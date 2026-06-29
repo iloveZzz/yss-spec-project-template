@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-sql-condition"
+  short_description: "YSS component skill for yss-sql-condition"
+  default_prompt: "Use yss-sql-condition for this YSS backend component task."

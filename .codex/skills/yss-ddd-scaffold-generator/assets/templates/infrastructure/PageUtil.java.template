@@ -1,0 +1,13 @@
+package {{base_package}}.repository.util;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yss.cloud.dto.page.PageQuery;
+
+public class PageUtil {
+
+    public static <T> Page<T> page(PageQuery query) {
+        int pageNum = query.getPageIndex();
+        int pageSize = query.getPageSize();
+        return new Page<>(pageNum, pageSize);
+    }
+}

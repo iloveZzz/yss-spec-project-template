@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <servers>
+        <server>
+            <id>dm26-mirror</id>
+            <username>dm-admin</username>
+            <password>admin123</password>
+        </server>
+        <server>
+            <id>dm26</id>
+            <username>dm-admin</username>
+            <password>admin123</password>
+        </server>
+
+        <!-- 假设 yss-dm-* 和 dm-* 与 dm26 是同一服务器实例，可以尝试合并权限 -->
+        <server>
+            <id>yss-dm-releases</id>
+            <username>dm-admin</username>
+            <password>{wMfbp90u13IHkUrNFhrsYvE+1BlXoIztVoPS8IPkTLI=}</password>
+        </server>
+        <server>
+            <id>yss-dm-snapshot</id>
+            <username>dm-admin</username>
+            <password>{wMfbp90u13IHkUrNFhrsYvE+1BlXoIztVoPS8IPkTLI=}</password>
+        </server>
+
+    </servers>
+
+    <!-- 解决镜像冲突：调整顺序，并使用更精确的 mirrorOf 语法 -->
+    <mirrors>
+<!--        <mirror>-->
+<!--            <id>dm26-mirror</id>-->
+<!--            <name>Internal Repository Manager</name>-->
+<!--            <url>http://192.168.167.26:8081/repository/dm/</url>-->
+<!--            <mirrorOf>external:*</mirrorOf>-->
+<!--        </mirror>-->
+
+    </mirrors>
+
+    <profiles>
+        <profile>
+            <id>internal-only</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>internal</value>
+                </property>
+            </activation>
+            <!-- 配置部署仓库 -->
+            <properties>
+                <altReleaseDeploymentRepository>
+                    dm-releases::default::http://192.168.167.26:8081/repository/dm-releases/
+                </altReleaseDeploymentRepository>
+                <altSnapshotDeploymentRepository>
+                    dm-snapshots::default::http://192.168.167.26:8081/repository/dm-snapshots/
+                </altSnapshotDeploymentRepository>
+            </properties>
+
+            <!-- 通常，配置了镜像后，此处无需再声明repository。
+                 除非你需要从这个特定的仓库下载一些在镜像中未包含的构件 -->
+            <repositories>
+                <!-- 你的内部仓库。由于镜像配置，对它的请求也会被代理 -->
+                <repository>
+                    <id>dm26</id>
+                    <name>Internal Repository</name>
+                    <url>http://192.168.167.26:8081/repository/dm/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>daily</updatePolicy> <!-- 平衡网络请求和更新频率 -->
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy> <!-- SNAPSHOT需要实时更新 -->
+                    </snapshots>
+                </repository>
+            </repositories>
+
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>dm26</id>
+                    <name>Internal Plugin Repository</name>
+                    <url>http://192.168.167.26:8081/repository/dm/</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>daily</updatePolicy>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                        <updatePolicy>always</updatePolicy>
+                    </snapshots>
+                </pluginRepository>
+            </pluginRepositories>
+        </profile>
+        <!-- 使用阿里云的配置 -->
+        <profile>
+            <id>aliyun-only</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>aliyun</value>
+                </property>
+            </activation>
+            <repositories>
+                <!-- 阿里云仓库配置 -->
+                <repository>
+                    <id>aliyunmaven</id>
+                    <name>Aliyun Public Repository</name>
+                    <url>https://maven.aliyun.com/repository/public</url>
+                    <releases>
+                        <enabled>true</enabled>
+                        <updatePolicy>daily</updatePolicy> <!-- 平衡网络请求和更新频率 -->
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+
+            </repositories>
+        </profile>
+
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>aliyun-only</activeProfile>
+    </activeProfiles>
+</settings>

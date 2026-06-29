@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-log"
+  short_description: "YSS component skill for yss-log"
+  default_prompt: "Use yss-log for this YSS backend component task."

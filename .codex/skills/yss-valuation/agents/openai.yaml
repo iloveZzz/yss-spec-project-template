@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-valuation"
+  short_description: "YSS component skill for yss-valuation"
+  default_prompt: "Use yss-valuation for this YSS backend component task."

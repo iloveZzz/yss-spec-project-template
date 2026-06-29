@@ -1,0 +1,46 @@
+{
+  "datasources": {
+    "quality-mysql": {
+      "db_type": "mysql",
+      "host": "127.0.0.1",
+      "port": 3306,
+      "user": "root",
+      "password": "root",
+      "database": "yss_quality"
+    },
+    "quality-postgres": {
+      "db_type": "postgres",
+      "host": "127.0.0.1",
+      "port": 5432,
+      "user": "postgres",
+      "password": "postgres",
+      "database": "yss_quality",
+      "schema": "public"
+    },
+    "quality-oracle": {
+      "db_type": "oracle",
+      "host": "127.0.0.1",
+      "port": 1521,
+      "user": "quality",
+      "password": "quality",
+      "database": "ORCLPDB1"
+    },
+    "quality-opengauss": {
+      "db_type": "opengauss",
+      "host": "127.0.0.1",
+      "port": 5432,
+      "user": "opengauss",
+      "password": "password",
+      "database": "yss_quality",
+      "schema": "public"
+    },
+    "quality-oceanbase": {
+      "db_type": "oceanbase",
+      "host": "127.0.0.1",
+      "port": 2881,
+      "user": "root@mysql",
+      "password": "root",
+      "database": "yss_quality"
+    }
+  }
+}

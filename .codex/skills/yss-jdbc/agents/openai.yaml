@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS JDBC"
+  short_description: "动态数据源、JDBC 访问、批量写入与排障处理规范"
+  default_prompt: "Use $yss-jdbc to configure or debug Hutool Db, dynamic data sources, and JDBC batch access."

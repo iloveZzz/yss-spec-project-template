@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Excel MVC"
+  short_description: "Excel 导入导出与 Spring MVC 接入规范"
+  default_prompt: "Use $yss-excel-mvc to implement or debug Excel import and export endpoints in Spring MVC."

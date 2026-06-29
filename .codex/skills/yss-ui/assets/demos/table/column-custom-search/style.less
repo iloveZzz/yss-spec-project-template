@@ -1,0 +1,48 @@
+.demo-container {
+  padding: 20px;
+}
+
+.vxe-table-filter-header {
+  padding: 8px;
+  border-bottom: 1px solid var(--vxe-ui-border-color, #e8eaec);
+}
+
+.vxe-table-filter-body {
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.vxe-table-filter-option {
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: var(--vxe-ui-layout-hover-background-color, #f5f7fa);
+  }
+
+  .filter-option-text {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  /* 让复选框标签占满一行并可缩小，便于文本省略号生效 */
+  .ant-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  /* 文本容器允许收缩，触发省略 */
+  .ant-checkbox-wrapper > span:last-child {
+    flex: 1;
+    min-width: 0;
+  }
+}

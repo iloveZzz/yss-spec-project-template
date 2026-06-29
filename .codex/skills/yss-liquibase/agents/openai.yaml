@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-liquibase"
+  short_description: "YSS component skill for yss-liquibase"
+  default_prompt: "Use yss-liquibase for this YSS backend component task."

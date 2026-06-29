@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Formily"
+  short_description: "表单 schema、联动、详情渲染与 Slot 规范"
+  default_prompt: "Use $yss-formily to build or refactor a YssFormily schema-driven form with linkage, validation, and detail rendering."

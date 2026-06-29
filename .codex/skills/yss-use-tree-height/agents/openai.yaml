@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Tree Height"
+  short_description: "YTree 自适应高度计算、搜索偏移与布局处理规范"
+  default_prompt: "Use $yss-use-tree-height to wire a responsive tree height calculation for a YSS page."

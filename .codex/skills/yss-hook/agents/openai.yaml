@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Hook"
+  short_description: "页面逻辑抽象、请求治理、分页与参数治理落地标准规范"
+  default_prompt: "Use $yss-hook to extract Vue page requests, pagination, and tree-loading logic into a reusable hook."

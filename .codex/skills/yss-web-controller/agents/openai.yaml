@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Web Controller"
+  short_description: "Web Controller、DTO、VO 与响应封装规范"
+  default_prompt: "Use $yss-web-controller to generate or refactor a YSS REST controller, request DTO, and response VO."

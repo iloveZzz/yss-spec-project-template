@@ -1,0 +1,73 @@
+.layout-split-pane-demo {
+  height: 500px;
+  border: 1px solid var(--color-border, #e8e8e8);
+
+  // Tree 侧边栏样式
+  .left-pane-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+
+    .tree-title {
+      font-weight: 600;
+      margin-bottom: 12px;
+      padding: 0 4px;
+      font-size: 14px;
+    }
+
+    .tree-wrapper {
+      flex: 1;
+      overflow-y: auto;
+    }
+  }
+
+  // 右侧表格区域样式
+  .right-pane-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    background-color: var(--color-bg-container, #fff);
+
+    .table-toolbar {
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+
+      .filter-area {
+        display: flex;
+        gap: 12px;
+        flex: 1;
+        max-width: 400px;
+      }
+
+      .action-area {
+        display: flex;
+        gap: 8px;
+      }
+    }
+
+    .table-wrapper {
+      flex: 1;
+      min-height: 0; // 关键：让 flex items 正确处理 overflow
+    }
+  }
+}
+
+.action-link {
+  color: var(--yss-color-primary-5, var(--ant-primary-color-hover, #3177ff));
+  cursor: pointer;
+  margin-right: 12px;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:last-child {
+    margin-right: 0;
+  }
+}

@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Table Height"
+  short_description: "YTable 自适应高度计算、分页偏移与布局处理规范"
+  default_prompt: "Use $yss-use-table-height to wire a responsive table height calculation for a YSS page."

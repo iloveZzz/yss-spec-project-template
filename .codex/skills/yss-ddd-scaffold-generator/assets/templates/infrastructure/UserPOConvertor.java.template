@@ -1,0 +1,28 @@
+package {{base_package}}.repository.convertor;
+
+import {{base_package}}.client.dto.cmd.UserAddCmd;
+import {{base_package}}.client.dto.cmd.UserUpdateCmd;
+import {{base_package}}.client.vo.UserVO;
+import {{base_package}}.repository.entity.UserPO;
+import org.mapstruct.Mapper;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.factory.Mappers;
+
+import java.util.List;
+
+@Mapper(
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+public interface UserPOConvertor {
+
+    UserPOConvertor INSTANCE = Mappers.getMapper(UserPOConvertor.class);
+
+    UserPO cmdToPO(UserAddCmd cmd);
+
+    UserPO cmdToPO(UserUpdateCmd cmd);
+
+    UserVO toVO(UserPO po);
+
+    List<UserVO> toVOList(List<UserPO> poList);
+}

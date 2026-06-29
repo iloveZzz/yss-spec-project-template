@@ -1,0 +1,232 @@
+.metrics-dashboard {
+  .metrics-row {
+    display: grid;
+
+    /* 使用 auto-fit 实现真正的自适应布局，最小卡片宽度 320px */
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: var(--spacing-lg, 24px);
+    margin-bottom: var(--spacing-lg, 24px);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  /* 仪表盘卡片样式 */
+  .gauge-card {
+    .gauge-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-color, #333);
+    }
+
+    .gauge-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 280px;
+    }
+
+    .disk-usage {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: var(--spacing-md, 16px);
+      padding-top: var(--spacing-sm, 8px);
+      border-top: 1px solid var(--border-color, #f0f0f0);
+
+      .usage-text {
+        font-size: 14px;
+        color: var(--text-color-secondary, #666);
+      }
+
+      .usage-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--warning-color, #faad14);
+      }
+    }
+  }
+
+  /* 线程统计卡片样式 */
+  .thread-card {
+    .thread-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-color, #333);
+    }
+
+    .thread-container {
+      text-align: center;
+      padding: var(--spacing-lg, 24px) 0;
+    }
+
+    .thread-total {
+      font-size: 72px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: var(--spacing-lg, 24px);
+      color: var(--warning-color, #faad14);
+    }
+
+    .thread-details {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: var(--spacing-xs, 4px) var(--spacing-md, 110px);
+      max-width: 240px;
+      margin: 0 auto;
+      align-items: start;
+    }
+
+    .thread-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      padding: 4px 0;
+      white-space: nowrap;
+
+      .thread-label {
+        font-weight: 400;
+        color: var(--text-color-secondary, #999);
+        margin-right: var(--spacing-xs, 4px);
+      }
+
+      .thread-value {
+        font-weight: 600;
+        font-size: 12px;
+        color: var(--error-color, #ff4d4f);
+      }
+    }
+  }
+
+  /* 指标卡片样式 */
+  .metric-card {
+    min-height: 120px;
+  }
+
+  /* 图表卡片样式 */
+  .chart-card {
+    .chart-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 150px;
+    }
+  }
+
+  /* 统计数据卡片样式 */
+  .stats-card {
+    text-align: center;
+
+    .big-number {
+      font-size: 42px;
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: var(--spacing-sm, 8px);
+      color: var(--primary-color, #1890ff);
+    }
+
+    .sub-stats {
+      display: flex;
+      gap: var(--spacing-sm, 12px);
+      justify-content: center;
+
+      .stat-item {
+        color: var(--text-color-secondary, #999);
+        font-size: 12px;
+      }
+    }
+  }
+
+  /* 告警卡片样式 */
+  .alert-card {
+    .alert-level {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 2px;
+      font-size: 12px;
+      margin-right: var(--spacing-sm, 8px);
+
+      &.level-warning {
+        background: var(--warning-color-background, #fff7e6);
+        color: var(--warning-color, #faad14);
+        border: 1px solid var(--warning-color-border, #ffd591);
+      }
+
+      &.level-error {
+        background: var(--error-color-background, #fff2f0);
+        color: var(--error-color, #ff4d4f);
+        border: 1px solid var(--error-color-border, #ffccc7);
+      }
+    }
+
+    .alert-name {
+      font-weight: 500;
+    }
+
+    .alert-host {
+      color: var(--text-color-secondary, #999);
+      font-size: 13px;
+    }
+  }
+
+  /* 存储卡片样式 */
+  .storage-card {
+    .storage-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-color, #333);
+    }
+
+    .storage-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 280px;
+    }
+
+    .storage-value {
+      font-size: 36px;
+      font-weight: 600;
+      text-align: center;
+      color: var(--warning-color, #f0a020);
+      line-height: 1.2;
+    }
+  }
+}
+
+/* 响应式设计优化 */
+
+/* 超小屏幕：强制单列布局，调整最小宽度 */
+@media (max-width: 767px) {
+  .metrics-dashboard {
+    .metrics-row {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-md, 16px);
+    }
+  }
+}
+
+/* 小屏幕：降低最小卡片宽度以适应更小的屏幕 */
+@media (max-width: 480px) {
+  .metrics-dashboard {
+    .metrics-row {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-sm, 12px);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .metrics-dashboard {
+    .stats-card .big-number {
+      font-size: 28px;
+    }
+
+    .storage-card .storage-value {
+      font-size: 24px;
+    }
+  }
+}

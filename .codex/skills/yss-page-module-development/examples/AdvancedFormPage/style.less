@@ -1,0 +1,76 @@
+@import "@/styles/variables.less";
+
+.complex-form-create {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-sizing: border-box;
+  padding-bottom: 56px; // 留出底部按钮高度
+
+  // 修复 Formily Label 对齐
+  :deep(.ant-formily-form-item-label) {
+    align-items: center;
+  }
+
+  // 步骤条样式
+  .steps-card {
+    .y-steps {
+      padding: 12px 0;
+    }
+  }
+
+  // 内容区样式（自适应高度）
+  .content-card {
+    flex: 1;
+    overflow: auto;
+  }
+
+  // SQL 预览区样式
+  .sql-preview-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+
+    .sql-preview-content {
+      flex: 1;
+      min-height: 28px;
+      border: 1px solid #f6f6f6;
+      border-radius: 6px;
+      background: #ffffff;
+      overflow: hidden;
+
+      .sql-code {
+        margin: 0;
+        padding: 8px 12px;
+        background: #fafbfc;
+        font-family: "Monaco", "Menlo", monospace;
+        font-size: 13px;
+        color: #2c3e50;
+        white-space: pre-wrap;
+        word-break: break-all;
+        max-height: 200px;
+        overflow: auto;
+      }
+    }
+  }
+
+  // 底部悬浮按钮栏
+  .footer-actions {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    height: 56px;
+    background: #fff;
+    border-top: 1px solid #e8e8e8;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 24px;
+    gap: 12px;
+    z-index: 10;
+  }
+}

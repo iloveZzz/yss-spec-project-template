@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS UI"
+  short_description: "YSS 页面、组件、Hook 与 API 一体化规范"
+  default_prompt: "Use $yss-ui to build a YSS page with standard layout, query form, table, tree, hooks, and API integration."

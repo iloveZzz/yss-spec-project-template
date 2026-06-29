@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-exception"
+  short_description: "YSS component skill for yss-exception"
+  default_prompt: "Use yss-exception for this YSS backend component task."

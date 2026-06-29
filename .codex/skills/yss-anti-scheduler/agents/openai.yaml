@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-anti-scheduler"
+  short_description: "YSS component skill for yss-anti-scheduler"
+  default_prompt: "Use yss-anti-scheduler for this YSS backend component task."

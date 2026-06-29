@@ -1,0 +1,53 @@
+{
+  "keywords": [
+    {
+      "keyword": "审批流程列表",
+      "scenario": "列表管理页（查询 + 分页 + 操作）",
+      "docs": ["./docs/components/table.md"],
+      "demos": ["./demos/table/basic", "./demos/table/action"]
+    },
+    {
+      "keyword": "节点设计",
+      "scenario": "可编辑表格（行内编辑）",
+      "docs": ["./docs/components/editTable.md"],
+      "demos": ["./demos/edit-table/row-edit", "./demos/edit-table/slot-linkage"]
+    },
+    {
+      "keyword": "树表联动",
+      "scenario": "树表联动页面（左树右表）",
+      "docs": ["./docs/components/tree.md", "./docs/components/split-pane.md"],
+      "demos": ["./demos/split-pane/tree-table-layout"]
+    },
+    {
+      "keyword": "新增编辑查看",
+      "scenario": "JSON Schema 表单（新增/编辑/查看）",
+      "docs": ["./docs/components/formily.md"],
+      "demos": ["./demos/formily/modes.vue"]
+    },
+    {
+      "keyword": "文件导入",
+      "scenario": "文件导入两步流",
+      "docs": ["./docs/components/fileImport.md"],
+      "demos": ["./demos/file-import/basic.vue", "./demos/file-import/formily.vue"]
+    },
+    {
+      "keyword": "代码编辑器",
+      "scenario": "代码编辑与日志查看",
+      "docs": ["./docs/components/monaco.md"],
+      "demos": ["./demos/monaco/monaco.vue", "./demos/monaco/log-viewer.vue"]
+    },
+    {
+      "keyword": "图表分析",
+      "scenario": "图表分析页",
+      "docs": ["./docs/components/echarts.md"],
+      "demos": ["./demos/echarts/mix.vue", "./demos/echarts/line.vue"]
+    },
+    {
+      "keyword": "表格高度",
+      "scenario": "表格高度自适应",
+      "docs": ["./docs/hooks/use-table-height.md"],
+      "demos": ["./demos/table/basic"]
+    }
+  ],
+  "status": "validated"
+}

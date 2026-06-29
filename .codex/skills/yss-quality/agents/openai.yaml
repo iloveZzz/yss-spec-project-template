@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-quality"
+  short_description: "YSS component skill for yss-quality"
+  default_prompt: "Use yss-quality for this YSS backend component task."

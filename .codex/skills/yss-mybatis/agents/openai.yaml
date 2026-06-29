@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS MyBatis"
+  short_description: "MyBatis 持久层、多数据源、分页与查询处理规范"
+  default_prompt: "Use $yss-mybatis to implement or debug YSS MyBatis repositories, pagination, and multi-datasource access."

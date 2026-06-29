@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Page Module"
+  short_description: "标准业务页面模块、分区布局与 Hook 开发实践规范"
+  default_prompt: "Use $yss-page-module-development to scaffold a YSS Vue 3 page module with hooks, schemas, and split layout."

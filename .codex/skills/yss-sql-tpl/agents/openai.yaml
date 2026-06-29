@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-sql-tpl"
+  short_description: "YSS component skill for yss-sql-tpl"
+  default_prompt: "Use yss-sql-tpl for this YSS backend component task."

@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS DB2MyBatis"
+  short_description: "数据库元数据生成 YSS 持久层与代码脚手架落地规范"
+  default_prompt: "Use $yss-db2mybatis to generate YSS domain gateway, repository, convertor, and gateway implementation code from database metadata."

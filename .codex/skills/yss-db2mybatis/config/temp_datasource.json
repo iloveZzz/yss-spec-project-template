@@ -1,0 +1,12 @@
+{
+  "metadata_mysql": {
+    "db_type": "mysql",
+    "host": "<host>",
+    "port": 3306,
+    "user": "<user>",
+    "password": "<password>",
+    "database": "<database>",
+    "schema": null,
+    "service_name": null
+  }
+}

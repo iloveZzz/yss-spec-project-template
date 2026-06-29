@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-variable"
+  short_description: "YSS component skill for yss-variable"
+  default_prompt: "Use yss-variable for this YSS backend component task."

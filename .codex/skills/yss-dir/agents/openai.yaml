@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-dir"
+  short_description: "YSS component skill for yss-dir"
+  default_prompt: "Use yss-dir for this YSS backend component task."

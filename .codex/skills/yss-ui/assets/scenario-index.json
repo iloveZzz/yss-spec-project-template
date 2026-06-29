@@ -1,0 +1,50 @@
+{
+  "scenarios": [
+    {
+      "name": "列表管理页（查询 + 分页 + 操作）",
+      "docs": ["./docs/components/table.md"],
+      "demos": ["./demos/table/basic", "./demos/table/action", "./demos/table/pagination-remote"]
+    },
+    {
+      "name": "远程筛选列表页",
+      "docs": ["./docs/components/table.md"],
+      "demos": ["./demos/table/filter-remote", "./demos/table/filter-mixed"]
+    },
+    {
+      "name": "可编辑表格（行内编辑）",
+      "docs": ["./docs/components/editTable.md"],
+      "demos": ["./demos/edit-table/row-edit", "./demos/edit-table/required", "./demos/edit-table/custom-rule"]
+    },
+    {
+      "name": "树表联动页面（左树右表）",
+      "docs": ["./docs/components/tree.md", "./docs/components/split-pane.md", "./docs/hooks/use-tree-height.md"],
+      "demos": ["./demos/split-pane/tree-table", "./demos/split-pane/tree-table-layout"]
+    },
+    {
+      "name": "JSON Schema 表单（新增/编辑/查看）",
+      "docs": ["./docs/components/formily.md"],
+      "demos": ["./demos/formily/basic.vue", "./demos/formily/modes.vue", "./demos/formily/steps.vue"]
+    },
+    {
+      "name": "文件导入两步流",
+      "docs": ["./docs/components/fileImport.md"],
+      "demos": ["./demos/file-import/basic.vue", "./demos/file-import/formily.vue"]
+    },
+    {
+      "name": "代码编辑与日志查看",
+      "docs": ["./docs/components/monaco.md", "./docs/hooks/useFullscreen.md"],
+      "demos": ["./demos/monaco/monaco.vue", "./demos/monaco/log-viewer.vue", "./demos/monaco/fullscreen.vue"]
+    },
+    {
+      "name": "图表分析页",
+      "docs": ["./docs/components/echarts.md"],
+      "demos": ["./demos/echarts/line.vue", "./demos/echarts/mix.vue", "./demos/echarts/dark.vue"]
+    },
+    {
+      "name": "高度自适应",
+      "docs": ["./docs/hooks/use-table-height.md", "./docs/hooks/use-tree-height.md"],
+      "demos": ["./demos/table/basic", "./demos/tree/search-toolbar"]
+    }
+  ],
+  "status": "validated"
+}

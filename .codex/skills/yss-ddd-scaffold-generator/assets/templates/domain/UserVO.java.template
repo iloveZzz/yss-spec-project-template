@@ -1,0 +1,52 @@
+package {{base_package}}.client.vo;
+
+import lombok.Data;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+/**
+ * 用户值对象
+ *
+ * @author {{author}}
+ * @date {{date}}
+ */
+@Data
+public class UserVO implements Serializable {
+    
+    private static final long serialVersionUID = 1L;
+    
+    /**
+     * 用户ID
+     */
+    private Long id;
+    
+    /**
+     * 用户名
+     */
+    private String username;
+    
+    /**
+     * 邮箱
+     */
+    private String email;
+    
+    /**
+     * 状态：1-启用，0-禁用
+     */
+    private Integer status;
+    
+    /**
+     * 状态名称
+     */
+    private String statusName;
+    
+    /**
+     * 创建时间
+     */
+    private LocalDateTime createTime;
+    
+    /**
+     * 更新时间
+     */
+    private LocalDateTime updateTime;
+}

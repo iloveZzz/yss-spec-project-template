@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS Spring Boot 3 Upgrade"
+  short_description: "YSS 后端 Spring Boot 3 升级核查"
+  default_prompt: "Use $yss-up-springboot3 to audit a YSS backend module for Spring Boot 3 compatibility."

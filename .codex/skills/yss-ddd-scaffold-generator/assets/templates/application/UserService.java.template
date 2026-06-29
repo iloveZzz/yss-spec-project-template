@@ -1,0 +1,48 @@
+package {{base_package}}.core.service;
+
+import com.yss.cloud.dto.result.PageResult;
+import {{base_package}}.client.dto.cmd.UserAddCmd;
+import {{base_package}}.client.dto.cmd.UserUpdateCmd;
+import {{base_package}}.client.dto.query.UserPageQuery;
+import {{base_package}}.client.vo.UserVO;
+
+public interface UserService {
+
+    /**
+     * 分页查询用户列表
+     *
+     * @param query 查询条件
+     * @return 用户分页结果
+     */
+    PageResult<UserVO> pageUser(UserPageQuery query);
+
+    /**
+     * 根据主键ID查询用户
+     *
+     * @param id 用户ID
+     * @return 用户详情
+     */
+    UserVO getUserById(Long id);
+
+    /**
+     * 新增用户并返回主键ID
+     *
+     * @param cmd 新增命令
+     * @return 新增用户ID
+     */
+    Long addUser(UserAddCmd cmd);
+
+    /**
+     * 根据命令更新用户信息
+     *
+     * @param cmd 更新命令
+     */
+    void updateUser(UserUpdateCmd cmd);
+
+    /**
+     * 根据主键ID删除用户
+     *
+     * @param id 用户ID
+     */
+    void deleteUser(Long id);
+}

@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Distributed ID"
+  short_description: "Leaf、CosId 与分布式 ID 接入与配置规范"
+  default_prompt: "Use $yss-distributed-id to configure or debug distributed ID generation, Leaf, CosId, and MyBatis ID injection."

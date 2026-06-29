@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-duckdb"
+  short_description: "YSS component skill for yss-duckdb"
+  default_prompt: "Use yss-duckdb for this YSS backend component task."
