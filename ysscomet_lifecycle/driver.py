@@ -5,7 +5,10 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .config import load_config
 from .guard import run_guard
+from .handoff import generate_handoff
+from .inspector import collect_pipeline_snapshot
 from .state import STAGES, TRANSITIONS, get_pipeline, init_pipeline, load_state, now_iso, save_state
 
 
@@ -36,19 +39,34 @@ def advance(state_path: Path, pipeline: str, retry: bool = False) -> tuple[int, 
     stage_data["guard"] = {**payload, "ran_at": ran_at}
     action = "retry" if retry else "advance"
     if payload["result"] == "pass":
+        root = state_path.parent if state_path.parent != Path("") else Path.cwd()
         stage_data["status"] = "passed"
         stage_data["passed_at"] = ran_at
         item["current_stage"] = target
         item["stages"][target]["status"] = "active"
         item["stages"][target]["entered_at"] = ran_at
         item["stages"][target].setdefault("guard", None)
+        handoff = generate_handoff(root, state_path, pipeline, current, target)
+        if handoff:
+            item["handoff_context"] = handoff["path"]
+            item["handoff_hash"] = handoff["sha256"]
         item["history"].append({"at": ran_at, "action": action, "from": current, "to": target, "result": "pass"})
         save_state(state_path, state)
+        if resolve_auto_transition(root, item):
+            snapshot = collect_pipeline_snapshot(root, state_path, pipeline)
+            payload["nextAction"] = snapshot["nextAction"]
         return 0, payload
     stage_data["status"] = "blocked"
     item["history"].append({"at": ran_at, "action": action, "from": current, "to": target, "result": "fail"})
     save_state(state_path, state)
     return 1, payload
+
+
+def resolve_auto_transition(root: Path, item: dict[str, Any]) -> bool:
+    value = item.get("auto_transition")
+    if value is not None:
+        return bool(value)
+    return bool(load_config(root).get("auto_transition"))
 
 
 def skip_stage(state_path: Path, pipeline: str, stage: str, reason: str) -> None:

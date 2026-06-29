@@ -37,6 +37,7 @@ class Task:
     goal: str
     output_path: str
     backend_hint: str = "codex"
+    handoff_context: str | None = None
 
 
 def available_cli(backend: str) -> str | None:
@@ -117,12 +118,14 @@ def run_cli_backend(root: Path, task: Task, executable: str) -> subprocess.Compl
             "YSSCOMET_TASK_ROLE": task.agent_role,
             "YSSCOMET_TASK_GOAL": task.goal,
             "YSSCOMET_TASK_OUTPUT_PATH": str(output_path),
+            "YSSCOMET_TASK_HANDOFF_CONTEXT": task.handoff_context or "",
             "HERMES_TASK_ID": task.id,
             "HERMES_TASK_PIPELINE": task.pipeline,
             "HERMES_TASK_STAGE": task.stage,
             "HERMES_TASK_ROLE": task.agent_role,
             "HERMES_TASK_GOAL": task.goal,
             "HERMES_TASK_OUTPUT_PATH": str(output_path),
+            "HERMES_TASK_HANDOFF_CONTEXT": task.handoff_context or "",
         }
     )
     prompt = (

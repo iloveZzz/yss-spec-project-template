@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -9,6 +10,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from ysscomet_lifecycle.harness import BACKENDS, available_cli
+from ysscomet_lifecycle.config import load_config
+from ysscomet_lifecycle.inspector import collect_doctor, collect_pipeline_snapshot, print_json
 from ysscomet_lifecycle.metrics import collect_comet
 from ysscomet_lifecycle.stage_executor import execute_stage
 from ysscomet_lifecycle.state import init_pipeline, load_state
@@ -25,7 +28,10 @@ def print_dashboard(state_path: Path) -> None:
         print(f"{pipeline:24} stage={item['current_stage']:8} sprint={item.get('sprint', ''):12} guard={result}")
 
 
-def print_doctor() -> None:
+def print_doctor(json_output: bool, state_path: Path) -> None:
+    if json_output:
+        print_json(collect_doctor(Path.cwd(), state_path, Path(__file__).resolve().parents[1]))
+        return
     print("YSSComet Environment")
     print("====================")
     for backend in BACKENDS:
@@ -49,17 +55,26 @@ def main(argv: list[str] | None = None) -> int:
     init_cmd.add_argument("--title")
     init_cmd.add_argument("--sprint", default="Sprint 1")
 
-    for name in ["status", "advance", "history"]:
+    status_cmd = sub.add_parser("status")
+    status_cmd.add_argument("pipeline", nargs="?")
+    status_cmd.add_argument("--json", action="store_true")
+
+    for name in ["advance", "history"]:
         cmd = sub.add_parser(name)
         cmd.add_argument("pipeline")
+
+    next_cmd = sub.add_parser("next")
+    next_cmd.add_argument("pipeline")
+    next_cmd.add_argument("--json", action="store_true")
 
     run_cmd = sub.add_parser("run")
     run_cmd.add_argument("pipeline")
     run_cmd.add_argument("stage", nargs="?")
-    run_cmd.add_argument("--backend", default="stub")
+    run_cmd.add_argument("--backend")
 
     sub.add_parser("dashboard")
-    sub.add_parser("doctor")
+    doctor_cmd = sub.add_parser("doctor")
+    doctor_cmd.add_argument("--json", action="store_true")
     sub.add_parser("collect-metrics")
     args = parser.parse_args(argv)
     state_path = Path(args.state)
@@ -74,17 +89,40 @@ def main(argv: list[str] | None = None) -> int:
         if args.stage and args.stage != current_stage:
             print(f"stage mismatch: current stage is {current_stage}, requested {args.stage}", file=sys.stderr)
             return 1
-        result = execute_stage(Path.cwd(), state_path, args.pipeline, args.backend)
+        backend = args.backend or load_config(Path.cwd()).get("default_backend", "stub")
+        result = execute_stage(Path.cwd(), state_path, args.pipeline, backend)
         print(result["status"])
         return 0 if result["status"] == "success" else 1
-    if args.command in {"status", "advance", "history"}:
+    if args.command == "status":
+        if args.json:
+            if args.pipeline:
+                print_json(collect_pipeline_snapshot(Path.cwd(), state_path, args.pipeline))
+            else:
+                state = load_state(state_path)
+                print(json.dumps({"pipelines": list(state.get("pipelines", {}).keys())}, ensure_ascii=False, indent=2))
+            return 0
+        if not args.pipeline:
+            print_dashboard(state_path)
+            return 0
+        cmd = [sys.executable, str(Path(__file__).with_name("comet-driver")), args.pipeline, "status", "--state", str(state_path)]
+        return subprocess.run(cmd).returncode
+    if args.command == "next":
+        snapshot = collect_pipeline_snapshot(Path.cwd(), state_path, args.pipeline)
+        if args.json:
+            print_json(snapshot["nextAction"])
+        else:
+            action = snapshot["nextAction"]
+            print(action["command"] or "done")
+            print(action["reason"])
+        return 0
+    if args.command in {"advance", "history"}:
         cmd = [sys.executable, str(Path(__file__).with_name("comet-driver")), args.pipeline, args.command, "--state", str(state_path)]
         return subprocess.run(cmd).returncode
     if args.command == "dashboard":
         print_dashboard(state_path)
         return 0
     if args.command == "doctor":
-        print_doctor()
+        print_doctor(args.json, state_path)
         return 0
     if args.command == "collect-metrics":
         events = collect_comet(Path.cwd(), state_path)

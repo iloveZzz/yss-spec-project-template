@@ -49,6 +49,10 @@ def new_pipeline(pipeline: str, title: str | None, sprint: str, spec: str | None
         "sprint": sprint,
         "created_at": created,
         "current_stage": "open",
+        "workflow": "full",
+        "auto_transition": None,
+        "handoff_context": None,
+        "handoff_hash": None,
         "spec": artifacts["spec"],
         "artifacts": artifacts,
         "stages": stages,
@@ -104,6 +108,10 @@ def _upgrade_state(state: dict[str, Any]) -> dict[str, Any]:
         item.setdefault("sprint", "Sprint 1")
         item.setdefault("created_at", now_iso())
         item.setdefault("current_stage", "open")
+        item.setdefault("workflow", "full")
+        item.setdefault("auto_transition", None)
+        item.setdefault("handoff_context", None)
+        item.setdefault("handoff_hash", None)
         artifacts = default_artifacts(pipeline)
         artifacts.update(item.get("artifacts") or {})
         if item.get("spec"):

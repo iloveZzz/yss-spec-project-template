@@ -46,6 +46,7 @@ def execute_stage(root: Path, state_path: Path, pipeline: str, backend: str) -> 
         goal=f"{GOAL_BY_STAGE[stage]}：{pipeline}",
         output_path=item["artifacts"][output_key],
         backend_hint=backend,
+        handoff_context=item.get("handoff_context"),
     )
     return run_task(root, task)
 

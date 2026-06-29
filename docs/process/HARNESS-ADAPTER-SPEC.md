@@ -119,6 +119,8 @@ result:
 
 校验失败 → `status: failure`，不返回半成品路径。
 
+当 `.comet.yaml` 中存在 `handoff_context` 时，后端可读取该 JSON 文件作为阶段交接上下文。第一版 handoff 只记录 spec/plan 路径、存在性和 SHA256，不裁剪真实 prompt。
+
 ---
 
 ## 5. AgentBackend 接口
