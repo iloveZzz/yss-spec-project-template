@@ -189,12 +189,12 @@ class LifecycleTests(unittest.TestCase):
         )
 
         self.assertEqual(result.returncode, 0, result.stderr)
-        text = (self.tmp_path / ".hermes/plans/demo-feature.md").read_text()
+        text = (self.tmp_path / ".ysscomet/plans/demo-feature.md").read_text()
         self.assertIn("# demo-feature 设计阶段产物", text)
         self.assertIn("## 目标", text)
 
     def test_real_backend_must_create_valid_artifact(self):
-        from hermes_lifecycle.harness import Task, run_task
+        from ysscomet_lifecycle.harness import Task, run_task
 
         fake_bin = self.tmp_path / "bin"
         fake_bin.mkdir()
@@ -203,11 +203,11 @@ class LifecycleTests(unittest.TestCase):
             "#!/usr/bin/env python3\n"
             "from pathlib import Path\n"
             "import os\n"
-            "path = Path(os.environ['HERMES_TASK_OUTPUT_PATH'])\n"
+            "path = Path(os.environ['YSSCOMET_TASK_OUTPUT_PATH'])\n"
             "path.parent.mkdir(parents=True, exist_ok=True)\n"
             "path.write_text('---\\n'\n"
-            "                f\"pipeline: {os.environ['HERMES_TASK_PIPELINE']}\\n\"\n"
-            "                f\"stage: {os.environ['HERMES_TASK_STAGE']}\\n\"\n"
+            "                f\"pipeline: {os.environ['YSSCOMET_TASK_PIPELINE']}\\n\"\n"
+            "                f\"stage: {os.environ['YSSCOMET_TASK_STAGE']}\\n\"\n"
             "                'status: draft\\nowner: ai\\n---\\nCLI_MARKER\\n')\n"
         )
         fake_codex.chmod(0o755)
@@ -221,14 +221,14 @@ class LifecycleTests(unittest.TestCase):
                 stage="design",
                 agent_role="plan",
                 goal="生成实现计划",
-                output_path=".hermes/plans/demo-feature.md",
+                output_path=".ysscomet/plans/demo-feature.md",
                 backend_hint="codex",
             ),
         )
 
         self.assertEqual(result["status"], "success", result)
         self.assertEqual(result["transport"], "cli")
-        text = (self.tmp_path / ".hermes/plans/demo-feature.md").read_text()
+        text = (self.tmp_path / ".ysscomet/plans/demo-feature.md").read_text()
         self.assertIn("pipeline: demo-feature", text)
         self.assertIn("CLI_MARKER", text)
 
@@ -236,7 +236,7 @@ class LifecycleTests(unittest.TestCase):
         comet = self.init_pipeline()
         write_spec(self.tmp_path / "docs/api/specs/demo-feature.yaml", "demo-feature")
         run_cmd([sys.executable, str(REPO / "scripts" / "comet-driver"), "demo-feature", "advance", "--state", str(comet)], self.tmp_path)
-        write_markdown_artifact(self.tmp_path / ".hermes/plans/demo-feature.md", "demo-feature", "design")
+        write_markdown_artifact(self.tmp_path / ".ysscomet/plans/demo-feature.md", "demo-feature", "design")
         run_cmd([sys.executable, str(REPO / "scripts" / "comet-driver"), "demo-feature", "advance", "--state", str(comet)], self.tmp_path)
 
         missing = run_cmd([sys.executable, str(REPO / "scripts" / "comet-driver"), "demo-feature", "advance", "--state", str(comet)], self.tmp_path)
@@ -251,11 +251,11 @@ class LifecycleTests(unittest.TestCase):
         self.assertNotEqual(wrong.returncode, 0)
         self.assertTrue(any(check["id"] == "tests-bound" and not check["pass"] for check in payload["checks"]))
 
-    def test_hermes_run_rejects_stage_mismatch(self):
+    def test_ysscomet_run_rejects_stage_mismatch(self):
         comet = self.init_pipeline()
         result = run_cmd(
             [
-                str(REPO / "scripts" / "hermes"),
+                str(REPO / "scripts" / "ysscomet"),
                 "--state",
                 str(comet),
                 "run",
@@ -270,11 +270,11 @@ class LifecycleTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("current stage is open", result.stderr)
 
-    def test_hermes_run_defaults_to_stub_for_progressive_disclosure(self):
+    def test_ysscomet_run_defaults_to_stub_for_progressive_disclosure(self):
         comet = self.init_pipeline()
         result = run_cmd(
             [
-                str(REPO / "scripts" / "hermes"),
+                str(REPO / "scripts" / "ysscomet"),
                 "--state",
                 str(comet),
                 "run",
@@ -286,15 +286,21 @@ class LifecycleTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertTrue((self.tmp_path / "docs/api/specs/demo-feature.yaml").exists())
 
-    def test_hermes_doctor_discloses_backend_environment(self):
-        result = run_cmd([str(REPO / "scripts" / "hermes"), "doctor"], self.tmp_path)
+    def test_ysscomet_doctor_discloses_backend_environment(self):
+        result = run_cmd([str(REPO / "scripts" / "ysscomet"), "doctor"], self.tmp_path)
 
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("codex", result.stdout)
         self.assertIn("stub", result.stdout)
 
+    def test_legacy_hermes_cli_forwards_to_ysscomet(self):
+        result = run_cmd([str(REPO / "scripts" / "hermes"), "doctor"], self.tmp_path)
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("YSSComet Environment", result.stdout)
+
     def test_harness_declares_required_backends(self):
-        from hermes_lifecycle.harness import BACKENDS
+        from ysscomet_lifecycle.harness import BACKENDS
 
         self.assertIn("stub", BACKENDS)
         self.assertIn("codex", BACKENDS)

@@ -92,7 +92,7 @@ task:
       - docs/api/specs/user-login.yaml
       - docs/requirements/user-login.md
   toolsets: ["terminal", "file", "web"]    # 请求的工具集
-  output_path: ".hermes/plans/user-login.md"   # 产物落盘路径（== COMET §7 artifacts.<role>）
+  output_path: ".ysscomet/plans/user-login.md"   # 产物落盘路径（== COMET §7 artifacts.<role>）
   timeout_s: 600
   backend_hint: null                       # 可选：显式指定后端，优先级最高
 ```
@@ -103,9 +103,9 @@ task:
 result:
   status: success | failure | partial
   backend: "codex"                         # 实际执行的后端
-  output_path: ".hermes/plans/user-login.md"
+  output_path: ".ysscomet/plans/user-login.md"
   artifacts:                               # 附带产物（如多文件）
-    - ".hermes/plans/user-login.md"
+    - ".ysscomet/plans/user-login.md"
   log: "<后端原始 stdout/trace，截断>"      # 供调试与分析
   duration_s: 42
   error: null                              # failure 时填错误码+描述
@@ -233,7 +233,7 @@ stage_backend:
 | Comet stage | agent_role | output_path（= COMET artifacts） | 触发时机 |
 |-------------|-----------|----------------------------------|---------|
 | open | spec | `docs/api/specs/<pipeline>.yaml` | stage=active 期间，guard open→design 前 |
-| design | plan | `.hermes/plans/<pipeline>.md` | guard design→build 前 |
+| design | plan | `.ysscomet/plans/<pipeline>.md` | guard design→build 前 |
 | build | tdd | `backend/tests/test_<pipeline>.py` 等 | guard build→verify 前 |
 | verify | review | `docs/process/sprint-reviews/<pipeline>.md` | guard verify→archive 前 |
 | archive | retro | `docs/process/sprint-retros/<pipeline>.md` | archive 阶段内 |

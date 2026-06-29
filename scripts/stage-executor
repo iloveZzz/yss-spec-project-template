@@ -4,7 +4,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from hermes_lifecycle.stage_executor import main
+from ysscomet_lifecycle.stage_executor import main
 
 
 if __name__ == "__main__":

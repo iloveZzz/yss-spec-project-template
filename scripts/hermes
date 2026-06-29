@@ -1,97 +1,9 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import argparse
-import subprocess
-import sys
+import runpy
 from pathlib import Path
-
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-
-from hermes_lifecycle.metrics import collect_comet
-from hermes_lifecycle.stage_executor import execute_stage
-from hermes_lifecycle.state import init_pipeline, load_state
-from hermes_lifecycle.harness import BACKENDS, available_cli
-
-
-def print_dashboard(state_path: Path) -> None:
-    state = load_state(state_path)
-    print("Hermes Lifecycle Dashboard")
-    print("==========================")
-    for pipeline, item in state.get("pipelines", {}).items():
-        guard = item["stages"].get(item["current_stage"], {}).get("guard") or {}
-        history = item.get("history", [])
-        result = guard.get("result") or (history[-1].get("result") if history else "-")
-        print(f"{pipeline:24} stage={item['current_stage']:8} sprint={item.get('sprint', ''):12} guard={result}")
-
-
-def print_doctor() -> None:
-    print("Hermes Environment")
-    print("==================")
-    for backend in BACKENDS:
-        cli = available_cli(backend)
-        if backend == "stub":
-            status = "ready"
-            detail = "built-in"
-        else:
-            status = "ready" if cli else "missing"
-            detail = cli or "install CLI or provide platform adapter"
-        print(f"{backend:12} {status:7} {detail}")
-
-
-def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="hermes")
-    parser.add_argument("--state", default=".comet.yaml")
-    sub = parser.add_subparsers(dest="command", required=True)
-
-    init_cmd = sub.add_parser("init-feature")
-    init_cmd.add_argument("pipeline")
-    init_cmd.add_argument("--title")
-    init_cmd.add_argument("--sprint", default="Sprint 1")
-
-    for name in ["status", "advance", "history"]:
-        cmd = sub.add_parser(name)
-        cmd.add_argument("pipeline")
-
-    run_cmd = sub.add_parser("run")
-    run_cmd.add_argument("pipeline")
-    run_cmd.add_argument("stage", nargs="?")
-    run_cmd.add_argument("--backend", default="stub")
-
-    sub.add_parser("dashboard")
-    sub.add_parser("doctor")
-    sub.add_parser("collect-metrics")
-    args = parser.parse_args(argv)
-    state_path = Path(args.state)
-
-    if args.command == "init-feature":
-        init_pipeline(state_path, args.pipeline, args.title, args.sprint, None)
-        print(f"Initialized feature {args.pipeline}")
-        return 0
-    if args.command == "run":
-        state = load_state(state_path)
-        current_stage = state.get("pipelines", {}).get(args.pipeline, {}).get("current_stage")
-        if args.stage and args.stage != current_stage:
-            print(f"stage mismatch: current stage is {current_stage}, requested {args.stage}", file=sys.stderr)
-            return 1
-        result = execute_stage(Path.cwd(), state_path, args.pipeline, args.backend)
-        print(result["status"])
-        return 0 if result["status"] == "success" else 1
-    if args.command in {"status", "advance", "history"}:
-        cmd = [sys.executable, str(Path(__file__).with_name("comet-driver")), args.pipeline, args.command, "--state", str(state_path)]
-        return subprocess.run(cmd).returncode
-    if args.command == "dashboard":
-        print_dashboard(state_path)
-        return 0
-    if args.command == "doctor":
-        print_doctor()
-        return 0
-    if args.command == "collect-metrics":
-        events = collect_comet(Path.cwd(), state_path)
-        print(f"Collected {len(events)} events")
-        return 0
-    return 2
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    runpy.run_path(str(Path(__file__).with_name("ysscomet")), run_name="__main__")
