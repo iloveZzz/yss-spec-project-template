@@ -17,6 +17,8 @@
 
 ## 继续阅读
 
+- [产品全生命周期使用手册](./product-lifecycle-workflow.md)
+- [全生命周期最佳实践](./lifecycle-best-practices.md)
 - [OpenSpec Skills 使用手册](./openspec-skills.md)
 - [PDCA × Scrum](../process/PDCA-SCRUM.md)
 - [OpenSpec × Superpowers](../process/OPENSPEC-SUPERPOWERS-COMPOSITION.md)

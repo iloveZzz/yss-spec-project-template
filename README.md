@@ -61,6 +61,8 @@ scripts/verify-template
 |------|------|
 | [AGENTS.md](./AGENTS.md) | 全局 AI 指令 + 编码规范 + Agent 协作 |
 | [docs/user-guide/README.md](./docs/user-guide/README.md) | 模板使用说明 |
+| [docs/user-guide/product-lifecycle-workflow.md](./docs/user-guide/product-lifecycle-workflow.md) | 产品全生命周期使用手册 |
+| [docs/user-guide/lifecycle-best-practices.md](./docs/user-guide/lifecycle-best-practices.md) | 全生命周期最佳实践 |
 | [docs/process/PDCA-SCRUM.md](./docs/process/PDCA-SCRUM.md) | PDCA × Scrum × AI |
 | [docs/process/OPENSPEC-SUPERPOWERS-COMPOSITION.md](./docs/process/OPENSPEC-SUPERPOWERS-COMPOSITION.md) | OpenSpec 与 Superpowers 协作方式 |
 | [docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md](./docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md) | Matt Pocock Engineering Skills 集成与使用 |
