@@ -126,4 +126,4 @@ Spec    Plan     TDD     Review    Deploy+Retro
 
 | 日期 | 版本 | 变更内容 |
 |------|------|---------|
-| | v1.0 | 从 ysscomet-project-template 初始化 |
+| | v1.0 | 从 yss-spec-project-template 初始化 |

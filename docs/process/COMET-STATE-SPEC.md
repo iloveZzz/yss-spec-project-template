@@ -71,7 +71,7 @@
 ```yaml
 meta:
   version: "1.1"
-  template: "ysscomet-project-template"
+  template: "yss-spec-project-template"
 
 pipelines:
   user-login:

@@ -34,7 +34,7 @@ def default_artifacts(pipeline: str) -> dict[str, str]:
 
 
 def new_state() -> dict[str, Any]:
-    return {"meta": {"version": "1.1", "template": "ysscomet-project-template"}, "pipelines": {}}
+    return {"meta": {"version": "1.1", "template": "yss-spec-project-template"}, "pipelines": {}}
 
 
 def new_pipeline(pipeline: str, title: str | None, sprint: str, spec: str | None) -> dict[str, Any]:
@@ -95,9 +95,9 @@ def _upgrade_state(state: dict[str, Any]) -> dict[str, Any]:
     upgraded = deepcopy(state)
     upgraded.setdefault("meta", {})
     upgraded["meta"]["version"] = "1.1"
-    if upgraded["meta"].get("template") == "hermes-project-template":
-        upgraded["meta"]["template"] = "ysscomet-project-template"
-    upgraded["meta"].setdefault("template", "ysscomet-project-template")
+    if upgraded["meta"].get("template") in {"hermes-project-template", "ysscomet-project-template"}:
+        upgraded["meta"]["template"] = "yss-spec-project-template"
+    upgraded["meta"].setdefault("template", "yss-spec-project-template")
     upgraded.setdefault("pipelines", {})
     for pipeline, item in upgraded["pipelines"].items():
         item.setdefault("title", pipeline.replace("-", " ").title())

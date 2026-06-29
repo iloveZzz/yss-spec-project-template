@@ -79,6 +79,7 @@ class LifecycleTests(unittest.TestCase):
         comet = self.init_pipeline()
         self.assertIn("current_stage: open", comet.read_text())
         self.assertIn("status: active", comet.read_text())
+        self.assertIn("template: yss-spec-project-template", comet.read_text())
 
         blocked = run_cmd(
             [
@@ -114,6 +115,17 @@ class LifecycleTests(unittest.TestCase):
         self.assertIn("current_stage: design", state)
         self.assertIn("result: pass", state)
         self.assertIn("action: retry", state)
+
+    def test_state_load_upgrades_legacy_template_names(self):
+        from ysscomet_lifecycle.state import load_state
+
+        for legacy_name in ["hermes-project-template", "ysscomet-project-template"]:
+            state_file = self.tmp_path / f"{legacy_name}.yaml"
+            state_file.write_text(f"meta:\n  version: 1.1\n  template: {legacy_name}\npipelines:\n")
+
+            state = load_state(state_file)
+
+            self.assertEqual(state["meta"]["template"], "yss-spec-project-template")
 
     def test_guard_rejects_artifact_bound_to_other_pipeline(self):
         comet = self.init_pipeline()

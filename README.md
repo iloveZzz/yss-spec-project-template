@@ -1,4 +1,4 @@
-# YSSComet Project Template
+# YSS Spec Project Template
 
 > OpenSpec × Comet × Superpowers 驱动的 AI 研发流程模板。
 
