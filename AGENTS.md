@@ -78,6 +78,12 @@ Spec    Plan     TDD     Review    Deploy+Retro
       comet-guard.sh 门禁检查每个阶段转换
 ```
 
+**Comet 状态推进规则：**
+- `.comet.yaml` 是唯一状态源，禁止手工修改 pipeline 阶段状态。
+- 阶段推进必须通过 `scripts/comet-driver <pipeline> advance` 或 `scripts/hermes advance <pipeline>`。
+- Agent / harness / stage-executor 只允许生成 artifacts，不允许直接推进 `current_stage`。
+- 每个 artifact 头部必须包含 `pipeline: <id>`，guard 会拒绝使用其他 pipeline 的产物。
+
 ---
 
 ## AI Agent 协作规范

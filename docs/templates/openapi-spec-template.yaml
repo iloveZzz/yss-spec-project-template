@@ -1,0 +1,11 @@
+---
+pipeline: <feature-id>
+stage: open
+status: draft
+owner: ai
+---
+openapi: 3.1.0
+info:
+  title: <功能 API>
+  version: 0.1.0
+paths: {}

@@ -173,10 +173,11 @@ capabilities:
 
 | 后端 | 默认传输 | 输入映射 | 输出解析 | 已知限制 / 备注 |
 |------|---------|---------|---------|----------------|
-| **codex**（默认） | CLI | goal/context/toolsets → codex CLI 参数 | 写 `output_path`，解析 exit code | 全局默认；`probe` 校验 `codex --version` |
-| **claude** | SDK 或 CLI（实现时定） | 同上 | 同上 | 若走 Agent SDK，`toolsets` 映射到 SDK 工具集；`probe` 校验 SDK 可 import |
-| **hermes** | HTTP（待确认） | Task JSON → `POST /run` | 下载 artifact 到 `output_path` | 远程服务需鉴权；超时阈值 ≤ task.timeout_s |
-| **opencode** | CLI | 同 codex | 同 codex | `probe` 校验 `opencode --version` |
+| **codex**（默认） | CLI 或平台工具 | goal/context/toolsets → codex task | 写 `output_path`，解析结果 | 使用最多；优先探测 `codex` CLI |
+| **hermes / hermess** | CLI 或平台工具 | Task JSON / goal 参数 | 写 `output_path` 或下载 artifact | 同时兼容 `hermes` 与常见拼写 `hermess` |
+| **trae** | CLI 或平台工具 | 同上 | 同上 | 先做能力探测与降级 |
+| **qoder** | CLI 或平台工具 | 同上 | 同上 | 先做能力探测与降级 |
+| **claude-code** | CLI 或平台工具 | 同上 | 同上 | 优先探测 `claude`，其次 `claude-code` |
 
 **新增后端流程**：实现 `AgentBackend` 三方法 + 在 `harness.backends` 注册 + 补本表一行。无需改动 comet-driver 或 guard。
 
@@ -206,10 +207,11 @@ capabilities:
 ```yaml
 default_backend: codex
 backends:
-  codex:    { transport: cli,  enabled: true }
-  claude:   { transport: sdk,  enabled: true }
-  hermes:   { transport: http, enabled: false, endpoint: "https://hermes.local/run" }
-  opencode: { transport: cli,  enabled: true }
+  codex:       { transport: auto, enabled: true }
+  hermes:      { transport: auto, enabled: true }
+  trae:        { transport: auto, enabled: true }
+  qoder:       { transport: auto, enabled: true }
+  claude-code: { transport: auto, enabled: true }
 
 # 可选：按 stage 路由
 stage_backend:
