@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+
+required_files=(
+  ".codex/skills/openspec-apply-change/SKILL.md"
+  ".codex/skills/openspec-archive-change/SKILL.md"
+  ".codex/skills/openspec-explore/SKILL.md"
+  ".codex/skills/openspec-propose/SKILL.md"
+  ".codex/skills/openspec-sync-specs/SKILL.md"
+  ".pi/prompts/opsx-apply.md"
+  ".pi/prompts/opsx-archive.md"
+  ".pi/prompts/opsx-explore.md"
+  ".pi/prompts/opsx-propose.md"
+  ".pi/prompts/opsx-sync.md"
+  ".pi/skills/openspec-apply-change/SKILL.md"
+  ".pi/skills/openspec-archive-change/SKILL.md"
+  ".pi/skills/openspec-explore/SKILL.md"
+  ".pi/skills/openspec-propose/SKILL.md"
+  ".pi/skills/openspec-sync-specs/SKILL.md"
+  ".trae/skills/openspec-apply-change/SKILL.md"
+  ".trae/skills/openspec-archive-change/SKILL.md"
+  ".trae/skills/openspec-explore/SKILL.md"
+  ".trae/skills/openspec-propose/SKILL.md"
+  ".trae/skills/openspec-sync-specs/SKILL.md"
+  "openspec/config.yaml"
+)
+
+legacy_paths=(
+  ".comet.yaml"
+  "docs/development/cli-extension-guide.md"
+  "docs/process/COMET-STATE-SPEC.md"
+  "docs/process/COMET.md"
+  "docs/process/HARNESS-ADAPTER-SPEC.md"
+  "docs/process/HERMES-CLI-ARCHITECTURE.md"
+  "docs/process/METRICS-LAYER-SPEC.md"
+  "docs/user-guide/cli-reference.md"
+  "docs/user-guide/troubleshooting.md"
+  "hermes_lifecycle"
+  "packages/hermes-cli-ts"
+  "scripts/ysscomet"
+  "tests/test_lifecycle.py"
+  "ysscomet_lifecycle"
+)
+
+for path in "${required_files[@]}"; do
+  test -f "$path" || {
+    echo "missing required file: $path" >&2
+    exit 1
+  }
+done
+
+for path in "${legacy_paths[@]}"; do
+  test ! -e "$path" || {
+    echo "legacy runtime artifact still exists: $path" >&2
+    exit 1
+  }
+done
+
+git diff --check
+
+ruby <<'RUBY'
+require "yaml"
+require "pathname"
+
+root = Pathname.pwd
+
+["openspec/config.yaml", "docs/api/specs/demo-feature.yaml"].each do |path|
+  text = File.read(root.join(path))
+  text = text.sub(/\A---\n.*?\n---\n/m, "")
+  YAML.safe_load(text, permitted_classes: [], aliases: true)
+end
+
+missing = []
+Dir.glob("**/*.md", File::FNM_DOTMATCH).reject { |p| p.start_with?(".git/") }.each do |path|
+  text = File.read(path)
+  text.scan(/\[[^\]]+\]\(([^)]+)\)/).flatten.each do |target|
+    next if target.start_with?("http://", "https://", "mailto:", "#")
+    clean = target.split("#", 2).first
+    next if clean.empty?
+    resolved = Pathname.new(path).dirname.join(clean).cleanpath
+    missing << "#{path} -> #{target}" unless root.join(resolved).exist?
+  end
+end
+
+unless missing.empty?
+  warn "broken markdown links:"
+  missing.each { |item| warn "  #{item}" }
+  exit 1
+end
+RUBY
+
+echo "template verification passed"
