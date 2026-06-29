@@ -107,4 +107,4 @@ delegate_task(
 | 覆盖率 | ≥80% (新增代码) | 🟡 警告 |
 | Lint | 0 error | 🔴 阻断合入 |
 | 安全扫描 | 0 high/critical | 🔴 阻断合入 |
-| Comet Guard | build→verify 门禁通过 | 🔴 阻断合入 |
+| 发布门禁 | 项目定义的质量门禁通过 | 🔴 阻断合入 |

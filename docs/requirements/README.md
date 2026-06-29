@@ -4,6 +4,22 @@
 
 ---
 
+## Engineering Skills 流程
+
+默认需求链路：
+
+```text
+grill-with-docs -> to-prd -> OpenAPI Spec -> to-issues
+```
+
+进入开发前必须满足：
+
+- [ ] PRD 使用 [../templates/prd-template.md](../templates/prd-template.md)。
+- [ ] OpenAPI 影响明确为“无”或已更新 `docs/api/specs/*.yaml`。
+- [ ] 测试决策明确主要测试 seam。
+- [ ] AI / 人工审查点标注安全红线。
+- [ ] 后续 Issue 使用 [../templates/vertical-slice-issue-template.md](../templates/vertical-slice-issue-template.md)，不得按层横向拆分。
+
 ## AI 三步法
 
 ### Step 1: 生成 PRD 初稿
@@ -30,11 +46,11 @@ delegate_task(
 )
 ```
 
-### Step 3: 拆解 User Stories
+### Step 3: 拆解用户故事
 
 ```python
 delegate_task(
-    goal="将 PRD 拆解为可估算的 User Stories",
+    goal="将 PRD 拆解为可估算的用户故事",
     context="""
     格式: As a / I want / So that
     附带 Gherkin 验收条件 + 优先级(P0/P1/P2) + AI风险标注
@@ -46,15 +62,15 @@ delegate_task(
 
 ## PRD 模板结构
 
-1. 背景与目标 (痛点/商业目标/成功指标)
-2. 用户画像 (Persona)
-3. 用户场景 (Scenario)
-4. 功能需求 (表格)
-5. 非功能需求 (性能/安全/可用性)
-6. 验收条件 (Gherkin: Given/When/Then)
-7. 边界条件与异常
-8. 技术影响分析
-9. 风险标注
+1. 问题陈述 / 解决方案
+2. 用户故事
+3. 功能需求 / 非功能需求
+4. 验收标准
+5. OpenAPI 影响
+6. 测试决策
+7. AI / 人工审查点
+8. 非目标范围
+9. 风险
 
 ---
 

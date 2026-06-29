@@ -60,29 +60,45 @@ Controller → Service → Repository
 
 ---
 
-## 研发自动化体系：OpenSpec × Comet × Superpowers
+## 研发协作体系：OpenSpec × Superpowers
 
 | 层级 | 组件 | 职责 |
 |------|------|------|
 | **契约层** | OpenAPI 3.1 Spec | 前后端 Agent 共同语言 |
-| **状态机层** | Comet (.comet.yaml + comet-guard.sh) | Open→Design→Build→Verify→Archive |
 | **方法论层** | Superpowers (spike/plan/tdd/review/debug/simplify) | Agent 协作模式 |
-| **编排层** | cronjob / webhook / delegate_task | 自动化流水线 |
+| **编排层** | 项目自选 harness / CI / webhook | 自动化流水线 |
 
-### Comet 五阶段流水线
+---
 
-```
-Open → Design → Build → Verify → Archive
-  │       │        │        │         │
-Spec    Plan     TDD     Review    Deploy+Retro
-      comet-guard.sh 门禁检查每个阶段转换
-```
+## Agent skills
 
-**Comet 状态推进规则：**
-- `.comet.yaml` 是唯一状态源，禁止手工修改 pipeline 阶段状态。
-- 阶段推进必须通过 `scripts/comet-driver <pipeline> advance` 或 `scripts/ysscomet advance <pipeline>`。
-- Agent / harness / stage-executor 只允许生成 artifacts，不允许直接推进 `current_stage`。
-- 每个 artifact 头部必须包含 `pipeline: <id>`，guard 会拒绝使用其他 pipeline 的产物。
+本仓库已集成 Matt Pocock Engineering Skills，Codex 与 Hermes 均可调用。能力说明见 `docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md`。
+
+### Issue tracker
+
+Issues 和 PRD 默认发布到 GitHub Issues；外部 PR 暂不作为 triage 请求入口。详见 `docs/agents/issue-tracker.md`。
+
+### Triage labels
+
+使用标准五态标签：`needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`。详见 `docs/agents/triage-labels.md`。
+
+### Domain docs
+
+使用单上下文领域文档布局：根目录 `CONTEXT.md` + `docs/adr/`。详见 `docs/agents/domain.md`。
+
+### Recommended flow
+
+默认需求交付链路：`grill-with-docs -> to-prd -> OpenAPI Spec -> to-issues -> implement with tdd -> review/verify`。
+
+### Mandatory skill rules
+
+- 新功能或较大改动必须先用 `grill-with-docs` 澄清需求，再用 `to-prd` / `to-issues` 形成 PRD 和垂直切片 Issue。
+- 任何 API 契约变更必须先更新 `docs/api/specs/*.yaml`，再实现前后端和测试。
+- 任何 Bug、测试失败或性能回退必须先用 `diagnosing-bugs` 建立可复现反馈命令，再修复。
+- 任何实现工作默认使用 `tdd`：一次一个行为测试，测试公共接口，不测试内部实现细节。
+- 架构治理、难测模块、深模块设计必须使用 `improve-codebase-architecture` / `codebase-design` 的 module、interface、seam、adapter 术语。
+- `to-issues` 产出的任务必须是端到端垂直切片，不允许只按 Controller / Service / Repository 横向拆分。
+- 触碰安全红线时，必须标记 `ready-for-human` 或 `TODO-HUMAN-REVIEW`，Agent 只能生成草案。
 
 ---
 

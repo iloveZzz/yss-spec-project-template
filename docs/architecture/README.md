@@ -1,6 +1,6 @@
 # 架构设计 (Architecture) — 从需求到技术方案
 
-> **Phase: Design | Comet Stage: Design**
+> **Phase: Design**
 
 ---
 
@@ -55,9 +55,23 @@ delegate_task(
 
 ---
 
+## Deep Module 治理
+
+当出现模块难改、测试 seam 不清晰、逻辑散落、Agent 难以理解代码路径时，优先使用 `improve-codebase-architecture` 和 `codebase-design`。
+
+落地产物：
+
+- [templates/architecture-deepening-template.md](templates/architecture-deepening-template.md)：记录 deepening candidate。
+- `CONTEXT.md`：沉淀领域术语。
+- `docs/adr/`：记录硬以回滚、非显而易见、存在真实取舍的架构决策。
+
+架构讨论必须使用统一术语：`module`、`interface`、`seam`、`adapter`、`depth`、`leverage`、`locality`。
+
+---
+
 ## AI-Human Loop
 
 ```
 需求 → AI 3方案对比 → 架构师选方向 → AI 详细方案
-→ AI 六维预审 → 架构师签字 → ADR记录 → comet-guard design→build
+→ AI 六维预审 → 架构师签字 → ADR 记录 → 进入实现
 ```

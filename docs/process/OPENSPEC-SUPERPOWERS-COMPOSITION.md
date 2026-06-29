@@ -77,7 +77,7 @@ cronjob(action="create", schedule="0 9 * * *",
 ### Kanban 多 Agent 队列
 
 ```bash
-hermes kanban create --title "实现[功能]" \
+agentctl kanban create --title "实现[功能]" \
   --skills "test-driven-development,requesting-code-review"
 ```
 
