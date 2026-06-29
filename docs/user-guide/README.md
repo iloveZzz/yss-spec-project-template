@@ -4,15 +4,7 @@
 
 ## 当前范围
 
-本模板只提供文档骨架和协作约定，不再内置 lifecycle CLI 或状态机运行时。
-
-已移除：
-
-- Comet / YSSComet 状态机与配置
-- Hermes / YSSComet CLI
-- Python lifecycle core
-- TypeScript interactive shell
-- 内置测试套件
+本模板提供文档骨架、契约模板、项目级 Agent skills 和协作约定。
 
 ## 推荐流程
 

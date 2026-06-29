@@ -28,7 +28,7 @@ required_files=(
   "openspec/config.yaml"
 )
 
-legacy_paths=(
+runtime_artifact_paths=(
   ".comet.yaml"
   "docs/development/cli-extension-guide.md"
   "docs/process/COMET-STATE-SPEC.md"
@@ -52,9 +52,9 @@ for path in "${required_files[@]}"; do
   }
 done
 
-for path in "${legacy_paths[@]}"; do
+for path in "${runtime_artifact_paths[@]}"; do
   test ! -e "$path" || {
-    echo "legacy runtime artifact still exists: $path" >&2
+    echo "unexpected runtime artifact exists: $path" >&2
     exit 1
   }
 done

@@ -4,7 +4,7 @@
 
 ## 定位
 
-本模板只保留流程文档、契约模板和 Agent 协作约定。已移除 Comet、YSSComet、Hermes、本地 lifecycle runtime、CLI、Python core、TS shell、`.comet.yaml`、`.ysscomet` 和测试套件。
+本模板只保留流程文档、契约模板和 Agent 协作约定。
 
 ## 项目结构
 
@@ -27,7 +27,7 @@
 └── scripts/                 ← 模板轻量校验脚本
 ```
 
-空的运行时产物目录不纳入 Git；项目需要生成度量、OpenSpec changes 或其他临时产物时再按需创建。
+项目需要生成度量、OpenSpec changes 或其他临时产物时再按需创建对应目录。
 
 ## Quickstart
 
@@ -41,8 +41,6 @@
 
 本模板纳入 `.codex/`、`.pi/`、`.trae/`，因为它们是跨 Agent 复用 OpenSpec 流程的项目级配置。Hermes 的 Engineering Skills 仍按本机安装目录维护，见 `docs/agents/skills-maintenance.md`。
 
-旧的 Comet / YSSComet / Hermes lifecycle runtime、CLI、Python core、TypeScript shell 和内置测试套件已移除；本仓库不再跟踪空的 `packages/`、`metrics/`、`docs/development/` 等占位目录。
-
 ## 轻量校验
 
 ```bash
@@ -52,7 +50,7 @@ scripts/verify-template
 该脚本检查：
 
 - `.codex/.pi/.trae` 项目级 OpenSpec 配置是否齐全。
-- 旧 lifecycle runtime 文件是否残留。
+- 模板边界内不应存在的运行时产物是否残留。
 - Markdown 相对链接是否指向现有文件。
 - OpenSpec 配置和示例 OpenAPI YAML 是否可解析。
 - Git diff 是否存在空白错误。
