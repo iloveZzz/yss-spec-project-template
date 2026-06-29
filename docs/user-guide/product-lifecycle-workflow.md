@@ -114,7 +114,8 @@ scripts/verify-template
 推荐主线：
 
 ```text
-发现
+竞品分析
+-> 发现
 -> PRD
 -> OpenAPI 契约
 -> 架构设计
@@ -126,7 +127,54 @@ scripts/verify-template
 -> 复盘沉淀
 ```
 
-### 4.1 发现阶段
+### 4.1 竞品分析阶段
+
+保存位置：
+
+```text
+docs/discovery/
+docs/discovery/reports/
+```
+
+使用模板：
+
+```text
+docs/discovery/templates/competitive-matrix-template.md
+```
+
+竞品分析不是为了照抄功能，而是帮助你判断：
+
+- 行业里已经形成共识的基础能力是什么？
+- 哪些流程是用户已经习惯的？
+- 哪些能力只是竞品堆料，第一版不需要做？
+- 哪些痛点竞品没有解决，适合作为差异化机会？
+- 哪些术语、页面结构或实施方式可以借鉴，哪些必须避开？
+
+“数据中台模型管理”建议至少分析：
+
+- 数据建模 / 元数据管理产品。
+- 数据治理或数据目录产品。
+- 低代码模型配置平台。
+- 公司内部已有相似系统。
+
+示例提示词：
+
+```text
+请作为产品经理和实施顾问，基于“数据中台模型管理”场景，
+按照 docs/discovery/templates/competitive-matrix-template.md 输出竞品功能矩阵。
+重点分析模型定义、字段配置、版本管理、发布流程、权限、血缘和实施复杂度。
+```
+
+竞品分析结束后，输出物应该能直接输入发现阶段：
+
+```text
+竞品功能矩阵
+-> 差异化机会清单
+-> 功能空白区
+-> MVP 边界建议
+```
+
+### 4.2 发现阶段
 
 保存位置：
 
@@ -146,10 +194,11 @@ docs/discovery/
 
 ```text
 请作为产品顾问，帮我梳理“数据中台模型管理”的用户角色、核心场景、痛点、非目标范围和第一版 MVP。
+参考 docs/discovery/reports/ 下已有竞品分析材料。
 输出到 docs/discovery/model-management-discovery.md。
 ```
 
-### 4.2 PRD 阶段
+### 4.3 PRD 阶段
 
 保存位置：
 
@@ -182,7 +231,7 @@ PRD 必须包含：
 重点补充验收标准、非目标范围、OpenAPI 影响和测试决策。
 ```
 
-### 4.3 API 契约阶段
+### 4.4 API 契约阶段
 
 保存位置：
 
@@ -212,7 +261,7 @@ GET    /api/v1/models/{id}/versions
 要求包含错误响应、分页、字段级校验错误和模型发布接口。
 ```
 
-### 4.4 架构设计阶段
+### 4.5 架构设计阶段
 
 保存位置：
 
@@ -237,7 +286,7 @@ docs/adr/0001-model-versioning-strategy.md
 docs/adr/0002-model-publishing-state-machine.md
 ```
 
-### 4.5 OpenSpec / Comet 变更阶段
+### 4.6 OpenSpec / Comet 变更阶段
 
 当需求进入正式交付，用 Comet 或 OpenSpec 创建 change。
 
@@ -267,7 +316,7 @@ open -> design -> build -> verify -> archive
 
 小文案、配置值或局部文档调整可走 tweak。明确 bug 且范围小的修复可走 hotfix。只要触发跨模块、API、架构或数据库变化，就升级为完整流程。
 
-### 4.6 垂直切片阶段
+### 4.7 垂直切片阶段
 
 保存位置可以是 GitHub Issues，也可以先放在：
 
@@ -302,21 +351,36 @@ Slice 6: 查看模型版本
 
 每个 slice 都要贯穿 API、后端、前端、测试和验收。
 
-### 4.7 开发阶段
+### 4.8 开发阶段
 
-后端遵循：
+YSS 项目开发前先用 `yss-router` 判断最小技能集，避免一次性加载所有 YSS 规范。
+
+前端页面必须按 `yss-ui` 约束落地：
 
 ```text
-Controller -> Service -> Repository
+OpenAPI / Orval API client
+-> views/PageName/index.vue
+-> components/
+-> hooks/useXxx.ts
+-> schemas/*.ts
+-> YTable / YTree / YssFormily
+-> useTableHeight / useTreeHeight
 ```
 
-前端建议遵循：
+后端新服务或新模块建议按 YSS DDD 顺序推进：
 
 ```text
-OpenAPI 类型 / API client
--> composable 或 service
--> Ant Design Vue 页面组件
--> 表单、表格、弹窗、状态反馈
+yss-ddd-scaffold-generator
+-> yss-domain / yss-backend-scaffold-domain
+-> yss-repository
+-> yss-mybatis
+-> yss-web-controller
+```
+
+分层边界：
+
+```text
+Web Adapter -> Domain Service / Gateway -> Infrastructure Repository
 ```
 
 开发顺序建议：
@@ -331,7 +395,7 @@ OpenAPI 类型 / API client
 7. 联调并更新任务状态
 ```
 
-### 4.8 验证、发布和实施阶段
+### 4.9 验证、发布和实施阶段
 
 建议新增并维护：
 
@@ -359,7 +423,7 @@ docs/implementation/customer-a-model-management-rollout.md
 docs/user-guide/model-management.md
 ```
 
-### 4.9 复盘沉淀阶段
+### 4.10 复盘沉淀阶段
 
 保存位置：
 
@@ -405,6 +469,7 @@ docs/adr/
 
 ```text
 CONTEXT.md
+docs/discovery/reports/model-management-competitive-matrix.md
 docs/discovery/model-management-discovery.md
 docs/requirements/model-management-prd.md
 docs/api/specs/model-management.yaml
@@ -426,6 +491,13 @@ Slice 5: 模型发布与版本冻结
 
 ## 6. 每天如何使用
 
+### 竞品分析
+
+```text
+请基于“模型版本管理”能力，按 docs/discovery/templates/competitive-matrix-template.md
+补充竞品功能矩阵、功能空白区和 MVP 边界建议。
+```
+
 ### 新想法
 
 ```text
@@ -444,6 +516,7 @@ Slice 5: 模型发布与版本冻结
 
 ```text
 /comet 实现模型发布与版本冻结
+进入 build 前请用 yss-router 判断最小 YSS 技能集。
 ```
 
 ### 继续未完成工作
@@ -472,15 +545,16 @@ Slice 5: 模型发布与版本冻结
 
 ## 7. 最小可执行版本
 
-如果你不想一开始就把流程做重，保留这六步即可：
+如果你不想一开始就把流程做重，保留这七步即可：
 
 ```text
-1. CONTEXT.md 写清楚术语
-2. PRD 写清楚需求和验收
-3. OpenAPI 写清楚接口
-4. 垂直切片拆清楚任务
-5. TDD 或至少关键路径测试
-6. 发布后复盘并更新 CONTEXT.md / AGENTS.md
+1. 竞品矩阵明确基础能力和差异化机会
+2. CONTEXT.md 写清楚术语
+3. PRD 写清楚需求和验收
+4. OpenAPI 写清楚接口
+5. 垂直切片拆清楚任务
+6. TDD 或至少关键路径测试
+7. 发布后复盘并更新 CONTEXT.md / AGENTS.md
 ```
 
-这六步已经能让产品、研发、设计、实施和 AI 协作形成闭环。
+这七步已经能让产品、研发、设计、实施和 AI 协作形成闭环。
