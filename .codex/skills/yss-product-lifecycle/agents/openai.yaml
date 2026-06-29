@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS Product Lifecycle"
+  short_description: "Route lifecycle work to YSS delivery skills"
+  default_prompt: "使用 $yss-product-lifecycle，帮我从产品全生命周期推进这个需求。"
