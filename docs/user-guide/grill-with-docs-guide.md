@@ -167,7 +167,7 @@ _Avoid_: 上线、提交、保存
 
 | 阶段 | 先用 | 后接 |
 |---|---|---|
-| 竞品后发现 | `grill-with-docs` | discovery / PRD |
+| 机会探索后澄清 | `grill-with-docs` | discovery / PRD |
 | PRD 前 | `grill-with-docs` | `to-prd` |
 | OpenSpec 前 | `grill-with-docs` | `openspec-explore` / `comet` |
 | 设计前 | `grill-with-docs` | `brainstorming` |

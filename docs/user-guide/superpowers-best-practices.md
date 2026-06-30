@@ -143,12 +143,11 @@ Task 5: 接前端发布按钮和状态反馈
 
 ```text
 yss-product-lifecycle
--> 竞品分析
--> discovery
+-> 机会探索环
 -> grill-with-docs
 -> PRD / to-prd
 -> OpenAPI 影响
--> brainstorming
+-> Superpowers brainstorming 设计
 -> OpenSpec / Comet
 -> writing-plans
 -> yss-router
@@ -158,7 +157,8 @@ yss-product-lifecycle
 
 关键门禁：
 
-- 没有竞品分析，不直接写 PRD。
+- 没有机会探索结论或等价说明，不直接写 PRD。
+- 没有经过 `grill-with-docs` 澄清关键边界，不直接进入 `to-prd`。
 - OpenAPI 影响不清楚，不直接写前后端。
 - 没有垂直切片，不拆 Controller / Service / Repository 横向任务。
 - 没有 fresh verification，不说完成。

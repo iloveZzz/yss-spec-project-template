@@ -8,7 +8,7 @@
 
 ## 推荐流程
 
-1. 在 `docs/discovery/` 记录头脑风暴、市场和用户洞察。
+1. 在 `docs/discovery/` 记录机会探索、市场、竞品和用户洞察。
 2. 在 `docs/requirements/` 维护 PRD、用户故事和验收标准。
 3. 在 `docs/api/` 维护 OpenAPI 3.1 契约。
 4. 在 `docs/architecture/` 和 `docs/adr/` 记录技术方案和架构决策。

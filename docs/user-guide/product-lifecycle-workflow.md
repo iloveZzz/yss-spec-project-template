@@ -114,8 +114,8 @@ scripts/verify-template
 推荐主线：
 
 ```text
-竞品分析
--> 发现
+机会探索环
+-> grill-with-docs 澄清
 -> PRD
 -> OpenAPI 契约
 -> 架构设计
@@ -127,7 +127,22 @@ scripts/verify-template
 -> 复盘沉淀
 ```
 
-### 4.1 竞品分析阶段
+机会探索环不是死流程，而是把三类输入循环校准：
+
+```text
+市场 / 竞品 / 用户事实 <-> 机会构想假设 <-> MVP 边界
+```
+
+常见入口：
+
+- 只有一个模糊想法：先机会构想，再用 Discovery 验证。
+- 已有行业、竞品或用户材料：先 Discovery，再生成候选方案。
+- 明确 Bug 或小调整：不走完整机会探索环，直接走 hotfix / tweak。
+- 新模块、API 或跨端改动：必须进入 `grill-with-docs`、PRD、OpenAPI、OpenSpec/Comet、垂直切片和 TDD。
+
+进入 PRD 前必须通过 `grill-with-docs` 收敛为：用户是谁、痛点是什么、为什么现在做、第一版做什么、明确不做什么、成功标准是什么。
+
+### 4.1 机会探索与竞品分析阶段
 
 保存位置：
 
@@ -142,7 +157,7 @@ docs/discovery/reports/
 docs/discovery/templates/competitive-matrix-template.md
 ```
 
-竞品分析不是为了照抄功能，而是帮助你判断：
+竞品分析是机会探索环的重要事实输入，不是为了照抄功能，而是帮助你判断：
 
 - 行业里已经形成共识的基础能力是什么？
 - 哪些流程是用户已经习惯的？
@@ -165,7 +180,7 @@ docs/discovery/templates/competitive-matrix-template.md
 重点分析模型定义、字段配置、版本管理、发布流程、权限、血缘和实施复杂度。
 ```
 
-竞品分析结束后，输出物应该能直接输入发现阶段：
+竞品分析结束后，输出物应该能直接输入机会探索环：
 
 ```text
 竞品功能矩阵
@@ -174,7 +189,7 @@ docs/discovery/templates/competitive-matrix-template.md
 -> MVP 边界建议
 ```
 
-### 4.2 发现阶段
+### 4.2 发现与机会构想收敛阶段
 
 保存位置：
 

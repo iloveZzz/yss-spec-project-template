@@ -44,11 +44,11 @@ Superpowers 的价值是把这些动作变成显式流程：
 
 ```text
 yss-product-lifecycle
--> 竞品分析 / discovery
+-> 机会探索环
 -> grill-with-docs
 -> PRD / to-prd
 -> OpenAPI 影响判断
--> brainstorming
+-> Superpowers brainstorming 设计
 -> OpenSpec / Comet
 -> writing-plans
 -> yss-router
@@ -148,7 +148,7 @@ Superpowers 不替代 OpenSpec 或 Comet。
 |---|---|
 | 这次变更要不要正式记录 | `yss-product-lifecycle` / `openspec-explore` |
 | 变更 proposal、design、spec、tasks | OpenSpec skills 或 Comet |
-| 怎么把想法变成设计 | `brainstorming` |
+| 怎么把已选方向变成设计 | `brainstorming` |
 | 怎么把设计变成可执行计划 | `writing-plans` |
 | 怎么按计划可靠实现 | `executing-plans` / `subagent-driven-development` |
 | 怎么写代码不跑偏 | `test-driven-development` |
@@ -157,10 +157,11 @@ Superpowers 不替代 OpenSpec 或 Comet。
 一个完整功能可以这样串：
 
 ```text
-竞品分析 / Discovery / PRD
+机会探索环
 -> grill-with-docs 澄清边界和术语
+-> PRD
 -> OpenAPI 影响判断
--> brainstorming 设计
+-> Superpowers brainstorming 设计
 -> OpenSpec / Comet change
 -> writing-plans 计划
 -> YSS skills 实现
