@@ -1,5 +1,7 @@
 # Domain Docs
 
+> 中文说明：本文规定 Agent 在做需求、Issue、架构或实现前如何读取领域上下文。领域词汇统一放在根目录 `CONTEXT.md`，架构决策放在 `docs/adr/`，避免每个任务重新解释业务概念。
+
 Engineering skills should consume this repo's domain documentation before exploring code or drafting issues.
 
 ## Layout

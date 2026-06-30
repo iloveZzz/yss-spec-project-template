@@ -1,5 +1,7 @@
 # Skills Maintenance
 
+> 中文说明：本文说明 Engineering Skills 的来源、安装位置、升级步骤和验证命令。它是维护文档，不是 skill 本体；真正可被 Agent 加载的 `SKILL.md` 位于 `.agents/`、`.agent/`、`.codex/skills/` 或用户本机的 skills 目录。
+
 This repo expects Matt Pocock Engineering Skills to be installed locally for Codex and Hermes.
 
 ## Source

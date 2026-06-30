@@ -1,5 +1,7 @@
 # Issue Tracker: GitHub
 
+> 中文说明：本文规定本项目默认使用 GitHub Issues 承载 PRD、任务和 triage 结果。Agent 在需要发布、读取或更新 Issue 时，应优先按这里的 `gh` CLI 约定执行。
+
 Issues and PRDs for this repo live as GitHub issues. Use the `gh` CLI for issue operations when credentials are available.
 
 ## Conventions

@@ -22,7 +22,7 @@
 │   ├── discovery/           ← 头脑风暴与发现阶段材料
 │   ├── architecture/        ← 技术方案与架构审查模板
 │   ├── testing/             ← 测试策略
-│   ├── agents/              ← Engineering Skills 配置与维护
+│   ├── agents/              ← Agent 协作规范、Issue/Triage/领域文档约定
 │   ├── templates/           ← 通用文档模板
 │   └── process/             ← PDCA / OpenSpec / Superpowers 流程说明
 ├── openspec/                ← OpenSpec 配置
@@ -68,6 +68,7 @@ scripts/verify-template
 | [docs/process/PDCA-SCRUM.md](./docs/process/PDCA-SCRUM.md) | PDCA × Scrum × AI |
 | [docs/process/OPENSPEC-SUPERPOWERS-COMPOSITION.md](./docs/process/OPENSPEC-SUPERPOWERS-COMPOSITION.md) | OpenSpec 与 Superpowers 协作方式 |
 | [docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md](./docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md) | Matt Pocock Engineering Skills 集成与使用 |
+| [docs/agents/README.md](./docs/agents/README.md) | Agent 协作文档目录说明 |
 | [docs/agents/skills-maintenance.md](./docs/agents/skills-maintenance.md) | Codex / Hermes skills 安装与维护 |
 | [docs/discovery/IDEATION.md](./docs/discovery/IDEATION.md) | 头脑风暴方法论 |
 | [docs/architecture/README.md](./docs/architecture/README.md) | 架构设计 + 审查清单 |
