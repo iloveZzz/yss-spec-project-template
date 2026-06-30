@@ -29,7 +29,7 @@ When the request is already narrowly scoped, use the matching specialist directl
 | Generate/refresh OpenAPI and Orval clients | `yss-openapi` |
 | Commit micro-app changes | `microapp-commit` |
 | Create a DDD backend module from scratch | `yss-ddd-scaffold-generator` |
-| Model domain aggregates/entities/gateways | `yss-domain`; add `yss-repository` when persistence is required |
+| Model domain aggregates/entities/gateways | `yss-domain-modeling`; add `yss-domain` when code implementation is required, and add `yss-repository` when persistence is required |
 | Generate persistence from DDL/metadata | `yss-db2mybatis`; add `yss-mybatis` for framework-specific behavior |
 | Implement Repository/GatewayImpl/PO/Convertor | `yss-repository`; add `yss-mybatis` for BaseRepository, pagination, or datasource issues |
 | Implement Controller/DTO/VO/Web Convertor | `yss-web-controller`; add `yss-dto` for Result/PageQuery/CommandDTO conventions |
@@ -78,7 +78,8 @@ When the request is already narrowly scoped, use the matching specialist directl
 - Page with backend list API: `yss-page-module-development` + `api-integration`.
 - Tree-table page: `yss-page-module-development` + `yss-use-tree-height` + `yss-use-table-height`.
 - Search form plus table: `yss-page-module-development` + `yss-formily` + `api-integration`.
-- Backend CRUD from table: `yss-domain` + `yss-dto` + `yss-repository` + `yss-web-controller`.
+- Backend CRUD from table: `yss-domain-modeling` + `yss-domain` + `yss-dto` + `yss-repository` + `yss-web-controller`.
+- DDD modeling before implementation: `yss-domain-modeling` + `yss-domain` + `yss-repository` + `yss-web-controller` as needed.
 - Metadata/DDL to backend layers: `yss-db2mybatis` + `yss-web-controller`.
 - Cached query endpoint: `yss-cache` + `yss-mybatis` + `yss-dto` when DTO/page results are involved.
 

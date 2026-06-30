@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS Domain Modeling"
+  short_description: "Model YSS domains before implementation"
+  default_prompt: "Use $yss-domain-modeling to derive YSS domain aggregates, boundaries, rules, and implementation handoff from PRD/RDD/spec inputs."
