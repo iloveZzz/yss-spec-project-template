@@ -146,9 +146,10 @@ yss-product-lifecycle
 -> 机会探索环
 -> grill-with-docs
 -> PRD / to-prd
--> OpenAPI 影响
+-> OpenAPI Draft
 -> Superpowers brainstorming 设计
 -> OpenSpec / Comet
+-> OpenAPI Freeze
 -> writing-plans
 -> yss-router
 -> TDD 实现
@@ -160,6 +161,7 @@ yss-product-lifecycle
 - 没有机会探索结论或等价说明，不直接写 PRD。
 - 没有经过 `grill-with-docs` 澄清关键边界，不直接进入 `to-prd`。
 - OpenAPI 影响不清楚，不直接写前后端。
+- 涉及 API 时没有冻结 OpenAPI，不直接拆垂直切片或实现。
 - 没有垂直切片，不拆 Controller / Service / Repository 横向任务。
 - 没有 fresh verification，不说完成。
 
@@ -277,7 +279,7 @@ using-git-worktrees
 
 - [ ] 已明确生命周期阶段。
 - [ ] 已有 PRD 或明确无需 PRD。
-- [ ] OpenAPI 影响明确。
+- [ ] OpenAPI 影响明确；涉及 API 时已有 Draft，开发前已 Freeze。
 - [ ] 架构和安全红线已判断。
 - [ ] 已决定是否需要 OpenSpec / Comet change。
 - [ ] 已有可执行计划或垂直切片。
@@ -287,7 +289,7 @@ using-git-worktrees
 - [ ] 每个行为先有失败测试或可复现验证。
 - [ ] 每个任务完成后运行对应验证。
 - [ ] 跨 YSS 专项前先用 `yss-router`。
-- [ ] 涉及 API 时先更新 `docs/api/specs/*.yaml`。
+- [ ] 涉及 API 时先形成 `docs/api/specs/*.yaml` Draft；实现前必须使用冻结契约。
 - [ ] 重要节点请求 review。
 
 ### 完成前

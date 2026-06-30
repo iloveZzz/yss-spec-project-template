@@ -48,7 +48,7 @@
 ## 5. 可维护性 (Maintainability)
 
 - [ ] 架构决策已记录为 ADR
-- [ ] API 文档已生成 (OpenAPI Spec / Swagger)
+- [ ] OpenAPI Draft 已经架构 / OpenSpec 校验，并在开发前 Freeze
 - [ ] 关键流程有日志 (结构化日志，含 trace_id)
 - [ ] 监控指标已定义 (RED: Rate/Errors/Duration)
 - [ ] 告警规则已配置 (P99 延迟、错误率、磁盘)

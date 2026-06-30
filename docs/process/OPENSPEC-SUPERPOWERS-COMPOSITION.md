@@ -19,19 +19,22 @@
 ### 工作流
 
 ```
-Step 1: 人工定义 API 契约 (OpenAPI 3.1)
-Step 2: 后端按 Spec 实现端点
-Step 3: 前端从 Spec 生成 types
-Step 4: 测试按 Spec 做契约测试 (Contract Testing)
+Step 1: 基于 PRD 生成 API 契约草案 (OpenAPI 3.1 Draft)
+Step 2: 结合架构设计 / OpenSpec 行为规格校验 Draft
+Step 3: 冻结 API 契约 (OpenAPI 3.1 Freeze)
+Step 4: 后端按冻结 Spec 实现端点
+Step 5: 前端从冻结 Spec 生成 types
+Step 6: 测试按冻结 Spec 做契约测试 (Contract Testing)
 ```
 
 ```python
-# Sprint 0: 先生成 API 契约
+# Sprint 0: 先生成 API 契约草案，并在开发前冻结
 delegate_task(
-    goal="根据产品需求，设计并输出 OpenAPI 3.1 Spec",
+    goal="根据产品需求，设计并输出 OpenAPI 3.1 Draft",
     context="""
     需要定义的端点：GET/POST/PUT/DELETE ...
-    输出：完整的 OpenAPI 3.1 YAML → docs/api/specs/[feature].yaml
+    输出：OpenAPI 3.1 Draft YAML → docs/api/specs/[feature].yaml
+    后续：经 Architecture / OpenSpec 校验后 Freeze，再进入前后端实现
     """
 )
 ```

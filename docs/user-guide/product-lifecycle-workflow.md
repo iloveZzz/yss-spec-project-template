@@ -117,9 +117,9 @@ scripts/verify-template
 机会探索环
 -> grill-with-docs 澄清
 -> PRD
--> OpenAPI 契约
--> 架构设计
--> OpenSpec / Comet change
+-> OpenAPI Draft
+-> 架构设计 / OpenSpec / Comet proposal & design
+-> OpenAPI Freeze
 -> 垂直切片 Issue
 -> TDD 开发
 -> 验证与发布
@@ -138,7 +138,7 @@ scripts/verify-template
 - 只有一个模糊想法：先机会构想，再用 Discovery 验证。
 - 已有行业、竞品或用户材料：先 Discovery，再生成候选方案。
 - 明确 Bug 或小调整：不走完整机会探索环，直接走 hotfix / tweak。
-- 新模块、API 或跨端改动：必须进入 `grill-with-docs`、PRD、OpenAPI、OpenSpec/Comet、垂直切片和 TDD。
+- 新模块、API 或跨端改动：必须进入 `grill-with-docs`、PRD、OpenAPI Draft、架构/OpenSpec/Comet 校验、OpenAPI Freeze、垂直切片和 TDD。
 
 进入 PRD 前必须通过 `grill-with-docs` 收敛为：用户是谁、痛点是什么、为什么现在做、第一版做什么、明确不做什么、成功标准是什么。
 
@@ -254,7 +254,20 @@ PRD 必须包含：
 docs/api/specs/
 ```
 
-如果功能会影响前后端接口，先更新 OpenAPI 3.1，再写 Java / Vue 代码。
+API 契约采用 Draft -> Freeze 两段式：
+
+| 状态 | 产出人 | 用途 | 进入条件 |
+|---|---|---|---|
+| OpenAPI Draft | API Contract Agent 主责，Product / Frontend / Backend 协作 | 把 PRD 中的接口影响转成可讨论的路径、schema、错误、分页、权限和契约测试草案 | PRD 已说明 OpenAPI 影响 |
+| OpenAPI Freeze | API Contract Agent 主责，Architecture / Frontend / Backend 共同确认 | 作为垂直切片、TDD、前后端实现和契约测试的冻结输入 | 已通过架构设计 / OpenSpec / Comet 校验 |
+
+如果功能会影响前后端接口，先生成 OpenAPI Draft，再通过架构设计和 OpenSpec / Comet 校验冻结契约；冻结后再写 Java / Vue 代码。
+
+OpenAPI YAML 和 OpenSpec delta spec 职责不同：
+
+- OpenAPI YAML 位于 `docs/api/specs/`，描述接口契约：路径、请求、响应、错误、分页、字段约束。
+- OpenSpec delta spec 位于 `openspec/changes/.../specs/`，描述系统行为：状态变化、业务规则、验收场景。
+- 二者可以互相引用；当行为规格影响接口时，必须回写并重新冻结 OpenAPI。
 
 “数据中台模型管理”的第一批端点可以是：
 
@@ -272,8 +285,9 @@ GET    /api/v1/models/{id}/versions
 
 ```text
 根据 docs/requirements/model-management-prd.md，
-生成 OpenAPI 3.1 契约到 docs/api/specs/model-management.yaml。
+生成 OpenAPI 3.1 Draft 到 docs/api/specs/model-management.yaml。
 要求包含错误响应、分页、字段级校验错误和模型发布接口。
+随后结合架构设计 / OpenSpec / Comet 校验领域状态、权限、错误结构和契约测试，确认后标记为 Freeze。
 ```
 
 ### 4.5 架构设计阶段
@@ -303,7 +317,7 @@ docs/adr/0002-model-publishing-state-machine.md
 
 ### 4.6 OpenSpec / Comet 变更阶段
 
-当需求进入正式交付，用 Comet 或 OpenSpec 创建 change。
+当需求进入正式交付，用 Comet 或 OpenSpec 创建 change。涉及 API 的 change 应先带着 OpenAPI Draft 进入 open / design 阶段，用行为规格、领域状态、权限和错误场景校验契约；进入 build 前必须完成 OpenAPI Freeze。
 
 普通功能推荐：
 
@@ -321,9 +335,9 @@ open -> design -> build -> verify -> archive
 
 | 阶段 | 主要产物 | 人类确认点 |
 |---|---|---|
-| open | proposal、design、tasks 初稿 | 范围是否正确 |
-| design | 深度设计、delta spec | 方案是否可接受 |
-| build | 实施计划、代码、测试 | 是否采用 TDD、是否分支隔离 |
+| open | proposal、design、tasks 初稿，必要时引用 OpenAPI Draft | 范围是否正确 |
+| design | 深度设计、delta spec、OpenAPI Draft 校验结论 | 方案是否可接受，OpenAPI 是否可 Freeze |
+| build | 实施计划、代码、测试，基于冻结 OpenAPI | 是否采用 TDD、是否分支隔离 |
 | verify | 测试结果、验证报告 | 是否通过或回到 build |
 | archive | 主规格同步、change 归档 | 是否确认归档 |
 
@@ -401,7 +415,7 @@ Web Adapter -> Domain Service / Gateway -> Infrastructure Repository
 开发顺序建议：
 
 ```text
-1. 根据 OpenAPI 写 API / 契约测试
+1. 根据冻结 OpenAPI 写 API / 契约测试
 2. 写 Service 行为测试
 3. 实现 Java 后端
 4. 生成或维护前端接口类型
@@ -560,16 +574,17 @@ Slice 5: 模型发布与版本冻结
 
 ## 7. 最小可执行版本
 
-如果你不想一开始就把流程做重，保留这七步即可：
+如果你不想一开始就把流程做重，保留这八步即可：
 
 ```text
 1. 竞品矩阵明确基础能力和差异化机会
 2. CONTEXT.md 写清楚术语
 3. PRD 写清楚需求和验收
-4. OpenAPI 写清楚接口
-5. 垂直切片拆清楚任务
-6. TDD 或至少关键路径测试
-7. 发布后复盘并更新 CONTEXT.md / AGENTS.md
+4. OpenAPI Draft 写清楚接口草案
+5. 架构 / OpenSpec 校验后冻结 OpenAPI
+6. 垂直切片拆清楚任务
+7. TDD 或至少关键路径测试
+8. 发布后复盘并更新 CONTEXT.md / AGENTS.md
 ```
 
-这七步已经能让产品、研发、设计、实施和 AI 协作形成闭环。
+这八步已经能让产品、研发、设计、实施和 AI 协作形成闭环。

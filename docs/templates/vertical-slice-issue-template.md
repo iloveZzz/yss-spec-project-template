@@ -15,7 +15,7 @@
 ## OpenAPI 影响
 
 - [ ] 无
-- [ ] 更新 `docs/api/specs/<feature>.yaml`
+- [ ] 基于冻结 OpenAPI：`docs/api/specs/<feature>.yaml`
 
 受影响端点：
 
@@ -54,7 +54,7 @@
 
 ## 完成定义
 
-- [ ] 如有需要，已更新 OpenAPI Spec
+- [ ] 如有需要，已基于冻结 OpenAPI Spec 拆分切片
 - [ ] 实现完成
 - [ ] 已新增测试且测试通过
 - [ ] 已移除调试 / 原型代码

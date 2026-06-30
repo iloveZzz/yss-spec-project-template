@@ -32,7 +32,7 @@ Controller → Service → Repository
 
 ### 前后端契约
 - 以 OpenAPI 3.1 Spec 作为 API 契约
-- 契约变更必须先更新 Spec，再分别实现前后端
+- 契约变更必须先形成 Draft，经架构 / OpenSpec 校验后 Freeze，再分别实现前后端
 
 ---
 
@@ -88,12 +88,12 @@ Issues 和 PRD 默认发布到 GitHub Issues；外部 PR 暂不作为 triage 请
 
 ### Recommended flow
 
-默认需求交付链路：`grill-with-docs -> to-prd -> OpenAPI Spec -> to-issues -> implement with tdd -> review/verify`。
+默认需求交付链路：`grill-with-docs -> to-prd -> OpenAPI Draft -> Architecture/OpenSpec/Comet design -> OpenAPI Freeze -> to-issues -> implement with tdd -> review/verify`。
 
 ### Mandatory skill rules
 
 - 新功能或较大改动必须先用 `grill-with-docs` 澄清需求，再用 `to-prd` / `to-issues` 形成 PRD 和垂直切片 Issue。
-- 任何 API 契约变更必须先更新 `docs/api/specs/*.yaml`，再实现前后端和测试。
+- 任何 API 契约变更必须先在 `docs/api/specs/*.yaml` 形成 Draft，经架构/OpenSpec 校验后 Freeze，再实现前后端和测试。
 - 任何 Bug、测试失败或性能回退必须先用 `diagnosing-bugs` 建立可复现反馈命令，再修复。
 - 任何实现工作默认使用 `tdd`：一次一个行为测试，测试公共接口，不测试内部实现细节。
 - 架构治理、难测模块、深模块设计必须使用 `improve-codebase-architecture` / `codebase-design` 的 module、interface、seam、adapter 术语。
@@ -112,7 +112,7 @@ Issues 和 PRD 默认发布到 GitHub Issues；外部 PR 暂不作为 triage 请
 |------|------|------|
 | 模糊想法 / 产品机会 | 机会探索环 → 需求澄清 | 进入 PRD 前必须收敛用户、痛点、MVP 和非目标范围 |
 | 已有竞品 / 用户 / 行业材料 | Discovery → 机会构想 → `grill-with-docs` → PRD | 事实输入必须转化为 MVP 边界和验收标准 |
-| 新模块 / API / 跨端改动 | `grill-with-docs` → PRD → OpenAPI → OpenSpec/Comet → 垂直切片 → TDD | 契约变更先更新 `docs/api/specs/*.yaml` |
+| 新模块 / API / 跨端改动 | `grill-with-docs` → PRD → OpenAPI Draft → Architecture/OpenSpec/Comet design → OpenAPI Freeze → 垂直切片 → TDD | 契约变更先冻结 `docs/api/specs/*.yaml` |
 | 明确 Bug / 测试失败 / 性能回退 | diagnosing-bugs → tdd → verify | 先建立可复现反馈命令，再修复 |
 | 小文案 / 局部样式 / 配置调整 | comet-tweak 或直接最小改动 → verify | 扩散到 API、状态、权限或多模块时升级完整流程 |
 | 架构治理 / 难测模块 | improve-codebase-architecture / codebase-design → ADR / Issue | 使用 module、interface、seam、adapter 术语 |
@@ -147,15 +147,16 @@ Issues 和 PRD 默认发布到 GitHub Issues；外部 PR 暂不作为 triage 请
 | 0. 入口分诊 | Intake / Lifecycle Agent | 判断任务类型、风险等级和最小技能集；选择 OpenSpec / Comet / Superpowers / YSS 路径 |
 | 1. 机会探索 | Discovery + Ideation Agent | 市场、竞品、用户事实与机会构想假设循环验证；形成机会清单、MVP 边界和非目标范围 |
 | 2. 需求澄清 | Product / Grill Agent | 使用 `grill-with-docs`、`domain-modeling` 澄清用户、场景、术语、验收标准；必要时更新 `CONTEXT.md` |
-| 3. 需求成文 | PRD / Issue Agent | 使用 `to-prd` 生成 PRD；明确 OpenAPI 影响、测试 seam、安全红线；使用 `to-issues` 拆垂直切片 |
-| 4. 契约先行 | API Contract Agent | 先更新 OpenAPI 3.1 Spec，再实现前后端；定义统一响应、错误结构、分页和契约测试 |
-| 5. 方案设计 | Architecture / OpenSpec Agent | 生成 proposal、design、spec、tasks；明确模块边界、数据流、风险和取舍；必要时写 ADR |
-| 6. 实施计划 | Planning Agent | 使用 `writing-plans` 把方案拆成可执行步骤；每步包含文件、测试、验证命令和回滚点 |
-| 7. 开发实现 | Code Agent | 使用 `yss-router` 选择最小 YSS skills；按垂直切片 TDD 实现，前后端通过 OpenAPI 对齐 |
-| 8. 独立审查 | Review Agent | 实现者不得审查自己；重点审安全红线、契约一致性、分层边界和测试缺口 |
-| 9. 清理简化 | Simplify Agent | 在功能已验证基础上处理复用、质量和效率问题；不做无关重构 |
-| 10. 验证发布 | Verify / Release Agent | fresh verification、契约测试、关键路径 E2E、发布说明、实施步骤和回滚方案 |
-| 11. 复盘沉淀 | Retro / Knowledge Agent | 将术语、规则、踩坑、ADR、AGENTS.md 约定和用户手册更新回仓库 |
+| 3. 需求成文 | PRD / Issue Agent | 使用 `to-prd` 生成 PRD；明确 OpenAPI 影响、测试 seam、安全红线 |
+| 4. 契约草案 | API Contract Agent | 基于 PRD 产出 OpenAPI Draft；定义路径、请求/响应 schema、错误结构、分页、权限和契约测试草案 |
+| 5. 方案设计 | Architecture / OpenSpec Agent | 校验 API Draft 与领域模型、状态流、模块边界、行为规格和风险取舍是否一致；可通过 Comet design 阶段承载，必要时写 ADR |
+| 6. 契约冻结 | API + Frontend + Backend Agent | 冻结 `docs/api/specs/*.yaml`；确认前端可消费、后端可实现、契约测试可落地，再进入垂直切片 |
+| 7. 实施计划 | Planning Agent | 使用 `to-issues` / `writing-plans` 把冻结契约和设计拆成垂直切片；每步包含文件、测试、验证命令和回滚点 |
+| 8. 开发实现 | Code Agent | 使用 `yss-router` 选择最小 YSS skills；按垂直切片 TDD 实现，前后端通过冻结 OpenAPI 对齐 |
+| 9. 独立审查 | Review Agent | 实现者不得审查自己；重点审安全红线、契约一致性、分层边界和测试缺口 |
+| 10. 清理简化 | Simplify Agent | 在功能已验证基础上处理复用、质量和效率问题；不做无关重构 |
+| 11. 验证发布 | Verify / Release Agent | fresh verification、契约测试、关键路径 E2E、发布说明、实施步骤和回滚方案 |
+| 12. 复盘沉淀 | Retro / Knowledge Agent | 将术语、规则、踩坑、ADR、AGENTS.md 约定和用户手册更新回仓库 |
 
 ### Agent 铁律
 1. **实现者 ≠ 审查者** — 同一段代码不能由同一个 Agent 审查

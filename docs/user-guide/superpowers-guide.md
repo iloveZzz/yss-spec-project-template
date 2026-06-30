@@ -47,9 +47,10 @@ yss-product-lifecycle
 -> 机会探索环
 -> grill-with-docs
 -> PRD / to-prd
--> OpenAPI 影响判断
+-> OpenAPI Draft
 -> Superpowers brainstorming 设计
 -> OpenSpec / Comet
+-> OpenAPI Freeze
 -> writing-plans
 -> yss-router
 -> YSS specialist skills
@@ -95,7 +96,7 @@ yss-product-lifecycle
 
 执行代码任务前仍要遵守本模板规则：
 
-- API 变更先更新 `docs/api/specs/*.yaml`。
+- API 变更先在 `docs/api/specs/*.yaml` 形成 Draft，并在实现前 Freeze。
 - 新功能和 Bug 修复默认先写失败测试。
 - 跨前后端或 YSS 多领域任务先走 `yss-router`。
 - 安全红线只生成草案或标记 `TODO-HUMAN-REVIEW`。
@@ -160,9 +161,10 @@ Superpowers 不替代 OpenSpec 或 Comet。
 机会探索环
 -> grill-with-docs 澄清边界和术语
 -> PRD
--> OpenAPI 影响判断
+-> OpenAPI Draft
 -> Superpowers brainstorming 设计
 -> OpenSpec / Comet change
+-> OpenAPI Freeze
 -> writing-plans 计划
 -> YSS skills 实现
 -> TDD / Review / Verify

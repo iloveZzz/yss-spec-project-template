@@ -29,7 +29,7 @@ Agent 不应修改的范围。
 ## 实现提示
 
 - 推荐测试 seam：
-- OpenAPI Spec 影响：
+- OpenAPI Draft / Freeze 影响：
 - 相关既有实现：
 
 ## 验证方式

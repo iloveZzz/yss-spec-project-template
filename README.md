@@ -34,7 +34,7 @@
 ## Quickstart
 
 1. 使用 `grill-with-docs` 澄清需求，并按 `docs/templates/prd-template.md` 形成 PRD。
-2. 如有 API 影响，先在 `docs/api/specs/` 更新 OpenAPI 3.1 契约。
+2. 如有 API 影响，先在 `docs/api/specs/` 生成 OpenAPI 3.1 Draft，经架构 / OpenSpec 校验后 Freeze。
 3. 使用 `docs/templates/vertical-slice-issue-template.md` 拆分可独立验证的垂直切片 Issue。
 4. 实现时默认使用 TDD；Bug 修复先建立 `diagnosing-bugs` 反馈闭环。
 5. 在 `docs/architecture/`、`docs/adr/` 和 `CONTEXT.md` 沉淀架构与领域决策。

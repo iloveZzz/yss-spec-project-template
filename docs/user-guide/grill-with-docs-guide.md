@@ -77,8 +77,9 @@ grill-with-docs = 追问清楚 + 同步沉淀领域语言和关键决策
 -> 更新 CONTEXT.md
 -> 必要时新增 ADR
 -> to-prd 或 PRD 文档
--> OpenAPI 影响判断
+-> OpenAPI Draft
 -> OpenSpec / Comet
+-> OpenAPI Freeze
 -> writing-plans / yss-router / YSS skills
 ```
 

@@ -44,7 +44,7 @@ owner: ai
 ## OpenAPI 影响
 
 - [ ] 无
-- [ ] 更新 `docs/api/specs/<feature>.yaml`
+- [ ] 需要 OpenAPI Draft：`docs/api/specs/<feature>.yaml`
 
 受影响端点：
 
