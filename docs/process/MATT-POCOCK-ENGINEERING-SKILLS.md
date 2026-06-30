@@ -1,8 +1,8 @@
-# Matt Pocock Engineering Skills 落地手册
+# Matt Pocock Engineering Skills 集成与使用说明
 
 > 来源：<https://github.com/mattpocock/skills/tree/main/skills/engineering>
 
-本文说明 Matt Pocock `skills/engineering` 如何在本模板中落地为可复用、可执行、可检查的 AI 工程协作流程。它不是普通能力清单，而是 Codex、Hermes 与人工协作者共同遵守的工作手册。
+本文说明本模板如何引用和使用 Matt Pocock `skills/engineering`。它不是从零建立工程方法论的完整方案，而是 Codex、Hermes 与人工协作者在需求澄清、PRD、Issue 拆分、TDD、Bug 诊断、架构治理和分诊等场景中的集成说明。
 
 ## 1. 总体定位
 
@@ -310,9 +310,9 @@ Engineering Skills 的主要价值不是“多几个提示词”，而是把 AI 
 - **沉淀组织知识**：领域词汇进 `CONTEXT.md`，重大取舍进 ADR，拒绝原因进 `.out-of-scope/`
 - **控制 AI 风险**：triage 状态和安全红线结合后，可以明确区分 Agent 可做、人类必须介入、拒绝处理三类工作
 
-## 8. 推荐落地顺序
+## 8. 推荐使用顺序
 
-1. 使用本手册作为需求、Bug、架构和分诊的统一入口。
+1. 使用本文作为需求、Bug、架构和分诊相关 Engineering Skills 的引用入口。
 2. 所有新功能先走 PRD Ready，再走 Issue Ready。
 3. 所有 Bug 修复先走 `diagnosing-bugs` 反馈闭环。
 4. 每个迭代末运行一次架构治理流程，把高价值 deepening candidate 转成后续需求。

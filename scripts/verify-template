@@ -4,27 +4,34 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+openspec_skill_names=(
+  "openspec-apply-change"
+  "openspec-archive-change"
+  "openspec-bulk-archive-change"
+  "openspec-continue-change"
+  "openspec-explore"
+  "openspec-ff-change"
+  "openspec-new-change"
+  "openspec-onboard"
+  "openspec-propose"
+  "openspec-sync-specs"
+  "openspec-verify-change"
+)
+
+openspec_skill_roots=(
+  ".claude/skills"
+  ".codex/skills"
+  ".hermes/skills"
+  ".pi/skills"
+  ".trae/skills"
+)
+
 required_files=(
-  ".codex/skills/openspec-apply-change/SKILL.md"
-  ".codex/skills/openspec-archive-change/SKILL.md"
-  ".codex/skills/openspec-explore/SKILL.md"
-  ".codex/skills/openspec-propose/SKILL.md"
-  ".codex/skills/openspec-sync-specs/SKILL.md"
   ".pi/prompts/opsx-apply.md"
   ".pi/prompts/opsx-archive.md"
   ".pi/prompts/opsx-explore.md"
   ".pi/prompts/opsx-propose.md"
   ".pi/prompts/opsx-sync.md"
-  ".pi/skills/openspec-apply-change/SKILL.md"
-  ".pi/skills/openspec-archive-change/SKILL.md"
-  ".pi/skills/openspec-explore/SKILL.md"
-  ".pi/skills/openspec-propose/SKILL.md"
-  ".pi/skills/openspec-sync-specs/SKILL.md"
-  ".trae/skills/openspec-apply-change/SKILL.md"
-  ".trae/skills/openspec-archive-change/SKILL.md"
-  ".trae/skills/openspec-explore/SKILL.md"
-  ".trae/skills/openspec-propose/SKILL.md"
-  ".trae/skills/openspec-sync-specs/SKILL.md"
   "openspec/config.yaml"
 )
 
@@ -52,6 +59,16 @@ for path in "${required_files[@]}"; do
   }
 done
 
+for root in "${openspec_skill_roots[@]}"; do
+  for skill in "${openspec_skill_names[@]}"; do
+    path="$root/$skill/SKILL.md"
+    test -f "$path" || {
+      echo "missing required file: $path" >&2
+      exit 1
+    }
+  done
+done
+
 for path in "${runtime_artifact_paths[@]}"; do
   test ! -e "$path" || {
     echo "unexpected runtime artifact exists: $path" >&2
@@ -73,8 +90,10 @@ root = Pathname.pwd
   YAML.safe_load(text, permitted_classes: [], aliases: true)
 end
 
+markdown_paths = Dir.glob("*.md") + Dir.glob("{docs,openspec}/**/*.md")
+
 missing = []
-Dir.glob("**/*.md", File::FNM_DOTMATCH).reject { |p| p.start_with?(".git/") }.each do |path|
+markdown_paths.uniq.sort.each do |path|
   text = File.read(path)
   text.scan(/\[[^\]]+\]\(([^)]+)\)/).flatten.each do |target|
     next if target.start_with?("http://", "https://", "mailto:", "#")

@@ -9,7 +9,9 @@
 ## 项目结构
 
 ```text
+├── .claude/                 ← Claude commands + OpenSpec / Comet skills
 ├── .codex/                  ← Codex 项目级 OpenSpec skills
+├── .hermes/                 ← Hermes 项目级 OpenSpec / Comet skills
 ├── .pi/                     ← PI prompts + OpenSpec skills
 ├── .trae/                   ← Trae 项目级 OpenSpec skills
 ├── AGENTS.md                ← AI 指令
@@ -39,7 +41,7 @@
 
 ## 模板配置取舍
 
-本模板纳入 `.codex/`、`.pi/`、`.trae/`，因为它们是跨 Agent 复用 OpenSpec 流程的项目级配置。Hermes 的 Engineering Skills 仍按本机安装目录维护，见 `docs/agents/skills-maintenance.md`。
+本模板纳入 `.claude/`、`.codex/`、`.hermes/`、`.pi/`、`.trae/`，因为它们是跨 Agent 复用 OpenSpec / Comet 流程的项目级配置。Hermes 的 Engineering Skills 仍按本机安装目录维护，见 `docs/agents/skills-maintenance.md`。
 
 ## 轻量校验
 
@@ -49,7 +51,7 @@ scripts/verify-template
 
 该脚本检查：
 
-- `.codex/.pi/.trae` 项目级 OpenSpec 配置是否齐全。
+- `.claude/.codex/.hermes/.pi/.trae` 项目级 OpenSpec 配置是否齐全。
 - 模板边界内不应存在的运行时产物是否残留。
 - Markdown 相对链接是否指向现有文件。
 - OpenSpec 配置和示例 OpenAPI YAML 是否可解析。
