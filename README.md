@@ -1,6 +1,6 @@
 # YSS Spec Project Template
 
-> OpenSpec × Superpowers 驱动的 AI 研发文档模板。
+> OpenSpec × Superpowers × YSS 驱动的 AI 研发文档模板。
 
 ## 定位
 
@@ -33,11 +33,16 @@
 
 ## Quickstart
 
-1. 使用 `grill-with-docs` 澄清需求，并按 `docs/templates/prd-template.md` 形成 PRD。
-2. 如有 API 影响，先在 `docs/api/specs/` 生成 OpenAPI 3.1 Draft，经架构 / OpenSpec 校验后 Freeze。
-3. 使用 `docs/templates/vertical-slice-issue-template.md` 拆分可独立验证的垂直切片 Issue。
-4. 实现时默认使用 TDD；Bug 修复先建立 `diagnosing-bugs` 反馈闭环。
-5. 在 `docs/architecture/`、`docs/adr/` 和 `CONTEXT.md` 沉淀架构与领域决策。
+1. 先判断当前生命周期阶段、已有资产和缺失资产；建议用 `yss-product-lifecycle` 做阶段路由。
+2. 新产品或新模块先完成机会探索；已有材料时先整理 discovery，再进入 `grill-with-docs`。
+3. 使用 `grill-with-docs` 澄清边界，并按 `docs/templates/prd-template.md` 形成 PRD。
+4. 如有 API 影响，先在 `docs/api/specs/` 生成 OpenAPI 3.1 Draft。
+5. 后端新服务或新模块先确认 YSS DDD 工程基线；从零创建服务时使用 `yss-ddd-scaffold-generator`。
+6. 用 Architecture / OpenSpec / Comet design 校验行为规格、领域边界和契约，设计审查通过后 Freeze OpenAPI。
+7. 使用 `docs/templates/vertical-slice-issue-template.md` 拆分可独立验证的垂直切片 Issue。
+8. 业务行为实现默认使用 TDD：先写失败测试，再写最小实现；生成代码、配置或一次性原型需说明例外和验证方式；Bug 修复先建立 `diagnosing-bugs` 反馈闭环。
+9. 每个切片完成后做独立审查和 fresh verification，再发布、实施和复盘。
+10. 在 `docs/architecture/`、`docs/adr/`、`CONTEXT.md` 和 `AGENTS.md` 沉淀稳定规则。
 
 ## 模板配置取舍
 
@@ -61,7 +66,7 @@ scripts/verify-template
 
 | 文档 | 内容 |
 |------|------|
-| [AGENTS.md](./AGENTS.md) | 全局 AI 指令 + 编码规范 + Agent 协作 |
+| [AGENTS.md](./AGENTS.md) | 全局 AI 指令 + 工程基线入口 + Agent 协作 |
 | [docs/user-guide/README.md](./docs/user-guide/README.md) | 模板使用说明 |
 | [docs/user-guide/product-lifecycle-workflow.md](./docs/user-guide/product-lifecycle-workflow.md) | 产品全生命周期使用手册 |
 | [docs/user-guide/lifecycle-best-practices.md](./docs/user-guide/lifecycle-best-practices.md) | 全生命周期最佳实践 |

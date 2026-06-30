@@ -44,18 +44,21 @@ grill-with-docs
   -> domain-modeling
   -> to-prd
   -> OpenAPI 3.1 Draft
-  -> Architecture / OpenSpec validation
+  -> Engineering Baseline / YSS DDD review
+  -> Architecture / OpenSpec / Comet design validation
+  -> Design Review
   -> OpenAPI 3.1 Freeze
   -> to-issues
   -> implement with tdd
-  -> review / verify
+  -> independent review / verify
 ```
 
 门禁：
 
 - PRD 进入开发前必须明确用户故事、验收条件、OpenAPI 影响、测试 seam。
-- 任何 API 变更必须先在 `docs/api/specs/*.yaml` 形成 Draft，经架构 / OpenSpec 校验后 Freeze，再进入实现。
-- `to-issues` 只能产出可独立验证的垂直切片，不允许只按 Controller / Service / Repository 横向拆分。
+- 任何 API 变更必须先在 `docs/api/specs/*.yaml` 形成 Draft，经工程基线（如适用）、架构 / OpenSpec / Comet design 和设计审查后 Freeze，再进入实现。
+- 后端新服务或新模块必须先确认 YSS DDD 工程基线；从零创建服务时优先使用 `yss-ddd-scaffold-generator`。
+- `to-issues` 只能产出可独立验证的垂直切片，不允许只按 Adapter / Application / Domain / Infrastructure 横向拆分。
 - 涉及安全红线时，Issue 必须标注 `ready-for-human` 或 `TODO-HUMAN-REVIEW`。
 
 ### 2.2 Bug 修复流程
@@ -133,7 +136,7 @@ grill-with-docs
 | `grill-with-docs` | 想法还不清晰，需要追问 | 结合领域建模持续追问，沉淀 glossary / ADR | `CONTEXT.md`、`docs/adr/` |
 | `to-prd` | 已有对话，需要整理成 PRD | 不再访谈，直接合成 PRD 并发布到 issue tracker | `docs/requirements/` 或 Issue |
 | `to-issues` | PRD / 计划需要拆任务 | 拆成可独立领取的垂直切片 Issue | Issue tracker |
-| `implement` | 按 PRD 或 Issue 实现 | 尽量 TDD，定期 typecheck/test，最后 review + commit | 当前代码分支 |
+| `implement` | 按 PRD 或 Issue 实现 | 业务行为默认按 TDD 推进；生成代码、配置或一次性原型说明例外和验证方式；最后 independent review + fresh verification + commit | 当前代码分支 |
 
 推荐与本模板的交付路径合并为：
 
@@ -141,11 +144,13 @@ grill-with-docs
 grill-with-docs
   -> to-prd
   -> OpenAPI 3.1 Draft
-  -> Architecture / OpenSpec validation
+  -> Engineering Baseline / YSS DDD review
+  -> Architecture / OpenSpec / Comet design validation
+  -> Design Review
   -> OpenAPI 3.1 Freeze
   -> to-issues
   -> implement with tdd
-  -> review / verify / commit
+  -> independent review / fresh verification / commit
 ```
 
 ### 3.3 编码与验证
@@ -159,7 +164,7 @@ grill-with-docs
 
 与本仓库测试要求的对应：
 
-- Service 层高覆盖要求可以用 `tdd` 的公共接口测试原则落实
+- Domain / Application 层高覆盖要求可以用 `tdd` 的公共接口测试原则落实
 - Bug 修复必须先产生能捕获原始症状的反馈命令
 - OpenAPI 变更应优先补充契约测试，再实现前后端
 - 原型代码必须明确标记为 throwaway，避免进入生产路径
@@ -233,7 +238,7 @@ docs/architecture/            # 技术方案、审查清单、架构报告
 
 `to-prd` 和 `to-issues` 默认关注需求和任务拆分，本模板应补充一条硬约束：
 
-> 任何前后端契约变更，必须先在 `docs/api/specs/*.yaml` 中形成 OpenAPI 3.1 Draft，经架构 / OpenSpec 校验后 Freeze，再分别实现后端、前端和契约测试。
+> 任何前后端契约变更，必须先在 `docs/api/specs/*.yaml` 中形成 OpenAPI 3.1 Draft，经工程基线、架构 / OpenSpec / Comet design 和设计审查后 Freeze，再分别实现后端、前端和契约测试。
 
 ### 5.1 PRD Ready
 

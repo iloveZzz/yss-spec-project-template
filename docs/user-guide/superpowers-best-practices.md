@@ -162,7 +162,7 @@ yss-product-lifecycle
 - 没有经过 `grill-with-docs` 澄清关键边界，不直接进入 `to-prd`。
 - OpenAPI 影响不清楚，不直接写前后端。
 - 涉及 API 时没有冻结 OpenAPI，不直接拆垂直切片或实现。
-- 没有垂直切片，不拆 Controller / Service / Repository 横向任务。
+- 没有垂直切片，不拆 Adapter / Application / Domain / Infrastructure 横向任务。
 - 没有 fresh verification，不说完成。
 
 ### 2.2 小改动

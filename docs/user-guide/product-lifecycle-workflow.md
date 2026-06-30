@@ -118,10 +118,13 @@ scripts/verify-template
 -> grill-with-docs 澄清
 -> PRD
 -> OpenAPI Draft
+-> 工程基线 / DDD 分层确认
 -> 架构设计 / OpenSpec / Comet proposal & design
+-> 设计审查
 -> OpenAPI Freeze
 -> 垂直切片 Issue
 -> TDD 开发
+-> 独立审查
 -> 验证与发布
 -> 实施反馈
 -> 复盘沉淀
@@ -259,9 +262,9 @@ API 契约采用 Draft -> Freeze 两段式：
 | 状态 | 产出人 | 用途 | 进入条件 |
 |---|---|---|---|
 | OpenAPI Draft | API Contract Agent 主责，Product / Frontend / Backend 协作 | 把 PRD 中的接口影响转成可讨论的路径、schema、错误、分页、权限和契约测试草案 | PRD 已说明 OpenAPI 影响 |
-| OpenAPI Freeze | API Contract Agent 主责，Architecture / Frontend / Backend 共同确认 | 作为垂直切片、TDD、前后端实现和契约测试的冻结输入 | 已通过架构设计 / OpenSpec / Comet 校验 |
+| OpenAPI Freeze | API Contract Agent 主责，Architecture / Frontend / Backend 共同确认 | 作为垂直切片、TDD、前后端实现和契约测试的冻结输入 | 已通过工程基线、架构设计 / OpenSpec / Comet 和设计审查 |
 
-如果功能会影响前后端接口，先生成 OpenAPI Draft，再通过架构设计和 OpenSpec / Comet 校验冻结契约；冻结后再写 Java / Vue 代码。
+如果功能会影响前后端接口，先生成 OpenAPI Draft，再通过工程基线、架构设计和 OpenSpec / Comet 校验冻结契约；冻结后再写 Java / Vue 代码。
 
 OpenAPI YAML 和 OpenSpec delta spec 职责不同：
 
@@ -287,10 +290,10 @@ GET    /api/v1/models/{id}/versions
 根据 docs/requirements/model-management-prd.md，
 生成 OpenAPI 3.1 Draft 到 docs/api/specs/model-management.yaml。
 要求包含错误响应、分页、字段级校验错误和模型发布接口。
-随后结合架构设计 / OpenSpec / Comet 校验领域状态、权限、错误结构和契约测试，确认后标记为 Freeze。
+随后结合工程基线、架构设计 / OpenSpec / Comet 校验领域状态、权限、错误结构和契约测试，确认后标记为 Freeze。
 ```
 
-### 4.5 架构设计阶段
+### 4.5 工程基线与架构设计阶段
 
 保存位置：
 
@@ -298,6 +301,39 @@ GET    /api/v1/models/{id}/versions
 docs/architecture/
 docs/adr/
 ```
+
+编码规范不是每个需求临时产出的文档，而是项目初始化阶段形成的工程基线；功能设计阶段只补充本次变更需要遵守的局部约束。
+
+后端工程基线：
+
+| 场景 | 产出 | 主责 | 使用规范 |
+|---|---|---|---|
+| 从零创建后端服务 | DDD 多模块骨架、父 POM、Bootstrap、基础配置 | Scaffold / Architecture Agent | `yss-ddd-scaffold-generator` |
+| 检查后端基线 | 技术栈、模块依赖、命名、统一响应、MapStruct、Repository 规则 | Architecture / Review Agent | `yss-backend-scaffold-parent` |
+| 本功能领域设计 | 聚合、实体、值对象、状态流、Gateway 接口 | Domain Agent | `yss-domain` / `yss-backend-scaffold-domain` |
+| 本功能持久化设计 | PO、Repository、GatewayImpl、Mapper、Convertor | Backend Agent | `yss-repository` / `yss-mybatis` |
+| 本功能 Web 适配 | Controller、CMD、Query、VO、Web Convertor | Backend Agent | `yss-web-controller` / `yss-dto` |
+
+YSS DDD 默认分层：
+
+```text
+Adapter -> Application -> Domain
+Infrastructure -> Domain Gateway / Repository Interface
+Bootstrap -> 组装启动、配置和依赖
+```
+
+调用方向：
+
+```text
+Web Adapter
+-> Application Use Case / Command Handler
+-> Domain Model / Domain Service
+-> Domain Gateway
+-> Infrastructure GatewayImpl / Repository
+-> Database / External System
+```
+
+稳定规则写入 `AGENTS.md` 或 YSS skill，功能级取舍写入 `docs/architecture/` 或 ADR。不要把一次功能的临时实现细节沉淀为全局编码规范。
 
 适合沉淀：
 
@@ -315,9 +351,22 @@ docs/adr/0001-model-versioning-strategy.md
 docs/adr/0002-model-publishing-state-machine.md
 ```
 
+### 4.5.1 设计审查闭环
+
+设计审查不是“最后看一眼”，而是进入 OpenAPI Freeze 和垂直切片前的阻断门禁。
+
+| 审查点 | 主审 | 检查重点 | 不通过时回到 |
+|---|---|---|---|
+| PRD Review | Product / Domain Review Agent | 用户、痛点、非目标范围、验收标准、OpenAPI 影响、安全红线 | 需求澄清 / PRD |
+| API Review | API + Frontend + Backend Agent | 路径、schema、错误结构、分页、权限、契约测试 | OpenAPI Draft |
+| Architecture Review | Architecture Review Agent | DDD 分层、模块依赖、Gateway 边界、状态流、ADR、回滚策略 | 工程基线 / 架构设计 |
+| Plan Review | Planning / Test Agent | 是否垂直切片、是否有测试命令、验证方式和回滚点 | 垂直切片 |
+
+只要审查发现阻断项，必须回到对应阶段修正，然后重新审查。非阻断建议可以进入任务清单，但不能混入本次范围造成无关重构。
+
 ### 4.6 OpenSpec / Comet 变更阶段
 
-当需求进入正式交付，用 Comet 或 OpenSpec 创建 change。涉及 API 的 change 应先带着 OpenAPI Draft 进入 open / design 阶段，用行为规格、领域状态、权限和错误场景校验契约；进入 build 前必须完成 OpenAPI Freeze。
+当需求进入正式交付，用 Comet 或 OpenSpec 创建 change。涉及 API 的 change 应先带着 OpenAPI Draft 进入 open / design 阶段，用行为规格、领域状态、权限、错误场景和 YSS DDD 工程基线校验契约；进入 build 前必须完成设计审查和 OpenAPI Freeze。
 
 普通功能推荐：
 
@@ -336,7 +385,7 @@ open -> design -> build -> verify -> archive
 | 阶段 | 主要产物 | 人类确认点 |
 |---|---|---|
 | open | proposal、design、tasks 初稿，必要时引用 OpenAPI Draft | 范围是否正确 |
-| design | 深度设计、delta spec、OpenAPI Draft 校验结论 | 方案是否可接受，OpenAPI 是否可 Freeze |
+| design | 深度设计、delta spec、工程基线检查、OpenAPI Draft 校验结论 | 方案是否可接受，OpenAPI 是否可 Freeze |
 | build | 实施计划、代码、测试，基于冻结 OpenAPI | 是否采用 TDD、是否分支隔离 |
 | verify | 测试结果、验证报告 | 是否通过或回到 build |
 | archive | 主规格同步、change 归档 | 是否确认归档 |
@@ -362,9 +411,10 @@ docs/templates/vertical-slice-issue-template.md
 不要这样拆：
 
 ```text
-Issue 1: 写 Controller
-Issue 2: 写 Service
-Issue 3: 写前端页面
+Issue 1: 写所有 Adapter
+Issue 2: 写所有 Application / Domain
+Issue 3: 写所有 Infrastructure
+Issue 4: 写所有前端页面
 ```
 
 应该这样拆：
@@ -409,20 +459,33 @@ yss-ddd-scaffold-generator
 分层边界：
 
 ```text
-Web Adapter -> Domain Service / Gateway -> Infrastructure Repository
+Web Adapter -> Application Use Case -> Domain Service / Gateway -> Infrastructure Repository
 ```
 
 开发顺序建议：
 
 ```text
 1. 根据冻结 OpenAPI 写 API / 契约测试
-2. 写 Service 行为测试
+2. 写 Domain / Application 行为测试
 3. 实现 Java 后端
 4. 生成或维护前端接口类型
 5. 实现 Vue + AntDV 页面
 6. 写组件测试或关键 E2E
 7. 联调并更新任务状态
 ```
+
+### 4.8.1 实现审查与清理审查
+
+每个垂直切片完成后都要做独立代码审查，审查者不能是实现者。
+
+| 审查 | 触发时机 | 检查重点 | 处理方式 |
+|---|---|---|---|
+| Code Review | slice 完成后 | OpenAPI 与实现一致、YSS DDD 分层、测试覆盖、安全红线 | 阻断项回到开发；建议项进入 backlog |
+| Security Review | 触碰安全红线时 | 权限、认证、SQL、迁移、加密、公共 API | 必须人工确认或标记 `TODO-HUMAN-REVIEW` |
+| Simplify Review | 功能验证通过后 | 复用、重复代码、可读性、性能风险 | 只做与本次目标相关的简化 |
+| Release Review | 发布前 | fresh verification、发布说明、实施步骤、回滚方案 | 不足则回到 verify / release 准备 |
+
+清理简化只能发生在功能行为已有测试保护之后。如果清理触碰契约、状态流、权限或数据库结构，必须回到设计审查。
 
 ### 4.9 验证、发布和实施阶段
 
@@ -581,9 +644,9 @@ Slice 5: 模型发布与版本冻结
 2. CONTEXT.md 写清楚术语
 3. PRD 写清楚需求和验收
 4. OpenAPI Draft 写清楚接口草案
-5. 架构 / OpenSpec 校验后冻结 OpenAPI
-6. 垂直切片拆清楚任务
-7. TDD 或至少关键路径测试
+5. 工程基线 / 架构 / OpenSpec 校验并通过设计审查
+6. 冻结 OpenAPI，垂直切片拆清楚任务
+7. TDD、独立审查和 fresh verification
 8. 发布后复盘并更新 CONTEXT.md / AGENTS.md
 ```
 
