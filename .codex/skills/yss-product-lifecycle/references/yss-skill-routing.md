@@ -11,7 +11,7 @@ Route to the smallest useful skill set. Load a primary skill first, then add sec
 | YTable layout or behavior | `yss-ui` | `yss-use-table-height` |
 | YTree layout or search | `yss-ui` | `yss-use-tree-height` |
 | YssFormily schema | `yss-formily` | `yss-formily-schema-generator` |
-| API client / Orval | `api-integration` | `yss-openapi` |
+| API client / Orval | `api-integration` | `yss-openapi` only after OpenAPI Freeze or when explicitly refreshing generated clients from implemented backend contracts |
 
 Frontend acceptance:
 
@@ -28,7 +28,7 @@ Frontend acceptance:
 | Need | Primary skill | Add when needed |
 |---|---|---|
 | New DDD service skeleton | `yss-ddd-scaffold-generator` | specialist backend skills after generation |
-| Existing service feature | `yss-domain` | `yss-repository`, `yss-web-controller`, plus `yss-mybatis` when persistence framework details are involved |
+| Existing service feature | `yss-domain` | read `yss-backend-scaffold-parent` for baseline; add `yss-repository`, `yss-web-controller`, plus `yss-mybatis` when persistence framework details are involved |
 | Domain model, aggregate, state | `yss-domain` | `yss-backend-scaffold-domain` |
 | Domain DTO/Gateway conventions | `yss-backend-scaffold-domain` | `yss-dto` |
 | PO / Repository / Convertor / GatewayImpl | `yss-repository` | `yss-mybatis` |
@@ -38,6 +38,7 @@ Frontend acceptance:
 Backend acceptance:
 
 - Generate skeleton first for new services; do not hand-build a full multi-module scaffold.
+- For existing backend features, check `yss-backend-scaffold-parent` before selecting layer-specific skills.
 - Keep Domain independent from Infrastructure and Web.
 - Define Gateway in Domain; implement it in Infrastructure.
 - Keep persistence details out of Gateway interfaces.
@@ -52,17 +53,18 @@ Backend acceptance:
 - CRUD with pagination / datasource concern:
   `yss-router` -> `yss-domain` -> `yss-repository` -> `yss-mybatis` -> `yss-web-controller`
 - New frontend page/module with API:
-  `yss-router` -> `yss-page-module-development` -> `yss-ui` -> `api-integration`
+  `yss-router` -> `yss-page-module-development` -> `yss-ui` -> `api-integration` -> `yss-openapi` after Freeze/generation boundary is clear
 - Existing frontend page refactor with API:
-  `yss-router` -> `yss-ui` -> `api-integration`
+  `yss-router` -> `yss-ui` -> `api-integration` -> `yss-openapi` when generated client refresh is required
 - New backend service:
-  `yss-router` -> `yss-ddd-scaffold-generator` -> `yss-domain` -> `yss-repository` -> `yss-web-controller`
+  `yss-router` -> `yss-ddd-scaffold-generator` -> `yss-backend-scaffold-parent` -> `yss-domain` -> `yss-repository` -> `yss-web-controller`
 - Existing backend service feature:
-  `yss-router` -> `yss-domain` -> `yss-repository` -> `yss-web-controller`
+  `yss-router` -> `yss-backend-scaffold-parent` -> `yss-domain` -> `yss-repository` -> `yss-web-controller`
 
 ## Do Not
 
 - Do not load every YSS skill because the repo is a YSS repo.
 - Do not use `yss-repository` before the domain model or metadata is stable.
 - Do not use `yss-web-controller` before Gateway/metadata is stable.
+- Do not use `yss-openapi` to invent API contracts during product/design work; use it to generate or refresh clients/contracts once the Draft/Freeze boundary is clear.
 - Do not let frontend page code duplicate hook request callbacks or pagination state.

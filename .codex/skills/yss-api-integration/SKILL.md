@@ -16,8 +16,12 @@ description: Guide AI to correctly use Orval-generated API clients in Vue 3 micr
 
 ## 🔍 前置条件
 
-1. **API 已生成**：运行 `pnpm generate:api` 生成最新 API
-2. **了解 OpenAPI**：查看 `openapi/openapi.json` 了解接口定义
+1. **契约状态已明确**：
+   - 已有生成客户端：可以直接集成。
+   - 新增或变更 API：必须先在 `docs/api/specs/` 形成 OpenAPI Draft，经工程基线 / 架构 / OpenSpec / Comet design 和设计审查后 Freeze，再进入生成和集成。
+   - 如果接口尚未冻结或生成函数不存在，先回到 `yss-product-lifecycle` / `yss-openapi`，不要手写临时路径、DTO 或响应结构。
+2. **API 已生成**：运行 `pnpm generate:api` 生成最新 API
+3. **了解 OpenAPI**：查看 `openapi/openapi.json` 了解接口定义
 
 ## 📁 API 文件结构
 
@@ -318,7 +322,16 @@ const handleSubmit = async (payload: SubmitCmd) => {
 
 ✅ **正确做法**：在 `api/` 目录外的地方使用生成的 API
 
-### ❌ 错误 2：缺少错误处理
+### ❌ 错误 2：手写不存在的 API 契约
+
+```typescript
+// ❌ 不要为了赶页面进度临时拼路径和 any 类型
+request.post("/api/v1/todo/guess", payload as any);
+```
+
+✅ **正确做法**：确认 OpenAPI Draft/Freeze 状态；冻结后用 `yss-openapi` 刷新生成客户端，再从 `@/api/generated/api` 和 `@/api/generated/model` 导入。
+
+### ❌ 错误 3：缺少错误处理
 
 ```typescript
 // ❌ 不推荐：没有 try-catch
@@ -341,7 +354,7 @@ const fetchData = async () => {
 };
 ```
 
-### ❌ 错误 3：忘记 Loading 状态
+### ❌ 错误 4：忘记 Loading 状态
 
 ```typescript
 // ❌ 不推荐：用户不知道正在加载
@@ -367,11 +380,13 @@ const fetchData = async () => {
 
 ## 💡 最佳实践
 
-1. **API 变更后记得重新生成**：
+1. **API 变更先冻结再生成**：
 
    ```bash
    pnpm generate:api
    ```
+
+   生成前应确认 `docs/api/specs/` 中的 OpenAPI Draft 已完成设计审查并 Freeze；生成动作本身优先交给 `yss-openapi`。
 
 2. **封装业务逻辑到 Hook**：
    - 将 API 调用封装在 `hooks/use{Name}Api.ts`

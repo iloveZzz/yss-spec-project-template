@@ -7,6 +7,8 @@ description: Generate and refresh YSS backend OpenAPI contracts and frontend Orv
 
 Use this skill to move a backend controller/DTO contract into the frontend generated API layer.
 
+This is an implementation/generation skill, not the product API design step. For new or changed API contracts, first produce OpenAPI Draft in `docs/api/specs/`, pass engineering baseline, architecture / OpenSpec / Comet design, and Design Review, then Freeze the contract before using this skill to refresh generated clients. When the backend is already the implemented source of truth, use this skill to regenerate and inspect the emitted contract before updating call sites.
+
 ## Core Flow
 
 1. Locate the backend module that owns smart-doc generation.

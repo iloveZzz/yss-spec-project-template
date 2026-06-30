@@ -17,6 +17,12 @@ When the request is already narrowly scoped, use the matching specialist directl
 
 中文说明：如果用户已经明确提到缓存、审计、Excel、YTable 等具体内容，可以直接用专项技能；只有需求比较宽或跨前后端时才先用 router。
 
+## Lifecycle Boundaries
+
+- If the task introduces or changes a frontend/backend API contract, route back to `yss-product-lifecycle` until PRD, OpenAPI Draft, engineering baseline/design review, and OpenAPI Freeze are clear.
+- `api-integration` consumes generated clients and wires page behavior; it must not invent missing API paths, DTOs, or response shapes.
+- `yss-openapi` is for generating or refreshing contracts/Orval clients after OpenAPI Freeze, or for regenerating from an already implemented backend source of truth.
+
 ## Minimal Skill Matrix
 
 | User intent | Load these skills |
@@ -25,8 +31,8 @@ When the request is already narrowly scoped, use the matching specialist directl
 | Work on YTable responsive height | `yss-use-table-height`; add `yss-components` only for page layout |
 | Work on YTree responsive height or search tree | `yss-use-tree-height`; add `yss-components` only for page layout |
 | Build or modify YssFormily schema/forms | `yss-formily`; add `yss-formily-schema-generator` when converting requirements, screenshots, Figma, or natural language into schema |
-| Integrate backend APIs in Vue | `api-integration`; add `yss-openapi` only when regenerating Orval clients |
-| Generate/refresh OpenAPI and Orval clients | `yss-openapi` |
+| Integrate backend APIs in Vue | `api-integration`; add `yss-openapi` only after OpenAPI Freeze or when regenerating from an implemented backend contract |
+| Generate/refresh OpenAPI and Orval clients | `yss-openapi` only after OpenAPI Freeze or implemented-backend source-of-truth refresh |
 | Commit micro-app changes | `microapp-commit` |
 | Create a DDD backend module from scratch | `yss-ddd-scaffold-generator` |
 | Model domain aggregates/entities/gateways | `yss-domain-modeling`; add `yss-domain` when code implementation is required, and add `yss-repository` when persistence is required |
@@ -75,7 +81,7 @@ When the request is already narrowly scoped, use the matching specialist directl
 
 ## Common Combinations
 
-- Page with backend list API: `yss-page-module-development` + `api-integration`.
+- Page with backend list API: `yss-page-module-development` + `api-integration`; add `yss-openapi` only when the contract is frozen or the backend contract is being refreshed.
 - Tree-table page: `yss-page-module-development` + `yss-use-tree-height` + `yss-use-table-height`.
 - Search form plus table: `yss-page-module-development` + `yss-formily` + `api-integration`.
 - Backend CRUD from table: `yss-domain-modeling` + `yss-domain` + `yss-dto` + `yss-repository` + `yss-web-controller`.

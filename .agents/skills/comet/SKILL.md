@@ -14,6 +14,8 @@ Superpowers 负责 HOW — 技术设计、计划、执行、收尾
 
 **核心原则：brainstorming 必不可跳过。每次变更都必须经过深度设计（hotfix 和 tweak preset 除外）。**
 
+这里的 brainstorming 是正式 OpenSpec / Comet 变更的方案设计活动，聚焦技术方案、架构权衡、风险、测试 seam、契约影响和实施策略。它不替代 `yss-product-lifecycle` 的机会探索；如果 Discovery / PRD 已经明确用户、痛点、MVP 边界、非目标和成功标准，则直接复用这些产品事实，不重复做市场、竞品或用户探索。
+
 ---
 
 ## 决策核心（Decision Core）

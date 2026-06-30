@@ -1,6 +1,6 @@
 ---
 name: yss-product-lifecycle
-description: "Use when starting or continuing a YSS product/module/project through competitor analysis, discovery, PRD, OpenAPI, architecture, OpenSpec/Comet, vertical slices, YSS frontend/backend delivery, release, implementation, or retrospective; or when deciding missing artifacts, lifecycle stage, next prompt, or YSS/OpenSpec/Comet skill routing."
+description: "Use when starting or continuing a YSS product/module/project through opportunity exploration, discovery, PRD, OpenAPI Draft/Freeze, engineering baseline, architecture, design review, OpenSpec/Comet, vertical slices, YSS frontend/backend delivery, review, release, implementation, or retrospective; or when deciding missing artifacts, lifecycle stage, next prompt, or YSS/OpenSpec/Comet skill routing."
 ---
 
 # YSS Product Lifecycle
@@ -12,17 +12,28 @@ Use this skill as the project-level entrypoint for product-to-engineering flow. 
 Determine the current lifecycle stage before proposing work. If implementation is requested but upstream artifacts are missing, identify the gap and route to the right artifact or specialist skill first.
 
 ```text
-competitive analysis
--> discovery
+opportunity exploration
+-> discovery / competitive analysis
 -> PRD
--> OpenAPI
--> architecture
--> OpenSpec / Comet change
+-> OpenAPI Draft
+-> Engineering Baseline / YSS DDD Review
+-> architecture / OpenSpec / Comet design
+-> Design Review
+-> OpenAPI Freeze
 -> vertical slices
 -> YSS frontend/backend implementation
+-> independent review / fresh verification
 -> release / implementation
 -> retrospective
 ```
+
+## Opportunity Exploration vs Comet Brainstorming
+
+Opportunity exploration belongs to this lifecycle skill. It answers product-level questions before PRD: who the user is, what pain exists, why now, what MVP includes, what it excludes, and how success will be measured.
+
+Comet brainstorming belongs to the formal change workflow. It starts after the change is ready for OpenSpec / Comet and focuses on solution design: technical options, tradeoffs, risks, architecture, test seams, contract impact, and implementation strategy.
+
+Do not duplicate the same brainstorming work in both places. If Discovery / PRD already captures the product opportunity clearly, Comet brainstorming should reuse those artifacts and focus on technical design and risk reduction instead of repeating market, competitor, or user exploration.
 
 ## Workflow
 
@@ -34,7 +45,7 @@ competitive analysis
    - `docs/architecture/` and `docs/adr/`
    - `openspec/changes/` and current OpenSpec/Comet state
 2. Classify the request into one stage:
-   - product research, requirement definition, contract/design, change planning, implementation routing, release, or retrospective.
+   - opportunity exploration, requirement definition, API contract draft/freeze, engineering baseline, contract/design, change planning, implementation routing, review/verification, release, or retrospective.
 3. Check whether required upstream artifacts exist.
 4. Output the next action:
    - artifact to create/update,
@@ -55,7 +66,7 @@ Default routing:
 
 | Intent | Next skill / workflow |
 |---|---|
-| Start a new business product/module | competitive analysis -> discovery -> PRD |
+| Start a new business product/module | opportunity exploration -> discovery / competitive analysis -> PRD |
 | Formalize a change | `comet` or `openspec-new-change` / `openspec-propose` |
 | Continue active change | `comet` first; fallback to `openspec-continue-change` |
 | Choose YSS implementation skills | `yss-router` |
@@ -107,9 +118,11 @@ When the user explicitly asks for a full delivery plan, include stage-by-stage t
 
 ## Guardrails
 
-- Do not skip competitor analysis for new product/module work unless the user explicitly says it is unnecessary.
-- Do not start implementation before PRD and OpenAPI impact are clear.
+- Do not skip opportunity exploration for new product/module work; create competitive analysis when market/competitor facts are needed, or record why it is not needed.
+- Do not start implementation before PRD, OpenAPI Freeze decision, engineering baseline, design review, and vertical slice are clear.
 - Do not route directly to frontend/backend skills before `yss-router` when the task crosses multiple YSS areas.
 - Do not modify specialist skill behavior from this skill.
 - Do not generate production code from this skill; hand off to the selected specialist skill.
+- Treat TDD as the default for business behavior implementation; generated code, configuration, or throwaway prototypes may use a documented exception with a verification command.
+- Require independent review and fresh verification evidence before calling work complete.
 - Flag security red lines from `AGENTS.md` as human-review items.
