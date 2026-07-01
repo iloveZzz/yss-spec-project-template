@@ -145,6 +145,32 @@ scripts/verify-template
 
 进入 PRD 前必须通过 `grill-with-docs` 收敛为：用户是谁、痛点是什么、为什么现在做、第一版做什么、明确不做什么、成功标准是什么。
 
+### 4.0 yss-product-lifecycle 使用入口
+
+当你不知道当前应该补 Discovery、PRD、OpenAPI、工程基线、Comet change、垂直切片还是 YSS 实现技能时，先使用 `yss-product-lifecycle`。
+
+它的职责是阶段判断和路由，不替代 `comet`、OpenSpec skills、`yss-router` 或具体 YSS 专项技能。
+
+推荐使用场景：
+
+- 新产品、新模块或跨端/API 改动：先判断生命周期阶段和缺失资产。
+- 已有 PRD 或设计材料：检查是否可以进入 OpenAPI Draft、工程基线、OpenSpec / Comet 或垂直切片。
+- 已有 active Comet / OpenSpec change：判断是继续 change，还是缺少上游产物。
+- 实现前：确认 PRD、OpenAPI Freeze、工程基线、设计审查和垂直切片是否齐备。
+
+不需要使用的场景：
+
+- 明确单点 UI 问题、单个 Repository/Convertor 修复，且领域和契约稳定。
+- 用户明确要求继续某个已有 Comet change，且上游资产已经齐备。
+- 明确 hotfix / tweak，且没有触发跨模块、API、架构或数据库变化。
+
+推荐提示词：
+
+```text
+使用 yss-product-lifecycle，检查当前需求处于哪个生命周期阶段，
+列出已有资产、缺失资产、是否阻塞，以及下一步应该调用的最小 skill 集合。
+```
+
 ### 4.1 机会探索与竞品分析阶段
 
 保存位置：
@@ -367,6 +393,8 @@ docs/adr/0002-model-publishing-state-machine.md
 ### 4.6 OpenSpec / Comet 变更阶段
 
 当需求进入正式交付，用 Comet 或 OpenSpec 创建 change。涉及 API 的 change 应先带着 OpenAPI Draft 进入 open / design 阶段，用行为规格、领域状态、权限、错误场景和 YSS DDD 工程基线校验契约；进入 build 前必须完成设计审查和 OpenAPI Freeze。
+
+Comet 中的 brainstorming 只负责正式变更的方案设计：技术选项、架构权衡、风险、测试 seam、契约影响和实施策略。它不重复 lifecycle 机会探索；如果 Discovery / PRD 已经说明用户、痛点、MVP、非目标和成功标准，Comet 直接引用这些产品事实。
 
 普通功能推荐：
 

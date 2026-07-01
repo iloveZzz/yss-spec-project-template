@@ -18,7 +18,7 @@
 
 ### 1.2 API Draft 先于方案落地，API Freeze 先于前后端实现
 
-只要涉及前后端接口，就先在 `docs/api/specs/*.yaml` 产出 OpenAPI Draft；经过架构设计 / OpenSpec 校验后冻结为 OpenAPI Freeze，再实现前后端。
+只要涉及前后端接口，就先在 `docs/api/specs/*.yaml` 产出 OpenAPI Draft；经过工程基线、架构 / OpenSpec / Comet design 和设计审查后冻结为 OpenAPI Freeze，再实现前后端。
 
 这能避免：
 
@@ -27,7 +27,7 @@
 - 分页、排序、筛选字段反复改。
 - 实施文档和真实接口脱节。
 
-Draft 阶段允许调整接口；Freeze 之后的契约变更必须回到架构 / OpenSpec 校验点，不能边写代码边悄悄改接口。
+Draft 阶段允许调整接口；Freeze 之后的契约变更必须回到工程基线、架构 / OpenSpec / Comet design 和设计审查点，不能边写代码边悄悄改接口。
 
 ### 1.3 工程基线先于业务代码
 
@@ -391,11 +391,11 @@ OpenAPI Freeze
 
 ### 6.1 进入开发前
 
-- [ ] 竞品分析已产出基础能力、差异化机会和非目标范围输入。
+- [ ] 已有机会探索结论，或明确说明无需市场 / 竞品 / 用户输入。
 - [ ] PRD 已说明问题、范围和验收标准。
 - [ ] OpenAPI 影响为“无”或已有 Draft，并在开发前 Freeze。
 - [ ] 后端新服务或新模块已完成 YSS DDD 工程基线确认。
-- [ ] PRD / API / Architecture / Plan 的阻断审查项已关闭。
+- [ ] PRD / API / 工程基线 / Architecture / Plan 的阻断审查项已关闭。
 - [ ] 主要测试 seam 已明确。
 - [ ] 安全红线已检查。
 - [ ] 垂直切片已经足够小。
@@ -488,8 +488,8 @@ OpenAPI Freeze
 ### 8.5 API 契约冻结
 
 ```text
-基于 OpenAPI Draft、架构设计和 OpenSpec 行为规格，
-检查路径、schema、错误结构、分页、权限、状态流和契约测试是否一致。
+基于 OpenAPI Draft、工程基线、架构设计和 OpenSpec / Comet 行为规格，
+检查路径、schema、错误结构、分页、权限、状态流、DDD 边界和契约测试是否一致。
 确认后将 docs/api/specs/<feature>.yaml 作为开发冻结契约。
 ```
 

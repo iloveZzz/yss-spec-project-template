@@ -26,7 +26,7 @@ Superpowers 的价值是把这些动作变成显式流程：
 
 | 场景 | 推荐 skill | 产物 |
 |---|---|---|
-| 想法、需求、功能设计 | `brainstorming` | 设计说明，默认落到 `docs/superpowers/specs/` |
+| 已选方向、正式变更、技术方案设计 | `brainstorming` | 方案说明，默认落到 `docs/superpowers/specs/` |
 | 已有规格，需要落成计划 | `writing-plans` | 实施计划，默认落到 `docs/superpowers/plans/` |
 | 按计划执行 | `executing-plans` 或 `subagent-driven-development` | 逐项实现、验证、提交 |
 | 新功能、Bug、重构 | `test-driven-development` | 红绿重构记录和测试 |
@@ -48,8 +48,9 @@ yss-product-lifecycle
 -> grill-with-docs
 -> PRD / to-prd
 -> OpenAPI Draft
--> Superpowers brainstorming 设计
 -> OpenSpec / Comet
+-> Comet / Superpowers brainstorming 技术方案设计
+-> 工程基线 / 设计审查
 -> OpenAPI Freeze
 -> writing-plans
 -> yss-router
@@ -71,7 +72,7 @@ yss-product-lifecycle
 
 ```text
 使用 grill-with-docs，先帮我把“数据中台模型管理”的用户、范围、非目标和稳定术语问清楚。
-然后再使用 brainstorming 形成方案设计。
+如果进入正式变更，再使用 Comet / brainstorming 聚焦技术方案、风险和测试 seam。
 ```
 
 如果已经有 PRD 或设计：
@@ -149,7 +150,7 @@ Superpowers 不替代 OpenSpec 或 Comet。
 |---|---|
 | 这次变更要不要正式记录 | `yss-product-lifecycle` / `openspec-explore` |
 | 变更 proposal、design、spec、tasks | OpenSpec skills 或 Comet |
-| 怎么把已选方向变成设计 | `brainstorming` |
+| 怎么把已选方向变成技术方案 | `brainstorming` |
 | 怎么把设计变成可执行计划 | `writing-plans` |
 | 怎么按计划可靠实现 | `executing-plans` / `subagent-driven-development` |
 | 怎么写代码不跑偏 | `test-driven-development` |
@@ -162,8 +163,9 @@ Superpowers 不替代 OpenSpec 或 Comet。
 -> grill-with-docs 澄清边界和术语
 -> PRD
 -> OpenAPI Draft
--> Superpowers brainstorming 设计
 -> OpenSpec / Comet change
+-> Comet / Superpowers brainstorming 技术方案设计
+-> 工程基线 / 设计审查
 -> OpenAPI Freeze
 -> writing-plans 计划
 -> YSS skills 实现
@@ -193,7 +195,8 @@ Superpowers 管“如何做”，YSS skills 管“按 YSS 规范怎么写”。
 ## 5. 常用口令
 
 ```text
-使用 brainstorming，先帮我把这个需求想清楚，不要直接写代码。
+使用 brainstorming，基于已有 Discovery / PRD / OpenAPI Draft，
+帮我比较技术方案、风险、测试 seam 和实现策略，不要直接写代码。
 ```
 
 ```text

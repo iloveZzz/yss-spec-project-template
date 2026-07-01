@@ -17,7 +17,7 @@
 推荐习惯：
 
 ```text
-先判断该不该用 brainstorming / debugging / TDD / review，再按 skill 流程推进。
+先判断当前生命周期阶段，再判断该不该用 brainstorming / debugging / TDD / review，并按 skill 流程推进。
 ```
 
 这条尤其适用于：
@@ -30,7 +30,7 @@
 
 ### 1.2 设计要有批准点
 
-`brainstorming` 的价值不是多写一份文档，而是在实现前把方向冻结到可讨论状态。
+`brainstorming` 的价值不是多写一份文档，而是在实现前把技术方向冻结到可讨论状态。产品机会、用户、痛点、MVP 和非目标优先由 `yss-product-lifecycle` 的机会探索环和 `grill-with-docs` 澄清；Comet / Superpowers brainstorming 复用这些事实，聚焦方案取舍、风险、测试 seam、契约影响和实施策略。
 
 进入开发前至少确认：
 
@@ -147,8 +147,9 @@ yss-product-lifecycle
 -> grill-with-docs
 -> PRD / to-prd
 -> OpenAPI Draft
--> Superpowers brainstorming 设计
 -> OpenSpec / Comet
+-> Comet / Superpowers brainstorming 技术方案设计
+-> 工程基线 / 设计审查
 -> OpenAPI Freeze
 -> writing-plans
 -> yss-router
@@ -240,7 +241,7 @@ using-git-worktrees
 
 | 门禁 | Superpowers 支撑 |
 |---|---|
-| 新功能先澄清 | `yss-product-lifecycle` / `grill-with-docs` / `brainstorming` |
+| 新功能先澄清 | `yss-product-lifecycle` / `grill-with-docs`；正式变更技术设计再用 `brainstorming` |
 | PRD 变成可执行任务 | `writing-plans` |
 | 代码先测后写 | `test-driven-development` |
 | Bug 先找根因 | `systematic-debugging` |
@@ -264,7 +265,7 @@ using-git-worktrees
 
 | 反模式 | 风险 | 改法 |
 |---|---|---|
-| 一句话直接让 AI 写代码 | 需求和边界丢失 | 先 `yss-product-lifecycle`、`grill-with-docs` 或 `brainstorming` |
+| 一句话直接让 AI 写代码 | 需求和边界丢失 | 先 `yss-product-lifecycle` 和 `grill-with-docs`；已有产品事实后再用 `brainstorming` 做技术设计 |
 | 计划只有大标题 | 执行时继续猜 | 用 `writing-plans` 写到文件和命令级 |
 | 测试后补 | 不知道测试是否有效 | 先红后绿 |
 | Bug 先改再看 | 修症状不修根因 | 先 `systematic-debugging` |
