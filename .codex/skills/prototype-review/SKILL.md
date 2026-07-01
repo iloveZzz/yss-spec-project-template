@@ -24,12 +24,17 @@ Use this skill as the gate between product design/prototype work and PRD calibra
 | Permission coverage | Hidden vs disabled vs rejected actions are clear |
 | Data coverage | Visible fields, filters, sort, pagination, forms, tables, drawers, modals, and audit/version data are listed |
 | API implication | Request/response fields, error structure, pagination/filtering, permissions, and concurrency implications can be drafted |
+| Action contract coverage | Every primary page action has an `actionKey`, endpoint or explicit non-goal, permission behavior, state transition, idempotency/concurrency rule, and error codes |
+| P0 contract coverage | Every P0 requirement with manage/maintain/configure/create/update/archive/retry/cancel/publish/export/create-draft semantics is mapped to an API implication or an explicit non-goal |
+| Rule/source coverage | Validation, approval, coverage, and publish gates state where rules come from, who can configure them, whether they are fixed, and how blocker/warning decisions are represented |
 | Frontend acceptance | A frontend engineer can tell which components, stories, mock data, and E2E paths are needed |
 
 ## Decision Rules
 
 - If a feature has UI impact and lacks page map, user flow, prototype/wireframe, or state matrix, block PRD calibration and OpenAPI Draft.
 - If the prototype hides business rules behind generic text such as "校验失败", require field-level errors and recovery behavior.
+- If a page shows a user action but the OpenAPI implication list lacks endpoint/non-goal mapping, block PRD calibration or OpenAPI Draft.
+- If PRD P0 scope says a user can manage or configure an object but the design only shows read-only data, block until the write path or scope downgrade is explicit.
 - If a state is intentionally out of scope, record why and who owns the decision.
 - If implementation dependencies are unclear, route to `yss-router` only after the prototype passes this review.
 
@@ -46,7 +51,7 @@ Use this skill as the gate between product design/prototype work and PRD calibra
 - <improvement that can wait>
 
 ### OpenAPI Draft Readiness
-- <paths, fields, errors, permissions, pagination/concurrency notes>
+- <paths, fields, errors, permissions, pagination/YSS wrappers, action mappings, rule sources, concurrency notes>
 
 ### PRD Calibration Readiness
 - <requirements gaps, acceptance criteria updates, non-goals, pending decisions>

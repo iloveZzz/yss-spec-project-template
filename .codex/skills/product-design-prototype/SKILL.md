@@ -23,7 +23,9 @@ If no PRD baseline exists, route back to `yss-product-lifecycle` / `grill-with-d
 3. Capture page map, primary user flow, exception flow, and low-fidelity prototype or wireframe link.
 4. Fill the state matrix using `docs/design/templates/state-matrix-template.md`.
 5. Write the OpenAPI implication list: fields, filters, actions, errors, permissions, pagination, optimistic/concurrency states, and audit/version data.
-6. Hand off to `prototype-review`. Do not freeze/calibrate the PRD or enter OpenAPI Draft for UI work until prototype review has no blocking findings.
+6. For every primary page action, add an action-to-contract row: page/component, action label, `actionKey`, endpoint or explicit non-goal, request fields, response shape, permission behavior, state transition, idempotency/concurrency rule, and error codes.
+7. For every P0 requirement containing verbs such as manage, maintain, configure, create, update, archive, retry, cancel, publish, export, or create draft, confirm the interaction spec either names the API implication or records that the capability is intentionally out of scope.
+8. Hand off to `prototype-review`. Do not freeze/calibrate the PRD or enter OpenAPI Draft for UI work until prototype review has no blocking findings.
 
 ## Tool Routing
 
@@ -58,6 +60,9 @@ Product design / prototype / interaction design
 ### OpenAPI 反推清单
 - <request/response fields, filters, actions, errors, permissions>
 
+### 页面动作到契约映射
+- <page/component action -> actionKey -> endpoint/non-goal -> permission -> state transition -> error codes>
+
 ### 是否可进入 PRD 校准 / OpenAPI Draft
 - <yes/no; include whether PRD calibration is needed first>
 
@@ -74,5 +79,7 @@ For a data middle platform modeling MVP, cover at least:
 - Field editor drawer: field name, type, nullable, primary key, default value, business meaning, validation errors.
 - Publish confirmation modal: validation summary, irreversible version-freeze warning, audit actor/time.
 - Version history: published version list, diff entry, rollback or deprecate decision if in scope.
+- Readonly published version: create-draft action or explicit non-goal.
+- Validation panel: rule source, blocker/warning configuration source, validation run result.
 
-The API implication list should include list filters, page result shape, field-level validation errors, publish result, version metadata, and permission-driven disabled actions.
+The API implication list should include list filters, YSS page result shape, field-level validation errors, publish result, version metadata, rule configuration source, draftVersion behavior, and permission-driven disabled actions.

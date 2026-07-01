@@ -19,6 +19,7 @@ opportunity exploration
 -> prototype review
 -> PRD calibration / requirement freeze
 -> OpenAPI Draft
+-> OpenAPI Draft contract review
 -> Engineering Baseline / YSS DDD Review
 -> architecture / OpenSpec / Comet design
 -> Design Review
@@ -56,7 +57,34 @@ Do not duplicate the same brainstorming work in both places. If Discovery / PRD 
    - specialist skill to invoke,
    - suggested prompt,
    - acceptance checklist.
-5. Stop before writing business code. For implementation, route through `yss-router` and the selected specialist skills.
+5. For every completed lifecycle stage, perform a Git checkpoint decision:
+   - identify the exact artifacts created or changed in that stage,
+   - separate product/process artifacts from unrelated workspace changes,
+   - propose or execute a scoped `git add` / `git commit` / `git push` when the user has already authorized committing,
+   - record if a checkpoint is intentionally deferred and why.
+6. Stop before writing business code. For implementation, route through `yss-router` and the selected specialist skills.
+
+## Stage Git Checkpoints
+
+Lifecycle artifacts are part of the product record, not scratch notes. Do not let PRD, design, OpenAPI, architecture, review, OpenSpec/Comet, issue, or retrospective outputs remain only in the local worktree across multiple stages.
+
+At the end of each stage, report:
+
+```markdown
+### Git Checkpoint
+- Changed artifacts: <files or directories>
+- Excluded changes: <unrelated dirty files or "none">
+- Commit status: <committed / pushed / deferred>
+- Reason if deferred: <why>
+```
+
+When committing, prefer small checkpoint commits by artifact type or stage, for example:
+
+- `docs: add data modeling discovery and prd artifacts`
+- `docs: add data modeling openapi and architecture reviews`
+- `docs: update lifecycle checkpoint rules`
+
+Never stage broad dirty directories by default. Use explicit paths and keep generated environment folders, local tool caches, or unrelated user changes out of lifecycle commits unless the user explicitly asks to include them.
 
 ## Specialist Routing
 
@@ -73,6 +101,7 @@ Default routing:
 | Start a new business product/module | opportunity exploration -> discovery / competitive analysis -> PRD baseline -> product design/prototype when UI exists -> PRD calibration |
 | Design UI flow after PRD baseline | `product-design-prototype`; add `wireframe-prototype`, `component-story-prototype`, or `mock-api-prototype` only when needed |
 | Review prototype before PRD calibration | `prototype-review` |
+| Review OpenAPI Draft before engineering baseline | `yss-openapi-draft-review` |
 | Formalize a change | `comet` or `openspec-new-change` / `openspec-propose` |
 | Continue active change | `comet` first; fallback to `openspec-continue-change` |
 | Choose YSS implementation skills | `yss-router` |
@@ -126,6 +155,8 @@ When the user explicitly asks for a full delivery plan, include stage-by-stage t
 
 - Do not skip opportunity exploration for new product/module work; create competitive analysis when market/competitor facts are needed, or record why it is not needed.
 - Do not start implementation before PRD is calibrated, product design / prototype / interaction design exists and passes `prototype-review` when UI exists, OpenAPI Freeze decision, engineering baseline, design review, and vertical slice are clear.
+- Do not move an OpenAPI Draft into Engineering Baseline / YSS DDD Review until `yss-openapi-draft-review` or an equivalent persistent review verifies P0 feature coverage, page action to endpoint mapping, YSS response wrappers, error structures, permissions, concurrency, security red lines, and contract test seams.
+- Do not advance multiple lifecycle stages while leaving their persistent artifacts uncommitted without explicitly calling out the missing Git checkpoint.
 - Do not route directly to frontend/backend skills before `yss-router` when the task crosses multiple YSS areas.
 - Do not modify specialist skill behavior from this skill.
 - Do not generate production code from this skill; hand off to the selected specialist skill.

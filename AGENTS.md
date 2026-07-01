@@ -43,6 +43,7 @@
 | **规格驱动层 (SDD)** | PRD / OpenAPI 3.1 / OpenSpec / Comet / Vertical Slice Issue | 将需求、接口、行为规格和任务拆分固化为可追溯资产 |
 | **领域与工程基线层 (DDD)** | CONTEXT.md / YSS DDD skills / ADR / Gateway / Repository | 统一领域语言、后端模块边界、依赖方向和业务行为 |
 | **方法论层** | Superpowers (grill / plan / tdd / debug / review / verify) | 提供澄清、计划、TDD、诊断、审查和完成前验证方法 |
+| **可视化辅助层** | Excalidraw diagrams / prototypes / architecture diagrams | 将流程、架构、状态、依赖和切片关系可视化，辅助共识和审查 |
 | **编排层** | OpenSpec / Comet / 项目自选 harness / CI / webhook | 自动化或半自动推进生命周期 |
 
 一句话：
@@ -79,12 +80,14 @@ Issues 和 PRD 默认发布到 GitHub Issues；外部 PR 暂不作为 triage 请
 - 新功能或较大改动必须先用 `grill-with-docs` 澄清需求，再用 `to-prd` / `to-issues` 形成 PRD 和垂直切片 Issue。
 - 有用户界面的功能在 PRD 初稿后必须先用 `product-design-prototype` 产出页面、原型、交互状态、PRD 回填项和 OpenAPI 反推清单，并通过 `prototype-review` 后才能进入 PRD 校准 / 需求冻结和 UI 驱动的 OpenAPI Draft。
 - 任何 API 契约变更必须先在 `docs/api/specs/*.yaml` 形成 Draft，经工程基线（如适用）、架构/OpenSpec/Comet design 和设计审查后 Freeze，再实现前后端和测试。
+- 当需求、架构、流程、状态机、数据流或垂直切片关系仅靠文字难以说明时，可用 `excalidraw-diagram-generator` 生成 `.excalidraw` 图作为辅助材料；图不能替代 PRD、OpenAPI、ADR、Comet design 或测试。
 - 从零创建后端服务时，必须优先使用 `yss-ddd-scaffold-generator` 产出骨架；现有服务功能或重构先用 `yss-backend-scaffold-parent` 和对应层级 skill 检查 YSS DDD 工程基线。
 - 任何 Bug、测试失败或性能回退必须先用 `diagnosing-bugs` 建立可复现反馈命令，再修复。
 - 业务行为实现默认使用 `tdd`：先写一个会失败的行为测试并确认失败，再写最小实现；生成代码、配置或一次性原型如不适用 TDD，必须明确例外原因和验证方式。
 - 架构治理、难测模块、深模块设计必须使用 `improve-codebase-architecture` / `codebase-design` 的 module、interface、seam、adapter 术语。
 - `to-issues` 产出的任务必须是端到端垂直切片，不允许只按 Adapter / Application / Domain / Infrastructure 横向拆分。
 - 触碰安全红线时，必须标记 `ready-for-human` 或 `TODO-HUMAN-REVIEW`，Agent 只能生成草案。
+- 每个生命周期阶段完成后必须执行 Git checkpoint 判断：列出阶段产物、排除无关脏文件，并在用户已授权时按范围提交和推送；不得连续推进多个阶段却让 PRD、设计、OpenAPI、架构、评审或 Issue 产物长期只停留在本地工作区。
 - 任何“完成 / 可合并 / 可发布”结论必须有 fresh verification 证据；不得只凭实现者自述通过。
 
 ---
@@ -202,6 +205,33 @@ Web Adapter
 | 16. 验证发布 | Verify / Release Agent | fresh verification、契约测试、关键路径 E2E、发布说明、实施步骤和回滚方案 |
 | 17. 复盘沉淀 | Retro / Knowledge Agent | 将术语、规则、踩坑、ADR、AGENTS.md 约定和用户手册更新回仓库 |
 
+### 可视化辅助：Excalidraw
+
+`excalidraw-diagram-generator` 是可视化说明与审查辅助 skill，不是主流程阶段。它用于把已经形成的 Discovery、PRD、OpenAPI Draft、架构设计、Comet design、垂直切片或复盘结论画成可评审的图。
+
+适用场景：
+
+- 机会探索 / Discovery：机会地图、用户旅程、竞品流程泳道图。
+- PRD / 需求澄清：业务流程图、角色职责泳道图、页面地图。
+- OpenAPI Draft / 工程基线 / 架构设计：系统架构图、数据流图、序列图、ER 图、DDD 边界图。
+- OpenSpec / Comet design：状态流、调用链、领域边界、切片依赖图。
+- 设计审查 / 垂直切片前：用图暴露边界不清、契约缺口和切片依赖。
+- 复盘沉淀：最终流程图、架构演进图和知识沉淀图。
+
+产物建议：
+
+```text
+docs/discovery/diagrams/
+docs/design/diagrams/
+docs/architecture/diagrams/
+```
+
+红线：
+
+- 不得让图凭空发明需求；图必须回指 Discovery、PRD、OpenAPI Draft、Architecture、Comet design 或 Issue。
+- 图中暴露的问题必须回写到对应文本资产，不能只停留在 `.excalidraw` 文件里。
+- 简单文案、小样式、单点 bug 不强制画图。
+
 ### 反复审查闭环
 
 审查不是最后一步，而是阶段门禁。任何阻断项都必须回到产生该问题的阶段修正，修正后重新审查。
@@ -232,7 +262,7 @@ Web Adapter
 - （待补充）
 
 ### 已知陷阱
-- （待补充）
+- 生命周期阶段产物只在本地生成但未提交 / 推送，会导致过程决策、评审依据和后续实现输入不可追溯。阶段结束时必须主动提出或执行 Git checkpoint，并使用显式路径分组提交，避免把环境目录或无关用户改动混入提交。
 
 ### 性能基线
 - （待补充）
