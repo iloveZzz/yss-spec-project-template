@@ -10,15 +10,17 @@
 
 1. 在 `docs/discovery/` 记录机会探索、市场、竞品和用户洞察。
 2. 在 `docs/requirements/` 维护 PRD、用户故事和验收标准。
-3. 在 `docs/api/` 维护 OpenAPI 3.1 契约。
-4. 在 `docs/architecture/` 和 `docs/adr/` 记录技术方案和架构决策。
-5. 在 `docs/testing/` 维护测试策略和质量要求。
-6. 使用项目自己的 CI、harness 或人工流程推进开发、审查、发布和复盘。
+3. 在 `docs/design/` 维护页面、原型、用户流和交互状态。
+4. 在 `docs/api/` 维护 OpenAPI 3.1 契约。
+5. 在 `docs/architecture/` 和 `docs/adr/` 记录技术方案和架构决策。
+6. 在 `docs/testing/` 维护测试策略和质量要求。
+7. 使用项目自己的 CI、harness 或人工流程推进开发、审查、发布和复盘。
 
 ## 继续阅读
 
 - [产品全生命周期使用手册](./product-lifecycle-workflow.md)
 - [全生命周期最佳实践](./lifecycle-best-practices.md)
+- [产品研发全生命周期最佳实践](./product-rd-lifecycle-best-practices.md)
 - [OpenSpec Skills 使用手册](./openspec-skills.md)
 - [grill-with-docs 使用手册](./grill-with-docs-guide.md)
 - [grill-with-docs 最佳实践](./grill-with-docs-best-practices.md)

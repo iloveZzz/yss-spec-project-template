@@ -6,14 +6,16 @@ Use this table to decide where the request belongs and what to do next.
 |---|---|---|---|---|
 | Opportunity exploration | 新工程、竞品、行业对标、MVP 边界、模糊想法 | Product idea | opportunity notes, competitive matrix when useful, MVP boundary input | Discovery / PRD clarification |
 | Discovery | 用户、痛点、场景、非目标、成功标准 | Opportunity input, competitive matrix or explicit skip | `docs/discovery/<feature>-discovery.md` | PRD |
-| PRD | 需求、用户故事、验收标准 | Discovery, `CONTEXT.md` terms | `docs/requirements/<feature>-prd.md` with API impact and test decisions | OpenAPI Draft / no API impact |
-| OpenAPI Draft | 前后端接口、契约、DTO、Orval、错误结构 | PRD with API impact | `docs/api/specs/<feature>.yaml` draft or "no API impact" | Engineering baseline / architecture |
-| Engineering baseline / YSS DDD review | 后端新服务、新模块、DDD 分层、脚手架、Gateway/Repository | PRD and API draft/no-impact decision | scaffold decision, YSS skill baseline, architecture inputs | Architecture / OpenSpec / Comet design |
-| Architecture / OpenSpec / Comet design | 模块边界、状态机、版本、权限、集成、行为规格 | PRD, API draft/no-impact decision, engineering baseline when applicable | `docs/architecture/<feature>-architecture.md`, ADR if needed, OpenSpec/Comet design artifacts | Design Review |
-| Design Review | PRD/API/DDD/ADR/seam/安全红线审查 | PRD, API Draft, architecture/design artifacts | review result, blocking fixes or approval to Freeze | OpenAPI Freeze |
-| OpenAPI Freeze | API 契约冻结、前后端实现输入 | API Draft, design review approval, frontend/backend/API agreement | frozen `docs/api/specs/<feature>.yaml` or no API impact record | Vertical slices |
-| Vertical slices | issue、切片、拆任务 | PRD, frozen OpenAPI or no API impact, change artifacts | GitHub Issues or `docs/requirements/issues/` | Implementation routing |
-| Implementation routing | 前端、后端、YSS、代码落地 | Slice, frozen OpenAPI/no-impact decision, design artifacts | Minimal YSS skill list and TDD/review/verify handoff | Specialist skills |
+| PRD baseline | 需求、用户故事、验收标准 | Discovery, `CONTEXT.md` terms | `docs/requirements/<feature>-prd.md` with API impact and test decisions | Product design / PRD calibration / OpenAPI no-impact decision |
+| Product design / prototype / interaction design | 页面、原型、交互、用户流、状态矩阵 | PRD baseline, user stories, UI impact | `docs/design/<feature>-interaction-spec.md` or prototype link, page map, state matrix | PRD calibration / OpenAPI Draft |
+| PRD calibration / requirement freeze | 原型评审、交互回填、范围冻结 | PRD baseline, product design when UI exists | calibrated PRD with design links, updated acceptance criteria, no-go list | OpenAPI Draft / Engineering baseline |
+| OpenAPI Draft | 前后端接口、契约、DTO、Orval、错误结构 | calibrated PRD with API impact, product design when UI exists | `docs/api/specs/<feature>.yaml` draft or "no API impact" | Engineering baseline / architecture |
+| Engineering baseline / YSS DDD review | 后端新服务、新模块、DDD 分层、脚手架、Gateway/Repository | PRD, product design when UI exists, and API draft/no-impact decision | scaffold decision, YSS skill baseline, architecture inputs | Architecture / OpenSpec / Comet design |
+| Architecture / OpenSpec / Comet design | 模块边界、状态机、版本、权限、集成、行为规格 | PRD, product design when UI exists, API draft/no-impact decision, engineering baseline when applicable | `docs/architecture/<feature>-architecture.md`, ADR if needed, OpenSpec/Comet design artifacts | Design Review |
+| Design Review | PRD/UI/API/DDD/ADR/seam/安全红线审查 | PRD, product design when UI exists, API Draft, architecture/design artifacts | review result, blocking fixes or approval to Freeze | OpenAPI Freeze |
+| OpenAPI Freeze | API 契约冻结、前后端实现输入 | API Draft, design review approval, product design agreement, frontend/backend/API agreement | frozen `docs/api/specs/<feature>.yaml` or no API impact record | Vertical slices |
+| Vertical slices | issue、切片、拆任务 | PRD, product design when UI exists, frozen OpenAPI or no API impact, change artifacts | GitHub Issues or `docs/requirements/issues/` | Implementation routing |
+| Implementation routing | 前端、后端、YSS、代码落地 | Slice, product design when UI exists, frozen OpenAPI/no-impact decision, design artifacts | Minimal YSS skill list and TDD/review/verify handoff | Specialist skills |
 | Review / verification | 独立审查、fresh verification、契约一致性 | Implemented slice | review result, verification evidence | Release / implementation |
 | Release / implementation | 发布、实施、客户上线、回滚 | Verified change | `docs/releases/`, `docs/implementation/`, `docs/user-guide/` | Retrospective |
 | Retrospective | 复盘、沉淀、流程改进 | Release feedback | `docs/process/sprint-retros/`, updates to `CONTEXT.md` / `AGENTS.md` / ADR | Next planning |
@@ -22,8 +24,9 @@ Use this table to decide where the request belongs and what to do next.
 
 - If no opportunity input exists for a new module, start with opportunity exploration; create a competitive matrix when market/competitor/user facts are needed, or explicitly record why it is skipped.
 - Treat lifecycle opportunity exploration as product/MVP boundary work. When routing into Comet, do not repeat product discovery; Comet brainstorming should focus on formal change design, technical tradeoffs, risks, contracts, and test seams.
-- If `CONTEXT.md` lacks stable terms, update terms before PRD finalization.
+- If `CONTEXT.md` lacks stable terms, update terms before PRD calibration / requirement freeze.
 - If the PRD says API impact is unknown, do not start frontend/backend implementation.
+- If the feature has a user interface, do not create OpenAPI Draft from PRD baseline alone; create or link page map, prototype / wireframe, user flow, and interaction state matrix first, then calibrate the PRD.
 - If OpenAPI changes exist, create Draft first, then Freeze after engineering baseline/design review before implementing frontend or backend.
 - If backend work creates a new service or module, confirm YSS DDD engineering baseline before architecture/design approval.
 - Do not move from design to implementation until Design Review has no blocking findings.
@@ -68,7 +71,7 @@ Start a data middle platform model-management project:
 
 - Stage: Opportunity exploration.
 - Evidence: The user says "新建工程" or "模型管理" and no product artifacts exist yet.
-- Missing assets: opportunity input, competitor matrix if needed, discovery document, PRD, OpenAPI Draft/Freeze decision, engineering baseline, architecture/design review, OpenSpec/Comet change.
+- Missing assets: opportunity input, competitor matrix if needed, discovery document, PRD baseline, product design / prototype when UI exists, PRD calibration, OpenAPI Draft/Freeze decision, engineering baseline, architecture/design review, OpenSpec/Comet change.
 - Next prompt:
 
 ```text
@@ -83,7 +86,7 @@ Continue model publishing and version freeze:
 - Next prompt:
 
 ```text
-使用 yss-product-lifecycle，继续模型发布与版本冻结功能，检查 active change、PRD、OpenAPI Draft/Freeze、工程基线、设计审查和垂直切片是否齐全，并给出下一步。
+使用 yss-product-lifecycle，继续模型发布与版本冻结功能，检查 active change、PRD、页面/原型/交互设计、OpenAPI Draft/Freeze、工程基线、设计审查和垂直切片是否齐全，并给出下一步。
 ```
 
 Decide YSS skills for a vertical slice:
