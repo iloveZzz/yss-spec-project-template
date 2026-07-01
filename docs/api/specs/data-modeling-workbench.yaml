@@ -1,15 +1,14 @@
----
-pipeline: data-modeling-workbench
-stage: openapi-draft
-status: draft
-owner: ai
-created: 2026-07-02T00:00:00+08:00
-source:
-  - docs/requirements/2026-07-01-data-modeling-workbench-prd.md
-  - docs/requirements/2026-07-02-data-modeling-workbench-prd-calibration.md
-  - docs/design/data-modeling-workbench-interaction-spec.md
----
 openapi: 3.1.0
+x-yss-lifecycle:
+  pipeline: data-modeling-workbench
+  stage: openapi-draft
+  status: draft-remediated-approved-for-freeze
+  owner: ai
+  created: 2026-07-02T00:00:00+08:00
+  source:
+    - docs/requirements/2026-07-01-data-modeling-workbench-prd.md
+    - docs/requirements/2026-07-02-data-modeling-workbench-prd-calibration.md
+    - docs/design/data-modeling-workbench-interaction-spec.md
 info:
   title: 企业数据模型协作工作台 MVP
   version: 0.1.0-draft
@@ -768,6 +767,8 @@ paths:
       summary: 上传 Excel 并创建导入任务
       description: 上传 Excel 字段清单，系统解析为导入预览。上传本身不写入模型草稿。
       operationId: createExcelImport
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
       requestBody:
         required: true
         content:
@@ -1256,7 +1257,7 @@ paths:
     post:
       tags: [模型评审]
       summary: 提交模型评审
-      description: 提交单一数据架构师评审。后端再次校验提交评审整体覆盖率不低于 80% 且不存在阻断级检查问题。
+      description: 提交单一数据架构师评审。后端再次校验提交评审整体覆盖率不低于 80% 且不存在阻断级检查问题。P0 采用“每次提交生成新 reviewId”策略；驳回后再次提交会生成新的 reviewId，原 rejected review 保留为历史记录。
       operationId: submitModelReview
       parameters:
         - $ref: '#/components/parameters/ProjectId'
@@ -1780,8 +1781,8 @@ components:
     IdempotencyKey:
       name: X-Idempotency-Key
       in: header
-      required: false
-      description: 幂等键，用于安全重试。
+      required: true
+      description: 幂等键，用于 mutating command 的安全重试和防重复执行。
       schema:
         type: string
         maxLength: 128
@@ -1899,6 +1900,7 @@ components:
         - VALIDATION_BLOCKING_ISSUES
         - VERSION_CONFLICT
         - REVIEW_DECISION_CONFLICT
+        - DDL_DRAFT_ACK_REQUIRED
         - EXPORT_TASK_FAILED
         - EXPORT_TASK_EXPIRED
         - INTERNAL_ERROR
@@ -3291,6 +3293,9 @@ components:
               maxLength: 1000
             validationRunId:
               type: string
+            resubmissionOfReviewId:
+              type: string
+              description: 驳回后再次提交时可携带上一条 rejected reviewId；未携带时后端可按项目当前 rejected review 自动关联。
 
     ReviewSummary:
       type: object
@@ -3309,6 +3314,9 @@ components:
           format: date-time
         reviewer:
           $ref: '#/components/schemas/UserRef'
+        previousReviewId:
+          type: string
+          description: 驳回后再次提交生成的新 reviewId，可通过该字段追溯上一条 rejected review。
         coverageSummary:
           $ref: '#/components/schemas/CoverageSummary'
         actions:
@@ -3451,7 +3459,7 @@ components:
       allOf:
         - $ref: '#/components/schemas/DraftVersion'
         - type: object
-          required: [publishNote]
+          required: [publishNote, ddlDraftAcknowledged]
           properties:
             publishCheckId:
               type: string
@@ -3488,7 +3496,7 @@ components:
 
     ModelVersionSummary:
       type: object
-      required: [versionId, projectId, versionNo, publishedBy, publishedAt, publishNote, coverageSummary, actions]
+      required: [versionId, projectId, versionNo, publishedBy, publishedAt, publishNote, coverageSummary, snapshotChecksum, actions]
       properties:
         versionId:
           type: string
@@ -3506,6 +3514,9 @@ components:
           type: string
         coverageSummary:
           $ref: '#/components/schemas/CoverageSummary'
+        snapshotChecksum:
+          type: string
+          description: 发布快照校验值，用于审计追溯、导出一致性和快照不可变校验。
         actions:
           type: array
           items:
@@ -3560,10 +3571,14 @@ components:
 
     VersionSnapshot:
       type: object
-      required: [snapshotId, projectName, themeDomains, logicalFieldCount, physicalFieldCount, mappingCount]
+      required: [snapshotId, snapshotSchemaVersion, projectName, themeDomains, logicalFieldCount, physicalFieldCount, mappingCount]
       properties:
         snapshotId:
           type: string
+        snapshotSchemaVersion:
+          type: string
+          description: 发布快照 payload 的结构版本，用于后续快照结构演进兼容。
+          example: v1
         projectName:
           type: string
         themeDomains:

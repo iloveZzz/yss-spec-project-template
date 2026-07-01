@@ -188,7 +188,7 @@ pending -> approved
         -> rejected
 ```
 
-评审绑定提交时的草稿版本、diff、覆盖率摘要和检查结果。驳回后原评审记录保留，草稿回到可修改状态；再次提交生成新的 `reviewId` 或新的 review revision，具体实现可在 Design Review 后确定。
+评审绑定提交时的草稿版本、diff、覆盖率摘要和检查结果。驳回后原评审记录保留，草稿回到可修改状态；P0 固定采用“每次提交生成新 `reviewId`”策略，再次提交不复用原评审记录，原 rejected review 保留为历史证据。
 
 ### 5.5 导出任务状态
 
@@ -399,7 +399,7 @@ OpenAPI Freeze 前至少要把以下契约测试固定到测试计划中：
 | 发布快照不可变 | 写 ADR：发布版本以快照存储，后续修改必须从版本创建新草稿。 | 不阻断 Design Review。 |
 | 异步导出文件有效期 | Design Review 确认默认过期时间、下载权限和审计要求。 | 不阻断 Design Review，阻断实现。 |
 | 规范检查规则表达能力 | P0 使用配置化规则列表，不引入复杂规则引擎。 | 不阻断 Design Review。 |
-| Review revision 模型 | 驳回后再次提交是复用 `reviewId` 版本号还是新建 `reviewId`。 | 不阻断 Design Review，但需在 OpenAPI Freeze 前确认。 |
+| Review revision 模型 | P0 固定采用“每次提交生成新 `reviewId`”，原 rejected review 保留历史。 | Design Review 已确认，OpenAPI Freeze 前需在契约描述和测试中验证。 |
 
 ## 13. 风险与缓解
 
