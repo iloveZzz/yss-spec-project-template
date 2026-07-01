@@ -176,7 +176,7 @@ Web Adapter
 
 - 如果只有一个模糊想法，可以先由 Ideation Agent 发散假设，再由 Discovery Agent 验证。
 - 如果已经有行业、竞品或用户材料，应先由 Discovery Agent 整理事实，再由 Ideation Agent 生成候选方案。
-- Ideation Agent 的“机会构想”不等同于 Superpowers `brainstorming`。前者回答“可能做什么、是否值得探索”，后者用于某个候选方向进入设计前的需求澄清、方案比较和设计说明。
+- Ideation Agent 的“机会构想”不等同于 Superpowers `brainstorming`。前者回答“可能做什么、是否值得探索”，后者用于某个已选方向进入正式变更后的技术方案澄清、方案比较、风险识别和设计说明。
 
 ### 阶段、Agent 与职责
 

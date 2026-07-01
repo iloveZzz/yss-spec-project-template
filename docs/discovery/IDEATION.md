@@ -12,7 +12,7 @@ Ideation 不等同于 Superpowers `brainstorming`：
 |---|---|---|
 | Ideation Agent | 产品机会探索角色，回答“可能做什么、是否值得探索” | 候选机会、假设、挑战点、组合方案 |
 | Discovery Agent | 事实验证角色，回答“证据支持什么、用户真实痛点是什么” | 市场、竞品、用户洞察、MVP 边界输入 |
-| Superpowers `brainstorming` | 方法论 skill，回答“某个候选方向如何设计清楚” | 设计说明、方案取舍、进入计划前的批准点 |
+| Superpowers `brainstorming` | 方法论 skill，回答“某个已选方向如何形成技术方案” | 设计说明、方案取舍、风险识别、进入计划前的批准点 |
 
 推荐关系：
 
@@ -92,5 +92,5 @@ Substitute / Combine / Adapt / Modify / Put to another use / Eliminate / Reverse
 ```
 人类提主题或 Discovery 事实 → AI 发散候选机会 → 人类选择 Top 10
 → AI 挑战者分析 → Discovery 验证证据 → AI 连接者找模式
-→ 收敛 MVP 边界 → 确认是否进入 PRD / Superpowers brainstorming
+→ 收敛 MVP 边界 → 确认是否进入 PRD / Comet 或 Superpowers brainstorming 技术方案设计
 ```

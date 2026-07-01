@@ -20,7 +20,7 @@
 
 ```
 Step 1: 基于 PRD 生成 API 契约草案 (OpenAPI 3.1 Draft)
-Step 2: 结合架构设计 / OpenSpec 行为规格校验 Draft
+Step 2: 结合工程基线、架构设计 / OpenSpec / Comet 行为规格和设计审查校验 Draft
 Step 3: 冻结 API 契约 (OpenAPI 3.1 Freeze)
 Step 4: 后端按冻结 Spec 实现端点
 Step 5: 前端从冻结 Spec 生成 types
@@ -34,7 +34,7 @@ delegate_task(
     context="""
     需要定义的端点：GET/POST/PUT/DELETE ...
     输出：OpenAPI 3.1 Draft YAML → docs/api/specs/[feature].yaml
-    后续：经 Architecture / OpenSpec 校验后 Freeze，再进入前后端实现
+    后续：经工程基线、Architecture / OpenSpec / Comet design 和设计审查后 Freeze，再进入前后端实现
     """
 )
 ```

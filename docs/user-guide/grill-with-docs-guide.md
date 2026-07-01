@@ -78,7 +78,8 @@ grill-with-docs = 追问清楚 + 同步沉淀领域语言和关键决策
 -> 必要时新增 ADR
 -> to-prd 或 PRD 文档
 -> OpenAPI Draft
--> OpenSpec / Comet
+-> 工程基线 / OpenSpec / Comet design
+-> 设计审查
 -> OpenAPI Freeze
 -> writing-plans / yss-router / YSS skills
 ```
@@ -171,7 +172,7 @@ _Avoid_: 上线、提交、保存
 | 机会探索后澄清 | `grill-with-docs` | discovery / PRD |
 | PRD 前 | `grill-with-docs` | `to-prd` |
 | OpenSpec 前 | `grill-with-docs` | `openspec-explore` / `comet` |
-| 设计前 | `grill-with-docs` | `brainstorming` |
+| 正式变更技术设计前 | `grill-with-docs` 只在需求边界仍不清时使用 | `comet` / `brainstorming` |
 | 实现前 | `grill-with-docs` 只在需求不清时使用 | `writing-plans` / `yss-router` |
 | Bug | 通常不用 | `systematic-debugging` |
 

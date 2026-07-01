@@ -141,7 +141,7 @@ scripts/verify-template
 - 只有一个模糊想法：先机会构想，再用 Discovery 验证。
 - 已有行业、竞品或用户材料：先 Discovery，再生成候选方案。
 - 明确 Bug 或小调整：不走完整机会探索环，直接走 hotfix / tweak。
-- 新模块、API 或跨端改动：必须进入 `grill-with-docs`、PRD、OpenAPI Draft、架构/OpenSpec/Comet 校验、OpenAPI Freeze、垂直切片和 TDD。
+- 新模块、API 或跨端改动：必须进入 `grill-with-docs`、PRD、OpenAPI Draft、工程基线、架构/OpenSpec/Comet design、设计审查、OpenAPI Freeze、垂直切片和 TDD。
 
 进入 PRD 前必须通过 `grill-with-docs` 收敛为：用户是谁、痛点是什么、为什么现在做、第一版做什么、明确不做什么、成功标准是什么。
 
@@ -290,7 +290,7 @@ API 契约采用 Draft -> Freeze 两段式：
 | OpenAPI Draft | API Contract Agent 主责，Product / Frontend / Backend 协作 | 把 PRD 中的接口影响转成可讨论的路径、schema、错误、分页、权限和契约测试草案 | PRD 已说明 OpenAPI 影响 |
 | OpenAPI Freeze | API Contract Agent 主责，Architecture / Frontend / Backend 共同确认 | 作为垂直切片、TDD、前后端实现和契约测试的冻结输入 | 已通过工程基线、架构设计 / OpenSpec / Comet 和设计审查 |
 
-如果功能会影响前后端接口，先生成 OpenAPI Draft，再通过工程基线、架构设计和 OpenSpec / Comet 校验冻结契约；冻结后再写 Java / Vue 代码。
+如果功能会影响前后端接口，先生成 OpenAPI Draft，再通过工程基线、架构设计 / OpenSpec / Comet design 和设计审查冻结契约；冻结后再写 Java / Vue 代码。
 
 OpenAPI YAML 和 OpenSpec delta spec 职责不同：
 
@@ -316,7 +316,7 @@ GET    /api/v1/models/{id}/versions
 根据 docs/requirements/model-management-prd.md，
 生成 OpenAPI 3.1 Draft 到 docs/api/specs/model-management.yaml。
 要求包含错误响应、分页、字段级校验错误和模型发布接口。
-随后结合工程基线、架构设计 / OpenSpec / Comet 校验领域状态、权限、错误结构和契约测试，确认后标记为 Freeze。
+随后结合工程基线、架构设计 / OpenSpec / Comet design 和设计审查校验领域状态、权限、错误结构和契约测试，确认后标记为 Freeze。
 ```
 
 ### 4.5 工程基线与架构设计阶段
@@ -668,11 +668,11 @@ Slice 5: 模型发布与版本冻结
 如果你不想一开始就把流程做重，保留这八步即可：
 
 ```text
-1. 竞品矩阵明确基础能力和差异化机会
+1. 机会探索明确用户、痛点、MVP、非目标和成功标准
 2. CONTEXT.md 写清楚术语
 3. PRD 写清楚需求和验收
 4. OpenAPI Draft 写清楚接口草案
-5. 工程基线 / 架构 / OpenSpec 校验并通过设计审查
+5. 工程基线 / 架构 / OpenSpec / Comet design 校验并通过设计审查
 6. 冻结 OpenAPI，垂直切片拆清楚任务
 7. TDD、独立审查和 fresh verification
 8. 发布后复盘并更新 CONTEXT.md / AGENTS.md
