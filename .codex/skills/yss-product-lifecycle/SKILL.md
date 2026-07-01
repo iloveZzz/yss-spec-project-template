@@ -1,6 +1,6 @@
 ---
 name: yss-product-lifecycle
-description: "Use when starting or continuing a YSS product/module/project through opportunity exploration, discovery, PRD baseline, product design/prototype/interaction design, PRD calibration, OpenAPI Draft/Freeze, engineering baseline, architecture, design review, OpenSpec/Comet, vertical slices, YSS frontend/backend delivery, review, release, implementation, or retrospective; or when deciding missing artifacts, lifecycle stage, next prompt, or YSS/OpenSpec/Comet skill routing."
+description: "Use when starting or continuing a YSS product/module/project through opportunity exploration, discovery, business/functional/system/data architecture artifacts, PRD baseline, product design/prototype/interaction design, PRD calibration, OpenAPI Draft/Freeze, engineering baseline, architecture, design review, OpenSpec/Comet, vertical slices, YSS frontend/backend delivery, review, release, implementation, or retrospective; or when deciding missing artifacts, lifecycle stage, next prompt, or YSS/OpenSpec/Comet skill routing."
 ---
 
 # YSS Product Lifecycle
@@ -14,14 +14,16 @@ Determine the current lifecycle stage before proposing work. If implementation i
 ```text
 opportunity exploration
 -> discovery / competitive analysis
--> PRD baseline
+-> business architecture / capability map
+-> PRD baseline / functional architecture
 -> product design / prototype / interaction design
 -> prototype review
 -> PRD calibration / requirement freeze
 -> OpenAPI Draft
 -> OpenAPI Draft contract review
 -> Engineering Baseline / YSS DDD Review
--> architecture / OpenSpec / Comet design
+-> system architecture / OpenSpec / Comet design
+-> data architecture / meta-model design
 -> Design Review
 -> OpenAPI Freeze
 -> vertical slices
@@ -39,6 +41,21 @@ Comet brainstorming belongs to the formal change workflow. It starts after the c
 
 Do not duplicate the same brainstorming work in both places. If Discovery / PRD already captures the product opportunity clearly, Comet brainstorming should reuse those artifacts and focus on technical design and risk reduction instead of repeating market, competitor, or user exploration.
 
+## Architecture Artifact Ladder
+
+Architecture artifacts are produced progressively. Do not try to finish every architecture document on day one, but do not enter implementation when the artifact required by the current risk is missing.
+
+| Artifact | Lifecycle timing | Primary question | Typical outputs | Diagram support |
+|---|---|---|---|---|
+| Business architecture | Opportunity exploration / Discovery / product definition | Who gets value, in which workflow, and where the product boundary sits | user journey, value stream, role/ecosystem model, capability map | journey map, swimlane, capability map |
+| Functional architecture | PRD baseline / product design / PRD calibration | Which product modules support the business capabilities and MVP boundary | module map, feature list, priority, dependencies, non-goals | feature/module map, dependency graph |
+| System architecture | Engineering baseline / Architecture / OpenSpec / Comet design | How the product is built, deployed, integrated, and operated | C4/container view, service boundary, integration, deployment, NFR decisions | system architecture, sequence, deployment, DFD |
+| Data architecture | Detailed design before persistence and repository work | How domain data, metadata, versions, lineage, and queries are modeled and stored | conceptual/logical/physical model, meta-model, versioning strategy, lineage/query/index strategy | ER, class, lineage graph, DFD |
+
+For data modeling, metadata management, ER design, versioning, or lineage-analysis products, data architecture is a core product design artifact. It must be explicit before persistence implementation and before OpenAPI Freeze when API schemas depend on the meta-model.
+
+Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, data structures, or slice dependencies easier to review. Diagrams support the text artifacts; they do not replace PRD, OpenAPI, ADR, OpenSpec/Comet design, or tests.
+
 ## Workflow
 
 1. Inspect existing context before asking questions:
@@ -50,7 +67,7 @@ Do not duplicate the same brainstorming work in both places. If Discovery / PRD 
    - `docs/architecture/` and `docs/adr/`
    - `openspec/changes/` and current OpenSpec/Comet state
 2. Classify the request into one stage:
-   - opportunity exploration, requirement definition, product design / prototype / interaction design, prototype review, PRD calibration / requirement freeze, API contract draft/freeze, engineering baseline, contract/design, change planning, implementation routing, review/verification, release, or retrospective.
+   - opportunity exploration, discovery, business architecture, PRD baseline / functional architecture, product design / prototype / interaction design, prototype review, PRD calibration / requirement freeze, API contract draft/freeze, engineering baseline, system architecture, data architecture, contract/design, change planning, implementation routing, review/verification, release, or retrospective.
 3. Check whether required upstream artifacts exist.
 4. Output the next action:
    - artifact to create/update,
@@ -98,23 +115,26 @@ Default routing:
 
 | Intent | Next skill / workflow |
 |---|---|
-| Start a new business product/module | opportunity exploration -> discovery / competitive analysis -> PRD baseline -> product design/prototype when UI exists -> PRD calibration |
+| Start a new business product/module | opportunity exploration -> discovery / competitive analysis -> business architecture -> PRD baseline / functional architecture -> product design/prototype when UI exists -> PRD calibration |
 | Design UI flow after PRD baseline | `product-design-prototype`; add `wireframe-prototype`, `component-story-prototype`, or `mock-api-prototype` only when needed |
 | Review prototype before PRD calibration | `prototype-review` |
 | Review OpenAPI Draft before engineering baseline | `yss-openapi-draft-review` |
+| Clarify architecture artifact timing or gaps | this skill plus `references/artifact-checklist.md` |
+| Create architecture/process/data diagrams | `excalidraw-diagram-generator` as a support skill |
+| Design meta-model / metadata / lineage data architecture | architecture/design workflow plus `yss-domain-modeling` or `yss-domain`; use `excalidraw-diagram-generator` for ER, lineage, DFD, or class diagrams when helpful |
 | Formalize a change | `comet` or `openspec-new-change` / `openspec-propose` |
 | Continue active change | `comet` first; fallback to `openspec-continue-change` |
 | Choose YSS implementation skills | `yss-router` |
 | Build Vue page | `yss-ui` plus related frontend skills chosen by `yss-router` |
 | Build backend module from scratch | `yss-ddd-scaffold-generator` |
 | Model backend domain | `yss-domain` / `yss-backend-scaffold-domain` |
-| Implement persistence | `yss-repository` plus `yss-mybatis` when needed |
+| Implement persistence | `yss-repository` plus `yss-mybatis` when data architecture and domain metadata are stable |
 | Implement Web adapter | `yss-web-controller` |
 
 ## When Not To Use
 
 - For a single YTable height/layout issue, use `yss-use-table-height` directly.
-- For a single Repository / PO / Convertor / GatewayImpl task with stable domain metadata, use `yss-repository` directly.
+- For a single Repository / PO / Convertor / GatewayImpl task with stable domain metadata and data architecture, use `yss-repository` directly.
 - For a request that is only about running the Comet workflow and already has the needed lifecycle artifacts, use `comet` directly.
 
 ## Output Contract
@@ -154,7 +174,12 @@ When the user explicitly asks for a full delivery plan, include stage-by-stage t
 ## Guardrails
 
 - Do not skip opportunity exploration for new product/module work; create competitive analysis when market/competitor facts are needed, or record why it is not needed.
-- Do not start implementation before PRD is calibrated, product design / prototype / interaction design exists and passes `prototype-review` when UI exists, OpenAPI Freeze decision, engineering baseline, design review, and vertical slice are clear.
+- Do not start implementation before PRD is calibrated, required architecture artifacts are explicit, product design / prototype / interaction design exists and passes `prototype-review` when UI exists, OpenAPI Freeze decision, engineering baseline, design review, and vertical slice are clear.
+- Do not skip business architecture for new products unless the product boundary, users, ecosystem, and value stream are already captured elsewhere.
+- Do not skip functional architecture before PRD calibration when module boundaries, MVP priority, or cross-module dependencies are still unclear.
+- Do not skip system architecture when services, deployment, integrations, performance, security, reliability, or operations are affected.
+- Do not skip data architecture before persistence / repository work. For data modeling, metadata, versioning, or lineage products, treat it as mandatory before Design Review and OpenAPI Freeze.
+- Do not let Excalidraw diagrams invent requirements or architecture decisions; diagrams must point back to source artifacts and any findings must be written back to PRD, OpenAPI, ADR, OpenSpec/Comet design, or issues.
 - Do not move an OpenAPI Draft into Engineering Baseline / YSS DDD Review until `yss-openapi-draft-review` or an equivalent persistent review verifies P0 feature coverage, page action to endpoint mapping, YSS response wrappers, error structures, permissions, concurrency, security red lines, and contract test seams.
 - Do not advance multiple lifecycle stages while leaving their persistent artifacts uncommitted without explicitly calling out the missing Git checkpoint.
 - Do not route directly to frontend/backend skills before `yss-router` when the task crosses multiple YSS areas.

@@ -4,6 +4,32 @@
 
 ---
 
+## 四类架构产物
+
+架构设计按生命周期逐步产出，不要求一次性完成所有细节。
+
+| 产物 | 产出阶段 | 重点问题 | 建议文件 |
+|------|----------|----------|----------|
+| 业务架构 | 机会探索 / Discovery / 产品定义 | 用户是谁、价值流是什么、产品在业务生态中的边界在哪里 | `<feature>-business-architecture.md` |
+| 功能架构 | PRD baseline / 产品设计 / PRD 校准 | 功能域、模块边界、优先级、依赖和 MVP 非目标范围是什么 | `<feature>-functional-architecture.md` |
+| 系统总体架构 | 工程基线 / OpenSpec / Comet design | 服务/模块如何构建、部署、集成、运维和演进 | `<feature>-system-architecture.md` 或 `<feature>-architecture.md` |
+| 数据架构 | 详细设计 / 持久化开发前 | 概念/逻辑/物理模型、元模型、版本、血缘、查询、索引和存储策略是什么 | `<feature>-data-architecture.md` |
+
+对于数据模型、元数据管理、ER 设计、版本管理或血缘分析类产品，数据架构是核心产品能力，必须在 Repository / MyBatis / 持久化开发前完成；如果 OpenAPI schema 依赖元模型，也必须在 OpenAPI Freeze 前完成。
+
+推荐配套图：
+
+```text
+docs/architecture/diagrams/<feature>-business-capability.excalidraw
+docs/architecture/diagrams/<feature>-functional-modules.excalidraw
+docs/architecture/diagrams/<feature>-system-architecture.excalidraw
+docs/architecture/diagrams/<feature>-data-model.excalidraw
+```
+
+使用 `excalidraw-diagram-generator` 生成图时，图只作为审查辅助；发现的问题必须回写到 PRD、OpenAPI、ADR、OpenSpec/Comet design 或对应架构文档。
+
+---
+
 ## AI 四种角色
 
 ### 方案生成器
@@ -33,8 +59,8 @@ delegate_task(
 ### 图表生成者
 ```python
 delegate_task(
-    goal="生成系统架构图 (SVG)",
-    context="包含：部署架构/数据流/服务通信"
+    goal="使用 excalidraw-diagram-generator 生成架构图",
+    context="根据阶段选择：业务能力图/功能模块图/系统架构图/ER 图/血缘图/数据流图"
 )
 ```
 

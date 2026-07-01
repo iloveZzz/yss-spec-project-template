@@ -18,6 +18,24 @@
 
 ## 详细设计
 
+### 业务架构影响
+
+（本方案影响哪些用户旅程、价值流、角色职责、外部系统边界；如无影响，说明原因。）
+
+相关图：`docs/architecture/diagrams/<feature>-business-capability.excalidraw`
+
+### 功能架构
+
+（功能域、模块边界、优先级、模块依赖、MVP / 非目标范围；说明哪些内容需要回填 PRD。）
+
+相关图：`docs/architecture/diagrams/<feature>-functional-modules.excalidraw`
+
+### 系统总体架构
+
+（服务/模块边界、部署形态、集成关系、权限链路、性能/可靠性/可观测性、发布和回滚策略。）
+
+相关图：`docs/architecture/diagrams/<feature>-system-architecture.excalidraw`
+
 ### 数据模型
 
 ```sql
@@ -27,6 +45,10 @@ CREATE TABLE xxx (
     ...
 );
 ```
+
+（如果是数据模型、元数据、版本或血缘分析类产品，必须补充概念模型、逻辑模型、物理模型、元模型、版本策略、血缘/查询/索引策略。）
+
+相关图：`docs/architecture/diagrams/<feature>-data-model.excalidraw`
 
 ### API 设计
 

@@ -15,6 +15,7 @@
 | 领域语言 | `CONTEXT.md` | 统一产品、开发、设计、实施和 AI 的业务词汇 |
 | 需求与验收 | `docs/requirements/` | 保存 PRD、用户故事、验收条件和边界规则 |
 | API 契约 | `docs/api/specs/` | 用 OpenAPI 3.1 约束前后端协作 |
+| 架构资产 | `docs/architecture/`、`docs/adr/` | 保存业务架构、功能架构、系统总体架构、数据架构和关键 ADR |
 | 变更过程 | `openspec/changes/` | 用 OpenSpec / Comet 跟踪一次变更从想法到归档 |
 
 推荐把真实工程代码放在同一个仓库下，例如：
@@ -115,11 +116,14 @@ scripts/verify-template
 
 ```text
 机会探索环
+-> 业务架构
 -> grill-with-docs 澄清
--> PRD
+-> PRD / 功能架构
+-> 产品设计 / 原型 / 交互评审（有 UI 时）
+-> PRD 校准 / 需求冻结
 -> OpenAPI Draft
 -> 工程基线 / DDD 分层确认
--> 架构设计 / OpenSpec / Comet proposal & design
+-> 系统总体架构 / 数据架构 / OpenSpec / Comet proposal & design
 -> 设计审查
 -> OpenAPI Freeze
 -> 垂直切片 Issue
@@ -266,6 +270,7 @@ PRD 必须包含：
 - OpenAPI 影响。
 - 测试决策。
 - AI / 人工审查点。
+- 功能架构入口：功能域、模块边界、优先级、模块依赖和非目标范围。
 
 示例提示词：
 
@@ -273,6 +278,29 @@ PRD 必须包含：
 基于 docs/discovery/model-management-discovery.md，
 使用 docs/templates/prd-template.md 生成“模型管理 MVP”的 PRD。
 重点补充验收标准、非目标范围、OpenAPI 影响和测试决策。
+```
+
+### 4.3.1 四类架构产物的阶段关系
+
+四类架构不是一次性全部做完，而是按风险逐步细化：
+
+| 架构产物 | 产出阶段 | 解决的问题 | 推荐产物 | 可选图 |
+|---|---|---|---|---|
+| 业务架构 | 机会探索 / Discovery / 产品定义 | 产品为谁创造价值，在用户工作流和外部生态中处于什么位置 | 用户旅程、价值流、业务能力地图、角色/组织模型、外部系统边界 | 用户旅程图、泳道图、能力地图 |
+| 功能架构 | PRD baseline / 产品设计 / PRD 校准 | 哪些功能模块支撑业务能力，MVP 做什么和不做什么 | 功能模块图、功能列表与优先级、模块依赖、PRD 回填项 | 功能模块图、依赖图、页面地图 |
+| 系统总体架构 | 工程基线 / OpenSpec / Comet design | 技术上如何构建、部署、集成和运行 | 服务/模块边界、C4/容器视图、部署方案、关键接口、NFR 决策 | 系统架构图、部署图、序列图、DFD |
+| 数据架构 | 详细设计 / 持久化开发前 | 元数据、版本、血缘、查询和存储如何建模 | 概念/逻辑/物理模型、元模型、版本策略、血缘/查询/索引策略 | ER 图、Class 图、血缘图、数据流图 |
+
+对于数据模型、元数据管理、ER 设计、模型版本或血缘分析类产品，数据架构是核心产品能力，不是普通数据库实现细节。它必须在 Repository / MyBatis / 持久化代码开发前完成；如果 OpenAPI schema 依赖元模型，也必须在 OpenAPI Freeze 前完成。
+
+推荐保存：
+
+```text
+docs/architecture/<feature>-business-architecture.md
+docs/architecture/<feature>-functional-architecture.md
+docs/architecture/<feature>-system-architecture.md
+docs/architecture/<feature>-data-architecture.md
+docs/architecture/diagrams/
 ```
 
 ### 4.4 API 契约阶段
@@ -288,9 +316,9 @@ API 契约采用 Draft -> Freeze 两段式：
 | 状态 | 产出人 | 用途 | 进入条件 |
 |---|---|---|---|
 | OpenAPI Draft | API Contract Agent 主责，Product / Frontend / Backend 协作 | 把 PRD 中的接口影响转成可讨论的路径、schema、错误、分页、权限和契约测试草案 | PRD 已说明 OpenAPI 影响 |
-| OpenAPI Freeze | API Contract Agent 主责，Architecture / Frontend / Backend 共同确认 | 作为垂直切片、TDD、前后端实现和契约测试的冻结输入 | 已通过工程基线、架构设计 / OpenSpec / Comet 和设计审查 |
+| OpenAPI Freeze | API Contract Agent 主责，Architecture / Frontend / Backend 共同确认 | 作为垂直切片、TDD、前后端实现和契约测试的冻结输入 | 已通过工程基线、系统/数据架构（如适用）、OpenSpec / Comet 和设计审查 |
 
-如果功能会影响前后端接口，先生成 OpenAPI Draft，再通过工程基线、架构设计 / OpenSpec / Comet design 和设计审查冻结契约；冻结后再写 Java / Vue 代码。
+如果功能会影响前后端接口，先生成 OpenAPI Draft，再通过工程基线、系统/数据架构（如适用）、OpenSpec / Comet design 和设计审查冻结契约；冻结后再写 Java / Vue 代码。
 
 OpenAPI YAML 和 OpenSpec delta spec 职责不同：
 
@@ -316,7 +344,7 @@ GET    /api/v1/models/{id}/versions
 根据 docs/requirements/model-management-prd.md，
 生成 OpenAPI 3.1 Draft 到 docs/api/specs/model-management.yaml。
 要求包含错误响应、分页、字段级校验错误和模型发布接口。
-随后结合工程基线、架构设计 / OpenSpec / Comet design 和设计审查校验领域状态、权限、错误结构和契约测试，确认后标记为 Freeze。
+随后结合工程基线、系统/数据架构、OpenSpec / Comet design 和设计审查校验领域状态、权限、错误结构和契约测试，确认后标记为 Freeze。
 ```
 
 ### 4.5 工程基线与架构设计阶段
@@ -327,6 +355,15 @@ GET    /api/v1/models/{id}/versions
 docs/architecture/
 docs/adr/
 ```
+
+本阶段不是只画技术架构图，而是把工程风险和产品模型风险收束为可审查的产物：
+
+| 产物 | 典型内容 | 进入下一步前的判断 |
+|---|---|---|
+| 系统总体架构 | 服务/模块边界、部署形态、集成关系、权限链路、性能/可靠性/可观测性、发布回滚 | 足以支撑 Design Review 和 OpenAPI Freeze |
+| 数据架构 | 概念/逻辑/物理模型、元模型、版本策略、血缘关系、查询/搜索、索引、存储和迁移约束 | 足以支撑 API schema、Repository、MyBatis 和测试设计 |
+| ADR | 难回滚、有真实取舍、影响长期演进的关键决策 | 决策背景、选项、取舍和后果清楚 |
+| 架构图 | C4/系统架构、DDD 边界、ER、Class、DFD、血缘、序列图 | 帮助审查，且引用到对应文字资产 |
 
 编码规范不是每个需求临时产出的文档，而是项目初始化阶段形成的工程基线；功能设计阶段只补充本次变更需要遵守的局部约束。
 
@@ -385,10 +422,42 @@ docs/adr/0002-model-publishing-state-machine.md
 |---|---|---|---|
 | PRD Review | Product / Domain Review Agent | 用户、痛点、非目标范围、验收标准、OpenAPI 影响、安全红线 | 需求澄清 / PRD |
 | API Review | API + Frontend + Backend Agent | 路径、schema、错误结构、分页、权限、契约测试 | OpenAPI Draft |
-| Architecture Review | Architecture Review Agent | DDD 分层、模块依赖、Gateway 边界、状态流、ADR、回滚策略 | 工程基线 / 架构设计 |
+| Architecture Review | Architecture Review Agent | 业务/功能/系统/数据架构、DDD 分层、模块依赖、Gateway 边界、状态流、ADR、回滚策略 | 工程基线 / 架构设计 |
 | Plan Review | Planning / Test Agent | 是否垂直切片、是否有测试命令、验证方式和回滚点 | 垂直切片 |
 
 只要审查发现阻断项，必须回到对应阶段修正，然后重新审查。非阻断建议可以进入任务清单，但不能混入本次范围造成无关重构。
+
+### 4.5.2 可视化辅助图
+
+当流程、架构、状态机、数据流、权限路径或垂直切片关系仅靠文字难以说明时，可以使用 `excalidraw-diagram-generator` 生成 `.excalidraw` 图。
+
+它的定位是说明与审查辅助，不替代 PRD、OpenAPI、ADR、OpenSpec / Comet 或测试。图必须来源于已有资产，并把发现的问题回写到对应文档。
+
+常见用途：
+
+- 业务架构：用户旅程、价值流、角色职责泳道图、业务能力地图。
+- 功能架构 / PRD：功能模块图、模块依赖图、业务流程图、页面地图。
+- OpenAPI Draft：接口调用序列、数据流、错误流。
+- 工程基线 / 系统架构：系统架构、DDD 边界、模块依赖、部署图、DFD。
+- 数据架构：ER 图、元模型 Class 图、血缘图、查询路径图。
+- Comet design：状态流、调用链、切片依赖。
+- 设计审查：暴露边界不清、契约缺口和切片依赖。
+
+推荐保存位置：
+
+```text
+docs/discovery/diagrams/
+docs/design/diagrams/
+docs/architecture/diagrams/
+```
+
+示例提示词：
+
+```text
+使用 excalidraw-diagram-generator，基于当前 PRD、OpenAPI Draft 和 Comet design，
+生成模型发布与版本冻结的序列图和 DDD 边界图。
+保存到 docs/architecture/diagrams/。
+```
 
 ### 4.6 OpenSpec / Comet 变更阶段
 
@@ -413,7 +482,7 @@ open -> design -> build -> verify -> archive
 | 阶段 | 主要产物 | 人类确认点 |
 |---|---|---|
 | open | proposal、design、tasks 初稿，必要时引用 OpenAPI Draft | 范围是否正确 |
-| design | 深度设计、delta spec、工程基线检查、OpenAPI Draft 校验结论 | 方案是否可接受，OpenAPI 是否可 Freeze |
+| design | 深度设计、delta spec、工程基线检查、系统/数据架构校验、OpenAPI Draft 校验结论 | 方案是否可接受，OpenAPI 是否可 Freeze |
 | build | 实施计划、代码、测试，基于冻结 OpenAPI | 是否采用 TDD、是否分支隔离 |
 | verify | 测试结果、验证报告 | 是否通过或回到 build |
 | archive | 主规格同步、change 归档 | 是否确认归档 |
@@ -479,6 +548,7 @@ OpenAPI / Orval API client
 ```text
 yss-ddd-scaffold-generator
 -> yss-domain / yss-backend-scaffold-domain
+-> 数据架构确认（涉及持久化 / 元数据 / 版本 / 血缘时）
 -> yss-repository
 -> yss-mybatis
 -> yss-web-controller
@@ -592,8 +662,12 @@ CONTEXT.md
 docs/discovery/reports/model-management-competitive-matrix.md
 docs/discovery/model-management-discovery.md
 docs/requirements/model-management-prd.md
+docs/architecture/model-management-business-architecture.md
+docs/architecture/model-management-functional-architecture.md
+docs/design/model-management-interaction-spec.md
 docs/api/specs/model-management.yaml
-docs/architecture/model-management-architecture.md
+docs/architecture/model-management-system-architecture.md
+docs/architecture/model-management-data-architecture.md
 docs/adr/0001-model-versioning-strategy.md
 ```
 
@@ -636,7 +710,7 @@ Slice 5: 模型发布与版本冻结
 
 ```text
 /comet 实现模型发布与版本冻结
-进入 build 前请用 yss-router 判断最小 YSS 技能集。
+进入 build 前请确认系统/数据架构、OpenAPI Freeze 和设计审查结论，再用 yss-router 判断最小 YSS 技能集。
 ```
 
 ### 继续未完成工作
@@ -669,13 +743,13 @@ Slice 5: 模型发布与版本冻结
 
 ```text
 1. 机会探索明确用户、痛点、MVP、非目标和成功标准
-2. CONTEXT.md 写清楚术语
-3. PRD 写清楚需求和验收
-4. OpenAPI Draft 写清楚接口草案
-5. 工程基线 / 架构 / OpenSpec / Comet design 校验并通过设计审查
-6. 冻结 OpenAPI，垂直切片拆清楚任务
-7. TDD、独立审查和 fresh verification
-8. 发布后复盘并更新 CONTEXT.md / AGENTS.md
+2. CONTEXT.md 写清楚术语，业务架构写清楚用户旅程和产品边界
+3. PRD / 功能架构写清楚需求、模块、优先级和验收
+4. 有 UI 时完成产品设计、原型评审和 PRD 校准
+5. OpenAPI Draft 写清楚接口草案
+6. 工程基线、系统/数据架构、OpenSpec / Comet design 校验并通过设计审查
+7. 冻结 OpenAPI，垂直切片拆清楚任务
+8. TDD、独立审查、fresh verification，发布后复盘并更新 CONTEXT.md / AGENTS.md
 ```
 
 这八步已经能让产品、研发、设计、实施和 AI 协作形成闭环。

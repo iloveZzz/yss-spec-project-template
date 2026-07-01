@@ -7,6 +7,7 @@
 - 页面清单和信息架构。
 - 用户主路径和异常路径。
 - 低保真线框图，或 Figma / 即时设计 / Axure 等原型工具链接。
+- Excalidraw 流程图、泳道图、页面地图、状态流或架构辅助图。
 - 表单、表格、弹窗、抽屉、步骤流等交互说明。
 - loading、empty、error、readonly、disabled、no-permission、conflict 等状态矩阵。
 - 页面字段、筛选条件、操作按钮和权限规则。
@@ -26,3 +27,12 @@
 - `component-story-prototype`：Storybook / Histoire 工程态状态原型。
 - `mock-api-prototype`：MSW / mock fixtures 支撑未冻结 API 前的交互验证。
 - `prototype-review`：原型阶段评审门禁；未通过则不要进入 PRD 校准 / OpenAPI Draft。
+- `excalidraw-diagram-generator`：根据已形成的 Discovery、PRD、OpenAPI Draft、Architecture 或 Comet design 生成 `.excalidraw` 图；用于说明和审查，不替代文本规格。
+
+推荐目录：
+
+```text
+docs/design/diagrams/
+docs/architecture/diagrams/
+docs/discovery/diagrams/
+```

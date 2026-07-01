@@ -12,7 +12,7 @@
 2. 在 `docs/requirements/` 维护 PRD、用户故事和验收标准。
 3. 在 `docs/design/` 维护页面、原型、用户流和交互状态。
 4. 在 `docs/api/` 维护 OpenAPI 3.1 契约。
-5. 在 `docs/architecture/` 和 `docs/adr/` 记录技术方案和架构决策。
+5. 在 `docs/architecture/` 和 `docs/adr/` 记录业务架构、功能架构、系统总体架构、数据架构和架构决策。
 6. 在 `docs/testing/` 维护测试策略和质量要求。
 7. 使用项目自己的 CI、harness 或人工流程推进开发、审查、发布和复盘。
 
@@ -26,6 +26,7 @@
 - [grill-with-docs 最佳实践](./grill-with-docs-best-practices.md)
 - [Superpowers 使用手册](./superpowers-guide.md)
 - [Superpowers 最佳实践](./superpowers-best-practices.md)
+- [Excalidraw Diagram Generator 使用手册](./excalidraw-diagram-generator-guide.md)
 - [PDCA × Scrum](../process/PDCA-SCRUM.md)
 - [OpenSpec × Superpowers](../process/OPENSPEC-SUPERPOWERS-COMPOSITION.md)
 - [架构设计](../architecture/README.md)

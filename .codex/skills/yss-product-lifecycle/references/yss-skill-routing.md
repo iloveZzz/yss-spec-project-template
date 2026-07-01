@@ -20,6 +20,24 @@ Prototype acceptance:
 - Capture PRD calibration notes and OpenAPI implications before API Draft: fields, filters, actions, errors, permissions, pagination, and concurrency/version data.
 - Do not treat Storybook, MSW, Excalidraw, Figma, Penpot, tldraw, or xyflow as mandatory project dependencies in this template repo.
 
+## Architecture / Visualization
+
+| Need | Primary skill | Add when needed |
+|---|---|---|
+| Business architecture or capability map | `yss-product-lifecycle` | `excalidraw-diagram-generator` for user journey, value stream, swimlane, or capability map |
+| Functional architecture / module map | `yss-product-lifecycle` | `product-design-prototype` when UI flows expose module boundaries; `excalidraw-diagram-generator` for module/dependency diagrams |
+| System architecture / service boundary / deployment | `comet` or OpenSpec design workflow | `yss-backend-scaffold-parent` for YSS DDD baseline; `excalidraw-diagram-generator` for C4, sequence, DFD, or deployment diagrams |
+| Data architecture / meta-model / lineage | `yss-domain-modeling` or `yss-domain` | `yss-repository` / `yss-mybatis` only after the model is stable; `excalidraw-diagram-generator` for ER, class, lineage, or DFD diagrams |
+
+Architecture acceptance:
+
+- Business architecture answers users, value stream, role/ecosystem boundary, and product capability map before PRD baseline when the product is new.
+- Functional architecture turns PRD scope into modules, priorities, dependencies, MVP boundaries, and PRD gaps before PRD calibration.
+- System architecture covers service/module boundary, deployment, integration, security, performance, reliability, observability, rollout, and rollback before Design Review when those risks exist.
+- Data architecture covers conceptual/logical/physical model, meta-model, versioning, lineage, query/search, index, storage, and migration constraints before persistence/repository work.
+- For data modeling, metadata management, versioning, ER design, or lineage-analysis products, data architecture is mandatory before Design Review and OpenAPI Freeze.
+- Excalidraw diagrams must reference upstream artifacts and push discovered issues back to PRD, OpenAPI, ADR, OpenSpec/Comet design, or issues.
+
 ## Frontend
 
 | Need | Primary skill | Add when needed |
@@ -68,6 +86,10 @@ Backend acceptance:
 
 - Product/interaction prototype:
   `product-design-prototype` -> `wireframe-prototype` -> `prototype-review` -> PRD calibration
+- Architecture artifact ladder:
+  `yss-product-lifecycle` -> business architecture -> PRD / functional architecture -> system architecture -> data architecture when data/persistence is affected -> Design Review
+- Architecture diagrams:
+  source artifact -> `excalidraw-diagram-generator` -> review -> update source artifact
 - Engineering state prototype:
   `product-design-prototype` -> `component-story-prototype` -> `mock-api-prototype` -> `prototype-review` -> PRD calibration
 - Prototype to formal implementation:
@@ -92,4 +114,6 @@ Backend acceptance:
 - Do not use `yss-web-controller` before Gateway/metadata is stable.
 - Do not use `yss-openapi` to invent API contracts during product/design work; use it to generate or refresh clients/contracts once the Draft/Freeze boundary is clear.
 - Do not route a UI feature from PRD baseline directly to OpenAPI Draft; use `product-design-prototype`, `prototype-review`, and PRD calibration first.
+- Do not use Excalidraw diagrams as the only source of truth for requirements, architecture decisions, API contracts, or tests.
+- Do not make diagrams mandatory for small copy, style, config, or single-point bug fixes.
 - Do not let frontend page code duplicate hook request callbacks or pagination state.

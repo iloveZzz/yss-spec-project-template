@@ -61,6 +61,12 @@
       "skillPath": "skills/dispatching-parallel-agents/SKILL.md",
       "computedHash": "85df55d2235a7623b315dac4bc340c14a37dcdc57c869c80a829e1a53a174689"
     },
+    "excalidraw-diagram-generator": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/excalidraw-diagram-generator/SKILL.md",
+      "computedHash": "68af7d099a9e6fd2a94b4e1219b8b7820e09ebe4a8c2a636358d3f5188219e51"
+    },
     "executing-plans": {
       "source": "obra/superpowers",
       "sourceType": "github",

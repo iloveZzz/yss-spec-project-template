@@ -72,14 +72,18 @@ Issues 和 PRD 默认发布到 GitHub Issues；外部 PR 暂不作为 triage 请
 
 ### Recommended flow
 
-默认完整需求交付链路：`lifecycle stage check -> opportunity exploration -> grill-with-docs -> to-prd baseline -> product-design-prototype / prototype-review when UI exists -> PRD calibration / requirement freeze -> OpenAPI Draft -> Engineering Baseline / DDD Review -> Architecture/OpenSpec/Comet design -> Design Review -> OpenAPI Freeze -> to-issues -> implement with tdd -> independent review -> fresh verification/archive`。
+默认完整需求交付链路：`lifecycle stage check -> opportunity exploration / discovery -> business architecture -> grill-with-docs -> PRD baseline / functional architecture -> product-design-prototype / prototype-review when UI exists -> PRD calibration / requirement freeze -> OpenAPI Draft -> Engineering Baseline / DDD Review -> system architecture / data architecture / OpenSpec / Comet design -> Design Review -> OpenAPI Freeze -> to-issues -> implement with tdd -> independent review -> fresh verification/archive`。
 
 ### Mandatory skill rules
 
 - 新产品、新模块或较大变更必须先判断生命周期阶段、缺失资产和下一步；可用 `yss-product-lifecycle`，已有等价记录时可复用。
+- 新产品或新业务域必须在 PRD 基线前明确业务架构：目标用户、用户旅程、价值流、业务能力地图、角色/组织模型和外部系统边界；已有等价材料时可引用。
 - 新功能或较大改动必须先用 `grill-with-docs` 澄清需求，再用 `to-prd` / `to-issues` 形成 PRD 和垂直切片 Issue。
+- PRD 基线阶段必须同步明确功能架构：功能域、模块边界、优先级、MVP / 非目标范围和模块依赖；不清晰时不得进入 PRD 校准。
 - 有用户界面的功能在 PRD 初稿后必须先用 `product-design-prototype` 产出页面、原型、交互状态、PRD 回填项和 OpenAPI 反推清单，并通过 `prototype-review` 后才能进入 PRD 校准 / 需求冻结和 UI 驱动的 OpenAPI Draft。
 - 任何 API 契约变更必须先在 `docs/api/specs/*.yaml` 形成 Draft，经工程基线（如适用）、架构/OpenSpec/Comet design 和设计审查后 Freeze，再实现前后端和测试。
+- 涉及服务边界、部署、集成、性能、安全、可靠性或运维的变更，必须在设计审查前产出系统总体架构或等价设计记录。
+- 涉及持久化、Repository、元数据、版本、血缘、搜索或查询策略的变更，必须在开发前产出数据架构；数据模型、元数据管理、ER 设计、版本管理或血缘分析类产品必须在 Design Review 和 OpenAPI Freeze 前完成数据架构。
 - 当需求、架构、流程、状态机、数据流或垂直切片关系仅靠文字难以说明时，可用 `excalidraw-diagram-generator` 生成 `.excalidraw` 图作为辅助材料；图不能替代 PRD、OpenAPI、ADR、Comet design 或测试。
 - 从零创建后端服务时，必须优先使用 `yss-ddd-scaffold-generator` 产出骨架；现有服务功能或重构先用 `yss-backend-scaffold-parent` 和对应层级 skill 检查 YSS DDD 工程基线。
 - 任何 Bug、测试失败或性能回退必须先用 `diagnosing-bugs` 建立可复现反馈命令，再修复。
@@ -154,7 +158,7 @@ Web Adapter
 |------|------|------|
 | 模糊想法 / 产品机会 | 机会探索环 → 需求澄清 | 进入 PRD 前必须收敛用户、痛点、MVP 和非目标范围 |
 | 已有竞品 / 用户 / 行业材料 | Discovery → 机会构想 → `grill-with-docs` → PRD | 事实输入必须转化为 MVP 边界和验收标准 |
-| 新模块 / API / 跨端改动 | 阶段判断 → `grill-with-docs` → PRD 初稿 → 页面/原型/交互设计与 `prototype-review`（有 UI 时）→ PRD 校准 / 需求冻结 → OpenAPI Draft → 工程基线 / Architecture / OpenSpec / Comet design → 设计审查 → OpenAPI Freeze → 垂直切片 → TDD | 契约变更先冻结 `docs/api/specs/*.yaml`；有 UI 时不得从 PRD 初稿直接跳 OpenAPI |
+| 新模块 / API / 跨端改动 | 阶段判断 → 业务架构（新业务域）→ `grill-with-docs` → PRD 初稿 / 功能架构 → 页面/原型/交互设计与 `prototype-review`（有 UI 时）→ PRD 校准 / 需求冻结 → OpenAPI Draft → 工程基线 → 系统/数据架构 / OpenSpec / Comet design → 设计审查 → OpenAPI Freeze → 垂直切片 → TDD | 契约变更先冻结 `docs/api/specs/*.yaml`；数据/元数据类产品必须先完成数据架构；有 UI 时不得从 PRD 初稿直接跳 OpenAPI |
 | 明确 Bug / 测试失败 / 性能回退 | diagnosing-bugs → tdd → verify | 先建立可复现反馈命令，再修复 |
 | 小文案 / 局部样式 / 配置调整 | comet-tweak 或直接最小改动 → verify | 扩散到 API、状态、权限或多模块时升级完整流程 |
 | 架构治理 / 难测模块 | improve-codebase-architecture / codebase-design → ADR / Issue | 使用 module、interface、seam、adapter 术语 |
@@ -188,22 +192,37 @@ Web Adapter
 |------|-------|------|
 | 0. 入口分诊 | Intake / Lifecycle Agent | 判断任务类型、风险等级和最小技能集；选择 OpenSpec / Comet / Superpowers / YSS 路径 |
 | 1. 机会探索 | Discovery + Ideation Agent | 市场、竞品、用户事实与机会构想假设循环验证；形成机会清单、MVP 边界和非目标范围 |
-| 2. 需求澄清 | Product / Grill Agent | 使用 `grill-with-docs`、`domain-modeling` 澄清用户、场景、术语、验收标准；必要时更新 `CONTEXT.md` |
-| 3. 需求基线 | PRD / Issue Agent | 使用 `to-prd` 生成 PRD 初稿；明确 OpenAPI 影响、测试 seam、安全红线和 UI 影响 |
-| 4. 页面/原型/交互设计 | Product Design / UX Agent | 使用 `product-design-prototype`、`wireframe-prototype`、`component-story-prototype`、`mock-api-prototype` 产出页面清单、用户流、原型、状态矩阵、PRD 回填项和 OpenAPI 反推清单 |
-| 5. 原型评审 | Prototype Review Agent | 使用 `prototype-review` 审查页面/流程/状态/PRD 回填/API 反推是否足以进入 PRD 校准；阻断项回到产品设计阶段 |
-| 6. PRD 校准 / 需求冻结 | PRD / Product Agent | 把交互设计暴露出来的需求缺口、异常路径、验收标准和非目标范围补回 PRD，冻结可进入 OpenAPI Draft 的范围 |
-| 7. 契约草案 | API Contract Agent | 基于校准后的 PRD 和已评审交互设计产出 OpenAPI Draft；定义路径、请求/响应 schema、错误结构、分页、权限和契约测试草案 |
-| 8. 工程基线 | Scaffold / Architecture Agent | 新服务先用 `yss-ddd-scaffold-generator` 生成骨架；用 `yss-backend-scaffold-parent` 确认技术栈、模块依赖、DDD 分层和编码基线 |
-| 9. 方案设计 | Architecture / OpenSpec Agent | 校验 API Draft 与交互设计、领域模型、状态流、模块边界、行为规格和风险取舍是否一致；可通过 Comet design 阶段承载，必要时写 ADR |
-| 10. 设计审查 | Design Review Agent | 独立审查 PRD、产品设计、OpenAPI Draft、DDD 分层、ADR、测试 seam 和安全红线；阻断项必须回到对应阶段修正 |
-| 11. 契约冻结 | API + Frontend + Backend Agent | 冻结 `docs/api/specs/*.yaml`；确认前端可消费、后端可实现、契约测试可落地，再进入垂直切片 |
-| 12. 实施计划 | Planning Agent | 使用 `to-issues` / `writing-plans` 把冻结契约和设计拆成垂直切片；每步包含文件、测试、验证命令和回滚点 |
-| 13. 开发实现 | Code Agent | 使用 `yss-router` 选择最小 YSS skills；按垂直切片 TDD 实现，前后端通过冻结 OpenAPI 对齐 |
-| 14. 独立审查 | Review Agent | 实现者不得审查自己；重点审安全红线、契约一致性、YSS DDD 分层边界、测试缺口和回归风险 |
-| 15. 清理简化 | Simplify Agent | 在功能已验证基础上处理复用、质量和效率问题；不做无关重构；如触碰行为或契约需回到审查 |
-| 16. 验证发布 | Verify / Release Agent | fresh verification、契约测试、关键路径 E2E、发布说明、实施步骤和回滚方案 |
-| 17. 复盘沉淀 | Retro / Knowledge Agent | 将术语、规则、踩坑、ADR、AGENTS.md 约定和用户手册更新回仓库 |
+| 2. 业务架构 | Business Architecture Agent | 梳理用户旅程、价值流、业务能力地图、角色/组织模型、外部系统边界和产品生态位置 |
+| 3. 需求澄清 | Product / Grill Agent | 使用 `grill-with-docs`、`domain-modeling` 澄清用户、场景、术语、验收标准；必要时更新 `CONTEXT.md` |
+| 4. 需求基线 / 功能架构 | PRD / Functional Architecture Agent | 使用 `to-prd` 生成 PRD 初稿；明确功能域、模块边界、优先级、OpenAPI 影响、测试 seam、安全红线和 UI 影响 |
+| 5. 页面/原型/交互设计 | Product Design / UX Agent | 使用 `product-design-prototype`、`wireframe-prototype`、`component-story-prototype`、`mock-api-prototype` 产出页面清单、用户流、原型、状态矩阵、PRD 回填项和 OpenAPI 反推清单 |
+| 6. 原型评审 | Prototype Review Agent | 使用 `prototype-review` 审查页面/流程/状态/PRD 回填/API 反推是否足以进入 PRD 校准；阻断项回到产品设计阶段 |
+| 7. PRD 校准 / 需求冻结 | PRD / Product Agent | 把交互设计暴露出来的需求缺口、异常路径、验收标准和非目标范围补回 PRD，冻结可进入 OpenAPI Draft 的范围 |
+| 8. 契约草案 | API Contract Agent | 基于校准后的 PRD 和已评审交互设计产出 OpenAPI Draft；定义路径、请求/响应 schema、错误结构、分页、权限和契约测试草案 |
+| 9. 工程基线 | Scaffold / Architecture Agent | 新服务先用 `yss-ddd-scaffold-generator` 生成骨架；用 `yss-backend-scaffold-parent` 确认技术栈、模块依赖、DDD 分层和编码基线 |
+| 10. 系统总体架构 / 方案设计 | Architecture / OpenSpec Agent | 校验 API Draft 与交互设计、领域模型、状态流、模块边界、服务边界、部署、集成、NFR、行为规格和风险取舍是否一致；可通过 Comet design 阶段承载，必要时写 ADR |
+| 11. 数据架构 / 元模型设计 | Data Architecture / Domain Agent | 在持久化开发前明确概念/逻辑/物理模型、元模型、版本策略、血缘、搜索/查询、索引和存储策略；数据模型类产品必须完成 |
+| 12. 设计审查 | Design Review Agent | 独立审查 PRD、产品设计、OpenAPI Draft、业务/功能/系统/数据架构、DDD 分层、ADR、测试 seam 和安全红线；阻断项必须回到对应阶段修正 |
+| 13. 契约冻结 | API + Frontend + Backend Agent | 冻结 `docs/api/specs/*.yaml`；确认前端可消费、后端可实现、契约测试可落地，再进入垂直切片 |
+| 14. 实施计划 | Planning Agent | 使用 `to-issues` / `writing-plans` 把冻结契约和设计拆成垂直切片；每步包含文件、测试、验证命令和回滚点 |
+| 15. 开发实现 | Code Agent | 使用 `yss-router` 选择最小 YSS skills；按垂直切片 TDD 实现，前后端通过冻结 OpenAPI 对齐 |
+| 16. 独立审查 | Review Agent | 实现者不得审查自己；重点审安全红线、契约一致性、YSS DDD 分层边界、测试缺口和回归风险 |
+| 17. 清理简化 | Simplify Agent | 在功能已验证基础上处理复用、质量和效率问题；不做无关重构；如触碰行为或契约需回到审查 |
+| 18. 验证发布 | Verify / Release Agent | fresh verification、契约测试、关键路径 E2E、发布说明、实施步骤和回滚方案 |
+| 19. 复盘沉淀 | Retro / Knowledge Agent | 将术语、规则、踩坑、ADR、AGENTS.md 约定和用户手册更新回仓库 |
+
+### 四类架构产物
+
+架构不是单一阶段一次性产出，而是随生命周期逐步细化：
+
+| 架构产物 | 产出阶段 | 主责 | 最低完成标准 |
+|------|------|------|------|
+| 业务架构 | 机会探索 / Discovery / 产品定义 | Discovery + Business Architecture Agent | 用户旅程、价值流、业务能力地图、角色/组织模型、外部系统边界和 MVP 非目标范围清楚 |
+| 功能架构 | PRD baseline / 产品设计 / PRD 校准 | PRD + Functional Architecture Agent | 功能域、模块边界、优先级、依赖、MVP / 非目标范围和 PRD 缺口清楚 |
+| 系统总体架构 | 工程基线 / OpenSpec / Comet design | Architecture Agent | 服务/模块边界、部署、集成、权限、性能、可靠性、可观测性、发布回滚策略清楚 |
+| 数据架构 | 详细设计 / 持久化开发前 | Data Architecture + Domain Agent | 概念/逻辑/物理模型、元模型、版本、血缘、查询/搜索、索引、存储和迁移约束清楚 |
+
+数据模型、元数据管理、ER 设计、模型版本或血缘分析类产品中，数据架构是核心产品设计，不是普通实现细节；未完成数据架构不得进入 Repository / MyBatis / 持久化代码开发。
 
 ### 可视化辅助：Excalidraw
 
@@ -212,8 +231,10 @@ Web Adapter
 适用场景：
 
 - 机会探索 / Discovery：机会地图、用户旅程、竞品流程泳道图。
-- PRD / 需求澄清：业务流程图、角色职责泳道图、页面地图。
-- OpenAPI Draft / 工程基线 / 架构设计：系统架构图、数据流图、序列图、ER 图、DDD 边界图。
+- 业务架构：用户旅程图、价值流、角色职责泳道图、业务能力地图、生态关系图。
+- 功能架构 / PRD：功能模块图、模块依赖图、业务流程图、页面地图。
+- OpenAPI Draft / 工程基线 / 系统架构：系统架构图、数据流图、序列图、部署图、DDD 边界图。
+- 数据架构：ER 图、元模型 Class 图、血缘图、数据流图、查询路径图。
 - OpenSpec / Comet design：状态流、调用链、领域边界、切片依赖图。
 - 设计审查 / 垂直切片前：用图暴露边界不清、契约缺口和切片依赖。
 - 复盘沉淀：最终流程图、架构演进图和知识沉淀图。
@@ -241,7 +262,7 @@ docs/architecture/diagrams/
 | PRD Review | PRD 完成后 | Product / Domain Review Agent | 用户、痛点、非目标范围、验收标准或安全红线不清 |
 | Prototype Review | 有 UI 的 PRD 初稿完成后、PRD 校准前 | Product Design / UX / Frontend / API Agent | 页面清单、原型/线框、用户流、状态矩阵、PRD 回填项、权限状态或 OpenAPI 反推清单不清 |
 | API Review | OpenAPI Draft 后 | API + Frontend + Backend Agent | schema、错误结构、分页、权限、契约测试不可落地 |
-| Architecture Review | Comet / OpenSpec design 后 | Architecture Review Agent | DDD 分层、模块依赖、ADR、状态流或回滚策略不清 |
+| Architecture Review | 系统/数据架构与 Comet / OpenSpec design 后 | Architecture Review Agent | 业务/功能/系统/数据架构、DDD 分层、模块依赖、ADR、状态流或回滚策略不清 |
 | Plan Review | 垂直切片生成后 | Planning / Test Agent | 切片横向拆层、缺测试命令、缺回滚点或范围过大 |
 | Code Review | 每个 slice 完成后 | 独立 Review Agent | 实现者自审、契约不一致、分层穿透、测试不足 |
 | Security Review | 触碰安全红线时 | Security / Human Review | 权限、认证、SQL、加密、迁移或公共 API 风险未人工确认 |
