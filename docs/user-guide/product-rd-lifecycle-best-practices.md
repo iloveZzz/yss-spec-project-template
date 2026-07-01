@@ -137,7 +137,8 @@ skills 是让 AI 按规程工作的“操作手册”，不是关键词装饰。
 | 不知道当前该做什么 | `yss-product-lifecycle` | 先阶段判断和资产检查，不写业务代码 |
 | 模糊需求追问 | `grill-with-docs` | 先问清，不让 AI 猜规则；稳定术语写 `CONTEXT.md` |
 | 生成 PRD 初稿 / 需求基线 | `to-prd` 或 PRD 模板 | 只基于已确认事实，不把待确认项写成需求 |
-| 页面和交互设计 | `docs/design/`、Figma / 原型工具，必要时接 `yss-ui` 做实现约束 | 基于 PRD 初稿细化页面流、状态和交互，再回填 PRD 并反推 API |
+| 页面和交互设计 | `product-design-prototype`、`wireframe-prototype`、`component-story-prototype`、`mock-api-prototype`、`docs/design/` | 基于 PRD 初稿细化页面流、状态和交互，再回填 PRD 并反推 API |
+| 原型评审 | `prototype-review` | 未通过时回到产品设计，不进入 PRD 校准 / OpenAPI Draft |
 | API 契约 | OpenAPI Draft / Freeze 流程 | Draft 可讨论，Freeze 才可开发 |
 | 正式变更设计 | `comet` / OpenSpec skills / Superpowers `brainstorming` | 复用 PRD，聚焦技术方案、风险和测试 seam |
 | 拆切片 | `to-issues` / `writing-plans` | 必须是端到端垂直切片 |
@@ -162,6 +163,7 @@ skills 是让 AI 按规程工作的“操作手册”，不是关键词装饰。
 - 只说“用一下 skill”，但不说明输入资产和输出路径。
 - 因为是 YSS 项目就一次性加载所有 YSS skills。
 - 把 `brainstorming` 用来重复机会探索，而不是在正式变更中做技术方案。
+- 有 UI 的功能从 PRD 初稿直接跳 OpenAPI，跳过页面、原型、状态矩阵和 `prototype-review`。
 - 在 OpenAPI Freeze 前让 `yss-openapi` 生成生产客户端。
 
 ### 1.5.4 如何使用 agents
@@ -416,14 +418,24 @@ PRD 初稿定义目标、范围、用户故事和验收
 建议资产：
 
 ```text
-docs/design/data-modeling-page-map.md
-docs/design/data-modeling-user-flow.md
-docs/design/data-modeling-wireframe.md
 docs/design/data-modeling-interaction-spec.md
 docs/design/data-modeling-state-matrix.md
+docs/design/data-modeling-prototype-review.md
 ```
 
-如果团队使用 Figma、即时设计、Axure 或其它原型工具，可以在 `docs/design/data-modeling-interaction-spec.md` 中保存链接、版本、评审记录和关键截图说明。
+推荐使用 `product-design-prototype` 作为入口，并按需要追加专项 skill：
+
+| 目标 | 推荐技能 / 工具 | 说明 |
+|---|---|---|
+| 页面清单、用户流、状态矩阵、PRD 回填项、OpenAPI 反推 | `product-design-prototype` | PRD 初稿后的主入口 |
+| 低保真线框、流程草图 | `wireframe-prototype`；Excalidraw / Markdown wireframe | 适合快速讨论，不绑定工程依赖 |
+| 高保真或设计系统协作 | Figma / Penpot，必要时使用 `figma` / `figma-use` | 适合设计团队和组件规范沉淀 |
+| 工程态页面状态原型 | `component-story-prototype`；Storybook / Histoire | 适合验证 loading、empty、error、权限、冲突等状态 |
+| API 未冻结前的交互数据 | `mock-api-prototype`；MSW / JSON fixtures | 适合支撑 Storybook 或前端原型 |
+| 图谱、血缘、流程编排画布 | tldraw / xyflow | 适合数据血缘、任务流、关系图等画布型体验 |
+| 进入 PRD 校准前门禁 | `prototype-review` | 未通过则回到原型阶段 |
+
+如果团队使用 Figma、即时设计、Axure 或其它原型工具，可以在 `docs/design/data-modeling-interaction-spec.md` 中保存链接、版本、评审记录和关键截图说明。第一版不强制引入 Storybook、MSW、Excalidraw、Figma、Penpot、tldraw 或 xyflow 作为项目依赖。
 
 数据建模 MVP 的页面清单示例：
 
@@ -472,12 +484,23 @@ docs/design/data-modeling-state-matrix.md
 推荐提示词：
 
 ```text
+使用 product-design-prototype。
 基于 docs/requirements/data-modeling-prd.md，
 为“数据中台数据建模 MVP”输出页面 / 原型 / 交互设计资产。
 请生成页面清单、用户主路径、异常路径、低保真线框说明、交互状态矩阵、权限状态、空态/加载态/错误态，
 并明确这些设计如何反推 OpenAPI 字段、错误结构、分页筛选和前端验收标准。
 保存到 docs/design/data-modeling-interaction-spec.md。
 如果发现 PRD 缺少页面状态、异常路径或验收标准，请列出需要回填到 PRD 的条目。
+完成后请给出 prototype-review 的评审输入清单。
+```
+
+原型评审提示词：
+
+```text
+使用 prototype-review。
+输入：docs/requirements/data-modeling-prd.md、docs/design/data-modeling-interaction-spec.md、docs/design/data-modeling-state-matrix.md。
+请审查页面清单、用户流、异常路径、权限状态、状态矩阵、PRD 回填项和 OpenAPI 反推清单是否足以进入 PRD 校准 / 需求冻结。
+输出 Approved/Blocked、阻断项、PRD Calibration Readiness、OpenAPI Draft Readiness、Frontend Prototype Readiness 和下一步。
 ```
 
 阶段门禁：
@@ -486,7 +509,7 @@ docs/design/data-modeling-state-matrix.md
 - [ ] 用户主路径和异常路径都能走通。
 - [ ] loading、empty、error、readonly、disabled、no-permission、conflict 状态已定义。
 - [ ] 字段级错误、权限状态、分页筛选和发布确认已反推到 API 输入。
-- [ ] 原型或线框图已经过产品 / 设计 / 前端 / 后端共同评审。
+- [ ] 原型或线框图已经过 `prototype-review`，产品 / 设计 / 前端 / 后端无阻断项。
 - [ ] 从交互设计发现的需求缺口已经回填 PRD，或明确标记为待确认。
 - [ ] 没有把页面实现细节提前写成后端契约，但已经明确契约需要支撑的交互。
 
@@ -938,14 +961,25 @@ docs/user-guide/
 ### 20.3 页面 / 原型 / 交互设计
 
 ```text
+使用 product-design-prototype。
 基于 <PRD 路径>，为 <功能名> 输出页面 / 原型 / 交互设计资产。
 请生成页面清单、用户主路径、异常路径、低保真线框说明、交互状态矩阵、权限状态、空态/加载态/错误态。
 请明确这些设计如何反推 OpenAPI 字段、错误结构、分页筛选、权限和前端验收标准。
 请同时列出需要回填 PRD 的需求缺口、验收标准或非目标范围。
 保存到 docs/design/<feature>-interaction-spec.md。
+完成后输出 prototype-review 评审输入清单。
 ```
 
-### 20.4 PRD 校准 / 需求冻结
+### 20.4 原型评审
+
+```text
+使用 prototype-review。
+输入资产：<PRD 路径>、docs/design/<feature>-interaction-spec.md、docs/design/<feature>-state-matrix.md、<原型链接或线框说明>。
+请审查页面覆盖、主路径、异常路径、loading/empty/error/no-permission/readonly/conflict/dirty-form 状态、权限行为、字段级错误、PRD 回填项和 OpenAPI 反推清单。
+输出 Approved/Blocked、阻断项、非阻断建议、PRD Calibration Readiness、OpenAPI Draft Readiness、Frontend Prototype Readiness 和下一步。
+```
+
+### 20.5 PRD 校准 / 需求冻结
 
 ```text
 基于 <PRD 路径> 和 <交互设计路径>，执行 PRD 校准。
@@ -953,7 +987,7 @@ docs/user-guide/
 输出：需要更新的 PRD 条目、仍待确认的问题、可以冻结的范围、不能进入 OpenAPI Draft 的风险。
 ```
 
-### 20.5 技能路由
+### 20.6 技能路由
 
 ```text
 使用 yss-router。
@@ -963,7 +997,7 @@ docs/user-guide/
 边界：不要实现代码，只输出技能路由、实施顺序、测试 seam 和验证建议。
 ```
 
-### 20.6 Agent Brief
+### 20.7 Agent Brief
 
 ```text
 请基于 docs/templates/agent-brief-template.md 为 <垂直切片标题> 生成 Agent Brief。
@@ -980,7 +1014,7 @@ docs/user-guide/
 要求：内容自包含，使 Code Agent 无需读取聊天历史即可开始。
 ```
 
-### 20.7 子 Agent 分派
+### 20.8 子 Agent 分派
 
 ```text
 请判断以下任务是否适合并行 Agent：
@@ -990,7 +1024,7 @@ docs/user-guide/
 如果任务会修改同一文件、同一 OpenAPI、同一聚合或同一页面，请标记为不可并行。
 ```
 
-### 20.8 完成前验证
+### 20.9 完成前验证
 
 ```text
 使用 verification-before-completion。

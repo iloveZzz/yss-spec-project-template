@@ -6,10 +6,11 @@ Use this table to decide where the request belongs and what to do next.
 |---|---|---|---|---|
 | Opportunity exploration | 新工程、竞品、行业对标、MVP 边界、模糊想法 | Product idea | opportunity notes, competitive matrix when useful, MVP boundary input | Discovery / PRD clarification |
 | Discovery | 用户、痛点、场景、非目标、成功标准 | Opportunity input, competitive matrix or explicit skip | `docs/discovery/<feature>-discovery.md` | PRD |
-| PRD baseline | 需求、用户故事、验收标准 | Discovery, `CONTEXT.md` terms | `docs/requirements/<feature>-prd.md` with API impact and test decisions | Product design / PRD calibration / OpenAPI no-impact decision |
-| Product design / prototype / interaction design | 页面、原型、交互、用户流、状态矩阵 | PRD baseline, user stories, UI impact | `docs/design/<feature>-interaction-spec.md` or prototype link, page map, state matrix | PRD calibration / OpenAPI Draft |
-| PRD calibration / requirement freeze | 原型评审、交互回填、范围冻结 | PRD baseline, product design when UI exists | calibrated PRD with design links, updated acceptance criteria, no-go list | OpenAPI Draft / Engineering baseline |
-| OpenAPI Draft | 前后端接口、契约、DTO、Orval、错误结构 | calibrated PRD with API impact, product design when UI exists | `docs/api/specs/<feature>.yaml` draft or "no API impact" | Engineering baseline / architecture |
+| PRD baseline | 需求、用户故事、验收标准 | Discovery, `CONTEXT.md` terms | `docs/requirements/<feature>-prd.md` with API impact and test decisions | `product-design-prototype` when UI exists / PRD calibration / OpenAPI no-impact decision |
+| Product design / prototype / interaction design | 页面、原型、交互、用户流、状态矩阵 | PRD baseline, user stories, UI impact | `docs/design/<feature>-interaction-spec.md` or prototype link, page map, state matrix, OpenAPI implication list | `prototype-review` |
+| Prototype Review | 原型评审、状态矩阵评审、PRD 回填和 OpenAPI 反推评审 | PRD baseline, interaction spec, prototype/wireframe, state matrix | approved prototype review or blocking findings | PRD calibration / return to product design |
+| PRD calibration / requirement freeze | 原型评审、交互回填、范围冻结 | PRD baseline, product design and prototype review when UI exists | calibrated PRD with design links, updated acceptance criteria, no-go list | OpenAPI Draft / Engineering baseline |
+| OpenAPI Draft | 前后端接口、契约、DTO、Orval、错误结构 | calibrated PRD with API impact, approved prototype review when UI exists | `docs/api/specs/<feature>.yaml` draft or "no API impact" | Engineering baseline / architecture |
 | Engineering baseline / YSS DDD review | 后端新服务、新模块、DDD 分层、脚手架、Gateway/Repository | PRD, product design when UI exists, and API draft/no-impact decision | scaffold decision, YSS skill baseline, architecture inputs | Architecture / OpenSpec / Comet design |
 | Architecture / OpenSpec / Comet design | 模块边界、状态机、版本、权限、集成、行为规格 | PRD, product design when UI exists, API draft/no-impact decision, engineering baseline when applicable | `docs/architecture/<feature>-architecture.md`, ADR if needed, OpenSpec/Comet design artifacts | Design Review |
 | Design Review | PRD/UI/API/DDD/ADR/seam/安全红线审查 | PRD, product design when UI exists, API Draft, architecture/design artifacts | review result, blocking fixes or approval to Freeze | OpenAPI Freeze |
@@ -26,7 +27,8 @@ Use this table to decide where the request belongs and what to do next.
 - Treat lifecycle opportunity exploration as product/MVP boundary work. When routing into Comet, do not repeat product discovery; Comet brainstorming should focus on formal change design, technical tradeoffs, risks, contracts, and test seams.
 - If `CONTEXT.md` lacks stable terms, update terms before PRD calibration / requirement freeze.
 - If the PRD says API impact is unknown, do not start frontend/backend implementation.
-- If the feature has a user interface, do not create OpenAPI Draft from PRD baseline alone; create or link page map, prototype / wireframe, user flow, and interaction state matrix first, then calibrate the PRD.
+- If the feature has a user interface, route PRD baseline to `product-design-prototype`; do not create OpenAPI Draft from PRD baseline alone.
+- UI work must have page map, prototype / wireframe, user flow, interaction state matrix, and OpenAPI implication list, then pass `prototype-review` before PRD calibration / requirement freeze.
 - If OpenAPI changes exist, create Draft first, then Freeze after engineering baseline/design review before implementing frontend or backend.
 - If backend work creates a new service or module, confirm YSS DDD engineering baseline before architecture/design approval.
 - Do not move from design to implementation until Design Review has no blocking findings.
@@ -65,13 +67,27 @@ Change continuation:
 使用 yss-product-lifecycle，继续 <feature>，判断当前应走 Comet、OpenSpec 还是 YSS implementation routing。
 ```
 
+Product design / prototype:
+
+```text
+使用 product-design-prototype，基于 <PRD 路径> 为 <feature> 生成或更新 docs/design/<feature>-interaction-spec.md。
+请覆盖页面清单、用户主路径、异常路径、线框/原型链接、状态矩阵、OpenAPI 反推清单，以及需要回填 PRD 的需求缺口；完成后给出 prototype-review 交接。
+```
+
+Prototype review:
+
+```text
+使用 prototype-review，审查 <feature> 的 PRD 初稿、交互设计、线框/原型和状态矩阵是否足以进入 PRD 校准和 OpenAPI Draft。
+请输出 Approved/Blocked、阻断项、PRD Calibration Readiness、OpenAPI Draft Readiness 和下一步。
+```
+
 ## Examples
 
 Start a data middle platform model-management project:
 
 - Stage: Opportunity exploration.
 - Evidence: The user says "新建工程" or "模型管理" and no product artifacts exist yet.
-- Missing assets: opportunity input, competitor matrix if needed, discovery document, PRD baseline, product design / prototype when UI exists, PRD calibration, OpenAPI Draft/Freeze decision, engineering baseline, architecture/design review, OpenSpec/Comet change.
+- Missing assets: opportunity input, competitor matrix if needed, discovery document, PRD baseline, product design / prototype and `prototype-review` when UI exists, PRD calibration, OpenAPI Draft/Freeze decision, engineering baseline, architecture/design review, OpenSpec/Comet change.
 - Next prompt:
 
 ```text

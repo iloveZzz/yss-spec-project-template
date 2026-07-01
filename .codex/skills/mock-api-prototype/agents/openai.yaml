@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mock API Prototype"
+  short_description: "Mock responses for prototype validation"
+  default_prompt: "Use $mock-api-prototype to design mock API fixtures before OpenAPI Freeze."

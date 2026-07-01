@@ -1,0 +1,4 @@
+interface:
+  display_name: "Wireframe Prototype"
+  short_description: "Low-fidelity wireframes and flow artifacts"
+  default_prompt: "Use $wireframe-prototype to choose and capture low-fidelity prototype artifacts."

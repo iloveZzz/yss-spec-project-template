@@ -71,12 +71,13 @@ Issues 和 PRD 默认发布到 GitHub Issues；外部 PR 暂不作为 triage 请
 
 ### Recommended flow
 
-默认完整需求交付链路：`lifecycle stage check -> opportunity exploration -> grill-with-docs -> to-prd -> OpenAPI Draft -> Engineering Baseline / DDD Review -> Architecture/OpenSpec/Comet design -> Design Review -> OpenAPI Freeze -> to-issues -> implement with tdd -> independent review -> fresh verification/archive`。
+默认完整需求交付链路：`lifecycle stage check -> opportunity exploration -> grill-with-docs -> to-prd baseline -> product-design-prototype / prototype-review when UI exists -> PRD calibration / requirement freeze -> OpenAPI Draft -> Engineering Baseline / DDD Review -> Architecture/OpenSpec/Comet design -> Design Review -> OpenAPI Freeze -> to-issues -> implement with tdd -> independent review -> fresh verification/archive`。
 
 ### Mandatory skill rules
 
 - 新产品、新模块或较大变更必须先判断生命周期阶段、缺失资产和下一步；可用 `yss-product-lifecycle`，已有等价记录时可复用。
 - 新功能或较大改动必须先用 `grill-with-docs` 澄清需求，再用 `to-prd` / `to-issues` 形成 PRD 和垂直切片 Issue。
+- 有用户界面的功能在 PRD 初稿后必须先用 `product-design-prototype` 产出页面、原型、交互状态、PRD 回填项和 OpenAPI 反推清单，并通过 `prototype-review` 后才能进入 PRD 校准 / 需求冻结和 UI 驱动的 OpenAPI Draft。
 - 任何 API 契约变更必须先在 `docs/api/specs/*.yaml` 形成 Draft，经工程基线（如适用）、架构/OpenSpec/Comet design 和设计审查后 Freeze，再实现前后端和测试。
 - 从零创建后端服务时，必须优先使用 `yss-ddd-scaffold-generator` 产出骨架；现有服务功能或重构先用 `yss-backend-scaffold-parent` 和对应层级 skill 检查 YSS DDD 工程基线。
 - 任何 Bug、测试失败或性能回退必须先用 `diagnosing-bugs` 建立可复现反馈命令，再修复。
@@ -150,7 +151,7 @@ Web Adapter
 |------|------|------|
 | 模糊想法 / 产品机会 | 机会探索环 → 需求澄清 | 进入 PRD 前必须收敛用户、痛点、MVP 和非目标范围 |
 | 已有竞品 / 用户 / 行业材料 | Discovery → 机会构想 → `grill-with-docs` → PRD | 事实输入必须转化为 MVP 边界和验收标准 |
-| 新模块 / API / 跨端改动 | 阶段判断 → `grill-with-docs` → PRD → OpenAPI Draft → 工程基线 / Architecture / OpenSpec / Comet design → 设计审查 → OpenAPI Freeze → 垂直切片 → TDD | 契约变更先冻结 `docs/api/specs/*.yaml` |
+| 新模块 / API / 跨端改动 | 阶段判断 → `grill-with-docs` → PRD 初稿 → 页面/原型/交互设计与 `prototype-review`（有 UI 时）→ PRD 校准 / 需求冻结 → OpenAPI Draft → 工程基线 / Architecture / OpenSpec / Comet design → 设计审查 → OpenAPI Freeze → 垂直切片 → TDD | 契约变更先冻结 `docs/api/specs/*.yaml`；有 UI 时不得从 PRD 初稿直接跳 OpenAPI |
 | 明确 Bug / 测试失败 / 性能回退 | diagnosing-bugs → tdd → verify | 先建立可复现反馈命令，再修复 |
 | 小文案 / 局部样式 / 配置调整 | comet-tweak 或直接最小改动 → verify | 扩散到 API、状态、权限或多模块时升级完整流程 |
 | 架构治理 / 难测模块 | improve-codebase-architecture / codebase-design → ADR / Issue | 使用 module、interface、seam、adapter 术语 |
@@ -185,18 +186,21 @@ Web Adapter
 | 0. 入口分诊 | Intake / Lifecycle Agent | 判断任务类型、风险等级和最小技能集；选择 OpenSpec / Comet / Superpowers / YSS 路径 |
 | 1. 机会探索 | Discovery + Ideation Agent | 市场、竞品、用户事实与机会构想假设循环验证；形成机会清单、MVP 边界和非目标范围 |
 | 2. 需求澄清 | Product / Grill Agent | 使用 `grill-with-docs`、`domain-modeling` 澄清用户、场景、术语、验收标准；必要时更新 `CONTEXT.md` |
-| 3. 需求成文 | PRD / Issue Agent | 使用 `to-prd` 生成 PRD；明确 OpenAPI 影响、测试 seam、安全红线 |
-| 4. 契约草案 | API Contract Agent | 基于 PRD 产出 OpenAPI Draft；定义路径、请求/响应 schema、错误结构、分页、权限和契约测试草案 |
-| 5. 工程基线 | Scaffold / Architecture Agent | 新服务先用 `yss-ddd-scaffold-generator` 生成骨架；用 `yss-backend-scaffold-parent` 确认技术栈、模块依赖、DDD 分层和编码基线 |
-| 6. 方案设计 | Architecture / OpenSpec Agent | 校验 API Draft 与领域模型、状态流、模块边界、行为规格和风险取舍是否一致；可通过 Comet design 阶段承载，必要时写 ADR |
-| 7. 设计审查 | Design Review Agent | 独立审查 PRD、OpenAPI Draft、DDD 分层、ADR、测试 seam 和安全红线；阻断项必须回到对应阶段修正 |
-| 8. 契约冻结 | API + Frontend + Backend Agent | 冻结 `docs/api/specs/*.yaml`；确认前端可消费、后端可实现、契约测试可落地，再进入垂直切片 |
-| 9. 实施计划 | Planning Agent | 使用 `to-issues` / `writing-plans` 把冻结契约和设计拆成垂直切片；每步包含文件、测试、验证命令和回滚点 |
-| 10. 开发实现 | Code Agent | 使用 `yss-router` 选择最小 YSS skills；按垂直切片 TDD 实现，前后端通过冻结 OpenAPI 对齐 |
-| 11. 独立审查 | Review Agent | 实现者不得审查自己；重点审安全红线、契约一致性、YSS DDD 分层边界、测试缺口和回归风险 |
-| 12. 清理简化 | Simplify Agent | 在功能已验证基础上处理复用、质量和效率问题；不做无关重构；如触碰行为或契约需回到审查 |
-| 13. 验证发布 | Verify / Release Agent | fresh verification、契约测试、关键路径 E2E、发布说明、实施步骤和回滚方案 |
-| 14. 复盘沉淀 | Retro / Knowledge Agent | 将术语、规则、踩坑、ADR、AGENTS.md 约定和用户手册更新回仓库 |
+| 3. 需求基线 | PRD / Issue Agent | 使用 `to-prd` 生成 PRD 初稿；明确 OpenAPI 影响、测试 seam、安全红线和 UI 影响 |
+| 4. 页面/原型/交互设计 | Product Design / UX Agent | 使用 `product-design-prototype`、`wireframe-prototype`、`component-story-prototype`、`mock-api-prototype` 产出页面清单、用户流、原型、状态矩阵、PRD 回填项和 OpenAPI 反推清单 |
+| 5. 原型评审 | Prototype Review Agent | 使用 `prototype-review` 审查页面/流程/状态/PRD 回填/API 反推是否足以进入 PRD 校准；阻断项回到产品设计阶段 |
+| 6. PRD 校准 / 需求冻结 | PRD / Product Agent | 把交互设计暴露出来的需求缺口、异常路径、验收标准和非目标范围补回 PRD，冻结可进入 OpenAPI Draft 的范围 |
+| 7. 契约草案 | API Contract Agent | 基于校准后的 PRD 和已评审交互设计产出 OpenAPI Draft；定义路径、请求/响应 schema、错误结构、分页、权限和契约测试草案 |
+| 8. 工程基线 | Scaffold / Architecture Agent | 新服务先用 `yss-ddd-scaffold-generator` 生成骨架；用 `yss-backend-scaffold-parent` 确认技术栈、模块依赖、DDD 分层和编码基线 |
+| 9. 方案设计 | Architecture / OpenSpec Agent | 校验 API Draft 与交互设计、领域模型、状态流、模块边界、行为规格和风险取舍是否一致；可通过 Comet design 阶段承载，必要时写 ADR |
+| 10. 设计审查 | Design Review Agent | 独立审查 PRD、产品设计、OpenAPI Draft、DDD 分层、ADR、测试 seam 和安全红线；阻断项必须回到对应阶段修正 |
+| 11. 契约冻结 | API + Frontend + Backend Agent | 冻结 `docs/api/specs/*.yaml`；确认前端可消费、后端可实现、契约测试可落地，再进入垂直切片 |
+| 12. 实施计划 | Planning Agent | 使用 `to-issues` / `writing-plans` 把冻结契约和设计拆成垂直切片；每步包含文件、测试、验证命令和回滚点 |
+| 13. 开发实现 | Code Agent | 使用 `yss-router` 选择最小 YSS skills；按垂直切片 TDD 实现，前后端通过冻结 OpenAPI 对齐 |
+| 14. 独立审查 | Review Agent | 实现者不得审查自己；重点审安全红线、契约一致性、YSS DDD 分层边界、测试缺口和回归风险 |
+| 15. 清理简化 | Simplify Agent | 在功能已验证基础上处理复用、质量和效率问题；不做无关重构；如触碰行为或契约需回到审查 |
+| 16. 验证发布 | Verify / Release Agent | fresh verification、契约测试、关键路径 E2E、发布说明、实施步骤和回滚方案 |
+| 17. 复盘沉淀 | Retro / Knowledge Agent | 将术语、规则、踩坑、ADR、AGENTS.md 约定和用户手册更新回仓库 |
 
 ### 反复审查闭环
 
@@ -205,6 +209,7 @@ Web Adapter
 | 审查点 | 触发时机 | 主审 | 阻断项 |
 |------|----------|------|--------|
 | PRD Review | PRD 完成后 | Product / Domain Review Agent | 用户、痛点、非目标范围、验收标准或安全红线不清 |
+| Prototype Review | 有 UI 的 PRD 初稿完成后、PRD 校准前 | Product Design / UX / Frontend / API Agent | 页面清单、原型/线框、用户流、状态矩阵、PRD 回填项、权限状态或 OpenAPI 反推清单不清 |
 | API Review | OpenAPI Draft 后 | API + Frontend + Backend Agent | schema、错误结构、分页、权限、契约测试不可落地 |
 | Architecture Review | Comet / OpenSpec design 后 | Architecture Review Agent | DDD 分层、模块依赖、ADR、状态流或回滚策略不清 |
 | Plan Review | 垂直切片生成后 | Planning / Test Agent | 切片横向拆层、缺测试命令、缺回滚点或范围过大 |

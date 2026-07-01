@@ -16,6 +16,7 @@ opportunity exploration
 -> discovery / competitive analysis
 -> PRD baseline
 -> product design / prototype / interaction design
+-> prototype review
 -> PRD calibration / requirement freeze
 -> OpenAPI Draft
 -> Engineering Baseline / YSS DDD Review
@@ -48,7 +49,7 @@ Do not duplicate the same brainstorming work in both places. If Discovery / PRD 
    - `docs/architecture/` and `docs/adr/`
    - `openspec/changes/` and current OpenSpec/Comet state
 2. Classify the request into one stage:
-   - opportunity exploration, requirement definition, product design / prototype / interaction design, API contract draft/freeze, engineering baseline, contract/design, change planning, implementation routing, review/verification, release, or retrospective.
+   - opportunity exploration, requirement definition, product design / prototype / interaction design, prototype review, PRD calibration / requirement freeze, API contract draft/freeze, engineering baseline, contract/design, change planning, implementation routing, review/verification, release, or retrospective.
 3. Check whether required upstream artifacts exist.
 4. Output the next action:
    - artifact to create/update,
@@ -70,6 +71,8 @@ Default routing:
 | Intent | Next skill / workflow |
 |---|---|
 | Start a new business product/module | opportunity exploration -> discovery / competitive analysis -> PRD baseline -> product design/prototype when UI exists -> PRD calibration |
+| Design UI flow after PRD baseline | `product-design-prototype`; add `wireframe-prototype`, `component-story-prototype`, or `mock-api-prototype` only when needed |
+| Review prototype before PRD calibration | `prototype-review` |
 | Formalize a change | `comet` or `openspec-new-change` / `openspec-propose` |
 | Continue active change | `comet` first; fallback to `openspec-continue-change` |
 | Choose YSS implementation skills | `yss-router` |
@@ -122,7 +125,7 @@ When the user explicitly asks for a full delivery plan, include stage-by-stage t
 ## Guardrails
 
 - Do not skip opportunity exploration for new product/module work; create competitive analysis when market/competitor facts are needed, or record why it is not needed.
-- Do not start implementation before PRD is calibrated, product design / prototype / interaction design exists when UI exists, OpenAPI Freeze decision, engineering baseline, design review, and vertical slice are clear.
+- Do not start implementation before PRD is calibrated, product design / prototype / interaction design exists and passes `prototype-review` when UI exists, OpenAPI Freeze decision, engineering baseline, design review, and vertical slice are clear.
 - Do not route directly to frontend/backend skills before `yss-router` when the task crosses multiple YSS areas.
 - Do not modify specialist skill behavior from this skill.
 - Do not generate production code from this skill; hand off to the selected specialist skill.

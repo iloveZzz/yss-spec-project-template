@@ -11,8 +11,9 @@ Use this checklist to identify missing lifecycle artifacts.
 | Competitive matrix | `docs/discovery/reports/<feature>-competitive-matrix.md` | Competitors, function matrix, gaps, MVP boundary input are captured |
 | Discovery | `docs/discovery/<feature>-discovery.md` | Users, pains, core flows, non-goals, success criteria are captured |
 | PRD baseline / calibrated PRD | `docs/requirements/<feature>-prd.md` | Uses `docs/templates/prd-template.md`, includes acceptance criteria, API impact, test decisions, and is calibrated with product design when UI exists |
-| Product design / prototype / interaction spec | `docs/design/<feature>-interaction-spec.md` or prototype link | Page map, user flow, wireframe/prototype, interaction state matrix, permissions, empty/loading/error states are captured when UI exists |
-| OpenAPI Draft | `docs/api/specs/<feature>.yaml` | API paths, schemas, errors, pagination, permissions, and contract-test ideas are specified from calibrated PRD plus product design when UI exists, or PRD explicitly says no API impact |
+| Product design / prototype / interaction spec | `docs/design/<feature>-interaction-spec.md` or prototype link | Page map, user flow, wireframe/prototype, interaction state matrix, permissions, empty/loading/error states, PRD calibration notes, and OpenAPI implications are captured when UI exists |
+| Prototype Review | `docs/design/<feature>-prototype-review.md` or review note | Page/flow/state/PRD calibration/API implication gates have no blocking findings before PRD calibration and UI-driven OpenAPI Draft |
+| OpenAPI Draft | `docs/api/specs/<feature>.yaml` | API paths, schemas, errors, pagination, permissions, and contract-test ideas are specified from calibrated PRD plus approved prototype review when UI exists, or PRD explicitly says no API impact |
 | Engineering baseline | `docs/architecture/`, ADR, or issue notes | New backend services/modules have YSS DDD scaffold/baseline decisions and relevant YSS skills selected |
 | Architecture / Design | `docs/architecture/<feature>-architecture.md` | Module boundaries, state flow, integration, risks, UI interaction impact when relevant, and OpenSpec/Comet design impact are clear |
 | Design Review | architecture checklist, issue comment, or review report | PRD, product design when UI exists, API Draft, DDD boundary, ADR, test seam, and security red lines have no blocking findings |
@@ -37,7 +38,7 @@ Use this checklist to identify missing lifecycle artifacts.
 - Opportunity exploration exists, or market/competitor/user research is explicitly skipped with a reason.
 - `CONTEXT.md` has stable terms for the feature.
 - PRD exists, has clear acceptance criteria, and has been calibrated with product design when UI exists.
-- Product design / prototype / interaction spec exists when the feature has a user interface.
+- Product design / prototype / interaction spec exists and passed `prototype-review` when the feature has a user interface.
 - OpenAPI impact is explicit; API changes have Draft and are Frozen before frontend/backend implementation.
 - Engineering baseline / YSS DDD review is complete when backend service/module structure is affected.
 - Architecture impact is explicit and Design Review has no blocking findings.
