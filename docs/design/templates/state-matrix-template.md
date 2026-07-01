@@ -1,40 +1,40 @@
-# <Feature Name> State Matrix
+# <功能名称> 状态矩阵模板
 
-> Use with `product-design-prototype` before PRD calibration and OpenAPI Draft.
+> 适用时机：配合 `product-design-prototype` 使用，在 PRD 校准和 OpenAPI Draft 之前补齐页面状态。
 
-| Page / Component | State | Trigger | UI Behavior | API / Data Need | Acceptance |
+| 页面 / 组件 | 状态 | 触发条件 | 界面行为 | API / 数据要求 | 验收点 |
 |---|---|---|---|---|---|
-| Model List | Loading | First load or filter change | Show table loading; keep filter controls usable when possible | Pending list request | User sees progress without layout jump |
-| Model List | Empty | Query returns no records | Show empty result and create action if permitted | Empty page result | User can create or adjust filters |
-| Model List | Error | List request fails | Show retry affordance and non-destructive error | Error code/message | Retry does not lose filters |
-| Model List | No Permission | User lacks view permission | Show access message; hide data table | Permission response or preloaded auth state | No restricted data leaks |
-| Model Detail | Loading | Detail request pending | Show skeleton or loading regions | Pending detail request | Actions disabled until loaded |
-| Model Detail | Readonly | Published version opened | Disable edit/save/publish; allow version inspection | Model status/version | User cannot mutate published version |
-| Field Editor Drawer | Dirty Form | User changes field values | Enable save; warn on close/navigation | Local form state | User can cancel or keep editing |
-| Field Editor Drawer | Field Error | Save/validate returns field errors | Show error near field and in validation panel | Field-level error list | User can locate and fix each error |
-| Publish Modal | Validation Failed | Publish precheck fails | Block publish and show grouped errors | Model/field validation errors | User sees exact blocking reasons |
-| Publish Modal | Conflict | Draft changed since page load | Show refresh/retry decision | Conflict code, latest version/token | No accidental overwrite |
-| Publish Modal | Success | Publish succeeds | Close modal, show published status/version | Published version metadata | Detail reflects frozen version |
+| 模型列表 | 加载中 | 首次进入或筛选条件变化 | 表格展示加载态；查询条件尽量保持可用 | 列表请求进行中 | 用户看到进度且布局不跳动 |
+| 模型列表 | 空数据 | 查询返回 0 条记录 | 展示空态；有权限时展示创建入口 | 空分页结果 | 用户可创建或调整筛选条件 |
+| 模型列表 | 错误 | 列表请求失败 | 展示可重试错误，不清空筛选条件 | 错误码和错误文案 | 重试不会丢失筛选条件 |
+| 模型列表 | 无权限 | 用户无查看权限 | 展示无权限提示；不展示受限数据 | 权限响应或预加载权限状态 | 不泄露受限数据 |
+| 模型详情 | 加载中 | 详情请求进行中 | 展示骨架屏或区域加载态 | 详情请求进行中 | 数据加载完成前禁用关键操作 |
+| 模型详情 | 只读 | 打开已发布版本 | 禁用编辑、保存和发布；允许查看版本 | 模型状态和版本号 | 用户无法修改已发布版本 |
+| 字段编辑抽屉 | 表单已修改 | 用户修改字段值 | 启用保存；关闭或跳转时提醒 | 本地表单状态 | 用户可继续编辑或放弃修改 |
+| 字段编辑抽屉 | 字段错误 | 保存或校验返回字段错误 | 字段附近和校验面板同时展示错误 | 字段级错误列表 | 用户能定位并修复每个错误 |
+| 发布弹窗 | 校验失败 | 发布前检查失败 | 阻断发布并分组展示错误 | 模型级 / 字段级校验错误 | 用户看到明确的阻断原因 |
+| 发布弹窗 | 并发冲突 | 页面加载后草稿已被他人修改 | 展示刷新或重试决策 | 冲突错误码、最新版本或 token | 不会误覆盖他人修改 |
+| 发布弹窗 | 发布成功 | 发布接口成功 | 关闭弹窗，展示已发布状态和版本号 | 发布版本元数据 | 详情页反映冻结版本 |
 
-## Required State Decisions
+## 必须确认的状态决策
 
-| Decision | Selected Behavior | Owner |
+| 决策项 | 选择的行为 | 负责人 |
 |---|---|---|
-| Hidden vs disabled action for no permission |  | Product / Security |
-| Field-level vs page-level validation errors | Field-level required for editable forms | Product |
-| Conflict recovery | Refresh latest version before retry | Product / Architecture |
-| Published version mutability | Published version is readonly | Product |
-| Empty state primary action |  | Product |
+| 无权限操作是隐藏还是禁用 |  | 产品 / 安全 |
+| 校验错误展示到字段级还是页面级 | 可编辑表单必须支持字段级错误 | 产品 |
+| 并发冲突如何恢复 | 刷新到最新版本后再重试 | 产品 / 架构 |
+| 已发布版本是否可修改 | 已发布版本只读 | 产品 |
+| 空态主操作 |  | 产品 |
 
-## OpenAPI State Implications
+## OpenAPI 状态影响
 
-| State | Contract implication |
+| 状态 | 契约影响 |
 |---|---|
-| Loading | Async request exists; frontend needs stable pending state |
-| Empty | Page result must represent zero records without error |
-| Error | Standard error envelope and user-safe message |
-| No Permission | Permission response or capability flags |
-| Readonly | Status/version fields drive disabled UI |
-| Field Error | Error body supports field path/code/message/severity |
-| Conflict | Error code and latest version/token are available |
-| Success | Response includes updated status, version, actor, and timestamp |
+| 加载中 | 存在异步请求；前端需要稳定 pending 状态 |
+| 空数据 | 分页结果必须能表示 0 条记录，不能用错误表达 |
+| 错误 | 需要标准错误包装和用户可读文案 |
+| 无权限 | 需要权限响应或能力标识 |
+| 只读 | 状态和版本字段驱动禁用交互 |
+| 字段错误 | 错误体支持 field path / code / message / severity |
+| 并发冲突 | 需要错误码和最新版本或 token |
+| 发布成功 | 响应包含最新状态、版本、操作人和时间 |

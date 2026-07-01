@@ -1,63 +1,63 @@
-# <Feature Name> Prototype Review Checklist
+# <功能名称> 原型评审清单
 
-> Use with `prototype-review`. Result is fail-closed: blocking findings return to product design before PRD calibration or OpenAPI Draft.
+> 适用时机：配合 `prototype-review` 使用。评审采用 fail-closed：有阻断项时必须回到产品设计阶段，不能进入 PRD 校准或 OpenAPI Draft。
 
-## Review Inputs
+## 评审输入
 
-| Input | Path / Link | Present |
+| 输入 | 路径 / 链接 | 是否具备 |
 |---|---|---|
 | PRD | `docs/requirements/<feature>-prd.md` |  |
-| Interaction spec | `docs/design/<feature>-interaction-spec.md` |  |
-| Prototype / wireframe | `<link or exported image path>` |  |
-| State matrix | `docs/design/<feature>-state-matrix.md` |  |
-| Existing API draft | `docs/api/specs/<feature>.yaml` | Optional |
+| 交互说明 | `docs/design/<feature>-interaction-spec.md` |  |
+| 原型 / 线框图 | `<链接或导出图片路径>` |  |
+| 状态矩阵 | `docs/design/<feature>-state-matrix.md` |  |
+| 现有 API 草案 | `docs/api/specs/<feature>.yaml` | 可选 |
 
-## Gate Checklist
+## 门禁清单
 
-| Gate | Pass? | Findings |
+| 门禁项 | 是否通过 | 发现的问题 |
 |---|---|---|
-| Page map covers all entry points, exits, and primary pages |  |  |
-| Main flow is clear from start to completion |  |  |
-| Exception flows cover cancel, retry, validation failure, permission failure, and conflict |  |  |
-| State matrix covers loading, empty, error, no-permission, readonly, disabled, conflict, and dirty form |  |  |
-| Visible fields, filters, sort, pagination, forms, drawers, modals, and actions are listed |  |  |
-| Permission behavior distinguishes hidden, disabled, and rejected actions |  |  |
-| Validation errors identify model-level and field-level placement |  |  |
-| OpenAPI Draft can be derived from UI needs |  |  |
-| Frontend acceptance and optional story/mock needs are clear |  |  |
-| Security red lines are marked for human review |  |  |
+| 页面地图覆盖所有入口、出口和主要页面 |  |  |
+| 主流程从开始到完成是清楚的 |  |  |
+| 异常流程覆盖取消、重试、校验失败、权限失败和并发冲突 |  |  |
+| 状态矩阵覆盖 loading、empty、error、no-permission、readonly、disabled、conflict、dirty-form |  |  |
+| 可见字段、筛选、排序、分页、表单、抽屉、弹窗和操作按钮已列出 |  |  |
+| 权限行为能区分隐藏、禁用和调用后拒绝 |  |  |
+| 校验错误能区分模型级和字段级展示位置 |  |  |
+| 能从界面需求反推出 OpenAPI Draft |  |  |
+| 前端验收、Storybook / Histoire 或 mock 数据需要已明确 |  |  |
+| 安全红线已标记人工审查 |  |  |
 
-## PRD Calibration Readiness
+## PRD 校准就绪度
 
-| Area | Ready? | Notes |
+| 范围 | 是否就绪 | 说明 |
 |---|---|---|
-| New acceptance criteria from prototype |  |  |
-| Requirement gaps discovered by flow/state design |  |  |
-| Non-goals proven by prototype scope |  |  |
-| Pending decisions excluded from freeze |  |  |
-| Design links added to PRD |  |  |
+| 原型新增的验收标准 |  |  |
+| 流程 / 状态设计发现的需求缺口 |  |  |
+| 原型证明需要排除的非目标 |  |  |
+| 待确认决策已排除在冻结范围外 |  |  |
+| PRD 中已补充设计资产链接 |  |  |
 
-## OpenAPI Draft Readiness
+## OpenAPI Draft 就绪度
 
-| Area | Ready? | Notes |
+| 范围 | 是否就绪 | 说明 |
 |---|---|---|
-| Paths / operations |  |  |
-| Request fields |  |  |
-| Response fields |  |  |
-| Pagination / filters / sorting |  |  |
-| Error envelope |  |  |
-| Field-level validation errors |  |  |
-| Permission/capability flags |  |  |
-| Conflict/version token |  |  |
+| 路径 / 操作 |  |  |
+| 请求字段 |  |  |
+| 响应字段 |  |  |
+| 分页 / 筛选 / 排序 |  |  |
+| 错误包装 |  |  |
+| 字段级校验错误 |  |  |
+| 权限 / 能力标识 |  |  |
+| 冲突 / 版本 token |  |  |
 
-## Review Result
+## 评审结论
 
 ```text
-Result: Approved / Blocked
-Blocking findings:
+结论：通过 / 阻断
+阻断项：
 - 
-Non-blocking suggestions:
+非阻断建议：
 - 
-Next action:
-- PRD calibration / OpenAPI Draft / return to product-design-prototype / component-story-prototype / mock-api-prototype
+下一步：
+- PRD 校准 / OpenAPI Draft / 回到 product-design-prototype / component-story-prototype / mock-api-prototype
 ```

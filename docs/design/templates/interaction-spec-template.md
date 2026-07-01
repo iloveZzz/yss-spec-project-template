@@ -1,113 +1,113 @@
-# <Feature Name> Interaction Spec
+# <功能名称> 交互说明模板
 
-> Use after PRD baseline and before PRD calibration / OpenAPI Draft when the feature has UI impact.
+> 适用时机：PRD 初稿之后、PRD 校准 / OpenAPI Draft 之前；仅用于有用户界面影响的功能。
 
-## 1. Inputs
+## 1. 输入资产
 
-| Asset | Path / Link | Notes |
+| 资产 | 路径 / 链接 | 说明 |
 |---|---|---|
-| PRD baseline | `docs/requirements/<feature>-prd.md` | Calibrate after prototype review |
-| Domain terms | `CONTEXT.md` |  |
-| Discovery | `docs/discovery/<feature>-discovery.md` | Optional |
-| Prototype / wireframe | `<link or exported image path>` | Excalidraw / Figma / Penpot / tldraw / Axure / Markdown |
-| Existing API draft | `docs/api/specs/<feature>.yaml` | Optional; product design and PRD calibration should usually come first |
+| PRD 初稿 | `docs/requirements/<feature>-prd.md` | 原型评审后需要回填和校准 |
+| 领域术语 | `CONTEXT.md` | 核心名词、状态和业务规则 |
+| Discovery | `docs/discovery/<feature>-discovery.md` | 可选 |
+| 原型 / 线框图 | `<链接或导出图片路径>` | Excalidraw / Figma / Penpot / tldraw / Axure / Markdown |
+| 现有 API 草案 | `docs/api/specs/<feature>.yaml` | 可选；通常应先完成产品设计和 PRD 校准 |
 
-## 2. Page Map
+## 2. 页面地图
 
-| Page / Panel | Entry | Primary user | Purpose | Exit / Next |
+| 页面 / 面板 | 入口 | 主要用户 | 目标 | 出口 / 下一步 |
 |---|---|---|---|---|
-| Model List | Main navigation | Data modeler | Search, filter, create, and open models | Model Detail |
-| Model Detail | Model List row | Data modeler | View base info, fields, validation, publish status | Field Editor / Version History |
-| Field Editor Drawer | Edit field action | Data modeler | Create or update model fields | Model Detail |
-| Publish Confirmation Modal | Publish action | Data modeler / admin | Confirm validation result and version freeze | Model Detail |
-| Version History | Model Detail tab | Admin / developer | Inspect published versions and changes | Model Detail |
+| 模型列表 | 主导航 | 数据建模人员 | 查询、筛选、创建和进入模型 | 模型详情 |
+| 模型详情 | 模型列表行 | 数据建模人员 | 查看基础信息、字段、校验和发布状态 | 字段编辑 / 版本历史 |
+| 字段编辑抽屉 | 编辑字段操作 | 数据建模人员 | 新增或更新模型字段 | 模型详情 |
+| 发布确认弹窗 | 发布操作 | 数据建模人员 / 管理员 | 确认校验结果和版本冻结 | 模型详情 |
+| 版本历史 | 模型详情页签 | 管理员 / 下游开发者 | 查看发布版本和变更 | 模型详情 |
 
-## 3. User Flow
+## 3. 用户流程
 
-### Main Flow
+### 主流程
 
-1. User opens Model List.
-2. User filters by status or keyword.
-3. User opens a draft model.
-4. User edits fields in Field Editor Drawer.
-5. User runs validation.
-6. User confirms publish.
-7. System freezes a published version and shows version metadata.
+1. 用户打开模型列表。
+2. 用户按状态或关键字筛选。
+3. 用户打开一个草稿模型。
+4. 用户在字段编辑抽屉中维护字段。
+5. 用户执行发布前校验。
+6. 用户确认发布。
+7. 系统冻结发布版本并展示版本信息。
 
-### Exception Flows
+### 异常流程
 
-| Trigger | System behavior | User recovery |
+| 触发条件 | 系统行为 | 用户恢复方式 |
 |---|---|---|
-| Validation fails | Show model-level and field-level errors | Fix fields and validate again |
-| No publish permission | Hide or disable publish action and return permission error if invoked | Contact administrator |
-| Version conflict | Show latest version and discard/refresh choice | Refresh detail and reapply changes |
-| Unsaved changes | Show leave confirmation | Stay or discard changes |
+| 校验失败 | 展示模型级和字段级错误 | 修复字段后重新校验 |
+| 无发布权限 | 隐藏或禁用发布操作；若被调用则返回权限错误 | 联系管理员 |
+| 版本冲突 | 展示最新版本，并提示放弃或刷新 | 刷新详情后重新应用修改 |
+| 存在未保存修改 | 展示离开确认 | 留在当前页或放弃修改 |
 
-## 4. Page Details
+## 4. 页面细节
 
-### Model List
+### 模型列表
 
-| Region | Content / Component | Notes |
+| 区域 | 内容 / 组件 | 说明 |
 |---|---|---|
-| Search form | keyword, status, owner | Use Formily when implemented in YSS frontend |
-| Table | modelCode, modelName, status, owner, updatedAt, latestPublishedVersion, actions | Use YTable when implemented |
-| Actions | Create, Edit, Validate, Publish, View Versions | Permission-driven visibility/disabled state |
+| 查询区 | 关键字、状态、负责人 | YSS 前端实现时优先使用 Formily |
+| 表格 | modelCode、modelName、status、owner、updatedAt、latestPublishedVersion、actions | YSS 前端实现时优先使用 YTable |
+| 操作 | 创建、编辑、校验、发布、查看版本 | 由权限决定隐藏、禁用或可点击 |
 
-### Model Detail
+### 模型详情
 
-| Region | Content / Component | Notes |
+| 区域 | 内容 / 组件 | 说明 |
 |---|---|---|
-| Header | modelName, modelCode, status, latestVersion | Published version is readonly |
-| Tabs | Base Info, Fields, Version History |  |
-| Validation panel | model errors, field errors, warning count | Field-level anchor required |
-| Footer actions | Save Draft, Validate, Publish | Publish requires validation pass |
+| 头部 | modelName、modelCode、status、latestVersion | 已发布版本只读 |
+| 页签 | 基础信息、字段、版本历史 |  |
+| 校验面板 | 模型错误、字段错误、告警数量 | 字段级错误必须能定位 |
+| 底部操作 | 保存草稿、校验、发布 | 发布前必须校验通过 |
 
-### Field Editor Drawer
+### 字段编辑抽屉
 
-| Field | Type | Required | Validation / UI Notes |
+| 字段 | 类型 | 必填 | 校验 / 交互说明 |
 |---|---|---|---|
-| fieldCode | string | Yes | Unique within model |
-| fieldName | string | Yes | Display name |
-| dataType | enum | Yes | Select from supported data types |
-| nullable | boolean | Yes |  |
-| primaryKey | boolean | No | At least one primary key may be required by policy |
-| defaultValue | string | No | Validate by dataType |
-| businessMeaning | string | No | Long text |
+| fieldCode | string | 是 | 模型内唯一 |
+| fieldName | string | 是 | 展示名称 |
+| dataType | enum | 是 | 从支持的数据类型中选择 |
+| nullable | boolean | 是 |  |
+| primaryKey | boolean | 否 | 是否必须至少一个主键由产品策略决定 |
+| defaultValue | string | 否 | 按 dataType 校验 |
+| businessMeaning | string | 否 | 长文本 |
 
-## 5. State Matrix
+## 5. 状态矩阵
 
-Link or paste from `docs/design/templates/state-matrix-template.md`.
+引用或复制 `docs/design/templates/state-matrix-template.md`。
 
-## 6. OpenAPI Implications
+## 6. OpenAPI 反推清单
 
-| UI Need | API implication | Notes |
+| 界面需求 | API 影响 | 说明 |
 |---|---|---|
-| Model list pagination | `GET /api/v1/models` with page, size, filters | Return status, latestPublishedVersion |
-| Field editor save | create/update field endpoint or model draft save endpoint | Include field validation response |
-| Validate before publish | validation endpoint returning model and field errors | Error shape must support anchors |
-| Publish confirmation | publish endpoint with expected draft/version token | Conflict response required |
-| Version history | version list endpoint | Include actor/time/change summary |
+| 模型列表分页 | `GET /api/v1/models` 支持 page、size 和筛选条件 | 返回状态和 latestPublishedVersion |
+| 字段编辑保存 | 字段新增 / 更新接口，或模型草稿保存接口 | 包含字段级校验响应 |
+| 发布前校验 | 校验接口返回模型级和字段级错误 | 错误结构必须支持页面定位 |
+| 发布确认 | 发布接口携带草稿版本或版本 token | 需要冲突响应 |
+| 版本历史 | 版本列表接口 | 包含操作人、时间和变更摘要 |
 
-## 7. PRD Calibration Notes
+## 7. PRD 校准记录
 
-| Finding from prototype | PRD update needed | Owner / Status |
+| 原型发现 | 需要回填 PRD 的内容 | 负责人 / 状态 |
 |---|---|---|
-| Field-level validation needs anchors | Add acceptance criteria for field-level error placement | Product / Pending |
-| Published version is readonly | Add explicit non-mutation rule | Product / Confirmed |
-| Publish conflict requires recovery | Add conflict path to exception flow | Product / Pending |
+| 字段级校验需要页面定位 | 增加字段级错误展示验收标准 | 产品 / 待确认 |
+| 已发布版本只读 | 增加发布版本不可修改规则 | 产品 / 已确认 |
+| 发布冲突需要恢复路径 | 增加并发冲突异常流程 | 产品 / 待确认 |
 
-## 8. Frontend Acceptance
+## 8. 前端验收
 
-- Loading, empty, error, no-permission, readonly, conflict, and dirty-form states are visible or explicitly not applicable.
-- Every table column, filter, form field, drawer, modal, and button has a data source or mock fixture.
-- The design can be split into vertical slices that are independently demoable.
-- Storybook/Histoire or static fixtures are planned if engineering prototype is required.
+- loading、empty、error、no-permission、readonly、conflict、dirty-form 状态已展示，或明确不适用。
+- 每个表格列、筛选条件、表单字段、抽屉、弹窗和按钮都有数据来源或 mock fixture。
+- 设计可以拆成独立可演示的垂直切片。
+- 如果需要工程态原型，已规划 Storybook / Histoire 或静态 fixture。
 
-## 9. Decisions And Open Questions
+## 9. 决策与未决问题
 
-| Type | Item | Owner | Due / Status |
+| 类型 | 内容 | 负责人 | 截止 / 状态 |
 |---|---|---|---|
-| Confirmed | Published version is readonly | Product | Confirmed |
-| Open | Whether admins can deprecate a published version | Product / Architecture | Pending |
-| Non-goal | Approval workflow | Product | MVP excluded |
-| Human review | Database migration generation | Human | TODO-HUMAN-REVIEW |
+| 已确认 | 已发布版本只读 | 产品 | 已确认 |
+| 待确认 | 管理员是否可以废弃已发布版本 | 产品 / 架构 | 待确认 |
+| 非目标 | 审批流 | 产品 | MVP 排除 |
+| 人工审查 | 数据库迁移生成 | 人工 | TODO-HUMAN-REVIEW |

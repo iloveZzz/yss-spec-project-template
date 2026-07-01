@@ -500,7 +500,7 @@ docs/design/data-modeling-prototype-review.md
 使用 prototype-review。
 输入：docs/requirements/data-modeling-prd.md、docs/design/data-modeling-interaction-spec.md、docs/design/data-modeling-state-matrix.md。
 请审查页面清单、用户流、异常路径、权限状态、状态矩阵、PRD 回填项和 OpenAPI 反推清单是否足以进入 PRD 校准 / 需求冻结。
-输出 Approved/Blocked、阻断项、PRD Calibration Readiness、OpenAPI Draft Readiness、Frontend Prototype Readiness 和下一步。
+输出：通过/阻断、阻断项、PRD 校准就绪度、OpenAPI Draft 就绪度、前端原型就绪度和下一步。
 ```
 
 阶段门禁：
@@ -976,7 +976,7 @@ docs/user-guide/
 使用 prototype-review。
 输入资产：<PRD 路径>、docs/design/<feature>-interaction-spec.md、docs/design/<feature>-state-matrix.md、<原型链接或线框说明>。
 请审查页面覆盖、主路径、异常路径、loading/empty/error/no-permission/readonly/conflict/dirty-form 状态、权限行为、字段级错误、PRD 回填项和 OpenAPI 反推清单。
-输出 Approved/Blocked、阻断项、非阻断建议、PRD Calibration Readiness、OpenAPI Draft Readiness、Frontend Prototype Readiness 和下一步。
+输出：通过/阻断、阻断项、非阻断建议、PRD 校准就绪度、OpenAPI Draft 就绪度、前端原型就绪度和下一步。
 ```
 
 ### 20.5 PRD 校准 / 需求冻结
