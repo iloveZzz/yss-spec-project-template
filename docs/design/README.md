@@ -16,14 +16,14 @@
 
 推荐模板：
 
-- `docs/design/templates/product-overview-design-template.md`：PRD 初稿之后，用于团队评审产品总体设计、功能架构、页面/API/数据影响和 PRD 回填项。
+- `docs/design/templates/product-overview-design-template.md`：PRD 初稿之后、页面 / 原型 / 交互设计之前，用于团队评审产品总体设计、功能架构、页面/API/数据影响和 PRD 回填项；它是原型设计输入，不是交互说明本身。
 - `docs/design/templates/interaction-spec-template.md`：页面、流程、交互、PRD 回填项和 OpenAPI 反推清单。
 - `docs/design/templates/state-matrix-template.md`：loading、empty、error、readonly、no-permission、conflict 等状态。
 - `docs/design/templates/prototype-review-checklist.md`：进入 PRD 校准 / OpenAPI Draft 前的原型评审门禁。
 
 推荐技能：
 
-- `product-design-prototype`：PRD 初稿后的页面 / 原型 / 交互设计入口。
+- `product-design-prototype`：基于 PRD 初稿和产品总体设计 / 功能架构，产出页面 / 原型 / 交互设计资产。
 - `wireframe-prototype`：低保真线框、Excalidraw、Figma、Penpot、tldraw、Axure 等原型链接沉淀。
 - `component-story-prototype`：Storybook / Histoire 工程态状态原型。
 - `mock-api-prototype`：MSW / mock fixtures 支撑未冻结 API 前的交互验证。
