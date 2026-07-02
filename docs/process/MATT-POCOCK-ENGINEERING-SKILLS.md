@@ -59,6 +59,7 @@ grill-with-docs
 - PRD 进入开发前必须明确用户故事、验收条件、OpenAPI 影响、测试 seam。
 - 任何 API 变更必须先在 `docs/api/specs/*.yaml` 形成 Draft，经工程基线（如适用）、架构 / OpenSpec / Comet design 和设计审查后 Freeze，再进入实现。
 - OpenAPI Freeze 后、正式进入 `to-issues` 前，必须存在匹配 active OpenSpec / Comet change，且包含 `proposal.md`、`design.md`、`tasks.md`、至少一个 `specs/**/spec.md` 和 `.comet.yaml`；缺失时先路由到 `comet` 或 `openspec-new-change`。
+- 存在匹配 active Comet change 时，Superpowers `brainstorming`、`writing-plans`、`executing-plans`、`test-driven-development`、`systematic-debugging` 和 `requesting-code-review` 应通过 Comet 阶段进入；不要绕过 `.comet.yaml` phase、handoff、decision point 和 guard 直接执行。
 - 后端新服务或新模块必须先确认 YSS DDD 工程基线；从零创建服务时优先使用 `yss-ddd-scaffold-generator`。
 - `to-issues` 只能产出可独立验证的垂直切片，不允许只按 Adapter / Application / Domain / Infrastructure 横向拆分。
 - 涉及安全红线时，Issue 必须标注 `ready-for-human` 或 `TODO-HUMAN-REVIEW`。
@@ -241,7 +242,7 @@ docs/architecture/            # 技术方案、审查清单、架构报告
 
 `to-prd` 和 `to-issues` 默认关注需求和任务拆分，本模板应补充一条硬约束：
 
-> 任何前后端契约变更，必须先在 `docs/api/specs/*.yaml` 中形成 OpenAPI 3.1 Draft，经工程基线、架构 / OpenSpec / Comet design 和设计审查后 Freeze；Freeze 后必须创建或选择匹配 active OpenSpec / Comet change，并确认 `proposal.md`、`design.md`、`tasks.md`、至少一个 `specs/**/spec.md` 和 `.comet.yaml` 存在，才能进入 `to-issues` 和后续前后端实现、契约测试。
+> 任何前后端契约变更，必须先在 `docs/api/specs/*.yaml` 中形成 OpenAPI 3.1 Draft，经工程基线、架构 / OpenSpec / Comet design 和设计审查后 Freeze；Freeze 后必须创建或选择匹配 active OpenSpec / Comet change，并确认 `proposal.md`、`design.md`、`tasks.md`、至少一个 `specs/**/spec.md` 和 `.comet.yaml` 存在，才能进入 `to-issues`。进入实现前还必须检查 Comet phase；若仍在 `open` / `design` / 未就绪 `build`，先继续 `comet` / `comet-build`，再进入前后端实现和契约测试。
 
 ### 5.1 PRD Ready
 

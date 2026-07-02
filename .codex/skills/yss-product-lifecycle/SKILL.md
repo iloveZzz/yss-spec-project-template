@@ -42,6 +42,24 @@ Comet brainstorming belongs to the formal change workflow. It starts after the c
 
 Do not duplicate the same brainstorming work in both places. If Discovery / PRD already captures the product opportunity clearly, Comet brainstorming should reuse those artifacts and focus on technical design and risk reduction instead of repeating market, competitor, or user exploration.
 
+## OpenSpec / Comet / Superpowers Coordination
+
+Use this lifecycle skill to decide the stage and route to the right workflow. Do not use it as a substitute for the formal OpenSpec / Comet / Superpowers flow.
+
+| Layer | Owner | Responsibility | Canonical artifacts |
+|---|---|---|---|
+| OpenSpec | `openspec-*` through Comet | WHAT: formal change scope, capability requirements, acceptance scenarios, task boundary, archive lifecycle | `openspec/changes/<change>/proposal.md`, `specs/**/spec.md`, `design.md`, `tasks.md` |
+| Comet | `comet` and phase skills | ORCHESTRATION: active change discovery, phase state, phase guards, OpenSpec-to-Superpowers handoff, user decision points, verify/archive | `openspec/changes/<change>/.comet.yaml`, `.comet/handoff/*` |
+| Superpowers | invoked by Comet or explicit non-Comet tasks | HOW: brainstorming, implementation planning, TDD execution, debugging, review, verification discipline | `docs/superpowers/specs/*`, `docs/superpowers/plans/*`, review / verification evidence |
+
+Rules:
+
+- Prefer `comet` for formal change work. Raw `openspec-new-change`, `openspec-propose`, or `openspec-continue-change` are fallback tools or explicit user-requested tools; if they are used for a Comet-managed project, verify or create `.comet.yaml` before continuing.
+- For an active change, report both the lifecycle stage and Comet phase. If `.comet.yaml` says `phase: open`, `design`, `build`, `verify`, or `archive`, route through `comet` / the matching Comet phase skill instead of manually jumping to downstream YSS implementation.
+- Do not manually invoke Superpowers `brainstorming`, `writing-plans`, `executing-plans`, `test-driven-development`, `systematic-debugging`, or `requesting-code-review` for a formal change when Comet should invoke them. Comet owns the handoff context, phase guards, and decision points.
+- `to-issues` produces vertical slice Issues, not Comet build execution. After Issues are approved, implementation still continues through the active Comet change: design if needed, build planning, TDD execution, verify, and archive.
+- `yss-router` selects the minimal YSS implementation skills for a slice. It does not replace Comet; use its output as implementation guidance inside the Comet build handoff or for clearly non-Comet local work.
+
 ## Architecture Artifact Ladder
 
 Architecture artifacts are produced progressively. Do not try to finish every architecture document on day one, but do not enter implementation when the artifact required by the current risk is missing.
@@ -75,6 +93,7 @@ Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, da
      - identify the matching active change;
      - verify `openspec/changes/<change>/proposal.md`, `design.md`, `tasks.md`, at least one `specs/**/spec.md`, and `.comet.yaml` exist.
    - If no matching active change exists, or any required OpenSpec / Comet artifact is missing, do not enter formal `to-issues`; route first to `comet` or `openspec-new-change`.
+   - Before frontend/backend implementation, inspect `.comet.yaml` for the matching change. If the phase has not reached a build-ready state with required Superpowers design/plan artifacts, route to `comet` rather than directly to `yss-router` or implementation skills.
 4. Output the next action:
    - artifact to create/update,
    - specialist skill to invoke,
@@ -128,9 +147,9 @@ Default routing:
 | Clarify architecture artifact timing or gaps | this skill plus `references/artifact-checklist.md` |
 | Create architecture/process/data diagrams | `excalidraw-diagram-generator` as a support skill |
 | Design meta-model / metadata / lineage data architecture | architecture/design workflow plus `yss-domain-modeling` or `yss-domain`; use `excalidraw-diagram-generator` for ER, lineage, DFD, or class diagrams when helpful |
-| Formalize a change | `comet` or `openspec-new-change` / `openspec-propose` |
-| Continue active change | `comet` first; fallback to `openspec-continue-change` |
-| Choose YSS implementation skills | `yss-router` |
+| Formalize a change | Prefer `comet`; fallback to `openspec-new-change` / `openspec-propose` only when Comet is unavailable or explicitly requested, then verify `.comet.yaml` |
+| Continue active change | `comet` first; fallback to `openspec-continue-change` only when Comet cannot manage the change |
+| Choose YSS implementation skills | `yss-router`, but only after slice selection and active Comet phase inspection; use the result as Comet build guidance |
 | Build Vue page | `yss-ui` plus related frontend skills chosen by `yss-router` |
 | Build backend module from scratch | `yss-ddd-scaffold-generator` |
 | Model backend domain | `yss-domain` / `yss-backend-scaffold-domain` |
@@ -188,6 +207,7 @@ When the user explicitly asks for a full delivery plan, include stage-by-stage t
 - Do not let Excalidraw diagrams invent requirements or architecture decisions; diagrams must point back to source artifacts and any findings must be written back to PRD, OpenAPI, ADR, OpenSpec/Comet design, or issues.
 - Do not move an OpenAPI Draft into Engineering Baseline / YSS DDD Review until `yss-openapi-draft-review` or an equivalent persistent review verifies P0 feature coverage, page action to endpoint mapping, YSS response wrappers, error structures, permissions, concurrency, security red lines, and contract test seams.
 - Do not enter formal `vertical slices / to-issues` directly after OpenAPI Freeze unless a matching active OpenSpec / Comet change is selected and complete enough to anchor slices. Required files: `openspec/changes/<change>/proposal.md`, `design.md`, `tasks.md`, at least one `specs/**/spec.md`, and `.comet.yaml`. If `openspec list --json` shows no matching active change, or those files are missing, this is blocking; route to `comet` or `openspec-new-change` first.
+- Do not bypass Comet with direct Superpowers or YSS implementation skills when a matching active Comet change exists. Continue the Comet phase first; Comet owns Superpowers handoff, user decision points, TDD mode, review mode, verification, and archive state.
 - Do not advance multiple lifecycle stages while leaving their persistent artifacts uncommitted without explicitly calling out the missing Git checkpoint.
 - Do not route directly to frontend/backend skills before `yss-router` when the task crosses multiple YSS areas.
 - Do not modify specialist skill behavior from this skill.

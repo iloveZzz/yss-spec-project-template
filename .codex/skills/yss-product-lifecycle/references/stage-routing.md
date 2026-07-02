@@ -20,7 +20,7 @@ Use this table to decide where the request belongs and what to do next.
 | OpenAPI Freeze | API 契约冻结、前后端实现输入 | API Draft, design review approval, product design agreement, frontend/backend/API agreement | frozen `docs/api/specs/<feature>.yaml` or no API impact record | OpenSpec / Comet change formalization |
 | OpenSpec / Comet change formalization | 正式 change、proposal/spec/design/tasks、Comet 状态 | OpenAPI Freeze, PRD, product design when UI exists, system/data architecture, design review | matching active `openspec/changes/<change>/` with `proposal.md`, `design.md`, `tasks.md`, `specs/**/spec.md`, `.comet.yaml` | Vertical slices |
 | Vertical slices | issue、切片、拆任务 | PRD, product design when UI exists, frozen OpenAPI or no API impact, matching active OpenSpec / Comet change with required artifacts | GitHub Issues or `docs/requirements/issues/` | Implementation routing |
-| Implementation routing | 前端、后端、YSS、代码落地 | Slice, product design when UI exists, frozen OpenAPI/no-impact decision, design artifacts | Minimal YSS skill list and TDD/review/verify handoff | Specialist skills |
+| Implementation routing | 前端、后端、YSS、代码落地 | Approved slice, product design when UI exists, frozen OpenAPI/no-impact decision, active Comet change phase inspected, Superpowers design/plan status known | Minimal YSS skill list plus Comet build handoff notes | `comet` / `comet-build` first when active change is not build-ready; otherwise specialist skills |
 | Review / verification | 独立审查、fresh verification、契约一致性 | Implemented slice | review result, verification evidence | Release / implementation |
 | Release / implementation | 发布、实施、客户上线、回滚 | Verified change | `docs/releases/`, `docs/implementation/`, `docs/user-guide/` | Retrospective |
 | Retrospective | 复盘、沉淀、流程改进 | Release feedback | `docs/process/sprint-retros/`, updates to `CONTEXT.md` / `AGENTS.md` / ADR | Next planning |
@@ -44,7 +44,7 @@ Use this table to decide where the request belongs and what to do next.
 - Do not move from design to implementation until Design Review has no blocking findings.
 - If a Comet/OpenSpec change is active, prefer continuing it over creating a duplicate.
 - If multiple active OpenSpec/Comet changes look relevant, ask the user which change to continue before planning work.
-- If implementation spans frontend and backend, route through `yss-router`.
+- If implementation spans frontend and backend, route through `yss-router`, but only after checking the matching Comet phase. If the change is still in `open`, `design`, `verify`, or `archive`, continue `comet` first. If the change is in `build` but lacks plan, isolation, build mode, TDD mode, or review mode, continue `comet-build` first.
 - After implementation, require independent review and fresh verification evidence before release/archive.
 
 ## State Inspection
@@ -54,10 +54,12 @@ Before deciding whether to create or continue a formal change:
 1. Run `openspec list --json` when the command is available.
 2. Inspect `openspec/changes/*/.comet.yaml` when Comet metadata exists.
 3. For formal vertical slicing, verify the matching active change contains `proposal.md`, `design.md`, `tasks.md`, at least one `specs/**/spec.md`, and `.comet.yaml`.
-4. Prefer continuing an active matching change over creating a duplicate.
-5. If no active matching change exists, route to `comet` or `openspec-new-change` / `openspec-propose`.
-6. If a matching change exists but required artifacts are missing, route to `comet` / OpenSpec continuation before `to-issues`.
-7. If several active changes may match the request, stop and ask the user to choose one.
+4. For implementation routing, inspect `.comet.yaml` fields: `phase`, `design_doc`, `plan`, `build_pause`, `isolation`, `build_mode`, `tdd_mode`, `review_mode`, and `verify_result` when present.
+5. Prefer continuing an active matching change over creating a duplicate.
+6. If no active matching change exists, route to `comet` or `openspec-new-change` / `openspec-propose`.
+7. If a matching change exists but required artifacts are missing, route to `comet` / OpenSpec continuation before `to-issues`.
+8. If a matching change exists but Comet phase is not ready for implementation, route to `comet` or the matching phase skill before `yss-router` / implementation.
+9. If several active changes may match the request, stop and ask the user to choose one.
 
 ## Suggested Prompts
 
@@ -144,10 +146,11 @@ Continue model publishing and version freeze:
 Decide YSS skills for a vertical slice:
 
 - Stage: Implementation routing.
-- Evidence: PRD, frozen OpenAPI or no API impact, design review, and slice are already clear.
-- Next action: load `references/yss-skill-routing.md`, then route through `yss-router`.
+- Evidence: PRD, frozen OpenAPI or no API impact, design review, approved slice, and matching Comet phase are clear.
+- Next action: inspect `.comet.yaml`. If the change is not build-ready, route to `comet`; otherwise load `references/yss-skill-routing.md`, then route through `yss-router`.
 - Next prompt:
 
 ```text
-使用 yss-product-lifecycle，判断这个垂直切片需要哪些 YSS skills，并输出最小技能集和交接提示词。
+使用 yss-product-lifecycle，检查 active Comet change phase 和这个垂直切片的实现准备度。
+若 Comet phase 尚未 build-ready，请路由到 comet；若已就绪，请判断需要哪些 YSS skills，并输出最小技能集和 Comet build 交接提示词。
 ```

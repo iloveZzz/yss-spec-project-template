@@ -30,6 +30,8 @@ Use this checklist to identify missing lifecycle artifacts.
 |---|---|---|
 | OpenSpec / Comet change | `openspec/changes/<change>/` | Matching active change exists in `openspec list --json`; `proposal.md`, `design.md`, `tasks.md`, at least one `specs/**/spec.md`, and `.comet.yaml` exist and align with PRD / OpenAPI Freeze |
 | Vertical slice issue | GitHub Issues or `docs/requirements/issues/` | Each slice uses `docs/templates/vertical-slice-issue-template.md` and is independently demoable and testable |
+| Superpowers design doc | `docs/superpowers/specs/<date>-<topic>-design.md` | For Comet full workflow implementation, `.comet.yaml` has `design_doc`, the file exists, and it uses `canonical_spec: openspec` |
+| Superpowers implementation plan | `docs/superpowers/plans/<date>-<topic>.md` | For Comet build execution, `.comet.yaml` has `plan`, the file exists, and it references the OpenSpec change, design doc, and base ref |
 | Independent review | MR/PR comments or `docs/templates/review-report-template.md` | Implementer did not review their own work; blocking findings are closed or explicitly accepted by a responsible human |
 | Fresh verification | command output in issue/MR/release notes | Relevant tests, contract checks, build/typecheck, or template verification have fresh evidence |
 | Release note | `docs/releases/` | Uses `docs/templates/release-note-template.md`; user-facing changes, upgrade notes, risks, rollback are documented |
@@ -53,7 +55,8 @@ Use this checklist to identify missing lifecycle artifacts.
 - Design Review has no blocking findings.
 - Active Comet/OpenSpec change is selected or created and contains `proposal.md`, `design.md`, `tasks.md`, at least one `specs/**/spec.md`, and `.comet.yaml`. If missing, formal vertical slicing is blocked and must route to `comet` or `openspec-new-change` first.
 - Vertical slice is narrow and end-to-end.
-- `yss-router` has selected the minimal YSS implementation skills.
+- Before implementation, matching Comet phase is inspected. If `phase` is `open` or `design`, continue `comet` before YSS implementation. If `phase` is `build`, required Comet build fields and Superpowers plan status must be known.
+- `yss-router` has selected the minimal YSS implementation skills and the output is attached to the Comet build handoff or equivalent implementation handoff.
 - Business behavior implementation has a TDD plan, or a documented exception and verification command.
 - Independent review and fresh verification are planned before release/archive.
 
