@@ -25,15 +25,15 @@ Prototype acceptance:
 | Need | Primary skill | Add when needed |
 |---|---|---|
 | Business architecture or capability map | `yss-product-lifecycle` | `excalidraw-diagram-generator` for user journey, value stream, swimlane, or capability map |
-| Functional architecture / module map | `yss-product-lifecycle` | `product-design-prototype` when UI flows expose module boundaries; `excalidraw-diagram-generator` for module/dependency diagrams |
-| System architecture / service boundary / deployment | `comet` or OpenSpec design workflow | `yss-backend-scaffold-parent` for YSS DDD baseline; `excalidraw-diagram-generator` for C4, sequence, DFD, or deployment diagrams |
+| Product overview design / functional architecture / module map | `yss-product-lifecycle` | `product-design-prototype` when UI flows expose module boundaries; `excalidraw-diagram-generator` for module/dependency diagrams |
+| System overview design / system architecture / service boundary / deployment | `comet` or OpenSpec design workflow | `yss-backend-scaffold-parent` for YSS DDD baseline; `excalidraw-diagram-generator` for C4, sequence, DFD, or deployment diagrams |
 | Data architecture / meta-model / lineage | `yss-domain-modeling` or `yss-domain` | `yss-repository` / `yss-mybatis` only after the model is stable; `excalidraw-diagram-generator` for ER, class, lineage, or DFD diagrams |
 
 Architecture acceptance:
 
 - Business architecture answers users, value stream, role/ecosystem boundary, and product capability map before PRD baseline when the product is new.
-- Functional architecture turns PRD scope into modules, priorities, dependencies, MVP boundaries, and PRD gaps before PRD calibration.
-- System architecture covers service/module boundary, deployment, integration, security, performance, reliability, observability, rollout, and rollback before Design Review when those risks exist.
+- Product overview design / functional architecture turns PRD scope into user flows, business objects, modules, priorities, dependencies, page/API/data impacts, MVP boundaries, and PRD gaps before PRD calibration.
+- System overview design / system architecture covers service/module boundary, deployment, integration, security, performance, reliability, observability, rollout, and rollback before Design Review when those risks exist.
 - Data architecture covers conceptual/logical/physical model, meta-model, versioning, lineage, query/search, index, storage, and migration constraints before persistence/repository work.
 - For data modeling, metadata management, versioning, ER design, or lineage-analysis products, data architecture is mandatory before Design Review and OpenAPI Freeze.
 - Excalidraw diagrams must reference upstream artifacts and push discovered issues back to PRD, OpenAPI, ADR, OpenSpec/Comet design, or issues.

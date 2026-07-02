@@ -16,6 +16,7 @@
 
 推荐模板：
 
+- `docs/design/templates/product-overview-design-template.md`：PRD 初稿之后，用于团队评审产品总体设计、功能架构、页面/API/数据影响和 PRD 回填项。
 - `docs/design/templates/interaction-spec-template.md`：页面、流程、交互、PRD 回填项和 OpenAPI 反推清单。
 - `docs/design/templates/state-matrix-template.md`：loading、empty、error、readonly、no-permission、conflict 等状态。
 - `docs/design/templates/prototype-review-checklist.md`：进入 PRD 校准 / OpenAPI Draft 前的原型评审门禁。

@@ -118,14 +118,17 @@ scripts/verify-template
 机会探索环
 -> 业务架构
 -> grill-with-docs 澄清
--> PRD / 功能架构
+-> PRD 初稿 / 需求基线
+-> 产品总体设计 / 功能架构设计
 -> 产品设计 / 原型 / 交互评审（有 UI 时）
 -> PRD 校准 / 需求冻结
 -> OpenAPI Draft
+-> OpenAPI Draft Review
 -> 工程基线 / DDD 分层确认
--> 系统总体架构 / 数据架构 / OpenSpec / Comet proposal & design
+-> 系统概要设计 / 数据架构 / OpenSpec / Comet proposal & design
 -> 设计审查
 -> OpenAPI Freeze
+-> OpenSpec / Comet change
 -> 垂直切片 Issue
 -> TDD 开发
 -> 独立审查
@@ -145,7 +148,8 @@ scripts/verify-template
 - 只有一个模糊想法：先机会构想，再用 Discovery 验证。
 - 已有行业、竞品或用户材料：先 Discovery，再生成候选方案。
 - 明确 Bug 或小调整：不走完整机会探索环，直接走 hotfix / tweak。
-- 新模块、API 或跨端改动：必须进入 `grill-with-docs`、PRD、OpenAPI Draft、工程基线、架构/OpenSpec/Comet design、设计审查、OpenAPI Freeze、垂直切片和 TDD。
+- 已有功能的小需求变更：先做影响面评估，选择最近可信阶段，只更新受影响资产和下游门禁。
+- 新模块、API 或跨端改动：必须进入 `grill-with-docs`、PRD、产品总体设计/功能架构、OpenAPI Draft、工程基线、系统概要设计/OpenSpec/Comet design、设计审查、OpenAPI Freeze、垂直切片和 TDD。
 
 进入 PRD 前必须通过 `grill-with-docs` 收敛为：用户是谁、痛点是什么、为什么现在做、第一版做什么、明确不做什么、成功标准是什么。
 
@@ -158,7 +162,8 @@ scripts/verify-template
 推荐使用场景：
 
 - 新产品、新模块或跨端/API 改动：先判断生命周期阶段和缺失资产。
-- 已有 PRD 或设计材料：检查是否可以进入 OpenAPI Draft、工程基线、OpenSpec / Comet 或垂直切片。
+- 小需求变更或迭代：判断现有 PRD、产品总体设计、交互设计、OpenAPI、架构、垂直切片中哪一层最早受影响。
+- 已有 PRD 或设计材料：检查是否可以进入产品总体设计、OpenAPI Draft、工程基线、OpenSpec / Comet 或垂直切片。
 - 已有 active Comet / OpenSpec change：判断是继续 change，还是缺少上游产物。
 - 实现前：确认 PRD、OpenAPI Freeze、工程基线、设计审查和垂直切片是否齐备。
 
@@ -489,7 +494,7 @@ open -> design -> build -> verify -> archive
 
 如果直接使用原生 OpenSpec skills，常见顺序是先 `openspec-sync-specs` 再 `openspec-archive-change`。如果使用 Comet，archive 阶段会处理“同步主规格 + 归档 change”的确认流程，不需要手动重复执行同一件事。
 
-小文案、配置值或局部文档调整可走 tweak。明确 bug 且范围小的修复可走 hotfix。只要触发跨模块、API、架构或数据库变化，就升级为完整流程。
+小文案、配置值或局部文档调整可走 tweak。明确 bug 且范围小的修复可走 hotfix。只要触发跨模块、API、架构或数据库变化，就升级到最早受影响阶段并补齐下游门禁。
 
 ### 4.7 垂直切片阶段
 
@@ -744,11 +749,11 @@ Slice 5: 模型发布与版本冻结
 ```text
 1. 机会探索明确用户、痛点、MVP、非目标和成功标准
 2. CONTEXT.md 写清楚术语，业务架构写清楚用户旅程和产品边界
-3. PRD / 功能架构写清楚需求、模块、优先级和验收
+3. PRD 写清楚需求、验收和 API 影响，产品总体设计 / 功能架构写清楚流程、模块、页面/API/数据影响
 4. 有 UI 时完成产品设计、原型评审和 PRD 校准
-5. OpenAPI Draft 写清楚接口草案
-6. 工程基线、系统/数据架构、OpenSpec / Comet design 校验并通过设计审查
-7. 冻结 OpenAPI，垂直切片拆清楚任务
+5. OpenAPI Draft 写清楚接口草案，并通过 Draft Review
+6. 工程基线、系统概要/数据架构、OpenSpec / Comet design 校验并通过设计审查
+7. 冻结 OpenAPI，创建 OpenSpec / Comet change，垂直切片拆清楚任务
 8. TDD、独立审查、fresh verification，发布后复盘并更新 CONTEXT.md / AGENTS.md
 ```
 

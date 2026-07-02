@@ -11,13 +11,13 @@ Use this checklist to identify missing lifecycle artifacts.
 | Competitive matrix | `docs/discovery/reports/<feature>-competitive-matrix.md` | Competitors, function matrix, gaps, MVP boundary input are captured |
 | Discovery | `docs/discovery/<feature>-discovery.md` | Users, pains, core flows, non-goals, success criteria are captured |
 | Business architecture | `docs/architecture/<feature>-business-architecture.md` or `docs/discovery/` section | User journey, value stream, role/ecosystem model, business capability map, external system boundary, and MVP boundary are clear |
-| PRD baseline / calibrated PRD | `docs/requirements/<feature>-prd.md` | Uses `docs/templates/prd-template.md`, includes acceptance criteria, API impact, test decisions, and is calibrated with product design when UI exists |
-| Functional architecture | `docs/architecture/<feature>-functional-architecture.md` or PRD section | Functional domains, module boundaries, priorities, dependencies, MVP/non-goal boundary, and PRD gaps are clear |
+| PRD baseline / calibrated PRD | `docs/requirements/<feature>-prd.md` | Uses `docs/templates/prd-template.md`, includes acceptance criteria, API impact, test decisions, and is calibrated with product overview design and product design when UI exists |
+| Product overview design / Functional architecture | `docs/design/<feature>-product-overview-design.md`, `docs/architecture/<feature>-functional-architecture.md`, or PRD section | User main flow, business object relationships, functional domains, module boundaries, priorities, dependencies, MVP/non-goal boundary, page/API/data impacts, open questions, decisions, and PRD gaps are clear |
 | Product design / prototype / interaction spec | `docs/design/<feature>-interaction-spec.md` or prototype link | Page map, user flow, wireframe/prototype, interaction state matrix, permissions, empty/loading/error states, PRD calibration notes, and OpenAPI implications are captured when UI exists |
 | Prototype Review | `docs/design/<feature>-prototype-review.md` or review note | Page/flow/state/PRD calibration/API implication gates have no blocking findings before PRD calibration and UI-driven OpenAPI Draft |
-| OpenAPI Draft | `docs/api/specs/<feature>.yaml` | API paths, schemas, errors, pagination, permissions, and contract-test ideas are specified from calibrated PRD plus approved prototype review when UI exists, or PRD explicitly says no API impact |
+| OpenAPI Draft | `docs/api/specs/<feature>.yaml` | API paths, schemas, errors, pagination, permissions, state/conflict handling, and contract-test ideas are specified from calibrated PRD plus product overview design and approved interaction/prototype/state-matrix review when UI exists, or PRD explicitly says no API impact |
 | Engineering baseline | `docs/architecture/`, ADR, or issue notes | New backend services/modules have YSS DDD scaffold/baseline decisions and relevant YSS skills selected |
-| System architecture / Design | `docs/architecture/<feature>-system-architecture.md` or `<feature>-architecture.md` | Service/module boundaries, deployment, integration, security, performance, reliability, observability, rollout, and OpenSpec/Comet design impact are clear |
+| System overview design / System architecture | `docs/architecture/<feature>-system-overview-design.md`, `<feature>-system-architecture.md`, or `<feature>-architecture.md` | Service/module boundaries, deployment, integration, security, performance, reliability, observability, rollout, rollback, OpenSpec/Comet design impact, and architecture review questions are clear |
 | Data architecture / meta-model | `docs/architecture/<feature>-data-architecture.md` | Conceptual/logical/physical model, meta-model, versioning, lineage, query/search, index, storage, and migration constraints are clear when data/persistence is affected |
 | Architecture diagrams | `docs/discovery/diagrams/`, `docs/design/diagrams/`, or `docs/architecture/diagrams/` | Diagrams clarify business flow, functional modules, system boundaries, data architecture, state flow, API sequence, or slice dependencies and are referenced from the source document |
 | Design Review | architecture checklist, issue comment, or review report | PRD, product design when UI exists, API Draft, DDD boundary, ADR, test seam, and security red lines have no blocking findings |
@@ -44,12 +44,12 @@ Use this checklist to identify missing lifecycle artifacts.
 - Opportunity exploration exists, or market/competitor/user research is explicitly skipped with a reason.
 - Business architecture exists for new products/modules, or users, value stream, role/ecosystem model, capability map, and product boundary are already captured elsewhere.
 - `CONTEXT.md` has stable terms for the feature.
-- PRD exists, has clear acceptance criteria, and has been calibrated with product design when UI exists.
-- Functional architecture is clear when the feature has multiple modules, roles, major user flows, or MVP prioritization tradeoffs.
+- PRD exists, has clear acceptance criteria, and has been calibrated with product overview design and product design when UI exists.
+- Product overview design / functional architecture is clear when the feature has multiple modules, roles, major user flows, business object relationships, page/API/data impacts, or MVP prioritization tradeoffs.
 - Product design / prototype / interaction spec exists and passed `prototype-review` when the feature has a user interface.
-- OpenAPI impact is explicit; API changes have Draft and are Frozen before frontend/backend implementation.
+- OpenAPI impact is explicit; API changes have Draft and are Frozen before frontend/backend implementation. UI-driven APIs must trace to product overview design, interaction spec/prototype, state matrix, and prototype-review findings.
 - Engineering baseline / YSS DDD review is complete when backend service/module structure is affected.
-- System architecture impact is explicit when services, deployment, integrations, NFRs, operations, or rollback are affected.
+- System overview design / system architecture impact is explicit when services, deployment, integrations, NFRs, operations, or rollback are affected.
 - Data architecture is complete before persistence / repository work; for metadata, modeling, versioning, or lineage products it is required before Design Review and OpenAPI Freeze.
 - Excalidraw diagrams, when used, are referenced by the corresponding Discovery, PRD, design, architecture, OpenSpec/Comet, or issue artifact and do not stand alone as decisions.
 - Design Review has no blocking findings.
