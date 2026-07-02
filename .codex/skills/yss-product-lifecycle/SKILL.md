@@ -11,6 +11,12 @@ Use this skill as the project-level entrypoint for product-to-engineering flow. 
 
 Determine the current lifecycle stage before proposing work. If implementation is requested but upstream artifacts are missing, identify the gap and route to the right artifact or specialist skill first.
 
+## Documentation Language
+
+For this repository, persistent lifecycle artifacts MUST use Chinese body text by default, because the primary users and reviewers are Chinese readers. This includes discovery notes, PRD, product design, architecture, OpenAPI review/freeze notes, OpenSpec / Comet handoff notes, vertical slice issues, Superpowers specs/plans, review reports, release notes, implementation records, retrospectives, and Git checkpoint explanations.
+
+Keep English identifiers unchanged when they are technical names: file paths, commands, class/method names, API paths, schema names, enum values, error codes, frontmatter keys, YAML/JSON keys, OpenSpec capability names, and Comet state values. If an upstream skill template uses English section titles, convert the persisted project document to Chinese section titles unless the user explicitly asks for English or the document targets an English-speaking audience.
+
 ```text
 opportunity exploration
 -> discovery / competitive analysis

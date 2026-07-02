@@ -2,9 +2,9 @@
 
 - 日期：2026-07-02
 - 阶段：vertical slices / to-issues
-- 状态：本地 Issue 草案，待用户确认粒度后发布到 GitHub Issues
+- 状态：本地 Issue 草案，切片粒度与依赖关系已确认，待发布到 GitHub Issues
 - OpenSpec / Comet change：`openspec/changes/data-modeling-workbench-mvp`
-- Comet 状态：`.comet.yaml` 已初始化，当前 `phase=open`，阶段守卫待用户确认后推进
+- Comet 状态：`.comet.yaml` 已推进到 `phase=design`，OpenSpec → Superpowers handoff 已生成，技术方案待用户确认后进入 Design Doc。
 
 ## 输入资产
 
@@ -77,8 +77,8 @@ flowchart LR
 - 建议标签：`ready-for-agent`；若安全人工确认尚未安排，安全相关 Issue 同时标记 `ready-for-human` 或在 issue body 保留 `TODO-HUMAN-REVIEW`。
 - 发布后将本地 `DMW-*` 引用替换或补充为真实 GitHub Issue 链接。
 
-## 待用户确认
+## 已确认决策
 
-1. 切片粒度是否合适：是否需要把 DMW-002 拆成“逻辑模型维护”和“物理模型维护”两个 issue？
-2. 依赖关系是否正确：DMW-003 是否可以和 DMW-002 并行，还是必须在 DMW-002 后启动？
-3. DMW-009 是否保留为收口 issue，还是只作为每个 issue 的完成门禁？
+1. DMW-002 保持合并，不拆成“逻辑模型维护”和“物理模型维护”两个 issue。
+2. DMW-003 与 DMW-002 可并行，只依赖 DMW-001；DMW-004 作为映射能力汇合点。
+3. DMW-009 保留为安全、审计与契约收口 issue；DMW-001 至 DMW-008 仍各自包含安全门禁。

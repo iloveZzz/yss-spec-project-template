@@ -70,6 +70,10 @@ Issues 和 PRD 默认发布到 GitHub Issues；外部 PR 暂不作为 triage 请
 
 使用单上下文领域文档布局：根目录 `CONTEXT.md` + `docs/adr/`。详见 `docs/agents/domain.md`。
 
+### Documentation language
+
+面向业务用户、产品、架构、OpenSpec / Comet、Superpowers、YSS lifecycle、Issue、Review、Release、Implementation 和 Retro 的持久化文档默认使用中文落地。保留英文专有名词、代码标识、API 路径、schema 名称、类名、方法名、文件名、枚举值、错误码和命令，不强行翻译。若外部工具模板或协议要求英文 frontmatter / key / metadata，仅 metadata 使用英文，正文仍使用中文。用户明确要求英文或目标读者为英文团队时除外。
+
 ### Recommended flow
 
 默认完整需求交付链路：`lifecycle stage check -> opportunity exploration / discovery -> business architecture -> grill-with-docs -> PRD baseline / functional architecture -> product-design-prototype / prototype-review when UI exists -> PRD calibration / requirement freeze -> OpenAPI Draft -> Engineering Baseline / DDD Review -> system architecture / data architecture / OpenSpec / Comet design -> Design Review -> OpenAPI Freeze -> OpenSpec / Comet change formalization -> to-issues -> implement with tdd -> independent review -> fresh verification/archive`。
@@ -77,6 +81,7 @@ Issues 和 PRD 默认发布到 GitHub Issues；外部 PR 暂不作为 triage 请
 ### Mandatory skill rules
 
 - 新产品、新模块或较大变更必须先判断生命周期阶段、缺失资产和下一步；可用 `yss-product-lifecycle`，已有等价记录时可复用。
+- 生命周期、OpenSpec / Comet、Superpowers 和 YSS skills 产出的持久化文档默认用中文正文；如 skill 模板含英文标题，应在项目内落地时转换为中文标题和中文说明，只保留必要英文 metadata / identifier。
 - 新产品或新业务域必须在 PRD 基线前明确业务架构：目标用户、用户旅程、价值流、业务能力地图、角色/组织模型和外部系统边界；已有等价材料时可引用。
 - 新功能或较大改动必须先用 `grill-with-docs` 澄清需求，再用 `to-prd` / `to-issues` 形成 PRD 和垂直切片 Issue。
 - PRD 基线阶段必须同步明确功能架构：功能域、模块边界、优先级、MVP / 非目标范围和模块依赖；不清晰时不得进入 PRD 校准。
