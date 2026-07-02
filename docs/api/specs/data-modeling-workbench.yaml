@@ -1,23 +1,30 @@
 openapi: 3.1.0
 x-yss-lifecycle:
   pipeline: data-modeling-workbench
-  stage: openapi-draft
-  status: draft-remediated-approved-for-freeze
+  stage: openapi-freeze
+  status: frozen
   owner: ai
   created: 2026-07-02T00:00:00+08:00
+  frozen_at: 2026-07-02T00:00:00+08:00
   source:
     - docs/requirements/2026-07-01-data-modeling-workbench-prd.md
     - docs/requirements/2026-07-02-data-modeling-workbench-prd-calibration.md
     - docs/design/data-modeling-workbench-interaction-spec.md
+    - docs/architecture/2026-07-02-data-modeling-workbench-design-review-rerun.md
+  freeze_record: docs/api/freeze/2026-07-02-data-modeling-workbench-openapi-freeze.md
 info:
   title: 企业数据模型协作工作台 MVP
-  version: 0.1.0-draft
+  version: 1.0.0-mvp-freeze
   description: |
-    本 API 为企业数据模型协作工作台 MVP 的 OpenAPI Draft。
+    本 API 为企业数据模型协作工作台 MVP 的冻结版 OpenAPI 契约。
 
-    Draft 覆盖模型项目、主题域、业务对象、逻辑字段、物理字段、Excel 导入、
+    契约覆盖模型项目、主题域、业务对象、逻辑字段、物理字段、Excel 导入、
     字段映射、覆盖率、规范检查、单一架构师评审、版本发布、异步导出、权限动作、
     错误结构、分页筛选排序和 draftVersion 乐观锁契约。
+
+    本契约已通过 Design Review 复审并进入 OpenAPI Freeze。冻结后任何路径、
+    schema、错误码、权限动作、幂等、分页、排序或乐观锁契约变更，都必须重新进入
+    变更评审和契约测试更新。
 
     P0 安全边界：
     - 仅生成 PostgreSQL DDL 草案，不提供任何数据库连接或自动执行迁移端点。
