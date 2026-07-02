@@ -3,6 +3,7 @@
 ## 父级
 
 - OpenSpec / Comet change：`openspec/changes/data-modeling-workbench-mvp`
+- GitHub Issue：[#9](https://github.com/iloveZzz/yss-spec-project-template/issues/9)
 - PRD：`docs/requirements/2026-07-01-data-modeling-workbench-prd.md`
 - OpenAPI Freeze：`docs/api/freeze/2026-07-02-data-modeling-workbench-openapi-freeze.md`
 - ADR：`docs/adr/0001-data-modeling-workbench-ddl-draft-only.md`

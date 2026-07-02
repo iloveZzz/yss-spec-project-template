@@ -2,9 +2,9 @@
 
 - 日期：2026-07-02
 - 阶段：vertical slices / to-issues
-- 状态：本地 Issue 草案，切片粒度与依赖关系已确认，待发布到 GitHub Issues
+- 状态：已发布到 GitHub Issues，切片粒度与依赖关系已确认
 - OpenSpec / Comet change：`openspec/changes/data-modeling-workbench-mvp`
-- Comet 状态：`.comet.yaml` 已推进到 `phase=design`，OpenSpec → Superpowers handoff 已生成，技术方案待用户确认后进入 Design Doc。
+- Comet 状态：`.comet.yaml` 已推进到 `phase=build`，中文 Design Doc 与实施计划已生成，等待确认实现工作区与 YSS 路由。
 
 ## 输入资产
 
@@ -28,15 +28,15 @@
 
 | Issue | 标题 | 阻塞关系 | 覆盖用户故事 / FR | 主要页面 | 主要契约测试 |
 |---|---|---|---|---|---|
-| DMW-001 | 模型项目与边界闭环 | 无 | 用户故事 1-5；FR-001、FR-002、FR-019、FR-021 | 模型工作台、项目详情 | CT-020 至 CT-023、CT-013、CT-014 |
-| DMW-002 | 模型对象树与字段维护 | DMW-001 | 用户故事 6-8、11、28；FR-003、FR-005、FR-016、FR-019、FR-020 | 设计工作台、字段抽屉 | CT-010、CT-012、CT-014、CT-015 |
-| DMW-003 | Excel 导入物理模型草稿 | DMW-001 | 用户故事 9、10、28；FR-004、FR-020 | 导入向导 | CT-030 至 CT-038、CT-093 |
-| DMW-004 | 字段映射与覆盖率 | DMW-002、DMW-003 | 用户故事 12-15、18、22、28；FR-006、FR-007、FR-008、FR-021 | 映射抽屉、覆盖率面板 | CT-040 至 CT-045 |
-| DMW-005 | 规范规则与检查运行 | DMW-004 | 用户故事 16-18、19、22；FR-009、FR-016、FR-020 | 规范检查面板 | CT-050 至 CT-054 |
-| DMW-006 | 单一架构师评审 | DMW-005 | 用户故事 19-21；FR-010、FR-011、FR-019、FR-020 | 评审页 | CT-060 至 CT-065 |
-| DMW-007 | 发布版本与新草稿 | DMW-006 | 用户故事 22、23、27；FR-012、FR-019、FR-020、FR-021 | 发布弹窗、版本中心 | CT-070 至 CT-075 |
-| DMW-008 | 三类异步导出资产 | DMW-007 | 用户故事 24-26；FR-013、FR-014、FR-015、FR-020 | 导出中心、版本详情 | CT-080 至 CT-085 |
-| DMW-009 | 安全、审计与契约收口 | DMW-001 至 DMW-008 | 用户故事 4、19、23、29；FR-019、FR-020、全局安全红线 | 全局 | CT-001 至 CT-004、CT-010 至 CT-015、CT-090 至 CT-094 |
+| [#2 DMW-001](https://github.com/iloveZzz/yss-spec-project-template/issues/2) | 模型项目与边界闭环 | 无 | 用户故事 1-5；FR-001、FR-002、FR-019、FR-021 | 模型工作台、项目详情 | CT-020 至 CT-023、CT-013、CT-014 |
+| [#3 DMW-002](https://github.com/iloveZzz/yss-spec-project-template/issues/3) | 模型对象树与字段维护 | #2 | 用户故事 6-8、11、28；FR-003、FR-005、FR-016、FR-019、FR-020 | 设计工作台、字段抽屉 | CT-010、CT-012、CT-014、CT-015 |
+| [#4 DMW-003](https://github.com/iloveZzz/yss-spec-project-template/issues/4) | Excel 导入物理模型草稿 | #2 | 用户故事 9、10、28；FR-004、FR-020 | 导入向导 | CT-030 至 CT-038、CT-093 |
+| [#5 DMW-004](https://github.com/iloveZzz/yss-spec-project-template/issues/5) | 字段映射与覆盖率 | #3、#4 | 用户故事 12-15、18、22、28；FR-006、FR-007、FR-008、FR-021 | 映射抽屉、覆盖率面板 | CT-040 至 CT-045 |
+| [#6 DMW-005](https://github.com/iloveZzz/yss-spec-project-template/issues/6) | 规范规则与检查运行 | #5 | 用户故事 16-18、19、22；FR-009、FR-016、FR-020 | 规范检查面板 | CT-050 至 CT-054 |
+| [#7 DMW-006](https://github.com/iloveZzz/yss-spec-project-template/issues/7) | 单一架构师评审 | #6 | 用户故事 19-21；FR-010、FR-011、FR-019、FR-020 | 评审页 | CT-060 至 CT-065 |
+| [#8 DMW-007](https://github.com/iloveZzz/yss-spec-project-template/issues/8) | 发布版本与新草稿 | #7 | 用户故事 22、23、27；FR-012、FR-019、FR-020、FR-021 | 发布弹窗、版本中心 | CT-070 至 CT-075 |
+| [#9 DMW-008](https://github.com/iloveZzz/yss-spec-project-template/issues/9) | 三类异步导出资产 | #8 | 用户故事 24-26；FR-013、FR-014、FR-015、FR-020 | 导出中心、版本详情 | CT-080 至 CT-085 |
+| [#10 DMW-009](https://github.com/iloveZzz/yss-spec-project-template/issues/10) | 安全、审计与契约收口 | #2 至 #9 | 用户故事 4、19、23、29；FR-019、FR-020、全局安全红线 | 全局 | CT-001 至 CT-004、CT-010 至 CT-015、CT-090 至 CT-094 |
 
 ## 依赖图
 
@@ -70,12 +70,13 @@ flowchart LR
   DMW008 --> DMW009
 ```
 
-## 发布到 GitHub Issues 的建议
+## GitHub Issues 发布记录
 
-- 发布前先确认：切片粒度是否合适、依赖关系是否正确、是否需要合并或拆分。
-- 发布顺序：按 DMW-001 到 DMW-009。
-- 建议标签：`ready-for-agent`；若安全人工确认尚未安排，安全相关 Issue 同时标记 `ready-for-human` 或在 issue body 保留 `TODO-HUMAN-REVIEW`。
-- 发布后将本地 `DMW-*` 引用替换或补充为真实 GitHub Issue 链接。
+- 发布时间：2026-07-02。
+- 发布顺序：DMW-001 到 DMW-009。
+- 默认标签：`ready-for-agent`。
+- DMW-009 额外标签：`ready-for-human`。
+- GitHub issue 中已评论阻塞关系；本索引中的 issue 编号即线上追踪入口。
 
 ## 已确认决策
 

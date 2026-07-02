@@ -3,6 +3,7 @@
 ## 父级
 
 - OpenSpec / Comet change：`openspec/changes/data-modeling-workbench-mvp`
+- GitHub Issue：[#7](https://github.com/iloveZzz/yss-spec-project-template/issues/7)
 - PRD：`docs/requirements/2026-07-01-data-modeling-workbench-prd.md`
 - 交互设计：`docs/design/data-modeling-workbench-interaction-spec.md`
 - 契约测试清单：`docs/testing/2026-07-02-data-modeling-workbench-contract-test-checklist.md`

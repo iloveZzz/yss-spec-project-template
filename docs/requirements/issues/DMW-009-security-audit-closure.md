@@ -3,6 +3,7 @@
 ## 父级
 
 - OpenSpec / Comet change：`openspec/changes/data-modeling-workbench-mvp`
+- GitHub Issue：[#10](https://github.com/iloveZzz/yss-spec-project-template/issues/10)
 - OpenAPI Freeze：`docs/api/freeze/2026-07-02-data-modeling-workbench-openapi-freeze.md`
 - 契约测试清单：`docs/testing/2026-07-02-data-modeling-workbench-contract-test-checklist.md`
 - AGENTS 安全红线：`AGENTS.md`
