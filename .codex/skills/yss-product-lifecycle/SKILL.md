@@ -26,6 +26,7 @@ opportunity exploration
 -> data architecture / meta-model design
 -> Design Review
 -> OpenAPI Freeze
+-> OpenSpec / Comet change formalization
 -> vertical slices
 -> YSS frontend/backend implementation
 -> independent review / fresh verification
@@ -67,8 +68,13 @@ Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, da
    - `docs/architecture/` and `docs/adr/`
    - `openspec/changes/` and current OpenSpec/Comet state
 2. Classify the request into one stage:
-   - opportunity exploration, discovery, business architecture, PRD baseline / functional architecture, product design / prototype / interaction design, prototype review, PRD calibration / requirement freeze, API contract draft/freeze, engineering baseline, system architecture, data architecture, contract/design, change planning, implementation routing, review/verification, release, or retrospective.
+   - opportunity exploration, discovery, business architecture, PRD baseline / functional architecture, product design / prototype / interaction design, prototype review, PRD calibration / requirement freeze, API contract draft/freeze, engineering baseline, system architecture, data architecture, contract/design, OpenSpec / Comet change formalization, change planning, implementation routing, review/verification, release, or retrospective.
 3. Check whether required upstream artifacts exist.
+   - Before formal `vertical slices / to-issues`, verify the OpenSpec / Comet change gate:
+     - run `openspec list --json` when available;
+     - identify the matching active change;
+     - verify `openspec/changes/<change>/proposal.md`, `design.md`, `tasks.md`, at least one `specs/**/spec.md`, and `.comet.yaml` exist.
+   - If no matching active change exists, or any required OpenSpec / Comet artifact is missing, do not enter formal `to-issues`; route first to `comet` or `openspec-new-change`.
 4. Output the next action:
    - artifact to create/update,
    - specialist skill to invoke,
@@ -181,6 +187,7 @@ When the user explicitly asks for a full delivery plan, include stage-by-stage t
 - Do not skip data architecture before persistence / repository work. For data modeling, metadata, versioning, or lineage products, treat it as mandatory before Design Review and OpenAPI Freeze.
 - Do not let Excalidraw diagrams invent requirements or architecture decisions; diagrams must point back to source artifacts and any findings must be written back to PRD, OpenAPI, ADR, OpenSpec/Comet design, or issues.
 - Do not move an OpenAPI Draft into Engineering Baseline / YSS DDD Review until `yss-openapi-draft-review` or an equivalent persistent review verifies P0 feature coverage, page action to endpoint mapping, YSS response wrappers, error structures, permissions, concurrency, security red lines, and contract test seams.
+- Do not enter formal `vertical slices / to-issues` directly after OpenAPI Freeze unless a matching active OpenSpec / Comet change is selected and complete enough to anchor slices. Required files: `openspec/changes/<change>/proposal.md`, `design.md`, `tasks.md`, at least one `specs/**/spec.md`, and `.comet.yaml`. If `openspec list --json` shows no matching active change, or those files are missing, this is blocking; route to `comet` or `openspec-new-change` first.
 - Do not advance multiple lifecycle stages while leaving their persistent artifacts uncommitted without explicitly calling out the missing Git checkpoint.
 - Do not route directly to frontend/backend skills before `yss-router` when the task crosses multiple YSS areas.
 - Do not modify specialist skill behavior from this skill.

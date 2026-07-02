@@ -28,7 +28,7 @@ Use this checklist to identify missing lifecycle artifacts.
 
 | Artifact | Path | Done when |
 |---|---|---|
-| OpenSpec / Comet change | `openspec/changes/<change>/` | proposal, design, specs, tasks exist and align with PRD |
+| OpenSpec / Comet change | `openspec/changes/<change>/` | Matching active change exists in `openspec list --json`; `proposal.md`, `design.md`, `tasks.md`, at least one `specs/**/spec.md`, and `.comet.yaml` exist and align with PRD / OpenAPI Freeze |
 | Vertical slice issue | GitHub Issues or `docs/requirements/issues/` | Each slice uses `docs/templates/vertical-slice-issue-template.md` and is independently demoable and testable |
 | Independent review | MR/PR comments or `docs/templates/review-report-template.md` | Implementer did not review their own work; blocking findings are closed or explicitly accepted by a responsible human |
 | Fresh verification | command output in issue/MR/release notes | Relevant tests, contract checks, build/typecheck, or template verification have fresh evidence |
@@ -51,7 +51,7 @@ Use this checklist to identify missing lifecycle artifacts.
 - Data architecture is complete before persistence / repository work; for metadata, modeling, versioning, or lineage products it is required before Design Review and OpenAPI Freeze.
 - Excalidraw diagrams, when used, are referenced by the corresponding Discovery, PRD, design, architecture, OpenSpec/Comet, or issue artifact and do not stand alone as decisions.
 - Design Review has no blocking findings.
-- Active Comet/OpenSpec change is selected or created.
+- Active Comet/OpenSpec change is selected or created and contains `proposal.md`, `design.md`, `tasks.md`, at least one `specs/**/spec.md`, and `.comet.yaml`. If missing, formal vertical slicing is blocked and must route to `comet` or `openspec-new-change` first.
 - Vertical slice is narrow and end-to-end.
 - `yss-router` has selected the minimal YSS implementation skills.
 - Business behavior implementation has a TDD plan, or a documented exception and verification command.

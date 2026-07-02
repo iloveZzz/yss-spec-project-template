@@ -17,8 +17,9 @@ Use this table to decide where the request belongs and what to do next.
 | System architecture / OpenSpec / Comet design | 服务边界、部署、集成、状态机、版本、权限、行为规格 | PRD, product design when UI exists, API draft/no-impact decision, engineering baseline when applicable | `docs/architecture/<feature>-system-architecture.md` or `<feature>-architecture.md`, ADR if needed, OpenSpec/Comet design artifacts | Data architecture when data/persistence is affected / Design Review |
 | Data architecture / meta-model design | 元模型、版本、血缘、搜索、存储、索引、持久化策略 | PRD, OpenAPI Draft/no-impact decision, domain terms, system architecture when relevant | `docs/architecture/<feature>-data-architecture.md`, conceptual/logical/physical model, meta-model, lineage/query/index strategy | Design Review |
 | Design Review | PRD/UI/API/DDD/ADR/seam/安全红线审查 | PRD, product design when UI exists, API Draft, required business/functional/system/data architecture artifacts | review result, blocking fixes or approval to Freeze | OpenAPI Freeze |
-| OpenAPI Freeze | API 契约冻结、前后端实现输入 | API Draft, design review approval, product design agreement, frontend/backend/API agreement | frozen `docs/api/specs/<feature>.yaml` or no API impact record | Vertical slices |
-| Vertical slices | issue、切片、拆任务 | PRD, product design when UI exists, frozen OpenAPI or no API impact, change artifacts | GitHub Issues or `docs/requirements/issues/` | Implementation routing |
+| OpenAPI Freeze | API 契约冻结、前后端实现输入 | API Draft, design review approval, product design agreement, frontend/backend/API agreement | frozen `docs/api/specs/<feature>.yaml` or no API impact record | OpenSpec / Comet change formalization |
+| OpenSpec / Comet change formalization | 正式 change、proposal/spec/design/tasks、Comet 状态 | OpenAPI Freeze, PRD, product design when UI exists, system/data architecture, design review | matching active `openspec/changes/<change>/` with `proposal.md`, `design.md`, `tasks.md`, `specs/**/spec.md`, `.comet.yaml` | Vertical slices |
+| Vertical slices | issue、切片、拆任务 | PRD, product design when UI exists, frozen OpenAPI or no API impact, matching active OpenSpec / Comet change with required artifacts | GitHub Issues or `docs/requirements/issues/` | Implementation routing |
 | Implementation routing | 前端、后端、YSS、代码落地 | Slice, product design when UI exists, frozen OpenAPI/no-impact decision, design artifacts | Minimal YSS skill list and TDD/review/verify handoff | Specialist skills |
 | Review / verification | 独立审查、fresh verification、契约一致性 | Implemented slice | review result, verification evidence | Release / implementation |
 | Release / implementation | 发布、实施、客户上线、回滚 | Verified change | `docs/releases/`, `docs/implementation/`, `docs/user-guide/` | Retrospective |
@@ -35,6 +36,7 @@ Use this table to decide where the request belongs and what to do next.
 - If the feature has a user interface, route PRD baseline to `product-design-prototype`; do not create OpenAPI Draft from PRD baseline alone.
 - UI work must have page map, prototype / wireframe, user flow, interaction state matrix, and OpenAPI implication list, then pass `prototype-review` before PRD calibration / requirement freeze.
 - If OpenAPI changes exist, create Draft first, then Freeze after engineering baseline/design review before implementing frontend or backend.
+- After OpenAPI Freeze and before formal `vertical slices / to-issues`, OpenSpec / Comet change formalization is a hard gate. Run `openspec list --json`; if there is no matching active change, route to `comet` or `openspec-new-change` first. If a matching change exists but lacks `proposal.md`, `design.md`, `tasks.md`, at least one `specs/**/spec.md`, or `.comet.yaml`, treat vertical slicing as blocked until the change artifacts are completed.
 - If backend work creates a new service or module, confirm YSS DDD engineering baseline before architecture/design approval.
 - System architecture is required before Design Review when service boundaries, deployment, integration, performance, reliability, security, observability, or operations are affected.
 - Data architecture is required before persistence / repository work. For data modeling, metadata management, ER design, version management, or lineage-analysis products, it is a core design artifact and must be explicit before Design Review and OpenAPI Freeze.
@@ -51,9 +53,11 @@ Before deciding whether to create or continue a formal change:
 
 1. Run `openspec list --json` when the command is available.
 2. Inspect `openspec/changes/*/.comet.yaml` when Comet metadata exists.
-3. Prefer continuing an active matching change over creating a duplicate.
-4. If no active matching change exists, route to `comet` or `openspec-new-change` / `openspec-propose`.
-5. If several active changes may match the request, stop and ask the user to choose one.
+3. For formal vertical slicing, verify the matching active change contains `proposal.md`, `design.md`, `tasks.md`, at least one `specs/**/spec.md`, and `.comet.yaml`.
+4. Prefer continuing an active matching change over creating a duplicate.
+5. If no active matching change exists, route to `comet` or `openspec-new-change` / `openspec-propose`.
+6. If a matching change exists but required artifacts are missing, route to `comet` / OpenSpec continuation before `to-issues`.
+7. If several active changes may match the request, stop and ask the user to choose one.
 
 ## Suggested Prompts
 

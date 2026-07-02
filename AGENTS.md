@@ -72,7 +72,7 @@ Issues 和 PRD 默认发布到 GitHub Issues；外部 PR 暂不作为 triage 请
 
 ### Recommended flow
 
-默认完整需求交付链路：`lifecycle stage check -> opportunity exploration / discovery -> business architecture -> grill-with-docs -> PRD baseline / functional architecture -> product-design-prototype / prototype-review when UI exists -> PRD calibration / requirement freeze -> OpenAPI Draft -> Engineering Baseline / DDD Review -> system architecture / data architecture / OpenSpec / Comet design -> Design Review -> OpenAPI Freeze -> to-issues -> implement with tdd -> independent review -> fresh verification/archive`。
+默认完整需求交付链路：`lifecycle stage check -> opportunity exploration / discovery -> business architecture -> grill-with-docs -> PRD baseline / functional architecture -> product-design-prototype / prototype-review when UI exists -> PRD calibration / requirement freeze -> OpenAPI Draft -> Engineering Baseline / DDD Review -> system architecture / data architecture / OpenSpec / Comet design -> Design Review -> OpenAPI Freeze -> OpenSpec / Comet change formalization -> to-issues -> implement with tdd -> independent review -> fresh verification/archive`。
 
 ### Mandatory skill rules
 
@@ -82,6 +82,7 @@ Issues 和 PRD 默认发布到 GitHub Issues；外部 PR 暂不作为 triage 请
 - PRD 基线阶段必须同步明确功能架构：功能域、模块边界、优先级、MVP / 非目标范围和模块依赖；不清晰时不得进入 PRD 校准。
 - 有用户界面的功能在 PRD 初稿后必须先用 `product-design-prototype` 产出页面、原型、交互状态、PRD 回填项和 OpenAPI 反推清单，并通过 `prototype-review` 后才能进入 PRD 校准 / 需求冻结和 UI 驱动的 OpenAPI Draft。
 - 任何 API 契约变更必须先在 `docs/api/specs/*.yaml` 形成 Draft，经工程基线（如适用）、架构/OpenSpec/Comet design 和设计审查后 Freeze，再实现前后端和测试。
+- OpenAPI Freeze 后、正式进入 `to-issues` 前，必须先创建或选择匹配的 active OpenSpec / Comet change；若 `openspec list --json` 无匹配 active change，或 `openspec/changes/<change>/` 缺 `proposal.md`、`design.md`、`tasks.md`、至少一个 `specs/**/spec.md` 或 `.comet.yaml`，则不得进入正式垂直切片，必须先路由到 `comet` 或 `openspec-new-change`。
 - 涉及服务边界、部署、集成、性能、安全、可靠性或运维的变更，必须在设计审查前产出系统总体架构或等价设计记录。
 - 涉及持久化、Repository、元数据、版本、血缘、搜索或查询策略的变更，必须在开发前产出数据架构；数据模型、元数据管理、ER 设计、版本管理或血缘分析类产品必须在 Design Review 和 OpenAPI Freeze 前完成数据架构。
 - 当需求、架构、流程、状态机、数据流或垂直切片关系仅靠文字难以说明时，可用 `excalidraw-diagram-generator` 生成 `.excalidraw` 图作为辅助材料；图不能替代 PRD、OpenAPI、ADR、Comet design 或测试。
@@ -158,7 +159,7 @@ Web Adapter
 |------|------|------|
 | 模糊想法 / 产品机会 | 机会探索环 → 需求澄清 | 进入 PRD 前必须收敛用户、痛点、MVP 和非目标范围 |
 | 已有竞品 / 用户 / 行业材料 | Discovery → 机会构想 → `grill-with-docs` → PRD | 事实输入必须转化为 MVP 边界和验收标准 |
-| 新模块 / API / 跨端改动 | 阶段判断 → 业务架构（新业务域）→ `grill-with-docs` → PRD 初稿 / 功能架构 → 页面/原型/交互设计与 `prototype-review`（有 UI 时）→ PRD 校准 / 需求冻结 → OpenAPI Draft → 工程基线 → 系统/数据架构 / OpenSpec / Comet design → 设计审查 → OpenAPI Freeze → 垂直切片 → TDD | 契约变更先冻结 `docs/api/specs/*.yaml`；数据/元数据类产品必须先完成数据架构；有 UI 时不得从 PRD 初稿直接跳 OpenAPI |
+| 新模块 / API / 跨端改动 | 阶段判断 → 业务架构（新业务域）→ `grill-with-docs` → PRD 初稿 / 功能架构 → 页面/原型/交互设计与 `prototype-review`（有 UI 时）→ PRD 校准 / 需求冻结 → OpenAPI Draft → 工程基线 → 系统/数据架构 / OpenSpec / Comet design → 设计审查 → OpenAPI Freeze → OpenSpec / Comet change formalization → 垂直切片 → TDD | 契约变更先冻结 `docs/api/specs/*.yaml`；Freeze 后必须有匹配 active change 和 proposal/spec/design/tasks/.comet.yaml 才能正式 to-issues；数据/元数据类产品必须先完成数据架构；有 UI 时不得从 PRD 初稿直接跳 OpenAPI |
 | 明确 Bug / 测试失败 / 性能回退 | diagnosing-bugs → tdd → verify | 先建立可复现反馈命令，再修复 |
 | 小文案 / 局部样式 / 配置调整 | comet-tweak 或直接最小改动 → verify | 扩散到 API、状态、权限或多模块时升级完整流程 |
 | 架构治理 / 难测模块 | improve-codebase-architecture / codebase-design → ADR / Issue | 使用 module、interface、seam、adapter 术语 |
@@ -203,13 +204,14 @@ Web Adapter
 | 10. 系统总体架构 / 方案设计 | Architecture / OpenSpec Agent | 校验 API Draft 与交互设计、领域模型、状态流、模块边界、服务边界、部署、集成、NFR、行为规格和风险取舍是否一致；可通过 Comet design 阶段承载，必要时写 ADR |
 | 11. 数据架构 / 元模型设计 | Data Architecture / Domain Agent | 在持久化开发前明确概念/逻辑/物理模型、元模型、版本策略、血缘、搜索/查询、索引和存储策略；数据模型类产品必须完成 |
 | 12. 设计审查 | Design Review Agent | 独立审查 PRD、产品设计、OpenAPI Draft、业务/功能/系统/数据架构、DDD 分层、ADR、测试 seam 和安全红线；阻断项必须回到对应阶段修正 |
-| 13. 契约冻结 | API + Frontend + Backend Agent | 冻结 `docs/api/specs/*.yaml`；确认前端可消费、后端可实现、契约测试可落地，再进入垂直切片 |
-| 14. 实施计划 | Planning Agent | 使用 `to-issues` / `writing-plans` 把冻结契约和设计拆成垂直切片；每步包含文件、测试、验证命令和回滚点 |
-| 15. 开发实现 | Code Agent | 使用 `yss-router` 选择最小 YSS skills；按垂直切片 TDD 实现，前后端通过冻结 OpenAPI 对齐 |
-| 16. 独立审查 | Review Agent | 实现者不得审查自己；重点审安全红线、契约一致性、YSS DDD 分层边界、测试缺口和回归风险 |
-| 17. 清理简化 | Simplify Agent | 在功能已验证基础上处理复用、质量和效率问题；不做无关重构；如触碰行为或契约需回到审查 |
-| 18. 验证发布 | Verify / Release Agent | fresh verification、契约测试、关键路径 E2E、发布说明、实施步骤和回滚方案 |
-| 19. 复盘沉淀 | Retro / Knowledge Agent | 将术语、规则、踩坑、ADR、AGENTS.md 约定和用户手册更新回仓库 |
+| 13. 契约冻结 | API + Frontend + Backend Agent | 冻结 `docs/api/specs/*.yaml`；确认前端可消费、后端可实现、契约测试可落地，再进入 OpenSpec / Comet change formalization |
+| 14. OpenSpec / Comet change formalization | OpenSpec / Comet Agent | 创建或选择匹配 active change；确认 `proposal.md`、`design.md`、`tasks.md`、至少一个 `specs/**/spec.md` 和 `.comet.yaml` 存在并与 PRD / OpenAPI Freeze 对齐 |
+| 15. 实施计划 | Planning Agent | 使用 `to-issues` / `writing-plans` 把冻结契约和设计拆成垂直切片；每步包含文件、测试、验证命令和回滚点 |
+| 16. 开发实现 | Code Agent | 使用 `yss-router` 选择最小 YSS skills；按垂直切片 TDD 实现，前后端通过冻结 OpenAPI 对齐 |
+| 17. 独立审查 | Review Agent | 实现者不得审查自己；重点审安全红线、契约一致性、YSS DDD 分层边界、测试缺口和回归风险 |
+| 18. 清理简化 | Simplify Agent | 在功能已验证基础上处理复用、质量和效率问题；不做无关重构；如触碰行为或契约需回到审查 |
+| 19. 验证发布 | Verify / Release Agent | fresh verification、契约测试、关键路径 E2E、发布说明、实施步骤和回滚方案 |
+| 20. 复盘沉淀 | Retro / Knowledge Agent | 将术语、规则、踩坑、ADR、AGENTS.md 约定和用户手册更新回仓库 |
 
 ### 四类架构产物
 
