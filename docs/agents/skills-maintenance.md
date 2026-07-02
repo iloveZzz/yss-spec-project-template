@@ -36,6 +36,18 @@ triage
 | Codex | `/Users/zhudaoming/.codex/skills/<skill-name>/` |
 | Hermes | `/Users/zhudaoming/.hermes/skills/software-development/<skill-name>/` |
 
+## Project Workflow Skills
+
+除 Matt Pocock Engineering Skills 外，本项目还使用本机级 GitLab 工作流技能：
+
+| Skill / Tool | Path / Entry | 用途 |
+|---|---|---|
+| `gitlab-workflow` | `/Users/zhudaoming/.codex/skills/gitlab-workflow/` | GitLab API、项目查询、clone、push、分支化 workflow |
+| `glab` | `/Users/zhudaoming/go/bin/glab` | GitLab MR、CI、Pipeline、Issue、Release 等 CLI 操作 |
+| `scripts/gitworks` | `scripts/gitworks` | 当前仓库的 GitLab workflow 快捷入口 |
+
+详细配置与使用规则见 `docs/agents/gitlab-workflow-skills.md`。
+
 ## Upgrade Checklist
 
 1. Back up the current Codex and Hermes skill directories.

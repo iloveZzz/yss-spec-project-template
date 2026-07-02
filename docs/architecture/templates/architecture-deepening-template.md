@@ -1,19 +1,19 @@
-# Architecture Deepening Proposal: <Module / Concept>
+# 架构深化提案：<模块 / 概念>
 
-## Candidate
+## 候选项
 
-| Field | Value |
+| 字段 | 值 |
 |---|---|
-| Domain concept | |
-| Current module(s) | |
-| Proposed module | |
-| Recommendation strength | Strong / Worth exploring / Speculative |
+| 领域概念 | |
+| 当前模块 | |
+| 建议模块 | |
+| 推荐强度 | 强烈建议 / 值得探索 / 推测性建议 |
 
-## Current Friction
+## 当前摩擦点
 
-Describe why the current shape is shallow or hard to maintain.
+说明当前结构为什么偏浅，或为什么难以维护。
 
-Use the `codebase-design` vocabulary:
+使用 `codebase-design` 术语：
 
 - Module:
 - Interface:
@@ -23,42 +23,42 @@ Use the `codebase-design` vocabulary:
 - Leverage:
 - Locality:
 
-## Before
+## 调整前
 
 ```mermaid
 flowchart LR
-    A[Caller] --> B[Shallow module]
-    A --> C[Scattered logic]
+    A[调用方] --> B[浅模块]
+    A --> C[分散逻辑]
 ```
 
-## After
+## 调整后
 
 ```mermaid
 flowchart LR
-    A[Caller] --> B[Deep module interface]
-    B --> C[Implementation hidden behind seam]
+    A[调用方] --> B[深模块接口]
+    B --> C[隐藏在 seam 后的实现]
 ```
 
-## Proposed Interface
+## 建议接口
 
-Describe the smallest interface callers need to know, including invariants, ordering constraints, error modes, and performance expectations.
+说明调用方需要了解的最小接口，包括不变量、顺序约束、错误模式和性能预期。
 
-## Dependency Strategy
+## 依赖策略
 
-- In-process:
-- Local-substitutable:
-- Remote but owned:
-- True external:
+- 进程内依赖：
+- 可本地替换依赖：
+- 远程但自有依赖：
+- 真正外部依赖：
 
-## Testing Strategy
+## 测试策略
 
-- Primary test seam:
-- Tests to delete or replace:
-- Tests to add:
+- 主要测试 seam：
+- 需要删除或替换的测试：
+- 需要新增的测试：
 
-## ADR / Context Impact
+## ADR / 上下文影响
 
-- [ ] Update `CONTEXT.md`
-- [ ] Create ADR
-- [ ] Reopen or amend existing ADR
-- [ ] No durable documentation needed
+- [ ] 更新 `CONTEXT.md`
+- [ ] 创建 ADR
+- [ ] 重新打开或修订现有 ADR
+- [ ] 不需要持久化文档

@@ -19,5 +19,6 @@
 | `triage-labels.md` | 标准五态 triage 标签与含义 |
 | `domain.md` | 领域文档读取和维护规则 |
 | `skills-maintenance.md` | Engineering Skills 的安装、升级和验证说明 |
+| `gitlab-workflow-skills.md` | GitLab、MR、CI 和自动 gitworks 的技能配置与使用规则 |
 
 当 `AGENTS.md` 或某个 skill 提到本目录时，应优先把这里当作项目协作规则读取；真正的 skill 执行入口仍在 `.agents/`、`.agent/` 或 `.codex/skills/`。

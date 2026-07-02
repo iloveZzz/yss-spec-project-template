@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PROJECT_PATH="${GITLAB_PROJECT_PATH:-Data-Middleground-Develop-Area/product-code/datamiddle-backend/yss-datamiddle-datamodeling}"
+GITLAB_OPS="${GITLAB_OPS:-$HOME/.codex/skills/gitlab-workflow/scripts/gitlab_ops.py}"
+GLAB="${GLAB:-$(command -v glab || true)}"
+
+if [[ -z "$GLAB" && -x "$HOME/go/bin/glab" ]]; then
+  GLAB="$HOME/go/bin/glab"
+fi
+
+usage() {
+  cat <<'EOF'
+Usage:
+  scripts/gitworks status
+  scripts/gitworks workflow <base-branch> <work-branch> <commit-message>
+  scripts/gitworks mr-list
+  scripts/gitworks mr-create <target-branch> <title> [description]
+  scripts/gitworks ci-list
+  scripts/gitworks ci-run [branch]
+  scripts/gitworks ci-status
+
+Environment:
+  GITLAB_PROJECT_PATH  Override GitLab project path.
+  GITLAB_OPS          Override gitlab_ops.py path.
+  GLAB                Override glab binary path.
+EOF
+}
+
+need_glab() {
+  if [[ -z "$GLAB" || ! -x "$GLAB" ]]; then
+    echo "glab is not installed or not executable. Install it, or set GLAB=/path/to/glab." >&2
+    exit 1
+  fi
+}
+
+cmd="${1:-}"
+case "$cmd" in
+  status)
+    git -C "$REPO_ROOT" status --short --branch
+    need_glab
+    "$GLAB" auth status --hostname 192.168.167.142:8081
+    ;;
+  workflow)
+    if [[ $# -lt 4 ]]; then
+      usage >&2
+      exit 1
+    fi
+    python3 "$GITLAB_OPS" workflow \
+      --repo "$REPO_ROOT" \
+      --base-branch "$2" \
+      --branch "$3" \
+      --message "$4" \
+      --rebase
+    ;;
+  mr-list)
+    need_glab
+    "$GLAB" mr list --repo "$PROJECT_PATH"
+    ;;
+  mr-create)
+    if [[ $# -lt 3 ]]; then
+      usage >&2
+      exit 1
+    fi
+    need_glab
+    target="$2"
+    title="$3"
+    description="${4:-}"
+    "$GLAB" mr create \
+      --repo "$PROJECT_PATH" \
+      --target-branch "$target" \
+      --title "$title" \
+      --description "$description" \
+      --remove-source-branch \
+      --yes
+    ;;
+  ci-list)
+    need_glab
+    "$GLAB" ci list --repo "$PROJECT_PATH"
+    ;;
+  ci-run)
+    need_glab
+    if [[ $# -ge 2 ]]; then
+      "$GLAB" ci run --repo "$PROJECT_PATH" --branch "$2"
+    else
+      "$GLAB" ci run --repo "$PROJECT_PATH"
+    fi
+    ;;
+  ci-status)
+    need_glab
+    "$GLAB" ci status --repo "$PROJECT_PATH"
+    ;;
+  ""|-h|--help|help)
+    usage
+    ;;
+  *)
+    echo "Unknown command: $cmd" >&2
+    usage >&2
+    exit 1
+    ;;
+esac
