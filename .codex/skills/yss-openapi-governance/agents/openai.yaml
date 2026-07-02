@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS OpenAPI Governance"
+  short_description: "Lint and govern YSS OpenAPI drafts"
+  default_prompt: "Use $yss-openapi-governance to lint and govern a YSS OpenAPI draft before freeze."

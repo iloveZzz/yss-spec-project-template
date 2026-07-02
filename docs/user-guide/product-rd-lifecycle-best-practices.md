@@ -2,22 +2,27 @@
 
 本文面向产品、架构、研发、测试、实施和 AI Agent 协作者，说明如何把一个产品想法从机会探索推进到发布、实施和复盘。示例使用“数据中台数据建模”场景，重点展示每个阶段应该沉淀什么资产、如何判断能否进入下一阶段、以及应该调用哪些项目技能。
 
-如果只做小文案、局部样式或明确 bug 修复，不需要套完整流程。只要涉及新模块、API、跨端协作、DDD 分层、发布实施或长期可维护性，就按本文跑最小必要生命周期。
+如果只做小文案、局部样式、明确 bug 修复或已有功能的小需求迭代，不需要套完整流程。先判断现有资产可信到哪一阶段，再从最早受影响的阶段延伸；只有涉及新模块、API、跨端协作、DDD 分层、发布实施或长期可维护性，才按本文跑最小必要生命周期。
 
 ## 1. 一张图看完整链路
 
 ```text
 机会探索
 -> Discovery / 竞品分析
+-> 业务架构
 -> grill-with-docs 需求澄清
 -> PRD 初稿 / 需求基线
+-> 产品总体设计 / 功能架构设计
 -> 页面 / 原型 / 交互设计
+-> Prototype Review
 -> PRD 校准 / 需求冻结
 -> OpenAPI Draft
+-> OpenAPI Draft Review
 -> 工程基线 / YSS DDD Review
--> 架构设计 / OpenSpec / Comet design
+-> 系统概要设计 / 数据架构 / OpenSpec / Comet design
 -> 设计审查
 -> OpenAPI Freeze
+-> OpenSpec / Comet change
 -> 垂直切片
 -> TDD 实现
 -> 独立审查 / fresh verification
@@ -30,7 +35,9 @@
 - 用 `yss-product-lifecycle` 判断当前阶段、缺失资产和下一步。
 - 用 `grill-with-docs` 把模糊需求追问清楚，不让 AI 替人类猜业务规则。
 - 把 AI 当作可审查的协作者，而不是一次性生成器；每轮都要说清目标、输入资产、边界、输出格式和验证方式。
+- PRD 初稿后先产出产品总体设计 / 功能架构设计，让团队评审用户主流程、业务对象、模块边界、页面/API/数据影响和开放问题，再进入 PRD 校准。
 - 有用户界面的产品，PRD 和页面 / 原型 / 交互设计要迭代校准；不要在交互未评审前冻结 PRD 或直接生成 OpenAPI。
+- OpenAPI Draft 后、实现前，需要系统概要设计 / 数据架构承接工程基线、服务边界、状态流、NFR、发布回滚和安全红线。
 - 涉及 API 时先 Draft，设计审查通过后 Freeze，再开发。
 - 涉及前后端或多层实现时先让 `yss-router` 选择最小技能集。
 - 业务行为默认 TDD；不能 TDD 的文档、配置或生成类任务要写清验证方式。
@@ -283,6 +290,7 @@ Agent brief 最少包含：
 完成定义：
 
 - [ ] 已确认这是新模块、较大变更、bug、tweak 还是探索任务。
+- [ ] 如果是已有功能迭代，已确认最近可信阶段和最早受影响资产。
 - [ ] 已列出当前已有资产和缺失资产。
 - [ ] 已明确下一步只推进一个阶段，不跨阶段直接实现。
 
@@ -537,7 +545,7 @@ docs/design/data-modeling-prototype-review.md
 
 只要前后端接口会变化，就先写 OpenAPI Draft。Draft 是讨论稿，不是冻结实现。
 
-OpenAPI Draft 的输入不应只有 PRD，还应包含页面 / 原型 / 交互设计产物。页面流和状态矩阵会决定请求字段、响应字段、错误结构、权限标识、分页筛选和状态冲突处理。
+OpenAPI Draft 的输入不应只有 PRD，还必须结合产品总体设计、页面 / 原型 / 交互设计产物、状态矩阵和 `prototype-review` 结论。页面流和状态矩阵会决定请求字段、响应字段、错误结构、权限标识、分页筛选、只读/禁用策略和状态冲突处理。
 
 建议资产：
 
@@ -571,13 +579,16 @@ Draft 必须覆盖：
 推荐提示词：
 
 ```text
-基于 docs/requirements/data-modeling-prd.md 和 docs/design/data-modeling-interaction-spec.md，
+基于 docs/requirements/data-modeling-prd.md、docs/design/data-modeling-product-overview-design.md、
+docs/design/data-modeling-interaction-spec.md、状态矩阵和 prototype-review 结论，
 生成 OpenAPI 3.1 Draft 到 docs/api/specs/data-modeling.yaml。
-要求包含分页、筛选、统一响应包装、字段级校验错误、模型发布、版本查询和契约测试建议。
+要求逐项追踪页面动作、表单字段、筛选分页、权限状态、loading/empty/error/readonly/disabled/conflict 状态，
+并包含统一响应包装、字段级校验错误、模型发布、版本查询和契约测试建议。
 ```
 
 阶段门禁：
 
+- [ ] Draft 的输入包含校准后的 PRD、产品总体设计、交互说明 / 原型、状态矩阵和 prototype-review 结论；无 UI 影响时已显式说明。
 - [ ] Draft 能支撑前端页面和后端用例，不缺关键字段。
 - [ ] 错误结构足以表达字段级校验失败。
 - [ ] 权限、只读、禁用、并发冲突等交互状态有契约支撑。

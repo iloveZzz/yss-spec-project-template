@@ -70,18 +70,26 @@ Issues 和 PRD 默认发布到 GitHub Issues；外部 PR 暂不作为 triage 请
 
 使用单上下文领域文档布局：根目录 `CONTEXT.md` + `docs/adr/`。详见 `docs/agents/domain.md`。
 
+### Documentation language
+
+面向业务用户、产品、架构、OpenSpec / Comet、Superpowers、YSS lifecycle、Issue、Review、Release、Implementation 和 Retro 的持久化文档默认使用中文落地。保留英文专有名词、代码标识、API 路径、schema 名称、类名、方法名、文件名、枚举值、错误码和命令，不强行翻译。若外部工具模板或协议要求英文 frontmatter / key / metadata，仅 metadata 使用英文，正文仍使用中文。用户明确要求英文或目标读者为英文团队时除外。
+
 ### Recommended flow
 
-默认完整需求交付链路：`lifecycle stage check -> opportunity exploration / discovery -> business architecture -> grill-with-docs -> PRD baseline / functional architecture -> product-design-prototype / prototype-review when UI exists -> PRD calibration / requirement freeze -> OpenAPI Draft -> Engineering Baseline / DDD Review -> system architecture / data architecture / OpenSpec / Comet design -> Design Review -> OpenAPI Freeze -> to-issues -> implement with tdd -> independent review -> fresh verification/archive`。
+默认完整需求交付链路：`lifecycle stage check -> opportunity exploration / discovery -> business architecture -> grill-with-docs -> PRD baseline -> product overview design / functional architecture -> product-design-prototype / prototype-review when UI exists -> PRD calibration / requirement freeze -> OpenAPI Draft -> OpenAPI Draft Review -> Engineering Baseline / DDD Review -> system overview design / data architecture / OpenSpec / Comet design -> Design Review -> OpenAPI Freeze -> OpenSpec / Comet change formalization -> to-issues -> implement with tdd -> independent review -> fresh verification/archive`。
 
 ### Mandatory skill rules
 
 - 新产品、新模块或较大变更必须先判断生命周期阶段、缺失资产和下一步；可用 `yss-product-lifecycle`，已有等价记录时可复用。
+- 小需求变更或迭代不从头重跑完整链路；必须先做影响面评估，找到“最近可信阶段”（如 PRD、产品总体设计、交互设计、OpenAPI Draft、系统概要设计、垂直切片或实现），只补齐受影响阶段及其下游资产。
+- 生命周期、OpenSpec / Comet、Superpowers 和 YSS skills 产出的持久化文档默认用中文正文；如 skill 模板含英文标题，应在项目内落地时转换为中文标题和中文说明，只保留必要英文 metadata / identifier。
 - 新产品或新业务域必须在 PRD 基线前明确业务架构：目标用户、用户旅程、价值流、业务能力地图、角色/组织模型和外部系统边界；已有等价材料时可引用。
 - 新功能或较大改动必须先用 `grill-with-docs` 澄清需求，再用 `to-prd` / `to-issues` 形成 PRD 和垂直切片 Issue。
 - PRD 基线阶段必须同步明确功能架构：功能域、模块边界、优先级、MVP / 非目标范围和模块依赖；不清晰时不得进入 PRD 校准。
 - 有用户界面的功能在 PRD 初稿后必须先用 `product-design-prototype` 产出页面、原型、交互状态、PRD 回填项和 OpenAPI 反推清单，并通过 `prototype-review` 后才能进入 PRD 校准 / 需求冻结和 UI 驱动的 OpenAPI Draft。
-- 任何 API 契约变更必须先在 `docs/api/specs/*.yaml` 形成 Draft，经工程基线（如适用）、架构/OpenSpec/Comet design 和设计审查后 Freeze，再实现前后端和测试。
+- 任何 API 契约变更必须先在 `docs/api/specs/*.yaml` 形成 Draft；有 UI 的功能不得只基于 PRD 反推 OpenAPI，必须结合产品总体设计、页面/原型/交互说明、状态矩阵和 `prototype-review` 结论，经工程基线（如适用）、架构/OpenSpec/Comet design 和设计审查后 Freeze，再实现前后端和测试。
+- OpenAPI Freeze 后、正式进入 `to-issues` 前，必须先创建或选择匹配的 active OpenSpec / Comet change；若 `openspec list --json` 无匹配 active change，或 `openspec/changes/<change>/` 缺 `proposal.md`、`design.md`、`tasks.md`、至少一个 `specs/**/spec.md` 或 `.comet.yaml`，则不得进入正式垂直切片，必须先路由到 `comet` 或 `openspec-new-change`。
+- 存在匹配 active Comet change 时，不得绕过 Comet 直接调用 Superpowers 或 YSS 实现技能；必须先检查 `.comet.yaml` 的 `phase`、`design_doc`、`plan`、`build_mode`、`tdd_mode` 和 `review_mode`。若 phase 仍在 `open` / `design` / 未就绪 `build`，先继续 `comet` / `comet-build`；`yss-router` 的输出作为 Comet build 或等价实现交接输入。
 - 涉及服务边界、部署、集成、性能、安全、可靠性或运维的变更，必须在设计审查前产出系统总体架构或等价设计记录。
 - 涉及持久化、Repository、元数据、版本、血缘、搜索或查询策略的变更，必须在开发前产出数据架构；数据模型、元数据管理、ER 设计、版本管理或血缘分析类产品必须在 Design Review 和 OpenAPI Freeze 前完成数据架构。
 - 当需求、架构、流程、状态机、数据流或垂直切片关系仅靠文字难以说明时，可用 `excalidraw-diagram-generator` 生成 `.excalidraw` 图作为辅助材料；图不能替代 PRD、OpenAPI、ADR、Comet design 或测试。
@@ -158,9 +166,10 @@ Web Adapter
 |------|------|------|
 | 模糊想法 / 产品机会 | 机会探索环 → 需求澄清 | 进入 PRD 前必须收敛用户、痛点、MVP 和非目标范围 |
 | 已有竞品 / 用户 / 行业材料 | Discovery → 机会构想 → `grill-with-docs` → PRD | 事实输入必须转化为 MVP 边界和验收标准 |
-| 新模块 / API / 跨端改动 | 阶段判断 → 业务架构（新业务域）→ `grill-with-docs` → PRD 初稿 / 功能架构 → 页面/原型/交互设计与 `prototype-review`（有 UI 时）→ PRD 校准 / 需求冻结 → OpenAPI Draft → 工程基线 → 系统/数据架构 / OpenSpec / Comet design → 设计审查 → OpenAPI Freeze → 垂直切片 → TDD | 契约变更先冻结 `docs/api/specs/*.yaml`；数据/元数据类产品必须先完成数据架构；有 UI 时不得从 PRD 初稿直接跳 OpenAPI |
+| 新模块 / API / 跨端改动 | 阶段判断 → 业务架构（新业务域）→ `grill-with-docs` → PRD 初稿 → 产品总体设计 / 功能架构 → 页面/原型/交互设计与 `prototype-review`（有 UI 时）→ PRD 校准 / 需求冻结 → OpenAPI Draft → 工程基线 → 系统概要/数据架构 / OpenSpec / Comet design → 设计审查 → OpenAPI Freeze → OpenSpec / Comet change formalization → 垂直切片 → TDD | 契约变更先冻结 `docs/api/specs/*.yaml`；Freeze 后必须有匹配 active change 和 proposal/spec/design/tasks/.comet.yaml 才能正式 to-issues；数据/元数据类产品必须先完成数据架构；有 UI 时不得从 PRD 初稿直接跳 OpenAPI |
+| 小需求变更 / 已有功能迭代 | 影响面评估 → 选择最近可信阶段 → 更新受影响资产 → 必要评审 → TDD / verify | 不重跑机会探索和全量 PRD；若影响 API、状态机、权限、数据模型、跨端协作或安全红线，则从对应阶段延伸并补齐下游门禁 |
 | 明确 Bug / 测试失败 / 性能回退 | diagnosing-bugs → tdd → verify | 先建立可复现反馈命令，再修复 |
-| 小文案 / 局部样式 / 配置调整 | comet-tweak 或直接最小改动 → verify | 扩散到 API、状态、权限或多模块时升级完整流程 |
+| 小文案 / 局部样式 / 配置调整 | comet-tweak 或直接最小改动 → verify | 扩散到 API、状态、权限或多模块时，升级到最早受影响阶段并补齐下游门禁 |
 | 架构治理 / 难测模块 | improve-codebase-architecture / codebase-design → ADR / Issue | 使用 module、interface、seam、adapter 术语 |
 
 ### 机会探索环
@@ -203,13 +212,14 @@ Web Adapter
 | 10. 系统总体架构 / 方案设计 | Architecture / OpenSpec Agent | 校验 API Draft 与交互设计、领域模型、状态流、模块边界、服务边界、部署、集成、NFR、行为规格和风险取舍是否一致；可通过 Comet design 阶段承载，必要时写 ADR |
 | 11. 数据架构 / 元模型设计 | Data Architecture / Domain Agent | 在持久化开发前明确概念/逻辑/物理模型、元模型、版本策略、血缘、搜索/查询、索引和存储策略；数据模型类产品必须完成 |
 | 12. 设计审查 | Design Review Agent | 独立审查 PRD、产品设计、OpenAPI Draft、业务/功能/系统/数据架构、DDD 分层、ADR、测试 seam 和安全红线；阻断项必须回到对应阶段修正 |
-| 13. 契约冻结 | API + Frontend + Backend Agent | 冻结 `docs/api/specs/*.yaml`；确认前端可消费、后端可实现、契约测试可落地，再进入垂直切片 |
-| 14. 实施计划 | Planning Agent | 使用 `to-issues` / `writing-plans` 把冻结契约和设计拆成垂直切片；每步包含文件、测试、验证命令和回滚点 |
-| 15. 开发实现 | Code Agent | 使用 `yss-router` 选择最小 YSS skills；按垂直切片 TDD 实现，前后端通过冻结 OpenAPI 对齐 |
-| 16. 独立审查 | Review Agent | 实现者不得审查自己；重点审安全红线、契约一致性、YSS DDD 分层边界、测试缺口和回归风险 |
-| 17. 清理简化 | Simplify Agent | 在功能已验证基础上处理复用、质量和效率问题；不做无关重构；如触碰行为或契约需回到审查 |
-| 18. 验证发布 | Verify / Release Agent | fresh verification、契约测试、关键路径 E2E、发布说明、实施步骤和回滚方案 |
-| 19. 复盘沉淀 | Retro / Knowledge Agent | 将术语、规则、踩坑、ADR、AGENTS.md 约定和用户手册更新回仓库 |
+| 13. 契约冻结 | API + Frontend + Backend Agent | 冻结 `docs/api/specs/*.yaml`；确认前端可消费、后端可实现、契约测试可落地，再进入 OpenSpec / Comet change formalization |
+| 14. OpenSpec / Comet change formalization | OpenSpec / Comet Agent | 创建或选择匹配 active change；确认 `proposal.md`、`design.md`、`tasks.md`、至少一个 `specs/**/spec.md` 和 `.comet.yaml` 存在并与 PRD / OpenAPI Freeze 对齐 |
+| 15. 实施计划 | Planning Agent | 使用 `to-issues` / `writing-plans` 把冻结契约和设计拆成垂直切片；每步包含文件、测试、验证命令和回滚点；进入实现前检查 active Comet phase |
+| 16. 开发实现 | Code Agent | 先继续 active Comet change 到 build-ready，再使用 `yss-router` 选择最小 YSS skills；按垂直切片 TDD 实现，前后端通过冻结 OpenAPI 对齐 |
+| 17. 独立审查 | Review Agent | 实现者不得审查自己；重点审安全红线、契约一致性、YSS DDD 分层边界、测试缺口和回归风险 |
+| 18. 清理简化 | Simplify Agent | 在功能已验证基础上处理复用、质量和效率问题；不做无关重构；如触碰行为或契约需回到审查 |
+| 19. 验证发布 | Verify / Release Agent | fresh verification、契约测试、关键路径 E2E、发布说明、实施步骤和回滚方案 |
+| 20. 复盘沉淀 | Retro / Knowledge Agent | 将术语、规则、踩坑、ADR、AGENTS.md 约定和用户手册更新回仓库 |
 
 ### 四类架构产物
 

@@ -11,8 +11,8 @@
 | 产物 | 产出阶段 | 重点问题 | 建议文件 |
 |------|----------|----------|----------|
 | 业务架构 | 机会探索 / Discovery / 产品定义 | 用户是谁、价值流是什么、产品在业务生态中的边界在哪里 | `<feature>-business-architecture.md` |
-| 功能架构 | PRD baseline / 产品设计 / PRD 校准 | 功能域、模块边界、优先级、依赖和 MVP 非目标范围是什么 | `<feature>-functional-architecture.md` |
-| 系统总体架构 | 工程基线 / OpenSpec / Comet design | 服务/模块如何构建、部署、集成、运维和演进 | `<feature>-system-architecture.md` 或 `<feature>-architecture.md` |
+| 产品总体设计 / 功能架构 | PRD baseline / 产品设计 / PRD 校准 | 用户主流程、业务对象、功能域、模块边界、页面/API/数据影响、优先级、依赖和 MVP 非目标范围是什么 | `<feature>-product-overview-design.md` 或 `<feature>-functional-architecture.md` |
+| 系统概要设计 / 系统总体架构 | 工程基线 / OpenSpec / Comet design | 服务/模块如何构建、部署、集成、运维、回滚和演进 | `<feature>-system-overview-design.md`、`<feature>-system-architecture.md` 或 `<feature>-architecture.md` |
 | 数据架构 | 详细设计 / 持久化开发前 | 概念/逻辑/物理模型、元模型、版本、血缘、查询、索引和存储策略是什么 | `<feature>-data-architecture.md` |
 
 对于数据模型、元数据管理、ER 设计、版本管理或血缘分析类产品，数据架构是核心产品能力，必须在 Repository / MyBatis / 持久化开发前完成；如果 OpenAPI schema 依赖元模型，也必须在 OpenAPI Freeze 前完成。
@@ -27,6 +27,11 @@ docs/architecture/diagrams/<feature>-data-model.excalidraw
 ```
 
 使用 `excalidraw-diagram-generator` 生成图时，图只作为审查辅助；发现的问题必须回写到 PRD、OpenAPI、ADR、OpenSpec/Comet design 或对应架构文档。
+
+推荐模板：
+
+- `docs/design/templates/product-overview-design-template.md`：PRD 初稿之后的产品总体设计 / 功能架构评审稿。
+- `docs/architecture/templates/system-overview-design-template.md`：OpenAPI Draft 与工程基线之后的系统概要设计评审稿。
 
 ---
 

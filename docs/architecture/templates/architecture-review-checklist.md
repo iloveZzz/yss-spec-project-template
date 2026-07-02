@@ -13,6 +13,16 @@
 - [ ] 数据模型、元数据、版本或血缘类产品已在 Repository / MyBatis / 持久化开发前完成数据架构。
 - [ ] 架构图如已生成，已引用明确上游文档，且图中发现的问题已回写到 PRD、OpenAPI、ADR、OpenSpec/Comet design 或 Issue。
 
+## 0.1 DDD 轻量门禁
+
+> DDD 检查嵌入现有阶段，不默认新增阶段或独立文档。只有当本节无法说明清楚时，才升级为独立 Strategic / Tactical DDD 设计文档。
+
+- [ ] 若为小改动，已完成 DDD impact check，并确认不影响统一语言、上下文边界、聚合、API、数据、权限或安全红线。
+- [ ] Strategic DDD Check 已完成或明确不适用：统一语言、核心/支撑/通用子域、限界上下文、上下文映射和非目标范围清楚。
+- [ ] Tactical DDD Check 已完成或明确不适用：聚合根、Entity、Value Object、领域服务、不变量、一致性边界和 Repository / Gateway seam 清楚。
+- [ ] OpenAPI 契约使用上下文的公开语言，不直接暴露内部聚合、Repository 或持久化表结构。
+- [ ] 领域行为测试、Application 用例测试、契约测试和必要 E2E 已与 DDD 边界对齐。
+
 ## 1. 可扩展性 (Scalability)
 
 - [ ] 服务是否可独立部署和水平扩展？
