@@ -1,13 +1,33 @@
 ---
 name: yss-openapi
-description: Generate and refresh YSS backend OpenAPI contracts and frontend Orval API clients. Use when working in YSS Java plus Vue micro-application repos where smart-doc-maven-plugin creates target/openapi/openapi.json, the file must be copied into a frontend openapi directory, and package scripts such as generate:api, orval, api-schema-cleanup.cjs, api-flatten-exports.cjs, or format:generated regenerate src/api client code.
+description: Generate OpenAPI JSON from implemented YSS Java controllers, request DTOs, and response DTOs, then refresh frontend Orval API clients. Use only for the smart-doc plus Orval implementation workflow where smart-doc-maven-plugin emits target/openapi/openapi.json and frontend scripts such as generate:api, orval, api-schema-cleanup.cjs, api-flatten-exports.cjs, or format:generated regenerate src/api client code. Do not use this as the unified OpenAPI style guide, design-time API governance, or docs/api/specs Draft review skill.
 ---
 
 # YSS OpenAPI
 
-Use this skill to move a backend controller/DTO contract into the frontend generated API layer.
+Use this skill to move an already implemented backend controller/DTO contract into the frontend generated API layer.
 
-This is an implementation/generation skill, not the product API design step. For new or changed API contracts, first produce OpenAPI Draft in `docs/api/specs/`, pass engineering baseline, architecture / OpenSpec / Comet design, and Design Review, then Freeze the contract before using this skill to refresh generated clients. When the backend is already the implemented source of truth, use this skill to regenerate and inspect the emitted contract before updating call sites.
+This is an implementation/generation skill, not the product API design step and not the unified OpenAPI specification governance skill. It generates `openapi.json` from controller methods, request DTOs, response DTOs, annotations, and Java comments; it does not decide naming conventions, resource modeling, error taxonomy, pagination policy, permission semantics, or organization-wide OpenAPI style rules.
+
+For new or changed API contracts, first produce OpenAPI Draft in `docs/api/specs/`, pass engineering baseline, architecture / OpenSpec / Comet design, and Design Review, then Freeze the contract before using this skill to refresh generated clients. When the backend is already the implemented source of truth, use this skill to regenerate and inspect the emitted contract before updating call sites.
+
+## Scope Boundary
+
+Use this skill for:
+
+- Running `smart-doc-maven-plugin` to generate `target/openapi/openapi.json` from implemented backend code.
+- Copying generated `openapi.json` into the frontend OpenAPI input path expected by Orval.
+- Running frontend API client generation and inspecting generated TypeScript changes.
+- Verifying that implemented controllers/DTOs emit the expected OpenAPI shape before call-site updates.
+
+Do not use this skill for:
+
+- Designing a new API contract from PRD, prototype, or architecture inputs.
+- Defining the unified OpenAPI style guide or reusable API governance rules.
+- Reviewing `docs/api/specs/*.yaml` before OpenAPI Freeze.
+- Choosing REST resource boundaries, error models, permission behavior, pagination standards, or contract test policy.
+
+For design-time contract review, use `yss-openapi-draft-review`. For a stronger organization-wide OpenAPI governance baseline, prefer a separate OpenAPI lint/style skill backed by a maintained ruleset tool such as Stoplight Spectral or Redocly CLI, then layer YSS-specific response wrappers, permission, pagination, and security-red-line rules on top.
 
 ## Core Flow
 
