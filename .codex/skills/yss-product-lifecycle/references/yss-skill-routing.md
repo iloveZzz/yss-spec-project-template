@@ -85,15 +85,15 @@ Backend acceptance:
 ## Common Combinations
 
 - Product/interaction prototype:
-  `product-design-prototype` -> `wireframe-prototype` -> `prototype-review` -> PRD calibration
+  product design and requirement freeze: `product-design-prototype` -> `wireframe-prototype` -> `prototype-review` -> requirement freeze
 - Architecture artifact ladder:
-  `yss-product-lifecycle` -> business architecture -> PRD / functional architecture -> system architecture -> data architecture when data/persistence is affected -> Design Review
+  `yss-product-lifecycle` -> business / PRD / functional architecture -> system / data architecture when affected -> Design Review
 - Architecture diagrams:
   source artifact -> `excalidraw-diagram-generator` -> review -> update source artifact
 - Engineering state prototype:
-  `product-design-prototype` -> `component-story-prototype` -> `mock-api-prototype` -> `prototype-review` -> PRD calibration
+  product design and requirement freeze: `product-design-prototype` -> `component-story-prototype` -> `mock-api-prototype` -> `prototype-review` -> requirement freeze
 - Prototype to formal implementation:
-  `prototype-review` -> PRD calibration -> OpenAPI Draft / Freeze -> `yss-router`
+  requirement freeze -> API Draft and engineering baseline -> contract freeze and OpenSpec / Comet -> `yss-router`
 - Full CRUD slice:
   `yss-router` -> `yss-domain` -> `yss-repository` -> `yss-web-controller`
 - CRUD with pagination / datasource concern:

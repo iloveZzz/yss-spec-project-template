@@ -19,28 +19,18 @@ For this repository, persistent lifecycle artifacts MUST use Chinese body text b
 
 Keep English identifiers unchanged when they are technical names: file paths, commands, class/method names, API paths, schema names, enum values, error codes, frontmatter keys, YAML/JSON keys, OpenSpec capability names, and Comet state values. If an upstream skill template uses English section titles, convert the persisted project document to Chinese section titles unless the user explicitly asks for English or the document targets an English-speaking audience.
 
+Daily execution uses 9 main stages. The previous 21 stage names are governance gates / responsibility points, not a mandatory step-by-step flow for every request. The authoritative mapping of stages, artifacts, templates, and required / conditional gates is `docs/process/lifecycle-artifact-map.md`.
+
 ```text
-opportunity exploration
--> discovery / competitive analysis
--> business architecture / capability map
--> PRD baseline
--> product overview design / functional architecture
--> product design / prototype / interaction design
--> prototype review
--> PRD calibration / requirement freeze
--> OpenAPI Draft
--> OpenAPI Draft contract review
--> Engineering Baseline / YSS DDD Review
--> system overview design / OpenSpec / Comet design
--> data architecture / meta-model design
--> Design Review
--> OpenAPI Freeze
--> OpenSpec / Comet change formalization
--> vertical slices
--> YSS frontend/backend implementation
--> independent review / fresh verification
--> release / implementation
--> retrospective
+intake / lifecycle triage
+-> opportunity and Discovery
+-> business / PRD / functional architecture
+-> product design and requirement freeze
+-> API Draft and engineering baseline
+-> system / data architecture and Design Review
+-> contract freeze and OpenSpec / Comet
+-> vertical slices and TDD implementation
+-> verification, release, and retrospective
 ```
 
 ## Opportunity Exploration vs Comet Brainstorming
@@ -94,8 +84,8 @@ Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, da
    - `docs/api/specs/`
    - `docs/architecture/` and `docs/adr/`
    - `openspec/changes/` and current OpenSpec/Comet state
-2. Classify the request into one stage:
-   - opportunity exploration, discovery, business architecture, PRD baseline, product overview design / functional architecture, product design / prototype / interaction design, prototype review, PRD calibration / requirement freeze, API contract draft/freeze, engineering baseline, system overview design / system architecture, data architecture, contract/design, OpenSpec / Comet change formalization, change planning, implementation routing, review/verification, release, or retrospective.
+2. Classify the request into one main stage:
+   - intake / lifecycle triage, opportunity and Discovery, business / PRD / functional architecture, product design and requirement freeze, API Draft and engineering baseline, system / data architecture and Design Review, contract freeze and OpenSpec / Comet, vertical slices and TDD implementation, or verification / release / retrospective.
 3. For small changes or iterations, identify the nearest trustworthy existing stage and only expand from the earliest impacted artifact:
    - wording / style / local configuration -> tweak or direct minimal change, then verify;
    - UI behavior or page state -> product design / prototype review / PRD calibration as needed;
@@ -155,11 +145,11 @@ Default routing:
 
 | Intent | Next skill / workflow |
 |---|---|
-| Start a new business product/module | opportunity exploration -> discovery / competitive analysis -> business architecture -> PRD baseline -> product overview design / functional architecture -> product design/prototype when UI exists -> PRD calibration |
+| Start a new business product/module | intake -> opportunity and Discovery -> business / PRD / functional architecture -> product design and requirement freeze when UI exists |
 | Design UI flow after PRD baseline | `product-design-prototype`; add `wireframe-prototype`, `component-story-prototype`, or `mock-api-prototype` only when needed |
 | Review prototype before PRD calibration | `prototype-review` |
 | Review OpenAPI Draft before engineering baseline | `yss-openapi-draft-review` |
-| Clarify architecture artifact timing or gaps | this skill plus `references/artifact-checklist.md` |
+| Clarify architecture artifact timing or gaps | this skill plus `docs/process/lifecycle-artifact-map.md` and `references/artifact-checklist.md` |
 | Create architecture/process/data diagrams | `excalidraw-diagram-generator` as a support skill |
 | Design meta-model / metadata / lineage data architecture | architecture/design workflow plus `yss-domain-modeling` or `yss-domain`; use `excalidraw-diagram-generator` for ER, lineage, DFD, or class diagrams when helpful |
 | Formalize a change | Prefer `comet`; fallback to `openspec-new-change` / `openspec-propose` only when Comet is unavailable or explicitly requested, then verify `.comet.yaml` |

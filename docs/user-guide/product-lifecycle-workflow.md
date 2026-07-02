@@ -112,29 +112,24 @@ scripts/verify-template
 
 ## 4. 生命周期主流程
 
+日常推荐使用 9 个主阶段推进，21 个门禁 / 职责点只用于检查和补齐缺失资产，不要求每个需求逐项跑完。阶段、产物、模板和必需 / 条件必需规则的权威索引见：
+
+```text
+docs/process/lifecycle-artifact-map.md
+```
+
 推荐主线：
 
 ```text
-机会探索环
--> 业务架构
--> grill-with-docs 澄清
--> PRD 初稿 / 需求基线
--> 产品总体设计 / 功能架构设计
--> 产品设计 / 原型 / 交互评审（有 UI 时）
--> PRD 校准 / 需求冻结
--> OpenAPI Draft
--> OpenAPI Draft Review
--> 工程基线 / DDD 分层确认
--> 系统概要设计 / 数据架构 / OpenSpec / Comet proposal & design
--> 设计审查
--> OpenAPI Freeze
--> OpenSpec / Comet change
--> 垂直切片 Issue
--> TDD 开发
--> 独立审查
--> 验证与发布
--> 实施反馈
--> 复盘沉淀
+1. 入口分诊
+2. 机会与 Discovery
+3. 业务 / PRD / 功能架构
+4. 产品设计与需求冻结
+5. API Draft 与工程基线
+6. 系统 / 数据架构与设计审查
+7. 契约冻结与 OpenSpec / Comet
+8. 垂直切片与 TDD 实现
+9. 验证发布与复盘
 ```
 
 机会探索环不是死流程，而是把三类输入循环校准：
@@ -149,7 +144,7 @@ scripts/verify-template
 - 已有行业、竞品或用户材料：先 Discovery，再生成候选方案。
 - 明确 Bug 或小调整：不走完整机会探索环，直接走 hotfix / tweak。
 - 已有功能的小需求变更：先做影响面评估，选择最近可信阶段，只更新受影响资产和下游门禁。
-- 新模块、API 或跨端改动：必须进入 `grill-with-docs`、PRD、产品总体设计/功能架构、OpenAPI Draft、工程基线、系统概要设计/OpenSpec/Comet design、设计审查、OpenAPI Freeze、垂直切片和 TDD。
+- 新模块、API 或跨端改动：必须按 9 个主阶段推进；有 UI 时必须经过产品设计、原型评审和需求冻结；有 API 时必须经过 OpenAPI Draft、工程基线、系统 / 数据架构与设计审查、OpenAPI Freeze、OpenSpec / Comet、垂直切片和 TDD。
 
 进入 PRD 前必须通过 `grill-with-docs` 收敛为：用户是谁、痛点是什么、为什么现在做、第一版做什么、明确不做什么、成功标准是什么。
 
@@ -193,6 +188,7 @@ docs/discovery/reports/
 
 ```text
 docs/discovery/templates/competitive-matrix-template.md
+docs/discovery/templates/discovery-template.md
 ```
 
 竞品分析是机会探索环的重要事实输入，不是为了照抄功能，而是帮助你判断：
@@ -308,6 +304,15 @@ docs/architecture/<feature>-data-architecture.md
 docs/architecture/diagrams/
 ```
 
+推荐模板：
+
+```text
+docs/architecture/templates/business-architecture-template.md
+docs/architecture/templates/functional-architecture-template.md
+docs/architecture/templates/system-overview-design-template.md
+docs/architecture/templates/data-architecture-template.md
+```
+
 ### 4.4 API 契约阶段
 
 保存位置：
@@ -352,6 +357,12 @@ GET    /api/v1/models/{id}/versions
 随后结合工程基线、系统/数据架构、OpenSpec / Comet design 和设计审查校验领域状态、权限、错误结构和契约测试，确认后标记为 Freeze。
 ```
 
+Freeze 记录使用：
+
+```text
+docs/api/templates/openapi-freeze-record-template.md
+```
+
 ### 4.5 工程基线与架构设计阶段
 
 保存位置：
@@ -381,6 +392,12 @@ docs/adr/
 | 本功能领域设计 | 聚合、实体、值对象、状态流、Gateway 接口 | Domain Agent | `yss-domain` / `yss-backend-scaffold-domain` |
 | 本功能持久化设计 | PO、Repository、GatewayImpl、Mapper、Convertor | Backend Agent | `yss-repository` / `yss-mybatis` |
 | 本功能 Web 适配 | Controller、CMD、Query、VO、Web Convertor | Backend Agent | `yss-web-controller` / `yss-dto` |
+
+工程基线审查可使用：
+
+```text
+docs/architecture/templates/engineering-baseline-review-template.md
+```
 
 YSS DDD 默认分层：
 
@@ -744,17 +761,18 @@ Slice 5: 模型发布与版本冻结
 
 ## 7. 最小可执行版本
 
-如果你不想一开始就把流程做重，保留这八步即可：
+如果你不想一开始就把流程做重，保留这 9 个主阶段即可；其中条件产物按影响面启用：
 
 ```text
-1. 机会探索明确用户、痛点、MVP、非目标和成功标准
-2. CONTEXT.md 写清楚术语，业务架构写清楚用户旅程和产品边界
-3. PRD 写清楚需求、验收和 API 影响，产品总体设计 / 功能架构写清楚流程、模块、页面/API/数据影响
-4. 有 UI 时完成产品设计、原型评审和 PRD 校准
-5. OpenAPI Draft 写清楚接口草案，并通过 Draft Review
-6. 工程基线、系统概要/数据架构、OpenSpec / Comet design 校验并通过设计审查
-7. 冻结 OpenAPI，创建 OpenSpec / Comet change，垂直切片拆清楚任务
-8. TDD、独立审查、fresh verification，发布后复盘并更新 CONTEXT.md / AGENTS.md
+1. 入口分诊：判断任务类型、最近可信阶段和最小技能集。
+2. 机会与 Discovery：明确用户、痛点、MVP、非目标和成功标准。
+3. 业务 / PRD / 功能架构：写清 PRD、业务边界、功能域、模块、验收和 API 影响。
+4. 产品设计与需求冻结：有 UI 时完成交互、状态矩阵、原型评审和 PRD 校准；无 UI 时形成冻结记录。
+5. API Draft 与工程基线：有 API 时写 Draft 并评审；有后端结构影响时完成 YSS DDD 基线审查。
+6. 系统 / 数据架构与设计审查：按风险补系统概要、数据架构、ADR，并通过 Design Review。
+7. 契约冻结与 OpenSpec / Comet：冻结 OpenAPI 或记录无 API 影响，创建 / 选择 active change。
+8. 垂直切片与 TDD 实现：拆端到端切片，检查 Comet build-ready，TDD 实现并独立审查。
+9. 验证发布与复盘：fresh verification、发布 / 实施 / 用户手册和复盘沉淀。
 ```
 
-这八步已经能让产品、研发、设计、实施和 AI 协作形成闭环。
+这 9 个主阶段已经能让产品、研发、设计、实施和 AI 协作形成闭环；完整模板索引见 `docs/process/lifecycle-artifact-map.md`。
