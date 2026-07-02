@@ -46,6 +46,7 @@ runtime_artifact_paths=(
   "docs/user-guide/cli-reference.md"
   "docs/user-guide/troubleshooting.md"
   "hermes_lifecycle"
+  "openspec/changes"
   "packages/hermes-cli-ts"
   "scripts/ysscomet"
   "tests/test_lifecycle.py"
@@ -84,7 +85,7 @@ require "pathname"
 
 root = Pathname.pwd
 
-["openspec/config.yaml", "docs/api/specs/demo-feature.yaml"].each do |path|
+["openspec/config.yaml", "docs/templates/openapi-spec-template.yaml"].each do |path|
   text = File.read(root.join(path))
   text = text.sub(/\A---\n.*?\n---\n/m, "")
   YAML.safe_load(text, permitted_classes: [], aliases: true)
