@@ -97,10 +97,11 @@ Issues 和 PRD 默认发布到 GitHub Issues；外部 PR 暂不作为 triage 请
 - 新产品、新模块或较大变更必须先判断生命周期阶段、缺失资产和下一步；可用 `yss-product-lifecycle`，已有等价记录时可复用。
 - 小需求变更或迭代不从头重跑完整链路；必须先做影响面评估，找到“最近可信阶段”（如 PRD、产品总体设计、交互设计、OpenAPI Draft、系统概要设计、垂直切片或实现），只补齐受影响阶段及其下游资产。
 - 生命周期、OpenSpec / Comet、Superpowers 和 YSS skills 产出的持久化文档默认用中文正文；如 skill 模板含英文标题，应在项目内落地时转换为中文标题和中文说明，只保留必要英文 metadata / identifier。
+- 涉及页面设计、原型评审、UI 实现、组件选型、主题 token、颜色排版间距或 Ant Design / YSS UI 风格一致性的任务，必须先用 `yss-design-system` 作为设计系统基线；详细规范引用 `docs/design/design.md`。
 - 新产品或新业务域必须在 PRD 基线前明确业务架构：目标用户、用户旅程、价值流、业务能力地图、角色/组织模型和外部系统边界；已有等价材料时可引用。
 - 新功能或较大改动必须先用 `grill-with-docs` 澄清需求，再用 `to-prd` / `to-issues` 形成 PRD 和垂直切片 Issue。
 - PRD 基线阶段必须同步明确功能架构：功能域、模块边界、优先级、MVP / 非目标范围和模块依赖；不清晰时不得进入 PRD 校准。
-- 有用户界面的功能在 PRD 初稿后必须先用 `product-design-prototype` 产出页面、原型、交互状态、PRD 回填项和 OpenAPI 反推清单，并通过 `prototype-review` 后才能进入 PRD 校准 / 需求冻结和 UI 驱动的 OpenAPI Draft。
+- 有用户界面的功能在 PRD 初稿后必须先引用 `yss-design-system`，再用 `product-design-prototype` 产出页面、原型、交互状态、PRD 回填项和 OpenAPI 反推清单，并通过 `prototype-review` 后才能进入 PRD 校准 / 需求冻结和 UI 驱动的 OpenAPI Draft。
 - 任何 API 契约变更必须先在 `docs/api/specs/*.yaml` 形成 Draft；有 UI 的功能不得只基于 PRD 反推 OpenAPI，必须结合产品总体设计、页面/原型/交互说明、状态矩阵和 `prototype-review` 结论，经工程基线（如适用）、架构/OpenSpec/Comet design 和设计审查后 Freeze，再实现前后端和测试。
 - OpenAPI Freeze 后、正式进入 `to-issues` 前，必须先创建或选择匹配的 active OpenSpec / Comet change；若 `openspec list --json` 无匹配 active change，或 `openspec/changes/<change>/` 缺 `proposal.md`、`design.md`、`tasks.md`、至少一个 `specs/**/spec.md` 或 `.comet.yaml`，则不得进入正式垂直切片，必须先路由到 `comet` 或 `openspec-new-change`。
 - 存在匹配 active Comet change 时，不得绕过 Comet 直接调用 Superpowers 或 YSS 实现技能；必须先检查 `.comet.yaml` 的 `phase`、`design_doc`、`plan`、`build_mode`、`tdd_mode` 和 `review_mode`。若 phase 仍在 `open` / `design` / 未就绪 `build`，先继续 `comet` / `comet-build`；`yss-router` 的输出作为 Comet build 或等价实现交接输入。

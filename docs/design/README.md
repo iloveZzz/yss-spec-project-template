@@ -2,6 +2,11 @@
 
 本目录保存产品页面、用户流、原型、交互说明和状态矩阵等设计资产。
 
+设计系统基线：
+
+- `docs/design/design.md`：从本地 `Product-Design-System` 引入并整理的 Ant Design 企业级设计系统说明，后续页面设计、交互说明、原型评审和前端实现默认引用该文件。
+- `docs/design/tokens/`：随仓库保存的主题、亮色 / 暗色 / 紧凑 token 和 CSS 变量快照，后续实现不得依赖本机 Downloads 目录。
+
 进入 OpenAPI Draft 前，有用户界面的功能建议先沉淀：
 
 - 页面清单和信息架构。
@@ -23,6 +28,7 @@
 
 推荐技能：
 
+- `yss-design-system`：项目设计系统与 Ant Design 企业级 UI 风格基线；页面设计、原型评审、UI 实现和主题 token 落地时默认先引用。
 - `product-design-prototype`：基于 PRD 初稿和产品总体设计 / 功能架构，产出页面 / 原型 / 交互设计资产。
 - `wireframe-prototype`：低保真线框、Excalidraw、Figma、Penpot、tldraw、Axure 等原型链接沉淀。
 - `component-story-prototype`：Storybook / Histoire 工程态状态原型。
