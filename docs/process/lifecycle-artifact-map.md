@@ -80,6 +80,7 @@ owner: ai
 ## 执行规则
 
 - 每次开始前先判断任务类型和最近可信阶段；不要把小文案、局部样式、单点 Bug 套进完整新功能流程。
-- 每个主阶段结束都要做 Git checkpoint 判断：列出变更产物、排除无关脏文件，并说明提交 / 推送 / 暂缓原因。
+- 每个主阶段结束都要做 issue tracker 同步：按用户明确选择或当前仓库主远端路由到 GitLab / GitHub，更新对应 PRD、OpenSpec / Comet change、垂直切片 Issue、里程碑或评论，记录阶段状态、完成范围、验证证据、阻塞项、下一步和安全人审点。
+- 每个主阶段结束都要做 Git checkpoint 判断：列出变更产物、Issue 同步状态、排除无关脏文件，并说明提交 / 推送 / 暂缓原因。
 - 触碰安全红线时，模板中必须标记 `TODO-HUMAN-REVIEW`，Agent 只能生成草案。
 - 任何“完成 / 可合并 / 可发布”结论必须有 fresh verification 证据。
