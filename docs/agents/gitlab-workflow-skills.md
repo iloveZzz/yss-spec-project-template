@@ -4,7 +4,9 @@
 
 ## 1. 定位
 
-本项目后续默认使用 GitLab 作为代码托管、Merge Request、CI/CD 和工作流协作入口。
+当项目主远端为 GitLab 时，默认使用 GitLab 作为代码托管、Merge Request、CI/CD 和工作流协作入口。
+
+PRD、Issue 和 triage 不在本文中写死到 GitLab；它们按 `docs/agents/issue-tracker.md` 在 GitLab / GitHub 间路由。
 
 已集成能力：
 
@@ -27,7 +29,7 @@ GitLab 基础配置文件：
 
 ```json
 {
-  "url": "http://192.168.167.142:8081",
+  "url": "http://<gitlab-host>",
   "token": "<GitLab Personal Access Token 或 Project Access Token>",
   "default_clone_protocol": "http"
 }
@@ -44,12 +46,12 @@ GitLab 基础配置文件：
 
 `glab` 用于操作 GitLab MR / CI / Issue / Release。
 
-本项目自托管 GitLab 配置：
+自托管 GitLab 配置示例：
 
 ```bash
 glab auth login \
-  --hostname 192.168.167.142:8081 \
-  --api-host 192.168.167.142:8081 \
+  --hostname <gitlab-host> \
+  --api-host <gitlab-host> \
   --api-protocol http \
   --git-protocol http \
   --stdin
@@ -58,8 +60,8 @@ glab auth login \
 验证：
 
 ```bash
-glab auth status --hostname 192.168.167.142:8081
-glab repo view --repo Data-Middleground-Develop-Area/product-code/datamiddle-backend/yss-datamiddle-datamodeling
+glab auth status --hostname <gitlab-host>
+glab repo view --repo <group>/<project>
 ```
 
 若 `glab` 由 Go 安装，默认位置为：
@@ -77,6 +79,8 @@ glab repo view --repo Data-Middleground-Develop-Area/product-code/datamiddle-bac
 ```text
 scripts/gitworks
 ```
+
+`scripts/gitworks` 默认从当前仓库 `origin` 远端推导 GitLab host 和 `<group>/<project>`；如需覆盖，可设置 `GITLAB_HOST`、`GITLAB_PROJECT_PATH` 或 `GIT_REMOTE`。
 
 常用命令：
 
@@ -108,7 +112,7 @@ scripts/gitworks ci-status
 
 1. 读取项目状态：`scripts/gitworks status`。
 2. 需要 GitLab API / clone / push workflow 时，使用 `gitlab-workflow` skill。
-3. 需要 MR / CI / Issue / Pipeline 时，使用 `glab` 或 `scripts/gitworks`。
+3. 需要 MR / CI / Pipeline 时，使用 `glab` 或 `scripts/gitworks`；需要 Issue / PRD / triage 时，先按 `docs/agents/issue-tracker.md` 判断 GitLab 或 GitHub。
 4. 执行自动提交前，必须先检查工作区脏文件，避免把无关 `.agents/`、`.codex/`、本机配置或用户未确认文件混入提交。
 5. 不直接提交到受保护主分支；默认使用 `feature/*`、`fix/*`、`chore/*` 分支。
 6. 自动 workflow 只在用户明确授权提交/推送时执行。

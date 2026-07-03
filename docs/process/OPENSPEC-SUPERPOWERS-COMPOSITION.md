@@ -43,6 +43,10 @@ delegate_task(
 
 ## Superpowers — 方法论 Skill 生态
 
+### 产物语言约束
+
+Superpowers 相关技能在本项目内生成的持久化产物正文默认使用中文，尤其是 `grill-with-docs`、`plan`、`tdd`、`review`、`debug`、`simplify` 等链路输出。英文仅保留为必要的标识、代码、命令和模板 metadata。
+
 | Skill | 阶段 | 触发 |
 |-------|------|------|
 | `spike` | 可行性验证 | "先试试", "验证下" |
@@ -74,7 +78,7 @@ cronjob(action="create", schedule="0 9 * * *",
 ### Webhook 驱动
 
 ```python
-# PR Opened → 自动触发 AI Review (GitHub Actions webhook → agent)
+# MR / PR Opened → 自动触发 AI Review (GitLab / GitHub webhook → agent)
 ```
 
 ### Kanban 多 Agent 队列

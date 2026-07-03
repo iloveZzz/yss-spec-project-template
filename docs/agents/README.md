@@ -15,7 +15,7 @@
 
 | 文档 | 说明 |
 |---|---|
-| `issue-tracker.md` | Issue / PRD 发布到 GitHub Issues 时的操作约定 |
+| `issue-tracker.md` | Issue / PRD / triage 在 GitLab Issues 与 GitHub Issues 间路由的操作约定 |
 | `triage-labels.md` | 标准五态 triage 标签与含义 |
 | `domain.md` | 领域文档读取和维护规则 |
 | `skills-maintenance.md` | Engineering Skills 的安装、升级和验证说明 |

@@ -65,7 +65,7 @@
 | 产品设计资产 | `docs/design/` 或 Figma / 原型工具链接 | 保存页面清单、用户流、原型、交互说明和状态矩阵 |
 | 架构和决策资产 | `docs/architecture/`、`docs/adr/` | 保存模块边界、状态流和难回滚取舍 |
 | 变更编排 | `openspec/changes/`、Comet | 追踪 proposal、design、spec、tasks、verify、archive |
-| Agent 交接 | `docs/templates/agent-brief-template.md`、GitHub Issues | 把任务交给 Agent 前写清目标、非目标、验收和验证 |
+| Agent 交接 | `docs/templates/agent-brief-template.md`、GitLab / GitHub Issues | 把任务交给 Agent 前写清目标、非目标、验收和验证 |
 | Fresh verification | 测试命令、`scripts/verify-template`、CI | 用最新证据支撑“完成”结论 |
 
 ### 1.5.1 与 AI 交互的基本协议

@@ -34,7 +34,7 @@ Matt Pocock Engineering Skills 是一组面向 AI 编码协作的工作流说明
 | 使用 skills | `grill-with-docs`、`domain-modeling`、`to-prd`、`to-issues`、`implement`、`tdd` |
 | 输入 | 业务想法、发现报告、用户故事草案、干系人讨论记录 |
 | 输出 | PRD、OpenAPI 3.1 Spec、垂直切片 Issue、实现与测试 |
-| 落点 | `docs/requirements/`、`docs/api/specs/`、GitHub Issues、`CONTEXT.md`、`docs/adr/` |
+| 落点 | `docs/requirements/`、`docs/api/specs/`、GitLab / GitHub Issues、`CONTEXT.md`、`docs/adr/` |
 | 人工确认点 | PRD 范围、OpenAPI 契约、Issue 粒度、安全红线、最终 Review |
 
 执行顺序：
@@ -104,9 +104,9 @@ grill-with-docs
 |---|---|
 | 触发语 | “看下 issue”、“分诊这些需求”、“哪些可以给 Agent 做”、“把 #42 准备好” |
 | 使用 skills | `triage`、必要时 `grill-with-docs`、`domain-modeling`、`diagnosing-bugs` |
-| 输入 | GitHub Issue、评论、标签、复现步骤、需求背景 |
+| 输入 | GitLab / GitHub Issue、评论、标签、复现步骤、需求背景 |
 | 输出 | 分类标签、状态标签、triage notes、agent brief、关闭说明 |
-| 落点 | GitHub Issues、`.out-of-scope/`、`CONTEXT.md`、`docs/adr/` |
+| 落点 | GitLab / GitHub Issues、`.out-of-scope/`、`CONTEXT.md`、`docs/adr/` |
 | 人工确认点 | 状态跳转异常、信息不足、拒绝请求、必须人工实现 |
 
 状态模型：
@@ -127,7 +127,7 @@ grill-with-docs
 
 建议本仓库采用：
 
-- Issue tracker：GitHub Issues，配置见 `docs/agents/issue-tracker.md`
+- Issue tracker：按用户选择或仓库主远端路由到 GitLab / GitHub Issues，配置见 `docs/agents/issue-tracker.md`
 - Triage labels：标准五态，配置见 `docs/agents/triage-labels.md`
 - Domain docs：单上下文模式，即根目录 `CONTEXT.md` + `docs/adr/`
 

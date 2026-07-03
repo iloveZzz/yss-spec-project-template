@@ -102,6 +102,13 @@ docs/implementation/
 - `docs/releases/` 保存发布说明。
 - `docs/implementation/` 保存实施方案、客户上线记录和回滚方案。
 
+这不是普通建议，而是 Comet / YSS 执行时的默认实现位置约定：
+
+- `/comet open` 或 `/comet design` 如果发现本次 change 需要在本仓库落代码，应在 proposal、design 或 build entry review 中记录实现位置决策；已有记录可复用，不需要反复询问。
+- `/comet-build` 在生成后端 / 前端工程骨架、运行 `yss-ddd-scaffold-generator` 或创建业务代码目录前，必须先检查默认目录是否适用。
+- 默认后端进入 `apps/backend/`，默认前端进入 `apps/frontend/`；不得由 Agent 自行新建任意顶层业务代码目录。
+- 如果项目已经存在其他实现目录，或用户明确选择外部仓库 / worktree，必须在本次 change 的持久化产物中记录偏离原因和验证命令；历史目录不强制搬迁，但需要说明是否后续迁移到默认 `apps/` 结构。
+
 新增目录后运行：
 
 ```bash
@@ -515,7 +522,7 @@ open -> design -> build -> verify -> archive
 
 ### 4.7 垂直切片阶段
 
-保存位置可以是 GitHub Issues，也可以先放在：
+保存位置可以是 GitLab / GitHub Issues，也可以先放在：
 
 ```text
 docs/requirements/issues/
@@ -553,6 +560,8 @@ Slice 6: 查看模型版本
 
 YSS 项目开发前先用 `yss-router` 判断最小技能集，避免一次性加载所有 YSS 规范。
 
+Comet build 不能只停留在“已经运行脚手架”。`yss-ddd-scaffold-generator` 只完成工程骨架和基线输入；真正写业务代码时，每个垂直切片都要把 `yss-router` 输出的专项 skill 当作实现规范来源，并在实施计划、build entry review 或切片记录中留下证据。
+
 前端页面必须按 `yss-ui` 约束落地：
 
 ```text
@@ -569,11 +578,15 @@ OpenAPI / Orval API client
 
 ```text
 yss-ddd-scaffold-generator
+-> yss-backend-scaffold-parent
+-> yss-router 输出本切片最小 skill 集合
+-> yss-domain-modeling（需要先建模时）
 -> yss-domain / yss-backend-scaffold-domain
 -> 数据架构确认（涉及持久化 / 元数据 / 版本 / 血缘时）
--> yss-repository
--> yss-mybatis
--> yss-web-controller
+-> yss-repository / yss-backend-scaffold-infrastructure
+-> yss-mybatis（需要 MyBatis / BaseRepository / 分页细节时）
+-> yss-web-controller / yss-backend-scaffold-web
+-> alibaba-java-code-style
 ```
 
 分层边界：
@@ -594,13 +607,22 @@ Web Adapter -> Application Use Case -> Domain Service / Gateway -> Infrastructur
 7. 联调并更新任务状态
 ```
 
+每个后端切片至少记录：
+
+- 本切片使用的 `yss-router` 路由结果。
+- 领域层是否使用 `yss-domain-modeling`、`yss-domain` 或 `yss-backend-scaffold-domain`。
+- 持久层是否使用 `yss-repository`、`yss-mybatis` 或 `yss-backend-scaffold-infrastructure`。
+- Web 层是否使用 `yss-web-controller`、`yss-dto` 或 `yss-backend-scaffold-web`。
+- Java 代码是否按 `alibaba-java-code-style` 做命名、异常、日志、集合、测试、ORM/MyBatis 和安全检查。
+- 未使用某个预期 skill 的原因，例如本切片不涉及持久化、不涉及 Web Adapter，或只更新文档。
+
 ### 4.8.1 实现审查与清理审查
 
 每个垂直切片完成后都要做独立代码审查，审查者不能是实现者。
 
 | 审查 | 触发时机 | 检查重点 | 处理方式 |
 |---|---|---|---|
-| Code Review | slice 完成后 | OpenAPI 与实现一致、YSS DDD 分层、测试覆盖、安全红线 | 阻断项回到开发；建议项进入 backlog |
+| Code Review | slice 完成后 | OpenAPI 与实现一致、YSS DDD 分层、实际使用的 YSS 专项 skill、Alibaba Java 强制项、测试覆盖、安全红线 | 阻断项回到开发；建议项进入 backlog |
 | Security Review | 触碰安全红线时 | 权限、认证、SQL、迁移、加密、公共 API | 必须人工确认或标记 `TODO-HUMAN-REVIEW` |
 | Simplify Review | 功能验证通过后 | 复用、重复代码、可读性、性能风险 | 只做与本次目标相关的简化 |
 | Release Review | 发布前 | fresh verification、发布说明、实施步骤、回滚方案 | 不足则回到 verify / release 准备 |

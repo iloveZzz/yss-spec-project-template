@@ -68,7 +68,7 @@ owner: ai
 | 数据架构 | `docs/architecture/<feature>-data-architecture.md` | `docs/architecture/templates/data-architecture-template.md` |
 | 架构 / 设计审查 | `docs/architecture/<feature>-architecture-review.md` | `docs/architecture/templates/architecture-review-checklist.md` |
 | OpenAPI Freeze | `docs/api/<feature>-openapi-freeze.md` | `docs/api/templates/openapi-freeze-record-template.md` |
-| 垂直切片 Issue | GitHub Issues 或 `docs/requirements/issues/<feature>-slice.md` | `docs/templates/vertical-slice-issue-template.md` |
+| 垂直切片 Issue | GitLab / GitHub Issues 或 `docs/requirements/issues/<feature>-slice.md` | `docs/templates/vertical-slice-issue-template.md` |
 | 实现路由 | `docs/requirements/issues/<feature>-implementation-routing.md` | `docs/templates/implementation-routing-template.md` |
 | 审查报告 | MR / PR 评论或 `docs/requirements/issues/<feature>-review.md` | `docs/templates/review-report-template.md` |
 | Fresh verification | issue / MR / release note 或 `docs/testing/<feature>-verification.md` | `docs/templates/verification-record-template.md` |
