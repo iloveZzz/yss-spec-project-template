@@ -7,6 +7,13 @@ owner: ai
 
 本文是本仓库产品研发流程的权威索引。日常执行使用 9 个主阶段；21 个门禁 / 职责点用于审查、路由和补齐缺失资产。小需求、Bug、局部样式或配置调整不重跑完整流程，只从最早受影响资产开始补齐下游门禁。
 
+补充执行资产：
+
+- 13 个对外工作单元与本表的映射见 `docs/process/harness-work-unit-map.md`。
+- 小改动 / 中等变更 / 新模块的流程裁剪和最近可信阶段判定见 `docs/process/harness-process-tailoring.md`。
+- 外部前端 / 后端实现仓库的接入和跨仓库切片绑定见 `docs/process/implementation-repo-integration.md`。
+- 阶段结束的 Issue 同步与 Git checkpoint 记录可使用 `docs/process/templates/stage-checkpoint-template.md`。
+
 ## 9 个主阶段
 
 | 主阶段 | 目标 | 必须产物 | 条件产物 | 下一门禁 |
@@ -70,6 +77,8 @@ owner: ai
 | OpenAPI Freeze | `docs/api/<feature>-openapi-freeze.md` | `docs/api/templates/openapi-freeze-record-template.md` |
 | 垂直切片 Issue | GitLab / GitHub Issues 或 `docs/requirements/issues/<feature>-slice.md` | `docs/templates/vertical-slice-issue-template.md` |
 | 实现路由 | `docs/requirements/issues/<feature>-implementation-routing.md` | `docs/templates/implementation-routing-template.md` |
+| 实现仓库登记 | change design / build entry review / `docs/implementation/<feature>-repo-registry.md` | `docs/templates/implementation-repo-registry-template.md` |
+| 跨仓库切片记录 | change tasks / 垂直切片 Issue / `docs/implementation/<feature>-cross-repo-slice.md` | `docs/templates/cross-repo-slice-template.md` |
 | Build Architecture Checklist | `docs/implementation/<feature>-build-architecture-checklist.md` 或 build entry review / `.comet/subagent-progress.md` | `docs/templates/build-architecture-checklist-template.md` |
 | 审查报告 | MR / PR 评论或 `docs/requirements/issues/<feature>-review.md` | `docs/templates/review-report-template.md` |
 | Fresh verification | issue / MR / release note 或 `docs/testing/<feature>-verification.md` | `docs/templates/verification-record-template.md` |
@@ -77,10 +86,20 @@ owner: ai
 | 实施记录 | `docs/implementation/<feature>-rollout.md` | `docs/templates/implementation-plan-template.md` |
 | 用户手册 | `docs/user-guide/<feature>.md` | `docs/user-guide/templates/user-guide-template.md` |
 | 复盘 | `docs/process/sprint-retros/<date>-<topic>.md` | `docs/templates/retro-report-template.md` |
+| Harness 工作单元映射 | `docs/process/harness-work-unit-map.md` | 直接维护 |
+| Harness 流程裁剪 | `docs/process/harness-process-tailoring.md` | 直接维护 |
+| Harness 试点选择 | `docs/process/harness-pilot-selection.md` | 直接维护 |
+| 阶段 checkpoint | Issue / MR / PR 评论或阶段文档 | `docs/process/templates/stage-checkpoint-template.md` |
+| Harness 自动化候选 | `docs/process/harness-automation-candidates.md` | 直接维护 |
+| Skill 沉淀治理 | `docs/process/skill-governance.md` | 直接维护 |
+| Harness 对外蓝图 | `docs/process/harness-executive-blueprint.md` | 直接维护 |
+| Harness 试点复盘指标 | `docs/process/harness-pilot-retro-metrics.md` | 直接维护 |
+| Harness 状态模型评估 | `docs/process/harness-state-model-evaluation.md` | 直接维护 |
 
 ## 执行规则
 
 - 每次开始前先判断任务类型和最近可信阶段；不要把小文案、局部样式、单点 Bug 套进完整新功能流程。
+- 判断流程裁剪时先引用 `docs/process/harness-process-tailoring.md`；该指南只能减少不相关产物，不能裁剪关键追踪关系、安全人审或 fresh verification。
 - 进入垂直切片实现前，必须将系统架构、数据架构、ADR、工程基线、OpenAPI Freeze 结论和安全红线转译成 `Build Architecture Checklist`。若架构文档仍是 `draft-for-design-review`、缺少 Design Review 结论，或 checklist 未建立，不得进入正式业务实现。
 - 每个垂直切片完成时必须回勾 `Build Architecture Checklist`，用 `implemented`、`seam-deferred`、`drift`、`violation` 或 `not-applicable` 标记状态，并提供证据或补齐落点。`drift` 触发 Architecture Re-check；`violation` 阻断继续 build。
 - Repository / Gateway / 持久化、权限 / 授权、审计、SQL / DDL / 迁移、文件上传下载、版本快照 / 元数据 / 血缘 / 查询索引、部署 / 回滚 / 运维约束，必须在 checklist 中逐项绑定切片和人审要求。

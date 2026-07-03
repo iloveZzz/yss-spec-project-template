@@ -41,7 +41,17 @@ owner: ai
 | API / 契约 |  |  | 是 / 否 |
 | 测试 / 验证 |  |  | 是 / 否 |
 
-## 4. TDD 与验证策略
+## 4. 外部实现仓库
+
+| repo_role | git_url | default_branch | working_branch | MR / PR | CI | test_command | build_command | 状态 |
+|---|---|---|---|---|---|---|---|---|
+| backend |  |  |  |  |  |  |  | pending / ready / blocked / not-applicable |
+| frontend |  |  |  |  |  |  |  | pending / ready / blocked / not-applicable |
+| other |  |  |  |  |  |  |  | pending / ready / blocked / not-applicable |
+
+说明：当前仓库默认作为 Harness / 研发管理仓库；前后端实现默认位于外部实现仓库。缺少实现仓库登记时，先使用 `implementation-repo-onboarding`，并按 `docs/templates/implementation-repo-registry-template.md` 补齐登记。
+
+## 5. TDD 与验证策略
 
 | 层级 | 先失败测试 / 验证命令 | 通过标准 |
 |------|------------------------|----------|
@@ -50,20 +60,21 @@ owner: ai
 | 前端组件 |  |  |
 | E2E / 关键路径 |  |  |
 
-## 5. 回滚点与风险
+## 6. 回滚点与风险
 
 | 风险 | 回滚点 | 观察信号 | 负责人 |
 |------|--------|----------|--------|
 |  |  |  |  |
 
-## 6. 完成标准
+## 7. 完成标准
 
 - [ ] active Comet / OpenSpec change 完整，且 phase 可进入 build。
 - [ ] YSS skills 已最小化选择，没有绕过 Comet。
+- [ ] 受影响外部实现仓库已登记，并绑定分支、MR / PR、CI 和验证命令。
 - [ ] 每个切片包含测试命令、验证方式和回滚点。
 - [ ] 触碰安全红线的项已标记 `TODO-HUMAN-REVIEW`。
 
-## 7. 下一步门禁
+## 8. 下一步门禁
 
 - 结论：Approved / Blocked
 - 下一步：TDD 实现 / 回到 Comet design / 回到垂直切片

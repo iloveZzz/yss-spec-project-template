@@ -86,13 +86,13 @@ CONTEXT.md
 
 这一步会直接影响后续 AI 生成 PRD、API、代码和测试的质量。
 
-### Step 3: 初始化轻量目录
+### Step 3: 确认实现仓库和产物目录
 
-如果要把代码放入本仓库，可以新增：
+当前仓库默认作为 Harness / 研发管理仓库，前后端源码默认保留在独立实现仓库。每个 change 在进入实现前，必须记录后端 / 前端实现仓库、分支、MR / PR、CI、测试命令和验证证据。
+
+发布和实施产物保存在：
 
 ```text
-apps/backend/
-apps/frontend/
 docs/releases/
 docs/implementation/
 ```
@@ -102,12 +102,20 @@ docs/implementation/
 - `docs/releases/` 保存发布说明。
 - `docs/implementation/` 保存实施方案、客户上线记录和回滚方案。
 
-这不是普通建议，而是 Comet / YSS 执行时的默认实现位置约定：
+只有用户明确选择把代码放入本仓库时，才按需新增：
+
+```text
+apps/backend/
+apps/frontend/
+```
+
+这不是普通建议，而是 Comet / YSS 执行时的实现位置门禁：
 
 - `/comet open` 或 `/comet design` 如果发现本次 change 需要在本仓库落代码，应在 proposal、design 或 build entry review 中记录实现位置决策；已有记录可复用，不需要反复询问。
-- `/comet-build` 在生成后端 / 前端工程骨架、运行 `yss-ddd-scaffold-generator` 或创建业务代码目录前，必须先检查默认目录是否适用。
-- 默认后端进入 `apps/backend/`，默认前端进入 `apps/frontend/`；不得由 Agent 自行新建任意顶层业务代码目录。
-- 如果项目已经存在其他实现目录，或用户明确选择外部仓库 / worktree，必须在本次 change 的持久化产物中记录偏离原因和验证命令；历史目录不强制搬迁，但需要说明是否后续迁移到默认 `apps/` 结构。
+- `/comet-build` 在生成后端 / 前端工程骨架、运行 `yss-ddd-scaffold-generator`、使用 `yss-frontend-scaffold-generator` 或创建业务代码目录前，必须先检查外部实现仓库是否适用。
+- 默认使用外部实现仓库；不得由 Agent 自行新建任意顶层业务代码目录。
+- 如果项目已经存在其他实现目录，或用户明确选择外部仓库 / worktree，必须在本次 change 的持久化产物中记录实现位置、偏离原因和验证命令；历史目录不强制搬迁。
+- 实现仓库接入和跨仓库切片绑定见 `docs/process/implementation-repo-integration.md`。
 
 新增目录后运行：
 

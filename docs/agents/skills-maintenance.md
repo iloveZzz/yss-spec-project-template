@@ -48,6 +48,18 @@ triage
 
 详细配置与使用规则见 `docs/agents/gitlab-workflow-skills.md`。
 
+## Project-level Harness Skills
+
+本项目还维护以下项目级 Harness / YSS 集成技能：
+
+| Skill | Path | 用途 |
+|---|---|---|
+| `implementation-repo-onboarding` | `.codex/skills/implementation-repo-onboarding/` | 接入已有前端 / 后端实现仓库，生成登记、基线发现和验证命令 |
+| `cross-repo-implementation-routing` | `.codex/skills/cross-repo-implementation-routing/` | 从 Harness change 路由跨仓库实现任务，绑定 MR / PR 和验证证据 |
+| `yss-frontend-scaffold-generator` | `.codex/skills/yss-frontend-scaffold-generator/` | 基于标准 YSS 前端模板定义 0-1 前端工程生成流程 |
+
+这些 skill 只定义流程、输入输出和安全边界；除非用户明确授权，不直接 clone 到 Harness 仓库、创建远端仓库、提交或推送代码。
+
 ## Upgrade Checklist
 
 1. Back up the current Codex and Hermes skill directories.
@@ -64,5 +76,9 @@ triage
 for d in ask-matt codebase-design diagnosing-bugs domain-modeling grill-with-docs implement improve-codebase-architecture prototype resolving-merge-conflicts setup-matt-pocock-skills tdd to-issues to-prd triage; do
   test -f "/Users/zhudaoming/.codex/skills/$d/SKILL.md" || echo "codex missing $d"
   test -f "/Users/zhudaoming/.hermes/skills/software-development/$d/SKILL.md" || echo "hermes missing $d"
+done
+
+for d in implementation-repo-onboarding cross-repo-implementation-routing yss-frontend-scaffold-generator; do
+  test -f ".codex/skills/$d/SKILL.md" || echo "project missing $d"
 done
 ```

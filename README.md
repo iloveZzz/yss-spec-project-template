@@ -4,7 +4,7 @@
 
 ## 定位
 
-本模板只保留流程文档、契约模板和 Agent 协作约定。
+本模板默认作为 Harness / 研发管理仓库，保留流程文档、契约模板和 Agent 协作约定。前端 / 后端源码默认位于独立实现仓库；只有用户明确选择本仓库承载实现代码时，才按需创建 `apps/backend/`、`apps/frontend/`。
 
 ## 项目结构
 
@@ -21,6 +21,8 @@
 │   ├── requirements/        ← PRD / 用户故事 / 需求草案
 │   ├── discovery/           ← 头脑风暴与发现阶段材料
 │   ├── architecture/        ← 技术方案与架构审查模板
+│   ├── releases/            ← 发布说明
+│   ├── implementation/      ← 实施方案、上线记录和回滚方案
 │   ├── testing/             ← 测试策略
 │   ├── agents/              ← Agent 协作规范、Issue/Triage/领域文档约定
 │   ├── templates/           ← 通用文档模板
@@ -29,7 +31,7 @@
 └── scripts/                 ← 模板轻量校验脚本
 ```
 
-项目需要生成度量、OpenSpec changes 或其他临时产物时再按需创建对应目录。
+项目需要生成度量、OpenSpec changes、外部实现仓库记录或其他临时产物时再按需创建对应目录。前后端实现仓库接入规则见 `docs/process/implementation-repo-integration.md`。
 
 ## Quickstart
 
@@ -38,12 +40,14 @@
 3. 新产品或新业务域先明确业务架构，再使用 `grill-with-docs` 澄清边界。
 4. 按 `docs/templates/prd-template.md` 形成 PRD，并同步明确功能架构、模块边界和 MVP / 非目标范围。
 5. 如有 API 影响，先在 `docs/api/specs/` 生成 OpenAPI 3.1 Draft。
-6. 后端新服务或新模块先确认 YSS DDD 工程基线；从零创建服务时使用 `yss-ddd-scaffold-generator`。
-7. 用系统总体架构、数据架构（如适用）、OpenSpec / Comet design 校验行为规格、领域边界和契约，设计审查通过后 Freeze OpenAPI。
-8. 使用 `docs/templates/vertical-slice-issue-template.md` 拆分可独立验证的垂直切片 Issue。
-9. 业务行为实现默认使用 TDD：先写失败测试，再写最小实现；生成代码、配置或一次性原型需说明例外和验证方式；Bug 修复先建立 `diagnosing-bugs` 反馈闭环。
-10. 每个切片完成后做独立审查和 fresh verification，再发布、实施和复盘。
-11. 在 `docs/architecture/`、`docs/adr/`、`CONTEXT.md` 和 `AGENTS.md` 沉淀稳定规则。
+6. 进入实现前先按 `docs/process/implementation-repo-integration.md` 登记外部实现仓库；已有工程用 `implementation-repo-onboarding`，跨仓库切片用 `cross-repo-implementation-routing`。
+7. 后端新服务或新模块先确认 YSS DDD 工程基线；从零创建服务时使用 `yss-ddd-scaffold-generator`。
+8. 前端 0-1 微应用使用 `yss-frontend-scaffold-generator` 对齐标准模板；业务页面实现再接 `yss-page-module-development` 和 `api-integration`。
+9. 用系统总体架构、数据架构（如适用）、OpenSpec / Comet design 校验行为规格、领域边界和契约，设计审查通过后 Freeze OpenAPI。
+10. 使用 `docs/templates/vertical-slice-issue-template.md` 拆分可独立验证的垂直切片 Issue。
+11. 业务行为实现默认使用 TDD：先写失败测试，再写最小实现；生成代码、配置或一次性原型需说明例外和验证方式；Bug 修复先建立 `diagnosing-bugs` 反馈闭环。
+12. 每个切片完成后做独立审查和 fresh verification，再发布、实施和复盘。
+13. 在 `docs/architecture/`、`docs/adr/`、`CONTEXT.md` 和 `AGENTS.md` 沉淀稳定规则。
 
 ## 模板配置取舍
 
@@ -75,6 +79,11 @@ scripts/verify-template
 | [docs/process/PDCA-SCRUM.md](./docs/process/PDCA-SCRUM.md) | PDCA × Scrum × AI |
 | [docs/process/OPENSPEC-SUPERPOWERS-COMPOSITION.md](./docs/process/OPENSPEC-SUPERPOWERS-COMPOSITION.md) | OpenSpec 与 Superpowers 协作方式 |
 | [docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md](./docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md) | Matt Pocock Engineering Skills 集成与使用 |
+| [docs/process/harness-work-unit-map.md](./docs/process/harness-work-unit-map.md) | Harness 13 个工作单元与 9 阶段 / 21 门禁映射 |
+| [docs/process/harness-process-tailoring.md](./docs/process/harness-process-tailoring.md) | 小改动 / 中等变更 / 新模块的流程裁剪指南 |
+| [docs/process/harness-executive-blueprint.md](./docs/process/harness-executive-blueprint.md) | 面向业务方和管理者的 Harness 一页式蓝图 |
+| [docs/process/harness-optimization-backlog.md](./docs/process/harness-optimization-backlog.md) | Harness 工程优化调整待办 |
+| [docs/process/implementation-repo-integration.md](./docs/process/implementation-repo-integration.md) | 外部前端 / 后端实现仓库接入与跨仓库切片绑定 |
 | [docs/agents/README.md](./docs/agents/README.md) | Agent 协作文档目录说明 |
 | [docs/agents/skills-maintenance.md](./docs/agents/skills-maintenance.md) | Codex / Hermes skills 安装与维护 |
 | [docs/discovery/IDEATION.md](./docs/discovery/IDEATION.md) | 头脑风暴方法论 |
@@ -88,4 +97,6 @@ scripts/verify-template
 | [docs/templates/prd-template.md](./docs/templates/prd-template.md) | PRD，包含 OpenAPI 影响、测试决策、AI / 人工审查点 |
 | [docs/templates/vertical-slice-issue-template.md](./docs/templates/vertical-slice-issue-template.md) | 垂直切片 Issue |
 | [docs/templates/agent-brief-template.md](./docs/templates/agent-brief-template.md) | `triage` 产出的 Agent Brief |
+| [docs/templates/implementation-repo-registry-template.md](./docs/templates/implementation-repo-registry-template.md) | 外部实现仓库登记 |
+| [docs/templates/cross-repo-slice-template.md](./docs/templates/cross-repo-slice-template.md) | 跨仓库垂直切片记录 |
 | [docs/architecture/templates/architecture-deepening-template.md](./docs/architecture/templates/architecture-deepening-template.md) | 架构 deepening 候选与 seam 设计 |

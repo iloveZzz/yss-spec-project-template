@@ -35,6 +35,7 @@ When the request is already narrowly scoped, use the matching specialist directl
 | Generate/refresh OpenAPI and Orval clients | `yss-openapi` only after OpenAPI Freeze or implemented-backend source-of-truth refresh |
 | Commit micro-app changes | `microapp-commit` |
 | Create a DDD backend module from scratch | `yss-ddd-scaffold-generator` |
+| Create a YSS frontend micro-app from scratch | `yss-frontend-scaffold-generator`; add `yss-page-module-development`, `yss-components`, `api-integration` only after the scaffold and contract are ready |
 | Model domain aggregates/entities/gateways | `yss-domain-modeling`; add `yss-domain` when code implementation is required, and add `yss-repository` when persistence is required |
 | Generate persistence from DDL/metadata | `yss-db2mybatis`; add `yss-mybatis` for framework-specific behavior |
 | Implement Repository/GatewayImpl/PO/Convertor | `yss-repository`; add `yss-mybatis` for BaseRepository, pagination, or datasource issues |
@@ -81,6 +82,7 @@ When the request is already narrowly scoped, use the matching specialist directl
 
 ## Common Combinations
 
+- New frontend micro-app: `yss-frontend-scaffold-generator`; after scaffold creation, use `yss-page-module-development` + `api-integration` for business pages.
 - Page with backend list API: `yss-page-module-development` + `api-integration`; add `yss-openapi` only when the contract is frozen or the backend contract is being refreshed.
 - Tree-table page: `yss-page-module-development` + `yss-use-tree-height` + `yss-use-table-height`.
 - Search form plus table: `yss-page-module-development` + `yss-formily` + `api-integration`.
