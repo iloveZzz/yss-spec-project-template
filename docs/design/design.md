@@ -202,7 +202,7 @@ Inter, system-ui, -apple-system, Segoe UI, Helvetica Neue, Arial, sans-serif
 
 ## 设计审查清单
 
-进入 PRD 校准、OpenAPI Draft 或前端实现前，带 UI 的需求应检查：
+进入 PRD 校准、API 影响分析 / 契约草案或前端实现前，带 UI 的需求应检查：
 
 - 是否引用本文件作为设计系统基线。
 - 页面清单、用户主路径、异常路径和权限状态是否明确。

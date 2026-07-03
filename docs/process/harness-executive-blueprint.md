@@ -26,11 +26,11 @@ AI 不能只作为一次性辅助工具使用。Harness 工程的目标，是把
 → 反馈复盘
 ```
 
-对内执行时，13 个工作单元映射到本仓库 9 个主阶段和 21 个门禁。权威执行索引仍是 `docs/process/lifecycle-artifact-map.md`。
+对内执行时，13 个工作单元映射到本仓库 8 个主阶段和 21 个门禁。权威执行索引仍是 `docs/process/lifecycle-artifact-map.md`。
 
 ## 哪些门禁不能跳
 
-- API 变化必须先有 OpenAPI Draft，并在实现前完成 Freeze 或记录无 API 影响。
+- API 变化必须先有 API 影响记录和契约草案 / review-only OpenAPI Draft，并在实现或生成客户端前完成 Freeze 或记录无 API 影响。
 - 正式垂直切片前必须有 active OpenSpec / Comet change 和完整 change 资产。
 - 架构、数据、ADR、工程基线和安全红线必须进入 Build Architecture Checklist。
 - 支付、迁移、认证授权、加密、SQL、公共基础库 API 等安全红线必须人工审查。
@@ -43,7 +43,8 @@ AI 不能只作为一次性辅助工具使用。Harness 工程的目标，是把
 
 ```text
 PRD
-→ OpenAPI Draft
+→ API 影响分析 / 契约草案
+→ review-only OpenAPI Draft（如需要）
 → Comet Change
 → 垂直切片
 → TDD
@@ -62,4 +63,3 @@ PRD
 - ready-for-agent 到可验证 PR 的周期缩短。
 - 回归缺陷数下降。
 - 模板、脚本和 Skill 能从复盘中持续更新。
-

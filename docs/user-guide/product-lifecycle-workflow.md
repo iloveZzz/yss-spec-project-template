@@ -127,7 +127,7 @@ scripts/verify-template
 
 ## 4. 生命周期主流程
 
-日常推荐使用 9 个主阶段推进，21 个门禁 / 职责点只用于检查和补齐缺失资产，不要求每个需求逐项跑完。阶段、产物、模板和必需 / 条件必需规则的权威索引见：
+日常推荐使用 8 个主阶段推进，21 个门禁 / 职责点只用于检查和补齐缺失资产，不要求每个需求逐项跑完。阶段、产物、模板和必需 / 条件必需规则的权威索引见：
 
 ```text
 docs/process/lifecycle-artifact-map.md
@@ -140,11 +140,10 @@ docs/process/lifecycle-artifact-map.md
 2. 机会与 Discovery
 3. 业务 / PRD / 功能架构
 4. 产品设计与需求冻结
-5. API Draft 与工程基线
-6. 系统 / 数据架构与设计审查
-7. 契约冻结与 OpenSpec / Comet
-8. 垂直切片与 TDD 实现
-9. 验证发布与复盘
+5. 系统 / 数据架构与工程契约设计审查
+6. 契约冻结与 OpenSpec / Comet
+7. 垂直切片与 TDD 实现
+8. 验证发布与复盘
 ```
 
 机会探索环不是死流程，而是把三类输入循环校准：
@@ -159,9 +158,9 @@ docs/process/lifecycle-artifact-map.md
 - 已有行业、竞品或用户材料：先 Discovery，再生成候选方案。
 - 明确 Bug 或小调整：不走完整机会探索环，直接走 hotfix / tweak。
 - 已有功能的小需求变更：先做影响面评估，选择最近可信阶段，只更新受影响资产和下游门禁。
-- 新模块、API 或跨端改动：必须按 9 个主阶段推进；有 UI 时必须经过产品设计、原型评审和需求冻结；有 API 时必须经过 OpenAPI Draft、工程基线、系统 / 数据架构与设计审查、OpenAPI Freeze、OpenSpec / Comet、垂直切片和 TDD。
+- 新模块、API 或跨端改动：必须按 8 个主阶段推进；有 UI 时必须经过产品设计、原型评审和需求冻结；有 API 时必须在系统 / 数据架构与工程契约设计审查阶段完成 API 影响分析 / 契约草案、工程基线、系统 / 数据架构、Design Review，再进入 OpenAPI Freeze、OpenSpec / Comet、垂直切片和 TDD。
 
-进入 PRD 前必须通过 `grill-with-docs` 收敛为：用户是谁、痛点是什么、为什么现在做、第一版做什么、明确不做什么、成功标准是什么。
+进入 PRD 前必须通过 `grill-with-docs` 收敛为：用户是谁、痛点是什么、为什么现在做、第一版做什么、明确不做什么、成功标准是什么、产品功能建设方向是什么，以及后续可能影响哪些 UI、API、数据、权限、架构和安全门禁。
 
 ### 4.0 yss-product-lifecycle 使用入口
 
@@ -173,7 +172,7 @@ docs/process/lifecycle-artifact-map.md
 
 - 新产品、新模块或跨端/API 改动：先判断生命周期阶段和缺失资产。
 - 小需求变更或迭代：判断现有 PRD、产品总体设计、交互设计、OpenAPI、架构、垂直切片中哪一层最早受影响。
-- 已有 PRD 或设计材料：检查是否可以进入产品总体设计、OpenAPI Draft、工程基线、OpenSpec / Comet 或垂直切片。
+- 已有 PRD 或设计材料：检查是否可以进入产品总体设计、API 影响分析 / 契约草案、工程基线、OpenSpec / Comet 或垂直切片。
 - 已有 active Comet / OpenSpec change：判断是继续 change，还是缺少上游产物。
 - 实现前：确认 PRD、OpenAPI Freeze、工程基线、设计审查和垂直切片是否齐备。
 
@@ -340,10 +339,10 @@ API 契约采用 Draft -> Freeze 两段式：
 
 | 状态 | 产出人 | 用途 | 进入条件 |
 |---|---|---|---|
-| OpenAPI Draft | API Contract Agent 主责，Product / Frontend / Backend 协作 | 把 PRD 中的接口影响转成可讨论的路径、schema、错误、分页、权限和契约测试草案 | PRD 已说明 OpenAPI 影响 |
+| API 影响分析 / 契约草案 / OpenAPI Draft | API Contract Agent 主责，Product / Frontend / Backend 协作 | 把 PRD 和产品设计中的接口影响转成可讨论的路径、schema、错误、分页、权限和契约测试草案；Freeze 前仅供评审和架构反审 | PRD 已说明 OpenAPI 影响，UI 场景已完成产品设计 / 原型评审 |
 | OpenAPI Freeze | API Contract Agent 主责，Architecture / Frontend / Backend 共同确认 | 作为垂直切片、TDD、前后端实现和契约测试的冻结输入 | 已通过工程基线、系统/数据架构（如适用）、OpenSpec / Comet 和设计审查 |
 
-如果功能会影响前后端接口，先生成 OpenAPI Draft，再通过工程基线、系统/数据架构（如适用）、OpenSpec / Comet design 和设计审查冻结契约；冻结后再写 Java / Vue 代码。
+如果功能会影响前后端接口，先形成 API 影响记录和契约草案；必要时生成 review-only OpenAPI Draft，再通过工程基线、系统/数据架构（如适用）、OpenSpec / Comet design 和设计审查冻结契约；冻结后再写 Java / Vue 代码或生成客户端。
 
 OpenAPI YAML 和 OpenSpec delta spec 职责不同：
 
@@ -378,7 +377,7 @@ Freeze 记录使用：
 docs/api/templates/openapi-freeze-record-template.md
 ```
 
-### 4.5 工程基线与架构设计阶段
+### 4.5 系统 / 数据架构与工程契约设计审查阶段
 
 保存位置：
 
@@ -498,7 +497,7 @@ docs/architecture/diagrams/
 
 ### 4.6 OpenSpec / Comet 变更阶段
 
-当需求进入正式交付，用 Comet 或 OpenSpec 创建 change。涉及 API 的 change 应先带着 OpenAPI Draft 进入 open / design 阶段，用行为规格、领域状态、权限、错误场景和 YSS DDD 工程基线校验契约；进入 build 前必须完成设计审查和 OpenAPI Freeze。
+当需求进入正式交付，用 Comet 或 OpenSpec 创建 change。涉及 API 的 change 应引用 API 影响记录、契约草案或 review-only OpenAPI Draft，用行为规格、领域状态、权限、错误场景和 YSS DDD 工程基线校验契约；进入 build 前必须完成设计审查和 OpenAPI Freeze。
 
 Comet 中的 brainstorming 只负责正式变更的方案设计：技术选项、架构权衡、风险、测试 seam、契约影响和实施策略。它不重复 lifecycle 机会探索；如果 Discovery / PRD 已经说明用户、痛点、MVP、非目标和成功标准，Comet 直接引用这些产品事实。
 
@@ -791,18 +790,17 @@ Slice 5: 模型发布与版本冻结
 
 ## 7. 最小可执行版本
 
-如果你不想一开始就把流程做重，保留这 9 个主阶段即可；其中条件产物按影响面启用：
+如果你不想一开始就把流程做重，保留这 8 个主阶段即可；其中条件产物按影响面启用：
 
 ```text
 1. 入口分诊：判断任务类型、最近可信阶段和最小技能集。
-2. 机会与 Discovery：明确用户、痛点、MVP、非目标和成功标准。
+2. 机会与 Discovery：明确用户、痛点、MVP、非目标、成功标准、产品功能指引和下游影响清单。
 3. 业务 / PRD / 功能架构：写清 PRD、业务边界、功能域、模块、验收和 API 影响。
 4. 产品设计与需求冻结：有 UI 时完成交互、状态矩阵、原型评审和 PRD 校准；无 UI 时形成冻结记录。
-5. API Draft 与工程基线：有 API 时写 Draft 并评审；有后端结构影响时完成 YSS DDD 基线审查。
-6. 系统 / 数据架构与设计审查：按风险补系统概要、数据架构、ADR，并通过 Design Review。
-7. 契约冻结与 OpenSpec / Comet：冻结 OpenAPI 或记录无 API 影响，创建 / 选择 active change。
-8. 垂直切片与 TDD 实现：拆端到端切片，检查 Comet build-ready，TDD 实现并独立审查。
-9. 验证发布与复盘：fresh verification、发布 / 实施 / 用户手册和复盘沉淀。
+5. 系统 / 数据架构与工程契约设计审查：有 API 时写影响记录和契约草案 / review-only Draft 并评审；有后端结构影响时完成 YSS DDD 基线审查；按风险补系统概要、数据架构、ADR，并通过 Design Review。
+6. 契约冻结与 OpenSpec / Comet：冻结 OpenAPI 或记录无 API 影响，创建 / 选择 active change。
+7. 垂直切片与 TDD 实现：拆端到端切片，检查 Comet build-ready，TDD 实现并独立审查。
+8. 验证发布与复盘：fresh verification、发布 / 实施 / 用户手册和复盘沉淀。
 ```
 
-这 9 个主阶段已经能让产品、研发、设计、实施和 AI 协作形成闭环；完整模板索引见 `docs/process/lifecycle-artifact-map.md`。
+这 8 个主阶段已经能让产品、研发、设计、实施和 AI 协作形成闭环；完整模板索引见 `docs/process/lifecycle-artifact-map.md`。

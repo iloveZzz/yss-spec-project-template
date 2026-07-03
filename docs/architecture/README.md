@@ -31,7 +31,7 @@ docs/architecture/diagrams/<feature>-data-model.excalidraw
 推荐模板：
 
 - `docs/design/templates/product-overview-design-template.md`：PRD 初稿之后、页面 / 原型 / 交互设计之前的产品总体设计 / 功能架构评审稿。
-- `docs/architecture/templates/system-overview-design-template.md`：OpenAPI Draft 与工程基线之后的系统概要设计评审稿。
+- `docs/architecture/templates/system-overview-design-template.md`：系统 / 数据架构与工程契约设计审查阶段的系统概要设计评审稿，承接 API 影响分析 / 契约草案 / OpenAPI Draft 与工程基线，并在 OpenAPI Freeze 前反向校验 Draft。
 
 ---
 

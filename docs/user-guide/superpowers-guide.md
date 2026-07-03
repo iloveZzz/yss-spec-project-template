@@ -47,7 +47,7 @@ yss-product-lifecycle
 -> 机会探索环
 -> grill-with-docs
 -> PRD / to-prd
--> OpenAPI Draft
+-> API impact / contract draft
 -> OpenSpec / Comet
 -> Comet / Superpowers brainstorming 技术方案设计
 -> 工程基线 / 设计审查
@@ -162,7 +162,7 @@ Superpowers 不替代 OpenSpec 或 Comet。
 机会探索环
 -> grill-with-docs 澄清边界和术语
 -> PRD
--> OpenAPI Draft
+-> API impact / contract draft
 -> OpenSpec / Comet change
 -> Comet / Superpowers brainstorming 技术方案设计
 -> 工程基线 / 设计审查

@@ -9,13 +9,13 @@
 默认需求链路：
 
 ```text
-grill-with-docs -> to-prd -> OpenAPI Draft -> Architecture/OpenSpec 校验 -> OpenAPI Freeze -> to-issues
+grill-with-docs -> to-prd -> API 影响分析 / 契约草案 -> Architecture/OpenSpec 反审 -> OpenAPI Freeze -> to-issues
 ```
 
 进入开发前必须满足：
 
 - [ ] PRD 使用 [../templates/prd-template.md](../templates/prd-template.md)。
-- [ ] OpenAPI 影响明确为“无”或已产出 Draft；进入开发前必须冻结 `docs/api/specs/*.yaml`。
+- [ ] OpenAPI 影响明确为“无”或已产出契约草案 / review-only Draft；进入开发前必须冻结 `docs/api/specs/*.yaml`。
 - [ ] 测试决策明确主要测试 seam。
 - [ ] AI / 人工审查点标注安全红线。
 - [ ] 后续 Issue 使用 [../templates/vertical-slice-issue-template.md](../templates/vertical-slice-issue-template.md)，不得按层横向拆分。

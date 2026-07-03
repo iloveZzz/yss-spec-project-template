@@ -39,7 +39,8 @@
 
 ```text
 PRD
-→ OpenAPI Draft
+→ API 影响分析 / 契约草案
+→ review-only OpenAPI Draft（如需要）
 → Comet Change
 → 垂直切片
 → TDD
@@ -49,4 +50,3 @@ PRD
 ```
 
 试点过程中只补必要文档。若发现流程负担高于收益，优先调整模板和自动化候选，而不是删除安全红线、契约冻结或 fresh verification。
-

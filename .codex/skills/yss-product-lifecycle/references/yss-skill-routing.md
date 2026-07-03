@@ -10,14 +10,14 @@ Route to the smallest useful skill set. Load a primary skill first, then add sec
 | Low-fidelity page flow or wireframe | `wireframe-prototype` | `figma` / `figma-use` when using Figma; Penpot/tldraw/Axure links may be recorded without becoming required dependencies |
 | Engineering prototype with component/page states | `component-story-prototype` | `mock-api-prototype` when data/error states are needed |
 | Prototype needs provisional API data | `mock-api-prototype` | `api-integration` / `yss-openapi` only after OpenAPI Freeze |
-| Gate before PRD calibration / OpenAPI Draft | `prototype-review` | Return to `product-design-prototype` if blocked |
+| Gate before PRD calibration / API impact analysis / contract draft | `prototype-review` | Return to `product-design-prototype` if blocked |
 
 Prototype acceptance:
 
 - Use `docs/design/templates/interaction-spec-template.md` for the main interaction artifact.
 - Use `docs/design/templates/state-matrix-template.md` for loading, empty, error, no-permission, readonly, conflict, and dirty-form states.
-- Use `docs/design/templates/prototype-review-checklist.md` for the gate before PRD calibration and OpenAPI Draft.
-- Capture PRD calibration notes and OpenAPI implications before API Draft: fields, filters, actions, errors, permissions, pagination, and concurrency/version data.
+- Use `docs/design/templates/prototype-review-checklist.md` for the gate before PRD calibration and API impact analysis / contract draft.
+- Capture PRD calibration notes and OpenAPI implications before contract drafting: fields, filters, actions, errors, permissions, pagination, and concurrency/version data.
 - Do not treat Storybook, MSW, Excalidraw, Figma, Penpot, tldraw, or xyflow as mandatory project dependencies in this template repo.
 
 ## Architecture / Visualization
@@ -93,7 +93,7 @@ Backend acceptance:
 - Engineering state prototype:
   product design and requirement freeze: `product-design-prototype` -> `component-story-prototype` -> `mock-api-prototype` -> `prototype-review` -> requirement freeze
 - Prototype to formal implementation:
-  requirement freeze -> API Draft and engineering baseline -> contract freeze and OpenSpec / Comet -> `yss-router`
+  requirement freeze -> system / data architecture, engineering contract, and Design Review -> contract freeze and OpenSpec / Comet -> `yss-router`
 - Full CRUD slice:
   `yss-router` -> `yss-domain` -> `yss-repository` -> `yss-web-controller`
 - CRUD with pagination / datasource concern:
@@ -113,7 +113,7 @@ Backend acceptance:
 - Do not use `yss-repository` before the domain model or metadata is stable.
 - Do not use `yss-web-controller` before Gateway/metadata is stable.
 - Do not use `yss-openapi` to invent API contracts during product/design work; use it to generate or refresh clients/contracts once the Draft/Freeze boundary is clear.
-- Do not route a UI feature from PRD baseline directly to OpenAPI Draft; use `product-design-prototype`, `prototype-review`, and PRD calibration first.
+- Do not route a UI feature from PRD baseline directly to contract draft / OpenAPI Draft; use `product-design-prototype`, `prototype-review`, and PRD calibration first.
 - Do not use Excalidraw diagrams as the only source of truth for requirements, architecture decisions, API contracts, or tests.
 - Do not make diagrams mandatory for small copy, style, config, or single-point bug fixes.
 - Do not let frontend page code duplicate hook request callbacks or pagination state.

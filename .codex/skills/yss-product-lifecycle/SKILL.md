@@ -19,15 +19,14 @@ For this repository, persistent lifecycle artifacts MUST use Chinese body text b
 
 Keep English identifiers unchanged when they are technical names: file paths, commands, class/method names, API paths, schema names, enum values, error codes, frontmatter keys, YAML/JSON keys, OpenSpec capability names, and Comet state values. If an upstream skill template uses English section titles, convert the persisted project document to Chinese section titles unless the user explicitly asks for English or the document targets an English-speaking audience.
 
-Daily execution uses 9 main stages. The previous 21 stage names are governance gates / responsibility points, not a mandatory step-by-step flow for every request. The authoritative mapping of stages, artifacts, templates, and required / conditional gates is `docs/process/lifecycle-artifact-map.md`.
+Daily execution uses 8 main stages. The previous 21 stage names are governance gates / responsibility points, not a mandatory step-by-step flow for every request. The authoritative mapping of stages, artifacts, templates, and required / conditional gates is `docs/process/lifecycle-artifact-map.md`.
 
 ```text
 intake / lifecycle triage
 -> opportunity and Discovery
 -> business / PRD / functional architecture
 -> product design and requirement freeze
--> API Draft and engineering baseline
--> system / data architecture and Design Review
+-> system / data architecture, engineering contract, and Design Review
 -> contract freeze and OpenSpec / Comet
 -> vertical slices and TDD implementation
 -> verification, release, and retrospective
@@ -35,7 +34,9 @@ intake / lifecycle triage
 
 ## Opportunity Exploration vs Comet Brainstorming
 
-Opportunity exploration belongs to this lifecycle skill. It answers product-level questions before PRD: who the user is, what pain exists, why now, what MVP includes, what it excludes, and how success will be measured.
+Opportunity exploration belongs to this lifecycle skill. It answers product-level questions before PRD: who the user is, what pain exists, why now, what MVP includes, what it excludes, how success will be measured, which product capabilities look promising, and which downstream UI / API / data / architecture impacts are likely.
+
+Discovery may produce competitive analysis, a competitive matrix, an opportunity statement, MVP scope, non-goals, product capability guidance, and a downstream impact list. These are upstream inputs for PRD, functional architecture, product design, API, and architecture work. They do not freeze the PRD, final functional architecture, OpenAPI contract, data architecture, or technical system design.
 
 Comet brainstorming belongs to the formal change workflow. It starts after the change is ready for OpenSpec / Comet and focuses on solution design: technical options, tradeoffs, risks, architecture, test seams, contract impact, and implementation strategy.
 
@@ -85,13 +86,13 @@ Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, da
    - `docs/architecture/` and `docs/adr/`
    - `openspec/changes/` and current OpenSpec/Comet state
 2. Classify the request into one main stage:
-   - intake / lifecycle triage, opportunity and Discovery, business / PRD / functional architecture, product design and requirement freeze, API Draft and engineering baseline, system / data architecture and Design Review, contract freeze and OpenSpec / Comet, vertical slices and TDD implementation, or verification / release / retrospective.
+   - intake / lifecycle triage, opportunity and Discovery, business / PRD / functional architecture, product design and requirement freeze, system / data architecture, engineering contract, and Design Review, contract freeze and OpenSpec / Comet, vertical slices and TDD implementation, or verification / release / retrospective.
 3. For small changes or iterations, identify the nearest trustworthy existing stage and only expand from the earliest impacted artifact:
    - wording / style / local configuration -> tweak or direct minimal change, then verify;
    - UI behavior or page state -> product design / prototype review / PRD calibration as needed;
-   - API request, response, error, permission, pagination, or concurrency -> OpenAPI Draft / Review / Freeze and downstream gates;
-   - service boundary, state machine, integration, NFR, rollout, or rollback -> system overview design / Design Review and downstream gates;
-   - persistence, metadata, versioning, lineage, query, or index -> data architecture / Design Review and downstream gates.
+   - API request, response, error, permission, pagination, or concurrency -> system / data architecture, engineering contract, and Design Review with API impact analysis / contract draft / OpenAPI Draft Review / Freeze downstream gates;
+   - service boundary, state machine, integration, NFR, rollout, or rollback -> system / data architecture, engineering contract, and Design Review downstream gates;
+   - persistence, metadata, versioning, lineage, query, or index -> system / data architecture, engineering contract, and Design Review downstream gates.
 4. Check whether required upstream artifacts exist.
    - Before formal `vertical slices / to-issues`, verify the OpenSpec / Comet change gate:
      - run `openspec list --json` when available;
@@ -148,7 +149,7 @@ Default routing:
 | Start a new business product/module | intake -> opportunity and Discovery -> business / PRD / functional architecture -> product design and requirement freeze when UI exists |
 | Design UI flow after PRD baseline | `product-design-prototype`; add `wireframe-prototype`, `component-story-prototype`, or `mock-api-prototype` only when needed |
 | Review prototype before PRD calibration | `prototype-review` |
-| Review OpenAPI Draft before engineering baseline | `yss-openapi-draft-review` |
+| Review contract draft / OpenAPI Draft inside architecture/design review | `yss-openapi-draft-review` |
 | Clarify architecture artifact timing or gaps | this skill plus `docs/process/lifecycle-artifact-map.md` and `references/artifact-checklist.md` |
 | Create architecture/process/data diagrams | `excalidraw-diagram-generator` as a support skill |
 | Design meta-model / metadata / lineage data architecture | architecture/design workflow plus `yss-domain-modeling` or `yss-domain`; use `excalidraw-diagram-generator` for ER, lineage, DFD, or class diagrams when helpful |
@@ -204,12 +205,14 @@ When the user explicitly asks for a full delivery plan, include stage-by-stage t
 ## Guardrails
 
 - Do not skip opportunity exploration for new product/module work; create competitive analysis when market/competitor facts are needed, or record why it is not needed.
+- Do not treat Discovery outputs as frozen downstream design. Discovery can provide product capability guidance and downstream impact signals, but PRD, functional architecture, OpenAPI, system architecture, and data architecture still require their own gates.
 - Do not start implementation before PRD is calibrated, required architecture artifacts are explicit, product design / prototype / interaction design exists and passes `prototype-review` when UI exists, OpenAPI Freeze decision, engineering baseline, design review, and vertical slice are clear.
 - Do not skip business architecture for new products unless the product boundary, users, ecosystem, and value stream are already captured elsewhere.
 - Do not skip functional architecture before PRD calibration when module boundaries, MVP priority, or cross-module dependencies are still unclear.
 - Do not skip system architecture when services, deployment, integrations, performance, security, reliability, or operations are affected.
 - Do not skip data architecture before persistence / repository work. For data modeling, metadata, versioning, or lineage products, treat it as mandatory before Design Review and OpenAPI Freeze.
 - Do not let Excalidraw diagrams invent requirements or architecture decisions; diagrams must point back to source artifacts and any findings must be written back to PRD, OpenAPI, ADR, OpenSpec/Comet design, or issues.
+- Do not treat an OpenAPI Draft as an implementation or generated-client contract before OpenAPI Freeze. It is review-only until engineering baseline, system/data architecture, Design Review, and Freeze have approved it.
 - Do not move an OpenAPI Draft into Engineering Baseline / YSS DDD Review until `yss-openapi-draft-review` or an equivalent persistent review verifies P0 feature coverage, page action to endpoint mapping, YSS response wrappers, error structures, permissions, concurrency, security red lines, and contract test seams.
 - Do not enter formal `vertical slices / to-issues` directly after OpenAPI Freeze unless a matching active OpenSpec / Comet change is selected and complete enough to anchor slices. Required files: `openspec/changes/<change>/proposal.md`, `design.md`, `tasks.md`, at least one `specs/**/spec.md`, and `.comet.yaml`. If `openspec list --json` shows no matching active change, or those files are missing, this is blocking; route to `comet` or `openspec-new-change` first.
 - Do not bypass Comet with direct Superpowers or YSS implementation skills when a matching active Comet change exists. Continue the Comet phase first; Comet owns Superpowers handoff, user decision points, TDD mode, review mode, verification, and archive state.

@@ -16,7 +16,7 @@ owner: ai
 |------|-------------|------|------|
 | PRD / 需求冻结 |  |  |  |
 | 产品总体设计 / 功能架构 |  |  |  |
-| OpenAPI Draft / 无 API 影响记录 |  |  |  |
+| API 影响记录 / 契约草案 / OpenAPI Draft / 无 API 影响记录 |  |  |  |
 | 既有工程结构 |  |  |  |
 | YSS skill 路由 |  |  |  |
 
@@ -63,5 +63,5 @@ owner: ai
 ## 6. 下一步门禁
 
 - 结论：Approved / Blocked
-- 下一步：系统概要设计 / 数据架构 / 回改 OpenAPI Draft
+- 下一步：系统概要设计 / 数据架构 / 回改契约草案 / OpenAPI Draft
 - 阻断项：

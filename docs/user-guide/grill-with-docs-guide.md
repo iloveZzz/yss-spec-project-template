@@ -77,7 +77,8 @@ grill-with-docs = 追问清楚 + 同步沉淀领域语言和关键决策
 -> 更新 CONTEXT.md
 -> 必要时新增 ADR
 -> to-prd 或 PRD 文档
--> OpenAPI Draft
+-> API 影响分析 / 契约草案
+-> review-only OpenAPI Draft（如需要）
 -> 工程基线 / OpenSpec / Comet design
 -> 设计审查
 -> OpenAPI Freeze

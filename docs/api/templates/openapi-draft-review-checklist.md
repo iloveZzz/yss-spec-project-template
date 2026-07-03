@@ -1,11 +1,14 @@
 # OpenAPI Draft 契约评审清单
 
-> 用于 OpenAPI Draft 进入 Engineering Baseline / YSS DDD Review 之前。评审采用 fail-closed：阻断项未关闭前，不进入架构 / OpenSpec / Comet design。
+> 用于 API 影响分析 / 契约草案 / OpenAPI Draft 进入 Engineering Baseline / YSS DDD Review 之前。
+> OpenAPI Draft 在 OpenAPI Freeze 前仅用于评审和架构反审，不得作为前后端实现或生成客户端的稳定契约。
+> 评审采用 fail-closed：阻断项未关闭前，不进入架构 / OpenSpec / Comet design。
 
 ## 输入资产
 
 | 资产 | 路径 | 状态 |
 |---|---|---|
+| API 影响记录 / 契约草案 | issue note / design note / `docs/api/specs/<feature>.yaml` |  |
 | OpenAPI Draft | `docs/api/specs/<feature>.yaml` |  |
 | PRD / 需求冻结 |  |  |
 | 产品总体设计 / 功能架构 |  |  |
@@ -25,6 +28,7 @@
 
 | Gate | Pass 条件 | 结论 | 备注 |
 |---|---|---|---|
+| Draft 成熟度 | 明确当前仅为 review-only；实现、生成 client、契约测试固化均等待 OpenAPI Freeze |  |  |
 | OpenAPI 语法 | YAML、`$ref`、path 参数、lint 通过 |  |  |
 | P0 覆盖 | 每个 P0 需求有 endpoint/schema/error/test 或明确非目标 |  |  |
 | 交互输入完整 | Draft 已同时依据 PRD、产品总体设计、交互说明、原型/线框、状态矩阵和 prototype-review；缺任一项需说明无 UI 影响或返回上游补齐 |  |  |
@@ -43,7 +47,7 @@
 | 结论 | 勾选 |
 |---|---|
 | Approved for Engineering Baseline / Architecture Design |  |
-| Blocked, return to OpenAPI Draft |  |
+| Blocked, return to contract draft / OpenAPI Draft |  |
 
 ## 阻断项
 

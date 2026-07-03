@@ -7,7 +7,7 @@
 - `docs/design/design.md`：从本地 `Product-Design-System` 引入并整理的 Ant Design 企业级设计系统说明，后续页面设计、交互说明、原型评审和前端实现默认引用该文件。
 - `docs/design/tokens/`：随仓库保存的主题、亮色 / 暗色 / 紧凑 token 和 CSS 变量快照，后续实现不得依赖本机 Downloads 目录。
 
-进入 OpenAPI Draft 前，有用户界面的功能建议先沉淀：
+进入 API 影响分析 / 契约草案前，有用户界面的功能建议先沉淀：
 
 - 页面清单和信息架构。
 - 用户主路径和异常路径。
@@ -17,14 +17,14 @@
 - loading、empty、error、readonly、disabled、no-permission、conflict 等状态矩阵。
 - 页面字段、筛选条件、操作按钮和权限规则。
 
-这些资产用于反推 OpenAPI 请求 / 响应字段、错误结构、分页筛选、权限状态和前端验收标准。
+这些资产用于反推 API 影响、契约草案、OpenAPI 请求 / 响应字段、错误结构、分页筛选、权限状态和前端验收标准。
 
 推荐模板：
 
 - `docs/design/templates/product-overview-design-template.md`：PRD 初稿之后、页面 / 原型 / 交互设计之前，用于团队评审产品总体设计、功能架构、页面/API/数据影响和 PRD 回填项；它是原型设计输入，不是交互说明本身。
 - `docs/design/templates/interaction-spec-template.md`：页面、流程、交互、PRD 回填项和 OpenAPI 反推清单。
 - `docs/design/templates/state-matrix-template.md`：loading、empty、error、readonly、no-permission、conflict 等状态。
-- `docs/design/templates/prototype-review-checklist.md`：进入 PRD 校准 / OpenAPI Draft 前的原型评审门禁。
+- `docs/design/templates/prototype-review-checklist.md`：进入 PRD 校准 / API 影响分析 / 契约草案前的原型评审门禁。
 
 推荐技能：
 
@@ -33,7 +33,7 @@
 - `wireframe-prototype`：低保真线框、Excalidraw、Figma、Penpot、tldraw、Axure 等原型链接沉淀。
 - `component-story-prototype`：Storybook / Histoire 工程态状态原型。
 - `mock-api-prototype`：MSW / mock fixtures 支撑未冻结 API 前的交互验证。
-- `prototype-review`：原型阶段评审门禁；未通过则不要进入 PRD 校准 / OpenAPI Draft。
+- `prototype-review`：原型阶段评审门禁；未通过则不要进入 PRD 校准 / API 影响分析 / 契约草案。
 - `excalidraw-diagram-generator`：根据已形成的 Discovery、PRD、OpenAPI Draft、Architecture 或 Comet design 生成 `.excalidraw` 图；用于说明和审查，不替代文本规格。
 
 推荐目录：

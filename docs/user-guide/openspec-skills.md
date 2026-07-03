@@ -263,7 +263,7 @@ explore -> propose -> apply -> sync-specs -> archive
 ```text
 grill-with-docs
   -> to-prd
-  -> OpenAPI Draft
+  -> API impact / contract draft
   -> Engineering Baseline / DDD Review
   -> Architecture / OpenSpec / Comet design
   -> Design Review

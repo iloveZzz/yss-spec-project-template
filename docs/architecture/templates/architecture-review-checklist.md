@@ -67,7 +67,7 @@
 ## 5. 可维护性 (Maintainability)
 
 - [ ] 架构决策已记录为 ADR
-- [ ] OpenAPI Draft 已经工程基线、系统/数据架构和 OpenSpec / Comet 校验，并在开发前 Freeze
+- [ ] 契约草案 / OpenAPI Draft 已经工程基线、系统/数据架构和 OpenSpec / Comet 校验，并在开发前完成 OpenAPI Freeze
 - [ ] 关键流程有日志 (结构化日志，含 trace_id)
 - [ ] 监控指标已定义 (RED: Rate/Errors/Duration)
 - [ ] 告警规则已配置 (P99 延迟、错误率、磁盘)

@@ -16,7 +16,7 @@ owner: ai
 |------|-------------|------|------|
 | PRD / 需求冻结 |  |  |  |
 | 产品总体设计 / 功能架构 |  |  |  |
-| OpenAPI Draft |  |  |  |
+| API 影响记录 / 契约草案 / OpenAPI Draft |  |  |  |
 | 系统概要设计 |  |  |  |
 | CONTEXT 术语 |  |  |  |
 
@@ -59,7 +59,7 @@ owner: ai
 |------|----------|-------------|-------------|----------|
 |  |  |  |  |  |
 
-## 8. OpenAPI / Repository 影响
+## 8. OpenAPI / Repository 反审影响
 
 | 影响点 | 结论 | 是否需回改 | 备注 |
 |--------|------|------------|------|
@@ -72,12 +72,12 @@ owner: ai
 
 - [ ] 概念 / 逻辑 / 物理模型草案清楚，且不以表结构替代业务概念。
 - [ ] 版本、血缘、审计、查询、索引和存储策略已说明。
-- [ ] OpenAPI schema、Repository、MyBatis 影响已标注。
+- [ ] OpenAPI schema、Repository、MyBatis 影响已标注；schema 依赖数据模型时已列出 Draft 回改项。
 - [ ] 数据迁移、原生 SQL 等安全红线已标记 `TODO-HUMAN-REVIEW`。
 - [ ] 可进入 Design Review / OpenAPI Freeze，或阻断项已列出。
 
 ## 10. 下一步门禁
 
 - 结论：Approved / Blocked
-- 下一步：Design Review / 回到系统概要设计 / 回改 OpenAPI Draft
+- 下一步：Design Review / 回到系统概要设计 / 回改契约草案 / OpenAPI Draft
 - 阻断项：

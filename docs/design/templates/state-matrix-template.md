@@ -1,6 +1,6 @@
 # <功能名称> 状态矩阵模板
 
-> 适用时机：配合 `product-design-prototype` 使用，在 PRD 校准和 OpenAPI Draft 之前补齐页面状态。
+> 适用时机：配合 `product-design-prototype` 使用，在 PRD 校准和 API 影响分析 / 契约草案之前补齐页面状态。
 
 | 页面 / 组件 | 状态 | 触发条件 | 界面行为 | API / 数据要求 | 验收点 |
 |---|---|---|---|---|---|

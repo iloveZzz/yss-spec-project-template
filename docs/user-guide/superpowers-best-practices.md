@@ -146,7 +146,7 @@ yss-product-lifecycle
 -> 机会探索环
 -> grill-with-docs
 -> PRD / to-prd
--> OpenAPI Draft
+-> API impact / contract draft
 -> OpenSpec / Comet
 -> Comet / Superpowers brainstorming 技术方案设计
 -> 工程基线 / 设计审查

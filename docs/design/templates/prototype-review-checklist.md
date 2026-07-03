@@ -1,6 +1,6 @@
 # <功能名称> 原型评审清单
 
-> 适用时机：配合 `prototype-review` 使用。评审采用 fail-closed：有阻断项时必须回到产品设计阶段，不能进入 PRD 校准或 OpenAPI Draft。
+> 适用时机：配合 `prototype-review` 使用。评审采用 fail-closed：有阻断项时必须回到产品设计阶段，不能进入 PRD 校准或 API 影响分析 / 契约草案。
 
 ## 评审输入
 
@@ -23,7 +23,7 @@
 | 可见字段、筛选、排序、分页、表单、抽屉、弹窗和操作按钮已列出 |  |  |
 | 权限行为能区分隐藏、禁用和调用后拒绝 |  |  |
 | 校验错误能区分模型级和字段级展示位置 |  |  |
-| 能从界面需求反推出 OpenAPI Draft |  |  |
+| 能从界面需求反推出 API 影响和契约草案 |  |  |
 | 前端验收、Storybook / Histoire 或 mock 数据需要已明确 |  |  |
 | 安全红线已标记人工审查 |  |  |
 
@@ -37,7 +37,7 @@
 | 待确认决策已排除在冻结范围外 |  |  |
 | PRD 中已补充设计资产链接 |  |  |
 
-## OpenAPI Draft 就绪度
+## API 影响分析 / 契约草案就绪度
 
 | 范围 | 是否就绪 | 说明 |
 |---|---|---|
@@ -59,5 +59,5 @@
 非阻断建议：
 - 
 下一步：
-- PRD 校准 / OpenAPI Draft / 回到 product-design-prototype / component-story-prototype / mock-api-prototype
+- PRD 校准 / API 影响分析 / 契约草案 / 回到 product-design-prototype / component-story-prototype / mock-api-prototype
 ```

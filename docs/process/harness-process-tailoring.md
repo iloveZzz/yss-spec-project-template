@@ -1,6 +1,6 @@
 # Harness 流程裁剪指南
 
-本文定义 Harness 工程在不同任务规模下的最小流程、最近可信阶段和升级条件。它补充 `docs/process/lifecycle-artifact-map.md`，不替代其中的 9 个主阶段和 21 个门禁。
+本文定义 Harness 工程在不同任务规模下的最小流程、最近可信阶段和升级条件。它补充 `docs/process/lifecycle-artifact-map.md`，不替代其中的 8 个主阶段和 21 个门禁。
 
 ## 三档流程
 
@@ -17,13 +17,13 @@
 | 只有模糊想法、业务机会或竞品输入 | 2. 机会与 Discovery | Discovery、PRD、业务 / 功能架构 |
 | 已有清晰 PRD，但用户、痛点、MVP 或非目标不稳 | 3. 业务 / PRD / 功能架构 | PRD Review、功能架构、必要的产品设计 |
 | 有 UI 变更但缺页面流、状态矩阵或原型评审 | 4. 产品设计与需求冻结 | 交互说明、状态矩阵、Prototype Review、PRD 回填 |
-| API 路径、schema、错误结构、分页或权限发生变化 | 5. API Draft 与工程基线 | OpenAPI Draft / Review、系统 / 数据架构、Freeze、OpenSpec / Comet |
-| 服务边界、集成、部署、性能、可靠性或运维变化 | 6. 系统 / 数据架构与设计审查 | 系统架构、Design Review、Build Architecture Checklist |
-| 持久化、元数据、版本、血缘、搜索、索引或迁移变化 | 6. 系统 / 数据架构与设计审查 | 数据架构、人审点、Repository / MyBatis 前置审查 |
-| OpenAPI 已冻结但没有 active change 或 change 资产不完整 | 7. 契约冻结与 OpenSpec / Comet | proposal、design、tasks、spec、`.comet.yaml` |
-| 已有 active Comet change，但 build entry 条件不完整 | 8. 垂直切片与 TDD 实现 | 实施计划、垂直切片、Build Architecture Checklist |
-| 只有代码修复或测试失败 | 8. 垂直切片与 TDD 实现 | 可复现命令、失败测试、最小修复、fresh verification |
-| 准备发布或宣称完成 | 9. 验证发布与复盘 | fresh verification、发布说明、回滚方案、复盘入口 |
+| API 路径、schema、错误结构、分页或权限发生变化 | 5. 系统 / 数据架构与工程契约设计审查 | API 影响记录、契约草案 / OpenAPI Draft Review、系统 / 数据架构反审、Freeze、OpenSpec / Comet |
+| 服务边界、集成、部署、性能、可靠性或运维变化 | 5. 系统 / 数据架构与工程契约设计审查 | 系统架构、Design Review、Build Architecture Checklist |
+| 持久化、元数据、版本、血缘、搜索、索引或迁移变化 | 5. 系统 / 数据架构与工程契约设计审查 | 数据架构、人审点、Repository / MyBatis 前置审查 |
+| OpenAPI 已冻结但没有 active change 或 change 资产不完整 | 6. 契约冻结与 OpenSpec / Comet | proposal、design、tasks、spec、`.comet.yaml` |
+| 已有 active Comet change，但 build entry 条件不完整 | 7. 垂直切片与 TDD 实现 | 实施计划、垂直切片、Build Architecture Checklist |
+| 只有代码修复或测试失败 | 7. 垂直切片与 TDD 实现 | 可复现命令、失败测试、最小修复、fresh verification |
+| 准备发布或宣称完成 | 8. 验证发布与复盘 | fresh verification、发布说明、回滚方案、复盘入口 |
 
 ## 升级条件
 
@@ -43,4 +43,3 @@
 - 中等变更只补受影响阶段及其下游，不回到机会探索。
 - 小改动必须保留影响面评估、验证证据和 Git checkpoint 判断。
 - 安全红线只能进入人工审查或草案状态，不能因任务小而跳过。
-

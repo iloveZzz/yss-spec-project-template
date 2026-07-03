@@ -7,7 +7,8 @@ owner: ai
 
 # <功能名称>系统概要设计
 
-> 适用时机：OpenAPI Draft、工程基线 / YSS DDD Review 之后，Design Review 和 OpenAPI Freeze 之前。
+> 适用时机：API 影响分析 / 契约草案 / OpenAPI Draft、工程基线 / YSS DDD Review 之后，Design Review 和 OpenAPI Freeze 之前。
+> 本阶段必须反向校验契约草案；OpenAPI Draft 在 Freeze 前仍是 review-only，不是实现或生成客户端的稳定契约。
 > 本文用于团队内部技术方案讨论审核，不替代 OpenAPI、ADR、OpenSpec / Comet design、数据架构或详细设计。
 
 ## 1. 输入资产
@@ -17,7 +18,7 @@ owner: ai
 | PRD / PRD 校准 |  |  |  |
 | 产品总体设计 / 功能架构 |  |  |  |
 | 产品设计 / 原型 / 交互说明 |  |  |  |
-| OpenAPI Draft |  |  |  |
+| API 影响记录 / 契约草案 / OpenAPI Draft |  |  |  |
 | 工程基线 / YSS DDD Review |  |  |  |
 | ADR / 既有架构约束 |  |  |  |
 
@@ -51,7 +52,7 @@ owner: ai
 |---------------|----------|----------|----------|-------------|
 |  |  |  |  |  |
 
-## 6. API 与契约影响
+## 6. API 与契约反审
 
 | OpenAPI 路径 / schema | 设计结论 | 是否需回改 Draft | 备注 |
 |-----------------------|----------|------------------|------|
@@ -113,7 +114,7 @@ owner: ai
 ## 12. 评审清单
 
 - [ ] 系统边界、模块职责和调用方向符合 YSS DDD 分层。
-- [ ] OpenAPI Draft 的路径、schema、错误结构、分页、权限和契约测试可落地。
+- [ ] API 影响记录 / 契约草案 / OpenAPI Draft 的路径、schema、错误结构、分页、权限和契约测试已被架构反审，且可落地或已列出回改项。
 - [ ] 状态流、失败路径、幂等、并发和回滚策略清楚。
 - [ ] 数据架构需求已明确；涉及持久化、元模型、版本或血缘时已有数据架构。
 - [ ] Tactical DDD Check 已完成，或明确说明本次变更不影响领域模型 / 聚合 / 持久化边界。
