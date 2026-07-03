@@ -18,7 +18,7 @@ owner: ai
 | 5. API Draft 与工程基线 | 形成可评审接口草案，并确认 YSS DDD / 工程约束 | API 影响结论；有 API 时：`docs/api/specs/<feature>.yaml` Draft | OpenAPI Draft Review、工程基线审查 | 系统 / 数据架构准备度 |
 | 6. 系统 / 数据架构与设计审查 | 收束服务边界、部署、集成、NFR、数据模型、版本、血缘和回滚策略 | 系统概要设计或等价架构记录；Design Review 结论 | 数据架构、ADR、架构图 | OpenAPI Freeze 准备度 |
 | 7. 契约冻结与 OpenSpec / Comet | 冻结契约并创建或选择正式 change 作为交付锚点 | OpenAPI Freeze 记录或无 API 影响记录；active OpenSpec / Comet change | `.comet.yaml`、proposal、design、tasks、delta spec | 垂直切片准备度 |
-| 8. 垂直切片与 TDD 实现 | 将冻结范围拆成端到端切片并按 TDD 实现 | 垂直切片 Issue、实现计划、测试 / 验证记录 | YSS skill routing、代码审查报告、清理简化记录 | Fresh verification / Release Review |
+| 8. 垂直切片与 TDD 实现 | 将冻结范围拆成端到端切片并按 TDD 实现 | 垂直切片 Issue、实施计划、Build Architecture Checklist、测试 / 验证记录 | YSS skill routing、代码审查报告、清理简化记录、Architecture Re-check | Fresh verification / Release Review |
 | 9. 验证发布与复盘 | 保留发布、实施、验证和经验沉淀证据 | fresh verification、发布说明、复盘记录 | 实施记录、用户手册、AGENTS / CONTEXT / ADR 更新 | 下一轮规划 |
 
 ## 21 个门禁 / 职责点映射
@@ -40,8 +40,8 @@ owner: ai
 | 12. 设计审查 | 6. 系统 / 数据架构与设计审查 | Design Review 结论 | 进入 Freeze 前必需 |
 | 13. 契约冻结 | 7. 契约冻结与 OpenSpec / Comet | OpenAPI Freeze 记录或无 API 影响记录 | 有 API 影响时必需 |
 | 14. OpenSpec / Comet change formalization | 7. 契约冻结与 OpenSpec / Comet | active change、proposal、design、tasks、spec、`.comet.yaml` | 正式垂直切片前必需 |
-| 15. 实施计划 | 8. 垂直切片与 TDD 实现 | 垂直切片 Issue、实施计划、回滚点 | 正式开发前必需 |
-| 16. 开发实现 | 8. 垂直切片与 TDD 实现 | TDD 证据、代码实现、契约对齐 | 代码变更时必需 |
+| 15. 实施计划 | 8. 垂直切片与 TDD 实现 | 垂直切片 Issue、实施计划、Build Architecture Checklist、回滚点 | 正式开发前必需 |
+| 16. 开发实现 | 8. 垂直切片与 TDD 实现 | TDD 证据、代码实现、契约对齐、架构约束回勾 | 代码变更时必需 |
 | 17. 独立审查 | 8. 垂直切片与 TDD 实现 | Review Report 或 MR / PR 评论 | 合并 / 发布前必需 |
 | 18. 清理简化 | 8. 垂直切片与 TDD 实现 | 清理项记录或 review 建议 | 有复用 / 可读性 / 性能问题时执行 |
 | 19. 验证发布 | 9. 验证发布与复盘 | fresh verification、发布说明、实施 / 回滚说明 | 发布 / 可合并结论前必需 |
@@ -70,6 +70,7 @@ owner: ai
 | OpenAPI Freeze | `docs/api/<feature>-openapi-freeze.md` | `docs/api/templates/openapi-freeze-record-template.md` |
 | 垂直切片 Issue | GitLab / GitHub Issues 或 `docs/requirements/issues/<feature>-slice.md` | `docs/templates/vertical-slice-issue-template.md` |
 | 实现路由 | `docs/requirements/issues/<feature>-implementation-routing.md` | `docs/templates/implementation-routing-template.md` |
+| Build Architecture Checklist | `docs/implementation/<feature>-build-architecture-checklist.md` 或 build entry review / `.comet/subagent-progress.md` | `docs/templates/build-architecture-checklist-template.md` |
 | 审查报告 | MR / PR 评论或 `docs/requirements/issues/<feature>-review.md` | `docs/templates/review-report-template.md` |
 | Fresh verification | issue / MR / release note 或 `docs/testing/<feature>-verification.md` | `docs/templates/verification-record-template.md` |
 | 发布说明 | `docs/releases/<version>-<feature>.md` | `docs/templates/release-note-template.md` |
@@ -80,6 +81,9 @@ owner: ai
 ## 执行规则
 
 - 每次开始前先判断任务类型和最近可信阶段；不要把小文案、局部样式、单点 Bug 套进完整新功能流程。
+- 进入垂直切片实现前，必须将系统架构、数据架构、ADR、工程基线、OpenAPI Freeze 结论和安全红线转译成 `Build Architecture Checklist`。若架构文档仍是 `draft-for-design-review`、缺少 Design Review 结论，或 checklist 未建立，不得进入正式业务实现。
+- 每个垂直切片完成时必须回勾 `Build Architecture Checklist`，用 `implemented`、`seam-deferred`、`drift`、`violation` 或 `not-applicable` 标记状态，并提供证据或补齐落点。`drift` 触发 Architecture Re-check；`violation` 阻断继续 build。
+- Repository / Gateway / 持久化、权限 / 授权、审计、SQL / DDL / 迁移、文件上传下载、版本快照 / 元数据 / 血缘 / 查询索引、部署 / 回滚 / 运维约束，必须在 checklist 中逐项绑定切片和人审要求。
 - 每个主阶段结束都要做 issue tracker 同步：按用户明确选择或当前仓库主远端路由到 GitLab / GitHub，更新对应 PRD、OpenSpec / Comet change、垂直切片 Issue、里程碑或评论，记录阶段状态、完成范围、验证证据、阻塞项、下一步和安全人审点。
 - 每个主阶段结束都要做 Git checkpoint 判断：列出变更产物、Issue 同步状态、排除无关脏文件，并说明提交 / 推送 / 暂缓原因。
 - 触碰安全红线时，模板中必须标记 `TODO-HUMAN-REVIEW`，Agent 只能生成草案。
