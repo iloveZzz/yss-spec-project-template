@@ -1,0 +1,10 @@
+{
+  "name": "yss-spec-project-template-dev",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "node --test packages/create-yss-spec/tests/*.test.js"
+  }
+}
