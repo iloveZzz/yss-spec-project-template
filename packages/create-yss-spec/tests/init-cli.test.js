@@ -11,7 +11,7 @@ const cliBin = path.join(repoRoot, "packages/create-yss-spec/bin/create-yss-spec
 test("interactive init generates a template instance in an empty directory", () => {
   const sandboxDir = fs.mkdtempSync(path.join(os.tmpdir(), "create-yss-spec-"));
   const targetDir = path.join(sandboxDir, "demo-project");
-  const input = ["Demo Project", "Data Platform", targetDir].join("\n") + "\n";
+  const input = ["Demo Project", "Data Platform", "12", targetDir].join("\n") + "\n";
 
   const result = spawnSync(process.execPath, [cliBin], {
     cwd: repoRoot,
@@ -53,6 +53,7 @@ test("interactive init generates a template instance in an empty directory", () 
 
   assert.match(agentsContent, /项目名称：\*\* Demo Project/);
   assert.match(agentsContent, /业务领域：\*\* Data Platform/);
+  assert.match(agentsContent, /团队规模：\*\* 12/);
   assert.doesNotMatch(agentsContent, /\[填写\]/);
   assert.match(readmeContent, /^# Demo Project/m);
 });

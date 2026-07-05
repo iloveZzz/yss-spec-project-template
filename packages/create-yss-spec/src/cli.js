@@ -165,7 +165,8 @@ async function promptFromBufferedInput(options) {
 
   const projectName = options.projectName || ask("项目名称");
   const businessDomain = options.businessDomain || ask("业务领域");
-  const teamSizeInput = options.teamSize !== undefined ? options.teamSize : "待补充";
+  const teamSizeInput =
+    options.teamSize !== undefined ? options.teamSize : ask("团队规模（可留空）");
   const targetDir = options.targetDir || ask("目标目录");
 
   return {

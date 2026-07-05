@@ -17,10 +17,12 @@ npx create-yss-spec@latest
 ## 当前支持
 
 - 交互式收集 `projectName`、`businessDomain`、`targetDir`
+- `--team-size`
 - `--dry-run`
 - 非空目录默认拒绝，`--force` 覆盖
 - `--git-init`
 - `--issue-tracker github|gitlab`
+- `--include-example-docs`
 - `--no-example-docs`
 
 ## 开发验证
