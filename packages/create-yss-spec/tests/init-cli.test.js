@@ -8,6 +8,12 @@ const { spawnSync } = require("node:child_process");
 
 const repoRoot = path.resolve(__dirname, "../../..");
 const cliBin = path.join(repoRoot, "packages/create-yss-spec/bin/create-yss-spec.js");
+const packageVersion = JSON.parse(
+  fs.readFileSync(
+    path.join(repoRoot, "packages/create-yss-spec/package.json"),
+    "utf8",
+  ),
+).version;
 const metadataFileName = ".yss-template.json";
 
 function sha256(content) {
@@ -67,7 +73,7 @@ test("interactive init generates a template instance in an empty directory", () 
   assert.doesNotMatch(agentsContent, /\[填写\]/);
   assert.match(readmeContent, /^# Demo Project/m);
   assert.equal(metadata.templateName, "create-yss-spec");
-  assert.equal(metadata.templateVersion, "1.0.0");
+  assert.equal(metadata.templateVersion, packageVersion);
   assert.equal(metadata.variables.projectName, "Demo Project");
   assert.equal(metadata.variables.businessDomain, "Data Platform");
 });
@@ -304,12 +310,12 @@ test("sync updates unchanged managed files and restores missing managed files", 
   assert.equal(syncResult.status, 0, syncResult.stderr);
   assert.match(syncResult.stdout, /同步完成/);
   assert.match(syncResult.stdout, /0\.9\.0/);
-  assert.match(syncResult.stdout, /1\.0\.0/);
+  assert.match(syncResult.stdout, new RegExp(packageVersion.replace(/\./g, "\\.")));
   assert.equal(fs.readFileSync(readmePath, "utf8"), originalReadme);
   assert.ok(fs.existsSync(restoredPath));
 
   const syncedMetadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
-  assert.equal(syncedMetadata.templateVersion, "1.0.0");
+  assert.equal(syncedMetadata.templateVersion, packageVersion);
   assert.equal(
     syncedMetadata.managedFiles["README.md"].contentHash,
     sha256(originalReadme),
@@ -366,7 +372,7 @@ test("sync dry-run previews changes without mutating files or metadata", () => {
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /sync dry-run/i);
   assert.match(result.stdout, /0\.8\.0/);
-  assert.match(result.stdout, /1\.0\.0/);
+  assert.match(result.stdout, new RegExp(packageVersion.replace(/\./g, "\\.")));
   assert.match(result.stdout, /update: README\.md/);
   assert.match(result.stdout, /add: docs\/templates\/spec-delta-template\.md/);
   assert.equal(fs.readFileSync(readmePath, "utf8"), legacyReadme);
