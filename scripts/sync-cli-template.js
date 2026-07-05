@@ -1,5 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const { spawnSync } = require("node:child_process");
 
 const repoRoot = path.resolve(__dirname, "..");
 const packageRoot = path.join(repoRoot, "packages/create-yss-spec");
@@ -14,6 +15,44 @@ const excludedRootEntries = new Set([
 ]);
 const excludedRootFiles = new Set(manifest.excludeRootFiles);
 const excludedRelativePaths = new Set(manifest.excludePaths);
+const trackedRepoState = loadTrackedRepoState();
+
+function loadTrackedRepoState() {
+  const result = spawnSync("git", ["ls-files"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+  });
+
+  if (result.status !== 0) {
+    return null;
+  }
+
+  const files = new Set();
+  const directories = new Set();
+
+  for (const entry of result.stdout.split(/\r?\n/)) {
+    if (!entry) {
+      continue;
+    }
+
+    const normalizedEntry = entry.split(path.sep).join("/");
+    files.add(normalizedEntry);
+
+    const segments = normalizedEntry.split("/");
+    segments.pop();
+
+    let current = "";
+    for (const segment of segments) {
+      current = current ? `${current}/${segment}` : segment;
+      directories.add(current);
+    }
+  }
+
+  return {
+    files,
+    directories,
+  };
+}
 
 function shouldSkipRootEntry(entryName) {
   return (
@@ -23,6 +62,20 @@ function shouldSkipRootEntry(entryName) {
 
 function shouldSkipRelativePath(relativePath) {
   return excludedRelativePaths.has(relativePath.split(path.sep).join("/"));
+}
+
+function shouldSkipUntrackedPath(relativePath, isDirectory) {
+  if (!trackedRepoState) {
+    return false;
+  }
+
+  const normalizedPath = relativePath.split(path.sep).join("/");
+
+  if (isDirectory) {
+    return !trackedRepoState.directories.has(normalizedPath);
+  }
+
+  return !trackedRepoState.files.has(normalizedPath);
 }
 
 function copyDirectory(sourceDir, targetDir, relativeDir = "") {
@@ -36,6 +89,10 @@ function copyDirectory(sourceDir, targetDir, relativeDir = "") {
     const relativePath = relativeDir
       ? path.posix.join(relativeDir, entry.name)
       : entry.name;
+
+    if (shouldSkipUntrackedPath(relativePath, entry.isDirectory())) {
+      continue;
+    }
 
     if (shouldSkipRelativePath(relativePath)) {
       continue;

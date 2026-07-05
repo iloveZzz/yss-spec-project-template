@@ -25,6 +25,46 @@ const ROOT_EXCLUDED_FILES = new Set(TEMPLATE_MANIFEST.excludeRootFiles);
 const EXCLUDED_RELATIVE_PATHS = new Set(TEMPLATE_MANIFEST.excludePaths);
 const RENDERED_RELATIVE_PATHS = new Set(TEMPLATE_MANIFEST.renderPaths);
 const EXAMPLE_DOC_PATHS = new Set(TEMPLATE_MANIFEST.exampleDocPaths);
+const REPO_TRACKED_STATE = IS_REPO_DEVELOPMENT
+  ? loadRepoTrackedState(REPO_TEMPLATE_ROOT)
+  : null;
+
+function loadRepoTrackedState(repoRoot) {
+  const result = spawnSync("git", ["ls-files"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+  });
+
+  if (result.status !== 0) {
+    return null;
+  }
+
+  const files = new Set();
+  const directories = new Set();
+
+  for (const entry of result.stdout.split(/\r?\n/)) {
+    if (!entry) {
+      continue;
+    }
+
+    const normalizedEntry = entry.split(path.sep).join("/");
+    files.add(normalizedEntry);
+
+    const segments = normalizedEntry.split("/");
+    segments.pop();
+
+    let current = "";
+    for (const segment of segments) {
+      current = current ? `${current}/${segment}` : segment;
+      directories.add(current);
+    }
+  }
+
+  return {
+    files,
+    directories,
+  };
+}
 
 function parseArgs(argv) {
   const options = {};
@@ -170,29 +210,6 @@ function isInsideTemplateRoot(targetDir) {
   );
 }
 
-function ensureWritableTargetDir(targetDir, force) {
-  if (isInsideTemplateRoot(targetDir)) {
-    throw new Error("目标目录不能位于模板源仓库内部");
-  }
-
-  if (!fs.existsSync(targetDir)) {
-    fs.mkdirSync(targetDir, { recursive: true });
-    return;
-  }
-
-  const entries = fs.readdirSync(targetDir);
-  if (entries.length > 0) {
-    if (force) {
-      for (const entry of entries) {
-        fs.rmSync(path.join(targetDir, entry), { recursive: true, force: true });
-      }
-      return;
-    }
-
-    throw new Error("目标目录非空，当前主路径不支持覆盖已有内容");
-  }
-}
-
 function shouldExcludeRelativePath(relativePath) {
   const normalizedPath = relativePath.split(path.sep).join("/");
   return EXCLUDED_RELATIVE_PATHS.has(normalizedPath);
@@ -202,6 +219,20 @@ function shouldSkipRootEntry(entryName) {
   return (
     ROOT_EXCLUDED_ENTRIES.has(entryName) || ROOT_EXCLUDED_FILES.has(entryName)
   );
+}
+
+function shouldSkipRepoDevelopmentPath(relativePath, isDirectory) {
+  if (!REPO_TRACKED_STATE) {
+    return false;
+  }
+
+  const normalizedPath = relativePath.split(path.sep).join("/");
+
+  if (isDirectory) {
+    return !REPO_TRACKED_STATE.directories.has(normalizedPath);
+  }
+
+  return !REPO_TRACKED_STATE.files.has(normalizedPath);
 }
 
 function renderTemplateFile(relativePath, content, variables) {
@@ -239,6 +270,10 @@ function buildCopyPlan(sourceDir, targetDir, variables, relativeDir = "") {
     const relativePath = relativeDir
       ? path.posix.join(relativeDir, entry.name)
       : entry.name;
+
+    if (shouldSkipRepoDevelopmentPath(relativePath, entry.isDirectory())) {
+      continue;
+    }
 
     if (shouldExcludeRelativePath(relativePath)) {
       continue;
@@ -297,6 +332,44 @@ function printDryRun(operations, targetDir) {
   }
 }
 
+function inspectTargetDir(targetDir, force) {
+  if (isInsideTemplateRoot(targetDir)) {
+    throw new Error("目标目录不能位于模板源仓库内部");
+  }
+
+  if (!fs.existsSync(targetDir)) {
+    return {
+      exists: false,
+      clearEntries: false,
+    };
+  }
+
+  const entries = fs.readdirSync(targetDir);
+  if (entries.length > 0 && !force) {
+    throw new Error("目标目录非空，当前主路径不支持覆盖已有内容");
+  }
+
+  return {
+    exists: true,
+    clearEntries: entries.length > 0 && force,
+  };
+}
+
+function prepareTargetDir(targetDir, targetState) {
+  if (!targetState.exists) {
+    fs.mkdirSync(targetDir, { recursive: true });
+    return;
+  }
+
+  if (!targetState.clearEntries) {
+    return;
+  }
+
+  for (const entry of fs.readdirSync(targetDir)) {
+    fs.rmSync(path.join(targetDir, entry), { recursive: true, force: true });
+  }
+}
+
 function executePlan(operations, variables) {
   for (const operation of operations) {
     if (operation.type === "mkdir") {
@@ -336,7 +409,7 @@ async function runCli(argv = []) {
   assertRequiredOptions(promptedOptions);
 
   const targetDir = normalizeTargetDir(promptedOptions.targetDir);
-  ensureWritableTargetDir(targetDir, promptedOptions.force);
+  const targetState = inspectTargetDir(targetDir, promptedOptions.force);
 
   const operations = buildCopyPlan(TEMPLATE_ROOT, targetDir, promptedOptions);
 
@@ -345,6 +418,7 @@ async function runCli(argv = []) {
     return;
   }
 
+  prepareTargetDir(targetDir, targetState);
   executePlan(operations, promptedOptions);
 
   if (promptedOptions.gitInit) {
@@ -353,6 +427,14 @@ async function runCli(argv = []) {
 
   console.log("初始化完成");
   console.log(`输出目录：${targetDir}`);
+  console.log("下一步建议：");
+  console.log(`1. cd ${targetDir}`);
+  console.log(
+    promptedOptions.gitInit
+      ? "2. 运行 git status 检查初始化结果"
+      : "2. 如需版本管理，可执行 git init",
+  );
+  console.log("3. 检查 AGENTS.md、README 和 docs 目录是否符合预期");
 }
 
 module.exports = {

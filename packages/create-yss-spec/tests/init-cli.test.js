@@ -21,6 +21,7 @@ test("interactive init generates a template instance in an empty directory", () 
 
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /初始化完成/);
+  assert.match(result.stdout, /下一步建议/);
   assert.ok(fs.existsSync(path.join(targetDir, "AGENTS.md")));
   assert.ok(fs.existsSync(path.join(targetDir, "README.md")));
   assert.ok(fs.existsSync(path.join(targetDir, "docs/templates/prd-template.md")));
@@ -56,7 +57,7 @@ test("interactive init generates a template instance in an empty directory", () 
   assert.match(readmeContent, /^# Demo Project/m);
 });
 
-test("dry-run previews the plan without writing files", () => {
+test("dry-run previews the plan without writing or deleting files", () => {
   const sandboxDir = fs.mkdtempSync(path.join(os.tmpdir(), "create-yss-spec-"));
   const targetDir = path.join(sandboxDir, "preview-project");
 
@@ -80,6 +81,34 @@ test("dry-run previews the plan without writing files", () => {
 
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /dry-run/i);
+  assert.equal(fs.existsSync(targetDir), false);
+  assert.equal(fs.existsSync(path.join(targetDir, "AGENTS.md")), false);
+
+  fs.mkdirSync(targetDir, { recursive: true });
+  const existingFile = path.join(targetDir, "keep.txt");
+  fs.writeFileSync(existingFile, "existing", "utf8");
+
+  const forceDryRunResult = spawnSync(
+    process.execPath,
+    [
+      cliBin,
+      "--project-name",
+      "Preview Project",
+      "--business-domain",
+      "Fixed Income",
+      "--target-dir",
+      targetDir,
+      "--dry-run",
+      "--force",
+    ],
+    {
+      cwd: repoRoot,
+      encoding: "utf8",
+    },
+  );
+
+  assert.equal(forceDryRunResult.status, 0, forceDryRunResult.stderr);
+  assert.equal(fs.readFileSync(existingFile, "utf8"), "existing");
   assert.equal(fs.existsSync(path.join(targetDir, "AGENTS.md")), false);
 });
 
@@ -167,4 +196,37 @@ test("manifest-driven optional flags affect rendered output and example docs", (
     fs.existsSync(path.join(targetDir, "docs/discovery/IDEATION.md")),
     false,
   );
+});
+
+test("repo development mode ignores untracked files from the template source", () => {
+  const sandboxDir = fs.mkdtempSync(path.join(os.tmpdir(), "create-yss-spec-"));
+  const targetDir = path.join(sandboxDir, "tracked-only-project");
+  const sentinelName = ".tmp-create-yss-spec-untracked.txt";
+  const sentinelPath = path.join(repoRoot, sentinelName);
+
+  fs.writeFileSync(sentinelPath, "untracked", "utf8");
+
+  try {
+    const result = spawnSync(
+      process.execPath,
+      [
+        cliBin,
+        "--project-name",
+        "Tracked Only Project",
+        "--business-domain",
+        "Platform",
+        "--target-dir",
+        targetDir,
+      ],
+      {
+        cwd: repoRoot,
+        encoding: "utf8",
+      },
+    );
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(fs.existsSync(path.join(targetDir, sentinelName)), false);
+  } finally {
+    fs.rmSync(sentinelPath, { force: true });
+  }
 });
