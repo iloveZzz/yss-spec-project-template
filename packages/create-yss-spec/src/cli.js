@@ -1,9 +1,13 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const readline = require("node:readline/promises");
+const crypto = require("node:crypto");
 const { spawnSync } = require("node:child_process");
 
 const PACKAGE_ROOT = path.resolve(__dirname, "..");
+const PACKAGE_MANIFEST = JSON.parse(
+  fs.readFileSync(path.join(PACKAGE_ROOT, "package.json"), "utf8"),
+);
 const BUNDLED_TEMPLATE_ROOT = path.join(PACKAGE_ROOT, "template");
 const REPO_TEMPLATE_ROOT = path.resolve(PACKAGE_ROOT, "../..");
 const REPO_MANIFEST_PATH = path.join(REPO_TEMPLATE_ROOT, "template.manifest.json");
@@ -17,17 +21,32 @@ const TEMPLATE_ROOT = IS_REPO_DEVELOPMENT
 const TEMPLATE_MANIFEST_PATH = IS_REPO_DEVELOPMENT
   ? REPO_MANIFEST_PATH
   : BUNDLED_MANIFEST_PATH;
-const TEMPLATE_MANIFEST = JSON.parse(
-  fs.readFileSync(TEMPLATE_MANIFEST_PATH, "utf8"),
-);
+const TEMPLATE_MANIFEST_TEXT = fs.readFileSync(TEMPLATE_MANIFEST_PATH, "utf8");
+const TEMPLATE_MANIFEST = JSON.parse(TEMPLATE_MANIFEST_TEXT);
 const ROOT_EXCLUDED_ENTRIES = new Set(TEMPLATE_MANIFEST.excludeRootEntries);
 const ROOT_EXCLUDED_FILES = new Set(TEMPLATE_MANIFEST.excludeRootFiles);
 const EXCLUDED_RELATIVE_PATHS = new Set(TEMPLATE_MANIFEST.excludePaths);
 const RENDERED_RELATIVE_PATHS = new Set(TEMPLATE_MANIFEST.renderPaths);
 const EXAMPLE_DOC_PATHS = new Set(TEMPLATE_MANIFEST.exampleDocPaths);
+const TEMPLATE_METADATA_FILENAME = ".yss-template.json";
+const TEMPLATE_MANIFEST_VERSION = sha256(TEMPLATE_MANIFEST_TEXT);
 const REPO_TRACKED_STATE = IS_REPO_DEVELOPMENT
   ? loadRepoTrackedState(REPO_TEMPLATE_ROOT)
   : null;
+
+function sha256(value) {
+  return crypto.createHash("sha256").update(value).digest("hex");
+}
+
+function nowIsoString() {
+  return new Date().toISOString();
+}
+
+function getTemplateSource() {
+  return IS_REPO_DEVELOPMENT
+    ? "repo-development"
+    : `npm:${PACKAGE_MANIFEST.name}@${PACKAGE_MANIFEST.version}`;
+}
 
 function loadRepoTrackedState(repoRoot) {
   const result = spawnSync("git", ["ls-files"], {
@@ -259,6 +278,49 @@ function renderTemplateFile(relativePath, content, variables) {
   return content;
 }
 
+function collectManagedFileHashes(operations) {
+  const managedFiles = {};
+
+  for (const operation of operations) {
+    if (operation.type !== "copy" && operation.type !== "render") {
+      continue;
+    }
+
+    managedFiles[operation.relativePath] = {
+      type: operation.type,
+      contentHash: sha256(fs.readFileSync(operation.targetPath)),
+    };
+  }
+
+  return managedFiles;
+}
+
+function writeTemplateMetadata(targetDir, metadata) {
+  const metadataPath = path.join(targetDir, TEMPLATE_METADATA_FILENAME);
+  fs.writeFileSync(metadataPath, `${JSON.stringify(metadata, null, 2)}\n`, "utf8");
+}
+
+function buildTemplateMetadata(targetDir, variables, operations) {
+  const timestamp = nowIsoString();
+
+  return {
+    templateName: PACKAGE_MANIFEST.name,
+    templateVersion: PACKAGE_MANIFEST.version,
+    templateSource: getTemplateSource(),
+    initializedAt: timestamp,
+    lastSyncedAt: timestamp,
+    managedFilesManifestVersion: TEMPLATE_MANIFEST_VERSION,
+    variables: {
+      projectName: variables.projectName,
+      businessDomain: variables.businessDomain,
+      teamSize: variables.teamSize,
+      issueTracker: variables.issueTracker,
+      includeExampleDocs: variables.includeExampleDocs,
+    },
+    managedFiles: collectManagedFileHashes(operations),
+  };
+}
+
 function buildCopyPlan(sourceDir, targetDir, variables, relativeDir = "") {
   const operations = [];
   const entries = fs.readdirSync(sourceDir, { withFileTypes: true });
@@ -405,7 +467,245 @@ function initializeGitRepository(targetDir) {
   }
 }
 
-async function runCli(argv = []) {
+function loadTemplateMetadata(targetDir) {
+  const metadataPath = path.join(targetDir, TEMPLATE_METADATA_FILENAME);
+
+  if (!fs.existsSync(metadataPath)) {
+    throw new Error(
+      `当前目录不是受支持的模板实例仓库，缺少模板元数据文件 ${TEMPLATE_METADATA_FILENAME}`,
+    );
+  }
+
+  return {
+    metadataPath,
+    metadata: JSON.parse(fs.readFileSync(metadataPath, "utf8")),
+  };
+}
+
+function buildSyncVariables(metadata) {
+  const variables = metadata.variables || {};
+
+  return {
+    projectName: variables.projectName,
+    businessDomain: variables.businessDomain,
+    teamSize: variables.teamSize || "待补充",
+    issueTracker: variables.issueTracker || "github",
+    includeExampleDocs:
+      variables.includeExampleDocs === undefined
+        ? true
+        : Boolean(variables.includeExampleDocs),
+  };
+}
+
+function buildDesiredManagedOperations(targetDir, metadata) {
+  const variables = buildSyncVariables(metadata);
+
+  return buildCopyPlan(TEMPLATE_ROOT, targetDir, variables).filter(
+    (operation) => operation.type === "copy" || operation.type === "render",
+  );
+}
+
+function buildDesiredManagedFile(operation, metadata) {
+  const variables = buildSyncVariables(metadata);
+
+  if (operation.type === "render") {
+    const renderedContent = renderTemplateFile(
+      operation.relativePath,
+      fs.readFileSync(operation.sourcePath, "utf8"),
+      variables,
+    );
+
+    return {
+      ...operation,
+      desiredContent: renderedContent,
+      desiredHash: sha256(renderedContent),
+    };
+  }
+
+  return {
+    ...operation,
+    desiredHash: sha256(fs.readFileSync(operation.sourcePath)),
+  };
+}
+
+function classifySyncPlan(targetDir, metadata) {
+  const managedFiles = metadata.managedFiles || {};
+  const desiredOperations = buildDesiredManagedOperations(targetDir, metadata).map(
+    (operation) => buildDesiredManagedFile(operation, metadata),
+  );
+  const desiredPathSet = new Set(
+    desiredOperations.map((operation) => operation.relativePath),
+  );
+
+  const updated = [];
+  const added = [];
+  const unchanged = [];
+  const skipped = [];
+
+  for (const operation of desiredOperations) {
+    const existingRecord = managedFiles[operation.relativePath];
+    const existsOnDisk = fs.existsSync(operation.targetPath);
+
+    if (!existingRecord) {
+      if (!existsOnDisk) {
+        added.push(operation);
+        continue;
+      }
+
+      const currentHash = sha256(fs.readFileSync(operation.targetPath));
+      if (currentHash === operation.desiredHash) {
+        unchanged.push(operation);
+      } else {
+        skipped.push({
+          ...operation,
+          reason: "文件已存在，但不在受管模板文件基线中",
+        });
+      }
+      continue;
+    }
+
+    if (!existsOnDisk) {
+      added.push(operation);
+      continue;
+    }
+
+    const currentHash = sha256(fs.readFileSync(operation.targetPath));
+    if (currentHash !== existingRecord.contentHash) {
+      skipped.push({
+        ...operation,
+        reason: "检测到本地已修改的受管文件",
+      });
+      continue;
+    }
+
+    if (currentHash === operation.desiredHash) {
+      unchanged.push(operation);
+      continue;
+    }
+
+    updated.push(operation);
+  }
+
+  const removed = Object.keys(managedFiles).filter(
+    (relativePath) => !desiredPathSet.has(relativePath),
+  );
+
+  return {
+    updated,
+    added,
+    unchanged,
+    skipped,
+    removed,
+    desiredOperations,
+  };
+}
+
+function printSyncDryRun(targetDir, metadata, syncPlan) {
+  console.log("sync dry-run 预览");
+  console.log(`目标目录：${targetDir}`);
+  console.log(
+    `模板版本：${metadata.templateVersion || "unknown"} -> ${PACKAGE_MANIFEST.version}`,
+  );
+
+  for (const operation of syncPlan.updated) {
+    console.log(`update: ${operation.relativePath}`);
+  }
+
+  for (const operation of syncPlan.added) {
+    console.log(`add: ${operation.relativePath}`);
+  }
+
+  for (const operation of syncPlan.skipped) {
+    console.log(`skip: ${operation.relativePath} (${operation.reason})`);
+  }
+
+  for (const relativePath of syncPlan.removed) {
+    console.log(`remove-report: ${relativePath}`);
+  }
+}
+
+function applyManagedFileOperation(operation) {
+  fs.mkdirSync(path.dirname(operation.targetPath), { recursive: true });
+
+  if (operation.type === "render") {
+    fs.writeFileSync(operation.targetPath, operation.desiredContent, "utf8");
+    return;
+  }
+
+  fs.copyFileSync(operation.sourcePath, operation.targetPath);
+}
+
+function syncTemplateInstance(targetDir, metadata, dryRun) {
+  const syncPlan = classifySyncPlan(targetDir, metadata);
+
+  if (dryRun) {
+    printSyncDryRun(targetDir, metadata, syncPlan);
+    return;
+  }
+
+  for (const operation of [...syncPlan.updated, ...syncPlan.added]) {
+    applyManagedFileOperation(operation);
+  }
+
+  const nextManagedFiles = { ...(metadata.managedFiles || {}) };
+  for (const operation of syncPlan.desiredOperations) {
+    if (!fs.existsSync(operation.targetPath)) {
+      continue;
+    }
+
+    const currentHash = sha256(fs.readFileSync(operation.targetPath));
+    if (currentHash !== operation.desiredHash) {
+      continue;
+    }
+
+    nextManagedFiles[operation.relativePath] = {
+      type: operation.type,
+      contentHash: operation.desiredHash,
+    };
+  }
+
+  const nextMetadata = {
+    ...metadata,
+    templateName: PACKAGE_MANIFEST.name,
+    templateVersion: PACKAGE_MANIFEST.version,
+    templateSource: getTemplateSource(),
+    lastSyncedAt: nowIsoString(),
+    managedFilesManifestVersion: TEMPLATE_MANIFEST_VERSION,
+    managedFiles: nextManagedFiles,
+  };
+
+  writeTemplateMetadata(targetDir, nextMetadata);
+
+  console.log("同步完成");
+  console.log(
+    `模板版本：${metadata.templateVersion || "unknown"} -> ${PACKAGE_MANIFEST.version}`,
+  );
+  console.log(`自动更新：${syncPlan.updated.length}`);
+  console.log(`新增文件：${syncPlan.added.length}`);
+  console.log(`跳过文件：${syncPlan.skipped.length}`);
+  console.log(`删除差异：${syncPlan.removed.length}`);
+
+  if (syncPlan.skipped.length > 0) {
+    console.log("本地已修改，已跳过：");
+    for (const operation of syncPlan.skipped) {
+      console.log(`- ${operation.relativePath}: ${operation.reason}`);
+    }
+  }
+
+  if (syncPlan.removed.length > 0) {
+    console.log("模板已移除但未自动删除：");
+    for (const relativePath of syncPlan.removed) {
+      console.log(`- ${relativePath}`);
+    }
+  }
+
+  console.log("下一步建议：");
+  console.log("1. 运行 git diff 或 git status 检查同步结果");
+  console.log("2. 人工处理被跳过文件和删除差异（如有）");
+  console.log("3. 确认无误后提交本次模板同步结果");
+}
+
+async function runInit(argv = []) {
   const promptedOptions = await promptForMissingOptions(parseArgs(argv));
   assertRequiredOptions(promptedOptions);
 
@@ -421,6 +721,10 @@ async function runCli(argv = []) {
 
   prepareTargetDir(targetDir, targetState);
   executePlan(operations, promptedOptions);
+  writeTemplateMetadata(
+    targetDir,
+    buildTemplateMetadata(targetDir, promptedOptions, operations),
+  );
 
   if (promptedOptions.gitInit) {
     initializeGitRepository(targetDir);
@@ -436,6 +740,22 @@ async function runCli(argv = []) {
       : "2. 如需版本管理，可执行 git init",
   );
   console.log("3. 检查 AGENTS.md、README 和 docs 目录是否符合预期");
+}
+
+function runSync(argv = []) {
+  const options = parseArgs(argv);
+  const targetDir = normalizeTargetDir(options.targetDir || ".");
+  const { metadata } = loadTemplateMetadata(targetDir);
+  syncTemplateInstance(targetDir, metadata, Boolean(options.dryRun));
+}
+
+async function runCli(argv = []) {
+  if (argv[0] === "sync") {
+    runSync(argv.slice(1));
+    return;
+  }
+
+  await runInit(argv);
 }
 
 module.exports = {

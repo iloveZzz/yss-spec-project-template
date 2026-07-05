@@ -1,6 +1,6 @@
 {
   "name": "create-yss-spec",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Initialize a YSS spec project template repository",
   "files": [
     "bin",

@@ -1,6 +1,6 @@
 # create-yss-spec
 
-用于初始化 `yss-spec-project-template` 模板实例仓库的 npm CLI。
+用于初始化和同步 `yss-spec-project-template` 模板实例仓库的 npm CLI。
 
 ## 用法
 
@@ -24,6 +24,30 @@ npx create-yss-spec@latest
 - `--issue-tracker github|gitlab`
 - `--include-example-docs`
 - `--no-example-docs`
+- `sync` 子命令
+- 基于 `.yss-template.json` 的模板版本基线
+- 已有模板实例仓库的受管模板资产同步
+
+## 同步已有模板实例仓库
+
+当项目仓库已经由 `create-yss-spec` 初始化，并且根目录存在 `.yss-template.json` 时，可以执行：
+
+```bash
+npx create-yss-spec@latest sync
+```
+
+只预演，不真实写入：
+
+```bash
+npx create-yss-spec@latest sync --dry-run
+```
+
+当前同步能力的边界：
+
+- 只支持带模板元数据的模板实例仓库
+- 默认只更新未被本地修改的受管模板文件
+- 对本地已修改文件只提示和跳过，不自动覆盖
+- 对模板已删除文件只报告，不自动删除
 
 ## 开发验证
 
