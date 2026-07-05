@@ -172,7 +172,7 @@ docs/process/lifecycle-artifact-map.md
 
 ### 6.3 设计产品和契约
 
-有 UI 时先走设计系统、产品设计、低保真原型评审和 Ant Design v6 高保真 HTML 原型。涉及 API 时，先生成 review-only OpenAPI Draft：
+有 UI 时先走设计系统、`product-design:index` 路由的产品设计、低保真原型评审、Ant Design v6 高保真 HTML 原型、AntD CLI 校验证据和用户确认记录。涉及 API 时，先生成 review-only OpenAPI Draft：
 
 ```text
 基于 PRD 和产品设计，生成 OpenAPI 3.1 Draft。
@@ -206,7 +206,7 @@ OpenAPI Freeze 或无 API 影响记录完成后使用 `to-issues`：
 
 - Draft 阶段允许调整接口，但不能被当成稳定实现契约。
 - Freeze 后的契约变更必须回到 API 影响分析、架构 / 数据设计和 Design Review，不能边写代码边悄悄改接口。
-- OpenAPI 不得只基于 PRD 反推：必须结合产品总体设计 / 功能架构；有 UI 时还必须结合页面 / 原型 / 交互说明、状态矩阵、低保真原型评审和 Ant Design v6 高保真 HTML 原型。
+- OpenAPI 不得只基于 PRD 反推：必须结合产品总体设计 / 功能架构；有 UI 时还必须结合页面 / 原型 / 交互说明、状态矩阵、低保真原型评审、Ant Design v6 高保真 HTML 原型、AntD CLI 校验证据和用户确认记录。
 - OpenAPI Freeze 后进入 `to-issues`，再进入前后端实现和契约测试。
 
 ## 8. 验证、发布和复盘

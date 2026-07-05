@@ -46,7 +46,8 @@ AI 不能只作为一次性辅助工具使用。Harness 工程的目标，是把
 PRD
 → 产品总体设计 / 功能架构
 → 页面 / 原型 / 交互设计与 prototype-review（有 UI 时）
-→ Ant Design v6 高保真 HTML 原型（有 UI 时）
+→ product-design:index 路由 Product Design focused skill 产出 Ant Design v6 高保真 HTML 原型（有 UI 时）
+→ antd CLI 校验证据与用户确认记录（有 UI 时）
 → API 影响分析 / 契约草案
 → review-only OpenAPI Draft（如需要）
 → Issue Change

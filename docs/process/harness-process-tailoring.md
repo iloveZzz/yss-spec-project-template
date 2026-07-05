@@ -18,7 +18,7 @@
 |---|---|---|
 | 只有模糊想法、业务机会或竞品输入 | 2. 机会与 Discovery | Discovery、`grill-with-docs`、PRD、产品总体设计 / 功能架构 |
 | 已有清晰 PRD，但用户、痛点、MVP 或非目标不稳 | 3. 业务 / PRD / 功能架构 | PRD Review、产品总体设计 / 功能架构、必要的页面 / 原型 / 交互设计 |
-| 有 UI 变更但缺页面流、状态矩阵、原型评审或高保真 HTML 原型 | 4. 产品设计与需求冻结 | 交互说明、状态矩阵、Prototype Review、Ant Design v6 高保真 HTML 原型、PRD 回填 |
+| 有 UI 变更但缺页面流、状态矩阵、原型评审、高保真 HTML 原型、AntD CLI 校验证据或用户确认记录 | 4. 产品设计与需求冻结 | 交互说明、状态矩阵、Prototype Review、Ant Design v6 高保真 HTML 原型（可在低保真评审通过后由系统 / Agent 自动产出）、AntD CLI 校验证据、用户确认记录、PRD 回填 |
 | API 路径、schema、错误结构、分页或权限发生变化 | 5. 系统 / 数据架构与工程契约设计审查 | API 影响记录、契约草案 / OpenAPI Draft Review、必要时 Spec Delta、系统 / 数据架构反审、Freeze、`to-issues` |
 | 服务边界、集成、部署、性能、可靠性或运维变化 | 5. 系统 / 数据架构与工程契约设计审查 | 系统架构、Design Review、必要时 Spec Delta、Build Architecture Checklist |
 | 持久化、元数据、版本、血缘、搜索、索引或迁移变化 | 5. 系统 / 数据架构与工程契约设计审查 | 数据架构、必要时 Spec Delta、人审点、Repository / MyBatis 前置审查 |

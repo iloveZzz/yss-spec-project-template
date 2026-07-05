@@ -23,7 +23,7 @@ owner: ai
 | 1. 入口分诊 | 判断任务类型、风险等级、最近可信阶段和最小技能集 | 分诊结论或 issue 备注 | `yss-product-lifecycle` 路由结果、Git checkpoint 判断 | 是否需要 Discovery / PRD / API / 架构 / Issue |
 | 2. 机会与 Discovery | 收敛用户、痛点、为什么现在做、MVP、非目标、成功标准、产品功能指引和下游影响信号 | `docs/discovery/<feature>-discovery.md` 或等价说明 | `competitive-intelligence` 竞品情报、竞品矩阵、机会说明、产品功能指引、下游影响清单、市场分析、用户痛点文档 | 是否足以进入业务架构和 PRD |
 | 3. 业务 / PRD / 功能架构 | 明确产品边界、用户旅程、功能域、模块边界、优先级、低保真原型和验收标准 | `docs/requirements/<feature>-prd.md`；`docs/design/<feature>-product-overview-design.md` | `grill-with-docs` 澄清记录、业务架构、CONTEXT 术语回填；不进入 PRD 生命周期的小改动可记录不适用原因 | PRD Review / 产品总体设计评审 / 产品设计准备度 |
-| 4. 产品设计与需求冻结 | 基于 PRD 初稿和产品总体设计，对 UI、页面流、状态矩阵、异常路径、高保真体验和 PRD 回填做闭环 | 有 UI 时：交互说明、低保真原型评审结论、Ant Design v6 高保真 HTML 原型；无 UI 时：需求冻结记录 | 状态矩阵、页面地图、原型链接 | PRD 校准 / 工程契约与架构设计准备度 |
+| 4. 产品设计与需求冻结 | 基于 PRD 初稿和产品总体设计，对 UI、页面流、状态矩阵、异常路径、高保真体验和 PRD 回填做闭环 | 有 UI 时：交互说明、低保真原型评审结论、Ant Design v6 高保真 HTML 原型（可由系统 / Agent 在低保真评审通过后自动产出）、AntD CLI 校验证据和用户确认记录；无 UI 时：需求冻结记录 | 状态矩阵、页面地图、原型链接 | PRD 校准 / 工程契约与架构设计准备度 |
 | 5. 系统 / 数据架构与工程契约设计审查 | 合并 API 影响分析、契约草案、工程基线、系统架构、数据架构和 Design Review；Draft 仅用于评审，Freeze 前不得作为实现或生成客户端契约 | 系统概要设计或等价架构记录；Design Review 结论；有 API 时：API 影响记录和契约草案 / review-only OpenAPI Draft；有后端结构影响时：工程基线审查 | OpenAPI Draft Review、OpenSpec-style Spec Delta、工程基线审查、无 API 影响记录、数据架构、ADR、架构图 | OpenAPI Freeze 准备度 |
 | 6. 契约冻结与 Issue formalization | 冻结契约并把交付范围转成可执行 Issue，并明确受影响前后端工程是否已存在 | OpenAPI Freeze 记录或无 API 影响记录；垂直切片 Issue 入口 | `to-issues` 输出、实施路由记录、实现仓库 / 脚手架判定、Issue tracker 同步 | 垂直切片准备度 |
 | 7. 垂直切片与 TDD 实现 | 将冻结范围拆成端到端切片并按 TDD 实现 | 垂直切片 Issue、实施计划、Build Architecture Checklist、测试 / 验证记录 | YSS skill routing、前后端脚手架初始化记录、`implement` / `tdd` 证据、`code-review` 报告、清理简化记录、Architecture Re-check | Fresh verification / Release Review |
@@ -39,7 +39,7 @@ owner: ai
 | 3. 需求澄清 | 3. 业务 / PRD / 功能架构 | `grill-with-docs` 结论或等价澄清记录 | 新功能 / 较大改动必需 |
 | 4. 需求基线 / 功能架构 | 3. 业务 / PRD / 功能架构 | PRD；产品总体设计 / 功能架构资产；功能域、模块边界、低保真原型、验收标准 | 进入 PRD 初稿 / 需求基线流程时必需 |
 | 5. 页面 / 原型 / 交互设计 | 4. 产品设计与需求冻结 | 基于 PRD 初稿和产品总体设计 / 功能架构产出的交互说明、页面清单、状态矩阵 | 有 UI 时必需；缺产品总体设计时阻断 |
-| 6. 原型评审 | 4. 产品设计与需求冻结 | Prototype Review 结论；通过后必须产出 Ant Design v6 高保真 HTML 原型 | 有 UI 时必需 |
+| 6. 原型评审 | 4. 产品设计与需求冻结 | Prototype Review 结论；通过后必须产出 Ant Design v6 高保真 HTML 原型，可由系统 / Agent 自动生成；必须记录 AntD CLI 校验证据；产出后必须获得用户确认 | 有 UI 时必需 |
 | 7. PRD 校准 / 需求冻结 | 4. 产品设计与需求冻结 | 需求冻结记录或校准后的 PRD | 必需；无 UI 可轻量化 |
 | 8. API 影响分析 / 契约草案 | 5. 系统 / 数据架构与工程契约设计审查 | API 影响记录、契约草案 / OpenAPI Draft 或无 API 影响记录；Draft 在 Freeze 前仅可评审；中高风险变更补 OpenSpec-style Spec Delta | 有 API 影响时必需；Spec Delta 条件必需 |
 | 9. 工程基线 | 5. 系统 / 数据架构与工程契约设计审查 | 工程基线 / YSS DDD Review | 新服务 / 新模块 / 后端结构变化时必需 |
@@ -69,7 +69,8 @@ owner: ai
 | 交互说明 | `docs/design/<feature>-interaction-spec.md` | `docs/design/templates/interaction-spec-template.md` |
 | 状态矩阵 | `docs/design/<feature>-state-matrix.md` | `docs/design/templates/state-matrix-template.md` |
 | 原型评审 | `docs/design/<feature>-prototype-review.md` | `docs/design/templates/prototype-review-checklist.md` |
-| 高保真 HTML 原型 | `docs/design/prototypes/<feature>/index.html` | `high-fidelity-html-prototype` |
+| 高保真 HTML 原型 | `docs/design/prototypes/<feature>/index.html` | `product-design:index` 路由到 Product Design focused skill 产出 |
+| 高保真原型确认记录 | `docs/design/<feature>-prototype-confirmation.md` | `docs/design/templates/prototype-confirmation-template.md` |
 | 需求冻结 | `docs/requirements/<feature>-requirement-freeze.md` | `docs/templates/requirement-freeze-template.md` |
 | API 影响分析 / 契约草案 / OpenAPI Draft | API 影响记录、issue note 或 `docs/api/specs/<feature>.yaml` | `docs/templates/openapi-spec-template.yaml` |
 | OpenSpec-style Spec Delta | `docs/specs/<feature>-spec-delta.md` | `docs/templates/spec-delta-template.md` |

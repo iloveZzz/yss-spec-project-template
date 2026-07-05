@@ -1,6 +1,6 @@
 # <功能名称> 原型评审清单
 
-> 适用时机：配合 `prototype-review` 使用。评审采用 fail-closed：有阻断项时必须回到产品设计阶段；低保真评审通过后必须进入 `high-fidelity-html-prototype`，不能直接进入 PRD 校准或 API 影响分析 / 契约草案。
+> 适用时机：配合 `prototype-review` 使用。评审采用 fail-closed：有阻断项时必须回到产品设计阶段；产品原型产出以 `product-design:index` 路由到 Product Design focused skill 为主；低保真评审通过后必须产出高保真 HTML 原型，可由系统 / Agent 自动产出；产出后必须获得用户确认，确认前不能直接进入 PRD 校准或 API 影响分析 / 契约草案。
 
 ## 评审输入
 
@@ -10,6 +10,8 @@
 | 交互说明 | `docs/design/<feature>-interaction-spec.md` |  |
 | 原型 / 线框图 | `<链接或导出图片路径>` |  |
 | 状态矩阵 | `docs/design/<feature>-state-matrix.md` |  |
+| Product Design 路由记录 | `product-design:index -> <focused skill>` |  |
+| AntD CLI 校验证据 | `<命令输出或记录路径>` |  |
 | 现有 API 草案 | `docs/api/specs/<feature>.yaml` | 可选 |
 
 ## 门禁清单
@@ -24,6 +26,8 @@
 | 权限行为能区分隐藏、禁用和调用后拒绝 |  |  |
 | 校验错误能区分模型级和字段级展示位置 |  |  |
 | 能从界面需求反推出 API 影响和契约草案 |  |  |
+| AntD v6 设计语言、组件 API、demo、token 和 semantic 已用 `antd` CLI 查询并记录 |  |  |
+| 高保真 HTML 原型未使用旧原型技能作为主入口，已通过 `product-design:index` 路由产出或记录例外原因 |  |  |
 | 前端验收、组件状态和数据依赖已明确 |  |  |
 | 安全红线已标记人工审查 |  |  |
 
@@ -59,5 +63,5 @@
 非阻断建议：
 - 
 下一步：
-- high-fidelity-html-prototype / 回到 product-design-prototype
+- product-design:index 路由高保真 HTML 原型产出 / 回到 Product Design focused skill 补齐原型 / 进入用户确认
 ```

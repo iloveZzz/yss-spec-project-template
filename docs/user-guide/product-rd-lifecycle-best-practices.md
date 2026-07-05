@@ -147,9 +147,9 @@ skills 是让 AI 按规程工作的“操作手册”，不是关键词装饰。
 | 模糊需求追问 | `grill-with-docs` | 先问清，不让 AI 猜规则；稳定术语写 `CONTEXT.md` |
 | 生成 PRD 初稿 / 需求基线 | `to-prd` 或 PRD 模板 | 只基于已确认事实，不把待确认项写成需求 |
 | 产品总体设计 / 功能架构 | `docs/design/templates/product-overview-design-template.md` | PRD 初稿后的必要产物；必须包含低保真原型 / 页面草图；进入页面 / 原型 / 交互设计、PRD 校准或 OpenAPI Draft 前必须完成 |
-| 页面和交互设计 | `product-design-prototype`、`wireframe-prototype`、`docs/design/` | 基于 PRD 初稿和产品总体设计细化页面流、状态和交互，再回填 PRD 并反推 API |
+| 页面和交互设计 | `product-design:index`、Product Design focused skills、`docs/design/` | 基于 PRD 初稿和产品总体设计细化页面流、状态和交互，再回填 PRD 并反推 API |
 | 原型评审 | `prototype-review` | 未通过时回到产品设计；通过后进入高保真 HTML 原型，不直接进入 PRD 校准 / API 影响分析 / 契约草案 |
-| 高保真 HTML 原型 | `high-fidelity-html-prototype` | 低保真评审通过后的强制产物；必须使用 Ant Design v6，并基于官方 `@ant-design/cli` / Ant Design For Agents 指引，输出 `docs/design/prototypes/<feature>/index.html` |
+| 高保真 HTML 原型 | `product-design:index` 路由到 Product Design focused skill；`antd` CLI | 低保真评审通过后的强制产物；必须使用 Ant Design v6，输出 `docs/design/prototypes/<feature>/index.html`，记录 AntD CLI 校验证据并获得用户确认 |
 | API 契约 | API 影响分析 / 契约草案 / OpenAPI Freeze 流程 | Draft 可讨论，Freeze 才可开发 |
 | 正式变更设计 | `to-issues` / Matt skills | 复用 PRD，聚焦技术方案、风险和测试 seam |
 | 拆切片 | `to-issues` | 必须是端到端垂直切片 |
@@ -471,16 +471,18 @@ docs/design/data-modeling-state-matrix.md
 docs/design/data-modeling-prototype-review.md
 ```
 
-推荐使用 `product-design-prototype` 作为入口，并按需要追加专项 skill：
+推荐使用 `product-design:index` 作为产品原型主入口，并按 Product Design plugin 规则路由到 focused skill：
 
 | 目标 | 推荐技能 / 工具 | 说明 |
 |---|---|---|
-| 页面清单、用户流、状态矩阵、PRD 回填项、OpenAPI 反推 | `product-design-prototype` | 基于 PRD 初稿和产品总体设计后的原型入口 |
-| 低保真线框、流程草图 | `wireframe-prototype`；Excalidraw / Markdown wireframe | 适合快速讨论，不绑定工程依赖 |
+| 页面清单、用户流、状态矩阵、PRD 回填项、OpenAPI 反推 | `product-design:index` -> `$get-context` / `$prototype` | 基于 PRD 初稿和产品总体设计后的原型入口 |
+| 低保真线框、流程草图 | `product-design:index` -> `$ideate` / `$prototype`；Excalidraw / Markdown wireframe | 适合快速讨论，不绑定工程依赖 |
 | 高保真或设计系统协作 | Figma / Penpot，必要时使用 `figma` / `figma-use` | 适合设计团队和组件规范沉淀 |
-| 高保真可交互 HTML 原型 | `high-fidelity-html-prototype`；Ant Design v6 | 低保真原型评审通过后的必需产物，用于 PRD 校准和 API 反推前的体验确认 |
+| 高保真可交互 HTML 原型 | `product-design:index` -> `$prototype` / `$image-to-code` / `$url-to-code`；`antd` CLI；Ant Design v6 | 低保真原型评审通过后的必需产物，用于 PRD 校准和 API 反推前的体验确认 |
 | 图谱、血缘、流程编排画布 | tldraw / xyflow | 适合数据血缘、任务流、关系图等画布型体验 |
 | 进入高保真前门禁 | `prototype-review` | 未通过则回到原型阶段 |
+
+`product-design-prototype`、`wireframe-prototype`、`high-fidelity-html-prototype` 仅作为历史兼容入口或产物门禁名称保留；新的产品原型产出默认使用 `product-design:index`。
 
 如果团队使用 Figma、即时设计、Axure 或其它原型工具，可以在 `docs/design/data-modeling-interaction-spec.md` 中保存链接、版本、评审记录和关键截图说明。第一版不强制引入 Excalidraw、Figma、Penpot、tldraw 或 xyflow 作为项目依赖。
 
@@ -531,9 +533,10 @@ docs/design/data-modeling-prototype-review.md
 推荐提示词：
 
 ```text
-使用 product-design-prototype。
+使用 product-design:index。
 基于 docs/requirements/data-modeling-prd.md 和 docs/design/data-modeling-product-overview-design.md，
 为“数据中台数据建模 MVP”输出页面 / 原型 / 交互设计资产。
+请先按 Product Design plugin 规则路由到合适的 focused skill：$get-context / $ideate / $prototype / $image-to-code / $url-to-code。
 请生成页面清单、用户主路径、异常路径、低保真线框说明、交互状态矩阵、权限状态、空态/加载态/错误态，
 并明确这些设计如何反推 OpenAPI 字段、错误结构、分页筛选和前端验收标准。
 保存到 docs/design/data-modeling-interaction-spec.md。
@@ -1022,9 +1025,10 @@ docs/user-guide/
 ### 20.4 页面 / 原型 / 交互设计
 
 ```text
-使用 product-design-prototype。
+使用 product-design:index。
 基于 <PRD 路径> 和 docs/design/<feature>-product-overview-design.md，为 <功能名> 输出页面 / 原型 / 交互设计资产。
 如果缺少产品总体设计 / 功能架构，先阻断并要求补齐；不要直接继续生成交互设计。
+请先按 Product Design plugin 规则路由到合适的 focused skill：$get-context / $ideate / $prototype / $image-to-code / $url-to-code。
 请生成页面清单、用户主路径、异常路径、低保真线框说明、交互状态矩阵、权限状态、空态/加载态/错误态。
 请明确这些设计如何反推 OpenAPI 字段、错误结构、分页筛选、权限和前端验收标准。
 请同时列出需要回填 PRD 的需求缺口、验收标准或非目标范围。
@@ -1044,12 +1048,13 @@ docs/user-guide/
 ### 20.6 高保真 HTML 原型
 
 ```text
-使用 high-fidelity-html-prototype。
+使用 product-design:index，并路由到合适的 Product Design focused skill。
 基于 <PRD 路径>、docs/design/<feature>-product-overview-design.md、docs/design/<feature>-interaction-spec.md、docs/design/<feature>-state-matrix.md 和 docs/design/<feature>-prototype-review.md，
 为 <功能名> 生成 Ant Design v6 高保真可交互 HTML 原型。
 输出路径必须是 docs/design/prototypes/<feature>/index.html。
+产出前必须使用 `antd` CLI 查询设计语言、组件 API、demo、token 和 semantic 信息，不要凭记忆写 Ant Design v6 组件。
 请覆盖主流程、关键异常、loading/empty/error/no-permission/readonly/disabled/conflict/success 状态、表单校验、弹窗/抽屉、响应式断点。
-完成后给出 Ant Design v6 版本依据、`@ant-design/cli` 查询过的组件 / token / demo 和本地浏览器验证证据。
+完成后给出 Ant Design v6 版本依据、`antd` CLI 查询过的组件 / token / demo / semantic、本地浏览器验证证据，并使用 docs/design/templates/prototype-confirmation-template.md 记录用户确认。
 ```
 
 ### 20.7 PRD 校准 / 需求冻结
