@@ -31,7 +31,7 @@ AI 不能只作为一次性辅助工具使用。Harness 工程的目标，是把
 ## 哪些门禁不能跳
 
 - API 变化必须先有 API 影响记录和契约草案 / review-only OpenAPI Draft，并在实现或生成客户端前完成 Freeze 或记录无 API 影响。
-- 正式垂直切片前必须有 active OpenSpec / Comet change 和完整 change 资产。
+- 正式垂直切片前必须有 active Issue change 和完整 change 资产。
 - 架构、数据、ADR、工程基线和安全红线必须进入 Build Architecture Checklist。
 - 支付、迁移、认证授权、加密、SQL、公共基础库 API 等安全红线必须人工审查。
 - 完成、可合并或可发布结论必须有 fresh verification。
@@ -45,7 +45,7 @@ AI 不能只作为一次性辅助工具使用。Harness 工程的目标，是把
 PRD
 → API 影响分析 / 契约草案
 → review-only OpenAPI Draft（如需要）
-→ Comet Change
+→ Issue Change
 → 垂直切片
 → TDD
 → Review

@@ -17,6 +17,8 @@ owner: ai
 | git_url |  |
 | default_branch |  |
 | local_worktree |  |
+| scaffold_status | existing / required / initialized |
+| scaffold_skill | `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator` / none |
 | owner |  |
 | ci_system | GitLab CI / GitHub Actions / Jenkins / other / none |
 | issue_tracker | GitLab / GitHub / other |

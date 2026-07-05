@@ -34,7 +34,7 @@
 - `component-story-prototype`：Storybook / Histoire 工程态状态原型。
 - `mock-api-prototype`：MSW / mock fixtures 支撑未冻结 API 前的交互验证。
 - `prototype-review`：原型阶段评审门禁；未通过则不要进入 PRD 校准 / API 影响分析 / 契约草案。
-- `excalidraw-diagram-generator`：根据已形成的 Discovery、PRD、OpenAPI Draft、Architecture 或 Comet design 生成 `.excalidraw` 图；用于说明和审查，不替代文本规格。
+- `excalidraw-diagram-generator`：根据已形成的 Discovery、PRD、OpenAPI Draft、Architecture 或 系统 / 数据架构设计 生成 `.excalidraw` 图；用于说明和审查，不替代文本规格。
 
 推荐目录：
 

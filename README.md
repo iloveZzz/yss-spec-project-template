@@ -55,6 +55,10 @@
 
 当前仓库已内置一个用于实例化模板的 npm CLI：`create-yss-spec`。
 
+完整中文使用手册见：
+
+- [docs/user-guide/create-yss-spec-cli-guide.md](./docs/user-guide/create-yss-spec-cli-guide.md)
+
 本地开发验证：
 
 ```bash

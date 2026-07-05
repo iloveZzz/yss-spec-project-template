@@ -1,6 +1,6 @@
 # 实现仓库接入流程
 
-本文定义研发管理仓库与外部实现仓库的集成方式。当前仓库默认作为研发管理仓库，承载 PRD、OpenAPI、OpenSpec / Comet、架构、垂直切片、验证、发布和复盘；前端、后端和其他运行时代码默认保留在独立实现仓库中。
+本文定义研发管理仓库与外部实现仓库的集成方式。当前仓库默认作为研发管理仓库，承载 PRD、OpenAPI、Issue、架构、垂直切片、验证、发布和复盘；前端、后端和其他运行时代码默认保留在独立实现仓库中。
 
 ## 职责边界
 
@@ -19,6 +19,22 @@
 | 0-1 前端工程 | 先记录实现仓库决策，再按 `yss-frontend-scaffold-generator` 使用 YSS 前端模板生成外部工程 | 前端 Git 仓库、前端模板基线、Harness 登记 |
 | 跨仓库垂直切片 | 使用 `cross-repo-implementation-routing` 绑定 Harness change、后端 MR、前端 MR 和验证证据 | 跨仓库切片记录、fresh verification |
 
+## 实现前工程存在性判定
+
+进入业务实现前，必须先判断当前需求受影响的 frontend / backend 运行时代码工程是否已经存在且可复用。该判定必须写入实施计划、实现路由记录或切片 issue，至少回答：
+
+- 当前切片是否影响 frontend、backend，或两者都影响。
+- 对应实现仓库 / 本地工程是否已经存在。
+- 已有工程是否满足当前 OpenAPI、设计系统、YSS DDD 或工程基线要求。
+- 若不存在或不可复用，是否需要初始化 0-1 脚手架，以及初始化到哪个目标仓库或输出目录。
+
+判定结论的路由规则：
+
+- 后端受影响且不存在可用工程：先记录实现仓库决策，再路由 `yss-ddd-scaffold-generator`。
+- 前端受影响且不存在可用工程：先记录实现仓库决策，再路由 `yss-frontend-scaffold-generator`。
+- 前后端均受影响且均不存在可用工程：先分别完成前后端初始化，再进入垂直切片业务实现。
+- 工程已存在但与当前目录约定或技术基线冲突：先停在 engineering baseline / implementation routing，补齐偏离说明和处理决策。
+
 ## 实现仓库登记
 
 每个参与实现的仓库都必须有登记记录。推荐使用 `docs/templates/implementation-repo-registry-template.md`，至少记录：
@@ -31,11 +47,17 @@
 
 登记记录可以放在当前 change 的 `design.md`、build entry review、实施计划或 `docs/implementation/` 下的实现记录中，但必须能被垂直切片和阶段 checkpoint 引用。
 
+若当前切片需要新建 0-1 工程，登记记录还必须额外说明：
+
+- `scaffold_status`：existing / required / initialized。
+- `scaffold_skill`：`yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator` / none。
+- 初始化理由、目标输出目录或目标仓库，以及是否已经通过基线检查。
+
 ## 跨仓库切片规则
 
 每个跨前后端切片必须绑定以下信息：
 
-- Harness change：OpenSpec / Comet change ID、垂直切片 ID、OpenAPI Freeze 记录。
+- Harness change：Issue change ID、垂直切片 ID、OpenAPI Freeze 记录。
 - Backend：repo、branch、MR / PR、测试命令、验证结果。
 - Frontend：repo、branch、MR / PR、测试命令、验证结果。
 - Contract：OpenAPI spec 路径、生成类型或 API client 版本、契约验证命令。

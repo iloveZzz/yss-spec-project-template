@@ -9,7 +9,7 @@
 默认需求链路：
 
 ```text
-grill-with-docs -> to-prd -> API 影响分析 / 契约草案 -> Architecture/OpenSpec 反审 -> OpenAPI Freeze -> to-issues
+grill-with-docs -> to-prd -> API 影响分析 / 契约草案 -> Architecture 反审 -> OpenAPI Freeze -> to-issues
 ```
 
 进入开发前必须满足：

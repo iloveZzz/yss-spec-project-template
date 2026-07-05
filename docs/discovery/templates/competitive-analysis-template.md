@@ -252,7 +252,7 @@ flowchart LR
 1. [补充调研 / 用户访谈 / 厂商验证]
 2. [进入 grill-with-docs 继续澄清的问题]
 3. [生成 PRD]
-4. [判断是否需要 OpenAPI / OpenSpec / 垂直切片 issue]
+4. [判断是否需要 OpenAPI / 垂直切片 issue]
 
 ## 12. 参考资料
 

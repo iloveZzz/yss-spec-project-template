@@ -2,7 +2,7 @@
 
 > 用于 API 影响分析 / 契约草案 / OpenAPI Draft 进入 Engineering Baseline / YSS DDD Review 之前。
 > OpenAPI Draft 在 OpenAPI Freeze 前仅用于评审和架构反审，不得作为前后端实现或生成客户端的稳定契约。
-> 评审采用 fail-closed：阻断项未关闭前，不进入架构 / OpenSpec / Comet design。
+> 评审采用 fail-closed：阻断项未关闭前，不进入架构 / 系统 / 数据架构设计。
 
 ## 输入资产
 

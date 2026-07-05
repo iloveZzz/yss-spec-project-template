@@ -1,6 +1,6 @@
 # Harness 工程优化调整待办
 
-本文档记录基于《产品全生命周期 AI 研发工程化体系》PPT 与当前项目流程对比后，需要优化调整的待办事项。目标不是削弱现有治理能力，而是在保留 OpenSpec / Comet、YSS、门禁、追踪和验证优势的前提下，补齐轻量表达、流程裁剪、试点推进和自动化落地能力。
+本文档记录基于《产品全生命周期 AI 研发工程化体系》PPT 与当前项目流程对比后，需要优化调整的待办事项。目标不是削弱现有治理能力，而是在保留 Issue、YSS、门禁、追踪和验证优势的前提下，补齐轻量表达、流程裁剪、试点推进和自动化落地能力。
 
 ## 优化目标
 
@@ -25,9 +25,9 @@
 |---|---|---|---|---|---|
 | HOB-005 | 已落地 | 梳理可自动化门禁清单 | 现在门禁多，但哪些能机器检查、哪些必须人工判断还不够清楚。 | `docs/process/harness-automation-candidates.md` | 门禁按“可自动检查 / 可半自动生成 checklist / 必须人工审查”分类，并标注触发阶段。 |
 | HOB-006 | 已落地 | 设计 Build Architecture Checklist 生成与回勾模板 | 架构约束进入实现阶段的成本偏高，容易变成手写负担。 | `docs/templates/build-architecture-checklist-template.md` | 模板包含 source、constraint、slice、status、evidence、follow-up，并给出示例。 |
-| HOB-007 | 已落地 | 建立 Skill 沉淀规则 | 当前 skill 很多，但缺少“何时新增 / 合并 / 脚本化”的判断标准。 | `docs/process/skill-governance.md` | 明确重复 3 次以上动作的处理路径：模板、脚本、Skill、Comet 节点或无需沉淀。 |
+| HOB-007 | 已落地 | 建立 Skill 沉淀规则 | 当前 skill 很多，但缺少“何时新增 / 合并 / 脚本化”的判断标准。 | `docs/process/skill-governance.md` | 明确重复 3 次以上动作的处理路径：模板、脚本、Skill、Issue 节点或无需沉淀。 |
 | HOB-008 | 已落地 | 形成对外汇报版 Harness 蓝图 | 当前 `AGENTS.md` 适合 Agent 执行，不适合业务方和管理者快速理解。 | `docs/process/harness-executive-blueprint.md` | 能用 5 分钟讲清楚：为什么做、怎么分阶段、哪些门禁不能跳、试点怎么跑。 |
-| HOB-009 | 已落地 | 定义“最近可信阶段”判定表 | 项目已有原则，但缺少可查表，执行时容易争议。 | `docs/process/harness-process-tailoring.md` | 输入不同变更类型后，能定位从 PRD、设计、OpenAPI、架构、Comet 或实现哪个阶段开始补齐。 |
+| HOB-009 | 已落地 | 定义“最近可信阶段”判定表 | 项目已有原则，但缺少可查表，执行时容易争议。 | `docs/process/harness-process-tailoring.md` | 输入不同变更类型后，能定位从 PRD、设计、OpenAPI、架构、Issue 或实现哪个阶段开始补齐。 |
 
 ## P2：试点后演进
 
@@ -36,7 +36,7 @@
 | HOB-010 | 已落地 | 建立试点复盘指标 | 没有指标时，很难判断 Harness 是否真正降风险、提效率。 | `docs/process/harness-pilot-retro-metrics.md` | 至少跟踪 PRD Ready 一次通过率、阶段产物一次通过率、规范偏离次数、ready-for-agent 到可验证 PR 周期、回归缺陷数、模板 / Skill 更新次数。 |
 | HOB-011 | 已并入 | 沉淀门禁自动化脚本 backlog | 自动化不能一次做完，需要按收益排序。 | `docs/process/harness-automation-candidates.md` | 每项脚本记录触发阶段、输入、输出、失败处理和人工接管点。 |
 | HOB-012 | 试点后执行 | 试点后更新 AGENTS / CONTEXT / ADR | 试点结论如果不回流，流程会停留在一次性经验。 | `docs/process/harness-pilot-retro-metrics.md` 中的治理回流检查 | 只把稳定语言写入 CONTEXT；只有难回滚、非显而易见且有真实取舍的决策写 ADR。 |
-| HOB-013 | 已落地 | 评估是否需要 Harness 状态模型 | 当前阶段状态主要散落在文档、Issue 和 Comet 中，后续自动化可能需要统一状态模型。 | `docs/process/harness-state-model-evaluation.md` | 明确状态来源、状态流转、谁有权推进、失败回退和人工审查状态。 |
+| HOB-013 | 已落地 | 评估是否需要 Harness 状态模型 | 当前阶段状态主要散落在文档、Issue 和 Issue 中，后续自动化可能需要统一状态模型。 | `docs/process/harness-state-model-evaluation.md` | 明确状态来源、状态流转、谁有权推进、失败回退和人工审查状态。 |
 
 ## 推荐执行顺序
 

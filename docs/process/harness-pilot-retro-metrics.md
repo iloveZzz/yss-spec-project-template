@@ -8,7 +8,7 @@
 |---|---|---|---|
 | PRD Ready 一次通过率 | PRD 首次评审即可进入下一阶段的比例 | PRD Review 记录、Issue 评论 | 提升 |
 | 阶段产物一次通过率 | 阶段产物首次 checkpoint 无阻断项的比例 | 阶段 checkpoint、门禁记录 | 提升 |
-| 规范偏离次数 | 违反流程、模板、YSS、OpenSpec / Comet 或安全红线的次数 | Review、Architecture Re-check、Issue | 降低 |
+| 规范偏离次数 | 违反流程、模板、YSS、Issue 或安全红线的次数 | Review、Architecture Re-check、Issue | 降低 |
 | ready-for-agent 到可验证 PR 周期 | 从进入 Agent 可执行状态到出现可验证 PR / MR 的耗时 | Issue 状态、Git 记录、验证记录 | 缩短 |
 | 回归缺陷数 | 试点上线或合并后发现的回归问题 | 缺陷 Issue、Release Review | 降低 |
 | 模板 / Skill 更新次数 | 复盘后新增、修改、合并或废弃的模板 / Skill 数量 | 复盘记录、Git diff | 稳定沉淀 |
@@ -25,7 +25,7 @@
 | 时间范围 |  |
 | 参与角色 |  |
 | 关联 Issue / MR / PR |  |
-| 使用的 OpenSpec / Comet change |  |
+| 使用的 Issue change |  |
 
 ### 指标结果
 

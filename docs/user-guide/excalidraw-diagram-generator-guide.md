@@ -2,7 +2,7 @@
 
 `excalidraw-diagram-generator` 是可视化说明与审查辅助 skill，用来把流程、架构、状态、依赖、数据流和切片关系生成 `.excalidraw` 文件。
 
-它不替代 `yss-product-lifecycle`、PRD、OpenAPI、ADR、OpenSpec / Comet 或测试。它的价值是让复杂关系可以被快速看见、讨论和审查。
+它不替代 `yss-product-lifecycle`、PRD、OpenAPI、ADR、Issue 或测试。它的价值是让复杂关系可以被快速看见、讨论和审查。
 
 ## 1. 在流程中的定位
 
@@ -18,7 +18,7 @@ PRD / 需求澄清
 OpenAPI Draft / 工程基线 / 架构设计
   -> 系统架构图、数据流图、序列图、ER 图、DDD 边界图
 
-OpenSpec / Comet design
+系统 / 数据架构设计
   -> 状态流、调用链、领域边界、切片依赖图
 
 设计审查 / 垂直切片前
@@ -28,7 +28,7 @@ OpenSpec / Comet design
   -> 最终流程图、架构演进图、知识沉淀图
 ```
 
-最有价值的阶段是 Architecture / OpenSpec / Comet design 和 Design Review。此时图可以帮助审查 DDD 边界、状态流、接口契约、异常路径和垂直切片是否一致。
+最有价值的阶段是 Architecture / 系统 / 数据架构设计 和 Design Review。此时图可以帮助审查 DDD 边界、状态流、接口契约、异常路径和垂直切片是否一致。
 
 ## 1.1 四类架构图产物
 
@@ -38,7 +38,7 @@ OpenSpec / Comet design
 |---|---|---|---|---|
 | 业务架构图 | 机会探索 / Discovery / 产品定义 | 让用户、价值流、角色协作和产品边界可视化 | 用户旅程、价值流、泳道图、能力地图、生态关系图 | `docs/discovery/diagrams/` 或 `docs/architecture/diagrams/` |
 | 功能架构图 | PRD baseline / 产品设计 / PRD 校准 | 让功能域、模块、优先级和依赖关系可审查 | 功能模块图、依赖图、页面地图、关系图 | `docs/design/diagrams/` 或 `docs/architecture/diagrams/` |
-| 系统总体架构图 | 工程基线 / OpenSpec / Comet design | 让服务边界、部署、集成、权限链路和 NFR 方案可审查 | C4/容器图、部署图、序列图、DFD、DDD 边界图 | `docs/architecture/diagrams/` |
+| 系统总体架构图 | 工程基线 / 系统 / 数据架构设计 | 让服务边界、部署、集成、权限链路和 NFR 方案可审查 | C4/容器图、部署图、序列图、DFD、DDD 边界图 | `docs/architecture/diagrams/` |
 | 数据架构图 | 详细设计 / 持久化开发前 | 让元模型、版本、血缘、查询和存储策略在写 Repository 前被看见 | ER 图、Class/元模型图、血缘图、DFD、查询路径图 | `docs/architecture/diagrams/` |
 
 对于数据模型、元数据管理、模型版本或血缘分析类产品，数据架构图尤其有价值。它不能替代 `docs/architecture/<feature>-data-architecture.md`，但可以帮助提前发现元模型抽象不稳、版本边界不清、血缘关系无法高效查询等高成本问题。
@@ -102,11 +102,11 @@ docs/architecture/diagrams/model-ddd-boundary.excalidraw
 推荐三步法：
 
 1. 先有文字事实。
-   来源应该是 Discovery、PRD、OpenAPI Draft、Architecture、Comet design 或 Issue。
+   来源应该是 Discovery、PRD、OpenAPI Draft、Architecture、系统 / 数据架构设计 或 Issue。
 2. 再生成图。
    根据用途选择 Flowchart、Swimlane、Relationship、Class、ER、Sequence、DFD、Architecture 或 Mind Map。
 3. 最后回写审查结论。
-   图里暴露的问题要回写到 PRD、OpenAPI、ADR、Comet design 或 Issue。
+   图里暴露的问题要回写到 PRD、OpenAPI、ADR、系统 / 数据架构设计 或 Issue。
 
 常用提示词：
 
@@ -117,7 +117,7 @@ docs/architecture/diagrams/model-ddd-boundary.excalidraw
 ```
 
 ```text
-使用 excalidraw-diagram-generator，基于当前 Comet design，
+使用 excalidraw-diagram-generator，基于当前 系统 / 数据架构设计，
 生成 DDD 边界和模块依赖图，突出 Domain、Application、Infrastructure、Adapter 的依赖方向。
 保存到 docs/architecture/diagrams/<feature>-ddd-boundary.excalidraw。
 ```
