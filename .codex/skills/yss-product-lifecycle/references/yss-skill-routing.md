@@ -1,119 +1,56 @@
-# YSS Skill Routing
+# YSS Skill Routing Reference
 
-Route to the smallest useful skill set. Load a primary skill first, then add secondary skills only when the task requires their details.
+Use this reference after lifecycle stage and slice scope are clear. Pick the minimal set of YSS skills that match the impacted engineering area.
 
-## Product Design / Prototype
+## Common Routing
 
-| Need | Primary skill | Add when needed |
+| Intent / impact | Primary skill | Secondary skills / notes |
 |---|---|---|
-| PRD baseline has UI impact and needs page/flow/state design | `product-design-prototype` | `wireframe-prototype`, `component-story-prototype`, `mock-api-prototype` |
-| Low-fidelity page flow or wireframe | `wireframe-prototype` | `figma` / `figma-use` when using Figma; Penpot/tldraw/Axure links may be recorded without becoming required dependencies |
-| Engineering prototype with component/page states | `component-story-prototype` | `mock-api-prototype` when data/error states are needed |
-| Prototype needs provisional API data | `mock-api-prototype` | `api-integration` / `yss-openapi` only after OpenAPI Freeze |
-| Gate before PRD calibration / API impact analysis / contract draft | `prototype-review` | Return to `product-design-prototype` if blocked |
+| Decide YSS implementation skills for a slice | `yss-router` | Use before frontend/backend implementation when multiple YSS areas are touched |
+| UI design, tokens, style consistency, Ant Design / YSS UI decisions | `yss-design-system` | Use before product design prototype or UI implementation |
+| Product page / module development | `yss-page-module-development` | Add `yss-ui`, `yss-components`, `api-integration` as needed |
+| YSS UI component usage | `yss-ui` | Use local examples first; then skill references |
+| YSS component selection / patterns | `yss-components` | Useful for tables, forms, buttons, modals, layout |
+| API client integration | `api-integration` | Requires stable API contract or clearly marked mock/prototype exception |
+| OpenAPI generation or review | `yss-openapi`, `yss-openapi-draft-review`, `yss-openapi-governance` | Draft is review-only until Freeze |
+| Backend service from scratch | `yss-ddd-scaffold-generator` | After implementation location decision; then baseline check |
+| Backend scaffold baseline | `yss-backend-scaffold-parent` | Required after generated backend skeleton and before business implementation |
+| Domain modeling / aggregate / state behavior | `yss-domain-modeling`, `yss-domain`, `yss-backend-scaffold-domain` | Use before repository/controller code when domain concepts are unstable |
+| Repository / PO / Convertor / GatewayImpl | `yss-repository` | Add `yss-mybatis` / `yss-backend-scaffold-infrastructure` for mapper/persistence details |
+| Web controller / DTO / VO / Web Convertor | `yss-web-controller`, `yss-dto`, `yss-backend-scaffold-web` | Requires OpenAPI Freeze or no-API-impact record |
+| Java coding style and review | `alibaba-java-code-style` | Treat blockers as review blockers |
+| SQL condition/template/query utilities | `yss-sql-condition`, `yss-sql-tpl` | SQL red line still requires human review for native SQL |
+| Audit log | `yss-audit-log` | Security and traceability impacts must be recorded |
+| Cache | `yss-cache` | Include invalidation and consistency strategy |
+| File upload/download | `yss-file` | Include temporary URL, permission, and cleanup considerations |
+| Distributed ID | `yss-distributed-id` | Use for identifier strategy, not ad hoc ID generation |
+| Dictionary / variable / validation | `yss-dictionary`, `yss-variable`, `yss-validation` | Use for shared business metadata and validation |
 
-Prototype acceptance:
+## Routing Rules
 
-- Use `docs/design/templates/interaction-spec-template.md` for the main interaction artifact.
-- Use `docs/design/templates/state-matrix-template.md` for loading, empty, error, no-permission, readonly, conflict, and dirty-form states.
-- Use `docs/design/templates/prototype-review-checklist.md` for the gate before PRD calibration and API impact analysis / contract draft.
-- Capture PRD calibration notes and OpenAPI implications before contract drafting: fields, filters, actions, errors, permissions, pagination, and concurrency/version data.
-- Do not treat Storybook, MSW, Excalidraw, Figma, Penpot, tldraw, or xyflow as mandatory project dependencies in this template repo.
+- Do not route directly to frontend/backend implementation skills before `yss-router` when the task crosses multiple YSS areas.
+- Do not use backend implementation skills before required PRD, OpenAPI Freeze/no-impact record, architecture/data design, and Build Architecture Checklist are ready for the slice.
+- Do not use Repository / MyBatis skills before data architecture and domain metadata are stable enough to review.
+- Do not use Controller / DTO skills before OpenAPI contract is frozen or explicitly marked as no API impact.
+- Do not use UI implementation skills before `yss-design-system` and product design/prototype review when user-facing workflow is affected.
+- For bugs, start with `diagnosing-bugs`; route to YSS skills only after the failing feedback command points to the impacted area.
 
-## Architecture / Visualization
+## Handoff Prompt Template
 
-| Need | Primary skill | Add when needed |
-|---|---|---|
-| Business architecture or capability map | `yss-product-lifecycle` | `excalidraw-diagram-generator` for user journey, value stream, swimlane, or capability map |
-| Product overview design / functional architecture / module map | `yss-product-lifecycle` | `product-design-prototype` when UI flows expose module boundaries; `excalidraw-diagram-generator` for module/dependency diagrams |
-| System overview design / system architecture / service boundary / deployment | `comet` or OpenSpec design workflow | `yss-backend-scaffold-parent` for YSS DDD baseline; `excalidraw-diagram-generator` for C4, sequence, DFD, or deployment diagrams |
-| Data architecture / meta-model / lineage | `yss-domain-modeling` or `yss-domain` | `yss-repository` / `yss-mybatis` only after the model is stable; `excalidraw-diagram-generator` for ER, class, lineage, or DFD diagrams |
+```text
+请使用 yss-router 为 <slice> 选择最小 YSS skill 集合。
 
-Architecture acceptance:
+已知资产：
+- PRD / Issue: <path-or-link>
+- OpenAPI Freeze / no API impact: <path-or-link>
+- Architecture / data design: <path-or-link>
+- Build Architecture Checklist: <path-or-link>
+- Implementation repo/location: <repo-or-path>
 
-- Business architecture answers users, value stream, role/ecosystem boundary, and product capability map before PRD baseline when the product is new.
-- Product overview design / functional architecture turns PRD scope into user flows, business objects, modules, priorities, dependencies, page/API/data impacts, MVP boundaries, and PRD gaps before PRD calibration.
-- System overview design / system architecture covers service/module boundary, deployment, integration, security, performance, reliability, observability, rollout, and rollback before Design Review when those risks exist.
-- Data architecture covers conceptual/logical/physical model, meta-model, versioning, lineage, query/search, index, storage, and migration constraints before persistence/repository work.
-- For data modeling, metadata management, versioning, ER design, or lineage-analysis products, data architecture is mandatory before Design Review and OpenAPI Freeze.
-- Excalidraw diagrams must reference upstream artifacts and push discovered issues back to PRD, OpenAPI, ADR, OpenSpec/Comet design, or issues.
-
-## Frontend
-
-| Need | Primary skill | Add when needed |
-|---|---|---|
-| New full YSS Vue page/module | `yss-page-module-development` | `yss-ui`, plus `api-integration` / `yss-openapi` when API is involved |
-| Existing page refactor or component work | `yss-ui` | `api-integration` / `yss-openapi` when API contract changes |
-| YTable layout or behavior | `yss-ui` | `yss-use-table-height` |
-| YTree layout or search | `yss-ui` | `yss-use-tree-height` |
-| YssFormily schema | `yss-formily` | `yss-formily-schema-generator` |
-| API client / Orval | `api-integration` | `yss-openapi` only after OpenAPI Freeze or when explicitly refreshing generated clients from implemented backend contracts |
-
-Frontend acceptance:
-
-- Use `@yss-ui/components` before raw `ant-design-vue` when YSS provides the component.
-- Keep `index.vue` for composition and event forwarding.
-- Put request, pagination, mapping, and fallback logic in `hooks/useXxx.ts`.
-- Use `YTable` columns with `field/type` and field-named slots.
-- Use `YssFormily` schema for query forms.
-- Use `useTableHeight` / `useTreeHeight` on container refs.
-- Cover loading, empty, error, and selected states.
-
-## Backend
-
-| Need | Primary skill | Add when needed |
-|---|---|---|
-| New DDD service skeleton | `yss-ddd-scaffold-generator` | specialist backend skills after generation |
-| Existing service feature | `yss-domain` | read `yss-backend-scaffold-parent` for baseline; add `yss-repository`, `yss-web-controller`, plus `yss-mybatis` when persistence framework details are involved |
-| Domain model, aggregate, state | `yss-domain` | `yss-backend-scaffold-domain` |
-| Domain DTO/Gateway conventions | `yss-backend-scaffold-domain` | `yss-dto` |
-| PO / Repository / Convertor / GatewayImpl | `yss-repository` | `yss-mybatis` |
-| MyBatis, PageQuery, datasource, batch | `yss-mybatis` | `yss-source-index` for real source locations |
-| Controller / Web Convertor / DTO / VO | `yss-web-controller` | `yss-dto` |
-
-Backend acceptance:
-
-- Generate skeleton first for new services; do not hand-build a full multi-module scaffold.
-- For existing backend features, check `yss-backend-scaffold-parent` before selecting layer-specific skills.
-- Keep Domain independent from Infrastructure and Web.
-- Define Gateway in Domain; implement it in Infrastructure.
-- Keep persistence details out of Gateway interfaces.
-- Use MapStruct for Convertor where the project convention supports it.
-- Reuse `PageQuery` and existing MyBatis/BaseRepository mechanisms.
-- Keep Controller dependent on Domain Gateway/Service, not Repository.
-
-## Common Combinations
-
-- Product/interaction prototype:
-  product design and requirement freeze: `product-design-prototype` -> `wireframe-prototype` -> `prototype-review` -> requirement freeze
-- Architecture artifact ladder:
-  `yss-product-lifecycle` -> business / PRD / functional architecture -> system / data architecture when affected -> Design Review
-- Architecture diagrams:
-  source artifact -> `excalidraw-diagram-generator` -> review -> update source artifact
-- Engineering state prototype:
-  product design and requirement freeze: `product-design-prototype` -> `component-story-prototype` -> `mock-api-prototype` -> `prototype-review` -> requirement freeze
-- Prototype to formal implementation:
-  requirement freeze -> system / data architecture, engineering contract, and Design Review -> contract freeze and OpenSpec / Comet -> `yss-router`
-- Full CRUD slice:
-  `yss-router` -> `yss-domain` -> `yss-repository` -> `yss-web-controller`
-- CRUD with pagination / datasource concern:
-  `yss-router` -> `yss-domain` -> `yss-repository` -> `yss-mybatis` -> `yss-web-controller`
-- New frontend page/module with API:
-  `yss-router` -> `yss-page-module-development` -> `yss-ui` -> `api-integration` -> `yss-openapi` after Freeze/generation boundary is clear
-- Existing frontend page refactor with API:
-  `yss-router` -> `yss-ui` -> `api-integration` -> `yss-openapi` when generated client refresh is required
-- New backend service:
-  `yss-router` -> `yss-ddd-scaffold-generator` -> `yss-backend-scaffold-parent` -> `yss-domain` -> `yss-repository` -> `yss-web-controller`
-- Existing backend service feature:
-  `yss-router` -> `yss-backend-scaffold-parent` -> `yss-domain` -> `yss-repository` -> `yss-web-controller`
-
-## Do Not
-
-- Do not load every YSS skill because the repo is a YSS repo.
-- Do not use `yss-repository` before the domain model or metadata is stable.
-- Do not use `yss-web-controller` before Gateway/metadata is stable.
-- Do not use `yss-openapi` to invent API contracts during product/design work; use it to generate or refresh clients/contracts once the Draft/Freeze boundary is clear.
-- Do not route a UI feature from PRD baseline directly to contract draft / OpenAPI Draft; use `product-design-prototype`, `prototype-review`, and PRD calibration first.
-- Do not use Excalidraw diagrams as the only source of truth for requirements, architecture decisions, API contracts, or tests.
-- Do not make diagrams mandatory for small copy, style, config, or single-point bug fixes.
-- Do not let frontend page code duplicate hook request callbacks or pagination state.
+请输出：
+1. 必须加载的 YSS skills
+2. 可选 skills 与触发条件
+3. TDD / 验证命令
+4. 人审点和 TODO-HUMAN-REVIEW
+5. 不应触碰的范围
+```

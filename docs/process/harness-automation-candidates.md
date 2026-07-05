@@ -12,7 +12,7 @@
 
 | 编号 | 门禁 | 触发阶段 | 输入 | 输出 | 失败处理 | 人工接管点 |
 |---|---|---|---|---|---|---|
-| HAC-001 | active OpenSpec / Comet change 完整性 | 6. 契约冻结与 OpenSpec / Comet | `openspec/changes/**`、`.comet.yaml` | 缺失文件清单 | 阻止进入正式垂直切片 | change 命名或匹配关系不明确 |
+| HAC-001 | active Issue change 完整性 | 6. 契约冻结与 Issue | `docs/requirements/issues/**`、`垂直切片 Issue 状态` | 缺失文件清单 | 阻止进入正式垂直切片 | change 命名或匹配关系不明确 |
 | HAC-002 | API 影响记录 / OpenAPI Draft / Freeze 文件存在性 | 5 / 6. API 相关阶段 | API 影响记录、`docs/api/specs/*.yaml`、Freeze 记录 | API 资产状态 | 要求补齐影响记录、契约草案、Draft / Freeze 或无 API 影响记录 | API 影响范围有争议 |
 | HAC-003 | Build Architecture Checklist 字段完整性 | 7. 垂直切片与 TDD 实现 | checklist 文档 | 缺失字段和未回勾项 | 阻止 build-ready 结论 | 架构约束是否适用需判断 |
 | HAC-004 | fresh verification 记录存在性 | 8. 验证发布与复盘 | verification 文档、Issue 评论、测试输出 | 验证证据摘要 | 阻止“完成 / 可合并 / 可发布”结论 | 验证范围是否足够需判断 |

@@ -7,8 +7,8 @@
 | 路径 | 用途 |
 |---|---|
 | `.agents/` | Agent 可加载的 Engineering Skills、脚本、prompt 和参考材料 |
-| `.agent/` | OpenSpec / OpsX 相关工作流与 skills |
-| `.codex/skills/` | Codex 项目级 skills，包含 YSS、OpenSpec、Comet 等能力 |
+| `.agent/` | Matt engineering skills 与通用 Agent 工作流 |
+| `.codex/skills/` | Codex 项目级 skills，包含 YSS、Matt、Issue 等能力 |
 | `docs/agents/` | 人和 AI 都可读的协作说明、标签约定、维护规范 |
 
 ## 当前文档

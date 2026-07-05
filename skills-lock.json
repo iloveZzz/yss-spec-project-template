@@ -1,143 +1,71 @@
 {
-  "version": 1,
+  "version": 2,
+  "source": {
+    "name": "mattpocock/skills",
+    "sourceType": "github",
+    "ref": "272f99b22574f50e4266791c86b9302682970e23",
+    "path": "skills/engineering"
+  },
+  "additionalSources": {
+    "competitive-intelligence": {
+      "name": "anthropics/knowledge-work-plugins",
+      "sourceType": "github",
+      "ref": "main",
+      "path": "sales/skills/competitive-intelligence"
+    }
+  },
   "skills": {
-    "brainstorming": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/brainstorming/SKILL.md",
-      "computedHash": "26a8eb33d548f0c4ead9e7bc13a90c3853398d30345c651245a61a12b869f130"
+    "ask-matt": {
+      "skillPath": "skills/engineering/ask-matt/SKILL.md"
     },
-    "comet": {
-      "source": "rpamis/comet",
-      "sourceType": "github",
-      "skillPath": "assets/skills/comet/SKILL.md",
-      "computedHash": "902e2d6a03030867b0111919e531b9149d84f8fb1a50259143ed450e60822c52"
+    "code-review": {
+      "skillPath": "skills/engineering/code-review/SKILL.md"
     },
-    "comet-archive": {
-      "source": "rpamis/comet",
-      "sourceType": "github",
-      "skillPath": "assets/skills/comet-archive/SKILL.md",
-      "computedHash": "23c3013b1667ac2c0a289f8f31882d41415b46b22f93220d18b9289a66a3d6e2"
+    "codebase-design": {
+      "skillPath": "skills/engineering/codebase-design/SKILL.md"
     },
-    "comet-build": {
-      "source": "rpamis/comet",
-      "sourceType": "github",
-      "skillPath": "assets/skills/comet-build/SKILL.md",
-      "computedHash": "6bc54538795e3e74e5114d4a81e97f373ff91b12cdbc1ebf9f2ddb19f0d94ec6"
+    "competitive-intelligence": {
+      "skillPath": "sales/skills/competitive-intelligence/SKILL.md",
+      "source": "competitive-intelligence"
     },
-    "comet-design": {
-      "source": "rpamis/comet",
-      "sourceType": "github",
-      "skillPath": "assets/skills/comet-design/SKILL.md",
-      "computedHash": "23854c78fe56cc02291f4dfa05385e6339d637f324939febfc16c81af62738a6"
+    "diagnosing-bugs": {
+      "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md"
     },
-    "comet-hotfix": {
-      "source": "rpamis/comet",
-      "sourceType": "github",
-      "skillPath": "assets/skills/comet-hotfix/SKILL.md",
-      "computedHash": "1d3c5bc50105c16f5da266c56dc42485d2e7fda639841c88c9c39db64ae60f82"
+    "domain-modeling": {
+      "skillPath": "skills/engineering/domain-modeling/SKILL.md"
     },
-    "comet-open": {
-      "source": "rpamis/comet",
-      "sourceType": "github",
-      "skillPath": "assets/skills/comet-open/SKILL.md",
-      "computedHash": "4896e748063ccd638de52b4e5704c721df15be390e1cae79b53ad32145b7644b"
+    "grill-with-docs": {
+      "skillPath": "skills/engineering/grill-with-docs/SKILL.md"
     },
-    "comet-tweak": {
-      "source": "rpamis/comet",
-      "sourceType": "github",
-      "skillPath": "assets/skills/comet-tweak/SKILL.md",
-      "computedHash": "7501987a8b0481aa7f2317df4ce3c848d032ace9a486f87ad1dc9db20b74c987"
+    "implement": {
+      "skillPath": "skills/engineering/implement/SKILL.md"
     },
-    "comet-verify": {
-      "source": "rpamis/comet",
-      "sourceType": "github",
-      "skillPath": "assets/skills/comet-verify/SKILL.md",
-      "computedHash": "4f032d34119073ac150e400915ebb84eb7793de8a4ce2956dc5ac9489650a78f"
+    "improve-codebase-architecture": {
+      "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md"
     },
-    "dispatching-parallel-agents": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/dispatching-parallel-agents/SKILL.md",
-      "computedHash": "85df55d2235a7623b315dac4bc340c14a37dcdc57c869c80a829e1a53a174689"
+    "prototype": {
+      "skillPath": "skills/engineering/prototype/SKILL.md"
     },
-    "excalidraw-diagram-generator": {
-      "source": "github/awesome-copilot",
-      "sourceType": "github",
-      "skillPath": "skills/excalidraw-diagram-generator/SKILL.md",
-      "computedHash": "68af7d099a9e6fd2a94b4e1219b8b7820e09ebe4a8c2a636358d3f5188219e51"
+    "research": {
+      "skillPath": "skills/engineering/research/SKILL.md"
     },
-    "executing-plans": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/executing-plans/SKILL.md",
-      "computedHash": "d3e5b64b97d4713e3a7f33625cae12ed9305898d85a1c6309f46765c39a9d789"
+    "resolving-merge-conflicts": {
+      "skillPath": "skills/engineering/resolving-merge-conflicts/SKILL.md"
     },
-    "finishing-a-development-branch": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/finishing-a-development-branch/SKILL.md",
-      "computedHash": "aa2632ed96df59c36348bd8f8ec1ff0fb0c5cc68b60691834687bf4cedc6be3f"
+    "setup-matt-pocock-skills": {
+      "skillPath": "skills/engineering/setup-matt-pocock-skills/SKILL.md"
     },
-    "receiving-code-review": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/receiving-code-review/SKILL.md",
-      "computedHash": "3f56080356c62e4f74a183d7371686babc661e41a952dc67a97c2c76fe8a9329"
+    "tdd": {
+      "skillPath": "skills/engineering/tdd/SKILL.md"
     },
-    "requesting-code-review": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/requesting-code-review/SKILL.md",
-      "computedHash": "cde520e9118d7e6b74b5ab0123cff2f68d9c07bddb3f82c997753b6126600aed"
+    "to-issues": {
+      "skillPath": "skills/engineering/to-issues/SKILL.md"
     },
-    "subagent-driven-development": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/subagent-driven-development/SKILL.md",
-      "computedHash": "aaeb6686111c76b3c38e09156fe18af44d73b324ee055e5cb0ab63dc776f216f"
+    "to-prd": {
+      "skillPath": "skills/engineering/to-prd/SKILL.md"
     },
-    "systematic-debugging": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/systematic-debugging/SKILL.md",
-      "computedHash": "792a368e074981d7e3138edb439e138489b2ac247cd1e5739fab52af680fb17b"
-    },
-    "test-driven-development": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/test-driven-development/SKILL.md",
-      "computedHash": "eee144aea35d783296d178017e9fe843c6d16cc8b240e106f5e50910f6caf329"
-    },
-    "using-git-worktrees": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/using-git-worktrees/SKILL.md",
-      "computedHash": "212ad917e5543e84ea3adf4e3fab537675db976fdab05d4de432870e38b49e80"
-    },
-    "using-superpowers": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/using-superpowers/SKILL.md",
-      "computedHash": "75fb918d6ddbdfea9abe9d67a8d9214b1c95d9da58078c078b04fc658526c1cf"
-    },
-    "verification-before-completion": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/verification-before-completion/SKILL.md",
-      "computedHash": "9b446f0c7fe1cfb560b1d34439523b1a76d5f177290007b2c053a1c749a4a8ba"
-    },
-    "writing-plans": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/writing-plans/SKILL.md",
-      "computedHash": "b73b59d43c34c3fc225bfae419c458bb216af80df25fc0c545dfa7fd2a161722"
-    },
-    "writing-skills": {
-      "source": "obra/superpowers",
-      "sourceType": "github",
-      "skillPath": "skills/writing-skills/SKILL.md",
-      "computedHash": "792e9d25ed6fbe38561202af07e6dd570060f745f9b8f4c71d6d13e7bc9597fa"
+    "triage": {
+      "skillPath": "skills/engineering/triage/SKILL.md"
     }
   }
 }

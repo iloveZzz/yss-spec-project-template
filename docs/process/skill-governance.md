@@ -1,6 +1,8 @@
 # Skill 沉淀治理规则
 
-本文定义何时把重复动作沉淀为模板、脚本、Skill 或 Comet 节点。目标是让 Skill 成为可复用能力单元，而不是零散提示词集合。
+本文定义何时把重复动作沉淀为模板、脚本或 Skill。目标是让 Skill 成为可复用能力单元，而不是零散提示词集合。
+
+本仓库默认使用 Matt Pocock Engineering Skills 承接通用工程流程，使用 YSS skills 承接领域工程规范。新增技能前必须先确认是否已有 Matt / YSS skill、模板或脚本覆盖。
 
 ## 沉淀触发条件
 
@@ -14,7 +16,8 @@
 | 需要稳定检查但不需要生成大量内容 | checklist | 人仍然负责放行判断 |
 | 规则明确、可机器判断 | 脚本 | 有确定输入、输出和失败条件 |
 | 需要一组可复用步骤、上下文规则和产物规范 | Skill | 多次复用，且普通模板无法约束执行质量 |
-| 属于生命周期主链路状态推进 | Comet / OpenSpec 节点 | 与 change 状态、proposal、design、tasks、spec 强相关 |
+| 属于需求澄清、PRD、Issue、TDD、诊断、审查或架构治理 | 优先复用 Matt skill | 与 `grill-with-docs`、`to-prd`、`to-issues`、`implement`、`tdd`、`diagnosing-bugs`、`code-review`、`codebase-design` 等职责重合 |
+| 属于 YSS DDD、UI、OpenAPI、Repository、Controller、DTO 或组件规范 | 优先复用 YSS skill | 与现有 YSS 专项规范强相关 |
 | 低频、一次性或高度依赖人工判断 | 不沉淀为 Skill | 记录在复盘或 checklist 即可 |
 
 ## Skill 候选评估表
@@ -27,7 +30,7 @@
 | 输出 | 生成什么产物或判断 |
 | 质量门禁 | 如何判断执行合格 |
 | 是否已有模板 / 脚本 | 避免重复建设 |
-| 是否需要接入 Comet | 是否影响 change 状态推进 |
+| 是否已有 Matt / YSS skill | 避免重复建设 |
 | 不适用场景 | 明确不要使用的情况 |
 
 ## 不封装 Skill 的情况
@@ -44,4 +47,4 @@
 - 只有稳定语言写入 `CONTEXT.md`。
 - 只有难回滚、非显而易见且有真实取舍的治理决策写入 ADR。
 - Skill 更新后必须同步相关模板、触发规则和用户指南。
-
+- Matt skills 升级必须记录来源提交、变更摘要和验证结果。

@@ -17,7 +17,7 @@
 
 必须同步的节点：
 
-- PRD / 需求冻结 / OpenAPI Freeze / OpenSpec 或 Comet change 创建完成时，创建或更新对应 Issue，并记录本地资产路径。
+- PRD / 需求冻结 / OpenAPI Freeze / Issue change 创建完成时，创建或更新对应 Issue，并记录本地资产路径。
 - 垂直切片进入实现前，必须在对应平台存在可追踪 Issue；Issue 需要包含切片范围、阻塞关系、验收标准、测试 seam 和人工审查点。
 - 每个切片或生命周期阶段完成时，必须更新对应 Issue 的评论、标签、状态或里程碑，说明完成范围、验证命令、fresh verification 结果、剩余风险和下一步。
 - 阶段性议程、里程碑或 sprint planning 已经存在时，应把相关 PRD / change / slice Issue 归入同一议程，避免只在本地文档里记录进度。

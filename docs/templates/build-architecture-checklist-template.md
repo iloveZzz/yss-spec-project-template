@@ -5,7 +5,7 @@ owner: ai
 
 # <功能 / change> Build Architecture Checklist
 
-> 本模板用于 Comet build 前和每个垂直切片完成后，把系统架构、数据架构、ADR、工程基线、OpenAPI Freeze 结论和安全红线转译为可执行检查项。它不是替代架构文档，而是防止架构资产在 build 阶段失效。
+> 本模板用于 垂直切片实现 前和每个垂直切片完成后，把系统架构、数据架构、ADR、工程基线、OpenAPI Freeze 结论和安全红线转译为可执行检查项。它不是替代架构文档，而是防止架构资产在 build 阶段失效。
 
 ## 1. 输入资产
 
@@ -16,7 +16,7 @@ owner: ai
 | ADR |  |  |
 | 工程基线 |  |  |
 | OpenAPI Freeze |  |  |
-| OpenSpec / Comet design |  |  |
+| 系统 / 数据架构设计 |  |  |
 | 安全红线 | `AGENTS.md` |  |
 
 ## 2. 架构约束矩阵

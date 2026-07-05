@@ -9,7 +9,7 @@ owner: ai
 
 > 适用时机：API 影响分析 / 契约草案 / OpenAPI Draft、工程基线 / YSS DDD Review 之后，Design Review 和 OpenAPI Freeze 之前。
 > 本阶段必须反向校验契约草案；OpenAPI Draft 在 Freeze 前仍是 review-only，不是实现或生成客户端的稳定契约。
-> 本文用于团队内部技术方案讨论审核，不替代 OpenAPI、ADR、OpenSpec / Comet design、数据架构或详细设计。
+> 本文用于团队内部技术方案讨论审核，不替代 OpenAPI、ADR、系统 / 数据架构设计、数据架构或详细设计。
 
 ## 1. 输入资产
 

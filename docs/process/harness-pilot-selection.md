@@ -26,9 +26,9 @@
 
 | 检查项 | 要求 |
 |---|---|
-| 试点目标 | 说明要验证哪些 Harness 能力，例如裁剪、OpenAPI、Comet、Build Checklist、fresh verification |
+| 试点目标 | 说明要验证哪些 Harness 能力，例如裁剪、OpenAPI、Issue、Build Checklist、fresh verification |
 | 业务范围 | 明确用户、痛点、MVP、非目标和成功标准 |
-| 现有资产 | 列出已有 PRD、设计、OpenAPI、架构、Issue、Comet change 或代码入口 |
+| 现有资产 | 列出已有 PRD、设计、OpenAPI、架构、Issue、垂直切片 Issue 或代码入口 |
 | 影响面 | 标注 UI、API、数据、权限、安全、部署和回滚影响 |
 | 垂直切片 | 拆成可独立验证的 1 到 3 个端到端切片 |
 | 验证方式 | 明确测试命令、契约检查、人工验收或截图证据 |
@@ -41,7 +41,7 @@
 PRD
 → API 影响分析 / 契约草案
 → review-only OpenAPI Draft（如需要）
-→ Comet Change
+→ Issue Change
 → 垂直切片
 → TDD
 → Review

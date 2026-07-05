@@ -21,10 +21,10 @@
 -> API 影响分析 / 契约草案
 -> OpenAPI Draft Review（如生成 YAML Draft）
 -> 工程基线 / YSS DDD Review
--> 系统概要设计 / 数据架构 / OpenSpec / Comet design
+-> 系统概要设计 / 数据架构
 -> 设计审查
 -> OpenAPI Freeze
--> OpenSpec / Comet change
+-> 垂直切片 Issue
 -> 垂直切片
 -> TDD 实现
 -> 独立审查 / fresh verification
@@ -54,7 +54,7 @@
 -> Codex / Hermes 等平台读取仓库、执行任务、更新资产
 -> skills 提供阶段化工作方法和 YSS 专项规范
 -> agents 承担分工明确的角色：Discovery / PRD / API / Architecture / Code / Review / Verify
--> harness 把聊天结论固化为 docs、OpenAPI、OpenSpec、Issue、测试和验证记录
+-> harness 把聊天结论固化为 docs、OpenAPI、Issue、测试和验证记录
 ```
 
 这里的 harness 不是单个工具，而是本项目提供的一组可追溯能力：
@@ -66,7 +66,7 @@
 | 需求和规格资产 | `docs/discovery/`、`docs/requirements/`、`docs/api/specs/` | 把聊天结论变成可审查文件 |
 | 产品设计资产 | `docs/design/` 或 Figma / 原型工具链接 | 保存页面清单、用户流、原型、交互说明和状态矩阵 |
 | 架构和决策资产 | `docs/architecture/`、`docs/adr/` | 保存模块边界、状态流和难回滚取舍 |
-| 变更编排 | `openspec/changes/`、Comet | 追踪 proposal、design、spec、tasks、verify、archive |
+| 变更编排 | `docs/requirements/issues/`、Issue | 追踪切片目标、设计约束、行为差异、任务、验证和收口状态 |
 | Agent 交接 | `docs/templates/agent-brief-template.md`、GitLab / GitHub Issues | 把任务交给 Agent 前写清目标、非目标、验收和验证 |
 | Fresh verification | 测试命令、`scripts/verify-template`、CI | 用最新证据支撑“完成”结论 |
 
@@ -92,7 +92,7 @@
 使用 yss-product-lifecycle 处理“数据中台数据建模 MVP”。
 背景：目前只有初始想法，目标用户是假设的建模人员、管理员、实施顾问和下游开发者。
 目标：本轮只判断生命周期阶段，并给出下一步产物，不写业务代码。
-输入资产：请先读取 AGENTS.md、CONTEXT.md、docs/discovery/、docs/requirements/、docs/design/、docs/api/specs/ 和 openspec/changes/。
+输入资产：请先读取 AGENTS.md、CONTEXT.md、docs/discovery/、docs/requirements/、docs/design/、docs/api/specs/ 和 docs/requirements/issues/。
 边界：不要生成 Java / Vue 实现；不要替我确认审批、权限和数据库迁移规则。
 输出：当前阶段、已有资产、缺失资产、是否阻塞、下一步、推荐技能和可直接使用的下一轮 prompt。
 验证：说明本轮是否只是文档分诊；如修改文档，运行 git diff --check 和 scripts/verify-template。
@@ -149,13 +149,13 @@ skills 是让 AI 按规程工作的“操作手册”，不是关键词装饰。
 | 页面和交互设计 | `product-design-prototype`、`wireframe-prototype`、`component-story-prototype`、`mock-api-prototype`、`docs/design/` | 基于 PRD 初稿细化页面流、状态和交互，再回填 PRD 并反推 API |
 | 原型评审 | `prototype-review` | 未通过时回到产品设计，不进入 PRD 校准 / API 影响分析 / 契约草案 |
 | API 契约 | API 影响分析 / 契约草案 / OpenAPI Freeze 流程 | Draft 可讨论，Freeze 才可开发 |
-| 正式变更设计 | `comet` / OpenSpec skills / Superpowers `brainstorming` | 复用 PRD，聚焦技术方案、风险和测试 seam |
-| 拆切片 | `to-issues` / `writing-plans` | 必须是端到端垂直切片 |
+| 正式变更设计 | `to-issues` / Matt skills | 复用 PRD，聚焦技术方案、风险和测试 seam |
+| 拆切片 | `to-issues` | 必须是端到端垂直切片 |
 | 选择 YSS 实现规范 | `yss-router` | 不要一次加载所有 YSS skills |
-| 业务开发 | `tdd` / `test-driven-development` + YSS 专项 skills | 先失败测试，再实现 |
-| Bug 修复 | `diagnosing-bugs` / `systematic-debugging` | 先复现和根因，再修 |
-| 完成前验证 | `verification-before-completion` | 必须 fresh verification |
-| 审查 | `requesting-code-review` / Review Agent | 实现者不能审查自己 |
+| 业务开发 | `tdd` + YSS 专项 skills | 先失败测试，再实现 |
+| Bug 修复 | `diagnosing-bugs` | 先复现和根因，再修 |
+| 完成前验证 | fresh verification 记录 / 验证模板 | 必须记录命令、结果、失败项和未验证原因 |
+| 审查 | `code-review` / Review Agent | 实现者不能审查自己 |
 
 使用技能的好 prompt：
 
@@ -171,7 +171,7 @@ skills 是让 AI 按规程工作的“操作手册”，不是关键词装饰。
 
 - 只说“用一下 skill”，但不说明输入资产和输出路径。
 - 因为是 YSS 项目就一次性加载所有 YSS skills。
-- 把 `brainstorming` 用来重复机会探索，而不是在正式变更中做技术方案。
+- 把 `需求澄清` 用来重复机会探索，而不是在正式变更中做技术方案。
 - 有 UI 的功能从 PRD 初稿直接跳 OpenAPI，跳过页面、原型、状态矩阵和 `prototype-review`。
 - 在 OpenAPI Freeze 前让 `yss-openapi` 生成生产客户端。
 
@@ -679,14 +679,14 @@ docs/adr/0001-data-model-versioning-strategy.md
 - [ ] 版本策略和状态流清楚；难回滚决策已写 ADR。
 - [ ] 设计已经反向校验 OpenAPI Draft。
 
-## 12. 主阶段 5/6 交接：OpenSpec / Comet design 准备与设计审查
+## 12. 主阶段 5/6 交接：系统 / 数据架构设计 准备与设计审查
 
-正式进入变更交付时，使用 OpenSpec / Comet 承载 proposal、design、specs 和 tasks。Comet brainstorming 在这里关注技术方案、风险、测试 seam 和契约影响，不重复机会探索。
+正式进入变更交付时，使用垂直切片 Issue 承载目标、设计约束、行为差异、任务和验证方式。这里关注技术方案、风险、测试 seam 和契约影响，不重复机会探索。
 
 推荐提示词：
 
 ```text
-使用 Comet 为“数据中台数据建模 MVP”创建正式 change。
+使用 to-issues 为“数据中台数据建模 MVP”创建垂直切片 Issue。
 请复用校准后的 PRD、产品总体设计 / 功能架构、页面 / 原型 / 交互设计、OpenAPI Draft 和工程基线，重点完成行为规格、状态流、风险、测试 seam 和设计审查清单。
 ```
 
@@ -705,7 +705,7 @@ docs/adr/0001-data-model-versioning-strategy.md
 - [ ] 阻断项已回到对应阶段修正。
 - [ ] 产品总体设计 / 功能架构、页面 / 原型 / 交互设计已通过评审，并已反推 OpenAPI Draft。
 - [ ] 契约草案 / OpenAPI Draft 已通过设计审查，可以进入 Freeze。
-- [ ] OpenSpec / Comet change 目标单一，不混入指标管理、血缘分析等额外目标。
+- [ ] 垂直切片 Issue 目标单一，不混入指标管理、血缘分析等额外目标。
 
 ## 13. 主阶段 6：OpenAPI Freeze
 
@@ -844,7 +844,7 @@ fresh verification 记录示例：
 
 - [ ] 独立 review 无阻断项。
 - [ ] fresh verification 是本轮最新结果，不复用旧输出。
-- [ ] 失败项已回到 build 或设计阶段处理。
+- [ ] 失败项已回到实现或设计阶段处理。
 
 ## 17. 阶段 14：发布、实施与用户指南
 
@@ -919,7 +919,7 @@ docs/user-guide/
 阶段门禁：
 
 - [ ] 复盘结论不是空泛总结，而是落到文档、规则或 backlog。
-- [ ] OpenSpec / Comet change 已 verify 和 archive。
+- [ ] 垂直切片 Issue 已完成验证并收口。
 - [ ] 下一轮同类需求可以复用本次资产。
 
 ## 18. 人类参考用总清单
@@ -942,7 +942,7 @@ docs/user-guide/
 - [ ] 交互设计发现的需求缺口已回填 PRD，PRD 和设计资产已互相链接。
 - [ ] API 影响记录和契约草案 / OpenAPI Draft 已完成；涉及 API 时已通过设计审查并 Freeze。
 - [ ] 工程基线和 YSS DDD 分层已确认。
-- [ ] OpenSpec / Comet change 目标单一。
+- [ ] 垂直切片 Issue 目标单一。
 - [ ] 垂直切片可独立验收。
 - [ ] `yss-router` 已选择最小技能集。
 - [ ] Agent Brief 已包含目标、非目标、验收标准、OpenAPI 状态、安全红线和验证命令。
@@ -989,7 +989,7 @@ docs/user-guide/
 ```text
 使用 yss-product-lifecycle。
 背景：<一句话说明产品/模块/变更>。
-输入资产：请先检查 AGENTS.md、CONTEXT.md、docs/discovery/、docs/requirements/、docs/design/、docs/api/specs/、docs/architecture/、docs/adr/、openspec/changes/。
+输入资产：请先检查 AGENTS.md、CONTEXT.md、docs/discovery/、docs/requirements/、docs/design/、docs/api/specs/、docs/architecture/、docs/adr/、docs/requirements/issues/。
 目标：判断当前生命周期阶段和缺失资产。
 边界：不要写业务代码，不要替我确认未决业务规则。
 输出：当前阶段、阶段依据、已有资产、缺失资产、是否阻塞、下一步、推荐技能、下一轮可直接使用的 prompt。
@@ -1075,8 +1075,8 @@ docs/user-guide/
 ### 20.9 完成前验证
 
 ```text
-使用 verification-before-completion。
-请基于本次 diff 和任务目标，列出必须运行的 fresh verification 命令并执行。
+请基于本次 diff 和任务目标，生成 fresh verification 记录。
+列出必须运行的验证命令并执行。
 输出命令、结果、失败项、未验证项和原因。
 不要只说“看起来可以”。
 ```
