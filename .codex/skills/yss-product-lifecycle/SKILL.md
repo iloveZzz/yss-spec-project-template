@@ -63,7 +63,7 @@ Architecture artifacts are produced progressively. Do not try to finish every ar
 | Artifact | Lifecycle timing | Primary question | Typical outputs | Diagram support |
 |---|---|---|---|---|
 | Business architecture | Opportunity exploration / Discovery / product definition | Who gets value, in which workflow, and where the product boundary sits | user journey, value stream, role/ecosystem model, capability map | journey map, swimlane, capability map |
-| Product overview design / Functional architecture | PRD baseline / product design / PRD calibration | Which product capabilities, user flows, modules, pages, APIs, and data impacts support the MVP boundary | product overview, module map, feature list, priority, dependencies, state flow, open questions, PRD gaps | feature/module map, dependency graph, user flow, page map |
+| Product overview design / Functional architecture | PRD baseline / product design / PRD calibration | Which product capabilities, user flows, modules, pages, low-fidelity prototypes, APIs, and data impacts support the MVP boundary | product overview, module map, feature list, priority, dependencies, low-fidelity wireframe, state flow, open questions, PRD gaps | feature/module map, dependency graph, user flow, page map, low-fidelity wireframe |
 | System overview design / System architecture | Engineering baseline / architecture review | How the product is built, deployed, integrated, operated, and safely evolved | C4/container view, service boundary, integration, deployment, NFR decisions, rollout/rollback decisions | system architecture, sequence, deployment, DFD |
 | Data architecture | Detailed design before persistence and repository work | How domain data, metadata, versions, lineage, and queries are modeled and stored | conceptual/logical/physical model, meta-model, versioning strategy, lineage/query/index strategy | ER, class, lineage graph, DFD |
 
@@ -90,7 +90,9 @@ Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, da
    - service boundary, state machine, integration, NFR, rollout, or rollback -> system / data architecture, engineering contract, and Design Review downstream gates;
    - persistence, metadata, versioning, lineage, query, or index -> system / data architecture, engineering contract, and Design Review downstream gates.
 4. Check whether required upstream artifacts exist.
-   - Before formal vertical slicing, verify PRD, OpenAPI Freeze or no-API-impact record, architecture review as needed, and a clear issue destination.
+   - Before PRD calibration, product design, API impact analysis, OpenAPI Draft, requirement freeze, or formal vertical slicing, verify PRD baseline and product overview design / functional architecture exist. If the task does not enter the PRD lifecycle, record the not-applicable reason in the impact assessment.
+   - For UI work, before PRD calibration, API impact analysis, OpenAPI Draft, or requirement freeze, verify low-fidelity `prototype-review` is approved and `docs/design/prototypes/<feature>/index.html` exists as an Ant Design v6 high-fidelity HTML prototype.
+   - Before formal vertical slicing, verify PRD, product overview design / functional architecture, OpenAPI Freeze or no-API-impact record, architecture review as needed, and a clear issue destination.
    - For medium/high-risk API, permission, state-machine, data-model, cross-client, new-module, or safety-sensitive changes, verify an OpenSpec-style Spec Delta exists or record why it is not needed.
    - Before frontend/backend implementation, verify vertical slice scope, implementation repo/location, whether the impacted frontend/backend runtime projects already exist and are reusable, YSS skill routing, Build Architecture Checklist, test command, and review strategy.
 5. Output the next action:
@@ -139,10 +141,11 @@ Default routing:
 
 | Intent | Next skill / workflow |
 |---|---|
-| Start a new business product/module | intake -> opportunity and Discovery -> `competitive-intelligence` when market / competitor facts are needed -> `grill-with-docs` -> `to-prd` -> business / PRD / functional architecture -> product design and requirement freeze when UI exists |
+| Start a new business product/module | intake -> opportunity and Discovery -> `competitive-intelligence` when market / competitor facts are needed -> `grill-with-docs` -> `to-prd` -> product overview design / functional architecture -> product design and requirement freeze when UI exists |
 | Analyze competitors, substitute workflows, pricing, positioning, or market facts | `competitive-intelligence`; then feed stable findings into `grill-with-docs` and `to-prd` |
-| Design UI flow after PRD baseline | `product-design-prototype`; add `wireframe-prototype`, `component-story-prototype`, or `mock-api-prototype` only when needed |
-| Review prototype before PRD calibration | `prototype-review` |
+| Design UI flow after PRD baseline | Verify product overview design / functional architecture first, then use `product-design-prototype`; add `wireframe-prototype` only when a low-fidelity page or flow sketch is needed |
+| Review low-fidelity prototype before high-fidelity design | `prototype-review` |
+| Build high-fidelity interactive HTML prototype | `high-fidelity-html-prototype` with Ant Design v6 after low-fidelity prototype review is approved |
 | Review contract draft / OpenAPI Draft inside architecture/design review | `yss-openapi-draft-review` |
 | Record behavior deltas for medium/high-risk changes | OpenSpec-style Spec Delta at `docs/specs/<feature>-spec-delta.md` using `docs/templates/spec-delta-template.md` |
 | Clarify architecture artifact timing or gaps | this skill plus `docs/process/lifecycle-artifact-map.md` and `references/artifact-checklist.md` |
@@ -202,10 +205,10 @@ When the user explicitly asks for a full delivery plan, include stage-by-stage t
 
 - Do not skip opportunity exploration for new product/module work; use `competitive-intelligence` when market/competitor facts are needed, or record why it is not needed.
 - Do not treat Discovery outputs as frozen downstream design. Discovery can provide product capability guidance and downstream impact signals, but PRD, functional architecture, OpenAPI, system architecture, and data architecture still require their own gates.
-- Do not start implementation before PRD is calibrated, required architecture artifacts are explicit, product design / prototype / interaction design exists and passes `prototype-review` when UI exists, OpenAPI Freeze decision, engineering baseline, design review, and vertical slice are clear.
+- Do not start implementation before PRD is calibrated, product overview design / functional architecture exists, required architecture artifacts are explicit, product design / prototype / interaction design exists, low-fidelity `prototype-review` passes, high-fidelity Ant Design v6 HTML prototype exists when UI exists, OpenAPI Freeze decision, engineering baseline, design review, and vertical slice are clear.
 - Do not start implementation before deciding whether the impacted frontend/backend runtime projects already exist and can be reused. Missing or conflicting runtime projects must route back to implementation routing and scaffold initialization first.
 - Do not skip business architecture for new products unless the product boundary, users, ecosystem, and value stream are already captured elsewhere.
-- Do not skip functional architecture before PRD calibration when module boundaries, MVP priority, or cross-module dependencies are still unclear.
+- Do not skip product overview design / functional architecture after PRD baseline. It is a required artifact before PRD calibration, product design / prototype / interaction design, API impact analysis, OpenAPI Draft, requirement freeze, or implementation. Only tasks that do not enter the PRD lifecycle may record a not-applicable reason in the impact assessment.
 - Do not skip system architecture when services, deployment, integrations, performance, security, reliability, or operations are affected.
 - Do not skip data architecture before persistence / repository work. For data modeling, metadata, versioning, or lineage products, treat it as mandatory before Design Review and OpenAPI Freeze.
 - Do not let Excalidraw diagrams invent requirements or architecture decisions; diagrams must point back to source artifacts and any findings must be written back to PRD, OpenAPI, ADR, or issues.

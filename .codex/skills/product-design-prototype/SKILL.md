@@ -25,7 +25,7 @@ If no PRD baseline exists, route back to `yss-product-lifecycle` / `grill-with-d
 5. Write the OpenAPI implication list: fields, filters, actions, errors, permissions, pagination, optimistic/concurrency states, and audit/version data.
 6. For every primary page action, add an action-to-contract row: page/component, action label, `actionKey`, endpoint or explicit non-goal, request fields, response shape, permission behavior, state transition, idempotency/concurrency rule, and error codes.
 7. For every P0 requirement containing verbs such as manage, maintain, configure, create, update, archive, retry, cancel, publish, export, or create draft, confirm the interaction spec either names the API implication or records that the capability is intentionally out of scope.
-8. Hand off to `prototype-review`. Do not freeze/calibrate the PRD or enter OpenAPI Draft for UI work until prototype review has no blocking findings.
+8. Hand off to `prototype-review`. After low-fidelity review is approved, hand off to `high-fidelity-html-prototype`. Do not freeze/calibrate the PRD or enter OpenAPI Draft for UI work until the Ant Design v6 high-fidelity HTML prototype exists and has no blocking findings.
 
 ## Tool Routing
 
@@ -33,8 +33,6 @@ If no PRD baseline exists, route back to `yss-product-lifecycle` / `grill-with-d
 |---|---|
 | Low-fidelity page or flow sketch | `wireframe-prototype` |
 | Figma work or existing Figma file | `figma` / `figma-use` |
-| Engineering state prototype | `component-story-prototype` |
-| API not frozen but interactions need data | `mock-api-prototype` |
 | YSS implementation constraints | `yss-router`, then `yss-ui`, `yss-formily`, `yss-page-module-development` as needed |
 
 ## Output Contract
@@ -67,7 +65,7 @@ Product design / prototype / interaction design
 - <yes/no; include whether PRD calibration is needed first>
 
 ### 下一步
-- <prototype-review or routing back to PRD/design>
+- <prototype-review / high-fidelity-html-prototype / routing back to PRD/design>
 ```
 
 ## Data Modeling Example

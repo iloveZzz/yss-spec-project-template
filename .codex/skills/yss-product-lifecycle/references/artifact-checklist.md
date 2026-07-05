@@ -14,6 +14,7 @@ Use this checklist to decide whether the current request can move forward or mus
 | Functional architecture | `docs/architecture/<feature>-functional-architecture.md` or PRD/design section | Product capabilities, module boundaries, priority, dependencies, and MVP scope are clear |
 | Product overview design | `docs/design/<feature>-product-overview-design.md` | Pages, flows, states, permissions, API candidates, and PRD gaps are clear |
 | Prototype / interaction review | `docs/design/<feature>-prototype-review.md` or issue comment | UI paths, empty/error/loading states, permission states, and API backflow list are reviewed |
+| High-fidelity HTML prototype | `docs/design/prototypes/<feature>/index.html` | Ant Design v6 interactive HTML prototype exists after low-fidelity review and before PRD calibration / API Draft |
 | API impact / OpenAPI Draft | `docs/api/specs/<feature>.yaml`, issue note, or API impact record | Request/response, wrappers, errors, pagination, permissions, concurrency, and contract test seams are reviewable |
 | OpenAPI Freeze | `docs/api/<feature>-openapi-freeze.md` or issue comment | Draft has been reviewed and marked stable for frontend/backend implementation |
 | Engineering baseline | `docs/architecture/<feature>-engineering-baseline-review.md` | YSS DDD module boundary, dependency direction, DTO/VO/CMD/Query conventions, and scaffold constraints are reviewed |

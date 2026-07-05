@@ -146,8 +146,10 @@ skills 是让 AI 按规程工作的“操作手册”，不是关键词装饰。
 | 不知道当前该做什么 | `yss-product-lifecycle` | 先阶段判断和资产检查，不写业务代码 |
 | 模糊需求追问 | `grill-with-docs` | 先问清，不让 AI 猜规则；稳定术语写 `CONTEXT.md` |
 | 生成 PRD 初稿 / 需求基线 | `to-prd` 或 PRD 模板 | 只基于已确认事实，不把待确认项写成需求 |
-| 页面和交互设计 | `product-design-prototype`、`wireframe-prototype`、`component-story-prototype`、`mock-api-prototype`、`docs/design/` | 基于 PRD 初稿细化页面流、状态和交互，再回填 PRD 并反推 API |
-| 原型评审 | `prototype-review` | 未通过时回到产品设计，不进入 PRD 校准 / API 影响分析 / 契约草案 |
+| 产品总体设计 / 功能架构 | `docs/design/templates/product-overview-design-template.md` | PRD 初稿后的必要产物；必须包含低保真原型 / 页面草图；进入页面 / 原型 / 交互设计、PRD 校准或 OpenAPI Draft 前必须完成 |
+| 页面和交互设计 | `product-design-prototype`、`wireframe-prototype`、`docs/design/` | 基于 PRD 初稿和产品总体设计细化页面流、状态和交互，再回填 PRD 并反推 API |
+| 原型评审 | `prototype-review` | 未通过时回到产品设计；通过后进入高保真 HTML 原型，不直接进入 PRD 校准 / API 影响分析 / 契约草案 |
+| 高保真 HTML 原型 | `high-fidelity-html-prototype` | 低保真评审通过后的强制产物；必须使用 Ant Design v6，并基于官方 `@ant-design/cli` / Ant Design For Agents 指引，输出 `docs/design/prototypes/<feature>/index.html` |
 | API 契约 | API 影响分析 / 契约草案 / OpenAPI Freeze 流程 | Draft 可讨论，Freeze 才可开发 |
 | 正式变更设计 | `to-issues` / Matt skills | 复用 PRD，聚焦技术方案、风险和测试 seam |
 | 拆切片 | `to-issues` | 必须是端到端垂直切片 |
@@ -208,7 +210,7 @@ Agent brief 最少包含：
 适合并行：
 
 - Discovery Agent 做竞品矩阵，Ideation Agent 基于同一主题做机会假设，最后由主 Agent 收敛。
-- API Contract Agent 和 Architecture Agent 分别审查 Draft 与 DDD 边界，前提是校准后的 PRD 已稳定，且 UI 功能的产品总体设计 / 功能架构、页面 / 原型 / 交互设计已评审或明确无 UI 影响。
+- API Contract Agent 和 Architecture Agent 分别审查 Draft 与 DDD 边界，前提是校准后的 PRD、产品总体设计 / 功能架构已稳定；有 UI 时，页面 / 原型 / 交互设计也已评审，或已明确无 UI 影响。
 - 多个独立垂直切片，且不会修改同一批文件。
 
 不适合并行：
@@ -363,7 +365,7 @@ docs/discovery/data-modeling-opportunity.md
 
 ## 6. 阶段 3：PRD 初稿 / 需求基线
 
-PRD 把追问结论变成可交付需求，不写实现代码。这里的 PRD 先形成“需求基线”，不等于最终冻结版本；有用户界面的功能，还需要先形成产品总体设计 / 功能架构，再经过页面 / 原型 / 交互设计校准后，回填 PRD 并进入 API 影响分析 / 契约草案。
+PRD 把追问结论变成可交付需求，不写实现代码。这里的 PRD 先形成“需求基线”，不等于最终冻结版本；进入 PRD 初稿 / 需求基线流程后，必须先形成产品总体设计 / 功能架构，再按是否有 UI 决定是否进入页面 / 原型 / 交互设计，最后回填 PRD 并进入 API 影响分析 / 契约草案。
 
 建议资产：
 
@@ -408,17 +410,17 @@ PRD 片段示例：
 - [ ] 非目标范围清晰。
 - [ ] 测试 seam 已明确。
 - [ ] 待人工确认问题没有伪装成已确认需求。
-- [ ] 有用户界面的功能已明确需要进入产品总体设计 / 功能架构，并在其后进入页面 / 原型 / 交互设计；简单文案或纯后端能力可记录跳过原因。
+- [ ] 产品总体设计 / 功能架构已作为 PRD 初稿后的必要产物进入下一阶段；不进入 PRD 生命周期的小文案、低风险 Bug 或局部配置变更已记录不适用原因。
 
 ## 7. 阶段 4：产品总体设计 / 功能架构
 
-产品总体设计 / 功能架构是 PRD 初稿到页面原型之间的过渡层。它回答“产品由哪些功能域和业务对象支撑”“MVP 做什么和不做什么”“哪些页面、状态、权限、API、数据会被影响”。它不是交互说明，也不替代页面原型，而是页面 / 原型 / 交互设计的上游输入。
+产品总体设计 / 功能架构是 PRD 初稿到页面 / 原型 / 交互设计之间的过渡层。它回答“产品由哪些功能域和业务对象支撑”“MVP 做什么和不做什么”“哪些页面、状态、权限、API、数据会被影响”，并用低保真原型 / 页面草图先验证页面结构、关键操作和主流程。它不是详细交互说明，也不替代后续交互设计，而是页面 / 原型 / 交互设计的上游输入。
 
 正确关系是先结构化、再原型化：
 
 ```text
 PRD 初稿定义目标、范围、用户故事和验收
--> 产品总体设计 / 功能架构明确功能域、模块边界、页面/API/数据影响和 PRD 回填项
+-> 产品总体设计 / 功能架构明确功能域、模块边界、低保真原型、页面/API/数据影响和 PRD 回填项
 -> 页面 / 原型 / 交互设计验证用户如何完成任务
 -> 交互发现遗漏后回填 PRD
 -> PRD、产品总体设计和交互设计一起作为 API 影响分析 / 契约草案输入
@@ -440,6 +442,7 @@ docs/design/templates/product-overview-design-template.md
 
 - [ ] 用户主流程、异常路径、业务对象和状态已足以支撑原型设计。
 - [ ] 功能域、模块边界、优先级、依赖和非目标范围清楚。
+- [ ] 低保真原型 / 页面草图已覆盖 P0 页面、主流程、关键操作和关键异常路径。
 - [ ] 页面、API、数据、权限、审计影响已显式标注。
 - [ ] PRD 回填项、开放问题和阻断项已记录。
 - [ ] 可进入页面 / 原型 / 交互设计，或明确阻断原因。
@@ -475,12 +478,11 @@ docs/design/data-modeling-prototype-review.md
 | 页面清单、用户流、状态矩阵、PRD 回填项、OpenAPI 反推 | `product-design-prototype` | 基于 PRD 初稿和产品总体设计后的原型入口 |
 | 低保真线框、流程草图 | `wireframe-prototype`；Excalidraw / Markdown wireframe | 适合快速讨论，不绑定工程依赖 |
 | 高保真或设计系统协作 | Figma / Penpot，必要时使用 `figma` / `figma-use` | 适合设计团队和组件规范沉淀 |
-| 工程态页面状态原型 | `component-story-prototype`；Storybook / Histoire | 适合验证 loading、empty、error、权限、冲突等状态 |
-| API 未冻结前的交互数据 | `mock-api-prototype`；MSW / JSON fixtures | 适合支撑 Storybook 或前端原型 |
+| 高保真可交互 HTML 原型 | `high-fidelity-html-prototype`；Ant Design v6 | 低保真原型评审通过后的必需产物，用于 PRD 校准和 API 反推前的体验确认 |
 | 图谱、血缘、流程编排画布 | tldraw / xyflow | 适合数据血缘、任务流、关系图等画布型体验 |
-| 进入 PRD 校准前门禁 | `prototype-review` | 未通过则回到原型阶段 |
+| 进入高保真前门禁 | `prototype-review` | 未通过则回到原型阶段 |
 
-如果团队使用 Figma、即时设计、Axure 或其它原型工具，可以在 `docs/design/data-modeling-interaction-spec.md` 中保存链接、版本、评审记录和关键截图说明。第一版不强制引入 Storybook、MSW、Excalidraw、Figma、Penpot、tldraw 或 xyflow 作为项目依赖。
+如果团队使用 Figma、即时设计、Axure 或其它原型工具，可以在 `docs/design/data-modeling-interaction-spec.md` 中保存链接、版本、评审记录和关键截图说明。第一版不强制引入 Excalidraw、Figma、Penpot、tldraw 或 xyflow 作为项目依赖。
 
 数据建模 MVP 的页面清单示例：
 
@@ -1006,11 +1008,23 @@ docs/user-guide/
 最后输出：已确认、待确认、非目标、建议写入 CONTEXT 的术语、需要 ADR 的取舍。
 ```
 
-### 20.3 页面 / 原型 / 交互设计
+### 20.3 产品总体设计 / 功能架构
+
+```text
+基于 <PRD 路径>，为 <功能名> 生成产品总体设计 / 功能架构。
+请使用 docs/design/templates/product-overview-design-template.md。
+重点输出：设计目标、用户主流程、业务对象与状态、功能域与模块边界、Strategic DDD Check、低保真原型 / 页面草图、页面/API/数据/权限/审计影响、PRD 回填项、开放问题和评审结论。
+边界：不要写交互细节、不要生成 OpenAPI Draft、不要实现代码；只判断是否足以进入页面 / 原型 / 交互设计。
+保存到 docs/design/<feature>-product-overview-design.md。
+结论必须明确：Approved 可进入页面 / 原型 / 交互设计或 PRD 校准；Blocked 需先补齐产品边界、业务对象、模块边界、低保真原型、页面/API/数据/权限影响或 PRD 回填项。
+```
+
+### 20.4 页面 / 原型 / 交互设计
 
 ```text
 使用 product-design-prototype。
-基于 <PRD 路径>，为 <功能名> 输出页面 / 原型 / 交互设计资产。
+基于 <PRD 路径> 和 docs/design/<feature>-product-overview-design.md，为 <功能名> 输出页面 / 原型 / 交互设计资产。
+如果缺少产品总体设计 / 功能架构，先阻断并要求补齐；不要直接继续生成交互设计。
 请生成页面清单、用户主路径、异常路径、低保真线框说明、交互状态矩阵、权限状态、空态/加载态/错误态。
 请明确这些设计如何反推 OpenAPI 字段、错误结构、分页筛选、权限和前端验收标准。
 请同时列出需要回填 PRD 的需求缺口、验收标准或非目标范围。
@@ -1018,24 +1032,35 @@ docs/user-guide/
 完成后输出 prototype-review 评审输入清单。
 ```
 
-### 20.4 原型评审
+### 20.5 原型评审
 
 ```text
 使用 prototype-review。
-输入资产：<PRD 路径>、docs/design/<feature>-interaction-spec.md、docs/design/<feature>-state-matrix.md、<原型链接或线框说明>。
+输入资产：<PRD 路径>、docs/design/<feature>-product-overview-design.md、docs/design/<feature>-interaction-spec.md、docs/design/<feature>-state-matrix.md、<原型链接或线框说明>。
 请审查页面覆盖、主路径、异常路径、loading/empty/error/no-permission/readonly/conflict/dirty-form 状态、权限行为、字段级错误、PRD 回填项和 OpenAPI 反推清单。
-输出：通过/阻断、阻断项、非阻断建议、PRD 校准就绪度、Contract Draft / OpenAPI Draft 就绪度、前端原型就绪度和下一步。
+输出：通过/阻断、阻断项、非阻断建议、高保真 HTML 原型输入就绪度、Contract Draft / OpenAPI Draft 输入风险和下一步。
 ```
 
-### 20.5 PRD 校准 / 需求冻结
+### 20.6 高保真 HTML 原型
 
 ```text
-基于 <PRD 路径> 和 <交互设计路径>，执行 PRD 校准。
+使用 high-fidelity-html-prototype。
+基于 <PRD 路径>、docs/design/<feature>-product-overview-design.md、docs/design/<feature>-interaction-spec.md、docs/design/<feature>-state-matrix.md 和 docs/design/<feature>-prototype-review.md，
+为 <功能名> 生成 Ant Design v6 高保真可交互 HTML 原型。
+输出路径必须是 docs/design/prototypes/<feature>/index.html。
+请覆盖主流程、关键异常、loading/empty/error/no-permission/readonly/disabled/conflict/success 状态、表单校验、弹窗/抽屉、响应式断点。
+完成后给出 Ant Design v6 版本依据、`@ant-design/cli` 查询过的组件 / token / demo 和本地浏览器验证证据。
+```
+
+### 20.7 PRD 校准 / 需求冻结
+
+```text
+基于 <PRD 路径>、<产品总体设计路径>、<交互设计路径> 和 <高保真 HTML 原型路径>，执行 PRD 校准。
 请检查页面流、状态矩阵、异常路径、权限状态和验收标准是否已经回填 PRD。
 输出：需要更新的 PRD 条目、仍待确认的问题、可以冻结的范围、不能进入 API 影响分析 / 契约草案的风险。
 ```
 
-### 20.6 技能路由
+### 20.8 技能路由
 
 ```text
 使用 yss-router。

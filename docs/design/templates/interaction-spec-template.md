@@ -1,15 +1,17 @@
 # <功能名称> 交互说明模板
 
-> 适用时机：PRD 初稿之后、PRD 校准 / API 影响分析 / 契约草案之前；仅用于有用户界面影响的功能。
+> 适用时机：PRD 初稿和产品总体设计 / 功能架构完成之后，PRD 校准 / API 影响分析 / 契约草案之前；仅用于有用户界面影响的功能。
 
 ## 1. 输入资产
 
 | 资产 | 路径 / 链接 | 说明 |
 |---|---|---|
 | PRD 初稿 | `docs/requirements/<feature>-prd.md` | 原型评审后需要回填和校准 |
+| 产品总体设计 / 功能架构 | `docs/design/<feature>-product-overview-design.md` | 必需；缺失时先返回产品总体设计阶段 |
 | 领域术语 | `CONTEXT.md` | 核心名词、状态和业务规则 |
 | Discovery | `docs/discovery/<feature>-discovery.md` | 可选 |
 | 原型 / 线框图 | `<链接或导出图片路径>` | Excalidraw / Figma / Penpot / tldraw / Axure / Markdown |
+| 高保真 HTML 原型 | `docs/design/prototypes/<feature>/index.html` | 低保真原型评审通过后补齐；必须使用 Ant Design v6 |
 | 现有 API 草案 | `docs/api/specs/<feature>.yaml` | 可选；通常应先完成产品设计和 PRD 校准 |
 
 ## 2. 页面地图
@@ -99,9 +101,9 @@
 ## 8. 前端验收
 
 - loading、empty、error、no-permission、readonly、conflict、dirty-form 状态已展示，或明确不适用。
-- 每个表格列、筛选条件、表单字段、抽屉、弹窗和按钮都有数据来源或 mock fixture。
+- 每个表格列、筛选条件、表单字段、抽屉、弹窗和按钮都有数据来源或契约反推说明。
 - 设计可以拆成独立可演示的垂直切片。
-- 如果需要工程态原型，已规划 Storybook / Histoire 或静态 fixture。
+- 低保真原型评审通过后，高保真 HTML 原型使用 Ant Design v6 覆盖主流程、关键状态和响应式断点。
 
 ## 9. 决策与未决问题
 

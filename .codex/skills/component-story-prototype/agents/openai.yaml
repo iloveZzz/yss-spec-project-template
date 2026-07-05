@@ -1,4 +1,0 @@
-interface:
-  display_name: "Component Story Prototype"
-  short_description: "Storybook or Histoire state prototype plans"
-  default_prompt: "Use $component-story-prototype to plan component stories for UI state validation."

@@ -152,7 +152,7 @@ const nodeColumns = reactive<YTableColumn[]>([
 
 ---
 
-## 模板 4：列表请求 + Mock 联调
+## 模板 4：列表请求 + API 接入
 
 ```ts
 const fetchData = async () => {

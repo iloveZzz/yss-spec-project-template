@@ -13,7 +13,7 @@ AI 不能只作为一次性辅助工具使用。Harness 工程的目标，是把
 ```text
 机会 / 问题收集
 → 需求澄清
-→ PRD + 原型并行
+→ PRD -> 产品总体设计 -> 原型校准
 → SDD 研发规范基线
 → DDD 领域建模
 → 架构设计
@@ -31,6 +31,7 @@ AI 不能只作为一次性辅助工具使用。Harness 工程的目标，是把
 ## 哪些门禁不能跳
 
 - API 变化必须先有 API 影响记录和契约草案 / review-only OpenAPI Draft，并在实现或生成客户端前完成 Freeze 或记录无 API 影响。
+- 进入 PRD 初稿 / 需求基线流程后，必须先有产品总体设计 / 功能架构，才能进入页面 / 原型 / 交互设计、OpenAPI Draft、PRD 校准、需求冻结或实现；不进入 PRD 生命周期的小改动才可记录不适用原因。
 - 正式垂直切片前必须有 active Issue change 和完整 change 资产。
 - 架构、数据、ADR、工程基线和安全红线必须进入 Build Architecture Checklist。
 - 支付、迁移、认证授权、加密、SQL、公共基础库 API 等安全红线必须人工审查。
@@ -43,6 +44,9 @@ AI 不能只作为一次性辅助工具使用。Harness 工程的目标，是把
 
 ```text
 PRD
+→ 产品总体设计 / 功能架构
+→ 页面 / 原型 / 交互设计与 prototype-review（有 UI 时）
+→ Ant Design v6 高保真 HTML 原型（有 UI 时）
 → API 影响分析 / 契约草案
 → review-only OpenAPI Draft（如需要）
 → Issue Change

@@ -16,6 +16,7 @@
 | 原型 / 线框图 |  |  |
 | 状态矩阵 | `docs/design/<feature>-state-matrix.md` |  |
 | 原型评审结论 | `docs/design/<feature>-prototype-review.md` |  |
+| 高保真 HTML 原型 | `docs/design/prototypes/<feature>/index.html` | 有 UI 时必需；必须使用 Ant Design v6 |
 | YSS 工程基线 | `.codex/skills/yss-ddd-scaffold-generator/references/yss-backend-scaffold-parent/SKILL.md` |  |
 
 ## P0 追踪矩阵
@@ -31,7 +32,8 @@
 | Draft 成熟度 | 明确当前仅为 review-only；实现、生成 client、契约测试固化均等待 OpenAPI Freeze |  |  |
 | OpenAPI 语法 | YAML、`$ref`、path 参数、lint 通过 |  |  |
 | P0 覆盖 | 每个 P0 需求有 endpoint/schema/error/test 或明确非目标 |  |  |
-| 交互输入完整 | Draft 已同时依据 PRD、产品总体设计、交互说明、原型/线框、状态矩阵和 prototype-review；缺任一项需说明无 UI 影响或返回上游补齐 |  |  |
+| 产品总体设计完整 | Draft 已依据 PRD 和产品总体设计 / 功能架构；缺产品总体设计时返回上游补齐 |  |  |
+| 交互输入完整 | 有 UI 时，Draft 已同时依据交互说明、原型/线框、状态矩阵、prototype-review 和 Ant Design v6 高保真 HTML 原型；无 UI 时需说明页面 / 交互资产不适用原因 |  |  |
 | DDD 契约边界 | Endpoint/schema 归属的限界上下文清楚；术语与 `CONTEXT.md` 和功能架构一致；契约不直接暴露内部聚合、Repository 或持久化表结构 |  |  |
 | 页面动作覆盖 | 每个按钮 / 抽屉 / 弹窗动作有 endpoint/non-goal、`actionKey`、权限和错误码 |  |  |
 | 对象生命周期 | manage/maintain/configure/create/update/archive/retry/cancel/publish/export/create-draft 语义闭环 |  |  |

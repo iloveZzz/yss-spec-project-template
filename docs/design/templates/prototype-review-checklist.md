@@ -1,6 +1,6 @@
 # <功能名称> 原型评审清单
 
-> 适用时机：配合 `prototype-review` 使用。评审采用 fail-closed：有阻断项时必须回到产品设计阶段，不能进入 PRD 校准或 API 影响分析 / 契约草案。
+> 适用时机：配合 `prototype-review` 使用。评审采用 fail-closed：有阻断项时必须回到产品设计阶段；低保真评审通过后必须进入 `high-fidelity-html-prototype`，不能直接进入 PRD 校准或 API 影响分析 / 契约草案。
 
 ## 评审输入
 
@@ -24,7 +24,7 @@
 | 权限行为能区分隐藏、禁用和调用后拒绝 |  |  |
 | 校验错误能区分模型级和字段级展示位置 |  |  |
 | 能从界面需求反推出 API 影响和契约草案 |  |  |
-| 前端验收、Storybook / Histoire 或 mock 数据需要已明确 |  |  |
+| 前端验收、组件状态和数据依赖已明确 |  |  |
 | 安全红线已标记人工审查 |  |  |
 
 ## PRD 校准就绪度
@@ -59,5 +59,5 @@
 非阻断建议：
 - 
 下一步：
-- PRD 校准 / API 影响分析 / 契约草案 / 回到 product-design-prototype / component-story-prototype / mock-api-prototype
+- high-fidelity-html-prototype / 回到 product-design-prototype
 ```

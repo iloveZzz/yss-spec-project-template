@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "High Fidelity HTML Prototype"
+  short_description: "Ant Design v6 interactive HTML prototype gate"
+  default_prompt: "Use $high-fidelity-html-prototype to create an Ant Design v6 high-fidelity interactive HTML prototype after low-fidelity prototype review."

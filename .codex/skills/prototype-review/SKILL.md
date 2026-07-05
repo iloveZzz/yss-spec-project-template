@@ -1,11 +1,11 @@
 ---
 name: prototype-review
-description: Use when reviewing UI design, wireframes, prototype links, interaction specs, or state matrices before PRD calibration, OpenAPI Draft, vertical slicing, or implementation.
+description: Use when reviewing low-fidelity UI design, wireframes, prototype links, interaction specs, or state matrices before high-fidelity HTML prototype work, PRD calibration, OpenAPI Draft, vertical slicing, or implementation.
 ---
 
 # Prototype Review
 
-Use this skill as the gate between product design/prototype work and PRD calibration / OpenAPI Draft. The review is fail-closed: if the design cannot drive calibrated requirements, API, frontend acceptance, and slices, send it back to product design.
+Use this skill as the low-fidelity gate between product design/prototype work and high-fidelity HTML prototype work. The review is fail-closed: if the design cannot drive calibrated requirements, API, frontend acceptance, and slices, send it back to product design.
 
 ## Required Inputs
 
@@ -27,13 +27,13 @@ Use this skill as the gate between product design/prototype work and PRD calibra
 | Action contract coverage | Every primary page action has an `actionKey`, endpoint or explicit non-goal, permission behavior, state transition, idempotency/concurrency rule, and error codes |
 | P0 contract coverage | Every P0 requirement with manage/maintain/configure/create/update/archive/retry/cancel/publish/export/create-draft semantics is mapped to an API implication or an explicit non-goal |
 | Rule/source coverage | Validation, approval, coverage, and publish gates state where rules come from, who can configure them, whether they are fixed, and how blocker/warning decisions are represented |
-| Frontend acceptance | A frontend engineer can tell which components, stories, mock data, and E2E paths are needed |
+| Frontend acceptance | A frontend engineer can tell which components, visible states, data dependencies, and E2E paths are needed |
 
 ## Decision Rules
 
-- If a feature has UI impact and lacks page map, user flow, prototype/wireframe, or state matrix, block PRD calibration and OpenAPI Draft.
+- If a feature has UI impact and lacks page map, user flow, prototype/wireframe, or state matrix, block high-fidelity HTML prototype work, PRD calibration, and OpenAPI Draft.
 - If the prototype hides business rules behind generic text such as "校验失败", require field-level errors and recovery behavior.
-- If a page shows a user action but the OpenAPI implication list lacks endpoint/non-goal mapping, block PRD calibration or OpenAPI Draft.
+- If a page shows a user action but the OpenAPI implication list lacks endpoint/non-goal mapping, block high-fidelity HTML prototype work, PRD calibration, or OpenAPI Draft.
 - If PRD P0 scope says a user can manage or configure an object but the design only shows read-only data, block until the write path or scope downgrade is explicit.
 - If a state is intentionally out of scope, record why and who owns the decision.
 - If implementation dependencies are unclear, route to `yss-router` only after the prototype passes this review.
@@ -57,10 +57,10 @@ Use this skill as the gate between product design/prototype work and PRD calibra
 - <requirements gaps, acceptance criteria updates, non-goals, pending decisions>
 
 ### Frontend Prototype Readiness
-- <storybook/histoire stories, mock data, component states>
+- <component states, data dependencies, frontend acceptance notes>
 
 ### Next Action
-- <PRD calibration / OpenAPI Draft / return to product-design-prototype / component-story-prototype / mock-api-prototype>
+- <high-fidelity-html-prototype / return to product-design-prototype>
 ```
 
 Use `docs/design/templates/prototype-review-checklist.md` when writing a persistent review artifact.

@@ -1,6 +1,6 @@
 ---
 name: "yss-ui"
-description: "YSS UI 页面开发组件技能。涉及 YTable、YTree、YssFormily、useTableHeight、useTreeHeight、页面布局、Hook 抽离、API/Mock 联调、路由菜单约定时必须使用。组件技能可以参考 yss-components 与 yss-hooks 技能规范。"
+description: "YSS UI 页面开发组件技能。涉及 YTable、YTree、YssFormily、useTableHeight、useTreeHeight、页面布局、Hook 抽离、API 契约接入、路由菜单约定时必须使用。组件技能可以参考 yss-components 与 yss-hooks 技能规范。"
 ---
 
 # YSS UI 页面与 Hook 一体化标准
@@ -197,19 +197,13 @@ const { loading, run: runPage } = useRequest(pageApi, {
 - 翻页仅更新 `page/pageSize`，保留筛选项
 - 导出、刷新等动作复用 `currentParams`
 
-## 11. API 与 Mock 联调标准
-
-API 层：
+## 11. API 契约接入标准
 
 - 接口写在 `packages/src/api/*`
 - 复用 `mutator.ts`
 - 避免重复拼接 `/api`
-
-Mock 层：
-
-- 路由放 `packages/mock/api.ts`
-- 支持筛选和分页切片
-- 返回结构统一：`{ code, message, data: { list, total, page, pageSize } }`
+- 请求 / 响应字段以冻结后的 OpenAPI 或明确的契约草案为准
+- 未冻结契约不得作为稳定生成客户端或实现依据
 
 ## 12. 路由菜单标准
 
