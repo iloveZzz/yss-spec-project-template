@@ -380,6 +380,61 @@ test("sync dry-run previews changes without mutating files or metadata", () => {
   assert.equal(fs.readFileSync(metadataPath, "utf8"), beforeDryRunMetadata);
 });
 
+test("legacy attach dry-run excludes sync rollout docs from template additions", () => {
+  const sandboxDir = fs.mkdtempSync(path.join(os.tmpdir(), "create-yss-spec-"));
+  const targetDir = path.join(sandboxDir, "legacy-sync-preview-project");
+  const metadataPath = path.join(targetDir, metadataFileName);
+
+  fs.mkdirSync(targetDir, { recursive: true });
+  fs.writeFileSync(
+    metadataPath,
+    `${JSON.stringify(
+      {
+        templateName: "create-yss-spec",
+        templateVersion: "legacy-untracked",
+        templateSource: "legacy-attach",
+        initializedAt: "2026-07-05T13:30:52Z",
+        lastSyncedAt: "2026-07-05T13:30:52Z",
+        managedFilesManifestVersion: "test-manifest-version",
+        variables: {
+          projectName: "Legacy Sync Project",
+          businessDomain: "Operations",
+          teamSize: "6",
+          issueTracker: "github",
+          includeExampleDocs: true,
+        },
+        managedFiles: {},
+      },
+      null,
+      2,
+    )}\n`,
+    "utf8",
+  );
+
+  const result = spawnSync(process.execPath, [cliBin, "sync", "--dry-run"], {
+    cwd: targetDir,
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(result.stdout, /sync dry-run/i);
+  assert.match(result.stdout, /add: \.gitignore/);
+  assert.doesNotMatch(result.stdout, /yss-spec-cli-template-sync-discovery\.md/);
+  assert.doesNotMatch(result.stdout, /yss-spec-cli-template-sync-prd\.md/);
+  assert.doesNotMatch(
+    result.stdout,
+    /yss-spec-cli-template-sync-slice-01-main-path\.md/,
+  );
+  assert.doesNotMatch(
+    result.stdout,
+    /yss-spec-cli-template-sync-slice-02-safety-controls\.md/,
+  );
+  assert.doesNotMatch(
+    result.stdout,
+    /yss-spec-cli-template-sync-slice-03-delivery-verification\.md/,
+  );
+});
+
 test("sync skips locally modified managed files and reports removed managed files", () => {
   const sandboxDir = fs.mkdtempSync(path.join(os.tmpdir(), "create-yss-spec-"));
   const targetDir = path.join(sandboxDir, "sync-protected-project");
