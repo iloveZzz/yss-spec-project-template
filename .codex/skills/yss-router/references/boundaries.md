@@ -54,7 +54,6 @@ Default for backend CRUD: use `yss-domain`, `yss-dto`, `yss-repository`, and `ys
 - `yss-userinfo`: Current-user info propagation and starter integration.
 - `yss-variable`: Variable component APIs and variable resolution.
 - `yss-quality`: Quality starter behavior.
-- `yss-anti-scheduler`: DolphinScheduler anti-corrosion/anti-scheduler integration.
 - `yss-exception`: Exception component and unified exception handling.
 - `yss-mail`: Mail starter and email sending.
 - `yss-filerunner`: File runner component behavior.

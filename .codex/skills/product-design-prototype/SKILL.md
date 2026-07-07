@@ -18,7 +18,7 @@ If no PRD baseline exists, route back to `yss-product-lifecycle` / `grill-with-d
 
 ## Core Flow
 
-1. Inspect current assets: PRD, `docs/design/`, `docs/api/specs/`, `docs/architecture/`, and active OpenSpec/Comet changes.
+1. Inspect current assets: PRD, `docs/design/`, `docs/api/specs/`, `docs/architecture/`, and active Spec Delta changes.
 2. Create or update a design artifact under `docs/design/<feature>-interaction-spec.md` using `docs/design/templates/interaction-spec-template.md`.
 3. Capture page map, primary user flow, exception flow, and low-fidelity prototype or wireframe link.
 4. Fill the state matrix using `docs/design/templates/state-matrix-template.md`.

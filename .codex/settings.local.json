@@ -1,15 +1,3 @@
 {
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "bash .codex/skills/comet/scripts/comet-hook-guard.sh"
-          }
-        ]
-      }
-    ]
-  }
+  "hooks": {}
 }

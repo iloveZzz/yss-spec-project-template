@@ -9,7 +9,7 @@ Use this skill to move an already implemented backend controller/DTO contract in
 
 This is an implementation/generation skill, not the product API design step and not the unified OpenAPI specification governance skill. It generates `openapi.json` from controller methods, request DTOs, response DTOs, annotations, and Java comments; it does not decide naming conventions, resource modeling, error taxonomy, pagination policy, permission semantics, or organization-wide OpenAPI style rules.
 
-For new or changed API contracts, first produce OpenAPI Draft in `docs/api/specs/`, pass engineering baseline, architecture / OpenSpec / Comet design, and Design Review, then Freeze the contract before using this skill to refresh generated clients. When the backend is already the implemented source of truth, use this skill to regenerate and inspect the emitted contract before updating call sites.
+For new or changed API contracts, first produce OpenAPI Draft in `docs/api/specs/`, pass engineering baseline, architecture / Spec Delta design, and Design Review, then Freeze the contract before using this skill to refresh generated clients. When the backend is already the implemented source of truth, use this skill to regenerate and inspect the emitted contract before updating call sites.
 
 ## Scope Boundary
 

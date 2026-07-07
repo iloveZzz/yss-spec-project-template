@@ -1,6 +1,6 @@
 ---
 name: yss-openapi-draft-review
-description: "Use when reviewing a docs/api/specs OpenAPI Draft before Engineering Baseline, YSS DDD Review, architecture/OpenSpec/Comet design, OpenAPI Freeze, vertical slicing, frontend/backend implementation, or when checking P0 requirement coverage, page action to endpoint mapping, YSS response wrappers, errors, permissions, pagination, optimistic locking, security red lines, and contract test seams."
+description: "Use when reviewing a docs/api/specs OpenAPI Draft before Engineering Baseline, YSS DDD Review, architecture/Spec Delta design, OpenAPI Freeze, vertical slicing, frontend/backend implementation, or when checking P0 requirement coverage, page action to endpoint mapping, YSS response wrappers, errors, permissions, pagination, optimistic locking, security red lines, and contract test seams."
 ---
 
 # YSS OpenAPI Draft Review

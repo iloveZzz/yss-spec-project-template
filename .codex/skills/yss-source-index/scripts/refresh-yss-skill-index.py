@@ -76,9 +76,6 @@ BACKEND_SKILLS = {
     "yss-quality": [
         "yss-microservice-components/yss-component-quality-starter",
     ],
-    "yss-anti-scheduler": [
-        "yss-microservice-components/yss-component-anti-corrosion/yss-component-anti-scheduler",
-    ],
     "yss-exception": [
         "yss-microservice-components/yss-component-exception",
     ],

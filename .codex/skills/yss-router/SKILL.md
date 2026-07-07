@@ -61,7 +61,6 @@ When the request is already narrowly scoped, use the matching specialist directl
 | Work with current user info propagation or user info starter | `yss-userinfo` |
 | Work with variable component APIs | `yss-variable` |
 | Work with quality starter behavior | `yss-quality` |
-| Work with DolphinScheduler anti-corrosion/anti-scheduler integration | `yss-anti-scheduler` |
 | Work with exception component or unified exception handling | `yss-exception` |
 | Work with mail starter or email sending | `yss-mail` |
 | Work with file runner component | `yss-filerunner` |
@@ -98,7 +97,7 @@ Backend component skills have generated source indexes under `references/source-
 中文说明：当问题涉及真实类名、配置项、注解、拦截器、自动配置或排障时，先读对应 `source-index.md`，它会指向后端组件源码库里的真实入口。
 
 - Core framework/component examples: `yss-cache`, `yss-mybatis`, `yss-dto`, `yss-audit-log`, `yss-excel-mvc`, `yss-distributed-id`, `yss-jdbc`.
-- Extended component examples: `yss-dictionary`, `yss-dir`, `yss-file`, `yss-log`, `yss-liquibase`, `yss-resilience4j`, `yss-sql-condition`, `yss-sql-tpl`, `yss-taskflow`, `yss-validation`, `yss-security-algorithm`, `yss-userinfo`, `yss-variable`, `yss-quality`, `yss-anti-scheduler`, `yss-exception`, `yss-mail`, `yss-filerunner`, `yss-valuation`, `yss-duckdb`, `yss-mapper-dynamic`.
+- Extended component examples: `yss-dictionary`, `yss-dir`, `yss-file`, `yss-log`, `yss-liquibase`, `yss-resilience4j`, `yss-sql-condition`, `yss-sql-tpl`, `yss-taskflow`, `yss-validation`, `yss-security-algorithm`, `yss-userinfo`, `yss-variable`, `yss-quality`, `yss-exception`, `yss-mail`, `yss-filerunner`, `yss-valuation`, `yss-duckdb`, `yss-mapper-dynamic`.
 
 Regenerate these indexes with `yss-source-index/scripts/refresh-yss-skill-index.py` after `yss-cloud-microservice` changes. Read `yss-source-index/references/source-map-config.md` when you need the full skill-to-source mapping.
 

@@ -27,7 +27,6 @@ The refresh script maps component source path hints to skill references. These p
 | `yss-userinfo` | `yss-microservice-components/yss-component-userinfo-starter` |
 | `yss-variable` | `yss-microservice-components/yss-component-variable` |
 | `yss-quality` | `yss-microservice-components/yss-component-quality-starter` |
-| `yss-anti-scheduler` | `yss-microservice-components/yss-component-anti-corrosion/yss-component-anti-scheduler` |
 | `yss-exception` | `yss-microservice-components/yss-component-exception` |
 | `yss-mail` | `yss-microservice-components/yss-component-mail-starter` |
 | `yss-filerunner` | `yss-microservice-components/yss-component-filerunner-parent` |

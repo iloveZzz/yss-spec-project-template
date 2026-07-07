@@ -15,13 +15,13 @@ Use `yss-openapi-governance` for:
 - Running Spectral or Redocly CLI against `docs/api/specs/*.yaml`.
 - Checking YSS response wrappers, error contracts, pagination, permissions, security red lines, and contract-test seams.
 - Comparing generated `openapi.json` against frozen design rules when backend code is already implemented.
-- Writing or updating governance notes under `docs/api/`, `docs/architecture/`, or the active OpenSpec / Comet design.
+- Writing or updating governance notes under `docs/api/`, `docs/architecture/`, or the active Spec Delta design.
 
 Use other skills for:
 
 - `yss-openapi`: generate `target/openapi/openapi.json` from implemented controllers/DTOs and refresh Orval clients.
 - `yss-openapi-draft-review`: perform fail-closed semantic review against PRD, prototype, page actions, P0 coverage, and architecture readiness.
-- `openspec-*` or `comet-*`: formalize behavior changes and implementation tasks after the contract is frozen.
+- `docs/specs/*-spec-delta.md` and `to-issues`: formalize behavior changes and implementation tasks after the contract is frozen.
 
 ## Preferred Tooling
 
@@ -71,7 +71,7 @@ If neither tool is configured, do not invent project policy silently. Create or 
 5. Produce governance output.
    - For quick checks, report lint command, pass/fail result, and blocking findings with file paths.
    - For durable decisions, write or update a Chinese governance artifact under `docs/api/` or `docs/architecture/`.
-   - For active OpenSpec / Comet work, reference the active change and keep rules aligned with `proposal.md`, `design.md`, `tasks.md`, and specs.
+   - For active Spec Delta work, reference the active change and keep rules aligned with the related design, task, and spec artifacts.
 
 ## Minimal Spectral Baseline
 

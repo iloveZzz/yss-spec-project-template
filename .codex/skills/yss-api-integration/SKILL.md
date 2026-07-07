@@ -18,7 +18,7 @@ description: Guide AI to correctly use Orval-generated API clients in Vue 3 micr
 
 1. **契约状态已明确**：
    - 已有生成客户端：可以直接集成。
-   - 新增或变更 API：必须先在 `docs/api/specs/` 形成 OpenAPI Draft，经工程基线 / 架构 / OpenSpec / Comet design 和设计审查后 Freeze，再进入生成和集成。
+   - 新增或变更 API：必须先在 `docs/api/specs/` 形成 OpenAPI Draft，经工程基线 / 架构 / Spec Delta 设计和设计审查后 Freeze，再进入生成和集成。
    - 如果接口尚未冻结或生成函数不存在，先回到 `yss-product-lifecycle` / `yss-openapi`，不要手写临时路径、DTO 或响应结构。
 2. **API 已生成**：运行 `pnpm generate:api` 生成最新 API
 3. **了解 OpenAPI**：查看 `openapi/openapi.json` 了解接口定义

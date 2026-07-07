@@ -38,27 +38,14 @@ matt_skill_roots=(
 )
 
 removed_flow_paths=(
-  ".comet"
   "docs/superpowers"
   "openspec"
-  ".codex/rules/comet-phase-guard.md"
-  ".claude/rules/comet-phase-guard.md"
-  ".trae/rules/comet-phase-guard.md"
-  ".pi/extensions/comet-commands.ts"
   ".agent/workflows"
   ".claude/commands/opsx"
   ".pi/prompts"
 )
 
 removed_skill_names=(
-  "comet"
-  "comet-archive"
-  "comet-build"
-  "comet-design"
-  "comet-hotfix"
-  "comet-open"
-  "comet-tweak"
-  "comet-verify"
   "openspec-apply-change"
   "openspec-archive-change"
   "openspec-bulk-archive-change"
@@ -98,7 +85,6 @@ legacy_text_paths=(
 legacy_text_patterns=(
   "active change"
   "openspec/changes"
-  ".comet.yaml"
   "openspec list"
   "test-driven-development"
   "requesting-code-review"

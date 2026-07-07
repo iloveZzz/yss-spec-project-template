@@ -22,7 +22,7 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 1. Identify whether the task is running SQL/Python files, exposing file-runner APIs, parsing scheduler logs, or adding a new file execution type.
 2. Read `references/source-index.md`, then inspect `FileRunnerController`, `FileRunnerService`, `FileExecuterManager`, and concrete executers.
 3. Current supported `FileType` values are `SQL` and `PYTHON`; unsupported types throw `BizException`.
-4. `FileExecuterManager` depends on `SchedulerFacadeApi`; load `yss-anti-scheduler` when execution delegates to scheduler APIs.
+4. `FileExecuterManager` depends on `SchedulerFacadeApi`; inspect the filerunner source index and local scheduler integration code directly when execution delegates to scheduler APIs.
 5. For logs, inspect `DolphinLogParser` and `LogType`.
 6. For starter integration, inspect `DefaultFileRunnerConfiguration`.
 
