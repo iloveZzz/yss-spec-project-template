@@ -38,21 +38,25 @@ Use this lifecycle skill to decide the stage and route to the right workflow. Do
 
 | Layer | Owner | Responsibility | Canonical artifacts |
 |---|---|---|---|
-| Product / requirements | `competitive-intelligence`, `grill-with-docs`, `to-prd` | Clarify market / competitor facts, users, pain, boundaries, acceptance criteria, and PRD scope | `CONTEXT.md`, `docs/adr/`, `docs/discovery/`, `docs/requirements/<feature>-prd.md` |
+| Product / requirements | `competitive-intelligence`, `research`, `grill-with-docs`, `prototype`, `to-prd` | Clarify market / competitor / technical facts, users, pain, boundaries, acceptance criteria, PRD scope, and runnable answers to hard design questions | `CONTEXT.md`, `docs/adr/`, `docs/discovery/`, `docs/research/`, `docs/requirements/<feature>-prd.md` |
 | Contract | OpenAPI / YSS API skills, OpenSpec-style Spec Delta | Define and freeze frontend/backend API contracts, plus behavior deltas for medium/high-risk changes | `docs/api/specs/*.yaml`, `docs/specs/<feature>-spec-delta.md`, OpenAPI Draft Review / Freeze records |
-| Delivery planning | `to-issues`, Issue tracker | Split PRD / frozen contract into end-to-end vertical slices | GitLab / GitHub Issues or `docs/requirements/issues/*` |
-| Implementation | `implement`, `tdd`, `diagnosing-bugs`, `code-review` | Build with feedback loops, bug diagnosis, independent review, and fresh verification | tests, review reports, verification records, implementation notes |
+| Delivery planning | `to-issues`, `handoff` / equivalent handoff record, Issue tracker | Split PRD / frozen contract into end-to-end vertical slices and preserve context across threads or implementation repos | GitLab / GitHub Issues or `docs/requirements/issues/*`, `docs/implementation/*` |
+| Implementation | `implement`, `tdd`, `diagnosing-bugs`, `resolving-merge-conflicts`, `code-review` | Build with feedback loops, bug diagnosis, conflict resolution, independent review, and fresh verification | tests, review reports, verification records, implementation notes |
 | YSS engineering | `yss-router` and selected YSS skills | Apply YSS DDD, UI, DTO, Repository, Controller, OpenAPI, and component rules | implementation routing record, Build Architecture Checklist, code/test evidence |
 
 Rules:
 
-- Prefer Matt skills for generic engineering workflow: `grill-with-docs`, `to-prd`, `to-issues`, `implement`, `tdd`, `diagnosing-bugs`, `code-review`, `domain-modeling`, `codebase-design`, and `improve-codebase-architecture`.
+- Prefer Matt skills for generic engineering workflow: `research`, `grill-with-docs`, `prototype`, `to-prd`, `to-issues`, `implement`, `tdd`, `diagnosing-bugs`, `resolving-merge-conflicts`, `code-review`, `domain-modeling`, `codebase-design`, and `improve-codebase-architecture`.
 - Use `competitive-intelligence` when market, competitor, pricing, positioning, or customer sentiment facts are needed before Discovery / PRD decisions.
+- Use `research` when technical facts, standards, third-party API behavior, framework behavior, or official documentation need primary-source evidence before PRD, OpenAPI, architecture, or acceptance decisions.
+- Use `prototype` only for throwaway runnable feedback on logic, state-machine, or UI direction questions. Feed the conclusion back into PRD, design, ADR, or issues; do not treat prototype code as production implementation or as the required Ant Design v6 high-fidelity HTML prototype.
 - Preserve OpenAPI 3.1 Draft / Freeze as the API contract gate. Draft is review-only until Freeze.
 - Use OpenSpec-style Spec Delta for API, permission, state-machine, data-model, cross-client, new-module, or high-risk behavior changes. It is a lightweight behavior-delta artifact, not OpenSpec CLI, change-state files, or an extra state machine.
 - After OpenAPI Freeze, route to `to-issues` or an equivalent vertical-slice issue record; do not require extra state-machine artifacts.
 - Before frontend/backend implementation, first decide whether the impacted frontend/backend runtime projects already exist and can be reused. If an impacted side has no reusable project yet, route to `yss-ddd-scaffold-generator` or `yss-frontend-scaffold-generator` before business implementation.
 - Use `yss-router` before frontend/backend implementation when the task crosses multiple YSS areas. The route output becomes implementation guidance inside the current slice.
+- Use `handoff` or an equivalent handoff record when crossing threads, implementation repositories, prototype branches, or context-window limits.
+- Use `resolving-merge-conflicts` or an equivalent conflict-resolution flow for merge / rebase conflicts before release or merge decisions.
 - Use `code-review` or an independent review agent before merge/release decisions.
 - Require fresh verification evidence before claiming completion.
 
@@ -76,6 +80,7 @@ Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, da
 1. Inspect existing context before asking questions:
    - `CONTEXT.md`
    - `docs/discovery/` and `docs/discovery/reports/`
+   - `docs/research/`
    - `docs/requirements/`
    - `docs/design/`
    - `docs/api/specs/`
@@ -86,6 +91,7 @@ Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, da
 3. For small changes or iterations, identify the nearest trustworthy existing stage and only expand from the earliest impacted artifact:
    - wording / style / local configuration -> direct minimal change, then verify;
    - UI behavior or page state -> product design / prototype review / PRD calibration as needed;
+   - unclear state-machine, complex rules, or UI direction -> `prototype` for throwaway runnable feedback, then feed the conclusion into PRD/design/ADR/issue;
    - API request, response, error, permission, pagination, or concurrency -> system / data architecture, engineering contract, and Design Review with API impact analysis / contract draft / OpenAPI Draft Review / Freeze downstream gates;
    - service boundary, state machine, integration, NFR, rollout, or rollback -> system / data architecture, engineering contract, and Design Review downstream gates;
    - persistence, metadata, versioning, lineage, query, or index -> system / data architecture, engineering contract, and Design Review downstream gates.
@@ -94,7 +100,9 @@ Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, da
    - For UI work, before PRD calibration, API impact analysis, OpenAPI Draft, or requirement freeze, verify low-fidelity `prototype-review` is approved, `docs/design/prototypes/<feature>/index.html` exists as an Ant Design v6 high-fidelity HTML prototype, AntD v6 CLI validation evidence is recorded, and user confirmation is recorded after the prototype is produced. This prototype is a required lifecycle artifact and may be generated automatically by the system / Agent after low-fidelity prototype review; it does not have to be manually supplied by the user.
    - Before formal vertical slicing, verify PRD, product overview design / functional architecture, OpenAPI Freeze or no-API-impact record, architecture review as needed, and a clear issue destination.
    - For medium/high-risk API, permission, state-machine, data-model, cross-client, new-module, or safety-sensitive changes, verify an OpenSpec-style Spec Delta exists or record why it is not needed.
+   - When technical, standard, framework, or third-party API facts influence downstream decisions, verify `research` or an equivalent primary-source record exists and is cited.
    - Before frontend/backend implementation, verify vertical slice scope, implementation repo/location, whether the impacted frontend/backend runtime projects already exist and are reusable, YSS skill routing, Build Architecture Checklist, test command, and review strategy.
+   - Before crossing threads, implementation repos, prototype branches, or long contexts, verify `handoff` or an equivalent handoff record captures source artifacts, current stage, open questions, verification commands, and next owner.
 5. Output the next action:
    - artifact to create/update,
    - specialist skill to invoke,
@@ -143,6 +151,8 @@ Default routing:
 |---|---|
 | Start a new business product/module | intake -> opportunity and Discovery -> `competitive-intelligence` when market / competitor facts are needed -> `grill-with-docs` -> `to-prd` -> product overview design / functional architecture -> product design and requirement freeze when UI exists |
 | Analyze competitors, substitute workflows, pricing, positioning, or market facts | `competitive-intelligence`; then feed stable findings into `grill-with-docs` and `to-prd` |
+| Research technical facts, standards, framework behavior, or third-party APIs | `research`; feed cited findings into PRD, OpenAPI, architecture, ADR, or acceptance criteria |
+| Answer a design question that needs runnable feedback | `prototype`; feed the conclusion into PRD, design, ADR, or issue, then delete or absorb throwaway code |
 | Design UI flow after PRD baseline | Verify product overview design / functional architecture first, then use `product-design:index` as the primary Product Design router; follow its focused routing such as `$get-context`, `$ideate`, `$prototype`, `$image-to-code`, or `$url-to-code` |
 | Review low-fidelity prototype before high-fidelity design | `prototype-review` |
 | Build high-fidelity interactive HTML prototype | Use `product-design:index` as the primary entrypoint and route to the appropriate Product Design focused workflow for prototype/code output; query AntD v6 design/component/demo/token/semantic facts with `antd` CLI before output; the required stage output must be Ant Design v6 HTML at `docs/design/prototypes/<feature>/index.html`, may be system / Agent generated, must record AntD CLI validation evidence, and must be confirmed by the user before downstream gates |
@@ -152,8 +162,10 @@ Default routing:
 | Create architecture/process/data diagrams | `excalidraw-diagram-generator` as a support skill |
 | Design meta-model / metadata / lineage data architecture | architecture/design workflow plus `yss-domain-modeling` or `yss-domain`; use `excalidraw-diagram-generator` for ER, lineage, DFD, or class diagrams when helpful |
 | Split delivery scope after PRD / OpenAPI Freeze | `to-issues`; record whether impacted frontend/backend projects already exist, and whether scaffold initialization is needed |
+| Cross threads, repos, prototype branches, or long contexts | `handoff` or equivalent handoff record; preserve source artifacts, current stage, open questions, verification commands, and next owner |
 | Implement a slice | first check impacted frontend/backend project existence; route missing backend to `yss-ddd-scaffold-generator`, missing frontend to `yss-frontend-scaffold-generator`, then use `implement` plus `tdd`; use `yss-router` first when multiple YSS areas are touched |
 | Fix a bug or test failure | `diagnosing-bugs` then `tdd` |
+| Resolve merge or rebase conflicts | `resolving-merge-conflicts`; record both intents, resolution trade-offs, and fresh verification |
 | Review implementation | `code-review` plus YSS-specific review inputs |
 | Build Vue page | `yss-ui` plus related frontend skills chosen by `yss-router` |
 | Build backend module from scratch | `yss-ddd-scaffold-generator` |
@@ -204,7 +216,9 @@ When the user explicitly asks for a full delivery plan, include stage-by-stage t
 ## Guardrails
 
 - Do not skip opportunity exploration for new product/module work; use `competitive-intelligence` when market/competitor facts are needed, or record why it is not needed.
+- Do not make technical, standards, framework, or third-party API claims that affect PRD, OpenAPI, architecture, acceptance, or release decisions without `research` or equivalent primary-source evidence.
 - Do not treat Discovery outputs as frozen downstream design. Discovery can provide product capability guidance and downstream impact signals, but PRD, functional architecture, OpenAPI, system architecture, and data architecture still require their own gates.
+- Do not treat throwaway `prototype` code as production code, as an implementation shortcut, or as the required Ant Design v6 high-fidelity HTML prototype. Keep the conclusion, delete or absorb the code.
 - Do not start implementation before PRD is calibrated, product overview design / functional architecture exists, required architecture artifacts are explicit, product design / prototype / interaction design exists, low-fidelity `prototype-review` passes, high-fidelity Ant Design v6 HTML prototype exists when UI exists, OpenAPI Freeze decision, engineering baseline, design review, and vertical slice are clear.
 - Do not start implementation before deciding whether the impacted frontend/backend runtime projects already exist and can be reused. Missing or conflicting runtime projects must route back to implementation routing and scaffold initialization first.
 - Do not skip business architecture for new products unless the product boundary, users, ecosystem, and value stream are already captured elsewhere.
@@ -217,7 +231,9 @@ When the user explicitly asks for a full delivery plan, include stage-by-stage t
 - Do not require Spec Delta for small wording, local style, configuration, or low-risk bug fixes unless the change expands into API, permission, state-machine, data-model, cross-client, or security impacts.
 - Do not move an OpenAPI Draft into Engineering Baseline / YSS DDD Review until `yss-openapi-draft-review` or an equivalent persistent review verifies P0 feature coverage, page action to endpoint mapping, YSS response wrappers, error structures, permissions, concurrency, security red lines, and contract test seams.
 - Do not route directly to frontend/backend skills before `yss-router` when the task crosses multiple YSS areas.
+- Do not cross threads, implementation repos, prototype branches, or context-window limits without `handoff` or an equivalent handoff record when downstream agents need continuity.
 - Do not generate production code from this skill; hand off to the selected specialist skill.
+- Do not complete merge/rebase conflict work without documenting resolution intent and rerunning relevant checks.
 - Treat TDD as the default for business behavior implementation; generated code, configuration, or throwaway prototypes may use a documented exception with a verification command.
 - Require independent review and fresh verification evidence before calling work complete.
 - Flag security red lines from `AGENTS.md` as human-review items.
