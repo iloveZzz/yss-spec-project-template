@@ -15,8 +15,8 @@
 |---|---|---|
 | 已有后端工程 | `implementation-repo-onboarding` 只读扫描，记录工程基线、测试命令和偏离项 | 实现仓库登记、工程基线审查、验证命令 |
 | 已有前端工程 | `implementation-repo-onboarding` 只读扫描，检查技术栈、OpenAPI client、设计 token 和页面规范 | 实现仓库登记、前端基线审查、验证命令 |
-| 0-1 后端工程 | 先在 Harness change 中记录实现仓库决策，再使用 `yss-ddd-scaffold-generator` 生成外部后端工程 | 后端 Git 仓库、YSS DDD 基线、Harness 登记 |
-| 0-1 前端工程 | 先记录实现仓库决策，再按 `yss-frontend-scaffold-generator` 使用 YSS 前端模板生成外部工程 | 前端 Git 仓库、前端模板基线、Harness 登记 |
+| 0-1 后端工程 | 先在 Harness change 中登记 `scaffold_status=required` 并确认外部脚手架目标，再使用 `yss-ddd-scaffold-generator` 生成后端工程 | 后端 Git 仓库或输出目录、YSS DDD 基线、Harness 登记 |
+| 0-1 前端工程 | 先登记 `scaffold_status=required` 并确认外部脚手架目标，再按 `yss-frontend-scaffold-generator` 使用 YSS 前端模板生成工程 | 前端 Git 仓库或输出目录、前端模板基线、Harness 登记 |
 | 跨仓库垂直切片 | 使用 `cross-repo-implementation-routing` 绑定 Harness change、后端 MR、前端 MR 和验证证据 | 跨仓库切片记录、fresh verification |
 
 ## 实现前工程存在性判定
@@ -24,14 +24,15 @@
 进入业务实现前，必须先判断当前需求受影响的 frontend / backend 运行时代码工程是否已经存在且可复用。该判定必须写入实施计划、实现路由记录或切片 issue，至少回答：
 
 - 当前切片是否影响 frontend、backend，或两者都影响。
-- 对应实现仓库 / 本地工程是否已经存在。
+- 对应实现仓库 / 本地工程是否已经存在；0-1 新项目中 backend / frontend 目录不存在时，登记为 `scaffold_status=required`，不得视为流程失败。
 - 已有工程是否满足当前 OpenAPI、设计系统、YSS DDD 或工程基线要求。
 - 若不存在或不可复用，是否需要初始化 0-1 脚手架，以及初始化到哪个目标仓库或输出目录。
+- 若涉及 DDL / SQL / 数据库迁移、权限接入或审计日志，是否已经拿到对应人审结论。
 
 判定结论的路由规则：
 
-- 后端受影响且不存在可用工程：先记录实现仓库决策，再路由 `yss-ddd-scaffold-generator`。
-- 前端受影响且不存在可用工程：先记录实现仓库决策，再路由 `yss-frontend-scaffold-generator`。
+- 后端受影响且不存在可用工程：先登记后端仓库或确认外部脚手架目标，再路由 `yss-ddd-scaffold-generator`。
+- 前端受影响且不存在可用工程：先登记前端仓库或确认外部脚手架目标，再路由 `yss-frontend-scaffold-generator`。
 - 前后端均受影响且均不存在可用工程：先分别完成前后端初始化，再进入垂直切片业务实现。
 - 工程已存在但与当前目录约定或技术基线冲突：先停在 engineering baseline / implementation routing，补齐偏离说明和处理决策。
 
@@ -51,7 +52,8 @@
 
 - `scaffold_status`：existing / required / initialized。
 - `scaffold_skill`：`yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator` / none。
-- 初始化理由、目标输出目录或目标仓库，以及是否已经通过基线检查。
+- 初始化理由、目标输出目录或目标仓库、用户是否已确认外部脚手架目标，以及是否已经通过基线检查。
+- DDL / SQL / 数据库迁移、权限接入、审计日志三类人审结论；不适用时必须写明不适用原因。
 
 ## 跨仓库切片规则
 
@@ -75,6 +77,8 @@
 - 与当前 Harness change 的绑定关系。
 
 生成后必须使用 `yss-backend-scaffold-parent` 做工程基线检查，不得把脚手架 sample 代码当作业务实现交付。
+
+若后端切片触碰 DDL / SQL / 数据库迁移、权限接入或审计日志，脚手架生成只能提供工程骨架和模板。业务实现前必须在登记记录、实施计划或切片 issue 中写明对应人审结论；未拿到结论时保留 `TODO-HUMAN-REVIEW`，不得宣称生产实现完成。
 
 ## 0-1 前端工程
 

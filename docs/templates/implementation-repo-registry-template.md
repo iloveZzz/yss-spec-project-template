@@ -19,6 +19,8 @@ owner: ai
 | local_worktree |  |
 | scaffold_status | existing / required / initialized |
 | scaffold_skill | `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator` / none |
+| scaffold_target_confirmed | 是 / 否 / 不适用 |
+| target_git_url_or_output_dir |  |
 | owner |  |
 | ci_system | GitLab CI / GitHub Actions / Jenkins / other / none |
 | issue_tracker | GitLab / GitHub / other |
@@ -52,9 +54,12 @@ owner: ai
 
 ## 5. 人工审查
 
-| human_review_required | 原因 | 审查人 / 角色 | 结论 |
-|---|---|---|---|
-| 是 / 否 |  |  |  |
+| 人审项 | 是否涉及 | 审查人 / 角色 | 结论 | TODO-HUMAN-REVIEW 落点 |
+|---|---|---|---|---|
+| DDL / SQL / 数据库迁移 | 是 / 否 |  | 通过 / 草案 / 阻断 / 不适用 |  |
+| 权限接入 / 认证 / 授权 | 是 / 否 |  | 通过 / 草案 / 阻断 / 不适用 |  |
+| 审计日志 | 是 / 否 |  | 通过 / 草案 / 阻断 / 不适用 |  |
+| 其他安全红线 | 是 / 否 |  | 通过 / 草案 / 阻断 / 不适用 |  |
 
 ## 6. Harness 回写
 

@@ -12,6 +12,14 @@
 | 中等变更 | 已有功能迭代、已有页面 / API 的局部扩展、非核心流程调整 | 最近可信阶段 | 受影响 PRD / 设计 / OpenAPI / 架构 / Issue 的增量更新；必要时 Spec Delta | 受影响切片测试、契约检查、review | 下游门禁补齐，未受影响资产不重跑 |
 | 新模块 / 高风险变更 | 新产品、新业务域、新模块、跨端协作、服务边界、数据模型、权限、安全或发布回滚变化 | 入口分诊 | Discovery、PRD、设计、OpenAPI、Spec Delta、架构、垂直切片 Issue | TDD、契约验证、独立审查、fresh verification | 完整生命周期关键门禁都有证据 |
 
+## Subagent 裁剪规则
+
+| 档位 | subagent 使用建议 | 任务包要求 |
+|---|---|---|
+| 小改动 | 默认不派 subagent；只有需要独立验证或防止自审时才派 Reviewer / Verifier | 可在 issue 备注或 checkpoint 中轻量记录 |
+| 中等变更 | 可派 Drafter / Reviewer / Verifier 处理受影响资产、契约检查和回归验证 | 必须记录输入、输出、写范围、验收标准和主控采纳结论 |
+| 新模块 / 高风险变更 | 建议按 Explorer / Drafter / Worker / Reviewer / Verifier 并行拆分，但写范围必须不重叠 | 必须使用 `docs/templates/subagent-task-package-template.md` 或等价字段，并在阶段 checkpoint 中汇总 |
+
 ## 最近可信阶段判定表
 
 | 当前输入 / 变更事实 | 最近可信阶段 | 需要补齐的下游 |
@@ -25,7 +33,8 @@
 | 服务边界、集成、部署、性能、可靠性或运维变化 | 5. 系统 / 数据架构与工程契约设计审查 | 系统架构、Design Review、必要时 Spec Delta、Build Architecture Checklist |
 | 持久化、元数据、版本、血缘、搜索、索引或迁移变化 | 5. 系统 / 数据架构与工程契约设计审查 | 数据架构、必要时 Spec Delta、人审点、Repository / MyBatis 前置审查 |
 | OpenAPI 已冻结但还没有垂直切片 Issue | 6. 契约冻结与 Issue formalization | `to-issues`、实施计划、Build Architecture Checklist |
-| 已有垂直切片 Issue，但实现准备不完整 | 7. 垂直切片与 TDD 实现 | 实施计划、YSS skill routing、测试命令、回滚点 |
+| 已有垂直切片 Issue，但实现准备不完整 | 7. 垂直切片与 TDD 实现 | 实施计划、YSS skill routing、实现仓库登记或外部脚手架目标确认、测试命令、回滚点 |
+| 0-1 项目缺 backend / frontend 可用工程 | 7. 垂直切片与 TDD 实现 | 登记 `scaffold_status=required`，确认目标仓库或输出目录，路由 `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator` |
 | 跨线程、跨仓库、上下文过长或原型分支需要回流 | 7. 垂直切片与 TDD 实现 | `handoff` 或等价交接记录、实现仓库绑定、验证命令 |
 | 只有代码修复或测试失败 | 7. 垂直切片与 TDD 实现 | 可复现命令、失败测试、最小修复、fresh verification |
 | merge / rebase 冲突阻塞交付 | 7. 垂直切片与 TDD 实现 | `resolving-merge-conflicts` 或等价冲突处理记录、重新验证 |
@@ -38,6 +47,8 @@
 - API 契约、OpenAPI schema、错误结构、分页、权限或版本发生变化。
 - 认证、授权、支付、加密、SQL 原生查询、数据库迁移、公共基础库 API 等安全红线被触碰。
 - 数据模型、Repository / Gateway、持久化边界、审计日志、文件上传下载、临时 URL、版本快照、血缘或查询索引变化。
+- DDL / SQL / 数据库迁移、权限接入或审计日志缺少明确人审结论。
+- 当前切片影响 backend / frontend，但既无可复用实现仓库登记，也未确认 0-1 外部脚手架目标。
 - 服务边界、外部系统集成、部署、回滚、可观测性、性能、可靠性或运维约束变化。
 - UI 变更影响用户主流程、权限状态、异常状态、页面导航或 OpenAPI 反推清单。
 - 实现与既有架构、CONTEXT 术语、ADR、PRD 或垂直切片 Issue 出现漂移。
