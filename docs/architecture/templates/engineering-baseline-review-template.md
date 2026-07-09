@@ -48,6 +48,7 @@ owner: ai
 | 新服务骨架 | `yss-ddd-scaffold-generator` | 是 / 否 |  |
 | 后端基线检查 | `yss-backend-scaffold-parent` | 是 / 否 |  |
 | 领域建模 | `yss-domain` / `yss-backend-scaffold-domain` | 是 / 否 |  |
+| Application 用例编排 / 事务边界 | `yss-backend-scaffold-application` | 是 / 否 |  |
 | Repository / MyBatis | `yss-repository` / `yss-mybatis` | 是 / 否 |  |
 | Web Controller / DTO | `yss-web-controller` / `yss-dto` | 是 / 否 |  |
 

@@ -24,6 +24,10 @@ owner: ai
 | constraint | source | slice | status | evidence | follow-up |
 |---|---|---|---|---|---|
 | DDD 分层不得穿透：Domain 不依赖 Adapter、Infrastructure、Mapper、Controller 或 Web DTO | 系统架构 / YSS DDD 规范 / `AGENTS.md` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 若发现穿透依赖，标记 `violation` 并停止 build，回到架构修正 |
+| 后端切片必须回勾 `Backend Slice Implementation Contract`：required skills、允许写范围、禁止模式、证据文件、延期 seam 和验证命令完整 | implementation routing / 垂直切片 Issue / `AGENTS.md` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺合同或合同不完整时停止实现 |
+| Web Adapter / DTO：必须按 `yss-dto` 定义或复用 CMD / Query / VO / Result；不得在 Controller 内部类或非约定包临时定义主要 DTO，不得手工分页主要业务集合 | `yss-web-controller` / `yss-dto` / OpenAPI Freeze |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 命中时回到 Controller / DTO 设计 |
+| Application：负责用例编排、事务边界和跨聚合协调，不承载核心领域规则 | `yss-backend-scaffold-application` / 系统架构 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 领域规则下沉 Domain，事务边界留在 Application |
+| Infrastructure：需要持久化的切片必须有 PO / Repository / Convertor / GatewayImpl；`InMemory*Gateway` 只能作为显式 `seam-deferred` | `yss-repository` / `yss-backend-scaffold-infrastructure` / 数据架构 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 未补齐时不得声称生产持久化完成 |
 | 安全红线：认证 / 授权、SQL / DDL、迁移、加密、公共基础库 API 变更必须 `TODO-HUMAN-REVIEW` | `AGENTS.md` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 未有人审证据时不得发布或合并 |
 |  |  |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  |  |
 
@@ -49,6 +53,23 @@ owner: ai
 | 切片 | 已落实 | seam / 延期 | 漂移 | 违反 | 是否允许继续 |
 |---|---|---|---|---|---|
 |  |  |  |  |  |  |
+
+## 3.1 后端实现证据回勾
+
+| 层级 | required_skills | 代码证据 | 测试 / 验证证据 | 状态 | 备注 |
+|---|---|---|---|---|---|
+| Adapter / Web | `yss-web-controller`、`yss-dto` |  |  | `implemented` / `seam-deferred` / `violation` / `not-applicable` |  |
+| Application | `yss-backend-scaffold-application` |  |  | `implemented` / `seam-deferred` / `violation` / `not-applicable` |  |
+| Domain | `yss-domain` / `yss-backend-scaffold-domain` |  |  | `implemented` / `seam-deferred` / `violation` / `not-applicable` |  |
+| Infrastructure | `yss-repository` / `yss-backend-scaffold-infrastructure` / `yss-mybatis` |  |  | `implemented` / `seam-deferred` / `violation` / `not-applicable` |  |
+
+## 3.2 后端门禁 smoke check
+
+> 命中不等于必然失败；`SingleResult` / `PageResult`、`CMD` / `Query` / `VO` 是 `yss-dto` 合法产物。命中项必须说明是否复用了既有 DTO 体系、是否位于约定包路径、是否继承约定基类；无法解释或未回勾合同即为 `violation`。
+
+```bash
+rg -n "class (SingleResult|MultiResult|PageResult|Result)<|public static class .*(Command|Cmd|Query|VO)|subList\\(|InMemory.*Gateway|implements .*Gateway|extends .*Repository|@TableName|Mappers\\.getMapper" apps/backend
+```
 
 ## 4. 人工审查点
 

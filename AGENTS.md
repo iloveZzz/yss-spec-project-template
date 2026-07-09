@@ -203,11 +203,23 @@ docs/implementation/
 4. 先使用 `yss-router` 判断最小 YSS skill 集合，并把路由结果记录到实施计划或切片 issue 中。
 5. 每个垂直切片在写业务代码前，按影响面加载专项规范：
    - 领域建模 / 聚合 / 状态流：`yss-domain-modeling`，落代码时接 `yss-domain` / `yss-backend-scaffold-domain`。
+   - Application 用例编排 / 事务边界 / 跨聚合协调：`yss-backend-scaffold-application`。
    - Repository / PO / Convertor / GatewayImpl：`yss-repository`，需要 MyBatis 细节时接 `yss-mybatis` / `yss-backend-scaffold-infrastructure`。
    - Controller / DTO / VO / Web Convertor：`yss-web-controller`、`yss-dto`、`yss-backend-scaffold-web`。
    - 前端页面、组件、API 接入、YSS UI：按 `yss-router` 选择 `yss-page-module-development`、`yss-components`、`api-integration` 等最小集合。
 6. Java 后端实现和审查必须同时遵守 `alibaba-java-code-style`；命名、异常、日志、集合、单元测试、ORM/MyBatis、Maven 和安全相关强制项作为 review blocker 处理。
 7. 实现计划和 review 记录必须列出本切片实际使用的 YSS / Alibaba 规范输入、验证命令和未覆盖原因；不得用“符合 YSS”笼统替代具体 skill 证据。
+8. 任何后端垂直切片在写业务代码前，必须先形成 `Backend Slice Implementation Contract` 或等价记录；缺少 `required_skills`、`allowed_write_paths`、`forbidden_patterns`、`expected_evidence_files`、`seam_deferred`、`verification_commands` 任一项时，Agent 必须停止实现并回到 implementation routing / 切片 Issue 补齐。
+9. 后端切片完成后必须用代码、测试或文档证据回勾 `Backend Slice Implementation Contract` 和 `Build Architecture Checklist`；未回勾的 `required_skills` 视为 `violation`，不能声明完成 / 可合并。
+10. 以下情况默认作为 YSS 后端实现 review blocker，除非在合同和 review 记录中给出 `yss-dto` / `yss-web-controller` 等专项 skill 依据、例外原因和补齐落点；注意 `CMD` / `Query` / `VO` / `SingleResult` / `MultiResult` / `PageResult` 本身是 `yss-dto` 规范产物，阻断的是私自发明、内嵌、混用或绕过既有 DTO 体系：
+   - Controller 私自新建 `SingleResult` / `MultiResult` / `PageResult` / `Result` 等响应包装，未复用项目既有 `yss-dto` 体系，或在同一项目混用多套响应包装。
+   - Controller 内部类或非约定包中临时定义主要 `CMD` / `Query` / `VO` / DTO，未按 `yss-dto` 继承 `CommandDTO` / `QueryDTO` / `PageQuery`、未与 OpenAPI schema 对齐，或手工分页 / 排序 / 过滤主要业务集合。
+   - Controller 承担大量领域对象到 Web VO 的 mapping，缺少 `WebConvertor` / MapStruct 或明确例外说明。
+   - Controller 直接依赖 Repository / Mapper / PO，或绕过 Application / Domain Gateway。
+   - Application 层承载核心领域规则，或缺少事务边界、用例编排和跨聚合协调说明。
+   - Infrastructure 使用 `InMemory*Gateway`、临时 Map、文件或 mock 作为正式持久化实现，未标记 `seam-deferred` 和补齐切片。
+   - 需要持久化的切片缺少 PO / Repository / Convertor / GatewayImpl，或重复手写 mapping 而未说明为何不用 MapStruct。
+   - 实现记录只写“符合 YSS”，没有列出已读取 / 已使用的 YSS skills、证据文件、验证命令和未覆盖原因。
 
 ### YSS DDD 分层红线
 

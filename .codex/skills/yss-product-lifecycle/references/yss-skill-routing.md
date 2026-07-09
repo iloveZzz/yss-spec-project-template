@@ -16,6 +16,7 @@ Use this reference after lifecycle stage and slice scope are clear. Pick the min
 | Backend service from scratch | `yss-ddd-scaffold-generator` | After implementation location decision; then baseline check |
 | Backend scaffold baseline | `yss-backend-scaffold-parent` | Required after generated backend skeleton and before business implementation |
 | Domain modeling / aggregate / state behavior | `yss-domain-modeling`, `yss-domain`, `yss-backend-scaffold-domain` | Use before repository/controller code when domain concepts are unstable |
+| Application use case orchestration / transaction boundary | `yss-backend-scaffold-application` | Use when implementing AppService, command/query handling, cross-aggregate coordination, or transaction boundaries |
 | Repository / PO / Convertor / GatewayImpl | `yss-repository` | Add `yss-mybatis` / `yss-backend-scaffold-infrastructure` for mapper/persistence details |
 | Web controller / DTO / VO / Web Convertor | `yss-web-controller`, `yss-dto`, `yss-backend-scaffold-web` | Requires OpenAPI Freeze or no-API-impact record |
 | Java coding style and review | `alibaba-java-code-style` | Treat blockers as review blockers |

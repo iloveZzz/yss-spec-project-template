@@ -9,8 +9,50 @@ owner: ai
 
 ## 结论
 
+Approved / Changes requested / Blocked
+
 ## 发现
 
+| 严重级别 | 文件 / 位置 | 问题 | 建议 |
+|---|---|---|---|
+|  |  |  |  |
+
 ## 必须修复项
+
+- [ ]
+
+## YSS 后端门禁审查
+
+> 涉及后端切片时必填；不涉及时写 `not-applicable`。任何 `violation` 都阻断完成 / 可合并结论。
+
+| 检查项 | 结论 | 证据 |
+|---|---|---|
+| 已存在 `Backend Slice Implementation Contract`，且 required skills / allowed paths / forbidden patterns / evidence / seam / verification 完整 | pass / violation / not-applicable |  |
+| `yss-domain` / `yss-backend-scaffold-domain` 已按影响面落实，Domain 不依赖 Adapter、Infrastructure、Mapper、Controller 或 Web DTO | pass / violation / not-applicable |  |
+| `yss-backend-scaffold-application` 已按影响面落实，Application 只做用例编排、事务边界和跨聚合协调 | pass / violation / not-applicable |  |
+| `yss-repository` / `yss-backend-scaffold-infrastructure` 已按影响面落实，需要持久化的切片有 PO / Repository / Convertor / GatewayImpl | pass / seam-deferred / violation / not-applicable |  |
+| `yss-web-controller` / `yss-dto` 已按影响面落实，CMD / Query / VO / Result 按既有 DTO 体系定义或复用，Controller 不用内部类或非约定包临时承载主要 DTO / VO、不手工分页主要业务集合、不穿透 Repository | pass / violation / not-applicable |  |
+| `alibaba-java-code-style` 已纳入审查，命名、异常、日志、ORM/MyBatis、Maven、安全项无 blocker | pass / violation / not-applicable |  |
+| `Build Architecture Checklist` 已回勾，延期项、漂移项、违反项有明确处理结论 | pass / violation / not-applicable |  |
+
+### 后端 smoke check
+
+```bash
+rg -n "class (SingleResult|MultiResult|PageResult|Result)<|public static class .*(Command|Cmd|Query|VO)|subList\\(|InMemory.*Gateway|implements .*Gateway|extends .*Repository|@TableName|Mappers\\.getMapper" apps/backend
+```
+
+命中说明：`SingleResult` / `PageResult`、`CMD` / `Query` / `VO` 命中不等于失败；需要说明其是否来自 `yss-dto` / 项目既有体系、是否位于约定包路径、是否继承约定基类。
+
+| 命中 | 解释 | 结论 |
+|---|---|---|
+|  |  | expected / seam-deferred / violation |
+
+## 压力场景验证
+
+| 压力场景 | 预期 | 本次结论 |
+|---|---|---|
+| Agent 尝试用 Controller 内部类承载主要 CMD / VO 或私自新建 Result 包装 | 应被标记为 `violation`，回到 `yss-web-controller` / `yss-dto` 复用 / 定义约定 DTO |  |
+| Agent 尝试用 `InMemory*Gateway` 完成正式持久化 | 只能 `seam-deferred`，必须有补齐切片和风险说明 |  |
+| Agent 只写“符合 YSS”但没有 skill / 文件 / 测试证据 | 应被标记为 `violation` |  |
 
 ## 签字确认

@@ -170,6 +170,7 @@ Default routing:
 | Build Vue page | `yss-ui` plus related frontend skills chosen by `yss-router` |
 | Build backend module from scratch | `yss-ddd-scaffold-generator` |
 | Model backend domain | `yss-domain` / `yss-backend-scaffold-domain` |
+| Implement Application use case / transaction boundary | `yss-backend-scaffold-application` |
 | Implement persistence | `yss-repository` plus `yss-mybatis` when data architecture and domain metadata are stable |
 | Implement Web adapter | `yss-web-controller` |
 

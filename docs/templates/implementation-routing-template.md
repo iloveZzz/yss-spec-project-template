@@ -47,6 +47,39 @@ owner: ai
 | API / 契约 |  |  | 是 / 否 |
 | 测试 / 验证 |  |  | 是 / 否 |
 
+### 3.1 Backend Slice Implementation Contract
+
+> 任一后端切片写业务代码前必须填写本合同；没有后端影响时标记 `not-applicable` 并说明原因。合同缺少必填项时，结论必须为 `Blocked`，不得进入实现。
+
+| 项 | 内容 |
+|---|---|
+| slice_id |  |
+| affected_layers | Adapter / Application / Domain / Infrastructure / Bootstrap / not-applicable |
+| required_skills | `yss-domain` / `yss-backend-scaffold-application` / `yss-repository` / `yss-mybatis` / `yss-backend-scaffold-infrastructure` / `yss-web-controller` / `yss-dto` / `alibaba-java-code-style` / other |
+| allowed_write_paths |  |
+| forbidden_patterns | 私自新建 / 混用 Result 包装；Controller 内部类或非约定包临时定义主要 DTO / VO；DTO 未按 `yss-dto` 继承 `CommandDTO` / `QueryDTO` / `PageQuery`；Controller 手工分页；Controller 穿透 Repository；InMemory Gateway 作为正式持久化；重复手写 mapping；其他： |
+| expected_evidence_files |  |
+| seam_deferred |  |
+| TODO-HUMAN-REVIEW |  |
+| verification_commands |  |
+
+| 层级 | 必需 skill | 预期文件 / 证据 | 状态 |
+|---|---|---|---|
+| Adapter / Web | `yss-web-controller`、`yss-dto`、`yss-backend-scaffold-web` | Controller、CMD / Query / VO、WebConvertor、统一响应包装证据 | pending / implemented / seam-deferred / violation / not-applicable |
+| Application | `yss-backend-scaffold-application` | AppService / UseCase、事务边界、跨聚合协调、异常处理 | pending / implemented / seam-deferred / violation / not-applicable |
+| Domain | `yss-domain-modeling`、`yss-domain`、`yss-backend-scaffold-domain` | Entity / ValueObject / DomainService / Gateway interface / 状态方法 | pending / implemented / seam-deferred / violation / not-applicable |
+| Infrastructure | `yss-repository`、`yss-mybatis`、`yss-backend-scaffold-infrastructure` | PO、Repository、Convertor、GatewayImpl、Mapper / XML / 查询策略 | pending / implemented / seam-deferred / violation / not-applicable |
+| Java 规范 | `alibaba-java-code-style` | 命名、异常、日志、ORM、Maven、单测和安全项审查记录 | pending / implemented / seam-deferred / violation / not-applicable |
+
+### 3.2 后端门禁压力场景
+
+| 场景 | 期望处理 |
+|---|---|
+| Agent 试图在 Controller 中新增内部 `CreateXCommand`、`XVO` 或私自新建 `PageResult` | 标记 `violation`；回到 `yss-web-controller` / `yss-dto` 补独立 DTO / VO / WebConvertor、复用既有响应包装或记录受控例外 |
+| Agent 试图用 `InMemory*Gateway` 完成需要持久化的切片 | 仅允许 `seam-deferred`；必须写补齐切片、风险和 `TODO-HUMAN-REVIEW`，不得作为正式持久化实现 |
+| Agent 试图跳过 Repository / PO / Convertor，直接在 Application 中过滤集合 | 若切片需要持久化或查询策略，标记 `violation`；回到 `yss-repository` / `yss-mybatis` |
+| Agent 只写“符合 YSS”但没有列出 skill 证据和文件证据 | 标记 `violation`；不得进入 code review / 完成结论 |
+
 ## 4. 外部实现仓库
 
 | repo_role | git_url | default_branch | working_branch | MR / PR | CI | test_command | build_command | 状态 |
@@ -107,6 +140,7 @@ owner: ai
 
 - [ ] 垂直切片 Issue 完整，且状态允许进入实现。
 - [ ] YSS skills 已最小化选择，没有绕过 Issue、OpenAPI Freeze / 无 API 影响记录或必要的 Spec Delta。
+- [ ] 后端切片如适用，已填写 `Backend Slice Implementation Contract`，并且 required skills、禁止模式、证据文件、延期 seam 和验证命令完整。
 - [ ] 受影响外部实现仓库已登记，并绑定分支、MR / PR、CI 和验证命令。
 - [ ] 受影响 frontend / backend 工程存在性已判定；0-1 缺失工程已登记 `scaffold_status=required`、确认外部脚手架目标并路由对应脚手架 skill。
 - [ ] DDL / SQL / 数据库迁移、权限接入和审计日志的人审结论已记录；未通过时仅保留草案或 `TODO-HUMAN-REVIEW`。
