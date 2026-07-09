@@ -38,6 +38,15 @@ test("interactive init generates a template instance in an empty directory", () 
   assert.ok(fs.existsSync(path.join(targetDir, "README.md")));
   assert.ok(fs.existsSync(path.join(targetDir, metadataFileName)));
   assert.ok(fs.existsSync(path.join(targetDir, "docs/templates/prd-template.md")));
+  assert.ok(fs.existsSync(path.join(targetDir, ".codex/skills/to-spec/SKILL.md")));
+  assert.ok(fs.existsSync(path.join(targetDir, ".codex/skills/to-tickets/SKILL.md")));
+  assert.ok(fs.existsSync(path.join(targetDir, ".codex/skills/wayfinder/SKILL.md")));
+  assert.ok(
+    fs.existsSync(path.join(targetDir, ".codex/skills/yss-openapi/img.png")),
+  );
+  assert.ok(
+    fs.existsSync(path.join(targetDir, ".codex/skills/yss-openapi/img_1.png")),
+  );
   assert.equal(fs.existsSync(path.join(targetDir, ".git")), false);
   assert.equal(fs.existsSync(path.join(targetDir, "packages")), false);
   assert.equal(

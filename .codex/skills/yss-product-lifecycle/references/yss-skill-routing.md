@@ -30,7 +30,7 @@ Use this reference after lifecycle stage and slice scope are clear. Pick the min
 ## Routing Rules
 
 - Do not route directly to frontend/backend implementation skills before `yss-router` when the task crosses multiple YSS areas.
-- Do not use backend implementation skills before required PRD, OpenAPI Freeze/no-impact record, architecture/data design, and Build Architecture Checklist are ready for the slice.
+- Do not use backend implementation skills before required spec, OpenAPI Freeze/no-impact record, architecture/data design, and Build Architecture Checklist are ready for the slice.
 - Do not use Repository / MyBatis skills before data architecture and domain metadata are stable enough to review.
 - Do not use Controller / DTO skills before OpenAPI contract is frozen or explicitly marked as no API impact.
 - Do not use UI implementation skills before `yss-design-system` and product design/prototype review when user-facing workflow is affected.
@@ -42,7 +42,7 @@ Use this reference after lifecycle stage and slice scope are clear. Pick the min
 请使用 yss-router 为 <slice> 选择最小 YSS skill 集合。
 
 已知资产：
-- PRD / Issue: <path-or-link>
+- Spec / ticket: <path-or-link>
 - OpenAPI Freeze / no API impact: <path-or-link>
 - Architecture / data design: <path-or-link>
 - Build Architecture Checklist: <path-or-link>

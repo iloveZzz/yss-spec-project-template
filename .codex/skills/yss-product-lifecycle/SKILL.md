@@ -1,6 +1,6 @@
 ---
 name: yss-product-lifecycle
-description: "Use when starting or continuing a YSS product/module/project through opportunity exploration, discovery, business/functional/system/data architecture artifacts, PRD baseline, product design/prototype/interaction design, PRD calibration, OpenAPI Draft/Freeze, engineering baseline, architecture, design review, vertical slices, YSS frontend/backend delivery, review, release, implementation, or retrospective; or when deciding missing artifacts, lifecycle stage, next prompt, or Matt/YSS skill routing."
+description: "Use when starting or continuing a YSS product/module/project through opportunity exploration, discovery, business/functional/system/data architecture artifacts, spec baseline, product design/prototype/interaction design, spec calibration, OpenAPI Draft/Freeze, engineering baseline, architecture, design review, vertical slice tickets, YSS frontend/backend delivery, review, release, implementation, or retrospective; or when deciding missing artifacts, lifecycle stage, next prompt, or Matt/YSS skill routing."
 ---
 
 # YSS Product Lifecycle
@@ -15,7 +15,7 @@ For a small requirement change or iteration on an existing feature, do not resta
 
 ## Documentation Language
 
-For this repository, persistent lifecycle artifacts MUST use Chinese body text by default, because the primary users and reviewers are Chinese readers. This includes discovery notes, PRD, product design, architecture, OpenAPI review/freeze notes, vertical slice issues, Matt skill outputs, review reports, release notes, implementation records, retrospectives, and Git checkpoint explanations.
+For this repository, persistent lifecycle artifacts MUST use Chinese body text by default, because the primary users and reviewers are Chinese readers. This includes discovery notes, specs, product design, architecture, OpenAPI review/freeze notes, vertical slice tickets, Matt skill outputs, review reports, release notes, implementation records, retrospectives, and Git checkpoint explanations.
 
 Keep English identifiers unchanged when they are technical names: file paths, commands, class/method names, API paths, schema names, enum values, error codes, frontmatter keys, YAML/JSON keys, and metadata identifiers. If an upstream skill template uses English section titles, convert the persisted project document to Chinese section titles unless the user explicitly asks for English or the document targets an English-speaking audience.
 
@@ -24,10 +24,10 @@ Daily execution uses 8 main stages. The previous 21 stage names are governance g
 ```text
 intake / lifecycle triage
 -> opportunity and Discovery
--> business / PRD / functional architecture
+-> business / spec / functional architecture
 -> product design and requirement freeze
 -> system / data architecture, engineering contract, and Design Review
--> contract freeze and Issue formalization
+-> contract freeze and ticket formalization
 -> vertical slices and TDD implementation
 -> verification, release, and retrospective
 ```
@@ -38,21 +38,22 @@ Use this lifecycle skill to decide the stage and route to the right workflow. Do
 
 | Layer | Owner | Responsibility | Canonical artifacts |
 |---|---|---|---|
-| Product / requirements | `competitive-intelligence`, `research`, `grill-with-docs`, `prototype`, `to-prd` | Clarify market / competitor / technical facts, users, pain, boundaries, acceptance criteria, PRD scope, and runnable answers to hard design questions | `CONTEXT.md`, `docs/adr/`, `docs/discovery/`, `docs/research/`, `docs/requirements/<feature>-prd.md` |
+| Product / requirements | `competitive-intelligence`, `research`, `grill-with-docs`, `prototype`, `to-spec` | Clarify market / competitor / technical facts, users, pain, boundaries, acceptance criteria, spec scope, and runnable answers to hard design questions | `CONTEXT.md`, `docs/adr/`, `docs/discovery/`, `docs/research/`, `docs/requirements/<feature>-spec.md` or legacy `<feature>-prd.md` |
 | Contract | OpenAPI / YSS API skills, OpenSpec-style Spec Delta | Define and freeze frontend/backend API contracts, plus behavior deltas for medium/high-risk changes | `docs/api/specs/*.yaml`, `docs/specs/<feature>-spec-delta.md`, OpenAPI Draft Review / Freeze records |
-| Delivery planning | `to-issues`, `handoff` / equivalent handoff record, Issue tracker | Split PRD / frozen contract into end-to-end vertical slices and preserve context across threads or implementation repos | GitLab / GitHub Issues or `docs/requirements/issues/*`, `docs/implementation/*` |
+| Delivery planning | `to-tickets`, `wayfinder`, `handoff` / equivalent handoff record, Issue tracker | Split specs / frozen contracts into end-to-end vertical slice tickets, or map unclear large work before slicing, and preserve context across threads or implementation repos | GitLab / GitHub Issues, local `tickets.md`, `docs/requirements/tickets/*`, legacy `docs/requirements/issues/*`, `docs/implementation/*` |
 | Implementation | `implement`, `tdd`, `diagnosing-bugs`, `resolving-merge-conflicts`, `code-review` | Build with feedback loops, bug diagnosis, conflict resolution, independent review, and fresh verification | tests, review reports, verification records, implementation notes |
 | YSS engineering | `yss-router` and selected YSS skills | Apply YSS DDD, UI, DTO, Repository, Controller, OpenAPI, and component rules | implementation routing record, Build Architecture Checklist, code/test evidence |
 
 Rules:
 
-- Prefer Matt skills for generic engineering workflow: `research`, `grill-with-docs`, `prototype`, `to-prd`, `to-issues`, `implement`, `tdd`, `diagnosing-bugs`, `resolving-merge-conflicts`, `code-review`, `domain-modeling`, `codebase-design`, and `improve-codebase-architecture`.
-- Use `competitive-intelligence` when market, competitor, pricing, positioning, or customer sentiment facts are needed before Discovery / PRD decisions.
-- Use `research` when technical facts, standards, third-party API behavior, framework behavior, or official documentation need primary-source evidence before PRD, OpenAPI, architecture, or acceptance decisions.
-- Use `prototype` only for throwaway runnable feedback on logic, state-machine, or UI direction questions. Feed the conclusion back into PRD, design, ADR, or issues; do not treat prototype code as production implementation or as the required Ant Design v6 high-fidelity HTML prototype.
+- Prefer Matt skills for generic engineering workflow: `research`, `grill-with-docs`, `prototype`, `to-spec`, `to-tickets`, `wayfinder`, `implement`, `tdd`, `diagnosing-bugs`, `resolving-merge-conflicts`, `code-review`, `domain-modeling`, `codebase-design`, and `improve-codebase-architecture`. Use legacy `to-prd` / `to-issues` only when continuing an existing artifact or repository convention that still requires those names.
+- Use `competitive-intelligence` when market, competitor, pricing, positioning, or customer sentiment facts are needed before Discovery / spec decisions.
+- Use `research` when technical facts, standards, third-party API behavior, framework behavior, or official documentation need primary-source evidence before spec, OpenAPI, architecture, or acceptance decisions.
+- Use `prototype` only for throwaway runnable feedback on logic, state-machine, or UI direction questions. Feed the conclusion back into spec, design, ADR, or tickets; do not treat prototype code as production implementation or as the required Ant Design v6 high-fidelity HTML prototype.
 - Preserve OpenAPI 3.1 Draft / Freeze as the API contract gate. Draft is review-only until Freeze.
 - Use OpenSpec-style Spec Delta for API, permission, state-machine, data-model, cross-client, new-module, or high-risk behavior changes. It is a lightweight behavior-delta artifact, not OpenSpec CLI, change-state files, or an extra state machine.
-- After OpenAPI Freeze, route to `to-issues` or an equivalent vertical-slice issue record; do not require extra state-machine artifacts.
+- After OpenAPI Freeze, route to `to-tickets` or an equivalent vertical-slice ticket record; do not require extra state-machine artifacts.
+- Use `wayfinder` before `to-spec` / `to-tickets` when the work is too large or foggy for one session and the destination is not yet clear.
 - Before frontend/backend implementation, first decide whether the impacted frontend/backend runtime projects already exist and can be reused. If an impacted side has no reusable project yet, route to `yss-ddd-scaffold-generator` or `yss-frontend-scaffold-generator` before business implementation.
 - Use `yss-router` before frontend/backend implementation when the task crosses multiple YSS areas. The route output becomes implementation guidance inside the current slice.
 - Use `handoff` or an equivalent handoff record when crossing threads, implementation repositories, prototype branches, or context-window limits.
@@ -67,13 +68,13 @@ Architecture artifacts are produced progressively. Do not try to finish every ar
 | Artifact | Lifecycle timing | Primary question | Typical outputs | Diagram support |
 |---|---|---|---|---|
 | Business architecture | Opportunity exploration / Discovery / product definition | Who gets value, in which workflow, and where the product boundary sits | user journey, value stream, role/ecosystem model, capability map | journey map, swimlane, capability map |
-| Product overview design / Functional architecture | PRD baseline / product design / PRD calibration | Which product capabilities, user flows, modules, pages, low-fidelity prototypes, APIs, and data impacts support the MVP boundary | product overview, module map, feature list, priority, dependencies, low-fidelity wireframe, state flow, open questions, PRD gaps | feature/module map, dependency graph, user flow, page map, low-fidelity wireframe |
+| Product overview design / Functional architecture | spec baseline / product design / spec calibration | Which product capabilities, user flows, modules, pages, low-fidelity prototypes, APIs, and data impacts support the MVP boundary | product overview, module map, feature list, priority, dependencies, low-fidelity wireframe, state flow, open questions, spec gaps | feature/module map, dependency graph, user flow, page map, low-fidelity wireframe |
 | System overview design / System architecture | Engineering baseline / architecture review | How the product is built, deployed, integrated, operated, and safely evolved | C4/container view, service boundary, integration, deployment, NFR decisions, rollout/rollback decisions | system architecture, sequence, deployment, DFD |
 | Data architecture | Detailed design before persistence and repository work | How domain data, metadata, versions, lineage, and queries are modeled and stored | conceptual/logical/physical model, meta-model, versioning strategy, lineage/query/index strategy | ER, class, lineage graph, DFD |
 
 For data modeling, metadata management, ER design, versioning, or lineage-analysis products, data architecture is a core product design artifact. It must be explicit before persistence implementation and before OpenAPI Freeze when API schemas depend on the meta-model.
 
-Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, data structures, or slice dependencies easier to review. Diagrams support the text artifacts; they do not replace PRD, OpenAPI, ADR, issues, or tests.
+Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, data structures, or slice dependencies easier to review. Diagrams support the text artifacts; they do not replace specs, OpenAPI, ADR, tickets, or tests.
 
 ## Workflow
 
@@ -85,20 +86,20 @@ Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, da
    - `docs/design/`
    - `docs/api/specs/`
    - `docs/architecture/` and `docs/adr/`
-   - `docs/requirements/issues/` and current issue tracker state when available
+   - `docs/requirements/tickets/`, legacy `docs/requirements/issues/`, `tickets.md`, and current issue tracker state when available
 2. Classify the request into one main stage:
-   - intake / lifecycle triage, opportunity and Discovery, business / PRD / functional architecture, product design and requirement freeze, system / data architecture, engineering contract, and Design Review, contract freeze and Issue formalization, vertical slices and TDD implementation, or verification / release / retrospective.
+   - intake / lifecycle triage, opportunity and Discovery, business / spec / functional architecture, product design and requirement freeze, system / data architecture, engineering contract, and Design Review, contract freeze and ticket formalization, vertical slices and TDD implementation, or verification / release / retrospective.
 3. For small changes or iterations, identify the nearest trustworthy existing stage and only expand from the earliest impacted artifact:
    - wording / style / local configuration -> direct minimal change, then verify;
-   - UI behavior or page state -> product design / prototype review / PRD calibration as needed;
-   - unclear state-machine, complex rules, or UI direction -> `prototype` for throwaway runnable feedback, then feed the conclusion into PRD/design/ADR/issue;
+   - UI behavior or page state -> product design / prototype review / spec calibration as needed;
+   - unclear state-machine, complex rules, or UI direction -> `prototype` for throwaway runnable feedback, then feed the conclusion into spec/design/ADR/ticket;
    - API request, response, error, permission, pagination, or concurrency -> system / data architecture, engineering contract, and Design Review with API impact analysis / contract draft / OpenAPI Draft Review / Freeze downstream gates;
    - service boundary, state machine, integration, NFR, rollout, or rollback -> system / data architecture, engineering contract, and Design Review downstream gates;
    - persistence, metadata, versioning, lineage, query, or index -> system / data architecture, engineering contract, and Design Review downstream gates.
 4. Check whether required upstream artifacts exist.
-   - Before PRD calibration, product design, API impact analysis, OpenAPI Draft, requirement freeze, or formal vertical slicing, verify PRD baseline and product overview design / functional architecture exist. If the task does not enter the PRD lifecycle, record the not-applicable reason in the impact assessment.
-   - For UI work, before PRD calibration, API impact analysis, OpenAPI Draft, or requirement freeze, verify low-fidelity `prototype-review` is approved, `docs/design/prototypes/<feature>/index.html` exists as an Ant Design v6 high-fidelity HTML prototype, AntD v6 CLI validation evidence is recorded, and user confirmation is recorded after the prototype is produced. This prototype is a required lifecycle artifact and may be generated automatically by the system / Agent after low-fidelity prototype review; it does not have to be manually supplied by the user.
-   - Before formal vertical slicing, verify PRD, product overview design / functional architecture, OpenAPI Freeze or no-API-impact record, architecture review as needed, and a clear issue destination.
+   - Before spec calibration, product design, API impact analysis, OpenAPI Draft, requirement freeze, or formal vertical slicing, verify spec baseline and product overview design / functional architecture exist. If the task does not enter the spec lifecycle, record the not-applicable reason in the impact assessment.
+   - For UI work, before spec calibration, API impact analysis, OpenAPI Draft, or requirement freeze, verify low-fidelity `prototype-review` is approved, `docs/design/prototypes/<feature>/index.html` exists as an Ant Design v6 high-fidelity HTML prototype, AntD v6 CLI validation evidence is recorded, and user confirmation is recorded after the prototype is produced. This prototype is a required lifecycle artifact and may be generated automatically by the system / Agent after low-fidelity prototype review; it does not have to be manually supplied by the user.
+   - Before formal vertical slicing, verify spec, product overview design / functional architecture, OpenAPI Freeze or no-API-impact record, architecture review as needed, and a clear ticket destination.
    - For medium/high-risk API, permission, state-machine, data-model, cross-client, new-module, or safety-sensitive changes, verify an OpenSpec-style Spec Delta exists or record why it is not needed.
    - When technical, standard, framework, or third-party API facts influence downstream decisions, verify `research` or an equivalent primary-source record exists and is cited.
    - Before frontend/backend implementation, verify vertical slice scope, implementation repo/location, whether the impacted frontend/backend runtime projects already exist and are reusable, YSS skill routing, Build Architecture Checklist, test command, and review strategy.
@@ -117,7 +118,7 @@ Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, da
 
 ## Stage Git Checkpoints
 
-Lifecycle artifacts are part of the product record, not scratch notes. Do not let PRD, design, OpenAPI, architecture, review, issue, or retrospective outputs remain only in the local worktree across multiple stages.
+Lifecycle artifacts are part of the product record, not scratch notes. Do not let spec, design, OpenAPI, architecture, review, ticket, or retrospective outputs remain only in the local worktree across multiple stages.
 
 At the end of each stage, report:
 
@@ -131,7 +132,7 @@ At the end of each stage, report:
 
 When committing, prefer small checkpoint commits by artifact type or stage, for example:
 
-- `docs: add data modeling discovery and prd artifacts`
+- `docs: add data modeling discovery and spec artifacts`
 - `docs: add data modeling openapi and architecture reviews`
 - `docs: update lifecycle checkpoint rules`
 
@@ -149,11 +150,12 @@ Default routing:
 
 | Intent | Next skill / workflow |
 |---|---|
-| Start a new business product/module | intake -> opportunity and Discovery -> `competitive-intelligence` when market / competitor facts are needed -> `grill-with-docs` -> `to-prd` -> product overview design / functional architecture -> product design and requirement freeze when UI exists |
-| Analyze competitors, substitute workflows, pricing, positioning, or market facts | `competitive-intelligence`; then feed stable findings into `grill-with-docs` and `to-prd` |
-| Research technical facts, standards, framework behavior, or third-party APIs | `research`; feed cited findings into PRD, OpenAPI, architecture, ADR, or acceptance criteria |
-| Answer a design question that needs runnable feedback | `prototype`; feed the conclusion into PRD, design, ADR, or issue, then delete or absorb throwaway code |
-| Design UI flow after PRD baseline | Verify product overview design / functional architecture first, then use `product-design:index` as the primary Product Design router; follow its focused routing such as `$get-context`, `$ideate`, `$prototype`, `$image-to-code`, or `$url-to-code` |
+| Start a new business product/module | intake -> opportunity and Discovery -> `competitive-intelligence` when market / competitor facts are needed -> `grill-with-docs` -> `to-spec` -> product overview design / functional architecture -> product design and requirement freeze when UI exists |
+| Plan a large unclear effort | `wayfinder`; map the destination, decisions, fog, and frontier tickets before `to-spec` / `to-tickets` |
+| Analyze competitors, substitute workflows, pricing, positioning, or market facts | `competitive-intelligence`; then feed stable findings into `grill-with-docs` and `to-spec` |
+| Research technical facts, standards, framework behavior, or third-party APIs | `research`; feed cited findings into spec, OpenAPI, architecture, ADR, or acceptance criteria |
+| Answer a design question that needs runnable feedback | `prototype`; feed the conclusion into spec, design, ADR, or ticket, then delete or absorb throwaway code |
+| Design UI flow after spec baseline | Verify product overview design / functional architecture first, then use `product-design:index` as the primary Product Design router; follow its focused routing such as `$get-context`, `$ideate`, `$prototype`, `$image-to-code`, or `$url-to-code` |
 | Review low-fidelity prototype before high-fidelity design | `prototype-review` |
 | Build high-fidelity interactive HTML prototype | Use `product-design:index` as the primary entrypoint and route to the appropriate Product Design focused workflow for prototype/code output; query AntD v6 design/component/demo/token/semantic facts with `antd` CLI before output; the required stage output must be Ant Design v6 HTML at `docs/design/prototypes/<feature>/index.html`, may be system / Agent generated, must record AntD CLI validation evidence, and must be confirmed by the user before downstream gates |
 | Review contract draft / OpenAPI Draft inside architecture/design review | `yss-openapi-draft-review` |
@@ -161,7 +163,7 @@ Default routing:
 | Clarify architecture artifact timing or gaps | this skill plus `docs/process/lifecycle-artifact-map.md` and `references/artifact-checklist.md` |
 | Create architecture/process/data diagrams | `excalidraw-diagram-generator` as a support skill |
 | Design meta-model / metadata / lineage data architecture | architecture/design workflow plus `yss-domain-modeling` or `yss-domain`; use `excalidraw-diagram-generator` for ER, lineage, DFD, or class diagrams when helpful |
-| Split delivery scope after PRD / OpenAPI Freeze | `to-issues`; record whether impacted frontend/backend projects already exist, and whether scaffold initialization is needed |
+| Split delivery scope after spec / OpenAPI Freeze | `to-tickets`; record whether impacted frontend/backend projects already exist, and whether scaffold initialization is needed |
 | Cross threads, repos, prototype branches, or long contexts | `handoff` or equivalent handoff record; preserve source artifacts, current stage, open questions, verification commands, and next owner |
 | Implement a slice | first check impacted frontend/backend project existence; route missing backend to `yss-ddd-scaffold-generator`, missing frontend to `yss-frontend-scaffold-generator`, then use `implement` plus `tdd`; use `yss-router` first when multiple YSS areas are touched |
 | Fix a bug or test failure | `diagnosing-bugs` then `tdd` |
@@ -217,18 +219,18 @@ When the user explicitly asks for a full delivery plan, include stage-by-stage t
 ## Guardrails
 
 - Do not skip opportunity exploration for new product/module work; use `competitive-intelligence` when market/competitor facts are needed, or record why it is not needed.
-- Do not make technical, standards, framework, or third-party API claims that affect PRD, OpenAPI, architecture, acceptance, or release decisions without `research` or equivalent primary-source evidence.
-- Do not treat Discovery outputs as frozen downstream design. Discovery can provide product capability guidance and downstream impact signals, but PRD, functional architecture, OpenAPI, system architecture, and data architecture still require their own gates.
+- Do not make technical, standards, framework, or third-party API claims that affect spec, OpenAPI, architecture, acceptance, or release decisions without `research` or equivalent primary-source evidence.
+- Do not treat Discovery outputs as frozen downstream design. Discovery can provide product capability guidance and downstream impact signals, but spec, functional architecture, OpenAPI, system architecture, and data architecture still require their own gates.
 - Do not treat throwaway `prototype` code as production code, as an implementation shortcut, or as the required Ant Design v6 high-fidelity HTML prototype. Keep the conclusion, delete or absorb the code.
-- Do not start implementation before PRD is calibrated, product overview design / functional architecture exists, required architecture artifacts are explicit, product design / prototype / interaction design exists, low-fidelity `prototype-review` passes, high-fidelity Ant Design v6 HTML prototype exists when UI exists, OpenAPI Freeze decision, engineering baseline, design review, and vertical slice are clear.
+- Do not start implementation before the spec is calibrated, product overview design / functional architecture exists, required architecture artifacts are explicit, product design / prototype / interaction design exists, low-fidelity `prototype-review` passes, high-fidelity Ant Design v6 HTML prototype exists when UI exists, OpenAPI Freeze decision, engineering baseline, design review, and vertical slice ticket are clear.
 - Do not start implementation before deciding whether the impacted frontend/backend runtime projects already exist and can be reused. Missing or conflicting runtime projects must route back to implementation routing and scaffold initialization first.
 - Do not skip business architecture for new products unless the product boundary, users, ecosystem, and value stream are already captured elsewhere.
-- Do not skip product overview design / functional architecture after PRD baseline. It is a required artifact before PRD calibration, product design / prototype / interaction design, API impact analysis, OpenAPI Draft, requirement freeze, or implementation. Only tasks that do not enter the PRD lifecycle may record a not-applicable reason in the impact assessment.
+- Do not skip product overview design / functional architecture after spec baseline. It is a required artifact before spec calibration, product design / prototype / interaction design, API impact analysis, OpenAPI Draft, requirement freeze, or implementation. Only tasks that do not enter the spec lifecycle may record a not-applicable reason in the impact assessment.
 - Do not skip system architecture when services, deployment, integrations, performance, security, reliability, or operations are affected.
 - Do not skip data architecture before persistence / repository work. For data modeling, metadata, versioning, or lineage products, treat it as mandatory before Design Review and OpenAPI Freeze.
-- Do not let Excalidraw diagrams invent requirements or architecture decisions; diagrams must point back to source artifacts and any findings must be written back to PRD, OpenAPI, ADR, or issues.
+- Do not let Excalidraw diagrams invent requirements or architecture decisions; diagrams must point back to source artifacts and any findings must be written back to spec, OpenAPI, ADR, or tickets.
 - Do not treat an OpenAPI Draft as an implementation or generated-client contract before OpenAPI Freeze. It is review-only until engineering baseline, system/data architecture, Design Review, and Freeze have approved it.
-- Do not treat OpenSpec-style Spec Delta as a replacement for PRD, OpenAPI, Design Review, or vertical slice Issues. It only captures behavior differences, acceptance scenarios, and test / verification mapping.
+- Do not treat OpenSpec-style Spec Delta as a replacement for spec, OpenAPI, Design Review, or vertical slice tickets. It only captures behavior differences, acceptance scenarios, and test / verification mapping.
 - Do not require Spec Delta for small wording, local style, configuration, or low-risk bug fixes unless the change expands into API, permission, state-machine, data-model, cross-client, or security impacts.
 - Do not move an OpenAPI Draft into Engineering Baseline / YSS DDD Review until `yss-openapi-draft-review` or an equivalent persistent review verifies P0 feature coverage, page action to endpoint mapping, YSS response wrappers, error structures, permissions, concurrency, security red lines, and contract test seams.
 - Do not route directly to frontend/backend skills before `yss-router` when the task crosses multiple YSS areas.

@@ -16,7 +16,7 @@
 | 需要稳定检查但不需要生成大量内容 | checklist | 人仍然负责放行判断 |
 | 规则明确、可机器判断 | 脚本 | 有确定输入、输出和失败条件 |
 | 需要一组可复用步骤、上下文规则和产物规范 | Skill | 多次复用，且普通模板无法约束执行质量 |
-| 属于需求澄清、PRD、Issue、TDD、诊断、审查或架构治理 | 优先复用 Matt skill | 与 `grill-with-docs`、`to-prd`、`to-issues`、`implement`、`tdd`、`diagnosing-bugs`、`code-review`、`codebase-design` 等职责重合 |
+| 属于需求澄清、Spec、Ticket、TDD、诊断、审查或架构治理 | 优先复用 Matt skill | 与 `grill-with-docs`、`to-spec`、`to-tickets`、`wayfinder`、`implement`、`tdd`、`diagnosing-bugs`、`code-review`、`codebase-design` 等职责重合 |
 | 属于 YSS DDD、UI、OpenAPI、Repository、Controller、DTO 或组件规范 | 优先复用 YSS skill | 与现有 YSS 专项规范强相关 |
 | 低频、一次性或高度依赖人工判断 | 不沉淀为 Skill | 记录在复盘或 checklist 即可 |
 
@@ -26,7 +26,7 @@
 |---|---|
 | 候选名称 | 使用动词或明确能力名 |
 | 触发场景 | 什么时候必须使用 |
-| 输入 | 需要哪些文档、代码、Issue 或上下文 |
+| 输入 | 需要哪些文档、代码、Ticket 或上下文 |
 | 输出 | 生成什么产物或判断 |
 | 质量门禁 | 如何判断执行合格 |
 | 是否已有模板 / 脚本 | 避免重复建设 |

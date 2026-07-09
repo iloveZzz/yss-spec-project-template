@@ -10,7 +10,7 @@ description: Use when a Harness change or vertical slice may require work across
 ## Inputs
 
 - Harness change / Spec Delta change。
-- 垂直切片 Issue 或实施计划。
+- 垂直切片 Ticket 或实施计划。
 - OpenAPI Freeze 或无 API 影响记录。
 - 已登记的实现仓库记录；没有登记时先使用 `implementation-repo-onboarding`。
 

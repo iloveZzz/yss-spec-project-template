@@ -47,7 +47,7 @@ Use this skill when competitive or market facts are needed to shape product Disc
 5. Hand off to lifecycle assets:
    - Update Discovery findings in `docs/discovery/`.
    - Create or update a competitor matrix in `docs/discovery/reports/`.
-   - Feed stable user, pain, MVP, non-goal, and success criteria into `grill-with-docs` and `to-prd`.
+   - Feed stable user, pain, MVP, non-goal, and success criteria into `grill-with-docs` and `to-spec`.
    - Record uncertain claims as assumptions, not requirements.
 
 ## Output Shape

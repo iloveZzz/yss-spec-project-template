@@ -1,20 +1,20 @@
 ---
 name: product-design-prototype
-description: Use when a PRD baseline or user story has UI impact and needs page maps, user flows, wireframes, interaction states, or API implications before PRD calibration, OpenAPI Draft, or implementation.
+description: Use when a Spec baseline or user story has UI impact and needs page maps, user flows, wireframes, interaction states, or API implications before Spec calibration, OpenAPI Draft, or implementation.
 ---
 
 # Product Design Prototype
 
-Use this skill after PRD baseline and before PRD calibration / OpenAPI Draft for features with user interfaces. Its job is to turn requirements into design assets that can drive calibrated PRD, API, frontend acceptance, and vertical slices.
+Use this skill after Spec baseline and before Spec calibration / OpenAPI Draft for features with user interfaces. Its job is to turn requirements into design assets that can drive calibrated PRD, API, frontend acceptance, and vertical slices.
 
 ## Required Inputs
 
-- PRD baseline or confirmed user stories.
+- Spec baseline or confirmed user stories.
 - `CONTEXT.md` terms when domain language matters.
 - Existing `docs/design/` assets or prototype links.
 - Known component/page constraints, such as YSS UI, Formily, tables, trees, drawers, modals, permissions, or generated API clients.
 
-If no PRD baseline exists, route back to `yss-product-lifecycle` / `grill-with-docs` / `to-prd`. If the change has no UI impact, record the no-UI decision and continue to PRD calibration, OpenAPI, or engineering baseline.
+If no Spec baseline exists, route back to `yss-product-lifecycle` / `grill-with-docs` / `to-spec`. If the change has no UI impact, record the no-UI decision and continue to Spec calibration, OpenAPI, or engineering baseline.
 
 ## Core Flow
 
@@ -25,7 +25,7 @@ If no PRD baseline exists, route back to `yss-product-lifecycle` / `grill-with-d
 5. Write the OpenAPI implication list: fields, filters, actions, errors, permissions, pagination, optimistic/concurrency states, and audit/version data.
 6. For every primary page action, add an action-to-contract row: page/component, action label, `actionKey`, endpoint or explicit non-goal, request fields, response shape, permission behavior, state transition, idempotency/concurrency rule, and error codes.
 7. For every P0 requirement containing verbs such as manage, maintain, configure, create, update, archive, retry, cancel, publish, export, or create draft, confirm the interaction spec either names the API implication or records that the capability is intentionally out of scope.
-8. Hand off to `prototype-review`. After low-fidelity review is approved, hand off to `high-fidelity-html-prototype`. Do not freeze/calibrate the PRD or enter OpenAPI Draft for UI work until the Ant Design v6 high-fidelity HTML prototype exists and has no blocking findings.
+8. Hand off to `prototype-review`. After low-fidelity review is approved, hand off to `high-fidelity-html-prototype`. Do not freeze/calibrate the Spec or enter OpenAPI Draft for UI work until the Ant Design v6 high-fidelity HTML prototype exists and has no blocking findings.
 
 ## Tool Routing
 
@@ -44,7 +44,7 @@ Return:
 Product design / prototype / interaction design
 
 ### 输入资产
-- <PRD / discovery / CONTEXT / existing design paths>
+- <Spec / discovery / CONTEXT / existing design paths>
 
 ### 设计产物
 - <docs/design/... or prototype link>
@@ -61,8 +61,8 @@ Product design / prototype / interaction design
 ### 页面动作到契约映射
 - <page/component action -> actionKey -> endpoint/non-goal -> permission -> state transition -> error codes>
 
-### 是否可进入 PRD 校准 / OpenAPI Draft
-- <yes/no; include whether PRD calibration is needed first>
+### 是否可进入 Spec 校准 / OpenAPI Draft
+- <yes/no; include whether Spec calibration is needed first>
 
 ### 下一步
 - <prototype-review / high-fidelity-html-prototype / routing back to PRD/design>
