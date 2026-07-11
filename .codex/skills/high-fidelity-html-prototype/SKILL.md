@@ -45,6 +45,10 @@ Use the latest verified v6.x version instead of `6.5.0` when npm reports a newer
 - The prototype must use Ant Design v6. Before generating or updating code, verify the current v6 package with `npm view antd version` and `npm view @ant-design/cli version`. If the latest version is not v6.x, pin the newest available v6.x version and record the choice.
 - Use React >= 18, `antd@6.x`, and `@ant-design/icons@6.x` for interactive prototypes.
 - Prefer Ant Design components and tokens over hand-built controls: `Layout`, `Menu`, `Breadcrumb`, `Button`, `Input`, `Select`, `Table`, `Form`, `Tabs`, `Steps`, `Drawer`, `Modal`, `Alert`, `Tooltip`, `Tag`, `Badge`, `DatePicker`, `Upload`, `Pagination`, `Empty`, `Spin`, `Result`.
+- Start from semantic token roles for layout, container, elevated surface, text, border, status, radius and shadow. Map them through `ConfigProvider`, component tokens or CSS variables; do not use page-local color patches as a substitute.
+- Use `theme.defaultAlgorithm` for the default theme, and use a theme algorithm for dark or compact variants. Do not manually invert colors or compress controls one by one.
+- Keep one single primary action in each decision area. Every clickable save, submit, approve, publish, export or retry control must provide interaction feedback through state change, message, inline result, disabled reason or confirmation.
+- Check accessibility contrast for text and icons at their actual surface and size. If the default pairing is insufficient, adjust a seed or component token rather than adding an arbitrary local color.
 - Do not create extra data-service or fixture artifacts. Use embedded sample data inside the HTML/JS for visual and interaction demonstration only.
 - Mark the file clearly as `PROTOTYPE ONLY - NOT PRODUCTION CODE`.
 - Do not treat the HTML prototype as a stable frontend implementation, generated-client contract, or OpenAPI source of truth. It informs PRD calibration and OpenAPI Draft.
@@ -61,6 +65,7 @@ The HTML prototype must cover, or explicitly mark not applicable:
 - loading, empty, error, readonly, disabled, no-permission, conflict, success states.
 - Permission behavior: hidden vs disabled vs rejected action.
 - Field-level and page-level error placement.
+- Single primary action, interaction feedback and confirmation for high-risk or irreversible actions.
 - Responsive behavior for at least desktop, tablet, and narrow mobile viewport.
 
 ## Verification

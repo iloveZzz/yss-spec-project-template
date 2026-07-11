@@ -26,6 +26,7 @@ If no Spec baseline exists, route back to `yss-product-lifecycle` / `grill-with-
 6. For every primary page action, add an action-to-contract row: page/component, action label, `actionKey`, endpoint or explicit non-goal, request fields, response shape, permission behavior, state transition, idempotency/concurrency rule, and error codes.
 7. For every P0 requirement containing verbs such as manage, maintain, configure, create, update, archive, retry, cancel, publish, export, or create draft, confirm the interaction spec either names the API implication or records that the capability is intentionally out of scope.
 8. Hand off to `prototype-review`. After low-fidelity review is approved, hand off to `high-fidelity-html-prototype`. Do not freeze/calibrate the Spec or enter OpenAPI Draft for UI work until the Ant Design v6 high-fidelity HTML prototype exists and has no blocking findings.
+9. 交互原型应标注 semantic token 角色、single primary action、interaction feedback 和不可逆操作确认；若页面使用 Ant Design，主题密度或暗色策略必须使用 theme algorithm，并在关键文本上复核 accessibility contrast。
 
 ## Tool Routing
 
@@ -60,6 +61,9 @@ Product design / prototype / interaction design
 
 ### 页面动作到契约映射
 - <page/component action -> actionKey -> endpoint/non-goal -> permission -> state transition -> error codes>
+
+### Ant Design v6 体验检查
+- <semantic token / theme algorithm / single primary action / interaction feedback / accessibility contrast>
 
 ### 是否可进入 Spec 校准 / OpenAPI Draft
 - <yes/no; include whether Spec calibration is needed first>

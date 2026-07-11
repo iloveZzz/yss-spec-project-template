@@ -218,3 +218,12 @@ Inter, system-ui, -apple-system, Segoe UI, Helvetica Neue, Arial, sans-serif
 - 将 `docs/design/tokens/variables.css` 中的 `--brand-*` 变量纳入项目 token 管理。
 - 如果项目启用暗色模式，补充 `docs/design/tokens/tokens.dark.json` 的使用规范和截图验收。
 - 如果项目存在高密度表格 / 审批 / 运营台，补充 `docs/design/tokens/tokens.compact.json` 的适用边界。
+
+## Ant Design v6 原型补充基线
+
+本节根据 `antdv6-design.md` 的设计说明提炼，用于高保真原型和后续前端实现，不替代项目 token。
+
+- 先按 `bg-layout`、`bg-container`、`bg-elevated`、文本、边框、状态、圆角和阴影等 semantic token 角色设计，再映射到 `ConfigProvider`、组件 token 或 CSS variables；不得用页面局部色值替代主题层。
+- 默认亮色使用 `theme.defaultAlgorithm`；暗色和紧凑密度通过 theme algorithm 切换，禁止手工反色或逐控件压缩。
+- 每个决策区域只保留一个 single primary action。保存、提交、审批、发布、导出和重试等动作必须提供 interaction feedback；不可逆或高风险动作使用确认弹窗。
+- 对实际字号、图标和背景复核 accessibility contrast。默认 token 不足时，通过种子 token 或组件 token 调整，不引入单页特例色。

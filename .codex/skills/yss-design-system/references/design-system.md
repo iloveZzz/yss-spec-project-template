@@ -62,6 +62,8 @@
 - `success`、`warning`、`error`、`info` 只表达功能状态。
 - 预设色板只用于 Tag、图表、分类可视化，不用于重新定义主操作。
 - 不硬编码白色、灰色、状态色；优先引用 token、CSS variables 或 Ant Design theme。
+- semantic token 优先于色值：页面先声明背景、容器、浮层、文本、边框、状态等角色，再映射到具体 token。
+- accessibility contrast 不足时，通过 `ConfigProvider` 的 seed token 或组件 token 调整；不要为单个页面制造不可复用的深浅色例外。
 
 ### 排版
 
@@ -129,6 +131,12 @@
 | Badge | 只做紧凑状态提示，不能替代文本 |
 | Tooltip | 只提供补充解释，不承载关键业务信息 |
 
+交互规则：
+
+- 每个决策区域只保留一个 single primary action；危险操作和次级动作必须在视觉层级上降级。
+- 保存、提交、审批、发布、导出等可点击动作必须产生 interaction feedback，包括结果消息、行内状态变化、禁用原因或确认弹窗。
+- 风险或不可逆动作使用 Modal 二次确认；禁止将“已发布”误表示为“已执行数据库变更”。
+
 ## 页面规则
 
 - 后台页面优先使用：Header / 查询区 / 工具栏 / 表格 / 详情抽屉 / 弹窗。
@@ -190,6 +198,7 @@
 React + Ant Design：
 
 - 使用 `ConfigProvider` 注入主题。
+- 默认主题使用 `theme.defaultAlgorithm`；暗色与紧凑模式通过 theme algorithm 切换，不手工反转色值或逐组件压缩。
 - 优先通过 token、component token、CSS variables、theme algorithm 实现样式。
 - 静态反馈 API 使用 `App`、hook API 或 context holder，避免主题上下文丢失。
 - 暗色模式使用 `darkAlgorithm` 或 `variables.dark.css`。
@@ -219,7 +228,10 @@ YSS UI / Vue：
 实现评审时检查：
 
 - 是否消费 token，而不是硬编码颜色和尺寸。
+- 是否以 semantic token 表达颜色、圆角、阴影和状态层级。
 - 是否保持默认 14px 正文、32px 控件、4px 间距网格。
 - 是否保留 hover、focus、active、disabled、loading、empty、error 状态。
+- 是否只保留一个 single primary action，并让每个关键操作提供 interaction feedback。
+- 是否在目标字号和背景下复核 accessibility contrast。
 - 是否存在卡片套卡片、营销式 hero、装饰性渐变或无意义插画。
 - 是否存在横向溢出、文本遮挡或按钮文字溢出。
