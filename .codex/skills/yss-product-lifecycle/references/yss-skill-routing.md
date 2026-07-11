@@ -17,9 +17,10 @@ Use this reference after lifecycle stage and slice scope are clear. Pick the min
 | Backend scaffold baseline | `yss-backend-scaffold-parent` | Required after generated backend skeleton and before business implementation |
 | Domain modeling / aggregate / state behavior | `yss-domain-modeling`, `yss-domain`, `yss-backend-scaffold-domain` | Use before repository/controller code when domain concepts are unstable |
 | Application use case orchestration / transaction boundary | `yss-backend-scaffold-application` | Use when implementing AppService, command/query handling, cross-aggregate coordination, or transaction boundaries |
-| Repository / PO / Convertor / GatewayImpl | `yss-repository` | Add `yss-mybatis` / `yss-backend-scaffold-infrastructure` for mapper/persistence details |
-| Web controller / DTO / VO / Web Convertor | `yss-web-controller`, `yss-dto`, `yss-backend-scaffold-web` | Requires OpenAPI Freeze or no-API-impact record |
-| Java coding style and review | `alibaba-java-code-style` | Treat blockers as review blockers |
+| Repository / PO / Convertor / GatewayImpl | `yss-repository` | Add `mapstruct` and `lombok` for POJO / Convertor work; add `yss-mybatis` / `yss-backend-scaffold-infrastructure` for mapper/persistence details |
+| Web controller / DTO / VO / Web Convertor | `yss-web-controller`, `yss-dto`, `yss-backend-scaffold-web` | Requires OpenAPI Freeze or no-API-impact record; add `mapstruct` and `lombok` when DTO / VO / WebConvertor objects are created or converted |
+| POJO boilerplate and object conversion | `lombok`, `mapstruct` | Required for Java POJO getter/setter/constructor/builder/logging and DTO / VO / PO / Domain Model conversion work |
+| Java coding style and review | `alibaba-java-code-style` | Treat blockers as review blockers; include MapStruct / Lombok processor and anti-pattern checks |
 | SQL condition/template/query utilities | `yss-sql-condition`, `yss-sql-tpl` | SQL red line still requires human review for native SQL |
 | Audit log | `yss-audit-log` | Security and traceability impacts must be recorded |
 | Cache | `yss-cache` | Include invalidation and consistency strategy |
@@ -33,6 +34,8 @@ Use this reference after lifecycle stage and slice scope are clear. Pick the min
 - Do not use backend implementation skills before required spec, OpenAPI Freeze/no-impact record, architecture/data design, and Build Architecture Checklist are ready for the slice.
 - Do not use Repository / MyBatis skills before data architecture and domain metadata are stable enough to review.
 - Do not use Controller / DTO skills before OpenAPI contract is frozen or explicitly marked as no API impact.
+- Do not implement DTO / VO / PO / Domain Model conversions with `BeanUtils.copyProperties`, reflection copy, or repeated manual field assignment unless the implementation contract records a controlled exception, tests, and review evidence.
+- Do not handwrite batches of getter/setter/constructor/builder/logger code for Java POJO classes when Lombok is available; use `lombok` or record a controlled exception.
 - Do not use UI implementation skills before `yss-design-system` and product design/prototype review when user-facing workflow is affected.
 - For bugs, start with `diagnosing-bugs`; route to YSS skills only after the failing feedback command points to the impacted area.
 
@@ -51,7 +54,8 @@ Use this reference after lifecycle stage and slice scope are clear. Pick the min
 请输出：
 1. 必须加载的 YSS skills
 2. 可选 skills 与触发条件
-3. TDD / 验证命令
-4. 人审点和 TODO-HUMAN-REVIEW
-5. 不应触碰的范围
+3. 是否必须加载 `mapstruct` / `lombok`，以及对象转换和 POJO 样板代码证据
+4. TDD / 验证命令
+5. 人审点和 TODO-HUMAN-REVIEW
+6. 不应触碰的范围
 ```

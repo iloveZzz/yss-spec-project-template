@@ -48,6 +48,7 @@
 | Application / 用例编排 | `yss-backend-scaffold-application` |  |  |
 | Infrastructure / Repository | `yss-repository` / `yss-mybatis` / `yss-backend-scaffold-infrastructure` |  |  |
 | Web Adapter / DTO | `yss-web-controller` / `yss-dto` / `yss-backend-scaffold-web` |  |  |
+| POJO / 对象转换 | `lombok` / `mapstruct` |  |  |
 | Java 规范 | `alibaba-java-code-style` |  |  |
 
 ### 后端阻断规则
@@ -58,7 +59,8 @@
 - [ ] Controller 不手工分页主要业务集合，不穿透 Repository / Mapper / PO。
 - [ ] Application 只做用例编排、事务边界和跨聚合协调，核心领域规则放入 Domain。
 - [ ] 需要持久化的切片必须补 PO / Repository / Convertor / GatewayImpl；临时 `InMemory*Gateway` 必须标记 `seam-deferred`。
-- [ ] MapStruct / Convertor 优先，重复手写 mapping 必须说明例外原因。
+- [ ] POJO 样板代码默认使用 Lombok；成片手写 getter/setter、constructor、builder、logger 必须说明例外原因、测试证据和 review 结论。
+- [ ] MapStruct / Convertor 强制优先；`BeanUtils.copyProperties`、反射式通用拷贝或重复手写 mapping 必须说明例外原因、测试证据和 review 结论。
 
 ## 阻塞关系
 
@@ -66,13 +68,9 @@
 
 ## AI / 人工审查点
 
-- [ ] 未触碰安全红线
-- [ ] 支付逻辑：`TODO-HUMAN-REVIEW`
-- [ ] 数据库迁移：`TODO-HUMAN-REVIEW`
-- [ ] 认证 / 授权：`TODO-HUMAN-REVIEW`
-- [ ] 加密算法：禁止实现
-- [ ] 原生 SQL：仅生成草案
-- [ ] 公共基础库 API：仅生成草案
+- [ ] 无高风险变更或需人工确认项
+- [ ] 原生 SQL：记录验证证据
+- [ ] 公共基础库 API：记录验证证据
 
 ## 完成定义
 

@@ -28,6 +28,6 @@
 
 ## 不变规则
 
-- 13 个工作单元不能替代 OpenAPI Freeze、Ticket formalization、Build Architecture Checklist、安全红线和 fresh verification。
+- 13 个工作单元不能替代 OpenAPI Freeze、Ticket formalization、Build Architecture Checklist、风险 / 回滚约束和 fresh verification。
 - 裁剪只能减少不相关产物，不能裁剪关键追踪关系和验证证据。
-- 触碰安全红线时必须进入人工审查，不能被自动化门禁放行。
+- 自动化门禁不能替代业务取舍、不可逆变更或责任确认。

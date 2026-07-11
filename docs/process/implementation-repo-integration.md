@@ -27,7 +27,7 @@
 - 对应实现仓库 / 本地工程是否已经存在；0-1 新项目中 backend / frontend 目录不存在时，登记为 `scaffold_status=required`，不得视为流程失败。
 - 已有工程是否满足当前 OpenAPI、设计系统、YSS DDD 或工程基线要求。
 - 若不存在或不可复用，是否需要初始化 0-1 脚手架，以及初始化到哪个目标仓库或输出目录。
-- 若涉及 DDL / SQL / 数据库迁移、权限接入或审计日志，是否已经拿到对应人审结论。
+- 若涉及 DDL / SQL / 数据库迁移、权限接入或审计日志，是否已经拿到对应人工确认结论。
 
 判定结论的路由规则：
 
@@ -44,7 +44,7 @@
 - Git URL、默认分支、本地 worktree 或远端 MR / PR 链接。
 - CI 系统、测试命令、构建命令。
 - OpenAPI 接入方式、设计 token 接入方式。
-- 已知偏离项、人审要求和补齐计划。
+- 已知偏离项、人工确认要求和补齐计划。
 
 登记记录可以放在当前 change 的 `design.md`、build entry review、实施计划或 `docs/implementation/` 下的实现记录中，但必须能被垂直切片和阶段 checkpoint 引用。
 
@@ -53,7 +53,7 @@
 - `scaffold_status`：existing / required / initialized。
 - `scaffold_skill`：`yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator` / none。
 - 初始化理由、目标输出目录或目标仓库、用户是否已确认外部脚手架目标，以及是否已经通过基线检查。
-- DDL / SQL / 数据库迁移、权限接入、审计日志三类人审结论；不适用时必须写明不适用原因。
+- DDL / SQL / 数据库迁移、权限接入、审计日志三类人工确认结论；不适用时必须写明不适用原因。
 
 ## 跨仓库切片规则
 
@@ -78,7 +78,17 @@
 
 生成后必须使用 `yss-backend-scaffold-parent` 做工程基线检查，不得把脚手架 sample 代码当作业务实现交付。
 
-若后端切片触碰 DDL / SQL / 数据库迁移、权限接入或审计日志，脚手架生成只能提供工程骨架和模板。业务实现前必须在登记记录、实施计划或切片 issue 中写明对应人审结论；未拿到结论时保留 `TODO-HUMAN-REVIEW`，不得宣称生产实现完成。
+后端工程落地后，构建、测试、运行、OpenAPI 生成、CI、Review 和 Release 记录必须使用项目根目录的 Maven Wrapper：
+
+```bash
+./mvnw clean test
+./mvnw clean package
+./mvnw spring-boot:run -pl <service>-bootstrap
+```
+
+新脚手架必须保留并提交 `mvnw`、`mvnw.cmd` 和 `.mvn/` wrapper 资产。实现路由、Ticket、README、验证记录或 CI 中出现裸 `mvn ...` 时，默认判定为规范偏离；只有既有仓库确实无法使用 wrapper 且已在实现路由中记录受控例外时，才允许临时保留。
+
+若后端切片触碰 DDL / SQL / 数据库迁移、权限接入或审计日志，脚手架生成只能提供工程骨架和模板。业务实现前必须在登记记录、实施计划或切片 issue 中写明对应人工确认结论；缺少结论、验证证据或责任人时，不得宣称生产实现完成。
 
 ## 0-1 前端工程
 
@@ -99,6 +109,6 @@ http://192.168.167.142:8081/Data-Middleground-Develop-Area/product-code/ai-front
 - Harness 资产完成情况。
 - 各实现仓库 MR / PR 和 CI 状态。
 - 测试命令和 fresh verification。
-- 安全人审点、阻塞项和下一步。
+- 人工审查点、阻塞项和下一步。
 
 不得只在实现仓库 MR / PR 中保留结论；Harness 仓库必须保留可追溯的规格和验证证据。

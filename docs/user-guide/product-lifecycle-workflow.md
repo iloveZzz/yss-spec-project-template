@@ -157,7 +157,7 @@ docs/process/lifecycle-artifact-map.md
 使用 `grill-with-docs`，把想法问到可以进入 PRD：
 
 ```text
-使用 grill-with-docs，围绕“<功能名>”澄清用户、痛点、MVP、非目标、成功标准、边界条件和安全人审点。
+使用 grill-with-docs，围绕“<功能名>”澄清用户、痛点、MVP、非目标、成功标准、边界条件和人工审查点。
 请同步检查 CONTEXT.md 中是否需要补充领域术语，必要时提出 ADR 候选。
 ```
 
@@ -167,7 +167,7 @@ docs/process/lifecycle-artifact-map.md
 
 ```text
 使用 to-prd，把当前讨论整理为 PRD。
-正文使用中文，包含用户故事、验收标准、非目标范围、OpenAPI 影响、测试决策、AI/人工审查点和安全红线。
+正文使用中文，包含用户故事、验收标准、非目标范围、OpenAPI 影响、测试决策、AI/人工审查点和风险 / 回滚约束。
 ```
 
 ### 6.3 设计产品和契约
@@ -189,7 +189,7 @@ OpenAPI Freeze 或无 API 影响记录完成后使用 `to-issues`：
 
 ```text
 使用 to-issues，基于 PRD、OpenAPI Freeze 和架构设计，把功能拆成可独立验证的垂直切片 Issue。
-每个 Issue 必须包含用户价值、验收标准、测试命令、依赖、回滚点、YSS skill routing 和 TODO-HUMAN-REVIEW。
+每个 Issue 必须包含用户价值、验收标准、测试命令、依赖、回滚点、YSS skill routing，以及需要人工确认的事项（如适用）。
 ```
 
 ### 6.5 实现与审查
@@ -217,6 +217,6 @@ OpenAPI Freeze 或无 API 影响记录完成后使用 `to-issues`：
 - 运行时间或当前提交。
 - 结果摘要。
 - 失败项或未覆盖风险。
-- 是否触碰安全红线。
+- 是否存在高风险变更、人工确认项或回滚约束。
 
-发布前补齐发布说明、实施步骤和回滚方案。发生架构返工、重要 review finding、verify 返工或 `TODO-HUMAN-REVIEW` 延期时，必须写复盘，并把流程修订回写到 `AGENTS.md`、生命周期文档、ADR 或模板中。
+发布前补齐发布说明、实施步骤和回滚方案。发生架构返工、重要 review finding、verify 返工或人工确认延期时，必须写复盘，并把流程修订回写到 `AGENTS.md`、生命周期文档、ADR 或模板中。

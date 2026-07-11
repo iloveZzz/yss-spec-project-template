@@ -50,7 +50,7 @@ owner: ai
 - [ ] 不得执行 PRD baseline / requirement freeze。
 - [ ] 不得执行 OpenAPI Freeze。
 - [ ] 不得给出 Architecture Review 最终放行结论。
-- [ ] 不得替代安全红线人审。
+- [ ] 不得替代风险 / 回滚约束人工确认。
 - [ ] 不得替代 Git checkpoint 范围裁决。
 - [ ] 不得宣布“完成 / 可合并 / 可发布”。
 - [ ] 不得 revert 或覆盖其他 Agent / 用户的改动。
@@ -62,7 +62,7 @@ owner: ai
 - [ ] 写入类任务只修改授权范围。
 - [ ] 审查类任务列出 blocker / non-blocker / residual risk。
 - [ ] 验证类任务记录命令、时间、结果和残余风险。
-- [ ] 触碰安全红线时标记 `TODO-HUMAN-REVIEW`。
+- [ ] 需要人工确认的事项记录范围、责任人和结论。
 
 ## 7. 汇合方式
 
@@ -86,7 +86,7 @@ owner: ai
 - <如无写入，填“无，只读任务”>
 
 ### 风险与阻塞
-- <blocker / residual risk / TODO-HUMAN-REVIEW>
+- <blocker / residual risk / 人工确认项>
 
 ### 需要主控 Agent 裁决
 - <Freeze / 安全 / 范围 / 发布等事项>

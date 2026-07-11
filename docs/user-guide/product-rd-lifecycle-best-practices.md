@@ -39,7 +39,7 @@
 - 把 AI 当作可审查的协作者，而不是一次性生成器；每轮都要说清目标、输入资产、边界、输出格式和验证方式。
 - PRD 初稿后先产出产品总体设计 / 功能架构设计，让团队评审用户主流程、业务对象、模块边界、页面/API/数据影响和开放问题，再进入页面 / 原型 / 交互设计。
 - 有用户界面的产品，PRD 和页面 / 原型 / 交互设计要迭代校准；不要在交互未评审前冻结 PRD 或直接生成 OpenAPI 契约。
-- API 影响分析 / 契约草案后、实现前，需要系统概要设计 / 数据架构承接工程基线、服务边界、状态流、NFR、发布回滚和安全红线。
+- API 影响分析 / 契约草案后、实现前，需要系统概要设计 / 数据架构承接工程基线、服务边界、状态流、NFR、发布回滚和风险 / 回滚约束。
 - 涉及 API 时先形成影响记录和契约草案；必要时生成 review-only OpenAPI Draft，设计审查通过后 Freeze，再开发或生成客户端。
 - 涉及前后端或多层实现时先让 `yss-router` 选择最小技能集。
 - 业务行为默认 TDD；不能 TDD 的文档、配置或生成类任务要写清验证方式。
@@ -50,7 +50,7 @@
 生命周期流程能不能跑好，关键不只是“让 AI 做事”，而是让人、Codex、skills、agents 和项目 harness 形成闭环。
 
 ```text
-人类决定目标、优先级、业务取舍和安全红线
+人类决定目标、优先级、业务取舍和风险 / 回滚约束
 -> Codex / Hermes 等平台读取仓库、执行任务、更新资产
 -> skills 提供阶段化工作方法和 YSS 专项规范
 -> agents 承担分工明确的角色：Discovery / PRD / API / Architecture / Code / Review / Verify
@@ -61,7 +61,7 @@
 
 | Harness 能力 | 位置 | 用法 |
 |---|---|---|
-| Agent 入口规则 | `AGENTS.md` | 约束安全红线、阶段门禁和默认协作流程 |
+| Agent 入口规则 | `AGENTS.md` | 约束风险 / 回滚约束、阶段门禁和默认协作流程 |
 | 领域记忆 | `CONTEXT.md` | 保存稳定业务术语，避免每轮重新解释 |
 | 需求和规格资产 | `docs/discovery/`、`docs/requirements/`、`docs/api/specs/` | 把聊天结论变成可审查文件 |
 | 产品设计资产 | `docs/design/` 或 Figma / 原型工具链接 | 保存页面清单、用户流、原型、交互说明和状态矩阵 |
@@ -80,7 +80,7 @@
 背景：<业务背景、已有材料路径、当前阶段>
 目标：<这轮只要完成什么>
 输入资产：<CONTEXT / discovery / PRD / design / OpenAPI / architecture / issue>
-边界：<不做什么、不得触碰什么、安全红线>
+边界：<不做什么、约束条件、风险与回滚要求>
 工作方式：<先检查资产 / 先追问 / 先设计 / 先测试 / 不要直接写代码>
 输出：<文件路径、表格、清单、prompt、验证记录>
 验证：<需要运行或建议运行的命令>
@@ -124,7 +124,7 @@
 
 ```text
 使用苏格拉底式提问法，不要直接给方案。
-请围绕用户、痛点、MVP、非目标、异常路径、成功标准、安全红线和可验证性，连续提出 10 个必须回答的问题。
+请围绕用户、痛点、MVP、非目标、异常路径、成功标准、风险、验证证据和可验证性，连续提出 10 个必须回答的问题。
 每个问题后说明：为什么这个问题会影响 PRD、OpenAPI、架构或测试。
 ```
 
@@ -134,7 +134,7 @@
 已确认：发布版本不可变。
 待确认：是否允许管理员废弃发布版本。
 非目标：第一版不做审批流和自动血缘分析。
-不要猜：数据库迁移生成规则先标记 TODO-HUMAN-REVIEW。
+不要猜：数据库迁移生成规则先记录待确认项、责任人和补齐计划。
 ```
 
 ### 1.5.3 如何使用 skills
@@ -204,7 +204,7 @@ Agent brief 最少包含：
 - 必须遵守的 skills / AGENTS.md 规则。
 - 验收标准。
 - OpenAPI Draft / Freeze 状态。
-- 安全红线和人工审查点。
+- 风险与人工审查点。
 - 验证命令。
 
 适合并行：
@@ -226,7 +226,7 @@ Agent brief 最少包含：
 - 检查是否冲突。
 - 将结论写回项目资产。
 - 运行 fresh verification。
-- 对安全红线保持 fail-closed。
+- 对无法验证的高风险变更记录阻塞原因和下一步责任人。
 
 ## 2. 示例背景：数据中台数据建模
 
@@ -345,7 +345,7 @@ docs/discovery/data-modeling-opportunity.md
 | 版本策略 | 发布是冻结字段快照，还是覆盖当前模型？ |
 | 引用规则 | 下游引用模型草稿时应该禁止、警告还是允许？ |
 | 失败路径 | 发布失败要展示整体错误还是字段级错误？ |
-| 安全红线 | 是否涉及权限、数据库迁移、原生 SQL 或公共基础 API？ |
+| 风险 / 回滚约束 | 是否涉及权限、数据库迁移、原生 SQL 或公共基础 API？ |
 
 推荐提示词：
 
@@ -360,7 +360,7 @@ docs/discovery/data-modeling-opportunity.md
 - [ ] 草稿、发布、废弃等状态含义明确。
 - [ ] 字段级校验和错误展示规则明确。
 - [ ] API 影响已初判。
-- [ ] 安全红线已检查；触碰项标记 `TODO-HUMAN-REVIEW`。
+- [ ] 风险 / 回滚约束已检查；需要人工确认的事项已记录结论。
 - [ ] 稳定术语已准备写入 `CONTEXT.md`。
 
 ## 6. 阶段 3：PRD 初稿 / 需求基线
@@ -399,7 +399,7 @@ PRD 片段示例：
 ```text
 基于 docs/discovery/data-modeling-opportunity.md 和 grill-with-docs 的已确认结论，
 使用 docs/templates/prd-template.md 生成“数据中台数据建模 MVP”PRD。
-请重点补充 Gherkin 验收标准、OpenAPI 影响、测试决策、安全红线和非目标范围。
+请重点补充 Gherkin 验收标准、OpenAPI 影响、测试决策、风险 / 回滚约束和非目标范围。
 保存为 docs/requirements/data-modeling-prd.md。
 ```
 
@@ -699,7 +699,7 @@ docs/adr/0001-data-model-versioning-strategy.md
 
 | 审查点 | 检查内容 |
 |---|---|
-| PRD Review | 用户、痛点、非目标、验收标准、交互回填和安全红线 |
+| PRD Review | 用户、痛点、非目标、验收标准、交互回填和风险 / 回滚约束 |
 | Product Design Review | 页面流、原型、交互状态、权限状态、异常路径和前端验收 |
 | API Review | 路径、schema、错误结构、分页、权限和契约测试 |
 | Architecture Review | DDD 分层、模块依赖、Gateway、状态流、ADR 和回滚 |
@@ -813,7 +813,7 @@ TDD 顺序示例：
 - [ ] 前端实现符合已评审页面流和交互状态矩阵。
 - [ ] 前端请求、分页和参数治理下沉到 Hook。
 - [ ] 后端分层没有穿透。
-- [ ] 安全红线未被 AI 直接实现；需要时已标记人工审查。
+- [ ] 风险 / 回滚约束未被 AI 直接实现；需要时已标记人工审查。
 
 ## 16. 阶段 13：独立审查与 fresh verification
 
@@ -837,7 +837,7 @@ fresh verification 记录示例：
 验证日期：YYYY-MM-DD
 验证人：<name or agent>
 验证命令：
-- backend: mvn test -pl data-modeling-service
+- backend: ./mvnw test -pl data-modeling-service
 - frontend: pnpm test data-modeling
 - contract: pnpm openapi:lint docs/api/specs/data-modeling.yaml
 - e2e: pnpm e2e data-model-publish.spec.ts
@@ -950,7 +950,7 @@ docs/user-guide/
 - [ ] 垂直切片 Issue 目标单一。
 - [ ] 垂直切片可独立验收。
 - [ ] `yss-router` 已选择最小技能集。
-- [ ] Agent Brief 已包含目标、非目标、验收标准、OpenAPI 状态、安全红线和验证命令。
+- [ ] Agent Brief 已包含目标、非目标、验收标准、OpenAPI 状态、风险 / 回滚约束和验证命令。
 - [ ] 不存在多个 Agent 同时修改同一契约、同一聚合或同一页面的冲突。
 
 完成前：
@@ -961,7 +961,7 @@ docs/user-guide/
 - [ ] 发布说明、实施步骤、回滚方案和用户指南齐备。
 - [ ] 复盘结论已回流到项目资产。
 - [ ] 主 Agent 已检查所有子 Agent 输出，而不是直接相信总结。
-- [ ] 触碰安全红线的内容已人工确认或标记 `TODO-HUMAN-REVIEW`。
+- [ ] 需要人工确认的内容已记录范围、责任人和结论。
 
 ## 19. 常见错误
 
@@ -980,7 +980,7 @@ docs/user-guide/
 | Skill 名称当装饰 | AI 没有按规程执行 | 明确 skill、阶段、输入资产、输出路径和停止点 |
 | 实现时跳过 `yss-router` | 技能漏用或规范冲突 | 先选最小技能集 |
 | 因为是 YSS 项目加载全部 skills | 上下文膨胀且约束互相干扰 | 先选主技能，按需要补副技能 |
-| Agent Brief 不完整 | 子 Agent 反复问背景或自行猜测 | 用 brief 写清目标、非目标、验收、验证和安全红线 |
+| Agent Brief 不完整 | 子 Agent 反复问背景或自行猜测 | 用 brief 写清目标、非目标、验收、验证和风险 / 回滚约束 |
 | 多个 Agent 并行改同一文件 | 冲突、重复实现、结论不一致 | 只并行独立任务，主 Agent 负责整合 |
 | AI 自己审查自己 | 同类错误容易漏 | 安排独立 review |
 | 主 Agent 不复核子 Agent 输出 | 子 Agent 错误被带入主线 | 主 Agent 检查 diff、测试、冲突和资产落点 |
@@ -1006,7 +1006,7 @@ docs/user-guide/
 使用 grill-with-docs 和苏格拉底式提问法。
 主题：<功能名>。
 请不要生成 PRD 或方案，先连续提出 10 个必须回答的问题。
-问题必须覆盖用户、痛点、MVP、非目标、页面流、异常路径、成功标准、OpenAPI 影响、测试 seam 和安全红线。
+问题必须覆盖用户、痛点、MVP、非目标、页面流、异常路径、成功标准、OpenAPI 影响、测试 seam 和风险 / 回滚约束。
 每个问题后说明它会影响哪个产物：CONTEXT、PRD、Design、OpenAPI、Architecture、Issue 或 Test。
 最后输出：已确认、待确认、非目标、建议写入 CONTEXT 的术语、需要 ADR 的取舍。
 ```
@@ -1088,7 +1088,7 @@ docs/user-guide/
 - 验收标准
 - 实现提示
 - 验证命令
-- 安全红线和人工审查点
+- 风险与人工审查点
 要求：内容自包含，使 Code Agent 无需读取聊天历史即可开始。
 ```
 

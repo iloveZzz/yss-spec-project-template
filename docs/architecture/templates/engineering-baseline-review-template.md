@@ -29,7 +29,7 @@ owner: ai
 | 是否影响 Adapter / Application / Domain / Infrastructure 分层 | 是 / 否 |  |
 | 是否新增 Gateway / Repository | 是 / 否 |  |
 | 是否影响统一响应 / DTO / VO / Query / CMD | 是 / 否 |  |
-| 是否触碰安全红线 | 是 / 否 |  |
+| 是否存在高风险变更、人工确认项或回滚约束 | 是 / 否 |  |
 
 ## 3. YSS DDD 分层检查
 
@@ -59,7 +59,7 @@ owner: ai
 - [ ] Controller 不穿透 Repository。
 - [ ] 对象转换优先 MapStruct，重复 mapping 有处理策略。
 - [ ] 所需 YSS skills 已最小化选择。
-- [ ] 安全红线已标记 `TODO-HUMAN-REVIEW`。
+- [ ] 风险影响、验证证据和责任人已记录。
 
 ## 6. 下一步门禁
 

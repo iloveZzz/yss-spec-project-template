@@ -19,6 +19,8 @@ For this repository, persistent lifecycle artifacts MUST use Chinese body text b
 
 Keep English identifiers unchanged when they are technical names: file paths, commands, class/method names, API paths, schema names, enum values, error codes, frontmatter keys, YAML/JSON keys, and metadata identifiers. If an upstream skill template uses English section titles, convert the persisted project document to Chinese section titles unless the user explicitly asks for English or the document targets an English-speaking audience.
 
+Treat English skill bodies and templates as source instructions, not as final document language. When writing durable artifacts into this repository, translate section headings, checklist labels, status explanations, review findings, implementation notes, and Git checkpoint explanations into Chinese. Keep only protocol fields, metadata keys, code identifiers, commands, and external product names in English.
+
 Daily execution uses 8 main stages. The previous 21 stage names are governance gates / responsibility points, not a mandatory step-by-step flow for every request. The authoritative mapping of stages, artifacts, templates, and required / conditional gates is `docs/process/lifecycle-artifact-map.md`.
 
 ```text
@@ -55,6 +57,7 @@ Rules:
 - After OpenAPI Freeze, route to `to-tickets` or an equivalent vertical-slice ticket record; do not require extra state-machine artifacts.
 - Use `wayfinder` before `to-spec` / `to-tickets` when the work is too large or foggy for one session and the destination is not yet clear.
 - Before frontend/backend implementation, first decide whether the impacted frontend/backend runtime projects already exist and can be reused. If an impacted side has no reusable project yet, route to `yss-ddd-scaffold-generator` or `yss-frontend-scaffold-generator` before business implementation.
+- After a YSS DDD backend scaffold is generated, backend build, test, run, OpenAPI generation, README, CI, review, and release commands MUST use the project Maven Wrapper (`./mvnw ...`) from the backend repository root. A bare `mvn ...` command is a process deviation unless an existing repository has a documented wrapper exception and an equivalent verification record.
 - Use `yss-router` before frontend/backend implementation when the task crosses multiple YSS areas. The route output becomes implementation guidance inside the current slice.
 - Use `handoff` or an equivalent handoff record when crossing threads, implementation repositories, prototype branches, or context-window limits.
 - Use `resolving-merge-conflicts` or an equivalent conflict-resolution flow for merge / rebase conflicts before release or merge decisions.
@@ -103,6 +106,7 @@ Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, da
    - For medium/high-risk API, permission, state-machine, data-model, cross-client, new-module, or safety-sensitive changes, verify an OpenSpec-style Spec Delta exists or record why it is not needed.
    - When technical, standard, framework, or third-party API facts influence downstream decisions, verify `research` or an equivalent primary-source record exists and is cited.
    - Before frontend/backend implementation, verify vertical slice scope, implementation repo/location, whether the impacted frontend/backend runtime projects already exist and are reusable, YSS skill routing, Build Architecture Checklist, test command, and review strategy.
+   - For backend slices, verify planned build / test / OpenAPI / CI commands use `./mvnw ...`; if commands use bare `mvn ...`, stop and either correct them or record a controlled wrapper exception before implementation.
    - Before crossing threads, implementation repos, prototype branches, or long contexts, verify `handoff` or an equivalent handoff record captures source artifacts, current stage, open questions, verification commands, and next owner.
 5. Output the next action:
    - artifact to create/update,
@@ -173,13 +177,13 @@ Default routing:
 | Build backend module from scratch | `yss-ddd-scaffold-generator` |
 | Model backend domain | `yss-domain` / `yss-backend-scaffold-domain` |
 | Implement Application use case / transaction boundary | `yss-backend-scaffold-application` |
-| Implement persistence | `yss-repository` plus `yss-mybatis` when data architecture and domain metadata are stable |
-| Implement Web adapter | `yss-web-controller` |
+| Implement persistence | `yss-repository` plus `mapstruct` / `lombok`; add `yss-mybatis` when data architecture and domain metadata are stable |
+| Implement Web adapter | `yss-web-controller` plus `yss-dto` / `mapstruct` / `lombok` when DTO / VO / WebConvertor work is involved |
 
 ## When Not To Use
 
 - For a single YTable height/layout issue, use `yss-use-table-height` directly.
-- For a single Repository / PO / Convertor / GatewayImpl task with stable domain metadata and data architecture, use `yss-repository` directly.
+- For a single Repository / PO / Convertor / GatewayImpl task with stable domain metadata and data architecture, use `yss-repository` directly, and also load `mapstruct` / `lombok` when POJO or Convertor code is generated.
 - For a request that only asks to run a specific Matt skill and already has the needed lifecycle artifacts, use that Matt skill directly.
 
 ## Output Contract

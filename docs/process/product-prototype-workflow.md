@@ -75,7 +75,7 @@ antd semantic <Component> --version 6.0.0 --format json
 - 没有视觉目标且需要新 UI：按 Product Design 规则先走 `$get-context`，再走 `$ideate`，展示 3 个视觉方向并等待用户选择。
 - 原型评审阻断：回到 Product Design focused skill 补齐页面流、状态矩阵、权限或异常路径。
 - 用户未确认：不得进入 PRD 校准 / OpenAPI Draft。
-- 触碰安全红线：标记 `TODO-HUMAN-REVIEW`，不得直接交付生产实现。
+- 存在高风险变更：记录人工确认项，不得省略验证证据。
 
 ## 兼容策略
 

@@ -1,6 +1,6 @@
 # <功能名称> 原型评审清单
 
-> 适用时机：配合 `prototype-review` 使用。评审采用 fail-closed：有阻断项时必须回到产品设计阶段；产品原型产出以 `product-design:index` 路由到 Product Design focused skill 为主；低保真评审通过后必须产出高保真 HTML 原型，可由系统 / Agent 自动产出；产出后必须获得用户确认，确认前不能直接进入 PRD 校准或 API 影响分析 / 契约草案。
+> 适用时机：配合 `prototype-review` 使用。评审采用 记录阻塞原因：有阻断项时必须回到产品设计阶段；产品原型产出以 `product-design:index` 路由到 Product Design focused skill 为主；低保真评审通过后必须产出高保真 HTML 原型，可由系统 / Agent 自动产出；产出后必须获得用户确认，确认前不能直接进入 PRD 校准或 API 影响分析 / 契约草案。
 
 ## 评审输入
 
@@ -29,7 +29,7 @@
 | AntD v6 设计语言、组件 API、demo、token 和 semantic 已用 `antd` CLI 查询并记录 |  |  |
 | 高保真 HTML 原型未使用旧原型技能作为主入口，已通过 `product-design:index` 路由产出或记录例外原因 |  |  |
 | 前端验收、组件状态和数据依赖已明确 |  |  |
-| 安全红线已标记人工审查 |  |  |
+| 风险 / 回滚约束和人工确认项已记录 |  |  |
 
 ## PRD 校准就绪度
 

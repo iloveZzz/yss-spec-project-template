@@ -49,7 +49,7 @@ sonarqube:
     paths:
       - .sonar/cache
   script:
-    - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
+    - ./mvnw clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
   allow_failure: true
 ```
 

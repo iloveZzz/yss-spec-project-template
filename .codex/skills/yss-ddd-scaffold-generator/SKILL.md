@@ -55,6 +55,7 @@ python3 scripts/generate_scaffold.py \
 - 不要在 skill 里硬编码用户业务字段或真实连接信息。
 - 生成后要检查依赖关系是否仍符合分层约束。
 - 生成后必须继续使用 `yss-backend-scaffold-parent` 校验工程基线，再按垂直切片加载 `yss-domain`、`yss-repository`、`yss-web-controller` 等局部技能。
+- 生成后的后端工程必须使用项目根目录 `./mvnw ...` 执行构建、测试、运行、OpenAPI 生成和 CI 验证；不得在 README、实施记录、Ticket、Review 或 Release 中默认写裸 `mvn ...`。既有仓库确实无法使用 wrapper 时，必须记录受控例外。
 - 涉及 API 契约时，先确认 `docs/api/specs/` 中的 OpenAPI Draft / Freeze 状态；不要用脚手架生成结果反向替代产品契约设计。
 
 ## 按需读取

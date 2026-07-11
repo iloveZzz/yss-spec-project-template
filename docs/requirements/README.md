@@ -17,7 +17,7 @@ grill-with-docs -> to-prd -> API 影响分析 / 契约草案 -> Architecture 反
 - [ ] PRD 使用 [../templates/prd-template.md](../templates/prd-template.md)。
 - [ ] OpenAPI 影响明确为“无”或已产出契约草案 / review-only Draft；进入开发前必须冻结 `docs/api/specs/*.yaml`。
 - [ ] 测试决策明确主要测试 seam。
-- [ ] AI / 人工审查点标注安全红线。
+- [ ] AI / 人工审查点标注风险 / 人工确认项。
 - [ ] 后续 Issue 使用 [../templates/vertical-slice-issue-template.md](../templates/vertical-slice-issue-template.md)，不得按层横向拆分。
 
 ## AI 三步法

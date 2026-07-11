@@ -34,7 +34,7 @@ subagent 不是“多几个 Agent 一起做同一件事”，而是主控 Agent 
 | Discovery / PRD / 设计 / 架构 / OpenAPI 草案 | PRD baseline / requirement freeze |
 | API Draft Review、Design Review findings | OpenAPI Freeze |
 | 垂直切片草案和实现路由草案 | Architecture Review 最终放行 |
-| 前端、后端、测试等边界清晰的局部实现 | 安全红线放行 |
+| 前端、后端、测试等边界清晰的局部实现 | 风险 / 回滚约束裁决 |
 | 独立 code review | Issue tracker 最终状态裁决 |
 | fresh verification 执行与证据整理 | Git checkpoint 范围裁决 |
 | release note / retro 草案 | “完成 / 可合并 / 可发布”结论 |
@@ -49,7 +49,7 @@ subagent 不是“多几个 Agent 一起做同一件事”，而是主控 Agent 
 - 输入资产：PRD、OpenAPI、设计、ADR、Issue、代码路径或命令。
 - 输出资产：文档路径、review findings、代码文件、验证记录或摘要。
 - 写范围：允许修改的文件 / 模块；只读任务必须写明只读。
-- 禁止事项：不得 freeze、不得改安全红线、不得覆盖他人改动等。
+- 禁止事项：不得 freeze、不得覆盖他人改动、不得替主控 Agent 做最终阶段结论。
 - 验收标准：完成后主控 Agent 如何判断任务有效。
 - 汇合方式：结果写入何处，冲突如何上报。
 
@@ -83,7 +83,7 @@ subagent 不是“多几个 Agent 一起做同一件事”，而是主控 Agent 
 1. 已冻结的 PRD、OpenAPI Freeze、ADR、架构评审和 Issue。
 2. 当前 fresh verification、测试、CI 和可复现证据。
 3. `CONTEXT.md` 中已确认的领域术语。
-4. 安全红线和 `TODO-HUMAN-REVIEW` 要求。
+4. 风险记录和人工确认要求。
 5. 用户最新明确指令。
 
 若冲突会改变需求、契约、架构、安全或发布结论，必须回到对应生命周期阶段重新审查，不得由 subagent 或主控 Agent 临时绕过。
@@ -108,4 +108,4 @@ subagent 不是“多几个 Agent 一起做同一件事”，而是主控 Agent 
 - 所有写入类 subagent 的文件范围清晰且不重叠。
 - 所有审查类 subagent 独立于实现者。
 - 主控 Agent 明确给出最终阶段结论和证据来源。
-- 安全红线、Freeze、release、Git checkpoint 未被 subagent 代替裁决。
+- 风险 / 回滚约束、Freeze、release、Git checkpoint 未被 subagent 代替裁决。

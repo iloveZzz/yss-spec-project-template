@@ -68,6 +68,18 @@
       "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
       "computedHash": "8bf292143ca93b00276a0de0fc5f84f2381f4690c5b0d32e99fa283a072f392f"
     },
+    "lombok": {
+      "source": "claude-dev-suite/claude-dev-suite",
+      "sourceType": "github",
+      "skillPath": "skills/languages/lombok/SKILL.md",
+      "computedHash": "b27bd55f695271de1c22fbdc1c4c4520ed48f05e6352eb760bfc32822139475e"
+    },
+    "mapstruct": {
+      "source": "claude-dev-suite/claude-dev-suite",
+      "sourceType": "github",
+      "skillPath": "skills/languages/mapstruct/SKILL.md",
+      "computedHash": "50dcb3a41a92bb42b6714e8ab9fd1e7149fa89774a05c6e21c7711368dbb6443"
+    },
     "prototype": {
       "source": "mattpocock/skills",
       "sourceType": "github",

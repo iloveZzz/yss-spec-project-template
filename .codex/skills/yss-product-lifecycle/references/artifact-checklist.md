@@ -40,6 +40,8 @@ Use this checklist to decide whether the current request can move forward or mus
 - Service boundary, integration, deployment, reliability, performance, or operations changes have system architecture before implementation.
 - Vertical slice tickets are end-to-end and independently verifiable.
 - Impacted frontend/backend runtime projects are confirmed to exist and be reusable before implementation; otherwise scaffold initialization is recorded and completed first.
+- Backend build, test, OpenAPI generation, CI, review, and release commands use the backend repository root `./mvnw ...`; bare `mvn ...` has a documented controlled exception or is corrected before implementation / completion.
+- Durable project documents use Chinese body text and Chinese section titles; English skill/template wording is treated as source guidance and not copied verbatim into deliverables.
 - `yss-router` has selected the minimal YSS implementation skills before frontend/backend implementation when multiple YSS areas are touched.
 - Build Architecture Checklist is established before implementing high-risk or architecture-sensitive slices.
 - Fresh verification evidence exists before any complete / merge / release claim.

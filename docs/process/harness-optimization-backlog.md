@@ -17,7 +17,7 @@
 | HOB-001 | 已落地 | 建立“13 个工作单元 → 9 阶段 / 21 门禁”映射表 | 当前项目执行规则完整但对外表达重；PPT 蓝图易懂但缺少执行约束。 | `docs/process/harness-work-unit-map.md` | 每个 PPT 工作单元都能映射到项目阶段、门禁、产物、Skill、是否可裁剪和是否可自动化。 |
 | HOB-002 | 已落地 | 定义三档流程裁剪策略 | 小改动、中等变更和新模块现在都容易被理解成同一套重流程。 | `docs/process/harness-process-tailoring.md`；`docs/process/lifecycle-artifact-map.md` 引用 | 明确“小改动 / 中等变更 / 新模块或高风险变更”的入口判断、最小产物、验证要求和升级条件。 |
 | HOB-003 | 已落地 | 制定 Harness 试点模块选择标准 | 没有试点边界时，流程优化容易停留在抽象讨论。 | `docs/process/harness-pilot-selection.md` | 标准包含低风险、边界清晰、真实业务价值、可验证 API / UI / 数据影响、适合垂直切片等条件。 |
-| HOB-004 | 已落地 | 明确阶段结束 Git checkpoint 与 Issue 同步最小模板 | 当前要求存在，但执行时容易靠 Agent 临场组织语言。 | `docs/process/templates/stage-checkpoint-template.md` | 每个阶段都能按固定字段记录产物、验证、阻塞、安全人审、排除的脏文件和下一步。 |
+| HOB-004 | 已落地 | 明确阶段结束 Git checkpoint 与 Issue 同步最小模板 | 当前要求存在，但执行时容易靠 Agent 临场组织语言。 | `docs/process/templates/stage-checkpoint-template.md` | 每个阶段都能按固定字段记录产物、验证、阻塞、人工审查、排除的脏文件和下一步。 |
 
 ## P1：试点前补齐
 

@@ -28,18 +28,18 @@ owner: ai
 - 期望行为：主控 Agent 按文件 / 模块拆分写范围；Reviewer subagent 独立于 Worker；Verifier 执行 fresh verification。
 - 验证点：任务包写范围不重叠，checkpoint 记录 Reviewer 和 Verifier 证据。
 
-## 场景 4：安全红线被子代理触碰
+## 场景 4：风险 / 回滚约束被子代理触碰
 
 - 输入：切片涉及权限接入、SQL 或数据库迁移。
 - 风险：Worker 直接生成生产实现并宣称可合并。
-- 期望行为：subagent 只能生成草案或模板，标记 `TODO-HUMAN-REVIEW`；主控 Agent 在实现路由和 checkpoint 中记录人审结论。
-- 验证点：没有人审结论时，阶段状态不得进入“可发布 / 可合并”。
+- 期望行为：subagent 必须记录验证证据和责任人，记录人工确认项；主控 Agent 在实现路由和 checkpoint 中记录人工确认结论。
+- 验证点：没有人工确认结论时，阶段状态不得进入“可发布 / 可合并”。
 
 ## 场景 5：子代理结论冲突
 
 - 输入：API Reviewer 认为字段必需，Frontend Worker 认为字段可选。
 - 风险：主控 Agent 随意采纳其中一个结论，未回到源资产。
-- 期望行为：主控 Agent 按 PRD、OpenAPI Freeze、ADR、测试证据、CONTEXT 和安全红线优先级裁决；如影响契约，回到 OpenAPI Draft Review / Freeze。
+- 期望行为：主控 Agent 按 PRD、OpenAPI Freeze、ADR、测试证据、CONTEXT 和风险 / 回滚约束优先级裁决；如影响契约，回到 OpenAPI Draft Review / Freeze。
 - 验证点：checkpoint 记录冲突、裁决依据和回填资产。
 
 ## 验收结论
@@ -50,4 +50,4 @@ owner: ai
 - `docs/process/lifecycle-artifact-map.md` 引用 subagent 协同规范和任务包模板。
 - `docs/process/templates/stage-checkpoint-template.md` 可记录 subagent 使用情况。
 - `docs/templates/implementation-routing-template.md` 可记录实现阶段 subagent 拆分和写范围。
-- 压力场景覆盖 Discovery、OpenAPI、实现、安全红线和冲突合并。
+- 压力场景覆盖 Discovery、OpenAPI、实现、风险 / 回滚约束和冲突合并。
