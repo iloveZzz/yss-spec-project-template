@@ -28,7 +28,6 @@ additional_skill_names=(
 )
 
 matt_skill_roots=(
-  ".agent/skills"
   ".agents/skills"
   ".claude/skills"
   ".codex/skills"
@@ -40,7 +39,6 @@ matt_skill_roots=(
 removed_flow_paths=(
   "docs/superpowers"
   "openspec"
-  ".agent/workflows"
   ".claude/commands/opsx"
   ".pi/prompts"
 )

@@ -7,7 +7,6 @@
 | 路径 | 用途 |
 |---|---|
 | `.agents/` | Agent 可加载的 Engineering Skills、脚本、prompt 和参考材料 |
-| `.agent/` | Matt engineering skills 与通用 Agent 工作流 |
 | `.codex/skills/` | Codex 项目级 skills，包含 YSS、Matt、Issue 等能力 |
 | `docs/agents/` | 人和 AI 都可读的协作说明、标签约定、维护规范 |
 
@@ -21,4 +20,4 @@
 | `skills-maintenance.md` | Engineering Skills 的安装、升级和验证说明 |
 | `gitlab-workflow-skills.md` | GitLab、MR、CI 和自动 gitworks 的技能配置与使用规则 |
 
-当 `AGENTS.md` 或某个 skill 提到本目录时，应优先把这里当作项目协作规则读取；真正的 skill 执行入口仍在 `.agents/`、`.agent/` 或 `.codex/skills/`。
+当 `AGENTS.md` 或某个 skill 提到本目录时，应优先把这里当作项目协作规则读取；真正的 skill 执行入口仍在 `.agents/` 或 `.codex/skills/`。

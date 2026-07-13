@@ -41,7 +41,6 @@ resolving-merge-conflicts
 
 | Agent | Project root |
 |---|---|
-| Agent | `.agent/skills/<skill-name>/` |
 | Agents | `.agents/skills/<skill-name>/` |
 | Claude | `.claude/skills/<skill-name>/` |
 | Codex | `.codex/skills/<skill-name>/` |
@@ -77,7 +76,7 @@ resolving-merge-conflicts
 
 1. 读取 `skills-lock.json`，确认 Matt 快照 ref、`competitive-intelligence` 额外来源和技能清单。
 2. 拉取或下载对应来源到临时目录，不直接覆盖工作区。
-3. 将锁定技能同步到全部 7 个项目 Agent roots。
+3. 将锁定技能同步到全部 6 个项目 Agent roots。
 4. 保留 `ask-matt` 上游正文不改；项目差异写入 `yss-product-lifecycle`、流程文档或维护说明。
 5. 检查每个技能目录都有合法 `SKILL.md` frontmatter，至少包含 `name` 和 `description`。
 6. 运行 `scripts/verify-template`。
@@ -107,7 +106,6 @@ skills=(
 )
 
 roots=(
-  .agent/skills
   .agents/skills
   .claude/skills
   .codex/skills
