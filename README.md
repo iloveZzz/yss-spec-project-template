@@ -53,19 +53,15 @@
 
 ## 模板初始化 CLI
 
-当前仓库已内置一个用于实例化模板的 npm CLI：`create-yss-spec`。
+模板初始化与同步 CLI `create-yss-spec` 已由独立 GitHub 项目维护：
 
-完整中文使用手册见：
+- [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec)
+
+本仓库只保留面向模板使用者的中文手册和实践说明：
 
 - [docs/user-guide/create-yss-spec-cli-guide.md](./docs/user-guide/create-yss-spec-cli-guide.md)
 
-本地开发验证：
-
-```bash
-npm test
-```
-
-发包 / 使用形态：
+推荐使用方式：
 
 ```bash
 npm create yss-spec@latest
@@ -79,6 +75,8 @@ npm create yss-spec@latest
 - `--git-init`
 - `--issue-tracker`
 - `--no-example-docs`
+
+CLI 源码、测试、发布和研发过程记录请在独立项目中维护。
 
 ## 模板配置取舍
 

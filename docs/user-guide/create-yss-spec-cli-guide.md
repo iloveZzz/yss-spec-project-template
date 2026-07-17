@@ -4,7 +4,7 @@
 
 ## 适用场景
 
-当你需要基于当前模板源仓库快速生成一个新的研发管理仓库时，使用 `create-yss-spec`。
+当你需要基于 YSS Spec Project Template 快速生成一个新的研发管理仓库时，使用 `create-yss-spec`。CLI 源码由 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec) 独立维护，本仓库只记录用户使用和实践。
 
 它适合做的事：
 
@@ -217,8 +217,11 @@ CLI 会根据模板清单把源仓库内容分成三类处理：
 可以，CLI 已支持非 TTY 输入。建议优先显式传参；如果要走标准输入，请按交互顺序提供：
 
 ```bash
-printf 'Acme Spec Repo\nInvestment Research\n12\n/tmp/acme-spec-repo\n' \
-  | node packages/create-yss-spec/bin/create-yss-spec.js
+npx create-yss-spec@latest \
+  --project-name "Acme Spec Repo" \
+  --business-domain "Investment Research" \
+  --team-size "12" \
+  --target-dir "/tmp/acme-spec-repo"
 ```
 
 ### 4. 为什么没有自动安装依赖或创建远端仓库
@@ -245,25 +248,9 @@ printf 'Acme Spec Repo\nInvestment Research\n12\n/tmp/acme-spec-repo\n' \
 - 用 `git diff` 比较当前项目版本和模板版本的差异
 - 人工决定是否合并模板变更
 
-## 维护与验证
-
-如果你在维护这个 CLI，本地验证命令是：
-
-```bash
-node --test packages/create-yss-spec/tests/init-cli.test.js
-```
-
-发布前可检查打包内容：
-
-```bash
-cd packages/create-yss-spec
-npm pack --dry-run
-```
-
 ## 继续阅读
 
 - [模板使用说明](./README.md)
 - [产品全生命周期使用手册](./product-lifecycle-workflow.md)
 - [产品研发全生命周期最佳实践](./product-rd-lifecycle-best-practices.md)
-- [实现路由记录](../implementation/yss-spec-cli-init-routing.md)
-- [产品需求文档：yss-spec 模板初始化 CLI](../requirements/yss-spec-cli-init-prd.md)
+- [CLI GitHub 项目](https://github.com/iloveZzz/create-yss-spec)
