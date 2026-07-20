@@ -15,6 +15,23 @@ PROJECTION_ROOTS = %w[
   .pi/skills
   .trae/skills
 ].freeze
+GIT_WORKTREE = system(
+  "git",
+  "rev-parse",
+  "--is-inside-work-tree",
+  out: File::NULL,
+  err: File::NULL
+)
+
+def tracked_skill_names(relative_root)
+  return [] unless GIT_WORKTREE
+
+  IO.popen(
+    ["git", "ls-files", "-z", "--", relative_root],
+    err: File::NULL,
+    &:read
+  ).split("\0").map { |item| item.split("/")[2] }.compact.uniq
+end
 
 def skill_names(root)
   return [] unless root.directory?
@@ -100,10 +117,7 @@ unless missing_shared.empty?
   exit 1
 end
 
-tracked_shared_names = IO.popen(
-  ["git", "ls-files", "-z", "--", ".agents/skills"],
-  &:read
-).split("\0").map { |item| item.split("/")[2] }.compact.uniq
+tracked_shared_names = tracked_skill_names(".agents/skills")
 obsolete_names = %w[to-prd to-issues]
 unlocked_tracked = tracked_shared_names - shared_names - obsolete_names
 unless unlocked_tracked.empty?
@@ -141,10 +155,7 @@ PROJECTION_ROOTS.each do |relative_root|
     exit 1
   end
 
-  tracked_platform_names = IO.popen(
-    ["git", "ls-files", "-z", "--", relative_root],
-    &:read
-  ).split("\0").map { |item| item.split("/")[2] }.compact.uniq
+  tracked_platform_names = tracked_skill_names(relative_root)
   unlocked_platform = tracked_platform_names - shared_names - platform_names - obsolete_names
   unless unlocked_platform.empty?
     warn "发现未登记的平台 skills (#{relative_root}): #{unlocked_platform.sort.join(', ')}"

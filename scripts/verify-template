@@ -106,6 +106,11 @@ end
 singular_agent_root = root.join(".agent" + "/skills")
 abort("不允许存在单数 Agent skill root: #{singular_agent_root.relative_path_from(root)}") if singular_agent_root.exist?
 
+legacy_ticket_directory = root.join("docs/requirements/issues")
+if legacy_ticket_directory.exist?
+  abort("不允许存在旧任务目录: #{legacy_ticket_directory.relative_path_from(root)}")
+end
+
 allowed_legacy_files = %w[
   docs/process/template-governance-grilling-record.md
   docs/process/template-governance-skill-validation.md
@@ -183,6 +188,10 @@ RUBY
 ruby -c scripts/sync-skills >/dev/null
 ruby -c scripts/update-skill-lock >/dev/null
 ruby -c scripts/verify-lifecycle-scenarios >/dev/null
-git diff --check
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  git diff --check
+else
+  echo "当前目录尚未初始化 Git，跳过 git diff --check"
+fi
 
 echo "模板发布校验通过"

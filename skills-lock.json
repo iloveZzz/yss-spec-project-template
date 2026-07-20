@@ -546,15 +546,6 @@
             ".codex/skills"
           ]
         },
-        "component-story-prototype": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/component-story-prototype/SKILL.md",
-          "effectiveHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
         "cross-repo-implementation-routing": {
           "source": "project",
           "sourceType": "local",
@@ -578,15 +569,6 @@
           "sourceType": "local",
           "skillPath": ".codex/skills/implementation-repo-onboarding/SKILL.md",
           "effectiveHash": "d59ce9970de45c3b0d3d633abd2204ddff6fb672a835266d46e8798f540008f5",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "mock-api-prototype": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/mock-api-prototype/SKILL.md",
-          "effectiveHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
           "targets": [
             ".codex/skills"
           ]
