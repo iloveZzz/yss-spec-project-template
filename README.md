@@ -51,6 +51,20 @@
 11. 每个切片完成后做 `code-review` 或独立审查和 fresh verification，再发布、实施和复盘。
 12. 在 `docs/architecture/`、`docs/adr/`、`CONTEXT.md` 和 `AGENTS.md` 沉淀稳定规则。
 
+## 模板初始化 CLI
+
+`create-yss-spec` 的目标维护位置是独立 GitHub 仓库 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec)。本仓库不再包含 CLI 源码、测试、发布配置或开发过程记录，只保留面向模板使用者的实践指南：
+
+- [create-yss-spec 外部 CLI 实践指南](./docs/user-guide/create-yss-spec-cli-guide.md)
+
+推荐入口：
+
+```bash
+npm create yss-spec@latest
+```
+
+首次使用前请先确认独立仓库和 npm 包已完成发布。
+
 ## 模板配置取舍
 
 本模板纳入 `.agent/`、`.agents/`、`.claude/`、`.codex/`、`.hermes/`、`.pi/`、`.trae/`，因为它们是跨 Agent 复用 Matt Pocock Engineering Skills 和 YSS skills 的项目级配置。

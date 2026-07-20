@@ -210,13 +210,11 @@
     "AGENTS.md",
     "CONTEXT.md",
     "未命名 1.canvas",
-    "packages/create-yss-spec/template/docs/templates/agent-brief-template.md",
     "docs/user-guide/product-rd-lifecycle-best-practices.md",
     "docs/user-guide/lifecycle-best-practices.md",
     "docs/user-guide/grill-with-docs-guide.md",
     "docs/user-guide/grill-with-docs-best-practices.md",
     "docs/user-guide/excalidraw-diagram-generator-guide.md",
-    "docs/user-guide/create-yss-spec-cli-guide.md",
     "docs/adr/adr-product-design-prototype-entrypoint.md",
     "docs/adr/template.md",
     "README.md"
