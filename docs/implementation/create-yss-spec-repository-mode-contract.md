@@ -45,5 +45,15 @@ CLI 仓库至少补充以下集成场景：
 
 - 本仓库负责：清单 schema、流程事实源、迁移指南、skills 投影与锁定、模板验证脚本。
 - `create-yss-spec` 仓库负责：初始化转换、升级转换、冲突处理、CLI 集成测试、CLI major 发布。
-- 下一责任人：CLI 维护者。
+- 模板实现 PR：[#30](https://github.com/iloveZzz/yss-spec-project-template/pull/30)，修正 Ticket 目录、空 skill 锁登记和无 Git 初始化时的模板校验。
+- CLI 实现 PR：[`create-yss-spec` #10](https://github.com/iloveZzz/create-yss-spec/pull/10)，实现身份转换、旧版迁移、fail closed、skill 投影复制和 `2.0.0` 版本准备。
+- 共同验证：`YSS_SPEC_TEMPLATE_REF=codex/ticket-directory-contract npm test`，20/20 通过；生成实例执行 `scripts/verify-template` 通过；`npm pack --dry-run` 通过。
+- 下一责任人：模板与 CLI 独立 reviewer；合并后由发布负责人绑定确定 commit / tag 重跑验证并确认 npm `2.0.0` 发布。
 - 建议 skills：`cross-repo-implementation-routing`、`tdd`、`code-review`。
+
+## 当前阻断条件
+
+- 模板 PR #30 尚未独立 review 与合并。
+- CLI PR #10 尚未独立 review 与合并。
+- 当前共同测试绑定开发分支；合并后必须改绑确定 commit / tag 再执行 fresh verification。
+- npm `2.0.0` 尚未获得发布确认，本轮不执行 npm 发布。
