@@ -18,7 +18,6 @@
 
 ## 继续阅读
 
-- [create-yss-spec 使用手册](./create-yss-spec-cli-guide.md)
 - [产品全生命周期使用手册](./product-lifecycle-workflow.md)
 - [全生命周期最佳实践](./lifecycle-best-practices.md)
 - [产品研发全生命周期最佳实践](./product-rd-lifecycle-best-practices.md)
