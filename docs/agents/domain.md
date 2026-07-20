@@ -1,12 +1,10 @@
-# Domain Docs
+# 领域文档
 
-> 中文说明：本文规定 Agent 在做需求、Issue、架构或实现前如何读取领域上下文。领域词汇统一放在根目录 `CONTEXT.md`，架构决策放在 `docs/adr/`，避免每个任务重新解释业务概念。
+本文规定 Engineering Skills 在探索仓库、起草 Issue、设计架构或实施代码前，如何读取和使用领域文档。
 
-Engineering skills should consume this repo's domain documentation before exploring code or drafting issues.
+## 文档布局
 
-## Layout
-
-This repo uses a single-context layout:
+本仓库采用单上下文布局：
 
 ```text
 /
@@ -15,17 +13,17 @@ This repo uses a single-context layout:
 └── docs/
 ```
 
-## Before Exploring
+## 探索前读取规则
 
-Read these files when relevant:
+根据任务影响范围读取：
 
-- `CONTEXT.md` for domain vocabulary.
-- `docs/adr/` for architectural decisions related to the area being touched.
+- `CONTEXT.md`：领域术语和统一语言。
+- `docs/adr/`：与当前任务相关的架构决策。
 
-If a file does not exist yet, proceed silently. The `domain-modeling` skill creates or updates domain docs lazily when real terms or decisions are resolved.
+如果文件尚不存在，继续执行即可，不需要将缺失本身报告为问题。`domain-modeling` skill 会在形成稳定术语或架构决策时按需创建或更新领域文档。
 
-## Usage Rules
+## 使用规则
 
-- Use glossary vocabulary in PRDs, issue titles, tests, architecture notes, and implementation summaries.
-- Do not put implementation details in `CONTEXT.md`; it is a glossary, not a spec.
-- If a proposal contradicts an ADR, call out the conflict explicitly before proceeding.
+- 在 Spec、Issue 标题、测试、架构说明和实施总结中使用 `CONTEXT.md` 定义的术语。
+- 不在 `CONTEXT.md` 中记录实现细节；它是领域词汇表，不是需求或实现规格。
+- 如果提案与现有 ADR 冲突，必须在继续执行前明确指出冲突。

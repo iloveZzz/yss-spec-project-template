@@ -1,15 +1,13 @@
-# Triage Labels
+# Triage 标签
 
-> 中文说明：本文定义 Agent 分诊时使用的标准五态标签。无论 skill 内部使用什么描述，落到 GitLab Issue 或 GitHub Issue 时都应映射为这里列出的标签。
+本文定义 Agent 分诊时使用的五种标准角色，以及它们在当前 Issue tracker 中对应的标签。
 
-The engineering skills use five canonical triage roles. This file maps those roles to the label strings used in this repo's issue tracker.
+| 标准角色 | Tracker 标签 | 含义 |
+| --- | --- | --- |
+| `needs-triage` | `needs-triage` | 等待维护者评估 Issue |
+| `needs-info` | `needs-info` | 等待报告者补充信息 |
+| `ready-for-agent` | `ready-for-agent` | 信息完整，可交由 Agent 执行 |
+| `ready-for-human` | `ready-for-human` | 需要人工实现、判断或特权访问 |
+| `wontfix` | `wontfix` | 不会处理 |
 
-| Canonical role | Tracker label | Meaning |
-|---|---|---|
-| `needs-triage` | `needs-triage` | Maintainer needs to evaluate this issue |
-| `needs-info` | `needs-info` | Waiting on reporter for more information |
-| `ready-for-agent` | `ready-for-agent` | Fully specified and ready for an AFK agent |
-| `ready-for-human` | `ready-for-human` | Requires human implementation, judgment, or privileged access |
-| `wontfix` | `wontfix` | Will not be actioned |
-
-When a skill mentions a role, use the corresponding tracker label from this table.
+当 skill 提及某个标准角色时，使用表中对应的 Tracker 标签。
