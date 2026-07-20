@@ -1,14 +1,30 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$ROOT"
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
 
-matt_skill_names=(
+required_files=(
+  "yss-project.yaml"
+  "AGENTS.md"
+  "CONTEXT.md"
+  "skills-lock.json"
+  "docs/process/lifecycle-artifact-map.md"
+  "docs/process/harness-process-tailoring.md"
+  "docs/templates/spec-template.md"
+  "docs/templates/vertical-slice-ticket-template.md"
+  "docs/user-guide/spec-ticket-migration-guide.md"
+  "scripts/sync-skills"
+  "scripts/update-skill-lock"
+  "scripts/verify-lifecycle-scenarios"
+)
+
+required_skills=(
   "ask-matt"
+  "competitive-intelligence"
   "grill-with-docs"
-  "to-prd"
-  "to-issues"
+  "to-spec"
+  "to-tickets"
   "implement"
   "tdd"
   "diagnosing-bugs"
@@ -23,166 +39,150 @@ matt_skill_names=(
   "resolving-merge-conflicts"
 )
 
-additional_skill_names=(
-  "competitive-intelligence"
-)
-
-matt_skill_roots=(
-  ".agents/skills"
-  ".claude/skills"
-  ".codex/skills"
-  ".hermes/skills"
-  ".pi/skills"
-  ".trae/skills"
-)
-
-removed_flow_paths=(
-  "docs/superpowers"
-  "openspec"
-  ".claude/commands/opsx"
-  ".pi/prompts"
-)
-
-removed_skill_names=(
-  "openspec-apply-change"
-  "openspec-archive-change"
-  "openspec-bulk-archive-change"
-  "openspec-continue-change"
-  "openspec-explore"
-  "openspec-ff-change"
-  "openspec-new-change"
-  "openspec-onboard"
-  "openspec-propose"
-  "openspec-sync-specs"
-  "openspec-verify-change"
-  "using-superpowers"
-  "brainstorming"
-  "writing-plans"
-  "executing-plans"
-  "test-driven-development"
-  "requesting-code-review"
-  "receiving-code-review"
-  "verification-before-completion"
-  "systematic-debugging"
-)
-
-legacy_text_paths=(
-  "AGENTS.md"
-  ".codex/skills/yss-product-lifecycle/SKILL.md"
-  "docs/process/harness-work-unit-map.md"
-  "docs/process/lifecycle-artifact-map.md"
-  "docs/process/harness-process-tailoring.md"
-  "docs/agents/skills-maintenance.md"
-  "docs/user-guide/product-lifecycle-workflow.md"
-  "docs/user-guide/lifecycle-best-practices.md"
-  "docs/user-guide/product-rd-lifecycle-best-practices.md"
-  "docs/templates/implementation-routing-template.md"
-  "docs/templates/spec-delta-template.md"
-)
-
-legacy_text_patterns=(
-  "active change"
-  "openspec/changes"
-  "openspec list"
-  "test-driven-development"
-  "requesting-code-review"
-  "receiving-code-review"
-  "verification-before-completion"
-)
-
-required_template_files=(
-  "docs/templates/spec-delta-template.md"
-)
-
-for root in "${matt_skill_roots[@]}"; do
-  for skill in "${matt_skill_names[@]}"; do
-    path="$root/$skill/SKILL.md"
-    test -f "$path" || {
-      echo "missing Matt skill: $path" >&2
-      exit 1
-    }
-  done
-  for skill in "${additional_skill_names[@]}"; do
-    path="$root/$skill/SKILL.md"
-    test -f "$path" || {
-      echo "missing additional skill: $path" >&2
-      exit 1
-    }
-  done
-done
-
-for path in "${removed_flow_paths[@]}"; do
-  test ! -e "$path" || {
-    echo "removed flow path still exists: $path" >&2
+for required_file in "${required_files[@]}"; do
+  test -f "$required_file" || {
+    echo "缺少模板必需文件: $required_file" >&2
     exit 1
   }
 done
 
-for root in "${matt_skill_roots[@]}"; do
-  for skill in "${removed_skill_names[@]}"; do
-    path="$root/$skill"
-    test ! -e "$path" || {
-      echo "removed legacy skill still exists: $path" >&2
-      exit 1
-    }
-  done
-done
-
-for path in "${legacy_text_paths[@]}"; do
-  test -f "$path" || {
-    echo "legacy text check target missing: $path" >&2
-    exit 1
-  }
-  for pattern in "${legacy_text_patterns[@]}"; do
-    hits="$(grep -F -n "$pattern" "$path" || true)"
-    if [ -n "$hits" ]; then
-      echo "legacy flow text found in $path: $pattern" >&2
-      echo "$hits" >&2
-      exit 1
-    fi
-  done
-done
-
-for path in "${required_template_files[@]}"; do
-  test -f "$path" || {
-    echo "missing required template: $path" >&2
+for skill_name in "${required_skills[@]}"; do
+  test -f ".agents/skills/$skill_name/SKILL.md" || {
+    echo "缺少权威共享 skill: .agents/skills/$skill_name/SKILL.md" >&2
     exit 1
   }
 done
-
-git diff --check
 
 ruby <<'RUBY'
+require "json"
+require "pathname"
 require "yaml"
+
+root = Pathname.pwd
+manifest = YAML.safe_load(root.join("yss-project.yaml").read, permitted_classes: [], aliases: false)
+valid_modes = %w[template-source project-instance]
+unless manifest.is_a?(Hash) && manifest.keys.sort == %w[repository_mode schema_version] &&
+       manifest["schema_version"] == 1 && valid_modes.include?(manifest["repository_mode"])
+  warn "yss-project.yaml 必须只声明 schema_version: 1 和合法 repository_mode"
+  exit 1
+end
+
+lock = JSON.parse(root.join("skills-lock.json").read)
+unless lock["version"] == 3 && lock["canonicalRoot"] == ".agents/skills"
+  warn "skills-lock.json 必须使用 version 3 且 canonicalRoot 为 .agents/skills"
+  exit 1
+end
+
+openapi_path = root.join("docs/templates/openapi-spec-template.yaml")
+openapi_text = openapi_path.read.sub(/\A---\n.*?\n---\n/m, "")
+YAML.safe_load(openapi_text, permitted_classes: [], aliases: true)
+RUBY
+
+scripts/sync-skills --check
+scripts/update-skill-lock --check
+scripts/verify-lifecycle-scenarios
+
+ruby <<'RUBY'
 require "pathname"
 
 root = Pathname.pwd
+agent_roots = %w[
+  .agents/skills
+  .claude/skills
+  .codex/skills
+  .hermes/skills
+  .pi/skills
+  .trae/skills
+]
+obsolete_names = ["to-" + "prd", "to-" + "issues"]
 
-["docs/templates/openapi-spec-template.yaml"].each do |path|
-  text = File.read(root.join(path))
-  text = text.sub(/\A---\n.*?\n---\n/m, "")
-  YAML.safe_load(text, permitted_classes: [], aliases: true)
-end
-
-markdown_paths = Dir.glob("*.md") + Dir.glob("docs/**/*.md")
-
-missing = []
-markdown_paths.uniq.sort.each do |path|
-  text = File.read(path)
-  text.scan(/\[[^\]]+\]\(([^)]+)\)/).flatten.each do |target|
-    next if target.start_with?("http://", "https://", "mailto:", "#")
-    clean = target.split("#", 2).first
-    next if clean.empty?
-    resolved = Pathname.new(path).dirname.join(clean).cleanpath
-    missing << "#{path} -> #{target}" unless root.join(resolved).exist?
+agent_roots.each do |agent_root|
+  obsolete_names.each do |name|
+    path = root.join(agent_root, name)
+    abort("过时 skill 目录仍然存在: #{path.relative_path_from(root)}") if path.exist?
   end
 end
 
-unless missing.empty?
-  warn "broken markdown links:"
-  missing.each { |item| warn "  #{item}" }
+singular_agent_root = root.join(".agent" + "/skills")
+abort("不允许存在单数 Agent skill root: #{singular_agent_root.relative_path_from(root)}") if singular_agent_root.exist?
+
+allowed_legacy_files = %w[
+  docs/process/template-governance-grilling-record.md
+  docs/process/template-governance-skill-validation.md
+  docs/user-guide/spec-ticket-migration-guide.md
+  scripts/sync-skills
+  scripts/update-skill-lock
+  scripts/verify-template
+].freeze
+
+legacy_patterns = {
+  "旧规格 skill" => /to-prd/,
+  "旧任务 skill" => /to-issues/,
+  "旧规格模板" => /prd-template\.md/,
+  "旧切片模板" => /vertical-slice-issue-template\.md/,
+  "旧任务目录" => %r{docs/requirements/issues/},
+  "旧规格文件名" => /<feature>-prd\.md/,
+  "旧规格术语" => /\bPRD\b/,
+  "单数 Agent root 声明" => /\.agent\//
+}.freeze
+
+scan_entries = %w[AGENTS.md CONTEXT.md README.md docs scripts .agents .claude .codex .hermes .pi .trae]
+files = scan_entries.flat_map do |entry|
+  path = root.join(entry)
+  path.directory? ? path.glob("**/*", File::FNM_DOTMATCH) : [path]
+end
+
+legacy_hits = []
+files.select(&:file?).uniq.each do |path|
+  relative = path.relative_path_from(root).to_s
+  next if allowed_legacy_files.include?(relative)
+
+  body = path.binread.force_encoding("UTF-8")
+  next unless body.valid_encoding?
+
+  legacy_patterns.each do |label, pattern|
+    body.each_line.with_index(1) do |line, line_number|
+      legacy_hits << "#{relative}:#{line_number}: #{label}" if line.match?(pattern)
+    end
+  end
+end
+
+unless legacy_hits.empty?
+  warn "发现未迁移的旧入口或声明:"
+  legacy_hits.each { |hit| warn "  #{hit}" }
+  exit 1
+end
+
+unless root.join("AGENTS.md").read.include?("正文统一使用简体中文") &&
+       root.join("CONTEXT.md").read.include?("统一使用简体中文")
+  abort("AGENTS.md 与 CONTEXT.md 必须共同声明落地文档使用简体中文")
+end
+
+markdown_paths = root.glob("*.md") + root.glob("docs/**/*.md")
+missing_links = []
+markdown_paths.uniq.sort.each do |path|
+  body = path.read
+  body.scan(/\[[^\]]+\]\(([^)]+)\)/).flatten.each do |target|
+    next if target.start_with?("http://", "https://", "mailto:", "#")
+
+    clean = target.split("#", 2).first
+    next if clean.empty?
+
+    resolved = path.dirname.join(clean).cleanpath
+    missing_links << "#{path.relative_path_from(root)} -> #{target}" unless resolved.exist?
+  end
+end
+
+unless missing_links.empty?
+  warn "发现无效 Markdown 相对链接:"
+  missing_links.each { |item| warn "  #{item}" }
   exit 1
 end
 RUBY
 
-echo "template verification passed"
+ruby -c scripts/sync-skills >/dev/null
+ruby -c scripts/update-skill-lock >/dev/null
+ruby -c scripts/verify-lifecycle-scenarios >/dev/null
+git diff --check
+
+echo "模板发布校验通过"

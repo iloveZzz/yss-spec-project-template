@@ -1,13 +1,13 @@
 # <功能名称> 高保真原型确认记录
 
-> 适用时机：Ant Design v6 高保真 HTML 原型产出后、PRD 校准 / 需求冻结 / UI 驱动 OpenAPI Draft 前。未确认前不得进入下游门禁。
+> 适用时机：Ant Design v6 高保真 HTML 原型产出后、Spec 校准 / 需求冻结 / UI 驱动 OpenAPI Draft 前。未确认前不得进入下游门禁。
 
 ## 1. 原型信息
 
 | 项目 | 内容 |
 |---|---|
 | 功能名称 |  |
-| PRD | `docs/requirements/<feature>-prd.md` |
+| Spec | `docs/requirements/<feature>-spec.md` |
 | 产品总体设计 / 功能架构 | `docs/design/<feature>-product-overview-design.md` |
 | 交互说明 | `docs/design/<feature>-interaction-spec.md` |
 | 状态矩阵 | `docs/design/<feature>-state-matrix.md` |
@@ -34,9 +34,9 @@
 |---|---|
 | 确认人 |  |
 | 确认时间 |  |
-| 确认方式 | 口头 / 评论 / Issue / 会议纪要 / 其他 |
+| 确认方式 | 口头 / 评论 / Ticket / 会议纪要 / 其他 |
 | 确认结论 | 通过 / 需调整 / 暂缓 |
-| 是否允许进入 PRD 校准 | 是 / 否 |
+| 是否允许进入 Spec 校准 | 是 / 否 |
 | 是否允许进入 API 影响分析 / OpenAPI Draft | 是 / 否 |
 
 ## 4. 调整项

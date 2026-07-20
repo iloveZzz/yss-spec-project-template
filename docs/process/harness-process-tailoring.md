@@ -1,6 +1,6 @@
 # Harness 流程裁剪指南
 
-本文定义 Harness 工程在不同任务规模下的最小流程、最近可信阶段和升级条件。它补充 `docs/process/lifecycle-artifact-map.md`，不替代其中的 8 个主阶段和 21 个门禁。
+本文定义 `project-instance` 在不同任务规模下的最小流程、最近可信阶段和升级条件。它补充 `docs/process/lifecycle-artifact-map.md`，不替代其中的 8 个主阶段和 21 个条件强制门禁。`template-source` 使用 `AGENTS.md` 中的模板维护流程。
 
 本仓库默认使用 Matt Pocock Engineering Skills 承接需求澄清、Spec、Ticket 拆分、实现、TDD、诊断、审查和架构治理。OpenAPI 3.1 继续作为前后端契约资产；OpenSpec-style Spec Delta 只作为中高风险变更的轻量行为差异记录，不再引入额外变更状态机。
 
@@ -8,9 +8,9 @@
 
 | 档位 | 适用场景 | 最小入口 | 最小产物 | 最小验证 | 典型退出标准 |
 |---|---|---|---|---|---|
-| 小改动 | 文案、局部样式、配置微调、无 API / 数据 / 权限影响的低风险修正 | 影响面评估 | issue 备注或简短实施说明 | 相关页面 / 命令 / 文档检查 | 变更范围清楚、验证新鲜、无高风险变更或需人工确认项 |
+| 小改动 | 文案、局部样式、配置微调、无 API / 数据 / 权限影响的低风险修正 | 影响面评估 | Ticket 备注或简短实施说明 | 相关页面 / 命令 / 文档检查 | 变更范围清楚、验证新鲜、无高风险变更或需人工确认项 |
 | 中等变更 | 已有功能迭代、已有页面 / API 的局部扩展、非核心流程调整 | 最近可信阶段 | 受影响 Spec / 设计 / OpenAPI / 架构 / Ticket 的增量更新；必要时 Spec Delta | 受影响切片测试、契约检查、review | 下游门禁补齐，未受影响资产不重跑 |
-| 新模块 / 高风险变更 | 新产品、新业务域、新模块、跨端协作、服务边界、数据模型、权限、安全或发布回滚变化 | 入口分诊 | Discovery、Spec、设计、OpenAPI、Spec Delta、架构、垂直切片 Ticket | TDD、契约验证、独立审查、fresh verification | 完整生命周期关键门禁都有证据 |
+| 新模块 / 高风险变更 | 新产品、新业务域、新模块、跨端协作、服务边界、数据模型、权限、安全或发布回滚变化 | 入口分诊 | Discovery、Spec、设计、OpenAPI、架构、垂直切片 Ticket；修改既有冻结基线时补 Spec Delta | TDD、契约验证、独立审查、fresh verification | 命中的生命周期门禁都有证据，未命中项已标记 `not-applicable` |
 
 ## Subagent 裁剪规则
 
@@ -32,7 +32,7 @@
 | API 路径、schema、错误结构、分页或权限发生变化 | 5. 系统 / 数据架构与工程契约设计审查 | API 影响记录、契约草案 / OpenAPI Draft Review、必要时 Spec Delta、系统 / 数据架构反审、Freeze、`to-tickets` |
 | 服务边界、集成、部署、性能、可靠性或运维变化 | 5. 系统 / 数据架构与工程契约设计审查 | 系统架构、Design Review、必要时 Spec Delta、Build Architecture Checklist |
 | 持久化、元数据、版本、血缘、搜索、索引或迁移变化 | 5. 系统 / 数据架构与工程契约设计审查 | 数据架构、必要时 Spec Delta、人审点、Repository / MyBatis 前置审查 |
-| OpenAPI 已冻结但还没有垂直切片 Ticket | 6. 契约冻结与 Ticket formalization | `to-tickets`、实施计划、Build Architecture Checklist |
+| OpenAPI 已冻结但还没有垂直切片 Ticket | 6. 契约冻结与 Ticket 正式化 | `to-tickets`、实施计划、Build Architecture Checklist |
 | 已有垂直切片 Ticket，但实现准备不完整 | 7. 垂直切片与 TDD 实现 | 实施计划、YSS skill routing、实现仓库登记或外部脚手架目标确认、测试命令、回滚点 |
 | 0-1 项目缺 backend / frontend 可用工程 | 7. 垂直切片与 TDD 实现 | 登记 `scaffold_status=required`，确认目标仓库或输出目录，路由 `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator` |
 | 跨线程、跨仓库、上下文过长或原型分支需要回流 | 7. 垂直切片与 TDD 实现 | `handoff` 或等价交接记录、实现仓库绑定、验证命令 |
@@ -59,9 +59,10 @@
 ## 裁剪原则
 
 - 裁剪的是不相关阶段和产物，不裁剪证据链。
+- 未命中条件门禁时记录 `not-applicable` 及原因，不生成空文档。
 - 中等变更只补受影响阶段及其下游，不回到机会探索。
 - 小改动必须保留影响面评估、验证证据和 Git checkpoint 判断。
-- 小改动默认不创建 Spec Delta；只有扩散到 API、权限、状态机、数据模型、跨端或风险 / 回滚约束时才升级补齐。
+- Spec Delta 只用于修改既有冻结基线的中高风险行为；全新产品 / 模块、小文案、局部样式、配置微调和低风险 Bug 默认不创建。
 - 小改动默认不需要 `research`、`prototype` 或 `handoff`；只有事实依据、设计验证或交接风险会影响后续门禁时才触发。
 - 存在高风险变更时必须记录验证证据、责任人和回滚约束，不能因任务小而跳过。
 - OpenAPI Freeze 后直接进入 `to-tickets` 或等价垂直切片拆分；不要求额外变更状态文件。

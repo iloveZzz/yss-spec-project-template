@@ -5,7 +5,7 @@ description: Use when a Spec baseline or user story has UI impact and needs page
 
 # Product Design Prototype
 
-Use this skill after Spec baseline and before Spec calibration / OpenAPI Draft for features with user interfaces. Its job is to turn requirements into design assets that can drive calibrated PRD, API, frontend acceptance, and vertical slices.
+Use this skill after Spec baseline and before Spec calibration / OpenAPI Draft for features with user interfaces. Its job is to turn requirements into design assets that can drive a calibrated Spec, API, frontend acceptance, and vertical slices.
 
 ## Required Inputs
 
@@ -18,7 +18,7 @@ If no Spec baseline exists, route back to `yss-product-lifecycle` / `grill-with-
 
 ## Core Flow
 
-1. Inspect current assets: PRD, `docs/design/`, `docs/api/specs/`, `docs/architecture/`, and active Spec Delta changes.
+1. Inspect current assets: Spec, `docs/design/`, `docs/api/specs/`, `docs/architecture/`, and active Spec Delta changes.
 2. Create or update a design artifact under `docs/design/<feature>-interaction-spec.md` using `docs/design/templates/interaction-spec-template.md`.
 3. Capture page map, primary user flow, exception flow, and low-fidelity prototype or wireframe link.
 4. Fill the state matrix using `docs/design/templates/state-matrix-template.md`.
@@ -69,7 +69,7 @@ Product design / prototype / interaction design
 - <yes/no; include whether Spec calibration is needed first>
 
 ### 下一步
-- <prototype-review / high-fidelity-html-prototype / routing back to PRD/design>
+- <prototype-review / high-fidelity-html-prototype / routing back to Spec/design>
 ```
 
 ## Data Modeling Example

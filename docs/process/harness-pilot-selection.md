@@ -8,7 +8,7 @@
 |---|---|---|
 | 业务价值 | 真实业务需求，能被产品、研发和测试共同验收 | 避免试点变成纯流程演示 |
 | 风险等级 | 低到中等风险，不涉及支付、加密、核心认证授权或不可逆迁移 | 降低首次试点的人审和回滚压力 |
-| 边界清晰 | 功能边界、用户角色、输入输出和非目标范围容易定义 | 便于验证 PRD、OpenAPI 和垂直切片 |
+| 边界清晰 | 功能边界、用户角色、输入输出和非目标范围容易定义 | 便于验证 Spec、OpenAPI 和垂直切片 |
 | API / UI / 数据影响 | 至少触碰一个可验证接口或页面，最好有轻量数据读写 | 能检验契约、前后端协作和测试闭环 |
 | 切片可拆 | 可以拆成 1 到 3 个端到端垂直切片 | 避免横向拆层或范围过大 |
 | 验证可得 | 有明确验收标准、测试命令或人工验收路径 | 便于 fresh verification |
@@ -26,22 +26,22 @@
 
 | 检查项 | 要求 |
 |---|---|
-| 试点目标 | 说明要验证哪些 Harness 能力，例如裁剪、OpenAPI、Issue、Build Checklist、fresh verification |
+| 试点目标 | 说明要验证哪些 Harness 能力，例如裁剪、OpenAPI、Ticket、Build Checklist、fresh verification |
 | 业务范围 | 明确用户、痛点、MVP、非目标和成功标准 |
-| 现有资产 | 列出已有 PRD、设计、OpenAPI、架构、Issue、垂直切片 Issue 或代码入口 |
+| 现有资产 | 列出已有 Spec、设计、OpenAPI、架构、Ticket、垂直切片 Ticket 或代码入口 |
 | 影响面 | 标注 UI、API、数据、权限、安全、部署和回滚影响 |
 | 垂直切片 | 拆成可独立验证的 1 到 3 个端到端切片 |
 | 验证方式 | 明确测试命令、契约检查、人工验收或截图证据 |
 | 人审点 | 标注 人工确认项和责任人 |
-| Git / Issue | 明确 Issue tracker、里程碑、分支策略和 checkpoint 节奏 |
+| Git / Ticket | 明确 Ticket tracker、里程碑、分支策略和 checkpoint 节奏 |
 
 ## 推荐试点闭环
 
 ```text
-PRD
+Spec
 → API 影响分析 / 契约草案
 → review-only OpenAPI Draft（如需要）
-→ Issue Change
+→ 功能父 Ticket 更新 / 契约冻结
 → 垂直切片
 → TDD
 → Review

@@ -1,6 +1,6 @@
 ---
 name: yss-domain-modeling
-description: 用于 YSS 项目在实现前进行 DDD 领域建模。当用户提供 PRD、RDD Spec、OpenAPI、页面流程、业务规则、DDL、元数据或现有代码，希望先识别统一语言、上下文边界、聚合、实体、值对象、领域行为、状态流转、Domain Gateway、领域事件、ADR 和实现 handoff 时调用。
+description: 用于 YSS 项目在实现前进行 DDD 领域建模。当用户提供 Spec、RDD Spec、OpenAPI、页面流程、业务规则、DDL、元数据或现有代码，希望先识别统一语言、上下文边界、聚合、实体、值对象、领域行为、状态流转、Domain Gateway、领域事件、ADR 和实现 handoff 时调用。
 ---
 
 # yss-domain-modeling
@@ -10,7 +10,7 @@ description: 用于 YSS 项目在实现前进行 DDD 领域建模。当用户提
 ## 何时使用
 
 - 用户要求先做 DDD、领域建模、聚合分析、上下文边界或统一语言。
-- 用户提供 PRD、RDD Spec、OpenAPI、页面流程、业务规则、DDL、元数据或现有代码，希望先沉淀领域模型。
+- 用户提供 Spec、RDD Spec、OpenAPI、页面流程、业务规则、DDL、元数据或现有代码，希望先沉淀领域模型。
 - 用户要求从业务规则推导实体、值对象、领域行为、状态流转、Domain Gateway 或领域事件。
 - 用户要判断某个设计是否应该写 ADR、更新 `CONTEXT.md`，或如何交给后续实现。
 
@@ -23,7 +23,7 @@ description: 用于 YSS 项目在实现前进行 DDD 领域建模。当用户提
 
 ## 工作流
 
-1. 先读取输入资料：PRD、RDD Spec、OpenAPI、页面流程、DDL、`CONTEXT.md`、ADR 和现有代码。
+1. 先读取输入资料：Spec、RDD Spec、OpenAPI、页面流程、DDL、`CONTEXT.md`、ADR 和现有代码。
 2. 抽取业务术语，识别同义词、歧义词、禁用词和待确认含义。
 3. 划分上下文边界，明确每个上下文负责什么、不负责什么、依赖什么。
 4. 识别聚合、聚合根、实体、值对象、领域服务和领域事件。

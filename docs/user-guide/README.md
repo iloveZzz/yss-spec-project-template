@@ -9,7 +9,7 @@
 ## 推荐流程
 
 1. 在 `docs/discovery/` 记录机会探索、市场、竞品和用户洞察。
-2. 在 `docs/requirements/` 维护 PRD、用户故事和验收标准。
+2. 在 `docs/requirements/` 维护 Spec、用户故事和验收标准。
 3. 在 `docs/design/` 维护页面、原型、用户流和交互状态。
 4. 在 `docs/api/` 维护 OpenAPI 3.1 契约。
 5. 在 `docs/architecture/` 和 `docs/adr/` 记录业务架构、功能架构、系统总体架构、数据架构和架构决策。

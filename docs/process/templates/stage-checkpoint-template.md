@@ -5,7 +5,7 @@ owner: ai
 
 # 阶段 Checkpoint 记录模板
 
-> 用于每个生命周期阶段结束时，复制到 Issue 评论、MR / PR 描述或阶段文档。目标是固定产物、验证、风险、Issue 同步和 Git checkpoint 判断，避免阶段结论只停留在本地上下文。
+> 用于每个生命周期阶段结束时，复制到 Ticket 评论、MR / PR 描述或阶段文档。目标是固定产物、验证、风险、Ticket 同步和 Git checkpoint 判断，避免阶段结论只停留在本地上下文。
 
 ## 基本信息
 
@@ -17,7 +17,7 @@ owner: ai
 | 记录日期 |  |
 | 记录人 / Agent |  |
 | 主控 Agent |  |
-| Issue / MR / PR |  |
+| Ticket / MR / PR |  |
 
 ## 阶段产物
 
@@ -25,11 +25,11 @@ owner: ai
 |---|---|---|---|
 |  |  | `done` / `draft` / `not-applicable` |  |
 
-## Issue 同步状态
+## Ticket 同步状态
 
 | 项目 | 内容 |
 |---|---|
-| Issue tracker | GitLab / GitHub / 本地文档 |
+| Ticket tracker | GitLab / GitHub / 本地文档 |
 | 已同步内容 |  |
 | 未同步原因 |  |
 | 下一次同步点 |  |
@@ -47,7 +47,7 @@ owner: ai
 | 是否使用 subagent | 是 / 否 |
 | 使用原因 |  |
 | 任务包位置 |  |
-| 不可委派门禁确认 | 生命周期阶段判定 / PRD baseline / requirement freeze / Prototype 用户确认 / OpenAPI Freeze / Architecture Review 放行 / 风险 / 回滚约束 / Issue 状态 / Git checkpoint / 完成结论均由主控 Agent 收口 |
+| 不可委派门禁确认 | 生命周期阶段判定 / Spec baseline / requirement freeze / Prototype 用户确认 / OpenAPI Freeze / Architecture Review 放行 / 风险 / 回滚约束 / Ticket 状态 / Git checkpoint / 完成结论均由主控 Agent 收口 |
 
 | task_id | subagent 角色 | 任务类型 | 输入资产 | 输出产物 | 写范围 | 主控采纳结论 |
 |---|---|---|---|---|---|---|
@@ -55,7 +55,7 @@ owner: ai
 
 | 冲突 / 分歧 | 裁决依据 | 回填资产 | 是否阻断 |
 |---|---|---|---|
-|  | PRD / OpenAPI / ADR / Issue / 测试 / CONTEXT / 风险 / 回滚约束 / 用户指令 |  | 是 / 否 |
+|  | Spec / OpenAPI / ADR / Ticket / 测试 / CONTEXT / 风险 / 回滚约束 / 用户指令 |  | 是 / 否 |
 
 | 独立审查项 | 结论 | 证据 |
 |---|---|---|

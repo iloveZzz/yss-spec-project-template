@@ -1,0 +1,136 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "pathname"
+
+ROOT = Pathname.new(__dir__).join("..").realpath
+
+def route(facts)
+  if facts.fetch(:repository_mode) == "template-source"
+    return %w[
+      impact-assessment
+      ssot-update
+      skill-projection-sync
+      pressure-scenarios
+      fresh-verification
+      independent-review
+    ]
+  end
+
+  gates = %w[impact-assessment tracker-sync fresh-verification]
+  return gates if facts.fetch(:scale) == :small && !facts.fetch(:high_risk)
+
+  gates.concat(%w[spec product-overview functional-architecture])
+
+  if facts.fetch(:ui_impact)
+    gates.concat(%w[
+      low-fidelity-prototype
+      state-matrix
+      high-fidelity-html-prototype
+      user-confirmation
+    ])
+  end
+
+  gates.concat(%w[openapi-draft design-review openapi-freeze]) if facts.fetch(:api_impact)
+
+  if facts.fetch(:backend_impact) || facts.fetch(:high_risk)
+    gates.concat(%w[engineering-baseline architecture-review])
+  end
+
+  gates << "data-architecture" if facts.fetch(:data_impact)
+  gates << "spec-delta" if facts.fetch(:existing_frozen_baseline) && facts.fetch(:high_risk)
+  gates.concat(%w[parent-ticket vertical-slice-tickets])
+  gates.uniq
+end
+
+scenarios = [
+  {
+    name: "小文案调整",
+    facts: {
+      repository_mode: "project-instance", scale: :small, high_risk: false,
+      ui_impact: false, api_impact: false, backend_impact: false,
+      data_impact: false, existing_frozen_baseline: true
+    },
+    required: %w[impact-assessment tracker-sync fresh-verification],
+    forbidden: %w[spec product-overview spec-delta high-fidelity-html-prototype]
+  },
+  {
+    name: "纯后端新功能",
+    facts: {
+      repository_mode: "project-instance", scale: :new_module, high_risk: false,
+      ui_impact: false, api_impact: true, backend_impact: true,
+      data_impact: false, existing_frozen_baseline: false
+    },
+    required: %w[spec product-overview functional-architecture openapi-draft engineering-baseline parent-ticket vertical-slice-tickets],
+    forbidden: %w[low-fidelity-prototype state-matrix high-fidelity-html-prototype user-confirmation spec-delta]
+  },
+  {
+    name: "有 UI 的新功能",
+    facts: {
+      repository_mode: "project-instance", scale: :new_module, high_risk: false,
+      ui_impact: true, api_impact: true, backend_impact: true,
+      data_impact: false, existing_frozen_baseline: false
+    },
+    required: %w[spec product-overview low-fidelity-prototype state-matrix high-fidelity-html-prototype user-confirmation openapi-freeze vertical-slice-tickets],
+    forbidden: %w[spec-delta]
+  },
+  {
+    name: "既有冻结基线的高风险变更",
+    facts: {
+      repository_mode: "project-instance", scale: :medium, high_risk: true,
+      ui_impact: false, api_impact: true, backend_impact: true,
+      data_impact: true, existing_frozen_baseline: true
+    },
+    required: %w[spec product-overview spec-delta openapi-draft data-architecture architecture-review vertical-slice-tickets],
+    forbidden: %w[high-fidelity-html-prototype]
+  },
+  {
+    name: "模板源流程修订",
+    facts: {
+      repository_mode: "template-source", scale: :process, high_risk: true,
+      ui_impact: false, api_impact: false, backend_impact: false,
+      data_impact: false, existing_frozen_baseline: false
+    },
+    required: %w[impact-assessment ssot-update skill-projection-sync pressure-scenarios fresh-verification independent-review],
+    forbidden: %w[spec product-overview openapi-draft spec-delta vertical-slice-tickets]
+  }
+].freeze
+
+failures = []
+
+scenarios.each do |scenario|
+  result = route(scenario.fetch(:facts))
+  missing = scenario.fetch(:required) - result
+  unexpected = scenario.fetch(:forbidden) & result
+  failures << "#{scenario.fetch(:name)} 缺少门禁: #{missing.join(', ')}" unless missing.empty?
+  failures << "#{scenario.fetch(:name)} 错误触发: #{unexpected.join(', ')}" unless unexpected.empty?
+end
+
+semantic_markers = {
+  "AGENTS.md" => [
+    "21 个门禁全部是条件强制门禁",
+    "只要进入 Spec 基线",
+    "只有存在 UI 影响时",
+    "Spec Delta 只记录相对既有冻结 Spec 基线",
+    "template-source"
+  ],
+  "docs/process/harness-process-tailoring.md" => [
+    "全新产品 / 模块",
+    "不生成空文档",
+    "最近可信阶段"
+  ]
+}.freeze
+
+semantic_markers.each do |relative_path, markers|
+  body = ROOT.join(relative_path).read
+  markers.each do |marker|
+    failures << "#{relative_path} 缺少语义标记: #{marker}" unless body.include?(marker)
+  end
+end
+
+unless failures.empty?
+  warn failures.join("\n")
+  exit 1
+end
+
+puts "五类生命周期压力场景验证通过"

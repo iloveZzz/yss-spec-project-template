@@ -1,12 +1,12 @@
 # Modeling Workflow
 
-Use this reference to turn PRD/RDD/OpenAPI/page flow/DDL/current code into a YSS domain model brief.
+Use this reference to turn Spec/RDD/OpenAPI/page flow/DDL/current code into a YSS domain model brief.
 
 ## 1. Read Inputs
 
 Collect only the inputs needed for the current task:
 
-- PRD, user stories, acceptance criteria, and non-scope.
+- Spec, user stories, acceptance criteria, and non-scope.
 - RDD Spec, OpenAPI, state machine, error codes, and business rules.
 - Page flow, form fields, table columns, actions, permissions, and visible states.
 - Existing `CONTEXT.md`, `CONTEXT-MAP.md`, ADRs, and related code.

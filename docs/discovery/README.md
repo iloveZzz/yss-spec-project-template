@@ -12,7 +12,7 @@ Discovery 不是固定排在 Ideation 后面的单向步骤。它和机会构想
 市场 / 竞品 / 用户事实 <-> 机会构想假设 <-> MVP 边界
 ```
 
-进入 PRD 前必须收敛为：
+进入 Spec 前必须收敛为：
 
 - 用户是谁。
 - 痛点是什么。
@@ -43,7 +43,7 @@ Discovery 不是固定排在 Ideation 后面的单向步骤。它和机会构想
 
 ## 竞品分析
 
-推荐优先使用 `competitive-intelligence`，把公开证据、事实 / 推断、置信度和 PRD 输入分开记录。竞品分析结论只能作为 Discovery / PRD 输入，不能直接冻结为需求。
+推荐优先使用 `competitive-intelligence`，把公开证据、事实 / 推断、置信度和 Spec 输入分开记录。竞品分析结论只能作为 Discovery / Spec 输入，不能直接冻结为需求。
 
 ### 分析维度
 产品功能 / 用户体验 / 技术能力 / 商业模式 / 用户口碑 / 市场表现
@@ -65,7 +65,7 @@ Discovery 不是固定排在 Ideation 后面的单向步骤。它和机会构想
 
 ## Discovery 收敛产物
 
-Discovery 的结论用于影响 PRD、功能架构、产品设计、API 和架构阶段，但不替代这些阶段的正式产物。
+Discovery 的结论用于影响 Spec、功能架构、产品设计、API 和架构阶段，但不替代这些阶段的正式产物。
 
 - 机会说明。
 - MVP 范围和非目标范围。

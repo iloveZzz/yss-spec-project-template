@@ -1,6 +1,6 @@
 ---
 name: prototype-review
-description: Use when reviewing low-fidelity UI design, wireframes, prototype links, interaction specs, or state matrices before high-fidelity HTML prototype work, PRD calibration, OpenAPI Draft, vertical slicing, or implementation.
+description: Use when reviewing low-fidelity UI design, wireframes, prototype links, interaction specs, or state matrices before high-fidelity HTML prototype work, Spec calibration, OpenAPI Draft, vertical slicing, or implementation.
 ---
 
 # Prototype Review
@@ -9,7 +9,7 @@ Use this skill as the low-fidelity gate between product design/prototype work an
 
 ## Required Inputs
 
-- PRD baseline or confirmed user stories.
+- Spec baseline or confirmed user stories.
 - `docs/design/<feature>-interaction-spec.md` or prototype link.
 - State matrix, preferably based on `docs/design/templates/state-matrix-template.md`.
 - Existing OpenAPI Draft only if the review is checking alignment; do not require OpenAPI before product design.
@@ -31,10 +31,10 @@ Use this skill as the low-fidelity gate between product design/prototype work an
 
 ## Decision Rules
 
-- If a feature has UI impact and lacks page map, user flow, prototype/wireframe, or state matrix, block high-fidelity HTML prototype work, PRD calibration, and OpenAPI Draft.
+- If a feature has UI impact and lacks page map, user flow, prototype/wireframe, or state matrix, block high-fidelity HTML prototype work, Spec calibration, and OpenAPI Draft.
 - If the prototype hides business rules behind generic text such as "校验失败", require field-level errors and recovery behavior.
-- If a page shows a user action but the OpenAPI implication list lacks endpoint/non-goal mapping, block high-fidelity HTML prototype work, PRD calibration, or OpenAPI Draft.
-- If PRD P0 scope says a user can manage or configure an object but the design only shows read-only data, block until the write path or scope downgrade is explicit.
+- If a page shows a user action but the OpenAPI implication list lacks endpoint/non-goal mapping, block high-fidelity HTML prototype work, Spec calibration, or OpenAPI Draft.
+- If Spec P0 scope says a user can manage or configure an object but the design only shows read-only data, block until the write path or scope downgrade is explicit.
 - If a state is intentionally out of scope, record why and who owns the decision.
 - If implementation dependencies are unclear, route to `yss-router` only after the prototype passes this review.
 
@@ -53,7 +53,7 @@ Use this skill as the low-fidelity gate between product design/prototype work an
 ### OpenAPI Draft Readiness
 - <paths, fields, errors, permissions, pagination/YSS wrappers, action mappings, rule sources, concurrency notes>
 
-### PRD Calibration Readiness
+### Spec Calibration Readiness
 - <requirements gaps, acceptance criteria updates, non-goals, pending decisions>
 
 ### Frontend Prototype Readiness

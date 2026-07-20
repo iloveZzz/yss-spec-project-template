@@ -1,27 +1,27 @@
 # 产品原型工作流
 
-本文定义 YSS Harness 中有 UI 功能的最小产品原型链路。目标是用 `grill-with-docs` 问清需求，用 `product-design:index` 统一原型产出入口，用 `antd` CLI 固化 Ant Design v6 事实校验，并由 YSS 生命周期负责评审、用户确认和 PRD / OpenAPI 回填。
+本文定义 YSS Harness 中有 UI 功能的最小产品原型链路。目标是用 `grill-with-docs` 问清需求，用 `product-design:index` 统一原型产出入口，用 `antd` CLI 固化 Ant Design v6 事实校验，并由 YSS 生命周期负责评审、用户确认和 Spec / OpenAPI 回填。
 
 ## 适用范围
 
 - 新产品、新模块或较大 UI 功能。
 - 影响主流程、权限状态、异常状态、页面导航或 OpenAPI 反推清单的 UI 变更。
-- 已进入 PRD 初稿 / 需求基线流程，且存在用户界面的功能。
+- 已进入 Spec 初稿 / 需求基线流程，且存在用户界面的功能。
 
-小文案、局部样式、配置微调或不进入 PRD 生命周期的低风险变更，可在影响面评估中说明不适用。
+小文案、局部样式、配置微调或不进入 Spec 生命周期的低风险变更，可在影响面评估中说明不适用。
 
 ## 标准链路
 
 ```text
 grill-with-docs
--> PRD / 产品总体设计
+-> Spec / 产品总体设计
 -> yss-design-system
 -> product-design:index
 -> Product Design focused skills
 -> antd CLI 校验
 -> prototype-review
 -> 用户确认
--> PRD 校准 / OpenAPI Draft
+-> Spec 校准 / OpenAPI Draft
 ```
 
 ## 职责边界
@@ -34,13 +34,13 @@ grill-with-docs
 | 原型产出 | `$get-context` / `$ideate` / `$prototype` / `$image-to-code` / `$url-to-code` | 产出低保真 / 高保真页面、交互说明、可演示原型和可分享资产 |
 | AntD 事实校验 | `antd` CLI | 查询 Ant Design v6 设计语言、组件 API、demo、token 和 semantic 信息 |
 | 阶段评审 | `prototype-review` | Fail-closed 评审页面流、状态矩阵、权限、异常、OpenAPI 反推和验收标准 |
-| 用户确认 | `docs/design/templates/prototype-confirmation-template.md` | 记录高保真 HTML 原型是否被用户确认，并决定能否进入 PRD 校准 / OpenAPI Draft |
+| 用户确认 | `docs/design/templates/prototype-confirmation-template.md` | 记录高保真 HTML 原型是否被用户确认，并决定能否进入 Spec 校准 / OpenAPI Draft |
 
 ## 产物要求
 
 有 UI 的功能至少沉淀：
 
-- PRD 初稿：`docs/requirements/<feature>-prd.md`
+- Spec 初稿：`docs/requirements/<feature>-spec.md`
 - 产品总体设计 / 功能架构：`docs/design/<feature>-product-overview-design.md`
 - 交互说明：`docs/design/<feature>-interaction-spec.md`
 - 状态矩阵：`docs/design/<feature>-state-matrix.md`
@@ -48,7 +48,7 @@ grill-with-docs
 - 高保真 HTML 原型：`docs/design/prototypes/<feature>/index.html`
 - 用户确认记录：`docs/design/<feature>-prototype-confirmation.md`
 
-高保真 HTML 原型必须使用 Ant Design v6。系统 / Agent 可以自动产出，但产出后必须获得用户确认并记录确认结果；未确认前不得进入 PRD 校准、需求冻结或 UI 驱动 OpenAPI Draft。
+高保真 HTML 原型必须使用 Ant Design v6。系统 / Agent 可以自动产出，但产出后必须获得用户确认并记录确认结果；未确认前不得进入 Spec 校准、需求冻结或 UI 驱动 OpenAPI Draft。
 
 ## AntD CLI 门禁
 
@@ -74,7 +74,7 @@ antd semantic <Component> --version 6.0.0 --format json
 - 缺产品总体设计 / 功能架构：回到 `docs/design/<feature>-product-overview-design.md`。
 - 没有视觉目标且需要新 UI：按 Product Design 规则先走 `$get-context`，再走 `$ideate`，展示 3 个视觉方向并等待用户选择。
 - 原型评审阻断：回到 Product Design focused skill 补齐页面流、状态矩阵、权限或异常路径。
-- 用户未确认：不得进入 PRD 校准 / OpenAPI Draft。
+- 用户未确认：不得进入 Spec 校准 / OpenAPI Draft。
 - 存在高风险变更：记录人工确认项，不得省略验证证据。
 
 ## 兼容策略

@@ -1,124 +1,61 @@
-# Skills Maintenance
+# Skills 维护说明
 
-> 中文说明：本文说明本仓库内置 Engineering Skills 的来源、安装位置、升级步骤和验证命令。它是维护文档，不是 skill 本体；真正可被 Agent 加载的 `SKILL.md` 位于各项目 Agent roots 的 `skills/` 目录。
+本文说明项目级 skills 的权威目录、投影方式、锁文件语义和升级验证。Agent 实际加载的入口仍是各目录中的 `SKILL.md`。
 
-本仓库默认使用项目内置技能快照，而不是只依赖用户全局 Codex / Hermes 技能目录。`skills-lock.json` 是来源、版本和技能清单的权威记录；`scripts/verify-template` 是落地校验入口。
+## 权威内容与投影
 
-## Sources
+- `.agents/skills` 是跨 Agent 共享技能的唯一权威内容。
+- `.claude/skills`、`.codex/skills`、`.hermes/skills`、`.pi/skills`、`.trae/skills` 中的同名共享技能是生成投影，不得分别手工修改。
+- 只属于某个平台的 skill 继续保留在对应 root，并由 `skills-lock.json` 的 `platform` 分组记录。
+- 共享技能投影可以是指向权威目录的符号链接，也可以是完整同步副本；`scripts/sync-skills --check` 会检查链接目标或完整目录哈希。
 
-| Source | Ref | Path | 用途 |
-|---|---|---|---|
-| `mattpocock/skills` | `272f99b22574f50e4266791c86b9302682970e23` | `skills/engineering` | Matt Pocock Engineering Skills 主流程 |
-| `anthropics/knowledge-work-plugins` | `main` | `sales/skills/competitive-intelligence` | 竞品 / 市场事实研究 |
+## 来源与锁定
 
-## Installed Skills
-
-当前项目 Agent roots 必须同时具备以下技能：
-
-```text
-ask-matt
-competitive-intelligence
-grill-with-docs
-to-prd
-to-issues
-implement
-tdd
-diagnosing-bugs
-code-review
-domain-modeling
-codebase-design
-improve-codebase-architecture
-triage
-prototype
-research
-setup-matt-pocock-skills
-resolving-merge-conflicts
-```
-
-`ask-matt` 保持 Matt Pocock 上游正文不改；本项目通过 `yss-product-lifecycle` 把它的 idea -> ship 主流映射到 YSS 阶段门禁、OpenAPI Draft / Freeze、YSS routing、Git checkpoint 和 fresh verification。
-
-## Project Agent Roots
-
-| Agent | Project root |
-|---|---|
-| Agents | `.agents/skills/<skill-name>/` |
-| Claude | `.claude/skills/<skill-name>/` |
-| Codex | `.codex/skills/<skill-name>/` |
-| Hermes | `.hermes/skills/<skill-name>/` |
-| Pi | `.pi/skills/<skill-name>/` |
-| Trae | `.trae/skills/<skill-name>/` |
-
-## Optional Local Workflow Tools
-
-除项目内置 Engineering Skills 外，维护者可按需使用本机级 GitLab 工作流工具；它们不是模板必须内置的技能目录。
-
-| Skill / Tool | Entry | 用途 |
+| 来源 | 固定版本 / 路径 | 用途 |
 |---|---|---|
-| `gitlab-workflow` | `$CODEX_HOME/skills/gitlab-workflow/` | GitLab API、项目查询、clone、push、分支化 workflow |
-| `glab` | `glab` | GitLab MR、CI、Pipeline、Issue、Release 等 CLI 操作 |
-| `scripts/gitworks` | `scripts/gitworks` | 当前仓库的 GitLab workflow 快捷入口 |
+| `mattpocock/skills` | `272f99b22574f50e4266791c86b9302682970e23` / `skills/engineering` | 通用工程流程 skills |
+| `anthropics/knowledge-work-plugins` | `sales/skills/competitive-intelligence` | 竞品与市场事实研究 |
+| 项目本地 | `.agents/skills` 或平台专属 root | YSS 适配与项目治理 skills |
 
-详细配置与使用规则见 `docs/agents/gitlab-workflow-skills.md`。
+`skills-lock.json` 是技能清单、来源、上游哈希、当前有效内容哈希和投影目标的权威记录：
 
-## Project-Level Harness / YSS Skills
+- `upstreamHash`：能够追溯时记录未经项目适配的上游内容哈希。
+- `effectiveHash`：当前实际生效的完整 skill 目录树哈希。
+- `targets`：权威内容应投影到的 Agent roots。
 
-本项目还维护以下项目级 Harness / YSS 集成技能：
+项目允许按 YSS 流程适配上游 skill，但必须同时保留可追溯的上游信息和适配后的有效哈希。
 
-| Skill | Path | 用途 |
-|---|---|---|
-| `implementation-repo-onboarding` | `.codex/skills/implementation-repo-onboarding/` | 接入已有前端 / 后端实现仓库，生成登记、基线发现和验证命令 |
-| `cross-repo-implementation-routing` | `.codex/skills/cross-repo-implementation-routing/` | 路由跨仓库实现任务，绑定 MR / PR 和验证证据 |
-| `yss-frontend-scaffold-generator` | `.codex/skills/yss-frontend-scaffold-generator/` | 基于标准 YSS 前端模板定义 0-1 前端工程生成流程 |
+## 维护流程
 
-这些技能只定义流程、输入输出和安全边界；除非用户明确授权，不直接 clone 到 Harness 仓库、创建远端仓库、提交或推送代码。
+1. 在临时目录读取或下载锁定来源，不直接覆盖工作区。
+2. 只在 `.agents/skills/<skill-name>/` 修改共享技能；平台专属技能只在所属 root 修改。
+3. 修改流程型 skill 时按 `writing-skills` 记录 RED 基线、压力场景、GREEN 结果和 REFACTOR 检查。
+4. 生成共享投影并更新锁文件：
 
-## Upgrade Checklist
+   ```bash
+   scripts/sync-skills
+   scripts/update-skill-lock
+   ```
 
-1. 读取 `skills-lock.json`，确认 Matt 快照 ref、`competitive-intelligence` 额外来源和技能清单。
-2. 拉取或下载对应来源到临时目录，不直接覆盖工作区。
-3. 将锁定技能同步到全部 6 个项目 Agent roots。
-4. 保留 `ask-matt` 上游正文不改；项目差异写入 `yss-product-lifecycle`、流程文档或维护说明。
-5. 检查每个技能目录都有合法 `SKILL.md` frontmatter，至少包含 `name` 和 `description`。
-6. 运行 `scripts/verify-template`。
-7. 重启需要重新加载技能的 Agent 客户端。
+   新增共享 skill 时先显式登记：`scripts/update-skill-lock --add=<skill-name>`；新增平台专属 skill 使用 `scripts/update-skill-lock --add-platform=<root>:<skill-name>`。脚本不会把工作区中偶然出现的未跟踪目录自动纳入发布清单。
 
-## Verification Command
+5. 执行发布阻断校验：
+
+   ```bash
+   scripts/verify-template
+   ```
+
+6. 需要重新加载技能的客户端在变更落地后重启或刷新项目。
+
+## 单独检查
 
 ```bash
-skills=(
-  ask-matt
-  competitive-intelligence
-  grill-with-docs
-  to-prd
-  to-issues
-  implement
-  tdd
-  diagnosing-bugs
-  code-review
-  domain-modeling
-  codebase-design
-  improve-codebase-architecture
-  triage
-  prototype
-  research
-  setup-matt-pocock-skills
-  resolving-merge-conflicts
-)
-
-roots=(
-  .agents/skills
-  .claude/skills
-  .codex/skills
-  .hermes/skills
-  .pi/skills
-  .trae/skills
-)
-
-for root in "${roots[@]}"; do
-  for skill in "${skills[@]}"; do
-    test -f "$root/$skill/SKILL.md" || echo "missing $root/$skill/SKILL.md"
-  done
-done
-
-scripts/verify-template
+scripts/sync-skills --check
+scripts/update-skill-lock --check
 ```
+
+前者检查所有共享投影是否指向或匹配权威内容，后者检查 `skills-lock.json` 是否与当前完整目录树一致。过时技能不会保留兼容别名；旧版项目按 `docs/user-guide/spec-ticket-migration-guide.md` 一次性迁移。
+
+## 外部工作流工具
+
+维护者可按需使用本机的 `gitlab-workflow`、`glab`、`gh` 或 `scripts/gitworks`。这些工具不是共享技能投影的一部分；平台选择与发布规则见 `docs/agents/issue-tracker.md`。

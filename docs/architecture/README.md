@@ -11,7 +11,7 @@
 | 产物 | 产出阶段 | 重点问题 | 建议文件 |
 |------|----------|----------|----------|
 | 业务架构 | 机会探索 / Discovery / 产品定义 | 用户是谁、价值流是什么、产品在业务生态中的边界在哪里 | `<feature>-business-architecture.md` |
-| 产品总体设计 / 功能架构 | PRD 初稿之后、页面 / 原型 / 交互设计之前 | 用户主流程、业务对象、功能域、模块边界、页面/API/数据影响、优先级、依赖和 MVP 非目标范围是什么 | `<feature>-product-overview-design.md` 或 `<feature>-functional-architecture.md` |
+| 产品总体设计 / 功能架构 | Spec 初稿之后、页面 / 原型 / 交互设计之前 | 用户主流程、业务对象、功能域、模块边界、页面/API/数据影响、优先级、依赖和 MVP 非目标范围是什么 | `<feature>-product-overview-design.md` 或 `<feature>-functional-architecture.md` |
 | 系统概要设计 / 系统总体架构 | 工程基线 / 系统 / 数据架构设计 | 服务/模块如何构建、部署、集成、运维、回滚和演进 | `<feature>-system-overview-design.md`、`<feature>-system-architecture.md` 或 `<feature>-architecture.md` |
 | 数据架构 | 详细设计 / 持久化开发前 | 概念/逻辑/物理模型、元模型、版本、血缘、查询、索引和存储策略是什么 | `<feature>-data-architecture.md` |
 
@@ -26,11 +26,11 @@ docs/architecture/diagrams/<feature>-system-architecture.excalidraw
 docs/architecture/diagrams/<feature>-data-model.excalidraw
 ```
 
-使用 `excalidraw-diagram-generator` 生成图时，图只作为审查辅助；发现的问题必须回写到 PRD、OpenAPI、ADR、系统 / 数据架构设计 或对应架构文档。
+使用 `excalidraw-diagram-generator` 生成图时，图只作为审查辅助；发现的问题必须回写到 Spec、OpenAPI、ADR、系统 / 数据架构设计 或对应架构文档。
 
 推荐模板：
 
-- `docs/design/templates/product-overview-design-template.md`：PRD 初稿之后、页面 / 原型 / 交互设计之前的产品总体设计 / 功能架构评审稿。
+- `docs/design/templates/product-overview-design-template.md`：Spec 初稿之后、页面 / 原型 / 交互设计之前的产品总体设计 / 功能架构评审稿。
 - `docs/architecture/templates/system-overview-design-template.md`：系统 / 数据架构与工程契约设计审查阶段的系统概要设计评审稿，承接 API 影响分析 / 契约草案 / OpenAPI Draft 与工程基线，并在 OpenAPI Freeze 前反向校验 Draft。
 
 ---
@@ -57,7 +57,7 @@ delegate_task(
 ```python
 delegate_task(
     goal="根据技术讨论记录，自动生成 ADR",
-    context="使用 docs/adr/template.md 模板"
+    context="使用 docs/templates/adr-template.md 模板"
 )
 ```
 

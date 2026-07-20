@@ -1,16 +1,16 @@
 # <功能名称> Spec Delta
 
-> 适用场景：API、权限、状态机、数据模型、跨端协作、新模块或高风险变更需要在 PRD、OpenAPI Draft、Design Review 和垂直切片之间明确行为差异时使用。  
+> 适用场景：修改既有冻结 Spec 基线时，API、权限、状态机、数据模型、跨端协作或其他高风险行为需要在 Spec、OpenAPI Draft、Design Review 和垂直切片之间明确差异。全新产品或全新模块不使用本模板。
 > 本模板只借鉴 OpenSpec 的行为差异表达方式，不引入 OpenSpec CLI、旧式变更目录、变更状态文件或额外状态机。
 
 ## 1. 变更摘要
 
 | 项 | 内容 |
 |---|---|
-| 需求 / PRD |  |
+| 需求 / Spec |  |
 | 相关 OpenAPI Draft / Freeze |  |
 | 相关架构 / 设计审查 |  |
-| 相关 Issue / 切片 |  |
+| 相关 Ticket / 切片 |  |
 | 变更类型 | 新增 / 修改 / 移除 / 高风险修正 |
 | 是否阻塞实现 | 是 / 否 |
 
@@ -64,6 +64,6 @@
 ## 7. 结论
 
 - 是否允许进入 OpenAPI Freeze / no API impact 记录：
-- 是否允许进入 `to-issues`：
+- 是否允许进入 `to-tickets`：
 - 必须带入垂直切片的约束：
 - Git checkpoint 状态：

@@ -15,7 +15,7 @@ owner: ai
 | Feature / Change |  |
 | 生命周期阶段 |  |
 | 对应门禁 |  |
-| Issue / MR / PR |  |
+| Ticket / MR / PR |  |
 | 主控 Agent |  |
 | subagent 角色 | Explorer / Drafter / Worker / Reviewer / Verifier |
 | 任务类型 | explore / draft / work / review / verify |
@@ -24,11 +24,11 @@ owner: ai
 
 | 输入 | 路径 / 链接 | 用途 |
 |---|---|---|
-| PRD / Discovery |  |  |
+| Spec / Discovery |  |  |
 | Product / Interaction Design |  |  |
 | OpenAPI Draft / Freeze |  |  |
 | Architecture / ADR / CONTEXT |  |  |
-| Issue / Slice / Checklist |  |  |
+| Ticket / Slice / Checklist |  |  |
 | 代码 / 命令 / 其他 |  |  |
 
 ## 3. 输出要求
@@ -47,7 +47,7 @@ owner: ai
 
 ## 5. 禁止事项
 
-- [ ] 不得执行 PRD baseline / requirement freeze。
+- [ ] 不得执行 Spec baseline / requirement freeze。
 - [ ] 不得执行 OpenAPI Freeze。
 - [ ] 不得给出 Architecture Review 最终放行结论。
 - [ ] 不得替代风险 / 回滚约束人工确认。

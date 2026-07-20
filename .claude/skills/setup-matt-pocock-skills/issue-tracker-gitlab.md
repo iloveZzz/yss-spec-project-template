@@ -1,6 +1,6 @@
-# Issue tracker: GitLab
+# Ticket tracker: GitLab
 
-Issues and PRDs for this repo live as GitLab issues. Use the [`glab`](https://gitlab.com/gitlab-org/cli) CLI for all operations.
+Tickets and Specs for this repo live as GitLab Issues. Use the [`glab`](https://gitlab.com/gitlab-org/cli) CLI for all operations.
 
 ## Conventions
 

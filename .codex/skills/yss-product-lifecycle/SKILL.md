@@ -40,20 +40,20 @@ Use this lifecycle skill to decide the stage and route to the right workflow. Do
 
 | Layer | Owner | Responsibility | Canonical artifacts |
 |---|---|---|---|
-| Product / requirements | `competitive-intelligence`, `research`, `grill-with-docs`, `prototype`, `to-spec` | Clarify market / competitor / technical facts, users, pain, boundaries, acceptance criteria, spec scope, and runnable answers to hard design questions | `CONTEXT.md`, `docs/adr/`, `docs/discovery/`, `docs/research/`, `docs/requirements/<feature>-spec.md` or legacy `<feature>-prd.md` |
+| Product / requirements | `competitive-intelligence`, `research`, `grill-with-docs`, `prototype`, `to-spec` | Clarify market / competitor / technical facts, users, pain, boundaries, acceptance criteria, spec scope, and runnable answers to hard design questions | `CONTEXT.md`, `docs/adr/`, `docs/discovery/`, `docs/research/`, `docs/requirements/<feature>-spec.md` |
 | Contract | OpenAPI / YSS API skills, OpenSpec-style Spec Delta | Define and freeze frontend/backend API contracts, plus behavior deltas for medium/high-risk changes | `docs/api/specs/*.yaml`, `docs/specs/<feature>-spec-delta.md`, OpenAPI Draft Review / Freeze records |
-| Delivery planning | `to-tickets`, `wayfinder`, `handoff` / equivalent handoff record, Issue tracker | Split specs / frozen contracts into end-to-end vertical slice tickets, or map unclear large work before slicing, and preserve context across threads or implementation repos | GitLab / GitHub Issues, local `tickets.md`, `docs/requirements/tickets/*`, legacy `docs/requirements/issues/*`, `docs/implementation/*` |
+| Delivery planning | `to-tickets`, `wayfinder`, `handoff` / equivalent handoff record, Ticket tracker | Split specs / frozen contracts into end-to-end vertical slice tickets, or map unclear large work before slicing, and preserve context across threads or implementation repos | GitLab / GitHub Issues, local `tickets.md`, `docs/requirements/tickets/*`, `docs/implementation/*` |
 | Implementation | `implement`, `tdd`, `diagnosing-bugs`, `resolving-merge-conflicts`, `code-review` | Build with feedback loops, bug diagnosis, conflict resolution, independent review, and fresh verification | tests, review reports, verification records, implementation notes |
 | YSS engineering | `yss-router` and selected YSS skills | Apply YSS DDD, UI, DTO, Repository, Controller, OpenAPI, and component rules | implementation routing record, Build Architecture Checklist, code/test evidence |
 
 Rules:
 
-- Prefer Matt skills for generic engineering workflow: `research`, `grill-with-docs`, `prototype`, `to-spec`, `to-tickets`, `wayfinder`, `implement`, `tdd`, `diagnosing-bugs`, `resolving-merge-conflicts`, `code-review`, `domain-modeling`, `codebase-design`, and `improve-codebase-architecture`. Use legacy `to-prd` / `to-issues` only when continuing an existing artifact or repository convention that still requires those names.
+- Prefer Matt skills for generic engineering workflow: `research`, `grill-with-docs`, `prototype`, `to-spec`, `to-tickets`, `wayfinder`, `implement`, `tdd`, `diagnosing-bugs`, `resolving-merge-conflicts`, `code-review`, `domain-modeling`, `codebase-design`, and `improve-codebase-architecture`.
 - Use `competitive-intelligence` when market, competitor, pricing, positioning, or customer sentiment facts are needed before Discovery / spec decisions.
 - Use `research` when technical facts, standards, third-party API behavior, framework behavior, or official documentation need primary-source evidence before spec, OpenAPI, architecture, or acceptance decisions.
 - Use `prototype` only for throwaway runnable feedback on logic, state-machine, or UI direction questions. Feed the conclusion back into spec, design, ADR, or tickets; do not treat prototype code as production implementation or as the required Ant Design v6 high-fidelity HTML prototype.
 - Preserve OpenAPI 3.1 Draft / Freeze as the API contract gate. Draft is review-only until Freeze.
-- Use OpenSpec-style Spec Delta for API, permission, state-machine, data-model, cross-client, new-module, or high-risk behavior changes. It is a lightweight behavior-delta artifact, not OpenSpec CLI, change-state files, or an extra state machine.
+- Use OpenSpec-style Spec Delta only for medium/high-risk behavior changes to an existing frozen Spec baseline, such as API, permission, state-machine, data-model, or cross-client changes. Do not create it for a new product or new module baseline.
 - After OpenAPI Freeze, route to `to-tickets` or an equivalent vertical-slice ticket record; do not require extra state-machine artifacts.
 - Use `wayfinder` before `to-spec` / `to-tickets` when the work is too large or foggy for one session and the destination is not yet clear.
 - Before frontend/backend implementation, first decide whether the impacted frontend/backend runtime projects already exist and can be reused. If an impacted side has no reusable project yet, route to `yss-ddd-scaffold-generator` or `yss-frontend-scaffold-generator` before business implementation.
@@ -89,7 +89,7 @@ Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, da
    - `docs/design/`
    - `docs/api/specs/`
    - `docs/architecture/` and `docs/adr/`
-   - `docs/requirements/tickets/`, legacy `docs/requirements/issues/`, `tickets.md`, and current issue tracker state when available
+   - `docs/requirements/tickets/`, `tickets.md`, and current tracker state when available
 2. Classify the request into one main stage:
    - intake / lifecycle triage, opportunity and Discovery, business / spec / functional architecture, product design and requirement freeze, system / data architecture, engineering contract, and Design Review, contract freeze and ticket formalization, vertical slices and TDD implementation, or verification / release / retrospective.
 3. For small changes or iterations, identify the nearest trustworthy existing stage and only expand from the earliest impacted artifact:
@@ -103,7 +103,7 @@ Use `excalidraw-diagram-generator` when diagrams will make boundaries, flows, da
    - Before spec calibration, product design, API impact analysis, OpenAPI Draft, requirement freeze, or formal vertical slicing, verify spec baseline and product overview design / functional architecture exist. If the task does not enter the spec lifecycle, record the not-applicable reason in the impact assessment.
    - For UI work, before spec calibration, API impact analysis, OpenAPI Draft, or requirement freeze, verify low-fidelity `prototype-review` is approved, `docs/design/prototypes/<feature>/index.html` exists as an Ant Design v6 high-fidelity HTML prototype, AntD v6 CLI validation evidence is recorded, and user confirmation is recorded after the prototype is produced. This prototype is a required lifecycle artifact and may be generated automatically by the system / Agent after low-fidelity prototype review; it does not have to be manually supplied by the user.
    - Before formal vertical slicing, verify spec, product overview design / functional architecture, OpenAPI Freeze or no-API-impact record, architecture review as needed, and a clear ticket destination.
-   - For medium/high-risk API, permission, state-machine, data-model, cross-client, new-module, or safety-sensitive changes, verify an OpenSpec-style Spec Delta exists or record why it is not needed.
+   - For medium/high-risk API, permission, state-machine, data-model, cross-client, or safety-sensitive changes to an existing frozen baseline, verify an OpenSpec-style Spec Delta exists or record why it is not needed. New product and new module baselines do not use Spec Delta.
    - When technical, standard, framework, or third-party API facts influence downstream decisions, verify `research` or an equivalent primary-source record exists and is cited.
    - Before frontend/backend implementation, verify vertical slice scope, implementation repo/location, whether the impacted frontend/backend runtime projects already exist and are reusable, YSS skill routing, Build Architecture Checklist, test command, and review strategy.
    - For backend slices, verify planned build / test / OpenAPI / CI commands use `./mvnw ...`; if commands use bare `mvn ...`, stop and either correct them or record a controlled wrapper exception before implementation.

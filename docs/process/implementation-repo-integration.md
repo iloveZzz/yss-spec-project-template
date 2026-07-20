@@ -59,7 +59,7 @@
 
 每个跨前后端切片必须绑定以下信息：
 
-- Harness change：Ticket change ID、垂直切片 ID、OpenAPI Freeze 记录。
+- Harness 追踪：功能父 Ticket ID、垂直切片 Ticket ID、OpenAPI Freeze 记录。
 - Backend：repo、branch、MR / PR、测试命令、验证结果。
 - Frontend：repo、branch、MR / PR、测试命令、验证结果。
 - Contract：OpenAPI spec 路径、生成类型或 API client 版本、契约验证命令。

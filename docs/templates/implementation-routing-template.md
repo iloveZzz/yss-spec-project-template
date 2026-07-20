@@ -7,30 +7,30 @@ owner: ai
 
 # <功能名称>实现路由记录
 
-> 适用场景：PRD、OpenAPI Freeze / 无 API 影响记录、Design Review 和垂直切片 Issue 已就绪后，进入实现前。
-> 本文记录契约状态、Issue 状态、YSS skill 最小集合、测试策略和回滚点，不替代垂直切片 Issue 或实施计划。
+> 适用场景：Spec、OpenAPI Freeze / 无 API 影响记录、Design Review 和垂直切片 Ticket 已就绪后，进入实现前。
+> 本文记录契约状态、Ticket 状态、YSS skill 最小集合、测试策略和回滚点，不替代垂直切片 Ticket 或实施计划。
 
 ## 1. 输入材料
 
 | 资产 | 路径 / 链接 | 状态 | 备注 |
 |------|-------------|------|------|
-| 垂直切片 Issue |  |  |  |
+| 垂直切片 Ticket |  |  |  |
 | OpenAPI Freeze / 无 API 影响记录 |  |  |  |
 | OpenSpec-style Spec Delta（条件必需） |  |  | 仅 API、权限、状态机、数据模型、跨端、新模块或高风险变更需要 |
 | Design Review |  |  |  |
 | 实现仓库 / 实现位置 |  |  |  |
 | 前后端工程存在性判定 |  |  | 记录 frontend / backend 是否已存在且可复用 |
-| `垂直切片 Issue 状态` |  |  | ready / blocked / in-progress |
+| `垂直切片 Ticket 状态` |  |  | ready / blocked / in-progress |
 
 ## 2. 实现前门禁
 
 | 检查项 | 结果 | 备注 |
 |--------|------|------|
-| PRD 验收标准已可追溯 | 是 / 否 |  |
+| Spec 验收标准已可追溯 | 是 / 否 |  |
 | OpenAPI Freeze 或无 API 影响记录已完成 | 是 / 否 |  |
 | Spec Delta 已补齐或明确不需要 | 是 / 否 / 不适用 |  |
 | Design Review 阻断项已关闭 | 是 / 否 / 不适用 |  |
-| 垂直切片 Issue 已拆到端到端可验收 | 是 / 否 |  |
+| 垂直切片 Ticket 已拆到端到端可验收 | 是 / 否 |  |
 | 实现仓库 / 实现位置已登记 | 是 / 否 |  |
 | 受影响 frontend 工程已存在可复用，或已登记 `scaffold_status=required` 并确认外部脚手架目标 | 是 / 否 / 不适用 |  |
 | 受影响 backend 工程已存在可复用，或已登记 `scaffold_status=required` 并确认外部脚手架目标 | 是 / 否 / 不适用 |  |
@@ -144,8 +144,8 @@ owner: ai
 
 ## 8. 完成标准
 
-- [ ] 垂直切片 Issue 完整，且状态允许进入实现。
-- [ ] YSS skills 已最小化选择，没有绕过 Issue、OpenAPI Freeze / 无 API 影响记录或必要的 Spec Delta。
+- [ ] 垂直切片 Ticket 完整，且状态允许进入实现。
+- [ ] YSS skills 已最小化选择，没有绕过 Ticket、OpenAPI Freeze / 无 API 影响记录或必要的 Spec Delta。
 - [ ] 后端切片如适用，已填写 `Backend Slice Implementation Contract`，并且 required skills、禁止模式、证据文件、延期 seam 和验证命令完整。
 - [ ] 受影响外部实现仓库已登记，并绑定分支、MR / PR、CI 和验证命令。
 - [ ] 受影响 frontend / backend 工程存在性已判定；0-1 缺失工程已登记 `scaffold_status=required`、确认外部脚手架目标并路由对应脚手架 skill。

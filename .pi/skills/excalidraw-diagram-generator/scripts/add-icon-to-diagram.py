@@ -37,60 +37,60 @@ def calculate_bounding_box(elements: List[Dict[str, Any]]) -> Tuple[float, float
     """Calculate the bounding box (min_x, min_y, max_x, max_y) of icon elements."""
     if not elements:
         return (0, 0, 0, 0)
-    
+
     min_x = float('inf')
     min_y = float('inf')
     max_x = float('-inf')
     max_y = float('-inf')
-    
+
     for element in elements:
         if 'x' in element and 'y' in element:
             x = element['x']
             y = element['y']
             width = element.get('width', 0)
             height = element.get('height', 0)
-            
+
             min_x = min(min_x, x)
             min_y = min(min_y, y)
             max_x = max(max_x, x + width)
             max_y = max(max_y, y + height)
-    
+
     return (min_x, min_y, max_x, max_y)
 
 
 def transform_icon_elements(
-    elements: List[Dict[str, Any]], 
-    target_x: float, 
+    elements: List[Dict[str, Any]],
+    target_x: float,
     target_y: float
 ) -> List[Dict[str, Any]]:
     """
     Transform icon elements to target coordinates with unique IDs.
-    
+
     Args:
         elements: Icon elements from JSON file
         target_x: Target X coordinate (top-left position)
         target_y: Target Y coordinate (top-left position)
-    
+
     Returns:
         Transformed elements with new coordinates and IDs
     """
     if not elements:
         return []
-    
+
     # Calculate bounding box
     min_x, min_y, max_x, max_y = calculate_bounding_box(elements)
-    
+
     # Calculate offset
     offset_x = target_x - min_x
     offset_y = target_y - min_y
-    
+
     # Create ID mapping: old_id -> new_id
     id_mapping = {}
     for element in elements:
         if 'id' in element:
             old_id = element['id']
             id_mapping[old_id] = generate_unique_id()
-    
+
     # Create group ID mapping
     group_id_mapping = {}
     for element in elements:
@@ -98,47 +98,47 @@ def transform_icon_elements(
             for old_group_id in element['groupIds']:
                 if old_group_id not in group_id_mapping:
                     group_id_mapping[old_group_id] = generate_unique_id()
-    
+
     # Transform elements
     transformed = []
     for element in elements:
         new_element = element.copy()
-        
+
         # Update coordinates
         if 'x' in new_element:
             new_element['x'] = new_element['x'] + offset_x
         if 'y' in new_element:
             new_element['y'] = new_element['y'] + offset_y
-        
+
         # Update ID
         if 'id' in new_element:
             new_element['id'] = id_mapping[new_element['id']]
-        
+
         # Update group IDs
         if 'groupIds' in new_element:
             new_element['groupIds'] = [
                 group_id_mapping[gid] for gid in new_element['groupIds']
             ]
-        
+
         # Update binding references if they exist
         if 'startBinding' in new_element and new_element['startBinding']:
             if 'elementId' in new_element['startBinding']:
                 old_id = new_element['startBinding']['elementId']
                 if old_id in id_mapping:
                     new_element['startBinding']['elementId'] = id_mapping[old_id]
-        
+
         if 'endBinding' in new_element and new_element['endBinding']:
             if 'elementId' in new_element['endBinding']:
                 old_id = new_element['endBinding']['elementId']
                 if old_id in id_mapping:
                     new_element['endBinding']['elementId'] = id_mapping[old_id]
-        
+
         # Update containerId if it exists
         if 'containerId' in new_element and new_element['containerId']:
             old_id = new_element['containerId']
             if old_id in id_mapping:
                 new_element['containerId'] = id_mapping[old_id]
-        
+
         # Update boundElements if they exist
         if 'boundElements' in new_element and new_element['boundElements']:
             new_bound_elements = []
@@ -149,31 +149,31 @@ def transform_icon_elements(
                         bound_elem['id'] = id_mapping[old_id]
                 new_bound_elements.append(bound_elem)
             new_element['boundElements'] = new_bound_elements
-        
+
         transformed.append(new_element)
-    
+
     return transformed
 
 
 def load_icon(icon_name: str, library_path: Path) -> List[Dict[str, Any]]:
     """
     Load icon elements from library.
-    
+
     Args:
         icon_name: Name of the icon (e.g., "EC2", "VPC")
         library_path: Path to the icon library directory
-    
+
     Returns:
         List of icon elements
     """
     icon_file = library_path / "icons" / f"{icon_name}.json"
-    
+
     if not icon_file.exists():
         raise FileNotFoundError(f"Icon file not found: {icon_file}")
-    
+
     with open(icon_file, 'r', encoding='utf-8') as f:
         icon_data = json.load(f)
-    
+
     return icon_data.get('elements', [])
 
 
@@ -216,12 +216,12 @@ def finalize_edit_path(work_path: Path, final_path: Path | None) -> None:
 def create_text_label(text: str, x: float, y: float) -> Dict[str, Any]:
     """
     Create a text label element.
-    
+
     Args:
         text: Label text
         x: X coordinate
         y: Y coordinate
-    
+
     Returns:
         Text element dictionary
     """
@@ -274,7 +274,7 @@ def add_icon_to_diagram(
 ) -> None:
     """
     Add an icon to an Excalidraw diagram.
-    
+
     Args:
         diagram_path: Path to the Excalidraw diagram file
         icon_name: Name of the icon to add
@@ -287,43 +287,43 @@ def add_icon_to_diagram(
     print(f"Loading icon: {icon_name}")
     icon_elements = load_icon(icon_name, library_path)
     print(f"  Loaded {len(icon_elements)} elements")
-    
+
     # Transform icon elements
     print(f"Transforming to position ({x}, {y})")
     transformed_elements = transform_icon_elements(icon_elements, x, y)
-    
+
     # Calculate icon bounding box for label positioning
     if label and transformed_elements:
         min_x, min_y, max_x, max_y = calculate_bounding_box(transformed_elements)
         icon_width = max_x - min_x
         icon_height = max_y - min_y
-        
+
         # Position label below icon, centered
         label_x = min_x + (icon_width / 2) - (len(label) * 5)
         label_y = max_y + 10
-        
+
         label_element = create_text_label(label, label_x, label_y)
         transformed_elements.append(label_element)
         print(f"  Added label: '{label}'")
-    
+
     # Load diagram
     print(f"Loading diagram: {diagram_path}")
     with open(diagram_path, 'r', encoding='utf-8') as f:
         diagram = json.load(f)
-    
+
     # Add transformed elements
     if 'elements' not in diagram:
         diagram['elements'] = []
-    
+
     original_count = len(diagram['elements'])
     diagram['elements'].extend(transformed_elements)
     print(f"  Added {len(transformed_elements)} elements (total: {original_count} -> {len(diagram['elements'])})")
-    
+
     # Save diagram
     print(f"Saving diagram")
     with open(diagram_path, 'w', encoding='utf-8') as f:
         json.dump(diagram, f, indent=2, ensure_ascii=False)
-    
+
     print(f"✓ Successfully added '{icon_name}' icon to diagram")
 
 
@@ -342,22 +342,22 @@ def main():
         print("  python add-icon-to-diagram.py diagram.excalidraw EC2 500 300")
         print("  python add-icon-to-diagram.py diagram.excalidraw EC2 500 300 --label 'Web Server'")
         sys.exit(1)
-    
+
     diagram_path = Path(sys.argv[1])
     icon_name = sys.argv[2]
     x = float(sys.argv[3])
     y = float(sys.argv[4])
-    
+
     # Default library path
     script_dir = Path(__file__).parent
     default_library_path = script_dir.parent / "libraries" / "aws-architecture-icons"
-    
+
     # Parse optional arguments
     library_path = default_library_path
     label = None
     # Default: use edit suffix to avoid editor overwrite issues
     use_edit_suffix = True
-    
+
     i = 5
     while i < len(sys.argv):
         if sys.argv[i] == '--library-path':
@@ -383,16 +383,16 @@ def main():
         else:
             print(f"Error: Unknown option: {sys.argv[i]}")
             sys.exit(1)
-    
+
     # Validate inputs
     if not diagram_path.exists():
         print(f"Error: Diagram file not found: {diagram_path}")
         sys.exit(1)
-    
+
     if not library_path.exists():
         print(f"Error: Library path not found: {library_path}")
         sys.exit(1)
-    
+
     try:
         work_path, final_path = prepare_edit_path(diagram_path, use_edit_suffix)
         add_icon_to_diagram(work_path, icon_name, x, y, library_path, label)
@@ -404,4 +404,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

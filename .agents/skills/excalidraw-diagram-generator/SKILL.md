@@ -33,14 +33,14 @@ Use this skill when users request:
 
 ## YSS Lifecycle Integration
 
-In YSS projects, this skill is a visualization and review aid. It can clarify lifecycle artifacts, but it must not replace Discovery, PRD, OpenAPI, ADR, Spec Delta design, or tests.
+In YSS projects, this skill is a visualization and review aid. It can clarify lifecycle artifacts, but it must not replace Discovery, Spec, OpenAPI, ADR, Spec Delta design, or tests.
 
 Use it after the relevant source artifact exists:
 
 | Lifecycle artifact | Typical timing | Useful diagrams | Recommended output |
 |--------------------|----------------|-----------------|--------------------|
 | Business architecture | Opportunity exploration / Discovery | user journey, value stream, swimlane, capability map, ecosystem map | `docs/discovery/diagrams/` or `docs/architecture/diagrams/` |
-| Functional architecture | PRD baseline / product design / PRD calibration | feature map, module map, dependency graph, page map | `docs/design/diagrams/` or `docs/architecture/diagrams/` |
+| Functional architecture | Spec baseline / product design / Spec calibration | feature map, module map, dependency graph, page map | `docs/design/diagrams/` or `docs/architecture/diagrams/` |
 | System architecture | Engineering baseline / Architecture / Spec Delta design | C4/container view, deployment, sequence, DDD boundary, DFD | `docs/architecture/diagrams/` |
 | Data architecture | Detailed design before persistence / repository work | ER, class, meta-model, lineage graph, query/data-flow diagram | `docs/architecture/diagrams/` |
 
@@ -48,7 +48,7 @@ Guardrails:
 
 - Do not invent product requirements or architecture decisions only from the diagram prompt.
 - Reference the source artifact in the Markdown document that links the `.excalidraw` file.
-- If a diagram exposes a missing field, unclear state, dependency, or boundary problem, write that finding back to the source PRD, OpenAPI Draft, architecture document, ADR, Spec Delta design, or issue.
+- If a diagram exposes a missing field, unclear state, dependency, or boundary problem, write that finding back to the source Spec, OpenAPI Draft, architecture document, ADR, Spec Delta design, or issue.
 - Do not require diagrams for small copy, style, configuration, or single-point bug fixes.
 - For data modeling, metadata management, model versioning, or lineage-analysis products, prefer ER, class/meta-model, DFD, and lineage diagrams before persistence implementation.
 

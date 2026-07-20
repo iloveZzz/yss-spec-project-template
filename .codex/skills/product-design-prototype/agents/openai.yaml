@@ -1,4 +1,4 @@
 interface:
   display_name: "Product Design Prototype"
   short_description: "UI flow and state design before API draft"
-  default_prompt: "Use $product-design-prototype to turn a PRD baseline into interaction design assets before PRD calibration."
+  default_prompt: "Use $product-design-prototype to turn a Spec baseline into interaction design assets before Spec calibration."

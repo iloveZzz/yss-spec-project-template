@@ -1,6 +1,6 @@
 # 技术方案：[功能名称]
 
-> 版本: 0.1 | 作者: | 日期: | 关联: PRD-xxx / ADR-xxx
+> 版本: 0.1 | 作者: | 日期: | 关联: Spec-xxx / ADR-xxx
 
 ---
 
@@ -26,7 +26,7 @@
 
 ### 功能架构
 
-（功能域、模块边界、优先级、模块依赖、MVP / 非目标范围；说明哪些内容需要回填 PRD。）
+（功能域、模块边界、优先级、模块依赖、MVP / 非目标范围；说明哪些内容需要回填 Spec。）
 
 相关图：`docs/architecture/diagrams/<feature>-functional-modules.excalidraw`
 

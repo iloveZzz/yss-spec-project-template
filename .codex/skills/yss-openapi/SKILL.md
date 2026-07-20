@@ -22,7 +22,7 @@ Use this skill for:
 
 Do not use this skill for:
 
-- Designing a new API contract from PRD, prototype, or architecture inputs.
+- Designing a new API contract from Spec, prototype, or architecture inputs.
 - Defining the unified OpenAPI style guide or reusable API governance rules.
 - Reviewing design-time OpenAPI Draft files before OpenAPI Freeze.
 - Choosing REST resource boundaries, error models, permission behavior, pagination standards, or contract test policy.

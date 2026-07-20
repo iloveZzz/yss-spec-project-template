@@ -19,11 +19,11 @@ subagent 不是“多几个 Agent 一起做同一件事”，而是主控 Agent 
 
 | 角色 | 职责 | 典型输出 | 默认写权限 |
 |---|---|---|---|
-| 主控 Agent | 生命周期阶段判定、任务拆分、结果合并、门禁裁决、Issue 同步、Git checkpoint | 阶段结论、正式资产、合并记录、下一步 | 可写正式资产 |
+| 主控 Agent | 生命周期阶段判定、任务拆分、结果合并、门禁裁决、Ticket 同步、Git checkpoint | 阶段结论、正式资产、合并记录、下一步 | 可写正式资产 |
 | Explorer subagent | 查现有资产、技术事实、竞品事实、代码影响面、缺失项 | 事实清单、证据链接、风险列表 | 只读 |
-| Drafter subagent | 起草 PRD、设计、OpenAPI、架构、Issue 或 release 文档 | 草案文档或章节补丁 | 仅限指定文档 |
+| Drafter subagent | 起草 Spec、设计、OpenAPI、架构、Ticket 或 release 文档 | 草案文档或章节补丁 | 仅限指定文档 |
 | Worker subagent | 实现指定切片、测试、脚手架或局部修复 | 代码变更、测试结果、变更说明 | 仅限指定文件 / 模块 |
-| Reviewer subagent | 独立审查 PRD、OpenAPI、架构、代码、发布准备度 | findings、blocker、残余风险 | 默认只读 |
+| Reviewer subagent | 独立审查 Spec、OpenAPI、架构、代码、发布准备度 | findings、blocker、残余风险 | 默认只读 |
 | Verifier subagent | 执行验证、复现实验、回归命令、截图或 CI 证据整理 | fresh verification 记录 | 默认只读，必要时写验证记录 |
 
 ## 可委派与不可委派
@@ -31,11 +31,11 @@ subagent 不是“多几个 Agent 一起做同一件事”，而是主控 Agent 
 | 可委派事项 | 不可委派事项 |
 |---|---|
 | 竞品 / 市场 / 技术事实调研 | 生命周期阶段最终判定 |
-| Discovery / PRD / 设计 / 架构 / OpenAPI 草案 | PRD baseline / requirement freeze |
+| Discovery / Spec / 设计 / 架构 / OpenAPI 草案 | Spec baseline / requirement freeze |
 | API Draft Review、Design Review findings | OpenAPI Freeze |
 | 垂直切片草案和实现路由草案 | Architecture Review 最终放行 |
 | 前端、后端、测试等边界清晰的局部实现 | 风险 / 回滚约束裁决 |
-| 独立 code review | Issue tracker 最终状态裁决 |
+| 独立 code review | Ticket tracker 最终状态裁决 |
 | fresh verification 执行与证据整理 | Git checkpoint 范围裁决 |
 | release note / retro 草案 | “完成 / 可合并 / 可发布”结论 |
 
@@ -43,10 +43,10 @@ subagent 不是“多几个 Agent 一起做同一件事”，而是主控 Agent 
 
 主控 Agent 派发 subagent 前，必须为每个任务包明确：
 
-- `task_id`：唯一编号，关联阶段、Issue 或切片。
+- `task_id`：唯一编号，关联阶段、Ticket 或切片。
 - 任务类型：explore / draft / work / review / verify。
 - 生命周期阶段和对应门禁。
-- 输入资产：PRD、OpenAPI、设计、ADR、Issue、代码路径或命令。
+- 输入资产：Spec、OpenAPI、设计、ADR、Ticket、代码路径或命令。
 - 输出资产：文档路径、review findings、代码文件、验证记录或摘要。
 - 写范围：允许修改的文件 / 模块；只读任务必须写明只读。
 - 禁止事项：不得 freeze、不得覆盖他人改动、不得替主控 Agent 做最终阶段结论。
@@ -59,12 +59,12 @@ subagent 不是“多几个 Agent 一起做同一件事”，而是主控 Agent 
 
 | 主阶段 | 推荐用法 | 风险控制 |
 |---|---|---|
-| 1. 入口分诊 | 复杂项目可派 Explorer 检查现有资产、Issue、git 状态 | 主控 Agent 保留最近可信阶段裁决 |
-| 2. 机会与 Discovery | 竞品、市场、用户流程、技术事实并行调研 | 调研结论只能作为 PRD 输入，不得直接冻结需求 |
-| 3. 业务 / PRD / 功能架构 | PRD 草案、功能架构、业务架构并行起草；Reviewer 质询边界 | 主控 Agent 合并术语、范围、非目标和验收标准 |
+| 1. 入口分诊 | 复杂项目可派 Explorer 检查现有资产、Ticket、git 状态 | 主控 Agent 保留最近可信阶段裁决 |
+| 2. 机会与 Discovery | 竞品、市场、用户流程、技术事实并行调研 | 调研结论只能作为 Spec 输入，不得直接冻结需求 |
+| 3. 业务 / Spec / 功能架构 | Spec 草案、功能架构、业务架构并行起草；Reviewer 质询边界 | 主控 Agent 合并术语、范围、非目标和验收标准 |
 | 4. 产品设计与需求冻结 | 页面流、状态矩阵、AntD / YSS 设计系统、高保真 HTML 原型、Prototype Review 分工 | 用户确认和 requirement freeze 不可委派 |
 | 5. 系统 / 数据架构与工程契约设计审查 | API Draft、系统架构、数据架构、Spec Delta、Draft Review 并行 | OpenAPI Freeze 和架构放行不可委派 |
-| 6. 契约冻结与 Issue formalization | `to-issues` 草案、实现仓库 / 脚手架状态检查并行 | 主控 Agent 确认端到端切片和 Issue 同步 |
+| 6. 契约冻结与 Ticket 正式化 | `to-tickets` 草案、实现仓库 / 脚手架状态检查并行 | 主控 Agent 确认端到端切片和 Ticket 同步 |
 | 7. 垂直切片与 TDD 实现 | 前端、后端、测试、验证按文件 / 模块拆给 Worker；Reviewer 独立审查 | 写范围必须不重叠；同一 Agent 不得自审 |
 | 8. 验证发布与复盘 | Verifier 执行 fresh verification；Drafter 起草 release / retro | 发布、合并、完成结论不可委派 |
 
@@ -80,7 +80,7 @@ subagent 不是“多几个 Agent 一起做同一件事”，而是主控 Agent 
 
 当 subagent 结论冲突时，主控 Agent 按以下优先级裁决：
 
-1. 已冻结的 PRD、OpenAPI Freeze、ADR、架构评审和 Issue。
+1. 已冻结的 Spec、OpenAPI Freeze、ADR、架构评审和 Ticket。
 2. 当前 fresh verification、测试、CI 和可复现证据。
 3. `CONTEXT.md` 中已确认的领域术语。
 4. 风险记录和人工确认要求。
@@ -90,7 +90,7 @@ subagent 不是“多几个 Agent 一起做同一件事”，而是主控 Agent 
 
 ## 记录要求
 
-每个使用 subagent 的生命周期阶段，必须在阶段 checkpoint 或 Issue 评论中记录：
+每个使用 subagent 的生命周期阶段，必须在阶段 checkpoint 或 Ticket 评论中记录：
 
 - 派发的任务包编号和子代理角色。
 - 输入资产和输出资产。

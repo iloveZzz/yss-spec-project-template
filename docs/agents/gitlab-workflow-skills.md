@@ -6,14 +6,14 @@
 
 当项目主远端为 GitLab 时，默认使用 GitLab 作为代码托管、Merge Request、CI/CD 和工作流协作入口。
 
-PRD、Issue 和 triage 不在本文中写死到 GitLab；它们按 `docs/agents/issue-tracker.md` 在 GitLab / GitHub 间路由。
+Spec、Ticket 和 triage 不在本文中写死到 GitLab；它们按 `docs/agents/issue-tracker.md` 在 GitLab / GitHub 间路由。
 
 已集成能力：
 
 | 能力 | 工具 / Skill | 用途 |
 |---|---|---|
 | GitLab API 与项目查询 | `gitlab-workflow` skill | 查询项目、clone 地址、创建 group / project、执行分支化 git workflow |
-| GitLab CLI | `glab` | 管理 MR、Issue、CI、Pipeline、Release、变量、Runner 等 |
+| GitLab CLI | `glab` | 管理 MR、Ticket、CI、Pipeline、Release、变量、Runner 等 |
 | 项目快捷入口 | `scripts/gitworks` | 在当前仓库内统一执行 status、workflow、MR、CI 命令 |
 | Git 推送认证 | macOS Keychain + HTTPS token | 让 `git push`、workflow push 能非交互执行 |
 
@@ -39,12 +39,12 @@ GitLab 基础配置文件：
 
 - 文件权限应为 `600`。
 - token 不得写入仓库文件。
-- token 不得出现在脚本、文档、Issue、MR 描述或提交信息中。
+- token 不得出现在脚本、文档、Ticket、MR 描述或提交信息中。
 - token 至少需要 `read_api`；若要推送代码，需要 `write_repository`；若要创建 MR、管理 CI 或项目资源，建议具备对应 API 权限。
 
 ## 3. glab 配置
 
-`glab` 用于操作 GitLab MR / CI / Issue / Release。
+`glab` 用于操作 GitLab MR / CI / Ticket / Release。
 
 自托管 GitLab 配置示例：
 
@@ -112,7 +112,7 @@ scripts/gitworks ci-status
 
 1. 读取项目状态：`scripts/gitworks status`。
 2. 需要 GitLab API / clone / push workflow 时，使用 `gitlab-workflow` skill。
-3. 需要 MR / CI / Pipeline 时，使用 `glab` 或 `scripts/gitworks`；需要 Issue / PRD / triage 时，先按 `docs/agents/issue-tracker.md` 判断 GitLab 或 GitHub。
+3. 需要 MR / CI / Pipeline 时，使用 `glab` 或 `scripts/gitworks`；需要 Ticket / Spec / triage 时，先按 `docs/agents/issue-tracker.md` 判断 GitLab 或 GitHub。
 4. 执行自动提交前，必须先检查工作区脏文件，避免把无关 `.agents/`、`.codex/`、本机配置或用户未确认文件混入提交。
 5. 不直接提交到受保护主分支；默认使用 `feature/*`、`fix/*`、`chore/*` 分支。
 6. 自动 workflow 只在用户明确授权提交/推送时执行。

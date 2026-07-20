@@ -1,0 +1,126 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "digest"
+require "fileutils"
+require "json"
+require "pathname"
+
+ROOT = Pathname.new(__dir__).join("..").realpath
+SOURCE_ROOT = ROOT.join(".agents/skills")
+LOCK_PATH = ROOT.join("skills-lock.json")
+PROJECTION_ROOTS = %w[
+  .claude/skills
+  .codex/skills
+  .hermes/skills
+  .pi/skills
+  .trae/skills
+].freeze
+OBSOLETE_SKILLS = %w[to-prd to-issues].freeze
+
+def skill_names(root)
+  root.children.select(&:directory?).map { |item| item.basename.to_s }.sort
+end
+
+def shared_skill_names
+  manifest = JSON.parse(LOCK_PATH.read)
+  shared = manifest.dig("skills", "shared")
+  return shared.keys.sort if manifest["version"] == 3 && shared.is_a?(Hash)
+
+  skill_names(SOURCE_ROOT) - OBSOLETE_SKILLS
+rescue JSON::ParserError, Errno::ENOENT
+  warn "skills-lock.json 无法解析；请先运行 scripts/update-skill-lock"
+  exit 1
+end
+
+def tree_hash(root)
+  digest = Digest::SHA256.new
+  root.glob("**/*", File::FNM_DOTMATCH)
+      .reject { |item| item.directory? || item.basename.to_s == ".DS_Store" }
+      .sort_by { |item| item.relative_path_from(root).to_s }
+      .each do |item|
+    relative = item.relative_path_from(root).to_s
+    digest << relative << "\0" << item.binread << "\0"
+  end
+  digest.hexdigest
+end
+
+def validate_target!(target)
+  expanded = target.expand_path
+  expected_prefix = ROOT.join(".").expand_path.to_s + File::SEPARATOR
+  return if expanded.to_s.start_with?(expected_prefix) && expanded.basename.to_s == "skills"
+
+  warn "refusing unsafe projection target: #{target}"
+  exit 2
+end
+
+def tracked_projection?(target)
+  relative = target.relative_path_from(ROOT).to_s
+  !IO.popen(["git", "ls-files", "-z", "--", relative], &:read).empty?
+end
+
+check_only = ARGV.include?("--check")
+shared = shared_skill_names
+missing_from_source = shared.reject { |skill_name| SOURCE_ROOT.join(skill_name).directory? }
+unless missing_from_source.empty?
+  warn "锁文件声明的共享 skills 缺少权威内容: #{missing_from_source.join(', ')}"
+  exit 1
+end
+obsolete_in_source = shared & OBSOLETE_SKILLS
+unless obsolete_in_source.empty?
+  warn "obsolete skills remain in canonical root: #{obsolete_in_source.join(', ')}"
+  exit 1
+end
+
+drift = []
+
+PROJECTION_ROOTS.each do |relative_root|
+  projection_root = ROOT.join(relative_root)
+  validate_target!(projection_root)
+  FileUtils.mkdir_p(projection_root) unless check_only
+
+  shared.each do |skill_name|
+    source = SOURCE_ROOT.join(skill_name)
+    target = projection_root.join(skill_name)
+
+    if check_only
+      if target.symlink?
+        drift << "projection target mismatch: #{target.relative_path_from(ROOT)}" unless target.realpath == source.realpath
+      elsif !target.directory?
+        drift << "missing projection: #{target.relative_path_from(ROOT)}"
+      elsif tree_hash(source) != tree_hash(target)
+        drift << "projection drift: #{target.relative_path_from(ROOT)}"
+      end
+      next
+    end
+
+    if target.symlink?
+      next if target.realpath == source.realpath
+
+      FileUtils.rm_f(target)
+      FileUtils.ln_s(source.relative_path_from(projection_root), target)
+    elsif !tracked_projection?(target)
+      FileUtils.rm_rf(target)
+      FileUtils.ln_s(source.relative_path_from(projection_root), target)
+    else
+      FileUtils.rm_rf(target)
+      FileUtils.cp_r(source, target, preserve: true)
+    end
+  end
+
+  OBSOLETE_SKILLS.each do |skill_name|
+    target = projection_root.join(skill_name)
+    if check_only
+      drift << "obsolete projection: #{target.relative_path_from(ROOT)}" if target.exist?
+    else
+      FileUtils.rm_rf(target)
+    end
+  end
+end
+
+unless drift.empty?
+  warn drift.join("\n")
+  exit 1
+end
+
+puts check_only ? "skill projections are synchronized" : "synchronized #{shared.length} shared skills"

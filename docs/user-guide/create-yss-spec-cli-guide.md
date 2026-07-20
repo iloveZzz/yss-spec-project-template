@@ -6,7 +6,7 @@
 
 ## 适用范围
 
-`create-yss-spec` 用于生成包含 PRD、架构、OpenAPI、Issue 和 Agent 协作基线的模板实例仓库。它不负责生成前后端运行时工程，也不会代替你创建远程 Git 仓库、CI 或 Issue Board。
+`create-yss-spec` 用于生成包含 Spec、架构、OpenAPI、Ticket 和 Agent 协作基线的模板实例仓库。它不负责生成前后端运行时工程，也不会代替你创建远程 Git 仓库、CI 或 Ticket Board。
 
 ## 快速开始
 

@@ -20,7 +20,7 @@ Use `yss-openapi-governance` for:
 Use other skills for:
 
 - `yss-openapi`: generate `target/openapi/openapi.json` from implemented controllers/DTOs and refresh Orval clients.
-- `yss-openapi-draft-review`: perform fail-closed semantic review against PRD, prototype, page actions, P0 coverage, and architecture readiness.
+- `yss-openapi-draft-review`: perform fail-closed semantic review against Spec, prototype, page actions, P0 coverage, and architecture readiness.
 - `docs/specs/*-spec-delta.md` and `to-tickets`: formalize behavior changes and implementation tickets after the contract is frozen.
 
 ## Preferred Tooling

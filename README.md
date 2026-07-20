@@ -9,26 +9,26 @@
 ## 项目结构
 
 ```text
-├── .agent/                  ← 通用 Agent 项目级 Matt skills
-├── .agents/                 ← Agent 可加载的 Engineering Skills、脚本和参考材料
-├── .claude/                 ← Claude 项目级 skills
-├── .codex/                  ← Codex 项目级 Matt + YSS skills
-├── .hermes/                 ← Hermes 项目级 skills
-├── .pi/                     ← Pi 项目级 skills
-├── .trae/                   ← Trae 项目级 skills
+├── .agents/                 ← 跨 Agent 共享 skills 的权威内容
+├── .claude/                 ← Claude skills 投影与平台专属 skills
+├── .codex/                  ← Codex skills 投影与平台专属 YSS skills
+├── .hermes/                 ← Hermes skills 投影与平台专属 skills
+├── .pi/                     ← Pi skills 投影与平台专属 skills
+├── .trae/                   ← Trae skills 投影与平台专属 skills
 ├── AGENTS.md                ← AI 指令
 ├── CONTEXT.md               ← 领域词汇表
+├── yss-project.yaml         ← 仓库身份清单
 ├── docs/
 │   ├── api/                 ← OpenAPI 3.1 契约
 │   ├── adr/                 ← 架构决策记录
-│   ├── requirements/        ← PRD / 用户故事 / 需求草案 / 垂直切片
+│   ├── requirements/        ← Spec / 用户故事 / 需求草案 / 垂直切片
 │   ├── discovery/           ← 机会探索、市场、竞品和用户材料
 │   ├── design/              ← 产品设计、原型、交互说明和状态矩阵
 │   ├── architecture/        ← 架构设计与审查模板
 │   ├── releases/            ← 发布说明
 │   ├── implementation/      ← 实施方案、上线记录和回滚方案
 │   ├── testing/             ← 测试策略和验证记录
-│   ├── agents/              ← Agent 协作规范、Issue/Triage/领域文档约定
+│   ├── agents/              ← Agent 协作规范、Ticket/Triage/领域文档约定
 │   ├── templates/           ← 通用文档模板
 │   └── process/             ← 生命周期、裁剪、Scrum 和技能治理说明
 └── scripts/                 ← 模板轻量校验脚本
@@ -38,18 +38,11 @@
 
 ## Quickstart
 
-1. 先判断当前生命周期阶段、已有资产和缺失资产；建议用 `yss-product-lifecycle` 做阶段路由。
-2. 新产品或新模块先完成机会探索；已有材料时先整理 discovery，再进入 `grill-with-docs`。
-3. 新产品或新业务域先明确业务架构，再使用 `grill-with-docs` 澄清边界。
-4. 按 `docs/templates/prd-template.md` 形成 PRD，并同步明确功能架构、模块边界和 MVP / 非目标范围。
-5. 如有 API 影响，先在 `docs/api/specs/` 生成 OpenAPI 3.1 Draft；Draft 经工程基线、系统 / 数据架构和设计审查后 Freeze。
-6. 使用 `to-issues` 或 `docs/templates/vertical-slice-issue-template.md` 拆分可独立验证的垂直切片 Issue。
-7. 进入实现前按 `docs/process/implementation-repo-integration.md` 登记外部实现仓库；已有工程用 `implementation-repo-onboarding`，跨仓库切片用 `cross-repo-implementation-routing`。
-8. 后端新服务或新模块先确认 YSS DDD 工程基线；从零创建服务时使用 `yss-ddd-scaffold-generator`。
-9. 前端 0-1 微应用使用 `yss-frontend-scaffold-generator` 对齐标准模板；业务页面实现再接 `yss-page-module-development` 和 `api-integration`。
-10. 业务行为实现默认使用 `tdd`：先写失败测试，再写最小实现；Bug 修复先建立 `diagnosing-bugs` 反馈闭环。
-11. 每个切片完成后做 `code-review` 或独立审查和 fresh verification，再发布、实施和复盘。
-12. 在 `docs/architecture/`、`docs/adr/`、`CONTEXT.md` 和 `AGENTS.md` 沉淀稳定规则。
+1. 先读取 `yss-project.yaml`，按 `repository_mode` 选择模板维护或产品研发生命周期。
+2. 必读入口为 `AGENTS.md` 与 `CONTEXT.md`；流程事实分别以生命周期映射和裁剪指南为准。
+3. `template-source` 修改流程、技能或模板后，执行 `scripts/sync-skills`、`scripts/update-skill-lock` 和 `scripts/verify-template`。
+4. `project-instance` 先做影响面分诊；进入 Spec 基线时使用 `grill-with-docs`、`to-spec`，契约冻结后再用 `to-tickets` 拆分垂直切片 Ticket。
+5. 实现仓库接入、YSS 路由、独立审查、fresh verification 和 Git checkpoint 以 `AGENTS.md` 的硬门禁为准。
 
 ## 模板初始化 CLI
 
@@ -67,7 +60,12 @@ npm create yss-spec@latest
 
 ## 模板配置取舍
 
-本模板纳入 `.agent/`、`.agents/`、`.claude/`、`.codex/`、`.hermes/`、`.pi/`、`.trae/`，因为它们是跨 Agent 复用 Matt Pocock Engineering Skills 和 YSS skills 的项目级配置。
+`.agents/skills` 是共享技能的权威内容；其他 Agent root 只保存同步投影和平台专属技能。共享技能只能在权威目录修改，随后运行：
+
+```bash
+scripts/sync-skills
+scripts/update-skill-lock
+```
 
 Matt engineering skills 固定来源：
 
@@ -85,8 +83,10 @@ scripts/verify-template
 
 该脚本检查：
 
-- 项目级 Agent 目录是否包含必需 Matt engineering skills。
-- 旧流程目录、规则和运行时状态文件是否已清理。
+- `yss-project.yaml`、权威流程资产和模板是否完整。
+- 共享技能投影及 `skills-lock.json` 的完整树哈希是否一致。
+- 过时技能、路径和规范用语是否已清理。
+- 五类流程压力场景是否符合条件门禁和仓库身份路由。
 - Markdown 相对链接是否指向现有文件。
 - 示例 OpenAPI YAML 是否可解析。
 - Git diff 是否存在空白错误。
@@ -108,6 +108,7 @@ scripts/verify-template
 | [docs/process/implementation-repo-integration.md](./docs/process/implementation-repo-integration.md) | 外部前端 / 后端实现仓库接入与跨仓库切片绑定 |
 | [docs/agents/README.md](./docs/agents/README.md) | Agent 协作文档目录说明 |
 | [docs/agents/skills-maintenance.md](./docs/agents/skills-maintenance.md) | Agent skills 安装与维护 |
+| [docs/user-guide/spec-ticket-migration-guide.md](./docs/user-guide/spec-ticket-migration-guide.md) | 旧规格与任务入口迁移指南 |
 | [docs/discovery/IDEATION.md](./docs/discovery/IDEATION.md) | 机会构想方法 |
 | [docs/architecture/README.md](./docs/architecture/README.md) | 架构设计 + 审查清单 |
 | [docs/testing/README.md](./docs/testing/README.md) | 测试策略 |
@@ -116,8 +117,8 @@ scripts/verify-template
 
 | 模板 | 用途 |
 |------|------|
-| [docs/templates/prd-template.md](./docs/templates/prd-template.md) | PRD，包含 OpenAPI 影响、测试决策、AI / 人工审查点 |
-| [docs/templates/vertical-slice-issue-template.md](./docs/templates/vertical-slice-issue-template.md) | 垂直切片 Issue |
+| [docs/templates/spec-template.md](./docs/templates/spec-template.md) | Spec，包含 OpenAPI 影响、测试决策、AI / 人工审查点 |
+| [docs/templates/vertical-slice-ticket-template.md](./docs/templates/vertical-slice-ticket-template.md) | 垂直切片 Ticket |
 | [docs/templates/agent-brief-template.md](./docs/templates/agent-brief-template.md) | `triage` 产出的 Agent Brief |
 | [docs/templates/implementation-repo-registry-template.md](./docs/templates/implementation-repo-registry-template.md) | 外部实现仓库登记 |
 | [docs/templates/cross-repo-slice-template.md](./docs/templates/cross-repo-slice-template.md) | 跨仓库垂直切片记录 |

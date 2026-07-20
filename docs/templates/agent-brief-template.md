@@ -1,8 +1,8 @@
-# Agent Brief：<Issue 标题>
+# Agent Brief：<Ticket 标题>
 
-> 本简报用于 `ready-for-agent` 状态的 Issue。内容必须足够完整，使 Agent 无需向维护者询问隐藏背景即可开始工作。
+> 本简报用于 `ready-for-agent` 状态的垂直切片 Ticket。内容必须足够完整，使 Agent 无需向维护者询问隐藏背景即可开始工作。
 
-## Issue 信息
+## Ticket 信息
 
 - 链接：
 - 分类：bug / enhancement

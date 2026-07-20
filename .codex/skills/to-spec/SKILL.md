@@ -1,75 +1,58 @@
 ---
 name: to-spec
-description: Turn the current conversation into a spec and publish it to the project issue tracker — no interview, just synthesis of what you've already discussed.
+description: Use when the current discussion is sufficiently resolved to synthesize a product-development specification without another requirements interview.
 disable-model-invocation: true
 ---
 
-This skill takes the current conversation context and codebase understanding and produces a spec (you may know this document as a PRD). Do NOT interview the user — just synthesize what you already know.
+# To Spec
 
-The issue tracker and triage label vocabulary should have been provided to you — run `/setup-matt-pocock-skills` if not.
+将已经澄清的对话、Discovery 和仓库上下文整理为 Spec。本 skill 只做综合，不重新访谈用户，也不将未冻结的 Spec 标记为可实现。
 
-## Process
+## 流程
 
-1. Explore the repo to understand the current state of the codebase, if you haven't already. Use the project's domain glossary vocabulary throughout the spec, and respect any ADRs in the area you're touching.
+1. 读取 `CONTEXT.md`、相关 ADR、Discovery、质询记录和现有资产。统一使用领域词汇和简体中文正文。
+2. 提取已确认的测试 seam，优先复用最高的现有公开边界。如果 seam 尚未确认，将其记为 `ready-for-human` 阻塞项，不自行发明实现边界。
+3. 按下方结构写入 `docs/requirements/<feature>-spec.md`。不在 Spec 中写具体实现文件路径或大段代码。
+4. 创建或更新功能父 Ticket，链接本地 Spec 和上游资产，并标记 `ready-for-human`。
 
-2. Sketch out the seams at which you're going to test the feature. Existing seams should be preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better - the ideal number is one.
+## 状态红线
 
-Check with the user that these seams match their expectations.
+- Spec 初稿不得标记 `ready-for-agent`。
+- 只有需求冻结、必要设计审查、OpenAPI Freeze 或无 API 影响记录完成后，才能进入 `to-tickets`。
+- 本 skill 不创建垂直切片 Ticket，不关闭功能父 Ticket。
 
-3. Write the spec using the template below, then publish it to the project issue tracker. Apply the `ready-for-agent` triage label - no need for additional triage.
+## Spec 结构
 
-<spec-template>
+### 问题陈述
 
-## Problem Statement
+从用户视角说明问题、影响和为什么现在要解决。
 
-The problem that the user is facing, from the user's perspective.
+### 解决方案
 
-## Solution
+从用户视角说明预期能力和价值，不展开实现步骤。
 
-The solution to the problem, from the user's perspective.
+### 用户故事
 
-## User Stories
+用编号列表覆盖主流程、异常、权限、边界和恢复场景：
 
-A LONG, numbered list of user stories. Each user story should be in the format of:
+1. 作为 <角色>，我希望 <能力>，以便 <价值>。
 
-1. As an <actor>, I want a <feature>, so that <benefit>
+### 验收标准
 
-<user-story-example>
-1. As a mobile bank customer, I want to see balance on my accounts, so that I can make better informed decisions about my spending
-</user-story-example>
+使用可观测行为定义成功、失败和边界条件。
 
-This list of user stories should be extremely extensive and cover all aspects of the feature.
+### 已确认决策
 
-## Implementation Decisions
+记录功能域、模块边界、公开接口、数据 / API 影响、状态与权限约束。原型中只有状态机、schema 或类型形状比文字更精确时，才内联最小决策片段。
 
-A list of implementation decisions that were made. This can include:
+### 测试决策
 
-- The modules that will be built/modified
-- The interfaces of those modules that will be modified
-- Technical clarifications from the developer
-- Architectural decisions
-- Schema changes
-- API contracts
-- Specific interactions
+记录已确认 seam、对外行为、相似测试先例和不测实现细节的约束。
 
-Do NOT include specific file paths or code snippets. They may end up being outdated very quickly.
+### 非目标
 
-Exception: if a prototype produced a snippet that encodes a decision more precisely than prose can (state machine, reducer, schema, type shape), inline it within the relevant decision and note briefly that it came from a prototype. Trim to the decision-rich parts — not a working demo, just the important bits.
+明确本 Spec 不交付的能力、角色、端、数据或运维范围。
 
-## Testing Decisions
+### 未决项与风险
 
-A list of testing decisions that were made. Include:
-
-- A description of what makes a good test (only test external behavior, not implementation details)
-- Which modules will be tested
-- Prior art for the tests (i.e. similar types of tests in the codebase)
-
-## Out of Scope
-
-A description of the things that are out of scope for this spec.
-
-## Further Notes
-
-Any further notes about the feature.
-
-</spec-template>
+只保留会阻塞需求冻结或下游设计的未决问题，并标注责任人和期望解决阶段。

@@ -13,12 +13,12 @@ AI 不能只作为一次性辅助工具使用。Harness 工程的目标，是把
 ```text
 机会 / 问题收集
 → 需求澄清
-→ PRD -> 产品总体设计 -> 原型校准
+→ Spec -> 产品总体设计 -> 原型校准
 → SDD 研发规范基线
 → DDD 领域建模
 → 架构设计
-→ 垂直切片 Issue
-→ 垂直 Issue 详细设计
+→ 垂直切片 Ticket
+→ 垂直切片详细设计
 → TDD 并行开发
 → 测试验证
 → Code Review
@@ -31,26 +31,26 @@ AI 不能只作为一次性辅助工具使用。Harness 工程的目标，是把
 ## 哪些门禁不能跳
 
 - API 变化必须先有 API 影响记录和契约草案 / review-only OpenAPI Draft，并在实现或生成客户端前完成 Freeze 或记录无 API 影响。
-- 进入 PRD 初稿 / 需求基线流程后，必须先有产品总体设计 / 功能架构，才能进入页面 / 原型 / 交互设计、OpenAPI Draft、PRD 校准、需求冻结或实现；不进入 PRD 生命周期的小改动才可记录不适用原因。
-- 正式垂直切片前必须有 active Issue change 和完整 change 资产。
+- 进入 Spec 初稿 / 需求基线流程后，必须先有产品总体设计 / 功能架构，才能进入页面 / 原型 / 交互设计、OpenAPI Draft、Spec 校准、需求冻结或实现；不进入 Spec 生命周期的小改动才可记录不适用原因。
+- 正式垂直切片前必须有 功能父 Ticket 和完整 change 资产。
 - 架构、数据、ADR、工程基线和风险、回滚约束和验证证据必须进入 Build Architecture Checklist。
 - 支付、迁移、认证授权、加密、SQL、公共基础库 API 等高风险事项必须记录验证证据、责任人和回滚约束。
 - 完成、可合并或可发布结论必须有 fresh verification。
-- 每个阶段结束必须记录 Issue 同步状态和 Git checkpoint 判断。
+- 每个阶段结束必须记录 Ticket 同步状态和 Git checkpoint 判断。
 
 ## 试点怎么跑
 
 先选择一个真实、低风险、边界清晰的业务模块，按半自动闭环推进：
 
 ```text
-PRD
+Spec
 → 产品总体设计 / 功能架构
 → 页面 / 原型 / 交互设计与 prototype-review（有 UI 时）
 → product-design:index 路由 Product Design focused skill 产出 Ant Design v6 高保真 HTML 原型（有 UI 时）
 → antd CLI 校验证据与用户确认记录（有 UI 时）
 → API 影响分析 / 契约草案
 → review-only OpenAPI Draft（如需要）
-→ Issue Change
+→ 功能父 Ticket 更新 / 契约冻结
 → 垂直切片
 → TDD
 → Review
@@ -62,7 +62,7 @@ PRD
 
 ## 成功指标
 
-- PRD Ready 一次通过率提升。
+- Spec Ready 一次通过率提升。
 - 阶段产物一次通过率提升。
 - 规范偏离次数下降。
 - ready-for-agent 到可验证 PR 的周期缩短。

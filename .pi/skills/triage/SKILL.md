@@ -32,11 +32,11 @@ Five **state** roles:
 
 - `needs-triage` — maintainer needs to evaluate
 - `needs-info` — waiting on reporter for more information
-- `ready-for-agent` — fully specified, ready for an AFK agent
-- `ready-for-human` — needs human implementation
+- `ready-for-agent` — an unblocked vertical-slice ticket whose required gates passed and whose implementation can start immediately
+- `ready-for-human` — a spec, design, contract draft, review, or other item that needs human judgment, confirmation, implementation, or privileged access
 - `wontfix` — will not be actioned
 
-For a PR, the same states read against the attached code: `ready-for-agent` means a brief is attached and an agent should take the next step on the diff; `ready-for-human` means it's ready for a human to merge.
+For a PR, use `ready-for-human` when the attached code is ready for human review or merge. Do not use `ready-for-agent` as a generic draft or review state; it is reserved for directly executable, unblocked vertical-slice tickets.
 
 Every triaged issue should carry exactly one category role and one state role. If state roles conflict, flag it and ask the maintainer before doing anything else.
 
@@ -87,7 +87,7 @@ Show counts and a one-line summary per item. Let the maintainer pick.
 
 ## Quick state override
 
-If the maintainer says "move #42 to ready-for-agent", trust them and apply the role directly. Confirm what you're about to do (role changes, comment, close), then act. Skip grilling. If moving to `ready-for-agent` without a grilling session, ask whether they want to write an agent brief.
+If the maintainer says "move #42 to ready-for-agent", first verify that it is an unblocked, directly executable vertical-slice ticket and that its required gates have passed. If not, explain the missing gate and keep it in the appropriate state. When the conditions are satisfied, confirm the label change, post an agent brief, and act without another grilling session.
 
 ## Needs-info template
 

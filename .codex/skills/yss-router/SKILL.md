@@ -19,7 +19,7 @@ When the request is already narrowly scoped, use the matching specialist directl
 
 ## Lifecycle Boundaries
 
-- If the task introduces or changes a frontend/backend API contract, route back to `yss-product-lifecycle` until PRD, OpenAPI Draft, engineering baseline/design review, and OpenAPI Freeze are clear.
+- If the task introduces or changes a frontend/backend API contract, route back to `yss-product-lifecycle` until Spec, OpenAPI Draft, engineering baseline/design review, and OpenAPI Freeze are clear.
 - `api-integration` consumes generated clients and wires page behavior; it must not invent missing API paths, DTOs, or response shapes.
 - `yss-openapi` is for generating or refreshing contracts/Orval clients after OpenAPI Freeze, or for regenerating from an already implemented backend source of truth.
 

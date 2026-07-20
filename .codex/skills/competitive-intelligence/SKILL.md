@@ -1,13 +1,13 @@
 ---
 name: competitive-intelligence
-description: Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Discovery, PRD, product strategy, or roadmap decisions.
+description: Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Discovery, Spec, product strategy, or roadmap decisions.
 ---
 
 # Competitive Intelligence
 
 Source requested for this project: `anthropics/knowledge-work-plugins`, `sales/skills/competitive-intelligence`.
 
-Use this skill when competitive or market facts are needed to shape product Discovery, PRD scope, positioning, differentiation, pricing assumptions, or roadmap tradeoffs.
+Use this skill when competitive or market facts are needed to shape product Discovery, Spec scope, positioning, differentiation, pricing assumptions, or roadmap tradeoffs.
 
 ## Core Rules
 
@@ -43,7 +43,7 @@ Use this skill when competitive or market facts are needed to shape product Disc
    - Differentiators and defensibility.
    - Gaps and underserved jobs-to-be-done.
    - Risks if we copy the competitor too closely.
-   - Product opportunities for PRD or roadmap.
+   - Product opportunities for Spec or roadmap.
 5. Hand off to lifecycle assets:
    - Update Discovery findings in `docs/discovery/`.
    - Create or update a competitor matrix in `docs/discovery/reports/`.
@@ -76,7 +76,7 @@ For a quick brief:
 | 维度 | 竞品 A | 竞品 B | 我们的机会 |
 |---|---|---|---|
 
-### PRD 输入
+### Spec 输入
 - 用户 / 痛点：
 - MVP 建议：
 - 非目标范围：

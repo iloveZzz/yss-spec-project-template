@@ -1,12 +1,12 @@
 # <功能名称> 原型评审清单
 
-> 适用时机：配合 `prototype-review` 使用。评审采用 记录阻塞原因：有阻断项时必须回到产品设计阶段；产品原型产出以 `product-design:index` 路由到 Product Design focused skill 为主；低保真评审通过后必须产出高保真 HTML 原型，可由系统 / Agent 自动产出；产出后必须获得用户确认，确认前不能直接进入 PRD 校准或 API 影响分析 / 契约草案。
+> 适用时机：配合 `prototype-review` 使用。评审采用 记录阻塞原因：有阻断项时必须回到产品设计阶段；产品原型产出以 `product-design:index` 路由到 Product Design focused skill 为主；低保真评审通过后必须产出高保真 HTML 原型，可由系统 / Agent 自动产出；产出后必须获得用户确认，确认前不能直接进入 Spec 校准或 API 影响分析 / 契约草案。
 
 ## 评审输入
 
 | 输入 | 路径 / 链接 | 是否具备 |
 |---|---|---|
-| PRD | `docs/requirements/<feature>-prd.md` |  |
+| Spec | `docs/requirements/<feature>-spec.md` |  |
 | 交互说明 | `docs/design/<feature>-interaction-spec.md` |  |
 | 原型 / 线框图 | `<链接或导出图片路径>` |  |
 | 状态矩阵 | `docs/design/<feature>-state-matrix.md` |  |
@@ -31,7 +31,7 @@
 | 前端验收、组件状态和数据依赖已明确 |  |  |
 | 风险 / 回滚约束和人工确认项已记录 |  |  |
 
-## PRD 校准就绪度
+## Spec 校准就绪度
 
 | 范围 | 是否就绪 | 说明 |
 |---|---|---|
@@ -39,7 +39,7 @@
 | 流程 / 状态设计发现的需求缺口 |  |  |
 | 原型证明需要排除的非目标 |  |  |
 | 待确认决策已排除在冻结范围外 |  |  |
-| PRD 中已补充设计资产链接 |  |  |
+| Spec 中已补充设计资产链接 |  |  |
 
 ## API 影响分析 / 契约草案就绪度
 

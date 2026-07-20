@@ -24,7 +24,7 @@ owner: ai
 | constraint | source | slice | status | evidence | follow-up |
 |---|---|---|---|---|---|
 | DDD 分层不得穿透：Domain 不依赖 Adapter、Infrastructure、Mapper、Controller 或 Web DTO | 系统架构 / YSS DDD 规范 / `AGENTS.md` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 若发现穿透依赖，标记 `violation` 并停止 build，回到架构修正 |
-| 后端切片必须回勾 `Backend Slice Implementation Contract`：required skills、允许写范围、禁止模式、证据文件、延期 seam 和验证命令完整 | implementation routing / 垂直切片 Issue / `AGENTS.md` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺合同或合同不完整时暂停并记录替代方案 |
+| 后端切片必须回勾 `Backend Slice Implementation Contract`：required skills、允许写范围、禁止模式、证据文件、延期 seam 和验证命令完整 | implementation routing / 垂直切片 Ticket / `AGENTS.md` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺合同或合同不完整时暂停并记录替代方案 |
 | Web Adapter / DTO：必须按 `yss-dto` 定义或复用 CMD / Query / VO / Result；不得在 Controller 内部类或非约定包临时定义主要 DTO，不得手工分页主要业务集合 | `yss-web-controller` / `yss-dto` / OpenAPI Freeze |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 命中时回到 Controller / DTO 设计 |
 | Application：负责用例编排、事务边界和跨聚合协调，不承载核心领域规则 | `yss-backend-scaffold-application` / 系统架构 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 领域规则下沉 Domain，事务边界留在 Application |
 | Infrastructure：需要持久化的切片必须有 PO / Repository / Convertor / GatewayImpl；`InMemory*Gateway` 只能作为显式 `seam-deferred` | `yss-repository` / `yss-backend-scaffold-infrastructure` / 数据架构 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 未补齐时不得声称生产持久化完成 |
@@ -48,7 +48,7 @@ owner: ai
 - `constraint`：可检查的架构或治理约束。
 - `slice`：绑定的垂直切片编号或名称。
 - `status`：只能使用上方状态枚举。
-- `evidence`：代码、测试、文档、Issue 评论或人工确认证据。
+- `evidence`：代码、测试、文档、Ticket 评论或人工确认证据。
 - `follow-up`：延期、漂移或违反时的补齐落点和是否阻断继续 build。
 
 ## 3. 当前切片回勾

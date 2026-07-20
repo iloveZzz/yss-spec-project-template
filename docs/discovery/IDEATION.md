@@ -20,7 +20,7 @@ Ideation 不等同于  Matt skills `需求澄清`：
 市场 / 竞品 / 用户事实 <-> 机会构想假设 <-> MVP 边界
 ```
 
-如果只有一个模糊主题，可以先 Ideation 再 Discovery；如果已经有竞品、用户或行业材料，应先 Discovery 再 Ideation。二者循环到 PRD 前，必须收敛用户、痛点、做什么、不做什么和成功标准。
+如果只有一个模糊主题，可以先 Ideation 再 Discovery；如果已经有竞品、用户或行业材料，应先 Discovery 再 Ideation。二者循环到 Spec 前，必须收敛用户、痛点、做什么、不做什么和成功标准。
 
 ---
 
@@ -92,5 +92,5 @@ Substitute / Combine / Adapt / Modify / Put to another use / Eliminate / Reverse
 ```
 人类提主题或 Discovery 事实 → AI 发散候选机会 → 人类选择 Top 10
 → AI 挑战者分析 → Discovery 验证证据 → AI 连接者找模式
-→ 收敛 MVP 边界 → 确认是否进入 PRD / Issue 或  Matt skills 需求澄清 技术方案设计
+→ 收敛 MVP 边界 → 确认是否进入 Spec / Ticket 或  Matt skills 需求澄清 技术方案设计
 ```
