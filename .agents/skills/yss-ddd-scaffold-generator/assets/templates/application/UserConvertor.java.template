@@ -1,0 +1,21 @@
+package {{base_package}}.core.service.convertor;
+
+import {{base_package}}.client.dto.cmd.UserAddCmd;
+import {{base_package}}.client.dto.cmd.UserUpdateCmd;
+import {{base_package}}.domain.user.model.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.factory.Mappers;
+
+@Mapper(
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
+        nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS)
+public interface UserConvertor {
+
+    UserConvertor INSTANCE = Mappers.getMapper(UserConvertor.class);
+
+    User toDomain(UserAddCmd cmd);
+
+    User toDomain(UserUpdateCmd cmd);
+}

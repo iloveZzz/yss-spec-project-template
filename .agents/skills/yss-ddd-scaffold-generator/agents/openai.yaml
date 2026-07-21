@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS DDD Scaffold"
+  short_description: "生成多模块 YSS DDD 后端脚手架与工程骨架规范"
+  default_prompt: "Use $yss-ddd-scaffold-generator to create a standard YSS DDD backend scaffold with domain, application, infrastructure, adapter, and bootstrap modules."

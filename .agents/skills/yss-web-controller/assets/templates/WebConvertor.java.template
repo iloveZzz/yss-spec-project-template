@@ -1,0 +1,23 @@
+package ${base_package}.rest.convertor;
+
+import com.yss.cloud.dto.result.PageResult;
+import ${base_package}.client.dto.cmd.${domain_class}AddCmd;
+import ${base_package}.client.dto.cmd.${domain_class}UpdateCmd;
+import ${base_package}.client.vo.${domain_class}VO;
+import ${base_package}.domain.${domain_pkg_name}.model.${domain_class};
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
+
+@Mapper
+public interface ${web_convertor_class} {
+
+    ${web_convertor_class} INSTANCE = Mappers.getMapper(${web_convertor_class}.class);
+
+    ${domain_class} toDomain(${domain_class}AddCmd source);
+
+    ${domain_class} toDomain(${domain_class}UpdateCmd source);
+
+    ${domain_class}VO toVO(${domain_class} source);
+
+    PageResult<${domain_class}VO> toVOPage(PageResult<${domain_class}> source);
+}

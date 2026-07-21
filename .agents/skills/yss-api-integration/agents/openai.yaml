@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS API Integration"
+  short_description: "Vue 3 接口对接、useRequest 与分页状态规范"
+  default_prompt: "Use $yss-api-integration to wire Orval-generated APIs into a Vue 3 page with typed requests, loading state, and error handling."

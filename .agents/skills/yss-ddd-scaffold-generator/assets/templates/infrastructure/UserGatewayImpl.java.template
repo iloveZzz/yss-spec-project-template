@@ -1,0 +1,85 @@
+package {{base_package}}.repository.gateway.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.yss.cloud.dto.result.PageResult;
+import {{base_package}}.client.dto.cmd.UserAddCmd;
+import {{base_package}}.client.dto.cmd.UserUpdateCmd;
+import {{base_package}}.client.dto.query.UserPageQuery;
+import {{base_package}}.client.vo.UserVO;
+import {{base_package}}.domain.user.gateway.UserGateway;
+import {{base_package}}.repository.UserRepository;
+import {{base_package}}.repository.convertor.UserPOConvertor;
+import {{base_package}}.repository.entity.UserPO;
+import {{base_package}}.repository.util.PageUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
+import java.util.List;
+
+/**
+ * 用户网关实现类
+ *
+ * @author {{author}}
+ * @date {{date}}
+ */
+@Repository
+@RequiredArgsConstructor
+public class UserGatewayImpl implements UserGateway {
+
+    private final UserRepository userRepository;
+
+    @Override
+    public PageResult<UserVO> pageUser(UserPageQuery query) {
+        LambdaQueryWrapper<UserPO> wrapper = Wrappers.lambdaQuery(UserPO.class);
+
+        // 构建查询条件
+        if (StringUtils.hasText(query.getUsername())) {
+            wrapper.like(UserPO::getUsername, query.getUsername());
+        }
+        if (query.getStatus() != null) {
+            wrapper.eq(UserPO::getStatus, query.getStatus());
+        }
+
+        wrapper.orderByDesc(UserPO::getCreatedDate);
+
+        // 执行分页查询
+        IPage<UserPO> result = userRepository.selectPage(PageUtil.page(query), wrapper);
+
+        // 转换结果
+        List<UserVO> records = UserPOConvertor.INSTANCE.toVOList(result.getRecords());
+
+        return PageResult.of(
+                records,
+                result.getTotal(),
+                result.getSize(),
+                result.getCurrent()
+        );
+    }
+
+    @Override
+    public UserVO getUserById(Long id) {
+        UserPO po = userRepository.selectById(id);
+        return UserPOConvertor.INSTANCE.toVO(po);
+    }
+
+    @Override
+    public Long addUser(UserAddCmd cmd) {
+        UserPO po = UserPOConvertor.INSTANCE.cmdToPO(cmd);
+        userRepository.insert(po);
+        return po.getId();
+    }
+
+    @Override
+    public void updateUser(UserUpdateCmd cmd) {
+        UserPO po = UserPOConvertor.INSTANCE.cmdToPO(cmd);
+        userRepository.updateById(po);
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+}

@@ -21,6 +21,35 @@ Approved / Changes requested / Blocked
 
 - [ ]
 
+## Slice Implementation Contract 审查
+
+> 按 Router 生成条件对称核验合同和执行结果。Reviewer 不得直接信任实现者自报的 `implemented`。
+
+| 检查项 | 结论 | 证据 |
+|---|---|---|
+| `contract_id` / `contract_version` 与生命周期批准、持久化版本及 Ticket 引用一致；Router 未自行写入 `approved`、`ready-for-agent` 或 `completed` | pass / violation |  |
+| Common、Frontend、Backend、Contract、Cross-repo 子合同按实际影响填写，不适用项均有原因 | pass / violation |  |
+| `required_skills` 依赖闭包与实际影响对称；Application、MapStruct、Lombok、Alibaba 等强制依赖未遗漏 | pass / violation / not-applicable |  |
+| 每个工作单元绑定唯一 `behavior-tdd` 或 `controlled-generation`；业务行为未混入机械生成 | pass / violation |  |
+| `behavior-tdd` 有已确认公开 seam、RED 和 GREEN 证据；`controlled-generation` 有例外原因、输入、预期文件、验证命令和生成后行为测试 | pass / violation / not-applicable |  |
+| 每个 YSS Skill Execution Result 引用当前合同版本和 work_unit_id，且状态枚举有效 | pass / violation |  |
+| `changed_files` 全部位于 `allowed_write_paths`，没有未授权仓库或目录写入 | pass / violation |  |
+| `expected_evidence_files` 已存在且可追溯到工作单元；不存在只写“符合 YSS”的自报结论 | pass / violation |  |
+| verification result 包含实际执行命令、结果和时间；只列计划命令不算 fresh verification | pass / violation |  |
+| `seam_deferred`、`deviations`、`new_impacts`、`drift` 和 `violation` 已分别处理，没有被错误汇总为完成 | pass / seam-deferred / drift / violation / not-applicable |  |
+| 非空 `new_impacts`、被推翻的 `not-applicable` 或合同关键变化已使相关工作单元 / 合同变为 `stale`，并进入完整重路由或生命周期回退 | pass / violation / not-applicable |  |
+| `Build Architecture Checklist` 已绑定同一合同版本和 Execution Result，并记录 Architecture Re-check / 回退结论 | pass / violation |  |
+
+子合同对称审查：
+
+| 子合同 | 重点检查 | 结论 | 证据 |
+|---|---|---|---|
+| Common | 影响面、skill、路径、禁止模式、证据、验证、人工审查、完整重路由触发 | pass / violation |  |
+| Frontend | 批准原型、状态矩阵、冻结客户端、组件 seam、E2E 路径 | pass / violation / not-applicable |  |
+| Backend | 分层、Application / 事务边界、持久化策略、禁止模式、证据、延期 seam、Wrapper 验证命令 | pass / seam-deferred / violation / not-applicable |  |
+| Contract | API 影响、Freeze / no-impact、生成客户端、契约测试、重生成命令 | pass / violation / not-applicable |  |
+| Cross-repo | 仓库、交付顺序、集成验证和回滚顺序 | pass / violation / not-applicable |  |
+
 ## YSS 后端门禁审查
 
 > 涉及后端切片时必填；不涉及时写 `not-applicable`。任何 `violation` 都阻断完成 / 可合并结论。
@@ -62,5 +91,9 @@ rg -n "class (SingleResult|MultiResult|PageResult|Result)<|public static class .
 | Agent 只写“符合 YSS”但没有 skill / 文件 / 测试证据 | 应被标记为 `violation` |  |
 | Agent 在后端验证、CI、README 或发布说明中写裸 `mvn ...` | 应改为项目根目录 `./mvnw ...`，否则标记为 `violation` |  |
 | Agent 将英文 skill / 模板的标题和说明原样输出为项目持久化文档 | 应改为中文正文和中文章节标题，否则标记为 `violation` |  |
+| Agent 修改合同允许路径之外的文件，或缺少预期证据文件 | 应标记为 `violation` 并阻断 build |  |
+| Agent 把状态机、权限、事务或错误映射放入 `controlled-generation` | 应拆分为 `behavior-tdd` 工作单元并触发完整重路由 |  |
+| Agent 返回非空 `new_impacts` 后继续编码或补写旧合同 | 应暂停相关工作单元，将合同标记 `stale`，回到 Router 或更早生命周期阶段 |  |
+| Agent 只列验证命令但没有实际结果和执行时间 | 不构成 fresh verification，不得给出 Approved / 可合并结论 |  |
 
 ## 签字确认

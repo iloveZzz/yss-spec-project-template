@@ -18,6 +18,9 @@ owner: ai
 | OpenAPI Freeze |  |  |
 | 系统 / 数据架构设计 |  |  |
 | 风险 / 回滚约束 | `AGENTS.md` |  |
+| Slice Implementation Contract |  | 填写 contract_id / contract_version / 生命周期批准状态 |
+| 垂直切片工作单元 |  |  |
+| YSS Skill Execution Result |  | 每个 skill / work_unit 的结果文件引用 |
 
 ## 2. 架构约束矩阵
 
@@ -25,6 +28,12 @@ owner: ai
 |---|---|---|---|---|---|
 | DDD 分层不得穿透：Domain 不依赖 Adapter、Infrastructure、Mapper、Controller 或 Web DTO | 系统架构 / YSS DDD 规范 / `AGENTS.md` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 若发现穿透依赖，标记 `violation` 并停止 build，回到架构修正 |
 | 后端切片必须回勾 `Backend Slice Implementation Contract`：required skills、允许写范围、禁止模式、证据文件、延期 seam 和验证命令完整 | implementation routing / 垂直切片 Ticket / `AGENTS.md` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺合同或合同不完整时暂停并记录替代方案 |
+| 统一合同版本：实现消费的 contract_id / contract_version 与生命周期批准并持久化的版本一致，Router 未自行批准合同或推进 `ready-for-agent` | Slice Implementation Contract / 生命周期证据 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 版本不一致时将工作单元标记 `stale` 并暂停 build |
+| 合同子项闭环：Common、Frontend、Backend、Contract、Cross-repo 子合同按影响面填写，不适用项有原因 | Slice Implementation Contract |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺失适用子合同时回到 Router |
+| 写路径与证据：Execution Result 的 changed_files 均位于 allowed_write_paths，expected_evidence_files 已实际生成 | Slice Implementation Contract / YSS Skill Execution Result |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 路径越界或证据缺失标记 `violation` 并阻断 build |
+| TDD 模式：每个工作单元唯一选择 `behavior-tdd` 或 `controlled-generation`；生成器未承载状态、权限、业务过滤、事务、错误映射或用户可见交互 | Slice Implementation Contract / 垂直切片 Ticket / Execution Result |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 模式不匹配时拆分工作单元并完整重路由 |
+| 实际验证：Execution Result 包含实际命令、结果和执行时间；只列计划命令不构成 fresh verification | YSS Skill Execution Result |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺实际结果或时间时不得进入完成结论 |
+| 新影响与偏离：`new_impacts`、`deviations`、`drift`、`violation` 已核验并触发相应重路由、Architecture Re-check 或生命周期回退 | YSS Skill Execution Result / implementation routing |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 非空新影响使当前合同相关部分失效并暂停工作单元 |
 | Web Adapter / DTO：必须按 `yss-dto` 定义或复用 CMD / Query / VO / Result；不得在 Controller 内部类或非约定包临时定义主要 DTO，不得手工分页主要业务集合 | `yss-web-controller` / `yss-dto` / OpenAPI Freeze |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 命中时回到 Controller / DTO 设计 |
 | Application：负责用例编排、事务边界和跨聚合协调，不承载核心领域规则 | `yss-backend-scaffold-application` / 系统架构 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 领域规则下沉 Domain，事务边界留在 Application |
 | Infrastructure：需要持久化的切片必须有 PO / Repository / Convertor / GatewayImpl；`InMemory*Gateway` 只能作为显式 `seam-deferred` | `yss-repository` / `yss-backend-scaffold-infrastructure` / 数据架构 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 未补齐时不得声称生产持久化完成 |
@@ -53,6 +62,10 @@ owner: ai
 
 ## 3. 当前切片回勾
 
+| contract_id | contract_version | 生命周期批准状态 | 合同引用 | 是否为当前版本 |
+|---|---|---|---|---|
+|  |  | pending / approved / rejected |  | 是 / 否 |
+
 | 切片 | 已落实 | seam / 延期 | 漂移 | 违反 | 是否允许继续 |
 |---|---|---|---|---|---|
 |  |  |  |  |  |  |
@@ -66,7 +79,13 @@ owner: ai
 | Domain | `yss-domain` / `yss-backend-scaffold-domain` |  |  | `implemented` / `seam-deferred` / `violation` / `not-applicable` |  |
 | Infrastructure | `yss-repository` / `yss-backend-scaffold-infrastructure` / `yss-mybatis` / `mapstruct` / `lombok` |  |  | `implemented` / `seam-deferred` / `violation` / `not-applicable` |  |
 
-## 3.2 后端门禁 smoke check
+## 3.2 工作单元与 Execution Result 回勾
+
+| work_unit_id | tdd_mode | skill / 结果引用 | changed_files 路径检查 | expected evidence 检查 | 实际 verification / executed_at | deviations / new_impacts | 状态 |
+|---|---|---|---|---|---|---|---|
+|  | behavior-tdd / controlled-generation |  | pass / violation | pass / violation |  |  | implemented / seam-deferred / drift / violation / not-applicable |
+
+## 3.3 后端门禁 smoke check
 
 > 命中不等于必然失败；`SingleResult` / `PageResult`、`CMD` / `Query` / `VO` 是 `yss-dto` 合法产物。命中项必须说明是否复用了既有 DTO 体系、是否位于约定包路径、是否继承约定基类；无法解释或未回勾合同即为 `violation`。
 
@@ -75,7 +94,7 @@ rg -n "class (SingleResult|MultiResult|PageResult|Result)<|public static class .
 rg -n "class .*(PO|DTO|VO|Cmd|Query)\\b|private final .* log =|LoggerFactory\\.getLogger|public .*(get|set)[A-Z]" apps/backend
 ```
 
-### 3.3 流程规范 smoke check
+### 3.4 流程规范 smoke check
 
 ```bash
 rg -n '(^|[[:space:]])mvn[[:space:]]' <backend-repo-or-doc-paths>
@@ -97,3 +116,6 @@ rg -n '(^|[[:space:]])mvn[[:space:]]' <backend-repo-or-doc-paths>
 - 必须先修正：
 - 可延期到后续切片：
 - fresh verification 命令：
+- 合同 ID / version：
+- Execution Result 汇总结论：
+- 重路由 / Architecture Re-check / 生命周期回退：

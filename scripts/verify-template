@@ -81,6 +81,7 @@ RUBY
 scripts/sync-skills --check
 scripts/update-skill-lock --check
 scripts/verify-lifecycle-scenarios
+scripts/verify-yss-router-scenarios
 
 ruby <<'RUBY'
 require "pathname"

@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Scaffold Domain"
+  short_description: "YSS 后端脚手架领域层、聚合与规则建模实践落地规范"
+  default_prompt: "Use $yss-backend-scaffold-domain to implement the domain layer for a YSS backend scaffold module."

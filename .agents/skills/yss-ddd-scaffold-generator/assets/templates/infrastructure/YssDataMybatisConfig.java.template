@@ -1,0 +1,8 @@
+package {{base_package}}.repository.config;
+
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration(proxyBeanMethods = true)
+@MapperScan(basePackages = {"com.yss.cloud.**.repository", "com.yss.cloud.**.mapper", "com.yss.datamiddle.**.repository"})
+public class YssDataMybatisConfig {}

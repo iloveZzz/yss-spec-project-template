@@ -19,11 +19,42 @@ owner: ai
 | 主控 Agent |  |
 | Ticket / MR / PR |  |
 
+## 生命周期状态块
+
+> 平台可用时以功能父 Ticket 中的同版本状态块为主；本地块用于降级和审计。它只保存索引、状态与因果关系，不能替代真实资产。
+
+```yaml
+lifecycle:
+  schema_version: 1
+  mode: route # route / orchestrate / resume / audit
+  stage: intake
+  status: routing # routing / running / paused-human-gate / blocked / completed
+  updated_at: <ISO-8601>
+workflow:
+  matt_flow: main
+  active_skill: null
+  status: not-started # not-started / active / paused / resolved / failed
+  next_skill: null
+  wayfinder_map: null
+artifacts: {}
+gates: {}
+tracker:
+  platform: null
+  parent_ticket: null
+  role: ready-for-human
+pause:
+  reason_code: null
+  gate_ref: null
+  owner_or_authority: null
+  resume_condition: null
+  next_work_unit: null
+```
+
 ## 阶段产物
 
 | 产物 | 路径 / 链接 | 状态 | 备注 |
 |---|---|---|---|
-|  |  | `done` / `draft` / `not-applicable` |  |
+|  |  | `missing` / `draft` / `ready-for-human` / `approved` / `stale` / `not-applicable` |  |
 
 ## Ticket 同步状态
 

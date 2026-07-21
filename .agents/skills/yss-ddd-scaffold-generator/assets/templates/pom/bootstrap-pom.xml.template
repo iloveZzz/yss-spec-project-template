@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.yss.datamiddle</groupId>
+        <artifactId>{{project_name}}-parent</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>{{project_name}}-bootstrap</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.yss.datamiddle</groupId>
+            <artifactId>{{project_name}}-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yss.datamiddle</groupId>
+            <artifactId>{{project_name}}-infrastructure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yss.cloud</groupId>
+            <artifactId>yss-component-excel-mvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yss.cloud</groupId>
+            <artifactId>yss-component-distributed-id</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yss.cloud</groupId>
+            <artifactId>yss-component-spring-cache</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <artifactId>smart-doc-maven-plugin</artifactId>
+                <configuration>
+                    <configFile>src/main/resources/smart-doc.json</configFile>
+                    <includes>
+                        <!-- 如果配置了includes的情况下， 使用了jpa的分页需要include所使用的源码包 -->
+                        <include>com.yss.cloud:yss-component-dto</include>
+                        <include>com.yss.datamiddle:datamiddle-component-exception</include>
+                        <include>com.yss.datamiddle:datamiddle-component-cache-starter</include>
+                        <include>com.yss.datamiddle:valuation-outsourced-client</include>
+                        <include>com.yss.cloud:yss-component-dir-client</include>
+                        <include>com.yss.cloud:yss-component-dir</include>
+                        <include>com.yss.cloud:yss-component-dir-common</include>
+                        <include>com.yss.datamiddle:{{project_name}}-domain</include>
+                        <include>com.yss.datamiddle:{{project_name}}-infrastructure</include>
+                        <include>com.yss.datamiddle:{{project_name}}-domain</include>
+                    </includes>
+                    <projectName>${project.description}</projectName>
+                </configuration>
+                <groupId>com.github.shalousun</groupId>
+                <version>yss-3.1.2</version>
+                <dependencies>
+                    <!-- 显式添加 commons-codec 依赖 -->
+                    <dependency>
+                        <groupId>commons-codec</groupId>
+                        <artifactId>commons-codec</artifactId>
+                        <version>1.15</version> <!-- 或与项目一致的版本 -->
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,2 @@
+INSERT INTO t_user (id, username, email, status, description, deleted, created_by, created_date, last_modified_by, last_modified_date)
+VALUES (1, 'admin', 'admin@example.com', 1, 'default admin', 0, 'system', CURRENT_TIMESTAMP, 'system', CURRENT_TIMESTAMP);

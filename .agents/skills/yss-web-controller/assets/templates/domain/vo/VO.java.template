@@ -1,0 +1,20 @@
+package ${base_package}.client.vo;
+
+import lombok.Data;
+import java.io.Serializable;
+import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+/**
+ * ${domain_desc} VO
+ *
+ * @author ${author}
+ */
+@Data
+public class ${domain_class}VO implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+${field_declarations}
+}

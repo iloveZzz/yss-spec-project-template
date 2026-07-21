@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Repository"
+  short_description: "Repository、Convertor 与 gateway 实现规范"
+  default_prompt: "Use $yss-repository to generate or refactor YSS repository, convertor, and gateway implementation code."

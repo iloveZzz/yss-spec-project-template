@@ -1,0 +1,804 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "pathname"
+require "rexml/document"
+require "rexml/xpath"
+require "time"
+require "yaml"
+
+ROOT = Pathname.new(__dir__).join("..").realpath
+CONTRACT = YAML.safe_load(
+  ROOT.join(".agents/skills/yss-router/references/router-contract.yaml").read,
+  permitted_classes: [], aliases: false
+)
+
+failures = []
+
+unless CONTRACT["schema_version"] == 1 && CONTRACT["allowed_statuses"] == %w[draft blocked ready-for-lifecycle-review]
+  failures << "Router status contract invalid"
+end
+failures << "Router must forbid approval statuses" unless CONTRACT["forbidden_statuses"] == %w[approved ready-for-agent completed]
+
+def readiness_missing(contract, impacts, available)
+  keys = contract.fetch("readiness").fetch("common").dup
+  impacts.each { |impact| keys.concat(contract.fetch("readiness").fetch(impact, [])) }
+  keys.uniq.reject { |key| available.fetch(key, false) }
+end
+
+def routing_input_violations(contract, input)
+  violations = contract.fetch("routing_input_required").reject { |field| input.key?(field) }
+  violations << "slice_id" if input["slice_id"].to_s.empty?
+  %w[impact_flags lifecycle implementation acceptance].each do |field|
+    violations << field unless input[field].is_a?(Hash)
+  end
+  flags = input["impact_flags"].is_a?(Hash) ? input["impact_flags"] : {}
+  violations += contract.fetch("impact_flags_required").reject { |flag| [true, false].include?(flags[flag]) }
+  contract.fetch("exclusive_flags").each do |left, right|
+    violations << "#{left}/#{right}" unless flags[left] != flags[right]
+  end
+  violations
+end
+
+def active_impacts(input)
+  input.fetch("impact_flags").select { |_, enabled| enabled }.keys
+end
+
+base_input = {
+  "slice_id" => "order-create",
+  "impact_flags" => {
+    "ui_impact" => true, "api_impact" => true, "no_api_impact" => false,
+    "data_impact" => false, "backend_impact" => false, "cross_repo" => false
+  },
+  "lifecycle" => {}, "implementation" => {}, "acceptance" => {}
+}
+failures << "Valid routing input was rejected" unless routing_input_violations(CONTRACT, base_input).empty?
+failures << "Missing impact flags were accepted" if routing_input_violations(CONTRACT, base_input.merge("impact_flags" => {})).empty?
+failures << "Blank slice id was accepted" if routing_input_violations(CONTRACT, base_input.merge("slice_id" => nil)).empty?
+failures << "Invalid lifecycle input type was accepted" if routing_input_violations(CONTRACT, base_input.merge("lifecycle" => nil)).empty?
+both_api_modes = base_input["impact_flags"].merge("api_impact" => true, "no_api_impact" => true)
+failures << "API/no-API exclusivity was not enforced" if routing_input_violations(CONTRACT, base_input.merge("impact_flags" => both_api_modes)).empty?
+
+common_ready = CONTRACT.dig("readiness", "common").to_h { |key| [key, true] }
+ui_ready = CONTRACT.dig("readiness", "ui_impact").to_h { |key| [key, true] }
+api_ready = CONTRACT.dig("readiness", "api_impact").to_h { |key| [key, true] }
+all_ui = common_ready.merge(ui_ready).merge(api_ready)
+failures << "Approved UI inputs were blocked" unless readiness_missing(CONTRACT, %w[ui_impact api_impact], all_ui).empty?
+
+ui_without_confirmation = all_ui.merge("prototype_confirmation" => false)
+unless readiness_missing(CONTRACT, %w[ui_impact api_impact], ui_without_confirmation).include?("prototype_confirmation")
+  failures << "UI implementation was not blocked without prototype confirmation"
+end
+
+data_ready = common_ready.merge(CONTRACT.dig("readiness", "data_impact").to_h { |key| [key, true] })
+data_missing = data_ready.merge("data_architecture" => false)
+unless readiness_missing(CONTRACT, %w[data_impact], data_missing).include?("data_architecture")
+  failures << "Repository route was not blocked without data architecture"
+end
+
+
+%w[ui_impact api_impact no_api_impact data_impact backend_impact cross_repo].each do |impact|
+  available = common_ready.merge(CONTRACT.dig("readiness", impact).to_h { |key| [key, true] })
+  required = CONTRACT.dig("readiness", impact)
+  next if required.empty?
+
+  required.each do |field|
+    missing = readiness_missing(CONTRACT, [impact], available.merge(field => false))
+    failures << "#{impact} did not block without #{field}" unless missing.include?(field)
+    status = missing.empty? ? "ready-for-lifecycle-review" : "blocked"
+    failures << "#{impact} missing #{field} did not return blocked" unless status == "blocked"
+  end
+end
+
+slice_contract_doc = ROOT.join(".agents/skills/yss-router/references/slice-implementation-contract.md").read
+slice_yaml = slice_contract_doc[/```yaml\n(.*?)\n```/m, 1]
+slice_fixture = YAML.safe_load(slice_yaml, permitted_classes: [], aliases: false).fetch("slice_contract")
+
+def slice_contract_missing(contract, fixture)
+  missing = contract.dig("slice_contract_required", "root").reject { |field| fixture.key?(field) }
+  %w[lifecycle_refs readiness common frontend backend contract cross_repo].each do |section|
+    required = contract.dig("slice_contract_required", section)
+    missing += required.reject { |field| fixture.fetch(section, {}).key?(field) }.map { |field| "#{section}.#{field}" }
+  end
+  missing
+end
+
+def slice_contract_violations(contract, fixture)
+  violations = slice_contract_missing(contract, fixture)
+  contract.fetch("slice_contract_nonempty").each do |field|
+    value = fixture[field]
+    valid = field == "contract_version" ? value.is_a?(Integer) && value.positive? : !value.to_s.empty?
+    violations << field unless valid
+  end
+  violations << "status" unless contract.fetch("allowed_statuses").include?(fixture["status"])
+  contract.fetch("slice_contract_array_fields").each do |section, fields|
+    fields.each do |field|
+      value = fixture.dig(section, field)
+      violations << "#{section}.#{field}" unless value.is_a?(Array) && !value.empty?
+    end
+  end
+  violations.uniq
+end
+
+def populated?(value)
+  value.is_a?(Array) ? !value.empty? : !value.to_s.empty?
+end
+
+def path_allowed_by?(path, allowed_paths)
+  return false unless path.is_a?(String) && allowed_paths.is_a?(Array)
+
+  candidate = path.sub(%r{/$}, "")
+  clean = Pathname.new(candidate).cleanpath.to_s
+  return false if clean != candidate || Pathname.new(clean).absolute? || clean.start_with?("../")
+
+  allowed_paths.any? do |allowed|
+    base = Pathname.new(allowed).cleanpath.to_s.sub(%r{/$}, "")
+    clean == base || clean.start_with?(base + "/")
+  end
+end
+
+def dependency_closure(contract, primary_skills, conditions)
+  result = primary_skills.dup
+  loop do
+    additions = result.flat_map do |skill|
+      rule = contract.fetch("dependency_closure").fetch(skill, {})
+      selected = rule.fetch("always", [])
+      conditions.each do |condition, enabled|
+        selected += rule.fetch("when_#{condition}", []) if enabled
+      end
+      selected
+    end
+    expanded = (result + additions).uniq
+    break result if expanded == result
+    result = expanded
+  end
+end
+
+def work_unit_violations(contract, fixture)
+  work_units = fixture["work_units"]
+  return ["work_units"] unless work_units.is_a?(Array) && !work_units.empty?
+
+  violations = []
+  ids = []
+  declared_skills = fixture.dig("common", "required_skills")
+  declared_skills = [] unless declared_skills.is_a?(Array)
+  path_scopes = [fixture.dig("common", "allowed_write_paths")]
+  path_scopes << fixture.dig("frontend", "allowed_write_paths") if fixture.dig("frontend", "status") == "required"
+  path_scopes << fixture.dig("backend", "allowed_write_paths") if fixture.dig("backend", "status") == "required"
+  evidence_scopes = [fixture.dig("common", "expected_evidence_files")]
+  evidence_scopes << fixture.dig("backend", "expected_evidence_files") if fixture.dig("backend", "status") == "required"
+  command_scopes = [fixture.dig("common", "verification_commands")]
+  command_scopes << fixture.dig("backend", "verification_commands") if fixture.dig("backend", "status") == "required"
+  work_units.each_with_index do |work_unit, index|
+    prefix = "work_units[#{index}]"
+    unless work_unit.is_a?(Hash)
+      violations << prefix
+      next
+    end
+    contract.fetch("work_unit_required").each do |field|
+      violations << "#{prefix}.#{field}" unless work_unit.key?(field)
+    end
+    %w[id behavior primary_skill].each do |field|
+      violations << "#{prefix}.#{field}" unless populated?(work_unit[field])
+    end
+    ids << work_unit["id"] if populated?(work_unit["id"])
+    violations << "#{prefix}.supporting_skills" unless work_unit["supporting_skills"].is_a?(Array)
+    violations << "#{prefix}.primary_skill" unless declared_skills.include?(work_unit["primary_skill"])
+    if work_unit["supporting_skills"].is_a?(Array) && !(work_unit["supporting_skills"] - declared_skills).empty?
+      violations << "#{prefix}.supporting_skills"
+    end
+    contract.fetch("work_unit_nonempty_arrays").each do |field|
+      value = work_unit[field]
+      violations << "#{prefix}.#{field}" unless value.is_a?(Array) && !value.empty?
+    end
+    work_unit.fetch("allowed_write_paths", []).each do |path|
+      violations << "#{prefix}.allowed_write_paths" unless path_scopes.all? { |scope| path_allowed_by?(path, scope) }
+    end
+    work_unit.fetch("expected_evidence", []).each do |evidence|
+      violations << "#{prefix}.expected_evidence" unless evidence.is_a?(String) && evidence_scopes.all? { |scope| scope.is_a?(Array) && scope.include?(evidence) }
+    end
+    work_unit.fetch("verification_commands", []).each do |command|
+      violations << "#{prefix}.verification_commands" unless command.is_a?(String) && !command.empty? &&
+                                                               command_scopes.all? { |scope| scope.is_a?(Array) && scope.include?(command) }
+    end
+    mode = work_unit["tdd_mode"]
+    violations << "#{prefix}.tdd_mode" unless contract.fetch("tdd_modes").key?(mode)
+    next unless mode == "controlled-generation"
+
+    generation = work_unit["controlled_generation"]
+    contract.dig("tdd_modes", mode, "required").each do |field|
+      violations << "#{prefix}.controlled_generation.#{field}" unless generation.is_a?(Hash) && populated?(generation[field])
+    end
+  end
+  violations << "work_units.id" unless ids.uniq.length == ids.length
+  violations
+end
+
+def slice_contract_decision_violations(contract, input, available, fixture, expected_required_skills)
+  violations = []
+  flags = input.fetch("impact_flags")
+  missing_readiness = readiness_missing(contract, active_impacts(input), available)
+  blockers = fixture.dig("readiness", "blockers")
+  stale_inputs = fixture.dig("readiness", "stale_inputs")
+  blocked = !missing_readiness.empty? || (blockers.is_a?(Array) && !blockers.empty?) ||
+            (stale_inputs.is_a?(Array) && !stale_inputs.empty?)
+  expected_status = blocked ? "blocked" : "ready-for-lifecycle-review"
+  violations << "status" unless fixture["status"] == expected_status
+
+  unless blocked
+    required_readiness = contract.fetch("readiness", {}).fetch("common", []).dup
+    active_impacts(input).each { |impact| required_readiness.concat(contract.dig("readiness", impact) || []) }
+    required_readiness.uniq.each do |readiness_key|
+      ref_field = contract.dig("lifecycle_ref_by_readiness", readiness_key)
+      next unless ref_field
+
+      ref = fixture.dig("lifecycle_refs", ref_field)
+      violations << "lifecycle_refs.#{ref_field}" unless populated?(ref)
+      evidence = available[readiness_key]
+      violations << "lifecycle_refs.#{ref_field}" unless evidence.is_a?(String) && !evidence.empty? && ref == evidence
+    end
+    violations.concat(work_unit_violations(contract, fixture))
+  end
+
+  {"frontend" => flags["ui_impact"], "backend" => flags["backend_impact"]}.each do |section, required|
+    expected = required ? "required" : "not-applicable"
+    violations << "#{section}.status" unless contract.fetch("subcontract_statuses").include?(fixture.dig(section, "status")) &&
+                                                   fixture.dig(section, "status") == expected
+    next unless required
+
+    rules = contract.dig("applicable_subcontract_nonempty", section)
+    rules.fetch("scalar", []).each do |field|
+      violations << "#{section}.#{field}" unless populated?(fixture.dig(section, field))
+    end
+    rules.fetch("array", []).each do |field|
+      value = fixture.dig(section, field)
+      violations << "#{section}.#{field}" unless value.is_a?(Array) && !value.empty?
+    end
+  end
+
+  api_impact = flags["api_impact"]
+  violations << "contract.api_impact" unless fixture.dig("contract", "api_impact") == api_impact
+  contract_mode = api_impact ? "contract_api" : "contract_no_api"
+  contract.dig("applicable_subcontract_nonempty", contract_mode).fetch("scalar", []).each do |field|
+    violations << "contract.#{field}" unless populated?(fixture.dig("contract", field))
+  end
+  contract.dig("applicable_subcontract_nonempty", contract_mode).fetch("array", []).each do |field|
+    value = fixture.dig("contract", field)
+    violations << "contract.#{field}" unless value.is_a?(Array) && !value.empty?
+  end
+  violations << "contract.no_api_impact_ref" if api_impact && populated?(fixture.dig("contract", "no_api_impact_ref"))
+  violations << "contract.freeze_ref" if !api_impact && populated?(fixture.dig("contract", "freeze_ref"))
+
+  if flags["cross_repo"]
+    contract.dig("applicable_subcontract_nonempty", "cross_repo", "array").each do |field|
+      value = fixture.dig("cross_repo", field)
+      violations << "cross_repo.#{field}" unless value.is_a?(Array) && !value.empty?
+    end
+  end
+  if flags["backend_impact"] && expected_required_skills.empty?
+    violations << "backend.required_skills"
+  elsif !expected_required_skills.empty?
+    sections = ["common"]
+    sections << "frontend" if flags["ui_impact"]
+    sections << "backend" if flags["backend_impact"]
+    sections.each do |section|
+      actual = fixture.dig(section, "required_skills")
+      violations << "#{section}.required_skills" unless actual.is_a?(Array) && (expected_required_skills - actual).empty?
+    end
+  end
+  violations.uniq
+end
+
+failures << "Documented Slice Contract does not match machine schema" unless slice_contract_missing(CONTRACT, slice_fixture).empty?
+CONTRACT.dig("slice_contract_required", "root").each do |field|
+  mutation = slice_fixture.reject { |key, _| key == field }
+  failures << "Slice Contract did not require root.#{field}" unless slice_contract_missing(CONTRACT, mutation).include?(field)
+end
+
+complete_slice = Marshal.load(Marshal.dump(slice_fixture))
+complete_slice.merge!("contract_id" => "order-create", "contract_version" => 1, "slice_id" => "order-create", "status" => "ready-for-lifecycle-review")
+CONTRACT.fetch("slice_contract_array_fields").each do |section, fields|
+  fields.each { |field| complete_slice[section][field] = ["value"] }
+end
+failures << "Complete Slice Contract fixture was rejected" unless slice_contract_violations(CONTRACT, complete_slice).empty?
+CONTRACT.fetch("slice_contract_nonempty").each do |field|
+  mutation = Marshal.load(Marshal.dump(complete_slice))
+  mutation[field] = nil
+  failures << "Slice Contract accepted blank #{field}" unless slice_contract_violations(CONTRACT, mutation).include?(field)
+end
+
+
+complete_slice["frontend"].merge!(
+  "status" => "required",
+  "required_skills" => ["yss-page-module-development"],
+  "approved_prototype_ref" => "docs/prototypes/order-create.html",
+  "state_matrix_ref" => "docs/design/order-create-state-matrix.md",
+  "allowed_write_paths" => ["apps/frontend/src/pages/order-create/"],
+  "component_test_seams" => ["order-create-form"],
+  "e2e_paths" => ["create-order"]
+)
+complete_slice["backend"]["status"] = "not-applicable"
+complete_slice["common"].merge!(
+  "required_skills" => ["yss-page-module-development"],
+  "allowed_write_paths" => ["apps/frontend/src/pages/order-create/"],
+  "expected_evidence_files" => ["apps/frontend/src/pages/order-create/OrderCreate.test.tsx"],
+  "verification_commands" => ["pnpm test order-create"]
+)
+complete_slice["contract"].merge!(
+  "api_impact" => true,
+  "freeze_ref" => "docs/openapi/order-create.yaml",
+  "no_api_impact_ref" => nil,
+  "contract_tests" => ["tests/contracts/order-create.yaml"]
+)
+ui_evidence = all_ui.transform_values.with_index { |_, index| "evidence/ui/#{index}" }
+CONTRACT.fetch("lifecycle_ref_by_readiness").each do |readiness_key, ref_field|
+  complete_slice["lifecycle_refs"][ref_field] = ui_evidence[readiness_key] if ui_evidence.key?(readiness_key)
+end
+complete_slice["work_units"] = [{
+  "id" => "render-order-create", "behavior" => "用户提交新订单", "primary_skill" => "yss-page-module-development",
+  "supporting_skills" => [], "tdd_mode" => "behavior-tdd",
+  "allowed_write_paths" => ["apps/frontend/src/pages/order-create/"],
+  "expected_evidence" => ["apps/frontend/src/pages/order-create/OrderCreate.test.tsx"],
+  "verification_commands" => ["pnpm test order-create"], "controlled_generation" => {}
+}]
+ui_expected_skills = ["yss-page-module-development"]
+ui_violations = slice_contract_decision_violations(CONTRACT, base_input, ui_evidence, complete_slice, ui_expected_skills)
+unless ui_violations.empty?
+  failures << "Ready UI/API Slice Contract was rejected: #{ui_violations.join(', ')}"
+end
+
+decision_mutations = {
+  "status-with-blockers" => [base_input, ui_evidence, {"readiness" => {"blockers" => ["review"], "stale_inputs" => [], "not_applicable" => []}}, "status"],
+  "status-with-stale" => [base_input, ui_evidence, {"readiness" => {"blockers" => [], "stale_inputs" => ["spec"], "not_applicable" => []}}, "status"],
+  "status-with-missing-readiness" => [base_input, ui_evidence.merge("prototype_confirmation" => false), {}, "status"],
+  "frontend-status" => [base_input, ui_evidence, {"frontend" => {"status" => "not-applicable"}}, "frontend.status"],
+  "frontend-skills" => [base_input, ui_evidence, {"frontend" => {"required_skills" => []}}, "frontend.required_skills"],
+  "frontend-wrong-skills" => [base_input, ui_evidence, {"frontend" => {"required_skills" => ["unrelated-skill"]}}, "frontend.required_skills"],
+  "frontend-prototype" => [base_input, ui_evidence, {"frontend" => {"approved_prototype_ref" => nil}}, "frontend.approved_prototype_ref"],
+  "frontend-state-matrix" => [base_input, ui_evidence, {"frontend" => {"state_matrix_ref" => nil}}, "frontend.state_matrix_ref"],
+  "frontend-paths" => [base_input, ui_evidence, {"frontend" => {"allowed_write_paths" => []}}, "frontend.allowed_write_paths"],
+  "frontend-seams" => [base_input, ui_evidence, {"frontend" => {"component_test_seams" => []}}, "frontend.component_test_seams"],
+  "frontend-e2e" => [base_input, ui_evidence, {"frontend" => {"e2e_paths" => []}}, "frontend.e2e_paths"],
+  "api-impact" => [base_input, ui_evidence, {"contract" => {"api_impact" => false}}, "contract.api_impact"],
+  "api-freeze" => [base_input, ui_evidence, {"contract" => {"freeze_ref" => nil}}, "contract.freeze_ref"],
+  "api-contract-tests" => [base_input, ui_evidence, {"contract" => {"contract_tests" => []}}, "contract.contract_tests"],
+  "lifecycle-ref" => [base_input, ui_evidence, {"lifecycle_refs" => {"spec" => nil}}, "lifecycle_refs.spec"],
+  "work-units-empty" => [base_input, ui_evidence, {"work_units" => []}, "work_units"],
+  "work-unit-behavior" => [base_input, ui_evidence, {"work_units" => [complete_slice["work_units"][0].merge("behavior" => nil)]}, "work_units[0].behavior"],
+  "work-unit-paths" => [base_input, ui_evidence, {"work_units" => [complete_slice["work_units"][0].merge("allowed_write_paths" => [])]}, "work_units[0].allowed_write_paths"],
+  "work-unit-tdd-mode" => [base_input, ui_evidence, {"work_units" => [complete_slice["work_units"][0].merge("tdd_mode" => "unknown")]}, "work_units[0].tdd_mode"],
+  "work-unit-primary-skill" => [base_input, ui_evidence, {"work_units" => [complete_slice["work_units"][0].merge("primary_skill" => "undeclared-skill")]}, "work_units[0].primary_skill"],
+  "work-unit-supporting-skills" => [base_input, ui_evidence, {"work_units" => [complete_slice["work_units"][0].merge("supporting_skills" => ["undeclared-skill"])]}, "work_units[0].supporting_skills"],
+  "work-unit-duplicate-id" => [base_input, ui_evidence, {"work_units" => [complete_slice["work_units"][0], Marshal.load(Marshal.dump(complete_slice["work_units"][0]))]}, "work_units.id"],
+  "work-unit-controlled-generation" => [base_input, ui_evidence, {"work_units" => [complete_slice["work_units"][0].merge("tdd_mode" => "controlled-generation", "controlled_generation" => {})]}, "work_units[0].controlled_generation.exception_reason"]
+}
+decision_mutations.each do |name, (input, available, overlay, expected)|
+  mutation = Marshal.load(Marshal.dump(complete_slice))
+  overlay.each { |section, values| values.is_a?(Hash) ? mutation[section].merge!(values) : mutation[section] = values }
+  failures << "Decision invariant accepted #{name}" unless slice_contract_decision_violations(CONTRACT, input, available, mutation, ui_expected_skills).include?(expected)
+end
+
+boolean_evidence = ui_evidence.transform_values { true }
+failures << "Ready contract accepted boolean readiness evidence" if slice_contract_decision_violations(CONTRACT, base_input, boolean_evidence, complete_slice, ui_expected_skills).empty?
+
+backend_input = Marshal.load(Marshal.dump(base_input))
+backend_input["impact_flags"].merge!("ui_impact" => false, "api_impact" => false, "no_api_impact" => true, "backend_impact" => true)
+backend_ready = common_ready.merge(CONTRACT.dig("readiness", "no_api_impact").to_h { |key| [key, true] })
+backend_ready.merge!(CONTRACT.dig("readiness", "backend_impact").to_h { |key| [key, true] })
+backend_evidence = backend_ready.transform_values.with_index { |_, index| "evidence/backend/#{index}" }
+backend_slice = Marshal.load(Marshal.dump(complete_slice))
+backend_slice["frontend"].merge!("status" => "not-applicable", "required_skills" => [], "approved_prototype_ref" => nil,
+                                  "state_matrix_ref" => nil, "allowed_write_paths" => [], "component_test_seams" => [], "e2e_paths" => [])
+backend_expected_skills = dependency_closure(
+  CONTRACT,
+  %w[yss-domain yss-backend-scaffold-application yss-repository yss-web-controller],
+  {"pojo" => true, "conversion" => true, "mybatis" => true}
+)
+backend_slice["backend"].merge!(
+  "status" => "required", "affected_layers" => ["application", "domain", "infrastructure", "web"],
+  "required_skills" => backend_expected_skills,
+  "application_boundary" => "CreateOrderUseCase", "transaction_boundary" => "CreateOrderUseCase.execute",
+  "persistence_strategy" => "OrderGateway via MyBatis", "allowed_write_paths" => ["apps/backend/order/"],
+  "forbidden_patterns" => ["Controller -> Repository"], "expected_evidence_files" => ["apps/backend/order/OrderTest.java"],
+  "verification_commands" => ["./mvnw -pl order -am test"]
+)
+backend_slice["common"]["required_skills"] = backend_expected_skills
+backend_slice["common"].merge!(
+  "allowed_write_paths" => ["apps/backend/order/"],
+  "expected_evidence_files" => ["apps/backend/order/OrderTest.java"],
+  "verification_commands" => ["./mvnw -pl order -am test"]
+)
+backend_slice["contract"].merge!("api_impact" => false, "freeze_ref" => nil, "no_api_impact_ref" => "docs/contracts/order-create-no-api.md", "contract_tests" => [])
+CONTRACT.fetch("lifecycle_ref_by_readiness").each do |readiness_key, ref_field|
+  backend_slice["lifecycle_refs"][ref_field] = backend_evidence[readiness_key] if backend_evidence.key?(readiness_key)
+end
+backend_slice["work_units"] = [{
+  "id" => "create-order", "behavior" => "创建订单事务", "primary_skill" => "yss-backend-scaffold-application",
+  "supporting_skills" => backend_expected_skills - ["yss-backend-scaffold-application"], "tdd_mode" => "behavior-tdd",
+  "allowed_write_paths" => ["apps/backend/order/"], "expected_evidence" => ["apps/backend/order/OrderTest.java"],
+  "verification_commands" => ["./mvnw -pl order -am test"], "controlled_generation" => {}
+}]
+backend_violations = slice_contract_decision_violations(CONTRACT, backend_input, backend_evidence, backend_slice, backend_expected_skills)
+unless backend_violations.empty?
+  failures << "Ready Backend/no-API Slice Contract was rejected: #{backend_violations.join(', ')}"
+end
+CONTRACT.dig("applicable_subcontract_nonempty", "backend").each do |kind, fields|
+  fields.each do |field|
+    mutation = Marshal.load(Marshal.dump(backend_slice))
+    mutation["backend"][field] = kind == "array" ? [] : nil
+    expected = "backend.#{field}"
+    failures << "Backend contract accepted empty #{field}" unless slice_contract_decision_violations(CONTRACT, backend_input, backend_evidence, mutation, backend_expected_skills).include?(expected)
+  end
+end
+no_api_mutation = Marshal.load(Marshal.dump(backend_slice))
+no_api_mutation["contract"]["no_api_impact_ref"] = nil
+failures << "No-API contract accepted missing record" unless slice_contract_decision_violations(CONTRACT, backend_input, backend_evidence, no_api_mutation, backend_expected_skills).include?("contract.no_api_impact_ref")
+backend_skill_mutation = Marshal.load(Marshal.dump(backend_slice))
+backend_skill_mutation["backend"]["required_skills"].delete("mapstruct")
+failures << "Backend contract accepted incomplete skill closure" unless slice_contract_decision_violations(CONTRACT, backend_input, backend_evidence, backend_skill_mutation, backend_expected_skills).include?("backend.required_skills")
+failures << "Backend contract accepted omitted skill closure" if slice_contract_decision_violations(CONTRACT, backend_input, backend_evidence, backend_slice, []).empty?
+
+{
+  "allowed_write_paths" => ["outside/contract/"],
+  "expected_evidence" => ["outside/Evil.test"],
+  "verification_commands" => ["true"]
+}.each do |field, value|
+  mutation = Marshal.load(Marshal.dump(backend_slice))
+  mutation["work_units"][0][field] = value
+  expected = "work_units[0].#{field}"
+  failures << "Work unit accepted out-of-contract #{field}" unless slice_contract_decision_violations(CONTRACT, backend_input, backend_evidence, mutation, backend_expected_skills).include?(expected)
+end
+
+cross_repo_input = Marshal.load(Marshal.dump(backend_input))
+cross_repo_input["impact_flags"]["cross_repo"] = true
+cross_repo_ready = backend_ready.merge(CONTRACT.dig("readiness", "cross_repo").to_h { |key| [key, true] })
+cross_repo_evidence = backend_evidence.merge(cross_repo_ready.reject { |key, _| backend_evidence.key?(key) }.transform_values.with_index { |_, index| "evidence/cross-repo/#{index}" })
+cross_repo_slice = Marshal.load(Marshal.dump(backend_slice))
+cross_repo_slice["cross_repo"].merge!("repositories" => ["frontend", "backend"], "delivery_order" => ["backend", "frontend"],
+                                      "integration_verification" => ["scripts/verify-integration"], "rollback_order" => ["frontend", "backend"])
+unless slice_contract_decision_violations(CONTRACT, cross_repo_input, cross_repo_evidence, cross_repo_slice, backend_expected_skills).empty?
+  failures << "Ready cross-repo Slice Contract was rejected"
+end
+CONTRACT.dig("applicable_subcontract_nonempty", "cross_repo", "array").each do |field|
+  mutation = Marshal.load(Marshal.dump(cross_repo_slice))
+  mutation["cross_repo"][field] = []
+  expected = "cross_repo.#{field}"
+  failures << "Cross-repo contract accepted empty #{field}" unless slice_contract_decision_violations(CONTRACT, cross_repo_input, cross_repo_evidence, mutation, backend_expected_skills).include?(expected)
+end
+CONTRACT.fetch("slice_contract_array_fields").each do |section, fields|
+  fields.each do |field|
+    mutation = Marshal.load(Marshal.dump(complete_slice))
+    mutation[section][field] = []
+    expected = "#{section}.#{field}"
+    failures << "Slice Contract accepted empty #{expected}" unless slice_contract_violations(CONTRACT, mutation).include?(expected)
+  end
+end
+
+not_applicable_item = slice_fixture.dig("readiness", "not_applicable", 0) || {}
+CONTRACT.fetch("not_applicable_required").each do |field|
+  failures << "not_applicable item missing #{field}" unless not_applicable_item.key?(field)
+end
+unavailable_item = slice_fixture.dig("common", "unavailable_skills", 0) || {}
+CONTRACT.fetch("unavailable_skill_required").each do |field|
+  failures << "unavailable skill item missing #{field}" unless unavailable_item.key?(field)
+end
+
+crud = dependency_closure(
+  CONTRACT,
+  %w[yss-domain yss-backend-scaffold-application yss-repository yss-web-controller],
+  {"pojo" => true, "conversion" => true, "mybatis" => true}
+)
+CONTRACT.fetch("end_to_end_backend_required").each do |skill|
+  failures << "Backend CRUD closure missing #{skill}" unless crud.include?(skill)
+end
+failures << "MyBatis condition was ignored" unless crud.include?("yss-mybatis")
+
+def tdd_mode(contract, impact)
+  contract.fetch("tdd_modes").each do |mode, definition|
+    return mode if definition.fetch("impacts").include?(impact)
+  end
+  nil
+end
+
+%w[domain-rule state-machine transaction permission page-interaction].each do |impact|
+  failures << "#{impact} must use behavior-tdd" unless tdd_mode(CONTRACT, impact) == "behavior-tdd"
+end
+%w[project-scaffold dto-boilerplate mapstruct-generated frozen-openapi-client].each do |impact|
+  failures << "#{impact} must use controlled-generation" unless tdd_mode(CONTRACT, impact) == "controlled-generation"
+end
+failures << "Unknown impact must not receive a TDD exception" unless tdd_mode(CONTRACT, "unknown").nil?
+
+def path_within_contract?(path, allowed_paths)
+  clean = Pathname.new(path).cleanpath.to_s
+  return false if clean != path || Pathname.new(clean).absolute? || clean.start_with?("../")
+
+  allowed_paths.any? do |allowed|
+    base = Pathname.new(allowed).cleanpath.to_s.sub(%r{/$}, "")
+    clean == base || clean.start_with?(base + "/")
+  end
+end
+
+def execution_violations(contract, result, allowed_paths, expected_evidence, expected_contract, expected_identity, expected_commands, expected_constraints, existing_files)
+  violations = []
+  unless result["schema_version"] == 1 && %w[skill slice_id work_unit_id].all? { |field| !result[field].to_s.empty? }
+    violations << "violation"
+  end
+  violations << "violation" unless expected_identity.all? { |field, value| result[field] == value }
+  violations << "violation" unless contract.fetch("execution_result_allowed_statuses").include?(result["status"])
+  contract.fetch("execution_result_required").each do |field|
+    violations << "missing-evidence" unless result.key?(field)
+  end
+  consumed = result.fetch("consumed_contract", {})
+  unless consumed["contract_ref"] == expected_contract["contract_ref"] &&
+         consumed["contract_id"] == expected_contract["contract_id"] &&
+         consumed["contract_version"] == expected_contract["contract_version"]
+    violations << "violation"
+  end
+  result.fetch("changed_files", []).each do |item|
+    path = item.is_a?(Hash) ? item["path"] : item
+    valid_item = item.is_a?(Hash) && %w[common frontend backend contract cross_repo].include?(item["contract_area"])
+    within_both = path && allowed_paths.all? { |scope_paths| path_within_contract?(path, scope_paths) }
+    violations << "path-outside-contract" unless valid_item && within_both
+  end
+  evidence_paths = result.fetch("evidence_files", []).each_with_object([]) do |item, paths|
+    next unless item.is_a?(Hash) && %w[code test generated review verification].include?(item["evidence_type"]) &&
+                !item["behavior_ref"].to_s.empty?
+    paths << item["path"]
+  end
+  missing = expected_evidence - evidence_paths
+  missing += evidence_paths.reject { |path| existing_files.include?(path) }
+  violations << "missing-evidence" unless missing.empty?
+  verification_results = result.fetch("verification_results", [])
+  verified = !verification_results.empty? && verification_results.all? do |item|
+    valid_time = begin
+      Time.iso8601(item["executed_at"].to_s)
+      true
+    rescue ArgumentError
+      false
+    end
+    !item["command"].to_s.empty? && item["result"] == "passed" && valid_time
+  end
+  violations << "verification-not-executed" unless verified
+  actual_commands = verification_results.map { |item| item["command"] }
+  violations << "verification-command-mismatch" unless actual_commands.sort == expected_commands.sort
+  constraint_results = result.fetch("constraint_results", [])
+  result_constraints = constraint_results.map { |item| item["constraint"] }
+  violations << "constraint-failed" unless (expected_constraints - result_constraints).empty?
+  constraint_results.each do |constraint|
+    violations << "constraint-failed" if constraint["status"] == "failed"
+    unless %w[passed failed not-applicable].include?(constraint["status"]) && !constraint["constraint"].to_s.empty? &&
+           !constraint["evidence_ref"].to_s.empty?
+      violations << "violation"
+    end
+  end
+  result.fetch("seam_deferred", []).each do |seam|
+    required = contract.fetch("seam_deferred_required")
+    violations << "seam-deferred-without-owner" unless required.all? { |field| !seam[field].to_s.empty? }
+  end
+  violations << "seam-deferred-without-owner" if result["status"] == "seam-deferred" && result.fetch("seam_deferred", []).empty?
+  violations << "violation" if result["status"] == "implemented" && !result.fetch("seam_deferred", []).empty?
+  violations << "violation" if result["status"] == "not-applicable" && result["not_applicable_reason"].to_s.empty?
+  result.fetch("deviations", []).each do |deviation|
+    required = contract.fetch("deviation_required")
+    violations << "unapproved-deviation" unless required.all? { |field| !deviation[field].to_s.empty? }
+  end
+  violations << "new-impacts" unless result.fetch("new_impacts", []).empty?
+  violations << result["status"] if %w[drift violation].include?(result["status"])
+  violations & contract.fetch("execution_blockers")
+end
+
+expected_contract = {"contract_ref" => "docs/contracts/order-create-v2.yaml", "contract_id" => "order-create", "contract_version" => 2}
+expected_identity = {"skill" => "yss-domain", "slice_id" => "order-create", "work_unit_id" => "create-order"}
+evidence_path = "apps/backend/order/OrderTest.java"
+expected_command = "./mvnw -pl order -am test"
+valid_result = {
+  "schema_version" => 1,
+  "skill" => "yss-domain",
+  "slice_id" => "order-create",
+  "work_unit_id" => "create-order",
+  "status" => "implemented",
+  "consumed_contract" => expected_contract,
+  "changed_files" => [{"path" => "apps/backend/order/Order.java", "contract_area" => "backend"}],
+  "evidence_files" => [{"path" => evidence_path, "evidence_type" => "test", "behavior_ref" => "create-order"}],
+  "verification_results" => [{"command" => expected_command, "result" => "passed", "executed_at" => "2026-07-21T12:00:00+08:00"}],
+  "constraint_results" => [{"constraint" => "no-controller-repository", "status" => "passed", "evidence_ref" => evidence_path}],
+  "seam_deferred" => [],
+  "deviations" => [],
+  "new_impacts" => [],
+  "not_applicable_reason" => nil
+}
+valid_args = [[
+  ["apps/backend/"],
+  ["apps/backend/order/"]
+], [evidence_path], expected_contract, [expected_command], ["no-controller-repository"], [evidence_path]]
+valid_args.insert(3, expected_identity)
+unless execution_violations(CONTRACT, valid_result, *valid_args).empty?
+  failures << "Valid execution result was rejected"
+end
+
+mutations = {
+  "path-outside-contract" => valid_result.merge("changed_files" => [{"path" => "apps/backend/order-escape/Evil.java", "contract_area" => "backend"}]),
+  "path-outside-contract-work-unit" => valid_result.merge("changed_files" => [{"path" => "apps/backend/other/Other.java", "contract_area" => "backend"}]),
+  "missing-evidence" => valid_result.merge("evidence_files" => []),
+  "verification-not-executed-empty" => valid_result.merge("verification_results" => []),
+  "verification-not-executed-command" => valid_result.merge("verification_results" => [{"result" => "passed", "executed_at" => "2026-07-21T12:00:00+08:00"}]),
+  "verification-not-executed" => valid_result.merge("verification_results" => [{"result" => "passed", "executed_at" => nil}]),
+  "verification-command-mismatch" => valid_result.merge("verification_results" => [{"command" => "true", "result" => "passed", "executed_at" => "2026-07-21T12:00:00+08:00"}]),
+  "violation-contract-version" => valid_result.merge("consumed_contract" => expected_contract.merge("contract_version" => 1)),
+  "violation-identity" => valid_result.merge("work_unit_id" => "other-work-unit"),
+  "path-outside-contract-area" => valid_result.merge("changed_files" => [{"path" => "apps/backend/order/Order.java", "contract_area" => "nonsense"}]),
+  "seam-deferred-without-owner" => valid_result.merge("seam_deferred" => [{"risk" => "temporary adapter"}]),
+  "seam-deferred-without-owner-empty" => valid_result.merge("status" => "seam-deferred", "seam_deferred" => []),
+  "violation-implemented-with-seam" => valid_result.merge("seam_deferred" => [{"risk" => "temporary", "owner" => "team", "follow_up_ticket" => "T-2", "verification_plan" => "test"}]),
+  "constraint-failed" => valid_result.merge("constraint_results" => [{"constraint" => "domain-layering", "status" => "failed"}]),
+  "constraint-failed-missing" => valid_result.merge("constraint_results" => []),
+  "unapproved-deviation" => valid_result.merge("deviations" => [{"rule" => "mapping"}]),
+  "violation-status" => valid_result.merge("status" => "nonsense"),
+  "violation-not-applicable-reason" => valid_result.merge("status" => "not-applicable", "not_applicable_reason" => nil),
+  "missing-evidence-shape" => valid_result.merge("evidence_files" => [{"path" => evidence_path, "evidence_type" => "test"}]),
+  "new-impacts" => valid_result.merge("new_impacts" => ["api-schema"]),
+  "drift" => valid_result.merge("status" => "drift"),
+  "violation" => valid_result.merge("status" => "violation")
+}
+mutations.each do |expected, result|
+  blocker = expected.sub(/-(empty|command|contract-version|status|shape|work-unit|missing|implemented-with-seam|not-applicable-reason|identity|area)$/, "")
+  actual = execution_violations(CONTRACT, result, *valid_args)
+  failures << "Execution mutation did not block: #{expected}" unless actual.include?(blocker)
+end
+
+controlled_required = CONTRACT.dig("tdd_modes", "controlled-generation", "required")
+controlled_complete = controlled_required.to_h { |field| [field, field == "generator_inputs" || field == "expected_files" || field == "verification_commands" ? ["value"] : "value"] }
+def controlled_generation_violations(required, mode, details)
+  return [] unless mode == "controlled-generation"
+
+  required.reject do |field|
+    value = details[field]
+    value.is_a?(Array) ? !value.empty? : !value.to_s.empty?
+  end
+end
+
+unless controlled_generation_violations(controlled_required, "controlled-generation", controlled_complete).empty?
+  failures << "Complete controlled-generation details were rejected"
+end
+controlled_required.each do |field|
+  mutation = controlled_complete.reject { |key, _| key == field }
+  unless controlled_generation_violations(controlled_required, "controlled-generation", mutation).include?(field)
+    failures << "controlled-generation did not require #{field}"
+  end
+end
+failures << "behavior-tdd incorrectly required generation details" unless controlled_generation_violations(controlled_required, "behavior-tdd", {}).empty?
+
+versioning = CONTRACT.fetch("contract_versioning")
+unless versioning["full_reroute_current_status"] == "stale" && versioning["next_version"] == "increment" &&
+       versioning["affected_work_units_status"] == "paused" &&
+       versioning["required_history"] == %w[previous_contract_ref stale_reason reroute_trigger]
+  failures << "Full reroute versioning contract invalid"
+end
+
+def full_reroute(contract, current_contract, trigger)
+  destination = contract.fetch("reroute_destinations")[trigger]
+  return nil unless destination
+
+  {
+    "current_status" => contract.dig("contract_versioning", "full_reroute_current_status"),
+    "next_version" => current_contract.fetch("contract_version") + 1,
+    "history" => {
+      "previous_contract_ref" => current_contract.fetch("contract_ref"),
+      "stale_reason" => "new-impact",
+      "reroute_trigger" => trigger
+    },
+    "affected_work_units_status" => contract.dig("contract_versioning", "affected_work_units_status"),
+    "destination" => destination
+  }
+end
+
+current_contract = {"contract_ref" => "docs/contracts/order-create-v2.yaml", "contract_version" => 2}
+CONTRACT.fetch("full_reroute_triggers").each do |trigger|
+  destination = CONTRACT.fetch("reroute_destinations")[trigger]
+  transition = full_reroute(CONTRACT, current_contract, trigger)
+  unless transition && transition["current_status"] == "stale" && transition["next_version"] == 3 &&
+         transition["affected_work_units_status"] == "paused" && transition["destination"] == destination &&
+         CONTRACT.dig("contract_versioning", "required_history").all? { |field| !transition.dig("history", field).to_s.empty? }
+    failures << "Full reroute transition failed: #{trigger}"
+  end
+end
+failures << "API/database schema reroutes collapsed" if CONTRACT.dig("reroute_destinations", "api-schema-impact") == CONTRACT.dig("reroute_destinations", "database-schema-impact")
+failures << "Unknown reroute trigger did not stop" unless full_reroute(CONTRACT, current_contract, "unknown").nil?
+
+shared_core = %w[
+  yss-router yss-domain-modeling yss-domain yss-ddd-scaffold-generator
+  yss-backend-scaffold-application yss-backend-scaffold-domain
+  yss-backend-scaffold-infrastructure yss-backend-scaffold-web
+  yss-repository yss-mybatis yss-web-controller yss-dto
+  yss-page-module-development yss-api-integration alibaba-java-code-style
+  mapstruct lombok
+]
+shared_core.each do |skill|
+  failures << "Shared core skill missing: #{skill}" unless ROOT.join(".agents/skills", skill, "SKILL.md").file?
+end
+
+projection_roots = %w[.claude .codex .hermes .pi .trae]
+top_level_scaffold_skills = %w[
+  yss-backend-scaffold-application yss-backend-scaffold-domain
+  yss-backend-scaffold-infrastructure yss-backend-scaffold-web
+]
+projection_roots.each do |projection_root|
+  top_level_scaffold_skills.each do |skill|
+    projected = ROOT.join(projection_root, "skills", skill, "SKILL.md")
+    failures << "Projected top-level scaffold skill missing: #{projection_root}/#{skill}" unless projected.file?
+  end
+end
+
+top_level_scaffold_skills.each do |skill|
+  wrapper = ROOT.join(".agents/skills/yss-ddd-scaffold-generator/references", skill, "SKILL.md")
+  body = wrapper.file? ? wrapper.read : ""
+  failures << "Nested scaffold wrapper missing target: #{skill}" unless body.include?("Use `#{skill}`") &&
+                                                                    body.include?("single authoritative")
+end
+
+execution_protocol_files = %w[
+  yss-domain-modeling/SKILL.md
+  yss-domain/SKILL.md
+  yss-ddd-scaffold-generator/SKILL.md
+  yss-repository/SKILL.md
+  yss-mybatis/SKILL.md
+  yss-web-controller/SKILL.md
+  yss-dto/SKILL.md
+  yss-page-module-development/SKILL.md
+  yss-api-integration/SKILL.md
+  alibaba-java-code-style/SKILL.md
+  mapstruct/SKILL.md
+  lombok/SKILL.md
+  yss-backend-scaffold-application/SKILL.md
+  yss-backend-scaffold-domain/SKILL.md
+  yss-backend-scaffold-infrastructure/SKILL.md
+  yss-backend-scaffold-web/SKILL.md
+]
+execution_protocol_files.each do |relative_path|
+  body = ROOT.join(".agents/skills", relative_path).read
+  failures << "Execution Result protocol missing: #{relative_path}" unless body.include?("Execution Result")
+end
+
+governance_markers = {
+  "AGENTS.md" => ["Slice Implementation Contract", "YSS Skill Execution Result", "Router 不得自行批准合同"],
+  "CONTEXT.md" => ["Slice Implementation Contract", "YSS Skill Execution Result"],
+  "docs/process/lifecycle-artifact-map.md" => ["批准的 Slice Implementation Contract", "YSS Skill Execution Result"]
+}
+governance_markers.each do |relative_path, markers|
+  body = ROOT.join(relative_path).read
+  markers.each { |marker| failures << "#{relative_path} missing #{marker}" unless body.include?(marker) }
+end
+
+settings_path = ROOT.join(".agents/skills/yss-ddd-scaffold-generator/assets/wrapper/.mvn/settings.xml")
+settings_document = REXML::Document.new(settings_path.read)
+{
+  "//server/username" => '${env.MAVEN_REPO_USERNAME}',
+  "//server/password" => '${env.MAVEN_REPO_PASSWORD}'
+}.each do |xpath, expected|
+  values = REXML::XPath.match(settings_document, xpath).map { |element| element.text.to_s }
+  failures << "Maven settings credential variables invalid: #{xpath}" if values.empty? || values.any? { |value| value != expected }
+end
+
+%w[
+  yss-domain/SKILL.md
+  yss-repository/SKILL.md
+  yss-mybatis/SKILL.md
+  yss-web-controller/SKILL.md
+  yss-dto/SKILL.md
+  yss-page-module-development/SKILL.md
+  yss-api-integration/SKILL.md
+  yss-backend-scaffold-application/SKILL.md
+  yss-backend-scaffold-domain/SKILL.md
+  yss-backend-scaffold-infrastructure/SKILL.md
+  yss-backend-scaffold-web/SKILL.md
+].each do |relative_path|
+  body = ROOT.join(".agents/skills", relative_path).read
+  failures << "behavior-tdd rule missing: #{relative_path}" unless body.include?("behavior-tdd")
+end
+
+unless failures.empty?
+  warn failures.join("\n")
+  exit 1
+end
+
+puts "YSS Router stage 7 scenarios passed"

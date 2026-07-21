@@ -1,0 +1,21 @@
+package ${base_package}.client.dto.query;
+
+import com.yss.cloud.dto.page.PageQuery;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+/**
+ * ${domain_desc} 分页查询
+ *
+ * @author ${author}
+ */
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class ${domain_class}Page extends PageQuery {
+
+${field_declarations}
+}
