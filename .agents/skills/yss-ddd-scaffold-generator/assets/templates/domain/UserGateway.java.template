@@ -1,0 +1,54 @@
+package {{base_package}}.domain.user.gateway;
+
+import com.yss.cloud.dto.result.PageResult;
+import {{base_package}}.client.dto.cmd.UserAddCmd;
+import {{base_package}}.client.dto.cmd.UserUpdateCmd;
+import {{base_package}}.client.dto.query.UserPageQuery;
+import {{base_package}}.client.vo.UserVO;
+
+/**
+ * 用户网关接口
+ *
+ * @author {{author}}
+ * @date {{date}}
+ */
+public interface UserGateway {
+
+    /**
+     * 分页查询用户
+     *
+     * @param query 查询条件
+     * @return 分页结果
+     */
+    PageResult<UserVO> pageUser(UserPageQuery query);
+
+    /**
+     * 根据ID查询用户
+     *
+     * @param id 用户ID
+     * @return 用户信息
+     */
+    UserVO getUserById(Long id);
+
+    /**
+     * 新增用户
+     *
+     * @param cmd 新增命令
+     * @return 用户ID
+     */
+    Long addUser(UserAddCmd cmd);
+
+    /**
+     * 更新用户
+     *
+     * @param cmd 更新命令
+     */
+    void updateUser(UserUpdateCmd cmd);
+
+    /**
+     * 删除用户
+     *
+     * @param id 用户ID
+     */
+    void deleteUser(Long id);
+}

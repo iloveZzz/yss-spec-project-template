@@ -1,0 +1,116 @@
+schema_version: 1
+supported_state_schema_versions: [1]
+
+modes:
+  route: read_only
+  audit: read_only
+  orchestrate: bounded_write
+  resume: rebuild_then_bounded_write
+
+wayfinder_completion:
+  required: [no_open_children, no_open_blocked_or_claimed_children, no_fog, destination_clear]
+
+ready_for_agent:
+  required: [gates_satisfied, no_stale_artifacts, blockers_closed, implementation_context_ready, slice_contract_approved, slice_contract_persisted, slice_contract_current_version]
+
+unknown_impact:
+  action: pause
+  reason_code: impact-classification-required
+
+# 每个 target 必须声明 kind、传播层级和适用条件。条件不满足时保持原状态，尤其不得把 not-applicable 改成 stale。
+impact_propagation:
+  wording:
+    targets:
+      - {kind: artifact, name: spec, level: direct, when: always}
+  ui-state:
+    targets:
+      - {kind: artifact, name: product-design, level: direct, when: ui_impact}
+      - {kind: artifact, name: prototype, level: direct, when: ui_impact}
+      - {kind: gate, name: requirement-freeze, level: direct, when: ui_impact}
+      - {kind: artifact, name: openapi-draft, level: transitive, when: api_impact}
+      - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
+      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
+  permission:
+    targets:
+      - {kind: artifact, name: spec, level: direct, when: always}
+      - {kind: artifact, name: spec-delta, level: direct, when: existing_frozen_baseline}
+      - {kind: artifact, name: product-design, level: direct, when: ui_impact}
+      - {kind: gate, name: requirement-freeze, level: direct, when: always}
+      - {kind: artifact, name: openapi-draft, level: transitive, when: api_impact}
+      - {kind: gate, name: draft-review, level: transitive, when: api_impact}
+      - {kind: gate, name: design-review, level: transitive, when: always}
+      - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
+      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
+      - {kind: artifact, name: implementation-contract, level: transitive, when: always}
+      - {kind: artifact, name: test-mapping, level: transitive, when: always}
+  api-schema:
+    targets:
+      - {kind: artifact, name: spec, level: direct, when: always}
+      - {kind: artifact, name: spec-delta, level: direct, when: existing_frozen_baseline}
+      - {kind: artifact, name: openapi-draft, level: direct, when: api_impact}
+      - {kind: gate, name: draft-review, level: transitive, when: api_impact}
+      - {kind: gate, name: design-review, level: transitive, when: api_impact}
+      - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
+      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: api_impact}
+      - {kind: artifact, name: contract-tests, level: transitive, when: api_impact}
+  state-machine:
+    targets:
+      - {kind: artifact, name: spec, level: direct, when: always}
+      - {kind: artifact, name: spec-delta, level: direct, when: existing_frozen_baseline}
+      - {kind: artifact, name: product-design, level: direct, when: ui_impact}
+      - {kind: artifact, name: system-architecture, level: direct, when: always}
+      - {kind: artifact, name: data-architecture, level: direct, when: data_impact}
+      - {kind: gate, name: requirement-freeze, level: direct, when: always}
+      - {kind: artifact, name: openapi-draft, level: transitive, when: api_impact}
+      - {kind: gate, name: design-review, level: transitive, when: always}
+      - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
+      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
+      - {kind: artifact, name: test-mapping, level: transitive, when: always}
+  data-model:
+    targets:
+      - {kind: artifact, name: spec, level: direct, when: always}
+      - {kind: artifact, name: spec-delta, level: direct, when: existing_frozen_baseline}
+      - {kind: artifact, name: data-architecture, level: direct, when: data_impact}
+      - {kind: gate, name: architecture-review, level: direct, when: data_impact}
+      - {kind: artifact, name: openapi-draft, level: transitive, when: api_impact}
+      - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
+      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
+      - {kind: artifact, name: data-migration, level: transitive, when: data_impact}
+  service-boundary:
+    targets:
+      - {kind: artifact, name: system-architecture, level: direct, when: always}
+      - {kind: artifact, name: engineering-baseline, level: direct, when: backend_impact}
+      - {kind: gate, name: architecture-review, level: direct, when: always}
+      - {kind: artifact, name: openapi-draft, level: transitive, when: api_impact}
+      - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
+      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
+  nfr:
+    targets:
+      - {kind: artifact, name: spec, level: direct, when: always}
+      - {kind: artifact, name: system-architecture, level: direct, when: always}
+      - {kind: gate, name: design-review, level: direct, when: always}
+      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
+      - {kind: artifact, name: verification-strategy, level: transitive, when: always}
+  deployment:
+    targets:
+      - {kind: artifact, name: system-architecture, level: direct, when: always}
+      - {kind: artifact, name: rollout-plan, level: direct, when: always}
+      - {kind: artifact, name: rollback-plan, level: direct, when: always}
+      - {kind: gate, name: design-review, level: transitive, when: always}
+      - {kind: artifact, name: release-plan, level: transitive, when: always}
+  security:
+    targets:
+      - {kind: artifact, name: spec, level: direct, when: always}
+      - {kind: artifact, name: spec-delta, level: direct, when: existing_frozen_baseline}
+      - {kind: artifact, name: product-design, level: direct, when: ui_impact}
+      - {kind: artifact, name: system-architecture, level: direct, when: always}
+      - {kind: artifact, name: data-architecture, level: direct, when: data_impact}
+      - {kind: gate, name: requirement-freeze, level: direct, when: always}
+      - {kind: gate, name: architecture-review, level: direct, when: always}
+      - {kind: artifact, name: openapi-draft, level: transitive, when: api_impact}
+      - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
+      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
+      - {kind: artifact, name: release-plan, level: transitive, when: always}
+
+prototype_return_evidence:
+  required: [source_handoff, prototype_asset_or_run, conclusion, updated_authoritative_asset, remaining_questions, return_handoff]

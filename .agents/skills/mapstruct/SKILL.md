@@ -17,6 +17,12 @@ allowed-tools: Read, Grep, Glob, Write, Edit
 
 > **Deep Knowledge**: Use `mcp__documentation__fetch_docs` with technology: `mapstruct` for comprehensive documentation.
 
+## YSS 阶段 7 执行结果
+
+- 消费批准后的 Slice Contract/work unit，只为合同中的 DTO/VO/PO/Domain 转换生成 Mapper/Convertor。
+- 受控生成必须记录 source/target、忽略字段、更新语义、Lombok processor 配置和 mapper 行为测试。
+- 按 `yss-router` 的统一 Execution Result 返回生成/源文件、测试和实际验证；未映射字段、反射/BeanUtils 退化或越界路径返回 `violation`。
+
 ## Basic Mapper
 
 ```java
@@ -286,7 +292,7 @@ public abstract class UserMapper {
 | Lombok annotations | `lombok` skill |
 | Spring configuration | `backend-spring-boot` skill |
 | JPA entity operations | JPA-specific skills |
-| Simple copying | Manual mapping or BeanUtils |
+| Simple copying outside YSS contracts | Explicit manual mapping; in YSS slices follow the contract and never fall back to `BeanUtils.copyProperties` |
 
 ---
 

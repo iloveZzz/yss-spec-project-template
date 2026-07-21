@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Scaffold Infrastructure"
+  short_description: "YSS 后端脚手架基础设施层与持久化实现设计落地规范"
+  default_prompt: "Use $yss-backend-scaffold-infrastructure to implement the infrastructure layer for a YSS backend scaffold module."

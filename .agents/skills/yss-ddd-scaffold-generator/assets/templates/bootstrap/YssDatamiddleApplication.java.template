@@ -1,0 +1,28 @@
+package {{base_package}};
+
+import com.yss.cloud.EnableDistributedId;
+import com.yss.cloud.cache.EnableYssCloudRedisCache;
+import com.yss.excel.mvc.annotation.EnableExcelMvc;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.boot.SpringApplication;
+
+@EnableAsync
+@EnableDiscoveryClient
+// @EnableYssCloudRedisCache // 请在确认 Redis 配置后取消注释
+@EnableAspectJAutoProxy
+// @EnableDistributedId // 请在确认分布式 ID 配置后取消注释
+@EnableExcelMvc
+@SpringBootApplication(scanBasePackages = {"com.yss.datamiddle", "com.yss.cloud"})
+public class YssDatamiddleApplication {
+    /**
+     * 应用程序入口方法，启动 Spring Boot 应用
+     *
+     * @param args 启动参数
+     */
+    public static void main(String[] args) {
+        SpringApplication.run(YssDatamiddleApplication.class, args);
+    }
+}

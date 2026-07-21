@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "pathname"
+require "yaml"
 
 ROOT = Pathname.new(__dir__).join("..").realpath
 
@@ -134,3 +135,196 @@ unless failures.empty?
 end
 
 puts "五类生命周期压力场景验证通过"
+
+skill_root = ROOT.join(".agents/skills/yss-product-lifecycle")
+skill = skill_root.join("SKILL.md").read
+required_skill_markers = [
+  "`route`",
+  "`orchestrate`",
+  "`resume`",
+  "`audit`",
+  "有界推进",
+  "不得绕过专项 skill",
+  "ready-for-agent",
+  "stale"
+]
+required_skill_markers.each do |marker|
+  failures << "yss-product-lifecycle 缺少编排语义: #{marker}" unless skill.include?(marker)
+end
+
+reference_markers = {
+  "references/orchestration.md" => [
+    "无 frontier”不等于完成",
+    "open blocked 或 open claimed",
+    "Setup readiness",
+    "handoff → prototype → handoff",
+    "Prototype 回流必须有可核验证据",
+    "用户明确选择优先"
+  ],
+  "references/state-model.md" => [
+    "lifecycle.status",
+    "artifacts.*.status",
+    "ticket.role",
+    "schema_version: 1"
+  ],
+  "references/artifact-dependencies.md" => [
+    "传播算法",
+    "标记 `stale`",
+    "移除相关切片的 `ready-for-agent`"
+  ],
+  "references/matt-yss-adapter.md" => [
+    "`ask-matt`",
+    "`wayfinder`",
+    "`setup-matt-pocock-skills`",
+    "`implement`、`tdd`"
+  ]
+}.freeze
+
+reference_markers.each do |relative_path, markers|
+  path = skill_root.join(relative_path)
+  if !path.file?
+    failures << "yss-product-lifecycle 缺少 reference: #{relative_path}"
+    next
+  end
+  body = path.read
+  markers.each do |marker|
+    failures << "#{relative_path} 缺少语义标记: #{marker}" unless body.include?(marker)
+  end
+end
+
+contract_path = skill_root.join("references/orchestration-contract.yaml")
+contract = YAML.safe_load(contract_path.read, permitted_classes: [], aliases: false)
+
+unless contract["schema_version"] == 1 && contract["supported_state_schema_versions"] == [1]
+  failures << "编排契约 schema 或支持版本错误"
+end
+
+modes = contract.fetch("modes")
+failures << "route 必须只读" unless modes["route"] == "read_only"
+failures << "audit 必须只读" unless modes["audit"] == "read_only"
+failures << "orchestrate 必须有界写入" unless modes["orchestrate"] == "bounded_write"
+failures << "resume 必须先重建状态" unless modes["resume"] == "rebuild_then_bounded_write"
+
+wayfinder_required = contract.dig("wayfinder_completion", "required")
+def wayfinder_complete?(required, facts)
+  required.all? { |condition| facts.fetch(condition) }
+end
+
+clear_map = wayfinder_required.to_h { |condition| [condition, true] }
+failures << "Wayfinder 完成式拒绝了清晰地图" unless wayfinder_complete?(wayfinder_required, clear_map)
+wayfinder_required.each do |condition|
+  mutation = clear_map.merge(condition => false)
+  failures << "Wayfinder 完成式未阻断: #{condition}" if wayfinder_complete?(wayfinder_required, mutation)
+end
+
+ready_required = contract.dig("ready_for_agent", "required")
+def ready_for_agent?(required, facts)
+  required.all? { |condition| facts.fetch(condition) }
+end
+
+ready_slice = ready_required.to_h { |condition| [condition, true] }
+failures << "ready-for-agent 完成式拒绝了合格切片" unless ready_for_agent?(ready_required, ready_slice)
+ready_required.each do |condition|
+  mutation = ready_slice.merge(condition => false)
+  failures << "ready-for-agent 完成式未阻断: #{condition}" if ready_for_agent?(ready_required, mutation)
+end
+
+propagation = contract.fetch("impact_propagation")
+expected_types = %w[wording ui-state permission api-schema state-machine data-model service-boundary nfr deployment security]
+failures << "影响类型不完整" unless (expected_types - propagation.keys).empty?
+
+allowed_conditions = %w[always existing_frozen_baseline ui_impact api_impact data_impact backend_impact]
+propagation.each do |impact_type, definition|
+  targets = definition.fetch("targets", [])
+  failures << "#{impact_type} 没有传播目标" if targets.empty?
+  targets.each do |target|
+    failures << "#{impact_type} target kind 非法" unless %w[artifact gate].include?(target["kind"])
+    failures << "#{impact_type} target level 非法" unless %w[direct transitive].include?(target["level"])
+    failures << "#{impact_type} target condition 非法" unless allowed_conditions.include?(target["when"])
+  end
+end
+
+def propagated_targets(propagation, impact_type, context)
+  definition = propagation[impact_type]
+  return nil unless definition
+
+  definition.fetch("targets").select do |target|
+    condition = target.fetch("when")
+    condition == "always" || context.fetch(condition, false)
+  end
+end
+
+def propagation_decision(contract, impact_type, context)
+  targets = propagated_targets(contract.fetch("impact_propagation"), impact_type, context)
+  return {"action" => "propagate", "targets" => targets} if targets
+
+  contract.fetch("unknown_impact")
+end
+
+all_impacts_context = {
+  "existing_frozen_baseline" => true,
+  "ui_impact" => true,
+  "api_impact" => true,
+  "data_impact" => true,
+  "backend_impact" => true
+}
+expected_types.each do |impact_type|
+  targets = propagated_targets(propagation, impact_type, all_impacts_context)
+  failures << "#{impact_type} 可执行传播结果为空" if targets.nil? || targets.empty?
+end
+
+new_module_permission = propagated_targets(
+  propagation,
+  "permission",
+  all_impacts_context.merge("existing_frozen_baseline" => false)
+)
+failures << "新模块错误激活 spec-delta" if new_module_permission.any? { |target| target["name"] == "spec-delta" }
+unless new_module_permission.any? { |target| target["kind"] == "gate" && target["name"] == "openapi-freeze" }
+  failures << "permission API 影响未使 openapi-freeze gate stale"
+end
+
+no_api_ui = propagated_targets(
+  propagation,
+  "ui-state",
+  all_impacts_context.merge("api_impact" => false)
+)
+if no_api_ui.any? { |target| %w[openapi-draft openapi-freeze].include?(target["name"]) }
+  failures << "no-API UI 变化错误污染 OpenAPI 节点"
+end
+
+unknown_decision = propagation_decision(contract, "unknown-impact", all_impacts_context)
+unless unknown_decision == {"action" => "pause", "reason_code" => "impact-classification-required"}
+  failures << "未知 impact type 未返回结构化暂停"
+end
+
+permission_gate_stale = new_module_permission.any? { |target| target["kind"] == "gate" }
+permission_artifact_stale = new_module_permission.any? { |target| target["kind"] == "artifact" }
+linked_ready_facts = ready_slice.merge(
+  "gates_satisfied" => !permission_gate_stale,
+  "no_stale_artifacts" => !permission_artifact_stale
+)
+failures << "传播后未撤销 ready-for-agent" if ready_for_agent?(ready_required, linked_ready_facts)
+
+prototype_evidence = contract.dig("prototype_return_evidence", "required")
+complete_evidence = prototype_evidence.to_h { |field| [field, true] }
+def prototype_return_complete?(required, evidence)
+  required.all? { |field| evidence.fetch(field, false) }
+end
+
+failures << "完整 prototype 回流证据被拒绝" unless prototype_return_complete?(prototype_evidence, complete_evidence)
+prototype_evidence.each do |field|
+  mutation = complete_evidence.merge(field => false)
+  failures << "prototype 回流缺少 #{field} 时未阻断" if prototype_return_complete?(prototype_evidence, mutation)
+end
+
+checkpoint = ROOT.join("docs/process/templates/stage-checkpoint-template.md").read
+%w[schema_version mode artifacts gates].each do |marker|
+  failures << "stage checkpoint 缺少状态字段: #{marker}" unless checkpoint.include?(marker)
+end
+
+unless failures.empty?
+  warn failures.join("\n")
+  exit 1
+end
+
+puts "生命周期编排器压力场景验证通过"

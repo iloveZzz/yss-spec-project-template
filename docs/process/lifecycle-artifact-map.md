@@ -16,6 +16,7 @@ owner: ai
 - subagent 协同边界、任务包规则和不可委派门禁见 `docs/process/subagent-collaboration.md`，任务包模板见 `docs/templates/subagent-task-package-template.md`。
 - 外部前端 / 后端实现仓库的接入和跨仓库切片绑定见 `docs/process/implementation-repo-integration.md`。
 - 阶段结束的 Ticket 同步与 Git checkpoint 记录可使用 `docs/process/templates/stage-checkpoint-template.md`。
+- `yss-product-lifecycle` 使用 `route / orchestrate / resume / audit` 四种模式，并在功能父 Ticket 或降级 checkpoint 中保存版本化状态索引；真实生命周期资产仍是事实来源。
 
 ## 8 个主阶段
 
@@ -27,7 +28,7 @@ owner: ai
 | 4. 产品设计与需求冻结 | 基于 Spec 初稿和产品总体设计，对 UI、页面流、状态矩阵、异常路径、高保真体验和 Spec 回填做闭环 | 有 UI 时：交互说明、低保真原型评审结论、Ant Design v6 高保真 HTML 原型（可由系统 / Agent 在低保真评审通过后自动产出）、AntD CLI 校验证据和用户确认记录；无 UI 时：需求冻结记录 | 状态矩阵、页面地图、原型链接 | Spec 校准 / 工程契约与架构设计准备度 |
 | 5. 系统 / 数据架构与工程契约设计审查 | 合并 API 影响分析、契约草案、工程基线、系统架构、数据架构和 Design Review；Draft 仅用于评审，Freeze 前不得作为实现或生成客户端契约 | 系统概要设计或等价架构记录；Design Review 结论；有 API 时：API 影响记录和契约草案 / review-only OpenAPI Draft；有后端结构影响时：工程基线审查 | OpenAPI Draft Review、OpenSpec-style Spec Delta、工程基线审查、无 API 影响记录、数据架构、ADR、架构图 | OpenAPI Freeze 准备度 |
 | 6. 契约冻结与 Ticket 正式化 | 冻结契约并把交付范围转成可执行 Ticket，并明确受影响前后端工程是否已存在 | OpenAPI Freeze 记录或无 API 影响记录；垂直切片 Ticket 入口 | `to-tickets` 输出、实施路由记录、实现仓库 / 脚手架判定、外部脚手架目标确认、Ticket tracker 同步 | 垂直切片准备度 |
-| 7. 垂直切片与 TDD 实现 | 将冻结范围拆成端到端切片并按 TDD 实现 | 垂直切片 Ticket、实施计划、Build Architecture Checklist、测试 / 验证记录 | YSS skill routing、前后端脚手架初始化记录、DDL / SQL / 数据库迁移、权限接入和审计日志人工确认结论、`handoff` / 跨仓库交接记录、`implement` / `tdd` 证据、`code-review` 报告、`resolving-merge-conflicts` 记录、清理简化记录、Architecture Re-check | Fresh verification / Release Review |
+| 7. 垂直切片与 TDD 实现 | 将冻结范围拆成端到端切片并按 TDD 实现 | 垂直切片 Ticket、批准的 Slice Implementation Contract、实施计划、Build Architecture Checklist、测试 / 验证记录 | YSS Skill Execution Result、前后端脚手架初始化记录、DDL / SQL / 数据库迁移、权限接入和审计日志人工确认结论、`handoff` / 跨仓库交接记录、`implement` / `tdd` 证据、`code-review` 报告、`resolving-merge-conflicts` 记录、清理简化记录、Architecture Re-check | Fresh verification / Release Review |
 | 8. 验证发布与复盘 | 保留发布、实施、验证和经验沉淀证据 | fresh verification、发布说明、复盘记录 | 实施记录、用户手册、`writing-skills` 压力场景 / 流程修订验证、AGENTS / CONTEXT / ADR 更新 | 下一轮规划 |
 
 ## Subagent 协同映射
@@ -62,7 +63,7 @@ owner: ai
 | 12. 设计审查 | 5. 系统 / 数据架构与工程契约设计审查 | Design Review 结论 | 进入 Freeze 前必需 |
 | 13. 契约冻结 | 6. 契约冻结与 Ticket 正式化 | OpenAPI Freeze 记录或无 API 影响记录 | 有 API 影响时必需；无 API 时记录结论 |
 | 14. Ticket 正式化 | 6. 契约冻结与 Ticket 正式化 | 垂直切片 Ticket、`to-tickets` 输出或等价任务记录，并记录受影响前后端工程存在性判定、`scaffold_status` 与外部脚手架目标确认 | 正式垂直切片前必需 |
-| 15. 实施计划 | 7. 垂直切片与 TDD 实现 | 垂直切片 Ticket、实施计划、Build Architecture Checklist、回滚点，以及缺失前后端工程时的脚手架初始化记录；涉及 DDL / SQL / 数据库迁移、权限接入或审计日志时记录人工确认结论 | 正式开发前必需 |
+| 15. 实施计划 | 7. 垂直切片与 TDD 实现 | 垂直切片 Ticket、批准的 Slice Implementation Contract、实施计划、Build Architecture Checklist、回滚点，以及缺失前后端工程时的脚手架初始化记录；涉及 DDL / SQL / 数据库迁移、权限接入或审计日志时记录人工确认结论 | 正式开发前必需 |
 | 16. 开发实现 | 7. 垂直切片与 TDD 实现 | TDD 证据、代码实现、契约对齐、架构约束回勾 | 代码变更时必需 |
 | 17. 独立审查 | 7. 垂直切片与 TDD 实现 | Review Report、`code-review` 结论或 MR / PR 评论；发生 merge / rebase 冲突时补 `resolving-merge-conflicts` 记录 | 合并 / 发布前必需 |
 | 18. 清理简化 | 7. 垂直切片与 TDD 实现 | 清理项记录或 review 建议 | 有复用 / 可读性 / 性能问题时执行 |
@@ -118,6 +119,9 @@ owner: ai
 ## 执行规则
 
 - 每次开始前先判断任务类型和最近可信阶段；不要把小文案、局部样式、单点 Bug 套进完整新功能流程。
+- `route` 与 `audit` 必须只读；`orchestrate` 与 `resume` 采用有界自动推进，遇到人工门禁、真实阻塞、新授权或完成裁决时暂停。
+- Matt 五态标签与资产/门禁状态必须分层表达；只有解除阻塞且全部必要门禁通过的垂直切片 Ticket 才能使用 `ready-for-agent`。
+- 上游资产变化后按影响类型将实际受影响的下游标记为 `stale`；不得只凭父 Ticket 阶段或文件存在继续实现，也不得默认重跑全部阶段。
 - 判断流程裁剪时先引用 `docs/process/harness-process-tailoring.md`；该指南只能减少不相关产物，不能裁剪关键追踪关系、人工审查或 fresh verification。
 - 使用 subagent 前必须引用 `docs/process/subagent-collaboration.md` 或等价规则，明确主控 Agent、任务包、写范围、不可委派门禁和汇合方式；阶段 checkpoint 必须记录 subagent 使用、冲突处理和主控采纳结论。
 - Discovery 可以通过 `competitive-intelligence` 形成竞品情报、竞品矩阵、机会说明、产品功能指引和下游影响清单，但这些只是 Spec、功能架构、产品设计、API 和架构阶段的输入，不冻结后续设计。
@@ -129,6 +133,7 @@ owner: ai
 - OpenAPI Freeze 后直接进入 `to-tickets` 或等价垂直切片拆分，不再要求额外变更目录或状态文件。
 - 进入实现前，必须先判断当前切片受影响的 frontend / backend 运行时代码工程是否已经存在且可复用；若不存在、不可复用或目录约定缺失，必须先登记 `scaffold_status=required`，补实现仓库登记或确认外部脚手架目标，再路由 `yss-ddd-scaffold-generator` 或 `yss-frontend-scaffold-generator` 初始化后进入业务实现。
 - 进入垂直切片实现前，必须将系统架构、数据架构、ADR、工程基线、OpenAPI Freeze 结论和风险 / 回滚约束转译成 `Build Architecture Checklist`。
+- `yss-router` 只编译 Slice Implementation Contract 草案；生命周期编排器核验上游门禁并批准、持久化合同。核心 YSS skills 必须消费相同合同版本并返回 YSS Skill Execution Result，Router 与独立 Reviewer 再核验路径、证据、实际验证、偏离和新增影响。
 - 跨线程、跨仓库、上下文过长或原型结论回流时，必须留下 `handoff` 或等价交接记录，至少包含来源资产、当前阶段、未决问题、验证命令和下一步责任人。
 - 每个垂直切片完成时必须回勾 `Build Architecture Checklist`，用 `implemented`、`seam-deferred`、`drift`、`violation` 或 `not-applicable` 标记状态，并提供证据或补齐落点。`drift` 触发 Architecture Re-check；`violation` 阻断继续 build。
 - Repository / Gateway / 持久化、权限 / 授权、审计、SQL / DDL / 迁移、文件上传下载、版本快照 / 元数据 / 血缘 / 查询索引、部署 / 回滚 / 运维约束，必须在 checklist 中逐项绑定切片和人工确认要求。

@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Scaffold Application"
+  short_description: "YSS 后端脚手架应用层、用例编排与 DTO 规范"
+  default_prompt: "Use $yss-backend-scaffold-application to implement the application layer for a YSS backend scaffold module."

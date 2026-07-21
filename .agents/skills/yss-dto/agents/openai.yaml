@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS DTO"
+  short_description: "统一响应、分页查询、Command 与 DTO 设计规范"
+  default_prompt: "Use $yss-dto to define YSS-style DTOs, page queries, commands, and unified response models."

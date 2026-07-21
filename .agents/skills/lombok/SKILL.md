@@ -17,6 +17,12 @@ allowed-tools: Read, Grep, Glob, Write, Edit
 
 > **Deep Knowledge**: Use `mcp__documentation__fetch_docs` with technology: `lombok` for comprehensive documentation.
 
+## YSS 阶段 7 执行结果
+
+- 消费批准后的 Slice Contract/work unit，只在允许路径内调整 POJO 样板和注解处理器配置。
+- 受控生成必须记录对象类型、选用/排除注解、实体关系和敏感字段风险、编译/测试实际结果。
+- 按 `yss-router` 的统一 Execution Result 返回 changed files、证据、偏离和新增影响；`@Data` 实体风险、处理器配置缺失或越界路径返回 `violation`。
+
 ## Maven Configuration
 
 ```xml
@@ -137,9 +143,10 @@ public class UserResponse {
 ```java
 @Entity
 @Table(name = "users")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
 @EntityListeners(AuditingEntityListener.class)
 public class User {
@@ -165,14 +172,13 @@ public class User {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    // Exclude from toString/equals for performance
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department;
 }
 ```
+
+JPA/DDD entities must not default to `@Data`; choose equality and `toString` deliberately from stable identity and exclude lazy, relationship, and sensitive fields.
 
 ## Service Pattern with Constructor Injection
 

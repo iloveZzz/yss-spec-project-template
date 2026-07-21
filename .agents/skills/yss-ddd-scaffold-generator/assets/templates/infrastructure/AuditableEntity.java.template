@@ -1,0 +1,25 @@
+package {{base_package}}.repository.entity;
+
+import lombok.Data;
+
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+import java.time.LocalDateTime;
+
+@MappedSuperclass
+@Data
+public abstract class AuditableEntity {
+
+    @Column(name = "created_by",updatable = false)
+    private String createdBy;
+
+    @Column(name = "created_date",updatable = false)
+    private LocalDateTime createdDate;
+
+    @Column(name = "last_modified_by")
+    private String lastModifiedBy;
+
+    @Column(name = "last_modified_date")
+    private LocalDateTime lastModifiedDate;
+
+}

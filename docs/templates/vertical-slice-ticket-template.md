@@ -38,6 +38,27 @@
   - [ ] UI / 组件测试
   - [ ] E2E 测试
 
+## Slice Implementation Contract
+
+| 字段 | 内容 |
+|---|---|
+| contract_id |  |
+| contract_version |  |
+| contract_ref |  |
+| Router 状态 | draft / blocked / ready-for-lifecycle-review |
+| 生命周期批准状态 | pending / approved / rejected |
+| Build Architecture Checklist |  |
+
+> Router 不得自行将合同批准或将本 Ticket 推进为 `ready-for-agent`。只有生命周期编排器核验并持久化当前版本合同、清除阻塞边后，才能推进状态。
+
+### 工作单元
+
+| work_unit_id | 验收行为 / 目标 | primary_skill | supporting_skills | tdd_mode | allowed_write_paths | expected_evidence | verification_commands | Execution Result 引用 | 状态 |
+|---|---|---|---|---|---|---|---|---|---|
+|  |  |  |  | behavior-tdd / controlled-generation |  |  |  |  | pending / running / blocked / completed / stale |
+
+`controlled-generation` 仅允许机械脚手架、样板、冻结客户端或配置，并记录 exception reason、生成器输入和生成后行为测试；业务规则、状态机、事务、权限、错误映射、复杂查询和用户可见交互必须使用 `behavior-tdd`。
+
 ## YSS 技能与后端实现合同
 
 > 涉及后端时必须填写；不涉及时写明 `not-applicable`。不得只写“符合 YSS”。
@@ -66,6 +87,20 @@
 
 - 无，可立即开始
 
+## 重路由状态
+
+| 字段 | 内容 |
+|---|---|
+| reroute_status | current / incremental-review / full-reroute-required / lifecycle-return / stale |
+| trigger | 新 API/schema / 权限 / 状态机 / 数据模型 / 写路径 / 仓库 / skill / seam / 风险 / 交付顺序 / other |
+| affected_work_units |  |
+| new_impacts |  |
+| stale_contract_version |  |
+| return_stage | Router / Architecture Re-check / 产品设计 / OpenAPI Draft-Review-Freeze / 系统或数据架构 / other |
+| recovery_conditions |  |
+
+出现 `drift`、`violation` 或非空 `new_impacts` 时暂停受影响工作单元，不得先完成代码再补合同；更新合同版本并通过生命周期审查后才能恢复。
+
 ## 状态
 
 `ready-for-agent`
@@ -85,4 +120,7 @@
 - [ ] 已新增测试且测试通过
 - [ ] 已移除调试 / 原型代码
 - [ ] 已回勾 `Backend Slice Implementation Contract` 和 `Build Architecture Checklist`
+- [ ] 已回勾当前 `contract_id` / `contract_version`、全部工作单元和对应 `YSS Skill Execution Result`
+- [ ] 实际 changed files 均在合同允许路径内，预期证据齐全，验证结果包含执行时间
+- [ ] `new_impacts`、`drift`、`violation` 和重路由状态均有明确结论，合同未处于 `stale`
 - [ ] 如领域或架构决策变化，已更新 `CONTEXT.md` / ADR

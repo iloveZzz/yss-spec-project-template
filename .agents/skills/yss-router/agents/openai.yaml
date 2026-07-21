@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS Router"
+  short_description: "Route YSS tasks to the right skills"
+  default_prompt: "Use yss-router to choose the minimal YSS skills for this task."

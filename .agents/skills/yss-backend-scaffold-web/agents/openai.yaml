@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Scaffold Web"
+  short_description: "YSS 后端脚手架 Web 层、DTO 与控制器规范"
+  default_prompt: "Use $yss-backend-scaffold-web to implement the web adapter layer for a YSS backend scaffold module."

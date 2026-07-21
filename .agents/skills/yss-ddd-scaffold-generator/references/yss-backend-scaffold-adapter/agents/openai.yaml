@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Scaffold Adapter"
+  short_description: "YSS 后端脚手架适配器层与接口接入设计落地标准规范"
+  default_prompt: "Use $yss-backend-scaffold-adapter to implement the adapter layer for a YSS backend scaffold module."

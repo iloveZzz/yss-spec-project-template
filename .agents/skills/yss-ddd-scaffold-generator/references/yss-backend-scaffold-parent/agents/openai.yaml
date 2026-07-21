@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Scaffold Parent"
+  short_description: "YSS 后端脚手架父工程、依赖与公共约定实践落地规范"
+  default_prompt: "Use $yss-backend-scaffold-parent to set up the parent project and shared conventions for a YSS backend scaffold."

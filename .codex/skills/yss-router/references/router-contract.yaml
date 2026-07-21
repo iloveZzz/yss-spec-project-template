@@ -1,0 +1,171 @@
+schema_version: 1
+allowed_statuses: [draft, blocked, ready-for-lifecycle-review]
+forbidden_statuses: [approved, ready-for-agent, completed]
+subcontract_statuses: [required, not-applicable]
+
+readiness:
+  common: [spec, slice_ticket, architecture_review, build_architecture_checklist, implementation_repository, verification_commands]
+  ui_impact: [requirement_freeze, low_fidelity_review, high_fidelity_html, antd_cli_evidence, prototype_confirmation]
+  api_impact: [openapi_freeze]
+  no_api_impact: [no_api_impact_record]
+  data_impact: [data_architecture]
+  backend_impact: [engineering_baseline, backend_repository, maven_wrapper]
+  cross_repo: [repository_registry, delivery_order, integration_verification, rollback_order]
+
+routing_input_required:
+  - slice_id
+  - impact_flags
+  - lifecycle
+  - implementation
+  - acceptance
+impact_flags_required: [ui_impact, api_impact, no_api_impact, data_impact, backend_impact, cross_repo]
+exclusive_flags:
+  - [api_impact, no_api_impact]
+
+slice_contract_required:
+  root: [schema_version, contract_id, contract_version, slice_id, status, lifecycle_refs, readiness, common, frontend, backend, contract, cross_repo, work_units]
+  lifecycle_refs: [spec, ticket, requirement_freeze, low_fidelity_review, high_fidelity_html, antd_cli_evidence, prototype_confirmation, openapi_freeze_or_no_impact, architecture_review, data_architecture, engineering_baseline, build_architecture_checklist, implementation_repository, frontend_repository, backend_repository, maven_wrapper]
+  readiness: [blockers, stale_inputs, not_applicable]
+  common: [impacted_areas, required_skills, optional_skills, unavailable_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, human_review_points, full_reroute_triggers]
+  frontend: [status, required_skills, approved_prototype_ref, state_matrix_ref, allowed_write_paths, component_test_seams, e2e_paths]
+  backend: [status, affected_layers, required_skills, application_boundary, transaction_boundary, persistence_strategy, allowed_write_paths, forbidden_patterns, expected_evidence_files, seam_deferred, verification_commands]
+  contract: [api_impact, freeze_ref, no_api_impact_ref, generated_clients, contract_tests, regeneration_commands]
+  cross_repo: [repositories, delivery_order, integration_verification, rollback_order]
+
+lifecycle_ref_by_readiness:
+  spec: spec
+  slice_ticket: ticket
+  architecture_review: architecture_review
+  build_architecture_checklist: build_architecture_checklist
+  implementation_repository: implementation_repository
+  requirement_freeze: requirement_freeze
+  low_fidelity_review: low_fidelity_review
+  high_fidelity_html: high_fidelity_html
+  antd_cli_evidence: antd_cli_evidence
+  prototype_confirmation: prototype_confirmation
+  openapi_freeze: openapi_freeze_or_no_impact
+  no_api_impact_record: openapi_freeze_or_no_impact
+  data_architecture: data_architecture
+  engineering_baseline: engineering_baseline
+  backend_repository: backend_repository
+  maven_wrapper: maven_wrapper
+
+work_unit_required: [id, behavior, primary_skill, supporting_skills, tdd_mode, allowed_write_paths, expected_evidence, verification_commands, controlled_generation]
+work_unit_nonempty_arrays: [allowed_write_paths, expected_evidence, verification_commands]
+slice_contract_nonempty: [contract_id, contract_version, slice_id, status]
+slice_contract_array_fields:
+  common: [impacted_areas, required_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, full_reroute_triggers]
+
+applicable_subcontract_nonempty:
+  frontend:
+    scalar: [approved_prototype_ref, state_matrix_ref]
+    array: [required_skills, allowed_write_paths, component_test_seams, e2e_paths]
+  backend:
+    scalar: [application_boundary, transaction_boundary, persistence_strategy]
+    array: [affected_layers, required_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands]
+  contract_api:
+    scalar: [freeze_ref]
+    array: [contract_tests]
+  contract_no_api:
+    scalar: [no_api_impact_ref]
+  cross_repo:
+    array: [repositories, delivery_order, integration_verification, rollback_order]
+
+dependency_closure:
+  yss-domain:
+    always: [yss-domain-modeling, yss-backend-scaffold-domain, alibaba-java-code-style]
+    when_pojo: [lombok]
+  yss-backend-scaffold-application:
+    always: [alibaba-java-code-style]
+    when_conversion: [mapstruct, lombok]
+  yss-repository:
+    always: [yss-backend-scaffold-infrastructure, mapstruct, lombok, alibaba-java-code-style]
+    when_mybatis: [yss-mybatis]
+  yss-web-controller:
+    always: [yss-dto, yss-backend-scaffold-web, mapstruct, lombok, alibaba-java-code-style]
+  yss-page-module-development:
+    when_components: [yss-components]
+    when_hooks: [yss-hook]
+    when_form: [yss-formily]
+    when_api: [api-integration]
+  api-integration:
+    when_regeneration: [yss-openapi]
+
+end_to_end_backend_required:
+  - yss-domain-modeling
+  - yss-domain
+  - yss-backend-scaffold-domain
+  - yss-backend-scaffold-application
+  - yss-repository
+  - yss-backend-scaffold-infrastructure
+  - yss-web-controller
+  - yss-dto
+  - yss-backend-scaffold-web
+  - mapstruct
+  - lombok
+  - alibaba-java-code-style
+
+tdd_modes:
+  behavior-tdd:
+    impacts: [domain-rule, state-machine, transaction, complex-query, permission, error-mapping, page-interaction, user-visible-state]
+  controlled-generation:
+    impacts: [project-scaffold, dto-boilerplate, po-boilerplate, mapstruct-generated, frozen-openapi-client, mechanical-config]
+    required: [exception_reason, generator, generator_inputs, expected_files, verification_commands, behavior_tests_after_generation]
+
+full_reroute_triggers:
+  - api-schema-impact
+  - database-schema-impact
+  - permission-impact
+  - state-machine-impact
+  - data-model-impact
+  - new-write-path
+  - new-repository
+  - new-required-skill
+  - not-applicable-invalidated
+  - architecture-drift
+  - contract-violation
+  - generation-became-behavior
+  - test-seam-changed
+  - verification-command-changed
+  - delivery-order-changed
+
+reroute_destinations:
+  api-schema-impact: system-data-architecture-and-contract-review
+  database-schema-impact: data-architecture-and-migration-review
+  permission-impact: spec-product-design-and-contract-review
+  state-machine-impact: spec-system-data-and-contract-review
+  data-model-impact: data-architecture-and-contract-review
+  new-write-path: stage7-contract-recompile
+  new-repository: stage7-contract-recompile
+  new-required-skill: stage7-contract-recompile
+  not-applicable-invalidated: lifecycle-impact-reassessment
+  architecture-drift: architecture-recheck
+  contract-violation: stage7-contract-recompile
+  generation-became-behavior: stage7-contract-recompile
+  test-seam-changed: spec-ticket-test-seam-review
+  verification-command-changed: stage7-contract-recompile
+  delivery-order-changed: cross-repo-release-review
+
+execution_result_allowed_statuses: [implemented, seam-deferred, drift, violation, not-applicable]
+execution_blockers: [path-outside-contract, missing-evidence, verification-not-executed, verification-command-mismatch, seam-deferred-without-owner, constraint-failed, unapproved-deviation, drift, violation, new-impacts]
+
+contract_versioning:
+  full_reroute_current_status: stale
+  next_version: increment
+  required_history: [previous_contract_ref, stale_reason, reroute_trigger]
+  affected_work_units_status: paused
+
+execution_result_required:
+  - consumed_contract
+  - changed_files
+  - evidence_files
+  - verification_results
+  - constraint_results
+  - seam_deferred
+  - deviations
+  - new_impacts
+  - not_applicable_reason
+seam_deferred_required: [risk, owner, follow_up_ticket, verification_plan]
+deviation_required: [rule, reason, approval_ref]
+not_applicable_required: [item, reason]
+unavailable_skill_required: [skill, provider, fallback, resolution]

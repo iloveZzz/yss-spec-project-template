@@ -1,0 +1,72 @@
+package ${base_package}.rest;
+
+${gateway_import}
+${dto_imports}
+${domain_import}
+${web_convertor_import}
+import com.yss.cloud.dto.result.PageResult;
+import com.yss.cloud.dto.result.SingleResult;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
+/**
+ * ${domain_desc} 管理
+ *
+ * @author ${author}
+ */
+@RestController
+@RequestMapping("/api/${module_name}/${domain_url_path}")
+@RequiredArgsConstructor
+@Api(tags = "${domain_desc}管理")
+public class ${domain_class}Controller {
+
+    ${gateway_field}
+    private static final ${web_convertor_class} CONVERTOR = ${web_convertor_class}.INSTANCE;
+
+    /**
+     * 分页查询 ${domain_desc}
+     */
+    @PostMapping("/page")
+    @ApiOperation("分页查询")
+    public PageResult<${vo_class}> page(@RequestBody ${query_class} query) {
+        return CONVERTOR.toVOPage(${query_call});
+    }
+
+    /**
+     * 根据ID查询 ${domain_desc}
+     */
+    @GetMapping("/{id}")
+    @ApiOperation("详情查询")
+    public SingleResult<${vo_class}> detail(@PathVariable Long id) {
+        return SingleResult.of(CONVERTOR.toVO(${detail_call}));
+    }
+
+    /**
+     * 新增 ${domain_desc}
+     */
+    @PostMapping
+    @ApiOperation("新增")
+    public SingleResult<Long> add(@RequestBody ${add_cmd_class} cmd) {
+        return SingleResult.of(${add_call});
+    }
+
+    /**
+     * 更新 ${domain_desc}
+     */
+    @PutMapping
+    @ApiOperation("更新")
+    public SingleResult<Boolean> update(@RequestBody ${update_cmd_class} cmd) {
+        return SingleResult.of(${update_call});
+    }
+
+    /**
+     * 删除 ${domain_desc}
+     */
+    @DeleteMapping("/{id}")
+    @ApiOperation("删除")
+    public SingleResult<Boolean> delete(@PathVariable Long id) {
+        return SingleResult.of(${delete_call});
+    }
+}

@@ -1,0 +1,87 @@
+package {{base_package}}.core.service.impl;
+
+import com.yss.cloud.dto.result.PageResult;
+import {{base_package}}.client.dto.cmd.UserAddCmd;
+import {{base_package}}.client.dto.cmd.UserUpdateCmd;
+import {{base_package}}.client.dto.query.UserPageQuery;
+import {{base_package}}.client.vo.UserVO;
+import {{base_package}}.core.service.UserService;
+import {{base_package}}.domain.user.gateway.UserGateway;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+/**
+ * 用户应用服务实现类
+ *
+ * @author {{author}}
+ * @date {{date}}
+ */
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class UserServiceImpl implements UserService {
+    private final UserGateway userGateway;
+
+    /**
+     * 分页查询用户
+     *
+     * @param query 查询条件
+     * @return 分页结果
+     */
+    @Override
+    public PageResult<UserVO> pageUser(UserPageQuery query) {
+        log.debug("分页查询用户, query: {}", query);
+        return userGateway.pageUser(query);
+    }
+
+    /**
+     * 根据ID查询用户
+     *
+     * @param id 用户ID
+     * @return 用户信息
+     */
+    @Override
+    public UserVO getUserById(Long id) {
+        log.debug("根据ID查询用户, id: {}", id);
+        return userGateway.getUserById(id);
+    }
+
+    /**
+     * 新增用户
+     *
+     * @param cmd 新增命令
+     * @return 用户ID
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long addUser(UserAddCmd cmd) {
+        log.info("新增用户, username: {}", cmd.getUsername());
+        return userGateway.addUser(cmd);
+    }
+
+    /**
+     * 更新用户
+     *
+     * @param cmd 更新命令
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUser(UserUpdateCmd cmd) {
+        log.info("更新用户, id: {}", cmd.getId());
+        userGateway.updateUser(cmd);
+    }
+
+    /**
+     * 删除用户
+     *
+     * @param id 用户ID
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void deleteUser(Long id) {
+        log.info("删除用户, id: {}", id);
+        userGateway.deleteUser(id);
+    }
+}

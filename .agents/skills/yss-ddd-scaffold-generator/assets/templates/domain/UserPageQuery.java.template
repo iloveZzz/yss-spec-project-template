@@ -1,0 +1,12 @@
+package {{base_package}}.client.dto.query;
+
+import com.yss.cloud.dto.page.PageQuery;
+import lombok.Data;
+
+@Data
+public class UserPageQuery extends PageQuery {
+
+    private String username;
+
+    private Integer status;
+}

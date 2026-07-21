@@ -1,0 +1,84 @@
+package {{base_package}}.rest;
+
+import com.yss.cloud.dto.result.PageResult;
+import com.yss.cloud.dto.result.SingleResult;
+import {{base_package}}.client.dto.cmd.UserAddCmd;
+import {{base_package}}.client.dto.cmd.UserUpdateCmd;
+import {{base_package}}.client.dto.query.UserPageQuery;
+import {{base_package}}.client.vo.UserVO;
+import {{base_package}}.core.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
+/**
+ * 用户管理控制器
+ *
+ * @author {{author}}
+ * @date {{date}}
+ */
+@RestController
+@RequestMapping("/api/users")
+@RequiredArgsConstructor
+public class UserController {
+
+    private final UserService userService;
+
+    /**
+     * 分页查询用户
+     *
+     * @param query 查询条件
+     * @return 分页结果
+     */
+    @PostMapping("/page")
+    public PageResult<UserVO> page(@Valid @RequestBody UserPageQuery query) {
+        return userService.pageUser(query);
+    }
+
+    /**
+     * 根据ID查询用户详情
+     *
+     * @param id 用户ID
+     * @return 用户详情
+     */
+    @GetMapping("/{id}")
+    public SingleResult<UserVO> getById(@PathVariable Long id) {
+        return SingleResult.of(userService.getUserById(id));
+    }
+
+    /**
+     * 新增用户
+     *
+     * @param cmd 新增命令
+     * @return 用户ID
+     */
+    @PostMapping
+    public SingleResult<Long> add(@Valid @RequestBody UserAddCmd cmd) {
+        return SingleResult.of(userService.addUser(cmd));
+    }
+
+    /**
+     * 更新用户
+     *
+     * @param cmd 更新命令
+     * @return 更新结果
+     */
+    @PutMapping
+    public SingleResult<Boolean> update(@Valid @RequestBody UserUpdateCmd cmd) {
+        userService.updateUser(cmd);
+        return SingleResult.of(true);
+    }
+
+    /**
+     * 删除用户
+     *
+     * @param id 用户ID
+     * @return 删除结果
+     */
+    @DeleteMapping("/{id}")
+    public SingleResult<Boolean> delete(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return SingleResult.of(true);
+    }
+}
