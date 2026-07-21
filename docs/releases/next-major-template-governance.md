@@ -11,7 +11,7 @@
 - Spec Delta 只用于修改既有冻结基线的中高风险行为，不用于全新产品或全新模块。
 - 所有面向人的落地文档正文以简体中文为标准语言。
 
-旧版项目必须按 `docs/user-guide/spec-ticket-migration-guide.md` 一次性迁移，不提供旧 skill 别名。
+旧版项目必须按 `docs/user-guide/规格与任务迁移指南.md` 一次性迁移，不提供旧 skill 别名。
 
 ## 模板仓库验证
 

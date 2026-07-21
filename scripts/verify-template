@@ -13,7 +13,7 @@ required_files=(
   "docs/process/harness-process-tailoring.md"
   "docs/templates/spec-template.md"
   "docs/templates/vertical-slice-ticket-template.md"
-  "docs/user-guide/spec-ticket-migration-guide.md"
+  "docs/user-guide/规格与任务迁移指南.md"
   "scripts/sync-skills"
   "scripts/update-skill-lock"
   "scripts/verify-lifecycle-scenarios"
@@ -115,7 +115,7 @@ end
 allowed_legacy_files = %w[
   docs/process/template-governance-grilling-record.md
   docs/process/template-governance-skill-validation.md
-  docs/user-guide/spec-ticket-migration-guide.md
+  docs/user-guide/规格与任务迁移指南.md
   scripts/sync-skills
   scripts/update-skill-lock
   scripts/verify-template

@@ -54,7 +54,7 @@ scripts/sync-skills --check
 scripts/update-skill-lock --check
 ```
 
-前者检查所有共享投影是否指向或匹配权威内容，后者检查 `skills-lock.json` 是否与当前完整目录树一致。过时技能不会保留兼容别名；旧版项目按 `docs/user-guide/spec-ticket-migration-guide.md` 一次性迁移。
+前者检查所有共享投影是否指向或匹配权威内容，后者检查 `skills-lock.json` 是否与当前完整目录树一致。过时技能不会保留兼容别名；旧版项目按 `docs/user-guide/规格与任务迁移指南.md` 一次性迁移。
 
 ## 外部工作流工具
 

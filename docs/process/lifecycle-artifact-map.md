@@ -106,7 +106,7 @@ owner: ai
 | Fresh verification | Ticket / MR / release note 或 `docs/testing/<feature>-verification.md` | `docs/templates/verification-record-template.md` |
 | 发布说明 | `docs/releases/<version>-<feature>.md` | `docs/templates/release-note-template.md` |
 | 实施记录 | `docs/implementation/<feature>-rollout.md` | `docs/templates/implementation-plan-template.md` |
-| 用户手册 | `docs/user-guide/<feature>.md` | `docs/user-guide/templates/user-guide-template.md` |
+| 用户手册 | `docs/user-guide/<功能名称>.md` | `docs/user-guide/templates/用户手册模板.md` |
 | 复盘 | `docs/process/sprint-retros/<date>-<topic>.md` | `docs/templates/retro-report-template.md` |
 | 流程 / Skill 修订验证 | `docs/process/<topic>-skill-validation.md` 或 PR / Ticket 评论 | `writing-skills` 压力场景与验证记录 |
 | Subagent 协同规范 | `docs/process/subagent-collaboration.md` | 直接维护 |
