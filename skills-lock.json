@@ -981,7 +981,7 @@
           "source": "project",
           "sourceType": "local",
           "skillPath": ".codex/skills/yss-liquibase/SKILL.md",
-          "effectiveHash": "bc80928310f305ea8a0f8d6fd2705d5aaa3a522121ad8d18217c84d625597b0d",
+          "effectiveHash": "c6952d93bda76a28edbd63df649ba0a67253c86ad50076d97a1e1f33cd25719c",
           "targets": [
             ".codex/skills"
           ]

@@ -1,4 +1,4 @@
 interface:
-  display_name: "yss-liquibase"
-  short_description: "YSS component skill for yss-liquibase"
-  default_prompt: "Use yss-liquibase for this YSS backend component task."
+  display_name: "YSS Liquibase"
+  short_description: "覆盖审计、设计、发布和排障的 YSS 全生命周期数据库迁移"
+  default_prompt: "使用 $yss-liquibase 审计并处理这个 YSS 数据库迁移任务。"
