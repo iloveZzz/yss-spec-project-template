@@ -14,13 +14,14 @@
 
 ## 2. 单一事实来源
 
-| 事实类型 | 权威资产 |
-|---|---|
-| 领域与流程词汇 | `CONTEXT.md` |
-| Agent 入口、硬门禁、禁止事项 | `AGENTS.md` |
-| 主阶段、门禁、产物和退出标准 | `docs/process/lifecycle-artifact-map.md` |
+| 事实类型                    | 权威资产                                        |
+| ----------------------- | ------------------------------------------- |
+| 领域与流程词汇                 | `CONTEXT.md`                                |
+| Agent 入口、硬门禁、禁止事项       | `AGENTS.md`                                 |
+| 主阶段、门禁、产物和退出标准          | `docs/process/lifecycle-artifact-map.md`    |
 | 影响面触发与 `not-applicable` | `docs/process/harness-process-tailoring.md` |
-| 技能清单、来源、版本、哈希和投影目标 | `skills-lock.json` |
+| 技能清单、来源、版本、哈希和投影目标      | `skills-lock.json`                          |
+|                         |                                             |
 
 README、用户指南和其他说明文档只引用或解释上述事实，不重复定义同一规则。
 

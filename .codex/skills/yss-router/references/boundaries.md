@@ -45,7 +45,6 @@ Default for end-to-end backend CRUD: include Domain, Application, Infrastructure
 - `yss-dir`: Directory/resource tree component behavior.
 - `yss-file`: Base file abstractions and file parser utilities.
 - `yss-log`: Logging starter auto-configuration and log extension points.
-- `yss-liquibase`: Liquibase starter migration bootstrap.
 - `yss-resilience4j`: Circuit breaker, fallback, and gateway resilience integration.
 - `yss-sql-condition`: SQL condition parsing, validation, and condition builder behavior.
 - `yss-sql-tpl`: SQL template definition, rendering, and template management.

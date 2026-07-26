@@ -33,3 +33,5 @@ logs/
 htmlcov/
 .coverage
 .pytest_cache/
+Excalidraw
+.obsidian

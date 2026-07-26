@@ -17,7 +17,6 @@ The refresh script maps component source path hints to skill references. These p
 | `yss-dir` | `yss-microservice-components/yss-component-dir-parent` |
 | `yss-file` | `yss-microservice-components/yss-component-file`, `yss-microservice-components/yss-component-file-parser`, `yss-microservice-components/yss-component-filemanager-common` |
 | `yss-log` | `yss-microservice-components/yss-component-log-starter` |
-| `yss-liquibase` | `yss-microservice-components/yss-component-liquibase-starter` |
 | `yss-resilience4j` | `yss-microservice-components/yss-component-resilience4j-starter` |
 | `yss-sql-condition` | `yss-microservice-components/yss-component-sql-condition` |
 | `yss-sql-tpl` | `yss-microservice-components/yss-component-sql-tpl-parent` |

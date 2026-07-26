@@ -725,7 +725,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-router/SKILL.md",
-        "effectiveHash": "61045c7fbcb4412b9b574eb3cfc21790f941c3bdefd5af41614736c54bf54351",
+        "effectiveHash": "01586000b9c97a1daf6c7c3fa55354b264ea1dd92e742e7de51dc86816ffd193",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -977,15 +977,6 @@
             ".codex/skills"
           ]
         },
-        "yss-liquibase": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-liquibase/SKILL.md",
-          "effectiveHash": "c6952d93bda76a28edbd63df649ba0a67253c86ad50076d97a1e1f33cd25719c",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
         "yss-log": {
           "source": "project",
           "sourceType": "local",
@@ -1080,7 +1071,7 @@
           "source": "project",
           "sourceType": "local",
           "skillPath": ".codex/skills/yss-source-index/SKILL.md",
-          "effectiveHash": "1a71c9d2f0b9a9ee55009c96417e6c96317bcd6609325db2e46a40114072f16a",
+          "effectiveHash": "e90b7580619bc06949d56b3e27d2982e6e71d632c3036832ac708c25970707ae",
           "targets": [
             ".codex/skills"
           ]

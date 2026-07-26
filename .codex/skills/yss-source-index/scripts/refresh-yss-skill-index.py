@@ -45,9 +45,6 @@ BACKEND_SKILLS = {
     "yss-log": [
         "yss-microservice-components/yss-component-log-starter",
     ],
-    "yss-liquibase": [
-        "yss-microservice-components/yss-component-liquibase-starter",
-    ],
     "yss-resilience4j": [
         "yss-microservice-components/yss-component-resilience4j-starter",
     ],
