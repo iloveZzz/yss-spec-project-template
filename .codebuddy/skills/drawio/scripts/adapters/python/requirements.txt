@@ -1,2 +1,0 @@
-python-hcl2==8.1.2
-sqlglot==30.12.0
