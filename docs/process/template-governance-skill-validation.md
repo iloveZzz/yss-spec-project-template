@@ -34,7 +34,7 @@
 - [x] `to-spec` 状态语义校验：Spec 初稿创建功能父 Ticket 并使用 `ready-for-human`，状态红线明确禁止 `ready-for-agent`。
 - [x] `to-tickets` frontier 标签校验：被阻塞 Ticket 不得使用 `ready-for-agent`，只有阻塞边清除的 frontier Ticket 可进入实现。
 - [x] 共享技能目录哈希校验：`scripts/sync-skills --check` 输出 `skill projections are synchronized`。
-- [x] 锁文件校验：`scripts/update-skill-lock --check` 输出 `skills-lock.json matches distributed skills`；锁文件记录 35 个共享 skills 与 62 个平台 skills。
+- [x] 锁文件校验：`scripts/update-skill-lock --check` 输出 `skills-lock.json matches distributed skills`；当时锁文件记录 35 个共享 skills 与 62 个平台 skills。
 - [x] 五类路由压力场景校验：`scripts/verify-lifecycle-scenarios` 输出 `五类生命周期压力场景验证通过`。
 - [x] `scripts/verify-template` fresh verification：输出 `模板发布校验通过`。
 
@@ -42,6 +42,35 @@
 
 - 当前实现者的差异自检不构成独立审查；模板仍需其他 Agent 或人工 Reviewer 审查。
 - 外部 `create-yss-spec` 尚未完成 `project-instance` 转换和共同集成验证，因此整体 major 版本仍不可发布。
+
+## 2026-08-06：Matt skills 生命周期适配验证
+
+本轮 RED 已确认生命周期 skill 缺少阶段边界、`to-questionnaire`、`wait-what`、`wizard` 语义及对应机器契约；旧 Matt 条目仍存在于权威目录、投影和锁文件。GREEN 修订加入 `phase_boundary`、`external-input-required`、双轨 Prototype、行为不变量和旧名称压力断言；REFACTOR 迁移锁文件为规范 v3 并修复旧顶层 Matt metadata 的来源 / 路径 / 上游哈希保留逻辑。
+
+| 压力场景 | RED 失败行为 / rationalization | GREEN / REFACTOR 反制 |
+|---|---|---|
+| 阶段切换时上下文过长 | 可能把 `/compact` 当作默认动作，或把上下文动作误判为新阶段 | 契约固定五个边界选择，并要求条件化 `phase_boundary` 证据 |
+| 关键信息在产品负责人手中 | 继续猜测并推进下游 Spec 或 Ticket | `to-questionnaire` 进入 `external-input-required`，答案回流后重新分类影响面 |
+| Matt runnable 原型与 YSS 高保真原型混用 | 把 throwaway HTML 当生产交付，或跳过用户确认 | `prototype_mode` 双轨契约分别要求分支回流和 Review/AntD CLI/确认 |
+| 人工审批或凭据步骤 | 让 Agent 伪造点击结果，或把秘密写进日志 | `wizard` 限定人工步骤，诊断与持久化证据强制脱敏 |
+| 旧 Matt 条目仍被发现 | 以兼容别名保留退休入口，造成路由歧义 | 从权威目录、五个投影和 v3 锁文件删除，并由验证脚本阻断 |
+
+RED 的可复现失败断言包括：`yss-product-lifecycle 缺少编排语义: 阶段边界`、缺少 `to-questionnaire` / `wait-what` / `wizard` 语义，以及契约缺少阶段边界、外部输入和双轨 Prototype 行为不变量；旧名称扫描同时命中七个 Matt 条目。GREEN 首次重跑已将这些断言全部转绿；REFACTOR 复核又补上了 `transition: pause`、结构化 `reason`、两种 `prototype_mode` 的逐字段正反变异和 checkpoint `phase_boundary` 字段。这样可以区分“命令通过”与“规则确实能阻断错误输入”。
+
+修订后锁文件包含 67 个共享 skills 和 47 个平台 skills；旧 Matt 条目已从 `.agents/skills`、`.claude/skills`、`.codex/skills`、`.hermes/skills`、`.pi/skills`、`.trae/skills` 及 `skills-lock.json` 清除，`.qoder` 保持排除。最终 fresh verification 证据由以下命令产生：
+
+```text
+scripts/sync-skills --check
+scripts/update-skill-lock --check
+scripts/verify-lifecycle-scenarios
+scripts/verify-yss-router-scenarios
+scripts/verify-template
+ruby -c scripts/sync-skills
+ruby -c scripts/update-skill-lock
+git diff --check
+```
+
+阶段边界、问卷暂停 / 回流、Matt/YSS 双轨原型、wizard 人工步骤、诊断脱敏、旧技能名称清理和五个投影根均纳入验证；独立审查仍需在 Git checkpoint 前完成。
 
 ## 2026-08-06：Matt skills 快照升级验证
 

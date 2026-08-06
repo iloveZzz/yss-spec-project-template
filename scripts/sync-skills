@@ -16,7 +16,17 @@ PROJECTION_ROOTS = %w[
   .pi/skills
   .trae/skills
 ].freeze
-OBSOLETE_SKILLS = %w[to-prd to-issues].freeze
+OBSOLETE_SKILLS = %w[
+  to-prd
+  to-issues
+  design-an-interface
+  qa
+  request-refactor-plan
+  ubiquitous-language
+  edit-article
+  obsidian-vault
+  writing-great-skills
+].freeze
 
 def skill_names(root)
   root.children.select(&:directory?).map { |item| item.basename.to_s }.sort
@@ -85,7 +95,7 @@ PROJECTION_ROOTS.each do |relative_root|
 
     if check_only
       if target.symlink?
-        drift << "projection target mismatch: #{target.relative_path_from(ROOT)}" unless target.realpath == source.realpath
+        drift << "projection target mismatch: #{target.relative_path_from(ROOT)}" unless target.exist? && target.realpath == source.realpath
       elsif !target.directory?
         drift << "missing projection: #{target.relative_path_from(ROOT)}"
       elsif tree_hash(source) != tree_hash(target)
@@ -95,7 +105,7 @@ PROJECTION_ROOTS.each do |relative_root|
     end
 
     if target.symlink?
-      next if target.realpath == source.realpath
+      next if target.exist? && target.realpath == source.realpath
 
       FileUtils.rm_f(target)
       FileUtils.ln_s(source.relative_path_from(projection_root), target)
@@ -111,7 +121,7 @@ PROJECTION_ROOTS.each do |relative_root|
   OBSOLETE_SKILLS.each do |skill_name|
     target = projection_root.join(skill_name)
     if check_only
-      drift << "obsolete projection: #{target.relative_path_from(ROOT)}" if target.exist?
+      drift << "obsolete projection: #{target.relative_path_from(ROOT)}" if target.exist? || target.symlink?
     else
       FileUtils.rm_rf(target)
     end

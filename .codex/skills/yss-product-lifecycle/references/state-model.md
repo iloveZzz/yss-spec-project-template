@@ -12,6 +12,25 @@
 
 Matt 五态不得扩义。资产的 `ready-for-human` 与 Ticket label 必须带命名空间表达。
 
+## 上下文与外部输入证据
+
+状态模型不新增 context 状态域。阶段边界只在状态块或 checkpoint 中保存可选证据：
+
+```yaml
+phase_boundary:
+  decision: continue # continue / clear / handoff / subagent / compact
+  reason: <why-this-choice>
+  source_ref: null
+  destination_ref: null
+  task_package_ref: null
+  convergence_ref: null
+  next_phase: null
+```
+
+`handoff` 必须有来源和目的地；subagent 必须有任务包和汇合证据；`compact` 必须有下一阶段。`Continue`、`clear` 不要求跨上下文引用，但仍应记录判断理由。
+
+`to-questionnaire` 的暂停使用 `pause.reason_code: external-input-required`，并保存 `questionnaire_ref`、`recipient_role`、`requested_outputs` 和 `resume_route`。答案回流后补 `response_ref`、`reclassified_impact` 和 `updated_authoritative_asset`，然后重新计算 `stale`、门禁和可执行 frontier。
+
 ## `ready-for-agent` 公式
 
 仅当以下全部为真，垂直切片 Ticket 才能获得该角色：

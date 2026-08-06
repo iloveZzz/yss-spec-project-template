@@ -146,7 +146,11 @@ required_skill_markers = [
   "有界推进",
   "不得绕过专项 skill",
   "ready-for-agent",
-  "stale"
+  "stale",
+  "阶段边界",
+  "`to-questionnaire`",
+  "`wait-what`",
+  "`wizard`"
 ]
 required_skill_markers.each do |marker|
   failures << "yss-product-lifecycle 缺少编排语义: #{marker}" unless skill.include?(marker)
@@ -159,7 +163,11 @@ reference_markers = {
     "Setup readiness",
     "handoff → prototype → handoff",
     "Prototype 回流必须有可核验证据",
-    "用户明确选择优先"
+    "用户明确选择优先",
+    "Continue",
+    "`/clear`",
+    "`/handoff`",
+    "`/compact`"
   ],
   "references/state-model.md" => [
     "lifecycle.status",
@@ -176,7 +184,11 @@ reference_markers = {
     "`ask-matt`",
     "`wayfinder`",
     "`setup-matt-pocock-skills`",
-    "`implement`、`tdd`"
+    "`implement`、`tdd`",
+    "阶段边界",
+    "`to-questionnaire`",
+    "`wait-what`",
+    "`wizard`"
   ]
 }.freeze
 
@@ -198,6 +210,69 @@ contract = YAML.safe_load(contract_path.read, permitted_classes: [], aliases: fa
 unless contract["schema_version"] == 1 && contract["supported_state_schema_versions"] == [1]
   failures << "编排契约 schema 或支持版本错误"
 end
+
+phase_boundary = contract.fetch("phase_boundary", {})
+expected_boundary_choices = %w[continue clear handoff subagent compact]
+unless phase_boundary.fetch("choices", []) == expected_boundary_choices
+  failures << "阶段边界选项或顺序错误"
+end
+boundary_evidence = phase_boundary.fetch("evidence", {})
+failures << "阶段边界缺少 decision/reason 证据要求" unless (%w[decision reason] - boundary_evidence.fetch("required", [])).empty?
+conditional_boundary = boundary_evidence.fetch("conditional", {})
+{
+  "handoff" => %w[source_ref destination_ref],
+  "subagent" => %w[task_package_ref convergence_ref],
+  "compact" => %w[next_phase]
+}.each do |choice, required|
+  actual = conditional_boundary.fetch(choice, [])
+  failures << "阶段边界 #{choice} 缺少条件证据" unless (required - actual).empty?
+end
+failures << "阶段边界未声明状态不变集合" unless (phase_boundary.fetch("preserves", []) & %w[lifecycle.status gate.status ticket.role]).sort == %w[gate.status lifecycle.status ticket.role]
+
+external_input = contract.fetch("external_input_pause", {})
+failures << "人工输入暂停未声明 pause transition" unless external_input["transition"] == "pause"
+failures << "to-questionnaire 未使用 external-input-required" unless external_input["reason_code"] == "external-input-required"
+failures << "人工输入暂停缺少结构化 reason" if external_input["reason"].to_s.empty?
+required_pause_fields = %w[questionnaire_ref recipient_role requested_outputs resume_route]
+failures << "人工输入暂停缺少字段" unless (required_pause_fields - external_input.fetch("required", [])).empty?
+required_response_fields = %w[response_ref reclassified_impact updated_authoritative_asset]
+failures << "问卷回流缺少字段" unless (required_response_fields - external_input.fetch("response_required", [])).empty?
+failures << "问卷恢复要求未包含回流字段" unless (required_response_fields - external_input.fetch("resume_requires", [])).empty?
+
+prototype_modes = contract.fetch("prototype_modes", {})
+matt_prototype = prototype_modes.fetch("matt_logic", {})
+failures << "Matt prototype 未要求 prototype 分支" unless matt_prototype.fetch("required", []).include?("prototype_branch")
+failures << "Matt prototype 分支模式错误" unless matt_prototype["branch_pattern"] == "prototype/<name>"
+failures << "Matt prototype 不能作为生产交付物" unless matt_prototype["production_delivery"] == false
+failures << "Matt prototype 错误替代 YSS 高保真原型" unless matt_prototype["replaces_yss_high_fidelity"] == false
+yss_prototype = prototype_modes.fetch("yss_high_fidelity", {})
+%w[prototype_review antd_cli_verification user_confirmation].each do |field|
+  failures << "YSS 高保真 prototype 缺少 #{field} 门禁" unless yss_prototype.fetch("required", []).include?(field)
+end
+failures << "YSS 高保真 prototype 错误替代 Matt prototype" unless yss_prototype["replaces_matt_logic"] == false
+
+prototype_mode_requirements = {
+  "matt_logic" => %w[prototype_mode prototype_branch source_handoff prototype_asset_or_run conclusion updated_authoritative_asset remaining_questions return_handoff],
+  "yss_high_fidelity" => %w[prototype_mode prototype_review antd_cli_verification user_confirmation]
+}.freeze
+prototype_mode_requirements.each do |mode, required_fields|
+  evidence = required_fields.to_h { |field| [field, true] }.merge("prototype_mode" => mode)
+  complete_mode_evidence = ->(candidate) { required_fields.all? { |field| candidate.fetch(field, false) } }
+  failures << "#{mode} prototype 模式正向回流被错误阻断" unless complete_mode_evidence.call(evidence)
+  required_fields.each do |field|
+    mutation = evidence.merge(field => false)
+    failures << "#{mode} prototype 缺少 #{field} 时未阻断" if complete_mode_evidence.call(mutation)
+  end
+end
+
+behavioral_invariants = contract.fetch("behavioral_invariants", {})
+%w[wait_what_preserves_state wizard_human_only diagnostics_redact_secrets].each do |invariant|
+  failures << "缺少行为不变量: #{invariant}" unless behavioral_invariants[invariant] == true
+end
+diagnosing_bugs = ROOT.join(".agents/skills/diagnosing-bugs/SKILL.md").read
+failures << "diagnosing-bugs 缺少秘密脱敏规则" unless diagnosing_bugs.include?("Redact every secret")
+wizard = ROOT.join(".agents/skills/wizard/SKILL.md").read
+failures << "wizard 缺少隐藏秘密输入规则" unless wizard.include?("hidden secret entry") && wizard.include?("ask_secret")
 
 modes = contract.fetch("modes")
 failures << "route 必须只读" unless modes["route"] == "read_only"
@@ -305,7 +380,10 @@ linked_ready_facts = ready_slice.merge(
 )
 failures << "传播后未撤销 ready-for-agent" if ready_for_agent?(ready_required, linked_ready_facts)
 
-prototype_evidence = contract.dig("prototype_return_evidence", "required")
+prototype_return_contract = contract.fetch("prototype_return_evidence")
+prototype_evidence = prototype_return_contract.fetch("required")
+allowed_prototype_modes = prototype_return_contract.fetch("allowed_modes")
+failures << "prototype 回流缺少 Matt/YSS 模式枚举" unless allowed_prototype_modes.sort == %w[matt_logic yss_high_fidelity]
 complete_evidence = prototype_evidence.to_h { |field| [field, true] }
 def prototype_return_complete?(required, evidence)
   required.all? { |field| evidence.fetch(field, false) }
@@ -318,7 +396,7 @@ prototype_evidence.each do |field|
 end
 
 checkpoint = ROOT.join("docs/process/templates/stage-checkpoint-template.md").read
-%w[schema_version mode artifacts gates].each do |marker|
+%w[schema_version mode artifacts gates phase_boundary decision reason].each do |marker|
   failures << "stage checkpoint 缺少状态字段: #{marker}" unless checkpoint.include?(marker)
 end
 

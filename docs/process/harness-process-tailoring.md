@@ -4,6 +4,8 @@
 
 本仓库默认使用 Matt Pocock Engineering Skills 承接需求澄清、Spec、Ticket 拆分、实现、TDD、诊断、审查和架构治理。OpenAPI 3.1 继续作为前后端契约资产；OpenSpec-style Spec Delta 只作为中高风险变更的轻量行为差异记录，不再引入额外变更状态机。
 
+当前 Matt 上游适配固定在 `6acc160e4e0cd062dbbbd7a1b26ae92855edf07e`。阶段边界是上下文决策（`Continue → /clear → /handoff → subagent → /compact`），不是新状态；`to-questionnaire` 的 `external-input-required` 暂停收到答案后，必须重新做影响面分析。Matt `prototype` 与 YSS 高保真 HTML 原型是两条独立轨道，后者仍需 Prototype Review、AntD CLI 校验和用户确认。
+
 ## 三档流程
 
 | 档位 | 适用场景 | 最小入口 | 最小产物 | 最小验证 | 典型退出标准 |
@@ -28,6 +30,7 @@
 | 需要技术事实、标准、第三方 API 或框架行为支撑决策 | 2. 机会与 Discovery 或 5. 系统 / 数据架构与工程契约设计审查 | `research` 或等价一手资料记录，并回填到 Spec、OpenAPI、架构或 ADR |
 | 已有清晰 Spec，但用户、痛点、MVP 或非目标不稳 | 3. 业务 / Spec / 功能架构 | Spec Review、产品总体设计 / 功能架构、必要的页面 / 原型 / 交互设计 |
 | 状态机、复杂规则或 UI 方向无法仅靠文字判断 | 3. 业务 / Spec / 功能架构 或 4. 产品设计与需求冻结 | `prototype` 一次性验证结论，并回填到 Spec / 设计 / ADR / Ticket |
+| 关键信息掌握在其他人手中 | 当前阶段保持不变并暂停 | `to-questionnaire`、`external-input-required` 及问卷回流记录；答案回来后重新分类影响面 |
 | 有 UI 变更但缺页面流、状态矩阵、原型评审、高保真 HTML 原型、AntD CLI 校验证据或用户确认记录 | 4. 产品设计与需求冻结 | 交互说明、状态矩阵、Prototype Review、Ant Design v6 高保真 HTML 原型（可在低保真评审通过后由系统 / Agent 自动产出）、AntD CLI 校验证据、用户确认记录、Spec 回填 |
 | API 路径、schema、错误结构、分页或权限发生变化 | 5. 系统 / 数据架构与工程契约设计审查 | API 影响记录、契约草案 / OpenAPI Draft Review、必要时 Spec Delta、系统 / 数据架构反审、Freeze、`to-tickets` |
 | 服务边界、集成、部署、性能、可靠性或运维变化 | 5. 系统 / 数据架构与工程契约设计审查 | 系统架构、Design Review、必要时 Spec Delta、Build Architecture Checklist |
@@ -64,5 +67,6 @@
 - 小改动必须保留影响面评估、验证证据和 Git checkpoint 判断。
 - Spec Delta 只用于修改既有冻结基线的中高风险行为；全新产品 / 模块、小文案、局部样式、配置微调和低风险 Bug 默认不创建。
 - 小改动默认不需要 `research`、`prototype` 或 `handoff`；只有事实依据、设计验证或交接风险会影响后续门禁时才触发。
+- `wizard` 只处理人工才能完成的步骤，默认临时使用；凭据、诊断和交接证据必须脱敏。`wait-what` 只重新解释当前结论，不改变阶段、门禁或 Ticket 状态。
 - 存在高风险变更时必须记录验证证据、责任人和回滚约束，不能因任务小而跳过。
 - OpenAPI Freeze 后直接进入 `to-tickets` 或等价垂直切片拆分；不要求额外变更状态文件。

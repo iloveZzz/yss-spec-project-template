@@ -9,9 +9,9 @@ review_state: approved
 > 日期：2026-07-21
 > 仓库身份：`template-source`
 > 方法：`grill-with-docs` + `domain-modeling` + `writing-skills` RED / GREEN / REFACTOR
-> 范围：定义后续 skill 改造方案；本文不表示当前 skill 已具备所述能力。
+> 范围：定义并记录 `yss-product-lifecycle` 的可执行编排契约及 Matt/YSS 适配。
 
-> 实施状态：设计已由用户确认，后续实现与验证证据见 `docs/process/yss-product-lifecycle-orchestrator-validation.md`。
+> 实施状态：设计已由用户确认并落地到共享 skill；实现与验证证据见 `docs/process/yss-product-lifecycle-orchestrator-validation.md`。
 
 ## 1. 结论
 
@@ -40,6 +40,8 @@ review_state: approved
 10. 使用生命周期适配层衔接 Matt skills；只对违反模板硬规则的 Matt skill 做最小必要修改。
 11. 编排器持续主控阶段 7 的实现活动，但具体实现必须委托 `implement`、`tdd` 和选定的 YSS skills。
 12. `template-source` 只维护和验证可复用编排契约，不生成具体产品生命周期资产。
+13. Matt phase boundary 只保存可选 `phase_boundary` 证据，不新增生命周期状态；`to-questionnaire` 的 `external-input-required` 回流必须重新分类影响面。
+14. Matt `prototype` 与 YSS 高保真 HTML 原型采用双轨门禁；任一轨道都不能替代另一轨道或生产交付。
 
 ## 3. 三层职责模型
 
@@ -87,6 +89,10 @@ review_state: approved
 | 独立审查 | `code-review` | 同时校验 Spec fidelity、YSS 标准、安全红线和 fresh verification |
 | 架构健康 | `improve-codebase-architecture`、`codebase-design` | 新机会重新进入 `grill-with-docs`，不直接扩张当前切片 |
 | 跨会话或仓库 | `handoff` | 保存来源资产、阶段、未决问题、验证命令和下一责任人 |
+
+阶段边界的上下文动作依次为 `Continue → /clear → /handoff → subagent → /compact`。`wait-what` 只重新解释，不改变状态；`wizard` 只处理人工步骤并对秘密值脱敏。`to-questionnaire` 暂停使用 `external-input-required`，答案回流后必须更新 response、影响面和权威资产，再恢复下游流程。
+
+Prototype 必须声明 `prototype_mode`。Matt 轨道要求 `prototype/<name>` 分支、单文件可分享 HTML、source/return handoff 和结论回填；YSS 轨道要求 Prototype Review、AntD CLI 验证和用户确认。
 
 ### 5.1 `ask-matt` 兼容关系
 

@@ -217,3 +217,24 @@ competitive-intelligence (when market / competitor facts are needed)
 - [ ] 修改 AGENTS、流程模板或 skill 时，已按 `writing-skills` 思路列出至少一个压力场景或验证方式。
 - [ ] 新规则触发条件清楚，避免把条件技能变成所有任务的硬门禁。
 - [ ] 下游资产位置、引用方式和不适用条件明确。
+
+## 6. 快照升级后的生命周期适配
+
+本模板以 `6acc160e4e0cd062dbbbd7a1b26ae92855edf07e` 为 Matt 上游快照。新版入口已经纳入 `to-questionnaire`、`wait-what`、`wizard`、`writing-for-agents`，以及 `ask-matt/PHASE-BOUNDARIES.md`。它们只负责工作方式；阶段、门禁、Ticket 角色和权威资产仍由 `yss-product-lifecycle` 裁决。
+
+### 6.1 阶段边界和人工输入
+
+阶段边界按 `Continue → /clear → /handoff → subagent → /compact` 选择上下文动作，并在 checkpoint 中记录可选的 `phase_boundary` 证据块；这不是生命周期新状态。`wait-what` 只重新解释当前结论，不得改变阶段、门禁或 Ticket 状态。
+
+`to-questionnaire` 在答案到达前进入 `external-input-required` 暂停，保存问卷、接收人、所需输出和恢复路由。答案回流后必须记录 response、重新分类影响面、更新权威资产并重算下游 `stale` 与门禁。`wizard` 只执行 Agent 无法替代的点击、审批、凭据或迁移步骤，默认临时使用；诊断日志、交接和持久化证据均不得泄漏秘密值。
+
+### 6.2 两类 Prototype 不互相替代
+
+| 模式 | 用途与主来源 | 必要证据 | 不能替代 |
+|---|---|---|---|
+| Matt `prototype` | 探索逻辑或 runnable 问题；使用 `prototype/<name>` 分支保存单文件可分享 HTML | source handoff、运行/资产、结论、权威资产回填、剩余问题、return handoff | 生产实现、YSS 高保真 HTML 原型 |
+| YSS 高保真 HTML 原型 | 产品设计阶段审查真实视觉密度、交互状态和页面流 | Prototype Review、AntD CLI 校验、用户确认 | Matt throwaway prototype、OpenAPI Freeze 或生产前端实现 |
+
+### 6.3 旧 Matt 条目迁移
+
+本模板不再提供旧技能兼容别名。原 `design-an-interface` 路由到 `codebase-design`；原 `qa` 路由到 `triage + to-tickets`；原 `request-refactor-plan` 路由到 `to-spec + improve-codebase-architecture`；原 `ubiquitous-language` 路由到 `domain-modeling`。`edit-article`、`obsidian-vault` 和 `writing-great-skills` 不再进入共享投影：分别按普通文档编辑 / 项目文档工具和 `writing-skills` 的维护流程处理。

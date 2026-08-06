@@ -128,21 +128,6 @@
           ".trae/skills"
         ]
       },
-      "design-an-interface": {
-        "source": "mattpocock/skills",
-        "sourceType": "github",
-        "skillPath": "skills/deprecated/design-an-interface/SKILL.md",
-        "effectiveHash": "3b3d6b772c043d6f7d687304a4b02f2f46ad1c019e16c578fdaf060fab5dc4cd",
-        "upstreamHash": "aef348a9af675b771635623b5aa7790da4d40adc1ee88b58b6fd116eda2047d8",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".codex/skills",
-          ".hermes/skills",
-          ".pi/skills",
-          ".trae/skills"
-        ]
-      },
       "diagnosing-bugs": {
         "source": "mattpocock/skills",
         "sourceType": "github",
@@ -206,21 +191,6 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/drawio-academic-skills/SKILL.md",
         "effectiveHash": "9a81303065d0e151775088f56423ac85602ba1cdcc67617f87b140b4cd686116",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".codex/skills",
-          ".hermes/skills",
-          ".pi/skills",
-          ".trae/skills"
-        ]
-      },
-      "edit-article": {
-        "source": "mattpocock/skills",
-        "sourceType": "github",
-        "skillPath": "skills/personal/edit-article/SKILL.md",
-        "effectiveHash": "aa1d91a86d64c080ca508129250c4be04d4b4e9e1a838b83cc6bc16f487efae5",
-        "upstreamHash": "cb2a13b2acb6c8a0706eb3a973a2681f30fd74c00784c74ceaa98e12eb2b2fc3",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -437,57 +407,12 @@
           ".trae/skills"
         ]
       },
-      "obsidian-vault": {
-        "source": "mattpocock/skills",
-        "sourceType": "github",
-        "skillPath": "skills/personal/obsidian-vault/SKILL.md",
-        "effectiveHash": "424089b19f6b4d3287f99de290bf4341fa611ad87146d72c551be2fa0c8fb49d",
-        "upstreamHash": "5c08eda96fd76a71793c0a8cb91bef41d518586654a14af4f2edf8f8fd0f96a7",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".codex/skills",
-          ".hermes/skills",
-          ".pi/skills",
-          ".trae/skills"
-        ]
-      },
       "prototype": {
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/prototype/SKILL.md",
         "effectiveHash": "20996d9c591eff86c5f20b8db594ef728c8688b9605bc9543d9d65886523e3b2",
         "upstreamHash": "73862de6cd32acf30799bfb2220357b96c1a58ab0e3d01126b769fd659d6555a",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".codex/skills",
-          ".hermes/skills",
-          ".pi/skills",
-          ".trae/skills"
-        ]
-      },
-      "qa": {
-        "source": "mattpocock/skills",
-        "sourceType": "github",
-        "skillPath": "skills/deprecated/qa/SKILL.md",
-        "effectiveHash": "e2fd26e68530beb342a607be3245d46a39bf43d263763ee4c3e87117414d2ca0",
-        "upstreamHash": "223de2b02aa9ab36cfa4fe93e80e527b56e912e7ae725f9d596f6d2457afab77",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".codex/skills",
-          ".hermes/skills",
-          ".pi/skills",
-          ".trae/skills"
-        ]
-      },
-      "request-refactor-plan": {
-        "source": "mattpocock/skills",
-        "sourceType": "github",
-        "skillPath": "skills/deprecated/request-refactor-plan/SKILL.md",
-        "effectiveHash": "8ee013f00ce0c861ac20151351ac9a37e35fe3b1bdff8dde57568a69f9363c31",
-        "upstreamHash": "08c06e587d0f979b8731f6a00c67fb8d00e563614daf80bf648d41148e553473",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -677,21 +602,6 @@
           ".trae/skills"
         ]
       },
-      "ubiquitous-language": {
-        "source": "mattpocock/skills",
-        "sourceType": "github",
-        "skillPath": "skills/deprecated/ubiquitous-language/SKILL.md",
-        "effectiveHash": "5e063128d360b61ecd41d95acfb80bcc19f371c905f38044ed15919f87c6f1a7",
-        "upstreamHash": "0395170031b57ea63f2eb22561542894c03e3047430a2f1118a06b411054429b",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".codex/skills",
-          ".hermes/skills",
-          ".pi/skills",
-          ".trae/skills"
-        ]
-      },
       "using-git-worktrees": {
         "source": "project",
         "sourceType": "local",
@@ -815,21 +725,6 @@
         "skillPath": "skills/in-progress/writing-fragments/SKILL.md",
         "effectiveHash": "3be76523ce90b6ea60f884220ea250d898d438e7813f0907d7cc1016aab1e190",
         "upstreamHash": "972ab831c7a39dab971439fa4718b668114d3063d347d8ba29b2a19765b3f911",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".codex/skills",
-          ".hermes/skills",
-          ".pi/skills",
-          ".trae/skills"
-        ]
-      },
-      "writing-great-skills": {
-        "source": "mattpocock/skills",
-        "sourceType": "github",
-        "skillPath": "skills/productivity/writing-great-skills/SKILL.md",
-        "effectiveHash": "35e3074217abf664be81122c6b9e0cd6aebdb577427c82e5846bf3742f70cbf5",
-        "upstreamHash": "4deb21855fb4deeeb1b8217b041faff003fd0c915d24a22f636851c520bc9c5c",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1040,7 +935,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "effectiveHash": "e9e29f1a00ac0d331d4bd7d008e28e5579731d286f5f853482fd249243758186",
+        "effectiveHash": "dcd5d62b934def3829fb6a1601c5b16759b75d172ccb41fe0dbf87823fe3c3d5",
         "targets": [
           ".agents/skills",
           ".claude/skills",

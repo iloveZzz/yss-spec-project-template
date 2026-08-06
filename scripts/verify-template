@@ -37,6 +37,10 @@ required_skills=(
   "research"
   "setup-matt-pocock-skills"
   "resolving-merge-conflicts"
+  "to-questionnaire"
+  "wait-what"
+  "wizard"
+  "writing-for-agents"
 )
 
 for required_file in "${required_files[@]}"; do
@@ -85,8 +89,10 @@ scripts/verify-yss-router-scenarios
 
 ruby <<'RUBY'
 require "pathname"
+require "json"
 
 root = Pathname.pwd
+manifest = JSON.parse(root.join("skills-lock.json").read)
 agent_roots = %w[
   .agents/skills
   .claude/skills
@@ -95,13 +101,29 @@ agent_roots = %w[
   .pi/skills
   .trae/skills
 ]
-obsolete_names = ["to-" + "prd", "to-" + "issues"]
+obsolete_names = [
+  "to-" + "prd",
+  "to-" + "issues",
+  "design-an-interface",
+  "qa",
+  "request-refactor-plan",
+  "ubiquitous-language",
+  "edit-article",
+  "obsidian-vault",
+  "writing-great-skills"
+].freeze
 
 agent_roots.each do |agent_root|
   obsolete_names.each do |name|
     path = root.join(agent_root, name)
-    abort("过时 skill 目录仍然存在: #{path.relative_path_from(root)}") if path.exist?
+    abort("过时 skill 目录仍然存在: #{path.relative_path_from(root)}") if path.exist? || path.symlink?
   end
+end
+
+manifest_skill_names = manifest.fetch("skills", {}).fetch("shared", {}).keys
+manifest_skill_names += manifest.fetch("skills", {}).fetch("platform", {}).values.flat_map(&:keys)
+obsolete_names.each do |name|
+  abort("过时 Matt skill 仍在 skills-lock.json: #{name}") if manifest_skill_names.include?(name)
 end
 
 singular_agent_root = root.join(".agent" + "/skills")

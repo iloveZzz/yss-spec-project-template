@@ -15,7 +15,17 @@ PROJECTION_ROOTS = %w[
   .pi/skills
   .trae/skills
 ].freeze
-OBSOLETE_SKILLS = %w[to-prd to-issues].freeze
+OBSOLETE_SKILLS = %w[
+  to-prd
+  to-issues
+  design-an-interface
+  qa
+  request-refactor-plan
+  ubiquitous-language
+  edit-article
+  obsidian-vault
+  writing-great-skills
+].freeze
 LOCK_GROUPS = %w[shared platform].freeze
 GIT_WORKTREE = system(
   "git",

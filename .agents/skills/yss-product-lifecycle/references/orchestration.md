@@ -11,6 +11,18 @@
 
 不要仅输出下一个提示词后结束 `orchestrate`/`resume`。不要因进入业务代码阶段而退出主控；应把实现交给专项 skill，并在返回后继续核验。
 
+## 阶段边界
+
+Matt phase boundary 是工作阶段之间的上下文决策，不是新的生命周期状态。按以下顺序判断，第一项适用即停止判断：
+
+1. **Continue**：下一阶段需要当前会话作为 primary source，或当前上下文仍在 smart zone 内。
+2. **`/clear`**：当前探索、死路和决策对下一阶段完全无关。
+3. **`/handoff`**：内容必须跨新 harness、新目录、同事或中途分叉的 side task 携带。
+4. **Subagent**：工作单元边界清晰，可以在无人值守时完成并返回报告。
+5. **`/compact`**：同一 harness、同一目录且上下文仍相关，但需要压缩后继续；它是最后选项。
+
+在 checkpoint 记录 `phase_boundary.decision`；使用 `handoff`、subagent 或 `compact` 时同时记录契约要求的引用。phase boundary 不得改变生命周期阶段、门禁或 Ticket 五态。
+
 ## Setup readiness
 
 | 状态 | 判定 | 动作 |
@@ -51,3 +63,7 @@ Decision ticket 产生决策，不是实现切片，不得标记 `ready-for-agen
 进入 `to-spec` 前必须区分已确认项与未决项，并确认用户、问题、MVP、非目标、成功标准、术语/ADR 候选和测试 seam。事实问题走 `research`；需 runnable 反馈的问题走 `handoff → prototype → handoff`。存在未回流 blocker 时不得进入 Spec baseline。
 
 Prototype 回流必须有可核验证据：来源 handoff、prototype 资产或运行记录、结论、被更新的 Spec/设计/ADR/Ticket 引用、剩余未决项和返回 handoff。仅在对话中声称“已验证”不算回流完成。
+
+Matt `prototype` 的回流还必须注明 `prototype_branch`，并保留单文件 HTML 主来源；YSS 高保真 HTML 原型另走阶段 4 的评审、AntD CLI 校验和用户确认，不得用 throwaway prototype 替代。
+
+`to-questionnaire` 未收到答案时使用 `external-input-required` 暂停，记录问卷、接收人、所需输出和恢复路由；收到答案后记录 response、重新分类影响面和更新后的权威资产，再回到 `grill-with-docs` 或 `to-spec`。

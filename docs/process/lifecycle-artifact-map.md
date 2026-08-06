@@ -126,7 +126,7 @@ owner: ai
 - 使用 subagent 前必须引用 `docs/process/subagent-collaboration.md` 或等价规则，明确主控 Agent、任务包、写范围、不可委派门禁和汇合方式；阶段 checkpoint 必须记录 subagent 使用、冲突处理和主控采纳结论。
 - Discovery 可以通过 `competitive-intelligence` 形成竞品情报、竞品矩阵、机会说明、产品功能指引和下游影响清单，但这些只是 Spec、功能架构、产品设计、API 和架构阶段的输入，不冻结后续设计。
 - 技术事实、框架行为、标准、第三方 API 或协议依据需要可追溯时，使用 `research` 或等价一手资料调研记录；其结论是 Spec、OpenAPI、架构或 ADR 的输入，不替代这些阶段资产。
-- 状态机、复杂业务规则或 UI 方向难以文字定稿时，可用 `prototype` 做一次性验证；必须把结论回填到 Spec、设计、ADR 或 Ticket，且不得把 throwaway prototype 当作生产实现或高保真 AntD HTML 原型。
+- 状态机、复杂业务规则或 UI 方向难以文字定稿时，可用 Matt `prototype` 做一次性验证；必须在 `prototype/<name>` 分支保留单文件 HTML、完成双向 handoff 并把结论回填到 Spec、设计、ADR 或 Ticket，且不得把 throwaway prototype 当作生产实现或高保真 AntD HTML 原型。YSS 高保真 HTML 原型仍必须通过 Prototype Review、AntD CLI 校验和用户确认。
 - API 相关阶段必须区分“契约草案 / OpenAPI Draft”和“OpenAPI Freeze”：Draft 仅可用于评审和架构反审，Freeze 前不得作为前后端实现或生成客户端的稳定契约。
 - Spec Delta 只用于表达相对既有冻结 Spec 基线的行为差异、验收场景和测试映射；它不替代 Spec、OpenAPI、Design Review 或垂直切片 Ticket，也不用于全新产品 / 模块。
 - 既有冻结行为的 API、权限、状态机、数据模型、跨端或其他高风险变更，应在 Design Review / OpenAPI Freeze 前补充 Spec Delta；小文案、局部样式、配置微调、低风险 Bug 和全新基线默认跳过。
@@ -135,6 +135,7 @@ owner: ai
 - 进入垂直切片实现前，必须将系统架构、数据架构、ADR、工程基线、OpenAPI Freeze 结论和风险 / 回滚约束转译成 `Build Architecture Checklist`。
 - `yss-router` 只编译 Slice Implementation Contract 草案；生命周期编排器核验上游门禁并批准、持久化合同。核心 YSS skills 必须消费相同合同版本并返回 YSS Skill Execution Result，Router 与独立 Reviewer 再核验路径、证据、实际验证、偏离和新增影响。
 - 跨线程、跨仓库、上下文过长或原型结论回流时，必须留下 `handoff` 或等价交接记录，至少包含来源资产、当前阶段、未决问题、验证命令和下一步责任人。
+- 阶段边界只记录可选 `phase_boundary` 证据，按 `Continue → /clear → /handoff → subagent → /compact` 选择上下文动作；`wait-what` 不改变状态，`to-questionnaire` 回流后必须重新分类影响面，`wizard` 的人工步骤和诊断输出必须脱敏。
 - 每个垂直切片完成时必须回勾 `Build Architecture Checklist`，用 `implemented`、`seam-deferred`、`drift`、`violation` 或 `not-applicable` 标记状态，并提供证据或补齐落点。`drift` 触发 Architecture Re-check；`violation` 阻断继续 build。
 - Repository / Gateway / 持久化、权限 / 授权、审计、SQL / DDL / 迁移、文件上传下载、版本快照 / 元数据 / 血缘 / 查询索引、部署 / 回滚 / 运维约束，必须在 checklist 中逐项绑定切片和人工确认要求。
 - 每个主阶段结束都要做 Ticket tracker 同步：按用户明确选择或当前仓库主远端路由到 GitLab / GitHub，更新对应 Spec、垂直切片 Ticket、里程碑或评论，记录阶段状态、完成范围、验证证据、阻塞项、下一步和人工审查点。

@@ -48,6 +48,9 @@ pause:
   owner_or_authority: null
   resume_condition: null
   next_work_unit: null
+phase_boundary: null # optional; continue / clear / handoff / subagent / compact
+# When phase_boundary is used, record decision + reason. Handoff needs source_ref /
+# destination_ref, subagent needs task_package_ref / convergence_ref, compact needs next_phase.
 ```
 
 ## 阶段产物
