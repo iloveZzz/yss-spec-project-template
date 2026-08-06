@@ -4,17 +4,17 @@
     "type": "split",
     "children": [
       {
-        "id": "18ded26b04de99bc",
+        "id": "401b76531aa099e5",
         "type": "tabs",
         "children": [
           {
-            "id": "63cb8586165e04eb",
+            "id": "7ae6ae5e4be28a25",
             "type": "leaf",
             "state": {
-              "type": "graph",
+              "type": "empty",
               "state": {},
-              "icon": "lucide-git-fork",
-              "title": "关系图谱"
+              "icon": "lucide-file",
+              "title": "新标签页"
             }
           }
         ]
@@ -37,7 +37,9 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": false
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
               "title": "文件列表"
@@ -74,7 +76,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 476.5
+    "width": 309.5
   },
   "right": {
     "id": "f31f5a3bd2b6d392",
@@ -90,7 +92,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "docs/user-guide/product-rd-lifecycle-best-practices.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -100,7 +101,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "product-rd-lifecycle-best-practices 的反向链接列表"
+              "title": "反向链接"
             }
           },
           {
@@ -152,13 +153,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "docs/user-guide/product-rd-lifecycle-best-practices.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "product-rd-lifecycle-best-practices 的大纲"
+              "title": "大纲"
             }
           },
           {
@@ -173,12 +173,12 @@
               "title": "脚注"
             }
           }
-        ]
+        ],
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -191,49 +191,51 @@
       "bases:新建数据库": false,
       "obsidian-git:Open Git source control": false,
       "obsidian-excalidraw-plugin:新建绘图文件": false,
-      "markdown-importer:打开 Markdown 格式转换器": false
+      "markdown-importer:打开 Markdown 格式转换器": false,
+      "workspaces:管理工作区布局": false,
+      "terminal:Open terminal": false
     }
   },
-  "active": "63cb8586165e04eb",
+  "active": "a7eeb977945c7892",
   "lastOpenFiles": [
-    "docs/user-guide/产品研发全生命周期最佳实践.md",
-    "docs/user-guide/产品生命周期工作流.md",
-    "CONTEXT.md",
-    "AGENTS.md",
-    "docs/adr/0002-yss-project-repository-mode.md",
-    "docs/adr/0001-product-design-prototype-entrypoint.md",
-    "README.md",
-    "docs/user-guide/生命周期最佳实践.md",
-    "docs/user-guide/规格与任务迁移指南.md",
-    "docs/user-guide/需求澄清最佳实践.md",
-    "docs/user-guide/用户手册索引.md",
-    "docs/user-guide/图示生成器使用指南.md",
-    "docs/user-guide/外部命令行工具实践指南.md",
-    "docs/user-guide/product-rd-lifecycle-best-practices.md",
-    "docs/user-guide/templates/用户手册模板.md",
-    "docs/user-guide/需求澄清指南.md",
-    "docs/user-guide/create-yss-spec命令行指南.md",
-    "docs/user-guide/Excalidraw图示生成器使用指南.md",
-    "docs/user-guide/spec-ticket-migration-guide.md",
-    "docs/user-guide/product-lifecycle-workflow.md",
-    "docs/user-guide/lifecycle-best-practices.md",
-    "docs/user-guide/grill-with-docs-best-practices.md",
-    "docs/user-guide/excalidraw-diagram-generator-guide.md",
-    "Excalidraw/Drawing 2026-07-21 13.49.54.excalidraw.md",
-    "docs/agents/triage-labels.md",
-    "docs/agents/skills-maintenance.md",
-    "scripts/verify-yss-router-scenarios",
-    "docs/requirements/tickets",
-    "docs/requirements/issues",
+    "graphify-out/GRAPH_REPORT.md",
+    "graphify-out/wiki/Templates_(docs_templates)_4.md",
+    "graphify-out/wiki/Process_Documentation_(docs_process)_6.md",
+    "graphify-out/wiki/Agents_Skills_163.md",
+    "graphify-out/wiki/Agents_Skills_93.md",
+    "graphify-out/wiki/Agents_Skills_66.md",
+    "graphify-out/wiki/Agent_Docs_(docs_agents).md",
+    "graphify-out/wiki/Agents_Skills_9.md",
+    "graphify-out/wiki/Agents_Skills_4.md",
+    "graphify-out/cost.json",
+    "graphify-out/wiki/Miscellaneous_84.md",
+    "graphify-out/wiki/Miscellaneous_83.md",
+    "graphify-out/wiki/Miscellaneous_82.md",
+    "graphify-out/wiki/Miscellaneous_81.md",
+    "graphify-out/wiki/Miscellaneous_80.md",
+    "graphify-out/wiki/Miscellaneous_79.md",
+    "graphify-out/wiki/Miscellaneous_78.md",
+    "graphify-out/wiki/Miscellaneous_77.md",
+    "graphify-out/wiki/Miscellaneous_76.md",
+    "graphify-out/wiki/Miscellaneous_75.md",
+    "graphify-out/wiki/Miscellaneous_74.md",
+    "graphify-out/wiki/Miscellaneous_73.md",
+    "graphify-out/wiki/Miscellaneous_72.md",
+    "graphify-out/wiki/Miscellaneous_71.md",
+    "graphify-out/wiki/Miscellaneous_70.md",
+    "graphify-out/wiki/Miscellaneous_69.md",
+    "graphify-out/wiki/Miscellaneous_68.md",
+    "graphify-out/wiki",
+    "graphify-out/graph.html",
+    "graphify-out/graph.json",
+    "graphify-out/cache/semantic",
+    "graphify-out/cache/ast/v0.9.29/28a2e49b6a9fe94d1b10c504389a3266dd22becbe9be5cba9917387265a8ab57.json",
+    "graphify-out/cache/ast/v0.9.29/a893f486c40c03404bfe276cc57f60610a23808308c3c592688793818d5066af.json",
+    "graphify-out/cache/ast/v0.9.29/4dae11a0898a8fd611eeee4a7786dfe023b6713aaac6bbb1949a07f6526798fb.json",
+    "graphify-out/cache/ast/v0.9.29/347929f2937c9a6378299b6336bbfe364030b5f42d8b51c2836791f27cd73e81.json",
+    "graphify-out/cache/ast/v0.9.29/1f700521fd40de9af92f22586939d95574f14c9fc5488cfa27705505bcb8b3dc.json",
     "docs/process/matt-pocock-engineering-skills-flow.png",
-    "docs/process/matt-pocock-engineering-skills-flow.drawio",
-    "scripts/verify-lifecycle-scenarios",
-    "scripts/update-skill-lock",
-    "scripts/sync-skills",
-    "yss-project.yaml",
-    "Excalidraw",
     "未命名.canvas",
-    "未命名.base",
     "未命名 1.canvas"
   ]
 }

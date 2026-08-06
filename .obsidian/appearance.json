@@ -1,5 +1,7 @@
 {
   "theme": "moonstone",
-  "accentColor": "#6158ad",
-  "translucency": true
+  "accentColor": "#242e6e",
+  "translucency": true,
+  "interfaceFontFamily": "",
+  "baseFontSize": 14
 }
