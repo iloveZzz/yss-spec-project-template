@@ -15,6 +15,8 @@ PROJECTION_ROOTS = %w[
   .pi/skills
   .trae/skills
 ].freeze
+OBSOLETE_SKILLS = %w[to-prd to-issues].freeze
+LOCK_GROUPS = %w[shared platform].freeze
 GIT_WORKTREE = system(
   "git",
   "rev-parse",
@@ -56,13 +58,31 @@ def old_metadata
 
   parsed = JSON.parse(LOCK_PATH.read)
   skills = parsed.fetch("skills", {})
-  return skills unless skills.key?("shared") || skills.key?("platform")
+  return skills unless (skills.keys & LOCK_GROUPS).any?
 
   shared = skills.fetch("shared", {})
   platform = skills.fetch("platform", {}).values.reduce({}) { |all, group| all.merge(group) }
-  shared.merge(platform)
+  legacy = skills.reject { |name, _| LOCK_GROUPS.include?(name) }
+
+  # Before the v3 manifest became canonical, Matt entries lived beside the
+  # shared/platform groups. Prefer those entries during migration because a
+  # manual upstream install may have refreshed their source path/hash while
+  # the nested copy is still stale.
+  shared.merge(legacy).merge(platform)
 rescue JSON::ParserError
   {}
+end
+
+def legacy_shared_names
+  return [] unless LOCK_PATH.file?
+
+  parsed = JSON.parse(LOCK_PATH.read)
+  return [] unless parsed["version"] == 3
+
+  skills = parsed.fetch("skills", {})
+  (skills.keys - LOCK_GROUPS - OBSOLETE_SKILLS).sort
+rescue JSON::ParserError
+  []
 end
 
 def existing_shared_names
@@ -109,7 +129,7 @@ platform_additions = ARGV.grep(/\A--add-platform=/).map do |item|
   item.split("=", 2).last.split(":", 2)
 end
 shared_names = existing_shared_names || skill_names(SHARED_ROOT)
-shared_names = ((shared_names + add_names).uniq - remove_names).sort
+shared_names = ((shared_names + legacy_shared_names + add_names).uniq - remove_names - OBSOLETE_SKILLS).sort
 
 missing_shared = shared_names.reject { |skill_name| SHARED_ROOT.join(skill_name).directory? }
 unless missing_shared.empty?
@@ -118,8 +138,7 @@ unless missing_shared.empty?
 end
 
 tracked_shared_names = tracked_skill_names(".agents/skills")
-obsolete_names = %w[to-prd to-issues]
-unlocked_tracked = tracked_shared_names - shared_names - obsolete_names
+unlocked_tracked = tracked_shared_names - shared_names - OBSOLETE_SKILLS
 unless unlocked_tracked.empty?
   warn "发现未登记到 skills-lock.json 的已跟踪共享 skills: #{unlocked_tracked.sort.join(', ')}"
   warn "确认新增后运行 scripts/update-skill-lock --add=<skill-name>"
@@ -147,7 +166,7 @@ PROJECTION_ROOTS.each do |relative_root|
   default_names = skill_names(target_root) - shared_names
   platform_names = existing_platform ? existing_platform.fetch(relative_root, []) : default_names
   additions = platform_additions.select { |root_name, _| root_name == relative_root }.map(&:last)
-  platform_names = ((platform_names + additions).uniq - remove_names - shared_names).sort
+  platform_names = ((platform_names + additions).uniq - remove_names - shared_names - OBSOLETE_SKILLS).sort
 
   missing_platform = platform_names.reject { |skill_name| target_root.join(skill_name).directory? }
   unless missing_platform.empty?
@@ -156,7 +175,7 @@ PROJECTION_ROOTS.each do |relative_root|
   end
 
   tracked_platform_names = tracked_skill_names(relative_root)
-  unlocked_platform = tracked_platform_names - shared_names - platform_names - obsolete_names
+  unlocked_platform = tracked_platform_names - shared_names - platform_names - OBSOLETE_SKILLS
   unless unlocked_platform.empty?
     warn "发现未登记的平台 skills (#{relative_root}): #{unlocked_platform.sort.join(', ')}"
     warn "确认新增后运行 scripts/update-skill-lock --add-platform=#{relative_root}:<skill-name>"

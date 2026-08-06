@@ -13,7 +13,7 @@
 
 | 来源 | 固定版本 / 路径 | 用途 |
 |---|---|---|
-| `mattpocock/skills` | `272f99b22574f50e4266791c86b9302682970e23` / `skills/engineering` | 通用工程流程 skills |
+| `mattpocock/skills` | `6acc160e4e0cd062dbbbd7a1b26ae92855edf07e` / `skills/engineering` 及锁文件记录的关联路径 | 通用工程流程及关联 skills |
 | `anthropics/knowledge-work-plugins` | `sales/skills/competitive-intelligence` | 竞品与市场事实研究 |
 | 项目本地 | `.agents/skills` 或平台专属 root | YSS 适配与项目治理 skills |
 
@@ -24,6 +24,8 @@
 - `targets`：权威内容应投影到的 Agent roots。
 
 项目允许按 YSS 流程适配上游 skill，但必须同时保留可追溯的上游信息和适配后的有效哈希。
+
+当前 Matt 快照为 `6acc160e4e0cd062dbbbd7a1b26ae92855edf07e`。`ask-matt` 的关联入口包括 `to-questionnaire`、`wait-what`、`writing-for-agents` 和 `PHASE-BOUNDARIES.md`；这些支持文件随共享 skill 目录一起计算 `effectiveHash`，不得单独投影或维护。
 
 ## 维护流程
 

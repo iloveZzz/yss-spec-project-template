@@ -7,6 +7,7 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 | 首次启用或配置缺失 | `setup-matt-pocock-skills` | 幂等核对 tracker、真实标签和领域布局；冲突时迁移而非覆盖 |
 | 通用入口 | `ask-matt` | 检测到 YSS 后由本编排器最终裁决 |
 | 需求澄清 | `grill-with-docs`、`domain-modeling` | 按退出判定检查未决项和回流 |
+| 信息在其他人手中 | `to-questionnaire` | 先保留人工输入门禁；回答回流后再进入 `grill-with-docs` 或 `to-spec` |
 | 大型模糊工作 | `wayfinder` | map 真正完成后 `handoff → to-spec` |
 | 技术事实 | `research` | 一手资料回填 Spec/OpenAPI/架构/ADR |
 | runnable 问题 | `prototype` | 只保留结论，不把 throwaway code 当生产资产，也不得替代阶段 4 的低保真评审、Ant Design v6 高保真 HTML、AntD CLI 证据和用户确认 |
@@ -16,6 +17,8 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 | Bug | `diagnosing-bugs`、`tdd` | 先建立红色反馈；高风险影响升级上游门禁 |
 | 审查 | `code-review` | 审查者独立，结合 Spec 和 YSS 标准 |
 | 跨上下文 | `handoff` | 保存来源、阶段、未决项、命令和下一责任人 |
+| 解释未落地 | `wait-what` | 只重新解释当前结论，不绕过生命周期门禁 |
+| 编写 Agent 文档 | `writing-for-agents`、`writing-skills` | 共享 skill 只改 `.agents/skills`；流程文档保持简体中文 |
 
 尽量不修改 Matt skill 以复制 YSS 规则。只有它违反模板硬门禁时才做最小兼容修改。
 

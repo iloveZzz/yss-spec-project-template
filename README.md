@@ -67,13 +67,14 @@ scripts/sync-skills
 scripts/update-skill-lock
 ```
 
-Matt engineering skills 固定来源：
+Matt skills 固定来源：
 
 ```text
 mattpocock/skills
-skills/engineering
-main@272f99b22574f50e4266791c86b9302682970e23
+main@6acc160e4e0cd062dbbbd7a1b26ae92855edf07e
 ```
+
+主研发流程使用 `skills/engineering`；`skills-lock.json` 同时记录本次安装的关联 `productivity`、`in-progress`、`deprecated`、`misc` 和 `personal` skill 路径。
 
 ## 轻量校验
 

@@ -42,3 +42,20 @@
 
 - 当前实现者的差异自检不构成独立审查；模板仍需其他 Agent 或人工 Reviewer 审查。
 - 外部 `create-yss-spec` 尚未完成 `project-instance` 转换和共同集成验证，因此整体 major 版本仍不可发布。
+
+## 2026-08-06：Matt skills 快照升级验证
+
+### RED：安装后基线
+
+| 压力场景 | 基线失败 |
+|---|---|
+| 上游新增 `wait-what`、`writing-for-agents`，且 `ask-matt` 增加关联支持文件 | 五个 Agent root 未全部生成共享投影，`scripts/sync-skills --check` 报告 missing projection |
+| 安装器更新顶层 Matt 条目，但旧锁文件仍有 `shared/platform` 分组 | `scripts/update-skill-lock --check` 报告未登记 skill，且 `skills-lock.json` 缺少规范 v3 `canonicalRoot` |
+| 上游移动 `to-questionnaire`、`wizard` 的 skill 路径 | 锁文件同时保留旧路径和新路径，无法作为唯一来源 |
+
+### GREEN / REFACTOR：修订后门禁
+
+- [x] `scripts/sync-skills --check` 通过，五个共享投影根与 `.agents/skills` 一致。
+- [x] `scripts/update-skill-lock --check` 通过，锁文件只保留规范 v3 的 `shared/platform` 分组，并保留 Matt `source`、`skillPath`、`upstreamHash` 和 `effectiveHash`。
+- [x] `scripts/verify-lifecycle-scenarios`、`scripts/verify-yss-router-scenarios` 和 `scripts/verify-template` fresh verification 通过。
+- [x] 独立审查确认 `.qoder` 及其他无关脏文件未进入本次 Git checkpoint。

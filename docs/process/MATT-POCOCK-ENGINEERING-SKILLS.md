@@ -1,9 +1,9 @@
 # Matt Pocock Engineering Skills 集成与使用说明
 
-> 来源：<https://github.com/mattpocock/skills/tree/main/skills/engineering>
-> 项目内置快照：`272f99b22574f50e4266791c86b9302682970e23`
+> 来源：<https://github.com/mattpocock/skills>
+> 项目内置快照：`6acc160e4e0cd062dbbbd7a1b26ae92855edf07e`
 
-本文说明本模板如何使用 Matt Pocock `skills/engineering` 作为默认轻量研发流程。它不是代码库依赖，而是 Agent 可读取和执行的操作规程，用来把模糊需求逐步转化为 Spec、OpenAPI 契约、垂直切片 Ticket、TDD 实现、审查和验证证据。
+本文说明本模板如何使用 Matt Pocock `skills/engineering` 作为默认轻量研发流程，并保留其直接关联的其他分类 skill。它们不是代码库依赖，而是 Agent 可读取和执行的操作规程，用来把模糊需求逐步转化为 Spec、OpenAPI 契约、垂直切片 Ticket、TDD 实现、审查和验证证据。
 
 ## 1. 总体定位
 
@@ -137,6 +137,7 @@ competitive-intelligence (when market / competitor facts are needed)
 | `prototype` | 状态机、复杂规则或 UI 方向需要可运行反馈 | 生成一次性逻辑 / UI 原型并沉淀结论 | Spec、设计、ADR 或 Ticket 的结论章节 |
 | `to-spec` | 已有对话，需要整理成 Spec | 不再访谈，直接合成 Spec 并发布到 Ticket tracker | `docs/requirements/` 或 Ticket |
 | `to-tickets` | Spec / 计划需要拆任务 | 拆成可独立领取的垂直切片 Ticket | Ticket tracker |
+| `to-questionnaire` | 关键信息掌握在其他人手中 | 针对信息缺口生成可填写问卷，再回流 `grill-with-docs` 或 `to-spec` | 当前目录的 questionnaire 文件 |
 | `implement` | 按 Spec 或 Ticket 实现 | 业务行为默认按 TDD 推进；生成代码、配置或一次性原型说明例外和验证方式；最后 independent review + fresh verification + commit | 当前代码分支 |
 
 ### 3.3 编码与验证
@@ -148,6 +149,8 @@ competitive-intelligence (when market / competitor facts are needed)
 | `prototype` | 用一次性原型回答设计问题 | 逻辑原型用终端小程序，UI 原型用可切换多方案页面；结论沉淀后删除或吸收 |
 | `resolving-merge-conflicts` | 处理 merge / rebase 冲突 | 理解双方意图，保留两边真实目的，跑检查，完成 merge/rebase |
 | `code-review` | 审查实现是否符合标准和规格 | 从固定 diff 基准出发，分别审查 coding standards 和 spec fidelity |
+| `wait-what` | 前一条解释没有被理解 | 使用 `CONTEXT.md` 词汇重新解释，不推进生命周期状态 | 当前对话 |
+| `writing-for-agents` | 编写 skill、`AGENTS.md` 或 Agent 消费的文档 | 作为写作参考；skill 修改仍必须遵循 `writing-skills` 的 RED / GREEN / REFACTOR | 技能或流程文档 |
 
 与本仓库测试要求的对应：
 
