@@ -32,7 +32,7 @@ owner: iloveZzz (modeling-yss repository owner; user-confirmed)
 ### 只读发现
 
 - 仓库根目录存在完整产品研发文档、后端多模块工程和前端工程；后端包含 Domain、Application、Infrastructure、Adapter / Web、Bootstrap 模块。
-- 后端服务子目录存在 `mvnw`、`mvnw.cmd` 和 `.mvn` wrapper 资产，但仓库根目录没有 `mvnw`。这与“实现仓库根目录执行 `./mvnw`”的 Harness 约定不一致，暂作为 Pilot blocker。
+- 后端服务子目录存在 `mvnw`、`mvnw.cmd` 和 `.mvn` wrapper 资产，但仓库根目录没有 `mvnw`。这与“实现仓库根目录执行 `./mvnw`”的 Harness 约定不一致；已确认作为本 Pilot 的受控例外，不扩展为发布默认。
 - 原 `dev` 工作区有 14 个已修改文件、23 个未跟踪文件，共 37 个 Git 状态项；该工作区仍不作为 Pilot 基线，且未被覆盖、清理或回滚。
 - 隔离 Pilot 分支已新增并推送 `yss-project.yaml`，声明 `schema_version: 1` 和 `repository_mode: project-instance`；身份清单提交为 `4517193`。
 - 隔离 Pilot worktree 当前 clean，基于 `origin/dev` 建立；身份解析通过，Maven baseline 通过。
@@ -46,7 +46,7 @@ owner: iloveZzz (modeling-yss repository owner; user-confirmed)
 | 推荐原因 | 贯穿 Domain、Application、Repository / Gateway、Web / DTO，边界清晰，有真实业务行为、可观察 API 和已有测试 seam，最适合验证核心 Backend skill 最小闭包 |
 | 既有合同 | `docs/implementation/asset-product-modeling-vs001-backend-slice-contract.md` |
 | 既有验证 | Domain / Application / Infrastructure / Web 测试、OpenAPI / Web 合规测试、PostgreSQL Testcontainers 验证均有历史记录 |
-| 当前选择状态 | `candidate-lifecycle-review-pending`；身份和隔离分支已具备，仍需 slice Ticket、需求冻结、合同审查和 wrapper 边界确认 |
+| 当前选择状态 | `boundary-confirmed-pending-lifecycle-gates`；身份、隔离分支和 wrapper 边界已确认，仍需需求冻结、slice Ticket、合同审查和独立 review |
 | 首轮 Pilot 约束 | 只验证路由、合同、TDD seam 和测试证据；不执行生产 migration，不接真实 IAM / SSO，不接生产审计 adapter，不修改原 dirty 工作区 |
 
 VS-006 暂不作为首选：它触及导出 / 文件服务边界，真实文件服务、临时 URL、文件权限和下载审计仍延期，容易误触已退役的 `yss-file` 入口。VS-003 至 VS-005 涉及规则、评审、发布快照和更高风险状态 / 权限路径，待核心 Pilot 通过后再评估。
@@ -69,9 +69,9 @@ Maven 输出包含本机 `~/.m2/settings.xml` 的 `distributionManagement` warni
 
 | 接入项 | 状态 | 证据 / 路径 | 缺口 |
 |---|---|---|---|
-| openapi_integration | 已接入 | `docs/api/asset-product-modeling-openapi-freeze.md`、冻结 OpenAPI、Controller contract tests | 需要绑定到 Harness #41，并在 Pilot fresh clone 中确认契约来源和版本 |
+| openapi_integration | 已接入 | `docs/api/asset-product-modeling-vs001-no-api-impact.md`、既有冻结 OpenAPI、Controller contract tests | 当前 Pilot 不改契约、不生成 client；若契约来源或版本变化必须回到 OpenAPI review |
 | generated_client | 部分接入 | 仓库已有前端 Freeze JSON / Orval 产物 | 本 Backend-only Pilot 不重新生成客户端；若切片扩大到 frontend，需跨仓库切片记录 |
-| yss_backend_baseline | 部分接入 | 多模块 DDD 工程、Backend Slice Contract、YSS DTO / Web / Repository 纠偏记录、Pilot clean baseline | 根目录 wrapper、owner、远端 CI 和当前 catalog 合同重编译仍未完成 |
+| yss_backend_baseline | 部分接入 | 多模块 DDD 工程、当前 catalog Engineering Baseline、YSS DTO / Web / Repository 纠偏记录、Pilot clean baseline | CI 和当前 catalog Slice Contract / 独立 review 仍未完成；wrapper 作为 Pilot 例外已记录 |
 | domain_modeling | 已有历史证据 | VS-001 合同和 Domain tests | 当前合同使用历史 `yss-domain-modeling` 名称；新 Pilot 必须改按 catalog 的 `domain-modeling` + `yss-domain` 路由核对，不得重新引入退役入口 |
 | repository_gateway | 已有历史证据 | PO、Repository、Convertor、GatewayImpl 和 Infrastructure tests | 需要用当前 catalog 重新编译依赖闭包，确认不加载 retired / nested entrypoint |
 | web_dto | 已有历史证据 | Controller contract tests、YSS Web compliance tests | 需要用共享 scaffold Web / DTO entrypoint 做一次新鲜路由验证 |
@@ -105,7 +105,7 @@ Maven 输出包含本机 `~/.m2/settings.xml` 的 `distributionManagement` warni
 - 关联 Harness change：`yss-capability-catalog-backend-pilot`。
 - 关联功能父 Ticket：[Issue #41](https://github.com/iloveZzz/yss-spec-project-template/issues/41)。
 - 推荐垂直切片：VS-001；当前只登记为候选，不创建 `ready-for-agent` 子 Ticket。
-- 当前阶段：实现仓库登记 / Pilot readiness，状态 `candidate-lifecycle-review-pending`。
+- 当前阶段：实现仓库登记 / Pilot readiness，状态 `boundary-confirmed-pending-lifecycle-gates`。
 - Pilot branch fresh baseline：
   - `cd /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service && ./mvnw -q -DskipTests validate`：PASS。
   - `cd /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service && ./mvnw test -DfailIfNoTests=false`：PASS，127 tests，0 failures / errors / skipped。

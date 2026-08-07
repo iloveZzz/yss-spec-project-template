@@ -31,8 +31,8 @@ readiness:
     - id: current-slice-ticket-missing
       reason: Historical modeling-yss Issue #2 is closed and belongs to the old lifecycle; Issue #41 is the current functional parent, but no current Pilot slice Ticket has been approved.
       destination: to-tickets-after-requirement-freeze
-    - id: historical-contract-stale
-      reason: historical VS-001 contract references retired yss-domain-modeling and must not be consumed.
+    - id: current-contract-recompile-required
+      reason: historical VS-001 contract references retired yss-domain-modeling and is explicitly stale; the current catalog contract has not yet been compiled and approved.
       destination: stage7-contract-recompile
     - id: current-catalog-contract-not-approved
       reason: the clean Pilot branch and project-instance identity are ready, but no current-catalog contract has lifecycle approval.
@@ -107,9 +107,7 @@ common:
     - cd /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service && ./mvnw -q -DskipTests validate
     - cd /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service && ./mvnw test -DfailIfNoTests=false
   human_review_points:
-    - approve modeling-yss as the external implementation repository
-    - acknowledge project-instance identity commit 4517193 and clean isolated checkpoint
-    - confirm wrapper boundary and backend implementation location
+    - verify the user-confirmed modeling-yss repository, project-instance identity commit 4517193, clean checkpoint and Pilot-only wrapper exception are reflected in the current artifacts
     - confirm database, permission and audit seams remain deferred
   full_reroute_triggers:
     - api-schema-impact
