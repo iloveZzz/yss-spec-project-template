@@ -1,8 +1,8 @@
 ---
 pipeline: yss-capability-catalog-backend-pilot
 stage: implementation-repo-registry
-status: candidate-lifecycle-review-pending
-owner: ai
+status: boundary-confirmed-pending-lifecycle-gates
+owner: iloveZzz (modeling-yss repository owner; user-confirmed)
 ---
 
 # `modeling-yss` Backend Pilot 实现仓库登记
@@ -24,7 +24,7 @@ owner: ai
 | scaffold_skill | `yss-ddd-scaffold-generator`（历史基线；本轮不重新生成） |
 | scaffold_target_confirmed | 是；沿用既有工程，在隔离 Pilot 分支验证 |
 | target_git_url_or_output_dir | 已有远端仓库；后端当前位于仓库内的 `apps/backend/asset-product-modeling-service` |
-| owner | 待人工确认 |
+| owner | `iloveZzz`（`modeling-yss` repository owner；已确认） |
 | ci_system | none / 未在本地登记远端 CI |
 | issue_tracker | GitHub：`https://github.com/iloveZzz/modeling-yss/issues` |
 | Harness parent | [yss-spec-project-template Issue #41](https://github.com/iloveZzz/yss-spec-project-template/issues/41) |
@@ -61,7 +61,7 @@ VS-006 暂不作为首选：它触及导出 / 文件服务边界，真实文件�
 | lint_command | `not-configured` | 使用 Alibaba Java code style 人工 / review 约束；未发现独立 Checkstyle / Spotless 门禁 |
 | typecheck_command | `not-applicable` | Java backend |
 | ci_pipeline | `unknown` | 远端 CI 尚未登记；发布前阻断 |
-| wrapper_boundary | `candidate-gap` | `mvnw` 位于后端服务子目录，不在实现仓库根目录；须由 owner 决定保持既有例外或补齐统一入口 |
+| wrapper_boundary | `accepted-pilot-exception` | 已确认本 Pilot 使用后端服务子目录的 `./mvnw`；不得把该例外扩展为仓库全局默认，发布前仍需补根级入口或单独放行 |
 
 Maven 输出包含本机 `~/.m2/settings.xml` 的 `distributionManagement` warning、MapStruct processor warning，以及测试中预期的无 request 上下文日志；本轮命令最终成功，但这些环境噪声应在干净 Pilot 基线中重新确认。
 
@@ -84,7 +84,7 @@ Maven 输出包含本机 `~/.m2/settings.xml` 的 `distributionManagement` warni
 |---|---|---|---|
 | 原 `dev` 工作区 37 个 dirty 状态项 | 直接使用会覆盖用户正在进行的产品 / 原型修改 | 已建立独立 Pilot worktree；原工作区继续保留并不参与验证 | 否（原工作区不作为 Pilot） |
 | `project-instance` 身份清单 | 已在 Pilot 分支提交 `4517193`；原 `dev` 工作区仍未改动 | 在 Pilot branch 上继续执行身份和流程验证 | 否 |
-| `mvnw` 不在实现仓库根目录 | 与统一 `./mvnw` 验证约定不一致，容易在 Ticket / CI 中产生裸 Maven 或错误工作目录 | owner 确认外部实现仓库边界；保持例外时在 implementation routing 明确记录，否则补根入口 | 是 |
+| `mvnw` 不在实现仓库根目录 | 与统一 `./mvnw` 验证约定不一致，容易在 Ticket / CI 中产生裸 Maven 或错误工作目录 | 已确认作为本 Pilot 的受控边界例外；所有命令显式切换到后端服务目录，发布前补根入口或单独放行 | 否（Pilot）；是（发布） |
 | 远端 CI 未登记 | 缺少独立构建、测试和发布证据 | 补 GitHub Actions 或等价 CI；发布前必须完成 | 是（发布） |
 | 现有仓库同时承载研发文档与运行时代码 | 与 Harness / implementation repo 职责分离不完全一致，跨仓库回链边界模糊 | Pilot 先登记现有例外；后续决定是否迁移后端到独立仓库，未决前不扩大写入范围 | 是（新切片） |
 | 历史合同使用已退役 `yss-domain-modeling` 名称 | 若直接复用会重新引入 retired entrypoint，导致 catalog / Router 漂移 | 用当前 `backend-vertical-slice` profile 重新编译 VS-001 合同；历史名称只作为迁移上下文保留 | 是 |
@@ -97,7 +97,7 @@ Maven 输出包含本机 `~/.m2/settings.xml` 的 `distributionManagement` warni
 | DDL / SQL / 数据库迁移 | 是 | Architecture / DBA / Release | 首轮 Pilot 仅允许延期 seam；不允许把历史 Liquibase PASS 解释为生产执行放行 | VS-001 Pilot contract、Build Architecture Checklist、目标环境验证记录 |
 | 权限接入 / 认证 / 授权 | 是 | Security / Architecture | mock system seam 可用于行为测试；真实 IAM / SSO 未完成 | `seam_deferred`、权限拒绝测试、后续安全 follow-up |
 | 审计日志 | 是 | Security / Architecture | mock audit seam 已有；生产 adapter、保留和脱敏策略未完成 | `seam_deferred`、后续 `yss-audit-log` 专项评审 |
-| 仓库身份与实现边界 | 是 | Harness owner / implementation repo owner | 身份清单和隔离分支已完成；仍需确认后端子目录 wrapper、文档/运行时代码同仓例外和 owner | `yss-project.yaml`、implementation routing、repo registry |
+| 仓库身份与实现边界 | 是 | Harness owner / implementation repo owner | 已确认后端子目录 wrapper、文档/运行时代码同仓例外和 owner；需要写入当前 Pilot 合同和 Build Architecture Checklist | `yss-project.yaml`、implementation routing、repo registry |
 | 远端 CI 与发布 | 是 | Repo owner / Release | 未登记；不阻断本地只读 onboarding，但阻断 Pilot 发布结论 | CI 配置、stage checkpoint、release review |
 
 ## 7. Harness 回写
@@ -113,9 +113,9 @@ Maven 输出包含本机 `~/.m2/settings.xml` 的 `distributionManagement` warni
 
 ## 8. 下一步门禁
 
-1. 确认 `modeling-yss` 的隔离 Pilot branch 作为 Issue #41 的外部 implementation repo。
-2. 确认后端服务子目录 wrapper 和“文档 / 运行时代码同仓”的现有边界例外。
-3. 为 VS-001 完成需求冻结、切片 Ticket 和当前 catalog 依赖闭包重编译。
+1. 已确认 `modeling-yss` 的隔离 Pilot branch 作为 Issue #41 的外部 Backend implementation repo。
+2. 已确认后端服务子目录 wrapper 和“文档 / 运行时代码同仓”的受控边界例外。
+3. 为 VS-001 完成需求冻结、无 API 影响记录、当前架构复核和 Ticket 粒度审查。
 4. 由生命周期编排器审查并批准新的 Slice Implementation Contract；替换历史 retired skill 名称，不消费旧合同。
-5. 确认首轮不执行生产 migration、不接真实 IAM / SSO、不接生产审计 adapter，并将其写入 Build Architecture Checklist 与 `seam_deferred`。
+5. 将首轮不执行生产 migration、不接真实 IAM / SSO、不接生产审计 adapter 写入 Build Architecture Checklist 与 `seam_deferred`。
 6. 在 clean Pilot branch 上重新执行模板验证、Router / lifecycle 场景、后端 `./mvnw` 验证和独立 review；通过后再创建 `ready-for-agent` 垂直切片 Ticket。

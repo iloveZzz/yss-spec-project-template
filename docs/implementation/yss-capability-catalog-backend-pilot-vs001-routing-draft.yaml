@@ -8,40 +8,37 @@ status: blocked
 lifecycle_refs:
   spec: docs/requirements/yss-capability-catalog-backend-pilot-spec.md#41
   ticket: https://github.com/iloveZzz/yss-spec-project-template/issues/41
-  requirement_freeze: null
+  requirement_freeze: /Users/zhudaoming/Projects/modeling-yss-pilot/docs/requirements/yss-capability-catalog-backend-pilot-vs001-requirement-freeze.md
   low_fidelity_review: not-applicable-no-ui-impact
   high_fidelity_html: not-applicable-no-ui-impact
   antd_cli_evidence: not-applicable-no-ui-impact
   prototype_confirmation: not-applicable-no-ui-impact
-  openapi_freeze_or_no_impact: no-production-api-change-recorded-in-spec
-  architecture_review: pending-pilot-architecture-review
-  data_architecture: external-historical-vs001-data-architecture-requires-current-review
-  engineering_baseline: external-historical-vs001-engineering-baseline-requires-current-review
-  build_architecture_checklist: external-historical-vs001-checklist-requires-contract-recompile
+  openapi_freeze_or_no_impact: /Users/zhudaoming/Projects/modeling-yss-pilot/docs/api/asset-product-modeling-vs001-no-api-impact.md
+  architecture_review: /Users/zhudaoming/Projects/modeling-yss-pilot/docs/architecture/yss-capability-catalog-backend-pilot-vs001-architecture-review.md
+  data_architecture: /Users/zhudaoming/Projects/modeling-yss-pilot/docs/architecture/yss-capability-catalog-backend-pilot-vs001-data-architecture-review.md
+  engineering_baseline: /Users/zhudaoming/Projects/modeling-yss-pilot/docs/implementation/yss-capability-catalog-backend-pilot-vs001-engineering-baseline-review.md
+  build_architecture_checklist: /Users/zhudaoming/Projects/modeling-yss-pilot/docs/implementation/yss-capability-catalog-backend-pilot-vs001-current-catalog-build-architecture-checklist.md
   implementation_repository: docs/implementation/yss-capability-catalog-backend-pilot-repo-registry.md
   frontend_repository: not-applicable-backend-only-pilot
   backend_repository: docs/implementation/yss-capability-catalog-backend-pilot-repo-registry.md
-  maven_wrapper: candidate-gap-wrapper-only-under-service-subdirectory
+  maven_wrapper: accepted-pilot-exception-under-service-subdirectory
 
 readiness:
   blockers:
-    - id: implementation-boundary-unconfirmed
-      reason: backend runtime is nested in a repository that also carries Harness/product documents.
-      destination: implementation-repo-onboarding-human-review
-    - id: root-maven-wrapper-missing
-      reason: mvnw exists under apps/backend/asset-product-modeling-service, not repository root.
-      destination: implementation-routing-wrapper-decision
     - id: lifecycle-approval-missing
       reason: parent Spec is ready-for-human and no approved vertical-slice Ticket exists.
       destination: yss-product-lifecycle
     - id: current-slice-ticket-missing
-      reason: Issue #41 is a functional parent Spec Ticket, not a ready-for-agent slice Ticket.
+      reason: Historical modeling-yss Issue #2 is closed and belongs to the old lifecycle; Issue #41 is the current functional parent, but no current Pilot slice Ticket has been approved.
       destination: to-tickets-after-requirement-freeze
     - id: historical-contract-stale
       reason: historical VS-001 contract references retired yss-domain-modeling and must not be consumed.
       destination: stage7-contract-recompile
     - id: current-catalog-contract-not-approved
       reason: the clean Pilot branch and project-instance identity are ready, but no current-catalog contract has lifecycle approval.
+      destination: yss-product-lifecycle
+    - id: current-requirement-freeze-not-approved
+      reason: The current Pilot requirement freeze and no-API-impact record are prepared but remain ready-for-human.
       destination: yss-product-lifecycle
   stale_inputs:
     - external-historical-vs001-backend-slice-contract
@@ -97,7 +94,7 @@ common:
     - docs/implementation/yss-capability-catalog-backend-pilot-repo-registry.md
     - docs/implementation/yss-capability-catalog-backend-pilot-vs001-routing-draft.yaml
     - external-vs001-backend-slice-contract-with-current-catalog
-    - external-vs001-build-architecture-checklist
+    - external-vs001-current-catalog-build-architecture-checklist
     - external-vs001-tdd-verification
     - external-vs001-independent-review
     - external-clean-checkpoint
