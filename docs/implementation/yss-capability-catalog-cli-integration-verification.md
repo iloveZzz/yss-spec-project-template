@@ -13,7 +13,7 @@ owner: ai
 
 | 影响面 | 仓库 / 分支 | 当前提交 | 状态 |
 |---|---|---|---|
-| Harness template-source | `iloveZzz/yss-spec-project-template` / `codex/yss-skill-optimization` | `14fa487` | 已推送，模板门禁通过 |
+| Harness template-source | `iloveZzz/yss-spec-project-template` / `codex/yss-skill-optimization` | `cf65208` | 已推送，模板门禁通过 |
 | CLI 初始化与模板同步 | `iloveZzz/create-yss-spec` / `codex/yss-capability-catalog-cli-integration` | `7c68860` | 已推送，独立 review 通过 |
 | backend runtime | `modeling-yss` | 不适用 | 本轮未修改 |
 | frontend runtime | 不适用 | 不适用 | 本轮无 UI / frontend 影响 |
@@ -95,7 +95,7 @@ scripts/verify-lifecycle-scenarios
 | 字段 | 值 |
 |---|---|
 | template_ref_for_test | `codex/yss-skill-optimization` |
-| harness_commit_for_test | `14fa487` |
+| harness_commit_for_test | `cf65208` |
 | cli_commit_for_test | `7c68860` |
 | backend_change | `not-applicable`；不修改原始 dirty `modeling-yss`，不修改 Pilot runtime |
 | frontend_change | `not-applicable` |
