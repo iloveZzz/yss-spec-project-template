@@ -25,12 +25,6 @@ lifecycle_refs:
 
 readiness:
   blockers:
-    - id: repository-identity-missing
-      reason: modeling-yss lacks yss-project.yaml; repository identity cannot be inferred.
-      destination: lifecycle-migration-check
-    - id: implementation-worktree-dirty
-      reason: candidate has 14 modified and 23 untracked Git status items.
-      destination: implementation-repo-isolated-clean-checkpoint
     - id: implementation-boundary-unconfirmed
       reason: backend runtime is nested in a repository that also carries Harness/product documents.
       destination: implementation-repo-onboarding-human-review
@@ -46,6 +40,9 @@ readiness:
     - id: historical-contract-stale
       reason: historical VS-001 contract references retired yss-domain-modeling and must not be consumed.
       destination: stage7-contract-recompile
+    - id: current-catalog-contract-not-approved
+      reason: the clean Pilot branch and project-instance identity are ready, but no current-catalog contract has lifecycle approval.
+      destination: yss-product-lifecycle
   stale_inputs:
     - external-historical-vs001-backend-slice-contract
     - external-historical-vs001-build-architecture-checklist
@@ -56,6 +53,8 @@ readiness:
       reason: Pilot validates existing behavior and does not change the production API contract.
     - item: high-fidelity-ui-prototype
       reason: no UI impact.
+    - item: original-dirty-worktree
+      reason: the original dev worktree is explicitly excluded; the Pilot uses an isolated clean worktree.
 
 common:
   impacted_areas: [backend, data, cross-repo]
@@ -82,18 +81,18 @@ common:
       fallback: blocked
       resolution: Do not consume the historical contract; lifecycle must approve a reroute using domain-modeling.
   allowed_write_paths:
-    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-domain/src/**
-    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-application/src/**
-    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-infrastructure/src/**
-    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-adapter/asset-product-modeling-service-web/src/**
+    - /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service/asset-product-modeling-service-domain/src/**
+    - /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service/asset-product-modeling-service-application/src/**
+    - /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service/asset-product-modeling-service-infrastructure/src/**
+    - /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service/asset-product-modeling-service-adapter/asset-product-modeling-service-web/src/**
     - /Users/zhudaoming/Projects/yss-spec-project-template/docs/implementation/**
   forbidden_patterns:
-    - Do not write to modeling-yss until lifecycle approval and a clean isolated checkpoint exist.
+    - Do not write business code to the Pilot worktree until lifecycle approval and the current contract version exist.
     - Do not consume or recreate retired yss-domain-modeling, yss-file, yss-quality or other retired entrypoints.
     - Do not execute production DDL, migration, rollback SQL or direct user-triggered SQL.
     - Do not replace mock permission / audit seams with real IAM or production audit adapters in this Pilot.
     - Do not change the frozen API contract; any API change triggers contract review and reroute.
-    - Do not clean, reset, overwrite or commit the existing dirty worktree.
+    - Do not clean, reset, overwrite or commit the original dirty worktree.
   expected_evidence_files:
     - docs/implementation/yss-capability-catalog-backend-pilot-repo-registry.md
     - docs/implementation/yss-capability-catalog-backend-pilot-vs001-routing-draft.yaml
@@ -102,16 +101,17 @@ common:
     - external-vs001-tdd-verification
     - external-vs001-independent-review
     - external-clean-checkpoint
+    - external-project-instance-identity-4517193
   verification_commands:
     - scripts/verify-yss-capability-catalog
     - scripts/verify-yss-router-scenarios
     - scripts/verify-lifecycle-scenarios
     - scripts/verify-template
-    - cd /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service && ./mvnw -q -DskipTests validate
-    - cd /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service && ./mvnw test -DfailIfNoTests=false
+    - cd /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service && ./mvnw -q -DskipTests validate
+    - cd /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service && ./mvnw test -DfailIfNoTests=false
   human_review_points:
     - approve modeling-yss as the external implementation repository
-    - confirm project-instance identity and clean isolated checkpoint
+    - acknowledge project-instance identity commit 4517193 and clean isolated checkpoint
     - confirm wrapper boundary and backend implementation location
     - confirm database, permission and audit seams remain deferred
   full_reroute_triggers:
@@ -159,10 +159,10 @@ backend:
   transaction_boundary: Application service owns the draft creation transaction; query path remains read-only.
   persistence_strategy: Existing Gateway / Repository seam with PostgreSQL-oriented test evidence; no production migration execution in Pilot.
   allowed_write_paths:
-    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-domain/src/**
-    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-application/src/**
-    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-infrastructure/src/**
-    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-adapter/asset-product-modeling-service-web/src/**
+    - /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service/asset-product-modeling-service-domain/src/**
+    - /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service/asset-product-modeling-service-application/src/**
+    - /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service/asset-product-modeling-service-infrastructure/src/**
+    - /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service/asset-product-modeling-service-adapter/asset-product-modeling-service-web/src/**
   forbidden_patterns:
     - direct Adapter-to-Infrastructure dependency
     - in-memory runtime Gateway replacement for the persisted behavior
@@ -190,8 +190,8 @@ backend:
       follow_up_ticket: modeling-yss audit integration ticket
       verification_plan: approved system audit contract and redacted event verification
   verification_commands:
-    - cd /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service && ./mvnw test -DfailIfNoTests=false
-    - cd /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service && ./mvnw -q -DskipTests validate
+    - cd /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service && ./mvnw test -DfailIfNoTests=false
+    - cd /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service && ./mvnw -q -DskipTests validate
 
 contract:
   api_impact: false
@@ -210,14 +210,13 @@ cross_repo:
       status: active
     - role: backend-implementation-candidate
       repo: https://github.com/iloveZzz/modeling-yss.git
-      ref: dev
-      status: candidate-blocked
+      ref: codex/yss-capability-catalog-backend-pilot@4517193
+      status: candidate-lifecycle-review-pending
   delivery_order:
     - approve-spec-and-pilot-candidate
-    - establish-clean-implementation-checkpoint
+    - confirm-project-instance-identity-and-clean-checkpoint
     - approve-lifecycle-and-router-contract
     - implement-or-replay-vs001-in-isolated-slice-branch
-    - run-backend-fresh-verification
     - independent-review
     - integrate-and-retro
   integration_verification:
@@ -253,10 +252,10 @@ work_units:
       - alibaba-java-code-style
     tdd_mode: behavior-tdd
     allowed_write_paths:
-      - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-domain/src/**
-      - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-application/src/**
-      - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-infrastructure/src/**
-      - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-adapter/asset-product-modeling-service-web/src/**
+      - /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service/asset-product-modeling-service-domain/src/**
+      - /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service/asset-product-modeling-service-application/src/**
+      - /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service/asset-product-modeling-service-infrastructure/src/**
+      - /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service/asset-product-modeling-service-adapter/asset-product-modeling-service-web/src/**
     expected_evidence:
       - domain-behavior-tests
       - application-behavior-tests
@@ -265,8 +264,8 @@ work_units:
       - yss-web-compliance-tests
       - independent-review
     verification_commands:
-      - cd /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service && ./mvnw test -DfailIfNoTests=false
-      - cd /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service && ./mvnw -q -DskipTests validate
+      - cd /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service && ./mvnw test -DfailIfNoTests=false
+      - cd /Users/zhudaoming/Projects/modeling-yss-pilot/apps/backend/asset-product-modeling-service && ./mvnw -q -DskipTests validate
     controlled_generation:
       exception_reason: not-applicable-behavior-tdd
       generator: not-applicable
