@@ -43,13 +43,14 @@ CLI 仓库至少补充以下集成场景：
 
 ## 最新跨仓库检查点（2026-08-07）
 
-本轮 capability catalog 整合的 RED/GREEN 证据见 [`yss-capability-catalog-cli-integration-verification.md`](./yss-capability-catalog-cli-integration-verification.md)。当前开发组合为：Harness `codex/yss-skill-optimization@18dcbcf`（验证内容来自 `cf65208`）与 CLI `codex/yss-capability-catalog-cli-integration@7c68860`。
+本轮 capability catalog 整合的 RED/GREEN 证据见 [`yss-capability-catalog-cli-integration-verification.md`](./yss-capability-catalog-cli-integration-verification.md)。当前合并后验证组合为：Harness `codex/yss-skill-optimization@d1d1bec` 与 CLI `main@87cd720`。
 
 - CLI `npm test`：13/13 通过。
 - fresh 生成实例：`repository_mode: project-instance`、`skills-lock.json`、catalog、五类 projection 和六个核心 backend scaffold projection 均存在。
 - 生成实例的 `scripts/verify-template`、catalog、Router、lifecycle 门禁均通过。
 - 独立 review：Standards PASS；Spec review 发现的两个 P2 测试证据缺口已补齐并复核通过。
-- CLI 分支尚未建立 PR、合并或发布；合并后必须按确定 commit / tag 重跑共同验证。
+- CLI 已由 `87cd720` 合入 `main`；合并后 `npm test` 13/13 通过，生成实例门禁再次通过。
+- npm 发布尚未执行；发布前必须绑定确定 tag，并重跑共同验证。
 
 ## 当前责任边界
 

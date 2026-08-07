@@ -1,7 +1,7 @@
 ---
 pipeline: yss-capability-catalog-backend-pilot
-stage: cross-repo-cli-integration
-status: green-human-review-pending
+stage: post-merge-cli-integration
+status: green-post-merge-release-pending
 owner: ai
 ---
 
@@ -14,11 +14,11 @@ owner: ai
 | 影响面 | 仓库 / 分支 | 当前提交 | 状态 |
 |---|---|---|---|
 | Harness template-source | `iloveZzz/yss-spec-project-template` / `codex/yss-skill-optimization` | `18dcbcf` | 已推送，模板门禁通过；验证内容来自 `cf65208` |
-| CLI 初始化与模板同步 | `iloveZzz/create-yss-spec` / `codex/yss-capability-catalog-cli-integration` | `7c68860` | 已推送，独立 review 通过 |
+| CLI 初始化与模板同步 | `iloveZzz/create-yss-spec` / `main` | `87cd720` | 已合入主线，未发布 npm |
 | backend runtime | `modeling-yss` | 不适用 | 本轮未修改 |
 | frontend runtime | 不适用 | 不适用 | 本轮无 UI / frontend 影响 |
 
-CLI 分支入口：[create-yss-spec 分支](https://github.com/iloveZzz/create-yss-spec/tree/codex/yss-capability-catalog-cli-integration)。当前没有合并 PR，也没有执行 npm 发布；后续必须由独立 reviewer 建立并审查 PR。
+CLI 原实现分支：[create-yss-spec 分支](https://github.com/iloveZzz/create-yss-spec/tree/codex/yss-capability-catalog-cli-integration)。其内容已由 merge commit [`87cd720`](https://github.com/iloveZzz/create-yss-spec/commit/87cd720) 合入 `main`；GitHub PR #11 记录为关闭状态，但仓库拓扑确认该 merge commit 的第二父提交为 `7c68860`。当前仍未执行 npm 发布。
 
 ## 2. RED 基线
 
@@ -96,18 +96,38 @@ scripts/verify-lifecycle-scenarios
 |---|---|
 | template_ref_for_test | `codex/yss-skill-optimization` |
 | harness_commit_for_test | `cf65208` |
-| cli_commit_for_test | `7c68860` |
+| cli_commit_for_test | `87cd720` |
 | backend_change | `not-applicable`；不修改原始 dirty `modeling-yss`，不修改 Pilot runtime |
 | frontend_change | `not-applicable` |
 | API / OpenAPI change | `not-applicable` |
-| release / rollback | 未发布；合并前以分支回退或不纳入发行物为回滚方式 |
+| release / rollback | 主线已合入但未发布 npm；发布前可回退发行 commit 或不纳入发行物 |
 | independent_review | Standards：PASS；Spec：两个 P2 已闭合；CLI 实现者未担任最终审查 |
 
 ## 6. 未解除的阻断项
 
-1. CLI 分支尚未建立并通过独立 review 的 GitHub PR；当前提交本身已完成独立 review，PR 流程仍未建立。
-2. Harness 与 CLI 尚未绑定合并后的确定 commit / tag 重跑共同验证。
-3. npm 发布尚未授权，也未执行。
-4. Issue #41 仍是 `ready-for-human`；VS-001 仍是 Router `blocked`，没有获得生命周期批准、当前 catalog 合同和 `ready-for-agent` 状态。
+1. 合并后的 CLI `main@87cd720` 已完成 fresh verification，但 npm 发布尚未授权，也未执行。
+2. Harness 与 CLI 尚未绑定发布 tag；当前仅完成主线 commit 级共同验证。
+3. Issue #41 仍是 `ready-for-human`；VS-001 仍是 Router `blocked`，没有获得生命周期批准、当前 catalog 合同和 `ready-for-agent` 状态。
 
-因此当前结论为：跨仓库 CLI 集成验证已 GREEN，但整体模板发布和 backend Pilot 实施仍受人工审查与生命周期门禁阻断。
+因此当前结论为：跨仓库 CLI 主线集成验证已 GREEN，但 npm 发布和 backend Pilot 实施仍受发布授权与生命周期门禁阻断。
+
+## 7. 合并后 fresh verification
+
+验证输入：`iloveZzz/create-yss-spec@main`，HEAD `87cd720`；Harness 模板引用：`codex/yss-skill-optimization`。
+
+```bash
+YSS_SPEC_TEMPLATE_REF=codex/yss-skill-optimization npm test
+```
+
+结果：`13 passed, 0 failed`，CLI package version 为 `2.0.0`。
+
+从该主线 CLI 生成实例 `/tmp/yss-merged-main-instance.Vdx5Ep/project` 的结果：
+
+- `yss-project.yaml`：`schema_version: 1`、`repository_mode: project-instance`；
+- 初始化自动通过 `scripts/sync-skills --check`、`scripts/update-skill-lock --check`、`scripts/verify-template`；
+- 生成实例 catalog：49 个 entrypoint；
+- Router stage 7：通过；
+- lifecycle 压力场景：通过；
+- 外部 symlink 拒绝、失败保留旧 snapshot、旧入口直接断言：通过。
+
+这证明 CLI PR 合入主线后仍与当前 Harness 契约兼容，但不证明 npm 包已发布或 VS-001 已获实现放行。
