@@ -19,7 +19,7 @@
 | 高保真 HTML 原型 | `docs/design/prototypes/<feature>/index.html` | 有 UI 时必需；必须使用 Ant Design v6，并通过 `product-design:index` 路由产出或记录例外原因 |
 | AntD CLI 校验证据 | `docs/design/<feature>-prototype-confirmation.md` 或评审记录 | 有 UI 时必需；记录 design.md / info / demo / token / semantic 查询 |
 | 用户确认记录 | `docs/design/<feature>-prototype-confirmation.md` | 有 UI 时必需；未确认前不得进入 OpenAPI Draft 评审 |
-| YSS 工程基线 | `.codex/skills/yss-ddd-scaffold-generator/references/yss-backend-scaffold-parent/SKILL.md` |  |
+| YSS 工程基线 | `.agents/skills/yss-backend-scaffold-parent/SKILL.md` |  |
 
 ## P0 追踪矩阵
 

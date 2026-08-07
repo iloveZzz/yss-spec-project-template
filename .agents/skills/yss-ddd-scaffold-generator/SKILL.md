@@ -1,6 +1,6 @@
 ---
 name: yss-ddd-scaffold-generator
-description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户要求从零创建符合 YSS 规范的 Domain、Application、Infrastructure、Adapter、Bootstrap 工程骨架时调用。
+description: Use when creating a new YSS DDD multi-module backend scaffold with Domain, Application, Infrastructure, Adapter, and Bootstrap modules.
 ---
 
 # yss-ddd-scaffold-generator
@@ -63,7 +63,9 @@ python3 scripts/generate_scaffold.py \
 
 - 主脚本：`scripts/generate_scaffold.py`
 - 模板目录：`assets/templates/`
-- 分层细化参考：`references/yss-backend-scaffold-parent/` 及其子 skill
+- 工程基线：`yss-backend-scaffold-parent`
+- 分层专项：`yss-backend-scaffold-domain`、`yss-backend-scaffold-application`、`yss-backend-scaffold-infrastructure`、`yss-backend-scaffold-adapter`、`yss-backend-scaffold-web`
+- 生成器 references 只保留 `ARCHITECTURE.md` 和 `USAGE_EXAMPLES.md` 等生成器自身的说明，不作为独立 skill 入口。
 
 ## 阶段 7 合同
 

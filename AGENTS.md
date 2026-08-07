@@ -21,6 +21,7 @@
 | 主阶段、门禁、产物和退出标准          | `docs/process/lifecycle-artifact-map.md`    |
 | 影响面触发与 `not-applicable` | `docs/process/harness-process-tailoring.md` |
 | 技能清单、来源、版本、哈希和投影目标      | `skills-lock.json`                          |
+| YSS 技能分类、owner、触发、依赖闭包和 source-index | `docs/skills/yss-capability-catalog.yaml` |
 |                         |                                             |
 
 README、用户指南和其他说明文档只引用或解释上述事实，不重复定义同一规则。

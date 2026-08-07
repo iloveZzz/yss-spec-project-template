@@ -1,6 +1,10 @@
 # Skills 维护说明
 
-本文说明项目级 skills 的权威目录、投影方式、锁文件语义和升级验证。Agent 实际加载的入口仍是各目录中的 `SKILL.md`。
+本文说明项目级 skills 的权威目录、投影方式、锁文件语义、YSS capability catalog 和升级验证。Agent 实际加载的入口仍是各目录中的 `SKILL.md`。
+
+YSS 能力的分类、owner、触发条件、依赖闭包和 source-index 以
+[`docs/skills/yss-capability-catalog.yaml`](../skills/yss-capability-catalog.yaml)
+为唯一事实来源；不要把 `skills-lock.json` 当作能力路由表。
 
 ## 权威内容与投影
 
@@ -47,6 +51,12 @@
 
    ```bash
    scripts/verify-template
+   ```
+
+   能力目录也可以单独校验：
+
+   ```bash
+   ruby scripts/verify-yss-capability-catalog
    ```
 
 6. 需要重新加载技能的客户端在变更落地后重启或刷新项目。

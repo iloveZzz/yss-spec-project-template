@@ -11,6 +11,13 @@
 | 标准文档语言 | 面向业务、产品、架构、实施、审查、发布和复盘的持久化文档所使用的默认语言。 | 统一使用简体中文；英文专有名词、代码标识、API 路径、schema、文件名和协议 metadata 保持原样。 |
 | Matt Engineering Skills | 来自 `mattpocock/skills` 的轻量工程流程技能集合。 | 用于澄清、Spec、Ticket、实现、TDD、诊断、审查和架构治理，不替代 YSS 专项规范。 |
 | YSS skills | 本项目内置的 YSS 工程规范技能。 | 用于 DDD、UI、OpenAPI、Repository、Controller、DTO、组件和编码规范。 |
+| 入口分诊 | 对任务模式、仓库身份、当前阶段和初始影响面的统一判断。 | 由 `yss-product-lifecycle` 负责；`yss-router` 不取代生命周期分诊。 |
+| 影响面 | 描述任务是否涉及 frontend、backend、API、data 或 cross-repo 的变更范围。 | 生命周期拥有最终判断权；实现阶段由 Router 对实现级影响进行一致性校验。 |
+| 技能依赖闭包 | 为一个垂直切片完成目标行为所需的最小直接与传递技能集合。 | 由 `yss-router` 编译；专项 skill 不得在执行时私自扩大全局闭包。 |
+| 长尾技能 | 只在特定组件、平台或边界能力被影响时按需加载的 YSS skill。 | 不默认进入 backend 核心闭包；不可用时必须显式阻断或经生命周期批准采用等价规范。 |
+| Pilot（试点） | 在有限范围内使用真实实现仓库和真实垂直切片，验证 Harness、YSS 路由、规范完整性和证据闭环的受控活动。 | 试点不是模板发布或完整产品交付；必须使用可回滚的隔离基线。 |
+| 真实垂直切片 | 来自真实 `project-instance` 实现仓库、可独立验收并贯穿受影响层的功能行为。 | YSS 框架源码、组件源码或纯合成 fixture 可作为事实和压力场景来源，但不替代真实切片。 |
+| 压力场景 | 针对正常、阻断、越界、漂移或新增影响等边界行为定义的可重复验证案例。 | 每个场景必须有明确预期、实际证据和失败处理；不能只用“规则已说明”作为结论。 |
 | 技能投影 | 从权威共享技能生成、供特定 Agent root 加载的同步副本。 | 投影不是独立维护的技能源，不应在各 Agent root 中分别修改。 |
 | Spec | 记录用户问题、解决方案、用户故事、关键决策、验收标准和测试 seam 的产品研发规格。 | 新资产统一使用 Spec；旧规格称谓只在迁移记录中保留。 |
 | Spec Delta | 记录相对于既有冻结 Spec 基线的 `ADDED / MODIFIED / REMOVED` 行为、验收场景和测试映射。 | 不用于全新产品或全新模块，也不替代完整 Spec、OpenAPI 或架构资产。 |
@@ -24,8 +31,10 @@
 | UI 影响 | 会改变用户可见页面、导航、交互流程、状态呈现或权限体验的功能影响。 | 纯后端、API、批处理或数据变更不自动构成 UI 影响。 |
 | 高保真 HTML 原型 | 低保真原型评审通过后，用于在浏览器中审查真实视觉密度、交互状态和页面流的产品设计资产。 | 不等同于生产前端实现，也不替代 OpenAPI、Spec 校准或垂直切片。 |
 | 垂直切片（Vertical Slice） | 贯穿所有受影响层、可独立验证的窄功能路径。 | 优先使用垂直切片，避免只按层拆分的横向任务。 |
-| Slice Implementation Contract | 阶段 7 进入实现前，由 `yss-router` 根据冻结资产和垂直切片编译、再由生命周期编排器批准的实现合同，包含 Common、Frontend、Backend、Contract 和 Cross-repo 子合同。 | Router 只能生成草案，不能自行批准、设置 `ready-for-agent` 或宣布完成；Backend 子合同仍保留额外强约束。 |
-| YSS Skill Execution Result | YSS 专项 skill 完成工作单元后返回的结构化执行证据，记录合同版本、变更文件、证据文件、实际验证、延期 seam、偏离和新增影响。 | 实现者自报 `implemented` 不构成最终通过，必须由 Router、生命周期编排器和独立 Reviewer 复核。 |
+| Slice Implementation Contract | 阶段 7 进入实现前，由 `yss-router` 根据冻结资产和垂直切片编译、再由生命周期编排器批准并持久化的实现合同，包含 Common、Frontend、Backend、Contract 和 Cross-repo 子合同。 | Router 只能生成草案，生命周期编排器拥有批准、版本和 `ready-for-agent` 裁决权；Backend 子合同仍保留额外强约束。 |
+| 增量路由 | 在既有切片合同内为单个行为工作单元补充主 skill、支持 skill、写入范围和验证证据的路由。 | 不改变生命周期门禁；发生实质影响变化时必须升级为完整重路由。 |
+| 完整重路由 | 因 API/schema、权限、状态机、数据模型、写路径、Repository、skill、架构约束、测试 seam 或验证命令发生实质变化而重新评估切片合同的流程。 | 当前合同必须失效并暂停相关工作单元；不得先完成实现再补路由。 |
+| YSS Skill Execution Result | YSS 专项 skill 完成工作单元后返回的结构化执行证据，记录合同版本、变更文件、证据文件、实际验证、延期 seam、偏离和新增影响。 | 实现者自报 `implemented` 不构成最终通过，必须由生命周期编排器和独立 Reviewer 复核；新增影响、漂移或违规必须阻断或重路由。 |
 | ADR | 架构决策记录，用于沉淀难以回滚、非显而易见且存在真实取舍的技术决策。 | 常规实现选择不要写 ADR。 |
 | Fresh Verification | 完成前重新执行的验证证据，包括测试命令、契约校验、关键路径检查或人工审查结论。 | 不等同于“之前跑过”或实现者自述。 |
 | 测试质量基线 | 项目实例明确采纳的覆盖率阈值、关键流程清单和受控例外。 | 模板推荐值本身不构成可执行门禁；未定义关键流程时，不得声称其 E2E 覆盖率达到 100%。 |
@@ -34,6 +43,8 @@
 | 流程模板资产 | 可被不同项目复用的文档模板、技能说明、校验脚本、流程规范和目录占位文件。 | 不包含某个具体产品的 Spec、设计、OpenAPI 或 Ticket。 |
 | 模板维护流程 | 用于评估影响、修改权威资产、同步投影、执行压力验证并审查模板演进的工作流。 | 面向模板源仓库，不默认生成具体产品的 Spec、原型、OpenAPI 或垂直切片 Ticket。 |
 | 模板发布门禁 | 模板源发布前必须通过的结构、技能同步、流程语义和压力场景验证集合。 | 不等同于只检查文件存在、Markdown 链接或 YAML 语法。 |
+| 发布阻断门禁 | 在完成、合并或发布结论前必须满足的证据和责任条件；任一关键条件失败都会阻止结论。 | 模板本地校验通过不等于跨仓库集成完成；未完成外部契约验证时不得宣称整体可发布。 |
+| 独立审查 | 与实现者分离的审查活动，用于核验合同、规范、路径、证据、验证和风险约束。 | 不得把实现者自报结果或历史验证输出当作独立审查或 Fresh Verification。 |
 | Harness 工程 | 串联研发生命周期阶段、门禁、产物、Agent/Skill 编排和追踪证据的工程化治理载体。 | 不等同于单个 CI 流水线或零散提示词集合。 |
 | 研发管理仓库 | 承载 Spec、OpenAPI、架构、Ticket、验证、发布和复盘等研发管理资产的仓库。 | 不等同于前端 / 后端代码 monorepo。 |
 | 实现仓库 | 承载前端、后端或其他运行时代码及其 Git、CI、MR / PR、测试命令和发布流水线的仓库。 | 不要把实现仓库的源码所有权混入研发管理仓库。 |
@@ -41,5 +52,13 @@
 | 模板源仓库（`template-source`） | 承载 `yss-spec-project-template` 权威模板资产及其演进规则的仓库身份。 | 只管理可复用模板，不承载某个具体产品的研发生命周期资产。 |
 | 模板实例仓库（`project-instance`） | 由模板初始化后生成、承载某个具体产品研发生命周期资产的仓库身份。 | 不作为通用流程模板的权威来源。 |
 | 仓库身份清单 | 显式声明仓库身份和清单结构版本的机器可读资产。 | 不承载项目名称、团队规模、Tracker 或其他易变业务配置。 |
+| Component Adapter skill | 直接对应 YSS runtime component / starter 的专项技能，负责组件 API、配置、source-index、新鲜度和验证入口。 | 不等同于业务领域层或生命周期流程；组件存在于实现仓库不代表必须新增独立 skill。 |
+| Application Architecture skill | 描述 DDD 应用分层、代码形状、脚手架和业务工程如何使用 YSS 组件的技能。 | 与 Component Adapter skill 组合使用，不把应用模板误认为 runtime component。 |
+| Process & Contract skill | 描述生命周期、路由、OpenAPI、API integration 和实现合同治理的技能。 | 不作为 backend runtime component 默认依赖；其中的流程门禁仍可约束 backend 实现。 |
+| Platform / Frontend skill | 面向特定 Agent 平台、frontend 文档/生成器、source-index 刷新或迁移提交操作的技能。 | platform-only 不等于无效；应通过能力索引发现，不默认进入所有 Agent 的 backend skill 闭包。 |
+| Skill entrypoint | 可被 Agent 按触发场景直接加载、拥有明确输入/输出/验证门禁的技能入口。 | 不要把每个 reference、template 或脚本都当作独立 entrypoint。 |
+| Reference-only asset | 被 entrypoint 按需读取的规范、源码索引、变体说明或示例，不单独触发路由。 | 必须有明确 owner 和引用关系；不能通过复制内容冒充独立 skill。 |
+| YSS capability catalog | 独立于 `skills-lock.json` 的 YSS 能力目录，记录 skill 分类、触发场景、owner、依赖、source-index 和验证命令。 | 不替代锁文件的来源/哈希/投影完整性职责；不把同一规则复制到多个 skill。 |
+| 受控技能迁移 | 在明确的迁移窗口内移动、合并或降级 skill，并同步权威源、投影、能力目录、路由引用和验证证据的模板维护动作。 | 不保留旧入口兼容别名；必须提供迁移说明和 fresh verification。 |
 
 只有在计划、分诊、调试或架构讨论中明确沉淀出稳定语言时，才新增术语。

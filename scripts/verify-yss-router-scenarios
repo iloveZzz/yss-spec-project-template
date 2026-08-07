@@ -706,11 +706,12 @@ failures << "API/database schema reroutes collapsed" if CONTRACT.dig("reroute_de
 failures << "Unknown reroute trigger did not stop" unless full_reroute(CONTRACT, current_contract, "unknown").nil?
 
 shared_core = %w[
-  yss-router yss-domain-modeling yss-domain yss-ddd-scaffold-generator
+  yss-router yss-domain yss-ddd-scaffold-generator
+  yss-backend-scaffold-adapter yss-backend-scaffold-parent
   yss-backend-scaffold-application yss-backend-scaffold-domain
   yss-backend-scaffold-infrastructure yss-backend-scaffold-web
   yss-repository yss-mybatis yss-web-controller yss-dto
-  yss-page-module-development yss-api-integration alibaba-java-code-style
+  yss-page-module-development yss-api-integration domain-modeling alibaba-java-code-style
   mapstruct lombok
 ]
 shared_core.each do |skill|
@@ -719,6 +720,7 @@ end
 
 projection_roots = %w[.claude .codex .hermes .pi .trae]
 top_level_scaffold_skills = %w[
+  yss-backend-scaffold-adapter yss-backend-scaffold-parent
   yss-backend-scaffold-application yss-backend-scaffold-domain
   yss-backend-scaffold-infrastructure yss-backend-scaffold-web
 ]
@@ -730,14 +732,11 @@ projection_roots.each do |projection_root|
 end
 
 top_level_scaffold_skills.each do |skill|
-  wrapper = ROOT.join(".agents/skills/yss-ddd-scaffold-generator/references", skill, "SKILL.md")
-  body = wrapper.file? ? wrapper.read : ""
-  failures << "Nested scaffold wrapper missing target: #{skill}" unless body.include?("Use `#{skill}`") &&
-                                                                    body.include?("single authoritative")
+  nested = ROOT.join(".agents/skills/yss-ddd-scaffold-generator/references", skill)
+  failures << "Nested scaffold reference must be removed: #{skill}" if nested.exist?
 end
 
 execution_protocol_files = %w[
-  yss-domain-modeling/SKILL.md
   yss-domain/SKILL.md
   yss-ddd-scaffold-generator/SKILL.md
   yss-repository/SKILL.md
@@ -753,9 +752,12 @@ execution_protocol_files = %w[
   yss-backend-scaffold-domain/SKILL.md
   yss-backend-scaffold-infrastructure/SKILL.md
   yss-backend-scaffold-web/SKILL.md
+  yss-backend-scaffold-adapter/SKILL.md
+  yss-backend-scaffold-parent/SKILL.md
 ]
 execution_protocol_files.each do |relative_path|
-  body = ROOT.join(".agents/skills", relative_path).read
+  path = ROOT.join(".agents/skills", relative_path)
+  body = path.file? ? path.read : ""
   failures << "Execution Result protocol missing: #{relative_path}" unless body.include?("Execution Result")
 end
 
@@ -791,8 +793,11 @@ end
   yss-backend-scaffold-domain/SKILL.md
   yss-backend-scaffold-infrastructure/SKILL.md
   yss-backend-scaffold-web/SKILL.md
+  yss-backend-scaffold-adapter/SKILL.md
+  yss-backend-scaffold-parent/SKILL.md
 ].each do |relative_path|
-  body = ROOT.join(".agents/skills", relative_path).read
+  path = ROOT.join(".agents/skills", relative_path)
+  body = path.file? ? path.read : ""
   failures << "behavior-tdd rule missing: #{relative_path}" unless body.include?("behavior-tdd")
 end
 

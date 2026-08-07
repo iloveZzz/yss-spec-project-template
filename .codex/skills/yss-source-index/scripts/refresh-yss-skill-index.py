@@ -34,14 +34,6 @@ BACKEND_SKILLS = {
     "yss-dictionary": [
         "yss-microservice-components/yss-component-dictionary-parent",
     ],
-    "yss-dir": [
-        "yss-microservice-components/yss-component-dir-parent",
-    ],
-    "yss-file": [
-        "yss-microservice-components/yss-component-file",
-        "yss-microservice-components/yss-component-file-parser",
-        "yss-microservice-components/yss-component-filemanager-common",
-    ],
     "yss-log": [
         "yss-microservice-components/yss-component-log-starter",
     ],
@@ -67,29 +59,14 @@ BACKEND_SKILLS = {
     "yss-userinfo": [
         "yss-microservice-components/yss-component-userinfo-starter",
     ],
-    "yss-variable": [
-        "yss-microservice-components/yss-component-variable",
-    ],
-    "yss-quality": [
-        "yss-microservice-components/yss-component-quality-starter",
-    ],
     "yss-exception": [
         "yss-microservice-components/yss-component-exception",
-    ],
-    "yss-mail": [
-        "yss-microservice-components/yss-component-mail-starter",
-    ],
-    "yss-filerunner": [
-        "yss-microservice-components/yss-component-filerunner-parent",
     ],
     "yss-valuation": [
         "yss-microservice-components/yss-component-valuation",
     ],
     "yss-duckdb": [
         "yss-microservice-components/yss-component-duckdb",
-    ],
-    "yss-mapper-dynamic": [
-        "yss-microservice-components/yss-component-mapper-dynamic",
     ],
 }
 

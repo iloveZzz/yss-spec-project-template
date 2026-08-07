@@ -188,9 +188,11 @@ Router 先选择主 skill，再按可观察影响自动补齐强制依赖。
 
 | 主影响 | 主 skills | 强制依赖 |
 |---|---|---|
-| Domain 行为/状态机 | `yss-domain-modeling`、`yss-domain`、`yss-backend-scaffold-domain` | `alibaba-java-code-style`；POJO 命中时 `lombok` |
+| Backend 工程基线 / scaffold review | `yss-backend-scaffold-parent`、`yss-ddd-scaffold-generator` | 目标实现仓库登记、`./mvnw`、模块边界和批准合同 |
+| Domain 行为/状态机 | `domain-modeling`、`yss-domain`、`yss-backend-scaffold-domain` | `alibaba-java-code-style`；POJO 命中时 `lombok` |
 | Application 用例/事务 | `yss-backend-scaffold-application` | `mapstruct`、`lombok`、`alibaba-java-code-style` 按对象影响触发 |
 | Repository/持久化 | `yss-repository`、`yss-backend-scaffold-infrastructure` | `mapstruct`、`lombok`、`alibaba-java-code-style`；MyBatis 命中时 `yss-mybatis` |
+| Scheduler / SPI / 外部适配 | `yss-backend-scaffold-adapter` | `yss-backend-scaffold-application`、`alibaba-java-code-style`；Web-only 时不加载 |
 | Web/DTO | `yss-web-controller`、`yss-dto`、`yss-backend-scaffold-web` | `mapstruct`、`lombok`、`alibaba-java-code-style` |
 | 页面模块 | `yss-page-module-development` | 按影响增加 `yss-components`、`yss-hook`、`yss-formily`、`api-integration` |
 | API 集成 | `api-integration` | 冻结客户端；需要重生成时 `yss-openapi` |
@@ -212,11 +214,13 @@ not_applicable_skills:
 
 ```text
 yss-router
-yss-domain-modeling
+domain-modeling
 yss-domain
+yss-backend-scaffold-parent
 yss-backend-scaffold-application
 yss-backend-scaffold-domain
 yss-backend-scaffold-infrastructure
+yss-backend-scaffold-adapter
 yss-backend-scaffold-web
 yss-repository
 yss-mybatis

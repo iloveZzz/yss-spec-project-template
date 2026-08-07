@@ -22,15 +22,20 @@ Default for a new page: first verify the approved product design, state matrix, 
 ## Backend Boundaries
 
 - `yss-ddd-scaffold-generator`: Create a whole multi-module backend skeleton.
+- `yss-backend-scaffold-parent`: Establish or review the parent project, module boundaries, shared build rules, and engineering baseline after scaffold generation or before backend implementation.
 - `yss-domain`: Domain modeling and domain gateway contracts.
+- `yss-backend-scaffold-domain`: Shared scaffold/domain-layer code shape and boundary rules; pair with `yss-domain` for business behavior.
 - `yss-backend-scaffold-application`: Application use cases, transaction boundaries, and cross-aggregate orchestration.
+- `yss-backend-scaffold-infrastructure`: Shared scaffold/infrastructure-layer shape for PO, Repository, Convertor, GatewayImpl, and external adapters; pair with `yss-repository` for persistence implementation.
 - `yss-repository`: Persistence implementation, PO, Repository, Convertor, GatewayImpl.
+- `yss-backend-scaffold-adapter`: Scheduler, connector, plugin, and SPI adapter shape; do not load for REST Controller/DTO-only work.
+- `yss-backend-scaffold-web`: Shared scaffold/Web Adapter layer shape; pair with `yss-web-controller` for concrete REST Controller and DTO/VO work.
 - `yss-web-controller`: REST adapter layer, request/response DTOs, VO, web convertor.
 - `yss-db2mybatis`: Generate persistence artifacts from database metadata or DDL.
 - `yss-mybatis`: Framework behavior for MyBatis/MyBatis-Plus, BaseRepository, pagination, mapper scanning, batch, datasource issues.
 - `yss-dto`: Result/PageQuery/CommandDTO/QueryDTO and unified API contract objects.
 
-Default for end-to-end backend CRUD: include Domain, Application, Infrastructure, and Web skills plus `mapstruct`, `lombok`, and `alibaba-java-code-style`; add `yss-mybatis` when persistence framework details matter. The executable closure in `router-contract.yaml` is authoritative.
+Default for end-to-end backend CRUD: include Domain, Application, Infrastructure, and Web skills plus `mapstruct`, `lombok`, and `alibaba-java-code-style`; add `yss-mybatis` when persistence framework details matter. Load `yss-backend-scaffold-adapter` only for scheduler/connector/SPI impacts. The executable closure in `router-contract.yaml` is authoritative.
 
 中文说明：后端 CRUD 按领域、DTO、持久层、Controller 分层处理；只有涉及 MyBatis 机制、分页、扫描、多数据源时才加 `yss-mybatis`。
 
@@ -42,8 +47,6 @@ Default for end-to-end backend CRUD: include Domain, Application, Infrastructure
 - `yss-distributed-id`: ID strategies, AutoIdInterceptor, Leaf/CosId/Snowflake, batch ID injection.
 - `yss-jdbc`: Hutool Db, dynamic datasource JDBC, JdbcSqlUtil, batch SQL execution.
 - `yss-dictionary`: Dictionary/domain item APIs and dictionary component integration.
-- `yss-dir`: Directory/resource tree component behavior.
-- `yss-file`: Base file abstractions and file parser utilities.
 - `yss-log`: Logging starter auto-configuration and log extension points.
 - `yss-resilience4j`: Circuit breaker, fallback, and gateway resilience integration.
 - `yss-sql-condition`: SQL condition parsing, validation, and condition builder behavior.
@@ -52,14 +55,9 @@ Default for end-to-end backend CRUD: include Domain, Application, Infrastructure
 - `yss-validation`: Validation engine and JSR-303 integration.
 - `yss-security-algorithm`: RSA/AES/crypto/security algorithm utilities.
 - `yss-userinfo`: Current-user info propagation and starter integration.
-- `yss-variable`: Variable component APIs and variable resolution.
-- `yss-quality`: Quality starter behavior.
 - `yss-exception`: Exception component and unified exception handling.
-- `yss-mail`: Mail starter and email sending.
-- `yss-filerunner`: File runner component behavior.
 - `yss-valuation`: Valuation component behavior.
 - `yss-duckdb`: DuckDB component behavior.
-- `yss-mapper-dynamic`: Dynamic mapper component behavior.
 
 Component skills should inspect generated `references/source-index.md` before changing code when the task depends on exact class or config names.
 

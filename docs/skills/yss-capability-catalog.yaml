@@ -1,0 +1,1516 @@
+schema_version: 1
+catalog_version: "1.0.0"
+catalog_id: yss-capability-catalog
+
+# 本目录只负责能力发现、路由和 source-index；来源、哈希与投影完整性仍由
+# skills-lock.json 负责。
+categories:
+  component-adapter:
+    label: Component Adapter
+    purpose: YSS runtime component、starter、配置、API 与故障排查
+    default_owner: yss-backend-platform
+  application-architecture:
+    label: Application Architecture
+    purpose: DDD 应用分层、脚手架、领域建模、持久化生成和 Web 适配
+    default_owner: yss-application-architecture
+  process-contract:
+    label: Process & Contract
+    purpose: 生命周期、垂直切片路由、OpenAPI 与前后端契约
+    default_owner: yss-engineering-governance
+  platform-frontend:
+    label: Platform / Frontend
+    purpose: 前端页面、设计系统、平台维护和 Codex-only 执行器
+    default_owner: yss-frontend-platform
+
+owners:
+  yss-backend-platform:
+    label: YSS Backend Platform
+    responsibility: 负责 YSS backend component adapter、源码索引和组件验证
+  yss-application-architecture:
+    label: YSS Application Architecture
+    responsibility: 负责 DDD 应用工程形状、脚手架和跨层代码规范
+  yss-engineering-governance:
+    label: YSS Engineering Governance
+    responsibility: 负责生命周期、契约、路由、重路由和模板门禁
+  yss-frontend-platform:
+    label: YSS Frontend Platform
+    responsibility: 负责 YSS UI、前端生成器、平台执行器和前端文档入口
+
+retired_skills:
+  - yss-dir
+  - yss-domain-modeling
+  - yss-file
+  - yss-filerunner
+  - yss-mail
+  - yss-mapper-dynamic
+  - yss-quality
+  - yss-variable
+retirement_policy:
+  reintroduction: requires-owner-review-and-new-red-baseline
+  domain_modeling_replacement: domain-modeling
+  component_fallback: lifecycle-approved-project-implementation-contract
+
+unavailable_skill_policy:
+  default_action: blocked
+  approval_owner: yss-product-lifecycle
+  fallback: only-approved-equivalent-specification
+  required_evidence: [provider, fallback, approval_ref, resolution]
+
+reroute_policy:
+  stale_status: stale
+  new_impacts: [api-schema-impact, database-schema-impact, permission-impact, state-machine-impact, data-model-impact, new-write-path, new-repository, new-required-skill, architecture-drift, contract-violation, test-seam-changed, verification-command-changed]
+  paused_work_units: true
+  destinations:
+    api-schema-impact: system-data-architecture-and-contract-review
+    database-schema-impact: data-architecture-and-migration-review
+    permission-impact: spec-product-design-and-contract-review
+    state-machine-impact: spec-system-data-and-contract-review
+    data-model-impact: data-architecture-and-contract-review
+    new-write-path: stage7-contract-recompile
+    new-repository: stage7-contract-recompile
+    new-required-skill: stage7-contract-recompile
+    architecture-drift: architecture-recheck
+    contract-violation: stage7-contract-recompile
+    test-seam-changed: spec-ticket-test-seam-review
+    verification-command-changed: stage7-contract-recompile
+
+profiles:
+  backend-vertical-slice:
+    entrypoint: yss-router
+    required:
+      - yss-product-lifecycle
+      - yss-router
+      - yss-backend-scaffold-parent
+      - domain-modeling
+      - yss-domain
+      - yss-backend-scaffold-domain
+      - yss-backend-scaffold-application
+      - yss-backend-scaffold-infrastructure
+      - yss-repository
+      - yss-backend-scaffold-web
+      - yss-web-controller
+      - yss-dto
+      - alibaba-java-code-style
+      - mapstruct
+      - lombok
+    excluded_categories: [platform-frontend]
+    policy: yss-router-compiles-minimal-closure-and-lifecycle-approves
+
+condition_vocabulary:
+  components: 页面使用 YSS UI 组件或组件文档入口，例如 YTable、YTree、YssFormily
+  hooks: 页面使用 YSS UI hooks 或共享页面数据逻辑，例如 useRequest、useTableHeight、useTreeHeight
+  form: 页面使用 YssFormily / YFormily schema、effects 或 detail mode
+  api: 页面需要生成、刷新或接入 Orval API client
+
+capabilities:
+  yss-api-integration:
+    id: yss/yss-api-integration
+    skill: yss-api-integration
+    entrypoint: .agents/skills/yss-api-integration/SKILL.md
+    availability: shared
+    category: process-contract
+    owner: yss-engineering-governance
+    role: supporting
+    status: active
+    backend_default: false
+    trigger_conditions: [frontend.api-client, frontend.orval, frontend.use-request, api-regeneration]
+    non_triggers: [backend-controller-implementation, openapi-style-governance, generic-http-client]
+    dependencies:
+      always: []
+      when:
+        regeneration: [yss-openapi]
+    dependency_closure:
+      always: []
+      when:
+        regeneration: [yss-openapi]
+    source_index:
+      kind: project-reference
+      index_paths: [.agents/skills/yss-api-integration/SKILL.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".agents/skills/yss-api-integration is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-backend-scaffold-adapter:
+    id: yss/yss-backend-scaffold-adapter
+    skill: yss-backend-scaffold-adapter
+    entrypoint: .agents/skills/yss-backend-scaffold-adapter/SKILL.md
+    availability: shared
+    category: application-architecture
+    owner: yss-application-architecture
+    role: supporting
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.scheduler-adapter, backend.spi-adapter, backend.external-adapter]
+    non_triggers: [backend.domain-layer, backend.application-layer, rest-controller-only, frontend-page]
+    dependencies:
+      always: [yss-backend-scaffold-application, alibaba-java-code-style]
+      when: {}
+    dependency_closure:
+      always: [alibaba-java-code-style, yss-backend-scaffold-application, yss-backend-scaffold-domain]
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.agents/skills/yss-backend-scaffold-adapter/SKILL.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog, scripts/verify-yss-router-scenarios]
+    authority: ".agents/skills/yss-backend-scaffold-adapter is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-backend-scaffold-parent:
+    id: yss/yss-backend-scaffold-parent
+    skill: yss-backend-scaffold-parent
+    entrypoint: .agents/skills/yss-backend-scaffold-parent/SKILL.md
+    availability: shared
+    category: application-architecture
+    owner: yss-application-architecture
+    role: primary
+    status: active
+    backend_default: true
+    trigger_conditions: [backend.engineering-baseline, backend.parent-project, backend.module-boundaries, backend.scaffold-review]
+    non_triggers: [frontend-only-project, runtime-component-troubleshooting, isolated-controller-formatting]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.agents/skills/yss-backend-scaffold-parent/SKILL.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog, scripts/verify-yss-router-scenarios]
+    authority: ".agents/skills/yss-backend-scaffold-parent is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-audit-log:
+    id: yss/yss-audit-log
+    skill: yss-audit-log
+    entrypoint: .codex/skills/yss-audit-log/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: supporting
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.audit-log, audit-log.integration, audit-log.troubleshooting, EnableAuditLog]
+    non_triggers: [generic-business-history, generic-logging-without-yss-audit]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-audit-log/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-audit-log]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-audit-log is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-backend-scaffold-application:
+    id: yss/yss-backend-scaffold-application
+    skill: yss-backend-scaffold-application
+    entrypoint: .agents/skills/yss-backend-scaffold-application/SKILL.md
+    availability: shared
+    category: application-architecture
+    owner: yss-application-architecture
+    role: supporting
+    status: active
+    backend_default: true
+    trigger_conditions: [backend.application-layer, application-use-case, application-dto-conversion]
+    non_triggers: [domain-rule-design, repository-implementation, controller-only-change]
+    dependencies:
+      always: [yss-backend-scaffold-domain, alibaba-java-code-style]
+      when: {}
+    dependency_closure:
+      always: [alibaba-java-code-style, yss-backend-scaffold-domain]
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.agents/skills/yss-backend-scaffold-application/SKILL.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".agents/skills/yss-backend-scaffold-application is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-backend-scaffold-domain:
+    id: yss/yss-backend-scaffold-domain
+    skill: yss-backend-scaffold-domain
+    entrypoint: .agents/skills/yss-backend-scaffold-domain/SKILL.md
+    availability: shared
+    category: application-architecture
+    owner: yss-application-architecture
+    role: supporting
+    status: active
+    backend_default: true
+    trigger_conditions: [backend.domain-layer, domain-gateway, domain-layer-scaffold]
+    non_triggers: [runtime-component-configuration, controller-only-change, frontend-page]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.agents/skills/yss-backend-scaffold-domain/SKILL.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".agents/skills/yss-backend-scaffold-domain is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-backend-scaffold-infrastructure:
+    id: yss/yss-backend-scaffold-infrastructure
+    skill: yss-backend-scaffold-infrastructure
+    entrypoint: .agents/skills/yss-backend-scaffold-infrastructure/SKILL.md
+    availability: shared
+    category: application-architecture
+    owner: yss-application-architecture
+    role: supporting
+    status: active
+    backend_default: true
+    trigger_conditions: [backend.infrastructure-layer, persistence-adapter, external-service-adapter]
+    non_triggers: [domain-rule-design, controller-only-change, frontend-page]
+    dependencies:
+      always: [yss-backend-scaffold-domain, alibaba-java-code-style]
+      when: {}
+    dependency_closure:
+      always: [alibaba-java-code-style, yss-backend-scaffold-domain]
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.agents/skills/yss-backend-scaffold-infrastructure/SKILL.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".agents/skills/yss-backend-scaffold-infrastructure is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-backend-scaffold-web:
+    id: yss/yss-backend-scaffold-web
+    skill: yss-backend-scaffold-web
+    entrypoint: .agents/skills/yss-backend-scaffold-web/SKILL.md
+    availability: shared
+    category: application-architecture
+    owner: yss-application-architecture
+    role: supporting
+    status: active
+    backend_default: true
+    trigger_conditions: [backend.web-adapter, rest-api, request-response-formatting]
+    non_triggers: [domain-rule-design, repository-only-change, frontend-api-client]
+    dependencies:
+      always: [alibaba-java-code-style]
+      when: {}
+    dependency_closure:
+      always: [alibaba-java-code-style]
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.agents/skills/yss-backend-scaffold-web/SKILL.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".agents/skills/yss-backend-scaffold-web is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-cache:
+    id: yss/yss-cache
+    skill: yss-cache
+    entrypoint: .agents/skills/yss-cache/SKILL.md
+    availability: shared
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.cache, QueryCache, UpdateCache, ClearCache, ttl, redis-topology, cache-inconsistency]
+    non_triggers: [generic-in-memory-cache-without-yss, database-index-tuning, frontend-query-state]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.agents/skills/yss-cache/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-cache-parent]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog, .agents/skills/yss-cache/scripts/check-skill-freshness.sh]
+    authority: ".agents/skills/yss-cache is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-components:
+    id: yss/yss-components
+    skill: yss-components
+    entrypoint: .codex/skills/yss-components/SKILL.md
+    availability: codex-only
+    category: platform-frontend
+    owner: yss-frontend-platform
+    role: supporting
+    status: active
+    backend_default: false
+    trigger_conditions: [frontend.yss-component, YTable, YTree, YssFormily, page-layout]
+    non_triggers: [backend-component-adapter, generic-ant-design-without-yss]
+    dependencies:
+      always: [yss-design-system]
+      when: {}
+    dependency_closure:
+      always: [yss-design-system]
+      when: {}
+    source_index:
+      kind: frontend-docs
+      index_paths: [.codex/skills/yss-components/references/frontend-docs.md]
+      source_repository: yss-ui-docs
+      source_paths: ["http://192.168.164.27:3200/components"]
+      freshness_command: yss-source-index frontend-docs refresh
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-components is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-db2mybatis:
+    id: yss/yss-db2mybatis
+    skill: yss-db2mybatis
+    entrypoint: .codex/skills/yss-db2mybatis/SKILL.md
+    availability: codex-only
+    category: application-architecture
+    owner: yss-application-architecture
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [database.ddl-to-code, database.metadata-to-code, PO-generation, repository-generation]
+    non_triggers: [manual-domain-modeling, runtime-mybatis-troubleshooting, frontend-page]
+    dependencies:
+      always: [yss-repository, yss-mybatis]
+      when: {}
+    dependency_closure:
+      always: [alibaba-java-code-style, lombok, mapstruct, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-mybatis, yss-repository]
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.codex/skills/yss-db2mybatis/SKILL.md, docs/research/yss-framework-capability-map.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-db2mybatis is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-ddd-scaffold-generator:
+    id: yss/yss-ddd-scaffold-generator
+    skill: yss-ddd-scaffold-generator
+    entrypoint: .agents/skills/yss-ddd-scaffold-generator/SKILL.md
+    availability: shared
+    category: application-architecture
+    owner: yss-application-architecture
+    role: primary
+    status: active
+    backend_default: true
+    trigger_conditions: [new-backend-project, ddd-multi-module-scaffold, bootstrap-generation, application-scaffold]
+    non_triggers: [single-layer-change-in-existing-project, runtime-component-troubleshooting, frontend-only-project]
+    dependencies:
+      always: [domain-modeling, yss-domain, yss-backend-scaffold-parent, yss-backend-scaffold-application, yss-backend-scaffold-infrastructure, yss-backend-scaffold-adapter, yss-backend-scaffold-web, yss-repository, yss-web-controller, yss-dto, mapstruct, lombok, alibaba-java-code-style]
+      when: {}
+    dependency_closure:
+      always: [alibaba-java-code-style, domain-modeling, lombok, mapstruct, yss-backend-scaffold-adapter, yss-backend-scaffold-application, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-backend-scaffold-parent, yss-backend-scaffold-web, yss-domain, yss-dto, yss-repository, yss-web-controller]
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.agents/skills/yss-ddd-scaffold-generator/SKILL.md, .agents/skills/yss-backend-scaffold-parent/SKILL.md, docs/research/yss-framework-capability-map.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".agents/skills/yss-ddd-scaffold-generator is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-design-system:
+    id: yss/yss-design-system
+    skill: yss-design-system
+    entrypoint: .codex/skills/yss-design-system/SKILL.md
+    availability: codex-only
+    category: platform-frontend
+    owner: yss-frontend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [frontend.ui-design, ant-design-v6, yss-theme, design-token, ui-review]
+    non_triggers: [backend-api-contract, backend-persistence, generic-css-without-yss-ui]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.codex/skills/yss-design-system/SKILL.md, docs/design/design.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-design-system is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-dictionary:
+    id: yss/yss-dictionary
+    skill: yss-dictionary
+    entrypoint: .codex/skills/yss-dictionary/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.dictionary, DicCache, YssDicFeign, EnableDicManage, dictionary-refresh]
+    non_triggers: [generic-enum, frontend-select-without-dictionary-service]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-dictionary/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-dictionary-parent]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-dictionary is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-distributed-id:
+    id: yss/yss-distributed-id
+    skill: yss-distributed-id
+    entrypoint: .codex/skills/yss-distributed-id/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.id-generation, Leaf, CosId, snowflake, AutoIdInterceptor, primary-key-generation]
+    non_triggers: [uuid-formatting-without-yss, business-number-generation]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-distributed-id/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-distributed-id, yss-microservice-components/yss-component-leaf]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-distributed-id is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-domain:
+    id: yss/yss-domain
+    skill: yss-domain
+    entrypoint: .agents/skills/yss-domain/SKILL.md
+    availability: shared
+    category: application-architecture
+    owner: yss-application-architecture
+    role: primary
+    status: active
+    backend_default: true
+    trigger_conditions: [backend.domain-model, aggregate, entity, value-object, domain-gateway, state-transition]
+    non_triggers: [controller-only-change, repository-only-generation, runtime-component-configuration]
+    dependencies:
+      always: [domain-modeling, yss-backend-scaffold-domain, alibaba-java-code-style]
+      when: {}
+    dependency_closure:
+      always: [alibaba-java-code-style, domain-modeling, yss-backend-scaffold-domain]
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.agents/skills/yss-domain/SKILL.md, docs/process/harness-work-unit-map.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".agents/skills/yss-domain is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-dto:
+    id: yss/yss-dto
+    skill: yss-dto
+    entrypoint: .agents/skills/yss-dto/SKILL.md
+    availability: shared
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: true
+    trigger_conditions: [backend.dto, Result, PageQuery, CommandDTO, QueryDTO, response-wrapper]
+    non_triggers: [domain-rule-design, frontend-form-schema, arbitrary-json-response]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.agents/skills/yss-dto/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-dto]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".agents/skills/yss-dto is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-duckdb:
+    id: yss/yss-duckdb
+    skill: yss-duckdb
+    entrypoint: .codex/skills/yss-duckdb/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.duckdb, embedded-analytics, duckdb-query, duckdb-configuration]
+    non_triggers: [generic-sql-query, production-database-migration]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-duckdb/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-duckdb]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-duckdb is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-excel-mvc:
+    id: yss/yss-excel-mvc
+    skill: yss-excel-mvc
+    entrypoint: .codex/skills/yss-excel-mvc/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.excel, RequestExcel, ResponseExcel, import-export, dynamic-columns]
+    non_triggers: [frontend-only-spreadsheet, generic-file-upload]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-excel-mvc/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-excel-mvc, yss-microservice-components/yss-component-excel-starter]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-excel-mvc is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-exception:
+    id: yss/yss-exception
+    skill: yss-exception
+    entrypoint: .codex/skills/yss-exception/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.exception, BaseException, BizException, error-code, GlobalExceptionAdvice]
+    non_triggers: [generic-language-exception, frontend-error-toast-only]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-exception/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-exception]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-exception is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-formily:
+    id: yss/yss-formily
+    skill: yss-formily
+    entrypoint: .codex/skills/yss-formily/SKILL.md
+    availability: codex-only
+    category: platform-frontend
+    owner: yss-frontend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [frontend.formily, YssFormily, YFormily, schema-driven-form, form-effects]
+    non_triggers: [backend-dto, generic-html-form-without-formily]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.codex/skills/yss-formily/SKILL.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-formily is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-formily-schema-generator:
+    id: yss/yss-formily-schema-generator
+    skill: yss-formily-schema-generator
+    entrypoint: .codex/skills/yss-formily-schema-generator/SKILL.md
+    availability: codex-only
+    category: platform-frontend
+    owner: yss-frontend-platform
+    role: supporting
+    status: active
+    backend_default: false
+    trigger_conditions: [frontend.formily-schema-generation, natural-language-to-schema, screenshot-to-form, Figma-to-form]
+    non_triggers: [manual-formily-edit, backend-schema-generation]
+    dependencies:
+      always: [yss-formily]
+      when: {}
+    dependency_closure:
+      always: [yss-formily]
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.codex/skills/yss-formily-schema-generator/SKILL.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-formily-schema-generator is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-frontend-scaffold-generator:
+    id: yss/yss-frontend-scaffold-generator
+    skill: yss-frontend-scaffold-generator
+    entrypoint: .codex/skills/yss-frontend-scaffold-generator/SKILL.md
+    availability: codex-only
+    category: platform-frontend
+    owner: yss-frontend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [new-frontend-project, yss-microapp-scaffold, frontend-template]
+    non_triggers: [existing-page-module, backend-project-scaffold, generic-vue-app]
+    dependencies:
+      always: [yss-design-system]
+      when: {}
+    dependency_closure:
+      always: [yss-design-system]
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.codex/skills/yss-frontend-scaffold-generator/SKILL.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-frontend-scaffold-generator is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-hook:
+    id: yss/yss-hook
+    skill: yss-hook
+    entrypoint: .codex/skills/yss-hook/SKILL.md
+    availability: codex-only
+    category: platform-frontend
+    owner: yss-frontend-platform
+    role: supporting
+    status: active
+    backend_default: false
+    trigger_conditions: [frontend.hook, useRequest, frontend.pagination, tree-data-loading, frontend-data-transformation]
+    non_triggers: [backend-service, generic-react-hook, component-visual-style]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: frontend-docs
+      index_paths: [.codex/skills/yss-hook/references/frontend-docs.md]
+      source_repository: yss-ui-docs
+      source_paths: ["http://192.168.164.27:3200/hooks"]
+      freshness_command: yss-source-index frontend-docs refresh
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-hook is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-jdbc:
+    id: yss/yss-jdbc
+    skill: yss-jdbc
+    entrypoint: .codex/skills/yss-jdbc/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.jdbc, Hutool-Db, dynamic-data-source, JdbcSqlUtil, batch-jdbc-write]
+    non_triggers: [mybatis-repository, generic-jdbc-without-yss]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-jdbc/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-jdbc]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-jdbc is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-log:
+    id: yss/yss-log
+    skill: yss-log
+    entrypoint: .codex/skills/yss-log/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.logging, yss-log-starter, request-log, business-log, log-not-output]
+    non_triggers: [generic-application-log, frontend-console-log]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-log/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-log-starter]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-log is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-microapp-commit:
+    id: yss/yss-microapp-commit
+    skill: yss-microapp-commit
+    entrypoint: .codex/skills/yss-microapp-commit/SKILL.md
+    availability: codex-only
+    category: platform-frontend
+    owner: yss-frontend-platform
+    role: maintenance
+    status: active
+    backend_default: false
+    trigger_conditions: [microapp.commit, conventional-commit, git-commit-message, micro-frontend-repository]
+    non_triggers: [template-source-governance-commit, backend-runtime-code-review]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.codex/skills/yss-microapp-commit/SKILL.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-microapp-commit is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-mybatis:
+    id: yss/yss-mybatis
+    skill: yss-mybatis
+    entrypoint: .agents/skills/yss-mybatis/SKILL.md
+    availability: shared
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: true
+    trigger_conditions: [backend.mybatis, BaseRepository, BasePlusRepository, pagination, multi-datasource, batch-insert]
+    non_triggers: [jdbc-without-mybatis, frontend-data-table-only]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.agents/skills/yss-mybatis/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-persistence]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".agents/skills/yss-mybatis is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-openapi:
+    id: yss/yss-openapi
+    skill: yss-openapi
+    entrypoint: .codex/skills/yss-openapi/SKILL.md
+    availability: codex-only
+    category: process-contract
+    owner: yss-engineering-governance
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [implemented-controller-to-openapi, smart-doc, orval-regeneration, generated-api-client]
+    non_triggers: [openapi-draft-governance, openapi-style-lint, manual-api-design]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.codex/skills/yss-openapi/SKILL.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-openapi is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-openapi-draft-review:
+    id: yss/yss-openapi-draft-review
+    skill: yss-openapi-draft-review
+    entrypoint: .codex/skills/yss-openapi-draft-review/SKILL.md
+    availability: codex-only
+    category: process-contract
+    owner: yss-engineering-governance
+    role: supporting
+    status: active
+    backend_default: false
+    trigger_conditions: [openapi-draft-review, api-requirement-coverage, endpoint-review, pre-freeze-api-review]
+    non_triggers: [implemented-controller-to-json, openapi-style-rule-authoring, frontend-client-regeneration]
+    dependencies:
+      always: [yss-openapi-governance]
+      when: {}
+    dependency_closure:
+      always: [yss-openapi-governance]
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.codex/skills/yss-openapi-draft-review/SKILL.md, docs/api/templates/openapi-draft-review-checklist.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-openapi-draft-review is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-openapi-governance:
+    id: yss/yss-openapi-governance
+    skill: yss-openapi-governance
+    entrypoint: .codex/skills/yss-openapi-governance/SKILL.md
+    availability: codex-only
+    category: process-contract
+    owner: yss-engineering-governance
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [openapi-style-governance, spectral, redocly, api-naming, api-pagination, api-error-conventions]
+    non_triggers: [smart-doc-generation, orval-regeneration, business-domain-modeling]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.codex/skills/yss-openapi-governance/SKILL.md, docs/api/templates/openapi-draft-review-checklist.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-openapi-governance is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-page-module-development:
+    id: yss/yss-page-module-development
+    skill: yss-page-module-development
+    entrypoint: .agents/skills/yss-page-module-development/SKILL.md
+    availability: shared
+    category: platform-frontend
+    owner: yss-frontend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [frontend.page-module, YTable-page, YTree-page, left-tree-right-content, microapp-module]
+    non_triggers: [backend-only-slice, generic-vue-page-without-yss, design-only-prototype]
+    dependencies:
+      always: []
+      when:
+        components: [yss-components]
+        hooks: [yss-hook]
+        form: [yss-formily]
+        api: [yss-api-integration]
+    dependency_closure:
+      always: []
+      when:
+        components: [yss-components, yss-design-system]
+        hooks: [yss-hook]
+        form: [yss-formily]
+        api: [yss-api-integration]
+    source_index:
+      kind: frontend-docs
+      index_paths: [.agents/skills/yss-page-module-development/references/frontend-docs.md]
+      source_repository: yss-ui-docs
+      source_paths: ["http://192.168.164.27:3200/components", "http://192.168.164.27:3200/hooks", "http://192.168.164.27:3200/skills"]
+      freshness_command: yss-source-index frontend-docs refresh
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".agents/skills/yss-page-module-development is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-product-lifecycle:
+    id: yss/yss-product-lifecycle
+    skill: yss-product-lifecycle
+    entrypoint: .agents/skills/yss-product-lifecycle/SKILL.md
+    availability: shared
+    category: process-contract
+    owner: yss-engineering-governance
+    role: primary
+    status: active
+    backend_default: true
+    trigger_conditions: [yss-lifecycle, product-change-routing, gate-readiness, implementation-readiness, lifecycle-audit]
+    non_triggers: [isolated-code-formatting, runtime-component-api-question, generic-project-management]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.agents/skills/yss-product-lifecycle/SKILL.md, .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml, docs/process/lifecycle-artifact-map.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-lifecycle-scenarios
+    verification_commands: [scripts/verify-yss-capability-catalog, scripts/verify-lifecycle-scenarios]
+    authority: ".agents/skills/yss-product-lifecycle is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-repository:
+    id: yss/yss-repository
+    skill: yss-repository
+    entrypoint: .agents/skills/yss-repository/SKILL.md
+    availability: shared
+    category: application-architecture
+    owner: yss-application-architecture
+    role: primary
+    status: active
+    backend_default: true
+    trigger_conditions: [backend.repository, domain-gateway-implementation, PO-generation, Repository-generation, GatewayImpl]
+    non_triggers: [domain-only-modeling, controller-only-change, frontend-api-client]
+    dependencies:
+      always: [yss-backend-scaffold-infrastructure, mapstruct, lombok, alibaba-java-code-style]
+      when:
+        mybatis: [yss-mybatis]
+    dependency_closure:
+      always: [alibaba-java-code-style, lombok, mapstruct, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure]
+      when:
+        mybatis: [alibaba-java-code-style, lombok, mapstruct, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-mybatis]
+    source_index:
+      kind: project-reference
+      index_paths: [.agents/skills/yss-repository/SKILL.md, docs/research/yss-framework-capability-map.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".agents/skills/yss-repository is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-resilience4j:
+    id: yss/yss-resilience4j
+    skill: yss-resilience4j
+    entrypoint: .codex/skills/yss-resilience4j/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.resilience, circuit-breaker, rate-limit, fallback, GlobalCircuitExceptionAdvice]
+    non_triggers: [generic-retry, frontend-network-retry]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-resilience4j/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-resilience4j-starter]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-resilience4j is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-router:
+    id: yss/yss-router
+    skill: yss-router
+    entrypoint: .agents/skills/yss-router/SKILL.md
+    availability: shared
+    category: process-contract
+    owner: yss-engineering-governance
+    role: primary
+    status: active
+    backend_default: true
+    trigger_conditions: [vertical-slice-entering-implementation, multi-area-slice, implementation-readiness, skill-closure, slice-contract, reroute]
+    non_triggers: [product-discovery, final-human-approval, direct-business-code-writing]
+    dependencies:
+      always: [yss-product-lifecycle]
+      when: {}
+    dependency_closure:
+      always: [yss-product-lifecycle]
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.agents/skills/yss-router/SKILL.md, .agents/skills/yss-router/references/router-contract.yaml, .agents/skills/yss-router/references/slice-implementation-contract.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-router-scenarios
+    verification_commands: [scripts/verify-yss-capability-catalog, scripts/verify-yss-router-scenarios]
+    authority: ".agents/skills/yss-router is canonical; projections are generated"
+    projection_policy: sync-from-agents
+
+  yss-security-algorithm:
+    id: yss/yss-security-algorithm
+    skill: yss-security-algorithm
+    entrypoint: .codex/skills/yss-security-algorithm/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.security-algorithm, RSA, AES, JWT, SecurityCryptoUtil, key-pair, encryption]
+    non_triggers: [generic-password-hashing, frontend-token-storage-only]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-security-algorithm/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-security-algorithm]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-security-algorithm is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-source-index:
+    id: yss/yss-source-index
+    skill: yss-source-index
+    entrypoint: .codex/skills/yss-source-index/SKILL.md
+    availability: codex-only
+    category: platform-frontend
+    owner: yss-frontend-platform
+    role: maintenance
+    status: active
+    backend_default: false
+    trigger_conditions: [yss-source-changed, component-index-refresh, frontend-doc-index-refresh, source-freshness]
+    non_triggers: [business-feature-implementation, manual-skill-content-edit, generic-repository-search]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.codex/skills/yss-source-index/SKILL.md, .codex/skills/yss-source-index/references/source-map-config.md, .codex/skills/yss-source-index/references/source-location.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-source-index is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-sql-condition:
+    id: yss/yss-sql-condition
+    skill: yss-sql-condition
+    entrypoint: .codex/skills/yss-sql-condition/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.sql-condition, SqlTranspiler, CaseWhenSqlGenerator, dynamic-sql, SQL-validation]
+    non_triggers: [static-sql, generic-query-builder-without-yss]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-sql-condition/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-sql-condition]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-sql-condition is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-sql-tpl:
+    id: yss/yss-sql-tpl
+    skill: yss-sql-tpl
+    entrypoint: .codex/skills/yss-sql-tpl/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.sql-template, EnableSqlTplManage, SqlTplConfig, SqlTplResource, SQL-template-repository]
+    non_triggers: [inline-sql-only, generic-template-engine]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-sql-tpl/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-sql-tpl-parent]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-sql-tpl is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-taskflow:
+    id: yss/yss-taskflow
+    skill: yss-taskflow
+    entrypoint: .codex/skills/yss-taskflow/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.taskflow, process-definition, task-definition, task-instance, TaskFactory, task-state]
+    non_triggers: [generic-job-scheduler, frontend-workflow-visualization-only]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-taskflow/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-taskflow]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-taskflow is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-ui:
+    id: yss/yss-ui
+    skill: yss-ui
+    entrypoint: .codex/skills/yss-ui/SKILL.md
+    availability: codex-only
+    category: platform-frontend
+    owner: yss-frontend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [frontend.yss-ui, YTable, YTree, YssFormily, frontend.page-layout, frontend.route-menu]
+    non_triggers: [backend-api-only, generic-ant-design-without-yss]
+    dependencies:
+      always: []
+      when:
+        components: [yss-components]
+        hooks: [yss-hook]
+        form: [yss-formily]
+        api: [yss-api-integration]
+    dependency_closure:
+      always: []
+      when:
+        components: [yss-components, yss-design-system]
+        hooks: [yss-hook]
+        form: [yss-formily]
+        api: [yss-api-integration]
+    source_index:
+      kind: frontend-docs
+      index_paths: [.codex/skills/yss-ui/references/frontend-docs.md]
+      source_repository: yss-ui-docs
+      source_paths: ["http://192.168.164.27:3200/components", "http://192.168.164.27:3200/hooks", "http://192.168.164.27:3200/skills"]
+      freshness_command: yss-source-index frontend-docs refresh
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-ui is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-up-springboot3:
+    id: yss/yss-up-springboot3
+    skill: yss-up-springboot3
+    entrypoint: .codex/skills/yss-up-springboot3/SKILL.md
+    availability: codex-only
+    category: platform-frontend
+    owner: yss-backend-platform
+    role: maintenance
+    status: active
+    scope: backend-platform-maintenance
+    backend_default: false
+    trigger_conditions: [spring-boot-3-migration, jakarta-migration, spring-cloud-upgrade, compatibility-audit]
+    non_triggers: [new-spring-boot-2-feature, generic-dependency-upgrade-without-yss]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.codex/skills/yss-up-springboot3/SKILL.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-up-springboot3 is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-use-table-height:
+    id: yss/yss-use-table-height
+    skill: yss-use-table-height
+    entrypoint: .codex/skills/yss-use-table-height/SKILL.md
+    availability: codex-only
+    category: platform-frontend
+    owner: yss-frontend-platform
+    role: supporting
+    status: active
+    backend_default: false
+    trigger_conditions: [frontend.table-height, useTableHeight, YTable, responsive-table, table-pagination]
+    non_triggers: [backend-table-query, fixed-height-table, generic-css-height]
+    dependencies:
+      always: [yss-components]
+      when: {}
+    dependency_closure:
+      always: [yss-components, yss-design-system]
+      when: {}
+    source_index:
+      kind: frontend-docs
+      index_paths: [.codex/skills/yss-use-table-height/references/frontend-docs.md]
+      source_repository: yss-ui-docs
+      source_paths: ["http://192.168.164.27:3200/hooks", "http://192.168.164.27:3200/components"]
+      freshness_command: yss-source-index frontend-docs refresh
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-use-table-height is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-use-tree-height:
+    id: yss/yss-use-tree-height
+    skill: yss-use-tree-height
+    entrypoint: .codex/skills/yss-use-tree-height/SKILL.md
+    availability: codex-only
+    category: platform-frontend
+    owner: yss-frontend-platform
+    role: supporting
+    status: active
+    backend_default: false
+    trigger_conditions: [frontend.tree-height, useTreeHeight, YTree, virtual-scroll, tree-search]
+    non_triggers: [backend-tree-query, fixed-height-tree, generic-css-height]
+    dependencies:
+      always: [yss-components]
+      when: {}
+    dependency_closure:
+      always: [yss-components, yss-design-system]
+      when: {}
+    source_index:
+      kind: frontend-docs
+      index_paths: [.codex/skills/yss-use-tree-height/references/frontend-docs.md]
+      source_repository: yss-ui-docs
+      source_paths: ["http://192.168.164.27:3200/hooks", "http://192.168.164.27:3200/components"]
+      freshness_command: yss-source-index frontend-docs refresh
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-use-tree-height is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-userinfo:
+    id: yss/yss-userinfo
+    skill: yss-userinfo
+    entrypoint: .codex/skills/yss-userinfo/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.user-context, AuthUserInfoUtil, current-user, authentication-user-info]
+    non_triggers: [generic-user-profile, frontend-auth-state-only]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-userinfo/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-userinfo-starter]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-userinfo is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-validation:
+    id: yss/yss-validation
+    skill: yss-validation
+    entrypoint: .codex/skills/yss-validation/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.validation, validation-engine, validation-jsr303, LiteFlow-EL, expression-validation]
+    non_triggers: [frontend-form-validation-only, generic-bean-validation-without-yss]
+    dependencies:
+      always: []
+      when: {}
+    dependency_closure:
+      always: []
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-validation/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-validation-engine-parent, yss-microservice-components/yss-component-validation-jsr303]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-validation is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-valuation:
+    id: yss/yss-valuation
+    skill: yss-valuation
+    entrypoint: .codex/skills/yss-valuation/SKILL.md
+    availability: codex-only
+    category: component-adapter
+    owner: yss-backend-platform
+    role: primary
+    status: active
+    backend_default: false
+    trigger_conditions: [backend.valuation, Excel2SqlDDL, ImportFileJob, valuation-import, regional-condition]
+    non_triggers: [generic-excel-import, frontend-file-preview-only]
+    dependencies:
+      always: [yss-excel-mvc]
+      when: {}
+    dependency_closure:
+      always: [yss-excel-mvc]
+      when: {}
+    source_index:
+      kind: backend-generated
+      index_paths: [.codex/skills/yss-valuation/references/source-index.md, .codex/skills/yss-source-index/references/source-map-config.md]
+      source_repository: yss-cloud-microservice
+      source_root_env: YSS_SOURCE_ROOT
+      source_paths: [yss-microservice-components/yss-component-valuation]
+      freshness_command: YSS_SKILLS_ROOT=.codex/skills YSS_SOURCE_ROOT=$YSS_SOURCE_ROOT python3 .codex/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".codex/skills/yss-valuation is Codex-only canonical content"
+    projection_policy: codex-only-no-shared-projection
+
+  yss-web-controller:
+    id: yss/yss-web-controller
+    skill: yss-web-controller
+    entrypoint: .agents/skills/yss-web-controller/SKILL.md
+    availability: shared
+    category: application-architecture
+    owner: yss-application-architecture
+    role: primary
+    status: active
+    backend_default: true
+    trigger_conditions: [backend.controller, REST-API-generation, controller-refactor, DTO-VO-convertor, CRUD-endpoint]
+    non_triggers: [openapi-style-governance, frontend-api-client, domain-rule-only]
+    dependencies:
+      always: [yss-dto, yss-backend-scaffold-web, mapstruct, lombok, alibaba-java-code-style]
+      when: {}
+    dependency_closure:
+      always: [alibaba-java-code-style, lombok, mapstruct, yss-backend-scaffold-web, yss-dto]
+      when: {}
+    source_index:
+      kind: project-reference
+      index_paths: [.agents/skills/yss-web-controller/SKILL.md, docs/research/yss-framework-capability-map.md]
+      source_repository: project
+      source_paths: []
+      freshness_command: scripts/verify-yss-capability-catalog
+    verification_commands: [scripts/verify-yss-capability-catalog]
+    authority: ".agents/skills/yss-web-controller is canonical; projections are generated"
+    projection_policy: sync-from-agents

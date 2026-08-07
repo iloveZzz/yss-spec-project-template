@@ -41,8 +41,9 @@
 1. 先读取 `yss-project.yaml`，按 `repository_mode` 选择模板维护或产品研发生命周期。
 2. 必读入口为 `AGENTS.md` 与 `CONTEXT.md`；流程事实分别以生命周期映射和裁剪指南为准。
 3. `template-source` 修改流程、技能或模板后，执行 `scripts/sync-skills`、`scripts/update-skill-lock` 和 `scripts/verify-template`。
-4. `project-instance` 先做影响面分诊；进入 Spec 基线时使用 `grill-with-docs`、`to-spec`，契约冻结后再用 `to-tickets` 拆分垂直切片 Ticket。
-5. 实现仓库接入、YSS 路由、独立审查、fresh verification 和 Git checkpoint 以 `AGENTS.md` 的硬门禁为准。
+4. YSS 能力发现先查 [`docs/skills/yss-capability-catalog.yaml`](./docs/skills/yss-capability-catalog.yaml)，再按 `yss-router` 和 catalog 依赖闭包路由。
+5. `project-instance` 先做影响面分诊；进入 Spec 基线时使用 `grill-with-docs`、`to-spec`，契约冻结后再用 `to-tickets` 拆分垂直切片 Ticket。
+6. 实现仓库接入、YSS 路由、独立审查、fresh verification 和 Git checkpoint 以 `AGENTS.md` 的硬门禁为准。
 
 ## 模板初始化 CLI
 

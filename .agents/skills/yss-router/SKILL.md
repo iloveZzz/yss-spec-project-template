@@ -9,13 +9,13 @@ description: Use when a YSS vertical slice is entering implementation, spans mul
 
 ## 输入
 
-先读取 Spec、切片 Ticket、需求冻结、适用的原型确认、OpenAPI Freeze/no-impact、系统/数据架构、Design Review、Build Architecture Checklist、实现仓库和验证命令。输入缺失、未批准或 `stale` 时输出 `blocked`，交回 `yss-product-lifecycle`。
+先读取 [YSS capability catalog](../../../docs/skills/yss-capability-catalog.yaml)，按 `category`、`trigger_conditions` 和 profile 找到最小入口；再读取 Spec、切片 Ticket、需求冻结、适用的原型确认、OpenAPI Freeze/no-impact、系统/数据架构、Design Review、Build Architecture Checklist、实现仓库和验证命令。catalog 只提供能力发现和依赖闭包，不替代生命周期批准或本合同。输入缺失、未批准或 `stale` 时输出 `blocked`，交回 `yss-product-lifecycle`。
 
 ## 编译循环
 
 1. 判断 frontend/backend/API/data/cross-repo 影响。
-2. 检查工程存在性和核心/长尾 skill 可用性。
-3. 选择主 skill，并按 [router-contract.yaml](references/router-contract.yaml) 计算强制依赖闭包。
+2. 检查工程存在性和核心/长尾 skill 可用性；命中 catalog 的长尾 skill 不可用时按 catalog 默认策略阻断。
+3. 选择主 skill，读取 catalog 的 `dependencies` / `dependency_closure`，再按 [router-contract.yaml](references/router-contract.yaml) 计算合同强制依赖闭包；两者冲突时暂停并交 `yss-product-lifecycle` 重路由。
 4. 为切片生成基线合同；为当前行为生成工作单元增量路由。
 5. 选择 `behavior-tdd` 或 `controlled-generation`。
 6. 输出 `draft`、`blocked` 或 `ready-for-lifecycle-review`，交生命周期编排器核验和持久化。

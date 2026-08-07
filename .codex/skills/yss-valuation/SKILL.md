@@ -21,7 +21,7 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 
 1. Identify whether the task is valuation file import, Excel/CSV reading, Excel-to-DDL generation, table relationship extraction, or import job troubleshooting.
 2. Read `references/source-index.md`, then inspect `Excel2SqlDDL`, `Excel2TableRelationship`, `ImportFileJob`, `FileReader`, `ExcelFileReader`, and `CsvFileReader`.
-3. Use this component for valuation/data-middle file import and DDL derivation; load `yss-file` when the issue is generic file storage or parser infrastructure.
+3. Use this component for valuation/data-middle file import and DDL derivation; route generic file storage or parser infrastructure through the project implementation contract because no dedicated YSS file skill is available.
 4. Validate file format, sheet/column mapping, encoding, and generated DDL before applying changes to a database.
 5. Keep import jobs idempotent or clearly restartable when possible.
 

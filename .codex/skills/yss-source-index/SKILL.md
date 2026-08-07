@@ -1,6 +1,6 @@
 ---
 name: yss-source-index
-description: Refresh generated YSS skill source indexes from the local backend component source repository and record frontend YSS UI documentation entry points. Use when yss-cloud-microservice changes, when YSS component skills need accurate source paths, or when maintaining YSS backend component skills such as cache/mybatis/dto/audit/excel/distributed-id/jdbc/dictionary/file/log/taskflow/validation/security and frontend yss-ui skill references.
+description: Refresh generated YSS skill source indexes from the local backend component source repository and record frontend YSS UI documentation entry points. Use when yss-cloud-microservice changes, when YSS component skills need accurate source paths, or when maintaining supported YSS backend component skills such as cache/mybatis/dto/audit/excel/distributed-id/jdbc/dictionary/log/taskflow/validation/security and frontend yss-ui skill references.
 ---
 
 # yss-source-index

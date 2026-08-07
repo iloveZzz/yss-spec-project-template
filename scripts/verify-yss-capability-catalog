@@ -1,0 +1,277 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "json"
+require "pathname"
+require "yaml"
+
+ROOT = Pathname.new(__dir__).join("..").realpath
+CATALOG_PATH = ROOT.join("docs/skills/yss-capability-catalog.yaml")
+LOCK_PATH = ROOT.join("skills-lock.json")
+external_source_root = ENV["YSS_SOURCE_ROOT"] && Pathname.new(ENV["YSS_SOURCE_ROOT"]).expand_path
+
+def fail_with(errors)
+  return if errors.empty?
+
+  warn "YSS capability catalog 校验失败:"
+  errors.each { |error| warn "  - #{error}" }
+  exit 1
+end
+
+def string_array(value, path, errors, allow_empty: false)
+  unless value.is_a?(Array) && value.all? { |item| item.is_a?(String) && !item.empty? }
+    errors << "#{path} 必须是非空字符串数组"
+    return []
+  end
+  errors << "#{path} 不能为空" if !allow_empty && value.empty?
+  value
+end
+
+def relative_local_path?(path)
+  !path.start_with?("/") && !path.split("/").include?("..")
+end
+
+def local_path_exists?(root, path)
+  root.join(path).file? || root.join(path).directory?
+end
+
+unless CATALOG_PATH.file?
+  abort "缺少 YSS capability catalog: #{CATALOG_PATH.relative_path_from(ROOT)}"
+end
+
+catalog = YAML.safe_load(CATALOG_PATH.read, permitted_classes: [], aliases: false)
+lock = JSON.parse(LOCK_PATH.read)
+errors = []
+
+unless catalog.is_a?(Hash)
+  abort "YSS capability catalog 顶层必须是 YAML mapping"
+end
+
+errors << "schema_version 必须为 1" unless catalog["schema_version"] == 1
+errors << "catalog_version 必须是非空字符串" unless catalog["catalog_version"].is_a?(String) && !catalog["catalog_version"].empty?
+
+expected_categories = %w[component-adapter application-architecture process-contract platform-frontend]
+categories = catalog["categories"]
+unless categories.is_a?(Hash) && categories.keys.sort == expected_categories.sort
+  errors << "categories 必须恰好包含 #{expected_categories.join(', ')}"
+end
+
+owners = catalog["owners"]
+unless owners.is_a?(Hash) && !owners.empty?
+  errors << "owners 必须是非空 mapping"
+  owners = {}
+end
+
+policy = catalog["unavailable_skill_policy"]
+unless policy.is_a?(Hash) && policy["default_action"] == "blocked" && policy["approval_owner"] == "yss-product-lifecycle"
+  errors << "unavailable_skill_policy 必须默认 blocked，并由 yss-product-lifecycle 批准等价规范"
+end
+
+reroute = catalog["reroute_policy"]
+required_reroute_keys = %w[stale_status new_impacts paused_work_units destinations]
+unless reroute.is_a?(Hash) && required_reroute_keys.all? { |key| reroute.key?(key) }
+  errors << "reroute_policy 缺少 stale/new_impacts/paused_work_units/destinations"
+end
+
+shared = lock.dig("skills", "shared") || {}
+platform = (lock.dig("skills", "platform") || {}).values.reduce({}) { |all, group| all.merge(group) }
+all_locked_skills = (shared.keys + platform.keys).uniq
+expected_yss_skills = all_locked_skills.grep(/\Ayss-/).sort
+
+retired_skills = catalog["retired_skills"]
+unless retired_skills.is_a?(Array) && retired_skills.all? { |skill| skill.is_a?(String) && skill.start_with?("yss-") }
+  errors << "retired_skills 必须是 yss skill 名称数组"
+  retired_skills = []
+end
+retired_skills.each do |skill|
+  errors << "退役 skill 仍在 skills-lock.json: #{skill}" if all_locked_skills.include?(skill)
+end
+
+capabilities = catalog["capabilities"]
+unless capabilities.is_a?(Hash)
+  errors << "capabilities 必须是 mapping，key 为 skill 名称"
+  capabilities = {}
+end
+
+unless capabilities.keys.sort == expected_yss_skills
+  missing = expected_yss_skills - capabilities.keys
+  extra = capabilities.keys - expected_yss_skills
+  errors << "capabilities 与 skills-lock.json 不一致；缺少=#{missing.sort.join(', ')} 多余=#{extra.sort.join(', ')}" unless missing.empty? && extra.empty?
+end
+retired_skills.each { |skill| errors << "退役 skill 仍在 capability catalog: #{skill}" if capabilities.key?(skill) }
+
+agent_skill_roots = %w[.agents/skills .claude/skills .codex/skills .hermes/skills .pi/skills .trae/skills]
+retired_skills.each do |skill|
+  agent_skill_roots.each do |agent_root|
+    retired_path = ROOT.join(agent_root, skill)
+    errors << "退役 skill 仍在 Agent root: #{retired_path.relative_path_from(ROOT)}" if retired_path.exist? || retired_path.symlink?
+  end
+end
+
+known_dependencies = all_locked_skills
+known_dependencies += capabilities.keys
+known_dependencies.uniq!
+base_closure_cache = {}
+
+base_closure = lambda do |skill, stack = []|
+  return base_closure_cache[skill] if base_closure_cache.key?(skill)
+  return [] unless capabilities.key?(skill)
+  if stack.include?(skill)
+    errors << "依赖闭包存在循环: #{(stack + [skill]).join(' -> ')}"
+    return []
+  end
+
+  entry = capabilities.fetch(skill)
+  direct = entry.dig("dependencies", "always") || []
+  result = direct.flat_map do |dependency|
+    [dependency, *base_closure.call(dependency, stack + [skill])]
+  end
+  base_closure_cache[skill] = result.uniq.sort
+end
+
+capabilities.each do |skill, entry|
+  path = "capabilities.#{skill}"
+  unless entry.is_a?(Hash)
+    errors << "#{path} 必须是 mapping"
+    next
+  end
+
+  required = %w[id skill entrypoint availability category owner role status trigger_conditions non_triggers dependencies dependency_closure source_index verification_commands authority projection_policy]
+  required.each { |key| errors << "#{path}.#{key} 缺失" unless entry.key?(key) }
+
+  errors << "#{path}.skill 必须等于 key" unless entry["skill"] == skill
+  errors << "#{path}.id 必须等于 yss/#{skill}" unless entry["id"] == "yss/#{skill}"
+  errors << "#{path}.owner 未登记" unless owners.key?(entry["owner"])
+  errors << "#{path}.category 非法" unless expected_categories.include?(entry["category"])
+  errors << "#{path}.role 非法" unless %w[primary supporting maintenance].include?(entry["role"])
+  errors << "#{path}.status 必须为 active" unless entry["status"] == "active"
+  string_array(entry["trigger_conditions"], "#{path}.trigger_conditions", errors)
+  string_array(entry["non_triggers"], "#{path}.non_triggers", errors)
+  string_array(entry["verification_commands"], "#{path}.verification_commands", errors)
+
+  entrypoint = entry["entrypoint"]
+  unless entrypoint.is_a?(String) && relative_local_path?(entrypoint) && local_path_exists?(ROOT, entrypoint)
+    errors << "#{path}.entrypoint 必须指向仓库内存在的 SKILL.md"
+  end
+
+  expected_availability = shared.key?(skill) ? "shared" : "codex-only"
+  errors << "#{path}.availability 与 skills-lock.json 的 shared/platform 分组不一致" unless entry["availability"] == expected_availability
+  if entry["availability"] == "shared"
+    errors << "#{path} shared entrypoint 必须位于 .agents/skills" unless entrypoint.to_s.start_with?(".agents/skills/")
+    errors << "#{path} shared skill 未在 skills-lock.json.shared 中" unless shared.key?(skill)
+  elsif entry["availability"] == "codex-only"
+    errors << "#{path} codex-only entrypoint 必须位于 .codex/skills" unless entrypoint.to_s.start_with?(".codex/skills/")
+    errors << "#{path} codex-only skill 未在 skills-lock.json.platform 中" unless platform.key?(skill)
+  else
+    errors << "#{path}.availability 必须为 shared 或 codex-only"
+  end
+
+  dependencies = entry["dependencies"]
+  closure = entry["dependency_closure"]
+  unless dependencies.is_a?(Hash) && closure.is_a?(Hash)
+    errors << "#{path} dependencies 和 dependency_closure 必须是 mapping"
+    next
+  end
+
+  %w[always when].each do |field|
+    if field == "always"
+      string_array(dependencies[field], "#{path}.dependencies.always", errors, allow_empty: true)
+      string_array(closure[field], "#{path}.dependency_closure.always", errors, allow_empty: true)
+    else
+      unless dependencies[field].is_a?(Hash) && closure[field].is_a?(Hash)
+        errors << "#{path}.#{field} 必须是 mapping"
+        next
+      end
+      dependencies[field].each { |condition, values| string_array(values, "#{path}.dependencies.when.#{condition}", errors, allow_empty: true) }
+      closure[field].each { |condition, values| string_array(values, "#{path}.dependency_closure.when.#{condition}", errors, allow_empty: true) }
+    end
+  end
+
+  dependency_values = (dependencies.fetch("always", []) + dependencies.fetch("when", {}).values.flatten).uniq
+  closure_values = (closure.fetch("always", []) + closure.fetch("when", {}).values.flatten).uniq
+  (dependency_values + closure_values).each do |dependency|
+    errors << "#{path} 引用了未登记依赖 #{dependency}" unless known_dependencies.include?(dependency)
+  end
+
+  expected_base = base_closure.call(skill)
+  actual_base = Array(closure["always"]).uniq.sort
+  errors << "#{path}.dependency_closure.always 不等于依赖传递闭包；期望=#{expected_base.join(', ')} 实际=#{actual_base.join(', ')}" unless actual_base == expected_base
+
+  dependencies.fetch("when", {}).each do |condition, values|
+    expected_condition = (dependencies.fetch("always", []) + values).flat_map do |dependency|
+      [dependency, *base_closure.call(dependency, [skill])]
+    end.uniq.sort
+    actual_condition = Array(closure.fetch("when", {})[condition]).uniq.sort
+    errors << "#{path}.dependency_closure.when.#{condition} 不等于条件传递闭包" unless actual_condition == expected_condition
+  end
+
+  source_index = entry["source_index"]
+  unless source_index.is_a?(Hash)
+    errors << "#{path}.source_index 必须是 mapping"
+    next
+  end
+  %w[kind index_paths source_repository source_paths freshness_command].each do |key|
+    errors << "#{path}.source_index.#{key} 缺失" unless source_index.key?(key)
+  end
+  unless %w[backend-generated frontend-docs project-reference not-applicable].include?(source_index["kind"])
+    errors << "#{path}.source_index.kind 非法"
+  end
+  string_array(source_index["index_paths"], "#{path}.source_index.index_paths", errors)
+  string_array(source_index["source_paths"], "#{path}.source_index.source_paths", errors, allow_empty: true)
+  errors << "#{path}.source_index.freshness_command 必须非空" unless source_index["freshness_command"].is_a?(String) && !source_index["freshness_command"].empty?
+  Array(source_index["index_paths"]).each do |index_path|
+    next if index_path.start_with?("http://", "https://")
+    errors << "#{path}.source_index.index_paths 不存在: #{index_path}" unless relative_local_path?(index_path) && local_path_exists?(ROOT, index_path)
+  end
+  Array(source_index["source_paths"]).each do |source_path|
+    next if source_path.start_with?("http://", "https://")
+    errors << "#{path}.source_index.source_paths 必须是相对路径或 URL: #{source_path}" unless relative_local_path?(source_path)
+  end
+
+  if source_index["kind"] == "backend-generated" && external_source_root
+    unless external_source_root.directory?
+      errors << "YSS_SOURCE_ROOT 不存在: #{external_source_root}"
+    else
+      Array(source_index["source_paths"]).each do |source_path|
+        next if source_path.start_with?("http://", "https://")
+        errors << "#{path}.source_index.source_paths 不存在于 YSS_SOURCE_ROOT: #{source_path}" unless external_source_root.join(source_path).directory? || external_source_root.join(source_path).file?
+      end
+    end
+  end
+
+  if source_index["kind"] == "backend-generated"
+    errors << "#{path} backend-generated 必须声明 YSS_SOURCE_ROOT" unless source_index["source_repository"] == "yss-cloud-microservice" && source_index["source_root_env"] == "YSS_SOURCE_ROOT"
+  end
+  if source_index["kind"] == "frontend-docs"
+    errors << "#{path} frontend-docs 必须至少声明一个 HTTP 文档入口" unless source_index["source_paths"].any? { |source_path| source_path.start_with?("http://", "https://") }
+  end
+
+  if entry["category"] == "platform-frontend" && entry["availability"] == "codex-only"
+    errors << "#{path} platform-frontend 不得声明 backend-default: true" if entry["backend_default"] == true
+  end
+end
+
+profiles = catalog["profiles"]
+unless profiles.is_a?(Hash) && profiles.key?("backend-vertical-slice")
+  errors << "profiles.backend-vertical-slice 缺失"
+else
+  profile = profiles.fetch("backend-vertical-slice")
+  string_array(profile["required"], "profiles.backend-vertical-slice.required", errors)
+  string_array(profile["excluded_categories"], "profiles.backend-vertical-slice.excluded_categories", errors)
+  profile.fetch("required", []).each do |skill|
+    errors << "backend-vertical-slice 引用了未登记 skill #{skill}" unless known_dependencies.include?(skill)
+  end
+  profile.fetch("required", []).each do |skill|
+    next unless capabilities.key?(skill)
+    errors << "backend-vertical-slice 不得加载 platform-frontend skill #{skill}" if capabilities.fetch(skill)["category"] == "platform-frontend"
+  end
+end
+
+required_conditions = %w[components hooks form api]
+condition_vocabulary = catalog["condition_vocabulary"]
+unless condition_vocabulary.is_a?(Hash) && required_conditions.all? { |condition| condition_vocabulary[condition].is_a?(String) && !condition_vocabulary[condition].empty? }
+  errors << "condition_vocabulary 必须解释 components/hooks/form/api"
+end
+
+fail_with(errors)
+puts "YSS capability catalog 校验通过 (#{capabilities.length} 个 entrypoint)"
