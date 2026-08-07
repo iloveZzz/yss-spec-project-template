@@ -41,6 +41,15 @@ CLI 仓库至少补充以下集成场景：
 
 任一仓库未通过共同集成验证时，只能声明“本仓库实现完成，跨仓库发布受阻”，不得声明整体可发布。
 
+## 最新跨仓库检查点（2026-08-07）
+
+本轮 capability catalog 整合的 RED/GREEN 证据见 [`yss-capability-catalog-cli-integration-verification.md`](./yss-capability-catalog-cli-integration-verification.md)。当前开发组合为：Harness `codex/yss-skill-optimization@14fa487` 与 CLI `codex/yss-capability-catalog-cli-integration@97e3d06`。
+
+- CLI `npm test`：10/10 通过。
+- fresh 生成实例：`repository_mode: project-instance`、`skills-lock.json`、catalog、五类 projection 和六个核心 backend scaffold projection 均存在。
+- 生成实例的 `scripts/verify-template`、catalog、Router、lifecycle 门禁均通过。
+- CLI 分支尚未独立 review、合并或发布；合并后必须按确定 commit / tag 重跑共同验证。
+
 ## 当前责任边界
 
 - 本仓库负责：清单 schema、流程事实源、迁移指南、skills 投影与锁定、模板验证脚本。
