@@ -13,7 +13,7 @@ owner: ai
 
 | 影响面 | 仓库 / 分支 | 当前提交 | 状态 |
 |---|---|---|---|
-| Harness template-source | `iloveZzz/yss-spec-project-template` / `codex/yss-skill-optimization` | `cf65208` | 已推送，模板门禁通过 |
+| Harness template-source | `iloveZzz/yss-spec-project-template` / `codex/yss-skill-optimization` | `18dcbcf` | 已推送，模板门禁通过；验证内容来自 `cf65208` |
 | CLI 初始化与模板同步 | `iloveZzz/create-yss-spec` / `codex/yss-capability-catalog-cli-integration` | `7c68860` | 已推送，独立 review 通过 |
 | backend runtime | `modeling-yss` | 不适用 | 本轮未修改 |
 | frontend runtime | 不适用 | 不适用 | 本轮无 UI / frontend 影响 |

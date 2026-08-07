@@ -43,7 +43,7 @@ CLI 仓库至少补充以下集成场景：
 
 ## 最新跨仓库检查点（2026-08-07）
 
-本轮 capability catalog 整合的 RED/GREEN 证据见 [`yss-capability-catalog-cli-integration-verification.md`](./yss-capability-catalog-cli-integration-verification.md)。当前开发组合为：Harness `codex/yss-skill-optimization@cf65208` 与 CLI `codex/yss-capability-catalog-cli-integration@7c68860`。
+本轮 capability catalog 整合的 RED/GREEN 证据见 [`yss-capability-catalog-cli-integration-verification.md`](./yss-capability-catalog-cli-integration-verification.md)。当前开发组合为：Harness `codex/yss-skill-optimization@18dcbcf`（验证内容来自 `cf65208`）与 CLI `codex/yss-capability-catalog-cli-integration@7c68860`。
 
 - CLI `npm test`：13/13 通过。
 - fresh 生成实例：`repository_mode: project-instance`、`skills-lock.json`、catalog、五类 projection 和六个核心 backend scaffold projection 均存在。
