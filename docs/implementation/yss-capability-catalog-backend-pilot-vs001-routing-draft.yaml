@@ -1,0 +1,276 @@
+schema_version: 1
+contract_id: yss-capability-catalog-backend-pilot-vs001
+contract_version: 1
+slice_id: VS-001
+status: blocked
+
+# Router 草案：只描述当前可观察输入和阻断原因，不批准合同、不授予写权限。
+lifecycle_refs:
+  spec: docs/requirements/yss-capability-catalog-backend-pilot-spec.md#41
+  ticket: https://github.com/iloveZzz/yss-spec-project-template/issues/41
+  requirement_freeze: null
+  low_fidelity_review: not-applicable-no-ui-impact
+  high_fidelity_html: not-applicable-no-ui-impact
+  antd_cli_evidence: not-applicable-no-ui-impact
+  prototype_confirmation: not-applicable-no-ui-impact
+  openapi_freeze_or_no_impact: no-production-api-change-recorded-in-spec
+  architecture_review: pending-pilot-architecture-review
+  data_architecture: external-historical-vs001-data-architecture-requires-current-review
+  engineering_baseline: external-historical-vs001-engineering-baseline-requires-current-review
+  build_architecture_checklist: external-historical-vs001-checklist-requires-contract-recompile
+  implementation_repository: docs/implementation/yss-capability-catalog-backend-pilot-repo-registry.md
+  frontend_repository: not-applicable-backend-only-pilot
+  backend_repository: docs/implementation/yss-capability-catalog-backend-pilot-repo-registry.md
+  maven_wrapper: candidate-gap-wrapper-only-under-service-subdirectory
+
+readiness:
+  blockers:
+    - id: repository-identity-missing
+      reason: modeling-yss lacks yss-project.yaml; repository identity cannot be inferred.
+      destination: lifecycle-migration-check
+    - id: implementation-worktree-dirty
+      reason: candidate has 14 modified and 23 untracked Git status items.
+      destination: implementation-repo-isolated-clean-checkpoint
+    - id: implementation-boundary-unconfirmed
+      reason: backend runtime is nested in a repository that also carries Harness/product documents.
+      destination: implementation-repo-onboarding-human-review
+    - id: root-maven-wrapper-missing
+      reason: mvnw exists under apps/backend/asset-product-modeling-service, not repository root.
+      destination: implementation-routing-wrapper-decision
+    - id: lifecycle-approval-missing
+      reason: parent Spec is ready-for-human and no approved vertical-slice Ticket exists.
+      destination: yss-product-lifecycle
+    - id: current-slice-ticket-missing
+      reason: Issue #41 is a functional parent Spec Ticket, not a ready-for-agent slice Ticket.
+      destination: to-tickets-after-requirement-freeze
+    - id: historical-contract-stale
+      reason: historical VS-001 contract references retired yss-domain-modeling and must not be consumed.
+      destination: stage7-contract-recompile
+  stale_inputs:
+    - external-historical-vs001-backend-slice-contract
+    - external-historical-vs001-build-architecture-checklist
+  not_applicable:
+    - item: frontend-implementation
+      reason: current Pilot scope is backend-only and has no UI impact.
+    - item: production-api-change
+      reason: Pilot validates existing behavior and does not change the production API contract.
+    - item: high-fidelity-ui-prototype
+      reason: no UI impact.
+
+common:
+  impacted_areas: [backend, data, cross-repo]
+  required_skills:
+    - yss-product-lifecycle
+    - yss-router
+    - yss-backend-scaffold-parent
+    - domain-modeling
+    - yss-domain
+    - yss-backend-scaffold-domain
+    - yss-backend-scaffold-application
+    - yss-backend-scaffold-infrastructure
+    - yss-repository
+    - yss-backend-scaffold-web
+    - yss-web-controller
+    - yss-dto
+    - alibaba-java-code-style
+    - mapstruct
+    - lombok
+  optional_skills: []
+  unavailable_skills:
+    - skill: yss-domain-modeling
+      provider: retired-by-yss-capability-catalog
+      fallback: blocked
+      resolution: Do not consume the historical contract; lifecycle must approve a reroute using domain-modeling.
+  allowed_write_paths:
+    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-domain/src/**
+    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-application/src/**
+    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-infrastructure/src/**
+    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-adapter/asset-product-modeling-service-web/src/**
+    - /Users/zhudaoming/Projects/yss-spec-project-template/docs/implementation/**
+  forbidden_patterns:
+    - Do not write to modeling-yss until lifecycle approval and a clean isolated checkpoint exist.
+    - Do not consume or recreate retired yss-domain-modeling, yss-file, yss-quality or other retired entrypoints.
+    - Do not execute production DDL, migration, rollback SQL or direct user-triggered SQL.
+    - Do not replace mock permission / audit seams with real IAM or production audit adapters in this Pilot.
+    - Do not change the frozen API contract; any API change triggers contract review and reroute.
+    - Do not clean, reset, overwrite or commit the existing dirty worktree.
+  expected_evidence_files:
+    - docs/implementation/yss-capability-catalog-backend-pilot-repo-registry.md
+    - docs/implementation/yss-capability-catalog-backend-pilot-vs001-routing-draft.yaml
+    - external-vs001-backend-slice-contract-with-current-catalog
+    - external-vs001-build-architecture-checklist
+    - external-vs001-tdd-verification
+    - external-vs001-independent-review
+    - external-clean-checkpoint
+  verification_commands:
+    - scripts/verify-yss-capability-catalog
+    - scripts/verify-yss-router-scenarios
+    - scripts/verify-lifecycle-scenarios
+    - scripts/verify-template
+    - cd /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service && ./mvnw -q -DskipTests validate
+    - cd /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service && ./mvnw test -DfailIfNoTests=false
+  human_review_points:
+    - approve modeling-yss as the external implementation repository
+    - confirm project-instance identity and clean isolated checkpoint
+    - confirm wrapper boundary and backend implementation location
+    - confirm database, permission and audit seams remain deferred
+  full_reroute_triggers:
+    - api-schema-impact
+    - database-schema-impact
+    - permission-impact
+    - state-machine-impact
+    - data-model-impact
+    - new-write-path
+    - new-repository
+    - new-required-skill
+    - architecture-drift
+    - contract-violation
+    - test-seam-changed
+    - verification-command-changed
+    - delivery-order-changed
+
+frontend:
+  status: not-applicable
+  required_skills: []
+  approved_prototype_ref: not-applicable
+  state_matrix_ref: not-applicable
+  generated_api_client_ref: not-applicable
+  allowed_write_paths: []
+  component_test_seams: []
+  e2e_paths: []
+
+backend:
+  status: blocked
+  affected_layers: [domain, application, infrastructure, web]
+  required_skills:
+    - domain-modeling
+    - yss-domain
+    - yss-backend-scaffold-domain
+    - yss-backend-scaffold-application
+    - yss-repository
+    - yss-backend-scaffold-infrastructure
+    - yss-web-controller
+    - yss-dto
+    - yss-backend-scaffold-web
+    - mapstruct
+    - lombok
+    - alibaba-java-code-style
+  application_boundary: Product model query and draft creation use cases; Adapter DTOs must not cross into Application.
+  transaction_boundary: Application service owns the draft creation transaction; query path remains read-only.
+  persistence_strategy: Existing Gateway / Repository seam with PostgreSQL-oriented test evidence; no production migration execution in Pilot.
+  allowed_write_paths:
+    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-domain/src/**
+    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-application/src/**
+    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-infrastructure/src/**
+    - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-adapter/asset-product-modeling-service-web/src/**
+  forbidden_patterns:
+    - direct Adapter-to-Infrastructure dependency
+    - in-memory runtime Gateway replacement for the persisted behavior
+    - default collection initialization that changes YSS response semantics
+    - direct SQL or migration execution outside the approved seam
+    - real IAM / audit adapter integration during this Pilot
+  expected_evidence_files:
+    - external-vs001-domain-tests
+    - external-vs001-application-tests
+    - external-vs001-repository-tests
+    - external-vs001-web-contract-tests
+    - external-vs001-yss-compliance-tests
+    - external-vs001-fresh-verification
+  seam_deferred:
+    - risk: production database migration and rollback execution
+      owner: architecture-and-release-owner
+      follow_up_ticket: modeling-yss migration review / future release ticket
+      verification_plan: isolated target database execution after explicit release approval
+    - risk: real IAM / SSO role and action capability source
+      owner: security-owner
+      follow_up_ticket: modeling-yss security follow-up
+      verification_plan: fail-closed permission matrix and isolated integration verification
+    - risk: production audit adapter, retention and masking
+      owner: security-and-platform-owner
+      follow_up_ticket: modeling-yss audit integration ticket
+      verification_plan: approved system audit contract and redacted event verification
+  verification_commands:
+    - cd /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service && ./mvnw test -DfailIfNoTests=false
+    - cd /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service && ./mvnw -q -DskipTests validate
+
+contract:
+  api_impact: false
+  freeze_ref: null
+  no_api_impact_ref: docs/requirements/yss-capability-catalog-backend-pilot-spec.md#Implementation-Decisions
+  generated_clients: []
+  contract_tests:
+    - existing VS-001 Controller contract tests, to be rerun after current-catalog route approval
+  regeneration_commands: []
+
+cross_repo:
+  repositories:
+    - role: harness
+      repo: https://github.com/iloveZzz/yss-spec-project-template.git
+      ref: codex/yss-skill-optimization
+      status: active
+    - role: backend-implementation-candidate
+      repo: https://github.com/iloveZzz/modeling-yss.git
+      ref: dev
+      status: candidate-blocked
+  delivery_order:
+    - approve-spec-and-pilot-candidate
+    - establish-clean-implementation-checkpoint
+    - approve-lifecycle-and-router-contract
+    - implement-or-replay-vs001-in-isolated-slice-branch
+    - run-backend-fresh-verification
+    - independent-review
+    - integrate-and-retro
+  integration_verification:
+    - fresh-clone-create-yss-spec-project-instance-check
+    - scripts/verify-template
+    - scripts/verify-yss-capability-catalog
+    - scripts/verify-yss-router-scenarios
+    - scripts/verify-lifecycle-scenarios
+    - external-backend-root-wrapper-and-identity-check
+    - external-vs001-contract-and-mvnw-verification
+  rollback_order:
+    - stop-and-mark-contract-stale
+    - do-not-merge-or-push-external-implementation-change
+    - revert-only-approved-pilot-branch-commit
+    - preserve-existing-user-worktree-and-evidence
+    - update-harness-ticket-with-blocker-and-review-result
+
+work_units:
+  - id: vs001-model-query-and-draft-creation
+    behavior: Query the current project / product domain, page product models, create a product model draft, and return a conflict for duplicate creation.
+    primary_skill: yss-domain
+    supporting_skills:
+      - domain-modeling
+      - yss-backend-scaffold-domain
+      - yss-backend-scaffold-application
+      - yss-repository
+      - yss-backend-scaffold-infrastructure
+      - yss-web-controller
+      - yss-dto
+      - yss-backend-scaffold-web
+      - mapstruct
+      - lombok
+      - alibaba-java-code-style
+    tdd_mode: behavior-tdd
+    allowed_write_paths:
+      - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-domain/src/**
+      - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-application/src/**
+      - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-infrastructure/src/**
+      - /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service/asset-product-modeling-service-adapter/asset-product-modeling-service-web/src/**
+    expected_evidence:
+      - domain-behavior-tests
+      - application-behavior-tests
+      - repository-gateway-tests
+      - controller-contract-tests
+      - yss-web-compliance-tests
+      - independent-review
+    verification_commands:
+      - cd /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service && ./mvnw test -DfailIfNoTests=false
+      - cd /Users/zhudaoming/Projects/modeling-yss/apps/backend/asset-product-modeling-service && ./mvnw -q -DskipTests validate
+    controlled_generation:
+      exception_reason: not-applicable-behavior-tdd
+      generator: not-applicable
+      generator_inputs: []
+      expected_files: []
+      verification_commands: []
+      behavior_tests_after_generation: []
