@@ -17,6 +17,7 @@ required_files=(
   "scripts/sync-skills"
   "scripts/update-skill-lock"
   "scripts/verify-lifecycle-scenarios"
+  "scripts/verify-matt-yss-integration-scenarios"
 )
 
 required_skills=(
@@ -85,6 +86,7 @@ RUBY
 scripts/sync-skills --check
 scripts/update-skill-lock --check
 scripts/verify-lifecycle-scenarios
+ruby scripts/verify-matt-yss-integration-scenarios
 scripts/verify-yss-router-scenarios
 
 ruby <<'RUBY'
@@ -211,6 +213,7 @@ RUBY
 ruby -c scripts/sync-skills >/dev/null
 ruby -c scripts/update-skill-lock >/dev/null
 ruby -c scripts/verify-lifecycle-scenarios >/dev/null
+ruby -c scripts/verify-matt-yss-integration-scenarios >/dev/null
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   git diff --check
 else

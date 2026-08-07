@@ -1,0 +1,300 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "pathname"
+require "yaml"
+
+ROOT = Pathname.new(__dir__).join("..").realpath
+
+def read(root, relative_path)
+  root.join(relative_path).read
+end
+
+failures = []
+contract = YAML.safe_load(
+  read(ROOT, ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"),
+  permitted_classes: [],
+  aliases: false
+)
+
+def require_equal(failures, label, actual, expected)
+  failures << "#{label}: expected #{expected.inspect}, got #{actual.inspect}" unless actual == expected
+end
+
+def require_include(failures, label, values, expected)
+  failures << "#{label}: missing #{expected.inspect}" unless values.include?(expected)
+end
+
+def require_markers(failures, label, body, markers)
+  markers.each do |marker|
+    failures << "#{label}: missing marker #{marker.inspect}" unless body.include?(marker)
+  end
+end
+
+def preconditions_met?(definition, evidence)
+  definition.fetch("required", []).all? { |field| evidence.include?(field) }
+end
+
+def evidence_refs_resolvable?(root, result)
+  result.fetch("evidence_refs", []).all? do |ref|
+    ref.match?(%r{\Ahttps?://}) || root.join(ref).file?
+  end
+end
+
+def completed_result_allowed?(definition, result, root:)
+  definition["completed_requires_no_blocking_signals"] == true &&
+    result["result"] == "completed" &&
+    definition.fetch("required", []).all? { |field| result.key?(field) } &&
+    result.fetch("blocking_signals", []).empty? &&
+    definition.fetch("completed_requires_empty", []).all? { |field| result.fetch(field, []).empty? } &&
+    definition.fetch("completed_requires_non_empty", []).all? { |field| !result.fetch(field, []).empty? } &&
+    (!definition["completed_requires_readable_evidence_refs"] || evidence_refs_resolvable?(root, result))
+end
+
+def entry_decision(definition, repository_mode:, manifest_valid:, direct_matt:)
+  return definition.dig("invalid_manifest", "action") unless manifest_valid
+  return definition.dig("template_source", "route") if repository_mode == "template-source"
+  return definition.dig("direct_matt_entry", "delegate_to") if direct_matt
+
+  "lifecycle-entry"
+end
+
+def flow_allowed?(definition, repository_mode:, flow:)
+  return false if repository_mode == "template-source" && definition.dig("template_source", "forbidden_flows").include?(flow)
+
+  true
+end
+
+def flow_decision(definition, repository_mode:, flow:)
+  if repository_mode == "template-source" && definition.dig("template_source", "forbidden_flows").include?(flow)
+    return {
+      "result" => definition.dig("template_source", "on_forbidden_flow"),
+      "reason" => definition.dig("template_source", "block_reason")
+    }
+  end
+
+  {"result" => "allowed", "reason" => nil}
+end
+
+entry = contract.fetch("entry_routing", {})
+require_equal(failures, "entry manifest", entry["manifest"], "yss-project.yaml")
+require_equal(failures, "entry valid modes", entry["valid_modes"], %w[template-source project-instance])
+require_equal(
+  failures,
+  "direct Matt delegate",
+  entry.dig("direct_matt_entry", "delegate_to"),
+  "yss-product-lifecycle"
+)
+require_equal(
+  failures,
+  "invalid manifest action",
+  entry.dig("invalid_manifest", "action"),
+  "migration-check"
+)
+require_equal(
+  failures,
+  "template source route",
+  entry.dig("template_source", "route"),
+  "template-maintenance"
+)
+require_equal(
+  failures,
+  "template source direct Matt route",
+  entry_decision(entry, repository_mode: "template-source", manifest_valid: true, direct_matt: true),
+  "template-maintenance"
+)
+require_equal(
+  failures,
+  "project instance direct Matt route",
+  entry_decision(entry, repository_mode: "project-instance", manifest_valid: true, direct_matt: true),
+  "yss-product-lifecycle"
+)
+require_equal(
+  failures,
+  "invalid manifest route",
+  entry_decision(entry, repository_mode: nil, manifest_valid: false, direct_matt: true),
+  "migration-check"
+)
+%w[product-spec prototype openapi vertical-slice-tickets].each do |artifact|
+  require_include(
+    failures,
+    "template source forbidden artifacts",
+    entry.dig("template_source", "forbidden_artifacts") || [],
+    artifact
+  )
+end
+entry.dig("template_source", "forbidden_flows").each do |flow|
+  failures << "template-source 错误允许流程 #{flow}" if flow_allowed?(entry, repository_mode: "template-source", flow: flow)
+  failures << "project-instance 错误禁止流程 #{flow}" unless flow_allowed?(entry, repository_mode: "project-instance", flow: flow)
+  decision = flow_decision(entry, repository_mode: "template-source", flow: flow)
+  require_equal(failures, "template-source #{flow} block result", decision["result"], "blocked")
+  require_equal(failures, "template-source #{flow} block reason", decision["reason"], "template-source-product-artifact-forbidden")
+end
+
+result_contract = contract.fetch("matt_skill_result", {})
+require_equal(failures, "Matt result schema", result_contract["schema_version"], 1)
+%w[completed blocked needs-human failed].each do |result|
+  require_include(failures, "Matt result values", result_contract["result_values"] || [], result)
+end
+%w[result skill evidence_refs changed_artifacts new_impacts stale_candidates next_route blocking_signals].each do |field|
+  require_include(failures, "Matt result required fields", result_contract["required"] || [], field)
+end
+%w[drift new_impacts violation missing_evidence stale_candidates].each do |signal|
+  require_include(failures, "Matt result blocking signals", result_contract["blocking_signals"] || [], signal)
+end
+require_include(failures, "Matt result completed-empty fields", result_contract["completed_requires_empty"] || [], "new_impacts")
+require_include(failures, "Matt result completed-empty fields", result_contract["completed_requires_empty"] || [], "stale_candidates")
+require_include(failures, "Matt result completed-non-empty fields", result_contract["completed_requires_non_empty"] || [], "evidence_refs")
+{
+  "draft" => "completed",
+  "blocked" => "blocked",
+  "ready-for-lifecycle-review" => "needs-human"
+}.each do |router_status, result_status|
+  require_equal(
+    failures,
+    "Router 状态映射 #{router_status}",
+    result_contract.dig("router_status_mapping", router_status),
+    result_status
+  )
+end
+
+valid_result = result_contract.fetch("required", []).to_h do |field|
+  [field, field.end_with?("_refs") || field.end_with?("_artifacts") || field.end_with?("_candidates") || field == "new_impacts" || field == "blocking_signals" ? [] : nil]
+end.merge("result" => "completed", "blocking_signals" => [], "evidence_refs" => ["docs/process/yss-product-lifecycle-orchestrator-validation.md"])
+failures << "完整 Matt Result 未被接受" unless completed_result_allowed?(result_contract, valid_result, root: ROOT)
+%w[drift new_impacts violation missing_evidence stale_candidates].each do |signal|
+  candidate = valid_result.merge("blocking_signals" => [signal])
+  failures << "Matt Result 的 #{signal} 未阻断 completed" if completed_result_allowed?(result_contract, candidate, root: ROOT)
+end
+[
+  ["new_impacts", ["api-schema"]],
+  ["stale_candidates", ["openapi-draft"]]
+].each do |field, value|
+  candidate = valid_result.merge(field => value)
+  failures << "Matt Result 的 #{field} 未阻断 completed" if completed_result_allowed?(result_contract, candidate, root: ROOT)
+end
+empty_evidence_result = valid_result.merge("evidence_refs" => [])
+failures << "空 evidence_refs 未阻断 completed" if completed_result_allowed?(result_contract, empty_evidence_result, root: ROOT)
+unreadable_evidence_result = valid_result.merge("evidence_refs" => ["missing-evidence.md"])
+failures << "不可读取 evidence_refs 未阻断 completed" if completed_result_allowed?(result_contract, unreadable_evidence_result, root: ROOT)
+
+preconditions = contract.fetch("flow_preconditions", {})
+{
+  "to-spec" => %w[grill_exit no_unresolved_runnable_blocker],
+  "to-tickets" => %w[openapi_freeze_or_no_api_impact required_gates_satisfied vertical_slice_scope blocking_edges],
+  "implement" => %w[ready_for_agent slice_contract_approved slice_contract_persisted slice_contract_current_version build_architecture_checklist implementation_repo implementation_branch ci verification_commands rollback_point backend_slice_contract_if_applicable]
+}.each do |flow, required|
+  actual = preconditions.dig(flow, "required") || []
+  required.each { |field| require_include(failures, "#{flow} preconditions", actual, field) }
+  failures << "#{flow} 合格证据未被接受" unless preconditions_met?(preconditions.fetch(flow), required)
+  required.each do |field|
+    incomplete = required - [field]
+    failures << "#{flow} 缺失 #{field} 时未阻断" if preconditions_met?(preconditions.fetch(flow), incomplete)
+  end
+end
+ready_required = contract.dig("ready_for_agent", "required") || []
+(preconditions.dig("implement", "required") || []).reject { |field| field == "ready_for_agent" }.each do |field|
+  require_include(failures, "ready-for-agent 与 implement 前置条件", ready_required, field)
+end
+{
+  "to-spec" => %w[user_problem mvp_and_non_goals success_criteria test_seam terminology_review]
+}.each do |flow, required|
+  actual = preconditions.dig(flow, "evidence") || []
+  required.each { |field| require_include(failures, "#{flow} evidence", actual, field) }
+end
+require_equal(
+  failures,
+  "single-session implement guard",
+  preconditions.dig("implement", "applies_to_single_session"),
+  true
+)
+
+setup = contract.fetch("setup_readiness", {})
+require_equal(
+  failures,
+  "setup readiness states",
+  setup["states"],
+  %w[ready missing conflict degraded not-applicable]
+)
+%w[platform label_check domain_layout migration_ref].each do |field|
+  require_include(failures, "setup readiness evidence", setup["evidence"] || [], field)
+end
+require_equal(failures, "template setup action", setup.dig("template_source", "action"), "validate-only")
+{
+  "ready" => %w[tracker_compatible labels_verified domain_layout_verified],
+  "missing" => %w[required_configuration_absent],
+  "conflict" => %w[persistent_configuration_or_tracker_conflict],
+  "degraded" => %w[target_platform_unavailable],
+  "not-applicable" => %w[template_source_validate_only]
+}.each do |state, semantics|
+  actual = setup.dig("semantics", state) || []
+  semantics.each { |field| require_include(failures, "setup #{state} semantics", actual, field) }
+end
+
+phase_boundary = contract.fetch("phase_boundary", {})
+require_equal(
+  failures,
+  "phase-boundary precedence",
+  phase_boundary["precedence"],
+  %w[continue clear handoff subagent compact]
+)
+require_include(
+  failures,
+  "phase-boundary guard",
+  phase_boundary["invariants"] || [],
+  "does-not-force-clear"
+)
+
+%w[release retrospective].each do |work_unit|
+  require_include(
+    failures,
+    "lifecycle-owned work units",
+    contract["lifecycle_owned_work_units"] || [],
+    work_unit
+  )
+end
+{
+  "release" => %w[fresh_verification release_or_rollback_evidence independent_review],
+  "retrospective" => %w[fresh_verification retrospective_record governance_reflow_decision]
+}.each do |work_unit, required|
+  actual = contract.dig("lifecycle_work_unit_requirements", work_unit) || []
+  required.each { |field| require_include(failures, "#{work_unit} requirements", actual, field) }
+end
+
+adapter = read(ROOT, ".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md")
+require_markers(
+  failures,
+  "Matt/YSS adapter",
+  adapter,
+  [
+    "直接调用 `ask-matt`",
+    "template-source",
+    "Matt Skill Result",
+    "to-spec",
+    "to-tickets",
+    "Release",
+    "Retrospective"
+  ]
+)
+
+lifecycle_skill = read(ROOT, ".agents/skills/yss-product-lifecycle/SKILL.md")
+require_markers(
+  failures,
+  "lifecycle template-source guard",
+  lifecycle_skill,
+  ["template-source", "必须返回 `blocked`", "template-source-product-artifact-forbidden"]
+)
+orchestration = read(ROOT, ".agents/skills/yss-product-lifecycle/references/orchestration.md")
+require_markers(
+  failures,
+  "lifecycle Matt Result guard",
+  orchestration,
+  ["stale_candidates", "空 `evidence_refs`"]
+)
+
+if failures.empty?
+  puts "Matt/YSS 集成压力场景验证通过"
+else
+  warn failures.join("\n")
+  exit 1
+end

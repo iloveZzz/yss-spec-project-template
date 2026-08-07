@@ -6,7 +6,7 @@
 2. `setup readiness`：核对 tracker、五态标签和领域文档布局。
 3. 加载父 Ticket/checkpoint 与真实资产，计算最近可信阶段。
 4. 评估资产、门禁和 `stale`，选择第一个未阻塞工作单元。
-5. 调用一个最小 Matt/YSS 专项 skill，验收输出并回写状态与证据。
+5. 调用一个最小 Matt/YSS 专项 skill，将结果归一化为 `Matt Skill Result`，验收输出并回写状态与证据。
 6. 若仍在授权和自动推进边界内，回到第 3 步；否则暂停。
 
 不要仅输出下一个提示词后结束 `orchestrate`/`resume`。不要因进入业务代码阶段而退出主控；应把实现交给专项 skill，并在返回后继续核验。
@@ -36,6 +36,13 @@ Matt phase boundary 是工作阶段之间的上下文决策，不是新的生命
 真实 tracker 标签也必须检查；仅有 `docs/agents/triage-labels.md` 不代表远端标签存在。
 
 tracker 冲突按 `docs/agents/issue-tracker.md` 裁决：用户明确选择优先，其次是当前实现/管理仓库的主远端；凭据不可用时降级为本地待发布草案，不自动改投其他平台。恢复前记录最终平台、真实五态标签检查结果和待发布草案位置。
+
+## Matt flow 进入条件
+
+- `to-spec` 只能在 `grill-with-docs` 退出条件满足且没有未回流 runnable blocker 时进入；产物默认为 `ready-for-human`。
+- `to-tickets` 只能在 OpenAPI Freeze 或无 API 影响记录完成后进入，并且只能生成垂直切片 Ticket。
+- `implement` 无论是多会话还是单会话，都必须满足 `ready-for-agent` 公式、批准并持久化的 Slice Implementation Contract 和 Build Architecture Checklist。
+- Matt Result 出现 `drift`、`new_impacts`、`stale_candidates`、`violation`、`missing_evidence`、空 `evidence_refs` 或缺少必需字段时暂停当前工作单元。
 
 ## 必须暂停
 
@@ -67,3 +74,5 @@ Prototype 回流必须有可核验证据：来源 handoff、prototype 资产或�
 Matt `prototype` 的回流还必须注明 `prototype_branch`，并保留单文件 HTML 主来源；YSS 高保真 HTML 原型另走阶段 4 的评审、AntD CLI 校验和用户确认，不得用 throwaway prototype 替代。
 
 `to-questionnaire` 未收到答案时使用 `external-input-required` 暂停，记录问卷、接收人、所需输出和恢复路由；收到答案后记录 response、重新分类影响面和更新后的权威资产，再回到 `grill-with-docs` 或 `to-spec`。
+
+Release 与 Retrospective 属于生命周期编排器拥有的工作单元。发布和复盘前都必须重新取得 fresh verification；发布还需要发布/回滚证据和独立审查，复盘还需要复盘记录和治理回流判断，再回流权威资产。

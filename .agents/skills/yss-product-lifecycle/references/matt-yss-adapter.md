@@ -2,6 +2,13 @@
 
 Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 专项 skills 决定如何符合工程规范。
 
+## 入口与仓库身份裁决
+
+- 所有入口先读取 `yss-project.yaml`。缺失、解析失败、schema 不支持或 `repository_mode` 非法时，停止路由并进入 migration-check。
+- **直接调用 `ask-matt`** 时，它只能提供通用 Matt flow 导航；有效 YSS 仓库必须把最终阶段、影响面、门禁和状态裁决交回 `yss-product-lifecycle`。
+- `template-source` 只允许进入模板维护流程。命中 `to-spec`、`to-tickets`、`implement`、Release 或 Retrospective 时返回 `blocked`，原因是 `template-source-product-artifact-forbidden`；`ask-matt` 和 `setup-matt-pocock-skills` 都不得为具体产品生成 Spec、prototype、OpenAPI 或垂直切片 Ticket。
+- `project-instance` 才允许进入产品 Discovery → Spec → 设计 → 契约 → Ticket → 实现 → Release / Retrospective 链路。
+
 | 情形 | Matt flow | 生命周期验收 |
 |---|---|---|
 | 首次启用或配置缺失 | `setup-matt-pocock-skills` | 幂等核对 tracker、真实标签和领域布局；冲突时迁移而非覆盖 |
@@ -25,3 +32,49 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 尽量不修改 Matt skill 以复制 YSS 规则。只有它违反模板硬门禁时才做最小兼容修改。
 
 Router 只能返回 `draft`、`blocked` 或 `ready-for-lifecycle-review`，不得自行批准合同、设置 `ready-for-agent` 或宣布完成。`new_impacts`、`drift`、`violation`、越界路径或缺失实际验证会暂停当前工作单元，并由本编排器决定增量重路由、完整重路由或回到更早生命周期阶段。
+
+## Matt Skill Result
+
+Matt skill 的自然语言执行结果必须先归一化为 `Matt Skill Result`，再由生命周期编排器验收。结果至少包含：
+
+```yaml
+result: completed # completed / blocked / needs-human / failed
+skill: <skill-name>
+evidence_refs:
+  - docs/process/yss-product-lifecycle-orchestrator-validation.md
+changed_artifacts: []
+new_impacts: []
+stale_candidates: []
+next_route: <next-work-unit-or-null>
+blocking_signals: []
+```
+
+存在 `drift`、`new_impacts`、`violation`、`missing_evidence` 或 `stale_candidates`，以及证据缺失时，不得返回 `completed`；必须暂停并由编排器决定增量重路由、完整重路由或回到更早阶段。
+
+Router 状态映射为：`draft → completed`、`blocked → blocked`、`ready-for-lifecycle-review → needs-human`。这里的 `completed` 只表示 Matt 工作单元已产出可验收结果，不表示生命周期完成或可发布。
+
+`completed` 的 `evidence_refs` 至少包含一条可读取或可解析的证据引用；只有字段存在但为空，不能证明工作单元完成。
+
+## Matt flow 前置条件
+
+| Matt flow | 进入条件 | 生命周期结果 |
+|---|---|---|
+| `to-spec` | `grill-with-docs` 已满足退出条件，且不存在未回流的 runnable blocker；用户问题、MVP/非目标、成功标准、测试 seam 和术语审查均有证据 | Spec 初稿为 `ready-for-human`，不等于批准 |
+| `to-tickets` | OpenAPI Freeze 或 `no-api-impact` 记录、必要门禁、垂直切片范围和阻塞边均已明确 | 只能生成垂直切片 Ticket |
+| `implement` | `ready-for-agent` 公式、Contract 已批准/持久化/版本一致、Build Architecture Checklist、实现仓库/分支/CI/验证命令/回滚点，以及后端 Contract（适用时）均满足 | 单会话实现同样适用，不得绕过门禁 |
+
+## Setup readiness
+
+编排器先做幂等 readiness 检查，再决定是否调用 `setup-matt-pocock-skills`。检查结果只能是：
+
+`ready`、`missing`、`conflict`、`degraded`、`not-applicable`。
+
+证据必须覆盖实际 platform、五态 label_check、domain_layout 和 migration_ref。配置与主远端或真实标签冲突时不覆盖；目标平台暂不可用时保留本地待发布草案；`template-source` 只执行 validate-only，不初始化具体产品 tracker。
+
+## Phase boundary 优先级
+
+Matt 的上下文建议不能覆盖 YSS 的 phase-boundary 契约。固定按 `Continue → /clear → /handoff → subagent → /compact` 判断，`/clear` 不是每个 Ticket 的强制动作；任何选择都不得改变生命周期阶段、门禁或 Ticket 五态。
+
+## Release / Retrospective
+
+Release 和 Retrospective 是生命周期编排器拥有的工作单元，不由 `ask-matt` 的默认 `idea → ship` 流程隐式完成。进入发布或完成结论前必须重新取得 fresh verification、发布/回滚证据和独立审查结果；复盘同样必须有 fresh verification，再按模板治理规则回流 `AGENTS.md`、`CONTEXT.md`、ADR 或 Skill。

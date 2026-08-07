@@ -28,6 +28,8 @@ YSS 产品研发的全生命周期主控编排器。它决定阶段、条件门�
 ## 核心规则
 
 - 保留 8 个主阶段；21 个门禁全部按影响面条件强制。命中项必须达到 `approved`，未命中项记录 `not-applicable` 和原因。
+- 有效 `yss-project.yaml` 存在时，`ask-matt` 和 `setup-matt-pocock-skills` 只能作为子流程；最终入口、仓库身份和模式裁决归本编排器。
+- `template-source` 命中产品 flow 时必须返回 `blocked`（`template-source-product-artifact-forbidden`），不得继续到产品资产或 Ticket 生成。
 - 文件存在不等于就绪。按内容、审查结论和上游新鲜度评估资产。
 - 父 Ticket/checkpoint 的状态只是索引；与真实资产冲突时，以权威资产为准并修复索引。
 - 上游变化按依赖图精准传播 `stale`；不要无条件重跑完整阶段。
@@ -39,12 +41,13 @@ YSS 产品研发的全生命周期主控编排器。它决定阶段、条件门�
 - `to-questionnaire` 进入结构化 `external-input-required` 暂停；回答回流后必须重新分类影响面并更新权威资产，不能直接恢复下游实现。
 - `wait-what` 只重新解释当前结论，不改变阶段、门禁、Ticket 或 `ready-for-agent` 状态；`wizard` 只处理人工才能完成的步骤，默认临时使用，秘密值不得进入持久化输出。
 - Matt `prototype` 是保留在 `prototype/<name>` 分支的单文件可分享 HTML 主来源；YSS 高保真 HTML 原型仍必须经过 Prototype Review、AntD CLI 校验和用户确认，两者不得互相替代。
+- Matt skill 返回结果必须先归一化为 `Matt Skill Result`；`drift`、`new_impacts`、`violation`、`stale_candidates`、缺失证据或不完整结果不得推进为 `completed`。
 
 状态和依赖规则见 [state-model.md](references/state-model.md) 与 [artifact-dependencies.md](references/artifact-dependencies.md)；Matt/YSS 对应见 [matt-yss-adapter.md](references/matt-yss-adapter.md)。
 机器可执行的模式、readiness、Wayfinder、影响传播和回流字段见 [orchestration-contract.yaml](references/orchestration-contract.yaml)。说明文档与该契约冲突时必须暂停并修订权威资产，不得猜测。
 
 ## 输出
 
-始终输出：模式、当前阶段、影响面、证据、资产/门禁状态、阻塞项、本轮动作、下一工作单元、暂停或继续理由、Ticket 同步和 Git checkpoint 判断。
+始终输出：模式、当前阶段、影响面、证据、资产/门禁状态、阻塞项、本轮动作、下一工作单元、暂停或继续理由、Ticket 同步和 Git checkpoint 判断；调用 Matt skill 时追加 `Matt Skill Result`。
 
 暂停时只提出一个具体人工决策，并给出推荐答案与确认后的恢复动作。`audit`/`route` 不得写文件、Ticket、标签或 Git。

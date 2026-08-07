@@ -7,11 +7,72 @@ modes:
   orchestrate: bounded_write
   resume: rebuild_then_bounded_write
 
+# 有效的 YSS 仓库必须先由生命周期编排器接管入口；Matt flow 只负责选择工作方式。
+entry_routing:
+  manifest: yss-project.yaml
+  valid_modes: [template-source, project-instance]
+  invalid_manifest:
+    action: migration-check
+  direct_matt_entry:
+    delegate_to: yss-product-lifecycle
+    requires_valid_manifest: true
+  template_source:
+    route: template-maintenance
+    forbidden_artifacts: [product-spec, prototype, openapi, vertical-slice-tickets]
+    forbidden_flows: [to-spec, to-tickets, implement, release, retrospective]
+    on_forbidden_flow: blocked
+    block_reason: template-source-product-artifact-forbidden
+
+# Matt skill 的自然语言输出必须先归一化，再由生命周期编排器决定是否推进。
+matt_skill_result:
+  schema_version: 1
+  result_values: [completed, blocked, needs-human, failed]
+  required: [result, skill, evidence_refs, changed_artifacts, new_impacts, stale_candidates, next_route, blocking_signals]
+  blocking_signals: [drift, new_impacts, violation, missing_evidence, stale_candidates]
+  completed_requires_empty: [new_impacts, stale_candidates]
+  completed_requires_non_empty: [evidence_refs]
+  completed_requires_readable_evidence_refs: true
+  evidence_ref_validation: readable-or-resolvable
+  completed_requires_no_blocking_signals: true
+  router_status_mapping:
+    draft: completed
+    blocked: blocked
+    ready-for-lifecycle-review: needs-human
+
+flow_preconditions:
+  to-spec:
+    required: [grill_exit, no_unresolved_runnable_blocker]
+    evidence: [user_problem, mvp_and_non_goals, success_criteria, test_seam, terminology_review]
+    output_role: ready-for-human
+  to-tickets:
+    required: [openapi_freeze_or_no_api_impact, required_gates_satisfied, vertical_slice_scope, blocking_edges]
+    output: vertical-slice-tickets
+  implement:
+    required: [ready_for_agent, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, backend_slice_contract_if_applicable]
+    applies_to_single_session: true
+
+setup_readiness:
+  states: [ready, missing, conflict, degraded, not-applicable]
+  evidence: [platform, label_check, domain_layout, migration_ref]
+  semantics:
+    ready: [tracker_compatible, labels_verified, domain_layout_verified]
+    missing: [required_configuration_absent]
+    conflict: [persistent_configuration_or_tracker_conflict]
+    degraded: [target_platform_unavailable]
+    not-applicable: [template_source_validate_only]
+  template_source:
+    action: validate-only
+
+lifecycle_owned_work_units: [release, retrospective]
+lifecycle_work_unit_requirements:
+  release: [fresh_verification, release_or_rollback_evidence, independent_review]
+  retrospective: [fresh_verification, retrospective_record, governance_reflow_decision]
+
 wayfinder_completion:
   required: [no_open_children, no_open_blocked_or_claimed_children, no_fog, destination_clear]
 
 ready_for_agent:
-  required: [gates_satisfied, no_stale_artifacts, blockers_closed, implementation_context_ready, slice_contract_approved, slice_contract_persisted, slice_contract_current_version]
+  required: [gates_satisfied, no_stale_artifacts, blockers_closed, implementation_context_ready, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, backend_slice_contract_if_applicable]
 
 unknown_impact:
   action: pause
@@ -120,6 +181,8 @@ prototype_return_evidence:
 # alter a gate, or mutate a Ticket role.
 phase_boundary:
   choices: [continue, clear, handoff, subagent, compact]
+  precedence: [continue, clear, handoff, subagent, compact]
+  invariants: [does-not-force-clear, preserves-lifecycle-state]
   evidence:
     required: [decision, reason]
     conditional:
