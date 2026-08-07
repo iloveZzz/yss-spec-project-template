@@ -14,7 +14,7 @@ owner: ai
 | 影响面 | 仓库 / 分支 | 当前提交 | 状态 |
 |---|---|---|---|
 | Harness template-source | `iloveZzz/yss-spec-project-template` / `codex/yss-skill-optimization` | `14fa487` | 已推送，模板门禁通过 |
-| CLI 初始化与模板同步 | `iloveZzz/create-yss-spec` / `codex/yss-capability-catalog-cli-integration` | `97e3d06` | 已推送，等待独立 review |
+| CLI 初始化与模板同步 | `iloveZzz/create-yss-spec` / `codex/yss-capability-catalog-cli-integration` | `7c68860` | 已推送，独立 review 通过 |
 | backend runtime | `modeling-yss` | 不适用 | 本轮未修改 |
 | frontend runtime | 不适用 | 不适用 | 本轮无 UI / frontend 影响 |
 
@@ -32,12 +32,15 @@ RED 结论：旧 CLI 可以生成目录，但不能同时满足仓库身份契�
 
 ## 3. GREEN 修复
 
-CLI `97e3d06` 包含以下最小修复：
+CLI `7c68860` 包含以下最小修复：
 
 - `src/cli.js` 在渲染根目录 `yss-project.yaml` 时，将模板源身份转换为 `project-instance`；若模板未声明 `template-source` 则 fail closed。
 - `template.manifest.json` 将 `yss-project.yaml` 纳入渲染路径。
 - `scripts/sync-template.js` 展开仓库内部的 directory symlink projection，复制其对应的受 Git 跟踪文件；拒绝指向仓库外的模板投影链接。
-- `tests/init-cli.test.js` 更新当前 Spec / `.agents` 路径，并覆盖五类 projection root 的六个核心 backend scaffold skill。
+- 初始化完成前执行 `scripts/sync-skills --check`、`scripts/update-skill-lock --check` 和 `scripts/verify-template`；身份和门禁失败时 fail closed。
+- 模板同步先构建同文件系统 staging snapshot，再进行可恢复替换；复制失败不会删除既有 bundle，也不会读取仓库外 symlink 目标。
+- `tests/init-cli.test.js` 更新当前 Spec / `.agents` 路径，并覆盖五类 projection root 的六个核心 backend scaffold skill、旧入口迁移和可选示例文档链接。
+- `tests/sync-template.test.js` 覆盖内部 projection 展开与外部 symlink 拒绝 / 旧 snapshot 保留。
 
 ## 4. Fresh verification
 
@@ -49,7 +52,7 @@ CLI `97e3d06` 包含以下最小修复：
 YSS_SPEC_TEMPLATE_REF=codex/yss-skill-optimization npm test
 ```
 
-结果：`10 passed, 0 failed`。
+结果：`13 passed, 0 failed`。
 
 ### 生成实例
 
@@ -60,7 +63,7 @@ node bin/create-yss-spec.js \
   --project-name 'Generated Pilot Green' \
   --business-domain 'YSS Backend' \
   --team-size 8 \
-  --target-dir /tmp/create-yss-spec-pilot-green.06XNJu/generated-project
+  --target-dir /tmp/create-yss-spec-pilot-review-green.kbWUwC/generated-project
 ```
 
 实例检查结果：
@@ -93,16 +96,16 @@ scripts/verify-lifecycle-scenarios
 |---|---|
 | template_ref_for_test | `codex/yss-skill-optimization` |
 | harness_commit_for_test | `14fa487` |
-| cli_commit_for_test | `97e3d06` |
+| cli_commit_for_test | `7c68860` |
 | backend_change | `not-applicable`；不修改原始 dirty `modeling-yss`，不修改 Pilot runtime |
 | frontend_change | `not-applicable` |
 | API / OpenAPI change | `not-applicable` |
 | release / rollback | 未发布；合并前以分支回退或不纳入发行物为回滚方式 |
-| independent_review | pending；CLI 实现者不得自行完成最终审查 |
+| independent_review | Standards：PASS；Spec：两个 P2 已闭合；CLI 实现者未担任最终审查 |
 
 ## 6. 未解除的阻断项
 
-1. CLI 分支尚未建立并通过独立 review 的 GitHub PR。
+1. CLI 分支尚未建立并通过独立 review 的 GitHub PR；当前提交本身已完成独立 review，PR 流程仍未建立。
 2. Harness 与 CLI 尚未绑定合并后的确定 commit / tag 重跑共同验证。
 3. npm 发布尚未授权，也未执行。
 4. Issue #41 仍是 `ready-for-human`；VS-001 仍是 Router `blocked`，没有获得生命周期批准、当前 catalog 合同和 `ready-for-agent` 状态。
