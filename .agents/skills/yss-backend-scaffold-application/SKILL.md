@@ -46,9 +46,9 @@ com.yss.{module}.core
 - **业务异常**: 使用 `ExceptionFactory.bizException(...)` 或项目已批准的 `BizException` 错误码。
 - **已知系统异常**: 使用 `ExceptionFactory.sysException(...)` 并保留 cause；未知异常交由全局处理器兜底，不在 Application 吞并或改写。
 
-## 4. Legacy 参考案例
+## 4. Legacy 参考形状（不可复制）
 
-以下 `QualityTemplate*` 代码只展示现有 `core/service` 风格，不定义新模块的包名、接口或返回模型。新 DDD profile 必须由批准合同生成中性 Application 接口，不能复制该历史样例的 DTO/VO Gateway 泄漏。
+以下 `QualityTemplate*` 代码只是说明 legacy `core/service` 形状的占位示例，不是当前参考源码中已验证存在的通用模块，也不定义新模块的包名、接口或返回模型。新 DDD profile 必须由批准合同生成中性 Application 接口，不能复制这些名称或 DTO/VO Gateway 泄漏。
 
 ### 4.1 Application Service Implementation
 

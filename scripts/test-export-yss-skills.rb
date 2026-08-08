@@ -105,4 +105,24 @@ class ExportYssSkillsTest < Minitest::Test
       assert_includes check_stderr, "forbidden project file"
     end
   end
+
+  def test_preserves_executable_source_index_paths
+    Dir.mktmpdir("yss-export-test-") do |directory|
+      output = Pathname.new(directory)
+      stdout, stderr, result = run_export(output)
+      assert result.success?, "#{stdout}\n#{stderr}"
+
+      source_index = Dir.glob(output.join("skills", "yss-source-index", "**", "*").to_s)
+        .select { |path| File.file?(path) }
+        .map { |path| File.binread(path).force_encoding(Encoding::UTF_8) }
+        .select(&:valid_encoding?)
+        .join("\n")
+
+      refute_includes source_index, "/absolute./path"
+      refute_includes source_index, "YSS_SKILLS_ROOT=$YSS_SKILLS_ROOT"
+      refute_match(/YSS_SKILLS_ROOT=(?:[\"']?)\$YSS_SKILLS_ROOT/, source_index)
+      assert_includes source_index, 'export YSS_SKILLS_ROOT="./path/to/yss-skills"'
+      assert_includes source_index, "YSS_SOURCE_ROOT=/absolute/path/to/yss-cloud-microservice"
+    end
+  end
 end

@@ -28,6 +28,7 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 ## Current Source Behavior
 
 - `GlobalExceptionAdvice` currently maps BizException, unknown Exception, and RuntimeException to HTTP 400; the OpenAPI error contract must reflect or deliberately override that behavior.
+- The current RuntimeException handler returns `exception.getLocalizedMessage()` for many runtime failures; treat that as a response-information-leak risk and do not copy it into new APIs without an approved, sanitized error mapping.
 - `yss.exception.level` only controls a direct `printStackTrace()` branch when its value is exactly `debug`; it is not a general response-format switch.
 - Validation binding failures currently become `SysException(PARAM_VALIDATION_ERROR)`. Coordinate changes with `yss-validation` and contract tests.
 
@@ -41,6 +42,7 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 
 - Required dependency or starter module is present.
 - Error code/message are meaningful to API consumers.
+- Response messages are sanitized and do not expose raw RuntimeException or localized exception details.
 - Business validation failures are not reported as unknown system errors.
 - Stack traces are preserved for unknown/system failures.
 - Retry guidance matches exception type.

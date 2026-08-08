@@ -15,4 +15,4 @@ YSS skill references may mention paths such as `yss-microservice-components/yss-
 - Say "source path hints" instead of "source root" unless you have verified the directory in the current environment.
 - Keep generated indexes useful for search, but do not require agents to open those exact paths.
 - Prefer symbols, package names, Maven artifact names, and annotations in instructions; they survive repository relocation better than absolute paths.
-- When refreshing indexes, set `YSS_SOURCE_ROOT=/absolute/path/to/yss-cloud-microservice` if auto-detection cannot find the component repository.
+- When refreshing indexes, export `YSS_SOURCE_ROOT=/absolute/path/to/yss-cloud-microservice` if auto-detection cannot find the component repository.

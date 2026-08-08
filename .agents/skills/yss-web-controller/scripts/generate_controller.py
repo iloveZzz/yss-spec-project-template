@@ -220,7 +220,7 @@ def main():
         dto_imports = "\n".join([
             f"import {args.base_package}.client.dto.cmd.{domain_class}AddCmd;",
             f"import {args.base_package}.client.dto.cmd.{domain_class}UpdateCmd;",
-            f"import {args.base_package}.client.dto.query.{domain_class}Page;",
+            f"import {args.base_package}.client.dto.query.{domain_class}PageQuery;",
             f"import {args.base_package}.client.vo.{domain_class}VO;"
         ])
         application_service_field = (

@@ -35,6 +35,7 @@ description: Use when YSS `AuditLog`, `EnableAuditLog`, audit SpEL summaries, as
 - 目标方法是否是可被 AOP 代理拦截的 Spring Bean 方法。
 - `@AuditLog` 是否标在正确的方法上。
 - `summary` 中的 SpEL 变量必须使用源码实际暴露的 context keys (`参数审计` / `结果审计`)；方法参数名不会自动进入 context。
+- 当前源码的变量正则只接受 ASCII 字母、数字、下划线和路径符号，不能可靠识别中文 context key；涉及 `#{参数审计...}` / `#{结果审计...}` 时先标记 `blocked`，除非组件修复并有表达式测试，不要声称摘要会被解析。
 - 项目编译参数是否保留了参数名。
 - `yss.audit.enabled` 是否开启；`sendSysManageEnabled` 与 `auditLogPrintEnabled` 在当前实现中不会自动阻止订阅器注册，需按源码验证，不能假设开关生效。
 

@@ -58,6 +58,8 @@ class GenerateControllerTest(unittest.TestCase):
         self.assertIn("private final QualityRuleService qualityRuleService;", controller)
         self.assertNotIn("Gateway", controller)
         self.assertIn("@Valid @RequestBody QualityRuleAddCmd", controller)
+        self.assertIn("import com.yss.demo.client.dto.query.QualityRulePageQuery;", controller)
+        self.assertNotIn("import com.yss.demo.client.dto.query.QualityRulePage;", controller)
         self.assertIn("import jakarta.validation.Valid;", controller)
         self.assertIn("class QualityRulePageQuery extends PageQuery", query)
 

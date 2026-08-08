@@ -57,3 +57,27 @@ uv run --with pyyaml python .../skill-creator/scripts/quick_validate.py <skill>
 独立 Reviewer 基于已读取的仓库状态与 diff stat 审查后，结论为“未发现可确认的 P0-P3 finding”。Reviewer 同时指出其未逐项内容级核验 Controller 生成器、Router `component_impacts`、source-index freshness 和投影测试，因此保留残余风险。
 
 上述残余项已有本轮 fresh 自动化证据覆盖：Controller 生成器 smoke test、Router 场景验证、source-index commit/worktree freshness gate、共享投影与 lock 一致性检查、`scripts/verify-template` 全量门禁均通过。独立审查受本地 Codex CLI 插件认证和模型缓存告警影响，审查深度有限；发布前仍建议保留人工内容级 checkpoint。
+
+## 本轮增量 RED / GREEN / REFACTOR（公开发布与生成器）
+
+### RED
+
+- `scripts/test-export-yss-skills.rb` 新增路径语义回归断言；基线导出复现了 `/absolute./path` 和 `YSS_SKILLS_ROOT=$YSS_SKILLS_ROOT`。
+- 加入带引号的 `export YSS_SKILLS_ROOT="$YSS_SKILLS_ROOT"` 变体后再次复现同一问题，确认回归测试覆盖了 CLI 文档的实际写法。
+- `yss-web-controller` 生成器测试新增 Controller 查询 DTO 导入断言；基线复现了导入不存在的 `*Page` 而实际文件为 `*PageQuery`。
+- `yss-source-index` 未设置 `YSS_SKILLS_ROOT` 时的刷新基线把索引写进 `yss-source-index/yss-*`，并触发投影漂移。
+
+### GREEN
+
+- 导出器只转换独立的 `/path/` 占位符，不再改写 `/absolute/path/...`；刷新示例改为独立 `export` 变量。
+- Controller 生成器导入 `${Domain}PageQuery`，新增回归测试通过。
+- 源码索引默认根修正为共享 `.agents/skills`；以未设置环境变量的命令刷新 17 个后端索引，当前源码 HEAD 记录为 `a34644e2dfc4eb2bfa2b0a1c69dc6b61cc98539a`，工作树状态如实记录为 `dirty`。
+- `yss-audit-log`、`yss-security-algorithm`、`yss-exception` 和 Application skill 增加当前源码缺陷的阻断 / 警告边界。
+
+### REFACTOR / Fresh Verification
+
+- 已执行 `ruby scripts/test-export-yss-skills.rb`：5 runs, 69 assertions, 0 failures。
+- 已执行 `python3 .agents/skills/yss-web-controller/scripts/test_generate_controller.py`：1 test, OK。
+- 已执行 `scripts/sync-skills`、`scripts/update-skill-lock` 和 `scripts/verify-template`：投影、锁文件、生命周期压力场景、Router/UI 场景及模板发布校验均通过。
+- 已执行公开仓库 `scripts/export-yss-skills --check`、`npx --yes skills@latest add . --list` 和 `git diff --check`；公开仓库发现 46 个技能且无导出漂移。
+- 公开 README 说明了 `skills@latest` 的单 Agent 自动检测、`--agent codex` 和 `--all` 的差异；`--agent '*'` 不再被描述为“检测到的 Agent”。

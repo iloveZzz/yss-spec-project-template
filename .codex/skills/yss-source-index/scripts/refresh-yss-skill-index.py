@@ -6,7 +6,7 @@ import os
 import subprocess
 from pathlib import Path
 
-DEFAULT_SKILLS_ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_SKILLS_ROOT = Path(__file__).resolve().parents[2]
 SKILLS_ROOT = Path(os.environ.get("YSS_SKILLS_ROOT", str(DEFAULT_SKILLS_ROOT))).expanduser()
 
 BACKEND_SKILLS = {
@@ -209,7 +209,7 @@ def resolve_source_root() -> Path:
 
     raise SystemExit(
         "Could not find a YSS source repository containing `yss-microservice-components`. "
-        "Set YSS_SOURCE_ROOT=/absolute/path/to/yss-cloud-microservice and rerun."
+        "Export YSS_SOURCE_ROOT=/absolute/path/to/yss-cloud-microservice and rerun."
     )
 
 

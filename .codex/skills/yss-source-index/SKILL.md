@@ -22,9 +22,9 @@ Use this maintenance skill to keep YSS skills grounded in current source and doc
 Run:
 
 ```bash
-YSS_SKILLS_ROOT=/path/to/.agents/skills \
-YSS_SOURCE_ROOT=/path/to/yss-cloud-microservice \
-python3 /path/to/.agents/skills/yss-source-index/scripts/refresh-yss-skill-index.py
+export YSS_SKILLS_ROOT="/path/to/.agents/skills"
+export YSS_SOURCE_ROOT="/path/to/yss-cloud-microservice"
+python3 "$YSS_SKILLS_ROOT/yss-source-index/scripts/refresh-yss-skill-index.py"
 ```
 
 Backend-only refreshes may set `YSS_REFRESH_FRONTEND=false` to avoid unrelated frontend timestamp churn.

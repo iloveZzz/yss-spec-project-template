@@ -84,11 +84,18 @@ def sanitize_text(text, relative_file)
   end
 
   # Convert source-tree paths to links in the public `skills/` layout.
+  # Protect an explicit skills-root assignment from the generic source-path
+  # and Agent-root rewrites below, then restore it as a relative placeholder.
+  text = text.gsub(%r{(YSS_SKILLS_ROOT\s*=\s*[\"']?)/path/to/\.agents/skills}) do
+    "#{Regexp.last_match(1)}__YSS_SKILLS_ROOT_PATH__"
+  end
   text = text.gsub(%r{/path/to/\.agents/skills}) { "$YSS_SKILLS_ROOT" }
   text = text.gsub(%r{(?:\$\{base_project\}/)?(?:/path/to/)?\.(?:agents|claude|codex|hermes|pi|qoder|trae)/skills/}) { portable_skill_path(relative_file) }
   text = text.gsub(%r{\.(?:agents|claude|codex|hermes|pi|qoder|trae)/skills\b}) { "the canonical public skill source" }
   text = text.gsub(%r{/path/to/skill-creator}) { "skill-creator" }
-  text = text.gsub(%r{/path/}) { "./path/" }
+  # Make standalone placeholder paths portable without corrupting paths such
+  # as `/absolute/path/...`, where `/path/` is only a later path segment.
+  text = text.gsub(%r{(?<![\w.])/path/}) { "./path/" }
 
   # Remove workstation-only paths and private-network documentation endpoints.
   text = text.gsub(%r{/(?:Users|home|private)/[^\s`"'()<>\]]+}) { "<local-path-removed>" }
@@ -124,6 +131,7 @@ def sanitize_text(text, relative_file)
   # Public examples must not carry usable passwords or token-like values.
   text = text.gsub(/((?:["']?(?:password|passwd|secret|token|api[_-]?key|access[_-]?key)["']?\s*[:=]\s*["']))[^"'\r\n]*(["'])/i) { "#{$1}CHANGE_ME#{$2}" }
   text = text.gsub(/(["'])(?:admin123|guest|123456)\1/i) { "#{$1}CHANGE_ME#{$1}" }
+  text = text.gsub("__YSS_SKILLS_ROOT_PATH__", "./path/to/yss-skills")
 
   if relative_file.end_with?("SKILL.md") && !text.include?("消费项目上下文")
     frontmatter = /\A---[ \t]*\r?\n.*?\r?\n---[ \t]*(?:\r?\n|\z)/m.match(text)
