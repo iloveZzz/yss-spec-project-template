@@ -779,6 +779,18 @@ settings_document = REXML::Document.new(settings_path.read)
   failures << "Maven settings credential variables invalid: #{xpath}" if values.empty? || values.any? { |value| value != expected }
 end
 
+scaffold_pom_template = ROOT.join(".agents/skills/yss-ddd-scaffold-generator/assets/templates/pom/bootstrap-pom.xml.template")
+scaffold_pom_body = scaffold_pom_template.read
+smart_doc_plugin_versions = scaffold_pom_body.scan(/<artifactId>smart-doc-maven-plugin<\/artifactId>\s*<version>([^<]+)<\/version>/).flatten
+failures << "smart-doc Maven plugin version must be fixed at yss-4.0.0" unless smart_doc_plugin_versions == ["yss-4.0.0"]
+smart_doc_template = ROOT.join(".agents/skills/yss-ddd-scaffold-generator/assets/templates/config/smart-doc.json.template")
+smart_doc_body = smart_doc_template.file? ? smart_doc_template.read : ""
+%w[allInOne outPath packageFilters componentType].each do |marker|
+  failures << "smart-doc template missing #{marker}" unless smart_doc_body.include?("\"#{marker}\"")
+end
+failures << "smart-doc packageFilters must use the supported single-star regex" unless smart_doc_body.include?("\"packageFilters\": \"{{base_package}}.*\"")
+failures << "smart-doc template contains environment secret settings" if smart_doc_body.match?(/appToken|openUrl|debugEnvUrl|serverUrl/)
+
 %w[
   yss-domain/SKILL.md
   yss-repository/SKILL.md

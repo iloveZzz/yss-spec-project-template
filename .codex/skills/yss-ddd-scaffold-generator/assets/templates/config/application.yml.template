@@ -8,8 +8,8 @@ spring:
   datasource:
     primary:
       url: {{jdbc_url}}
-      username: {{db_username}}
-      password: {{db_password}}
+      username: ${DB_USERNAME:}
+      password: ${DB_PASSWORD:}
       driver-class-name: {{driver_class}}
       hikari:
         maximum-pool-size: 20

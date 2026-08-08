@@ -9,10 +9,11 @@
 cd yss-datamiddle-scaffold
 
 # 生成项目
-python .trae/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.py \
+python3 .agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.py \
   --project-name user-service \
   --base-package com.yss.user \
-  --output-dir ./output
+  --output-dir /path/to/implementation-repo \
+  --database mysql
 ```
 
 ### 1.2 生成的项目结构

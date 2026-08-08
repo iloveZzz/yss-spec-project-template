@@ -35,9 +35,11 @@ For design-time contract review, use `yss-openapi-draft-review`. For a stronger 
    - Search the repository for `smart-doc-maven-plugin`, `configFile`, `outPath`, and `smart-doc.json`.
    - Confirm which module contains the controllers/DTOs being changed and which plugin execution includes them.
    - Read the smart-doc config instead of assuming a directory. Its `outPath` determines where the generated OpenAPI JSON is emitted.
+   - For a newly generated YSS scaffold, use the generated `bootstrap/src/main/resources/smart-doc.json` as the baseline and replace `packageFilters` with the actual controller package if needed.
 
 2. Generate the backend OpenAPI contract from the repository root.
-   - Use the exact Maven wrapper, profiles, module selector, and plugin version already used by the repository.
+   - Use the exact Maven wrapper, profiles, and module selector already used by the repository.
+   - The YSS `smart-doc-maven-plugin` version is fixed at `yss-4.0.0`; verify the selected POM declares `<version>yss-4.0.0</version>` before generation.
    - Prefer the repo's documented generation command if one exists in scripts, docs, CI, or previous command history.
    - Do not add IntelliJ-specific listener or `-Didea.*` parameters.
 
@@ -75,6 +77,8 @@ pnpm <api-generation-script>
 ## How It Works
 
 - `smart-doc-maven-plugin` scans Java controller methods, request/response DTOs, annotations, comments, and configured dependency source jars. It emits an OpenAPI contract under the configured `outPath`.
+- The YSS baseline config uses `allInOne: true`, `outPath: "target/openapi"`, a service package filter, `componentType: "NORMAL"`, and disables debug pages and request/response examples by default.
+- Do not copy environment-specific `serverUrl`, `debugEnvUrl`, `openUrl`, Torna `appToken`, or project-specific `revisionLogs` into a reusable scaffold.
 - The backend module is the source of truth for routes, HTTP verbs, DTO field names, enum descriptions, binary responses, multipart inputs, and operation IDs.
 - The frontend `orval.config.*` determines which OpenAPI input file is read and where TypeScript schema types plus client functions are generated.
 - Local cleanup, export-flattening, or formatting scripts may post-process generated files. Use them only when they are part of the repository's generation script.

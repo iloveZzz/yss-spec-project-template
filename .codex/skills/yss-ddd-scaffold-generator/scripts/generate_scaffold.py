@@ -8,23 +8,26 @@ YSS DDD 脚手架生成器
 import os
 import sys
 import argparse
+import json
 from pathlib import Path
 from typing import Dict, List
 import re
 import shutil
 import sqlite3
+import tempfile
 from datetime import datetime
 
 class ScaffoldGenerator:
     """脚手架生成器主类"""
 
     def __init__(self, project_name: str, base_package: str, output_dir: str,
-                 with_example: bool = True, database: str = 'sqlite'):
+                 with_example: bool = False, database: str = 'mysql', force: bool = False):
         self.project_name = project_name
         self.base_package = base_package
         self.output_dir = Path(output_dir)
         self.with_example = with_example
         self.database = database
+        self.force = force
         self.template_root = Path(__file__).resolve().parents[1] / "assets" / "templates"
         self.config_template_dir = self.template_root / "config"
         self.pom_template_dir = self.template_root / "pom"
@@ -34,8 +37,9 @@ class ScaffoldGenerator:
         # 转换包名为路径
         self.package_path = base_package.replace('.', '/')
 
-        # 项目根目录
-        self.project_root = self.output_dir / project_name
+        # 最终项目根目录；生成期间 project_root 会指向 staging 目录
+        self.final_project_root = self.output_dir / project_name
+        self.project_root = self.final_project_root
 
         self.author = os.getenv("USER", "yss-team")
         self.date = datetime.now().strftime("%Y-%m-%d")
@@ -44,46 +48,97 @@ class ScaffoldGenerator:
         self.db_name = self.project_name.replace("-", "_")
         self.driver_class = self._resolve_driver_class(self.database)
         self.jdbc_url = self._resolve_jdbc_url(self.database, self.db_name)
-        self.db_username = "root" if self.database == "mysql" else ""
-        self.db_password = "root" if self.database == "mysql" else ""
         self.db_dependency = self._resolve_db_dependency(self.database)
 
     def generate(self):
         """生成完整的脚手架项目"""
-        print(f"🚀 开始生成项目: {self.project_name}")
-        print(f"📦 基础包名: {self.base_package}")
-        print(f"📁 输出目录: {self.output_dir}")
-        print()
+        if self.final_project_root.exists() and not self.force:
+            raise FileExistsError(
+                f"输出目录已存在: {self.final_project_root}；如确认覆盖，请显式传入 --force"
+            )
 
-        # 创建项目结构
-        self._create_project_structure()
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+        staging_root = Path(tempfile.mkdtemp(prefix=f".{self.project_name}.staging-", dir=self.output_dir))
+        self.project_root = staging_root / self.project_name
 
-        # 生成 POM 文件
-        self._generate_pom_files()
+        try:
+            print(f"🚀 开始生成项目: {self.project_name}")
+            print(f"📦 基础包名: {self.base_package}")
+            print(f"📁 输出目录: {self.output_dir}")
+            print()
 
-        # 生成配置文件
-        self._generate_config_files()
+            # 创建项目结构
+            self._create_project_structure()
 
-        # 生成示例代码
-        if self.with_example:
-            self._generate_example_code()
+            # 生成 POM 文件
+            self._generate_pom_files()
 
-        # 生成数据库脚本
-        self._generate_database_scripts()
+            # 生成配置文件
+            self._generate_config_files()
 
-        # 生成文档
-        self._generate_documentation()
+            # 生成示例代码
+            if self.with_example:
+                self._generate_example_code()
 
-        self._copy_wrapper_files()
+            # 生成数据库脚本
+            self._generate_database_scripts()
 
-        print()
-        print("✅ 项目生成完成!")
-        print(f"📂 项目位置: {self.project_root}")
-        print()
-        print("🎯 下一步:")
-        print(f"  cd {self.project_root}")
-        print("  ./mvnw clean install")
-        print("  ./mvnw spring-boot:run -pl {}-bootstrap".format(self.project_name))
+            # 生成文档
+            self._generate_documentation()
+
+            self._copy_wrapper_files()
+            self._validate_generated_artifacts()
+
+            backup_path = None
+            if self.final_project_root.exists():
+                backup_path = self.output_dir / f".{self.project_name}.backup-{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
+                self.final_project_root.rename(backup_path)
+            self.project_root.rename(self.final_project_root)
+            self.project_root = self.final_project_root
+
+            print()
+            print("✅ 项目生成完成!")
+            print(f"📂 项目位置: {self.project_root}")
+            if backup_path:
+                print(f"♻️ 原项目备份: {backup_path}")
+            print()
+            print("🎯 下一步:")
+            print(f"  cd {self.project_root}")
+            print("  ./mvnw validate")
+            print("  ./mvnw test")
+            print("  ./mvnw package")
+            print("  ./mvnw spring-boot:run -pl {}-bootstrap".format(self.project_name))
+        except Exception:
+            shutil.rmtree(staging_root, ignore_errors=True)
+            raise
+
+    def _validate_generated_artifacts(self):
+        """在 staging 目录提交前校验关键产物和占位符。"""
+        required_files = [
+            self.project_root / "pom.xml",
+            self.project_root / f"{self.project_name}-bootstrap" / "pom.xml",
+            self.project_root / f"{self.project_name}-bootstrap" / "src/main/resources/smart-doc.json",
+            self.project_root / "mvnw",
+        ]
+        missing = [str(path) for path in required_files if not path.is_file()]
+        if missing:
+            raise FileNotFoundError(f"生成产物缺失: {', '.join(missing)}")
+
+        smart_doc_path = required_files[2]
+        json.loads(smart_doc_path.read_text(encoding="utf-8"))
+        bootstrap_pom = required_files[1].read_text(encoding="utf-8")
+        plugin_versions = re.findall(
+            r"<artifactId>smart-doc-maven-plugin</artifactId>\s*<version>([^<]+)</version>",
+            bootstrap_pom,
+        )
+        if plugin_versions != ["yss-4.0.0"]:
+            raise ValueError("smart-doc-maven-plugin 必须且只能使用 yss-4.0.0")
+
+        for path in self.project_root.rglob("*"):
+            if path.is_file() and path.suffix not in {".db", ".jar", ".class"}:
+                content = path.read_text(encoding="utf-8")
+                if "{{" in content or "root/root" in content:
+                    raise ValueError(f"生成文件包含未替换占位符或明文凭据: {path}")
 
     def _create_project_structure(self):
         """创建项目目录结构"""
@@ -152,10 +207,12 @@ class ScaffoldGenerator:
         config_templates = [
             (self.config_template_dir / "application.yml.template", self.project_root / f"{self.project_name}-bootstrap" / "src" / "main" / "resources" / "application.yml"),
             (self.config_template_dir / "logback-spring.xml.template", self.project_root / f"{self.project_name}-bootstrap" / "src" / "main" / "resources" / "logback-spring.xml"),
+            (self.config_template_dir / "smart-doc.json.template", self.project_root / f"{self.project_name}-bootstrap" / "src" / "main" / "resources" / "smart-doc.json"),
         ]
         self._render_and_write_templates(config_templates)
         print("  ✓ application.yml")
         print("  ✓ logback-spring.xml")
+        print("  ✓ smart-doc.json")
 
     def _generate_example_code(self):
         """生成示例代码"""
@@ -361,8 +418,6 @@ CREATE TABLE leaf_alloc (
             "driver_class": self.driver_class,
             "db_name": self.db_name,
             "jdbc_url": self.jdbc_url,
-            "db_username": self.db_username,
-            "db_password": self.db_password,
             "db_dependency": self.db_dependency
         }
 
@@ -421,8 +476,8 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog='''
 示例:
-  python generate_scaffold.py --project-name my-service --base-package com.yss.myservice
-  python generate_scaffold.py --project-name user-service --base-package com.yss.user --output-dir ./output
+  python generate_scaffold.py --project-name my-service --base-package com.yss.myservice --output-dir /path/to/repo
+  python generate_scaffold.py --project-name user-service --base-package com.yss.user --output-dir /path/to/repo --database mysql
         '''
     )
 
@@ -430,13 +485,19 @@ def main():
                        help='项目名称 (kebab-case, 例如: user-service)')
     parser.add_argument('--base-package', required=True,
                        help='基础包名 (例如: com.yss.user)')
-    parser.add_argument('--output-dir', default='./output',
-                       help='输出目录 (默认: ./output)')
-    parser.add_argument('--with-example', type=bool, default=True,
-                       help='是否包含示例代码 (默认: True)')
-    parser.add_argument('--database', default='sqlite',
-                       choices=['mysql', 'postgres', 'oracle', 'sqlite'],
-                       help='数据库类型 (默认: sqlite)')
+    parser.add_argument('--output-dir', required=True,
+                       help='输出目录；必须显式指定')
+    example_group = parser.add_mutually_exclusive_group()
+    example_group.add_argument('--with-example', dest='with_example', action='store_true',
+                               help='显式生成 User CRUD 示例代码')
+    example_group.add_argument('--without-example', dest='with_example', action='store_false',
+                               help='不生成示例代码（默认）')
+    parser.set_defaults(with_example=False)
+    parser.add_argument('--database', default='mysql',
+                       choices=['mysql'],
+                       help='数据库类型；当前仅支持经过验证的 mysql（默认）')
+    parser.add_argument('--force', action='store_true',
+                       help='显式允许写入非空输出目录；默认拒绝覆盖')
 
     args = parser.parse_args()
 
@@ -446,7 +507,7 @@ def main():
         sys.exit(1)
 
     # 验证包名格式
-    if not re.match(r'^[a-z][a-z0-9.]*$', args.base_package):
+    if not re.match(r'^[a-z](?:[a-z0-9]*)(?:\.[a-z](?:[a-z0-9]*)?)*$', args.base_package):
         print("❌ 错误: 包名格式不正确 (例如: com.yss.user)")
         sys.exit(1)
 
@@ -456,7 +517,8 @@ def main():
         base_package=args.base_package,
         output_dir=args.output_dir,
         with_example=args.with_example,
-        database=args.database
+        database=args.database,
+        force=args.force
     )
 
     try:

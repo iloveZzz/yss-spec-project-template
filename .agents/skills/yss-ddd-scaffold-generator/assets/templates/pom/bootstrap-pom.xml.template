@@ -47,6 +47,7 @@
             </plugin>
             <plugin>
                 <artifactId>smart-doc-maven-plugin</artifactId>
+                <version>yss-4.0.0</version>
                 <configuration>
                     <configFile>src/main/resources/smart-doc.json</configFile>
                     <includes>
@@ -65,7 +66,6 @@
                     <projectName>${project.description}</projectName>
                 </configuration>
                 <groupId>com.github.shalousun</groupId>
-                <version>yss-3.1.2</version>
                 <dependencies>
                     <!-- 显式添加 commons-codec 依赖 -->
                     <dependency>

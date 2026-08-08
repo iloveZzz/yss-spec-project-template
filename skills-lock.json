@@ -1044,7 +1044,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
-        "effectiveHash": "2ae1a7cc874728e56d9ce9ac37867f949e7ed65ac24e30686be8163c325717b4",
+        "effectiveHash": "49790ef4c75f79b94d49e9d5587c2d347928609c751972996883aca58fedcd13",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1299,7 +1299,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-openapi/SKILL.md",
-        "effectiveHash": "cc03dc934c71266507c4f34ddc637adedee438b941d170afbdca4804964fd15a",
+        "effectiveHash": "2283b86f5731d58d6138895f2418dd681abc49aa5b3b753b64ef3f7d0d87b690",
         "targets": [
           ".agents/skills",
           ".claude/skills",

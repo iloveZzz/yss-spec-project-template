@@ -1,0 +1,17 @@
+{
+  "isStrict": false,
+  "allInOne": true,
+  "outPath": "target/openapi",
+  "coverOld": true,
+  "createDebugPage": false,
+  "packageFilters": "{{base_package}}.*",
+  "showAuthor": true,
+  "requestFieldToUnderline": false,
+  "responseFieldToUnderline": false,
+  "inlineEnum": true,
+  "componentType": "NORMAL",
+  "recursionLimit": 7,
+  "requestExample": false,
+  "responseExample": false,
+  "displayActualType": false
+}
