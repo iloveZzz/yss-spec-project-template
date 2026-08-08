@@ -51,7 +51,7 @@
 | ----------------- | ------------------------------------------- | --------------------------- |
 | YTable            | `docs/components/demos/table/*`             | `./demos/table`             |
 | YEditTable        | `docs/components/demos/edit-table/*`        | `./demos/edit-table`        |
-| YFormily          | `docs/components/demos/formily/*`           | `./demos/formily`           |
+| YssFormily        | `docs/components/demos/formily/*`           | `./demos/formily`           |
 | YTree             | `docs/components/demos/tree/*`              | `./demos/tree`              |
 | SplitPane         | `docs/components/demos/split-pane/*`        | `./demos/split-pane`        |
 | YMonaco           | `docs/components/demos/monaco/*`            | `./demos/monaco`            |

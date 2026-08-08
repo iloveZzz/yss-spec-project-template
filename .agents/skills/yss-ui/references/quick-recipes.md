@@ -13,7 +13,7 @@
 
 - YTable：`../assets/demos/table/*`
 - YEditTable：`../assets/demos/edit-table/*`
-- YFormily：`../assets/demos/formily/*`
+- YssFormily：`../assets/demos/formily/*`
 - YTree：`../assets/demos/tree/*`
 - SplitPane：`../assets/demos/split-pane/*`
 - YMonaco：`../assets/demos/monaco/*`
@@ -238,7 +238,7 @@ const { treeHeight } = useTreeHeight(treeWrapRef, {
 
 ---
 
-## 模板 6：YFormily 模式切换（新增/编辑/查看）
+## 模板 6：YssFormily 模式切换（新增/编辑/查看）
 
 ```ts
 const mode = ref<0 | 1 | 2>(0);
@@ -246,11 +246,11 @@ const formData = ref<Record<string, any>>({});
 ```
 
 ```vue
-<YFormily v-model="formData" :schema="schema" :mode="mode">
+<YssFormily v-model="formData" :schema="schema" :mode="mode">
   <template #detail-owner="{ value }">
     <a-tag color="blue">{{ value || "-" }}</a-tag>
   </template>
-</YFormily>
+</YssFormily>
 ```
 
 规则要点：

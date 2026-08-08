@@ -227,7 +227,7 @@ schema 约束：
 优先级建议：
 
 - 页面结构与组件编排问题，优先 `yss-components`
-- 请求与参数治理问题，优先 `yss-hooks`
+- 请求与参数治理问题，优先 `yss-hook`
 
 ## 14. 典型请求示例
 
@@ -239,8 +239,8 @@ schema 约束：
 
 不应优先触发示例：
 
-- “这个接口请求参数怎么合并分页参数？”（更适合 `yss-hooks`）
-- “useRequest 的 onSuccess 怎么做数据兜底？”（更适合 `yss-hooks`）
+- “这个接口请求参数怎么合并分页参数？”（更适合 `yss-hook`）
+- “useRequest 的 onSuccess 怎么做数据兜底？”（更适合 `yss-hook`）
 
 ## 15. useRequest 与组件层协作边界
 
@@ -272,7 +272,7 @@ const { run: runExport, loading: exportLoading } = useRequest(exportApi, {
 - 需要 `currentParams` 统一治理的请求
 - 包含复杂数据转换、字段映射、树结构组装的请求
 
-这类逻辑必须下沉到 `hooks/useXxx.ts`，由 `yss-hooks` 规范约束。
+这类逻辑必须下沉到 `hooks/useXxx.ts`，由 `yss-hook` 规范约束。
 
 ### 15.3 组件与 Hook 的调用关系
 
@@ -292,20 +292,20 @@ const { run: runExport, loading: exportLoading } = useRequest(exportApi, {
 当页面编排和请求逻辑同时出现时，按以下三步快速判定归属：
 
 1. **先看是否影响分页或筛选参数状态**
-   - 会影响 `page/pageSize/currentParams`：归 `yss-hooks`
+   - 会影响 `page/pageSize/currentParams`：归 `yss-hook`
    - 不影响：进入第 2 步
 2. **再看是否需要复用**
-   - 多页面/多区块复用：归 `yss-hooks`
+   - 多页面/多区块复用：归 `yss-hook`
    - 仅当前页面单点动作：进入第 3 步
 3. **最后看是否为一次性动作请求**
    - 导出、调试、校验、单次预览：可留在 `yss-components`
-   - 列表查询、联动筛选、结构转换：归 `yss-hooks`
+   - 列表查询、联动筛选、结构转换：归 `yss-hook`
 
 ## 17. 二选一决策表
 
 - **场景：左树右表页面搭建** → 使用 `yss-components`
 - **场景：查询区改造为 schema 驱动** → 使用 `yss-components`
-- **场景：分页参数与筛选参数统一治理** → 使用 `yss-hooks`
-- **场景：onSuccess/onError 数据兜底与映射** → 使用 `yss-hooks`
+- **场景：分页参数与筛选参数统一治理** → 使用 `yss-hook`
+- **场景：onSuccess/onError 数据兜底与映射** → 使用 `yss-hook`
 - **场景：导出按钮单次请求且不参与分页状态** → 可在 `yss-components` 就地处理
-- **场景：导出要复用 currentParams 并与列表一致** → 使用 `yss-hooks`
+- **场景：导出要复用 currentParams 并与列表一致** → 使用 `yss-hook`

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { message, Button } from 'ant-design-vue';
-import { YTable, type YTableColumn } from '@yss-ui/components';
+import { message } from 'ant-design-vue';
+import { YButton, YTable, type YTableColumn } from '@yss-ui/components';
 
 defineOptions({ name: 'DemoTableActionExpand' });
 
@@ -108,15 +108,15 @@ const onToggleRowExpand = async () => {
     >
       <!-- 使用自定义操作列插槽接管按钮渲染 -->
       <template #action="{ row }">
-        <Button type="link" size="small" @click="handleLogClick(row)">日志</Button>
-        <Button
+        <YButton type="link" size="small" @click="handleLogClick(row)">日志</YButton>
+        <YButton
           type="link"
           size="small"
           :loading="tableData.find(item => item.id === row.id)?._btnLoading"
           @click="handleStepClick(row)"
         >
           步骤
-        </Button>
+        </YButton>
       </template>
 
       <!-- hide-default-icon 通过将 iconOpen 和 iconClose 设为空字符串实现 -->

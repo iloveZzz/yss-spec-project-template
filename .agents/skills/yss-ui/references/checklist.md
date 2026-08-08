@@ -10,6 +10,8 @@
 
 ## 通用基线（所有页面必查）
 
+- [ ] 已用 `pnpm why` 确认 Vue、YSS UI、AntDV、VXE 实际版本
+- [ ] 组件选型已对照 `component-routing.md`，AntDV 回退已记录原因
 - [ ] 使用 Vue 3 Composition API + `<script setup lang="ts">`
 - [ ] 优先使用 `@yss-ui/components`，缺失能力再回退 `ant-design-vue`
 - [ ] 未引入不存在的 Y 前缀组件
@@ -18,6 +20,23 @@
 - [ ] 状态展示与危险操作颜色保持一致
 - [ ] 关键交互具备成功/失败反馈（`message`）
 - [ ] 关键实现至少对照一个 docs demo（`../assets/demos/*`）
+- [ ] 推荐 Demo 不含 `pending-verification`
+
+## 主题、Locale 与浮层
+
+- [ ] 页面通过项目 ConfigProvider/YSS theme/语义 token 消费主题
+- [ ] 未新增页面级主题色和任意 z-index
+- [ ] locale、时区、日期和金额格式化沿用项目统一能力
+- [ ] Popup/Teleport 目标适配宿主和微应用容器
+- [ ] Modal/Drawer 关闭时清理状态并恢复触发元素焦点
+
+## 可访问性、响应式与性能
+
+- [ ] 图标按钮有可访问名称，状态不只依赖颜色
+- [ ] 表单 label、错误提示与控件建立语义关联
+- [ ] 主要操作可通过键盘完成，Tab 顺序合理
+- [ ] 窄屏布局、表格横向滚动和操作收敛已检查
+- [ ] 大数据 Table/Tree、远程搜索和复杂组件采用项目已验证的性能策略
 
 ---
 
@@ -87,3 +106,5 @@
 - [ ] 目标文件 IDE 诊断无新增错误
 - [ ] 若 lint/type-check 失败，已明确标注环境原因
 - [ ] 如需 AI 辅助生成代码，优先加载 `llms-full.txt` 上下文
+- [ ] 必要的组件测试、E2E、视觉回归已执行；未适用项记录原因
+- [ ] 浏览器 console 无新增 warning/error

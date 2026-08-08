@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { message, Space, Statistic, Button, Tooltip, Dropdown, Menu, Tag, Select, Row, Col } from 'ant-design-vue';
-import { YCard } from '@yss-ui/components';
+import { message, Space, Statistic, Tooltip, Dropdown, Menu, Tag, Select, Row, Col } from 'ant-design-vue';
+import { YButton, YCard } from '@yss-ui/components';
 import './style.less';
 import {
   CloudServerOutlined,
@@ -167,14 +167,14 @@ const handleViewDetails = () => {
       <template #extra>
         <Space>
           <Tooltip title="刷新数据">
-            <Button type="text" size="small" :loading="refreshing" @click="handleRefresh">
+            <YButton type="text" size="small" :loading="refreshing" @click="handleRefresh">
               <template #icon><ReloadOutlined /></template>
-            </Button>
+            </YButton>
           </Tooltip>
           <Tooltip title="设置告警阈值">
-            <Button type="text" size="small" @click="handleSettings">
+            <YButton type="text" size="small" @click="handleSettings">
               <template #icon><SettingOutlined /></template>
-            </Button>
+            </YButton>
           </Tooltip>
           <Dropdown>
             <template #overlay>
@@ -193,9 +193,9 @@ const handleViewDetails = () => {
                 </Menu.Item>
               </Menu>
             </template>
-            <Button type="text" size="small">
+            <YButton type="text" size="small">
               <template #icon><MoreOutlined /></template>
-            </Button>
+            </YButton>
           </Dropdown>
         </Space>
       </template>
@@ -238,7 +238,7 @@ const handleViewDetails = () => {
             <Select.Option value="30d">30天</Select.Option>
             <Select.Option value="90d">90天</Select.Option>
           </Select>
-          <Button type="primary" size="small" @click="handleViewDetails"> 查看详情 </Button>
+          <YButton type="primary" size="small" @click="handleViewDetails"> 查看详情 </YButton>
         </Space>
       </template>
 

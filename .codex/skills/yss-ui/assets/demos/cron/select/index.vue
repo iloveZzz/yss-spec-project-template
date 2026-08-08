@@ -4,9 +4,9 @@
  * @description 将 Cron 组件放入 Select 的下拉面板，类似日期选择器的交互方式
  */
 import { ref, computed } from 'vue';
-import { Popover, Button } from 'ant-design-vue';
+import { Popover } from 'ant-design-vue';
 import { ScheduleOutlined } from '@ant-design/icons-vue';
-import { YCron } from '@yss-ui/components';
+import { YButton, YCron } from '@yss-ui/components';
 
 /** 弹出框是否可见 */
 const popoverVisible = ref(false);
@@ -59,8 +59,8 @@ const displayValue = computed(() => cronValue.value);
         <div class="cron-popover-content">
           <YCron v-model="tempCronValue" />
           <div class="cron-popover-footer">
-            <Button size="small" @click="handleCancel">取消</Button>
-            <Button type="primary" size="small" @click="handleConfirm">确定</Button>
+            <YButton size="small" @click="handleCancel">取消</YButton>
+            <YButton type="primary" size="small" @click="handleConfirm">确定</YButton>
           </div>
         </div>
       </template>
