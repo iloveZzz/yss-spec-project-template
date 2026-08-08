@@ -14,6 +14,7 @@ PROJECTION_ROOTS = %w[
   .codex/skills
   .hermes/skills
   .pi/skills
+  .qoder/skills
   .trae/skills
 ].freeze
 OBSOLETE_SKILLS = %w[

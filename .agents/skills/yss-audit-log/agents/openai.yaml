@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Audit Log"
+  short_description: "审计日志接入、SpEL 描述、发布订阅与扩展实现规范"
+  default_prompt: "Use $yss-audit-log to implement or debug audit-log publishing, SpEL descriptions, and subscription handling."

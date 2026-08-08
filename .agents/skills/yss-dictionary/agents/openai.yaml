@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-dictionary"
+  short_description: "YSS component skill for yss-dictionary"
+  default_prompt: "Use yss-dictionary for this YSS backend component task."

@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Components"
+  short_description: "页面布局、表格、树、弹窗、空态与交互行为设计落地规范"
+  default_prompt: "Use $yss-components to design a YSS page layout with YTable, YTree, YssFormily, dialogs, and standard empty states."

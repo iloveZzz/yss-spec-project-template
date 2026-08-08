@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-taskflow"
+  short_description: "YSS component skill for yss-taskflow"
+  default_prompt: "Use yss-taskflow for this YSS backend component task."

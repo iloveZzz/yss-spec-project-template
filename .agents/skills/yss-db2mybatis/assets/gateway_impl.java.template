@@ -1,0 +1,62 @@
+package ${base_package}.repository.gateway.impl;
+
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.yss.cloud.dto.page.PageQuery;
+import com.yss.cloud.dto.result.PageResult;
+import ${gateway_pkg}.${domain_name}Gateway;
+import ${model_pkg}.${domain_name};
+import ${base_package}.repository.${domain_name}Repository;
+import ${base_package}.repository.convertor.${domain_name}Convertor;
+import ${base_package}.repository.entity.${domain_name}PO;
+import ${base_package}.repository.util.PageUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Repository
+@RequiredArgsConstructor
+public class ${domain_name}GatewayImpl implements ${domain_name}Gateway {
+
+    private final ${domain_name}Repository ${repository_field_name};
+
+    @Override
+    public ${pk_java_type} ${method_add}(${domain_name} entity) {
+        ${domain_name}PO po = ${domain_name}Convertor.INSTANCE.toPO(entity);
+        ${repository_field_name}.insert(po);
+        //fixme 补充返回数据唯一id
+        return null;
+    }
+
+    @Override
+    public boolean ${method_update}(${domain_name} entity) {
+        return ${repository_field_name}.updateById(${domain_name}Convertor.INSTANCE.toPO(entity)) > 0;
+    }
+
+    @Override
+    public boolean ${method_delete}(${pk_java_type} ${pk_field_name}) {
+        return ${repository_field_name}.deleteById(${pk_field_name}) > 0;
+    }
+
+    @Override
+    public Optional<${domain_name}> ${method_get}(${pk_java_type} ${pk_field_name}) {
+        return Optional.ofNullable(${repository_field_name}.selectById(${pk_field_name})).map(this::toDomain);
+    }
+
+    @Override
+    public PageResult<${domain_name}> ${method_page}(PageQuery query) {
+        LambdaQueryWrapper<${domain_name}PO> wrapper = Wrappers.lambdaQuery(${domain_name}PO.class);
+        ${logic_delete_condition}
+        IPage<${domain_name}PO> result = ${repository_field_name}.selectPage(PageUtil.page(query), wrapper);
+        List<${domain_name}> records = result.getRecords().stream().map(this::toDomain).collect(Collectors.toList());
+        return PageResult.of(records, result.getTotal(), result.getSize(), result.getCurrent());
+    }
+
+    private ${domain_name} toDomain(${domain_name}PO source) {
+        return ${domain_name}Convertor.INSTANCE.toDomain(source);
+    }
+}

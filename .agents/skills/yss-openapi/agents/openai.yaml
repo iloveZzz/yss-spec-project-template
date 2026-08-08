@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS OpenAPI"
+  short_description: "Generate YSS OpenAPI and Orval clients"
+  default_prompt: "Use $yss-openapi to regenerate backend OpenAPI and frontend API clients."

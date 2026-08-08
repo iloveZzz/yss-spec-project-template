@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-resilience4j"
+  short_description: "YSS component skill for yss-resilience4j"
+  default_prompt: "Use yss-resilience4j for this YSS backend component task."

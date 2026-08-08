@@ -44,8 +44,8 @@ Whether and how much to ask depends on how much information has been provided. *
 
 | Scenario | Ask? |
 |---|---|
-| "Make a deck" (no PRD, no audience) | ✅ Ask extensively: audience, duration, tone, variants |
-| "Use this PRD to make a 10-min deck for Eng All Hands" | ❌ Enough info — start building |
+| "Make a deck" (no Spec, no audience) | ✅ Ask extensively: audience, duration, tone, variants |
+| "Use this Spec to make a 10-min deck for Eng All Hands" | ❌ Enough info — start building |
 | "Turn this screenshot into an interactive prototype" | ⚠️ Only ask if the intended interactions are unclear |
 | "Make 6 slides about the history of butter" | ✅ Too vague — at least ask about tone and audience |
 | "Design onboarding for my food-delivery app" | ✅ Ask heavily: users, flows, brand, variants |

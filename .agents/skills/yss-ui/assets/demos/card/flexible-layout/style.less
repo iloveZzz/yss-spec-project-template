@@ -1,0 +1,191 @@
+.flexible-layout-demo {
+  padding: var(--spacing-lg, 24px);
+
+  .layout-info {
+    margin-bottom: var(--spacing-xl, 32px);
+
+    h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: var(--spacing-sm, 8px);
+      color: var(--text-color, #333);
+    }
+
+    p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-color-secondary, #666);
+      margin: 0;
+
+      code {
+        background: var(--code-bg, #f6f8fa);
+        border: 1px solid var(--border-color-light, #e1e4e8);
+        border-radius: 3px;
+        padding: 2px 6px;
+        font-family: "SF Mono", Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 85%;
+      }
+    }
+  }
+
+  /* 自适应网格布局 */
+  .flexible-grid {
+    display: grid;
+
+    /* 核心：使用 auto-fit 和 minmax 实现真正的自适应 */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg, 24px);
+    margin-bottom: var(--spacing-xl, 32px);
+  }
+
+  /* 指标卡片样式 */
+  .metric-card {
+    min-height: 160px;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+
+    .metric-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-color, #333);
+    }
+
+    .metric-content {
+      padding: var(--spacing-md, 16px) 0;
+    }
+
+    .metric-value {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--primary-color, #1890ff);
+      margin-bottom: var(--spacing-sm, 8px);
+
+      .sub-value {
+        font-size: 16px;
+        font-weight: 400;
+        color: var(--text-color-secondary, #999);
+        margin-left: var(--spacing-xs, 4px);
+      }
+    }
+
+    .metric-trend {
+      margin-bottom: var(--spacing-sm, 8px);
+
+      .trend-indicator {
+        display: inline-block;
+        font-size: 13px;
+        font-weight: 500;
+        padding: 2px 8px;
+        border-radius: 12px;
+
+        &.trend-up {
+          background: var(--success-color-bg, #f6ffed);
+          color: var(--success-color, #52c41a);
+          border: 1px solid var(--success-color-border, #b7eb8f);
+
+          &::before {
+            content: "↗ ";
+          }
+        }
+
+        &.trend-down {
+          background: var(--error-color-bg, #fff2f0);
+          color: var(--error-color, #ff4d4f);
+          border: 1px solid var(--error-color-border, #ffccc7);
+
+          &::before {
+            content: "↘ ";
+          }
+        }
+      }
+    }
+
+    .metric-description {
+      font-size: 12px;
+      line-height: 1.4;
+      color: var(--text-color-tertiary, #999);
+    }
+  }
+
+  /* 布局说明 */
+  .layout-explanation {
+    .feature-list {
+      margin: 0;
+      padding-left: var(--spacing-lg, 20px);
+
+      li {
+        margin-bottom: var(--spacing-sm, 8px);
+        line-height: 1.6;
+        color: var(--text-color-secondary, #666);
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        strong {
+          color: var(--text-color, #333);
+        }
+      }
+    }
+  }
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .flexible-layout-demo {
+    padding: var(--spacing-md, 16px);
+
+    .flexible-grid {
+      /* 小屏幕强制单列，降低最小宽度 */
+      grid-template-columns: 1fr;
+      gap: var(--spacing-md, 16px);
+    }
+
+    .metric-card {
+      .metric-value {
+        font-size: 24px;
+      }
+    }
+
+    .layout-info {
+      margin-bottom: var(--spacing-lg, 24px);
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .flexible-layout-demo {
+    padding: var(--spacing-sm, 12px);
+
+    .flexible-grid {
+      gap: var(--spacing-sm, 12px);
+    }
+
+    .metric-card {
+      min-height: 140px;
+
+      .metric-value {
+        font-size: 20px;
+      }
+    }
+  }
+}
+
+/* 超大屏幕优化：限制最大列数，避免卡片过宽 */
+@media (min-width: 1600px) {
+  .flexible-layout-demo {
+    .flexible-grid {
+      /* 在超大屏幕上最多显示 4 列 */
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      max-width: 1400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+}

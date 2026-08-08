@@ -14,6 +14,7 @@
 ├── .codex/                  ← Codex skills 投影与平台专属 YSS skills
 ├── .hermes/                 ← Hermes skills 投影与平台专属 skills
 ├── .pi/                     ← Pi skills 投影与平台专属 skills
+├── .qoder/                  ← Qoder skills 投影与平台专属 skills
 ├── .trae/                   ← Trae skills 投影与平台专属 skills
 ├── AGENTS.md                ← AI 指令
 ├── CONTEXT.md               ← 领域词汇表
@@ -43,6 +44,8 @@
 3. `template-source` 修改流程、技能或模板后，执行 `scripts/sync-skills`、`scripts/update-skill-lock` 和 `scripts/verify-template`。
 4. `project-instance` 先做影响面分诊；进入 Spec 基线时使用 `grill-with-docs`、`to-spec`，契约冻结后再用 `to-tickets` 拆分垂直切片 Ticket。
 5. 实现仓库接入、YSS 路由、独立审查、fresh verification 和 Git checkpoint 以 `AGENTS.md` 的硬门禁为准。
+
+YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https://github.com/iloveZzz/yss-spec-dev-skills)，发布清单和导出命令见 [skills 维护说明](./docs/agents/skills-maintenance.md)。
 
 ## 模板初始化 CLI
 

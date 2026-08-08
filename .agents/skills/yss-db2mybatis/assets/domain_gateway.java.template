@@ -1,0 +1,45 @@
+package ${gateway_pkg};
+
+import com.yss.cloud.dto.page.PageQuery;
+import com.yss.cloud.dto.result.PageResult;
+import ${model_pkg}.${domain_name};
+
+import java.util.Optional;
+
+public interface ${domain_name}Gateway{
+    /**
+     * Add ${domain_name}
+     *
+     * @param entity entity
+     * @return id
+     */
+    ${pk_java_type} ${method_add}(${domain_name} entity);
+    /**
+     * Update ${domain_name}
+     *
+     * @param entity entity
+     * @return boolean
+     */
+    boolean ${method_update}(${domain_name} entity);
+    /**
+     * Delete ${domain_name}
+     *
+     * @param ${pk_field_name} id
+     * @return boolean
+     */
+    boolean ${method_delete}(${pk_java_type} ${pk_field_name});
+    /**
+     * Get ${domain_name} by id
+     *
+     * @param ${pk_field_name} id
+     * @return optional
+     */
+    Optional<${domain_name}> ${method_get}(${pk_java_type} ${pk_field_name});
+    /**
+      * Page ${domain_name}
+      *
+      * @param query query
+      * @return page result
+      */
+    PageResult<${domain_name}> ${method_page}(PageQuery query);
+}

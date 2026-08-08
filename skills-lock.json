@@ -7,6 +7,7 @@
     ".codex/skills",
     ".hermes/skills",
     ".pi/skills",
+    ".qoder/skills",
     ".trae/skills"
   ],
   "skills": {
@@ -22,6 +23,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -37,6 +39,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -52,6 +55,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -66,6 +70,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -81,6 +86,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -96,6 +102,22 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "code-review-process": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/code-review-process/SKILL.md",
+        "effectiveHash": "05b1cbfdbb3426de48d5c3df6cb15f0333920c080b7321f0b414fdee5837f511",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -111,6 +133,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -125,6 +148,22 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "cross-repo-implementation-routing": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/cross-repo-implementation-routing/SKILL.md",
+        "effectiveHash": "4823402876326d33eff644a54db127ce43960ded841f50b1ba236a8f0a2e3f3a",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -140,6 +179,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -154,6 +194,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -169,6 +210,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -183,6 +225,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -197,6 +240,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -211,6 +255,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -226,6 +271,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -241,6 +287,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -256,6 +303,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -271,6 +319,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -286,6 +335,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -300,6 +350,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -315,6 +366,22 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "implementation-repo-onboarding": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/implementation-repo-onboarding/SKILL.md",
+        "effectiveHash": "ef6573ec4e483ebebb7ce53df4ccd335397b8ae3aa4bc165e0d7cf4aa39e7925",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -330,6 +397,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -344,6 +412,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -359,6 +428,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -374,6 +444,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -389,6 +460,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -404,6 +476,22 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "product-design-prototype": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/product-design-prototype/SKILL.md",
+        "effectiveHash": "5e02a472c7636b28f89969989ec8ce7d83a966469b3d5ba0a844d15c17b9fb13",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -419,6 +507,22 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "prototype-review": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/prototype-review/SKILL.md",
+        "effectiveHash": "015484d37db81e0499bedeeda8205c4c5186350fbc33016b0a84c5d1dec6bbcf",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -434,6 +538,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -449,6 +554,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -464,6 +570,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -479,6 +586,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -494,6 +602,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -509,6 +618,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -524,6 +634,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -539,6 +650,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -554,6 +666,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -569,6 +682,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -584,6 +698,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -599,6 +714,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -613,6 +729,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -628,6 +745,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -643,6 +761,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -657,6 +776,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -671,6 +791,22 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "wireframe-prototype": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/wireframe-prototype/SKILL.md",
+        "effectiveHash": "3960b07ce6ba5a06a66784982cf872a061a0516bfe945d6fb4c1b06af061c612",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -686,6 +822,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -701,6 +838,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -716,6 +854,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -731,6 +870,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -746,6 +886,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -760,6 +901,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -774,6 +916,22 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-audit-log": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-audit-log/SKILL.md",
+        "effectiveHash": "230c7c1898992f9529e907704db63c3873b5036449157c6ddfb59e25c341d07e",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -788,6 +946,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -802,6 +961,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -816,6 +976,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -830,6 +991,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -844,6 +1006,37 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-components": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-components/SKILL.md",
+        "effectiveHash": "a1cbe32e7bff410ed2092f847f0168e4e920b1e27caef10ff25151d83d051314",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-db2mybatis": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-db2mybatis/SKILL.md",
+        "effectiveHash": "ae96800ad55b27a06b6de70f6dc635109ab490e6f0061f9623b2b94076065d28",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -858,6 +1051,67 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-design-system": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-design-system/SKILL.md",
+        "effectiveHash": "2626e379a57a197a87e97110eb805b68aae149b4e7388c15dab2b7a2ca55ea26",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-dictionary": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-dictionary/SKILL.md",
+        "effectiveHash": "4fb306162548fc7f667031e69a2c8b4da2e8272fc782fe0eb4b6ef206960f708",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-dir": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-dir/SKILL.md",
+        "effectiveHash": "a1dfaab89777359452c89019e279f5276886ba0c9f942b9e4fd0d33187206476",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-distributed-id": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-distributed-id/SKILL.md",
+        "effectiveHash": "f7ec7103ec1b14f9ec84c6664edfd44580637d9e4ef1276c943b61994b066171",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -872,6 +1126,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -886,6 +1141,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -900,6 +1156,217 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-duckdb": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-duckdb/SKILL.md",
+        "effectiveHash": "082b15d969aa40c092e95471f537128db188a78f74c7b0560f01fb077cf48877",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-excel-mvc": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-excel-mvc/SKILL.md",
+        "effectiveHash": "0efca463c39b2e725c6195f48ad4cc411111b3caabce55bcaea880d509f55663",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-exception": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-exception/SKILL.md",
+        "effectiveHash": "f0f820a0898a92dc5e6b69606266fe954018d1f688d9a3faf8cdcb9becc5aeb4",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-file": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-file/SKILL.md",
+        "effectiveHash": "6712f669c69d79b08af9f73f08747e55aebdf5aac6442e6c8277e1db3bd3aced",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-filerunner": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-filerunner/SKILL.md",
+        "effectiveHash": "84ac31c5cee74daa24aae1ccf467dd70c93ce4dfa3e4a0631fb977e504433510",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-formily": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-formily/SKILL.md",
+        "effectiveHash": "16f989e36624b133969fb3aacada84c6599a288c19ab765dc2bb338f983165dd",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-formily-schema-generator": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-formily-schema-generator/SKILL.md",
+        "effectiveHash": "756014608b94921ddae5d5283246d06b8bc6c87681f8e98fff2606bea9e080e3",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-frontend-scaffold-generator": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-frontend-scaffold-generator/SKILL.md",
+        "effectiveHash": "b62b04d06574debfc4777da5f85dcbb02ea1e07c35f772e2e4c766892e24830e",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-hook": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-hook/SKILL.md",
+        "effectiveHash": "9236c26082d46f26ed3920df6e740459dcf26790704abb372ed4eb6ddc4d5374",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-jdbc": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-jdbc/SKILL.md",
+        "effectiveHash": "e63a076c83b0943525c4edb0210421c37e5e6a786ac62b8850a1e284f78d6a1b",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-log": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-log/SKILL.md",
+        "effectiveHash": "a0c2cb56c73b25afb68f1104edb5bee17a30ff8e40351b3e2f82f63b4508c9c3",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-mail": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-mail/SKILL.md",
+        "effectiveHash": "e841dccba2e50a403ad4438dc190d3915340ae59dc066275f782887b4a220a7d",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-mapper-dynamic": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-mapper-dynamic/SKILL.md",
+        "effectiveHash": "d4881f9d6dbc618673b0d015c66fdb5f96d9dafe1eedb11045aced3407ef99dc",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-microapp-commit": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-microapp-commit/SKILL.md",
+        "effectiveHash": "5c249cf41b36ab229b5ba5e1389620c173c5c47a206cb0f8d70f4d177bf13c6b",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -914,6 +1381,52 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-openapi": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-openapi/SKILL.md",
+        "effectiveHash": "cc03dc934c71266507c4f34ddc637adedee438b941d170afbdca4804964fd15a",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-openapi-draft-review": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-openapi-draft-review/SKILL.md",
+        "effectiveHash": "5d65b378505858c837fea69a28c32b3c4bead13bc4d308c5a32b76294b0755ad",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-openapi-governance": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-openapi-governance/SKILL.md",
+        "effectiveHash": "3f361c9181c70a1429be39da67714ef5f0f84edcc88783ca135421afb672b3ed",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -928,6 +1441,7 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -942,6 +1456,22 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-quality": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-quality/SKILL.md",
+        "effectiveHash": "3e0dd25ca6a034b51d08498d63f8d3df710a791efe78b69d8df8b67e6f3dcd37",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -956,6 +1486,22 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-resilience4j": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-resilience4j/SKILL.md",
+        "effectiveHash": "85e48a8ecd4cf50c7b63ac8c91d41cd37165f6bb5633942cab5acb4509148144",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -970,6 +1516,202 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-security-algorithm": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-security-algorithm/SKILL.md",
+        "effectiveHash": "9345cc28220837dbec8da348876b7cff5663394c7fda94fa924a9f62bc2a3c00",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-source-index": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-source-index/SKILL.md",
+        "effectiveHash": "d5d7298969fa4076a0f16cde5c354f57fee6953ba35ea5d28c868c77bb1822d4",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-sql-condition": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-sql-condition/SKILL.md",
+        "effectiveHash": "6a4a4d0c2af6f085397a6b5f629b050cca514aeb10aad76848a05faf6f780d49",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-sql-tpl": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-sql-tpl/SKILL.md",
+        "effectiveHash": "4fa4802c971b144ceff9ca0d5d43ecf8af4348ca64b472c3cc8970f92184aa98",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-taskflow": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-taskflow/SKILL.md",
+        "effectiveHash": "6b17e1a3444c013dd88797a79992b30bc53467c15bfe65061d4f8701af957288",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-ui": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-ui/SKILL.md",
+        "effectiveHash": "871848f31d26ba51b03a5d4f2401a00037ff2ff786ef60729b8892e1cef5a5d6",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-up-springboot3": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-up-springboot3/SKILL.md",
+        "effectiveHash": "6de68036d801a50209ce3c5af0ecf5b460d02f80cb148da6e1a8c414d845834c",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-use-table-height": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-use-table-height/SKILL.md",
+        "effectiveHash": "a36455960ead35cfff6b788ebd0268b7cd7901b5cfded9ac7440cc15159f4cdd",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-use-tree-height": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-use-tree-height/SKILL.md",
+        "effectiveHash": "8b7fe6f8ea49a8871546a018e007a3161767898f7dd57a8c9e385d996ce946b8",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-userinfo": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-userinfo/SKILL.md",
+        "effectiveHash": "2de92f9f67710ac743dcd79164afd635550fc53a130c378447e892c91b84f710",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-validation": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-validation/SKILL.md",
+        "effectiveHash": "d75688a3b524cca4da2f23c4125bd1ed6a812986b5a2ed471795042f355858d5",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-valuation": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-valuation/SKILL.md",
+        "effectiveHash": "484cd2b910e781fba0cc9efbf2206fe52d29c804dd569dfd9b491ccabd87bbee",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-variable": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-variable/SKILL.md",
+        "effectiveHash": "1a3b25e014c2504b8cf691e110989925476de96f63686f2d9a3daa7b91423c70",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       },
@@ -984,30 +1726,13 @@
           ".codex/skills",
           ".hermes/skills",
           ".pi/skills",
+          ".qoder/skills",
           ".trae/skills"
         ]
       }
     },
     "platform": {
       ".codex/skills": {
-        "code-review-process": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/code-review-process/SKILL.md",
-          "effectiveHash": "b09fe9b154fe2ff9877e43de59c19004493785db8fede2e1e64950c77a4a5459",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "cross-repo-implementation-routing": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/cross-repo-implementation-routing/SKILL.md",
-          "effectiveHash": "3957dc8bb00245f5363acd1b5237efec455955916f0486c56775c6e2031f17b0",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
         "data-analytics": {
           "source": "project",
           "sourceType": "local",
@@ -1017,398 +1742,11 @@
             ".codex/skills"
           ]
         },
-        "implementation-repo-onboarding": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/implementation-repo-onboarding/SKILL.md",
-          "effectiveHash": "d59ce9970de45c3b0d3d633abd2204ddff6fb672a835266d46e8798f540008f5",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
         "product-design": {
           "source": "project",
           "sourceType": "local",
           "skillPath": ".codex/skills/product-design/SKILL.md",
           "effectiveHash": "7eda879597373e6c7069a90c15cdfea58476ee927d3d054f9e7f4bbcbf1df4ab",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "product-design-prototype": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/product-design-prototype/SKILL.md",
-          "effectiveHash": "5e02a472c7636b28f89969989ec8ce7d83a966469b3d5ba0a844d15c17b9fb13",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "prototype-review": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/prototype-review/SKILL.md",
-          "effectiveHash": "015484d37db81e0499bedeeda8205c4c5186350fbc33016b0a84c5d1dec6bbcf",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "wireframe-prototype": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/wireframe-prototype/SKILL.md",
-          "effectiveHash": "3960b07ce6ba5a06a66784982cf872a061a0516bfe945d6fb4c1b06af061c612",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-audit-log": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-audit-log/SKILL.md",
-          "effectiveHash": "a151c066acc1be1fed6dbfe9e28c7c066fe7e6af5325050906ce51ef9b85387f",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-components": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-components/SKILL.md",
-          "effectiveHash": "907cbadb27747102a0e1f690477f0d155d938a9942aee11c0f4c425ac513679a",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-db2mybatis": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-db2mybatis/SKILL.md",
-          "effectiveHash": "3b7c85fed5f634096630eb2c19a076145247b529225ba538656a67b251966a89",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-design-system": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-design-system/SKILL.md",
-          "effectiveHash": "24b7f8cd4c7aeefe2a2e38e7ba618a771cacace1783651df81a3e796f379e46a",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-dictionary": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-dictionary/SKILL.md",
-          "effectiveHash": "6cac749b00a96136553123de8aef54293542e9d4297aa960f21cece59b8a72ab",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-dir": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-dir/SKILL.md",
-          "effectiveHash": "1422b95b31a5b70333fb9fc057adef90d4d99f4e7b15c403ec68a305906047f2",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-distributed-id": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-distributed-id/SKILL.md",
-          "effectiveHash": "bf9ece4d0768f90a6738f2dff0fcf089968ef3dcded8f551191eca5b2435bbad",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-duckdb": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-duckdb/SKILL.md",
-          "effectiveHash": "f16b6c518936a680a4f1c0a2c0e4f9929d515e7aa400cc74fc1779d07ade91c9",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-excel-mvc": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-excel-mvc/SKILL.md",
-          "effectiveHash": "3b8e09c8f46142cd474f3f777ebf400bda338d234ca32855acdc77ba7d4d5d7b",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-exception": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-exception/SKILL.md",
-          "effectiveHash": "dc2dc36ad5f8ed9db40fceca6865825f454631efb45b1d32b5cda71d76c0944d",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-file": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-file/SKILL.md",
-          "effectiveHash": "8fdcfec8d0fce1a51c5f271516033965e7974e071baadfa7c64ff4a3d8d53ef5",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-filerunner": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-filerunner/SKILL.md",
-          "effectiveHash": "71a6c46f2980bf1f48e677b134f7f6bb0a4c63877853d8285a066c2520329d5a",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-formily": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-formily/SKILL.md",
-          "effectiveHash": "1509a063e7f0771c0f67bd13441c7e78d23ef08f4d55dab15e21dac175dcdbe5",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-formily-schema-generator": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-formily-schema-generator/SKILL.md",
-          "effectiveHash": "6ccb54ed50a1093f4c9fb1c5aeb9b449064d5c01e2f2d72c28bcf3e0d767b701",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-frontend-scaffold-generator": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-frontend-scaffold-generator/SKILL.md",
-          "effectiveHash": "3ecdf248e76edc2450ac549e400e76498eac956ec5095f99dc8ddf19bce45aa5",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-hook": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-hook/SKILL.md",
-          "effectiveHash": "9bedabaf8c8983ff006e4409b99ef9e5c55f3f00657328a64392a068bf61de04",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-jdbc": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-jdbc/SKILL.md",
-          "effectiveHash": "98aaaf7b3b8072064ed37ad8f6622ac3b48b57bf15e18df95802344870041330",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-log": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-log/SKILL.md",
-          "effectiveHash": "98f7011494a0c57fa31c35a7c3f1a8deb6364561686a315869257e227f8f490e",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-mail": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-mail/SKILL.md",
-          "effectiveHash": "3c1a97ecc0084c6b31a9b3239583a6644b9597af2219410350056ffead608d34",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-mapper-dynamic": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-mapper-dynamic/SKILL.md",
-          "effectiveHash": "b41fcba9be2b4807023c5a897770ec6f2b75c3db5526589b6fc231f9871a7f19",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-microapp-commit": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-microapp-commit/SKILL.md",
-          "effectiveHash": "8f15144e9854290ef577c2030b7aa3f8ee11634f49b122a42bbb801432242388",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-openapi": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-openapi/SKILL.md",
-          "effectiveHash": "5aa6d36fa0067f7cb55c096122131f9eb8ef6d4fc51fcb9fdca7ef2fbc41dcf0",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-openapi-draft-review": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-openapi-draft-review/SKILL.md",
-          "effectiveHash": "ac05894c5d80926442f5450530d5a65cde1a61dbb8ad9330b4087065b2a7e1fc",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-openapi-governance": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-openapi-governance/SKILL.md",
-          "effectiveHash": "20a58824289a9181a3b39abd7d80eb052ed48792199334f432cd48b7d5b60cb9",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-quality": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-quality/SKILL.md",
-          "effectiveHash": "d584187912f5e2c4c8f287797331dcb266c1983d22468c22cd194c4a37e700b5",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-resilience4j": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-resilience4j/SKILL.md",
-          "effectiveHash": "723397021a79a6407596a8d1c7768e1511c1ac556703bc0147e3ec5032bf8e01",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-security-algorithm": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-security-algorithm/SKILL.md",
-          "effectiveHash": "a23e814ed089ed0f21c4a0dd131aa8a3c31b5616380131f33e4a4bcbf37c6b6a",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-source-index": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-source-index/SKILL.md",
-          "effectiveHash": "e90b7580619bc06949d56b3e27d2982e6e71d632c3036832ac708c25970707ae",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-sql-condition": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-sql-condition/SKILL.md",
-          "effectiveHash": "f8bfc31b5a23b4bddb82677ca2103858d6cf33777d83e23b0d5156c4f913625d",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-sql-tpl": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-sql-tpl/SKILL.md",
-          "effectiveHash": "9de10750d815c824526292e6f7e84d424365b3032f0d6e2397874bdc8e17caa4",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-taskflow": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-taskflow/SKILL.md",
-          "effectiveHash": "33727fef8eafd5e5616739eef25fe72650c0f11b887ab0a9a3ea624fcac24a5a",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-ui": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-ui/SKILL.md",
-          "effectiveHash": "b519f5be50f6a9175001dfca0d922a2d93e21bb260f85cf1485b892587df9f76",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-up-springboot3": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-up-springboot3/SKILL.md",
-          "effectiveHash": "cd600782e93fc9e3207ad59811739ba37c53a415181c00db66f85a1b9dd1637d",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-use-table-height": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-use-table-height/SKILL.md",
-          "effectiveHash": "2d2d739381d9a3c65ad57aa95482fc4b1499313126f7eac30c0bf3d01189f452",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-use-tree-height": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-use-tree-height/SKILL.md",
-          "effectiveHash": "d2b057c6d3ec67a11539332fcc967ca4ef2bb5dbe657cca63d19cffd43275598",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-userinfo": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-userinfo/SKILL.md",
-          "effectiveHash": "ba93bfb1fec4c45a5a7054798d761b624dba21e9d2a850b1103851f5b21c422f",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-validation": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-validation/SKILL.md",
-          "effectiveHash": "f2adaaef051112978d32160231e35e9ebc68c36edbcf0bc42b58e00aac734347",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-valuation": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-valuation/SKILL.md",
-          "effectiveHash": "4cd2fe2f438e570f2888834fa8279163988c9301e80dfd232a3687c68c1ed1c9",
-          "targets": [
-            ".codex/skills"
-          ]
-        },
-        "yss-variable": {
-          "source": "project",
-          "sourceType": "local",
-          "skillPath": ".codex/skills/yss-variable/SKILL.md",
-          "effectiveHash": "737c679f5d8a865e8504a0b4af3ea968fc25fa68c9616832c3f1d0d81b9bba8d",
           "targets": [
             ".codex/skills"
           ]

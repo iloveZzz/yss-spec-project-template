@@ -1,0 +1,41 @@
+.basic-demo {
+  padding: var(--spacing-lg, 24px);
+
+  .cards-grid {
+    display: grid;
+
+    /* 使用 auto-fit 实现自适应布局，最小卡片宽度 280px */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg, 24px);
+  }
+
+  /* 自定义 className 样式示例 */
+  /deep/ .custom-card-style {
+    background: var(--primary-color-bg, #e6f7ff);
+    border-color: var(--primary-color, #1890ff);
+    border-width: 2px;
+
+    .ant-card-head {
+      background: var(--primary-color-light, #bae7ff);
+      border-bottom-color: var(--primary-color, #1890ff);
+    }
+
+    .ant-card-head-title {
+      color: var(--primary-color, #1890ff);
+      font-weight: 600;
+    }
+  }
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .basic-demo {
+    padding: var(--spacing-md, 16px);
+
+    .cards-grid {
+      /* 小屏幕：强制单列 */
+      grid-template-columns: 1fr;
+      gap: var(--spacing-md, 16px);
+    }
+  }
+}

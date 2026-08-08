@@ -1,0 +1,334 @@
+{
+  "db_type": "mysql",
+  "database": "yss_metadata",
+  "schema": "yss_metadata",
+  "tables": [
+    {
+      "table_name": "dbs",
+      "table_comment": "dbs",
+      "primary_keys": [
+        "db_id"
+      ],
+      "columns": [
+        {
+          "name": "db_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "primary": true,
+          "auto_increment": false,
+          "comment": "id"
+        },
+        {
+          "name": "desc",
+          "sql_type": "varchar(4000)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "db_location",
+          "sql_type": "varchar(4000)",
+          "nullable": false,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "name",
+          "sql_type": "varchar(128)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "owner_name",
+          "sql_type": "varchar(128)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "owner_type",
+          "sql_type": "varchar(10)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "db_type",
+          "sql_type": "varchar(256)",
+          "nullable": false,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        }
+      ],
+      "indexes": [
+        {
+          "name": "PRIMARY",
+          "columns": [
+            "db_id"
+          ],
+          "unique": 1,
+          "primary": 1
+        }
+      ],
+      "foreign_keys": []
+    },
+    {
+      "table_name": "sds",
+      "table_comment": "sds",
+      "primary_keys": [],
+      "columns": [
+        {
+          "name": "sd_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "cd_id",
+          "sql_type": "bigint",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "input_format",
+          "sql_type": "varchar(4000)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "is_compressed",
+          "sql_type": "bit(1)",
+          "nullable": false,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "is_storedassubdirectories",
+          "sql_type": "bit(1)",
+          "nullable": false,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "location",
+          "sql_type": "varchar(4000)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "num_buckets",
+          "sql_type": "int",
+          "nullable": false,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "output_format",
+          "sql_type": "varchar(4000)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "serde_id",
+          "sql_type": "bigint",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": []
+    },
+    {
+      "table_name": "tbl_lineage",
+      "table_comment": "tbl_lineage",
+      "primary_keys": [],
+      "columns": [
+        {
+          "name": "db_id",
+          "sql_type": "int",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": "数据库id"
+        },
+        {
+          "name": "tbl_id",
+          "sql_type": "varchar(255)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": "表id"
+        },
+        {
+          "name": "tbl_name",
+          "sql_type": "varchar(255)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": "表名称"
+        },
+        {
+          "name": "up_tbl_id",
+          "sql_type": "varchar(255)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": "上游id"
+        },
+        {
+          "name": "down_tbl_id",
+          "sql_type": "int",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": "下游表id"
+        },
+        {
+          "name": "add_type",
+          "sql_type": "varchar(255)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": "添加方式"
+        },
+        {
+          "name": "create_time",
+          "sql_type": "datetime",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": "创建时间"
+        },
+        {
+          "name": "tbl_type",
+          "sql_type": "varchar(255)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": "表类型（mysql,hive）"
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": []
+    },
+    {
+      "table_name": "tbls",
+      "table_comment": "tbls",
+      "primary_keys": [],
+      "columns": [
+        {
+          "name": "tbl_id",
+          "sql_type": "bigint",
+          "nullable": false,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "create_time",
+          "sql_type": "int",
+          "nullable": false,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "db_id",
+          "sql_type": "bigint",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "last_access_time",
+          "sql_type": "int",
+          "nullable": false,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "owner",
+          "sql_type": "varchar(767)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "owner_type",
+          "sql_type": "varchar(10)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "retention",
+          "sql_type": "int",
+          "nullable": false,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "sd_id",
+          "sql_type": "bigint",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "tbl_name",
+          "sql_type": "varchar(256)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "tbl_type",
+          "sql_type": "varchar(128)",
+          "nullable": true,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        },
+        {
+          "name": "is_rewrite_enabled",
+          "sql_type": "bit(1)",
+          "nullable": false,
+          "primary": false,
+          "auto_increment": false,
+          "comment": ""
+        }
+      ],
+      "indexes": [],
+      "foreign_keys": []
+    }
+  ]
+}

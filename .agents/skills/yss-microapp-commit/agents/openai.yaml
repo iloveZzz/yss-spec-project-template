@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Microapp Commit"
+  short_description: "微应用 Conventional Commit 提交规范"
+  default_prompt: "Use $yss-microapp-commit to generate a Conventional Commit message for a YSS micro-app change."

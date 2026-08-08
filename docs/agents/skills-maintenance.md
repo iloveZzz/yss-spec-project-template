@@ -5,7 +5,7 @@
 ## 权威内容与投影
 
 - `.agents/skills` 是跨 Agent 共享技能的唯一权威内容。
-- `.claude/skills`、`.codex/skills`、`.hermes/skills`、`.pi/skills`、`.trae/skills` 中的同名共享技能是生成投影，不得分别手工修改。
+- `.claude/skills`、`.codex/skills`、`.hermes/skills`、`.pi/skills`、`.qoder/skills`、`.trae/skills` 中的同名共享技能是生成投影，不得分别手工修改。
 - 只属于某个平台的 skill 继续保留在对应 root，并由 `skills-lock.json` 的 `platform` 分组记录。
 - 共享技能投影可以是指向权威目录的符号链接，也可以是完整同步副本；`scripts/sync-skills --check` 会检查链接目标或完整目录哈希。
 
@@ -60,7 +60,18 @@ scripts/update-skill-lock --check
 
 前者检查所有共享投影是否指向或匹配权威内容，后者检查 `skills-lock.json` 是否与当前完整目录树一致。过时技能不会保留兼容别名；旧版项目按 `docs/user-guide/规格与任务迁移指南.md` 一次性迁移。
 
-已退休或 personal 的 Matt 条目（`design-an-interface`、`qa`、`request-refactor-plan`、`ubiquitous-language`、`edit-article`、`obsidian-vault`、`writing-great-skills`）不再进入 `.agents/skills`、五个共享投影根或 `skills-lock.json`。迁移时使用 `codebase-design`、`triage + to-tickets`、`to-spec + improve-codebase-architecture`、`domain-modeling` 等新路由，不创建兼容目录。
+## skills.sh 公开发布
+
+YSS 技能的公开发布仓库为 `iloveZzz/yss-spec-dev-skills`，它是本模板 `.agents/skills` 的单向发布投影，不是新的权威来源。
+
+- `yss-public-skills.json` 冻结允许公开的 YSS 技能清单；新增技能必须显式加入该清单。
+- `scripts/export-yss-skills --output <目录>` 从 canonical skills 生成公开目录；`--check --output <目录>` 只验证已有导出，不写入文件。
+- 公开仓库只包含 `skills/`、README、许可证、`skills.sh.json` 和发布校验；不得复制 `AGENTS.md`、`CONTEXT.md`、`skills-lock.json` 或各 Agent 投影目录。
+- 导出器会将本机绝对路径、Agent root 和模板内部路径转换为公开可移植形式，并阻断重复 skill 名、疑似凭据、符号链接和失效仓库内链接。
+- 发布顺序为：同步 canonical projections → 更新 lock → `scripts/verify-template` → 导出并检查 → 独立审查 → 在 `yss-spec-dev-skills` 提交人工 PR。不得从目标仓库反向覆盖 `.agents/skills`。
+- skills.sh 通过 `npx skills add iloveZzz/yss-spec-dev-skills` 的安装遥测自动发现技能，不需要手工注册；遥测可用 `DISABLE_TELEMETRY=1` 或 `DO_NOT_TRACK` 关闭。
+
+已退休或 personal 的 Matt 条目（`design-an-interface`、`qa`、`request-refactor-plan`、`ubiquitous-language`、`edit-article`、`obsidian-vault`、`writing-great-skills`）不再进入 `.agents/skills`、六个共享投影根或 `skills-lock.json`。迁移时使用 `codebase-design`、`triage + to-tickets`、`to-spec + improve-codebase-architecture`、`domain-modeling` 等新路由，不创建兼容目录。
 
 ## 外部工作流工具
 

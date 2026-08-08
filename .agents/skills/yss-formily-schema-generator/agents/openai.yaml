@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Formily Schema Generator"
+  short_description: "从需求、截图或 Figma 生成表单 schema"
+  default_prompt: "Use $yss-formily-schema-generator to turn requirements, screenshots, or Figma into a YssFormily schema and render plan."

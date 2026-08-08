@@ -70,6 +70,11 @@ ruby -c scripts/update-skill-lock
 git diff --check
 ```
 
+- [x] 新晋升的 45 个技能 description 检查通过：`45/45` 以 `Use when...` 开头。
+- [x] 共享锁条目路径检查通过：`0` 个 `skillPath` 指向 Agent 投影根。
+- [x] 三个目标投影根均为 `112` 个目录，缺失技能和退休入口均为 `0`。
+- [x] 独立 Standards / Spec 审查发现的锁路径和 description 问题已修正并重新通过全部门禁。
+
 阶段边界、问卷暂停 / 回流、Matt/YSS 双轨原型、wizard 人工步骤、诊断脱敏、旧技能名称清理和五个投影根均纳入验证；独立审查仍需在 Git checkpoint 前完成。
 
 ## 2026-08-06：Matt skills 快照升级验证
@@ -88,3 +93,40 @@ git diff --check
 - [x] `scripts/update-skill-lock --check` 通过，锁文件只保留规范 v3 的 `shared/platform` 分组，并保留 Matt `source`、`skillPath`、`upstreamHash` 和 `effectiveHash`。
 - [x] `scripts/verify-lifecycle-scenarios`、`scripts/verify-yss-router-scenarios` 和 `scripts/verify-template` fresh verification 通过。
 - [x] 独立审查确认 `.qoder` 及其他无关脏文件未进入本次 Git checkpoint。
+
+## 2026-08-08：Codex 可加载技能扩展到 Qoder、Pi 和 Trae
+
+### RED：扩展前基线
+
+Codex 的平台清单中有 45 个可直接加载的技能（39 个 YSS 技能和 6 个工程流程技能），但 Qoder、Pi、Trae 各自缺少这 45 个技能；Qoder 另外保留了已退休的 `to-prd`、`to-issues`。原有模板门禁因未纳入 Qoder，仍可通过，说明投影根范围本身是缺口。
+
+同一基线还发现 39 个待提升技能的 description 不符合 `writing-skills` 的 `Use when...` 发现约定，且锁文件会沿用旧的 `.codex/skills` 路径，无法表达新的共享权威源。
+
+独立审查还复现了三个可移植性缺口：Router 场景只覆盖五个投影根；`yss-design-system`、`yss-db2mybatis`、`yss-source-index` 残留 Codex-only 路径；部分 description 混入流程和产出说明。
+
+### GREEN / REFACTOR：目标行为与范围
+
+- 45 个可直接加载技能提升到 `.agents/skills`，共享权威技能由 67 个扩展为 112 个。
+- 45 个待提升技能的 frontmatter description 已统一以 `Use when...` 开头；共享锁条目不再沿用任何 Agent 投影根路径。
+- 共享技能中的执行路径已改为 `.agents/skills` 或环境变量 / 相对路径，不再依赖 Codex 专属路径；description 只保留触发条件。
+- `.qoder/skills` 纳入同步脚本、锁文件和模板发布校验；Qoder、Pi、Trae 均生成 112 个共享技能。
+- Codex 专属的 `data-analytics`、`product-design` 插件包继续保留在 `.codex/skills`，不复制到不具备相同插件运行时的 Agent root。
+- Qoder 的退休入口由同步脚本删除，所有共享投影继续只能从 `.agents/skills` 生成。
+
+### Fresh Verification
+
+```text
+scripts/sync-skills --check
+scripts/update-skill-lock --check
+scripts/verify-template
+scripts/verify-yss-router-scenarios
+ruby -c scripts/sync-skills
+ruby -c scripts/update-skill-lock
+git diff --check
+```
+
+- [x] 新晋升的 45 个技能 description 检查通过：`45/45` 以 `Use when...` 开头。
+- [x] 共享锁条目路径检查通过：`0` 个 `skillPath` 指向 Agent 投影根。
+- [x] 三个目标投影根均为 `112` 个目录，缺失技能和退休入口均为 `0`。
+- [x] Router 核心 scaffold 投影覆盖六个 Agent root；Codex-only 插件包仍只存在于 Codex。
+- [x] 独立 Standards / Spec 审查发现的锁路径、description 和可移植性问题已修正并重新通过全部门禁。

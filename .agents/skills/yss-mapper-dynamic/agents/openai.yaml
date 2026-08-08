@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-mapper-dynamic"
+  short_description: "YSS component skill for yss-mapper-dynamic"
+  default_prompt: "Use yss-mapper-dynamic for this YSS backend component task."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-filerunner"
+  short_description: "YSS component skill for yss-filerunner"
+  default_prompt: "Use yss-filerunner for this YSS backend component task."

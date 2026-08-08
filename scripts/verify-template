@@ -78,6 +78,15 @@ unless lock["version"] == 3 && lock["canonicalRoot"] == ".agents/skills"
   exit 1
 end
 
+projection_roots = lock.fetch("projectionRoots", [])
+lock.fetch("skills", {}).fetch("shared", {}).each do |skill_name, metadata|
+  skill_path = metadata.fetch("skillPath", "")
+  if projection_roots.any? { |projection_root| skill_path.start_with?("#{projection_root}/") }
+    warn "共享 skill 的 skillPath 不得指向投影根: #{skill_name} -> #{skill_path}"
+    exit 1
+  end
+end
+
 openapi_path = root.join("docs/templates/openapi-spec-template.yaml")
 openapi_text = openapi_path.read.sub(/\A---\n.*?\n---\n/m, "")
 YAML.safe_load(openapi_text, permitted_classes: [], aliases: true)
@@ -101,6 +110,7 @@ agent_roots = %w[
   .codex/skills
   .hermes/skills
   .pi/skills
+  .qoder/skills
   .trae/skills
 ]
 obsolete_names = [
@@ -156,7 +166,7 @@ legacy_patterns = {
   "单数 Agent root 声明" => /\.agent\//
 }.freeze
 
-scan_entries = %w[AGENTS.md CONTEXT.md README.md docs scripts .agents .claude .codex .hermes .pi .trae]
+scan_entries = %w[AGENTS.md CONTEXT.md README.md docs scripts .agents .claude .codex .hermes .pi .qoder .trae]
 files = scan_entries.flat_map do |entry|
   path = root.join(entry)
   path.directory? ? path.glob("**/*", File::FNM_DOTMATCH) : [path]

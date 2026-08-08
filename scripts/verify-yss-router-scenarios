@@ -717,7 +717,7 @@ shared_core.each do |skill|
   failures << "Shared core skill missing: #{skill}" unless ROOT.join(".agents/skills", skill, "SKILL.md").file?
 end
 
-projection_roots = %w[.claude .codex .hermes .pi .trae]
+projection_roots = %w[.claude .codex .hermes .pi .qoder .trae]
 top_level_scaffold_skills = %w[
   yss-backend-scaffold-application yss-backend-scaffold-domain
   yss-backend-scaffold-infrastructure yss-backend-scaffold-web

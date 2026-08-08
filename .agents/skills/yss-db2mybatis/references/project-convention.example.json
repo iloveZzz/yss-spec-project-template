@@ -1,0 +1,14 @@
+{
+  "audit_columns": [
+    "created_by",
+    "created_date",
+    "last_modified_by",
+    "last_modified_date"
+  ],
+  "logic_delete_fields": [
+    "deleted",
+    "is_deleted"
+  ],
+  "pk_strategy": "error",
+  "page_method_name": "page"
+}

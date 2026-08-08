@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Review Process"
+  short_description: "Run GitLab-based code review process"
+  default_prompt: "Use $code-review-process to run a GitLab merge-request code review with clear findings, roles, and follow-up."

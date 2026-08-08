@@ -45,7 +45,7 @@ README、用户指南和其他说明文档只引用或解释上述事实，不�
 硬门禁：
 
 - 修改 skill、`AGENTS.md`、流程规则或模板时，必须使用 `writing-skills` 的 RED / GREEN / REFACTOR 思路，保留基线失败、压力场景和修订后验证证据。
-- `.agents/skills` 是跨 Agent 共享技能的权威内容；`.claude/skills`、`.codex/skills`、`.hermes/skills`、`.pi/skills`、`.trae/skills` 中的共享技能是生成投影，禁止分别手工修改。
+- `.agents/skills` 是跨 Agent 共享技能的权威内容；`.claude/skills`、`.codex/skills`、`.hermes/skills`、`.pi/skills`、`.qoder/skills`、`.trae/skills` 中的共享技能是生成投影，禁止分别手工修改。
 - `scripts/verify-template` 是模板发布阻断门禁。模板与外部 `create-yss-spec` 的跨仓库契约未完成集成验证时，不得声称可发布。
 
 ## 5. `project-instance` 产品研发路由

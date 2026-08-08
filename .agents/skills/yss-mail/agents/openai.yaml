@@ -1,0 +1,4 @@
+interface:
+  display_name: "yss-mail"
+  short_description: "YSS component skill for yss-mail"
+  default_prompt: "Use yss-mail for this YSS backend component task."
