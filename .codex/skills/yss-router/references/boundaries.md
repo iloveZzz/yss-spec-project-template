@@ -42,24 +42,15 @@ Default for end-to-end backend CRUD: include Domain, Application, Infrastructure
 - `yss-distributed-id`: ID strategies, AutoIdInterceptor, Leaf/CosId/Snowflake, batch ID injection.
 - `yss-jdbc`: Hutool Db, dynamic datasource JDBC, JdbcSqlUtil, batch SQL execution.
 - `yss-dictionary`: Dictionary/domain item APIs and dictionary component integration.
-- `yss-dir`: Directory/resource tree component behavior.
-- `yss-file`: Base file abstractions and file parser utilities.
 - `yss-log`: Logging starter auto-configuration and log extension points.
 - `yss-resilience4j`: Circuit breaker, fallback, and gateway resilience integration.
-- `yss-sql-condition`: SQL condition parsing, validation, and condition builder behavior.
-- `yss-sql-tpl`: SQL template definition, rendering, and template management.
 - `yss-taskflow`: Task flow definition/execution component behavior.
 - `yss-validation`: Validation engine and JSR-303 integration.
 - `yss-security-algorithm`: RSA/AES/crypto/security algorithm utilities.
 - `yss-userinfo`: Current-user info propagation and starter integration.
 - `yss-variable`: Variable component APIs and variable resolution.
-- `yss-quality`: Quality starter behavior.
 - `yss-exception`: Exception component and unified exception handling.
-- `yss-mail`: Mail starter and email sending.
-- `yss-filerunner`: File runner component behavior.
 - `yss-valuation`: Valuation component behavior.
-- `yss-duckdb`: DuckDB component behavior.
-- `yss-mapper-dynamic`: Dynamic mapper component behavior.
 
 Component skills should inspect generated `references/source-index.md` before changing code when the task depends on exact class or config names.
 

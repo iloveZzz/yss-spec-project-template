@@ -14,24 +14,15 @@ The refresh script maps component source path hints to skill references. These p
 | `yss-distributed-id` | `yss-microservice-components/yss-component-distributed-id`, `yss-microservice-components/yss-component-leaf` |
 | `yss-jdbc` | `yss-microservice-components/yss-component-jdbc` |
 | `yss-dictionary` | `yss-microservice-components/yss-component-dictionary-parent` |
-| `yss-dir` | `yss-microservice-components/yss-component-dir-parent` |
-| `yss-file` | `yss-microservice-components/yss-component-file`, `yss-microservice-components/yss-component-file-parser`, `yss-microservice-components/yss-component-filemanager-common` |
 | `yss-log` | `yss-microservice-components/yss-component-log-starter` |
 | `yss-resilience4j` | `yss-microservice-components/yss-component-resilience4j-starter` |
-| `yss-sql-condition` | `yss-microservice-components/yss-component-sql-condition` |
-| `yss-sql-tpl` | `yss-microservice-components/yss-component-sql-tpl-parent` |
 | `yss-taskflow` | `yss-microservice-components/yss-component-taskflow` |
 | `yss-validation` | `yss-microservice-components/yss-component-validation-engine-parent`, `yss-microservice-components/yss-component-validation-jsr303` |
 | `yss-security-algorithm` | `yss-microservice-components/yss-component-security-algorithm` |
 | `yss-userinfo` | `yss-microservice-components/yss-component-userinfo-starter` |
 | `yss-variable` | `yss-microservice-components/yss-component-variable` |
-| `yss-quality` | `yss-microservice-components/yss-component-quality-starter` |
 | `yss-exception` | `yss-microservice-components/yss-component-exception` |
-| `yss-mail` | `yss-microservice-components/yss-component-mail-starter` |
-| `yss-filerunner` | `yss-microservice-components/yss-component-filerunner-parent` |
 | `yss-valuation` | `yss-microservice-components/yss-component-valuation` |
-| `yss-duckdb` | `yss-microservice-components/yss-component-duckdb` |
-| `yss-mapper-dynamic` | `yss-microservice-components/yss-component-mapper-dynamic` |
 
 Frontend docs are written to these skills:
 

@@ -1,4 +1,0 @@
-interface:
-  display_name: "yss-file"
-  short_description: "YSS component skill for yss-file"
-  default_prompt: "Use yss-file for this YSS backend component task."

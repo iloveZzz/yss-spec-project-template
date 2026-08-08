@@ -27,6 +27,15 @@ OBSOLETE_SKILLS = %w[
   edit-article
   obsidian-vault
   writing-great-skills
+  yss-dir
+  yss-duckdb
+  yss-file
+  yss-filerunner
+  yss-mail
+  yss-mapper-dynamic
+  yss-quality
+  yss-sql-condition
+  yss-sql-tpl
 ].freeze
 
 def skill_names(root)

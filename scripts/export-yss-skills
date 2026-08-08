@@ -1,0 +1,377 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "digest"
+require "fileutils"
+require "json"
+require "optparse"
+require "pathname"
+require "tmpdir"
+
+ROOT = Pathname.new(__dir__).parent.expand_path
+CANONICAL_ROOT = ROOT.join(".agents", "skills")
+CONFIG_PATH = ROOT.join("yss-public-skills.json")
+MANAGED_PATHS = %w[skills skills.sh.json .yss-export-manifest.json].freeze
+FORBIDDEN_TOP_LEVEL = %w[
+  AGENTS.md
+  CONTEXT.md
+  docs
+  skills-lock.json
+  .agents
+  .claude
+  .codex
+  .hermes
+  .pi
+  .qoder
+  .trae
+].freeze
+PORTABILITY_NOTE = <<~MARKDOWN
+
+  > **消费项目上下文：** 本公开技能包不携带消费项目的 `AGENTS.md`、`CONTEXT.md` 或 `docs/`。文档中出现的这些路径均指可选的消费项目上下文；技能自身所需的参考资料、资源和脚本已随技能一同提供。
+MARKDOWN
+
+def abort_with(message)
+  warn "export-yss-skills: #{message}"
+  exit 1
+end
+
+def normalized_name(name)
+  name.downcase.gsub(/[\s_]+/, "-")
+end
+
+def parse_frontmatter(path)
+  text = File.binread(path).force_encoding(Encoding::UTF_8)
+  match = /\A---[ \t]*\r?\n(.*?)\r?\n---[ \t]*(?:\r?\n|\z)/m.match(text)
+  abort_with("invalid frontmatter: #{path}") unless match
+
+  fields = {}
+  match[1].each_line do |line|
+    key, value = line.chomp.split(":", 2)
+    next unless key && value
+
+    key = key.strip
+    value = value.strip
+    value = value[1..-2] if value.length >= 2 && ((value.start_with?("\"") && value.end_with?("\"")) || (value.start_with?("'") && value.end_with?("'")))
+    fields[key] = value
+  end
+
+  %w[name description].each do |key|
+    abort_with("frontmatter #{key} must be a string: #{path}") unless fields[key].is_a?(String) && !fields[key].empty?
+  end
+  [fields, match.end(0)]
+end
+
+def public_relative_prefix(relative_file)
+  current_dir = Pathname.new("skills").join(File.dirname(relative_file))
+  prefix = Pathname.new("skills").relative_path_from(current_dir).to_s
+  prefix == "." ? "" : prefix
+end
+
+def portable_skill_path(relative_file)
+  prefix = public_relative_prefix(relative_file)
+  prefix.empty? ? "" : "#{prefix}/"
+end
+
+def sanitize_text(text, relative_file)
+  text = text.dup.force_encoding(Encoding::UTF_8)
+  return text unless text.valid_encoding?
+
+  if relative_file.end_with?("assets/wrapper/.mvn/maven.config")
+    return <<~CONFIG
+      # Optional consuming-project Maven deployment configuration.
+      # Configure repository URLs and profiles in the consuming project or CI.
+    CONFIG
+  end
+
+  # Convert source-tree paths to links in the public `skills/` layout.
+  text = text.gsub(%r{/path/to/\.agents/skills}) { "$YSS_SKILLS_ROOT" }
+  text = text.gsub(%r{(?:\$\{base_project\}/)?(?:/path/to/)?\.(?:agents|claude|codex|hermes|pi|qoder|trae)/skills/}) { portable_skill_path(relative_file) }
+  text = text.gsub(%r{\.(?:agents|claude|codex|hermes|pi|qoder|trae)/skills\b}) { "the canonical public skill source" }
+  text = text.gsub(%r{/path/to/skill-creator}) { "skill-creator" }
+  text = text.gsub(%r{/path/}) { "./path/" }
+
+  # Remove workstation-only paths and private-network documentation endpoints.
+  text = text.gsub(%r{/(?:Users|home|private)/[^\s`"'()<>\]]+}) { "<local-path-removed>" }
+  text = text.gsub(%r{/tmp/}) { "./tmp/" }
+  text = text.gsub("yss-spec-project-template", "the consuming project")
+  text = text.gsub(/\[([^\]]*)\]\(https?:\/\/192\.168\.[^\s)]+\)/) { Regexp.last_match(1) }
+  text = text.gsub(%r{https?://192\.168\.[^\s)`>]+}) { "the consuming project's optional YSS documentation" }
+  text = text.gsub("${base_project}", "the consuming project")
+
+  # One bundled guide links to a sibling guide through an extra `guide/`
+  # segment; normalize that link only in the directory where it is valid.
+  text = text.gsub(%r{(\]\(\./)guide/}, '\\1') if relative_file.include?("/assets/docs/guide/")
+
+  # Convert the bundled YSS UI site's root-relative documentation routes to
+  # files in this skill's local `assets/docs` tree.
+  if relative_file.include?("/assets/docs/")
+    text = text.gsub(/\[([^\]]+)\]\(\/(guide|components|hooks|utils)(\/[^)#]+)?(#[^)]*)?\)/) do
+      label, section, suffix, fragment = Regexp.last_match.captures
+      next label if section == "utils"
+
+      route = suffix ? suffix.delete_prefix("/") : nil
+      target = if section == "guide"
+                 route ? "./#{route}.md" : "./"
+               elsif section == "components"
+                 "../components/#{route}.md"
+               else
+                 route ? "../hooks/#{route}.md" : "../hooks/"
+               end
+      "[#{label}](#{target}#{fragment})"
+    end
+  end
+
+  # Public examples must not carry usable passwords or token-like values.
+  text = text.gsub(/((?:["']?(?:password|passwd|secret|token|api[_-]?key|access[_-]?key)["']?\s*[:=]\s*["']))[^"'\r\n]*(["'])/i) { "#{$1}CHANGE_ME#{$2}" }
+  text = text.gsub(/(["'])(?:admin123|guest|123456)\1/i) { "#{$1}CHANGE_ME#{$1}" }
+
+  if relative_file.end_with?("SKILL.md") && !text.include?("消费项目上下文")
+    frontmatter = /\A---[ \t]*\r?\n.*?\r?\n---[ \t]*(?:\r?\n|\z)/m.match(text)
+    text = "#{frontmatter[0]}#{PORTABILITY_NOTE}#{text[frontmatter.end(0)..]}" if frontmatter
+  end
+  text = text.lines.map(&:rstrip).join("\n")
+  text.empty? ? text : "#{text.rstrip}\n"
+end
+
+def safe_source_files(skill_dir)
+  files = []
+  Dir.glob(skill_dir.join("**", "*").to_s, File::FNM_DOTMATCH).sort.each do |entry|
+    next if [".", ".."].include?(File.basename(entry)) || File.basename(entry) == ".DS_Store"
+
+    stat = File.lstat(entry)
+    abort_with("symbolic links are not allowed: #{entry}") if stat.symlink?
+    abort_with("unsupported source entry: #{entry}") unless stat.file? || stat.directory?
+    files << Pathname.new(entry) if stat.file?
+  end
+  files
+end
+
+def relative_files(root)
+  return [] unless root.directory?
+
+  Dir.glob(root.join("**", "*").to_s, File::FNM_DOTMATCH).each_with_object([]) do |entry, files|
+    next if [".", ".."].include?(File.basename(entry))
+
+    path = Pathname.new(entry)
+    files << path.relative_path_from(root).to_s if path.file?
+  end.sort
+end
+
+def suspicious_content?(text)
+  text.match?(/-----BEGIN (?:[A-Z0-9 ]+ )?PRIVATE KEY-----/) ||
+    text.match?(/(?:ghp_|github_pat_|github_token_|xox[baprs]-)[A-Za-z0-9_-]+/) ||
+    text.match?(/AKIA[0-9A-Z]{16}/)
+end
+
+def validate_markdown_links(root)
+  relative_files(root).each do |relative|
+    next unless relative.end_with?(".md")
+
+    path = root.join(relative)
+    text = File.binread(path).force_encoding(Encoding::UTF_8)
+    next unless text.valid_encoding?
+
+    text.scan(/!?\[[^\]]*\]\(([^)]+)\)/).each do |match|
+      href = match[0].strip.split(/[ \t]+/, 2).first
+      href = href[1..-2] if href&.start_with?("<") && href.end_with?(">")
+      next if href.nil? || href.empty? || href.start_with?("#", "http://", "https://", "mailto:", "<", "${")
+
+      target = href.split("#", 2).first
+      next if target.empty?
+
+      resolved = path.dirname.join(target).cleanpath
+      abort_with("link escapes public export: #{relative} -> #{href}") unless resolved.to_s.start_with?(root.to_s)
+      abort_with("broken internal link: #{relative} -> #{href}") unless resolved.file? || resolved.directory?
+    end
+  end
+end
+
+def ensure_output_destination(output)
+  abort_with("canonical skill root is missing: #{CANONICAL_ROOT}") unless CANONICAL_ROOT.directory?
+  abort_with("canonical skill root must not be a symbolic link: #{CANONICAL_ROOT}") if File.symlink?(CANONICAL_ROOT)
+
+  canonical = CANONICAL_ROOT.realpath
+  if output == canonical || output.to_s.start_with?("#{canonical}/") || canonical.to_s.start_with?("#{output}/")
+    abort_with("output directory must not overlap canonical skills: #{output}")
+  end
+  abort_with("output directory must not be a symbolic link: #{output}") if output.exist? && File.symlink?(output)
+
+  if output.directory?
+    MANAGED_PATHS.each do |entry|
+      abort_with("managed export path must not be a symbolic link: #{output.join(entry)}") if File.symlink?(output.join(entry))
+    end
+    FORBIDDEN_TOP_LEVEL.each do |entry|
+      abort_with("forbidden project file in public export: #{entry}") if output.join(entry).exist?
+    end
+  end
+end
+
+def validate_export(output, expected_names)
+  expected_names.each do |directory|
+    path = output.join("skills", directory, "SKILL.md")
+    abort_with("missing exported skill: #{path}") unless path.file?
+  end
+
+  FORBIDDEN_TOP_LEVEL.each do |entry|
+    abort_with("forbidden project file in public export: #{entry}") if output.join(entry).exist?
+  end
+
+  relative_files(output.join("skills")).each do |relative|
+    path = output.join("skills", relative)
+    abort_with("symbolic link in public export: #{path}") if File.symlink?(path)
+    text = File.binread(path)
+    next if text.include?("\x00")
+
+    decoded = text.force_encoding(Encoding::UTF_8)
+    next unless decoded.valid_encoding?
+    abort_with("suspicious credential-like content: #{path}") if suspicious_content?(decoded)
+    abort_with("absolute local path in public export: #{path}") if decoded.match?(%r{(?:\A|[^.\w])/(?:Users|home|private|tmp)/})
+    abort_with("Agent root path in public export: #{path}") if decoded.match?(%r{\.(?:agents|claude|codex|hermes|pi|qoder|trae)/skills})
+  end
+
+  validate_markdown_links(output.join("skills"))
+end
+
+def load_config
+  abort_with("missing #{CONFIG_PATH}") unless CONFIG_PATH.file?
+
+  config = JSON.parse(CONFIG_PATH.read)
+  skills = config["skills"]
+  abort_with("yss-public-skills.json skills must be a non-empty array") unless skills.is_a?(Array) && !skills.empty?
+  abort_with("duplicate skill directory in public list") unless skills.uniq.length == skills.length
+  skills.each do |skill|
+    abort_with("invalid skill directory: #{skill.inspect}") unless skill.is_a?(String) && skill.match?(/\Ayss-[a-z0-9]+(?:-[a-z0-9]+)*\z/)
+  end
+
+  abort_with("canonical_root must be .agents/skills") unless config["canonical_root"] == ".agents/skills"
+  groupings = config["groupings"]
+  abort_with("yss-public-skills.json groupings must be an array") unless groupings.is_a?(Array) && !groupings.empty?
+  grouped = []
+  groupings.each do |group|
+    abort_with("invalid public skill grouping") unless group.is_a?(Hash) && group["title"].is_a?(String) && !group["title"].empty? && group["description"].is_a?(String) && group["skills"].is_a?(Array) && !group["skills"].empty?
+    group["skills"].each do |skill|
+      abort_with("unknown grouped skill: #{skill}") unless skills.include?(skill)
+      grouped << skill
+    end
+  end
+  abort_with("a skill appears in more than one public grouping") unless grouped.uniq.length == grouped.length
+  abort_with("public grouping does not cover every listed skill") unless grouped.sort == skills.sort
+
+  config
+rescue JSON::ParserError => e
+  abort_with("invalid yss-public-skills.json: #{e.message}")
+end
+
+def build_export(output, config)
+  output = Pathname.new(output).expand_path
+  ensure_output_destination(output)
+  FileUtils.mkdir_p(output)
+  FileUtils.rm_rf(output.join("skills"))
+  FileUtils.rm_f(output.join("skills.sh.json"))
+  FileUtils.rm_f(output.join(".yss-export-manifest.json"))
+  FileUtils.mkdir_p(output.join("skills"))
+
+  exported = []
+  config.fetch("skills").each do |directory|
+    source = CANONICAL_ROOT.join(directory)
+    abort_with("listed skill directory must not be a symbolic link: #{source}") if File.symlink?(source)
+    abort_with("listed skill directory does not exist: #{source}") unless source.directory?
+    source_skill = source.join("SKILL.md")
+    abort_with("listed skill has no SKILL.md: #{source_skill}") unless source_skill.file?
+    fields, = parse_frontmatter(source_skill)
+    normalized = normalized_name(fields.fetch("name"))
+    abort_with("duplicate normalized skill name: #{fields.fetch('name')}") if exported.any? { |item| normalized_name(item.fetch("name")) == normalized }
+
+    destination = output.join("skills", directory)
+    FileUtils.mkdir_p(destination)
+    exported_files = []
+    safe_source_files(source).each do |file|
+      relative = file.relative_path_from(source).to_s
+      target = destination.join(relative)
+      FileUtils.mkdir_p(target.dirname)
+      bytes = File.binread(file)
+      source_text = bytes.dup.force_encoding(Encoding::UTF_8)
+      public_relative = File.join(directory, relative)
+      File.binwrite(target, bytes.include?("\x00") || !source_text.valid_encoding? ? bytes : sanitize_text(bytes, public_relative))
+      FileUtils.chmod(file.stat.mode & 0o7777, target)
+      exported_files << relative
+    end
+
+    exported << {
+      "directory" => directory,
+      "name" => fields.fetch("name"),
+      "description" => fields.fetch("description"),
+      "files" => exported_files.sort
+    }
+  end
+
+  public_names = exported.to_h { |item| [item.fetch("directory"), item.fetch("name")] }
+  skills_sh_groupings = config.fetch("groupings").map do |group|
+    group.merge("skills" => group.fetch("skills").map { |directory| public_names.fetch(directory) })
+  end
+  skills_sh = {
+    "$schema" => "https://skills.sh/schemas/skills.sh.schema.json",
+    "notGrouped" => "bottom",
+    "groupings" => skills_sh_groupings
+  }
+  File.write(output.join("skills.sh.json"), JSON.pretty_generate(skills_sh) + "\n")
+
+  manifest = {
+    "format_version" => 1,
+    "source" => {
+      "repository" => config.fetch("repository"),
+      "canonical_root" => config.fetch("canonical_root")
+    },
+    "skills" => exported,
+    "generated_files_sha256" => relative_files(output.join("skills")).to_h do |relative|
+      [relative, Digest::SHA256.file(output.join("skills", relative)).hexdigest]
+    end
+  }
+  File.write(output.join(".yss-export-manifest.json"), JSON.pretty_generate(manifest) + "\n")
+  validate_export(output, config.fetch("skills"))
+end
+
+def compare_managed(expected, actual)
+  expected_paths = MANAGED_PATHS.flat_map do |path|
+    root = expected.join(path)
+    root.directory? ? relative_files(root).map { |file| Pathname.new(path).join(file).to_s } : [path]
+  end.sort
+  actual_paths = MANAGED_PATHS.flat_map do |path|
+    root = actual.join(path)
+    root.directory? ? relative_files(root).map { |file| Pathname.new(path).join(file).to_s } : [path]
+  end.sort
+  abort_with("export is out of date; managed file list differs") unless expected_paths == actual_paths
+
+  expected_paths.each do |relative|
+    expected_bytes = File.binread(expected.join(relative))
+    actual_path = actual.join(relative)
+    abort_with("export is out of date: #{relative}") unless actual_path.file? && File.binread(actual_path) == expected_bytes
+  end
+end
+
+options = { check: false }
+parser = OptionParser.new do |opts|
+  opts.banner = "Usage: scripts/export-yss-skills --output DIR [--check]"
+  opts.on("--output DIR", "Export destination") { |value| options[:output] = value }
+  opts.on("--check", "Validate an existing export without writing") { options[:check] = true }
+  opts.on("-h", "--help", "Show this help") { puts opts; exit 0 }
+end
+parser.parse!
+abort_with("--output is required") unless options[:output]
+
+config = load_config
+output = Pathname.new(options[:output]).expand_path
+if options[:check]
+  ensure_output_destination(output)
+  abort_with("export directory does not exist: #{output}") unless output.directory?
+  Dir.mktmpdir("yss-export-check-") do |temporary|
+    expected = Pathname.new(temporary)
+    build_export(expected, config)
+    validate_export(output, config.fetch("skills"))
+    compare_managed(expected, output)
+  end
+  puts "YSS public export is up to date: #{output}"
+else
+  build_export(output, config)
+  puts "Exported #{config.fetch('skills').length} YSS skills to #{output}"
+end
