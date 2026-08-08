@@ -1,6 +1,6 @@
 ---
 name: yss-repository
-description: 用于生成或重构 YSS Repository 持久层与 Domain Gateway 实现。当用户要求按表结构、DDL、metadata 或现有领域模型补齐 PO、Repository、Convertor、GatewayImpl 时调用。
+description: Use when generating or refactoring YSS persistence models, BaseRepository/MyBatis repositories, MapStruct convertors, Domain Gateway implementations, or metadata/DDL-backed queries.
 ---
 
 # yss-repository
@@ -22,16 +22,17 @@ description: 用于生成或重构 YSS Repository 持久层与 Domain Gateway �
 ## 工作方式
 
 1. 先确认输入来源：领域模型、metadata、数据库表、DDL。
-2. 如果 metadata 不完整，优先转到 `yss-db2mybatis` 提取。
-3. 涉及 POJO 字段、getter/setter、constructor、builder 或日志时，必须加载并遵守 `lombok`。
-4. 涉及 `PO <-> Domain Model`、集合转换、更新映射或枚举转换时，必须加载并遵守 `mapstruct`。
-5. 生成代码时严格保持 Domain 与 Infrastructure 分层边界。
-6. 默认先生成基础 CRUD 骨架，把复杂查询留给手工实现。
+2. 探测持久化 profile：新 DDD 默认 `PO <-> Domain Model`；legacy YSS 常见 `Entity + BaseRepository + GatewayImpl`。沿用现有工程命名，不混用两套模型。
+3. 如果 metadata 不完整，优先转到 `yss-db2mybatis` 提取。
+4. 涉及 POJO 字段、getter/setter、constructor、builder 或日志时，必须加载并遵守 `lombok`。
+5. 涉及持久化模型与 Domain/VO/CMD 转换时，必须加载并遵守 `mapstruct`。
+6. 生成代码时严格保持 Domain 与 Infrastructure 分层边界。
+7. 默认先生成基础 CRUD 骨架，把复杂查询留给手工实现。
 
 ## 产物范围
 
 - `domain/{segment}/gateway/*Gateway.java`
-- `repository/entity/*PO.java`
+- `repository/entity/*PO.java`（legacy profile 沿用 `*Entity.java`）
 - `repository/*Repository.java`
 - `repository/convertor/*Convertor.java`
 - `repository/gateway/impl/*GatewayImpl.java`
@@ -44,6 +45,7 @@ description: 用于生成或重构 YSS Repository 持久层与 Domain Gateway �
 - Convertor 必须优先使用 MapStruct；禁止 `BeanUtils.copyProperties`、反射式通用拷贝和重复手写字段赋值，除非实现合同记录受控例外、测试和 review 证据。
 - MapStruct 与 Lombok 同时使用时，必须确认注解处理器顺序和 `lombok-mapstruct-binding` 配置；构建命令使用项目根目录 `./mvnw ...`。
 - 逻辑删除、审计字段、主键策略要显式处理，不要隐式略过。
+- 事务放在批准的 Application 用例边界；legacy GatewayImpl 已有事务时先记录并测试迁移影响，不重复嵌套制造假边界。
 
 ## 质量门禁
 

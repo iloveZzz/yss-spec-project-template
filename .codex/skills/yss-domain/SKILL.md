@@ -7,6 +7,8 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 
 这是一个建模型 skill。核心目标是先把领域语义和边界建立清楚，再落代码。
 
+默认输出是新 DDD target profile；现有 YSS 组件仓库常见 `core/client/repository`、贫血对象和 VO 型 Gateway 只是 legacy profile，不得静默复制成新模块架构。
+
 ## 何时使用
 
 - 用户要求先做 Domain、先抽象实体或聚合。
@@ -30,7 +32,7 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 
 - `domain/{segment}/model/*Entity.java`
 - `domain/{segment}/gateway/*Gateway.java`
-- 任务明确要求时，可顺带补 `client/dto/cmd`、`client/dto/query`、`client/vo`
+- DTO/VO 属于 client/web 契约，转交 `yss-dto` / `yss-web-controller`；Domain skill 不顺带生成。
 
 ## 建模约束
 
@@ -38,6 +40,8 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 - 领域行为放在模型方法，不要放在 Web 层。
 - Gateway 只暴露领域能力，不暴露持久化细节。
 - 对关键状态流转给出明确方法，如 `publish()`、`cancel()`、`terminate()`。
+- 明确 Aggregate Root、Entity identity、Value Object、不变量、Domain Event 和一致性边界；没有业务行为时不要伪造富领域模型。
+- 发现 legacy profile 时先记录迁移/兼容决策，不把 Repository Entity 当 Domain Entity。
 
 ## 质量要求
 

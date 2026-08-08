@@ -13,7 +13,7 @@ description: Use when a YSS vertical slice is entering implementation, spans mul
 
 ## 编译循环
 
-1. 判断 frontend/backend/API/data/cross-repo 影响。
+1. 判断 frontend/backend/API/data/cross-repo 影响，并逐项填写 backend `component_impacts`。
 2. 检查工程存在性和核心/长尾 skill 可用性。
 3. 选择主 skill，并按 [router-contract.yaml](references/router-contract.yaml) 计算强制依赖闭包。
 4. 为切片生成基线合同；为当前行为生成工作单元增量路由。
@@ -29,6 +29,7 @@ description: Use when a YSS vertical slice is entering implementation, spans mul
 - Repository/数据模型影响缺少数据架构时，不得路由持久化实现。
 - API 变化必须回到生命周期 Draft/Review/Freeze；半成品 backend 不得冒充稳定 source of truth。
 - 后端端到端切片必须包含 Application；对象/POJO 影响按契约自动补 `mapstruct`、`lombok`、`alibaba-java-code-style`。
+- 当前用户、审计事件、普通技术日志、请求校验、错误映射或加解密命中时，必须按 `router-contract.yaml` 的 `component_impact_routing` 补齐长尾 skill；不能只在 `boundaries.md` 中提及。
 - 业务行为使用 `behavior-tdd`；只有机械脚手架/生成物可用 `controlled-generation`，并记录例外和验证。
 - 专项结果中的越界路径、缺失证据、`drift`、`violation` 或 `new_impacts` 必须阻断或重路由。
 - 长尾 skill 不可用时显式 `blocked`，不得用通用知识假装已应用 YSS 规范。

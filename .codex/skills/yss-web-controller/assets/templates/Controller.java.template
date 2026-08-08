@@ -1,6 +1,6 @@
 package ${base_package}.rest;
 
-${gateway_import}
+${application_service_import}
 ${dto_imports}
 ${domain_import}
 ${web_convertor_import}
@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import ${validation_namespace}.validation.Valid;
 
 /**
  * ${domain_desc} 管理
@@ -22,7 +23,7 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "${domain_desc}管理")
 public class ${domain_class}Controller {
 
-    ${gateway_field}
+    ${application_service_field}
     private static final ${web_convertor_class} CONVERTOR = ${web_convertor_class}.INSTANCE;
 
     /**
@@ -30,7 +31,7 @@ public class ${domain_class}Controller {
      */
     @PostMapping("/page")
     @ApiOperation("分页查询")
-    public PageResult<${vo_class}> page(@RequestBody ${query_class} query) {
+    public PageResult<${vo_class}> page(@Valid @RequestBody ${query_class} query) {
         return CONVERTOR.toVOPage(${query_call});
     }
 
@@ -48,7 +49,7 @@ public class ${domain_class}Controller {
      */
     @PostMapping
     @ApiOperation("新增")
-    public SingleResult<Long> add(@RequestBody ${add_cmd_class} cmd) {
+    public SingleResult<Long> add(@Valid @RequestBody ${add_cmd_class} cmd) {
         return SingleResult.of(${add_call});
     }
 
@@ -57,7 +58,7 @@ public class ${domain_class}Controller {
      */
     @PutMapping
     @ApiOperation("更新")
-    public SingleResult<Boolean> update(@RequestBody ${update_cmd_class} cmd) {
+    public SingleResult<Boolean> update(@Valid @RequestBody ${update_cmd_class} cmd) {
         return SingleResult.of(${update_call});
     }
 

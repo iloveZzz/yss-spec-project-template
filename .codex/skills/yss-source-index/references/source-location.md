@@ -6,6 +6,7 @@ YSS skill references may mention paths such as `yss-microservice-components/yss-
 
 1. Check the current workspace first. If `.codegraph/` exists, use `codegraph explore "<class, module, or path hint>"` before text search.
 2. If the component source is outside the workspace, use `YSS_SOURCE_ROOT` when it is set. It should point to the repository root that contains `yss-microservice-components`.
+   Compare `git -C "$YSS_SOURCE_ROOT" rev-parse HEAD` with the selected index `Source commit`; mismatch is `stale` and blocks exact implementation guidance until refresh.
 3. If `YSS_SOURCE_ROOT` is not set, search common local roots such as the current repository parents, `~/Projects`, `~/Documents`, and `~/Documents/yss-project`.
 4. If the source still cannot be found, use the generated `references/source-index.md` as a stale-but-useful map of module names, package names, class names, and Maven artifacts. Do not assume listed files exist locally.
 

@@ -59,6 +59,7 @@ slice_contract:
   backend:
     status: not-applicable
     affected_layers: []
+    component_impacts: []
     required_skills: []
     application_boundary:
     transaction_boundary:

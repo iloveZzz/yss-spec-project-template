@@ -1,6 +1,6 @@
 ---
 name: yss-userinfo
-description: Use when 用于 YSS userinfo starter、AuthUserInfoUtil、当前用户信息获取、用户上下文和认证用户信息排障。
+description: Use when YSS current-user context, `AuthUserInfoUtil`, propagated user headers, JWT user payloads, Redis user cache, or background-user fallback is involved.
 ---
 
 # yss-userinfo
@@ -21,14 +21,15 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 
 1. Identify whether the task is current-user lookup, request header propagation, JWT parsing, Redis user cache lookup, or non-REST/background fallback behavior.
 2. Read `references/source-index.md`, then inspect `AuthUserInfoUtil`, `DmUser`, and `DmUserDetails`.
-3. Prefer `AuthUserInfoUtil.userInfo()`, `userName()`, `userCode()`, or `currentUserJson()` over manually parsing request headers in business code.
+3. Prefer `AuthUserInfoUtil.userInfo()`, `userName()`, `userCode()`, or `currentUserJson()` over manually parsing headers in business code, but treat the result as propagated context, not as JWT signature verification.
 4. Check lookup order before debugging: `X-Username`/`X-Usercode`/`X-LoginDisplayName` headers, Bearer JWT payload, then Redis cache via `CacheManagerCompose`.
 5. For scheduled/background tasks, expect fallback behavior such as default `system` user unless the caller explicitly provides context.
 
 ## Source-Backed Notes
 
 - Header names include `X-Username`, `X-Usercode`, and `X-LoginDisplayName`.
-- Bearer token parsing reads payload fields such as `sub`, `loginDisplayName`, `email`, and `userCode`.
+- Bearer token parsing reads payload fields such as `sub`, `loginDisplayName`, `email`, and `userCode` without verifying signature/issuer/audience/expiry in this utility. Authentication decisions must use a verified security context.
+- The current source has a known reversed `userCode` header assignment condition; do not claim that header path is reliable until fixed and tested.
 - Redis cache lookup uses the JWT user-info cache key path; load `yss-cache` if changing cache behavior.
 
 ## Checklist
@@ -38,6 +39,7 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 - Gateway/auth service forwards expected user headers or Authorization token.
 - Cache fallback is checked when headers exist but detailed user info is incomplete.
 - Business code does not duplicate JWT parsing logic.
+- Header/JWT/cache/background precedence and overwrite behavior are covered by tests; `system` fallback is distinguished from an authenticated system user.
 - User info propagation is tested for REST calls and async/background execution separately.
 
 ## Do Not

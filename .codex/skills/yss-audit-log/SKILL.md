@@ -1,6 +1,6 @@
 ---
 name: yss-audit-log
-description: Use when 用于 YSS 审计日志组件问题排查与接入实现。当用户提到 AuditLog、EnableAuditLog、SpEL 审计描述、审计日志异步发布、订阅器扩展或审计日志不生效时调用。
+description: Use when YSS `AuditLog`, `EnableAuditLog`, audit SpEL summaries, async publication, subscriber registration, queue loss, or audit delivery failures are involved.
 ---
 
 # yss-audit-log
@@ -34,9 +34,9 @@ description: Use when 用于 YSS 审计日志组件问题排查与接入实现�
 - 启动类是否启用了类似 `@EnableAuditLog` 的能力。
 - 目标方法是否是可被 AOP 代理拦截的 Spring Bean 方法。
 - `@AuditLog` 是否标在正确的方法上。
-- `summary` 中的 SpEL 变量名是否与方法参数名一致。
+- `summary` 中的 SpEL 变量必须使用源码实际暴露的 context keys (`参数审计` / `结果审计`)；方法参数名不会自动进入 context。
 - 项目编译参数是否保留了参数名。
-- 是否开启了对应的日志输出或系统管理投递开关。
+- `yss.audit.enabled` 是否开启；`sendSysManageEnabled` 与 `auditLogPrintEnabled` 在当前实现中不会自动阻止订阅器注册，需按源码验证，不能假设开关生效。
 
 ## 排障顺序
 
@@ -48,6 +48,8 @@ description: Use when 用于 YSS 审计日志组件问题排查与接入实现�
 6. 下游系统管理或打印订阅器是否被开关禁用。
 7. 异步线程池或事件发布异常是否被吞掉。
 8. 参数名、返回值字段、异常分支是否满足摘要模板。
+
+审计切面当前是 `@AfterReturning`，只记录成功返回；异常审计、参数脱敏、队列满丢弃、线程池关闭、重试和幂等必须单独设计并测试。
 
 ## 修改约束
 

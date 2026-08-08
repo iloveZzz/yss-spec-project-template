@@ -25,6 +25,12 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 4. Check `YssGlobalExceptionProperties` when global exception output/logging behavior is configurable.
 5. Keep logging semantics aligned: business exceptions usually do not require error-stack logging; system/unknown exceptions usually do.
 
+## Current Source Behavior
+
+- `GlobalExceptionAdvice` currently maps BizException, unknown Exception, and RuntimeException to HTTP 400; the OpenAPI error contract must reflect or deliberately override that behavior.
+- `yss.exception.level` only controls a direct `printStackTrace()` branch when its value is exactly `debug`; it is not a general response-format switch.
+- Validation binding failures currently become `SysException(PARAM_VALIDATION_ERROR)`. Coordinate changes with `yss-validation` and contract tests.
+
 ## Source-Backed Exception Semantics
 
 - `BizException`: clear business meaning, generally no Error log and no retry.
@@ -38,6 +44,7 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 - Business validation failures are not reported as unknown system errors.
 - Stack traces are preserved for unknown/system failures.
 - Retry guidance matches exception type.
+- Known system failures use `ExceptionFactory.sysException(..., cause)`; Application code does not replace them with ad-hoc `RuntimeException`.
 
 ## Do Not
 

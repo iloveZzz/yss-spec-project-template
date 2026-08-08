@@ -42,11 +42,11 @@ Default for end-to-end backend CRUD: include Domain, Application, Infrastructure
 - `yss-distributed-id`: ID strategies, AutoIdInterceptor, Leaf/CosId/Snowflake, batch ID injection.
 - `yss-jdbc`: Hutool Db, dynamic datasource JDBC, JdbcSqlUtil, batch SQL execution.
 - `yss-dictionary`: Dictionary/domain item APIs and dictionary component integration.
-- `yss-log`: Logging starter auto-configuration and log extension points.
+- `yss-log`: DEBUG request-parameter/success-latency logging, starter auto-configuration, and centralized collection; current `CatchAndLog` is not exception logging.
 - `yss-resilience4j`: Circuit breaker, fallback, and gateway resilience integration.
 - `yss-taskflow`: Task flow definition/execution component behavior.
 - `yss-validation`: Validation engine and JSR-303 integration.
-- `yss-security-algorithm`: RSA/AES/crypto/security algorithm utilities.
+- `yss-security-algorithm`: RSA/AES/SM/JWT/JWK/password-encoding compatibility and production key-management safety gates.
 - `yss-userinfo`: Current-user info propagation and starter integration.
 - `yss-variable`: Variable component APIs and variable resolution.
 - `yss-exception`: Exception component and unified exception handling.

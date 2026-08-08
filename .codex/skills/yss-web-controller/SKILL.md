@@ -1,6 +1,6 @@
 ---
 name: yss-web-controller
-description: 用于根据 YSS 规范生成或重构 Web Adapter Controller 层代码。当用户要求按 metadata 或领域模型生成 Controller、DTO/VO、Web Convertor，或补齐标准 CRUD 接口时调用。
+description: Use when generating or refactoring YSS Web Adapter Controllers, request DTOs, response VOs, validation, result wrappers, or Web Convertors from frozen contracts and stable Application interfaces.
 ---
 
 # yss-web-controller
@@ -20,11 +20,11 @@ description: 用于根据 YSS 规范生成或重构 Web Adapter Controller 层�
 
 ## 优先流程
 
-1. 先确认 metadata、基础包、模块名、领域 segment、domain/web 落盘目录。
+1. 先确认冻结 OpenAPI/no-impact record、Application Service 接口、metadata、基础包、模块名、领域 segment、domain/web 落盘目录。
 2. 涉及 DTO / VO / CMD / Query POJO 样板代码时，加载并遵守 `lombok`。
 3. 涉及 Domain / Application Result 到 VO / DTO 或 CMD / Query 到输入模型的转换时，加载并遵守 `mapstruct`。
 4. 运行 `scripts/generate_controller.py`。
-5. 生成后检查路径、命名、返回值包装、Gateway 引用、Lombok 注解和 MapStruct WebConvertor 是否对齐项目。
+5. 生成后检查路径、命名、返回值包装、Application Service 引用、`@Valid`、Lombok 注解和 MapStruct WebConvertor 是否对齐项目。
 6. 对复杂接口做少量手工修正，不在 skill 中承诺自动覆盖全部业务逻辑。
 
 ## 推荐命令
@@ -37,6 +37,8 @@ python3 scripts/generate_controller.py \
   --domain-segment example \
   --domain-project-dir /path/demo-domain \
   --web-project-dir /path/demo-adapter/demo-web \
+  --application-service-package com.yss.demo.application.service \
+  --validation-namespace javax \
   --force
 ```
 
@@ -51,11 +53,12 @@ python3 scripts/generate_controller.py \
 
 ## 约束
 
-- 生成代码默认依赖既有 Domain Gateway，不直接穿透 Repository。
+- 生成代码默认依赖既有 Application Service。只有批准合同明确标记的纯查询 CQRS 工作单元才允许直接读 Gateway；写操作禁止绕过 Application。
 - 返回结构保持项目既有 `SingleResult`、`PageResult`、`MultiResult` 体系。
 - DTO / VO / CMD / Query 默认用 Lombok 处理 getter/setter、constructor、builder 和日志样板；不要在 Controller 内部类或非约定包临时定义主要 DTO / VO。
 - `WebConvertor` 默认使用 MapStruct；禁止在 Controller / Application 中大段手写字段赋值、使用 `BeanUtils.copyProperties` 或反射式通用拷贝，除非有受控例外和测试证据。
 - 先跑脚本，再按项目规范做少量手调。
+- `javax` / `jakarta` validation namespace 必须来自工程基线，不得按记忆选择。
 - 若用户只是要改单个 Controller，先看现有代码，不要盲覆盖整个目录。
 
 ## 按需读取

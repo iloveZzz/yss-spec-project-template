@@ -1,6 +1,6 @@
 ---
 name: yss-validation
-description: Use when 用于 YSS validation engine、validation-jsr303、LiteFlow EL parser、JSR303 校验接入、表达式校验和校验规则排障。
+description: Use when YSS Bean Validation/JSR-303 dependencies, validation messages, LiteFlow EL parsing, `ExpressParserFactory`, parser registration, or validation-error mapping is involved.
 ---
 
 # yss-validation
@@ -27,7 +27,7 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 
 ## Capability Split
 
-- `validation-jsr303`: Spring/JSR-303 integration and annotation-driven validation behavior.
+- `validation-jsr303`: currently a dependency/message-resource aggregation module; it has no local Validator, Advice, or auto-configuration Java implementation.
 - `validation-el-parser`: LiteFlow/EL expression parser infrastructure.
 - `ExpressParserFactory`: central parser registry backed by a concurrent map.
 - Parser extension point: implement/provide `ExpressParser` with a non-null parser type and register it as a bean.
@@ -36,6 +36,8 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 
 - If a parser is not found, confirm it is a Spring bean and `parserType()` is non-null.
 - If validation annotations do not fire, check controller/service validation annotations and Spring validation starter wiring before editing parser code.
+- The component README is empty; use the POM, message resources, Controller annotations, and `GlobalExceptionAdvice` as current evidence.
+- Duplicate parser type keys are silently overwritten by `PARSER_MAP.put`; require collision and round-trip tests for extensions.
 - If behavior differs between expression validation and DTO validation, route the problem to the correct submodule first.
 
 ## Checklist

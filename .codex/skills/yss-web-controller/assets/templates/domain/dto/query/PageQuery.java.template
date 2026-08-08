@@ -15,7 +15,7 @@ import java.time.LocalDate;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ${domain_class}Page extends PageQuery {
+public class ${domain_class}PageQuery extends PageQuery {
 
 ${field_declarations}
 }

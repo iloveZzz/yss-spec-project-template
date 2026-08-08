@@ -1,17 +1,17 @@
 ---
 name: yss-backend-scaffold-application
-description: YSS 管理服务应用层开发框架和技术指南。在实现应用服务、用例协调或 DTO 转换时需要用到。
+description: Use when implementing YSS application use cases, transaction boundaries, cross-aggregate orchestration, idempotency, or application-level DTO conversion.
 ---
 
 # Application 层开发规范 (Application Layer Development Guide)
 
-本 Skill 提供了 YSS 数据质量管理服务 **Application (应用层)** 的开发规范。Application 层负责协调领域对象完成业务用例，是连接 Adapter 层和 Domain 层的桥梁。
+本 Skill 约束 Application 层的用例边界。它是目标 DDD 架构规则，不等同于现有 YSS 组件仓库中所有 `core/service` 的历史实现；先探测工程布局并记录兼容 profile。
 
 ## 1. 核心职责 (Core Responsibilities)
 
 - **业务用例编排 (Use Case Orchestration)**: 协调 Domain Service 和 Gateway 完成复杂的业务流程。
 - **服务接口实现 (Service Implementation)**: 实现 Application Service 接口，对外提供业务能力。
-- **DTO 转换 (DTO Conversion)**: 负责将 Domain 对象转换为 Adapter 层所需的 DTO/VO。
+- **DTO 转换 (DTO Conversion)**: 只在合同指定时负责 Domain/Application model 与 client/web DTO/VO 的转换；不得把 Repository PO 带入 Application。
 - **事务控制 (Transaction Management)**: 在应用层进行 `@Transactional` 事务管理。
 
 ## 2. 代码结构 (Code Structure)
@@ -27,11 +27,11 @@ com.yss.{module}.core
 
 ## 3. 开发规范 (Development Guidelines)
 
-### 3.1 应用服务实现 (ServiceImpl)
+### 3.1 应用服务实现 (AppServiceImpl)
 
-- **位置**: `com.yss.{module}.core.service.impl`。
+- **位置**: 新 DDD 工程优先 `application/.../service/impl`；legacy profile 才使用 `core/service/impl`。
 - **注解**: `@Service`，通常配合 `@RequiredArgsConstructor` 进行构造器注入。
-- **事务**: 在写操作方法上添加 `@Transactional` 注解。
+- **事务**: 只在已确认的用例边界添加 `@Transactional(rollbackFor = Exception.class)`；读用例明确 `readOnly` 与总数策略。
 - **逻辑**: 主要负责调用 Domain Service 或 Gateway，**不应包含核心领域逻辑**（应下沉到 Domain 层）。
 
 ### 3.2 对象转换 (Convertor)
@@ -43,10 +43,12 @@ com.yss.{module}.core
 
 ### 3.3 异常处理
 
-- **业务异常**: 抛出 `BizException` 或其子类。
-- **系统异常**: 抛出 `RuntimeException`，由全局异常处理器捕获。
+- **业务异常**: 使用 `ExceptionFactory.bizException(...)` 或项目已批准的 `BizException` 错误码。
+- **已知系统异常**: 使用 `ExceptionFactory.sysException(...)` 并保留 cause；未知异常交由全局处理器兜底，不在 Application 吞并或改写。
 
-## 4. 详细案例 (Detailed Examples)
+## 4. Legacy 参考案例
+
+以下 `QualityTemplate*` 代码只展示现有 `core/service` 风格，不定义新模块的包名、接口或返回模型。新 DDD profile 必须由批准合同生成中性 Application 接口，不能复制该历史样例的 DTO/VO Gateway 泄漏。
 
 ### 4.1 Application Service Implementation
 
@@ -86,7 +88,7 @@ public class QualityTemplateServiceImpl implements QualityTemplateService {
     @Transactional(rollbackFor = Exception.class)
     public Long addQualityTemplate(QualityTemplateAddCmd cmd) {
         // 可以在此进行简单的应用层校验或编排
-        log.info("Adding quality template: {}", cmd.getTemplateName());
+        log.info("Adding quality template");
         return qualityTemplateGateway.addQualityTemplate(cmd);
     }
 }
@@ -123,10 +125,14 @@ public interface QualityTechTemplateConvertor {
 
 1.  **职责分离**: Application 层关注“做什么”（流程编排），Domain 层关注“怎么做”（业务规则）。
 2.  **依赖方向**: Application 层依赖 Domain 层，不应依赖 Adapter 层（Web/Job）。
-3.  **事务边界**: Application Service 方法通常是一个事务的边界。
-4.  **日志记录**: 在关键业务节点记录日志，便于问题排查。
+3.  **事务边界**: 一个用例一个边界；跨聚合写入、幂等键、事件发布时点必须写入合同并用 `behavior-tdd` 验证。
+4.  **上下文能力**: 当前用户、审计、普通技术日志、校验和异常是条件依赖，按 `yss-router` 影响闭包加载，不在 AppService 内手工解析 Header/JWT。
 
-## 6. 阶段 7 合同
+## 6. 架构探测门禁
+
+先确认工程是新 DDD `application/domain/infrastructure/adapter`，还是 legacy `core/client/repository`。没有 `backend_repository`、Maven Wrapper 和已批准合同版本时输出 `blocked`；不得用示例包名推断真实接口。
+
+## 7. 阶段 7 合同
 
 - 明确当前 Use Case、Application 边界、事务边界、跨聚合协调和异常映射，只消费批准后的合同版本。
 - AppService 骨架可受控生成；用例编排、事务、幂等、权限和失败行为必须使用 `behavior-tdd`。

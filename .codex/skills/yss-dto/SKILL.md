@@ -1,6 +1,6 @@
 ---
 name: yss-dto
-description: 用于 YSS DTO 规范相关的实现与排障。当用户提到 Result、PageQuery、CommandDTO、QueryDTO、统一响应格式、分页入参基类或 DTO 继承约定时调用。
+description: Use when YSS `Result`, `SingleResult`, `MultiResult`, `PageResult`, `PageQuery`, `CommandDTO`, `QueryDTO`, pagination, or response-wrapper compatibility is involved.
 ---
 
 # yss-dto
@@ -36,11 +36,15 @@ description: 用于 YSS DTO 规范相关的实现与排障。当用户提到 Res
 - 分页查询优先继承 `PageQuery`，不要自行发明分页字段名。
 - Controller 返回优先使用项目既有的 `Result` 或派生结果对象。
 - 单对象返回优先 `SingleResult`，列表返回优先 `MultiResult`，分页返回优先 `PageResult`，前提是当前项目已采用这套体系。
+- 三种泛型结果要求 `T extends Serializable`；生成的 VO/响应类型必须满足该编译约束。
+- `buildSuccess(...)` 各重载设置 code 的行为并不一致；冻结契约必须测试 `success/code/message/tips/dataType`，不能只测试 data。
+- `needTotalCount` / `tempTotalCount` 是内部分页协作字段；当前源码中前者标注暂未实现，二者都不是客户端输入。
 - DTO 只表达接口契约，不承载 Repository PO 或领域对象的持久化细节。
 
 ## 检查清单
 
 - 分页字段名是否和框架约定一致。
+- `orderBy` / `groupBy` 是否经过 Repository 白名单映射，禁止直接拼接 SQL。
 - Service / Repository 是否真的接收到了 `PageQuery`。
 - 新增 DTO 是否与现有序列化和校验方式兼容。
 - 返回结构是否和前端或上游调用方契约一致。

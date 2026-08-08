@@ -254,6 +254,20 @@ def slice_contract_decision_violations(contract, input, available, fixture, expe
       value = fixture.dig(section, field)
       violations << "#{section}.#{field}" unless value.is_a?(Array) && !value.empty?
     end
+    next unless section == "backend"
+
+    component_impacts = fixture.dig("backend", "component_impacts")
+    unless component_impacts.is_a?(Array)
+      violations << "backend.component_impacts"
+      next
+    end
+    allowed_component_impacts = contract.fetch("component_impact_values")
+    violations << "backend.component_impacts" unless (component_impacts - allowed_component_impacts).empty?
+    routed_skills = component_impacts.flat_map do |impact|
+      contract.dig("component_impact_routing", impact) || []
+    end.uniq
+    required_skills = fixture.dig("backend", "required_skills")
+    violations << "backend.required_skills" unless required_skills.is_a?(Array) && (routed_skills - required_skills).empty?
   end
 
   api_impact = flags["api_impact"]
@@ -396,6 +410,7 @@ backend_expected_skills = dependency_closure(
 )
 backend_slice["backend"].merge!(
   "status" => "required", "affected_layers" => ["application", "domain", "infrastructure", "web"],
+  "component_impacts" => [],
   "required_skills" => backend_expected_skills,
   "application_boundary" => "CreateOrderUseCase", "transaction_boundary" => "CreateOrderUseCase.execute",
   "persistence_strategy" => "OrderGateway via MyBatis", "allowed_write_paths" => ["apps/backend/order/"],
@@ -437,6 +452,25 @@ backend_skill_mutation = Marshal.load(Marshal.dump(backend_slice))
 backend_skill_mutation["backend"]["required_skills"].delete("mapstruct")
 failures << "Backend contract accepted incomplete skill closure" unless slice_contract_decision_violations(CONTRACT, backend_input, backend_evidence, backend_skill_mutation, backend_expected_skills).include?("backend.required_skills")
 failures << "Backend contract accepted omitted skill closure" if slice_contract_decision_violations(CONTRACT, backend_input, backend_evidence, backend_slice, []).empty?
+
+component_slice = Marshal.load(Marshal.dump(backend_slice))
+component_slice["backend"]["component_impacts"] = ["current-user-context"]
+component_skills = dependency_closure(CONTRACT, backend_expected_skills + ["yss-userinfo"], {})
+component_slice["backend"]["required_skills"] = component_skills
+component_slice["common"]["required_skills"] = component_skills
+failures << "Current-user component route was rejected" unless slice_contract_decision_violations(
+  CONTRACT, backend_input, backend_evidence, component_slice, component_skills
+).empty?
+unknown_component = Marshal.load(Marshal.dump(component_slice))
+unknown_component["backend"]["component_impacts"] = ["unknown-component"]
+unless slice_contract_decision_violations(CONTRACT, backend_input, backend_evidence, unknown_component, component_skills).include?("backend.component_impacts")
+  failures << "Unknown component impact was accepted"
+end
+missing_component_skill = Marshal.load(Marshal.dump(component_slice))
+missing_component_skill["backend"]["required_skills"].delete("yss-userinfo")
+unless slice_contract_decision_violations(CONTRACT, backend_input, backend_evidence, missing_component_skill, component_skills).include?("backend.required_skills")
+  failures << "Component impact accepted missing required skill"
+end
 
 {
   "allowed_write_paths" => ["outside/contract/"],

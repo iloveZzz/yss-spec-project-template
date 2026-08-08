@@ -111,6 +111,16 @@ def main():
     parser.add_argument("--author", default="System", help="Author name")
     parser.add_argument("--force", action="store_true", help="Overwrite existing files")
     parser.add_argument("--domain-segment", required=True, help="Domain segment package name")
+    parser.add_argument(
+        "--application-service-package",
+        help="Application Service package; defaults to <base-package>.application.service",
+    )
+    parser.add_argument(
+        "--validation-namespace",
+        choices=("javax", "jakarta"),
+        default="javax",
+        help="Validation API namespace from the target engineering baseline",
+    )
 
     args = parser.parse_args()
 
@@ -177,9 +187,12 @@ def main():
         domain_pkg_name = args.domain_segment
         domain_url_path = to_kebab_case(table_name)
 
-        gateway_pkg = f"{args.base_package}.domain.{domain_pkg_name}.gateway"
         domain_model_pkg = f"{args.base_package}.domain.{domain_pkg_name}.model"
         web_convertor_pkg = f"{args.base_package}.rest.convertor"
+        application_service_pkg = (
+            args.application_service_package
+            or f"{args.base_package}.application.service"
+        )
 
         # Field generation for DTOs
         columns = table.get("columns", [])
@@ -188,27 +201,31 @@ def main():
         field_declarations_update = generate_fields(columns, skip_pk=False, is_cmd=True, skip_audit=True)
         field_declarations_query = generate_fields(columns, skip_audit=True) # Query usually has all fields as optional filters
 
-        use_gateway = True
         vo_class = f"{domain_class}VO"
         add_cmd_class = f"{domain_class}AddCmd"
         update_cmd_class = f"{domain_class}UpdateCmd"
-        query_class = f"{domain_class}Page"
+        query_class = f"{domain_class}PageQuery"
         domain_import = f"import {domain_model_pkg}.{domain_class};"
 
-        query_call = f"{domain_var}Gateway.page{domain_class}(query)"
-        detail_call = f"{domain_var}Gateway.get{domain_class}ById(id).orElse(null)"
-        add_call = f"{domain_var}Gateway.add{domain_class}(CONVERTOR.toDomain(cmd))"
-        update_call = f"{domain_var}Gateway.update{domain_class}(CONVERTOR.toDomain(cmd))"
-        delete_call = f"{domain_var}Gateway.delete{domain_class}(id)"
+        query_call = f"{domain_var}Service.page(query)"
+        detail_call = f"{domain_var}Service.detail(id)"
+        add_call = f"{domain_var}Service.add(cmd)"
+        update_call = f"{domain_var}Service.update(cmd)"
+        delete_call = f"{domain_var}Service.delete(id)"
 
-        gateway_import = f"import {gateway_pkg}.{domain_class}Gateway;" if use_gateway else ""
+        application_service_class = f"{domain_class}Service"
+        application_service_import = (
+            f"import {application_service_pkg}.{application_service_class};"
+        )
         dto_imports = "\n".join([
             f"import {args.base_package}.client.dto.cmd.{domain_class}AddCmd;",
             f"import {args.base_package}.client.dto.cmd.{domain_class}UpdateCmd;",
             f"import {args.base_package}.client.dto.query.{domain_class}Page;",
             f"import {args.base_package}.client.vo.{domain_class}VO;"
         ])
-        gateway_field = f"private final {domain_class}Gateway {domain_var}Gateway;" if use_gateway else ""
+        application_service_field = (
+            f"private final {application_service_class} {domain_var}Service;"
+        )
         web_convertor_class = f"{domain_class}WebConvertor"
         web_convertor_import = f"import {web_convertor_pkg}.{web_convertor_class};"
 
@@ -222,12 +239,11 @@ def main():
             "domain_pkg_name": domain_pkg_name,
             "author": args.author,
             "dto_imports": dto_imports,
-            "gateway_import": gateway_import,
+            "application_service_import": application_service_import,
             "domain_import": domain_import,
             "web_convertor_import": web_convertor_import,
             "web_convertor_class": web_convertor_class,
-            "gateway_pkg": gateway_pkg,
-            "gateway_field": gateway_field,
+            "application_service_field": application_service_field,
             "query_call": query_call,
             "detail_call": detail_call,
             "add_call": add_call,
@@ -237,6 +253,7 @@ def main():
             "add_cmd_class": add_cmd_class,
             "update_cmd_class": update_cmd_class,
             "query_class": query_class,
+            "validation_namespace": args.validation_namespace,
             "field_declarations": "" # placeholder
         }
 
@@ -267,7 +284,10 @@ def main():
         write_file(os.path.join(domain_root, "dto/cmd", f"{domain_class}UpdateCmd.java"), Template(update_cmd_tpl).substitute(ctx))
 
         ctx["field_declarations"] = field_declarations_query
-        write_file(os.path.join(domain_root, "dto/query", f"{domain_class}Page.java"), Template(page_query_tpl).substitute(ctx))
+        write_file(
+            os.path.join(domain_root, "dto/query", f"{domain_class}PageQuery.java"),
+            Template(page_query_tpl).substitute(ctx),
+        )
 
 if __name__ == "__main__":
     main()
