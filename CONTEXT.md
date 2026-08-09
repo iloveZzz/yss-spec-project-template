@@ -22,6 +22,7 @@
 | OpenAPI Draft | review-only 的 OpenAPI 3.1 契约草案。 | Freeze 前不得作为前后端稳定实现契约。 |
 | OpenAPI Freeze | 已通过评审、可作为前后端实现和契约测试输入的 OpenAPI 3.1 契约。 | Freeze 后变更必须回到 API 影响分析和设计审查。 |
 | UI 影响 | 会改变用户可见页面、导航、交互流程、状态呈现或权限体验的功能影响。 | 纯后端、API、批处理或数据变更不自动构成 UI 影响。 |
+| 产品设计影响 | UI 变化触及主流程、导航、权限体验、异常 / 恢复状态、状态流转或 API 反推，需要页面流、状态矩阵和原型校准。 | 文案、token、颜色、间距和无行为变化的孤立视觉修复属于 UI 影响，但不自动构成产品设计影响。 |
 | 高保真 HTML 原型 | 低保真原型评审通过后，用于在浏览器中审查真实视觉密度、交互状态和页面流的产品设计资产。 | 不等同于生产前端实现，也不替代 OpenAPI、Spec 校准或垂直切片。 |
 | 垂直切片（Vertical Slice） | 贯穿所有受影响层、可独立验证的窄功能路径。 | 优先使用垂直切片，避免只按层拆分的横向任务。 |
 | Slice Implementation Contract | 阶段 7 进入实现前，由 `yss-router` 根据冻结资产和垂直切片编译、再由生命周期编排器批准的实现合同，包含 Common、Frontend、Backend、Contract 和 Cross-repo 子合同。 | Router 只能生成草案，不能自行批准、设置 `ready-for-agent` 或宣布完成；Backend 子合同仍保留额外强约束。 |

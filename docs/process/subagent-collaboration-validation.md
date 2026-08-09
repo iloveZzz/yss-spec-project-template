@@ -25,8 +25,8 @@ owner: ai
 
 - 输入：已有冻结契约和垂直切片 Ticket，前端和后端都要改。
 - 风险：两个 Worker 同时修改同一 API 客户端或同一 DTO，导致冲突；实现者自审。
-- 期望行为：主控 Agent 按文件 / 模块拆分写范围；Reviewer subagent 独立于 Worker；Verifier 执行 fresh verification。
-- 验证点：任务包写范围不重叠，checkpoint 记录 Reviewer 和 Verifier 证据。
+- 期望行为：主控 Agent 按文件 / 模块拆分写范围；低中风险可由同一独立执行者完成 Review 与 fresh verification，高风险时拆分 Reviewer / Verifier。
+- 验证点：任务包写范围不重叠，checkpoint 记录独立审查和 fresh verification 证据，执行者不属于 Worker。
 
 ## 场景 4：风险 / 回滚约束被子代理触碰
 

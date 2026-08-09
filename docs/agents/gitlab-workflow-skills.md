@@ -116,7 +116,7 @@ scripts/gitworks ci-status
 4. 执行自动提交前，必须先检查工作区脏文件，避免把无关 `.agents/`、`.codex/`、本机配置或用户未确认文件混入提交。
 5. 不直接提交到受保护主分支；默认使用 `feature/*`、`fix/*`、`chore/*` 分支。
 6. 自动 workflow 只在用户明确授权提交/推送时执行。
-7. 每个阶段产物完成后，按 `AGENTS.md` 的 Git checkpoint 规则确认范围、提交和推送。
+7. 在人工暂停、handoff、进入实现、合并或发布边界，按 `AGENTS.md` 的集中 Git checkpoint 规则确认本轮覆盖阶段、范围、提交和推送。
 
 ## 6. 推荐工作流
 

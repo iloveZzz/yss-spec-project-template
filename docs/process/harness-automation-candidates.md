@@ -16,7 +16,7 @@
 | HAC-002 | API 影响记录 / OpenAPI Draft / Freeze 文件存在性 | 5 / 6. API 相关阶段 | API 影响记录、`docs/api/specs/*.yaml`、Freeze 记录 | API 资产状态 | 要求补齐影响记录、契约草案、Draft / Freeze 或无 API 影响记录 | API 影响范围有争议 |
 | HAC-003 | Build Architecture Checklist 字段完整性 | 7. 垂直切片与 TDD 实现 | checklist 文档 | 缺失字段和未回勾项 | 阻止 build-ready 结论 | 架构约束是否适用需判断 |
 | HAC-004 | fresh verification 记录存在性 | 8. 验证发布与复盘 | verification 文档、Ticket 评论、测试输出 | 验证证据摘要 | 阻止“完成 / 可合并 / 可发布”结论 | 验证范围是否足够需判断 |
-| HAC-005 | 阶段 checkpoint 字段完整性 | 每个主阶段结束 | checkpoint 记录 | 缺失字段清单 | 要求补齐后再推进 | Ticket tracker 不可用或权限不足 |
+| HAC-005 | 集中 checkpoint 字段完整性 | 人工暂停、handoff、进入实现、合并或发布边界 | checkpoint 记录 | 缺失字段清单 | 要求补齐后再推进 | Ticket tracker 不可用或权限不足 |
 
 ## 可半自动生成 checklist
 

@@ -141,7 +141,7 @@ owner: ai
 |---|---|---|---|
 | Adapter / Web | `yss-web-controller`、`yss-dto`、`yss-backend-scaffold-web`、`mapstruct`、`lombok` | Controller、CMD / Query / VO、WebConvertor、统一响应包装、Lombok 注解和 MapStruct 转换证据 | pending / implemented / seam-deferred / violation / not-applicable |
 | Application | `yss-backend-scaffold-application` | AppService / UseCase、事务边界、跨聚合协调、异常处理 | pending / implemented / seam-deferred / violation / not-applicable |
-| Domain | `yss-domain-modeling`、`yss-domain`、`yss-backend-scaffold-domain` | Entity / ValueObject / DomainService / Gateway interface / 状态方法 | pending / implemented / seam-deferred / violation / not-applicable |
+| Domain | `yss-domain`、`yss-backend-scaffold-domain`；术语 / 边界 / ADR 变化时增加 `domain-modeling` | Entity / ValueObject / DomainService / Gateway interface / 状态方法；命中通用建模时补 CONTEXT / ADR 证据 | pending / implemented / seam-deferred / violation / not-applicable |
 | Infrastructure | `yss-repository`、`yss-mybatis`、`yss-backend-scaffold-infrastructure`、`mapstruct`、`lombok` | PO、Repository、Convertor、GatewayImpl、Mapper / XML / 查询策略、Lombok 注解和 MapStruct 转换证据 | pending / implemented / seam-deferred / violation / not-applicable |
 | Java 规范 | `alibaba-java-code-style` | 命名、异常、日志、ORM、Maven、单测和安全项审查记录 | pending / implemented / seam-deferred / violation / not-applicable |
 

@@ -17,7 +17,6 @@
     "yss-dictionary",
     "yss-distributed-id",
     "yss-domain",
-    "yss-domain-modeling",
     "yss-dto",
     "yss-excel-mvc",
     "yss-exception",
@@ -55,7 +54,6 @@
       "title": "生命周期",
       "description": "用于 YSS 产品生命周期、路由和跨仓库协作的技能。",
       "skills": [
-        "yss-domain-modeling",
         "yss-microapp-commit",
         "yss-product-lifecycle",
         "yss-router",

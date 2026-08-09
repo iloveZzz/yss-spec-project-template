@@ -1,6 +1,18 @@
 schema_version: 1
 supported_state_schema_versions: [1]
 
+review_verification:
+  low_medium_combined_independent_executor: true
+  implementer_must_be_separate: true
+  split_when: [new_module, high_risk, responsibility_conflict, dual_control_required]
+
+checkpoint_policy:
+  strategy: consolidated
+  flush_on: [human_pause, handoff, implementation_entry, merge, release]
+  flush_immediately_on: [blocked, responsibility_changed, asset_approval]
+  preserve_stage_causality: true
+  required_stage_trace_fields: [stage, upstream_refs, artifact_refs, gate_decisions, downstream_impacts]
+
 modes:
   route: read_only
   audit: read_only
@@ -52,6 +64,8 @@ flow_preconditions:
     applies_to_single_session: true
 
 setup_readiness:
+  evaluation: once_per_task
+  recheck_when: [tracker_changed, remote_changed, labels_changed, configuration_changed]
   states: [ready, missing, conflict, degraded, not-applicable]
   evidence: [platform, label_check, domain_layout, migration_ref]
   semantics:

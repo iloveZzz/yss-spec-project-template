@@ -124,7 +124,9 @@ obsolete_names = [
   "ubiquitous-language",
   "edit-article",
   "obsidian-vault",
-  "writing-great-skills"
+  "writing-great-skills",
+  "code-review-process",
+  "yss-domain-modeling"
 ].freeze
 
 agent_roots.each do |agent_root|
@@ -137,7 +139,7 @@ end
 manifest_skill_names = manifest.fetch("skills", {}).fetch("shared", {}).keys
 manifest_skill_names += manifest.fetch("skills", {}).fetch("platform", {}).values.flat_map(&:keys)
 obsolete_names.each do |name|
-  abort("过时 Matt skill 仍在 skills-lock.json: #{name}") if manifest_skill_names.include?(name)
+  abort("过时 skill 仍在 skills-lock.json: #{name}") if manifest_skill_names.include?(name)
 end
 
 singular_agent_root = root.join(".agent" + "/skills")

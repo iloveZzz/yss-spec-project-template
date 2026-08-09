@@ -26,6 +26,8 @@ subagent 不是“多几个 Agent 一起做同一件事”，而是主控 Agent 
 | Reviewer subagent | 独立审查 Spec、OpenAPI、架构、代码、发布准备度 | findings、blocker、残余风险 | 默认只读 |
 | Verifier subagent | 执行验证、复现实验、回归命令、截图或 CI 证据整理 | fresh verification 记录 | 默认只读，必要时写验证记录 |
 
+小改动和中等变更允许同一独立执行者同时承担 Reviewer 与 Verifier 职责并产出一份分区报告；其必须独立于 Worker。新模块、高风险、职责冲突或双人控制要求命中时，两个角色必须拆分。
+
 ## 可委派与不可委派
 
 | 可委派事项 | 不可委派事项 |
@@ -65,8 +67,8 @@ subagent 不是“多几个 Agent 一起做同一件事”，而是主控 Agent 
 | 4. 产品设计与需求冻结 | 页面流、状态矩阵、AntD / YSS 设计系统、高保真 HTML 原型、Prototype Review 分工 | 用户确认和 requirement freeze 不可委派 |
 | 5. 系统 / 数据架构与工程契约设计审查 | API Draft、系统架构、数据架构、Spec Delta、Draft Review 并行 | OpenAPI Freeze 和架构放行不可委派 |
 | 6. 契约冻结与 Ticket 正式化 | `to-tickets` 草案、实现仓库 / 脚手架状态检查并行 | 主控 Agent 确认端到端切片和 Ticket 同步 |
-| 7. 垂直切片与 TDD 实现 | 前端、后端、测试、验证按文件 / 模块拆给 Worker；Reviewer 独立审查 | 写范围必须不重叠；同一 Agent 不得自审 |
-| 8. 验证发布与复盘 | Verifier 执行 fresh verification；Drafter 起草 release / retro | 发布、合并、完成结论不可委派 |
+| 7. 垂直切片与 TDD 实现 | 前端、后端、测试按文件 / 模块拆给 Worker；独立执行者审查并重新验证 | 写范围必须不重叠；同一 Agent 不得自审；高风险时拆分 Reviewer / Verifier |
+| 8. 验证发布与复盘 | 独立执行者提供 fresh verification；Drafter 起草 release / retro | 发布、合并、完成结论不可委派 |
 
 ## 并行拆分规则
 

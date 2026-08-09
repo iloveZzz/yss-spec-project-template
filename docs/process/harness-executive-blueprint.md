@@ -36,7 +36,7 @@ AI 不能只作为一次性辅助工具使用。Harness 工程的目标，是把
 - 架构、数据、ADR、工程基线和风险、回滚约束和验证证据必须进入 Build Architecture Checklist。
 - 支付、迁移、认证授权、加密、SQL、公共基础库 API 等高风险事项必须记录验证证据、责任人和回滚约束。
 - 完成、可合并或可发布结论必须有 fresh verification。
-- 每个阶段结束必须记录 Ticket 同步状态和 Git checkpoint 判断。
+- 连续推进时累积阶段证据，在人工暂停、handoff、进入实现、合并或发布边界集中记录 Ticket 同步状态和 Git checkpoint 判断。
 
 ## 试点怎么跑
 

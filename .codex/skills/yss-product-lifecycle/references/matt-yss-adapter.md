@@ -6,6 +6,7 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 
 - 所有入口先读取 `yss-project.yaml`。缺失、解析失败、schema 不支持或 `repository_mode` 非法时，停止路由并进入 migration-check。
 - **直接调用 `ask-matt`** 时，它只能提供通用 Matt flow 导航；有效 YSS 仓库必须把最终阶段、影响面、门禁和状态裁决交回 `yss-product-lifecycle`。
+- **直接调用 `yss-product-lifecycle`** 时，不机械嵌套调用 `ask-matt`；编排器直接使用兼容映射。Matt skills 作为固定上游使用，不在 YSS 精简中修改。
 - `template-source` 只允许进入模板维护流程。命中 `to-spec`、`to-tickets`、`implement`、Release 或 Retrospective 时返回 `blocked`，原因是 `template-source-product-artifact-forbidden`；`ask-matt` 和 `setup-matt-pocock-skills` 都不得为具体产品生成 Spec、prototype、OpenAPI 或垂直切片 Ticket。
 - `project-instance` 才允许进入产品 Discovery → Spec → 设计 → 契约 → Ticket → 实现 → Release / Retrospective 链路。
 
@@ -22,7 +23,7 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 | 切片 | `to-tickets` | 仅在冻结/无影响记录后拆垂直切片 |
 | 实现 | `implement`、`tdd` | `yss-router` 编译 Slice Implementation Contract 草案；本编排器核验并持久化后才执行，专项 Execution Result 返回后再次核验 |
 | Bug | `diagnosing-bugs`、`tdd` | 先建立红色反馈；高风险影响升级上游门禁 |
-| 审查 | `code-review` | 审查者独立，结合 Spec 和 YSS 标准 |
+| 审查 | `code-review` | 唯一默认代码审查入口；审查者独立，结合 Spec、仓库治理规则和 YSS 标准 |
 | 跨上下文 | `handoff` | 保存来源、阶段、未决项、命令和下一责任人 |
 | 阶段边界 | `PHASE-BOUNDARIES.md` | 按 `Continue → /clear → /handoff → subagent → /compact` 选择上下文动作；只记录证据，不扩展生命周期状态 |
 | 解释未落地 | `wait-what` | 只重新解释当前结论，不改变阶段、门禁、Ticket 或 `ready-for-agent` |
@@ -68,6 +69,8 @@ Router 状态映射为：`draft → completed`、`blocked → blocked`、`ready-
 编排器先做幂等 readiness 检查，再决定是否调用 `setup-matt-pocock-skills`。检查结果只能是：
 
 `ready`、`missing`、`conflict`、`degraded`、`not-applicable`。
+
+该检查每个任务只执行一次并缓存；只有 tracker、主远端、真实标签或配置变化时重查。
 
 证据必须覆盖实际 platform、五态 label_check、domain_layout 和 migration_ref。配置与主远端或真实标签冲突时不覆盖；目标平台暂不可用时保留本地待发布草案；`template-source` 只执行 validate-only，不初始化具体产品 tracker。
 

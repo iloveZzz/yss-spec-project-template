@@ -18,8 +18,8 @@
 
 | 档位 | subagent 使用建议 | 任务包要求 |
 |---|---|---|
-| 小改动 | 默认不派 subagent；只有需要独立验证或防止自审时才派 Reviewer / Verifier | 可在 issue 备注或 checkpoint 中轻量记录 |
-| 中等变更 | 可派 Drafter / Reviewer / Verifier 处理受影响资产、契约检查和回归验证 | 必须记录输入、输出、写范围、验收标准和主控采纳结论 |
+| 小改动 | 默认不派实现 subagent；需要防止自审时，可由同一独立执行者合并完成 Review 与 fresh verification | 可在 issue 备注或集中 checkpoint 中轻量记录 |
+| 中等变更 | 可派 Drafter 处理受影响资产；Review 与 fresh verification 默认可由同一独立执行者合并完成 | 必须记录输入、输出、写范围、验收标准和主控采纳结论 |
 | 新模块 / 高风险变更 | 建议按 Explorer / Drafter / Worker / Reviewer / Verifier 并行拆分，但写范围必须不重叠 | 必须使用 `docs/templates/subagent-task-package-template.md` 或等价字段，并在阶段 checkpoint 中汇总 |
 
 ## 最近可信阶段判定表
@@ -31,7 +31,7 @@
 | 已有清晰 Spec，但用户、痛点、MVP 或非目标不稳 | 3. 业务 / Spec / 功能架构 | Spec Review、产品总体设计 / 功能架构、必要的页面 / 原型 / 交互设计 |
 | 状态机、复杂规则或 UI 方向无法仅靠文字判断 | 3. 业务 / Spec / 功能架构 或 4. 产品设计与需求冻结 | `prototype` 一次性验证结论，并回填到 Spec / 设计 / ADR / Ticket |
 | 关键信息掌握在其他人手中 | 当前阶段保持不变并暂停 | `to-questionnaire`、`external-input-required` 及问卷回流记录；答案回来后重新分类影响面 |
-| 有 UI 变更但缺页面流、状态矩阵、原型评审、高保真 HTML 原型、AntD CLI 校验证据或用户确认记录 | 4. 产品设计与需求冻结 | 交互说明、状态矩阵、Prototype Review、Ant Design v6 高保真 HTML 原型（可在低保真评审通过后由系统 / Agent 自动产出）、AntD CLI 校验证据、用户确认记录、Spec 回填 |
+| UI 变更触及主流程、导航、权限体验、异常 / 恢复状态、状态流转或 API 反推，但缺页面流、状态矩阵、原型评审、高保真 HTML 原型、AntD CLI 校验证据或用户确认记录 | 4. 产品设计与需求冻结 | 交互说明、状态矩阵、Prototype Review、Ant Design v6 高保真 HTML 原型（可在低保真评审通过后由系统 / Agent 自动产出）、AntD CLI 校验证据、用户确认记录、Spec 回填 |
 | API 路径、schema、错误结构、分页或权限发生变化 | 5. 系统 / 数据架构与工程契约设计审查 | API 影响记录、契约草案 / OpenAPI Draft Review、必要时 Spec Delta、系统 / 数据架构反审、Freeze、`to-tickets` |
 | 服务边界、集成、部署、性能、可靠性或运维变化 | 5. 系统 / 数据架构与工程契约设计审查 | 系统架构、Design Review、必要时 Spec Delta、Build Architecture Checklist |
 | 持久化、元数据、版本、血缘、搜索、索引或迁移变化 | 5. 系统 / 数据架构与工程契约设计审查 | 数据架构、必要时 Spec Delta、人审点、Repository / MyBatis 前置审查 |
@@ -53,7 +53,7 @@
 - DDL / SQL / 数据库迁移、权限接入或审计日志缺少明确人工确认结论。
 - 当前切片影响 backend / frontend，但既无可复用实现仓库登记，也未确认 0-1 外部脚手架目标。
 - 服务边界、外部系统集成、部署、回滚、可观测性、性能、可靠性或运维约束变化。
-- UI 变更影响用户主流程、权限状态、异常状态、页面导航或 OpenAPI 反推清单。
+- UI 变更影响用户主流程、权限状态、异常 / 恢复状态、状态流转、页面导航或 OpenAPI 反推清单；文案、token、颜色、间距和无行为变化的孤立视觉修复不命中该升级条件。
 - 实现与既有架构、CONTEXT 术语、ADR、Spec 或垂直切片 Ticket 出现漂移。
 - 技术事实、标准或第三方 API 判断会影响 Spec、OpenAPI、架构、验收或发布风险，且当前没有一手资料记录。
 - 当前工作需要跨线程、跨仓库、原型分支回流或上下文交接，但没有 handoff / 等价交接记录。
@@ -70,3 +70,6 @@
 - `wizard` 只处理人工才能完成的步骤，默认临时使用；凭据、诊断和交接证据必须脱敏。`wait-what` 只重新解释当前结论，不改变阶段、门禁或 Ticket 状态。
 - 存在高风险变更时必须记录验证证据、责任人和回滚约束，不能因任务小而跳过。
 - OpenAPI Freeze 后直接进入 `to-tickets` 或等价垂直切片拆分；不要求额外变更状态文件。
+- 连续自动推进阶段累积证据，在人工暂停、handoff、进入实现、合并或发布时集中 checkpoint；阻塞、责任变化或独立批准仍立即记录。
+- 小改动和中等变更可由同一独立执行者完成 Review 与 fresh verification，但实现者不得兼任；新模块、高风险、职责冲突或双人控制要求命中时必须拆分。
+- `codebase-design` 是普通架构设计入口；`improve-codebase-architecture` 只在难测模块、依赖恶化或明确重构目标时调用，不默认叠加。

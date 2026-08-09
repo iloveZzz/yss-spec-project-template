@@ -73,7 +73,8 @@ applicable_subcontract_nonempty:
 
 dependency_closure:
   yss-domain:
-    always: [yss-domain-modeling, yss-backend-scaffold-domain, alibaba-java-code-style]
+    always: [yss-backend-scaffold-domain, alibaba-java-code-style]
+    when_modeling: [domain-modeling]
     when_pojo: [lombok]
   yss-backend-scaffold-application:
     always: [alibaba-java-code-style]
@@ -123,7 +124,6 @@ component_impact_routing:
   encryption-or-signing: [yss-security-algorithm, yss-exception]
 
 end_to_end_backend_required:
-  - yss-domain-modeling
   - yss-domain
   - yss-backend-scaffold-domain
   - yss-backend-scaffold-application

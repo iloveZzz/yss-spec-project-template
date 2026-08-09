@@ -188,7 +188,7 @@ Router 先选择主 skill，再按可观察影响自动补齐强制依赖。
 
 | 主影响 | 主 skills | 强制依赖 |
 |---|---|---|
-| Domain 行为/状态机 | `yss-domain-modeling`、`yss-domain`、`yss-backend-scaffold-domain` | `alibaba-java-code-style`；POJO 命中时 `lombok` |
+| Domain 行为/状态机 | `yss-domain`、`yss-backend-scaffold-domain`；术语、边界或 ADR 变化时增加 `domain-modeling` | `alibaba-java-code-style`；POJO 命中时 `lombok` |
 | Application 用例/事务 | `yss-backend-scaffold-application` | `mapstruct`、`lombok`、`alibaba-java-code-style` 按对象影响触发 |
 | Repository/持久化 | `yss-repository`、`yss-backend-scaffold-infrastructure` | `mapstruct`、`lombok`、`alibaba-java-code-style`；MyBatis 命中时 `yss-mybatis` |
 | Web/DTO | `yss-web-controller`、`yss-dto`、`yss-backend-scaffold-web` | `mapstruct`、`lombok`、`alibaba-java-code-style` |
@@ -212,7 +212,6 @@ not_applicable_skills:
 
 ```text
 yss-router
-yss-domain-modeling
 yss-domain
 yss-backend-scaffold-application
 yss-backend-scaffold-domain

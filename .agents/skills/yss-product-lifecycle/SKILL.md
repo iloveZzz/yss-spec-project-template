@@ -14,6 +14,8 @@ YSS 产品研发的全生命周期主控编排器。它决定阶段、条件门�
 3. `template-source` 只走模板维护流程；不得生成具体产品 Spec、原型、OpenAPI 或切片 Ticket。
 4. `project-instance` 以 `docs/process/lifecycle-artifact-map.md` 和 `docs/process/harness-process-tailoring.md` 为阶段、门禁和裁剪事实来源。
 
+YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask-matt` 仅在用户显式调用时作为 Matt 通用导航，且不得修改 Matt skills。
+
 ## 选择模式
 
 | 请求 | 模式 | 副作用 |
@@ -36,6 +38,9 @@ YSS 产品研发的全生命周期主控编排器。它决定阶段、条件门�
 - Matt 五态保持原义。只有解除阻塞、门禁通过且可直接实现的垂直切片才能使用 `ready-for-agent`。
 - `orchestrate`/`resume` 连续执行安全工作单元，直到人工门禁、真实阻塞、新授权、实现/发布裁决或专项失败。
 - 进入实现后继续主控，通过 `yss-router`、`implement`、`tdd` 和 YSS 专项 skills 执行；独立审查和 fresh verification 后才能作完成判断。
+- Setup readiness 每个任务只评估一次并在本轮缓存；只有 tracker、主远端、真实标签或配置变化时重查。
+- 小改动和中等变更允许同一独立执行者完成 Review 与 fresh verification；该执行者不得是实现者。新模块、高风险或职责冲突时拆分 Reviewer 与 Verifier。
+- 连续自动推进期间累积 Ticket/Git 证据，在人工暂停、handoff、进入实现、合并或发布边界集中 checkpoint；不为每个连续经过的概念阶段重复写同类记录。
 - 跨线程、仓库、原型分支或上下文边界时使用 `handoff` 或等价记录。
 - 在 Matt 阶段边界（phase boundary）先按 `Continue → /clear → /handoff → subagent → /compact` 判断上下文动作；只在 checkpoint 记录可选 `phase_boundary` 证据，不新增生命周期状态。
 - `to-questionnaire` 进入结构化 `external-input-required` 暂停；回答回流后必须重新分类影响面并更新权威资产，不能直接恢复下游实现。

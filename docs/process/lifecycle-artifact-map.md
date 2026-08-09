@@ -15,7 +15,7 @@ owner: ai
 - 小改动 / 中等变更 / 新模块的流程裁剪和最近可信阶段判定见 `docs/process/harness-process-tailoring.md`。
 - subagent 协同边界、任务包规则和不可委派门禁见 `docs/process/subagent-collaboration.md`，任务包模板见 `docs/templates/subagent-task-package-template.md`。
 - 外部前端 / 后端实现仓库的接入和跨仓库切片绑定见 `docs/process/implementation-repo-integration.md`。
-- 阶段结束的 Ticket 同步与 Git checkpoint 记录可使用 `docs/process/templates/stage-checkpoint-template.md`。
+- 生命周期边界的集中 Ticket 同步与 Git checkpoint 记录可使用 `docs/process/templates/stage-checkpoint-template.md`。
 - `yss-product-lifecycle` 使用 `route / orchestrate / resume / audit` 四种模式，并在功能父 Ticket 或降级 checkpoint 中保存版本化状态索引；真实生命周期资产仍是事实来源。
 
 ## 8 个主阶段
@@ -24,8 +24,8 @@ owner: ai
 |---|---|---|---|---|
 | 1. 入口分诊 | 判断任务类型、风险等级、最近可信阶段和最小技能集 | 分诊结论或 issue 备注 | `yss-product-lifecycle` 路由结果、Git checkpoint 判断 | 是否需要 Discovery / Spec / API / 架构 / Ticket |
 | 2. 机会与 Discovery | 收敛用户、痛点、为什么现在做、MVP、非目标、成功标准、产品功能指引和下游影响信号 | `docs/discovery/<feature>-discovery.md` 或等价说明 | `competitive-intelligence` 竞品情报、`research` 技术 / 标准 / API 一手资料记录、竞品矩阵、机会说明、产品功能指引、下游影响清单、市场分析、用户痛点文档 | 是否足以进入业务架构和 Spec |
-| 3. 业务 / Spec / 功能架构 | 明确产品边界、用户旅程、功能域、模块边界、优先级和验收标准 | `docs/requirements/<feature>-spec.md`；`docs/design/<feature>-product-overview-design.md` | 有 UI 影响时的低保真页面草图；`grill-with-docs` 澄清记录、`prototype` 一次性验证结论、业务架构、CONTEXT 术语回填；不进入 Spec 生命周期的小改动可记录不适用原因 | Spec Review / 产品总体设计评审 / 产品设计准备度 |
-| 4. 产品设计与需求冻结 | 基于 Spec 初稿和产品总体设计，对 UI、页面流、状态矩阵、异常路径、高保真体验和 Spec 回填做闭环 | 有 UI 时：交互说明、低保真原型评审结论、Ant Design v6 高保真 HTML 原型（可由系统 / Agent 在低保真评审通过后自动产出）、AntD CLI 校验证据和用户确认记录；无 UI 时：需求冻结记录 | 状态矩阵、页面地图、原型链接 | Spec 校准 / 工程契约与架构设计准备度 |
+| 3. 业务 / Spec / 功能架构 | 明确产品边界、用户旅程、功能域、模块边界、优先级和验收标准 | `docs/requirements/<feature>-spec.md`；`docs/design/<feature>-product-overview-design.md` | 有产品设计影响时的低保真页面草图；`grill-with-docs` 澄清记录、`prototype` 一次性验证结论、业务架构、CONTEXT 术语回填；不进入 Spec 生命周期的小改动可记录不适用原因 | Spec Review / 产品总体设计评审 / 产品设计准备度 |
+| 4. 产品设计与需求冻结 | 基于 Spec 初稿和产品总体设计，对 UI、页面流、状态矩阵、异常路径、高保真体验和 Spec 回填做闭环 | 有产品设计影响时：交互说明、低保真原型评审结论、Ant Design v6 高保真 HTML 原型（可由系统 / Agent 在低保真评审通过后自动产出）、AntD CLI 校验证据和用户确认记录；未命中时：需求冻结记录或 `not-applicable` 原因 | 状态矩阵、页面地图、原型链接 | Spec 校准 / 工程契约与架构设计准备度 |
 | 5. 系统 / 数据架构与工程契约设计审查 | 合并 API 影响分析、契约草案、工程基线、系统架构、数据架构和 Design Review；Draft 仅用于评审，Freeze 前不得作为实现或生成客户端契约 | 系统概要设计或等价架构记录；Design Review 结论；有 API 时：API 影响记录和契约草案 / review-only OpenAPI Draft；有后端结构影响时：工程基线审查 | OpenAPI Draft Review、OpenSpec-style Spec Delta、工程基线审查、无 API 影响记录、数据架构、ADR、架构图 | OpenAPI Freeze 准备度 |
 | 6. 契约冻结与 Ticket 正式化 | 冻结契约并把交付范围转成可执行 Ticket，并明确受影响前后端工程是否已存在 | OpenAPI Freeze 记录或无 API 影响记录；垂直切片 Ticket 入口 | `to-tickets` 输出、实施路由记录、实现仓库 / 脚手架判定、外部脚手架目标确认、Ticket tracker 同步 | 垂直切片准备度 |
 | 7. 垂直切片与 TDD 实现 | 将冻结范围拆成端到端切片并按 TDD 实现 | 垂直切片 Ticket、批准的 Slice Implementation Contract、实施计划、Build Architecture Checklist、测试 / 验证记录 | YSS Skill Execution Result、前后端脚手架初始化记录、DDL / SQL / 数据库迁移、权限接入和审计日志人工确认结论、`handoff` / 跨仓库交接记录、`implement` / `tdd` 证据、`code-review` 报告、`resolving-merge-conflicts` 记录、清理简化记录、Architecture Re-check | Fresh verification / Release Review |
@@ -52,9 +52,9 @@ owner: ai
 | 1. 机会探索 | 2. 机会与 Discovery | 机会输入、MVP 边界、非目标范围 | 新产品 / 新模块必需 |
 | 2. 业务架构 | 3. 业务 / Spec / 功能架构 | 业务架构或 Spec 中等价章节 | 新产品 / 新业务域必需 |
 | 3. 需求澄清 | 3. 业务 / Spec / 功能架构 | `grill-with-docs` 结论或等价澄清记录 | 新功能 / 较大改动必需 |
-| 4. 需求基线 / 功能架构 | 3. 业务 / Spec / 功能架构 | Spec；产品总体设计 / 功能架构资产；功能域、模块边界、验收标准；有 UI 影响时补低保真页面草图 | 进入 Spec 初稿 / 需求基线流程时必需 |
-| 5. 页面 / 原型 / 交互设计 | 4. 产品设计与需求冻结 | 基于 Spec 初稿和产品总体设计 / 功能架构产出的交互说明、页面清单、状态矩阵 | 有 UI 时必需；缺产品总体设计时阻断 |
-| 6. 原型评审 | 4. 产品设计与需求冻结 | Prototype Review 结论；通过后必须产出 Ant Design v6 高保真 HTML 原型，可由系统 / Agent 自动生成；必须记录 AntD CLI 校验证据；产出后必须获得用户确认 | 有 UI 时必需 |
+| 4. 需求基线 / 功能架构 | 3. 业务 / Spec / 功能架构 | Spec；产品总体设计 / 功能架构资产；功能域、模块边界、验收标准；有产品设计影响时补低保真页面草图 | 进入 Spec 初稿 / 需求基线流程时必需 |
+| 5. 页面 / 原型 / 交互设计 | 4. 产品设计与需求冻结 | 基于 Spec 初稿和产品总体设计 / 功能架构产出的交互说明、页面清单、状态矩阵 | 产品设计影响命中时必需；缺产品总体设计时阻断 |
+| 6. 原型评审 | 4. 产品设计与需求冻结 | Prototype Review 结论；通过后必须产出 Ant Design v6 高保真 HTML 原型，可由系统 / Agent 自动生成；必须记录 AntD CLI 校验证据；产出后必须获得用户确认 | 产品设计影响命中时必需；无行为变化的局部视觉改动记录 `not-applicable` |
 | 7. Spec 校准 / 需求冻结 | 4. 产品设计与需求冻结 | 需求冻结记录或校准后的 Spec | 必需；无 UI 可轻量化 |
 | 8. API 影响分析 / 契约草案 | 5. 系统 / 数据架构与工程契约设计审查 | API 影响记录、契约草案 / OpenAPI Draft 或无 API 影响记录；Draft 在 Freeze 前仅可评审；修改既有冻结基线的中高风险变更补 Spec Delta | 有 API 影响时必需；Spec Delta 条件必需 |
 | 9. 工程基线 | 5. 系统 / 数据架构与工程契约设计审查 | 工程基线 / YSS DDD Review | 新服务 / 新模块 / 后端结构变化时必需 |
@@ -138,8 +138,9 @@ owner: ai
 - 阶段边界只记录可选 `phase_boundary` 证据，按 `Continue → /clear → /handoff → subagent → /compact` 选择上下文动作；`wait-what` 不改变状态，`to-questionnaire` 回流后必须重新分类影响面，`wizard` 的人工步骤和诊断输出必须脱敏。
 - 每个垂直切片完成时必须回勾 `Build Architecture Checklist`，用 `implemented`、`seam-deferred`、`drift`、`violation` 或 `not-applicable` 标记状态，并提供证据或补齐落点。`drift` 触发 Architecture Re-check；`violation` 阻断继续 build。
 - Repository / Gateway / 持久化、权限 / 授权、审计、SQL / DDL / 迁移、文件上传下载、版本快照 / 元数据 / 血缘 / 查询索引、部署 / 回滚 / 运维约束，必须在 checklist 中逐项绑定切片和人工确认要求。
-- 每个主阶段结束都要做 Ticket tracker 同步：按用户明确选择或当前仓库主远端路由到 GitLab / GitHub，更新对应 Spec、垂直切片 Ticket、里程碑或评论，记录阶段状态、完成范围、验证证据、阻塞项、下一步和人工审查点。
-- 每个主阶段结束都要做 Git checkpoint 判断：列出变更产物、Ticket 同步状态、排除无关脏文件，并说明提交 / 推送 / 暂缓原因。
+- 连续自动推进期间累积 Ticket tracker 同步内容，在人工暂停、handoff、进入实现、合并或发布边界集中写入；阻塞、责任人变化或资产单独批准时立即同步。记录阶段状态、完成范围、验证证据、阻塞项、下一步和人工审查点。
+- Git checkpoint 与上述边界对齐，列出本轮覆盖阶段、变更产物、Ticket 同步状态、排除的无关脏文件和提交 / 推送 / 暂缓原因；不得因集中记录而丢失阶段因果关系。
+- 小改动和中等变更允许同一独立执行者完成 code review 与 fresh verification，但实现者不得兼任；新模块、高风险、职责冲突或双人控制要求命中时拆分 Reviewer 与 Verifier。
 - 存在需要人工确认的风险时，模板中必须记录范围、责任人和结论或待补齐事项。
 - 任何“完成 / 可合并 / 可发布”结论必须有 fresh verification 证据。
 - 发生 merge / rebase 冲突时，必须按 `resolving-merge-conflicts` 或等价流程记录双方意图、取舍和重新验证结果。

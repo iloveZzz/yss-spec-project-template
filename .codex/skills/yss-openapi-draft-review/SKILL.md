@@ -16,7 +16,7 @@ Use this skill after OpenAPI Draft creation and before Engineering Baseline / YS
 
 ## Review Flow
 
-1. Parse the OpenAPI file and verify YAML, `$ref`, path parameters, and lint when tooling is available.
+1. Consume fresh automated evidence for YAML parsing, `$ref`, path parameters, and lint. Generate it once with the Draft or when the Draft changes; do not manually repeat unchanged structural checks.
 2. Build a P0 traceability matrix from Spec functional requirements and interaction actions to OpenAPI paths, schemas, errors, and contract tests.
 3. Check page action coverage: every action has `actionKey`, endpoint or explicit non-goal, permission behavior, state transition, idempotency/concurrency rule, and error codes.
 4. Check object lifecycle coverage: manage/maintain/configure/create/update/archive/retry/cancel/publish/export/create-draft semantics have endpoints or explicit scope downgrades.
@@ -24,6 +24,13 @@ Use this skill after OpenAPI Draft creation and before Engineering Baseline / YS
 6. Check error and permission contracts: field-level errors, model-level errors, 403 no-data leakage, disabled reasons, gate failures, and conflict responses.
 7. Check security red lines: authentication/authorization, SQL/DDL draft boundaries, downloads, audit/logging, sensitive field handling, and human-review items.
 8. Output a persistent review artifact under `docs/architecture/` or update the existing one.
+
+## Automation Boundary
+
+- Automated checks own YAML syntax, `$ref` resolution, path-parameter consistency, OpenAPI lint, and stable machine-checkable style rules.
+- Human or independent semantic review owns P0 traceability, page-action coverage, permission and error behavior, concurrency/idempotency, security red lines, scope downgrades, and contract-test seams.
+- Fresh passing automation evidence may be referenced by the semantic review; copying the same findings into a second checklist is unnecessary.
+- Re-run structural automation only when the Draft, ruleset, or referenced schema changes.
 
 ## Blocking Rules
 

@@ -27,6 +27,8 @@ OBSOLETE_SKILLS = %w[
   edit-article
   obsidian-vault
   writing-great-skills
+  code-review-process
+  yss-domain-modeling
   yss-dir
   yss-duckdb
   yss-file

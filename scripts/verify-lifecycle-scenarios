@@ -111,16 +111,35 @@ semantic_markers = {
   "AGENTS.md" => [
     "21 个门禁全部是条件强制门禁",
     "只要进入 Spec 基线",
-    "只有存在 UI 影响时",
+    "才构成产品设计影响",
     "Spec Delta 只记录相对既有冻结 Spec 基线",
-    "template-source"
+    "template-source",
+    "集中同步",
+    "集中记录不得丢失各阶段因果关系"
   ],
   "docs/process/harness-process-tailoring.md" => [
     "全新产品 / 模块",
     "不生成空文档",
-    "最近可信阶段"
+    "最近可信阶段",
+    "同一独立执行者",
+    "集中 checkpoint"
   ]
 }.freeze
+
+obsolete_checkpoint_rules = {
+  "AGENTS.md" => ["每个阶段结束时执行 Git checkpoint 判断"],
+  "docs/process/harness-executive-blueprint.md" => ["每个阶段结束必须记录 Ticket 同步状态"],
+  "docs/process/harness-optimization-backlog.md" => ["每个阶段都能按固定字段记录"],
+  "docs/user-guide/生命周期最佳实践.md" => ["阶段结束做 Ticket 同步和 Git checkpoint"],
+  "docs/user-guide/产品生命周期工作流.md" => ["每个阶段结束、垂直切片创建"]
+}.freeze
+
+obsolete_checkpoint_rules.each do |relative_path, markers|
+  body = ROOT.join(relative_path).read
+  markers.each do |marker|
+    failures << "#{relative_path} 仍保留逐阶段 checkpoint 规则: #{marker}" if body.include?(marker)
+  end
+end
 
 semantic_markers.each do |relative_path, markers|
   body = ROOT.join(relative_path).read
@@ -150,7 +169,9 @@ required_skill_markers = [
   "阶段边界",
   "`to-questionnaire`",
   "`wait-what`",
-  "`wizard`"
+  "`wizard`",
+  "直接入口",
+  "readiness"
 ]
 required_skill_markers.each do |marker|
   failures << "yss-product-lifecycle 缺少编排语义: #{marker}" unless skill.include?(marker)
@@ -167,7 +188,9 @@ reference_markers = {
     "Continue",
     "`/clear`",
     "`/handoff`",
-    "`/compact`"
+    "`/compact`",
+    "每个任务只执行一次",
+    "集中 checkpoint"
   ],
   "references/state-model.md" => [
     "lifecycle.status",
@@ -192,6 +215,41 @@ reference_markers = {
   ]
 }.freeze
 
+removed_skills = %w[code-review-process yss-domain-modeling]
+removed_skills.each do |skill_name|
+  failures << "已移除 skill 仍存在: #{skill_name}" if ROOT.join(".agents/skills", skill_name).exist?
+end
+
+tracked_policy_files = [
+  "docs/process/harness-work-unit-map.md",
+  "docs/process/harness-process-tailoring.md",
+  "docs/templates/implementation-routing-template.md",
+  ".agents/skills/yss-router/references/router-contract.yaml",
+  "yss-public-skills.json"
+]
+tracked_policy_files.each do |relative_path|
+  body = ROOT.join(relative_path).read
+  removed_skills.each do |skill_name|
+    failures << "#{relative_path} 仍引用已移除 skill: #{skill_name}" if body.include?(skill_name)
+  end
+end
+
+router_contract_body = ROOT.join(".agents/skills/yss-router/references/router-contract.yaml").read
+failures << "Router 的领域建模未收敛到 Matt domain-modeling" unless router_contract_body.include?("domain-modeling")
+
+public_skills = ROOT.join("yss-public-skills.json").read
+failures << "YSS 公共技能清单仍暴露通用 code-review" if public_skills.include?("code-review")
+
+prototype_review = ROOT.join(".agents/skills/prototype-review/SKILL.md").read
+unless prototype_review.include?("isolated visual fixes") && prototype_review.include?("not-applicable")
+  failures << "prototype-review 未排除无行为影响的局部视觉改动"
+end
+
+openapi_review = ROOT.join(".agents/skills/yss-openapi-draft-review/SKILL.md").read
+%w[Automated semantic unchanged].each do |marker|
+  failures << "OpenAPI Draft Review 缺少自动/语义边界: #{marker}" unless openapi_review.include?(marker)
+end
+
 reference_markers.each do |relative_path, markers|
   path = skill_root.join(relative_path)
   if !path.file?
@@ -206,6 +264,44 @@ end
 
 contract_path = skill_root.join("references/orchestration-contract.yaml")
 contract = YAML.safe_load(contract_path.read, permitted_classes: [], aliases: false)
+
+setup_readiness = contract.fetch("setup_readiness", {})
+failures << "setup readiness 未限定为每任务一次" unless setup_readiness["evaluation"] == "once_per_task"
+expected_recheck_triggers = %w[tracker_changed remote_changed labels_changed configuration_changed]
+unless (expected_recheck_triggers - setup_readiness.fetch("recheck_when", [])).empty?
+  failures << "setup readiness 缺少重查触发条件"
+end
+
+review_verification = contract.fetch("review_verification", {})
+unless review_verification["low_medium_combined_independent_executor"] == true
+  failures << "低中风险 Review 与 fresh verification 未允许合并执行"
+end
+failures << "Review/verification 未保持实现者隔离" unless review_verification["implementer_must_be_separate"] == true
+
+checkpoint_policy = contract.fetch("checkpoint_policy", {})
+failures << "checkpoint 未采用集中策略" unless checkpoint_policy["strategy"] == "consolidated"
+expected_checkpoint_triggers = %w[human_pause handoff implementation_entry merge release]
+unless (expected_checkpoint_triggers - checkpoint_policy.fetch("flush_on", [])).empty?
+  failures << "集中 checkpoint 缺少关键落点"
+end
+expected_immediate_checkpoint_triggers = %w[blocked responsibility_changed asset_approval]
+unless (expected_immediate_checkpoint_triggers - checkpoint_policy.fetch("flush_immediately_on", [])).empty?
+  failures << "集中 checkpoint 缺少即时落点"
+end
+failures << "集中 checkpoint 未要求保留阶段因果" unless checkpoint_policy["preserve_stage_causality"] == true
+expected_stage_trace_fields = %w[stage upstream_refs artifact_refs gate_decisions downstream_impacts]
+unless (expected_stage_trace_fields - checkpoint_policy.fetch("required_stage_trace_fields", [])).empty?
+  failures << "集中 checkpoint 缺少结构化阶段追踪字段"
+end
+expected_review_split = %w[new_module high_risk responsibility_conflict dual_control_required]
+unless (expected_review_split - review_verification.fetch("split_when", [])).empty?
+  failures << "Review/verification 缺少拆分条件"
+end
+
+checkpoint_template = ROOT.join("docs/process/templates/stage-checkpoint-template.md").read
+expected_stage_trace_fields.each do |field|
+  failures << "checkpoint 模板缺少阶段追踪字段: #{field}" unless checkpoint_template.include?(field)
+end
 
 unless contract["schema_version"] == 1 && contract["supported_state_schema_versions"] == [1]
   failures << "编排契约 schema 或支持版本错误"

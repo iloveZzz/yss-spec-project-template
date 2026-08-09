@@ -526,6 +526,9 @@ CONTRACT.fetch("end_to_end_backend_required").each do |skill|
   failures << "Backend CRUD closure missing #{skill}" unless crud.include?(skill)
 end
 failures << "MyBatis condition was ignored" unless crud.include?("yss-mybatis")
+failures << "domain-modeling 不应成为每次 Domain 实现的固定依赖" if crud.include?("domain-modeling")
+modeled_domain = dependency_closure(CONTRACT, ["yss-domain"], {"modeling" => true})
+failures << "术语/边界/ADR 变化未触发 domain-modeling" unless modeled_domain.include?("domain-modeling")
 
 def tdd_mode(contract, impact)
   contract.fetch("tdd_modes").each do |mode, definition|
@@ -740,7 +743,7 @@ failures << "API/database schema reroutes collapsed" if CONTRACT.dig("reroute_de
 failures << "Unknown reroute trigger did not stop" unless full_reroute(CONTRACT, current_contract, "unknown").nil?
 
 shared_core = %w[
-  yss-router yss-domain-modeling yss-domain yss-ddd-scaffold-generator
+  yss-router domain-modeling yss-domain yss-ddd-scaffold-generator
   yss-backend-scaffold-application yss-backend-scaffold-domain
   yss-backend-scaffold-infrastructure yss-backend-scaffold-web
   yss-repository yss-mybatis yss-web-controller yss-dto
@@ -771,7 +774,6 @@ top_level_scaffold_skills.each do |skill|
 end
 
 execution_protocol_files = %w[
-  yss-domain-modeling/SKILL.md
   yss-domain/SKILL.md
   yss-ddd-scaffold-generator/SKILL.md
   yss-repository/SKILL.md

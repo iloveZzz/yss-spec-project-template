@@ -7,6 +7,10 @@ description: Use when reviewing low-fidelity UI design, wireframes, prototype li
 
 Use this skill as the low-fidelity gate between product design/prototype work and high-fidelity HTML prototype work. The review is fail-closed: if the design cannot drive calibrated requirements, API, frontend acceptance, and slices, send it back to product design.
 
+## Trigger Boundary
+
+Run this independent gate only when UI changes affect a primary user flow, navigation, permissions, exception/recovery states, state transitions, or OpenAPI implications. For copy edits, token/color/spacing adjustments, and isolated visual fixes with no behavior, state, permission, navigation, or API impact, record `not-applicable` with the impact assessment; do not create prototype-review artifacts.
+
 ## Required Inputs
 
 - Spec baseline or confirmed user stories.
