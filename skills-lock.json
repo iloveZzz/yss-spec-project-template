@@ -1329,7 +1329,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "effectiveHash": "e2ff821688a27cffc3e9913aa9fb172de50aef810763e0d0b9286ee4def70e05",
+        "effectiveHash": "0b7984e3638cd87ea2342f7040e3288ef8d2e46d47c7b076420d38733c149808",
         "targets": [
           ".agents/skills",
           ".claude/skills",

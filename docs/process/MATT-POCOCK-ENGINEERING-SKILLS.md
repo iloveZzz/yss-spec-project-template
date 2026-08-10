@@ -1,0 +1,9 @@
+# Matt Pocock Engineering Skills 集成
+
+Matt Pocock Engineering Skills 提供轻量的澄清、实现、TDD、诊断和审查方法；YSS 生命周期、仓库身份、产品设计、OpenAPI 和跨仓库契约仍由本模板的权威资产裁决。
+
+## 进入与退出
+
+- `grill-with-docs`、`to-spec`、`to-tickets`、`implement`、`tdd` 和 `code-review` 必须遵守 `AGENTS.md` 的阶段、门禁和证据要求。
+- `template-source` 只执行模板维护流程，不生成具体产品 Spec、原型、OpenAPI 或垂直切片 Ticket。
+- Agent 完成工作单元后返回可核验的 evidence refs、变更资产、验证命令、残余风险和下一路由。

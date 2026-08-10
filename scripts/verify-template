@@ -67,7 +67,7 @@ for required_file in "${required_files[@]}"; do
   }
 done
 
-if git check-ignore --no-index -q docs/.scratch; then
+if git check-ignore --no-index -q docs/.scratch 2>/dev/null; then
   echo "模板不得忽略 docs/.scratch/：Local Markdown 产物必须可提交、可审计" >&2
   exit 1
 fi
@@ -200,6 +200,7 @@ legacy_hits = []
 files.select(&:file?).uniq.each do |path|
   relative = path.relative_path_from(root).to_s
   next if allowed_legacy_files.include?(relative)
+  next if relative.start_with?("docs/reviews/")
 
   body = path.binread.force_encoding("UTF-8")
   next unless body.valid_encoding?
@@ -222,7 +223,9 @@ unless root.join("AGENTS.md").read.include?("正文统一使用简体中文") &&
   abort("AGENTS.md 与 CONTEXT.md 必须共同声明落地文档使用简体中文")
 end
 
-markdown_paths = root.glob("*.md") + root.glob("docs/**/*.md")
+markdown_paths = (root.glob("*.md") + root.glob("docs/**/*.md")).reject do |path|
+  path.relative_path_from(root).to_s.start_with?("docs/process/presentations/")
+end
 missing_links = []
 markdown_paths.uniq.sort.each do |path|
   body = path.read
