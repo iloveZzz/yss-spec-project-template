@@ -87,11 +87,12 @@ README、用户指南和其他说明文档只引用或解释上述事实，不�
 
 1. 确认受影响的 frontend / backend 工程是 `existing`、`required` 还是 `initialized`，并登记实现仓库、分支、CI、验证命令和回滚点。
 2. 无可复用工程时，先确认外部目标仓库或输出目录，再分别使用 `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator`；不因当前仓库缺少 frontend / backend 目录而绕过脚手架路由。
-3. 使用 `yss-router` 选择最小 YSS skill 集合。后端领域、Application、Repository / Gateway、Web / DTO 分别路由到对应 YSS skill；涉及 POJO 样板或对象转换时必须加载 `lombok`、`mapstruct` 和 `alibaba-java-code-style`。
-4. 所有正式垂直切片必须先由 `yss-router` 编译 Slice Implementation Contract 草案，再由生命周期编排器核验并持久化；合同至少包含 Common、Frontend、Backend、Contract、Cross-repo 子合同、工作单元、TDD 模式、允许写路径、禁止模式、证据和验证命令。Router 不得自行批准合同或设置 `ready-for-agent`。
-5. 后端切片必须在统一合同中补齐 Backend Slice Implementation Contract，至少包含 `required_skills`、`allowed_write_paths`、`forbidden_patterns`、`expected_evidence_files`、`seam_deferred`、`verification_commands`。
-6. 把系统 / 数据架构、ADR、工程基线、OpenAPI Freeze 和风险 / 回滚约束转译为 Build Architecture Checklist。
-7. 核心 YSS skills 必须消费批准合同并返回 YSS Skill Execution Result；路径越界、证据缺失、未执行验证、`drift`、`violation` 或 `new_impacts` 阻断继续实现或触发重路由。
+3. 原型确认后，若 backend 为 `scaffold_status=required`，先由 `yss-router` 编译结构化脚手架受控生成工作单元合同，经生命周期编排器批准并持久化为合同 JSON 后，才使用 `yss-ddd-scaffold-generator` 读取该文件生成骨架；随后由受控工作单元实际执行项目根目录的 `./mvnw validate`、`./mvnw test`、`./mvnw package` 并记录逐条结果，再用 `yss-backend-scaffold-parent` 做工程基线校验并重新进入 Router；不得在合同批准前、脚手架前或脚手架内写业务代码。
+4. 使用 `yss-router` 选择最小 YSS skill 集合。后端领域、Application、Repository / Gateway、Web / DTO 分别路由到对应 YSS skill；涉及 POJO 样板或对象转换时必须加载 `lombok`、`mapstruct` 和 `alibaba-java-code-style`。
+5. 所有正式垂直切片必须先由 `yss-router` 编译 Slice Implementation Contract 草案，再由生命周期编排器核验并持久化；合同至少包含 Common、Frontend、Backend、Contract、Cross-repo 子合同、工作单元、TDD 模式、允许写路径、禁止模式、证据和验证命令。Router 不得自行批准合同或设置 `ready-for-agent`。
+6. 后端切片必须在统一合同中补齐 Backend Slice Implementation Contract，至少包含 `required_skills`、`allowed_write_paths`、`forbidden_patterns`、`expected_evidence_files`、`seam_deferred`、`verification_commands`。
+7. 把系统 / 数据架构、ADR、工程基线、OpenAPI Freeze 和风险 / 回滚约束转译为 Build Architecture Checklist。
+8. 脚手架输出消费批准的脚手架合同；所有后续生成的后端代码都必须消费批准且版本当前的 Slice Implementation Contract、YSS skill 依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result；业务行为只能使用 `behavior-tdd`，路径越界、证据缺失、未执行验证、`drift`、`violation` 或 `new_impacts` 阻断继续实现或触发重路由。
 
 禁止绕过上述合同、检查清单或专项 skill，直接在 `AGENTS.md` 中自行发明细则。详细实现约束以 YSS skills、`docs/process/implementation-repo-integration.md` 和对应模板为准。
 

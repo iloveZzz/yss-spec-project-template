@@ -1,43 +1,67 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-YSS DDD 脚手架生成器
-用于快速创建基于 DDD 的后端项目结构
-"""
+"""YSS DDD 后端纯工程骨架生成器。"""
 
-import os
-import sys
 import argparse
 import json
-from pathlib import Path
-from typing import Dict, List
+import os
 import re
 import shutil
-import sqlite3
+import sys
 import tempfile
 from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
 
 class ScaffoldGenerator:
-    """脚手架生成器主类"""
+    """只生成工程结构，不生成任何业务行为。"""
 
-    def __init__(self, project_name: str, base_package: str, output_dir: str,
-                 with_example: bool = False, database: str = 'mysql', force: bool = False):
+    def __init__(
+        self,
+        project_name: str,
+        base_package: str,
+        output_dir: str,
+        with_example: bool = False,
+        database: str = "mysql",
+        force: bool = False,
+        contract_id: Optional[str] = None,
+        contract_version: Optional[int] = None,
+        approval_ref: Optional[str] = None,
+        router_draft_ref: Optional[str] = None,
+        persisted_ref: Optional[str] = None,
+        contract_file: Optional[str] = None,
+        overwrite_scope: Optional[str] = None,
+        rollback_ref: Optional[str] = None,
+    ):
+        if with_example:
+            raise ValueError(
+                "YSS 受控脚手架只生成纯工程骨架；--with-example 已禁用，业务代码必须按批准切片合同实现"
+            )
+
         self.project_name = project_name
         self.base_package = base_package
         self.output_dir = Path(output_dir)
         self.with_example = with_example
         self.database = database
         self.force = force
+        self.contract_id = contract_id
+        self.contract_version = contract_version
+        self.approval_ref = approval_ref
+        self.router_draft_ref = router_draft_ref
+        self.persisted_ref = persisted_ref
+        self.contract_file = Path(contract_file).resolve() if contract_file else None
+        self.overwrite_scope = overwrite_scope
+        self.rollback_ref = rollback_ref
+        self.scaffold_contract: Dict[str, object] = {}
+
         self.template_root = Path(__file__).resolve().parents[1] / "assets" / "templates"
         self.config_template_dir = self.template_root / "config"
         self.pom_template_dir = self.template_root / "pom"
         if not self.pom_template_dir.exists():
             self.pom_template_dir = self.config_template_dir
 
-        # 转换包名为路径
-        self.package_path = base_package.replace('.', '/')
-
-        # 最终项目根目录；生成期间 project_root 会指向 staging 目录
+        self.package_path = base_package.replace(".", "/")
         self.final_project_root = self.output_dir / project_name
         self.project_root = self.final_project_root
 
@@ -51,14 +75,19 @@ class ScaffoldGenerator:
         self.db_dependency = self._resolve_db_dependency(self.database)
 
     def generate(self):
-        """生成完整的脚手架项目"""
+        """在受控生成合同下生成不含业务行为的工程骨架。"""
         if self.final_project_root.exists() and not self.force:
             raise FileExistsError(
                 f"输出目录已存在: {self.final_project_root}；如确认覆盖，请显式传入 --force"
             )
+        self._validate_contract_metadata()
+        if self._target_is_non_empty() and self.force:
+            self._validate_force_metadata()
 
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        staging_root = Path(tempfile.mkdtemp(prefix=f".{self.project_name}.staging-", dir=self.output_dir))
+        staging_root = Path(
+            tempfile.mkdtemp(prefix=f".{self.project_name}.staging-", dir=self.output_dir)
+        )
         self.project_root = staging_root / self.project_name
 
         try:
@@ -67,31 +96,21 @@ class ScaffoldGenerator:
             print(f"📁 输出目录: {self.output_dir}")
             print()
 
-            # 创建项目结构
             self._create_project_structure()
-
-            # 生成 POM 文件
             self._generate_pom_files()
-
-            # 生成配置文件
             self._generate_config_files()
-
-            # 生成示例代码
-            if self.with_example:
-                self._generate_example_code()
-
-            # 生成数据库脚本
             self._generate_database_scripts()
-
-            # 生成文档
             self._generate_documentation()
-
+            self._write_generation_manifest()
             self._copy_wrapper_files()
             self._validate_generated_artifacts()
 
             backup_path = None
             if self.final_project_root.exists():
-                backup_path = self.output_dir / f".{self.project_name}.backup-{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
+                backup_path = self.output_dir / (
+                    f".{self.project_name}.backup-"
+                    f"{datetime.now().strftime('%Y%m%d%H%M%S%f')}"
+                )
                 self.final_project_root.rename(backup_path)
             self.project_root.rename(self.final_project_root)
             self.project_root = self.final_project_root
@@ -107,18 +126,180 @@ class ScaffoldGenerator:
             print("  ./mvnw validate")
             print("  ./mvnw test")
             print("  ./mvnw package")
-            print("  ./mvnw spring-boot:run -pl {}-bootstrap".format(self.project_name))
+            print(f"  ./mvnw spring-boot:run -pl {self.project_name}-bootstrap")
         except Exception:
             shutil.rmtree(staging_root, ignore_errors=True)
             raise
+
+    def _target_is_non_empty(self) -> bool:
+        if not self.final_project_root.exists():
+            return False
+        if self.final_project_root.is_file():
+            return True
+        return any(self.final_project_root.iterdir())
+
+    def _validate_contract_metadata(self):
+        if self.contract_file is None or not self.contract_file.is_file():
+            raise ValueError("必须提供已持久化的结构化脚手架合同 JSON 文件: --contract-file")
+
+        try:
+            contract = json.loads(self.contract_file.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exception:
+            raise ValueError(f"脚手架合同文件无法读取或不是合法 JSON: {self.contract_file}") from exception
+        if not isinstance(contract, dict):
+            raise ValueError("脚手架合同必须是 JSON 对象")
+
+        required_metadata = {
+            "--contract-id": self.contract_id,
+            "--contract-version": self.contract_version,
+            "--approval-ref": self.approval_ref,
+            "--router-draft-ref": self.router_draft_ref,
+            "--persisted-ref": self.persisted_ref,
+        }
+        missing = [
+            option for option, value in required_metadata.items() if value in (None, "")
+        ]
+        if self.contract_version is not None and self.contract_version < 1:
+            missing.append("--contract-version(必须为正整数)")
+        if missing:
+            raise ValueError(
+                "生成项目必须提供当前已批准脚手架合同的完整元数据: " + ", ".join(missing)
+            )
+
+        required_fields = [
+            "schema_version",
+            "contract_id",
+            "contract_version",
+            "slice_id",
+            "status",
+            "router_draft_ref",
+            "lifecycle_approval_ref",
+            "persisted_ref",
+            "current_version",
+            "implementation_repository",
+            "backend_repository",
+            "scaffold_status",
+            "target_git_url_or_output_dir",
+            "allowed_write_paths",
+            "expected_evidence_files",
+            "verification_commands",
+            "approval",
+            "work_unit",
+            "overwrite_policy",
+        ]
+        missing_contract_fields = [
+            field for field in required_fields if contract.get(field) in (None, "", [])
+        ]
+        if missing_contract_fields:
+            raise ValueError(
+                "脚手架合同缺少结构化字段: " + ", ".join(missing_contract_fields)
+            )
+        if contract["schema_version"] != 1 or contract["status"] != "approved":
+            raise ValueError("脚手架合同必须是 schema_version=1 且已由生命周期批准")
+        if contract["contract_id"] != self.contract_id:
+            raise ValueError("--contract-id 与脚手架合同不一致")
+        if contract["contract_version"] != self.contract_version:
+            raise ValueError("--contract-version 与脚手架合同不一致")
+        if contract["current_version"] != contract["contract_version"]:
+            raise ValueError("脚手架合同版本不是当前版本")
+        if contract["router_draft_ref"] != self.router_draft_ref:
+            raise ValueError("--router-draft-ref 与脚手架合同不一致")
+        if contract["persisted_ref"] != self.persisted_ref:
+            raise ValueError("--persisted-ref 与脚手架合同不一致")
+        if contract["lifecycle_approval_ref"] != self.approval_ref:
+            raise ValueError("--approval-ref 与脚手架合同不一致")
+        if contract["scaffold_status"] != "required":
+            raise ValueError("脚手架生成器只接受 scaffold_status=required")
+        if not all(isinstance(contract[field], list) and contract[field] for field in (
+            "allowed_write_paths", "expected_evidence_files", "verification_commands"
+        )):
+            raise ValueError("脚手架合同的 allowed_write_paths、expected_evidence_files、verification_commands 必须非空")
+        if ".yss/scaffold-generation.json" not in " ".join(str(item) for item in contract["expected_evidence_files"]):
+            raise ValueError("脚手架合同 expected_evidence_files 必须包含 .yss/scaffold-generation.json")
+        target_ref = str(contract["target_git_url_or_output_dir"])
+        if "://" not in target_ref and not target_ref.startswith("git@"):
+            if Path(target_ref).resolve() != self.output_dir.resolve():
+                raise ValueError("脚手架合同目标目录与 --output-dir 不一致")
+        expected_commands = ["./mvnw validate", "./mvnw test", "./mvnw package"]
+        if contract["verification_commands"] != expected_commands:
+            raise ValueError("脚手架合同验证命令必须固定为三条项目根目录 ./mvnw 命令")
+
+        approval = contract["approval"]
+        if not isinstance(approval, dict) or any(
+            approval.get(field) in (None, "")
+            for field in ("approval_ref", "approver", "persisted_ref", "current_version")
+        ):
+            raise ValueError("脚手架合同 approval 记录不完整")
+        if approval["approval_ref"] != self.approval_ref or approval["persisted_ref"] != self.persisted_ref:
+            raise ValueError("脚手架合同 approval 引用与命令参数不一致")
+        if approval["current_version"] != self.contract_version:
+            raise ValueError("脚手架合同 approval 不是当前版本")
+
+        work_unit = contract["work_unit"]
+        required_work_unit_fields = [
+            "id",
+            "behavior",
+            "primary_skill",
+            "supporting_skills",
+            "tdd_mode",
+            "allowed_write_paths",
+            "expected_evidence",
+            "verification_commands",
+            "controlled_generation",
+        ]
+        if not isinstance(work_unit, dict) or any(
+            work_unit.get(field) in (None, "", []) for field in required_work_unit_fields
+        ):
+            raise ValueError("脚手架合同 work_unit 结构不完整")
+        if (
+            work_unit.get("primary_skill") != "yss-ddd-scaffold-generator"
+            or work_unit.get("tdd_mode") != "controlled-generation"
+            or work_unit.get("controlled_generation") is not True
+        ):
+            raise ValueError("脚手架合同 work_unit 必须绑定本 skill 和 controlled-generation")
+        if (
+            work_unit["verification_commands"] != contract["verification_commands"]
+            or work_unit["allowed_write_paths"] != contract["allowed_write_paths"]
+        ):
+            raise ValueError("脚手架合同 work_unit 与根级验证/写路径约束不一致")
+        overwrite_policy = contract["overwrite_policy"]
+        if not isinstance(overwrite_policy, dict) or any(
+            field not in overwrite_policy for field in ("force_allowed", "overwrite_scope", "rollback_ref")
+        ):
+            raise ValueError("脚手架合同 overwrite_policy 结构不完整")
+        self.scaffold_contract = contract
+
+    def _validate_force_metadata(self):
+        required_metadata = {
+            "--overwrite-scope": self.overwrite_scope,
+            "--rollback-ref": self.rollback_ref,
+        }
+        missing = [
+            option for option, value in required_metadata.items() if value in (None, "")
+        ]
+        if missing:
+            raise ValueError(
+                "覆盖非空目录必须提供当前批准合同的覆盖范围和回滚引用: "
+                + ", ".join(missing)
+            )
+        overwrite_policy = self.scaffold_contract.get("overwrite_policy", {})
+        if not isinstance(overwrite_policy, dict) or overwrite_policy.get("force_allowed") is not True:
+            raise ValueError("脚手架合同未批准非空目录覆盖")
+        if overwrite_policy.get("overwrite_scope") != self.overwrite_scope:
+            raise ValueError("--overwrite-scope 与脚手架合同不一致")
+        if overwrite_policy.get("rollback_ref") != self.rollback_ref:
+            raise ValueError("--rollback-ref 与脚手架合同不一致")
 
     def _validate_generated_artifacts(self):
         """在 staging 目录提交前校验关键产物和占位符。"""
         required_files = [
             self.project_root / "pom.xml",
             self.project_root / f"{self.project_name}-bootstrap" / "pom.xml",
-            self.project_root / f"{self.project_name}-bootstrap" / "src/main/resources/smart-doc.json",
+            self.project_root
+            / f"{self.project_name}-bootstrap"
+            / "src/main/resources/smart-doc.json",
             self.project_root / "mvnw",
+            self.project_root / ".yss/scaffold-generation.json",
         ]
         missing = [str(path) for path in required_files if not path.is_file()]
         if missing:
@@ -126,6 +307,16 @@ class ScaffoldGenerator:
 
         smart_doc_path = required_files[2]
         json.loads(smart_doc_path.read_text(encoding="utf-8"))
+        manifest = json.loads(required_files[4].read_text(encoding="utf-8"))
+        if (
+            manifest.get("contract_id") != self.contract_id
+            or manifest.get("contract_version") != self.contract_version
+            or manifest.get("current_version") != self.contract_version
+            or manifest.get("generation_mode") != "controlled-generation"
+            or manifest.get("verification_commands")
+            != ["./mvnw validate", "./mvnw test", "./mvnw package"]
+        ):
+            raise ValueError("脚手架生成元数据清单与当前批准合同或固定验证命令不一致")
         bootstrap_pom = required_files[1].read_text(encoding="utf-8")
         plugin_versions = re.findall(
             r"<artifactId>smart-doc-maven-plugin</artifactId>\s*<version>([^<]+)</version>",
@@ -134,63 +325,81 @@ class ScaffoldGenerator:
         if plugin_versions != ["yss-4.0.0"]:
             raise ValueError("smart-doc-maven-plugin 必须且只能使用 yss-4.0.0")
 
+        binary_suffixes = {".class", ".db", ".jar", ".png", ".jpg", ".jpeg", ".gif"}
         for path in self.project_root.rglob("*"):
-            if path.is_file() and path.suffix not in {".db", ".jar", ".class"}:
-                content = path.read_text(encoding="utf-8")
-                if "{{" in content or "root/root" in content:
-                    raise ValueError(f"生成文件包含未替换占位符或明文凭据: {path}")
+            if not path.is_file() or path.suffix in binary_suffixes:
+                continue
+            content = path.read_text(encoding="utf-8")
+            if "{{" in content or "root/root" in content:
+                raise ValueError(f"生成文件包含未替换占位符或明文凭据: {path}")
 
     def _create_project_structure(self):
-        """创建项目目录结构"""
+        """创建不含业务文件的项目目录结构。"""
         print("📁 创建项目目录结构...")
-
         modules = [
             f"{self.project_name}-domain",
             f"{self.project_name}-application",
             f"{self.project_name}-infrastructure",
             f"{self.project_name}-adapter",
-            f"{self.project_name}-bootstrap"
+            f"{self.project_name}-bootstrap",
         ]
 
         for module in modules:
             module_path = self.project_root / module
-
-            # 创建 src/main/java 目录
-            java_path = module_path / "src" / "main" / "java" / self.package_path
-            java_path.mkdir(parents=True, exist_ok=True)
-
-            # 创建 src/main/resources 目录
-            resources_path = module_path / "src" / "main" / "resources"
-            resources_path.mkdir(parents=True, exist_ok=True)
-
-            # 创建 src/test/java 目录
-            test_path = module_path / "src" / "test" / "java" / self.package_path
-            test_path.mkdir(parents=True, exist_ok=True)
-
+            (module_path / "src/main/java" / self.package_path).mkdir(
+                parents=True, exist_ok=True
+            )
+            (module_path / "src/main/resources").mkdir(parents=True, exist_ok=True)
+            (module_path / "src/test/java" / self.package_path).mkdir(
+                parents=True, exist_ok=True
+            )
             print(f"  ✓ {module}")
 
-        # 创建 adapter 子模块
-        web_module = self.project_root / f"{self.project_name}-adapter" / f"{self.project_name}-web"
-        web_java_path = web_module / "src" / "main" / "java" / self.package_path / "rest"
-        web_java_path.mkdir(parents=True, exist_ok=True)
+        web_module = (
+            self.project_root
+            / f"{self.project_name}-adapter"
+            / f"{self.project_name}-web"
+        )
+        (web_module / "src/main/java" / self.package_path / "rest").mkdir(
+            parents=True, exist_ok=True
+        )
         print(f"  ✓ {self.project_name}-adapter/{self.project_name}-web")
 
-        # 创建数据库脚本目录
-        db_path = self.project_root / "db"
-        db_path.mkdir(parents=True, exist_ok=True)
-        print(f"  ✓ db")
+        (self.project_root / "db").mkdir(parents=True, exist_ok=True)
+        print("  ✓ db")
 
     def _generate_pom_files(self):
-        """生成 Maven POM 文件"""
+        """生成 Maven POM 文件。"""
         print("\n📝 生成 Maven POM 文件...")
-        pom_templates = [
+        pom_templates: List[Tuple[Path, Path]] = [
             (self.pom_template_dir / "parent-pom.xml.template", self.project_root / "pom.xml"),
-            (self.pom_template_dir / "domain-pom.xml.template", self.project_root / f"{self.project_name}-domain" / "pom.xml"),
-            (self.pom_template_dir / "application-pom.xml.template", self.project_root / f"{self.project_name}-application" / "pom.xml"),
-            (self.pom_template_dir / "infrastructure-pom.xml.template", self.project_root / f"{self.project_name}-infrastructure" / "pom.xml"),
-            (self.pom_template_dir / "adapter-pom.xml.template", self.project_root / f"{self.project_name}-adapter" / "pom.xml"),
-            (self.pom_template_dir / "web-pom.xml.template", self.project_root / f"{self.project_name}-adapter" / f"{self.project_name}-web" / "pom.xml"),
-            (self.pom_template_dir / "bootstrap-pom.xml.template", self.project_root / f"{self.project_name}-bootstrap" / "pom.xml"),
+            (
+                self.pom_template_dir / "domain-pom.xml.template",
+                self.project_root / f"{self.project_name}-domain" / "pom.xml",
+            ),
+            (
+                self.pom_template_dir / "application-pom.xml.template",
+                self.project_root / f"{self.project_name}-application" / "pom.xml",
+            ),
+            (
+                self.pom_template_dir / "infrastructure-pom.xml.template",
+                self.project_root / f"{self.project_name}-infrastructure" / "pom.xml",
+            ),
+            (
+                self.pom_template_dir / "adapter-pom.xml.template",
+                self.project_root / f"{self.project_name}-adapter" / "pom.xml",
+            ),
+            (
+                self.pom_template_dir / "web-pom.xml.template",
+                self.project_root
+                / f"{self.project_name}-adapter"
+                / f"{self.project_name}-web"
+                / "pom.xml",
+            ),
+            (
+                self.pom_template_dir / "bootstrap-pom.xml.template",
+                self.project_root / f"{self.project_name}-bootstrap" / "pom.xml",
+            ),
         ]
         self._render_and_write_templates(pom_templates)
         print("  ✓ 父级 pom.xml")
@@ -202,142 +411,41 @@ class ScaffoldGenerator:
         print("  ✓ bootstrap pom.xml")
 
     def _generate_config_files(self):
-        """生成配置文件"""
+        """生成不含业务行为的工程配置文件。"""
         print("\n⚙️  生成配置文件...")
-        config_templates = [
-            (self.config_template_dir / "application.yml.template", self.project_root / f"{self.project_name}-bootstrap" / "src" / "main" / "resources" / "application.yml"),
-            (self.config_template_dir / "logback-spring.xml.template", self.project_root / f"{self.project_name}-bootstrap" / "src" / "main" / "resources" / "logback-spring.xml"),
-            (self.config_template_dir / "smart-doc.json.template", self.project_root / f"{self.project_name}-bootstrap" / "src" / "main" / "resources" / "smart-doc.json"),
+        config_templates: List[Tuple[Path, Path]] = [
+            (
+                self.config_template_dir / "application.yml.template",
+                self.project_root
+                / f"{self.project_name}-bootstrap"
+                / "src/main/resources/application.yml",
+            ),
+            (
+                self.config_template_dir / "logback-spring.xml.template",
+                self.project_root
+                / f"{self.project_name}-bootstrap"
+                / "src/main/resources/logback-spring.xml",
+            ),
+            (
+                self.config_template_dir / "smart-doc.json.template",
+                self.project_root
+                / f"{self.project_name}-bootstrap"
+                / "src/main/resources/smart-doc.json",
+            ),
         ]
         self._render_and_write_templates(config_templates)
         print("  ✓ application.yml")
         print("  ✓ logback-spring.xml")
         print("  ✓ smart-doc.json")
 
-    def _generate_example_code(self):
-        """生成示例代码"""
-        print("\n💻 生成示例代码 (User CRUD)...")
-        domain_root = self.project_root / f"{self.project_name}-domain" / "src" / "main" / "java" / self.package_path
-        application_root = self.project_root / f"{self.project_name}-application" / "src" / "main" / "java" / self.package_path
-        infrastructure_root = self.project_root / f"{self.project_name}-infrastructure" / "src" / "main" / "java" / self.package_path
-        adapter_root = self.project_root / f"{self.project_name}-adapter" / f"{self.project_name}-web" / "src" / "main" / "java" / self.package_path
-        bootstrap_root = self.project_root / f"{self.project_name}-bootstrap" / "src" / "main" / "java" / self.package_path
-
-        example_templates = [
-            (self.template_root / "domain" / "UserAddCmd.java.template", domain_root / "client" / "dto" / "cmd" / "UserAddCmd.java"),
-            (self.template_root / "domain" / "UserUpdateCmd.java.template", domain_root / "client" / "dto" / "cmd" / "UserUpdateCmd.java"),
-            (self.template_root / "domain" / "UserPageQuery.java.template", domain_root / "client" / "dto" / "query" / "UserPageQuery.java"),
-            (self.template_root / "domain" / "UserVO.java.template", domain_root / "client" / "vo" / "UserVO.java"),
-            (self.template_root / "domain" / "UserGateway.java.template", domain_root / "domain" / "user" / "gateway" / "UserGateway.java"),
-            (self.template_root / "domain" / "User.java.template", domain_root / "domain" / "user" / "model" / "User.java"),
-            (self.template_root / "application" / "UserService.java.template", application_root / "core" / "service" / "UserService.java"),
-            (self.template_root / "application" / "UserServiceImpl.java.template", application_root / "core" / "service" / "impl" / "UserServiceImpl.java"),
-            (self.template_root / "application" / "UserConvertor.java.template", application_root / "core" / "service" / "convertor" / "UserConvertor.java"),
-            (self.template_root / "infrastructure" / "AuditableEntity.java.template", infrastructure_root / "repository" / "entity" / "AuditableEntity.java"),
-            (self.template_root / "infrastructure" / "UserPO.java.template", infrastructure_root / "repository" / "entity" / "UserPO.java"),
-            (self.template_root / "infrastructure" / "UserRepository.java.template", infrastructure_root / "repository" / "UserRepository.java"),
-            (self.template_root / "infrastructure" / "UserGatewayImpl.java.template", infrastructure_root / "repository" / "gateway" / "impl" / "UserGatewayImpl.java"),
-            (self.template_root / "infrastructure" / "UserPOConvertor.java.template", infrastructure_root / "repository" / "convertor" / "UserPOConvertor.java"),
-            (self.template_root / "infrastructure" / "PageUtil.java.template", infrastructure_root / "repository" / "util" / "PageUtil.java"),
-            (self.template_root / "infrastructure" / "YssDataMybatisConfig.java.template", infrastructure_root / "repository" / "config" / "YssDataMybatisConfig.java"),
-            (self.template_root / "adapter" / "UserController.java.template", adapter_root / "rest" / "UserController.java"),
-            (self.template_root / "bootstrap" / "YssDatamiddleApplication.java.template", bootstrap_root / "YssDatamiddleApplication.java"),
-        ]
-        self._render_and_write_templates(example_templates)
-        print("  ✓ Domain 层: UserAddCmd, UserUpdateCmd, UserPageQuery, UserVO, UserGateway, User")
-        print("  ✓ Application 层: UserService, UserServiceImpl, UserConvertor")
-        print("  ✓ Infrastructure 层: UserPO, UserRepository, UserGatewayImpl, UserPOConvertor, PageUtil,YssDataMybatisConfig")
-        print("  ✓ Adapter 层: UserController")
-        print("  ✓ Bootstrap 层: YssDatamiddleApplication 启动类")
-
     def _generate_database_scripts(self):
-        """生成数据库脚本"""
-        print("\n🗃️  生成数据库脚本...")
-
-        # 针对 SQLite 的特殊处理
-        if self.database == 'sqlite':
-            schema_content = """-- 用户表
-CREATE TABLE t_user (
-  id INTEGER PRIMARY KEY,
-  username VARCHAR(50) NOT NULL,
-  email VARCHAR(100),
-  status INTEGER NOT NULL DEFAULT 1,
-  description VARCHAR(500),
-  deleted INTEGER NOT NULL DEFAULT 0,
-  created_by VARCHAR(50),
-  created_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_by VARCHAR(50),
-  last_modified_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE UNIQUE INDEX uk_username ON t_user (username);
-CREATE INDEX idx_status ON t_user (status);
-CREATE INDEX idx_created_date ON t_user (created_date);
-
--- Leaf Alloc 表
-CREATE TABLE leaf_alloc (
-  biz_tag VARCHAR(128) NOT NULL PRIMARY KEY,
-  max_id BIGINT NOT NULL,
-  step INT NOT NULL,
-  description VARCHAR(256),
-  update_time VARCHAR(256)
-);
-"""
-            # 直接写入 schema.sql
-            schema_path = self.project_root / "db" / "schema.sql"
-            self._write_file(schema_path, schema_content)
-
-            # data.sql 模板处理 (如果有差异也可以在这里处理，暂时复用模板但需注意语法)
-            # SQLite 的 data.sql 可以复用 MySQL 的 INSERT 语句，只要没有特殊函数
-            data_templates = [
-                (self.config_template_dir / "data.sql.template", self.project_root / "db" / "data.sql"),
-            ]
-            self._render_and_write_templates(data_templates)
-
-            # 初始化 SQLite 数据库
-            print("  Initializing SQLite database...")
-            try:
-                db_file = self.project_root / f"{self.project_name}-bootstrap" / f"{self.db_name}.db"
-                # 如果文件存在先删除，确保干净的初始化
-                if db_file.exists():
-                    db_file.unlink()
-
-                conn = sqlite3.connect(str(db_file))
-                cursor = conn.cursor()
-
-                # 执行 schema.sql
-                if schema_path.exists():
-                    cursor.executescript(schema_path.read_text(encoding='utf-8'))
-                    print("    ✓ Executed schema.sql")
-
-                # 执行 data.sql
-                data_path = self.project_root / "db" / "data.sql"
-                if data_path.exists():
-                    cursor.executescript(data_path.read_text(encoding='utf-8'))
-                    print("    ✓ Executed data.sql")
-
-                conn.commit()
-                conn.close()
-                print(f"    ✓ Created database: {db_file.name}")
-            except Exception as e:
-                print(f"    ❌ Failed to initialize SQLite database: {e}")
-
-        else:
-            # 默认 (MySQL) 处理
-            db_templates = [
-                (self.config_template_dir / "schema.sql.template", self.project_root / "db" / "schema.sql"),
-                (self.config_template_dir / "data.sql.template", self.project_root / "db" / "data.sql"),
-            ]
-            self._render_and_write_templates(db_templates)
-
-        print("  ✓ schema.sql (建表脚本)")
-        print("  ✓ data.sql (初始化数据)")
+        """只保留数据库目录布局，不生成业务表或初始化数据。"""
+        print("\n🗃️  保留数据库目录布局...")
+        print("  ✓ db/（业务 schema 和初始化数据由批准切片合同生成）")
 
     def _generate_documentation(self):
-        """生成项目文档"""
+        """生成不包含业务 API 的项目说明。"""
         print("\n📚 生成项目文档...")
-        readme_path = self.project_root / "README.md"
-        api_path = self.project_root / "API.md"
         readme_content = self._render_text(
             "# {{project_name}}\n\n"
             "## 模块说明\n\n"
@@ -346,28 +454,54 @@ CREATE TABLE leaf_alloc (
             "- {{project_name}}-infrastructure\n"
             "- {{project_name}}-adapter\n"
             "- {{project_name}}-bootstrap\n\n"
+            "业务 API、领域模型、数据结构和权限行为必须在冻结的 "
+            "Slice Implementation Contract 下，由对应 YSS skill 逐切片实现。\n\n"
             "## 快速开始\n\n"
             "```bash\n"
             "cd {{project_name}}\n"
             "./mvnw clean compile\n"
             "./mvnw spring-boot:run -pl {{project_name}}-bootstrap\n"
             "```\n",
-            self._template_vars()
+            self._template_vars(),
         )
-        api_content = self._render_text(
-            "# {{project_name}} API\n\n"
-            "## 用户接口\n\n"
-            "- POST /api/users/page\n"
-            "- GET /api/users/{id}\n"
-            "- POST /api/users\n"
-            "- PUT /api/users\n"
-            "- DELETE /api/users/{id}\n",
-            self._template_vars()
-        )
-        self._write_file(readme_path, readme_content)
-        self._write_file(api_path, api_content)
+        self._write_file(self.project_root / "README.md", readme_content)
         print("  ✓ README.md")
-        print("  ✓ API.md")
+
+    def _write_generation_manifest(self):
+        """把脚手架合同引用和生成输入写入非业务元数据清单。"""
+        manifest = {
+            "schema_version": 1,
+            "contract_id": self.contract_id,
+            "contract_version": self.contract_version,
+            "approval_ref": self.approval_ref,
+            "router_draft_ref": self.router_draft_ref,
+            "persisted_ref": self.persisted_ref,
+            "contract_file_ref": str(self.contract_file),
+            "slice_id": self.scaffold_contract["slice_id"],
+            "lifecycle_approval_ref": self.scaffold_contract["lifecycle_approval_ref"],
+            "current_version": self.scaffold_contract["current_version"],
+            "approver": self.scaffold_contract["approval"]["approver"],
+            "allowed_write_paths": self.scaffold_contract["allowed_write_paths"],
+            "expected_evidence_files": self.scaffold_contract["expected_evidence_files"],
+            "project_name": self.project_name,
+            "base_package": self.base_package,
+            "database": self.database,
+            "generation_mode": "controlled-generation",
+            "force": self.force,
+            "overwrite_scope": self.overwrite_scope,
+            "rollback_ref": self.rollback_ref,
+            "verification_commands": [
+                "./mvnw validate",
+                "./mvnw test",
+                "./mvnw package",
+            ],
+            "generated_at": datetime.now().astimezone().isoformat(),
+        }
+        self._write_file(
+            self.project_root / ".yss/scaffold-generation.json",
+            json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
+        )
+        print("  ✓ .yss/scaffold-generation.json")
 
     def _copy_wrapper_files(self):
         wrapper_dir = self.template_root.parent / "wrapper"
@@ -384,7 +518,7 @@ CREATE TABLE leaf_alloc (
                 shutil.rmtree(mvn_dir_target)
             shutil.copytree(mvn_dir_source, mvn_dir_target)
 
-    def _render_and_write_templates(self, items: List[tuple]):
+    def _render_and_write_templates(self, items: List[Tuple[Path, Path]]):
         variables = self._template_vars()
         for template_path, output_path in items:
             content = self._load_template(template_path)
@@ -418,7 +552,7 @@ CREATE TABLE leaf_alloc (
             "driver_class": self.driver_class,
             "db_name": self.db_name,
             "jdbc_url": self.jdbc_url,
-            "db_dependency": self.db_dependency
+            "db_dependency": self.db_dependency,
         }
 
     def _resolve_group_id(self, base_package: str) -> str:
@@ -432,16 +566,19 @@ CREATE TABLE leaf_alloc (
             "mysql": "com.mysql.cj.jdbc.Driver",
             "postgres": "org.postgresql.Driver",
             "oracle": "oracle.jdbc.OracleDriver",
-            "sqlite": "org.sqlite.JDBC"
+            "sqlite": "org.sqlite.JDBC",
         }
         return drivers.get(database, "com.mysql.cj.jdbc.Driver")
 
     def _resolve_jdbc_url(self, database: str, db_name: str) -> str:
         if database == "sqlite":
             return f"jdbc:sqlite:{db_name}.db"
-        elif database == "mysql":
-            return f"jdbc:mysql://localhost:3306/{db_name}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai"
-        elif database == "postgres":
+        if database == "mysql":
+            return (
+                f"jdbc:mysql://localhost:3306/{db_name}?useUnicode=true&"
+                "characterEncoding=utf8&serverTimezone=Asia/Shanghai"
+            )
+        if database == "postgres":
             return f"jdbc:postgresql://localhost:5432/{db_name}"
         return ""
 
@@ -452,81 +589,134 @@ CREATE TABLE leaf_alloc (
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.51.1.0</version>
         </dependency>"""
-        elif database == "mysql":
+        if database == "mysql":
             return """<dependency>
     <groupId>com.mysql</groupId>
     <artifactId>mysql-connector-j</artifactId>
     <version>8.4.0</version>
     <scope>compile</scope>
 </dependency>"""
-        elif database == "postgres":
+        if database == "postgres":
             return """<dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.3</version>
         </dependency>"""
-
         return ""
 
 
 def main():
-    """主函数"""
+    """命令行入口。"""
     parser = argparse.ArgumentParser(
-        description='YSS DDD 脚手架生成器',
+        description="YSS DDD 脚手架生成器",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog='''
+        epilog="""
 示例:
   python generate_scaffold.py --project-name my-service --base-package com.yss.myservice --output-dir /path/to/repo
-  python generate_scaffold.py --project-name user-service --base-package com.yss.user --output-dir /path/to/repo --database mysql
-        '''
+  python generate_scaffold.py --project-name order-service --base-package com.yss.order --output-dir /path/to/repo --database mysql
+        """,
     )
-
-    parser.add_argument('--project-name', required=True,
-                       help='项目名称 (kebab-case, 例如: user-service)')
-    parser.add_argument('--base-package', required=True,
-                       help='基础包名 (例如: com.yss.user)')
-    parser.add_argument('--output-dir', required=True,
-                       help='输出目录；必须显式指定')
+    parser.add_argument(
+        "--project-name",
+        required=True,
+        help="项目名称 (kebab-case, 例如: user-service)",
+    )
+    parser.add_argument(
+        "--base-package",
+        required=True,
+        help="基础包名 (例如: com.yss.user)",
+    )
+    parser.add_argument("--output-dir", required=True, help="输出目录；必须显式指定")
     example_group = parser.add_mutually_exclusive_group()
-    example_group.add_argument('--with-example', dest='with_example', action='store_true',
-                               help='显式生成 User CRUD 示例代码')
-    example_group.add_argument('--without-example', dest='with_example', action='store_false',
-                               help='不生成示例代码（默认）')
+    example_group.add_argument(
+        "--with-example",
+        dest="with_example",
+        action="store_true",
+        help="已禁用：业务示例必须按批准切片合同生成",
+    )
+    example_group.add_argument(
+        "--without-example",
+        dest="with_example",
+        action="store_false",
+        help="不生成示例代码（默认）",
+    )
     parser.set_defaults(with_example=False)
-    parser.add_argument('--database', default='mysql',
-                       choices=['mysql'],
-                       help='数据库类型；当前仅支持经过验证的 mysql（默认）')
-    parser.add_argument('--force', action='store_true',
-                       help='显式允许写入非空输出目录；默认拒绝覆盖')
+    parser.add_argument(
+        "--database",
+        default="mysql",
+        choices=["mysql"],
+        help="数据库类型；当前仅支持经过验证的 mysql（默认）",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="显式允许写入非空输出目录；必须同时提供批准合同元数据",
+    )
+    parser.add_argument("--contract-id", help="脚手架合同 ID；生成时必填")
+    parser.add_argument(
+        "--contract-version",
+        type=int,
+        help="脚手架合同版本；生成时必填",
+    )
+    parser.add_argument(
+        "--approval-ref",
+        help="生命周期批准引用；生成时必填",
+    )
+    parser.add_argument(
+        "--router-draft-ref",
+        help="Router 脚手架合同 draft 引用；生成时必填",
+    )
+    parser.add_argument(
+        "--persisted-ref",
+        help="已持久化脚手架合同引用；生成时必填",
+    )
+    parser.add_argument(
+        "--contract-file",
+        required=True,
+        help="已批准且已持久化的结构化脚手架合同 JSON 文件；生成时必填",
+    )
+    parser.add_argument(
+        "--overwrite-scope",
+        help="合同批准的覆盖范围；非空目录使用 --force 时必填",
+    )
+    parser.add_argument(
+        "--rollback-ref",
+        help="可回滚 checkpoint 引用；非空目录使用 --force 时必填",
+    )
 
     args = parser.parse_args()
 
-    # 验证项目名称格式
-    if not re.match(r'^[a-z][a-z0-9-]*$', args.project_name):
+    if not re.match(r"^[a-z][a-z0-9-]*$", args.project_name):
         print("❌ 错误: 项目名称必须是 kebab-case 格式 (例如: user-service)")
         sys.exit(1)
-
-    # 验证包名格式
-    if not re.match(r'^[a-z](?:[a-z0-9]*)(?:\.[a-z](?:[a-z0-9]*)?)*$', args.base_package):
+    if not re.match(r"^[a-z](?:[a-z0-9]*)(?:\.[a-z](?:[a-z0-9]*)?)*$", args.base_package):
         print("❌ 错误: 包名格式不正确 (例如: com.yss.user)")
         sys.exit(1)
+    if args.with_example:
+        parser.error("--with-example 已禁用；业务代码必须由批准的 YSS Slice skill 逐切片生成")
 
-    # 创建生成器并执行
     generator = ScaffoldGenerator(
         project_name=args.project_name,
         base_package=args.base_package,
         output_dir=args.output_dir,
         with_example=args.with_example,
         database=args.database,
-        force=args.force
+        force=args.force,
+        contract_id=args.contract_id,
+        contract_version=args.contract_version,
+        approval_ref=args.approval_ref,
+        router_draft_ref=args.router_draft_ref,
+        persisted_ref=args.persisted_ref,
+        contract_file=args.contract_file,
+        overwrite_scope=args.overwrite_scope,
+        rollback_ref=args.rollback_ref,
     )
-
     try:
         generator.generate()
-    except Exception as e:
-        print(f"\n❌ 生成失败: {str(e)}")
+    except Exception as exception:
+        print(f"\n❌ 生成失败: {str(exception)}")
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

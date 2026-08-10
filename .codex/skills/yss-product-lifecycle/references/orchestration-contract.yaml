@@ -60,8 +60,67 @@ flow_preconditions:
     required: [openapi_freeze_or_no_api_impact, required_gates_satisfied, vertical_slice_scope, blocking_edges]
     output: vertical-slice-tickets
   implement:
-    required: [ready_for_agent, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, backend_slice_contract_if_applicable]
+    required: [ready_for_agent, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied]
     applies_to_single_session: true
+
+backend_scaffold:
+  applies_when: [backend_impact]
+  scaffold_statuses: [existing, required, initialized]
+  required_status: required
+  sequence:
+    after: [prototype_confirmation, engineering_baseline]
+    before_generator: [yss-router-scaffold-contract, lifecycle-approve-scaffold-contract]
+    before: [business_code_generation, implement]
+  generator_skill: yss-ddd-scaffold-generator
+  baseline_skill: yss-backend-scaffold-parent
+  tdd_mode: controlled-generation
+  contract_schema:
+    schema_version: 1
+    required: [contract_id, contract_version, slice_id, status, router_draft_ref, lifecycle_approval_ref, persisted_ref, current_version, implementation_repository, backend_repository, scaffold_status, target_git_url_or_output_dir, allowed_write_paths, expected_evidence_files, verification_commands, approval, work_unit, overwrite_policy]
+    status_by_owner:
+      router: [draft, ready-for-lifecycle-review, blocked]
+      lifecycle: [approved, stale, blocked]
+    approval:
+      required: [approval_ref, approver, persisted_ref, current_version]
+    overwrite_policy:
+      required: [force_allowed, overwrite_scope, rollback_ref]
+  required_inputs: [implementation_repository, backend_repository, scaffold_status, scaffold_target_confirmed, target_git_url_or_output_dir, project_name, base_package, database, scaffold_contract_file, scaffold_contract_draft, scaffold_contract_id, scaffold_contract_version, scaffold_contract_status, scaffold_contract_approved, scaffold_contract_router_draft_ref, scaffold_contract_lifecycle_approval_ref, scaffold_contract_persisted, scaffold_contract_persisted_ref, scaffold_contract_current_version]
+  required_evidence: [generator_inputs, expected_files, scaffold_generation_manifest, generated_project_structure, generation_execution_result, verification_execution_result, ./mvnw_validate, ./mvnw_test, ./mvnw_package, yss_skill_execution_result]
+  generation_options:
+    with_example: false
+    force: forbidden-by-default
+    force_requires: [contract_file, contract_id, contract_version, approval_ref, router_draft_ref, persisted_ref, overwrite_scope, rollback_ref]
+  forbidden_generation: [business_rules, state_machine, permission, transaction, complex_query, error_mapping, user_visible_behavior, business_example_crud, unapproved_force_overwrite]
+  after_generation: [yss-backend-scaffold-parent, yss-router]
+  existing_or_initialized: [baseline_evidence, wrapper_verification, yss_router_contract_recompile]
+  verification:
+    commands: ["./mvnw validate", "./mvnw test", "./mvnw package"]
+    requires_execution: true
+    printed_commands_are_not_evidence: true
+    evidence: [command, exit_code, duration_ms, stdout_ref, stderr_ref, executed_at]
+    failure_action: blocked
+  failure_action: blocked
+
+scaffold_work_unit_policy:
+  applies_to: [scaffold_generator_output]
+  scope: pre_business_code_generation
+  required: [approved_scaffold_contract, primary_yss_skill, allowed_write_paths, expected_evidence_files, verification_commands]
+  controlled_generation:
+    allowed_for: [project_scaffold, pom, mechanical_config, wrapper, smart_doc_baseline]
+    forbidden_when: [business_behavior, business_fields, business_state, permission, transaction, complex_query, error_mapping, business_example_crud]
+  on_violation: blocked
+
+post_scaffold_generated_code_policy:
+  applies_to: [post_scaffold_backend_code]
+  scope: post_scaffold_generated_code
+  required: [approved_persisted_current_slice_contract, primary_yss_skill, dependency_closure, allowed_write_paths, expected_evidence_files, yss_skill_execution_result]
+  business_behavior:
+    tdd_mode: behavior-tdd
+    impacts: [domain-rule, state-machine, transaction, permission, complex-query, error-mapping, user-visible-behavior]
+  controlled_generation:
+    allowed_for: [dto_boilerplate, po_boilerplate, mapstruct_generated, frozen_openapi_client, mechanical_config]
+    forbidden_when: [business_behavior, business_fields, business_state, permission, transaction, complex_query, error_mapping, business_example_crud]
+  on_violation: blocked
 
 tracker:
   allowed_platforms: [local-markdown, github, gitlab]
@@ -108,7 +167,7 @@ wayfinder_completion:
   required: [no_open_children, no_open_blocked_or_claimed_children, no_fog, destination_clear]
 
 ready_for_agent:
-  required: [gates_satisfied, no_stale_artifacts, blockers_closed, implementation_context_ready, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, backend_slice_contract_if_applicable]
+  required: [gates_satisfied, no_stale_artifacts, blockers_closed, implementation_context_ready, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied]
 
 unknown_impact:
   action: pause

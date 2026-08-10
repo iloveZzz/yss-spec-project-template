@@ -39,6 +39,8 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 - YSS active 调用 `to-spec` 时，必须把 Matt 独立 flow 的 `ready-for-agent` 发布提示归一化为 Spec `ready-for-human`；不得把 Spec 初稿当作可直接实现的 Ticket。
 - `orchestrate`/`resume` 连续执行安全工作单元，直到人工门禁、真实阻塞、新授权、实现/发布裁决或专项失败。
 - 进入实现后继续主控，通过 `yss-router`、`implement`、`tdd` 和 YSS 专项 skills 执行；独立审查和 fresh verification 后才能作完成判断。
+- 原型确认 → 后端脚手架：当 YSS 高保真原型已经完成 Prototype Review、AntD CLI 校验和用户确认，且 backend `scaffold_status=required` 时，先完成工程基线，由 `yss-router` 编译脚手架受控生成工作单元合同，经生命周期编排器批准并持久化后，才使用 `yss-ddd-scaffold-generator` 生成后端骨架；随后由 `yss-backend-scaffold-parent` 校验并重新进入 `yss-router`，不得先写业务代码。
+- 所有后续生成的后端代码都必须消费生命周期批准、已持久化且版本当前的 Slice Implementation Contract，绑定最小 YSS skill 闭包、允许写路径、证据文件和 YSS Skill Execution Result；没有这些证据时必须阻断。
 - Setup readiness 每个任务只评估一次并在本轮缓存；只有 tracker、主远端、真实标签或配置变化时重查。
 - Ticket tracker 支持 `local-markdown`、GitHub 和 GitLab；模板默认 `local-markdown`，以 `docs/.scratch/<feature>/` 完整功能包为主载体。Git remote 只代表代码托管，不能覆盖已持久化的 tracker 选择；Local 主 tracker 不要求远程 Ticket。根 `.scratch/` 与 `docs/requirements/tickets/` 只作为旧路径迁移来源。
 - 小改动和中等变更允许同一独立执行者完成 Review 与 fresh verification；该执行者不得是实现者。新模块、高风险或职责冲突时拆分 Reviewer 与 Verifier。
@@ -49,6 +51,29 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 - `wait-what` 只重新解释当前结论，不改变阶段、门禁、Ticket 或 `ready-for-agent` 状态；`wizard` 只处理人工才能完成的步骤，默认临时使用，秘密值不得进入持久化输出。
 - Matt `prototype` 是保留在 `prototype/<name>` 分支的单文件可分享 HTML 主来源；YSS 高保真 HTML 原型仍必须经过 Prototype Review、AntD CLI 校验和用户确认，两者不得互相替代。
 - Matt skill 返回结果必须先归一化为 `Matt Skill Result`；`drift`、`new_impacts`、`violation`、`stale_candidates`、缺失证据或不完整结果不得推进为 `completed`。
+
+### 原型完成后的后端脚手架与代码生成边界
+
+`prototype_confirmation` 是产品设计门禁，不是业务实现授权。后端新工程的顺序固定为：工程基线 → `yss-router` 编译脚手架合同 draft → 生命周期批准/持久化 → `yss-ddd-scaffold-generator` → `yss-backend-scaffold-parent` → `yss-router` 合同重编译 → 垂直切片实现。
+
+- `scaffold_status=required` 时，脚手架工作单元使用 `controlled-generation`，记录项目名、基础包名、输出目录、数据库类型、预期文件和实际 `./mvnw validate`、`./mvnw test`、`./mvnw package` 结果，并返回 YSS Skill Execution Result。
+- 脚手架合同必须结构化记录 `contract_id`、`contract_version`、`slice_id`、Router draft 引用、生命周期批准引用、持久化引用、当前版本、实现仓库、允许写路径、预期证据文件和验证命令；生命周期批准记录至少包含 `approval_ref`、`approver`、`persisted_ref`、`current_version`。
+- `yss-ddd-scaffold-generator` 必须读取已持久化的结构化脚手架合同 JSON，并校验 `status=approved`、当前版本、主 skill、`controlled-generation` 和固定验证命令；只传任意字符串引用不得放行。
+- 生成项目必须包含 `.yss/scaffold-generation.json`，回勾实际使用的合同 ID、版本、Router draft 引用、生命周期批准引用、持久化引用、生成输入、受控模式和固定验证命令；元数据清单缺失或过期时阻断后续 Router。
+- 三条 `./mvnw` 命令必须由受控工作单元真实执行，并记录每条命令的 `exit_code`、`duration_ms`、stdout/stderr 引用和执行时间；生成器打印的命令、输出目录存在或“生成成功”都不构成验证证据。
+- 脚手架只生成多模块工程结构、POM、配置、Wrapper、Smart Doc 和经验证的机械模板；不得生成或承载领域规则、状态机、权限、事务、复杂查询、错误映射或用户可见业务行为。
+- 该生命周期脚手架工作单元必须关闭 `--with-example`，不得把 User CRUD 或业务字段伪装成样板；目标目录非空时 `--force` 默认阻断，只有覆盖范围、备份、回滚点和明确批准全部进入合同后才能另行审查。
+- `scaffold_status=existing` 或 `initialized` 时不重复全量生成，但仍须完成 `yss-backend-scaffold-parent` 基线证据、Wrapper 校验和 `yss-router` 合同重编译。
+- 脚手架完成不等于实现仓库接入、架构放行、契约批准或 `ready-for-agent`。后续每一个 Agent / generator 写入的后端代码都必须绑定批准合同和对应 YSS skill；业务行为只能使用 `behavior-tdd`，机械生成才可使用 `controlled-generation`。
+
+| 压力诱因 | 统一裁决 |
+|---|---|
+| “脚手架本来就是 YSS，先生成代码再补合同” | 先阻断；Router draft 不能批准合同或替代生命周期放行。 |
+| “`./mvnw validate` 已通过，直接继续最省时间” | 只证明工程基线可验证，不证明业务、权限、事务或契约已获批；三条实际命令的结果还必须进入 Execution Result。 |
+| “后续代码也是生成物，不需要重新路由” | 只要写入业务代码，就必须重新消费当前 Slice Implementation Contract 和 YSS skill 闭包。 |
+| “发布窗口快结束了，可以把业务字段放进脚手架” | 时间、上级要求、已有产出和演示压力都不能放宽禁止模式；必须拆为 `behavior-tdd` 工作单元。 |
+
+**红旗：** 输出目录存在、脚手架成功、只打印了 `./mvnw` 命令、`validate` 通过、Router 只有 draft、或生成器参数中出现业务字段 / 权限 / 事务 / 状态机，均不足以继续业务实现；命中任一项即暂停并重路由。
 
 状态和依赖规则见 [state-model.md](references/state-model.md) 与 [artifact-dependencies.md](references/artifact-dependencies.md)；Matt/YSS 对应见 [matt-yss-adapter.md](references/matt-yss-adapter.md)。
 机器可执行的模式、readiness、Wayfinder、影响传播和回流字段见 [orchestration-contract.yaml](references/orchestration-contract.yaml)。说明文档与该契约冲突时必须暂停并修订权威资产，不得猜测。

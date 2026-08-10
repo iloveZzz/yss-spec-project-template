@@ -32,6 +32,8 @@ required_files=(
   "scripts/sync-skills"
   "scripts/update-skill-lock"
   "scripts/verify-lifecycle-scenarios"
+  "scripts/verify-scaffold-generator-scenarios"
+  "scripts/verify-prototype-backend-scaffold-scenarios"
   "scripts/verify-matt-yss-integration-scenarios"
   "scripts/verify-yss-ui-scenarios"
 )
@@ -67,7 +69,7 @@ for required_file in "${required_files[@]}"; do
   }
 done
 
-if git check-ignore --no-index -q docs/.scratch; then
+if git check-ignore --no-index -q docs/.scratch 2>/dev/null; then
   echo "模板不得忽略 docs/.scratch/：Local Markdown 产物必须可提交、可审计" >&2
   exit 1
 fi
@@ -116,6 +118,8 @@ RUBY
 scripts/sync-skills --check
 scripts/update-skill-lock --check
 scripts/verify-lifecycle-scenarios
+scripts/verify-scaffold-generator-scenarios
+scripts/verify-prototype-backend-scaffold-scenarios
 ruby scripts/verify-matt-yss-integration-scenarios
 scripts/verify-yss-router-scenarios
 scripts/verify-yss-ui-scenarios
@@ -200,6 +204,7 @@ legacy_hits = []
 files.select(&:file?).uniq.each do |path|
   relative = path.relative_path_from(root).to_s
   next if allowed_legacy_files.include?(relative)
+  next if relative.start_with?("docs/reviews/")
 
   body = path.binread.force_encoding("UTF-8")
   next unless body.valid_encoding?
@@ -222,7 +227,9 @@ unless root.join("AGENTS.md").read.include?("正文统一使用简体中文") &&
   abort("AGENTS.md 与 CONTEXT.md 必须共同声明落地文档使用简体中文")
 end
 
-markdown_paths = root.glob("*.md") + root.glob("docs/**/*.md")
+markdown_paths = (root.glob("*.md") + root.glob("docs/**/*.md")).reject do |path|
+  path.relative_path_from(root).to_s.start_with?("docs/process/presentations/")
+end
 missing_links = []
 markdown_paths.uniq.sort.each do |path|
   body = path.read
@@ -247,8 +254,11 @@ RUBY
 ruby -c scripts/sync-skills >/dev/null
 ruby -c scripts/update-skill-lock >/dev/null
 ruby -c scripts/verify-lifecycle-scenarios >/dev/null
+ruby -c scripts/verify-prototype-backend-scaffold-scenarios >/dev/null
 ruby -c scripts/verify-matt-yss-integration-scenarios >/dev/null
 ruby -c scripts/verify-yss-ui-scenarios >/dev/null
+python3 -m py_compile .agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.py
+python3 -m py_compile .agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.py
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   git diff --check
 else

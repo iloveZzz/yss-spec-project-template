@@ -25,6 +25,14 @@ Matt phase boundary 是工作阶段之间的上下文决策，不是新的生命
 
 在 checkpoint 记录 `phase_boundary.decision`；使用 `handoff`、subagent 或 `compact` 时同时记录契约要求的引用。phase boundary 不得改变生命周期阶段、门禁或 Ticket 五态。
 
+## 原型到后端脚手架的接力
+
+`prototype_confirmation` 通过后，先判断实现仓库登记中的 backend `scaffold_status`。当状态为 `required` 时，先完成工程基线，由 `yss-router` 编译脚手架 `controlled-generation` 工作单元合同，生命周期编排器批准并持久化后才能运行生成器；顺序为：工程基线 → Router 脚手架合同 draft → 生命周期批准/持久化 → 脚手架生成 → `yss-backend-scaffold-parent` 基线校验 → Router 合同重编译。`existing` / `initialized` 不重复全量生成，但不能跳过基线校验和 Router 重编译。
+
+脚手架工作单元必须使用结构化合同 JSON 文件，至少记录 `contract_id`、`contract_version`、`slice_id`、Router draft 引用、生命周期批准引用、持久化引用、当前版本、允许写路径、预期证据文件和验证命令；批准记录至少含 `approval_ref`、`approver`、`persisted_ref`、`current_version`。生成器必须读取该合同文件并校验状态、版本、skill、工作模式和固定命令，不能只接受任意字符串参数。它还必须记录生成器输入、预期文件、目标目录、实际 `./mvnw validate` / `./mvnw test` / `./mvnw package` 结果和 YSS Skill Execution Result。三条命令必须由受控工作单元真实执行，逐条留存 `exit_code`、`duration_ms`、stdout/stderr 引用和执行时间；生成器打印的下一步命令不构成证据。生命周期生成关闭 `--with-example`；非空目标目录使用 `--force` 默认阻断，除非覆盖范围、备份、回滚点和批准引用已进入合同。脚手架不得把业务规则、状态机、权限、事务、复杂查询、错误映射或用户可见行为放进生成物；`validate` 通过、输出目录存在或生成器成功都不是生命周期批准、架构放行或 `ready-for-agent`。
+
+脚手架完成后，所有后续生成的后端代码仍必须重新消费当前版本的批准 Slice Implementation Contract、YSS skill 依赖闭包、允许写路径、预期证据和 Execution Result。业务行为使用 `behavior-tdd`；只有机械结构、样板、配置和冻结客户端使用 `controlled-generation`。缺少合同、skill、证据或实际验证时立即阻断；生成范围从机械内容变成业务行为时触发完整重路由。
+
 ## Setup readiness
 
 Readiness 结果在同一任务内复用。只有 tracker、主远端、真实标签或配置发生变化，才重新执行检查；不得把 `setup-matt-pocock-skills` 当作每阶段或每工作单元的固定动作。
@@ -39,13 +47,14 @@ Readiness 结果在同一任务内复用。只有 tracker、主远端、真实�
 
 远程 tracker 必须检查真实标签；Local Markdown 必须检查功能包目录和 Ticket 顶部的 `Status:`。仅有 `docs/agents/triage-labels.md` 不代表远程标签存在，也不能替代 Local 文件状态检查。
 
-tracker 选择和冲突按 `docs/agents/issue-tracker.md` 裁决：已持久化的项目配置优先，本模板默认 `local-markdown`，Local root 为 `docs/.scratch/`；用户在初始化/迁移时明确选择 GitHub/GitLab 后才切换，Git remote 只代表代码托管。Local 主 tracker 不要求远程 Ticket；只有已选择远程平台但凭据不可用时，才降级为 `docs/.scratch/<feature>/` 待发布草案，不自动改投其他平台。发现根 `.scratch/` 或 `docs/requirements/tickets/` 旧资产时，保留 `migration_ref` 并暂停写入；新旧路径同时存在时返回 `conflict`。恢复前记录最终平台、真实五态标签或 Local `Status:` 检查结果和草案位置。
+tracker 选择和冲突按 `docs/agents/issue-tracker.md` 裁决：已持久化 tracker 配置优先，本模板默认 `local-markdown`，Local root 为 `docs/.scratch/`；用户在初始化/迁移时明确选择 GitHub/GitLab 后才切换，Git remote 只代表代码托管。Local 主 tracker 不要求远程 Ticket；只有已选择远程平台但凭据不可用时，才降级为 `docs/.scratch/<feature>/` 待发布草案，不自动改投其他平台。发现根 `.scratch/` 或 `docs/requirements/tickets/` 旧资产时，保留 `migration_ref` 并暂停写入；新旧路径同时存在时返回 `conflict`。恢复前记录最终平台、真实五态标签或 Local `Status:` 检查结果和草案位置。
 
 ## Matt flow 进入条件
 
 - `to-spec` 只能在 `grill-with-docs` 退出条件满足且没有未回流 runnable blocker 时进入；产物默认为 `ready-for-human`。
 - `to-tickets` 只能在 OpenAPI Freeze 或无 API 影响记录完成后进入，并且只能生成垂直切片 Ticket。
 - `implement` 无论是多会话还是单会话，都必须满足 `ready-for-agent` 公式、批准并持久化的 Slice Implementation Contract 和 Build Architecture Checklist。
+- `implement` 遇到 backend `scaffold_status=required` 时，还必须满足原型确认后的脚手架策略：脚手架 Execution Result、`yss-backend-scaffold-parent` 基线、Wrapper 验证和 Router 合同重编译均已回写；否则停在工程基线，不得写业务代码。
 - Matt Result 出现 `drift`、`new_impacts`、`stale_candidates`、`violation`、`missing_evidence`、空 `evidence_refs` 或缺少必需字段时暂停当前工作单元。
 
 ## 审查与验证

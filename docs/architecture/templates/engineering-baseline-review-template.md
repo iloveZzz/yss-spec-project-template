@@ -19,6 +19,8 @@ owner: ai
 | API 影响记录 / 契约草案 / OpenAPI Draft / 无 API 影响记录 |  |  |  |
 | 既有工程结构 |  |  |  |
 | YSS skill 路由 |  |  |  |
+| `prototype_confirmation` |  |  | UI 影响时必须是已确认；无 UI 影响记录 `not-applicable` 及原因 |
+| 后端脚手架登记 / 生成结果 |  |  | 记录 `scaffold_status`、目标目录、生成器输入、预期文件和 Execution Result |
 
 ## 2. 工程影响判断
 
@@ -52,6 +54,17 @@ owner: ai
 | Repository / MyBatis | `yss-repository` / `yss-mybatis` | 是 / 否 |  |
 | Web Controller / DTO | `yss-web-controller` / `yss-dto` | 是 / 否 |  |
 
+## 4.1 原型确认后的后端脚手架门禁
+
+| 检查项 | 结论 | 证据 / 备注 |
+|---|---|---|
+| 原型确认已完成，或已记录 `not-applicable` 原因 | 是 / 否 / 不适用 | `prototype_confirmation` |
+| `scaffold_status=required` 时先由 Router 编译脚手架合同并经生命周期批准，再使用 `yss-ddd-scaffold-generator` | 是 / 否 / 不适用 | 结构化 `contract_id` / `contract_version`、Router draft、批准引用、持久化引用和生成结果 |
+| 脚手架生成结果只包含工程结构、配置和机械模板 | 是 / 否 | 禁止生成业务行为 |
+| 生成器输入、预期文件和实际 `./mvnw validate` / `./mvnw test` / `./mvnw package` 已留证 | 是 / 否 | 每条命令记录 `exit_code`、`duration_ms`、stdout/stderr 引用和执行时间；打印命令不算证据 |
+| `yss-backend-scaffold-parent` 基线校验已完成并重新进入 `yss-router` | 是 / 否 / 不适用 |  |
+| 脚手架后所有业务代码均绑定批准 Slice Implementation Contract 和 YSS Skill Execution Result | 是 / 否 |  |
+
 ## 5. 完成标准
 
 - [ ] 调用方向符合 `Adapter -> Application -> Domain` 和 `Infrastructure -> Domain Gateway`。
@@ -60,6 +73,7 @@ owner: ai
 - [ ] 对象转换优先 MapStruct，重复 mapping 有处理策略。
 - [ ] 所需 YSS skills 已最小化选择。
 - [ ] 风险影响、验证证据和责任人已记录。
+- [ ] 原型确认后已按脚手架顺序完成工程基线、生成器、`yss-backend-scaffold-parent` 和 Router 重编译；脚手架未生成业务行为。
 
 ## 6. 下一步门禁
 

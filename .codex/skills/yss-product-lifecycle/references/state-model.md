@@ -44,6 +44,8 @@ AND implementation repo/branch/CI/test/rollback 已明确
 AND Slice Implementation Contract 已由生命周期编排器批准并持久化
 AND 当前工作单元消费的 contract_id/version 与最新批准版本一致
 AND Backend Slice Implementation Contract（后端适用）和 Build Architecture Checklist 已完成
+AND backend 影响且 scaffold_status=required 时，原型确认后的脚手架策略、`yss-backend-scaffold-parent` 基线、Wrapper 验证和 Router 重编译均已完成
+AND 所有后续生成代码均绑定主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result
 ```
 
 父 Ticket、Spec、设计、原型、OpenAPI Draft、wayfinder map 和 decision ticket 不得使用 `ready-for-agent`。

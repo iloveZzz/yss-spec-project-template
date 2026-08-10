@@ -1,0 +1,422 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""验证 YSS 后端脚手架生成器的受控生成边界。"""
+
+from __future__ import annotations
+
+import subprocess
+import sys
+import tempfile
+import json
+import os
+from pathlib import Path
+
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
+GENERATOR = (
+    REPOSITORY_ROOT
+    / ".agents"
+    / "skills"
+    / "yss-ddd-scaffold-generator"
+    / "scripts"
+    / "generate_scaffold.py"
+)
+VERIFIER = (
+    REPOSITORY_ROOT
+    / ".agents"
+    / "skills"
+    / "yss-ddd-scaffold-generator"
+    / "scripts"
+    / "run_scaffold_verification.py"
+)
+
+
+def run_generator(*arguments: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [sys.executable, str(GENERATOR), *arguments],
+        cwd=REPOSITORY_ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        raise AssertionError(message)
+
+
+def write_contract(
+    path: Path,
+    output_root: Path,
+    project_name: str,
+    contract_id: str,
+    approval_ref: str,
+    router_draft_ref: str,
+    persisted_ref: str,
+    force_allowed: bool = False,
+) -> None:
+    overwrite_scope = f"{project_name}/**" if force_allowed else None
+    rollback_ref = "git:checkpoint-001" if force_allowed else None
+    contract = {
+        "schema_version": 1,
+        "contract_id": contract_id,
+        "contract_version": 1,
+        "slice_id": f"{project_name}-scaffold",
+        "status": "approved",
+        "router_draft_ref": router_draft_ref,
+        "lifecycle_approval_ref": approval_ref,
+        "persisted_ref": persisted_ref,
+        "current_version": 1,
+        "implementation_repository": str(output_root),
+        "backend_repository": str(output_root),
+        "scaffold_status": "required",
+        "target_git_url_or_output_dir": str(output_root),
+        "allowed_write_paths": [f"{project_name}/**"],
+        "expected_evidence_files": [
+            f"{project_name}/.yss/scaffold-generation.json",
+            "scaffold-verification.json",
+        ],
+        "verification_commands": [
+            "./mvnw validate",
+            "./mvnw test",
+            "./mvnw package",
+        ],
+        "approval": {
+            "approval_ref": approval_ref,
+            "approver": "lifecycle-reviewer",
+            "persisted_ref": persisted_ref,
+            "current_version": 1,
+        },
+        "work_unit": {
+            "id": f"{project_name}-scaffold",
+            "behavior": "create pure project scaffold",
+            "primary_skill": "yss-ddd-scaffold-generator",
+            "supporting_skills": ["yss-backend-scaffold-parent", "alibaba-java-code-style"],
+            "tdd_mode": "controlled-generation",
+            "allowed_write_paths": [f"{project_name}/**"],
+            "expected_evidence": [".yss/scaffold-generation.json", "scaffold-verification.json"],
+            "verification_commands": [
+                "./mvnw validate",
+                "./mvnw test",
+                "./mvnw package",
+            ],
+            "controlled_generation": True,
+        },
+        "overwrite_policy": {
+            "force_allowed": force_allowed,
+            "overwrite_scope": overwrite_scope,
+            "rollback_ref": rollback_ref,
+        },
+    }
+    path.write_text(json.dumps(contract, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def assert_pure_scaffold(project_root: Path, contract_id: str) -> None:
+    require(project_root.is_dir(), "默认生成必须创建项目目录")
+    require((project_root / "pom.xml").is_file(), "默认生成必须包含父级 pom.xml")
+    require((project_root / "mvnw").is_file(), "默认生成必须包含 Maven wrapper")
+    manifest_path = project_root / ".yss" / "scaffold-generation.json"
+    require(manifest_path.is_file(), "生成项目必须携带脚手架合同元数据清单")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    require(manifest["contract_id"] == contract_id, "生成清单必须记录脚手架合同 ID")
+    require(manifest["contract_version"] == 1, "生成清单必须记录脚手架合同版本")
+    require(manifest["approval_ref"], "生成清单必须记录生命周期批准引用")
+    require(manifest["router_draft_ref"], "生成清单必须记录 Router draft 引用")
+    require(manifest["persisted_ref"], "生成清单必须记录合同持久化引用")
+    require(manifest["generation_mode"] == "controlled-generation", "生成清单必须记录受控生成模式")
+    require(not (project_root / "API.md").exists(), "默认生成不得写入业务 API 文档")
+    require(not (project_root / "db" / "schema.sql").exists(), "默认生成不得写入业务 schema")
+    require(not (project_root / "db" / "data.sql").exists(), "默认生成不得写入业务初始化数据")
+
+    forbidden_tokens = (
+        "t_user",
+        "/api/users",
+        "default admin",
+        "User CRUD",
+    )
+    for path in project_root.rglob("*"):
+        if not path.is_file() or path.suffix in {".jar", ".class", ".db"}:
+            continue
+        content = path.read_text(encoding="utf-8")
+        for token in forbidden_tokens:
+            require(token not in content, f"纯骨架包含业务示例 {token}: {path}")
+
+
+def main() -> int:
+    template_root = REPOSITORY_ROOT / ".agents/skills/yss-ddd-scaffold-generator/assets/templates"
+    user_templates = list(template_root.rglob("User*.java.template"))
+    require(not user_templates, "脚手架资产不得保留 User 业务 Java 模板")
+
+    with tempfile.TemporaryDirectory(prefix="yss-scaffold-test-") as temp_dir:
+        temp_root = Path(temp_dir)
+        output_root = temp_root / "output"
+
+        missing_contract_root = temp_root / "missing-contract-output"
+        missing_contract_result = run_generator(
+            "--project-name",
+            "missing-contract-service",
+            "--base-package",
+            "com.yss.missing",
+            "--output-dir",
+            str(missing_contract_root),
+        )
+        require(
+            missing_contract_result.returncode != 0,
+            "缺少批准脚手架合同元数据时不得生成项目",
+        )
+
+        stale_contract_root = temp_root / "stale-contract-output"
+        stale_contract = temp_root / "stale-contract.json"
+        write_contract(
+            stale_contract,
+            stale_contract_root,
+            "stale-service",
+            "backend-scaffold-stale",
+            "lifecycle/approval-stale",
+            "router/draft-stale",
+            "lifecycle/contracts/backend-scaffold-stale.yaml",
+        )
+        stale_payload = json.loads(stale_contract.read_text(encoding="utf-8"))
+        stale_payload["current_version"] = 2
+        stale_contract.write_text(json.dumps(stale_payload), encoding="utf-8")
+        stale_result = run_generator(
+            "--project-name",
+            "stale-service",
+            "--base-package",
+            "com.yss.stale",
+            "--output-dir",
+            str(stale_contract_root),
+            "--contract-id",
+            "backend-scaffold-stale",
+            "--contract-version",
+            "1",
+            "--approval-ref",
+            "lifecycle/approval-stale",
+            "--router-draft-ref",
+            "router/draft-stale",
+            "--persisted-ref",
+            "lifecycle/contracts/backend-scaffold-stale.yaml",
+            "--contract-file",
+            str(stale_contract),
+        )
+        require(stale_result.returncode != 0, "过期脚手架合同不得生成项目")
+
+        default_contract = temp_root / "pure-contract.json"
+        write_contract(
+            default_contract,
+            output_root,
+            "pure-service",
+            "backend-scaffold-000",
+            "lifecycle/approval-000",
+            "router/draft-000",
+            "lifecycle/contracts/backend-scaffold-000.yaml",
+        )
+
+        default_result = run_generator(
+            "--project-name",
+            "pure-service",
+            "--base-package",
+            "com.yss.pure",
+            "--output-dir",
+            str(output_root),
+            "--contract-id",
+            "backend-scaffold-000",
+            "--contract-version",
+            "1",
+            "--approval-ref",
+            "lifecycle/approval-000",
+            "--router-draft-ref",
+            "router/draft-000",
+            "--persisted-ref",
+            "lifecycle/contracts/backend-scaffold-000.yaml",
+            "--contract-file",
+            str(default_contract),
+        )
+        require(
+            default_result.returncode == 0,
+            f"默认纯骨架生成失败:\n{default_result.stdout}\n{default_result.stderr}",
+        )
+        assert_pure_scaffold(output_root / "pure-service", "backend-scaffold-000")
+
+        verification_project = temp_root / "verification-service"
+        verification_project.mkdir()
+        verification_manifest = verification_project / ".yss" / "scaffold-generation.json"
+        verification_manifest.parent.mkdir()
+        verification_manifest.write_text(
+            json.dumps(
+                {
+                    "schema_version": 1,
+                    "contract_id": "backend-scaffold-verification",
+                    "contract_version": 1,
+                    "slice_id": "verification-service-scaffold",
+                    "approval_ref": "lifecycle/verification",
+                    "lifecycle_approval_ref": "lifecycle/verification",
+                    "router_draft_ref": "router/verification",
+                    "persisted_ref": "lifecycle/contracts/verification.yaml",
+                    "contract_file_ref": "lifecycle/contracts/verification.json",
+                    "current_version": 1,
+                    "approver": "lifecycle-reviewer",
+                    "allowed_write_paths": ["verification-service/**"],
+                    "expected_evidence_files": ["scaffold-verification.json"],
+                    "verification_commands": [
+                        "./mvnw validate",
+                        "./mvnw test",
+                        "./mvnw package",
+                    ],
+                    "generation_mode": "controlled-generation",
+                }
+            ),
+            encoding="utf-8",
+        )
+        wrapper = verification_project / "mvnw"
+        wrapper.write_text(
+            "#!/bin/sh\n"
+            "printf '%s\\n' \"$*\" >> \"$(dirname \"$0\")/commands.log\"\n"
+            "exit 0\n",
+            encoding="utf-8",
+        )
+        os.chmod(wrapper, 0o755)
+        evidence_dir = verification_project / "evidence"
+        verification_result = subprocess.run(
+            [
+                sys.executable,
+                str(VERIFIER),
+                "--project-root",
+                str(verification_project),
+                "--evidence-dir",
+                str(evidence_dir),
+            ],
+            cwd=REPOSITORY_ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        require(
+            verification_result.returncode == 0,
+            f"受控验证执行器失败:\n{verification_result.stdout}\n{verification_result.stderr}",
+        )
+        report = json.loads((evidence_dir / "scaffold-verification.json").read_text(encoding="utf-8"))
+        require(
+            Path(report["scaffold_manifest_ref"]).resolve() == verification_manifest.resolve(),
+            "验证报告必须回勾脚手架生成元数据清单",
+        )
+        require(
+            [item["command"] for item in report["commands"]]
+            == ["./mvnw validate", "./mvnw test", "./mvnw package"],
+            "验证报告必须记录完整的 wrapper 命令",
+        )
+        require(
+            all(item["exit_code"] == 0 for item in report["commands"]),
+            "验证报告必须记录每条命令的 exit_code",
+        )
+        require(
+            all(Path(item["stdout_ref"]).is_file() for item in report["commands"]),
+            "验证报告必须包含 stdout 证据文件",
+        )
+        require(
+            all(Path(item["stderr_ref"]).is_file() for item in report["commands"]),
+            "验证报告必须包含 stderr 证据文件",
+        )
+        require(
+            all(item["duration_ms"] >= 0 and item["started_at"] and item["executed_at"] for item in report["commands"]),
+            "验证报告必须记录耗时和执行时间",
+        )
+        require(
+            (verification_project / "commands.log").read_text(encoding="utf-8").splitlines()
+            == ["validate", "test", "package"],
+            "验证器必须实际执行三条 wrapper 命令",
+        )
+
+        example_root = temp_root / "example-output"
+        example_result = run_generator(
+            "--project-name",
+            "example-service",
+            "--base-package",
+            "com.yss.example",
+            "--output-dir",
+            str(example_root),
+            "--with-example",
+        )
+        require(example_result.returncode != 0, "--with-example 必须被受控生成边界拒绝")
+        require(
+            not (example_root / "example-service").exists(),
+            "拒绝 --with-example 时不得留下部分生成目录",
+        )
+
+        force_root = temp_root / "force-output"
+        force_project = force_root / "force-service"
+        force_project.mkdir(parents=True)
+        sentinel = force_project / "user-owned.txt"
+        sentinel.write_text("preserve me", encoding="utf-8")
+
+        unapproved_force_result = run_generator(
+            "--project-name",
+            "force-service",
+            "--base-package",
+            "com.yss.force",
+            "--output-dir",
+            str(force_root),
+            "--force",
+        )
+        require(
+            unapproved_force_result.returncode != 0,
+            "非空目录的 --force 必须要求合同元数据",
+        )
+        require(sentinel.read_text(encoding="utf-8") == "preserve me", "未批准覆盖不得改变原目录")
+
+        force_contract = temp_root / "force-contract.json"
+        write_contract(
+            force_contract,
+            force_root,
+            "force-service",
+            "backend-scaffold-001",
+            "lifecycle/approval-001",
+            "router/draft-001",
+            "lifecycle/contracts/backend-scaffold-001.yaml",
+            force_allowed=True,
+        )
+
+        approved_force_result = run_generator(
+            "--project-name",
+            "force-service",
+            "--base-package",
+            "com.yss.force",
+            "--output-dir",
+            str(force_root),
+            "--force",
+            "--contract-id",
+            "backend-scaffold-001",
+            "--contract-version",
+            "1",
+            "--approval-ref",
+            "lifecycle/approval-001",
+            "--router-draft-ref",
+            "router/draft-001",
+            "--persisted-ref",
+            "lifecycle/contracts/backend-scaffold-001.yaml",
+            "--contract-file",
+            str(force_contract),
+            "--overwrite-scope",
+            "force-service/**",
+            "--rollback-ref",
+            "git:checkpoint-001",
+        )
+        require(
+            approved_force_result.returncode == 0,
+            f"具备合同元数据的覆盖生成失败:\n{approved_force_result.stdout}\n{approved_force_result.stderr}",
+        )
+        assert_pure_scaffold(force_root / "force-service", "backend-scaffold-001")
+        backup_dirs = list(force_root.glob(".force-service.backup-*"))
+        require(backup_dirs, "批准覆盖必须保留可回滚备份")
+        require(
+            (backup_dirs[0] / "user-owned.txt").read_text(encoding="utf-8") == "preserve me",
+            "批准覆盖的备份必须保留原目录内容",
+        )
+
+    print("YSS 脚手架生成器受控生成场景验证通过")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

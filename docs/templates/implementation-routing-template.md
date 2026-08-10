@@ -36,6 +36,8 @@ owner: ai
 | 受影响 frontend 工程已存在可复用，或已登记 `scaffold_status=required` 并确认外部脚手架目标 | 是 / 否 / 不适用 |  |
 | 受影响 backend 工程已存在可复用，或已登记 `scaffold_status=required` 并确认外部脚手架目标 | 是 / 否 / 不适用 |  |
 | 缺失工程时已路由到对应脚手架 skill | 是 / 否 / 不适用 | `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator` |
+| 原型确认后先完成后端脚手架，再进入业务代码路由 | 是 / 否 / 不适用 | `backend_scaffold_policy_satisfied` |
+| 后端脚手架合同字段完整且版本当前 | 是 / 否 / 不适用 | `contract_id`、`contract_version`、Router draft、生命周期批准、持久化引用、允许写路径、预期证据、验证命令 |
 | 后端构建 / 测试 / OpenAPI / CI 命令均使用项目根目录 `./mvnw ...`，或已记录受控例外 | 是 / 否 / 不适用 | 裸 `mvn ...` 默认为规范偏离 |
 | 持久化文档正文和章节标题已转换为中文，仅保留必要英文技术标识 / metadata | 是 / 否 | 英文 skill / 模板不得原样落地为交付文档 |
 | YSS skill 路由已完成 | 是 / 否 |  |
@@ -203,6 +205,23 @@ owner: ai
 | 权限接入 / 认证 / 授权 | 是 / 否 | 通过 / 草案 / 阻断 / 不适用 |  |  |
 | 审计日志 | 是 / 否 | 通过 / 草案 / 阻断 / 不适用 |  |  |
 
+### 4.3 后端脚手架工作单元
+
+当 backend `scaffold_status=required` 时，先登记一个 `controlled-generation` 工作单元：`primary_skill=yss-ddd-scaffold-generator`，并在后续追加 `yss-backend-scaffold-parent` 基线校验和 `yss-router` 合同重编译。`existing` / `initialized` 不重复全量生成，但必须提供等价基线和 Wrapper 证据。
+
+| 项 | 内容 |
+|---|---|
+| 前置 | `prototype_confirmation`、工程基线、实现仓库和脚手架目标已确认；Router 脚手架合同 draft 已经生命周期批准并持久化为结构化 JSON，生成器通过 `--contract-file` 消费 |
+| 生成器 | `yss-ddd-scaffold-generator` |
+| 模式 | `controlled-generation` |
+| 允许生成 | Domain / Application / Infrastructure / Adapter / Bootstrap 目录骨架、POM、配置、Wrapper、Smart Doc 和非业务机械模板 |
+| 禁止生成 | 业务规则、状态机、权限、事务、复杂查询、错误映射、业务字段和用户可见行为 |
+| 生成选项 | 关闭 `--with-example`；非空目录 `--force` 默认阻断，覆盖范围、备份、回滚点和批准引用齐全后才能单独审查 |
+| 验证 | 受控验证器实际执行项目根目录 `./mvnw validate`、`./mvnw test`、`./mvnw package`，逐条记录 `exit_code`、`duration_ms`、stdout/stderr 引用和执行时间；打印命令不算证据 |
+| 后置 | `yss-backend-scaffold-parent`、`yss-router` 业务合同重编译、YSS Skill Execution Result |
+
+所有后续生成代码必须绑定当前批准且版本一致的 Slice Implementation Contract、主 YSS skill、依赖闭包、允许写路径、预期证据和 Execution Result。业务行为必须使用 `behavior-tdd`；缺任一条件即阻断，不得以脚手架成功或时间压力豁免。
+
 ## 5. TDD 与验证策略
 
 > 每个工作单元必须且只能选择 `behavior-tdd` 或 `controlled-generation`。领域规则、状态机、事务、复杂查询、权限 / 错误映射、页面交互和用户可见状态必须使用 `behavior-tdd`；`controlled-generation` 只用于机械脚手架、样板、冻结客户端和配置。
@@ -234,7 +253,7 @@ owner: ai
 
 ## 5.3 YSS Skill Execution Result 回填
 
-> 每个结果必须引用当前 `contract_id` / `contract_version` 和 `work_unit_id`。只列计划命令、缺实际结果或时间戳，不构成 fresh verification。
+> 每个结果必须引用当前 `contract_id` / `contract_version` 和 `work_unit_id`。只列计划命令、缺实际结果、`duration_ms` 或时间戳，不构成 fresh verification。
 
 | schema_version | skill | slice_id | work_unit_id | status | consumed contract ref / version | changed_files | evidence_files | verification result / executed_at | constraint_results | seam_deferred | deviations | new_impacts | 结果文件引用 |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -277,6 +296,7 @@ owner: ai
 - [ ] 后端切片如适用，已填写 `Backend Slice Implementation Contract`，并且 required skills、禁止模式、证据文件、延期 seam 和验证命令完整。
 - [ ] 受影响外部实现仓库已登记，并绑定分支、MR / PR、CI 和验证命令。
 - [ ] 受影响 frontend / backend 工程存在性已判定；0-1 缺失工程已登记 `scaffold_status=required`、确认外部脚手架目标并路由对应脚手架 skill。
+- [ ] 原型确认后已满足 `backend_scaffold_policy_satisfied`；脚手架只生成工程骨架，所有后续生成代码均经批准合同和 YSS skill 路由。
 - [ ] DDL / SQL / 数据库迁移、权限接入和审计日志的人工确认结论已记录；未通过时记录阻塞原因、责任人和补齐计划。
 - [ ] 若使用 subagent，已记录任务包、写范围、独立 review、verification 命令和主控采纳结论。
 - [ ] 每个切片包含测试命令、验证方式和回滚点。

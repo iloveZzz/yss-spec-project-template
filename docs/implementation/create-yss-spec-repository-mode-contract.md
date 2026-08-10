@@ -1,59 +1,90 @@
-# `create-yss-spec` 仓库身份与迁移契约
+# `create-yss-spec` 接管与模板同步跨仓库契约
 
-本文定义模板仓库与外部 `create-yss-spec` CLI 仓库之间的跨仓库发布契约。模板治理父 Ticket 为 [#24](https://github.com/iloveZzz/yss-spec-project-template/issues/24)，CLI 交接子 Ticket 为 [#26](https://github.com/iloveZzz/yss-spec-project-template/issues/26)。
+本文定义模板源仓库与外部 `create-yss-spec` CLI 仓库之间的身份、资产边界、迁移、同步、验证和发布契约。
 
 ## 契约目标
 
 - 模板源仓库保留 `repository_mode: template-source`。
-- CLI 创建的产品仓库必须写入 `repository_mode: project-instance`，不得原样保留模板源身份。
-- 清单只包含 `schema_version` 与 `repository_mode`；项目名称、团队规模、Tracker 和实现仓库信息不得写入清单。
-- CLI 初始化与升级后的落地文档正文以简体中文为标准语言。
+- CLI 创建或接管的产品仓库写入 `repository_mode: project-instance`。
+- CLI 只管理 manifest 声明的研发管理资产，不接管前后端运行时代码、业务目录、用户文件或 `.git`。
+- 通过模板快照和 40 位 `templateCommit` 使每次初始化、升级和回滚可追踪。
 
-## 初始化转换
+## 生命周期接口
 
-CLI 从模板内容生成目标仓库时，必须在写入目标目录后、执行模板验证前完成以下转换：
+### 空目录初始化
 
-1. 将根目录 `yss-project.yaml` 的 `repository_mode` 从 `template-source` 改为 `project-instance`。
-2. 保持 `schema_version: 1`，拒绝未知 schema 版本或未知模式。
-3. 保持 `.agents/skills` 为共享技能权威内容，并保留其他 Agent root 的生成投影与平台专属技能。
-4. 执行目标仓库的 `scripts/sync-skills --check`、`scripts/update-skill-lock --check` 和 `scripts/verify-template`。
+初始化必须把模板身份转换为 `schema_version: 1`、`repository_mode: project-instance`，并执行目标仓库的：
 
-## 旧版升级转换
+```bash
+scripts/sync-skills --check
+scripts/update-skill-lock --check
+scripts/verify-template
+```
 
-升级已有仓库时必须执行 `docs/user-guide/规格与任务迁移指南.md` 中的路径迁移，删除过时 skill 目录且不创建兼容别名。若目标路径已存在或旧、新资产内容冲突，CLI 必须停止并输出冲突清单，不得静默覆盖用户内容。
+### 已有项目 `attach`
 
-## 外部仓库验收测试
+```bash
+npx create-yss-spec@latest attach \
+  --target-dir . \
+  --project-name "项目名称" \
+  --business-domain "业务领域" \
+  --dry-run
+npx create-yss-spec@latest attach \
+  --target-dir . \
+  --project-name "项目名称" \
+  --business-domain "业务领域" \
+  --apply [--force]
+```
 
-CLI 仓库至少补充以下集成场景：
+`attach` 必须显式选择 dry-run 或 apply，已有 `.yss-template.json` 时拒绝并提示 `sync`。计划按 `missing`、`matched`、`conflict`、`unsafe` 分类；force 只能覆盖受管 conflict，不能绕过 unsafe 或迁移冲突。合法 `template-source` 可转换为 `project-instance`，合法 `project-instance` 保留并校验，非法身份在写入前阻断。
 
-1. 从当前模板初始化空目录，断言输出清单为 `project-instance` 且只含两个字段。
-2. 断言初始化输出不存在过时 skill、旧模板路径和单数 Agent skill root。
-3. 断言共享 skill 投影及 `skills-lock.json` 完整目录树哈希校验通过。
-4. 用旧版 fixture 执行升级，断言 Spec / Ticket 新路径生效；存在内容冲突时 fail closed。
-5. 在初始化后的仓库运行 `scripts/verify-template`，断言五类压力场景、Markdown 链接和 YAML 解析全部通过。
+### 持续同步 `sync`
 
-## 发布顺序
+`sync` 只使用 CLI 包内置的模板快照。“最新”指用户执行 `npx create-yss-spec@latest` 所携带的最新已发布快照，不在运行时直接拉取模板仓库。普通同步新增缺失文件、更新 baseline 未被本地修改的文件、报告冲突和模板删除；`sync --force` 先备份再覆盖受管冲突，模板删除默认只报告。
 
-1. 模板仓库完成 fresh verification 与独立审查，形成待发布 commit / tag，但暂不声明整体可发布。
-2. CLI 仓库按本契约实现身份转换与升级测试，并绑定模板的确定 commit / tag。
-3. 两个仓库共同执行初始化和升级集成测试。
-4. 先发布模板兼容版本或确定模板引用，再发布 CLI major 版本；最后同步父 Ticket、迁移说明和发布记录。
+完成后必须重新执行三个模板门禁；任一门禁失败时回滚文件变更并保持旧 metadata 版本。
 
-任一仓库未通过共同集成验证时，只能声明“本仓库实现完成，跨仓库发布受阻”，不得声明整体可发布。
+## metadata v2
 
-## 当前责任边界
+`.yss-template.json` 至少包含：
 
-- 本仓库负责：清单 schema、流程事实源、迁移指南、skills 投影与锁定、模板验证脚本。
-- `create-yss-spec` 仓库负责：初始化转换、升级转换、冲突处理、CLI 集成测试、CLI major 发布。
-- 模板实现 PR：[#30](https://github.com/iloveZzz/yss-spec-project-template/pull/30)，修正 Ticket 目录、空 skill 锁登记和无 Git 初始化时的模板校验。
-- CLI 实现 PR：[`create-yss-spec` #10](https://github.com/iloveZzz/create-yss-spec/pull/10)，实现身份转换、旧版迁移、fail closed、skill 投影复制和 `2.0.0` 版本准备。
-- 共同验证：`YSS_SPEC_TEMPLATE_REF=codex/ticket-directory-contract npm test`，20/20 通过；生成实例执行 `scripts/verify-template` 通过；`npm pack --dry-run` 通过。
-- 下一责任人：模板与 CLI 独立 reviewer；合并后由发布负责人绑定确定 commit / tag 重跑验证并确认 npm `2.0.0` 发布。
-- 建议 skills：`cross-repo-implementation-routing`、`tdd`、`code-review`。
+```json
+{
+  "metadataSchemaVersion": 2,
+  "templateName": "create-yss-spec",
+  "cliVersion": "2.1.0",
+  "templateSource": "github:iloveZzz/yss-spec-project-template",
+  "templateCommit": "<40-char-commit>",
+  "managedFilesManifestVersion": "<manifest-hash>",
+  "managedFiles": {}
+}
+```
 
-## 当前阻断条件
+`managedFiles` 是每个受管文件的 baseline。CLI apply 前把将被覆盖的文件保存到目标目录外的临时备份目录；验证成功后默认保留，失败按操作日志回滚，metadata 不更新。
 
-- 模板 PR #30 尚未独立 review 与合并。
-- CLI PR #10 尚未独立 review 与合并。
-- 当前共同测试绑定开发分支；合并后必须改绑确定 commit / tag 再执行 fresh verification。
-- npm `2.0.0` 尚未获得发布确认，本轮不执行 npm 发布。
+## 固定迁移规则
+
+CLI 必须遵循 [Spec / Ticket 迁移指南](../user-guide/规格与任务迁移指南.md) 的固定映射：旧 Spec / Ticket skill 和模板入口迁移为当前名称，旧规格文件、根 `.scratch/<feature>/` 迁移到当前路径；无法推断功能归属的扁平 Ticket 标记为 `unsafe` 并阻断。新旧目标内容不一致时标记 `conflict`，不得静默覆盖。
+
+## 跨仓库验收
+
+| 场景 | 必须验证 |
+|---|---|
+| 空目录初始化 | `project-instance`、metadata v2、固定 commit、六类 projection 和模板门禁 |
+| 任意已有项目 attach dry-run | 不写文件、不删除 `.git`，运行时代码和无关文件不变 |
+| attach apply | 缺失资产新增；matched 纳入 baseline；conflict 需 force；unsafe 不可 force 绕过 |
+| 旧资产迁移 | 规格 / Ticket 路径和根 scratch 安全迁移；目标冲突与扁平 Ticket fail closed |
+| sync | 新增、更新、冲突、迁移和删除报告完整；force 只作用于受管文件 |
+| post-sync | 三个门禁全部 fresh 通过；失败时文件和 metadata 回滚 |
+| 发布包 | 固定 commit 下 `npm test` 和 `npm pack --dry-run` 通过，包内含 `template.snapshot.json` |
+
+本变更只涉及模板治理和外部 CLI，不涉及 frontend、backend、OpenAPI 或运行时工程；这些范围为 `not-applicable`。
+
+## 发布顺序与阻断条件
+
+1. 模板恢复 `docs/process/*`、正式处理 `.qoder` 投影并通过 fresh verification，形成确定 commit。
+2. CLI 绑定该 commit，完成 attach / sync 跨仓库测试和独立 review。
+3. 运行固定 commit 的 `npm test`、`npm pack --dry-run`，确认包内快照和实例门禁通过。
+4. 发布 CLI `2.1.0`，并回写版本、验证证据、备份恢复路径和回滚点。
+
+模板引用仍为浮动 ref、任一共同验证失败、独立 review 未完成或打包失败时，只能声明“本仓库实现完成，跨仓库发布受阻”，不得声明整体可发布。本轮不执行 npm publish。

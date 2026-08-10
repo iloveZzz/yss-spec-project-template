@@ -2,4 +2,4 @@ version: 1
 interface:
   display_name: "YSS DDD Scaffold"
   short_description: "生成多模块 YSS DDD 后端脚手架与工程骨架规范"
-  default_prompt: "Use $yss-ddd-scaffold-generator to create a standard YSS DDD backend scaffold with domain, application, infrastructure, adapter, and bootstrap modules."
+  default_prompt: "Use $yss-ddd-scaffold-generator only with a lifecycle-approved scaffold contract JSON to create a pure YSS DDD backend skeleton with domain, application, infrastructure, adapter, and bootstrap module boundaries; route all business code back through yss-router and the applicable YSS skills."
