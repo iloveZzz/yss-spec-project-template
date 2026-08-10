@@ -35,5 +35,6 @@ htmlcov/
 .pytest_cache/
 Excalidraw
 .obsidian
+.ua
 docs/process
 docs/graphify-out
