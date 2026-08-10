@@ -62,7 +62,7 @@ python3 scripts/generate_scaffold.py \
 - 当前脚手架第一阶段仅支持经过验证的 `mysql`；未提供完整模板和验证的数据库类型不得伪装成已支持。
 - 生成后的后端工程必须使用项目根目录 `./mvnw ...` 执行构建、测试、运行、OpenAPI 生成和 CI 验证；不得在 README、实施记录、Ticket、Review 或 Release 中默认写裸 `mvn ...`。既有仓库确实无法使用 wrapper 时，必须记录受控例外。
 - `.mvn/settings.xml` 只能通过 `${env.MAVEN_REPO_USERNAME}` 和 `${env.MAVEN_REPO_PASSWORD}` 读取 Maven 仓库凭据；内部仓库构建前由 CI 或本地安全环境注入变量，禁止把 Maven 仓库用户名、明文密码或 Maven 加密密码写入 skill、模板或生成工程。
-- 涉及 API 契约时，先确认 `docs/api/specs/` 中的 OpenAPI Draft / Freeze 状态；不要用脚手架生成结果反向替代产品契约设计。
+- 涉及 API 契约时，先确认 `docs/.scratch/<feature>/api/<feature>.yaml` 中的 OpenAPI Draft / Freeze 状态；不要用脚手架生成结果反向替代产品契约设计。
 
 ## Smart Doc 配置参考
 

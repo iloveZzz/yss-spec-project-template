@@ -11,3 +11,5 @@
 | `wontfix` | `wontfix` | 不会处理 |
 
 当 skill 提及某个标准角色时，使用表中对应的 Tracker 标签。
+
+Local Markdown 主 tracker 不调用远程标签：在 Ticket 文件顶部使用同名 `Status:` 值记录标准角色。Wayfinder 的 `claimed` / `resolved` 仅是临时工作状态，不属于本表五态；进入交付 Ticket 前必须转换为标准 `Status:`。

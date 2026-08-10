@@ -7,12 +7,12 @@
 | 项目 | 内容 |
 |---|---|
 | 功能名称 |  |
-| Spec | `docs/requirements/<feature>-spec.md` |
-| 产品总体设计 / 功能架构 | `docs/design/<feature>-product-overview-design.md` |
-| 交互说明 | `docs/design/<feature>-interaction-spec.md` |
-| 状态矩阵 | `docs/design/<feature>-state-matrix.md` |
-| 原型评审 | `docs/design/<feature>-prototype-review.md` |
-| 高保真 HTML 原型 | `docs/design/prototypes/<feature>/index.html` |
+| Spec | `docs/.scratch/<feature>/spec.md` |
+| 产品总体设计 / 功能架构 | `docs/.scratch/<feature>/design/<feature>-product-overview-design.md` |
+| 交互说明 | `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` |
+| 状态矩阵 | `docs/.scratch/<feature>/design/<feature>-state-matrix.md` |
+| 原型评审 | `docs/.scratch/<feature>/design/<feature>-prototype-review.md` |
+| 高保真 HTML 原型 | `docs/.scratch/<feature>/design/prototypes/index.html` |
 | Product Design 路由 | `product-design:index -> <focused skill>` |
 | 产出方式 | 系统 / Agent 自动产出 / 人工补充 |
 | Ant Design 版本 | v6 |

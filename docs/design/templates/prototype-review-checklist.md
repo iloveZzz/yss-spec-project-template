@@ -6,13 +6,13 @@
 
 | 输入 | 路径 / 链接 | 是否具备 |
 |---|---|---|
-| Spec | `docs/requirements/<feature>-spec.md` |  |
-| 交互说明 | `docs/design/<feature>-interaction-spec.md` |  |
+| Spec | `docs/.scratch/<feature>/spec.md` |  |
+| 交互说明 | `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` |  |
 | 原型 / 线框图 | `<链接或导出图片路径>` |  |
-| 状态矩阵 | `docs/design/<feature>-state-matrix.md` |  |
+| 状态矩阵 | `docs/.scratch/<feature>/design/<feature>-state-matrix.md` |  |
 | Product Design 路由记录 | `product-design:index -> <focused skill>` |  |
 | AntD CLI 校验证据 | `<命令输出或记录路径>` |  |
-| 现有 API 草案 | `docs/api/specs/<feature>.yaml` | 可选 |
+| 现有 API 草案 | `docs/.scratch/<feature>/api/<feature>.yaml` | 可选 |
 
 ## 门禁清单
 

@@ -25,7 +25,8 @@ Look at the current repo to understand its starting state. Read whatever exists;
 - `CONTEXT.md` and `CONTEXT-MAP.md` at the repo root
 - `docs/adr/` and any `src/*/docs/adr/` directories
 - `docs/agents/` — does this skill's prior output already exist?
-- `.scratch/` — sign that a local-markdown issue tracker convention is already in use
+- `docs/.scratch/` — sign that the canonical local-markdown issue tracker convention is already in use
+- `.scratch/` and `docs/requirements/tickets/` — legacy local-tracker roots; inspect them read-only for migration and never use them as new write targets
 - Is the `triage` skill installed? (a `triage` skill folder alongside this one, or `triage` in your available skills.) This decides whether Section B runs at all.
 - Monorepo signals — a `pnpm-workspace.yaml`, a `workspaces` field in `package.json`, or a populated `packages/*` with its own `src/`. Present only in a genuinely large multi-package repo; their absence means single-context, which is almost every repo.
 
@@ -37,14 +38,22 @@ Lead each section with the recommended answer so the user can accept it in a wor
 
 **Section A — Issue tracker.**
 
-> Explainer: The "issue tracker" is where issues live for this repo. Skills like `to-tickets`, `triage`, and `to-spec` read from and write to it — they need to know whether to call `gh issue create`, write a markdown file under `.scratch/`, or follow some other workflow you describe. Pick the place you actually track work for this repo.
+> Explainer: The "issue tracker" is where issues live for this repo. Skills like `to-tickets`, `triage`, and `to-spec` read from and write to it — they need to know whether to call `gh issue create`, write a markdown file under `docs/.scratch/`, or follow some other workflow you describe. Pick the place you actually track work for this repo.
 
-Default posture: these skills were designed for GitHub. If a `git remote` points at GitHub, propose that. If a `git remote` points at GitLab (`gitlab.com` or a self-hosted host), propose GitLab. Otherwise (or if the user prefers), offer:
+Path resolution is configuration-first: every Local-aware skill must read the
+persisted `tracker.root` from `docs/agents/issue-tracker.md` before resolving an
+artifact path. If the field is absent, use `docs/.scratch` as the default. Do
+not infer a tracker or replace the configured root from `git remote`; the legacy
+`.scratch/` and `docs/requirements/tickets/` roots are read-only migration
+sources.
 
-- **GitHub** — issues live in the repo's GitHub Issues (uses the `gh` CLI)
-- **GitLab** — issues live in the repo's GitLab Issues (uses the [`glab`](https://gitlab.com/gitlab-org/cli) CLI)
-- **Local markdown** — issues live as files under `.scratch/<feature>/` in this repo (good for solo projects or repos without a remote)
-- **Other** (Jira, Linear, etc.) — ask the user to describe the workflow in one paragraph; the skill will record it as freeform prose
+The supported tracker choices in this template are exactly `local-markdown`, `github`, and `gitlab`. A `git remote` may be displayed as code-host context only; it must not choose or rank a tracker. Ask for one explicit project choice, with Local Markdown as the template default:
+
+- **Local markdown (recommended)** — issues live as files under `docs/.scratch/<feature>/` in this repo.
+- **GitHub** — use GitHub Issues and the `gh` CLI only when the user explicitly selects GitHub.
+- **GitLab** — use GitLab Issues and the [`glab`](https://gitlab.com/gitlab-org/cli) CLI only when the user explicitly selects GitLab.
+
+Do not offer an `Other` tracker or write an unsupported platform into the project configuration; extending the YSS tracker contract must happen before adding another platform.
 
 Record the choice in `docs/agents/issue-tracker.md`. The GitHub and GitLab templates carry a "PRs as a request surface" flag, defaulted **off** — leave it off and don't raise it; a user who wants external PRs in the triage queue can flip the flag in the file later.
 
@@ -109,7 +118,7 @@ Then write the docs files using the seed templates in this skill folder as a sta
 - [triage-labels.md](./triage-labels.md) — label mapping (only if `triage` is installed)
 - [domain.md](./domain.md) — domain doc consumer rules + layout
 
-For "other" issue trackers, write `docs/agents/issue-tracker.md` from scratch using the user's description.
+For an unsupported tracker request, stop and require a YSS tracker-contract extension; do not write an unsupported platform into `docs/agents/issue-tracker.md`.
 
 ### 5. Done
 

@@ -20,7 +20,7 @@
 - 表单、表格、弹窗、抽屉、步骤流等交互说明。
 - loading、empty、error、readonly、disabled、no-permission、conflict 等状态矩阵。
 - 页面字段、筛选条件、操作按钮和权限规则。
-- 低保真原型评审通过后的 Ant Design v6 高保真可交互 HTML 原型，默认路径为 `docs/design/prototypes/<feature>/index.html`；该产物可由系统 / Agent 自动生成，不要求用户手工提供，产出前必须使用 `antd` CLI 查询设计语言、组件 API、demo、token 和 semantic 信息，产出后必须记录 AntD v6 校验证据并获得用户确认。
+- 低保真原型评审通过后的 Ant Design v6 高保真可交互 HTML 原型，默认路径为 `docs/.scratch/<feature>/design/prototypes/index.html`；该产物可由系统 / Agent 自动生成，不要求用户手工提供，产出前必须使用 `antd` CLI 查询设计语言、组件 API、demo、token 和 semantic 信息，产出后必须记录 AntD v6 校验证据并获得用户确认。
 
 这些资产用于反推 API 影响、契约草案、OpenAPI 请求 / 响应字段、错误结构、分页筛选、权限状态和前端验收标准。
 
@@ -45,8 +45,8 @@
 推荐目录：
 
 ```text
-docs/design/diagrams/
-docs/design/prototypes/
-docs/architecture/diagrams/
-docs/discovery/diagrams/
+docs/.scratch/<feature>/design/diagrams/
+docs/.scratch/<feature>/design/prototypes/
+docs/.scratch/<feature>/architecture/diagrams/
+docs/.scratch/<feature>/discovery/diagrams/
 ```

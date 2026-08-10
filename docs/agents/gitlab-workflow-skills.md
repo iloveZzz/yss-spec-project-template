@@ -6,7 +6,7 @@
 
 当项目主远端为 GitLab 时，默认使用 GitLab 作为代码托管、Merge Request、CI/CD 和工作流协作入口。
 
-Spec、Ticket 和 triage 不在本文中写死到 GitLab；它们按 `docs/agents/issue-tracker.md` 在 GitLab / GitHub 间路由。
+Spec、Ticket 和 triage 不在本文中写死到 GitLab；它们按 `docs/agents/issue-tracker.md` 在 Local Markdown、GitLab / GitHub 间路由。
 
 已集成能力：
 
@@ -112,7 +112,7 @@ scripts/gitworks ci-status
 
 1. 读取项目状态：`scripts/gitworks status`。
 2. 需要 GitLab API / clone / push workflow 时，使用 `gitlab-workflow` skill。
-3. 需要 MR / CI / Pipeline 时，使用 `glab` 或 `scripts/gitworks`；需要 Ticket / Spec / triage 时，先按 `docs/agents/issue-tracker.md` 判断 GitLab 或 GitHub。
+3. 需要 MR / CI / Pipeline 时，使用 `glab` 或 `scripts/gitworks`；需要 Ticket / Spec / triage 时，先按 `docs/agents/issue-tracker.md` 判断 Local Markdown、GitLab 或 GitHub。
 4. 执行自动提交前，必须先检查工作区脏文件，避免把无关 `.agents/`、`.codex/`、本机配置或用户未确认文件混入提交。
 5. 不直接提交到受保护主分支；默认使用 `feature/*`、`fix/*`、`chore/*` 分支。
 6. 自动 workflow 只在用户明确授权提交/推送时执行。

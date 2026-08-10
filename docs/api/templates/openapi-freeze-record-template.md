@@ -43,7 +43,7 @@ owner: ai
 ## 4. 冻结后变更规则
 
 - 冻结后如需改变路径、请求 / 响应 schema、错误结构、权限或分页规则，必须回到 OpenAPI Draft Review 和 Design Review。
-- 行为规格变化影响接口时，必须同步回写 `docs/api/specs/<feature>.yaml` 和 OpenAPI Draft 或 Spec 验收场景。
+- 行为规格变化影响接口时，必须同步回写 `docs/.scratch/<feature>/api/<feature>.yaml` 和 OpenAPI Draft 或 Spec 验收场景。
 - 前后端实现必须以本记录引用的冻结版本为准。
 
 ## 5. 完成标准

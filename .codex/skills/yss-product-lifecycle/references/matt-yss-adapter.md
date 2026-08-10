@@ -72,7 +72,26 @@ Router 状态映射为：`draft → completed`、`blocked → blocked`、`ready-
 
 该检查每个任务只执行一次并缓存；只有 tracker、主远端、真实标签或配置变化时重查。
 
-证据必须覆盖实际 platform、五态 label_check、domain_layout 和 migration_ref。配置与主远端或真实标签冲突时不覆盖；目标平台暂不可用时保留本地待发布草案；`template-source` 只执行 validate-only，不初始化具体产品 tracker。
+证据必须覆盖实际 platform、五态 `label_check` 或 Local `Status:` 检查、`domain_layout`、`artifact_root` 和 `migration_ref`。已持久化 tracker 配置优先于主远端；配置之间或真实标签/Local 状态之间冲突时不覆盖。Local 主 tracker 使用 `docs/.scratch/<feature>/` 完整功能包，不要求远程 Ticket；根 `.scratch/` 与 `docs/requirements/tickets/` 只可作为旧路径迁移来源。仅发现旧路径资产时返回迁移所需结果并暂停写入；新旧路径同时存在时返回 `conflict`。已选择的 GitHub/GitLab 暂不可用时才保留“待发布平台”草案，并在父 Ticket 保留目标平台、`publication: pending` 和 `pending_publication_to`。`template-source` 只执行 validate-only，不初始化具体产品 tracker。
+
+当 YSS 生命周期处于 active 状态时，Matt `to-spec` 中独立运行时的 `ready-for-agent` 发布提示由本适配层覆盖为 `ready-for-human`：Spec 必须先经过产品总体设计 / 功能架构、必要的设计与契约门禁，之后才由生命周期编排器决定垂直切片 Ticket 的 `ready-for-agent`。这只约束 YSS 编排下的状态写入，不修改 Matt skill 单独运行时的核心行为。
+
+### Local Markdown 兼容映射
+
+当 `docs/agents/issue-tracker.md` 的 `platform` 为 `local-markdown` 时，Matt flow 的本地输出归一化为以下 YSS 载体：
+
+| Matt 产物 | Local 载体 |
+|---|---|
+| Discovery | `docs/.scratch/<feature>/discovery/` |
+| Spec | `docs/.scratch/<feature>/spec.md` |
+| Spec Delta | `docs/.scratch/<feature>/spec-delta/` |
+| 功能父 Ticket | `docs/.scratch/<feature>/parent-ticket.md` |
+| Wayfinder map | `docs/.scratch/<feature>/map.md` |
+| 垂直切片 Ticket | `docs/.scratch/<feature>/issues/NN-<slug>.md` |
+| 设计 / API / 架构草案 | `docs/.scratch/<feature>/design/`、`api/`、`architecture/` |
+| 门禁 / 验证 / checkpoint | `docs/.scratch/<feature>/gates/`、`verification/` |
+
+Local Ticket 的文件路径是稳定身份，顶部 `Status:` 保存 Matt 五态；远程 URL 只作为显式镜像引用。`ready-for-agent` 仍只能由生命周期编排器在所有必要门禁、阻塞边、实现上下文和 Slice Implementation Contract 满足后设置。
 
 ## Phase boundary 优先级
 

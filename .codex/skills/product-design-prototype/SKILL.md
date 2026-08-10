@@ -11,15 +11,15 @@ Use this skill after Spec baseline and before Spec calibration / OpenAPI Draft f
 
 - Spec baseline or confirmed user stories.
 - `CONTEXT.md` terms when domain language matters.
-- Existing `docs/design/` assets or prototype links.
+- Existing `docs/.scratch/<feature>/design/` assets or prototype links; keep the project-wide `docs/design/design.md` system baseline separate.
 - Known component/page constraints, such as YSS UI, Formily, tables, trees, drawers, modals, permissions, or generated API clients.
 
 If no Spec baseline exists, route back to `yss-product-lifecycle` / `grill-with-docs` / `to-spec`. If the change has no UI impact, record the no-UI decision and continue to Spec calibration, OpenAPI, or engineering baseline.
 
 ## Core Flow
 
-1. Inspect current assets: Spec, `docs/design/`, `docs/api/specs/`, `docs/architecture/`, and active Spec Delta changes.
-2. Create or update a design artifact under `docs/design/<feature>-interaction-spec.md` using `docs/design/templates/interaction-spec-template.md`.
+1. Inspect current assets: `docs/.scratch/<feature>/spec.md`, `docs/.scratch/<feature>/design/`, `docs/.scratch/<feature>/api/`, `docs/.scratch/<feature>/architecture/`, and active Spec Delta changes.
+2. Create or update `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` using `docs/design/templates/interaction-spec-template.md`.
 3. Capture page map, primary user flow, exception flow, and low-fidelity prototype or wireframe link.
 4. Fill the state matrix using `docs/design/templates/state-matrix-template.md`.
 5. Write the OpenAPI implication list: fields, filters, actions, errors, permissions, pagination, optimistic/concurrency states, and audit/version data.
@@ -45,10 +45,10 @@ Return:
 Product design / prototype / interaction design
 
 ### 输入资产
-- <Spec / discovery / CONTEXT / existing design paths>
+- <docs/.scratch/<feature>/spec.md / docs/.scratch/<feature>/discovery/ / CONTEXT / existing design paths>
 
 ### 设计产物
-- <docs/design/... or prototype link>
+- <docs/.scratch/<feature>/design/... or prototype link>
 
 ### 页面与流程
 - <page map and main/exception flows>

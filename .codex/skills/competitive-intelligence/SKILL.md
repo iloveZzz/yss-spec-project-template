@@ -45,8 +45,8 @@ Use this skill when competitive or market facts are needed to shape product Disc
    - Risks if we copy the competitor too closely.
    - Product opportunities for Spec or roadmap.
 5. Hand off to lifecycle assets:
-   - Update Discovery findings in `docs/discovery/`.
-   - Create or update a competitor matrix in `docs/discovery/reports/`.
+   - Update Discovery findings in `docs/.scratch/<feature>/discovery/`.
+   - Create or update a competitor matrix in `docs/.scratch/<feature>/discovery/reports/`.
    - Feed stable user, pain, MVP, non-goal, and success criteria into `grill-with-docs` and `to-spec`.
    - Record uncertain claims as assumptions, not requirements.
 

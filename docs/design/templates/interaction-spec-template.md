@@ -6,15 +6,15 @@
 
 | 资产 | 路径 / 链接 | 说明 |
 |---|---|---|
-| Spec 初稿 | `docs/requirements/<feature>-spec.md` | 原型评审后需要回填和校准 |
-| 产品总体设计 / 功能架构 | `docs/design/<feature>-product-overview-design.md` | 必需；缺失时先返回产品总体设计阶段 |
+| Spec 初稿 | `docs/.scratch/<feature>/spec.md` | 原型评审后需要回填和校准 |
+| 产品总体设计 / 功能架构 | `docs/.scratch/<feature>/design/<feature>-product-overview-design.md` | 必需；缺失时先返回产品总体设计阶段 |
 | 领域术语 | `CONTEXT.md` | 核心名词、状态和业务规则 |
-| Discovery | `docs/discovery/<feature>-discovery.md` | 可选 |
+| Discovery | `docs/.scratch/<feature>/discovery/<feature>-discovery.md` | 可选 |
 | Product Design 路由 | `product-design:index -> <focused skill>` | 必需；记录 `$get-context`、`$ideate`、`$prototype`、`$image-to-code` 或 `$url-to-code` |
 | 原型 / 线框图 | `<链接或导出图片路径>` | Excalidraw / Figma / Penpot / tldraw / Axure / Markdown |
-| 高保真 HTML 原型 | `docs/design/prototypes/<feature>/index.html` | 低保真原型评审通过后补齐；必须使用 Ant Design v6；可由系统 / Agent 自动产出；产出后必须获得用户确认 |
+| 高保真 HTML 原型 | `docs/.scratch/<feature>/design/prototypes/index.html` | 低保真原型评审通过后补齐；必须使用 Ant Design v6；可由系统 / Agent 自动产出；产出后必须获得用户确认 |
 | AntD CLI 校验证据 | `<命令输出或记录路径>` | `antd design.md/info/demo/token/semantic --version 6.0.0 --format json` |
-| 现有 API 草案 | `docs/api/specs/<feature>.yaml` | 可选；通常应先完成产品设计和 Spec 校准 |
+| 现有 API 草案 | `docs/.scratch/<feature>/api/<feature>.yaml` | 可选；通常应先完成产品设计和 Spec 校准 |
 
 ## 2. 页面地图
 

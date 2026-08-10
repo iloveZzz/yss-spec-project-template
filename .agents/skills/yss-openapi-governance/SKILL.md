@@ -1,40 +1,40 @@
 ---
 name: yss-openapi-governance
-description: Use when Govern and lint YSS OpenAPI design-time contracts with Spectral or Redocly CLI before OpenAPI Freeze. Use when creating or maintaining organization-level OpenAPI style rules, validating docs/api/specs/*.yaml, defining API naming/error/pagination/permission conventions, adding contract-test checklist rules, or checking generated smart-doc output against YSS API governance. Do not use for smart-doc or Orval generation; use yss-openapi for that implementation workflow.
+description: Use when Govern and lint YSS OpenAPI design-time contracts with Spectral or Redocly CLI before OpenAPI Freeze. Use when creating or maintaining organization-level OpenAPI style rules, validating `docs/.scratch/<feature>/api/<feature>.yaml`, defining API naming/error/pagination/permission conventions, adding contract-test checklist rules, or checking generated smart-doc output against YSS API governance. Do not use for smart-doc or Orval generation; use yss-openapi for that implementation workflow.
 ---
 
 # YSS OpenAPI Governance
 
-Use this skill to make OpenAPI contracts consistent, lintable, and reviewable before implementation. This is the ruleset and governance layer for `docs/api/specs/*.yaml`; it is not the smart-doc / Orval generation workflow.
+Use this skill to make OpenAPI contracts consistent, lintable, and reviewable before implementation. This is the ruleset and governance layer for `docs/.scratch/<feature>/api/<feature>.yaml`; it is not the smart-doc / Orval generation workflow.
 
 ## Boundary
 
 Use `yss-openapi-governance` for:
 
 - Defining or applying reusable OpenAPI style rules.
-- Running Spectral or Redocly CLI against `docs/api/specs/*.yaml`.
+- Running Spectral or Redocly CLI against `docs/.scratch/<feature>/api/<feature>.yaml`.
 - Checking YSS response wrappers, error contracts, pagination, permissions, security red lines, and contract-test seams.
 - Comparing generated `openapi.json` against frozen design rules when backend code is already implemented.
-- Writing or updating governance notes under `docs/api/`, `docs/architecture/`, or the active Spec Delta design.
+- Writing or updating governance notes under `docs/.scratch/<feature>/api/`, `docs/.scratch/<feature>/architecture/`, or the active Spec Delta design.
 
 Use other skills for:
 
 - `yss-openapi`: generate `target/openapi/openapi.json` from implemented controllers/DTOs and refresh Orval clients.
 - `yss-openapi-draft-review`: perform fail-closed semantic review against Spec, prototype, page actions, P0 coverage, and architecture readiness.
-- `docs/specs/*-spec-delta.md` and `to-tickets`: formalize behavior changes and implementation tickets after the contract is frozen.
+- `docs/.scratch/<feature>/spec-delta/` and `to-tickets`: formalize behavior changes and implementation tickets after the contract is frozen.
 
 ## Preferred Tooling
 
 Prefer Spectral when the repo needs a portable, custom OpenAPI ruleset:
 
 ```bash
-npx --yes @stoplight/spectral-cli lint -r .spectral.yaml docs/api/specs/*.yaml
+npx --yes @stoplight/spectral-cli lint -r .spectral.yaml docs/.scratch/<feature>/api/<feature>.yaml
 ```
 
 Prefer Redocly CLI when the repo already uses Redocly for lint, bundle, docs, or CI:
 
 ```bash
-npx --yes @redocly/cli lint docs/api/specs/*.yaml
+npx --yes @redocly/cli lint docs/.scratch/<feature>/api/<feature>.yaml
 ```
 
 If neither tool is configured, do not invent project policy silently. Create or propose a minimal config and mark it as draft until reviewed. Use Spectral as the default baseline for custom YSS rules because its YAML rulesets are easy to version and extend.
@@ -42,7 +42,7 @@ If neither tool is configured, do not invent project policy silently. Create or 
 ## Governance Flow
 
 1. Locate contract inputs.
-   - Check `docs/api/specs/*.yaml` first.
+   - Check `docs/.scratch/<feature>/api/<feature>.yaml` first.
    - If only generated contracts exist, inspect `*/target/openapi/openapi.json` or frontend `openapi/openapi.json` as implemented evidence, not as design authority.
    - Confirm whether the task is pre-freeze design governance or post-implementation conformance checking.
 
@@ -70,8 +70,8 @@ If neither tool is configured, do not invent project policy silently. Create or 
 
 5. Produce governance output.
    - For quick checks, report lint command, pass/fail result, and blocking findings with file paths.
-   - For durable decisions, write or update a Chinese governance artifact under `docs/api/` or `docs/architecture/`.
-   - For active Spec Delta work, reference the active change and keep rules aligned with the related design, task, and spec artifacts.
+   - For durable decisions, write or update a Chinese governance artifact under `docs/.scratch/<feature>/api/` or `docs/.scratch/<feature>/architecture/`.
+   - For active Spec Delta work, reference `docs/.scratch/<feature>/spec-delta/` and keep rules aligned with the related design, task, and spec artifacts.
 
 ## Minimal Spectral Baseline
 

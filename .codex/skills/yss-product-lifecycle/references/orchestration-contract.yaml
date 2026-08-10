@@ -63,15 +63,37 @@ flow_preconditions:
     required: [ready_for_agent, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, backend_slice_contract_if_applicable]
     applies_to_single_session: true
 
+tracker:
+  allowed_platforms: [local-markdown, github, gitlab]
+  default_platform: local-markdown
+  selection_precedence: [persisted_project_configuration, explicit_user_choice, template_default]
+  remote_origin_role: code_host_only
+  no_automatic_cross_platform_switch: true
+  local_markdown:
+    root: docs/.scratch
+    legacy_roots: [.scratch, docs/requirements/tickets]
+    feature_layout: [map.md, discovery, spec.md, spec-delta, parent-ticket.md, design, api, architecture, gates, verification, issues]
+    primary_sync: local
+    remote_ticket_required: false
+    remote_mirror: optional
+    default_remote_mirror: false
+  remote_platforms:
+    primary_sync: remote
+    remote_ticket_required: true
+    unavailable_fallback_root: docs/.scratch
+    unavailable_fallback_marker: pending-publication
+    unavailable_fallback_record: parent-ticket.md
+    unavailable_fallback_fields: [tracker, publication, pending_publication_to]
+
 setup_readiness:
   evaluation: once_per_task
   recheck_when: [tracker_changed, remote_changed, labels_changed, configuration_changed]
   states: [ready, missing, conflict, degraded, not-applicable]
-  evidence: [platform, label_check, domain_layout, migration_ref]
+  evidence: [platform, label_check, domain_layout, artifact_root, migration_ref]
   semantics:
-    ready: [tracker_compatible, labels_verified, domain_layout_verified]
-    missing: [required_configuration_absent]
-    conflict: [persistent_configuration_or_tracker_conflict]
+    ready: [tracker_compatible, labels_verified, domain_layout_verified, artifact_root_verified]
+    missing: [required_configuration_absent, legacy_artifacts_detected_requires_migration]
+    conflict: [persistent_configuration_or_tracker_conflict, canonical_and_legacy_artifacts]
     degraded: [target_platform_unavailable]
     not-applicable: [template_source_validate_only]
   template_source:

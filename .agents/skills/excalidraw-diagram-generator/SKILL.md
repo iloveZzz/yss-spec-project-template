@@ -39,10 +39,10 @@ Use it after the relevant source artifact exists:
 
 | Lifecycle artifact | Typical timing | Useful diagrams | Recommended output |
 |--------------------|----------------|-----------------|--------------------|
-| Business architecture | Opportunity exploration / Discovery | user journey, value stream, swimlane, capability map, ecosystem map | `docs/discovery/diagrams/` or `docs/architecture/diagrams/` |
-| Functional architecture | Spec baseline / product design / Spec calibration | feature map, module map, dependency graph, page map | `docs/design/diagrams/` or `docs/architecture/diagrams/` |
-| System architecture | Engineering baseline / Architecture / Spec Delta design | C4/container view, deployment, sequence, DDD boundary, DFD | `docs/architecture/diagrams/` |
-| Data architecture | Detailed design before persistence / repository work | ER, class, meta-model, lineage graph, query/data-flow diagram | `docs/architecture/diagrams/` |
+| Business architecture | Opportunity exploration / Discovery | user journey, value stream, swimlane, capability map, ecosystem map | `docs/.scratch/<feature>/discovery/diagrams/` or `docs/.scratch/<feature>/architecture/diagrams/` |
+| Functional architecture | Spec baseline / product design / Spec calibration | feature map, module map, dependency graph, page map | `docs/.scratch/<feature>/design/diagrams/` or `docs/.scratch/<feature>/architecture/diagrams/` |
+| System architecture | Engineering baseline / Architecture / Spec Delta design | C4/container view, deployment, sequence, DDD boundary, DFD | `docs/.scratch/<feature>/architecture/diagrams/` |
+| Data architecture | Detailed design before persistence / repository work | ER, class, meta-model, lineage graph, query/data-flow diagram | `docs/.scratch/<feature>/architecture/diagrams/` |
 
 Guardrails:
 

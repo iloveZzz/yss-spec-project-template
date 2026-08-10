@@ -66,7 +66,7 @@ owner: ai
 
 ## 8. Tactical DDD Check（轻量）
 
-> 本节嵌入系统概要设计 / 数据架构，不新增独立阶段。只有当聚合边界、状态机、一致性或持久化映射复杂到无法在本节说明时，才升级为 `docs/architecture/<feature>-tactical-design.md`。
+> 本节嵌入系统概要设计 / 数据架构，不新增独立阶段。只有当聚合边界、状态机、一致性或持久化映射复杂到无法在本节说明时，才升级为 `docs/.scratch/<feature>/architecture/<feature>-tactical-design.md`。
 
 | 限界上下文 | 聚合根 | 业务不变量 | Entity / Value Object | 一致性边界 | Gateway / Repository | 主要测试 seam |
 |------------|--------|------------|-----------------------|------------|----------------------|----------------|

@@ -1,15 +1,15 @@
 ---
 name: yss-openapi-draft-review
-description: Use when reviewing a docs/api/specs OpenAPI Draft before Engineering Baseline, YSS DDD Review, architecture/Spec Delta design, OpenAPI Freeze, vertical slicing, frontend/backend implementation, or when checking P0 requirement coverage, page action to endpoint mapping, YSS response wrappers, errors, permissions, pagination, optimistic locking, security red lines, and contract test seams.
+description: Use when reviewing a `docs/.scratch/<feature>/api/` OpenAPI Draft before Engineering Baseline, YSS DDD Review, architecture/Spec Delta design, OpenAPI Freeze, vertical slicing, frontend/backend implementation, or when checking P0 requirement coverage, page action to endpoint mapping, YSS response wrappers, errors, permissions, pagination, optimistic locking, security red lines, and contract test seams.
 ---
 
 # YSS OpenAPI Draft Review
 
-Use this skill after OpenAPI Draft creation and before Engineering Baseline / YSS DDD Review. It is a fail-closed contract review skill for design-time OpenAPI files under `docs/api/specs/`; it is not the smart-doc / Orval generation workflow.
+Use this skill after OpenAPI Draft creation and before Engineering Baseline / YSS DDD Review. It is a fail-closed contract review skill for design-time OpenAPI files under `docs/.scratch/<feature>/api/`; it is not the smart-doc / Orval generation workflow.
 
 ## Required Inputs
 
-- OpenAPI Draft under `docs/api/specs/*.yaml`.
+- OpenAPI Draft under `docs/.scratch/<feature>/api/<feature>.yaml`.
 - Calibrated Spec.
 - Interaction spec / prototype review when UI exists.
 - YSS engineering baseline rules, especially `SingleResult<T>`, `MultiResult<T>`, and `PageResult<T>`.
@@ -23,7 +23,7 @@ Use this skill after OpenAPI Draft creation and before Engineering Baseline / YS
 5. Check YSS API baseline: REST shape, `SingleResult<T>` for single objects, `MultiResult<T>` for non-page lists, `PageResult<T>` for pagination, and stable DTO/schema names.
 6. Check error and permission contracts: field-level errors, model-level errors, 403 no-data leakage, disabled reasons, gate failures, and conflict responses.
 7. Check security red lines: authentication/authorization, SQL/DDL draft boundaries, downloads, audit/logging, sensitive field handling, and human-review items.
-8. Output a persistent review artifact under `docs/architecture/` or update the existing one.
+8. Output a persistent review artifact under `docs/.scratch/<feature>/architecture/` or update the existing one.
 
 ## Automation Boundary
 

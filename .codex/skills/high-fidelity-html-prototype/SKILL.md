@@ -9,11 +9,11 @@ Use this skill only after `prototype-review` approves the low-fidelity prototype
 
 ## Required Inputs
 
-- Spec baseline: `docs/requirements/<feature>-spec.md`.
-- Product overview design / functional architecture: `docs/design/<feature>-product-overview-design.md`.
-- Interaction spec: `docs/design/<feature>-interaction-spec.md`.
-- State matrix: `docs/design/<feature>-state-matrix.md`.
-- Approved low-fidelity prototype review: `docs/design/<feature>-prototype-review.md` or equivalent issue comment.
+- Spec baseline: `docs/.scratch/<feature>/spec.md`.
+- Product overview design / functional architecture: `docs/.scratch/<feature>/design/<feature>-product-overview-design.md`.
+- Interaction spec: `docs/.scratch/<feature>/design/<feature>-interaction-spec.md`.
+- State matrix: `docs/.scratch/<feature>/design/<feature>-state-matrix.md`.
+- Approved low-fidelity prototype review: `docs/.scratch/<feature>/design/<feature>-prototype-review.md` or equivalent issue comment.
 - Project design system: `docs/design/design.md` and `docs/design/tokens/*`.
 
 If low-fidelity `prototype-review` is blocked or missing, stop and return to `product-design-prototype` / `prototype-review`.
@@ -41,7 +41,7 @@ Use the latest verified v6.x version instead of `6.5.0` when npm reports a newer
 
 ## Core Rules
 
-- Output is HTML: `docs/design/prototypes/<feature>/index.html`.
+- Output is HTML: `docs/.scratch/<feature>/design/prototypes/index.html`.
 - The prototype must use Ant Design v6. Before generating or updating code, verify the current v6 package with `npm view antd version` and `npm view @ant-design/cli version`. If the latest version is not v6.x, pin the newest available v6.x version and record the choice.
 - Use React >= 18, `antd@6.x`, and `@ant-design/icons@6.x` for interactive prototypes.
 - Prefer Ant Design components and tokens over hand-built controls: `Layout`, `Menu`, `Breadcrumb`, `Button`, `Input`, `Select`, `Table`, `Form`, `Tabs`, `Steps`, `Drawer`, `Modal`, `Alert`, `Tooltip`, `Tag`, `Badge`, `DatePicker`, `Upload`, `Pagination`, `Empty`, `Spin`, `Result`.
@@ -67,7 +67,7 @@ The HTML prototype must cover, or explicitly mark not applicable:
 
 Run a local browser verification before calling the artifact ready:
 
-- Open `docs/design/prototypes/<feature>/index.html` or run the dev server if the prototype needs one.
+- Open `docs/.scratch/<feature>/design/prototypes/index.html` or run the dev server if the prototype needs one.
 - Check that the page renders nonblank.
 - Exercise the main flow and at least one failure / permission / conflict state.
 - Check at least one desktop and one mobile viewport.
@@ -80,10 +80,10 @@ Run a local browser verification before calling the artifact ready:
 High-fidelity HTML prototype
 
 ### 输入资产
-- <Spec / product overview / interaction spec / state matrix / prototype review>
+- <docs/.scratch/<feature>/spec.md / docs/.scratch/<feature>/design/...>
 
 ### 高保真产物
-- `docs/design/prototypes/<feature>/index.html`
+- `docs/.scratch/<feature>/design/prototypes/index.html`
 
 ### Ant Design v6 依据
 - <antd version, @ant-design/cli version, official docs checked, CLI component/token/demo queries>

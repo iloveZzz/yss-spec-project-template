@@ -77,7 +77,7 @@ README、用户指南和其他说明文档只引用或解释上述事实，不�
 - 每个功能先建立功能父 Ticket，用于汇总 Spec、设计、审查、OpenAPI Freeze、阻塞项和阶段证据。
 - Spec 初稿、产品设计、原型、OpenAPI Draft 和待冻结资产使用 `ready-for-human`。
 - 只有通过必要门禁、阻塞边已清除并具备直接实现条件的垂直切片 Ticket，才能使用 `ready-for-agent`。
-- Ticket、Spec 和阶段证据必须按用户选择或当前主远程路由到 GitHub / GitLab；平台不可用时生成本地待发布草案，不自动改投其他平台。
+- Ticket、Spec 和阶段证据必须按 `docs/agents/issue-tracker.md` 选择的主 tracker 持久化；模板默认使用 Local Markdown，完整功能包保存于 `docs/.scratch/<feature>/`。GitHub / GitLab 只有在项目明确选择时才作为主 tracker，Git remote 仅代表代码托管，不覆盖 tracker 选择；选定远程平台不可用时才生成 `docs/.scratch/<feature>/` 下的待发布草案，不自动改投其他平台。
 
 平台规则和五态标签见 `docs/agents/issue-tracker.md` 与 `docs/agents/triage-labels.md`。
 

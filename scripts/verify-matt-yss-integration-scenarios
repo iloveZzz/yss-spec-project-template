@@ -160,7 +160,7 @@ end
 
 valid_result = result_contract.fetch("required", []).to_h do |field|
   [field, field.end_with?("_refs") || field.end_with?("_artifacts") || field.end_with?("_candidates") || field == "new_impacts" || field == "blocking_signals" ? [] : nil]
-end.merge("result" => "completed", "blocking_signals" => [], "evidence_refs" => ["docs/process/yss-product-lifecycle-orchestrator-validation.md"])
+end.merge("result" => "completed", "blocking_signals" => [], "evidence_refs" => ["docs/agents/issue-tracker.md"])
 failures << "完整 Matt Result 未被接受" unless completed_result_allowed?(result_contract, valid_result, root: ROOT)
 %w[drift new_impacts violation missing_evidence stale_candidates].each do |signal|
   candidate = valid_result.merge("blocking_signals" => [signal])
@@ -216,20 +216,204 @@ require_equal(
   setup["states"],
   %w[ready missing conflict degraded not-applicable]
 )
-%w[platform label_check domain_layout migration_ref].each do |field|
+%w[platform label_check domain_layout artifact_root migration_ref].each do |field|
   require_include(failures, "setup readiness evidence", setup["evidence"] || [], field)
 end
 require_equal(failures, "template setup action", setup.dig("template_source", "action"), "validate-only")
 {
-  "ready" => %w[tracker_compatible labels_verified domain_layout_verified],
-  "missing" => %w[required_configuration_absent],
-  "conflict" => %w[persistent_configuration_or_tracker_conflict],
+  "ready" => %w[tracker_compatible labels_verified domain_layout_verified artifact_root_verified],
+  "missing" => %w[required_configuration_absent legacy_artifacts_detected_requires_migration],
+  "conflict" => %w[persistent_configuration_or_tracker_conflict canonical_and_legacy_artifacts],
   "degraded" => %w[target_platform_unavailable],
   "not-applicable" => %w[template_source_validate_only]
 }.each do |state, semantics|
   actual = setup.dig("semantics", state) || []
   semantics.each { |field| require_include(failures, "setup #{state} semantics", actual, field) }
 end
+
+tracker = contract.fetch("tracker", {})
+%w[local-markdown github gitlab].each do |platform|
+  require_include(failures, "tracker platforms", tracker["allowed_platforms"] || [], platform)
+end
+require_equal(failures, "tracker default", tracker["default_platform"], "local-markdown")
+require_equal(failures, "tracker origin role", tracker["remote_origin_role"], "code_host_only")
+require_equal(failures, "tracker no automatic cross-platform switch", tracker["no_automatic_cross_platform_switch"], true)
+local_tracker = tracker.fetch("local_markdown", {})
+require_equal(failures, "local tracker root", local_tracker["root"], "docs/.scratch")
+%w[.scratch docs/requirements/tickets].each do |legacy_root|
+  require_include(failures, "local tracker legacy roots", local_tracker["legacy_roots"] || [], legacy_root)
+end
+require_equal(failures, "local tracker remote requirement", local_tracker["remote_ticket_required"], false)
+require_equal(failures, "local tracker default mirror", local_tracker["default_remote_mirror"], false)
+%w[map.md discovery spec.md spec-delta parent-ticket.md design api architecture gates verification issues].each do |entry|
+  require_include(failures, "local tracker feature layout", local_tracker["feature_layout"] || [], entry)
+end
+remote_tracker = tracker.fetch("remote_platforms", {})
+require_equal(failures, "remote tracker ticket requirement", remote_tracker["remote_ticket_required"], true)
+require_equal(failures, "remote tracker fallback root", remote_tracker["unavailable_fallback_root"], "docs/.scratch")
+require_equal(failures, "remote tracker fallback record", remote_tracker["unavailable_fallback_record"], "parent-ticket.md")
+%w[tracker publication pending_publication_to].each do |field|
+  require_include(failures, "remote tracker fallback fields", remote_tracker["unavailable_fallback_fields"] || [], field)
+end
+
+issue_tracker = read(ROOT, "docs/agents/issue-tracker.md")
+issue_tracker_front_matter = issue_tracker.match(/\A---\n(.*?)\n---/m)
+failures << "issue tracker 缺少机器可读 front matter" unless issue_tracker_front_matter
+issue_tracker_config = issue_tracker_front_matter ? YAML.safe_load(issue_tracker_front_matter[1], permitted_classes: [], aliases: false) : {}
+project_tracker = issue_tracker_config.fetch("tracker", {})
+require_equal(failures, "persisted tracker platform", project_tracker["platform"], "local-markdown")
+require_equal(failures, "persisted tracker root", project_tracker["root"], "docs/.scratch")
+require_equal(
+  failures,
+  "persisted tracker legacy roots",
+  project_tracker["legacy_roots"],
+  [".scratch", "docs/requirements/tickets"]
+)
+require_markers(
+  failures,
+  "issue tracker configuration",
+  issue_tracker,
+  [
+    "`platform` | `local-markdown`",
+    "`docs/.scratch/`",
+    "旧路径",
+    "Git remote 只用于代码托管",
+    "Local 主 tracker 不要求远程 Ticket",
+    "Status:",
+    "needs-triage",
+    "ready-for-agent",
+    "待发布平台",
+    "pending_publication_to"
+  ]
+)
+local_seed = read(ROOT, ".agents/skills/setup-matt-pocock-skills/issue-tracker-local.md")
+require_markers(
+  failures,
+  "Matt local/YSS mapping",
+  local_seed,
+  ["tracker:", "platform: local-markdown", "root: docs/.scratch", "legacy_roots:", "docs/requirements/tickets", "YSS lifecycle extension", "parent-ticket.md", "remote issue"]
+)
+setup_skill = read(ROOT, ".agents/skills/setup-matt-pocock-skills/SKILL.md")
+require_markers(
+  failures,
+  "Matt setup path resolution",
+  setup_skill,
+  ["persisted `tracker.root`", "`docs/.scratch` as the default", "exactly `local-markdown`, `github`, and `gitlab`", "must not choose or rank a tracker", "Do not offer an `Other` tracker", "unsupported tracker request", "do not write an unsupported platform", "read-only migration"]
+)
+local_parent_template = read(ROOT, "docs/templates/local-parent-ticket-template.md")
+require_markers(
+  failures,
+  "Local parent fallback template",
+  local_parent_template,
+  ["<local-markdown | github | gitlab>", "<local | pending>", "pending_publication_to"]
+)
+
+def tracker_decision(repository_mode:, persisted_platforms:, explicit_platform:, remote:, platform_available:, legacy_paths: [], canonical_artifacts: false)
+  return {state: "not-applicable", platform: nil, writes: [], reason: "validate-only"} if repository_mode == "template-source"
+
+  persisted = persisted_platforms.compact.uniq
+  return {state: "conflict", platform: nil, writes: [], reason: "persistent-configuration-conflict"} if persisted.length > 1
+
+  platform = persisted.first || explicit_platform || "local-markdown"
+  return {state: "conflict", platform: nil, writes: [], reason: "unsupported-platform"} unless %w[local-markdown github gitlab].include?(platform)
+
+  if legacy_paths.any? && canonical_artifacts
+    return {state: "conflict", platform: platform, writes: [], reason: "legacy-and-canonical-artifacts", migration_ref: legacy_paths}
+  end
+
+  if legacy_paths.any?
+    return {state: "missing", platform: platform, writes: [], reason: "legacy-artifacts-detected", migration_ref: legacy_paths}
+  end
+
+  if platform != "local-markdown" && !platform_available
+    return {
+      state: "degraded",
+      platform: platform,
+      fallback_root: "docs/.scratch",
+      publish_target: platform,
+      writes: ["docs/.scratch/<feature>/parent-ticket.md (tracker: #{platform}, publication: pending, pending_publication_to: #{platform})"]
+    }
+  end
+
+  {
+    state: "ready",
+    platform: platform,
+    code_host: remote,
+    writes: platform == "local-markdown" ? ["docs/.scratch/<feature>/"] : ["#{platform}:issue"]
+  }
+end
+
+local_with_github_origin = tracker_decision(
+  repository_mode: "project-instance",
+  persisted_platforms: [project_tracker.fetch("platform")],
+  explicit_platform: nil,
+  remote: "github",
+  platform_available: true
+)
+require_equal(failures, "GitHub origin does not override Local tracker", local_with_github_origin[:platform], "local-markdown")
+require_equal(failures, "Local tracker does not call remote issue command", local_with_github_origin[:writes], ["docs/.scratch/<feature>/"])
+
+unavailable_github = tracker_decision(
+  repository_mode: "project-instance",
+  persisted_platforms: [],
+  explicit_platform: "github",
+  remote: "gitlab",
+  platform_available: false
+)
+require_equal(failures, "explicit GitHub remains selected when unavailable", unavailable_github[:platform], "github")
+require_equal(failures, "unavailable remote fallback state", unavailable_github[:state], "degraded")
+require_equal(failures, "unavailable remote fallback root", unavailable_github[:fallback_root], "docs/.scratch")
+require_equal(failures, "unavailable remote does not switch platform", unavailable_github[:publish_target], "github")
+require_equal(
+  failures,
+  "unavailable remote fallback marker",
+  unavailable_github[:writes],
+  ["docs/.scratch/<feature>/parent-ticket.md (tracker: github, publication: pending, pending_publication_to: github)"]
+)
+
+conflicting_persistent_config = tracker_decision(
+  repository_mode: "project-instance",
+  persisted_platforms: ["local-markdown", "gitlab"],
+  explicit_platform: nil,
+  remote: "gitlab",
+  platform_available: true
+)
+require_equal(failures, "conflicting persistent tracker config", conflicting_persistent_config[:state], "conflict")
+
+legacy_only = tracker_decision(
+  repository_mode: "project-instance",
+  persisted_platforms: ["local-markdown"],
+  explicit_platform: nil,
+  remote: "github",
+  platform_available: true,
+  legacy_paths: [".scratch"],
+  canonical_artifacts: false
+)
+require_equal(failures, "legacy-only tracker requires migration", legacy_only[:state], "missing")
+require_equal(failures, "legacy-only tracker does not write", legacy_only[:writes], [])
+require_equal(failures, "legacy-only tracker records migration reference", legacy_only[:migration_ref], [".scratch"])
+
+legacy_and_canonical = tracker_decision(
+  repository_mode: "project-instance",
+  persisted_platforms: ["local-markdown"],
+  explicit_platform: nil,
+  remote: "github",
+  platform_available: true,
+  legacy_paths: ["docs/requirements/tickets"],
+  canonical_artifacts: true
+)
+require_equal(failures, "legacy and canonical tracker conflict", legacy_and_canonical[:state], "conflict")
+require_equal(failures, "legacy and canonical tracker does not write", legacy_and_canonical[:writes], [])
+
+template_source_tracker = tracker_decision(
+  repository_mode: "template-source",
+  persisted_platforms: ["local-markdown"],
+  explicit_platform: "github",
+  remote: "github",
+  platform_available: true
+)
+require_equal(failures, "template-source tracker action", template_source_tracker[:state], "not-applicable")
+require_equal(failures, "template-source does not create product assets", template_source_tracker[:writes], [])
 
 phase_boundary = contract.fetch("phase_boundary", {})
 require_equal(
@@ -262,6 +446,13 @@ end
 end
 
 adapter = read(ROOT, ".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md")
+to_spec = read(ROOT, ".agents/skills/to-spec/SKILL.md")
+require_markers(
+  failures,
+  "Matt to-spec core contract",
+  to_spec,
+  ["Apply the `ready-for-agent` triage label"]
+)
 require_markers(
   failures,
   "Matt/YSS adapter",
@@ -270,6 +461,9 @@ require_markers(
     "直接调用 `ask-matt`",
     "template-source",
     "Matt Skill Result",
+    "Local Markdown 兼容映射",
+    "docs/.scratch/<feature>/parent-ticket.md",
+    "发布提示由本适配层覆盖为 `ready-for-human`",
     "to-spec",
     "to-tickets",
     "Release",
@@ -282,15 +476,26 @@ require_markers(
   failures,
   "lifecycle template-source guard",
   lifecycle_skill,
-  ["template-source", "必须返回 `blocked`", "template-source-product-artifact-forbidden"]
+  ["template-source", "必须返回 `blocked`", "template-source-product-artifact-forbidden", "YSS active 调用 `to-spec` 时", "ready-for-agent` 发布提示归一化为 Spec `ready-for-human`"]
 )
 orchestration = read(ROOT, ".agents/skills/yss-product-lifecycle/references/orchestration.md")
 require_markers(
   failures,
   "lifecycle Matt Result guard",
   orchestration,
-  ["stale_candidates", "空 `evidence_refs`"]
+  ["stale_candidates", "空 `evidence_refs`", "Local Markdown", "docs/.scratch/<feature>/"]
 )
+
+feature_skill_markers = {
+  "high-fidelity-html-prototype" => ["docs/.scratch/<feature>/spec.md", "docs/.scratch/<feature>/design/prototypes/index.html"],
+  "product-design-prototype" => ["docs/.scratch/<feature>/design/", "docs/.scratch/<feature>/design/<feature>-interaction-spec.md"],
+  "yss-openapi-draft-review" => ["docs/.scratch/<feature>/api/<feature>.yaml", "docs/.scratch/<feature>/architecture/"],
+  "yss-openapi-governance" => ["docs/.scratch/<feature>/api/<feature>.yaml", "docs/.scratch/<feature>/spec-delta/"],
+  "excalidraw-diagram-generator" => ["docs/.scratch/<feature>/discovery/diagrams/", "docs/.scratch/<feature>/architecture/diagrams/"]
+}.each do |skill_name, markers|
+  body = read(ROOT, ".agents/skills/#{skill_name}/SKILL.md")
+  require_markers(failures, "Local feature path #{skill_name}", body, markers)
+end
 
 if failures.empty?
   puts "Matt/YSS 集成压力场景验证通过"

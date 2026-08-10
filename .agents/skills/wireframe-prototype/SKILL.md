@@ -16,7 +16,7 @@ Use this skill for low-fidelity product decisions. It favors fast, inspectable a
 | Infinite-canvas workshop or AI-assisted whiteboard | tldraw |
 | Enterprise clickable prototype already standard in team | Axure or equivalent link |
 
-Do not make the tool the deliverable. The deliverable is the page/flow/state decision captured in `docs/design/`.
+Do not make the tool the deliverable. The deliverable is the page/flow/state decision captured in `docs/.scratch/<feature>/design/`.
 
 ## Minimum Artifact
 
@@ -45,7 +45,7 @@ Sketch:
 字段表格 + 字段编辑抽屉 + 校验结果侧栏 + 发布确认弹窗
 ```
 
-Then link or paste this into `docs/design/<feature>-interaction-spec.md`.
+Then link or paste this into `docs/.scratch/<feature>/design/<feature>-interaction-spec.md`.
 
 ## Handoff
 

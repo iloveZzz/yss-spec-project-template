@@ -1,8 +1,14 @@
+---
+status: ready-for-human
+---
+
 # 垂直切片 Ticket：<标题>
+
+Status: ready-for-human
 
 ## 父级
 
-<Spec / 功能父 Ticket 链接>
+<Spec：`docs/.scratch/<feature>/spec.md`；功能父 Ticket：`docs/.scratch/<feature>/parent-ticket.md` 或远程 Issue URL>
 
 ## 要构建什么
 
@@ -15,7 +21,7 @@
 ## OpenAPI 影响
 
 - [ ] 无
-- [ ] 基于冻结 OpenAPI：`docs/api/specs/<feature>.yaml`
+- [ ] 基于冻结 OpenAPI：`docs/.scratch/<feature>/api/<feature>.yaml`
 
 受影响端点：
 

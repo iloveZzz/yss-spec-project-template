@@ -14,7 +14,7 @@ Run this independent gate only when UI changes affect a primary user flow, navig
 ## Required Inputs
 
 - Spec baseline or confirmed user stories.
-- `docs/design/<feature>-interaction-spec.md` or prototype link.
+- `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` or prototype link.
 - State matrix, preferably based on `docs/design/templates/state-matrix-template.md`.
 - Existing OpenAPI Draft only if the review is checking alignment; do not require OpenAPI before product design.
 

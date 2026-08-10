@@ -20,10 +20,10 @@
 推荐配套图：
 
 ```text
-docs/architecture/diagrams/<feature>-business-capability.excalidraw
-docs/architecture/diagrams/<feature>-functional-modules.excalidraw
-docs/architecture/diagrams/<feature>-system-architecture.excalidraw
-docs/architecture/diagrams/<feature>-data-model.excalidraw
+docs/.scratch/<feature>/architecture/diagrams/<feature>-business-capability.excalidraw
+docs/.scratch/<feature>/architecture/diagrams/<feature>-functional-modules.excalidraw
+docs/.scratch/<feature>/architecture/diagrams/<feature>-system-architecture.excalidraw
+docs/.scratch/<feature>/architecture/diagrams/<feature>-data-model.excalidraw
 ```
 
 使用 `excalidraw-diagram-generator` 生成图时，图只作为审查辅助；发现的问题必须回写到 Spec、OpenAPI、ADR、系统 / 数据架构设计 或对应架构文档。

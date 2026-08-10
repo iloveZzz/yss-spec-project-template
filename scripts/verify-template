@@ -4,6 +4,20 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+ruby <<'RUBY'
+require "pathname"
+require "yaml"
+
+root = Pathname.pwd
+manifest = YAML.safe_load(root.join("yss-project.yaml").read, permitted_classes: [], aliases: false)
+if manifest.is_a?(Hash) && manifest["repository_mode"] == "template-source"
+  canonical_scratch = root.join("docs/.scratch")
+  legacy_scratch = root.join(".scratch")
+  abort("template-source 不得包含产品 docs/.scratch 资产") if canonical_scratch.directory? && canonical_scratch.children.any?
+  abort("template-source 不得包含产品根 .scratch 资产") if legacy_scratch.directory? && legacy_scratch.children.any?
+end
+RUBY
+
 required_files=(
   "yss-project.yaml"
   "AGENTS.md"
@@ -11,6 +25,7 @@ required_files=(
   "skills-lock.json"
   "docs/process/lifecycle-artifact-map.md"
   "docs/process/harness-process-tailoring.md"
+  "docs/templates/local-parent-ticket-template.md"
   "docs/templates/spec-template.md"
   "docs/templates/vertical-slice-ticket-template.md"
   "docs/user-guide/规格与任务迁移指南.md"
@@ -51,6 +66,11 @@ for required_file in "${required_files[@]}"; do
     exit 1
   }
 done
+
+if git check-ignore --no-index -q docs/.scratch; then
+  echo "模板不得忽略 docs/.scratch/：Local Markdown 产物必须可提交、可审计" >&2
+  exit 1
+fi
 
 for skill_name in "${required_skills[@]}"; do
   test -f ".agents/skills/$skill_name/SKILL.md" || {

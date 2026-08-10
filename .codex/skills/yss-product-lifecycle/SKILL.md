@@ -36,9 +36,11 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 - 父 Ticket/checkpoint 的状态只是索引；与真实资产冲突时，以权威资产为准并修复索引。
 - 上游变化按依赖图精准传播 `stale`；不要无条件重跑完整阶段。
 - Matt 五态保持原义。只有解除阻塞、门禁通过且可直接实现的垂直切片才能使用 `ready-for-agent`。
+- YSS active 调用 `to-spec` 时，必须把 Matt 独立 flow 的 `ready-for-agent` 发布提示归一化为 Spec `ready-for-human`；不得把 Spec 初稿当作可直接实现的 Ticket。
 - `orchestrate`/`resume` 连续执行安全工作单元，直到人工门禁、真实阻塞、新授权、实现/发布裁决或专项失败。
 - 进入实现后继续主控，通过 `yss-router`、`implement`、`tdd` 和 YSS 专项 skills 执行；独立审查和 fresh verification 后才能作完成判断。
 - Setup readiness 每个任务只评估一次并在本轮缓存；只有 tracker、主远端、真实标签或配置变化时重查。
+- Ticket tracker 支持 `local-markdown`、GitHub 和 GitLab；模板默认 `local-markdown`，以 `docs/.scratch/<feature>/` 完整功能包为主载体。Git remote 只代表代码托管，不能覆盖已持久化的 tracker 选择；Local 主 tracker 不要求远程 Ticket。根 `.scratch/` 与 `docs/requirements/tickets/` 只作为旧路径迁移来源。
 - 小改动和中等变更允许同一独立执行者完成 Review 与 fresh verification；该执行者不得是实现者。新模块、高风险或职责冲突时拆分 Reviewer 与 Verifier。
 - 连续自动推进期间累积 Ticket/Git 证据，在人工暂停、handoff、进入实现、合并或发布边界集中 checkpoint；不为每个连续经过的概念阶段重复写同类记录。
 - 跨线程、仓库、原型分支或上下文边界时使用 `handoff` 或等价记录。

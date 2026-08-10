@@ -15,10 +15,12 @@ grill-with-docs -> to-spec -> API 影响分析 / 契约草案 -> Architecture �
 进入开发前必须满足：
 
 - [ ] Spec 使用 [../templates/spec-template.md](../templates/spec-template.md)。
-- [ ] OpenAPI 影响明确为“无”或已产出契约草案 / review-only Draft；进入开发前必须冻结 `docs/api/specs/*.yaml`。
+- [ ] OpenAPI 影响明确为“无”或已产出契约草案 / review-only Draft；进入开发前必须冻结 `docs/.scratch/<feature>/api/<feature>.yaml`。
 - [ ] 测试决策明确主要测试 seam。
 - [ ] AI / 人工审查点标注风险 / 人工确认项。
 - [ ] 后续 Ticket 使用 [../templates/vertical-slice-ticket-template.md](../templates/vertical-slice-ticket-template.md)，不得按层横向拆分。
+
+Local Markdown 默认将完整功能包保存到 `docs/.scratch/<feature>/`；功能父 Ticket 使用 [../templates/local-parent-ticket-template.md](../templates/local-parent-ticket-template.md)。GitHub / GitLab 只有在项目明确选择时才作为主 tracker。
 
 ## AI 三步法
 

@@ -9,7 +9,7 @@ owner: ai
 
 ## 功能父 Ticket
 
-<GitHub / GitLab Ticket 链接或本地待发布 Ticket 路径>
+<Local：`docs/.scratch/<feature>/parent-ticket.md`；GitHub / GitLab：Issue URL / 编号>
 
 ## 问题陈述
 
@@ -50,7 +50,7 @@ owner: ai
 - 功能域与模块边界：
 - MVP / 非目标：
 - UI 影响：是 / 否
-- 产品总体设计：`docs/design/<feature>-product-overview-design.md`
+- 产品总体设计：`docs/.scratch/<feature>/design/<feature>-product-overview-design.md`
 
 > 只有存在 UI 影响时，才强制低保真页面草图、状态矩阵、高保真 HTML 原型和用户确认；否则记录 `not-applicable` 及原因。
 
@@ -58,7 +58,7 @@ owner: ai
 
 - [ ] 无
 - [ ] 需要 API 影响分析 / 契约草案
-- [ ] 需要 review-only OpenAPI Draft：`docs/api/specs/<feature>.yaml`
+- [ ] 需要 review-only OpenAPI Draft：`docs/.scratch/<feature>/api/<feature>.yaml`
 
 > OpenAPI Draft 在 OpenAPI Freeze 前仅用于评审和架构反审，不作为实现或生成客户端的稳定契约。
 

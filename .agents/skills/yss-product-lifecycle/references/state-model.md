@@ -8,6 +8,7 @@
 | `workflow.status` | `not-started`、`active`、`paused`、`resolved`、`failed` |
 | `artifacts.*.status` | `missing`、`draft`、`ready-for-human`、`approved`、`stale`、`not-applicable` |
 | `gates.*.status` | `not-evaluated`、`blocked`、`ready-for-human`、`approved`、`stale`、`not-applicable` |
+| `tracker.kind` | `local-markdown`、`github`、`gitlab` |
 | `ticket.role` | `needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix` |
 
 Matt 五态不得扩义。资产的 `ready-for-human` 与 Ticket label 必须带命名空间表达。
@@ -49,7 +50,7 @@ AND Backend Slice Implementation Contract（后端适用）和 Build Architectur
 
 ## 状态块
 
-状态块位于功能父 Ticket；平台不可用时位于 stage checkpoint。只保存索引、状态、引用和因果关系：
+状态块位于主 tracker 的功能父 Ticket；Local Markdown 使用 `docs/.scratch/<feature>/parent-ticket.md`，远程 tracker 使用 Issue 并在本地功能包保留引用。平台不可用时才位于 stage checkpoint。只保存索引、状态、引用和因果关系：
 
 ```yaml
 lifecycle:
@@ -62,12 +63,14 @@ workflow:
   active_skill: yss-openapi-draft-review
   status: paused
 artifacts:
-  spec: {status: approved, ref: docs/requirements/example-spec.md}
-  openapi: {status: stale, ref: docs/api/specs/example.yaml, stale_by: [spec]}
+  spec: {status: approved, ref: docs/.scratch/example/spec.md}
+  openapi: {status: stale, ref: docs/.scratch/example/api/example.yaml, stale_by: [spec]}
 gates:
   openapi_freeze: {status: stale}
 tracker:
-  parent_ticket: <url>
+  kind: local-markdown
+  root: docs/.scratch
+  parent_ticket: docs/.scratch/example/parent-ticket.md
   role: ready-for-human
 pause:
   reason_code: human-gate
@@ -81,7 +84,7 @@ pause:
 
 - 当前只支持 `schema_version: 1`，支持版本列表以 `orchestration-contract.yaml` 为准。
 - 版本缺失、解析失败或版本不在支持列表时，必须暂停并进入迁移检查；不得按 v1 猜测、覆盖或降级写回。
-- 父 Ticket 状态块优先作为主索引；本地 checkpoint 只在平台不可用时降级。两者版本或内容冲突时，不做字段级静默合并：读取真实资产重建新状态，保留旧块引用和迁移记录，再由人工确认主载体。
+- 主 tracker 的父 Ticket 状态块优先作为主索引；Local Markdown 的 `docs/.scratch/<feature>/parent-ticket.md` 是主载体，远程 Issue 只是显式选择远程 tracker 时的主载体。根 `.scratch/` 与 `docs/requirements/tickets/` 只作为旧路径迁移来源。stage checkpoint 只在选定平台不可用时降级。两者版本或内容冲突时，不做字段级静默合并：读取真实资产重建新状态，保留旧块引用和迁移记录，再由人工确认主载体。
 - 不得用旧版本状态覆盖较新版本。迁移记录至少包含来源版本、目标版本、来源载体、冲突、真实资产证据、迁移人和时间。
 
 ## Resume

@@ -107,7 +107,7 @@ description: "YSS 服务的后端开发脚手架框架和技术指南。在开�
   - 单个对象: `SingleResult<T>`
   - 列表: `MultiResult<T>`
   - 分页: `PageResult<T>`
-- 涉及新增或变更前后端契约时，先在 `docs/api/specs/` 形成 OpenAPI Draft，经工程基线、架构 / Spec Delta 设计和设计审查后 Freeze，再实现 Controller、DTO、前端调用和契约测试。
+- 涉及新增或变更前后端契约时，先在 `docs/.scratch/<feature>/api/<feature>.yaml` 形成 OpenAPI Draft，经工程基线、架构 / Spec Delta 设计和设计审查后 Freeze，再实现 Controller、DTO、前端调用和契约测试。
 
 ## 4. 工程基线检查清单
 
