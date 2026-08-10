@@ -56,6 +56,33 @@ slice_contract_nonempty: [contract_id, contract_version, slice_id, status]
 slice_contract_array_fields:
   common: [impacted_areas, required_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, full_reroute_triggers]
 
+scaffold_contract_schema:
+  schema_version: 1
+  compiled_by: yss-router
+  approved_by: yss-product-lifecycle
+  status_by_owner:
+    router: [draft, ready-for-lifecycle-review, blocked]
+    lifecycle: [approved, stale, blocked]
+  required: [contract_id, contract_version, slice_id, status, router_draft_ref, lifecycle_approval_ref, persisted_ref, current_version, implementation_repository, backend_repository, scaffold_status, target_git_url_or_output_dir, allowed_write_paths, expected_evidence_files, verification_commands, approval, work_unit, overwrite_policy]
+  approval:
+    required: [approval_ref, approver, persisted_ref, current_version]
+  overwrite_policy:
+    required: [force_allowed, overwrite_scope, rollback_ref]
+  lifecycle_boundary:
+    router_emits: [draft, ready-for-lifecycle-review, blocked]
+    lifecycle_approves: [approved]
+    generator_consumes: [approved]
+    after_generation: [yss-backend-scaffold-parent, yss-router-business-contract-recompile]
+  work_unit:
+    required: [id, behavior, primary_skill, supporting_skills, tdd_mode, allowed_write_paths, expected_evidence, verification_commands, controlled_generation]
+  generation_boundary:
+    allowed_for: [project_scaffold, pom, mechanical_config, wrapper, smart_doc_baseline]
+    forbidden_when: [business_behavior, business_fields, business_state, permission, transaction, complex_query, error_mapping, business_example_crud]
+  verification:
+    commands: ["./mvnw validate", "./mvnw test", "./mvnw package"]
+    requires_execution: true
+    evidence: [command, exit_code, duration_ms, stdout_ref, stderr_ref, executed_at]
+
 applicable_subcontract_nonempty:
   frontend:
     scalar: [approved_prototype_ref, state_matrix_ref]
@@ -72,6 +99,8 @@ applicable_subcontract_nonempty:
     array: [repositories, delivery_order, integration_verification, rollback_order]
 
 dependency_closure:
+  yss-ddd-scaffold-generator:
+    always: [yss-backend-scaffold-parent, alibaba-java-code-style]
   yss-domain:
     always: [yss-backend-scaffold-domain, alibaba-java-code-style]
     when_modeling: [domain-modeling]
@@ -144,6 +173,7 @@ tdd_modes:
     required: [exception_reason, generator, generator_inputs, expected_files, verification_commands, behavior_tests_after_generation]
 
 full_reroute_triggers:
+  - scaffold-baseline-drift
   - api-schema-impact
   - database-schema-impact
   - permission-impact
@@ -161,6 +191,7 @@ full_reroute_triggers:
   - delivery-order-changed
 
 reroute_destinations:
+  scaffold-baseline-drift: stage7-scaffold-revalidation
   api-schema-impact: system-data-architecture-and-contract-review
   database-schema-impact: data-architecture-and-migration-review
   permission-impact: spec-product-design-and-contract-review

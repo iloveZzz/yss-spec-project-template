@@ -182,7 +182,7 @@ preconditions = contract.fetch("flow_preconditions", {})
 {
   "to-spec" => %w[grill_exit no_unresolved_runnable_blocker],
   "to-tickets" => %w[openapi_freeze_or_no_api_impact required_gates_satisfied vertical_slice_scope blocking_edges],
-  "implement" => %w[ready_for_agent slice_contract_approved slice_contract_persisted slice_contract_current_version build_architecture_checklist implementation_repo implementation_branch ci verification_commands rollback_point backend_slice_contract_if_applicable]
+  "implement" => %w[ready_for_agent slice_contract_approved slice_contract_persisted slice_contract_current_version build_architecture_checklist implementation_repo implementation_branch ci verification_commands rollback_point backend_slice_contract_if_applicable backend_scaffold_policy_satisfied]
 }.each do |flow, required|
   actual = preconditions.dig(flow, "required") || []
   required.each { |field| require_include(failures, "#{flow} preconditions", actual, field) }

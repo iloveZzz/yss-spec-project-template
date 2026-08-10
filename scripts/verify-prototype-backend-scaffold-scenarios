@@ -1,0 +1,239 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "pathname"
+require "yaml"
+
+ROOT = Pathname.new(__dir__).join("..").realpath
+
+failures = []
+
+def require_marker(failures, path, marker)
+  body = ROOT.join(path).read
+  failures << "#{path} 缺少约束标记: #{marker}" unless body.include?(marker)
+end
+
+def route_after_prototype(facts)
+  return {"status" => "not-applicable", "steps" => []} unless facts.fetch(:backend_impact)
+
+  if facts.fetch(:ui_impact) && !facts.fetch(:prototype_confirmation)
+    return {"status" => "blocked", "reason" => "prototype-confirmation-required", "steps" => []}
+  end
+
+  steps = ["engineering-baseline"]
+  case facts.fetch(:scaffold_status)
+  when "required"
+    return {"status" => "blocked", "reason" => "scaffold-contract-required", "steps" => []} unless facts.fetch(:scaffold_contract_approved)
+    steps.concat(%w[yss-router-scaffold-contract lifecycle-approve-scaffold-contract yss-ddd-scaffold-generator yss-backend-scaffold-parent yss-router-contract-recompile])
+  when "existing", "initialized"
+    steps.concat(%w[yss-backend-scaffold-parent yss-router-contract-recompile])
+  else
+    return {"status" => "blocked", "reason" => "scaffold-status-required", "steps" => []}
+  end
+  {"status" => "ready-for-contract-review", "steps" => steps}
+end
+
+def generated_code_decision(facts)
+  return "blocked" unless facts.fetch(:contract_approved)
+  return "blocked" unless facts.fetch(:contract_persisted)
+  return "blocked" unless facts.fetch(:contract_current)
+  return "blocked" unless facts.fetch(:yss_skill_selected)
+  return "blocked" unless facts.fetch(:execution_result_bound)
+  return "blocked" if facts.fetch(:behavioral_impact) && facts.fetch(:tdd_mode) != "behavior-tdd"
+  return "blocked" if facts.fetch(:tdd_mode) == "controlled-generation" && facts.fetch(:business_behavior_in_generator)
+
+  "allowed"
+end
+
+def scaffold_generation_decision(facts)
+  return "blocked" if facts.fetch(:with_example)
+  return "blocked" if facts.fetch(:nonempty_target) && facts.fetch(:force) && !facts.fetch(:overwrite_approval)
+
+  "allowed"
+end
+
+contract_path = ROOT.join(".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml")
+contract = YAML.safe_load(contract_path.read, permitted_classes: [], aliases: false)
+router_contract = YAML.safe_load(
+  ROOT.join(".agents/skills/yss-router/references/router-contract.yaml").read,
+  permitted_classes: [], aliases: false
+)
+
+backend_scaffold = contract["backend_scaffold"]
+failures << "编排契约缺少 backend_scaffold" unless backend_scaffold.is_a?(Hash)
+if backend_scaffold.is_a?(Hash)
+  scaffold_schema = backend_scaffold.fetch("contract_schema", {})
+  failures << "脚手架合同必须声明结构化 schema" unless scaffold_schema.is_a?(Hash)
+  if scaffold_schema.is_a?(Hash)
+    failures << "生命周期脚手架合同 schema 版本不受支持" unless scaffold_schema["schema_version"] == 1
+    failures << "生命周期脚手架合同 schema 未分离 Router 与生命周期状态" unless scaffold_schema.dig("status_by_owner", "router").to_a.include?("ready-for-lifecycle-review") && scaffold_schema.dig("status_by_owner", "lifecycle").to_a.include?("approved")
+  end
+  %w[contract_id contract_version slice_id status router_draft_ref lifecycle_approval_ref persisted_ref current_version implementation_repository backend_repository scaffold_status target_git_url_or_output_dir allowed_write_paths expected_evidence_files verification_commands approval work_unit overwrite_policy].each do |required|
+    failures << "脚手架合同 schema 缺少 #{required}" unless scaffold_schema.fetch("required", []).include?(required)
+  end
+  %w[approval_ref approver persisted_ref current_version].each do |required|
+    failures << "脚手架合同审批记录缺少 #{required}" unless scaffold_schema.dig("approval", "required").to_a.include?(required)
+  end
+  failures << "backend_scaffold 必须声明 prototype_confirmation 后置顺序" unless backend_scaffold.dig("sequence", "after").include?("prototype_confirmation")
+  failures << "backend_scaffold 必须先于业务代码生成" unless backend_scaffold.dig("sequence", "before").include?("business_code_generation")
+  failures << "required 脚手架必须使用 yss-ddd-scaffold-generator" unless backend_scaffold["generator_skill"] == "yss-ddd-scaffold-generator"
+  failures << "脚手架生成必须使用 controlled-generation" unless backend_scaffold["tdd_mode"] == "controlled-generation"
+  %w[scaffold_contract_file scaffold_contract_draft scaffold_contract_approved scaffold_contract_persisted scaffold_contract_current_version].each do |required|
+    failures << "脚手架生成前缺少合同条件 #{required}" unless backend_scaffold.fetch("required_inputs", []).include?(required)
+  end
+  %w[yss-backend-scaffold-parent yss-router].each do |skill|
+    failures << "脚手架后置流程缺少 #{skill}" unless backend_scaffold.fetch("after_generation", []).include?(skill)
+  end
+  %w[business_rules state_machine permission transaction complex_query error_mapping user_visible_behavior].each do |forbidden|
+    failures << "脚手架生成禁止项缺少 #{forbidden}" unless backend_scaffold.fetch("forbidden_generation", []).include?(forbidden)
+  end
+  failures << "脚手架必须关闭 --with-example" unless backend_scaffold.dig("generation_options", "with_example") == false
+  failures << "脚手架覆盖写入必须默认阻断" unless backend_scaffold.dig("generation_options", "force") == "forbidden-by-default"
+  %w[contract_file router_draft_ref persisted_ref overwrite_scope rollback_ref].each do |required|
+    failures << "脚手架覆盖写入条件缺少 #{required}" unless backend_scaffold.dig("generation_options", "force_requires").to_a.include?(required)
+  end
+  failures << "脚手架必须留存生成元数据清单" unless backend_scaffold.fetch("required_evidence", []).include?("scaffold_generation_manifest")
+  %w[business_example_crud unapproved_force_overwrite].each do |forbidden|
+    failures << "脚手架生成禁止项缺少 #{forbidden}" unless backend_scaffold.fetch("forbidden_generation", []).include?(forbidden)
+  end
+  failures << "脚手架验证必须执行真实命令" unless backend_scaffold.dig("verification", "requires_execution") == true
+  failures << "脚手架验证必须记录命令结果" unless backend_scaffold.dig("verification", "evidence").to_a.include?("exit_code")
+  failures << "脚手架验证必须统一记录 duration_ms" unless backend_scaffold.dig("verification", "evidence").to_a.include?("duration_ms")
+  failures << "脚手架打印命令不得冒充验证证据" unless backend_scaffold.dig("verification", "printed_commands_are_not_evidence") == true
+end
+
+generated_policy = contract["post_scaffold_generated_code_policy"]
+failures << "编排契约缺少 post_scaffold_generated_code_policy" unless generated_policy.is_a?(Hash)
+if generated_policy.is_a?(Hash)
+  failures << "generated_code_policy 必须明确只约束脚手架后的代码" unless generated_policy["scope"] == "post_scaffold_generated_code"
+  %w[approved_persisted_current_slice_contract primary_yss_skill dependency_closure allowed_write_paths expected_evidence_files yss_skill_execution_result].each do |required|
+    failures << "后续代码生成缺少强制条件 #{required}" unless generated_policy.fetch("required", []).include?(required)
+  end
+  failures << "后续业务代码生成必须使用 behavior-tdd" unless generated_policy.dig("business_behavior", "tdd_mode") == "behavior-tdd"
+  failures << "未满足生成约束时必须阻断" unless generated_policy["on_violation"] == "blocked"
+  failures << "脚手架工程结构不得落入脚手架后的生成策略" if generated_policy.dig("controlled_generation", "allowed_for").to_a.include?("project_scaffold")
+end
+
+scaffold_policy = contract["scaffold_work_unit_policy"]
+failures << "编排契约缺少 scaffold_work_unit_policy" unless scaffold_policy.is_a?(Hash)
+if scaffold_policy.is_a?(Hash)
+  %w[approved_scaffold_contract primary_yss_skill allowed_write_paths expected_evidence_files verification_commands].each do |required|
+    failures << "脚手架工作单元缺少强制条件 #{required}" unless scaffold_policy.fetch("required", []).include?(required)
+  end
+  failures << "脚手架工作单元违反约束时必须阻断" unless scaffold_policy["on_violation"] == "blocked"
+end
+
+ready_requirements = contract.dig("ready_for_agent", "required") || []
+failures << "ready-for-agent 缺少 backend_scaffold_policy_satisfied" unless ready_requirements.include?("backend_scaffold_policy_satisfied")
+
+router_generator = router_contract.dig("dependency_closure", "yss-ddd-scaffold-generator") || {}
+failures << "Router 未把 yss-backend-scaffold-parent 绑定到脚手架" unless router_generator.fetch("always", []).include?("yss-backend-scaffold-parent")
+failures << "Router 未把 alibaba-java-code-style 绑定到脚手架" unless router_generator.fetch("always", []).include?("alibaba-java-code-style")
+failures << "Router 未声明脚手架完成后的完整重路由" unless router_contract.fetch("full_reroute_triggers", []).include?("scaffold-baseline-drift")
+router_scaffold_schema = router_contract.fetch("scaffold_contract_schema", {})
+failures << "Router 未声明脚手架合同 schema" unless router_scaffold_schema.is_a?(Hash)
+if router_scaffold_schema.is_a?(Hash)
+  failures << "Router 脚手架合同 schema 版本不受支持" unless router_scaffold_schema["schema_version"] == 1
+  failures << "Router 脚手架合同 schema 必须由 yss-router 编译" unless router_scaffold_schema["compiled_by"] == "yss-router"
+  failures << "Router 脚手架合同 schema 必须由生命周期批准" unless router_scaffold_schema["approved_by"] == "yss-product-lifecycle"
+  failures << "Router 脚手架合同必须按 owner 分离状态" unless router_scaffold_schema.dig("status_by_owner", "router").to_a.include?("ready-for-lifecycle-review") && router_scaffold_schema.dig("status_by_owner", "lifecycle").to_a.include?("approved")
+  failures << "Router 不得自行声明 approved 状态" if router_scaffold_schema.dig("status_by_owner", "router").to_a.include?("approved")
+  %w[contract_id contract_version slice_id status router_draft_ref lifecycle_approval_ref persisted_ref current_version allowed_write_paths expected_evidence_files verification_commands approval work_unit overwrite_policy].each do |required|
+    failures << "Router 脚手架合同 schema 缺少 #{required}" unless router_scaffold_schema.fetch("required", []).include?(required)
+  end
+  failures << "Router 脚手架合同 schema 未要求真实验证执行" unless router_scaffold_schema.dig("verification", "requires_execution") == true
+  failures << "Router 脚手架合同 schema 未统一 duration_ms" unless router_scaffold_schema.dig("verification", "evidence").to_a.include?("duration_ms")
+end
+
+complete_facts = {
+  backend_impact: true, ui_impact: true, prototype_confirmation: true, scaffold_status: "required", scaffold_contract_approved: true
+}
+complete_route = route_after_prototype(complete_facts)
+expected_steps = %w[engineering-baseline yss-router-scaffold-contract lifecycle-approve-scaffold-contract yss-ddd-scaffold-generator yss-backend-scaffold-parent yss-router-contract-recompile]
+failures << "原型完成后的后端路由顺序不完整" unless complete_route == {"status" => "ready-for-contract-review", "steps" => expected_steps}
+
+blocked_route = route_after_prototype(complete_facts.merge(prototype_confirmation: false))
+failures << "原型未确认时错误允许后端脚手架" unless blocked_route["status"] == "blocked" && blocked_route["reason"] == "prototype-confirmation-required"
+
+missing_scaffold_contract = route_after_prototype(complete_facts.merge(scaffold_contract_approved: false))
+failures << "脚手架受控生成缺少批准合同仍被允许" unless missing_scaffold_contract["status"] == "blocked" && missing_scaffold_contract["reason"] == "scaffold-contract-required"
+
+existing_route = route_after_prototype(complete_facts.merge(scaffold_status: "existing"))
+failures << "existing 工程不应重复全量脚手架" if existing_route.fetch("steps").include?("yss-ddd-scaffold-generator")
+failures << "existing 工程仍需基线校验和 Router" unless existing_route.fetch("steps") == %w[engineering-baseline yss-backend-scaffold-parent yss-router-contract-recompile]
+
+initialized_route = route_after_prototype(complete_facts.merge(scaffold_status: "initialized"))
+failures << "initialized 工程不应重复全量脚手架" if initialized_route.fetch("steps").include?("yss-ddd-scaffold-generator")
+failures << "initialized 工程仍需基线校验和 Router" unless initialized_route.fetch("steps") == %w[engineering-baseline yss-backend-scaffold-parent yss-router-contract-recompile]
+
+pressure_cases = {
+  "原型完成但无批准合同" => [
+    {contract_approved: false, contract_persisted: false, contract_current: false, yss_skill_selected: true, execution_result_bound: false, behavioral_impact: true, tdd_mode: "behavior-tdd", business_behavior_in_generator: false},
+    "blocked"
+  ],
+  "脚手架把事务和权限一起生成" => [
+    {contract_approved: true, contract_persisted: true, contract_current: true, yss_skill_selected: true, execution_result_bound: true, behavioral_impact: true, tdd_mode: "controlled-generation", business_behavior_in_generator: true},
+    "blocked"
+  ],
+  "批准合同下的业务行为切片" => [
+    {contract_approved: true, contract_persisted: true, contract_current: true, yss_skill_selected: true, execution_result_bound: true, behavioral_impact: true, tdd_mode: "behavior-tdd", business_behavior_in_generator: false},
+    "allowed"
+  ]
+}
+pressure_cases.each do |name, (facts, expected)|
+  actual = generated_code_decision(facts)
+  failures << "压力场景 #{name} 期望 #{expected}，实际 #{actual}" unless actual == expected
+end
+
+scaffold_pressure_cases = {
+  "--with-example 伪装成样板" => [{with_example: true, nonempty_target: false, force: false, overwrite_approval: false}, "blocked"],
+  "非空目录无覆盖批准" => [{with_example: false, nonempty_target: true, force: true, overwrite_approval: false}, "blocked"],
+  "空目录纯骨架" => [{with_example: false, nonempty_target: false, force: false, overwrite_approval: false}, "allowed"]
+}
+scaffold_pressure_cases.each do |name, (facts, expected)|
+  actual = scaffold_generation_decision(facts)
+  failures << "脚手架压力场景 #{name} 期望 #{expected}，实际 #{actual}" unless actual == expected
+end
+
+required_markers = {
+  ".agents/skills/yss-product-lifecycle/SKILL.md" => [
+    "原型确认 → 后端脚手架",
+    "yss-ddd-scaffold-generator",
+    "所有后续生成的后端代码",
+    "controlled-generation",
+    "behavior-tdd",
+    "--with-example",
+    "--force"
+  ],
+  ".agents/skills/yss-product-lifecycle/references/orchestration.md" => [
+    "prototype_confirmation",
+    "脚手架生成",
+    "不得把业务规则",
+    "YSS Skill Execution Result"
+  ],
+  "AGENTS.md" => [
+    "原型确认后",
+    "所有后续生成的后端代码",
+    "yss-ddd-scaffold-generator"
+  ],
+  "docs/architecture/templates/engineering-baseline-review-template.md" => [
+    "prototype_confirmation",
+    "脚手架生成结果",
+    "禁止生成业务行为"
+  ],
+  "docs/templates/implementation-routing-template.md" => [
+    "原型确认后先完成后端脚手架",
+    "所有后续生成代码",
+    "backend_scaffold_policy_satisfied"
+  ]
+}
+required_markers.each do |path, markers|
+  markers.each { |marker| require_marker(failures, path, marker) }
+end
+
+if failures.empty?
+  puts "原型到后端脚手架及后续 YSS 代码生成压力场景验证通过"
+else
+  warn failures.join("\n")
+  exit 1
+end

@@ -13,8 +13,16 @@ python3 .agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.py \
   --project-name user-service \
   --base-package com.yss.user \
   --output-dir /path/to/implementation-repo \
-  --database mysql
+  --database mysql \
+  --contract-id <approved-scaffold-contract-id> \
+  --contract-version <current-version> \
+  --approval-ref <lifecycle-approval-ref> \
+  --router-draft-ref <router-draft-ref> \
+  --persisted-ref <persisted-contract-ref> \
+  --contract-file /path/to/persisted-scaffold-contract.json
 ```
+
+上述合同参数必须替换为生命周期已批准且已持久化的当前脚手架合同；缺少时生成器会拒绝写入。
 
 ### 1.2 生成的项目结构
 
@@ -22,6 +30,7 @@ python3 .agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.py \
 output/user-service/
 ├── pom.xml
 ├── README.md
+├── .yss/scaffold-generation.json
 ├── user-service-domain/
 ├── user-service-application/
 ├── user-service-infrastructure/
@@ -39,7 +48,17 @@ cd output/user-service
 ./mvnw clean compile
 ```
 
-### 2.2 运行项目
+### 2.2 受控验证
+
+从生命周期工作目录执行固定验证器；它会在项目 evidence 目录实际运行三条 wrapper 命令并写入结果，不能用生成器打印的命令替代：
+
+```bash
+python3 .agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.py \
+  --project-root /path/to/implementation-repo/user-service \
+  --evidence-dir /path/to/implementation-repo/user-service/docs/evidence/scaffold
+```
+
+### 2.3 运行项目
 
 ```bash
 # 方式1: 使用 Maven 插件
@@ -50,44 +69,14 @@ cd output/user-service
 java -jar user-service-bootstrap/target/user-service-bootstrap-1.0.0-SNAPSHOT.jar
 ```
 
-### 2.3 访问应用
+### 2.4 验证基础工程
 
 ```bash
-# 健康检查
+# 纯脚手架不包含业务 Controller；这里只验证启动工程是否可访问
 curl http://localhost:8080/actuator/health
-
-# 查询用户列表
-curl -X POST http://localhost:8080/api/users/page \
-  -H "Content-Type: application/json" \
-  -d '{
-    "pageNum": 1,
-    "pageSize": 10
-  }'
-
-# 新增用户
-curl -X POST http://localhost:8080/api/users \
-  -H "Content-Type: application/json" \
-  -d '{
-    "username": "zhangsan",
-    "email": "zhangsan@example.com"
-  }'
-
-# 查询用户详情
-curl http://localhost:8080/api/users/1
-
-# 更新用户
-curl -X PUT http://localhost:8080/api/users \
-  -H "Content-Type: application/json" \
-  -d '{
-    "id": 1,
-    "username": "zhangsan",
-    "email": "zhangsan@yss.com",
-    "status": 1
-  }'
-
-# 删除用户
-curl -X DELETE http://localhost:8080/api/users/1
 ```
+
+业务 API、数据表和初始化数据不属于脚手架输出。完成 OpenAPI Freeze、Slice Implementation Contract 和生命周期批准后，按 `yss-router` 选择的 YSS skill 在对应垂直切片中实现并补充契约测试。
 
 ## 3. 添加新实体
 

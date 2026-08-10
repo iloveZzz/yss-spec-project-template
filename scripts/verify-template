@@ -32,6 +32,8 @@ required_files=(
   "scripts/sync-skills"
   "scripts/update-skill-lock"
   "scripts/verify-lifecycle-scenarios"
+  "scripts/verify-scaffold-generator-scenarios"
+  "scripts/verify-prototype-backend-scaffold-scenarios"
   "scripts/verify-matt-yss-integration-scenarios"
   "scripts/verify-yss-ui-scenarios"
 )
@@ -116,6 +118,8 @@ RUBY
 scripts/sync-skills --check
 scripts/update-skill-lock --check
 scripts/verify-lifecycle-scenarios
+scripts/verify-scaffold-generator-scenarios
+scripts/verify-prototype-backend-scaffold-scenarios
 ruby scripts/verify-matt-yss-integration-scenarios
 scripts/verify-yss-router-scenarios
 scripts/verify-yss-ui-scenarios
@@ -250,8 +254,11 @@ RUBY
 ruby -c scripts/sync-skills >/dev/null
 ruby -c scripts/update-skill-lock >/dev/null
 ruby -c scripts/verify-lifecycle-scenarios >/dev/null
+ruby -c scripts/verify-prototype-backend-scaffold-scenarios >/dev/null
 ruby -c scripts/verify-matt-yss-integration-scenarios >/dev/null
 ruby -c scripts/verify-yss-ui-scenarios >/dev/null
+python3 -m py_compile .agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.py
+python3 -m py_compile .agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.py
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   git diff --check
 else

@@ -31,6 +31,9 @@ description: Use when a YSS vertical slice is entering implementation, spans mul
 - 后端端到端切片必须包含 Application；对象/POJO 影响按契约自动补 `mapstruct`、`lombok`、`alibaba-java-code-style`。
 - 当前用户、审计事件、普通技术日志、请求校验、错误映射或加解密命中时，必须按 `router-contract.yaml` 的 `component_impact_routing` 补齐长尾 skill；不能只在 `boundaries.md` 中提及。
 - 业务行为使用 `behavior-tdd`；只有机械脚手架/生成物可用 `controlled-generation`，并记录例外和验证。
+- 原型确认后若 backend `scaffold_status=required`，先由本 Router 按 `scaffold_contract_schema` 编译 `yss-ddd-scaffold-generator` 的 `controlled-generation` 工作单元合同 draft；合同必须带 `contract_id`、`contract_version`、Router draft、生命周期批准、持久化引用、允许写路径、预期证据和验证命令。经生命周期编排器批准并持久化后才能运行生成器，再由受控工作单元实际执行固定的 `./mvnw validate`、`./mvnw test`、`./mvnw package` 并记录逐条结果，随后加载 `yss-backend-scaffold-parent` 并重新编译业务合同；脚手架不承载业务行为。
+- 脚手架合同在 Router 阶段只能是 `draft` / `ready-for-lifecycle-review` / `blocked`；只有生命周期编排器可以把已持久化脚手架合同标记为 `approved`。脚手架合同只覆盖业务代码前的工程骨架工作单元；生成、基线校验和 Router 重编译完成后，它不能替代脚手架后的 Slice Implementation Contract。
+- 脚手架输出消费批准的脚手架合同；脚手架后的所有生成后端代码都必须绑定当前批准且版本当前的 Slice Implementation Contract、主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result。打印命令、`./mvnw validate` 单项通过或脚手架成功不能替代合同批准；生成范围从机械内容变成业务行为时触发完整重路由。
 - 专项结果中的越界路径、缺失证据、`drift`、`violation` 或 `new_impacts` 必须阻断或重路由。
 - 长尾 skill 不可用时显式 `blocked`，不得用通用知识假装已应用 YSS 规范。
 
