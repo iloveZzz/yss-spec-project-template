@@ -166,6 +166,22 @@ def main() -> int:
             "缺少批准脚手架合同元数据时不得生成项目",
         )
 
+        forbidden_harness_output = run_generator(
+            "--project-name",
+            "forbidden-service",
+            "--base-package",
+            "com.yss.forbidden",
+            "--output-dir",
+            str(REPOSITORY_ROOT / "app" / "backend"),
+            "--contract-file",
+            str(temp_root / "forbidden-contract.json"),
+        )
+        require(
+            forbidden_harness_output.returncode != 0
+            and "禁止使用单数 app/backend" in (forbidden_harness_output.stdout + forbidden_harness_output.stderr),
+            "脚手架不得把 app/backend 作为工程输出路径",
+        )
+
         stale_contract_root = temp_root / "stale-contract-output"
         stale_contract = temp_root / "stale-contract.json"
         write_contract(

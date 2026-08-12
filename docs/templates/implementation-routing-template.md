@@ -21,6 +21,7 @@ owner: ai
 | Design Review |  |  |  |
 | 实现仓库 / 实现位置 |  |  |  |
 | 前后端工程存在性判定 |  |  | 记录 frontend / backend 是否已存在且可复用 |
+| 工程路径策略 |  |  | Harness 内使用 `apps/backend/<project>/` / `apps/frontend/<project>/`；外部仓库记录真实项目根 |
 | `垂直切片 Ticket 状态` |  |  | ready / blocked / in-progress |
 
 ## 2. 实现前门禁
@@ -36,6 +37,8 @@ owner: ai
 | 受影响 frontend 工程已存在可复用，或已登记 `scaffold_status=required` 并确认外部脚手架目标 | 是 / 否 / 不适用 |  |
 | 受影响 backend 工程已存在可复用，或已登记 `scaffold_status=required` 并确认外部脚手架目标 | 是 / 否 / 不适用 |  |
 | 缺失工程时已路由到对应脚手架 skill | 是 / 否 / 不适用 | `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator` |
+| Harness 内项目根路径符合 `apps/<backend|frontend>/<project>/` | 是 / 否 / 不适用 | `apps/backend/`、`apps/frontend/` 仅为容器 |
+| 未使用 `app/backend/`、`app/frontend/` 及其子路径 | 是 / 否 / 不适用 | 命中即阻断生成和实现 |
 | 原型确认后先完成后端脚手架，再进入业务代码路由 | 是 / 否 / 不适用 | `backend_scaffold_policy_satisfied` |
 | 后端脚手架合同字段完整且版本当前 | 是 / 否 / 不适用 | `contract_id`、`contract_version`、Router draft、生命周期批准、持久化引用、允许写路径、预期证据、验证命令 |
 | 后端构建 / 测试 / OpenAPI / CI 命令均使用项目根目录 `./mvnw ...`，或已记录受控例外 | 是 / 否 / 不适用 | 裸 `mvn ...` 默认为规范偏离 |
@@ -81,6 +84,8 @@ owner: ai
 | 字段 | 内容 |
 |---|---|
 | impacted_areas |  |
+| implementation_path_policy | `harness-apps-multi-project` / `external-repository-native` |
+| project_roots | Harness 内填写 `apps/backend/<project>/` / `apps/frontend/<project>/`；外部仓库填写真实项目根 |
 | required_skills |  |
 | optional_skills |  |
 | unavailable_skills | 写明 provider、fallback 和阻断结论；不得静默跳过 |
@@ -182,11 +187,13 @@ owner: ai
 
 ## 4. 外部实现仓库
 
-| repo_role | git_url | default_branch | working_branch | MR / PR | CI | test_command | build_command | 状态 |
-|---|---|---|---|---|---|---|---|---|
-| backend |  |  |  |  |  |  |  | pending / ready / blocked / not-applicable |
-| frontend |  |  |  |  |  |  |  | pending / ready / blocked / not-applicable |
-| other |  |  |  |  |  |  |  | pending / ready / blocked / not-applicable |
+> 当前仓库默认不承载运行时代码。若用户明确选择 Harness 内实现，项目根必须是 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 不能作为项目根，`app/backend/`、`app/frontend/` 及其子路径禁止使用。
+
+| repo_role | project_root | git_url | default_branch | working_branch | MR / PR | CI | test_command | build_command | 状态 |
+|---|---|---|---|---|---|---|---|---|---|
+| backend | `apps/backend/<project>/` 或外部真实路径 |  |  |  |  |  |  |  | pending / ready / blocked / not-applicable |
+| frontend | `apps/frontend/<project>/` 或外部真实路径 |  |  |  |  |  |  |  | pending / ready / blocked / not-applicable |
+| other | 真实路径 |  |  |  |  |  |  |  | pending / ready / blocked / not-applicable |
 
 说明：当前仓库默认作为 Harness / 研发管理仓库；前后端实现默认位于外部实现仓库。缺少实现仓库登记时，先使用 `implementation-repo-onboarding`，并按 `docs/templates/implementation-repo-registry-template.md` 补齐登记。
 
@@ -196,6 +203,8 @@ owner: ai
 |---|---|---|---|---|---|---|---|
 | backend | 是 / 否 / 不适用 | existing / required / initialized / not-applicable | 是 / 否 / 不适用 | 复用现有 / 初始化 / 阻塞 | `yss-ddd-scaffold-generator` / none |  |  |
 | frontend | 是 / 否 / 不适用 | existing / required / initialized / not-applicable | 是 / 否 / 不适用 | 复用现有 / 初始化 / 阻塞 | `yss-frontend-scaffold-generator` / none |  |  |
+
+脚手架输出位置必须回指具体项目根：后端为 `apps/backend/<project>/`，前端为 `apps/frontend/<project>/`；不得把 `apps/backend/`、`apps/frontend/` 容器根或任何 `app/backend/`、`app/frontend/` 路径作为生成目标。
 
 ## 4.2 人工确认结论
 

@@ -41,6 +41,7 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 - 进入实现后继续主控，通过 `yss-router`、`implement`、`tdd` 和 YSS 专项 skills 执行；独立审查和 fresh verification 后才能作完成判断。
 - 原型确认 → 后端脚手架：当 YSS 高保真原型已经完成 Prototype Review、AntD CLI 校验和用户确认，且 backend `scaffold_status=required` 时，先完成工程基线，由 `yss-router` 编译脚手架受控生成工作单元合同，经生命周期编排器批准并持久化后，才使用 `yss-ddd-scaffold-generator` 生成后端骨架；随后由 `yss-backend-scaffold-parent` 校验并重新进入 `yss-router`，不得先写业务代码。
 - 所有后续生成的后端代码都必须消费生命周期批准、已持久化且版本当前的 Slice Implementation Contract，绑定最小 YSS skill 闭包、允许写路径、证据文件和 YSS Skill Execution Result；没有这些证据时必须阻断。
+- Harness 内承载运行时代码时，项目路径策略固定为 `apps/backend/<project>/` 和 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 仅是项目容器，`app/backend/`、`app/frontend/` 及其子路径禁止生成。外部实现仓库不强制使用该目录，但必须登记真实项目根路径并写入合同。
 - Setup readiness 每个任务只评估一次并在本轮缓存；只有 tracker、主远端、真实标签或配置变化时重查。
 - Ticket tracker 支持 `local-markdown`、GitHub 和 GitLab；模板默认 `local-markdown`，以 `docs/.scratch/<feature>/` 完整功能包为主载体。Git remote 只代表代码托管，不能覆盖已持久化的 tracker 选择；Local 主 tracker 不要求远程 Ticket。根 `.scratch/` 与 `docs/requirements/tickets/` 只作为旧路径迁移来源。
 - 小改动和中等变更允许同一独立执行者完成 Review 与 fresh verification；该执行者不得是实现者。新模块、高风险或职责冲突时拆分 Reviewer 与 Verifier。
@@ -74,6 +75,8 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 | “发布窗口快结束了，可以把业务字段放进脚手架” | 时间、上级要求、已有产出和演示压力都不能放宽禁止模式；必须拆为 `behavior-tdd` 工作单元。 |
 
 **红旗：** 输出目录存在、脚手架成功、只打印了 `./mvnw` 命令、`validate` 通过、Router 只有 draft、或生成器参数中出现业务字段 / 权限 / 事务 / 状态机，均不足以继续业务实现；命中任一项即暂停并重路由。
+
+**项目路径策略：** 在 Harness 内生成项目时，先确认目标属于 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；把 `apps/backend/`、`apps/frontend/` 当作项目根，或把单数 `app/backend/`、`app/frontend/` 当作等价路径，均属于路径违规并阻断。
 
 状态和依赖规则见 [state-model.md](references/state-model.md) 与 [artifact-dependencies.md](references/artifact-dependencies.md)；Matt/YSS 对应见 [matt-yss-adapter.md](references/matt-yss-adapter.md)。
 机器可执行的模式、readiness、Wayfinder、影响传播和回流字段见 [orchestration-contract.yaml](references/orchestration-contract.yaml)。说明文档与该契约冲突时必须暂停并修订权威资产，不得猜测。

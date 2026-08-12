@@ -1,6 +1,15 @@
 schema_version: 1
 supported_state_schema_versions: [1]
 
+implementation_path_policy:
+  harness_layout:
+    backend: apps/backend/<project>/
+    frontend: apps/frontend/<project>/
+  container_roots: [apps/backend/, apps/frontend/]
+  forbidden_roots: [app/backend/, app/frontend/]
+  container_roots_are_projects: false
+  external_repository_uses_native_root: true
+
 review_verification:
   low_medium_combined_independent_executor: true
   implementer_must_be_separate: true

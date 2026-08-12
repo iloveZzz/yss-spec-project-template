@@ -37,6 +37,7 @@ owner: ai
 | backend_mr_pr |  |
 | backend_ci |  |
 | backend_verification |  |
+| backend_project_root | `apps/backend/<project>/` 或外部真实路径 |
 | backend_status | pending / ready / blocked / not-applicable |
 
 ## 4. Frontend
@@ -48,6 +49,7 @@ owner: ai
 | frontend_mr_pr |  |
 | frontend_ci |  |
 | frontend_verification |  |
+| frontend_project_root | `apps/frontend/<project>/` 或外部真实路径 |
 | frontend_status | pending / ready / blocked / not-applicable |
 
 ## 5. Fresh Verification

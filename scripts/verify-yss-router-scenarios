@@ -6,6 +6,7 @@ require "rexml/document"
 require "rexml/xpath"
 require "time"
 require "yaml"
+require_relative "implementation-path-policy"
 
 ROOT = Pathname.new(__dir__).join("..").realpath
 CONTRACT = YAML.safe_load(
@@ -137,6 +138,10 @@ def path_allowed_by?(path, allowed_paths)
   end
 end
 
+def implementation_path_policy_valid?(path, policy = "harness-apps-multi-project")
+  YssImplementationPathPolicy.valid?(path, enforce_harness: policy == "harness-apps-multi-project")
+end
+
 def dependency_closure(contract, primary_skills, conditions)
   result = primary_skills.dup
   loop do
@@ -192,6 +197,8 @@ def work_unit_violations(contract, fixture)
       violations << "#{prefix}.#{field}" unless value.is_a?(Array) && !value.empty?
     end
     work_unit.fetch("allowed_write_paths", []).each do |path|
+      policy = fixture.dig("common", "implementation_path_policy")
+      violations << "#{prefix}.allowed_write_paths.path-policy" unless implementation_path_policy_valid?(path, policy)
       violations << "#{prefix}.allowed_write_paths" unless path_scopes.all? { |scope| path_allowed_by?(path, scope) }
     end
     work_unit.fetch("expected_evidence", []).each do |evidence|
@@ -217,6 +224,29 @@ end
 def slice_contract_decision_violations(contract, input, available, fixture, expected_required_skills)
   violations = []
   flags = input.fetch("impact_flags")
+  implementation_path_policy = fixture.dig("common", "implementation_path_policy")
+  unless %w[harness-apps-multi-project external-repository-native].include?(implementation_path_policy)
+    violations << "common.implementation_path_policy"
+  end
+  project_roots = fixture.dig("common", "project_roots")
+  if !project_roots.is_a?(Array) || project_roots.empty?
+    violations << "common.project_roots"
+  elsif implementation_path_policy == "harness-apps-multi-project"
+    project_roots.each do |path|
+      violations << "common.project_roots.path-policy" unless implementation_path_policy_valid?(path)
+    end
+  end
+  {
+    "common" => fixture.dig("common", "allowed_write_paths"),
+    "frontend" => fixture.dig("frontend", "allowed_write_paths"),
+    "backend" => fixture.dig("backend", "allowed_write_paths")
+  }.each do |section, paths|
+    next unless paths.is_a?(Array)
+
+    paths.each do |path|
+      violations << "#{section}.allowed_write_paths.path-policy" unless implementation_path_policy_valid?(path, implementation_path_policy)
+    end
+  end
   missing_readiness = readiness_missing(contract, active_impacts(input), available)
   blockers = fixture.dig("readiness", "blockers")
   stale_inputs = fixture.dig("readiness", "stale_inputs")
@@ -327,15 +357,17 @@ complete_slice["frontend"].merge!(
   "required_skills" => ["yss-page-module-development"],
   "approved_prototype_ref" => "docs/prototypes/order-create.html",
   "state_matrix_ref" => "docs/design/order-create-state-matrix.md",
-  "allowed_write_paths" => ["apps/frontend/src/pages/order-create/"],
+  "allowed_write_paths" => ["apps/frontend/project1/src/pages/order-create/"],
   "component_test_seams" => ["order-create-form"],
   "e2e_paths" => ["create-order"]
 )
 complete_slice["backend"]["status"] = "not-applicable"
 complete_slice["common"].merge!(
+  "implementation_path_policy" => "harness-apps-multi-project",
+  "project_roots" => ["apps/frontend/project1/"],
   "required_skills" => ["yss-page-module-development"],
-  "allowed_write_paths" => ["apps/frontend/src/pages/order-create/"],
-  "expected_evidence_files" => ["apps/frontend/src/pages/order-create/OrderCreate.test.tsx"],
+  "allowed_write_paths" => ["apps/frontend/project1/src/pages/order-create/"],
+  "expected_evidence_files" => ["apps/frontend/project1/src/pages/order-create/OrderCreate.test.tsx"],
   "verification_commands" => ["pnpm test order-create"]
 )
 complete_slice["contract"].merge!(
@@ -351,8 +383,8 @@ end
 complete_slice["work_units"] = [{
   "id" => "render-order-create", "behavior" => "用户提交新订单", "primary_skill" => "yss-page-module-development",
   "supporting_skills" => [], "tdd_mode" => "behavior-tdd",
-  "allowed_write_paths" => ["apps/frontend/src/pages/order-create/"],
-  "expected_evidence" => ["apps/frontend/src/pages/order-create/OrderCreate.test.tsx"],
+  "allowed_write_paths" => ["apps/frontend/project1/src/pages/order-create/"],
+  "expected_evidence" => ["apps/frontend/project1/src/pages/order-create/OrderCreate.test.tsx"],
   "verification_commands" => ["pnpm test order-create"], "controlled_generation" => {}
 }]
 ui_expected_skills = ["yss-page-module-development"]
@@ -360,6 +392,20 @@ ui_violations = slice_contract_decision_violations(CONTRACT, base_input, ui_evid
 unless ui_violations.empty?
   failures << "Ready UI/API Slice Contract was rejected: #{ui_violations.join(', ')}"
 end
+
+external_slice = Marshal.load(Marshal.dump(complete_slice))
+external_slice["common"].merge!(
+  "implementation_path_policy" => "external-repository-native",
+  "project_roots" => ["app/frontend/src/"]
+)
+external_slice["common"]["allowed_write_paths"] = ["app/frontend/src/pages/order-create/"]
+external_slice["frontend"]["allowed_write_paths"] = ["app/frontend/src/pages/order-create/"]
+external_slice["work_units"][0]["allowed_write_paths"] = ["app/frontend/src/pages/order-create/"]
+external_slice["work_units"][0]["expected_evidence"] = ["app/frontend/src/pages/order-create/OrderCreate.test.tsx"]
+external_slice["common"]["expected_evidence_files"] = ["app/frontend/src/pages/order-create/OrderCreate.test.tsx"]
+failures << "External native project path was incorrectly blocked" unless slice_contract_decision_violations(
+  CONTRACT, base_input, ui_evidence, external_slice, ui_expected_skills
+).empty?
 
 decision_mutations = {
   "status-with-blockers" => [base_input, ui_evidence, {"readiness" => {"blockers" => ["review"], "stale_inputs" => [], "not_applicable" => []}}, "status"],
@@ -371,6 +417,8 @@ decision_mutations = {
   "frontend-prototype" => [base_input, ui_evidence, {"frontend" => {"approved_prototype_ref" => nil}}, "frontend.approved_prototype_ref"],
   "frontend-state-matrix" => [base_input, ui_evidence, {"frontend" => {"state_matrix_ref" => nil}}, "frontend.state_matrix_ref"],
   "frontend-paths" => [base_input, ui_evidence, {"frontend" => {"allowed_write_paths" => []}}, "frontend.allowed_write_paths"],
+  "frontend-singular-path-policy" => [base_input, ui_evidence, {"frontend" => {"allowed_write_paths" => ["app/frontend/project1/"]}}, "frontend.allowed_write_paths.path-policy"],
+  "frontend-container-path-policy" => [base_input, ui_evidence, {"frontend" => {"allowed_write_paths" => ["apps/frontend/"]}}, "frontend.allowed_write_paths.path-policy"],
   "frontend-seams" => [base_input, ui_evidence, {"frontend" => {"component_test_seams" => []}}, "frontend.component_test_seams"],
   "frontend-e2e" => [base_input, ui_evidence, {"frontend" => {"e2e_paths" => []}}, "frontend.e2e_paths"],
   "api-impact" => [base_input, ui_evidence, {"contract" => {"api_impact" => false}}, "contract.api_impact"],
@@ -380,6 +428,7 @@ decision_mutations = {
   "work-units-empty" => [base_input, ui_evidence, {"work_units" => []}, "work_units"],
   "work-unit-behavior" => [base_input, ui_evidence, {"work_units" => [complete_slice["work_units"][0].merge("behavior" => nil)]}, "work_units[0].behavior"],
   "work-unit-paths" => [base_input, ui_evidence, {"work_units" => [complete_slice["work_units"][0].merge("allowed_write_paths" => [])]}, "work_units[0].allowed_write_paths"],
+  "work-unit-singular-path-policy" => [base_input, ui_evidence, {"work_units" => [complete_slice["work_units"][0].merge("allowed_write_paths" => ["app/frontend/project1/"])]}, "work_units[0].allowed_write_paths.path-policy"],
   "work-unit-tdd-mode" => [base_input, ui_evidence, {"work_units" => [complete_slice["work_units"][0].merge("tdd_mode" => "unknown")]}, "work_units[0].tdd_mode"],
   "work-unit-primary-skill" => [base_input, ui_evidence, {"work_units" => [complete_slice["work_units"][0].merge("primary_skill" => "undeclared-skill")]}, "work_units[0].primary_skill"],
   "work-unit-supporting-skills" => [base_input, ui_evidence, {"work_units" => [complete_slice["work_units"][0].merge("supporting_skills" => ["undeclared-skill"])]}, "work_units[0].supporting_skills"],
@@ -413,15 +462,17 @@ backend_slice["backend"].merge!(
   "component_impacts" => [],
   "required_skills" => backend_expected_skills,
   "application_boundary" => "CreateOrderUseCase", "transaction_boundary" => "CreateOrderUseCase.execute",
-  "persistence_strategy" => "OrderGateway via MyBatis", "allowed_write_paths" => ["apps/backend/order/"],
-  "forbidden_patterns" => ["Controller -> Repository"], "expected_evidence_files" => ["apps/backend/order/OrderTest.java"],
-  "verification_commands" => ["./mvnw -pl order -am test"]
+  "persistence_strategy" => "OrderGateway via MyBatis", "allowed_write_paths" => ["apps/backend/project1/"],
+  "forbidden_patterns" => ["Controller -> Repository"], "expected_evidence_files" => ["apps/backend/project1/OrderTest.java"],
+  "verification_commands" => ["./mvnw -pl project1 -am test"]
 )
 backend_slice["common"]["required_skills"] = backend_expected_skills
 backend_slice["common"].merge!(
-  "allowed_write_paths" => ["apps/backend/order/"],
-  "expected_evidence_files" => ["apps/backend/order/OrderTest.java"],
-  "verification_commands" => ["./mvnw -pl order -am test"]
+  "implementation_path_policy" => "harness-apps-multi-project",
+  "project_roots" => ["apps/backend/project1/"],
+  "allowed_write_paths" => ["apps/backend/project1/"],
+  "expected_evidence_files" => ["apps/backend/project1/OrderTest.java"],
+  "verification_commands" => ["./mvnw -pl project1 -am test"]
 )
 backend_slice["contract"].merge!("api_impact" => false, "freeze_ref" => nil, "no_api_impact_ref" => "docs/contracts/order-create-no-api.md", "contract_tests" => [])
 CONTRACT.fetch("lifecycle_ref_by_readiness").each do |readiness_key, ref_field|
@@ -430,8 +481,8 @@ end
 backend_slice["work_units"] = [{
   "id" => "create-order", "behavior" => "创建订单事务", "primary_skill" => "yss-backend-scaffold-application",
   "supporting_skills" => backend_expected_skills - ["yss-backend-scaffold-application"], "tdd_mode" => "behavior-tdd",
-  "allowed_write_paths" => ["apps/backend/order/"], "expected_evidence" => ["apps/backend/order/OrderTest.java"],
-  "verification_commands" => ["./mvnw -pl order -am test"], "controlled_generation" => {}
+  "allowed_write_paths" => ["apps/backend/project1/"], "expected_evidence" => ["apps/backend/project1/OrderTest.java"],
+  "verification_commands" => ["./mvnw -pl project1 -am test"], "controlled_generation" => {}
 }]
 backend_violations = slice_contract_decision_violations(CONTRACT, backend_input, backend_evidence, backend_slice, backend_expected_skills)
 unless backend_violations.empty?
@@ -575,7 +626,8 @@ def execution_violations(contract, result, allowed_paths, expected_evidence, exp
     path = item.is_a?(Hash) ? item["path"] : item
     valid_item = item.is_a?(Hash) && %w[common frontend backend contract cross_repo].include?(item["contract_area"])
     within_both = path && allowed_paths.all? { |scope_paths| path_within_contract?(path, scope_paths) }
-    violations << "path-outside-contract" unless valid_item && within_both
+    within_path_policy = path && implementation_path_policy_valid?(path, expected_contract["implementation_path_policy"])
+    violations << "path-outside-contract" unless valid_item && within_both && within_path_policy
   end
   evidence_paths = result.fetch("evidence_files", []).each_with_object([]) do |item, paths|
     next unless item.is_a?(Hash) && %w[code test generated review verification].include?(item["evidence_type"]) &&
@@ -624,10 +676,11 @@ def execution_violations(contract, result, allowed_paths, expected_evidence, exp
   violations & contract.fetch("execution_blockers")
 end
 
-expected_contract = {"contract_ref" => "docs/contracts/order-create-v2.yaml", "contract_id" => "order-create", "contract_version" => 2}
+expected_contract = {"contract_ref" => "docs/contracts/order-create-v2.yaml", "contract_id" => "order-create", "contract_version" => 2,
+                    "implementation_path_policy" => "harness-apps-multi-project"}
 expected_identity = {"skill" => "yss-domain", "slice_id" => "order-create", "work_unit_id" => "create-order"}
-evidence_path = "apps/backend/order/OrderTest.java"
-expected_command = "./mvnw -pl order -am test"
+evidence_path = "apps/backend/project1/OrderTest.java"
+expected_command = "./mvnw -pl project1 -am test"
 valid_result = {
   "schema_version" => 1,
   "skill" => "yss-domain",
@@ -635,7 +688,7 @@ valid_result = {
   "work_unit_id" => "create-order",
   "status" => "implemented",
   "consumed_contract" => expected_contract,
-  "changed_files" => [{"path" => "apps/backend/order/Order.java", "contract_area" => "backend"}],
+  "changed_files" => [{"path" => "apps/backend/project1/Order.java", "contract_area" => "backend"}],
   "evidence_files" => [{"path" => evidence_path, "evidence_type" => "test", "behavior_ref" => "create-order"}],
   "verification_results" => [{"command" => expected_command, "result" => "passed", "executed_at" => "2026-07-21T12:00:00+08:00"}],
   "constraint_results" => [{"constraint" => "no-controller-repository", "status" => "passed", "evidence_ref" => evidence_path}],
@@ -645,8 +698,8 @@ valid_result = {
   "not_applicable_reason" => nil
 }
 valid_args = [[
-  ["apps/backend/"],
-  ["apps/backend/order/"]
+  ["apps/backend/project1/"],
+  ["apps/backend/project1/"]
 ], [evidence_path], expected_contract, [expected_command], ["no-controller-repository"], [evidence_path]]
 valid_args.insert(3, expected_identity)
 unless execution_violations(CONTRACT, valid_result, *valid_args).empty?
@@ -654,8 +707,8 @@ unless execution_violations(CONTRACT, valid_result, *valid_args).empty?
 end
 
 mutations = {
-  "path-outside-contract" => valid_result.merge("changed_files" => [{"path" => "apps/backend/order-escape/Evil.java", "contract_area" => "backend"}]),
-  "path-outside-contract-work-unit" => valid_result.merge("changed_files" => [{"path" => "apps/backend/other/Other.java", "contract_area" => "backend"}]),
+  "path-outside-contract" => valid_result.merge("changed_files" => [{"path" => "apps/backend/project1-escape/Evil.java", "contract_area" => "backend"}]),
+  "path-outside-contract-work-unit" => valid_result.merge("changed_files" => [{"path" => "apps/backend/project2/Other.java", "contract_area" => "backend"}]),
   "missing-evidence" => valid_result.merge("evidence_files" => []),
   "verification-not-executed-empty" => valid_result.merge("verification_results" => []),
   "verification-not-executed-command" => valid_result.merge("verification_results" => [{"result" => "passed", "executed_at" => "2026-07-21T12:00:00+08:00"}]),
@@ -663,7 +716,7 @@ mutations = {
   "verification-command-mismatch" => valid_result.merge("verification_results" => [{"command" => "true", "result" => "passed", "executed_at" => "2026-07-21T12:00:00+08:00"}]),
   "violation-contract-version" => valid_result.merge("consumed_contract" => expected_contract.merge("contract_version" => 1)),
   "violation-identity" => valid_result.merge("work_unit_id" => "other-work-unit"),
-  "path-outside-contract-area" => valid_result.merge("changed_files" => [{"path" => "apps/backend/order/Order.java", "contract_area" => "nonsense"}]),
+  "path-outside-contract-area" => valid_result.merge("changed_files" => [{"path" => "apps/backend/project1/Order.java", "contract_area" => "nonsense"}]),
   "seam-deferred-without-owner" => valid_result.merge("seam_deferred" => [{"risk" => "temporary adapter"}]),
   "seam-deferred-without-owner-empty" => valid_result.merge("status" => "seam-deferred", "seam_deferred" => []),
   "violation-implemented-with-seam" => valid_result.merge("seam_deferred" => [{"risk" => "temporary", "owner" => "team", "follow_up_ticket" => "T-2", "verification_plan" => "test"}]),

@@ -19,9 +19,10 @@ description: Use when a Harness change or vertical slice may require work across
 1. 读取 `docs/process/implementation-repo-integration.md` 和当前 change 资产。
 2. 判断影响面：Harness-only、backend-only、frontend-only、backend+frontend、contract-only、release-only。
 3. 确认每个受影响实现仓库已有登记记录；缺失则阻断并要求 onboarding。
-4. 输出最小任务分配：Harness 文档 / OpenAPI / 后端 MR / 前端 MR / 验证 / 发布。
-5. 按 `docs/templates/cross-repo-slice-template.md` 生成切片记录草案。
-6. 给出 fresh verification 命令和阶段 checkpoint 回写字段。
+4. 核对项目根路径：Harness 内项目必须是 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 只能作为容器，`app/backend/`、`app/frontend/` 及其子路径必须阻断。外部仓库记录各自的真实项目根。
+5. 输出最小任务分配：Harness 文档 / OpenAPI / 后端 MR / 前端 MR / 验证 / 发布。
+6. 按 `docs/templates/cross-repo-slice-template.md` 生成切片记录草案。
+7. 给出 fresh verification 命令和阶段 checkpoint 回写字段。
 
 ## Routing Matrix
 

@@ -6,6 +6,23 @@
 
 每个受影响实现仓库必须登记：仓库地址、分支、代码所有者、CI 入口、测试 / 构建命令、允许写路径、回滚点和 MR / PR。没有登记记录时，先完成 onboarding，不能用本仓库目录代替实现仓库。
 
+## 1.1 Harness 内实现项目路径策略
+
+当前 Harness 明确承载运行时代码时，统一使用以下多项目布局：
+
+```text
+apps/
+├── backend/<backend-project>/
+└── frontend/<frontend-project>/
+```
+
+- `apps/backend/` 和 `apps/frontend/` 是项目容器，不是可生成的工程项目根；后端、前端项目必须分别位于 `apps/backend/<project>/`、`apps/frontend/<project>/`，多个项目按 `<project>` 目录并列。
+- `app/backend/`、`app/frontend/` 及其所有子路径均禁止作为工程生成目标；单复数差异不能被视为等价路径。
+- `allowed_write_paths`、`expected_evidence_files` 和生成器输出位置必须能回指具体项目目录；直接放开 `apps/backend/` 或 `apps/frontend/` 属于路径策略违规。
+- 外部实现仓库不要求采用 Harness 的 `apps/` 布局，但仍必须登记该仓库内的实际项目根路径；跨仓库切片的写路径不得用本 Harness 的占位路径冒充真实路径。
+
+每个 Harness 内项目至少登记 `project_type`、`project_name`、`project_root` 和 `repository_scope`。同一 Git monorepo 下的多个项目可以共用一条仓库登记，但必须逐项目列出根路径和独立验证命令；不同 Git 仓库必须分别登记。
+
 ## 2. 影响面路由
 
 | 影响面 | 必须绑定的记录 | 本变更结论 |

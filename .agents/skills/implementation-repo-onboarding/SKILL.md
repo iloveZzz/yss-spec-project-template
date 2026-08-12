@@ -20,8 +20,9 @@ description: Use when connecting an existing frontend, backend, fullstack, or ot
 2. 如果输入是本地路径，只读检查 Git remote、当前分支、目录结构、构建文件和测试脚本。
 3. 如果输入是远端 URL，优先使用只读 Git 查询；需要 clone 时只能 clone 到临时目录，不能 clone 到 Harness 仓库内。
 4. 识别技术栈、包管理器、CI、测试命令、构建命令、OpenAPI 接入和设计 token 接入。
-5. 按 `docs/templates/implementation-repo-registry-template.md` 输出实现仓库登记内容。
-6. 列出 `known_gaps`、人审点、fresh verification 命令和需要回写到 Harness change / Issue / checkpoint 的信息。
+5. 判定实现位置：Harness 内只能使用 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 仅为容器，`app/backend/`、`app/frontend/` 及其子路径必须标记为阻断。外部实现仓库记录真实项目根路径，不套用 Harness 占位路径。
+6. 按 `docs/templates/implementation-repo-registry-template.md` 输出实现仓库登记内容。
+7. 列出 `known_gaps`、人审点、fresh verification 命令和需要回写到 Harness change / Issue / checkpoint 的信息。
 
 ## Baseline Checks
 
@@ -37,6 +38,7 @@ description: Use when connecting an existing frontend, backend, fullstack, or ot
 - 不直接提交、推送、创建 MR / PR 或修改实现仓库。
 - 不把实现仓库源码复制进 Harness 仓库。
 - 不把缺失命令编造为已存在；找不到时标记 `unknown` 或 `需人工确认`。
+- 不得把 `app/backend/`、`app/frontend/` 或 `apps/backend/`、`apps/frontend/` 容器根登记为可生成项目根。
 - 触碰认证、授权、SQL、迁移、加密、公共基础库 API 时标记 `TODO-HUMAN-REVIEW`。
 
 ## Output

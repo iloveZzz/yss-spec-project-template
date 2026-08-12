@@ -114,6 +114,10 @@ semantic_markers = {
     "才构成产品设计影响",
     "Spec Delta 只记录相对既有冻结 Spec 基线",
     "template-source",
+    "apps/backend/<project>/",
+    "apps/frontend/<project>/",
+    "app/backend/",
+    "app/frontend/",
     "集中同步",
     "集中记录不得丢失各阶段因果关系"
   ],
@@ -123,6 +127,20 @@ semantic_markers = {
     "最近可信阶段",
     "同一独立执行者",
     "集中 checkpoint"
+  ],
+  "docs/process/implementation-repo-integration.md" => [
+    "apps/backend/<project>/",
+    "apps/frontend/<project>/",
+    "app/backend/",
+    "app/frontend/",
+    "项目容器"
+  ],
+  ".agents/skills/yss-product-lifecycle/SKILL.md" => [
+    "apps/backend/<project>/",
+    "apps/frontend/<project>/",
+    "app/backend/",
+    "app/frontend/",
+    "项目路径策略"
   ]
 }.freeze
 

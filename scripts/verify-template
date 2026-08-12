@@ -31,7 +31,9 @@ required_files=(
   "docs/user-guide/规格与任务迁移指南.md"
   "scripts/sync-skills"
   "scripts/update-skill-lock"
+  "scripts/implementation-path-policy.rb"
   "scripts/verify-lifecycle-scenarios"
+  "scripts/verify-implementation-path-scenarios"
   "scripts/verify-scaffold-generator-scenarios"
   "scripts/verify-prototype-backend-scaffold-scenarios"
   "scripts/verify-matt-yss-integration-scenarios"
@@ -118,6 +120,7 @@ RUBY
 scripts/sync-skills --check
 scripts/update-skill-lock --check
 scripts/verify-lifecycle-scenarios
+scripts/verify-implementation-path-scenarios
 scripts/verify-scaffold-generator-scenarios
 scripts/verify-prototype-backend-scaffold-scenarios
 ruby scripts/verify-matt-yss-integration-scenarios
@@ -253,6 +256,7 @@ RUBY
 
 ruby -c scripts/sync-skills >/dev/null
 ruby -c scripts/update-skill-lock >/dev/null
+ruby -c scripts/implementation-path-policy.rb >/dev/null
 ruby -c scripts/verify-lifecycle-scenarios >/dev/null
 ruby -c scripts/verify-prototype-backend-scaffold-scenarios >/dev/null
 ruby -c scripts/verify-matt-yss-integration-scenarios >/dev/null

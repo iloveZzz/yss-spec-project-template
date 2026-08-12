@@ -1,6 +1,21 @@
 schema_version: 1
 allowed_statuses: [draft, blocked, ready-for-lifecycle-review]
 forbidden_statuses: [approved, ready-for-agent, completed]
+implementation_path_policy:
+  applies_to: harness-resident-runtime-code
+  project_roots:
+    backend: apps/backend/<project>/
+    frontend: apps/frontend/<project>/
+  container_roots:
+    - apps/backend/
+    - apps/frontend/
+  forbidden_roots:
+    - app/backend/
+    - app/frontend/
+  rules:
+    - "Harness 内每个运行时工程必须位于具体 project 目录，不能直接写入 apps/backend/ 或 apps/frontend/。"
+    - "app/backend/、app/frontend/ 及其子路径不是兼容别名，必须阻断。"
+    - "外部实现仓库使用登记的真实项目根路径，不用 Harness 容器路径冒充。"
 subcontract_statuses: [required, not-applicable]
 
 readiness:
@@ -26,7 +41,7 @@ slice_contract_required:
   root: [schema_version, contract_id, contract_version, slice_id, status, lifecycle_refs, readiness, common, frontend, backend, contract, cross_repo, work_units]
   lifecycle_refs: [spec, ticket, requirement_freeze, low_fidelity_review, high_fidelity_html, antd_cli_evidence, prototype_confirmation, openapi_freeze_or_no_impact, architecture_review, data_architecture, engineering_baseline, build_architecture_checklist, implementation_repository, frontend_repository, backend_repository, maven_wrapper]
   readiness: [blockers, stale_inputs, not_applicable]
-  common: [impacted_areas, required_skills, optional_skills, unavailable_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, human_review_points, full_reroute_triggers]
+  common: [impacted_areas, implementation_path_policy, project_roots, required_skills, optional_skills, unavailable_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, human_review_points, full_reroute_triggers]
   frontend: [status, required_skills, approved_prototype_ref, state_matrix_ref, allowed_write_paths, component_test_seams, e2e_paths]
   backend: [status, affected_layers, component_impacts, required_skills, application_boundary, transaction_boundary, persistence_strategy, allowed_write_paths, forbidden_patterns, expected_evidence_files, seam_deferred, verification_commands]
   contract: [api_impact, freeze_ref, no_api_impact_ref, generated_clients, contract_tests, regeneration_commands]
@@ -54,7 +69,7 @@ work_unit_required: [id, behavior, primary_skill, supporting_skills, tdd_mode, a
 work_unit_nonempty_arrays: [allowed_write_paths, expected_evidence, verification_commands]
 slice_contract_nonempty: [contract_id, contract_version, slice_id, status]
 slice_contract_array_fields:
-  common: [impacted_areas, required_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, full_reroute_triggers]
+  common: [impacted_areas, implementation_path_policy, project_roots, required_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, full_reroute_triggers]
 
 scaffold_contract_schema:
   schema_version: 1

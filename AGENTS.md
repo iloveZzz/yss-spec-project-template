@@ -115,11 +115,14 @@ README、用户指南和其他说明文档只引用或解释上述事实，不�
 当前仓库默认是研发管理仓库，前端、后端和其他运行时代码优先位于独立实现仓库。只有用户明确选择当前仓库承载实现代码时，才可按需创建：
 
 ```text
-apps/backend/
-apps/frontend/
+apps/
+├── backend/<project>/
+└── frontend/<project>/
 ```
 
-不得自行新建其他顶层业务代码目录。
+`apps/backend/` 和 `apps/frontend/` 只能作为项目容器，不能直接作为某个工程项目的输出目录；每个工程必须落在唯一的 `apps/backend/<project>/` 或 `apps/frontend/<project>/` 下，多个项目按项目目录并列。`app/backend/`、`app/frontend/` 及其子路径是禁止的工程输出路径，不能因脚手架、临时目录或已有目录而放行。
+
+实现仓库为外部仓库时，不强制把源码搬入本 Harness 的 `apps/`；但必须在实现仓库登记和 Slice Implementation Contract 中记录实际仓库、项目根路径、分支、CI、验证命令和回滚点。不得自行新建其他顶层业务代码目录。
 
 ## 10. 独立审查、验证和追踪
 
