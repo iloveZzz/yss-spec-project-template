@@ -58,4 +58,4 @@ Router 必须验证：
 
 专项 skill 自报 `implemented` 不等于最终通过，生命周期编排器和独立 Reviewer 必须复核。
 
-`verification_results` 不得为空，每项必须包含非空 `command`、`result` 和 `executed_at`。路径校验按完整目录边界判断，`apps/backend/order-escape` 不属于 `apps/backend/order/`。完整重路由时旧合同必须标记 `stale`，新合同版本递增并保留旧合同引用、失效原因和触发器。
+`verification_results` 不得为空，每项必须包含非空 `command`、`result` 和 `executed_at`。路径校验按完整目录边界判断，`apps/backend/project1-escape` 不属于 `apps/backend/project1/`；Harness 内路径还必须通过项目路径策略。完整重路由时旧合同必须标记 `stale`，新合同版本递增并保留旧合同引用、失效原因和触发器。

@@ -42,6 +42,8 @@ class ScaffoldGenerator:
         self.project_name = project_name
         self.base_package = base_package
         self.output_dir = Path(output_dir)
+        self.repository_root = Path(__file__).resolve().parents[4]
+        self._validate_harness_output_layout()
         self.with_example = with_example
         self.database = database
         self.force = force
@@ -137,6 +139,30 @@ class ScaffoldGenerator:
         if self.final_project_root.is_file():
             return True
         return any(self.final_project_root.iterdir())
+
+    def _validate_harness_output_layout(self) -> None:
+        """在当前 Harness 内只允许生成到 apps/backend/<project>/。"""
+        output_root = self.output_dir.resolve()
+        try:
+            relative = output_root.relative_to(self.repository_root)
+        except ValueError:
+            # 外部实现仓库使用其登记的 native root，不套用 Harness 目录策略。
+            return
+
+        parts = relative.parts
+        if len(parts) >= 2 and parts[0] == "app" and parts[1] in {"backend", "frontend"}:
+            raise ValueError(
+                "禁止使用单数 app/backend 或 app/frontend 作为工程生成路径；"
+                "Harness 内后端脚手架必须以 apps/backend 为父容器"
+            )
+        if parts == ("apps", "backend"):
+            return
+        if parts[:2] == ("apps", "frontend"):
+            raise ValueError("后端脚手架不能输出到 apps/frontend；请使用外部后端仓库或 apps/backend")
+        raise ValueError(
+            "当前 Harness 内生成后端工程时，输出目录必须是 apps/backend；"
+            "生成器会以 project_name 创建 apps/backend/<project>/"
+        )
 
     def _validate_contract_metadata(self):
         if self.contract_file is None or not self.contract_file.is_file():
@@ -695,23 +721,23 @@ def main():
     if args.with_example:
         parser.error("--with-example 已禁用；业务代码必须由批准的 YSS Slice skill 逐切片生成")
 
-    generator = ScaffoldGenerator(
-        project_name=args.project_name,
-        base_package=args.base_package,
-        output_dir=args.output_dir,
-        with_example=args.with_example,
-        database=args.database,
-        force=args.force,
-        contract_id=args.contract_id,
-        contract_version=args.contract_version,
-        approval_ref=args.approval_ref,
-        router_draft_ref=args.router_draft_ref,
-        persisted_ref=args.persisted_ref,
-        contract_file=args.contract_file,
-        overwrite_scope=args.overwrite_scope,
-        rollback_ref=args.rollback_ref,
-    )
     try:
+        generator = ScaffoldGenerator(
+            project_name=args.project_name,
+            base_package=args.base_package,
+            output_dir=args.output_dir,
+            with_example=args.with_example,
+            database=args.database,
+            force=args.force,
+            contract_id=args.contract_id,
+            contract_version=args.contract_version,
+            approval_ref=args.approval_ref,
+            router_draft_ref=args.router_draft_ref,
+            persisted_ref=args.persisted_ref,
+            contract_file=args.contract_file,
+            overwrite_scope=args.overwrite_scope,
+            rollback_ref=args.rollback_ref,
+        )
         generator.generate()
     except Exception as exception:
         print(f"\n❌ 生成失败: {str(exception)}")

@@ -24,6 +24,7 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 ## 优先流程
 
 1. 确认项目名、基础包名、输出目录、数据库类型。
+   Harness 内输出目录必须是 `apps/backend/` 容器，生成器再以 `project_name` 创建 `apps/backend/<project>/`；禁止使用 `app/backend/`、`app/frontend/` 或把 `apps/backend/` 之外的容器根当作后端项目根。
 2. 运行 `scripts/generate_scaffold.py` 生成骨架。
 3. 检查生成的模块名、POM、配置文件、Smart Doc 配置和包路径。
 4. 由生命周期受控工作单元在生成项目根目录实际执行 `./mvnw validate`、`./mvnw test` 和 `./mvnw package`；生成器打印的下一步命令不构成验证证据。
@@ -64,6 +65,7 @@ python3 scripts/generate_scaffold.py \
 - 永不生成 `User CRUD` 示例；`--with-example` 已禁用，业务代码必须按批准的 Slice Implementation Contract 逐切片实现。
 - 若仓库已经存在相同工程，先核对覆盖范围。
 - 输出目录必须显式指定；非空目录默认拒绝写入，确认覆盖时才使用 `--force`。
+- Harness 内多项目布局必须使用 `apps/backend/<project>/`；`apps/backend/` 只能是生成器的父容器，`app/backend/`、`app/frontend/` 及其子路径一律拒绝。
 - 不要在 skill 里硬编码用户业务字段或真实连接信息。
 - 生成后要检查依赖关系是否仍符合分层约束。
 - 生成后必须继续使用 `yss-backend-scaffold-parent` 校验工程基线，再按垂直切片加载 `yss-domain`、`yss-repository`、`yss-web-controller` 等局部技能。

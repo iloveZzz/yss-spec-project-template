@@ -17,6 +17,11 @@ owner: ai
 | git_url |  |
 | default_branch |  |
 | local_worktree |  |
+| repository_scope | external-repository / harness-apps |
+| project_type | backend / frontend / fullstack / other |
+| project_name |  |
+| project_root | 外部仓库相对路径，或 `apps/backend/<project>/` / `apps/frontend/<project>/` |
+| layout_policy | `harness-apps-multi-project` / `external-repository-native` |
 | scaffold_status | existing / required / initialized |
 | scaffold_skill | `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator` / none |
 | scaffold_target_confirmed | 是 / 否 / 不适用 |
@@ -35,6 +40,15 @@ owner: ai
 | lint_command |  |  |
 | typecheck_command |  |  |
 | ci_pipeline |  |  |
+
+Harness 内项目路径约束：`apps/backend/`、`apps/frontend/` 只能作为项目容器；工程必须位于具体的 `apps/backend/<project>/` 或 `apps/frontend/<project>/`。`app/backend/`、`app/frontend/` 及其子路径禁止登记或生成。外部实现仓库填写真实项目根路径，不使用本表的 Harness 占位路径。
+
+## 2.1 项目清单（同一 monorepo 可登记多个项目）
+
+| project_name | project_type | project_root | test_command | build_command | rollback_point |
+|---|---|---|---|---|---|
+| project1 | backend / frontend | `apps/backend/project1/` 或 `apps/frontend/project1/` |  |  |  |
+| project2 | backend / frontend | `apps/backend/project2/` 或 `apps/frontend/project2/` |  |  |  |
 
 ## 3. 契约与设计接入
 

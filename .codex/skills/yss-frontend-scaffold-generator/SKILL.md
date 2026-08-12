@@ -29,7 +29,7 @@ branch: template
 ## Workflow
 
 1. 确认当前任务已经通过 Harness 入口分诊，且实现位置已记录在 proposal、design、build entry review、实施计划或实现路由记录中。
-2. 确认目标是外部实现仓库；只有用户明确选择时才输出到 Harness 仓库的 `apps/frontend/`。
+2. 确认目标是外部实现仓库；只有用户明确选择时才输出到 Harness 仓库的 `apps/frontend/<project>/`。`apps/frontend/` 只能作为项目容器，`app/frontend/`、`app/backend/` 及其子路径禁止作为输出位置。
 3. 只读检查模板分支是否可访问：`git ls-remote --heads <repo> template`。
 4. 需要生成工程时，克隆或复制模板到用户确认的目标位置；不得默认写入 Harness 仓库。
 5. 替换应用名、微应用名、路由、`micro-config.json`、环境变量和 README 中的模板占位。
@@ -56,6 +56,7 @@ packages/package.json
 - 不直接创建远端 Git 项目，除非用户明确要求。
 - 不推送、不创建 MR / PR，除非用户明确要求。
 - 不绕过 OpenAPI Draft / Freeze；API client 生成必须有可追溯 OpenAPI source。
+- 不得把 `apps/frontend/` 容器根登记为项目根；Harness 内每个前端项目必须有独立的 `apps/frontend/<project>/` 路径。
 - 不把模板示例页面当作业务功能交付。
 - 生成后仍需使用 `yss-page-module-development`、`yss-components`、`api-integration` 等专项 skill 实现业务页面。
 

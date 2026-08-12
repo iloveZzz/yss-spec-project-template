@@ -33,7 +33,7 @@
 | 设计审查 | API 或架构影响 | 审查意见和处理结果 |
 | OpenAPI Freeze | API 进入实现 | Freeze 版本和消费者确认 |
 | 数据架构 | 数据模型、存储或一致性变化 | 数据架构记录 |
-| 工程基线 | 后端、前端或高风险工程变化 | 工程基线和验证命令；新后端还需脚手架登记、Router 脚手架合同 draft / 生命周期批准记录、生成器输入 / 预期文件、`./mvnw` 结果和 YSS Skill Execution Result |
+| 工程基线 | 后端、前端或高风险工程变化 | 工程基线、项目根路径和验证命令；Harness 内项目必须符合 `apps/backend/<project>/` / `apps/frontend/<project>/`，新后端还需脚手架登记、Router 脚手架合同 draft / 生命周期批准记录、生成器输入 / 预期文件、`./mvnw` 结果和 YSS Skill Execution Result |
 | 架构审查 | 高风险或跨边界变化 | 架构审查记录 |
 | Spec Delta | 已有冻结 Spec 的高风险行为变化 | `ADDED / MODIFIED / REMOVED` 差异 |
 | 功能父 Ticket | 每个进入追踪的功能 | `parent-ticket.md` 或远程父 Ticket |

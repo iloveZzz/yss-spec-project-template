@@ -34,6 +34,8 @@ slice_contract:
         reason:
   common:
     impacted_areas: []
+    implementation_path_policy: harness-apps-multi-project # or external-repository-native
+    project_roots: []
     required_skills: []
     optional_skills: []
     unavailable_skills:
