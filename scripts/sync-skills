@@ -59,6 +59,11 @@ def tree_hash(root)
   digest = Digest::SHA256.new
   root.glob("**/*", File::FNM_DOTMATCH)
       .reject { |item| item.directory? || item.basename.to_s == ".DS_Store" }
+      .reject do |item|
+        relative = item.relative_path_from(root)
+        relative.each_filename.include?("__pycache__") ||
+          %w[.pyc .pyo].include?(item.extname)
+      end
       .sort_by { |item| item.relative_path_from(root).to_s }
       .each do |item|
     relative = item.relative_path_from(root).to_s
