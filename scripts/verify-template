@@ -4,7 +4,13 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+# Ruby inherits US-ASCII under a C locale on some macOS installations. Keep
+# all verification scripts UTF-8 capable because the template contains Chinese
+# documentation and skill metadata.
+export RUBYOPT="${RUBYOPT:+$RUBYOPT }-EUTF-8:UTF-8"
+
 ruby <<'RUBY'
+# encoding: UTF-8
 require "pathname"
 require "yaml"
 
@@ -84,6 +90,7 @@ for skill_name in "${required_skills[@]}"; do
 done
 
 ruby <<'RUBY'
+# encoding: UTF-8
 require "json"
 require "pathname"
 require "yaml"
@@ -113,7 +120,7 @@ lock.fetch("skills", {}).fetch("shared", {}).each do |skill_name, metadata|
 end
 
 openapi_path = root.join("docs/templates/openapi-spec-template.yaml")
-openapi_text = openapi_path.read.sub(/\A---\n.*?\n---\n/m, "")
+openapi_text = openapi_path.binread.force_encoding("UTF-8").sub(/\A---\n.*?\n---\n/m, "")
 YAML.safe_load(openapi_text, permitted_classes: [], aliases: true)
 RUBY
 
@@ -128,6 +135,7 @@ scripts/verify-yss-router-scenarios
 scripts/verify-yss-ui-scenarios
 
 ruby <<'RUBY'
+# encoding: UTF-8
 require "pathname"
 require "json"
 
@@ -225,8 +233,8 @@ unless legacy_hits.empty?
   exit 1
 end
 
-unless root.join("AGENTS.md").read.include?("正文统一使用简体中文") &&
-       root.join("CONTEXT.md").read.include?("统一使用简体中文")
+unless root.join("AGENTS.md").binread.force_encoding("UTF-8").include?("正文统一使用简体中文") &&
+       root.join("CONTEXT.md").binread.force_encoding("UTF-8").include?("统一使用简体中文")
   abort("AGENTS.md 与 CONTEXT.md 必须共同声明落地文档使用简体中文")
 end
 
