@@ -1,0 +1,120 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "json"
+require "pathname"
+require "yaml"
+
+ROOT = Pathname.new(__dir__).join("..").realpath
+PROJECTION_ROOTS = %w[
+  .agents/skills
+  .claude/skills
+  .codex/skills
+  .hermes/skills
+  .pi/skills
+  .qoder/skills
+  .trae/skills
+].freeze
+
+failures = []
+
+template_path = ROOT.join("docs/templates/openapi-spec-template.yaml")
+documents = YAML.load_stream(template_path.read)
+failures << "OpenAPI YAML 模板必须是单一 YAML document" unless documents.length == 1
+document = documents.first
+unless document.is_a?(Hash) && document["openapi"] == "3.1.0"
+  failures << "OpenAPI YAML 模板必须是 OAS 3.1 文档"
+end
+%w[pipeline stage status owner].each do |field|
+  failures << "OpenAPI YAML 模板不得把生命周期元数据写入根字段: #{field}" if document.is_a?(Hash) && document.key?(field)
+end
+
+PROJECTION_ROOTS.each do |root|
+  failures << "已移除的 yss-openapi 仍存在: #{root}/yss-openapi" if ROOT.join(root, "yss-openapi").exist?
+end
+
+lock = JSON.parse(ROOT.join("skills-lock.json").read)
+if lock.dig("skills", "shared", "yss-openapi")
+  failures << "skills-lock.json 仍登记 yss-openapi"
+end
+
+public_skills = JSON.parse(ROOT.join("yss-public-skills.json").read)
+if public_skills.fetch("skills").include?("yss-openapi")
+  failures << "yss-public-skills.json 仍公开 yss-openapi"
+end
+
+router = ROOT.join(".agents/skills/yss-router/references/router-contract.yaml").read
+removed_skill_pattern = /(?<![a-z0-9-])yss-openapi(?![a-z0-9-])/
+failures << "Router 仍路由到 yss-openapi" if router.match?(removed_skill_pattern)
+failures << "Router 脚手架合同仍允许旧 OpenAPI 基线" if router.include?("smart_doc_baseline")
+unless router.include?("api-integration:\n    when_regeneration: [yss-openapi-governance]")
+  failures << "Router 未将客户端重新生成路由到 yss-openapi-governance"
+end
+
+lifecycle_contract = ROOT.join(".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml").read
+failures << "Lifecycle 脚手架合同仍允许旧 OpenAPI 基线" if lifecycle_contract.include?("smart_doc_baseline")
+lifecycle_skill = ROOT.join(".agents/skills/yss-product-lifecycle/SKILL.md").read
+failures << "Lifecycle 说明仍保留旧 OpenAPI 基线" if lifecycle_skill.match?(/smart[ -]?doc/i)
+implementation_routing_template = ROOT.join("docs/templates/implementation-routing-template.md").read
+failures << "实现路由模板仍保留旧 OpenAPI 基线" if implementation_routing_template.match?(/smart[ -]?doc/i)
+
+scaffold_pom = ROOT.join(".agents/skills/yss-ddd-scaffold-generator/assets/templates/pom/bootstrap-pom.xml.template").read
+failures << "后端脚手架仍包含 smart-doc Maven 插件" if scaffold_pom.include?("smart-doc-maven-plugin")
+failures << "后端脚手架仍保留 smart-doc 配置模板" if ROOT.join(".agents/skills/yss-ddd-scaffold-generator/assets/templates/config/smart-doc.json.template").exist?
+
+scaffold_generator = ROOT.join(".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.py").read
+failures << "后端脚手架生成器仍生成 smart-doc 配置" if scaffold_generator.include?("smart-doc.json") || scaffold_generator.include?("smart-doc-maven-plugin")
+
+governance = ROOT.join(".agents/skills/yss-openapi-governance/SKILL.md").read
+%w[YAML-first 唯一权威 redocly\ bundle --ext\ json operationId].each do |marker|
+  failures << "OpenAPI Governance 缺少 YAML-first JSON 派生规则: #{marker}" unless governance.include?(marker)
+end
+failures << "OpenAPI Governance 仍依赖 smart-doc" if governance.include?("smart-doc")
+%w[pnpm\ generate:api orval.config unsafeDisableValidation].each do |marker|
+  failures << "OpenAPI Governance 越界到前端代码生成或 Orval 配置: #{marker}" if governance.include?(marker)
+end
+
+api_integration = ROOT.join(".agents/skills/yss-api-integration/SKILL.md").read
+%w[冻结的\ OpenAPI\ YAML redocly\ bundle 原样物化 既有前端代码生成流程].each do |marker|
+  failures << "API Integration 缺少冻结 JSON 的下游交接规则: #{marker}" unless api_integration.include?(marker)
+end
+failures << "API Integration 仍引用 yss-openapi" if api_integration.match?(removed_skill_pattern)
+%w[docs/.scratch/<feature>/api/<feature>.json SHA-256 受控交接].each do |marker|
+  failures << "API Integration 未绑定治理 JSON 派生物: #{marker}" unless api_integration.include?(marker)
+end
+%w[orval.config unsafeDisableValidation].each do |marker|
+  failures << "API Integration 越界要求修改或核验 Orval 配置: #{marker}" if api_integration.include?(marker)
+end
+
+frontend_scaffold = ROOT.join(".agents/skills/yss-frontend-scaffold-generator/SKILL.md").read
+failures << "前端脚手架仍接受任意 openapi_source" if frontend_scaffold.include?("openapi_source")
+%w[OpenAPI\ Freeze\ 记录 OpenAPI\ JSON\ 派生记录 SHA-256 openapi/openapi.json 既有前端代码生成流程].each do |marker|
+  failures << "前端脚手架未绑定冻结 JSON 交接: #{marker}" unless frontend_scaffold.include?(marker)
+end
+%w[配置并读取实际\ `orval.config.*` unsafeDisableValidation].each do |marker|
+  failures << "前端脚手架越界修改或核验既有 Orval 配置: #{marker}" if frontend_scaffold.include?(marker)
+end
+
+export_record = ROOT.join("docs/api/templates/openapi-json-export-record-template.md")
+failures << "缺少 OpenAPI JSON 派生记录模板" unless export_record.file?
+if export_record.file?
+  export_record_text = export_record.read
+  %w[Orval\ 输入路径 orval.config unsafeDisableValidation pnpm\ generate:api].each do |marker|
+    failures << "JSON 派生记录越界记录前端 Orval 配置或执行: #{marker}" if export_record_text.include?(marker)
+  end
+end
+
+freeze_record = ROOT.join("docs/api/templates/openapi-freeze-record-template.md")
+%w[orval.config unsafeDisableValidation].each do |marker|
+  failures << "OpenAPI Freeze 记录越界规定 Orval 配置: #{marker}" if freeze_record.read.include?(marker)
+end
+
+draft_checklist = ROOT.join("docs/api/templates/openapi-draft-review-checklist.md")
+failures << "Draft 评审清单越界要求 Orval 输入路径" if draft_checklist.read.include?("Orval 输入路径")
+
+unless failures.empty?
+  warn failures.join("\n")
+  exit 1
+end
+
+puts "OpenAPI YAML-first 场景验证通过"

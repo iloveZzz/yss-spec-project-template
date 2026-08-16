@@ -38,6 +38,7 @@ OBSOLETE_SKILLS = %w[
   yss-quality
   yss-sql-condition
   yss-sql-tpl
+  yss-openapi
 ].freeze
 
 def skill_names(root)

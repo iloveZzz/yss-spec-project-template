@@ -115,7 +115,7 @@ scaffold_work_unit_policy:
   scope: pre_business_code_generation
   required: [approved_scaffold_contract, primary_yss_skill, allowed_write_paths, expected_evidence_files, verification_commands]
   controlled_generation:
-    allowed_for: [project_scaffold, pom, mechanical_config, wrapper, smart_doc_baseline]
+    allowed_for: [project_scaffold, pom, mechanical_config, wrapper]
     forbidden_when: [business_behavior, business_fields, business_state, permission, transaction, complex_query, error_mapping, business_example_crud]
   on_violation: blocked
 

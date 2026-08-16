@@ -5,19 +5,19 @@ description: Use when reviewing a `docs/.scratch/<feature>/api/` OpenAPI Draft b
 
 # YSS OpenAPI Draft Review
 
-Use this skill after OpenAPI Draft creation and before Engineering Baseline / YSS DDD Review. It is a fail-closed contract review skill for design-time OpenAPI files under `docs/.scratch/<feature>/api/`; it is not the smart-doc / Orval generation workflow.
+Use this skill after OpenAPI Draft creation and before Engineering Baseline / YSS DDD Review. It is a fail-closed contract review skill for design-time OpenAPI files under `docs/.scratch/<feature>/api/`; it does not bundle JSON or generate Orval clients.
 
 ## Required Inputs
 
-- OpenAPI Draft under `docs/.scratch/<feature>/api/<feature>.yaml`.
+- OpenAPI Draft under `docs/.scratch/<feature>/api/<feature>.yaml`，作为唯一权威的单一 OAS 3.1 YAML document；生命周期元数据和 Freeze 决策位于相邻 Markdown 记录。
 - Calibrated Spec.
 - Interaction spec / prototype review when UI exists.
 - YSS engineering baseline rules, especially `SingleResult<T>`, `MultiResult<T>`, and `PageResult<T>`.
 
 ## Review Flow
 
-1. Consume fresh automated evidence for YAML parsing, `$ref`, path parameters, and lint. Generate it once with the Draft or when the Draft changes; do not manually repeat unchanged structural checks.
-2. Build a P0 traceability matrix from Spec functional requirements and interaction actions to OpenAPI paths, schemas, errors, and contract tests.
+1. Consume fresh automated evidence for YAML parsing, single-document OAS 3.1 shape, `$ref`, path parameters, and lint. Generate it once with the Draft or when the Draft changes; do not manually repeat unchanged structural checks.
+2. Build a P0 traceability matrix from Spec functional requirements and interaction actions to OpenAPI paths, schemas, errors, and contract tests. Each UI action must map to a stable `operationId` and `x-yss-action-key` or an equivalent traceability entry.
 3. Check page action coverage: every action has `actionKey`, endpoint or explicit non-goal, permission behavior, state transition, idempotency/concurrency rule, and error codes.
 4. Check object lifecycle coverage: manage/maintain/configure/create/update/archive/retry/cancel/publish/export/create-draft semantics have endpoints or explicit scope downgrades.
 5. Check YSS API baseline: REST shape, `SingleResult<T>` for single objects, `MultiResult<T>` for non-page lists, `PageResult<T>` for pagination, and stable DTO/schema names.
@@ -27,7 +27,7 @@ Use this skill after OpenAPI Draft creation and before Engineering Baseline / YS
 
 ## Automation Boundary
 
-- Automated checks own YAML syntax, `$ref` resolution, path-parameter consistency, OpenAPI lint, and stable machine-checkable style rules.
+- Automated checks own YAML single-document syntax, `$ref` resolution, path-parameter consistency, OpenAPI lint, and stable machine-checkable style rules.
 - Human or independent semantic review owns P0 traceability, page-action coverage, permission and error behavior, concurrency/idempotency, security red lines, scope downgrades, and contract-test seams.
 - Fresh passing automation evidence may be referenced by the semantic review; copying the same findings into a second checklist is unnecessary.
 - Re-run structural automation only when the Draft, ruleset, or referenced schema changes.
@@ -42,6 +42,7 @@ Block if any of these are true:
 - Pagination does not align with YSS `PageResult<T>` or documented exception.
 - Draft has no contract test seam for import, mapping coverage, validation, review, publish, export, permission, and optimistic locking.
 - Security red lines are unmarked or the Draft exposes execution endpoints for SQL/DDL migration.
+- YAML contains lifecycle frontmatter / root metadata, or the proposed JSON client input is not explicitly deferred until Freeze and governance export.
 
 ## Output Contract
 
@@ -68,7 +69,7 @@ Block if any of these are true:
 - <minimum contract tests before OpenAPI Freeze>
 
 ### Next Action
-- <return to OpenAPI Draft / enter Engineering Baseline / architecture design>
+- <return to OpenAPI Draft / enter Engineering Baseline / architecture design / request YAML-to-JSON export after Freeze>
 ```
 
 Prefer `docs/api/templates/openapi-draft-review-checklist.md` when a tabular checklist is useful.

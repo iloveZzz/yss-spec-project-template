@@ -223,7 +223,7 @@ owner: ai
 | 前置 | `prototype_confirmation`、工程基线、实现仓库和脚手架目标已确认；Router 脚手架合同 draft 已经生命周期批准并持久化为结构化 JSON，生成器通过 `--contract-file` 消费 |
 | 生成器 | `yss-ddd-scaffold-generator` |
 | 模式 | `controlled-generation` |
-| 允许生成 | Domain / Application / Infrastructure / Adapter / Bootstrap 目录骨架、POM、配置、Wrapper、Smart Doc 和非业务机械模板 |
+| 允许生成 | Domain / Application / Infrastructure / Adapter / Bootstrap 目录骨架、POM、配置、Wrapper 和非业务机械模板 |
 | 禁止生成 | 业务规则、状态机、权限、事务、复杂查询、错误映射、业务字段和用户可见行为 |
 | 生成选项 | 关闭 `--with-example`；非空目录 `--force` 默认阻断，覆盖范围、备份、回滚点和批准引用齐全后才能单独审查 |
 | 验证 | 受控验证器实际执行项目根目录 `./mvnw validate`、`./mvnw test`、`./mvnw package`，逐条记录 `exit_code`、`duration_ms`、stdout/stderr 引用和执行时间；打印命令不算证据 |

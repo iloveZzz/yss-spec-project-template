@@ -44,6 +44,8 @@ required_files=(
   "scripts/verify-prototype-backend-scaffold-scenarios"
   "scripts/verify-matt-yss-integration-scenarios"
   "scripts/verify-yss-ui-scenarios"
+  "scripts/verify-openapi-yaml-first-scenarios"
+  "scripts/verify-openapi-json-handoff-scenarios"
 )
 
 required_skills=(
@@ -120,8 +122,11 @@ lock.fetch("skills", {}).fetch("shared", {}).each do |skill_name, metadata|
 end
 
 openapi_path = root.join("docs/templates/openapi-spec-template.yaml")
-openapi_text = openapi_path.binread.force_encoding("UTF-8").sub(/\A---\n.*?\n---\n/m, "")
-YAML.safe_load(openapi_text, permitted_classes: [], aliases: true)
+documents = YAML.load_stream(openapi_path.binread.force_encoding("UTF-8"))
+unless documents.length == 1 && documents.first.is_a?(Hash) && documents.first["openapi"] == "3.1.0"
+  warn "docs/templates/openapi-spec-template.yaml 必须是单一 OAS 3.1 YAML document"
+  exit 1
+end
 RUBY
 
 scripts/sync-skills --check
@@ -133,6 +138,8 @@ scripts/verify-prototype-backend-scaffold-scenarios
 ruby scripts/verify-matt-yss-integration-scenarios
 scripts/verify-yss-router-scenarios
 scripts/verify-yss-ui-scenarios
+scripts/verify-openapi-yaml-first-scenarios
+scripts/verify-openapi-json-handoff-scenarios
 
 ruby <<'RUBY'
 # encoding: UTF-8
@@ -161,7 +168,8 @@ obsolete_names = [
   "obsidian-vault",
   "writing-great-skills",
   "code-review-process",
-  "yss-domain-modeling"
+  "yss-domain-modeling",
+  "yss-openapi"
 ].freeze
 
 agent_roots.each do |agent_root|

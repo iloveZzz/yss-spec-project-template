@@ -321,9 +321,6 @@ class ScaffoldGenerator:
         required_files = [
             self.project_root / "pom.xml",
             self.project_root / f"{self.project_name}-bootstrap" / "pom.xml",
-            self.project_root
-            / f"{self.project_name}-bootstrap"
-            / "src/main/resources/smart-doc.json",
             self.project_root / "mvnw",
             self.project_root / ".yss/scaffold-generation.json",
         ]
@@ -331,9 +328,7 @@ class ScaffoldGenerator:
         if missing:
             raise FileNotFoundError(f"生成产物缺失: {', '.join(missing)}")
 
-        smart_doc_path = required_files[2]
-        json.loads(smart_doc_path.read_text(encoding="utf-8"))
-        manifest = json.loads(required_files[4].read_text(encoding="utf-8"))
+        manifest = json.loads(required_files[3].read_text(encoding="utf-8"))
         if (
             manifest.get("contract_id") != self.contract_id
             or manifest.get("contract_version") != self.contract_version
@@ -343,14 +338,6 @@ class ScaffoldGenerator:
             != ["./mvnw validate", "./mvnw test", "./mvnw package"]
         ):
             raise ValueError("脚手架生成元数据清单与当前批准合同或固定验证命令不一致")
-        bootstrap_pom = required_files[1].read_text(encoding="utf-8")
-        plugin_versions = re.findall(
-            r"<artifactId>smart-doc-maven-plugin</artifactId>\s*<version>([^<]+)</version>",
-            bootstrap_pom,
-        )
-        if plugin_versions != ["yss-4.0.0"]:
-            raise ValueError("smart-doc-maven-plugin 必须且只能使用 yss-4.0.0")
-
         binary_suffixes = {".class", ".db", ".jar", ".png", ".jpg", ".jpeg", ".gif"}
         for path in self.project_root.rglob("*"):
             if not path.is_file() or path.suffix in binary_suffixes:
@@ -452,17 +439,10 @@ class ScaffoldGenerator:
                 / f"{self.project_name}-bootstrap"
                 / "src/main/resources/logback-spring.xml",
             ),
-            (
-                self.config_template_dir / "smart-doc.json.template",
-                self.project_root
-                / f"{self.project_name}-bootstrap"
-                / "src/main/resources/smart-doc.json",
-            ),
         ]
         self._render_and_write_templates(config_templates)
         print("  ✓ application.yml")
         print("  ✓ logback-spring.xml")
-        print("  ✓ smart-doc.json")
 
     def _generate_database_scripts(self):
         """只保留数据库目录布局，不生成业务表或初始化数据。"""

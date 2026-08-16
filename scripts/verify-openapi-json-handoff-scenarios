@@ -1,0 +1,270 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "digest"
+require "json"
+require "tmpdir"
+require "yaml"
+
+# This validates the YAML-to-JSON handoff contract rather than invoking
+# Redocly or any frontend generator. These fixtures prove that a JSON
+# derivative preserves the frozen OpenAPI semantics and can be handed to an
+# implementation repository as unchanged bytes.
+module OpenapiJsonHandoff
+  module_function
+
+  def validate!(source_yaml:, source_json:, materialized_json:, handoff:, **_unused)
+    validate_source_paths!(handoff)
+    assert!(handoff.fetch("freeze_status") == "approved", "OpenAPI Freeze 未批准")
+    assert!(handoff.fetch("export_status") == "exported", "JSON 导出未完成")
+    assert!(!handoff.fetch("freeze_record").to_s.empty?, "缺少 OpenAPI Freeze 记录")
+    assert!(!handoff.fetch("export_record").to_s.empty?, "缺少 OpenAPI JSON 派生记录")
+
+    yaml_documents = YAML.load_stream(File.binread(source_yaml).force_encoding("UTF-8"))
+    assert!(yaml_documents.length == 1, "YAML 必须是单一 document")
+    assert!(yaml_documents.first.is_a?(Hash) && yaml_documents.first["openapi"] == "3.1.0", "YAML 必须是 OAS 3.1")
+
+    json_document = JSON.parse(File.binread(source_json))
+    assert!(json_document["openapi"] == "3.1.0", "JSON 必须是 OAS 3.1")
+    validate_operation_contract!(yaml_documents.first, json_document)
+    validate_json_refs!(json_document)
+    assert!(Digest::SHA256.file(source_yaml).hexdigest == handoff.fetch("yaml_sha256"), "YAML SHA-256 不匹配")
+    assert!(Digest::SHA256.file(source_json).hexdigest == handoff.fetch("json_sha256"), "JSON SHA-256 不匹配")
+    assert!(Digest::SHA256.file(materialized_json).hexdigest == handoff.fetch("json_sha256"), "前端物化 JSON 与导出记录不一致")
+
+    bundle_command = handoff.fetch("bundle_command")
+    %w[pnpm\ exec\ redocly\ bundle --ext\ json --component-renaming-conflicts-severity=error].each do |marker|
+      assert!(bundle_command.include?(marker), "bundle 命令缺少 #{marker}")
+    end
+    assert!(bundle_command.include?(handoff.fetch("source_yaml")), "bundle 命令未使用冻结 YAML")
+    assert!(bundle_command.include?(handoff.fetch("source_json")), "bundle 命令未写入记录的 JSON")
+    assert!(!bundle_command.match?(/(?:\bmvn\b|smart[ _-]?doc)/i), "bundle 命令包含已移除的 Maven OpenAPI 链路")
+
+  end
+
+  def validate_operation_contract!(yaml_document, json_document)
+    yaml_operations = operation_contracts(yaml_document)
+    json_operations = operation_contracts(json_document)
+    assert!(!yaml_operations.empty?, "YAML 缺少可生成客户端的操作")
+    assert!(yaml_operations == json_operations, "JSON 未保留 YAML 的路径、方法、operationId、请求或响应契约")
+    ids = yaml_operations.values.map { |contract| contract.fetch("operationId") }
+    assert!(ids.all? { |operation_id| operation_id.is_a?(String) && !operation_id.empty? }, "operationId 必须为非空字符串")
+    assert!(ids.uniq.length == ids.length, "operationId 必须唯一")
+  end
+
+  def operation_contracts(document)
+    methods = %w[get put post delete options head patch trace]
+    paths = document.fetch("paths", {})
+    paths.each_with_object({}) do |(path, path_item), operations|
+      next unless path_item.is_a?(Hash)
+
+      path_item.each do |method, operation|
+        next unless methods.include?(method.to_s.downcase) && operation.is_a?(Hash)
+
+        operations["#{method.to_s.upcase} #{path}"] = {
+          "operationId" => operation["operationId"],
+          "parameters" => operation.fetch("parameters", []),
+          "requestBody" => operation["requestBody"],
+          "responses" => operation.fetch("responses", {})
+        }
+      end
+    end
+  end
+
+  def validate_json_refs!(document)
+    refs = []
+    collect_refs(document, refs)
+    refs.each do |ref|
+      assert!(ref.start_with?("#/"), "JSON 不得包含外部或远程 $ref: #{ref}")
+      resolve_json_pointer!(document, ref)
+    end
+  end
+
+  def collect_refs(value, refs)
+    case value
+    when Hash
+      refs << value["$ref"] if value["$ref"].is_a?(String)
+      value.each_value { |child| collect_refs(child, refs) }
+    when Array
+      value.each { |child| collect_refs(child, refs) }
+    end
+  end
+
+  def resolve_json_pointer!(document, ref)
+    ref.delete_prefix("#/").split("/").reduce(document) do |node, segment|
+      key = segment.gsub("~1", "/").gsub("~0", "~")
+      assert!(node.is_a?(Hash) && node.key?(key), "JSON $ref 无法解析: #{ref}")
+      node.fetch(key)
+    end
+  end
+
+  def validate_source_paths!(handoff)
+    yaml_path = handoff.fetch("source_yaml")
+    json_path = handoff.fetch("source_json")
+    match = %r{\Adocs/\.scratch/([^/]+)/api/([^/]+)\.yaml\z}.match(yaml_path)
+    assert!(!match.nil? && match[1] == match[2], "冻结 YAML 路径不符合 feature 约定")
+    assert!(json_path == "docs/.scratch/#{match[1]}/api/#{match[2]}.json", "JSON 必须与冻结 YAML 同 feature 同目录")
+  end
+
+  def assert!(condition, message)
+    raise ArgumentError, message unless condition
+  end
+end
+
+def build_context(root)
+  feature = "order"
+  api_dir = File.join(root, "docs", ".scratch", feature, "api")
+  frontend_dir = File.join(root, "frontend", "openapi")
+  Dir.mkdir(File.join(root, "docs"))
+  Dir.mkdir(File.join(root, "docs", ".scratch"))
+  Dir.mkdir(File.join(root, "docs", ".scratch", feature))
+  Dir.mkdir(api_dir)
+  Dir.mkdir(File.join(root, "frontend"))
+  Dir.mkdir(frontend_dir)
+
+  source_yaml = File.join(api_dir, "#{feature}.yaml")
+  source_json = File.join(api_dir, "#{feature}.json")
+  materialized_json = File.join(frontend_dir, "openapi.json")
+  File.write(source_yaml, <<~YAML)
+    openapi: 3.1.0
+    info:
+      title: Order API
+      version: 1.0.0
+    paths:
+      /api/v1/orders/{orderId}:
+        get:
+          operationId: getOrder
+          parameters:
+            - name: orderId
+              in: path
+              required: true
+              schema:
+                type: string
+          responses:
+            '200':
+              description: success
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Order'
+    components:
+      schemas:
+        Order:
+          type: object
+          required: [id]
+          properties:
+            id:
+              type: string
+  YAML
+  json_document = {
+    "openapi" => "3.1.0",
+    "info" => { "title" => "Order API", "version" => "1.0.0" },
+    "paths" => {
+      "/api/v1/orders/{orderId}" => {
+        "get" => {
+          "operationId" => "getOrder",
+          "parameters" => [{ "name" => "orderId", "in" => "path", "required" => true, "schema" => { "type" => "string" } }],
+          "responses" => {
+            "200" => {
+              "description" => "success",
+              "content" => { "application/json" => { "schema" => { "$ref" => "#/components/schemas/Order" } } }
+            }
+          }
+        }
+      }
+    },
+    "components" => {
+      "schemas" => {
+        "Order" => {
+          "type" => "object",
+          "required" => ["id"],
+          "properties" => { "id" => { "type" => "string" } }
+        }
+      }
+    }
+  }
+  File.write(source_json, JSON.generate(json_document))
+  File.binwrite(materialized_json, File.binread(source_json))
+
+  source_yaml_path = "docs/.scratch/#{feature}/api/#{feature}.yaml"
+  source_json_path = "docs/.scratch/#{feature}/api/#{feature}.json"
+  handoff = {
+    "freeze_status" => "approved",
+    "export_status" => "exported",
+    "freeze_record" => "docs/.scratch/#{feature}/api/#{feature}-freeze.md",
+    "export_record" => "docs/.scratch/#{feature}/api/#{feature}-json-export.md",
+    "source_yaml" => source_yaml_path,
+    "source_json" => source_json_path,
+    "yaml_sha256" => Digest::SHA256.file(source_yaml).hexdigest,
+    "json_sha256" => Digest::SHA256.file(source_json).hexdigest,
+    "bundle_command" => "pnpm exec redocly bundle #{source_yaml_path} --output #{source_json_path} --ext json --component-renaming-conflicts-severity=error"
+  }
+  {
+    source_yaml: source_yaml,
+    source_json: source_json,
+    materialized_json: materialized_json,
+    handoff: handoff
+  }
+end
+
+def expect_rejected(label)
+  yield
+  raise "负向场景未被阻断: #{label}"
+rescue ArgumentError
+  true
+end
+
+Dir.mktmpdir("openapi-handoff-") do |root|
+  context = build_context(root)
+  OpenapiJsonHandoff.validate!(**context)
+
+  expect_rejected("Draft 不能导出") do
+    OpenapiJsonHandoff.validate!(**context.merge(handoff: context.fetch(:handoff).merge("freeze_status" => "draft")))
+  end
+
+  expect_rejected("Maven 链路不能作为导出命令") do
+    OpenapiJsonHandoff.validate!(**context.merge(handoff: context.fetch(:handoff).merge("bundle_command" => "mvn package")))
+  end
+
+  expect_rejected("运行时 URL 不能替代治理 JSON") do
+    OpenapiJsonHandoff.validate!(**context.merge(handoff: context.fetch(:handoff).merge("source_json" => "https://example.invalid/openapi.json")))
+  end
+
+  original_json = File.binread(context.fetch(:source_json))
+
+  changed_operation = JSON.parse(original_json)
+  changed_operation.fetch("paths").fetch("/api/v1/orders/{orderId}").fetch("get")["operationId"] = "getOtherOrder"
+  File.write(context.fetch(:source_json), JSON.generate(changed_operation))
+  expect_rejected("JSON 必须保留冻结 YAML 的 operationId") do
+    OpenapiJsonHandoff.validate!(**context.merge(handoff: context.fetch(:handoff).merge("json_sha256" => Digest::SHA256.file(context.fetch(:source_json)).hexdigest)))
+  end
+
+  invalid_ref = JSON.parse(original_json)
+  invalid_ref.fetch("paths").fetch("/api/v1/orders/{orderId}").fetch("get").fetch("responses").fetch("200").fetch("content").fetch("application/json").fetch("schema")["$ref"] = "#/components/schemas/Missing"
+  File.write(context.fetch(:source_json), JSON.generate(invalid_ref))
+  expect_rejected("JSON $ref 必须可解析") do
+    OpenapiJsonHandoff.validate!(**context.merge(handoff: context.fetch(:handoff).merge("json_sha256" => Digest::SHA256.file(context.fetch(:source_json)).hexdigest)))
+  end
+
+  changed_response = JSON.parse(original_json)
+  changed_response.fetch("paths").fetch("/api/v1/orders/{orderId}").fetch("get").fetch("responses").fetch("200").fetch("content").fetch("application/json").fetch("schema")["$ref"] = "#/components/schemas/ChangedOrder"
+  changed_response.fetch("components").fetch("schemas")["ChangedOrder"] = { "type" => "string" }
+  File.write(context.fetch(:source_json), JSON.generate(changed_response))
+  expect_rejected("JSON 必须保留冻结 YAML 的请求和响应契约") do
+    OpenapiJsonHandoff.validate!(**context.merge(handoff: context.fetch(:handoff).merge("json_sha256" => Digest::SHA256.file(context.fetch(:source_json)).hexdigest)))
+  end
+
+  File.binwrite(context.fetch(:source_json), original_json)
+  File.write(context.fetch(:materialized_json), "{\"openapi\":\"3.1.0\",\"paths\":{\"/tampered\":{}}}")
+  expect_rejected("前端 JSON 被手改") do
+    OpenapiJsonHandoff.validate!(**context)
+  end
+
+  File.binwrite(context.fetch(:materialized_json), original_json)
+  File.write(context.fetch(:source_json), "{\"openapi\":\"3.1.0\",\"paths\":{\"/tampered-source\":{}}}")
+  expect_rejected("治理 JSON 被手改") do
+    OpenapiJsonHandoff.validate!(**context)
+  end
+end
+
+puts "OpenAPI YAML-first JSON handoff scenarios passed"

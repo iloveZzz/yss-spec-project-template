@@ -62,7 +62,7 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 - `yss-ddd-scaffold-generator` 必须读取已持久化的结构化脚手架合同 JSON，并校验 `status=approved`、当前版本、主 skill、`controlled-generation` 和固定验证命令；只传任意字符串引用不得放行。
 - 生成项目必须包含 `.yss/scaffold-generation.json`，回勾实际使用的合同 ID、版本、Router draft 引用、生命周期批准引用、持久化引用、生成输入、受控模式和固定验证命令；元数据清单缺失或过期时阻断后续 Router。
 - 三条 `./mvnw` 命令必须由受控工作单元真实执行，并记录每条命令的 `exit_code`、`duration_ms`、stdout/stderr 引用和执行时间；生成器打印的命令、输出目录存在或“生成成功”都不构成验证证据。
-- 脚手架只生成多模块工程结构、POM、配置、Wrapper、Smart Doc 和经验证的机械模板；不得生成或承载领域规则、状态机、权限、事务、复杂查询、错误映射或用户可见业务行为。
+- 脚手架只生成多模块工程结构、POM、配置、Wrapper 和经验证的机械模板；不得生成或承载领域规则、状态机、权限、事务、复杂查询、错误映射或用户可见业务行为。
 - 该生命周期脚手架工作单元必须关闭 `--with-example`，不得把 User CRUD 或业务字段伪装成样板；目标目录非空时 `--force` 默认阻断，只有覆盖范围、备份、回滚点和明确批准全部进入合同后才能另行审查。
 - `scaffold_status=existing` 或 `initialized` 时不重复全量生成，但仍须完成 `yss-backend-scaffold-parent` 基线证据、Wrapper 校验和 `yss-router` 合同重编译。
 - 脚手架完成不等于实现仓库接入、架构放行、契约批准或 `ready-for-agent`。后续每一个 Agent / generator 写入的后端代码都必须绑定批准合同和对应 YSS skill；业务行为只能使用 `behavior-tdd`，机械生成才可使用 `controlled-generation`。

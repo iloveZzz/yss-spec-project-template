@@ -84,7 +84,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 | 表单 schema | `yss-formily` |
 | YTable / YTree / 高度自适应 | `yss-components` / `yss-use-table-height` / `yss-use-tree-height` |
 | Ant Design v6 组件 / token / demo 查询 | 官方 `@ant-design/cli` / `https://ant.design/docs/react/for-agents` |
-| API 契约 / 接入 | `api-integration` / `yss-openapi` |
+| API 契约 / 接入 | `yss-openapi-governance` / `api-integration` |
 
 ## 更新设计系统
 

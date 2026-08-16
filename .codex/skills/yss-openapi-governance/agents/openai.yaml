@@ -1,4 +1,4 @@
 interface:
   display_name: "YSS OpenAPI Governance"
-  short_description: "Lint and govern YSS OpenAPI drafts"
-  default_prompt: "Use $yss-openapi-governance to lint and govern a YSS OpenAPI draft before freeze."
+  short_description: "Govern YAML-first OpenAPI and export frozen JSON"
+  default_prompt: "Use $yss-openapi-governance to govern an OpenAPI YAML Draft, freeze it, and export its reviewed JSON derivative."

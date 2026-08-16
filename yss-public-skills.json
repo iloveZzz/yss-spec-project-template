@@ -28,7 +28,6 @@
     "yss-log",
     "yss-microapp-commit",
     "yss-mybatis",
-    "yss-openapi",
     "yss-openapi-draft-review",
     "yss-openapi-governance",
     "yss-page-module-development",
@@ -99,7 +98,6 @@
       "description": "用于 YSS API 设计、审查、治理和生成集成的技能。",
       "skills": [
         "yss-api-integration",
-        "yss-openapi",
         "yss-openapi-draft-review",
         "yss-openapi-governance"
       ]

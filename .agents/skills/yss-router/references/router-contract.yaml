@@ -91,7 +91,7 @@ scaffold_contract_schema:
   work_unit:
     required: [id, behavior, primary_skill, supporting_skills, tdd_mode, allowed_write_paths, expected_evidence, verification_commands, controlled_generation]
   generation_boundary:
-    allowed_for: [project_scaffold, pom, mechanical_config, wrapper, smart_doc_baseline]
+    allowed_for: [project_scaffold, pom, mechanical_config, wrapper]
     forbidden_when: [business_behavior, business_fields, business_state, permission, transaction, complex_query, error_mapping, business_example_crud]
   verification:
     commands: ["./mvnw validate", "./mvnw test", "./mvnw package"]
@@ -147,7 +147,7 @@ dependency_closure:
     when_form: [yss-formily]
     when_api: [api-integration]
   api-integration:
-    when_regeneration: [yss-openapi]
+    when_regeneration: [yss-openapi-governance]
 
 component_impact_values:
   - current-user-context

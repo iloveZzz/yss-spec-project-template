@@ -18,6 +18,7 @@ REMOVED_SKILLS = %w[
   yss-quality
   yss-sql-condition
   yss-sql-tpl
+  yss-openapi
 ].freeze
 
 class ExportYssSkillsTest < Minitest::Test
@@ -31,19 +32,19 @@ class ExportYssSkillsTest < Minitest::Test
       stdout, stderr, result = run_export(output)
 
       assert result.success?, "#{stdout}\n#{stderr}"
-      assert_equal 46, Dir.glob(output.join("skills", "*").to_s).count { |path| File.directory?(path) }
+      assert_equal 44, Dir.glob(output.join("skills", "*").to_s).count { |path| File.directory?(path) }
 
       manifest = JSON.parse(output.join(".yss-export-manifest.json").read)
-      assert_equal 46, manifest.fetch("skills").length
-      assert_operator manifest.fetch("generated_files_sha256").length, :>, 46
+      assert_equal 44, manifest.fetch("skills").length
+      assert_operator manifest.fetch("generated_files_sha256").length, :>, 44
       REMOVED_SKILLS.each do |skill_name|
         refute output.join("skills", skill_name).exist?, "removed skill was exported: #{skill_name}"
       end
 
       page = JSON.parse(output.join("skills.sh.json").read)
       grouped = page.fetch("groupings").flat_map { |group| group.fetch("skills") }
-      assert_equal 46, grouped.uniq.length
-      assert_equal 46, grouped.length
+      assert_equal 44, grouped.uniq.length
+      assert_equal 44, grouped.length
 
       exported_text = Dir.glob(output.join("skills", "**", "*").to_s)
         .select { |path| File.file?(path) }
@@ -51,7 +52,8 @@ class ExportYssSkillsTest < Minitest::Test
         .select(&:valid_encoding?)
         .join("\n")
       REMOVED_SKILLS.each do |skill_name|
-        refute_match(/\b#{Regexp.escape(skill_name)}\b/, exported_text, "removed skill is still referenced: #{skill_name}")
+        pattern = Regexp.new("(?<![a-z0-9-])#{Regexp.escape(skill_name)}(?![a-z0-9-])")
+        refute_match(pattern, exported_text, "removed skill is still referenced: #{skill_name}")
       end
 
       formily_examples = output.join("skills", "yss-formily", "references", "examples.md").read

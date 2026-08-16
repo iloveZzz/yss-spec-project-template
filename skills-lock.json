@@ -894,7 +894,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-api-integration/SKILL.md",
-        "effectiveHash": "ac7223a22d83bb0b0365534ab4772847e64cb439c82e8a1d4a0b1c15b3d50a69",
+        "effectiveHash": "fb6ccf48f016b6df63c3072fc771344c29a1523b5daf08f9512e7bbd79c6a3bc",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1029,7 +1029,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
-        "effectiveHash": "2dc2ac84fac2d4a3a1da433dcb863bd8f8c77dc559c584b688876ab2ff8fac05",
+        "effectiveHash": "52e39785b84170bde6f16ce263a64f92909c8ad191aaf1575bc864f6a1a3752a",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1044,7 +1044,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-design-system/SKILL.md",
-        "effectiveHash": "2626e379a57a197a87e97110eb805b68aae149b4e7388c15dab2b7a2ca55ea26",
+        "effectiveHash": "b8bde50efcd0226b7bbdfd830e738a3cdb4d74d135e1b2af8715057d1557a9b0",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1179,7 +1179,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-frontend-scaffold-generator/SKILL.md",
-        "effectiveHash": "b61aa0fdbcd1026757efade8054b84a4f260f1bdf3b1f4d9b6a0315a4a933979",
+        "effectiveHash": "6b966c5824b80f5196c7fd8225238b3047d9e49f1f94c60179e4a567d82911f5",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1265,26 +1265,11 @@
           ".trae/skills"
         ]
       },
-      "yss-openapi": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/yss-openapi/SKILL.md",
-        "effectiveHash": "2283b86f5731d58d6138895f2418dd681abc49aa5b3b753b64ef3f7d0d87b690",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".codex/skills",
-          ".hermes/skills",
-          ".pi/skills",
-          ".qoder/skills",
-          ".trae/skills"
-        ]
-      },
       "yss-openapi-draft-review": {
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-openapi-draft-review/SKILL.md",
-        "effectiveHash": "674d1b60d4b6fc5f13814e4b0c109fe183a54e23865f853994c0d7065847d40c",
+        "effectiveHash": "6c715b724f8febc483bc9ed0bd1e77f8dec45c25c9a87724999b7d07c0d19240",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1299,7 +1284,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-openapi-governance/SKILL.md",
-        "effectiveHash": "9d34f131880fc517e163d2f73c93c8f141cc9d9411a6c015bd867d7085c4b31a",
+        "effectiveHash": "4f7d8a28ca4cc84cfbbe4d91b726053ab8f0035dc7f86ab5cc5ce44a5219c696",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1329,7 +1314,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "effectiveHash": "199a9f9422cdbb9e31d7517fa4ee9738e41e53a67188aeff9a0130d4f154f93a",
+        "effectiveHash": "1b7a2bdda9762264e1bc0c27c2e5335b2c5ac80c42d52c6fb0f2d8b007c73e7a",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1374,7 +1359,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-router/SKILL.md",
-        "effectiveHash": "5f19ae24070a93bae92fcd8731857e9a57027c27970106eb82498484f8524008",
+        "effectiveHash": "55e2d5d14ba2e8b7c2e4252bf22568eaab20989515a0d4d4bfdf9a0cd5641f23",
         "targets": [
           ".agents/skills",
           ".claude/skills",

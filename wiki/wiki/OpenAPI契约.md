@@ -6,4 +6,4 @@ OpenAPI Freeze 指已通过评审、可作为前后端实现和契约测试输�
 
 OpenAPI 契约文件存放于 `docs/api/specs/`，评审检查清单与 Freeze 记录模板见 `docs/api/templates/`。OpenAPI Freeze 或无 API 影响记录完成后，使用 `to-tickets` 拆分成窄垂直切片（见 [[垂直切片Ticket]]）。OpenAPI Draft 属于待冻结资产，使用 `ready-for-human`；只有 Freeze 后的契约才支撑 `ready-for-agent` 的切片。
 
-YSS 的 OpenAPI 契约在实现后通过 `yss-openapi` 技能生成 OpenAPI JSON 并刷新前端 Orval API 客户端（见 [[YSS工程技能体系]]）。
+YSS 的 OpenAPI 契约以冻结的 OpenAPI 3.1 YAML 为唯一权威。`yss-openapi-governance` 使用锁定的 Redocly CLI 派生 JSON，随后由 `api-integration` 刷新前端 Orval API 客户端；JSON 与生成代码均不得手工修改（见 [[YSS工程技能体系]]）。

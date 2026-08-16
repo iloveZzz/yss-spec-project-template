@@ -45,36 +45,6 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <artifactId>smart-doc-maven-plugin</artifactId>
-                <version>yss-4.0.0</version>
-                <configuration>
-                    <configFile>src/main/resources/smart-doc.json</configFile>
-                    <includes>
-                        <!-- 如果配置了includes的情况下， 使用了jpa的分页需要include所使用的源码包 -->
-                        <include>com.yss.cloud:yss-component-dto</include>
-                        <include>com.yss.datamiddle:datamiddle-component-exception</include>
-                        <include>com.yss.datamiddle:datamiddle-component-cache-starter</include>
-                        <include>com.yss.datamiddle:valuation-outsourced-client</include>
-                        <include>com.yss.cloud:yss-component-dir-client</include>
-                        <include>com.yss.cloud:yss-component-dir</include>
-                        <include>com.yss.cloud:yss-component-dir-common</include>
-                        <include>com.yss.datamiddle:{{project_name}}-domain</include>
-                        <include>com.yss.datamiddle:{{project_name}}-infrastructure</include>
-                        <include>com.yss.datamiddle:{{project_name}}-domain</include>
-                    </includes>
-                    <projectName>${project.description}</projectName>
-                </configuration>
-                <groupId>com.github.shalousun</groupId>
-                <dependencies>
-                    <!-- 显式添加 commons-codec 依赖 -->
-                    <dependency>
-                        <groupId>commons-codec</groupId>
-                        <artifactId>commons-codec</artifactId>
-                        <version>1.15</version> <!-- 或与项目一致的版本 -->
-                    </dependency>
-                </dependencies>
-            </plugin>
         </plugins>
     </build>
 </project>

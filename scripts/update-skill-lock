@@ -37,6 +37,7 @@ OBSOLETE_SKILLS = %w[
   yss-quality
   yss-sql-condition
   yss-sql-tpl
+  yss-openapi
 ].freeze
 LOCK_GROUPS = %w[shared platform].freeze
 GIT_WORKTREE = system(

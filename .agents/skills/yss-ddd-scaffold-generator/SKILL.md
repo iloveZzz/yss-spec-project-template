@@ -26,7 +26,7 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 1. 确认项目名、基础包名、输出目录、数据库类型。
    Harness 内输出目录必须是 `apps/backend/` 容器，生成器再以 `project_name` 创建 `apps/backend/<project>/`；禁止使用 `app/backend/`、`app/frontend/` 或把 `apps/backend/` 之外的容器根当作后端项目根。
 2. 运行 `scripts/generate_scaffold.py` 生成骨架。
-3. 检查生成的模块名、POM、配置文件、Smart Doc 配置和包路径。
+3. 检查生成的模块名、POM、基础配置文件和包路径。
 4. 由生命周期受控工作单元在生成项目根目录实际执行 `./mvnw validate`、`./mvnw test` 和 `./mvnw package`；生成器打印的下一步命令不构成验证证据。
 5. 如需继续细化，再追加其他 YSS skill 补全领域、仓储和 Web。
 
@@ -57,7 +57,6 @@ python3 scripts/generate_scaffold.py \
 - `*-adapter`
 - `*-bootstrap`
 - 基础配置、机械模板、构建脚本
-- `bootstrap/src/main/resources/smart-doc.json` 基础配置
 
 ## 使用约束
 
@@ -70,8 +69,8 @@ python3 scripts/generate_scaffold.py \
 - 生成后要检查依赖关系是否仍符合分层约束。
 - 生成后必须继续使用 `yss-backend-scaffold-parent` 校验工程基线，再按垂直切片加载 `yss-domain`、`yss-repository`、`yss-web-controller` 等局部技能。
 - 当前脚手架第一阶段仅支持经过验证的 `mysql`；未提供完整模板和验证的数据库类型不得伪装成已支持。
-- 生成后的后端工程必须使用项目根目录 `./mvnw ...` 执行构建、测试、运行、OpenAPI 生成和 CI 验证；不得在 README、实施记录、Ticket、Review 或 Release 中默认写裸 `mvn ...`。既有仓库确实无法使用 wrapper 时，必须记录受控例外。
-- 原型确认后，`scaffold_status=required` 才能进入本 skill；本 skill 的生成边界是工程结构、POM、配置、Wrapper、Smart Doc 和机械模板，不是业务实现。
+- 生成后的后端工程必须使用项目根目录 `./mvnw ...` 执行构建、测试、运行和 CI 验证；不得在 README、实施记录、Ticket、Review 或 Release 中默认写裸 `mvn ...`。既有仓库确实无法使用 wrapper 时，必须记录受控例外。
+- 原型确认后，`scaffold_status=required` 才能进入本 skill；本 skill 的生成边界是工程结构、POM、配置、Wrapper 和机械模板，不是业务实现。
 - 脚手架合同必须携带 `contract_id`、`contract_version`、Router draft 引用、生命周期批准引用、持久化引用、当前版本、允许写路径、预期证据文件和验证命令；字段缺失或版本过期时阻断。
 - 运行生成器必须传入 `--contract-file`；生成器会校验合同 `status=approved`、`current_version`、`primary_skill`、`controlled-generation` 和固定三条验证命令，不接受仅凭任意字符串引用的放行。
 - 生成项目必须写入非业务元数据清单 `.yss/scaffold-generation.json`，回勾合同 ID、版本、批准引用、生成输入、受控模式和固定验证命令；清单缺失时不得交给后续 Router。
@@ -80,19 +79,6 @@ python3 scripts/generate_scaffold.py \
 - 脚手架完成后，所有后续生成的后端代码必须回到 `yss-router`，消费批准且版本当前的 Slice Implementation Contract 和对应 YSS skill；业务行为使用 `behavior-tdd`，机械生成才使用 `controlled-generation`。
 - `.mvn/settings.xml` 只能通过 `${env.MAVEN_REPO_USERNAME}` 和 `${env.MAVEN_REPO_PASSWORD}` 读取 Maven 仓库凭据；内部仓库构建前由 CI 或本地安全环境注入变量，禁止把 Maven 仓库用户名、明文密码或 Maven 加密密码写入 skill、模板或生成工程。
 - 涉及 API 契约时，先确认 `docs/.scratch/<feature>/api/<feature>.yaml` 中的 OpenAPI Draft / Freeze 状态；不要用脚手架生成结果反向替代产品契约设计。
-
-## Smart Doc 配置参考
-
-脚手架只生成不包含环境地址、Torna token 和业务项目名称的基础 `smart-doc.json`。参考真实项目配置时，仅提炼通用生成行为：
-
-- `allInOne: true`：生成单一 OpenAPI 文档。
-- `outPath: "target/openapi"`：生成文件输出到构建产物目录。
-- `packageFilters: "<base_package>.*"`：按 Smart Doc 的正则语义扫描当前服务的 Controller 包。
-- `componentType: "NORMAL"`：使用稳定的类名作为 schema 组件名。
-- `inlineEnum: true`、`recursionLimit: 7`：保持枚举展开和递归深度策略。
-- `requestExample`、`responseExample`、`createDebugPage` 默认关闭，避免把环境或示例数据带入契约产物。
-
-`serverUrl`、`debugEnvUrl`、`openUrl`、`appToken`、`revisionLogs` 属于具体环境或项目治理配置，必须在实现仓库中按实际契约补充，不能写入通用脚手架模板。
 
 ## 按需读取
 

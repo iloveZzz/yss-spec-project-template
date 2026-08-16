@@ -1,7 +1,7 @@
 # OpenAPI Draft 契约评审清单
 
 > 用于 API 影响分析 / 契约草案 / OpenAPI Draft 进入 Engineering Baseline / YSS DDD Review 之前。
-> OpenAPI Draft 在 OpenAPI Freeze 前仅用于评审和架构反审，不得作为前后端实现或生成客户端的稳定契约。
+> OpenAPI Draft 在 OpenAPI Freeze 前仅用于评审和架构反审，不得作为前后端实现或生成客户端的稳定契约。`<feature>.yaml` 必须是唯一权威的单一 OAS 3.1 YAML document；JSON 只能在 Freeze 后由受锁定工具派生。
 > 评审采用阻断项闭环：阻断项未关闭前，不进入架构 / 系统 / 数据架构设计。
 
 ## 输入资产
@@ -33,6 +33,7 @@
 |---|---|---|---|
 | Draft 成熟度 | 明确当前仅为 review-only；实现、生成 client、契约测试固化均等待 OpenAPI Freeze |  |  |
 | OpenAPI 语法 | YAML、`$ref`、path 参数、lint 通过 |  |  |
+| YAML 权威性 | 单一 OAS 3.1 document；未混入生命周期 frontmatter / 根字段；`operationId` 稳定 |  |  |
 | P0 覆盖 | 每个 P0 需求有 endpoint/schema/error/test 或明确非目标 |  |  |
 | 产品总体设计完整 | Draft 已依据 Spec 和产品总体设计 / 功能架构；缺产品总体设计时返回上游补齐 |  |  |
 | 交互输入完整 | 有 UI 时，Draft 已同时依据交互说明、原型/线框、状态矩阵、prototype-review、Ant Design v6 高保真 HTML 原型、AntD CLI 校验证据和用户确认记录；无 UI 时需说明页面 / 交互资产不适用原因 |  |  |
@@ -45,6 +46,7 @@
 | 乐观锁 / 幂等 | 草稿写入有 draftVersion；关键命令有幂等键 |  |  |
 | 风险 / 人工确认项 | 认证授权、SQL/DDL 草案、下载 URL、审计日志、敏感字段的验证证据和责任人已记录 |  |  |
 | 契约测试 | 导入、覆盖率、检查、评审、发布、导出、权限、冲突场景可测 |  |  |
+| JSON 派生准备 | 明确仅在 Freeze 后用锁定 Redocly CLI 生成 JSON；输出记录、SHA 和下游既有输入路径已定义 |  |  |
 
 ## 结论
 

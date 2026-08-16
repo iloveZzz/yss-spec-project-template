@@ -235,7 +235,7 @@ reference_markers = {
   ]
 }.freeze
 
-removed_skills = %w[code-review-process yss-domain-modeling]
+removed_skills = %w[code-review-process yss-domain-modeling yss-openapi]
 removed_skills.each do |skill_name|
   failures << "已移除 skill 仍存在: #{skill_name}" if ROOT.join(".agents/skills", skill_name).exist?
 end
@@ -250,7 +250,8 @@ tracked_policy_files = [
 tracked_policy_files.each do |relative_path|
   body = ROOT.join(relative_path).read
   removed_skills.each do |skill_name|
-    failures << "#{relative_path} 仍引用已移除 skill: #{skill_name}" if body.include?(skill_name)
+    pattern = Regexp.new("(?<![a-z0-9-])#{Regexp.escape(skill_name)}(?![a-z0-9-])")
+    failures << "#{relative_path} 仍引用已移除 skill: #{skill_name}" if body.match?(pattern)
   end
 end
 

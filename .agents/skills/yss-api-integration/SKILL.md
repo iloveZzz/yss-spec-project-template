@@ -18,10 +18,28 @@ description: Guide AI to correctly use Orval-generated API clients in Vue 3 micr
 
 1. **契约状态已明确**：
    - 已有生成客户端：可以直接集成。
-   - 新增或变更 API：必须先在 `docs/.scratch/<feature>/api/<feature>.yaml` 形成 OpenAPI Draft，经工程基线 / 架构 / Spec Delta 设计和设计审查后 Freeze，再进入生成和集成。
-   - 如果接口尚未冻结或生成函数不存在，先回到 `yss-product-lifecycle` / `yss-openapi`，不要手写临时路径、DTO 或响应结构。
-2. **API 已生成**：运行 `pnpm generate:api` 生成最新 API
-3. **了解 OpenAPI**：查看 `openapi/openapi.json` 了解接口定义
+   - 新增或变更 API：必须先在 `docs/.scratch/<feature>/api/<feature>.yaml` 形成 OpenAPI Draft，经工程基线 / 架构 / Spec Delta 设计和设计审查后 Freeze。冻结的 OpenAPI YAML 是唯一权威，JSON 仅为它的受控派生物。
+   - 如果接口尚未冻结、JSON 派生记录缺失或生成函数不存在，先回到 `yss-product-lifecycle` / `yss-openapi-governance`，不要手写临时路径、DTO 或响应结构。
+2. **API 已生成**：在目标前端实现仓库中，按其既有的手动代码生成命令（例如 `pnpm generate:api`）刷新 API；本 Harness 不配置、不执行该命令，也不把它加入 CI。
+3. **了解 OpenAPI**：查看 Freeze 记录、JSON 派生记录和 `openapi/openapi.json` 了解接口定义；不得把 JSON 或生成 TypeScript 当成可手改的源文件。
+
+## 契约输入与生成链
+
+客户端重新生成只能走下列受控链路：
+
+```text
+冻结的 OpenAPI YAML
+  → 锁定的 redocly bundle 生成 openapi.json
+  → 原样物化到目标前端
+  → 既有前端代码生成流程（由目标项目手动执行）
+  → 类型检查与调用方验证
+```
+
+1. 读取 `yss-openapi-governance` 产出的 OpenAPI Freeze 记录和 `docs/.scratch/<feature>/api/<feature>-json-export.md`；确认 YAML SHA-256、JSON SHA-256、Redocly CLI 版本、lockfile 引用和 JSON 校验均通过。治理 JSON 的唯一产物路径是 `docs/.scratch/<feature>/api/<feature>.json`。
+2. JSON 导出由 `yss-openapi-governance` 负责。`api-integration` 只接受该 skill 留下的派生记录；记录中的锁定 `redocly bundle` 命令是治理导出证据，不是前端集成任意重跑的入口。
+3. **受控交接**：若前端实现仓库需要本地输入，批准的 Cross-repo 子合同或项目脚本只能将上述治理 JSON 原样物化为 `<frontend>/openapi/openapi.json`；物化后的 SHA-256 必须与派生记录一致。禁止从 URL、Draft YAML、后端运行时或任意本地文件临时替换输入。
+4. `api-integration` 只核对 JSON 派生记录、交接路径和 SHA-256，并把原始 JSON 交给既有前端代码生成流程；本 Harness 不读取或修改目标前端的生成器配置，不在此仓库执行生成，也不建立生成 CI 门禁。若 JSON SHA 与派生记录不一致，停止交接并回到治理流程。
+5. 目标前端项目在需要时手动运行其既有生成命令、类型检查和受影响组件 / API 测试；将实际命令、结果、生成输入 SHA 和偏离写入 `YSS Skill Execution Result`。
 
 ## 📁 API 文件结构
 
@@ -329,7 +347,7 @@ const handleSubmit = async (payload: SubmitCmd) => {
 request.post("/api/v1/todo/guess", payload as any);
 ```
 
-✅ **正确做法**：确认 OpenAPI Draft/Freeze 状态；冻结后用 `yss-openapi` 刷新生成客户端，再从 `@/api/generated/api` 和 `@/api/generated/model` 导入。
+✅ **正确做法**：确认 OpenAPI Draft/Freeze 状态；Freeze 后先由 `yss-openapi-governance` 从 YAML 生成并记录 JSON，再运行 `pnpm generate:api`，最后从 `@/api/generated/api` 和 `@/api/generated/model` 导入。
 
 ### ❌ 错误 3：缺少错误处理
 
@@ -386,7 +404,7 @@ const fetchData = async () => {
    pnpm generate:api
    ```
 
-   生成前应确认 `docs/.scratch/<feature>/api/<feature>.yaml` 中的 OpenAPI Draft 已完成设计审查并 Freeze；生成动作本身优先交给 `yss-openapi`。
+   生成前应确认 `docs/.scratch/<feature>/api/<feature>.yaml` 中的 OpenAPI Draft 已完成设计审查并 Freeze，且 `yss-openapi-governance` 已用锁定的 `redocly bundle` 留下对应 JSON 派生记录；随后才运行 `pnpm generate:api`。
 
 2. **封装业务逻辑到 Hook**：
    - 将 API 调用封装在 `hooks/use{Name}Api.ts`
@@ -404,6 +422,6 @@ const fetchData = async () => {
 
 ## 阶段 7 合同
 
-- 只消费已冻结的 OpenAPI 生成客户端和批准后的 `Slice Implementation Contract`；实现中的半成品 backend 不得作为稳定 source of truth。
+- 只消费冻结的 OpenAPI YAML 派生出的 JSON、生成客户端和批准后的 `Slice Implementation Contract`；实现中的半成品 backend 不得作为稳定 source of truth。
 - 客户端重新生成属于 `controlled-generation`；页面请求状态、错误处理、权限和用户交互属于 `behavior-tdd`。
 - 必须按统一 `YSS Skill Execution Result` 返回生成客户端引用、调用文件、组件/API 测试、实际 pnpm 验证结果、偏离和 `new_impacts`；发现缺失路径或 schema 变化时暂停并回生命周期。
