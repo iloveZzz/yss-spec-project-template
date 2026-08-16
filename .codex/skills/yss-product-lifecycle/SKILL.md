@@ -12,7 +12,7 @@ YSS 产品研发的全生命周期主控编排器。它决定阶段、条件门�
 1. 读取根目录 `yss-project.yaml`；非法或缺失时停止并进入迁移检查。
 2. 读取 `CONTEXT.md`、相关 ADR、父 Ticket/checkpoint、当前资产与 tracker 配置。
 3. `template-source` 只走模板维护流程；不得生成具体产品 Spec、原型、OpenAPI 或切片 Ticket。
-4. `project-instance` 以 `docs/process/lifecycle-artifact-map.md` 和 `docs/process/harness-process-tailoring.md` 为阶段、门禁和裁剪事实来源。
+4. `project-instance` 以 `docs/process/lifecycle-registry.yaml`、由其派生的 `docs/process/lifecycle-artifact-map.md` 和 `docs/process/harness-process-tailoring.md` 为阶段、门禁和裁剪事实来源。
 
 YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask-matt` 仅在用户显式调用时作为 Matt 通用导航，且不得修改 Matt skills。
 
@@ -29,7 +29,8 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 
 ## 核心规则
 
-- 保留 8 个主阶段；21 个门禁全部按影响面条件强制。命中项必须达到 `approved`，未命中项记录 `not-applicable` 和原因。
+- 保留生命周期注册表定义的主阶段；其中条件门禁全部按影响面强制。命中项必须达到 `approved`，未命中项记录 `not-applicable` 和原因；产物、工作单元和证据不得被统称为门禁。
+- 安全 / 权限不设独立生命周期资料、专属门禁或 `not-applicable` 记录。只有需求或冻结资产明确要求改变认证、授权、租户隔离、敏感数据或合规行为时，才把该行为写入普通 Spec、API、架构、验收和测试 seam，并仅按实际 UI、API、Backend、Data、High-risk 影响触发既有门禁；普通 action 注册、沿用认证中间件、未变化的 `401` / `403`、一般字段、SQL / DDL / 迁移和上传 / 下载本身不触发安全 / 权限流程。
 - 有效 `yss-project.yaml` 存在时，`ask-matt` 和 `setup-matt-pocock-skills` 只能作为子流程；最终入口、仓库身份和模式裁决归本编排器。
 - `template-source` 命中产品 flow 时必须返回 `blocked`（`template-source-product-artifact-forbidden`），不得继续到产品资产或 Ticket 生成。
 - 文件存在不等于就绪。按内容、审查结论和上游新鲜度评估资产。
@@ -37,14 +38,17 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 - 上游变化按依赖图精准传播 `stale`；不要无条件重跑完整阶段。
 - Matt 五态保持原义。只有解除阻塞、门禁通过且可直接实现的垂直切片才能使用 `ready-for-agent`。
 - YSS active 调用 `to-spec` 时，必须把 Matt 独立 flow 的 `ready-for-agent` 发布提示归一化为 Spec `ready-for-human`；不得把 Spec 初稿当作可直接实现的 Ticket。
+- YSS active 调用 `to-tickets` 时，新建垂直切片统一写为 `ready-for-human`；只有本编排器复算完整 `ready-for-agent` 公式后才能提升，Matt 的通用默认标签不得提前覆盖生命周期状态。
 - `orchestrate`/`resume` 连续执行安全工作单元，直到人工门禁、真实阻塞、新授权、实现/发布裁决或专项失败。
-- 进入实现后继续主控，通过 `yss-router`、`implement`、`tdd` 和 YSS 专项 skills 执行；独立审查和 fresh verification 后才能作完成判断。
+- 进入实现后继续主控，通过 `yss-router`、`implement`、`tdd` 和 YSS 专项 skills 执行；独立审查和 fresh verification 后才能作完成判断。只有工作单元真实触碰当前用户、审计、加密或明确的权限业务行为时，才增加 `yss-userinfo`、`yss-audit-log`、`yss-security-algorithm` 等专项依赖。
 - 原型确认 → 后端脚手架：当 YSS 高保真原型已经完成 Prototype Review、AntD CLI 校验和用户确认，且 backend `scaffold_status=required` 时，先完成工程基线，由 `yss-router` 编译脚手架受控生成工作单元合同，经生命周期编排器批准并持久化后，才使用 `yss-ddd-scaffold-generator` 生成后端骨架；随后由 `yss-backend-scaffold-parent` 校验并重新进入 `yss-router`，不得先写业务代码。
 - 所有后续生成的后端代码都必须消费生命周期批准、已持久化且版本当前的 Slice Implementation Contract，绑定最小 YSS skill 闭包、允许写路径、证据文件和 YSS Skill Execution Result；没有这些证据时必须阻断。
 - Harness 内承载运行时代码时，项目路径策略固定为 `apps/backend/<project>/` 和 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 仅是项目容器，`app/backend/`、`app/frontend/` 及其子路径禁止生成。外部实现仓库不强制使用该目录，但必须登记真实项目根路径并写入合同。
 - Setup readiness 每个任务只评估一次并在本轮缓存；只有 tracker、主远端、真实标签或配置变化时重查。
 - Ticket tracker 支持 `local-markdown`、GitHub 和 GitLab；模板默认 `local-markdown`，以 `docs/.scratch/<feature>/` 完整功能包为主载体。Git remote 只代表代码托管，不能覆盖已持久化的 tracker 选择；Local 主 tracker 不要求远程 Ticket。根 `.scratch/` 与 `docs/requirements/tickets/` 只作为旧路径迁移来源。
 - 小改动和中等变更允许同一独立执行者完成 Review 与 fresh verification；该执行者不得是实现者。新模块、高风险或职责冲突时拆分 Reviewer 与 Verifier。
+- 进入 `code-review` 前必须持久化或明确传入 `review_mode`、`review_base_ref`、`candidate_snapshot_ref`、`candidate_digest` 和完整候选引用；`worktree` 模式必须一次捕获 committed、staged、unstaged、untracked，并让两个 Reviewer 消费同一快照，不能用只看 `HEAD` 或实时变化的 diff 宣称已审查。候选 manifest 和 `yss-worktree-candidate-v1` 不可变摘要流以 `orchestration-contract.yaml.review_input` 为唯一机器契约。
+- 实现授权不包含 Git 授权。只有用户分别明确给出值为 `true` 的 `commit_authorized` / `push_authorized`、非空 scope 和对应 `*_authorization_ref` 时才执行动作；缺失时只记录 checkpoint 判断，不得把 `implement`、`orchestrate`、当前分支或负责人要求解释成隐含授权。
 - 连续自动推进期间累积 Ticket/Git 证据，在人工暂停、handoff、进入实现、合并或发布边界集中 checkpoint；不为每个连续经过的概念阶段重复写同类记录。
 - 跨线程、仓库、原型分支或上下文边界时使用 `handoff` 或等价记录。
 - 在 Matt 阶段边界（phase boundary）先按 `Continue → /clear → /handoff → subagent → /compact` 判断上下文动作；只在 checkpoint 记录可选 `phase_boundary` 证据，不新增生命周期状态。
@@ -69,8 +73,10 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 
 | 压力诱因 | 统一裁决 |
 |---|---|
+| “普通 action、SQL / DDL 或下载也要补安全姿态吗” | 不补。没有明确的安全 / 权限行为需求时只按实际 API、Data 或工程影响推进；明确改变相关行为时也只复用普通产物和门禁。 |
+| “延期项先不写责任人和目标版本，之后再补” | 阻断 `seam-deferred`；必须写风险、责任人、后续 Ticket、验证计划和目标版本 / 发布日期。 |
 | “脚手架本来就是 YSS，先生成代码再补合同” | 先阻断；Router draft 不能批准合同或替代生命周期放行。 |
-| “`./mvnw validate` 已通过，直接继续最省时间” | 只证明工程基线可验证，不证明业务、权限、事务或契约已获批；三条实际命令的结果还必须进入 Execution Result。 |
+| “`./mvnw validate` 已通过，直接继续最省时间” | 只证明工程基线可验证，不证明业务、事务或契约已获批；三条实际命令的结果还必须进入 Execution Result。 |
 | “后续代码也是生成物，不需要重新路由” | 只要写入业务代码，就必须重新消费当前 Slice Implementation Contract 和 YSS skill 闭包。 |
 | “发布窗口快结束了，可以把业务字段放进脚手架” | 时间、上级要求、已有产出和演示压力都不能放宽禁止模式；必须拆为 `behavior-tdd` 工作单元。 |
 

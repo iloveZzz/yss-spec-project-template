@@ -105,7 +105,8 @@ scripts/verify-template
 | [docs/user-guide/图示生成器使用指南.md](./docs/user-guide/图示生成器使用指南.md) | Excalidraw 可视化辅助 skill 使用手册 |
 | [docs/process/PDCA-SCRUM.md](./docs/process/PDCA-SCRUM.md) | PDCA × Scrum × AI |
 | [docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md](./docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md) | Matt Pocock Engineering Skills 集成与使用 |
-| [docs/process/harness-work-unit-map.md](./docs/process/harness-work-unit-map.md) | Harness 13 个工作单元与 8 主阶段 / 21 门禁映射 |
+| [docs/process/lifecycle-registry.yaml](./docs/process/lifecycle-registry.yaml) | 生命周期结构事实源：主阶段、门禁、产物、工作单元、证据与稳定 ID |
+| [docs/process/harness-work-unit-map.md](./docs/process/harness-work-unit-map.md) | 由生命周期注册表派生的 Harness 工作单元地图 |
 | [docs/process/harness-process-tailoring.md](./docs/process/harness-process-tailoring.md) | 小改动 / 中等变更 / 新模块的流程裁剪指南 |
 | [docs/process/harness-executive-blueprint.md](./docs/process/harness-executive-blueprint.md) | 面向业务方和管理者的 Harness 一页式蓝图 |
 | [docs/process/harness-optimization-backlog.md](./docs/process/harness-optimization-backlog.md) | Harness 工程优化调整待办 |

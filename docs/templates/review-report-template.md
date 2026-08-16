@@ -63,7 +63,7 @@ Approved / Changes requested / Blocked
 | `yss-web-controller` / `yss-dto` 已按影响面落实，CMD / Query / VO / Result 按既有 DTO 体系定义或复用，Controller 不用内部类或非约定包临时承载主要 DTO / VO、不手工分页主要业务集合、不穿透 Repository | pass / violation / not-applicable |  |
 | `mapstruct` 已按影响面落实，PO / Domain Model / DTO / VO / CMD / Query 转换使用 MapStruct Convertor / Mapper，未使用 `BeanUtils.copyProperties`、反射拷贝或重复手写字段赋值；例外已记录测试和补齐落点 | pass / violation / not-applicable |  |
 | `lombok` 已按影响面落实，POJO 样板代码使用 Lombok，未成片手写 getter/setter、constructor、builder、logger；实体 / POJO 未触发 `@Data` 等反模式或已说明例外 | pass / violation / not-applicable |  |
-| `alibaba-java-code-style` 已纳入审查，命名、异常、日志、ORM/MyBatis、Maven、MapStruct / Lombok 注解处理器配置、安全项无 blocker | pass / violation / not-applicable |  |
+| `alibaba-java-code-style` 已纳入审查，命名、异常、日志、ORM/MyBatis、Maven、MapStruct / Lombok 注解处理器配置无 blocker | pass / violation / not-applicable |  |
 | 后端构建 / 测试 / OpenAPI / CI / Release 命令使用项目根目录 `./mvnw ...`；裸 `mvn ...` 已改正或有受控例外记录 | pass / violation / not-applicable |  |
 | 持久化文档正文、章节标题、审查结论和实施说明使用中文；英文模板内容未原样落地 | pass / violation / not-applicable |  |
 | `Build Architecture Checklist` 已回勾，延期项、漂移项、违反项有明确处理结论 | pass / violation / not-applicable |  |
@@ -93,6 +93,7 @@ rg -n "class (SingleResult|MultiResult|PageResult|Result)<|public static class .
 | Agent 将英文 skill / 模板的标题和说明原样输出为项目持久化文档 | 应改为中文正文和中文章节标题，否则标记为 `violation` |  |
 | Agent 修改合同允许路径之外的文件，或缺少预期证据文件 | 应标记为 `violation` 并阻断 build |  |
 | Agent 把状态机、权限、事务或错误映射放入 `controlled-generation` | 应拆分为 `behavior-tdd` 工作单元并触发完整重路由 |  |
+| Agent 使用 `seam-deferred` 却缺少风险、责任人、后续 Ticket、验证计划或目标版本 / 发布日期 | 应标记为 `violation` 并阻断 |  |
 | Agent 返回非空 `new_impacts` 后继续编码或补写旧合同 | 应暂停相关工作单元，将合同标记 `stale`，回到 Router 或更早生命周期阶段 |  |
 | Agent 只列验证命令但没有实际结果和执行时间 | 不构成 fresh verification，不得给出 Approved / 可合并结论 |  |
 

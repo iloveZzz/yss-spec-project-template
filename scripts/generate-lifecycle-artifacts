@@ -1,0 +1,26 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "optparse"
+require_relative "lifecycle-registry"
+
+options = { check: false, write: false, registry: LifecycleRegistry::DEFAULT_REGISTRY }
+OptionParser.new do |parser|
+  parser.on("--check", "仅校验派生文档是否与注册表一致") { options[:check] = true }
+  parser.on("--write", "写入派生文档的受管结构区") { options[:write] = true }
+  parser.on("--registry PATH", "使用指定注册表") { |path| options[:registry] = Pathname.new(path) }
+end.parse!
+
+abort("--check 与 --write 不能同时使用") if options[:check] && options[:write]
+
+registry = LifecycleRegistry.validate!(LifecycleRegistry.load_registry(options[:registry]))
+targets = [
+  [LifecycleRegistry::ROOT.join("docs/process/lifecycle-artifact-map.md"), "<!-- lifecycle-registry:structure:start -->", "<!-- lifecycle-registry:structure:end -->", LifecycleRegistry.render_lifecycle_structure(registry)],
+  [LifecycleRegistry::ROOT.join("docs/process/harness-work-unit-map.md"), "<!-- lifecycle-registry:work-units:start -->", "<!-- lifecycle-registry:work-units:end -->", LifecycleRegistry.render_work_units(registry)]
+]
+
+targets.each do |path, start_marker, end_marker, rendered|
+  LifecycleRegistry.replace_region!(path, start_marker, end_marker, rendered, check: options[:check])
+end
+
+puts(options[:check] ? "生命周期派生产物与注册表一致" : "生命周期派生产物已更新")

@@ -1,0 +1,255 @@
+schema_version: 1
+registry_id: yss.lifecycle
+status: shadow
+description: >-
+  YSS 生命周期结构化事实源。Phase 1 以 shadow/check 方式派生结构表并校验漂移，
+  不切换任何运行时状态 schema 或人工批准语义。
+id_policy:
+  pattern: '^(stage|gate|artifact|work-unit|evidence)\.[a-z0-9][a-z0-9-]*$'
+  published_ids_immutable: true
+  baseline: docs/process/lifecycle-registry-baseline.json
+  deprecated_ids: []
+
+stages:
+  - id: stage.entry-triage
+    name: 入口分诊
+    goal: 确认仓库身份、问题范围和影响面。
+    exit_criteria: yss-project.yaml 合法，影响面和最近可信阶段可解释。
+  - id: stage.discovery
+    name: Discovery
+    goal: 澄清问题、用户、约束和机会。
+    exit_criteria: 问题边界、关键假设和待确认项已记录。
+  - id: stage.spec-architecture
+    name: Spec / 功能架构
+    goal: 固化解决方案和功能边界。
+    exit_criteria: Spec 基线和功能边界可审查。
+  - id: stage.product-design
+    name: 产品设计
+    goal: 在存在产品设计影响时校准页面流和状态。
+    exit_criteria: 命中的设计门禁通过；未命中项记录 not-applicable 及原因。
+  - id: stage.system-data-engineering
+    name: 系统 / 数据架构与工程契约
+    goal: 固化系统、数据、工程基线和 API 契约。
+    exit_criteria: 受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。
+  - id: stage.ticket-formalization
+    name: Ticket 正式化
+    goal: 将冻结范围拆为可追踪的父 Ticket 和垂直切片。
+    exit_criteria: 工作单元窄、依赖清晰、验收和测试 seam 可执行。
+  - id: stage.vertical-slice-implementation
+    name: 垂直切片实现
+    goal: 以批准合同驱动 TDD 实现和跨仓库协作。
+    exit_criteria: 允许写路径、禁止模式、证据和验证命令全部满足。
+  - id: stage.verification-release-retrospective
+    name: 验证 / 发布 / 复盘
+    goal: 完成 fresh verification、发布和回顾。
+    exit_criteria: 所有命中门禁通过，人工审查点已完成，checkpoint 可追溯。
+
+evidence:
+  - id: evidence.impact-assessment
+    name: 影响面分析记录
+    description: 受影响仓库、资产、风险与最近可信阶段。
+  - id: evidence.repository-identity-check
+    name: 仓库身份校验结果
+    description: yss-project.yaml 的合法性与 repository_mode 裁决。
+  - id: evidence.approval-record
+    name: 人工批准记录
+    description: 对需要人工批准的 Spec、设计、契约或发布裁决的可追溯记录。
+  - id: evidence.design-review-result
+    name: 设计审查结果
+    description: API、架构或产品设计审查意见及处理结果。
+  - id: evidence.openapi-draft-review
+    name: OpenAPI Draft 审查记录
+    description: P0、错误、分页、幂等和契约测试审查记录。
+  - id: evidence.contract-approval
+    name: Slice 合同批准记录
+    description: 生命周期编排器批准且已持久化的当前版本合同引用。
+  - id: evidence.yss-skill-execution-result
+    name: YSS Skill Execution Result
+    description: 专项 skill 的合同版本、写入、验证、延期 seam 与偏离证据。
+  - id: evidence.fresh-verification
+    name: Fresh Verification 记录
+    description: 本轮实际执行的验证命令、结果和时间。
+  - id: evidence.checkpoint-and-rollback
+    name: Checkpoint 与回滚点
+    description: 可追溯的变更边界、发布记录和恢复动作。
+
+gates:
+  - id: gate.repository-identity-valid
+    name: 仓库身份校验
+    stage: stage.entry-triage
+    trigger: 每次进入流程。
+    evidence: [evidence.repository-identity-check]
+  - id: gate.spec-baseline-approved
+    name: Spec 基线批准
+    stage: stage.spec-architecture
+    trigger: 新功能、行为变化或范围扩大进入 Spec 基线。
+    evidence: [evidence.approval-record]
+  - id: gate.user-confirmation
+    name: 用户确认
+    stage: stage.product-design
+    trigger: 产品设计影响尚未被人工确认。
+    evidence: [evidence.approval-record]
+  - id: gate.openapi-draft-reviewed
+    name: OpenAPI Draft Review
+    stage: stage.system-data-engineering
+    trigger: 有 API 影响且 Draft 已生成。
+    evidence: [evidence.openapi-draft-review]
+  - id: gate.design-reviewed
+    name: 设计审查
+    stage: stage.system-data-engineering
+    trigger: API 或架构影响。
+    evidence: [evidence.design-review-result]
+  - id: gate.openapi-frozen
+    name: OpenAPI Freeze
+    stage: stage.system-data-engineering
+    trigger: API 进入实现。
+    evidence: [evidence.approval-record]
+  - id: gate.engineering-baseline-accepted
+    name: 工程基线
+    stage: stage.system-data-engineering
+    trigger: 后端、前端或高风险工程变化。
+    evidence: [evidence.fresh-verification]
+  - id: gate.architecture-reviewed
+    name: 架构审查
+    stage: stage.system-data-engineering
+    trigger: 高风险或跨边界变化。
+    evidence: [evidence.design-review-result]
+  - id: gate.slice-contract-approved
+    name: Slice Implementation Contract 批准
+    stage: stage.ticket-formalization
+    trigger: Agent 进入实现；脚手架完成后每个后续生成代码工作单元。
+    evidence: [evidence.contract-approval]
+  - id: gate.slice-ready-for-agent
+    name: 垂直切片实现就绪
+    stage: stage.ticket-formalization
+    trigger: 垂直切片具备直接实现条件。
+    evidence: [evidence.contract-approval, evidence.approval-record]
+  - id: gate.release-ready
+    name: 发布就绪
+    stage: stage.verification-release-retrospective
+    trigger: 合并、发布或阶段完成。
+    evidence: [evidence.fresh-verification, evidence.checkpoint-and-rollback]
+
+artifacts:
+  - id: artifact.impact-assessment
+    name: 影响面分析
+    stage: stage.entry-triage
+    trigger: 每次变更。
+  - id: artifact.discovery-record
+    name: Discovery 记录
+    stage: stage.discovery
+    trigger: 新问题或边界不清。
+  - id: artifact.spec
+    name: Spec
+    stage: stage.spec-architecture
+    trigger: 新功能、行为变化或范围扩大。
+  - id: artifact.product-overview
+    name: 产品总体设计
+    stage: stage.spec-architecture
+    trigger: 进入 Spec 基线。
+  - id: artifact.functional-architecture
+    name: 功能架构
+    stage: stage.spec-architecture
+    trigger: 新模块或跨边界变化。
+  - id: artifact.low-fidelity-prototype
+    name: 低保真原型
+    stage: stage.product-design
+    trigger: 命中产品设计影响。
+  - id: artifact.state-matrix
+    name: 状态矩阵
+    stage: stage.product-design
+    trigger: 存在状态流转、异常或恢复。
+  - id: artifact.high-fidelity-html-prototype
+    name: 高保真 HTML 原型
+    stage: stage.product-design
+    trigger: 需要视觉与交互校准。
+  - id: artifact.openapi-draft
+    name: OpenAPI Draft
+    stage: stage.system-data-engineering
+    trigger: 有 API 影响。
+  - id: artifact.openapi-freeze-record
+    name: OpenAPI Freeze 记录
+    stage: stage.system-data-engineering
+    trigger: API 进入实现。
+  - id: artifact.data-architecture
+    name: 数据架构
+    stage: stage.system-data-engineering
+    trigger: 数据模型、存储或一致性变化。
+  - id: artifact.engineering-baseline
+    name: 工程基线记录
+    stage: stage.system-data-engineering
+    trigger: 后端、前端或高风险工程变化。
+  - id: artifact.architecture-review
+    name: 架构审查记录
+    stage: stage.system-data-engineering
+    trigger: 高风险或跨边界变化。
+  - id: artifact.spec-delta
+    name: Spec Delta
+    stage: stage.spec-architecture
+    trigger: 已有冻结 Spec 的高风险行为变化。
+  - id: artifact.parent-ticket
+    name: 功能父 Ticket
+    stage: stage.ticket-formalization
+    trigger: 每个进入追踪的功能。
+  - id: artifact.vertical-slice-ticket
+    name: 垂直切片 Ticket
+    stage: stage.ticket-formalization
+    trigger: 进入实现前。
+  - id: artifact.slice-implementation-contract
+    name: Slice Implementation Contract
+    stage: stage.ticket-formalization
+    trigger: Agent 进入实现。
+  - id: artifact.retrospective
+    name: 复盘记录
+    stage: stage.verification-release-retrospective
+    trigger: 发布后或阶段性完成后满足复盘触发条件。
+
+work_units:
+  - id: work-unit.entry-triage
+    name: 入口分诊
+    scope: template-source
+    input: 用户请求、仓库身份。
+    output: 影响面与最近可信阶段。
+    completion: 身份和影响面可解释。
+  - id: work-unit.ssot-update
+    name: 单一事实源更新
+    scope: template-source
+    input: 变更合同。
+    output: 权威文档或脚本。
+    completion: 其他投影可由脚本生成。
+  - id: work-unit.skill-projection-sync
+    name: 技能投影同步
+    scope: template-source
+    input: .agents/skills。
+    output: Agent root 投影、skills lock。
+    completion: --check 通过。
+  - id: work-unit.template-snapshot-build
+    name: 模板快照构建
+    scope: template-source
+    input: 固定模板 commit。
+    output: CLI bundled snapshot。
+    completion: commit 与 tree hash 可追踪。
+  - id: work-unit.attach-sync-integration
+    name: attach / sync 集成
+    scope: template-source
+    input: 目标仓库、dry-run 计划。
+    output: 受管资产和 metadata。
+    completion: 验证通过或完整回滚。
+  - id: work-unit.fresh-verification
+    name: Fresh verification
+    scope: template-source
+    input: 变更仓库。
+    output: 命令输出与证据。
+    completion: 所有命中门禁通过。
+  - id: work-unit.independent-review
+    name: 独立审查
+    scope: template-source
+    input: 变更 diff、验证证据。
+    output: review 结论。
+    completion: 无未处理阻断项。
+  - id: work-unit.release-and-rollback
+    name: 发布与回滚
+    scope: template-source
+    input: 已审查 commit。
+    output: release note、观察信号、回滚点。
+    completion: 两仓库顺序和恢复动作明确。

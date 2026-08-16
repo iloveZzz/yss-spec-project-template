@@ -20,7 +20,7 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 | 技术事实 | `research` | 一手资料回填 Spec/OpenAPI/架构/ADR |
 | runnable 问题 | `prototype` | 生成单文件可分享 HTML，保留 `prototype/<name>` 分支作为主来源；必须 source/return handoff 和结论回填，不得替代阶段 4 的低保真评审、Ant Design v6 高保真 HTML、AntD CLI 证据和用户确认 |
 | Spec 综合 | `to-spec` | 初稿进入 `ready-for-human`，不得直接实现 |
-| 切片 | `to-tickets` | 仅在冻结/无影响记录后拆垂直切片 |
+| 切片 | `to-tickets` | 仅在冻结/无影响记录后拆垂直切片；初始角色为 `ready-for-human` |
 | 实现 | `implement`、`tdd` | `yss-router` 编译 Slice Implementation Contract 草案；本编排器核验并持久化后才执行，专项 Execution Result 返回后再次核验 |
 | Bug | `diagnosing-bugs`、`tdd` | 先建立红色反馈；高风险影响升级上游门禁 |
 | 审查 | `code-review` | 唯一默认代码审查入口；审查者独立，结合 Spec、仓库治理规则和 YSS 标准 |
@@ -61,8 +61,14 @@ Router 状态映射为：`draft → completed`、`blocked → blocked`、`ready-
 | Matt flow | 进入条件 | 生命周期结果 |
 |---|---|---|
 | `to-spec` | `grill-with-docs` 已满足退出条件，且不存在未回流的 runnable blocker；用户问题、MVP/非目标、成功标准、测试 seam 和术语审查均有证据 | Spec 初稿为 `ready-for-human`，不等于批准 |
-| `to-tickets` | OpenAPI Freeze 或 `no-api-impact` 记录、必要门禁、垂直切片范围和阻塞边均已明确 | 只能生成垂直切片 Ticket |
+| `to-tickets` | OpenAPI Freeze 或 `no-api-impact` 记录、必要门禁、垂直切片范围和阻塞边均已明确 | 只能生成垂直切片 Ticket；YSS active 的 `to-tickets` 初始统一为 `ready-for-human` |
 | `implement` | `ready-for-agent` 公式、Contract 已批准/持久化/版本一致、Build Architecture Checklist、实现仓库/分支/CI/验证命令/回滚点，以及后端 Contract（适用时）均满足 | 单会话实现同样适用，不得绕过门禁 |
+
+## Review 候选与 Git 授权
+
+YSS 调用 `code-review` 前必须形成 review input，至少包含 `review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest`、`spec_ref`、`ticket_ref`、`slice_contract_ref`、`build_architecture_checklist_ref` 和 `yss_execution_result_refs`，并满足 `orchestration-contract.yaml.review_input.manifest_required_by_mode`。`committed` 审查 merge-base 到不可变 `HEAD`；`worktree` 一次捕获 merge-base 到 working tree 的 committed、staged、unstaged 和 untracked 内容，使用 `yss-worktree-candidate-v1` 规定的 raw path、uint64 big-endian 长度、tracked/untracked record 和不支持条目阻断规则计算 SHA-256，让两个 Reviewer 消费同一不可变快照，并在返回和完成 checkpoint 复核摘要未变化。缺少输入、候选为空或摘要变化时返回 `blocked`，不能缩小审查范围或合并不同候选的结论。
+
+Matt `implement` 的通用提交指令不构成 YSS Git 授权。只有用户明确给出 `commit_authorized` 为 `true`、非空 `commit_scope` 和 `commit_authorization_ref` 时才能 commit；只有明确给出 `push_authorized` 为 `true`、非空 `push_scope` 和 `push_authorization_ref` 时才能 push。缺少任一字段时保持工作区不变，只输出 checkpoint 判断；不得把 `orchestrate`、实现授权、当前分支、测试通过或负责人要求解释为隐含授权。
 
 ## Setup readiness
 

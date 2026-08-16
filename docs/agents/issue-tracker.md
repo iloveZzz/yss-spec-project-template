@@ -59,6 +59,7 @@ docs/.scratch/<feature>/
 - 评论和对话追加在 `## Comments` 下；状态变化必须保留原因、证据引用和下一步。
 - Wayfinder 的临时子问题可以沿用 Matt 的 `Status: claimed/resolved` 工作状态；它不是交付 Ticket 的五态角色，进入正式切片前必须转换为上述五态之一。
 - Local 主 tracker 不要求远程 Ticket 存在；`ready-for-agent` 仍必须满足生命周期门禁、阻塞边关闭、实现上下文和 Slice Implementation Contract 要求。
+- YSS active 调用 `to-tickets` 时，新建垂直切片的初始 `Status:` 固定为 `ready-for-human`；只有生命周期编排器核验完整就绪公式后才能改为 `ready-for-agent`。
 - GitHub / GitLab 可以作为显式开启的镜像，在功能包中记录 URL、编号和最近同步时间；镜像失败不改变 Local 主 tracker 的权威性。
 - 根目录 `.scratch/` 与 `docs/requirements/tickets/` 是旧路径，只允许用于只读迁移检查；不再作为新 Ticket 或阶段证据的写入目录。
 - 仅发现旧路径资产时，readiness 不得进入 `ready`，必须保留 `migration_ref` 并先完成迁移；新旧路径同时存在时返回 `conflict`，不得静默覆盖或合并。

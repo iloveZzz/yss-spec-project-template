@@ -1,48 +1,84 @@
 # YSS 生命周期产物与门禁地图
 
-本文是模板仓库与模板实例共享的生命周期事实源。它定义主阶段、条件门禁、必须持久化的产物和退出标准；具体项目只有在触发条件命中时才执行对应门禁。
+本文是模板仓库与模板实例共享的生命周期派生阅读视图。结构化事实源是 `docs/process/lifecycle-registry.yaml`；本文解释主阶段、条件门禁、必须持久化的产物和退出标准。具体项目只有在触发条件命中时才执行对应门禁。
 
-## 1. 八个主阶段
+<!-- lifecycle-registry:structure:start -->
+> 此结构区由 `docs/process/lifecycle-registry.yaml` 生成。当前为 `shadow` 模式：它校验结构和派生文档，不改变运行时状态 schema 或人工批准语义。
 
-| 阶段 | 目标 | 主要产物 | 退出标准 |
+## 1. 主阶段
+
+| 稳定 ID | 阶段 | 目标 | 退出标准 |
 |---|---|---|---|
-| 入口分诊 | 确认仓库身份、问题范围和影响面 | 入口分诊记录、仓库身份清单 | `yss-project.yaml` 合法，影响面和最近可信阶段可解释 |
-| Discovery | 澄清问题、用户、约束和机会 | Discovery 记录、问题陈述 | 问题边界、关键假设和待确认项已记录 |
-| Spec / 功能架构 | 固化解决方案和功能边界 | Spec、产品总体设计、功能架构 | Spec 基线和功能边界可审查 |
-| 产品设计 | 在存在产品设计影响时校准页面流和状态 | 低保真草图、状态矩阵、高保真 HTML 原型、用户确认 | 触发的设计门禁通过；未触发项记录 `not-applicable` 及原因 |
-| 系统 / 数据架构与工程契约 | 固化系统、数据、工程基线和 API 契约；原型确认后为新后端服务建立 YSS 工程骨架 | 架构审查、工程基线、后端脚手架生成结果、OpenAPI Draft / Freeze、ADR | 受影响的工程契约冻结或记录无 API 影响；backend `scaffold_status=required` 时脚手架、基线校验和 Router 重编译证据齐全 |
-| Ticket 正式化 | 将冻结范围拆为可追踪的父 Ticket 和垂直切片 | 功能父 Ticket、垂直切片 Ticket | 工作单元窄、依赖清晰、验收和测试 seam 可执行 |
-| 垂直切片实现 | 以批准合同驱动 TDD 实现和跨仓库协作 | Slice Implementation Contract、代码、测试、YSS Skill Execution Result | 允许写路径、禁止模式、证据和验证命令全部满足 |
-| 验证 / 发布 / 复盘 | 完成 fresh verification、发布和回顾 | 验证记录、发布记录、回滚点、复盘 | 所有命中的门禁通过，人工审查点已完成，checkpoint 可追溯 |
+| `stage.entry-triage` | 入口分诊 | 确认仓库身份、问题范围和影响面。 | yss-project.yaml 合法，影响面和最近可信阶段可解释。 |
+| `stage.discovery` | Discovery | 澄清问题、用户、约束和机会。 | 问题边界、关键假设和待确认项已记录。 |
+| `stage.spec-architecture` | Spec / 功能架构 | 固化解决方案和功能边界。 | Spec 基线和功能边界可审查。 |
+| `stage.product-design` | 产品设计 | 在存在产品设计影响时校准页面流和状态。 | 命中的设计门禁通过；未命中项记录 not-applicable 及原因。 |
+| `stage.system-data-engineering` | 系统 / 数据架构与工程契约 | 固化系统、数据、工程基线和 API 契约。 | 受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。 |
+| `stage.ticket-formalization` | Ticket 正式化 | 将冻结范围拆为可追踪的父 Ticket 和垂直切片。 | 工作单元窄、依赖清晰、验收和测试 seam 可执行。 |
+| `stage.vertical-slice-implementation` | 垂直切片实现 | 以批准合同驱动 TDD 实现和跨仓库协作。 | 允许写路径、禁止模式、证据和验证命令全部满足。 |
+| `stage.verification-release-retrospective` | 验证 / 发布 / 复盘 | 完成 fresh verification、发布和回顾。 | 所有命中门禁通过，人工审查点已完成，checkpoint 可追溯。 |
 
-## 2. 条件门禁与产物
+## 2. 生命周期对象
 
-| 门禁 | 触发条件 | 必须留下的证据 |
+门禁是需要裁决的审查点；产物、工作单元和证据不是门禁的同义词。未命中条件的门禁记录 `not-applicable` 及原因，不生成空文档。
+
+### 2.1 条件门禁
+
+| 稳定 ID | 门禁 | 所属阶段 | 触发条件 | 必须留下的证据 |
+|---|---|---|---|---|
+| `gate.repository-identity-valid` | 仓库身份校验 | `stage.entry-triage` | 每次进入流程。 | `evidence.repository-identity-check` |
+| `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | 新功能、行为变化或范围扩大进入 Spec 基线。 | `evidence.approval-record` |
+| `gate.user-confirmation` | 用户确认 | `stage.product-design` | 产品设计影响尚未被人工确认。 | `evidence.approval-record` |
+| `gate.openapi-draft-reviewed` | OpenAPI Draft Review | `stage.system-data-engineering` | 有 API 影响且 Draft 已生成。 | `evidence.openapi-draft-review` |
+| `gate.design-reviewed` | 设计审查 | `stage.system-data-engineering` | API 或架构影响。 | `evidence.design-review-result` |
+| `gate.openapi-frozen` | OpenAPI Freeze | `stage.system-data-engineering` | API 进入实现。 | `evidence.approval-record` |
+| `gate.engineering-baseline-accepted` | 工程基线 | `stage.system-data-engineering` | 后端、前端或高风险工程变化。 | `evidence.fresh-verification` |
+| `gate.architecture-reviewed` | 架构审查 | `stage.system-data-engineering` | 高风险或跨边界变化。 | `evidence.design-review-result` |
+| `gate.slice-contract-approved` | Slice Implementation Contract 批准 | `stage.ticket-formalization` | Agent 进入实现；脚手架完成后每个后续生成代码工作单元。 | `evidence.contract-approval` |
+| `gate.slice-ready-for-agent` | 垂直切片实现就绪 | `stage.ticket-formalization` | 垂直切片具备直接实现条件。 | `evidence.contract-approval`、`evidence.approval-record` |
+| `gate.release-ready` | 发布就绪 | `stage.verification-release-retrospective` | 合并、发布或阶段完成。 | `evidence.fresh-verification`、`evidence.checkpoint-and-rollback` |
+
+### 2.2 生命周期产物
+
+| 稳定 ID | 产物 | 所属阶段 | 触发条件 |
+|---|---|---|---|
+| `artifact.impact-assessment` | 影响面分析 | `stage.entry-triage` | 每次变更。 |
+| `artifact.discovery-record` | Discovery 记录 | `stage.discovery` | 新问题或边界不清。 |
+| `artifact.spec` | Spec | `stage.spec-architecture` | 新功能、行为变化或范围扩大。 |
+| `artifact.product-overview` | 产品总体设计 | `stage.spec-architecture` | 进入 Spec 基线。 |
+| `artifact.functional-architecture` | 功能架构 | `stage.spec-architecture` | 新模块或跨边界变化。 |
+| `artifact.low-fidelity-prototype` | 低保真原型 | `stage.product-design` | 命中产品设计影响。 |
+| `artifact.state-matrix` | 状态矩阵 | `stage.product-design` | 存在状态流转、异常或恢复。 |
+| `artifact.high-fidelity-html-prototype` | 高保真 HTML 原型 | `stage.product-design` | 需要视觉与交互校准。 |
+| `artifact.openapi-draft` | OpenAPI Draft | `stage.system-data-engineering` | 有 API 影响。 |
+| `artifact.openapi-freeze-record` | OpenAPI Freeze 记录 | `stage.system-data-engineering` | API 进入实现。 |
+| `artifact.data-architecture` | 数据架构 | `stage.system-data-engineering` | 数据模型、存储或一致性变化。 |
+| `artifact.engineering-baseline` | 工程基线记录 | `stage.system-data-engineering` | 后端、前端或高风险工程变化。 |
+| `artifact.architecture-review` | 架构审查记录 | `stage.system-data-engineering` | 高风险或跨边界变化。 |
+| `artifact.spec-delta` | Spec Delta | `stage.spec-architecture` | 已有冻结 Spec 的高风险行为变化。 |
+| `artifact.parent-ticket` | 功能父 Ticket | `stage.ticket-formalization` | 每个进入追踪的功能。 |
+| `artifact.vertical-slice-ticket` | 垂直切片 Ticket | `stage.ticket-formalization` | 进入实现前。 |
+| `artifact.slice-implementation-contract` | Slice Implementation Contract | `stage.ticket-formalization` | Agent 进入实现。 |
+| `artifact.retrospective` | 复盘记录 | `stage.verification-release-retrospective` | 发布后或阶段性完成后满足复盘触发条件。 |
+
+### 2.3 执行证据
+
+| 稳定 ID | 证据 | 说明 |
 |---|---|---|
-| 影响面分析 | 每次变更 | 受影响仓库、资产和风险 |
-| 仓库身份校验 | 每次进入流程 | `yss-project.yaml` 校验结果 |
-| Discovery | 新问题或边界不清 | Discovery 记录 |
-| Spec | 新功能、行为变化或范围扩大 | Spec 基线 |
-| 产品总体设计 | 进入 Spec 基线 | 总体设计或功能架构 |
-| 功能架构 | 新模块或跨边界变化 | 功能架构图 / 说明 |
-| 低保真原型 | 命中产品设计影响 | 页面流草图 |
-| 状态矩阵 | 存在状态流转、异常或恢复 | 状态矩阵 |
-| 高保真 HTML 原型 | 需要视觉与交互校准 | 原型地址和审查结果 |
-| 用户确认 | 产品设计影响未被人工确认 | 确认记录 |
-| OpenAPI Draft | 有 API 影响 | OpenAPI 3.1 Draft |
-| 设计审查 | API 或架构影响 | 审查意见和处理结果 |
-| OpenAPI Freeze | API 进入实现 | Freeze 版本和消费者确认 |
-| 数据架构 | 数据模型、存储或一致性变化 | 数据架构记录 |
-| 工程基线 | 后端、前端或高风险工程变化 | 工程基线、项目根路径和验证命令；Harness 内项目必须符合 `apps/backend/<project>/` / `apps/frontend/<project>/`，新后端还需脚手架登记、Router 脚手架合同 draft / 生命周期批准记录、生成器输入 / 预期文件、`./mvnw` 结果和 YSS Skill Execution Result |
-| 架构审查 | 高风险或跨边界变化 | 架构审查记录 |
-| Spec Delta | 已有冻结 Spec 的高风险行为变化 | `ADDED / MODIFIED / REMOVED` 差异 |
-| 功能父 Ticket | 每个进入追踪的功能 | `parent-ticket.md` 或远程父 Ticket |
-| 垂直切片 Ticket | 进入实现前 | 可独立验证的切片 Ticket |
-| Slice Implementation Contract | Agent 进入实现；脚手架完成后每个后续生成代码工作单元 | 批准的 Slice Implementation Contract、当前版本、YSS skill 闭包和写路径 / 证据约束 |
-| YSS Skill Execution Result | YSS 专项 skill 完成工作单元 | YSS Skill Execution Result |
-| Fresh Verification / 发布 | 合并、发布或阶段完成 | fresh verification、release、rollback、checkpoint |
+| `evidence.impact-assessment` | 影响面分析记录 | 受影响仓库、资产、风险与最近可信阶段。 |
+| `evidence.repository-identity-check` | 仓库身份校验结果 | yss-project.yaml 的合法性与 repository_mode 裁决。 |
+| `evidence.approval-record` | 人工批准记录 | 对需要人工批准的 Spec、设计、契约或发布裁决的可追溯记录。 |
+| `evidence.design-review-result` | 设计审查结果 | API、架构或产品设计审查意见及处理结果。 |
+| `evidence.openapi-draft-review` | OpenAPI Draft 审查记录 | P0、错误、分页、幂等和契约测试审查记录。 |
+| `evidence.contract-approval` | Slice 合同批准记录 | 生命周期编排器批准且已持久化的当前版本合同引用。 |
+| `evidence.yss-skill-execution-result` | YSS Skill Execution Result | 专项 skill 的合同版本、写入、验证、延期 seam 与偏离证据。 |
+| `evidence.fresh-verification` | Fresh Verification 记录 | 本轮实际执行的验证命令、结果和时间。 |
+| `evidence.checkpoint-and-rollback` | Checkpoint 与回滚点 | 可追溯的变更边界、发布记录和恢复动作。 |
+<!-- lifecycle-registry:structure:end -->
 
-所有门禁都是条件强制门禁。未命中触发条件时，必须明确记录 `not-applicable` 及原因；不生成空文档。完成结论必须同时包含批准的 Slice Implementation Contract 与 YSS Skill Execution Result（若进入实现阶段）。
+完成结论必须同时包含批准的 Slice Implementation Contract 与 YSS Skill Execution Result（若进入实现阶段）。
+
+安全 / 权限不形成独立门禁。只有需求或冻结资产明确改变相关业务行为时，才把它写入普通产物，并按实际 UI、API、Backend、Data、High-risk 影响使用上表既有门禁。
 
 ## 3. 退出与 checkpoint
 

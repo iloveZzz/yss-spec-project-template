@@ -1,6 +1,6 @@
 ---
 name: yss-openapi-draft-review
-description: Use when reviewing a `docs/.scratch/<feature>/api/` OpenAPI Draft before Engineering Baseline, YSS DDD Review, architecture/Spec Delta design, OpenAPI Freeze, vertical slicing, frontend/backend implementation, or when checking P0 requirement coverage, page action to endpoint mapping, YSS response wrappers, errors, permissions, pagination, optimistic locking, security red lines, and contract test seams.
+description: Use when reviewing a `docs/.scratch/<feature>/api/` OpenAPI Draft before Engineering Baseline, YSS DDD Review, architecture/Spec Delta design, OpenAPI Freeze, vertical slicing, frontend/backend implementation, or when checking P0 requirement coverage, page action to endpoint mapping, YSS response wrappers, errors, pagination, optimistic locking, and contract test seams.
 ---
 
 # YSS OpenAPI Draft Review
@@ -18,17 +18,16 @@ Use this skill after OpenAPI Draft creation and before Engineering Baseline / YS
 
 1. Consume fresh automated evidence for YAML parsing, single-document OAS 3.1 shape, `$ref`, path parameters, and lint. Generate it once with the Draft or when the Draft changes; do not manually repeat unchanged structural checks.
 2. Build a P0 traceability matrix from Spec functional requirements and interaction actions to OpenAPI paths, schemas, errors, and contract tests. Each UI action must map to a stable `operationId` and `x-yss-action-key` or an equivalent traceability entry.
-3. Check page action coverage: every action has `actionKey`, endpoint or explicit non-goal, permission behavior, state transition, idempotency/concurrency rule, and error codes.
+3. Check page action coverage: every action has `actionKey`, endpoint or explicit non-goal, state transition, idempotency/concurrency rule, and error codes. When the Spec explicitly changes authentication or authorization behavior, trace that behavior through the same matrix.
 4. Check object lifecycle coverage: manage/maintain/configure/create/update/archive/retry/cancel/publish/export/create-draft semantics have endpoints or explicit scope downgrades.
 5. Check YSS API baseline: REST shape, `SingleResult<T>` for single objects, `MultiResult<T>` for non-page lists, `PageResult<T>` for pagination, and stable DTO/schema names.
-6. Check error and permission contracts: field-level errors, model-level errors, 403 no-data leakage, disabled reasons, gate failures, and conflict responses.
-7. Check security red lines: authentication/authorization, SQL/DDL draft boundaries, downloads, audit/logging, sensitive field handling, and human-review items.
-8. Output a persistent review artifact under `docs/.scratch/<feature>/architecture/` or update the existing one.
+6. Check error contracts: field-level errors, model-level errors, disabled reasons, gate failures, and conflict responses. When the Spec explicitly changes authentication or authorization behavior, include its `401` / `403` and resource-filtering semantics here.
+7. Output a persistent review artifact under `docs/.scratch/<feature>/architecture/` or update the existing one.
 
 ## Automation Boundary
 
 - Automated checks own YAML single-document syntax, `$ref` resolution, path-parameter consistency, OpenAPI lint, and stable machine-checkable style rules.
-- Human or independent semantic review owns P0 traceability, page-action coverage, permission and error behavior, concurrency/idempotency, security red lines, scope downgrades, and contract-test seams.
+- Human or independent semantic review owns P0 traceability, page-action coverage, error behavior, concurrency/idempotency, scope downgrades, contract-test seams, and any explicitly specified authentication or authorization behavior.
 - Fresh passing automation evidence may be referenced by the semantic review; copying the same findings into a second checklist is unnecessary.
 - Re-run structural automation only when the Draft, ruleset, or referenced schema changes.
 
@@ -40,8 +39,7 @@ Block if any of these are true:
 - A UI action has no endpoint/non-goal mapping.
 - A configurable rule or gate lacks a source, owner, fixed/default decision, or API representation.
 - Pagination does not align with YSS `PageResult<T>` or documented exception.
-- Draft has no contract test seam for import, mapping coverage, validation, review, publish, export, permission, and optimistic locking.
-- Security red lines are unmarked or the Draft exposes execution endpoints for SQL/DDL migration.
+- Draft has no contract test seam for import, mapping coverage, validation, review, publish, export, and optimistic locking.
 - YAML contains lifecycle frontmatter / root metadata, or the proposed JSON client input is not explicitly deferred until Freeze and governance export.
 
 ## Output Contract
@@ -61,9 +59,6 @@ Block if any of these are true:
 
 ### YSS Baseline
 - <response wrappers, DDD boundary implications, implementation feasibility>
-
-### Security Review
-- <red lines and human-review items>
 
 ### Contract Test Checklist
 - <minimum contract tests before OpenAPI Freeze>

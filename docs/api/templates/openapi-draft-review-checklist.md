@@ -23,7 +23,7 @@
 
 ## P0 追踪矩阵
 
-| P0 需求 / 页面动作 | Endpoint / Non-goal | Request | Response | Error | Permission / actionKey | Concurrency / Idempotency | Contract Test | 结论 |
+| P0 需求 / 页面动作 | Endpoint / Non-goal | Request | Response | Error | actionKey / 显式认证授权行为 | Concurrency / Idempotency | Contract Test | 结论 |
 |---|---|---|---|---|---|---|---|---|
 |  |  |  |  |  |  |  |  |  |
 
@@ -38,14 +38,14 @@
 | 产品总体设计完整 | Draft 已依据 Spec 和产品总体设计 / 功能架构；缺产品总体设计时返回上游补齐 |  |  |
 | 交互输入完整 | 有 UI 时，Draft 已同时依据交互说明、原型/线框、状态矩阵、prototype-review、Ant Design v6 高保真 HTML 原型、AntD CLI 校验证据和用户确认记录；无 UI 时需说明页面 / 交互资产不适用原因 |  |  |
 | DDD 契约边界 | Endpoint/schema 归属的限界上下文清楚；术语与 `CONTEXT.md` 和功能架构一致；契约不直接暴露内部聚合、Repository 或持久化表结构 |  |  |
-| 页面动作覆盖 | 每个按钮 / 抽屉 / 弹窗动作有 endpoint/non-goal、`actionKey`、权限和错误码 |  |  |
+| 页面动作覆盖 | 每个按钮 / 抽屉 / 弹窗动作有 endpoint/non-goal、`actionKey` 和错误码；Spec 明确认认证 / 授权变化时同时映射该行为 |  |  |
 | 对象生命周期 | manage/maintain/configure/create/update/archive/retry/cancel/publish/export/create-draft 语义闭环 |  |  |
 | YSS 响应包装 | 单对象 `SingleResult<T>`；列表 `MultiResult<T>`；分页 `PageResult<T>` |  |  |
-| 权限 | 无权不泄露数据；禁用动作返回 disabledReason；越权调用 403 |  |  |
+| 显式认证 / 授权行为 | 仅当 Spec 明确改变相关行为时，`401` / `403`、资源过滤和错误语义有契约表示 |  | 未明确改变时不适用且无需额外记录 |
 | 错误结构 | 模型级、字段级、行级错误可定位；关键 422 有 examples |  |  |
 | 乐观锁 / 幂等 | 草稿写入有 draftVersion；关键命令有幂等键 |  |  |
-| 风险 / 人工确认项 | 认证授权、SQL/DDL 草案、下载 URL、审计日志、敏感字段的验证证据和责任人已记录 |  |  |
-| 契约测试 | 导入、覆盖率、检查、评审、发布、导出、权限、冲突场景可测 |  |  |
+| 风险 / 人工确认项 | 仅记录 Spec 或既有高风险分类已经明确的事项，不因 SQL / DDL、上传 / 下载或一般字段自动新增安全项 |  |  |
+| 契约测试 | 导入、覆盖率、检查、评审、发布、导出和冲突场景可测；显式认证 / 授权行为按需加入 |  |  |
 | JSON 派生准备 | 明确仅在 Freeze 后用锁定 Redocly CLI 生成 JSON；输出记录、SHA 和下游既有输入路径已定义 |  |  |
 
 ## 结论

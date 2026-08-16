@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "json"
+require "pathname"
+require "yaml"
+
+ROOT = Pathname.new(__dir__).join("..").realpath
+failures = []
+
+{
+  "docs/architecture/templates/system-overview-design-template.md" => "已明确的认证、授权、租户隔离、敏感数据或合规行为",
+  "docs/architecture/templates/tech-design-template.md" => "已明确的认证、授权、租户隔离、敏感数据或合规行为"
+}.each do |relative_path, marker|
+  body = ROOT.join(relative_path).read
+  failures << "#{relative_path} 缺少条件性安全/权限架构承载" unless body.include?(marker)
+end
+
+{
+  "docs/adr/0003-machine-readable-lifecycle-registry.md" => "状态：部分实施（Phase 1）",
+  "docs/adr/0004-split-lifecycle-and-router-registry-domains.md" => "状态：proposed",
+  "docs/adr/0005-cross-repository-ecosystem-release-manifest.md" => "状态：proposed",
+  "docs/adr/0006-stable-lifecycle-ids-and-generated-structure.md" => "状态：部分实施（Phase 1）",
+  "docs/adr/0007-separate-skill-routing-registry-from-integrity-lock.md" => "状态：proposed"
+}.each do |relative_path, marker|
+  body = ROOT.join(relative_path).read
+  failures << "#{relative_path} 未声明当前实现状态" unless body.include?(marker)
+end
+
+scenario_verifier = ROOT.join("scripts/verify-lifecycle-scenarios").read
+failures << "生命周期场景未校验稳定 ID 映射" unless scenario_verifier.include?("ROUTE_REGISTRY_IDS")
+
+unless failures.empty?
+  warn failures.join("\n")
+  exit 1
+end
+
+warn failures.join("\n") unless failures.empty?
+exit(failures.empty? ? 0 : 1)

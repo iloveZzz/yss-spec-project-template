@@ -29,6 +29,9 @@ required_files=(
   "AGENTS.md"
   "CONTEXT.md"
   "skills-lock.json"
+  "docs/process/lifecycle-registry.yaml"
+  "docs/process/lifecycle-registry-baseline.json"
+  "docs/process/schemas/lifecycle-registry.schema.json"
   "docs/process/lifecycle-artifact-map.md"
   "docs/process/harness-process-tailoring.md"
   "docs/templates/local-parent-ticket-template.md"
@@ -39,6 +42,10 @@ required_files=(
   "scripts/update-skill-lock"
   "scripts/implementation-path-policy.rb"
   "scripts/verify-lifecycle-scenarios"
+  "scripts/generate-lifecycle-artifacts"
+  "scripts/verify-lifecycle-registry"
+  "scripts/test-lifecycle-registry.rb"
+  "scripts/verify-governance-release"
   "scripts/verify-implementation-path-scenarios"
   "scripts/verify-scaffold-generator-scenarios"
   "scripts/verify-prototype-backend-scaffold-scenarios"
@@ -131,7 +138,9 @@ RUBY
 
 scripts/sync-skills --check
 scripts/update-skill-lock --check
+scripts/verify-lifecycle-registry
 scripts/verify-lifecycle-scenarios
+scripts/verify-governance-release
 scripts/verify-implementation-path-scenarios
 scripts/verify-scaffold-generator-scenarios
 scripts/verify-prototype-backend-scaffold-scenarios
@@ -140,6 +149,8 @@ scripts/verify-yss-router-scenarios
 scripts/verify-yss-ui-scenarios
 scripts/verify-openapi-yaml-first-scenarios
 scripts/verify-openapi-json-handoff-scenarios
+ruby scripts/test-lifecycle-registry.rb
+ruby scripts/test-export-yss-skills.rb
 
 ruby <<'RUBY'
 # encoding: UTF-8
@@ -274,6 +285,11 @@ ruby -c scripts/sync-skills >/dev/null
 ruby -c scripts/update-skill-lock >/dev/null
 ruby -c scripts/implementation-path-policy.rb >/dev/null
 ruby -c scripts/verify-lifecycle-scenarios >/dev/null
+ruby -c scripts/lifecycle-registry.rb >/dev/null
+ruby -c scripts/generate-lifecycle-artifacts >/dev/null
+ruby -c scripts/verify-lifecycle-registry >/dev/null
+ruby -c scripts/test-lifecycle-registry.rb >/dev/null
+ruby -c scripts/verify-governance-release >/dev/null
 ruby -c scripts/verify-prototype-backend-scaffold-scenarios >/dev/null
 ruby -c scripts/verify-matt-yss-integration-scenarios >/dev/null
 ruby -c scripts/verify-yss-ui-scenarios >/dev/null

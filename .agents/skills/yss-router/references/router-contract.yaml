@@ -33,7 +33,7 @@ routing_input_required:
   - lifecycle
   - implementation
   - acceptance
-impact_flags_required: [ui_impact, api_impact, no_api_impact, data_impact, backend_impact, cross_repo]
+impact_flags_required: [ui_impact, api_impact, no_api_impact, data_impact, backend_impact, cross_repo, existing_frozen_baseline]
 exclusive_flags:
   - [api_impact, no_api_impact]
 
@@ -191,7 +191,6 @@ full_reroute_triggers:
   - scaffold-baseline-drift
   - api-schema-impact
   - database-schema-impact
-  - permission-impact
   - state-machine-impact
   - data-model-impact
   - new-write-path
@@ -209,7 +208,6 @@ reroute_destinations:
   scaffold-baseline-drift: stage7-scaffold-revalidation
   api-schema-impact: system-data-architecture-and-contract-review
   database-schema-impact: data-architecture-and-migration-review
-  permission-impact: spec-product-design-and-contract-review
   state-machine-impact: spec-system-data-and-contract-review
   data-model-impact: data-architecture-and-contract-review
   new-write-path: stage7-contract-recompile
@@ -242,7 +240,7 @@ execution_result_required:
   - deviations
   - new_impacts
   - not_applicable_reason
-seam_deferred_required: [risk, owner, follow_up_ticket, verification_plan]
+seam_deferred_required: [risk, owner, follow_up_ticket, verification_plan, target_version_or_release_date]
 deviation_required: [rule, reason, approval_ref]
 not_applicable_required: [item, reason]
 unavailable_skill_required: [skill, provider, fallback, resolution]

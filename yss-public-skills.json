@@ -73,7 +73,8 @@
         "yss-dto",
         "yss-jdbc",
         "yss-mybatis",
-        "yss-repository"
+        "yss-repository",
+        "yss-web-controller"
       ]
     },
     {
@@ -89,8 +90,7 @@
         "yss-page-module-development",
         "yss-ui",
         "yss-use-table-height",
-        "yss-use-tree-height",
-        "yss-web-controller"
+        "yss-use-tree-height"
       ]
     },
     {

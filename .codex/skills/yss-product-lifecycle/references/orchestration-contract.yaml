@@ -68,9 +68,83 @@ flow_preconditions:
   to-tickets:
     required: [openapi_freeze_or_no_api_impact, required_gates_satisfied, vertical_slice_scope, blocking_edges]
     output: vertical-slice-tickets
+    output_role: ready-for-human
   implement:
     required: [ready_for_agent, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied]
     applies_to_single_session: true
+
+ticket_role_transition:
+  yss_active:
+    to_tickets_initial_role: ready-for-human
+    promotion_owner: yss-product-lifecycle
+    promoted_role: ready-for-agent
+    promotion_requires: ready_for_agent
+
+review_input:
+  schema_version: 1
+  required: [review_mode, review_base_ref, implementation_candidate_ref, candidate_snapshot_ref, candidate_digest, spec_ref, ticket_ref, slice_contract_ref, build_architecture_checklist_ref, yss_execution_result_refs]
+  nullable: [spec_ref]
+  modes: [committed, worktree]
+  committed:
+    candidate_ref: HEAD
+    diff_scope: merge-base-to-head
+  worktree:
+    candidate_ref: working-tree
+    diff_scope: merge-base-to-working-tree
+    required_coverage: [committed, staged, unstaged, untracked]
+    tracked_diff_command: git diff --no-ext-diff --binary --full-index <merge-base>
+    untracked_inventory_command: git ls-files -z --others --exclude-standard
+    untracked_files_encoding: nul-delimited-raw-path-bytes
+    untracked_diff_command: git diff --no-index --no-ext-diff --binary --full-index -- /dev/null <path>
+    capture_once: true
+    verify_unchanged_after_review: true
+  manifest_required_by_mode:
+    committed: [merge_base, tracked_diff_command, commit_list_command]
+    worktree: [merge_base, tracked_diff_command, untracked_inventory_command, untracked_diff_command, untracked_files, commit_list_command]
+  snapshot:
+    immutable: true
+    protocol: yss-worktree-candidate-v1
+    digest_algorithm: sha256
+    digest_framing: length-prefixed-path-and-bytes
+    path_order: bytewise
+    path_encoding: raw-bytes
+    length_encoding: uint64-big-endian
+    header_ascii: YSS-WORKTREE-CANDIDATE-V1
+    terminator_byte: "0x00"
+    tracked_record:
+      type_byte: "0x54"
+      fields: [type_byte, uint64be_content_length, binary_diff_bytes]
+      source: tracked_diff_command_stdout
+    untracked_record:
+      type_byte: "0x55"
+      fields: [type_byte, uint64be_path_length, raw_path_bytes, uint32be_file_mode, entry_kind_byte, uint64be_content_length, content_bytes]
+      order: bytewise-raw-path
+      entry_kinds: {regular: "0x52", symlink: "0x4c"}
+      regular_content_source: file_bytes
+      symlink_content_source: link_target_bytes
+    unsupported_entry_action: blocked
+    snapshot_artifact:
+      identity: candidate_digest
+      required: [candidate-manifest.yaml, tracked.diff, untracked/]
+      access: immutable-read-only
+    on_digest_change: blocked
+    completion_requires_current_digest: true
+
+git_authorization:
+  commit:
+    requires_explicit_user_authorization: true
+    required: [commit_authorized, commit_scope, commit_authorization_ref]
+    authorized_value: true
+    non_empty: [commit_scope, commit_authorization_ref]
+    unauthorized_action: checkpoint-only
+  push:
+    requires_explicit_user_authorization: true
+    required: [push_authorized, push_scope, push_authorization_ref]
+    authorized_value: true
+    non_empty: [push_scope, push_authorization_ref]
+    unauthorized_action: checkpoint-only
+
+seam_deferred_required: [risk, owner, follow_up_ticket, verification_plan, target_version_or_release_date]
 
 backend_scaffold:
   applies_when: [backend_impact]
@@ -195,19 +269,6 @@ impact_propagation:
       - {kind: artifact, name: openapi-draft, level: transitive, when: api_impact}
       - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
       - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
-  permission:
-    targets:
-      - {kind: artifact, name: spec, level: direct, when: always}
-      - {kind: artifact, name: spec-delta, level: direct, when: existing_frozen_baseline}
-      - {kind: artifact, name: product-design, level: direct, when: ui_impact}
-      - {kind: gate, name: requirement-freeze, level: direct, when: always}
-      - {kind: artifact, name: openapi-draft, level: transitive, when: api_impact}
-      - {kind: gate, name: draft-review, level: transitive, when: api_impact}
-      - {kind: gate, name: design-review, level: transitive, when: always}
-      - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
-      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
-      - {kind: artifact, name: implementation-contract, level: transitive, when: always}
-      - {kind: artifact, name: test-mapping, level: transitive, when: always}
   api-schema:
     targets:
       - {kind: artifact, name: spec, level: direct, when: always}
@@ -263,20 +324,6 @@ impact_propagation:
       - {kind: artifact, name: rollback-plan, level: direct, when: always}
       - {kind: gate, name: design-review, level: transitive, when: always}
       - {kind: artifact, name: release-plan, level: transitive, when: always}
-  security:
-    targets:
-      - {kind: artifact, name: spec, level: direct, when: always}
-      - {kind: artifact, name: spec-delta, level: direct, when: existing_frozen_baseline}
-      - {kind: artifact, name: product-design, level: direct, when: ui_impact}
-      - {kind: artifact, name: system-architecture, level: direct, when: always}
-      - {kind: artifact, name: data-architecture, level: direct, when: data_impact}
-      - {kind: gate, name: requirement-freeze, level: direct, when: always}
-      - {kind: gate, name: architecture-review, level: direct, when: always}
-      - {kind: artifact, name: openapi-draft, level: transitive, when: api_impact}
-      - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
-      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
-      - {kind: artifact, name: release-plan, level: transitive, when: always}
-
 prototype_return_evidence:
   required: [prototype_mode, source_handoff, prototype_asset_or_run, conclusion, updated_authoritative_asset, remaining_questions, return_handoff]
   allowed_modes: [matt_logic, yss_high_fidelity]

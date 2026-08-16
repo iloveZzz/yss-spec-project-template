@@ -17,7 +17,7 @@ owner: ai
 |------|-------------|------|------|
 | 垂直切片 Ticket |  |  |  |
 | OpenAPI Freeze / 无 API 影响记录 |  |  |  |
-| OpenSpec-style Spec Delta（条件必需） |  |  | 仅 API、权限、状态机、数据模型、跨端、新模块或高风险变更需要 |
+| OpenSpec-style Spec Delta（条件必需） |  |  | 仅 API、状态机、数据模型、跨端、新模块或高风险变更需要 |
 | Design Review |  |  |  |
 | 实现仓库 / 实现位置 |  |  |  |
 | 前后端工程存在性判定 |  |  | 记录 frontend / backend 是否已存在且可复用 |
@@ -94,7 +94,7 @@ owner: ai
 | expected_evidence_files |  |
 | verification_commands |  |
 | human_review_points |  |
-| full_reroute_triggers | 新 API/schema、权限、状态机、数据模型、写目录、仓库、skill、风险、seam 或交付顺序等变化 |
+| full_reroute_triggers | 新 API/schema、状态机、数据模型、写目录、仓库、skill、风险、seam、交付顺序或其他未冻结行为等变化 |
 
 | 不适用 skill | 原因 |
 |---|---|
@@ -211,8 +211,7 @@ owner: ai
 | 人工确认项 | 是否涉及 | 结论 | 证据 / 链接 | 补齐落点 |
 |---|---|---|---|---|
 | DDL / SQL / 数据库迁移 | 是 / 否 | 通过 / 草案 / 阻断 / 不适用 |  |  |
-| 权限接入 / 认证 / 授权 | 是 / 否 | 通过 / 草案 / 阻断 / 不适用 |  |  |
-| 审计日志 | 是 / 否 | 通过 / 草案 / 阻断 / 不适用 |  |  |
+| 其他已明确的风险 / 人工确认 | 是 / 否 | 通过 / 草案 / 阻断 / 不适用 | 仅登记上游已经明确的事项 |  |
 
 ### 4.3 后端脚手架工作单元
 
@@ -306,7 +305,8 @@ owner: ai
 - [ ] 受影响外部实现仓库已登记，并绑定分支、MR / PR、CI 和验证命令。
 - [ ] 受影响 frontend / backend 工程存在性已判定；0-1 缺失工程已登记 `scaffold_status=required`、确认外部脚手架目标并路由对应脚手架 skill。
 - [ ] 原型确认后已满足 `backend_scaffold_policy_satisfied`；脚手架只生成工程骨架，所有后续生成代码均经批准合同和 YSS skill 路由。
-- [ ] DDL / SQL / 数据库迁移、权限接入和审计日志的人工确认结论已记录；未通过时记录阻塞原因、责任人和补齐计划。
+- [ ] DDL / SQL / 数据库迁移及其他上游明确的人工确认结论已记录。
+- [ ] `seam-deferred` 若存在，已填写风险、责任人、后续 Ticket、验证计划和目标版本 / 发布日期。
 - [ ] 若使用 subagent，已记录任务包、写范围、独立 review、verification 命令和主控采纳结论。
 - [ ] 每个切片包含测试命令、验证方式和回滚点。
 - [ ] 每个工作单元均绑定唯一 TDD 模式，且 Execution Result 引用合同版本并包含实际验证结果和时间。

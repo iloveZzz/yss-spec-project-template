@@ -41,6 +41,10 @@ docs/process/*
 !docs/process/templates/
 !docs/process/templates/stage-checkpoint-template.md
 !docs/process/lifecycle-artifact-map.md
+!docs/process/lifecycle-registry.yaml
+!docs/process/lifecycle-registry-baseline.json
+!docs/process/schemas/
+!docs/process/schemas/lifecycle-registry.schema.json
 !docs/process/harness-process-tailoring.md
 !docs/process/implementation-repo-integration.md
 !docs/process/subagent-collaboration.md

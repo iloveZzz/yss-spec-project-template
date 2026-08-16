@@ -45,13 +45,13 @@ owner: ai
 | 后端工程工具链：构建、测试、运行、OpenAPI 生成、CI 和 Release 命令必须使用项目根目录 `./mvnw ...`；裸 `mvn ...` 必须有受控例外记录 | `yss-ddd-scaffold-generator` / `yss-backend-scaffold-parent` / implementation routing |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 无例外记录时改为 `./mvnw ...`，否则不得进入完成 / 可合并结论 |
 | 工程项目路径：每个 Harness 内项目必须有具体项目段，禁止直接写入容器根或单数 `app/...` | `docs/process/implementation-repo-integration.md` / implementation path validator |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 路径违规时停止 build，并回到实现路由 |
 | 文档语言：持久化生命周期文档、实施记录、审查报告、发布说明和 Git checkpoint 正文必须使用中文，英文 skill / 模板不得原样落地 | `AGENTS.md` / `yss-product-lifecycle` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 仅保留必要英文技术标识、命令和 metadata |
-| 高风险变更：认证 / 授权、SQL / DDL、迁移、加密、公共基础库 API 变更必须记录验证证据、责任人和回滚约束 | `AGENTS.md` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺验证证据或责任人时不得发布或合并 |
+| 高风险变更：按已批准的普通影响面结论记录验证证据、责任人和回滚约束 | `AGENTS.md` / Spec / 架构记录 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺验证证据或责任人时不得发布或合并 |
 |  |  |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  |  |
 
 状态说明：
 
 - `implemented`：已有代码、测试或文档证据证明满足约束。
-- `seam-deferred`：允许临时 seam，但必须说明风险、补齐切片、责任人和验证计划；延期项不得无限期挂起。
+- `seam-deferred`：允许临时 seam，但必须说明风险、补齐切片、责任人、验证计划和目标版本 / 发布日期；延期项不得无限期挂起。
 - `drift`：实现与架构意图不一致，必须先做 Architecture Re-check。
 - `violation`：违反架构约束或缺少风险 / 回滚证据，停止继续 build，回到设计审查或架构修正。
 - `not-applicable`：当前切片不触碰该约束，并说明原因。
@@ -113,8 +113,7 @@ rg -n '(^|[[:space:]])mvn[[:space:]]' <backend-repo-or-doc-paths>
 | 风险事项 | 是否涉及 | 责任人 / 结论 | 证据 | 阻断结论 |
 |---|---|---|---|---|
 | SQL / DDL |  |  |  |  |
-| 审计日志 |  |  |  |  |
-| 文件上传下载 / 临时 URL |  |  |  |  |
+| 其他已明确风险 |  |  |  |  |
 
 ## 5. 结论
 

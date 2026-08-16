@@ -2,9 +2,44 @@
 # frozen_string_literal: true
 
 require "pathname"
+require "set"
 require "yaml"
 
 ROOT = Pathname.new(__dir__).join("..").realpath
+REGISTRY = YAML.safe_load(
+  ROOT.join("docs/process/lifecycle-registry.yaml").read,
+  permitted_classes: [],
+  aliases: false
+)
+REGISTRY_IDS = %w[stages gates artifacts work_units evidence].flat_map do |collection|
+  REGISTRY.fetch(collection).map { |record| record.fetch("id") }
+end.to_set
+ROUTE_REGISTRY_IDS = {
+  "impact-assessment" => "artifact.impact-assessment",
+  "ssot-update" => "work-unit.ssot-update",
+  "skill-projection-sync" => "work-unit.skill-projection-sync",
+  "pressure-scenarios" => "evidence.fresh-verification",
+  "fresh-verification" => "work-unit.fresh-verification",
+  "independent-review" => "work-unit.independent-review",
+  "tracker-sync" => "evidence.checkpoint-and-rollback",
+  "spec" => "artifact.spec",
+  "product-overview" => "artifact.product-overview",
+  "functional-architecture" => "artifact.functional-architecture",
+  "low-fidelity-prototype" => "artifact.low-fidelity-prototype",
+  "state-matrix" => "artifact.state-matrix",
+  "high-fidelity-html-prototype" => "artifact.high-fidelity-html-prototype",
+  "user-confirmation" => "gate.user-confirmation",
+  "openapi-draft" => "artifact.openapi-draft",
+  "draft-review" => "gate.openapi-draft-reviewed",
+  "design-review" => "gate.design-reviewed",
+  "openapi-freeze" => "gate.openapi-frozen",
+  "engineering-baseline" => "artifact.engineering-baseline",
+  "architecture-review" => "artifact.architecture-review",
+  "data-architecture" => "artifact.data-architecture",
+  "spec-delta" => "artifact.spec-delta",
+  "parent-ticket" => "artifact.parent-ticket",
+  "vertical-slice-tickets" => "artifact.vertical-slice-ticket"
+}.freeze
 
 def route(facts)
   if facts.fetch(:repository_mode) == "template-source"
@@ -19,7 +54,10 @@ def route(facts)
   end
 
   gates = %w[impact-assessment tracker-sync fresh-verification]
-  return gates if facts.fetch(:scale) == :small && !facts.fetch(:high_risk)
+  small_change = facts.fetch(:scale) == :small && !facts.fetch(:high_risk) &&
+                 !facts.fetch(:ui_impact) && !facts.fetch(:api_impact) &&
+                 !facts.fetch(:backend_impact) && !facts.fetch(:data_impact)
+  return gates if small_change
 
   gates.concat(%w[spec product-overview functional-architecture])
 
@@ -32,7 +70,7 @@ def route(facts)
     ])
   end
 
-  gates.concat(%w[openapi-draft design-review openapi-freeze]) if facts.fetch(:api_impact)
+  gates.concat(%w[openapi-draft draft-review design-review openapi-freeze]) if facts.fetch(:api_impact)
 
   if facts.fetch(:backend_impact) || facts.fetch(:high_risk)
     gates.concat(%w[engineering-baseline architecture-review])
@@ -63,6 +101,16 @@ scenarios = [
       data_impact: false, existing_frozen_baseline: false
     },
     required: %w[spec product-overview functional-architecture openapi-draft engineering-baseline parent-ticket vertical-slice-tickets],
+    forbidden: %w[low-fidelity-prototype state-matrix high-fidelity-html-prototype user-confirmation spec-delta]
+  },
+  {
+    name: "普通 API 功能无需专项输入",
+    facts: {
+      repository_mode: "project-instance", scale: :small, high_risk: false,
+      ui_impact: false, api_impact: true, backend_impact: true,
+      data_impact: false, existing_frozen_baseline: false
+    },
+    required: %w[spec product-overview functional-architecture openapi-draft draft-review openapi-freeze engineering-baseline parent-ticket vertical-slice-tickets],
     forbidden: %w[low-fidelity-prototype state-matrix high-fidelity-html-prototype user-confirmation spec-delta]
   },
   {
@@ -107,12 +155,22 @@ scenarios.each do |scenario|
   failures << "#{scenario.fetch(:name)} 错误触发: #{unexpected.join(', ')}" unless unexpected.empty?
 end
 
+route_keys = scenarios.flat_map { |scenario| scenario.fetch(:required) + scenario.fetch(:forbidden) }.uniq
+route_keys.each do |route_key|
+  registry_id = ROUTE_REGISTRY_IDS[route_key]
+  failures << "生命周期场景 route key 未映射稳定 ID: #{route_key}" unless registry_id
+  failures << "生命周期场景 route key 映射到不存在的稳定 ID: #{route_key} -> #{registry_id}" if registry_id && !REGISTRY_IDS.include?(registry_id)
+end
+
 semantic_markers = {
   "AGENTS.md" => [
-    "21 个门禁全部是条件强制门禁",
+    "生命周期注册表中的条件门禁全部按影响面强制",
     "只要进入 Spec 基线",
     "才构成产品设计影响",
     "Spec Delta 只记录相对既有冻结 Spec 基线",
+    "安全 / 权限不设独立生命周期资料或专属门禁",
+    "普通 action 注册",
+    "SQL / DDL / 迁移和上传 / 下载本身不构成安全 / 权限专项",
     "template-source",
     "apps/backend/<project>/",
     "apps/frontend/<project>/",
@@ -126,7 +184,17 @@ semantic_markers = {
     "不生成空文档",
     "最近可信阶段",
     "同一独立执行者",
-    "集中 checkpoint"
+    "集中 checkpoint",
+    "安全 / 权限不单独分诊",
+    "不自动升级为安全专项"
+  ],
+  "docs/process/lifecycle-artifact-map.md" => [
+    "安全 / 权限不形成独立门禁",
+    "按实际 UI、API、Backend、Data、High-risk 影响"
+  ],
+  ".agents/skills/yss-product-lifecycle/references/artifact-dependencies.md" => [
+    "不使用独立影响类型",
+    "不增加安全 / 权限传播"
   ],
   "docs/process/implementation-repo-integration.md" => [
     "apps/backend/<project>/",
@@ -171,7 +239,7 @@ unless failures.empty?
   exit 1
 end
 
-puts "五类生命周期压力场景验证通过"
+puts "六类生命周期压力场景验证通过"
 
 skill_root = ROOT.join(".agents/skills/yss-product-lifecycle")
 skill = skill_root.join("SKILL.md").read
@@ -422,8 +490,9 @@ ready_required.each do |condition|
 end
 
 propagation = contract.fetch("impact_propagation")
-expected_types = %w[wording ui-state permission api-schema state-machine data-model service-boundary nfr deployment security]
+expected_types = %w[wording ui-state api-schema state-machine data-model service-boundary nfr deployment]
 failures << "影响类型不完整" unless (expected_types - propagation.keys).empty?
+failures << "安全 / 权限仍作为独立传播类型" unless (propagation.keys & %w[permission security]).empty?
 
 allowed_conditions = %w[always existing_frozen_baseline ui_impact api_impact data_impact backend_impact]
 propagation.each do |impact_type, definition|
@@ -465,14 +534,41 @@ expected_types.each do |impact_type|
   failures << "#{impact_type} 可执行传播结果为空" if targets.nil? || targets.empty?
 end
 
-new_module_permission = propagated_targets(
+new_module_api = propagated_targets(
   propagation,
-  "permission",
+  "api-schema",
   all_impacts_context.merge("existing_frozen_baseline" => false)
 )
-failures << "新模块错误激活 spec-delta" if new_module_permission.any? { |target| target["name"] == "spec-delta" }
-unless new_module_permission.any? { |target| target["kind"] == "gate" && target["name"] == "openapi-freeze" }
-  failures << "permission API 影响未使 openapi-freeze gate stale"
+failures << "新模块错误激活 spec-delta" if new_module_api.any? { |target| target["name"] == "spec-delta" }
+unless new_module_api.any? { |target| target["kind"] == "gate" && target["name"] == "openapi-freeze" }
+  failures << "普通 API 影响未使 openapi-freeze gate stale"
+end
+
+legacy_posture_key = %w[security permission posture].join("_")
+failures << "生命周期合同仍要求已废弃的专项输入" if contract.key?(legacy_posture_key)
+ordinary_route = route(
+  repository_mode: "project-instance", scale: :medium, high_risk: false,
+  ui_impact: true, api_impact: true, backend_impact: true,
+  data_impact: false, existing_frozen_baseline: false
+)
+%w[openapi-draft openapi-freeze engineering-baseline].each do |gate|
+  failures << "普通功能错误移除 #{gate} 门禁" unless ordinary_route.include?(gate)
+end
+
+data_targets = propagated_targets(propagation, "data-model", all_impacts_context)
+failures << "SQL / DDL 未按普通数据影响传播" unless data_targets.any? { |target| target["name"] == "data-architecture" }
+api_targets = propagated_targets(propagation, "api-schema", all_impacts_context)
+failures << "下载接口未按普通 API 影响传播" unless api_targets.any? { |target| target["name"] == "openapi-draft" }
+
+seam_required = contract.fetch("seam_deferred_required")
+def seam_field_filled?(value)
+  value.is_a?(Array) ? !value.empty? : !value.to_s.empty?
+end
+valid_seam = seam_required.to_h { |field| [field, "value"] }
+failures << "完整 seam-deferred 证据被错误阻断" unless seam_required.all? { |field| seam_field_filled?(valid_seam[field]) }
+%w[owner follow_up_ticket target_version_or_release_date].each do |field|
+  mutation = valid_seam.reject { |key, _| key == field }
+  failures << "seam-deferred 缺少 #{field} 时未阻断" if seam_required.all? { |required_field| seam_field_filled?(mutation[required_field]) }
 end
 
 no_api_ui = propagated_targets(
@@ -489,11 +585,11 @@ unless unknown_decision == {"action" => "pause", "reason_code" => "impact-classi
   failures << "未知 impact type 未返回结构化暂停"
 end
 
-permission_gate_stale = new_module_permission.any? { |target| target["kind"] == "gate" }
-permission_artifact_stale = new_module_permission.any? { |target| target["kind"] == "artifact" }
+api_gate_stale = new_module_api.any? { |target| target["kind"] == "gate" }
+api_artifact_stale = new_module_api.any? { |target| target["kind"] == "artifact" }
 linked_ready_facts = ready_slice.merge(
-  "gates_satisfied" => !permission_gate_stale,
-  "no_stale_artifacts" => !permission_artifact_stale
+  "gates_satisfied" => !api_gate_stale,
+  "no_stale_artifacts" => !api_artifact_stale
 )
 failures << "传播后未撤销 ready-for-agent" if ready_for_agent?(ready_required, linked_ready_facts)
 

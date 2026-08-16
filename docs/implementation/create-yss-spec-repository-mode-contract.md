@@ -52,7 +52,7 @@ npx create-yss-spec@latest attach \
 {
   "metadataSchemaVersion": 2,
   "templateName": "create-yss-spec",
-  "cliVersion": "2.1.0",
+  "cliVersion": "2.1.4",
   "templateSource": "github:iloveZzz/yss-spec-project-template",
   "templateCommit": "<40-char-commit>",
   "managedFilesManifestVersion": "<manifest-hash>",
@@ -85,6 +85,6 @@ CLI 必须遵循 [Spec / Ticket 迁移指南](../user-guide/规格与任务迁�
 1. 模板恢复 `docs/process/*`、正式处理 `.qoder` 投影并通过 fresh verification，形成确定 commit。
 2. CLI 绑定该 commit，完成 attach / sync 跨仓库测试和独立 review。
 3. 运行固定 commit 的 `npm test`、`npm pack --dry-run`，确认包内快照和实例门禁通过。
-4. 发布 CLI `2.1.0`，并回写版本、验证证据、备份恢复路径和回滚点。
+4. 发布 CLI `2.1.4`，并回写版本、验证证据、备份恢复路径和回滚点。
 
 模板引用仍为浮动 ref、任一共同验证失败、独立 review 未完成或打包失败时，只能声明“本仓库实现完成，跨仓库发布受阻”，不得声明整体可发布。本轮不执行 npm publish。

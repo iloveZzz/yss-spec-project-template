@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/lifecycle-registry.schema.json",
+  "title": "YSS 生命周期注册表",
+  "type": "object",
+  "required": ["schema_version", "registry_id", "status", "id_policy", "stages", "gates", "artifacts", "work_units", "evidence"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "registry_id": { "const": "yss.lifecycle" },
+    "status": { "enum": ["shadow", "active"] },
+    "id_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pattern", "published_ids_immutable", "baseline", "deprecated_ids"],
+      "properties": {
+        "pattern": { "const": "^(stage|gate|artifact|work-unit|evidence)\\.[a-z0-9][a-z0-9-]*$" },
+        "published_ids_immutable": { "const": true },
+        "baseline": { "const": "docs/process/lifecycle-registry-baseline.json" },
+        "deprecated_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } }
+      }
+    },
+    "stages": { "$ref": "#/$defs/stages" },
+    "gates": { "$ref": "#/$defs/objects" },
+    "artifacts": { "$ref": "#/$defs/objects" },
+    "work_units": { "$ref": "#/$defs/workUnits" },
+    "evidence": { "$ref": "#/$defs/evidence" }
+  },
+  "$defs": {
+    "id": { "type": "string", "pattern": "^(stage|gate|artifact|work-unit|evidence)\\.[a-z0-9][a-z0-9-]*$" },
+    "stages": { "type": "array", "minItems": 1, "items": { "type": "object", "additionalProperties": false, "required": ["id", "name", "goal", "exit_criteria"], "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "type": "string", "minLength": 1 }, "goal": { "type": "string", "minLength": 1 }, "exit_criteria": { "type": "string", "minLength": 1 } } } },
+    "objects": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["id", "name", "stage", "trigger"], "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "type": "string", "minLength": 1 }, "stage": { "type": "string", "pattern": "^stage\\." }, "trigger": { "type": "string", "minLength": 1 }, "evidence": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^evidence\\." } } } } },
+    "workUnits": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["id", "name", "scope", "input", "output", "completion"], "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "type": "string", "minLength": 1 }, "scope": { "const": "template-source" }, "input": { "type": "string", "minLength": 1 }, "output": { "type": "string", "minLength": 1 }, "completion": { "type": "string", "minLength": 1 } } } },
+    "evidence": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["id", "name", "description"], "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "type": "string", "minLength": 1 }, "description": { "type": "string", "minLength": 1 } } } }
+  }
+}

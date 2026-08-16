@@ -16,7 +16,7 @@ Implementation → Independent Review → Fresh Verification → Release
 
 ## 传播算法
 
-1. 分类变化：文案、UI 状态、权限、API schema、状态机、数据模型、服务边界、NFR、部署、安全。
+1. 分类变化：文案、UI 状态、API schema、状态机、数据模型、服务边界、NFR、部署。
 2. 只遍历与变化类型相关的边。
 3. 受影响下游先标记 `stale`；不要删除或立即重建。
 4. 移除相关切片的 `ready-for-agent`，直到必要门禁重新为 `approved/not-applicable`。
@@ -27,6 +27,6 @@ Implementation → Independent Review → Fresh Verification → Release
 
 每个 `stale` 节点必须记录 `stale_by`、影响类型、证据引用和重新批准条件。重新批准 direct 节点后，逐个重新核验 transitive 节点；只有其全部受影响上游恢复为 `approved/not-applicable` 且本节点重新验证通过，才能移除 `stale`。
 
-权限/状态机变化通常影响 Spec/Spec Delta、页面权限状态、OpenAPI security/errors、Design Review、Ticket 验收和测试映射；不会自动使竞品情报或完整业务架构失效。
+明确写入需求的认证、授权、租户隔离、敏感数据或合规行为变化不使用独立影响类型；按它实际改变的 UI 状态、API schema、状态机、数据模型或服务边界传播。普通 action 注册、SQL / DDL / 迁移和上传 / 下载只使用既有技术影响类型，不增加安全 / 权限传播。
 
 OpenAPI Freeze 后发生上游变化时，不得仅因父 Ticket 仍写阶段 6 就继续实现。先做影响分析，再精准更新相关资产和门禁。

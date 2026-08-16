@@ -36,6 +36,10 @@
 
 相关图：`docs/.scratch/<feature>/architecture/diagrams/<feature>-system-architecture.excalidraw`
 
+### 已明确的认证、授权、租户隔离、敏感数据或合规行为（条件适用）
+
+仅当 Spec、冻结契约或既有架构约束明确改变认证、授权、租户隔离、敏感数据或合规行为时，说明责任边界、数据/API 影响、审计或加密要求、验证 seam 与回滚策略。沿用既有中间件、未变化的 `401` / `403`、普通字段、SQL / DDL / 迁移或上传 / 下载本身不填写本节，也不新增独立安全审查。
+
 ### 数据模型
 
 ```sql
@@ -89,17 +93,6 @@ CREATE TABLE xxx (
 | 风险 | 概率 (高/中/低) | 影响 | 缓解措施 | Owner |
 |------|---------------|------|---------|-------|
 | | | | | |
-
----
-
-## 安全审查
-
-- [ ] 认证授权链路完整
-- [ ] 敏感数据加密存储 (密码/payment info/PII)
-- [ ] API 输入校验 (Pydantic v2 / TypeScript strict)
-- [ ] SQL 注入防护 (参数化查询)
-- [ ] XSS 防护 (textContent / DOMPurify)
-- [ ] CSRF 防护 (SameSite Cookie / Token)
 
 ---
 

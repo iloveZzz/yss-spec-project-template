@@ -38,7 +38,7 @@ def routing_input_violations(contract, input)
   contract.fetch("exclusive_flags").each do |left, right|
     violations << "#{left}/#{right}" unless flags[left] != flags[right]
   end
-  violations
+  violations.uniq
 end
 
 def active_impacts(input)
@@ -49,7 +49,8 @@ base_input = {
   "slice_id" => "order-create",
   "impact_flags" => {
     "ui_impact" => true, "api_impact" => true, "no_api_impact" => false,
-    "data_impact" => false, "backend_impact" => false, "cross_repo" => false
+    "data_impact" => false, "backend_impact" => false, "cross_repo" => false,
+    "existing_frozen_baseline" => false
   },
   "lifecycle" => {}, "implementation" => {}, "acceptance" => {}
 }
@@ -59,6 +60,16 @@ failures << "Blank slice id was accepted" if routing_input_violations(CONTRACT, 
 failures << "Invalid lifecycle input type was accepted" if routing_input_violations(CONTRACT, base_input.merge("lifecycle" => nil)).empty?
 both_api_modes = base_input["impact_flags"].merge("api_impact" => true, "no_api_impact" => true)
 failures << "API/no-API exclusivity was not enforced" if routing_input_violations(CONTRACT, base_input.merge("impact_flags" => both_api_modes)).empty?
+
+legacy_posture_key = %w[security permission posture].join("_")
+failures << "Router 输入仍要求已废弃的专项输入" if CONTRACT.fetch("routing_input_required").include?(legacy_posture_key)
+failures << "Router 仍声明已废弃的专项合同" if CONTRACT.key?(legacy_posture_key)
+legacy_impact_flags = CONTRACT.fetch("impact_flags_required").select do |flag|
+  %w[permission security].any? { |prefix| flag.start_with?("#{prefix}_") }
+end
+failures << "Router 仍要求安全 / 权限派生旗标" unless (CONTRACT.fetch("impact_flags_required") & legacy_impact_flags).empty?
+explicit_authorization_input = base_input.merge("acceptance" => {"behavior" => "角色授权规则变化"})
+failures << "显式权限行为无法按普通输入进入 Router" unless routing_input_violations(CONTRACT, explicit_authorization_input).empty?
 
 common_ready = CONTRACT.dig("readiness", "common").to_h { |key| [key, true] }
 ui_ready = CONTRACT.dig("readiness", "ui_impact").to_h { |key| [key, true] }
@@ -504,14 +515,26 @@ backend_skill_mutation["backend"]["required_skills"].delete("mapstruct")
 failures << "Backend contract accepted incomplete skill closure" unless slice_contract_decision_violations(CONTRACT, backend_input, backend_evidence, backend_skill_mutation, backend_expected_skills).include?("backend.required_skills")
 failures << "Backend contract accepted omitted skill closure" if slice_contract_decision_violations(CONTRACT, backend_input, backend_evidence, backend_slice, []).empty?
 
+component_route_examples = {
+  "Current-user" => {"impact" => "current-user-context", "skills" => ["yss-userinfo"]},
+  "Audit" => {"impact" => "audit-event", "skills" => ["yss-audit-log", "yss-userinfo", "yss-dto"]},
+  "Encryption" => {"impact" => "encryption-or-signing", "skills" => ["yss-security-algorithm", "yss-exception"]}
+}
+component_route_examples.each do |label, example|
+  candidate = Marshal.load(Marshal.dump(backend_slice))
+  candidate["backend"]["component_impacts"] = [example.fetch("impact")]
+  required_skills = dependency_closure(CONTRACT, backend_expected_skills + example.fetch("skills"), {})
+  candidate["backend"]["required_skills"] = required_skills
+  candidate["common"]["required_skills"] = required_skills
+  failures << "#{label} component route was rejected" unless slice_contract_decision_violations(
+    CONTRACT, backend_input, backend_evidence, candidate, required_skills
+  ).empty?
+end
 component_slice = Marshal.load(Marshal.dump(backend_slice))
 component_slice["backend"]["component_impacts"] = ["current-user-context"]
 component_skills = dependency_closure(CONTRACT, backend_expected_skills + ["yss-userinfo"], {})
 component_slice["backend"]["required_skills"] = component_skills
 component_slice["common"]["required_skills"] = component_skills
-failures << "Current-user component route was rejected" unless slice_contract_decision_violations(
-  CONTRACT, backend_input, backend_evidence, component_slice, component_skills
-).empty?
 unknown_component = Marshal.load(Marshal.dump(component_slice))
 unknown_component["backend"]["component_impacts"] = ["unknown-component"]
 unless slice_contract_decision_violations(CONTRACT, backend_input, backend_evidence, unknown_component, component_skills).include?("backend.component_impacts")
@@ -730,6 +753,17 @@ mutations = {
   "drift" => valid_result.merge("status" => "drift"),
   "violation" => valid_result.merge("status" => "violation")
 }
+
+valid_deferred = valid_result.merge(
+  "status" => "seam-deferred",
+  "seam_deferred" => [{
+    "risk" => "temporary adapter", "owner" => "team", "follow_up_ticket" => "T-2",
+    "verification_plan" => "contract test", "target_version_or_release_date" => "2026-09-01"
+  }]
+)
+unless execution_violations(CONTRACT, valid_deferred, *valid_args).empty?
+  failures << "Valid seam-deferred result was rejected"
+end
 mutations.each do |expected, result|
   blocker = expected.sub(/-(empty|command|contract-version|status|shape|work-unit|missing|implemented-with-seam|not-applicable-reason|identity|area)$/, "")
   actual = execution_violations(CONTRACT, result, *valid_args)

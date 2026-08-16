@@ -19,7 +19,7 @@ Spec / 设计输入 → OpenAPI YAML Draft → 审查与 Freeze → JSON 派生�
 
 - 基于冻结前的 Spec、产品设计、架构约束创建或更新 `docs/.scratch/<feature>/api/<feature>.yaml`。
 - 保证 YAML 是单一 YAML document、根节点为 `openapi: 3.1.0`，且不把 `pipeline`、`stage`、`status`、`owner` 等生命周期元数据写入 OpenAPI 根节点。
-- 运行受项目 lockfile 约束的 lint / bundle，检查 `$ref`、operationId、响应包装、错误、分页、权限和安全红线。
+- 运行受项目 lockfile 约束的 lint / bundle，检查 `$ref`、operationId、响应包装、错误、分页、幂等和契约测试 seam；只有 Spec 明确改变认证或授权行为时才检查对应契约。
 - 在 OpenAPI Freeze 后，用锁定的 Redocly CLI 将 YAML bundle 为 JSON，并记录可重现证据。
 - 维护治理记录、Freeze 记录和 JSON 派生记录。
 - Spec Delta 影响存在时，在 `docs/.scratch/<feature>/spec-delta/` 记录与冻结 YAML 的关系；没有影响时明确记录 `not-applicable`。
@@ -59,7 +59,7 @@ pnpm exec redocly bundle \
 2. **运行结构与治理校验**
    - 先执行项目锁定的 `pnpm exec redocly lint` 或等价 CI 脚本。
    - 检查 YAML 可解析、`$ref` 可解析、路径参数完整、operationId 唯一、examples 合法、schema 命名稳定。
-   - 检查 `/api/v1/` 版本策略（或记录例外）、`SingleResult<T>` / `MultiResult<T>` / `PageResult<T>`、统一错误结构、分页、权限、幂等 / 乐观锁和契约测试 seam。
+   - 检查 `/api/v1/` 版本策略（或记录例外）、`SingleResult<T>` / `MultiResult<T>` / `PageResult<T>`、统一错误结构、分页、幂等 / 乐观锁和契约测试 seam。Spec 明确改变认证或授权行为时，把对应 `401` / `403`、资源过滤和错误语义作为普通 API 行为检查。
 
 3. **独立 Draft Review 与 Freeze**
    - 将 fresh lint 证据交给 `yss-openapi-draft-review`；阻断项未关闭前，YAML 仍是 review-only Draft，不得生成生产客户端。
@@ -83,7 +83,7 @@ pnpm exec redocly bundle \
 
 - YAML 不是单一 OAS 3.1 document，或其根节点混入生命周期元数据。
 - YAML / `$ref` / lint 不通过，operationId 不稳定或不唯一，或路径参数、schema、examples 无法解析。
-- P0 操作缺请求、响应、错误、权限、并发 / 幂等规则或可验证 seam。
+- P0 操作缺请求、响应、错误、并发 / 幂等规则或可验证 seam；Spec 明确的认证或授权行为没有契约表示。
 - `$ref` 超出允许范围，或转换器版本、lockfile、命令、输入 YAML 无法识别。
 - Freeze 记录、YAML SHA-256、JSON SHA-256、JSON 解析 / lint 证据缺失。
 - JSON 被手工编辑，或生成结果试图反向成为 YAML 的权威来源。

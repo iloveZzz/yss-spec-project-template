@@ -3,6 +3,7 @@
 
 require "pathname"
 require "yaml"
+require "digest"
 
 ROOT = Pathname.new(__dir__).join("..").realpath
 
@@ -74,6 +75,46 @@ def flow_decision(definition, repository_mode:, flow:)
   end
 
   {"result" => "allowed", "reason" => nil}
+end
+
+def git_operation_authorized?(definition, facts)
+  return false unless definition["requires_explicit_user_authorization"] == true
+  return false unless definition["authorized_value"] == true
+
+  required = definition.fetch("required", [])
+  return false unless required.all? { |field| facts.key?(field) }
+
+  authorization_fields = required.grep(/_authorized\z/)
+  return false unless authorization_fields.all? { |field| facts[field] == definition["authorized_value"] }
+
+  definition.fetch("non_empty", []).all? { |field| !facts.fetch(field, "").to_s.empty? }
+end
+
+def uint64be(value)
+  [value].pack("Q>")
+end
+
+def uint32be(value)
+  [value].pack("N")
+end
+
+def canonical_worktree_candidate_stream(snapshot, tracked_diff:, untracked:)
+  header = snapshot.fetch("header_ascii").b + [Integer(snapshot.fetch("terminator_byte"))].pack("C")
+  tracked = snapshot.fetch("tracked_record")
+  stream = header + [Integer(tracked.fetch("type_byte"))].pack("C") + uint64be(tracked_diff.bytesize) + tracked_diff
+  kinds = snapshot.fetch("untracked_record").fetch("entry_kinds")
+
+  untracked.sort_by { |entry| entry.fetch(:path).b }.each do |entry|
+    path = entry.fetch(:path).b
+    content = entry.fetch(:content).b
+    kind = entry.fetch(:kind).to_s
+    stream << [Integer(snapshot.fetch("untracked_record").fetch("type_byte"))].pack("C")
+    stream << uint64be(path.bytesize) << path
+    stream << uint32be(entry.fetch(:mode))
+    stream << [Integer(kinds.fetch(kind))].pack("C")
+    stream << uint64be(content.bytesize) << content
+  end
+  stream
 end
 
 entry = contract.fetch("entry_routing", {})
@@ -195,6 +236,222 @@ end
 ready_required = contract.dig("ready_for_agent", "required") || []
 (preconditions.dig("implement", "required") || []).reject { |field| field == "ready_for_agent" }.each do |field|
   require_include(failures, "ready-for-agent 与 implement 前置条件", ready_required, field)
+end
+
+ticket_role_transition = contract.fetch("ticket_role_transition", {})
+require_equal(
+  failures,
+  "YSS to-tickets initial role",
+  ticket_role_transition.dig("yss_active", "to_tickets_initial_role"),
+  "ready-for-human"
+)
+require_equal(
+  failures,
+  "YSS ticket promotion owner",
+  ticket_role_transition.dig("yss_active", "promotion_owner"),
+  "yss-product-lifecycle"
+)
+require_equal(
+  failures,
+  "YSS ticket promoted role",
+  ticket_role_transition.dig("yss_active", "promoted_role"),
+  "ready-for-agent"
+)
+require_equal(
+  failures,
+  "YSS ticket promotion condition",
+  ticket_role_transition.dig("yss_active", "promotion_requires"),
+  "ready_for_agent"
+)
+
+review_input = contract.fetch("review_input", {})
+require_equal(failures, "review input schema", review_input["schema_version"], 1)
+%w[
+  review_mode
+  review_base_ref
+  implementation_candidate_ref
+  candidate_snapshot_ref
+  candidate_digest
+  spec_ref
+  ticket_ref
+  slice_contract_ref
+  build_architecture_checklist_ref
+  yss_execution_result_refs
+].each do |field|
+  require_include(failures, "review input required fields", review_input["required"] || [], field)
+end
+%w[committed worktree].each do |mode|
+  require_include(failures, "review modes", review_input["modes"] || [], mode)
+end
+%w[committed staged unstaged untracked].each do |candidate_part|
+  require_include(
+    failures,
+    "worktree review coverage",
+    review_input.dig("worktree", "required_coverage") || [],
+    candidate_part
+  )
+end
+require_equal(
+  failures,
+  "worktree untracked inventory",
+  review_input.dig("worktree", "untracked_inventory_command"),
+  "git ls-files -z --others --exclude-standard"
+)
+require_equal(
+  failures,
+  "worktree tracked binary diff",
+  review_input.dig("worktree", "tracked_diff_command"),
+  "git diff --no-ext-diff --binary --full-index <merge-base>"
+)
+require_equal(
+  failures,
+  "worktree untracked binary diff",
+  review_input.dig("worktree", "untracked_diff_command"),
+  "git diff --no-index --no-ext-diff --binary --full-index -- /dev/null <path>"
+)
+require_equal(failures, "worktree capture once", review_input.dig("worktree", "capture_once"), true)
+require_equal(failures, "worktree verify unchanged", review_input.dig("worktree", "verify_unchanged_after_review"), true)
+require_equal(failures, "review snapshot immutable", review_input.dig("snapshot", "immutable"), true)
+require_equal(failures, "review digest algorithm", review_input.dig("snapshot", "digest_algorithm"), "sha256")
+require_equal(
+  failures,
+  "review digest framing",
+  review_input.dig("snapshot", "digest_framing"),
+  "length-prefixed-path-and-bytes"
+)
+require_equal(failures, "review digest path order", review_input.dig("snapshot", "path_order"), "bytewise")
+require_equal(failures, "review digest change action", review_input.dig("snapshot", "on_digest_change"), "blocked")
+require_equal(failures, "review completion digest guard", review_input.dig("snapshot", "completion_requires_current_digest"), true)
+require_equal(failures, "review snapshot protocol", review_input.dig("snapshot", "protocol"), "yss-worktree-candidate-v1")
+require_equal(failures, "review snapshot path encoding", review_input.dig("snapshot", "path_encoding"), "raw-bytes")
+require_equal(failures, "review snapshot length encoding", review_input.dig("snapshot", "length_encoding"), "uint64-big-endian")
+require_equal(failures, "review snapshot header", review_input.dig("snapshot", "header_ascii"), "YSS-WORKTREE-CANDIDATE-V1")
+require_equal(failures, "review snapshot terminator", review_input.dig("snapshot", "terminator_byte"), "0x00")
+require_equal(failures, "review snapshot tracked record", review_input.dig("snapshot", "tracked_record", "type_byte"), "0x54")
+require_equal(failures, "review snapshot untracked record", review_input.dig("snapshot", "untracked_record", "type_byte"), "0x55")
+require_equal(failures, "review snapshot unsupported entry action", review_input.dig("snapshot", "unsupported_entry_action"), "blocked")
+require_equal(
+  failures,
+  "review snapshot tracked fields",
+  review_input.dig("snapshot", "tracked_record", "fields"),
+  %w[type_byte uint64be_content_length binary_diff_bytes]
+)
+require_equal(
+  failures,
+  "review snapshot untracked fields",
+  review_input.dig("snapshot", "untracked_record", "fields"),
+  %w[type_byte uint64be_path_length raw_path_bytes uint32be_file_mode entry_kind_byte uint64be_content_length content_bytes]
+)
+require_equal(
+  failures,
+  "review snapshot entry kinds",
+  review_input.dig("snapshot", "untracked_record", "entry_kinds"),
+  {"regular" => "0x52", "symlink" => "0x4c"}
+)
+fixture_tracked_diff = "COMMITTED\\nSTAGED\\nUNSTAGED\\nDELETE\\nMODE-CHANGE\\n".b
+fixture_untracked = [
+  {path: "z\\nname".b, mode: 0o100644, kind: :regular, content: "untracked-bytes\\n".b},
+  {path: "a-link".b, mode: 0o120777, kind: :symlink, content: "target\\nname".b}
+]
+fixture_stream = canonical_worktree_candidate_stream(
+  review_input.fetch("snapshot"),
+  tracked_diff: fixture_tracked_diff,
+  untracked: fixture_untracked
+)
+require_equal(
+  failures,
+  "review snapshot canonical digest",
+  Digest::SHA256.hexdigest(fixture_stream),
+  "cc1b30990cc0d2a11721140cd94cb92a275f9dd24c6663e21ad7e5ea47898b7d"
+)
+reordered_stream = canonical_worktree_candidate_stream(
+  review_input.fetch("snapshot"),
+  tracked_diff: fixture_tracked_diff,
+  untracked: fixture_untracked.reverse
+)
+require_equal(failures, "review snapshot bytewise ordering", reordered_stream, fixture_stream)
+review_return_digest = Digest::SHA256.hexdigest(fixture_stream)
+completion_digest = Digest::SHA256.hexdigest(fixture_stream)
+require_equal(failures, "review return digest guard", review_return_digest, Digest::SHA256.hexdigest(fixture_stream))
+require_equal(failures, "review completion digest guard behavior", completion_digest, Digest::SHA256.hexdigest(fixture_stream))
+drift_stream = canonical_worktree_candidate_stream(
+  review_input.fetch("snapshot"),
+  tracked_diff: fixture_tracked_diff,
+  untracked: fixture_untracked.map { |entry| entry.merge(content: entry[:content] + "changed".b) }
+)
+failures << "review return digest drift 未阻断" if Digest::SHA256.hexdigest(drift_stream) == review_return_digest
+failures << "review completion digest drift 未阻断" if Digest::SHA256.hexdigest(drift_stream) == completion_digest
+%w[merge_base tracked_diff_command untracked_inventory_command untracked_diff_command untracked_files commit_list_command].each do |field|
+  require_include(
+    failures,
+    "worktree manifest required fields",
+    review_input.dig("manifest_required_by_mode", "worktree") || [],
+    field
+  )
+end
+%w[merge_base tracked_diff_command commit_list_command].each do |field|
+  require_include(
+    failures,
+    "committed manifest required fields",
+    review_input.dig("manifest_required_by_mode", "committed") || [],
+    field
+  )
+end
+
+git_authorization = contract.fetch("git_authorization", {})
+{
+  "commit" => %w[commit_authorized commit_scope commit_authorization_ref],
+  "push" => %w[push_authorized push_scope push_authorization_ref]
+}.each do |operation, required_fields|
+  require_equal(
+    failures,
+    "#{operation} explicit authorization",
+    git_authorization.dig(operation, "requires_explicit_user_authorization"),
+    true
+  )
+  required_fields.each do |field|
+    require_include(failures, "#{operation} authorization fields", git_authorization.dig(operation, "required") || [], field)
+  end
+  require_equal(
+    failures,
+    "#{operation} authorization value",
+    git_authorization.dig(operation, "authorized_value"),
+    true
+  )
+  required_fields.reject { |field| field.end_with?("_authorized") }.each do |field|
+    require_include(
+      failures,
+      "#{operation} non-empty authorization fields",
+      git_authorization.dig(operation, "non_empty") || [],
+      field
+    )
+  end
+  require_equal(
+    failures,
+    "#{operation} unauthorized action",
+    git_authorization.dig(operation, "unauthorized_action"),
+    "checkpoint-only"
+  )
+
+  definition = git_authorization.fetch(operation, {})
+  valid_facts = required_fields.to_h do |field|
+    [field, field.end_with?("_authorized") ? true : "explicit-value"]
+  end
+  allowed = git_operation_authorized?(definition, valid_facts)
+  failures << "#{operation} 完整显式授权被错误阻断" unless allowed
+
+  false_authorization = valid_facts.merge("#{operation}_authorized" => false)
+  false_allowed = git_operation_authorized?(definition, false_authorization)
+  failures << "#{operation} authorized=false 未阻断" if false_allowed
+
+  required_fields.reject { |field| field.end_with?("_authorized") }.each do |field|
+    blank = valid_facts.merge(field => "")
+    blank_allowed = git_operation_authorized?(definition, blank)
+    failures << "#{operation} #{field} 为空时未阻断" if blank_allowed
+  end
+
+  false_contract = definition.merge("authorized_value" => false)
+  failures << "#{operation} authorized_value=false 未阻断" if git_operation_authorized?(false_contract, valid_facts)
 end
 {
   "to-spec" => %w[user_problem mvp_and_non_goals success_criteria test_seam terminology_review]
@@ -447,6 +704,7 @@ end
 
 adapter = read(ROOT, ".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md")
 to_spec = read(ROOT, ".agents/skills/to-spec/SKILL.md")
+code_review = read(ROOT, ".agents/skills/code-review/SKILL.md")
 require_markers(
   failures,
   "Matt to-spec core contract",
@@ -466,8 +724,37 @@ require_markers(
     "发布提示由本适配层覆盖为 `ready-for-human`",
     "to-spec",
     "to-tickets",
+    "YSS active 的 `to-tickets`",
+    "`review_mode`",
+    "`commit_authorized`",
+    "`push_authorized`",
     "Release",
     "Retrospective"
+  ]
+)
+require_markers(
+  failures,
+  "Matt code-review candidate modes",
+  code_review,
+  [
+    "Committed candidate",
+    "Worktree candidate",
+    "git diff --no-ext-diff --binary --full-index <merge-base>",
+    "git diff --no-index --no-ext-diff --binary --full-index -- /dev/null <path>",
+    "git ls-files -z --others --exclude-standard",
+    "staged",
+    "unstaged",
+    "untracked",
+    "candidate manifest",
+    "captured candidate",
+    "yss-worktree-candidate-v1",
+    "unsigned 64-bit big-endian",
+    "candidate_digest",
+    "stale candidate",
+    "immutable",
+    "length-prefixed",
+    "bytewise path order",
+    "return `blocked`"
   ]
 )
 
@@ -476,7 +763,16 @@ require_markers(
   failures,
   "lifecycle template-source guard",
   lifecycle_skill,
-  ["template-source", "必须返回 `blocked`", "template-source-product-artifact-forbidden", "YSS active 调用 `to-spec` 时", "ready-for-agent` 发布提示归一化为 Spec `ready-for-human`"]
+  [
+    "template-source",
+    "必须返回 `blocked`",
+    "template-source-product-artifact-forbidden",
+    "YSS active 调用 `to-spec` 时",
+    "ready-for-agent` 发布提示归一化为 Spec `ready-for-human`",
+    "YSS active 调用 `to-tickets` 时",
+    "`commit_authorized`",
+    "`push_authorized`"
+  ]
 )
 orchestration = read(ROOT, ".agents/skills/yss-product-lifecycle/references/orchestration.md")
 require_markers(

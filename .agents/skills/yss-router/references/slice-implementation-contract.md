@@ -107,4 +107,4 @@ work_unit:
     behavior_tests_after_generation: []
 ```
 
-`controlled_generation` 仅在 `tdd_mode: controlled-generation` 时必填；其他模式标记 `not-applicable`。API schema 与 database schema 分别触发契约或数据架构回退，不得用一个含糊的 schema 类型决定路线。
+`controlled_generation` 仅在 `tdd_mode: controlled-generation` 时必填；其他模式标记 `not-applicable`。明确写入需求的权限业务行为仍使用 `behavior-tdd`；API schema 与 database schema 分别触发契约或数据架构回退，不得用一个含糊的 schema 类型决定路线。

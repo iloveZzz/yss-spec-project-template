@@ -36,7 +36,7 @@ owner: ai
 | 请求 / 响应 schema 明确 | 通过 / 阻断 |  |
 | 错误结构和错误码明确 | 通过 / 阻断 |  |
 | 分页 / 排序 / 过滤明确 | 通过 / 阻断 / 不适用 |  |
-| 权限 / 并发 / 幂等明确 | 通过 / 阻断 / 不适用 |  |
+| 并发 / 幂等明确 | 通过 / 阻断 / 不适用 |  |
 | YSS 统一响应包装明确 | 通过 / 阻断 |  |
 | 契约测试 seam 明确 | 通过 / 阻断 |  |
 | YAML 为单一 OAS 3.1 document | 通过 / 阻断 |  |
@@ -45,7 +45,7 @@ owner: ai
 
 ## 4. 冻结后变更规则
 
-- 冻结后如需改变路径、请求 / 响应 schema、错误结构、权限或分页规则，必须回到 OpenAPI Draft Review 和 Design Review。
+- 冻结后如需改变路径、请求 / 响应 schema、错误结构、分页规则，或 Spec 已明确的认证 / 授权行为，必须回到 OpenAPI Draft Review 和 Design Review。
 - 行为规格变化影响接口时，必须同步回写 `docs/.scratch/<feature>/api/<feature>.yaml` 和 OpenAPI Draft 或 Spec 验收场景。
 - 前后端实现必须以本记录引用的冻结版本为准。
 - 前端代码生成前，必须从冻结 YAML 生成 JSON，并保留 `openapi-json-export-record-template.md` 对应的派生记录。

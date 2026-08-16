@@ -18,7 +18,7 @@
 | ----------------------- | ------------------------------------------- |
 | 领域与流程词汇                 | `CONTEXT.md`                                |
 | Agent 入口、硬门禁、禁止事项       | `AGENTS.md`                                 |
-| 主阶段、门禁、产物和退出标准          | `docs/process/lifecycle-artifact-map.md`    |
+| 主阶段、门禁、产物、工作单元、证据和稳定 ID | `docs/process/lifecycle-registry.yaml`；`docs/process/lifecycle-artifact-map.md` 为派生阅读视图 |
 | 影响面触发与 `not-applicable` | `docs/process/harness-process-tailoring.md` |
 | 技能清单、来源、版本、哈希和投影目标      | `skills-lock.json`                          |
 |                         |                                             |
@@ -65,7 +65,9 @@ README、用户指南和其他说明文档只引用或解释上述事实，不�
 
 执行原则：
 
-- 21 个门禁全部是条件强制门禁。命中触发条件时必须完成；未命中时只记录 `not-applicable` 及原因，不生成空文档。
+- 生命周期注册表中的条件门禁全部按影响面强制。命中触发条件时必须完成；未命中时只记录 `not-applicable` 及原因，不生成空文档；不得把产物、工作单元或证据统称为门禁。
+- 安全 / 权限不设独立生命周期资料或专属门禁。日常功能不做额外登记、`not-applicable` 或推导校验；只有需求或冻结资产明确要求改变认证、授权、租户隔离、敏感数据或合规行为时，才把该行为写入普通 Spec、API、架构、验收和测试 seam，并仅按实际 UI、API、Backend、Data、High-risk 影响触发既有门禁。普通 action 注册、沿用既有认证中间件、未变化的 `401` / `403`、一般字段、SQL / DDL / 迁移和上传 / 下载本身不构成安全 / 权限专项。
+- `seam-deferred` 只能显式记录风险、责任人、后续 Ticket、验证计划和目标版本或发布日期。
 - 新功能或较大变更先用 `grill-with-docs` 澄清，再用 `to-spec` 形成 Spec。
 - 只要进入 Spec 基线，必须产出产品总体设计或功能架构；只有 UI 变化触及主流程、导航、权限体验、异常 / 恢复状态、状态流转或 API 反推时，才构成产品设计影响并强制低保真页面草图、状态矩阵、Ant Design v6 高保真 HTML 原型和用户确认。文案、token、颜色、间距和无行为变化的孤立视觉修复记录 `not-applicable`。
 - API 契约变更先形成 OpenAPI 3.1 Draft，经必要的工程基线、系统 / 数据架构和设计审查后 Freeze，再进入实现。
@@ -88,10 +90,10 @@ README、用户指南和其他说明文档只引用或解释上述事实，不�
 1. 确认受影响的 frontend / backend 工程是 `existing`、`required` 还是 `initialized`，并登记实现仓库、分支、CI、验证命令和回滚点。
 2. 无可复用工程时，先确认外部目标仓库或输出目录，再分别使用 `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator`；不因当前仓库缺少 frontend / backend 目录而绕过脚手架路由。
 3. 原型确认后，若 backend 为 `scaffold_status=required`，先由 `yss-router` 编译结构化脚手架受控生成工作单元合同，经生命周期编排器批准并持久化为合同 JSON 后，才使用 `yss-ddd-scaffold-generator` 读取该文件生成骨架；随后由受控工作单元实际执行项目根目录的 `./mvnw validate`、`./mvnw test`、`./mvnw package` 并记录逐条结果，再用 `yss-backend-scaffold-parent` 做工程基线校验并重新进入 Router；不得在合同批准前、脚手架前或脚手架内写业务代码。
-4. 使用 `yss-router` 选择最小 YSS skill 集合。后端领域、Application、Repository / Gateway、Web / DTO 分别路由到对应 YSS skill；涉及 POJO 样板或对象转换时必须加载 `lombok`、`mapstruct` 和 `alibaba-java-code-style`。
+4. 使用 `yss-router` 选择最小 YSS skill 集合。后端领域、Application、Repository / Gateway、Web / DTO 分别路由到对应 YSS skill；涉及 POJO 样板或对象转换时必须加载 `lombok`、`mapstruct` 和 `alibaba-java-code-style`。复用已验证的平台认证 / 授权能力本身不增加专项 skill；只有真实触碰当前用户、审计、加密、权限行为或安全边界时才增加对应路由。
 5. 所有正式垂直切片必须先由 `yss-router` 编译 Slice Implementation Contract 草案，再由生命周期编排器核验并持久化；合同至少包含 Common、Frontend、Backend、Contract、Cross-repo 子合同、工作单元、TDD 模式、允许写路径、禁止模式、证据和验证命令。Router 不得自行批准合同或设置 `ready-for-agent`。
 6. 后端切片必须在统一合同中补齐 Backend Slice Implementation Contract，至少包含 `required_skills`、`allowed_write_paths`、`forbidden_patterns`、`expected_evidence_files`、`seam_deferred`、`verification_commands`。
-7. 把系统 / 数据架构、ADR、工程基线、OpenAPI Freeze 和风险 / 回滚约束转译为 Build Architecture Checklist。
+7. 把系统 / 数据架构、ADR、工程基线、OpenAPI Freeze 和风险 / 回滚约束转译为 Build Architecture Checklist。明确写入需求的权限业务行为仍使用 `behavior-tdd`，且不放宽 `controlled-generation` 的禁止范围。
 8. 脚手架输出消费批准的脚手架合同；所有后续生成的后端代码都必须消费批准且版本当前的 Slice Implementation Contract、YSS skill 依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result；业务行为只能使用 `behavior-tdd`，路径越界、证据缺失、未执行验证、`drift`、`violation` 或 `new_impacts` 阻断继续实现或触发重路由。
 
 禁止绕过上述合同、检查清单或专项 skill，直接在 `AGENTS.md` 中自行发明细则。详细实现约束以 YSS skills、`docs/process/implementation-repo-integration.md` 和对应模板为准。

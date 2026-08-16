@@ -33,6 +33,7 @@ execution_result:
       owner:
       follow_up_ticket:
       verification_plan:
+      target_version_or_release_date:
   deviations:
     - rule:
       reason:
@@ -51,7 +52,7 @@ Router 必须验证：
 2. `changed_files` 全部位于工作单元和切片允许路径内。
 3. `expected_evidence_files` 全部存在并能回指行为。
 4. 验证命令包含实际结果和时间；计划命令不算证据。
-5. `seam_deferred` 有风险、责任人、补齐 Ticket 和验证计划。
+5. `seam_deferred` 有风险、责任人、补齐 Ticket、验证计划和目标版本 / 发布日期。
 6. `new_impacts` 非空时暂停并重路由。
 7. `drift` 触发 Architecture Re-check；`violation` 阻断 build。
 8. `status: not-applicable` 必须填写 `not_applicable_reason`；其他状态保留字段但可为空。

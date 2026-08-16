@@ -8,7 +8,7 @@
 
 - [ ] 业务架构清楚：用户旅程、价值流、业务能力、角色/组织模型、外部系统边界和 MVP 非目标范围已记录，或明确说明不适用。
 - [ ] 功能架构清楚：功能域、模块边界、优先级、依赖关系和 Spec 回填项已记录。
-- [ ] 系统总体架构清楚：服务/模块边界、部署、集成、权限、性能、可靠性、可观测性、发布和回滚策略已记录。
+- [ ] 系统总体架构清楚：服务/模块边界、部署、集成、性能、可靠性、可观测性、发布和回滚策略已记录。
 - [ ] 数据架构清楚：概念/逻辑/物理模型、元模型、版本、血缘、查询/搜索、索引、存储和迁移约束已记录，或明确说明无持久化影响。
 - [ ] 数据模型、元数据、版本或血缘类产品已在 Repository / MyBatis / 持久化开发前完成数据架构。
 - [ ] 架构图如已生成，已引用明确上游文档，且图中发现的问题已回写到 Spec、OpenAPI、ADR、系统 / 数据架构设计 或 Ticket。
@@ -17,7 +17,7 @@
 
 > DDD 检查嵌入现有阶段，不默认新增阶段或独立文档。只有当本节无法说明清楚时，才升级为独立 Strategic / Tactical DDD 设计文档。
 
-- [ ] 若为小改动，已完成 DDD impact check，并确认不影响统一语言、上下文边界、聚合、API、数据、权限或风险 / 回滚约束。
+- [ ] 若为小改动，已完成 DDD impact check，并确认不影响统一语言、上下文边界、聚合、API、数据或风险 / 回滚约束。
 - [ ] Strategic DDD Check 已完成或明确不适用：统一语言、核心/支撑/通用子域、限界上下文、上下文映射和非目标范围清楚。
 - [ ] Tactical DDD Check 已完成或明确不适用：聚合根、Entity、Value Object、领域服务、不变量、一致性边界和 Repository / Gateway seam 清楚。
 - [ ] OpenAPI 契约使用上下文的公开语言，不直接暴露内部聚合、Repository 或持久化表结构。
@@ -31,20 +31,7 @@
 - [ ] 服务边界是否合理（单一职责，不过大也不过度拆分）？
 - [ ] 是否有服务发现 / 负载均衡方案？
 
-## 2. 安全性 (Security)
-
-- [ ] 认证链路完整：用户 → API Gateway → Service → DB
-- [ ] 授权模型明确：RBAC / ABAC / OAuth2 Scope
-- [ ] 密码存储：bcrypt / argon2（禁止明文/SHA/MD5）
-- [ ] Token 管理：JWT 含 exp / 支持 refresh / 黑名单机制
-- [ ] API 输入校验：所有外部输入经过 Schema 校验
-- [ ] SQL 注入防护：100% 参数化查询（禁止字符串拼接）
-- [ ] XSS 防护：前端禁止 innerHTML / v-html 直接渲染用户输入
-- [ ] CSRF 防护：SameSite Cookie / CSRF Token
-- [ ] 敏感数据：PII 加密存储，日志脱敏
-- [ ] 依赖安全：定期 npm audit / pip audit
-
-## 3. 性能 (Performance)
+## 2. 性能 (Performance)
 
 - [ ] 数据库查询有索引计划（explain analyze 验证）
 - [ ] 热点数据有缓存策略（Redis / 本地缓存 / CDN）
@@ -55,7 +42,7 @@
 - [ ] 异步处理：耗时操作走消息队列（Kafka / Celery）
 - [ ] 静态资源 CDN + 压缩 (gzip/brotli)
 
-## 4. 可靠性 (Reliability)
+## 3. 可靠性 (Reliability)
 
 - [ ] 关键路径有降级方案（服务不可用时的 fallback）
 - [ ] 外部依赖有超时 + 重试 + 熔断
@@ -64,7 +51,7 @@
 - [ ] 健康检查端点：/health 返回依赖状态
 - [ ] 优雅关闭：SIGTERM 时完成进行中的请求
 
-## 5. 可维护性 (Maintainability)
+## 4. 可维护性 (Maintainability)
 
 - [ ] 架构决策已记录为 ADR
 - [ ] 契约草案 / OpenAPI Draft 已经工程基线、系统/数据架构和 Ticket 校验，并在开发前完成 OpenAPI Freeze
@@ -73,7 +60,7 @@
 - [ ] 告警规则已配置 (P99 延迟、错误率、磁盘)
 - [ ] 数据库迁移脚本可回滚 (含 downgrade)
 
-## 6. 成本 (Cost)
+## 5. 成本 (Cost)
 
 - [ ] 是否引入了不必要的技术组件？（YAGNI）
 - [ ] 云资源是否按需配置？（避免 over-provisioning）

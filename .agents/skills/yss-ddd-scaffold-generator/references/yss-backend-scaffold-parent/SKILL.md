@@ -119,7 +119,7 @@ description: "YSS 服务的后端开发脚手架框架和技术指南。在开�
 - Infrastructure 是否只实现 Gateway / Repository，并隔离 PO、Mapper、SQL、外部系统客户端。
 - Web / Adapter 是否只做协议适配、鉴权上下文、参数校验、DTO/VO 转换和响应包装。
 - Application 是否承载用例编排、事务边界和跨聚合协调，不把领域规则下沉到 Controller 或 Mapper。
-- OpenAPI Draft / Freeze、ADR、测试 seam 和安全红线是否已经明确。
+- OpenAPI Draft / Freeze、ADR、测试 seam 和已批准的架构约束是否已经明确。
 
 ## 5. 常用命令
 

@@ -1,6 +1,6 @@
 # <功能名称> Spec Delta
 
-> 适用场景：修改既有冻结 Spec 基线时，API、权限、状态机、数据模型、跨端协作或其他高风险行为需要在 Spec、OpenAPI Draft、Design Review 和垂直切片之间明确差异。全新产品或全新模块不使用本模板。
+> 适用场景：修改既有冻结 Spec 基线时，API、状态机、数据模型、跨端协作或其他高风险行为需要在 Spec、OpenAPI Draft、Design Review 和垂直切片之间明确差异。全新产品或全新模块不使用本模板。明确改变认证或授权行为时，把差异作为普通行为写入本 Delta，不新增单独 Delta。
 > 本模板只借鉴 OpenSpec 的行为差异表达方式，不引入 OpenSpec CLI、旧式变更目录、变更状态文件或额外状态机。
 
 ## 1. 变更摘要
