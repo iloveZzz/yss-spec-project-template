@@ -32,13 +32,11 @@ scripts/verify-openapi-json-handoff-scenarios
 
 for entry in scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-lifecycle-scenarios scripts/verify-matt-yss-integration-scenarios scripts/verify-prototype-backend-scaffold-scenarios scripts/verify-yss-router-scenarios scripts/verify-openapi-yaml-first-scenarios scripts/verify-openapi-json-handoff-scenarios scripts/export-yss-skills; do node --check "$entry"; done
 
-legacy_runtime="ru""by"
 script_roots=(scripts)
 if [[ -d .template-source/scripts ]]; then
   script_roots+=(.template-source/scripts)
 fi
-if rg -n "^#!.*${legacy_runtime}|\\b${legacy_runtime}\\b" "${script_roots[@]}" --glob '!*.md'; then echo "模板脚本不得保留活跃 Ruby 调用或 shebang" >&2; exit 1; fi
-if rg --files "${script_roots[@]}" | rg '\.rb$'; then echo "模板脚本不得保留 .rb 路径" >&2; exit 1; fi
+node scripts/lib/verify-template-scripts.mjs "${script_roots[@]}"
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   git diff --check
 fi

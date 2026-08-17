@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 
@@ -55,6 +55,89 @@ test("Node lifecycle registry verifier preserves the published semantic baseline
     encoding: "utf8"
   });
   assert.match(output, /生命周期注册表验证通过/);
+});
+
+test("template script scanner reports legacy runtime references and source extensions", async () => {
+  const scannerPath = path.join(repositoryRoot, "scripts/lib/verify-template-scripts.mjs");
+  const fixture = await mkdtemp(path.join(tmpdir(), "yss-script-scan-"));
+  const scriptsRoot = path.join(fixture, "scripts");
+  const optionalScriptsRoot = path.join(fixture, ".template-source/scripts");
+  const runScanner = (...roots) => spawnSync(process.execPath, [scannerPath, ...roots], {
+    cwd: fixture,
+    encoding: "utf8",
+  });
+  try {
+    await mkdir(scriptsRoot, { recursive: true });
+    await mkdir(optionalScriptsRoot, { recursive: true });
+    await mkdir(path.join(scriptsRoot, ".hidden-dir"), { recursive: true });
+    await mkdir(path.join(scriptsRoot, "ignored-dir"), { recursive: true });
+    await writeFile(path.join(scriptsRoot, "clean.sh"), "#!/usr/bin/env bash\n", "utf8");
+    await writeFile(path.join(scriptsRoot, "notes.md"), "ruby is documented here\n", "utf8");
+    await writeFile(path.join(scriptsRoot, ".hidden.sh"), "#!/usr/bin/env ruby\n", "utf8");
+    await writeFile(path.join(scriptsRoot, ".hidden-dir/hidden.sh"), "#!/usr/bin/env ruby\n", "utf8");
+    await writeFile(path.join(scriptsRoot, "ignored.sh"), "#!/usr/bin/env ruby\n", "utf8");
+    await writeFile(path.join(scriptsRoot, "ignored.rb"), "puts 'ignored'\n", "utf8");
+    await writeFile(path.join(scriptsRoot, "ignored-dir/ignored.sh"), "#!/usr/bin/env ruby\n", "utf8");
+    await writeFile(path.join(scriptsRoot, "ignored-by-ignore.sh"), "#!/usr/bin/env ruby\n", "utf8");
+    await writeFile(path.join(scriptsRoot, "ignored-by-rgignore.sh"), "#!/usr/bin/env ruby\n", "utf8");
+    await writeFile(path.join(scriptsRoot, "ignored-by-git-exclude.sh"), "#!/usr/bin/env ruby\n", "utf8");
+    await writeFile(path.join(optionalScriptsRoot, "clean.sh"), "#!/usr/bin/env bash\n", "utf8");
+    await writeFile(
+      path.join(scriptsRoot, "binary.sh"),
+      Buffer.from([0, 35, 33, 47, 117, 115, 114, 47, 98, 105, 110, 47, 101, 110, 118, 32, 114, 117, 98, 121, 10]),
+    );
+    await writeFile(path.join(fixture, ".gitignore"), "scripts/ignored.sh\nscripts/ignored.rb\nscripts/ignored-dir/\n", "utf8");
+    await writeFile(path.join(fixture, ".ignore"), "scripts/ignored-by-ignore.sh\n", "utf8");
+    await writeFile(path.join(fixture, ".rgignore"), "scripts/ignored-by-rgignore.sh\n", "utf8");
+    execFileSync("git", ["init", "--quiet"], { cwd: fixture });
+    await writeFile(
+      path.join(fixture, ".git/info/exclude"),
+      "scripts/ignored-by-git-exclude.sh\n",
+      "utf8",
+    );
+
+    const clean = runScanner("scripts", ".template-source/scripts");
+    assert.equal(clean.status, 0, clean.stderr);
+    assert.equal(clean.stderr, "");
+
+    await writeFile(path.join(scriptsRoot, "legacy.sh"), "#!/usr/bin/env ruby\n", "utf8");
+    await writeFile(path.join(scriptsRoot, "legacy.rb"), "puts 'legacy'\n", "utf8");
+
+    const violations = runScanner("scripts", ".template-source/scripts");
+    assert.notEqual(violations.status, 0);
+    assert.match(violations.stdout, /scripts\/legacy\.sh:1:\#!\/usr\/bin\/env ruby/);
+    assert.match(violations.stderr, /活跃 Ruby/);
+
+    await rm(path.join(scriptsRoot, "legacy.sh"));
+    const extensionViolation = runScanner("scripts", ".template-source/scripts");
+    assert.notEqual(extensionViolation.status, 0);
+    assert.equal(extensionViolation.stdout.trim(), "scripts/legacy.rb");
+    assert.match(extensionViolation.stderr, /\.rb 路径/);
+
+    const selfScan = spawnSync(
+      process.execPath,
+      [scannerPath, "scripts"],
+      { cwd: repositoryRoot, encoding: "utf8" },
+    );
+    assert.equal(selfScan.status, 0, selfScan.stderr);
+
+    const fileRootFailure = runScanner("scripts/clean.sh");
+    assert.notEqual(fileRootFailure.status, 0);
+    assert.match(fileRootFailure.stderr, /模板脚本扫描失败/);
+
+    const scannerAlias = process.platform === "darwin"
+      ? scannerPath.replace(/^\/private\/tmp(?=\/)/, "/tmp")
+      : scannerPath;
+    const missingRoot = spawnSync(
+      process.execPath,
+      [scannerAlias, "missing-scripts"],
+      { cwd: fixture, encoding: "utf8" },
+    );
+    assert.notEqual(missingRoot.status, 0);
+    assert.match(missingRoot.stderr, /模板脚本扫描失败/);
+  } finally {
+    await rm(fixture, { recursive: true, force: true });
+  }
 });
 
 test("public skill export preserves its portable manifest and blocks workstation paths", async () => {
