@@ -5,6 +5,10 @@ description: Use after low-fidelity prototype review is approved and before Spec
 
 # High Fidelity HTML Prototype
 
+## 兼容入口
+
+本 skill 仅服务旧名称或既有链接；新的高保真产出遵循 `yss-prototype-stage`，在 Codex 由 `product-design:index` 路由。它不批准生命周期门禁或实现就绪状态。
+
 Use this skill only after `prototype-review` approves the low-fidelity prototype / interaction design. It turns reviewed product design into a high-fidelity, browser-runnable HTML artifact for business, UX, frontend, and API review.
 
 ## Required Inputs
@@ -16,33 +20,33 @@ Use this skill only after `prototype-review` approves the low-fidelity prototype
 - Approved low-fidelity prototype review: `docs/.scratch/<feature>/design/<feature>-prototype-review.md` or equivalent issue comment.
 - Project design system: `docs/design/design.md` and `docs/design/tokens/*`.
 
-If low-fidelity `prototype-review` is blocked or missing, stop and return to `product-design-prototype` / `prototype-review`.
+If low-fidelity `prototype-review` is blocked or missing, stop and return to `yss-prototype-stage` / `prototype-review`.
 
 ## Ant Design Official Agent Baseline
 
-Use the official Ant Design agent guidance as the implementation baseline:
+Use the official Ant Design agent guidance as the fact baseline through `yss-prototype-stage`:
 
 - Read or reference `https://ant.design/docs/react/for-agents` when the task starts.
 - Use `@ant-design/cli` before choosing unfamiliar components, props, tokens, or migration-sensitive APIs.
 - Prefer direct CLI subcommands because `--help` may fail in some Node environments while subcommands still work.
 
-Recommended commands:
+Record the installed CLI version and the target AntD version in `prototype-evidence.yaml`. Use `--format json`; pass the recorded target version to version-sensitive queries:
 
 ```bash
-npm view antd version
-npm view @ant-design/cli version
-npx -y @ant-design/cli@6.5.0 info Button
-npx -y @ant-design/cli@6.5.0 token Button
-npx -y @ant-design/cli@6.5.0 demo Select basic
-npx -y @ant-design/cli@6.5.0 changelog 5.0.0 6.5.0 Table
+antd design.md --format json
+antd info Button --version <target_antd_version> --format json
+antd token Button --version <target_antd_version> --format json
+antd demo Select basic --version <target_antd_version> --format json
+antd semantic Button --version <target_antd_version> --format json
+antd lint <prototype-path> --format json
 ```
 
-Use the latest verified v6.x version instead of `6.5.0` when npm reports a newer v6 release. Record the exact version and any queried components in the output.
+Use the project-selected version when one exists; otherwise record the CLI's actual default version before making version-sensitive decisions. Record every queried component in the evidence manifest.
 
 ## Core Rules
 
 - Output is HTML: `docs/.scratch/<feature>/design/prototypes/index.html`.
-- The prototype must use Ant Design v6. Before generating or updating code, verify the current v6 package with `npm view antd version` and `npm view @ant-design/cli version`. If the latest version is not v6.x, pin the newest available v6.x version and record the choice.
+- The prototype must use the approved Ant Design v6 target. Obtain component facts from the official `antd` CLI and record the exact CLI/target versions; do not infer version-sensitive APIs from memory.
 - Use React >= 18, `antd@6.x`, and `@ant-design/icons@6.x` for interactive prototypes.
 - Prefer Ant Design components and tokens over hand-built controls: `Layout`, `Menu`, `Breadcrumb`, `Button`, `Input`, `Select`, `Table`, `Form`, `Tabs`, `Steps`, `Drawer`, `Modal`, `Alert`, `Tooltip`, `Tag`, `Badge`, `DatePicker`, `Upload`, `Pagination`, `Empty`, `Spin`, `Result`.
 - Do not create extra data-service or fixture artifacts. Use embedded sample data inside the HTML/JS for visual and interaction demonstration only.
@@ -71,7 +75,7 @@ Run a local browser verification before calling the artifact ready:
 - Check that the page renders nonblank.
 - Exercise the main flow and at least one failure / permission / conflict state.
 - Check at least one desktop and one mobile viewport.
-- Record verification evidence in the response or in the related review / issue.
+- Record verification evidence in `docs/.scratch/<feature>/verification/prototype-evidence.yaml` and link it from the review and confirmation record.
 
 ## Output Contract
 

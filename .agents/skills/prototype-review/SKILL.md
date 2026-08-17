@@ -5,7 +5,7 @@ description: Use when reviewing low-fidelity UI design, wireframes, prototype li
 
 # Prototype Review
 
-Use this skill as the low-fidelity gate between product design/prototype work and high-fidelity HTML prototype work. The review is fail-closed: if the design cannot drive calibrated requirements, API, frontend acceptance, and slices, send it back to product design.
+Use this skill as the independent low-fidelity review in `yss-prototype-stage`. The review is fail-closed: if the design cannot drive calibrated requirements, API, frontend acceptance, and slices, send it back to product design. `yss-product-lifecycle` alone records the resulting `gate.prototype-reviewed` decision.
 
 ## Trigger Boundary
 
@@ -17,6 +17,7 @@ Run this independent gate only when UI changes affect a primary user flow, navig
 - `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` or prototype link.
 - State matrix, preferably based on `docs/design/templates/state-matrix-template.md`.
 - Existing OpenAPI Draft only if the review is checking alignment; do not require OpenAPI before product design.
+- `docs/.scratch/<feature>/verification/prototype-evidence.yaml` may be created as a pending evidence record, but CLI/browser validation belongs to the following high-fidelity verification gate.
 
 ## Review Gates
 
@@ -63,8 +64,11 @@ Run this independent gate only when UI changes affect a primary user flow, navig
 ### Frontend Prototype Readiness
 - <component states, data dependencies, frontend acceptance notes>
 
+### Lifecycle Evidence
+- <persistent review path; blockers; `gate.prototype-reviewed` candidate result>
+
 ### Next Action
-- <high-fidelity-html-prototype / return to product-design-prototype>
+- <yss-prototype-stage / return to product design>
 ```
 
 Use `docs/design/templates/prototype-review-checklist.md` when writing a persistent review artifact.

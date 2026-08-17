@@ -16,8 +16,16 @@ end
 def route_after_prototype(facts)
   return {"status" => "not-applicable", "steps" => []} unless facts.fetch(:backend_impact)
 
-  if facts.fetch(:ui_impact) && !facts.fetch(:prototype_confirmation)
-    return {"status" => "blocked", "reason" => "prototype-confirmation-required", "steps" => []}
+  if facts.fetch(:ui_impact)
+    {
+      prototype_review: "prototype-review-required",
+      prototype_verification: "prototype-verification-required",
+      antd_cli_verification: "antd-cli-verification-required",
+      browser_verification: "browser-verification-required",
+      prototype_confirmation: "prototype-confirmation-required"
+    }.each do |fact, reason|
+      return {"status" => "blocked", "reason" => reason, "steps" => []} unless facts.fetch(fact, false)
+    end
   end
 
   steps = ["engineering-baseline"]
@@ -74,7 +82,9 @@ if backend_scaffold.is_a?(Hash)
   %w[approval_ref approver persisted_ref current_version].each do |required|
     failures << "脚手架合同审批记录缺少 #{required}" unless scaffold_schema.dig("approval", "required").to_a.include?(required)
   end
-  failures << "backend_scaffold 必须声明 prototype_confirmation 后置顺序" unless backend_scaffold.dig("sequence", "after").include?("prototype_confirmation")
+  %w[prototype_review prototype_verification antd_cli_verification browser_verification prototype_confirmation].each do |required|
+    failures << "backend_scaffold 必须声明 #{required} 后置顺序" unless backend_scaffold.dig("sequence", "after").include?(required)
+  end
   failures << "backend_scaffold 必须先于业务代码生成" unless backend_scaffold.dig("sequence", "before").include?("business_code_generation")
   failures << "required 脚手架必须使用 yss-ddd-scaffold-generator" unless backend_scaffold["generator_skill"] == "yss-ddd-scaffold-generator"
   failures << "脚手架生成必须使用 controlled-generation" unless backend_scaffold["tdd_mode"] == "controlled-generation"
@@ -146,7 +156,9 @@ if router_scaffold_schema.is_a?(Hash)
 end
 
 complete_facts = {
-  backend_impact: true, ui_impact: true, prototype_confirmation: true, scaffold_status: "required", scaffold_contract_approved: true
+  backend_impact: true, ui_impact: true, prototype_review: true, prototype_verification: true,
+  antd_cli_verification: true, browser_verification: true, prototype_confirmation: true,
+  scaffold_status: "required", scaffold_contract_approved: true
 }
 complete_route = route_after_prototype(complete_facts)
 expected_steps = %w[engineering-baseline yss-router-scaffold-contract lifecycle-approve-scaffold-contract yss-ddd-scaffold-generator yss-backend-scaffold-parent yss-router-contract-recompile]
@@ -154,6 +166,16 @@ failures << "原型完成后的后端路由顺序不完整" unless complete_rout
 
 blocked_route = route_after_prototype(complete_facts.merge(prototype_confirmation: false))
 failures << "原型未确认时错误允许后端脚手架" unless blocked_route["status"] == "blocked" && blocked_route["reason"] == "prototype-confirmation-required"
+
+{
+  prototype_review: "prototype-review-required",
+  prototype_verification: "prototype-verification-required",
+  antd_cli_verification: "antd-cli-verification-required",
+  browser_verification: "browser-verification-required"
+}.each do |missing_fact, reason|
+  blocked = route_after_prototype(complete_facts.merge(missing_fact => false))
+  failures << "#{missing_fact} 缺失时错误允许后端脚手架" unless blocked["status"] == "blocked" && blocked["reason"] == reason
+end
 
 missing_scaffold_contract = route_after_prototype(complete_facts.merge(scaffold_contract_approved: false))
 failures << "脚手架受控生成缺少批准合同仍被允许" unless missing_scaffold_contract["status"] == "blocked" && missing_scaffold_contract["reason"] == "scaffold-contract-required"

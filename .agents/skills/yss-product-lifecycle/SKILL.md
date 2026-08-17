@@ -41,7 +41,7 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 - YSS active 调用 `to-tickets` 时，新建垂直切片统一写为 `ready-for-human`；只有本编排器复算完整 `ready-for-agent` 公式后才能提升，Matt 的通用默认标签不得提前覆盖生命周期状态。
 - `orchestrate`/`resume` 连续执行安全工作单元，直到人工门禁、真实阻塞、新授权、实现/发布裁决或专项失败。
 - 进入实现后继续主控，通过 `yss-router`、`implement`、`tdd` 和 YSS 专项 skills 执行；独立审查和 fresh verification 后才能作完成判断。只有工作单元真实触碰当前用户、审计、加密或明确的权限业务行为时，才增加 `yss-userinfo`、`yss-audit-log`、`yss-security-algorithm` 等专项依赖。
-- 原型确认 → 后端脚手架：当 YSS 高保真原型已经完成 Prototype Review、AntD CLI 校验和用户确认，且 backend `scaffold_status=required` 时，先完成工程基线，由 `yss-router` 编译脚手架受控生成工作单元合同，经生命周期编排器批准并持久化后，才使用 `yss-ddd-scaffold-generator` 生成后端骨架；随后由 `yss-backend-scaffold-parent` 校验并重新进入 `yss-router`，不得先写业务代码。
+- 原型确认 → 后端脚手架：命中产品设计影响时，先按 `yss-prototype-stage` 形成交互说明、独立 Prototype Review、高保真 HTML、AntD CLI 与浏览器验证、用户确认；只有 `gate.prototype-reviewed`、`gate.prototype-verified` 和 `gate.user-confirmation` 均满足时，才能进入下游。若 backend `scaffold_status=required`，随后先完成工程基线，由 `yss-router` 编译脚手架受控生成工作单元合同，经生命周期编排器批准并持久化后，才使用 `yss-ddd-scaffold-generator` 生成后端骨架；随后由 `yss-backend-scaffold-parent` 校验并重新进入 `yss-router`，不得先写业务代码。
 - 所有后续生成的后端代码都必须消费生命周期批准、已持久化且版本当前的 Slice Implementation Contract，绑定最小 YSS skill 闭包、允许写路径、证据文件和 YSS Skill Execution Result；没有这些证据时必须阻断。
 - Harness 内承载运行时代码时，项目路径策略固定为 `apps/backend/<project>/` 和 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 仅是项目容器，`app/backend/`、`app/frontend/` 及其子路径禁止生成。外部实现仓库不强制使用该目录，但必须登记真实项目根路径并写入合同。
 - Setup readiness 每个任务只评估一次并在本轮缓存；只有 tracker、主远端、真实标签或配置变化时重查。
@@ -54,7 +54,7 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 - 在 Matt 阶段边界（phase boundary）先按 `Continue → /clear → /handoff → subagent → /compact` 判断上下文动作；只在 checkpoint 记录可选 `phase_boundary` 证据，不新增生命周期状态。
 - `to-questionnaire` 进入结构化 `external-input-required` 暂停；回答回流后必须重新分类影响面并更新权威资产，不能直接恢复下游实现。
 - `wait-what` 只重新解释当前结论，不改变阶段、门禁、Ticket 或 `ready-for-agent` 状态；`wizard` 只处理人工才能完成的步骤，默认临时使用，秘密值不得进入持久化输出。
-- Matt `prototype` 是保留在 `prototype/<name>` 分支的单文件可分享 HTML 主来源；YSS 高保真 HTML 原型仍必须经过 Prototype Review、AntD CLI 校验和用户确认，两者不得互相替代。
+- Matt `prototype` 是保留在 `prototype/<name>` 分支的单文件可分享 HTML 主来源；YSS 高保真 HTML 原型仍必须经过 Prototype Review、AntD CLI、浏览器验证和用户确认，两者不得互相替代。
 - Matt skill 返回结果必须先归一化为 `Matt Skill Result`；`drift`、`new_impacts`、`violation`、`stale_candidates`、缺失证据或不完整结果不得推进为 `completed`。
 
 ### 原型完成后的后端脚手架与代码生成边界

@@ -14,8 +14,11 @@ slice_contract:
     ticket:
     requirement_freeze:
     low_fidelity_review:
+    prototype_review:
     high_fidelity_html:
+    prototype_verification:
     antd_cli_evidence:
+    browser_verification_evidence:
     prototype_confirmation:
     openapi_freeze_or_no_impact:
     architecture_review:

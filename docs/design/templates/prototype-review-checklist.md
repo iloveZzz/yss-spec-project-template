@@ -10,8 +10,8 @@
 | 交互说明 | `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` |  |
 | 原型 / 线框图 | `<链接或导出图片路径>` |  |
 | 状态矩阵 | `docs/.scratch/<feature>/design/<feature>-state-matrix.md` |  |
-| Product Design 路由记录 | `product-design:index -> <focused skill>` |  |
-| AntD CLI 校验证据 | `<命令输出或记录路径>` |  |
+| 原型阶段合同 / Product Design 路由记录 | `yss-prototype-stage -> product-design:index -> <focused skill>` |  |
+| 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 高保真完成后补齐 CLI 与浏览器验证 |
 | 现有 API 草案 | `docs/.scratch/<feature>/api/<feature>.yaml` | 可选 |
 
 ## 门禁清单
@@ -26,8 +26,7 @@
 | 权限行为能区分隐藏、禁用和调用后拒绝 |  |  |
 | 校验错误能区分模型级和字段级展示位置 |  |  |
 | 能从界面需求反推出 API 影响和契约草案 |  |  |
-| AntD v6 设计语言、组件 API、demo、token 和 semantic 已用 `antd` CLI 查询并记录 |  |  |
-| 高保真 HTML 原型未使用旧原型技能作为主入口，已通过 `product-design:index` 路由产出或记录例外原因 |  |  |
+| 高保真 HTML 原型已按 `yss-prototype-stage` 通过 `product-design:index` 路由产出，或记录等价 Agent 适配及例外原因 |  |  |
 | 前端验收、组件状态和数据依赖已明确 |  |  |
 | 风险 / 回滚约束和人工确认项已记录 |  |  |
 
@@ -58,6 +57,7 @@
 
 ```text
 结论：通过 / 阻断
+生命周期门禁：`gate.prototype-reviewed` 通过 / 不通过
 阻断项：
 - 
 非阻断建议：

@@ -13,6 +13,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 - 项目 token 快照：`docs/design/tokens/theme.json`、`docs/design/tokens/tokens.default.json`、`docs/design/tokens/tokens.dark.json`、`docs/design/tokens/tokens.compact.json`、`docs/design/tokens/variables.css`、`docs/design/tokens/variables.dark.css`。
 - 本技能执行清单：`references/design-system.md`，用于 Agent 执行和评审，不替代 `docs/design/design.md`。
 - 历史输入包：`/Users/zhudaoming/Downloads/Product-Design-System`，只用于追溯首次引入来源，不作为后续工程依赖。
+- 原型阶段合同：`yss-prototype-stage`，用于统一跨 Agent 的原型资产、AntD 事实和浏览器验证证据。
 
 如果只需要快速判断，先读本文件。若要写 UI 规范、实现页面、评审设计或调整 token，必须读项目内 `docs/design/design.md`；若要执行评审或实现检查，再读 `references/design-system.md`。
 
@@ -21,7 +22,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 1. 先判断任务阶段：设计系统引入 / 产品设计 / 原型评审 / 前端实现 / UI 改造 / 主题 token 落地。
 2. 读取已有资产：`docs/design/design.md`、相关 Spec、交互说明、状态矩阵、OpenAPI Draft、现有页面代码。
 3. 按设计系统基线约束输出或修改产物：颜色、排版、间距、圆角、动效、组件、状态、响应式。
-4. 若是产品设计阶段，配合 `product-design-prototype` 产出页面、流程、状态矩阵和 OpenAPI 反推清单。
+4. 若是产品设计阶段，先使用 `yss-prototype-stage`；Codex 以 `product-design:index` 为主入口，其他 Agent 必须交付等价合同资产和证据。
 5. 若是前端实现阶段，配合 `yss-ui`、`yss-components`、`yss-formily`、`yss-page-module-development`，但本技能负责风格与体验一致性门禁。
 6. 若发现现有设计系统文档不足，先更新 `docs/design/design.md`，再让实现或评审引用该文档。
 
@@ -76,10 +77,10 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 
 | 场景 | 配合技能 |
 | --- | --- |
-| Spec 后做页面 / 原型 / 交互说明 | `product-design-prototype` |
+| Spec 后做页面 / 原型 / 交互说明 | `yss-prototype-stage` → `product-design:index` |
 | 低保真原型进入高保真前评审 | `prototype-review` |
-| 低保真评审通过后的高保真 HTML 原型 | `high-fidelity-html-prototype` |
-| 低保真线框或流程图 | `wireframe-prototype` / `excalidraw-diagram-generator` |
+| 低保真评审通过后的高保真 HTML 原型 | `yss-prototype-stage`；`high-fidelity-html-prototype` 仅兼容入口 |
+| 低保真线框或流程图 | `product-design:index` 或 `wireframe-prototype` 兼容入口 / `excalidraw-diagram-generator` |
 | 前端页面实现 | `yss-ui` / `yss-page-module-development` |
 | 表单 schema | `yss-formily` |
 | YTable / YTree / 高度自适应 | `yss-components` / `yss-use-table-height` / `yss-use-tree-height` |

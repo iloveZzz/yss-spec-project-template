@@ -151,7 +151,7 @@ backend_scaffold:
   scaffold_statuses: [existing, required, initialized]
   required_status: required
   sequence:
-    after: [prototype_confirmation, engineering_baseline]
+    after: [prototype_review, prototype_verification, antd_cli_verification, browser_verification, prototype_confirmation, engineering_baseline]
     before_generator: [yss-router-scaffold-contract, lifecycle-approve-scaffold-contract]
     before: [business_code_generation, implement]
   generator_skill: yss-ddd-scaffold-generator
@@ -360,7 +360,7 @@ prototype_modes:
     replaces_yss_high_fidelity: false
   yss_high_fidelity:
     asset: ant_design_v6_html
-    required: [prototype_mode, prototype_review, antd_cli_verification, user_confirmation]
+    required: [prototype_mode, prototype_review, antd_cli_verification, browser_verification, prototype_evidence, user_confirmation]
     purpose: product_design_review
     replaces_matt_logic: false
 

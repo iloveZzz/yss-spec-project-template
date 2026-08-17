@@ -5,7 +5,11 @@ description: Use when a Spec baseline or user story has UI impact and needs page
 
 # Product Design Prototype
 
-Use this skill after Spec baseline and before Spec calibration / OpenAPI Draft for features with user interfaces. Its job is to turn requirements into design assets that can drive a calibrated Spec, API, frontend acceptance, and vertical slices.
+## 兼容入口
+
+本 skill 仅服务旧名称或既有链接；它不是新的原型主入口。进入后先加载 `yss-prototype-stage`，并在 Codex 使用 `product-design:index` 产出设计资产。生命周期门禁仍由 `yss-product-lifecycle` 裁决。
+
+其余内容只描述可复用的交互说明检查项，不能替代统一合同中的 AntD CLI、浏览器验证或用户确认。
 
 ## Required Inputs
 
@@ -25,7 +29,7 @@ If no Spec baseline exists, route back to `yss-product-lifecycle` / `grill-with-
 5. Write the OpenAPI implication list: fields, filters, actions, errors, permissions, pagination, optimistic/concurrency states, and audit/version data.
 6. For every primary page action, add an action-to-contract row: page/component, action label, `actionKey`, endpoint or explicit non-goal, request fields, response shape, permission behavior, state transition, idempotency/concurrency rule, and error codes.
 7. For every P0 requirement containing verbs such as manage, maintain, configure, create, update, archive, retry, cancel, publish, export, or create draft, confirm the interaction spec either names the API implication or records that the capability is intentionally out of scope.
-8. Hand off to `prototype-review`. After low-fidelity review is approved, hand off to `high-fidelity-html-prototype`. Do not freeze/calibrate the Spec or enter OpenAPI Draft for UI work until the Ant Design v6 high-fidelity HTML prototype exists and has no blocking findings.
+8. Hand off to `prototype-review`. After approval, return to `yss-prototype-stage` for `product-design:index` 高保真产出、AntD CLI 与浏览器验证；未形成确认记录前不得冻结/校准 Spec 或进入 OpenAPI Draft。
 9. 交互原型应标注 semantic token 角色、single primary action、interaction feedback 和不可逆操作确认；若页面使用 Ant Design，主题密度或暗色策略必须使用 theme algorithm，并在关键文本上复核 accessibility contrast。
 
 ## Tool Routing

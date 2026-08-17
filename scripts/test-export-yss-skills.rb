@@ -32,19 +32,21 @@ class ExportYssSkillsTest < Minitest::Test
       stdout, stderr, result = run_export(output)
 
       assert result.success?, "#{stdout}\n#{stderr}"
-      assert_equal 44, Dir.glob(output.join("skills", "*").to_s).count { |path| File.directory?(path) }
+      assert_equal 45, Dir.glob(output.join("skills", "*").to_s).count { |path| File.directory?(path) }
 
       manifest = JSON.parse(output.join(".yss-export-manifest.json").read)
-      assert_equal 44, manifest.fetch("skills").length
-      assert_operator manifest.fetch("generated_files_sha256").length, :>, 44
+      assert_equal 45, manifest.fetch("skills").length
+      assert_operator manifest.fetch("generated_files_sha256").length, :>, 45
+      assert output.join("skills", "yss-prototype-stage", "SKILL.md").file?, "prototype stage contract was not exported"
       REMOVED_SKILLS.each do |skill_name|
         refute output.join("skills", skill_name).exist?, "removed skill was exported: #{skill_name}"
       end
 
       page = JSON.parse(output.join("skills.sh.json").read)
       grouped = page.fetch("groupings").flat_map { |group| group.fetch("skills") }
-      assert_equal 44, grouped.uniq.length
-      assert_equal 44, grouped.length
+      assert_equal 45, grouped.uniq.length
+      assert_equal 45, grouped.length
+      assert_includes grouped, "yss-prototype-stage"
 
       exported_text = Dir.glob(output.join("skills", "**", "*").to_s)
         .select { |path| File.file?(path) }

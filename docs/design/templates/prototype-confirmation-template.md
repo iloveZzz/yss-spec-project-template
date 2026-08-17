@@ -13,20 +13,23 @@
 | 状态矩阵 | `docs/.scratch/<feature>/design/<feature>-state-matrix.md` |
 | 原型评审 | `docs/.scratch/<feature>/design/<feature>-prototype-review.md` |
 | 高保真 HTML 原型 | `docs/.scratch/<feature>/design/prototypes/index.html` |
+| 机器可读验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` |
 | Product Design 路由 | `product-design:index -> <focused skill>` |
 | 产出方式 | 系统 / Agent 自动产出 / 人工补充 |
-| Ant Design 版本 | v6 |
+| Ant Design 目标版本 | `<实际项目选择的 v6 版本>` |
 
 ## 2. AntD CLI 校验证据
 
 | 校验项 | 命令 / 记录路径 | 结论 |
 |---|---|---|
-| 设计语言 | `antd design.md --version 6.0.0 --format json` |  |
-| 组件 API | `antd info <Component> --version 6.0.0 --format json` |  |
-| 组件 demo | `antd demo <Component> <demo> --version 6.0.0 --format json` |  |
-| 组件 token | `antd token <Component> --version 6.0.0 --format json` |  |
-| semantic | `antd semantic <Component> --version 6.0.0 --format json` |  |
+| 设计语言 | `antd design.md --format json` |  |
+| 组件 API | `antd info <Component> --version <target_antd_version> --format json` |  |
+| 组件 demo | `antd demo <Component> <demo> --version <target_antd_version> --format json` |  |
+| 组件 token | `antd token <Component> --version <target_antd_version> --format json` |  |
+| semantic | `antd semantic <Component> --version <target_antd_version> --format json` |  |
 | lint / 替代校验 | `antd lint <prototype path> --format json` |  |
+
+CLI 实际版本、目标 AntD 版本、完整 JSON 输出与浏览器验证结论以 `prototype-evidence.yaml` 为准；不得用本文中的示例版本替代实际记录。
 
 ## 3. 用户确认
 

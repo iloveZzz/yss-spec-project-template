@@ -104,7 +104,7 @@ README、用户指南和其他说明文档只引用或解释上述事实，不�
 |---|---|
 | 技术事实、标准、第三方 API 或框架行为影响决策 | `research` 或等价的一手资料记录 |
 | 竞品、市场或用户口碑事实 | `competitive-intelligence` |
-| UI 设计、原型、组件或主题 | `yss-design-system` 后路由 `product-design:index`；产出前用 `antd` 查询 Ant Design v6 事实 |
+| UI 设计、原型、组件或主题 | `yss-design-system` 后使用 `yss-prototype-stage`；Codex 再路由 `product-design:index`，其他 Agent 交付等价合同资产；产出前后用 `antd` CLI 记录 Ant Design v6 与浏览器验证事实 |
 | Bug、测试失败或性能回退 | `diagnosing-bugs` 建立可复现反馈，再用 `tdd` |
 | merge / rebase 冲突 | `resolving-merge-conflicts` |
 | 架构治理、难测模块或深模块设计 | `improve-codebase-architecture` / `codebase-design` |

@@ -20,7 +20,7 @@ subcontract_statuses: [required, not-applicable]
 
 readiness:
   common: [spec, slice_ticket, architecture_review, build_architecture_checklist, implementation_repository, verification_commands]
-  ui_impact: [requirement_freeze, low_fidelity_review, high_fidelity_html, antd_cli_evidence, prototype_confirmation]
+  ui_impact: [requirement_freeze, low_fidelity_review, prototype_review, high_fidelity_html, prototype_verification, antd_cli_evidence, browser_verification_evidence, prototype_confirmation]
   api_impact: [openapi_freeze]
   no_api_impact: [no_api_impact_record]
   data_impact: [data_architecture]
@@ -39,7 +39,7 @@ exclusive_flags:
 
 slice_contract_required:
   root: [schema_version, contract_id, contract_version, slice_id, status, lifecycle_refs, readiness, common, frontend, backend, contract, cross_repo, work_units]
-  lifecycle_refs: [spec, ticket, requirement_freeze, low_fidelity_review, high_fidelity_html, antd_cli_evidence, prototype_confirmation, openapi_freeze_or_no_impact, architecture_review, data_architecture, engineering_baseline, build_architecture_checklist, implementation_repository, frontend_repository, backend_repository, maven_wrapper]
+  lifecycle_refs: [spec, ticket, requirement_freeze, low_fidelity_review, prototype_review, high_fidelity_html, prototype_verification, antd_cli_evidence, browser_verification_evidence, prototype_confirmation, openapi_freeze_or_no_impact, architecture_review, data_architecture, engineering_baseline, build_architecture_checklist, implementation_repository, frontend_repository, backend_repository, maven_wrapper]
   readiness: [blockers, stale_inputs, not_applicable]
   common: [impacted_areas, implementation_path_policy, project_roots, required_skills, optional_skills, unavailable_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, human_review_points, full_reroute_triggers]
   frontend: [status, required_skills, approved_prototype_ref, state_matrix_ref, allowed_write_paths, component_test_seams, e2e_paths]
@@ -55,8 +55,11 @@ lifecycle_ref_by_readiness:
   implementation_repository: implementation_repository
   requirement_freeze: requirement_freeze
   low_fidelity_review: low_fidelity_review
+  prototype_review: prototype_review
   high_fidelity_html: high_fidelity_html
+  prototype_verification: prototype_verification
   antd_cli_evidence: antd_cli_evidence
+  browser_verification_evidence: browser_verification_evidence
   prototype_confirmation: prototype_confirmation
   openapi_freeze: openapi_freeze_or_no_impact
   no_api_impact_record: openapi_freeze_or_no_impact

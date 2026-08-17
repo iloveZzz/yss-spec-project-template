@@ -77,9 +77,18 @@ api_ready = CONTRACT.dig("readiness", "api_impact").to_h { |key| [key, true] }
 all_ui = common_ready.merge(ui_ready).merge(api_ready)
 failures << "Approved UI inputs were blocked" unless readiness_missing(CONTRACT, %w[ui_impact api_impact], all_ui).empty?
 
+%w[prototype_review prototype_verification antd_cli_evidence browser_verification_evidence prototype_confirmation].each do |field|
+  failures << "Router UI readiness 缺少 #{field}" unless CONTRACT.dig("readiness", "ui_impact").include?(field)
+end
+
 ui_without_confirmation = all_ui.merge("prototype_confirmation" => false)
 unless readiness_missing(CONTRACT, %w[ui_impact api_impact], ui_without_confirmation).include?("prototype_confirmation")
   failures << "UI implementation was not blocked without prototype confirmation"
+end
+
+ui_without_browser_evidence = all_ui.merge("browser_verification_evidence" => false)
+unless readiness_missing(CONTRACT, %w[ui_impact api_impact], ui_without_browser_evidence).include?("browser_verification_evidence")
+  failures << "UI implementation was not blocked without browser verification evidence"
 end
 
 data_ready = common_ready.merge(CONTRACT.dig("readiness", "data_impact").to_h { |key| [key, true] })

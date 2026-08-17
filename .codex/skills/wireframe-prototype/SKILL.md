@@ -5,6 +5,10 @@ description: Use when low-fidelity product screens, user flows, whiteboards, Exc
 
 # Wireframe Prototype
 
+## 兼容入口
+
+本 skill 仅服务旧名称或既有链接；新的低保真产出遵循 `yss-prototype-stage`，在 Codex 由 `product-design:index` 路由。它不批准产品设计门禁。
+
 Use this skill for low-fidelity product decisions. It favors fast, inspectable artifacts over polished visuals.
 
 ## Choose The Medium
@@ -49,4 +53,4 @@ Then link or paste this into `docs/.scratch/<feature>/design/<feature>-interacti
 
 ## Handoff
 
-After the wireframe is captured, return to `product-design-prototype` to fill state matrix and API implications, then run `prototype-review`.
+After the wireframe is captured, return to `yss-prototype-stage` to fill the interaction spec, state matrix, API implications, and then run `prototype-review`.

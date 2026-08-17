@@ -57,6 +57,18 @@ evidence:
   - id: evidence.design-review-result
     name: 设计审查结果
     description: API、架构或产品设计审查意见及处理结果。
+  - id: evidence.prototype-review-result
+    name: 原型评审结果
+    description: 低保真页面、流程、状态与 API 反推的独立评审结论和阻断项。
+  - id: evidence.antd-cli-validation
+    name: Ant Design CLI 校验证据
+    description: 设计语言、组件、demo、token、semantic 与 lint 的实际 CLI/目标版本和可读输出引用。
+  - id: evidence.browser-prototype-verification
+    name: 浏览器原型验证证据
+    description: 高保真原型的非空渲染、主流程、异常状态、视口和控制台验证记录。
+  - id: evidence.prototype-confirmation
+    name: 原型用户确认记录
+    description: 高保真原型、验证清单和进入下游阶段范围的人工确认结论。
   - id: evidence.openapi-draft-review
     name: OpenAPI Draft 审查记录
     description: P0、错误、分页、幂等和契约测试审查记录。
@@ -84,11 +96,21 @@ gates:
     stage: stage.spec-architecture
     trigger: 新功能、行为变化或范围扩大进入 Spec 基线。
     evidence: [evidence.approval-record]
+  - id: gate.prototype-reviewed
+    name: 原型评审
+    stage: stage.product-design
+    trigger: 命中产品设计影响，且低保真页面、流程、状态或 API 反推需要独立评审。
+    evidence: [evidence.prototype-review-result]
+  - id: gate.prototype-verified
+    name: 高保真原型验证
+    stage: stage.product-design
+    trigger: 需要高保真 HTML 原型进行视觉与交互校准。
+    evidence: [evidence.antd-cli-validation, evidence.browser-prototype-verification]
   - id: gate.user-confirmation
     name: 用户确认
     stage: stage.product-design
     trigger: 产品设计影响尚未被人工确认。
-    evidence: [evidence.approval-record]
+    evidence: [evidence.prototype-confirmation]
   - id: gate.openapi-draft-reviewed
     name: OpenAPI Draft Review
     stage: stage.system-data-engineering
@@ -151,6 +173,10 @@ artifacts:
     name: 功能架构
     stage: stage.spec-architecture
     trigger: 新模块或跨边界变化。
+  - id: artifact.interaction-spec
+    name: 交互说明
+    stage: stage.product-design
+    trigger: 命中产品设计影响。
   - id: artifact.low-fidelity-prototype
     name: 低保真原型
     stage: stage.product-design
@@ -163,6 +189,14 @@ artifacts:
     name: 高保真 HTML 原型
     stage: stage.product-design
     trigger: 需要视觉与交互校准。
+  - id: artifact.prototype-review
+    name: 原型评审记录
+    stage: stage.product-design
+    trigger: 命中 gate.prototype-reviewed。
+  - id: artifact.prototype-confirmation
+    name: 原型确认记录
+    stage: stage.product-design
+    trigger: 命中 gate.user-confirmation。
   - id: artifact.openapi-draft
     name: OpenAPI Draft
     stage: stage.system-data-engineering

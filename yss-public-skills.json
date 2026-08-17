@@ -32,6 +32,7 @@
     "yss-openapi-governance",
     "yss-page-module-development",
     "yss-product-lifecycle",
+    "yss-prototype-stage",
     "yss-repository",
     "yss-resilience4j",
     "yss-router",
@@ -88,6 +89,7 @@
         "yss-frontend-scaffold-generator",
         "yss-hook",
         "yss-page-module-development",
+        "yss-prototype-stage",
         "yss-ui",
         "yss-use-table-height",
         "yss-use-tree-height"

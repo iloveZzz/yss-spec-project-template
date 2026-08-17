@@ -25,9 +25,12 @@ ROUTE_REGISTRY_IDS = {
   "spec" => "artifact.spec",
   "product-overview" => "artifact.product-overview",
   "functional-architecture" => "artifact.functional-architecture",
+  "interaction-spec" => "artifact.interaction-spec",
   "low-fidelity-prototype" => "artifact.low-fidelity-prototype",
   "state-matrix" => "artifact.state-matrix",
+  "prototype-review" => "gate.prototype-reviewed",
   "high-fidelity-html-prototype" => "artifact.high-fidelity-html-prototype",
+  "prototype-verification" => "gate.prototype-verified",
   "user-confirmation" => "gate.user-confirmation",
   "openapi-draft" => "artifact.openapi-draft",
   "draft-review" => "gate.openapi-draft-reviewed",
@@ -63,9 +66,12 @@ def route(facts)
 
   if facts.fetch(:ui_impact)
     gates.concat(%w[
+      interaction-spec
       low-fidelity-prototype
       state-matrix
+      prototype-review
       high-fidelity-html-prototype
+      prototype-verification
       user-confirmation
     ])
   end
@@ -91,7 +97,7 @@ scenarios = [
       data_impact: false, existing_frozen_baseline: true
     },
     required: %w[impact-assessment tracker-sync fresh-verification],
-    forbidden: %w[spec product-overview spec-delta high-fidelity-html-prototype]
+    forbidden: %w[spec product-overview spec-delta interaction-spec high-fidelity-html-prototype prototype-review prototype-verification]
   },
   {
     name: "纯后端新功能",
@@ -101,7 +107,7 @@ scenarios = [
       data_impact: false, existing_frozen_baseline: false
     },
     required: %w[spec product-overview functional-architecture openapi-draft engineering-baseline parent-ticket vertical-slice-tickets],
-    forbidden: %w[low-fidelity-prototype state-matrix high-fidelity-html-prototype user-confirmation spec-delta]
+    forbidden: %w[interaction-spec low-fidelity-prototype state-matrix prototype-review high-fidelity-html-prototype prototype-verification user-confirmation spec-delta]
   },
   {
     name: "普通 API 功能无需专项输入",
@@ -111,7 +117,7 @@ scenarios = [
       data_impact: false, existing_frozen_baseline: false
     },
     required: %w[spec product-overview functional-architecture openapi-draft draft-review openapi-freeze engineering-baseline parent-ticket vertical-slice-tickets],
-    forbidden: %w[low-fidelity-prototype state-matrix high-fidelity-html-prototype user-confirmation spec-delta]
+    forbidden: %w[interaction-spec low-fidelity-prototype state-matrix prototype-review high-fidelity-html-prototype prototype-verification user-confirmation spec-delta]
   },
   {
     name: "有 UI 的新功能",
@@ -120,7 +126,7 @@ scenarios = [
       ui_impact: true, api_impact: true, backend_impact: true,
       data_impact: false, existing_frozen_baseline: false
     },
-    required: %w[spec product-overview low-fidelity-prototype state-matrix high-fidelity-html-prototype user-confirmation openapi-freeze vertical-slice-tickets],
+    required: %w[spec product-overview interaction-spec low-fidelity-prototype state-matrix prototype-review high-fidelity-html-prototype prototype-verification user-confirmation openapi-freeze vertical-slice-tickets],
     forbidden: %w[spec-delta]
   },
   {
@@ -131,7 +137,7 @@ scenarios = [
       data_impact: true, existing_frozen_baseline: true
     },
     required: %w[spec product-overview spec-delta openapi-draft data-architecture architecture-review vertical-slice-tickets],
-    forbidden: %w[high-fidelity-html-prototype]
+    forbidden: %w[interaction-spec prototype-review high-fidelity-html-prototype prototype-verification]
   },
   {
     name: "模板源流程修订",
@@ -160,6 +166,32 @@ route_keys.each do |route_key|
   registry_id = ROUTE_REGISTRY_IDS[route_key]
   failures << "生命周期场景 route key 未映射稳定 ID: #{route_key}" unless registry_id
   failures << "生命周期场景 route key 映射到不存在的稳定 ID: #{route_key} -> #{registry_id}" if registry_id && !REGISTRY_IDS.include?(registry_id)
+end
+
+prototype_registry_requirements = {
+  "gate.prototype-reviewed" => ["evidence.prototype-review-result"],
+  "gate.prototype-verified" => ["evidence.antd-cli-validation", "evidence.browser-prototype-verification"],
+  "gate.user-confirmation" => ["evidence.prototype-confirmation"]
+}.freeze
+prototype_registry_requirements.each do |gate_id, required_evidence|
+  gate = REGISTRY.fetch("gates").find { |record| record.fetch("id") == gate_id }
+  failures << "原型阶段缺少生命周期门禁: #{gate_id}" unless gate
+  next unless gate
+
+  missing_evidence = required_evidence - gate.fetch("evidence", [])
+  failures << "#{gate_id} 缺少证据: #{missing_evidence.join(', ')}" unless missing_evidence.empty?
+end
+
+%w[
+  artifact.interaction-spec
+  artifact.prototype-review
+  artifact.prototype-confirmation
+  evidence.prototype-review-result
+  evidence.antd-cli-validation
+  evidence.browser-prototype-verification
+  evidence.prototype-confirmation
+].each do |stable_id|
+  failures << "原型阶段缺少生命周期对象: #{stable_id}" unless REGISTRY_IDS.include?(stable_id)
 end
 
 semantic_markers = {
@@ -334,6 +366,47 @@ unless prototype_review.include?("isolated visual fixes") && prototype_review.in
   failures << "prototype-review 未排除无行为影响的局部视觉改动"
 end
 
+yss_design_system = ROOT.join(".agents/skills/yss-design-system/SKILL.md").read
+failures << "yss-design-system 未将 product-design:index 声明为原型主入口" unless yss_design_system.include?("product-design:index")
+failures << "yss-design-system 未路由统一原型阶段契约" unless yss_design_system.include?("yss-prototype-stage")
+
+%w[product-design-prototype wireframe-prototype high-fidelity-html-prototype].each do |skill_name|
+  body = ROOT.join(".agents/skills/#{skill_name}/SKILL.md").read
+  failures << "#{skill_name} 未降为兼容入口" unless body.include?("兼容入口") && body.include?("yss-prototype-stage")
+end
+
+high_fidelity = ROOT.join(".agents/skills/high-fidelity-html-prototype/SKILL.md").read
+failures << "高保真原型仍固定 AntD CLI 版本" if high_fidelity.include?("@ant-design/cli@6.5.0")
+failures << "高保真原型仍以 npm view 代替受控 AntD CLI 证据" if high_fidelity.include?("npm view antd version")
+
+confirmation_template = ROOT.join("docs/design/templates/prototype-confirmation-template.md").read
+failures << "原型确认模板仍固定 AntD 版本" if confirmation_template.include?("--version 6.0.0")
+failures << "原型确认模板未引用统一证据清单" unless confirmation_template.include?("prototype-evidence.yaml")
+
+evidence_template_path = ROOT.join("docs/design/templates/prototype-evidence-template.yaml")
+failures << "缺少机器可读的原型证据模板" unless evidence_template_path.file?
+if evidence_template_path.file?
+  evidence_template = evidence_template_path.read
+  %w[design_baseline antd browser_verification review user_confirmation].each do |field|
+    failures << "原型证据模板缺少 #{field}" unless evidence_template.include?("#{field}:")
+  end
+end
+
+prototype_stage_path = ROOT.join(".agents/skills/yss-prototype-stage/SKILL.md")
+failures << "缺少跨 Agent 原型阶段契约" unless prototype_stage_path.file?
+if prototype_stage_path.file?
+  prototype_stage = prototype_stage_path.read
+  %w[product-design:index antd design.md project_design browser_verification].each do |marker|
+    failures << "统一原型阶段契约缺少 #{marker}" unless prototype_stage.include?(marker)
+  end
+end
+
+design_baseline = ROOT.join("docs/design/design.md").read
+failures << "项目设计基线未声明上游 design.md 与项目 token 的优先级" unless design_baseline.include?("上游默认") && design_baseline.include?("项目覆盖")
+
+adr = ROOT.join("docs/adr/0001-product-design-prototype-entrypoint.md").read
+failures << "ADR 仍引用不存在的原型流程文档" if adr.include?("docs/process/product-prototype-workflow.md")
+
 openapi_review = ROOT.join(".agents/skills/yss-openapi-draft-review/SKILL.md").read
 %w[Automated semantic unchanged].each do |marker|
   failures << "OpenAPI Draft Review 缺少自动/语义边界: #{marker}" unless openapi_review.include?(marker)
@@ -431,14 +504,14 @@ failures << "Matt prototype 分支模式错误" unless matt_prototype["branch_pa
 failures << "Matt prototype 不能作为生产交付物" unless matt_prototype["production_delivery"] == false
 failures << "Matt prototype 错误替代 YSS 高保真原型" unless matt_prototype["replaces_yss_high_fidelity"] == false
 yss_prototype = prototype_modes.fetch("yss_high_fidelity", {})
-%w[prototype_review antd_cli_verification user_confirmation].each do |field|
+%w[prototype_review antd_cli_verification browser_verification prototype_evidence user_confirmation].each do |field|
   failures << "YSS 高保真 prototype 缺少 #{field} 门禁" unless yss_prototype.fetch("required", []).include?(field)
 end
 failures << "YSS 高保真 prototype 错误替代 Matt prototype" unless yss_prototype["replaces_matt_logic"] == false
 
 prototype_mode_requirements = {
   "matt_logic" => %w[prototype_mode prototype_branch source_handoff prototype_asset_or_run conclusion updated_authoritative_asset remaining_questions return_handoff],
-  "yss_high_fidelity" => %w[prototype_mode prototype_review antd_cli_verification user_confirmation]
+  "yss_high_fidelity" => %w[prototype_mode prototype_review antd_cli_verification browser_verification prototype_evidence user_confirmation]
 }.freeze
 prototype_mode_requirements.each do |mode, required_fields|
   evidence = required_fields.to_h { |field| [field, true] }.merge("prototype_mode" => mode)

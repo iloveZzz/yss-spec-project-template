@@ -48,7 +48,7 @@ YSS Harness 需要把有 UI 功能的产品原型产出收敛到一个稳定入�
 ## 相关
 
 - `AGENTS.md`
-- `docs/process/product-prototype-workflow.md`
+- `docs/design/README.md`
 - `docs/process/lifecycle-artifact-map.md`
 - `docs/design/README.md`
 - `docs/design/templates/prototype-confirmation-template.md`
