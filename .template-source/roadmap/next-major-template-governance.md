@@ -26,7 +26,7 @@ scripts/verify-template
 ## 发布阻塞项
 
 - 需要其他 Agent 或人工 Reviewer 完成独立审查。
-- 外部 `create-yss-spec` 需要按 `docs/implementation/create-yss-spec-repository-mode-contract.md` 实现 `project-instance` 转换、旧版升级和冲突 fail closed。
+- 外部 `create-yss-spec` 需要按 `.template-source/contracts/create-yss-spec-repository-mode-contract.md` 实现 `project-instance` 转换、旧版升级和冲突 fail closed。
 - 模板与 CLI 需要共同执行初始化 / 升级集成验证，并绑定确定的 commit / tag。
 
 上述阻塞全部解除前，本草案不能改为已发布状态。

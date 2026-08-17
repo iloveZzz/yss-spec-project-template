@@ -67,7 +67,7 @@ git diff --check
 
 补充 REFACTOR：删除 Router / 生命周期合同中的旧允许项及生命周期说明、实现路由模板中的旧表述；前端脚手架不再接受任意 source，而是要求 Freeze 记录、JSON 派生记录、实际 `orval.config.*` input 与验证开关证据。`scripts/verify-template` 已调用两个 OpenAPI 场景脚本，覆盖静态清理和可执行交接协议。
 
-`writing-skills` 要求的 fresh-context 原始 prompt / 输出、6 个无技能对照、6 个同题 GREEN 样本及 R6 的实际失败到合规转变，见 `docs/reviews/openapi-yaml-first-pressure-scenarios-2026-08-16.md`。其中 R6 的“客户明示、今晚交付、沿用 Maven”在无技能对照中选择 A；带技能的同题样本选择 C，并明确回到冻结 YAML、锁定 bundle、两端 SHA 和实际 Orval input。
+`writing-skills` 要求的 fresh-context 原始 prompt / 输出、6 个无技能对照、6 个同题 GREEN 样本及 R6 的实际失败到合规转变，见 `.template-source/evidence/reviews/openapi-yaml-first-pressure-scenarios-2026-08-16.md`。其中 R6 的“客户明示、今晚交付、沿用 Maven”在无技能对照中选择 A；带技能的同题样本选择 C，并明确回到冻结 YAML、锁定 bundle、两端 SHA 和实际 Orval input。
 
 ## REFACTOR 关注项
 

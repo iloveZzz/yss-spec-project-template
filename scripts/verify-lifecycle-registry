@@ -5,6 +5,7 @@ require "json"
 require "open3"
 require "optparse"
 require_relative "lifecycle-registry"
+require_relative "repository-mode"
 
 options = { registry: LifecycleRegistry::DEFAULT_REGISTRY }
 OptionParser.new do |parser|
@@ -46,7 +47,10 @@ begin
       raise ArgumentError, "权威注册表资产不得被 Git 忽略: #{relative_path}" if ignored.success?
     end
 
-    stale_count_paths = %w[AGENTS.md README.md docs/user-guide/产品生命周期工作流.md .agents/skills/yss-product-lifecycle/SKILL.md docs/process/lifecycle-artifact-map.md docs/process/harness-work-unit-map.md]
+    stale_count_paths = %w[AGENTS.md README.md docs/user-guide/产品生命周期工作流.md .agents/skills/yss-product-lifecycle/SKILL.md docs/process/lifecycle-artifact-map.md]
+    if YssRepositoryMode.template_source?(LifecycleRegistry::ROOT)
+      stale_count_paths << ".template-source/derived/harness-work-unit-map.md"
+    end
     stale_count_paths.each do |relative_path|
       body = LifecycleRegistry::ROOT.join(relative_path).read
       if body.match?(/\d+\s*个(?:主阶段|门禁|工作单元|职责点)/)

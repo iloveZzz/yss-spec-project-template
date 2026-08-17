@@ -3,6 +3,7 @@
 
 require "optparse"
 require_relative "lifecycle-registry"
+require_relative "repository-mode"
 
 options = { check: false, write: false, registry: LifecycleRegistry::DEFAULT_REGISTRY }
 OptionParser.new do |parser|
@@ -15,9 +16,17 @@ abort("--check 与 --write 不能同时使用") if options[:check] && options[:w
 
 registry = LifecycleRegistry.validate!(LifecycleRegistry.load_registry(options[:registry]))
 targets = [
-  [LifecycleRegistry::ROOT.join("docs/process/lifecycle-artifact-map.md"), "<!-- lifecycle-registry:structure:start -->", "<!-- lifecycle-registry:structure:end -->", LifecycleRegistry.render_lifecycle_structure(registry)],
-  [LifecycleRegistry::ROOT.join("docs/process/harness-work-unit-map.md"), "<!-- lifecycle-registry:work-units:start -->", "<!-- lifecycle-registry:work-units:end -->", LifecycleRegistry.render_work_units(registry)]
+  [LifecycleRegistry::ROOT.join("docs/process/lifecycle-artifact-map.md"), "<!-- lifecycle-registry:structure:start -->", "<!-- lifecycle-registry:structure:end -->", LifecycleRegistry.render_lifecycle_structure(registry)]
 ]
+
+if YssRepositoryMode.template_source?(LifecycleRegistry::ROOT)
+  targets << [
+    LifecycleRegistry::ROOT.join(".template-source/derived/harness-work-unit-map.md"),
+    "<!-- lifecycle-registry:work-units:start -->",
+    "<!-- lifecycle-registry:work-units:end -->",
+    LifecycleRegistry.render_work_units(registry)
+  ]
+end
 
 targets.each do |path, start_marker, end_marker, rendered|
   LifecycleRegistry.replace_region!(path, start_marker, end_marker, rendered, check: options[:check])

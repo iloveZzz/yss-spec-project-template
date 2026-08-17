@@ -64,7 +64,7 @@ npx create-yss-spec@latest attach \
 
 ## 固定迁移规则
 
-CLI 必须遵循 [Spec / Ticket 迁移指南](../user-guide/规格与任务迁移指南.md) 的固定映射：旧 Spec / Ticket skill 和模板入口迁移为当前名称，旧规格文件、根 `.scratch/<feature>/` 迁移到当前路径；无法推断功能归属的扁平 Ticket 标记为 `unsafe` 并阻断。新旧目标内容不一致时标记 `conflict`，不得静默覆盖。
+CLI 必须遵循 [Spec / Ticket 迁移指南](../../docs/user-guide/规格与任务迁移指南.md) 的固定映射：旧 Spec / Ticket skill 和模板入口迁移为当前名称，旧规格文件、根 `.scratch/<feature>/` 迁移到当前路径；无法推断功能归属的扁平 Ticket 标记为 `unsafe` 并阻断。新旧目标内容不一致时标记 `conflict`，不得静默覆盖。
 
 ## 跨仓库验收
 

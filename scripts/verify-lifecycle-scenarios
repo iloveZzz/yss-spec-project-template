@@ -4,8 +4,10 @@
 require "pathname"
 require "set"
 require "yaml"
+require_relative "repository-mode"
 
 ROOT = Pathname.new(__dir__).join("..").realpath
+REPOSITORY_MODE = YssRepositoryMode.read(ROOT)
 REGISTRY = YAML.safe_load(
   ROOT.join("docs/process/lifecycle-registry.yaml").read,
   permitted_classes: [],
@@ -247,7 +249,6 @@ semantic_markers = {
 obsolete_checkpoint_rules = {
   "AGENTS.md" => ["每个阶段结束时执行 Git checkpoint 判断"],
   "docs/process/harness-executive-blueprint.md" => ["每个阶段结束必须记录 Ticket 同步状态"],
-  "docs/process/harness-optimization-backlog.md" => ["每个阶段都能按固定字段记录"],
   "docs/user-guide/生命周期最佳实践.md" => ["阶段结束做 Ticket 同步和 Git checkpoint"],
   "docs/user-guide/产品生命周期工作流.md" => ["每个阶段结束、垂直切片创建"]
 }.freeze
@@ -256,6 +257,31 @@ obsolete_checkpoint_rules.each do |relative_path, markers|
   body = ROOT.join(relative_path).read
   markers.each do |marker|
     failures << "#{relative_path} 仍保留逐阶段 checkpoint 规则: #{marker}" if body.include?(marker)
+  end
+end
+
+if REPOSITORY_MODE == "template-source"
+  optimization_backlog = ROOT.join(".template-source/roadmap/harness-optimization-backlog.md")
+  if optimization_backlog.file?
+    body = optimization_backlog.read
+    relative = optimization_backlog.relative_path_from(ROOT).to_s
+    failures << "#{relative} 缺少状态列" unless body.include?("| 状态 |")
+    failures << "#{relative} 缺少验收证据列" unless body.include?("| 验收证据 |")
+
+    body.lines.each do |line|
+      next unless line.start_with?("|") && line.count("|") >= 5
+      next if line.include?("项目") || line.match?(/^\|\s*-{3,}/)
+
+      columns = line.split("|").map(&:strip)
+      status = columns[2]
+      evidence = columns[4]
+      unless %w[planned in-progress verified closed blocked].include?(status)
+        failures << "#{relative} 存在非法状态: #{status}"
+      end
+      if status == "closed" && (evidence.nil? || evidence.empty?)
+        failures << "#{relative} 的 closed 项缺少验收证据"
+      end
+    end
   end
 end
 
@@ -341,12 +367,12 @@ removed_skills.each do |skill_name|
 end
 
 tracked_policy_files = [
-  "docs/process/harness-work-unit-map.md",
   "docs/process/harness-process-tailoring.md",
   "docs/templates/implementation-routing-template.md",
   ".agents/skills/yss-router/references/router-contract.yaml",
   "yss-public-skills.json"
 ]
+tracked_policy_files.unshift(".template-source/derived/harness-work-unit-map.md") if REPOSITORY_MODE == "template-source"
 tracked_policy_files.each do |relative_path|
   body = ROOT.join(relative_path).read
   removed_skills.each do |skill_name|

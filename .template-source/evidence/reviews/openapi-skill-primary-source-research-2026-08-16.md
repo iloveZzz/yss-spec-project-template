@@ -4,7 +4,7 @@
 >
 > 研究范围：仅核验 smart-doc 官方文档 / 官方仓库、Orval 官方文档 / 官方仓库、OpenAPI 官方规范，以及 `OpenAPITools/openapi-diff` 的官方仓库。本文不验证内部或定制版本 `yss-4.0.0` 的专有实现；该版本的 Maven goal、参数和输出行为均不能从公开一手资料确认。
 
-> 后续决策：用户随后要求移除仓库内的 `yss-openapi` 和该 Maven 驱动链路。本笔记保留为迁移前的一手资料证据；当前 YAML-first 决策和验证见 `docs/reviews/openapi-yaml-first-red-green-2026-08-16.md`。
+> 后续决策：用户随后要求移除仓库内的 `yss-openapi` 和该 Maven 驱动链路。本笔记保留为迁移前的一手资料证据；当前 YAML-first 决策和验证见 `.template-source/evidence/reviews/openapi-yaml-first-red-green-2026-08-16.md`。
 
 ## 结论先行
 

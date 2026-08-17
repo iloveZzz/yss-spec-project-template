@@ -15,7 +15,9 @@ require "pathname"
 require "yaml"
 
 root = Pathname.pwd
+require root.join("scripts/repository-mode.rb").to_s
 manifest = YAML.safe_load(root.join("yss-project.yaml").read, permitted_classes: [], aliases: false)
+repository_mode = YssRepositoryMode.read(root)
 if manifest.is_a?(Hash) && manifest["repository_mode"] == "template-source"
   canonical_scratch = root.join("docs/.scratch")
   legacy_scratch = root.join(".scratch")
@@ -40,6 +42,7 @@ required_files=(
   "docs/user-guide/规格与任务迁移指南.md"
   "scripts/sync-skills"
   "scripts/update-skill-lock"
+  "scripts/repository-mode.rb"
   "scripts/implementation-path-policy.rb"
   "scripts/verify-lifecycle-scenarios"
   "scripts/generate-lifecycle-artifacts"
@@ -86,6 +89,52 @@ for required_file in "${required_files[@]}"; do
   }
 done
 
+if [[ "$(ruby scripts/repository-mode.rb)" == "template-source" ]]; then
+  source_required_files=(
+    ".template-source/README.md"
+    ".template-source/adr/0004-split-lifecycle-and-router-registry-domains.md"
+    ".template-source/adr/0005-cross-repository-ecosystem-release-manifest.md"
+    ".template-source/adr/0007-separate-skill-routing-registry-from-integrity-lock.md"
+    ".template-source/adr/0008-template-source-distribution-boundary.md"
+    ".template-source/contracts/create-yss-spec-repository-mode-contract.md"
+    ".template-source/derived/harness-work-unit-map.md"
+    ".template-source/evidence/reviews/index.yaml"
+    ".template-source/scripts/evidence-index.rb"
+    ".template-source/roadmap/next-major-template-governance.md"
+  )
+  for source_required_file in "${source_required_files[@]}"; do
+    test -f "$source_required_file" || {
+      echo "缺少模板源治理区资产: $source_required_file" >&2
+      exit 1
+    }
+  done
+  ruby .template-source/scripts/evidence-index.rb --check
+
+  if [[ -e ".template-source/roadmap/harness-optimization-backlog.md" ]]; then
+    :
+  elif ! rg -q "harness-optimization-backlog\.md" .template-source/README.md; then
+    echo "已移除 Harness 优化路线，但 README 未保留归档引用" >&2
+    exit 1
+  fi
+
+  forbidden_distribution_paths=(
+    "docs/reviews"
+    "docs/implementation/create-yss-spec-repository-mode-contract.md"
+    "docs/process/harness-optimization-backlog.md"
+    "docs/process/harness-work-unit-map.md"
+    "docs/releases/next-major-template-governance.md"
+    "docs/adr/0004-split-lifecycle-and-router-registry-domains.md"
+    "docs/adr/0005-cross-repository-ecosystem-release-manifest.md"
+    "docs/adr/0007-separate-skill-routing-registry-from-integrity-lock.md"
+  )
+  for forbidden_distribution_path in "${forbidden_distribution_paths[@]}"; do
+    test ! -e "$forbidden_distribution_path" || {
+      echo "模板源专属资产仍位于实例分发面: $forbidden_distribution_path" >&2
+      exit 1
+    }
+  done
+fi
+
 if git check-ignore --no-index -q docs/.scratch 2>/dev/null; then
   echo "模板不得忽略 docs/.scratch/：Local Markdown 产物必须可提交、可审计" >&2
   exit 1
@@ -105,6 +154,8 @@ require "pathname"
 require "yaml"
 
 root = Pathname.pwd
+require root.join("scripts/repository-mode.rb").to_s
+repository_mode = YssRepositoryMode.read(root)
 manifest = YAML.safe_load(root.join("yss-project.yaml").read, permitted_classes: [], aliases: false)
 valid_modes = %w[template-source project-instance]
 unless manifest.is_a?(Hash) && manifest.keys.sort == %w[repository_mode schema_version] &&
@@ -158,6 +209,8 @@ require "pathname"
 require "json"
 
 root = Pathname.pwd
+require root.join("scripts/repository-mode.rb").to_s
+repository_mode = YssRepositoryMode.read(root)
 manifest = JSON.parse(root.join("skills-lock.json").read)
 agent_roots = %w[
   .agents/skills
@@ -225,6 +278,7 @@ legacy_patterns = {
 }.freeze
 
 scan_entries = %w[AGENTS.md CONTEXT.md README.md docs scripts .agents .claude .codex .hermes .pi .qoder .trae]
+scan_entries << ".template-source" if repository_mode == "template-source"
 files = scan_entries.flat_map do |entry|
   path = root.join(entry)
   path.directory? ? path.glob("**/*", File::FNM_DOTMATCH) : [path]
@@ -234,7 +288,7 @@ legacy_hits = []
 files.select(&:file?).uniq.each do |path|
   relative = path.relative_path_from(root).to_s
   next if allowed_legacy_files.include?(relative)
-  next if relative.start_with?("docs/reviews/")
+  next if relative.start_with?("docs/reviews/") || relative.start_with?(".template-source/evidence/reviews/")
 
   body = path.binread.force_encoding("UTF-8")
   next unless body.valid_encoding?
@@ -257,9 +311,12 @@ unless root.join("AGENTS.md").binread.force_encoding("UTF-8").include?("正文�
   abort("AGENTS.md 与 CONTEXT.md 必须共同声明落地文档使用简体中文")
 end
 
+ignored_local_markdown = ["docs/process/yss-product-lifecycle-team-guide.md"]
 markdown_paths = (root.glob("*.md") + root.glob("docs/**/*.md")).reject do |path|
-  path.relative_path_from(root).to_s.start_with?("docs/process/presentations/")
+  relative = path.relative_path_from(root).to_s
+  relative.start_with?("docs/process/presentations/") || ignored_local_markdown.include?(relative)
 end
+markdown_paths += root.glob(".template-source/**/*.md") if repository_mode == "template-source"
 missing_links = []
 markdown_paths.uniq.sort.each do |path|
   body = path.read

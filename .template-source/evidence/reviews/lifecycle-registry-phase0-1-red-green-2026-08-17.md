@@ -4,7 +4,7 @@
 
 - 仓库身份：`template-source`，仅维护可复用流程资产。
 - 已授权范围：Phase 0 一致性修复与 Phase 1 生命周期注册表 shadow/check；不实施运行时 state schema v2、技能注册表或跨仓发布清单。
-- 受管来源：`docs/process/lifecycle-registry.yaml`；`docs/process/lifecycle-artifact-map.md` 与 `docs/process/harness-work-unit-map.md` 的标记区为派生阅读视图。
+- 受管来源：`docs/process/lifecycle-registry.yaml`；`docs/process/lifecycle-artifact-map.md` 与 `.template-source/derived/harness-work-unit-map.md` 的标记区为派生阅读视图。
 
 ## RED：旧门禁能放过结构漂移
 

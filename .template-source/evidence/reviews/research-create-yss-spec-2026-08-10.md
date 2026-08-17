@@ -18,10 +18,10 @@
 
 本地事实：
 
-- [`yss-project.yaml`](../../yss-project.yaml#L1) 当前为 `schema_version: 1`、`repository_mode: template-source`。
-- [`docs/implementation/create-yss-spec-repository-mode-contract.md`](../implementation/create-yss-spec-repository-mode-contract.md) 明确要求 CLI 生成实例改写为 `project-instance`，保留 `.agents/skills` 权威内容和所有声明的投影，并在写入后执行 `scripts/sync-skills --check`、`scripts/update-skill-lock --check`、`scripts/verify-template`。
-- 当前 [`skills-lock.json`](../../skills-lock.json#L1-L12) 为 v3，canonical root 是 `.agents/skills`，投影根包含 `.claude/skills`、`.codex/skills`、`.hermes/skills`、`.pi/skills`、`.qoder/skills`、`.trae/skills`。
-- 当前 [`scripts/sync-skills`](../../scripts/sync-skills#L12-L19) 同样遍历上述六个投影根；本地执行 `scripts/sync-skills --check` 和 `scripts/update-skill-lock --check` 均通过。
+- [`yss-project.yaml`](../../../yss-project.yaml#L1) 当前为 `schema_version: 1`、`repository_mode: template-source`。
+- [模板源与 CLI 契约](../../contracts/create-yss-spec-repository-mode-contract.md) 明确要求 CLI 生成实例改写为 `project-instance`，保留 `.agents/skills` 权威内容和所有声明的投影，并在写入后执行 `scripts/sync-skills --check`、`scripts/update-skill-lock --check`、`scripts/verify-template`。
+- 当前 [`skills-lock.json`](../../../skills-lock.json#L1-L12) 为 v3，canonical root 是 `.agents/skills`，投影根包含 `.claude/skills`、`.codex/skills`、`.hermes/skills`、`.pi/skills`、`.qoder/skills`、`.trae/skills`。
+- 当前 [`scripts/sync-skills`](../../../scripts/sync-skills#L12-L19) 同样遍历上述六个投影根；本地执行 `scripts/sync-skills --check` 和 `scripts/update-skill-lock --check` 均通过。
 - 当前模板 `main` 的最近提交是 [`a85560614536aa6fb20bbada91a08a1b89ea6e`](https://github.com/iloveZzz/yss-spec-project-template/commit/a85560614536aa6fb20bbada91a08a1b89ea6e)，提交信息为 `fix: unify local tracker artifacts under docs/.scratch`；其 [`AGENTS.md`](https://github.com/iloveZzz/yss-spec-project-template/blob/main/AGENTS.md#L80) 已把完整 Local Markdown 功能包定位到 `docs/.scratch/<feature>/`。
 
 ### 2. CLI 发布入口、模板来源与版本绑定
@@ -116,7 +116,7 @@ README 的声明与源码不一致：
 
 - `/Users/zhudaoming/Projects/yss-spec-project-template/yss-project.yaml`
 - `/Users/zhudaoming/Projects/yss-spec-project-template/CONTEXT.md`
-- `/Users/zhudaoming/Projects/yss-spec-project-template/docs/implementation/create-yss-spec-repository-mode-contract.md`
+- `/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/contracts/create-yss-spec-repository-mode-contract.md`
 - `/Users/zhudaoming/Projects/yss-spec-project-template/AGENTS.md`
 - `/Users/zhudaoming/Projects/yss-spec-project-template/skills-lock.json`
 - `/Users/zhudaoming/Projects/yss-spec-project-template/scripts/sync-skills`

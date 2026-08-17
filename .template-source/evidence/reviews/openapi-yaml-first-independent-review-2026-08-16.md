@@ -44,7 +44,7 @@
 
 ### P1：模板维护的 RED/GREEN 证据不足
 
-`docs/reviews/openapi-yaml-first-red-green-2026-08-16.md:11-29` 记录的是静态失败摘要，`:38-55` 仅记录脚本成功；没有同一压力场景下“无技能”的逐字决策/合理化和“带技能”的合规结果。`AGENTS.md:47` 要求 skill/模板修改遵循 `writing-skills` 的 RED/GREEN/REFACTOR，`.agents/skills/writing-skills/SKILL.md:556` 要求保留压力场景及可审计的 rationale。应补同一压力场景，并让其覆盖 smart-doc 残留和双 JSON 交接。
+`.template-source/evidence/reviews/openapi-yaml-first-red-green-2026-08-16.md:11-29` 记录的是静态失败摘要，`:38-55` 仅记录脚本成功；没有同一压力场景下“无技能”的逐字决策/合理化和“带技能”的合规结果。`AGENTS.md:47` 要求 skill/模板修改遵循 `writing-skills` 的 RED/GREEN/REFACTOR，`.agents/skills/writing-skills/SKILL.md:556` 要求保留压力场景及可审计的 rationale。应补同一压力场景，并让其覆盖 smart-doc 残留和双 JSON 交接。
 
 ### P2：无关的索引忽略规则被纳入工作树
 
@@ -55,7 +55,7 @@
 - **YAML/JSON 单向性：未通过。** YAML-first 规则本身已写入治理、Draft Review、Freeze/导出模板；但双输出路径和前端任意 source 使其无法被证明。
 - **前端生成交接：未通过。** `api-integration` 要求记录，却没有以真实 Orval input 为唯一事实；前端脚手架仍可直接接 URL/任意文件。
 - **旧 skill / 脚手架清理：部分通过。** 仓库内 `.agents/skills/yss-openapi`、六个投影、锁文件、公开清单、smart-doc POM、配置模板和生成器逻辑已清理；投影/锁与公开导出检查通过。活跃合同/模板中的 Smart Doc 入口仍未清理。
-- **历史资料：非阻断。** `docs/reviews/openapi-skill-primary-source-research-2026-08-16.md:7` 已明确其为迁移前证据，不将其视为活跃回退口；建议保留该标识以免误用。
+- **历史资料：非阻断。** `.template-source/evidence/reviews/openapi-skill-primary-source-research-2026-08-16.md:7` 已明确其为迁移前证据，不将其视为活跃回退口；建议保留该标识以免误用。
 
 ## 结论
 
@@ -80,7 +80,7 @@
 | YAML/JSON/Orval 双路径 | 已关闭 | `.agents/skills/yss-openapi-governance/SKILL.md:68-77` 固定治理 JSON；`.agents/skills/yss-api-integration/SKILL.md:37-50` 要求同字节物化及 SHA；JSON 导出记录模板记录两端 SHA。 |
 | 前端任意 source 回退 | 已关闭 | `.agents/skills/yss-frontend-scaffold-generator/SKILL.md:24-40,58-62` 禁止 URL、Draft、运行时和手工 JSON，并要求实际 `orval.config.*` 指向本地交接文件且 `unsafeDisableValidation` 为 `false` 或省略。 |
 | 仅文本验证 | 已关闭（模板层） | `scripts/verify-openapi-json-handoff-scenarios:16-43,111-142` 验证路径、Freeze、SHA、Redocly 命令、Orval input / 校验开关及正反交接。脚本故意不在模板源仓库执行 Redocly；目标实现仓库仍须依技能要求以锁定依赖执行并留存记录。 |
-| RED/GREEN 压力场景证据 | **仍为 P1** | `docs/reviews/openapi-yaml-first-red-green-2026-08-16.md:61-68` 现有的是汇总性的合理化和结果，未保存 `writing-skills` 所要求的“无该 skill 的 subagent”原始 prompt / 输出、逐字 rationale，以及同一场景“带 skill”的可审计输出（`.agents/skills/writing-skills/SKILL.md:558-569`）。 |
+| RED/GREEN 压力场景证据 | **仍为 P1** | `.template-source/evidence/reviews/openapi-yaml-first-red-green-2026-08-16.md:61-68` 现有的是汇总性的合理化和结果，未保存 `writing-skills` 所要求的“无该 skill 的 subagent”原始 prompt / 输出、逐字 rationale，以及同一场景“带 skill”的可审计输出（`.agents/skills/writing-skills/SKILL.md:558-569`）。 |
 
 ### 单向性与交接结论
 
@@ -96,10 +96,10 @@
 
 ### `writing-skills` RED / GREEN 证据
 
-- `docs/reviews/openapi-yaml-first-pressure-scenarios-2026-08-16.md:7-10` 明确记录了 fresh-context、无 skill 的 RED 对照、同题且完整读取三项相关 skill 的 GREEN，以及每题至少三类组合压力。
+- `.template-source/evidence/reviews/openapi-yaml-first-pressure-scenarios-2026-08-16.md:7-10` 明确记录了 fresh-context、无 skill 的 RED 对照、同题且完整读取三项相关 skill 的 GREEN，以及每题至少三类组合压力。
 - R1–R6 均保留相同题干及 RED / GREEN 原始输出；R1–R5 的 RED 自然选择 C 被诚实地标为非失败样本，未被伪造为 RED failure。
 - R6 在客户明示、截止时间和组织惯性下给出实际无技能失败：选择 A 并沿用 Maven smart-doc（该记录第 164-172 行）；同题 GREEN 选择 C，逐项回到 Freeze YAML、锁定 Redocly bundle、双端 SHA-256 和实际 `orval.config.*` 输入 / 校验开关（第 174-185 行）。
-- 记录第 187-191 行说明该新合理化已落实为技能约束，并由 JSON handoff 负向场景重测。`docs/reviews/openapi-yaml-first-red-green-2026-08-16.md:70` 建立了 RED / GREEN 索引。
+- 记录第 187-191 行说明该新合理化已落实为技能约束，并由 JSON handoff 负向场景重测。`.template-source/evidence/reviews/openapi-yaml-first-red-green-2026-08-16.md:70` 建立了 RED / GREEN 索引。
 
 这满足 `writing-skills` 对无指导压力基线、逐字合理化、同场景 GREEN 和发现后 REFACTOR / retest 的要求；压力样本的执行时间或 agent run ID 可作为未来审计增强，但不是本次流程门禁的遗漏。
 

@@ -10,7 +10,7 @@
 仍有两个跨仓库新鲜度缺口：
 
 1. npm `latest` `2.1.3` 固定在模板 commit `41c68b5...`，而模板当前 `main` 已到 `5859e1e...`；固定快照提高了可复现性，但发布包不会自动包含 8 月 13 日之后的模板变化。按本仓库合同，新的模板 commit 仍应完成 CLI 集成验证后再发版，不能把“固定旧快照测试通过”解释为“当前模板 main 已兼容”。
-2. 官方公开技能仓库当前能发现 **46** 个技能，而本地 [`yss-public-skills.json`](../../yss-public-skills.json) 冻结 **44** 个。44 个本地公开项都存在于远端，但远端还保留 `yss-domain-modeling` 和 `yss-openapi`；其中本地当前测试已明确把 `yss-openapi` 列为退休公开项。因此公开仓库不是当前 44 项清单的精确投影，需要重新导出、审查和发布。
+2. 官方公开技能仓库当前能发现 **46** 个技能，而本地 [`yss-public-skills.json`](../../../yss-public-skills.json) 冻结 **44** 个。44 个本地公开项都存在于远端，但远端还保留 `yss-domain-modeling` 和 `yss-openapi`；其中本地当前测试已明确把 `yss-openapi` 列为退休公开项。因此公开仓库不是当前 44 项清单的精确投影，需要重新导出、审查和发布。
 
 ## 一、当前可复核版本
 
@@ -61,7 +61,7 @@ CLI 启动时强制快照包含 40 位 `templateCommit`、64 位 `snapshotHash`�
 
 `verifyGeneratedTemplate` 依次运行 `scripts/sync-skills --check`、`scripts/update-skill-lock --check`、`scripts/verify-template --check`。[src/cli.js](https://github.com/iloveZzz/create-yss-spec/blob/01fbcb2c927a0ef7912a6656960f09413f8eaecb/src/cli.js#L1083-L1107)
 
-`sync` 在受管文件和迁移变更写入后、metadata 写入前执行该验证；验证或写入失败会执行事务 rollback，并保留临时备份路径。[src/cli.js](https://github.com/iloveZzz/create-yss-spec/blob/01fbcb2c927a0ef7912a6656960f09413f8eaecb/src/cli.js#L1622-L1686)。本仓库跨仓库合同也明确要求这三项门禁和固定 commit 集成测试。[implementation-repo-integration.md](../process/implementation-repo-integration.md#fresh-verification-与-checkpoint)
+`sync` 在受管文件和迁移变更写入后、metadata 写入前执行该验证；验证或写入失败会执行事务 rollback，并保留临时备份路径。[src/cli.js](https://github.com/iloveZzz/create-yss-spec/blob/01fbcb2c927a0ef7912a6656960f09413f8eaecb/src/cli.js#L1622-L1686)。本仓库跨仓库合同也明确要求这三项门禁和固定 commit 集成测试。[implementation-repo-integration.md](../../../docs/process/implementation-repo-integration.md#fresh-verification-与-checkpoint)
 
 判定：2026-08-10 “sync 只做 hash 同步、结束后不 fresh verify”的缺口已修复。
 
@@ -104,7 +104,7 @@ npm pack create-yss-spec@2.1.3 --pack-destination /tmp/yss-cli-refresh.uSVd7K
 - 远端额外存在 `yss-domain-modeling`、`yss-openapi`；
 - 目录 `yss-api-integration` 的 frontmatter 名为 `api-integration`，目录 `yss-microapp-commit` 的 frontmatter 名为 `microapp-commit`，因此 CLI `--list` 展示的是兼容名称，不是目录名。
 
-一手清单见 [远端导出 manifest](https://github.com/iloveZzz/yss-spec-dev-skills/blob/e669478e6fd6d78617fe01bc0d92279e23f81d70/.yss-export-manifest.json)、[skills.sh 分组](https://github.com/iloveZzz/yss-spec-dev-skills/blob/e669478e6fd6d78617fe01bc0d92279e23f81d70/skills.sh.json) 与本地 [`yss-public-skills.json`](../../yss-public-skills.json)。本地导出测试把期望数固定为 44，并显式禁止再导出 `yss-openapi`。[test-export-yss-skills.rb](../../scripts/test-export-yss-skills.rb#L11-L47)
+一手清单见 [远端导出 manifest](https://github.com/iloveZzz/yss-spec-dev-skills/blob/e669478e6fd6d78617fe01bc0d92279e23f81d70/.yss-export-manifest.json)、[skills.sh 分组](https://github.com/iloveZzz/yss-spec-dev-skills/blob/e669478e6fd6d78617fe01bc0d92279e23f81d70/skills.sh.json) 与本地 [`yss-public-skills.json`](../../../yss-public-skills.json)。本地导出测试把期望数固定为 44，并显式禁止再导出 `yss-openapi`。[test-export-yss-skills.rb](../../../scripts/test-export-yss-skills.rb#L11-L47)
 
 判定（事实）：远端是本地 44 项的超集，不是精确对齐。判定（推断）：公开发布投影至少落后于 2026-08-16 的本地 YAML-first OpenAPI 治理变化；`yss-domain-modeling` 是否应退休或重新纳入 44 项属于维护决策，不能仅凭差异自动删除。
 
