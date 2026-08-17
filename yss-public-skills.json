@@ -11,7 +11,6 @@
     "yss-backend-scaffold-web",
     "yss-cache",
     "yss-components",
-    "yss-db2mybatis",
     "yss-ddd-scaffold-generator",
     "yss-design-system",
     "yss-dictionary",
@@ -45,8 +44,6 @@
     "yss-use-tree-height",
     "yss-userinfo",
     "yss-validation",
-    "yss-valuation",
-    "yss-variable",
     "yss-web-controller"
   ],
   "groupings": [
@@ -68,7 +65,6 @@
         "yss-backend-scaffold-domain",
         "yss-backend-scaffold-infrastructure",
         "yss-backend-scaffold-web",
-        "yss-db2mybatis",
         "yss-ddd-scaffold-generator",
         "yss-domain",
         "yss-dto",
@@ -119,9 +115,7 @@
         "yss-taskflow",
         "yss-up-springboot3",
         "yss-userinfo",
-        "yss-validation",
-        "yss-valuation",
-        "yss-variable"
+        "yss-validation"
       ]
     },
     {

@@ -18,7 +18,7 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 ## 不适用
 
 - 只补单个领域模型时，优先 `yss-domain`。
-- 只补持久层时，优先 `yss-db2mybatis` 或 `yss-repository`。
+- 只补持久层时，优先 `yss-repository`。
 - 只补 Web 层时，优先 `yss-web-controller`。
 
 ## 优先流程

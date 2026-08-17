@@ -20,9 +20,7 @@ The refresh script maps component source path hints to skill references. These p
 | `yss-validation` | `yss-microservice-components/yss-component-validation-engine-parent`, `yss-microservice-components/yss-component-validation-jsr303` |
 | `yss-security-algorithm` | `yss-microservice-components/yss-component-security-algorithm` |
 | `yss-userinfo` | `yss-microservice-components/yss-component-userinfo-starter` |
-| `yss-variable` | `yss-microservice-components/yss-component-variable` |
 | `yss-exception` | `yss-microservice-components/yss-component-exception` |
-| `yss-valuation` | `yss-microservice-components/yss-component-valuation` |
 
 Frontend docs are written to these skills:
 

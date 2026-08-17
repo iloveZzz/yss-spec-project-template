@@ -61,7 +61,7 @@ description: 用于 YSS MyBatis 与 MyBatis-Plus 持久层规范、配置和排�
 
 - 不要同时引入两套分页机制而不说明谁生效。
 - 不要在已有 Repository 基类体系之外再造一套 Mapper 抽象。
-- 若用户只是要生成持久层骨架，优先衔接 `yss-db2mybatis`。
+- 若用户只是要生成持久层骨架，优先衔接 `yss-repository`。
 
 ## 按需读取
 

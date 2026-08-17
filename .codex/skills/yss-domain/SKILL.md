@@ -17,7 +17,7 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 
 ## 不适用
 
-- 只生成持久层时，优先 `yss-repository` 或 `yss-db2mybatis`。
+- 只生成持久层时，优先 `yss-repository`。
 - 只生成 Controller 时，优先 `yss-web-controller`。
 - 只初始化项目骨架时，优先 `yss-ddd-scaffold-generator`。
 
@@ -51,7 +51,7 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 
 ## 协同顺序
 
-- 需要持久层时，再接 `yss-repository` 或 `yss-db2mybatis`
+- 需要持久层时，再接 `yss-repository`
 - 需要 Web 层时，再接 `yss-web-controller`
 - 需要完整工程时，先 `yss-ddd-scaffold-generator`
 

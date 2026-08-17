@@ -23,7 +23,7 @@ description: Use when generating or refactoring YSS persistence models, BaseRepo
 
 1. 先确认输入来源：领域模型、metadata、数据库表、DDL。
 2. 探测持久化 profile：新 DDD 默认 `PO <-> Domain Model`；legacy YSS 常见 `Entity + BaseRepository + GatewayImpl`。沿用现有工程命名，不混用两套模型。
-3. 如果 metadata 不完整，优先转到 `yss-db2mybatis` 提取。
+3. 如果 metadata 不完整，先补齐 metadata、数据库表结构或 DDL 输入。
 4. 涉及 POJO 字段、getter/setter、constructor、builder 或日志时，必须加载并遵守 `lombok`。
 5. 涉及持久化模型与 Domain/VO/CMD 转换时，必须加载并遵守 `mapstruct`。
 6. 生成代码时严格保持 Domain 与 Infrastructure 分层边界。
@@ -57,7 +57,7 @@ description: Use when generating or refactoring YSS persistence models, BaseRepo
 
 ## 协同顺序
 
-- metadata 提取：`yss-db2mybatis`
+- metadata / DDL 输入准备：确认输入完整
 - 领域建模：`yss-domain`
 - POJO 样板代码：`lombok`
 - 对象转换：`mapstruct`

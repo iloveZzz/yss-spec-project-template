@@ -16,7 +16,7 @@ description: Use when generating or refactoring YSS Web Adapter Controllers, req
 ## 不适用
 
 - 用户只是要新增一个手写复杂接口，不一定要用脚本。
-- 用户还没有稳定的领域模型或 metadata，先补 `yss-domain` 或 `yss-db2mybatis`。
+- 用户还没有稳定的领域模型或 metadata，先补 `yss-domain` 并准备完整的 metadata 输入。
 
 ## 优先流程
 

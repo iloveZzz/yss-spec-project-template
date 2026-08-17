@@ -26,7 +26,6 @@ Default for a new page: first verify the approved product design, state matrix, 
 - `yss-backend-scaffold-application`: Application use cases, transaction boundaries, and cross-aggregate orchestration.
 - `yss-repository`: Persistence implementation, PO, Repository, Convertor, GatewayImpl.
 - `yss-web-controller`: REST adapter layer, request/response DTOs, VO, web convertor.
-- `yss-db2mybatis`: Generate persistence artifacts from database metadata or DDL.
 - `yss-mybatis`: Framework behavior for MyBatis/MyBatis-Plus, BaseRepository, pagination, mapper scanning, batch, datasource issues.
 - `yss-dto`: Result/PageQuery/CommandDTO/QueryDTO and unified API contract objects.
 
@@ -48,9 +47,7 @@ Default for end-to-end backend CRUD: include Domain, Application, Infrastructure
 - `yss-validation`: Validation engine and JSR-303 integration.
 - `yss-security-algorithm`: RSA/AES/SM/JWT/JWK/password-encoding compatibility and production key-management safety gates.
 - `yss-userinfo`: Current-user info propagation and starter integration.
-- `yss-variable`: Variable component APIs and variable resolution.
 - `yss-exception`: Exception component and unified exception handling.
-- `yss-valuation`: Valuation component behavior.
 
 Component skills should inspect generated `references/source-index.md` before changing code when the task depends on exact class or config names.
 
