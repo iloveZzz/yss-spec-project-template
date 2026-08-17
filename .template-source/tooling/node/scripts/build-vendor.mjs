@@ -94,6 +94,15 @@ async function buildInto(outdir) {
   return result.metafile;
 }
 
+async function normalizeGeneratedOutput(outdir, name) {
+  const outputPath = path.join(outdir, name);
+  const source = await readFile(outputPath, "utf8");
+  const normalized = source.replace(/[ \t]+$/gm, "");
+  if (normalized !== source) {
+    await writeFile(outputPath, normalized);
+  }
+}
+
 async function manifestFor(outdir, meta) {
   const lock = YAML.parse(await readFile(lockPath, "utf8"));
   const dependencies = await runtimeDependencies(meta, lock);
@@ -133,6 +142,7 @@ async function main() {
   const temporaryRoot = await mkdtemp(path.join(tmpdir(), "yss-vendor-"));
   try {
     const meta = await buildInto(temporaryRoot);
+    await Promise.all(outputs.map((name) => normalizeGeneratedOutput(temporaryRoot, name)));
     const manifest = await manifestFor(temporaryRoot, meta);
     await writeFile(path.join(temporaryRoot, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
     await writeFile(path.join(temporaryRoot, "NOTICES.md"), notices(manifest));

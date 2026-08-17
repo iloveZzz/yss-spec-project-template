@@ -42,4 +42,4 @@ These generated Node runtime bundles contain the following packages:
 ## Bundle SHA-256
 
 - yaml.mjs: sha256:58c510627769ef4e75e90bcf410d63ba33e64b46bc9cfc53149839d5ccb1709b
-- xml.mjs: sha256:92ae7ab88c3bf5047ea8f2246dbc1b34157d6da39c65f813d170785cde483286
+- xml.mjs: sha256:bab9b35f123c30198a7597422ca0baa9f207c0e536b41f2c478c6fd6b7fdfc79
