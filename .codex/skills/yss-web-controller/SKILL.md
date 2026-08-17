@@ -5,7 +5,7 @@ description: Use when generating or refactoring YSS Web Adapter Controllers, req
 
 # yss-web-controller
 
-这是一个 Web 适配层生成型 skill。优先复用脚本 `scripts/generate_controller.py` 和模板，不手写重复 CRUD。
+这是一个 Web 适配层生成型 skill。优先复用脚本 `scripts/generate_controller.mjs` 和模板，不手写重复 CRUD。
 
 ## 何时使用
 
@@ -23,14 +23,14 @@ description: Use when generating or refactoring YSS Web Adapter Controllers, req
 1. 先确认冻结 OpenAPI/no-impact record、Application Service 接口、metadata、基础包、模块名、领域 segment、domain/web 落盘目录。
 2. 涉及 DTO / VO / CMD / Query POJO 样板代码时，加载并遵守 `lombok`。
 3. 涉及 Domain / Application Result 到 VO / DTO 或 CMD / Query 到输入模型的转换时，加载并遵守 `mapstruct`。
-4. 运行 `scripts/generate_controller.py`。
+4. 运行 `node scripts/generate_controller.mjs`。
 5. 生成后检查路径、命名、返回值包装、Application Service 引用、`@Valid`、Lombok 注解和 MapStruct WebConvertor 是否对齐项目。
 6. 对复杂接口做少量手工修正，不在 skill 中承诺自动覆盖全部业务逻辑。
 
 ## 推荐命令
 
 ```bash
-python3 scripts/generate_controller.py \
+node scripts/generate_controller.mjs \
   --metadata-file /path/metadata.json \
   --base-package com.yss.demo \
   --module-name demo \
@@ -63,7 +63,7 @@ python3 scripts/generate_controller.py \
 
 ## 按需读取
 
-- 生成脚本：`scripts/generate_controller.py`
+- 生成脚本：`scripts/generate_controller.mjs`
 - Controller 模板：`assets/templates/Controller.java.template`
 - Convertor 模板：`assets/templates/WebConvertor.java.template`
 - POJO 样板代码：`lombok`

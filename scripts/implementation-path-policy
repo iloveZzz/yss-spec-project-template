@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+export {
+  normalizeImplementationPath as normalize,
+  validImplementationPath as valid,
+  violation
+} from "./lib/implementation-path-policy.mjs";

@@ -12,7 +12,7 @@
 
 1. RED / GREEN、压力场景、研究和独立审查证据先保留在 `evidence/reviews/`，完成 archive-source checkpoint 后由 `index.yaml` 汇总，原始文件从工作树移除但继续保存在 Git 历史或发布附件中。
 2. `evidence/reviews/index.yaml` 是当前证据清单、SHA-256 和 checkpoint 引用的唯一事实源；`pending` 只允许出现在尚未取得 archive-source checkpoint 的中间状态。
-3. 跨仓库契约进入 `contracts/`；模板源发布路线进入 `roadmap/`。路线条目必须有状态和验收证据，全部 `closed` 后才能从工作树移除。
+3. 跨仓库契约进入 `contracts/`；模板源发布路线进入 `roadmap/`。路线条目必须有状态和验收证据，全部 `closed` 后才能从工作树移除。维护侧 Node 工具依赖、lockfile 和 vendor 构建位于 `tooling/node/`，不进入模板实例分发面。
 4. 仅描述模板源执行过程的派生表进入 `derived/`。
 5. 仅影响模板治理、尚未成为实例运行规则的 ADR 进入 `adr/`，`proposed` 不等于当前发布门禁。
 
@@ -44,9 +44,9 @@
 
 ```bash
 # 先在保留原件的工作树上建立 archive-source checkpoint
-ruby .template-source/scripts/evidence-index.rb --write --archive-commit <archive-commit>
+.template-source/scripts/evidence-index --write --archive-commit <archive-commit>
 git rm .template-source/evidence/reviews/*.md
-ruby .template-source/scripts/evidence-index.rb --check
+.template-source/scripts/evidence-index --check
 scripts/verify-template
 ```
 

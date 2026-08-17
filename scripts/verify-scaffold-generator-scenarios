@@ -19,7 +19,7 @@ GENERATOR = (
     / "skills"
     / "yss-ddd-scaffold-generator"
     / "scripts"
-    / "generate_scaffold.py"
+    / "generate_scaffold.mjs"
 )
 VERIFIER = (
     REPOSITORY_ROOT
@@ -27,13 +27,13 @@ VERIFIER = (
     / "skills"
     / "yss-ddd-scaffold-generator"
     / "scripts"
-    / "run_scaffold_verification.py"
+    / "run_scaffold_verification.mjs"
 )
 
 
 def run_generator(*arguments: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [sys.executable, str(GENERATOR), *arguments],
+        ["node", str(GENERATOR), *arguments],
         cwd=REPOSITORY_ROOT,
         text=True,
         capture_output=True,
@@ -296,7 +296,7 @@ def main() -> int:
         evidence_dir = verification_project / "evidence"
         verification_result = subprocess.run(
             [
-                sys.executable,
+                "node",
                 str(VERIFIER),
                 "--project-root",
                 str(verification_project),

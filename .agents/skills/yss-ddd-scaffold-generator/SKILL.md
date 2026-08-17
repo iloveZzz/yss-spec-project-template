@@ -25,17 +25,17 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 
 1. 确认项目名、基础包名、输出目录、数据库类型。
    Harness 内输出目录必须是 `apps/backend/` 容器，生成器再以 `project_name` 创建 `apps/backend/<project>/`；禁止使用 `app/backend/`、`app/frontend/` 或把 `apps/backend/` 之外的容器根当作后端项目根。
-2. 运行 `scripts/generate_scaffold.py` 生成骨架。
+2. 运行 `node scripts/generate_scaffold.mjs` 生成骨架。
 3. 检查生成的模块名、POM、基础配置文件和包路径。
 4. 由生命周期受控工作单元在生成项目根目录实际执行 `./mvnw validate`、`./mvnw test` 和 `./mvnw package`；生成器打印的下一步命令不构成验证证据。
 5. 如需继续细化，再追加其他 YSS skill 补全领域、仓储和 Web。
 
-受控验证命令由本 skill 的 `scripts/run_scaffold_verification.py` 固定执行；验证器先检查 `.yss/scaffold-generation.json` 的合同元数据，再在指定 evidence 目录写入每条命令的 stdout/stderr、`exit_code`、耗时、执行时间和 `scaffold-verification.json`；任何一条命令失败或未执行都必须阻断。
+受控验证命令由本 skill 的 `node scripts/run_scaffold_verification.mjs` 固定执行；验证器先检查 `.yss/scaffold-generation.json` 的合同元数据，再在指定 evidence 目录写入每条命令的 stdout/stderr、`exit_code`、耗时、执行时间和 `scaffold-verification.json`；任何一条命令失败或未执行都必须阻断。
 
 ## 推荐命令
 
 ```bash
-python3 scripts/generate_scaffold.py \
+node scripts/generate_scaffold.mjs \
   --project-name my-service \
   --base-package com.yss.myservice \
   --output-dir /path/to/implementation-repo \
@@ -82,8 +82,8 @@ python3 scripts/generate_scaffold.py \
 
 ## 按需读取
 
-- 主脚本：`scripts/generate_scaffold.py`
-- 受控验证器：`scripts/run_scaffold_verification.py`
+- 主脚本：`scripts/generate_scaffold.mjs`
+- 受控验证器：`scripts/run_scaffold_verification.mjs`
 - 模板目录：`assets/templates/`
 - 分层细化参考：`references/yss-backend-scaffold-parent/` 及其子 skill
 

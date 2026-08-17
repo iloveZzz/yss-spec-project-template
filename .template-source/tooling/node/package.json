@@ -1,0 +1,19 @@
+{
+  "name": "yss-template-node-tooling",
+  "private": true,
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.15.0",
+  "engines": {
+    "node": ">=22 <27"
+  },
+  "scripts": {
+    "build:vendor": "node scripts/build-vendor.mjs",
+    "test": "node --test test/**/*.test.mjs",
+    "check:vendor": "node scripts/build-vendor.mjs --check"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "fast-xml-parser": "5.11.0",
+    "yaml": "2.9.0"
+  }
+}

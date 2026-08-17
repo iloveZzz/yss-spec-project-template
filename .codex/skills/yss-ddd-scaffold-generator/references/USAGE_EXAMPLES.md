@@ -9,7 +9,7 @@
 cd yss-datamiddle-scaffold
 
 # 生成项目
-python3 .agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.py \
+node .agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs \
   --project-name user-service \
   --base-package com.yss.user \
   --output-dir /path/to/implementation-repo \
@@ -53,7 +53,7 @@ cd output/user-service
 从生命周期工作目录执行固定验证器；它会在项目 evidence 目录实际运行三条 wrapper 命令并写入结果，不能用生成器打印的命令替代：
 
 ```bash
-python3 .agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.py \
+node .agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs \
   --project-root /path/to/implementation-repo/user-service \
   --evidence-dir /path/to/implementation-repo/user-service/docs/evidence/scaffold
 ```

@@ -17,16 +17,7 @@
 
 对于数据模型、元数据管理、ER 设计、版本管理或血缘分析类产品，数据架构是核心产品能力，必须在 Repository / MyBatis / 持久化开发前完成；如果 OpenAPI schema 依赖元模型，也必须在 OpenAPI Freeze 前完成。
 
-推荐配套图：
-
-```text
-docs/.scratch/<feature>/architecture/diagrams/<feature>-business-capability.excalidraw
-docs/.scratch/<feature>/architecture/diagrams/<feature>-functional-modules.excalidraw
-docs/.scratch/<feature>/architecture/diagrams/<feature>-system-architecture.excalidraw
-docs/.scratch/<feature>/architecture/diagrams/<feature>-data-model.excalidraw
-```
-
-使用 `excalidraw-diagram-generator` 生成图时，图只作为审查辅助；发现的问题必须回写到 Spec、OpenAPI、ADR、系统 / 数据架构设计 或对应架构文档。
+图表只作为审查辅助；发现的问题必须回写到 Spec、OpenAPI、ADR、系统 / 数据架构设计或对应架构文档。
 
 推荐模板：
 
@@ -58,14 +49,6 @@ delegate_task(
 delegate_task(
     goal="根据技术讨论记录，自动生成 ADR",
     context="使用 docs/templates/adr-template.md 模板"
-)
-```
-
-### 图表生成者
-```python
-delegate_task(
-    goal="使用 excalidraw-diagram-generator 生成架构图",
-    context="根据阶段选择：业务能力图/功能模块图/系统架构图/ER 图/血缘图/数据流图"
 )
 ```
 

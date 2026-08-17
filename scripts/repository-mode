@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+import { readRepositoryMode } from "./lib/repository-mode.mjs";
+
+try {
+  process.stdout.write(`${readRepositoryMode(process.cwd())}\n`);
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+}

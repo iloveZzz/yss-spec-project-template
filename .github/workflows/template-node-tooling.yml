@@ -1,0 +1,59 @@
+name: Template Node tooling
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  linux:
+    name: linux-node-${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: pnpm --dir .template-source/tooling/node install --frozen-lockfile
+      - run: pnpm --dir .template-source/tooling/node build:vendor
+      - run: pnpm --dir .template-source/tooling/node test
+      - run: pnpm --dir .template-source/tooling/node check:vendor
+      - run: git diff --exit-code -- scripts/vendor
+      - run: scripts/verify-template
+
+  macos-vendor:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: pnpm --dir .template-source/tooling/node install --frozen-lockfile
+      - run: pnpm --dir .template-source/tooling/node build:vendor
+      - run: pnpm --dir .template-source/tooling/node check:vendor
+      - run: git diff --exit-code -- scripts/vendor
+
+  node-26-observational:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 26
+      - run: pnpm --dir .template-source/tooling/node install --frozen-lockfile
+      - run: pnpm --dir .template-source/tooling/node test
+      - run: pnpm --dir .template-source/tooling/node check:vendor

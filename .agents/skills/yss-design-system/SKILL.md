@@ -80,7 +80,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 | Spec 后做页面 / 原型 / 交互说明 | `yss-prototype-stage` → `product-design:index` |
 | 低保真原型进入高保真前评审 | `prototype-review` |
 | 低保真评审通过后的高保真 HTML 原型 | `yss-prototype-stage`；`high-fidelity-html-prototype` 仅兼容入口 |
-| 低保真线框或流程图 | `product-design:index` 或 `wireframe-prototype` 兼容入口 / `excalidraw-diagram-generator` |
+| 低保真线框或流程图 | `product-design:index` 或 `wireframe-prototype` 兼容入口 |
 | 前端页面实现 | `yss-ui` / `yss-page-module-development` |
 | 表单 schema | `yss-formily` |
 | YTable / YTree / 高度自适应 | `yss-components` / `yss-use-table-height` / `yss-use-tree-height` |
@@ -96,4 +96,4 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 3. 将 Agent 执行入口落到 `.agents/skills/yss-design-system/SKILL.md`。
 4. 将 Agent 执行检查清单更新到 `.agents/skills/yss-design-system/references/design-system.md`。
 5. 更新 `docs/design/README.md` 和必要的 `AGENTS.md` 入口规则。
-6. 运行 `.agents/skills/yss-design-system/scripts/validate-frontmatter.py` 和 markdown/diff 基础检查；若当前环境安装了 `PyYAML`，再运行 skill-creator 的 `quick_validate.py`。
+6. 运行 `node .agents/skills/yss-design-system/scripts/validate-frontmatter.mjs`、对应 `node --test` 和 markdown/diff 基础检查。

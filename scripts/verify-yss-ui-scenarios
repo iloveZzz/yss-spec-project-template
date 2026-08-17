@@ -1,65 +1,54 @@
-#!/usr/bin/env ruby
-# frozen_string_literal: true
+#!/usr/bin/env node
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-require "pathname"
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const skillRoot = path.join(root, ".agents/skills/yss-ui");
+const failures = [];
+const read = (filePath) => readFileSync(filePath, "utf8");
+function filesUnder(directory) {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const target = path.join(directory, entry.name);
+    return entry.isDirectory() ? filesUnder(target) : entry.isFile() ? [target] : [];
+  });
+}
 
-root = Pathname.new(__dir__).parent
-skill_root = root.join(".agents/skills/yss-ui")
-failures = []
+const requiredReferences = [
+  "component-routing.md",
+  "antdv-compatibility.md",
+  "theme-locale-overlay.md",
+  "accessibility.md",
+  "verification.md",
+  "migration-antdv-to-yss.md"
+];
+for (const name of requiredReferences) if (!existsSync(path.join(skillRoot, "references", name))) failures.push(`Missing YSS UI governance reference: ${name}`);
 
-required_references = %w[
-  component-routing.md
-  antdv-compatibility.md
-  theme-locale-overlay.md
-  accessibility.md
-  verification.md
-  migration-antdv-to-yss.md
-]
-required_references.each do |name|
-  path = skill_root.join("references", name)
-  failures << "Missing YSS UI governance reference: #{name}" unless path.file?
-end
+for (const skillName of ["yss-ui", "yss-components"]) if (read(path.join(root, ".agents/skills", skillName, "SKILL.md")).includes("yss-hooks")) failures.push(`Nonexistent yss-hooks route remains in ${skillName}`);
 
-%w[yss-ui yss-components].each do |skill_name|
-  body = root.join(".agents/skills", skill_name, "SKILL.md").read
-  failures << "Nonexistent yss-hooks route remains in #{skill_name}" if body.include?("yss-hooks")
-end
+const uiBody = read(path.join(skillRoot, "SKILL.md"));
+for (const marker of ["yss-hook", "YssFormily", "component-routing.md", "antdv-compatibility.md", "ConfigProvider", "accessibility"]) if (!uiBody.includes(marker)) failures.push(`YSS UI router missing marker: ${marker}`);
 
-ui_body = skill_root.join("SKILL.md").read
-%w[yss-hook YssFormily component-routing.md antdv-compatibility.md ConfigProvider accessibility].each do |marker|
-  failures << "YSS UI router missing marker: #{marker}" unless ui_body.include?(marker)
-end
+const routingBody = read(path.join(skillRoot, "references/component-routing.md"));
+for (const marker of ["YButton", "YCard", "YTable", "YTree", "YssFormily", "YSplitPane", "required", "fallback", "specialized"]) if (!routingBody.includes(marker)) failures.push(`Component routing missing marker: ${marker}`);
 
-routing_body = skill_root.join("references/component-routing.md").read
-%w[YButton YCard YTable YTree YssFormily YSplitPane required fallback specialized].each do |marker|
-  failures << "Component routing missing marker: #{marker}" unless routing_body.include?(marker)
-end
+const compatibilityBody = read(path.join(skillRoot, "references/antdv-compatibility.md"));
+for (const marker of ["pnpm why", "4.2.6", "2026-08-08", "lockfile"]) if (!compatibilityBody.includes(marker)) failures.push(`AntDV compatibility reference missing marker: ${marker}`);
 
-compatibility_body = skill_root.join("references/antdv-compatibility.md").read
-%w[pnpm\ why 4.2.6 2026-08-08 lockfile].each do |marker|
-  expected = marker.tr("\\", "")
-  failures << "AntDV compatibility reference missing marker: #{expected}" unless compatibility_body.include?(expected)
-end
+const wrappedAntdvComponents = new Set(["Button", "Card", "Table", "Tree"]);
+for (const filePath of filesUnder(path.join(skillRoot, "assets/demos")).filter((filePath) => filePath.endsWith(".vue"))) {
+  for (const match of read(filePath).matchAll(/import\s*\{([^}]*)\}\s*from\s*['"]ant-design-vue['"]/gm)) {
+    const forbidden = match[1].split(",").map((item) => item.trim().split(/\s+as\s+/)[0]).filter((name) => wrappedAntdvComponents.has(name));
+    if (forbidden.length > 0) failures.push(`Demo bypasses required YSS wrapper: ${path.relative(root, filePath)} -> ${forbidden.join(", ")}`);
+  }
+}
 
-wrapped_antdv_components = %w[Button Card Table Tree]
-skill_root.glob("assets/demos/**/*.vue").each do |path|
-  body = path.read
-  body.scan(/import\s*\{([^}]*)\}\s*from\s*['\"]ant-design-vue['\"]/m).flatten.each do |imports|
-    names = imports.split(",").map { |item| item.strip.split(/\s+as\s+/).first }
-    forbidden = names & wrapped_antdv_components
-    failures << "Demo bypasses required YSS wrapper: #{path.relative_path_from(root)} -> #{forbidden.join(', ')}" unless forbidden.empty?
-  end
-end
+if (/<YFormily\b|\bYFormily：/.test(read(path.join(skillRoot, "references/quick-recipes.md")))) failures.push("Quick recipes still recommend YFormily alias");
 
-quick_recipes = skill_root.join("references/quick-recipes.md").read
-failures << "Quick recipes still recommend YFormily alias" if quick_recipes.match?(/<YFormily\b|\bYFormily：/)
-
-scenario_index = skill_root.join("assets/scenario-index.md").read
-failures << "Recommended scenario index contains pending-verification demo" if scenario_index.include?("pending-verification")
-
-unless failures.empty?
-  warn failures.join("\n")
-  exit 1
-end
-
-puts "YSS UI governance scenarios passed"
+if (read(path.join(skillRoot, "assets/scenario-index.md")).includes("pending-verification")) failures.push("Recommended scenario index contains pending-verification demo");
+if (failures.length > 0) {
+  process.stderr.write(`${failures.join("\n")}\n`);
+  process.exitCode = 1;
+} else {
+  process.stdout.write("YSS UI governance scenarios passed\n");
+}

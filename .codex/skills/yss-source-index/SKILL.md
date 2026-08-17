@@ -24,7 +24,7 @@ Run:
 ```bash
 export YSS_SKILLS_ROOT="/path/to/.agents/skills"
 export YSS_SOURCE_ROOT="/path/to/yss-cloud-microservice"
-python3 "$YSS_SKILLS_ROOT/yss-source-index/scripts/refresh-yss-skill-index.py"
+node "$YSS_SKILLS_ROOT/yss-source-index/scripts/refresh-yss-skill-index.mjs"
 ```
 
 Backend-only refreshes may set `YSS_REFRESH_FRONTEND=false` to avoid unrelated frontend timestamp churn.
@@ -56,8 +56,8 @@ Before exact class/config/security guidance, compare the index `Source commit` w
 
 ## After Refresh
 
-Validate changed skills with:
+Validate the migrated Node helper with:
 
 ```bash
-python3 /path/to/skill-creator/scripts/quick_validate.py /path/to/.agents/skills/yss-source-index
+node --test "$YSS_SKILLS_ROOT/yss-source-index/scripts/refresh-yss-skill-index.test.mjs"
 ```

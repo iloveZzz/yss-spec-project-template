@@ -1,43 +1,40 @@
-#!/usr/bin/env ruby
-# frozen_string_literal: true
+#!/usr/bin/env node
+import { validImplementationPath, violation } from "./lib/implementation-path-policy.mjs";
 
-require_relative "implementation-path-policy"
+const validPaths = {
+  "backend project 1": "apps/backend/project1/",
+  "backend project 2 nested source": "apps/backend/project2/src/main/java/",
+  "frontend project 1": "apps/frontend/project1/",
+  "external repository native path": "src/main/java/"
+};
 
-valid_paths = {
-  "backend project 1" => "apps/backend/project1/",
-  "backend project 2 nested source" => "apps/backend/project2/src/main/java/",
-  "frontend project 1" => "apps/frontend/project1/",
-  "external repository native path" => "src/main/java/"
-}.freeze
+const invalidPaths = {
+  "singular backend root": "app/backend/project1/",
+  "singular frontend root": "app/frontend/project1/",
+  "backend container root": "apps/backend/",
+  "frontend container root": "apps/frontend/",
+  "wildcard project root": "apps/backend/*/",
+  traversal: "apps/backend/project1/../project2/"
+};
 
-invalid_paths = {
-  "singular backend root" => "app/backend/project1/",
-  "singular frontend root" => "app/frontend/project1/",
-  "backend container root" => "apps/backend/",
-  "frontend container root" => "apps/frontend/",
-  "wildcard project root" => "apps/backend/*/",
-  "traversal" => "apps/backend/project1/../project2/"
-}.freeze
+const externalNativePaths = {
+  "external repository app directory": "app/backend/src/main/java/",
+  "external repository apps directory": "apps/backend/project1/src/"
+};
 
-external_native_paths = {
-  "external repository app directory" => "app/backend/src/main/java/",
-  "external repository apps directory" => "apps/backend/project1/src/"
-}.freeze
-
-failures = []
-valid_paths.each do |name, path|
-  failures << "应允许 #{name}: #{YssImplementationPathPolicy.violation(path)}" unless YssImplementationPathPolicy.valid?(path)
-end
-invalid_paths.each do |name, path|
-  failures << "应阻断 #{name}" if YssImplementationPathPolicy.valid?(path)
-end
-external_native_paths.each do |name, path|
-  failures << "外部 native root 不应被 Harness 路径策略误伤 #{name}" unless YssImplementationPathPolicy.valid?(path, enforce_harness: false)
-end
-
-unless failures.empty?
-  warn failures.join("\n")
-  exit 1
-end
-
-puts "实现项目路径策略压力场景验证通过"
+const failures = [];
+for (const [name, value] of Object.entries(validPaths)) {
+  if (!validImplementationPath(value)) failures.push(`应允许 ${name}: ${violation(value)}`);
+}
+for (const [name, value] of Object.entries(invalidPaths)) {
+  if (validImplementationPath(value)) failures.push(`应阻断 ${name}`);
+}
+for (const [name, value] of Object.entries(externalNativePaths)) {
+  if (!validImplementationPath(value, { enforceHarness: false })) failures.push(`外部 native root 不应被 Harness 路径策略误伤 ${name}`);
+}
+if (failures.length > 0) {
+  process.stderr.write(`${failures.join("\n")}\n`);
+  process.exitCode = 1;
+} else {
+  process.stdout.write("实现项目路径策略压力场景验证通过\n");
+}

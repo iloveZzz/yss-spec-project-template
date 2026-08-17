@@ -49,6 +49,8 @@
    scripts/verify-template
    ```
 
+   若模板维护引入或更新分发到实例的 Node 工具，先在 `.template-source/tooling/node/` 使用 `pnpm install --frozen-lockfile`，再运行 `pnpm build:vendor` 与 `pnpm check:vendor`；实例门禁不得安装依赖或重建 vendor。运行时、公开入口和跨仓回滚规则以 `.template-source/adr/0009-zero-install-node-tooling-runtime.md` 及对应契约为准。
+
 6. 需要重新加载技能的客户端在变更落地后重启或刷新项目。
 
 ## 单独检查

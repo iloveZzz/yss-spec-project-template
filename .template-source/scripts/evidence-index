@@ -1,0 +1,91 @@
+#!/usr/bin/env node
+import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { parseDocument } from "../../scripts/vendor/yaml.mjs";
+
+const root = process.env.YSS_EVIDENCE_INDEX_ROOT ? path.resolve(process.env.YSS_EVIDENCE_INDEX_ROOT) : path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const reviewsRoot = path.join(root, ".template-source/evidence/reviews");
+const indexPath = path.join(reviewsRoot, "index.yaml");
+const sourceRoot = ".template-source/evidence/reviews";
+const hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
+const die = (message) => { throw new TypeError(message); };
+const git = (...args) => execFileSync("git", args, { cwd: root, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+const reviews = () => existsSync(reviewsRoot) ? readdirSync(reviewsRoot).filter((name) => name.endsWith(".md")).sort().map((name) => path.join(reviewsRoot, name)) : [];
+const relative = (file) => path.relative(root, file).split(path.sep).join("/");
+const makeEntry = (file, archiveRef = null) => {
+  const bytes = readFileSync(file); const itemPath = relative(file);
+  return { path: itemPath, origin_path: "docs/reviews/" + path.basename(file), bytes: bytes.length, sha256: hash(bytes), archive_path: itemPath, archive_ref: archiveRef };
+};
+
+function load() {
+  if (!existsSync(indexPath)) die("缺少证据索引: .template-source/evidence/reviews/index.yaml");
+  const document = parseDocument(readFileSync(indexPath, "utf8"), { uniqueKeys: true });
+  if (document.errors.length) die("无法解析证据索引: " + document.errors[0].message);
+  return document.toJS({ maxAliasCount: 0 });
+}
+
+function validate(data) {
+  if (!data || data.schema_version !== 1 || data.kind !== "review-evidence-index" || data.source_root !== sourceRoot) die("证据索引结构无效");
+  if (!data.archive || data.archive.kind !== "git-history" || !["pending", "complete"].includes(data.archive.status)) die("证据索引 archive 无效");
+  if (!Array.isArray(data.files) || !data.files.length || data.count !== data.files.length) die("证据索引 files 或 count 无效");
+  const paths = new Set(); const origins = new Set();
+  for (const entry of data.files) {
+    if (!entry || typeof entry.path !== "string" || !entry.path.startsWith(sourceRoot + "/") || !entry.path.endsWith(".md") || entry.path.slice(sourceRoot.length + 1).includes("/") || entry.archive_path !== entry.path || typeof entry.origin_path !== "string" || !entry.origin_path.startsWith("docs/reviews/") || typeof entry.bytes !== "number" || entry.bytes < 0 || !/^[a-f0-9]{64}$/.test(entry.sha256 || "") || paths.has(entry.path) || origins.has(entry.origin_path)) die("证据索引条目无效: " + (entry?.path || "<unknown>"));
+    paths.add(entry.path); origins.add(entry.origin_path);
+  }
+  if (data.archive.status === "pending") {
+    if (data.archive.commit !== null || data.archive.tree !== null) die("pending 索引不应包含 commit/tree");
+    if (reviews().map(relative).join("\0") !== [...paths].sort().join("\0")) die("pending 索引与当前原始文件集合不一致");
+    for (const entry of data.files) { const bytes = readFileSync(path.join(root, entry.path)); if (bytes.length !== entry.bytes || hash(bytes) !== entry.sha256) die("当前原始文件 hash 不匹配: " + entry.path); }
+    return;
+  }
+  if (!/^[a-f0-9]{40}$/.test(data.archive.commit || "") || !/^[a-f0-9]{40}$/.test(data.archive.tree || "")) die("complete 索引缺少 Git checkpoint");
+  const commit = git("rev-parse", "--verify", data.archive.commit + "^{commit}"); const tree = git("rev-parse", "--verify", commit + "^{tree}");
+  if (commit !== data.archive.commit || tree !== data.archive.tree) die("archive commit/tree 不一致");
+  if (git("ls-files", "--", sourceRoot).split("\n").some((item) => item.endsWith(".md"))) die("complete 索引要求当前不再追踪原始审查 Markdown");
+  for (const entry of data.files) {
+    if (entry.archive_ref !== "git:" + commit + ":" + entry.archive_path) die("archive_ref 不正确: " + entry.path);
+    const bytes = execFileSync("git", ["cat-file", "blob", commit + ":" + entry.archive_path], { cwd: root });
+    if (bytes.length !== entry.bytes || hash(bytes) !== entry.sha256) die("Git archive hash 不匹配: " + entry.path);
+  }
+}
+
+function serialize(data) {
+  const quote = (value) => JSON.stringify(value);
+  const result = ["---", "schema_version: 1", "kind: review-evidence-index", "source_root: " + quote(sourceRoot), "count: " + data.files.length, "archive:", "  kind: git-history", "  status: " + data.archive.status, "  commit: " + (data.archive.commit === null ? "null" : data.archive.commit), "  tree: " + (data.archive.tree === null ? "null" : data.archive.tree), "files:"];
+  for (const entry of data.files) result.push("- path: " + quote(entry.path), "  origin_path: " + quote(entry.origin_path), "  bytes: " + entry.bytes, "  sha256: " + entry.sha256, "  archive_path: " + quote(entry.archive_path), "  archive_ref: " + (entry.archive_ref === null ? "null" : quote(entry.archive_ref)));
+  return result.join("\n") + "\n";
+}
+
+function writePending() {
+  const source = reviews(); if (!source.length) die("没有发现 .template-source/evidence/reviews/*.md");
+  return { archive: { kind: "git-history", status: "pending", commit: null, tree: null }, files: source.map((file) => makeEntry(file)) };
+}
+
+function writeComplete(requested) {
+  const source = reviews(); if (!source.length) die("生成 complete 索引前必须保留原始审查文件");
+  const commit = git("rev-parse", "--verify", requested + "^{commit}"); const tree = git("rev-parse", "--verify", commit + "^{tree}");
+  const files = source.map((file) => {
+    const archivePath = relative(file); const archived = execFileSync("git", ["cat-file", "blob", commit + ":" + archivePath], { cwd: root });
+    if (!readFileSync(file).equals(archived)) die("当前文件与 archive checkpoint 不一致: " + archivePath);
+    return makeEntry(file, "git:" + commit + ":" + archivePath);
+  });
+  return { archive: { kind: "git-history", status: "complete", commit, tree }, files };
+}
+
+function main(args) {
+  const check = args.includes("--check"); const write = args.includes("--write"); const pending = args.includes("--pending"); const index = args.indexOf("--archive-commit"); const archiveCommit = index >= 0 ? args[index + 1] : null;
+  if (args.includes("-h") || args.includes("--help")) return "Usage: evidence-index --check | --write (--pending | --archive-commit COMMIT)";
+  if (check === write) die("必须指定 --check 或 --write");
+  if (pending && (!write || archiveCommit)) die("--pending 只能与 --write 一起使用，且不可与 --archive-commit 并用");
+  if (write && !pending && !archiveCommit) die("--write 必须指定 --pending 或 --archive-commit");
+  if (index >= 0 && !archiveCommit) die("--archive-commit 缺少 COMMIT");
+  if (check) { const data = load(); validate(data); return "证据索引验证通过（" + data.archive.status + "）"; }
+  const data = pending ? writePending() : writeComplete(archiveCommit);
+  writeFileSync(indexPath, serialize(data)); return "证据索引已写入 .template-source/evidence/reviews/index.yaml（" + data.archive.status + "）";
+}
+
+try { process.stdout.write(main(process.argv.slice(2)) + "\n"); } catch (error) { process.stderr.write(error.message + "\n"); process.exitCode = 1; }

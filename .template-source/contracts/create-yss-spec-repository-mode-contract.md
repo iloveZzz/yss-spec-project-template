@@ -8,6 +8,7 @@
 - CLI 创建或接管的产品仓库写入 `repository_mode: project-instance`。
 - CLI 只管理 manifest 声明的研发管理资产，不接管前后端运行时代码、业务目录、用户文件或 `.git`。
 - 通过模板快照和 40 位 `templateCommit` 使每次初始化、升级和回滚可追踪。
+- 新模板快照的实例门禁以 Node `>=22 <27` 运行；不得执行 `npm install`、`pnpm install` 或维护侧 vendor 构建。`scripts/vendor/` 必须随快照分发且可离线使用。
 
 ## 生命周期接口
 
@@ -44,6 +45,8 @@ npx create-yss-spec@latest attach \
 
 完成后必须重新执行三个模板门禁；任一门禁失败时回滚文件变更并保持旧 metadata 版本。
 
+模板把共享运行脚本从 Ruby 迁移到 Node 时，CLI 同步继续将模板删除按 `remove-report` 报告；不得静默删除既有实例的 `.rb` 文件。对新快照，CLI 必须验证公开入口、Node 版本失败信息、离线门禁和回滚均符合本契约。
+
 ## metadata v2
 
 `.yss-template.json` 至少包含：
@@ -76,6 +79,8 @@ CLI 必须遵循 [Spec / Ticket 迁移指南](../../docs/user-guide/规格与任
 | 旧资产迁移 | 规格 / Ticket 路径和根 scratch 安全迁移；目标冲突与扁平 Ticket fail closed |
 | sync | 新增、更新、冲突、迁移和删除报告完整；force 只作用于受管文件 |
 | post-sync | 三个门禁全部 fresh 通过；失败时文件和 metadata 回滚 |
+| Node 运行时迁移 | Node 22 / 24 下 init、attach dry-run/apply、sync 都无需安装依赖；缺失或不兼容 Node 必须 fail closed 且回滚 |
+| 遗留 Ruby | 新快照无活动 Ruby 脚本；既有实例遗留 `.rb` 仅 `remove-report`，不静默删除 |
 | 发布包 | 固定 commit 下 `npm test` 和 `npm pack --dry-run` 通过，包内含 `template.snapshot.json` |
 
 本变更只涉及模板治理和外部 CLI，不涉及 frontend、backend、OpenAPI 或运行时工程；这些范围为 `not-applicable`。

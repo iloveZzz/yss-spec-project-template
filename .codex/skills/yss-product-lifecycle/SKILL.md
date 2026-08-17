@@ -33,6 +33,8 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 - 安全 / 权限不设独立生命周期资料、专属门禁或 `not-applicable` 记录。只有需求或冻结资产明确要求改变认证、授权、租户隔离、敏感数据或合规行为时，才把该行为写入普通 Spec、API、架构、验收和测试 seam，并仅按实际 UI、API、Backend、Data、High-risk 影响触发既有门禁；普通 action 注册、沿用认证中间件、未变化的 `401` / `403`、一般字段、SQL / DDL / 迁移和上传 / 下载本身不触发安全 / 权限流程。
 - 有效 `yss-project.yaml` 存在时，`ask-matt` 和 `setup-matt-pocock-skills` 只能作为子流程；最终入口、仓库身份和模式裁决归本编排器。
 - `template-source` 命中产品 flow 时必须返回 `blocked`（`template-source-product-artifact-forbidden`），不得继续到产品资产或 Ticket 生成。
+- `template-source` 迁移共享工具或验证器前，先区分维护侧构建资产、实例分发面和实例运行资产；冻结公开入口、运行时前提、旧实现处置和跨仓消费者契约后，才可改写实现。
+- 替换自身验证门禁时，不得只用候选门禁自证；必须保留独立 baseline oracle 或同一 fixture 的双跑证据。涉及共享运行资产时，只有生成/同步实例、失败回滚和跨仓消费者的 fresh evidence 齐备，才能声明生态完成或可发布。
 - 文件存在不等于就绪。按内容、审查结论和上游新鲜度评估资产。
 - 父 Ticket/checkpoint 的状态只是索引；与真实资产冲突时，以权威资产为准并修复索引。
 - 上游变化按依赖图精准传播 `stale`；不要无条件重跑完整阶段。

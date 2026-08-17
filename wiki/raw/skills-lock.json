@@ -59,21 +59,6 @@
           ".trae/skills"
         ]
       },
-      "beautiful-article": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/beautiful-article/SKILL.md",
-        "effectiveHash": "61fcf2d7b96f85289adae3e287aac1ed5fb8f077a3f5672ef5314991e2a87c37",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".codex/skills",
-          ".hermes/skills",
-          ".pi/skills",
-          ".qoder/skills",
-          ".trae/skills"
-        ]
-      },
       "claude-handoff": {
         "source": "mattpocock/skills",
         "sourceType": "github",
@@ -189,51 +174,6 @@
         "skillPath": "skills/engineering/domain-modeling/SKILL.md",
         "effectiveHash": "40afc20cd49261811d7fe377fff53c1804f5e27644b42adb65469c7fc305a3a2",
         "upstreamHash": "363cb0f53b0b431e7c00086ad1f823500b7e1b70b5616ee969c979f0934e9e6e",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".codex/skills",
-          ".hermes/skills",
-          ".pi/skills",
-          ".qoder/skills",
-          ".trae/skills"
-        ]
-      },
-      "drawio": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/drawio/SKILL.md",
-        "effectiveHash": "0e67d70f9a9e416850c2f1b03617f95d629de12f142582f5deb55a94b9a29f40",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".codex/skills",
-          ".hermes/skills",
-          ".pi/skills",
-          ".qoder/skills",
-          ".trae/skills"
-        ]
-      },
-      "drawio-academic-skills": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/drawio-academic-skills/SKILL.md",
-        "effectiveHash": "9a81303065d0e151775088f56423ac85602ba1cdcc67617f87b140b4cd686116",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".codex/skills",
-          ".hermes/skills",
-          ".pi/skills",
-          ".qoder/skills",
-          ".trae/skills"
-        ]
-      },
-      "excalidraw-diagram-generator": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/excalidraw-diagram-generator/SKILL.md",
-        "effectiveHash": "f4765f05d26a743b1251b8e234e6dd6f521a89be3431d6f9fb6e5d69eb5f937f",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -376,21 +316,6 @@
         "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
         "effectiveHash": "98ca22a0717a1e659e9f4714d2c7fa27afdd3497243cd2290fe5a4e04e111e78",
         "upstreamHash": "bce096b49db40761adb1d5348f064c303fc152e4e50fc3fd81b79df8b6cf137f",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".codex/skills",
-          ".hermes/skills",
-          ".pi/skills",
-          ".qoder/skills",
-          ".trae/skills"
-        ]
-      },
-      "kb-retriever": {
-        "source": "project",
-        "sourceType": "local",
-        "skillPath": ".agents/skills/kb-retriever/SKILL.md",
-        "effectiveHash": "ad03a02bce64ac15c27c4b282ad607f900137b598ac7f385092834d95bff9b71",
         "targets": [
           ".agents/skills",
           ".claude/skills",

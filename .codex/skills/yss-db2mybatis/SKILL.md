@@ -5,7 +5,7 @@ description: Use when 用于从数据库元数据或 DDL 生成 YSS 风格的 Do
 
 # yss-db2mybatis
 
-这是一个生成器型 skill。优先复用脚本 `scripts/db2mybatis.py`，不要在对话里手写大段样板代码替代脚本。
+这是一个生成器型 skill。优先复用脚本 `scripts/db2mybatis.mjs`，不要在对话里手写大段样板代码替代脚本。
 
 ## 何时使用
 
@@ -33,7 +33,7 @@ description: Use when 用于从数据库元数据或 DDL 生成 YSS 风格的 Do
 ### 从数据库提取 metadata
 
 ```bash
-python3 scripts/db2mybatis.py extract \
+node scripts/db2mybatis.mjs extract \
   --datasource-config references/datasource-config.example.json \
   --datasource-name your-datasource \
   --tables t_example \
@@ -43,7 +43,7 @@ python3 scripts/db2mybatis.py extract \
 ### 从 DDL 生成 metadata
 
 ```bash
-python3 scripts/db2mybatis.py ddl2metadata \
+node scripts/db2mybatis.mjs ddl2metadata \
   --ddl-file /path/schema.sql \
   --db-type mysql \
   --database demo \
@@ -53,7 +53,7 @@ python3 scripts/db2mybatis.py ddl2metadata \
 ### 生成代码
 
 ```bash
-python3 scripts/db2mybatis.py scaffold \
+node scripts/db2mybatis.mjs scaffold \
   --skill-root /path/to/.agents/skills/yss-db2mybatis \
   --metadata-file /tmp/metadata.json \
   --base-package com.yss.demo \
@@ -70,6 +70,7 @@ python3 scripts/db2mybatis.py scaffold \
 - 输入来源：`--metadata-file`、`--ddl-file`、`--ddl-sql`
 - 主键策略：`--pk-strategy error|first`
 - 项目约定：`--convention-file`
+- 实时驱动根目录：`YSS_DB2MYBATIS_DRIVER_ROOT`（未设置时使用当前工作目录；不自动安装依赖）。MySQL / OceanBase 使用 `mysql2`，PostgreSQL / OpenGauss 使用 `pg`，Oracle 使用 `oracledb`；DDL、metadata、scaffold 和 validate 不依赖第三方包。
 
 ## 输出预期
 
@@ -88,7 +89,7 @@ python3 scripts/db2mybatis.py scaffold \
 
 ## 按需读取
 
-- 主脚本：`scripts/db2mybatis.py`
+- 主脚本：`scripts/db2mybatis.mjs`（Node `>=22 <27`）
 - 类型映射：`references/type-mapping.json`
 - 数据源示例：`references/datasource-config.example.json`
 - 项目约定示例：`references/project-convention.example.json`
