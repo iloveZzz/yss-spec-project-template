@@ -34,6 +34,81 @@ function gitMetadataDirectory(cwd) {
     .find((directory) => existsSync(path.join(directory, ".git"))) || null;
 }
 
+function gitCommonDirectory(repositoryRoot) {
+  const dotGitPath = path.join(repositoryRoot, ".git");
+  try {
+    const dotGitContents = readFileSync(dotGitPath, "utf8").trim();
+    if (!dotGitContents.startsWith("gitdir:")) {
+      return dotGitPath;
+    }
+    const worktreeGitDirectory = path.resolve(
+      repositoryRoot,
+      dotGitContents.slice("gitdir:".length).trim(),
+    );
+    const commonDirectoryPath = path.join(worktreeGitDirectory, "commondir");
+    if (!existsSync(commonDirectoryPath)) {
+      return worktreeGitDirectory;
+    }
+    const commonDirectory = readFileSync(commonDirectoryPath, "utf8").trim();
+    return commonDirectory
+      ? path.resolve(worktreeGitDirectory, commonDirectory)
+      : worktreeGitDirectory;
+  } catch {
+    return dotGitPath;
+  }
+}
+
+function configuredExcludesFiles(repositoryRoot) {
+  const repositoryGitDirectory = gitCommonDirectory(repositoryRoot);
+  const homeDirectory = process.env.HOME || path.dirname(repositoryRoot);
+  const configPaths = [path.join(repositoryGitDirectory, "config")];
+  if (process.env.GIT_CONFIG_GLOBAL) {
+    configPaths.push(process.env.GIT_CONFIG_GLOBAL);
+  } else {
+    const xdgConfigHome = process.env.XDG_CONFIG_HOME || path.join(homeDirectory, ".config");
+    configPaths.push(path.join(xdgConfigHome, "git/config"));
+    configPaths.push(path.join(homeDirectory, ".gitconfig"));
+  }
+
+  const configuredFiles = [];
+  for (const configPath of new Set(configPaths)) {
+    if (!existsSync(configPath)) {
+      continue;
+    }
+    let section = "";
+    for (const line of readFileSync(configPath, "utf8").split(/\r?\n/)) {
+      const sectionMatch = line.trim().match(/^\[([^\]]+)\]$/);
+      if (sectionMatch) {
+        section = sectionMatch[1].trim().toLowerCase();
+        continue;
+      }
+      if (section !== "core") {
+        continue;
+      }
+      const excludesMatch = line.match(/^\s*excludesFile\s*=\s*(.*?)\s*$/i);
+      if (!excludesMatch || excludesMatch[1] === "") {
+        continue;
+      }
+      let configuredPath = excludesMatch[1];
+      if (configuredPath.startsWith('"') && configuredPath.endsWith('"')) {
+        configuredPath = configuredPath.slice(1, -1);
+      }
+      if (configuredPath.startsWith("~/")) {
+        configuredPath = path.join(homeDirectory, configuredPath.slice(2));
+      } else if (!path.isAbsolute(configuredPath)) {
+        configuredPath = path.resolve(homeDirectory, configuredPath);
+      }
+      configuredFiles.push(configuredPath);
+    }
+  }
+  return [...new Set(configuredFiles)];
+}
+
+function gitInfoExcludeFile(repositoryRoot) {
+  const excludePath = path.join(gitCommonDirectory(repositoryRoot), "info", "exclude");
+  return existsSync(excludePath) ? excludePath : null;
+}
+
 function escapeRegex(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -43,7 +118,11 @@ function globSource(pattern) {
   let index = 0;
   while (index < pattern.length) {
     const character = pattern[index];
-    if (character === "*" && pattern[index + 1] === "*") {
+    if (character === "\\" && index + 1 < pattern.length) {
+      source += escapeRegex(pattern[index + 1]);
+      index += 2;
+      continue;
+    } else if (character === "*" && pattern[index + 1] === "*") {
       index += 2;
       while (pattern[index] === "*") {
         index += 1;
@@ -81,10 +160,22 @@ function globSource(pattern) {
 
 function parseIgnoreFile(filePath, baseDirectory) {
   return readFileSync(filePath, "utf8").split(/\r?\n/).flatMap((line) => {
-    if (line.length === 0 || line.startsWith("#")) {
+    let end = line.length;
+    while (end > 0 && line[end - 1] === " ") {
+      let backslashCount = 0;
+      for (let index = end - 2; index >= 0 && line[index] === "\\"; index -= 1) {
+        backslashCount += 1;
+      }
+      if (backslashCount % 2 === 1) {
+        break;
+      }
+      end -= 1;
+    }
+    const trimmedLine = line.slice(0, end);
+    if (trimmedLine.length === 0 || trimmedLine.startsWith("#")) {
       return [];
     }
-    let pattern = line;
+    let pattern = trimmedLine;
     let negated = false;
     if (pattern.startsWith("\\#") || pattern.startsWith("\\!")) {
       pattern = pattern.slice(1);
@@ -128,9 +219,14 @@ function createIgnoreMatcher(cwd) {
     }
     const rules = [];
     if (gitRoot) {
-      const excludePath = path.join(gitRoot, ".git", "info", "exclude");
-      if (existsSync(excludePath)) {
-        rules.push(...parseIgnoreFile(excludePath, gitRoot));
+      const gitExcludePath = gitInfoExcludeFile(gitRoot);
+      if (gitExcludePath) {
+        rules.push(...parseIgnoreFile(gitExcludePath, gitRoot));
+      }
+      for (const configuredPath of configuredExcludesFiles(gitRoot)) {
+        if (existsSync(configuredPath)) {
+          rules.push(...parseIgnoreFile(configuredPath, gitRoot));
+        }
       }
     }
     for (const ancestor of ancestorDirectories(resolvedDirectory)) {

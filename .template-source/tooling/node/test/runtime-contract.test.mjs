@@ -62,10 +62,15 @@ test("template script scanner reports legacy runtime references and source exten
   const fixture = await mkdtemp(path.join(tmpdir(), "yss-script-scan-"));
   const scriptsRoot = path.join(fixture, "scripts");
   const optionalScriptsRoot = path.join(fixture, ".template-source/scripts");
-  const runScanner = (...roots) => spawnSync(process.execPath, [scannerPath, ...roots], {
-    cwd: fixture,
-    encoding: "utf8",
-  });
+  const runScannerWithEnv = (environment, ...roots) => spawnSync(
+    process.execPath,
+    [scannerPath, ...roots],
+    {
+      cwd: fixture,
+      encoding: "utf8",
+      env: { ...process.env, ...environment },
+    },
+  );
   try {
     await mkdir(scriptsRoot, { recursive: true });
     await mkdir(optionalScriptsRoot, { recursive: true });
@@ -81,6 +86,7 @@ test("template script scanner reports legacy runtime references and source exten
     await writeFile(path.join(scriptsRoot, "ignored-by-ignore.sh"), "#!/usr/bin/env ruby\n", "utf8");
     await writeFile(path.join(scriptsRoot, "ignored-by-rgignore.sh"), "#!/usr/bin/env ruby\n", "utf8");
     await writeFile(path.join(scriptsRoot, "ignored-by-git-exclude.sh"), "#!/usr/bin/env ruby\n", "utf8");
+    await writeFile(path.join(scriptsRoot, "ignored-by-global-excludes.sh"), "#!/usr/bin/env ruby\n", "utf8");
     await writeFile(path.join(optionalScriptsRoot, "clean.sh"), "#!/usr/bin/env bash\n", "utf8");
     await writeFile(
       path.join(scriptsRoot, "binary.sh"),
@@ -95,35 +101,97 @@ test("template script scanner reports legacy runtime references and source exten
       "scripts/ignored-by-git-exclude.sh\n",
       "utf8",
     );
+    const globalIgnore = path.join(fixture, "global-ignore");
+    const globalConfig = path.join(fixture, "global-config");
+    await writeFile(globalIgnore, "scripts/ignored-by-global-excludes.sh   \n", "utf8");
+    await writeFile(globalConfig, `[core]\n\texcludesFile = ${globalIgnore}\n`, "utf8");
 
-    const clean = runScanner("scripts", ".template-source/scripts");
+    const clean = runScannerWithEnv(
+      { GIT_CONFIG_GLOBAL: globalConfig },
+      "scripts",
+      ".template-source/scripts",
+    );
     assert.equal(clean.status, 0, clean.stderr);
+    assert.equal(clean.stdout, "");
     assert.equal(clean.stderr, "");
 
     await writeFile(path.join(scriptsRoot, "legacy.sh"), "#!/usr/bin/env ruby\n", "utf8");
     await writeFile(path.join(scriptsRoot, "legacy.rb"), "puts 'legacy'\n", "utf8");
 
-    const violations = runScanner("scripts", ".template-source/scripts");
-    assert.notEqual(violations.status, 0);
+    const violations = runScannerWithEnv(
+      { GIT_CONFIG_GLOBAL: globalConfig },
+      "scripts",
+      ".template-source/scripts",
+    );
+    assert.equal(violations.status, 1);
     assert.match(violations.stdout, /scripts\/legacy\.sh:1:\#!\/usr\/bin\/env ruby/);
     assert.match(violations.stderr, /活跃 Ruby/);
 
     await rm(path.join(scriptsRoot, "legacy.sh"));
-    const extensionViolation = runScanner("scripts", ".template-source/scripts");
-    assert.notEqual(extensionViolation.status, 0);
+    const extensionViolation = runScannerWithEnv(
+      { GIT_CONFIG_GLOBAL: globalConfig },
+      "scripts",
+      ".template-source/scripts",
+    );
+    assert.equal(extensionViolation.status, 1);
     assert.equal(extensionViolation.stdout.trim(), "scripts/legacy.rb");
     assert.match(extensionViolation.stderr, /\.rb 路径/);
 
     const selfScan = spawnSync(
       process.execPath,
       [scannerPath, "scripts"],
-      { cwd: repositoryRoot, encoding: "utf8" },
+      {
+        cwd: repositoryRoot,
+        encoding: "utf8",
+        env: { ...process.env, GIT_CONFIG_GLOBAL: globalConfig },
+      },
     );
     assert.equal(selfScan.status, 0, selfScan.stderr);
+    assert.equal(selfScan.stdout, "");
 
-    const fileRootFailure = runScanner("scripts/clean.sh");
-    assert.notEqual(fileRootFailure.status, 0);
+    const fileRootFailure = runScannerWithEnv(
+      { GIT_CONFIG_GLOBAL: globalConfig },
+      "scripts/clean.sh",
+    );
+    assert.equal(fileRootFailure.status, 1);
     assert.match(fileRootFailure.stderr, /模板脚本扫描失败/);
+
+    const worktreeFixture = path.join(fixture, "worktree");
+    const commonGitDirectory = path.join(fixture, "common-git");
+    await mkdir(path.join(worktreeFixture, "scripts"), { recursive: true });
+    await mkdir(path.join(commonGitDirectory, "info"), { recursive: true });
+    await mkdir(path.join(commonGitDirectory, "worktrees/example"), { recursive: true });
+    await writeFile(
+      path.join(worktreeFixture, ".git"),
+      `gitdir: ${path.join(commonGitDirectory, "worktrees/example")}\n`,
+      "utf8",
+    );
+    await writeFile(
+      path.join(commonGitDirectory, "worktrees/example/commondir"),
+      "../..\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(commonGitDirectory, "info/exclude"),
+      "scripts/worktree-ignored.sh\n",
+      "utf8",
+    );
+    await writeFile(
+      path.join(worktreeFixture, "scripts/worktree-ignored.sh"),
+      "#!/usr/bin/env ruby\n",
+      "utf8",
+    );
+    const worktreeScan = spawnSync(
+      process.execPath,
+      [scannerPath, "scripts"],
+      {
+        cwd: worktreeFixture,
+        encoding: "utf8",
+        env: { ...process.env, GIT_CONFIG_GLOBAL: globalConfig },
+      },
+    );
+    assert.equal(worktreeScan.status, 0, worktreeScan.stderr);
+    assert.equal(worktreeScan.stdout, "");
 
     const scannerAlias = process.platform === "darwin"
       ? scannerPath.replace(/^\/private\/tmp(?=\/)/, "/tmp")
