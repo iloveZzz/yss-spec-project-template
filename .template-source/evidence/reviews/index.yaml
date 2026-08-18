@@ -5,103 +5,103 @@ source_root: ".template-source/evidence/reviews"
 count: 16
 archive:
   kind: git-history
-  status: pending
-  commit: null
-  tree: null
+  status: complete
+  commit: 22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d
+  tree: e555a05af73ed9e46f5da4efa05e330ebc4f89c7
 files:
 - path: ".template-source/evidence/reviews/lifecycle-registry-phase0-1-red-green-2026-08-17.md"
   origin_path: "docs/reviews/lifecycle-registry-phase0-1-red-green-2026-08-17.md"
   bytes: 4919
   sha256: 9f5f857c4e7e570e7c9e9d1643c49e29c4edfbba619f029e4673b7eff50f1e53
   archive_path: ".template-source/evidence/reviews/lifecycle-registry-phase0-1-red-green-2026-08-17.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/lifecycle-registry-phase0-1-red-green-2026-08-17.md"
 - path: ".template-source/evidence/reviews/matt-yss-p0-ticket-review-git-red-green-2026-08-17.md"
   origin_path: "docs/reviews/matt-yss-p0-ticket-review-git-red-green-2026-08-17.md"
   bytes: 7049
   sha256: 9878a2cb9e7ffe981c00a3b1489640b195a5f1e2a54faa3878aaeadcf7dadf89
   archive_path: ".template-source/evidence/reviews/matt-yss-p0-ticket-review-git-red-green-2026-08-17.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/matt-yss-p0-ticket-review-git-red-green-2026-08-17.md"
 - path: ".template-source/evidence/reviews/openapi-skill-primary-source-research-2026-08-16.md"
   origin_path: "docs/reviews/openapi-skill-primary-source-research-2026-08-16.md"
   bytes: 15810
   sha256: df2011d02ba87eabc926d0e676be36f9ff604062ed0db0af2bbe2a9a13954a13
   archive_path: ".template-source/evidence/reviews/openapi-skill-primary-source-research-2026-08-16.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/openapi-skill-primary-source-research-2026-08-16.md"
 - path: ".template-source/evidence/reviews/openapi-yaml-first-independent-review-2026-08-16.md"
   origin_path: "docs/reviews/openapi-yaml-first-independent-review-2026-08-16.md"
   bytes: 12195
   sha256: c46b91066efd46e7e0cf5657f5d82c4068f269918ca26a76eb43b7ee7a7c22d6
   archive_path: ".template-source/evidence/reviews/openapi-yaml-first-independent-review-2026-08-16.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/openapi-yaml-first-independent-review-2026-08-16.md"
 - path: ".template-source/evidence/reviews/openapi-yaml-first-pressure-scenarios-2026-08-16.md"
   origin_path: "docs/reviews/openapi-yaml-first-pressure-scenarios-2026-08-16.md"
   bytes: 16541
   sha256: e5dfd0cb4250c275b4e3826e6be78aac4fc2db1a40768d1bc8c2db78e47b2ca9
   archive_path: ".template-source/evidence/reviews/openapi-yaml-first-pressure-scenarios-2026-08-16.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/openapi-yaml-first-pressure-scenarios-2026-08-16.md"
 - path: ".template-source/evidence/reviews/openapi-yaml-first-red-green-2026-08-16.md"
   origin_path: "docs/reviews/openapi-yaml-first-red-green-2026-08-16.md"
   bytes: 5945
   sha256: 0e497975b2134460034e9bad3178bd10f5be11e6180a52b7fe6e8d9a9a890068
   archive_path: ".template-source/evidence/reviews/openapi-yaml-first-red-green-2026-08-16.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/openapi-yaml-first-red-green-2026-08-16.md"
 - path: ".template-source/evidence/reviews/openapi-yaml-json-output-independent-review-2026-08-16.md"
   origin_path: "docs/reviews/openapi-yaml-json-output-independent-review-2026-08-16.md"
   bytes: 1330
   sha256: 47ad5f231e7a1fdb9c0ae91f2d20b69d1b1630a55b80bf633c2066cc1d9f0d93
   archive_path: ".template-source/evidence/reviews/openapi-yaml-json-output-independent-review-2026-08-16.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/openapi-yaml-json-output-independent-review-2026-08-16.md"
 - path: ".template-source/evidence/reviews/openapi-yaml-json-output-scope-red-green-2026-08-16.md"
   origin_path: "docs/reviews/openapi-yaml-json-output-scope-red-green-2026-08-16.md"
   bytes: 10456
   sha256: ed8724ba410ef2946619d238db5cbe593baa37622bc63cb46e19f17b3e12f4b9
   archive_path: ".template-source/evidence/reviews/openapi-yaml-json-output-scope-red-green-2026-08-16.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/openapi-yaml-json-output-scope-red-green-2026-08-16.md"
 - path: ".template-source/evidence/reviews/research-create-yss-spec-2026-08-10.md"
   origin_path: "docs/reviews/research-create-yss-spec-2026-08-10.md"
   bytes: 17721
   sha256: f860da37f91f1582358f71206f7741d50400d94a9a22b5fe4f8d7fdd90f21966
   archive_path: ".template-source/evidence/reviews/research-create-yss-spec-2026-08-10.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/research-create-yss-spec-2026-08-10.md"
 - path: ".template-source/evidence/reviews/research-create-yss-spec-refresh-2026-08-16.md"
   origin_path: "docs/reviews/research-create-yss-spec-refresh-2026-08-16.md"
   bytes: 16470
   sha256: 93ed4b811898d14d3f1cff04324592628b7becd046c17180cde9f7465852b0d5
   archive_path: ".template-source/evidence/reviews/research-create-yss-spec-refresh-2026-08-16.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/research-create-yss-spec-refresh-2026-08-16.md"
 - path: ".template-source/evidence/reviews/research-node-tooling-runtime-2026-08-17.md"
   origin_path: "docs/reviews/research-node-tooling-runtime-2026-08-17.md"
   bytes: 18900
   sha256: 22e3e930e09c2129aa1f59a1539f36e3b1fe221d6e598be8de3d256025320304
   archive_path: ".template-source/evidence/reviews/research-node-tooling-runtime-2026-08-17.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/research-node-tooling-runtime-2026-08-17.md"
 - path: ".template-source/evidence/reviews/security-permission-lifecycle-simplification-red-green-2026-08-16.md"
   origin_path: "docs/reviews/security-permission-lifecycle-simplification-red-green-2026-08-16.md"
   bytes: 3030
   sha256: 2b4c146fb4079d77bf67c89951bc99ab6659a05fa803ec35127c15817212af4e
   archive_path: ".template-source/evidence/reviews/security-permission-lifecycle-simplification-red-green-2026-08-16.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/security-permission-lifecycle-simplification-red-green-2026-08-16.md"
 - path: ".template-source/evidence/reviews/skill-node-migration-red-green-2026-08-17.md"
   origin_path: "docs/reviews/skill-node-migration-red-green-2026-08-17.md"
   bytes: 2124
   sha256: 0b02ff4f93760b4c0b64655be21163bc0f7b9b0c3922badfc5dcf2c8f30fc13f
   archive_path: ".template-source/evidence/reviews/skill-node-migration-red-green-2026-08-17.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/skill-node-migration-red-green-2026-08-17.md"
 - path: ".template-source/evidence/reviews/template-release-review-remediation-red-green-2026-08-17.md"
   origin_path: "docs/reviews/template-release-review-remediation-red-green-2026-08-17.md"
   bytes: 2698
   sha256: 81833e982902c0d1cd82068ec36d817866065d5d8f2c968ccb744626a384899a
   archive_path: ".template-source/evidence/reviews/template-release-review-remediation-red-green-2026-08-17.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/template-release-review-remediation-red-green-2026-08-17.md"
 - path: ".template-source/evidence/reviews/yss-dto-openapi-wire-profile-red-green-2026-08-18.md"
   origin_path: "docs/reviews/yss-dto-openapi-wire-profile-red-green-2026-08-18.md"
   bytes: 4035
   sha256: f64eae4e2042a71e40e9f3c2e850a0eaf862ce0be94dbf19f8159f5db37cde5d
   archive_path: ".template-source/evidence/reviews/yss-dto-openapi-wire-profile-red-green-2026-08-18.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/yss-dto-openapi-wire-profile-red-green-2026-08-18.md"
 - path: ".template-source/evidence/reviews/yss-local-tracker-red-green-2026-08-10.md"
   origin_path: "docs/reviews/yss-local-tracker-red-green-2026-08-10.md"
   bytes: 3755
   sha256: 7bd93f8ab9db070250c9e9b3ff54212970e065320057e8645f3a9948398cbad1
   archive_path: ".template-source/evidence/reviews/yss-local-tracker-red-green-2026-08-10.md"
-  archive_ref: null
+  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/yss-local-tracker-red-green-2026-08-10.md"
