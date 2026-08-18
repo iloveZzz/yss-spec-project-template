@@ -13,12 +13,15 @@ Spec / 设计输入 → OpenAPI YAML Draft → 审查与 Freeze → JSON 派生�
 
 `docs/.scratch/<feature>/api/<feature>.yaml` 是唯一权威的 OpenAPI 3.1 契约。JSON 只能由冻结后的 YAML 可复现地产生，用于前端代码生成或分发；不得手写、不得反向覆盖 YAML、不得把运行时代码当成设计契约来源。
 
+YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/openapi-wire-profile.yaml` 单一维护。它描述公开 wire shape，不是 Java 字段或 getter 清单；本 skill 必须消费 profile，不能在治理文档、feature YAML 和 JSON 中各自发明 `SingleResult`、`PageResult` 或 `PageQuery` 字段表。
+
 ## 边界与职责
 
 使用 `yss-openapi-governance`：
 
 - 基于冻结前的 Spec、产品设计、架构约束创建或更新 `docs/.scratch/<feature>/api/<feature>.yaml`。
 - 保证 YAML 是单一 YAML document、根节点为 `openapi: 3.1.0`，且不把 `pipeline`、`stage`、`status`、`owner` 等生命周期元数据写入 OpenAPI 根节点。
+- 按 `yss-dto` wire profile 校验 `com.yss.cloud.dto.result` canonical 包、`YssResultMeta` 公共字段、具体 wrapper schema、请求 / 响应方向和分页负向字段。
 - 运行受项目 lockfile 约束的 lint / bundle，检查 `$ref`、operationId、响应包装、错误、分页、幂等和契约测试 seam；只有 Spec 明确改变认证或授权行为时才检查对应契约。
 - 在 OpenAPI Freeze 后，用锁定的 Redocly CLI 将 YAML bundle 为 JSON，并记录可重现证据。
 - 维护治理记录、Freeze 记录和 JSON 派生记录。
@@ -59,7 +62,9 @@ pnpm exec redocly bundle \
 2. **运行结构与治理校验**
    - 先执行项目锁定的 `pnpm exec redocly lint` 或等价 CI 脚本。
    - 检查 YAML 可解析、`$ref` 可解析、路径参数完整、operationId 唯一、examples 合法、schema 命名稳定。
-   - 检查 `/api/v1/` 版本策略（或记录例外）、`SingleResult<T>` / `MultiResult<T>` / `PageResult<T>`、统一错误结构、分页、幂等 / 乐观锁和契约测试 seam。Spec 明确改变认证或授权行为时，把对应 `401` / `403`、资源过滤和错误语义作为普通 API 行为检查。
+   - 先运行 `scripts/verify-yss-dto-openapi-profile`，并记录 profile 版本；检查 `/api/v1/` 版本策略（或记录例外）、`x-yss-response-wrapper`、`YssResultMeta` + `allOf` 具体 schema、统一错误结构、分页、幂等 / 乐观锁和契约测试 seam。
+   - 每个响应都必须落成具体 endpoint schema：`SingleResult` 的 `data` 是具体对象或显式 nullable schema，`MultiResult` / `PageResult` 的 `data` 是数组；Java 的 `SingleResult<T>` / `PageResult<T>` 只能作为语义说明，不能直接写成 OAS type 或 `$ref`。
+   - `code` 按 profile 只允许 `string | integer | null`，`dataType` 按 profile 为 `string | null`；`offset`、`needTotalCount`、`tempTotalCount` 不得进入客户端分页输入；`totalPages` 只有目标 HTTP mapper / fixture 证明后才能进入契约。Spec 明确改变认证或授权行为时，把对应 `401` / `403`、资源过滤和错误语义作为普通 API 行为检查。
 
 3. **独立 Draft Review 与 Freeze**
    - 将 fresh lint 证据交给 `yss-openapi-draft-review`；阻断项未关闭前，YAML 仍是 review-only Draft，不得生成生产客户端。
@@ -85,6 +90,9 @@ pnpm exec redocly bundle \
 - YAML / `$ref` / lint 不通过，operationId 不稳定或不唯一，或路径参数、schema、examples 无法解析。
 - P0 操作缺请求、响应、错误、并发 / 幂等规则或可验证 seam；Spec 明确的认证或授权行为没有契约表示。
 - `$ref` 超出允许范围，或转换器版本、lockfile、命令、输入 YAML 无法识别。
+- `scripts/verify-yss-dto-openapi-profile` 失败、profile 版本未记录，或 Draft 未按 profile 建模 `x-yss-response-wrapper`、`YssResultMeta` / `allOf` 和具体 `data` schema。
+- 新契约引入 `com.yss.cloud.dto.response`、把 Java 泛型文字当成 OAS schema、把全局 `code` 放宽为任意 object，或把 `offset` / `needTotalCount` / `tempTotalCount` 作为客户端字段。
+- `totalPages`、任何 computed getter 或 Lombok / `@JsonIgnore` 推导字段没有目标 mapper identity、代表性序列化 fixture 和 contract-test / 等价 HTTP 证据。
 - Freeze 记录、YAML SHA-256、JSON SHA-256、JSON 解析 / lint 证据缺失。
 - JSON 被手工编辑，或生成结果试图反向成为 YAML 的权威来源。
 
@@ -102,6 +110,8 @@ pnpm exec redocly bundle \
 
 ### Validation
 - Lint command and result: <locked pnpm command / result>
+- YSS DTO wire profile: <`.agents/skills/yss-dto/references/openapi-wire-profile.yaml`, schema_version, verifier result>
+- Wrapper conformance: <`x-yss-response-wrapper`, `YssResultMeta`, `allOf`, concrete data schema, direction and forbidden-field result>
 - `$ref` policy / approved exceptions: <details>
 - Blocking findings: <file:line grounded finding>
 

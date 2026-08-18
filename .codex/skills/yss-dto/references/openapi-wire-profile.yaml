@@ -1,0 +1,181 @@
+schema_version: 1
+kind: yss-dto-openapi-wire-profile
+
+# This profile is the reusable mapping source consumed by the OpenAPI skills.
+# It describes the public HTTP/JSON shape, not every Java field or getter.
+canonical:
+  java_package: com.yss.cloud.dto.result
+  type_parameter:
+    name: T
+    java_bound: java.io.Serializable
+  openapi:
+    response_meta_schema: YssResultMeta
+    concrete_schema_composition: allOf
+    response_wrapper_extension: x-yss-response-wrapper
+    literal_java_generic_schema: false
+
+compatibility_packages:
+  - java_package: com.yss.cloud.dto.response
+    status: legacy-or-compatibility
+    use_for_new_contracts: false
+    policy: do-not-introduce-in-new-contracts
+
+common_response:
+  schema_name: YssResultMeta
+  fields:
+    success:
+      direction: response
+      wire_types: [boolean]
+      nullable: false
+      required: true
+    dataType:
+      direction: response
+      wire_types: [string, "null"]
+      nullable: true
+      required: true
+    code:
+      direction: response
+      wire_types: [string, integer, "null"]
+      nullable: true
+      required: true
+      policy: do-not-widen-global-wrapper
+    message:
+      direction: response
+      wire_types: [string, "null"]
+      nullable: true
+      required: true
+    tips:
+      direction: response
+      wire_types: [string, "null"]
+      nullable: true
+      required: true
+
+wrappers:
+  SingleResult:
+    java_type: com.yss.cloud.dto.result.SingleResult<T>
+    response_kind: single
+    data:
+      direction: response
+      wire_shape: endpoint-schema-or-null
+      nullable: true
+      required: true
+  MultiResult:
+    java_type: com.yss.cloud.dto.result.MultiResult<T>
+    response_kind: non-page-list
+    data:
+      direction: response
+      wire_types: [array]
+      items: endpoint-schema
+      nullable: false
+      required: true
+      empty_value: []
+  PageResult:
+    java_type: com.yss.cloud.dto.result.PageResult<T>
+    response_kind: page
+    fields:
+      totalCount:
+        direction: response
+        wire_types: [integer]
+        format: int64
+        minimum: 0
+        nullable: false
+        required: true
+      pageSize:
+        direction: response
+        wire_types: [integer]
+        format: int32
+        minimum: 1
+        nullable: false
+        required: true
+      pageIndex:
+        direction: response
+        wire_types: [integer]
+        format: int32
+        minimum: 1
+        nullable: false
+        required: true
+      data:
+        direction: response
+        wire_types: [array]
+        items: endpoint-schema
+        nullable: false
+        required: true
+        empty_value: []
+    computed_fields:
+      totalPages:
+        java_getter: getTotalPages
+        status: mapper-dependent
+        policy: include-only-with-target-wire-evidence
+
+page_query:
+  java_type: com.yss.cloud.dto.page.PageQuery
+  request_direction: query
+  fields:
+    pageIndex:
+      direction: request
+      wire_types: [integer]
+      format: int32
+      minimum: 1
+      default: 1
+      nullable: false
+      required: false
+    pageSize:
+      direction: request
+      wire_types: [integer]
+      format: int32
+      minimum: 1
+      default: 10
+      nullable: false
+      required: false
+    orderBy:
+      direction: request
+      wire_types: [string, "null"]
+      nullable: true
+      required: false
+      policy: endpoint-whitelist-required
+    orderDirection:
+      direction: request
+      wire_types: [string]
+      enum: [ASC, DESC]
+      default: DESC
+      nullable: false
+      required: false
+    groupBy:
+      direction: request
+      wire_types: [string, "null"]
+      nullable: true
+      required: false
+      policy: endpoint-whitelist-required
+  forbidden_client_fields:
+    - offset
+    - needTotalCount
+    - tempTotalCount
+  computed_fields:
+    offset:
+      java_getter: getOffset
+      status: computed
+      policy: exclude-from-client-input
+    needTotalCount:
+      java_getter: isNeedTotalCount
+      status: internal-or-ignored
+      policy: exclude-from-client-input
+    tempTotalCount:
+      java_getter: getTempTotalCount
+      status: internal-or-ignored
+      policy: exclude-from-client-input
+
+request_bases:
+  command:
+    java_type: com.yss.cloud.dto.CommandDTO
+    direction: request
+  query:
+    java_type: com.yss.cloud.dto.QueryDTO
+    direction: request
+    extends: command
+
+wire_evidence:
+  required_before_freeze:
+    - target-http-mapper-identity
+    - representative-serialization-fixtures
+    - contract-test-or-equivalent-http-evidence
+  rule: Java fields and computed getters are not public wire facts until target-boundary evidence confirms them.

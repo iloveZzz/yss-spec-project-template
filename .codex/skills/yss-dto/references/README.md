@@ -1,6 +1,6 @@
 # 参考资料
 
-本文档详细介绍了 `yss-component-dto` 组件的核心数据传输对象（DTO）。这些 DTO 类被广泛应用于各个服务项目，用于规范数据交互格式。
+本文档详细介绍了 `yss-component-dto` 组件的核心数据传输对象（DTO）。这些 DTO 类被广泛应用于各个服务项目，用于规范数据交互格式。公开 HTTP/JSON 的可复用映射以 `openapi-wire-profile.yaml` 为准；本文不把 Java 字段或 getter 自动等同于 wire shape。
 
 ## 核心类 (Core Classes)
 
@@ -13,7 +13,7 @@
 **核心字段**:
 
 - `success`: 操作是否成功 (boolean)
-- `code`: 状态码 (Object, 默认 "DM-A0001")
+- `code`: Java 内部类型为 `Object`；公开 wire contract 仅允许 `string | integer | null`
 - `message`: 消息描述 (String, 默认 "数据返回正常")
 - `dataType`: 返回数据格式
 - `tips`: 提示消息
@@ -43,6 +43,13 @@
 
 - 提供了链式调用的 Setter 方法 (`setPageIndex`, `setPageSize` 等)。
 - 自动计算偏移量 `getOffset()`。
+
+## HTTP/JSON 映射边界
+
+- 新契约使用 `com.yss.cloud.dto.result`；`com.yss.cloud.dto.response` 只作为 legacy / compatibility 线索。
+- 公共响应 schema 使用 `YssResultMeta`，具体 endpoint schema 使用 `allOf` 组合，并声明 `x-yss-response-wrapper`。
+- `MultiResult.data` 和 `PageResult.data` 为数组；`SingleResult.data` 绑定具体 endpoint schema。不要把 `SingleResult<T>`、`MultiResult<T>` 或 `PageResult<T>` 的 Java 泛型文字直接写成 OpenAPI schema。
+- `PageQuery` 的客户端字段是 `pageIndex/pageSize/orderBy/orderDirection/groupBy`；`offset`、`needTotalCount`、`tempTotalCount` 不属于客户端输入。`totalPages` 只有目标 mapper / contract evidence 证明后才进入响应契约。
 
 ### 3. CommandDTO.java & QueryDTO.java
 

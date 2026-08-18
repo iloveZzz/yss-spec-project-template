@@ -20,6 +20,7 @@
 | AntD CLI 校验证据 | `docs/.scratch/<feature>/design/<feature>-prototype-confirmation.md` 或评审记录 | 有 UI 时必需；记录 design.md / info / demo / token / semantic 查询 |
 | 用户确认记录 | `docs/.scratch/<feature>/design/<feature>-prototype-confirmation.md` | 有 UI 时必需；未确认前不得进入 OpenAPI Draft 评审 |
 | YSS 工程基线 | `.codex/skills/yss-ddd-scaffold-generator/references/yss-backend-scaffold-parent/SKILL.md` |  |
+| YSS DTO wire profile | `.agents/skills/yss-dto/references/openapi-wire-profile.yaml`；`scripts/verify-yss-dto-openapi-profile` |  |
 
 ## P0 追踪矩阵
 
@@ -41,6 +42,11 @@
 | 页面动作覆盖 | 每个按钮 / 抽屉 / 弹窗动作有 endpoint/non-goal、`actionKey` 和错误码；Spec 明确认认证 / 授权变化时同时映射该行为 |  |  |
 | 对象生命周期 | manage/maintain/configure/create/update/archive/retry/cancel/publish/export/create-draft 语义闭环 |  |  |
 | YSS 响应包装 | 单对象 `SingleResult<T>`；列表 `MultiResult<T>`；分页 `PageResult<T>` |  |  |
+| DTO wire shape | `com.yss.cloud.dto.result` 为新契约 canonical；`data` 落成 endpoint-specific schema，Java 泛型文字不得成为 OAS type / `$ref`；响应使用 `x-yss-response-wrapper`、`YssResultMeta` 和 `allOf` |  |  |
+| 公共响应字段 | `success:boolean`；`dataType:string|null`；`code:string|integer|null`；`message/tips` 显式 nullable；不得把全局 `code` 放宽为 arbitrary object |  |  |
+| 分页输入 | 只允许 `pageIndex/pageSize/orderBy/orderDirection/groupBy`；`orderDirection` 为 `ASC|DESC`；`orderBy/groupBy` 有 endpoint whitelist |  |  |
+| 分页负向字段 | `offset`、`needTotalCount`、`tempTotalCount` 不得成为客户端输入；`totalPages` 仅在目标 mapper / fixture 证据存在时纳入 |  |  |
+| Wire 证据 | mapper identity、代表性序列化 fixture、contract-test / 等价 HTTP 证据已记录；不能从 getter、Lombok 或 `@JsonIgnore` 直接推断 |  |  |
 | 显式认证 / 授权行为 | 仅当 Spec 明确改变相关行为时，`401` / `403`、资源过滤和错误语义有契约表示 |  | 未明确改变时不适用且无需额外记录 |
 | 错误结构 | 模型级、字段级、行级错误可定位；关键 422 有 examples |  |  |
 | 乐观锁 / 幂等 | 草稿写入有 draftVersion；关键命令有幂等键 |  |  |

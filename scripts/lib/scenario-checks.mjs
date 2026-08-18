@@ -38,6 +38,23 @@ const profiles = {
     message: "OpenAPI YAML-first JSON handoff scenarios passed",
     files: ["docs/api/templates/openapi-json-export-record-template.md", ".agents/skills/yss-api-integration/SKILL.md"],
     markers: [[".agents/skills/yss-api-integration/SKILL.md", "SHA-256"]]
+  },
+  yssDtoWire: {
+    message: "YSS DTO OpenAPI wire-shape scenarios passed",
+    files: [
+      ".agents/skills/yss-dto/references/openapi-wire-profile.yaml",
+      ".agents/skills/yss-dto/SKILL.md",
+      ".agents/skills/yss-openapi-governance/SKILL.md",
+      ".agents/skills/yss-openapi-draft-review/SKILL.md",
+      "docs/api/templates/openapi-draft-review-checklist.md",
+      "scripts/verify-yss-dto-openapi-profile"
+    ],
+    markers: [
+      [".agents/skills/yss-dto/SKILL.md", "x-yss-response-wrapper"],
+      [".agents/skills/yss-openapi-governance/SKILL.md", "verify-yss-dto-openapi-profile"],
+      [".agents/skills/yss-openapi-draft-review/SKILL.md", "offset`, `needTotalCount`, and `tempTotalCount"],
+      ["docs/api/templates/openapi-draft-review-checklist.md", "DTO wire shape"]
+    ]
   }
 };
 
@@ -48,6 +65,10 @@ export function runScenario(name) {
   for (const [file, marker] of profile.markers) ensure(read(file).includes(marker), `场景资产缺少标记 ${marker}: ${file}`);
   if (name === "lifecycle") {
     const result = spawnSync("scripts/verify-lifecycle-registry", [], { cwd: root, encoding: "utf8" });
+    ensure(result.status === 0, result.stderr || result.stdout);
+  }
+  if (name === "yssDtoWire") {
+    const result = spawnSync("scripts/verify-yss-dto-openapi-profile", [], { cwd: root, encoding: "utf8" });
     ensure(result.status === 0, result.stderr || result.stdout);
   }
   process.stdout.write(`${profile.message}\n`);

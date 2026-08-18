@@ -1,0 +1,109 @@
+#!/usr/bin/env node
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { parseDocument } from "./vendor/yaml.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const profilePath = path.join(root, ".agents/skills/yss-dto/references/openapi-wire-profile.yaml");
+
+function ensure(condition, message) {
+  if (!condition) throw new TypeError(message);
+}
+
+function sameMembers(actual, expected, label) {
+  ensure(Array.isArray(actual), `${label} 必须是数组`);
+  const left = [...actual].sort().join(",");
+  const right = [...expected].sort().join(",");
+  ensure(left === right, `${label} 必须为 [${expected.join(", ")}]，实际为 [${actual.join(", ")}]`);
+}
+
+function includesAll(actual, expected, label) {
+  ensure(Array.isArray(actual), `${label} 必须是数组`);
+  for (const value of expected) ensure(actual.includes(value), `${label} 缺少 ${value}`);
+}
+
+function checkField(field, label, { wireTypes, nullable, required, direction }) {
+  ensure(field && typeof field === "object", `${label} 必须是对象`);
+  if (direction) ensure(field.direction === direction, `${label}.direction 必须为 ${direction}`);
+  sameMembers(field.wire_types, wireTypes, `${label}.wire_types`);
+  ensure(field.nullable === nullable, `${label}.nullable 必须为 ${nullable}`);
+  ensure(field.required === required, `${label}.required 必须为 ${required}`);
+}
+
+function checkArrayData(field, label, direction) {
+  checkField(field, label, { wireTypes: ["array"], nullable: false, required: true, direction });
+  ensure(field.items === "endpoint-schema", `${label}.items 必须为 endpoint-schema`);
+  ensure(Array.isArray(field.empty_value) && field.empty_value.length === 0, `${label}.empty_value 必须为 []`);
+}
+
+try {
+  const document = parseDocument(readFileSync(profilePath, "utf8"), { maxAliasCount: 0 });
+  ensure(document && document.errors.length === 0, `wire profile YAML 无法解析: ${document?.errors?.map((error) => error.message).join("; ")}`);
+  const profile = document.toJSON();
+
+  ensure(profile.schema_version === 1, "wire profile schema_version 必须为 1");
+  ensure(profile.kind === "yss-dto-openapi-wire-profile", "wire profile kind 不正确");
+  ensure(profile.canonical?.java_package === "com.yss.cloud.dto.result", "canonical package 必须为 com.yss.cloud.dto.result");
+  ensure(profile.canonical?.type_parameter?.java_bound === "java.io.Serializable", "结果泛型必须声明 Serializable bound");
+  ensure(profile.canonical?.openapi?.response_meta_schema === "YssResultMeta", "OpenAPI 基础响应 schema 必须为 YssResultMeta");
+  ensure(profile.canonical?.openapi?.concrete_schema_composition === "allOf", "具体响应 schema 必须使用 allOf 组合");
+  ensure(profile.canonical?.openapi?.response_wrapper_extension === "x-yss-response-wrapper", "响应包装扩展字段不正确");
+  ensure(profile.canonical?.openapi?.literal_java_generic_schema === false, "不得把 Java 泛型文字作为 OpenAPI schema");
+
+  const compatibility = profile.compatibility_packages?.find((item) => item.java_package === "com.yss.cloud.dto.response");
+  ensure(compatibility?.use_for_new_contracts === false, "dto.response 必须标记为非新契约 canonical");
+
+  const commonFields = profile.common_response?.fields ?? {};
+  sameMembers(Object.keys(commonFields), ["success", "dataType", "code", "message", "tips"], "common response fields");
+  checkField(commonFields.success, "success", { wireTypes: ["boolean"], nullable: false, required: true, direction: "response" });
+  checkField(commonFields.dataType, "dataType", { wireTypes: ["string", "null"], nullable: true, required: true, direction: "response" });
+  checkField(commonFields.code, "code", { wireTypes: ["string", "integer", "null"], nullable: true, required: true, direction: "response" });
+  checkField(commonFields.message, "message", { wireTypes: ["string", "null"], nullable: true, required: true, direction: "response" });
+  checkField(commonFields.tips, "tips", { wireTypes: ["string", "null"], nullable: true, required: true, direction: "response" });
+  ensure(commonFields.code.policy === "do-not-widen-global-wrapper", "code 不得退化为全局 arbitrary object");
+
+  sameMembers(Object.keys(profile.wrappers ?? {}), ["SingleResult", "MultiResult", "PageResult"], "wrappers");
+  for (const name of ["SingleResult", "MultiResult", "PageResult"]) {
+    ensure(profile.wrappers[name].java_type.startsWith(`com.yss.cloud.dto.result.${name}<T>`), `${name} 必须来自 canonical result package`);
+  }
+  const singleData = profile.wrappers.SingleResult?.data;
+  ensure(singleData?.direction === "response", "SingleResult.data 必须为 response");
+  ensure(singleData?.wire_shape === "endpoint-schema-or-null", "SingleResult.data 必须绑定 endpoint schema 或 null");
+  ensure(singleData?.nullable === true && singleData?.required === true, "SingleResult.data 必须显式 required 且 nullable");
+  checkArrayData(profile.wrappers.MultiResult?.data, "MultiResult.data", "response");
+  const pageFields = profile.wrappers.PageResult?.fields ?? {};
+  sameMembers(Object.keys(pageFields), ["totalCount", "pageSize", "pageIndex", "data"], "PageResult.fields");
+  checkField(pageFields.totalCount, "PageResult.totalCount", { wireTypes: ["integer"], nullable: false, required: true, direction: "response" });
+  ensure(pageFields.totalCount.format === "int64" && pageFields.totalCount.minimum === 0, "PageResult.totalCount 必须为非负 int64");
+  checkField(pageFields.pageSize, "PageResult.pageSize", { wireTypes: ["integer"], nullable: false, required: true, direction: "response" });
+  ensure(pageFields.pageSize.format === "int32" && pageFields.pageSize.minimum === 1, "PageResult.pageSize 必须为正 int32");
+  checkField(pageFields.pageIndex, "PageResult.pageIndex", { wireTypes: ["integer"], nullable: false, required: true, direction: "response" });
+  ensure(pageFields.pageIndex.format === "int32" && pageFields.pageIndex.minimum === 1, "PageResult.pageIndex 必须为正 int32");
+  checkArrayData(pageFields.data, "PageResult.data", "response");
+  sameMembers(profile.page_query?.forbidden_client_fields, ["offset", "needTotalCount", "tempTotalCount"], "forbidden_client_fields");
+  ensure(profile.page_query?.request_direction === "query", "PageQuery 必须声明 query request direction");
+  const pageQueryFields = profile.page_query?.fields ?? {};
+  sameMembers(Object.keys(pageQueryFields), ["pageIndex", "pageSize", "orderBy", "orderDirection", "groupBy"], "PageQuery.fields");
+  checkField(pageQueryFields.pageIndex, "PageQuery.pageIndex", { wireTypes: ["integer"], nullable: false, required: false, direction: "request" });
+  ensure(pageQueryFields.pageIndex.format === "int32" && pageQueryFields.pageIndex.minimum === 1 && pageQueryFields.pageIndex.default === 1, "PageQuery.pageIndex 必须为正 int32，默认 1");
+  checkField(pageQueryFields.pageSize, "PageQuery.pageSize", { wireTypes: ["integer"], nullable: false, required: false, direction: "request" });
+  ensure(pageQueryFields.pageSize.format === "int32" && pageQueryFields.pageSize.minimum === 1 && pageQueryFields.pageSize.default === 10, "PageQuery.pageSize 必须为正 int32，默认 10");
+  checkField(pageQueryFields.orderBy, "PageQuery.orderBy", { wireTypes: ["string", "null"], nullable: true, required: false, direction: "request" });
+  ensure(pageQueryFields.orderBy.policy === "endpoint-whitelist-required", "PageQuery.orderBy 必须要求 endpoint whitelist");
+  sameMembers(profile.page_query?.fields?.orderDirection?.enum, ["ASC", "DESC"], "orderDirection.enum");
+  checkField(pageQueryFields.orderDirection, "PageQuery.orderDirection", { wireTypes: ["string"], nullable: false, required: false, direction: "request" });
+  ensure(pageQueryFields.orderDirection.default === "DESC", "PageQuery.orderDirection 默认值必须为 DESC");
+  checkField(pageQueryFields.groupBy, "PageQuery.groupBy", { wireTypes: ["string", "null"], nullable: true, required: false, direction: "request" });
+  ensure(pageQueryFields.groupBy.policy === "endpoint-whitelist-required", "PageQuery.groupBy 必须要求 endpoint whitelist");
+  ensure(profile.wrappers.PageResult.computed_fields.totalPages.policy === "include-only-with-target-wire-evidence", "totalPages 必须要求目标 wire evidence");
+  ensure(profile.wrappers.PageResult.computed_fields.totalPages.status === "mapper-dependent", "totalPages 必须标记为 mapper-dependent");
+  ensure(profile.page_query.computed_fields.offset.policy === "exclude-from-client-input", "offset 不得成为客户端输入");
+  ensure(profile.page_query.computed_fields.needTotalCount.policy === "exclude-from-client-input", "needTotalCount 不得成为客户端输入");
+  ensure(profile.page_query.computed_fields.tempTotalCount.policy === "exclude-from-client-input", "tempTotalCount 不得成为客户端输入");
+  includesAll(profile.wire_evidence?.required_before_freeze, ["target-http-mapper-identity", "representative-serialization-fixtures", "contract-test-or-equivalent-http-evidence"], "wire_evidence.required_before_freeze");
+  process.stdout.write("YSS DTO OpenAPI wire profile 验证通过\n");
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+}
