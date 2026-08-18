@@ -27,7 +27,7 @@
 
 当前 Matt 快照为 `6acc160e4e0cd062dbbbd7a1b26ae92855edf07e`。`ask-matt` 的关联入口包括 `to-questionnaire`、`wait-what`、`writing-for-agents` 和 `PHASE-BOUNDARIES.md`；这些支持文件随共享 skill 目录一起计算 `effectiveHash`，不得单独投影或维护。
 
-本轮升级还将生命周期适配固定为：阶段边界只写可选 `phase_boundary` 证据；`to-questionnaire` 使用 `external-input-required` 暂停并在答案回流后重新分类影响面；Matt `prototype` 使用 `prototype/<name>` 分支和单文件 HTML，YSS 高保真原型继续执行 Prototype Review、AntD CLI 校验和用户确认。`wizard` 的人工步骤以及 `diagnosing-bugs` 的输出必须脱敏，`wait-what` 不改变生命周期状态。
+本轮升级还将生命周期适配固定为：阶段边界只写可选 `phase_boundary` 证据；`to-questionnaire` 使用 `external-input-required` 暂停并在答案回流后重新分类影响面；Matt `prototype` 使用 `prototype/<name>` 分支和单文件 HTML，YSS 高保真原型继续执行 Prototype Review、AntD CLI 校验和用户确认。人工 checkpoint 与 `diagnosing-bugs` 的输出必须脱敏，`wait-what` 不改变生命周期状态。
 
 ## 维护流程
 
@@ -73,7 +73,7 @@ YSS 技能的公开发布仓库为 `iloveZzz/yss-spec-dev-skills`，它是本模
 - 发布顺序为：同步 canonical projections → 更新 lock → `scripts/verify-template` → 导出并检查 → 独立审查 → 在 `yss-spec-dev-skills` 提交人工 PR。不得从目标仓库反向覆盖 `.agents/skills`。
 - skills.sh 通过 `npx skills add iloveZzz/yss-spec-dev-skills` 的安装遥测自动发现技能，不需要手工注册；遥测可用 `DISABLE_TELEMETRY=1` 或 `DO_NOT_TRACK` 关闭。
 
-已退休或 personal 的 Matt 条目（`design-an-interface`、`qa`、`request-refactor-plan`、`ubiquitous-language`、`edit-article`、`obsidian-vault`、`writing-great-skills`）不再进入 `.agents/skills`、六个共享投影根或 `skills-lock.json`。迁移时使用 `codebase-design`、`triage + to-tickets`、`to-spec + improve-codebase-architecture`、`domain-modeling` 等新路由，不创建兼容目录。
+已退休或 personal 的条目（`design-an-interface`、`qa`、`request-refactor-plan`、`ubiquitous-language`、`edit-article`、`obsidian-vault`、`writing-great-skills`、`web-design-engineer`、`web-video-presentation`、`wireframe-prototype`、`wizard`、`git-guardrails-claude-code`、`claude-handoff`）不再进入 `.agents/skills`、六个共享投影根或 `skills-lock.json`。迁移时使用 `codebase-design`、`triage + to-tickets`、`to-spec + improve-codebase-architecture`、`domain-modeling`、`product-design:index`、普通人工 checkpoint 或 `handoff` 等现行路由，不创建兼容目录。
 
 ## 外部工作流工具
 

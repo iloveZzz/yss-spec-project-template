@@ -41,7 +41,7 @@
 - Product Design focused skills：基于 Spec 初稿和产品总体设计 / 功能架构，产出低保真 / 高保真页面、原型、交互设计资产和可分享原型；高保真 HTML 原型默认由该路由链路产出。
 - `antd`：Ant Design v6 组件、demo、token、semantic 和 design.md 查询工具；生成或修改高保真 HTML 原型前后必须留下 CLI 校验证据。
 - `prototype-review`：原型阶段评审门禁；未通过则不要进入 Spec 校准 / API 影响分析 / 契约草案。
-- 兼容入口：`product-design-prototype`、`wireframe-prototype`、`high-fidelity-html-prototype` 仅作为历史兼容或产物门禁名称保留；新的产品原型产出默认使用 `product-design:index`。
+- 兼容入口：`product-design-prototype`、`high-fidelity-html-prototype` 仅作为历史兼容或产物门禁名称保留；新的产品原型产出默认使用 `product-design:index`，已退休技能不再提供兼容路由。
 
 推荐目录：
 

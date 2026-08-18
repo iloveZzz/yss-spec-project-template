@@ -366,5 +366,5 @@ prototype_modes:
 
 behavioral_invariants:
   wait_what_preserves_state: true
-  wizard_human_only: true
+  human_checkpoint_required_for_manual_steps: true
   diagnostics_redact_secrets: true

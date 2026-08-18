@@ -36,7 +36,7 @@ If no Spec baseline exists, route back to `yss-product-lifecycle` / `grill-with-
 
 | Need | Add skill/tool |
 |---|---|
-| Low-fidelity page or flow sketch | `wireframe-prototype` |
+| Low-fidelity page or flow sketch | `product-design:index` |
 | Figma work or existing Figma file | `figma` / `figma-use` |
 | YSS implementation constraints | `yss-router`, then `yss-ui`, `yss-formily`, `yss-page-module-development` as needed |
 

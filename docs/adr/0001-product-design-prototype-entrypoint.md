@@ -24,7 +24,7 @@ YSS Harness 需要把有 UI 功能的产品原型产出收敛到一个稳定入�
 |------|------|------|------|
 | 继续使用多个原型技能并列入口 | 对旧流程改动少 | Agent 路由不稳定，难以统一 AntD v6 高保真 HTML 原型和确认记录 | 放弃 |
 | 只保留 `high-fidelity-html-prototype` | 产物目标直接 | 缺少 Product Design plugin 的上下文、视觉探索、URL / 图片 / 代码来源路由能力 | 放弃 |
-| 以 `product-design:index` 为主入口，旧技能保留兼容 | 路由统一，可复用 focused skills，迁移风险低 | 需要在文档中明确 legacy 边界 | 采纳 |
+| 以 `product-design:index` 为主入口，只保留仍有迁移价值的兼容入口 | 路由统一，可复用 focused skills，并允许逐步退休冗余入口 | 需要在文档中明确 legacy 边界 | 采纳 |
 
 ## 后果
 
@@ -37,7 +37,7 @@ YSS Harness 需要把有 UI 功能的产品原型产出收敛到一个稳定入�
 ### 负面影响
 
 - 需要维护完整 `.codex/skills/product-design/` 插件目录，不能只复制 `index/SKILL.md`。
-- 旧原型技能在过渡期仍会存在，需要通过流程文档限制使用语境。
+- 部分旧原型技能在过渡期仍会存在，需要通过流程文档限制使用语境；无继续维护价值的入口直接退休，不保留空壳目录。
 
 ### 风险
 

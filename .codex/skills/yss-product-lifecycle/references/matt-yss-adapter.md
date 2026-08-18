@@ -27,7 +27,7 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 | 跨上下文 | `handoff` | 保存来源、阶段、未决项、命令和下一责任人 |
 | 阶段边界 | `PHASE-BOUNDARIES.md` | 按 `Continue → /clear → /handoff → subagent → /compact` 选择上下文动作；只记录证据，不扩展生命周期状态 |
 | 解释未落地 | `wait-what` | 只重新解释当前结论，不改变阶段、门禁、Ticket 或 `ready-for-agent` |
-| 人工步骤 | `wizard` | 只处理 Agent 无法替代的点击、审批、凭据和迁移步骤；默认临时使用，秘密值必须隐藏并脱敏 |
+| 人工步骤 | 人工 checkpoint | 记录 Agent 无法替代的点击、审批、凭据和迁移步骤；秘密值必须隐藏并脱敏 |
 | 编写 Agent 文档 | `writing-for-agents`、`writing-skills` | 共享 skill 只改 `.agents/skills`；流程文档保持简体中文 |
 
 尽量不修改 Matt skill 以复制 YSS 规则。只有它违反模板硬门禁时才做最小兼容修改。
