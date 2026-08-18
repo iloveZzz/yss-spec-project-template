@@ -23,6 +23,7 @@
 - RED：`scripts/verify-matt-yss-integration-scenarios` 在 canonical 契约缺少 `workflow_reference`、完成态证据和阻断信号字段时返回失败。
 - GREEN：canonical `workflow_execution_result` 明确 `result_values`、`required`、`blocking_signals`、完成态空/非空字段、可读证据和无阻断信号条件；场景以一个可完成结果和缺 `workflow_reference`、空证据、不可读证据、`drift`、新影响五类变异验证。
 - REFACTOR：旧 `matt_skill_result` 保持只读兼容，不再承载 canonical 路由约束；新协议成为完成态裁决的唯一结构来源。
+- 审查补正：`workflow_reference` 必须与 `lifecycle_workflow_references` 中该 `work_unit` 的 source、skill 和 `invocation_mode` 精确匹配；错误 source、错配 skill 与错配模式均由压力场景拒绝。
 
 ## REFACTOR 与验证
 

@@ -52,10 +52,14 @@ function validateInvocationBoundary(data) {
   }
 }
 
-function validateWorkflowExecutionResult(payload, contract) {
+function validateWorkflowExecutionResult(payload, contract, workUnits) {
   for (const field of contract.required) ensure(Object.hasOwn(payload, field), `Workflow Execution Result 缺少 ${field}`);
   ensure(contract.result_values.includes(payload.result), "Workflow Execution Result result 无效");
   for (const field of contract.workflow_reference.required) ensure(typeof payload.workflow_reference?.[field] === "string" && payload.workflow_reference[field].trim(), `workflow_reference.${field} 无效`);
+  const workUnit = workUnits?.[payload.work_unit];
+  ensure(workUnit, `未知 Workflow Execution Result work_unit: ${payload.work_unit}`);
+  const expectedSkills = workUnit.workflow_reference ? [workUnit.workflow_reference] : workUnit.skills ?? [workUnit.skill];
+  ensure(payload.workflow_reference.source === contract.workflow_reference.source && includesAll(expectedSkills, [payload.workflow_reference.skill]) && payload.workflow_reference.invocation_mode === workUnit.invocation_mode, "Workflow Execution Result workflow_reference 与 work_unit 不匹配");
   if (payload.result !== "completed") return;
   for (const field of contract.completed_requires_empty) ensure(Array.isArray(payload[field]) && payload[field].length === 0, `completed 的 ${field} 必须为空`);
   for (const field of contract.completed_requires_non_empty) ensure(Array.isArray(payload[field]) && payload[field].length > 0, `completed 的 ${field} 不能为空`);
@@ -161,17 +165,20 @@ export function runScenario(name) {
       next_route: "work-unit.ticket-decomposition",
       blocking_signals: []
     };
-    validateWorkflowExecutionResult(validResult, data.workflow_execution_result);
+    validateWorkflowExecutionResult(validResult, data.workflow_execution_result, data.lifecycle_workflow_references);
     for (const mutate of [
       (item) => { delete item.workflow_reference; },
       (item) => { item.evidence_refs = []; },
       (item) => { item.evidence_refs = ["docs/process/not-found.md"]; },
       (item) => { item.blocking_signals = ["drift"]; },
-      (item) => { item.new_impacts = ["new-api"]; }
+      (item) => { item.new_impacts = ["new-api"]; },
+      (item) => { item.workflow_reference.source = "untrusted/source"; },
+      (item) => { item.workflow_reference.skill = "implement"; },
+      (item) => { item.workflow_reference.invocation_mode = "model-invoked"; }
     ]) {
       const invalid = structuredClone(validResult); mutate(invalid);
       let rejected = false;
-      try { validateWorkflowExecutionResult(invalid, data.workflow_execution_result); } catch { rejected = true; }
+      try { validateWorkflowExecutionResult(invalid, data.workflow_execution_result, data.lifecycle_workflow_references); } catch { rejected = true; }
       ensure(rejected, "Workflow Execution Result 完成态变异未被拒绝");
     }
     let metadataRejected = false;
