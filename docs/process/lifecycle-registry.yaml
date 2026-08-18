@@ -8,7 +8,7 @@ id_policy:
   pattern: '^(stage|gate|artifact|work-unit|evidence)\.[a-z0-9][a-z0-9-]*$'
   published_ids_immutable: true
   baseline: docs/process/lifecycle-registry-baseline.json
-  deprecated_ids: []
+  deprecated_ids: [work-unit.fresh-verification, work-unit.independent-review]
 
 stages:
   - id: stage.entry-triage
@@ -48,6 +48,9 @@ evidence:
   - id: evidence.impact-assessment
     name: 影响面分析记录
     description: 受影响仓库、资产、风险与最近可信阶段。
+  - id: evidence.maintenance-intensity-checkpoint
+    name: 模板维护强度 checkpoint
+    description: template-source 变更的 L1 / L2 / L3 分级、触发项、最低验证证据、review 模式和升级记录。
   - id: evidence.repository-identity-check
     name: 仓库身份校验结果
     description: yss-project.yaml 的合法性与 repository_mode 裁决。
@@ -269,18 +272,18 @@ work_units:
     input: 目标仓库、dry-run 计划。
     output: 受管资产和 metadata。
     completion: 验证通过或完整回滚。
-  - id: work-unit.fresh-verification
-    name: Fresh verification
+  - id: work-unit.intensity-aware-verification
+    name: 分级 Fresh verification
     scope: template-source
-    input: 变更仓库。
+    input: 变更仓库、强度分级与对应最低证据。
     output: 命令输出与证据。
-    completion: 所有命中门禁通过。
-  - id: work-unit.independent-review
-    name: 独立审查
+    completion: L1 相关检查、L2 最小反例与 fresh verification、L3 完整 RED / GREEN / REFACTOR 与 fresh verification 按命中等级通过。
+  - id: work-unit.intensity-aware-review
+    name: 分级审查
     scope: template-source
-    input: 变更 diff、验证证据。
-    output: review 结论。
-    completion: 无未处理阻断项。
+    input: 变更 diff、强度分级与验证证据。
+    output: L1 self-check / 人工 checkpoint、L2 聚焦独立审查或 L3 正式独立审查结论。
+    completion: 已按命中等级完成审查且无未处理阻断项；L1 不强制独立 reviewer。
   - id: work-unit.release-and-rollback
     name: 发布与回滚
     scope: template-source

@@ -14,7 +14,7 @@ YSS 产品研发的全生命周期主控编排器。它决定阶段、条件门�
 3. `template-source` 只走模板维护流程；不得生成具体产品 Spec、原型、OpenAPI 或切片 Ticket。
 4. `project-instance` 以 `docs/process/lifecycle-registry.yaml`、由其派生的 `docs/process/lifecycle-artifact-map.md` 和 `docs/process/harness-process-tailoring.md` 为阶段、门禁和裁剪事实来源。
 
-YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask-matt` 仅在用户显式调用时作为 Matt 通用导航，且不得修改 Matt skills。
+YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask-matt` 仅在用户显式调用时作为 Matt 通用导航：不得写生命周期资产或改变门禁/Ticket 状态，并须在任何写入前回交本编排器。不要修改 Matt skills 来复制 YSS 规则。
 
 ## 选择模式
 
@@ -31,7 +31,7 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 
 - 保留生命周期注册表定义的主阶段；其中条件门禁全部按影响面强制。命中项必须达到 `approved`，未命中项记录 `not-applicable` 和原因；产物、工作单元和证据不得被统称为门禁。
 - 安全 / 权限不设独立生命周期资料、专属门禁或 `not-applicable` 记录。只有需求或冻结资产明确要求改变认证、授权、租户隔离、敏感数据或合规行为时，才把该行为写入普通 Spec、API、架构、验收和测试 seam，并仅按实际 UI、API、Backend、Data、High-risk 影响触发既有门禁；普通 action 注册、沿用认证中间件、未变化的 `401` / `403`、一般字段、SQL / DDL / 迁移和上传 / 下载本身不触发安全 / 权限流程。
-- 有效 `yss-project.yaml` 存在时，`ask-matt` 和 `setup-matt-pocock-skills` 只能作为子流程；最终入口、仓库身份和模式裁决归本编排器。
+- 有效 `yss-project.yaml` 存在时，Matt user-invoked skill 保持显式用户入口。生命周期可以准备和验收其结果，但不得自动调用它们或代替其创建正式资产；最终入口、仓库身份和模式裁决归本编排器。
 - `template-source` 命中产品 flow 时必须返回 `blocked`（`template-source-product-artifact-forbidden`），不得继续到产品资产或 Ticket 生成。
 - `template-source` 迁移共享工具或验证器前，先区分维护侧构建资产、实例分发面和实例运行资产；冻结公开入口、运行时前提、旧实现处置和跨仓消费者契约后，才可改写实现。
 - 替换自身验证门禁时，不得只用候选门禁自证；必须保留独立 baseline oracle 或同一 fixture 的双跑证据。涉及共享运行资产时，只有生成/同步实例、失败回滚和跨仓消费者的 fresh evidence 齐备，才能声明生态完成或可发布。
@@ -39,10 +39,10 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 - 父 Ticket/checkpoint 的状态只是索引；与真实资产冲突时，以权威资产为准并修复索引。
 - 上游变化按依赖图精准传播 `stale`；不要无条件重跑完整阶段。
 - Matt 五态保持原义。只有解除阻塞、门禁通过且可直接实现的垂直切片才能使用 `ready-for-agent`。
-- YSS active 调用 `to-spec` 时，必须把 Matt 独立 flow 的 `ready-for-agent` 发布提示归一化为 Spec `ready-for-human`；不得把 Spec 初稿当作可直接实现的 Ticket。
-- YSS active 调用 `to-tickets` 时，新建垂直切片统一写为 `ready-for-human`；只有本编排器复算完整 `ready-for-agent` 公式后才能提升，Matt 的通用默认标签不得提前覆盖生命周期状态。
-- `orchestrate`/`resume` 连续执行安全工作单元，直到人工门禁、真实阻塞、新授权、实现/发布裁决或专项失败。
-- 进入实现后继续主控，通过 `yss-router`、`implement`、`tdd` 和 YSS 专项 skills 执行；独立审查和 fresh verification 后才能作完成判断。只有工作单元真实触碰当前用户、审计、加密或明确的权限业务行为时，才增加 `yss-userinfo`、`yss-audit-log`、`yss-security-algorithm` 等专项依赖。
+- 用户显式运行 `to-spec` 后，生命周期必须把其 `ready-for-agent` 发布提示归一化为 Spec `ready-for-human`；不得把 Spec 初稿当作可直接实现的 Ticket。
+- 用户显式运行 `to-tickets` 后，新建垂直切片统一写为 `ready-for-human`；只有本编排器复算完整 `ready-for-agent` 公式后才能提升，通用默认标签不得提前覆盖生命周期状态。
+- `orchestrate`/`resume` 连续执行安全的准备、校验和 model-invoked 工作单元，直到需要显式用户入口、人工门禁、真实阻塞、新授权、实现/发布裁决或专项失败。
+- 进入实现准备后继续主控，通过 `yss-router`、`code-review` 和 YSS 专项 skills 执行允许的 model-invoked 工作单元；`implement` 本身仍须由用户显式启动，并在其自身流程内按需使用 `tdd`，结果回交后再做独立审查和 fresh verification。只有工作单元真实触碰当前用户、审计、加密或明确的权限业务行为时，才增加 `yss-userinfo`、`yss-audit-log`、`yss-security-algorithm` 等专项依赖。
 - 原型确认 → 后端脚手架：命中产品设计影响时，先按 `yss-prototype-stage` 形成交互说明、独立 Prototype Review、高保真 HTML、AntD CLI 与浏览器验证、用户确认；只有 `gate.prototype-reviewed`、`gate.prototype-verified` 和 `gate.user-confirmation` 均满足时，才能进入下游。若 backend `scaffold_status=required`，随后先完成工程基线，由 `yss-router` 编译脚手架受控生成工作单元合同，经生命周期编排器批准并持久化后，才使用 `yss-ddd-scaffold-generator` 生成后端骨架；随后由 `yss-backend-scaffold-parent` 校验并重新进入 `yss-router`，不得先写业务代码。
 - 所有后续生成的后端代码都必须消费生命周期批准、已持久化且版本当前的 Slice Implementation Contract，绑定最小 YSS skill 闭包、允许写路径、证据文件和 YSS Skill Execution Result；没有这些证据时必须阻断。
 - Harness 内承载运行时代码时，项目路径策略固定为 `apps/backend/<project>/` 和 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 仅是项目容器，`app/backend/`、`app/frontend/` 及其子路径禁止生成。外部实现仓库不强制使用该目录，但必须登记真实项目根路径并写入合同。
@@ -51,13 +51,14 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 - 小改动和中等变更允许同一独立执行者完成 Review 与 fresh verification；该执行者不得是实现者。新模块、高风险或职责冲突时拆分 Reviewer 与 Verifier。
 - 进入 `code-review` 前必须持久化或明确传入 `review_mode`、`review_base_ref`、`candidate_snapshot_ref`、`candidate_digest` 和完整候选引用；`worktree` 模式必须一次捕获 committed、staged、unstaged、untracked，并让两个 Reviewer 消费同一快照，不能用只看 `HEAD` 或实时变化的 diff 宣称已审查。候选 manifest 和 `yss-worktree-candidate-v1` 不可变摘要流以 `orchestration-contract.yaml.review_input` 为唯一机器契约。
 - 实现授权不包含 Git 授权。只有用户分别明确给出值为 `true` 的 `commit_authorized` / `push_authorized`、非空 scope 和对应 `*_authorization_ref` 时才执行动作；缺失时只记录 checkpoint 判断，不得把 `implement`、`orchestrate`、当前分支或负责人要求解释成隐含授权。
+- “然后 commit”“做完提交”等自然语言意向不构成上述结构化 Git 授权，不能据此预授权或事后补齐 scope / authorization ref。
 - 连续自动推进期间累积 Ticket/Git 证据，在人工暂停、handoff、进入实现、合并或发布边界集中 checkpoint；不为每个连续经过的概念阶段重复写同类记录。
 - 跨线程、仓库、原型分支或上下文边界时使用 `handoff` 或等价记录。
 - 在 Matt 阶段边界（phase boundary）先按 `Continue → /clear → /handoff → subagent → /compact` 判断上下文动作；只在 checkpoint 记录可选 `phase_boundary` 证据，不新增生命周期状态。
 - `to-questionnaire` 进入结构化 `external-input-required` 暂停；回答回流后必须重新分类影响面并更新权威资产，不能直接恢复下游实现。
 - `wait-what` 只重新解释当前结论，不改变阶段、门禁、Ticket 或 `ready-for-agent` 状态；Agent 无法替代的人工步骤使用显式人工 checkpoint，秘密值不得进入持久化输出。
 - Matt `prototype` 是保留在 `prototype/<name>` 分支的单文件可分享 HTML 主来源；YSS 高保真 HTML 原型仍必须经过 Prototype Review、AntD CLI、浏览器验证和用户确认，两者不得互相替代。
-- Matt skill 返回结果必须先归一化为 `Matt Skill Result`；`drift`、`new_impacts`、`violation`、`stale_candidates`、缺失证据或不完整结果不得推进为 `completed`。
+- 新工作单元返回 `Workflow Execution Result`；旧 `Matt Skill Result` 仅可兼容读取后归一化。`drift`、`new_impacts`、`violation`、`stale_candidates`、缺失证据或不完整结果不得推进为 `completed`。
 
 ### 原型完成后的后端脚手架与代码生成边界
 
@@ -91,6 +92,6 @@ YSS 仓库以本 skill 为直接入口，不机械嵌套调用 `ask-matt`。`ask
 
 ## 输出
 
-始终输出：模式、当前阶段、影响面、证据、资产/门禁状态、阻塞项、本轮动作、下一工作单元、暂停或继续理由、Ticket 同步和 Git checkpoint 判断；调用 Matt skill 时追加 `Matt Skill Result`。
+始终输出：模式、当前阶段、影响面、证据、资产/门禁状态、阻塞项、本轮动作、下一工作单元、暂停或继续理由、Ticket 同步和 Git checkpoint 判断；追加 `Workflow Execution Result`，并注明 workflow reference 或实际 model-invoked skill。
 
 暂停时只提出一个具体人工决策，并给出推荐答案与确认后的恢复动作。`audit`/`route` 不得写文件、Ticket、标签或 Git。

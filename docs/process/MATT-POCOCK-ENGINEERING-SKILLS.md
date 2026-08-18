@@ -4,6 +4,6 @@ Matt Pocock Engineering Skills 提供轻量的澄清、实现、TDD、诊断和�
 
 ## 进入与退出
 
-- `grill-with-docs`、`to-spec`、`to-tickets`、`implement`、`tdd` 和 `code-review` 必须遵守 `AGENTS.md` 的阶段、门禁和证据要求。
+- Matt user-invoked 的 `grill-with-docs`、`to-spec`、`to-tickets` 和 `implement` 必须由用户显式启动；YSS 生命周期只准备、校验和验收其结果。`tdd`、`code-review` 等 model-invoked skill 仍须遵守 `AGENTS.md` 的阶段、门禁和证据要求。
 - `template-source` 只执行模板维护流程，不生成具体产品 Spec、原型、OpenAPI 或垂直切片 Ticket。
 - Agent 完成工作单元后返回可核验的 evidence refs、变更资产、验证命令、残余风险和下一路由。

@@ -71,6 +71,7 @@
 | 稳定 ID | 证据 | 说明 |
 |---|---|---|
 | `evidence.impact-assessment` | 影响面分析记录 | 受影响仓库、资产、风险与最近可信阶段。 |
+| `evidence.maintenance-intensity-checkpoint` | 模板维护强度 checkpoint | template-source 变更的 L1 / L2 / L3 分级、触发项、最低验证证据、review 模式和升级记录。 |
 | `evidence.repository-identity-check` | 仓库身份校验结果 | yss-project.yaml 的合法性与 repository_mode 裁决。 |
 | `evidence.approval-record` | 人工批准记录 | 对需要人工批准的 Spec、设计、契约或发布裁决的可追溯记录。 |
 | `evidence.design-review-result` | 设计审查结果 | API、架构或产品设计审查意见及处理结果。 |

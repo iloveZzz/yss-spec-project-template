@@ -42,8 +42,13 @@ function ensureSafeProjection(target) {
   const resolved = path.resolve(target);
   if (!resolved.startsWith(`${ROOT}${path.sep}`) || path.basename(resolved) !== "skills") throw new TypeError(`refusing unsafe projection target: ${target}`);
 }
+export function unlockedProjectionEntries(candidates, allowedNames, isTracked) {
+  const allowed = new Set(allowedNames);
+  return candidates.filter((candidate) => candidate.isDirectory() || candidate.isSymbolicLink()).filter((candidate) => !allowed.has(candidate.name) && isTracked(candidate.name));
+}
 export function syncSkills({ check = false } = {}) {
-  const shared = sharedFromLock(parseLock());
+  const lock = parseLock();
+  const shared = sharedFromLock(lock);
   const absent = shared.filter((name) => !lstatSafe(path.join(SOURCE_ROOT, name))?.isDirectory());
   if (absent.length) throw new TypeError(`锁文件声明的共享 skills 缺少权威内容: ${absent.join(", ")}`);
   const obsolete = shared.filter((name) => OBSOLETE.has(name));
@@ -53,6 +58,12 @@ export function syncSkills({ check = false } = {}) {
     const projection = path.join(ROOT, root);
     ensureSafeProjection(projection);
     if (!check) mkdirSync(projection, { recursive: true });
+    const allowed = [...shared, ...Object.keys(lock.skills?.platform?.[root] ?? {})];
+    for (const entry of unlockedProjectionEntries(entries(projection), allowed, (name) => tracked(relative(path.join(projection, name))))) {
+      const target = path.join(projection, entry.name);
+      if (!check && entry.isSymbolicLink() && !existsSync(target)) rmSync(target, { force: true });
+      else drift.push(`unlocked projection: ${relative(target)}`);
+    }
     for (const name of shared) {
       const source = path.join(SOURCE_ROOT, name);
       const target = path.join(projection, name);

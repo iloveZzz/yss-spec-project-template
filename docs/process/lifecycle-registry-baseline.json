@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "registry_id": "yss.lifecycle",
-  "semantic_sha256": "6261529654dba3e3738aa950e42d6af5b5db1b3be4ac6c2e4dc86a395c49ec6f",
+  "semantic_sha256": "308015680acdfdd600c255ce05ef46447c0e9205a5ec0d489c149f131a2e87fc",
   "published_ids": [
     "artifact.architecture-review",
     "artifact.data-architecture",
@@ -32,6 +32,7 @@
     "evidence.design-review-result",
     "evidence.fresh-verification",
     "evidence.impact-assessment",
+    "evidence.maintenance-intensity-checkpoint",
     "evidence.openapi-draft-review",
     "evidence.prototype-confirmation",
     "evidence.prototype-review-result",
@@ -62,6 +63,8 @@
     "work-unit.entry-triage",
     "work-unit.fresh-verification",
     "work-unit.independent-review",
+    "work-unit.intensity-aware-review",
+    "work-unit.intensity-aware-verification",
     "work-unit.release-and-rollback",
     "work-unit.skill-projection-sync",
     "work-unit.ssot-update",

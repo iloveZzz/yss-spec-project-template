@@ -50,7 +50,7 @@ AND 所有后续生成代码均绑定主 YSS skill、依赖闭包、允许写路
 
 父 Ticket、Spec、设计、原型、OpenAPI Draft、wayfinder map 和 decision ticket 不得使用 `ready-for-agent`。
 
-YSS active 调用 `to-tickets` 时，垂直切片初始角色固定为 `ready-for-human`。只有 `yss-product-lifecycle` 复算上述公式全部为真后，才能把它提升为 `ready-for-agent`；Matt `to-tickets` 的独立默认值不参与该裁决。
+用户显式运行 `to-tickets` 后，垂直切片初始角色固定为 `ready-for-human`。只有 `yss-product-lifecycle` 复算上述公式全部为真后，才能把它提升为 `ready-for-agent`；生命周期不会自动调用 `to-tickets`，其默认标签也不参与该裁决。
 
 ## Review 与 Git 授权状态
 

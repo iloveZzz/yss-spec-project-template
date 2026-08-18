@@ -1,9 +1,10 @@
 ---
 name: grill-with-docs
 description: Use when the user explicitly requests a relentless design interview that must preserve resolved glossary terms, ADR-worthy decisions, and factual research evidence.
+disable-model-invocation: true
 ---
 
-Run a `grilling` session with `domain-modeling` active.
+Call the Skill tool with `grilling`, then call it separately with `domain-modeling`.
 
 ## Output Contract
 

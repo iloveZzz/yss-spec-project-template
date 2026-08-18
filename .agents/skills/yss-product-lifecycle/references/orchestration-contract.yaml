@@ -35,8 +35,18 @@ entry_routing:
   invalid_manifest:
     action: migration-check
   direct_matt_entry:
+    skill: ask-matt
     delegate_to: yss-product-lifecycle
     requires_valid_manifest: true
+    action: navigate-only
+    lifecycle_state_mutation: forbidden
+    lifecycle_artifact_write: forbidden
+    return_to_orchestrator: required
+  formal_user_entry:
+    skills: [setup-matt-pocock-skills, grill-with-docs, to-spec, to-tickets, implement]
+    action: lifecycle-validate-and-accept
+    lifecycle_artifact_write: conditional-explicit-user-entry
+    return_to_orchestrator: required
   template_source:
     route: template-maintenance
     forbidden_artifacts: [product-spec, prototype, openapi, vertical-slice-tickets]
@@ -44,8 +54,11 @@ entry_routing:
     on_forbidden_flow: blocked
     block_reason: template-source-product-artifact-forbidden
 
-# Matt skill 的自然语言输出必须先归一化，再由生命周期编排器决定是否推进。
+# 旧 Matt Skill Result 只用于兼容读取；所有生命周期新输出使用 Workflow Execution Result。
 matt_skill_result:
+  status: compatibility-read-only
+  may_influence_routing: false
+  normalize_to: workflow-execution-result-v1
   schema_version: 1
   result_values: [completed, blocked, needs-human, failed]
   required: [result, skill, evidence_refs, changed_artifacts, new_impacts, stale_candidates, next_route, blocking_signals]
@@ -60,6 +73,52 @@ matt_skill_result:
     blocked: blocked
     ready-for-lifecycle-review: needs-human
 
+workflow_execution_result:
+  canonical_output_schema: workflow-execution-result-v1
+  accepted_input_schemas: [workflow-execution-result-v1]
+  legacy:
+    matt-skill-result-v1:
+      status: compatibility-read-only
+      may_influence_routing: false
+      normalize_to: workflow-execution-result-v1
+      removal_target: schema_version_2
+  required: [result_schema, work_unit, result, evidence_refs, changed_artifacts, new_impacts, stale_candidates, next_route, blocking_signals]
+  workflow_reference:
+    required: [source, skill, invocation_mode]
+    source: mattpocock/skills
+
+# Matt user-invoked skills remain explicit user entry points. Lifecycle work units
+# may prepare, validate and accept their results, but cannot invoke them or create
+# their formal artifacts on their behalf.
+matt_invocation_boundary:
+  user_invoked_skills: [ask-matt, batch-grill-me, grill-me, grill-with-docs, handoff, implement, improve-codebase-architecture, loop-me, setup-matt-pocock-skills, setup-ts-deep-modules, teach, to-questionnaire, to-spec, to-tickets, triage, wait-what, wayfinder, writing-beats, writing-fragments, writing-shape]
+  lifecycle_managed_user_entries: [setup-matt-pocock-skills, grill-with-docs, to-spec, to-tickets, implement]
+  model_invoked_skills: [grilling, domain-modeling, code-review]
+  lifecycle_may_invoke_user_invoked: false
+  formal_artifact_owner: explicit-user-entry
+  continuous_orchestration: prepare-and-validate-only
+  direct_user_entry: lifecycle-validate-and-accept
+
+lifecycle_workflow_references:
+  work-unit.discovery-interview:
+    invocation_mode: model-invoked
+    skills: [grilling, domain-modeling]
+  work-unit.spec-synthesis:
+    workflow_reference: to-spec
+    invocation_mode: reference
+    formal_artifact_owner: explicit-user-entry
+  work-unit.ticket-decomposition:
+    workflow_reference: to-tickets
+    invocation_mode: reference
+    formal_artifact_owner: explicit-user-entry
+  work-unit.slice-implementation:
+    workflow_reference: implement
+    invocation_mode: reference
+    formal_artifact_owner: explicit-user-entry
+  work-unit.code-review:
+    invocation_mode: model-invoked
+    skill: code-review
+
 flow_preconditions:
   to-spec:
     required: [grill_exit, no_unresolved_runnable_blocker]
@@ -72,6 +131,15 @@ flow_preconditions:
   implement:
     required: [ready_for_agent, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied]
     applies_to_single_session: true
+
+grill_exit:
+  required: [frontier_empty, facts_resolved_or_routed, decisions_confirmed, shared_understanding_confirmed, no_unresolved_runnable_blocker]
+  facts_resolved_or_routed:
+    technical_fact: research
+    runnable_question: handoff-prototype-handoff
+    external_decision: external-input-required
+  user_confirmation_required: true
+  output: discovery-evidence
 
 ticket_role_transition:
   yss_active:
@@ -131,6 +199,7 @@ review_input:
     completion_requires_current_digest: true
 
 git_authorization:
+  natural_language_intent_is_authorization: false
   commit:
     requires_explicit_user_authorization: true
     required: [commit_authorized, commit_scope, commit_authorization_ref]
@@ -230,6 +299,15 @@ tracker:
 setup_readiness:
   evaluation: once_per_task
   recheck_when: [tracker_changed, remote_changed, labels_changed, configuration_changed]
+  missing_action: needs-human
+  requested_skill: setup-matt-pocock-skills
+  resume_route: setup-readiness
+  preserves: [lifecycle.status, gate.status, ticket.role]
+  lifecycle_may_invoke_setup: false
+  legacy_artifacts_detected:
+    action: migration-check
+    setup: forbidden
+    write: paused
   states: [ready, missing, conflict, degraded, not-applicable]
   evidence: [platform, label_check, domain_layout, artifact_root, migration_ref]
   semantics:

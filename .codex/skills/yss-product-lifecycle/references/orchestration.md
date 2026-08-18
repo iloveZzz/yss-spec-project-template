@@ -6,7 +6,7 @@
 2. `setup readiness`：每个任务只执行一次，核对 tracker、五态标签和领域文档布局，并在本轮缓存结果；仅在 tracker、主远端、真实标签或配置变化时重查。
 3. 加载父 Ticket/checkpoint 与真实资产，计算最近可信阶段。
 4. 评估资产、门禁和 `stale`，选择第一个未阻塞工作单元。
-5. 调用一个最小 Matt/YSS 专项 skill，将结果归一化为 `Matt Skill Result`，验收输出并回写状态与证据。
+5. 执行最小生命周期工作单元：只实际调用允许的 model-invoked skill；Matt user-invoked skill 仅作为 workflow reference。将结果归一化为 `Workflow Execution Result`，验收输出并回写状态与证据。
 6. 若仍在授权和自动推进边界内，回到第 3 步；否则暂停。
 
 不要仅输出下一个提示词后结束 `orchestrate`/`resume`。不要因进入业务代码阶段而退出主控；应把实现交给专项 skill，并在返回后继续核验。
@@ -40,7 +40,7 @@ Readiness 结果在同一任务内复用。只有 tracker、主远端、真实�
 | 状态 | 判定 | 动作 |
 |---|---|---|
 | `ready` | tracker、Local `Status:` 或远程标签和领域布局兼容 | 继续 |
-| `missing` | 必要配置缺失 | 路由 `setup-matt-pocock-skills` |
+| `missing` | 必要配置缺失 | `needs-human`；说明缺失项并请用户显式运行 `setup-matt-pocock-skills`，随后回到 readiness |
 | `conflict` | 多个持久配置或真实标签/Local 状态互相矛盾 | 暂停并提出迁移方案，不覆盖 |
 | `degraded` | 已选择的 GitHub/GitLab 不可用 | 建 `docs/.scratch/<feature>/` 待发布草案，不改投平台 |
 | `not-applicable` | `template-source` | 只验证模板契约 |
@@ -51,11 +51,11 @@ tracker 选择和冲突按 `docs/agents/issue-tracker.md` 裁决：已持久化 
 
 ## Matt flow 进入条件
 
-- `to-spec` 只能在 `grill-with-docs` 退出条件满足且没有未回流 runnable blocker 时进入；产物默认为 `ready-for-human`。
-- `to-tickets` 只能在 OpenAPI Freeze 或无 API 影响记录完成后进入，并且只能生成垂直切片 Ticket；YSS active 下初始角色统一为 `ready-for-human`，不得沿用 Matt 的通用 `ready-for-agent` 默认值。
-- `implement` 无论是多会话还是单会话，都必须满足 `ready-for-agent` 公式、批准并持久化的 Slice Implementation Contract 和 Build Architecture Checklist。
+- `work-unit.discovery-interview` 实际调用 `grilling` 和 `domain-modeling`。`to-spec` 只能由用户显式启动；生命周期仅在其前准备并验收，正式 Spec 默认为 `ready-for-human`。
+- `to-tickets` 只能由用户显式启动；生命周期仅在 OpenAPI Freeze 或无 API 影响记录后准备和验收垂直切片，初始角色统一为 `ready-for-human`。
+- `implement` 只能由用户显式启动；无论多会话还是单会话，生命周期都在其前后核验 `ready-for-agent` 公式、批准并持久化的 Slice Implementation Contract 和 Build Architecture Checklist。
 - `implement` 遇到 backend `scaffold_status=required` 时，还必须满足原型确认后的脚手架策略：脚手架 Execution Result、`yss-backend-scaffold-parent` 基线、Wrapper 验证和 Router 合同重编译均已回写；否则停在工程基线，不得写业务代码。
-- Matt Result 出现 `drift`、`new_impacts`、`stale_candidates`、`violation`、`missing_evidence`、空 `evidence_refs` 或缺少必需字段时暂停当前工作单元。
+- `Workflow Execution Result` 出现 `drift`、`new_impacts`、`stale_candidates`、`violation`、`missing_evidence`、空 `evidence_refs` 或缺少必需字段时暂停当前工作单元；旧结果只能先经只读兼容 adapter 归一化。
 
 ## 审查与验证
 
