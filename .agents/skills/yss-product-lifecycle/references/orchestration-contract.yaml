@@ -82,7 +82,14 @@ workflow_execution_result:
       may_influence_routing: false
       normalize_to: workflow-execution-result-v1
       removal_target: schema_version_2
-  required: [result_schema, work_unit, result, evidence_refs, changed_artifacts, new_impacts, stale_candidates, next_route, blocking_signals]
+  result_values: [completed, blocked, needs-human, failed]
+  required: [result_schema, work_unit, workflow_reference, result, evidence_refs, changed_artifacts, new_impacts, stale_candidates, next_route, blocking_signals]
+  blocking_signals: [drift, new_impacts, violation, missing_evidence, stale_candidates]
+  completed_requires_empty: [new_impacts, stale_candidates]
+  completed_requires_non_empty: [evidence_refs]
+  completed_requires_readable_evidence_refs: true
+  evidence_ref_validation: readable-or-resolvable
+  completed_requires_no_blocking_signals: true
   workflow_reference:
     required: [source, skill, invocation_mode]
     source: mattpocock/skills

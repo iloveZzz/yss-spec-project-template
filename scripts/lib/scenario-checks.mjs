@@ -43,12 +43,26 @@ function validateInvocationBoundary(data) {
   const result = data.workflow_execution_result;
   ensure(data.matt_skill_result?.status === "compatibility-read-only" && data.matt_skill_result?.may_influence_routing === false && data.matt_skill_result?.normalize_to === "workflow-execution-result-v1", "旧 Matt Skill Result 未限制为只读兼容 adapter");
   ensure(result?.canonical_output_schema === "workflow-execution-result-v1" && JSON.stringify(result?.accepted_input_schemas) === JSON.stringify(["workflow-execution-result-v1"]) && result?.legacy?.["matt-skill-result-v1"]?.status === "compatibility-read-only" && result.legacy["matt-skill-result-v1"].may_influence_routing === false && result.legacy["matt-skill-result-v1"].normalize_to === "workflow-execution-result-v1", "Workflow Execution Result 未将旧 Matt Skill Result 限制为只读兼容");
+  ensure(includesAll(result?.required, ["result_schema", "work_unit", "workflow_reference", "result", "evidence_refs", "changed_artifacts", "new_impacts", "stale_candidates", "next_route", "blocking_signals"]) && includesAll(result?.result_values, ["completed", "blocked", "needs-human", "failed"]) && includesAll(result?.blocking_signals, ["drift", "new_impacts", "violation", "missing_evidence", "stale_candidates"]) && includesAll(result?.completed_requires_empty, ["new_impacts", "stale_candidates"]) && includesAll(result?.completed_requires_non_empty, ["evidence_refs"]) && result?.completed_requires_readable_evidence_refs === true && result?.evidence_ref_validation === "readable-or-resolvable" && result?.completed_requires_no_blocking_signals === true && includesAll(result?.workflow_reference?.required, ["source", "skill", "invocation_mode"]), "Workflow Execution Result 的完成态证据、阻断信号或 workflow_reference 契约不完整");
   const units = data.lifecycle_workflow_references;
   ensure(units?.["work-unit.discovery-interview"]?.invocation_mode === "model-invoked" && includesAll(units["work-unit.discovery-interview"].skills, ["grilling", "domain-modeling"]), "Discovery work unit 未调用允许的原语");
   ensure(units?.["work-unit.code-review"]?.invocation_mode === "model-invoked" && units["work-unit.code-review"].skill === "code-review", "Code review work unit 未使用 model-invoked code-review");
   for (const id of ["work-unit.spec-synthesis", "work-unit.ticket-decomposition", "work-unit.slice-implementation"]) {
     ensure(units?.[id]?.invocation_mode === "reference" && units[id].formal_artifact_owner === "explicit-user-entry", `${id} 未限制为 workflow reference 与显式正式入口`);
   }
+}
+
+function validateWorkflowExecutionResult(payload, contract) {
+  for (const field of contract.required) ensure(Object.hasOwn(payload, field), `Workflow Execution Result 缺少 ${field}`);
+  ensure(contract.result_values.includes(payload.result), "Workflow Execution Result result 无效");
+  for (const field of contract.workflow_reference.required) ensure(typeof payload.workflow_reference?.[field] === "string" && payload.workflow_reference[field].trim(), `workflow_reference.${field} 无效`);
+  if (payload.result !== "completed") return;
+  for (const field of contract.completed_requires_empty) ensure(Array.isArray(payload[field]) && payload[field].length === 0, `completed 的 ${field} 必须为空`);
+  for (const field of contract.completed_requires_non_empty) ensure(Array.isArray(payload[field]) && payload[field].length > 0, `completed 的 ${field} 不能为空`);
+  if (contract.completed_requires_readable_evidence_refs) {
+    for (const reference of payload.evidence_refs) ensure(typeof reference === "string" && reference.trim() && exists(reference), `completed 证据不可读取: ${reference}`);
+  }
+  if (contract.completed_requires_no_blocking_signals) ensure(Array.isArray(payload.blocking_signals) && payload.blocking_signals.length === 0, "completed 不得携带 blocking_signals");
 }
 
 function validateInvocationMetadata(boundary, skillContents) {
@@ -135,6 +149,31 @@ export function runScenario(name) {
     const data = contract.toJS({ maxAliasCount: 0 });
     validateMattContract(data);
     validateInvocationBoundary(data);
+    const validResult = {
+      result_schema: "workflow-execution-result-v1",
+      work_unit: "work-unit.spec-synthesis",
+      workflow_reference: { source: "mattpocock/skills", skill: "to-spec", invocation_mode: "reference" },
+      result: "completed",
+      evidence_refs: ["docs/process/lifecycle-registry.yaml"],
+      changed_artifacts: [],
+      new_impacts: [],
+      stale_candidates: [],
+      next_route: "work-unit.ticket-decomposition",
+      blocking_signals: []
+    };
+    validateWorkflowExecutionResult(validResult, data.workflow_execution_result);
+    for (const mutate of [
+      (item) => { delete item.workflow_reference; },
+      (item) => { item.evidence_refs = []; },
+      (item) => { item.evidence_refs = ["docs/process/not-found.md"]; },
+      (item) => { item.blocking_signals = ["drift"]; },
+      (item) => { item.new_impacts = ["new-api"]; }
+    ]) {
+      const invalid = structuredClone(validResult); mutate(invalid);
+      let rejected = false;
+      try { validateWorkflowExecutionResult(invalid, data.workflow_execution_result); } catch { rejected = true; }
+      ensure(rejected, "Workflow Execution Result 完成态变异未被拒绝");
+    }
     let metadataRejected = false;
     try {
       validateInvocationMetadata(data.matt_invocation_boundary, (skill) => skill === "grill-with-docs" ? read(`.agents/skills/${skill}/SKILL.md`).replace("disable-model-invocation: true\n", "") : read(`.agents/skills/${skill}/SKILL.md`));

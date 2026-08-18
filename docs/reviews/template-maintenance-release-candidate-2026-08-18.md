@@ -18,6 +18,12 @@
 - `scripts/verify-maintenance-intensity-scenarios` 覆盖该消费边界，并继续覆盖 L1/L2/L3 的接受与拒绝场景。
 - 生命周期调用边界、`Workflow Execution Result`、Git 授权和投影一致性由 Matt/YSS 压力场景验证。
 
+## 审查补正：完成态结果协议
+
+- RED：`scripts/verify-matt-yss-integration-scenarios` 在 canonical 契约缺少 `workflow_reference`、完成态证据和阻断信号字段时返回失败。
+- GREEN：canonical `workflow_execution_result` 明确 `result_values`、`required`、`blocking_signals`、完成态空/非空字段、可读证据和无阻断信号条件；场景以一个可完成结果和缺 `workflow_reference`、空证据、不可读证据、`drift`、新影响五类变异验证。
+- REFACTOR：旧 `matt_skill_result` 保持只读兼容，不再承载 canonical 路由约束；新协议成为完成态裁决的唯一结构来源。
+
 ## REFACTOR 与验证
 
 - 流程文档只解释分级决策，`AGENTS.md` 明确映射的唯一事实来源；不再与校验器重复维护 trigger 列表。
