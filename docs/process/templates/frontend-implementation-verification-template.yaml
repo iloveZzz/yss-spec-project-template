@@ -1,0 +1,21 @@
+schema_version: 1
+kind: verification
+template: true
+status: draft
+prototype_ref: docs/.scratch/example/design/prototype.html
+spec_ref: docs/.scratch/example/spec.md
+route_and_page_inventory:
+  - route: /example
+    page: ExamplePage
+desktop_visual_evidence: [docs/.scratch/example/verification/desktop.png]
+narrow_view_visual_evidence: [docs/.scratch/example/verification/narrow.png]
+interaction_results: [loading, empty, error, permission, selected, key-interaction]
+console_warning_check: blocked
+pnpm_commands: [pnpm lint, pnpm type-check, pnpm test]
+uncovered_differences: []
+difference_owner: null
+independent_review:
+  reviewer: non-implementer
+  candidate_digest: pending
+  status: pending
+  findings_ref: docs/.scratch/example/verification/ui-fidelity-review.md

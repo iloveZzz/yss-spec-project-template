@@ -92,41 +92,79 @@ workflow_execution_result:
   completed_requires_no_blocking_signals: true
   workflow_reference:
     required: [source, skill, invocation_mode]
-    source: mattpocock/skills
+    allowed_sources: [yss-product-lifecycle, mattpocock/skills]
 
 # Matt user-invoked skills remain explicit user entry points. Lifecycle work units
 # may prepare, validate and accept their results, but cannot invoke them or create
 # their formal artifacts on their behalf.
 matt_invocation_boundary:
-  user_invoked_skills: [ask-matt, batch-grill-me, grill-me, grill-with-docs, handoff, implement, improve-codebase-architecture, loop-me, setup-matt-pocock-skills, setup-ts-deep-modules, teach, to-questionnaire, to-spec, to-tickets, triage, wait-what, wayfinder, writing-beats, writing-fragments, writing-shape]
+  user_invoked_skills: [ask-matt, grill-me, grill-with-docs, handoff, implement, improve-codebase-architecture, loop-me, setup-matt-pocock-skills, setup-ts-deep-modules, teach, to-questionnaire, to-spec, to-tickets, triage, wait-what, wayfinder, writing-beats, writing-fragments, writing-shape]
   lifecycle_managed_user_entries: [setup-matt-pocock-skills, grill-with-docs, to-spec, to-tickets, implement]
-  model_invoked_skills: [grilling, domain-modeling, code-review]
+  model_invoked_skills: [code-review, codebase-design, diagnosing-bugs, domain-modeling, grilling, migrate-to-shoehorn, prototype, research, resolving-merge-conflicts, scaffold-exercises, setup-pre-commit, tdd, writing-for-agents]
+  lifecycle_allowed_model_invoked_skills: [code-review, codebase-design, diagnosing-bugs, domain-modeling, grilling, prototype, research, tdd]
   lifecycle_may_invoke_user_invoked: false
   formal_artifact_owner: explicit-user-entry
-  continuous_orchestration: prepare-and-validate-only
+  continuous_orchestration: compatibility-prepare-and-validate-only
   direct_user_entry: lifecycle-validate-and-accept
 
-lifecycle_workflow_references:
-  work-unit.discovery-interview:
-    invocation_mode: model-invoked
+skill_source_contract:
+  lock_version: 3
+  source_revisions_required: [mattpocock/skills]
+  adaptation_ref_required_when_effective_diff: true
+  retired_shared_skills: [batch-grill-me]
+
+# 生命周期默认走原生工作单元；Matt user-invoked skill 仅保留为兼容入口。
+lifecycle_native_entries:
+  default_entry: yss-product-lifecycle
+  formal_artifact_owner: yss-product-lifecycle
+  user_confirmation_required_at: [spec-baseline, prototype-confirmation, openapi-freeze, merge-or-release]
+  compatibility_entries:
+    to-spec: lifecycle-validate-and-accept
+    to-tickets: lifecycle-validate-and-accept
+    implement: lifecycle-validate-and-accept
+
+work_unit_routes:
+  work-unit.discovery-opportunity:
+    native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    skills: [competitive-intelligence, research]
+    route_by: {market_or_competitor_fact: competitive-intelligence, technical_or_standard_fact: research, no_external_fact: yss-product-lifecycle}
+  work-unit.discovery-requirements:
+    native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     skills: [grilling, domain-modeling]
   work-unit.spec-synthesis:
-    workflow_reference: to-spec
-    invocation_mode: reference
-    formal_artifact_owner: explicit-user-entry
+    native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    compatibility: {source: mattpocock/skills, skill: to-spec, invocation_mode: reference, formal_artifact_owner: explicit-user-entry}
+    skills: [domain-modeling]
+    human_gate: spec-baseline
+  work-unit.prototype-design:
+    native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    skills: [yss-design-system, yss-prototype-stage, product-design:index]
+    human_gate: prototype-confirmation
+  work-unit.technical-analysis:
+    native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    skills: [yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding, yss-router]
+    human_gate: openapi-freeze_if_api_impact
   work-unit.ticket-decomposition:
-    workflow_reference: to-tickets
-    invocation_mode: reference
-    formal_artifact_owner: explicit-user-entry
+    native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    compatibility: {source: mattpocock/skills, skill: to-tickets, invocation_mode: reference, formal_artifact_owner: explicit-user-entry}
+    skills: [yss-router]
   work-unit.slice-implementation:
-    workflow_reference: implement
-    invocation_mode: reference
-    formal_artifact_owner: explicit-user-entry
+    native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    compatibility: {source: mattpocock/skills, skill: implement, invocation_mode: reference, formal_artifact_owner: explicit-user-entry}
+    skills: [tdd, yss-router, yss-ui, yss-page-module-development]
+  work-unit.frontend-implementation-verification:
+    native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    skills: [yss-ui, yss-design-system, code-review]
+    applies_when: ui_impact
   work-unit.code-review:
-    invocation_mode: model-invoked
-    skill: code-review
+    native: {source: yss-product-lifecycle, skill: code-review, invocation_mode: model-invoked}
+    skills: [code-review]
+  work-unit.release-and-retrospective:
+    native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    skills: [yss-product-lifecycle]
+    human_gate: merge_or_release
 
-flow_preconditions:
+compatibility_flow_preconditions:
   to-spec:
     required: [grill_exit, no_unresolved_runnable_blocker]
     evidence: [user_problem, mvp_and_non_goals, success_criteria, test_seam, terminology_review]
@@ -136,7 +174,7 @@ flow_preconditions:
     output: vertical-slice-tickets
     output_role: ready-for-human
   implement:
-    required: [ready_for_agent, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied]
+    required: [ready_for_agent, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied, frontend_implementation_plan_if_ui_impact]
     applies_to_single_session: true
 
 grill_exit:
@@ -159,6 +197,9 @@ review_input:
   schema_version: 1
   required: [review_mode, review_base_ref, implementation_candidate_ref, candidate_snapshot_ref, candidate_digest, spec_ref, ticket_ref, slice_contract_ref, build_architecture_checklist_ref, yss_execution_result_refs]
   nullable: [spec_ref]
+  axes: [standards, spec, ui_fidelity_if_ui_impact]
+  repair_invalidates_candidate: true
+  repair_action: recapture_candidate_and_rerun_all_axes
   modes: [committed, worktree]
   committed:
     candidate_ref: HEAD
@@ -328,14 +369,39 @@ setup_readiness:
 
 lifecycle_owned_work_units: [release, retrospective]
 lifecycle_work_unit_requirements:
-  release: [fresh_verification, release_or_rollback_evidence, independent_review]
+  release: [fresh_verification, release_or_rollback_evidence, independent_review, all_triggered_gates_approved_or_not_applicable]
   retrospective: [fresh_verification, retrospective_record, governance_reflow_decision]
+
+release_readiness:
+  required: [fresh_verification, release_or_rollback_evidence, independent_review, all_triggered_gates_approved_or_not_applicable]
+  conditional:
+    ui_impact: [gate.frontend-implementation-verified, evidence.frontend-implementation-verification]
+  blocked_when: [triggered_gate_blocked, triggered_gate_stale, triggered_gate_not_evaluated, missing_evidence]
 
 wayfinder_completion:
   required: [no_open_children, no_open_blocked_or_claimed_children, no_fog, destination_clear]
 
 ready_for_agent:
-  required: [gates_satisfied, no_stale_artifacts, blockers_closed, implementation_context_ready, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied]
+  required: [gates_satisfied, no_stale_artifacts, blockers_closed, implementation_context_ready, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied, frontend_implementation_plan_if_ui_impact]
+
+frontend_implementation_plan:
+  applies_when: [ui_impact]
+  required_before: [ready_for_agent]
+  required: [prototype_ref, spec_ref, route_and_page_inventory, visual_acceptance_cases, desktop_viewport, narrow_viewport, state_cases, pnpm_commands]
+  schema: docs/process/schemas/frontend-implementation-evidence.schema.json
+  validator: scripts/verify-frontend-implementation-evidence
+  acceptance: [kind_plan, template_false, status_approved, no_template_placeholders, readable_baseline_refs, non_empty_acceptance_cases]
+
+frontend_implementation_verification:
+  applies_when: [ui_impact]
+  required_before: [release]
+  required: [prototype_ref, spec_ref, route_and_page_inventory, desktop_visual_evidence, narrow_view_visual_evidence, loading_empty_error_permission_interaction_results, console_warning_check, pnpm_commands, uncovered_differences, difference_owner]
+  verification: [actual_command, exit_code, executed_at, evidence_ref]
+  schema: docs/process/schemas/frontend-implementation-evidence.schema.json
+  validator: scripts/verify-frontend-implementation-evidence
+  acceptance: [kind_verification, template_false, status_approved, no_template_placeholders, console_warning_pass, independent_review_approved]
+  blocked_when: [unexplained_visual_difference, missing_visual_evidence, typecheck_only, claimed_alignment_without_evidence]
+  on_new_impact: [new_impacts, drift, reroute]
 
 unknown_impact:
   action: pause

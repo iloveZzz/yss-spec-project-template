@@ -13,7 +13,7 @@
 
 | 来源 | 固定版本 / 路径 | 用途 |
 |---|---|---|
-| `mattpocock/skills` | `6acc160e4e0cd062dbbbd7a1b26ae92855edf07e` / `skills/engineering` 及锁文件记录的关联路径 | 通用工程流程及关联 skills |
+| `mattpocock/skills` | `0ab1b63a410a03d3627979a109c8695de27af954` / `skills/engineering` 及锁文件记录的关联路径 | 通用工程流程及关联 skills |
 | `anthropics/knowledge-work-plugins` | `sales/skills/competitive-intelligence` | 竞品与市场事实研究 |
 | 项目本地 | `.agents/skills` 或平台专属 root | YSS 适配与项目治理 skills |
 
@@ -25,7 +25,7 @@
 
 项目允许按 YSS 流程适配上游 skill，但必须同时保留可追溯的上游信息和适配后的有效哈希。
 
-当前 Matt 快照为 `6acc160e4e0cd062dbbbd7a1b26ae92855edf07e`。`ask-matt` 的关联入口包括 `to-questionnaire`、`wait-what`、`writing-for-agents` 和 `PHASE-BOUNDARIES.md`；这些支持文件随共享 skill 目录一起计算 `effectiveHash`，不得单独投影或维护。
+当前 Matt 快照为 `0ab1b63a410a03d3627979a109c8695de27af954`。`ask-matt` 的关联入口包括 `to-questionnaire`、`wait-what`、`writing-for-agents` 和 `PHASE-BOUNDARIES.md`；这些支持文件随共享 skill 目录一起计算 `effectiveHash`，不得单独投影或维护。
 
 本轮升级还将生命周期适配固定为：阶段边界只写可选 `phase_boundary` 证据；`to-questionnaire` 使用 `external-input-required` 暂停并在答案回流后重新分类影响面；Matt `prototype` 使用 `prototype/<name>` 分支和单文件 HTML，YSS 高保真原型继续执行 Prototype Review、AntD CLI 校验和用户确认。人工 checkpoint 与 `diagnosing-bugs` 的输出必须脱敏，`wait-what` 不改变生命周期状态。
 
@@ -39,6 +39,12 @@
    ```bash
    scripts/sync-skills
    scripts/update-skill-lock
+   ```
+
+   若来源来自可访问的 Matt checkout，还应显式校验锁定 revision 与每个上游目录哈希：
+
+   ```bash
+   scripts/verify-upstream-skill-source --source-root <matt-skills-checkout>
    ```
 
    新增共享 skill 时先显式登记：`scripts/update-skill-lock --add=<skill-name>`；新增平台专属 skill 使用 `scripts/update-skill-lock --add-platform=<root>:<skill-name>`。脚本不会把工作区中偶然出现的未跟踪目录自动纳入发布清单。
@@ -58,6 +64,8 @@
 ```bash
 scripts/sync-skills --check
 scripts/update-skill-lock --check
+# 可选：对照锁文件中的 mattpocock/skills revision 与上游目录哈希
+scripts/verify-upstream-skill-source --source-root <matt-skills-checkout>
 ```
 
 前者检查所有共享投影是否指向或匹配权威内容，后者检查 `skills-lock.json` 是否与当前完整目录树一致。过时技能不会保留兼容别名；旧版项目按 `docs/user-guide/规格与任务迁移指南.md` 一次性迁移。
@@ -73,7 +81,7 @@ YSS 技能的公开发布仓库为 `iloveZzz/yss-spec-dev-skills`，它是本模
 - 发布顺序为：同步 canonical projections → 更新 lock → `scripts/verify-template` → 导出并检查 → 独立审查 → 在 `yss-spec-dev-skills` 提交人工 PR。不得从目标仓库反向覆盖 `.agents/skills`。
 - skills.sh 通过 `npx skills add iloveZzz/yss-spec-dev-skills` 的安装遥测自动发现技能，不需要手工注册；遥测可用 `DISABLE_TELEMETRY=1` 或 `DO_NOT_TRACK` 关闭。
 
-已退休或 personal 的条目（`design-an-interface`、`qa`、`request-refactor-plan`、`ubiquitous-language`、`edit-article`、`obsidian-vault`、`writing-great-skills`、`web-design-engineer`、`web-video-presentation`、`wireframe-prototype`、`wizard`、`git-guardrails-claude-code`、`claude-handoff`）不再进入 `.agents/skills`、六个共享投影根或 `skills-lock.json`。迁移时使用 `codebase-design`、`triage + to-tickets`、`to-spec + improve-codebase-architecture`、`domain-modeling`、`product-design:index`、普通人工 checkpoint 或 `handoff` 等现行路由，不创建兼容目录。
+已退休、personal 或由 YSS 有意排除的条目（`design-an-interface`、`qa`、`request-refactor-plan`、`ubiquitous-language`、`edit-article`、`obsidian-vault`、`writing-great-skills`、`web-design-engineer`、`web-video-presentation`、`wireframe-prototype`、`wizard`、`git-guardrails-claude-code`、`claude-handoff`、`batch-grill-me`）不再进入 `.agents/skills`、六个共享投影根或 `skills-lock.json`。其中 `wizard` 是最新上游仍存在但 YSS 当前有意排除的人工步骤技能，不应描述为上游已退休。迁移时使用 `codebase-design`、`triage + to-tickets`、`to-spec + improve-codebase-architecture`、`domain-modeling`、`product-design:index`、普通人工 checkpoint 或 `handoff` 等现行路由，不创建兼容目录。
 
 ## 外部工作流工具
 

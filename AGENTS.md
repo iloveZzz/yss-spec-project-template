@@ -47,10 +47,10 @@ README、用户指南和其他说明文档只引用或解释上述事实，不�
 - 生命周期注册表中的条件门禁全部按影响面强制。命中触发条件时必须完成；未命中时只记录 `not-applicable` 及原因，不生成空文档；不得把产物、工作单元或证据统称为门禁。
 - 安全 / 权限不设独立生命周期资料或专属门禁。日常功能不做额外登记、`not-applicable` 或推导校验；只有需求或冻结资产明确要求改变认证、授权、租户隔离、敏感数据或合规行为时，才把该行为写入普通 Spec、API、架构、验收和测试 seam，并仅按实际 UI、API、Backend、Data、High-risk 影响触发既有门禁。普通 action 注册、沿用既有认证中间件、未变化的 `401` / `403`、一般字段、SQL / DDL / 迁移和上传 / 下载本身不构成安全 / 权限专项。
 - `seam-deferred` 只能显式记录风险、责任人、后续 Ticket、验证计划和目标版本或发布日期。
-- 新功能或较大变更先用 `grill-with-docs` 澄清，再用 `to-spec` 形成 Spec；Spec 基线和产品设计影响的完整判定以注册表和裁剪规则为准。
+- 新功能或较大变更先进入 `yss-product-lifecycle` 的原生 Discovery / 需求分析工作单元；`grill-with-docs` 与 `to-spec` 仅作为用户显式兼容入口，Spec 基线和产品设计影响的完整判定以注册表和裁剪规则为准。
 - API 契约变更先形成 OpenAPI 3.1 Draft，经必要的工程基线、系统 / 数据架构和设计审查后 Freeze，再进入实现。
 - Spec Delta 只记录相对既有冻结 Spec 基线的高风险行为差异；全新产品、全新模块和低风险调整不生成 Spec Delta。
-- OpenAPI Freeze 或无 API 影响记录完成后，使用 `to-tickets` 拆成可独立验证的窄垂直切片，禁止只按 Adapter / Application / Domain / Infrastructure 横向拆分。
+- OpenAPI Freeze 或无 API 影响记录完成后，由生命周期原生 Ticket 正式化工作单元拆成可独立验证的窄垂直切片；用户显式 `to-tickets` 仅作为兼容入口，禁止只按 Adapter / Application / Domain / Infrastructure 横向拆分。
 
 ## 6. Ticket 与状态
 

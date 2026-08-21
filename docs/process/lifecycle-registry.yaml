@@ -81,6 +81,9 @@ evidence:
   - id: evidence.yss-skill-execution-result
     name: YSS Skill Execution Result
     description: 专项 skill 的合同版本、写入、验证、延期 seam 与偏离证据。
+  - id: evidence.frontend-implementation-verification
+    name: 前端实现还原验证证据
+    description: UI 实现相对冻结原型和 Spec 的桌面/窄屏视觉、状态、交互、控制台与 pnpm 验证记录。
   - id: evidence.fresh-verification
     name: Fresh Verification 记录
     description: 本轮实际执行的验证命令、结果和时间。
@@ -149,11 +152,17 @@ gates:
     stage: stage.ticket-formalization
     trigger: 垂直切片具备直接实现条件。
     evidence: [evidence.contract-approval, evidence.approval-record]
+  - id: gate.frontend-implementation-verified
+    name: 前端实现还原验证
+    stage: stage.verification-release-retrospective
+    trigger: UI 影响切片完成实现并准备合并、发布或阶段完成。
+    evidence: [evidence.frontend-implementation-verification]
   - id: gate.release-ready
     name: 发布就绪
     stage: stage.verification-release-retrospective
     trigger: 合并、发布或阶段完成。
     evidence: [evidence.fresh-verification, evidence.checkpoint-and-rollback]
+    requires_gates: [gate.frontend-implementation-verified]
 
 artifacts:
   - id: artifact.impact-assessment
@@ -236,6 +245,14 @@ artifacts:
     name: Slice Implementation Contract
     stage: stage.ticket-formalization
     trigger: Agent 进入实现。
+  - id: artifact.frontend-implementation-plan
+    name: 前端实现还原计划
+    stage: stage.ticket-formalization
+    trigger: UI 影响切片提升 ready-for-agent 前。
+  - id: artifact.frontend-implementation-verification
+    name: 前端实现还原验证记录
+    stage: stage.verification-release-retrospective
+    trigger: UI 影响切片完成实现并准备合并、发布或阶段完成。
   - id: artifact.retrospective
     name: 复盘记录
     stage: stage.verification-release-retrospective
@@ -290,3 +307,63 @@ work_units:
     input: 已审查 commit。
     output: release note、观察信号、回滚点。
     completion: 两仓库顺序和恢复动作明确。
+  - id: work-unit.discovery-opportunity
+    name: 机会调研
+    scope: project-instance
+    input: 用户问题、市场/竞品事实需求和现有上下文。
+    output: Discovery 机会结论、证据、替代方案和关键假设。
+    completion: 机会继续/停止建议可审查；事实已 research 或记录为假设。
+  - id: work-unit.discovery-requirements
+    name: 需求分析
+    scope: project-instance
+    input: 机会结论、用户反馈和领域词汇。
+    output: 用户、MVP、非目标、成功标准、测试 seam 和未决项。
+    completion: frontier 清空；用户确认；无 runnable blocker。
+  - id: work-unit.spec-synthesis
+    name: Spec 综合
+    scope: project-instance
+    input: 已确认的 Discovery 记录和测试 seam。
+    output: Spec、产品总体设计和功能架构。
+    completion: Spec 内容完整并进入 ready-for-human；下游推进仍需 gate.spec-baseline-approved。
+  - id: work-unit.prototype-design
+    name: 原型设计与验证
+    scope: project-instance
+    input: Spec、产品设计影响和状态矩阵。
+    output: 交互说明、低/高保真原型、评审、AntD CLI 和浏览器证据。
+    completion: 原型评审、高保真验证和用户确认门禁均通过。
+  - id: work-unit.technical-analysis
+    name: 技术分析与契约冻结
+    scope: project-instance
+    input: Spec、原型、API/数据/工程影响面。
+    output: OpenAPI、数据架构、工程基线、架构审查和 Slice 合同草案。
+    completion: 命中契约已冻结；无 API 影响有可读记录；工程基线通过。
+  - id: work-unit.ticket-decomposition
+    name: 垂直切片 Ticket 正式化
+    scope: project-instance
+    input: 冻结 Spec、设计、契约和阻塞关系。
+    output: 功能父 Ticket、垂直切片和批准的 Slice Implementation Contract。
+    completion: 切片可独立验证；生命周期复算后才能 ready-for-agent。
+  - id: work-unit.slice-implementation
+    name: 垂直切片实现
+    scope: project-instance
+    input: 当前版本 Slice Implementation Contract 和允许写路径。
+    output: 前后端实现、TDD 和 YSS Skill Execution Result。
+    completion: 行为通过 `behavior-tdd`；UI 影响完成还原验证计划；无 drift/violation。
+  - id: work-unit.frontend-implementation-verification
+    name: 前端实现还原验证
+    scope: project-instance
+    input: 冻结原型、状态矩阵、实现候选和视觉验收用例。
+    output: 桌面/窄屏视觉、状态、交互、console 和 pnpm 验证证据。
+    completion: 关键场景无未解释差异；独立 Reviewer 通过 UI fidelity 轴。
+  - id: work-unit.code-review
+    name: 独立代码审查与验证
+    scope: project-instance
+    input: 不可变候选快照、Spec、Ticket、合同和执行结果。
+    output: Standards、Spec、UI fidelity 三轴 Review 与 fresh verification。
+    completion: findings 已处理；修复后重新捕获候选并全量复审。
+  - id: work-unit.release-and-retrospective
+    name: 发布与复盘
+    scope: project-instance
+    input: 已审查候选、发布窗口和回滚点。
+    output: 发布/回滚证据和复盘记录。
+    completion: 人工发布裁决、fresh verification 和治理回流均完成。

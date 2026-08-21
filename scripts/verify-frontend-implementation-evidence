@@ -1,0 +1,51 @@
+#!/usr/bin/env node
+import { existsSync, readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import path from "node:path";
+import { parseArgs } from "node:util";
+import { fileURLToPath } from "node:url";
+import { parseDocument } from "./vendor/yaml.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const schemaPath = path.join(root, "docs/process/schemas/frontend-implementation-evidence.schema.json");
+const validator = String.raw`
+import json
+import sys
+from jsonschema import Draft202012Validator
+schema = json.load(open(sys.argv[1], encoding="utf-8"))
+value = json.load(sys.stdin)
+errors = sorted(Draft202012Validator(schema).iter_errors(value), key=lambda error: list(error.absolute_path))
+for error in errors:
+    location = ".".join(str(part) for part in error.absolute_path) or "<root>"
+    print(f"{location}: {error.message}", file=sys.stderr)
+sys.exit(1 if errors else 0)
+`;
+
+try {
+  const { values, positionals } = parseArgs({ options: { "allow-template": { type: "boolean" } }, allowPositionals: true, strict: true });
+  if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-frontend-implementation-evidence [--allow-template] <file.yaml>");
+  const document = parseDocument(readFileSync(path.resolve(positionals[0]), "utf8"), { maxAliasCount: 0, uniqueKeys: true });
+  if (document.errors.length) throw new TypeError(document.errors[0].message);
+  const value = document.toJS({ maxAliasCount: 0 });
+  const result = spawnSync("python3", ["-c", validator, schemaPath], { cwd: root, encoding: "utf8", input: JSON.stringify(value) });
+  if (result.status !== 0) throw new TypeError(`${result.stdout}${result.stderr}`.trim());
+  if (!values["allow-template"] && value.template !== false) throw new TypeError("正式证据必须设置 template: false");
+  if (!values["allow-template"] && value.status !== "approved") throw new TypeError("正式证据必须达到 status: approved");
+  const serialized = JSON.stringify(value);
+  if (!values["allow-template"] && /REPLACE_ME|<[^>]+>|docs\/\.scratch\/example/.test(serialized)) throw new TypeError("正式证据不得保留模板占位值");
+  if (!values["allow-template"]) {
+    for (const field of ["prototype_ref", "spec_ref"]) {
+      const reference = value[field];
+      if (!/^https?:\/\//.test(reference) && !existsSync(path.resolve(root, reference))) throw new TypeError(`${field} 不可读取: ${reference}`);
+    }
+  }
+  if (!values["allow-template"] && value.kind === "verification") {
+    if (value.console_warning_check !== "pass") throw new TypeError("前端验证必须通过 console warning 检查");
+    if (value.uncovered_differences.length > 0 && !value.difference_owner) throw new TypeError("存在未覆盖差异时必须填写 difference_owner");
+    if (value.independent_review?.status !== "approved") throw new TypeError("前端验证必须通过独立 UI fidelity review");
+  }
+  process.stdout.write(`前端实现还原 ${value.kind} 验证通过\n`);
+} catch (error) {
+  process.stderr.write(`前端实现还原证据验证失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

@@ -24,21 +24,22 @@
 
 ### 2.1 条件门禁
 
-| 稳定 ID | 门禁 | 所属阶段 | 触发条件 | 必须留下的证据 |
-|---|---|---|---|---|
-| `gate.repository-identity-valid` | 仓库身份校验 | `stage.entry-triage` | 每次进入流程。 | `evidence.repository-identity-check` |
-| `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | 新功能、行为变化或范围扩大进入 Spec 基线。 | `evidence.approval-record` |
-| `gate.prototype-reviewed` | 原型评审 | `stage.product-design` | 命中产品设计影响，且低保真页面、流程、状态或 API 反推需要独立评审。 | `evidence.prototype-review-result` |
-| `gate.prototype-verified` | 高保真原型验证 | `stage.product-design` | 需要高保真 HTML 原型进行视觉与交互校准。 | `evidence.antd-cli-validation`、`evidence.browser-prototype-verification` |
-| `gate.user-confirmation` | 用户确认 | `stage.product-design` | 产品设计影响尚未被人工确认。 | `evidence.prototype-confirmation` |
-| `gate.openapi-draft-reviewed` | OpenAPI Draft Review | `stage.system-data-engineering` | 有 API 影响且 Draft 已生成。 | `evidence.openapi-draft-review` |
-| `gate.design-reviewed` | 设计审查 | `stage.system-data-engineering` | API 或架构影响。 | `evidence.design-review-result` |
-| `gate.openapi-frozen` | OpenAPI Freeze | `stage.system-data-engineering` | API 进入实现。 | `evidence.approval-record` |
-| `gate.engineering-baseline-accepted` | 工程基线 | `stage.system-data-engineering` | 后端、前端或高风险工程变化。 | `evidence.fresh-verification` |
-| `gate.architecture-reviewed` | 架构审查 | `stage.system-data-engineering` | 高风险或跨边界变化。 | `evidence.design-review-result` |
-| `gate.slice-contract-approved` | Slice Implementation Contract 批准 | `stage.ticket-formalization` | Agent 进入实现；脚手架完成后每个后续生成代码工作单元。 | `evidence.contract-approval` |
-| `gate.slice-ready-for-agent` | 垂直切片实现就绪 | `stage.ticket-formalization` | 垂直切片具备直接实现条件。 | `evidence.contract-approval`、`evidence.approval-record` |
-| `gate.release-ready` | 发布就绪 | `stage.verification-release-retrospective` | 合并、发布或阶段完成。 | `evidence.fresh-verification`、`evidence.checkpoint-and-rollback` |
+| 稳定 ID | 门禁 | 所属阶段 | 触发条件 | 前置门禁 | 必须留下的证据 |
+|---|---|---|---|---|---|
+| `gate.repository-identity-valid` | 仓库身份校验 | `stage.entry-triage` | 每次进入流程。 | 无 | `evidence.repository-identity-check` |
+| `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | 新功能、行为变化或范围扩大进入 Spec 基线。 | 无 | `evidence.approval-record` |
+| `gate.prototype-reviewed` | 原型评审 | `stage.product-design` | 命中产品设计影响，且低保真页面、流程、状态或 API 反推需要独立评审。 | 无 | `evidence.prototype-review-result` |
+| `gate.prototype-verified` | 高保真原型验证 | `stage.product-design` | 需要高保真 HTML 原型进行视觉与交互校准。 | 无 | `evidence.antd-cli-validation`、`evidence.browser-prototype-verification` |
+| `gate.user-confirmation` | 用户确认 | `stage.product-design` | 产品设计影响尚未被人工确认。 | 无 | `evidence.prototype-confirmation` |
+| `gate.openapi-draft-reviewed` | OpenAPI Draft Review | `stage.system-data-engineering` | 有 API 影响且 Draft 已生成。 | 无 | `evidence.openapi-draft-review` |
+| `gate.design-reviewed` | 设计审查 | `stage.system-data-engineering` | API 或架构影响。 | 无 | `evidence.design-review-result` |
+| `gate.openapi-frozen` | OpenAPI Freeze | `stage.system-data-engineering` | API 进入实现。 | 无 | `evidence.approval-record` |
+| `gate.engineering-baseline-accepted` | 工程基线 | `stage.system-data-engineering` | 后端、前端或高风险工程变化。 | 无 | `evidence.fresh-verification` |
+| `gate.architecture-reviewed` | 架构审查 | `stage.system-data-engineering` | 高风险或跨边界变化。 | 无 | `evidence.design-review-result` |
+| `gate.slice-contract-approved` | Slice Implementation Contract 批准 | `stage.ticket-formalization` | Agent 进入实现；脚手架完成后每个后续生成代码工作单元。 | 无 | `evidence.contract-approval` |
+| `gate.slice-ready-for-agent` | 垂直切片实现就绪 | `stage.ticket-formalization` | 垂直切片具备直接实现条件。 | 无 | `evidence.contract-approval`、`evidence.approval-record` |
+| `gate.frontend-implementation-verified` | 前端实现还原验证 | `stage.verification-release-retrospective` | UI 影响切片完成实现并准备合并、发布或阶段完成。 | 无 | `evidence.frontend-implementation-verification` |
+| `gate.release-ready` | 发布就绪 | `stage.verification-release-retrospective` | 合并、发布或阶段完成。 | `gate.frontend-implementation-verified` | `evidence.fresh-verification`、`evidence.checkpoint-and-rollback` |
 
 ### 2.2 生命周期产物
 
@@ -64,6 +65,8 @@
 | `artifact.parent-ticket` | 功能父 Ticket | `stage.ticket-formalization` | 每个进入追踪的功能。 |
 | `artifact.vertical-slice-ticket` | 垂直切片 Ticket | `stage.ticket-formalization` | 进入实现前。 |
 | `artifact.slice-implementation-contract` | Slice Implementation Contract | `stage.ticket-formalization` | Agent 进入实现。 |
+| `artifact.frontend-implementation-plan` | 前端实现还原计划 | `stage.ticket-formalization` | UI 影响切片提升 ready-for-agent 前。 |
+| `artifact.frontend-implementation-verification` | 前端实现还原验证记录 | `stage.verification-release-retrospective` | UI 影响切片完成实现并准备合并、发布或阶段完成。 |
 | `artifact.retrospective` | 复盘记录 | `stage.verification-release-retrospective` | 发布后或阶段性完成后满足复盘触发条件。 |
 
 ### 2.3 执行证据
@@ -82,6 +85,7 @@
 | `evidence.openapi-draft-review` | OpenAPI Draft 审查记录 | P0、错误、分页、幂等和契约测试审查记录。 |
 | `evidence.contract-approval` | Slice 合同批准记录 | 生命周期编排器批准且已持久化的当前版本合同引用。 |
 | `evidence.yss-skill-execution-result` | YSS Skill Execution Result | 专项 skill 的合同版本、写入、验证、延期 seam 与偏离证据。 |
+| `evidence.frontend-implementation-verification` | 前端实现还原验证证据 | UI 实现相对冻结原型和 Spec 的桌面/窄屏视觉、状态、交互、控制台与 pnpm 验证记录。 |
 | `evidence.fresh-verification` | Fresh Verification 记录 | 本轮实际执行的验证命令、结果和时间。 |
 | `evidence.checkpoint-and-rollback` | Checkpoint 与回滚点 | 可追溯的变更边界、发布记录和恢复动作。 |
 <!-- lifecycle-registry:structure:end -->

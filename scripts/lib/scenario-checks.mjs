@@ -32,11 +32,14 @@ function validateMattContract(data) {
 
 function validateInvocationBoundary(data) {
   const boundary = data.matt_invocation_boundary;
-  const expectedUserInvoked = ["ask-matt", "batch-grill-me", "grill-me", "grill-with-docs", "handoff", "implement", "improve-codebase-architecture", "loop-me", "setup-matt-pocock-skills", "setup-ts-deep-modules", "teach", "to-questionnaire", "to-spec", "to-tickets", "triage", "wait-what", "wayfinder", "writing-beats", "writing-fragments", "writing-shape"];
+  const expectedUserInvoked = ["ask-matt", "grill-me", "grill-with-docs", "handoff", "implement", "improve-codebase-architecture", "loop-me", "setup-matt-pocock-skills", "setup-ts-deep-modules", "teach", "to-questionnaire", "to-spec", "to-tickets", "triage", "wait-what", "wayfinder", "writing-beats", "writing-fragments", "writing-shape"];
+  const expectedModelInvoked = ["code-review", "codebase-design", "diagnosing-bugs", "domain-modeling", "grilling", "migrate-to-shoehorn", "prototype", "research", "resolving-merge-conflicts", "scaffold-exercises", "setup-pre-commit", "tdd", "writing-for-agents"];
+  const expectedLifecycleModelInvoked = ["code-review", "codebase-design", "diagnosing-bugs", "domain-modeling", "grilling", "prototype", "research", "tdd"];
   ensure(JSON.stringify(boundary?.user_invoked_skills) === JSON.stringify(expectedUserInvoked), "Matt user-invoked skills 清单不完整或已漂移");
   ensure(JSON.stringify(boundary?.lifecycle_managed_user_entries) === JSON.stringify(["setup-matt-pocock-skills", "grill-with-docs", "to-spec", "to-tickets", "implement"]), "生命周期管理的显式用户入口清单不完整");
   ensure(boundary?.lifecycle_may_invoke_user_invoked === false && boundary?.formal_artifact_owner === "explicit-user-entry", "生命周期仍可能自动调用 user-invoked skill 或产出其正式资产");
-  ensure(JSON.stringify(boundary?.model_invoked_skills) === JSON.stringify(["grilling", "domain-modeling", "code-review"]) && boundary?.continuous_orchestration === "prepare-and-validate-only", "连续编排未被限制为允许的 model-invoked 原语与准备/校验动作");
+  ensure(JSON.stringify(boundary?.model_invoked_skills) === JSON.stringify(expectedModelInvoked) && JSON.stringify(boundary?.lifecycle_allowed_model_invoked_skills) === JSON.stringify(expectedLifecycleModelInvoked) && boundary?.continuous_orchestration === "compatibility-prepare-and-validate-only", "Matt invocation inventory 或生命周期 model-invoked 白名单不完整");
+  ensure(JSON.stringify(data.skill_source_contract?.source_revisions_required) === JSON.stringify(["mattpocock/skills"]) && data.skill_source_contract?.adaptation_ref_required_when_effective_diff === true && data.skill_source_contract?.retired_shared_skills?.includes("batch-grill-me"), "上游来源或退役 skill 供应链契约不完整");
   validateInvocationMetadata(boundary, (skill) => read(`.agents/skills/${skill}/SKILL.md`));
   const setup = data.setup_readiness;
   ensure(setup?.missing_action === "needs-human" && setup?.requested_skill === "setup-matt-pocock-skills" && setup?.resume_route === "setup-readiness" && setup?.preserves?.includes("lifecycle.status"), "readiness=missing 未形成显式用户 setup 的结构化暂停");
@@ -44,22 +47,31 @@ function validateInvocationBoundary(data) {
   ensure(data.matt_skill_result?.status === "compatibility-read-only" && data.matt_skill_result?.may_influence_routing === false && data.matt_skill_result?.normalize_to === "workflow-execution-result-v1", "旧 Matt Skill Result 未限制为只读兼容 adapter");
   ensure(result?.canonical_output_schema === "workflow-execution-result-v1" && JSON.stringify(result?.accepted_input_schemas) === JSON.stringify(["workflow-execution-result-v1"]) && result?.legacy?.["matt-skill-result-v1"]?.status === "compatibility-read-only" && result.legacy["matt-skill-result-v1"].may_influence_routing === false && result.legacy["matt-skill-result-v1"].normalize_to === "workflow-execution-result-v1", "Workflow Execution Result 未将旧 Matt Skill Result 限制为只读兼容");
   ensure(includesAll(result?.required, ["result_schema", "work_unit", "workflow_reference", "result", "evidence_refs", "changed_artifacts", "new_impacts", "stale_candidates", "next_route", "blocking_signals"]) && includesAll(result?.result_values, ["completed", "blocked", "needs-human", "failed"]) && includesAll(result?.blocking_signals, ["drift", "new_impacts", "violation", "missing_evidence", "stale_candidates"]) && includesAll(result?.completed_requires_empty, ["new_impacts", "stale_candidates"]) && includesAll(result?.completed_requires_non_empty, ["evidence_refs"]) && result?.completed_requires_readable_evidence_refs === true && result?.evidence_ref_validation === "readable-or-resolvable" && result?.completed_requires_no_blocking_signals === true && includesAll(result?.workflow_reference?.required, ["source", "skill", "invocation_mode"]), "Workflow Execution Result 的完成态证据、阻断信号或 workflow_reference 契约不完整");
-  const units = data.lifecycle_workflow_references;
-  ensure(units?.["work-unit.discovery-interview"]?.invocation_mode === "model-invoked" && includesAll(units["work-unit.discovery-interview"].skills, ["grilling", "domain-modeling"]), "Discovery work unit 未调用允许的原语");
-  ensure(units?.["work-unit.code-review"]?.invocation_mode === "model-invoked" && units["work-unit.code-review"].skill === "code-review", "Code review work unit 未使用 model-invoked code-review");
+  const native = data.lifecycle_native_entries;
+  ensure(native?.default_entry === "yss-product-lifecycle" && native?.formal_artifact_owner === "yss-product-lifecycle", "生命周期原生入口未持有默认正式资产所有权");
+  ensure(JSON.stringify(native?.user_confirmation_required_at) === JSON.stringify(["spec-baseline", "prototype-confirmation", "openapi-freeze", "merge-or-release"]), "生命周期人工门禁集合已漂移");
+  const routes = data.work_unit_routes;
+  ensure(routes?.["work-unit.discovery-requirements"]?.skills?.includes("grilling") && routes?.["work-unit.discovery-requirements"]?.skills?.includes("domain-modeling"), "需求分析工作单元缺少 grilling/domain-modeling");
+  ensure(routes?.["work-unit.discovery-opportunity"]?.route_by?.market_or_competitor_fact === "competitive-intelligence" && routes["work-unit.discovery-opportunity"].route_by.technical_or_standard_fact === "research", "机会调研事实路由不准确");
+  ensure(routes?.["work-unit.slice-implementation"]?.skills?.includes("tdd") && routes?.["work-unit.slice-implementation"]?.skills?.includes("yss-ui"), "原生实现工作单元缺少 TDD 或 UI 路由");
+  ensure(routes?.["work-unit.frontend-implementation-verification"]?.skills?.includes("code-review") && routes?.["work-unit.frontend-implementation-verification"]?.applies_when === "ui_impact", "前端还原验证未绑定 UI fidelity 审查轴");
   for (const id of ["work-unit.spec-synthesis", "work-unit.ticket-decomposition", "work-unit.slice-implementation"]) {
-    ensure(units?.[id]?.invocation_mode === "reference" && units[id].formal_artifact_owner === "explicit-user-entry", `${id} 未限制为 workflow reference 与显式正式入口`);
+    ensure(routes?.[id]?.native?.source === "yss-product-lifecycle" && routes[id].compatibility?.source === "mattpocock/skills" && routes[id].compatibility.formal_artifact_owner === "explicit-user-entry", `${id} 未分离原生执行定义与 Matt 兼容输入`);
+  }
+  for (const route of Object.values(routes ?? {})) {
+    for (const skill of route.skills ?? []) ensure(!boundary.user_invoked_skills.includes(skill), `工作单元不能自动调用 user-invoked skill: ${skill}`);
+    for (const skill of route.skills ?? []) if (boundary.model_invoked_skills.includes(skill)) ensure(boundary.lifecycle_allowed_model_invoked_skills.includes(skill), `工作单元调用了未进入生命周期白名单的 model-invoked skill: ${skill}`);
   }
 }
 
-function validateWorkflowExecutionResult(payload, contract, workUnits) {
+function validateWorkflowExecutionResult(payload, contract, workUnitRoutes) {
   for (const field of contract.required) ensure(Object.hasOwn(payload, field), `Workflow Execution Result 缺少 ${field}`);
   ensure(contract.result_values.includes(payload.result), "Workflow Execution Result result 无效");
   for (const field of contract.workflow_reference.required) ensure(typeof payload.workflow_reference?.[field] === "string" && payload.workflow_reference[field].trim(), `workflow_reference.${field} 无效`);
-  const workUnit = workUnits?.[payload.work_unit];
+  const workUnit = workUnitRoutes?.[payload.work_unit];
   ensure(workUnit, `未知 Workflow Execution Result work_unit: ${payload.work_unit}`);
-  const expectedSkills = workUnit.workflow_reference ? [workUnit.workflow_reference] : workUnit.skills ?? [workUnit.skill];
-  ensure(payload.workflow_reference.source === contract.workflow_reference.source && includesAll(expectedSkills, [payload.workflow_reference.skill]) && payload.workflow_reference.invocation_mode === workUnit.invocation_mode, "Workflow Execution Result workflow_reference 与 work_unit 不匹配");
+  const accepted = [workUnit.native, workUnit.compatibility].filter(Boolean);
+  ensure(contract.workflow_reference.allowed_sources.includes(payload.workflow_reference.source) && accepted.some((route) => route.source === payload.workflow_reference.source && route.skill === payload.workflow_reference.skill && route.invocation_mode === payload.workflow_reference.invocation_mode), "Workflow Execution Result workflow_reference 与 work_unit route 不匹配");
   if (payload.result !== "completed") return;
   for (const field of contract.completed_requires_empty) ensure(Array.isArray(payload[field]) && payload[field].length === 0, `completed 的 ${field} 必须为空`);
   for (const field of contract.completed_requires_non_empty) ensure(Array.isArray(payload[field]) && payload[field].length > 0, `completed 的 ${field} 不能为空`);
@@ -96,7 +108,7 @@ const profiles = {
   },
   matt: {
     message: "Matt/YSS 集成压力场景验证通过",
-    files: [".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md", ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"],
+    files: [".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md", ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml", "docs/process/templates/lifecycle-checkpoint-template.yaml", "docs/process/templates/frontend-implementation-plan-template.yaml", "docs/process/templates/frontend-implementation-verification-template.yaml"],
     markers: [[".agents/skills/yss-product-lifecycle/SKILL.md", "Workflow Execution Result"]]
   },
   prototype: {
@@ -146,6 +158,13 @@ export function runScenario(name) {
   if (name === "lifecycle") {
     const result = spawnSync("scripts/verify-lifecycle-registry", [], { cwd: root, encoding: "utf8" });
     ensure(result.status === 0, result.stderr || result.stdout);
+    const registry = parseDocument(read("docs/process/lifecycle-registry.yaml"), { uniqueKeys: true }).toJS({ maxAliasCount: 0 });
+    const releaseGate = registry.gates.find((gate) => gate.id === "gate.release-ready");
+    ensure(releaseGate?.requires_gates?.includes("gate.frontend-implementation-verified"), "发布就绪未依赖前端实现还原门禁");
+    const contract = parseDocument(read(".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"), { uniqueKeys: true }).toJS({ maxAliasCount: 0 });
+    ensure(contract.release_readiness?.conditional?.ui_impact?.includes("gate.frontend-implementation-verified") && contract.frontend_implementation_plan?.acceptance?.includes("no_template_placeholders"), "发布公式或前端计划实质校验不完整");
+    const templateRejected = spawnSync("scripts/verify-frontend-implementation-evidence", ["docs/process/templates/frontend-implementation-plan-template.yaml"], { cwd: root, encoding: "utf8" });
+    ensure(templateRejected.status !== 0 && templateRejected.stderr.includes("template: false"), "前端实现计划占位模板可冒充正式批准证据");
   }
   if (name === "matt") {
     const contract = parseDocument(read(".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"), { uniqueKeys: true });
@@ -156,7 +175,7 @@ export function runScenario(name) {
     const validResult = {
       result_schema: "workflow-execution-result-v1",
       work_unit: "work-unit.spec-synthesis",
-      workflow_reference: { source: "mattpocock/skills", skill: "to-spec", invocation_mode: "reference" },
+      workflow_reference: { source: "yss-product-lifecycle", skill: "yss-product-lifecycle", invocation_mode: "model-invoked" },
       result: "completed",
       evidence_refs: ["docs/process/lifecycle-registry.yaml"],
       changed_artifacts: [],
@@ -165,7 +184,10 @@ export function runScenario(name) {
       next_route: "work-unit.ticket-decomposition",
       blocking_signals: []
     };
-    validateWorkflowExecutionResult(validResult, data.workflow_execution_result, data.lifecycle_workflow_references);
+    validateWorkflowExecutionResult(validResult, data.workflow_execution_result, data.work_unit_routes);
+    const compatibleResult = structuredClone(validResult);
+    compatibleResult.workflow_reference = { source: "mattpocock/skills", skill: "to-spec", invocation_mode: "reference" };
+    validateWorkflowExecutionResult(compatibleResult, data.workflow_execution_result, data.work_unit_routes);
     for (const mutate of [
       (item) => { delete item.workflow_reference; },
       (item) => { item.evidence_refs = []; },
@@ -174,11 +196,11 @@ export function runScenario(name) {
       (item) => { item.new_impacts = ["new-api"]; },
       (item) => { item.workflow_reference.source = "untrusted/source"; },
       (item) => { item.workflow_reference.skill = "implement"; },
-      (item) => { item.workflow_reference.invocation_mode = "model-invoked"; }
+      (item) => { item.workflow_reference.invocation_mode = "reference"; }
     ]) {
       const invalid = structuredClone(validResult); mutate(invalid);
       let rejected = false;
-      try { validateWorkflowExecutionResult(invalid, data.workflow_execution_result, data.lifecycle_workflow_references); } catch { rejected = true; }
+      try { validateWorkflowExecutionResult(invalid, data.workflow_execution_result, data.work_unit_routes); } catch { rejected = true; }
       ensure(rejected, "Workflow Execution Result 完成态变异未被拒绝");
     }
     let metadataRejected = false;

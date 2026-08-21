@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 node -e 'const [major]=process.versions.node.split(".").map(Number); if (major < 22 || major >= 27) { console.error("模板工具需要 Node >=22 <27"); process.exit(1); }'
 
-required_files=(yss-project.yaml AGENTS.md CONTEXT.md skills-lock.json docs/process/lifecycle-registry.yaml docs/process/lifecycle-registry-baseline.json docs/process/maintenance-intensity.yaml scripts/repository-mode scripts/implementation-path-policy scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-maintenance-checkpoint scripts/verify-maintenance-intensity-scenarios scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/export-yss-skills)
+required_files=(yss-project.yaml AGENTS.md CONTEXT.md skills-lock.json docs/process/lifecycle-registry.yaml docs/process/lifecycle-registry-baseline.json docs/process/maintenance-intensity.yaml docs/process/schemas/lifecycle-checkpoint.schema.json docs/process/schemas/frontend-implementation-evidence.schema.json docs/process/templates/lifecycle-checkpoint-template.yaml docs/process/templates/frontend-implementation-plan-template.yaml docs/process/templates/frontend-implementation-verification-template.yaml scripts/repository-mode scripts/implementation-path-policy scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-lifecycle-checkpoint scripts/verify-frontend-implementation-evidence scripts/verify-maintenance-checkpoint scripts/verify-maintenance-intensity-scenarios scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/export-yss-skills)
 for required in "${required_files[@]}"; do test -f "$required" || { echo "缺少模板必需文件: $required" >&2; exit 1; }; done
 
 repository_mode="$(scripts/repository-mode)"
@@ -21,6 +21,9 @@ scripts/update-skill-lock --check
 scripts/verify-yss-dto-openapi-profile
 scripts/verify-yss-dto-openapi-scenarios
 scripts/verify-lifecycle-registry
+scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml
+scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-plan-template.yaml
+scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-verification-template.yaml
 scripts/verify-lifecycle-scenarios
 scripts/verify-maintenance-intensity-scenarios
 scripts/verify-governance-release
@@ -33,7 +36,7 @@ scripts/verify-yss-ui-scenarios
 scripts/verify-openapi-yaml-first-scenarios
 scripts/verify-openapi-json-handoff-scenarios
 
-for entry in scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-maintenance-checkpoint scripts/verify-maintenance-intensity-scenarios scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/verify-lifecycle-scenarios scripts/verify-matt-yss-integration-scenarios scripts/verify-prototype-backend-scaffold-scenarios scripts/verify-yss-router-scenarios scripts/verify-openapi-yaml-first-scenarios scripts/verify-openapi-json-handoff-scenarios scripts/export-yss-skills; do node --check "$entry"; done
+for entry in scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-lifecycle-checkpoint scripts/verify-frontend-implementation-evidence scripts/verify-maintenance-checkpoint scripts/verify-maintenance-intensity-scenarios scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/verify-lifecycle-scenarios scripts/verify-matt-yss-integration-scenarios scripts/verify-prototype-backend-scaffold-scenarios scripts/verify-yss-router-scenarios scripts/verify-openapi-yaml-first-scenarios scripts/verify-openapi-json-handoff-scenarios scripts/export-yss-skills; do node --check "$entry"; done
 
 legacy_runtime="ru""by"
 script_roots=(scripts)

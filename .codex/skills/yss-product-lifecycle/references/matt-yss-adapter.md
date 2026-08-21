@@ -2,12 +2,14 @@
 
 Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 专项 skills 决定如何符合工程规范。
 
+生命周期默认使用 `work_unit_routes.*.native`；下表中的 Matt flow 是 `work_unit_routes.*.compatibility` 显式兼容输入。兼容入口的正式资产由用户创建并回交生命周期验收，原生工作单元的正式资产由生命周期编排器创建。
+
 ## 入口与仓库身份裁决
 
 - 所有入口先读取 `yss-project.yaml`。缺失、解析失败、schema 不支持或 `repository_mode` 非法时，停止路由并进入 migration-check。
 - **直接调用 `ask-matt`** 时，它只能提供通用 Matt flow 导航，不得写生命周期资产、改变门禁或 Ticket 状态；有效 YSS 仓库必须在任何写入前把最终阶段、影响面、门禁和状态裁决交回 `yss-product-lifecycle`。
 - **直接调用生命周期管理的 Matt user-invoked skill**（`setup-matt-pocock-skills`、`grill-with-docs`、`to-spec`、`to-tickets`、`implement`）时，用户仍是正式资产的创建者；生命周期先校验前置条件，再接受结果并重新计算阶段、门禁和状态。它们不适用 `ask-matt` 的 `navigate-only` 限制。其他 user-invoked skill 同样不得由生命周期自动调用；只有在其专属适配合同存在时才进入 YSS 流程。
-- **直接调用 `yss-product-lifecycle`** 时，不机械嵌套调用任何 Matt user-invoked skill；编排器直接使用兼容映射，并只调用允许的 model-invoked 原语。Matt user-invoked skill 保持显式入口，生命周期只准备、校验并验收其结果。
+- **直接调用 `yss-product-lifecycle`** 时，不机械嵌套调用任何 Matt user-invoked skill；编排器直接使用原生工作单元和允许的 model-invoked 原语。Matt user-invoked skill 保持显式兼容入口，生命周期负责准备、校验并验收其结果。
 - `template-source` 只允许进入模板维护流程。命中 `to-spec`、`to-tickets`、`implement`、Release 或 Retrospective 时返回 `blocked`，原因是 `template-source-product-artifact-forbidden`；`ask-matt` 和 `setup-matt-pocock-skills` 都不得为具体产品生成 Spec、prototype、OpenAPI 或垂直切片 Ticket。
 - `project-instance` 才允许进入产品 Discovery → Spec → 设计 → 契约 → Ticket → 实现 → Release / Retrospective 链路。
 
@@ -20,9 +22,9 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 | 大型模糊工作 | `wayfinder` | map 真正完成后 `handoff → to-spec` |
 | 技术事实 | `research` | 一手资料回填 Spec/OpenAPI/架构/ADR |
 | runnable 问题 | `prototype` | 生成单文件可分享 HTML，保留 `prototype/<name>` 分支作为主来源；必须 source/return handoff 和结论回填，不得替代阶段 4 的低保真评审、Ant Design v6 高保真 HTML、AntD CLI 证据和用户确认 |
-| Spec 综合 | `to-spec`（用户显式） | 生命周期准备与验收；初稿进入 `ready-for-human`，不得直接实现 |
-| 切片 | `to-tickets`（用户显式） | 生命周期准备与验收；仅在冻结/无影响记录后拆垂直切片，初始角色为 `ready-for-human` |
-| 实现 | `implement`（用户显式） | `yss-router` 编译 Slice Implementation Contract 草案；本编排器核验并持久化后才允许用户启动 implement；其内部按自身流程使用 `tdd`，结果回交后再次核验 |
+| Spec 综合 | 原生 `work-unit.spec-synthesis`；`to-spec`（用户显式兼容） | 初稿进入 `ready-for-human`，不得直接实现 |
+| 切片 | 原生 `work-unit.ticket-decomposition`；`to-tickets`（用户显式兼容） | 仅在冻结/无影响记录后拆垂直切片，初始角色为 `ready-for-human` |
+| 实现 | 原生 `work-unit.slice-implementation`；`implement`（用户显式兼容） | 当前合同批准并持久化后执行；内部使用 `tdd`，结果回交后再次核验 |
 | Bug | `diagnosing-bugs`、`tdd` | 先建立红色反馈；高风险影响升级上游门禁 |
 | 审查 | `code-review` | 唯一默认代码审查入口；审查者独立，结合 Spec、仓库治理规则和 YSS 标准 |
 | 跨上下文 | `handoff` | 保存来源、阶段、未决项、命令和下一责任人 |
@@ -60,7 +62,7 @@ blocking_signals: []
 
 Router 状态映射为：`draft → completed`、`blocked → blocked`、`ready-for-lifecycle-review → needs-human`。这里的 `completed` 只表示 Matt 工作单元已产出可验收结果，不表示生命周期完成或可发布。
 
-`completed` 的 `evidence_refs` 至少包含一条可读取或可解析的证据引用；只有字段存在但为空，不能证明工作单元完成。正式 Spec、Ticket 或实现资产仍只能由对应显式用户入口创建。
+`completed` 的 `evidence_refs` 至少包含一条可读取或可解析的证据引用；只有字段存在但为空，不能证明工作单元完成。兼容入口下的正式 Spec、Ticket 或实现资产仍只能由对应显式用户入口创建；原生工作单元由生命周期编排器创建并持有状态。
 
 ## Matt flow 前置条件
 

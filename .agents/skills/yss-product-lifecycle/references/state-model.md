@@ -46,9 +46,12 @@ AND 当前工作单元消费的 contract_id/version 与最新批准版本一致
 AND Backend Slice Implementation Contract（后端适用）和 Build Architecture Checklist 已完成
 AND backend 影响且 scaffold_status=required 时，原型确认后的脚手架策略、`yss-backend-scaffold-parent` 基线、Wrapper 验证和 Router 重编译均已完成
 AND 所有后续生成代码均绑定主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result
+AND UI 影响切片的前端实现还原计划已通过 schema 校验、`template=false`、`status=approved`，且基线引用可读取
 ```
 
 父 Ticket、Spec、设计、原型、OpenAPI Draft、wayfinder map 和 decision ticket 不得使用 `ready-for-agent`。
+
+发布前还必须满足所有已触发门禁均为 `approved` 或 `not-applicable`；UI 影响切片必须额外通过 `gate.frontend-implementation-verified`，不能只凭 fresh verification 和回滚点放行。
 
 用户显式运行 `to-tickets` 后，垂直切片初始角色固定为 `ready-for-human`。只有 `yss-product-lifecycle` 复算上述公式全部为真后，才能把它提升为 `ready-for-agent`；生命周期不会自动调用 `to-tickets`，其默认标签也不参与该裁决。
 
@@ -60,7 +63,7 @@ Git 动作分别保存 `commit_authorized`、`commit_scope`、`commit_authorizat
 
 ## 状态块
 
-状态块位于主 tracker 的功能父 Ticket；Local Markdown 使用 `docs/.scratch/<feature>/parent-ticket.md`，远程 tracker 使用 Issue 并在本地功能包保留引用。平台不可用时才位于 stage checkpoint。只保存索引、状态、引用和因果关系：
+状态块位于主 tracker 的功能父 Ticket，并使用 `docs/process/templates/lifecycle-checkpoint-template.yaml` 的结构化形状和 `lifecycle-checkpoint.schema.json` 校验；Local Markdown 使用 `docs/.scratch/<feature>/parent-ticket.md`，可将完整 checkpoint 保存在 `docs/.scratch/<feature>/gates/lifecycle-checkpoint.yaml` 后由父 Ticket 引用，远程 tracker 使用 Issue 并在本地功能包保留引用。平台不可用时才位于 stage checkpoint。只保存索引、状态、引用和因果关系：
 
 ```yaml
 lifecycle:

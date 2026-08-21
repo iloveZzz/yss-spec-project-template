@@ -8,7 +8,7 @@ export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 const SOURCE_ROOT = path.join(ROOT, ".agents/skills");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
 const PROJECTION_ROOTS = [".claude/skills", ".codex/skills", ".hermes/skills", ".pi/skills", ".qoder/skills", ".trae/skills"];
-const OBSOLETE = new Set(["to-" + "prd", "to-" + "issues", "design-an-interface", "qa", "request-refactor-plan", "ubiquitous-language", "edit-article", "obsidian-vault", "writing-great-skills", "code-review-process", "yss-domain-modeling", "yss-dir", "yss-duckdb", "yss-file", "yss-filerunner", "yss-db2mybatis", "yss-mail", "yss-mapper-dynamic", "yss-quality", "yss-sql-condition", "yss-sql-tpl", "yss-valuation", "yss-variable", "yss-openapi", "web-design-engineer", "web-video-presentation", "wireframe-prototype", "wizard", "git-guardrails-claude-code", "claude-handoff"]);
+const OBSOLETE = new Set(["to-" + "prd", "to-" + "issues", "design-an-interface", "qa", "request-refactor-plan", "ubiquitous-language", "edit-article", "obsidian-vault", "writing-great-skills", "code-review-process", "yss-domain-modeling", "yss-dir", "yss-duckdb", "yss-file", "yss-filerunner", "yss-db2mybatis", "yss-mail", "yss-mapper-dynamic", "yss-quality", "yss-sql-condition", "yss-sql-tpl", "yss-valuation", "yss-variable", "yss-openapi", "web-design-engineer", "web-video-presentation", "wireframe-prototype", "wizard", "git-guardrails-claude-code", "claude-handoff", "batch-grill-me"]);
 
 function relative(target) { return path.relative(ROOT, target).replaceAll(path.sep, "/"); }
 function entries(directory) { return existsSync(directory) ? readdirSync(directory, { withFileTypes: true }) : []; }
@@ -59,7 +59,7 @@ export function syncSkills({ check = false } = {}) {
     ensureSafeProjection(projection);
     if (!check) mkdirSync(projection, { recursive: true });
     const allowed = [...shared, ...Object.keys(lock.skills?.platform?.[root] ?? {})];
-    for (const entry of unlockedProjectionEntries(entries(projection), allowed, (name) => tracked(relative(path.join(projection, name))))) {
+    for (const entry of unlockedProjectionEntries(entries(projection), allowed, (name) => tracked(relative(path.join(projection, name)))).filter((entry) => !OBSOLETE.has(entry.name))) {
       const target = path.join(projection, entry.name);
       if (!check && entry.isSymbolicLink() && !existsSync(target)) rmSync(target, { force: true });
       else drift.push(`unlocked projection: ${relative(target)}`);
@@ -96,16 +96,41 @@ function priorMetadata(lock) {
   if (!["shared", "platform"].some((key) => key in skills)) return skills;
   return { ...skills.shared, ...Object.values(skills.platform ?? {}).reduce((all, group) => ({ ...all, ...group }), {}), ...Object.fromEntries(Object.entries(skills).filter(([key]) => !["shared", "platform"].includes(key))) };
 }
-function metadata(name, skillPath, directory, previous, canonical = false) {
+function option(arguments_, name) {
+  const prefix = `--${name}=`;
+  const value = arguments_.find((argument) => argument.startsWith(prefix));
+  return value?.slice(prefix.length) || null;
+}
+function sourceRevisionMap(oldLock, arguments_) {
+  const sources = structuredClone(oldLock?.sources ?? {});
+  const revision = option(arguments_, "source-revision");
+  if (revision) {
+    const separator = revision.lastIndexOf(":");
+    if (separator <= 0 || separator === revision.length - 1) throw new TypeError("--source-revision 必须使用 source:revision 格式");
+    const source = revision.slice(0, separator);
+    sources[source] = { ...(sources[source] ?? {}), revision: revision.slice(separator + 1) };
+  }
+  return sources;
+}
+function metadata(name, skillPath, directory, previous, canonical = false, sources = {}, upstreamRoot = null) {
   const old = previous[name] ?? {};
   let recordedPath = old.skillPath ?? skillPath;
   if (canonical && /^\.(claude|codex|hermes|pi|qoder|trae)\/skills\//.test(recordedPath)) recordedPath = skillPath;
   const result = { source: old.source ?? "project", sourceType: old.sourceType ?? "local", skillPath: recordedPath, effectiveHash: treeHash(directory) };
-  if (old.upstreamHash ?? old.computedHash) result.upstreamHash = old.upstreamHash ?? old.computedHash;
+  const sourceInfo = sources[result.source];
+  if (sourceInfo?.revision) result.sourceRevision = sourceInfo.revision;
+  let upstreamDirectory = null;
+  if (upstreamRoot && result.source === "mattpocock/skills") {
+    upstreamDirectory = path.join(upstreamRoot, recordedPath).replace(/\/SKILL\.md$/, "");
+    if (!existsSync(upstreamDirectory)) throw new TypeError(`${name} 的上游路径不存在: ${recordedPath}`);
+    result.upstreamHash = treeHash(upstreamDirectory);
+  } else if (old.upstreamHash ?? old.computedHash) result.upstreamHash = old.upstreamHash ?? old.computedHash;
+  if (result.source === "mattpocock/skills" && result.upstreamHash && result.effectiveHash !== result.upstreamHash) result.adaptationRef = "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md";
   return result;
 }
 export function updateSkillLock(arguments_ = process.argv.slice(2)) {
-  const oldLock = parseLock(); const previous = priorMetadata(oldLock);
+  const oldLock = parseLock(); const previous = priorMetadata(oldLock); const sources = sourceRevisionMap(oldLock, arguments_); const upstreamRoot = option(arguments_, "upstream-root");
+  if (upstreamRoot && !existsSync(upstreamRoot)) throw new TypeError(`--upstream-root 不存在: ${upstreamRoot}`);
   const additions = arguments_.filter((arg) => arg.startsWith("--add=")).map((arg) => arg.slice(6));
   const removals = new Set(arguments_.filter((arg) => arg.startsWith("--remove=")).map((arg) => arg.slice(9)));
   const platformAdds = arguments_.filter((arg) => arg.startsWith("--add-platform=")).map((arg) => arg.slice(15).split(":", 2));
@@ -117,7 +142,7 @@ export function updateSkillLock(arguments_ = process.argv.slice(2)) {
   if (unlocked.length) throw new TypeError(`发现未登记到 skills-lock.json 的已跟踪共享 skills: ${unlocked.join(", ")}\n确认新增后运行 scripts/update-skill-lock --add=<skill-name>`);
   const targets = [".agents/skills", ...PROJECTION_ROOTS];
   const shared = Object.fromEntries(sharedNames.map((name) => {
-    const item = metadata(name, `.agents/skills/${name}/SKILL.md`, path.join(SOURCE_ROOT, name), previous, true); item.targets = targets; return [name, item];
+    const item = metadata(name, `.agents/skills/${name}/SKILL.md`, path.join(SOURCE_ROOT, name), previous, true, sources, upstreamRoot); item.targets = targets; return [name, item];
   }));
   const platform = {};
   for (const root of PROJECTION_ROOTS) {
@@ -126,9 +151,9 @@ export function updateSkillLock(arguments_ = process.argv.slice(2)) {
     if (!names.length) continue;
     const absentPlatform = names.filter((name) => !lstatSafe(path.join(location, name))?.isDirectory());
     if (absentPlatform.length) throw new TypeError(`锁文件声明的平台 skills 缺少内容 (${root}): ${absentPlatform.join(", ")}`);
-    platform[root] = Object.fromEntries(names.map((name) => { const item = metadata(name, `${root}/${name}/SKILL.md`, path.join(location, name), previous); item.targets = [root]; return [name, item]; }));
+    platform[root] = Object.fromEntries(names.map((name) => { const item = metadata(name, `${root}/${name}/SKILL.md`, path.join(location, name), previous, false, sources, upstreamRoot); item.targets = [root]; return [name, item]; }));
   }
-  const manifest = { version: 3, generatedBy: "scripts/update-skill-lock", canonicalRoot: ".agents/skills", projectionRoots: PROJECTION_ROOTS, skills: { shared, platform } };
+  const manifest = { version: 3, generatedBy: "scripts/update-skill-lock", canonicalRoot: ".agents/skills", projectionRoots: PROJECTION_ROOTS, sources, skills: { shared, platform } };
   const rendered = `${JSON.stringify(manifest, null, 2)}\n`;
   if (arguments_.includes("--check")) { if (!existsSync(LOCK_PATH) || readFileSync(LOCK_PATH, "utf8") !== rendered) throw new TypeError("skills-lock.json is stale; run scripts/update-skill-lock"); return "skills-lock.json matches distributed skills"; }
   writeFileSync(LOCK_PATH, rendered); return `updated skills-lock.json with ${sharedNames.length} shared skills and ${Object.values(platform).reduce((sum, group) => sum + Object.keys(group).length, 0)} platform skills`;

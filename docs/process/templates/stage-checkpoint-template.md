@@ -2,14 +2,17 @@
 
 ```yaml
 schema_version: 1
-mode: project-instance
+mode: <route|orchestrate|resume|audit>
+status: <routing|running|paused-human-gate|blocked|completed>
 stage: <lifecycle stage>
 artifacts:
-  - path: <artifact path>
-    status: <draft|ready-for-human|ready-for-agent|completed|blocked|not-applicable>
+  <stable-artifact-id>:
+    status: <missing|draft|ready-for-human|approved|stale|not-applicable>
+    ref: <readable artifact reference>
+    evidence_refs: []
 gates:
-  - name: <gate name>
-    status: <passed|failed|blocked|not-applicable>
+  <stable-gate-id>:
+    status: <not-evaluated|blocked|ready-for-human|approved|stale|not-applicable>
     reason: <why this status applies>
 phase_boundary:
   decision: <continue|clear|handoff|subagent|compact>
@@ -24,6 +27,7 @@ stage_trace:
 ticket_sync:
   status: <pending|synced|not-applicable>
   refs: []
+next_work_unit: <stable work-unit id>
 verification:
   commands: []
   evidence_refs: []

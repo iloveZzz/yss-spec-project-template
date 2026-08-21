@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/frontend-implementation-evidence.schema.json",
+  "title": "YSS 前端实现还原证据",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema_version", "kind", "template", "status", "prototype_ref", "spec_ref", "route_and_page_inventory"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "kind": { "enum": ["plan", "verification"] },
+    "template": { "type": "boolean" },
+    "status": { "enum": ["draft", "approved", "blocked"] },
+    "prototype_ref": { "type": "string", "minLength": 1 },
+    "spec_ref": { "type": "string", "minLength": 1 },
+    "route_and_page_inventory": { "type": "array", "minItems": 1 },
+    "visual_acceptance_cases": { "type": "array", "minItems": 1 },
+    "desktop_viewport": { "type": "string", "minLength": 3 },
+    "narrow_viewport": { "type": "string", "minLength": 3 },
+    "state_cases": { "type": "array", "minItems": 1 },
+    "pnpm_commands": { "type": "array", "minItems": 1 },
+    "desktop_visual_evidence": { "type": "array", "minItems": 1 },
+    "narrow_view_visual_evidence": { "type": "array", "minItems": 1 },
+    "interaction_results": { "type": "array", "minItems": 1 },
+    "console_warning_check": { "enum": ["pass", "blocked"] },
+    "uncovered_differences": { "type": "array" },
+    "difference_owner": { "type": ["string", "null"] },
+    "independent_review": { "type": "object" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "plan" } } },
+      "then": { "required": ["visual_acceptance_cases", "desktop_viewport", "narrow_viewport", "state_cases", "pnpm_commands"] }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "verification" } } },
+      "then": { "required": ["desktop_visual_evidence", "narrow_view_visual_evidence", "interaction_results", "console_warning_check", "pnpm_commands", "uncovered_differences", "difference_owner", "independent_review"] }
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/lifecycle-checkpoint.schema.json",
+  "title": "YSS 生命周期 Checkpoint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "mode", "status", "stage", "artifacts", "gates", "next_work_unit", "ticket_sync", "verification", "human_review", "git_checkpoint", "blockers", "rollback"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "mode": { "enum": ["route", "orchestrate", "resume", "audit"] },
+    "status": { "enum": ["routing", "running", "paused-human-gate", "blocked", "completed"] },
+    "stage": { "type": "string", "pattern": "^stage\\.[a-z0-9][a-z0-9-]*$" },
+    "artifacts": {
+      "type": "object",
+      "patternProperties": {
+        "^artifact\\.[a-z0-9][a-z0-9-]*$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "ref", "evidence_refs"],
+          "properties": {
+            "status": { "enum": ["missing", "draft", "ready-for-human", "approved", "stale", "not-applicable"] },
+            "ref": { "type": ["string", "null"] },
+            "evidence_refs": { "type": "array", "items": { "type": "string" } },
+            "stale_by": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "gates": {
+      "type": "object",
+      "patternProperties": {
+        "^gate\\.[a-z0-9][a-z0-9-]*$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "reason", "evidence_refs"],
+          "properties": {
+            "status": { "enum": ["not-evaluated", "blocked", "ready-for-human", "approved", "stale", "not-applicable"] },
+            "reason": { "type": "string" },
+            "evidence_refs": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "next_work_unit": { "type": ["string", "null"], "pattern": "^work-unit\\.[a-z0-9][a-z0-9-]*$" },
+    "phase_boundary": { "type": "object" },
+    "stage_trace": { "type": "object" },
+    "ticket_sync": { "type": "object" },
+    "verification": { "type": "object" },
+    "human_review": { "type": "object" },
+    "git_checkpoint": { "type": "object" },
+    "blockers": { "type": "array" },
+    "rollback": { "type": "array" }
+  }
+}
