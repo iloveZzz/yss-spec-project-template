@@ -71,10 +71,10 @@ Status: ready-for-human
 
 | 影响面 | 必需 skill | 需要 / 不需要的理由 | 预期证据 |
 |---|---|---|---|
-| Domain / 领域行为 | `yss-domain` / `yss-backend-scaffold-domain` |  |  |
-| Application / 用例编排 | `yss-backend-scaffold-application` |  |  |
-| Infrastructure / Repository | `yss-repository` / `yss-mybatis` / `yss-backend-scaffold-infrastructure` |  |  |
-| Web Adapter / DTO | `yss-web-controller` / `yss-dto` / `yss-backend-scaffold-web` |  |  |
+| Domain / 领域行为 | `yss-domain` |  |  |
+| Application / 用例编排 | `yss-application` |  |  |
+| Infrastructure / Repository | `yss-repository` / `yss-mybatis` |  |  |
+| Web Adapter / DTO | `yss-web-controller` / `yss-dto` |  |  |
 | POJO / 对象转换 | `lombok` / `mapstruct` |  |  |
 | Java 规范 | `alibaba-java-code-style` |  |  |
 

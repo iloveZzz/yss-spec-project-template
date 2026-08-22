@@ -5,10 +5,7 @@
   "skills": [
     "yss-api-integration",
     "yss-audit-log",
-    "yss-backend-scaffold-application",
-    "yss-backend-scaffold-domain",
-    "yss-backend-scaffold-infrastructure",
-    "yss-backend-scaffold-web",
+    "yss-application",
     "yss-cache",
     "yss-components",
     "yss-ddd-scaffold-generator",
@@ -57,10 +54,7 @@
       "title": "后端",
       "description": "用于 YSS Java、DDD、数据访问和服务端契约实现的技能。",
       "skills": [
-        "yss-backend-scaffold-application",
-        "yss-backend-scaffold-domain",
-        "yss-backend-scaffold-infrastructure",
-        "yss-backend-scaffold-web",
+        "yss-application",
         "yss-ddd-scaffold-generator",
         "yss-domain",
         "yss-dto",

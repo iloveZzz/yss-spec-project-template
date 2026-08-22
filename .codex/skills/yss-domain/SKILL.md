@@ -51,9 +51,14 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 
 ## 协同顺序
 
+- 需要用例编排时，再接 `yss-application`
 - 需要持久层时，再接 `yss-repository`
 - 需要 Web 层时，再接 `yss-web-controller`
 - 需要完整工程时，先 `yss-ddd-scaffold-generator`
+
+## 分层开发规范
+
+脚手架生成或进入 Domain 实现前，必须加载 `references/domain-layer-guide.md`：其中定义 DTO/Gateway/Domain Service 包结构、命名、校验与示例，与本 skill 的建模约束一并生效。
 
 ## 阶段 7 合同
 

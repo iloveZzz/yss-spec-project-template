@@ -289,25 +289,7 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
-  - id: yss-backend-scaffold-application
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [backend]
-  - id: yss-backend-scaffold-domain
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [backend]
-  - id: yss-backend-scaffold-infrastructure
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [backend]
-  - id: yss-backend-scaffold-web
+  - id: yss-application
     layer: specialist
     maturity: supported
     instance_default_discoverable: false

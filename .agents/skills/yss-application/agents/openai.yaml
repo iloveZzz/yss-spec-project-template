@@ -1,0 +1,5 @@
+version: 1
+interface:
+  display_name: "YSS Application Layer"
+  short_description: "YSS Application 层用例编排、事务边界与跨聚合协调规范"
+  default_prompt: "Use $yss-application to implement the application layer for a YSS backend module."
