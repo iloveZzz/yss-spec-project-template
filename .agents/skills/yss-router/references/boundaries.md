@@ -22,8 +22,8 @@ Default for a new page: first verify the approved product design, state matrix, 
 ## Backend Boundaries
 
 - `yss-ddd-scaffold-generator`: Create a whole multi-module backend skeleton.
-- `yss-domain`: Domain modeling and domain gateway contracts.
-- `yss-backend-scaffold-application`: Application use cases, transaction boundaries, and cross-aggregate orchestration.
+- `yss-domain`: Domain modeling, domain gateway contracts, and domain-layer conventions.
+- `yss-application`: Application use cases, transaction boundaries, and cross-aggregate orchestration.
 - `yss-repository`: Persistence implementation, PO, Repository, Convertor, GatewayImpl.
 - `yss-web-controller`: REST adapter layer, request/response DTOs, VO, web convertor.
 - `yss-mybatis`: Framework behavior for MyBatis/MyBatis-Plus, BaseRepository, pagination, mapper scanning, batch, datasource issues.

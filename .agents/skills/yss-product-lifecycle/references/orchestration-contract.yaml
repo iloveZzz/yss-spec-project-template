@@ -111,7 +111,7 @@ skill_source_contract:
   lock_version: 3
   source_revisions_required: [mattpocock/skills]
   adaptation_ref_required_when_effective_diff: true
-  retired_shared_skills: [batch-grill-me, product-design-prototype, yss-dictionary, yss-jdbc, yss-log, yss-taskflow]
+  retired_shared_skills: [batch-grill-me, product-design-prototype, yss-dictionary, yss-jdbc, yss-log, yss-taskflow, yss-backend-scaffold-application, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-backend-scaffold-web]
 
 # 生命周期默认走原生工作单元；Matt user-invoked skill 仅保留为兼容入口。
 lifecycle_native_entries:

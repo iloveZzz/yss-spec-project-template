@@ -59,9 +59,14 @@ description: Use when generating or refactoring YSS persistence models, BaseRepo
 
 - metadata / DDL 输入准备：确认输入完整
 - 领域建模：`yss-domain`
+- 用例编排：`yss-application`
 - POJO 样板代码：`lombok`
 - 对象转换：`mapstruct`
 - Web 补齐：`yss-web-controller`
+
+## 分层开发规范
+
+实现 PO / Repository / GatewayImpl 前，必须加载 `references/infrastructure-layer-guide.md`：其中定义持久化对象、Repository、Convertor 与 Gateway 实现的结构与示例。
 
 ## 阶段 7 合同
 

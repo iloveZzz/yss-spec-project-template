@@ -133,7 +133,7 @@ owner: ai
 | slice_id |  |
 | status | required / not-applicable |
 | affected_layers | Adapter / Application / Domain / Infrastructure / Bootstrap / not-applicable |
-| required_skills | `yss-domain` / `yss-backend-scaffold-application` / `yss-repository` / `yss-mybatis` / `yss-backend-scaffold-infrastructure` / `yss-web-controller` / `yss-dto` / `mapstruct` / `lombok` / `alibaba-java-code-style` / other |
+| required_skills | `yss-domain` / `yss-application` / `yss-repository` / `yss-mybatis` / `yss-web-controller` / `yss-dto` / `mapstruct` / `lombok` / `alibaba-java-code-style` / other |
 | application_boundary |  |
 | transaction_boundary |  |
 | persistence_strategy |  |
@@ -146,10 +146,10 @@ owner: ai
 
 | 层级 | 必需 skill | 预期文件 / 证据 | 状态 |
 |---|---|---|---|
-| Adapter / Web | `yss-web-controller`、`yss-dto`、`yss-backend-scaffold-web`、`mapstruct`、`lombok` | Controller、CMD / Query / VO、WebConvertor、统一响应包装、Lombok 注解和 MapStruct 转换证据 | pending / implemented / seam-deferred / violation / not-applicable |
-| Application | `yss-backend-scaffold-application` | AppService / UseCase、事务边界、跨聚合协调、异常处理 | pending / implemented / seam-deferred / violation / not-applicable |
-| Domain | `yss-domain`、`yss-backend-scaffold-domain`；术语 / 边界 / ADR 变化时增加 `domain-modeling` | Entity / ValueObject / DomainService / Gateway interface / 状态方法；命中通用建模时补 CONTEXT / ADR 证据 | pending / implemented / seam-deferred / violation / not-applicable |
-| Infrastructure | `yss-repository`、`yss-mybatis`、`yss-backend-scaffold-infrastructure`、`mapstruct`、`lombok` | PO、Repository、Convertor、GatewayImpl、Mapper / XML / 查询策略、Lombok 注解和 MapStruct 转换证据 | pending / implemented / seam-deferred / violation / not-applicable |
+| Adapter / Web | `yss-web-controller`、`yss-dto`、`mapstruct`、`lombok` | Controller、CMD / Query / VO、WebConvertor、统一响应包装、Lombok 注解和 MapStruct 转换证据 | pending / implemented / seam-deferred / violation / not-applicable |
+| Application | `yss-application` | AppService / UseCase、事务边界、跨聚合协调、异常处理 | pending / implemented / seam-deferred / violation / not-applicable |
+| Domain | `yss-domain`；术语 / 边界 / ADR 变化时增加 `domain-modeling` | Entity / ValueObject / DomainService / Gateway interface / 状态方法；命中通用建模时补 CONTEXT / ADR 证据 | pending / implemented / seam-deferred / violation / not-applicable |
+| Infrastructure | `yss-repository`、`yss-mybatis`、`mapstruct`、`lombok` | PO、Repository、Convertor、GatewayImpl、Mapper / XML / 查询策略、Lombok 注解和 MapStruct 转换证据 | pending / implemented / seam-deferred / violation / not-applicable |
 | Java 规范 | `alibaba-java-code-style` | 命名、异常、日志、ORM、Maven、单测和安全项审查记录 | pending / implemented / seam-deferred / violation / not-applicable |
 
 ### 3.3 Contract 子合同

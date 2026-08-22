@@ -188,7 +188,7 @@ Controller -> Service -> Gateway -> Repository -> Database
 ## 7. 参考资料
 
 - [YSS 后端开发规范](./yss-backend-scaffold-parent/SKILL.md)
-- [Domain 层开发指南](./yss-backend-scaffold-domain/SKILL.md)
-- [Application 层开发指南](./yss-backend-scaffold-application/SKILL.md)
-- [Infrastructure 层开发指南](./yss-backend-scaffold-infrastructure/SKILL.md)
-- [Web Adapter 开发指南](./yss-backend-scaffold-web/SKILL.md)
+- [Domain 层开发指南](./yss-backend-scaffold-domain/SKILL.md) → `yss-domain`
+- [Application 层开发指南](./yss-backend-scaffold-application/SKILL.md) → `yss-application`
+- [Infrastructure 层开发指南](./yss-backend-scaffold-infrastructure/SKILL.md) → `yss-repository`
+- [Web Adapter 开发指南](./yss-backend-scaffold-web/SKILL.md) → `yss-web-controller`

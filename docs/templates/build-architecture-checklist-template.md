@@ -39,8 +39,8 @@ owner: ai
 | 实际验证：Execution Result 包含实际命令、exit_code、`duration_ms`、stdout/stderr 引用和执行时间；只列计划命令或生成器打印不构成 fresh verification | YSS Skill Execution Result / `orchestration-contract.yaml` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺实际结果或时间时不得进入完成结论 |
 | 新影响与偏离：`new_impacts`、`deviations`、`drift`、`violation` 已核验并触发相应重路由、Architecture Re-check 或生命周期回退 | YSS Skill Execution Result / implementation routing |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 非空新影响使当前合同相关部分失效并暂停工作单元 |
 | Web Adapter / DTO：必须按 `yss-dto` 定义或复用 CMD / Query / VO / Result；不得在 Controller 内部类或非约定包临时定义主要 DTO，不得手工分页主要业务集合 | `yss-web-controller` / `yss-dto` / OpenAPI Freeze |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 命中时回到 Controller / DTO 设计 |
-| Application：负责用例编排、事务边界和跨聚合协调，不承载核心领域规则 | `yss-backend-scaffold-application` / 系统架构 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 领域规则下沉 Domain，事务边界留在 Application |
-| Infrastructure：需要持久化的切片必须有 PO / Repository / Convertor / GatewayImpl；`InMemory*Gateway` 只能作为显式 `seam-deferred` | `yss-repository` / `yss-backend-scaffold-infrastructure` / 数据架构 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 未补齐时不得声称生产持久化完成 |
+| Application：负责用例编排、事务边界和跨聚合协调，不承载核心领域规则 | `yss-application` / 系统架构 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 领域规则下沉 Domain，事务边界留在 Application |
+| Infrastructure：需要持久化的切片必须有 PO / Repository / Convertor / GatewayImpl；`InMemory*Gateway` 只能作为显式 `seam-deferred` | `yss-repository` / 数据架构 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 未补齐时不得声称生产持久化完成 |
 | POJO / Convertor：DTO / VO / CMD / Query / PO / Domain Model 样板代码默认使用 Lombok；对象转换默认使用 MapStruct，禁止 `BeanUtils.copyProperties`、反射拷贝和重复手写字段赋值 | `lombok` / `mapstruct` / `AGENTS.md` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 未加载 skill、缺注解处理器配置、缺 Convertor 或无例外说明时标记 `violation` |
 | 后端工程工具链：构建、测试、运行、OpenAPI 生成、CI 和 Release 命令必须使用项目根目录 `./mvnw ...`；裸 `mvn ...` 必须有受控例外记录 | `yss-ddd-scaffold-generator` / `yss-backend-scaffold-parent` / implementation routing |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 无例外记录时改为 `./mvnw ...`，否则不得进入完成 / 可合并结论 |
 | 工程项目路径：每个 Harness 内项目必须有具体项目段，禁止直接写入容器根或单数 `app/...` | `docs/process/implementation-repo-integration.md` / implementation path validator |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 路径违规时停止 build，并回到实现路由 |
@@ -80,9 +80,9 @@ owner: ai
 | 层级 | required_skills | 代码证据 | 测试 / 验证证据 | 状态 | 备注 |
 |---|---|---|---|---|---|
 | Adapter / Web | `yss-web-controller`、`yss-dto`、`mapstruct`、`lombok` |  |  | `implemented` / `seam-deferred` / `violation` / `not-applicable` |  |
-| Application | `yss-backend-scaffold-application` |  |  | `implemented` / `seam-deferred` / `violation` / `not-applicable` |  |
-| Domain | `yss-domain` / `yss-backend-scaffold-domain` |  |  | `implemented` / `seam-deferred` / `violation` / `not-applicable` |  |
-| Infrastructure | `yss-repository` / `yss-backend-scaffold-infrastructure` / `yss-mybatis` / `mapstruct` / `lombok` |  |  | `implemented` / `seam-deferred` / `violation` / `not-applicable` |  |
+| Application | `yss-application` |  |  | `implemented` / `seam-deferred` / `violation` / `not-applicable` |  |
+| Domain | `yss-domain` |  |  | `implemented` / `seam-deferred` / `violation` / `not-applicable` |  |
+| Infrastructure | `yss-repository` / `yss-mybatis` / `mapstruct` / `lombok` |  |  | `implemented` / `seam-deferred` / `violation` / `not-applicable` |  |
 
 ## 3.2 工作单元与 Execution Result 回勾
 

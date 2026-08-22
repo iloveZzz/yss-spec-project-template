@@ -123,17 +123,17 @@ dependency_closure:
   yss-ddd-scaffold-generator:
     always: [yss-backend-scaffold-parent, alibaba-java-code-style]
   yss-domain:
-    always: [yss-backend-scaffold-domain, alibaba-java-code-style]
+    always: [alibaba-java-code-style]
     when_modeling: [domain-modeling]
     when_pojo: [lombok]
-  yss-backend-scaffold-application:
+  yss-application:
     always: [alibaba-java-code-style]
     when_conversion: [mapstruct, lombok]
   yss-repository:
-    always: [yss-backend-scaffold-infrastructure, mapstruct, lombok, alibaba-java-code-style]
+    always: [mapstruct, lombok, alibaba-java-code-style]
     when_mybatis: [yss-mybatis]
   yss-web-controller:
-    always: [yss-dto, yss-backend-scaffold-web, mapstruct, lombok, alibaba-java-code-style]
+    always: [yss-dto, mapstruct, lombok, alibaba-java-code-style]
   yss-userinfo:
     always: [yss-dto]
     when_cache_lookup: [yss-cache]
@@ -171,13 +171,10 @@ component_impact_routing:
 
 end_to_end_backend_required:
   - yss-domain
-  - yss-backend-scaffold-domain
-  - yss-backend-scaffold-application
+  - yss-application
   - yss-repository
-  - yss-backend-scaffold-infrastructure
   - yss-web-controller
   - yss-dto
-  - yss-backend-scaffold-web
   - mapstruct
   - lombok
   - alibaba-java-code-style
