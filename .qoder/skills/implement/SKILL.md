@@ -12,4 +12,4 @@ Run typechecking regularly, single test files regularly, and the full test suite
 
 Once done, use /code-review to review the work.
 
-Commit your work to the current branch.
+Do not commit or push. Implementation authorization does not include git commit/push. Natural language such as "do it and commit" is not structured Git authorization. Stop after review unless a structured Git authorization is already present.
