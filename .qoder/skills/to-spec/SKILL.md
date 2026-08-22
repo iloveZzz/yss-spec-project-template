@@ -16,7 +16,7 @@ If the issue tracker or triage label vocabulary is missing, tell the user to run
 
 Check with the user that these seams match their expectations.
 
-3. Write the spec using the template below, then publish it to the project issue tracker. Apply the `ready-for-agent` triage label - no need for additional triage.
+3. Write the spec using the template below, then publish it to the project issue tracker. Apply the `ready-for-human` triage label. Spec drafts need a human baseline approval before they are `approved`, and before implementation tickets may become `ready-for-agent`. Do not label the Spec itself `ready-for-agent`.
 
 <spec-template>
 
