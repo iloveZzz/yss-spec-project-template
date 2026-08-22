@@ -106,3 +106,15 @@ README、用户指南和其他说明文档只引用或解释上述事实，不�
 ## 12. 测试质量基线
 
 模板推荐值为 Domain / Application `>= 90%`、API `>= 80%`、前端组件 `>= 75%`、已明确的关键流程 `100% E2E`。只有项目实例在测试策略中明确采纳或覆盖后才构成 CI 门禁；未定义关键流程清单时，不声称其 E2E 覆盖率达到 100%。
+
+## Cursor Cloud specific instructions
+
+本仓库是 `template-source` Harness / 研发管理仓库，没有前端 / 后端运行时应用；可运行、可测试的表面只有 Node 工具链与治理校验脚本。
+
+- 依赖与工具链：Node `>=22 <27`（`.nvmrc` 固定 22）；`pnpm` 通过 `packageManager` 字段由 corepack 自动切换到 `10.15.0`，无需手工切换。Node 依赖只装在 `.template-source/tooling/node`，仓库根没有 `package.json`。
+- 测试：`pnpm --dir .template-source/tooling/node test`（`node --test`，共 15 个用例）。
+- 构建 / lint：`pnpm --dir .template-source/tooling/node build:vendor` 与 `check:vendor` 维护 `scripts/vendor/*.mjs`；顶层 lint 是 `verify-template` 内对所有脚本执行的 `node --check`。
+- 完整发布门禁（相当于"运行应用"）：`scripts/verify-template`，成功输出 `模板发布校验通过`。它串联证据索引、`pnpm test`、`check:vendor` 和全部 `scripts/verify-*` 场景校验。
+- 非显然的坑：`scripts/verify-lifecycle-registry`（及其对应测试 `Node lifecycle registry verifier ...`）会 shell out 到 `python3` 并 `import jsonschema` 做 JSON Schema 校验。缺少该 Python 模块时测试会以 `ModuleNotFoundError: No module named 'jsonschema'` 失败，而不是代码问题；update script 已负责 `pip3 install jsonschema`。
+- `pnpm install` 输出的 `Ignored build scripts: esbuild` 警告可忽略：esbuild 0.28.2 在本平台自带二进制，`build:vendor` / `check:vendor` 无需 `pnpm approve-builds`。
+- 常用只读入口：`scripts/repository-mode`（返回仓库身份）、`scripts/generate-lifecycle-artifacts`（从 `docs/process/lifecycle-registry.yaml` 派生产物，输出应无 diff）、`scripts/export-yss-skills --output <dir>`（导出公开技能）。
