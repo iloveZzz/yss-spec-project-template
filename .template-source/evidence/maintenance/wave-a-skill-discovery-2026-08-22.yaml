@@ -1,0 +1,39 @@
+schema_version: 1
+intensity: L2
+classification_reason: >-
+  Wave A 清理退役空目录、把 Cursor 写入投影契约、统一 api-integration 别名，
+  并起草 shadow 技能路由注册表。触发 template-structure、local-rule、non-core-validator。
+  未改生命周期门禁、Ticket 五态、Router 运行时闭包消费或发现面强制裁剪。
+  focused-independent 审查尚未由非实施者完成，故本文件还不能作为 L2 通过证据。
+triggers:
+  - local-rule
+  - template-structure
+  - non-core-validator
+changed_assets:
+  - scripts/lib/skill-supply-chain.mjs
+  - scripts/lib/skill-registry.mjs
+  - scripts/verify-skill-registry
+  - scripts/verify-template
+  - docs/agents/yss-skill-registry.yaml
+  - docs/agents/skills-maintenance.md
+  - docs/agents/README.md
+  - AGENTS.md
+  - CONTEXT.md
+  - README.md
+  - skills-lock.json
+  - .cursor/skills
+  - .agents/skills/yss-router/references/router-contract.yaml
+  - .agents/skills/yss-api-integration/SKILL.md
+  - .agents/skills/yss-microapp-commit/SKILL.md
+  - .template-source/adr/0007-separate-skill-routing-registry-from-integrity-lock.md
+  - .template-source/tooling/node/test/skill-supply-chain.test.mjs
+  - .template-source/tooling/node/test/skill-registry.test.mjs
+verification_evidence:
+  - kind: counterexample
+    command: scripts/sync-skills --check
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template
+    result: pass
+review_mode: focused-independent
+escalation: none

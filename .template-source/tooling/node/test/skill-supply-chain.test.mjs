@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { unlockedProjectionEntries } from "../../../../scripts/lib/skill-supply-chain.mjs";
+import { obsoleteCanonicalResidues, PROJECTION_ROOTS, unlockedProjectionEntries } from "../../../../scripts/lib/skill-supply-chain.mjs";
 
 function entry(name, type) {
   return {
@@ -23,4 +23,19 @@ test("tracked projections absent from the lock cannot escape synchronization che
   const extras = unlockedProjectionEntries(candidates, ["shared-skill", "platform-skill"], (name) => tracked.has(name));
 
   assert.deepEqual(extras.map(({ name }) => name), ["retired-skill"]);
+});
+
+test("obsolete canonical residues fail even when they are not in the lock", () => {
+  assert.deepEqual(
+    obsoleteCanonicalResidues(["yss-domain", "yss-dir", "batch-grill-me", "code-review"]),
+    ["batch-grill-me", "yss-dir"]
+  );
+});
+
+test("Cursor is a first-class shared skill projection root", () => {
+  assert.ok(PROJECTION_ROOTS.includes(".cursor/skills"));
+  assert.deepEqual(
+    PROJECTION_ROOTS,
+    [".claude/skills", ".codex/skills", ".cursor/skills", ".hermes/skills", ".pi/skills", ".qoder/skills", ".trae/skills"]
+  );
 });

@@ -1,0 +1,547 @@
+schema_version: 1
+registry_id: yss.skill-routing
+status: shadow
+description: >-
+  技能分层、别名、默认可发现性和 Agent 运行时入口的 shadow 路由注册表。
+  本文件不替代 skills-lock.json 的来源、hash 与投影完整性职责；Router 与生命周期编排器在 status=shadow 时不得消费本表做运行时裁剪。
+canonical_content_root: .agents/skills
+runtime_policy:
+  consumed_by_router: false
+  consumed_by_lifecycle: false
+  discovery_enforced: false
+agent_runtime_roots:
+  claude: .claude/skills
+  codex: .codex/skills
+  cursor: .cursor/skills
+  hermes: .hermes/skills
+  pi: .pi/skills
+  qoder: .qoder/skills
+  trae: .trae/skills
+skills:
+  - id: alibaba-java-code-style
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: ask-matt
+    layer: compatibility
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [lifecycle]
+  - id: code-review
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [quality]
+  - id: codebase-design
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [quality]
+  - id: competitive-intelligence
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [discovery]
+  - id: cross-repo-implementation-routing
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [lifecycle]
+  - id: diagnosing-bugs
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [quality]
+  - id: dispatching-parallel-agents
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [lifecycle]
+  - id: domain-modeling
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [discovery]
+  - id: grill-me
+    layer: compatibility
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [discovery]
+  - id: grill-with-docs
+    layer: compatibility
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [discovery]
+  - id: grilling
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [discovery]
+  - id: handoff
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [lifecycle]
+  - id: high-fidelity-html-prototype
+    layer: compatibility
+    maturity: deprecated
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [prototype]
+    replaced_by: yss-prototype-stage
+  - id: implement
+    layer: compatibility
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [lifecycle]
+  - id: implementation-repo-onboarding
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [lifecycle]
+  - id: improve-codebase-architecture
+    layer: compatibility
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [quality]
+  - id: lombok
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: loop-me
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [setup]
+  - id: maintaining-skills
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [template-maintenance]
+  - id: mapstruct
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: migrate-to-shoehorn
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [setup]
+  - id: product-design-prototype
+    layer: compatibility
+    maturity: deprecated
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [prototype]
+    replaced_by: yss-prototype-stage
+  - id: prototype
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [prototype]
+  - id: prototype-review
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [prototype]
+  - id: research
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [discovery]
+  - id: resolving-merge-conflicts
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [quality]
+  - id: scaffold-exercises
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [setup]
+  - id: setup-matt-pocock-skills
+    layer: compatibility
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [setup]
+  - id: setup-pre-commit
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [setup]
+  - id: setup-ts-deep-modules
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [setup]
+  - id: tdd
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [quality]
+  - id: teach
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [writing]
+  - id: to-questionnaire
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [discovery]
+  - id: to-spec
+    layer: compatibility
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [lifecycle]
+  - id: to-tickets
+    layer: compatibility
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [lifecycle]
+  - id: triage
+    layer: compatibility
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [lifecycle]
+  - id: using-git-worktrees
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [setup]
+  - id: wait-what
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [setup]
+  - id: wayfinder
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [lifecycle]
+  - id: writing-beats
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [writing]
+  - id: writing-for-agents
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [writing]
+  - id: writing-fragments
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [writing]
+  - id: writing-shape
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [writing]
+  - id: yss-api-integration
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: [api-integration]
+    impacts: [frontend, api]
+  - id: yss-audit-log
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-backend-scaffold-application
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-backend-scaffold-domain
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-backend-scaffold-infrastructure
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-backend-scaffold-web
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-cache
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-components
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: yss-ddd-scaffold-generator
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-design-system
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [prototype, frontend]
+  - id: yss-dictionary
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-distributed-id
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-domain
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-dto
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend, api]
+  - id: yss-excel-mvc
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-exception
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-formily
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: yss-formily-schema-generator
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: yss-frontend-scaffold-generator
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: yss-hook
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: yss-jdbc
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-log
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-microapp-commit
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: [microapp-commit]
+    impacts: [frontend]
+  - id: yss-mybatis
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-openapi-draft-review
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [api]
+  - id: yss-openapi-governance
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [api]
+  - id: yss-page-module-development
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: yss-product-lifecycle
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [lifecycle]
+  - id: yss-prototype-stage
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [prototype]
+  - id: yss-repository
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-resilience4j
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-router
+    layer: core
+    maturity: supported
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [lifecycle, backend, frontend]
+  - id: yss-security-algorithm
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-source-index
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [template-maintenance]
+  - id: yss-taskflow
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-ui
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: yss-up-springboot3
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-use-table-height
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: yss-use-tree-height
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: yss-userinfo
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-validation
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-web-controller
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend, api]
+platform_skills:
+  - id: data-analytics
+    root: .codex/skills
+    layer: maintainer-only
+    instance_default_discoverable: false
+  - id: product-design
+    root: .codex/skills
+    layer: specialist
+    instance_default_discoverable: false
