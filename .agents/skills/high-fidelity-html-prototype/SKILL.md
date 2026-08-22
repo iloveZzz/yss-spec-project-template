@@ -102,5 +102,5 @@ High-fidelity HTML prototype
 - <yes/no; list blocking gaps>
 
 ### 下一步
-- <Spec calibration / return to high-fidelity prototype / return to product-design-prototype>
+- <Spec calibration / return to high-fidelity prototype / return to yss-prototype-stage>
 ```

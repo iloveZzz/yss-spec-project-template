@@ -139,8 +139,6 @@ dependency_closure:
     when_cache_lookup: [yss-cache]
   yss-audit-log:
     always: [yss-userinfo, yss-dto]
-  yss-log:
-    always: []
   yss-validation:
     always: [yss-exception]
   yss-security-algorithm:
@@ -159,7 +157,6 @@ component_impact_values:
   - current-user-context
   - user-cache-lookup
   - audit-event
-  - technical-request-logging
   - request-validation
   - error-mapping
   - encryption-or-signing
@@ -168,7 +165,6 @@ component_impact_routing:
   current-user-context: [yss-userinfo]
   user-cache-lookup: [yss-userinfo, yss-cache]
   audit-event: [yss-audit-log, yss-userinfo, yss-dto]
-  technical-request-logging: [yss-log]
   request-validation: [yss-validation, yss-exception]
   error-mapping: [yss-exception, yss-dto]
   encryption-or-signing: [yss-security-algorithm, yss-exception]

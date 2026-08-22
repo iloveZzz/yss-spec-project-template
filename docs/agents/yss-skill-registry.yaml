@@ -151,13 +151,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [setup]
-  - id: product-design-prototype
-    layer: compatibility
-    maturity: deprecated
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [prototype]
-    replaced_by: yss-prototype-stage
   - id: prototype
     layer: maintainer-only
     maturity: supported
@@ -344,12 +337,6 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [prototype, frontend]
-  - id: yss-dictionary
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [backend]
   - id: yss-distributed-id
     layer: specialist
     maturity: supported
@@ -404,18 +391,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
-  - id: yss-jdbc
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [backend]
-  - id: yss-log
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [backend]
   - id: yss-microapp-commit
     layer: maintainer-only
     maturity: supported
@@ -488,12 +463,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [template-maintenance]
-  - id: yss-taskflow
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [backend]
   - id: yss-ui
     layer: specialist
     maturity: supported
