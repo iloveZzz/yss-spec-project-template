@@ -1,0 +1,5 @@
+{
+  "name": "YSS Spec Project Template",
+  "install": "pip3 install jsonschema\npnpm --dir .template-source/tooling/node install --frozen-lockfile",
+  "start": "pnpm dev"
+}
