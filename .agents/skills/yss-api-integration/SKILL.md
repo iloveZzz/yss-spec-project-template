@@ -5,6 +5,8 @@ description: Guide AI to correctly use Orval-generated API clients in Vue 3 micr
 
 # API 集成 Skill
 
+目录与锁文件身份是 `yss-api-integration`；Agent 发现名与 Router 闭包键是 `api-integration`。二者指向同一技能，注册表以 alias 对齐。
+
 ## 📋 目标
 
 帮助 AI 正确使用基于 **Orval** 生成的 API 客户端：

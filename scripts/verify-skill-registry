@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+import { validateDefaultSkillRegistry } from "./lib/skill-registry.mjs";
+
+try {
+  const result = validateDefaultSkillRegistry();
+  process.stdout.write(`技能路由注册表校验通过（${result.status}，${result.skill_count} 个共享，${result.platform_count} 个平台）\n`);
+} catch (error) {
+  process.stderr.write(`技能路由注册表校验失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

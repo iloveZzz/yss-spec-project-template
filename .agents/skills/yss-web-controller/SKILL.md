@@ -63,6 +63,7 @@ node scripts/generate_controller.mjs \
 
 ## 按需读取
 
+- 分层开发规范：`references/web-adapter-layer-guide.md`
 - 生成脚本：`scripts/generate_controller.mjs`
 - Controller 模板：`assets/templates/Controller.java.template`
 - Convertor 模板：`assets/templates/WebConvertor.java.template`

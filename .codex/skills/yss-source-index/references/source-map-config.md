@@ -12,11 +12,7 @@ The refresh script maps component source path hints to skill references. These p
 | `yss-audit-log` | `yss-microservice-components/yss-component-audit-log` |
 | `yss-excel-mvc` | `yss-microservice-components/yss-component-excel-mvc`, `yss-microservice-components/yss-component-excel-starter` |
 | `yss-distributed-id` | `yss-microservice-components/yss-component-distributed-id`, `yss-microservice-components/yss-component-leaf` |
-| `yss-jdbc` | `yss-microservice-components/yss-component-jdbc` |
-| `yss-dictionary` | `yss-microservice-components/yss-component-dictionary-parent` |
-| `yss-log` | `yss-microservice-components/yss-component-log-starter` |
 | `yss-resilience4j` | `yss-microservice-components/yss-component-resilience4j-starter` |
-| `yss-taskflow` | `yss-microservice-components/yss-component-taskflow` |
 | `yss-validation` | `yss-microservice-components/yss-component-validation-engine-parent`, `yss-microservice-components/yss-component-validation-jsr303` |
 | `yss-security-algorithm` | `yss-microservice-components/yss-component-security-algorithm` |
 | `yss-userinfo` | `yss-microservice-components/yss-component-userinfo-starter` |

@@ -5,6 +5,8 @@ description: Use when committing or analyzing changes in a YSS micro-frontend ap
 
 # 微应用提交规范 Skill
 
+目录与锁文件身份是 `yss-microapp-commit`；Agent 发现名是 `microapp-commit`。二者指向同一技能，注册表以 alias 对齐。
+
 ## 📋 目标
 
 帮助 AI 为微应用项目生成符合 **Conventional Commits** 规范的 Git 提交信息，支持智能分析变更内容并处理复杂提交场景。

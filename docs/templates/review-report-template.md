@@ -57,9 +57,9 @@ Approved / Changes requested / Blocked
 | 检查项 | 结论 | 证据 |
 |---|---|---|
 | 已存在 `Backend Slice Implementation Contract`，且 required skills / allowed paths / forbidden patterns / evidence / seam / verification 完整 | pass / violation / not-applicable |  |
-| `yss-domain` / `yss-backend-scaffold-domain` 已按影响面落实，Domain 不依赖 Adapter、Infrastructure、Mapper、Controller 或 Web DTO | pass / violation / not-applicable |  |
-| `yss-backend-scaffold-application` 已按影响面落实，Application 只做用例编排、事务边界和跨聚合协调 | pass / violation / not-applicable |  |
-| `yss-repository` / `yss-backend-scaffold-infrastructure` 已按影响面落实，需要持久化的切片有 PO / Repository / Convertor / GatewayImpl | pass / seam-deferred / violation / not-applicable |  |
+| `yss-domain` 已按影响面落实，Domain 不依赖 Adapter、Infrastructure、Mapper、Controller 或 Web DTO | pass / violation / not-applicable |  |
+| `yss-application` 已按影响面落实，Application 只做用例编排、事务边界和跨聚合协调 | pass / violation / not-applicable |  |
+| `yss-repository` 已按影响面落实，需要持久化的切片有 PO / Repository / Convertor / GatewayImpl | pass / seam-deferred / violation / not-applicable |  |
 | `yss-web-controller` / `yss-dto` 已按影响面落实，CMD / Query / VO / Result 按既有 DTO 体系定义或复用，Controller 不用内部类或非约定包临时承载主要 DTO / VO、不手工分页主要业务集合、不穿透 Repository | pass / violation / not-applicable |  |
 | `mapstruct` 已按影响面落实，PO / Domain Model / DTO / VO / CMD / Query 转换使用 MapStruct Convertor / Mapper，未使用 `BeanUtils.copyProperties`、反射拷贝或重复手写字段赋值；例外已记录测试和补齐落点 | pass / violation / not-applicable |  |
 | `lombok` 已按影响面落实，POJO 样板代码使用 Lombok，未成片手写 getter/setter、constructor、builder、logger；实体 / POJO 未触发 `@Data` 等反模式或已说明例外 | pass / violation / not-applicable |  |

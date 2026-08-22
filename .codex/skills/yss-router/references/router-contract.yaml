@@ -1,6 +1,9 @@
 schema_version: 1
 allowed_statuses: [draft, blocked, ready-for-lifecycle-review]
 forbidden_statuses: [approved, ready-for-agent, completed]
+skill_aliases:
+  api-integration: yss-api-integration
+  microapp-commit: yss-microapp-commit
 implementation_path_policy:
   applies_to: harness-resident-runtime-code
   project_roots:
@@ -120,24 +123,22 @@ dependency_closure:
   yss-ddd-scaffold-generator:
     always: [yss-backend-scaffold-parent, alibaba-java-code-style]
   yss-domain:
-    always: [yss-backend-scaffold-domain, alibaba-java-code-style]
+    always: [alibaba-java-code-style]
     when_modeling: [domain-modeling]
     when_pojo: [lombok]
-  yss-backend-scaffold-application:
+  yss-application:
     always: [alibaba-java-code-style]
     when_conversion: [mapstruct, lombok]
   yss-repository:
-    always: [yss-backend-scaffold-infrastructure, mapstruct, lombok, alibaba-java-code-style]
+    always: [mapstruct, lombok, alibaba-java-code-style]
     when_mybatis: [yss-mybatis]
   yss-web-controller:
-    always: [yss-dto, yss-backend-scaffold-web, mapstruct, lombok, alibaba-java-code-style]
+    always: [yss-dto, mapstruct, lombok, alibaba-java-code-style]
   yss-userinfo:
     always: [yss-dto]
     when_cache_lookup: [yss-cache]
   yss-audit-log:
     always: [yss-userinfo, yss-dto]
-  yss-log:
-    always: []
   yss-validation:
     always: [yss-exception]
   yss-security-algorithm:
@@ -156,7 +157,6 @@ component_impact_values:
   - current-user-context
   - user-cache-lookup
   - audit-event
-  - technical-request-logging
   - request-validation
   - error-mapping
   - encryption-or-signing
@@ -165,20 +165,16 @@ component_impact_routing:
   current-user-context: [yss-userinfo]
   user-cache-lookup: [yss-userinfo, yss-cache]
   audit-event: [yss-audit-log, yss-userinfo, yss-dto]
-  technical-request-logging: [yss-log]
   request-validation: [yss-validation, yss-exception]
   error-mapping: [yss-exception, yss-dto]
   encryption-or-signing: [yss-security-algorithm, yss-exception]
 
 end_to_end_backend_required:
   - yss-domain
-  - yss-backend-scaffold-domain
-  - yss-backend-scaffold-application
+  - yss-application
   - yss-repository
-  - yss-backend-scaffold-infrastructure
   - yss-web-controller
   - yss-dto
-  - yss-backend-scaffold-web
   - mapstruct
   - lombok
   - alibaba-java-code-style

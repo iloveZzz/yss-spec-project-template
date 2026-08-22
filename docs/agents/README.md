@@ -6,9 +6,10 @@
 
 | 路径 | 用途 |
 |---|---|
-| `.agents/` | Agent 可加载的 Engineering Skills、脚本、prompt 和参考材料 |
-| `.codex/skills/` | Codex 项目级 skills，包含 YSS、Matt、Ticket 等能力 |
-| `docs/agents/` | 人和 AI 都可读的协作说明、标签约定、维护规范 |
+| `.agents/` | 共享技能的权威内容 |
+| `.cursor/skills/` | Cursor 的契约运行时投影 |
+| `.codex/skills/` | Codex 投影与平台专属 skills |
+| `docs/agents/` | 人和 AI 都可读的协作说明、标签约定、维护规范和技能路由注册表 |
 
 ## 当前文档
 
@@ -18,6 +19,7 @@
 | `triage-labels.md` | 标准五态 triage 标签与含义 |
 | `domain.md` | 领域文档读取和维护规则 |
 | `skills-maintenance.md` | Engineering Skills 的安装、升级和验证说明 |
+| `yss-skill-registry.yaml` | 技能分层、别名与运行时入口（shadow，不替代锁文件） |
 | `gitlab-workflow-skills.md` | GitLab、MR、CI 和自动 gitworks 的技能配置与使用规则 |
 
-当 `AGENTS.md` 或某个 skill 提到本目录时，应优先把这里当作项目协作规则读取；真正的 skill 执行入口仍在 `.agents/` 或 `.codex/skills/`。
+当 `AGENTS.md` 或某个 skill 提到本目录时，应优先把这里当作项目协作规则读取；真正的 skill 执行入口是各平台投影根，Cursor 为 `.cursor/skills`。

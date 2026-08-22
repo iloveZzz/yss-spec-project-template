@@ -22,8 +22,8 @@ Default for a new page: first verify the approved product design, state matrix, 
 ## Backend Boundaries
 
 - `yss-ddd-scaffold-generator`: Create a whole multi-module backend skeleton.
-- `yss-domain`: Domain modeling and domain gateway contracts.
-- `yss-backend-scaffold-application`: Application use cases, transaction boundaries, and cross-aggregate orchestration.
+- `yss-domain`: Domain modeling, domain gateway contracts, and domain-layer conventions.
+- `yss-application`: Application use cases, transaction boundaries, and cross-aggregate orchestration.
 - `yss-repository`: Persistence implementation, PO, Repository, Convertor, GatewayImpl.
 - `yss-web-controller`: REST adapter layer, request/response DTOs, VO, web convertor.
 - `yss-mybatis`: Framework behavior for MyBatis/MyBatis-Plus, BaseRepository, pagination, mapper scanning, batch, datasource issues.
@@ -39,11 +39,7 @@ Default for end-to-end backend CRUD: include Domain, Application, Infrastructure
 - `yss-audit-log`: Audit annotations, SpEL summaries, async publication, subscribers.
 - `yss-excel-mvc`: Spring MVC Excel import/export annotations and handlers.
 - `yss-distributed-id`: ID strategies, AutoIdInterceptor, Leaf/CosId/Snowflake, batch ID injection.
-- `yss-jdbc`: Hutool Db, dynamic datasource JDBC, JdbcSqlUtil, batch SQL execution.
-- `yss-dictionary`: Dictionary/domain item APIs and dictionary component integration.
-- `yss-log`: DEBUG request-parameter/success-latency logging, starter auto-configuration, and centralized collection; current `CatchAndLog` is not exception logging.
 - `yss-resilience4j`: Circuit breaker, fallback, and gateway resilience integration.
-- `yss-taskflow`: Task flow definition/execution component behavior.
 - `yss-validation`: Validation engine and JSR-303 integration.
 - `yss-security-algorithm`: RSA/AES/SM/JWT/JWK/password-encoding compatibility and production key-management safety gates.
 - `yss-userinfo`: Current-user info propagation and starter integration.
