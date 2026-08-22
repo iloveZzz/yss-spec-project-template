@@ -8,9 +8,15 @@ disable-model-invocation: true
 
 You don't remember every skill, so ask.
 
+## YSS default (read this first)
+
+In this template, **`yss-product-lifecycle` is the default orchestrator**. Native work-units own Spec, tickets, implementation authorization, and gates.
+
+This skill is a **Matt compatibility map**. Use `/grill-with-docs`, `/to-spec`, `/to-tickets`, and `/implement` only when the user **explicitly** names them. Do not treat the idea→ship list below as the YSS default. `/implement` does not grant git commit/push. Spec drafts from `/to-spec` stay `ready-for-human` until a human approves the Spec baseline.
+
 A **flow** is a path through the skills. Most paths run along one **main flow**, and two **on-ramps** merge onto it. Everything else is standalone, or a vocabulary layer that runs underneath.
 
-## The main flow: idea → ship
+## Matt compatibility flow: idea → ship
 
 The route most work travels. You have an idea and want it built.
 
@@ -23,7 +29,7 @@ The route most work travels. You have an idea and want it built.
    - **Yes** → **`/to-spec`** (turn the thread into a spec), then **`/to-tickets`** to split it into tracer-bullet tickets, each declaring its **blocking edges**. On a local tracker that's one file per ticket under `docs/.scratch/<feature>/issues/`, worked blockers-first by hand; on a real tracker the edges become native blocking links, so any ticket whose blockers are done can be grabbed — kick off **`/implement`** per ticket, **`/clear`ing context between each one**. Each ticket is self-contained, so the last one's context is disposable.
    - **No** → **`/implement`** right here, in the same context window.
 
-   Either way, **`/implement`** builds each issue by driving **`/tdd`** internally — one red-green slice at a time — then closes out by running **`/code-review`**, a two-axis review (Standards + Spec) of the diff, before committing. Reach for **`/tdd`** on its own when you just want to build a concrete behaviour test-first without a full spec, and **`/code-review`** on its own whenever you want to review a branch or PR against a fixed point.
+   Either way, **`/implement`** builds each issue by driving **`/tdd`** internally — one red-green slice at a time — then closes out by running **`/code-review`** (Standards + Spec, plus UI fidelity when UI is in scope). Do not commit or push from `/implement`. Reach for **`/tdd`** on its own when you just want to build a concrete behaviour test-first without a full spec, and **`/code-review`** on its own whenever you want to review a branch or PR against a fixed point.
 
 ### Context hygiene
 
