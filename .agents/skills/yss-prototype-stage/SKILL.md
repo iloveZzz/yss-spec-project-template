@@ -11,7 +11,7 @@ description: Use when a YSS feature has product-design impact on a primary flow,
 
 - 先由 `yss-product-lifecycle` 判断产品设计影响；无行为变化的孤立视觉修复记录 `not-applicable`，不创建空资产。
 - Codex 的产出主入口是 `product-design:index`；其他 Agent 使用等价的产品设计能力，但必须产出本技能规定的相同资产和证据。能力或证据不能等价时，暂停并回到人工确认。
-- `product-design-prototype`、`high-fidelity-html-prototype` 仅为兼容入口；从它们进入时立即回到本合同。已退休的原型技能不得继续路由。
+- `high-fidelity-html-prototype` 仅为历史兼容入口；从它进入时立即回到本合同。已退休的原型技能（含 `product-design-prototype`）不得继续路由。
 
 ## 资产与门禁顺序
 
