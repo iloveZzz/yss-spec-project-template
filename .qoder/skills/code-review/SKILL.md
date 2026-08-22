@@ -3,12 +3,13 @@ name: code-review
 description: Use when the user wants to review a branch, PR, committed candidate, uncommitted work-in-progress changes, or changes since a fixed point.
 ---
 
-Two-axis review of a pinned candidate against a fixed point:
+Review of a pinned candidate against a fixed point on two core axes, plus UI fidelity when UI is in scope:
 
 - **Standards** — does the code conform to this repo's documented coding standards?
 - **Spec** — does the code faithfully implement the originating issue / spec?
+- **UI fidelity** (only when the change has UI impact) — does the candidate match the confirmed prototype and `yss-design-system` / `yss-ui`? Type-check or claiming "already aligned" is not a pass. Invoke those skills' verification notes; do not collapse this axis into Standards or Spec.
 
-Both axes run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings.
+Standards and Spec run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings. When UI is in scope, add a separate UI fidelity pass after those two reports (do not merge it into either axis).
 
 If `docs/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`; do not invoke another user-invoked skill yourself.
 
@@ -99,17 +100,18 @@ If the spec is missing, skip the Spec sub-agent and note this in the final repor
 
 ### 5. Aggregate
 
-Present the two reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. Do **not** merge or rerank findings — the two axes are deliberately separate (see _Why two axes_).
+Present the reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. If UI is in scope, add `## UI fidelity` from the separate pass. Do **not** merge or rerank findings — the axes are deliberately separate (see _Why separate axes_).
 
 For Worktree mode, recapture the candidate digest after both reports return. If it differs from `candidate_digest`, mark both reports as reviewing a **stale candidate** and return `blocked`; the caller may start a new review against a new capture, but this invocation must not aggregate findings from different bytes. Recheck the same digest again at the completion/checkpoint boundary.
 
 State the reviewed `review_mode`, fixed point, candidate digest and coverage before the two reports. End with a one-line summary: total findings per axis, and the worst issue _within each axis_ (if any). Don't pick a single winner across axes — that's the reranking the separation exists to prevent.
 
-## Why two axes
+## Why separate axes
 
 A change can pass one axis and fail the other:
 
 - Code that follows every standard but implements the wrong thing → **Standards pass, Spec fail.**
 - Code that does exactly what the issue asked but breaks the project's conventions → **Spec pass, Standards fail.**
+- Code that implements the spec but diverges from the confirmed prototype or design system → **Spec pass, UI fidelity fail.**
 
 Reporting them separately stops one axis from masking the other.
