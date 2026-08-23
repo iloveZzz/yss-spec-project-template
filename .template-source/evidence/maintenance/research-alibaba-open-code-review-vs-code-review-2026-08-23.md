@@ -14,7 +14,7 @@
 
 ## 来源范围
 
-一手来源（2026-08-23 读取；OCR 源码快照 `66120291271b2e605e420e9f11fbd6448f06163f`，2026-08-22）：
+一手来源（2026-08-23 读取；OCR 源码快照 `66120291271b2e605e420e9f11fbd6448f06163f`，与 tag / GitHub Release `v1.9.10` 相同提交）：
 
 | 来源 | 地址 / 对象 | 用途 |
 |---|---|---|
@@ -42,10 +42,10 @@
 
 发布面：
 
-- CLI 命令 `ocr`，npm 包 `@alibaba-group/open-code-review`，当前发布 **1.9.10**（2026-08-23 更新）。仓库内 `package.json` 的 `version` 仍是占位 `0.0.0`，真实版本由 GitHub Release 二进制注入。
-- 两种 Agent Skill：`open-code-review`（OCR 自己调 LLM）与 `open-code-review-delegate`（宿主 Agent 调 LLM）。
+- CLI 命令 `ocr`，npm 包 `@alibaba-group/open-code-review`，当前发布 **1.9.10**（Release `published_at` 2026-08-23）。仓库内 `package.json` 的 `version` 仍是占位 `0.0.0`，真实版本由 GitHub Release 二进制注入；本地 clone `git describe --tags --exact-match HEAD` 输出 `v1.9.10`。
+- 两种 Agent Skill：`open-code-review`（OCR 自己调 LLM）与 `open-code-review-delegate`（宿主 Agent 调 LLM）。Skill frontmatter `metadata.version` 是清单版本 `1.0.0`，不是 CLI 版本。
 - Claude Code / Codex / Cursor 插件（`plugins/open-code-review/`）。
-- GitHub Action（`action.yml`）、GitLab CI / GitFlic / Gerrit / Codeup 示例。
+- GitHub Action（`action.yml`），以及 GitLab / Bitbucket / GitFlic / Gerrit / Codeup 示例（`examples/`）。
 - VS Code 扩展 `open-code-review-vscode` 0.1.2（`extensions/vscode/package.json`）。
 - 本地会话查看器 `ocr viewer`。
 
@@ -70,9 +70,11 @@
 
 未知 category 归一为 `other`，未知 severity 归一为 `low`。
 
-CI 默认把评论回贴到 PR，而不是把作业失败当作审查门禁。`action.yml` 的 `route_severity_below` / `route_categories` 明确 **fail-open：从不丢弃 finding**，只是把低优先级项从内联改到摘要。覆盖耗尽导致“什么都没审到”时才非零退出（`internal/agent/agent.go` `BudgetExceeded` 注释）。
+输出格式为 text / JSON / **SARIF 2.1.0**（`cmd/opencodereview/sarif.go`，供 GitHub Code Scanning；`--preview` 不支持 sarif）。
 
-额外命令：`ocr scan` 审整文件而非 diff；`ocr delegate preview` / `ocr delegate rule` 只做确定性工程，不调 LLM。
+CI 默认把评论回贴到 PR，而不是把作业失败当作审查门禁。`action.yml` 的 `route_severity_below` / `route_categories` 明确 **fail-open：从不丢弃 finding**，只是把低优先级项从内联改到摘要。Action 只在 `ocr review` 非零退出时 fail job。CLI **不按评论严重度 fail**，也没有官方 `--fail-on high` 类 flag；规则文案里的 “blocking” 只是给模型的优先级提示。覆盖耗尽导致“什么都没审到”时才非零退出（`internal/agent/agent.go` `BudgetExceeded` 注释）。
+
+额外命令：`ocr scan` 审整文件而非 diff（`scan_template.json` 默认按语言分批，`BATCH_SIZE=50`，另有 DEDUP / PROJECT_SUMMARY）；`ocr delegate preview` / `ocr delegate rule` 只做确定性工程，不调 LLM。
 
 业务上下文入口是 `--background` / `--background-file`，注入 prompt 占位符 `{{requirement_background}}`。这是可选自然语言，不是 Spec / Ticket / 合同引用。
 
@@ -297,7 +299,7 @@ yss-product-lifecycle
 ## 尚未确认项
 
 - AACR-Bench 的 Precision / F1 / Token 图未在本环境复跑；Hugging Face 数据集 `Alibaba-Aone/aacr-bench` 未下载核验标注。
-- npm 1.9.10 二进制与源码 `6612029` 是否同一提交未比对 Release SHA。
+- Git tag `v1.9.10` 已确认指向源码 `6612029`；npm 安装器下载的平台二进制 checksum 未在本环境逐文件核对。
 - `ocr scan` 全仓审计与 YSS 模板维护 L3 `formal-independent` 是否可叠加，未做试验。
 - Cursor Cloud 是否允许 `npm i -g @alibaba-group/open-code-review` 以及 Git 是否 ≥ 2.41，未在本任务安装验证。
 - OCR MCP 客户端拉 GitHub issue 后，能否稳定映射到 YSS `spec_ref`；文档只有“可拉 issue”的能力声明。
@@ -308,7 +310,7 @@ yss-product-lifecycle
 ## 本轮一手验证
 
 - 仓库身份：`yss-project.yaml` → `template-source`。
-- OCR clone：`git -C /tmp/open-code-review rev-parse HEAD` → `66120291271b2e605e420e9f11fbd6448f06163f`。
-- GitHub API：`alibaba/open-code-review`，Go，stars 21206，created 2026-05-18。
+- OCR clone：`git -C /tmp/open-code-review rev-parse HEAD` → `66120291271b2e605e420e9f11fbd6448f06163f`；`git describe --tags --exact-match HEAD` → `v1.9.10`。
+- GitHub API：`alibaba/open-code-review`，Go，stars 21206，created 2026-05-18；Release `v1.9.10` published 2026-08-23。
 - npm：`@alibaba-group/open-code-review` 1.9.10。
 - 未执行：`npm install -g`、`ocr review`、AACR-Bench、修改 `.agents/skills`。
