@@ -34,15 +34,19 @@
 | guanyang/llm-wiki | skills.sh 页 + `skills/llm-wiki/SKILL.md` |
 | JanYork/llm-wiki-cli（LWC） | gist 评论 + GitHub `README.md` |
 | egonex-ai/understand-anything（`understand-knowledge`） | skills.sh 页（图谱分析，不是 wiki 编译器） |
-| alirezarezvani/claude-skills `llm-wiki` | skills.sh 页（未整本拉取仓库） |
-| nousresearch/hermes-agent `llm-wiki` | skills.sh 页（未整本拉取仓库） |
+| alirezarezvani/claude-skills `llm-wiki` | skills.sh 页 + 仓库 `engineering/llm-wiki/skills/llm-wiki/SKILL.md`（外部摘录） |
+| nousresearch/hermes-agent `llm-wiki` | skills.sh 页 + 仓库 `skills/research/llm-wiki/SKILL.md`（外部摘录） |
 | karlorz/llm-wiki `wiki-ingest`、jackwener/llm-wiki `ingest`、vanillaflava `wiki-ingest` | skills.sh 摘要（补充生态形态，不作深度能力断言） |
+
+外部实现的逐条摘录另见同目录 `research-llm-wiki-skills-sh-github-external-2026-08-23.md`（后台调研代理产出；本文件只保留对照与建议）。该摘录还覆盖 `llmrix-inc`、`One4Shell`、`noaul`（astro-han fork）、`nashsu/llm_wiki`、`sdyckjq-lab`、`SamurAIGPT`、`atomicstrata/llm-wiki-compiler`、`nvk/llm-wiki`、`aaronoah`。
 
 本仓对照对象：`.agents/skills/llm-wiki/SKILL.md` 及其 `references/`、`scripts/`，以及已编译实例 `wiki/`。
 
 ## 2. skills.sh 平台本身
 
 [skills.sh](https://www.skills.sh/) 自称 **The Open Agent Skills Ecosystem**。首页正文写明：Skills 是给 AI agent 用的可复用能力，用一条命令安装，以增强 agent 的程序性知识。安装形态是 `npx skills add <repo>`。
+
+[About](https://www.skills.sh/about) 写明由 Vercel 运营，索引所有经 open skills CLI 发布的公开 skill，按匿名、去重的安装遥测排名；[文档](https://www.skills.sh/docs) 指向 CLI 仓库 `vercel-labs/skills`。未通过合作方安全审计的 skill 会被排除出目录。2026-08-23 首页可见榜单前排是 `find-skills`、`grill-me` 等，**没有** llm-wiki 进入首页可见区。
 
 首页是安装量排行榜，不是按「Karpathy wiki」分类的官方 taxonomy。检索到的 llm-wiki 条目都是第三方仓库被目录索引后的技能页；每页给出：
 
@@ -145,7 +149,21 @@ gist `karpathy/llm-wiki.md`（创建于 2026-04-04）自称 **idea file**，不�
 - 检测信号：`index.md` + 多篇带 `[[wikilink]]` 的 markdown；可选 `raw/` 与 schema。
 - 本仓 P1/P2 审查明确要求通用 skill **不要点名** 该外部 skill（`docs/reviews/llm-wiki-p12-focused-review-2026-08-23.md`）。图谱若要做，应是可选后处理，不能写进 `llm-wiki` 默认闭包。
 
-### 4.8 其余 skills.sh 变体（形态补充）
+### 4.8 与本仓编译模型更接近的变体（外部摘录补录）
+
+这些实现的逐条引用见外部摘录第 4.3–4.19 节。这里只保留会改变对照结论的事实。
+
+1. **hermes-agent `llm-wiki`**：raw frontmatter 带 `sha256`，同 URL 再 ingest 会跳过或标 drift。这是公开 skill 里最接近本仓 manifest 哈希的机制，但它哈希的是**已落入 raw 的拷贝**，不是仓库 live 路径。
+2. **JanYork LWC `source status`**：对 live 磁盘文件做 SHA-256，报告 modified/missing。语义上最像 `inventory.mjs drift`，权威状态却在 SQLite，不在 git markdown。
+3. **atomicstrata `llm-wiki-compiler`**：独立 Node CLI/SDK/MCP；`refresh --stale`、review queue、段落级行号引用、导出 OKF/GraphML/`llms.txt`。这是「编译器产品」，不是 Agent 提示词。本仓若要增强确定性编译，应对照它的 stale/review 门，而不是对照个人 vault。
+4. **nashsu/llm_wiki**（约 1.67 万 star）：桌面应用 + 文档-only skill。skill 自己不编译 wiki，只教 Agent 调本机 API。本仓不应朝桌面/向量库/folder watch 演进。
+5. **alirezarezvani**：`/wiki-*` 子命令 + stdlib Python（init/ingest/index/log/BM25/lint/graph/Marp）。query 明确「好答案回写」；约 500 页后文档指向另接 RAG。
+6. **llmrix-inc / SamurAIGPT**：ingest 后出 `graph.html`；Office/PDF/vision。图谱是后处理，不是编译图。
+7. **nvk/llm-wiki**：研究操作系统（research/thesis/collect/audit/checkpoint），远超 gist 三操作。本仓不要吸收这套命令面。
+8. **noaul/llm-wiki**：`uovme/llm-wiki` 301 到此；GitHub API 标明是 `Astro-Han/karpathy-llm-wiki` 的 0-star fork，不另计能力。
+9. **sdyckjq-lab / aaronoah / One4Shell**：标准 ingest/query/lint；sdyckjq 加中文平台适配器与 `.wiki-cache.json`；aaronoah 把 wiki 层叫 `generated/`；One4Shell 是 gist 的安装包装。
+
+### 4.9 其余 skills.sh 变体（形态补充）
 
 这些条目说明生态已从「一个 SKILL.md」裂成 **ingest / query / lint 分包**：
 
@@ -240,6 +258,10 @@ Canonical 入口：`.agents/skills/llm-wiki/SKILL.md`。
    来源：astro-han New / Update / Disputed / No material。  
    本仓已规定新文件只列候选。候选输出可改成这四态，避免「有新文件就想建页」。No material 应记 log、不建页。
 
+6. **把 drift 报告做成「源状态」而不是失败码。**  
+   来源：LWC `source status` / `source diff`；hermes raw `sha256` skip/drift；atomicstrata `refresh --stale`。  
+   本仓已把 drift 退出码定为 0 + JSON，方向正确。可再给 Agent 一张稳定的源状态表（changed / missing / unmapped / human-owned），避免把「有漂移」理解成脚本挂了。atomicstrata 的 review queue 只适合「外源主张等人工确认」；对本仓 live 权威源，确认后应直接 refresh，不要再加一层分数门。
+
 ### 8.2 中适配：补一个窄的 `ingest`，不要替代 refresh
 
 Karpathy 与几乎所有公开实现的主动词是 **ingest**。本仓主动词是 **refresh/rebuild 已映射的 live 源**。空缺不在「增量」，而在「人类新丢进来的外源」没有一等入口。
@@ -277,6 +299,9 @@ pin-llm-wiki 的 `inbox.md` + `queue` 可借鉴为「待确认源队列」，但
 | publish 出 newsletter/slides | 用户指南与审查报告已有出口；不要让 wiki 再长一套 `output/`。 |
 | 挂 `understand-knowledge` 或 skills.sh 安装 | 已审查禁止外部 skill 点名；公开面仍只放 `yss-*`。 |
 | 拆成 wiki-ingest / wiki-query / wiki-lint 十几个 skill | 本仓要最小发现面。现有一个 skill + references 按需加载已符合 writing-for-agents。 |
+| nashsu 桌面应用、LanceDB、folder watch、本机 HTTP/MCP | skill 只是 API 说明书；本仓是 git 内 IR，不是本机知识 IDE。 |
+| nvk 的 research/thesis/audit/checkpoint 命令面 | 那是研究操作系统，会淹没 `init/refresh/rebuild/lint`。 |
+| atomicstrata 整套 CLI/SDK/MCP 产品化 | 可学 stale/review，不要把模板 skill 升级成独立编译器发行版。 |
 
 图谱若将来要做：独立可选后处理，消费 `[[wikilink]]` 与 manifest，输出不进 `wiki/*.md` 文章集合，也不进默认 `init`。
 
@@ -290,11 +315,13 @@ pin-llm-wiki 的 `inbox.md` + `queue` 可借鉴为「待确认源队列」，但
 
 ## 10. 未验证项
 
-- 未 clone 运行任何外部 skill，未复现其 lint 脚本或 BM25。
-- 未整本读取 `alirezarezvani/claude-skills`、`nousresearch/hermes-agent`、`llmrix/llm-wiki-skill`、`One4Shell/llm-wiki-skill`、`noaul/llm-wiki` 的源码；web 搜索命中过这些仓库，但能力表不引用未打开的文件。
-- skills.sh 安装数是页面快照，不是 API 保证。
-- `understand-knowledge` 的仓库 owner 已从搜索中的 `lum1104` 变为页面上的 `egonex-ai`；以本次打开的 skills.sh 页为准。
-- 后台调研代理若另写外部摘录，以该文件的引用为准做补充，不自动覆盖本对照结论。
+- 未 clone 运行任何外部 skill，未复现其 lint 脚本、BM25 或桌面应用。
+- skills.sh 安装数是页面快照，不是 API 保证；nashsu skill 同日不同抓取曾显示 1.1K / 1.2K / 1.4K。
+- 大仓 star（`claude-skills` 2.48 万、`hermes-agent` 23.4 万、`Understand-Anything` 8.0 万）不能当成单个 skill 的受欢迎度。
+- `understand-knowledge` 的仓库经 301 到 `Egonex-AI/Understand-Anything`；`llmrix/llm-wiki-skill` 301 到 `llmrix-inc`；`uovme/llm-wiki` 301 到 `noaul/llm-wiki`。
+- `skills.sh/aradotso/trending-skills/llm-wiki-skill` 当日 404。
+- nvk / atomicstrata / JanYork / ar9av 的完整 docs 树与 38 个 companion skill 未逐份精读；以外部摘录已打开的 `SKILL.md` / README 为准。
+- 外部摘录与本对照冲突时：能力事实以外部摘录的原文引用为准，本仓适配建议以本文件第 7–9 节为准。
 
 ## 11. 来源
 
@@ -327,3 +354,7 @@ pin-llm-wiki 的 `inbox.md` + `queue` 可借鉴为「待确认源队列」，但
 - `wiki/wiki/LLM Wiki.md`
 - `.template-source/README.md`（治理区边界）
 - `docs/reviews/llm-wiki-p12-focused-review-2026-08-23.md`
+- `.template-source/research/research-llm-wiki-skills-sh-github-external-2026-08-23.md`
+- `https://www.skills.sh/about`
+- `https://www.skills.sh/docs`
+- `https://github.com/vercel-labs/skills`
