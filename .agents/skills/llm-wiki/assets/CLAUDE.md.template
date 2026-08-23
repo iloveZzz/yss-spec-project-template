@@ -15,11 +15,12 @@
 - 论断必须能追溯到 `raw/` 或 live 代码路径。文末使用 `## 来源`。
 - 分类归属由 `index.md` 决定。
 - 可选 frontmatter：`human-owned: true` 时 refresh / rebuild 不得重写正文。
+- 仅当多个来源冲突，或 live 与旧 raw 不一致时写可选 `## Status`（`Disputed` / `Outdated`）。单一 live 正确则不写。
 
 ## 基础设施文件
 
-`index.md`、`log.md`、`CLAUDE.md`、`AGENTS.md`、`soul.md` 为基础设施文件，不视为文章。
+`index.md`、`log.md`、`CLAUDE.md`、`AGENTS.md`、`soul.md`、`concept-table.md` 为基础设施文件，不视为文章。
 
 ## 操作日志
 
-`log.md` 只追加。格式：`## [YYYY-MM-DD] OPERATION | 描述`（CREATE / UPDATE / LINK / FIX / REFRESH / REBUILD / RETIRE / LINT）。
+`log.md` 只追加。格式：`## [YYYY-MM-DD] OPERATION | 描述`（CREATE / UPDATE / LINK / FIX / REFRESH / REBUILD / RETIRE / LINT / INGEST）。

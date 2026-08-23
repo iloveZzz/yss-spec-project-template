@@ -5,7 +5,14 @@ import { fileURLToPath } from "node:url";
 import { EXTRACT_KINDS } from "./extract.mjs";
 import { exists, sha256 } from "./inventory.mjs";
 
-const INFRA = new Set(["index.md", "log.md", "claude.md", "agents.md", "soul.md"]);
+export const INFRA = new Set([
+  "index.md",
+  "log.md",
+  "claude.md",
+  "agents.md",
+  "soul.md",
+  "concept-table.md",
+]);
 const WIKILINK_RE = /\[\[([^\]|#]+)(?:[|#][^\]]*)?\]\]/g;
 const SOURCE_HEADING_RE = /^##\s+来源\s*$/m;
 const H1_RE = /^#\s+(.+?)\s*$/m;
@@ -14,7 +21,7 @@ export function articlesDir(wikiRoot) {
   return path.join(wikiRoot, "wiki");
 }
 
-function extractLinks(text) {
+export function extractLinks(text) {
   const ids = [];
   const invalid = [];
   WIKILINK_RE.lastIndex = 0;
