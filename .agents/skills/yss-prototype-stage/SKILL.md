@@ -25,7 +25,7 @@ description: Use when a YSS feature has product-design impact on a primary flow,
 
 优先级固定为：官方 `design.md` 的上游默认 → `docs/design/design.md` 与项目 token 的 `project_design` 项目覆盖 → 当前功能的语义组件映射。不得用上游默认覆盖项目 token。
 
-使用官方 `antd` skill / CLI 查询事实，始终用 `--format json`，并记录实际 `antd`、CLI 和目标组件版本。至少保存 `antd design.md`、已选组件的 `info`/`demo`/`token`/`semantic` 查询和 `antd lint` 结果；目标版本存在时，将同一 `<target_antd_version>` 传给版本敏感查询，禁止在模板中固化某个 CLI 或组件版本。
+Ant Design v6 事实由 `yss-antd-design` 查询并回写证据，不要并列调用官方 `antd` skill，也不要在前端代码落地时继续使用它。进入实现后改走 `yss-ui`。
 
 ## 验证与回流
 

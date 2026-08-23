@@ -1,0 +1,29 @@
+# yss-antd-design L2 修改前反例
+date: 2026-08-23T11:56:15Z
+branch: cursor/antd-cli-skills-research-9dfb
+
+## 1. 调用方仍把官方 antd skill / CLI 写成平级入口
+
+### yss-prototype-stage
+28:使用官方 `antd` skill / CLI 查询事实，始终用 `--format json`，并记录实际 `antd`、CLI 和目标组件版本。至少保存 `antd design.md`、已选组件的 `info`/`demo`/`token`/`semantic` 查询和 `antd lint` 结果；目标版本存在时，将同一 `<target_antd_version>` 传给版本敏感查询，禁止在模板中固化某个 CLI 或组件版本。
+
+### yss-design-system
+87:| Ant Design v6 组件 / token / demo 查询 | 官方 `@ant-design/cli` / `https://ant.design/docs/react/for-agents` |
+
+### docs/design/README.md 推荐技能仍写裸 antd
+42:- `antd`：Ant Design v6 组件、demo、token、semantic 和 design.md 查询工具；生成或修改高保真 HTML 原型前后必须留下 CLI 校验证据。
+
+### AGENTS.md §8 仍写 antd CLI 而不写 yss-antd-design
+
+## 2. 仓库尚无 yss-antd-design 权威目录
+missing: .agents/skills/yss-antd-design
+
+## 3. 官方 antd setup --check 对本仓库为 Not configured
+Not configured: /workspace/.agents/skills/antd
+Not configured: /workspace/AGENTS.md
+- Ant Design skill not installed
+- Skill instructions do not match expected instructions
+
+## 4. skills-lock 与公开清单尚无 yss-antd-design
+lock_has False
+public_has False

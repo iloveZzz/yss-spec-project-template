@@ -13,7 +13,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 - 项目 token 快照：`docs/design/tokens/theme.json`、`docs/design/tokens/tokens.default.json`、`docs/design/tokens/tokens.dark.json`、`docs/design/tokens/tokens.compact.json`、`docs/design/tokens/variables.css`、`docs/design/tokens/variables.dark.css`。
 - 本技能执行清单：`references/design-system.md`，用于 Agent 执行和评审，不替代 `docs/design/design.md`。
 - 历史输入包：`/Users/zhudaoming/Downloads/Product-Design-System`，只用于追溯首次引入来源，不作为后续工程依赖。
-- 原型阶段合同：`yss-prototype-stage`，用于统一跨 Agent 的原型资产、AntD 事实和浏览器验证证据。
+- 原型阶段合同：`yss-prototype-stage`，用于统一跨 Agent 的原型资产和浏览器验证证据。AntD 事实由 `yss-antd-design` 提供，且只用于原型设计构建。
 
 如果只需要快速判断，先读本文件。若要写 UI 规范、实现页面、评审设计或调整 token，必须读项目内 `docs/design/design.md`；若要执行评审或实现检查，再读 `references/design-system.md`。
 
@@ -84,7 +84,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 | 前端页面实现 | `yss-ui` / `yss-page-module-development` |
 | 表单 schema | `yss-formily` |
 | YTable / YTree / 高度自适应 | `yss-components` / `yss-use-table-height` / `yss-use-tree-height` |
-| Ant Design v6 组件 / token / demo 查询 | 官方 `@ant-design/cli` / `https://ant.design/docs/react/for-agents` |
+| 原型阶段的 Ant Design v6 组件 / token / demo 查询 | `yss-antd-design`（只用于原型设计构建；前端落地改用 `yss-ui`） |
 | API 契约 / 接入 | `yss-openapi-governance` / `api-integration` |
 
 ## 更新设计系统

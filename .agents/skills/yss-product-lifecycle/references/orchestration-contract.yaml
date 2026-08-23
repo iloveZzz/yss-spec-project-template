@@ -138,7 +138,7 @@ work_unit_routes:
     human_gate: spec-baseline
   work-unit.prototype-design:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
-    skills: [yss-design-system, yss-prototype-stage, product-design:index]
+    skills: [yss-design-system, yss-prototype-stage, yss-antd-design, product-design:index]
     human_gate: prototype-confirmation
   work-unit.technical-analysis:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}

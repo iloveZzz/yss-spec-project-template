@@ -24,24 +24,7 @@ If low-fidelity `prototype-review` is blocked or missing, stop and return to `ys
 
 ## Ant Design Official Agent Baseline
 
-Use the official Ant Design agent guidance as the fact baseline through `yss-prototype-stage`:
-
-- Read or reference `https://ant.design/docs/react/for-agents` when the task starts.
-- Use `@ant-design/cli` before choosing unfamiliar components, props, tokens, or migration-sensitive APIs.
-- Prefer direct CLI subcommands because `--help` may fail in some Node environments while subcommands still work.
-
-Record the installed CLI version and the target AntD version in `prototype-evidence.yaml`. Use `--format json`; pass the recorded target version to version-sensitive queries:
-
-```bash
-antd design.md --format json
-antd info Button --version <target_antd_version> --format json
-antd token Button --version <target_antd_version> --format json
-antd demo Select basic --version <target_antd_version> --format json
-antd semantic Button --version <target_antd_version> --format json
-antd lint <prototype-path> --format json
-```
-
-Use the project-selected version when one exists; otherwise record the CLI's actual default version before making version-sensitive decisions. Record every queried component in the evidence manifest.
+Ant Design v6 事实由 `yss-antd-design` 执行并回写 `prototype-evidence.yaml`。本兼容入口不并列调用官方 `antd` skill，也不在前端代码落地时使用；实现改走 `yss-ui`。
 
 ## Core Rules
 

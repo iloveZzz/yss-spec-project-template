@@ -10,6 +10,7 @@ design_baseline:
   upstream_design_md_record_ref: <path-to-json-output-or-summary>
   project_override_reviewed: false
 antd:
+  fact_skill: yss-antd-design
   cli_command: antd
   cli_version: <actual-cli-version>
   target_antd_version: <project-selected-v6-version>
@@ -21,7 +22,9 @@ antd:
         demo_ref: <path-to-json-output>
         token_ref: <path-to-json-output>
         semantic_ref: <path-to-json-output>
-  lint_ref: <path-to-json-output>
+  lint_applicable: not-applicable
+  lint_reason: html-prototype
+  lint_ref: <path-to-json-output-or-none>
   lint_passed: false
 browser_verification:
   executor: <browser-or-automation-name>
