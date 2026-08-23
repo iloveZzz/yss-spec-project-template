@@ -39,22 +39,22 @@
 
 | Token | 值 | 用途 |
 | --- | --- | --- |
-| `colorPrimary` | `#1677ff` | 主操作、链接、焦点、选中态 |
+| `colorPrimary` | `#3371ff` | 主操作、链接、焦点、选中态 |
 | `colorPrimaryHover` | `#4096ff` | 主色 hover |
 | `colorPrimaryActive` | `#0958d9` | 主色 active |
 | `colorSuccess` | `#52c41a` | 成功状态 |
 | `colorWarning` | `#faad14` | 警告状态 |
-| `colorError` | `#ff4d4f` | 错误状态 |
-| `colorInfo` | `#1677ff` | 信息提示 |
-| `colorBgLayout` | `#f5f5f5` | 页面背景 |
+| `colorError` | `#f5222d` | 错误状态 |
+| `colorInfo` | `#3371ff` | 信息提示 |
+| `colorBgLayout` | `#f0f2f5` | 页面背景 |
 | `colorBgContainer` | `#ffffff` | 内容容器 |
 | `colorBgElevated` | `#ffffff` | 浮层容器 |
-| `colorText` | `#2e2e2e` | 主文本 |
-| `colorTextSecondary` | `#646464` | 次级文本 |
-| `colorTextTertiary` | `#949494` | 弱说明 |
-| `colorTextQuaternary` | `#c4c4c4` | placeholder / disabled |
-| `colorBorder` | `#dbdbdb` | 主边框 |
-| `colorBorderSecondary` | `#f1f1f1` | 次级分割线 |
+| `colorText` | `rgba(0, 0, 0, 0.88)` | 主文本 |
+| `colorTextSecondary` | `rgba(0, 0, 0, 0.65)` | 次级文本 |
+| `colorTextTertiary` | `#8c8c8c` | 弱说明 |
+| `colorTextQuaternary` | `#bfbfbf` | placeholder / disabled |
+| `colorBorder` | `#d9d9d9` | 主边框 |
+| `colorBorderSecondary` | `#f0f0f0` | 次级分割线 |
 
 颜色规则：
 
@@ -63,7 +63,10 @@
 - 预设色板只用于 Tag、图表、分类可视化，不用于重新定义主操作。
 - 不硬编码白色、灰色、状态色；优先引用 token、CSS variables 或 Ant Design theme。
 - semantic token 优先于色值：页面先声明背景、容器、浮层、文本、边框、状态等角色，再映射到具体 token。
+- 运行时短名 `--primary-color`、`--text-color`、`--bg-color` 必须指向 `--brand-*`，不要再维护第二套色值。
+- `blue` 等预设色板可以仍含官方 `#1677ff`；色板预设 ≠ 品牌主色。
 - accessibility contrast 不足时，通过 `ConfigProvider` 的 seed token 或组件 token 调整；不要为单个页面制造不可复用的深浅色例外。
+- Codex `$design-qa` 的 token / 字体对照读 `references/design-qa-theme.md`。
 
 ### 排版
 
@@ -81,6 +84,7 @@
 
 - UI 默认正文 14px。
 - UI 字重优先 400 / 600。
+- 字体栈使用系统字体，不强制 `Inter`。
 - 不用 700+ 粗体表达选中或激活状态。
 - 选中状态优先使用颜色、边框、下划线、背景表达。
 
@@ -93,8 +97,12 @@
 | 小控件高度 | 24px |
 | 大控件高度 | 40px |
 | 默认字号 | 14px |
-| 当前品牌默认圆角 | 8px |
-| 大容器 / 浮层圆角 | 10px |
+| 字体栈 | 系统栈，不强制 `Inter` |
+| 小控件圆角 | 4px |
+| 默认控件圆角 | 6px |
+| 大容器 / 浮层圆角 | 8px |
+| 顶栏高度 | 64px |
+| 深色侧栏 | `#001529` |
 
 执行规则：
 

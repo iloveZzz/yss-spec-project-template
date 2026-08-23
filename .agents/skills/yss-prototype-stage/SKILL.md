@@ -25,6 +25,8 @@ description: Use when a YSS feature has product-design impact on a primary flow,
 
 优先级固定为：官方 `design.md` 的上游默认 → `docs/design/design.md` 与项目 token 的 `project_design` 项目覆盖 → 当前功能的语义组件映射。不得用上游默认覆盖项目 token。
 
+Codex `$design-qa` 仍走官方对比流程；Colors/tokens 与 Fonts/typography 必须以项目覆盖为 source visual truth。对照清单见 `yss-design-system/references/design-qa-theme.md`。仍用官方 `#1677ff`、强制 `Inter` 或历史 8px 品牌圆角当默认主题，视为项目覆盖漂移。
+
 Ant Design v6 事实由 `yss-antd-design` 查询并回写证据，不要并列调用官方 `antd` skill，也不要在前端代码落地时继续使用它。进入实现后改走 `yss-ui`。
 
 ## 验证与回流
