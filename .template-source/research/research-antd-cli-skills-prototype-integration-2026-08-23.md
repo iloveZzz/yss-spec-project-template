@@ -96,6 +96,24 @@
 - 事实：LLMs.txt 提供导航 `llms.txt`、完整文档 `llms-full.txt` / `llms-full-cn.txt`、语义 `llms-semantic.md` / `llms-semantic-cn.md`，以及 `https://ant.design/components/<Name>.md`。Cursor 建议用 @Docs 或 `.cursor/rules`，不要默认整包灌进系统提示。  
   源：https://ant.design/docs/react/llms-cn
 
+### 2.7 后台一手补强（影响集成判断）
+
+[调研 Ant Design Agent 一手源](41445636-ac71-4331-8908-9acfde75a0bf) 跟到仓库 raw、CLI `--help` 与 `DESIGN.md` 后，下列事实会改本仓接法：
+
+- 事实：`antd design.md` **只服务 antd v6**；查 v3/v4/v5 返回 `UNSUPPORTED_VERSION_FEATURE`。权威文件是 `ant-design/ant-design` 根目录 `DESIGN.md`，`version: alpha`，描述默认 Light。  
+  源：https://raw.githubusercontent.com/ant-design/ant-design-cli/main/README.zh-CN.md ；https://ant.design/design.md
+- 事实：未传 `--version` 且探测失败时，CLI 回退 **`5.24.0`**，不是 v6。本仓高保真合同写死「Ant Design v6」时，漏记目标版本会查到 v5 API。  
+  源：https://github.com/ant-design/ant-design-cli/blob/main/README.md  
+  原文：「fallback `5.24.0`」
+- 事实：官网文档只列 `claude|cursor|vscode|codex`；`antd setup --help` 另有 `--client github-actions` 与 `--mode ci`，会写 `.github/workflows/antd-cli.yml`（`npm ci` / `build` / `doctor` / `lint ./src`）。本模板仓无前端 `src`，禁止跑该模式。  
+  源：`npx -y @ant-design/cli setup --help` ；https://github.com/ant-design/ant-design-cli/blob/main/README.md
+- 事实：官方 MCP **没有远程 HTTP 端点**，只是本地 stdio（`antd mcp`）。  
+  源：https://ant.design/docs/react/mcp-cn
+- 事实：官网写元数据覆盖 v3–v6；官方 skill 写捆绑知识是 v4–v6，v3 只有迁移指南。lint 第四类英文 README 叫 `usage`，中文 README 有一处写成 `best-practice`。集成时以 CLI `--help` / JSON 字段名为准。  
+  源：https://ant.design/docs/react/cli-cn 对比 https://raw.githubusercontent.com/ant-design/ant-design-cli/main/skills/antd/SKILL.md
+- 事实：`DESIGN.md` Don'ts 与 `yss-design-system` 已对齐：同一表面不叠两个 primary、不硬编码 `#FFFFFF`/`#FAFAFA`、不用 Tag 当关键状态、暗色走算法不手翻。  
+  源：https://ant.design/design.md
+
 ## 3. 本仓原型相关技能现状
 
 权威入口（`AGENTS.md` §8）：UI 设计、原型、组件或主题先 `yss-design-system`，再 `yss-prototype-stage`；Codex 走 `product-design:index`；「产出前后用 `antd` CLI 记录 Ant Design v6 与浏览器验证事实」。
@@ -175,6 +193,9 @@
 6. **Cloud / 无全局 npm 环境。**  
    官方 skill 会 `npm install -g @ant-design/cli`。本仓前端约定是 `pnpm`。验证脚本或 AGENTS Cloud 段应写清受控例外：`pnpm dlx @ant-design/cli` 或环境预装，并记录实际 bin。不要默认 `npm -g`。
 
+7. **高保真查询必须显式 `--version <target_antd_version>`，且 `antd design.md` 只在 v6 目标下调用。**  
+   默认回退是 `5.24.0`。漏传版本时，`info`/`demo` 可能是 v5，`design.md` 在非 v6 上直接失败。证据里同时记 CLI 版本与目标 antd 版本。
+
 ## 5. 推荐集成图
 
 ```text
@@ -199,7 +220,7 @@
 
 - 不把 `@ant-design/cli` 或官方 skill 挂进 `scripts/verify-template`。
 - 不把 `antd` 加入 `yss-public-skills.json`。
-- 不在本仓 root 执行会改 `AGENTS.md` / `.agents/skills` 的 `antd setup --mode skill|both`。
+- 不在本仓 root 执行会改 `AGENTS.md` / `.agents/skills` 的 `antd setup --mode skill|both`，也不跑 `--client github-actions --mode ci`。
 - 不把 LLMs.txt 或 `design.md` 全文检入模板实例分发面（`docs/`）；项目实例各自存证据 JSON。
 - 不引入图谱、向量检索或第二套设计系统 skill。
 
