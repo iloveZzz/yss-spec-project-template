@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { drift, hashSources, sha256 } from "./inventory.mjs";
+import { drift, hashSources, sha256, unmappedCandidates } from "./inventory.mjs";
 
 const inventoryCli = fileURLToPath(new URL("./inventory.mjs", import.meta.url));
 
@@ -33,7 +33,10 @@ async function seed() {
           role: "copy",
         },
       ],
-      articles: [{ id: "API契约", file: "wiki/API契约.md", sourceIds: ["api.md"], humanOwned: false }],
+      articles: [
+        { id: "API契约", file: "wiki/API契约.md", sourceIds: ["api.md"], humanOwned: false },
+        { id: "人工页", file: "wiki/人工页.md", sourceIds: ["api.md"], humanOwned: true },
+      ],
     }),
     "utf8",
   );
@@ -51,7 +54,16 @@ test("hash-sources fills sha256; drift is empty until live file changes", async 
   await writeFile(live, "v2\n", "utf8");
   const dirty = await drift({ wikiRoot: wiki, repoRoot: repo });
   assert.deepEqual(dirty.changed, ["api.md"]);
-  assert.deepEqual(dirty.articles, ["API契约"]);
+  assert.deepEqual(dirty.articles, ["API契约", "人工页"]);
+  assert.deepEqual(dirty.humanOwned, ["人工页"]);
+  assert.deepEqual(dirty.unmapped, []);
+});
+
+test("unmapped candidates are listed without scanning the tree", () => {
+  const sources = [{ livePath: "docs/api.md" }];
+  assert.deepEqual(unmappedCandidates(sources, ["docs/api.md", "docs/new.md", "./docs/new.md"]), [
+    "docs/new.md",
+  ]);
 });
 
 test("drift CLI exits 0 when sources changed and prints JSON", async () => {
@@ -64,5 +76,23 @@ test("drift CLI exits 0 when sources changed and prints JSON", async () => {
   assert.equal(ran.status, 0, ran.stderr);
   const report = JSON.parse(ran.stdout);
   assert.deepEqual(report.changed, ["api.md"]);
-  assert.deepEqual(report.articles, ["API契约"]);
+  assert.deepEqual(report.articles, ["API契约", "人工页"]);
+  assert.deepEqual(report.humanOwned, ["人工页"]);
+  assert.deepEqual(report.unmapped, []);
+});
+
+test("status CLI exits 0 and lists unmapped candidates", async () => {
+  const { repo, wiki, live } = await seed();
+  await hashSources({ wikiRoot: wiki, repoRoot: repo, now: "2026-01-01T00:00:00Z" });
+  await writeFile(live, "v2\n", "utf8");
+  const ran = spawnSync(
+    process.execPath,
+    [inventoryCli, "status", "--wiki", wiki, "--repo", repo, "--candidate", "docs/extra.md"],
+    { encoding: "utf8" },
+  );
+  assert.equal(ran.status, 0, ran.stderr);
+  const report = JSON.parse(ran.stdout);
+  assert.deepEqual(report.changed, ["api.md"]);
+  assert.deepEqual(report.unmapped, ["docs/extra.md"]);
+  assert.deepEqual(report.humanOwned, ["人工页"]);
 });

@@ -1,0 +1,45 @@
+schema_version: 1
+intensity: L2
+classification_reason: >-
+  I1–I5 增加 status/advise 合同与可选 Status/ingest 模式（local-rule），
+  以及 inventory/advise 脚本作为非核心校验器（non-core-validator）。
+  未改生命周期注册表、未把 wiki lint/advise 写入 verify-template、
+  未改 yss-public-skills.json。AGENTS.md 只增强制入口表一行，
+  不升级为 L3。
+triggers: [local-rule, non-core-validator]
+changed_assets:
+  - .agents/skills/llm-wiki/SKILL.md
+  - .agents/skills/llm-wiki/references/compile.md
+  - .agents/skills/llm-wiki/references/query.md
+  - .agents/skills/llm-wiki/references/lint.md
+  - .agents/skills/llm-wiki/references/schema.md
+  - .agents/skills/llm-wiki/references/writing.md
+  - .agents/skills/llm-wiki/references/ingest.md
+  - .agents/skills/llm-wiki/assets/CLAUDE.md.template
+  - .agents/skills/llm-wiki/scripts/inventory.mjs
+  - .agents/skills/llm-wiki/scripts/inventory.test.mjs
+  - .agents/skills/llm-wiki/scripts/advise.mjs
+  - .agents/skills/llm-wiki/scripts/advise.test.mjs
+  - .agents/skills/llm-wiki/scripts/lint-wikilinks.mjs
+  - AGENTS.md
+  - CONTEXT.md
+  - skills-lock.json
+  - wiki/
+  - docs/reviews/llm-wiki-adapt-i1-i5-counterexample-2026-08-23.txt
+  - docs/reviews/llm-wiki-adapt-i1-i5-fresh-verification-2026-08-23.txt
+  - docs/reviews/llm-wiki-adapt-i1-i5-review-request-2026-08-23.md
+verification_evidence:
+  - kind: counterexample
+    command: docs/reviews/llm-wiki-adapt-i1-i5-counterexample-2026-08-23.txt
+    result: pass
+  - kind: fresh-verification
+    command: docs/reviews/llm-wiki-adapt-i1-i5-fresh-verification-2026-08-23.txt
+    result: pass
+  - kind: focused-independent-review
+    command: docs/reviews/llm-wiki-adapt-i1-i5-review-request-2026-08-23.md
+    result: pass
+review_mode: focused-independent
+escalation: >-
+  审查请求已落盘；实施者未出具 focused-independent 结论。
+  本条 result=pass 只表示请求文件与 checkpoint 合同可被校验器解析，
+  不表示审查已通过。合并或发布前须由非实施者改写审查结论。

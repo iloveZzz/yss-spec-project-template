@@ -1,0 +1,39 @@
+# L2 修改前反例：llm-wiki I1–I5
+
+日期：2026-08-23
+对照：origin/main 上的 `.agents/skills/llm-wiki`
+
+## 1. I1 — status 子命令不存在，drift 无 unmapped / humanOwned
+
+命令（main 版 inventory.mjs）：
+node inventory.mjs status --wiki <tmp> --repo <tmp> --candidate docs/extra.md
+
+结果：
+status=2
+stderr=usage: inventory.mjs hash|drift --wiki <wiki-root> [--repo <repo-root>]
+
+同一 fixture 上 `drift` exit 0，JSON keys 仅为：
+changed, missing, unchanged, articles
+
+结论：Agent 无法读四态候选与 humanOwned 状态表；有漂移时也没有稳定 `status` 别名。
+
+## 2. I2 — advise 脚本不存在
+
+git cat-file -e origin/main:.agents/skills/llm-wiki/scripts/advise.mjs
+结果：exit 128（对象不存在）
+
+结论：单向链 / 未引用 raw / 字面证据 suspects 没有独立于结构 lint 的报告通道。
+
+## 3. I4 — concept-table 不是 INFRA
+
+origin/main 的 lint-wikilinks.mjs INFRA 集合不含 `concept-table.md`。
+
+结论：若放入 `wiki/concept-table.md`，会按孤儿文章失败。
+
+## 4. I5 — ingest 模式与入口不存在
+
+git cat-file -e origin/main:.agents/skills/llm-wiki/references/ingest.md
+结果：exit 128
+
+origin/main `AGENTS.md` 强制入口只写 `llm-wiki`，不点名 `ingest`。
+origin/main `SKILL.md` 模式表无 `ingest` 行。

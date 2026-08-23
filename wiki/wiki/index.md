@@ -31,7 +31,7 @@
 - [[Matt技能体系]] — Matt Engineering Skills
 - [[技能投影与锁定]] — 技能投影与 `skills-lock.json`
 - [[实现仓库与跨仓库契约]] — 实现仓库与跨仓库契约
-- [[LLM Wiki]] — 本地持久知识库的 init / refresh / rebuild
+- [[LLM Wiki]] — 本地持久知识库的 init / refresh / rebuild / ingest
 
 ## 质量与治理
 

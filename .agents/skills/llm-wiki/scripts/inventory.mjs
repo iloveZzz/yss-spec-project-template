@@ -74,7 +74,26 @@ export async function hashSources({ wikiRoot, repoRoot, now = new Date().toISOSt
   return { manifest, missing };
 }
 
-export async function drift({ wikiRoot, repoRoot }) {
+export function normalizeLivePath(livePath) {
+  return String(livePath || "").replace(/\\/g, "/").replace(/^\.\/+/, "");
+}
+
+export function unmappedCandidates(sources, candidates = []) {
+  const mapped = new Set(
+    (sources || []).map((source) => normalizeLivePath(source.livePath)).filter(Boolean),
+  );
+  const unmapped = [];
+  const seen = new Set();
+  for (const candidate of candidates) {
+    const livePath = normalizeLivePath(candidate);
+    if (!livePath || mapped.has(livePath) || seen.has(livePath)) continue;
+    seen.add(livePath);
+    unmapped.push(livePath);
+  }
+  return unmapped;
+}
+
+export async function drift({ wikiRoot, repoRoot, candidates = [] }) {
   const manifest = await loadManifest(wikiRoot);
   const changed = [];
   const missing = [];
@@ -94,17 +113,30 @@ export async function drift({ wikiRoot, repoRoot }) {
     else unchanged.push(source.id);
   }
   const hit = new Set([...changed, ...missing]);
-  const articles = (manifest.articles || [])
-    .filter((article) => (article.sourceIds || []).some((id) => hit.has(id)))
-    .map((article) => article.id);
-  return { changed, missing, unchanged, articles };
+  const articles = [];
+  const humanOwned = [];
+  for (const article of manifest.articles || []) {
+    const impacted = (article.sourceIds || []).some((id) => hit.has(id));
+    if (!impacted) continue;
+    articles.push(article.id);
+    if (article.humanOwned === true) humanOwned.push(article.id);
+  }
+  return {
+    changed,
+    missing,
+    unchanged,
+    articles,
+    unmapped: unmappedCandidates(manifest.sources, candidates),
+    humanOwned,
+  };
 }
 
 function parseArgs(argv) {
-  const args = { command: argv[0], wiki: null, repo: process.cwd() };
+  const args = { command: argv[0], wiki: null, repo: process.cwd(), candidates: [] };
   for (let i = 1; i < argv.length; i += 1) {
     if (argv[i] === "--wiki") args.wiki = argv[++i];
     else if (argv[i] === "--repo") args.repo = argv[++i];
+    else if (argv[i] === "--candidate") args.candidates.push(argv[++i]);
     else if (!args.wiki && !argv[i].startsWith("-")) args.wiki = argv[i];
   }
   return args;
@@ -112,8 +144,10 @@ function parseArgs(argv) {
 
 async function main(argv = process.argv.slice(2)) {
   const args = parseArgs(argv);
-  if (!args.command || !["hash", "drift"].includes(args.command)) {
-    throw new Error("usage: inventory.mjs hash|drift --wiki <wiki-root> [--repo <repo-root>]");
+  if (!args.command || !["hash", "drift", "status"].includes(args.command)) {
+    throw new Error(
+      "usage: inventory.mjs hash|drift|status --wiki <wiki-root> [--repo <repo-root>] [--candidate <livePath>]",
+    );
   }
   const wikiRoot = resolveWikiRoot(args.wiki, args.repo);
   const repoRoot = path.resolve(args.repo);
@@ -128,7 +162,7 @@ async function main(argv = process.argv.slice(2)) {
     if (result.missing.length) process.exitCode = 1;
     return;
   }
-  const report = await drift({ wikiRoot, repoRoot });
+  const report = await drift({ wikiRoot, repoRoot, candidates: args.candidates });
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
 }
 
