@@ -83,7 +83,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 | merge / rebase 冲突 | `resolving-merge-conflicts` |
 | 架构治理、难测模块或深模块设计 | `improve-codebase-architecture` / `codebase-design` |
 | 跨线程、跨仓库、上下文过长或原型结论回流 | `handoff` 或等价交接记录 |
-| 本地知识库 init / refresh / rebuild，或要把研究结果落成持久 wiki | `llm-wiki` |
+| 本地知识库 init / refresh / rebuild，或要把研究结果落成持久 wiki | `llm-wiki`（落成持久 wiki 用 `ingest`；已映射 live 源变了用 `refresh`） |
 
 业务行为默认按 `tdd` 使用已确认的公开 seam 逐切片实现。一次性生成、纯配置或流程文档不适用代码 TDD 时，必须记录例外理由和可执行验证方式。
 
