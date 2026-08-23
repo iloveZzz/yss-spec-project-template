@@ -35,3 +35,10 @@ lint 脚本改为失败跨路径 wikilink、校验 manifest sha256，并要求 H
 ## [2026-08-23] FIX | 按 skill-names 配方重放 derived 摘录
 
 `skills-lock.json` 登记 `extract.kind: skill-names`，用 `extract.mjs` 重写 `raw/skills-lock-names.md`（只含稳定排序的技能名）。
+
+## [2026-08-23] REFRESH | llm-wiki I1–I5 源状态、advise、ingest 与 Status
+- changed: AGENTS.md, CONTEXT.md, skills-lock.json
+- articles: Agent入口规则, LLM Wiki, 模板总览, 技能投影与锁定
+- unmapped: (none)
+
+同步 raw 中的 `AGENTS.md` / `CONTEXT.md`，重放 `skill-names` 摘录（内容未变）。刷新 [[Agent入口规则]]、[[LLM Wiki]] 与 [[模板总览]] 中与 ingest / refresh 分界相关的句子；新增基础设施 `concept-table.md`；`CLAUDE.md` 补 Status / INGEST。未改其余命中页：AGENTS 仅增 ingest 入口句，CONTEXT 仅澄清 ingest 不替代权威源，锁文件只变 `effectiveHash`。

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "wikiRoot": "wiki",
-  "compiledAt": "2026-08-23T07:46:44.220Z",
-  "gitCommit": "6545806f685e82fe872247f65955193e920266a2",
+  "compiledAt": "2026-08-23T09:28:35.779Z",
+  "gitCommit": "4195fb4f4e5b1f8cf2fada485ed890526d469385",
   "profile": "documents",
   "sources": [
     {
@@ -11,7 +11,7 @@
       "livePath": "AGENTS.md",
       "rawPath": "raw/AGENTS.md",
       "role": "copy",
-      "sha256": "85135247d8c4e35bb5169959c656ae59ad1eb9a49169ef73846ce0371175a1c7"
+      "sha256": "8b4616521833aae117e46a1ad07aa0fadbee180e95708d239062a67f31acc33d"
     },
     {
       "id": "CONTEXT.md",
@@ -19,7 +19,7 @@
       "livePath": "CONTEXT.md",
       "rawPath": "raw/CONTEXT.md",
       "role": "copy",
-      "sha256": "e1d4ee97dbf9f9a9a663b32c8e15be654e2593a867632c6f6ca22d70acc765b3"
+      "sha256": "4e8cf91a8d051edcce45867edc38e2d6d68d2e94577d069d8307ebc58d05a211"
     },
     {
       "id": "README.md",
@@ -142,7 +142,7 @@
       "extract": {
         "kind": "skill-names"
       },
-      "sha256": "965ce9f6011440a49845d2be7b406ec5842f3d384e628dff20937053d2e5979c"
+      "sha256": "df9bd8e96f575bee59d186a9d248ee5d969552cb949bafbe25ce0452e89e7a46"
     }
   ],
   "articles": [

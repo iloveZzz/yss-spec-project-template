@@ -58,7 +58,7 @@
 | 显式兼容入口 | 为已有用户操作习惯保留的 user-invoked 工作流入口，写入前由生命周期编排器预检，结果回交其验收。 | 不是默认路径、过时别名或可以越过门禁的第二套生命周期。 |
 | 技能成熟度 | 描述技能从 `draft`、`verified`、`supported` 到 `deprecated` 的治理状态。 | 不等同于文件存在、已被投影或能够安装。 |
 | 技能注册表 | 记录技能身份、别名、分层、适用影响面、成熟度、默认可发现性和 Agent 运行时入口的机器可读路由资产。 | 不替代 `skills-lock.json` 的来源、hash 和投影完整性职责。当前 `docs/agents/yss-skill-registry.yaml` 为 `shadow`，Router 与生命周期不得按其裁剪发现面。 |
-| LLM Wiki | 由 `raw/`、`wiki/` 与 `.wiki-manifest.json` 组成的本地持久知识库。 | 不是 `research` 一次性笔记，也不替代权威源。 |
+| LLM Wiki | 由 `raw/`、`wiki/` 与 `.wiki-manifest.json` 组成的本地持久知识库。 | 不是 `research` 一次性笔记，也不替代权威源。`ingest` 只把用户点名的外源或已落盘研究笔记编进 IR，不改 live 权威文件。 |
 | 生态发布清单 | 关联模板 schema 与 commit、CLI 版本与快照、公开技能来源与导出 hash 的跨仓发布证据。 | 不要求尚未生成的仓库 commit 互相循环引用。 |
 | 研发管理仓库 | 承载 Spec、OpenAPI、架构、Ticket、验证、发布和复盘等研发管理资产的仓库。 | 不等同于前端 / 后端代码 monorepo。 |
 | 实现仓库 | 承载前端、后端或其他运行时代码及其 Git、CI、MR / PR、测试命令和发布流水线的仓库。 | 不要把实现仓库的源码所有权混入研发管理仓库。 |
