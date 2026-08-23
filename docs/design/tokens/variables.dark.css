@@ -41,7 +41,7 @@
   --brand-color-bg-elevated: #272727;
   --brand-color-border: #3e3e3e;
   --brand-color-border-secondary: #303030;
-  --brand-font-family: Inter, system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --brand-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --brand-font-family-code: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
   --brand-font-size: 14px;
   --brand-font-size-sm: 12px;
@@ -63,10 +63,10 @@
   --brand-size-lg: 24px;
   --brand-size-xl: 32px;
   --brand-size-xxl: 48px;
-  --brand-border-radius-xs: 3px;
-  --brand-border-radius-sm: 5px;
-  --brand-border-radius: 8px;
-  --brand-border-radius-lg: 10px;
+  --brand-border-radius-xs: 2px;
+  --brand-border-radius-sm: 4px;
+  --brand-border-radius: 6px;
+  --brand-border-radius-lg: 8px;
   --brand-line-width: 1px;
   --brand-control-height-xs: 16px;
   --brand-control-height-sm: 24px;

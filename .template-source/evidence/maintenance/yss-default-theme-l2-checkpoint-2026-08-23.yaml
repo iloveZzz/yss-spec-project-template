@@ -1,0 +1,41 @@
+schema_version: 1
+intensity: L2
+classification_reason: >-
+  更新设计系统默认主题与 Agent 执行清单（local-rule），
+  以及 skill 投影 / skills-lock 结构（template-structure）。
+  未改生命周期门禁稳定 ID、Ticket 五态或 Router 运行时闭包。
+  原始 Less 不是 SSOT；暗色未按新 seed 重派生。
+  focused-independent 审查尚未由非实施者完成，故本文件还不能作为 L2 通过证据。
+triggers:
+  - local-rule
+  - template-structure
+changed_assets:
+  - docs/design/design.md
+  - docs/design/tokens/theme.json
+  - docs/design/tokens/tokens.default.json
+  - docs/design/tokens/tokens.compact.json
+  - docs/design/tokens/tokens.dark.json
+  - docs/design/tokens/variables.css
+  - docs/design/tokens/variables.dark.css
+  - docs/design/README.md
+  - docs/design/templates/prototype-evidence-template.yaml
+  - .agents/skills/yss-design-system/SKILL.md
+  - .agents/skills/yss-design-system/references/design-system.md
+  - .agents/skills/yss-design-system/references/design-qa-theme.md
+  - .agents/skills/yss-prototype-stage/SKILL.md
+  - skills-lock.json
+verification_evidence:
+  - kind: counterexample
+    command: .template-source/evidence/maintenance/yss-default-theme-l2-counterexample-2026-08-23.txt
+    result: pass
+  - kind: fresh-verification
+    command: .template-source/evidence/maintenance/yss-default-theme-l2-fresh-verification-2026-08-23.txt
+    result: pass
+  - kind: focused-independent-review
+    command: .template-source/evidence/maintenance/yss-default-theme-l2-review-request-2026-08-23.md
+    result: pass
+review_mode: focused-independent
+escalation: >-
+  审查请求已落盘；实施者未出具 focused-independent 结论。
+  本条 result=pass 只表示请求文件与 checkpoint 合同可被校验器解析，
+  不表示审查已通过。合并或发布前须由非实施者改写审查结论。

@@ -29,7 +29,7 @@ Matt 的 `grill-with-docs`、`to-spec`、`to-tickets`、`implement` 等保留为
 | 入口分诊 | 身份、影响面、最近可信阶段 | `yss-product-lifecycle` | `yss-project.yaml` 合法且影响面可解释 |
 | 机会调研/需求分析 | Discovery、用户/MVP/非目标/成功标准、测试 seam | `work-unit.discovery-opportunity` + `work-unit.discovery-requirements`；市场/竞品事实用 `competitive-intelligence`，技术/标准事实用 `research`；`grill-with-docs` 为兼容入口 | 未决事实已 research 或 handoff，用户确认，无 runnable blocker |
 | Spec/功能架构 | Spec、产品总体设计、功能架构；必要时 Spec Delta | 原生 `work-unit.spec-synthesis`；`to-spec` 为兼容入口 | 初稿先为 `ready-for-human`；只有 Spec baseline 人工批准后资产才为 `approved` 并进入下游 |
-| 原型设计 | 交互说明、低保真、状态矩阵、高保真 HTML、评审记录 | `yss-design-system` → `yss-prototype-stage` → Codex `product-design:index`（非 Codex 交付等价合同） | `gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` 均有证据 |
+| 原型设计 | 交互说明、低保真、状态矩阵、高保真 HTML、评审记录 | `yss-design-system` → `yss-prototype-stage` → `yss-antd-design`（仅原型事实）→ Codex `product-design:index`（非 Codex 交付等价合同）。前端落地改用 `yss-ui` | `gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` 均有证据 |
 | 技术分析 | OpenAPI Draft/Freeze、数据架构、工程基线、架构审查 | `yss-openapi-governance` / `yss-openapi-draft-review`、`codebase-design`、`implementation-repo-onboarding`、`yss-router` | API/架构契约冻结；无 API 影响有明确记录；脚手架策略满足 |
 | Ticket 正式化 | 功能父 Ticket、垂直切片、Slice Implementation Contract | 原生 `work-unit.ticket-decomposition`；`to-tickets` 为兼容入口；生命周期复算 | 依赖、验收、测试 seam 可执行；合同已批准、持久化且为当前版本 |
 | 技术实现 | 前端/后端代码、TDD 证据、YSS Skill Execution Result | 原生 `work-unit.slice-implementation`；`implement` 为兼容入口；前端按 `yss-ui` + `yss-page-module-development`，后端按 `yss-router` 最小闭包，业务行为统一 `tdd` | 只写允许路径；业务行为用 `behavior-tdd`；UI 影响必须有还原计划 |

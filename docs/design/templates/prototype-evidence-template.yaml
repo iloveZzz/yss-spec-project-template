@@ -9,7 +9,16 @@ design_baseline:
   upstream_design_md_source: https://ant.design/design.md
   upstream_design_md_record_ref: <path-to-json-output-or-summary>
   project_override_reviewed: false
+  theme_override:
+    color_primary: "#3371ff"
+    color_error: "#f5222d"
+    color_bg_layout: "#f0f2f5"
+    border_radius: 6
+    font_family: system-stack
+    recorded: false
+    note: 与官方 #1677ff / Inter / 8px 的差异必须记录；无差异则 recorded=false 并说明沿用项目默认。
 antd:
+  fact_skill: yss-antd-design
   cli_command: antd
   cli_version: <actual-cli-version>
   target_antd_version: <project-selected-v6-version>
@@ -21,7 +30,9 @@ antd:
         demo_ref: <path-to-json-output>
         token_ref: <path-to-json-output>
         semantic_ref: <path-to-json-output>
-  lint_ref: <path-to-json-output>
+  lint_applicable: not-applicable
+  lint_reason: html-prototype
+  lint_ref: <path-to-json-output-or-none>
   lint_passed: false
 browser_verification:
   executor: <browser-or-automation-name>

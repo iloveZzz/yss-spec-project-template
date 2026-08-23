@@ -1,0 +1,52 @@
+# yss-default-theme L2 fresh verification
+date: 2026-08-23T12:09:08Z
+commit: 526b5d4f9dcdd12065ae31c66bfb9ca5c018a7b6
+
+## seed after overlay
+{'colorPrimary': '#3371ff', 'colorError': '#f5222d', 'colorInfo': '#3371ff', 'colorBgLayout': '#f0f2f5', 'colorText': 'rgba(0, 0, 0, 0.88)', 'colorBorder': '#d9d9d9', 'borderRadius': 6, 'fontFamily': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"'}
+{'colorPrimary': '#3371ff', 'colorSuccess': '#52c41a', 'colorWarning': '#faad14', 'colorError': '#f5222d', 'colorInfo': '#3371ff', 'colorTextBase': '#000000', 'colorBgBase': '#ffffff', 'colorBgLayout': '#f0f2f5', 'colorText': 'rgba(0, 0, 0, 0.88)', 'colorTextSecondary': 'rgba(0, 0, 0, 0.65)', 'colorBorder': '#d9d9d9', 'fontFamily': '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"', 'fontFamilyCode': '"SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace', 'fontSize': 14, 'borderRadius': 6, 'sizeUnit': 4, 'sizeStep': 4, 'controlHeight': 32, 'lineWidth': 1, 'motionUnit': 0.1, 'motionBase': 0, 'wireframe': False, 'motion': True, 'layoutHeaderHeight': 64, 'layoutSiderBackground': '#001529', 'layoutBodyBackground': '#f0f2f5'}
+
+## design.md token table (current)
+29:| 默认圆角 | `6px` | Less 前半 `4px`、历史品牌 `8px` |
+30:| 字体栈 | 系统栈 | 强制 `Inter` |
+41:当前项目覆盖与官方默认的主要差异：主色 `#3371ff` ≠ 官方 `#1677ff`，错误色 `#f5222d` ≠ 官方 `#ff4d4f`，页面背景 `#f0f2f5`，文本使用 Ant Design 透明度阶，默认圆角 `6px`。`blue` 等预设色板仍可保留官方蓝谱；**色板预设 ≠ 品牌主色**。
+62:| `colorPrimary` | `#3371ff` | 主按钮、链接、焦点、选中态、激活导航 |
+63:| `colorPrimaryHover` | `#4096ff` | 主色 hover |
+64:| `colorPrimaryActive` | `#0958d9` | 主色 active |
+167:| `screenSM` | `576px` | 布局断点 |
+184:保持“控件圆角小于或等于容器圆角”：默认控件 `6px`，小控件 `4px`，容器 `8px`。实现时以 `docs/design/tokens/tokens.default.json` 为准。
+
+## skill baseline
+17:- Codex `$design-qa` 项目对照：`references/design-qa-theme.md`，不替代官方 `design-qa` 流程，也不改上游插件正文。
+34:- 主色：`#3371ff`（`--primary-color` / `--brand-color-primary`），用于主操作、链接、焦点、选中态和激活导航。
+91:| Codex 原型交接前的视觉 QA | `design-qa`；token / 字体对照读 `references/design-qa-theme.md`，以项目覆盖为准 |
+
+## lock / sync
+skill projections are synchronized
+skills-lock.json matches distributed skills
+
+## frontmatter
+yss-design-system frontmatter ok
+TAP version 13
+# Subtest: accepts the required skill frontmatter
+ok 1 - accepts the required skill frontmatter
+  ---
+  duration_ms: 0.557431
+  ...
+# Subtest: rejects missing and unsupported frontmatter fields
+ok 2 - rejects missing and unsupported frontmatter fields
+  ---
+  duration_ms: 0.35823
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 38.765562
+
+## verify-template
+本轮已执行 scripts/verify-template，退出码 0，输出含：15/15 Node 测试、模板发布校验通过

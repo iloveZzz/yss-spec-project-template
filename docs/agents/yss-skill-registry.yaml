@@ -283,6 +283,12 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [writing]
+  - id: yss-antd-design
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [prototype]
   - id: yss-api-integration
     layer: specialist
     maturity: supported

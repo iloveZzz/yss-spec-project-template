@@ -13,7 +13,9 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 - 项目 token 快照：`docs/design/tokens/theme.json`、`docs/design/tokens/tokens.default.json`、`docs/design/tokens/tokens.dark.json`、`docs/design/tokens/tokens.compact.json`、`docs/design/tokens/variables.css`、`docs/design/tokens/variables.dark.css`。
 - 本技能执行清单：`references/design-system.md`，用于 Agent 执行和评审，不替代 `docs/design/design.md`。
 - 历史输入包：`/Users/zhudaoming/Downloads/Product-Design-System`，只用于追溯首次引入来源，不作为后续工程依赖。
-- 原型阶段合同：`yss-prototype-stage`，用于统一跨 Agent 的原型资产、AntD 事实和浏览器验证证据。
+- 默认亮色覆盖：项目 Ant Design 5 Less / `:root` 变量已裁定进 `docs/design/design.md` 与 token 快照；原始 Less 不是实现语言。
+- Codex `$design-qa` 项目对照：`references/design-qa-theme.md`，不替代官方 `design-qa` 流程，也不改上游插件正文。
+- 原型阶段合同：`yss-prototype-stage`，用于统一跨 Agent 的原型资产和浏览器验证证据。AntD 事实由 `yss-antd-design` 提供，且只用于原型设计构建。
 
 如果只需要快速判断，先读本文件。若要写 UI 规范、实现页面、评审设计或调整 token，必须读项目内 `docs/design/design.md`；若要执行评审或实现检查，再读 `references/design-system.md`。
 
@@ -29,10 +31,11 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 ## 核心基线
 
 - UI 定位：中后台、数据密集、表单密集、流程密集、可扫描、低装饰。
-- 主色：`#1677ff`，用于主操作、链接、焦点、选中态和激活导航。
-- 默认字号：14px；主要字重：400 / 600。
-- 默认控件高度：32px。
+- 主色：`#3371ff`（`--primary-color` / `--brand-color-primary`），用于主操作、链接、焦点、选中态和激活导航。
+- 默认字号：14px；主要字重：400 / 600；字体栈为系统字体，不强制 `Inter`。
+- 默认控件高度：32px；默认圆角 6px。
 - 间距：4px 网格，优先使用 token，不写任意 magic number。
+- 运行时换肤：短名 CSS 变量必须指向 `--brand-*`，不要再维护第二套色值。
 - 表面层级：页面背景、内容容器、浮层三层模型。
 - 组件语言：优先 Ant Design / YSS UI 语义，不自造同类控件。
 - 状态完整性：loading、empty、error、readonly、disabled、no-permission、conflict、success 必须在设计或实现中可解释。
@@ -84,7 +87,8 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 | 前端页面实现 | `yss-ui` / `yss-page-module-development` |
 | 表单 schema | `yss-formily` |
 | YTable / YTree / 高度自适应 | `yss-components` / `yss-use-table-height` / `yss-use-tree-height` |
-| Ant Design v6 组件 / token / demo 查询 | 官方 `@ant-design/cli` / `https://ant.design/docs/react/for-agents` |
+| 原型阶段的 Ant Design v6 组件 / token / demo 查询 | `yss-antd-design`（只用于原型设计构建；前端落地改用 `yss-ui`） |
+| Codex 原型交接前的视觉 QA | `design-qa`；token / 字体对照读 `references/design-qa-theme.md`，以项目覆盖为准 |
 | API 契约 / 接入 | `yss-openapi-governance` / `api-integration` |
 
 ## 更新设计系统

@@ -2,26 +2,45 @@
 
 ## 来源与定位
 
-本文件基于本地设计系统包 `/Users/zhudaoming/Downloads/Product-Design-System` 首次分析整理。自本文件落地后，项目内设计系统的权威来源为 `docs/design/design.md` 与 `docs/design/tokens/*`，外部 Downloads 目录仅作为历史输入记录，不作为后续执行依赖。
+本文件基于本地设计系统包 `/Users/zhudaoming/Downloads/Product-Design-System` 首次分析整理，并在后续用项目 Ant Design 5 Less / `:root` CSS 变量覆盖默认亮色主题。自本文件落地后，项目内设计系统的权威来源为 `docs/design/design.md` 与 `docs/design/tokens/*`，外部 Downloads 目录和原始 Less 文件仅作为历史输入记录，不作为后续执行依赖，也不作为实现语言。
 
-本次分析的关键来源：
+关键来源：
 
-| 来源文件 | 作用 | 采用结论 |
+| 来源 | 作用 | 采用结论 |
 | --- | --- | --- |
-| `assets/design.md` | 完整 Ant Design 设计系统说明，包含颜色、排版、布局、组件、动效和定制规则 | 作为主要设计系统语义来源 |
+| 历史 `Product-Design-System` 包 | 首次引入 Ant Design 企业级语义、状态矩阵和验收习惯 | 保留原则、组件规则和审查清单 |
+| 项目 Ant Design 5 Less / `:root` 变量 | 默认亮色主题、运行时切换别名、色板与布局 token | **默认主题权威**；冲突时以 `:root` 为准 |
 | `docs/design/tokens/tokens.default.json` | 默认亮色主题派生 token | 作为实现 token 基线 |
-| `docs/design/tokens/tokens.dark.json` | 暗色主题派生 token | 作为后续暗色模式扩展来源 |
-| `docs/design/tokens/tokens.compact.json` | 紧凑密度主题派生 token | 作为后台密集表格 / 表单场景扩展来源 |
-| `docs/design/tokens/variables.css` | `--brand-*` CSS 变量 | 前端实现时优先转换为项目 token |
+| `docs/design/tokens/tokens.dark.json` | 暗色主题派生 token | 暗色仍走 `darkAlgorithm`；本轮未按新 seed 重派生完整暗色色板 |
+| `docs/design/tokens/tokens.compact.json` | 紧凑密度主题派生 token | 共享亮色 seed，紧凑高度算法保持现状 |
+| `docs/design/tokens/variables.css` | `--brand-*` 与运行时别名 | 前端实现时优先转换为项目 token |
 | `docs/design/tokens/theme.json` | Ant Design `ConfigProvider` theme 配置 | React + Ant Design 项目可直接参考 |
-| `DESIGN-HANDOFF.md` | 设计交付约束、响应式验证矩阵和实现顺序 | 作为 UI 实现验收补充 |
-| `DESIGN.md` | 品牌生成器输出的简要索引 | 仅作品牌包索引，不作为完整规范 |
+
+同份 Less 输入存在两套互相覆盖的默认值。项目裁定如下，并已写入 token 快照：
+
+| 项 | 采用 | 丢弃 |
+| --- | --- | --- |
+| 主色 | `#3371ff`（`--primary-color`） | `#3177ff` fallback、历史 `#1677ff` |
+| 信息色 | `#3371ff` | 历史 `#1677ff` |
+| 错误色 | `#f5222d` | 历史 `#ff4d4f` |
+| 页面背景 | `#f0f2f5` | 历史 `#f5f5f5` |
+| 主文本 / 次文本 | `rgba(0, 0, 0, 0.88)` / `rgba(0, 0, 0, 0.65)` | `#2e2e2e` / `#646464` |
+| 边框 / 分割线 | `#d9d9d9` / `#f0f0f0` | `#dbdbdb` / `#f1f1f1` |
+| 默认圆角 | `6px` | Less 前半 `4px`、历史品牌 `8px` |
+| 字体栈 | 系统栈 | 强制 `Inter` |
+| hover / active | `#4096ff` / `#0958d9`（`:root` 显式值） | 由新主色算法重算 |
+
+`.m-1` / `.flex-*` 等 utility class、`::-webkit-scrollbar` 定制和原始 `.less` 文件不纳入规范正文，只可作为可选实现备注。
 
 结论：这不是营销型视觉系统，而是面向中后台、数据密集、表单密集、流程密集产品的 Ant Design 风格企业级设计系统。项目内 UI 默认应以“清晰、确定、低装饰、可扫描、高一致性”为目标。
 
 ## 原型设计依据的优先级
 
 原型使用 Ant Design 时，`https://ant.design/design.md` 与官方 `antd` CLI 提供的是**上游默认**和组件事实；项目的 `docs/design/design.md`、`docs/design/tokens/*` 是经过确认的**项目覆盖**。当前功能只能在这两层之下完成语义组件映射。若上游默认与项目 token 不同，以项目覆盖为准，并在 `prototype-evidence.yaml` 中记录差异；不得把上游默认直接写回项目实现。
+
+当前项目覆盖与官方默认的主要差异：主色 `#3371ff` ≠ 官方 `#1677ff`，错误色 `#f5222d` ≠ 官方 `#ff4d4f`，页面背景 `#f0f2f5`，文本使用 Ant Design 透明度阶，默认圆角 `6px`。`blue` 等预设色板仍可保留官方蓝谱；**色板预设 ≠ 品牌主色**。
+
+Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以本文件和 `docs/design/tokens/*` 为 source visual truth，而不是官方默认或历史 `#1677ff` / `Inter` / `8px` 品牌圆角。执行清单见 `.agents/skills/yss-design-system/references/design-qa-theme.md`。
 
 ## 设计原则
 
@@ -40,29 +59,54 @@
 
 | Token | 值 | 用途 |
 | --- | --- | --- |
-| `colorPrimary` | `#1677ff` | 主按钮、链接、焦点、选中态、激活导航 |
+| `colorPrimary` | `#3371ff` | 主按钮、链接、焦点、选中态、激活导航 |
 | `colorPrimaryHover` | `#4096ff` | 主色 hover |
 | `colorPrimaryActive` | `#0958d9` | 主色 active |
 | `colorSuccess` | `#52c41a` | 成功状态 |
 | `colorWarning` | `#faad14` | 警告状态 |
-| `colorError` | `#ff4d4f` | 错误状态 |
-| `colorInfo` | `#1677ff` | 信息提示 |
-| `colorBgLayout` | `#f5f5f5` | 页面背景 |
+| `colorError` | `#f5222d` | 错误状态 |
+| `colorInfo` | `#3371ff` | 信息提示 |
+| `colorBgLayout` | `#f0f2f5` | 页面背景 |
 | `colorBgContainer` | `#ffffff` | 卡片、表格、表单、面板容器 |
 | `colorBgElevated` | `#ffffff` | 弹窗、下拉、浮层 |
-| `colorText` | `#2e2e2e` | 主文本 |
-| `colorTextSecondary` | `#646464` | 次级文本 |
-| `colorTextTertiary` | `#949494` | 说明 / 弱提示 |
-| `colorTextQuaternary` | `#c4c4c4` | placeholder / disabled |
-| `colorBorder` | `#dbdbdb` | 主边框 |
-| `colorBorderSecondary` | `#f1f1f1` | 次级分割线 |
+| `colorText` | `rgba(0, 0, 0, 0.88)` | 主文本 |
+| `colorTextSecondary` | `rgba(0, 0, 0, 0.65)` | 次级文本 |
+| `colorTextTertiary` | `#8c8c8c` | 说明 / 弱提示 |
+| `colorTextQuaternary` | `#bfbfbf` | placeholder / disabled |
+| `colorBorder` | `#d9d9d9` | 主边框 |
+| `colorBorderSecondary` | `#f0f0f0` | 次级分割线 |
 
 颜色使用规则：
 
 - 主色只表达全局主操作、链接、选中态和焦点态，不作为大面积背景装饰。
 - `success`、`warning`、`error`、`info` 只用于功能状态，不与品牌强调混用。
-- 预设色板如 `blue`、`purple`、`cyan`、`green`、`magenta`、`red`、`orange`、`yellow`、`volcano`、`geekblue`、`gold`、`lime` 主要用于 Tag、图表和分类可视化。
+- 预设色板如 `blue`、`purple`、`cyan`、`green`、`magenta`、`red`、`orange`、`yellow`、`volcano`、`geekblue`、`gold`、`lime` 主要用于 Tag、图表和分类可视化；其中 `blue-6` 仍可能是官方 `#1677ff`，不得当作品牌主色。
 - 产品代码中不要硬编码 `#ffffff`、`#fafafa` 等表面色，应引用语义 token。
+- 主色浅阶 `primary-1` 使用 `color-mix(in srgb, var(--primary-color) 10%, transparent)`，不要对 CSS 变量调用 Less `fade()`。
+
+### 运行时主题变量
+
+默认亮色支持运行时切换。`:root` 中的短名别名必须指向 `--brand-*`，不要再维护第二套色值。
+
+| 运行时别名 | 指向 | 默认值 |
+| --- | --- | --- |
+| `--primary-color` | `--brand-color-primary` | `#3371ff` |
+| `--primary-color-hover` | `--brand-color-primary-hover` | `#4096ff` |
+| `--primary-color-active` | `--brand-color-primary-active` | `#0958d9` |
+| `--primary-1` | `color-mix(in srgb, var(--primary-color) 10%, transparent)` | 主色 10% 透明 |
+| `--primary-7` | `--primary-color-active` | `#0958d9` |
+| `--success-color` | `--brand-color-success` | `#52c41a` |
+| `--warning-color` | `--brand-color-warning` | `#faad14` |
+| `--error-color` | `--brand-color-error` | `#f5222d` |
+| `--info-color` | `--brand-color-info` | `#3371ff` |
+| `--text-color` | `--brand-color-text` | `rgba(0, 0, 0, 0.88)` |
+| `--text-color-secondary` | `--brand-color-text-secondary` | `rgba(0, 0, 0, 0.65)` |
+| `--border-color` | `--brand-color-border` | `#d9d9d9` |
+| `--border-color-split` | `--brand-color-border-secondary` | `#f0f0f0` |
+| `--bg-color` | `--brand-color-bg-layout` | `#f0f2f5` |
+| `--bg-color-container` | `--brand-color-bg-container` | `#ffffff` |
+
+切换主题时只改 `--brand-*` 或同步改短名别名；不要在页面里另写一套 Less 变量。
 
 ### 排版
 
@@ -80,7 +124,7 @@
 字体栈：
 
 ```text
-Inter, system-ui, -apple-system, Segoe UI, Helvetica Neue, Arial, sans-serif
+-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"
 ```
 
 排版规则：
@@ -88,6 +132,7 @@ Inter, system-ui, -apple-system, Segoe UI, Helvetica Neue, Arial, sans-serif
 - 中后台产品默认正文使用 14px，以保证信息密度和可扫描性。
 - UI 字重优先使用 400 和 600，不使用 700+ 的重粗字作为状态强调。
 - 选中 / 激活状态优先通过颜色、边框、下划线和背景表达，不通过突然加粗制造跳动。
+- 不把 `Inter` 或其他品牌字体写成强制默认栈；项目若要引入品牌字体，必须先更新本文件和 token 快照。
 
 ### 间距与尺寸
 
@@ -111,16 +156,32 @@ Inter, system-ui, -apple-system, Segoe UI, Helvetica Neue, Arial, sans-serif
 - 表单、筛选区、工具栏、表格和详情页应优先使用密集但有节奏的布局。
 - 不使用任意 magic number；如确需新增尺寸，应先判断是否要扩展 token。
 
+### 布局 token
+
+| Token | 值 | 用途 |
+| --- | --- | --- |
+| `layoutHeaderHeight` | `64px` | 顶栏高度 |
+| `layoutSiderBackground` | `#001529` | 深色侧栏背景 |
+| `layoutBodyBackground` | `#f0f2f5` | 与 `colorBgLayout` 对齐的页面背景 |
+| `screenXS` | `480px` | 布局断点 |
+| `screenSM` | `576px` | 布局断点 |
+| `screenMD` | `768px` | 布局断点 |
+| `screenLG` | `992px` | 布局断点 |
+| `screenXL` | `1200px` | 布局断点 |
+| `screenXXL` | `1600px` | 布局断点 |
+
+这些断点用于栅格、隐藏工具类和布局折叠，不替换下方截图验收视口矩阵。
+
 ### 圆角
 
 | Token | 值 | 用途 |
 | --- | --- | --- |
-| `borderRadiusXS` | 3 | 极小元素 |
-| `borderRadiusSM` | 5 | 小标签、小控件 |
-| `borderRadius` | 8 | 当前品牌包默认圆角 |
-| `borderRadiusLG` | 10 | 大容器 / 浮层 |
+| `borderRadiusXS` | 2 | 极小元素 |
+| `borderRadiusSM` | 4 | 小标签、小控件 |
+| `borderRadius` | 6 | 默认控件圆角 |
+| `borderRadiusLG` | 8 | 大容器 / 浮层 |
 
-注意：`assets/design.md` 中 Ant Design 语义说明以 6px 控件圆角、8px 容器圆角为基准；当前品牌 token 派生结果将 `borderRadius` 设为 8px、`borderRadiusLG` 设为 10px。项目实现时以 `system/tokens.default.json` 为准，但应保持“控件圆角小于或等于容器圆角”的层级关系。
+保持“控件圆角小于或等于容器圆角”：默认控件 `6px`，小控件 `4px`，容器 `8px`。实现时以 `docs/design/tokens/tokens.default.json` 为准。
 
 ### 动效
 
@@ -181,6 +242,8 @@ Inter, system-ui, -apple-system, Segoe UI, Helvetica Neue, Arial, sans-serif
 | desktop | 1440 × 900 |
 | wide desktop | 1920 × 1080 |
 
+布局 CSS 断点补充：`480 / 576 / 768 / 992 / 1200 / 1600`。它们用于栅格和显示/隐藏，不替代上表截图验收尺寸。
+
 验收规则：
 
 - 不允许出现横向滚动，除非是明确设计的表格横向滚动容器。
@@ -195,7 +258,7 @@ Inter, system-ui, -apple-system, Segoe UI, Helvetica Neue, Arial, sans-serif
 - 使用 `ConfigProvider` 注入 `docs/design/tokens/theme.json` 中的 theme 配置。
 - 组件样式优先通过 Ant Design token、component token、CSS variables 或主题算法表达。
 - 消息、通知、Modal 静态方法应使用 `App`、hook API 或 context holder，避免主题上下文丢失。
-- 暗色模式使用 `darkAlgorithm` 或 `docs/design/tokens/variables.dark.css`，不要手工反转颜色。
+- 暗色模式使用 `darkAlgorithm` 或 `docs/design/tokens/variables.dark.css`，不要手工反转颜色。本轮只同步了暗色的字体栈和圆角 seed；完整暗色色板仍是历史算法结果，启用暗色前应再派生一次。
 - 紧凑模式使用 `compactAlgorithm` 或 `docs/design/tokens/tokens.compact.json`，不要逐组件压缩高度。
 
 如果前端不是 Ant Design：
@@ -203,6 +266,7 @@ Inter, system-ui, -apple-system, Segoe UI, Helvetica Neue, Arial, sans-serif
 - 先把 `docs/design/tokens/tokens.default.json` 转为项目设计 token，再映射到目标 UI 库。
 - 保留组件语义和状态语义，不要只复制颜色。
 - 尽量保持 32px 默认控件高度、14px 默认字号、4px 间距网格和三层表面模型。
+- 运行时动态换肤使用 `--primary-color` 等短名别名，或直接改 `--brand-*`。
 
 ## 设计审查清单
 
@@ -215,12 +279,13 @@ Inter, system-ui, -apple-system, Segoe UI, Helvetica Neue, Arial, sans-serif
 - 主操作是否唯一且清楚，次级操作是否降级。
 - 是否存在硬编码颜色、任意间距、重复自造控件或与系统冲突的交互。
 - 是否覆盖关键响应式断点。
+- Codex `$design-qa` 是否按项目覆盖对照主色、错误色、背景、文本、圆角和字体栈。
 
 ## 后续落地 TODO
 
 - 将 `docs/design/tokens/theme.json` 接入前端工程主题配置。
-- 将 `docs/design/tokens/variables.css` 中的 `--brand-*` 变量纳入项目 token 管理。
-- 如果项目启用暗色模式，补充 `docs/design/tokens/tokens.dark.json` 的使用规范和截图验收。
+- 将 `docs/design/tokens/variables.css` 中的 `--brand-*` 与运行时别名纳入项目 token 管理。
+- 如果项目启用暗色模式，用 `darkAlgorithm` 按新 seed 重派生 `docs/design/tokens/tokens.dark.json`，并补充截图验收。
 - 如果项目存在高密度表格 / 审批 / 运营台，补充 `docs/design/tokens/tokens.compact.json` 的适用边界。
 
 ## Ant Design v6 原型补充基线

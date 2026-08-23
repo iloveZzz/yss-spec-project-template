@@ -30,7 +30,7 @@ pnpm why vue @yss-ui/components @yss-ui/hooks ant-design-vue vxe-table
 
 记录实际版本、lockfile、验证命令和环境阻塞。完整策略见 `references/antdv-compatibility.md`。
 
-产品设计使用的 Ant Design v6 视觉/token 语义，不等于 Vue 生产实现 API。生产代码必须使用项目安装的 Ant Design Vue 4.x API，禁止复制 React hook、props 或组件写法。
+产品设计使用的 Ant Design v6 视觉/token 语义，不等于 Vue 生产实现 API。生产代码必须使用项目安装的 Ant Design Vue 4.x API，禁止复制 React hook、props 或组件写法。`yss-antd-design` 与 `@ant-design/cli` 只用于原型设计构建，进入本技能后不得再调用。
 
 ## 3. 组件选型门禁
 
