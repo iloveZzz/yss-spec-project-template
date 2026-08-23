@@ -89,17 +89,27 @@ Done when the target is a detectable Karpathy wiki and lint exits 0.
 
 ## refresh
 
-Done when only drift-hit articles change, human-owned pages are untouched, lint exits 0, and log has `REFRESH`.
+Done when only drift-hit articles change, human-owned pages are untouched, lint exits 0, and log has a structured `REFRESH`.
 
 1. No manifest → stop. Rebuild, or rebuild the manifest from existing「来源」sections. Do not invent `sourceIds`.
-2. `inventory.mjs drift` against every `livePath`. Read the JSON; non-empty `changed` or `missing` is stale. Exit `0` with that JSON is normal, not a failure. Exit `2` is a script error.
-3. Impact set = articles whose `sourceIds` intersect changed/missing sources.
+2. `inventory.mjs status` (alias of `drift`) against every `livePath`. Pass each Agent-listed new file as `--candidate <livePath>`. Do not scan the tree. Read the JSON keys `changed`, `missing`, `unchanged`, `articles`, `unmapped`, `humanOwned`. Non-empty `changed` or `missing` is stale. Exit `0` with that JSON is normal, not a failure. Exit `2` is a script error.
+3. Impact set = `articles`. Rewrite those pages except `humanOwned` (wikilinks only).
 4. For `document` / `derived`: update raw first (derived: re-run `extract`), then rewrite hit articles.
-5. New live files with no article mapping → list candidate pages; do not create them silently.
+5. Each `unmapped` live path must get one triage: `New` / `Update` / `Disputed` / `No material`. Do not create pages silently. `No material` appends log only.
 6. Deleted sources → mark missing in citing articles; do not delete pages silently.
 7. Unhit articles: zero bytes changed.
 8. Rewrite is not "rewrite the whole wiki and call it refresh".
-9. Lint. Sample facts on hit pages. Append `REFRESH`.
+9. Lint. Sample facts on hit pages. Append `REFRESH` with machine-readable fields:
+
+```
+## [YYYY-MM-DD] REFRESH | <summary>
+- changed: <sourceId>, ...
+- missing: <sourceId>, ...
+- articles: <articleId>, ...
+- unmapped: <livePath> (New|Update|Disputed|No material)
+```
+
+Omit an empty `changed` / `missing` / `articles` line. Repeat `unmapped` once per candidate. `status` / `drift` never fail just because those arrays are non-empty.
 
 ## rebuild
 
