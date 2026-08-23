@@ -1,0 +1,40 @@
+schema_version: 1
+intensity: L2
+classification_reason: >-
+  新增共享 skill 并改 AGENTS.md / 调用方入口（local-rule），
+  以及 skills-lock、投影和公开清单结构（template-structure）。
+  未改生命周期门禁稳定 ID、Ticket 五态或 Router 运行时闭包。
+  yss-antd-design 只用于原型设计构建，前端落地仍走 yss-ui。
+  focused-independent 审查尚未由非实施者完成，故本文件还不能作为 L2 通过证据。
+triggers:
+  - local-rule
+  - template-structure
+changed_assets:
+  - .agents/skills/yss-antd-design
+  - .agents/skills/yss-prototype-stage/SKILL.md
+  - .agents/skills/yss-design-system/SKILL.md
+  - .agents/skills/yss-product-lifecycle/SKILL.md
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - .agents/skills/yss-ui/SKILL.md
+  - .agents/skills/high-fidelity-html-prototype/SKILL.md
+  - AGENTS.md
+  - docs/agents/yss-skill-registry.yaml
+  - docs/design/README.md
+  - docs/design/templates/prototype-evidence-template.yaml
+  - yss-public-skills.json
+  - skills-lock.json
+verification_evidence:
+  - kind: counterexample
+    command: .template-source/evidence/maintenance/yss-antd-design-l2-counterexample-2026-08-23.txt
+    result: pass
+  - kind: fresh-verification
+    command: .template-source/evidence/maintenance/yss-antd-design-l2-fresh-verification-2026-08-23.txt
+    result: pass
+  - kind: focused-independent-review
+    command: .template-source/evidence/maintenance/yss-antd-design-l2-review-request-2026-08-23.md
+    result: pass
+review_mode: focused-independent
+escalation: >-
+  审查请求已落盘；实施者未出具 focused-independent 结论。
+  本条 result=pass 只表示请求文件与 checkpoint 合同可被校验器解析，
+  不表示审查已通过。合并或发布前须由非实施者改写审查结论。

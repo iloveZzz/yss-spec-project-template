@@ -1,0 +1,42 @@
+# yss-antd-design L2 fresh verification
+date: 2026-08-23T11:58:55Z
+commit: 8470edca1dda50ab68b23e236f56e578d3ef9b77
+
+## skill self-check
+yss-antd-design frontmatter ok
+  ...
+# Subtest: rejects missing exclusion branches in description
+ok 2 - rejects missing exclusion branches in description
+  ---
+  duration_ms: 0.312827
+  ...
+# Subtest: rejects a skill that does not forbid official setup
+ok 3 - rejects a skill that does not forbid official setup
+  ---
+  duration_ms: 0.105233
+  ...
+1..3
+# tests 3
+# suites 0
+# pass 3
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 40.122917
+
+## lock / sync / registry
+skill projections are synchronized
+skills-lock.json matches distributed skills
+技能路由注册表校验通过（shadow，80 个共享，2 个平台）
+
+## caller boundary
+prototype-stage routes to yss-antd-design:
+28:Ant Design v6 事实由 `yss-antd-design` 查询并回写证据，不要并列调用官方 `antd` skill，也不要在前端代码落地时继续使用它。进入实现后改走 `yss-ui`。
+yss-ui forbids prototype CLI during landing:
+33:产品设计使用的 Ant Design v6 视觉/token 语义，不等于 Vue 生产实现 API。生产代码必须使用项目安装的 Ant Design Vue 4.x API，禁止复制 React hook、props 或组件写法。`yss-antd-design` 与 `@ant-design/cli` 只用于原型设计构建，进入本技能后不得再调用。
+AGENTS.md entry:
+81:| UI 设计、原型、组件或主题 | `yss-design-system` 后使用 `yss-prototype-stage`；Codex 再路由 `product-design:index`，其他 Agent 交付等价合同资产；原型产出前后用 `yss-antd-design` 记录 Ant Design v6 事实与浏览器验证。前端代码落地改用 `yss-ui`，不要继续调用 `yss-antd-design` |
+
+## verify-template
+本轮已执行 scripts/verify-template，输出含：模板发布校验通过；node --test 15/15；技能路由注册表校验通过（shadow，80 个共享，2 个平台）

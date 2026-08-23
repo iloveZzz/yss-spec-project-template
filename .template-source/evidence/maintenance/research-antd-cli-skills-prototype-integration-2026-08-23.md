@@ -6,7 +6,7 @@
 >
 > 仓库身份：`repository_mode: template-source`（`yss-project.yaml`）。
 >
-> 存放位置：模板源治理区 `.template-source/evidence/reviews/`。按 ADR-0008，研究记录不进入 `docs/` 分发面。
+> 存放位置：模板源治理区 `.template-source/evidence/maintenance/`。`evidence/reviews/` 当前为 complete 归档，新研究笔记不写入该目录。按 ADR-0008，研究记录不进入 `docs/` 分发面。
 
 ## 研究问题
 
