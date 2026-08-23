@@ -24,7 +24,7 @@
 | 技能清单、来源、版本、哈希和投影目标      | `skills-lock.json`                          |
 | 技能分层、别名、默认可发现性和运行时入口 | `docs/agents/yss-skill-registry.yaml`（当前 `status: shadow`，不作为 Router / 生命周期运行时入口） |
 
-README、用户指南和其他说明文档只引用或解释上述事实，不重复定义同一规则。
+README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或解释上述事实，不重复定义同一规则。`CLAUDE.md` 是 Claude Code 入口指针，不是第二套 Agent 规则。
 
 ## 3. 标准文档语言与规范语汇
 
@@ -67,6 +67,7 @@ README、用户指南和其他说明文档只引用或解释上述事实，不�
 - 无可复用工程时，先确认外部目标仓库或输出目录，再使用 `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator`；当前仓库缺少 frontend / backend 目录不改变此路由。
 - 脚手架只在 `scaffold_status=required` 且受控生成合同已持久化、获得生命周期批准后运行；它只产生机械骨架，业务行为回到 Router 并使用 `behavior-tdd`。
 - 正式垂直切片必须消费已批准、已持久化且版本当前的 Slice Implementation Contract。Router 只生成草案，不批准合同、不设置 `ready-for-agent`、不宣布完成。合同 schema、Backend 子合同和证据字段以 `yss-router` references 为准。
+- 前端测试、type-check 与构建优先使用 `pnpm`；后端校验、测试与编译优先使用项目根 `./mvnw`。不要默认 `npm` / `yarn` 或裸 `mvn`。既有仓库确实没有 pnpm 或 Maven Wrapper 时，必须记录受控例外和实际命令。登记字段见 `docs/process/implementation-repo-integration.md`。
 - 路径越界、证据缺失、未执行验证、`drift`、`violation` 或 `new_impacts` 时停止实现并重新路由。
 
 实现细则由已批准合同、YSS skills 和实现接入文档定义；`AGENTS.md` 只保留入口与边界。
@@ -82,6 +83,7 @@ README、用户指南和其他说明文档只引用或解释上述事实，不�
 | merge / rebase 冲突 | `resolving-merge-conflicts` |
 | 架构治理、难测模块或深模块设计 | `improve-codebase-architecture` / `codebase-design` |
 | 跨线程、跨仓库、上下文过长或原型结论回流 | `handoff` 或等价交接记录 |
+| 本地知识库 init / refresh / rebuild，或要把研究结果落成持久 wiki | `llm-wiki` |
 
 业务行为默认按 `tdd` 使用已确认的公开 seam 逐切片实现。一次性生成、纯配置或流程文档不适用代码 TDD 时，必须记录例外理由和可执行验证方式。
 

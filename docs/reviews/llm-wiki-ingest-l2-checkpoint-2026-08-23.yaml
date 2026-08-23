@@ -1,0 +1,30 @@
+schema_version: 1
+intensity: L2
+classification_reason: >-
+  接入共享技能 llm-wiki（local-rule），并按新 schema 重建 wiki/ 三层布局、manifest
+  与文章来源小节（template-structure）。未把 wiki lint 写入 verify-template，
+  也未改生命周期注册表、Router 合同或 yss-public-skills.json。
+triggers: [local-rule, template-structure]
+changed_assets:
+  - .agents/skills/llm-wiki/
+  - docs/agents/yss-skill-registry.yaml
+  - skills-lock.json
+  - AGENTS.md
+  - CONTEXT.md
+  - wiki/
+  - docs/reviews/llm-wiki-ingest-lint-counterexample-2026-08-23.txt
+  - docs/reviews/llm-wiki-ingest-fresh-verification-2026-08-23.txt
+  - docs/reviews/llm-wiki-ingest-code-review-2026-08-23.md
+verification_evidence:
+  - kind: counterexample
+    command: docs/reviews/llm-wiki-ingest-lint-counterexample-2026-08-23.txt
+    result: pass
+  - kind: fresh-verification
+    command: docs/reviews/llm-wiki-ingest-fresh-verification-2026-08-23.txt
+    result: pass
+  - kind: focused-independent-review
+    command: docs/reviews/llm-wiki-ingest-code-review-2026-08-23.md
+    result: pass
+review_mode: focused-independent
+escalation: >-
+  focused-independent 覆盖接入候选（code-review 双轴）；按 finding 的后续修复尚未再次独立审查，不得据此宣布可发布

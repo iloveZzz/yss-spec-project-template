@@ -1,8 +1,14 @@
+---
+status: ready-for-human
+---
+
 # 垂直切片 Ticket：<标题>
+
+Status: ready-for-human
 
 ## 父级
 
-<Spec / 功能父 Ticket 链接>
+<Spec：`docs/.scratch/<feature>/spec.md`；功能父 Ticket：`docs/.scratch/<feature>/parent-ticket.md` 或远程 Issue URL>
 
 ## 要构建什么
 
@@ -15,7 +21,7 @@
 ## OpenAPI 影响
 
 - [ ] 无
-- [ ] 基于冻结 OpenAPI：`docs/api/specs/<feature>.yaml`
+- [ ] 基于冻结 OpenAPI：`docs/.scratch/<feature>/api/<feature>.yaml`
 
 受影响端点：
 
@@ -57,7 +63,7 @@
 |---|---|---|---|---|---|---|---|---|---|
 |  |  |  |  | behavior-tdd / controlled-generation |  |  |  |  | pending / running / blocked / completed / stale |
 
-`controlled-generation` 仅允许机械脚手架、样板、冻结客户端或配置，并记录 exception reason、生成器输入和生成后行为测试；业务规则、状态机、事务、权限、错误映射、复杂查询和用户可见交互必须使用 `behavior-tdd`。
+`controlled-generation` 仅允许机械脚手架、样板、冻结客户端或配置，并记录 exception reason、生成器输入和生成后行为测试；业务规则、状态机、事务、权限、错误映射、复杂查询和用户可见交互必须使用 `behavior-tdd`。只有需求明确包含权限业务行为时才把它写入工作单元，不另设安全 / 权限姿态。
 
 ## YSS 技能与后端实现合同
 
@@ -65,10 +71,10 @@
 
 | 影响面 | 必需 skill | 需要 / 不需要的理由 | 预期证据 |
 |---|---|---|---|
-| Domain / 领域行为 | `yss-domain` / `yss-backend-scaffold-domain` |  |  |
-| Application / 用例编排 | `yss-backend-scaffold-application` |  |  |
-| Infrastructure / Repository | `yss-repository` / `yss-mybatis` / `yss-backend-scaffold-infrastructure` |  |  |
-| Web Adapter / DTO | `yss-web-controller` / `yss-dto` / `yss-backend-scaffold-web` |  |  |
+| Domain / 领域行为 | `yss-domain` |  |  |
+| Application / 用例编排 | `yss-application` |  |  |
+| Infrastructure / Repository | `yss-repository` / `yss-mybatis` |  |  |
+| Web Adapter / DTO | `yss-web-controller` / `yss-dto` |  |  |
 | POJO / 对象转换 | `lombok` / `mapstruct` |  |  |
 | Java 规范 | `alibaba-java-code-style` |  |  |
 
@@ -92,7 +98,7 @@
 | 字段 | 内容 |
 |---|---|
 | reroute_status | current / incremental-review / full-reroute-required / lifecycle-return / stale |
-| trigger | 新 API/schema / 权限 / 状态机 / 数据模型 / 写路径 / 仓库 / skill / seam / 风险 / 交付顺序 / other |
+| trigger | 新 API/schema / 状态机 / 数据模型 / 写路径 / 仓库 / skill / seam / 风险 / 交付顺序 / other |
 | affected_work_units |  |
 | new_impacts |  |
 | stale_contract_version |  |

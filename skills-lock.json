@@ -323,6 +323,22 @@
           ".trae/skills"
         ]
       },
+      "llm-wiki": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/llm-wiki/SKILL.md",
+        "effectiveHash": "0aeea91cfec30010926abcb81cc08ee59946b7fc1b5e49bc3a5fb61979d319af",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
       "lombok": {
         "source": "claude-dev-suite/claude-dev-suite",
         "sourceType": "github",

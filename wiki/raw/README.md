@@ -11,7 +11,8 @@
 ```text
 ├── .agents/                 ← 跨 Agent 共享 skills 的权威内容
 ├── .claude/                 ← Claude skills 投影与平台专属 skills
-├── .codex/                  ← Codex skills 投影与平台专属 YSS skills
+├── .codex/                  ← Codex skills 投影与平台专属 skills
+├── .cursor/                 ← Cursor skills 投影
 ├── .hermes/                 ← Hermes skills 投影与平台专属 skills
 ├── .pi/                     ← Pi skills 投影与平台专属 skills
 ├── .qoder/                  ← Qoder skills 投影与平台专属 skills
@@ -105,6 +106,7 @@ scripts/verify-template
 | [docs/user-guide/图示生成器使用指南.md](./docs/user-guide/图示生成器使用指南.md) | Excalidraw 可视化辅助 skill 使用手册 |
 | [docs/process/PDCA-SCRUM.md](./docs/process/PDCA-SCRUM.md) | PDCA × Scrum × AI |
 | [docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md](./docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md) | Matt Pocock Engineering Skills 集成与使用 |
+| [docs/process/lifecycle-registry.yaml](./docs/process/lifecycle-registry.yaml) | 生命周期结构事实源：主阶段、门禁、产物、工作单元、证据与稳定 ID |
 | [docs/process/harness-process-tailoring.md](./docs/process/harness-process-tailoring.md) | 小改动 / 中等变更 / 新模块的流程裁剪指南 |
 | [docs/process/harness-executive-blueprint.md](./docs/process/harness-executive-blueprint.md) | 面向业务方和管理者的 Harness 一页式蓝图 |
 | [docs/process/implementation-repo-integration.md](./docs/process/implementation-repo-integration.md) | 外部前端 / 后端实现仓库接入与跨仓库切片绑定 |
@@ -120,6 +122,7 @@ scripts/verify-template
 | 模板 | 用途 |
 |------|------|
 | [docs/templates/spec-template.md](./docs/templates/spec-template.md) | Spec，包含 OpenAPI 影响、测试决策、AI / 人工审查点 |
+| [docs/templates/local-parent-ticket-template.md](./docs/templates/local-parent-ticket-template.md) | Local Markdown 功能父 Ticket 与生命周期索引 |
 | [docs/templates/vertical-slice-ticket-template.md](./docs/templates/vertical-slice-ticket-template.md) | 垂直切片 Ticket |
 | [docs/templates/agent-brief-template.md](./docs/templates/agent-brief-template.md) | `triage` 产出的 Agent Brief |
 | [docs/templates/implementation-repo-registry-template.md](./docs/templates/implementation-repo-registry-template.md) | 外部实现仓库登记 |

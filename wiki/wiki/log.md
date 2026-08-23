@@ -15,3 +15,15 @@
 ## [2026-08-09] ANALYZE | 生成知识图谱
 
 运行 understand-knowledge 解析 wiki，生成交互式知识图谱。
+
+## [2026-08-23] REBUILD | 按 llm-wiki schema 重编译本仓知识库
+
+接入 `llm-wiki` 后走 rebuild（已有 `wiki/index.md`，禁止 init 覆盖）。重建 `.wiki-manifest.json`（schemaVersion 1，profile: documents），raw 对齐 live 并扩展流程 / Agent / 契约源；`skills-lock.json` 只保留技能名派生摘录。保留原 22 个文章 ID，新增 `LLM Wiki`。LLM 页全量重写并补 `## 来源`。`inventory.mjs hash` 后 `lint-wikilinks` 23 篇文章 / 203 条 wikilink 通过。抽查 5 条 claim 对照 live 源。
+
+## [2026-08-23] FIX | 按 code-review 对齐 lint 契约与 wiki 边界
+
+lint 脚本改为失败跨路径 wikilink、校验 manifest sha256，并要求 H1 等于文章 ID。通用 skill 不再写死本仓文档语言。`documents` profile 去掉 `code-surface`。H1 与 `CLAUDE.md` 按审查结论收束。
+
+## [2026-08-23] REFRESH | 登记前端 pnpm / 后端 mvnw 验证命令
+
+`AGENTS.md` 与根目录 `CLAUDE.md` 写入 frontend `pnpm`、backend `./mvnw` 优先序；细则落在 `docs/process/implementation-repo-integration.md`。刷新 [[Agent入口规则]] 与 [[实现仓库与跨仓库契约]]。
