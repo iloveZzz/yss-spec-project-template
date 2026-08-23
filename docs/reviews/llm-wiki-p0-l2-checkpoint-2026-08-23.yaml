@@ -1,0 +1,30 @@
+schema_version: 1
+intensity: L2
+classification_reason: >-
+  为 llm-wiki 增加 query 算法（local-rule）以及 lint-wikilinks 的 manifest
+  闭合检查（non-core-validator）。未把 wiki lint 写入 verify-template，
+  未改生命周期注册表、Router 合同或公开发布面。
+triggers: [local-rule, non-core-validator]
+changed_assets:
+  - .agents/skills/llm-wiki/SKILL.md
+  - .agents/skills/llm-wiki/references/query.md
+  - .agents/skills/llm-wiki/references/lint.md
+  - .agents/skills/llm-wiki/scripts/lint-wikilinks.mjs
+  - .agents/skills/llm-wiki/scripts/lint-wikilinks.test.mjs
+  - docs/reviews/llm-wiki-p0-manifest-closure-counterexample-2026-08-23.txt
+  - docs/reviews/llm-wiki-p0-fresh-verification-2026-08-23.txt
+  - docs/reviews/llm-wiki-p0-focused-review-2026-08-23.md
+verification_evidence:
+  - kind: counterexample
+    command: docs/reviews/llm-wiki-p0-manifest-closure-counterexample-2026-08-23.txt
+    result: pass
+  - kind: fresh-verification
+    command: docs/reviews/llm-wiki-p0-fresh-verification-2026-08-23.txt
+    result: pass
+  - kind: focused-independent-review
+    command: docs/reviews/llm-wiki-p0-focused-review-2026-08-23.md
+    result: pass
+review_mode: focused-independent
+escalation: >-
+  非实施者审查接受 P0 实现；checkpoint 预填 pass 已纠正。
+  用户于 2026-08-23 确认 L2 通过。

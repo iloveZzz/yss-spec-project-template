@@ -1,0 +1,31 @@
+# llm-wiki P1/P2 fresh verification
+date: 2026-08-23T07:46:53Z
+
+## node --test
+ℹ tests 13
+ℹ pass 13
+ℹ fail 0
+test_exit=0
+
+含：skill-names 排序且不含 hash；drift CLI 源变化时退出 0；derived 缺 extract / 未知 kind 失败。
+
+## lint-wikilinks wiki
+校验完成：23 篇文章，203 条 wikilink
+通过：所有 wikilink / 来源 / 索引检查通过
+lint_exit=0
+
+## inventory drift --wiki wiki
+changed=[] missing=[]
+drift_exit=0
+
+## extract.mjs skill-names
+wiki/raw/skills-lock-names.md 与重放输出一致
+extract_matches=yes
+
+## lock / sync / registry
+skills-lock.json matches distributed skills
+lock_exit=0
+skill projections are synchronized
+sync_exit=0
+技能路由注册表校验通过（shadow，79 个共享，2 个平台）
+registry_exit=0

@@ -1,0 +1,26 @@
+# L2 修改前反例：llm-wiki P1/P2
+
+日期：2026-08-23
+
+## 1. derived 无 extract 仍通过 lint
+
+构造：`kind: derived`，hash 未漂，无 `extract` 字段。
+
+结果：
+lint.ok=true
+lint.errors=(none)
+
+结论：lint 不要求 derived 登记可复述摘录配方。
+
+## 2. drift 有变化时 CLI 退出 1
+
+命令：
+node .agents/skills/llm-wiki/scripts/inventory.mjs drift --wiki <tmp> --repo <tmp>
+
+live 已改、JSON 含 `"changed":["lock"]`。
+
+结果：
+status=1
+（stdout 为合法 drift JSON）
+
+结论：刷新的正常信号被当成失败。

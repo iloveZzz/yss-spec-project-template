@@ -1,0 +1,52 @@
+# llm-wiki P0 fresh verification
+date: 2026-08-23T07:40:00Z
+
+## node --test llm-wiki scripts
+✔ hash-sources fills sha256; drift is empty until live file changes
+✔ broken fixture fails on dangling wikilink
+✔ complete wiki passes wikilink, index, and source-section checks
+✔ cross-path wikilink fails instead of being ignored
+✔ manifest sha256 mismatch is stale
+✔ closed manifest passes listing, id, sourceIds, profile, and rawPath checks
+✔ open manifest fails unlisted article, id mismatch, unknown source, profile kind, and rawPath
+✔ document rawPath must exist on disk
+ℹ tests 8
+ℹ pass 8
+ℹ fail 0
+exit=0
+
+## lint-wikilinks wiki
+校验完成：23 篇文章，203 条 wikilink
+通过：所有 wikilink / 来源 / 索引检查通过
+lint_exit=0
+
+## inventory drift --wiki wiki
+changed=[] missing=[] articles=[]
+drift_exit=0
+
+## sync / lock / registry
+skill projections are synchronized
+sync_exit=0
+skills-lock.json matches distributed skills
+lock_exit=0
+技能路由注册表校验通过（shadow，79 个共享，2 个平台）
+registry_exit=0
+
+## query.md 手工对照（本仓，不写 wiki）
+
+前置：wiki/wiki/index.md 存在；inventory drift 无 changed/missing。
+
+### Q1 条件强制门禁有几个
+- 打开页（N=1）：wiki/wiki/条件强制门禁.md（index 精确命中 [[条件强制门禁]]）
+- 未打开：其余 22 篇
+- 回读 live：docs/process/lifecycle-registry.yaml `gates:` 列出 14 条，与正文「14 个门禁」一致
+- 结论：14 个；cite live 注册表，无 wiki 漂移
+
+### Q2 实现验证命令用什么
+- 打开页（N=2）：wiki/wiki/实现仓库与跨仓库契约.md、wiki/wiki/Agent入口规则.md
+- 回读 live：AGENTS.md、CONTEXT.md「实现验证命令」、docs/process/implementation-repo-integration.md §1.2
+- 结论：frontend 优先 pnpm，backend 优先项目根 ./mvnw；三处 live 与 wiki 一致
+
+### Q3 Redis 缓存过期策略（零命中）
+- index 分类与 [[wikilink]] 无 Redis / 缓存命中
+- 结论：当前 wiki 未覆盖。候选分类：入口与身份、生命周期与流程、契约资产、技能与实现、质量与治理。未发明页。

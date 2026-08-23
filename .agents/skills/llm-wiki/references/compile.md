@@ -1,6 +1,6 @@
 # Compile modes
 
-Manifest schema is the incremental-compile graph. The agent fills `id`, `kind`, `livePath`, `rawPath`, `role`, `articles`. Scripts fill `sha256`, `compiledAt`, `gitCommit`.
+Manifest schema is the incremental-compile graph. The agent fills `id`, `kind`, `livePath`, `rawPath`, `role`, `extract` (derived only), `articles`. Scripts fill `sha256`, `compiledAt`, `gitCommit`.
 
 ## Manifest
 
@@ -21,6 +21,14 @@ Path: `<wiki-root>/.wiki-manifest.json`
       "rawPath": "raw/schema.sql",
       "sha256": "...",
       "role": "copy"
+    },
+    {
+      "id": "skills-lock.json",
+      "kind": "derived",
+      "livePath": "skills-lock.json",
+      "rawPath": "raw/skills-lock-names.md",
+      "role": "extract",
+      "extract": { "kind": "skill-names" }
     }
   ],
   "articles": [
@@ -48,13 +56,31 @@ Source kinds:
 
 Article id = basename of `file` without `.md`. Renames are explicit `LINK` / `RETIRE`, never a silent refresh side effect.
 
+## Derived extracts
+
+Every `kind: derived` source must set `extract.kind` to one of `skill-names`, `heading-list`, or `prose-note`. Refresh and rebuild re-run that recipe into `rawPath`. Do not copy the live file in full.
+
+Shared rules:
+
+1. Input is `livePath` (or the live files the recipe names).
+2. Output is `rawPath` only.
+3. Sort or section order must be stable and documented for that kind.
+4. The extract must be smaller than the live input and must not include secrets, hashes, or lock metadata unless the recipe says those names are the payload.
+5. Replay the same recipe on drift; do not hand-edit raw to "fix" names.
+
+| `extract.kind` | Replay |
+|---|---|
+| `skill-names` | `extract.mjs skill-names --in <livePath> --out <wiki-root>/<rawPath>`. Lists `skills.shared` and `skills.platform` keys, `localeCompare` sorted. No hashes or paths. |
+| `heading-list` | Agent: list headings from the live file in document order, verbatim. No body copy. No script in this skill. |
+| `prose-note` | Agent: short labelled note that cites the live inputs. Stable section order. No full-file copy. No script in this skill. |
+
 ## init
 
 Done when the target is a detectable Karpathy wiki and lint exits 0.
 
 1. If `wiki/index.md` already exists: ask refresh vs rebuild. Do not init over it.
-2. Ask: wiki path, corpus roots, coverage, language (default 简体中文).
-3. Discover corpus: README, API, schema, OpenAPI, ADR, bootstrap; plus code surfaces (packages, enums, application services, controllers).
+2. Ask: wiki path, corpus roots, coverage, and body language (follow the host project's document-language rule). See [discover.md](discover.md).
+3. Discover corpus with the [discover.md](discover.md) checklist. Do not ingest `docs/` wholesale.
 4. Write raw copies/extracts. Write manifest source list. Run `inventory.mjs hash`.
 5. Write `wiki/CLAUDE.md` from the template, adapted to this corpus — do not hard-code a previous product name.
 6. Write `index.md` categories first, then articles. Categories are index `##` headings.
@@ -66,9 +92,9 @@ Done when the target is a detectable Karpathy wiki and lint exits 0.
 Done when only drift-hit articles change, human-owned pages are untouched, lint exits 0, and log has `REFRESH`.
 
 1. No manifest → stop. Rebuild, or rebuild the manifest from existing「来源」sections. Do not invent `sourceIds`.
-2. `inventory.mjs drift` against every `livePath`.
+2. `inventory.mjs drift` against every `livePath`. Read the JSON; non-empty `changed` or `missing` is stale. Exit `0` with that JSON is normal, not a failure. Exit `2` is a script error.
 3. Impact set = articles whose `sourceIds` intersect changed/missing sources.
-4. For `document` / `derived`: update raw first, then rewrite hit articles.
+4. For `document` / `derived`: update raw first (derived: re-run `extract`), then rewrite hit articles.
 5. New live files with no article mapping → list candidate pages; do not create them silently.
 6. Deleted sources → mark missing in citing articles; do not delete pages silently.
 7. Unhit articles: zero bytes changed.
@@ -79,7 +105,7 @@ Done when only drift-hit articles change, human-owned pages are untouched, lint 
 
 Done when raw matches live, LLM-owned pages are rewritten, stable ids and human-owned pages remain, lint exits 0, and log has `REBUILD`.
 
-1. Rediscover corpus. Do not trust the old source list as complete.
+1. Rediscover corpus with [discover.md](discover.md). Do not trust the old source list as complete.
 2. Recopy / re-extract raw.
 3. Keep article ids that still earn a page. Retired ids: `RETIRE` in log, drop from index.
 4. `humanOwned: true` (frontmatter or manifest): fix wikilinks only.

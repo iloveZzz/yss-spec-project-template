@@ -1,9 +1,9 @@
 # Lint
 
-Run from repo root:
+From the repo root, run this skill's `scripts/lint-wikilinks.mjs` (resolve `<skill-root>` from the directory that contains `SKILL.md`):
 
 ```bash
-node .agents/skills/llm-wiki/scripts/lint-wikilinks.mjs <wiki-root>
+node <skill-root>/scripts/lint-wikilinks.mjs <wiki-root>
 ```
 
 Exit 0 only when every check below passes.
@@ -15,7 +15,14 @@ Exit 0 only when every check below passes.
 - Every `[[wikilink]]` in `index.md` exists on disk.
 - Every article file appears in `index.md`. Orphans fail.
 - Every article has a `## 来源` heading.
-- If `.wiki-manifest.json` exists: each `articles[].file` exists; each `sources[].livePath` exists when set; `sha256` mismatch is stale (fail).
+- If `.wiki-manifest.json` exists:
+  - each `articles[].file` exists; each `sources[].livePath` exists when set; `sha256` mismatch is stale (fail)
+  - every non-infrastructure `wiki/*.md` appears in `articles[]`
+  - each `articles[].id` equals the basename of `file` without `.md`
+  - each `sourceIds[]` exists in `sources[].id`
+  - `profile === "documents"` forbids `kind: code-surface`
+  - `kind: document|derived` requires a `rawPath` whose file exists; `code-surface` requires `rawPath == null`
+  - `kind: derived` requires `extract.kind` in `skill-names` | `heading-list` | `prose-note`
 
 ## Agent checks (after script)
 

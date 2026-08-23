@@ -27,3 +27,11 @@ lint 脚本改为失败跨路径 wikilink、校验 manifest sha256，并要求 H
 ## [2026-08-23] REFRESH | 登记前端 pnpm / 后端 mvnw 验证命令
 
 `AGENTS.md` 与根目录 `CLAUDE.md` 写入 frontend `pnpm`、backend `./mvnw` 优先序；细则落在 `docs/process/implementation-repo-integration.md`。刷新 [[Agent入口规则]] 与 [[实现仓库与跨仓库契约]]。
+
+## [2026-08-23] REFRESH | llm-wiki 去掉外部技能关联
+
+技能正文不再点名其他 skill。刷新 [[LLM Wiki]]：一次性笔记标为范围外，删除图谱配对与 `/deep-research` 分流表述。
+
+## [2026-08-23] FIX | 按 skill-names 配方重放 derived 摘录
+
+`skills-lock.json` 登记 `extract.kind: skill-names`，用 `extract.mjs` 重写 `raw/skills-lock-names.md`（只含稳定排序的技能名）。

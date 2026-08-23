@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "wikiRoot": "wiki",
-  "compiledAt": "2026-08-23T07:15:41.840Z",
-  "gitCommit": "47eaf46d096f9ed03c5e93cbc030e25770dda685",
+  "compiledAt": "2026-08-23T07:46:44.220Z",
+  "gitCommit": "6545806f685e82fe872247f65955193e920266a2",
   "profile": "documents",
   "sources": [
     {
@@ -139,7 +139,10 @@
       "livePath": "skills-lock.json",
       "rawPath": "raw/skills-lock-names.md",
       "role": "extract",
-      "sha256": "888cd75e1cbe45a6e8d340eec273a63d3396b81e1e2b46b815aa26b5e8b7c7bf"
+      "extract": {
+        "kind": "skill-names"
+      },
+      "sha256": "965ce9f6011440a49845d2be7b406ec5842f3d384e628dff20937053d2e5979c"
     }
   ],
   "articles": [

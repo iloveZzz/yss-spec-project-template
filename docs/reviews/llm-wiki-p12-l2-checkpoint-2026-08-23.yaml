@@ -1,0 +1,36 @@
+schema_version: 1
+intensity: L2
+classification_reason: >-
+  P1/P2 增加 derived extract 配方与 discover 勾选表（local-rule），
+  以及 lint 对 extract.kind 的检查、drift 退出码改为读 JSON（non-core-validator）。
+  未把 wiki lint 写入 verify-template，未改生命周期注册表或公开发布面。
+triggers: [local-rule, non-core-validator]
+changed_assets:
+  - .agents/skills/llm-wiki/SKILL.md
+  - .agents/skills/llm-wiki/references/compile.md
+  - .agents/skills/llm-wiki/references/discover.md
+  - .agents/skills/llm-wiki/references/query.md
+  - .agents/skills/llm-wiki/references/lint.md
+  - .agents/skills/llm-wiki/references/schema.md
+  - .agents/skills/llm-wiki/assets/CLAUDE.md.template
+  - .agents/skills/llm-wiki/scripts/extract.mjs
+  - .agents/skills/llm-wiki/scripts/extract.test.mjs
+  - .agents/skills/llm-wiki/scripts/inventory.mjs
+  - .agents/skills/llm-wiki/scripts/inventory.test.mjs
+  - .agents/skills/llm-wiki/scripts/lint-wikilinks.mjs
+  - .agents/skills/llm-wiki/scripts/lint-wikilinks.test.mjs
+  - docs/reviews/llm-wiki-p12-counterexample-2026-08-23.txt
+  - docs/reviews/llm-wiki-p12-fresh-verification-2026-08-23.txt
+  - docs/reviews/llm-wiki-p12-focused-review-2026-08-23.md
+verification_evidence:
+  - kind: counterexample
+    command: docs/reviews/llm-wiki-p12-counterexample-2026-08-23.txt
+    result: pass
+  - kind: fresh-verification
+    command: docs/reviews/llm-wiki-p12-fresh-verification-2026-08-23.txt
+    result: pass
+  - kind: focused-independent-review
+    command: docs/reviews/llm-wiki-p12-focused-review-2026-08-23.md
+    result: pass
+review_mode: focused-independent
+escalation: none

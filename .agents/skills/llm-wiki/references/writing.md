@@ -27,7 +27,7 @@ When 2+ article groups have no shared files:
 - Return: paths written + wikilink count per file.
 - Orchestrator merges, lints, samples facts, appends log.
 
-Use `dispatching-parallel-agents` for the dispatch shape. Write scopes must not overlap.
+When article groups share no files, dispatch parallel subagents with disjoint write scopes.
 
 ## Human-owned
 

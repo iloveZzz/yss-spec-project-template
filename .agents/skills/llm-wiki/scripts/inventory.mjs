@@ -130,7 +130,6 @@ async function main(argv = process.argv.slice(2)) {
   }
   const report = await drift({ wikiRoot, repoRoot });
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
-  if (report.changed.length || report.missing.length) process.exitCode = 1;
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

@@ -1,0 +1,20 @@
+# L2 修改前反例：manifest 闭合（P0 lint 增强前）
+
+日期：2026-08-23
+命令：对一份结构合法、索引闭合、hash 未漂，但 manifest 不闭合的临时 wiki 调用 lintWiki()
+
+构造（当前脚本全部放行）：
+- 磁盘文章 Beta.md 已进 index，未进 articles[]
+- articles[].id = WrongId，file = wiki/Alpha.md（id ≠ basename）
+- sourceIds 含不存在的 ghost
+- profile: documents 且 sources 含 kind: code-surface
+- kind: document 的 rawPath 为空字符串
+- raw/ 目录不存在对应摘录
+
+结果：
+ok: true
+errors: (none)
+counts: {"articles":2,"links":4}
+退出码：0
+
+结论：lint 只检查 manifest 里已登记路径的存在与 sha256，不检查磁盘文章是否入表、id 与文件名是否一致、sourceIds 是否指向已登记源、profile 与 kind 是否相容、rawPath 是否按 kind 必填且存在。

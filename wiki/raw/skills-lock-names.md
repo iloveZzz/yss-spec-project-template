@@ -1,6 +1,6 @@
-# skills-lock.json 派生摘录
+# skills-lock names
 
-本文件不是锁文件全文，只列出当前共享技能名。权威来源、hash 与投影目标以仓库根 `skills-lock.json` 为准。
+Derived names only. Do not copy hashes, paths, or the lock file.
 
 ## shared
 

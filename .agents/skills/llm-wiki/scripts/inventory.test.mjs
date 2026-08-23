@@ -1,9 +1,13 @@
 import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 import { drift, hashSources, sha256 } from "./inventory.mjs";
+
+const inventoryCli = fileURLToPath(new URL("./inventory.mjs", import.meta.url));
 
 async function seed() {
   const repo = await mkdtemp(path.join(tmpdir(), "llm-wiki-inv-"));
@@ -48,4 +52,17 @@ test("hash-sources fills sha256; drift is empty until live file changes", async 
   const dirty = await drift({ wikiRoot: wiki, repoRoot: repo });
   assert.deepEqual(dirty.changed, ["api.md"]);
   assert.deepEqual(dirty.articles, ["API契约"]);
+});
+
+test("drift CLI exits 0 when sources changed and prints JSON", async () => {
+  const { repo, wiki, live } = await seed();
+  await hashSources({ wikiRoot: wiki, repoRoot: repo, now: "2026-01-01T00:00:00Z" });
+  await writeFile(live, "v2\n", "utf8");
+  const ran = spawnSync(process.execPath, [inventoryCli, "drift", "--wiki", wiki, "--repo", repo], {
+    encoding: "utf8",
+  });
+  assert.equal(ran.status, 0, ran.stderr);
+  const report = JSON.parse(ran.stdout);
+  assert.deepEqual(report.changed, ["api.md"]);
+  assert.deepEqual(report.articles, ["API契约"]);
 });

@@ -2,6 +2,7 @@
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { EXTRACT_KINDS } from "./extract.mjs";
 import { exists, sha256 } from "./inventory.mjs";
 
 const INFRA = new Set(["index.md", "log.md", "claude.md", "agents.md", "soul.md"]);
@@ -69,11 +70,52 @@ export async function lintWiki(wikiRoot, { repoRoot = process.cwd() } = {}) {
   const manifestFile = path.join(wikiRoot, ".wiki-manifest.json");
   if (await exists(manifestFile)) {
     const manifest = JSON.parse(await readFile(manifestFile, "utf8"));
+    const sourceById = new Map();
+    for (const source of manifest.sources || []) {
+      if (source?.id) sourceById.set(source.id, source);
+    }
+    const listedFiles = new Set();
     for (const article of manifest.articles || []) {
+      const rel = path.posix.normalize(article.file || "");
+      listedFiles.add(rel);
+      const expectedId = path.posix.basename(rel, ".md");
+      if (article.id !== expectedId) {
+        errors.push(`MANIFEST ID MISMATCH: ${article.file} id=${article.id} expected ${expectedId}`);
+      }
       const file = path.resolve(wikiRoot, article.file);
       if (!(await exists(file))) errors.push(`MANIFEST ARTICLE MISSING: ${article.file}`);
+      for (const sourceId of article.sourceIds || []) {
+        if (!sourceById.has(sourceId)) {
+          errors.push(`UNKNOWN SOURCE ID: ${article.id} -> ${sourceId}`);
+        }
+      }
+    }
+    for (const file of articleFiles) {
+      const rel = path.posix.join("wiki", file);
+      if (!listedFiles.has(rel)) errors.push(`UNLISTED ARTICLE: ${file}`);
     }
     for (const source of manifest.sources || []) {
+      if (manifest.profile === "documents" && source.kind === "code-surface") {
+        errors.push(`PROFILE KIND: documents forbids code-surface (${source.id})`);
+      }
+      if (source.kind === "document" || source.kind === "derived") {
+        if (!source.rawPath) {
+          errors.push(`RAW PATH REQUIRED: ${source.id} (${source.kind})`);
+        } else {
+          const raw = path.resolve(wikiRoot, source.rawPath);
+          if (!(await exists(raw))) errors.push(`RAW MISSING: ${source.id} (${source.rawPath})`);
+        }
+      }
+      if (source.kind === "derived") {
+        const extractKind = source.extract?.kind;
+        if (!extractKind) errors.push(`EXTRACT REQUIRED: ${source.id}`);
+        else if (!EXTRACT_KINDS.includes(extractKind)) {
+          errors.push(`EXTRACT KIND: ${source.id} (${extractKind})`);
+        }
+      }
+      if (source.kind === "code-surface" && source.rawPath != null) {
+        errors.push(`RAW PATH FORBIDDEN: ${source.id} (code-surface)`);
+      }
       if (!source.livePath) continue;
       const live = path.resolve(repoRoot, source.livePath);
       if (!(await exists(live))) {
@@ -113,7 +155,9 @@ async function main(argv = process.argv.slice(2)) {
   );
   if (result.ok) process.stdout.write("通过：所有 wikilink / 来源 / 索引检查通过\n");
   else {
-    process.stdout.write("失败：存在缺失的 wikilink、孤儿页、来源小节、跨路径链接、H1 或 manifest 条目\n");
+    process.stdout.write(
+      "失败：存在缺失的 wikilink、孤儿页、来源小节、跨路径链接、H1 或 manifest 闭合问题\n",
+    );
     process.exitCode = 1;
   }
 }
