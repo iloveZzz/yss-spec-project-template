@@ -15,6 +15,7 @@
 3. 跨仓库契约进入 `contracts/`；模板源发布路线进入 `roadmap/`。路线条目必须有状态和验收证据，全部 `closed` 后才能从工作树移除。维护侧 Node 工具依赖、lockfile 和 vendor 构建位于 `tooling/node/`，不进入模板实例分发面。
 4. 仅描述模板源执行过程的派生表进入 `derived/`。
 5. 仅影响模板治理、尚未成为实例运行规则的 ADR 进入 `adr/`，`proposed` 不等于当前发布门禁。
+6. 未归档的一手研究笔记进入 `research/`。不要把新的 `*.md` 放进已 `complete` 的 `evidence/reviews/`，以免破坏 archive 合同；也不要写入 `docs/`，以免进入模板实例分发面。
 
 ## ADR 评估
 
