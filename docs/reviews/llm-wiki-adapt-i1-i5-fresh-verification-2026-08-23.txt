@@ -1,0 +1,166 @@
+# llm-wiki I1–I5 fresh verification
+date: 2026-08-23T09:29:35Z
+
+## node --test .agents/skills/llm-wiki/scripts/*.test.mjs
+TAP version 13
+# Subtest: advise reports one-way links, missing terms, unreferenced raw, and suspects without failing lint
+ok 1 - advise reports one-way links, missing terms, unreferenced raw, and suspects without failing lint
+  ---
+  duration_ms: 9.703183
+  ...
+# Subtest: advise CLI exits 0 and prints JSON
+ok 2 - advise CLI exits 0 and prints JSON
+  ---
+  duration_ms: 31.431475
+  ...
+# Subtest: concept-table.md is infrastructure and does not fail lint as an orphan
+ok 3 - concept-table.md is infrastructure and does not fail lint as an orphan
+  ---
+  duration_ms: 4.005925
+  ...
+# Subtest: skill-names lists shared and platform keys, sorted, without hashes
+ok 4 - skill-names lists shared and platform keys, sorted, without hashes
+  ---
+  duration_ms: 5.840275
+  ...
+# Subtest: skill-names rejects a whole-file dump of a non-object
+ok 5 - skill-names rejects a whole-file dump of a non-object
+  ---
+  duration_ms: 0.542172
+  ...
+# Subtest: declared extract kinds stay the documented set
+ok 6 - declared extract kinds stay the documented set
+  ---
+  duration_ms: 0.441129
+  ...
+# Subtest: hash-sources fills sha256; drift is empty until live file changes
+ok 7 - hash-sources fills sha256; drift is empty until live file changes
+  ---
+  duration_ms: 8.134438
+  ...
+# Subtest: unmapped candidates are listed without scanning the tree
+ok 8 - unmapped candidates are listed without scanning the tree
+  ---
+  duration_ms: 0.142721
+  ...
+# Subtest: drift CLI exits 0 when sources changed and prints JSON
+ok 9 - drift CLI exits 0 when sources changed and prints JSON
+  ---
+  duration_ms: 27.537647
+  ...
+# Subtest: status CLI exits 0 and lists unmapped candidates
+ok 10 - status CLI exits 0 and lists unmapped candidates
+  ---
+  duration_ms: 27.028362
+  ...
+# Subtest: broken fixture fails on dangling wikilink
+ok 11 - broken fixture fails on dangling wikilink
+  ---
+  duration_ms: 4.925837
+  ...
+# Subtest: complete wiki passes wikilink, index, and source-section checks
+ok 12 - complete wiki passes wikilink, index, and source-section checks
+  ---
+  duration_ms: 1.81614
+  ...
+# Subtest: cross-path wikilink fails instead of being ignored
+ok 13 - cross-path wikilink fails instead of being ignored
+  ---
+  duration_ms: 1.21071
+  ...
+# Subtest: manifest sha256 mismatch is stale
+ok 14 - manifest sha256 mismatch is stale
+  ---
+  duration_ms: 5.415921
+  ...
+# Subtest: closed manifest passes listing, id, sourceIds, profile, and rawPath checks
+ok 15 - closed manifest passes listing, id, sourceIds, profile, and rawPath checks
+  ---
+  duration_ms: 1.808429
+  ...
+# Subtest: open manifest fails unlisted article, id mismatch, unknown source, profile kind, and rawPath
+ok 16 - open manifest fails unlisted article, id mismatch, unknown source, profile kind, and rawPath
+  ---
+  duration_ms: 2.77713
+  ...
+# Subtest: derived source requires a known extract.kind
+ok 17 - derived source requires a known extract.kind
+  ---
+  duration_ms: 3.654902
+  ...
+# Subtest: document rawPath must exist on disk
+ok 18 - document rawPath must exist on disk
+  ---
+  duration_ms: 4.498729
+  ...
+1..18
+# tests 18
+# suites 0
+# pass 18
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 107.334608
+test_exit=0
+
+## inventory status --wiki wiki
+{
+  "changed": [],
+  "missing": [],
+  "unchanged": [
+    "AGENTS.md",
+    "CONTEXT.md",
+    "README.md",
+    "yss-project.yaml",
+    "lifecycle-registry.yaml",
+    "harness-process-tailoring.md",
+    "maintenance-intensity.yaml",
+    "implementation-repo-integration.md",
+    "skills-maintenance.md",
+    "yss-skill-registry.yaml",
+    "issue-tracker.md",
+    "triage-labels.md",
+    "adr-0002",
+    "create-yss-spec-repository-mode-contract",
+    "spec-template.md",
+    "vertical-slice-ticket-template.md",
+    "skills-lock.json"
+  ],
+  "articles": [],
+  "unmapped": [],
+  "humanOwned": []
+}
+status_exit=0
+
+## lint-wikilinks wiki
+校验完成：23 篇文章，203 条 wikilink
+通过：所有 wikilink / 来源 / 索引检查通过
+lint_exit=0
+
+## advise.mjs wiki (counts only)
+{
+  oneWayLinks: 44,
+  missingTermPages: 134,
+  unreferencedRaws: 1,
+  suspects: 0
+}
+advise_exit=0
+
+## lock / sync
+skills-lock.json matches distributed skills
+lock_exit=0
+skill projections are synchronized
+sync_exit=0
+
+## checkpoint
+模板维护 checkpoint 验证通过（L2，最低 L2）
+checkpoint_exit=0
+
+## I3 query fallback (H1+首段)
+hits_derived_excerpt: LLM Wiki, 技能投影与锁定
+hits_ghost_ZxQq9WikiGhostToken: (none)
+
+## I5 unconfirmed ingest
+unconfirmed_article_byte_changes: []
+query.md forbids write/ingest: yes
