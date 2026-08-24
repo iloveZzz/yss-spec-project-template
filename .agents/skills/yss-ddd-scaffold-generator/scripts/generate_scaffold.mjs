@@ -5,6 +5,12 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 
+import {
+  findGitRoot,
+  gitSubmoduleScaffoldViolation,
+  overlayMountViolation
+} from "../../../../scripts/lib/repository-scope-policy.mjs";
+
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const SKILL_ROOT = path.resolve(SCRIPT_DIR, "..");
 const REPOSITORY_ROOT = path.resolve(SCRIPT_DIR, "../../../..");
@@ -87,11 +93,28 @@ class ScaffoldGenerator {
     this.scaffoldContract = undefined;
   }
 
+  gitRootForOutput() {
+    return findGitRoot(this.finalProjectRoot) || findGitRoot(this.outputDir) || REPOSITORY_ROOT;
+  }
+
+  refuseGitlinkAsRegularDirectory(gitRoot, target) {
+    const overlay = overlayMountViolation(gitRoot, target, { force: true });
+    if (overlay) fail(overlay);
+  }
+
   async generate() {
     await this.validateHarnessOutputLayout();
-    if (await exists(this.finalProjectRoot) && !this.options.force) fail(`输出目录已存在: ${this.finalProjectRoot}；如确认覆盖，请显式传入 --force`);
+    const gitRoot = this.gitRootForOutput();
+    const gitlinkViolation = gitSubmoduleScaffoldViolation(gitRoot, this.outputDir, this.projectName, { force: this.options.force });
+    if (gitlinkViolation) fail(gitlinkViolation);
+    this.refuseGitlinkAsRegularDirectory(gitRoot, this.finalProjectRoot);
+    const targetExists = await exists(this.finalProjectRoot);
+    if (targetExists) {
+      this.refuseGitlinkAsRegularDirectory(gitRoot, this.finalProjectRoot);
+      if (!this.options.force) fail(`输出目录已存在: ${this.finalProjectRoot}；如确认覆盖，请显式传入 --force`);
+    }
     await this.validateContractMetadata();
-    if (await exists(this.finalProjectRoot) && await nonEmpty(this.finalProjectRoot) && this.options.force) this.validateForceMetadata();
+    if (targetExists && await nonEmpty(this.finalProjectRoot) && this.options.force) this.validateForceMetadata();
     await mkdir(this.outputDir, { recursive: true });
     const stagingRoot = await mkdtemp(path.join(this.outputDir, `.${this.projectName}.staging-`));
     this.projectRoot = path.join(stagingRoot, this.projectName);
@@ -101,7 +124,11 @@ class ScaffoldGenerator {
       this.generateDatabaseScripts(); await this.generateDocumentation(); await this.writeGenerationManifest();
       await this.copyWrapperFiles(); await this.validateGeneratedArtifacts();
       let backupPath;
-      if (await exists(this.finalProjectRoot)) { backupPath = path.join(this.outputDir, `.${this.projectName}.backup-${backupStamp()}`); await rename(this.finalProjectRoot, backupPath); }
+      if (await exists(this.finalProjectRoot)) {
+        this.refuseGitlinkAsRegularDirectory(gitRoot, this.finalProjectRoot);
+        backupPath = path.join(this.outputDir, `.${this.projectName}.backup-${backupStamp()}`);
+        await rename(this.finalProjectRoot, backupPath);
+      }
       await rename(this.projectRoot, this.finalProjectRoot); this.projectRoot = this.finalProjectRoot;
       console.log(`\n✅ 项目生成完成!\n📂 项目位置: ${this.projectRoot}`);
       if (backupPath) console.log(`♻️ 原项目备份: ${backupPath}`);

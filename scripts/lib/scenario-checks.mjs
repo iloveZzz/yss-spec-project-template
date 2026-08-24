@@ -28,6 +28,9 @@ function validateMattContract(data) {
     ensure(git?.natural_language_intent_is_authorization === false && rule?.requires_explicit_user_authorization === true && rule?.authorized_value === true && rule?.unauthorized_action === "checkpoint-only", `${action} 授权边界不完整`);
     ensure(includesAll(rule?.required, [`${prefix}_authorized`, `${prefix}_scope`, `${prefix}_authorization_ref`]) && includesAll(rule?.non_empty, [`${prefix}_scope`, `${prefix}_authorization_ref`]), `${action} 授权必填字段不完整`);
   }
+  const submodule = git?.git_submodule;
+  ensure(submodule?.applies_when === "repository_scope=git-submodule" && submodule?.forbid_commit_on_detached_head === true && submodule?.empty_gitlink_scaffold === "blocked" && submodule?.treat_empty_gitlink_as_regular_dir === "blocked" && submodule?.treat_detached_head_as_regular_dir === "blocked" && submodule?.force_overlay_mount === "blocked" && submodule?.write_inside_detached_head === "blocked" && submodule?.require_git_entry_mode === "160000" && submodule?.working_tree_declared_scope_must_match === true && submodule?.copy_source_into_harness === "forbidden" && submodule?.clone_requires_recurse_submodules === true && submodule?.push_recurse_submodules === "check" && submodule?.delivery_order_must_include === "superproject-gitlink-update" && submodule?.nested_authorization === "per-repository" && submodule?.inspect_working_tree_writable === "explicit-boolean" && submodule?.empty_gitlink_writable === false && submodule?.force_overlay_regular_dir_path === "blocked", "git-submodule Git 授权契约不完整");
+  ensure(JSON.stringify(submodule?.commit_order) === JSON.stringify(["submodule-repositories", "superproject-gitlink"]) && JSON.stringify(submodule?.push_order) === JSON.stringify(["submodule-repositories", "superproject-gitlink"]), "git-submodule 先子后父顺序不完整");
 }
 
 function validateInvocationBoundary(data) {
@@ -92,6 +95,7 @@ function validateMattProse(skill, adapter) {
   ensure(adapter.includes("仅发现旧路径资产") && adapter.includes("不得调用 `setup-matt-pocock-skills`"), "适配器缺少 setup 旧资产迁移或显式用户入口条件");
   ensure(adapter.includes("frontier 为空") && adapter.includes("双方共同理解已确认"), "适配器缺少 grill_exit 的 frontier 或共同理解条件");
   ensure(skill.includes("自然语言意向不构成上述结构化 Git 授权") && adapter.includes("本身不是结构化授权"), "主技能或适配器缺少自然语言 Git 意向不是授权的说明");
+  ensure(adapter.includes("禁止 detached HEAD 提交") && adapter.includes("先推子仓再更新父仓 gitlink"), "适配器缺少 git-submodule 嵌套 Git 授权说明");
 }
 
 function validateInvocationProse(skill, adapter, orchestration) {
@@ -214,7 +218,13 @@ export function runScenario(name) {
       (item) => { item.matt_invocation_boundary.user_invoked_skills.push("unexpected-user-entry"); },
       (item) => { item.setup_readiness.lifecycle_may_invoke_setup = true; },
       (item) => { item.grill_exit.user_confirmation_required = false; },
-      (item) => { delete item.git_authorization.push; }
+      (item) => { delete item.git_authorization.push; },
+      (item) => { delete item.git_authorization.git_submodule; },
+      (item) => { item.git_authorization.git_submodule.forbid_commit_on_detached_head = false; },
+      (item) => { item.git_authorization.git_submodule.force_overlay_mount = "allowed"; },
+      (item) => { item.git_authorization.git_submodule.write_inside_detached_head = "allowed"; },
+      (item) => { item.git_authorization.git_submodule.empty_gitlink_writable = true },
+      (item) => { item.git_authorization.git_submodule.force_overlay_regular_dir_path = "allowed"; }
     ];
     for (const mutate of mutations) {
       const candidate = structuredClone(data); mutate(candidate);

@@ -1,0 +1,38 @@
+schema_version: 1
+intensity: L3
+classification_reason: 第四轮将三道写入门禁审查题改为可复现判定式，并让实施测试跟判定式对齐；仍命中 cross-repo-contract 与 generation-semantics。
+triggers:
+  - cross-repo-contract
+  - generation-semantics
+changed_assets:
+  - scripts/lib/repository-scope-policy.mjs
+  - scripts/verify-repository-scope-scenarios
+  - .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs
+  - .template-source/tooling/node/test/runtime-contract.test.mjs
+  - .template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-oracle-2026-08-24.md
+  - .template-source/evidence/maintenance/git-submodule-scope-oracle-implementer-measurement-2026-08-24.md
+  - .template-source/evidence/maintenance/git-submodule-scope-review-findings-oracle-2026-08-24.md
+verification_evidence:
+  - kind: red
+    command: .template-source/evidence/maintenance/git-submodule-scope-writable-api-red-2026-08-24.md
+    result: pass
+  - kind: green
+    command: .template-source/evidence/maintenance/git-submodule-scope-writable-api-green-2026-08-24.md
+    result: pass
+  - kind: refactor
+    command: scripts/lib/repository-scope-policy.mjs
+    result: pass
+  - kind: pressure-scenario
+    command: scripts/verify-repository-scope-scenarios
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template
+    result: pass
+  - kind: relevant-check
+    command: .template-source/evidence/maintenance/git-submodule-scope-oracle-implementer-measurement-2026-08-24.md
+    result: pass
+  - kind: formal-independent-review
+    command: .template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-oracle-2026-08-24.md
+    result: pass
+review_mode: formal-independent
+escalation: 人工已按第四轮判定式作答三题均为否；跨仓 CLI 联调未做，不得声称模板可发布。

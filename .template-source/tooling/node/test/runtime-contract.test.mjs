@@ -49,6 +49,94 @@ test("implementation path policy preserves harness and external-repository bound
   assert.equal(violation("app/backend/project1/", { enforceHarness: false }), null);
 });
 
+test("repository_scope git-submodule is a first-class layout distinct from harness-apps", async () => {
+  const {
+    LAYOUT_POLICIES,
+    gitSubmoduleScaffoldViolation,
+    implementationWriteViolation,
+    inspectCheckoutState,
+    inspectWorkingTreeScope,
+    isWorkingTreeWritable,
+    regularDirectoryMisreadViolation,
+    validRepositoryScope,
+    violationRepositoryScope
+  } = await import(path.join(repositoryRoot, "scripts/lib/repository-scope-policy.mjs"));
+  const { makeGitlinkFixture } = await import(path.join(repositoryRoot, "scripts/lib/git-submodule-fixtures.mjs"));
+  const record = {
+    repository_scope: "git-submodule",
+    layout_policy: LAYOUT_POLICIES["git-submodule"],
+    project_root: "apps/backend/billing-service/",
+    gitlink_path: "apps/backend/billing-service",
+    git_entry_mode: "160000",
+    git_url: "https://example.invalid/billing-service.git",
+    gitmodules_name: "backend-billing-service",
+    superproject_git_url: "https://example.invalid/harness.git",
+    checkout_state: "attached-branch",
+    scaffold_status: "existing"
+  };
+  assert.equal(validRepositoryScope(record), true);
+  assert.match(violationRepositoryScope({ ...record, layout_policy: "harness-apps-multi-project" }), /layout_policy/);
+  assert.match(violationRepositoryScope({ ...record, git_entry_mode: "" }), /git_entry_mode must be 160000/);
+  assert.match(violationRepositoryScope({ ...record, checkout_state: "empty-gitlink", scaffold_status: "required" }), /empty or uninitialized/);
+  assert.match(violationRepositoryScope({ ...record, checkout_state: "detached-head", scaffold_status: "required" }), /regular directory/);
+  assert.match(violationRepositoryScope({
+    repository_scope: "harness-apps",
+    layout_policy: "harness-apps-multi-project",
+    project_root: "apps/backend/billing-service/",
+    gitlink_path: "apps/backend/billing-service"
+  }), /git-submodule identity/);
+  const empty = makeGitlinkFixture({ checkout: "empty-gitlink" });
+  const detached = makeGitlinkFixture({ checkout: "detached-head" });
+  const attached = makeGitlinkFixture({ checkout: "attached-branch" });
+  try {
+    const emptyTarget = path.join(empty.superproject, empty.mount);
+    assert.equal(inspectCheckoutState(empty.superproject, emptyTarget), "empty-gitlink");
+    assert.match(regularDirectoryMisreadViolation({ checkout_state: "empty-gitlink" }), /regular directory/);
+    assert.match(gitSubmoduleScaffoldViolation(empty.superproject, path.join(empty.superproject, "apps/backend"), "billing-service", { force: true }), /--force/);
+    const harnessInspection = inspectWorkingTreeScope(empty.superproject, {
+      repository_scope: "harness-apps",
+      project_root: "apps/backend/billing-service/"
+    });
+    assert.equal(harnessInspection.writable, false);
+    assert.match(harnessInspection.violation, /不得登记为 harness-apps/);
+    const emptyInspection = inspectWorkingTreeScope(empty.superproject, {
+      ...record,
+      checkout_state: "empty-gitlink"
+    });
+    assert.equal(typeof emptyInspection, "object");
+    assert.notEqual(emptyInspection, null);
+    assert.equal(Array.isArray(emptyInspection), false);
+    assert.equal(emptyInspection.writable, false);
+    assert.equal(emptyInspection.writable === true, false);
+    assert.equal(isWorkingTreeWritable(emptyInspection), false);
+    assert.match(emptyInspection.violation, /regular directory/);
+    assert.match(implementationWriteViolation(empty.superproject, path.join(emptyTarget, "src/Foo.java")), /普通目录写入/);
+    const detachedTarget = path.join(detached.superproject, detached.mount);
+    assert.equal(inspectCheckoutState(detached.superproject, detachedTarget), "detached-head");
+    const detachedInspection = inspectWorkingTreeScope(detached.superproject, {
+      ...record,
+      checkout_state: "detached-head"
+    });
+    assert.equal(detachedInspection.writable, false);
+    assert.match(detachedInspection.violation, /regular directory/);
+    assert.match(gitSubmoduleScaffoldViolation(detached.superproject, path.join(detached.superproject, "apps/backend"), "billing-service"), /gitlink 不得由脚手架覆盖/);
+    assert.match(gitSubmoduleScaffoldViolation(detached.superproject, detachedTarget, "nested-service"), /普通目录写入/);
+    assert.equal(gitSubmoduleScaffoldViolation(empty.superproject, path.join(empty.superproject, "output"), "plain-service"), null);
+    const attachedInspection = inspectWorkingTreeScope(attached.superproject, record);
+    assert.equal(inspectCheckoutState(attached.superproject, path.join(attached.superproject, attached.mount)), "attached-branch");
+    assert.equal(attachedInspection.writable, true);
+    assert.equal(attachedInspection.violation, null);
+    const failedProbe = inspectWorkingTreeScope(path.resolve(repositoryRoot), { ...record, checkout_state: "empty-gitlink" });
+    assert.equal(typeof failedProbe, "object");
+    assert.equal(failedProbe.writable, false);
+    assert.equal(isWorkingTreeWritable(failedProbe), false);
+  } finally {
+    empty.cleanup();
+    detached.cleanup();
+    attached.cleanup();
+  }
+});
+
 test("Node lifecycle registry verifier preserves the published semantic baseline", () => {
   const output = execFileSync("node", ["scripts/node-verify-lifecycle-registry.mjs"], {
     cwd: repositoryRoot,

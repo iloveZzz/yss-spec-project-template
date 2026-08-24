@@ -430,6 +430,60 @@ def main() -> int:
             "批准覆盖的备份必须保留原目录内容",
         )
 
+        gitlink_root = temp_root / "gitlink-superproject"
+        gitlink_backend = gitlink_root / "apps" / "backend"
+        gitlink_project = gitlink_backend / "gitlink-service"
+        gitlink_project.mkdir(parents=True)
+        (gitlink_root / ".gitmodules").write_text(
+            '[submodule "backend-gitlink-service"]\n'
+            "\tpath = apps/backend/gitlink-service\n"
+            "\turl = https://example.invalid/gitlink-service.git\n",
+            encoding="utf-8",
+        )
+        gitlink_contract = temp_root / "gitlink-contract.json"
+        write_contract(
+            gitlink_contract,
+            gitlink_backend,
+            "gitlink-service",
+            "backend-scaffold-gitlink",
+            "lifecycle/approval-gitlink",
+            "router/draft-gitlink",
+            "lifecycle/contracts/backend-scaffold-gitlink.yaml",
+            force_allowed=True,
+        )
+        gitlink_result = run_generator(
+            "--project-name",
+            "gitlink-service",
+            "--base-package",
+            "com.yss.gitlink",
+            "--output-dir",
+            str(gitlink_backend),
+            "--force",
+            "--contract-id",
+            "backend-scaffold-gitlink",
+            "--contract-version",
+            "1",
+            "--approval-ref",
+            "lifecycle/approval-gitlink",
+            "--router-draft-ref",
+            "router/draft-gitlink",
+            "--persisted-ref",
+            "lifecycle/contracts/backend-scaffold-gitlink.yaml",
+            "--contract-file",
+            str(gitlink_contract),
+            "--overwrite-scope",
+            "gitlink-service/**",
+            "--rollback-ref",
+            "git:checkpoint-gitlink",
+        )
+        require(
+            gitlink_result.returncode != 0
+            and "gitlink 不得由脚手架覆盖" in (gitlink_result.stdout + gitlink_result.stderr)
+            and "请显式传入 --force" not in (gitlink_result.stdout + gitlink_result.stderr),
+            "空 gitlink 挂载点不得被脚手架覆盖",
+        )
+        require(not (gitlink_project / "pom.xml").exists(), "拒绝 gitlink 覆盖时不得留下骨架")
+
     print("YSS 脚手架生成器受控生成场景验证通过")
     return 0
 

@@ -31,7 +31,7 @@ branch: template
 ## Workflow
 
 1. 确认当前任务已经通过 Harness 入口分诊，且实现位置已记录在 proposal、design、build entry review、实施计划或实现路由记录中。
-2. 确认目标是外部实现仓库；只有用户明确选择时才输出到 Harness 仓库的 `apps/frontend/<project>/`。`apps/frontend/` 只能作为项目容器，`app/frontend/`、`app/backend/` 及其子路径禁止作为输出位置。
+2. 确认目标是外部实现仓库；只有用户明确选择时才输出到 Harness 仓库的 `apps/frontend/<project>/`。`apps/frontend/` 只能作为项目容器，`app/frontend/`、`app/backend/` 及其子路径禁止作为输出位置。`git-submodule` 只能在已初始化且附加分支的子仓工作树生成；空 gitlink、detached HEAD、`--force` 覆盖挂载点不得当成普通目录。
 3. 只读检查模板分支是否可访问：`git ls-remote --heads <repo> template`。
 4. 需要生成工程时，克隆或复制模板到用户确认的目标位置；不得默认写入 Harness 仓库。
 5. 替换应用名、微应用名、路由、`micro-config.json`、环境变量和 README 中的模板占位。

@@ -1,0 +1,239 @@
+#!/usr/bin/env node
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+  LAYOUT_POLICIES,
+  NAMED_STRESS_SCENARIOS,
+  REPOSITORY_SCOPES,
+  gitSubmoduleCommitViolation,
+  gitSubmodulePushOrderViolation,
+  gitSubmoduleScaffoldViolation,
+  implementationWriteViolation,
+  inspectCheckoutState,
+  inspectWorkingTreeScope,
+  isWorkingTreeWritable,
+  regularDirectoryMisreadViolation,
+  validRepositoryScope,
+  violationRepositoryScope
+} from "./lib/repository-scope-policy.mjs";
+import { makeGitlinkFixture } from "./lib/git-submodule-fixtures.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const read = (relative) => readFileSync(path.join(root, relative), "utf8");
+const failures = [];
+const namedPassed = [];
+
+function ensure(condition, message) {
+  if (!condition) failures.push(message);
+}
+
+function namedStress(id, condition, message) {
+  if (!NAMED_STRESS_SCENARIOS.includes(id)) {
+    failures.push(`named stress ${id}: unknown id`);
+    return;
+  }
+  if (!condition) {
+    failures.push(`named stress ${id}: FAIL ${message}`);
+    return;
+  }
+  namedPassed.push(id);
+}
+
+const validGitSubmodule = {
+  repository_scope: "git-submodule",
+  layout_policy: LAYOUT_POLICIES["git-submodule"],
+  project_root: "apps/backend/billing-service/",
+  gitlink_path: "apps/backend/billing-service",
+  git_entry_mode: "160000",
+  git_url: "https://example.invalid/billing-service.git",
+  gitmodules_name: "backend-billing-service",
+  superproject_git_url: "https://example.invalid/harness.git",
+  checkout_state: "attached-branch",
+  scaffold_status: "existing"
+};
+
+ensure(validRepositoryScope({ repository_scope: "external-repository", layout_policy: "external-repository-native", project_root: "src/" }), "应允许 external-repository");
+ensure(validRepositoryScope({ repository_scope: "harness-apps", layout_policy: "harness-apps-multi-project", project_root: "apps/frontend/console/" }), "应允许 harness-apps");
+ensure(validRepositoryScope(validGitSubmodule), `应允许正式 git-submodule: ${violationRepositoryScope(validGitSubmodule) ?? ""}`);
+
+namedStress(
+  "unknown_scope",
+  violationRepositoryScope({ repository_scope: "monorepo" })?.includes("repository_scope must be one of"),
+  "未知 repository_scope 应阻断"
+);
+namedStress(
+  "layout_mismatch",
+  violationRepositoryScope({ ...validGitSubmodule, layout_policy: "harness-apps-multi-project" })?.includes("layout_policy"),
+  "git-submodule 不得套用 harness-apps layout_policy"
+);
+namedStress(
+  "same_origin_url",
+  violationRepositoryScope({ ...validGitSubmodule, git_url: validGitSubmodule.superproject_git_url })?.includes("differ"),
+  "子仓 url 不得等于 superproject"
+);
+namedStress(
+  "copy_source_into_harness",
+  violationRepositoryScope({ ...validGitSubmodule, copy_source_into_harness: true })?.includes("gitlink mount"),
+  "复制源码进 Harness 应阻断"
+);
+namedStress(
+  "missing_git_entry_mode",
+  violationRepositoryScope({ ...validGitSubmodule, git_entry_mode: "" })?.includes("git_entry_mode must be 160000"),
+  "git-submodule 缺少 git_entry_mode 应阻断"
+);
+
+ensure(violationRepositoryScope({
+  repository_scope: "harness-apps",
+  layout_policy: "harness-apps-multi-project",
+  project_root: "apps/backend/billing-service/",
+  git_entry_mode: "160000"
+})?.includes("git-submodule"), "harness-apps 记录 gitlink 应改登记为 git-submodule");
+ensure(violationRepositoryScope({
+  repository_scope: "harness-apps",
+  layout_policy: "harness-apps-multi-project",
+  project_root: "apps/backend/billing-service/",
+  gitlink_path: "apps/backend/billing-service",
+  gitmodules_name: "backend-billing-service"
+})?.includes("git-submodule identity"), "harness-apps 填写 gitlink 身份字段应阻断");
+ensure(violationRepositoryScope({ repository_scope: "external-repository", gitlink_path: "apps/backend/billing-service", git_entry_mode: "160000" })?.includes("git-submodule"), "external-repository 挂 apps/ gitlink 应阻断");
+ensure(violationRepositoryScope({ ...validGitSubmodule, checkout_state: "detached-head", commit_allowed: true })?.includes("detached HEAD"), "detached HEAD 提交应阻断");
+ensure(violationRepositoryScope({ ...validGitSubmodule, checkout_state: "detached-head", scaffold_status: "required" })?.includes("regular directory"), "detached HEAD 脚手架应阻断");
+ensure(violationRepositoryScope({ ...validGitSubmodule, checkout_state: "empty-gitlink", scaffold_status: "required" })?.includes("empty or uninitialized"), "空 gitlink 脚手架应阻断");
+ensure(gitSubmoduleCommitViolation({ checkout_state: "detached-head", commit_authorized: true })?.includes("attached branch"), "commit 辅助校验应拒绝 detached HEAD");
+ensure(gitSubmodulePushOrderViolation(["superproject-gitlink", "submodule-repositories"])?.includes("submodule-repositories then superproject-gitlink"), "先父后子 push 应阻断");
+ensure(gitSubmodulePushOrderViolation(["submodule-repositories", "superproject-gitlink"]) === null, "先子后父顺序应允许");
+
+const emptyGitlink = makeGitlinkFixture({ checkout: "empty-gitlink" });
+const detached = makeGitlinkFixture({ checkout: "detached-head" });
+const attached = makeGitlinkFixture({ checkout: "attached-branch" });
+try {
+  const emptyTarget = path.join(emptyGitlink.superproject, emptyGitlink.mount);
+  const emptyRecord = {
+    repository_scope: "git-submodule",
+    project_root: "apps/backend/billing-service/",
+    checkout_state: "empty-gitlink"
+  };
+  const emptyInspection = inspectWorkingTreeScope(emptyGitlink.superproject, emptyRecord);
+  namedStress(
+    "empty_gitlink_as_regular_dir",
+    typeof emptyInspection === "object"
+      && emptyInspection !== null
+      && Array.isArray(emptyInspection) === false
+      && emptyInspection.writable === false
+      && emptyInspection.writable === true === false
+      && isWorkingTreeWritable(emptyInspection) === false
+      && emptyInspection.violation?.includes("regular directory")
+      && inspectCheckoutState(emptyGitlink.superproject, emptyTarget) === "empty-gitlink"
+      && implementationWriteViolation(emptyGitlink.superproject, path.join(emptyTarget, "src/Foo.java"))?.includes("普通目录写入")
+      && gitSubmoduleScaffoldViolation(emptyGitlink.superproject, path.join(emptyGitlink.superproject, "apps/backend"), "billing-service")?.includes("gitlink 不得由脚手架覆盖"),
+    "空 gitlink 仍被当成普通目录"
+  );
+  namedStress(
+    "declared_harness_apps_actual_gitlink",
+    inspectWorkingTreeScope(emptyGitlink.superproject, {
+      repository_scope: "harness-apps",
+      project_root: "apps/backend/billing-service/"
+    }).writable === false
+      && inspectWorkingTreeScope(emptyGitlink.superproject, {
+        repository_scope: "harness-apps",
+        project_root: "apps/backend/billing-service/"
+      }).violation?.includes("不得登记为 harness-apps"),
+    "声明 harness-apps 但工作树是 gitlink 应阻断"
+  );
+  const detachedTarget = path.join(detached.superproject, detached.mount);
+  const detachedInspection = inspectWorkingTreeScope(detached.superproject, {
+    repository_scope: "git-submodule",
+    project_root: "apps/backend/billing-service/",
+    checkout_state: "detached-head"
+  });
+  namedStress(
+    "detached_head_as_regular_dir",
+    detachedInspection.writable === false
+      && inspectCheckoutState(detached.superproject, detachedTarget) === "detached-head"
+      && detachedInspection.violation?.includes("regular directory")
+      && implementationWriteViolation(detached.superproject, path.join(detachedTarget, "nested-service"))?.includes("普通目录写入")
+      && gitSubmoduleScaffoldViolation(detached.superproject, detachedTarget, "nested-service")?.includes("gitlink 不得由脚手架覆盖"),
+    "detached HEAD 仍被当成普通目录"
+  );
+  namedStress(
+    "force_overlay_mount",
+    gitSubmoduleScaffoldViolation(
+      emptyGitlink.superproject,
+      path.join(emptyGitlink.superproject, "apps/backend"),
+      "billing-service",
+      { force: true }
+    )?.includes("--force")
+      && regularDirectoryMisreadViolation(validGitSubmodule, { force: true })?.includes("--force"),
+    "--force 仍可覆盖 gitlink 挂载点"
+  );
+  const attachedNested = path.join(attached.superproject, attached.mount);
+  const attachedInspection = inspectWorkingTreeScope(attached.superproject, {
+    ...validGitSubmodule,
+    checkout_state: "attached-branch"
+  });
+  ensure(
+    inspectCheckoutState(attached.superproject, attachedNested) === "attached-branch",
+    "附加分支 fixture 应处于 attached-branch"
+  );
+  ensure(attachedInspection.writable === true, "附加分支 git-submodule 工作树应可写");
+  ensure(attachedInspection.violation === null, "附加分支工作树对照不应返回 violation");
+  ensure(typeof emptyInspection === "object" && emptyInspection !== null && Array.isArray(emptyInspection) === false, "inspectWorkingTreeScope 必须返回对象，不得返回字符串");
+  ensure(
+    inspectWorkingTreeScope(emptyGitlink.superproject, {
+      ...validGitSubmodule,
+      checkout_state: "empty-gitlink"
+    }).writable === false,
+    "已登记为空 gitlink 的 git-submodule 不得返回可写"
+  );
+  const failedProbe = inspectWorkingTreeScope(process.cwd(), {
+    ...validGitSubmodule,
+    checkout_state: "empty-gitlink"
+  });
+  ensure(typeof failedProbe === "object" && failedProbe !== null, "探测失败时仍须返回对象，不得返回字符串");
+  ensure(failedProbe.writable === false && isWorkingTreeWritable(failedProbe) === false, "登记为空 gitlink 时即使工作树探测失败也不得返回可写");
+  ensure(
+    implementationWriteViolation(attached.superproject, path.join(attachedNested, "src")) === null,
+    "附加分支工作树内写入不应被当成空 gitlink / detached HEAD"
+  );
+  ensure(
+    gitSubmoduleScaffoldViolation(attached.superproject, attachedNested, "nested-service") === null,
+    "附加分支子仓工作树内生成应允许"
+  );
+} finally {
+  emptyGitlink.cleanup();
+  detached.cleanup();
+  attached.cleanup();
+}
+
+for (const id of NAMED_STRESS_SCENARIOS) {
+  if (!namedPassed.includes(id)) failures.push(`named stress ${id}: missing`);
+}
+
+const markerFiles = [
+  ["docs/process/implementation-repo-integration.md", "repository_scope: git-submodule"],
+  ["docs/templates/implementation-repo-registry-template.md", "git-submodule"],
+  ["docs/templates/implementation-repo-registry-template.md", "git-submodule-harness-apps"],
+  ["docs/templates/cross-repo-slice-template.md", "superproject-gitlink-update"],
+  ["docs/templates/implementation-routing-template.md", "git-submodule-harness-apps"],
+  [".agents/skills/implementation-repo-onboarding/SKILL.md", "git-submodule"],
+  [".agents/skills/yss-router/references/slice-implementation-contract.md", "git-submodule-harness-apps"],
+  [".agents/skills/yss-router/references/router-contract.yaml", "git-submodule-harness-apps"],
+  [".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml", "repository_scope=git-submodule"],
+  [".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs", "gitSubmoduleScaffoldViolation"],
+  [".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs", "refuseGitlinkAsRegularDirectory"]
+];
+for (const [file, marker] of markerFiles) {
+  ensure(existsSync(path.join(root, file)), `缺少场景资产: ${file}`);
+  ensure(read(file).includes(marker), `场景资产缺少标记 ${marker}: ${file}`);
+}
+
+ensure(REPOSITORY_SCOPES.includes("git-submodule"), "REPOSITORY_SCOPES 必须包含 git-submodule");
+
+if (failures.length > 0) {
+  process.stderr.write(`${failures.join("\n")}\n`);
+  process.exitCode = 1;
+} else {
+  process.stdout.write(`${namedPassed.map((id) => `named stress ${id}: PASS`).join("\n")}\n`);
+  process.stdout.write("实现仓库 repository_scope 压力场景验证通过\n");
+}

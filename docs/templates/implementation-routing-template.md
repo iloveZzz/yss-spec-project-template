@@ -84,8 +84,8 @@ owner: ai
 | 字段 | 内容 |
 |---|---|
 | impacted_areas |  |
-| implementation_path_policy | `harness-apps-multi-project` / `external-repository-native` |
-| project_roots | Harness 内填写 `apps/backend/<project>/` / `apps/frontend/<project>/`；外部仓库填写真实项目根 |
+| implementation_path_policy | `harness-apps-multi-project` / `external-repository-native` / `git-submodule-harness-apps` |
+| project_roots | Harness 内与 `git-submodule` 填写 `apps/backend/<project>/` / `apps/frontend/<project>/`；外部仓库填写真实项目根 |
 | required_skills |  |
 | optional_skills |  |
 | unavailable_skills | 写明 provider、fallback 和阻断结论；不得静默跳过 |
@@ -187,7 +187,7 @@ owner: ai
 
 ## 4. 外部实现仓库
 
-> 当前仓库默认不承载运行时代码。若用户明确选择 Harness 内实现，项目根必须是 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 不能作为项目根，`app/backend/`、`app/frontend/` 及其子路径禁止使用。
+> 当前仓库默认不承载运行时代码。若用户明确选择 Harness 内实现，同源代码用 `harness-apps`；独立仓挂载用 `git-submodule`。两种项目根都必须是 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 不能作为项目根，`app/backend/`、`app/frontend/` 及其子路径禁止使用。
 
 | repo_role | project_root | git_url | default_branch | working_branch | MR / PR | CI | test_command | build_command | 状态 |
 |---|---|---|---|---|---|---|---|---|---|

@@ -68,6 +68,7 @@
 | 生态发布清单 | 关联模板 schema 与 commit、CLI 版本与快照、公开技能来源与导出 hash 的跨仓发布证据。 | — | 不要求尚未生成的仓库 commit 互相循环引用。 |
 | 研发管理仓库 | 承载 Spec、OpenAPI、架构、Ticket、验证、发布和复盘等研发管理资产的仓库。 | — | 不等同于前端 / 后端代码 monorepo。 |
 | 实现仓库 | 承载前端、后端或其他运行时代码及其 Git、CI、MR / PR、测试命令和发布流水线的仓库。 | — | 不要把实现仓库的源码所有权混入研发管理仓库。 |
+| Git 子模块分层接入 | 将前端 / 后端实现仓以 Git submodule（gitlink，mode `160000`）挂到 `project-instance` 的 `apps/` 布局下，并登记 `repository_scope: git-submodule`。 | — | 不得与 `harness-apps` 同源 monorepo 或无 gitlink 的 `external-repository` 混用；禁止把实现源码复制进 Harness 冒充 submodule。 |
 | 跨仓库契约变更 | 需要两个或多个独立仓库协同实现、验证和按顺序发布的共享契约变化。 | — | 任一参与仓库未完成契约对齐和集成验证时，不得单独声称整体可发布。 |
 | 模板源仓库（`template-source`） | 承载 `yss-spec-project-template` 权威模板资产及其演进规则的仓库身份。 | — | 只管理可复用模板，不承载某个具体产品的研发生命周期资产。 |
 | 模板实例仓库（`project-instance`） | 由模板初始化后生成、承载某个具体产品研发生命周期资产的仓库身份。 | — | 不作为通用流程模板的权威来源。 |

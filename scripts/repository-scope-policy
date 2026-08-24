@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+export {
+  REPOSITORY_SCOPES as scopes,
+  LAYOUT_POLICIES as layoutPolicies,
+  GITLINK_MODE as gitlinkMode,
+  NAMED_STRESS_SCENARIOS as namedStressScenarios,
+  violationRepositoryScope as violation,
+  validRepositoryScope as valid,
+  gitSubmoduleScaffoldViolation as scaffoldViolation,
+  isGitSubmoduleMount as isMount,
+  inspectWorkingTree as inspectWorkingTree,
+  inspectCheckoutState as inspectCheckout,
+  isWorkingTreeWritable as isWorkingTreeWritable,
+  regularDirectoryMisreadViolation as regularDirectoryMisread,
+  implementationWriteViolation as writeViolation
+} from "./lib/repository-scope-policy.mjs";
