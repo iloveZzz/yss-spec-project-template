@@ -1,14 +1,24 @@
 # 实现仓库接入与跨仓库切片绑定
 
-本文件是 Harness 仓库连接外部实现仓库的事实源。当前 `yss-spec-project-template` 与 `create-yss-spec` 的模板接管 / 同步变更属于 Harness-only 加 release-only 影响，不创建前端、后端或运行时代码目录。
+本文件是 Harness 仓库连接实现仓库的事实源。产品 `project-instance` 的拓扑以 `CONTEXT.md` 的分仓接入 / 一体仓为准，决策见 `docs/adr/0008-split-repo-and-monorepo-harness-topology.md`。当前 `yss-spec-project-template` 与 `create-yss-spec` 的模板接管 / 同步变更仍属 Harness-only 加 release-only，不创建前端、后端或运行时代码目录；§2–§4 只描述该模板↔CLI 变更，不是某个产品的前后端影响面。
 
 ## 1. 接入清单
 
-每个受影响实现仓库必须登记：仓库地址、分支、代码所有者、CI 入口、测试 / 构建命令、允许写路径、回滚点和 MR / PR。没有登记记录时，先完成 onboarding，不能用本仓库目录代替实现仓库。
+每个受影响实现项目必须登记：仓库地址、分支、代码所有者、CI 入口、测试 / 构建命令、允许写路径、回滚点和 MR / PR。没有登记记录时，先完成 onboarding，不能用本仓库目录代替未登记的实现项目。
 
-## 1.1 Harness 内实现项目路径策略
+## 1.0 产品实例拓扑
 
-当前 Harness 明确承载运行时代码时，统一使用以下多项目布局：
+| 情形 | 做法 | 布局 |
+|---|---|---|
+| 分仓接入（默认） | 空目录 `create-yss-spec` 初始化为 `project-instance`，再对前端、后端实现仓库分别 `implementation-repo-onboarding` | `repository_scope: external-repository`；`layout_policy: external-repository-native`；各仓填写真实 `project_root` |
+| 新建一体仓 | 用户明示让该实例仓承载运行时后，在实例仓内新建或脚手架前后端项目 | `repository_scope: harness-apps`；`layout_policy: harness-apps-multi-project`；项目根必须是 `apps/backend/<project>/` 与 `apps/frontend/<project>/` |
+| 已有一体仓 | 在该仓根目录 `create-yss-spec attach`，不搬迁 Git 历史、不覆盖运行时代码 | 同一 `git_url` 下按磁盘真实项目根登记；`layout_policy: external-repository-native`。原目录不是 `apps/` 不构成路径违规 |
+
+对本 `template-source` 执行 attach，或把 Harness 资产 attach 进仅含前端或仅含后端的实现仓来冒充一体仓，都不允许。分仓实例仓的默认 Git 托管、tracker 与 Agent 工作区见 ADR-0008；Git remote 仍不决定主 tracker。
+
+## 1.1 Harness 内新建与脚手架路径策略
+
+用户明示在实例仓内**新建或脚手架**运行时代码时，统一使用以下多项目布局：
 
 ```text
 apps/
@@ -19,9 +29,10 @@ apps/
 - `apps/backend/` 和 `apps/frontend/` 是项目容器，不是可生成的工程项目根；后端、前端项目必须分别位于 `apps/backend/<project>/`、`apps/frontend/<project>/`，多个项目按 `<project>` 目录并列。
 - `app/backend/`、`app/frontend/` 及其所有子路径均禁止作为工程生成目标；单复数差异不能被视为等价路径。
 - `allowed_write_paths`、`expected_evidence_files` 和生成器输出位置必须能回指具体项目目录；直接放开 `apps/backend/` 或 `apps/frontend/` 属于路径策略违规。
-- 外部实现仓库不要求采用 Harness 的 `apps/` 布局，但仍必须登记该仓库内的实际项目根路径；跨仓库切片的写路径不得用本 Harness 的占位路径冒充真实路径。
+- 分仓接入的外部实现仓库，以及已有一体仓 attach 之后的既有项目根，不要求改成 `apps/` 布局，但必须登记磁盘上的实际 `project_root`；跨仓库切片的写路径不得用本 Harness 的 `apps/` 占位路径冒充这些真实路径。
+- 已有一体仓的原目录不是 `apps/`，不得判为 §1.1 违规，也不得据此把 `apps/backend/<project>/` 生成红线改成任意目录。自动把已有代码迁进 `apps/` 不在允许动作内。
 
-每个 Harness 内项目至少登记 `project_type`、`project_name`、`project_root` 和 `repository_scope`。同一 Git monorepo 下的多个项目可以共用一条仓库登记，但必须逐项目列出根路径和独立验证命令；不同 Git 仓库必须分别登记。
+每个实现项目至少登记 `project_type`、`project_name`、`project_root` 和 `repository_scope`。同一 Git 仓库下的多个项目可以共用一条仓库登记，但必须逐项目列出根路径和独立验证命令；不同 Git 仓库必须分别登记。
 
 ## 1.2 前端 / 后端验证命令
 
