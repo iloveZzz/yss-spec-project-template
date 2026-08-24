@@ -214,6 +214,7 @@ export function findGitRoot(start) {
 }
 
 export function collectGitRoots(start) {
+  if (!start) return [];
   const roots = [];
   let current = path.resolve(start);
   while (true) {
@@ -225,6 +226,10 @@ export function collectGitRoots(start) {
     current = parent;
   }
   return roots;
+}
+
+function isUnsafeCheckout(state) {
+  return state === "empty-gitlink" || state === "uninitialized" || state === "detached-head";
 }
 
 function gitAbbrevRef(cwd) {
@@ -371,35 +376,67 @@ export function implementationWriteViolation(repoRoot, targetPath, { force = fal
     || unsafeSubmoduleWorktreeViolation(repoRoot, targetPath);
 }
 
-export function inspectWorkingTreeScope(repoRoot, record = {}) {
-  const projectRoot = normalizeSlash(record.project_root);
-  if (!repoRoot || !projectRoot) return "working-tree inspection requires repoRoot and project_root";
-  const target = path.resolve(repoRoot, projectRoot);
-  const declared = asString(record.repository_scope);
-  const actual = actualWorkingTreeScope(repoRoot, target);
-  if (declared === "harness-apps" && actual === "git-submodule") {
-    return "工作树存在 gitlink / .gitmodules，不得登记为 harness-apps";
-  }
-  if (declared === "external-repository" && actual === "git-submodule" && projectRoot.startsWith("apps/")) {
-    return "工作树存在 apps/ gitlink，不得登记为 external-repository";
-  }
-  if (declared === "git-submodule" && actual !== "git-submodule") {
-    return "工作树不是 gitlink，不得登记为 git-submodule";
-  }
-  const checkout = inspectCheckoutState(repoRoot, target);
-  if (checkout === "empty-gitlink" || checkout === "uninitialized" || checkout === "detached-head") {
-    return regularDirectoryMisreadViolation({ checkout_state: checkout });
-  }
-  return unsafeSubmoduleWorktreeViolation(repoRoot, target);
+function freezeWorkingTreeInspection({ writable, violation, declared, actual }) {
+  return Object.freeze({
+    writable: writable === true,
+    violation: violation || null,
+    declared: Object.freeze(declared),
+    actual: Object.freeze(actual)
+  });
 }
 
-export function gitSubmoduleScaffoldViolation(repoRoot, outputDir, projectName, { force = false } = {}) {
-  const projectRoot = path.resolve(outputDir, projectName);
+export function isWorkingTreeWritable(inspection) {
+  return inspection?.writable === true;
+}
+
+export function inspectWorkingTreeScope(repoRoot, record = {}) {
+  const projectRoot = normalizeSlash(record.project_root);
+  const declaredScope = asString(record.repository_scope);
+  const declaredCheckout = asString(record.checkout_state);
+  const declared = { scope: declaredScope, checkout: declaredCheckout };
+  if (!repoRoot || !projectRoot) {
+    return freezeWorkingTreeInspection({
+      writable: false,
+      violation: "working-tree inspection requires repoRoot and project_root",
+      declared,
+      actual: { scope: null, checkout: null }
+    });
+  }
+  const target = path.resolve(repoRoot, projectRoot);
+  const actualScope = actualWorkingTreeScope(repoRoot, target);
+  const actualCheckout = inspectCheckoutState(repoRoot, target);
+  const actual = { scope: actualScope, checkout: actualCheckout };
+  let violation = null;
+  if (declaredScope === "harness-apps" && actualScope === "git-submodule") {
+    violation = "工作树存在 gitlink / .gitmodules，不得登记为 harness-apps";
+  } else if (declaredScope === "external-repository" && actualScope === "git-submodule" && projectRoot.startsWith("apps/")) {
+    violation = "工作树存在 apps/ gitlink，不得登记为 external-repository";
+  } else if (declaredScope === "git-submodule" && actualScope !== "git-submodule") {
+    violation = "工作树不是 gitlink，不得登记为 git-submodule";
+  }
+  if (isUnsafeCheckout(declaredCheckout) || isUnsafeCheckout(actualCheckout)) {
+    const misread = regularDirectoryMisreadViolation({
+      checkout_state: isUnsafeCheckout(actualCheckout) ? actualCheckout : declaredCheckout
+    });
+    violation = violation ? `${violation}；${misread}` : misread;
+  } else if (!violation) {
+    violation = unsafeSubmoduleWorktreeViolation(repoRoot, target);
+  }
+  const writable = violation === null
+    && declaredCheckout !== "empty-gitlink"
+    && (declaredScope !== "git-submodule"
+      || (declaredCheckout === "attached-branch" && actualCheckout === "attached-branch"));
+  return freezeWorkingTreeInspection({ writable, violation, declared, actual });
+}
+
+export function gitSubmoduleScaffoldViolation(repositoryRoot, outputDir, projectName, { force = false } = {}) {
   const resolvedOutput = path.resolve(outputDir);
-  return overlayMountViolation(repoRoot, projectRoot, { force })
-    || unsafeSubmoduleWorktreeViolation(repoRoot, projectRoot)
-    || unsafeSubmoduleWorktreeViolation(repoRoot, resolvedOutput)
-    || regularDirectoryMisreadViolation({}, { force, repoRoot, targetPath: projectRoot });
+  const projectRoot = path.resolve(resolvedOutput, projectName);
+  const gitRoot = findGitRoot(projectRoot) || findGitRoot(resolvedOutput) || repositoryRoot || null;
+  return overlayMountViolation(gitRoot, projectRoot, { force })
+    || unsafeSubmoduleWorktreeViolation(gitRoot, projectRoot)
+    || unsafeSubmoduleWorktreeViolation(gitRoot, resolvedOutput)
+    || regularDirectoryMisreadViolation({}, { force, repoRoot: gitRoot, targetPath: projectRoot });
 }
 
 export function gitSubmoduleCommitViolation({ checkout_state, commit_authorized } = {}) {

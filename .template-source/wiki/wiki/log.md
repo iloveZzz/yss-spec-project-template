@@ -56,3 +56,10 @@ lint 脚本改为失败跨路径 wikilink、校验 manifest sha256，并要求 H
 - unmapped: (none)
 
 wiki-root 从仓库根 `wiki/` 迁到 `.template-source/wiki`。同步 raw 中的 `AGENTS.md` / `CONTEXT.md` / 跨仓契约。刷新上述文章中的 wiki-root 与快照边界句。
+
+## [2026-08-24] REFRESH | git-submodule 工作树 writable 门禁
+- changed: implementation-repo-integration.md
+- articles: 实现仓库与跨仓库契约
+- unmapped: (none)
+
+同步 raw 中的 `implementation-repo-integration.md`。刷新 [[实现仓库与跨仓库契约]]：`inspectWorkingTreeScope` 必须返回 `{ writable }`，空 gitlink / detached HEAD 不可写，脚手架不得把 `--output-dir` 指向 detached HEAD 子仓或把 `--force` 覆盖 gitlink 走普通目录路径。

@@ -56,6 +56,7 @@ test("repository_scope git-submodule is a first-class layout distinct from harne
     implementationWriteViolation,
     inspectCheckoutState,
     inspectWorkingTreeScope,
+    isWorkingTreeWritable,
     regularDirectoryMisreadViolation,
     validRepositoryScope,
     violationRepositoryScope
@@ -86,32 +87,49 @@ test("repository_scope git-submodule is a first-class layout distinct from harne
   }), /git-submodule identity/);
   const empty = makeGitlinkFixture({ checkout: "empty-gitlink" });
   const detached = makeGitlinkFixture({ checkout: "detached-head" });
+  const attached = makeGitlinkFixture({ checkout: "attached-branch" });
   try {
     const emptyTarget = path.join(empty.superproject, empty.mount);
     assert.equal(inspectCheckoutState(empty.superproject, emptyTarget), "empty-gitlink");
     assert.match(regularDirectoryMisreadViolation({ checkout_state: "empty-gitlink" }), /regular directory/);
     assert.match(gitSubmoduleScaffoldViolation(empty.superproject, path.join(empty.superproject, "apps/backend"), "billing-service", { force: true }), /--force/);
-    assert.match(inspectWorkingTreeScope(empty.superproject, {
+    const harnessInspection = inspectWorkingTreeScope(empty.superproject, {
       repository_scope: "harness-apps",
       project_root: "apps/backend/billing-service/"
-    }), /不得登记为 harness-apps/);
-    assert.match(inspectWorkingTreeScope(empty.superproject, {
-      repository_scope: "git-submodule",
-      project_root: "apps/backend/billing-service/"
-    }), /regular directory/);
+    });
+    assert.equal(harnessInspection.writable, false);
+    assert.match(harnessInspection.violation, /不得登记为 harness-apps/);
+    const emptyInspection = inspectWorkingTreeScope(empty.superproject, {
+      ...record,
+      checkout_state: "empty-gitlink"
+    });
+    assert.equal(emptyInspection.writable, false);
+    assert.equal(isWorkingTreeWritable(emptyInspection), false);
+    assert.match(emptyInspection.violation, /regular directory/);
     assert.match(implementationWriteViolation(empty.superproject, path.join(emptyTarget, "src/Foo.java")), /普通目录写入/);
     const detachedTarget = path.join(detached.superproject, detached.mount);
     assert.equal(inspectCheckoutState(detached.superproject, detachedTarget), "detached-head");
-    assert.match(inspectWorkingTreeScope(detached.superproject, {
-      repository_scope: "git-submodule",
-      project_root: "apps/backend/billing-service/"
-    }), /regular directory/);
+    const detachedInspection = inspectWorkingTreeScope(detached.superproject, {
+      ...record,
+      checkout_state: "detached-head"
+    });
+    assert.equal(detachedInspection.writable, false);
+    assert.match(detachedInspection.violation, /regular directory/);
     assert.match(gitSubmoduleScaffoldViolation(detached.superproject, path.join(detached.superproject, "apps/backend"), "billing-service"), /gitlink 不得由脚手架覆盖/);
     assert.match(gitSubmoduleScaffoldViolation(detached.superproject, detachedTarget, "nested-service"), /普通目录写入/);
     assert.equal(gitSubmoduleScaffoldViolation(empty.superproject, path.join(empty.superproject, "output"), "plain-service"), null);
+    const attachedInspection = inspectWorkingTreeScope(attached.superproject, record);
+    assert.equal(inspectCheckoutState(attached.superproject, path.join(attached.superproject, attached.mount)), "attached-branch");
+    assert.equal(attachedInspection.writable, true);
+    assert.equal(attachedInspection.violation, null);
+    assert.equal(
+      inspectWorkingTreeScope(path.resolve(repositoryRoot), { ...record, checkout_state: "empty-gitlink" }).writable,
+      false
+    );
   } finally {
     empty.cleanup();
     detached.cleanup();
+    attached.cleanup();
   }
 });
 

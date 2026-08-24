@@ -22,7 +22,7 @@ description: Use when connecting an existing frontend, backend, fullstack, or ot
 4. 识别技术栈、包管理器、CI、测试命令、构建命令、OpenAPI 接入和设计 token 接入。
 5. 判定实现位置与 `repository_scope`：`external-repository` 记录真实项目根；`harness-apps` 与 `git-submodule` 只能使用 `apps/backend/<project>/` 或 `apps/frontend/<project>/`。`apps/backend/`、`apps/frontend/` 仅为容器，`app/backend/`、`app/frontend/` 及其子路径必须标记为阻断。gitlink（mode `160000`）必须登记为 `git-submodule` 和 `layout_policy: git-submodule-harness-apps`，不得写成 `harness-apps`。必须对照工作树：`git ls-files --stage`、`.gitmodules` 与声明 scope 不一致时阻断；缺少 `git_entry_mode: 160000` 不得把挂载点当普通目录。
 6. 按 `docs/templates/implementation-repo-registry-template.md` 输出实现仓库登记内容。`git-submodule` 必填 `gitmodules_name`、`gitlink_path`、`git_entry_mode`、`superproject_git_url` 和 `checkout_state`。`harness-apps` / `external-repository` 这些字段填 `不适用`。
-7. 列出 `known_gaps`、人审点、fresh verification 命令和需要回写到 Harness change / Issue / checkpoint 的信息。空 gitlink、detached HEAD、`--force` 覆盖挂载点或缺少递归检出凭据时标记阻断。写入前必须看 `inspectWorkingTreeScope` / `implementationWriteViolation`：即使已正确登记为 `git-submodule`，空 gitlink 或 detached HEAD 工作树也不得当普通目录写文件或脚手架。
+7. 列出 `known_gaps`、人审点、fresh verification 命令和需要回写到 Harness change / Issue / checkpoint 的信息。空 gitlink、detached HEAD、`--force` 覆盖挂载点或缺少递归检出凭据时标记阻断。写入前必须看 `inspectWorkingTreeScope` / `implementationWriteViolation`：只接受对象结果且 `.writable === true` 才可写；字符串、`null` 或 `.writable !== true` 一律不可写。即使已正确登记为 `git-submodule`，空 gitlink 或 detached HEAD 也必须 `.writable === false`，不得当普通目录写文件或脚手架。
 
 ## Baseline Checks
 

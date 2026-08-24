@@ -8,8 +8,9 @@ export {
   validRepositoryScope as valid,
   gitSubmoduleScaffoldViolation as scaffoldViolation,
   isGitSubmoduleMount as isMount,
-  inspectWorkingTreeScope as inspectWorkingTree,
+  inspectWorkingTree as inspectWorkingTree,
   inspectCheckoutState as inspectCheckout,
+  isWorkingTreeWritable as isWorkingTreeWritable,
   regularDirectoryMisreadViolation as regularDirectoryMisread,
   implementationWriteViolation as writeViolation
 } from "./lib/repository-scope-policy.mjs";

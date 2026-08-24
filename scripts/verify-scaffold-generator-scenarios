@@ -478,7 +478,8 @@ def main() -> int:
         )
         require(
             gitlink_result.returncode != 0
-            and "gitlink 不得由脚手架覆盖" in (gitlink_result.stdout + gitlink_result.stderr),
+            and "gitlink 不得由脚手架覆盖" in (gitlink_result.stdout + gitlink_result.stderr)
+            and "请显式传入 --force" not in (gitlink_result.stdout + gitlink_result.stderr),
             "空 gitlink 挂载点不得被脚手架覆盖",
         )
         require(not (gitlink_project / "pom.xml").exists(), "拒绝 gitlink 覆盖时不得留下骨架")

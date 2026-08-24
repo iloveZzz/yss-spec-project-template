@@ -12,6 +12,7 @@ import {
   implementationWriteViolation,
   inspectCheckoutState,
   inspectWorkingTreeScope,
+  isWorkingTreeWritable,
   regularDirectoryMisreadViolation,
   validRepositoryScope,
   violationRepositoryScope
@@ -108,13 +109,18 @@ const detached = makeGitlinkFixture({ checkout: "detached-head" });
 const attached = makeGitlinkFixture({ checkout: "attached-branch" });
 try {
   const emptyTarget = path.join(emptyGitlink.superproject, emptyGitlink.mount);
+  const emptyRecord = {
+    repository_scope: "git-submodule",
+    project_root: "apps/backend/billing-service/",
+    checkout_state: "empty-gitlink"
+  };
+  const emptyInspection = inspectWorkingTreeScope(emptyGitlink.superproject, emptyRecord);
   namedStress(
     "empty_gitlink_as_regular_dir",
-    inspectCheckoutState(emptyGitlink.superproject, emptyTarget) === "empty-gitlink"
-      && inspectWorkingTreeScope(emptyGitlink.superproject, {
-        repository_scope: "git-submodule",
-        project_root: "apps/backend/billing-service/"
-      })?.includes("regular directory")
+    emptyInspection.writable === false
+      && isWorkingTreeWritable(emptyInspection) === false
+      && emptyInspection.violation?.includes("regular directory")
+      && inspectCheckoutState(emptyGitlink.superproject, emptyTarget) === "empty-gitlink"
       && implementationWriteViolation(emptyGitlink.superproject, path.join(emptyTarget, "src/Foo.java"))?.includes("普通目录写入")
       && gitSubmoduleScaffoldViolation(emptyGitlink.superproject, path.join(emptyGitlink.superproject, "apps/backend"), "billing-service")?.includes("gitlink 不得由脚手架覆盖"),
     "空 gitlink 仍被当成普通目录"
@@ -124,17 +130,24 @@ try {
     inspectWorkingTreeScope(emptyGitlink.superproject, {
       repository_scope: "harness-apps",
       project_root: "apps/backend/billing-service/"
-    })?.includes("不得登记为 harness-apps"),
+    }).writable === false
+      && inspectWorkingTreeScope(emptyGitlink.superproject, {
+        repository_scope: "harness-apps",
+        project_root: "apps/backend/billing-service/"
+      }).violation?.includes("不得登记为 harness-apps"),
     "声明 harness-apps 但工作树是 gitlink 应阻断"
   );
   const detachedTarget = path.join(detached.superproject, detached.mount);
+  const detachedInspection = inspectWorkingTreeScope(detached.superproject, {
+    repository_scope: "git-submodule",
+    project_root: "apps/backend/billing-service/",
+    checkout_state: "detached-head"
+  });
   namedStress(
     "detached_head_as_regular_dir",
-    inspectCheckoutState(detached.superproject, detachedTarget) === "detached-head"
-      && inspectWorkingTreeScope(detached.superproject, {
-        repository_scope: "git-submodule",
-        project_root: "apps/backend/billing-service/"
-      })?.includes("regular directory")
+    detachedInspection.writable === false
+      && inspectCheckoutState(detached.superproject, detachedTarget) === "detached-head"
+      && detachedInspection.violation?.includes("regular directory")
       && implementationWriteViolation(detached.superproject, path.join(detachedTarget, "nested-service"))?.includes("普通目录写入")
       && gitSubmoduleScaffoldViolation(detached.superproject, detachedTarget, "nested-service")?.includes("gitlink 不得由脚手架覆盖"),
     "detached HEAD 仍被当成普通目录"
@@ -151,9 +164,29 @@ try {
     "--force 仍可覆盖 gitlink 挂载点"
   );
   const attachedNested = path.join(attached.superproject, attached.mount);
+  const attachedInspection = inspectWorkingTreeScope(attached.superproject, {
+    ...validGitSubmodule,
+    checkout_state: "attached-branch"
+  });
   ensure(
     inspectCheckoutState(attached.superproject, attachedNested) === "attached-branch",
     "附加分支 fixture 应处于 attached-branch"
+  );
+  ensure(attachedInspection.writable === true, "附加分支 git-submodule 工作树应可写");
+  ensure(attachedInspection.violation === null, "附加分支工作树对照不应返回 violation");
+  ensure(
+    inspectWorkingTreeScope(emptyGitlink.superproject, {
+      ...validGitSubmodule,
+      checkout_state: "empty-gitlink"
+    }).writable === false,
+    "已登记为空 gitlink 的 git-submodule 不得返回可写"
+  );
+  ensure(
+    inspectWorkingTreeScope(process.cwd(), {
+      ...validGitSubmodule,
+      checkout_state: "empty-gitlink"
+    }).writable === false,
+    "登记为空 gitlink 时即使工作树探测失败也不得返回可写"
   );
   ensure(
     implementationWriteViolation(attached.superproject, path.join(attachedNested, "src")) === null,
@@ -183,7 +216,8 @@ const markerFiles = [
   [".agents/skills/yss-router/references/slice-implementation-contract.md", "git-submodule-harness-apps"],
   [".agents/skills/yss-router/references/router-contract.yaml", "git-submodule-harness-apps"],
   [".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml", "repository_scope=git-submodule"],
-  [".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs", "gitSubmoduleScaffoldViolation"]
+  [".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs", "gitSubmoduleScaffoldViolation"],
+  [".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs", "refuseGitlinkAsRegularDirectory"]
 ];
 for (const [file, marker] of markerFiles) {
   ensure(existsSync(path.join(root, file)), `缺少场景资产: ${file}`);

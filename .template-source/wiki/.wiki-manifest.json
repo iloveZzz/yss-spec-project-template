@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "wikiRoot": ".template-source/wiki",
-  "compiledAt": "2026-08-24T06:02:17.224Z",
-  "gitCommit": "986ded5d78e2d0bd816f7f8038aec6ef2d7c6d0a",
+  "compiledAt": "2026-08-24T09:07:48.593Z",
+  "gitCommit": "6ecbbb25b6447143212b93b28b6d5cfac66ff867",
   "profile": "documents",
   "sources": [
     {
@@ -11,7 +11,7 @@
       "livePath": "AGENTS.md",
       "rawPath": "raw/AGENTS.md",
       "role": "copy",
-      "sha256": "821bcf67a90f4413516de96458e4097164fd41e38297aa55005f53d672c13618"
+      "sha256": "338553e997a37e43de73cd59f76a8f127ef2e38a02b9f7993afb46d2a51f2c67"
     },
     {
       "id": "CONTEXT.md",
@@ -19,7 +19,7 @@
       "livePath": "CONTEXT.md",
       "rawPath": "raw/CONTEXT.md",
       "role": "copy",
-      "sha256": "48a1915478521ebb6644865f2ae18785e02a34401e24b54530dec4cced7478ec"
+      "sha256": "9d23c31f09d189978716030ff592fede25d200017bd28c265e37316ff7ff57fd"
     },
     {
       "id": "README.md",
@@ -67,7 +67,7 @@
       "livePath": "docs/process/implementation-repo-integration.md",
       "rawPath": "raw/implementation-repo-integration.md",
       "role": "copy",
-      "sha256": "7cd8106029c53773f9ee3e83bcd2d48d6575dbf83d511b0f7d93eeb56538e4e8"
+      "sha256": "9d430f7b124cab6451d987ed7c97e27871b27a28a395fb63c1d34170724501ee"
     },
     {
       "id": "skills-maintenance.md",
@@ -115,7 +115,7 @@
       "livePath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
       "rawPath": "raw/create-yss-spec-repository-mode-contract.md",
       "role": "copy",
-      "sha256": "3449f695cbeda21fba2e4cb5e834dce29e1061359e6714574c206cc67b2a0c4b"
+      "sha256": "5a89a0f4e9ac8e8dee2c1ec310930eef39575b767e5da00ef9488d95995cf7b4"
     },
     {
       "id": "spec-template.md",
@@ -142,7 +142,7 @@
       "extract": {
         "kind": "skill-names"
       },
-      "sha256": "b5972cd2d975f06203e219e78a81b1ae7a7efa160c0604346a7983493f66e6e2"
+      "sha256": "cfb9b0bd889c7673aa4207da4660aedd0d141b9f097e5477318436cf1b27ba9f"
     }
   ],
   "articles": [

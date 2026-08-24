@@ -281,6 +281,9 @@ git_authorization:
     clone_requires_recurse_submodules: true
     delivery_order_must_include: superproject-gitlink-update
     nested_authorization: per-repository
+    inspect_working_tree_writable: explicit-boolean
+    empty_gitlink_writable: false
+    force_overlay_regular_dir_path: blocked
 
 seam_deferred_required: [risk, owner, follow_up_ticket, verification_plan, target_version_or_release_date]
 

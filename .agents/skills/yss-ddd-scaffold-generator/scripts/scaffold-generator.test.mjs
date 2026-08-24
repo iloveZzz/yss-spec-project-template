@@ -46,9 +46,29 @@ test("拒绝在 detached HEAD 子仓工作树内当成普通目录生成", async
   const contractFile = path.join(data.root, "detached-contract.json");
   await writeFile(contractFile, `${JSON.stringify(contract(output), null, 2)}\n`);
   const result = await command(["--project-name", "nested-service", "--base-package", "com.yss.demo", "--output-dir", output, "--database", "mysql", "--contract-id", "scaffold-1", "--contract-version", "1", "--approval-ref", "approval-1", "--router-draft-ref", "router-1", "--persisted-ref", "persisted-1", "--contract-file", contractFile]);
-  assert.equal(result.code, 1, result.stderr);
-  assert.match(`${result.stdout}\n${result.stderr}`, /detached HEAD 不得当成普通目录写入/);
+  const text = `${result.stdout}\n${result.stderr}`;
+  assert.equal(result.code, 1, text);
+  assert.doesNotMatch(text, /请显式传入 --force/);
+  assert.match(text, /detached HEAD 不得当成普通目录写入/);
   assert.equal(existsSync(path.join(output, "nested-service", "pom.xml")), false);
+  assert.equal((await readdir(output)).some((name) => name.includes("staging") || name === "nested-service"), false);
+});
+
+test("--force 覆盖真实 gitlink 不得走普通目录覆盖路径", async (t) => {
+  const data = await fixture();
+  const empty = makeGitlinkFixture({ checkout: "empty-gitlink" });
+  t.after(() => rm(data.root, { recursive: true, force: true }));
+  t.after(() => empty.cleanup());
+  const output = path.join(empty.superproject, "apps/backend");
+  const contractFile = path.join(data.root, "empty-gitlink-contract.json");
+  await writeFile(contractFile, `${JSON.stringify(contract(output), null, 2)}\n`);
+  const result = await command(["--project-name", "billing-service", "--base-package", "com.yss.demo", "--output-dir", output, "--database", "mysql", "--contract-id", "scaffold-1", "--contract-version", "1", "--approval-ref", "approval-1", "--router-draft-ref", "router-1", "--persisted-ref", "persisted-1", "--contract-file", contractFile, "--force", "--overwrite-scope", "replace-service", "--rollback-ref", "checkpoint-1"]);
+  const text = `${result.stdout}\n${result.stderr}`;
+  assert.equal(result.code, 1, text);
+  assert.doesNotMatch(text, /请显式传入 --force/);
+  assert.match(text, /--force 不得把 git-submodule 挂载点当成普通目录覆盖|gitlink 不得/);
+  assert.equal(existsSync(path.join(output, "billing-service", "pom.xml")), false);
+  assert.equal((await readdir(output)).some((name) => name.includes("backup")), false);
 });
 
 test("验证器记录三条 wrapper 命令的成功和失败证据", async (t) => { const root = await mkdtemp(path.join(os.tmpdir(), "yss-scaffold-verifier-")); t.after(() => rm(root, { recursive: true, force: true })); const project = path.join(root, "project"); await mkdir(path.join(project, ".yss"), { recursive: true }); await writeFile(path.join(project, ".yss/scaffold-generation.json"), `${JSON.stringify({ schema_version: 1, contract_id: "id", contract_version: 1, slice_id: "slice", approval_ref: "approval", approver: "reviewer", lifecycle_approval_ref: "approval", router_draft_ref: "router", persisted_ref: "persisted", contract_file_ref: "contract", current_version: 1, allowed_write_paths: ["."], expected_evidence_files: ["manifest"], verification_commands: ["./mvnw validate", "./mvnw test", "./mvnw package"], generation_mode: "controlled-generation" })}\n`); const wrapper = path.join(project, "mvnw"); await writeFile(wrapper, "#!/bin/sh\n[ \"$1\" = test ] && exit 2\nprintf 'ran %s\\n' \"$1\"\n"); await chmod(wrapper, 0o755); const evidence = path.join(root, "evidence"); const report = await run(project, evidence); assert.equal(report.status, "failed"); assert.deepEqual(report.commands.map((item) => item.exit_code), [0, 2, 0]); assert.match(await readFile(path.join(evidence, "mvnw-test.stderr.log"), "utf8"), /^$/); });
