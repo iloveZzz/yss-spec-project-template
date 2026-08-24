@@ -19,7 +19,7 @@ owner: ai
 | 产品设计 / 交互说明 |  |  |  |
 | 高保真 HTML 原型 | `docs/.scratch/<feature>/design/prototypes/index.html` |  | 有 UI 时必需；Ant Design v6 |
 | Prototype Review |  |  |  |
-| CONTEXT 术语 |  |  |  |
+| CONTEXT 术语 |  |  | 业务术语须含 PascalCase `英文标识` |
 
 ## 2. 冻结范围
 

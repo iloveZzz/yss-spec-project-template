@@ -66,6 +66,7 @@ Approved / Changes requested / Blocked
 | `alibaba-java-code-style` 已纳入审查，命名、异常、日志、ORM/MyBatis、Maven、MapStruct / Lombok 注解处理器配置无 blocker | pass / violation / not-applicable |  |
 | 后端构建 / 测试 / OpenAPI / CI / Release 命令使用项目根目录 `./mvnw ...`；裸 `mvn ...` 已改正或有受控例外记录 | pass / violation / not-applicable |  |
 | 持久化文档正文、章节标题、审查结论和实施说明使用中文；英文模板内容未原样落地 | pass / violation / not-applicable |  |
+| 新增或修改的业务类型 / 字段 / OpenAPI property 能追溯到 `CONTEXT.md` 业务术语的 `英文标识` 词干；未登记的新名字已回写词汇表 | pass / violation / not-applicable |  |
 | `Build Architecture Checklist` 已回勾，延期项、漂移项、违反项有明确处理结论 | pass / violation / not-applicable |  |
 
 ### 后端 smoke check
