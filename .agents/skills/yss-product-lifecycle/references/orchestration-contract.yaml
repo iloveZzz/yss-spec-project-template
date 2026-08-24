@@ -9,6 +9,10 @@ implementation_path_policy:
   forbidden_roots: [app/backend/, app/frontend/]
   container_roots_are_projects: false
   external_repository_uses_native_root: true
+  policies: [harness-apps-multi-project, external-repository-native, git-submodule-harness-apps]
+  git_submodule:
+    repository_scope: git-submodule
+    layout_policy: git-submodule-harness-apps
 
 review_verification:
   low_medium_combined_independent_executor: true
@@ -260,6 +264,17 @@ git_authorization:
     authorized_value: true
     non_empty: [push_scope, push_authorization_ref]
     unauthorized_action: checkpoint-only
+  git_submodule:
+    applies_when: repository_scope=git-submodule
+    forbid_commit_on_detached_head: true
+    commit_order: [submodule-repositories, superproject-gitlink]
+    push_order: [submodule-repositories, superproject-gitlink]
+    push_recurse_submodules: check
+    empty_gitlink_scaffold: blocked
+    copy_source_into_harness: forbidden
+    clone_requires_recurse_submodules: true
+    delivery_order_must_include: superproject-gitlink-update
+    nested_authorization: per-repository
 
 seam_deferred_required: [risk, owner, follow_up_ticket, verification_plan, target_version_or_release_date]
 

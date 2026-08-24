@@ -49,6 +49,39 @@ test("implementation path policy preserves harness and external-repository bound
   assert.equal(violation("app/backend/project1/", { enforceHarness: false }), null);
 });
 
+test("repository_scope git-submodule is a first-class layout distinct from harness-apps", async () => {
+  const {
+    LAYOUT_POLICIES,
+    gitSubmoduleScaffoldViolation,
+    validRepositoryScope,
+    violationRepositoryScope
+  } = await import(path.join(repositoryRoot, "scripts/lib/repository-scope-policy.mjs"));
+  const record = {
+    repository_scope: "git-submodule",
+    layout_policy: LAYOUT_POLICIES["git-submodule"],
+    project_root: "apps/backend/billing-service/",
+    gitlink_path: "apps/backend/billing-service",
+    git_entry_mode: "160000",
+    git_url: "https://example.invalid/billing-service.git",
+    gitmodules_name: "backend-billing-service",
+    superproject_git_url: "https://example.invalid/harness.git",
+    checkout_state: "attached-branch",
+    scaffold_status: "existing"
+  };
+  assert.equal(validRepositoryScope(record), true);
+  assert.match(violationRepositoryScope({ ...record, layout_policy: "harness-apps-multi-project" }), /layout_policy/);
+  assert.match(violationRepositoryScope({ ...record, checkout_state: "empty-gitlink", scaffold_status: "required" }), /empty or uninitialized/);
+  const fixture = await mkdtemp(path.join(tmpdir(), "yss-gitlink-"));
+  try {
+    await mkdir(path.join(fixture, "apps/backend/billing-service"), { recursive: true });
+    await writeFile(path.join(fixture, ".gitmodules"), "[submodule \"backend-billing-service\"]\n\tpath = apps/backend/billing-service\n\turl = https://example.invalid/billing-service.git\n");
+    assert.match(gitSubmoduleScaffoldViolation(fixture, path.join(fixture, "apps/backend"), "billing-service"), /gitlink 不得由脚手架覆盖/);
+    assert.equal(gitSubmoduleScaffoldViolation(fixture, path.join(fixture, "output"), "plain-service"), null);
+  } finally {
+    await rm(fixture, { recursive: true, force: true });
+  }
+});
+
 test("Node lifecycle registry verifier preserves the published semantic baseline", () => {
   const output = execFileSync("node", ["scripts/node-verify-lifecycle-registry.mjs"], {
     cwd: repositoryRoot,

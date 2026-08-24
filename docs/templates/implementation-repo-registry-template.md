@@ -17,11 +17,16 @@ owner: ai
 | git_url |  |
 | default_branch |  |
 | local_worktree |  |
-| repository_scope | external-repository / harness-apps |
+| repository_scope | external-repository / harness-apps / git-submodule |
 | project_type | backend / frontend / fullstack / other |
 | project_name |  |
 | project_root | 外部仓库相对路径，或 `apps/backend/<project>/` / `apps/frontend/<project>/` |
-| layout_policy | `harness-apps-multi-project` / `external-repository-native` |
+| layout_policy | `harness-apps-multi-project` / `external-repository-native` / `git-submodule-harness-apps` |
+| gitmodules_name | `git-submodule` 必填；其他范围填 `不适用` |
+| gitlink_path | 等于 `project_root`；仅 `git-submodule` |
+| git_entry_mode | `160000`；仅 `git-submodule` |
+| superproject_git_url | 父仓远端；必须与 `git_url` 不同 |
+| checkout_state | attached-branch / detached-head / uninitialized / empty-gitlink / 不适用 |
 | scaffold_status | existing / required / initialized |
 | scaffold_skill | `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator` / none |
 | scaffold_target_confirmed | 是 / 否 / 不适用 |
@@ -41,7 +46,7 @@ owner: ai
 | typecheck_command |  |  |
 | ci_pipeline |  |  |
 
-Harness 内项目路径约束：`apps/backend/`、`apps/frontend/` 只能作为项目容器；工程必须位于具体的 `apps/backend/<project>/` 或 `apps/frontend/<project>/`。`app/backend/`、`app/frontend/` 及其子路径禁止登记或生成。外部实现仓库填写真实项目根路径，不使用本表的 Harness 占位路径。
+Harness 内项目路径约束：`apps/backend/`、`apps/frontend/` 只能作为项目容器；工程必须位于具体的 `apps/backend/<project>/` 或 `apps/frontend/<project>/`。`app/backend/`、`app/frontend/` 及其子路径禁止登记或生成。外部实现仓库填写真实项目根路径，不使用本表的 Harness 占位路径。`git-submodule` 必须同时满足 Harness `apps/` 挂载路径和独立 Git 身份，不得登记为 `harness-apps` 或无 gitlink 的 `external-repository`。
 
 ## 2.1 项目清单（同一 monorepo 可登记多个项目）
 

@@ -1,0 +1,40 @@
+schema_version: 1
+intensity: L3
+classification_reason: 新增正式 repository_scope 改变跨仓库接入契约、Agent 写路径路由和脚手架生成语义，命中 cross-repo-contract 与 generation-semantics。
+triggers:
+  - cross-repo-contract
+  - generation-semantics
+changed_assets:
+  - docs/process/implementation-repo-integration.md
+  - docs/templates/implementation-repo-registry-template.md
+  - docs/templates/cross-repo-slice-template.md
+  - docs/templates/implementation-routing-template.md
+  - CONTEXT.md
+  - AGENTS.md
+  - scripts/lib/repository-scope-policy.mjs
+  - scripts/verify-repository-scope-scenarios
+  - .agents/skills/implementation-repo-onboarding/SKILL.md
+  - .agents/skills/yss-router/references/router-contract.yaml
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - .agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs
+verification_evidence:
+  - kind: red
+    command: .template-source/evidence/maintenance/git-submodule-scope-red-2026-08-24.md
+    result: pass
+  - kind: green
+    command: .template-source/evidence/maintenance/git-submodule-scope-green-2026-08-24.md
+    result: pass
+  - kind: refactor
+    command: scripts/lib/repository-scope-policy.mjs
+    result: pass
+  - kind: pressure-scenario
+    command: scripts/verify-repository-scope-scenarios
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template
+    result: pass
+  - kind: formal-independent-review
+    command: .template-source/evidence/maintenance/git-submodule-scope-l3-review-request-2026-08-24.md
+    result: pass
+review_mode: formal-independent
+escalation: none

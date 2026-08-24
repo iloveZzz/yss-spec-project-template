@@ -15,10 +15,21 @@ implementation_path_policy:
   forbidden_roots:
     - app/backend/
     - app/frontend/
+  policies:
+    - harness-apps-multi-project
+    - external-repository-native
+    - git-submodule-harness-apps
+  git_submodule:
+    repository_scope: git-submodule
+    layout_policy: git-submodule-harness-apps
+    git_entry_mode: "160000"
+    empty_gitlink_scaffold: blocked
+    copy_source_into_harness: forbidden
   rules:
     - "Harness 内每个运行时工程必须位于具体 project 目录，不能直接写入 apps/backend/ 或 apps/frontend/。"
     - "app/backend/、app/frontend/ 及其子路径不是兼容别名，必须阻断。"
     - "外部实现仓库使用登记的真实项目根路径，不用 Harness 容器路径冒充。"
+    - "git-submodule 挂载路径使用 git-submodule-harness-apps，必须是 gitlink 且分别登记；不得登记为 harness-apps。"
 subcontract_statuses: [required, not-applicable]
 
 readiness:

@@ -1,0 +1,80 @@
+#!/usr/bin/env node
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import {
+  LAYOUT_POLICIES,
+  REPOSITORY_SCOPES,
+  gitSubmoduleCommitViolation,
+  gitSubmodulePushOrderViolation,
+  gitSubmoduleScaffoldViolation,
+  validRepositoryScope,
+  violationRepositoryScope
+} from "./lib/repository-scope-policy.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const read = (relative) => readFileSync(path.join(root, relative), "utf8");
+const failures = [];
+function ensure(condition, message) {
+  if (!condition) failures.push(message);
+}
+
+const validGitSubmodule = {
+  repository_scope: "git-submodule",
+  layout_policy: LAYOUT_POLICIES["git-submodule"],
+  project_root: "apps/backend/billing-service/",
+  gitlink_path: "apps/backend/billing-service",
+  git_entry_mode: "160000",
+  git_url: "https://example.invalid/billing-service.git",
+  gitmodules_name: "backend-billing-service",
+  superproject_git_url: "https://example.invalid/harness.git",
+  checkout_state: "attached-branch",
+  scaffold_status: "existing"
+};
+
+ensure(validRepositoryScope({ repository_scope: "external-repository", layout_policy: "external-repository-native", project_root: "src/" }), "应允许 external-repository");
+ensure(validRepositoryScope({ repository_scope: "harness-apps", layout_policy: "harness-apps-multi-project", project_root: "apps/frontend/console/" }), "应允许 harness-apps");
+ensure(validRepositoryScope(validGitSubmodule), `应允许正式 git-submodule: ${violationRepositoryScope(validGitSubmodule) ?? ""}`);
+
+ensure(violationRepositoryScope({ repository_scope: "monorepo" })?.includes("repository_scope must be one of"), "未知 repository_scope 应阻断");
+ensure(violationRepositoryScope({ ...validGitSubmodule, layout_policy: "harness-apps-multi-project" })?.includes("layout_policy"), "git-submodule 不得套用 harness-apps layout_policy");
+ensure(violationRepositoryScope({
+  repository_scope: "harness-apps",
+  layout_policy: "harness-apps-multi-project",
+  project_root: "apps/backend/billing-service/",
+  git_entry_mode: "160000"
+})?.includes("git-submodule"), "harness-apps 记录 gitlink 应改登记为 git-submodule");
+ensure(violationRepositoryScope({ repository_scope: "external-repository", gitlink_path: "apps/backend/billing-service", git_entry_mode: "160000" })?.includes("git-submodule"), "external-repository 挂 apps/ gitlink 应阻断");
+ensure(violationRepositoryScope({ ...validGitSubmodule, git_url: validGitSubmodule.superproject_git_url })?.includes("differ"), "子仓 url 不得等于 superproject");
+ensure(violationRepositoryScope({ ...validGitSubmodule, checkout_state: "detached-head", commit_allowed: true })?.includes("detached HEAD"), "detached HEAD 提交应阻断");
+ensure(violationRepositoryScope({ ...validGitSubmodule, checkout_state: "empty-gitlink", scaffold_status: "required" })?.includes("empty or uninitialized"), "空 gitlink 脚手架应阻断");
+ensure(violationRepositoryScope({ ...validGitSubmodule, copy_source_into_harness: true })?.includes("gitlink mount"), "复制源码进 Harness 应阻断");
+ensure(gitSubmoduleCommitViolation({ checkout_state: "detached-head", commit_authorized: true })?.includes("attached branch"), "commit 辅助校验应拒绝 detached HEAD");
+ensure(gitSubmodulePushOrderViolation(["superproject-gitlink", "submodule-repositories"])?.includes("submodule-repositories then superproject-gitlink"), "先父后子 push 应阻断");
+ensure(gitSubmodulePushOrderViolation(["submodule-repositories", "superproject-gitlink"]) === null, "先子后父顺序应允许");
+
+const markerFiles = [
+  ["docs/process/implementation-repo-integration.md", "repository_scope: git-submodule"],
+  ["docs/templates/implementation-repo-registry-template.md", "git-submodule"],
+  ["docs/templates/implementation-repo-registry-template.md", "git-submodule-harness-apps"],
+  ["docs/templates/cross-repo-slice-template.md", "superproject-gitlink-update"],
+  ["docs/templates/implementation-routing-template.md", "git-submodule-harness-apps"],
+  [".agents/skills/implementation-repo-onboarding/SKILL.md", "git-submodule"],
+  [".agents/skills/yss-router/references/slice-implementation-contract.md", "git-submodule-harness-apps"],
+  [".agents/skills/yss-router/references/router-contract.yaml", "git-submodule-harness-apps"],
+  [".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml", "repository_scope=git-submodule"],
+  [".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs", "gitSubmoduleScaffoldViolation"]
+];
+for (const [file, marker] of markerFiles) {
+  ensure(existsSync(path.join(root, file)), `缺少场景资产: ${file}`);
+  ensure(read(file).includes(marker), `场景资产缺少标记 ${marker}: ${file}`);
+}
+
+ensure(REPOSITORY_SCOPES.includes("git-submodule"), "REPOSITORY_SCOPES 必须包含 git-submodule");
+
+if (failures.length > 0) {
+  process.stderr.write(`${failures.join("\n")}\n`);
+  process.exitCode = 1;
+} else {
+  process.stdout.write("实现仓库 repository_scope 压力场景验证通过\n");
+}

@@ -65,6 +65,21 @@ owner: ai
 | Frontend |  | pass / fail / not-applicable |
 | E2E / 关键路径 |  | pass / fail / not-applicable |
 
+## 5.1 Git submodule（条件）
+
+`repository_scope: git-submodule` 时必填；其他范围标记 `not-applicable`。
+
+| 字段 | 值 |
+|---|---|
+| superproject-gitlink-update | pending / ready / blocked / not-applicable |
+| submodule_commit_sha | 子仓已推送的 40 位 SHA |
+| superproject_gitlink_sha | 父仓记录的 gitlink SHA，必须等于 `submodule_commit_sha` |
+| checkout_state | attached-branch / detached-head / uninitialized / empty-gitlink |
+| push_recurse_submodules | `check` |
+| clone_or_ci_recurse | `git clone --recurse-submodules` / `GIT_SUBMODULE_STRATEGY` / Actions `submodules` |
+
+`delivery_order` 必须包含子仓 MR / PR，然后是 `superproject-gitlink-update`。空 gitlink、detached HEAD 或未推送的子仓 SHA 一律 `blocked`。
+
 ## 6. Release And Rollback
 
 | 字段 | 值 |

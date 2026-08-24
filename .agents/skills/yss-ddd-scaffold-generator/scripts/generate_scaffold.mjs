@@ -5,6 +5,8 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 
+import { gitSubmoduleScaffoldViolation } from "../../../../scripts/lib/repository-scope-policy.mjs";
+
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const SKILL_ROOT = path.resolve(SCRIPT_DIR, "..");
 const REPOSITORY_ROOT = path.resolve(SCRIPT_DIR, "../../../..");
@@ -89,6 +91,8 @@ class ScaffoldGenerator {
 
   async generate() {
     await this.validateHarnessOutputLayout();
+    const gitlinkViolation = gitSubmoduleScaffoldViolation(REPOSITORY_ROOT, this.outputDir, this.projectName);
+    if (gitlinkViolation) fail(gitlinkViolation);
     if (await exists(this.finalProjectRoot) && !this.options.force) fail(`输出目录已存在: ${this.finalProjectRoot}；如确认覆盖，请显式传入 --force`);
     await this.validateContractMetadata();
     if (await exists(this.finalProjectRoot) && await nonEmpty(this.finalProjectRoot) && this.options.force) this.validateForceMetadata();
