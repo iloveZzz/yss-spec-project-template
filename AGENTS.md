@@ -62,7 +62,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 
 ## 7. 实现与 YSS 路由硬门禁
 
-进入实现时先读 `docs/process/implementation-repo-integration.md`，登记实现仓库、项目根、分支、CI、验证命令和回滚点；再使用 `yss-router` 编译最小 skill 集合与当前实现合同。
+进入实现时先读 `docs/process/implementation-repo-integration.md`，登记实现仓库、项目根、分支、CI、验证命令和回滚点；再使用 `yss-router` 编译最小 skill 集合与当前实现合同。`layout_policy` 决定写路径：`harness-apps-multi-project` 才强制 `apps/.../<project>/`；`external-repository-native`（含 attach 后同仓）使用登记根，禁止用 `apps/` 占位冒充已有一体仓原根。
 
 - 无可复用工程时，先确认外部目标仓库或输出目录，再使用 `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator`；当前仓库缺少 frontend / backend 目录不改变此路由。
 - 脚手架只在 `scaffold_status=required` 且受控生成合同已持久化、获得生命周期批准后运行；它只产生机械骨架，业务行为回到 Router 并使用 `behavior-tdd`。
@@ -89,9 +89,13 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 
 ## 9. 工作区与实现仓库边界
 
-当前仓库默认是研发管理仓库，运行时代码优先位于已登记的独立实现仓库。只有用户明确选择当前仓库承载实现代码时，才使用唯一的 `apps/backend/<project>/` 或 `apps/frontend/<project>/` 项目根。
+产品实例先按 `docs/process/implementation-repo-integration.md` §1.0 与 `docs/adr/0008-split-repo-and-monorepo-harness-topology.md` 选择拓扑，再写路径：
 
-`apps/backend/` 和 `apps/frontend/` 只是项目容器；`app/backend/`、`app/frontend/` 及其子路径禁止作为工程输出。完整登记字段和跨仓约束见 `docs/process/implementation-repo-integration.md`。
+- 分仓接入（默认）：运行时代码在已登记的独立前端、后端实现仓库。
+- 新建一体仓：用户明示后，项目根必须是 `apps/backend/<project>/` 与 `apps/frontend/<project>/`。
+- 已有一体仓：attach 后按磁盘真实 `project_root` 登记；禁止用 `apps/` 占位冒充原根，也禁止为布局迁仓。
+
+`apps/backend/` 和 `apps/frontend/` 只是项目容器；`app/backend/`、`app/frontend/` 及其子路径禁止作为工程输出。完整登记字段见接入文档。
 
 ## 10. 独立审查、验证和追踪
 

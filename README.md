@@ -4,7 +4,7 @@
 
 ## 定位
 
-本模板默认作为 Harness / 研发管理仓库，保留流程文档、契约模板、Agent skills 和协作约定。前端 / 后端源码默认位于独立实现仓库；只有用户明确选择本仓库承载实现代码时，才按需创建 `apps/backend/`、`apps/frontend/`。
+本模板默认作为 Harness / 研发管理仓库，保留流程文档、契约模板、Agent skills 和协作约定。产品实例默认分仓接入：前端 / 后端源码位于独立实现仓库。用户明示新建一体仓时，才在实例仓创建 `apps/backend/<project>/`、`apps/frontend/<project>/`。已有一体仓用 `attach` 登记原项目根，不迁仓。拓扑见 `docs/process/implementation-repo-integration.md` §1.0 与 `docs/adr/0008-split-repo-and-monorepo-harness-topology.md`。
 
 ## 项目结构
 
