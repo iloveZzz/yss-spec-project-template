@@ -1,0 +1,42 @@
+L2 fresh verification：三分拓扑 Agent 入口收口
+date: 2026-08-24
+branch: cursor/grill-fe-be-harness-integration-e205
+head_at_verification: d09fabd00bf5186546d6ec801009987ca10a360f
+intensity: L2
+release_claim: 本轮不跑完整 scripts/verify-template，不宣布模板可发布。
+
+commands_and_results:
+
+1. scripts/sync-skills --check
+   result: pass
+   output: skill projections are synchronized
+
+2. scripts/update-skill-lock --check
+   result: pass
+   output: skills-lock.json matches distributed skills
+
+3. pnpm --dir .template-source/tooling/node test
+   result: pass
+   output: tests 15 / pass 15 / fail 0
+   含 implementation path policy：frontend/web 与 packages/ui 在 enforceHarness:true 时 violation=null；apps/backend/ 与 app/backend/x 仍失败
+
+4. node --check scripts/lib/implementation-path-policy.mjs
+   node --check .template-source/tooling/node/test/runtime-contract.test.mjs
+   result: pass
+
+5. 改后技能正文不再出现「Harness 内只能使用 / 项目必须是 / 实现路径必须」apps 一律句
+   command: rg -n "Harness 内只能使用|Harness 内项目必须是|Harness 内实现路径必须" .agents/skills --glob 'SKILL.md'
+   result: pass（无命中）
+
+6. 路径策略一次性对照
+   frontend/web → null
+   packages/ui → null
+   apps/backend/ → implementation container root is not a project root
+   app/backend/x → singular app implementation root is forbidden
+
+未执行：scripts/verify-template（L3 发布候选，本轮明确不做）
+未执行：create-yss-spec 跨仓集成（跨仓 L3）
+
+7. scripts/verify-maintenance-checkpoint docs/reviews/topology-runtime-entry-l2-checkpoint-2026-08-24.yaml
+   result: pass
+   output: 模板维护 checkpoint 验证通过（L2，最低 L2）

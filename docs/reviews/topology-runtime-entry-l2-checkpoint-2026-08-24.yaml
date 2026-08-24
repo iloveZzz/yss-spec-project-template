@@ -1,0 +1,43 @@
+schema_version: 1
+intensity: L2
+classification_reason: >-
+  改变 Agent 路由入口与技能硬规则（local-rule）：三分拓扑下按 layout_policy
+  写路径，不再把 Harness 内一律写成必须 apps/。未改生命周期注册表、
+  脚手架生成器语义或 create-yss-spec 跨仓契约，故不升级 L3。
+triggers: [local-rule]
+changed_assets:
+  - AGENTS.md
+  - README.md
+  - docs/user-guide/外部命令行工具实践指南.md
+  - .agents/skills/implementation-repo-onboarding/SKILL.md
+  - .agents/skills/cross-repo-implementation-routing/SKILL.md
+  - .agents/skills/yss-router/SKILL.md
+  - .agents/skills/yss-router/references/router-contract.yaml
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - .agents/skills/yss-ddd-scaffold-generator/SKILL.md
+  - .agents/skills/yss-frontend-scaffold-generator/SKILL.md
+  - docs/templates/implementation-repo-registry-template.md
+  - docs/templates/implementation-routing-template.md
+  - docs/templates/cross-repo-slice-template.md
+  - docs/templates/build-architecture-checklist-template.md
+  - .template-source/tooling/node/test/runtime-contract.test.mjs
+  - skills-lock.json
+  - docs/reviews/topology-runtime-entry-l2-counterexample-2026-08-24.txt
+  - docs/reviews/topology-runtime-entry-l2-fresh-verification-2026-08-24.txt
+  - docs/reviews/topology-runtime-entry-l2-review-request-2026-08-24.md
+verification_evidence:
+  - kind: counterexample
+    command: docs/reviews/topology-runtime-entry-l2-counterexample-2026-08-24.txt
+    result: pass
+  - kind: fresh-verification
+    command: docs/reviews/topology-runtime-entry-l2-fresh-verification-2026-08-24.txt
+    result: pass
+  - kind: focused-independent-review
+    command: docs/reviews/topology-runtime-entry-l2-review-request-2026-08-24.md
+    result: pass
+review_mode: focused-independent
+escalation: >-
+  审查请求已落盘；实施者未出具 focused-independent 结论。
+  本条 result=pass 只表示请求文件与 checkpoint 合同可被校验器解析，
+  不表示审查已通过。合并或发布前须由非实施者改写审查结论。
+  本轮不声称模板可发布。
