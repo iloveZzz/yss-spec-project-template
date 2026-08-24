@@ -1,0 +1,29 @@
+L2 fresh verification：分仓接入实践指南与不用 submodule
+date: 2026-08-24
+branch: cursor/grill-fe-be-harness-integration-e205
+head_at_verification: c59a5c1
+intensity: L2
+release_claim: 本轮不跑完整 scripts/verify-template，不宣布模板可发布。
+
+commands_and_results:
+
+1. scripts/sync-skills --check
+   result: pass（本轮未改 skill）
+   output: skill projections are synchronized
+
+2. scripts/update-skill-lock --check
+   result: pass
+   output: skills-lock.json matches distributed skills
+
+3. 新指南相对链接（排除仓库里既有的缺失「图示生成器使用指南」）
+   result: pass
+   抽查：分仓接入实践指南.md 指向 ADR-0008、接入文档、登记模板、切片模板、研究笔记、CLI 指南均存在
+
+4. 权威句子已落地
+   CONTEXT.md 研发管理仓库备注含口语「研发仓」
+   CONTEXT.md 分仓接入备注含「分层接入」对照与不用 git submodule
+   ADR-0008 第二段禁用 submodule / subtree，指向研究笔记与实践指南
+   用户手册索引与 README 列出分仓接入实践指南
+
+未执行：scripts/verify-template（L3 发布候选）
+未执行：create-yss-spec 跨仓集成

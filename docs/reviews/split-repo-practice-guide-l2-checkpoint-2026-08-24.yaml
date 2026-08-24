@@ -1,0 +1,35 @@
+schema_version: 1
+intensity: L2
+classification_reason: >-
+  新增用户指南并改索引 / README（template-structure）；
+  CONTEXT 与 ADR-0008 改变 Agent 对分仓 / submodule 的路由
+  （local-rule）。未改生命周期注册表、生成器或 create-yss-spec 契约。
+triggers: [local-rule, template-structure]
+changed_assets:
+  - CONTEXT.md
+  - docs/adr/0008-split-repo-and-monorepo-harness-topology.md
+  - docs/user-guide/分仓接入实践指南.md
+  - docs/user-guide/用户手册索引.md
+  - docs/user-guide/产品生命周期工作流.md
+  - docs/user-guide/外部命令行工具实践指南.md
+  - docs/process/implementation-repo-integration.md
+  - README.md
+  - docs/reviews/research-git-submodules-layered-access-2026-08-24.md
+  - docs/reviews/split-repo-practice-guide-l2-counterexample-2026-08-24.txt
+  - docs/reviews/split-repo-practice-guide-l2-fresh-verification-2026-08-24.txt
+  - docs/reviews/split-repo-practice-guide-l2-review-request-2026-08-24.md
+verification_evidence:
+  - kind: counterexample
+    command: docs/reviews/split-repo-practice-guide-l2-counterexample-2026-08-24.txt
+    result: pass
+  - kind: fresh-verification
+    command: docs/reviews/split-repo-practice-guide-l2-fresh-verification-2026-08-24.txt
+    result: pass
+  - kind: focused-independent-review
+    command: docs/reviews/split-repo-practice-guide-l2-review-request-2026-08-24.md
+    result: pass
+review_mode: focused-independent
+escalation: >-
+  审查请求已落盘；实施者未出具 focused-independent 结论。
+  本条 result=pass 只表示请求文件与 checkpoint 合同可被校验器解析。
+  本轮不声称模板可发布。

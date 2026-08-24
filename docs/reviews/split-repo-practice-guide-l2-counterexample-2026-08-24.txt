@@ -1,0 +1,18 @@
+L2 最小反例：分仓实践指南与「不用 submodule」落地前基线
+captured_from: 3f708d6b1369a8a570bb2ae8124526211300bfc3
+date: 2026-08-24
+
+断言：改前用户手册索引与 README 关键文档没有「分仓接入实践指南」；ADR-0008 仅一段、未禁用 git submodule；CONTEXT「分仓接入」备注无 submodule / 分层接入对照；生命周期 Step 3 只有拓扑三行。
+
+--- docs/user-guide/用户手册索引.md 继续阅读（改前无分仓实践指南） ---
+- [create-yss-spec 外部 CLI 实践指南](./外部命令行工具实践指南.md)
+- [产品全生命周期使用手册](./产品生命周期工作流.md)
+
+--- docs/adr/0008（改前 3 行，无 submodule） ---
+git show 3f708d6:docs/adr/0008-split-repo-and-monorepo-harness-topology.md
+wc -l => 3；正文无 git submodule、无实践指南指针。
+
+--- CONTEXT 分仓接入 备注（改前） ---
+默认拓扑。不是把源码复制进模板源仓库。不要与一体仓混用。
+
+期望改后：ADR-0008 + CONTEXT 冻结「分仓不用 submodule」；新增 docs/user-guide/分仓接入实践指南.md 并被索引 / README / Step 3 / CLI / 接入文档 §1.0 指向。
