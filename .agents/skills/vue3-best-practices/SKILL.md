@@ -26,7 +26,7 @@ description: 在 Vue3 业务页面、组件和 composable 中规范响应式状�
 - 必须在复杂页面中拆 composable，禁止单文件耦合所有逻辑。
 - 导出函数、composable、接口、类型与常量必须使用中文 JSDoc。
 - 接口默认错误由 mutator 统一提示并 reject；业务逻辑只做状态恢复或错误转换，禁止在 `catch` 重复 `message.error`，除非请求显式设置了 `skipErrorHandler`。
-- 在 hook/computed/watch 等业务逻辑里使用接口返回的 number 字段（id、主键、金额、数量等）时，禁止用 `Number()`/`parseInt`/`parseFloat`/`+x`/`*1`/`~~` 做任何数字转换，一律按字符串透传与比较；确需高精度数值计算时用 `decimal.js`/`big.js` 以字符串入参。底层 json-bigint 已存为字符串保精度，详见 `../api-integration/SKILL.md`「大数字与精度」。
+- 在 hook/computed/watch 等业务逻辑里使用接口返回的 number 字段（id、主键、金额、数量等）时，禁止用 `Number()`/`parseInt`/`parseFloat`/`+x`/`*1`/`~~` 做任何数字转换，一律按字符串透传与比较；确需高精度数值计算时用 `decimal.js`/`big.js` 以字符串入参。底层 json-bigint 已存为字符串保精度，详见 `../yss-api-integration/SKILL.md`「大数字与精度」。
 
 ## 标准代码骨架
 

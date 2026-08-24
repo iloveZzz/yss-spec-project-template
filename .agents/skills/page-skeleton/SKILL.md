@@ -14,7 +14,7 @@ description: 指导搭建 Vue3 YSS UI 列表、表单、详情和弹窗页面模
 ## 不适用场景
 
 - 仅补一个局部交互逻辑，不涉及页面骨架重建。
-- 仅改 API 请求细节：使用 `../api-integration/SKILL.md`。
+- 仅改 API 请求细节：使用 `../yss-api-integration/SKILL.md`。
 - 仅做 Formily 细节：使用 `../formily-*` 系列 skill。
 
 ## 硬约束（禁止/必须）

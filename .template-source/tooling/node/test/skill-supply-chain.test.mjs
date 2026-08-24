@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { obsoleteCanonicalResidues, PROJECTION_ROOTS, unlockedProjectionEntries } from "../../../../scripts/lib/skill-supply-chain.mjs";
+import { obsoleteCanonicalResidues, PROJECTION_ROOTS, unlockedCanonicalEntries, unlockedProjectionEntries } from "../../../../scripts/lib/skill-supply-chain.mjs";
 
 function entry(name, type) {
   return {
@@ -29,6 +29,13 @@ test("obsolete canonical residues fail even when they are not in the lock", () =
   assert.deepEqual(
     obsoleteCanonicalResidues(["yss-domain", "yss-dir", "batch-grill-me", "code-review"]),
     ["batch-grill-me", "yss-dir"]
+  );
+});
+
+test("physical canonical skills must be present in the lock", () => {
+  assert.deepEqual(
+    unlockedCanonicalEntries(["yss-api-integration", "forgotten-skill", "empty-dir"], ["yss-api-integration"], (name) => name !== "empty-dir"),
+    ["forgotten-skill"]
   );
 });
 

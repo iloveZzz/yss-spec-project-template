@@ -7,7 +7,7 @@
 - `.agents/skills` 是跨 Agent 共享技能的唯一权威内容。
 - `.claude/skills`、`.codex/skills`、`.cursor/skills`、`.hermes/skills`、`.pi/skills`、`.qoder/skills`、`.trae/skills` 中的同名共享技能是生成投影，不得分别手工修改。
 - Cursor 的契约运行时入口是 `.cursor/skills`。若客户端同时枚举 `.claude/skills`，仍以 `.cursor/skills` 为 Cursor 投影契约，不得把两套同名 skill 解释为两个来源。
-- 分层、别名和默认可发现性以 `docs/agents/yss-skill-registry.yaml` 为准；该文件当前为 shadow，不改变 Agent 实际发现列表，也不允许 Router 按其裁剪闭包。
+- 分层、别名和默认可发现性以 `docs/agents/yss-skill-registry.yaml` 为准；当前 registry 为 `active`，Router、生命周期编排器和实例发现面必须消费通过校验的 canonical 技能及其 alias 解析结果。
 - 只属于某个平台的 skill 继续保留在对应 root，并由 `skills-lock.json` 的 `platform` 分组记录。
 - 共享技能投影可以是指向权威目录的符号链接，也可以是完整同步副本；`scripts/sync-skills --check` 会检查链接目标或完整目录哈希。
 

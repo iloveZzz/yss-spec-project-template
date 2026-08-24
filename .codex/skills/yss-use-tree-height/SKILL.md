@@ -5,6 +5,15 @@ description: Use when working with YTree that needs responsive height, virtual s
 
 # useTreeHeight 树组件高度计算 Hook
 
+本目录是树高度的 canonical 技能；历史名称 `use-tree-height` 仅通过注册表和 Router alias 解析。
+
+## YSS canonical execution rules
+
+- 使用真实签名 `useTreeHeight(containerRef, options)`，结果绑定到 `YTree` 的 `:height`。
+- `filterable` 时配置 `extraOffset: YTREE_SEARCH_HEIGHT`；不得重复扣减或添加无依据偏移。
+- 容器使用 `flex: 1; min-height: 0; overflow: hidden`，隐藏态切换后在可见的 `nextTick` 中调用 `recalculateHeight()`。
+- 不因节点数量少而强制开启虚拟滚动；按实际可见节点阈值决定是否裁剪 DOM。
+
 ## Authoritative Docs And Boundary
 
 - YSS UI hooks documentation: `http://192.168.164.27:3200/hooks`

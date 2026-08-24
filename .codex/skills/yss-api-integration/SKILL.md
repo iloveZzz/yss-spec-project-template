@@ -1,11 +1,13 @@
 ---
-name: api-integration
+name: yss-api-integration
 description: Guide AI to correctly use Orval-generated API clients in Vue 3 micro-applications. This skill must be used whenever the user needs backend API integration, including list queries, CRUD actions, detail loading, submit flows, or API refactoring. It covers type-safe API imports, request/response mapping, and especially standardized useRequest integration patterns (manual/run/runAsync, pagination parameters, unified error handling, loading state, and success callbacks).
 ---
 
 # API 集成 Skill
 
-目录与锁文件身份是 `yss-api-integration`；Agent 发现名与 Router 闭包键是 `api-integration`。二者指向同一技能，注册表以 alias 对齐。
+本目录是 API 集成的 canonical 技能；历史名称 `api-integration` 仅通过注册表和 Router alias 解析，不再维护第二份内容。
+
+目录、frontmatter、注册表 ID 和 Router canonical 闭包键均为 `yss-api-integration`；历史名称 `api-integration` 只在注册表和 Router alias 表中解析为本技能。
 
 ## 📋 目标
 
@@ -55,6 +57,14 @@ packages/src/api/
 ```
 
 ## 🚀 使用步骤
+
+## YSS canonical execution rules
+
+- 先检查当前生成文件、`mutator.ts` 和冻结的 OpenAPI JSON 派生证据，不根据示例猜测导出名或响应形状。
+- 普通 JSON 请求中，`success === false` 已由 mutator reject；业务 Hook 不得再写 `if (res?.success)` 或重复 `message.error`。
+- loading 在 `finally` 中恢复；只有显式传入 `skipBusinessError` 或 `skipErrorHandler` 时，才允许实现局部错误交互。
+- 文件流必须保留 `{ data, headers }`，交给 `file-export-download` 的 `handleBlobResponse`；不得修改生成文件。
+- 长整型 ID 按冻结契约保持字符串，不得用 `Number`、`parseInt` 或位运算恢复为 number。
 
 ### 1. 查看可用 API
 

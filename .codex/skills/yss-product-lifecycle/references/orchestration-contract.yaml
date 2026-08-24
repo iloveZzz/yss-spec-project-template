@@ -88,6 +88,9 @@ workflow_execution_result:
       removal_target: schema_version_2
   result_values: [completed, blocked, needs-human, failed]
   required: [result_schema, work_unit, workflow_reference, result, evidence_refs, changed_artifacts, new_impacts, stale_candidates, next_route, blocking_signals]
+  unavailable_skill:
+    required: [skill, provider, fallback, resolution]
+    blocking_result: blocked
   blocking_signals: [drift, new_impacts, violation, missing_evidence, stale_candidates]
   completed_requires_empty: [new_impacts, stale_candidates]
   completed_requires_non_empty: [evidence_refs]
@@ -130,43 +133,101 @@ lifecycle_native_entries:
 work_unit_routes:
   work-unit.discovery-opportunity:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    primary_skill: yss-product-lifecycle
+    supporting_skills: [competitive-intelligence, research]
     skills: [competitive-intelligence, research]
     route_by: {market_or_competitor_fact: competitive-intelligence, technical_or_standard_fact: research, no_external_fact: yss-product-lifecycle}
+    applies_when: opportunity_or_external_fact_requires_validation
+    not_applicable_reason: no_external_fact
   work-unit.discovery-requirements:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    primary_skill: yss-product-lifecycle
+    supporting_skills: [grilling, domain-modeling]
     skills: [grilling, domain-modeling]
+    applies_when: requirements_or_domain_boundary_unclear
+    not_applicable_reason: requirements_already_confirmed
   work-unit.spec-synthesis:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    primary_skill: yss-product-lifecycle
+    supporting_skills: [domain-modeling]
     compatibility: {source: mattpocock/skills, skill: to-spec, invocation_mode: reference, formal_artifact_owner: explicit-user-entry}
     skills: [domain-modeling]
     human_gate: spec-baseline
+    applies_when: new_feature_or_behavior_change
+    not_applicable_reason: existing_frozen_spec_is_current
   work-unit.prototype-design:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
-    skills: [yss-design-system, yss-prototype-stage, yss-antd-design, product-design:index]
+    primary_skill: yss-prototype-stage
+    supporting_skills: [prototype-review, yss-design-system, yss-antd-design, product-design:index]
+    skills: [prototype-review, yss-design-system, yss-prototype-stage, yss-antd-design, product-design:index]
     human_gate: prototype-confirmation
+    applies_when: product_design_impact
+    not_applicable_reason: no_ui_or_product_design_impact
   work-unit.technical-analysis:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    primary_skill: yss-router
+    supporting_skills: [yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding]
     skills: [yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding, yss-router]
     human_gate: openapi-freeze_if_api_impact
+    applies_when: technical_or_contract_impact
+    not_applicable_reason: no_technical_or_contract_impact
   work-unit.ticket-decomposition:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    primary_skill: yss-product-lifecycle
+    supporting_skills: [yss-router]
     compatibility: {source: mattpocock/skills, skill: to-tickets, invocation_mode: reference, formal_artifact_owner: explicit-user-entry}
     skills: [yss-router]
+    applies_when: frozen_scope_ready_for_slicing
+    not_applicable_reason: contract_or_scope_not_frozen
   work-unit.slice-implementation:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    primary_skill: yss-router
+    supporting_skills: [tdd, yss-ui, yss-page-module-development]
     compatibility: {source: mattpocock/skills, skill: implement, invocation_mode: reference, formal_artifact_owner: explicit-user-entry}
     skills: [tdd, yss-router, yss-ui, yss-page-module-development]
+    frontend_route:
+      primary_skill: yss-ui
+      page_orchestration_skill: yss-page-module-development
+      conditional_skills:
+        api_impact: [yss-api-integration]
+        formily_impact: [yss-formily, formily-foundation, formily-linkage-effects, formily-mode-slot-detail, formily-step-flow]
+        table_impact: [ytable-usage, yedit-table-usage]
+        tree_impact: [ytree-usage]
+        height_impact: [yss-use-table-height, yss-use-tree-height]
+        export_impact: [file-export-download]
+        theme_impact: [theme-token-usage]
+      not_applicable_reasons:
+        api_impact: no_api_impact
+        formily_impact: no_formily_impact
+        table_impact: no_table_impact
+        tree_impact: no_tree_impact
+        height_impact: no_height_impact
+        export_impact: no_export_impact
+        theme_impact: no_theme_impact
+    applies_when: ready_for_agent
+    not_applicable_reason: slice_contract_not_approved
   work-unit.frontend-implementation-verification:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    primary_skill: yss-ui
+    supporting_skills: [yss-design-system, code-review]
     skills: [yss-ui, yss-design-system, code-review]
     applies_when: ui_impact
+    not_applicable_reason: no_ui_impact
   work-unit.code-review:
     native: {source: yss-product-lifecycle, skill: code-review, invocation_mode: model-invoked}
+    primary_skill: code-review
+    supporting_skills: []
     skills: [code-review]
+    applies_when: implementation_candidate_exists
+    not_applicable_reason: no_implementation_candidate
   work-unit.release-and-retrospective:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    primary_skill: yss-product-lifecycle
+    supporting_skills: []
     skills: [yss-product-lifecycle]
     human_gate: merge_or_release
+    applies_when: release_or_stage_completion
+    not_applicable_reason: work_not_ready_for_release
 
 compatibility_flow_preconditions:
   to-spec:

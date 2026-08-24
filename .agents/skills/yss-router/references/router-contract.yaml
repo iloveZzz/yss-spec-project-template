@@ -4,6 +4,10 @@ forbidden_statuses: [approved, ready-for-agent, completed]
 skill_aliases:
   api-integration: yss-api-integration
   microapp-commit: yss-microapp-commit
+  page-module-development: yss-page-module-development
+  yss-ui-business-page-generation: yss-page-module-development
+  use-table-height: yss-use-table-height
+  use-tree-height: yss-use-tree-height
 implementation_path_policy:
   applies_to: harness-resident-runtime-code
   project_roots:
@@ -169,8 +173,8 @@ dependency_closure:
     when_components: [yss-components]
     when_hooks: [yss-hook]
     when_form: [yss-formily]
-    when_api: [api-integration]
-  api-integration:
+    when_api: [yss-api-integration]
+  yss-api-integration:
     when_regeneration: [yss-openapi-governance]
 
 component_impact_values:

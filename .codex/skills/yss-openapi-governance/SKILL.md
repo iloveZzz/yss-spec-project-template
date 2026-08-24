@@ -30,7 +30,7 @@ YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/open
 不使用本 skill 来替代：
 
 - `yss-openapi-draft-review`：独立、fail-closed 的语义评审与 P0 追踪。
-- `api-integration`：消费已派生的 JSON，并在目标前端实现仓库中接入既有客户端生成流程。
+- `yss-api-integration`：消费已派生的 JSON，并在目标前端实现仓库中接入既有客户端生成流程。
 - `to-tickets`：在 Freeze 后正式化垂直切片。
 
 ## 受控工具链
@@ -77,7 +77,7 @@ pnpm exec redocly bundle \
    - 记录 YAML SHA-256、JSON SHA-256、OAS 版本、Redocly CLI 版本与 lockfile 引用、完整命令、metafile、`$ref` 例外以及结果。
 
 5. **交给下游前端**
-   - 仅当 Freeze、JSON 派生记录和 JSON 校验均通过时，才把派生 JSON 交给 `api-integration` 与目标前端实现仓库。
+   - 仅当 Freeze、JSON 派生记录和 JSON 校验均通过时，才把派生 JSON 交给 `yss-api-integration` 与目标前端实现仓库。
    - JSON 的治理产物固定为 `docs/.scratch/<feature>/api/<feature>.json`。跨仓库时只能由批准的 Cross-repo 子合同或项目脚本将同一字节内容物化为 `<frontend>/openapi/openapi.json`，并记录两端相同的 SHA-256 与交接路径。
    - 本模板不读取、修改或验证目标前端项目的客户端生成配置，不执行客户端生成，也不把生成动作加入 CI；目标前端项目在需要时手动运行其既有代码生成命令。
    - 接口调整回写 YAML，而不是编辑 JSON 或生成的 TypeScript。

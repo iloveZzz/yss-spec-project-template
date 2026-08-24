@@ -1,6 +1,6 @@
 ---
 name: yss-page-module-development
-description: Guide AI to create standardized Vue 3 business page modules for YSS micro-applications, including directory layout, hook extraction, table/tree height hooks, YssFormily query areas, YTable pages, and left-tree-right-content shells.
+description: 指导创建标准 Vue 3 YSS 业务页面模块，覆盖 CRUD、列表、表单、详情、左树右表、组件选型、Orval 接口、主题 Token、原型还原和交付验证。
 ---
 
 # YSS Page Module Development
@@ -20,7 +20,7 @@ This skill orchestrates page/module creation. Load narrower skills only when the
 
 - `yss-components` for layout, YTable/YTree/YssFormily/YSplitPane component specifics.
 - `yss-hook` for request, pagination, parameter, and mapping logic.
-- `api-integration` for Orval-generated APIs and submit/list/detail flows.
+- `yss-api-integration` for Orval-generated APIs and submit/list/detail flows.
 - `yss-use-table-height` and `yss-use-tree-height` for height calculation.
 - `yss-formily` for detailed schema behavior.
 
@@ -119,6 +119,16 @@ Use `useTableHeight` and `useTreeHeight` when the page needs available-height ca
 - move data transformation out of templates
 - keep action handlers small and explicit
 - preserve existing route, menu, and permission conventions in the repo
+
+## YSS business page contract
+
+- 页面实现前先按 `component-selection-imports` 判定真实导出；已封装能力优先从 `@yss-ui/components`、`@yss-ui/hooks`、`@yss-ui/utils` 导入。
+- 标准列表使用 `YTable` 的真实 `data`、`columns`、`loading`、`pageable`、`v-model:pagination` 和 `@page-change`；主操作放在 `#toolbar-right`，只有确实需要列设置时才启用 `toolbar-config.custom`。
+- 查询区使用 `YFormily` 渲染字段，查询/重置按钮位于表单外部并在窄屏下保持右下对齐；表单、表格、树和导出细节分别加载 `yss-formily`、`ytable-usage`、`ytree-usage` 和 `file-export-download`。
+- 页面有原型或旧页面参考时先读取 `prototype-page-acceptance`，建立视觉、状态、交互和响应式验收清单；交付时必须逐项对照。
+- 页面和组件的颜色、状态色及暗色模式遵循 `theme-token-usage`，不得硬编码品牌色。
+- Orval API 必须使用当前生成导出和 DTO；错误由 mutator 统一处理，业务 Hook 不重复判断 `success` 或重复提示错误。
+- 列表/树高度按实际分页、工具栏和搜索状态选择 `yss-use-table-height` / `yss-use-tree-height`，不得用固定魔法高度替代。
 
 ## Deliverables
 

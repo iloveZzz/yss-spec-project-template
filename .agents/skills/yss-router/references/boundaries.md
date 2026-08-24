@@ -9,7 +9,7 @@ Use this reference when multiple YSS skills seem applicable.
 - `yss-page-module-development`: Page/module workflow. Use for creating or reorganizing a page folder, deciding structure, and assembling page, hooks, schemas, and blocks.
 - `yss-components`: Component layout and visual/page composition rules. Use for YTable/YTree/YssFormily/YSplitPane usage details.
 - `yss-hook`: Request, pagination, parameter, tree-selection, and response-mapping logic in `views/**/hooks/useXxx.ts`.
-- `api-integration`: Orval-generated API client imports, request/response mapping, `useRequest` calling patterns, submit/list/detail flows.
+- `yss-api-integration`: Orval-generated API client imports, request/response mapping, `useRequest` calling patterns, submit/list/detail flows.
 - `yss-formily`: Hand-written YssFormily schema implementation and form behavior.
 - `yss-formily-schema-generator`: Generate YssFormily schema from requirements, screenshots, mockups, Figma, or natural-language field descriptions.
 - `yss-use-table-height`: Only table available-height calculation and required container/pagination/toolbar wiring.
