@@ -11,6 +11,7 @@ changed_assets:
   - .template-source/tooling/node/test/runtime-contract.test.mjs
   - .template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-oracle-2026-08-24.md
   - .template-source/evidence/maintenance/git-submodule-scope-oracle-implementer-measurement-2026-08-24.md
+  - .template-source/evidence/maintenance/git-submodule-scope-review-findings-oracle-2026-08-24.md
 verification_evidence:
   - kind: red
     command: .template-source/evidence/maintenance/git-submodule-scope-writable-api-red-2026-08-24.md
@@ -34,4 +35,4 @@ verification_evidence:
     command: .template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-oracle-2026-08-24.md
     result: pass
 review_mode: formal-independent
-escalation: 出题改为判定式后重新提交审查；实施者实测笔记不等于独立审查结论；不得根据实施者自述宣布可合并或可发布。
+escalation: 人工已按第四轮判定式作答三题均为否；跨仓 CLI 联调未做，不得声称模板可发布。
