@@ -1,6 +1,6 @@
 # 分仓接入实践指南 L2 聚焦审查请求
 
-> 实施者不得在本文件填写审查结论。`result=pass` 只表示本请求可被 checkpoint 校验器解析。
+> 结论已由非实施者写入 `docs/reviews/split-repo-practice-guide-l2-focused-review-2026-08-24.md`（Approved）。
 
 ## 范围
 

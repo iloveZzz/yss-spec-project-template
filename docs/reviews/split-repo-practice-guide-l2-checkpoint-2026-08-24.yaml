@@ -18,6 +18,7 @@ changed_assets:
   - docs/reviews/split-repo-practice-guide-l2-counterexample-2026-08-24.txt
   - docs/reviews/split-repo-practice-guide-l2-fresh-verification-2026-08-24.txt
   - docs/reviews/split-repo-practice-guide-l2-review-request-2026-08-24.md
+  - docs/reviews/split-repo-practice-guide-l2-focused-review-2026-08-24.md
 verification_evidence:
   - kind: counterexample
     command: docs/reviews/split-repo-practice-guide-l2-counterexample-2026-08-24.txt
@@ -26,10 +27,9 @@ verification_evidence:
     command: docs/reviews/split-repo-practice-guide-l2-fresh-verification-2026-08-24.txt
     result: pass
   - kind: focused-independent-review
-    command: docs/reviews/split-repo-practice-guide-l2-review-request-2026-08-24.md
+    command: docs/reviews/split-repo-practice-guide-l2-focused-review-2026-08-24.md
     result: pass
 review_mode: focused-independent
 escalation: >-
-  审查请求已落盘；实施者未出具 focused-independent 结论。
-  本条 result=pass 只表示请求文件与 checkpoint 合同可被校验器解析。
-  本轮不声称模板可发布。
+  非实施者已确认 focused-independent 审查完毕，结论 Approved。
+  本结论覆盖 L2 聚焦清单，不是模板发布或合并裁决，不得声称可发布。
