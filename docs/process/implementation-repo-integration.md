@@ -14,7 +14,7 @@
 | 新建一体仓 | 用户明示让该实例仓承载运行时后，在实例仓内新建或脚手架前后端项目 | `repository_scope: harness-apps`；`layout_policy: harness-apps-multi-project`；项目根必须是 `apps/backend/<project>/` 与 `apps/frontend/<project>/` |
 | 已有一体仓 | 在该仓根目录 `create-yss-spec attach`，不搬迁 Git 历史、不覆盖运行时代码 | 同一 `git_url` 下按磁盘真实项目根登记；`layout_policy: external-repository-native`。原目录不是 `apps/` 不构成路径违规 |
 
-对本 `template-source` 执行 attach，或把 Harness 资产 attach 进仅含前端或仅含后端的实现仓来冒充一体仓，都不允许。分仓实例仓的默认 Git 托管、tracker 与 Agent 工作区见 ADR-0008；Git remote 仍不决定主 tracker。
+对本 `template-source` 执行 attach，或把 Harness 资产 attach 进仅含前端或仅含后端的实现仓来冒充一体仓，都不允许。分仓实例仓的默认 Git 托管、tracker 与 Agent 工作区见 ADR-0008；Git remote 仍不决定主 tracker。分仓不用 git submodule 或 git subtree 嵌实现仓；日常操作见 `docs/user-guide/分仓接入实践指南.md`。
 
 ## 1.1 Harness 内新建与脚手架路径策略
 

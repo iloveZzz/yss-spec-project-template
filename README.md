@@ -53,6 +53,7 @@ YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https:/
 `create-yss-spec` 的目标维护位置是独立 GitHub 仓库 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec)。本仓库不再包含 CLI 源码、测试、发布配置或开发过程记录，只保留面向模板使用者的实践指南：
 
 - [create-yss-spec 外部 CLI 实践指南](./docs/user-guide/外部命令行工具实践指南.md)
+- [分仓接入实践指南](./docs/user-guide/分仓接入实践指南.md)
 
 推荐入口：
 
@@ -103,6 +104,7 @@ scripts/verify-template
 | [AGENTS.md](./AGENTS.md) | 全局 AI 指令 + 工程基线入口 + Agent 协作 |
 | [docs/user-guide/用户手册索引.md](./docs/user-guide/用户手册索引.md) | 模板使用说明 |
 | [docs/user-guide/产品生命周期工作流.md](./docs/user-guide/产品生命周期工作流.md) | 产品全生命周期使用手册 |
+| [docs/user-guide/分仓接入实践指南.md](./docs/user-guide/分仓接入实践指南.md) | 研发管理仓库与前后端实现仓库分 Git 管理 |
 | [docs/user-guide/图示生成器使用指南.md](./docs/user-guide/图示生成器使用指南.md) | Excalidraw 可视化辅助 skill 使用手册 |
 | [docs/process/PDCA-SCRUM.md](./docs/process/PDCA-SCRUM.md) | PDCA × Scrum × AI |
 | [docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md](./docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md) | Matt Pocock Engineering Skills 集成与使用 |
