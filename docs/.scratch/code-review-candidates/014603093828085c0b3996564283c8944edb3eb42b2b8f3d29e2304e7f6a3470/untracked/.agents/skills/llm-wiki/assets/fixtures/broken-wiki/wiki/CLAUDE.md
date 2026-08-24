@@ -1,3 +1,0 @@
-# CLAUDE.md
-
-fixture schema
