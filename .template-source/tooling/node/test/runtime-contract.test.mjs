@@ -103,7 +103,11 @@ test("repository_scope git-submodule is a first-class layout distinct from harne
       ...record,
       checkout_state: "empty-gitlink"
     });
+    assert.equal(typeof emptyInspection, "object");
+    assert.notEqual(emptyInspection, null);
+    assert.equal(Array.isArray(emptyInspection), false);
     assert.equal(emptyInspection.writable, false);
+    assert.equal(emptyInspection.writable === true, false);
     assert.equal(isWorkingTreeWritable(emptyInspection), false);
     assert.match(emptyInspection.violation, /regular directory/);
     assert.match(implementationWriteViolation(empty.superproject, path.join(emptyTarget, "src/Foo.java")), /普通目录写入/);
@@ -122,10 +126,10 @@ test("repository_scope git-submodule is a first-class layout distinct from harne
     assert.equal(inspectCheckoutState(attached.superproject, path.join(attached.superproject, attached.mount)), "attached-branch");
     assert.equal(attachedInspection.writable, true);
     assert.equal(attachedInspection.violation, null);
-    assert.equal(
-      inspectWorkingTreeScope(path.resolve(repositoryRoot), { ...record, checkout_state: "empty-gitlink" }).writable,
-      false
-    );
+    const failedProbe = inspectWorkingTreeScope(path.resolve(repositoryRoot), { ...record, checkout_state: "empty-gitlink" });
+    assert.equal(typeof failedProbe, "object");
+    assert.equal(failedProbe.writable, false);
+    assert.equal(isWorkingTreeWritable(failedProbe), false);
   } finally {
     empty.cleanup();
     detached.cleanup();

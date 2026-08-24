@@ -117,7 +117,11 @@ try {
   const emptyInspection = inspectWorkingTreeScope(emptyGitlink.superproject, emptyRecord);
   namedStress(
     "empty_gitlink_as_regular_dir",
-    emptyInspection.writable === false
+    typeof emptyInspection === "object"
+      && emptyInspection !== null
+      && Array.isArray(emptyInspection) === false
+      && emptyInspection.writable === false
+      && emptyInspection.writable === true === false
       && isWorkingTreeWritable(emptyInspection) === false
       && emptyInspection.violation?.includes("regular directory")
       && inspectCheckoutState(emptyGitlink.superproject, emptyTarget) === "empty-gitlink"
@@ -174,6 +178,7 @@ try {
   );
   ensure(attachedInspection.writable === true, "附加分支 git-submodule 工作树应可写");
   ensure(attachedInspection.violation === null, "附加分支工作树对照不应返回 violation");
+  ensure(typeof emptyInspection === "object" && emptyInspection !== null && Array.isArray(emptyInspection) === false, "inspectWorkingTreeScope 必须返回对象，不得返回字符串");
   ensure(
     inspectWorkingTreeScope(emptyGitlink.superproject, {
       ...validGitSubmodule,
@@ -181,13 +186,12 @@ try {
     }).writable === false,
     "已登记为空 gitlink 的 git-submodule 不得返回可写"
   );
-  ensure(
-    inspectWorkingTreeScope(process.cwd(), {
-      ...validGitSubmodule,
-      checkout_state: "empty-gitlink"
-    }).writable === false,
-    "登记为空 gitlink 时即使工作树探测失败也不得返回可写"
-  );
+  const failedProbe = inspectWorkingTreeScope(process.cwd(), {
+    ...validGitSubmodule,
+    checkout_state: "empty-gitlink"
+  });
+  ensure(typeof failedProbe === "object" && failedProbe !== null, "探测失败时仍须返回对象，不得返回字符串");
+  ensure(failedProbe.writable === false && isWorkingTreeWritable(failedProbe) === false, "登记为空 gitlink 时即使工作树探测失败也不得返回可写");
   ensure(
     implementationWriteViolation(attached.superproject, path.join(attachedNested, "src")) === null,
     "附加分支工作树内写入不应被当成空 gitlink / detached HEAD"

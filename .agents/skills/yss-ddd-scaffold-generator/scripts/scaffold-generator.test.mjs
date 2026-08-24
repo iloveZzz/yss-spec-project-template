@@ -8,6 +8,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { run } from "./run_scaffold_verification.mjs";
 import { makeGitlinkFixture } from "../../../../scripts/lib/git-submodule-fixtures.mjs";
+import { GITLINK_MODE, gitLsFilesStage } from "../../../../scripts/lib/repository-scope-policy.mjs";
 
 const scripts = path.dirname(fileURLToPath(import.meta.url));
 const generator = path.join(scripts, "generate_scaffold.mjs");
@@ -69,6 +70,7 @@ test("--force 覆盖真实 gitlink 不得走普通目录覆盖路径", async (t)
   assert.match(text, /--force 不得把 git-submodule 挂载点当成普通目录覆盖|gitlink 不得/);
   assert.equal(existsSync(path.join(output, "billing-service", "pom.xml")), false);
   assert.equal((await readdir(output)).some((name) => name.includes("backup")), false);
+  assert.equal(gitLsFilesStage(empty.superproject, empty.mount)?.mode, GITLINK_MODE);
 });
 
 test("验证器记录三条 wrapper 命令的成功和失败证据", async (t) => { const root = await mkdtemp(path.join(os.tmpdir(), "yss-scaffold-verifier-")); t.after(() => rm(root, { recursive: true, force: true })); const project = path.join(root, "project"); await mkdir(path.join(project, ".yss"), { recursive: true }); await writeFile(path.join(project, ".yss/scaffold-generation.json"), `${JSON.stringify({ schema_version: 1, contract_id: "id", contract_version: 1, slice_id: "slice", approval_ref: "approval", approver: "reviewer", lifecycle_approval_ref: "approval", router_draft_ref: "router", persisted_ref: "persisted", contract_file_ref: "contract", current_version: 1, allowed_write_paths: ["."], expected_evidence_files: ["manifest"], verification_commands: ["./mvnw validate", "./mvnw test", "./mvnw package"], generation_mode: "controlled-generation" })}\n`); const wrapper = path.join(project, "mvnw"); await writeFile(wrapper, "#!/bin/sh\n[ \"$1\" = test ] && exit 2\nprintf 'ran %s\\n' \"$1\"\n"); await chmod(wrapper, 0o755); const evidence = path.join(root, "evidence"); const report = await run(project, evidence); assert.equal(report.status, "failed"); assert.deepEqual(report.commands.map((item) => item.exit_code), [0, 2, 0]); assert.match(await readFile(path.join(evidence, "mvnw-test.stderr.log"), "utf8"), /^$/); });

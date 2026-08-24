@@ -918,7 +918,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
-        "effectiveHash": "b0f0397fa25038e293d0ab6c48228f6f50f715b3d378bdd6bdcf77663b39d203",
+        "effectiveHash": "89ec809eb32afacb107c6d89b343ce50e852f385f5ab6bf7c626e830752154ee",
         "targets": [
           ".agents/skills",
           ".claude/skills",

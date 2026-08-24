@@ -1,20 +1,15 @@
 schema_version: 1
 intensity: L3
-classification_reason: 第三轮独立审查三题均为 finding：inspectWorkingTreeScope 对已登记空 gitlink 仍返回可写；detached HEAD 子仓内脚手架仍可能生成；--force 覆盖 gitlink 仍走普通目录覆盖路径。闭合该写入门禁仍命中 cross-repo-contract 与 generation-semantics。
+classification_reason: 第四轮将三道写入门禁审查题改为可复现判定式，并让实施测试跟判定式对齐；仍命中 cross-repo-contract 与 generation-semantics。
 triggers:
   - cross-repo-contract
   - generation-semantics
 changed_assets:
   - scripts/lib/repository-scope-policy.mjs
   - scripts/verify-repository-scope-scenarios
-  - scripts/lib/scenario-checks.mjs
-  - docs/process/implementation-repo-integration.md
-  - .agents/skills/implementation-repo-onboarding/SKILL.md
-  - .agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs
   - .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs
-  - .agents/skills/yss-ddd-scaffold-generator/SKILL.md
-  - .agents/skills/yss-router/references/router-contract.yaml
-  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - .template-source/tooling/node/test/runtime-contract.test.mjs
+  - .template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-oracle-2026-08-24.md
 verification_evidence:
   - kind: red
     command: .template-source/evidence/maintenance/git-submodule-scope-writable-api-red-2026-08-24.md
@@ -32,7 +27,7 @@ verification_evidence:
     command: scripts/verify-template
     result: pass
   - kind: formal-independent-review
-    command: .template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-api-2026-08-24.md
+    command: .template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-oracle-2026-08-24.md
     result: pass
 review_mode: formal-independent
-escalation: 第三轮审查三题未通过，本轮修订后重新提交审查；不得根据实施者自述宣布可合并或可发布。
+escalation: 出题改为判定式后重新提交审查；第三轮请求归档不改写；不得根据实施者自述宣布可合并或可发布。
