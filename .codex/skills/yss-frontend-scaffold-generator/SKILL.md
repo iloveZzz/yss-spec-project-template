@@ -31,7 +31,7 @@ branch: template
 ## Workflow
 
 1. 确认当前任务已经通过 Harness 入口分诊，且实现位置已记录在 proposal、design、build entry review、实施计划或实现路由记录中。
-2. 确认目标是外部实现仓库；只有用户明确选择时才输出到 Harness 仓库的 `apps/frontend/<project>/`。`apps/frontend/` 只能作为项目容器，`app/frontend/`、`app/backend/` 及其子路径禁止作为输出位置。
+2. 确认目标与拓扑：分仓接入输出到外部实现仓库；新建一体仓才输出到实例仓的 `apps/frontend/<project>/`。已有一体仓且 `scaffold_status=existing` 时，不把迁仓到 `apps/` 当脚手架。`apps/frontend/` 只能作为项目容器，`app/frontend/`、`app/backend/` 及其子路径禁止作为输出位置。
 3. 只读检查模板分支是否可访问：`git ls-remote --heads <repo> template`。
 4. 需要生成工程时，克隆或复制模板到用户确认的目标位置；不得默认写入 Harness 仓库。
 5. 替换应用名、微应用名、路由、`micro-config.json`、环境变量和 README 中的模板占位。
@@ -61,7 +61,7 @@ packages/package.json
 - 不绕过 OpenAPI Draft / Freeze；API client 只消费与 OpenAPI JSON 派生记录 SHA-256 一致的冻结 JSON。
 - 不接受任意 URL、未冻结 YAML、后端运行时输出或手工 JSON 作为既有前端代码生成流程的输入。
 - 不修改模板既有的代码生成配置，也不把客户端生成加入 CI。
-- 不得把 `apps/frontend/` 容器根登记为项目根；Harness 内每个前端项目必须有独立的 `apps/frontend/<project>/` 路径。
+- 不得把 `apps/frontend/` 容器根登记为项目根；`harness-apps-multi-project` 下每个前端项目必须有独立的 `apps/frontend/<project>/` 路径。已有一体仓 `scaffold_status=existing` 时禁止把迁仓当作本脚手架。
 - 不把模板示例页面当作业务功能交付。
 - 生成后仍需使用 `yss-page-module-development`、`yss-components`、`api-integration` 等专项 skill 实现业务页面。
 

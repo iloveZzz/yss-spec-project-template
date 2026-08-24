@@ -5,7 +5,7 @@ description: Use when a Harness change or vertical slice may require work across
 
 # Cross Repo Implementation Routing
 
-用于从一个 Harness change 或垂直切片判断需要改哪些实现仓库，并把 Harness、后端、前端、契约和验证证据绑定起来。
+用于从一个 Harness change 或垂直切片判断需要改哪些实现仓库，并把 Harness、后端、前端、契约和验证证据绑定起来。一体仓允许前后端同一 `git_url`、两套 `project_root`；切片仍填 Backend / Frontend，交付顺序可以是同一 MR。
 
 ## Inputs
 
@@ -16,11 +16,11 @@ description: Use when a Harness change or vertical slice may require work across
 
 ## Workflow
 
-1. 读取 `docs/process/implementation-repo-integration.md` 和当前 change 资产。
+1. 读取 `docs/process/implementation-repo-integration.md` 和当前 change 资产，确认 `topology` 与 `layout_policy`。
 2. 判断影响面：Harness-only、backend-only、frontend-only、backend+frontend、contract-only、release-only。
-3. 确认每个受影响实现仓库已有登记记录；缺失则阻断并要求 onboarding。
-4. 核对项目根路径：Harness 内项目必须是 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 只能作为容器，`app/backend/`、`app/frontend/` 及其子路径必须阻断。外部仓库记录各自的真实项目根。
-5. 输出最小任务分配：Harness 文档 / OpenAPI / 后端 MR / 前端 MR / 验证 / 发布。
+3. 确认每个受影响实现项目已有登记记录；缺失则阻断并要求 onboarding。一体仓允许 `backend_repo` 与 `frontend_repo` 为同一 `git_url`。
+4. 按 `layout_policy` 核对项目根路径：`harness-apps-multi-project` 才强制 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`external-repository-native`（分仓外部仓或 attach 后同仓）使用登记的真实项目根，禁止改写成 `apps/` 占位。`apps/backend/`、`apps/frontend/` 只能作为容器，`app/backend/`、`app/frontend/` 及其子路径必须阻断。
+5. 输出最小任务分配：Harness 文档 / OpenAPI / 后端 MR / 前端 MR / 验证 / 发布。一体仓的前后端交付顺序可以是同一 MR。
 6. 按 `docs/templates/cross-repo-slice-template.md` 生成切片记录草案。
 7. 给出 fresh verification 命令和阶段 checkpoint 回写字段。
 
@@ -39,7 +39,7 @@ description: Use when a Harness change or vertical slice may require work across
 
 - 不直接修改实现仓库代码。
 - 不创建或推送分支，除非用户在执行任务中明确授权。
-- 不允许前后端 MR / PR 信息只停留在实现仓库；必须回写 Harness 记录。
+- 不允许前后端 MR / PR 信息只停留在实现仓库；必须回写 Harness 记录。一体仓同一 MR 仍须回写 Backend 与 Frontend 两套字段。
 - 如果 API 契约变化但没有 Freeze，必须回到 API Draft / Freeze 阶段。
 
 ## Output

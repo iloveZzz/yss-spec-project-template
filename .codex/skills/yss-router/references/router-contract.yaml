@@ -16,9 +16,11 @@ implementation_path_policy:
     - app/backend/
     - app/frontend/
   rules:
+    - "applies_to 只覆盖新建或脚手架进实例仓的 harness-resident-runtime-code；harness-apps-multi-project 才强制 apps/backend/<project>/ 与 apps/frontend/<project>/。"
     - "Harness 内每个运行时工程必须位于具体 project 目录，不能直接写入 apps/backend/ 或 apps/frontend/。"
     - "app/backend/、app/frontend/ 及其子路径不是兼容别名，必须阻断。"
     - "外部实现仓库使用登记的真实项目根路径，不用 Harness 容器路径冒充。"
+    - "external-repository-native（含 attach 后同仓）使用登记根；禁止把 native 根改写成 apps/ 占位。"
 subcontract_statuses: [required, not-applicable]
 
 readiness:

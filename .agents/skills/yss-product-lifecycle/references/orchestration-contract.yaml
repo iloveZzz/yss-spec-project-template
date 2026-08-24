@@ -8,6 +8,8 @@ implementation_path_policy:
   container_roots: [apps/backend/, apps/frontend/]
   forbidden_roots: [app/backend/, app/frontend/]
   container_roots_are_projects: false
+  # native 含分仓外部仓与已有一体仓 attach 后同仓；禁止把 native 根改写成 apps/ 占位。
+  # harness-apps-multi-project 才强制 apps/backend/<project>/ 与 apps/frontend/<project>/。
   external_repository_uses_native_root: true
 
 review_verification:

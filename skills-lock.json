@@ -111,7 +111,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/cross-repo-implementation-routing/SKILL.md",
-        "effectiveHash": "3207a3f6b51ba07835b56f7c0b2c5e55ca7fdd30a038b0b6ba8ec00228506a4b",
+        "effectiveHash": "f9e4a0fd77a3c3ae865f5bbc7573f618641b5b1f16dcb2c87edcb2eb2249a635",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -292,7 +292,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/implementation-repo-onboarding/SKILL.md",
-        "effectiveHash": "e3166bbc93388996d0593803a1d6fb675c0cf596783b3171c035b78293b0c3cd",
+        "effectiveHash": "1afbfca9afe7738f4b4b4091e475f594544084e287ecc847c0f35b1914f203a4",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -918,7 +918,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
-        "effectiveHash": "4a85b5babcf6b83f370ba6a2960dd307f19bcad9a59b04aa43eb7c398f8121fe",
+        "effectiveHash": "73bcc3248e35d31a685a211ccf5a28a5a5ae19c4e497af55960e1ef3d255ea9b",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1062,7 +1062,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-frontend-scaffold-generator/SKILL.md",
-        "effectiveHash": "6b966c5824b80f5196c7fd8225238b3047d9e49f1f94c60179e4a567d82911f5",
+        "effectiveHash": "4c203193edca8d244fd39570add1e26c1275e13828658ea071605801314cc803",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1174,7 +1174,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "effectiveHash": "eaa20ca65548a0c0c4fd30f56eb8d15ec872179ea39ffd93dd64730b3dcf5301",
+        "effectiveHash": "30ecc66a89c649b9b45af725fc659c8e1d03c3c64f52c983289987b50a7a51c1",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1238,7 +1238,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-router/SKILL.md",
-        "effectiveHash": "70ec63b0513393b116895ae658fec52a0ec00fbd692c28f87a3a5c7d1369d47e",
+        "effectiveHash": "0994035fabeda5c5191bf19fabe7db3237a563979d07b4bd4adfa3debd7aa0b3",
         "targets": [
           ".agents/skills",
           ".claude/skills",
