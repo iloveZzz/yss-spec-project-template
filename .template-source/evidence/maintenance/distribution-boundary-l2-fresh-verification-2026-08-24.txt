@@ -1,0 +1,132 @@
+date: 2026-08-24T06:04:05Z
+commit: d5a77004431104a6b8944228fc3150bcd6331495
+
+=== git ls-files wiki docs/reviews .nvmrc .gitignore ===
+.gitignore
+.nvmrc
+
+=== snapshot-eligible wiki/ or docs/reviews/ (expect empty) ===
+(empty above means pass)
+
+=== evidence-index --check ===
+证据索引验证通过（complete）
+
+=== llm-wiki lint ===
+校验完成：23 篇文章，204 条 wikilink
+通过：所有 wikilink / 来源 / 索引检查通过
+
+=== scripts/verify-template ===
+证据索引验证通过（complete）
+
+> yss-template-node-tooling@1.0.0 test /workspace/.template-source/tooling/node
+> node --test test/**/*.test.mjs
+
+TAP version 13
+# Subtest: Node runtime contract exposes a vendored YAML parser for distributed scripts
+ok 1 - Node runtime contract exposes a vendored YAML parser for distributed scripts
+  ---
+  duration_ms: 10.573434
+  ...
+# Subtest: YAML aliases are rejected before a repository manifest is materialized
+ok 2 - YAML aliases are rejected before a repository manifest is materialized
+  ---
+  duration_ms: 5.055154
+  ...
+# Subtest: repository mode public seam is executable by Node
+ok 3 - repository mode public seam is executable by Node
+  ---
+  duration_ms: 0.618482
+  ...
+# Subtest: vendored XML parser rejects DOCTYPE and preserves scalar text
+ok 4 - vendored XML parser rejects DOCTYPE and preserves scalar text
+  ---
+  duration_ms: 5.333313
+  ...
+# Subtest: implementation path policy preserves harness and external-repository boundaries
+ok 5 - implementation path policy preserves harness and external-repository boundaries
+  ---
+  duration_ms: 4.26728
+  ...
+# Subtest: Node lifecycle registry verifier preserves the published semantic baseline
+ok 6 - Node lifecycle registry verifier preserves the published semantic baseline
+  ---
+  duration_ms: 374.976298
+  ...
+# Subtest: public skill export preserves its portable manifest and blocks workstation paths
+ok 7 - public skill export preserves its portable manifest and blocks workstation paths
+  ---
+  duration_ms: 305.56853
+  ...
+# Subtest: evidence index writes pending and checkpointed Node records with legacy failure semantics
+ok 8 - evidence index writes pending and checkpointed Node records with legacy failure semantics
+  ---
+  duration_ms: 210.002971
+  ...
+# Subtest: unknown layer is rejected
+ok 9 - unknown layer is rejected
+  ---
+  duration_ms: 22.172336
+  ...
+# Subtest: shadow registry cannot be marked as runtime consumed
+ok 10 - shadow registry cannot be marked as runtime consumed
+  ---
+  duration_ms: 16.802321
+  ...
+# Subtest: alias that collides with another id is rejected
+ok 11 - alias that collides with another id is rejected
+  ---
+  duration_ms: 11.601043
+  ...
+# Subtest: missing Cursor runtime root is rejected
+ok 12 - missing Cursor runtime root is rejected
+  ---
+  duration_ms: 15.942369
+  ...
+# Subtest: tracked projections absent from the lock cannot escape synchronization checks
+ok 13 - tracked projections absent from the lock cannot escape synchronization checks
+  ---
+  duration_ms: 0.837923
+  ...
+# Subtest: obsolete canonical residues fail even when they are not in the lock
+ok 14 - obsolete canonical residues fail even when they are not in the lock
+  ---
+  duration_ms: 0.157629
+  ...
+# Subtest: Cursor is a first-class shared skill projection root
+ok 15 - Cursor is a first-class shared skill projection root
+  ---
+  duration_ms: 0.112563
+  ...
+1..15
+# tests 15
+# suites 0
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 953.069736
+
+> yss-template-node-tooling@1.0.0 check:vendor /workspace/.template-source/tooling/node
+> node scripts/build-vendor.mjs --check
+
+skill projections are synchronized
+skills-lock.json matches distributed skills
+技能路由注册表校验通过（shadow，80 个共享，2 个平台）
+YSS DTO OpenAPI wire profile 验证通过
+YSS DTO OpenAPI wire-shape scenarios passed
+生命周期注册表验证通过（shadow）
+生命周期 checkpoint 验证通过
+前端实现还原 plan 验证通过
+前端实现还原 verification 验证通过
+六类生命周期压力场景验证通过
+模板维护 L1/L2/L3 强度场景验证通过
+实现项目路径策略压力场景验证通过
+YSS 脚手架生成器受控生成场景验证通过
+原型到后端脚手架及后续 YSS 代码生成压力场景验证通过
+Matt/YSS 集成压力场景验证通过
+YSS Router stage 7 scenarios passed
+YSS UI governance scenarios passed
+OpenAPI YAML-first 场景验证通过
+OpenAPI YAML-first JSON handoff scenarios passed
+模板发布校验通过

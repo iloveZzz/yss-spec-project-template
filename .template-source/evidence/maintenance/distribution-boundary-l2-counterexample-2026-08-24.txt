@@ -1,0 +1,84 @@
+=== COUNTEREXAMPLE: tracked snapshot-eligible wiki and docs/reviews ===
+# git ls-files wiki docs/reviews .nvmrc .gitignore
+.gitignore
+.nvmrc
+docs/reviews/agents-entry-context-optimization-2026-08-18.md
+docs/reviews/context-bilingual-stems-counterexample-2026-08-24.txt
+docs/reviews/context-bilingual-stems-focused-review-2026-08-24.md
+docs/reviews/context-bilingual-stems-fresh-verification-2026-08-24.txt
+docs/reviews/context-bilingual-stems-l2-checkpoint-2026-08-24.yaml
+docs/reviews/llm-wiki-adapt-i1-i5-counterexample-2026-08-23.txt
+docs/reviews/llm-wiki-adapt-i1-i5-fresh-verification-2026-08-23.txt
+docs/reviews/llm-wiki-adapt-i1-i5-l2-checkpoint-2026-08-23.yaml
+docs/reviews/llm-wiki-adapt-i1-i5-review-request-2026-08-23.md
+docs/reviews/llm-wiki-ingest-code-review-2026-08-23.md
+docs/reviews/llm-wiki-ingest-fresh-verification-2026-08-23.txt
+docs/reviews/llm-wiki-ingest-l2-checkpoint-2026-08-23.yaml
+docs/reviews/llm-wiki-ingest-lint-counterexample-2026-08-23.txt
+docs/reviews/llm-wiki-p0-focused-review-2026-08-23.md
+docs/reviews/llm-wiki-p0-fresh-verification-2026-08-23.txt
+docs/reviews/llm-wiki-p0-l2-checkpoint-2026-08-23.yaml
+docs/reviews/llm-wiki-p0-manifest-closure-counterexample-2026-08-23.txt
+docs/reviews/llm-wiki-p12-counterexample-2026-08-23.txt
+docs/reviews/llm-wiki-p12-focused-review-2026-08-23.md
+docs/reviews/llm-wiki-p12-fresh-verification-2026-08-23.txt
+docs/reviews/llm-wiki-p12-l2-checkpoint-2026-08-23.yaml
+docs/reviews/matt-skills-upgrade-batch1-checkpoint-2026-08-21.md
+docs/reviews/matt-skills-upgrade-plan-2026-08-21.md
+docs/reviews/research-yss-dto-openapi-wire-contract-2026-08-18.md
+docs/reviews/template-maintenance-intensity-red-green-2026-08-18.md
+docs/reviews/template-maintenance-release-candidate-2026-08-18.md
+docs/reviews/writing-skills-retirement-red-green-2026-08-18.md
+docs/reviews/yss-product-lifecycle-simplification-2026-08-19.md
+docs/reviews/yss-skill-retirement-red-green-2026-08-18.md
+wiki/.wiki-manifest.json
+wiki/raw/AGENTS.md
+wiki/raw/CONTEXT.md
+wiki/raw/README.md
+wiki/raw/adr-0002-repository-mode.md
+wiki/raw/create-yss-spec-repository-mode-contract.md
+wiki/raw/harness-process-tailoring.md
+wiki/raw/implementation-repo-integration.md
+wiki/raw/issue-tracker.md
+wiki/raw/lifecycle-registry.yaml
+wiki/raw/maintenance-intensity.yaml
+wiki/raw/skills-lock-names.md
+wiki/raw/skills-maintenance.md
+wiki/raw/spec-template.md
+wiki/raw/triage-labels.md
+wiki/raw/vertical-slice-ticket-template.md
+wiki/raw/yss-project.yaml
+wiki/raw/yss-skill-registry.yaml
+"wiki/wiki/Agent\345\205\245\345\217\243\350\247\204\345\210\231.md"
+wiki/wiki/CLAUDE.md
+"wiki/wiki/Fresh\351\252\214\350\257\201\344\270\216\347\213\254\347\253\213\345\256\241\346\237\245.md"
+wiki/wiki/LLM Wiki.md
+"wiki/wiki/Matt\346\212\200\350\203\275\344\275\223\347\263\273.md"
+"wiki/wiki/OpenAPI\345\245\221\347\272\246.md"
+wiki/wiki/SpecDelta.md
+"wiki/wiki/Spec\345\237\272\347\272\277.md"
+"wiki/wiki/Ticket\344\270\216\346\265\201\347\250\213\347\212\266\346\200\201.md"
+"wiki/wiki/YSS\345\267\245\347\250\213\346\212\200\350\203\275\344\275\223\347\263\273.md"
+"wiki/wiki/YSS\350\267\257\347\224\261\344\270\216\345\220\210\345\220\214\347\274\226\350\257\221.md"
+wiki/wiki/concept-table.md
+wiki/wiki/index.md
+wiki/wiki/log.md
+"wiki/wiki/\344\272\247\345\223\201\347\240\224\345\217\221\347\224\237\345\221\275\345\221\250\346\234\237.md"
+"wiki/wiki/\344\272\247\345\223\201\350\256\276\350\256\241\345\275\261\345\223\215\344\270\216\345\216\237\345\236\213.md"
+"wiki/wiki/\344\273\223\345\272\223\350\272\253\344\273\275\344\270\216\350\267\257\347\224\261.md"
+"wiki/wiki/\345\210\207\347\211\207\345\256\236\347\216\260\345\220\210\345\220\214.md"
+"wiki/wiki/\345\236\202\347\233\264\345\210\207\347\211\207Ticket.md"
+"wiki/wiki/\345\244\215\347\233\230\344\270\216\346\235\203\345\250\201\350\265\204\344\272\247\344\277\256\350\256\242.md"
+"wiki/wiki/\345\256\236\347\216\260\344\273\223\345\272\223\344\270\216\350\267\250\344\273\223\345\272\223\345\245\221\347\272\246.md"
+"wiki/wiki/\345\275\261\345\223\215\351\235\242\345\210\206\350\257\212\344\270\216\346\265\201\347\250\213\350\243\201\345\211\252.md"
+"wiki/wiki/\346\212\200\350\203\275\346\212\225\345\275\261\344\270\216\351\224\201\345\256\232.md"
+"wiki/wiki/\346\235\241\344\273\266\345\274\272\345\210\266\351\227\250\347\246\201.md"
+"wiki/wiki/\346\250\241\346\235\277\345\217\221\345\270\203\351\227\250\347\246\201\344\270\216\351\252\214\350\257\201.md"
+"wiki/wiki/\346\250\241\346\235\277\346\200\273\350\247\210.md"
+"wiki/wiki/\346\250\241\346\235\277\347\273\264\346\212\244\346\265\201\347\250\213.md"
+
+# counts
+wiki files: 45
+docs/reviews files: 29
+
+These paths are Git-tracked outside .template-source/, so create-yss-spec snapshot includes them.

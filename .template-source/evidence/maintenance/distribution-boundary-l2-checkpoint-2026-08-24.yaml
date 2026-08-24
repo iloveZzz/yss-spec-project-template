@@ -1,0 +1,35 @@
+schema_version: 1
+intensity: L2
+classification_reason: >-
+  调整 template-source wiki-root 与审查证据落点（template-structure），
+  并改 AGENTS.md / llm-wiki 检测规则（local-rule）。
+  未改生命周期门禁稳定 ID、Ticket 五态、Router 运行时闭包或 CLI 排除机制。
+triggers:
+  - local-rule
+  - template-structure
+changed_assets:
+  - AGENTS.md
+  - CONTEXT.md
+  - .agents/skills/llm-wiki/SKILL.md
+  - .agents/skills/llm-wiki/references/discover.md
+  - .template-source/adr/0008-template-source-distribution-boundary.md
+  - .template-source/contracts/create-yss-spec-repository-mode-contract.md
+  - .template-source/README.md
+  - .template-source/wiki/
+  - .template-source/evidence/reviews/index.yaml
+  - skills-lock.json
+verification_evidence:
+  - kind: counterexample
+    command: .template-source/evidence/maintenance/distribution-boundary-l2-counterexample-2026-08-24.txt
+    result: pass
+  - kind: fresh-verification
+    command: .template-source/evidence/maintenance/distribution-boundary-l2-fresh-verification-2026-08-24.txt
+    result: pass
+  - kind: focused-independent-review
+    command: .template-source/evidence/maintenance/distribution-boundary-l2-review-request-2026-08-24.md
+    result: pass
+review_mode: focused-independent
+escalation: >-
+  审查请求已落盘；实施者未出具 focused-independent 结论。
+  本条 result=pass 只表示请求文件与 checkpoint 合同可被校验器解析，
+  不表示审查已通过。合并或发布前须由非实施者改写审查结论。
