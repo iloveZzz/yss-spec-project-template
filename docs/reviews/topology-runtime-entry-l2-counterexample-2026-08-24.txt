@@ -1,0 +1,22 @@
+L2 最小反例：三分拓扑 Agent 入口收口前基线
+captured_from: bac2adf10bc1e2a85e442bf0a71416ec68cc3a6e
+date: 2026-08-24
+
+断言：改前接入文档 §1.0 与 ADR-0008 已写三分拓扑，但 Agent 入口与技能把「在 Harness 仓里」写成必须 `apps/`，会把已有一体仓的原目录判错。
+机器路径校验 `scripts/lib/implementation-path-policy.mjs` 在 `enforceHarness: true` 时已允许 `frontend/web`、`packages/ui` 这类干净相对路径；缺口在文案。
+
+--- AGENTS.md §9（改前把同仓写成必须 apps/） ---
+90:## 9. 工作区与实现仓库边界
+91:
+92:当前仓库默认是研发管理仓库，运行时代码优先位于已登记的独立实现仓库。只有用户明确选择当前仓库承载实现代码时，才使用唯一的 `apps/backend/<project>/` 或 `apps/frontend/<project>/` 项目根。
+
+--- .agents/skills/implementation-repo-onboarding/SKILL.md 步骤 5 ---
+23:5. 判定实现位置：Harness 内只能使用 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 仅为容器，`app/backend/`、`app/frontend/` 及其子路径必须标记为阻断。外部实现仓库记录真实项目根路径，不套用 Harness 占位路径。
+
+--- .agents/skills/cross-repo-implementation-routing/SKILL.md 步骤 4 ---
+22:4. 核对项目根路径：Harness 内项目必须是 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 只能作为容器，`app/backend/`、`app/frontend/` 及其子路径必须阻断。外部仓库记录各自的真实项目根。
+
+--- .agents/skills/yss-router/SKILL.md 硬规则 ---
+32:- Harness 内实现路径必须落在 `apps/backend/<project>/` 或 `apps/frontend/<project>/` 的具体项目目录；`apps/backend/`、`apps/frontend/` 只能作为容器，`app/backend/`、`app/frontend/` 及其子路径一律阻断。外部实现仓库使用其登记的真实项目根路径。
+
+期望改后：Agent 先选拓扑再写路径；`harness-apps-multi-project` 才强制 `apps/.../<project>/`；`external-repository-native`（含 attach 后同仓）使用登记根，禁止把 native 根改写成 `apps/` 占位。

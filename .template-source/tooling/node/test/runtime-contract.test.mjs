@@ -47,6 +47,10 @@ test("implementation path policy preserves harness and external-repository bound
   assert.match(violation("app/backend/project1/"), /singular app implementation root/);
   assert.match(violation("apps/backend/"), /container root/);
   assert.equal(violation("app/backend/project1/", { enforceHarness: false }), null);
+  assert.equal(violation("frontend/web", { enforceHarness: true }), null);
+  assert.equal(violation("packages/ui", { enforceHarness: true }), null);
+  assert.match(violation("apps/backend/", { enforceHarness: true }), /container root/);
+  assert.match(violation("app/backend/x", { enforceHarness: true }), /singular app implementation root/);
 });
 
 test("Node lifecycle registry verifier preserves the published semantic baseline", () => {
