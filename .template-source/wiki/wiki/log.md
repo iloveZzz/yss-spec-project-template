@@ -49,3 +49,10 @@ lint 脚本改为失败跨路径 wikilink、校验 manifest sha256，并要求 H
 - unmapped: (none)
 
 同步 raw 中的 `CONTEXT.md` / `AGENTS.md` / Spec 与垂直切片模板。刷新上述文章中与 PascalCase `英文标识` 词干相关的句子。未改其余命中页。`yss-skill-registry.yaml` 与 `skills-lock.json` 为既有 live 漂移，仅对齐 raw / hash（补入 `yss-antd-design`），不改技能投影文章。
+
+## [2026-08-24] REFRESH | wiki-root 迁入模板源治理区
+- changed: AGENTS.md, CONTEXT.md, create-yss-spec-repository-mode-contract.md
+- articles: Agent入口规则, LLM Wiki, 模板总览, 仓库身份与路由
+- unmapped: (none)
+
+wiki-root 从仓库根 `wiki/` 迁到 `.template-source/wiki`。同步 raw 中的 `AGENTS.md` / `CONTEXT.md` / 跨仓契约。刷新上述文章中的 wiki-root 与快照边界句。

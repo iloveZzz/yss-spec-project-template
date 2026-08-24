@@ -4,8 +4,9 @@
 
 ## 边界
 
-- `docs/` 是模板实例分发面：其中的文件会随 `create-yss-spec` 快照进入新项目。
-- `.template-source/` 是模板源治理区：保存模板维护的审查、研究、跨仓契约、发布路线、源仓库 ADR 和派生证据。
+- `docs/` 是模板实例分发面：其中的文件会随 `create-yss-spec` 快照进入新项目。`.nvmrc` 与根 `.gitignore` 同属分发面。
+- `.template-source/` 是模板源治理区：保存模板维护的审查、研究、跨仓契约、发布路线、源仓库 ADR、派生证据和源仓库 LLM Wiki 编译树。
+- 源仓库 wiki-root 为 `.template-source/wiki`；新 `project-instance` 不附带该编译树。
 - 外部 CLI 按根目录排除 `.template-source/`；新项目不应出现该目录，也不应出现已经从 `docs/` 迁出的源仓库文件。
 
 ## 归档规则
@@ -37,6 +38,8 @@
 | `docs/process/harness-optimization-backlog.md` | `.template-source/roadmap/harness-optimization-backlog.md` |
 | `docs/releases/next-major-template-governance.md` | `.template-source/roadmap/next-major-template-governance.md` |
 | `docs/reviews/*.md`（13 个） | `.template-source/evidence/reviews/index.yaml` 及其 Git archive checkpoint |
+| 其余 `docs/reviews/` 审查与证据文件 | `.template-source/evidence/reviews/`（Markdown 进入同一 archive 索引；非 Markdown 留在治理区工作树） |
+| 根目录 `wiki/` 编译树 | `.template-source/wiki/` |
 
 归档文件不进入 CLI 实例分发面，但必须能够通过索引、哈希和 checkpoint 恢复；“不进入实例”不等于“不可审计”。
 

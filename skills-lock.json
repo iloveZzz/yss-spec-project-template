@@ -327,7 +327,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/llm-wiki/SKILL.md",
-        "effectiveHash": "41a5880856745312d33a2875ce16fe321e5f326eb8e27321f96741421ffce49a",
+        "effectiveHash": "39fbba419001c5701dc11b6c535f47916da1471cb808412e09f6ddb0485eb3e9",
         "targets": [
           ".agents/skills",
           ".claude/skills",

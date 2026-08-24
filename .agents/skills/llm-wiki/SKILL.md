@@ -51,7 +51,7 @@ node <skill-root>/scripts/extract.mjs skill-names --in <live-lock.json> --out <w
 
 ## Steps
 
-1. Detect: `wiki/index.md` + `CLAUDE.md` (or `AGENTS.md`) means a wiki exists.
+1. Detect: `<wiki-root>/wiki/index.md` + `CLAUDE.md` (or `AGENTS.md`) means a wiki exists. Default wiki-root is repo-root `wiki/`. If `yss-project.yaml` is `repository_mode: template-source`, wiki-root is `.template-source/wiki`.
 2. If the user is asking a repository question, load [query.md](references/query.md) and stop. Do not lint, ingest, or append `log.md`.
 3. Load the mode algorithm: [compile.md](references/compile.md) for init/refresh/rebuild, [ingest.md](references/ingest.md) for ingest. For init/rebuild corpus choice, load [discover.md](discover.md). For writing, load [writing.md](references/writing.md). For checks, load [lint.md](references/lint.md).
 4. **Fact order:** called code > table comments / config defaults > stale raw copies. After writing, re-read live sources for a sample of claims (`N = min(5, changed pages)`).

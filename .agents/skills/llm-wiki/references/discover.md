@@ -27,6 +27,7 @@ Unless the user replaces this list with the host's single source-of-truth table:
 ## Default exclude
 
 - `docs/reviews/`
+- `.template-source/evidence/`
 - `docs/.scratch/`
 - Agent projection directories (copies or symlinks of shared skills)
 - `node_modules`

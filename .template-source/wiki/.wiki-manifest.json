@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "wikiRoot": "wiki",
-  "compiledAt": "2026-08-24T03:05:31.972Z",
-  "gitCommit": "de5a8f193f84d44c0b8c9b8dc5da501e60846e66",
+  "wikiRoot": ".template-source/wiki",
+  "compiledAt": "2026-08-24T06:02:17.224Z",
+  "gitCommit": "986ded5d78e2d0bd816f7f8038aec6ef2d7c6d0a",
   "profile": "documents",
   "sources": [
     {
@@ -11,7 +11,7 @@
       "livePath": "AGENTS.md",
       "rawPath": "raw/AGENTS.md",
       "role": "copy",
-      "sha256": "7cfed91a8e530606f1140acf5156acae1b4c7b16ae13c3d960b8905a61fabd0d"
+      "sha256": "821bcf67a90f4413516de96458e4097164fd41e38297aa55005f53d672c13618"
     },
     {
       "id": "CONTEXT.md",
@@ -19,7 +19,7 @@
       "livePath": "CONTEXT.md",
       "rawPath": "raw/CONTEXT.md",
       "role": "copy",
-      "sha256": "83c31282a9fcfa5ca22e391045fb482cba87d1fb8ae1f31bd93a6224add462d4"
+      "sha256": "48a1915478521ebb6644865f2ae18785e02a34401e24b54530dec4cced7478ec"
     },
     {
       "id": "README.md",
@@ -115,7 +115,7 @@
       "livePath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
       "rawPath": "raw/create-yss-spec-repository-mode-contract.md",
       "role": "copy",
-      "sha256": "11abf661e07ae297995f4bc5fbbadff6df33ee66a8990df5ce5ea21e530c615a"
+      "sha256": "3449f695cbeda21fba2e4cb5e834dce29e1061359e6714574c206cc67b2a0c4b"
     },
     {
       "id": "spec-template.md",
@@ -142,7 +142,7 @@
       "extract": {
         "kind": "skill-names"
       },
-      "sha256": "8b6df90beb87c526bc2e0a71de61a2ffd1f76b96cb47e6fe87172ebd849bb45b"
+      "sha256": "b5972cd2d975f06203e219e78a81b1ae7a7efa160c0604346a7983493f66e6e2"
     }
   ],
   "articles": [

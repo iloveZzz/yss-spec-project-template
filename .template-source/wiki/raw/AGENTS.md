@@ -83,7 +83,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 | merge / rebase 冲突 | `resolving-merge-conflicts` |
 | 架构治理、难测模块或深模块设计 | `improve-codebase-architecture` / `codebase-design` |
 | 跨线程、跨仓库、上下文过长或原型结论回流 | `handoff` 或等价交接记录 |
-| 本地知识库 init / refresh / rebuild，或要把研究结果落成持久 wiki | `llm-wiki`（落成持久 wiki 用 `ingest`；已映射 live 源变了用 `refresh`） |
+| 本地知识库 init / refresh / rebuild，或要把研究结果落成持久 wiki | `llm-wiki`（落成持久 wiki 用 `ingest`；已映射 live 源变了用 `refresh`）。`template-source` 的 wiki-root 为 `.template-source/wiki`；`project-instance` 不附带源仓库编译树，需要时在仓库根 `wiki/` 执行 `init` |
 
 业务行为默认按 `tdd` 使用已确认的公开 seam 逐切片实现。一次性生成、纯配置或流程文档不适用代码 TDD 时，必须记录例外理由和可执行验证方式。
 
@@ -113,7 +113,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 
 本仓库是 `template-source` Harness / 研发管理仓库，没有前端 / 后端运行时应用；可运行、可测试的表面只有 Node 工具链与治理校验脚本。
 
-- 依赖与工具链：Node `>=22 <27`（`.nvmrc` 固定 22）；`pnpm` 通过 `packageManager` 字段由 corepack 自动切换到 `10.15.0`，无需手工切换。Node 依赖只装在 `.template-source/tooling/node`，仓库根没有 `package.json`。
+- 依赖与工具链：Node `>=22 <27`（`.nvmrc` 固定 22）；`pnpm` 通过 `packageManager` 字段由 corepack 自动切换到 `10.15.0`，无需手工切换。Node 依赖只装在 `.template-source/tooling/node`，仓库根没有 `package.json`。本仓 wiki-root 为 `.template-source/wiki`。
 - 测试：`pnpm --dir .template-source/tooling/node test`（`node --test`，共 15 个用例）。
 - 构建 / lint：`pnpm --dir .template-source/tooling/node build:vendor` 与 `check:vendor` 维护 `scripts/vendor/*.mjs`；顶层 lint 是 `verify-template` 内对所有脚本执行的 `node --check`。
 - 完整发布门禁（相当于"运行应用"）：`scripts/verify-template`，成功输出 `模板发布校验通过`。它串联证据索引、`pnpm test`、`check:vendor` 和全部 `scripts/verify-*` 场景校验。

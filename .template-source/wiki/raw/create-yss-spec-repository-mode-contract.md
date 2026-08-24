@@ -9,6 +9,7 @@
 - CLI 只管理 manifest 声明的研发管理资产，不接管前后端运行时代码、业务目录、用户文件或 `.git`。
 - 通过模板快照和 40 位 `templateCommit` 使每次初始化、升级和回滚可追踪。
 - 新模板快照的实例门禁以 Node `>=22 <27` 运行；不得执行 `npm install`、`pnpm install` 或维护侧 vendor 构建。`scripts/vendor/` 必须随快照分发且可离线使用。
+- 快照等于固定 `templateCommit` 的 Git 跟踪树减去根目录 `.template-source/`。源仓库 LLM Wiki 编译树位于 `.template-source/wiki`，模板维护审查位于 `.template-source/evidence/`，二者均不进入新 `project-instance`。此前误随快照到达实例的 `wiki/` 与 `docs/reviews/`，后续 `sync` 只 `remove-report`，不静默删除。`.nvmrc` 与根 `.gitignore` 仍属分发面。
 
 ## 生命周期接口
 
