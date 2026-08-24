@@ -2,106 +2,190 @@
 schema_version: 1
 kind: review-evidence-index
 source_root: ".template-source/evidence/reviews"
-count: 16
+count: 30
 archive:
   kind: git-history
   status: complete
-  commit: 22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d
-  tree: e555a05af73ed9e46f5da4efa05e330ebc4f89c7
+  commit: de42d8a9104d1c524a97ef49cd9727fd3aa282f3
+  tree: c730ac59dc4cdf18f05ccd00d6504be9e5ceca1d
 files:
+- path: ".template-source/evidence/reviews/agents-entry-context-optimization-2026-08-18.md"
+  origin_path: "docs/reviews/agents-entry-context-optimization-2026-08-18.md"
+  bytes: 2897
+  sha256: 16549acbcd4a89f1ba98165dededbc8ea161be0fd4ae5caa234d5274d4bac027
+  archive_path: ".template-source/evidence/reviews/agents-entry-context-optimization-2026-08-18.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/agents-entry-context-optimization-2026-08-18.md"
+- path: ".template-source/evidence/reviews/context-bilingual-stems-focused-review-2026-08-24.md"
+  origin_path: "docs/reviews/context-bilingual-stems-focused-review-2026-08-24.md"
+  bytes: 6417
+  sha256: 8a4f1d339a2ec8d0898e4ed6f07cbf6b85c0dd11575995e021dc33e50af83320
+  archive_path: ".template-source/evidence/reviews/context-bilingual-stems-focused-review-2026-08-24.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/context-bilingual-stems-focused-review-2026-08-24.md"
 - path: ".template-source/evidence/reviews/lifecycle-registry-phase0-1-red-green-2026-08-17.md"
   origin_path: "docs/reviews/lifecycle-registry-phase0-1-red-green-2026-08-17.md"
   bytes: 4919
   sha256: 9f5f857c4e7e570e7c9e9d1643c49e29c4edfbba619f029e4673b7eff50f1e53
   archive_path: ".template-source/evidence/reviews/lifecycle-registry-phase0-1-red-green-2026-08-17.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/lifecycle-registry-phase0-1-red-green-2026-08-17.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/lifecycle-registry-phase0-1-red-green-2026-08-17.md"
+- path: ".template-source/evidence/reviews/llm-wiki-adapt-i1-i5-review-request-2026-08-23.md"
+  origin_path: "docs/reviews/llm-wiki-adapt-i1-i5-review-request-2026-08-23.md"
+  bytes: 1162
+  sha256: 218a8a5fef979f67d9492e8aab2e45224519cab3af97c8989c6f1073da7782f9
+  archive_path: ".template-source/evidence/reviews/llm-wiki-adapt-i1-i5-review-request-2026-08-23.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/llm-wiki-adapt-i1-i5-review-request-2026-08-23.md"
+- path: ".template-source/evidence/reviews/llm-wiki-ingest-code-review-2026-08-23.md"
+  origin_path: "docs/reviews/llm-wiki-ingest-code-review-2026-08-23.md"
+  bytes: 972
+  sha256: eedef5cd85173bab771cdf1062c96e6217da660ad2d7fd4a33360063b1068c07
+  archive_path: ".template-source/evidence/reviews/llm-wiki-ingest-code-review-2026-08-23.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/llm-wiki-ingest-code-review-2026-08-23.md"
+- path: ".template-source/evidence/reviews/llm-wiki-p0-focused-review-2026-08-23.md"
+  origin_path: "docs/reviews/llm-wiki-p0-focused-review-2026-08-23.md"
+  bytes: 6823
+  sha256: ba27a55e0b6c4108e32319183ed1ec0b4c500027018de0d8c745d4eba027bb81
+  archive_path: ".template-source/evidence/reviews/llm-wiki-p0-focused-review-2026-08-23.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/llm-wiki-p0-focused-review-2026-08-23.md"
+- path: ".template-source/evidence/reviews/llm-wiki-p12-focused-review-2026-08-23.md"
+  origin_path: "docs/reviews/llm-wiki-p12-focused-review-2026-08-23.md"
+  bytes: 7121
+  sha256: 7ac3aa6adf616c5d58a07705ee8f032973ac0d1265e7fbca585513d181e4869b
+  archive_path: ".template-source/evidence/reviews/llm-wiki-p12-focused-review-2026-08-23.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/llm-wiki-p12-focused-review-2026-08-23.md"
+- path: ".template-source/evidence/reviews/matt-skills-upgrade-batch1-checkpoint-2026-08-21.md"
+  origin_path: "docs/reviews/matt-skills-upgrade-batch1-checkpoint-2026-08-21.md"
+  bytes: 2129
+  sha256: f4dffd9aee2e9950ba6e3cf2eb52c11fb7d581d30f2ec007bb88b4e74a926f6b
+  archive_path: ".template-source/evidence/reviews/matt-skills-upgrade-batch1-checkpoint-2026-08-21.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/matt-skills-upgrade-batch1-checkpoint-2026-08-21.md"
+- path: ".template-source/evidence/reviews/matt-skills-upgrade-plan-2026-08-21.md"
+  origin_path: "docs/reviews/matt-skills-upgrade-plan-2026-08-21.md"
+  bytes: 18227
+  sha256: 51ed07db1d5e77f958e4d6b6761722c4bf2130b67ea0506df3f887742b7ac052
+  archive_path: ".template-source/evidence/reviews/matt-skills-upgrade-plan-2026-08-21.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/matt-skills-upgrade-plan-2026-08-21.md"
 - path: ".template-source/evidence/reviews/matt-yss-p0-ticket-review-git-red-green-2026-08-17.md"
   origin_path: "docs/reviews/matt-yss-p0-ticket-review-git-red-green-2026-08-17.md"
   bytes: 7049
   sha256: 9878a2cb9e7ffe981c00a3b1489640b195a5f1e2a54faa3878aaeadcf7dadf89
   archive_path: ".template-source/evidence/reviews/matt-yss-p0-ticket-review-git-red-green-2026-08-17.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/matt-yss-p0-ticket-review-git-red-green-2026-08-17.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/matt-yss-p0-ticket-review-git-red-green-2026-08-17.md"
 - path: ".template-source/evidence/reviews/openapi-skill-primary-source-research-2026-08-16.md"
   origin_path: "docs/reviews/openapi-skill-primary-source-research-2026-08-16.md"
   bytes: 15810
   sha256: df2011d02ba87eabc926d0e676be36f9ff604062ed0db0af2bbe2a9a13954a13
   archive_path: ".template-source/evidence/reviews/openapi-skill-primary-source-research-2026-08-16.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/openapi-skill-primary-source-research-2026-08-16.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/openapi-skill-primary-source-research-2026-08-16.md"
 - path: ".template-source/evidence/reviews/openapi-yaml-first-independent-review-2026-08-16.md"
   origin_path: "docs/reviews/openapi-yaml-first-independent-review-2026-08-16.md"
   bytes: 12195
   sha256: c46b91066efd46e7e0cf5657f5d82c4068f269918ca26a76eb43b7ee7a7c22d6
   archive_path: ".template-source/evidence/reviews/openapi-yaml-first-independent-review-2026-08-16.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/openapi-yaml-first-independent-review-2026-08-16.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/openapi-yaml-first-independent-review-2026-08-16.md"
 - path: ".template-source/evidence/reviews/openapi-yaml-first-pressure-scenarios-2026-08-16.md"
   origin_path: "docs/reviews/openapi-yaml-first-pressure-scenarios-2026-08-16.md"
   bytes: 16541
   sha256: e5dfd0cb4250c275b4e3826e6be78aac4fc2db1a40768d1bc8c2db78e47b2ca9
   archive_path: ".template-source/evidence/reviews/openapi-yaml-first-pressure-scenarios-2026-08-16.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/openapi-yaml-first-pressure-scenarios-2026-08-16.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/openapi-yaml-first-pressure-scenarios-2026-08-16.md"
 - path: ".template-source/evidence/reviews/openapi-yaml-first-red-green-2026-08-16.md"
   origin_path: "docs/reviews/openapi-yaml-first-red-green-2026-08-16.md"
   bytes: 5945
   sha256: 0e497975b2134460034e9bad3178bd10f5be11e6180a52b7fe6e8d9a9a890068
   archive_path: ".template-source/evidence/reviews/openapi-yaml-first-red-green-2026-08-16.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/openapi-yaml-first-red-green-2026-08-16.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/openapi-yaml-first-red-green-2026-08-16.md"
 - path: ".template-source/evidence/reviews/openapi-yaml-json-output-independent-review-2026-08-16.md"
   origin_path: "docs/reviews/openapi-yaml-json-output-independent-review-2026-08-16.md"
   bytes: 1330
   sha256: 47ad5f231e7a1fdb9c0ae91f2d20b69d1b1630a55b80bf633c2066cc1d9f0d93
   archive_path: ".template-source/evidence/reviews/openapi-yaml-json-output-independent-review-2026-08-16.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/openapi-yaml-json-output-independent-review-2026-08-16.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/openapi-yaml-json-output-independent-review-2026-08-16.md"
 - path: ".template-source/evidence/reviews/openapi-yaml-json-output-scope-red-green-2026-08-16.md"
   origin_path: "docs/reviews/openapi-yaml-json-output-scope-red-green-2026-08-16.md"
   bytes: 10456
   sha256: ed8724ba410ef2946619d238db5cbe593baa37622bc63cb46e19f17b3e12f4b9
   archive_path: ".template-source/evidence/reviews/openapi-yaml-json-output-scope-red-green-2026-08-16.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/openapi-yaml-json-output-scope-red-green-2026-08-16.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/openapi-yaml-json-output-scope-red-green-2026-08-16.md"
 - path: ".template-source/evidence/reviews/research-create-yss-spec-2026-08-10.md"
   origin_path: "docs/reviews/research-create-yss-spec-2026-08-10.md"
   bytes: 17721
   sha256: f860da37f91f1582358f71206f7741d50400d94a9a22b5fe4f8d7fdd90f21966
   archive_path: ".template-source/evidence/reviews/research-create-yss-spec-2026-08-10.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/research-create-yss-spec-2026-08-10.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/research-create-yss-spec-2026-08-10.md"
 - path: ".template-source/evidence/reviews/research-create-yss-spec-refresh-2026-08-16.md"
   origin_path: "docs/reviews/research-create-yss-spec-refresh-2026-08-16.md"
   bytes: 16470
   sha256: 93ed4b811898d14d3f1cff04324592628b7becd046c17180cde9f7465852b0d5
   archive_path: ".template-source/evidence/reviews/research-create-yss-spec-refresh-2026-08-16.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/research-create-yss-spec-refresh-2026-08-16.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/research-create-yss-spec-refresh-2026-08-16.md"
 - path: ".template-source/evidence/reviews/research-node-tooling-runtime-2026-08-17.md"
   origin_path: "docs/reviews/research-node-tooling-runtime-2026-08-17.md"
   bytes: 18900
   sha256: 22e3e930e09c2129aa1f59a1539f36e3b1fe221d6e598be8de3d256025320304
   archive_path: ".template-source/evidence/reviews/research-node-tooling-runtime-2026-08-17.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/research-node-tooling-runtime-2026-08-17.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/research-node-tooling-runtime-2026-08-17.md"
+- path: ".template-source/evidence/reviews/research-yss-dto-openapi-wire-contract-2026-08-18.md"
+  origin_path: "docs/reviews/research-yss-dto-openapi-wire-contract-2026-08-18.md"
+  bytes: 19529
+  sha256: afaffab26fb7f0e936b0de55ccb09cdb6802d07d52ec1803875b54112d092f37
+  archive_path: ".template-source/evidence/reviews/research-yss-dto-openapi-wire-contract-2026-08-18.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/research-yss-dto-openapi-wire-contract-2026-08-18.md"
 - path: ".template-source/evidence/reviews/security-permission-lifecycle-simplification-red-green-2026-08-16.md"
   origin_path: "docs/reviews/security-permission-lifecycle-simplification-red-green-2026-08-16.md"
   bytes: 3030
   sha256: 2b4c146fb4079d77bf67c89951bc99ab6659a05fa803ec35127c15817212af4e
   archive_path: ".template-source/evidence/reviews/security-permission-lifecycle-simplification-red-green-2026-08-16.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/security-permission-lifecycle-simplification-red-green-2026-08-16.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/security-permission-lifecycle-simplification-red-green-2026-08-16.md"
 - path: ".template-source/evidence/reviews/skill-node-migration-red-green-2026-08-17.md"
   origin_path: "docs/reviews/skill-node-migration-red-green-2026-08-17.md"
   bytes: 2124
   sha256: 0b02ff4f93760b4c0b64655be21163bc0f7b9b0c3922badfc5dcf2c8f30fc13f
   archive_path: ".template-source/evidence/reviews/skill-node-migration-red-green-2026-08-17.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/skill-node-migration-red-green-2026-08-17.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/skill-node-migration-red-green-2026-08-17.md"
+- path: ".template-source/evidence/reviews/template-maintenance-intensity-red-green-2026-08-18.md"
+  origin_path: "docs/reviews/template-maintenance-intensity-red-green-2026-08-18.md"
+  bytes: 2522
+  sha256: e1e278fbcec924745fac789a20b5d91b5f5d762ba3187e03fb0fde0d0ec96420
+  archive_path: ".template-source/evidence/reviews/template-maintenance-intensity-red-green-2026-08-18.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/template-maintenance-intensity-red-green-2026-08-18.md"
+- path: ".template-source/evidence/reviews/template-maintenance-release-candidate-2026-08-18.md"
+  origin_path: "docs/reviews/template-maintenance-release-candidate-2026-08-18.md"
+  bytes: 5262
+  sha256: 7c7eef9bc1f82a2fd98a37929ad51d841bacab62c5236a4eb7a8f2bb73385372
+  archive_path: ".template-source/evidence/reviews/template-maintenance-release-candidate-2026-08-18.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/template-maintenance-release-candidate-2026-08-18.md"
 - path: ".template-source/evidence/reviews/template-release-review-remediation-red-green-2026-08-17.md"
   origin_path: "docs/reviews/template-release-review-remediation-red-green-2026-08-17.md"
   bytes: 2698
   sha256: 81833e982902c0d1cd82068ec36d817866065d5d8f2c968ccb744626a384899a
   archive_path: ".template-source/evidence/reviews/template-release-review-remediation-red-green-2026-08-17.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/template-release-review-remediation-red-green-2026-08-17.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/template-release-review-remediation-red-green-2026-08-17.md"
+- path: ".template-source/evidence/reviews/writing-skills-retirement-red-green-2026-08-18.md"
+  origin_path: "docs/reviews/writing-skills-retirement-red-green-2026-08-18.md"
+  bytes: 4403
+  sha256: 3d9e5cd25556c70896f07296df777bd193f4a4b427ab5b94f4c0f0e49aba9511
+  archive_path: ".template-source/evidence/reviews/writing-skills-retirement-red-green-2026-08-18.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/writing-skills-retirement-red-green-2026-08-18.md"
 - path: ".template-source/evidence/reviews/yss-dto-openapi-wire-profile-red-green-2026-08-18.md"
   origin_path: "docs/reviews/yss-dto-openapi-wire-profile-red-green-2026-08-18.md"
   bytes: 4035
   sha256: f64eae4e2042a71e40e9f3c2e850a0eaf862ce0be94dbf19f8159f5db37cde5d
   archive_path: ".template-source/evidence/reviews/yss-dto-openapi-wire-profile-red-green-2026-08-18.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/yss-dto-openapi-wire-profile-red-green-2026-08-18.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/yss-dto-openapi-wire-profile-red-green-2026-08-18.md"
 - path: ".template-source/evidence/reviews/yss-local-tracker-red-green-2026-08-10.md"
   origin_path: "docs/reviews/yss-local-tracker-red-green-2026-08-10.md"
   bytes: 3755
   sha256: 7bd93f8ab9db070250c9e9b3ff54212970e065320057e8645f3a9948398cbad1
   archive_path: ".template-source/evidence/reviews/yss-local-tracker-red-green-2026-08-10.md"
-  archive_ref: "git:22532a1c5d13d04c4b4ea0edcf52eb5945a7de1d:.template-source/evidence/reviews/yss-local-tracker-red-green-2026-08-10.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/yss-local-tracker-red-green-2026-08-10.md"
+- path: ".template-source/evidence/reviews/yss-product-lifecycle-simplification-2026-08-19.md"
+  origin_path: "docs/reviews/yss-product-lifecycle-simplification-2026-08-19.md"
+  bytes: 1918
+  sha256: a3c8744193a516c458859d10ac69b7f788179d23220d1aef8e2697a823cbf907
+  archive_path: ".template-source/evidence/reviews/yss-product-lifecycle-simplification-2026-08-19.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/yss-product-lifecycle-simplification-2026-08-19.md"
+- path: ".template-source/evidence/reviews/yss-skill-retirement-red-green-2026-08-18.md"
+  origin_path: "docs/reviews/yss-skill-retirement-red-green-2026-08-18.md"
+  bytes: 3216
+  sha256: f3ce1e7a122fa783631ac8d61b89b3ce5747b6971c8ef01413a8c7b6fb7d8ffd
+  archive_path: ".template-source/evidence/reviews/yss-skill-retirement-red-green-2026-08-18.md"
+  archive_ref: "git:de42d8a9104d1c524a97ef49cd9727fd3aa282f3:.template-source/evidence/reviews/yss-skill-retirement-red-green-2026-08-18.md"
