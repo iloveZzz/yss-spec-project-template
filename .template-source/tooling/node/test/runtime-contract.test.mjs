@@ -53,6 +53,7 @@ test("repository_scope git-submodule is a first-class layout distinct from harne
   const {
     LAYOUT_POLICIES,
     gitSubmoduleScaffoldViolation,
+    implementationWriteViolation,
     inspectCheckoutState,
     inspectWorkingTreeScope,
     regularDirectoryMisreadViolation,
@@ -94,9 +95,19 @@ test("repository_scope git-submodule is a first-class layout distinct from harne
       repository_scope: "harness-apps",
       project_root: "apps/backend/billing-service/"
     }), /不得登记为 harness-apps/);
+    assert.match(inspectWorkingTreeScope(empty.superproject, {
+      repository_scope: "git-submodule",
+      project_root: "apps/backend/billing-service/"
+    }), /regular directory/);
+    assert.match(implementationWriteViolation(empty.superproject, path.join(emptyTarget, "src/Foo.java")), /普通目录写入/);
     const detachedTarget = path.join(detached.superproject, detached.mount);
     assert.equal(inspectCheckoutState(detached.superproject, detachedTarget), "detached-head");
+    assert.match(inspectWorkingTreeScope(detached.superproject, {
+      repository_scope: "git-submodule",
+      project_root: "apps/backend/billing-service/"
+    }), /regular directory/);
     assert.match(gitSubmoduleScaffoldViolation(detached.superproject, path.join(detached.superproject, "apps/backend"), "billing-service"), /gitlink 不得由脚手架覆盖/);
+    assert.match(gitSubmoduleScaffoldViolation(detached.superproject, detachedTarget, "nested-service"), /普通目录写入/);
     assert.equal(gitSubmoduleScaffoldViolation(empty.superproject, path.join(empty.superproject, "output"), "plain-service"), null);
   } finally {
     empty.cleanup();

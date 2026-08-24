@@ -64,7 +64,7 @@ node scripts/generate_scaffold.mjs \
 - 永不生成 `User CRUD` 示例；`--with-example` 已禁用，业务代码必须按批准的 Slice Implementation Contract 逐切片实现。
 - 若仓库已经存在相同工程，先核对覆盖范围。
 - 输出目录必须显式指定；非空目录默认拒绝写入，确认覆盖时才使用 `--force`。
-- Harness 内多项目布局必须使用 `apps/backend/<project>/`；`apps/backend/` 只能是生成器的父容器，`app/backend/`、`app/frontend/` 及其子路径一律拒绝。`git-submodule` gitlink、空挂载点、detached HEAD 工作树不得覆盖生成，即使传入 `--force` 也不得当成普通目录；先 `git submodule update --init` 并在子仓附加分支工作树内生成。
+- Harness 内多项目布局必须使用 `apps/backend/<project>/`；`apps/backend/` 只能是生成器的父容器，`app/backend/`、`app/frontend/` 及其子路径一律拒绝。`git-submodule` gitlink、空挂载点、detached HEAD 工作树不得覆盖生成，即使传入 `--force` 也不得当成普通目录；先 `git submodule update --init` 并在子仓附加分支工作树内生成。生成器必须调用 `gitSubmoduleScaffoldViolation`，它会拒绝把空 gitlink / detached HEAD 当普通输出目录。
 - 不要在 skill 里硬编码用户业务字段或真实连接信息。
 - 生成后要检查依赖关系是否仍符合分层约束。
 - 生成后必须继续使用 `yss-backend-scaffold-parent` 校验工程基线，再按垂直切片加载 `yss-domain`、`yss-application`、`yss-repository`、`yss-web-controller` 等行为 skill；各 skill 的 `references/*-layer-guide.md` 承载分层开发规范。

@@ -316,6 +316,61 @@ export function regularDirectoryMisreadViolation(record = {}, options = {}) {
   return null;
 }
 
+export function findEnclosingSubmoduleWorktree(repoRoot, start) {
+  let current = path.resolve(start);
+  const stop = repoRoot ? path.resolve(repoRoot) : null;
+  while (true) {
+    const roots = uniqueResolved([repoRoot, ...collectGitRoots(current)]);
+    for (const root of roots) {
+      if (path.resolve(root) === current) continue;
+      if (isGitSubmoduleMount(root, current)) {
+        return {
+          worktree: current,
+          superproject: root,
+          checkout: inspectCheckoutState(root, current)
+        };
+      }
+    }
+    if (existsSync(path.join(current, ".git"))) {
+      const superproject = gitShowSuperproject(current);
+      if (superproject) {
+        const checkout = inspectCheckoutState(superproject, current)
+          || (gitAbbrevRef(current) === "HEAD" ? "detached-head" : "attached-branch");
+        return { worktree: current, superproject, checkout };
+      }
+    }
+    if (stop && current === stop) break;
+    const parent = path.dirname(current);
+    if (parent === current) break;
+    current = parent;
+  }
+  return null;
+}
+
+export function overlayMountViolation(repoRoot, targetPath, { force = false } = {}) {
+  if (!isGitSubmoduleMountAnywhere(repoRoot, targetPath)) return null;
+  return force
+    ? "--force 不得把 git-submodule 挂载点当成普通目录覆盖；gitlink 不得由脚手架覆盖"
+    : "git-submodule gitlink 不得由脚手架覆盖；先 git submodule update --init，在子仓附加分支的工作树内生成，或改用 external-repository / harness-apps";
+}
+
+export function unsafeSubmoduleWorktreeViolation(repoRoot, targetPath) {
+  const enclosing = findEnclosingSubmoduleWorktree(repoRoot, targetPath);
+  if (!enclosing) return null;
+  if (enclosing.checkout === "empty-gitlink" || enclosing.checkout === "uninitialized") {
+    return "空 gitlink 不得当成普通目录写入；gitlink 不得由脚手架覆盖";
+  }
+  if (enclosing.checkout === "detached-head") {
+    return "detached HEAD 不得当成普通目录写入；gitlink 不得由脚手架覆盖";
+  }
+  return null;
+}
+
+export function implementationWriteViolation(repoRoot, targetPath, { force = false } = {}) {
+  return overlayMountViolation(repoRoot, targetPath, { force })
+    || unsafeSubmoduleWorktreeViolation(repoRoot, targetPath);
+}
+
 export function inspectWorkingTreeScope(repoRoot, record = {}) {
   const projectRoot = normalizeSlash(record.project_root);
   if (!repoRoot || !projectRoot) return "working-tree inspection requires repoRoot and project_root";
@@ -331,33 +386,20 @@ export function inspectWorkingTreeScope(repoRoot, record = {}) {
   if (declared === "git-submodule" && actual !== "git-submodule") {
     return "工作树不是 gitlink，不得登记为 git-submodule";
   }
-  return null;
+  const checkout = inspectCheckoutState(repoRoot, target);
+  if (checkout === "empty-gitlink" || checkout === "uninitialized" || checkout === "detached-head") {
+    return regularDirectoryMisreadViolation({ checkout_state: checkout });
+  }
+  return unsafeSubmoduleWorktreeViolation(repoRoot, target);
 }
 
 export function gitSubmoduleScaffoldViolation(repoRoot, outputDir, projectName, { force = false } = {}) {
   const projectRoot = path.resolve(outputDir, projectName);
-  const roots = uniqueResolved([repoRoot, ...collectGitRoots(outputDir), ...collectGitRoots(projectRoot)]);
-  for (const root of roots) {
-    if (isGitSubmoduleMount(root, projectRoot)) {
-      return force
-        ? "--force 不得把 git-submodule 挂载点当成普通目录覆盖；gitlink 不得由脚手架覆盖"
-        : "git-submodule gitlink 不得由脚手架覆盖；先 git submodule update --init，在子仓附加分支的工作树内生成，或改用 external-repository / harness-apps";
-    }
-  }
-  for (const root of roots) {
-    const checkout = inspectCheckoutState(root, projectRoot);
-    if (checkout === "empty-gitlink" || checkout === "uninitialized") {
-      return "空 gitlink 不得当成普通目录覆盖；gitlink 不得由脚手架覆盖";
-    }
-    if (checkout === "detached-head") {
-      return "detached HEAD 不得当成普通目录覆盖；gitlink 不得由脚手架覆盖";
-    }
-  }
-  const misread = regularDirectoryMisreadViolation({}, { force, repoRoot, targetPath: projectRoot });
-  if (misread) {
-    return `${misread}；gitlink 不得由脚手架覆盖`;
-  }
-  return null;
+  const resolvedOutput = path.resolve(outputDir);
+  return overlayMountViolation(repoRoot, projectRoot, { force })
+    || unsafeSubmoduleWorktreeViolation(repoRoot, projectRoot)
+    || unsafeSubmoduleWorktreeViolation(repoRoot, resolvedOutput)
+    || regularDirectoryMisreadViolation({}, { force, repoRoot, targetPath: projectRoot });
 }
 
 export function gitSubmoduleCommitViolation({ checkout_state, commit_authorized } = {}) {

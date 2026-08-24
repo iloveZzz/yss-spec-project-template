@@ -41,6 +41,8 @@ export function makeGitlinkFixture({ checkout = "empty-gitlink" } = {}) {
     git(superproject, ["commit", "-m", "add submodule"]);
     if (checkout === "detached-head") {
       git(path.join(superproject, mount), ["checkout", "--detach"]);
+    } else if (checkout === "attached-branch") {
+      git(path.join(superproject, mount), ["checkout", "-B", "main"]);
     }
   }
   return {

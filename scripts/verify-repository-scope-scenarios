@@ -9,6 +9,7 @@ import {
   gitSubmoduleCommitViolation,
   gitSubmodulePushOrderViolation,
   gitSubmoduleScaffoldViolation,
+  implementationWriteViolation,
   inspectCheckoutState,
   inspectWorkingTreeScope,
   regularDirectoryMisreadViolation,
@@ -104,12 +105,17 @@ ensure(gitSubmodulePushOrderViolation(["submodule-repositories", "superproject-g
 
 const emptyGitlink = makeGitlinkFixture({ checkout: "empty-gitlink" });
 const detached = makeGitlinkFixture({ checkout: "detached-head" });
+const attached = makeGitlinkFixture({ checkout: "attached-branch" });
 try {
   const emptyTarget = path.join(emptyGitlink.superproject, emptyGitlink.mount);
   namedStress(
     "empty_gitlink_as_regular_dir",
     inspectCheckoutState(emptyGitlink.superproject, emptyTarget) === "empty-gitlink"
-      && regularDirectoryMisreadViolation({ checkout_state: "empty-gitlink" })?.includes("regular directory")
+      && inspectWorkingTreeScope(emptyGitlink.superproject, {
+        repository_scope: "git-submodule",
+        project_root: "apps/backend/billing-service/"
+      })?.includes("regular directory")
+      && implementationWriteViolation(emptyGitlink.superproject, path.join(emptyTarget, "src/Foo.java"))?.includes("普通目录写入")
       && gitSubmoduleScaffoldViolation(emptyGitlink.superproject, path.join(emptyGitlink.superproject, "apps/backend"), "billing-service")?.includes("gitlink 不得由脚手架覆盖"),
     "空 gitlink 仍被当成普通目录"
   );
@@ -125,8 +131,12 @@ try {
   namedStress(
     "detached_head_as_regular_dir",
     inspectCheckoutState(detached.superproject, detachedTarget) === "detached-head"
-      && regularDirectoryMisreadViolation({ checkout_state: "detached-head" })?.includes("regular directory")
-      && gitSubmoduleScaffoldViolation(detached.superproject, path.join(detached.superproject, "apps/backend"), "billing-service")?.includes("gitlink 不得由脚手架覆盖"),
+      && inspectWorkingTreeScope(detached.superproject, {
+        repository_scope: "git-submodule",
+        project_root: "apps/backend/billing-service/"
+      })?.includes("regular directory")
+      && implementationWriteViolation(detached.superproject, path.join(detachedTarget, "nested-service"))?.includes("普通目录写入")
+      && gitSubmoduleScaffoldViolation(detached.superproject, detachedTarget, "nested-service")?.includes("gitlink 不得由脚手架覆盖"),
     "detached HEAD 仍被当成普通目录"
   );
   namedStress(
@@ -140,9 +150,23 @@ try {
       && regularDirectoryMisreadViolation(validGitSubmodule, { force: true })?.includes("--force"),
     "--force 仍可覆盖 gitlink 挂载点"
   );
+  const attachedNested = path.join(attached.superproject, attached.mount);
+  ensure(
+    inspectCheckoutState(attached.superproject, attachedNested) === "attached-branch",
+    "附加分支 fixture 应处于 attached-branch"
+  );
+  ensure(
+    implementationWriteViolation(attached.superproject, path.join(attachedNested, "src")) === null,
+    "附加分支工作树内写入不应被当成空 gitlink / detached HEAD"
+  );
+  ensure(
+    gitSubmoduleScaffoldViolation(attached.superproject, attachedNested, "nested-service") === null,
+    "附加分支子仓工作树内生成应允许"
+  );
 } finally {
   emptyGitlink.cleanup();
   detached.cleanup();
+  attached.cleanup();
 }
 
 for (const id of NAMED_STRESS_SCENARIOS) {

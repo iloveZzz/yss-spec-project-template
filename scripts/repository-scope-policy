@@ -10,5 +10,6 @@ export {
   isGitSubmoduleMount as isMount,
   inspectWorkingTreeScope as inspectWorkingTree,
   inspectCheckoutState as inspectCheckout,
-  regularDirectoryMisreadViolation as regularDirectoryMisread
+  regularDirectoryMisreadViolation as regularDirectoryMisread,
+  implementationWriteViolation as writeViolation
 } from "./lib/repository-scope-policy.mjs";

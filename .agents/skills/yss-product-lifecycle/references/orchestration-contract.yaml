@@ -274,6 +274,7 @@ git_authorization:
     treat_empty_gitlink_as_regular_dir: blocked
     treat_detached_head_as_regular_dir: blocked
     force_overlay_mount: blocked
+    write_inside_detached_head: blocked
     require_git_entry_mode: "160000"
     working_tree_declared_scope_must_match: true
     copy_source_into_harness: forbidden

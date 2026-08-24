@@ -50,7 +50,7 @@ apps/
 - 子仓 `git_url` 必须与 `superproject_git_url` 不同。登记后必须用工作树对照（`git ls-files --stage`、`.gitmodules`、`inspectWorkingTreeScope`）：声明 `harness-apps` 但路径是 gitlink，或声明 `git-submodule` 但工作树只是普通目录 / 复制源码，均视为误路由并阻断。
 - 只允许 `git submodule add` / `git submodule update --init` 形成 gitlink；禁止把实现仓库源码 copy、subtree 或普通 clone 进 Harness 后冒充 submodule。
 - clone / CI / Cloud Agent 必须递归检出：`git clone --recurse-submodules`，或事后 `git submodule update --init`。GitHub Actions 须显式 `submodules: true|recursive` 且私有子仓另给 PAT / SSH；GitLab 须设 `GIT_SUBMODULE_STRATEGY` 并配置 job token 访问。默认不递归时目录为空，不得当作「工程不存在」去脚手架。
-- 空 gitlink、未初始化、detached HEAD 或 `--force` 覆盖挂载点一律不得当成普通目录：`scaffold_status=required` 阻断，脚手架生成器即使收到 `--force` 也不得覆盖 gitlink；禁止在 detached HEAD 上 commit。先在子仓检出跟踪分支，再写代码。
+- 空 gitlink、未初始化、detached HEAD 或 `--force` 覆盖挂载点一律不得当成普通目录：`scaffold_status=required` 阻断，脚手架生成器即使收到 `--force` 也不得覆盖 gitlink；禁止在 detached HEAD 上 commit，也不得把 detached HEAD 子仓工作树当成普通输出目录写入。先在子仓检出跟踪分支，再写代码。写入前使用 `inspectWorkingTreeScope` / `implementationWriteViolation`。
 - Git 授权按仓分别计算，顺序强制为 **先子仓 commit/push，再父仓更新 gitlink**。父仓 push 使用 `git push --recurse-submodules=check`。跨仓库切片的 `delivery_order` 必须包含 `superproject-gitlink-update`。
 - `.gitmodules`、gitlink 和子仓工作树不是 `create-yss-spec` 受管资产；CLI `sync` 不得创建、覆盖或删除它们。
 

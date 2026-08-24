@@ -29,7 +29,7 @@ function validateMattContract(data) {
     ensure(includesAll(rule?.required, [`${prefix}_authorized`, `${prefix}_scope`, `${prefix}_authorization_ref`]) && includesAll(rule?.non_empty, [`${prefix}_scope`, `${prefix}_authorization_ref`]), `${action} 授权必填字段不完整`);
   }
   const submodule = git?.git_submodule;
-  ensure(submodule?.applies_when === "repository_scope=git-submodule" && submodule?.forbid_commit_on_detached_head === true && submodule?.empty_gitlink_scaffold === "blocked" && submodule?.treat_empty_gitlink_as_regular_dir === "blocked" && submodule?.treat_detached_head_as_regular_dir === "blocked" && submodule?.force_overlay_mount === "blocked" && submodule?.require_git_entry_mode === "160000" && submodule?.working_tree_declared_scope_must_match === true && submodule?.copy_source_into_harness === "forbidden" && submodule?.clone_requires_recurse_submodules === true && submodule?.push_recurse_submodules === "check" && submodule?.delivery_order_must_include === "superproject-gitlink-update" && submodule?.nested_authorization === "per-repository", "git-submodule Git 授权契约不完整");
+  ensure(submodule?.applies_when === "repository_scope=git-submodule" && submodule?.forbid_commit_on_detached_head === true && submodule?.empty_gitlink_scaffold === "blocked" && submodule?.treat_empty_gitlink_as_regular_dir === "blocked" && submodule?.treat_detached_head_as_regular_dir === "blocked" && submodule?.force_overlay_mount === "blocked" && submodule?.write_inside_detached_head === "blocked" && submodule?.require_git_entry_mode === "160000" && submodule?.working_tree_declared_scope_must_match === true && submodule?.copy_source_into_harness === "forbidden" && submodule?.clone_requires_recurse_submodules === true && submodule?.push_recurse_submodules === "check" && submodule?.delivery_order_must_include === "superproject-gitlink-update" && submodule?.nested_authorization === "per-repository", "git-submodule Git 授权契约不完整");
   ensure(JSON.stringify(submodule?.commit_order) === JSON.stringify(["submodule-repositories", "superproject-gitlink"]) && JSON.stringify(submodule?.push_order) === JSON.stringify(["submodule-repositories", "superproject-gitlink"]), "git-submodule 先子后父顺序不完整");
 }
 
@@ -222,7 +222,7 @@ export function runScenario(name) {
       (item) => { delete item.git_authorization.git_submodule; },
       (item) => { item.git_authorization.git_submodule.forbid_commit_on_detached_head = false; },
       (item) => { item.git_authorization.git_submodule.force_overlay_mount = "allowed"; },
-      (item) => { item.git_authorization.git_submodule.treat_empty_gitlink_as_regular_dir = "allowed"; }
+      (item) => { item.git_authorization.git_submodule.write_inside_detached_head = "allowed"; }
     ];
     for (const mutate of mutations) {
       const candidate = structuredClone(data); mutate(candidate);
