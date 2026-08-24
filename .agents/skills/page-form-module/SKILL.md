@@ -22,7 +22,7 @@ description: 指导实现 YSS UI 新增、编辑和查看表单模块，覆盖 Y
 - 联动副作用：`../formily-linkage-effects/SKILL.md`
 - 模式与详情：`../formily-mode-slot-detail/SKILL.md`
 - 分步表单：`../formily-step-flow/SKILL.md`
-- 接口与错误处理：`../api-integration/SKILL.md`
+- 接口与错误处理：`../yss-api-integration/SKILL.md`
 
 ## 文档检索
 

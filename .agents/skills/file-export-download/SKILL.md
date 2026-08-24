@@ -20,7 +20,7 @@ description: 指导 Vue3 YSS UI 微应用实现文件导出、报表下载、模
 
 ## 必读依据
 
-- 通用接口规则：`../api-integration/SKILL.md`。
+- 通用接口规则：`../yss-api-integration/SKILL.md`。
 - 当前项目：`openapi/openapi.json`、Orval 配置、生成后的 API 方法和 `packages/src/api/mutator.ts`。
 - YSS Utils 文件下载能力：按下方检索顺序核对 `handleBlobResponse` 和 `downloadBlob`。
 

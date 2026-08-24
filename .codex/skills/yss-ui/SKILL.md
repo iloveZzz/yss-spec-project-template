@@ -59,7 +59,7 @@ pnpm why vue @yss-ui/components @yss-ui/hooks ant-design-vue vxe-table
 | Formily schema、联动、校验、详情态 | `yss-formily` |
 | 表格高度 | `yss-use-table-height` |
 | 树高度 | `yss-use-tree-height` |
-| Orval、API、useRequest 接入 | `api-integration` |
+| Orval、API、useRequest 接入 | `yss-api-integration` |
 | 视觉、token、响应式体验 | `yss-design-system` |
 
 不得引用不存在的复数 Hook skill 名称。

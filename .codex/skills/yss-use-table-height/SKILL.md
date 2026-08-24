@@ -5,6 +5,15 @@ description: Use when working with YTable that needs responsive height, paginati
 
 # useTableHeight 表格高度计算 Hook
 
+本目录是表格高度的 canonical 技能；历史名称 `use-table-height` 仅通过注册表和 Router alias 解析。
+
+## YSS canonical execution rules
+
+- 使用真实签名 `useTableHeight(containerRef, options)`，结果解构为 `tableHeight`、`isReady` 和 `recalculateHeight`。
+- `YTable` 必须绑定 `:height="tableHeight"`；不要只绑定 `max-height`，也不要用固定魔法高度替代 Hook。
+- `pageable`、工具栏和 `YEditTable` 添加按钮分别对应 `withPagination`、`withToolbar` 和 `withAddButton`。
+- 容器使用 `flex: 1; min-height: 0; overflow: hidden`，避免观察由表格内容反向撑开的直属容器。
+
 ## Authoritative Docs And Boundary
 
 - YSS UI hooks documentation: `http://192.168.164.27:3200/hooks`

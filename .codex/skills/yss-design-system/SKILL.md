@@ -89,7 +89,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 | YTable / YTree / 高度自适应 | `yss-components` / `yss-use-table-height` / `yss-use-tree-height` |
 | 原型阶段的 Ant Design v6 组件 / token / demo 查询 | `yss-antd-design`（只用于原型设计构建；前端落地改用 `yss-ui`） |
 | Codex 原型交接前的视觉 QA | `design-qa`；token / 字体对照读 `references/design-qa-theme.md`，以项目覆盖为准 |
-| API 契约 / 接入 | `yss-openapi-governance` / `api-integration` |
+| API 契约 / 接入 | `yss-openapi-governance` / `yss-api-integration` |
 
 ## 更新设计系统
 

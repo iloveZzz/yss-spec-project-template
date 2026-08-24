@@ -49,6 +49,10 @@ export function unlockedProjectionEntries(candidates, allowedNames, isTracked) {
   const allowed = new Set(allowedNames);
   return candidates.filter((candidate) => candidate.isDirectory() || candidate.isSymbolicLink()).filter((candidate) => !allowed.has(candidate.name) && isTracked(candidate.name));
 }
+export function unlockedCanonicalEntries(names, allowedNames, hasSkillMd = () => true) {
+  const allowed = new Set(allowedNames);
+  return names.filter((name) => !allowed.has(name) && !OBSOLETE.has(name) && hasSkillMd(name)).sort();
+}
 export function syncSkills({ check = false } = {}) {
   const lock = parseLock();
   const shared = sharedFromLock(lock);
@@ -141,7 +145,7 @@ export function updateSkillLock(arguments_ = process.argv.slice(2)) {
   const sharedNames = [...new Set([...existing, ...additions])].filter((name) => !removals.has(name) && !OBSOLETE.has(name)).sort();
   const absent = sharedNames.filter((name) => !lstatSafe(path.join(SOURCE_ROOT, name))?.isDirectory());
   if (absent.length) throw new TypeError(`锁文件声明的共享 skills 缺少权威内容: ${absent.join(", ")}`);
-  const unlocked = skillNames(SOURCE_ROOT).filter((name) => tracked(`.agents/skills/${name}`) && !sharedNames.includes(name) && !OBSOLETE.has(name));
+  const unlocked = unlockedCanonicalEntries(skillNames(SOURCE_ROOT), sharedNames, (name) => lstatSafe(path.join(SOURCE_ROOT, name, "SKILL.md"))?.isFile());
   if (unlocked.length) throw new TypeError(`发现未登记到 skills-lock.json 的已跟踪共享 skills: ${unlocked.join(", ")}\n确认新增后运行 scripts/update-skill-lock --add=<skill-name>`);
   const targets = [".agents/skills", ...PROJECTION_ROOTS];
   const shared = Object.fromEntries(sharedNames.map((name) => {

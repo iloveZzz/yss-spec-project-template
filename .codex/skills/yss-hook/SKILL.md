@@ -13,7 +13,7 @@ description: Use when YSS Vue 页面涉及 vue-hooks-plus/useRequest、分页、
 - Vue Hooks Plus `useRequest`: `https://inhiblabcore.github.io/vue-hooks-plus/zh/hooks/useRequest/quick-start`
 - Local reference index: `references/frontend-docs.md`
 
-本技能负责请求执行、分页/筛选参数、选择状态、响应映射和页面级调度。接口导入与 Orval mutator 使用 `api-integration`；布局、组件与交互呈现使用 `yss-components`；高度计算分别使用 `yss-use-table-height` 或 `yss-use-tree-height`。
+本技能负责请求执行、分页/筛选参数、选择状态、响应映射和页面级调度。接口导入与 Orval mutator 使用 `yss-api-integration`；布局、组件与交互呈现使用 `yss-components`；高度计算分别使用 `yss-use-table-height` 或 `yss-use-tree-height`。
 
 官方 `@yss-ui/hooks` 当前公开 `useFullscreen`、`useTreeHeight`、`useTableHeight`、`useLoading`、`usePollingTask` 与 `useUrlState`。`useRequest`、防抖、缓存或重试不属于这套公开 YSS Hooks 契约。仅当项目已批准 `vue-hooks-plus` 及其具体版本时，才可使用第 3 节的 `useRequest`；不得把它命名或包装成 YSS 官方 API。
 

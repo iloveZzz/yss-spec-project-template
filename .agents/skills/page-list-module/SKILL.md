@@ -20,8 +20,8 @@ description: 指导实现 YSS UI 标准列表、远程分页、查询重置、YT
 - 组件选型：`../component-selection-imports/SKILL.md`
 - 表格 API：`../ytable-usage/SKILL.md`
 - 查询表单：`../yss-formily/SKILL.md`
-- 接口、错误链路和长整型：`../api-integration/SKILL.md`
-- 左树右表高度：`../ytree-usage/SKILL.md`、`../use-tree-height/SKILL.md`、`../use-table-height/SKILL.md`
+- 接口、错误链路和长整型：`../yss-api-integration/SKILL.md`
+- 左树右表高度：`../ytree-usage/SKILL.md`、`../yss-use-tree-height/SKILL.md`、`../yss-use-table-height/SKILL.md`
 
 ## 文档检索
 

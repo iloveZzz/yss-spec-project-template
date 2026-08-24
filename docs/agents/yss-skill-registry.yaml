@@ -1,14 +1,14 @@
 schema_version: 1
 registry_id: yss.skill-routing
-status: shadow
+status: active
 description: >-
-  技能分层、别名、默认可发现性和 Agent 运行时入口的 shadow 路由注册表。
-  本文件不替代 skills-lock.json 的来源、hash 与投影完整性职责；Router 与生命周期编排器在 status=shadow 时不得消费本表做运行时裁剪。
+  技能分层、别名、默认可发现性和 Agent 运行时入口的可执行路由注册表。
+  本文件不替代 skills-lock.json 的来源、hash 与投影完整性职责；Router 与生命周期编排器只消费通过本表校验的 canonical 技能。
 canonical_content_root: .agents/skills
 runtime_policy:
-  consumed_by_router: false
-  consumed_by_lifecycle: false
-  discovery_enforced: false
+  consumed_by_router: true
+  consumed_by_lifecycle: true
+  discovery_enforced: true
 agent_runtime_roots:
   claude: .claude/skills
   codex: .codex/skills
@@ -27,7 +27,7 @@ skills:
   - id: ask-matt
     layer: compatibility
     maturity: supported
-    instance_default_discoverable: true
+    instance_default_discoverable: false
     aliases: []
     impacts: [lifecycle]
   - id: code-review
@@ -75,13 +75,13 @@ skills:
   - id: grill-me
     layer: compatibility
     maturity: supported
-    instance_default_discoverable: true
+    instance_default_discoverable: false
     aliases: []
     impacts: [discovery]
   - id: grill-with-docs
     layer: compatibility
     maturity: supported
-    instance_default_discoverable: true
+    instance_default_discoverable: false
     aliases: []
     impacts: [discovery]
   - id: grilling
@@ -96,17 +96,10 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [lifecycle]
-  - id: high-fidelity-html-prototype
-    layer: compatibility
-    maturity: deprecated
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [prototype]
-    replaced_by: yss-prototype-stage
   - id: implement
     layer: compatibility
     maturity: supported
-    instance_default_discoverable: true
+    instance_default_discoverable: false
     aliases: []
     impacts: [lifecycle]
   - id: implementation-repo-onboarding
@@ -118,7 +111,7 @@ skills:
   - id: improve-codebase-architecture
     layer: compatibility
     maturity: supported
-    instance_default_discoverable: true
+    instance_default_discoverable: false
     aliases: []
     impacts: [quality]
   - id: llm-wiki
@@ -190,7 +183,7 @@ skills:
   - id: setup-matt-pocock-skills
     layer: compatibility
     maturity: supported
-    instance_default_discoverable: true
+    instance_default_discoverable: false
     aliases: []
     impacts: [setup]
   - id: setup-pre-commit
@@ -226,19 +219,19 @@ skills:
   - id: to-spec
     layer: compatibility
     maturity: supported
-    instance_default_discoverable: true
+    instance_default_discoverable: false
     aliases: []
     impacts: [lifecycle]
   - id: to-tickets
     layer: compatibility
     maturity: supported
-    instance_default_discoverable: true
+    instance_default_discoverable: false
     aliases: []
     impacts: [lifecycle]
   - id: triage
     layer: compatibility
     maturity: supported
-    instance_default_discoverable: true
+    instance_default_discoverable: false
     aliases: []
     impacts: [lifecycle]
   - id: using-git-worktrees
@@ -413,7 +406,7 @@ skills:
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
-    aliases: []
+    aliases: [page-module-development, yss-ui-business-page-generation]
     impacts: [frontend]
   - id: yss-product-lifecycle
     layer: core
@@ -473,13 +466,13 @@ skills:
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
-    aliases: []
+    aliases: [use-table-height]
     impacts: [frontend]
   - id: yss-use-tree-height
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
-    aliases: []
+    aliases: [use-tree-height]
     impacts: [frontend]
   - id: yss-userinfo
     layer: specialist
@@ -499,12 +492,119 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend, api]
+  - id: component-selection-imports
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: file-export-download
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend, api]
+  - id: formily-foundation
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: formily-linkage-effects
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: formily-mode-slot-detail
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: formily-step-flow
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: frontend-commit
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [template-maintenance]
+  - id: java-backend-commit
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [template-maintenance]
+  - id: page-form-module
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: page-list-module
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: page-skeleton
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: prototype-page-acceptance
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [prototype, frontend]
+  - id: theme-token-usage
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend, prototype]
+  - id: vue3-best-practices
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: yedit-table-usage
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: ytable-usage
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: ytree-usage
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
 platform_skills:
   - id: data-analytics
     root: .codex/skills
     layer: maintainer-only
     instance_default_discoverable: false
+    aliases: []
   - id: product-design
     root: .codex/skills
     layer: specialist
     instance_default_discoverable: false
+    aliases: [product-design:index]
+external_skills:
+  - id: yss-backend-scaffold-parent
+    source: .agents/skills/yss-ddd-scaffold-generator/references/yss-backend-scaffold-parent/SKILL.md

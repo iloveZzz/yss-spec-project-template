@@ -57,6 +57,11 @@ function validateInvocationBoundary(data) {
   ensure(routes?.["work-unit.discovery-requirements"]?.skills?.includes("grilling") && routes?.["work-unit.discovery-requirements"]?.skills?.includes("domain-modeling"), "需求分析工作单元缺少 grilling/domain-modeling");
   ensure(routes?.["work-unit.discovery-opportunity"]?.route_by?.market_or_competitor_fact === "competitive-intelligence" && routes["work-unit.discovery-opportunity"].route_by.technical_or_standard_fact === "research", "机会调研事实路由不准确");
   ensure(routes?.["work-unit.slice-implementation"]?.skills?.includes("tdd") && routes?.["work-unit.slice-implementation"]?.skills?.includes("yss-ui"), "原生实现工作单元缺少 TDD 或 UI 路由");
+  const frontendRoute = routes?.["work-unit.slice-implementation"]?.frontend_route;
+  ensure(frontendRoute?.primary_skill === "yss-ui" && frontendRoute?.page_orchestration_skill === "yss-page-module-development", "前端实现路由缺少 yss-ui 主入口或页面编排技能");
+  for (const impact of ["api_impact", "formily_impact", "table_impact", "tree_impact", "height_impact", "export_impact", "theme_impact"]) {
+    ensure(Array.isArray(frontendRoute?.conditional_skills?.[impact]) && frontendRoute.conditional_skills[impact].length > 0 && typeof frontendRoute.not_applicable_reasons?.[impact] === "string", `前端条件专项路由缺少 ${impact}`);
+  }
   ensure(routes?.["work-unit.frontend-implementation-verification"]?.skills?.includes("code-review") && routes?.["work-unit.frontend-implementation-verification"]?.applies_when === "ui_impact", "前端还原验证未绑定 UI fidelity 审查轴");
   for (const id of ["work-unit.spec-synthesis", "work-unit.ticket-decomposition", "work-unit.slice-implementation"]) {
     ensure(routes?.[id]?.native?.source === "yss-product-lifecycle" && routes[id].compatibility?.source === "mattpocock/skills" && routes[id].compatibility.formal_artifact_owner === "explicit-user-entry", `${id} 未分离原生执行定义与 Matt 兼容输入`);
@@ -70,6 +75,12 @@ function validateInvocationBoundary(data) {
 function validateWorkflowExecutionResult(payload, contract, workUnitRoutes) {
   for (const field of contract.required) ensure(Object.hasOwn(payload, field), `Workflow Execution Result 缺少 ${field}`);
   ensure(contract.result_values.includes(payload.result), "Workflow Execution Result result 无效");
+  if (Object.hasOwn(payload, "unavailable_skill")) {
+    ensure(payload.result === contract.unavailable_skill.blocking_result, "技能不可用必须将 Workflow Execution Result 标记为 blocked");
+    for (const field of contract.unavailable_skill.required) {
+      ensure(typeof payload.unavailable_skill?.[field] === "string" && payload.unavailable_skill[field].trim(), `unavailable_skill.${field} 无效`);
+    }
+  }
   for (const field of contract.workflow_reference.required) ensure(typeof payload.workflow_reference?.[field] === "string" && payload.workflow_reference[field].trim(), `workflow_reference.${field} 无效`);
   const workUnit = workUnitRoutes?.[payload.work_unit];
   ensure(workUnit, `未知 Workflow Execution Result work_unit: ${payload.work_unit}`);
@@ -189,6 +200,16 @@ export function runScenario(name) {
       blocking_signals: []
     };
     validateWorkflowExecutionResult(validResult, data.workflow_execution_result, data.work_unit_routes);
+    const unavailableResult = structuredClone(validResult);
+    unavailableResult.result = "blocked";
+    unavailableResult.unavailable_skill = { skill: "yss-ui", provider: "codex", fallback: "manual-review", resolution: "needs-human" };
+    unavailableResult.blocking_signals = ["missing_evidence"];
+    validateWorkflowExecutionResult(unavailableResult, data.workflow_execution_result, data.work_unit_routes);
+    const malformedUnavailable = structuredClone(unavailableResult);
+    delete malformedUnavailable.unavailable_skill.fallback;
+    let unavailableRejected = false;
+    try { validateWorkflowExecutionResult(malformedUnavailable, data.workflow_execution_result, data.work_unit_routes); } catch { unavailableRejected = true; }
+    ensure(unavailableRejected, "技能不可用结果缺少 fallback 时未被拒绝");
     const compatibleResult = structuredClone(validResult);
     compatibleResult.workflow_reference = { source: "mattpocock/skills", skill: "to-spec", invocation_mode: "reference" };
     validateWorkflowExecutionResult(compatibleResult, data.workflow_execution_result, data.work_unit_routes);
