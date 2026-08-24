@@ -3,8 +3,12 @@ export {
   REPOSITORY_SCOPES as scopes,
   LAYOUT_POLICIES as layoutPolicies,
   GITLINK_MODE as gitlinkMode,
+  NAMED_STRESS_SCENARIOS as namedStressScenarios,
   violationRepositoryScope as violation,
   validRepositoryScope as valid,
   gitSubmoduleScaffoldViolation as scaffoldViolation,
-  isGitSubmoduleMount as isMount
+  isGitSubmoduleMount as isMount,
+  inspectWorkingTreeScope as inspectWorkingTree,
+  inspectCheckoutState as inspectCheckout,
+  regularDirectoryMisreadViolation as regularDirectoryMisread
 } from "./lib/repository-scope-policy.mjs";

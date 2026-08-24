@@ -91,7 +91,7 @@ class ScaffoldGenerator {
 
   async generate() {
     await this.validateHarnessOutputLayout();
-    const gitlinkViolation = gitSubmoduleScaffoldViolation(REPOSITORY_ROOT, this.outputDir, this.projectName);
+    const gitlinkViolation = gitSubmoduleScaffoldViolation(REPOSITORY_ROOT, this.outputDir, this.projectName, { force: this.options.force });
     if (gitlinkViolation) fail(gitlinkViolation);
     if (await exists(this.finalProjectRoot) && !this.options.force) fail(`输出目录已存在: ${this.finalProjectRoot}；如确认覆盖，请显式传入 --force`);
     await this.validateContractMetadata();

@@ -53,9 +53,13 @@ test("repository_scope git-submodule is a first-class layout distinct from harne
   const {
     LAYOUT_POLICIES,
     gitSubmoduleScaffoldViolation,
+    inspectCheckoutState,
+    inspectWorkingTreeScope,
+    regularDirectoryMisreadViolation,
     validRepositoryScope,
     violationRepositoryScope
   } = await import(path.join(repositoryRoot, "scripts/lib/repository-scope-policy.mjs"));
+  const { makeGitlinkFixture } = await import(path.join(repositoryRoot, "scripts/lib/git-submodule-fixtures.mjs"));
   const record = {
     repository_scope: "git-submodule",
     layout_policy: LAYOUT_POLICIES["git-submodule"],
@@ -70,15 +74,33 @@ test("repository_scope git-submodule is a first-class layout distinct from harne
   };
   assert.equal(validRepositoryScope(record), true);
   assert.match(violationRepositoryScope({ ...record, layout_policy: "harness-apps-multi-project" }), /layout_policy/);
+  assert.match(violationRepositoryScope({ ...record, git_entry_mode: "" }), /git_entry_mode must be 160000/);
   assert.match(violationRepositoryScope({ ...record, checkout_state: "empty-gitlink", scaffold_status: "required" }), /empty or uninitialized/);
-  const fixture = await mkdtemp(path.join(tmpdir(), "yss-gitlink-"));
+  assert.match(violationRepositoryScope({ ...record, checkout_state: "detached-head", scaffold_status: "required" }), /regular directory/);
+  assert.match(violationRepositoryScope({
+    repository_scope: "harness-apps",
+    layout_policy: "harness-apps-multi-project",
+    project_root: "apps/backend/billing-service/",
+    gitlink_path: "apps/backend/billing-service"
+  }), /git-submodule identity/);
+  const empty = makeGitlinkFixture({ checkout: "empty-gitlink" });
+  const detached = makeGitlinkFixture({ checkout: "detached-head" });
   try {
-    await mkdir(path.join(fixture, "apps/backend/billing-service"), { recursive: true });
-    await writeFile(path.join(fixture, ".gitmodules"), "[submodule \"backend-billing-service\"]\n\tpath = apps/backend/billing-service\n\turl = https://example.invalid/billing-service.git\n");
-    assert.match(gitSubmoduleScaffoldViolation(fixture, path.join(fixture, "apps/backend"), "billing-service"), /gitlink 不得由脚手架覆盖/);
-    assert.equal(gitSubmoduleScaffoldViolation(fixture, path.join(fixture, "output"), "plain-service"), null);
+    const emptyTarget = path.join(empty.superproject, empty.mount);
+    assert.equal(inspectCheckoutState(empty.superproject, emptyTarget), "empty-gitlink");
+    assert.match(regularDirectoryMisreadViolation({ checkout_state: "empty-gitlink" }), /regular directory/);
+    assert.match(gitSubmoduleScaffoldViolation(empty.superproject, path.join(empty.superproject, "apps/backend"), "billing-service", { force: true }), /--force/);
+    assert.match(inspectWorkingTreeScope(empty.superproject, {
+      repository_scope: "harness-apps",
+      project_root: "apps/backend/billing-service/"
+    }), /不得登记为 harness-apps/);
+    const detachedTarget = path.join(detached.superproject, detached.mount);
+    assert.equal(inspectCheckoutState(detached.superproject, detachedTarget), "detached-head");
+    assert.match(gitSubmoduleScaffoldViolation(detached.superproject, path.join(detached.superproject, "apps/backend"), "billing-service"), /gitlink 不得由脚手架覆盖/);
+    assert.equal(gitSubmoduleScaffoldViolation(empty.superproject, path.join(empty.superproject, "output"), "plain-service"), null);
   } finally {
-    await rm(fixture, { recursive: true, force: true });
+    empty.cleanup();
+    detached.cleanup();
   }
 });
 

@@ -89,7 +89,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 
 ## 9. 工作区与实现仓库边界
 
-当前仓库默认是研发管理仓库，运行时代码优先位于已登记的独立实现仓库（`repository_scope: external-repository`）。只有用户明确选择当前仓库承载实现代码时，才使用同源的 `apps/backend/<project>/` 或 `apps/frontend/<project>/`（`harness-apps`），或以 Git submodule 把独立实现仓挂到同一 `apps/` 布局（`git-submodule`）。
+当前仓库默认是研发管理仓库，运行时代码优先位于已登记的独立实现仓库（`repository_scope: external-repository`）。只有用户明确选择当前仓库承载实现代码时，才使用同源的 `apps/backend/<project>/` 或 `apps/frontend/<project>/`（`harness-apps`），或以 Git submodule 把独立实现仓挂到同一 `apps/` 布局（`git-submodule`）。三种 scope 必须用登记字段、Git 身份和工作树 gitlink 区分；空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得当成普通目录。
 
 `apps/backend/` 和 `apps/frontend/` 只是项目容器；`app/backend/`、`app/frontend/` 及其子路径禁止作为工程输出。`git-submodule` 不得登记为 `harness-apps`，也不得把实现源码复制进 Harness。完整登记字段、嵌套 Git 授权和跨仓约束见 `docs/process/implementation-repo-integration.md`。
 

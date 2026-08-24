@@ -271,6 +271,11 @@ git_authorization:
     push_order: [submodule-repositories, superproject-gitlink]
     push_recurse_submodules: check
     empty_gitlink_scaffold: blocked
+    treat_empty_gitlink_as_regular_dir: blocked
+    treat_detached_head_as_regular_dir: blocked
+    force_overlay_mount: blocked
+    require_git_entry_mode: "160000"
+    working_tree_declared_scope_must_match: true
     copy_source_into_harness: forbidden
     clone_requires_recurse_submodules: true
     delivery_order_must_include: superproject-gitlink-update

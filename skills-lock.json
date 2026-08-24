@@ -292,7 +292,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/implementation-repo-onboarding/SKILL.md",
-        "effectiveHash": "ebf1b29a894270f56a512e6984eac95099ba5412a2701feec1d3b5db9b0ded82",
+        "effectiveHash": "63c8fa4e08c12a2e670797273c3befa4e86231fa25109f856090892523b8e10b",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -918,7 +918,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
-        "effectiveHash": "f475fe87bdb9a4525e24f42d544a0a950e7274b670bc0b59b6b68aafc96e01b0",
+        "effectiveHash": "31b56e19da0e7f026e21363e412931c06179b29a8697a1dceed22fec45cb1007",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1062,7 +1062,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-frontend-scaffold-generator/SKILL.md",
-        "effectiveHash": "ae63336ab25b29111fa896f777de74097226a22764281465961856f331ebfac1",
+        "effectiveHash": "20f9f45435d2f31a6f5880bc1f653941a11f9fed7a22323b758951680901ed76",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1174,7 +1174,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "effectiveHash": "6eb65a463c6876ac12404830cf2f301c4ca8bbf3df6e24bc78ac446b1326e63b",
+        "effectiveHash": "2bf125ced419e5632da3be641b816a22c16dfe2d75f8feb5ced0b10f0cfe352d",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1238,7 +1238,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-router/SKILL.md",
-        "effectiveHash": "bb23f0454c2c70ac5d5d126744d8a1b636d79e4410f237d99139613ac92e99a1",
+        "effectiveHash": "c11e1005fa83085db965347fd3af611f11435a025fbcd05ff51cc85f06d430e4",
         "targets": [
           ".agents/skills",
           ".claude/skills",

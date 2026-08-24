@@ -20,9 +20,9 @@ description: Use when connecting an existing frontend, backend, fullstack, or ot
 2. 如果输入是本地路径，只读检查 Git remote、当前分支、目录结构、构建文件和测试脚本。
 3. 如果输入是远端 URL，优先使用只读 Git 查询。需要完整工作树时：`external-repository` 只能 clone 到临时目录；`git-submodule` 只能通过 `git submodule add` / `git submodule update --init` 在已批准的 `apps/backend/<project>/` 或 `apps/frontend/<project>/` gitlink 挂载点检出，禁止普通 clone 或复制源码进 Harness。
 4. 识别技术栈、包管理器、CI、测试命令、构建命令、OpenAPI 接入和设计 token 接入。
-5. 判定实现位置与 `repository_scope`：`external-repository` 记录真实项目根；`harness-apps` 与 `git-submodule` 只能使用 `apps/backend/<project>/` 或 `apps/frontend/<project>/`。`apps/backend/`、`apps/frontend/` 仅为容器，`app/backend/`、`app/frontend/` 及其子路径必须标记为阻断。gitlink（mode `160000`）必须登记为 `git-submodule` 和 `layout_policy: git-submodule-harness-apps`，不得写成 `harness-apps`。
-6. 按 `docs/templates/implementation-repo-registry-template.md` 输出实现仓库登记内容。`git-submodule` 必填 `gitmodules_name`、`gitlink_path`、`git_entry_mode`、`superproject_git_url` 和 `checkout_state`。
-7. 列出 `known_gaps`、人审点、fresh verification 命令和需要回写到 Harness change / Issue / checkpoint 的信息。空 gitlink、detached HEAD 或缺少递归检出凭据时标记阻断。
+5. 判定实现位置与 `repository_scope`：`external-repository` 记录真实项目根；`harness-apps` 与 `git-submodule` 只能使用 `apps/backend/<project>/` 或 `apps/frontend/<project>/`。`apps/backend/`、`apps/frontend/` 仅为容器，`app/backend/`、`app/frontend/` 及其子路径必须标记为阻断。gitlink（mode `160000`）必须登记为 `git-submodule` 和 `layout_policy: git-submodule-harness-apps`，不得写成 `harness-apps`。必须对照工作树：`git ls-files --stage`、`.gitmodules` 与声明 scope 不一致时阻断；缺少 `git_entry_mode: 160000` 不得把挂载点当普通目录。
+6. 按 `docs/templates/implementation-repo-registry-template.md` 输出实现仓库登记内容。`git-submodule` 必填 `gitmodules_name`、`gitlink_path`、`git_entry_mode`、`superproject_git_url` 和 `checkout_state`。`harness-apps` / `external-repository` 这些字段填 `不适用`。
+7. 列出 `known_gaps`、人审点、fresh verification 命令和需要回写到 Harness change / Issue / checkpoint 的信息。空 gitlink、detached HEAD、`--force` 覆盖挂载点或缺少递归检出凭据时标记阻断，不得当成普通目录继续脚手架或写入。
 
 ## Baseline Checks
 
