@@ -1,0 +1,41 @@
+schema_version: 1
+intensity: L2
+classification_reason: >-
+  接入共享技能 llm-wiki（local-rule），并按新 schema 重建 wiki/ 三层布局、manifest
+  与文章来源小节（template-structure）。未把 wiki lint 写入 verify-template，
+  也未改生命周期注册表、Router 合同或 yss-public-skills.json。
+triggers: [local-rule, template-structure]
+changed_assets:
+  - .agents/skills/llm-wiki/
+  - docs/agents/yss-skill-registry.yaml
+  - skills-lock.json
+  - AGENTS.md
+  - CONTEXT.md
+  - wiki/
+  - docs/reviews/llm-wiki-ingest-lint-counterexample-2026-08-23.txt
+verification_evidence:
+  - kind: counterexample
+    command: node .agents/skills/llm-wiki/scripts/lint-wikilinks.mjs wiki
+    result: pass
+  - kind: fresh-verification
+    command: >-
+      node --test .agents/skills/llm-wiki/scripts/*.test.mjs &&
+      node .agents/skills/llm-wiki/scripts/lint-wikilinks.mjs wiki &&
+      node .agents/skills/llm-wiki/scripts/inventory.mjs hash --wiki wiki &&
+      scripts/sync-skills --check &&
+      scripts/update-skill-lock --check &&
+      scripts/verify-skill-registry &&
+      scripts/verify-template
+    result: pass
+  - kind: focused-independent-review
+    command: >-
+      非实施者聚焦审查：核对 SKILL.md 与 research / understand-knowledge 边界、
+      registry（core/verified/quality）、AGENTS.md §8、CONTEXT.md 术语、
+      未写入 yss-public-skills.json 与 verify-template；抽查「条件强制门禁」
+      14 个 gate.* 与 lifecycle-registry.yaml 一致、LLM Wiki 页与 schema 一致；
+      重跑 skill test / wiki lint / inventory hash / sync-skills --check /
+      update-skill-lock --check / verify-skill-registry / verify-template 均通过。
+      实施者为子代理 dd9df91c，审查者为本会话主控。
+    result: pass
+review_mode: focused-independent
+escalation: none

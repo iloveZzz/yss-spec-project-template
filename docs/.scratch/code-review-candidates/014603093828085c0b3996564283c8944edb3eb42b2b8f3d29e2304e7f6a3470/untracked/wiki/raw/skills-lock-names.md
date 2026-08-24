@@ -1,0 +1,92 @@
+# skills-lock.json 派生摘录
+
+本文件不是锁文件全文，只列出当前共享技能名。权威来源、hash 与投影目标以仓库根 `skills-lock.json` 为准。
+
+## shared
+
+- `alibaba-java-code-style`
+- `ask-matt`
+- `code-review`
+- `codebase-design`
+- `competitive-intelligence`
+- `cross-repo-implementation-routing`
+- `diagnosing-bugs`
+- `dispatching-parallel-agents`
+- `domain-modeling`
+- `grill-me`
+- `grill-with-docs`
+- `grilling`
+- `handoff`
+- `high-fidelity-html-prototype`
+- `implement`
+- `implementation-repo-onboarding`
+- `improve-codebase-architecture`
+- `llm-wiki`
+- `lombok`
+- `loop-me`
+- `maintaining-skills`
+- `mapstruct`
+- `migrate-to-shoehorn`
+- `prototype`
+- `prototype-review`
+- `research`
+- `resolving-merge-conflicts`
+- `scaffold-exercises`
+- `setup-matt-pocock-skills`
+- `setup-pre-commit`
+- `setup-ts-deep-modules`
+- `tdd`
+- `teach`
+- `to-questionnaire`
+- `to-spec`
+- `to-tickets`
+- `triage`
+- `using-git-worktrees`
+- `wait-what`
+- `wayfinder`
+- `writing-beats`
+- `writing-for-agents`
+- `writing-fragments`
+- `writing-shape`
+- `yss-api-integration`
+- `yss-application`
+- `yss-audit-log`
+- `yss-cache`
+- `yss-components`
+- `yss-ddd-scaffold-generator`
+- `yss-design-system`
+- `yss-distributed-id`
+- `yss-domain`
+- `yss-dto`
+- `yss-excel-mvc`
+- `yss-exception`
+- `yss-formily`
+- `yss-formily-schema-generator`
+- `yss-frontend-scaffold-generator`
+- `yss-hook`
+- `yss-microapp-commit`
+- `yss-mybatis`
+- `yss-openapi-draft-review`
+- `yss-openapi-governance`
+- `yss-page-module-development`
+- `yss-product-lifecycle`
+- `yss-prototype-stage`
+- `yss-repository`
+- `yss-resilience4j`
+- `yss-router`
+- `yss-security-algorithm`
+- `yss-source-index`
+- `yss-ui`
+- `yss-up-springboot3`
+- `yss-use-table-height`
+- `yss-use-tree-height`
+- `yss-userinfo`
+- `yss-validation`
+- `yss-web-controller`
+
+## platform
+
+### `.codex/skills`
+
+- `data-analytics`
+- `product-design`

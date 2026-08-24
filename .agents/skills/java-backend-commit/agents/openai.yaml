@@ -1,0 +1,7 @@
+interface:
+  display_name: "Java 后端规范提交"
+  short_description: "分析真实改动并生成、校验 Java 后端项目的规范化 Git 提交"
+  default_prompt: "使用 $java-backend-commit 检查当前 Java 后端改动并创建一条规范、原子的 Git 提交。"
+
+policy:
+  allow_implicit_invocation: true

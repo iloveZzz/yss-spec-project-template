@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS 文件导出下载"
+  short_description: "规范 Orval Blob 导出、responseType 配置与文件下载处理"
+  default_prompt: "使用 $file-export-download 实现类型安全的文件导出下载，并正确处理 Blob、响应头和文件名。"

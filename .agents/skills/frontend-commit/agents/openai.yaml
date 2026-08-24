@@ -1,0 +1,7 @@
+interface:
+  display_name: "前端规范提交"
+  short_description: "分析真实改动并生成、校验前端项目的规范化 Git 提交"
+  default_prompt: "使用 $frontend-commit 检查当前前端改动并创建一条规范、原子的 Git 提交。"
+
+policy:
+  allow_implicit_invocation: true

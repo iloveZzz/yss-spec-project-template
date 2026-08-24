@@ -1,0 +1,29 @@
+{
+  "source": "@yss/skills",
+  "mode": "copy",
+  "skills": [
+    "yss-ui-business-page-generation",
+    "theme-token-usage",
+    "component-selection-imports",
+    "page-module-development",
+    "page-skeleton",
+    "page-list-module",
+    "page-form-module",
+    "ytable-usage",
+    "yedit-table-usage",
+    "ytree-usage",
+    "prototype-page-acceptance",
+    "api-integration",
+    "file-export-download",
+    "vue3-best-practices",
+    "frontend-commit",
+    "java-backend-commit",
+    "use-table-height",
+    "use-tree-height",
+    "yss-formily",
+    "formily-foundation",
+    "formily-linkage-effects",
+    "formily-mode-slot-detail",
+    "formily-step-flow"
+  ]
+}

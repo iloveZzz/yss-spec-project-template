@@ -1,0 +1,394 @@
+{
+  "schemaVersion": 1,
+  "wikiRoot": "wiki",
+  "compiledAt": "2026-08-23T06:59:36.814Z",
+  "gitCommit": "47eaf46d096f9ed03c5e93cbc030e25770dda685",
+  "profile": "documents",
+  "sources": [
+    {
+      "id": "AGENTS.md",
+      "kind": "document",
+      "livePath": "AGENTS.md",
+      "rawPath": "raw/AGENTS.md",
+      "role": "copy",
+      "sha256": "60f5d266ed819686d9a870d9253741d5cdc5f8ec2e38a25b9ac0d5e932645a29"
+    },
+    {
+      "id": "CONTEXT.md",
+      "kind": "document",
+      "livePath": "CONTEXT.md",
+      "rawPath": "raw/CONTEXT.md",
+      "role": "copy",
+      "sha256": "f05e58d5b3ff1acca6485ad1a15cb19a121bd91758b1487e98c6f90ccd29d72e"
+    },
+    {
+      "id": "README.md",
+      "kind": "document",
+      "livePath": "README.md",
+      "rawPath": "raw/README.md",
+      "role": "copy",
+      "sha256": "2a8e25ac4dc7798e2b7d1609644990518ece925aecff375160036eb8be611446"
+    },
+    {
+      "id": "yss-project.yaml",
+      "kind": "document",
+      "livePath": "yss-project.yaml",
+      "rawPath": "raw/yss-project.yaml",
+      "role": "copy",
+      "sha256": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af"
+    },
+    {
+      "id": "lifecycle-registry.yaml",
+      "kind": "document",
+      "livePath": "docs/process/lifecycle-registry.yaml",
+      "rawPath": "raw/lifecycle-registry.yaml",
+      "role": "copy",
+      "sha256": "051a51ea7e5ef3c6fecb5cb43137c5cdd157c646f468614022134e51a5bc5b06"
+    },
+    {
+      "id": "harness-process-tailoring.md",
+      "kind": "document",
+      "livePath": "docs/process/harness-process-tailoring.md",
+      "rawPath": "raw/harness-process-tailoring.md",
+      "role": "copy",
+      "sha256": "f11bb61f3034560c1607891654b0fb0b79dc82f8fb520f746585e5decf9bf41f"
+    },
+    {
+      "id": "maintenance-intensity.yaml",
+      "kind": "document",
+      "livePath": "docs/process/maintenance-intensity.yaml",
+      "rawPath": "raw/maintenance-intensity.yaml",
+      "role": "copy",
+      "sha256": "6338e218860416a2a2ca9c187b5589bc1140b967dbac5f3ecea906adfb588a0f"
+    },
+    {
+      "id": "implementation-repo-integration.md",
+      "kind": "document",
+      "livePath": "docs/process/implementation-repo-integration.md",
+      "rawPath": "raw/implementation-repo-integration.md",
+      "role": "copy",
+      "sha256": "2dee82e027aa4e4886e1e2e1497aa670d72905f1ba45fa734063478fa0b986b5"
+    },
+    {
+      "id": "skills-maintenance.md",
+      "kind": "document",
+      "livePath": "docs/agents/skills-maintenance.md",
+      "rawPath": "raw/skills-maintenance.md",
+      "role": "copy",
+      "sha256": "9c95176cc104224b515da9b3ad189d4fc6ea917f31877e60083f1416f342f378"
+    },
+    {
+      "id": "yss-skill-registry.yaml",
+      "kind": "document",
+      "livePath": "docs/agents/yss-skill-registry.yaml",
+      "rawPath": "raw/yss-skill-registry.yaml",
+      "role": "copy",
+      "sha256": "5859cc6ef663fb4939caab03083d4036ac5936886c9e4be7a99701d5d035047d"
+    },
+    {
+      "id": "issue-tracker.md",
+      "kind": "document",
+      "livePath": "docs/agents/issue-tracker.md",
+      "rawPath": "raw/issue-tracker.md",
+      "role": "copy",
+      "sha256": "260db9b67b39f8cba50fc1de7a7ae12abb9d246f3a4b85c0122a71f9fcf431f9"
+    },
+    {
+      "id": "triage-labels.md",
+      "kind": "document",
+      "livePath": "docs/agents/triage-labels.md",
+      "rawPath": "raw/triage-labels.md",
+      "role": "copy",
+      "sha256": "5877760bdbb9151a93736247c2dec77d67e969dd1a1b771acf5ff6dc590e5261"
+    },
+    {
+      "id": "adr-0002",
+      "kind": "document",
+      "livePath": "docs/adr/0002-yss-project-repository-mode.md",
+      "rawPath": "raw/adr-0002-repository-mode.md",
+      "role": "copy",
+      "sha256": "11d2a2b384491b4409e5a2c9b18f30d0566b6c80e1e270ef3c224d72fd264583"
+    },
+    {
+      "id": "create-yss-spec-repository-mode-contract",
+      "kind": "document",
+      "livePath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
+      "rawPath": "raw/create-yss-spec-repository-mode-contract.md",
+      "role": "copy",
+      "sha256": "11abf661e07ae297995f4bc5fbbadff6df33ee66a8990df5ce5ea21e530c615a"
+    },
+    {
+      "id": "spec-template.md",
+      "kind": "document",
+      "livePath": "docs/templates/spec-template.md",
+      "rawPath": "raw/spec-template.md",
+      "role": "copy",
+      "sha256": "296bffe6cddbd03c6b7e513e777a176cce5688e1d2e36ce1b63d4f810fe3877d"
+    },
+    {
+      "id": "vertical-slice-ticket-template.md",
+      "kind": "document",
+      "livePath": "docs/templates/vertical-slice-ticket-template.md",
+      "rawPath": "raw/vertical-slice-ticket-template.md",
+      "role": "copy",
+      "sha256": "d0e47649cf2fad5fe63d0c37a878d7ada30d1c6c4b12b6b59d036f49f369dcf3"
+    },
+    {
+      "id": "skills-lock.json",
+      "kind": "derived",
+      "livePath": "skills-lock.json",
+      "rawPath": "raw/skills-lock-names.md",
+      "role": "extract",
+      "sha256": "afbd76701137e763f924b4a025a17f102f5328e906df19994f2ae21ee7bfcda8"
+    },
+    {
+      "id": "llm-wiki-skill",
+      "kind": "code-surface",
+      "livePath": ".agents/skills/llm-wiki/SKILL.md",
+      "rawPath": null,
+      "role": "code-surface",
+      "sha256": "aebcb160b85ac9dc247334a8cba6eea4fafe52440a542605cc05fd6c83a4b3e5"
+    }
+  ],
+  "articles": [
+    {
+      "id": "模板总览",
+      "file": "wiki/模板总览.md",
+      "sourceIds": [
+        "README.md",
+        "AGENTS.md",
+        "CONTEXT.md",
+        "yss-project.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "仓库身份与路由",
+      "file": "wiki/仓库身份与路由.md",
+      "sourceIds": [
+        "yss-project.yaml",
+        "adr-0002",
+        "AGENTS.md",
+        "create-yss-spec-repository-mode-contract"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "Agent入口规则",
+      "file": "wiki/Agent入口规则.md",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "产品研发生命周期",
+      "file": "wiki/产品研发生命周期.md",
+      "sourceIds": [
+        "lifecycle-registry.yaml",
+        "AGENTS.md",
+        "harness-process-tailoring.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "条件强制门禁",
+      "file": "wiki/条件强制门禁.md",
+      "sourceIds": [
+        "lifecycle-registry.yaml",
+        "harness-process-tailoring.md",
+        "AGENTS.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "影响面分诊与流程裁剪",
+      "file": "wiki/影响面分诊与流程裁剪.md",
+      "sourceIds": [
+        "harness-process-tailoring.md",
+        "lifecycle-registry.yaml",
+        "AGENTS.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "模板维护流程",
+      "file": "wiki/模板维护流程.md",
+      "sourceIds": [
+        "harness-process-tailoring.md",
+        "maintenance-intensity.yaml",
+        "AGENTS.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "Spec基线",
+      "file": "wiki/Spec基线.md",
+      "sourceIds": [
+        "spec-template.md",
+        "CONTEXT.md",
+        "AGENTS.md",
+        "lifecycle-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "SpecDelta",
+      "file": "wiki/SpecDelta.md",
+      "sourceIds": [
+        "CONTEXT.md",
+        "AGENTS.md",
+        "lifecycle-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "OpenAPI契约",
+      "file": "wiki/OpenAPI契约.md",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md",
+        "lifecycle-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "产品设计影响与原型",
+      "file": "wiki/产品设计影响与原型.md",
+      "sourceIds": [
+        "CONTEXT.md",
+        "AGENTS.md",
+        "lifecycle-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "垂直切片Ticket",
+      "file": "wiki/垂直切片Ticket.md",
+      "sourceIds": [
+        "vertical-slice-ticket-template.md",
+        "CONTEXT.md",
+        "AGENTS.md",
+        "issue-tracker.md",
+        "triage-labels.md",
+        "lifecycle-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "切片实现合同",
+      "file": "wiki/切片实现合同.md",
+      "sourceIds": [
+        "CONTEXT.md",
+        "AGENTS.md",
+        "lifecycle-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "YSS路由与合同编译",
+      "file": "wiki/YSS路由与合同编译.md",
+      "sourceIds": [
+        "AGENTS.md",
+        "CONTEXT.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "YSS工程技能体系",
+      "file": "wiki/YSS工程技能体系.md",
+      "sourceIds": [
+        "CONTEXT.md",
+        "skills-maintenance.md",
+        "yss-skill-registry.yaml",
+        "skills-lock.json"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "Matt技能体系",
+      "file": "wiki/Matt技能体系.md",
+      "sourceIds": [
+        "CONTEXT.md",
+        "skills-maintenance.md",
+        "AGENTS.md",
+        "skills-lock.json"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "技能投影与锁定",
+      "file": "wiki/技能投影与锁定.md",
+      "sourceIds": [
+        "skills-maintenance.md",
+        "skills-lock.json",
+        "AGENTS.md",
+        "yss-skill-registry.yaml"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "实现仓库与跨仓库契约",
+      "file": "wiki/实现仓库与跨仓库契约.md",
+      "sourceIds": [
+        "implementation-repo-integration.md",
+        "AGENTS.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "LLM Wiki",
+      "file": "wiki/LLM Wiki.md",
+      "sourceIds": [
+        "llm-wiki-skill",
+        "AGENTS.md",
+        "CONTEXT.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "Ticket与流程状态",
+      "file": "wiki/Ticket与流程状态.md",
+      "sourceIds": [
+        "issue-tracker.md",
+        "triage-labels.md",
+        "CONTEXT.md",
+        "AGENTS.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "Fresh验证与独立审查",
+      "file": "wiki/Fresh验证与独立审查.md",
+      "sourceIds": [
+        "AGENTS.md",
+        "harness-process-tailoring.md",
+        "maintenance-intensity.yaml",
+        "CONTEXT.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "模板发布门禁与验证",
+      "file": "wiki/模板发布门禁与验证.md",
+      "sourceIds": [
+        "AGENTS.md",
+        "README.md",
+        "skills-maintenance.md",
+        "harness-process-tailoring.md"
+      ],
+      "humanOwned": false
+    },
+    {
+      "id": "复盘与权威资产修订",
+      "file": "wiki/复盘与权威资产修订.md",
+      "sourceIds": [
+        "AGENTS.md",
+        "lifecycle-registry.yaml",
+        "CONTEXT.md"
+      ],
+      "humanOwned": false
+    }
+  ]
+}

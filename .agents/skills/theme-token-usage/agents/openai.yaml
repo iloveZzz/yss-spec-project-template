@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS UI 主题 Token 使用"
+  short_description: "约束业务页面使用可动态换肤的主题 Token，禁止硬编码品牌色"
+  default_prompt: "使用 $theme-token-usage 检查并实现页面样式，确保主题色、状态色和明暗模式可动态切换。"
