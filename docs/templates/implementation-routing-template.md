@@ -20,8 +20,9 @@ owner: ai
 | OpenSpec-style Spec Delta（条件必需） |  |  | 仅 API、状态机、数据模型、跨端、新模块或高风险变更需要 |
 | Design Review |  |  |  |
 | 实现仓库 / 实现位置 |  |  |  |
+| topology |  |  | `分仓接入` / `新建一体仓` / `已有一体仓`；一体仓允许前后端同一 `git_url` |
 | 前后端工程存在性判定 |  |  | 记录 frontend / backend 是否已存在且可复用 |
-| 工程路径策略 |  |  | Harness 内使用 `apps/backend/<project>/` / `apps/frontend/<project>/`；外部仓库记录真实项目根 |
+| 工程路径策略 |  |  | 按 `layout_policy`：`harness-apps-multi-project` 才强制 `apps/.../<project>/`；`external-repository-native` 登记真实根 |
 | `垂直切片 Ticket 状态` |  |  | ready / blocked / in-progress |
 
 ## 2. 实现前门禁
@@ -33,11 +34,11 @@ owner: ai
 | Spec Delta 已补齐或明确不需要 | 是 / 否 / 不适用 |  |
 | Design Review 阻断项已关闭 | 是 / 否 / 不适用 |  |
 | 垂直切片 Ticket 已拆到端到端可验收 | 是 / 否 |  |
-| 实现仓库 / 实现位置已登记 | 是 / 否 |  |
-| 受影响 frontend 工程已存在可复用，或已登记 `scaffold_status=required` 并确认外部脚手架目标 | 是 / 否 / 不适用 |  |
-| 受影响 backend 工程已存在可复用，或已登记 `scaffold_status=required` 并确认外部脚手架目标 | 是 / 否 / 不适用 |  |
+| 实现仓库 / 实现位置已登记 | 是 / 否 | 含 `topology` 与 `layout_policy` |
+| 受影响 frontend 工程已存在可复用，或已登记 `scaffold_status=required` 并确认外部脚手架目标 | 是 / 否 / 不适用 | 已有一体仓 `existing` 不得把迁仓当脚手架 |
+| 受影响 backend 工程已存在可复用，或已登记 `scaffold_status=required` 并确认外部脚手架目标 | 是 / 否 / 不适用 | 已有一体仓 `existing` 不得把迁仓当脚手架 |
 | 缺失工程时已路由到对应脚手架 skill | 是 / 否 / 不适用 | `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator` |
-| Harness 内项目根路径符合 `apps/<backend|frontend>/<project>/` | 是 / 否 / 不适用 | `apps/backend/`、`apps/frontend/` 仅为容器 |
+| 项目根路径符合当前 `layout_policy` | 是 / 否 / 不适用 | `harness-apps-multi-project` 才要求 `apps/<backend|frontend>/<project>/`；native 用登记根 |
 | 未使用 `app/backend/`、`app/frontend/` 及其子路径 | 是 / 否 / 不适用 | 命中即阻断生成和实现 |
 | 原型确认后先完成后端脚手架，再进入业务代码路由 | 是 / 否 / 不适用 | `backend_scaffold_policy_satisfied` |
 | 后端脚手架合同字段完整且版本当前 | 是 / 否 / 不适用 | `contract_id`、`contract_version`、Router draft、生命周期批准、持久化引用、允许写路径、预期证据、验证命令 |
@@ -85,7 +86,7 @@ owner: ai
 |---|---|
 | impacted_areas |  |
 | implementation_path_policy | `harness-apps-multi-project` / `external-repository-native` |
-| project_roots | Harness 内填写 `apps/backend/<project>/` / `apps/frontend/<project>/`；外部仓库填写真实项目根 |
+| project_roots | 按 `layout_policy` 填写：新建一体仓用 `apps/backend/<project>/` / `apps/frontend/<project>/`；分仓与已有一体仓填真实项目根 |
 | required_skills |  |
 | optional_skills |  |
 | unavailable_skills | 写明 provider、fallback 和阻断结论；不得静默跳过 |
@@ -187,15 +188,15 @@ owner: ai
 
 ## 4. 外部实现仓库
 
-> 当前仓库默认不承载运行时代码。若用户明确选择 Harness 内实现，项目根必须是 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 不能作为项目根，`app/backend/`、`app/frontend/` 及其子路径禁止使用。
+> 先填 `topology`。分仓接入使用独立 `git_url`。一体仓允许 `backend` 与 `frontend` 同一 `git_url`、两套 `project_root`。新建一体仓的项目根必须是 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；已有一体仓登记磁盘真实根，禁止用 `apps/` 占位。`apps/backend/`、`apps/frontend/` 不能作为项目根，`app/backend/`、`app/frontend/` 及其子路径禁止使用。
 
 | repo_role | project_root | git_url | default_branch | working_branch | MR / PR | CI | test_command | build_command | 状态 |
 |---|---|---|---|---|---|---|---|---|---|
-| backend | `apps/backend/<project>/` 或外部真实路径 |  |  |  |  |  |  |  | pending / ready / blocked / not-applicable |
-| frontend | `apps/frontend/<project>/` 或外部真实路径 |  |  |  |  |  |  |  | pending / ready / blocked / not-applicable |
+| backend | 按 `layout_policy` 填真实根或 `apps/backend/<project>/` | 一体仓可与 frontend 相同 |  |  |  |  |  |  | pending / ready / blocked / not-applicable |
+| frontend | 按 `layout_policy` 填真实根或 `apps/frontend/<project>/` | 一体仓可与 backend 相同 |  |  |  |  |  |  | pending / ready / blocked / not-applicable |
 | other | 真实路径 |  |  |  |  |  |  |  | pending / ready / blocked / not-applicable |
 
-说明：当前仓库默认作为 Harness / 研发管理仓库；前后端实现默认位于外部实现仓库。缺少实现仓库登记时，先使用 `implementation-repo-onboarding`，并按 `docs/templates/implementation-repo-registry-template.md` 补齐登记。
+说明：产品实例默认分仓接入；新建一体仓才脚手架到 `apps/.../<project>/`。缺少实现仓库登记时，先使用 `implementation-repo-onboarding`，并按 `docs/templates/implementation-repo-registry-template.md` 补齐登记。
 
 ## 4.1 脚手架初始化判定
 
@@ -204,7 +205,7 @@ owner: ai
 | backend | 是 / 否 / 不适用 | existing / required / initialized / not-applicable | 是 / 否 / 不适用 | 复用现有 / 初始化 / 阻塞 | `yss-ddd-scaffold-generator` / none |  |  |
 | frontend | 是 / 否 / 不适用 | existing / required / initialized / not-applicable | 是 / 否 / 不适用 | 复用现有 / 初始化 / 阻塞 | `yss-frontend-scaffold-generator` / none |  |  |
 
-脚手架输出位置必须回指具体项目根：后端为 `apps/backend/<project>/`，前端为 `apps/frontend/<project>/`；不得把 `apps/backend/`、`apps/frontend/` 容器根或任何 `app/backend/`、`app/frontend/` 路径作为生成目标。
+脚手架输出位置必须回指具体项目根：`harness-apps-multi-project` 下后端为 `apps/backend/<project>/`，前端为 `apps/frontend/<project>/`；不得把容器根或任何 `app/backend/`、`app/frontend/` 路径作为生成目标。已有一体仓 `scaffold_status=existing` 时禁止把迁仓当脚手架。
 
 ## 4.2 人工确认结论
 

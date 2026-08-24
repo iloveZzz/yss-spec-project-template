@@ -13,6 +13,7 @@ owner: ai
 
 | 字段 | 值 |
 |---|---|
+| topology | `分仓接入` / `新建一体仓` / `已有一体仓` |
 | harness_change |  |
 | slice_id |  |
 | vertical_slice_issue |  |
@@ -32,24 +33,24 @@ owner: ai
 
 | 字段 | 值 |
 |---|---|
-| backend_repo |  |
+| backend_repo | 一体仓可与 `frontend_repo` 为同一 `git_url` |
 | backend_branch |  |
-| backend_mr_pr |  |
+| backend_mr_pr | 一体仓可与前端同一 MR |
 | backend_ci |  |
 | backend_verification |  |
-| backend_project_root | `apps/backend/<project>/` 或外部真实路径 |
+| backend_project_root | 按 `layout_policy` 填真实根或 `apps/backend/<project>/` |
 | backend_status | pending / ready / blocked / not-applicable |
 
 ## 4. Frontend
 
 | 字段 | 值 |
 |---|---|
-| frontend_repo |  |
+| frontend_repo | 一体仓可与 `backend_repo` 为同一 `git_url` |
 | frontend_branch |  |
-| frontend_mr_pr |  |
+| frontend_mr_pr | 一体仓可与后端同一 MR |
 | frontend_ci |  |
 | frontend_verification |  |
-| frontend_project_root | `apps/frontend/<project>/` 或外部真实路径 |
+| frontend_project_root | 按 `layout_policy` 填真实根或 `apps/frontend/<project>/` |
 | frontend_status | pending / ready / blocked / not-applicable |
 
 ## 5. Fresh Verification

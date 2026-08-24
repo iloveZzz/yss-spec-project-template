@@ -20,7 +20,7 @@ owner: ai
 | 风险 / 回滚约束 | `AGENTS.md` |  |
 | Slice Implementation Contract |  | 填写 contract_id / contract_version / 生命周期批准状态 |
 | 后端脚手架策略 | `orchestration-contract.yaml` / `yss-ddd-scaffold-generator` |  | backend `scaffold_status=required` 时填写结构化合同身份、批准/持久化引用、生成器输入、预期文件、实际 `./mvnw` 结果和后置 Router 重编译 |
-| 工程项目路径策略 | `docs/process/implementation-repo-integration.md` / Router Contract |  | Harness 内必须是 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 仅为容器，`app/backend/`、`app/frontend/` 及其子路径阻断 |
+| 工程项目路径策略 | `docs/process/implementation-repo-integration.md` / Router Contract |  | 按 `layout_policy` 验收：`harness-apps-multi-project` 必须是 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`external-repository-native`（含 attach 后同仓）使用登记根，原目录不是 `apps/` 不算失败。容器根与 `app/backend/`、`app/frontend/` 仍阻断 |
 | 垂直切片工作单元 |  |  |
 | YSS Skill Execution Result |  | 每个 skill / work_unit 的结果文件引用 |
 
@@ -43,7 +43,7 @@ owner: ai
 | Infrastructure：需要持久化的切片必须有 PO / Repository / Convertor / GatewayImpl；`InMemory*Gateway` 只能作为显式 `seam-deferred` | `yss-repository` / 数据架构 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 未补齐时不得声称生产持久化完成 |
 | POJO / Convertor：DTO / VO / CMD / Query / PO / Domain Model 样板代码默认使用 Lombok；对象转换默认使用 MapStruct，禁止 `BeanUtils.copyProperties`、反射拷贝和重复手写字段赋值 | `lombok` / `mapstruct` / `AGENTS.md` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 未加载 skill、缺注解处理器配置、缺 Convertor 或无例外说明时标记 `violation` |
 | 后端工程工具链：构建、测试、运行、OpenAPI 生成、CI 和 Release 命令必须使用项目根目录 `./mvnw ...`；裸 `mvn ...` 必须有受控例外记录 | `yss-ddd-scaffold-generator` / `yss-backend-scaffold-parent` / implementation routing |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 无例外记录时改为 `./mvnw ...`，否则不得进入完成 / 可合并结论 |
-| 工程项目路径：每个 Harness 内项目必须有具体项目段，禁止直接写入容器根或单数 `app/...` | `docs/process/implementation-repo-integration.md` / implementation path validator |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 路径违规时停止 build，并回到实现路由 |
+| 工程项目路径：按 `layout_policy` 验收项目根；禁止把 native 根改写成 `apps/` 占位，也禁止直接写入容器根或单数 `app/...` | `docs/process/implementation-repo-integration.md` / implementation path validator |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 路径违规时停止 build，并回到实现路由 |
 | 文档语言：持久化生命周期文档、实施记录、审查报告、发布说明和 Git checkpoint 正文必须使用中文，英文 skill / 模板不得原样落地 | `AGENTS.md` / `yss-product-lifecycle` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 仅保留必要英文技术标识、命令和 metadata |
 | 高风险变更：按已批准的普通影响面结论记录验证证据、责任人和回滚约束 | `AGENTS.md` / Spec / 架构记录 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺验证证据或责任人时不得发布或合并 |
 |  |  |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  |  |
