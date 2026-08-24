@@ -42,3 +42,10 @@ lint 脚本改为失败跨路径 wikilink、校验 manifest sha256，并要求 H
 - unmapped: (none)
 
 同步 raw 中的 `AGENTS.md` / `CONTEXT.md`，重放 `skill-names` 摘录（内容未变）。刷新 [[Agent入口规则]]、[[LLM Wiki]] 与 [[模板总览]] 中与 ingest / refresh 分界相关的句子；新增基础设施 `concept-table.md`；`CLAUDE.md` 补 Status / INGEST。未改其余命中页：AGENTS 仅增 ingest 入口句，CONTEXT 仅澄清 ingest 不替代权威源，锁文件只变 `effectiveHash`。
+
+## [2026-08-24] REFRESH | CONTEXT 英文标识词干
+- changed: AGENTS.md, CONTEXT.md, spec-template.md, vertical-slice-ticket-template.md, yss-skill-registry.yaml, skills-lock.json
+- articles: Agent入口规则, Spec基线, 垂直切片Ticket, 模板总览, 复盘与权威资产修订
+- unmapped: (none)
+
+同步 raw 中的 `CONTEXT.md` / `AGENTS.md` / Spec 与垂直切片模板。刷新上述文章中与 PascalCase `英文标识` 词干相关的句子。未改其余命中页。`yss-skill-registry.yaml` 与 `skills-lock.json` 为既有 live 漂移，仅对齐 raw / hash（补入 `yss-antd-design`），不改技能投影文章。

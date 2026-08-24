@@ -129,4 +129,4 @@ Status: ready-for-human
 - [ ] 已回勾当前 `contract_id` / `contract_version`、全部工作单元和对应 `YSS Skill Execution Result`
 - [ ] 实际 changed files 均在合同允许路径内，预期证据齐全，验证结果包含执行时间
 - [ ] `new_impacts`、`drift`、`violation` 和重路由状态均有明确结论，合同未处于 `stale`
-- [ ] 如领域或架构决策变化，已更新 `CONTEXT.md` / ADR
+- [ ] 如领域或架构决策变化，已更新 `CONTEXT.md` / ADR；新增业务术语含 PascalCase `英文标识`，代码与契约字段能追溯到该词干

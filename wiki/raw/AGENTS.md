@@ -31,7 +31,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 - 所有面向业务、产品、架构、实施、审查、发布和复盘的落地文档，正文统一使用简体中文。
 - 英文专有名词、代码标识、API 路径、schema、类名、方法名、枚举值、错误码、命令、文件名和协议 metadata 保持原样。
 - 新流程统一使用 Spec、Ticket、`to-spec`、`to-tickets`。过时术语和技能名只能出现在迁移指南或明确标注的旧项目上下文。
-- 实施前读取 `CONTEXT.md`；与词汇或 ADR 冲突时立即指出并先解决冲突。
+- 实施前读取 `CONTEXT.md`。业务术语必须已有 PascalCase `英文标识`；代码类型 / 字段与契约 property 使用该词干按 `CONTEXT.md` 文首规则变形。改中文术语或英文标识都先回写 `CONTEXT.md`。与词汇或 ADR 冲突时立即指出并先解决冲突。
 
 ## 4. `template-source` 模板维护路由
 
@@ -78,7 +78,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 |---|---|
 | 技术事实、标准、第三方 API 或框架行为影响决策 | `research` 或等价的一手资料记录 |
 | 竞品、市场或用户口碑事实 | `competitive-intelligence` |
-| UI 设计、原型、组件或主题 | `yss-design-system` 后使用 `yss-prototype-stage`；Codex 再路由 `product-design:index`，其他 Agent 交付等价合同资产；产出前后用 `antd` CLI 记录 Ant Design v6 与浏览器验证事实 |
+| UI 设计、原型、组件或主题 | `yss-design-system` 后使用 `yss-prototype-stage`；Codex 再路由 `product-design:index`，其他 Agent 交付等价合同资产；原型产出前后用 `yss-antd-design` 记录 Ant Design v6 事实与浏览器验证。前端代码落地改用 `yss-ui`，不要继续调用 `yss-antd-design` |
 | Bug、测试失败或性能回退 | `diagnosing-bugs` 建立可复现反馈，再用 `tdd` |
 | merge / rebase 冲突 | `resolving-merge-conflicts` |
 | 架构治理、难测模块或深模块设计 | `improve-codebase-architecture` / `codebase-design` |

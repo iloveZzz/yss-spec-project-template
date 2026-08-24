@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "wikiRoot": "wiki",
-  "compiledAt": "2026-08-23T09:28:35.779Z",
-  "gitCommit": "4195fb4f4e5b1f8cf2fada485ed890526d469385",
+  "compiledAt": "2026-08-24T03:05:31.972Z",
+  "gitCommit": "de5a8f193f84d44c0b8c9b8dc5da501e60846e66",
   "profile": "documents",
   "sources": [
     {
@@ -11,7 +11,7 @@
       "livePath": "AGENTS.md",
       "rawPath": "raw/AGENTS.md",
       "role": "copy",
-      "sha256": "8b4616521833aae117e46a1ad07aa0fadbee180e95708d239062a67f31acc33d"
+      "sha256": "7cfed91a8e530606f1140acf5156acae1b4c7b16ae13c3d960b8905a61fabd0d"
     },
     {
       "id": "CONTEXT.md",
@@ -19,7 +19,7 @@
       "livePath": "CONTEXT.md",
       "rawPath": "raw/CONTEXT.md",
       "role": "copy",
-      "sha256": "4e8cf91a8d051edcce45867edc38e2d6d68d2e94577d069d8307ebc58d05a211"
+      "sha256": "83c31282a9fcfa5ca22e391045fb482cba87d1fb8ae1f31bd93a6224add462d4"
     },
     {
       "id": "README.md",
@@ -83,7 +83,7 @@
       "livePath": "docs/agents/yss-skill-registry.yaml",
       "rawPath": "raw/yss-skill-registry.yaml",
       "role": "copy",
-      "sha256": "5859cc6ef663fb4939caab03083d4036ac5936886c9e4be7a99701d5d035047d"
+      "sha256": "b265d25be9bc80166e289ca1702337457ac839aec50290d1ba078c7a100cd474"
     },
     {
       "id": "issue-tracker.md",
@@ -123,7 +123,7 @@
       "livePath": "docs/templates/spec-template.md",
       "rawPath": "raw/spec-template.md",
       "role": "copy",
-      "sha256": "296bffe6cddbd03c6b7e513e777a176cce5688e1d2e36ce1b63d4f810fe3877d"
+      "sha256": "10d12f0d4c7c148afd74876d057afebdf0a97b65a21cdf2b67ca14a3ce804115"
     },
     {
       "id": "vertical-slice-ticket-template.md",
@@ -131,7 +131,7 @@
       "livePath": "docs/templates/vertical-slice-ticket-template.md",
       "rawPath": "raw/vertical-slice-ticket-template.md",
       "role": "copy",
-      "sha256": "d0e47649cf2fad5fe63d0c37a878d7ada30d1c6c4b12b6b59d036f49f369dcf3"
+      "sha256": "49bec2cb6df81ab6d76d01920b52197274b39b6381c329baff360e34e64cc341"
     },
     {
       "id": "skills-lock.json",
@@ -142,7 +142,7 @@
       "extract": {
         "kind": "skill-names"
       },
-      "sha256": "df9bd8e96f575bee59d186a9d248ee5d969552cb949bafbe25ce0452e89e7a46"
+      "sha256": "8b6df90beb87c526bc2e0a71de61a2ffd1f76b96cb47e6fe87172ebd849bb45b"
     }
   ],
   "articles": [

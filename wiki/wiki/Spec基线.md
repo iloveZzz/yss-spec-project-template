@@ -6,7 +6,7 @@ Spec 是记录用户问题、解决方案、用户故事、关键决策、验收
 
 模板 `docs/templates/spec-template.md` 的 frontmatter 含 `pipeline`、`stage`、`status`、`owner`；`status` 默认 `ready-for-human`，`stage` 默认 `open`，`owner` 默认 `ai`。正文先挂功能父 Ticket，再写问题陈述、解决方案、用户故事、功能需求、非功能需求、验收标准（gherkin）、产品总体设计 / 功能架构、OpenAPI 影响、DDD 影响判断、测试决策、AI / 人工审查点、非目标范围和风险。Local 路径约定为 `docs/.scratch/<feature>/spec.md`，父 Ticket 为 `docs/.scratch/<feature>/parent-ticket.md`。
 
-验收标准写可观察结果，不写实现步骤。测试决策要标明主要测试 seam、代码库中的相似测试，以及单元 / 领域行为、API / 契约、前端组件、E2E 关键路径是否必需。DDD 影响判断只做轻量检查：统一语言变化回写 `CONTEXT.md`；限界上下文变化在产品总体设计中补 Strategic DDD Check；聚合、不变量或状态机变化在系统概要设计 / 数据架构中补 Tactical DDD Check。未触发时不另开流程阶段。
+验收标准写可观察结果，不写实现步骤。测试决策要标明主要测试 seam、代码库中的相似测试，以及单元 / 领域行为、API / 契约、前端组件、E2E 关键路径是否必需。DDD 影响判断只做轻量检查：统一语言变化回写 `CONTEXT.md` 的中文术语和 PascalCase `英文标识`；限界上下文变化在产品总体设计中补 Strategic DDD Check；聚合、不变量或状态机变化在系统概要设计 / 数据架构中补 Tactical DDD Check。未触发时不另开流程阶段。
 
 存在 UI 影响时，Spec 才强制低保真页面草图、状态矩阵、高保真 HTML 原型和用户确认；否则记录 `not-applicable` 及原因。UI 影响不等于 [[产品设计影响与原型]]：只有主流程、导航、权限体验、异常 / 恢复、状态流转或 API 反推才构成产品设计影响。OpenAPI 影响在 Spec 中先勾选「无 / 需要 API 影响分析 / 需要 review-only OpenAPI Draft」，Draft 路径为 `docs/.scratch/<feature>/api/<feature>.yaml`；Draft 在 Freeze 前只供评审，见 [[OpenAPI契约]]。
 

@@ -4,7 +4,7 @@
 
 单一事实来源不得在说明文档里重复定义：领域与流程词汇以 `CONTEXT.md` 为准；Agent 入口以 `AGENTS.md` 为准；主阶段、门禁、产物、工作单元、证据和稳定 ID 以 `docs/process/lifecycle-registry.yaml` 为准（`docs/process/lifecycle-artifact-map.md` 只是派生阅读视图）；影响面触发与 `not-applicable` 以 `docs/process/harness-process-tailoring.md` 为准（见 [[影响面分诊与流程裁剪]]）；技能清单、来源、版本、哈希和投影目标以 `skills-lock.json` 为准。`docs/agents/yss-skill-registry.yaml` 当前 `status: shadow`，不作为 Router / 生命周期运行时入口。
 
-落地文档正文统一使用简体中文；英文专有名词、路径、schema、命令与协议 metadata 保持原样。新流程统一使用 Spec、Ticket、`to-spec`、`to-tickets`。功能父 Ticket 汇总阶段证据；Spec 初稿、产品设计、原型、OpenAPI Draft 和待冻结资产使用 `ready-for-human`；只有通过必要门禁、阻塞边已清除并具备直接实现条件的垂直切片 Ticket 才能使用 `ready-for-agent`（见 [[Ticket与流程状态]]）。
+落地文档正文统一使用简体中文；英文专有名词、路径、schema、命令与协议 metadata 保持原样。业务术语必须已有 PascalCase `英文标识`；代码类型 / 字段与契约 property 使用该词干按 `CONTEXT.md` 文首规则变形；改中文术语或英文标识都先回写 `CONTEXT.md`。新流程统一使用 Spec、Ticket、`to-spec`、`to-tickets`。功能父 Ticket 汇总阶段证据；Spec 初稿、产品设计、原型、OpenAPI Draft 和待冻结资产使用 `ready-for-human`；只有通过必要门禁、阻塞边已清除并具备直接实现条件的垂直切片 Ticket 才能使用 `ready-for-agent`（见 [[Ticket与流程状态]]）。
 
 进入实现前先读 `docs/process/implementation-repo-integration.md` 并登记实现仓库，再由 `yss-router` 编译最小 skill 集合与当前实现合同（见 [[YSS路由与合同编译]]）。当前仓库默认是研发管理仓库，运行时代码优先在独立实现仓库；只有用户明确选择时才用 `apps/backend/<project>/` 或 `apps/frontend/<project>/`。`app/backend/`、`app/frontend/` 禁止作为工程输出（见 [[实现仓库与跨仓库契约]]）。前端测试、type-check 与构建优先 `pnpm`；后端校验、测试与编译优先项目根 `./mvnw`；不要默认 `npm` / `yarn` 或裸 `mvn`。根目录 `CLAUDE.md` 只引用 `AGENTS.md`，不是第二套入口规则。
 

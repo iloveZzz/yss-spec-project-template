@@ -10,7 +10,7 @@ Spec 初稿、产品设计、原型、OpenAPI Draft 和待冻结资产一律使�
 
 工作单元必须写验收行为、主 / 辅 skill、`behavior-tdd` 或 `controlled-generation`、允许写路径、预期证据和验证命令。业务规则、状态机、事务、权限、错误映射、复杂查询和用户可见交互必须 `behavior-tdd`；`controlled-generation` 只覆盖机械脚手架、样板、冻结客户端或配置，并记录 exception reason。涉及后端时必须填写 Backend 合同与 skill 表，不得只写「符合 YSS」。出现 `drift`、`violation` 或非空 `new_impacts` 时暂停受影响工作单元，不得先完成代码再补合同。
 
-完成定义要求：实现与测试通过，调试 / 原型代码已移除，合同与 `YSS Skill Execution Result` 已回勾，实际 changed files 均在允许路径内，验证结果含执行时间，重路由状态有明确结论且合同未 `stale`。路径越界、证据缺失、未执行验证时停止实现并重新路由，见 [[条件强制门禁]] 与 [[实现仓库与跨仓库契约]]。整条链路属于 [[产品研发生命周期]] 的 Ticket 正式化与垂直切片实现阶段。
+完成定义要求：实现与测试通过，调试 / 原型代码已移除，合同与 `YSS Skill Execution Result` 已回勾，实际 changed files 均在允许路径内，验证结果含执行时间，重路由状态有明确结论且合同未 `stale`。领域或架构决策变化时更新 `CONTEXT.md` / ADR，新增业务术语含 PascalCase `英文标识`，代码与契约字段能追溯到该词干。路径越界、证据缺失、未执行验证时停止实现并重新路由，见 [[条件强制门禁]] 与 [[实现仓库与跨仓库契约]]。整条链路属于 [[产品研发生命周期]] 的 Ticket 正式化与垂直切片实现阶段。
 
 ## 来源
 

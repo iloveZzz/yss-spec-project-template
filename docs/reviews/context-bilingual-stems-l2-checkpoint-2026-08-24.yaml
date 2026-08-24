@@ -1,0 +1,32 @@
+schema_version: 1
+intensity: L2
+classification_reason: >-
+  CONTEXT.md 增加英文标识列并拆成流程/业务两节（template-structure），
+  AGENTS.md 增加业务术语词干硬门禁（local-rule）。未改生命周期注册表、
+  未把 CONTEXT schema 写入 verify-template，未改 create-yss-spec 文件清单。
+triggers: [local-rule, template-structure]
+changed_assets:
+  - CONTEXT.md
+  - AGENTS.md
+  - docs/agents/domain.md
+  - docs/templates/spec-template.md
+  - docs/templates/vertical-slice-ticket-template.md
+  - docs/templates/review-report-template.md
+  - docs/reviews/context-bilingual-stems-counterexample-2026-08-24.txt
+  - docs/reviews/context-bilingual-stems-fresh-verification-2026-08-24.txt
+  - docs/reviews/context-bilingual-stems-focused-review-2026-08-24.md
+verification_evidence:
+  - kind: counterexample
+    command: docs/reviews/context-bilingual-stems-counterexample-2026-08-24.txt
+    result: pass
+  - kind: fresh-verification
+    command: docs/reviews/context-bilingual-stems-fresh-verification-2026-08-24.txt
+    result: pass
+  - kind: focused-independent-review
+    command: docs/reviews/context-bilingual-stems-focused-review-2026-08-24.md
+    result: pass
+review_mode: focused-independent
+escalation: >-
+  实施者不得把本文件当作已通过的 L2 结论。focused-independent-review
+  指向的审查清单仍为 ready-for-human；非实施者勾选完成前不得声称 L2 通过、
+  可合并或可发布。

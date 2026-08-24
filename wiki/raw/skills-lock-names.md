@@ -48,6 +48,7 @@ Derived names only. Do not copy hashes, paths, or the lock file.
 - `writing-for-agents`
 - `writing-fragments`
 - `writing-shape`
+- `yss-antd-design`
 - `yss-api-integration`
 - `yss-application`
 - `yss-audit-log`
