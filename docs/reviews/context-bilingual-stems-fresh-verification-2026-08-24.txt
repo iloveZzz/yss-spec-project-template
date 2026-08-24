@@ -1,19 +1,19 @@
-L2 fresh verification: CONTEXT 英文标识词干
+L2 fresh verification: CONTEXT 英文标识词干（独立审查写入后重跑）
 date: 2026-08-24
-head: de5a8f1
+review_candidate: 3a855f8d9df5ad96d9daf55dfbb493ff77ba16f9
+note: 本文件覆盖 focused-independent 审查文档写入后的编排器重跑；不沿用 de5a8f1 实施者自述。
 
 相关检查：
 - CONTEXT.md 含 ## 流程术语、## 业务术语、四列表头 术语 | 含义 | 英文标识 | 避免 / 备注
 - 流程术语 62 行英文标识均为 — ；业务术语无虚构表行
 - AGENTS.md 第 3 节要求业务术语 PascalCase 英文标识，代码/契约按 CONTEXT 文首变形
-- wiki lint-wikilinks 退出 0（23 篇文章，204 条 wikilink）
+- 独立审查：docs/reviews/context-bilingual-stems-focused-review-2026-08-24.md Status=Approved（七项均勾选）
+- wiki lint 此前已通过；本轮未再改 wiki
 
-本轮命令：
-  node .agents/skills/llm-wiki/scripts/lint-wikilinks.mjs wiki  → 通过
+本轮命令（审查文档写入后）：
   scripts/verify-template  → 模板发布校验通过
+  pnpm test：15 passed / 0 failed
+  scripts/verify-maintenance-checkpoint docs/reviews/context-bilingual-stems-l2-checkpoint-2026-08-24.yaml
 
-verify-template 末行：模板发布校验通过
-pnpm test：15 passed / 0 failed
-
-未做：类名自动 lint；未把 CONTEXT schema 接入 verify-template；未声称可发布。
-focused-independent-review：见 docs/reviews/context-bilingual-stems-focused-review-2026-08-24.md，须由非实施者完成。
+未做：类名自动 lint；未把 CONTEXT schema 接入 verify-template。
+不得声称可发布。

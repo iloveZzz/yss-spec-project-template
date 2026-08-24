@@ -12,6 +12,13 @@ changed_assets:
   - docs/templates/spec-template.md
   - docs/templates/vertical-slice-ticket-template.md
   - docs/templates/review-report-template.md
+  - docs/templates/requirement-freeze-template.md
+  - docs/user-guide/需求澄清指南.md
+  - docs/user-guide/产品生命周期工作流.md
+  - docs/user-guide/生命周期最佳实践.md
+  - docs/user-guide/需求澄清最佳实践.md
+  - docs/user-guide/产品研发全生命周期最佳实践.md
+  - wiki/.wiki-manifest.json
   - docs/reviews/context-bilingual-stems-counterexample-2026-08-24.txt
   - docs/reviews/context-bilingual-stems-fresh-verification-2026-08-24.txt
   - docs/reviews/context-bilingual-stems-focused-review-2026-08-24.md
@@ -27,6 +34,6 @@ verification_evidence:
     result: pass
 review_mode: focused-independent
 escalation: >-
-  实施者不得把本文件当作已通过的 L2 结论。focused-independent-review
-  指向的审查清单仍为 ready-for-human；非实施者勾选完成前不得声称 L2 通过、
-  可合并或可发布。
+  非实施者已在候选 3a855f8d9df5ad96d9daf55dfbb493ff77ba16f9
+  完成 focused-independent 审查，结论 Approved。
+  本结论覆盖 L2 聚焦清单，不是模板发布或合并裁决，不得声称可发布。
