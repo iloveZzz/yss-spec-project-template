@@ -25,11 +25,13 @@ if (isTemplateSource(root)) {
     if (status === "proposed" && !/尚未|未实现|不构成|不能把/.test(body)) failures.push(`${relativePath} 的 proposed ADR 缺少未实施/非当前门禁说明`);
   }
 }
-for (const [relativePath, marker] of Object.entries({
-  "docs/adr/0003-machine-readable-lifecycle-registry.md": "状态：部分实施（Phase 1）",
-  "docs/adr/0006-stable-lifecycle-ids-and-generated-structure.md": "状态：部分实施（Phase 1）"
-})) {
-  if (!read(relativePath).includes(marker)) failures.push(`${relativePath} 未声明当前实现状态`);
+if (isTemplateSource(root)) {
+  for (const [relativePath, marker] of Object.entries({
+    ".template-source/adr/0003-machine-readable-lifecycle-registry.md": "状态：部分实施（Phase 1）",
+    ".template-source/adr/0006-stable-lifecycle-ids-and-generated-structure.md": "状态：部分实施（Phase 1）"
+  })) {
+    if (!read(relativePath).includes(marker)) failures.push(`${relativePath} 未声明当前实现状态`);
+  }
 }
 if (!read("scripts/verify-lifecycle-scenarios").includes("ROUTE_REGISTRY_IDS")) failures.push("生命周期场景未校验稳定 ID 映射");
 if (failures.length > 0) {
