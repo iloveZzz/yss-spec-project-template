@@ -10,7 +10,7 @@
 - `.gitmodules`、gitlink（mode `160000`）以及 `apps/` 下已挂载的实现仓工作树是用户资产，不属于受管文件；`attach` / `sync` 不得创建、覆盖或删除它们。
 - 通过模板快照和 40 位 `templateCommit` 使每次初始化、升级和回滚可追踪。
 - 新模板快照的实例门禁以 Node `>=22 <27` 运行；不得执行 `npm install`、`pnpm install` 或维护侧 vendor 构建。`scripts/vendor/` 必须随快照分发且可离线使用。
-- 快照等于固定 `templateCommit` 的 Git 跟踪树减去根目录 `.template-source/`。源仓库 LLM Wiki 编译树位于 `.template-source/wiki`，模板维护审查位于 `.template-source/evidence/`，二者均不进入新 `project-instance`。此前误随快照到达实例的 `wiki/` 与 `docs/reviews/`，后续 `sync` 只 `remove-report`，不静默删除。`.nvmrc` 与根 `.gitignore` 仍属分发面。
+- 快照使用显式分发 allowlist 构建，不再等于 Git 跟踪树的隐式子集。根规则、共享 skills/projections、`docs/` 中的实例流程资产、`scripts/` 中的共享校验入口及 `scripts/vendor/` 属于分发面；根 `package.json`、`.cursor/environment.json`、模板源 CI、`.template-source/**`、源仓库 ADR、`wiki/`、`docs/reviews/` 和其他未登记顶层资源属于模板源资产。`.nvmrc` 与根 `.gitignore` 属于分发面。此前误随快照到达实例的文件，后续 `sync` 只 `remove-report`，不静默删除。
 
 ## 生命周期接口
 
@@ -66,6 +66,12 @@ npx create-yss-spec@latest attach \
 ```
 
 `managedFiles` 是每个受管文件的 baseline。CLI apply 前把将被覆盖的文件保存到目标目录外的临时备份目录；验证成功后默认保留，失败按操作日志回滚，metadata 不更新。
+
+## 实例分发清单
+
+`template.manifest.json` 是模板源与 CLI 共享的分发清单。它必须同时声明允许进入快照的根文件、根目录和路径前缀，明确排除的源仓库路径及其例外文件，以及 init / attach / sync 的差异化受管边界。
+
+未命中 allowlist 的新顶层文件默认不进入快照。`docs/adr/README.md` 是实例 ADR 入口，模板源 ADR 不进入快照；`.nvmrc`、根 `.gitignore`、共享 `scripts/` 和 `scripts/vendor/` 进入快照。旧实例已经存在的被排除路径只生成 `remove-report`，不得静默删除。
 
 ## 固定迁移规则
 

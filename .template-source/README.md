@@ -4,10 +4,10 @@
 
 ## 边界
 
-- `docs/` 是模板实例分发面：其中的文件会随 `create-yss-spec` 快照进入新项目。`.nvmrc` 与根 `.gitignore` 同属分发面。
+- `docs/` 是模板实例分发面的候选来源；模板源 ADR、审查记录和其他治理资产不进入实例。`.nvmrc` 与根 `.gitignore` 同属分发面。
 - `.template-source/` 是模板源治理区：保存模板维护的审查、研究、跨仓契约、发布路线、源仓库 ADR、派生证据和源仓库 LLM Wiki 编译树。
 - 源仓库 wiki-root 为 `.template-source/wiki`；新 `project-instance` 不附带该编译树。
-- 外部 CLI 按根目录排除 `.template-source/`；新项目不应出现该目录，也不应出现已经从 `docs/` 迁出的源仓库文件。
+- 外部 CLI 按显式分发清单构建快照；新项目不应出现 `.template-source/`、模板源 ADR、维护环境配置或已经从 `docs/` 迁出的源仓库文件。
 
 ## 归档规则
 
@@ -30,6 +30,10 @@
 
 | 模板实例分发面来源 | 模板源治理区目标 |
 |---|---|
+| `docs/adr/0001-product-design-prototype-entrypoint.md` | `.template-source/adr/0001-product-design-prototype-entrypoint.md` |
+| `docs/adr/0002-yss-project-repository-mode.md` | `.template-source/adr/0002-yss-project-repository-mode.md` |
+| `docs/adr/0003-machine-readable-lifecycle-registry.md` | `.template-source/adr/0003-machine-readable-lifecycle-registry.md` |
+| `docs/adr/0006-stable-lifecycle-ids-and-generated-structure.md` | `.template-source/adr/0006-stable-lifecycle-ids-and-generated-structure.md` |
 | `docs/adr/0004-split-lifecycle-and-router-registry-domains.md` | `.template-source/adr/0004-split-lifecycle-and-router-registry-domains.md` |
 | `docs/adr/0005-cross-repository-ecosystem-release-manifest.md` | `.template-source/adr/0005-cross-repository-ecosystem-release-manifest.md` |
 | `docs/adr/0007-separate-skill-routing-registry-from-integrity-lock.md` | `.template-source/adr/0007-separate-skill-routing-registry-from-integrity-lock.md` |
