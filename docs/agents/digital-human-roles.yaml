@@ -18,6 +18,7 @@ runtime_policy:
   biological_veto: true
   implementer_must_differ: true
   write_isolation: task-package-policy
+  dual_hat_split_when: [cross-repo-load, responsibility-conflict]
 
 runtimes:
   - id: runtime.generic
@@ -133,7 +134,8 @@ roles:
       repo registry. Do not set ready-for-agent; the orchestrator recomputes
       that formula. Do not approve Spec or OpenAPI Freeze. Do not write business
       code or serve as independent Reviewer. Default dual-hat on the
-      orchestrator instance unless cross-repo load requires a separate instance.
+      orchestrator instance until dual_hat_split_when
+      (cross-repo-load or responsibility-conflict) requires a separate instance.
 
   - id: role.frontend-engineer
     name: 前端工程师
@@ -169,6 +171,7 @@ roles:
     title: YSS 测试工程师
     stages: [stage.spec-architecture, stage.vertical-slice-implementation, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.frontend-implementation-verification]
+    owned_evidence_ids: [evidence.fresh-verification, evidence.frontend-implementation-verification]
     core_skills: [tdd, diagnosing-bugs, code-review]
     forbidden_skills: [yss-ddd-scaffold-generator, yss-frontend-scaffold-generator, implement, to-spec]
     description: >-
@@ -183,6 +186,10 @@ stage_groups:
     name: Discovery
     stage: stage.discovery
     members: [role.lifecycle-orchestrator, role.requirements-manager, role.product-manager, role.business]
+  - id: group.spec
+    name: Spec
+    stage: stage.spec-architecture
+    members: [role.lifecycle-orchestrator, role.requirements-manager, role.product-manager, role.test-engineer]
   - id: group.product-design
     name: 产品设计
     stage: stage.product-design
@@ -191,6 +198,10 @@ stage_groups:
     name: 契约
     stage: stage.system-data-engineering
     members: [role.lifecycle-orchestrator, role.backend-engineer, role.frontend-engineer, role.test-engineer, role.product-manager]
+  - id: group.tickets
+    name: Ticket 正式化
+    stage: stage.ticket-formalization
+    members: [role.lifecycle-orchestrator, role.project-manager, role.frontend-engineer, role.backend-engineer, role.test-engineer]
   - id: group.implementation
     name: 实现
     stage: stage.vertical-slice-implementation
@@ -202,6 +213,9 @@ stage_groups:
 
 gate_policy:
   default_if_unlisted: biological-human
+  unlisted_kept_biological:
+    - gate.design-reviewed
+    - gate.architecture-reviewed
   evidence_only:
     - gate.repository-identity-valid
     - gate.prototype-verified
@@ -209,12 +223,21 @@ gate_policy:
     - gate.slice-contract-approved
     - gate.slice-ready-for-agent
   digital_human_review:
-    - gate.prototype-reviewed
-    - gate.openapi-draft-reviewed
-    - gate.engineering-baseline-accepted
-    - gate.frontend-implementation-verified
+    - gate: gate.prototype-reviewed
+      drafter: role.product-manager
+      countersigners: [role.frontend-engineer]
+    - gate: gate.openapi-draft-reviewed
+      drafter: role.backend-engineer
+      countersigners: [role.frontend-engineer]
+    - gate: gate.engineering-baseline-accepted
+      countersigners: [role.test-engineer]
+    - gate: gate.frontend-implementation-verified
+      drafter: role.frontend-engineer
+      countersigners: [role.test-engineer]
   digital_human_review_work_units:
-    - work-unit.code-review
+    - work_unit: work-unit.code-review
+      countersigners: [role.test-engineer]
+      implementer_must_differ: true
   dual_digital_human:
     - gate: gate.spec-baseline-approved
       drafter: role.requirements-manager

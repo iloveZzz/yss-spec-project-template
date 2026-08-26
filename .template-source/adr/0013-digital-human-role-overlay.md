@@ -13,7 +13,7 @@ YSS 生命周期已有三套易被叫做「角色」的轴：Ticket 五态、职
 1. 数字人角色是叠加在 `yss-product-lifecycle` 上的配置透镜，不是独立生命周期。职称 Bot 不批准 Slice 合同、不设置 `ready-for-agent`、不宣布可发布。
 2. 权威配置是 `docs/agents/digital-human-roles.yaml`。运行时实例（含 Grok Bot）绑定该配置；git 资产仍是 SSOT。平台差异见 ADR-0014。
 3. 人默认只唤起主控数字人。主控 1:1 派一个 owner；可见会签使用逻辑阶段协作组。Grok 群聊 2–6 人的限制只约束 `runtime.grok`，见 ADR-0014。
-4. 项目经理与主控在配置上分体，Grok 默认兼任，直到跨仓负载需要独立项目经理 Bot。
+4. 项目经理与主控在配置上分体，默认兼任，直到 `dual_hat_split_when`（`cross-repo-load` 或 `responsibility-conflict`）需要独立项目经理实例。
 5. 会签分三级：运行时副作用审批与 `gate.release-ready`、对外商务承诺仍须生物人；审查类门禁可由指定数字人关闭；Spec 基线与 OpenAPI Freeze 须双数字人会签；`gate.user-confirmation` 可由产品经理数字人会签，生物人可一票否决。实现者数字人不得会签自己起草的资产。
 6. 模板发布单例 profile；`project-instance` 通过 duplicate 绑定仓库路径。禁止按功能再拆 Bot。
 7. 当前不增加 `agent_runtime_roots.grok`。Skill 仍以 `.agents/skills` 为权威，在 Grok 侧按 Bot 启用 `core_skills`。
@@ -23,11 +23,12 @@ YSS 生命周期已有三套易被叫做「角色」的轴：Ticket 五态、职
 - 数字人会签让协同少等人点门禁，但把「人工门禁」从「必须是生物人」改成「按注册表指定的会签人」。发布与外部副作用仍留在生物人，避免账号级 Always Allow 被理解成可发布。
 - 共享计算机迫使写范围靠任务包而不是平台隔离；这比「一角色一沙箱」弱，但与 Grok 官方边界一致。
 - 不把职称写进生命周期注册表 ID 空间，避免和 `stage|gate|artifact|work-unit|evidence` 混用。
-- 门禁状态机尚未增加 `bot_id` 字段；本 ADR 约束 Agent 如何写 `evidence.approval-record`，不宣称编排器已自动核验会签人。
+- 会签桶内门禁标为 `approved` 时，checkpoint 的 `approval_ref` 必须可读且通过 `scripts/verify-approval-record`。编排器不改 Ticket 五态公式，但错误会签不得把该门禁标为 `approved`。
 
 ## 验证
 
 - `scripts/verify-digital-human-roles`
 - `scripts/verify-digital-human-roles-scenarios`
+- `scripts/verify-approval-record`
 - `scripts/sync-skills --check`（若改了主控 skill）
 - `scripts/verify-template`（纳入上述脚本后）

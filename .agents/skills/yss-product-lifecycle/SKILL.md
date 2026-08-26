@@ -44,6 +44,6 @@ Matt 的 `grill-with-docs`、`to-spec`、`to-tickets`、`implement` 等保留为
 
 每个工作单元必须返回 `Workflow Execution Result`（workflow reference、skill、changed files、evidence refs、actual verification、deferred seams、drift/new impacts）。缺少可读证据、`stale`、`violation`、`drift`、`new_impacts` 或阻塞信号时不得标记 completed。实现授权不包含 Git commit/push 授权；“做完提交”等自然语言意向不构成上述结构化 Git 授权。
 
-输出固定包含：模式、当前阶段、影响面、资产/门禁状态、证据、阻塞项、本轮动作、下一工作单元、暂停/继续理由、Ticket 同步和 Git checkpoint 判断。暂停时只提出一个具体人工决策，并给出推荐答案与恢复动作。
+输出固定包含：模式、当前阶段、影响面、资产/门禁状态、证据、阻塞项、本轮动作、下一工作单元、暂停/继续理由、Ticket 同步和 Git checkpoint 判断。暂停会签时必须输出门禁 ID、指定 `role_id`、`runtime_id` 和会签文件路径（`docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`）。恢复前运行 `scripts/verify-approval-record`；错误会签记为 `blocked`，不得把该门禁标为 `approved`。任务包的 `core_skills` / `forbidden_skills` 必须从 `docs/agents/digital-human-roles.yaml` 复制（`taskPackageDefaults`），禁止手写第二套。
 
 详细执行循环、readiness、脚手架（包括 `controlled-generation`）、审查快照、状态传播和 Matt 边界见 [orchestration.md](references/orchestration.md)、[orchestration-contract.yaml](references/orchestration-contract.yaml)、[artifact-dependencies.md](references/artifact-dependencies.md) 和 [state-model.md](references/state-model.md)。

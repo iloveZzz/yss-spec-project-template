@@ -5,6 +5,7 @@ import path from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "./vendor/yaml.mjs";
+import { assertCheckpointApprovals } from "./lib/approval-record.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const schemaPath = path.join(root, "docs/process/schemas/lifecycle-checkpoint.schema.json");
@@ -30,6 +31,7 @@ try {
   const value = document.toJS({ maxAliasCount: 0 });
   const result = spawnSync("python3", ["-c", validator, schemaPath], { cwd: root, encoding: "utf8", input: JSON.stringify(value) });
   if (result.status !== 0) throw new TypeError(`${result.stdout}${result.stderr}`.trim());
+  assertCheckpointApprovals(value, sourcePath);
   process.stdout.write("生命周期 checkpoint 验证通过\n");
 } catch (error) {
   process.stderr.write(`生命周期 checkpoint 验证失败: ${error.message}\n`);

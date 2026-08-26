@@ -11,7 +11,7 @@
 | `tracker.kind` | `local-markdown`、`github`、`gitlab` |
 | `ticket.role` | `needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix` |
 
-Matt 五态不得扩义。资产的 `ready-for-human` 与 Ticket label 必须带命名空间表达。
+Matt 五态不得扩义。资产的 `ready-for-human` 与 Ticket label 必须带命名空间表达。`paused-human-gate` 表示等待 `docs/agents/digital-human-roles.yaml` 指定的会签人（数字人或生物人），不是「必须是生物人」。
 
 ## 上下文与外部输入证据
 

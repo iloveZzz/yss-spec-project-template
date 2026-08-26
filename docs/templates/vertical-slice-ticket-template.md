@@ -53,6 +53,7 @@ Status: ready-for-human
 | contract_ref |  |
 | Router 状态 | draft / blocked / ready-for-lifecycle-review |
 | 生命周期批准状态 | pending / approved / rejected |
+| suggested_owner_role_id | `role.frontend-engineer` / `role.backend-engineer` / `role.test-engineer`（Router 建议，编排器派活） |
 | Build Architecture Checklist |  |
 
 > Router 不得自行将合同批准或将本 Ticket 推进为 `ready-for-agent`。只有生命周期编排器核验并持久化当前版本合同、清除阻塞边后，才能推进状态。
@@ -106,6 +107,12 @@ Status: ready-for-human
 | recovery_conditions |  |
 
 出现 `drift`、`violation` 或非空 `new_impacts` 时暂停受影响工作单元，不得先完成代码再补合同；更新合同版本并通过生命周期审查后才能恢复。
+
+## 会签
+
+| 门禁 | 记录路径 | 会签角色 | 状态 |
+|---|---|---|---|
+|  | `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml` | 见 `docs/agents/digital-human-roles.yaml` | pending / approved / blocked / not-applicable |
 
 ## 状态
 

@@ -46,6 +46,14 @@ Status: ready-for-human
 - Verification：`docs/.scratch/<feature>/verification/`
 - Vertical slices：`docs/.scratch/<feature>/issues/`
 
+## 会签
+
+会签记录写在 `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`。会签桶内门禁标为 `approved` 前必须通过 `scripts/verify-approval-record`。
+
+| 门禁 | 记录路径 | 会签角色 | 状态 |
+|---|---|---|---|
+|  | `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml` | 见 `docs/agents/digital-human-roles.yaml` | pending / approved / blocked / not-applicable |
+
 ## 阻塞关系
 
 - 无 / 被 `<ticket-path>` 阻塞

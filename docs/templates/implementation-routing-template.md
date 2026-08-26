@@ -275,9 +275,9 @@ owner: ai
 
 ## 6. Subagent 执行计划
 
-| task_id | 数字人角色 | runtime_id | subagent 角色 | 责任范围 | 允许修改文件 / 模块 | 禁止事项 | 输出回填位置 |
-|---|---|---|---|---|---|---|---|
-|  | role.frontend-engineer | runtime.skill-projection | Explorer / Drafter / Worker / Reviewer / Verifier | frontend / backend / test / review / verify / docs |  | 不得 Freeze / 不得安全放行 / 不得覆盖他人改动 / 不得会签自己的草稿 |  |
+| task_id | 数字人角色 | runtime_id | core_skills（从角色表复制） | subagent 角色 | 责任范围 | 允许修改文件 / 模块 | 禁止事项 | 输出回填位置 |
+|---|---|---|---|---|---|---|---|---|
+|  | role.frontend-engineer | runtime.skill-projection | 从 YAML `core_skills` 复制 | Explorer / Drafter / Worker / Reviewer / Verifier | frontend / backend / test / review / docs |  | 不得 Freeze / 不得覆盖他人改动 / 不得会签自己的草稿 |  |
 
 | 并行风险 | 缓解措施 | 合并负责人 | 状态 |
 |---|---|---|---|

@@ -19,13 +19,15 @@ const REQUIRED_ROLES = [
   "role.test-engineer"
 ];
 const REQUIRED_RUNTIMES = ["runtime.generic", "runtime.skill-projection", "runtime.grok"];
-const GATE_BUCKETS = [
+const REQUIRED_DUAL_HAT_SPLIT = ["cross-repo-load", "responsibility-conflict"];
+const STRING_GATE_BUCKETS = [
   "evidence_only",
   "orchestrator",
-  "digital_human_review",
   "product_digital_human_with_biological_veto",
   "biological_human"
 ];
+const COUNTERSIGN_STRING_BUCKETS = ["product_digital_human_with_biological_veto", "biological_human"];
+export const BIOLOGICAL_ROLE_ID = "role.biological-human";
 const OVERFLOWS = new Set(["not-applicable", "one-to-one-handoff", "forbid"]);
 const GROK_FIELDS = ["grok_title", "grok_description", "grok_default_dual_hat", "grok_runtime_root", "grok_platform_approval"];
 
@@ -96,7 +98,7 @@ function validateSkills(list, field, skillIds) {
   }
 }
 
-function validateActor(actor, { skillIds, stageIds, artifactIds, expectedKind }) {
+function validateActor(actor, { skillIds, stageIds, artifactIds, evidenceIds, expectedKind }) {
   rejectGrokCoupling(actor, actor?.id || expectedKind);
   requireString(actor.id, `${expectedKind}.id`);
   if (!ROLE_ID.test(actor.id)) fail(`${actor.id} 不符合 role.*`);
@@ -112,6 +114,12 @@ function validateActor(actor, { skillIds, stageIds, artifactIds, expectedKind })
     requireStringArray(actor.draft_artifact_ids, `${actor.id}.draft_artifact_ids`);
     for (const artifact of actor.draft_artifact_ids) {
       if (!artifactIds.has(artifact)) fail(`${actor.id} 引用了未知产物: ${artifact}`);
+    }
+  }
+  if (actor.owned_evidence_ids) {
+    requireStringArray(actor.owned_evidence_ids, `${actor.id}.owned_evidence_ids`);
+    for (const evidence of actor.owned_evidence_ids) {
+      if (!evidenceIds || !evidenceIds.has(evidence)) fail(`${actor.id} 引用了未知证据: ${evidence}`);
     }
   }
   validateSkills(actor.core_skills, `${actor.id}.core_skills`, skillIds);
@@ -172,7 +180,70 @@ function validateRuntimes(doc, skillRegistry, groupSizes) {
   if (!roots || typeof roots !== "object") fail("技能注册表缺少 agent_runtime_roots");
 }
 
-export function validateDigitalHumanRoles(doc, { skillIds, stageIds, gateIds, artifactIds, workUnitIds, skillRegistry } = {}) {
+function validateSignRule(rule, { actors, gateIds, claimed, field }) {
+  if (!rule || typeof rule !== "object") fail(`${field} 必须是对象`);
+  requireString(rule.gate, `${field}.gate`);
+  if (!gateIds.has(rule.gate)) fail(`${field} 引用了未知门禁: ${rule.gate}`);
+  if (claimed.has(rule.gate)) fail(`门禁被多个会签桶重复占用: ${rule.gate}`);
+  claimed.add(rule.gate);
+  if (rule.drafter != null) {
+    requireString(rule.drafter, `${rule.gate}.drafter`);
+    if (!actors.has(rule.drafter)) fail(`${rule.gate} 起草者未知: ${rule.drafter}`);
+  }
+  requireStringArray(rule.countersigners, `${rule.gate}.countersigners`);
+  if (rule.drafter && rule.countersigners.includes(rule.drafter)) fail(`${rule.gate} 起草者不得会签自己`);
+  for (const signer of rule.countersigners) {
+    if (!actors.has(signer)) fail(`${rule.gate} 会签人未知: ${signer}`);
+  }
+}
+
+export function collectCountersignGateIds(policy) {
+  const ids = [];
+  for (const bucket of COUNTERSIGN_STRING_BUCKETS) {
+    const gates = policy?.[bucket];
+    if (Array.isArray(gates)) ids.push(...gates);
+  }
+  for (const rule of policy?.digital_human_review || []) {
+    if (rule?.gate) ids.push(rule.gate);
+  }
+  for (const rule of policy?.dual_digital_human || []) {
+    if (rule?.gate) ids.push(rule.gate);
+  }
+  return ids;
+}
+
+export function countersignRuleForGate(policy, gateId) {
+  const dual = (policy?.dual_digital_human || []).find((rule) => rule.gate === gateId);
+  if (dual) return { bucket: "dual_digital_human", ...dual };
+  const review = (policy?.digital_human_review || []).find((rule) => rule.gate === gateId);
+  if (review) return { bucket: "digital_human_review", ...review };
+  if ((policy?.product_digital_human_with_biological_veto || []).includes(gateId)) {
+    return { bucket: "product_digital_human_with_biological_veto", gate: gateId, countersigners: ["role.product-manager"] };
+  }
+  if ((policy?.biological_human || []).includes(gateId)) {
+    return { bucket: "biological_human", gate: gateId, countersigners: [BIOLOGICAL_ROLE_ID] };
+  }
+  return null;
+}
+
+export function taskPackageDefaults(roleId, doc) {
+  const registry = doc || loadDigitalHumanRoles();
+  const actor = roleId === registry.orchestrator.id
+    ? registry.orchestrator
+    : registry.roles.find((role) => role.id === roleId);
+  if (!actor) fail(`未知角色: ${roleId}`);
+  return {
+    role_id: actor.id,
+    kind: actor.kind,
+    stages: [...actor.stages],
+    core_skills: [...actor.core_skills],
+    forbidden_skills: [...actor.forbidden_skills],
+    draft_artifact_ids: actor.draft_artifact_ids ? [...actor.draft_artifact_ids] : [],
+    owned_evidence_ids: actor.owned_evidence_ids ? [...actor.owned_evidence_ids] : []
+  };
+}
+
+export function validateDigitalHumanRoles(doc, { skillIds, stageIds, gateIds, artifactIds, evidenceIds, workUnitIds, skillRegistry } = {}) {
   if (!doc || typeof doc !== "object" || Array.isArray(doc)) fail("数字人角色注册表必须是对象");
   if (doc.schema_version !== 1) fail("schema_version 必须为 1");
   if (doc.registry_id !== "yss.digital-human-roles") fail("registry_id 必须为 yss.digital-human-roles");
@@ -191,18 +262,24 @@ export function validateDigitalHumanRoles(doc, { skillIds, stageIds, gateIds, ar
   if (runtime.implementer_must_differ !== true) fail("implementer_must_differ 必须为 true");
   if (runtime.biological_veto !== true) fail("biological_veto 必须为 true");
   if (runtime.write_isolation !== "task-package-policy") fail("write_isolation 必须为 task-package-policy");
+  requireStringArray(runtime.dual_hat_split_when, "runtime_policy.dual_hat_split_when");
+  for (const required of REQUIRED_DUAL_HAT_SPLIT) {
+    if (!runtime.dual_hat_split_when.includes(required)) {
+      fail(`runtime_policy.dual_hat_split_when 必须包含 ${required}`);
+    }
+  }
   if (runtime.max_group_size != null || runtime.min_group_size != null) {
     fail("平台群聊人数上限属于 runtimes，不得写在 runtime_policy");
   }
 
   const orchestrator = doc.orchestrator;
   if (!orchestrator || typeof orchestrator !== "object") fail("缺少 orchestrator");
-  validateActor(orchestrator, { skillIds, stageIds, artifactIds, expectedKind: "orchestrator" });
+  validateActor(orchestrator, { skillIds, stageIds, artifactIds, evidenceIds, expectedKind: "orchestrator" });
   requireStringArray(orchestrator.default_dual_hat, "orchestrator.default_dual_hat");
   if (!Array.isArray(doc.roles) || doc.roles.length === 0) fail("roles 不能为空");
   const roleIds = [];
   for (const role of doc.roles) {
-    validateActor(role, { skillIds, stageIds, artifactIds, expectedKind: "digital-human" });
+    validateActor(role, { skillIds, stageIds, artifactIds, evidenceIds, expectedKind: "digital-human" });
     roleIds.push(role.id);
   }
   if (new Set(roleIds).size !== roleIds.length) fail("roles.id 重复");
@@ -239,8 +316,14 @@ export function validateDigitalHumanRoles(doc, { skillIds, stageIds, gateIds, ar
   if (policy.default_if_unlisted !== "biological-human") fail("default_if_unlisted 必须为 biological-human");
   if (policy.runtime_side_effect_approval !== "biological-human") fail("runtime_side_effect_approval 必须为 biological-human");
   if (policy.commercial_contract !== "biological-human") fail("commercial_contract 必须为 biological-human");
+  if (policy.unlisted_kept_biological) {
+    requireStringArray(policy.unlisted_kept_biological, "gate_policy.unlisted_kept_biological");
+    for (const gate of policy.unlisted_kept_biological) {
+      if (!gateIds.has(gate)) fail(`unlisted_kept_biological 引用了未知门禁: ${gate}`);
+    }
+  }
   const claimed = new Set();
-  for (const bucket of GATE_BUCKETS) {
+  for (const bucket of STRING_GATE_BUCKETS) {
     requireStringArray(policy[bucket], `gate_policy.${bucket}`);
     for (const gate of policy[bucket]) {
       if (!gateIds.has(gate)) fail(`gate_policy.${bucket} 引用了未知门禁: ${gate}`);
@@ -248,29 +331,44 @@ export function validateDigitalHumanRoles(doc, { skillIds, stageIds, gateIds, ar
       claimed.add(gate);
     }
   }
-  if (policy.digital_human_review.includes("gate.release-ready")) {
-    fail("gate.release-ready 不得放入 digital_human_review");
+  if (!Array.isArray(policy.digital_human_review) || policy.digital_human_review.length === 0) {
+    fail("缺少 digital_human_review");
+  }
+  for (const [index, rule] of policy.digital_human_review.entries()) {
+    if (typeof rule === "string") fail("digital_human_review 必须是含 gate 与 countersigners 的规则");
+    validateSignRule(rule, { actors, gateIds, claimed, field: `digital_human_review[${index}]` });
+    if (rule.gate === "gate.release-ready") fail("gate.release-ready 不得放入 digital_human_review");
   }
   if (!policy.biological_human.includes("gate.release-ready")) {
     fail("gate.release-ready 必须属于 biological_human");
   }
-  requireStringArray(policy.digital_human_review_work_units, "gate_policy.digital_human_review_work_units");
-  for (const workUnit of policy.digital_human_review_work_units) {
-    if (!workUnitIds.has(workUnit)) fail(`未知工作单元: ${workUnit}`);
+  if (!Array.isArray(policy.digital_human_review_work_units) || policy.digital_human_review_work_units.length === 0) {
+    fail("缺少 digital_human_review_work_units");
+  }
+  const workUnitSeen = new Set();
+  for (const [index, rule] of policy.digital_human_review_work_units.entries()) {
+    if (typeof rule === "string") fail("digital_human_review_work_units 必须是含 work_unit 与 countersigners 的规则");
+    requireString(rule.work_unit, `digital_human_review_work_units[${index}].work_unit`);
+    if (!workUnitIds.has(rule.work_unit)) fail(`未知工作单元: ${rule.work_unit}`);
+    if (workUnitSeen.has(rule.work_unit)) fail(`工作单元重复: ${rule.work_unit}`);
+    workUnitSeen.add(rule.work_unit);
+    requireStringArray(rule.countersigners, `${rule.work_unit}.countersigners`);
+    for (const signer of rule.countersigners) {
+      if (!actors.has(signer)) fail(`${rule.work_unit} 会签人未知: ${signer}`);
+    }
+    if (rule.implementer_must_differ !== true) {
+      fail(`${rule.work_unit}.implementer_must_differ 必须为 true`);
+    }
   }
   if (!Array.isArray(policy.dual_digital_human) || policy.dual_digital_human.length === 0) {
     fail("缺少 dual_digital_human");
   }
-  for (const rule of policy.dual_digital_human) {
-    if (!gateIds.has(rule.gate)) fail(`dual_digital_human 引用了未知门禁: ${rule.gate}`);
-    if (claimed.has(rule.gate)) fail(`dual_digital_human 与其他桶重复: ${rule.gate}`);
-    claimed.add(rule.gate);
-    if (!actors.has(rule.drafter)) fail(`dual_digital_human 起草者未知: ${rule.drafter}`);
-    requireStringArray(rule.countersigners, `${rule.gate}.countersigners`);
-    if (rule.countersigners.includes(rule.drafter)) fail(`${rule.gate} 起草者不得会签自己`);
-    for (const signer of rule.countersigners) {
-      if (!actors.has(signer)) fail(`${rule.gate} 会签人未知: ${signer}`);
-    }
+  for (const [index, rule] of policy.dual_digital_human.entries()) {
+    validateSignRule(rule, { actors, gateIds, claimed, field: `dual_digital_human[${index}]` });
+    if (!rule.drafter) fail(`${rule.gate} 双数字人会签必须有 drafter`);
+  }
+  for (const gate of policy.unlisted_kept_biological || []) {
+    if (claimed.has(gate)) fail(`unlisted_kept_biological 与会签桶重复: ${gate}`);
   }
 
   return {
@@ -293,6 +391,7 @@ export function validateDefaultDigitalHumanRoles() {
     stageIds: idsFromCollection(lifecycle.stages, "stages"),
     gateIds: idsFromCollection(lifecycle.gates, "gates"),
     artifactIds: idsFromCollection(lifecycle.artifacts, "artifacts"),
+    evidenceIds: idsFromCollection(lifecycle.evidence, "evidence"),
     workUnitIds: idsFromCollection(lifecycle.work_units, "work_units"),
     skillRegistry: skills
   });
