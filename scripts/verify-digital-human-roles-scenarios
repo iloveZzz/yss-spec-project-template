@@ -9,13 +9,15 @@ function clone() {
 
 function deps() {
   const lifecycle = loadRegistry();
+  const skills = loadSkillRegistry();
   const ids = (records) => new Set(records.map((record) => record.id));
   return {
-    skillIds: skillIdsFromRegistry(loadSkillRegistry()),
+    skillIds: skillIdsFromRegistry(skills),
     stageIds: ids(lifecycle.stages),
     gateIds: ids(lifecycle.gates),
     artifactIds: ids(lifecycle.artifacts),
-    workUnitIds: ids(lifecycle.work_units)
+    workUnitIds: ids(lifecycle.work_units),
+    skillRegistry: skills
   };
 }
 
@@ -34,8 +36,7 @@ function mustFail(doc, pattern, label) {
 
 validateDefaultDigitalHumanRoles();
 
-const oversized = clone();
-oversized.stage_groups[0].members = [
+const seven = [
   "role.lifecycle-orchestrator",
   "role.requirements-manager",
   "role.product-manager",
@@ -44,7 +45,19 @@ oversized.stage_groups[0].members = [
   "role.backend-engineer",
   "role.test-engineer"
 ];
-mustFail(oversized, /成员数必须为 2–6/, "七人阶段群");
+
+const genericAllowsSeven = clone();
+genericAllowsSeven.stage_groups[0].members = seven;
+validateDigitalHumanRoles(genericAllowsSeven, deps());
+
+const grokForbidsSeven = clone();
+grokForbidsSeven.stage_groups[0].members = seven;
+grokForbidsSeven.runtimes.find((runtime) => runtime.id === "runtime.grok").overflow = "forbid";
+mustFail(grokForbidsSeven, /禁止超过 6 人/, "Grok 适配器在 overflow=forbid 时拒绝七人协作组");
+
+const coupled = clone();
+coupled.roles[0].grok_title = "legacy";
+mustFail(coupled, /平台耦合字段/, "角色上残留 grok_title");
 
 const unknownSkill = clone();
 unknownSkill.roles[0].core_skills = ["not-a-registered-skill"];
@@ -62,5 +75,9 @@ const releaseByBot = clone();
 releaseByBot.gate_policy.biological_human = ["gate.architecture-reviewed"];
 releaseByBot.gate_policy.digital_human_review.push("gate.release-ready");
 mustFail(releaseByBot, /gate\.release-ready/, "数字人关闭发布门禁");
+
+const missingGeneric = clone();
+missingGeneric.runtimes = missingGeneric.runtimes.filter((runtime) => runtime.id !== "runtime.generic");
+mustFail(missingGeneric, /缺少运行时绑定: runtime.generic/, "缺少通用运行时");
 
 process.stdout.write("数字人角色压力场景验证通过\n");

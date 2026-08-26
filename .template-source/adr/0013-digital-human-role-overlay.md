@@ -2,7 +2,7 @@
 
 - 状态：accepted
 - 日期：2026-08-26
-- 范围：`template-source` 的流程词汇、Agent 入口指针、数字人角色注册表与校验；不修改门禁稳定 ID，也不新增 `grok` skill 运行时 root
+- 范围：`template-source` 的流程词汇、Agent 入口指针、数字人角色注册表与校验；不修改门禁稳定 ID，也不新增 `grok` skill 运行时 root。运行时可移植性见 ADR-0014。
 
 ## 背景
 
@@ -11,10 +11,10 @@ YSS 生命周期已有三套易被叫做「角色」的轴：Ticket 五态、职
 ## 决策
 
 1. 数字人角色是叠加在 `yss-product-lifecycle` 上的配置透镜，不是独立生命周期。职称 Bot 不批准 Slice 合同、不设置 `ready-for-agent`、不宣布可发布。
-2. 权威配置是 `docs/agents/digital-human-roles.yaml`。Grok Bot 是该配置的运行时实例；git 资产仍是 SSOT。
-3. 人默认只唤起主控数字人。主控 1:1 派一个 owner；可见会签才开阶段群，且每群 2–6 人。
+2. 权威配置是 `docs/agents/digital-human-roles.yaml`。运行时实例（含 Grok Bot）绑定该配置；git 资产仍是 SSOT。平台差异见 ADR-0014。
+3. 人默认只唤起主控数字人。主控 1:1 派一个 owner；可见会签使用逻辑阶段协作组。Grok 群聊 2–6 人的限制只约束 `runtime.grok`，见 ADR-0014。
 4. 项目经理与主控在配置上分体，Grok 默认兼任，直到跨仓负载需要独立项目经理 Bot。
-5. 会签分三级：Grok 平台审批与 `gate.release-ready`、对外商务承诺仍须生物人；审查类门禁可由指定数字人关闭；Spec 基线与 OpenAPI Freeze 须双数字人会签；`gate.user-confirmation` 可由产品经理数字人会签，生物人可一票否决。实现者数字人不得会签自己起草的资产。
+5. 会签分三级：运行时副作用审批与 `gate.release-ready`、对外商务承诺仍须生物人；审查类门禁可由指定数字人关闭；Spec 基线与 OpenAPI Freeze 须双数字人会签；`gate.user-confirmation` 可由产品经理数字人会签，生物人可一票否决。实现者数字人不得会签自己起草的资产。
 6. 模板发布单例 profile；`project-instance` 通过 duplicate 绑定仓库路径。禁止按功能再拆 Bot。
 7. 当前不增加 `agent_runtime_roots.grok`。Skill 仍以 `.agents/skills` 为权威，在 Grok 侧按 Bot 启用 `core_skills`。
 

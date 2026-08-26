@@ -23,7 +23,7 @@
 | 模板维护强度触发与最低等级 | `docs/process/maintenance-intensity.yaml` |
 | 技能清单、来源、版本、哈希和投影目标      | `skills-lock.json`                          |
 | 技能分层、别名、默认可发现性和运行时入口 | `docs/agents/yss-skill-registry.yaml`（当前 `status: shadow`，不作为 Router / 生命周期运行时入口） |
-| 数字人角色、阶段群聊与生命周期会签 | `docs/agents/digital-human-roles.yaml`；`docs/agents/digital-human-roles.md` 为操作说明 |
+| 数字人角色、阶段协作组、运行时绑定与生命周期会签 | `docs/agents/digital-human-roles.yaml`；`docs/agents/digital-human-roles.md` 为操作说明 |
 
 README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或解释上述事实，不重复定义同一规则。`CLAUDE.md` 是 Claude Code 入口指针，不是第二套 Agent 规则。
 
@@ -84,7 +84,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 | merge / rebase 冲突 | `resolving-merge-conflicts` |
 | 架构治理、难测模块或深模块设计 | `improve-codebase-architecture` / `codebase-design` |
 | 跨线程、跨仓库、上下文过长或原型结论回流 | `handoff` 或等价交接记录 |
-| 数字人角色、Grok Bot 协同或生命周期会签 | 先读 `docs/agents/digital-human-roles.yaml`。职称 Bot 叠加在编排器上，不另起生命周期，不批准 Slice 合同、不设 `ready-for-agent`、不宣布可发布 |
+| 数字人角色、Agent 运行时协同或生命周期会签 | 先读 `docs/agents/digital-human-roles.yaml`。职称实例叠加在编排器上，不另起生命周期，不批准 Slice 合同、不设 `ready-for-agent`、不宣布可发布 |
 | 本地知识库 init / refresh / rebuild，或要把研究结果落成持久 wiki | `llm-wiki`（落成持久 wiki 用 `ingest`；已映射 live 源变了用 `refresh`）。`template-source` 的 wiki-root 为 `.template-source/wiki`；`project-instance` 不附带源仓库编译树，需要时在仓库根 `wiki/` 执行 `init` |
 
 业务行为默认按 `tdd` 使用已确认的公开 seam 逐切片实现。一次性生成、纯配置或流程文档不适用代码 TDD 时，必须记录例外理由和可执行验证方式。
@@ -99,14 +99,14 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 
 - 实现者不能承担命中的独立审查（含数字人）。模板维护按 L1 / L2 / L3 分别使用 self-check / 人工 checkpoint、聚焦独立审查、正式独立审查；模板发布、代码切片和高风险变更仍必须由其他 Agent 或独立审查者完成。
 - 任何“完成 / 可合并 / 可发布”结论必须基于 fresh verification，不接受“之前跑过”或实现者自述。
-- 会签门禁按 `docs/agents/digital-human-roles.yaml` 的 `gate_policy` 关闭；`gate.release-ready`、对外商务承诺和 Grok 平台外部副作用仍须生物人。
+- 会签门禁按 `docs/agents/digital-human-roles.yaml` 的 `gate_policy` 关闭；`gate.release-ready`、对外商务承诺和运行时外部副作用仍须生物人。
 - 在会签暂停、handoff、进入实现、合并或发布边界集中同步范围、验证证据、风险、会签点、Ticket 状态和下一步；阻塞、责任人变化或资产单独批准时立即同步。
 - Git checkpoint 只包含本轮明确范围；获得用户授权后才提交或推送。
 - 发布后或阶段性完成后做复盘判断；出现架构返工、验证返工、IMPORTANT / CRITICAL review finding 或人工确认延期时，落简体中文复盘并修订权威资产。
 
 ## 11. Subagent 协同
 
-使用 subagent 或 Grok Bot 前按 `docs/process/subagent-collaboration.md` 定义任务包和不重叠的写入范围，并同时写明数字人角色与 Explorer / Drafter / Worker / Reviewer / Verifier 执行态。实现者不担任独立审查者；仓库身份、Ticket 最终状态、Git checkpoint、Slice 合同批准和完成结论仍由主控数字人按编排器规则决定。Grok 共享计算机不是安全边界。
+使用 subagent 或其它 Agent 运行时前按 `docs/process/subagent-collaboration.md` 定义任务包和不重叠的写入范围，并同时写明数字人角色、`runtime_id` 与 Explorer / Drafter / Worker / Reviewer / Verifier 执行态。实现者不担任独立审查者；仓库身份、Ticket 最终状态、Git checkpoint、Slice 合同批准和完成结论仍由主控数字人按编排器规则决定。写隔离靠任务包；共享工作区不是默认沙箱。
 
 ## 12. 测试质量基线
 

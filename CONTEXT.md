@@ -12,15 +12,16 @@
 
 | 术语 | 含义 | 英文标识 | 避免 / 备注 |
 |---|---|---|---|
-| Agent | 执行特定工作流步骤的 AI 协作者。 | — | 不要与生物人审查者、数字人角色或 Ticket 状态混用。Grok Bot 是 Agent 的一种运行时。 |
-| Grok Bot | Grok 平台上的持久数字队友实例，有名字、会话和按 Bot 启用的 skill。 | — | 不是技能、门禁或 Ticket 状态。 |
-| 数字人角色 | 叠加在生命周期编排器上的职称配置；一个 Grok Bot 绑定一种。v1 清单以 `docs/agents/digital-human-roles.yaml` 为准。 | — | 不要称为 Ticket「标准角色」或职能 Agent。 |
-| 主控数字人 | 运行 `yss-product-lifecycle` 的协调 Bot，对应 Grok 的 Chief of Staff。 | — | 不是第八个业务职称；Grok 默认兼任项目经理。 |
-| 角色配置 | 某数字人角色的关注阶段、技能包、可起草产物和禁止事项。 | — | 不是独立编排器。 |
-| 生命周期会签 | 指定数字人或生物人关闭 `gate.*` / 独立审查并写入 `evidence.approval-record`。 | — | 不是 Grok 平台的 Allow once。实现者不得会签自己起草的资产。 |
-| Grok 平台审批 | 对发消息、改生产、付款、删数据等工具动作的账号级 Allow / Require Approval。 | — | 点 Allow 不等于门禁已批准或可发布。 |
+| Agent | 执行特定工作流步骤的 AI 协作者。 | — | 不要与生物人审查者、数字人角色或 Ticket 状态混用。运行时实例（Cursor Agent、Claude Code、Grok Bot 等）是 Agent 的承载，不是角色本身。 |
+| 运行时绑定 | 把数字人角色落到某个 Agent 平台的适配声明，权威清单在数字人角色注册表的 `runtimes`。 | — | 不要为每个平台复制一套职称职责。 |
+| Grok Bot | Grok 平台上的持久数字队友实例；对应 `runtime.grok`。 | — | 不是数字人角色、技能或门禁。 |
+| 数字人角色 | 叠加在生命周期编排器上的职称配置；一个运行时实例绑定一种。v1 清单以 `docs/agents/digital-human-roles.yaml` 为准。 | — | 不要称为 Ticket「标准角色」、职能 Agent 或某个平台的产品名。 |
+| 主控数字人 | 运行 `yss-product-lifecycle` 的协调实例。 | — | 不是第八个业务职称；默认兼任项目经理。 |
+| 角色配置 | 某数字人角色的关注阶段、技能包、可起草产物和禁止事项。 | — | 不是独立编排器，也不含平台群聊人数。 |
+| 生命周期会签 | 指定数字人或生物人关闭 `gate.*` / 独立审查并写入 `evidence.approval-record`。 | — | 不是运行时副作用审批。实现者不得会签自己起草的资产。 |
+| 运行时副作用审批 | 对发消息、改生产、付款、删数据等工具动作的账号级确认。 | — | 点 Allow 不等于门禁已批准或可发布。避免只称「Grok 平台审批」。 |
 | Ticket 状态 | Tracker 五态：`needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`。 | — | 不要称为数字人角色或「标准角色」。 |
-| 阶段群聊 | 为可见会签临时组建、成员 2–6 个数字人的 Grok 群。 | — | 不是 SSOT；权威结论写回 git。 |
+| 阶段协作组 | 某阶段需要共同可见会签的逻辑成员集合。 | — | 不是某个产品的群聊；平台人数上限只写在对应 `runtimes`。 |
 | 需求经理 | 主责 Discovery 语言、用户/MVP/非目标、Spec 正文与测试 seam 的数字人角色。 | — | 不拥有原型视觉定稿，不 Freeze API，不写实现。 |
 | 产品经理 | 主责优先级、产品设计影响、原型确认建议和范围裁剪的数字人角色。 | — | 不写生产代码，不单独 Freeze API。 |
 | 商务 | 主责机会调研商业约束、交付承诺和发布窗口商务非目标的数字人角色。 | — | 不参与 Spec 定稿、契约、代码或 Ticket 状态推进。 |

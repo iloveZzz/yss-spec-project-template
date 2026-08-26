@@ -3,11 +3,12 @@ gate_id: gate.spec-baseline-approved
 decision: approved
 actor_kind: digital-human
 role_id: role.product-manager
-bot_instance_ref: ""
+runtime_id: runtime.generic
+runtime_instance_ref: ""
 principal_ref: ""
 drafter_role_id: role.requirements-manager
 countersigner_role_ids:
   - role.product-manager
 evidence_refs: []
 biological_veto: false
-notes: 会签必须可读取；实现者角色不得出现在 countersigner_role_ids。表情回复无效。
+notes: 会签必须可读取；实现者角色不得出现在 countersigner_role_ids。运行时表情/reaction 无效。

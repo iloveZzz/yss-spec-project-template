@@ -11,7 +11,8 @@
 把七个数字人角色和主控写成 `docs/agents/digital-human-roles.yaml`，允许指定数字人关闭部分生命周期门禁，同时保持：
 
 - 编排器仍拥有 Ticket 状态、Slice 合同和 `ready-for-agent`
-- `gate.release-ready`、对外商务承诺、Grok 平台外部副作用仍须生物人
+- 角色表运行时无关；Grok 只作为 `runtime.grok` 适配器
+- `gate.release-ready`、对外商务承诺、运行时外部副作用仍须生物人
 - 实现者不得会签自己的草稿
 - 不新增 `grok` skill runtime root，不改门禁稳定 ID
 
