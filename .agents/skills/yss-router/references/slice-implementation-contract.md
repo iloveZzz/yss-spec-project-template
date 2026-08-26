@@ -9,6 +9,7 @@ slice_contract:
   contract_version: 1
   slice_id:
   status: draft
+  suggested_owner_role_id: # role.frontend-engineer | role.backend-engineer | role.test-engineer；Router 只建议，编排器派活并批准
   lifecycle_refs:
     spec:
     ticket:

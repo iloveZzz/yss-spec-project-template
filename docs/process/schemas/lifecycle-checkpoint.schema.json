@@ -37,7 +37,8 @@
           "properties": {
             "status": { "enum": ["not-evaluated", "blocked", "ready-for-human", "approved", "stale", "not-applicable"] },
             "reason": { "type": "string" },
-            "evidence_refs": { "type": "array", "items": { "type": "string" } }
+            "evidence_refs": { "type": "array", "items": { "type": "string" } },
+            "approval_ref": { "type": ["string", "null"] }
           }
         }
       },

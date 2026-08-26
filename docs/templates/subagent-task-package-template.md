@@ -17,6 +17,10 @@ owner: ai
 | 对应门禁 |  |
 | Ticket / MR / PR |  |
 | 主控 Agent |  |
+| 数字人角色 | `role.` 见 `docs/agents/digital-human-roles.yaml` |
+| runtime_id | `runtime.generic` / `runtime.skill-projection` / `runtime.grok` |
+| core_skills | 从角色表复制，禁止手写 |
+| forbidden_skills | 从角色表复制，禁止手写 |
 | subagent 角色 | Explorer / Drafter / Worker / Reviewer / Verifier |
 | 任务类型 | explore / draft / work / review / verify |
 
