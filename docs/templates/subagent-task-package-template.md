@@ -17,6 +17,7 @@ owner: ai
 | 对应门禁 |  |
 | Ticket / MR / PR |  |
 | 主控 Agent |  |
+| 数字人角色 | `role.` 见 `docs/agents/digital-human-roles.yaml` |
 | subagent 角色 | Explorer / Drafter / Worker / Reviewer / Verifier |
 | 任务类型 | explore / draft / work / review / verify |
 

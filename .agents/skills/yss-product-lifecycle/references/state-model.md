@@ -34,7 +34,7 @@ phase_boundary:
 
 ## `ready-for-agent` 公式
 
-仅当以下全部为真，垂直切片 Ticket 才能获得该角色：
+仅当以下全部为真，垂直切片 Ticket 才能获得该 Ticket 状态：
 
 ```text
 required gates ∈ {approved, not-applicable}
@@ -53,7 +53,7 @@ AND UI 影响切片的前端实现还原计划已通过 schema 校验、`templat
 
 发布前还必须满足所有已触发门禁均为 `approved` 或 `not-applicable`；UI 影响切片必须额外通过 `gate.frontend-implementation-verified`，不能只凭 fresh verification 和回滚点放行。
 
-用户显式运行 `to-tickets` 后，垂直切片初始角色固定为 `ready-for-human`。只有 `yss-product-lifecycle` 复算上述公式全部为真后，才能把它提升为 `ready-for-agent`；生命周期不会自动调用 `to-tickets`，其默认标签也不参与该裁决。
+用户显式运行 `to-tickets` 后，垂直切片初始 Ticket 状态固定为 `ready-for-human`。只有 `yss-product-lifecycle` 复算上述公式全部为真后，才能把它提升为 `ready-for-agent`；生命周期不会自动调用 `to-tickets`，其默认标签也不参与该裁决。
 
 ## Review 与 Git 授权状态
 

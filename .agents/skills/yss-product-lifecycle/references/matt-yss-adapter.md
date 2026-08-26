@@ -23,7 +23,7 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 | 技术事实 | `research` | 一手资料回填 Spec/OpenAPI/架构/ADR |
 | runnable 问题 | `prototype` | 生成单文件可分享 HTML，保留 `prototype/<name>` 分支作为主来源；必须 source/return handoff 和结论回填，不得替代阶段 4 的低保真评审、Ant Design v6 高保真 HTML、AntD CLI 证据和用户确认 |
 | Spec 综合 | 原生 `work-unit.spec-synthesis`；`to-spec`（用户显式兼容） | 初稿进入 `ready-for-human`，不得直接实现 |
-| 切片 | 原生 `work-unit.ticket-decomposition`；`to-tickets`（用户显式兼容） | 仅在冻结/无影响记录后拆垂直切片，初始角色为 `ready-for-human` |
+| 切片 | 原生 `work-unit.ticket-decomposition`；`to-tickets`（用户显式兼容） | 仅在冻结/无影响记录后拆垂直切片，初始 Ticket 状态为 `ready-for-human` |
 | 实现 | 原生 `work-unit.slice-implementation`；`implement`（用户显式兼容） | 当前合同批准并持久化后执行；内部使用 `tdd`，结果回交后再次核验 |
 | Bug | `diagnosing-bugs`、`tdd` | 先建立红色反馈；高风险影响升级上游门禁 |
 | 审查 | `code-review` | 唯一默认代码审查入口；审查者独立，结合 Spec、仓库治理规则和 YSS 标准 |

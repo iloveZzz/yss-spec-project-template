@@ -12,7 +12,18 @@
 
 | 术语 | 含义 | 英文标识 | 避免 / 备注 |
 |---|---|---|---|
-| Agent | 执行特定工作流步骤的 AI 协作者。 | — | 不要与人工审查者混用。 |
+| Agent | 执行特定工作流步骤的 AI 协作者。 | — | 不要与生物人审查者、数字人角色或 Ticket 状态混用。Grok Bot 是 Agent 的一种运行时。 |
+| Grok Bot | Grok 平台上的持久数字队友实例，有名字、会话和按 Bot 启用的 skill。 | — | 不是技能、门禁或 Ticket 状态。 |
+| 数字人角色 | 叠加在生命周期编排器上的职称配置；一个 Grok Bot 绑定一种。v1 清单以 `docs/agents/digital-human-roles.yaml` 为准。 | — | 不要称为 Ticket「标准角色」或职能 Agent。 |
+| 主控数字人 | 运行 `yss-product-lifecycle` 的协调 Bot，对应 Grok 的 Chief of Staff。 | — | 不是第八个业务职称；Grok 默认兼任项目经理。 |
+| 角色配置 | 某数字人角色的关注阶段、技能包、可起草产物和禁止事项。 | — | 不是独立编排器。 |
+| 生命周期会签 | 指定数字人或生物人关闭 `gate.*` / 独立审查并写入 `evidence.approval-record`。 | — | 不是 Grok 平台的 Allow once。实现者不得会签自己起草的资产。 |
+| Grok 平台审批 | 对发消息、改生产、付款、删数据等工具动作的账号级 Allow / Require Approval。 | — | 点 Allow 不等于门禁已批准或可发布。 |
+| Ticket 状态 | Tracker 五态：`needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`。 | — | 不要称为数字人角色或「标准角色」。 |
+| 阶段群聊 | 为可见会签临时组建、成员 2–6 个数字人的 Grok 群。 | — | 不是 SSOT；权威结论写回 git。 |
+| 需求经理 | 主责 Discovery 语言、用户/MVP/非目标、Spec 正文与测试 seam 的数字人角色。 | — | 不拥有原型视觉定稿，不 Freeze API，不写实现。 |
+| 产品经理 | 主责优先级、产品设计影响、原型确认建议和范围裁剪的数字人角色。 | — | 不写生产代码，不单独 Freeze API。 |
+| 商务 | 主责机会调研商业约束、交付承诺和发布窗口商务非目标的数字人角色。 | — | 不参与 Spec 定稿、契约、代码或 Ticket 状态推进。 |
 | Agent 入口规则 | Agent 启动任务时必须先遵守的全局路由、硬门禁和禁止事项。 | — | 不作为 YSS 后端、前端或其他专项编码规范的完整手册。 |
 | 标准文档语言 | 面向业务、产品、架构、实施、审查、发布和复盘的持久化文档所使用的默认语言。 | — | 统一使用简体中文；英文专有名词、代码标识、API 路径、schema、文件名和协议 metadata 保持原样。 |
 | Matt Engineering Skills | 来自 `mattpocock/skills` 的轻量工程流程技能集合。 | — | 用于澄清、Spec、Ticket、实现、TDD、诊断、审查和架构治理，不替代 YSS 专项规范。 |
@@ -25,7 +36,7 @@
 | Ticket | 在追踪平台上承载功能生命周期或可实现工作单元的通用追踪对象。 | — | GitHub Issues / GitLab Issues 是具体平台对象名称；领域资产统一称为 Ticket。 |
 | 功能父 Ticket | 汇总一个功能从 Spec 到契约冻结的阶段状态、资产链接、审查结论和阻塞项的 Ticket。 | — | 不作为 Agent 直接实现的垂直切片。 |
 | 垂直切片 Ticket | 契约冻结后生成的可独立验证实现单元，记录范围、阻塞关系、验收标准和验证证据。 | — | 只有通过必要门禁并具备直接实现条件时才能标记 `ready-for-agent`。 |
-| `ready-for-human` | 表示 Spec、设计、契约草案或其他资产仍需人工审查或确认的流程状态。 | — | 此状态不表示可以直接进入实现。 |
+| `ready-for-human` | 表示 Spec、设计、契约草案或其他资产仍需会签（指定数字人或生物人）。 | — | 此状态不表示可以直接进入实现；也不等于某个数字人角色。 |
 | `ready-for-agent` | 表示垂直切片已通过必要门禁并具备直接实现条件的流程状态。 | — | 不得用于 Spec 初稿、原型、OpenAPI Draft 或其他未冻结资产。 |
 | OpenAPI Draft | review-only 的 OpenAPI 3.1 契约草案。 | — | Freeze 前不得作为前后端稳定实现契约。 |
 | OpenAPI Freeze | 已通过评审、可作为前后端实现和契约测试输入的 OpenAPI 3.1 契约。 | — | Freeze 后变更必须回到 API 影响分析和设计审查。 |
