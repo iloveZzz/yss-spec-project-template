@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "wikiRoot": ".template-source/wiki",
-  "compiledAt": "2026-08-24T09:07:48.593Z",
-  "gitCommit": "6ecbbb25b6447143212b93b28b6d5cfac66ff867",
+  "compiledAt": "2026-08-26T04:15:33.139Z",
+  "gitCommit": "51189cae987209ff9076a3336269318f47615d5a",
   "profile": "documents",
   "sources": [
     {
@@ -11,7 +11,7 @@
       "livePath": "AGENTS.md",
       "rawPath": "raw/AGENTS.md",
       "role": "copy",
-      "sha256": "338553e997a37e43de73cd59f76a8f127ef2e38a02b9f7993afb46d2a51f2c67"
+      "sha256": "cbd1b46f5fd8edc143dbe5cc2b90d767358f4ce5be43c5c2bed9d85b6c71c2e3"
     },
     {
       "id": "CONTEXT.md",
@@ -67,7 +67,7 @@
       "livePath": "docs/process/implementation-repo-integration.md",
       "rawPath": "raw/implementation-repo-integration.md",
       "role": "copy",
-      "sha256": "9d430f7b124cab6451d987ed7c97e27871b27a28a395fb63c1d34170724501ee"
+      "sha256": "141b30cccfa01c013ed590783b4d56b33d5c7509858b6589d0ff6be9a7f9aa4c"
     },
     {
       "id": "skills-maintenance.md",
@@ -75,7 +75,7 @@
       "livePath": "docs/agents/skills-maintenance.md",
       "rawPath": "raw/skills-maintenance.md",
       "role": "copy",
-      "sha256": "9c95176cc104224b515da9b3ad189d4fc6ea917f31877e60083f1416f342f378"
+      "sha256": "d4916d59c48513856d1e347564696121e4fedb28433af223d2c02ab82b2ba6eb"
     },
     {
       "id": "yss-skill-registry.yaml",
@@ -83,7 +83,7 @@
       "livePath": "docs/agents/yss-skill-registry.yaml",
       "rawPath": "raw/yss-skill-registry.yaml",
       "role": "copy",
-      "sha256": "b265d25be9bc80166e289ca1702337457ac839aec50290d1ba078c7a100cd474"
+      "sha256": "28fdf40f615d2b5f0f65c1944448179f621f951114954cf7bc452b12c4c25df6"
     },
     {
       "id": "issue-tracker.md",
@@ -104,10 +104,10 @@
     {
       "id": "adr-0002",
       "kind": "document",
-      "livePath": "docs/adr/0002-yss-project-repository-mode.md",
+      "livePath": ".template-source/adr/0002-yss-project-repository-mode.md",
       "rawPath": "raw/adr-0002-repository-mode.md",
       "role": "copy",
-      "sha256": "11d2a2b384491b4409e5a2c9b18f30d0566b6c80e1e270ef3c224d72fd264583"
+      "sha256": "fd04eecc1960540efb5dac8b69d18c77667dab4febb3a9d917cb437d4c16e573"
     },
     {
       "id": "create-yss-spec-repository-mode-contract",
@@ -115,7 +115,7 @@
       "livePath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
       "rawPath": "raw/create-yss-spec-repository-mode-contract.md",
       "role": "copy",
-      "sha256": "5a89a0f4e9ac8e8dee2c1ec310930eef39575b767e5da00ef9488d95995cf7b4"
+      "sha256": "2224a834cc4203907fc9cf0118f954f4042625656aad40b301fc540f523b8837"
     },
     {
       "id": "spec-template.md",
@@ -142,7 +142,15 @@
       "extract": {
         "kind": "skill-names"
       },
-      "sha256": "cfb9b0bd889c7673aa4207da4660aedd0d141b9f097e5477318436cf1b27ba9f"
+      "sha256": "956a52f42e19b10b7d5fbd94894ad41c9e9ebf9a112c90c1a02376a2a795f717"
+    },
+    {
+      "id": "skill-migrations.md",
+      "kind": "document",
+      "livePath": "docs/agents/skill-migrations.md",
+      "rawPath": "raw/skill-migrations.md",
+      "role": "copy",
+      "sha256": "371991a9e5532802c4a67b1c9e99e5cafeb9cd95e4b80f350ceb246232a6dc98"
     }
   ],
   "articles": [
@@ -153,7 +161,9 @@
         "README.md",
         "AGENTS.md",
         "CONTEXT.md",
-        "yss-project.yaml"
+        "yss-project.yaml",
+        "adr-0002",
+        "create-yss-spec-repository-mode-contract"
       ],
       "humanOwned": false
     },
@@ -173,7 +183,10 @@
       "file": "wiki/Agent入口规则.md",
       "sourceIds": [
         "AGENTS.md",
-        "CONTEXT.md"
+        "CONTEXT.md",
+        "yss-skill-registry.yaml",
+        "skills-maintenance.md",
+        "adr-0002"
       ],
       "humanOwned": false
     },
@@ -254,7 +267,8 @@
       "sourceIds": [
         "CONTEXT.md",
         "AGENTS.md",
-        "lifecycle-registry.yaml"
+        "lifecycle-registry.yaml",
+        "skill-migrations.md"
       ],
       "humanOwned": false
     },
@@ -286,7 +300,8 @@
       "file": "wiki/YSS路由与合同编译.md",
       "sourceIds": [
         "AGENTS.md",
-        "CONTEXT.md"
+        "CONTEXT.md",
+        "yss-skill-registry.yaml"
       ],
       "humanOwned": false
     },
@@ -308,7 +323,8 @@
         "CONTEXT.md",
         "skills-maintenance.md",
         "AGENTS.md",
-        "skills-lock.json"
+        "skills-lock.json",
+        "skill-migrations.md"
       ],
       "humanOwned": false
     },
@@ -319,7 +335,8 @@
         "skills-maintenance.md",
         "skills-lock.json",
         "AGENTS.md",
-        "yss-skill-registry.yaml"
+        "yss-skill-registry.yaml",
+        "skill-migrations.md"
       ],
       "humanOwned": false
     },

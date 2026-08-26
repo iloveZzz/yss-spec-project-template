@@ -14,7 +14,11 @@ LLM Wiki 是由 `raw/`、`wiki/` 与 `.wiki-manifest.json` 组成的本地持久
 
 默认 wiki-root 是仓库根 `wiki/`。本仓 `yss-project.yaml` 为 `template-source`，wiki-root 为 `.template-source/wiki`，编译树不进入 CLI 快照；`project-instance` 不附带该树，需要时在仓库根 `wiki/` 执行 `init`。
 
-`llm-wiki` 已写入锁文件 `shared` 分组（`source: project`），并在 `yss-skill-registry.yaml` 中登记为 `layer: core`、`maturity: verified`、`instance_default_discoverable: true`、`impacts: [quality]`。该注册表仍是 `status: shadow`，不得据此裁剪 Router / 生命周期发现面。`llm-wiki` 不在 `yss-public-skills.json`；公开发布面只放 `yss-*` 工程技能（见 [[技能投影与锁定]] 与 [[YSS工程技能体系]]）。强制入口见 [[Agent入口规则]]。权威源修订后应 refresh / rebuild，复盘见 [[复盘与权威资产修订]]；技能变更强度走 [[模板维护流程]]。
+`llm-wiki` 已写入锁文件 `shared` 分组（`source: project`），并在 `yss-skill-registry.yaml` 中登记为 `layer: core`、`maturity: verified`、`instance_default_discoverable: true`、`impacts: [quality]`。该 YAML live 值为 `status: active`；`AGENTS.md` / `CONTEXT.md` 仍写 `shadow`。`llm-wiki` 不在 `yss-public-skills.json`；公开发布面只放 `yss-*` 工程技能（见 [[技能投影与锁定]] 与 [[YSS工程技能体系]]）。强制入口见 [[Agent入口规则]]。权威源修订后应 refresh / rebuild，复盘见 [[复盘与权威资产修订]]；技能变更强度走 [[模板维护流程]]。
+
+## Status
+
+Disputed：`AGENTS.md` / `CONTEXT.md` 写注册表为 `shadow`；`yss-skill-registry.yaml` live 为 `active`。
 
 ## 来源
 

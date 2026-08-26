@@ -30,7 +30,7 @@ apps/
 - **frontend**：依赖安装、测试、type-check 与构建优先使用 `pnpm`（例如 `pnpm test`、`pnpm type-check`、`pnpm build`）。不要默认 `npm` 或 `yarn`。
 - **backend**：校验、测试与编译优先使用项目根 `./mvnw`（例如 `./mvnw validate`、`./mvnw test`、`./mvnw package`）。不要默认裸 `mvn`。
 - Ticket、Slice Implementation Contract、CI 和 Review 证据必须写下实际执行的上述命令。既有仓库缺少 `pnpm` 或 Maven Wrapper 时，先记录受控例外、替代命令和责任人，再执行。
-- 本模板源仓库没有产品 frontend / backend 运行时；其 Node 校验仍按 `AGENTS.md` 的 Cursor Cloud 说明使用 `pnpm --dir .template-source/tooling/node`。
+- 本模板源仓库没有产品 frontend / backend 运行时；模板源维护侧的 Node 校验命令和环境约束只记录在 `.template-source/` 治理区及 CI 配置中，不属于项目实例实现命令。
 
 ## 1.3 `repository_scope: git-submodule`
 

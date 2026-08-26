@@ -1,0 +1,17 @@
+schema_version: 1
+intensity: L1
+classification_reason: >-
+  以 origin/main 51189ca 为基线刷新 llm-wiki 编译图与漂移文章
+  （deterministic-projection）。未改生命周期注册表、Router 运行时或把本分支合入 main。
+triggers:
+  - deterministic-projection
+changed_assets:
+  - .template-source/wiki/
+  - .template-source/evidence/maintenance/github-wiki-sync-main-base-l1-checkpoint-2026-08-26.yaml
+  - .template-source/evidence/maintenance/github-wiki-sync-main-base-l1-relevant-check-2026-08-26.txt
+verification_evidence:
+  - kind: relevant-check
+    command: .template-source/evidence/maintenance/github-wiki-sync-main-base-l1-relevant-check-2026-08-26.txt
+    result: pass
+review_mode: self-check
+escalation: none

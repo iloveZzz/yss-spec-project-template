@@ -1,0 +1,42 @@
+# Wiki refresh on origin/main 51189ca — L1 relevant-check
+
+日期: 2026-08-26
+基线: origin/main 51189cae987209ff9076a3336269318f47615d5a
+分支: cursor/sync-github-wiki-records-a5fa（以 main 为基线，不合并进 main）
+
+## 对齐
+
+- git reset --hard origin/main
+- HEAD == origin/main == 51189ca（刷新前）
+- 未把本分支合入 main
+
+## Wiki
+
+刷新前 inventory.mjs status:
+  changed: AGENTS.md, implementation-repo-integration.md, skills-maintenance.md,
+           yss-skill-registry.yaml, create-yss-spec-repository-mode-contract, skills-lock.json
+  missing: adr-0002（旧路径 docs/adr/0002-yss-project-repository-mode.md）
+  unmapped:
+    docs/adr/README.md (No material)
+    docs/agents/skill-migrations.md (Update)
+    .template-source/adr/0002-yss-project-repository-mode.md (Update)
+
+刷新后: changed/missing/articles/unmapped 全部为空
+manifest.gitCommit = 51189cae987209ff9076a3336269318f47615d5a
+
+## 命令
+
+node .agents/skills/llm-wiki/scripts/lint-wikilinks.mjs .template-source/wiki
+结果: 23 篇文章，205 条 wikilink；通过
+
+node .agents/skills/llm-wiki/scripts/advise.mjs .template-source/wiki
+oneWayLinks=43 missingTermPages=149 unreferencedRaws=1 suspects=0（只报告）
+
+抽查:
+  1. yss-skill-registry.yaml status: active — 成立
+  2. AGENTS.md 表仍写 shadow — 成立
+  3. ADR-0002 live 在 .template-source/adr/ — 成立；docs/adr/0002 不存在
+  4. high-fidelity-html-prototype 已退役（skill-migrations.md）— 成立
+  5. 共享技能名 96 — 与 raw/skills-lock-names.md 一致
+
+不声称模板可发布。

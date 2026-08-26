@@ -8,7 +8,7 @@
 
 Router 不得输出 `approved`、`ready-for-agent` 或 `completed`。正式垂直切片必须消费已批准、已持久化且版本当前的 [[切片实现合同]]；Router 只生成草案。合同 schema、Backend 子合同和证据字段以 `yss-router` references 为准。只有通过必要门禁、阻塞边已清除并具备直接实现条件的垂直切片 Ticket，才能使用 `ready-for-agent`（见 [[Ticket与流程状态]]）。
 
-脚手架只在 `scaffold_status=required` 且受控生成合同已持久化、获得生命周期批准后运行；它只产生机械骨架，业务行为回到 Router 并使用 `behavior-tdd`。Harness 内实现路径必须落在 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 只能作为容器，`app/backend/`、`app/frontend/` 及其子路径一律阻断。专项技能来自 [[YSS工程技能体系]]，由 Router 按影响面选择，而不是按 shadow 注册表裁剪发现面（见 [[技能投影与锁定]]）。
+脚手架只在 `scaffold_status=required` 且受控生成合同已持久化、获得生命周期批准后运行；它只产生机械骨架，业务行为回到 Router 并使用 `behavior-tdd`。Harness 内实现路径必须落在 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 只能作为容器，`app/backend/`、`app/frontend/` 及其子路径一律阻断。专项技能来自 [[YSS工程技能体系]]；`yss-skill-registry.yaml` live 为 `active`，但 `AGENTS.md` / `CONTEXT.md` 仍写 shadow（见 [[技能投影与锁定]]）。
 
 路径越界、证据缺失、未执行验证、`drift`、`violation` 或 `new_impacts` 时停止实现并重新路由。专项 skill 必须消费批准合同并返回 YSS Skill Execution Result；实现者自报不构成最终通过，须由 Router、生命周期编排器和独立 Reviewer 复核（见 [[Fresh验证与独立审查]]）。
 

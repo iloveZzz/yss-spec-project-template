@@ -10,7 +10,7 @@ Matt Engineering Skills 是来自 `mattpocock/skills` 的轻量工程流程技�
 
 业务行为默认按 `tdd` 使用已确认的公开 seam 逐切片实现。一次性生成、纯配置或流程文档不适用代码 TDD 时，必须记录例外理由和可执行验证方式。一次性一手资料走 `research`；要把研究结果落成持久 wiki 则走 [[LLM Wiki]]。`ask-matt` 的关联入口包括 `to-questionnaire`、`wait-what`、`writing-for-agents` 和 `PHASE-BOUNDARIES.md`，这些支持文件随共享 skill 目录一起计算 `effectiveHash`，不得单独投影或维护。
 
-过时技能不会保留兼容别名。已退休、personal 或由 YSS 有意排除的条目不再进入 `.agents/skills`、共享投影根或 `skills-lock.json`；其中 `wizard` 是最新上游仍存在但 YSS 当前有意排除的人工步骤技能，不应描述为上游已退休。
+过时技能不会保留兼容别名。已退休、personal 或由 YSS 有意排除的条目不再进入 `.agents/skills`、共享投影根或 `skills-lock.json`；其中 `wizard` 是最新上游仍存在但 YSS 当前有意排除的人工步骤技能，不应描述为上游已退休。`high-fidelity-html-prototype` 已退役，历史名称只保留在 `docs/agents/skill-migrations.md`。
 
 ## 来源
 
@@ -19,3 +19,4 @@ Matt Engineering Skills 是来自 `mattpocock/skills` 的轻量工程流程技�
 - `skills-lock.json`
 - `docs/agents/skills-maintenance.md`
 - `wiki/raw/skills-lock-names.md`
+- `docs/agents/skill-migrations.md`

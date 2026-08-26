@@ -63,3 +63,13 @@ wiki-root 从仓库根 `wiki/` 迁到 `.template-source/wiki`。同步 raw 中�
 - unmapped: (none)
 
 同步 raw 中的 `implementation-repo-integration.md`。刷新 [[实现仓库与跨仓库契约]]：`inspectWorkingTreeScope` 必须返回 `{ writable }`，空 gitlink / detached HEAD 不可写，脚手架不得把 `--output-dir` 指向 detached HEAD 子仓或把 `--force` 覆盖 gitlink 走普通目录路径。
+
+## [2026-08-26] REFRESH | 以 origin/main 51189ca 为基线重编译 wiki
+- changed: AGENTS.md, implementation-repo-integration.md, skills-maintenance.md, yss-skill-registry.yaml, create-yss-spec-repository-mode-contract, skills-lock.json
+- missing: adr-0002（旧 livePath `docs/adr/0002-yss-project-repository-mode.md`；已改映射到 `.template-source/adr/0002-yss-project-repository-mode.md`）
+- articles: 模板总览, 仓库身份与路由, Agent入口规则, 产品设计影响与原型, YSS路由与合同编译, YSS工程技能体系, Matt技能体系, 技能投影与锁定, 实现仓库与跨仓库契约, LLM Wiki
+- unmapped: docs/adr/README.md (No material)
+- unmapped: docs/agents/skill-migrations.md (Update)
+- unmapped: .template-source/adr/0002-yss-project-repository-mode.md (Update)
+
+未改其余命中页。注册表 `active` 与 `AGENTS.md` / `CONTEXT.md` 的 `shadow` 记为 Disputed，不改 live 权威文件。不声称模板可发布。
