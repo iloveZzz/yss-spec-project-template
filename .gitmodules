@@ -4,3 +4,6 @@
 [submodule "submodules/yss-harness-dev-agent"]
 	path = submodules/yss-harness-dev-agent
 	url = https://github.com/iloveZzz/yss-harness-dev-agent.git
+[submodule "submodules/create-yss-spec"]
+	path = submodules/create-yss-spec
+	url = https://github.com/iloveZzz/create-yss-spec.git
