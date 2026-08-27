@@ -22,7 +22,7 @@
 | 影响面触发与 `not-applicable` | `docs/process/harness-process-tailoring.md` |
 | 模板维护强度触发与最低等级 | `docs/process/maintenance-intensity.yaml` |
 | 技能清单、来源、版本、哈希和投影目标      | `skills-lock.json`                          |
-| 技能分层、别名、默认可发现性和运行时入口 | `docs/agents/yss-skill-registry.yaml`（当前 `status: shadow`，不作为 Router / 生命周期运行时入口） |
+| 技能分层、别名、默认可发现性和运行时入口 | `docs/agents/yss-skill-registry.yaml`（当前 `status: active`；Router / 生命周期必须消费） |
 | 数字人角色、阶段协作组、运行时绑定与生命周期会签 | `docs/agents/digital-human-roles.yaml`；`docs/agents/digital-human-roles.md` 为操作说明 |
 
 README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或解释上述事实，不重复定义同一规则。`CLAUDE.md` 是 Claude Code 入口指针，不是第二套 Agent 规则。
@@ -47,6 +47,19 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 
 先用 `docs/process/harness-process-tailoring.md` 判定变更类型、影响面和最近可信阶段，再按 `docs/process/lifecycle-registry.yaml` 执行命中的工作单元和条件门禁。
 
+下表是与 `yss-product-lifecycle` 对齐的阶段级导航索引；阶段、工作单元、技能和门禁不是同一层，条件细节以注册表及 lifecycle skill references 为准。
+
+| 主阶段（registry） | 原生工作单元 | 技能入口（按影响面裁剪） | 关键产物 / 门禁 |
+|---|---|---|---|
+| 入口分诊 `stage.entry-triage` | `work-unit.entry-triage` | `yss-product-lifecycle` | 仓库身份、影响面、最近可信阶段；`gate.repository-identity-valid` |
+| Discovery `stage.discovery` | `work-unit.discovery-opportunity`、`work-unit.discovery-requirements`、`work-unit.domain-strategy-design`、`work-unit.stage-decision` | `yss-product-lifecycle`；按事实 / 领域影响使用 `competitive-intelligence`、`research`、`grilling`、`domain-modeling`、`yss-stage-decision` | Discovery、用户/MVP/非目标/成功标准、测试 seam；必要时 DDD 战略设计与阶段决策包；`gate.domain-strategy-approved`、`gate.stage-decision-package-approved` |
+| Spec / 功能架构 `stage.spec-architecture` | `work-unit.spec-synthesis` | `yss-product-lifecycle`；`to-spec` 仅为显式兼容入口 | Spec、产品总体设计、功能架构；必要时 Spec Delta；`gate.spec-baseline-approved` |
+| 产品设计 `stage.product-design` | `work-unit.prototype-design` | `yss-design-system` → `prototype-review` → `yss-prototype-stage` → `yss-antd-design` → Codex `product-design:index`；前端落地改用 `yss-ui` | 交互说明、低 / 高保真原型、状态矩阵；`gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` |
+| 系统 / 数据架构与工程契约 `stage.system-data-engineering` | `work-unit.technical-analysis` | `yss-router`；按影响使用 `yss-openapi-governance`、`yss-openapi-draft-review`、`codebase-design`、`implementation-repo-onboarding`、`yss-tactical-design` | OpenAPI Draft / Freeze、数据架构、工程基线、架构审查；无 API 影响记录；必要时 Tactical DDD Check；`gate.openapi-draft-reviewed`、`gate.design-reviewed`、`gate.openapi-frozen`、`gate.engineering-baseline-accepted`、`gate.architecture-reviewed` |
+| Ticket 正式化 `stage.ticket-formalization` | `work-unit.ticket-decomposition` | `yss-product-lifecycle` + `yss-router`；`to-tickets` 仅为显式兼容入口 | 功能父 Ticket、垂直切片、Slice Implementation Contract；切片初始 `ready-for-human`；`gate.slice-contract-approved`、`gate.slice-ready-for-agent` |
+| 垂直切片实现 `stage.vertical-slice-implementation` | `work-unit.slice-implementation` | `yss-router` + `tdd`；UI 影响追加 `yss-ui`、`yss-page-module-development` 及条件专项 skill；`implement` 仅为显式兼容入口 | 前后端代码、TDD、YSS Skill Execution Result；仅允许 `ready-for-agent` 且合同当前 |
+| 验证 / 发布 / 复盘 `stage.verification-release-retrospective` | `work-unit.frontend-implementation-verification`、`work-unit.code-review`、`work-unit.release-and-retrospective` | `code-review`；UI 影响追加 `yss-ui` + `yss-design-system`；发布 / 复盘由 `yss-product-lifecycle` 持有 | 不可变候选快照、独立审查、fresh verification、发布 / 回滚证据、复盘；UI 影响追加 `gate.frontend-implementation-verified`；`gate.release-ready` |
+
 - 生命周期注册表中的条件门禁全部按影响面强制。命中触发条件时必须完成；未命中时只记录 `not-applicable` 及原因，不生成空文档；不得把产物、工作单元或证据统称为门禁。
 - 安全 / 权限不设独立生命周期资料或专属门禁。日常功能不做额外登记、`not-applicable` 或推导校验；只有需求或冻结资产明确要求改变认证、授权、租户隔离、敏感数据或合规行为时，才把该行为写入普通 Spec、API、架构、验收和测试 seam，并仅按实际 UI、API、Backend、Data、High-risk 影响触发既有门禁。普通 action 注册、沿用既有认证中间件、未变化的 `401` / `403`、一般字段、SQL / DDL / 迁移和上传 / 下载本身不构成安全 / 权限专项。
 - `seam-deferred` 只能显式记录风险、责任人、后续 Ticket、验证计划和目标版本或发布日期。
@@ -69,6 +82,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 - 无可复用工程时，先确认外部目标仓库或输出目录，再使用 `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator`；当前仓库缺少 frontend / backend 目录不改变此路由。
 - 脚手架只在 `scaffold_status=required` 且受控生成合同已持久化、获得生命周期批准后运行；它只产生机械骨架，业务行为回到 Router 并使用 `behavior-tdd`。
 - 正式垂直切片必须消费已批准、已持久化且版本当前的 Slice Implementation Contract。Router 只生成草案，不批准合同、不设置 `ready-for-agent`、不宣布完成。合同 schema、Backend 子合同和证据字段以 `yss-router` references 为准。
+- UI 影响切片必须在 `ready-for-agent` 前具备通过校验的 `frontend_implementation_plan`，实现完成后补齐 `frontend_implementation_verification`；截图 / 视觉回归、状态与交互、console warning 和实际 `pnpm` 退出码均须有证据，不能只做 type-check 或声称“已对齐”。
 - 前端测试、type-check 与构建优先使用 `pnpm`；后端校验、测试与编译优先使用项目根 `./mvnw`。不要默认 `npm` / `yarn` 或裸 `mvn`。既有仓库确实没有 pnpm 或 Maven Wrapper 时，必须记录受控例外和实际命令。登记字段见 `docs/process/implementation-repo-integration.md`。
 - 路径越界、证据缺失、未执行验证、`drift`、`violation` 或 `new_impacts` 时停止实现并重新路由。
 
@@ -76,19 +90,21 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 
 ## 8. 专项任务的强制入口
 
+本表补充跨阶段的触发型技能；主阶段对应的原生工作单元和条件技能以第 5 节、`yss-product-lifecycle` 及 `orchestration-contract.yaml` 为准。
+
 | 触发情形 | 必须使用 |
 |---|---|
 | 技术事实、标准、第三方 API 或框架行为影响决策 | `research` 或等价的一手资料记录 |
 | 竞品、市场或用户口碑事实 | `competitive-intelligence` |
-| UI 设计、原型、组件或主题 | `yss-design-system` 后使用 `yss-prototype-stage`；Codex 再路由 `product-design:index`，其他 Agent 交付等价合同资产；原型产出前后用 `yss-antd-design` 记录 Ant Design v6 事实与浏览器验证。前端代码落地改用 `yss-ui`，不要继续调用 `yss-antd-design` |
+| UI 设计、原型、组件或主题 | `yss-design-system` → `prototype-review` → `yss-prototype-stage`；原型事实用 `yss-antd-design`，Codex 再路由 `product-design:index`，其他 Agent 交付等价合同资产。前端代码落地改用 `yss-ui`，不要继续调用 `yss-antd-design` |
 | Bug、测试失败或性能回退 | `diagnosing-bugs` 建立可复现反馈，再用 `tdd` |
 | merge / rebase 冲突 | `resolving-merge-conflicts` |
-| 架构治理、难测模块或深模块设计 | `improve-codebase-architecture` / `codebase-design` |
+| 架构治理、难测模块或深模块设计 | `codebase-design`；`improve-codebase-architecture` 仅作为用户显式兼容入口 |
 | 跨线程、跨仓库、上下文过长或原型结论回流 | `handoff` 或等价交接记录 |
 | 数字人角色、Agent 运行时协同或生命周期会签 | 先读 `docs/agents/digital-human-roles.yaml`。职称实例叠加在编排器上，不另起生命周期，不批准 Slice 合同、不设 `ready-for-agent`、不宣布可发布 |
 | 本地知识库 init / refresh / rebuild，或要把研究结果落成持久 wiki | `llm-wiki`（落成持久 wiki 用 `ingest`；已映射 live 源变了用 `refresh`）。`template-source` 的 wiki-root 为 `.template-source/wiki`；`project-instance` 不附带源仓库编译树，需要时在仓库根 `wiki/` 执行 `init` |
 
-业务行为默认按 `tdd` 使用已确认的公开 seam 逐切片实现。一次性生成、纯配置或流程文档不适用代码 TDD 时，必须记录例外理由和可执行验证方式。
+业务行为默认按 `tdd` 的 `behavior-tdd` 模式使用已确认的公开 seam 逐切片实现。一次性生成、纯配置或流程文档不适用代码 TDD 时，必须记录例外理由和可执行验证方式。
 
 ## 9. 工作区与实现仓库边界
 
