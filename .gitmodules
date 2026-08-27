@@ -1,0 +1,3 @@
+[submodule "submodules/yss-strategic-design-harness"]
+	path = submodules/yss-strategic-design-harness
+	url = https://github.com/iloveZzz/yss-strategic-design-harness.git
