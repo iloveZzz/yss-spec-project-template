@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { ROOT } from "./lib/lifecycle-registry.mjs";
@@ -8,6 +8,8 @@ import { generateTaskPackageDefaults, validateTaskPackage, validateTaskPackageSe
 
 const contractRef = ".template-source/evidence/.task-package-slice-contract.json";
 const contractFile = path.join(ROOT, contractRef);
+const templateSourceRoot = path.join(ROOT, ".template-source");
+const templateSourceExisted = existsSync(templateSourceRoot);
 const evidenceRef = ".template-source/evidence/.task-package-evidence.json";
 const evidenceFile = path.join(ROOT, evidenceRef);
 const maintenanceRef = ".template-source/evidence/.task-package-maintenance.json";
@@ -190,4 +192,5 @@ try {
   rmSync(contractFile, { force: true });
   rmSync(evidenceFile, { force: true });
   rmSync(path.join(ROOT, maintenanceRef), { force: true });
+  if (!templateSourceExisted) rmSync(templateSourceRoot, { recursive: true, force: true });
 }
