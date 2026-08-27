@@ -100,6 +100,71 @@ workflow_execution_result:
   workflow_reference:
     required: [source, skill, invocation_mode]
     allowed_sources: [yss-product-lifecycle, mattpocock/skills]
+  next_route:
+    validator: scripts/lib/lifecycle-transition.mjs
+    function: validateNextRoute
+    implementation_predecessor: work-unit.ticket-decomposition
+    null_allowed_when: [blocked, needs-human, failed, terminal_completed]
+  work_unit_requirements:
+    work-unit.ticket-decomposition:
+      completed_requires: [vertical_slice_ticket_ref, ticket_decomposition_result_ref]
+    work-unit.slice-implementation:
+      required: [predecessor_work_unit, ticket_decomposition_result_ref, ticket_decomposition_result_status, vertical_slice_ticket_ref, vertical_slice_ticket_role, vertical_slice_ticket_kind, slice_contract_ticket_ref, slice_contract_status]
+      boolean_required: [ready_for_agent, slice_contract_persisted, slice_contract_current_version]
+      validator: scripts/lib/lifecycle-transition.mjs
+      function: validateImplementationEntry
+
+task_package:
+  schema_version: 1
+  applies_to: all-formal-digital-human-dispatches
+  schema_ref: docs/process/schemas/digital-human-task-package.schema.json
+  compatibility_schema_ref: docs/process/schemas/subagent-task-package.schema.json
+  validator: scripts/verify-digital-human-task-package
+  compatibility_validator: scripts/verify-subagent-task-package
+  persistence_layout: docs/.scratch/<feature>/task-packages/<task-id>.yaml
+  required: [schema_version, task_id, work_unit_id, actor_id, role_id, runtime_id, execution_state, workflow_status, skill_source, contract, inputs, objective, allowed_write_paths, forbidden_actions, expected_outputs, expected_evidence_files, verification_commands, verification_results, downstream_consumers, convergence]
+  execution_states: [Explorer, Drafter, Worker, Reviewer, Verifier]
+  workflow_statuses: [not-started, active, paused, resolved, failed]
+  skill_source:
+    registry_ref: docs/agents/digital-human-roles.yaml
+    defaults: taskPackageDefaults(role_id)
+    copy_required: [core_skills, forbidden_skills]
+  contract:
+    kinds: [lifecycle-work-unit, slice-implementation, template-maintenance]
+    required: [kind, contract_id, contract_version, status, contract_ref]
+    status_at_dispatch: issued
+    status_after_change: [stale, blocked]
+    lifecycle-work-unit:
+      required: [lifecycle_ref]
+      forbidden: [slice_contract_ref, maintenance_ref]
+      template_source_work_unit: forbidden
+    slice-implementation:
+      required: [slice_contract_ref]
+      must_match_current_slice_contract: true
+      version_mismatch: blocked
+      stage: stage.vertical-slice-implementation
+      parent_work_unit: work-unit.slice-implementation
+      work_unit_must_be_declared_in_slice_contract: true
+    template-maintenance:
+      required: [maintenance_ref]
+      forbidden: [slice_contract_ref, lifecycle_ref]
+  dispatch:
+    owner: role.lifecycle-orchestrator
+    mode: orchestrator-one-to-one
+    per_feature_instances: forbidden
+  write_isolation:
+    policy: task-package-policy
+    changed_files_must_be_within_allowed_paths: true
+    shared_workspace_is_not_security_boundary: true
+  downstream:
+    formal_channel: [task_package_ref, contract_ref, evidence_refs, workflow_execution_result]
+    direct_chat_is_not_formal_evidence: true
+  stale:
+    owner: yss-product-lifecycle
+    on_contract_change: [mark_downstream_stale, remove_ready-for-agent, reroute]
+  compatibility:
+    legacy_results: read-only-normalize
+    schema_version: 1
 
 # Matt user-invoked skills remain explicit user entry points. Lifecycle work units
 # may prepare, validate and accept their results, but cannot invoke them or create
@@ -182,8 +247,17 @@ work_unit_routes:
   work-unit.technical-analysis:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     primary_skill: yss-router
-    supporting_skills: [yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding]
-    skills: [yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding, yss-router]
+    supporting_skills: [yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding, yss-tactical-design]
+    skills: [yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding, yss-tactical-design, yss-router]
+    tactical_ddd:
+      applies_when: [aggregate-impact, state-machine-impact, invariant-impact, consistency-impact, domain-event-impact, gateway-boundary-impact, persistence-mapping-impact]
+      not_applicable_reason: no_tactical_ddd_impact
+      default_artifact: system-overview-design.tactical-ddd-check
+      standalone_artifact: artifact.tactical-design
+      review_evidence: evidence.tactical-design-review
+      statuses: [draft, ready-for-human, approved, blocked, stale, drift, new_impacts, not-applicable]
+      approved_by: yss-product-lifecycle
+      forbidden: [self-approval, ready-for-agent, production-code-generation]
     human_gate: openapi-freeze_if_api_impact
     applies_when: technical_or_contract_impact
     not_applicable_reason: no_technical_or_contract_impact
@@ -195,6 +269,7 @@ work_unit_routes:
     skills: [yss-router]
     applies_when: frozen_scope_ready_for_slicing
     not_applicable_reason: contract_or_scope_not_frozen
+    must_complete_before: work-unit.slice-implementation
   work-unit.slice-implementation:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     primary_skill: yss-router
@@ -222,6 +297,7 @@ work_unit_routes:
         theme_impact: no_theme_impact
     applies_when: ready_for_agent
     not_applicable_reason: slice_contract_not_approved
+    requires_completed_work_units: [work-unit.ticket-decomposition]
   work-unit.frontend-implementation-verification:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     primary_skill: yss-ui
@@ -255,8 +331,48 @@ compatibility_flow_preconditions:
     output: vertical-slice-tickets
     output_role: ready-for-human
   implement:
-    required: [ready_for_agent, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied, frontend_implementation_plan_if_ui_impact]
+    required: [ready_for_agent, predecessor_work_unit, ticket_decomposition_result_ref, ticket_decomposition_result_status, vertical_slice_ticket_ref, vertical_slice_ticket_role, vertical_slice_ticket_kind, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied, frontend_implementation_plan_if_ui_impact]
     applies_to_single_session: true
+
+ticket_formalization:
+  implementation_predecessor: work-unit.ticket-decomposition
+  result_ref_required: true
+  result_must_be: completed
+  evidence_refs_required: true
+  vertical_slice_ticket:
+    kind: vertical-slice-ticket
+    role_before_promotion: ready-for-human
+    role_for_implementation: ready-for-agent
+    local_ref_pattern: '^docs/\\.scratch/[^/]+/issues/[^/]+\\.md$'
+    parent_ticket_ref_forbidden: true
+  slice_contract_binding:
+    ticket_ref_must_equal: vertical_slice_ticket_ref
+    status: approved
+    persisted: true
+    current_version: true
+  validator:
+    module: scripts/lib/lifecycle-transition.mjs
+    functions: [validateNextRoute, validateTicketFormalization, validateImplementationEntry]
+
+transition_graph:
+  validator: scripts/lib/lifecycle-transition.mjs
+  implementation_requires_predecessor: work-unit.ticket-decomposition
+  routes:
+    work-unit.ssot-update: [work-unit.skill-projection-sync, work-unit.intensity-aware-verification]
+    work-unit.skill-projection-sync: [work-unit.template-snapshot-build, work-unit.intensity-aware-verification]
+    work-unit.template-snapshot-build: [work-unit.attach-sync-integration, work-unit.intensity-aware-verification]
+    work-unit.attach-sync-integration: [work-unit.intensity-aware-verification]
+    work-unit.intensity-aware-verification: [work-unit.intensity-aware-review]
+    work-unit.intensity-aware-review: [work-unit.release-and-rollback]
+    work-unit.release-and-rollback: []
+    work-unit.spec-synthesis: [work-unit.prototype-design, work-unit.technical-analysis, work-unit.ticket-decomposition]
+    work-unit.prototype-design: [work-unit.technical-analysis, work-unit.ticket-decomposition]
+    work-unit.technical-analysis: [work-unit.ticket-decomposition]
+    work-unit.ticket-decomposition: [work-unit.slice-implementation]
+  forbidden_shortcuts:
+    - {from: work-unit.spec-synthesis, to: work-unit.slice-implementation}
+    - {from: work-unit.prototype-design, to: work-unit.slice-implementation}
+    - {from: work-unit.technical-analysis, to: work-unit.slice-implementation}
 
 grill_exit:
   required: [frontier_empty, facts_resolved_or_routed, decisions_confirmed, shared_understanding_confirmed, no_unresolved_runnable_blocker]
@@ -483,7 +599,10 @@ wayfinder_completion:
   required: [no_open_children, no_open_blocked_or_claimed_children, no_fog, destination_clear]
 
 ready_for_agent:
-  required: [gates_satisfied, no_stale_artifacts, blockers_closed, implementation_context_ready, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied, frontend_implementation_plan_if_ui_impact]
+  required: [gates_satisfied, no_stale_artifacts, blockers_closed, implementation_context_ready, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, predecessor_work_unit, ticket_decomposition_result_ref, ticket_decomposition_result_status, vertical_slice_ticket_ref, vertical_slice_ticket_role, vertical_slice_ticket_kind, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied, frontend_implementation_plan_if_ui_impact]
+  ticket_formalization_validator: scripts/lib/lifecycle-transition.mjs
+  requires_vertical_slice_ticket: true
+  parent_ticket_as_implementation_ref: forbidden
 
 frontend_implementation_plan:
   applies_when: [ui_impact]

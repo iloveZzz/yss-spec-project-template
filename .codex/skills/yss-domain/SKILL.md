@@ -5,7 +5,7 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 
 # yss-domain
 
-这是一个建模型 skill。核心目标是先把领域语义和边界建立清楚，再落代码。
+这是一个领域实现 skill。核心目标是消费已批准的战术模型，将领域行为落实为代码；战术模型的设计与批准由 `yss-tactical-design` 和 `yss-product-lifecycle` 负责。
 
 默认输出是新 DDD target profile；现有 YSS 组件仓库常见 `core/client/repository`、贫血对象和 VO 型 Gateway 只是 legacy profile，不得静默复制成新模块架构。
 
@@ -23,10 +23,10 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 
 ## 工作方式
 
-1. 先抽业务术语、聚合边界和状态变化。
+1. 先读取批准且版本当前的 tactical-design contract 和 Slice Implementation Contract。
 2. 数据库字段只做补充，不直接决定领域对象结构。
-3. 先定义领域行为，再决定 Gateway 边界。
-4. 规则不清晰时，保留显式假设，不要静默猜测。
+3. 按合同实现领域行为、状态机、不变量和 Gateway 边界。
+4. 规则不清晰或模型需要扩展时，返回 `new_impacts` / `drift` 并停止，不要静默猜测。
 
 ## 产物范围
 
@@ -63,6 +63,7 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 ## 阶段 7 合同
 
 - 只消费生命周期已批准的 `Slice Implementation Contract` 和当前 `work_unit`；不得扩大 `allowed_write_paths`。
+- `Slice Implementation Contract` 必须引用批准且版本当前的 `tactical_design_ref`；不得在实现阶段重新批准或替换聚合、不变量和一致性策略。
 - 领域规则、状态机和不变量必须使用 `behavior-tdd`，先形成失败测试，再实现最小行为。
 - 完成后按 `yss-router/references/yss-skill-execution-result.md` 返回统一 `YSS Skill Execution Result`：changed files、领域/测试证据、实际验证结果、偏离和新增影响。
 - 发现新 API、权限、状态机、数据模型或架构影响时填入 `new_impacts` 并暂停，不得静默扩张切片。

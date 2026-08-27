@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+import { parseArgs } from "node:util";
+import { loadTaskPackage, validateTaskPackage } from "./lib/task-package.mjs";
+
+try {
+  const { positionals } = parseArgs({ allowPositionals: true, strict: true });
+  if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-digital-human-task-package <task-package.yaml|task-package.json>");
+  const { value } = loadTaskPackage(positionals[0]);
+  validateTaskPackage(value);
+  process.stdout.write("数字人任务包验证通过\n");
+} catch (error) {
+  process.stderr.write(`数字人任务包验证失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

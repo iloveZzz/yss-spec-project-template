@@ -51,6 +51,9 @@ evidence:
   - id: evidence.domain-strategy-review
     name: DDD 战略设计评审证据
     description: 子域、限界上下文、统一语言、Context Map、场景和不变量的结构化评审结果。
+  - id: evidence.tactical-design-review
+    name: DDD 战术设计评审证据
+    description: 聚合、Entity、Value Object、不变量、状态机、一致性、Gateway 与 API 隔离的结构化评审结果。
   - id: evidence.stage-decision-package
     name: 阶段决策包验证证据
     description: 阶段决策包的 Schema、引用、语义一致性、影响传播和下游消费验证结果。
@@ -254,6 +257,10 @@ artifacts:
     name: 架构审查记录
     stage: stage.system-data-engineering
     trigger: 高风险或跨边界变化。
+  - id: artifact.tactical-design
+    name: DDD 战术设计
+    stage: stage.system-data-engineering
+    trigger: 聚合边界、状态机、一致性或持久化映射复杂到无法在系统概要设计的 Tactical DDD Check 中清楚表达。
   - id: artifact.spec-delta
     name: Spec Delta
     stage: stage.spec-architecture
@@ -372,8 +379,8 @@ work_units:
     name: 技术分析与契约冻结
     scope: project-instance
     input: Spec、原型、API/数据/工程影响面。
-    output: OpenAPI、数据架构、工程基线、架构审查和 Slice 合同草案。
-    completion: 命中契约已冻结；无 API 影响有可读记录；工程基线通过。
+    output: OpenAPI、数据架构、Tactical DDD Check、工程基线、架构审查和 Slice 合同草案。
+    completion: 命中契约已冻结；无 API 影响有可读记录；命中领域影响时战术模型无未解释冲突；工程基线通过。
   - id: work-unit.ticket-decomposition
     name: 垂直切片 Ticket 正式化
     scope: project-instance

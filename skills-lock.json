@@ -1190,7 +1190,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-domain/SKILL.md",
-        "effectiveHash": "3254ddfca94e1ecca34d43521e781c466d76511c358618b4ad381697987f7bc0",
+        "effectiveHash": "6a4e88ad17cfc143e18e547f89ae7d3d91b59a9131feff1aa8eea0bb8a8b602b",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1398,7 +1398,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "effectiveHash": "c466b0749553073d7a7088d921378b7bfc26b6c104296a0773855c3951650b22",
+        "effectiveHash": "04df4a9cef4e994d703e5eb6626b15460a42d3177773935619adc5060aea4bbe",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1462,7 +1462,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-router/SKILL.md",
-        "effectiveHash": "a43355c7d8a1a5016d75af084328a4cfbb758aa5bf022b644d215c0e868b5bfa",
+        "effectiveHash": "29792bb3938257a12e1f4a175808fceeebfb3318116c6c09621c05d5137cb61d",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1511,6 +1511,22 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-stage-decision/SKILL.md",
         "effectiveHash": "ee846c58ba39f4ce76d94db609f7690f3e79518af54478d7b97780febc8eade3",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-tactical-design": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-tactical-design/SKILL.md",
+        "effectiveHash": "c9ad1856974b18af0fd250ee6ad541fcd8cdaab2ad32880488a757094e130ce6",
         "targets": [
           ".agents/skills",
           ".claude/skills",

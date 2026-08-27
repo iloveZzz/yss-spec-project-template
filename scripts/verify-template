@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 node -e 'const [major]=process.versions.node.split(".").map(Number); if (major < 22 || major >= 27) { console.error("模板工具需要 Node >=22 <27"); process.exit(1); }'
 
-required_files=(yss-project.yaml AGENTS.md CONTEXT.md skills-lock.json docs/agents/yss-skill-registry.yaml docs/agents/digital-human-roles.yaml docs/process/lifecycle-registry.yaml docs/process/lifecycle-registry-baseline.json docs/process/maintenance-intensity.yaml docs/process/schemas/lifecycle-checkpoint.schema.json docs/process/schemas/frontend-implementation-evidence.schema.json docs/process/templates/lifecycle-checkpoint-template.yaml docs/process/templates/frontend-implementation-plan-template.yaml docs/process/templates/frontend-implementation-verification-template.yaml scripts/repository-mode scripts/implementation-path-policy scripts/repository-scope-policy scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-lifecycle-checkpoint scripts/verify-frontend-implementation-evidence scripts/verify-maintenance-checkpoint scripts/verify-maintenance-intensity-scenarios scripts/verify-skill-registry scripts/verify-skill-governance scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/verify-digital-human-roles scripts/verify-digital-human-roles-scenarios scripts/verify-approval-record scripts/export-yss-skills)
+required_files=(yss-project.yaml AGENTS.md CONTEXT.md skills-lock.json docs/agents/yss-skill-registry.yaml docs/agents/digital-human-roles.yaml docs/process/lifecycle-registry.yaml docs/process/lifecycle-registry-baseline.json docs/process/maintenance-intensity.yaml docs/process/schemas/lifecycle-checkpoint.schema.json docs/process/schemas/frontend-implementation-evidence.schema.json docs/process/schemas/digital-human-task-package.schema.json docs/process/schemas/subagent-task-package.schema.json docs/process/templates/lifecycle-checkpoint-template.yaml docs/process/templates/frontend-implementation-plan-template.yaml docs/process/templates/frontend-implementation-verification-template.yaml docs/templates/subagent-task-package-template.md .agents/skills/yss-tactical-design/SKILL.md .agents/skills/yss-tactical-design/agents/openai.yaml .agents/skills/yss-tactical-design/references/tactical-design-contract.md .agents/skills/yss-tactical-design/references/tactical-design.schema.json .agents/skills/yss-tactical-design/references/validation-rules.md .agents/skills/yss-tactical-design/references/output-template.md .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs .agents/skills/yss-tactical-design/tests/run-scenarios.mjs .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml .template-source/evidence/maintenance/yss-tactical-design-formal-independent-review-2026-08-27.md scripts/repository-mode scripts/implementation-path-policy scripts/repository-scope-policy scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-lifecycle-checkpoint scripts/verify-frontend-implementation-evidence scripts/lib/task-package.mjs scripts/verify-digital-human-task-package scripts/verify-digital-human-task-package-scenarios scripts/verify-subagent-task-package scripts/verify-subagent-task-package-scenarios scripts/verify-lifecycle-transition-scenarios scripts/verify-maintenance-checkpoint scripts/verify-maintenance-intensity-scenarios scripts/verify-skill-registry scripts/verify-skill-governance scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/verify-digital-human-roles scripts/verify-digital-human-roles-scenarios scripts/verify-approval-record scripts/export-yss-skills)
 for required in "${required_files[@]}"; do test -f "$required" || { echo "缺少模板必需文件: $required" >&2; exit 1; }; done
 
 repository_mode="$(scripts/repository-mode)"
@@ -20,6 +20,9 @@ scripts/sync-skills --check
 scripts/update-skill-lock --check
 scripts/verify-skill-registry
 scripts/verify-skill-governance
+node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs
+node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs
+node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs
 scripts/verify-yss-dto-openapi-profile
 scripts/verify-yss-dto-openapi-scenarios
 scripts/verify-digital-human-roles
@@ -29,7 +32,13 @@ scripts/verify-lifecycle-registry
 scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml
 scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-plan-template.yaml
 scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-verification-template.yaml
+scripts/verify-subagent-task-package-scenarios
+scripts/verify-digital-human-task-package-scenarios
+scripts/verify-digital-human-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml
+scripts/verify-digital-human-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml
+scripts/verify-maintenance-checkpoint .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml
 scripts/verify-lifecycle-scenarios
+scripts/verify-lifecycle-transition-scenarios
 scripts/verify-maintenance-intensity-scenarios
 scripts/verify-governance-release
 scripts/verify-implementation-path-scenarios
@@ -42,7 +51,7 @@ scripts/verify-yss-ui-scenarios
 scripts/verify-openapi-yaml-first-scenarios
 scripts/verify-openapi-json-handoff-scenarios
 
-for entry in scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-lifecycle-checkpoint scripts/verify-frontend-implementation-evidence scripts/verify-maintenance-checkpoint scripts/verify-maintenance-intensity-scenarios scripts/verify-skill-registry scripts/verify-skill-governance scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/verify-digital-human-roles scripts/verify-digital-human-roles-scenarios scripts/verify-approval-record scripts/verify-lifecycle-scenarios scripts/verify-matt-yss-integration-scenarios scripts/verify-prototype-backend-scaffold-scenarios scripts/verify-yss-router-scenarios scripts/verify-openapi-yaml-first-scenarios scripts/verify-openapi-json-handoff-scenarios scripts/verify-repository-scope-scenarios scripts/export-yss-skills; do node --check "$entry"; done
+for entry in scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-lifecycle-checkpoint scripts/verify-frontend-implementation-evidence scripts/lib/task-package.mjs scripts/verify-digital-human-task-package scripts/verify-digital-human-task-package-scenarios scripts/verify-subagent-task-package scripts/verify-subagent-task-package-scenarios scripts/verify-maintenance-checkpoint scripts/verify-maintenance-intensity-scenarios scripts/verify-skill-registry scripts/verify-skill-governance scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/verify-digital-human-roles scripts/verify-digital-human-roles-scenarios scripts/verify-approval-record scripts/lib/lifecycle-transition.mjs scripts/verify-lifecycle-scenarios scripts/verify-lifecycle-transition-scenarios scripts/verify-matt-yss-integration-scenarios scripts/verify-prototype-backend-scaffold-scenarios scripts/verify-yss-router-scenarios scripts/verify-openapi-yaml-first-scenarios scripts/verify-openapi-json-handoff-scenarios scripts/verify-repository-scope-scenarios scripts/export-yss-skills; do node --check "$entry"; done
 
 legacy_runtime="ru""by"
 script_roots=(scripts)

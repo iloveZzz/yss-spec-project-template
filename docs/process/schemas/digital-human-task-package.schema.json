@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/digital-human-task-package.schema.json",
+  "title": "YSS Digital Human Task Package",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "task_id", "work_unit_id", "actor_id", "role_id", "runtime_id", "execution_state", "workflow_status", "skill_source", "contract", "inputs", "objective", "allowed_write_paths", "forbidden_actions", "expected_outputs", "expected_evidence_files", "verification_commands", "verification_results", "downstream_consumers", "convergence"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "task_id": { "type": "string", "minLength": 1, "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$" },
+    "work_unit_id": { "type": "string", "minLength": 1, "pattern": "^work-unit\\.[a-z0-9][a-z0-9-]*$" },
+    "actor_id": { "type": "string", "minLength": 1, "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$" },
+    "role_id": { "type": "string", "pattern": "^role\\.[a-z0-9][a-z0-9-]*$" },
+    "runtime_id": { "type": "string", "pattern": "^runtime\\.[a-z0-9][a-z0-9-]*$" },
+    "execution_state": { "enum": ["Explorer", "Drafter", "Worker", "Reviewer", "Verifier"] },
+    "workflow_status": { "enum": ["not-started", "active", "paused", "resolved", "failed"] },
+    "stage_id": { "type": "string", "pattern": "^stage\\.[a-z0-9][a-z0-9-]*$" },
+    "feature_id": { "type": "string", "minLength": 1 },
+    "skill_source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["registry_ref", "defaults_ref", "core_skills", "forbidden_skills"],
+      "properties": {
+        "registry_ref": { "const": "docs/agents/digital-human-roles.yaml" },
+        "defaults_ref": { "type": "string", "minLength": 1 },
+        "core_skills": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "forbidden_skills": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "contract": {
+      "type": "object", "additionalProperties": false,
+      "required": ["kind", "contract_id", "contract_version", "status", "contract_ref"],
+      "properties": {
+        "kind": { "enum": ["lifecycle-work-unit", "slice-implementation", "template-maintenance"] },
+        "contract_id": { "type": "string", "minLength": 1 },
+        "contract_version": { "type": "integer", "minimum": 1 },
+        "status": { "enum": ["issued", "stale", "blocked"] },
+        "contract_ref": { "type": "string", "minLength": 1 },
+        "lifecycle_ref": { "type": "string", "minLength": 1 },
+        "slice_contract_ref": { "type": "string", "minLength": 1 },
+        "maintenance_ref": { "type": "string", "minLength": 1 },
+        "artifact_refs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "gate_refs": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "inputs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "objective": { "type": "string", "minLength": 1 },
+    "allowed_write_paths": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "forbidden_actions": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "expected_outputs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "expected_evidence_files": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "verification_commands": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "verification_results": {
+      "type": "array", "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["command", "exit_code", "executed_at", "evidence_ref"],
+        "properties": {
+          "command": { "type": "string", "minLength": 1 },
+          "exit_code": { "type": "integer", "minimum": 0 },
+          "duration_ms": { "type": "integer", "minimum": 0 },
+          "executed_at": { "type": "string", "minLength": 1 },
+          "evidence_ref": { "type": "string", "minLength": 1 },
+          "stdout_ref": { "type": "string", "minLength": 1 },
+          "stderr_ref": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "review_context": {
+      "type": "object", "additionalProperties": false, "required": ["implementation_actor_id"],
+      "properties": { "implementation_actor_id": { "type": "string", "minLength": 1 }, "implementation_task_id": { "type": "string", "minLength": 1 } }
+    },
+    "downstream_consumers": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "convergence": {
+      "type": "object", "additionalProperties": false, "required": ["parent_work_unit", "convergence_ref"],
+      "properties": {
+        "parent_work_unit": { "type": "string", "pattern": "^work-unit\\.[a-z0-9][a-z0-9-]*$" },
+        "convergence_ref": { "type": "string", "minLength": 1 },
+        "conflict_escalation": { "type": "string", "minLength": 1 }
+      }
+    },
+    "result": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "result_schema": { "const": "workflow-execution-result-v1" },
+        "work_unit": { "type": "string", "minLength": 1 },
+        "workflow_reference": { "type": "string", "minLength": 1 },
+        "result": { "enum": ["completed", "blocked", "needs-human", "failed"] },
+        "skill": { "type": "string", "minLength": 1 },
+        "changed_files": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "changed_artifacts": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "evidence_refs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "deferred_seams": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "drift": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "violation": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "new_impacts": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "stale_candidates": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "next_route": { "type": ["string", "null"], "minLength": 1 },
+        "blocking_signals": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    }
+  },
+  "allOf": [
+    { "if": { "properties": { "contract": { "properties": { "kind": { "const": "lifecycle-work-unit" } } } } }, "then": { "required": ["stage_id"], "properties": { "contract": { "required": ["lifecycle_ref"] } } } },
+    { "if": { "properties": { "contract": { "properties": { "kind": { "const": "slice-implementation" } } } } }, "then": { "required": ["stage_id"], "properties": { "contract": { "required": ["slice_contract_ref"] } } } },
+    { "if": { "properties": { "contract": { "properties": { "kind": { "const": "template-maintenance" } } } } }, "then": { "properties": { "contract": { "required": ["maintenance_ref"] } } } },
+    { "if": { "properties": { "execution_state": { "const": "Reviewer" } } }, "then": { "required": ["review_context"] } }
+  ]
+}

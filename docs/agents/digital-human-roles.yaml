@@ -157,7 +157,7 @@ roles:
     title: YSS 后端工程师
     stages: [stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.openapi-draft, artifact.data-architecture]
-    core_skills: [yss-router, yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-dto, yss-exception, yss-validation, tdd, yss-ddd-scaffold-generator]
+    core_skills: [yss-router, yss-tactical-design, yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-dto, yss-exception, yss-validation, tdd, yss-ddd-scaffold-generator]
     forbidden_skills: [yss-ui, yss-page-module-development, yss-formily, yss-frontend-scaffold-generator, yss-antd-design, page-list-module, page-form-module]
     description: >-
       Own OpenAPI Draft, data-architecture contributions, and backend tests.

@@ -69,8 +69,8 @@ Router 状态映射为：`draft → completed`、`blocked → blocked`、`ready-
 | Matt flow | 进入条件 | 生命周期结果 |
 |---|---|---|
 | `to-spec`（用户显式） | Discovery work unit 或 `grill-with-docs` 已满足退出条件，且不存在未回流 runnable blocker；用户问题、MVP/非目标、成功标准、测试 seam 和术语审查均有证据 | 生命周期只准备/验收；Spec 初稿为 `ready-for-human`，不等于批准 |
-| `to-tickets`（用户显式） | OpenAPI Freeze 或 `no-api-impact` 记录、必要门禁、垂直切片范围和阻塞边均已明确 | 生命周期只准备/验收；只能生成垂直切片 Ticket，初始统一为 `ready-for-human` |
-| `implement`（用户显式） | `ready-for-agent` 公式、Contract 已批准/持久化/版本一致、Build Architecture Checklist、实现仓库/分支/CI/验证命令/回滚点，以及后端 Contract（适用时）均满足 | 生命周期只准备/验收；单会话实现同样适用，不得绕过门禁 |
+| `to-tickets`（用户显式） | OpenAPI Freeze 或 `no-api-impact` 记录、必要门禁、垂直切片范围和阻塞边均已明确 | 生命周期只准备/验收；只能生成垂直切片 Ticket，初始统一为 `ready-for-human`；必须留下 `ticket_decomposition_result_ref` 和 `vertical_slice_ticket_ref` |
+| `implement`（用户显式） | `ready-for-agent` 公式、Ticket 正式化结果、垂直切片引用/类型/状态、Contract 已批准/持久化/版本一致、Build Architecture Checklist、实现仓库/分支/CI/验证命令/回滚点，以及后端 Contract（适用时）均满足 | 生命周期只准备/验收；单会话实现同样适用，不得绕过门禁；父 Ticket、`ready-for-human` 切片或跳过 Ticket 正式化的 `next_route` 必须 `blocked` |
 
 `grill_exit` 不是“已经聊过”的自然语言声明。它必须同时证明 frontier 为空、事实已解决或分别路由到 `research` / prototype / external input、用户决策已确认、双方共同理解已确认，并且没有未回流的 runnable blocker。
 

@@ -3,7 +3,9 @@ status: template
 owner: ai
 ---
 
-# Subagent Task Package：<task_id>
+# Digital Human Task Package：<task_id>
+
+> Canonical contract: `docs/process/schemas/digital-human-task-package.schema.json`。本文件路径保留为兼容入口。
 
 > 用于主控 Agent 派发 subagent 前固定输入、输出、写范围和验收标准。没有任务包边界时，不得派发 subagent。
 
@@ -11,7 +13,10 @@ owner: ai
 
 | 字段 | 内容 |
 |---|---|
+| schema_version | `1` |
 | task_id |  |
+| work_unit_id | 对应生命周期注册表的 `work_units[].id`；实现子任务对应 Slice Contract 的 `work_units[].id` |
+| actor_id | 当前运行时实例标识；Reviewer 必须与实现者不同 |
 | Feature / Change |  |
 | 生命周期阶段 |  |
 | 对应门禁 |  |
@@ -23,6 +28,8 @@ owner: ai
 | forbidden_skills | 从角色表复制，禁止手写 |
 | subagent 角色 | Explorer / Drafter / Worker / Reviewer / Verifier |
 | 任务类型 | explore / draft / work / review / verify |
+| execution_state | 与 subagent 角色一致；由主控派发 |
+| workflow_status | not-started / active / paused / resolved / failed |
 
 ## 2. 输入资产
 
@@ -35,11 +42,36 @@ owner: ai
 | Ticket / Slice / Checklist |  |  |
 | 代码 / 命令 / 其他 |  |  |
 
+## 2.1 合同与技能来源
+
+| 字段 | 内容 |
+|---|---|
+| contract_id |  |
+| contract_version |  |
+| contract_kind | `lifecycle-work-unit` / `slice-implementation` / `template-maintenance` |
+| contract_status | `issued` / `stale` / `blocked`；不替代生命周期门禁批准 |
+| contract_ref |  |
+| lifecycle_ref | 生命周期工作单元使用 |
+| Slice Implementation Contract | 仅 `slice-implementation` 填写 |
+| maintenance_ref | 仅 `template-maintenance` 填写维护 checkpoint |
+| 技能注册表 | `docs/agents/digital-human-roles.yaml` |
+| 技能默认值 | `taskPackageDefaults(<role_id>)` |
+
 ## 3. 输出要求
 
 | 输出 | 路径 / 链接 | 完成标准 |
 |---|---|---|
 |  |  |  |
+| expected_evidence_files |  |  |
+
+## 3.1 下游与汇合
+
+| 字段 | 内容 |
+|---|---|
+| downstream_consumers |  |
+| parent_work_unit | `<work-unit.id>` |
+| convergence_ref |  |
+| conflict_escalation |  |
 
 ## 4. 写范围
 
@@ -76,6 +108,12 @@ owner: ai
 | 冲突上报方式 |  |
 | 主控 Agent 合并动作 | 采纳 / 部分采纳 / 不采纳 / 需返工 |
 | 未采纳原因 |  |
+
+## 7.1 实际验证结果
+
+| 命令 | exit_code | executed_at | evidence_ref |
+|---|---:|---|---|
+|  |  |  |  |
 
 ## 8. 子代理最终回复格式
 

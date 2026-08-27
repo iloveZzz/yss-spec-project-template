@@ -6,8 +6,8 @@ Subagent 和其它运行时实例只接收边界清晰的任务包。主控数�
 
 ## 任务包
 
-每个任务包必须写明数字人角色 ID、`runtime_id`、执行态、从 `docs/agents/digital-human-roles.yaml` 复制的 `core_skills` / `forbidden_skills`（可用 `taskPackageDefaults`）、输入资产、目标、允许写路径、禁止事项、验收标准、验证命令和汇合方式。禁止手写第二套技能包。
+凡主控向数字人角色或独立运行时正式派发生命周期工作单元，都必须使用 `docs/process/schemas/digital-human-task-package.schema.json` 定义的任务包，并写明 `task_id`、`work_unit_id`、`actor_id`、数字人角色 ID、`runtime_id`、执行态、工作流状态、从 `docs/agents/digital-human-roles.yaml` 复制的 `core_skills` / `forbidden_skills`（可用 `taskPackageDefaults`）、合同类型和版本、输入资产、目标、允许写路径、禁止事项、验收标准、验证命令及其实际退出码 / 执行时间 / 证据引用、下游消费者和汇合方式。`slice-implementation` 才额外绑定 Slice Implementation Contract；禁止手写第二套技能包；任务包由 `scripts/verify-digital-human-task-package` 校验，`scripts/verify-subagent-task-package` 仅为兼容入口。
 
 ## 汇合
 
-返回结果至少包括变更文件、证据文件、实际执行的命令、结果、延期 seam、drift / violation / new impacts 和建议下一路由。主控必须重新执行 fresh verification，并在集中 checkpoint 中保留阶段因果。会签写入 `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`（形状见 `docs/templates/approval-record-template.yaml`），不能用聊天表情代替。恢复前校验 `scripts/verify-approval-record`。
+返回结果必须符合 `workflow-execution-result-v1`，至少包括 `work_unit`、`workflow_reference`、`result`、`skill`、`changed_files` / `changed_artifacts`、`evidence_refs`、实际验证结果、`deferred_seams`、`drift`、`violation`、`new_impacts`、`stale_candidates`、`blocking_signals` 和 `next_route`。主控必须重新执行 fresh verification，并在集中 checkpoint 中保留阶段因果。会签写入 `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`（形状见 `docs/templates/approval-record-template.yaml`），不能用聊天表情代替。恢复前校验 `scripts/verify-approval-record`。

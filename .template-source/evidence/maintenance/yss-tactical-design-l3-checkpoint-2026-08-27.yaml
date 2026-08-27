@@ -1,0 +1,42 @@
+schema_version: 1
+intensity: L3
+classification_reason: >-
+  新增 yss-tactical-design 核心校验器、领域路由和跨 Agent 投影，改变 Agent 行为并影响
+  生命周期契约、Slice Contract 和模板发布门禁。
+triggers:
+  - core-validator
+  - lifecycle-gate
+  - aggregate-behavior-change
+changed_assets:
+  - .agents/skills/yss-tactical-design/SKILL.md
+  - .agents/skills/yss-tactical-design/references/tactical-design-contract.md
+  - .agents/skills/yss-tactical-design/references/tactical-design.schema.json
+  - .agents/skills/yss-tactical-design/references/validation-rules.md
+  - .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs
+  - .agents/skills/yss-tactical-design/tests/run-scenarios.mjs
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - .agents/skills/yss-router/references/router-contract.yaml
+  - docs/agents/yss-skill-registry.yaml
+  - docs/agents/digital-human-roles.yaml
+  - skills-lock.json
+verification_evidence:
+  - kind: red
+    command: .template-source/evidence/maintenance/yss-tactical-design-red-2026-08-27.md
+    result: pass
+  - kind: green
+    command: .template-source/evidence/maintenance/yss-tactical-design-green-2026-08-27.md
+    result: pass
+  - kind: refactor
+    command: .template-source/evidence/maintenance/yss-tactical-design-refactor-2026-08-27.md
+    result: pass
+  - kind: pressure-scenario
+    command: .template-source/evidence/maintenance/yss-tactical-design-pressure-2026-08-27.md
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template
+    result: pass
+  - kind: formal-independent-review
+    command: .template-source/evidence/maintenance/yss-tactical-design-formal-independent-review-2026-08-27.md
+    result: pass
+review_mode: formal-independent
+escalation: none

@@ -66,11 +66,11 @@ exclusive_flags:
 
 slice_contract_required:
   root: [schema_version, contract_id, contract_version, slice_id, status, lifecycle_refs, readiness, common, frontend, backend, contract, cross_repo, work_units]
-  lifecycle_refs: [spec, ticket, requirement_freeze, low_fidelity_review, prototype_review, high_fidelity_html, prototype_verification, antd_cli_evidence, browser_verification_evidence, prototype_confirmation, openapi_freeze_or_no_impact, architecture_review, data_architecture, engineering_baseline, build_architecture_checklist, implementation_repository, frontend_repository, backend_repository, maven_wrapper]
+  lifecycle_refs: [spec, ticket, requirement_freeze, low_fidelity_review, prototype_review, high_fidelity_html, prototype_verification, antd_cli_evidence, browser_verification_evidence, prototype_confirmation, openapi_freeze_or_no_impact, architecture_review, data_architecture, tactical_design, engineering_baseline, build_architecture_checklist, implementation_repository, frontend_repository, backend_repository, maven_wrapper]
   readiness: [blockers, stale_inputs, not_applicable]
   common: [impacted_areas, implementation_path_policy, project_roots, required_skills, optional_skills, unavailable_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, human_review_points, full_reroute_triggers]
   frontend: [status, required_skills, approved_prototype_ref, state_matrix_ref, allowed_write_paths, component_test_seams, e2e_paths]
-  backend: [status, affected_layers, component_impacts, required_skills, application_boundary, transaction_boundary, persistence_strategy, allowed_write_paths, forbidden_patterns, expected_evidence_files, seam_deferred, verification_commands]
+  backend: [status, affected_layers, component_impacts, required_skills, application_boundary, transaction_boundary, persistence_strategy, allowed_write_paths, forbidden_patterns, expected_evidence_files, seam_deferred, verification_commands, tactical_ddd]
   contract: [api_impact, freeze_ref, no_api_impact_ref, generated_clients, contract_tests, regeneration_commands]
   cross_repo: [repositories, delivery_order, integration_verification, rollback_order]
 
@@ -91,6 +91,7 @@ lifecycle_ref_by_readiness:
   openapi_freeze: openapi_freeze_or_no_impact
   no_api_impact_record: openapi_freeze_or_no_impact
   data_architecture: data_architecture
+  tactical_design: tactical_design
   engineering_baseline: engineering_baseline
   backend_repository: backend_repository
   maven_wrapper: maven_wrapper
@@ -135,6 +136,10 @@ applicable_subcontract_nonempty:
   backend:
     scalar: [application_boundary, transaction_boundary, persistence_strategy]
     array: [affected_layers, required_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands]
+    conditional_tactical_ddd:
+      when: [aggregate-impact, state-machine-impact, invariant-impact, consistency-impact, domain-event-impact, gateway-boundary-impact, persistence-mapping-impact]
+      scalar: [tactical_design_ref, tactical_design_version, gateway_boundary_ref]
+      array: [aggregate_refs, invariant_refs, state_behavior_refs, domain_test_seams, application_test_seams]
   contract_api:
     scalar: [freeze_ref]
     array: [contract_tests]
@@ -148,8 +153,12 @@ dependency_closure:
     always: [yss-backend-scaffold-parent, alibaba-java-code-style]
   yss-domain:
     always: [alibaba-java-code-style]
-    when_modeling: [domain-modeling]
+    when_modeling: [domain-modeling, yss-tactical-design]
     when_pojo: [lombok]
+  yss-tactical-design:
+    always: [domain-modeling]
+    when_api_impact: [yss-openapi-draft-review]
+    when_data_impact: [yss-repository]
   yss-application:
     always: [alibaba-java-code-style]
     when_conversion: [mapstruct, lombok]
@@ -218,6 +227,12 @@ full_reroute_triggers:
   - data-model-impact
   - new-write-path
   - new-repository
+  - aggregate-impact
+  - invariant-impact
+  - consistency-impact
+  - domain-event-impact
+  - gateway-boundary-impact
+  - persistence-mapping-impact
   - new-required-skill
   - not-applicable-invalidated
   - architecture-drift

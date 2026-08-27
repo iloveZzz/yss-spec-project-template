@@ -1,0 +1,80 @@
+schema_version: 1
+tactical_design_id: tactical-design.example-feature
+tactical_version: v1
+status: ready-for-human
+context_ref: context.example
+aggregate_catalog:
+  - aggregate_id: aggregate.example
+    name: ExampleAggregate
+    context_ref: context.example
+    root_entity: entity.example-root
+    invariant_refs: [invariant.example-required]
+    behavior_refs: [behavior.example-publish]
+    consistency_boundary: single-aggregate-transaction
+    api_exposure: internal-only
+entity_catalog:
+  - entity_id: entity.example-root
+    name: ExampleRoot
+    aggregate_id: aggregate.example
+    identity: stable-id
+    lifecycle: draft-published
+value_object_catalog:
+  - value_object_id: value-object.example-code
+    name: ExampleCode
+    aggregate_id: aggregate.example
+    immutable: true
+behavior_catalog:
+  - behavior_id: behavior.example-publish
+    name: Publish
+    aggregate_id: aggregate.example
+    command: publish
+    preconditions: ["状态为 draft"]
+    invariant_refs: [invariant.example-required]
+    postconditions: ["状态变为 published"]
+    event_refs: [domain-event.example-published]
+invariant_catalog:
+  - invariant_id: invariant.example-required
+    aggregate_id: aggregate.example
+    statement: "发布前必须满足业务前置条件"
+state_transition_catalog:
+  - transition_id: transition.example-publish
+    aggregate_id: aggregate.example
+    from: draft
+    to: published
+    behavior_id: behavior.example-publish
+consistency_policy:
+  transaction_boundary: single aggregate
+  concurrency: optimistic version check
+  idempotency: repeated publish is rejected by state guard
+  cross_aggregate_strategy: domain event with retry
+domain_event_catalog:
+  - event_id: domain-event.example-published
+    name: ExamplePublished
+    aggregate_id: aggregate.example
+    consumers: [downstream-context]
+    delivery: outbox-at-least-once
+gateway_catalog:
+  - gateway_id: gateway.example
+    name: ExampleGateway
+    context_ref: context.example
+    layer: Domain
+    capabilities: [save aggregate, load aggregate]
+persistence_mapping:
+  - aggregate_id: aggregate.example
+    storage_model: example_aggregate_snapshot
+    notes: "持久化结构不泄漏到领域模型"
+test_seams:
+  - seam_id: test-seam.example-invariant
+    kind: domain-behavior
+    subject_ref: invariant.example-required
+    assertion: "不满足前置条件时 publish 失败"
+adr_candidates: []
+upstream_impact:
+  spec_ref: docs/.scratch/example/spec.yaml@v1
+  strategic_ref: docs/.scratch/example/domain-strategy.yaml@v1
+  api_ref: docs/.scratch/example/openapi.yaml@draft
+  data_ref: docs/.scratch/example/data-architecture.md@v1
+  upstream_current: true
+version: v1
+digest: sha256:0000000000000000000000000000000000000000000000000000000000000000
+evidence_refs: [docs/.scratch/example/tactical-review.yaml]

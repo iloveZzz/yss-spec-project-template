@@ -38,10 +38,15 @@ phase_boundary:
 
 ```text
 required gates ∈ {approved, not-applicable}
-AND related artifacts 不含 stale
+AND related artifacts 不含 stale（若命中领域影响，`artifact.tactical-design` 或嵌入式 Tactical DDD Check 引用必须为当前版本）
 AND blocking edges 全部关闭
 AND implementation repo/branch/CI/test/rollback 已明确
+AND `work-unit.ticket-decomposition` 已返回 `completed`，且其 `ticket_decomposition_result_ref` 证据可读取
+AND `vertical_slice_ticket_ref` 指向 `docs/.scratch/<feature>/issues/` 下的垂直切片 Ticket
+AND `vertical_slice_ticket_kind=vertical-slice-ticket` 且 `vertical_slice_ticket_role=ready-for-agent`
+AND `vertical_slice_ticket_ref` 不得指向 `parent-ticket.md`
 AND Slice Implementation Contract 已由生命周期编排器批准并持久化
+AND Slice Implementation Contract 的 `ticket_ref` 与 `vertical_slice_ticket_ref` 完全一致
 AND 当前工作单元消费的 contract_id/version 与最新批准版本一致
 AND Backend Slice Implementation Contract（后端适用）和 Build Architecture Checklist 已完成
 AND backend 影响且 scaffold_status=required 时，原型确认后的脚手架策略、`yss-backend-scaffold-parent` 基线、Wrapper 验证和 Router 重编译均已完成
@@ -53,7 +58,7 @@ AND UI 影响切片的前端实现还原计划已通过 schema 校验、`templat
 
 发布前还必须满足所有已触发门禁均为 `approved` 或 `not-applicable`；UI 影响切片必须额外通过 `gate.frontend-implementation-verified`，不能只凭 fresh verification 和回滚点放行。
 
-用户显式运行 `to-tickets` 后，垂直切片初始 Ticket 状态固定为 `ready-for-human`。只有 `yss-product-lifecycle` 复算上述公式全部为真后，才能把它提升为 `ready-for-agent`；生命周期不会自动调用 `to-tickets`，其默认标签也不参与该裁决。
+用户显式运行 `to-tickets` 后，垂直切片初始 Ticket 状态固定为 `ready-for-human`。原生路径执行 `work-unit.ticket-decomposition` 时同样必须产生等价的垂直切片和 `Workflow Execution Result` 证据。只有 `yss-product-lifecycle` 复算上述公式全部为真后，才能把它提升为 `ready-for-agent`；生命周期不会自动调用 `to-tickets`，但不得跳过 Ticket 正式化工作单元。其默认标签也不参与该裁决。
 
 ## Review 与 Git 授权状态
 

@@ -1,0 +1,46 @@
+schema_version: 1
+task_id: lifecycle-ticket-transition-review
+work_unit_id: work-unit.intensity-aware-review
+actor_id: reviewer.lifecycle-ticket-transition.2026-08-27
+feature_id: lifecycle-ticket-transition-guardrails
+role_id: role.test-engineer
+runtime_id: runtime.generic
+execution_state: Reviewer
+workflow_status: active
+skill_source:
+  registry_ref: docs/agents/digital-human-roles.yaml
+  defaults_ref: taskPackageDefaults(role.test-engineer)
+  core_skills: [tdd, diagnosing-bugs, code-review]
+  forbidden_skills: [yss-ddd-scaffold-generator, yss-frontend-scaffold-generator, implement, to-spec]
+contract:
+  kind: template-maintenance
+  contract_id: lifecycle-ticket-transition-review
+  contract_version: 1
+  status: issued
+  contract_ref: .template-source/evidence/maintenance/lifecycle-ticket-transition-l3-checkpoint-2026-08-27.yaml
+  maintenance_ref: .template-source/evidence/maintenance/lifecycle-ticket-transition-l3-checkpoint-2026-08-27.yaml
+inputs:
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - scripts/lib/lifecycle-transition.mjs
+  - scripts/lib/scenario-checks.mjs
+  - scripts/verify-lifecycle-transition-scenarios
+objective: 只读审查 Ticket 正式化到实现入口的生命周期转换护栏。
+allowed_write_paths: [.template-source/evidence/maintenance/]
+forbidden_actions: [修改文件, commit, push, 关闭 gate]
+expected_outputs: [独立审查结论, findings, 实际验证命令和退出码, 建议下一路由]
+expected_evidence_files: [.template-source/evidence/maintenance/lifecycle-ticket-transition-formal-independent-review-2026-08-27.md]
+verification_commands:
+  - node --check scripts/lib/lifecycle-transition.mjs
+  - node --check scripts/lib/scenario-checks.mjs
+  - scripts/verify-lifecycle-transition-scenarios
+  - scripts/verify-lifecycle-scenarios
+  - scripts/verify-matt-yss-integration-scenarios
+verification_results: []
+review_context:
+  implementation_actor_id: worker.lifecycle-ticket-transition.2026-08-27
+  implementation_task_id: lifecycle-ticket-transition-implementation
+downstream_consumers: [role.lifecycle-orchestrator]
+convergence:
+  parent_work_unit: work-unit.intensity-aware-review
+  convergence_ref: .template-source/evidence/maintenance/lifecycle-ticket-transition-l3-checkpoint-2026-08-27.yaml
+  conflict_escalation: 返回主控，由主控决定是否修改合同或校验器。

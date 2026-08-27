@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS Tactical DDD Design"
+  short_description: "聚合、不变量、状态机、一致性与 Gateway 的战术设计"
+  default_prompt: "基于批准且版本当前的上游资产，完成可审查的 YSS DDD 战术设计并返回结构化验证结果。"

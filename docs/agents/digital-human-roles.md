@@ -16,7 +16,7 @@
 | 执行态 | Explorer / Drafter / Worker / Reviewer / Verifier | 数字人角色 |
 | 运行时绑定 | 如何在 Cursor / Claude / Grok 等落地 | 角色职责本身 |
 
-一次任务包同时写明数字人角色、执行态、当前 `runtime_id`，以及从角色表复制的 `core_skills` / `forbidden_skills`。可用 `taskPackageDefaults(roleId)`（`scripts/lib/digital-human-roles.mjs`）读取，禁止手写第二套技能包。
+一次数字人任务包同时写明 `task_id`、`work_unit_id`、`actor_id`、数字人角色、执行态、当前 `runtime_id`，以及从角色表复制的 `core_skills` / `forbidden_skills`。可用 `taskPackageDefaults(roleId)`（`scripts/lib/digital-human-roles.mjs`）读取，禁止手写第二套技能包。任务包 canonical Schema 为 `docs/process/schemas/digital-human-task-package.schema.json`，按 `contract.kind` 选择生命周期、切片实现或模板维护合同。
 
 ## 会签人
 
@@ -80,4 +80,4 @@ Grok 专用操作见 `docs/templates/grok-bot-profile-template.md`。通用实�
 
 ## 任务包最低字段
 
-数字人角色 ID、`runtime_id`、执行态、从角色表复制的 `core_skills` / `forbidden_skills`、输入资产、允许写路径、禁止事项、验收、验证命令、汇合方式。
+`task_id`、`work_unit_id`、`actor_id`、数字人角色 ID、`runtime_id`、执行态、从角色表复制的 `core_skills` / `forbidden_skills`、`contract.kind/id/version`、输入资产、允许写路径、禁止事项、验收、验证命令、证据、下游消费者和汇合方式。

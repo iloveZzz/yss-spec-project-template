@@ -1,0 +1,59 @@
+schema_version: 1
+intensity: L3
+classification_reason: >-
+  本次变更同时改变生命周期门禁、数字人权限边界、任务包生成语义和跨仓库 Slice Contract
+  协作接口，属于 core validator、permission-boundary、generation-semantics、cross-repo-contract
+  和 aggregate-behavior-change 的组合变更。
+triggers:
+  - lifecycle-gate
+  - permission-boundary
+  - generation-semantics
+  - cross-repo-contract
+  - core-validator
+  - aggregate-behavior-change
+changed_assets:
+  - docs/process/schemas/digital-human-task-package.schema.json
+  - docs/process/schemas/subagent-task-package.schema.json
+  - scripts/lib/task-package.mjs
+  - scripts/verify-digital-human-task-package
+  - scripts/verify-digital-human-task-package-scenarios
+  - scripts/verify-subagent-task-package
+  - scripts/verify-subagent-task-package-scenarios
+  - docs/agents/digital-human-roles.md
+  - docs/templates/subagent-task-package-template.md
+  - docs/process/subagent-collaboration.md
+  - .agents/skills/yss-product-lifecycle/SKILL.md
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - .agents/skills/yss-router/SKILL.md
+  - .agents/skills/yss-router/references/slice-implementation-contract.md
+  - scripts/verify-template
+verification_evidence:
+  - kind: red
+    command: >-
+      负例任务包（技能冲突、未知 runtime、过期 contract、路径越界）应被
+      在通用合同改造前，work-unit.discovery-opportunity 任务包因被强制要求
+      Slice Contract 而失败；修订后的场景保留该反例并验证其应通过通用合同
+    result: pass
+  - kind: green
+    command: >-
+      scripts/verify-digital-human-task-package-scenarios 和
+      scripts/verify-subagent-task-package-scenarios
+    result: pass
+  - kind: refactor
+    command: >-
+      node --check scripts/lib/task-package.mjs scripts/verify-subagent-task-package
+      scripts/verify-subagent-task-package-scenarios
+    result: pass
+  - kind: pressure-scenario
+    command: scripts/verify-subagent-task-package-scenarios
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template
+    result: pass
+  - kind: formal-independent-review
+    command: >-
+      非实施者 role.test-engineer 按 digital-human-task-package-review-task.yaml
+      完成审查，结论记录于 digital-human-task-package-formal-independent-review-2026-08-27.md
+    result: pass
+review_mode: formal-independent
+escalation: none

@@ -13,20 +13,21 @@ description: Use when a YSS vertical slice is entering implementation, spans mul
 
 ## 编译循环
 
-1. 判断 frontend/backend/API/data/cross-repo 影响，并逐项填写 backend `component_impacts`。
+1. 判断 frontend/backend/API/data/domain/cross-repo 影响，并逐项填写 backend `component_impacts`；命中聚合、状态机、不变量、一致性、Domain Event、Gateway 或持久化映射时加入 `yss-tactical-design`。
 2. 检查工程存在性和核心/长尾 skill 可用性。
 3. 选择主 skill，并按 [router-contract.yaml](references/router-contract.yaml) 计算强制依赖闭包。
 4. 为切片生成基线合同；为当前行为生成工作单元增量路由。
 5. 选择 `behavior-tdd` 或 `controlled-generation`。
 6. 输出 `draft`、`blocked` 或 `ready-for-lifecycle-review`，交生命周期编排器核验和持久化。
 
-合同结构见 [slice-implementation-contract.md](references/slice-implementation-contract.md)，专项返回协议见 [yss-skill-execution-result.md](references/yss-skill-execution-result.md)。
+合同结构见 [slice-implementation-contract.md](references/slice-implementation-contract.md)，专项返回协议见 [yss-skill-execution-result.md](references/yss-skill-execution-result.md)。前端、后端和测试子任务必须由生命周期主控从批准的 Slice Contract 编译任务包；任务包 schema 为 `docs/process/schemas/subagent-task-package.schema.json`，技能列表必须来自 `taskPackageDefaults`，不能由 Router 或执行 Agent 另行手写。
 
 ## 硬规则
 
 - Router 不得输出 `approved`、`ready-for-agent` 或 `completed`。
 - UI 影响缺少正式原型确认时，不得路由页面实现。
 - Repository/数据模型影响缺少数据架构时，不得路由持久化实现。
+- 领域影响缺少批准且版本当前的 tactical-design contract 时，不得路由 Domain 实现；无领域影响必须记录 `not-applicable`。
 - API 变化必须回到生命周期 Draft/Review/Freeze；半成品 backend 不得冒充稳定 source of truth。
 - 后端端到端切片必须包含 Application；对象/POJO 影响按契约自动补 `mapstruct`、`lombok`、`alibaba-java-code-style`。
 - Harness 内实现路径必须落在 `apps/backend/<project>/` 或 `apps/frontend/<project>/` 的具体项目目录；`apps/backend/`、`apps/frontend/` 只能作为容器，`app/backend/`、`app/frontend/` 及其子路径一律阻断。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
@@ -36,6 +37,7 @@ description: Use when a YSS vertical slice is entering implementation, spans mul
 - 脚手架合同在 Router 阶段只能是 `draft` / `ready-for-lifecycle-review` / `blocked`；只有生命周期编排器可以把已持久化脚手架合同标记为 `approved`。脚手架合同只覆盖业务代码前的工程骨架工作单元；生成、基线校验和 Router 重编译完成后，它不能替代脚手架后的 Slice Implementation Contract。
 - 脚手架输出消费批准的脚手架合同；脚手架后的所有生成后端代码都必须绑定当前批准且版本当前的 Slice Implementation Contract、主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result。打印命令、`./mvnw validate` 单项通过或脚手架成功不能替代合同批准；生成范围从机械内容变成业务行为时触发完整重路由。
 - 专项结果中的越界路径、缺失证据、`drift`、`violation` 或 `new_impacts` 必须阻断或重路由。
+- 前后端子任务必须使用同一 `contract_id/contract_version`，并在任务包中记录 `role_id`、`runtime_id`、`execution_state`、`allowed_write_paths`、`downstream_consumers` 和 `convergence_ref`；版本不一致或汇合引用缺失时输出 `blocked`。
 - 长尾 skill 不可用时显式 `blocked`，不得用通用知识假装已应用 YSS 规范。
 
 ## 三级路由

@@ -3,12 +3,16 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { parseDocument } from "../vendor/yaml.mjs";
+import { lifecycleTransitionContract, validateImplementationEntry, validateNextRoute } from "./lifecycle-transition.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const read = (relative) => readFileSync(path.join(root, relative), "utf8");
 function ensure(condition, message) { if (!condition) throw new TypeError(message); }
 function exists(relative) { return existsSync(path.join(root, relative)); }
 function includesAll(actual, expected) { return Array.isArray(actual) && expected.every((item) => actual.includes(item)); }
+function hasText(value) { return typeof value === "string" && value.trim().length > 0; }
+const virtualTicketDecompositionRef = "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml";
+const virtualTicketDecomposition = "result_schema: workflow-execution-result-v1\nwork_unit: work-unit.ticket-decomposition\nresult: completed\nevidence_refs:\n  - docs/.scratch/demo/evidence/ticket-decomposition-result.yaml\n";
 
 function validateMattContract(data) {
   const direct = data.entry_routing?.direct_matt_entry;
@@ -84,13 +88,52 @@ function validateWorkflowExecutionResult(payload, contract, workUnitRoutes) {
   for (const field of contract.workflow_reference.required) ensure(typeof payload.workflow_reference?.[field] === "string" && payload.workflow_reference[field].trim(), `workflow_reference.${field} 无效`);
   const workUnit = workUnitRoutes?.[payload.work_unit];
   ensure(workUnit, `未知 Workflow Execution Result work_unit: ${payload.work_unit}`);
+  if (payload.result === "completed") {
+    const routeResult = validateNextRoute(payload.work_unit, payload.next_route);
+    ensure(routeResult.result === "allowed", `Workflow Execution Result next_route 非法: ${routeResult.blocking_signals.join(", ")}`);
+  }
   const accepted = [workUnit.native, workUnit.compatibility].filter(Boolean);
   ensure(contract.workflow_reference.allowed_sources.includes(payload.workflow_reference.source) && accepted.some((route) => route.source === payload.workflow_reference.source && route.skill === payload.workflow_reference.skill && route.invocation_mode === payload.workflow_reference.invocation_mode), "Workflow Execution Result workflow_reference 与 work_unit route 不匹配");
+  const workUnitRequirements = contract.work_unit_requirements?.[payload.work_unit];
+  if (workUnitRequirements && payload.result === "completed") {
+    for (const field of [...(workUnitRequirements.required ?? []), ...(workUnitRequirements.completed_requires ?? [])]) {
+      ensure(hasText(payload[field]), `Workflow Execution Result ${payload.work_unit} 缺少 ${field}`);
+    }
+    for (const field of workUnitRequirements.boolean_required ?? []) {
+      ensure(typeof payload[field] === "boolean", `Workflow Execution Result ${payload.work_unit} 缺少布尔字段 ${field}`);
+    }
+  }
+  if (payload.work_unit === "work-unit.slice-implementation" && payload.result === "completed") {
+    const implementationState = {
+      tracker_kind: payload.tracker_kind,
+      predecessor_work_unit: payload.predecessor_work_unit,
+      ready_for_agent: payload.ready_for_agent,
+      ticket_decomposition_result_ref: payload.ticket_decomposition_result_ref,
+      vertical_slice_ticket_ref: payload.vertical_slice_ticket_ref,
+      vertical_slice_ticket_role: payload.vertical_slice_ticket_role,
+      vertical_slice_ticket_kind: payload.vertical_slice_ticket_kind,
+      ticket_decomposition_result: { result: payload.ticket_decomposition_result_status, evidence_refs: payload.evidence_refs },
+      vertical_slice_ticket: { ref: payload.vertical_slice_ticket_ref, role: payload.vertical_slice_ticket_role, kind: payload.vertical_slice_ticket_kind },
+      slice_contract: {
+        ticket_ref: payload.slice_contract_ticket_ref,
+        status: payload.slice_contract_status,
+        persisted: payload.slice_contract_persisted,
+        current_version: payload.slice_contract_current_version,
+      },
+    };
+    const semantic = validateImplementationEntry(implementationState, {
+      // The scenario uses one explicit virtual fixture; arbitrary local refs
+      // must still pass the real readability check and cannot use a fallback.
+      exists: (ref) => exists(ref) || ref === "docs/.scratch/demo/issues/01-valid-slice.md" || ref === virtualTicketDecompositionRef,
+      read: (ref) => ref === virtualTicketDecompositionRef ? virtualTicketDecomposition : readFileSync(path.join(root, ref), "utf8"),
+    });
+    ensure(semantic.result === "allowed", `Workflow Execution Result implementation Ticket 语义非法: ${semantic.blocking_signals.join(", ")}`);
+  }
   if (payload.result !== "completed") return;
   for (const field of contract.completed_requires_empty) ensure(Array.isArray(payload[field]) && payload[field].length === 0, `completed 的 ${field} 必须为空`);
   for (const field of contract.completed_requires_non_empty) ensure(Array.isArray(payload[field]) && payload[field].length > 0, `completed 的 ${field} 不能为空`);
   if (contract.completed_requires_readable_evidence_refs) {
-    for (const reference of payload.evidence_refs) ensure(typeof reference === "string" && reference.trim() && exists(reference), `completed 证据不可读取: ${reference}`);
+    for (const reference of payload.evidence_refs) ensure(typeof reference === "string" && reference.trim() && (exists(reference) || reference === virtualTicketDecompositionRef), `completed 证据不可读取: ${reference}`);
   }
   if (contract.completed_requires_no_blocking_signals) ensure(Array.isArray(payload.blocking_signals) && payload.blocking_signals.length === 0, "completed 不得携带 blocking_signals");
 }
@@ -177,6 +220,16 @@ export function runScenario(name) {
     const releaseGate = registry.gates.find((gate) => gate.id === "gate.release-ready");
     ensure(releaseGate?.requires_gates?.includes("gate.frontend-implementation-verified"), "发布就绪未依赖前端实现还原门禁");
     const contract = parseDocument(read(".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"), { uniqueKeys: true }).toJS({ maxAliasCount: 0 });
+    ensure(contract.ready_for_agent?.requires_vertical_slice_ticket === true && contract.ready_for_agent?.parent_ticket_as_implementation_ref === "forbidden", "ready_for_agent 未强制垂直切片且禁止父 Ticket 实现引用");
+    ensure(includesAll(contract.ready_for_agent?.required, ["ticket_decomposition_result_ref", "vertical_slice_ticket_ref", "vertical_slice_ticket_role", "vertical_slice_ticket_kind"]), "ready_for_agent 缺少 Ticket 正式化必填字段");
+    ensure(contract.ticket_formalization?.implementation_predecessor === "work-unit.ticket-decomposition" && contract.ticket_formalization?.vertical_slice_ticket?.parent_ticket_ref_forbidden === true, "Ticket 正式化实现前置或父 Ticket 禁止规则缺失");
+    ensure(contract.transition_graph?.implementation_requires_predecessor === "work-unit.ticket-decomposition", "生命周期转换图未声明实现前置工作单元");
+    ensure(JSON.stringify(contract.transition_graph?.forbidden_shortcuts) === JSON.stringify([
+      { from: "work-unit.spec-synthesis", to: "work-unit.slice-implementation" },
+      { from: "work-unit.prototype-design", to: "work-unit.slice-implementation" },
+      { from: "work-unit.technical-analysis", to: "work-unit.slice-implementation" },
+    ]), "生命周期转换图缺少 Spec/原型/技术分析到实现的越级阻断");
+    ensure(lifecycleTransitionContract.next_routes["work-unit.ticket-decomposition"]?.includes("work-unit.slice-implementation"), "转换校验器未允许 Ticket 正式化后进入实现");
     ensure(contract.release_readiness?.conditional?.ui_impact?.includes("gate.frontend-implementation-verified") && contract.frontend_implementation_plan?.acceptance?.includes("no_template_placeholders"), "发布公式或前端计划实质校验不完整");
     const templateRejected = spawnSync("scripts/verify-frontend-implementation-evidence", ["docs/process/templates/frontend-implementation-plan-template.yaml"], { cwd: root, encoding: "utf8" });
     ensure(templateRejected.status !== 0 && templateRejected.stderr.includes("template: false"), "前端实现计划占位模板可冒充正式批准证据");
@@ -200,6 +253,46 @@ export function runScenario(name) {
       blocking_signals: []
     };
     validateWorkflowExecutionResult(validResult, data.workflow_execution_result, data.work_unit_routes);
+    const validTicketResult = {
+      ...validResult,
+      work_unit: "work-unit.ticket-decomposition",
+      next_route: "work-unit.slice-implementation",
+      ticket_decomposition_result_ref: "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml",
+      vertical_slice_ticket_ref: "docs/.scratch/demo/issues/01-valid-slice.md",
+    };
+    validateWorkflowExecutionResult(validTicketResult, data.workflow_execution_result, data.work_unit_routes);
+    const validImplementationResult = {
+      ...validResult,
+      evidence_refs: [virtualTicketDecompositionRef, "docs/process/lifecycle-registry.yaml"],
+      work_unit: "work-unit.slice-implementation",
+      next_route: "work-unit.code-review",
+      predecessor_work_unit: "work-unit.ticket-decomposition",
+      ready_for_agent: true,
+      ticket_decomposition_result_ref: "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml",
+      ticket_decomposition_result_status: "completed",
+      vertical_slice_ticket_ref: "docs/.scratch/demo/issues/01-valid-slice.md",
+      vertical_slice_ticket_role: "ready-for-agent",
+      vertical_slice_ticket_kind: "vertical-slice-ticket",
+      slice_contract_ticket_ref: "docs/.scratch/demo/issues/01-valid-slice.md",
+      slice_contract_status: "approved",
+      slice_contract_persisted: true,
+      slice_contract_current_version: true,
+    };
+    validateWorkflowExecutionResult(validImplementationResult, data.workflow_execution_result, data.work_unit_routes);
+    for (const mutate of [
+      (item) => { item.vertical_slice_ticket_role = "ready-for-human"; },
+      (item) => { item.vertical_slice_ticket_kind = "parent-ticket"; },
+      (item) => { item.vertical_slice_ticket_ref = "docs/.scratch/demo/parent-ticket.md"; },
+      (item) => { item.slice_contract_ticket_ref = "docs/.scratch/demo/issues/02-other.md"; },
+      (item) => { item.predecessor_work_unit = "work-unit.spec-synthesis"; },
+      (item) => { item.ticket_decomposition_result_status = "blocked"; },
+      (item) => { item.ticket_decomposition_result_status = "needs-human"; },
+    ]) {
+      const invalid = structuredClone(validImplementationResult); mutate(invalid);
+      let rejected = false;
+      try { validateWorkflowExecutionResult(invalid, data.workflow_execution_result, data.work_unit_routes); } catch { rejected = true; }
+      ensure(rejected, "实现 Workflow Execution Result 的 Ticket 语义变异未被拒绝");
+    }
     const unavailableResult = structuredClone(validResult);
     unavailableResult.result = "blocked";
     unavailableResult.unavailable_skill = { skill: "yss-ui", provider: "codex", fallback: "manual-review", resolution: "needs-human" };
@@ -221,7 +314,8 @@ export function runScenario(name) {
       (item) => { item.new_impacts = ["new-api"]; },
       (item) => { item.workflow_reference.source = "untrusted/source"; },
       (item) => { item.workflow_reference.skill = "implement"; },
-      (item) => { item.workflow_reference.invocation_mode = "reference"; }
+      (item) => { item.workflow_reference.invocation_mode = "reference"; },
+      (item) => { item.next_route = "work-unit.slice-implementation"; }
     ]) {
       const invalid = structuredClone(validResult); mutate(invalid);
       let rejected = false;

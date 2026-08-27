@@ -336,6 +336,12 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+  - id: yss-tactical-design
+    layer: specialist
+    maturity: draft
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend, lifecycle]
   - id: yss-dto
     layer: specialist
     maturity: supported

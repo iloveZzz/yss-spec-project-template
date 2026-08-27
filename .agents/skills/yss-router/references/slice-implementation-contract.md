@@ -25,6 +25,7 @@ slice_contract:
     architecture_review:
     data_architecture:
     engineering_baseline:
+    tactical_design:
     build_architecture_checklist:
     implementation_repository:
     frontend_repository:
@@ -70,6 +71,24 @@ slice_contract:
     application_boundary:
     transaction_boundary:
     persistence_strategy:
+    tactical_design_ref:
+    tactical_design_version:
+    aggregate_refs: []
+    invariant_refs: []
+    state_behavior_refs: []
+    gateway_boundary_ref:
+    domain_test_seams: []
+    application_test_seams: []
+    tactical_ddd:
+      status: not-applicable
+      tactical_design_ref:
+      tactical_design_version:
+      aggregate_refs: []
+      invariant_refs: []
+      state_behavior_refs: []
+      gateway_boundary_ref:
+      domain_test_seams: []
+      application_test_seams: []
     allowed_write_paths: []
     forbidden_patterns: []
     expected_evidence_files: []
@@ -87,7 +106,43 @@ slice_contract:
     delivery_order: []
     integration_verification: []
     rollback_order: []
-  work_units: []
+  work_units:
+    - id: slice-frontend
+      role_id: role.frontend-engineer
+      runtime_id: runtime.skill-projection
+      execution_state: Worker
+      workflow_status: not-started
+      task_package_ref:
+      contract_id: # must equal slice_contract.contract_id
+      contract_version: # must equal slice_contract.contract_version
+      downstream_consumers: []
+      convergence_ref:
+      work_unit:
+        behavior:
+        primary_skill:
+        supporting_skills: []
+        tdd_mode: behavior-tdd
+        allowed_write_paths: []
+        expected_evidence: []
+        verification_commands: []
+    - id: slice-backend
+      role_id: role.backend-engineer
+      runtime_id: runtime.skill-projection
+      execution_state: Worker
+      workflow_status: not-started
+      task_package_ref:
+      contract_id:
+      contract_version:
+      downstream_consumers: []
+      convergence_ref:
+      work_unit:
+        behavior:
+        primary_skill:
+        supporting_skills: []
+        tdd_mode: behavior-tdd
+        allowed_write_paths: []
+        expected_evidence: []
+        verification_commands: []
 ```
 
 工作单元：
@@ -112,3 +167,5 @@ work_unit:
 ```
 
 `controlled_generation` 仅在 `tdd_mode: controlled-generation` 时必填；其他模式标记 `not-applicable`。明确写入需求的权限业务行为仍使用 `behavior-tdd`；API schema 与 database schema 分别触发契约或数据架构回退，不得用一个含糊的 schema 类型决定路线。
+
+`work_units` 中的前端、后端和测试任务是切片级子任务，不是新的生命周期阶段。每个子任务必须引用独立任务包；任务包只能消费同一份已批准且版本当前的 Slice Contract。`workflow_status` 追踪执行过程，不能替代生命周期状态；`contract_id` 或 `contract_version` 不一致时必须阻断并回到 Router。

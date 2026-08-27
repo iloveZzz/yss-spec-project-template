@@ -1,0 +1,49 @@
+schema_version: 1
+intensity: L3
+classification_reason: >-
+  本次变更修改生命周期实现门禁、Ticket 状态语义和核心转换校验器，并改变
+  Workflow Execution Result 的聚合行为，命中 lifecycle-gate、ticket-state、
+  core-validator 和 aggregate-behavior-change 触发条件。
+triggers:
+  - lifecycle-gate
+  - ticket-state
+  - core-validator
+  - aggregate-behavior-change
+changed_assets:
+  - .agents/skills/yss-product-lifecycle/SKILL.md
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - .agents/skills/yss-product-lifecycle/references/orchestration.md
+  - .agents/skills/yss-product-lifecycle/references/state-model.md
+  - .agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md
+  - scripts/lib/lifecycle-transition.mjs
+  - scripts/lib/scenario-checks.mjs
+  - scripts/verify-lifecycle-transition-scenarios
+  - scripts/verify-template
+  - skills-lock.json
+verification_evidence:
+  - kind: red
+    command: >-
+      scripts/verify-lifecycle-transition-scenarios（校验器尚不存在时预期
+      ERR_MODULE_NOT_FOUND）
+    result: pass
+  - kind: green
+    command: scripts/verify-lifecycle-transition-scenarios
+    result: pass
+  - kind: refactor
+    command: >-
+      node --check scripts/lib/lifecycle-transition.mjs scripts/lib/scenario-checks.mjs
+      && scripts/verify-lifecycle-transition-scenarios
+    result: pass
+  - kind: pressure-scenario
+    command: scripts/verify-lifecycle-scenarios && scripts/verify-matt-yss-integration-scenarios
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template
+    result: pass
+  - kind: formal-independent-review
+    command: >-
+      非实施者 role.test-engineer 完成独立审查，结论记录于
+      lifecycle-ticket-transition-formal-independent-review-2026-08-27.md
+    result: pass
+review_mode: formal-independent
+escalation: none

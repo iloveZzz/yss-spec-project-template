@@ -7,6 +7,8 @@ Discovery → Spec → Product Overview / Functional Architecture
 Spec + Product Overview → Product Design / Requirement Freeze
 Spec + Product Overview → API Impact / OpenAPI Draft
 Spec + Product Overview → System / Data Architecture
+System / Data Architecture + domain impact → Tactical DDD Check / tactical-design contract
+Tactical DDD contract → Architecture Review / Engineering Baseline / Slice Implementation Contract
 API impact = yes: Requirement Freeze + Design Review + Draft Review → OpenAPI Freeze
 API impact = no: API Impact Assessment approved → No-API-Impact record；Draft/Freeze gates = not-applicable
 Frozen Contract → Vertical Slice Tickets
@@ -30,3 +32,5 @@ Implementation → Independent Review → Fresh Verification → Release
 明确写入需求的认证、授权、租户隔离、敏感数据或合规行为变化不使用独立影响类型；按它实际改变的 UI 状态、API schema、状态机、数据模型或服务边界传播。普通 action 注册、SQL / DDL / 迁移和上传 / 下载只使用既有技术影响类型，不增加安全 / 权限传播。
 
 OpenAPI Freeze 后发生上游变化时，不得仅因父 Ticket 仍写阶段 6 就继续实现。先做影响分析，再精准更新相关资产和门禁。
+
+战术设计合同上游引用发生版本变化时，先将 tactical-design 标记为 `stale`，再传播到 Slice Contract；发现新的聚合、状态、不变量、一致性或 Gateway 影响时标记 `drift` / `new_impacts` 并重新路由。
