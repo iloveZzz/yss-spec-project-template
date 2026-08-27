@@ -242,6 +242,12 @@ gate_policy:
     - gate: gate.spec-baseline-approved
       drafter: role.requirements-manager
       countersigners: [role.product-manager]
+    - gate: gate.domain-strategy-approved
+      drafter: role.requirements-manager
+      countersigners: [role.product-manager]
+    - gate: gate.stage-decision-package-approved
+      drafter: role.requirements-manager
+      countersigners: [role.product-manager]
     - gate: gate.openapi-frozen
       drafter: role.backend-engineer
       countersigners: [role.product-manager, role.test-engineer]

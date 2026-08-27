@@ -146,6 +146,22 @@ work_unit_routes:
     skills: [grilling, domain-modeling]
     applies_when: requirements_or_domain_boundary_unclear
     not_applicable_reason: requirements_already_confirmed
+  work-unit.domain-strategy-design:
+    native: {source: yss-product-lifecycle, skill: yss-stage-decision, invocation_mode: model-invoked}
+    primary_skill: yss-stage-decision
+    supporting_skills: [domain-modeling, research, grilling]
+    skills: [yss-stage-decision, domain-modeling, research, grilling]
+    human_gate: domain-strategy-approved
+    applies_when: domain_boundary_or_language_or_core_rule_impact
+    not_applicable_reason: no_domain_strategy_impact
+  work-unit.stage-decision:
+    native: {source: yss-product-lifecycle, skill: yss-stage-decision, invocation_mode: model-invoked}
+    primary_skill: yss-stage-decision
+    supporting_skills: [domain-modeling]
+    skills: [yss-stage-decision, domain-modeling]
+    human_gate: stage-decision-package-approved
+    applies_when: discovery_to_spec_requires_stable_decision_package
+    not_applicable_reason: existing_approved_stage_decision_current
   work-unit.spec-synthesis:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     primary_skill: yss-product-lifecycle

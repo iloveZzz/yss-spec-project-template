@@ -48,6 +48,12 @@ evidence:
   - id: evidence.impact-assessment
     name: 影响面分析记录
     description: 受影响仓库、资产、风险与最近可信阶段。
+  - id: evidence.domain-strategy-review
+    name: DDD 战略设计评审证据
+    description: 子域、限界上下文、统一语言、Context Map、场景和不变量的结构化评审结果。
+  - id: evidence.stage-decision-package
+    name: 阶段决策包验证证据
+    description: 阶段决策包的 Schema、引用、语义一致性、影响传播和下游消费验证结果。
   - id: evidence.maintenance-intensity-checkpoint
     name: 模板维护强度 checkpoint
     description: template-source 变更的 L1 / L2 / L3 分级、触发项、最低验证证据、review 模式和升级记录。
@@ -97,6 +103,17 @@ gates:
     stage: stage.entry-triage
     trigger: 每次进入流程。
     evidence: [evidence.repository-identity-check]
+  - id: gate.domain-strategy-approved
+    name: DDD 战略设计批准
+    stage: stage.discovery
+    trigger: 存在 DDD 战略设计影响或需要确定领域边界、统一语言和核心规则。
+    evidence: [evidence.domain-strategy-review, evidence.approval-record]
+  - id: gate.stage-decision-package-approved
+    name: 阶段决策包批准
+    stage: stage.discovery
+    trigger: Discovery 到 Spec 入口需要稳定的阶段决策合同。
+    evidence: [evidence.stage-decision-package, evidence.approval-record]
+    requires_gates: [gate.domain-strategy-approved]
   - id: gate.spec-baseline-approved
     name: Spec 基线批准
     stage: stage.spec-architecture
@@ -169,6 +186,14 @@ artifacts:
     name: 影响面分析
     stage: stage.entry-triage
     trigger: 每次变更。
+  - id: artifact.domain-strategy
+    name: DDD 战略设计
+    stage: stage.discovery
+    trigger: 新产品/模块、跨上下文功能、统一语言冲突、服务边界或核心规则变化。
+  - id: artifact.stage-decision-package
+    name: 阶段决策包
+    stage: stage.discovery
+    trigger: Discovery 到 Spec 入口需要结构化上游决策。
   - id: artifact.discovery-record
     name: Discovery 记录
     stage: stage.discovery
@@ -319,6 +344,18 @@ work_units:
     input: 机会结论、用户反馈和领域词汇。
     output: 用户、MVP、非目标、成功标准、测试 seam 和未决项。
     completion: frontier 清空；用户确认；无 runnable blocker。
+  - id: work-unit.domain-strategy-design
+    name: DDD 战略设计
+    scope: project-instance
+    input: 已澄清的业务场景、领域词汇、约束和现有上下文。
+    output: 子域、限界上下文、Context Map、统一语言、事件、核心领域概念候选和不变量。
+    completion: 边界、语义方向、规则所有权和关键场景可审查；无未解释冲突。
+  - id: work-unit.stage-decision
+    name: 阶段决策包综合
+    scope: project-instance
+    input: Discovery、DDD 战略设计、产品和商务输入。
+    output: 带版本、digest、证据和下游映射的阶段决策包。
+    completion: 必填字段、引用、影响面和下游消费验证通过；批准门禁完成。
   - id: work-unit.spec-synthesis
     name: Spec 综合
     scope: project-instance

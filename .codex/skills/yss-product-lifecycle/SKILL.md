@@ -27,7 +27,7 @@ Matt 的 `grill-with-docs`、`to-spec`、`to-tickets`、`implement` 等保留为
 | 阶段 | 必需产物/门禁 | 工作单元与技能 | 通过条件 |
 |---|---|---|---|
 | 入口分诊 | 身份、影响面、最近可信阶段 | `yss-product-lifecycle` | `yss-project.yaml` 合法且影响面可解释 |
-| 机会调研/需求分析 | Discovery、用户/MVP/非目标/成功标准、测试 seam | `work-unit.discovery-opportunity` + `work-unit.discovery-requirements`；市场/竞品事实用 `competitive-intelligence`，技术/标准事实用 `research`；`grill-with-docs` 为兼容入口 | 未决事实已 research 或 handoff，用户确认，无 runnable blocker |
+| 机会调研/需求分析 | Discovery、用户/MVP/非目标/成功标准、测试 seam；命中 DDD 影响时补充领域战略设计与阶段决策包 | `work-unit.discovery-opportunity` + `work-unit.discovery-requirements` + `work-unit.domain-strategy-design` + `work-unit.stage-decision`；市场/竞品事实用 `competitive-intelligence`，技术/标准事实用 `research`；领域建模用 `domain-modeling`；`grill-with-docs` 为兼容入口 | 未决事实已 research 或 handoff，领域边界和统一语言可审查，阶段决策包完成必要批准 |
 | Spec/功能架构 | Spec、产品总体设计、功能架构；必要时 Spec Delta | 原生 `work-unit.spec-synthesis`；`to-spec` 为兼容入口 | 初稿先为 `ready-for-human`；只有 Spec baseline 会签批准后资产才为 `approved` 并进入下游 |
 | 原型设计 | 交互说明、低保真、状态矩阵、高保真 HTML、评审记录 | `yss-design-system` → `yss-prototype-stage` → `yss-antd-design`（仅原型事实）→ Codex `product-design:index`（非 Codex 交付等价合同）。前端落地改用 `yss-ui` | `gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` 均有证据 |
 | 技术分析 | OpenAPI Draft/Freeze、数据架构、工程基线、架构审查 | `yss-openapi-governance` / `yss-openapi-draft-review`、`codebase-design`、`implementation-repo-onboarding`、`yss-router` | API/架构契约冻结；无 API 影响有明确记录；脚手架策略满足 |

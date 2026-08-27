@@ -1,0 +1,45 @@
+schema_version: 1
+intensity: L3
+classification_reason: 新增 Discovery 到 Spec 的生命周期工作单元、门禁、核心领域战略校验器和阶段决策包传播语义，改变模板 Agent 行为并影响发布候选。
+triggers:
+  - lifecycle-gate
+  - core-validator
+changed_assets:
+  - .agents/skills/yss-stage-decision/SKILL.md
+  - .agents/skills/yss-stage-decision/references/domain-strategy-contract.md
+  - .agents/skills/yss-stage-decision/references/domain-strategy.schema.json
+  - .agents/skills/yss-stage-decision/references/stage-decision-package-contract.md
+  - .agents/skills/yss-stage-decision/references/stage-decision-package.schema.json
+  - .agents/skills/yss-stage-decision/references/validation-rules.md
+  - .agents/skills/yss-stage-decision/scripts/validate-domain-strategy.mjs
+  - .agents/skills/yss-stage-decision/scripts/validate-stage-decision-package.mjs
+  - .agents/skills/yss-stage-decision/tests/run-scenarios.mjs
+  - docs/process/lifecycle-registry.yaml
+  - docs/process/lifecycle-registry-baseline.json
+  - docs/agents/yss-skill-registry.yaml
+  - docs/agents/digital-human-roles.yaml
+  - .agents/skills/yss-product-lifecycle/SKILL.md
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - skills-lock.json
+  - .template-source/derived/harness-work-unit-map.md
+verification_evidence:
+  - kind: red
+    command: .template-source/evidence/maintenance/yss-stage-decision-l3-red-2026-08-27.md
+    result: pass
+  - kind: green
+    command: .template-source/evidence/maintenance/yss-stage-decision-l3-green-2026-08-27.md
+    result: pass
+  - kind: refactor
+    command: .agents/skills/yss-stage-decision/scripts/validate-domain-strategy.mjs; .agents/skills/yss-stage-decision/scripts/validate-stage-decision-package.mjs
+    result: pass
+  - kind: pressure-scenario
+    command: .template-source/evidence/maintenance/yss-stage-decision-l3-pressure-2026-08-27.md
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template
+    result: pass
+  - kind: formal-independent-review
+    command: .template-source/evidence/maintenance/yss-stage-decision-l3-formal-independent-review-2026-08-27.md
+    result: pass
+review_mode: formal-independent
+escalation: none
