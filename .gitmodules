@@ -7,3 +7,6 @@
 [submodule "submodules/create-yss-spec"]
 	path = submodules/create-yss-spec
 	url = https://github.com/iloveZzz/create-yss-spec.git
+[submodule "submodules/create-yss-strategic-design"]
+	path = submodules/create-yss-strategic-design
+	url = https://github.com/iloveZzz/create-yss-strategic-design.git
