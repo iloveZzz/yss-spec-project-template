@@ -10,7 +10,7 @@ const contractRef = ".template-source/evidence/.task-package-slice-contract.json
 const contractFile = path.join(ROOT, contractRef);
 const evidenceRef = ".template-source/evidence/.task-package-evidence.json";
 const evidenceFile = path.join(ROOT, evidenceRef);
-const maintenanceRef = ".template-source/evidence/maintenance/digital-human-task-package-l3-checkpoint-2026-08-27.yaml";
+const maintenanceRef = ".template-source/evidence/.task-package-maintenance.json";
 const contract = {
   schema_version: 1,
   contract_id: "slice-todo",
@@ -24,11 +24,26 @@ const contract = {
     { id: "work-unit.slice-backend", role_id: "role.backend-engineer", runtime_id: "runtime.skill-projection", task_package_ref: "work-unit.slice-backend", contract_id: "slice-todo", contract_version: 2, allowed_write_paths: ["apps/backend/todo/"] }
   ]
 };
+const maintenance = {
+  schema_version: 1,
+  intensity: "L2",
+  classification_reason: "场景测试维护合同",
+  triggers: [],
+  changed_assets: ["scenario-fixture"],
+  verification_evidence: [
+    { kind: "counterexample", command: "scenario", result: "pass" },
+    { kind: "fresh-verification", command: "scenario", result: "pass" },
+    { kind: "focused-independent-review", command: "scenario", result: "pass" }
+  ],
+  review_mode: "focused-independent",
+  escalation: "none"
+};
 
 function writeFixtures() {
   mkdirSync(path.dirname(contractFile), { recursive: true });
   writeFileSync(contractFile, JSON.stringify(contract));
   writeFileSync(evidenceFile, JSON.stringify({ ok: true }));
+  writeFileSync(path.join(ROOT, maintenanceRef), JSON.stringify(maintenance));
 }
 
 function packageBase(roleId, taskId, workUnitId, kind, contractFields, stageId) {
@@ -174,4 +189,5 @@ try {
 } finally {
   rmSync(contractFile, { force: true });
   rmSync(evidenceFile, { force: true });
+  rmSync(path.join(ROOT, maintenanceRef), { force: true });
 }
