@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
-import { rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { ROOT } from "./lib/lifecycle-registry.mjs";
@@ -26,6 +26,7 @@ const contract = {
 };
 
 function writeFixtures() {
+  mkdirSync(path.dirname(contractFile), { recursive: true });
   writeFileSync(contractFile, JSON.stringify(contract));
   writeFileSync(evidenceFile, JSON.stringify({ ok: true }));
 }
