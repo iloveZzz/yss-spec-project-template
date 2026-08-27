@@ -438,6 +438,12 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [lifecycle, backend, frontend]
+  - id: yss-stage-decision
+    layer: core
+    maturity: draft
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [discovery, lifecycle]
   - id: yss-security-algorithm
     layer: specialist
     maturity: supported

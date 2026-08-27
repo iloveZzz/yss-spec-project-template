@@ -1398,7 +1398,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "effectiveHash": "4c2f7c8d008397e0bfe134461e1e5ea7eadbbe91c18966bce68ae506b7166569",
+        "effectiveHash": "c466b0749553073d7a7088d921378b7bfc26b6c104296a0773855c3951650b22",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1495,6 +1495,22 @@
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-source-index/SKILL.md",
         "effectiveHash": "a1322bd92e3723453b6f7a8c7a766b0c70bf03666129873bf0091098a1cc703c",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-stage-decision": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-stage-decision/SKILL.md",
+        "effectiveHash": "ee846c58ba39f4ce76d94db609f7690f3e79518af54478d7b97780febc8eade3",
         "targets": [
           ".agents/skills",
           ".claude/skills",

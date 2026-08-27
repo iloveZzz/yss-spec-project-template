@@ -27,6 +27,8 @@
 | 稳定 ID | 门禁 | 所属阶段 | 触发条件 | 前置门禁 | 必须留下的证据 |
 |---|---|---|---|---|---|
 | `gate.repository-identity-valid` | 仓库身份校验 | `stage.entry-triage` | 每次进入流程。 | 无 | `evidence.repository-identity-check` |
+| `gate.domain-strategy-approved` | DDD 战略设计批准 | `stage.discovery` | 存在 DDD 战略设计影响或需要确定领域边界、统一语言和核心规则。 | 无 | `evidence.domain-strategy-review`、`evidence.approval-record` |
+| `gate.stage-decision-package-approved` | 阶段决策包批准 | `stage.discovery` | Discovery 到 Spec 入口需要稳定的阶段决策合同。 | `gate.domain-strategy-approved` | `evidence.stage-decision-package`、`evidence.approval-record` |
 | `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | 新功能、行为变化或范围扩大进入 Spec 基线。 | 无 | `evidence.approval-record` |
 | `gate.prototype-reviewed` | 原型评审 | `stage.product-design` | 命中产品设计影响，且低保真页面、流程、状态或 API 反推需要独立评审。 | 无 | `evidence.prototype-review-result` |
 | `gate.prototype-verified` | 高保真原型验证 | `stage.product-design` | 需要高保真 HTML 原型进行视觉与交互校准。 | 无 | `evidence.antd-cli-validation`、`evidence.browser-prototype-verification` |
@@ -46,6 +48,8 @@
 | 稳定 ID | 产物 | 所属阶段 | 触发条件 |
 |---|---|---|---|
 | `artifact.impact-assessment` | 影响面分析 | `stage.entry-triage` | 每次变更。 |
+| `artifact.domain-strategy` | DDD 战略设计 | `stage.discovery` | 新产品/模块、跨上下文功能、统一语言冲突、服务边界或核心规则变化。 |
+| `artifact.stage-decision-package` | 阶段决策包 | `stage.discovery` | Discovery 到 Spec 入口需要结构化上游决策。 |
 | `artifact.discovery-record` | Discovery 记录 | `stage.discovery` | 新问题或边界不清。 |
 | `artifact.spec` | Spec | `stage.spec-architecture` | 新功能、行为变化或范围扩大。 |
 | `artifact.product-overview` | 产品总体设计 | `stage.spec-architecture` | 进入 Spec 基线。 |
@@ -74,6 +78,8 @@
 | 稳定 ID | 证据 | 说明 |
 |---|---|---|
 | `evidence.impact-assessment` | 影响面分析记录 | 受影响仓库、资产、风险与最近可信阶段。 |
+| `evidence.domain-strategy-review` | DDD 战略设计评审证据 | 子域、限界上下文、统一语言、Context Map、场景和不变量的结构化评审结果。 |
+| `evidence.stage-decision-package` | 阶段决策包验证证据 | 阶段决策包的 Schema、引用、语义一致性、影响传播和下游消费验证结果。 |
 | `evidence.maintenance-intensity-checkpoint` | 模板维护强度 checkpoint | template-source 变更的 L1 / L2 / L3 分级、触发项、最低验证证据、review 模式和升级记录。 |
 | `evidence.repository-identity-check` | 仓库身份校验结果 | yss-project.yaml 的合法性与 repository_mode 裁决。 |
 | `evidence.approval-record` | 人工批准记录 | 对需要人工批准的 Spec、设计、契约或发布裁决的可追溯记录。 |
