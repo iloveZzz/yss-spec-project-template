@@ -1,13 +1,13 @@
 ---
 name: code-review
-description: Use when the user wants to review a branch, PR, committed candidate, uncommitted work-in-progress changes, or changes since a fixed point.
+description: Use when the user wants to review a branch, PR, committed candidate, uncommitted work-in-progress changes, or changes since a fixed point. For YSS implementation, Standards must load Slice contract required_skills plus specialist check inputs such as alibaba-java-code-style and yss-ui; do not add a second generic review skill.
 ---
 
 Review of a pinned candidate against a fixed point on two core axes, plus UI fidelity when UI is in scope:
 
-- **Standards** — does the code conform to this repo's documented coding standards?
+- **Standards** — does the code conform to this repo's documented coding standards **and**, for YSS slices, the specialist check inputs compiled in [yss-review-standards.md](references/yss-review-standards.md)?
 - **Spec** — does the code faithfully implement the originating issue / spec?
-- **UI fidelity** (only when the change has UI impact) — does the candidate match the confirmed prototype and `yss-design-system` / `yss-ui`? Type-check or claiming "already aligned" is not a pass. Invoke those skills' verification notes; do not collapse this axis into Standards or Spec.
+- **UI fidelity** (only when the change has UI impact) — does the candidate match the confirmed prototype and `yss-design-system` / `yss-ui`? Type-check or claiming "already aligned" is not a pass. Invoke those skills' verification notes; do not collapse this axis into Standards or Spec. YSS page-module conventions stay on Standards.
 
 Standards and Spec run as **parallel sub-agents** so they don't pollute each other's context, then this skill aggregates their findings. When UI is in scope, add a separate UI fidelity pass after those two reports (do not merge it into either axis).
 
@@ -60,7 +60,9 @@ Look for the originating spec, in this order:
 
 ### 3. Identify the standards sources
 
-Anything in the repo that documents how code should be written, such as `CODING_STANDARDS.md` or `CONTRIBUTING.md`.
+Compile sources **before** spawning reviewers. For YSS implementation candidates follow [yss-review-standards.md](references/yss-review-standards.md): run machine checks that exist in the implementation repo; then collect repo docs (`CODING_STANDARDS.md` / `CONTRIBUTING.md` if present), every Slice `required_skills` skill file, the impact-conditioned specialist inputs (`alibaba-java-code-style`, `yss-ui`, `yss-domain`, …), and `docs/templates/review-report-template.md`. Missing applicable coverage is `missing_evidence`, not a pass.
+
+Anything in the repo that documents how code should be written, such as `CODING_STANDARDS.md` or `CONTRIBUTING.md`, remains a source. It does **not** replace YSS or Alibaba specialist inputs.
 
 On top of whatever the repo documents, the Standards axis always carries the **smell baseline** below — a fixed set of Fowler code smells (_Refactoring_, ch.3) that applies even when a repo documents nothing. Two rules bind it:
 
@@ -87,8 +89,9 @@ Each smell reads *what it is* → *how to fix*; match it against the diff:
 **Standards sub-agent prompt** — include:
 
 - The full candidate manifest, captured candidate, `candidate_digest`, diff/inventory commands and commit list. For Worktree candidates, explicitly include every untracked file.
-- The list of standards-source files you found in step 3, **plus the smell baseline from step 3** pasted in full — the sub-agent has no other access to it.
-- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard: cite the standard (file + the rule); and (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls — documented-standard breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything tooling enforces. Under 400 words."
+- The list of standards-source files you found in step 3, **plus the smell baseline from step 3** pasted in full. Paste Fowler smells in full. For YSS specialist inputs, pass the exact skill file paths; the reviewer must read them and cite `skill + rule + location`. Do not summarise away mandatory Alibaba or YSS violations to fit a word cap. The 400-word cap applies only to the Fowler smell section.
+- Machine-check commands, exit codes and evidence from step 3. Tooling failure is a hard Standards violation.
+- The brief: "Report — per file/hunk where relevant — (a) every place the diff violates a documented standard or a required YSS / Alibaba specialist rule: cite the skill or file and the rule; (b) any baseline smell you spot: name it and quote the hunk. Distinguish hard violations from judgement calls — documented-standard and mandatory specialist breaches can be hard, but baseline smells are always judgement calls, and a documented repo standard overrides the baseline. Skip anything the machine checks already enforced. Smell section under 400 words; specialist findings have no word cap."
 
 **Spec sub-agent prompt** — include:
 
@@ -100,7 +103,7 @@ If the spec is missing, skip the Spec sub-agent and note this in the final repor
 
 ### 5. Aggregate
 
-Present the reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. If UI is in scope, add `## UI fidelity` from the separate pass. Do **not** merge or rerank findings — the axes are deliberately separate (see _Why separate axes_).
+Present the reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. If UI is in scope, add `## UI fidelity` from the separate pass. Fill `docs/templates/review-report-template.md` specialist tables as part of Standards evidence, not a fourth axis. Do **not** merge or rerank findings — the axes are deliberately separate (see _Why separate axes_). A YSS candidate with blank applicable specialist rows, skipped `required_skills`, or unaddressed mandatory violations is `blocked`, not `completed`. Do not close findings by writing implementation in the review session. `violation` / machine-check failure / blank applicable rows go back to the implementer on the original contract path, then recapture the candidate and rerun every axis. `drift` / `new_impacts` / `required_skills` mismatch mark the contract `stale` and return to Router; do not keep coding on the old contract. `not-applicable` is only for untriggered impacts; mandatory gates have no waiver, only repair or a complete `seam-deferred` record.
 
 For Worktree mode, recapture the candidate digest after both reports return. If it differs from `candidate_digest`, mark both reports as reviewing a **stale candidate** and return `blocked`; the caller may start a new review against a new capture, but this invocation must not aggregate findings from different bytes. Recheck the same digest again at the completion/checkpoint boundary.
 

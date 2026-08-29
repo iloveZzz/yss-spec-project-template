@@ -51,6 +51,15 @@ test("digital human roles are runtime-agnostic and grok is only an adapter", asy
   const defaults = taskPackageDefaults("role.frontend-engineer");
   assert.ok(defaults.core_skills.includes("yss-ui"));
   assert.ok(defaults.forbidden_skills.includes("yss-domain"));
+  const tester = taskPackageDefaults("role.test-engineer");
+  assert.ok(tester.core_skills.includes("code-review"));
+  assert.ok(tester.core_skills.includes("alibaba-java-code-style"));
+  assert.ok(tester.core_skills.includes("yss-ui"));
+  assert.ok(tester.core_skills.includes("yss-domain"));
+  assert.ok(!tester.core_skills.includes("implement"));
+  const backend = taskPackageDefaults("role.backend-engineer");
+  assert.ok(backend.core_skills.includes("alibaba-java-code-style"));
+  assert.ok(backend.core_skills.includes("mapstruct"));
 });
 
 test("approval records reject the wrong signer and approved countersign gates need approval_ref", async () => {

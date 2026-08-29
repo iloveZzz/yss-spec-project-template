@@ -157,7 +157,7 @@ roles:
     title: YSS 后端工程师
     stages: [stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.openapi-draft, artifact.data-architecture]
-    core_skills: [yss-router, yss-tactical-design, yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-dto, yss-exception, yss-validation, tdd, yss-ddd-scaffold-generator]
+    core_skills: [yss-router, yss-tactical-design, yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-dto, mapstruct, lombok, alibaba-java-code-style, yss-exception, yss-validation, tdd, yss-ddd-scaffold-generator]
     forbidden_skills: [yss-ui, yss-page-module-development, yss-formily, yss-frontend-scaffold-generator, yss-antd-design, page-list-module, page-form-module]
     description: >-
       Own OpenAPI Draft, data-architecture contributions, and backend tests.
@@ -172,14 +172,15 @@ roles:
     stages: [stage.spec-architecture, stage.vertical-slice-implementation, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.frontend-implementation-verification]
     owned_evidence_ids: [evidence.fresh-verification, evidence.frontend-implementation-verification]
-    core_skills: [tdd, diagnosing-bugs, code-review]
+    core_skills: [tdd, diagnosing-bugs, code-review, alibaba-java-code-style, yss-ui, yss-design-system, yss-page-module-development, yss-domain, yss-application, yss-repository, yss-web-controller, yss-dto, mapstruct, lombok]
     forbidden_skills: [yss-ddd-scaffold-generator, yss-frontend-scaffold-generator, implement, to-spec]
     description: >-
       Own test code, defect records, fresh verification, and frontend
-      implementation verification evidence. Review every implementation slice.
-      Recommend release readiness; do not close gate.release-ready. Do not
-      change product scope or write feature implementation. Must be a different
-      instance from the implementer.
+      implementation verification evidence. Review every implementation slice
+      through the unique code-review skill, loading YSS and Alibaba specialist
+      skills as read-only Standards sources. Recommend release readiness; do
+      not close gate.release-ready. Do not change product scope or write
+      feature implementation. Must be a different instance from the implementer.
 
 stage_groups:
   - id: group.discovery

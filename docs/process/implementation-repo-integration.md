@@ -32,6 +32,16 @@ apps/
 - Ticket、Slice Implementation Contract、CI 和 Review 证据必须写下实际执行的上述命令。既有仓库缺少 `pnpm` 或 Maven Wrapper 时，先记录受控例外、替代命令和责任人，再执行。
 - 本模板源仓库没有产品 frontend / backend 运行时；模板源维护侧的 Node 校验命令和环境约束只记录在 `.template-source/` 治理区及 CI 配置中，不属于项目实例实现命令。
 
+## 1.4 独立审查运行时
+
+`work-unit.code-review` 仍使用唯一 skill `code-review`，不新增第二套审查环境或审查 skill。独立 Reviewer 必须与实现者不同 `actor_id`，并在**能执行已登记验证命令**的运行时中工作：
+
+- 前端：已登记项目根的 `pnpm` 测试 / type-check / lint（若存在）。
+- 后端：已登记项目根的 `./mvnw` 校验 / 测试；若工程已配置 Checkstyle、P3C 或 Spotless，审查时实际执行。
+- `git-submodule` 必须递归检出；空 gitlink 不得当作「没有工程」。
+- 模板源 `.cursor/environment.json` 只安装模板校验依赖（`jsonschema`、模板 `pnpm`），**不是**实现仓审查运行时。`project-instance` 与实现仓库的 Cloud / CI 环境自行包含 JDK、Maven Wrapper 和 `pnpm`。
+- 审查任务包只写证据路径；专项 skill 只读，不得写实现。审查 finding 按 `review_standards_route.finding_disposition` 分流：`violation` 交实现者修复后全轴复审；`drift` / `new_impacts` 回 Router，不在审查会话中改代码。
+
 ## 1.3 `repository_scope: git-submodule`
 
 当用户明确选择分层接入、且前端 / 后端保持独立 Git 历史、同时挂到 `project-instance` 工作树时，使用 Git submodule，而不是把实现源码复制进 Harness，也不是把 gitlink 登记成 `harness-apps`。

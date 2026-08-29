@@ -308,8 +308,46 @@ work_unit_routes:
   work-unit.code-review:
     native: {source: yss-product-lifecycle, skill: code-review, invocation_mode: model-invoked}
     primary_skill: code-review
-    supporting_skills: []
-    skills: [code-review]
+    supporting_skills: [alibaba-java-code-style, yss-ui, yss-design-system, yss-page-module-development, yss-domain, yss-application, yss-repository, yss-web-controller, yss-dto, mapstruct, lombok]
+    skills: [code-review, alibaba-java-code-style, yss-ui, yss-design-system, yss-page-module-development, yss-domain, yss-application, yss-repository, yss-web-controller, yss-dto, mapstruct, lombok]
+    review_standards_route:
+      unique_default_skill: code-review
+      second_generic_review_skill: forbidden
+      report_template: docs/templates/review-report-template.md
+      contract_required_skills: required
+      write_implementation: forbidden
+      machine_checks:
+        run_if_present: true
+        missing_tooling: not-applicable-with-reason
+        checkable_rule_without_machine: not-a-pass
+      conditional_skills:
+        backend_impact: [alibaba-java-code-style, yss-domain, yss-application, yss-repository, yss-web-controller, yss-dto, mapstruct, lombok]
+        ui_impact: [yss-ui, yss-design-system, yss-page-module-development]
+      not_applicable_reasons:
+        backend_impact: no_backend_impact
+        ui_impact: no_ui_impact
+      finding_disposition:
+        same_loop_for: [product-slice, template-maintenance]
+        intensity:
+          product-slice: slice-contract
+          template-maintenance: L1-L2-L3
+        reviewer_write_implementation: forbidden
+        repair_then_full_rereview:
+          kinds: [violation, machine_check_failure, blank_applicable_row, missing_evidence]
+          actor: implementer
+          on_original_contract: true
+          then: recapture_candidate_and_rerun_all_axes
+        stale_and_reroute:
+          kinds: [drift, new_impacts, required_skills_mismatch]
+          mark_contract: stale
+          continue_coding_on_old_contract: forbidden
+          next: router-or-earlier-lifecycle
+        exemption_policy:
+          not_applicable: impact_not_triggered_only
+          mandatory_waiver: forbidden
+          allowed_exits: [repair, seam-deferred-complete]
+          new_human_waiver_gate: forbidden
+          existing_human_gates_unchanged: true
     applies_when: implementation_candidate_exists
     not_applicable_reason: no_implementation_candidate
   work-unit.release-and-retrospective:
@@ -394,7 +432,15 @@ review_input:
   schema_version: 1
   required: [review_mode, review_base_ref, implementation_candidate_ref, candidate_snapshot_ref, candidate_digest, spec_ref, ticket_ref, slice_contract_ref, build_architecture_checklist_ref, yss_execution_result_refs]
   nullable: [spec_ref]
+  unique_default_skill: code-review
+  second_generic_review_skill: forbidden
   axes: [standards, spec, ui_fidelity_if_ui_impact]
+  standards_sources: [repo_coding_standards, slice_contract_required_skills, specialist_check_inputs, review_report_template]
+  completed_requires_specialist_coverage: true
+  finding_disposition_required: true
+  completed_requires_no_open_mandatory_violations: true
+  completed_requires_no_blank_applicable_rows: true
+  reviewer_write_implementation: forbidden
   repair_invalidates_candidate: true
   repair_action: recapture_candidate_and_rerun_all_axes
   modes: [committed, worktree]
