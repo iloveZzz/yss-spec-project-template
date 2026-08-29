@@ -67,6 +67,10 @@ function validateInvocationBoundary(data) {
     ensure(Array.isArray(frontendRoute?.conditional_skills?.[impact]) && frontendRoute.conditional_skills[impact].length > 0 && typeof frontendRoute.not_applicable_reasons?.[impact] === "string", `前端条件专项路由缺少 ${impact}`);
   }
   ensure(routes?.["work-unit.frontend-implementation-verification"]?.skills?.includes("code-review") && routes?.["work-unit.frontend-implementation-verification"]?.applies_when === "ui_impact", "前端还原验证未绑定 UI fidelity 审查轴");
+  const reviewRoute = routes?.["work-unit.code-review"];
+  ensure(reviewRoute?.primary_skill === "code-review" && reviewRoute?.review_standards_route?.unique_default_skill === "code-review" && reviewRoute?.review_standards_route?.second_generic_review_skill === "forbidden", "code-review 不是唯一默认审查入口或允许第二套通用审查 skill");
+  ensure(includesAll(reviewRoute?.supporting_skills, ["alibaba-java-code-style", "yss-ui", "yss-domain"]) && includesAll(reviewRoute?.skills, ["code-review", "alibaba-java-code-style", "yss-ui"]), "审查工作单元缺少 YSS / Alibaba 专项检查输入");
+  ensure(data.review_input?.unique_default_skill === "code-review" && data.review_input?.second_generic_review_skill === "forbidden" && data.review_input?.completed_requires_specialist_coverage === true && includesAll(data.review_input?.standards_sources, ["slice_contract_required_skills", "specialist_check_inputs", "review_report_template"]), "review_input 未强制专项检查覆盖");
   for (const id of ["work-unit.spec-synthesis", "work-unit.ticket-decomposition", "work-unit.slice-implementation"]) {
     ensure(routes?.[id]?.native?.source === "yss-product-lifecycle" && routes[id].compatibility?.source === "mattpocock/skills" && routes[id].compatibility.formal_artifact_owner === "explicit-user-entry", `${id} 未分离原生执行定义与 Matt 兼容输入`);
   }

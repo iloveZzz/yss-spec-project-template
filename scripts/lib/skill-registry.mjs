@@ -47,6 +47,45 @@ function requireString(value, field) {
   if (typeof value !== "string" || !value.trim()) fail(`${field} 不能为空`);
 }
 
+function validateCodeReviewRoute(route, resolve) {
+  if (route.primary_skill !== "code-review") fail("work-unit.code-review 的 primary_skill 必须是唯一默认审查技能 code-review");
+  const standards = route.review_standards_route;
+  if (!standards || typeof standards !== "object" || Array.isArray(standards)) {
+    fail("work-unit.code-review 缺少 review_standards_route");
+  }
+  if (standards.unique_default_skill !== "code-review") fail("review_standards_route.unique_default_skill 必须为 code-review");
+  if (standards.second_generic_review_skill !== "forbidden") fail("禁止叠加第二个通用审查 skill");
+  if (standards.write_implementation !== "forbidden") fail("审查专项 skill 不得用于写实现");
+  if (standards.contract_required_skills !== "required") fail("Standards 必须消费 Slice 合同 required_skills");
+  requireString(standards.report_template, "review_standards_route.report_template");
+  if (!existsSync(path.join(ROOT, standards.report_template))) fail(`审查报告模板不存在: ${standards.report_template}`);
+  const conditional = standards.conditional_skills;
+  if (!conditional || typeof conditional !== "object" || Array.isArray(conditional)) {
+    fail("review_standards_route.conditional_skills 必须是对象");
+  }
+  const union = [];
+  for (const [impact, names] of Object.entries(conditional)) {
+    if (!Array.isArray(names) || names.length === 0) fail(`review_standards_route.conditional_skills.${impact} 必须是非空数组`);
+    for (const name of names) {
+      if (!resolve(name)) fail(`审查专项检查输入引用了未登记技能: ${impact} -> ${name}`);
+      if (!union.includes(name)) union.push(name);
+    }
+    if (typeof standards.not_applicable_reasons?.[impact] !== "string") {
+      fail(`review_standards_route.not_applicable_reasons.${impact} 必须是字符串`);
+    }
+  }
+  for (const name of union) {
+    if (!route.supporting_skills.includes(name)) fail(`work-unit.code-review.supporting_skills 缺少专项检查输入 ${name}`);
+    if (!route.skills.includes(name)) fail(`work-unit.code-review.skills 缺少专项检查输入 ${name}`);
+  }
+  if (!route.skills.includes("code-review")) fail("work-unit.code-review.skills 必须包含 code-review");
+  const machine = standards.machine_checks;
+  if (!machine || typeof machine !== "object" || Array.isArray(machine)) fail("review_standards_route.machine_checks 必须是对象");
+  if (machine.run_if_present !== true) fail("review_standards_route.machine_checks.run_if_present 必须为 true");
+  if (machine.missing_tooling !== "not-applicable-with-reason") fail("缺少机器检查工具时必须记录 not-applicable 及原因");
+  if (machine.checkable_rule_without_machine !== "not-a-pass") fail("可机器检查规则在未跑工具时不得记为 pass");
+}
+
 export function validateSkillRegistry(registry, { lock, routerContract, lifecycleContract, skillSource } = {}) {
   if (!registry || typeof registry !== "object" || Array.isArray(registry)) fail("技能路由注册表必须是对象");
   if (registry.schema_version !== 1) fail("schema_version 必须为 1");
@@ -256,6 +295,7 @@ export function validateSkillRegistry(registry, { lock, routerContract, lifecycl
         }
         if (route.primary_skill === "prototype-review") fail("prototype-review 必须作为独立 supporting skill，不得成为生命周期主技能");
       }
+      if (routeId === "work-unit.code-review") validateCodeReviewRoute(route, resolve);
     }
   }
 

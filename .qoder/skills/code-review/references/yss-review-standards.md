@@ -1,0 +1,41 @@
+# YSS 审查标准源与机器检查
+
+本文件只服务唯一默认审查技能 `code-review`。Alibaba Java、YSS 前端 / 后端 skill 是 **Standards 轴的专项检查输入**，不是第二个通用审查 skill。
+
+权威接线：`yss-product-lifecycle/references/orchestration-contract.yaml` 的 `work-unit.code-review.review_standards_route` 与 `review_input`。报告形状：`docs/templates/review-report-template.md`。
+
+## 1. 编译标准源
+
+按顺序收集，缺项写 `not-applicable` 及原因，不得省略适用项：
+
+1. 仓库文档：`CODING_STANDARDS.md`、`CONTRIBUTING.md` 或实现仓等价文件（若存在）。
+2. Slice Implementation Contract 的 `required_skills`：对每个技能读取 `.agents/skills/<id>/SKILL.md` 及该 skill 指明的 references。
+3. 影响面专项检查输入（与合同并集，不得互相替代）：
+   - 后端：`alibaba-java-code-style`、`yss-domain`、`yss-application`、`yss-repository`、`yss-web-controller`、`yss-dto`、`mapstruct`、`lombok`
+   - UI：`yss-ui`、`yss-design-system`、`yss-page-module-development`
+4. 报告模板中的后端 / 前端门禁表。空着的适用行视为 `missing_evidence`。
+
+YSS 页面模块约定（YTable、YssFormily、页面骨架等）走 Standards，不并入 UI fidelity。UI fidelity 只核原型与状态矩阵。
+
+审查者只读这些 skill，不得用它们写实现路径。`role.test-engineer` 任务包禁止 `implement` 与脚手架生成器。
+
+## 2. 机器检查
+
+在派发 Standards / Spec 子审查之前，对实现仓**已登记且当前可执行**的命令实际跑一遍：
+
+- 后端优先：切片合同里的 `./mvnw` 验证；若工程已配置 Checkstyle / P3C / Spotless / `validate`，一并执行。
+- 前端优先：切片合同里的 `pnpm` 验证；若存在 `pnpm lint` / `pnpm type-check`，一并执行。
+
+记录命令、退出码、时间和证据引用。退出码非 0 记为 Standards **hard violation**。
+
+仓库没有对应工具时，该工具行写 `not-applicable` 加原因。可被工具检查的 Alibaba / ESLint 规则若工具没跑、LLM 也没按原文引用规则，不得记 `pass`。无法 lint 的分层、页面骨架、Formily 约定由 LLM 按 skill 原文引用。
+
+## 3. 完成阻断
+
+出现以下任一情况时，`work-unit.code-review` 不得 `completed`：
+
+- 未消费合同 `required_skills` 或漏掉命中影响面的专项检查输入
+- 报告模板适用行空白或只写“符合 YSS / 符合阿里规范”
+- mandatory Alibaba 或 YSS 门禁 `violation` 未关闭
+- 机器检查失败，或可检查规则既无工具结果也无原文引用
+- 用第二个通用审查 skill 代替 `code-review`

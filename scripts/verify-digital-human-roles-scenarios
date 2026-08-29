@@ -38,6 +38,18 @@ function mustFail(doc, pattern, label) {
 
 validateDefaultDigitalHumanRoles();
 
+const tester = loadDigitalHumanRoles().roles.find((role) => role.id === "role.test-engineer");
+for (const skill of ["code-review", "alibaba-java-code-style", "yss-ui", "yss-page-module-development", "yss-domain", "yss-application", "yss-web-controller", "yss-dto", "mapstruct", "lombok"]) {
+  if (!tester.core_skills.includes(skill)) throw new TypeError(`role.test-engineer 缺少只读专项检查 skill: ${skill}`);
+}
+if (tester.forbidden_skills.includes("yss-ui") || tester.forbidden_skills.includes("alibaba-java-code-style")) {
+  throw new TypeError("测试工程师不得禁止审查所需的 YSS / Alibaba skill");
+}
+const backend = loadDigitalHumanRoles().roles.find((role) => role.id === "role.backend-engineer");
+if (!backend.core_skills.includes("alibaba-java-code-style") || !backend.core_skills.includes("mapstruct") || !backend.core_skills.includes("lombok")) {
+  throw new TypeError("role.backend-engineer 缺少 Alibaba / MapStruct / Lombok");
+}
+
 const seven = [
   "role.lifecycle-orchestrator",
   "role.requirements-manager",
