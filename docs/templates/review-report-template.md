@@ -129,5 +129,8 @@ rg -n "from 'ant-design-vue'|<(Table|Tree|Form)[ >]|YFormily|YssFormily|YTable|Y
 | Agent 只列验证命令但没有实际结果和执行时间 | 不构成 fresh verification，不得给出 Approved / 可合并结论 |  |
 | Agent 用第二个通用审查 skill 代替 `code-review`，或 Standards 未读取合同 `required_skills` / Alibaba / `yss-ui` | 应标记为 `violation` 并阻断完成 |  |
 | Agent 把 YSS 页面模块约定并进 UI fidelity，或适用报告行留空 | 应回到 Standards 专项检查，空白行视为 `missing_evidence` |  |
+| Agent 在审查会话中直接改实现代码以“关掉” finding | 应标记为 `violation`；finding 交实现者在原合同路径修复，再重新捕获候选并全轴复审 |  |
+| Agent 把 `violation` 记为 `not-applicable`，或为日常 Alibaba / YSS 另开生物人豁免门禁 | 应阻断；命中后只允许修复或完整 `seam-deferred`，未命中才 `not-applicable` |  |
+| Agent 发现 `drift` / `new_impacts` / `required_skills` 与真实影响不一致后仍在旧合同上编码 | 应将合同标 `stale`，回 Router 或更早生命周期阶段 |  |
 
 ## 签字确认

@@ -326,6 +326,28 @@ work_unit_routes:
       not_applicable_reasons:
         backend_impact: no_backend_impact
         ui_impact: no_ui_impact
+      finding_disposition:
+        same_loop_for: [product-slice, template-maintenance]
+        intensity:
+          product-slice: slice-contract
+          template-maintenance: L1-L2-L3
+        reviewer_write_implementation: forbidden
+        repair_then_full_rereview:
+          kinds: [violation, machine_check_failure, blank_applicable_row, missing_evidence]
+          actor: implementer
+          on_original_contract: true
+          then: recapture_candidate_and_rerun_all_axes
+        stale_and_reroute:
+          kinds: [drift, new_impacts, required_skills_mismatch]
+          mark_contract: stale
+          continue_coding_on_old_contract: forbidden
+          next: router-or-earlier-lifecycle
+        exemption_policy:
+          not_applicable: impact_not_triggered_only
+          mandatory_waiver: forbidden
+          allowed_exits: [repair, seam-deferred-complete]
+          new_human_waiver_gate: forbidden
+          existing_human_gates_unchanged: true
     applies_when: implementation_candidate_exists
     not_applicable_reason: no_implementation_candidate
   work-unit.release-and-retrospective:
@@ -415,6 +437,10 @@ review_input:
   axes: [standards, spec, ui_fidelity_if_ui_impact]
   standards_sources: [repo_coding_standards, slice_contract_required_skills, specialist_check_inputs, review_report_template]
   completed_requires_specialist_coverage: true
+  finding_disposition_required: true
+  completed_requires_no_open_mandatory_violations: true
+  completed_requires_no_blank_applicable_rows: true
+  reviewer_write_implementation: forbidden
   repair_invalidates_candidate: true
   repair_action: recapture_candidate_and_rerun_all_axes
   modes: [committed, worktree]

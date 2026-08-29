@@ -82,6 +82,37 @@ test("deprecated skills require migration and cleanup metadata", () => {
   assert.throws(() => validateSkillRegistry(data), /migration_deadline/);
 });
 
+function findingDisposition(overrides = {}) {
+  return {
+    same_loop_for: ["product-slice", "template-maintenance"],
+    intensity: {
+      "product-slice": "slice-contract",
+      "template-maintenance": "L1-L2-L3"
+    },
+    reviewer_write_implementation: "forbidden",
+    repair_then_full_rereview: {
+      kinds: ["violation", "machine_check_failure", "blank_applicable_row", "missing_evidence"],
+      actor: "implementer",
+      on_original_contract: true,
+      then: "recapture_candidate_and_rerun_all_axes"
+    },
+    stale_and_reroute: {
+      kinds: ["drift", "new_impacts", "required_skills_mismatch"],
+      mark_contract: "stale",
+      continue_coding_on_old_contract: "forbidden",
+      next: "router-or-earlier-lifecycle"
+    },
+    exemption_policy: {
+      not_applicable: "impact_not_triggered_only",
+      mandatory_waiver: "forbidden",
+      allowed_exits: ["repair", "seam-deferred-complete"],
+      new_human_waiver_gate: "forbidden",
+      existing_human_gates_unchanged: true
+    },
+    ...overrides
+  };
+}
+
 function codeReviewRoute(overrides = {}) {
   return {
     primary_skill: "code-review",
@@ -107,7 +138,8 @@ function codeReviewRoute(overrides = {}) {
       not_applicable_reasons: {
         backend_impact: "no_backend_impact",
         ui_impact: "no_ui_impact"
-      }
+      },
+      finding_disposition: findingDisposition()
     },
     ...overrides
   };
@@ -143,6 +175,53 @@ test("code-review route accepts specialist check inputs on the unique skill", ()
   assert.doesNotThrow(() => validateSkillRegistry(data, {
     lifecycleContract: { work_unit_routes: { "work-unit.code-review": codeReviewRoute() } }
   }));
+});
+
+test("code-review route without finding_disposition is rejected", () => {
+  const data = registry();
+  const route = codeReviewRoute();
+  delete route.review_standards_route.finding_disposition;
+  assert.throws(() => validateSkillRegistry(data, {
+    lifecycleContract: { work_unit_routes: { "work-unit.code-review": route } }
+  }), /finding_disposition/);
+});
+
+test("code-review route cannot let the reviewer write implementation", () => {
+  const data = registry();
+  const route = codeReviewRoute();
+  route.review_standards_route.finding_disposition = findingDisposition({
+    reviewer_write_implementation: "allowed"
+  });
+  assert.throws(() => validateSkillRegistry(data, {
+    lifecycleContract: { work_unit_routes: { "work-unit.code-review": route } }
+  }), /审查者不得写实现/);
+});
+
+test("code-review route forbids mandatory waiver of triggered gates", () => {
+  const data = registry();
+  const route = codeReviewRoute();
+  route.review_standards_route.finding_disposition = findingDisposition({
+    exemption_policy: {
+      not_applicable: "impact_not_triggered_only",
+      mandatory_waiver: "allowed",
+      allowed_exits: ["repair", "seam-deferred-complete"],
+      new_human_waiver_gate: "forbidden",
+      existing_human_gates_unchanged: true
+    }
+  });
+  assert.throws(() => validateSkillRegistry(data, {
+    lifecycleContract: { work_unit_routes: { "work-unit.code-review": route } }
+  }), /mandatory 门禁不得豁免/);
+});
+
+test("review_input without finding disposition completion flags is rejected", () => {
+  const data = registry();
+  assert.throws(() => validateSkillRegistry(data, {
+    lifecycleContract: {
+      work_unit_routes: { "work-unit.code-review": codeReviewRoute() },
+      review_input: { unique_default_skill: "code-review" }
+    }
+  }), /finding_disposition_required/);
 });
 
 test("frontend conditional routes require registered skills", () => {

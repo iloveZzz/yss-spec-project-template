@@ -47,6 +47,52 @@ function requireString(value, field) {
   if (typeof value !== "string" || !value.trim()) fail(`${field} 不能为空`);
 }
 
+function requireObject(value, field) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) fail(`${field} 必须是对象`);
+}
+
+function requireStringSet(value, expected, field) {
+  if (!Array.isArray(value)) fail(`${field} 必须是数组`);
+  const missing = expected.filter((item) => !value.includes(item));
+  const extra = value.filter((item) => !expected.includes(item));
+  if (missing.length || extra.length) fail(`${field} 必须恰好为 ${expected.join(", ")}`);
+}
+
+function validateFindingDisposition(disposition) {
+  requireObject(disposition, "review_standards_route.finding_disposition");
+  requireStringSet(disposition.same_loop_for, ["product-slice", "template-maintenance"], "finding_disposition.same_loop_for");
+  requireObject(disposition.intensity, "finding_disposition.intensity");
+  if (disposition.intensity["product-slice"] !== "slice-contract") fail("产品切片审查强度必须绑定 slice-contract");
+  if (disposition.intensity["template-maintenance"] !== "L1-L2-L3") fail("模板维护审查强度必须绑定 L1-L2-L3");
+  if (disposition.reviewer_write_implementation !== "forbidden") fail("审查者不得写实现");
+  const repair = disposition.repair_then_full_rereview;
+  requireObject(repair, "finding_disposition.repair_then_full_rereview");
+  requireStringSet(repair.kinds, ["violation", "machine_check_failure", "blank_applicable_row", "missing_evidence"], "finding_disposition.repair_then_full_rereview.kinds");
+  if (repair.actor !== "implementer") fail("violation 类 finding 必须由实现者修复");
+  if (repair.on_original_contract !== true) fail("violation 类 finding 必须在原合同允许路径内修复");
+  if (repair.then !== "recapture_candidate_and_rerun_all_axes") fail("修复后必须重新捕获候选并全轴复审");
+  const stale = disposition.stale_and_reroute;
+  requireObject(stale, "finding_disposition.stale_and_reroute");
+  requireStringSet(stale.kinds, ["drift", "new_impacts", "required_skills_mismatch"], "finding_disposition.stale_and_reroute.kinds");
+  if (stale.mark_contract !== "stale") fail("drift / new_impacts 必须将合同标为 stale");
+  if (stale.continue_coding_on_old_contract !== "forbidden") fail("合同 stale 后禁止在旧合同上继续编码");
+  if (stale.next !== "router-or-earlier-lifecycle") fail("合同 stale 后必须回 Router 或更早生命周期阶段");
+  const exemption = disposition.exemption_policy;
+  requireObject(exemption, "finding_disposition.exemption_policy");
+  if (exemption.not_applicable !== "impact_not_triggered_only") fail("not-applicable 仅允许影响面未命中");
+  if (exemption.mandatory_waiver !== "forbidden") fail("命中后的 mandatory 门禁不得豁免");
+  requireStringSet(exemption.allowed_exits, ["repair", "seam-deferred-complete"], "finding_disposition.exemption_policy.allowed_exits");
+  if (exemption.new_human_waiver_gate !== "forbidden") fail("禁止为日常 Alibaba/YSS 新增生物人豁免门禁");
+  if (exemption.existing_human_gates_unchanged !== true) fail("既有 TODO-HUMAN-REVIEW / 生物人门禁不得被审查闭环改写");
+}
+
+function validateReviewInputFinding(reviewInput) {
+  if (reviewInput.finding_disposition_required !== true) fail("review_input.finding_disposition_required 必须为 true");
+  if (reviewInput.completed_requires_no_open_mandatory_violations !== true) fail("未关闭的 mandatory violation 不得 completed");
+  if (reviewInput.completed_requires_no_blank_applicable_rows !== true) fail("适用报告行空白不得 completed");
+  if (reviewInput.reviewer_write_implementation !== "forbidden") fail("review_input 禁止审查者写实现");
+}
+
 function validateCodeReviewRoute(route, resolve) {
   if (route.primary_skill !== "code-review") fail("work-unit.code-review 的 primary_skill 必须是唯一默认审查技能 code-review");
   const standards = route.review_standards_route;
@@ -84,6 +130,7 @@ function validateCodeReviewRoute(route, resolve) {
   if (machine.run_if_present !== true) fail("review_standards_route.machine_checks.run_if_present 必须为 true");
   if (machine.missing_tooling !== "not-applicable-with-reason") fail("缺少机器检查工具时必须记录 not-applicable 及原因");
   if (machine.checkable_rule_without_machine !== "not-a-pass") fail("可机器检查规则在未跑工具时不得记为 pass");
+  validateFindingDisposition(standards.finding_disposition);
 }
 
 export function validateSkillRegistry(registry, { lock, routerContract, lifecycleContract, skillSource } = {}) {
@@ -297,6 +344,7 @@ export function validateSkillRegistry(registry, { lock, routerContract, lifecycl
       }
       if (routeId === "work-unit.code-review") validateCodeReviewRoute(route, resolve);
     }
+    if (lifecycle.review_input) validateReviewInputFinding(lifecycle.review_input);
   }
 
   return { skill_count: skills.length, platform_count: platform.length, status: registry.status };
