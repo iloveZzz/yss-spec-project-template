@@ -58,7 +58,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 | 系统 / 数据架构与工程契约 `stage.system-data-engineering` | `work-unit.technical-analysis` | `yss-router`；按影响使用 `yss-openapi-governance`、`yss-openapi-draft-review`、`codebase-design`、`implementation-repo-onboarding`、`yss-tactical-design` | OpenAPI Draft / Freeze、数据架构、工程基线、架构审查；无 API 影响记录；必要时 Tactical DDD Check；`gate.openapi-draft-reviewed`、`gate.design-reviewed`、`gate.openapi-frozen`、`gate.engineering-baseline-accepted`、`gate.architecture-reviewed` |
 | Ticket 正式化 `stage.ticket-formalization` | `work-unit.ticket-decomposition` | `yss-product-lifecycle` + `yss-router`；`to-tickets` 仅为显式兼容入口 | 功能父 Ticket、垂直切片、Slice Implementation Contract；切片初始 `ready-for-human`；`gate.slice-contract-approved`、`gate.slice-ready-for-agent` |
 | 垂直切片实现 `stage.vertical-slice-implementation` | `work-unit.slice-implementation` | `yss-router` + `tdd`；UI 影响追加 `yss-ui`、`yss-page-module-development` 及条件专项 skill；`implement` 仅为显式兼容入口 | 前后端代码、TDD、YSS Skill Execution Result；仅允许 `ready-for-agent` 且合同当前 |
-| 验证 / 发布 / 复盘 `stage.verification-release-retrospective` | `work-unit.frontend-implementation-verification`、`work-unit.code-review`、`work-unit.release-and-retrospective` | `code-review`；UI 影响追加 `yss-ui` + `yss-design-system`；发布 / 复盘由 `yss-product-lifecycle` 持有 | 不可变候选快照、独立审查、fresh verification、发布 / 回滚证据、复盘；UI 影响追加 `gate.frontend-implementation-verified`；`gate.release-ready` |
+| 验证 / 发布 / 复盘 `stage.verification-release-retrospective` | `work-unit.frontend-implementation-verification`、`work-unit.code-review`、`work-unit.release-and-retrospective` | `code-review`（唯一入口，Standards 消费 YSS / Alibaba 专项检查输入）；UI 影响追加 `yss-ui` + `yss-design-system`；发布 / 复盘由 `yss-product-lifecycle` 持有 | 不可变候选快照、独立审查、findings 按合同分流、fresh verification、发布 / 回滚证据、复盘；UI 影响追加 `gate.frontend-implementation-verified`；`gate.release-ready` |
 
 - 生命周期注册表中的条件门禁全部按影响面强制。命中触发条件时必须完成；未命中时只记录 `not-applicable` 及原因，不生成空文档；不得把产物、工作单元或证据统称为门禁。
 - 安全 / 权限不设独立生命周期资料或专属门禁。日常功能不做额外登记、`not-applicable` 或推导校验；只有需求或冻结资产明确要求改变认证、授权、租户隔离、敏感数据或合规行为时，才把该行为写入普通 Spec、API、架构、验收和测试 seam，并仅按实际 UI、API、Backend、Data、High-risk 影响触发既有门禁。普通 action 注册、沿用既有认证中间件、未变化的 `401` / `403`、一般字段、SQL / DDL / 迁移和上传 / 下载本身不构成安全 / 权限专项。
@@ -114,7 +114,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 
 ## 10. 独立审查、验证和追踪
 
-- 实现者不能承担命中的独立审查（含数字人）。模板维护按 L1 / L2 / L3 分别使用 self-check / 人工 checkpoint、聚焦独立审查、正式独立审查；模板发布、代码切片和高风险变更仍必须由其他 Agent 或独立审查者完成。
+- 实现者不能承担命中的独立审查（含数字人）。模板维护按 L1 / L2 / L3 分别使用 self-check / 人工 checkpoint、聚焦独立审查、正式独立审查；模板发布、代码切片和高风险变更仍必须由其他 Agent 或独立审查者完成。产品切片与模板维护共用同一 finding 闭环：`violation` 由实现者在原合同路径修复后重新捕获并全轴复审；`drift` / `new_impacts` 使合同 `stale` 并回 Router。审查者不得写实现。命中后的 mandatory 不得豁免；未命中才 `not-applicable`。
 - 任何“完成 / 可合并 / 可发布”结论必须基于 fresh verification，不接受“之前跑过”或实现者自述。
 - 会签门禁按 `docs/agents/digital-human-roles.yaml` 的 `gate_policy` 关闭，会签文件经 `scripts/verify-approval-record` 核验；`gate.release-ready`、对外商务承诺和运行时外部副作用仍须生物人。
 - 在会签暂停、handoff、进入实现、合并或发布边界集中同步范围、验证证据、风险、会签点、Ticket 状态和下一步；阻塞、责任人变化或资产单独批准时立即同步。

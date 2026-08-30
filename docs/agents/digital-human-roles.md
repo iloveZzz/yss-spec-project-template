@@ -16,7 +16,7 @@
 | 执行态 | Explorer / Drafter / Worker / Reviewer / Verifier | 数字人角色 |
 | 运行时绑定 | 如何在 Cursor / Claude / Grok 等落地 | 角色职责本身 |
 
-一次数字人任务包同时写明 `task_id`、`work_unit_id`、`actor_id`、数字人角色、执行态、当前 `runtime_id`，以及从角色表复制的 `core_skills` / `forbidden_skills`。可用 `taskPackageDefaults(roleId)`（`scripts/lib/digital-human-roles.mjs`）读取，禁止手写第二套技能包。任务包 canonical Schema 为 `docs/process/schemas/digital-human-task-package.schema.json`，按 `contract.kind` 选择生命周期、切片实现或模板维护合同。
+一次数字人任务包同时写明 `task_id`、`work_unit_id`、`actor_id`、数字人角色、执行态、当前 `runtime_id`，以及从角色表复制的 `core_skills` / `forbidden_skills`。可用 `taskPackageDefaults(roleId)`（`scripts/lib/digital-human-roles.mjs`）读取，禁止手写第二套技能包。`role.test-engineer` 的 core_skills 含 YSS / Alibaba 专项 skill，仅作为 `code-review` Standards 只读输入，不得写实现；finding 交实现者修复或回 Router，审查者不得当场改代码。任务包 canonical Schema 为 `docs/process/schemas/digital-human-task-package.schema.json`，按 `contract.kind` 选择生命周期、切片实现或模板维护合同。
 
 ## 会签人
 

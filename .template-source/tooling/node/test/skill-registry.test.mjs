@@ -82,6 +82,148 @@ test("deprecated skills require migration and cleanup metadata", () => {
   assert.throws(() => validateSkillRegistry(data), /migration_deadline/);
 });
 
+function findingDisposition(overrides = {}) {
+  return {
+    same_loop_for: ["product-slice", "template-maintenance"],
+    intensity: {
+      "product-slice": "slice-contract",
+      "template-maintenance": "L1-L2-L3"
+    },
+    reviewer_write_implementation: "forbidden",
+    repair_then_full_rereview: {
+      kinds: ["violation", "machine_check_failure", "blank_applicable_row", "missing_evidence"],
+      actor: "implementer",
+      on_original_contract: true,
+      then: "recapture_candidate_and_rerun_all_axes"
+    },
+    stale_and_reroute: {
+      kinds: ["drift", "new_impacts", "required_skills_mismatch"],
+      mark_contract: "stale",
+      continue_coding_on_old_contract: "forbidden",
+      next: "router-or-earlier-lifecycle"
+    },
+    exemption_policy: {
+      not_applicable: "impact_not_triggered_only",
+      mandatory_waiver: "forbidden",
+      allowed_exits: ["repair", "seam-deferred-complete"],
+      new_human_waiver_gate: "forbidden",
+      existing_human_gates_unchanged: true
+    },
+    ...overrides
+  };
+}
+
+function codeReviewRoute(overrides = {}) {
+  return {
+    primary_skill: "code-review",
+    supporting_skills: ["alibaba-java-code-style", "yss-ui", "yss-design-system", "yss-page-module-development", "yss-domain", "yss-application", "yss-repository", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
+    skills: ["code-review", "alibaba-java-code-style", "yss-ui", "yss-design-system", "yss-page-module-development", "yss-domain", "yss-application", "yss-repository", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
+    applies_when: "implementation_candidate_exists",
+    not_applicable_reason: "no_implementation_candidate",
+    review_standards_route: {
+      unique_default_skill: "code-review",
+      second_generic_review_skill: "forbidden",
+      report_template: "docs/templates/review-report-template.md",
+      contract_required_skills: "required",
+      write_implementation: "forbidden",
+      machine_checks: {
+        run_if_present: true,
+        missing_tooling: "not-applicable-with-reason",
+        checkable_rule_without_machine: "not-a-pass"
+      },
+      conditional_skills: {
+        backend_impact: ["alibaba-java-code-style", "yss-domain", "yss-application", "yss-repository", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
+        ui_impact: ["yss-ui", "yss-design-system", "yss-page-module-development"]
+      },
+      not_applicable_reasons: {
+        backend_impact: "no_backend_impact",
+        ui_impact: "no_ui_impact"
+      },
+      finding_disposition: findingDisposition()
+    },
+    ...overrides
+  };
+}
+
+test("code-review route without specialist supporting skills is rejected", () => {
+  const data = registry();
+  const route = codeReviewRoute({ supporting_skills: [], skills: ["code-review"] });
+  assert.throws(() => validateSkillRegistry(data, {
+    lifecycleContract: { work_unit_routes: { "work-unit.code-review": route } }
+  }), /专项检查输入/);
+});
+
+test("code-review route without review_standards_route is rejected", () => {
+  const data = registry();
+  const route = codeReviewRoute();
+  delete route.review_standards_route;
+  assert.throws(() => validateSkillRegistry(data, {
+    lifecycleContract: { work_unit_routes: { "work-unit.code-review": route } }
+  }), /缺少 review_standards_route/);
+});
+
+test("code-review route cannot replace the unique default review skill", () => {
+  const data = registry();
+  const route = codeReviewRoute({ primary_skill: "yss-ui" });
+  assert.throws(() => validateSkillRegistry(data, {
+    lifecycleContract: { work_unit_routes: { "work-unit.code-review": route } }
+  }), /唯一默认审查技能/);
+});
+
+test("code-review route accepts specialist check inputs on the unique skill", () => {
+  const data = registry();
+  assert.doesNotThrow(() => validateSkillRegistry(data, {
+    lifecycleContract: { work_unit_routes: { "work-unit.code-review": codeReviewRoute() } }
+  }));
+});
+
+test("code-review route without finding_disposition is rejected", () => {
+  const data = registry();
+  const route = codeReviewRoute();
+  delete route.review_standards_route.finding_disposition;
+  assert.throws(() => validateSkillRegistry(data, {
+    lifecycleContract: { work_unit_routes: { "work-unit.code-review": route } }
+  }), /finding_disposition/);
+});
+
+test("code-review route cannot let the reviewer write implementation", () => {
+  const data = registry();
+  const route = codeReviewRoute();
+  route.review_standards_route.finding_disposition = findingDisposition({
+    reviewer_write_implementation: "allowed"
+  });
+  assert.throws(() => validateSkillRegistry(data, {
+    lifecycleContract: { work_unit_routes: { "work-unit.code-review": route } }
+  }), /审查者不得写实现/);
+});
+
+test("code-review route forbids mandatory waiver of triggered gates", () => {
+  const data = registry();
+  const route = codeReviewRoute();
+  route.review_standards_route.finding_disposition = findingDisposition({
+    exemption_policy: {
+      not_applicable: "impact_not_triggered_only",
+      mandatory_waiver: "allowed",
+      allowed_exits: ["repair", "seam-deferred-complete"],
+      new_human_waiver_gate: "forbidden",
+      existing_human_gates_unchanged: true
+    }
+  });
+  assert.throws(() => validateSkillRegistry(data, {
+    lifecycleContract: { work_unit_routes: { "work-unit.code-review": route } }
+  }), /mandatory 门禁不得豁免/);
+});
+
+test("review_input without finding disposition completion flags is rejected", () => {
+  const data = registry();
+  assert.throws(() => validateSkillRegistry(data, {
+    lifecycleContract: {
+      work_unit_routes: { "work-unit.code-review": codeReviewRoute() },
+      review_input: { unique_default_skill: "code-review" }
+    }
+  }), /finding_disposition_required/);
+});
+
 test("frontend conditional routes require registered skills", () => {
   const data = registry();
   const route = {

@@ -63,7 +63,7 @@ Approved / Changes requested / Blocked
 | `yss-web-controller` / `yss-dto` 已按影响面落实，CMD / Query / VO / Result 按既有 DTO 体系定义或复用，Controller 不用内部类或非约定包临时承载主要 DTO / VO、不手工分页主要业务集合、不穿透 Repository | pass / violation / not-applicable |  |
 | `mapstruct` 已按影响面落实，PO / Domain Model / DTO / VO / CMD / Query 转换使用 MapStruct Convertor / Mapper，未使用 `BeanUtils.copyProperties`、反射拷贝或重复手写字段赋值；例外已记录测试和补齐落点 | pass / violation / not-applicable |  |
 | `lombok` 已按影响面落实，POJO 样板代码使用 Lombok，未成片手写 getter/setter、constructor、builder、logger；实体 / POJO 未触发 `@Data` 等反模式或已说明例外 | pass / violation / not-applicable |  |
-| `alibaba-java-code-style` 已纳入审查，命名、异常、日志、ORM/MyBatis、Maven、MapStruct / Lombok 注解处理器配置无 blocker | pass / violation / not-applicable |  |
+| `alibaba-java-code-style` 已纳入审查，命名、异常、日志、ORM/MyBatis、Maven、MapStruct / Lombok 注解处理器配置无 blocker；可机器检查规则有工具结果或原文引用 | pass / violation / not-applicable |  |
 | 后端构建 / 测试 / OpenAPI / CI / Release 命令使用项目根目录 `./mvnw ...`；裸 `mvn ...` 已改正或有受控例外记录 | pass / violation / not-applicable |  |
 | 持久化文档正文、章节标题、审查结论和实施说明使用中文；英文模板内容未原样落地 | pass / violation / not-applicable |  |
 | 新增或修改的业务类型 / 字段 / OpenAPI property 能追溯到 `CONTEXT.md` 业务术语的 `英文标识` 词干；未登记的新名字已回写词汇表 | pass / violation / not-applicable |  |
@@ -81,6 +81,36 @@ rg -n "class (SingleResult|MultiResult|PageResult|Result)<|public static class .
 |---|---|---|
 |  |  | expected / seam-deferred / violation |
 
+## YSS 前端门禁审查
+
+> UI 影响切片必填；无 UI 影响写 `not-applicable`。`UI fidelity` 轴只核原型与状态矩阵，不能代替本表。任何 `violation` 都阻断完成 / 可合并结论。
+
+| 检查项 | 结论 | 证据 |
+|---|---|---|
+| `yss-ui` 组件路由已落实：YSS `required` 封装（如 `YTable` / `YTree` / `YssFormily`）未被 AntDV 裸组件或其他重型方案绕过；受控回退有能力缺口记录 | pass / violation / not-applicable |  |
+| `yss-page-module-development` 页面骨架已落实：`index.vue` 只编排，请求与分页不堆在页面根组件 | pass / violation / not-applicable |  |
+| 切片合同 `required_skills` 中的 Formily / 表格 / 树 / 高度 / 主题 / API 专项 skill 已按影响面引用规则；未命中项有 `not-applicable` 原因 | pass / violation / not-applicable |  |
+| 前端验证使用项目根 `pnpm ...`；实际退出码已记录。只做 type-check 或声称“已对齐”不算通过 | pass / violation / not-applicable |  |
+| 机器检查（`pnpm lint` / `pnpm type-check` 等已存在脚本）已执行，或缺失工具已写 `not-applicable` 及原因 | pass / violation / not-applicable |  |
+
+### 前端 smoke check
+
+```bash
+rg -n "from 'ant-design-vue'|<(Table|Tree|Form)[ >]|YFormily|YssFormily|YTable|YTree" apps/frontend
+```
+
+命中说明：直接使用 AntDV `Table` / `Tree` / `Form` 不等于自动失败，但必须说明为何未走 YSS 封装。
+
+| 命中 | 解释 | 结论 |
+|---|---|---|
+|  |  | expected / seam-deferred / violation |
+
+## 机器检查
+
+| 命令 | 退出码 | 时间 | 证据 | 结论 |
+|---|---|---|---|---|
+|  |  |  |  | pass / violation / not-applicable |
+
 ## 压力场景验证
 
 | 压力场景 | 预期 | 本次结论 |
@@ -97,5 +127,10 @@ rg -n "class (SingleResult|MultiResult|PageResult|Result)<|public static class .
 | Agent 使用 `seam-deferred` 却缺少风险、责任人、后续 Ticket、验证计划或目标版本 / 发布日期 | 应标记为 `violation` 并阻断 |  |
 | Agent 返回非空 `new_impacts` 后继续编码或补写旧合同 | 应暂停相关工作单元，将合同标记 `stale`，回到 Router 或更早生命周期阶段 |  |
 | Agent 只列验证命令但没有实际结果和执行时间 | 不构成 fresh verification，不得给出 Approved / 可合并结论 |  |
+| Agent 用第二个通用审查 skill 代替 `code-review`，或 Standards 未读取合同 `required_skills` / Alibaba / `yss-ui` | 应标记为 `violation` 并阻断完成 |  |
+| Agent 把 YSS 页面模块约定并进 UI fidelity，或适用报告行留空 | 应回到 Standards 专项检查，空白行视为 `missing_evidence` |  |
+| Agent 在审查会话中直接改实现代码以“关掉” finding | 应标记为 `violation`；finding 交实现者在原合同路径修复，再重新捕获候选并全轴复审 |  |
+| Agent 把 `violation` 记为 `not-applicable`，或为日常 Alibaba / YSS 另开生物人豁免门禁 | 应阻断；命中后只允许修复或完整 `seam-deferred`，未命中才 `not-applicable` |  |
+| Agent 发现 `drift` / `new_impacts` / `required_skills` 与真实影响不一致后仍在旧合同上编码 | 应将合同标 `stale`，回 Router 或更早生命周期阶段 |  |
 
 ## 签字确认
