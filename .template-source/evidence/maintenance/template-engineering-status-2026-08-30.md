@@ -9,11 +9,11 @@
 | 项目 | 状态 |
 |---|---|
 | 仓库身份 | `template-source` |
-| 主分支 | 三个仓库均为 `main`；子仓提交已推送，父仓等待最终 checkpoint |
-| 当前流程 | B-02、B-01 已关闭；B-03 已完成两个子仓提交与推送，正在闭合父仓 gitlink 和递归克隆复现 |
+| 主分支 | 三个仓库均为 `main`；模板源、CLI 与父仓 checkpoint 均已推送 |
+| 当前流程 | B-02、B-01、B-03 全部关闭 |
 | 影响面 | `cross-repo-contract`、`generation-semantics`、`release-semantics` |
 | 产品资产 | Spec、原型、OpenAPI、Ticket 和垂直切片均 `not-applicable` |
-| 发布判断 | `blocked`；需完成父仓 commit、递归克隆复现与父仓 push 后关闭 B-03 |
+| 发布判断 | Git 跨仓交付已闭合；npm 发布不在本工作单元授权范围内 |
 
 当前跨仓组合：
 
@@ -48,11 +48,11 @@
 
 关闭证据：新增结构化审查记录 schema 与校验入口，绑定 Reviewer / 实施者、冻结 worktree 候选 digest、规范候选流、Reviewer 任务包、正式报告和 findings；新 L3 Markdown 被拒绝，仅保留固定历史 allowlist。反例覆盖审查请求、实施者自述、候选不匹配、否定结论、否定语境与受控通过行并存、无效任务包、开放阻断 finding、symlink 越界及候选字节不一致。根仓和模板源仓 `scripts/verify-template`、专项场景及 `git diff --check` 均 fresh 通过。
 
-### B-03：子仓与父仓 gitlink 未闭合（最终验证中）
+### B-03：子仓与父仓 gitlink 未闭合（已关闭）
 
 原始阻断已消除：模板源 `f381ade...` 和 CLI `32c6720...` 均已提交并推送，CLI snapshot 绑定同一模板源 commit，完整测试与打包预检通过。
 
-剩余关闭条件：父仓 commit 同时更新两个 gitlink；用 `clone --recurse-submodules` 复现并执行根门禁；随后推送父仓。commit / push 授权均引用 `B03-2026-08-31`。
+关闭证据：父仓 `7c5ed26e019d5bb50cb6f304ef10c9bf6db11013` 同时绑定模板源 `f381adeb0147472fd5829c097153c1a15450c30e` 与 CLI `32c6720ebb081faffc29710c53cce31fbd532e56`；全新 `clone --recurse-submodules` 成功解析全部 gitlink，安装锁定工具依赖后根 `scripts/verify-template` 通过，克隆工作树干净。父仓已通过 `git push --recurse-submodules=check` 推送。
 
 ## 5. 治理跟进项
 
@@ -65,10 +65,10 @@
 
 ## 6. 下一工作单元
 
-下一工作单元已收敛为 B-03 跨仓 Git 闭合，顺序如下：
+下一工作单元可从治理跟进项中单独分诊；B-03 已完成以下闭环：
 
-1. 在父仓 checkpoint commit 中更新两个 gitlink。
-2. 从该 commit 执行 `clone --recurse-submodules`，核对两个子仓 commit 并运行根模板门禁。
-3. 记录复现证据并推送父仓 `main`。
+1. 模板源先提交推送。
+2. CLI 固定模板 commit 重建、测试、打包预检后提交推送。
+3. 父仓更新双 gitlink，递归克隆复现并推送 `main`。
 
 完成标准：B-01 至 B-03 全部关闭，治理跟进项有明确 disposition，同一最终候选拥有有效 L3 checkpoint、正式独立审查和 fresh verification，且重新 clone 可以复现跨仓组合。

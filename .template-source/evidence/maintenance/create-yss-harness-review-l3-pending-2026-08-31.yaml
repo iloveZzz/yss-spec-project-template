@@ -12,13 +12,15 @@ changed_assets:
   - docs/process/harness-process-tailoring.md
   - .template-source/evidence/maintenance/reviews/**
   - .template-source/evidence/maintenance/template-engineering-status-2026-08-30.md
+  - .template-source/evidence/maintenance/create-yss-harness-b03-reproduction-2026-08-31.md
 verification_evidence:
   - { kind: red, command: scripts/verify-maintenance-intensity-scenarios, result: pass }
   - { kind: green, command: scripts/verify-maintenance-intensity-scenarios, result: pass }
   - { kind: refactor, command: scripts/verify-subagent-task-package-scenarios, result: pass }
   - { kind: pressure-scenario, command: scripts/verify-maintenance-intensity-scenarios, result: pass }
   - { kind: fresh-verification, command: scripts/verify-template, result: pass }
+  - { kind: cross-repo-reproduction, command: .template-source/evidence/maintenance/create-yss-harness-b03-reproduction-2026-08-31.md, result: pass }
   - { kind: formal-independent-review, command: .template-source/evidence/maintenance/reviews/create-yss-harness-formal-independent-review-record-round7-2026-08-31.yaml, result: pass }
   - { kind: formal-independent-review, command: .template-source/evidence/maintenance/reviews/create-yss-harness-cli-formal-independent-review-record-2026-08-31.yaml, result: pass }
 review_mode: formal-independent
-escalation: B-03 子仓已提交并推送；父仓 gitlink commit、递归克隆复现和父仓 push 正在执行，授权引用 B03-2026-08-31。
+escalation: none；B-03 已按 B03-2026-08-31 授权完成子仓提交推送、父仓双 gitlink、递归克隆复现与父仓推送。
