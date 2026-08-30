@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+import { parseArgs } from "node:util";
+import { validateMaintenanceReviewEvidence } from "./lib/maintenance-review.mjs";
+
+try {
+  const { positionals, values } = parseArgs({
+    allowPositionals: true,
+    strict: true,
+    options: { kind: { type: "string", default: "formal-independent-review" } }
+  });
+  if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-maintenance-review-record [--kind focused-independent-review|formal-independent-review] <record-or-report>");
+  const result = validateMaintenanceReviewEvidence({ kind: values.kind, command: positionals[0], result: "pass" });
+  process.stdout.write(`维护独立审查证据验证通过（${result.review_mode}，${result.candidate_digest ?? "legacy"}）\n`);
+} catch (error) {
+  process.stderr.write(`维护独立审查证据验证失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

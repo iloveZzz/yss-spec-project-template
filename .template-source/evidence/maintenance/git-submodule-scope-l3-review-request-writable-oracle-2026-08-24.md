@@ -1,5 +1,7 @@
 # git-submodule 写入门禁判定式 正式独立审查请求
 
+`legacy_formal_review: true`
+
 > 实施者不得在本文件填写审查结论。`result=pass` 只表示本请求可被 checkpoint 校验器解析，不表示审查已通过。
 > 第三轮请求原文不改写，见 `.template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-api-2026-08-24.md`。
 

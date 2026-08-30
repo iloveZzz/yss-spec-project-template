@@ -41,9 +41,7 @@ verification_evidence:
     command: scripts/verify-template
     result: pass
   - kind: formal-independent-review
-    command: >-
-      非实施者 role.test-engineer 完成独立审查，结论记录于
-      lifecycle-ticket-transition-formal-independent-review-2026-08-27.md
+    command: .template-source/evidence/maintenance/lifecycle-ticket-transition-formal-independent-review-2026-08-27.md
     result: pass
 review_mode: formal-independent
 escalation: none

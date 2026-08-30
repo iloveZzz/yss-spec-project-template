@@ -1,6 +1,9 @@
 #!/usr/bin/env node
-import { readFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { validateMaintenanceCheckpoint } from "./lib/maintenance-intensity.mjs";
+import { validateMaintenanceReviewEvidence } from "./lib/maintenance-review.mjs";
 
 const checkerSource = readFileSync(new URL("./lib/maintenance-intensity.mjs", import.meta.url), "utf8");
 if (checkerSource.includes("LEVEL_BY_TRIGGER = new Map")) {
@@ -11,6 +14,15 @@ if (!checkerSource.includes("maintenance-intensity.yaml")) {
 }
 
 const evidence = (...kinds) => kinds.map((kind) => ({ kind, command: `verify ${kind}`, result: "pass" }));
+const reviewRequestOnly = "scripts/fixtures/maintenance-review/maintenance-review-request-only.md";
+const focusedReview = "scripts/fixtures/maintenance-review/maintenance-focused-review-approved.md";
+const formalReview = "scripts/fixtures/maintenance-review/maintenance-review/formal-review-record.yaml";
+const sameActorReview = "scripts/fixtures/maintenance-review/maintenance-review/formal-review-same-actor.yaml";
+const wrongDigestReview = "scripts/fixtures/maintenance-review/maintenance-review/formal-review-wrong-digest.yaml";
+const negativeReview = "scripts/fixtures/maintenance-review/maintenance-formal-review-negative.md";
+const negativeStructuredReview = "scripts/fixtures/maintenance-review/maintenance-review/formal-review-negative-record.yaml";
+const openFindingReview = "scripts/fixtures/maintenance-review/maintenance-review/formal-review-open-finding.yaml";
+const invalidTaskReview = "scripts/fixtures/maintenance-review/maintenance-review/formal-review-invalid-task.yaml";
 const base = {
   schema_version: 1,
   classification_reason: "场景验证",
@@ -20,12 +32,21 @@ const base = {
 
 const accepted = [
   { ...base, intensity: "L1", triggers: ["textual-only"], verification_evidence: evidence("relevant-check"), review_mode: "self-check" },
-  { ...base, intensity: "L2", triggers: ["local-rule"], verification_evidence: evidence("counterexample", "fresh-verification", "focused-independent-review"), review_mode: "focused-independent" },
-  { ...base, intensity: "L2", triggers: [], verification_evidence: evidence("counterexample", "fresh-verification", "focused-independent-review"), review_mode: "focused-independent" },
-  { ...base, intensity: "L3", triggers: ["lifecycle-gate"], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification", "formal-independent-review"), review_mode: "formal-independent" }
+  { ...base, intensity: "L2", triggers: ["local-rule"], verification_evidence: [...evidence("counterexample", "fresh-verification"), { kind: "focused-independent-review", command: focusedReview, result: "pass" }], review_mode: "focused-independent" },
+  { ...base, intensity: "L2", triggers: [], verification_evidence: [...evidence("counterexample", "fresh-verification"), { kind: "focused-independent-review", command: focusedReview, result: "pass" }], review_mode: "focused-independent" },
+  { ...base, intensity: "L3", triggers: ["lifecycle-gate"], verification_evidence: [...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"), { kind: "formal-independent-review", command: formalReview, result: "pass" }], review_mode: "formal-independent" }
 ];
 
 for (const checkpoint of accepted) validateMaintenanceCheckpoint(checkpoint);
+
+const pendingFormalReview = {
+  ...accepted[3],
+  verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification")
+};
+validateMaintenanceCheckpoint(pendingFormalReview, { allowPendingReview: true });
+let pendingPassedStrictClosure = true;
+try { validateMaintenanceCheckpoint(pendingFormalReview); } catch { pendingPassedStrictClosure = false; }
+if (pendingPassedStrictClosure) throw new TypeError("待审合同不得通过最终 checkpoint 校验");
 
 const rejected = [
   { ...accepted[1], verification_evidence: evidence("fresh-verification") },
@@ -35,13 +56,75 @@ const rejected = [
   { ...accepted[2], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario") },
   { ...accepted[2], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification") },
   { ...accepted[1], escalation: "发现发布语义影响但仍维持 L2", triggers: ["release-semantics"] },
-  { ...accepted[2], intensity: "L1" }
+  { ...accepted[2], intensity: "L1" },
+  {
+    ...accepted[3],
+    verification_evidence: [
+      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
+      { kind: "formal-independent-review", command: reviewRequestOnly, result: "pass" }
+    ]
+  },
+  {
+    ...accepted[3],
+    verification_evidence: [
+      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
+      { kind: "formal-independent-review", command: sameActorReview, result: "pass" }
+    ]
+  },
+  {
+    ...accepted[3],
+    verification_evidence: [
+      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
+      { kind: "formal-independent-review", command: wrongDigestReview, result: "pass" }
+    ]
+  },
+  {
+    ...accepted[3],
+    verification_evidence: [
+      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
+      { kind: "formal-independent-review", command: negativeReview, result: "pass" }
+    ]
+  },
+  {
+    ...accepted[3],
+    verification_evidence: [
+      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
+      { kind: "formal-independent-review", command: negativeStructuredReview, result: "pass" }
+    ]
+  },
+  {
+    ...accepted[3],
+    verification_evidence: [
+      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
+      { kind: "formal-independent-review", command: openFindingReview, result: "pass" }
+    ]
+  },
+  {
+    ...accepted[3],
+    verification_evidence: [
+      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
+      { kind: "formal-independent-review", command: invalidTaskReview, result: "pass" }
+    ]
+  }
 ];
 
 for (const checkpoint of rejected) {
   let failed = false;
   try { validateMaintenanceCheckpoint(checkpoint); } catch { failed = true; }
   if (!failed) throw new TypeError(`错误 checkpoint 未被拒绝: ${JSON.stringify(checkpoint)}`);
+}
+
+const symlinkFixture = mkdtempSync(path.join(tmpdir(), "yss-maintenance-review-"));
+try {
+  const baseDir = path.join(symlinkFixture, "repo");
+  mkdirSync(baseDir);
+  writeFileSync(path.join(symlinkFixture, "outside.md"), "# 聚焦独立审查\n\n审查者：reviewer.outside\n\n审查结论：pass\n");
+  symlinkSync(path.join(symlinkFixture, "outside.md"), path.join(baseDir, "review.md"));
+  let symlinkEscaped = false;
+  try { validateMaintenanceReviewEvidence({ kind: "focused-independent-review", command: "review.md" }, { baseDir }); } catch { symlinkEscaped = true; }
+  if (!symlinkEscaped) throw new TypeError("symlink 越界证据未被拒绝");
+} finally {
+  rmSync(symlinkFixture, { recursive: true, force: true });
 }
 
 process.stdout.write("模板维护 L1/L2/L3 强度场景验证通过\n");

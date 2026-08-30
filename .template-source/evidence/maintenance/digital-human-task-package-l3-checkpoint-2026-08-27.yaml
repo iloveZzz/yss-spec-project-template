@@ -51,9 +51,7 @@ verification_evidence:
     command: scripts/verify-template
     result: pass
   - kind: formal-independent-review
-    command: >-
-      非实施者 role.test-engineer 按 digital-human-task-package-review-task.yaml
-      完成审查，结论记录于 digital-human-task-package-formal-independent-review-2026-08-27.md
+    command: .template-source/evidence/maintenance/digital-human-task-package-formal-independent-review-2026-08-27.md
     result: pass
 review_mode: formal-independent
 escalation: none

@@ -1,14 +1,13 @@
 import { existsSync, readFileSync } from "node:fs";
-import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { loadDigitalHumanRoles, taskPackageDefaults } from "./digital-human-roles.mjs";
 import { loadRegistry, ROOT } from "./lifecycle-registry.mjs";
 import { loadMaintenanceCheckpoint, validateMaintenanceCheckpoint } from "./maintenance-intensity.mjs";
 import { validateNextRoute } from "./lifecycle-transition.mjs";
+import { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSchema } from "./task-package-schema.mjs";
 
-export const TASK_PACKAGE_SCHEMA = path.join(ROOT, "docs/process/schemas/digital-human-task-package.schema.json");
-export const LEGACY_TASK_PACKAGE_SCHEMA = path.join(ROOT, "docs/process/schemas/subagent-task-package.schema.json");
+export { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSchema };
 export const TASK_PACKAGE_REGISTRY_REF = "docs/agents/digital-human-roles.yaml";
 export const CONTRACT_KINDS = new Set(["lifecycle-work-unit", "slice-implementation", "template-maintenance"]);
 export const EXECUTION_STATES = new Set(["Explorer", "Drafter", "Worker", "Reviewer", "Verifier"]);
@@ -46,25 +45,6 @@ export function loadTaskPackage(filePath) {
   const value = parseYaml(readFileSync(sourcePath, "utf8"), "任务包");
   if (!value || typeof value !== "object" || Array.isArray(value)) fail("任务包必须是对象");
   return { value, sourcePath };
-}
-
-export function validateTaskPackageSchema(value, schemaPath = TASK_PACKAGE_SCHEMA) {
-  const effectiveSchema = path.resolve(schemaPath) === path.resolve(LEGACY_TASK_PACKAGE_SCHEMA) ? TASK_PACKAGE_SCHEMA : schemaPath;
-  if (!existsSync(effectiveSchema)) fail(`缺少任务包 schema: ${effectiveSchema}`);
-  const validator = String.raw`
-import json
-import sys
-from jsonschema import Draft202012Validator
-schema = json.load(open(sys.argv[1], encoding="utf-8"))
-value = json.load(sys.stdin)
-errors = sorted(Draft202012Validator(schema).iter_errors(value), key=lambda error: list(error.absolute_path))
-for error in errors:
-    location = ".".join(str(part) for part in error.absolute_path) or "<root>"
-    print(f"{location}: {error.message}", file=sys.stderr)
-sys.exit(1 if errors else 0)
-`;
-  const result = spawnSync("python3", ["-c", validator, effectiveSchema], { cwd: ROOT, encoding: "utf8", input: JSON.stringify(value) });
-  if (result.status !== 0) fail(`${result.stdout}${result.stderr}`.trim());
 }
 
 function validateSkillSource(value, registry) {
@@ -155,7 +135,9 @@ function validateContract(value, registry, lifecycle) {
     if (contract.slice_contract_ref || contract.lifecycle_ref) fail("template-maintenance 不得携带其他合同引用");
     const checkpointPath = assertSafeRelativePath(contract.maintenance_ref, "contract.maintenance_ref");
     if (!existsSync(checkpointPath)) fail(`维护 checkpoint 不存在: ${contract.maintenance_ref}`);
-    validateMaintenanceCheckpoint(loadMaintenanceCheckpoint(contract.maintenance_ref));
+    validateMaintenanceCheckpoint(loadMaintenanceCheckpoint(contract.maintenance_ref), {
+      allowPendingReview: value.execution_state === "Reviewer" && value.workflow_status !== "resolved"
+    });
     if (lifecycle.work_units.find((item) => item.id === value.work_unit_id)?.scope !== "template-source") fail("template-maintenance 必须绑定 template-source work unit");
     return;
   }

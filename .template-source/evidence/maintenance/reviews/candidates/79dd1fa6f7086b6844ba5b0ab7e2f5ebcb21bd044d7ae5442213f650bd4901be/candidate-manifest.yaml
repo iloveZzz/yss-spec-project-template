@@ -1,0 +1,26 @@
+{
+  "review_mode": "worktree",
+  "review_base_ref": "4c3bec5ac6e5e9e074205d8bf80a4fe988e0365f",
+  "merge_base": "4c3bec5ac6e5e9e074205d8bf80a4fe988e0365f",
+  "implementation_candidate_ref": "working-tree",
+  "candidate_snapshot_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/reviews/candidates/79dd1fa6f7086b6844ba5b0ab7e2f5ebcb21bd044d7ae5442213f650bd4901be/candidate-manifest.yaml",
+  "candidate_digest": "79dd1fa6f7086b6844ba5b0ab7e2f5ebcb21bd044d7ae5442213f650bd4901be",
+  "tracked_diff_command": "git diff --no-ext-diff --binary --full-index 4c3bec5ac6e5e9e074205d8bf80a4fe988e0365f",
+  "untracked_inventory_command": "git ls-files -z --others --exclude-standard",
+  "untracked_diff_command": "git diff --no-index --no-ext-diff --binary --full-index -- /dev/null <path>",
+  "untracked_files": [
+    ".template-source/tooling/node/test/fixtures/maintenance-focused-review-approved.md",
+    ".template-source/tooling/node/test/fixtures/maintenance-review-request-only.md",
+    ".template-source/tooling/node/test/fixtures/maintenance-review/candidate-manifest.yaml",
+    ".template-source/tooling/node/test/fixtures/maintenance-review/formal-review-approved.md",
+    ".template-source/tooling/node/test/fixtures/maintenance-review/formal-review-record.yaml",
+    ".template-source/tooling/node/test/fixtures/maintenance-review/formal-review-same-actor.yaml",
+    ".template-source/tooling/node/test/fixtures/maintenance-review/formal-review-wrong-digest.yaml",
+    ".template-source/tooling/node/test/fixtures/maintenance-review/task-package.yaml",
+    "docs/process/schemas/maintenance-review-record.schema.json",
+    "scripts/lib/maintenance-review.mjs",
+    "scripts/verify-maintenance-review-record"
+  ],
+  "commit_list_command": "git log 4c3bec5ac6e5e9e074205d8bf80a4fe988e0365f..HEAD --oneline",
+  "source_repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent"
+}

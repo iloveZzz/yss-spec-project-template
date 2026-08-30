@@ -1,0 +1,12 @@
+schema_version: 1
+record_kind: maintenance-independent-review
+review_mode: formal-independent
+status: approved
+reviewer_id: reviewer.create-yss-harness.cli-lead.2026-08-31
+implementation_actor_id: worker.create-yss-harness.2026-08-28
+candidate_digest: e4a9a2ff8dba3eafd3d615101de590484bc739039b857c0e84486090ff4b2029
+candidate_snapshot_ref: .template-source/evidence/maintenance/reviews/candidates/e4a9a2ff8dba3eafd3d615101de590484bc739039b857c0e84486090ff4b2029/candidate-manifest.yaml
+task_package_ref: .template-source/evidence/maintenance/reviews/create-yss-harness-cli-review-lead-task-2026-08-31.yaml
+review_report_ref: .template-source/evidence/maintenance/reviews/create-yss-harness-cli-formal-independent-review-2026-08-31.md
+reviewed_at: 2026-08-30T17:09:24Z
+findings: []

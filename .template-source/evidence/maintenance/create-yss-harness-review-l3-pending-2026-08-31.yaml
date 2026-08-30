@@ -1,0 +1,24 @@
+schema_version: 1
+intensity: L3
+classification_reason: create-yss-harness-dev 跨仓合同、维护审查校验器与发布 gitlink 聚合复核。
+triggers: [cross-repo-contract, release-semantics, core-validator]
+changed_assets:
+  - submodules/yss-harness-dev-agent
+  - submodules/create-yss-harness-dev
+  - scripts/lib/maintenance-review.mjs
+  - scripts/lib/maintenance-intensity.mjs
+  - scripts/fixtures/maintenance-review/**
+  - docs/process/schemas/maintenance-review-record.schema.json
+  - docs/process/harness-process-tailoring.md
+  - .template-source/evidence/maintenance/reviews/**
+  - .template-source/evidence/maintenance/template-engineering-status-2026-08-30.md
+verification_evidence:
+  - { kind: red, command: scripts/verify-maintenance-intensity-scenarios, result: pass }
+  - { kind: green, command: scripts/verify-maintenance-intensity-scenarios, result: pass }
+  - { kind: refactor, command: scripts/verify-subagent-task-package-scenarios, result: pass }
+  - { kind: pressure-scenario, command: scripts/verify-maintenance-intensity-scenarios, result: pass }
+  - { kind: fresh-verification, command: scripts/verify-template, result: pass }
+  - { kind: formal-independent-review, command: .template-source/evidence/maintenance/reviews/create-yss-harness-formal-independent-review-record-round7-2026-08-31.yaml, result: pass }
+  - { kind: formal-independent-review, command: .template-source/evidence/maintenance/reviews/create-yss-harness-cli-formal-independent-review-record-2026-08-31.yaml, result: pass }
+review_mode: formal-independent
+escalation: B-03 子仓已提交并推送；父仓 gitlink commit、递归克隆复现和父仓 push 正在执行，授权引用 B03-2026-08-31。

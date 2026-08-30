@@ -1,5 +1,7 @@
 # yss-stage-decision L3 正式独立审查
 
+`legacy_formal_review: true`
+
 审查角色：`role.test-engineer`
 运行时：`runtime.generic`
 执行态：Reviewer

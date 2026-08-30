@@ -1,0 +1,112 @@
+import { existsSync, lstatSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { parseDocument } from "../vendor/yaml.mjs";
+
+export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const REVIEW_KIND_TO_MODE = new Map([
+  ["focused-independent-review", "focused-independent"],
+  ["formal-independent-review", "formal-independent"]
+]);
+const STRUCTURED_FIELDS = [
+  "schema_version",
+  "record_kind",
+  "review_mode",
+  "status",
+  "reviewer_id",
+  "implementation_actor_id",
+  "candidate_digest",
+  "candidate_snapshot_ref",
+  "task_package_ref",
+  "review_report_ref",
+  "reviewed_at",
+  "findings"
+];
+const REQUEST_ONLY_PATTERNS = [
+  /只(?:提出|用于|是一份?).{0,12}审查请求/,
+  /不是.{0,16}(?:独立审查|审查).{0,12}(?:结论|记录)/,
+  /不(?:是|构成).{0,20}(?:审查结论|通过结论)/,
+  /须由(?:其他|非实施者|独立审查者).{0,40}(?:改写|给出结论|完成审查)/,
+  /本条\s*result=pass\s*只表示.{0,60}不表示审查已通过/
+];
+
+function ensure(condition, message) {
+  if (!condition) throw new TypeError(message);
+}
+
+function parseYamlOrJson(source, label) {
+  const document = parseDocument(source, { uniqueKeys: true, maxAliasCount: 0 });
+  ensure(document.errors.length === 0, `${label} 无法解析: ${document.errors[0]?.message ?? "unknown error"}`);
+  const value = document.toJS({ maxAliasCount: 0 });
+  ensure(value && typeof value === "object" && !Array.isArray(value), `${label} 必须是对象`);
+  return value;
+}
+
+function resolvePortableFile(relativeRef, baseDir, label) {
+  ensure(typeof relativeRef === "string" && relativeRef.trim(), `${label} 不能为空`);
+  ensure(!path.isAbsolute(relativeRef), `${label} 必须是仓库相对路径`);
+  const resolvedBase = path.resolve(baseDir);
+  const resolved = path.resolve(resolvedBase, relativeRef);
+  ensure(resolved === resolvedBase || resolved.startsWith(`${resolvedBase}${path.sep}`), `${label} 不得越过仓库根`);
+  ensure(existsSync(resolved) && lstatSync(resolved).isFile(), `${label} 不可读: ${relativeRef}`);
+  return resolved;
+}
+
+function hasReviewIdentity(body) {
+  return /(?:审查角色|审查者|reviewer_id)\s*[：:]/i.test(body);
+}
+
+function hasApprovedConclusion(body) {
+  return /(?:审查结论|结论)\s*[：:]?\s*(?:`|\*\*)?(?:pass|approved|通过)/is.test(body)
+    || /(?:正式|聚焦)?独立审查.{0,20}(?:pass|approved|通过)/is.test(body)
+    || /裁决[：:].{0,40}闭合/is.test(body);
+}
+
+function validateReviewReportBody(body, label) {
+  ensure(!REQUEST_ONLY_PATTERNS.some((pattern) => pattern.test(body)), `${label} 只是审查请求或实施者自述，不是独立审查结论`);
+  ensure(hasReviewIdentity(body), `${label} 缺少审查身份`);
+  ensure(hasApprovedConclusion(body), `${label} 缺少明确的独立审查通过结论`);
+}
+
+function validateStructuredRecord(record, expectedMode, baseDir, recordRef) {
+  const unknown = Object.keys(record).filter((key) => !STRUCTURED_FIELDS.includes(key));
+  ensure(unknown.length === 0, `维护独立审查记录包含未知字段: ${unknown.join(", ")}`);
+  for (const field of STRUCTURED_FIELDS) ensure(field in record, `维护独立审查记录缺少字段: ${field}`);
+  ensure(record.schema_version === 1, "维护独立审查记录 schema_version 必须为 1");
+  ensure(record.record_kind === "maintenance-independent-review", "record_kind 必须为 maintenance-independent-review");
+  ensure(record.review_mode === expectedMode, `review_mode 必须为 ${expectedMode}`);
+  ensure(record.status === "approved", "维护独立审查记录必须明确 status=approved");
+  for (const field of ["reviewer_id", "implementation_actor_id", "candidate_snapshot_ref", "task_package_ref", "review_report_ref", "reviewed_at"]) {
+    ensure(typeof record[field] === "string" && record[field].trim(), `${field} 不能为空`);
+  }
+  ensure(record.reviewer_id !== record.implementation_actor_id, "独立审查者不得与实施者相同");
+  ensure(/^(?:sha256:)?[a-f0-9]{64}$/.test(record.candidate_digest), "candidate_digest 必须是 SHA-256");
+  ensure(!Number.isNaN(Date.parse(record.reviewed_at)), "reviewed_at 必须是可解析时间");
+  ensure(Array.isArray(record.findings), "findings 必须是数组");
+
+  const manifestPath = resolvePortableFile(record.candidate_snapshot_ref, baseDir, "candidate_snapshot_ref");
+  const manifest = parseYamlOrJson(readFileSync(manifestPath, "utf8"), "候选 manifest");
+  ensure(manifest.candidate_digest === record.candidate_digest, "独立审查记录与候选 manifest 的 digest 不一致");
+
+  resolvePortableFile(record.task_package_ref, baseDir, "task_package_ref");
+  const reportPath = resolvePortableFile(record.review_report_ref, baseDir, "review_report_ref");
+  const report = readFileSync(reportPath, "utf8");
+  validateReviewReportBody(report, record.review_report_ref);
+  ensure(report.includes(record.reviewer_id), "审查报告未绑定 reviewer_id");
+  ensure(report.includes(record.implementation_actor_id), "审查报告未绑定 implementation_actor_id");
+  ensure(report.includes(record.candidate_digest), "审查报告未绑定 candidate_digest");
+  return { review_mode: expectedMode, record_ref: recordRef, candidate_digest: record.candidate_digest };
+}
+
+export function validateMaintenanceReviewEvidence(evidence, { baseDir = ROOT } = {}) {
+  const expectedMode = REVIEW_KIND_TO_MODE.get(evidence?.kind);
+  ensure(expectedMode, `未知独立审查证据类型: ${evidence?.kind ?? "unknown"}`);
+  const evidencePath = resolvePortableFile(evidence.command, baseDir, `${evidence.kind}.command`);
+  const source = readFileSync(evidencePath, "utf8");
+  if (/\.ya?ml$|\.json$/i.test(evidence.command)) {
+    return validateStructuredRecord(parseYamlOrJson(source, "维护独立审查记录"), expectedMode, baseDir, evidence.command);
+  }
+  ensure(/\.md$/i.test(evidence.command), `${evidence.kind}.command 必须引用 Markdown 结论或结构化 YAML/JSON 记录`);
+  validateReviewReportBody(source, evidence.command);
+  return { review_mode: expectedMode, record_ref: evidence.command, legacy: true };
+}

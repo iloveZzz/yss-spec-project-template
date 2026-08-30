@@ -1,0 +1,13 @@
+review_mode: worktree
+review_base_ref: fixture-base
+merge_base: fixture-merge-base
+implementation_candidate_ref: working-tree
+candidate_snapshot_ref: fixture-snapshot
+candidate_digest: 8da03acf83c4c8648e1710ec80586f637758373aa1ca138399d244e09a87dc63
+tracked_diff_command: git diff --binary fixture-base
+untracked_inventory_command: git ls-files -z --others --exclude-standard
+untracked_diff_command: git diff --no-index --binary -- /dev/null <path>
+untracked_files: []
+commit_list_command: git log fixture-base..HEAD --oneline
+snapshot_stream_ref: .template-source/tooling/node/test/fixtures/maintenance-review/candidate.bin
+tracked_diff_ref: .template-source/tooling/node/test/fixtures/maintenance-review/tracked.diff

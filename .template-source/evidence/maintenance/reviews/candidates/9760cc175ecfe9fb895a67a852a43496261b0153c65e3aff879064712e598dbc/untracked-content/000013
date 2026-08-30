@@ -1,0 +1,34 @@
+schema_version: 1
+task_id: fixture.maintenance-review-negative
+work_unit_id: work-unit.intensity-aware-review
+actor_id: reviewer.negative
+role_id: role.test-agent
+runtime_id: runtime.generic
+execution_state: Reviewer
+workflow_status: active
+skill_source:
+  registry_ref: docs/agents/digital-human-roles.yaml
+  defaults_ref: taskPackageDefaults(role.test-agent)
+  core_skills: [code-review]
+  forbidden_skills: [implement]
+contract:
+  kind: template-maintenance
+  contract_id: fixture-maintenance
+  contract_version: 1
+  status: issued
+  contract_ref: fixture-checkpoint.yaml
+  maintenance_ref: fixture-checkpoint.yaml
+inputs: [scripts/fixtures/maintenance-review/maintenance-review/candidate-manifest.yaml]
+objective: 审查否定 fixture
+allowed_write_paths: [scripts/fixtures/maintenance-review/maintenance-review/]
+forbidden_actions: [修改实现]
+expected_outputs: [独立审查结论]
+expected_evidence_files: [scripts/fixtures/maintenance-review/maintenance-formal-review-negative.md]
+verification_commands: [fixture-check]
+verification_results: []
+review_context: { implementation_actor_id: implementer.fixture }
+downstream_consumers: [role.harness-orchestrator]
+convergence:
+  parent_work_unit: work-unit.intensity-aware-review
+  convergence_ref: fixture-checkpoint.yaml
+  conflict_escalation: 返回 fixture 主控

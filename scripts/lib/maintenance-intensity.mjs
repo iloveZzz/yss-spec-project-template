@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "../vendor/yaml.mjs";
+import { validateMaintenanceReviewEvidence } from "./maintenance-review.mjs";
 
 const LEVELS = ["L1", "L2", "L3"];
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -60,7 +61,7 @@ export function minimumIntensity(triggers) {
   return required;
 }
 
-export function validateMaintenanceCheckpoint(data) {
+export function validateMaintenanceCheckpoint(data, options = {}) {
   ensure(data && typeof data === "object" && !Array.isArray(data), "checkpoint 必须是对象");
   const exactFields = ["schema_version", "intensity", "classification_reason", "triggers", "changed_assets", "verification_evidence", "review_mode", "escalation"];
   const unknown = Object.keys(data).filter((key) => !exactFields.includes(key));
@@ -79,9 +80,16 @@ export function validateMaintenanceCheckpoint(data) {
     ensure(typeof evidence.kind === "string" && evidence.kind.trim(), "verification_evidence.kind 不能为空");
     ensure(typeof evidence.command === "string" && evidence.command.trim(), "verification_evidence.command 不能为空");
     ensure(evidence.result === "pass", `验证证据必须是本轮实际通过结果: ${evidence.kind ?? "unknown"}`);
+    if (["focused-independent-review", "formal-independent-review"].includes(evidence.kind)) {
+      validateMaintenanceReviewEvidence(evidence, options);
+    }
     kinds.add(evidence.kind);
   }
-  for (const required of REQUIRED_EVIDENCE[data.intensity]) ensure(kinds.has(required), `${data.intensity} 缺少 ${required} 证据`);
+  const reviewKind = data.intensity === "L2" ? "focused-independent-review" : data.intensity === "L3" ? "formal-independent-review" : null;
+  for (const required of REQUIRED_EVIDENCE[data.intensity]) {
+    if (options.allowPendingReview === true && required === reviewKind) continue;
+    ensure(kinds.has(required), `${data.intensity} 缺少 ${required} 证据`);
+  }
   ensure(REVIEW_MODES[data.intensity].has(data.review_mode), `${data.intensity} 不允许 review_mode=${data.review_mode}`);
   return { intensity: data.intensity, minimum_intensity: minimum };
 }

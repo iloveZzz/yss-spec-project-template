@@ -34,8 +34,7 @@ const maintenance = {
   changed_assets: ["scenario-fixture"],
   verification_evidence: [
     { kind: "counterexample", command: "scenario", result: "pass" },
-    { kind: "fresh-verification", command: "scenario", result: "pass" },
-    { kind: "focused-independent-review", command: "scenario", result: "pass" }
+    { kind: "fresh-verification", command: "scenario", result: "pass" }
   ],
   review_mode: "focused-independent",
   escalation: "none"
@@ -81,7 +80,7 @@ function lifecycleStagePackage(roleId, taskId, workUnitId, stageId) {
 }
 
 function templatePackage() {
-  return packageBase("role.lifecycle-orchestrator", "task-maintenance", "work-unit.intensity-aware-verification", "template-maintenance", { maintenance_ref: maintenanceRef, contract_id: "template-maintenance", contract_version: 1 });
+  return packageBase("role.test-engineer", "task-maintenance", "work-unit.intensity-aware-verification", "template-maintenance", { maintenance_ref: maintenanceRef, contract_id: "template-maintenance", contract_version: 1 });
 }
 
 function slicePackage(roleId, taskId, workUnitId, writePath) {
@@ -144,6 +143,8 @@ try {
   review.execution_state = "Reviewer";
   review.review_context = { implementation_actor_id: "role.frontend-engineer.instance-1" };
   const maintenance = templatePackage();
+  maintenance.execution_state = "Reviewer";
+  maintenance.review_context = { implementation_actor_id: "role.lifecycle-orchestrator.instance-1" };
   const frontend = slicePackage("role.frontend-engineer", "task-frontend", "work-unit.slice-frontend", "apps/frontend/todo/");
   const backend = slicePackage("role.backend-engineer", "task-backend", "work-unit.slice-backend", "apps/backend/todo/");
   [discovery, spec, prototype, technical, tickets, review].forEach((pkg) => validateTaskPackage(pkg));

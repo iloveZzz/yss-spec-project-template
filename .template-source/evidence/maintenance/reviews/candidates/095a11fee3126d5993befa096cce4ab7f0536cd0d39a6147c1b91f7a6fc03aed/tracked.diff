@@ -1,0 +1,2538 @@
+diff --git a/.template-source/README.md b/.template-source/README.md
+index 3e690cdb9b5f178b2cbabebb40d69497a7978cd3..b298b7db561b92ee6751cb8365ce5ca82713a4ba 100644
+--- a/.template-source/README.md
++++ b/.template-source/README.md
+@@ -25,6 +25,7 @@
+ | ADR-0005 | `proposed` | 保留；等待生态发布清单和跨仓闭合校验落地 |
+ | ADR-0007 | `proposed` | 保留；等待技能注册表和 Router 消费实现落地 |
+ | ADR-0008 | 已接受 | 保留；作为模板实例分发面与模板源治理区的边界契约 |
++| ADR-0015 | 已接受 | 保留；本仓实例化 CLI 为 `create-yss-harness-dev`，不再绑定 `create-yss-spec` |
+ 
+ ## 本次迁移清单
+ 
+diff --git a/.template-source/adr/0015-create-yss-harness-instantiation-cli.md b/.template-source/adr/0015-create-yss-harness-instantiation-cli.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..ccb1c956901ba29a2802fe8c6bea69c379e0a237
+--- /dev/null
++++ b/.template-source/adr/0015-create-yss-harness-instantiation-cli.md
+@@ -0,0 +1,29 @@
++# ADR-0015: 开发落地 Harness 的实例化 CLI 为 `create-yss-harness-dev`
++
++## 状态
++
++已接受
++
++## 背景
++
++本仓是四角色、五阶段开发落地 Harness（`harness-entry` → `tactical-design` → `slice-contract` → `slice-implementation` → `verification`）。父模板 `yss-spec-project-template` 与 CLI `create-yss-spec` 面向全产品生命周期。本仓 README、`AGENTS.md` 和用户指南曾错误地把 `create-yss-spec` 当作发布伴侣，会把开发落地实例初始化成另一套生命周期。
++
++ADR-0002 只决定用 `yss-project.yaml` 区分 `template-source` / `project-instance`，不决定由哪个 CLI 做身份改写。ADR-0008 决定分发面与治理区，但不指定 CLI 产品。
++
++## 决策
++
++- 本仓 `project-instance` 只由独立 npm 包 `create-yss-harness-dev`（`npm create yss-harness-dev`）初始化、接管和同步。
++- 实例 metadata 使用 `.yss-harness-dev.json`，`templateSource` 为 `github:iloveZzz/yss-harness-dev-agent`，`profileId` 为 `harness.dev-agent-slice`。
++- 目标已有 `.yss-template.json` 时 fail closed，不与 `create-yss-spec` 混用。
++- CLI 源码不进入本仓；本仓只保留分发清单、身份契约、用户指南和校验器。
++- 第一版只做实例化，不生成运行时工程、不替代 Harness Orchestrator。
++
++## 取舍
++
++独立 CLI 增加跨仓发布成本，但避免两套生命周期共享一个 npm 包导致错误快照。继续复用 `create-yss-spec` 的命令形状和安全开关，降低使用者学习成本，但不共享包名、metadata 或模板源。
++
++## 后果
++
++- 本仓发布门禁的外部伴侣改为 `create-yss-harness-dev`。
++- `.template-source/contracts/create-yss-spec-repository-mode-contract.md` 不再作为本仓发布门禁。
++- 未与 CLI 仓共同通过集成验证前，不得声称本模板可发布。
+diff --git a/.template-source/contracts/create-yss-harness-dev-repository-mode-contract.md b/.template-source/contracts/create-yss-harness-dev-repository-mode-contract.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..379b203190353a56c1c36b190b851b97fd29c30c
+--- /dev/null
++++ b/.template-source/contracts/create-yss-harness-dev-repository-mode-contract.md
+@@ -0,0 +1,132 @@
++# `create-yss-harness-dev` 实例化跨仓库契约
++
++本文定义本仓（`yss-harness-dev-agent`，`profile_id: harness.dev-agent-slice`）与外部 `create-yss-harness-dev` CLI 之间的身份、分发面、metadata、隔离、验证和发布契约。
++
++全生命周期 CLI `create-yss-spec` 不是本仓发布伴侣，不得初始化、接管或同步本 Harness。
++
++## 契约目标
++
++- 模板源仓库保留 `repository_mode: template-source`。
++- CLI 创建或接管的产品仓库写入 `repository_mode: project-instance`。
++- CLI 只管理分发清单声明的研发管理资产，不接管前后端运行时代码、业务目录、用户文件或 `.git`。
++- `.gitmodules`、gitlink（mode `160000`）以及 `apps/` 下已挂载的实现仓工作树是用户资产；`attach` / `sync` 不得创建、覆盖或删除它们。
++- 通过模板快照和 40 位 `templateCommit` 使每次初始化、升级和回滚可追踪。
++- 新模板快照的实例门禁以 Node `>=22 <27` 运行；不得执行 `npm install`、`pnpm install` 或维护侧 vendor 构建。`scripts/vendor/` 必须随快照分发且可离线使用。
++- 快照使用 `.template-source/distribution/template.manifest.json` 构建。未命中 allowlist 的新顶层文件默认不进入快照。
++
++## 家族隔离
++
++| 检测 | 行为 |
++|---|---|
++| 已有 `.yss-harness-dev.json` | `attach` 拒绝，提示 `sync` |
++| 已有 `.yss-template.json` | 拒绝：目标属于 `create-yss-spec` 全生命周期家族 |
++| `yss-project.yaml` schema / mode 非法 | 写入前阻断 |
++| 合法 `template-source` | 仅显式 `attach` 可转为 `project-instance` |
++| 空 gitlink / detached HEAD / submodule 挂载点 | fail closed，`--force` 也不能覆盖 |
++
++## metadata
++
++`.yss-harness-dev.json` 至少包含：
++
++```json
++{
++  "metadataSchemaVersion": 1,
++  "templateName": "create-yss-harness-dev",
++  "profileId": "harness.dev-agent-slice",
++  "cliVersion": "<semver>",
++  "templateSource": "github:iloveZzz/yss-harness-dev-agent",
++  "templateCommit": "<40-char-commit>",
++  "managedFilesManifestVersion": "<manifest-hash>",
++  "managedFiles": {}
++}
++```
++
++不得写入 `.yss-template.json`。
++
++## 生命周期接口
++
++### 空目录初始化
++
++```bash
++npm create yss-harness-dev@latest
++```
++
++初始化必须把模板身份转换为 `schema_version: 1`、`repository_mode: project-instance`，渲染 `yss-project.yaml` 与 `README.md`，并执行：
++
++```bash
++scripts/sync-skills --check
++scripts/update-skill-lock --check
++scripts/verify-template
++```
++
++`--dry-run` 只预览，不创建目录、不删除文件。
++
++### 已有项目 `attach`
++
++```bash
++npx create-yss-harness-dev@latest attach \
++  --target-dir . \
++  --project-name "项目名称" \
++  --business-domain "业务领域" \
++  --dry-run
++npx create-yss-harness-dev@latest attach \
++  --target-dir . \
++  --project-name "项目名称" \
++  --business-domain "业务领域" \
++  --apply [--force]
++```
++
++必须显式选择 `--dry-run` 或 `--apply`。计划按 `missing`、`matched`、`conflict`、`unsafe` 分类；`--force` 只能覆盖受管 conflict。覆盖前备份到目标目录外；校验失败按操作日志回滚，metadata 不更新。
++
++### 持续同步 `sync`
++
++`sync` 只使用当前 CLI 包内置、绑定不可变 commit 的模板快照。运行时不拉取模板仓库。覆盖环境变量仅为开发测试：`YSS_HARNESS_TEMPLATE_REF`、`YSS_HARNESS_TEMPLATE_REPO`。正式发布不得跟随浮动 `main`。
++
++完成后必须重新执行三个模板门禁；任一门禁失败时回滚文件变更并保持旧 metadata 版本。模板删除默认 `remove-report`，不静默删除。
++
++`update` / `upgrade` 只升级 CLI npm 包，不同步模板资产。
++
++## 渲染规则
++
++| 路径 | 规则 |
++|---|---|
++| `yss-project.yaml` | `repository_mode: template-source` → `project-instance` |
++| `README.md` | 标题改为 `--project-name`；模板源定位改为实例定位；保留 `create-yss-harness-dev` 的 `sync` 入口 |
++| 项目名称 / 业务领域 / 团队规模 | 写入 `.yss-harness-dev.json` 与 README，不在 `AGENTS.md` 另开配置源 |
++
++## 实例分发面
++
++根规则、共享 skills / 投影、`docs/` 中的实例流程资产、共享 `scripts/`、`scripts/vendor/`、`.nvmrc` 与根 `.gitignore` 属于分发面。`.template-source/`、根 `package.json`、`.github/`、`.cursor/environment.json`、源仓库 ADR、`wiki/`、`docs/reviews/` 属于模板源资产。
++
++`docs/process/harness-profile.yaml` 随 `docs/` 进入实例，供 Agent 识别本 Harness 家族。
++
++## 第一版不做
++
++- 不生成前后端运行时工程或脚手架
++- 不登记实现仓库、不执行 `git submodule add`
++- 不编译 Slice Implementation Contract，不替代 `harness-orchestrator`
++- 不 duplicate 数字人 runtime profile / Grok Bot
++- 不把战略设计交接包自动灌进实例
++
++## 跨仓库验收
++
++| 场景 | 必须验证 |
++|---|---|
++| 空目录初始化 | `project-instance`、`.yss-harness-dev.json`、固定 commit、无 `.template-source/` / `wiki/` / 根 `package.json`、三门禁通过 |
++| `--dry-run` | 不写盘 |
++| attach dry-run | 不写文件、不删除 `.git`，运行时代码不变 |
++| attach apply | 缺失资产新增；matched 纳入 baseline；conflict 需 force；unsafe 不可 force 绕过 |
++| 已有 `.yss-template.json` | 退出非 0，文件不变 |
++| sync | 新增、更新、冲突和删除报告完整；force 只作用于受管文件 |
++| post-sync | 三个门禁全部 fresh 通过；失败时文件和 metadata 回滚 |
++| gitlink | 空 gitlink / detached HEAD 即使 `--force` 也阻断 |
++| 发布包 | 固定 commit 下 `npm test` 和 `npm pack --dry-run` 通过 |
++
++本变更只涉及模板治理和外部 CLI；frontend、backend、OpenAPI 或运行时工程为 `not-applicable`。
++
++## 发布顺序与阻断条件
++
++1. 本仓通过 `scripts/verify-template`，形成确定 commit。
++2. CLI 用 `YSS_HARNESS_TEMPLATE_REF=<pinned-commit>` 绑定该 commit，完成 init / attach / sync 跨仓库测试和独立 review。
++3. 运行固定 commit 的 `npm test`、`npm pack --dry-run`。
++4. 任一仓库未通过共同验证时，不得声明整体可发布。
+diff --git a/.template-source/contracts/create-yss-spec-repository-mode-contract.md b/.template-source/contracts/create-yss-spec-repository-mode-contract.md
+index fca1ea8ef8745e8149acca5ea0f95ffb2d4386a0..045a1a2e799cdcd33e647dceb50422c3aaaa7f1c 100644
+--- a/.template-source/contracts/create-yss-spec-repository-mode-contract.md
++++ b/.template-source/contracts/create-yss-spec-repository-mode-contract.md
+@@ -1,5 +1,7 @@
+ # `create-yss-spec` 接管与模板同步跨仓库契约
+ 
++> 状态：已退役。本文是从全生命周期模板拷贝的错误绑定，不再作为本仓发布门禁。当前发布伴侣是 `create-yss-harness-dev`，见 [`create-yss-harness-dev-repository-mode-contract.md`](./create-yss-harness-dev-repository-mode-contract.md)。
++
+ 本文定义模板源仓库与外部 `create-yss-spec` CLI 仓库之间的身份、资产边界、迁移、同步、验证和发布契约。
+ 
+ ## 契约目标
+diff --git a/.template-source/distribution/template.manifest.json b/.template-source/distribution/template.manifest.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..273c5d58a4c1723bce8d528e118e306f8245dd05
+--- /dev/null
++++ b/.template-source/distribution/template.manifest.json
+@@ -0,0 +1,73 @@
++{
++  "allowRootEntries": [
++    ".agents",
++    ".claude",
++    ".codex",
++    ".cursor",
++    ".hermes",
++    ".pi",
++    ".qoder",
++    ".trae",
++    "docs",
++    "scripts"
++  ],
++  "allowRootFiles": [
++    ".cursorrules",
++    ".gitignore",
++    ".nvmrc",
++    "AGENTS.md",
++    "CLAUDE.md",
++    "CONTEXT.md",
++    "README.md",
++    "skills-lock.json",
++    "yss-project.yaml",
++    "yss-public-skills.json"
++  ],
++  "allowFiles": [
++    "docs/adr/README.md"
++  ],
++  "excludeRootEntries": [
++    ".git",
++    ".codegraph",
++    ".codebuddy",
++    ".idea",
++    ".uploads",
++    "node_modules",
++    ".ua",
++    ".qwen",
++    ".template-source",
++    "packages",
++    ".github",
++    "wiki"
++  ],
++  "excludeRootFiles": [
++    "package-lock.json",
++    "package.json",
++    "template.manifest.json",
++    "template.snapshot.json",
++    ".gitmodules"
++  ],
++  "excludePaths": [
++    ".claude/settings.local.json",
++    ".codex/hooks.json",
++    ".codex/settings.local.json",
++    ".codex/skills/.DS_Store",
++    ".pi/settings.json",
++    ".cursor/environment.json",
++    "docs/.scratch",
++    "docs/reviews",
++    "docs/adr"
++  ],
++  "renderPaths": [
++    "README.md",
++    "yss-project.yaml"
++  ],
++  "exampleDocPaths": [
++    "docs/discovery/IDEATION.md"
++  ],
++  "initExcludeRootEntries": [],
++  "initExcludeRootFiles": [
++    "yss-public-skills.json"
++  ],
++  "initExcludePaths": []
++}
+diff --git a/.template-source/evidence/maintenance/create-yss-harness-formal-independent-review-2026-08-28.md b/.template-source/evidence/maintenance/create-yss-harness-formal-independent-review-2026-08-28.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..26af318424eca12e87b1d352721fecf8895a7ff4
+--- /dev/null
++++ b/.template-source/evidence/maintenance/create-yss-harness-formal-independent-review-2026-08-28.md
+@@ -0,0 +1,19 @@
++# 已取代的正式独立审查请求 — create-yss-harness-dev 实例化契约
++
++## 范围
++
++本仓：Harness Profile、分发清单、跨仓契约、入口文档解绑 `create-yss-spec`、实例安全的校验脚本。
++
++CLI 仓：`submodules/create-yss-harness-dev`，`init` / `attach` / `sync` / `update`。
++
++## 请审查者确认
++
++1. 本仓发布伴侣是 `create-yss-harness-dev`，不再是 `create-yss-spec`。
++2. `.yss-harness-dev.json` 与 `.yss-template.json` 家族隔离 fail closed。
++3. 快照不含 `.template-source/`、根 `package.json`、`wiki/`、`.github/`。
++4. CLI 不生成运行时工程、不登记实现仓库。
++5. 未绑定固定模板 commit 并完成共同验证前，不得声称整体可发布。
++
++## 实施者结论
++
++实施者已完成 RED / GREEN / 压力场景与 CLI 56 项测试。本文件不是非实施者的正式独立审查结论。合并或 npm 发布前须由其他 Agent 或审查者改写本节。
+diff --git a/.template-source/evidence/maintenance/create-yss-harness-green-2026-08-28.md b/.template-source/evidence/maintenance/create-yss-harness-green-2026-08-28.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..e39e74a6f8cd5292d93846a8354ed27c8b86c05f
+--- /dev/null
++++ b/.template-source/evidence/maintenance/create-yss-harness-green-2026-08-28.md
+@@ -0,0 +1,26 @@
++# GREEN — create-yss-harness-dev 实例化契约
++
++补齐 Profile、分发清单、跨仓契约并改写入口指针后的验证。
++
++## scripts/verify-harness-profile
++
++```
++Harness profile 校验通过: harness.dev-agent-slice → create-yss-harness-dev
++exit=0
++```
++
++## scripts/verify-instance-distribution
++
++```
++实例分发面校验通过: create-yss-harness-dev / .yss-harness-dev.json
++exit=0
++```
++
++## scripts/verify-harness-profile-scenarios / verify-instance-distribution-scenarios
++
++```
++Harness profile 压力场景验证通过
++实例分发面压力场景验证通过
++```
++
++`scripts/verify-template` 已于本轮独立执行，退出码 0，输出以终端记录为准。
+diff --git a/.template-source/evidence/maintenance/create-yss-harness-l3-checkpoint-2026-08-28.yaml b/.template-source/evidence/maintenance/create-yss-harness-l3-checkpoint-2026-08-28.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..bd87fbde621f2ad1c09918aede94c37ccf60030f
+--- /dev/null
++++ b/.template-source/evidence/maintenance/create-yss-harness-l3-checkpoint-2026-08-28.yaml
+@@ -0,0 +1,73 @@
++schema_version: 1
++intensity: L3
++classification_reason: >-
++  新增开发落地 Harness 实例化 CLI 跨仓库契约、分发清单、身份改写和发布伴侣切换，
++  改变 Agent 路由入口与 generation / release 语义。
++triggers:
++  - cross-repo-contract
++  - generation-semantics
++  - release-semantics
++  - core-validator
++changed_assets:
++  - .template-source/README.md
++  - .template-source/adr/0015-create-yss-harness-instantiation-cli.md
++  - .template-source/contracts/create-yss-harness-dev-repository-mode-contract.md
++  - .template-source/contracts/create-yss-spec-repository-mode-contract.md
++  - .template-source/distribution/template.manifest.json
++  - .template-source/evidence/maintenance/create-yss-harness-*.md
++  - .template-source/evidence/maintenance/create-yss-harness-l3-checkpoint-2026-08-28.yaml
++  - .template-source/evidence/maintenance/digital-human-task-package-l3-checkpoint-2026-08-27.yaml
++  - .template-source/evidence/maintenance/lifecycle-ticket-transition-l3-checkpoint-2026-08-27.yaml
++  - .template-source/evidence/maintenance/maintenance-review-validation-*-2026-08-31.md
++  - .template-source/evidence/maintenance/*-formal-independent-review-2026-08-27.md
++  - .template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-oracle-2026-08-24.md
++  - .template-source/tooling/node/test/fixtures/maintenance-*
++  - AGENTS.md
++  - CONTEXT.md
++  - README.md
++  - docs/adr/README.md
++  - docs/process/harness-process-tailoring.md
++  - docs/process/harness-profile.yaml
++  - docs/process/implementation-repo-integration.md
++  - docs/process/schemas/maintenance-review-record.schema.json
++  - docs/templates/digital-human-runtime-profile-template.md
++  - docs/user-guide/外部命令行工具实践指南.md
++  - docs/user-guide/用户手册索引.md
++  - docs/user-guide/规格与任务迁移指南.md
++  - scripts/lib/harness-profile.mjs
++  - scripts/lib/instance-distribution.mjs
++  - scripts/lib/maintenance-intensity.mjs
++  - scripts/lib/maintenance-review.mjs
++  - scripts/lib/skill-supply-chain.mjs
++  - scripts/lib/task-package.mjs
++  - scripts/lib/task-package-schema.mjs
++  - scripts/verify-harness-profile
++  - scripts/verify-harness-profile-scenarios
++  - scripts/verify-instance-distribution
++  - scripts/verify-instance-distribution-scenarios
++  - scripts/verify-maintenance-intensity-scenarios
++  - scripts/verify-maintenance-review-record
++  - scripts/verify-subagent-task-package-scenarios
++  - scripts/verify-template
++  - skills-lock.json
++verification_evidence:
++  - kind: red
++    command: .template-source/evidence/maintenance/maintenance-review-validation-red-2026-08-31.md
++    result: pass
++  - kind: green
++    command: .template-source/evidence/maintenance/maintenance-review-validation-green-2026-08-31.md
++    result: pass
++  - kind: refactor
++    command: .template-source/evidence/maintenance/maintenance-review-validation-refactor-2026-08-31.md
++    result: pass
++  - kind: pressure-scenario
++    command: .template-source/evidence/maintenance/maintenance-review-validation-pressure-2026-08-31.md
++    result: pass
++  - kind: fresh-verification
++    command: scripts/verify-template
++    result: pass
++review_mode: formal-independent
++escalation: >-
++  正式独立审查尚未完成；Reviewer 任务包可把本文件作为待审合同，
++  但最终 checkpoint 在补入可机器校验的正式结论前必须保持失败。
++  模板 commit 尚未与 CLI 仓共同发布；不得声称整体可发布。
+diff --git a/.template-source/evidence/maintenance/create-yss-harness-pressure-2026-08-28.md b/.template-source/evidence/maintenance/create-yss-harness-pressure-2026-08-28.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..4a420cbefc6b5443b85b6f957dd8b8cd99a01ecb
+--- /dev/null
++++ b/.template-source/evidence/maintenance/create-yss-harness-pressure-2026-08-28.md
+@@ -0,0 +1,26 @@
++# 压力场景 — create-yss-harness-dev 实例化契约
++
++## 本仓
++
++```text
++scripts/verify-harness-profile-scenarios
++scripts/verify-instance-distribution-scenarios
++```
++
++覆盖：错误 `profile_id`、额外产品角色、错误终止工作单元、Discovery 作为默认入口、`cli_package` 改成 `create-yss-spec`、allowlist 放行 `.template-source`、漏排除 `wiki`、放行根 `package.json`、漏渲染 `yss-project.yaml`。
++
++结果：均按预期失败并被场景脚本断言。
++
++## CLI 仓
++
++`create-yss-harness-dev` 的 `npm test`（56/56）覆盖：
++
++- 空目录 init 得到 `project-instance` 与 `.yss-harness-dev.json`
++- `--dry-run` 不写盘
++- attach 保留运行时与 `.git`
++- 已有 `.yss-template.json` fail closed
++- 空 gitlink / detached HEAD 即使 `--force` 也阻断
++- ASCII locale 下 attach 门禁
++- 脏路径 / 冲突备份
++
++实例 `verify-template` 不再向 `.template-source/evidence/` 写压力 fixture。
+diff --git a/.template-source/evidence/maintenance/create-yss-harness-red-2026-08-28.md b/.template-source/evidence/maintenance/create-yss-harness-red-2026-08-28.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..1d55295deba64985617f128d6edb07c24806c4c6
+--- /dev/null
++++ b/.template-source/evidence/maintenance/create-yss-harness-red-2026-08-28.md
+@@ -0,0 +1,17 @@
++# RED — create-yss-harness-dev 实例化契约
++
++记录本轮改校验器之后、补资产之前的失败。命令在仓库根执行。
++
++## scripts/verify-harness-profile
++
++```
++缺少Harness profile: /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent/docs/process/harness-profile.yaml
++exit=1
++```
++
++## scripts/verify-instance-distribution
++
++```
++AGENTS.md 必须把 create-yss-harness-dev 作为模板发布跨仓库伴侣
++exit=1
++```
+diff --git a/.template-source/evidence/maintenance/create-yss-harness-refactor-2026-08-28.md b/.template-source/evidence/maintenance/create-yss-harness-refactor-2026-08-28.md
+new file mode 100644
+index 0000000000000000000000000000000000000000..a9695d5051eebfefdd8b233126a357fe58c43800
+--- /dev/null
++++ b/.template-source/evidence/maintenance/create-yss-harness-refactor-2026-08-28.md
+@@ -0,0 +1,6 @@
++# REFACTOR — create-yss-harness-dev 实例化契约
++
++- 分发清单与指针检查从文档叙述抽到 `scripts/lib/instance-distribution.mjs`。
++- Harness Profile 校验与战略仓分离，固定 `harness.dev-agent-slice`。
++- `update-skill-lock` 的 tree hash 排序改为与 locale 无关的字符串比较，ASCII `LC_ALL=C` 下 `--check` 与默认 locale 一致。
++- 任务包压力场景 fixture 从 `.template-source/evidence/` 迁到 `docs/.scratch/_verify-task-package/`，结束后删除，避免 `project-instance` 被污染。
+diff --git a/.template-source/evidence/maintenance/digital-human-task-package-formal-independent-review-2026-08-27.md b/.template-source/evidence/maintenance/digital-human-task-package-formal-independent-review-2026-08-27.md
+index 24fd71801889448a5673df143238cc8b190ae226..2b2f958bc7350d3c41598b11cc31a7188a9212aa 100644
+--- a/.template-source/evidence/maintenance/digital-human-task-package-formal-independent-review-2026-08-27.md
++++ b/.template-source/evidence/maintenance/digital-human-task-package-formal-independent-review-2026-08-27.md
+@@ -1,5 +1,7 @@
+ # 数字人任务包机制正式独立审查
+ 
++`legacy_formal_review: true`
++
+ ## 审查身份
+ 
+ - 审查角色：`role.test-engineer`
+diff --git a/.template-source/evidence/maintenance/digital-human-task-package-l3-checkpoint-2026-08-27.yaml b/.template-source/evidence/maintenance/digital-human-task-package-l3-checkpoint-2026-08-27.yaml
+index 2f9a65f60aa269bec376ebc85bf374c2d805961e..d27e17a0c184f44e37b614c490762b3c135fa25a 100644
+--- a/.template-source/evidence/maintenance/digital-human-task-package-l3-checkpoint-2026-08-27.yaml
++++ b/.template-source/evidence/maintenance/digital-human-task-package-l3-checkpoint-2026-08-27.yaml
+@@ -51,9 +51,7 @@ verification_evidence:
+     command: scripts/verify-template
+     result: pass
+   - kind: formal-independent-review
+-    command: >-
+-      非实施者 role.test-engineer 按 digital-human-task-package-review-task.yaml
+-      完成审查，结论记录于 digital-human-task-package-formal-independent-review-2026-08-27.md
++    command: .template-source/evidence/maintenance/digital-human-task-package-formal-independent-review-2026-08-27.md
+     result: pass
+ review_mode: formal-independent
+ escalation: none
+diff --git a/.template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-oracle-2026-08-24.md b/.template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-oracle-2026-08-24.md
+index e3d0f7596f7b926fa387fd77bf91dcc66c8feb0c..8831883830abdda86498fa892edc27deee22b5c3 100644
+--- a/.template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-oracle-2026-08-24.md
++++ b/.template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-oracle-2026-08-24.md
+@@ -1,5 +1,7 @@
+ # git-submodule 写入门禁判定式 正式独立审查请求
+ 
++`legacy_formal_review: true`
++
+ > 实施者不得在本文件填写审查结论。`result=pass` 只表示本请求可被 checkpoint 校验器解析，不表示审查已通过。
+ > 第三轮请求原文不改写，见 `.template-source/evidence/maintenance/git-submodule-scope-l3-review-request-writable-api-2026-08-24.md`。
+ 
+diff --git a/.template-source/evidence/maintenance/lifecycle-ticket-transition-formal-independent-review-2026-08-27.md b/.template-source/evidence/maintenance/lifecycle-ticket-transition-formal-independent-review-2026-08-27.md
+index 46b787dbd573887565173db3590ef9641390b1c3..ba93dd6580915fc695972487221c153f5daba9aa 100644
+--- a/.template-source/evidence/maintenance/lifecycle-ticket-transition-formal-independent-review-2026-08-27.md
++++ b/.template-source/evidence/maintenance/lifecycle-ticket-transition-formal-independent-review-2026-08-27.md
+@@ -1,5 +1,7 @@
+ # Ticket 正式化到实现入口独立审查
+ 
++`legacy_formal_review: true`
++
+ - 审查角色：`role.test-engineer`
+ - 执行态：`Reviewer`
+ - 任务包：`.template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml`
+diff --git a/.template-source/evidence/maintenance/lifecycle-ticket-transition-l3-checkpoint-2026-08-27.yaml b/.template-source/evidence/maintenance/lifecycle-ticket-transition-l3-checkpoint-2026-08-27.yaml
+index 8ad9649794a7fee60a9f824d91c561b7d7729a1e..c51a137282a5d65ae85c53eb2eff273a6cd2f195 100644
+--- a/.template-source/evidence/maintenance/lifecycle-ticket-transition-l3-checkpoint-2026-08-27.yaml
++++ b/.template-source/evidence/maintenance/lifecycle-ticket-transition-l3-checkpoint-2026-08-27.yaml
+@@ -41,9 +41,7 @@ verification_evidence:
+     command: scripts/verify-template
+     result: pass
+   - kind: formal-independent-review
+-    command: >-
+-      非实施者 role.test-engineer 完成独立审查，结论记录于
+-      lifecycle-ticket-transition-formal-independent-review-2026-08-27.md
++    command: .template-source/evidence/maintenance/lifecycle-ticket-transition-formal-independent-review-2026-08-27.md
+     result: pass
+ review_mode: formal-independent
+ escalation: none
+diff --git a/.template-source/evidence/maintenance/yss-stage-decision-l3-formal-independent-review-2026-08-27.md b/.template-source/evidence/maintenance/yss-stage-decision-l3-formal-independent-review-2026-08-27.md
+index 8536f2af7b6d6101bfb6cc0abde231c7ce23bf4a..6c85bdae2c297f2f6c37feed089f2401a0ff2b5b 100644
+--- a/.template-source/evidence/maintenance/yss-stage-decision-l3-formal-independent-review-2026-08-27.md
++++ b/.template-source/evidence/maintenance/yss-stage-decision-l3-formal-independent-review-2026-08-27.md
+@@ -1,5 +1,7 @@
+ # yss-stage-decision L3 正式独立审查
+ 
++`legacy_formal_review: true`
++
+ 审查角色：`role.test-engineer`
+ 运行时：`runtime.generic`
+ 执行态：Reviewer
+diff --git a/.template-source/evidence/maintenance/yss-tactical-design-formal-independent-review-2026-08-27.md b/.template-source/evidence/maintenance/yss-tactical-design-formal-independent-review-2026-08-27.md
+index f40bec8ab41fe0d7ec89420a5bffdc4b9b8bedf5..037dde9fe97caf87c85a5dbb7ecfc6f558b4db29 100644
+--- a/.template-source/evidence/maintenance/yss-tactical-design-formal-independent-review-2026-08-27.md
++++ b/.template-source/evidence/maintenance/yss-tactical-design-formal-independent-review-2026-08-27.md
+@@ -1,5 +1,7 @@
+ # `yss-tactical-design` L3 正式独立审查
+ 
++`legacy_formal_review: true`
++
+ 审查角色：`role.test-engineer`
+ 运行时：`runtime.generic`
+ 执行态：`Reviewer`
+diff --git a/AGENTS.md b/AGENTS.md
+index ba3ff32ddee8ea9c38cbd461badb5f58efffb99f..f76c82e8cbec401683af7977ccbe7fbd528265e7 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -42,7 +42,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或
+ 
+ - 创建、修改或退役 skill 时使用 `maintaining-skills`，并先按 `docs/process/harness-process-tailoring.md` 判定 L1 / L2 / L3；只有 L3 必须保留完整基线失败、压力场景、修订后验证和正式独立审查证据。
+ - `.agents/skills` 是跨 Agent 共享技能的权威内容；`.claude/skills`、`.codex/skills`、`.cursor/skills`、`.hermes/skills`、`.pi/skills`、`.qoder/skills`、`.trae/skills` 中的共享技能是生成投影，禁止分别手工修改。Cursor 的契约运行时入口是 `.cursor/skills`；不得把 canonical `.agents/skills` 与某个平台投影当作同权双入口。
+-- `scripts/verify-template` 是模板发布阻断门禁。模板与外部 `create-yss-spec` 的跨仓库契约未完成集成验证时，不得声称可发布。
++- `scripts/verify-template` 是模板发布阻断门禁。模板与外部 `create-yss-harness-dev` 的跨仓库契约未完成集成验证时，不得声称可发布。
+ 
+ ## 5. `project-instance` 产品研发路由
+ 
+diff --git a/CONTEXT.md b/CONTEXT.md
+index c72094f5cfb92a79100ace0d7a203718fd90270b..ec9c015df6dfafebd59cc35a60355975653c34aa 100644
+--- a/CONTEXT.md
++++ b/CONTEXT.md
+@@ -89,7 +89,9 @@
+ | 跨仓库契约变更 | 需要两个或多个独立仓库协同实现、验证和按顺序发布的共享契约变化。 | — | 任一参与仓库未完成契约对齐和集成验证时，不得单独声称整体可发布。 |
+ | 模板源仓库（`template-source`） | 承载可复用 Harness / 模板权威资产及其演进规则的仓库身份。本仓是 Harness Agent 五阶段模板源。 | — | 只管理可复用模板，不承载某个具体产品的研发生命周期资产。不要把仍使用旧八阶段入口的父目录或其他 submodule 当作本仓路由。 |
+ | 模板实例仓库（`project-instance`） | 由模板初始化后生成、承载某个具体产品研发生命周期资产的仓库身份。 | — | 不作为通用流程模板的权威来源。 |
+-| 模板实例分发面 | 模板源中应随 CLI 快照进入 `project-instance` 的共享生命周期、模板、用户指南和验证资产集合。 | — | 不包含模板源审查、研究、发布路线、源仓库专属 ADR 或源仓库 LLM Wiki 编译树。 |
++| 模板实例分发面 | 模板源中应随 CLI 快照进入 `project-instance` 的共享生命周期、模板、用户指南和验证资产集合。 | — | 不包含模板源审查、研究、发布路线、源仓库专属 ADR 或源仓库 LLM Wiki 编译树。本仓权威清单为 `.template-source/distribution/template.manifest.json`。 |
++| Harness Profile | 某个 Harness 模板源的受众、允许工作单元、禁止产物、上游输入和实例化 CLI 边界的机器可读配置。 | — | 不是角色表，也不替代生命周期注册表。本仓 `profile_id` 为 `harness.dev-agent-slice`。 |
++| 开发落地 Harness CLI | 将本仓五阶段 Harness 快照为 `project-instance` 的外部 npm CLI。 | — | 包名为 `create-yss-harness-dev`，入口 `npm create yss-harness-dev`。不要与全生命周期 CLI `create-yss-spec` 混用。 |
+ | 模板源治理区 | 仅供 `template-source` 使用、保存审查证据、研究记录、跨仓契约、发布路线、源仓库治理决策和源仓库 LLM Wiki 编译树的归档区域。 | — | 不随 CLI 分发；不等于产品实例的研发管理资产。`wiki-root` 为 `.template-source/wiki`。 |
+ | 仓库身份清单 | 显式声明仓库身份和清单结构版本的机器可读资产。 | — | 不承载项目名称、团队规模、Tracker 或其他易变业务配置。 |
+ 
+diff --git a/README.md b/README.md
+index a798d7ecf8a06a39ab23d90b829d4a8d77282192..ffb97ebaa9b154778d1adceb3867b4eae5cfe536 100644
+--- a/README.md
++++ b/README.md
+@@ -52,17 +52,17 @@ YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https:/
+ 
+ ## 模板初始化 CLI
+ 
+-`create-yss-spec` 的目标维护位置是独立 GitHub 仓库 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec)。本仓库不再包含 CLI 源码、测试、发布配置或开发过程记录，只保留面向模板使用者的实践指南：
++开发落地 Harness 的实例化入口是独立 GitHub 仓库 [iloveZzz/create-yss-harness-dev](https://github.com/iloveZzz/create-yss-harness-dev)。本仓库不包含 CLI 源码、测试或发布配置，只保留分发契约和面向实例使用者的实践指南：
+ 
+-- [create-yss-spec 外部 CLI 实践指南](./docs/user-guide/外部命令行工具实践指南.md)
++- [create-yss-harness-dev 外部 CLI 实践指南](./docs/user-guide/外部命令行工具实践指南.md)
+ 
+ 推荐入口：
+ 
+ ```bash
+-npm create yss-spec@latest
++npm create yss-harness-dev@latest
+ ```
+ 
+-首次使用前请先确认独立仓库和 npm 包已完成发布。
++`create-yss-spec` 属于全产品生命周期模板，不能用来初始化或同步本仓。首次使用前请确认独立仓库和 npm 包已完成与本仓固定 commit 的跨仓库验证。
+ 
+ ## 模板配置取舍
+ 
+diff --git a/docs/adr/README.md b/docs/adr/README.md
+index 43150836848a8bd23cdd88300fd99f6bf26c8349..2be1114b580380c29cdc8a7720b6c7f2291e8b8e 100644
+--- a/docs/adr/README.md
++++ b/docs/adr/README.md
+@@ -4,4 +4,4 @@
+ 
+ 创建 ADR 时使用 [`docs/templates/adr-template.md`](../templates/adr-template.md)，并为每条决策补充状态、背景、取舍、后果和相关资产。
+ 
+-模板源仓库的 ADR 保存在 `.template-source/adr/`，不会随 `create-yss-spec` 进入 `project-instance`。
++模板源仓库的 ADR 保存在 `.template-source/adr/`，不会随 `create-yss-harness-dev` 进入 `project-instance`。
+diff --git a/docs/process/harness-process-tailoring.md b/docs/process/harness-process-tailoring.md
+index 53b565bbb7030d645115ad1c291149117a7c3fc8..c124e4e5e20f61b04b31aa44c60b62d430c5af85 100644
+--- a/docs/process/harness-process-tailoring.md
++++ b/docs/process/harness-process-tailoring.md
+@@ -62,3 +62,5 @@ escalation: none | <升级原因和原等级>
+ ```
+ 
+ 使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。触发项 ID 与最低等级只由 `docs/process/maintenance-intensity.yaml` 维护；校验器消费该策略。未知触发项必须先更新该权威策略和场景，不能静默接受。
++
++`focused-independent-review` 与 `formal-independent-review` 的 `command` 必须引用可读取的审查结论。L3 新记录必须使用 `docs/process/schemas/maintenance-review-record.schema.json`，绑定 Reviewer、实施者、完整 `yss-worktree-candidate-v1` 冻结字节、候选 digest、通过正式 schema 的 Reviewer 任务包、任务包声明的审查报告和已关闭 findings。仅校验器内明确登记的 2026-08-24 / 27 历史 L3 Markdown 可兼容，并仍须带 `legacy_formal_review: true`、审查身份和明确通过结论；任意新 Markdown 不能自报 legacy。审查请求、实施者自述、否定裁决、伪造或非规范候选流、无效任务包、未关闭 findings 或 symlink 越界证据都会被拒绝。可用 `scripts/verify-maintenance-review-record` 单独校验。
+diff --git a/docs/process/harness-profile.yaml b/docs/process/harness-profile.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..fcf67df3d5abf4f58e6d3c94b5f6f9faf9237011
+--- /dev/null
++++ b/docs/process/harness-profile.yaml
+@@ -0,0 +1,59 @@
++schema_version: 1
++profile_id: harness.dev-agent-slice
++status: active
++name: 四角色开发落地 Harness
++purpose: >-
++  面向架构、前端、后端和测试四类 Agent，把已批准的上游 Spec 或战略设计交接包
++  细化为 DDD 战术设计、统一 Slice Implementation Contract、垂直切片实现和独立验证。
++
++audience:
++  target_user_roles:
++    - role.architecture-agent
++    - role.frontend-agent
++    - role.backend-agent
++    - role.test-agent
++  control_plane_roles:
++    - role.harness-orchestrator
++  non_target_role_policy: >-
++    本 profile 只注册四类研发角色；产品、需求、商务和项目管理不在当前 Harness 中派发。
++    上游战略设计由独立战略 Harness 或已批准 Spec 提供，不在本仓默认重做 Discovery。
++  boundary: >-
++    当前 Harness 从 Harness Entry 进入战术设计与切片落地，不把 Discovery、产品原型或
++    全生命周期规格作为默认第一阶段。grill-with-docs、to-spec、to-tickets 只作为显式兼容入口。
++
++lifecycle:
++  repository_modes: [project-instance]
++  entry_work_unit: work-unit.harness-entry
++  allowed_work_units:
++    - work-unit.harness-entry
++    - work-unit.tactical-design
++    - work-unit.slice-contract
++    - work-unit.slice-implementation
++    - work-unit.verification
++  terminal_work_unit: work-unit.verification
++  terminal_stage: stage.verification
++  forbidden_work_units:
++    - work-unit.ssot-update
++    - work-unit.skill-projection-sync
++    - work-unit.intensity-aware-verification
++    - work-unit.intensity-aware-review
++    - work-unit.release-and-rollback
++
++upstream:
++  kind: approved-spec-or-strategic-design
++  default_entry: work-unit.harness-entry
++  discovery_is_default: false
++  compatibility_skills:
++    - grill-with-docs
++    - to-spec
++    - to-tickets
++
++instantiation:
++  cli_package: create-yss-harness-dev
++  npm_create: yss-harness-dev
++  metadata_file: .yss-harness-dev.json
++  foreign_metadata_files:
++    - .yss-template.json
++  template_source: github:iloveZzz/yss-harness-dev-agent
++  distribution_manifest: .template-source/distribution/template.manifest.json
++  pin_env: YSS_HARNESS_TEMPLATE_REF
+diff --git a/docs/process/implementation-repo-integration.md b/docs/process/implementation-repo-integration.md
+index 1b16ce6913f629000502e9d701d3b8217b390bd1..f42fdaafaf147fa7559ec7ed3231e61334824576 100644
+--- a/docs/process/implementation-repo-integration.md
++++ b/docs/process/implementation-repo-integration.md
+@@ -1,6 +1,6 @@
+ # 实现仓库接入与跨仓库切片绑定
+ 
+-本文件是 Harness 仓库连接外部实现仓库的事实源。当前 `yss-spec-project-template` 与 `create-yss-spec` 的模板接管 / 同步变更属于 Harness-only 加 release-only 影响，不创建前端、后端或运行时代码目录。
++本文件是 Harness 仓库连接外部实现仓库的事实源。当前 `yss-harness-dev-agent` 与 `create-yss-harness-dev` 的模板接管 / 同步变更属于 Harness-only 加 release-only 影响，不创建前端、后端或运行时代码目录。
+ 
+ ## 1. 接入清单
+ 
+@@ -52,7 +52,7 @@ apps/
+ - clone / CI / Cloud Agent 必须递归检出：`git clone --recurse-submodules`，或事后 `git submodule update --init`。GitHub Actions 须显式 `submodules: true|recursive` 且私有子仓另给 PAT / SSH；GitLab 须设 `GIT_SUBMODULE_STRATEGY` 并配置 job token 访问。默认不递归时目录为空，不得当作「工程不存在」去脚手架。
+ - 空 gitlink、未初始化、detached HEAD 或 `--force` 覆盖挂载点一律不得当成普通目录：`scaffold_status=required` 阻断，脚手架生成器即使收到 `--force` 也不得覆盖 gitlink，且不得进入「请显式传入 `--force`」普通目录覆盖 / rename 路径；禁止在 detached HEAD 上 commit，也不得把 `--output-dir` 指向 detached HEAD 子仓后 mkdir、staging 或生成工程。先在子仓检出跟踪分支，再写代码。写入前必须读取 `inspectWorkingTreeScope` 的对象结果：只有 `.writable === true` 才可写。已登记为 `git-submodule` 的空 gitlink / uninitialized / detached HEAD 必须 `.writable === false`，即使工作树探测失败也不得把返回值当成可写。
+ - Git 授权按仓分别计算，顺序强制为 **先子仓 commit/push，再父仓更新 gitlink**。父仓 push 使用 `git push --recurse-submodules=check`。跨仓库切片的 `delivery_order` 必须包含 `superproject-gitlink-update`。
+-- `.gitmodules`、gitlink 和子仓工作树不是 `create-yss-spec` 受管资产；CLI `sync` 不得创建、覆盖或删除它们。
++- `.gitmodules`、gitlink 和子仓工作树不是 `create-yss-harness-dev` 受管资产；CLI `sync` 不得创建、覆盖或删除它们。
+ 
+ ## 2. 影响面路由
+ 
+@@ -66,10 +66,11 @@ apps/
+ 
+ ## 3. 本变更的跨仓库合同
+ 
+-- 模板仓库负责 `yss-project.yaml`、流程事实源、迁移指南、技能投影、模板校验脚本和快照可发布状态。
+-- CLI 仓库负责 `attach`、`sync`、受管 manifest、快照 commit、metadata、迁移计划、备份 / 回滚、端到端测试和用户说明。
++- 模板仓库负责 `yss-project.yaml`、Harness Profile、流程事实源、迁移指南、技能投影、分发清单、模板校验脚本和快照可发布状态。
++- CLI 仓库 `create-yss-harness-dev` 负责 `init`、`attach`、`sync`、受管 manifest 快照、`.yss-harness-dev.json`、迁移计划、备份 / 回滚、端到端测试和用户说明。
+ - CLI 只写研发管理资产；不得创建或覆盖前后端运行时代码，不删除目标 `.git`，也不创建、覆盖或删除 `.gitmodules` 与 gitlink。
+-- 模板 commit 必须是 40 位不可变提交；开发测试可通过 `YSS_SPEC_TEMPLATE_REF` 覆盖，正式发布不得跟随浮动 `main`。
++- 模板 commit 必须是 40 位不可变提交；开发测试可通过 `YSS_HARNESS_TEMPLATE_REF` 覆盖，正式发布不得跟随浮动 `main`。
++- 目标已有 `.yss-template.json` 时拒绝：那是 `create-yss-spec` 全生命周期家族，不是本 Harness。
+ 
+ ## 4. Fresh verification 与 checkpoint
+ 
+@@ -81,4 +82,4 @@ scripts/update-skill-lock --check
+ scripts/verify-template
+ ```
+ 
+-CLI 仓库至少执行固定 commit 的 `YSS_SPEC_TEMPLATE_REF=<pinned-commit> npm test`、`npm pack --dry-run`，并在解包后的 CLI 上验证 init、attach、sync、迁移冲突和回滚。共同发布前记录两个仓库的 commit、模板快照 hash、测试结果、独立审查结论和 rollback 路径。
++CLI 仓库至少执行固定 commit 的 `YSS_HARNESS_TEMPLATE_REF=<pinned-commit> npm test`、`npm pack --dry-run`，并在解包后的 CLI 上验证 init、attach、sync、家族隔离、迁移冲突和回滚。共同发布前记录两个仓库的 commit、模板快照 hash、测试结果、独立审查结论和 rollback 路径。
+diff --git a/docs/templates/digital-human-runtime-profile-template.md b/docs/templates/digital-human-runtime-profile-template.md
+index 5bdb839289efe7400315965749ffb1eb59c2dce0..e15a35a1bafb659f784d7f51fe18a5d59038c8e9 100644
+--- a/docs/templates/digital-human-runtime-profile-template.md
++++ b/docs/templates/digital-human-runtime-profile-template.md
+@@ -21,7 +21,7 @@
+ 
+ ## `project-instance` 绑定清单
+ 
+-模板仓只 `publish-singleton-profiles`。实例仓按本表 duplicate，禁止按功能再拆实例。外部 `create-yss-spec` 尚未接管此步骤。
++模板仓只 `publish-singleton-profiles`。实例仓按本表 duplicate，禁止按功能再拆实例。外部 `create-yss-harness-dev` 第一版只做实例化，不 duplicate Grok Bot 或 runtime profile。
+ 
+ - [ ] 从 YAML 复制 `title`、`description`、`core_skills`、`forbidden_skills`，不手写第二套职责
+ - [ ] 选择一个 `runtime_id`（`runtime.generic` / `runtime.skill-projection` / `runtime.grok`）
+diff --git a/docs/user-guide/外部命令行工具实践指南.md b/docs/user-guide/外部命令行工具实践指南.md
+index ae3f29cdc1f36fb171eb63fa099cc6ced94eb97d..f697429693f30a9c1d0e9a4bf2ddd2bfe8472f84 100644
+--- a/docs/user-guide/外部命令行工具实践指南.md
++++ b/docs/user-guide/外部命令行工具实践指南.md
+@@ -1,32 +1,34 @@
+-# `create-yss-spec` 外部 CLI 实践指南
++# `create-yss-harness-dev` 外部 CLI 实践指南
+ 
+-本文面向需要基于 YSS Spec Project Template 初始化、接管已有项目或持续同步研发管理资产的使用者。CLI 源码、测试和发布由独立项目 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec) 维护；本模板仓库只记录使用方法和跨仓库契约。
++本文面向需要基于 YSS 开发落地 Harness（`yss-harness-dev-agent`）初始化、接管已有项目或持续同步研发管理资产的使用者。CLI 源码、测试和发布由独立项目 [iloveZzz/create-yss-harness-dev](https://github.com/iloveZzz/create-yss-harness-dev) 维护；本模板仓库只记录使用方法和跨仓库契约。
++
++全生命周期 CLI `create-yss-spec` 不能用来初始化或同步本 Harness。
+ 
+ ## 适用范围
+ 
+-`create-yss-spec` 用于生成或补齐包含 Spec、架构、OpenAPI、Ticket 和 Agent 协作基线的模板实例仓库。它不负责生成前后端运行时工程，也不会代替你创建远程 Git 仓库、CI 或 Ticket Board。
++`create-yss-harness-dev` 用于生成或补齐包含五阶段 Harness、四角色 Agent、战术设计、Slice Contract、Ticket 和校验脚本的模板实例仓库。它不负责生成前后端运行时工程，也不会代替你创建远程 Git 仓库、CI 或 Ticket Board，更不替代 `harness-orchestrator`。
+ 
+-“最新模板”指用户执行的 `npx create-yss-spec@latest` 所携带的最新已发布快照。CLI 运行时不会直接拉取模板仓库；每个实例 metadata 都记录绑定的 `templateCommit`，便于审计、升级和回滚。
++“最新模板”指用户执行的 `npx create-yss-harness-dev@latest` 所携带的最新已发布快照。CLI 运行时不会直接拉取模板仓库；每个实例 metadata 都记录绑定的 `templateCommit`，便于审计、升级和回滚。
+ 
+ ## 空目录初始化
+ 
+ 推荐使用 npm create 入口：
+ 
+ ```bash
+-npm create yss-spec@latest
++npm create yss-harness-dev@latest
+ ```
+ 
+ 也可直接通过 npx 执行：
+ 
+ ```bash
+-npx create-yss-spec@latest \
++npx create-yss-harness-dev@latest \
+   --project-name "项目名称" \
+   --business-domain "业务领域" \
+   --target-dir "./project" \
+   --git-init
+ ```
+ 
+-初始化会把模板源身份转换为 `repository_mode: project-instance`，并写入 metadata schema v2。`--dry-run` 只预览，不创建目录、不删除文件。
++初始化会把模板源身份转换为 `repository_mode: project-instance`，写入 `.yss-harness-dev.json`，并带上 `docs/process/harness-profile.yaml`（`harness.dev-agent-slice`）。`--dry-run` 只预览，不创建目录、不删除文件。
+ 
+ ## 接管已有项目
+ 
+@@ -35,7 +37,7 @@ npx create-yss-spec@latest \
+ 先预演：
+ 
+ ```bash
+-npx create-yss-spec@latest attach \
++npx create-yss-harness-dev@latest attach \
+   --target-dir . \
+   --project-name "项目名称" \
+   --business-domain "业务领域" \
+@@ -45,7 +47,7 @@ npx create-yss-spec@latest attach \
+ 确认计划后写入：
+ 
+ ```bash
+-npx create-yss-spec@latest attach \
++npx create-yss-harness-dev@latest attach \
+   --target-dir . \
+   --project-name "项目名称" \
+   --business-domain "业务领域" \
+@@ -55,18 +57,20 @@ npx create-yss-spec@latest attach \
+ 约束：
+ 
+ - `--dry-run` 与 `--apply` 互斥，且必须显式选择其中一个。
+-- 已有 `.yss-template.json` 时拒绝重复接管，请使用 `sync`。
++- 已有 `.yss-harness-dev.json` 时拒绝重复接管，请使用 `sync`。
++- 已有 `.yss-template.json` 时拒绝：目标属于 `create-yss-spec` 家族。
+ - 合法 `template-source` 会转换为 `project-instance`；合法 `project-instance` 保留并校验；身份文件字段、schema 或 mode 非法时阻断。
+-- 受管路径计划分为 `missing`、`matched`、`conflict`、`unsafe`。`--force` 只允许覆盖 conflict，不能绕过 unsafe、迁移冲突或无法归属的扁平 Ticket。
+-- 覆盖前会在目标目录外创建临时备份；验证失败自动回滚，metadata 不更新。成功后备份默认保留，并输出恢复路径和清理命令。
++- 受管路径计划分为 `missing`、`matched`、`conflict`、`unsafe`。`--force` 只允许覆盖 conflict，不能绕过 unsafe。
++- 覆盖前会在目标目录外创建临时备份；验证失败自动回滚，metadata 不更新。
+ - Git worktree 有脏改动时允许继续，但会强提醒；CLI 不自动 stash 或提交。
++- `.gitmodules`、gitlink 和 `apps/` 挂载工作树是用户资产；空 gitlink / detached HEAD 即使 `--force` 也阻断。
+ 
+ ## 持续同步模板
+ 
+-已初始化或已 attach 的项目根目录存在 `.yss-template.json` 后，可以先预演：
++已初始化或已 attach 的项目根目录存在 `.yss-harness-dev.json` 后，可以先预演：
+ 
+ ```bash
+-npx create-yss-spec@latest sync \
++npx create-yss-harness-dev@latest sync \
+   --target-dir . \
+   --dry-run
+ ```
+@@ -74,11 +78,11 @@ npx create-yss-spec@latest sync \
+ 确认后执行：
+ 
+ ```bash
+-npx create-yss-spec@latest sync \
++npx create-yss-harness-dev@latest sync \
+   --target-dir . [--force]
+ ```
+ 
+-普通同步会新增缺失文件，更新 baseline 未被本地修改的文件，并报告冲突。`sync --force` 会先备份，再覆盖所有受管 conflict；模板删除的文件默认只报告不删除，模板无关文件始终不覆盖。旧路径只有在固定迁移计划安全完成时才移动或删除。
++普通同步会新增缺失文件，更新 baseline 未被本地修改的文件，并报告冲突。`sync --force` 会先备份，再覆盖所有受管 conflict；模板删除的文件默认只报告不删除，模板无关文件始终不覆盖。
+ 
+ 同步结束会重新运行：
+ 
+@@ -90,19 +94,36 @@ scripts/verify-template
+ 
+ 任一门禁失败都会回滚本轮文件变更，并保留旧 metadata 版本。
+ 
++## 升级 CLI 自身
++
++```bash
++npx create-yss-harness-dev update
++npx create-yss-harness-dev update --dry-run
++```
++
++`update` 只升级 npm 包，不会同步项目里的模板资产；模板同步仍使用 `sync`。
++
+ ## 生成后检查
+ 
+ 初始化、attach 或 sync 后，至少完成以下检查：
+ 
+ 1. 运行 `git status --short`，确认实际变更范围。
+-2. 检查 `AGENTS.md`、`CONTEXT.md`、`README.md`、`yss-project.yaml` 和 `docs/`。
+-3. 确认 `.yss-template.json` 的 `templateCommit` 为 40 位 commit，并核对 `managedFilesManifestVersion`。
+-4. 确认 `.qoder/skills`、其他 skills projection 和 `skills-lock.json` 门禁通过。
++2. 检查 `AGENTS.md`、`CONTEXT.md`、`README.md`、`yss-project.yaml`、`docs/process/harness-profile.yaml` 和 `docs/`。
++3. 确认 `.yss-harness-dev.json` 的 `templateCommit` 为 40 位 commit，`profileId` 为 `harness.dev-agent-slice`。
++4. 确认 skills projection 和 `skills-lock.json` 门禁通过。
+ 5. 人工处理冲突和只报告未删除的文件，确认无误后再创建 Git checkpoint。
+ 
++默认研发链路仍是：
++
++```text
++harness-entry → tactical-design → slice-contract → slice-implementation → verification
++```
++
++上游输入必须是已批准的 Spec 或战略设计交接包。不要把本实例当成全生命周期 Discovery 仓库。
++
+ ## 问题定位边界
+ 
+-- CLI 安装、参数解析、初始化、attach、同步、npm 发布或 CLI 测试问题：在 [create-yss-spec 独立仓库](https://github.com/iloveZzz/create-yss-spec) 追踪。
++- CLI 安装、参数解析、初始化、attach、同步、npm 发布或 CLI 测试问题：在 [create-yss-harness-dev 独立仓库](https://github.com/iloveZzz/create-yss-harness-dev) 追踪。
+ - 模板内容、流程文档、Agent skills 或 `scripts/verify-template` 问题：在本模板仓库追踪。
+ 
+ ## 发布与验证
+@@ -110,8 +131,8 @@ scripts/verify-template
+ 模板修复并通过 fresh verification 后，CLI 发布前必须绑定确定模板 commit：
+ 
+ ```bash
+-YSS_SPEC_TEMPLATE_REF=<pinned-commit> npm test
+-YSS_SPEC_TEMPLATE_REF=<pinned-commit> npm pack --dry-run
++YSS_HARNESS_TEMPLATE_REF=<pinned-commit> npm test
++YSS_HARNESS_TEMPLATE_REF=<pinned-commit> npm pack --dry-run
+ ```
+ 
+-发布顺序为：模板修复与验证 → CLI 绑定 commit 并完成跨仓库测试 → 独立审查 → 发布 CLI `2.1.6`。任一仓库未通过共同验证时，不声明整体可发布。
++发布顺序为：模板修复与验证 → CLI 绑定 commit 并完成跨仓库测试 → 独立审查 → 发布 CLI。任一仓库未通过共同验证时，不声明整体可发布。
+diff --git a/docs/user-guide/用户手册索引.md b/docs/user-guide/用户手册索引.md
+index f2dc42d79e757fcbb6cc6df040a1219751516a80..e32ee6bdf7367ce804e4cf087b9fdc23a7071a82 100644
+--- a/docs/user-guide/用户手册索引.md
++++ b/docs/user-guide/用户手册索引.md
+@@ -22,7 +22,7 @@ harness-entry → tactical-design → slice-contract → slice-implementation 
+ 
+ ## 继续阅读
+ 
+-- [create-yss-spec 外部 CLI 实践指南](./外部命令行工具实践指南.md)
++- [create-yss-harness-dev 外部 CLI 实践指南](./外部命令行工具实践指南.md)
+ - [产品全生命周期使用手册](./产品生命周期工作流.md)
+ - [全生命周期最佳实践](./生命周期最佳实践.md)
+ - [产品研发全生命周期最佳实践](./产品研发全生命周期最佳实践.md)
+diff --git a/docs/user-guide/规格与任务迁移指南.md b/docs/user-guide/规格与任务迁移指南.md
+index 7329113f914b6ed588ac55aec070ba660ff87bce..6f724b6e1f62f6dbb47db53019013c16619a0302 100644
+--- a/docs/user-guide/规格与任务迁移指南.md
++++ b/docs/user-guide/规格与任务迁移指南.md
+@@ -41,4 +41,4 @@ Local Markdown 项目不再使用上述旧目录作为主 tracker：新的完整
+ 
+ ## 外部初始化 CLI
+ 
+-`create-yss-spec` 必须在初始化和升级时写入正确的 `repository_mode`，并执行等价的路径迁移与集成测试。模板仓库与 CLI 仓库未共同通过集成验证前，不得单独声明新版模板可发布。
++`create-yss-harness-dev` 必须在初始化和升级时写入正确的 `repository_mode`，并执行等价的路径迁移与集成测试。模板仓库与 CLI 仓库未共同通过集成验证前，不得单独声明新版模板可发布。全生命周期 CLI `create-yss-spec` 不得改写本仓实例身份。
+diff --git a/scripts/lib/harness-profile.mjs b/scripts/lib/harness-profile.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..930f5af142eca82d0ee909d4772cb87612522b87
+--- /dev/null
++++ b/scripts/lib/harness-profile.mjs
+@@ -0,0 +1,172 @@
++import { existsSync, readFileSync } from "node:fs";
++import path from "node:path";
++import { parseDocument } from "../vendor/yaml.mjs";
++import { loadDigitalHumanRoles } from "./digital-human-roles.mjs";
++import { loadRegistry, ROOT } from "./lifecycle-registry.mjs";
++import { isTemplateSource } from "./repository-mode.mjs";
++
++export const DEFAULT_PROFILE = path.join(ROOT, "docs/process/harness-profile.yaml");
++export const DEV_AGENT_PROFILE_ID = "harness.dev-agent-slice";
++export const TARGET_ROLES = [
++  "role.architecture-agent",
++  "role.frontend-agent",
++  "role.backend-agent",
++  "role.test-agent",
++];
++export const CONTROL_ROLES = ["role.harness-orchestrator"];
++export const ALLOWED_WORK_UNITS = [
++  "work-unit.harness-entry",
++  "work-unit.tactical-design",
++  "work-unit.slice-contract",
++  "work-unit.slice-implementation",
++  "work-unit.verification",
++];
++export const FORBIDDEN_WORK_UNITS = [
++  "work-unit.ssot-update",
++  "work-unit.skill-projection-sync",
++  "work-unit.intensity-aware-verification",
++  "work-unit.intensity-aware-review",
++  "work-unit.release-and-rollback",
++];
++export const INSTANTIATION = Object.freeze({
++  cli_package: "create-yss-harness-dev",
++  npm_create: "yss-harness-dev",
++  metadata_file: ".yss-harness-dev.json",
++  foreign_metadata_files: [".yss-template.json"],
++  template_source: "github:iloveZzz/yss-harness-dev-agent",
++  distribution_manifest: ".template-source/distribution/template.manifest.json",
++  pin_env: "YSS_HARNESS_TEMPLATE_REF",
++});
++
++function fail(message) {
++  throw new TypeError(message);
++}
++
++function parseYaml(filePath, label) {
++  let source;
++  try {
++    source = readFileSync(filePath, "utf8");
++  } catch (error) {
++    if (error.code === "ENOENT") fail(`缺少${label}: ${filePath}`);
++    throw error;
++  }
++  const document = parseDocument(source, { maxAliasCount: 0, uniqueKeys: true });
++  if (document.errors.length > 0) fail(`无法解析${label}: ${document.errors[0].message}`);
++  const value = document.toJS({ maxAliasCount: 0 });
++  if (!value || typeof value !== "object" || Array.isArray(value)) fail(`${label}必须是对象`);
++  return value;
++}
++
++function equalArray(actual, expected) {
++  return Array.isArray(actual)
++    && actual.length === expected.length
++    && actual.every((value, index) => value === expected[index]);
++}
++
++function requireString(value, field) {
++  if (typeof value !== "string" || !value.trim()) fail(`${field} 不能为空`);
++}
++
++export function loadHarnessProfile(filePath = DEFAULT_PROFILE) {
++  return parseYaml(filePath, "Harness profile");
++}
++
++export function validateHarnessProfile(profile = loadHarnessProfile(), {
++  lifecycle = loadRegistry(),
++  roles = loadDigitalHumanRoles(),
++} = {}) {
++  if (profile.schema_version !== 1) fail("Harness profile schema_version 必须为 1");
++  if (profile.profile_id !== DEV_AGENT_PROFILE_ID) fail(`只支持 ${DEV_AGENT_PROFILE_ID}`);
++  if (profile.status !== "active") fail("Harness profile status 必须为 active");
++  requireString(profile.name, "profile.name");
++  requireString(profile.purpose, "profile.purpose");
++
++  const roleIds = new Set([roles.orchestrator?.id, ...(roles.roles || []).map((role) => role.id)]);
++  for (const [field, values] of [["target_user_roles", TARGET_ROLES], ["control_plane_roles", CONTROL_ROLES]]) {
++    if (!equalArray(profile.audience?.[field], values)) fail(`audience.${field} 必须严格匹配开发落地四角色边界`);
++    for (const role of values) {
++      if (!roleIds.has(role)) fail(`audience.${field} 引用了未知角色: ${role}`);
++    }
++  }
++  if (new Set(profile.audience.target_user_roles).size !== profile.audience.target_user_roles.length) {
++    fail("target_user_roles 不得重复");
++  }
++  requireString(profile.audience.non_target_role_policy, "audience.non_target_role_policy");
++  requireString(profile.audience.boundary, "audience.boundary");
++
++  const stageIds = new Set((lifecycle.stages || []).map((stage) => stage.id));
++  const workUnitIds = new Set((lifecycle.work_units || []).map((unit) => unit.id));
++  if (!equalArray(profile.lifecycle?.allowed_work_units, ALLOWED_WORK_UNITS)) {
++    fail("lifecycle.allowed_work_units 必须是五阶段开发落地工作单元");
++  }
++  if (!equalArray(profile.lifecycle?.forbidden_work_units, FORBIDDEN_WORK_UNITS)) {
++    fail("lifecycle.forbidden_work_units 必须是 template-source 维护工作单元");
++  }
++  if (!equalArray(profile.lifecycle?.repository_modes, ["project-instance"])) {
++    fail("profile 只适用于 project-instance");
++  }
++  if (profile.lifecycle.entry_work_unit !== "work-unit.harness-entry") {
++    fail("lifecycle.entry_work_unit 必须为 work-unit.harness-entry");
++  }
++  if (profile.lifecycle.terminal_work_unit !== "work-unit.verification") {
++    fail("lifecycle.terminal_work_unit 必须为 work-unit.verification");
++  }
++  if (profile.lifecycle.terminal_stage !== "stage.verification") {
++    fail("lifecycle.terminal_stage 必须为 stage.verification");
++  }
++  for (const id of [
++    profile.lifecycle.entry_work_unit,
++    profile.lifecycle.terminal_work_unit,
++    ...profile.lifecycle.allowed_work_units,
++    ...profile.lifecycle.forbidden_work_units,
++  ]) {
++    if (!workUnitIds.has(id)) fail(`lifecycle 引用了未知工作单元: ${id}`);
++  }
++  if (!stageIds.has(profile.lifecycle.terminal_stage)) {
++    fail(`lifecycle.terminal_stage 引用了未知阶段: ${profile.lifecycle.terminal_stage}`);
++  }
++  if (profile.lifecycle.allowed_work_units.some((id) => profile.lifecycle.forbidden_work_units.includes(id))) {
++    fail("allowed_work_units 与 forbidden_work_units 不得重叠");
++  }
++
++  if (profile.upstream?.kind !== "approved-spec-or-strategic-design") {
++    fail("upstream.kind 必须为 approved-spec-or-strategic-design");
++  }
++  if (profile.upstream?.discovery_is_default !== false) {
++    fail("upstream.discovery_is_default 必须为 false");
++  }
++  if (profile.upstream?.default_entry !== "work-unit.harness-entry") {
++    fail("upstream.default_entry 必须为 work-unit.harness-entry");
++  }
++
++  const instantiation = profile.instantiation || {};
++  for (const [field, expected] of Object.entries(INSTANTIATION)) {
++    if (Array.isArray(expected)) {
++      if (!equalArray(instantiation[field], expected)) fail(`instantiation.${field} 必须为 ${JSON.stringify(expected)}`);
++    } else if (instantiation[field] !== expected) {
++      fail(`instantiation.${field} 必须为 ${expected}`);
++    }
++  }
++  if (isTemplateSource(ROOT)) {
++    const manifestPath = path.resolve(ROOT, instantiation.distribution_manifest);
++    if (!existsSync(manifestPath)) {
++      fail(`instantiation.distribution_manifest 不可读: ${instantiation.distribution_manifest}`);
++    }
++  }
++
++  return {
++    profile_id: profile.profile_id,
++    target_user_roles: [...profile.audience.target_user_roles],
++    terminal_work_unit: profile.lifecycle.terminal_work_unit,
++    cli_package: instantiation.cli_package,
++  };
++}
++
++export const harnessProfileContract = Object.freeze({
++  profile_id: DEV_AGENT_PROFILE_ID,
++  target_user_roles: TARGET_ROLES,
++  control_plane_roles: CONTROL_ROLES,
++  allowed_work_units: ALLOWED_WORK_UNITS,
++  forbidden_work_units: FORBIDDEN_WORK_UNITS,
++  instantiation: INSTANTIATION,
++});
+diff --git a/scripts/lib/instance-distribution.mjs b/scripts/lib/instance-distribution.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..2db78ac3dcad362631a15bca6561870f3387a504
+--- /dev/null
++++ b/scripts/lib/instance-distribution.mjs
+@@ -0,0 +1,198 @@
++import { existsSync, readFileSync } from "node:fs";
++import path from "node:path";
++import { ROOT } from "./lifecycle-registry.mjs";
++import { INSTANTIATION } from "./harness-profile.mjs";
++import { isTemplateSource } from "./repository-mode.mjs";
++
++export const DISTRIBUTION_MANIFEST = path.join(ROOT, INSTANTIATION.distribution_manifest);
++export const HARNESS_CONTRACT = path.join(
++  ROOT,
++  ".template-source/contracts/create-yss-harness-dev-repository-mode-contract.md",
++);
++export const LEGACY_SPEC_CONTRACT = path.join(
++  ROOT,
++  ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
++);
++
++const REQUIRED_ALLOW_ROOT_ENTRIES = [
++  ".agents",
++  ".claude",
++  ".codex",
++  ".cursor",
++  ".hermes",
++  ".pi",
++  ".qoder",
++  ".trae",
++  "docs",
++  "scripts",
++];
++const REQUIRED_ALLOW_ROOT_FILES = [
++  ".cursorrules",
++  ".gitignore",
++  ".nvmrc",
++  "AGENTS.md",
++  "CLAUDE.md",
++  "CONTEXT.md",
++  "README.md",
++  "skills-lock.json",
++  "yss-project.yaml",
++  "yss-public-skills.json",
++];
++const REQUIRED_ALLOW_FILES = ["docs/adr/README.md"];
++const REQUIRED_EXCLUDE_ROOT_ENTRIES = [
++  ".git",
++  ".codegraph",
++  ".template-source",
++  ".github",
++  "wiki",
++];
++const REQUIRED_EXCLUDE_ROOT_FILES = [
++  "package.json",
++  "package-lock.json",
++  ".gitmodules",
++  "template.manifest.json",
++  "template.snapshot.json",
++];
++const REQUIRED_EXCLUDE_PATHS = [
++  ".cursor/environment.json",
++  "docs/.scratch",
++  "docs/reviews",
++  "docs/adr",
++];
++const REQUIRED_RENDER_PATHS = ["README.md", "yss-project.yaml"];
++
++function fail(message) {
++  throw new TypeError(message);
++}
++
++function read(relativePath) {
++  const filePath = path.join(ROOT, relativePath);
++  try {
++    return readFileSync(filePath, "utf8");
++  } catch (error) {
++    if (error.code === "ENOENT") fail(`缺少实例化入口文件: ${relativePath}`);
++    throw error;
++  }
++}
++
++function requireStringArray(value, field) {
++  if (!Array.isArray(value) || value.some((item) => typeof item !== "string" || !item)) {
++    fail(`${field} 必须是非空字符串数组`);
++  }
++}
++
++function requireIncludes(actual, required, field) {
++  requireStringArray(actual, field);
++  for (const item of required) {
++    if (!actual.includes(item)) fail(`${field} 缺少 ${item}`);
++  }
++}
++
++export function loadDistributionManifest(filePath = DISTRIBUTION_MANIFEST) {
++  if (!existsSync(filePath)) fail(`缺少分发清单: ${path.relative(ROOT, filePath)}`);
++  let value;
++  try {
++    value = JSON.parse(readFileSync(filePath, "utf8"));
++  } catch (error) {
++    fail(`无法解析分发清单: ${error.message}`);
++  }
++  if (!value || typeof value !== "object" || Array.isArray(value)) fail("分发清单必须是 JSON 对象");
++  return value;
++}
++
++export function validateDistributionManifest(manifest = loadDistributionManifest()) {
++  requireIncludes(manifest.allowRootEntries, REQUIRED_ALLOW_ROOT_ENTRIES, "allowRootEntries");
++  requireIncludes(manifest.allowRootFiles, REQUIRED_ALLOW_ROOT_FILES, "allowRootFiles");
++  requireIncludes(manifest.allowFiles, REQUIRED_ALLOW_FILES, "allowFiles");
++  requireIncludes(manifest.excludeRootEntries, REQUIRED_EXCLUDE_ROOT_ENTRIES, "excludeRootEntries");
++  requireIncludes(manifest.excludeRootFiles, REQUIRED_EXCLUDE_ROOT_FILES, "excludeRootFiles");
++  requireIncludes(manifest.excludePaths, REQUIRED_EXCLUDE_PATHS, "excludePaths");
++  requireIncludes(manifest.renderPaths, REQUIRED_RENDER_PATHS, "renderPaths");
++  requireStringArray(manifest.exampleDocPaths || [], "exampleDocPaths");
++  requireStringArray(manifest.initExcludeRootEntries || [], "initExcludeRootEntries");
++  requireStringArray(manifest.initExcludeRootFiles || [], "initExcludeRootFiles");
++  requireStringArray(manifest.initExcludePaths || [], "initExcludePaths");
++  if (!(manifest.initExcludeRootFiles || []).includes("yss-public-skills.json")) {
++    fail("initExcludeRootFiles 必须排除 yss-public-skills.json");
++  }
++  if ((manifest.allowRootEntries || []).includes(".template-source")) {
++    fail("allowRootEntries 不得包含 .template-source");
++  }
++  if ((manifest.allowRootFiles || []).includes("package.json")) {
++    fail("allowRootFiles 不得包含根 package.json");
++  }
++  return {
++    allowRootEntries: [...manifest.allowRootEntries],
++    excludeRootEntries: [...manifest.excludeRootEntries],
++    renderPaths: [...manifest.renderPaths],
++  };
++}
++
++export function validateInstantiationPointers(documents = {}) {
++  const agents = documents.agents ?? read("AGENTS.md");
++  const readme = documents.readme ?? read("README.md");
++  const guide = documents.guide ?? read("docs/user-guide/外部命令行工具实践指南.md");
++  const index = documents.index ?? read("docs/user-guide/用户手册索引.md");
++  const migration = documents.migration ?? read("docs/user-guide/规格与任务迁移指南.md");
++  const implementation = read("docs/process/implementation-repo-integration.md");
++  const context = read("CONTEXT.md");
++
++  if (!agents.includes("`create-yss-harness-dev`")) {
++    fail("AGENTS.md 必须把 create-yss-harness-dev 作为模板发布跨仓库伴侣");
++  }
++  if (agents.includes("模板与外部 `create-yss-spec` 的跨仓库契约")) {
++    fail("AGENTS.md 不得再把 create-yss-spec 当成本仓发布伴侣");
++  }
++  if (!readme.includes("npm create yss-harness-dev")) {
++    fail("README.md 必须提供 npm create yss-harness-dev 入口");
++  }
++  if (readme.includes("npm create yss-spec@latest")) {
++    fail("README.md 不得再推荐 npm create yss-spec@latest");
++  }
++  if (!guide.includes("# `create-yss-harness-dev`")) {
++    fail("外部命令行工具实践指南必须面向 create-yss-harness-dev");
++  }
++  if (guide.includes("npx create-yss-spec@latest")) {
++    fail("外部命令行工具实践指南不得把 create-yss-spec 作为本 Harness 的可执行入口");
++  }
++  if (!index.includes("create-yss-harness-dev")) {
++    fail("用户手册索引必须指向 create-yss-harness-dev");
++  }
++  if (!migration.includes("create-yss-harness-dev")) {
++    fail("规格与任务迁移指南必须由 create-yss-harness-dev 执行身份改写");
++  }
++  if (!implementation.includes("YSS_HARNESS_TEMPLATE_REF")) {
++    fail("实现仓库接入文档必须使用 YSS_HARNESS_TEMPLATE_REF");
++  }
++  if (!implementation.includes(".yss-harness-dev.json")) {
++    fail("实现仓库接入文档必须声明 .yss-harness-dev.json");
++  }
++  if (!context.includes("create-yss-harness-dev")) {
++    fail("CONTEXT.md 必须登记开发落地 Harness CLI");
++  }
++  if (isTemplateSource(ROOT)) {
++    if (!existsSync(HARNESS_CONTRACT)) {
++      fail("缺少 create-yss-harness-dev 跨仓库契约");
++    }
++    const contract = readFileSync(HARNESS_CONTRACT, "utf8");
++    if (!contract.includes(INSTANTIATION.metadata_file) || !contract.includes(INSTANTIATION.cli_package)) {
++      fail("create-yss-harness-dev 契约必须声明 metadata 与 CLI 包名");
++    }
++    if (existsSync(LEGACY_SPEC_CONTRACT)) {
++      const legacy = readFileSync(LEGACY_SPEC_CONTRACT, "utf8");
++      if (!/已退役|错误绑定|不再作为本仓发布门禁/.test(legacy)) {
++        fail("create-yss-spec 契约必须标记为不再作为本仓发布门禁");
++      }
++    }
++  }
++  return { cli_package: INSTANTIATION.cli_package, metadata_file: INSTANTIATION.metadata_file };
++}
++
++export function validateInstanceDistribution({
++  checkManifest = isTemplateSource(ROOT),
++} = {}) {
++  const pointers = validateInstantiationPointers();
++  if (!checkManifest) return { ...pointers, manifest: null };
++  const manifest = validateDistributionManifest();
++  return { ...pointers, manifest };
++}
+diff --git a/scripts/lib/maintenance-intensity.mjs b/scripts/lib/maintenance-intensity.mjs
+index 275c8a2501c453a2935b873cccab8e912a115898..f47494a62ce25b7281b8a1b1250ed18572e20fbd 100644
+--- a/scripts/lib/maintenance-intensity.mjs
++++ b/scripts/lib/maintenance-intensity.mjs
+@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
+ import path from "node:path";
+ import { fileURLToPath } from "node:url";
+ import { parseDocument } from "../vendor/yaml.mjs";
++import { validateMaintenanceReviewEvidence } from "./maintenance-review.mjs";
+ 
+ const LEVELS = ["L1", "L2", "L3"];
+ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+@@ -60,7 +61,7 @@ export function minimumIntensity(triggers) {
+   return required;
+ }
+ 
+-export function validateMaintenanceCheckpoint(data) {
++export function validateMaintenanceCheckpoint(data, options = {}) {
+   ensure(data && typeof data === "object" && !Array.isArray(data), "checkpoint 必须是对象");
+   const exactFields = ["schema_version", "intensity", "classification_reason", "triggers", "changed_assets", "verification_evidence", "review_mode", "escalation"];
+   const unknown = Object.keys(data).filter((key) => !exactFields.includes(key));
+@@ -79,9 +80,16 @@ export function validateMaintenanceCheckpoint(data) {
+     ensure(typeof evidence.kind === "string" && evidence.kind.trim(), "verification_evidence.kind 不能为空");
+     ensure(typeof evidence.command === "string" && evidence.command.trim(), "verification_evidence.command 不能为空");
+     ensure(evidence.result === "pass", `验证证据必须是本轮实际通过结果: ${evidence.kind ?? "unknown"}`);
++    if (["focused-independent-review", "formal-independent-review"].includes(evidence.kind)) {
++      validateMaintenanceReviewEvidence(evidence, options);
++    }
+     kinds.add(evidence.kind);
+   }
+-  for (const required of REQUIRED_EVIDENCE[data.intensity]) ensure(kinds.has(required), `${data.intensity} 缺少 ${required} 证据`);
++  const reviewKind = data.intensity === "L2" ? "focused-independent-review" : data.intensity === "L3" ? "formal-independent-review" : null;
++  for (const required of REQUIRED_EVIDENCE[data.intensity]) {
++    if (options.allowPendingReview === true && required === reviewKind) continue;
++    ensure(kinds.has(required), `${data.intensity} 缺少 ${required} 证据`);
++  }
+   ensure(REVIEW_MODES[data.intensity].has(data.review_mode), `${data.intensity} 不允许 review_mode=${data.review_mode}`);
+   return { intensity: data.intensity, minimum_intensity: minimum };
+ }
+diff --git a/scripts/lib/skill-supply-chain.mjs b/scripts/lib/skill-supply-chain.mjs
+index f53db22b5649a1e773c6d9128dffeb80b23a32ea..d5e39d3df00edc57f8a81a73a8ad6b728093d179 100644
+--- a/scripts/lib/skill-supply-chain.mjs
++++ b/scripts/lib/skill-supply-chain.mjs
+@@ -28,7 +28,7 @@ function treeFiles(directory, prefix = "") {
+ }
+ export function treeHash(directory) {
+   const digest = createHash("sha256");
+-  for (const [name, file] of treeFiles(directory).sort(([left], [right]) => left.localeCompare(right))) {
++  for (const [name, file] of treeFiles(directory).sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))) {
+     digest.update(name).update("\0").update(readFileSync(file)).update("\0");
+   }
+   return digest.digest("hex");
+diff --git a/scripts/lib/task-package.mjs b/scripts/lib/task-package.mjs
+index 80910716093134994a91387c0a041adf3d805fad..11686122286406028f307856d43fc261146b23b6 100644
+--- a/scripts/lib/task-package.mjs
++++ b/scripts/lib/task-package.mjs
+@@ -1,14 +1,13 @@
+ import { existsSync, readFileSync } from "node:fs";
+-import { spawnSync } from "node:child_process";
+ import path from "node:path";
+ import { parseDocument } from "../vendor/yaml.mjs";
+ import { loadDigitalHumanRoles, taskPackageDefaults } from "./digital-human-roles.mjs";
+ import { loadRegistry, ROOT } from "./lifecycle-registry.mjs";
+ import { loadMaintenanceCheckpoint, validateMaintenanceCheckpoint } from "./maintenance-intensity.mjs";
+ import { validateNextRoute } from "./lifecycle-transition.mjs";
++import { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSchema } from "./task-package-schema.mjs";
+ 
+-export const TASK_PACKAGE_SCHEMA = path.join(ROOT, "docs/process/schemas/digital-human-task-package.schema.json");
+-export const LEGACY_TASK_PACKAGE_SCHEMA = path.join(ROOT, "docs/process/schemas/subagent-task-package.schema.json");
++export { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSchema };
+ export const TASK_PACKAGE_REGISTRY_REF = "docs/agents/digital-human-roles.yaml";
+ export const CONTRACT_KINDS = new Set(["lifecycle-work-unit", "slice-implementation", "template-maintenance"]);
+ export const EXECUTION_STATES = new Set(["Explorer", "Drafter", "Worker", "Reviewer", "Verifier"]);
+@@ -48,25 +47,6 @@ export function loadTaskPackage(filePath) {
+   return { value, sourcePath };
+ }
+ 
+-export function validateTaskPackageSchema(value, schemaPath = TASK_PACKAGE_SCHEMA) {
+-  const effectiveSchema = path.resolve(schemaPath) === path.resolve(LEGACY_TASK_PACKAGE_SCHEMA) ? TASK_PACKAGE_SCHEMA : schemaPath;
+-  if (!existsSync(effectiveSchema)) fail(`缺少任务包 schema: ${effectiveSchema}`);
+-  const validator = String.raw`
+-import json
+-import sys
+-from jsonschema import Draft202012Validator
+-schema = json.load(open(sys.argv[1], encoding="utf-8"))
+-value = json.load(sys.stdin)
+-errors = sorted(Draft202012Validator(schema).iter_errors(value), key=lambda error: list(error.absolute_path))
+-for error in errors:
+-    location = ".".join(str(part) for part in error.absolute_path) or "<root>"
+-    print(f"{location}: {error.message}", file=sys.stderr)
+-sys.exit(1 if errors else 0)
+-`;
+-  const result = spawnSync("python3", ["-c", validator, effectiveSchema], { cwd: ROOT, encoding: "utf8", input: JSON.stringify(value) });
+-  if (result.status !== 0) fail(`${result.stdout}${result.stderr}`.trim());
+-}
+-
+ function validateSkillSource(value, registry) {
+   const defaults = taskPackageDefaults(value.role_id, registry);
+   if (value.skill_source.registry_ref !== TASK_PACKAGE_REGISTRY_REF) fail(`skill_source.registry_ref 必须为 ${TASK_PACKAGE_REGISTRY_REF}`);
+@@ -155,7 +135,9 @@ function validateContract(value, registry, lifecycle) {
+     if (contract.slice_contract_ref || contract.lifecycle_ref) fail("template-maintenance 不得携带其他合同引用");
+     const checkpointPath = assertSafeRelativePath(contract.maintenance_ref, "contract.maintenance_ref");
+     if (!existsSync(checkpointPath)) fail(`维护 checkpoint 不存在: ${contract.maintenance_ref}`);
+-    validateMaintenanceCheckpoint(loadMaintenanceCheckpoint(contract.maintenance_ref));
++    validateMaintenanceCheckpoint(loadMaintenanceCheckpoint(contract.maintenance_ref), {
++      allowPendingReview: value.execution_state === "Reviewer" && value.workflow_status !== "resolved"
++    });
+     if (lifecycle.work_units.find((item) => item.id === value.work_unit_id)?.scope !== "template-source") fail("template-maintenance 必须绑定 template-source work unit");
+     return;
+   }
+diff --git a/scripts/verify-harness-profile b/scripts/verify-harness-profile
+new file mode 100755
+index 0000000000000000000000000000000000000000..8d38b709bc58b4f63bca5a10bc35653e1fc3951d
+--- /dev/null
++++ b/scripts/verify-harness-profile
+@@ -0,0 +1,10 @@
++#!/usr/bin/env node
++import { validateHarnessProfile } from "./lib/harness-profile.mjs";
++
++try {
++  const result = validateHarnessProfile();
++  process.stdout.write(`Harness profile 校验通过: ${result.profile_id} → ${result.cli_package}\n`);
++} catch (error) {
++  process.stderr.write(`${error.message}\n`);
++  process.exitCode = 1;
++}
+diff --git a/scripts/verify-harness-profile-scenarios b/scripts/verify-harness-profile-scenarios
+new file mode 100755
+index 0000000000000000000000000000000000000000..c54a6bd6c4fb4b2078dad8121de50ffe98ea7ef0
+--- /dev/null
++++ b/scripts/verify-harness-profile-scenarios
+@@ -0,0 +1,33 @@
++#!/usr/bin/env node
++import assert from "node:assert/strict";
++import {
++  DEV_AGENT_PROFILE_ID,
++  loadHarnessProfile,
++  validateHarnessProfile,
++} from "./lib/harness-profile.mjs";
++
++const source = loadHarnessProfile();
++const valid = validateHarnessProfile(source);
++assert.equal(valid.profile_id, DEV_AGENT_PROFILE_ID);
++assert.deepEqual(valid.target_user_roles, [
++  "role.architecture-agent",
++  "role.frontend-agent",
++  "role.backend-agent",
++  "role.test-agent",
++]);
++assert.equal(valid.terminal_work_unit, "work-unit.verification");
++assert.equal(valid.cli_package, "create-yss-harness-dev");
++
++const mutations = [
++  ["wrong profile", (candidate) => { candidate.profile_id = "harness.business-ddd-strategy-handoff"; }, /harness\.dev-agent-slice/],
++  ["extra target role", (candidate) => candidate.audience.target_user_roles.push("role.product-manager"), /target_user_roles/],
++  ["wrong terminal", (candidate) => { candidate.lifecycle.terminal_work_unit = "work-unit.tactical-design"; }, /terminal_work_unit/],
++  ["discovery default", (candidate) => { candidate.upstream.discovery_is_default = true; }, /discovery_is_default/],
++  ["foreign cli", (candidate) => { candidate.instantiation.cli_package = "create-yss-spec"; }, /cli_package/],
++];
++for (const [name, mutate, pattern] of mutations) {
++  const candidate = structuredClone(source);
++  mutate(candidate);
++  assert.throws(() => validateHarnessProfile(candidate), pattern, name);
++}
++process.stdout.write("Harness profile 压力场景验证通过\n");
+diff --git a/scripts/verify-instance-distribution b/scripts/verify-instance-distribution
+new file mode 100755
+index 0000000000000000000000000000000000000000..67d1396c3c9a54cf60fad26430302ba731688611
+--- /dev/null
++++ b/scripts/verify-instance-distribution
+@@ -0,0 +1,12 @@
++#!/usr/bin/env node
++import { validateInstanceDistribution } from "./lib/instance-distribution.mjs";
++
++try {
++  const result = validateInstanceDistribution();
++  process.stdout.write(
++    `实例分发面校验通过: ${result.cli_package} / ${result.metadata_file}\n`,
++  );
++} catch (error) {
++  process.stderr.write(`${error.message}\n`);
++  process.exitCode = 1;
++}
+diff --git a/scripts/verify-instance-distribution-scenarios b/scripts/verify-instance-distribution-scenarios
+new file mode 100755
+index 0000000000000000000000000000000000000000..9d8fd5259f2483619b78bdce00c6213df1f905b1
+--- /dev/null
++++ b/scripts/verify-instance-distribution-scenarios
+@@ -0,0 +1,36 @@
++#!/usr/bin/env node
++import assert from "node:assert/strict";
++import {
++  loadDistributionManifest,
++  validateDistributionManifest,
++  validateInstanceDistribution,
++  validateInstantiationPointers,
++} from "./lib/instance-distribution.mjs";
++
++const live = validateInstanceDistribution();
++assert.equal(live.cli_package, "create-yss-harness-dev");
++assert.equal(live.metadata_file, ".yss-harness-dev.json");
++assert.ok(live.manifest.excludeRootEntries.includes(".template-source"));
++
++const source = loadDistributionManifest();
++const mutations = [
++  ["allow governance zone", (candidate) => candidate.allowRootEntries.push(".template-source"), /\.template-source/],
++  ["drop wiki exclude", (candidate) => {
++    candidate.excludeRootEntries = candidate.excludeRootEntries.filter((item) => item !== "wiki");
++  }, /wiki/],
++  ["allow package.json", (candidate) => candidate.allowRootFiles.push("package.json"), /package\.json/],
++  ["drop yss-project render", (candidate) => {
++    candidate.renderPaths = candidate.renderPaths.filter((item) => item !== "yss-project.yaml");
++  }, /yss-project\.yaml/],
++];
++for (const [name, mutate, pattern] of mutations) {
++  const candidate = structuredClone(source);
++  mutate(candidate);
++  assert.throws(() => validateDistributionManifest(candidate), pattern, name);
++}
++assert.throws(
++  () => validateInstantiationPointers({ guide: "# `create-yss-harness-dev`\n\n```bash\nnpx create-yss-spec@latest init\n```" }),
++  /不得把 create-yss-spec 作为本 Harness 的可执行入口/,
++  "legacy create-yss-spec executable command"
++);
++process.stdout.write("实例分发面压力场景验证通过\n");
+diff --git a/scripts/verify-maintenance-intensity-scenarios b/scripts/verify-maintenance-intensity-scenarios
+index 819714407c8622721262b0b506c8743891316b03..4ea6ae140712a37258d8c493718dac601e202f64 100755
+--- a/scripts/verify-maintenance-intensity-scenarios
++++ b/scripts/verify-maintenance-intensity-scenarios
+@@ -1,6 +1,9 @@
+ #!/usr/bin/env node
+-import { readFileSync } from "node:fs";
++import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
++import { tmpdir } from "node:os";
++import path from "node:path";
+ import { validateMaintenanceCheckpoint } from "./lib/maintenance-intensity.mjs";
++import { validateMaintenanceReviewEvidence } from "./lib/maintenance-review.mjs";
+ 
+ const checkerSource = readFileSync(new URL("./lib/maintenance-intensity.mjs", import.meta.url), "utf8");
+ if (checkerSource.includes("LEVEL_BY_TRIGGER = new Map")) {
+@@ -11,6 +14,15 @@ if (!checkerSource.includes("maintenance-intensity.yaml")) {
+ }
+ 
+ const evidence = (...kinds) => kinds.map((kind) => ({ kind, command: `verify ${kind}`, result: "pass" }));
++const reviewRequestOnly = ".template-source/tooling/node/test/fixtures/maintenance-review-request-only.md";
++const focusedReview = ".template-source/tooling/node/test/fixtures/maintenance-focused-review-approved.md";
++const formalReview = ".template-source/tooling/node/test/fixtures/maintenance-review/formal-review-record.yaml";
++const sameActorReview = ".template-source/tooling/node/test/fixtures/maintenance-review/formal-review-same-actor.yaml";
++const wrongDigestReview = ".template-source/tooling/node/test/fixtures/maintenance-review/formal-review-wrong-digest.yaml";
++const negativeReview = ".template-source/tooling/node/test/fixtures/maintenance-formal-review-negative.md";
++const negativeStructuredReview = ".template-source/tooling/node/test/fixtures/maintenance-review/formal-review-negative-record.yaml";
++const openFindingReview = ".template-source/tooling/node/test/fixtures/maintenance-review/formal-review-open-finding.yaml";
++const invalidTaskReview = ".template-source/tooling/node/test/fixtures/maintenance-review/formal-review-invalid-task.yaml";
+ const base = {
+   schema_version: 1,
+   classification_reason: "场景验证",
+@@ -20,13 +32,22 @@ const base = {
+ 
+ const accepted = [
+   { ...base, intensity: "L1", triggers: ["textual-only"], verification_evidence: evidence("relevant-check"), review_mode: "self-check" },
+-  { ...base, intensity: "L2", triggers: ["local-rule"], verification_evidence: evidence("counterexample", "fresh-verification", "focused-independent-review"), review_mode: "focused-independent" },
+-  { ...base, intensity: "L2", triggers: [], verification_evidence: evidence("counterexample", "fresh-verification", "focused-independent-review"), review_mode: "focused-independent" },
+-  { ...base, intensity: "L3", triggers: ["lifecycle-gate"], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification", "formal-independent-review"), review_mode: "formal-independent" }
++  { ...base, intensity: "L2", triggers: ["local-rule"], verification_evidence: [...evidence("counterexample", "fresh-verification"), { kind: "focused-independent-review", command: focusedReview, result: "pass" }], review_mode: "focused-independent" },
++  { ...base, intensity: "L2", triggers: [], verification_evidence: [...evidence("counterexample", "fresh-verification"), { kind: "focused-independent-review", command: focusedReview, result: "pass" }], review_mode: "focused-independent" },
++  { ...base, intensity: "L3", triggers: ["lifecycle-gate"], verification_evidence: [...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"), { kind: "formal-independent-review", command: formalReview, result: "pass" }], review_mode: "formal-independent" }
+ ];
+ 
+ for (const checkpoint of accepted) validateMaintenanceCheckpoint(checkpoint);
+ 
++const pendingFormalReview = {
++  ...accepted[3],
++  verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification")
++};
++validateMaintenanceCheckpoint(pendingFormalReview, { allowPendingReview: true });
++let pendingPassedStrictClosure = true;
++try { validateMaintenanceCheckpoint(pendingFormalReview); } catch { pendingPassedStrictClosure = false; }
++if (pendingPassedStrictClosure) throw new TypeError("待审合同不得通过最终 checkpoint 校验");
++
+ const rejected = [
+   { ...accepted[1], verification_evidence: evidence("fresh-verification") },
+   { ...accepted[1], verification_evidence: evidence("counterexample", "fresh-verification") },
+@@ -35,7 +56,56 @@ const rejected = [
+   { ...accepted[2], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario") },
+   { ...accepted[2], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification") },
+   { ...accepted[1], escalation: "发现发布语义影响但仍维持 L2", triggers: ["release-semantics"] },
+-  { ...accepted[2], intensity: "L1" }
++  { ...accepted[2], intensity: "L1" },
++  {
++    ...accepted[3],
++    verification_evidence: [
++      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
++      { kind: "formal-independent-review", command: reviewRequestOnly, result: "pass" }
++    ]
++  },
++  {
++    ...accepted[3],
++    verification_evidence: [
++      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
++      { kind: "formal-independent-review", command: sameActorReview, result: "pass" }
++    ]
++  },
++  {
++    ...accepted[3],
++    verification_evidence: [
++      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
++      { kind: "formal-independent-review", command: wrongDigestReview, result: "pass" }
++    ]
++  },
++  {
++    ...accepted[3],
++    verification_evidence: [
++      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
++      { kind: "formal-independent-review", command: negativeReview, result: "pass" }
++    ]
++  },
++  {
++    ...accepted[3],
++    verification_evidence: [
++      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
++      { kind: "formal-independent-review", command: negativeStructuredReview, result: "pass" }
++    ]
++  },
++  {
++    ...accepted[3],
++    verification_evidence: [
++      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
++      { kind: "formal-independent-review", command: openFindingReview, result: "pass" }
++    ]
++  },
++  {
++    ...accepted[3],
++    verification_evidence: [
++      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
++      { kind: "formal-independent-review", command: invalidTaskReview, result: "pass" }
++    ]
++  }
+ ];
+ 
+ for (const checkpoint of rejected) {
+@@ -44,4 +114,17 @@ for (const checkpoint of rejected) {
+   if (!failed) throw new TypeError(`错误 checkpoint 未被拒绝: ${JSON.stringify(checkpoint)}`);
+ }
+ 
++const symlinkFixture = mkdtempSync(path.join(tmpdir(), "yss-maintenance-review-"));
++try {
++  const baseDir = path.join(symlinkFixture, "repo");
++  mkdirSync(baseDir);
++  writeFileSync(path.join(symlinkFixture, "outside.md"), "# 聚焦独立审查\n\n审查者：reviewer.outside\n\n审查结论：pass\n");
++  symlinkSync(path.join(symlinkFixture, "outside.md"), path.join(baseDir, "review.md"));
++  let symlinkEscaped = false;
++  try { validateMaintenanceReviewEvidence({ kind: "focused-independent-review", command: "review.md" }, { baseDir }); } catch { symlinkEscaped = true; }
++  if (!symlinkEscaped) throw new TypeError("symlink 越界证据未被拒绝");
++} finally {
++  rmSync(symlinkFixture, { recursive: true, force: true });
++}
++
+ process.stdout.write("模板维护 L1/L2/L3 强度场景验证通过\n");
+diff --git a/scripts/verify-subagent-task-package-scenarios b/scripts/verify-subagent-task-package-scenarios
+index 77deba4763310f10959b2b3376376462efd4ac90..d80d45370c12bdc27597150dd6bf55675f23b020 100755
+--- a/scripts/verify-subagent-task-package-scenarios
++++ b/scripts/verify-subagent-task-package-scenarios
+@@ -1,17 +1,20 @@
+ #!/usr/bin/env node
+ import assert from "node:assert/strict";
+-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
++import { existsSync, mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+ import path from "node:path";
+ import { spawnSync } from "node:child_process";
+ import { ROOT } from "./lib/lifecycle-registry.mjs";
+ import { generateTaskPackageDefaults, validateTaskPackage, validateTaskPackageSet } from "./lib/task-package.mjs";
+ 
+-const contractRef = ".template-source/evidence/.task-package-slice-contract.json";
+-const evidenceRef = ".template-source/evidence/.task-package-evidence.json";
+-const maintenanceRef = ".template-source/evidence/.task-package-maintenance.json";
++const scratchDir = "docs/.scratch";
++const fixtureDir = `${scratchDir}/_verify-task-package`;
++const contractRef = `${fixtureDir}/slice-contract.json`;
++const evidenceRef = `${fixtureDir}/evidence.json`;
++const maintenanceRef = `${fixtureDir}/maintenance.json`;
+ const contractFile = path.join(ROOT, contractRef);
+ const evidenceFile = path.join(ROOT, evidenceRef);
+ const maintenanceFile = path.join(ROOT, maintenanceRef);
++const createdScratch = !existsSync(path.join(ROOT, scratchDir));
+ 
+ const contract = {
+   schema_version: 1,
+@@ -55,8 +58,7 @@ const maintenance = {
+     { kind: "green", command: "scenario", result: "pass" },
+     { kind: "refactor", command: "scenario", result: "pass" },
+     { kind: "pressure-scenario", command: "scenario", result: "pass" },
+-    { kind: "fresh-verification", command: "scenario", result: "pass" },
+-    { kind: "formal-independent-review", command: "scenario", result: "pass" }
++    { kind: "fresh-verification", command: "scenario", result: "pass" }
+   ],
+   review_mode: "formal-independent",
+   escalation: "none"
+@@ -103,7 +105,7 @@ function lifecyclePackage() {
+ }
+ 
+ function templatePackage() {
+-  return packageBase("role.harness-orchestrator", "task-maintenance", "work-unit.intensity-aware-verification", "template-maintenance", {
++  return packageBase("role.test-agent", "task-maintenance", "work-unit.intensity-aware-verification", "template-maintenance", {
+     maintenance_ref: maintenanceRef,
+     contract_id: "template-maintenance"
+   });
+@@ -162,6 +164,8 @@ function mustFail(mutator, pattern, label, factory = () => lifecyclePackage()) {
+ try {
+   const tactical = lifecyclePackage();
+   const maintenance = templatePackage();
++  maintenance.execution_state = "Reviewer";
++  maintenance.review_context = { implementation_actor_id: "role.harness-orchestrator.instance-1" };
+   const frontend = slicePackage("role.frontend-agent", "task-frontend", "work-unit.slice-frontend", "apps/frontend/todo/");
+   const backend = slicePackage("role.backend-agent", "task-backend", "work-unit.slice-backend", "apps/backend/todo/");
+   const testing = slicePackage("role.test-agent", "task-test", "work-unit.slice-test", "tests/todo/");
+@@ -175,7 +179,8 @@ try {
+   completed.result = completedResult(completed);
+   validateTaskPackage(completed);
+ 
+-  const validFile = path.join(ROOT, ".template-source/evidence/.task-package-valid.json");
++  const validFile = path.join(ROOT, fixtureDir, "valid.json");
++  mkdirSync(path.dirname(validFile), { recursive: true });
+   writeFileSync(validFile, JSON.stringify(tactical));
+   for (const cli of ["scripts/verify-digital-human-task-package", "scripts/verify-subagent-task-package"]) {
+     const result = spawnSync(process.execPath, [path.join(ROOT, cli), validFile], { encoding: "utf8" });
+@@ -199,7 +204,9 @@ try {
+ 
+   process.stdout.write("四角色 Harness Agent 任务包压力场景验证通过\n");
+ } finally {
+-  rmSync(contractFile, { force: true });
+-  rmSync(evidenceFile, { force: true });
+-  rmSync(maintenanceFile, { force: true });
++  rmSync(path.join(ROOT, fixtureDir), { recursive: true, force: true });
++  const scratchRoot = path.join(ROOT, scratchDir);
++  if (createdScratch && existsSync(scratchRoot) && readdirSync(scratchRoot).length === 0) {
++    rmSync(scratchRoot, { recursive: true, force: true });
++  }
+ }
+diff --git a/scripts/verify-template b/scripts/verify-template
+index 12dd6719d342325a31f7ce8c45749b8bd58421e9..ca67cd041dffbb61580838e125cee8506d97120e 100755
+--- a/scripts/verify-template
++++ b/scripts/verify-template
+@@ -5,11 +5,14 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ cd "$ROOT_DIR"
+ node -e 'const [major]=process.versions.node.split(".").map(Number); if (major < 22 || major >= 27) { console.error("模板工具需要 Node >=22 <27"); process.exit(1); }'
+ 
+-required_files=(yss-project.yaml AGENTS.md CONTEXT.md skills-lock.json docs/agents/yss-skill-registry.yaml docs/agents/digital-human-roles.yaml docs/process/lifecycle-registry.yaml docs/process/lifecycle-registry-baseline.json docs/process/maintenance-intensity.yaml docs/process/schemas/lifecycle-checkpoint.schema.json docs/process/schemas/frontend-implementation-evidence.schema.json docs/process/schemas/digital-human-task-package.schema.json docs/process/schemas/subagent-task-package.schema.json docs/process/templates/lifecycle-checkpoint-template.yaml docs/process/templates/frontend-implementation-plan-template.yaml docs/process/templates/frontend-implementation-verification-template.yaml docs/templates/subagent-task-package-template.md .agents/skills/yss-tactical-design/SKILL.md .agents/skills/yss-tactical-design/agents/openai.yaml .agents/skills/yss-tactical-design/references/tactical-design-contract.md .agents/skills/yss-tactical-design/references/tactical-design.schema.json .agents/skills/yss-tactical-design/references/validation-rules.md .agents/skills/yss-tactical-design/references/output-template.md .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs .agents/skills/yss-tactical-design/tests/run-scenarios.mjs scripts/repository-mode scripts/implementation-path-policy scripts/repository-scope-policy scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-lifecycle-checkpoint scripts/verify-frontend-implementation-evidence scripts/lib/task-package.mjs scripts/verify-digital-human-task-package scripts/verify-digital-human-task-package-scenarios scripts/verify-subagent-task-package scripts/verify-subagent-task-package-scenarios scripts/verify-lifecycle-transition-scenarios scripts/verify-maintenance-checkpoint scripts/verify-maintenance-intensity-scenarios scripts/verify-skill-registry scripts/verify-skill-governance scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/verify-digital-human-roles scripts/verify-digital-human-roles-scenarios scripts/verify-approval-record scripts/export-yss-skills)
++required_files=(yss-project.yaml AGENTS.md CONTEXT.md skills-lock.json docs/agents/yss-skill-registry.yaml docs/agents/digital-human-roles.yaml docs/process/lifecycle-registry.yaml docs/process/lifecycle-registry-baseline.json docs/process/maintenance-intensity.yaml docs/process/harness-profile.yaml docs/process/schemas/lifecycle-checkpoint.schema.json docs/process/schemas/frontend-implementation-evidence.schema.json docs/process/schemas/digital-human-task-package.schema.json docs/process/schemas/subagent-task-package.schema.json docs/process/templates/lifecycle-checkpoint-template.yaml docs/process/templates/frontend-implementation-plan-template.yaml docs/process/templates/frontend-implementation-verification-template.yaml docs/templates/subagent-task-package-template.md .agents/skills/yss-tactical-design/SKILL.md .agents/skills/yss-tactical-design/agents/openai.yaml .agents/skills/yss-tactical-design/references/tactical-design-contract.md .agents/skills/yss-tactical-design/references/tactical-design.schema.json .agents/skills/yss-tactical-design/references/validation-rules.md .agents/skills/yss-tactical-design/references/output-template.md .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs .agents/skills/yss-tactical-design/tests/run-scenarios.mjs scripts/repository-mode scripts/implementation-path-policy scripts/repository-scope-policy scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-lifecycle-checkpoint scripts/verify-frontend-implementation-evidence scripts/lib/task-package.mjs scripts/lib/harness-profile.mjs scripts/lib/instance-distribution.mjs scripts/verify-digital-human-task-package scripts/verify-digital-human-task-package-scenarios scripts/verify-subagent-task-package scripts/verify-subagent-task-package-scenarios scripts/verify-lifecycle-transition-scenarios scripts/verify-maintenance-checkpoint scripts/verify-maintenance-intensity-scenarios scripts/verify-skill-registry scripts/verify-skill-governance scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/verify-digital-human-roles scripts/verify-digital-human-roles-scenarios scripts/verify-harness-profile scripts/verify-harness-profile-scenarios scripts/verify-instance-distribution scripts/verify-approval-record scripts/export-yss-skills)
+ for required in "${required_files[@]}"; do test -f "$required" || { echo "缺少模板必需文件: $required" >&2; exit 1; }; done
++for required in docs/process/schemas/maintenance-review-record.schema.json scripts/lib/maintenance-review.mjs scripts/lib/task-package-schema.mjs scripts/verify-maintenance-review-record; do test -f "$required" || { echo "缺少模板必需文件: $required" >&2; exit 1; }; done
+ 
+ repository_mode="$(scripts/repository-mode)"
+ if [[ "$repository_mode" == "template-source" ]]; then
++  test -f .template-source/distribution/template.manifest.json
++  test -f .template-source/contracts/create-yss-harness-dev-repository-mode-contract.md
+   test -x .template-source/scripts/evidence-index
+   .template-source/scripts/evidence-index --check
+   pnpm --dir .template-source/tooling/node test
+@@ -27,6 +30,12 @@ scripts/verify-yss-dto-openapi-profile
+ scripts/verify-yss-dto-openapi-scenarios
+ scripts/verify-digital-human-roles
+ scripts/verify-digital-human-roles-scenarios
++scripts/verify-harness-profile
++scripts/verify-harness-profile-scenarios
++scripts/verify-instance-distribution
++if [[ "$repository_mode" == "template-source" ]]; then
++  scripts/verify-instance-distribution-scenarios
++fi
+ scripts/verify-approval-record docs/templates/approval-record-template.yaml
+ scripts/verify-lifecycle-registry
+ scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml
+@@ -53,7 +62,10 @@ scripts/verify-yss-ui-scenarios
+ scripts/verify-openapi-yaml-first-scenarios
+ scripts/verify-openapi-json-handoff-scenarios
+ 
+-for entry in scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-lifecycle-checkpoint scripts/verify-frontend-implementation-evidence scripts/lib/task-package.mjs scripts/verify-digital-human-task-package scripts/verify-digital-human-task-package-scenarios scripts/verify-subagent-task-package scripts/verify-subagent-task-package-scenarios scripts/verify-maintenance-checkpoint scripts/verify-maintenance-intensity-scenarios scripts/verify-skill-registry scripts/verify-skill-governance scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/verify-digital-human-roles scripts/verify-digital-human-roles-scenarios scripts/verify-approval-record scripts/lib/lifecycle-transition.mjs scripts/verify-lifecycle-scenarios scripts/verify-lifecycle-transition-scenarios scripts/verify-matt-yss-integration-scenarios scripts/verify-prototype-backend-scaffold-scenarios scripts/verify-yss-router-scenarios scripts/verify-openapi-yaml-first-scenarios scripts/verify-openapi-json-handoff-scenarios scripts/verify-repository-scope-scenarios scripts/export-yss-skills; do node --check "$entry"; done
++for entry in scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-lifecycle-checkpoint scripts/verify-frontend-implementation-evidence scripts/lib/task-package.mjs scripts/lib/harness-profile.mjs scripts/lib/instance-distribution.mjs scripts/verify-digital-human-task-package scripts/verify-digital-human-task-package-scenarios scripts/verify-subagent-task-package scripts/verify-subagent-task-package-scenarios scripts/verify-maintenance-checkpoint scripts/verify-maintenance-intensity-scenarios scripts/verify-skill-registry scripts/verify-skill-governance scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/verify-digital-human-roles scripts/verify-digital-human-roles-scenarios scripts/verify-harness-profile scripts/verify-harness-profile-scenarios scripts/verify-instance-distribution scripts/verify-instance-distribution-scenarios scripts/verify-approval-record scripts/lib/lifecycle-transition.mjs scripts/verify-lifecycle-scenarios scripts/verify-lifecycle-transition-scenarios scripts/verify-matt-yss-integration-scenarios scripts/verify-prototype-backend-scaffold-scenarios scripts/verify-yss-router-scenarios scripts/verify-openapi-yaml-first-scenarios scripts/verify-openapi-json-handoff-scenarios scripts/verify-repository-scope-scenarios scripts/export-yss-skills; do node --check "$entry"; done
++node --check scripts/lib/maintenance-review.mjs
++node --check scripts/lib/task-package-schema.mjs
++node --check scripts/verify-maintenance-review-record
+ 
+ legacy_runtime="ru""by"
+ script_roots=(scripts)
+diff --git a/skills-lock.json b/skills-lock.json
+index c0fc897846a0a1d3d1b7d7a32e394c3e9043826d..2bcf9e2664a944ef5d8a210597b808d16e7cda52 100644
+--- a/skills-lock.json
++++ b/skills-lock.json
+@@ -22,7 +22,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/alibaba-java-code-style/SKILL.md",
+-        "effectiveHash": "a3b3ff9501e0ca2324d594e4ce5b8018f651d61a277b4194a6f10407c6857bb8",
++        "effectiveHash": "a79c7098c7eba8c427981f07980996b82e9a90794e5d4804356269fecda3bcd2",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -38,7 +38,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/architecture-agent/SKILL.md",
+-        "effectiveHash": "36ad4bc4e68432b52fa8d5ca7f2cb28c8d465ed17748402743f4c96065b602a4",
++        "effectiveHash": "96fa0f276242f6c4d8775b86862a4a73ca2dbb607e45cadda3c3e6c37b00677d",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -54,7 +54,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/ask-matt/SKILL.md",
+-        "effectiveHash": "8feccba59807a6cf6799fd20aa63073e25c924a96748e9bf6b4d4aa5b27a6ab3",
++        "effectiveHash": "c2be6ccae575dc60a607c3fc60668505fbaacf277d4644570bd0d126e4f94e3f",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "0261a2abbd43cc5bb391878106cda2eb7c4eabdde9ba5701b51d831f6e98f658",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -73,7 +73,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/backend-agent/SKILL.md",
+-        "effectiveHash": "2a6b44b441ae5248c2883a284a9458e870c8c06ea2c3611a8a3c9205bfecb13e",
++        "effectiveHash": "642827175f89a9758a406037b0d888bbe331010b48c8bc179c85e3d993305ee8",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -89,7 +89,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/code-review/SKILL.md",
+-        "effectiveHash": "c219efcb928e6ecbb7cc258a1b257a030dde190d38234718fdf6783503180fab",
++        "effectiveHash": "535947ebebfa24ed6db7a25c34d4edd78f1885595dfeccfb255f303e40e35303",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "12daafb9c4f77deb3c3303dc2e6f8a3c2a0ff7928fc004af959ba18b8bd38068",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -108,7 +108,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/codebase-design/SKILL.md",
+-        "effectiveHash": "42f405c9a796a59fbca9e07f43225d42ce1c9f3541463099bc62eda59d6f550f",
++        "effectiveHash": "d2c52f5938ce4f570f16bd8b1c194b07524b57da046a86be1617b390f14f6409",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "9f457cc65ef2d70eb5b8a44a4dae2b139840078b6596a67ee8c4e95f5a0e6f5c",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -175,7 +175,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/diagnosing-bugs/SKILL.md",
+-        "effectiveHash": "15b8e2836976665738db7057678cb3a9ff63a8ab8d82274594bd8b068a523915",
++        "effectiveHash": "c2eed30155a02eae942534b4b95f1bf7ef227066e9e474a6a573cb7812628054",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "bcdaec9e1033901c396437fcb102161d8ad3cd87632007aaf270b19e03e70117",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -210,7 +210,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/domain-modeling/SKILL.md",
+-        "effectiveHash": "e670c36709c31c0801c0635397d2d9662d74bb777825b16d707f2902dd6fad0e",
++        "effectiveHash": "6bcb9c6af3a7a220d40eacf4a7f025501062d8b795c8c00e74991e7621761504",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "2bc3bb0a64ea9c6f5c3bcf78fc17f0fcdc7c062edc547ef006441de0b576d248",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -229,7 +229,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/file-export-download/SKILL.md",
+-        "effectiveHash": "200d4a5008f056039c5217f51fe5b0609a4abf19a6a32ba42abaaf4b3360aef2",
++        "effectiveHash": "309e91930e3d43390555eab37d762ab71598b97019e547e3abb2867c6891199d",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -245,7 +245,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/formily-foundation/SKILL.md",
+-        "effectiveHash": "7736711494f368750d930e96f918bc8ae2d8a0c6b7fd404be165d03441546d9d",
++        "effectiveHash": "a1639223bc2a8812213ee393dd36492ece835980bb4aca4d1a0d2a016a4cd885",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -309,7 +309,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/frontend-agent/SKILL.md",
+-        "effectiveHash": "80b853dd810a390c51ebc967dc791672268c924167dbb1c8a297750918bbf3cf",
++        "effectiveHash": "b014d59c78863ad6ddddc972ce8fc5d3370d4900ce6220b390730d4f070dc8b5",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -325,7 +325,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/frontend-commit/SKILL.md",
+-        "effectiveHash": "ffc1c7813607705c7c1158f4c5d3111aca79e73f1843e33bbc95eda9b5c726de",
++        "effectiveHash": "0b2ba94d811416e08528602414047ca7ab086f8a0d48ec1c42b1f4d5e3f9f530",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -341,7 +341,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/productivity/grill-me/SKILL.md",
+-        "effectiveHash": "916cf7ff0d81cf47fe578bd86695e09a53fbe8a4b371586e19dde6573549e88d",
++        "effectiveHash": "93099c9750eee1b5cfb6d1fd124fc12dfa52ff35d55f32e6682a2cb57edc241b",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "5a13e157f85835632b132390a162d234822658b6a544f31cc2578280062bd044",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -360,7 +360,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/grill-with-docs/SKILL.md",
+-        "effectiveHash": "8d3fbdd09fc1ab2efb8046e7d61f6d50ed9db88f8fefb17d0e2ca8c31ad8caa9",
++        "effectiveHash": "76f67ac711021f37e5a6d02fea68e37fc0444fa3b5b226e5642f243b1c02a7f8",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "6b1292031c4f38a11309b9dad9be1141c1921c6edf86d1ae6da8b048fa71a349",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -379,7 +379,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/productivity/grilling/SKILL.md",
+-        "effectiveHash": "579b0a459f1ec960ef6a489811a285f74b4a19220d0bc8d0c1cde2c4d8bfaabb",
++        "effectiveHash": "8410fabc07f272f39567903bccf6108358a79e08542c888c00b0d5e47b9e0d3c",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "0ca4cfe5105d79c6ef6755491492e056c43e88b82666376d8ecd7fac695d96e6",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -398,7 +398,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/productivity/handoff/SKILL.md",
+-        "effectiveHash": "4f7ef8b1c4e907fbf0de8e1533a16df3a991def76ef67dcb6c54fa6433d7f483",
++        "effectiveHash": "c97a305f5ca0b6fa21ca82a009ac5a553acd02aab63cf59de939f75ac7797393",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "e5a44fccc710f5402deee06beaf5178397885765773375f186aefd179565f23f",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -417,7 +417,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/harness-orchestrator/SKILL.md",
+-        "effectiveHash": "9726163d26f7e857d12579688d2ac7a9ce59106e4d345c9f58ee59c92f7451c6",
++        "effectiveHash": "568fa881e602ce0a9f79d20e8b77bfbb5c496fde4ab6d71687cdbf7f6d3e51fd",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -433,7 +433,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/implement/SKILL.md",
+-        "effectiveHash": "219f59dbfe734ac06ff1e29a21deaf82bbecbac3186fc1f9fcbb076dcf329d70",
++        "effectiveHash": "451c7a1f5ad800f11bb1d009fedde90361d82a835ed8d232648f5dc43f8f74b4",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "b49a049477c7eec7f8dd90745dbc3f27bf75617b832d5b5f33c55aab7638a12e",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -468,7 +468,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/improve-codebase-architecture/SKILL.md",
+-        "effectiveHash": "de5c5a6d6db3b1c665a4e82cf18dcaa4c39360b50b3ebaedf52e072f2614aada",
++        "effectiveHash": "98ca22a0717a1e659e9f4714d2c7fa27afdd3497243cd2290fe5a4e04e111e78",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "86f5e0413fa5b42b8e954858a09ce5a73187c61169f1b3b199bc79416fd78086",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -487,7 +487,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/java-backend-commit/SKILL.md",
+-        "effectiveHash": "ab0c3f6c32015955bc0b67c7895521642dc9e4c61cf39e7686c5238874f64782",
++        "effectiveHash": "ba9551b8985d1e173bed7d3567ef82080622a9c887239088e4ae0a5d34ba85e3",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -503,7 +503,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/llm-wiki/SKILL.md",
+-        "effectiveHash": "b9c7b0bda7e1ea77126d612392faafc999d032f6b75ee8b24d6cf4fada8dd6c5",
++        "effectiveHash": "6a3966de860a48f3688907d8002b799fe8a110bd9b62956cb18b2a2e2fbf094b",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -536,7 +536,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/in-progress/loop-me/SKILL.md",
+-        "effectiveHash": "dbf05f8b1c1ca26101bd8417113bd82275ae4fa878bfc4cc187be3b24a58a432",
++        "effectiveHash": "d7ddf6cf5a7e17dfa274c5a097e03b215a9259c7beea809a1d45ce183ad49bef",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "a2cb563c12a44443f8f64b62e5af7168322931e2c04f05808c10e2944e6bae48",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -588,9 +588,10 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/misc/migrate-to-shoehorn/SKILL.md",
+-        "effectiveHash": "a556e54775ab12f2ee8a9ac898fd70de4ae07fd3819039bc8fce334f9e56b54f",
++        "effectiveHash": "292b384215d803b52e07a7f463586a4a4e9d1ad89ac0019600ec80af258a648d",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "a556e54775ab12f2ee8a9ac898fd70de4ae07fd3819039bc8fce334f9e56b54f",
++        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -638,7 +639,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/page-skeleton/SKILL.md",
+-        "effectiveHash": "9b316a51c00ef04ecab71abe4cd990a5f42b3c94ec3c1eee68397834c1209261",
++        "effectiveHash": "f3f7765b55eda5197d9aeaae047e0694fe9b0614198acd54046aad2929f9553c",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -654,7 +655,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/prototype/SKILL.md",
+-        "effectiveHash": "2744ef8e3dd23c2f286527100a2778e446639806b21a2a4f413b76d136a8ff7d",
++        "effectiveHash": "20996d9c591eff86c5f20b8db594ef728c8688b9605bc9543d9d65886523e3b2",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "492e4433fcd9cf88c0854aba063829ee248b208849e5827a45da8424199fd10f",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -689,7 +690,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/prototype-review/SKILL.md",
+-        "effectiveHash": "371b2ee265d91b49e56f4432fb03a99b01f7c7482a70ccf40a552bd492e5e018",
++        "effectiveHash": "33a38d5bf81647fcd75e640c90152d14aa8b50e7096c29764e3ac9d86bf9cc97",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -705,7 +706,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/research/SKILL.md",
+-        "effectiveHash": "fb6fc6446ea4dc9db6e7863b89b77a0b4b0f1beca4a08c23d0d319fe96cd08c8",
++        "effectiveHash": "6d02c11a6a7192f3e6058533e1cc310060cfceddd118623ea53e6d1da605d659",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "75b7f9bbd7ccff6755a006f8b25d319a46ecbf6bd4b4c3323965ed9cb65e78ff",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -724,7 +725,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/resolving-merge-conflicts/SKILL.md",
+-        "effectiveHash": "b1fd57782c4699ca4b19dd4322e45c84c3e9d210d3b73d65f53230fe56ee779c",
++        "effectiveHash": "2c01ba50b0c9707fed7c9080add996caa5e14f05c9f910ad19198b426e645986",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "310fa72a34cddd1dd1a9790f9ebc17bf2c83caeae5cdf87e2485be8b1abec90e",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -743,9 +744,10 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/misc/scaffold-exercises/SKILL.md",
+-        "effectiveHash": "3a1e2a2dd40691e229bae49d18b61e0304f12b6fe270dade1aadcb984c02d77e",
++        "effectiveHash": "30b24d603cdb7e0c82263f264e0a9b52f01188683f7083df88512457b5a9ecb6",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "3a1e2a2dd40691e229bae49d18b61e0304f12b6fe270dade1aadcb984c02d77e",
++        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -761,7 +763,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
+-        "effectiveHash": "e3818961ce340fb1bec68123241b2a8baaa5b381e39bab75c1f7719d53fe09bc",
++        "effectiveHash": "6065de560faa1e99765df3b402eac3685050f70966a316724801fd140f664484",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "80cd6b5be4f67913f1b10f5acd97fccaeb6401682ae7ff3a971460cb73d86cbe",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -780,7 +782,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/misc/setup-pre-commit/SKILL.md",
+-        "effectiveHash": "39ef99170eb1c38fd49e658f48e7c872e39f2b0ed32d0c20466e3e9118279910",
++        "effectiveHash": "de068adf75caf27aae0e80f201c5f4f7eda4f279388120ffb8e6b58533acf34a",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "89aaa5ee01b7ffdee592f2ab7a6853cebe20d7bf2479871698aeadf4d000204c",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -799,7 +801,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/in-progress/setup-ts-deep-modules/SKILL.md",
+-        "effectiveHash": "6596fef591b8eb74284d9cf5007cc56b90f75ebaeb6d24d5a84dce3adb47a835",
++        "effectiveHash": "6502306a758ac25596550c7645d0a95b32c3f377959968f68ae43fafd448cf55",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "12ec6066097949fefa9918ffdfe28b7133a82dade54b1b2b4c5c59d8f51540ab",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -818,7 +820,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/tdd/SKILL.md",
+-        "effectiveHash": "b6bbe6b93000fdfa708d88090f463a88755aa70056ce487bd7587ff96877b5b0",
++        "effectiveHash": "020e48193f19c303f462ac6c6bf16548f10e3b1f706df562f8fb8f6b3efb43a6",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "28b5e430968370f51b03b88b4b4a046286192733d2f45bd5b8049e16f45fd234",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -837,7 +839,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/productivity/teach/SKILL.md",
+-        "effectiveHash": "a44fbaa67b0bfe0e4ae8007ee255a6e5e63d86309eb4077bec950f5087782297",
++        "effectiveHash": "d646b14188296c5a2658360ac13e7236f1ec564ca4674052ad1c3d3c4fbba058",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "7e67f13dc27781aad061d1eee61676c39c51d4d7ad6d7dc07ef943653c6e01ff",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -856,7 +858,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/test-agent/SKILL.md",
+-        "effectiveHash": "148ad6247b77442091a8cf6d0e54d58cb3f3ef8095567f593043a56d63f41356",
++        "effectiveHash": "ac4eb5102a9238ff8c15d69b2c2f5891cc53c02148aa75cad54456b779f86df3",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -872,7 +874,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/theme-token-usage/SKILL.md",
+-        "effectiveHash": "b38acb4caf5012c9134df16a312b6be31b2b5d3fd6b976cfccee8d845f27c0ef",
++        "effectiveHash": "be766c60e987b75f08c6768f93188f67a0ceaf10ed72af7b23268783835d7ba9",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -888,7 +890,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/productivity/to-questionnaire/SKILL.md",
+-        "effectiveHash": "17507a6727412ba31fcd948083478d140d0198d5febc636cdc094cfad7ae0f68",
++        "effectiveHash": "3d3e99445e02a976bca6107ff081eda1fd05c2d509224f57cdb5ae73de5075ce",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "915ac22f1133fd4a7899ac6536e704cae57f1104d45745b32193d1572332868f",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -907,7 +909,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/to-spec/SKILL.md",
+-        "effectiveHash": "7c4f7d5c27899d57e91f6fa5c8b2749280bcc1c326dcfabf862f8c9a29c14c95",
++        "effectiveHash": "cc76a65e084cb76f32a881e8e210d6d7045b4dcc8d6f478529158e20e5c919a0",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "f8041146ec1678c32304f46c9de99b73a4b5dadf664e35a8124be47c4cfe3196",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -926,7 +928,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/to-tickets/SKILL.md",
+-        "effectiveHash": "22cc7ab4757e8757588b715bb5c01a62bddf72494c1873b9c28faab5f43babc7",
++        "effectiveHash": "deb728bbcfda31d34036c0a40d8d0c5c945de45ae91af00f8a65c76bc8c7ce3c",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "597a1a0af4f7391ab459a02a3f33576109b6bc61ecdc5e7e05149336858b4f29",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -945,7 +947,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/triage/SKILL.md",
+-        "effectiveHash": "a249cdf5e4f6a6f714f7c8f315e91d2e136a923fcd54347eb34f122e40d79e39",
++        "effectiveHash": "2b2e3cbc8be66e2fca6192a1ab044e93add247f65ef5eb51426a91f96c35f4e1",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "461668611d1bd0eeb0533f347c11690a556c966a75938363a171914dcc42481a",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -996,7 +998,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/productivity/wait-what/SKILL.md",
+-        "effectiveHash": "dee6440f7d82c08329a519fe5d58490e8adc7d5df12584e005b9e560a30ad025",
++        "effectiveHash": "3fadeb8eea01fc56db5950144cc83ca1eaaf1410dfc94e72c58359470d871212",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "3f2e7e2ce8820380c08df1d6f2d8dc6aaefe5c2857d00a7190990c62d4039316",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -1015,7 +1017,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/wayfinder/SKILL.md",
+-        "effectiveHash": "c9c5a3a2a26c9dcba33dbe2d16f6e8f0a426349e2c960e32de00b09da6a2faa0",
++        "effectiveHash": "48a76adbb462ec0addfc15210609598673912728143f772527a92e25142e8a76",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "93d2a866764b048ad641e82e27e7a1940fc370e7933470bffeb937fa1fb3922b",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -1034,7 +1036,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/in-progress/writing-beats/SKILL.md",
+-        "effectiveHash": "246e6b3ba38640613e0547d254fe8d676798585be95b2f0fa02200a4fce9942c",
++        "effectiveHash": "9ce8e35b980128cee069da05b7213b1a223bdeed8c5478a4d8dd2fb318a9b6dd",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "66a82ad5770ca0840a38e926b1aa97ec8acfe045a89ac5652c93b877dd368c41",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -1053,7 +1055,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/productivity/writing-for-agents/SKILL.md",
+-        "effectiveHash": "88b5fd77c40e9f0eef1616ffc07f9a75563c0b32f50a473976c01c1ca1d0000d",
++        "effectiveHash": "ab9bd0b8194e79b371583548024d57781eda0f6797d39d64f0bdd81ba585b705",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "0071124a923559493bc8924a90fb87bceb048d31ad2ce785fa4281d7c506bfa7",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -1072,7 +1074,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/in-progress/writing-fragments/SKILL.md",
+-        "effectiveHash": "d5815b131b90348e3bb1d62479f9d9228a7cf8b83a43609bce008dda67eaaa57",
++        "effectiveHash": "3be76523ce90b6ea60f884220ea250d898d438e7813f0907d7cc1016aab1e190",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "46528d15fd7aed4814ba37b68cb78c735ac4a8dbf0dd8fbbff16e5a528fd538d",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -1091,7 +1093,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/in-progress/writing-shape/SKILL.md",
+-        "effectiveHash": "4d2744a5e19e30e8bc55174edda40b1043f9ec6946f82a021c3eeaa647e781d0",
++        "effectiveHash": "d2036087f7b91f97d5b9a01b5d2e71017530030af878b3da6a9c7fc9b0190b15",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "00519308a443c078a76566c7e19b4986367f5300305eb3e480120aac148afdc3",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -1126,7 +1128,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-antd-design/SKILL.md",
+-        "effectiveHash": "9ebed3a9b0ac94ecf1deafa096c1bfb999264d103d8fcd8cdf6eb4979196124c",
++        "effectiveHash": "0c87bdcb0d89acfa3065325b4310b0cdde413e680ddfaa22fce28393e85fd36f",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1142,7 +1144,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-api-integration/SKILL.md",
+-        "effectiveHash": "f094e596aaf203392aae8836801d46196402914cbdc3ef96eff19024f20aad3a",
++        "effectiveHash": "d319093c35d3c8c74545d5a995c88ee4e06d93c7f523d6320b32c2692b6ac6a3",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1158,7 +1160,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-application/SKILL.md",
+-        "effectiveHash": "0b803a7167def527cd43e3359db78d03b1a0fd7a2f7e15733e26f6ccf1b9aeb9",
++        "effectiveHash": "4aa71e7e37c04f6051ca5288b06390e72babe5d46dd41bce91e13a877384beeb",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1174,7 +1176,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-audit-log/SKILL.md",
+-        "effectiveHash": "687c3bf40f4967bfd9a67b3783fec841f941a227398899c8c3cb8e1270a5eb03",
++        "effectiveHash": "375cbc7b8849f92655a7227df9af9ccd8c2a1595d282cc2fe5c981665586ca33",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1190,7 +1192,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-cache/SKILL.md",
+-        "effectiveHash": "8ac1a17e25f1ef58ad6575e4f52f66cc0e12a4e1c47798dcc641189673807b53",
++        "effectiveHash": "13e70273a2c1751d26e80b166ea5f2d3e0e9d5fbde2ebaad031ec1d3dd7a6e11",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1206,7 +1208,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-components/SKILL.md",
+-        "effectiveHash": "5ac052fa625bab70de90b731e1c4a5bc50d34019e7f183ab43ce31035dcadc4b",
++        "effectiveHash": "fed8bcea1ef4268eb56b160e0bc162b5c4dfce4df82297d711575d86e1562f86",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1222,7 +1224,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
+-        "effectiveHash": "89ec809eb32afacb107c6d89b343ce50e852f385f5ab6bf7c626e830752154ee",
++        "effectiveHash": "70ed0cf1a2798096c531ecbad943d633c823328d0faf5ce0ee8e42c1d2624ba6",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1238,7 +1240,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-design-system/SKILL.md",
+-        "effectiveHash": "28ac866d18dd546d8b0cbfc91582fbaaf16012288cfb31bfeaac88000e35ec4a",
++        "effectiveHash": "2a4d2a1d4a4c8ed6b74938ec5cb8b277cb4d25d2a33cbe7b26e3f0816c89f160",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1254,7 +1256,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-distributed-id/SKILL.md",
+-        "effectiveHash": "b0d6a31068c85a1597fa34407d07a9498ab3f3d4ffa4cb7012d322265bf4f3e5",
++        "effectiveHash": "8e71c8d7bec4ba1fd6da52da20524ba527117e54ed10500cf9c4e5c672ffc186",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1270,7 +1272,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-domain/SKILL.md",
+-        "effectiveHash": "b269fcb3b20e40104fcd2c92acc79b14daa8a868547e9375ae6f19c1a0c80329",
++        "effectiveHash": "4ad73d9a557f26d9213bafec1c2fa725b99cde8b195ac45b1852e26499195462",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1286,7 +1288,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-dto/SKILL.md",
+-        "effectiveHash": "2a950d5399056a081139df2246a8f42ae68d354c19bd0e675055dcbf71187275",
++        "effectiveHash": "f59f4bf34aac71cd414098c47cfb83fb690d4bf906b99a9f627db04933fcc4eb",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1302,7 +1304,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-excel-mvc/SKILL.md",
+-        "effectiveHash": "f37aa5dd49d1f7853fd5d5e355a1a0e773121683db75e90450ece183b741cff7",
++        "effectiveHash": "f4dd20c41c5e56d4b8bb0e48021a1ed141031cec1428c27f19e8cc569f4f76bc",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1318,7 +1320,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-exception/SKILL.md",
+-        "effectiveHash": "3a96b070b636b5212dc45fd28603f249404c767e80708a7f20fa1fac235b711a",
++        "effectiveHash": "1f92aadec1387c4ecc2b7b17adfc2c458d9deab318820f89e55e425db7d354c2",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1350,7 +1352,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-formily-schema-generator/SKILL.md",
+-        "effectiveHash": "8a0249531f3396a7df750b9229910123d605a87c58b8973da391ccf5e2102718",
++        "effectiveHash": "756014608b94921ddae5d5283246d06b8bc6c87681f8e98fff2606bea9e080e3",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1382,7 +1384,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-hook/SKILL.md",
+-        "effectiveHash": "77740f75587c2978b72b3651693e4c630aecd62ff757ad50e630a5a4c5b05d49",
++        "effectiveHash": "e9aeb2f01ebca0a4e89b3e977c5c1e579de44a75df504b0b52b7eca3672a672d",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1398,7 +1400,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-microapp-commit/SKILL.md",
+-        "effectiveHash": "d0ea3e6f06d59cc6fa425f1d3bee9836ee703026c9dff83c4e395fdeb4568b5c",
++        "effectiveHash": "8bbdde863a7853e3ddf2c61c4df5d776822fce497f2380a683fb0e08d3011dfe",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1414,7 +1416,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-mybatis/SKILL.md",
+-        "effectiveHash": "ecacb9029a72dacf5fca6e9bb7527725df7ea92e67674e6523984ccb74cccfda",
++        "effectiveHash": "e55721b72795c23b6a9af4b6bd973a712a204f3f8ea22e55c71df0d9e1e6bd60",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1446,7 +1448,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-openapi-governance/SKILL.md",
+-        "effectiveHash": "f66c15e0b09ce849795846815beec534d38829fbc3a0fff6f9b5dd1657aa79b2",
++        "effectiveHash": "50fd4125bcee769906ca4c62bd2ee0babed9246fa483441269065da4a182056b",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1462,7 +1464,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-page-module-development/SKILL.md",
+-        "effectiveHash": "b1eb12cca45150ee776e68b3eb159e291d21bccb0d4b97a703de80c19ee7d7fb",
++        "effectiveHash": "6e6c729531fe21f37319b0381a3f7869f0349833ee1778a1530047fd2660d0ba",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1494,7 +1496,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-repository/SKILL.md",
+-        "effectiveHash": "ac49b499d74e155b7c404302d121e3a02dadce381e7ef0266e391aa7ab25b417",
++        "effectiveHash": "a967e2c9ae878e04701a8d7cbd7a30cdb4b0f5276ea79136a50fd0e3bea7cdef",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1510,7 +1512,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-resilience4j/SKILL.md",
+-        "effectiveHash": "dadbdea61b2c5acd8a31548103931e59ca768835ae68b71b45e304eb5346a358",
++        "effectiveHash": "49479df3ddfb9c9f7d71e59f7528f4e06886a48e4211f9986325ad538c553635",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1526,7 +1528,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-router/SKILL.md",
+-        "effectiveHash": "ab6ae0db1b6c4b27cc79a7f04a2ae0a6952e619b78df3f941637be30f2897132",
++        "effectiveHash": "fc69b3cbf5ed8ecb627f3c416cf482fc922bf278bfde7f9c1963939bea7a96b0",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1542,7 +1544,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-security-algorithm/SKILL.md",
+-        "effectiveHash": "ad6a5d883460434393ad0595847af946ad4dac7cf80a26b0304006fc7df7a67a",
++        "effectiveHash": "bb035c28a042c2cb81db8e28ed8183deb122c4d8205273ca116a450c25cdad51",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1558,7 +1560,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-source-index/SKILL.md",
+-        "effectiveHash": "a1322bd92e3723453b6f7a8c7a766b0c70bf03666129873bf0091098a1cc703c",
++        "effectiveHash": "977c868c4334dba1d414f570454c4b5d4ae74c037201bcbdac86c6d9e4f0d54c",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1574,7 +1576,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-tactical-design/SKILL.md",
+-        "effectiveHash": "9347cda038d551552ec0f1ea5dafa152d1ba6345543cdc68d2d6f32cd681bfd8",
++        "effectiveHash": "1f2632cc168d798ff0f2835048441b70c85115bfbb3d8f107075f69a08586506",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1590,7 +1592,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-ui/SKILL.md",
+-        "effectiveHash": "e450050a2200ea2b214c6d15bb9ce8a30c15827d36a4d7284e656506f31dad95",
++        "effectiveHash": "7dc703c31c23607578b681bc2c4ed65a6f7dd0949299656645c097fe0c215b00",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1606,7 +1608,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-up-springboot3/SKILL.md",
+-        "effectiveHash": "c862fe062a4146218615cdaddb9c923aa5015a882c573d95c5e13a3c2d9dd9ef",
++        "effectiveHash": "6de68036d801a50209ce3c5af0ecf5b460d02f80cb148da6e1a8c414d845834c",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1622,7 +1624,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-use-table-height/SKILL.md",
+-        "effectiveHash": "6838be18523fc15fc73dd99088c4a36e6026d4210f0b42939c2c1ad929542a36",
++        "effectiveHash": "db87b95e5ad1292ea2a8c6b1f10ff1b1b6b91b152ef6797c1c548ff653a2f648",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1638,7 +1640,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-use-tree-height/SKILL.md",
+-        "effectiveHash": "d6366d3022ff76dafdda9b4da67c2a424e5c33ef4f364baa87ffc4e7d1efeba6",
++        "effectiveHash": "b43fcdf94587cb9cab8bf7fb9b85dab9c14b57c2c5e06363baee0c370b36b296",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1654,7 +1656,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-userinfo/SKILL.md",
+-        "effectiveHash": "3872630d598d3c6d7605b4243a7889526020e166a1cb39b6cd76e91879e36b82",
++        "effectiveHash": "2c26e53a6f697bcf57984e8a18461794d8ef93b5d1f14b1b0c65c0632d5298e4",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1670,7 +1672,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-validation/SKILL.md",
+-        "effectiveHash": "eff9471ee79beaebf189c05203d01501b2c38baa6766ca733cd8af7cbe8fd5c7",
++        "effectiveHash": "b7a9c4b9939b4d92ff34112a0257ba76b4dedc7a428f9816fe146fda2492ad53",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1686,7 +1688,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-web-controller/SKILL.md",
+-        "effectiveHash": "8c878ae51ff8070b6776bb427451b117eac9385ebe5907dd9d837eb5e315abcd",
++        "effectiveHash": "1d421a5340f5abf20cbcdafa1b57241fe133413fc9be3951836c7761ac72c4e6",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1737,7 +1739,7 @@
+           "source": "project",
+           "sourceType": "local",
+           "skillPath": ".codex/skills/data-analytics/SKILL.md",
+-          "effectiveHash": "3c310b1b51fc4e07a1bbd2bc9c84f9e0b81a41a3b436af9eb7fa0a54b678babd",
++          "effectiveHash": "9476be54fc3bfd00a1b3f3ac08ebea904d5c2d946718697f4320ce4476fc1d6f",
+           "targets": [
+             ".codex/skills"
+           ]
+@@ -1746,7 +1748,7 @@
+           "source": "project",
+           "sourceType": "local",
+           "skillPath": ".codex/skills/product-design/SKILL.md",
+-          "effectiveHash": "68c51e896cbdcd9e3ddd0b88b97bd0064edf37e0eb1437291acb1e3d9ee48c0c",
++          "effectiveHash": "7eda879597373e6c7069a90c15cdfea58476ee927d3d054f9e7f4bbcbf1df4ab",
+           "targets": [
+             ".codex/skills"
+           ]

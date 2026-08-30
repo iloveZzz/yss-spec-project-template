@@ -1,5 +1,7 @@
 # Ticket 正式化到实现入口独立审查
 
+`legacy_formal_review: true`
+
 - 审查角色：`role.test-engineer`
 - 执行态：`Reviewer`
 - 任务包：`.template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml`

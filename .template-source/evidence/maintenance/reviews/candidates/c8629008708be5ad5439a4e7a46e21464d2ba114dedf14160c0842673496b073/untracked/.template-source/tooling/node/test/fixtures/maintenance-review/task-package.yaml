@@ -1,0 +1,19 @@
+schema_version: 1
+task_id: fixture.maintenance-review
+actor_id: reviewer.formal
+role_id: role.test-agent
+runtime_id: runtime.generic
+execution_state: Reviewer
+workflow_status: active
+skill_source:
+  core_skills: [code-review]
+  forbidden_skills: [implement]
+contract:
+  kind: template-maintenance
+  status: issued
+inputs:
+  - .template-source/tooling/node/test/fixtures/maintenance-review/candidate-manifest.yaml
+forbidden_actions: [修改实现]
+expected_outputs: [独立审查结论]
+review_context:
+  implementation_actor_id: implementer.fixture

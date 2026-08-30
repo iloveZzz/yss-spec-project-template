@@ -1,5 +1,7 @@
 # 数字人任务包机制正式独立审查
 
+`legacy_formal_review: true`
+
 ## 审查身份
 
 - 审查角色：`role.test-engineer`

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/maintenance-review-record.schema.json",
+  "title": "YSS Template Maintenance Independent Review Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "record_kind",
+    "review_mode",
+    "status",
+    "reviewer_id",
+    "implementation_actor_id",
+    "candidate_digest",
+    "candidate_snapshot_ref",
+    "task_package_ref",
+    "review_report_ref",
+    "reviewed_at",
+    "findings"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "record_kind": { "const": "maintenance-independent-review" },
+    "review_mode": { "enum": ["focused-independent", "formal-independent"] },
+    "status": { "enum": ["approved", "changes-requested", "blocked"] },
+    "reviewer_id": { "type": "string", "minLength": 1 },
+    "implementation_actor_id": { "type": "string", "minLength": 1 },
+    "candidate_digest": { "type": "string", "pattern": "^(sha256:)?[a-f0-9]{64}$" },
+    "candidate_snapshot_ref": { "type": "string", "minLength": 1 },
+    "task_package_ref": { "type": "string", "minLength": 1 },
+    "review_report_ref": { "type": "string", "minLength": 1 },
+    "reviewed_at": { "type": "string", "format": "date-time" },
+    "findings": { "type": "array", "items": { "type": "object" } }
+  }
+}

@@ -1,0 +1,12 @@
+schema_version: 1
+record_kind: maintenance-independent-review
+review_mode: formal-independent
+status: approved
+reviewer_id: reviewer.formal
+implementation_actor_id: implementer.fixture
+candidate_digest: d6bf78f58d2cf0e24528bfb7806bdf255124ed5f1b2973b5bf5fbc6aac5753dc
+candidate_snapshot_ref: scripts/fixtures/maintenance-review/maintenance-review/candidate-manifest.yaml
+task_package_ref: scripts/fixtures/maintenance-review/maintenance-review/task-package-invalid.yaml
+review_report_ref: scripts/fixtures/maintenance-review/maintenance-review/formal-review-approved.md
+reviewed_at: 2026-08-30T15:00:00Z
+findings: []

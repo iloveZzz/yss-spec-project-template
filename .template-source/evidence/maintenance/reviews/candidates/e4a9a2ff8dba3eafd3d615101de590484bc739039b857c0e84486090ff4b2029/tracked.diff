@@ -1,0 +1,756 @@
+diff --git a/scripts/sync-template.js b/scripts/sync-template.js
+index c85e9b7259cc839405d6c9c22979515d1b40669c..2f15ff10f571d9f99b1b9d10f41b5292a93e717d 100644
+--- a/scripts/sync-template.js
++++ b/scripts/sync-template.js
+@@ -12,7 +12,7 @@ const targetSnapshotPath = path.join(packageRoot, "template.snapshot.json");
+ const templateRepo =
+   process.env.YSS_HARNESS_TEMPLATE_REPO ||
+   "https://github.com/iloveZzz/yss-harness-dev-agent.git";
+-const DEFAULT_TEMPLATE_REF = "0c325d4f578481b1aa90c1897c0f986f040ea62b";
++const DEFAULT_TEMPLATE_REF = "f381adeb0147472fd5829c097153c1a15450c30e";
+ const templateRef = process.env.YSS_HARNESS_TEMPLATE_REF || DEFAULT_TEMPLATE_REF;
+ const NPM_IGNORED_BASENAMES = new Set([".gitignore", ".npmignore", ".npmrc"]);
+ 
+diff --git a/template.snapshot.json b/template.snapshot.json
+index 4c1c391271fdef4d9fc115779d21a1be08dafea2..e4074fdbe0b3fb80be1dfb492ad6b23b224e0e43 100644
+--- a/template.snapshot.json
++++ b/template.snapshot.json
+@@ -3,9 +3,9 @@
+   "templateName": "yss-harness-dev-agent",
+   "profileId": "harness.dev-agent-slice",
+   "templateSource": "github:iloveZzz/yss-harness-dev-agent",
+-  "templateRepository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
+-  "requestedRef": "working-tree",
+-  "templateCommit": "4c3bec5ac6e5e9e074205d8bf80a4fe988e0365f",
++  "templateRepository": "https://github.com/iloveZzz/yss-harness-dev-agent.git",
++  "requestedRef": "f381adeb0147472fd5829c097153c1a15450c30e",
++  "templateCommit": "f381adeb0147472fd5829c097153c1a15450c30e",
+   "manifestHash": "59dec8ccf234c51874c2c401df410dbd6c2d3a5fc2acbdf998f440b995375cf5",
+   "encodedPaths": {
+     ".codex/skills/data-analytics/.gitignore": ".codex/skills/data-analytics/__yss_dotfile__.gitignore",
+@@ -13,6 +13,6 @@
+     ".codex/skills/product-design/templates/prototype/.npmrc": ".codex/skills/product-design/templates/prototype/__yss_dotfile__.npmrc",
+     ".gitignore": "__yss_dotfile__.gitignore"
+   },
+-  "snapshotHash": "1f70f162277b722564b0143f34207424ee90f5a370331147a6534e6ecc98df6a",
+-  "generatedAt": "2026-08-27T16:40:05.039Z"
++  "snapshotHash": "7617965de2894eb4252d63c2317a398f28e65055244094577e472bba009adb3a",
++  "generatedAt": "2026-08-30T17:03:45.737Z"
+ }
+diff --git a/template/AGENTS.md b/template/AGENTS.md
+index a139dc7280213ea1b4d4ded29b2ce46b8e0575cd..f76c82e8cbec401683af7977ccbe7fbd528265e7 100644
+--- a/template/AGENTS.md
++++ b/template/AGENTS.md
+@@ -42,7 +42,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或
+ 
+ - 创建、修改或退役 skill 时使用 `maintaining-skills`，并先按 `docs/process/harness-process-tailoring.md` 判定 L1 / L2 / L3；只有 L3 必须保留完整基线失败、压力场景、修订后验证和正式独立审查证据。
+ - `.agents/skills` 是跨 Agent 共享技能的权威内容；`.claude/skills`、`.codex/skills`、`.cursor/skills`、`.hermes/skills`、`.pi/skills`、`.qoder/skills`、`.trae/skills` 中的共享技能是生成投影，禁止分别手工修改。Cursor 的契约运行时入口是 `.cursor/skills`；不得把 canonical `.agents/skills` 与某个平台投影当作同权双入口。
+-- `scripts/verify-template` 是模板发布阻断门禁。模板与外部 `create-yss-harness` 的跨仓库契约未完成集成验证时，不得声称可发布。
++- `scripts/verify-template` 是模板发布阻断门禁。模板与外部 `create-yss-harness-dev` 的跨仓库契约未完成集成验证时，不得声称可发布。
+ 
+ ## 5. `project-instance` 产品研发路由
+ 
+diff --git a/template/CONTEXT.md b/template/CONTEXT.md
+index 9445b2422d1f1129419692a96b9a91988af9e1d1..ec9c015df6dfafebd59cc35a60355975653c34aa 100644
+--- a/template/CONTEXT.md
++++ b/template/CONTEXT.md
+@@ -91,7 +91,7 @@
+ | 模板实例仓库（`project-instance`） | 由模板初始化后生成、承载某个具体产品研发生命周期资产的仓库身份。 | — | 不作为通用流程模板的权威来源。 |
+ | 模板实例分发面 | 模板源中应随 CLI 快照进入 `project-instance` 的共享生命周期、模板、用户指南和验证资产集合。 | — | 不包含模板源审查、研究、发布路线、源仓库专属 ADR 或源仓库 LLM Wiki 编译树。本仓权威清单为 `.template-source/distribution/template.manifest.json`。 |
+ | Harness Profile | 某个 Harness 模板源的受众、允许工作单元、禁止产物、上游输入和实例化 CLI 边界的机器可读配置。 | — | 不是角色表，也不替代生命周期注册表。本仓 `profile_id` 为 `harness.dev-agent-slice`。 |
+-| 开发落地 Harness CLI | 将本仓五阶段 Harness 快照为 `project-instance` 的外部 npm CLI。 | — | 包名为 `create-yss-harness`，入口 `npm create yss-harness`。不要与全生命周期 CLI `create-yss-spec` 混用。 |
++| 开发落地 Harness CLI | 将本仓五阶段 Harness 快照为 `project-instance` 的外部 npm CLI。 | — | 包名为 `create-yss-harness-dev`，入口 `npm create yss-harness-dev`。不要与全生命周期 CLI `create-yss-spec` 混用。 |
+ | 模板源治理区 | 仅供 `template-source` 使用、保存审查证据、研究记录、跨仓契约、发布路线、源仓库治理决策和源仓库 LLM Wiki 编译树的归档区域。 | — | 不随 CLI 分发；不等于产品实例的研发管理资产。`wiki-root` 为 `.template-source/wiki`。 |
+ | 仓库身份清单 | 显式声明仓库身份和清单结构版本的机器可读资产。 | — | 不承载项目名称、团队规模、Tracker 或其他易变业务配置。 |
+ 
+diff --git a/template/README.md b/template/README.md
+index 92c0de28a74925a441a32003fae4066f30eef8f9..ffb97ebaa9b154778d1adceb3867b4eae5cfe536 100644
+--- a/template/README.md
++++ b/template/README.md
+@@ -52,14 +52,14 @@ YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https:/
+ 
+ ## 模板初始化 CLI
+ 
+-开发落地 Harness 的实例化入口是独立 GitHub 仓库 [iloveZzz/create-yss-harness](https://github.com/iloveZzz/create-yss-harness)。本仓库不包含 CLI 源码、测试或发布配置，只保留分发契约和面向实例使用者的实践指南：
++开发落地 Harness 的实例化入口是独立 GitHub 仓库 [iloveZzz/create-yss-harness-dev](https://github.com/iloveZzz/create-yss-harness-dev)。本仓库不包含 CLI 源码、测试或发布配置，只保留分发契约和面向实例使用者的实践指南：
+ 
+-- [create-yss-harness 外部 CLI 实践指南](./docs/user-guide/外部命令行工具实践指南.md)
++- [create-yss-harness-dev 外部 CLI 实践指南](./docs/user-guide/外部命令行工具实践指南.md)
+ 
+ 推荐入口：
+ 
+ ```bash
+-npm create yss-harness@latest
++npm create yss-harness-dev@latest
+ ```
+ 
+ `create-yss-spec` 属于全产品生命周期模板，不能用来初始化或同步本仓。首次使用前请确认独立仓库和 npm 包已完成与本仓固定 commit 的跨仓库验证。
+diff --git a/template/docs/adr/README.md b/template/docs/adr/README.md
+index 0049bef7bef66d36b3eac5034424404a5bb6ca37..2be1114b580380c29cdc8a7720b6c7f2291e8b8e 100644
+--- a/template/docs/adr/README.md
++++ b/template/docs/adr/README.md
+@@ -4,4 +4,4 @@
+ 
+ 创建 ADR 时使用 [`docs/templates/adr-template.md`](../templates/adr-template.md)，并为每条决策补充状态、背景、取舍、后果和相关资产。
+ 
+-模板源仓库的 ADR 保存在 `.template-source/adr/`，不会随 `create-yss-harness` 进入 `project-instance`。
++模板源仓库的 ADR 保存在 `.template-source/adr/`，不会随 `create-yss-harness-dev` 进入 `project-instance`。
+diff --git a/template/docs/process/harness-process-tailoring.md b/template/docs/process/harness-process-tailoring.md
+index 53b565bbb7030d645115ad1c291149117a7c3fc8..c124e4e5e20f61b04b31aa44c60b62d430c5af85 100644
+--- a/template/docs/process/harness-process-tailoring.md
++++ b/template/docs/process/harness-process-tailoring.md
+@@ -62,3 +62,5 @@ escalation: none | <升级原因和原等级>
+ ```
+ 
+ 使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。触发项 ID 与最低等级只由 `docs/process/maintenance-intensity.yaml` 维护；校验器消费该策略。未知触发项必须先更新该权威策略和场景，不能静默接受。
++
++`focused-independent-review` 与 `formal-independent-review` 的 `command` 必须引用可读取的审查结论。L3 新记录必须使用 `docs/process/schemas/maintenance-review-record.schema.json`，绑定 Reviewer、实施者、完整 `yss-worktree-candidate-v1` 冻结字节、候选 digest、通过正式 schema 的 Reviewer 任务包、任务包声明的审查报告和已关闭 findings。仅校验器内明确登记的 2026-08-24 / 27 历史 L3 Markdown 可兼容，并仍须带 `legacy_formal_review: true`、审查身份和明确通过结论；任意新 Markdown 不能自报 legacy。审查请求、实施者自述、否定裁决、伪造或非规范候选流、无效任务包、未关闭 findings 或 symlink 越界证据都会被拒绝。可用 `scripts/verify-maintenance-review-record` 单独校验。
+diff --git a/template/docs/process/harness-profile.yaml b/template/docs/process/harness-profile.yaml
+index 421dd8f8e3b2bc20028df881e4f77f9be3ebf4b9..fcf67df3d5abf4f58e6d3c94b5f6f9faf9237011 100644
+--- a/template/docs/process/harness-profile.yaml
++++ b/template/docs/process/harness-profile.yaml
+@@ -49,9 +49,9 @@ upstream:
+     - to-tickets
+ 
+ instantiation:
+-  cli_package: create-yss-harness
+-  npm_create: yss-harness
+-  metadata_file: .yss-harness.json
++  cli_package: create-yss-harness-dev
++  npm_create: yss-harness-dev
++  metadata_file: .yss-harness-dev.json
+   foreign_metadata_files:
+     - .yss-template.json
+   template_source: github:iloveZzz/yss-harness-dev-agent
+diff --git a/template/docs/process/implementation-repo-integration.md b/template/docs/process/implementation-repo-integration.md
+index 455aeb384896ca42caf0f583ae5c46cc749ea69e..f42fdaafaf147fa7559ec7ed3231e61334824576 100644
+--- a/template/docs/process/implementation-repo-integration.md
++++ b/template/docs/process/implementation-repo-integration.md
+@@ -1,6 +1,6 @@
+ # 实现仓库接入与跨仓库切片绑定
+ 
+-本文件是 Harness 仓库连接外部实现仓库的事实源。当前 `yss-harness-dev-agent` 与 `create-yss-harness` 的模板接管 / 同步变更属于 Harness-only 加 release-only 影响，不创建前端、后端或运行时代码目录。
++本文件是 Harness 仓库连接外部实现仓库的事实源。当前 `yss-harness-dev-agent` 与 `create-yss-harness-dev` 的模板接管 / 同步变更属于 Harness-only 加 release-only 影响，不创建前端、后端或运行时代码目录。
+ 
+ ## 1. 接入清单
+ 
+@@ -52,7 +52,7 @@ apps/
+ - clone / CI / Cloud Agent 必须递归检出：`git clone --recurse-submodules`，或事后 `git submodule update --init`。GitHub Actions 须显式 `submodules: true|recursive` 且私有子仓另给 PAT / SSH；GitLab 须设 `GIT_SUBMODULE_STRATEGY` 并配置 job token 访问。默认不递归时目录为空，不得当作「工程不存在」去脚手架。
+ - 空 gitlink、未初始化、detached HEAD 或 `--force` 覆盖挂载点一律不得当成普通目录：`scaffold_status=required` 阻断，脚手架生成器即使收到 `--force` 也不得覆盖 gitlink，且不得进入「请显式传入 `--force`」普通目录覆盖 / rename 路径；禁止在 detached HEAD 上 commit，也不得把 `--output-dir` 指向 detached HEAD 子仓后 mkdir、staging 或生成工程。先在子仓检出跟踪分支，再写代码。写入前必须读取 `inspectWorkingTreeScope` 的对象结果：只有 `.writable === true` 才可写。已登记为 `git-submodule` 的空 gitlink / uninitialized / detached HEAD 必须 `.writable === false`，即使工作树探测失败也不得把返回值当成可写。
+ - Git 授权按仓分别计算，顺序强制为 **先子仓 commit/push，再父仓更新 gitlink**。父仓 push 使用 `git push --recurse-submodules=check`。跨仓库切片的 `delivery_order` 必须包含 `superproject-gitlink-update`。
+-- `.gitmodules`、gitlink 和子仓工作树不是 `create-yss-harness` 受管资产；CLI `sync` 不得创建、覆盖或删除它们。
++- `.gitmodules`、gitlink 和子仓工作树不是 `create-yss-harness-dev` 受管资产；CLI `sync` 不得创建、覆盖或删除它们。
+ 
+ ## 2. 影响面路由
+ 
+@@ -67,7 +67,7 @@ apps/
+ ## 3. 本变更的跨仓库合同
+ 
+ - 模板仓库负责 `yss-project.yaml`、Harness Profile、流程事实源、迁移指南、技能投影、分发清单、模板校验脚本和快照可发布状态。
+-- CLI 仓库 `create-yss-harness` 负责 `init`、`attach`、`sync`、受管 manifest 快照、`.yss-harness.json`、迁移计划、备份 / 回滚、端到端测试和用户说明。
++- CLI 仓库 `create-yss-harness-dev` 负责 `init`、`attach`、`sync`、受管 manifest 快照、`.yss-harness-dev.json`、迁移计划、备份 / 回滚、端到端测试和用户说明。
+ - CLI 只写研发管理资产；不得创建或覆盖前后端运行时代码，不删除目标 `.git`，也不创建、覆盖或删除 `.gitmodules` 与 gitlink。
+ - 模板 commit 必须是 40 位不可变提交；开发测试可通过 `YSS_HARNESS_TEMPLATE_REF` 覆盖，正式发布不得跟随浮动 `main`。
+ - 目标已有 `.yss-template.json` 时拒绝：那是 `create-yss-spec` 全生命周期家族，不是本 Harness。
+diff --git a/template/docs/templates/digital-human-runtime-profile-template.md b/template/docs/templates/digital-human-runtime-profile-template.md
+index f7cbbf7215cef2e54c9ec1684dfa787799d6c5e9..e15a35a1bafb659f784d7f51fe18a5d59038c8e9 100644
+--- a/template/docs/templates/digital-human-runtime-profile-template.md
++++ b/template/docs/templates/digital-human-runtime-profile-template.md
+@@ -21,7 +21,7 @@
+ 
+ ## `project-instance` 绑定清单
+ 
+-模板仓只 `publish-singleton-profiles`。实例仓按本表 duplicate，禁止按功能再拆实例。外部 `create-yss-harness` 第一版只做实例化，不 duplicate Grok Bot 或 runtime profile。
++模板仓只 `publish-singleton-profiles`。实例仓按本表 duplicate，禁止按功能再拆实例。外部 `create-yss-harness-dev` 第一版只做实例化，不 duplicate Grok Bot 或 runtime profile。
+ 
+ - [ ] 从 YAML 复制 `title`、`description`、`core_skills`、`forbidden_skills`，不手写第二套职责
+ - [ ] 选择一个 `runtime_id`（`runtime.generic` / `runtime.skill-projection` / `runtime.grok`）
+diff --git a/template/docs/user-guide/外部命令行工具实践指南.md b/template/docs/user-guide/外部命令行工具实践指南.md
+index a6a83c3f1e54f12c471a82b5163de752b2bcc2e2..f697429693f30a9c1d0e9a4bf2ddd2bfe8472f84 100644
+--- a/template/docs/user-guide/外部命令行工具实践指南.md
++++ b/template/docs/user-guide/外部命令行工具实践指南.md
+@@ -1,34 +1,34 @@
+-# `create-yss-harness` 外部 CLI 实践指南
++# `create-yss-harness-dev` 外部 CLI 实践指南
+ 
+-本文面向需要基于 YSS 开发落地 Harness（`yss-harness-dev-agent`）初始化、接管已有项目或持续同步研发管理资产的使用者。CLI 源码、测试和发布由独立项目 [iloveZzz/create-yss-harness](https://github.com/iloveZzz/create-yss-harness) 维护；本模板仓库只记录使用方法和跨仓库契约。
++本文面向需要基于 YSS 开发落地 Harness（`yss-harness-dev-agent`）初始化、接管已有项目或持续同步研发管理资产的使用者。CLI 源码、测试和发布由独立项目 [iloveZzz/create-yss-harness-dev](https://github.com/iloveZzz/create-yss-harness-dev) 维护；本模板仓库只记录使用方法和跨仓库契约。
+ 
+ 全生命周期 CLI `create-yss-spec` 不能用来初始化或同步本 Harness。
+ 
+ ## 适用范围
+ 
+-`create-yss-harness` 用于生成或补齐包含五阶段 Harness、四角色 Agent、战术设计、Slice Contract、Ticket 和校验脚本的模板实例仓库。它不负责生成前后端运行时工程，也不会代替你创建远程 Git 仓库、CI 或 Ticket Board，更不替代 `harness-orchestrator`。
++`create-yss-harness-dev` 用于生成或补齐包含五阶段 Harness、四角色 Agent、战术设计、Slice Contract、Ticket 和校验脚本的模板实例仓库。它不负责生成前后端运行时工程，也不会代替你创建远程 Git 仓库、CI 或 Ticket Board，更不替代 `harness-orchestrator`。
+ 
+-“最新模板”指用户执行的 `npx create-yss-harness@latest` 所携带的最新已发布快照。CLI 运行时不会直接拉取模板仓库；每个实例 metadata 都记录绑定的 `templateCommit`，便于审计、升级和回滚。
++“最新模板”指用户执行的 `npx create-yss-harness-dev@latest` 所携带的最新已发布快照。CLI 运行时不会直接拉取模板仓库；每个实例 metadata 都记录绑定的 `templateCommit`，便于审计、升级和回滚。
+ 
+ ## 空目录初始化
+ 
+ 推荐使用 npm create 入口：
+ 
+ ```bash
+-npm create yss-harness@latest
++npm create yss-harness-dev@latest
+ ```
+ 
+ 也可直接通过 npx 执行：
+ 
+ ```bash
+-npx create-yss-harness@latest \
++npx create-yss-harness-dev@latest \
+   --project-name "项目名称" \
+   --business-domain "业务领域" \
+   --target-dir "./project" \
+   --git-init
+ ```
+ 
+-初始化会把模板源身份转换为 `repository_mode: project-instance`，写入 `.yss-harness.json`，并带上 `docs/process/harness-profile.yaml`（`harness.dev-agent-slice`）。`--dry-run` 只预览，不创建目录、不删除文件。
++初始化会把模板源身份转换为 `repository_mode: project-instance`，写入 `.yss-harness-dev.json`，并带上 `docs/process/harness-profile.yaml`（`harness.dev-agent-slice`）。`--dry-run` 只预览，不创建目录、不删除文件。
+ 
+ ## 接管已有项目
+ 
+@@ -37,7 +37,7 @@ npx create-yss-harness@latest \
+ 先预演：
+ 
+ ```bash
+-npx create-yss-harness@latest attach \
++npx create-yss-harness-dev@latest attach \
+   --target-dir . \
+   --project-name "项目名称" \
+   --business-domain "业务领域" \
+@@ -47,7 +47,7 @@ npx create-yss-harness@latest attach \
+ 确认计划后写入：
+ 
+ ```bash
+-npx create-yss-harness@latest attach \
++npx create-yss-harness-dev@latest attach \
+   --target-dir . \
+   --project-name "项目名称" \
+   --business-domain "业务领域" \
+@@ -57,7 +57,7 @@ npx create-yss-harness@latest attach \
+ 约束：
+ 
+ - `--dry-run` 与 `--apply` 互斥，且必须显式选择其中一个。
+-- 已有 `.yss-harness.json` 时拒绝重复接管，请使用 `sync`。
++- 已有 `.yss-harness-dev.json` 时拒绝重复接管，请使用 `sync`。
+ - 已有 `.yss-template.json` 时拒绝：目标属于 `create-yss-spec` 家族。
+ - 合法 `template-source` 会转换为 `project-instance`；合法 `project-instance` 保留并校验；身份文件字段、schema 或 mode 非法时阻断。
+ - 受管路径计划分为 `missing`、`matched`、`conflict`、`unsafe`。`--force` 只允许覆盖 conflict，不能绕过 unsafe。
+@@ -67,10 +67,10 @@ npx create-yss-harness@latest attach \
+ 
+ ## 持续同步模板
+ 
+-已初始化或已 attach 的项目根目录存在 `.yss-harness.json` 后，可以先预演：
++已初始化或已 attach 的项目根目录存在 `.yss-harness-dev.json` 后，可以先预演：
+ 
+ ```bash
+-npx create-yss-harness@latest sync \
++npx create-yss-harness-dev@latest sync \
+   --target-dir . \
+   --dry-run
+ ```
+@@ -78,7 +78,7 @@ npx create-yss-harness@latest sync \
+ 确认后执行：
+ 
+ ```bash
+-npx create-yss-harness@latest sync \
++npx create-yss-harness-dev@latest sync \
+   --target-dir . [--force]
+ ```
+ 
+@@ -97,8 +97,8 @@ scripts/verify-template
+ ## 升级 CLI 自身
+ 
+ ```bash
+-npx create-yss-harness update
+-npx create-yss-harness update --dry-run
++npx create-yss-harness-dev update
++npx create-yss-harness-dev update --dry-run
+ ```
+ 
+ `update` 只升级 npm 包，不会同步项目里的模板资产；模板同步仍使用 `sync`。
+@@ -109,7 +109,7 @@ npx create-yss-harness update --dry-run
+ 
+ 1. 运行 `git status --short`，确认实际变更范围。
+ 2. 检查 `AGENTS.md`、`CONTEXT.md`、`README.md`、`yss-project.yaml`、`docs/process/harness-profile.yaml` 和 `docs/`。
+-3. 确认 `.yss-harness.json` 的 `templateCommit` 为 40 位 commit，`profileId` 为 `harness.dev-agent-slice`。
++3. 确认 `.yss-harness-dev.json` 的 `templateCommit` 为 40 位 commit，`profileId` 为 `harness.dev-agent-slice`。
+ 4. 确认 skills projection 和 `skills-lock.json` 门禁通过。
+ 5. 人工处理冲突和只报告未删除的文件，确认无误后再创建 Git checkpoint。
+ 
+@@ -123,7 +123,7 @@ harness-entry → tactical-design → slice-contract → slice-implementation 
+ 
+ ## 问题定位边界
+ 
+-- CLI 安装、参数解析、初始化、attach、同步、npm 发布或 CLI 测试问题：在 [create-yss-harness 独立仓库](https://github.com/iloveZzz/create-yss-harness) 追踪。
++- CLI 安装、参数解析、初始化、attach、同步、npm 发布或 CLI 测试问题：在 [create-yss-harness-dev 独立仓库](https://github.com/iloveZzz/create-yss-harness-dev) 追踪。
+ - 模板内容、流程文档、Agent skills 或 `scripts/verify-template` 问题：在本模板仓库追踪。
+ 
+ ## 发布与验证
+diff --git a/template/docs/user-guide/用户手册索引.md b/template/docs/user-guide/用户手册索引.md
+index c9670a67095d0ea2aecf46245d3054136940dd0b..e32ee6bdf7367ce804e4cf087b9fdc23a7071a82 100644
+--- a/template/docs/user-guide/用户手册索引.md
++++ b/template/docs/user-guide/用户手册索引.md
+@@ -22,7 +22,7 @@ harness-entry → tactical-design → slice-contract → slice-implementation 
+ 
+ ## 继续阅读
+ 
+-- [create-yss-harness 外部 CLI 实践指南](./外部命令行工具实践指南.md)
++- [create-yss-harness-dev 外部 CLI 实践指南](./外部命令行工具实践指南.md)
+ - [产品全生命周期使用手册](./产品生命周期工作流.md)
+ - [全生命周期最佳实践](./生命周期最佳实践.md)
+ - [产品研发全生命周期最佳实践](./产品研发全生命周期最佳实践.md)
+diff --git a/template/docs/user-guide/规格与任务迁移指南.md b/template/docs/user-guide/规格与任务迁移指南.md
+index 976c5abb2196fa75d73653148e4b4e29350df1e0..6f724b6e1f62f6dbb47db53019013c16619a0302 100644
+--- a/template/docs/user-guide/规格与任务迁移指南.md
++++ b/template/docs/user-guide/规格与任务迁移指南.md
+@@ -41,4 +41,4 @@ Local Markdown 项目不再使用上述旧目录作为主 tracker：新的完整
+ 
+ ## 外部初始化 CLI
+ 
+-`create-yss-harness` 必须在初始化和升级时写入正确的 `repository_mode`，并执行等价的路径迁移与集成测试。模板仓库与 CLI 仓库未共同通过集成验证前，不得单独声明新版模板可发布。全生命周期 CLI `create-yss-spec` 不得改写本仓实例身份。
++`create-yss-harness-dev` 必须在初始化和升级时写入正确的 `repository_mode`，并执行等价的路径迁移与集成测试。模板仓库与 CLI 仓库未共同通过集成验证前，不得单独声明新版模板可发布。全生命周期 CLI `create-yss-spec` 不得改写本仓实例身份。
+diff --git a/template/scripts/lib/harness-profile.mjs b/template/scripts/lib/harness-profile.mjs
+index da175b434404eda99fa16b393d15f17262722228..930f5af142eca82d0ee909d4772cb87612522b87 100644
+--- a/template/scripts/lib/harness-profile.mjs
++++ b/template/scripts/lib/harness-profile.mjs
+@@ -29,9 +29,9 @@ export const FORBIDDEN_WORK_UNITS = [
+   "work-unit.release-and-rollback",
+ ];
+ export const INSTANTIATION = Object.freeze({
+-  cli_package: "create-yss-harness",
+-  npm_create: "yss-harness",
+-  metadata_file: ".yss-harness.json",
++  cli_package: "create-yss-harness-dev",
++  npm_create: "yss-harness-dev",
++  metadata_file: ".yss-harness-dev.json",
+   foreign_metadata_files: [".yss-template.json"],
+   template_source: "github:iloveZzz/yss-harness-dev-agent",
+   distribution_manifest: ".template-source/distribution/template.manifest.json",
+diff --git a/template/scripts/lib/instance-distribution.mjs b/template/scripts/lib/instance-distribution.mjs
+index 3b81ea7a1370ee7f87cc4f10c2520f5ef4ed0c71..2db78ac3dcad362631a15bca6561870f3387a504 100644
+--- a/template/scripts/lib/instance-distribution.mjs
++++ b/template/scripts/lib/instance-distribution.mjs
+@@ -7,7 +7,7 @@ import { isTemplateSource } from "./repository-mode.mjs";
+ export const DISTRIBUTION_MANIFEST = path.join(ROOT, INSTANTIATION.distribution_manifest);
+ export const HARNESS_CONTRACT = path.join(
+   ROOT,
+-  ".template-source/contracts/create-yss-harness-repository-mode-contract.md",
++  ".template-source/contracts/create-yss-harness-dev-repository-mode-contract.md",
+ );
+ export const LEGACY_SPEC_CONTRACT = path.join(
+   ROOT,
+@@ -128,55 +128,55 @@ export function validateDistributionManifest(manifest = loadDistributionManifest
+   };
+ }
+ 
+-export function validateInstantiationPointers() {
+-  const agents = read("AGENTS.md");
+-  const readme = read("README.md");
+-  const guide = read("docs/user-guide/外部命令行工具实践指南.md");
+-  const index = read("docs/user-guide/用户手册索引.md");
+-  const migration = read("docs/user-guide/规格与任务迁移指南.md");
++export function validateInstantiationPointers(documents = {}) {
++  const agents = documents.agents ?? read("AGENTS.md");
++  const readme = documents.readme ?? read("README.md");
++  const guide = documents.guide ?? read("docs/user-guide/外部命令行工具实践指南.md");
++  const index = documents.index ?? read("docs/user-guide/用户手册索引.md");
++  const migration = documents.migration ?? read("docs/user-guide/规格与任务迁移指南.md");
+   const implementation = read("docs/process/implementation-repo-integration.md");
+   const context = read("CONTEXT.md");
+ 
+-  if (!agents.includes("`create-yss-harness`")) {
+-    fail("AGENTS.md 必须把 create-yss-harness 作为模板发布跨仓库伴侣");
++  if (!agents.includes("`create-yss-harness-dev`")) {
++    fail("AGENTS.md 必须把 create-yss-harness-dev 作为模板发布跨仓库伴侣");
+   }
+   if (agents.includes("模板与外部 `create-yss-spec` 的跨仓库契约")) {
+     fail("AGENTS.md 不得再把 create-yss-spec 当成本仓发布伴侣");
+   }
+-  if (!readme.includes("npm create yss-harness")) {
+-    fail("README.md 必须提供 npm create yss-harness 入口");
++  if (!readme.includes("npm create yss-harness-dev")) {
++    fail("README.md 必须提供 npm create yss-harness-dev 入口");
+   }
+   if (readme.includes("npm create yss-spec@latest")) {
+     fail("README.md 不得再推荐 npm create yss-spec@latest");
+   }
+-  if (!guide.includes("# `create-yss-harness`")) {
+-    fail("外部命令行工具实践指南必须面向 create-yss-harness");
++  if (!guide.includes("# `create-yss-harness-dev`")) {
++    fail("外部命令行工具实践指南必须面向 create-yss-harness-dev");
+   }
+-  if (guide.includes("npx create-yss-spec@latest") && !guide.includes("create-yss-harness")) {
+-    fail("外部命令行工具实践指南不得只描述 create-yss-spec");
++  if (guide.includes("npx create-yss-spec@latest")) {
++    fail("外部命令行工具实践指南不得把 create-yss-spec 作为本 Harness 的可执行入口");
+   }
+-  if (!index.includes("create-yss-harness")) {
+-    fail("用户手册索引必须指向 create-yss-harness");
++  if (!index.includes("create-yss-harness-dev")) {
++    fail("用户手册索引必须指向 create-yss-harness-dev");
+   }
+-  if (!migration.includes("create-yss-harness")) {
+-    fail("规格与任务迁移指南必须由 create-yss-harness 执行身份改写");
++  if (!migration.includes("create-yss-harness-dev")) {
++    fail("规格与任务迁移指南必须由 create-yss-harness-dev 执行身份改写");
+   }
+   if (!implementation.includes("YSS_HARNESS_TEMPLATE_REF")) {
+     fail("实现仓库接入文档必须使用 YSS_HARNESS_TEMPLATE_REF");
+   }
+-  if (!implementation.includes(".yss-harness.json")) {
+-    fail("实现仓库接入文档必须声明 .yss-harness.json");
++  if (!implementation.includes(".yss-harness-dev.json")) {
++    fail("实现仓库接入文档必须声明 .yss-harness-dev.json");
+   }
+-  if (!context.includes("create-yss-harness")) {
++  if (!context.includes("create-yss-harness-dev")) {
+     fail("CONTEXT.md 必须登记开发落地 Harness CLI");
+   }
+   if (isTemplateSource(ROOT)) {
+     if (!existsSync(HARNESS_CONTRACT)) {
+-      fail("缺少 create-yss-harness 跨仓库契约");
++      fail("缺少 create-yss-harness-dev 跨仓库契约");
+     }
+     const contract = readFileSync(HARNESS_CONTRACT, "utf8");
+     if (!contract.includes(INSTANTIATION.metadata_file) || !contract.includes(INSTANTIATION.cli_package)) {
+-      fail("create-yss-harness 契约必须声明 metadata 与 CLI 包名");
++      fail("create-yss-harness-dev 契约必须声明 metadata 与 CLI 包名");
+     }
+     if (existsSync(LEGACY_SPEC_CONTRACT)) {
+       const legacy = readFileSync(LEGACY_SPEC_CONTRACT, "utf8");
+diff --git a/template/scripts/lib/maintenance-intensity.mjs b/template/scripts/lib/maintenance-intensity.mjs
+index 275c8a2501c453a2935b873cccab8e912a115898..f47494a62ce25b7281b8a1b1250ed18572e20fbd 100644
+--- a/template/scripts/lib/maintenance-intensity.mjs
++++ b/template/scripts/lib/maintenance-intensity.mjs
+@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
+ import path from "node:path";
+ import { fileURLToPath } from "node:url";
+ import { parseDocument } from "../vendor/yaml.mjs";
++import { validateMaintenanceReviewEvidence } from "./maintenance-review.mjs";
+ 
+ const LEVELS = ["L1", "L2", "L3"];
+ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+@@ -60,7 +61,7 @@ export function minimumIntensity(triggers) {
+   return required;
+ }
+ 
+-export function validateMaintenanceCheckpoint(data) {
++export function validateMaintenanceCheckpoint(data, options = {}) {
+   ensure(data && typeof data === "object" && !Array.isArray(data), "checkpoint 必须是对象");
+   const exactFields = ["schema_version", "intensity", "classification_reason", "triggers", "changed_assets", "verification_evidence", "review_mode", "escalation"];
+   const unknown = Object.keys(data).filter((key) => !exactFields.includes(key));
+@@ -79,9 +80,16 @@ export function validateMaintenanceCheckpoint(data) {
+     ensure(typeof evidence.kind === "string" && evidence.kind.trim(), "verification_evidence.kind 不能为空");
+     ensure(typeof evidence.command === "string" && evidence.command.trim(), "verification_evidence.command 不能为空");
+     ensure(evidence.result === "pass", `验证证据必须是本轮实际通过结果: ${evidence.kind ?? "unknown"}`);
++    if (["focused-independent-review", "formal-independent-review"].includes(evidence.kind)) {
++      validateMaintenanceReviewEvidence(evidence, options);
++    }
+     kinds.add(evidence.kind);
+   }
+-  for (const required of REQUIRED_EVIDENCE[data.intensity]) ensure(kinds.has(required), `${data.intensity} 缺少 ${required} 证据`);
++  const reviewKind = data.intensity === "L2" ? "focused-independent-review" : data.intensity === "L3" ? "formal-independent-review" : null;
++  for (const required of REQUIRED_EVIDENCE[data.intensity]) {
++    if (options.allowPendingReview === true && required === reviewKind) continue;
++    ensure(kinds.has(required), `${data.intensity} 缺少 ${required} 证据`);
++  }
+   ensure(REVIEW_MODES[data.intensity].has(data.review_mode), `${data.intensity} 不允许 review_mode=${data.review_mode}`);
+   return { intensity: data.intensity, minimum_intensity: minimum };
+ }
+diff --git a/template/scripts/lib/task-package.mjs b/template/scripts/lib/task-package.mjs
+index 80910716093134994a91387c0a041adf3d805fad..11686122286406028f307856d43fc261146b23b6 100644
+--- a/template/scripts/lib/task-package.mjs
++++ b/template/scripts/lib/task-package.mjs
+@@ -1,14 +1,13 @@
+ import { existsSync, readFileSync } from "node:fs";
+-import { spawnSync } from "node:child_process";
+ import path from "node:path";
+ import { parseDocument } from "../vendor/yaml.mjs";
+ import { loadDigitalHumanRoles, taskPackageDefaults } from "./digital-human-roles.mjs";
+ import { loadRegistry, ROOT } from "./lifecycle-registry.mjs";
+ import { loadMaintenanceCheckpoint, validateMaintenanceCheckpoint } from "./maintenance-intensity.mjs";
+ import { validateNextRoute } from "./lifecycle-transition.mjs";
++import { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSchema } from "./task-package-schema.mjs";
+ 
+-export const TASK_PACKAGE_SCHEMA = path.join(ROOT, "docs/process/schemas/digital-human-task-package.schema.json");
+-export const LEGACY_TASK_PACKAGE_SCHEMA = path.join(ROOT, "docs/process/schemas/subagent-task-package.schema.json");
++export { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSchema };
+ export const TASK_PACKAGE_REGISTRY_REF = "docs/agents/digital-human-roles.yaml";
+ export const CONTRACT_KINDS = new Set(["lifecycle-work-unit", "slice-implementation", "template-maintenance"]);
+ export const EXECUTION_STATES = new Set(["Explorer", "Drafter", "Worker", "Reviewer", "Verifier"]);
+@@ -48,25 +47,6 @@ export function loadTaskPackage(filePath) {
+   return { value, sourcePath };
+ }
+ 
+-export function validateTaskPackageSchema(value, schemaPath = TASK_PACKAGE_SCHEMA) {
+-  const effectiveSchema = path.resolve(schemaPath) === path.resolve(LEGACY_TASK_PACKAGE_SCHEMA) ? TASK_PACKAGE_SCHEMA : schemaPath;
+-  if (!existsSync(effectiveSchema)) fail(`缺少任务包 schema: ${effectiveSchema}`);
+-  const validator = String.raw`
+-import json
+-import sys
+-from jsonschema import Draft202012Validator
+-schema = json.load(open(sys.argv[1], encoding="utf-8"))
+-value = json.load(sys.stdin)
+-errors = sorted(Draft202012Validator(schema).iter_errors(value), key=lambda error: list(error.absolute_path))
+-for error in errors:
+-    location = ".".join(str(part) for part in error.absolute_path) or "<root>"
+-    print(f"{location}: {error.message}", file=sys.stderr)
+-sys.exit(1 if errors else 0)
+-`;
+-  const result = spawnSync("python3", ["-c", validator, effectiveSchema], { cwd: ROOT, encoding: "utf8", input: JSON.stringify(value) });
+-  if (result.status !== 0) fail(`${result.stdout}${result.stderr}`.trim());
+-}
+-
+ function validateSkillSource(value, registry) {
+   const defaults = taskPackageDefaults(value.role_id, registry);
+   if (value.skill_source.registry_ref !== TASK_PACKAGE_REGISTRY_REF) fail(`skill_source.registry_ref 必须为 ${TASK_PACKAGE_REGISTRY_REF}`);
+@@ -155,7 +135,9 @@ function validateContract(value, registry, lifecycle) {
+     if (contract.slice_contract_ref || contract.lifecycle_ref) fail("template-maintenance 不得携带其他合同引用");
+     const checkpointPath = assertSafeRelativePath(contract.maintenance_ref, "contract.maintenance_ref");
+     if (!existsSync(checkpointPath)) fail(`维护 checkpoint 不存在: ${contract.maintenance_ref}`);
+-    validateMaintenanceCheckpoint(loadMaintenanceCheckpoint(contract.maintenance_ref));
++    validateMaintenanceCheckpoint(loadMaintenanceCheckpoint(contract.maintenance_ref), {
++      allowPendingReview: value.execution_state === "Reviewer" && value.workflow_status !== "resolved"
++    });
+     if (lifecycle.work_units.find((item) => item.id === value.work_unit_id)?.scope !== "template-source") fail("template-maintenance 必须绑定 template-source work unit");
+     return;
+   }
+diff --git a/template/scripts/verify-harness-profile-scenarios b/template/scripts/verify-harness-profile-scenarios
+index 1e5fbcfa01870545c5f2e429f982287b38c6b5e2..c54a6bd6c4fb4b2078dad8121de50ffe98ea7ef0 100755
+--- a/template/scripts/verify-harness-profile-scenarios
++++ b/template/scripts/verify-harness-profile-scenarios
+@@ -16,7 +16,7 @@ assert.deepEqual(valid.target_user_roles, [
+   "role.test-agent",
+ ]);
+ assert.equal(valid.terminal_work_unit, "work-unit.verification");
+-assert.equal(valid.cli_package, "create-yss-harness");
++assert.equal(valid.cli_package, "create-yss-harness-dev");
+ 
+ const mutations = [
+   ["wrong profile", (candidate) => { candidate.profile_id = "harness.business-ddd-strategy-handoff"; }, /harness\.dev-agent-slice/],
+diff --git a/template/scripts/verify-instance-distribution-scenarios b/template/scripts/verify-instance-distribution-scenarios
+index 304cfab83ccb8bc379ec347f6b56dbaa35823b37..9d8fd5259f2483619b78bdce00c6213df1f905b1 100755
+--- a/template/scripts/verify-instance-distribution-scenarios
++++ b/template/scripts/verify-instance-distribution-scenarios
+@@ -4,11 +4,12 @@ import {
+   loadDistributionManifest,
+   validateDistributionManifest,
+   validateInstanceDistribution,
++  validateInstantiationPointers,
+ } from "./lib/instance-distribution.mjs";
+ 
+ const live = validateInstanceDistribution();
+-assert.equal(live.cli_package, "create-yss-harness");
+-assert.equal(live.metadata_file, ".yss-harness.json");
++assert.equal(live.cli_package, "create-yss-harness-dev");
++assert.equal(live.metadata_file, ".yss-harness-dev.json");
+ assert.ok(live.manifest.excludeRootEntries.includes(".template-source"));
+ 
+ const source = loadDistributionManifest();
+@@ -27,4 +28,9 @@ for (const [name, mutate, pattern] of mutations) {
+   mutate(candidate);
+   assert.throws(() => validateDistributionManifest(candidate), pattern, name);
+ }
++assert.throws(
++  () => validateInstantiationPointers({ guide: "# `create-yss-harness-dev`\n\n```bash\nnpx create-yss-spec@latest init\n```" }),
++  /不得把 create-yss-spec 作为本 Harness 的可执行入口/,
++  "legacy create-yss-spec executable command"
++);
+ process.stdout.write("实例分发面压力场景验证通过\n");
+diff --git a/template/scripts/verify-maintenance-intensity-scenarios b/template/scripts/verify-maintenance-intensity-scenarios
+index 819714407c8622721262b0b506c8743891316b03..3aed18620f156647c6b41c4b86c3773078bcd9b2 100755
+--- a/template/scripts/verify-maintenance-intensity-scenarios
++++ b/template/scripts/verify-maintenance-intensity-scenarios
+@@ -1,6 +1,9 @@
+ #!/usr/bin/env node
+-import { readFileSync } from "node:fs";
++import { mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
++import { tmpdir } from "node:os";
++import path from "node:path";
+ import { validateMaintenanceCheckpoint } from "./lib/maintenance-intensity.mjs";
++import { validateMaintenanceReviewEvidence } from "./lib/maintenance-review.mjs";
+ 
+ const checkerSource = readFileSync(new URL("./lib/maintenance-intensity.mjs", import.meta.url), "utf8");
+ if (checkerSource.includes("LEVEL_BY_TRIGGER = new Map")) {
+@@ -11,6 +14,15 @@ if (!checkerSource.includes("maintenance-intensity.yaml")) {
+ }
+ 
+ const evidence = (...kinds) => kinds.map((kind) => ({ kind, command: `verify ${kind}`, result: "pass" }));
++const reviewRequestOnly = "scripts/fixtures/maintenance-review/maintenance-review-request-only.md";
++const focusedReview = "scripts/fixtures/maintenance-review/maintenance-focused-review-approved.md";
++const formalReview = "scripts/fixtures/maintenance-review/maintenance-review/formal-review-record.yaml";
++const sameActorReview = "scripts/fixtures/maintenance-review/maintenance-review/formal-review-same-actor.yaml";
++const wrongDigestReview = "scripts/fixtures/maintenance-review/maintenance-review/formal-review-wrong-digest.yaml";
++const negativeReview = "scripts/fixtures/maintenance-review/maintenance-formal-review-negative.md";
++const negativeStructuredReview = "scripts/fixtures/maintenance-review/maintenance-review/formal-review-negative-record.yaml";
++const openFindingReview = "scripts/fixtures/maintenance-review/maintenance-review/formal-review-open-finding.yaml";
++const invalidTaskReview = "scripts/fixtures/maintenance-review/maintenance-review/formal-review-invalid-task.yaml";
+ const base = {
+   schema_version: 1,
+   classification_reason: "场景验证",
+@@ -20,13 +32,22 @@ const base = {
+ 
+ const accepted = [
+   { ...base, intensity: "L1", triggers: ["textual-only"], verification_evidence: evidence("relevant-check"), review_mode: "self-check" },
+-  { ...base, intensity: "L2", triggers: ["local-rule"], verification_evidence: evidence("counterexample", "fresh-verification", "focused-independent-review"), review_mode: "focused-independent" },
+-  { ...base, intensity: "L2", triggers: [], verification_evidence: evidence("counterexample", "fresh-verification", "focused-independent-review"), review_mode: "focused-independent" },
+-  { ...base, intensity: "L3", triggers: ["lifecycle-gate"], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification", "formal-independent-review"), review_mode: "formal-independent" }
++  { ...base, intensity: "L2", triggers: ["local-rule"], verification_evidence: [...evidence("counterexample", "fresh-verification"), { kind: "focused-independent-review", command: focusedReview, result: "pass" }], review_mode: "focused-independent" },
++  { ...base, intensity: "L2", triggers: [], verification_evidence: [...evidence("counterexample", "fresh-verification"), { kind: "focused-independent-review", command: focusedReview, result: "pass" }], review_mode: "focused-independent" },
++  { ...base, intensity: "L3", triggers: ["lifecycle-gate"], verification_evidence: [...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"), { kind: "formal-independent-review", command: formalReview, result: "pass" }], review_mode: "formal-independent" }
+ ];
+ 
+ for (const checkpoint of accepted) validateMaintenanceCheckpoint(checkpoint);
+ 
++const pendingFormalReview = {
++  ...accepted[3],
++  verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification")
++};
++validateMaintenanceCheckpoint(pendingFormalReview, { allowPendingReview: true });
++let pendingPassedStrictClosure = true;
++try { validateMaintenanceCheckpoint(pendingFormalReview); } catch { pendingPassedStrictClosure = false; }
++if (pendingPassedStrictClosure) throw new TypeError("待审合同不得通过最终 checkpoint 校验");
++
+ const rejected = [
+   { ...accepted[1], verification_evidence: evidence("fresh-verification") },
+   { ...accepted[1], verification_evidence: evidence("counterexample", "fresh-verification") },
+@@ -35,7 +56,56 @@ const rejected = [
+   { ...accepted[2], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario") },
+   { ...accepted[2], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification") },
+   { ...accepted[1], escalation: "发现发布语义影响但仍维持 L2", triggers: ["release-semantics"] },
+-  { ...accepted[2], intensity: "L1" }
++  { ...accepted[2], intensity: "L1" },
++  {
++    ...accepted[3],
++    verification_evidence: [
++      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
++      { kind: "formal-independent-review", command: reviewRequestOnly, result: "pass" }
++    ]
++  },
++  {
++    ...accepted[3],
++    verification_evidence: [
++      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
++      { kind: "formal-independent-review", command: sameActorReview, result: "pass" }
++    ]
++  },
++  {
++    ...accepted[3],
++    verification_evidence: [
++      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
++      { kind: "formal-independent-review", command: wrongDigestReview, result: "pass" }
++    ]
++  },
++  {
++    ...accepted[3],
++    verification_evidence: [
++      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
++      { kind: "formal-independent-review", command: negativeReview, result: "pass" }
++    ]
++  },
++  {
++    ...accepted[3],
++    verification_evidence: [
++      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
++      { kind: "formal-independent-review", command: negativeStructuredReview, result: "pass" }
++    ]
++  },
++  {
++    ...accepted[3],
++    verification_evidence: [
++      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
++      { kind: "formal-independent-review", command: openFindingReview, result: "pass" }
++    ]
++  },
++  {
++    ...accepted[3],
++    verification_evidence: [
++      ...evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification"),
++      { kind: "formal-independent-review", command: invalidTaskReview, result: "pass" }
++    ]
++  }
+ ];
+ 
+ for (const checkpoint of rejected) {
+@@ -44,4 +114,17 @@ for (const checkpoint of rejected) {
+   if (!failed) throw new TypeError(`错误 checkpoint 未被拒绝: ${JSON.stringify(checkpoint)}`);
+ }
+ 
++const symlinkFixture = mkdtempSync(path.join(tmpdir(), "yss-maintenance-review-"));
++try {
++  const baseDir = path.join(symlinkFixture, "repo");
++  mkdirSync(baseDir);
++  writeFileSync(path.join(symlinkFixture, "outside.md"), "# 聚焦独立审查\n\n审查者：reviewer.outside\n\n审查结论：pass\n");
++  symlinkSync(path.join(symlinkFixture, "outside.md"), path.join(baseDir, "review.md"));
++  let symlinkEscaped = false;
++  try { validateMaintenanceReviewEvidence({ kind: "focused-independent-review", command: "review.md" }, { baseDir }); } catch { symlinkEscaped = true; }
++  if (!symlinkEscaped) throw new TypeError("symlink 越界证据未被拒绝");
++} finally {
++  rmSync(symlinkFixture, { recursive: true, force: true });
++}
++
+ process.stdout.write("模板维护 L1/L2/L3 强度场景验证通过\n");
+diff --git a/template/scripts/verify-subagent-task-package-scenarios b/template/scripts/verify-subagent-task-package-scenarios
+index 03a3aed83798bed9accfc255649fa5f2598afaab..d80d45370c12bdc27597150dd6bf55675f23b020 100755
+--- a/template/scripts/verify-subagent-task-package-scenarios
++++ b/template/scripts/verify-subagent-task-package-scenarios
+@@ -58,8 +58,7 @@ const maintenance = {
+     { kind: "green", command: "scenario", result: "pass" },
+     { kind: "refactor", command: "scenario", result: "pass" },
+     { kind: "pressure-scenario", command: "scenario", result: "pass" },
+-    { kind: "fresh-verification", command: "scenario", result: "pass" },
+-    { kind: "formal-independent-review", command: "scenario", result: "pass" }
++    { kind: "fresh-verification", command: "scenario", result: "pass" }
+   ],
+   review_mode: "formal-independent",
+   escalation: "none"
+@@ -106,7 +105,7 @@ function lifecyclePackage() {
+ }
+ 
+ function templatePackage() {
+-  return packageBase("role.harness-orchestrator", "task-maintenance", "work-unit.intensity-aware-verification", "template-maintenance", {
++  return packageBase("role.test-agent", "task-maintenance", "work-unit.intensity-aware-verification", "template-maintenance", {
+     maintenance_ref: maintenanceRef,
+     contract_id: "template-maintenance"
+   });
+@@ -165,6 +164,8 @@ function mustFail(mutator, pattern, label, factory = () => lifecyclePackage()) {
+ try {
+   const tactical = lifecyclePackage();
+   const maintenance = templatePackage();
++  maintenance.execution_state = "Reviewer";
++  maintenance.review_context = { implementation_actor_id: "role.harness-orchestrator.instance-1" };
+   const frontend = slicePackage("role.frontend-agent", "task-frontend", "work-unit.slice-frontend", "apps/frontend/todo/");
+   const backend = slicePackage("role.backend-agent", "task-backend", "work-unit.slice-backend", "apps/backend/todo/");
+   const testing = slicePackage("role.test-agent", "task-test", "work-unit.slice-test", "tests/todo/");
+diff --git a/template/scripts/verify-template b/template/scripts/verify-template
+index 081c83e9ab1eed0bde410e9e43a7e1e5e6bc0942..74a3334625eadfbc7df90cb39ef9a163cebe0fdc 100755
+--- a/template/scripts/verify-template
++++ b/template/scripts/verify-template
+@@ -7,11 +7,12 @@ node -e 'const [major]=process.versions.node.split(".").map(Number); if (major <
+ 
+ required_files=(yss-project.yaml AGENTS.md CONTEXT.md skills-lock.json docs/agents/yss-skill-registry.yaml docs/agents/digital-human-roles.yaml docs/process/lifecycle-registry.yaml docs/process/lifecycle-registry-baseline.json docs/process/maintenance-intensity.yaml docs/process/harness-profile.yaml docs/process/schemas/lifecycle-checkpoint.schema.json docs/process/schemas/frontend-implementation-evidence.schema.json docs/process/schemas/digital-human-task-package.schema.json docs/process/schemas/subagent-task-package.schema.json docs/process/templates/lifecycle-checkpoint-template.yaml docs/process/templates/frontend-implementation-plan-template.yaml docs/process/templates/frontend-implementation-verification-template.yaml docs/templates/subagent-task-package-template.md .agents/skills/yss-tactical-design/SKILL.md .agents/skills/yss-tactical-design/agents/openai.yaml .agents/skills/yss-tactical-design/references/tactical-design-contract.md .agents/skills/yss-tactical-design/references/tactical-design.schema.json .agents/skills/yss-tactical-design/references/validation-rules.md .agents/skills/yss-tactical-design/references/output-template.md .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs .agents/skills/yss-tactical-design/tests/run-scenarios.mjs scripts/repository-mode scripts/implementation-path-policy scripts/repository-scope-policy scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-lifecycle-checkpoint scripts/verify-frontend-implementation-evidence scripts/lib/task-package.mjs scripts/lib/harness-profile.mjs scripts/lib/instance-distribution.mjs scripts/verify-digital-human-task-package scripts/verify-digital-human-task-package-scenarios scripts/verify-subagent-task-package scripts/verify-subagent-task-package-scenarios scripts/verify-lifecycle-transition-scenarios scripts/verify-maintenance-checkpoint scripts/verify-maintenance-intensity-scenarios scripts/verify-skill-registry scripts/verify-skill-governance scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/verify-digital-human-roles scripts/verify-digital-human-roles-scenarios scripts/verify-harness-profile scripts/verify-harness-profile-scenarios scripts/verify-instance-distribution scripts/verify-approval-record scripts/export-yss-skills)
+ for required in "${required_files[@]}"; do test -f "$required" || { echo "缺少模板必需文件: $required" >&2; exit 1; }; done
++for required in docs/process/schemas/maintenance-review-record.schema.json scripts/lib/json-schema.mjs scripts/lib/maintenance-review.mjs scripts/lib/task-package-schema.mjs scripts/verify-maintenance-review-record; do test -f "$required" || { echo "缺少模板必需文件: $required" >&2; exit 1; }; done
+ 
+ repository_mode="$(scripts/repository-mode)"
+ if [[ "$repository_mode" == "template-source" ]]; then
+   test -f .template-source/distribution/template.manifest.json
+-  test -f .template-source/contracts/create-yss-harness-repository-mode-contract.md
++  test -f .template-source/contracts/create-yss-harness-dev-repository-mode-contract.md
+   test -x .template-source/scripts/evidence-index
+   .template-source/scripts/evidence-index --check
+   pnpm --dir .template-source/tooling/node test
+@@ -62,6 +63,10 @@ scripts/verify-openapi-yaml-first-scenarios
+ scripts/verify-openapi-json-handoff-scenarios
+ 
+ for entry in scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-lifecycle-checkpoint scripts/verify-frontend-implementation-evidence scripts/lib/task-package.mjs scripts/lib/harness-profile.mjs scripts/lib/instance-distribution.mjs scripts/verify-digital-human-task-package scripts/verify-digital-human-task-package-scenarios scripts/verify-subagent-task-package scripts/verify-subagent-task-package-scenarios scripts/verify-maintenance-checkpoint scripts/verify-maintenance-intensity-scenarios scripts/verify-skill-registry scripts/verify-skill-governance scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/verify-digital-human-roles scripts/verify-digital-human-roles-scenarios scripts/verify-harness-profile scripts/verify-harness-profile-scenarios scripts/verify-instance-distribution scripts/verify-instance-distribution-scenarios scripts/verify-approval-record scripts/lib/lifecycle-transition.mjs scripts/verify-lifecycle-scenarios scripts/verify-lifecycle-transition-scenarios scripts/verify-matt-yss-integration-scenarios scripts/verify-prototype-backend-scaffold-scenarios scripts/verify-yss-router-scenarios scripts/verify-openapi-yaml-first-scenarios scripts/verify-openapi-json-handoff-scenarios scripts/verify-repository-scope-scenarios scripts/export-yss-skills; do node --check "$entry"; done
++node --check scripts/lib/maintenance-review.mjs
++node --check scripts/lib/json-schema.mjs
++node --check scripts/lib/task-package-schema.mjs
++node --check scripts/verify-maintenance-review-record
+ 
+ legacy_runtime="ru""by"
+ script_roots=(scripts)
