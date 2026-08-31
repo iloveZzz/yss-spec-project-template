@@ -1,0 +1,44 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import { checkEntryAlignment, loadEntryAlignmentSources } from "./lib/entry-alignment.mjs";
+
+try {
+  const live = checkEntryAlignment();
+  const sources = loadEntryAlignmentSources();
+  const mutations = [
+    ["missing profile id", (candidate) => {
+      candidate.agentsText = candidate.agentsText.replaceAll(sources.profile.profile_id, "harness.unspecified");
+    }, /profile/],
+    ["missing harness profile path", (candidate) => {
+      candidate.agentsText = candidate.agentsText.replaceAll("docs/process/harness-profile.yaml", "docs/process/missing-profile.yaml");
+    }, /harness-profile/],
+    ["stale shadow claim", (candidate) => {
+      candidate.agentsText = candidate.agentsText.replace("status: active", "status: shadow");
+      candidate.glossaryText = candidate.glossaryText.replace("active", "shadow");
+    }, /shadow/],
+    ["yss-router as local gate", (candidate) => {
+      candidate.agentsText += "\n进入实现后使用 `yss-router` 编译最小 skill 集合。\n";
+    }, /yss-router/],
+    ["openapi-driven intro", (candidate) => {
+      candidate.readmeText = candidate.readmeText.replace(
+        sources.profile.profile_id,
+        "Matt Pocock Engineering Skills × YSS × OpenAPI 驱动的轻量 AI 研发文档模板"
+      );
+    }, /OpenAPI 驱动|profile/]
+  ];
+  for (const [name, mutate, pattern] of mutations) {
+    const candidate = {
+      profile: sources.profile,
+      skills: sources.skills,
+      agentsText: sources.agentsText,
+      readmeText: sources.readmeText,
+      glossaryText: sources.glossaryText
+    };
+    mutate(candidate);
+    assert.throws(() => checkEntryAlignment(candidate), pattern, name);
+  }
+  process.stdout.write(`入口规则与战略设计 profile 对齐校验通过: ${live.profile_id} → ${live.terminal_work_unit}\n`);
+} catch (error) {
+  process.stderr.write(`入口规则与战略设计 profile 对齐校验失败:\n${error.message}\n`);
+  process.exitCode = 1;
+}

@@ -1,0 +1,51 @@
+schema_version: 1
+registry_id: yss.skill-routing
+status: active
+description: >-
+  当前分支战略设计 Harness 的技能路由注册表。只暴露产品、需求、商务在战略设计上游
+  所需的技能；实现、OpenAPI、战术设计和发布技能由下游研发 profile 管理。
+canonical_content_root: .agents/skills
+runtime_policy:
+  consumed_by_router: false
+  consumed_by_lifecycle: true
+  discovery_enforced: true
+agent_runtime_roots:
+  claude: .claude/skills
+  codex: .codex/skills
+  cursor: .cursor/skills
+  hermes: .hermes/skills
+  pi: .pi/skills
+  qoder: .qoder/skills
+  trae: .trae/skills
+
+skills:
+  - { id: ask-matt, layer: compatibility, maturity: supported, instance_default_discoverable: false, aliases: [], impacts: [lifecycle] }
+  - { id: code-review, layer: maintainer-only, maturity: supported, instance_default_discoverable: false, aliases: [], impacts: [quality] }
+  - { id: competitive-intelligence, layer: core, maturity: supported, instance_default_discoverable: true, aliases: [], impacts: [discovery] }
+  - { id: domain-modeling, layer: core, maturity: supported, instance_default_discoverable: true, aliases: [], impacts: [discovery] }
+  - { id: grill-me, layer: compatibility, maturity: supported, instance_default_discoverable: false, aliases: [], impacts: [discovery] }
+  - { id: grill-with-docs, layer: compatibility, maturity: supported, instance_default_discoverable: false, aliases: [], impacts: [discovery] }
+  - { id: grilling, layer: core, maturity: supported, instance_default_discoverable: true, aliases: [], impacts: [discovery] }
+  - { id: handoff, layer: core, maturity: supported, instance_default_discoverable: true, aliases: [], impacts: [lifecycle] }
+  - { id: maintaining-skills, layer: maintainer-only, maturity: supported, instance_default_discoverable: false, aliases: [], impacts: [template-maintenance] }
+  - { id: prototype-review, layer: core, maturity: supported, instance_default_discoverable: true, aliases: [], impacts: [prototype] }
+  - { id: research, layer: core, maturity: supported, instance_default_discoverable: true, aliases: [], impacts: [discovery] }
+  - { id: to-spec, layer: compatibility, maturity: supported, instance_default_discoverable: false, aliases: [], impacts: [lifecycle] }
+  - { id: to-tickets, layer: compatibility, maturity: supported, instance_default_discoverable: false, aliases: [], impacts: [lifecycle] }
+  - { id: triage, layer: compatibility, maturity: supported, instance_default_discoverable: false, aliases: [], impacts: [lifecycle] }
+  - { id: wayfinder, layer: maintainer-only, maturity: supported, instance_default_discoverable: false, aliases: [], impacts: [lifecycle] }
+  - { id: writing-for-agents, layer: maintainer-only, maturity: supported, instance_default_discoverable: false, aliases: [], impacts: [writing] }
+  - { id: yss-antd-design, layer: specialist, maturity: supported, instance_default_discoverable: false, aliases: [], impacts: [prototype] }
+  - { id: yss-design-system, layer: core, maturity: supported, instance_default_discoverable: true, aliases: [], impacts: [prototype] }
+  - { id: yss-prototype-stage, layer: core, maturity: supported, instance_default_discoverable: true, aliases: [], impacts: [prototype] }
+  - { id: yss-stage-decision, layer: core, maturity: draft, instance_default_discoverable: true, aliases: [], impacts: [discovery, lifecycle] }
+  - { id: yss-strategic-design, layer: core, maturity: supported, instance_default_discoverable: true, aliases: [], impacts: [discovery, prototype, lifecycle] }
+
+platform_skills:
+  - id: product-design
+    root: .codex/skills
+    layer: specialist
+    instance_default_discoverable: false
+    aliases: [product-design:index]
+
+external_skills: []

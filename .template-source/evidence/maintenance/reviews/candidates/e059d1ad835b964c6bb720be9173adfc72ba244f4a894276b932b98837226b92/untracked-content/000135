@@ -1,0 +1,44 @@
+schema_version: 1
+stage_decision_id: stage-decision.invalid-blocker
+package_version: v1
+status: approved
+problem_statement: 示例
+target_users: [用户]
+mvp: [功能]
+non_goals: []
+success_criteria: [标准]
+test_seams: [seam]
+confirmed_decisions: [决定]
+assumptions: []
+constraints: []
+unresolved_items:
+  - item: 规则所有权未确认
+    type: blocker
+    owner: role.product-manager
+    next_action: 召开领域评审
+    target_version: 2026-Q4
+terminology_refs: [CONTEXT.md#Example]
+domain_strategy_ref:
+  domain_strategy_id: domain-strategy.invalid
+  domain_version: v1
+  digest: sha256:invalid
+  status: approved
+impact_assessment:
+  ui: false
+  api: false
+  data: false
+  backend: true
+  frontend: false
+  cross_repo: false
+  high_risk: false
+downstream_mapping:
+  - domain_change: example
+    consumer: spec-synthesis
+    propagation: direct
+    reapproval_condition: 规则确认
+evidence_refs: [evidence.invalid]
+approval:
+  approval_ref: docs/.scratch/invalid/gate.yaml
+  approver: role.lifecycle-orchestrator
+  persisted_ref: docs/.scratch/invalid/package.yaml
+  current_version: v1

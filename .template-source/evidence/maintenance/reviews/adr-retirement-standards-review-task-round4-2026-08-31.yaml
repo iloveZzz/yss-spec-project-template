@@ -1,0 +1,34 @@
+schema_version: 1
+task_id: adr-retirement-standards-review-round4-2026-08-31
+work_unit_id: work-unit.intensity-aware-review
+actor_id: reviewer.adr-retirement.standards.r4.2026-08-31
+role_id: role.test-engineer
+runtime_id: runtime.skill-projection
+execution_state: Reviewer
+workflow_status: active
+skill_source:
+  registry_ref: docs/agents/digital-human-roles.yaml
+  defaults_ref: taskPackageDefaults(role.test-engineer)
+  core_skills: [tdd, diagnosing-bugs, code-review, alibaba-java-code-style, yss-ui, yss-design-system, yss-page-module-development, yss-domain, yss-application, yss-repository, yss-web-controller, yss-dto, mapstruct, lombok]
+  forbidden_skills: [yss-ddd-scaffold-generator, yss-frontend-scaffold-generator, implement, to-spec]
+contract: { kind: template-maintenance, contract_id: template-adr-retirement, contract_version: 4, status: issued, contract_ref: .template-source/evidence/maintenance/adr-retirement-l3-contract-2026-08-31.yaml, maintenance_ref: .template-source/evidence/maintenance/adr-retirement-l3-contract-2026-08-31.yaml }
+inputs:
+  - .template-source/evidence/maintenance/reviews/candidates/561572f0ee4b360d478dae73a483422982225a35a5b9474b35842fe2d5466672/candidate-manifest.yaml
+  - .template-source/evidence/maintenance/reviews/adr-retirement-standards-review-round3-2026-08-31.md
+  - AGENTS.md
+  - CONTEXT.md
+  - docs/process/harness-process-tailoring.md
+  - .agents/skills/maintaining-skills/SKILL.md
+objective: 对最终 ADR 退役候选执行 Standards 独立审查，复核稳定 commit、可复现 prepack、ignored 发布 post-image、ADR 全量退役及跨仓证据。
+allowed_write_paths: [.template-source/evidence/maintenance/reviews/adr-retirement-standards-review-round4-2026-08-31.md]
+forbidden_actions: [修改实现资产, 修改候选快照, commit, push, 批准发布]
+expected_outputs: [Standards 审查结论, findings, 候选 digest]
+expected_evidence_files: [.template-source/evidence/maintenance/reviews/adr-retirement-standards-review-round4-2026-08-31.md]
+verification_commands: [scripts/verify-template, git diff --check]
+verification_results:
+  - { command: scripts/verify-template, exit_code: 0, executed_at: '2026-08-31T11:40:00Z', evidence_ref: .template-source/evidence/maintenance/adr-retirement-fresh-verification-2026-08-31.md }
+  - { command: git diff --check, exit_code: 0, executed_at: '2026-08-31T11:40:00Z', evidence_ref: .template-source/evidence/maintenance/adr-retirement-fresh-verification-2026-08-31.md }
+review_context: { implementation_actor_id: worker.adr-retirement.2026-08-31, implementation_task_id: adr-retirement-implementation }
+downstream_consumers: [reviewer.adr-retirement.lead.r4.2026-08-31, role.lifecycle-orchestrator]
+convergence: { parent_work_unit: work-unit.intensity-aware-review, convergence_ref: .template-source/evidence/maintenance/adr-retirement-l3-contract-2026-08-31.yaml, conflict_escalation: 任一 violation、drift 或 new_impacts 返回实现者并重新冻结候选 }
+

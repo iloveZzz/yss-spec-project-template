@@ -63,3 +63,9 @@ wiki-root 从仓库根 `wiki/` 迁到 `.template-source/wiki`。同步 raw 中�
 - unmapped: (none)
 
 同步 raw 中的 `implementation-repo-integration.md`。刷新 [[实现仓库与跨仓库契约]]：`inspectWorkingTreeScope` 必须返回 `{ writable }`，空 gitlink / detached HEAD 不可写，脚手架不得把 `--output-dir` 指向 detached HEAD 子仓或把 `--force` 覆盖 gitlink 走普通目录路径。
+
+## [2026-08-31] RETIRE | 退役模板源治理 ADR
+- missing: adr-0002
+- articles: 仓库身份与路由, 模板总览, Agent入口规则
+
+模板源不再维护实时治理 ADR；`adr-0002` 映射与 raw 副本已退役，仓库身份改由 `yss-project.yaml`、`AGENTS.md` 和实例化合同直接提供事实。

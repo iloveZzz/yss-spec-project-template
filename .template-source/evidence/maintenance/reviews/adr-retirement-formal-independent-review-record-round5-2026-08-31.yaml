@@ -1,0 +1,12 @@
+schema_version: 1
+record_kind: maintenance-independent-review
+review_mode: formal-independent
+status: approved
+reviewer_id: reviewer.adr-retirement.lead.r5.2026-08-31
+implementation_actor_id: worker.adr-retirement.2026-08-31
+candidate_digest: 125efcdf5e0ef9f5c62a97af177b303ee7493ae0a5ac3d65f49980a6c240e808
+candidate_snapshot_ref: .template-source/evidence/maintenance/reviews/candidates/125efcdf5e0ef9f5c62a97af177b303ee7493ae0a5ac3d65f49980a6c240e808/candidate-manifest.yaml
+task_package_ref: .template-source/evidence/maintenance/reviews/adr-retirement-review-lead-task-round5-2026-08-31.yaml
+review_report_ref: .template-source/evidence/maintenance/reviews/adr-retirement-formal-independent-review-round5-2026-08-31.md
+reviewed_at: 2026-08-31T12:38:28Z
+findings: []

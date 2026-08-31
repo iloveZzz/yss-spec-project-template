@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "templateName": "yss-harness-design-agent",
+  "profileId": "harness.business-ddd-strategy-handoff",
+  "templateSource": "github:iloveZzz/yss-harness-design-agent",
+  "templateRepository": "https://github.com/iloveZzz/yss-harness-design-agent.git",
+  "requestedRef": "f2c5f5878589667919f9000913743a288580ef46",
+  "templateCommit": "f2c5f5878589667919f9000913743a288580ef46",
+  "manifestHash": "261d5abe38f5d200c588d38d6a573a512f7d075a51bd5e7468683d6a79234e6c",
+  "encodedPaths": {
+    ".codex/skills/product-design/.npmignore": ".codex/skills/product-design/__yss_dotfile__.npmignore",
+    ".codex/skills/product-design/templates/prototype/.npmrc": ".codex/skills/product-design/templates/prototype/__yss_dotfile__.npmrc",
+    ".gitignore": "__yss_dotfile__.gitignore"
+  },
+  "snapshotHash": "be84a48c1a93b6f85e6c9f8101e2b0abf2de7bd4c03dc9df04934eee93990635",
+  "generatedAt": "2026-08-31T11:14:28.911Z"
+}

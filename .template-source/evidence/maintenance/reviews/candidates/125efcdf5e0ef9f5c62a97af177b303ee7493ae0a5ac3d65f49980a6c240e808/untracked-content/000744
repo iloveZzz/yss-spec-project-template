@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import { loadHarnessProfile, validateHarnessProfile, STRATEGIC_PROFILE_ID } from "./lib/harness-profile.mjs";
+
+const source = loadHarnessProfile();
+const valid = validateHarnessProfile(source);
+assert.equal(valid.profile_id, STRATEGIC_PROFILE_ID);
+assert.deepEqual(valid.target_user_roles, ["role.product-manager", "role.requirements-manager", "role.business"]);
+assert.equal(valid.terminal_work_unit, "work-unit.strategic-design-handoff");
+assert.equal(valid.downstream_skill, "yss-tactical-design");
+
+const mutations = [
+  ["extra target role", (candidate) => candidate.audience.target_user_roles.push("role.unknown"), /target_user_roles/],
+  ["wrong terminal", (candidate) => { candidate.lifecycle.terminal_work_unit = "work-unit.spec-synthesis"; }, /terminal_work_unit|strategic-design-handoff/],
+  ["wrong downstream skill", (candidate) => { candidate.handoff.downstream_skill = "yss-domain"; }, /downstream_skill/],
+  ["missing template", (candidate) => { candidate.handoff.package_template = "docs/templates/missing.yaml"; }, /package_template/],
+];
+for (const [name, mutate, pattern] of mutations) {
+  const candidate = structuredClone(source);
+  mutate(candidate);
+  assert.throws(() => validateHarnessProfile(candidate), pattern, name);
+}
+process.stdout.write("Harness profile 压力场景验证通过\n");

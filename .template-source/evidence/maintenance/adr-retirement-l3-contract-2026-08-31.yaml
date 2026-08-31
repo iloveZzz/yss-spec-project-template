@@ -1,0 +1,23 @@
+schema_version: 1
+intensity: L3
+classification_reason: 退役三仓模板源治理 ADR，并修改核心发布校验器、知识库映射和两个 CLI 生成快照。
+triggers: [core-validator, release-semantics, cross-repo-contract, aggregate-behavior-change]
+changed_assets:
+  - .template-source/adr/**
+  - .template-source/README.md
+  - .template-source/wiki/**
+  - docs/adr/README.md
+  - scripts/verify-governance-release
+  - submodules/yss-harness-dev-agent
+  - submodules/yss-strategic-design-harness
+  - submodules/create-yss-harness-dev
+  - submodules/create-yss-strategic-design
+verification_evidence:
+  - { kind: red, command: 'scripts/verify-template（修改前因已删除 ADR-0003/0006 触发 ENOENT）', result: pass }
+  - { kind: green, command: '父仓与两个模板源子仓 scripts/verify-template；两个目标 CLI npm test', result: pass }
+  - { kind: refactor, command: '三个 wiki refresh + lint；父仓和四个目标子仓 git diff --check', result: pass }
+  - { kind: pressure-scenario, command: '临时 template-source 加入 9999-regression.md 后 verify-governance-release 必须失败', result: pass }
+  - { kind: fresh-verification, command: .template-source/evidence/maintenance/adr-retirement-fresh-verification-2026-08-31.md, result: pass }
+  - { kind: formal-independent-review, command: .template-source/evidence/maintenance/reviews/adr-retirement-formal-independent-review-record-round5-2026-08-31.yaml, result: pass }
+review_mode: formal-independent
+escalation: none

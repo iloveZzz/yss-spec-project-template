@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+import { validateHarnessProfile } from "./lib/harness-profile.mjs";
+
+try {
+  const result = validateHarnessProfile();
+  process.stdout.write(`Harness profile 校验通过: ${result.profile_id} → ${result.downstream_skill}\n`);
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+}

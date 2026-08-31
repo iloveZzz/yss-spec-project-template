@@ -1,0 +1,75 @@
+schema_version: 1
+handoff_id: strategic-design-handoff.<feature>
+handoff_version: v1
+status: draft
+
+source:
+  domain_strategy_ref:
+    id: domain-strategy.<feature>
+    version: v1
+    digest: <domain-strategy-digest>
+    status: approved
+    persisted_ref: docs/.scratch/<feature>/domain/domain-strategy.yaml
+  stage_decision_package_ref:
+    id: stage-decision.<feature>
+    version: v1
+    digest: <stage-decision-digest>
+    status: approved
+    persisted_ref: docs/.scratch/<feature>/decisions/stage-decision-package.yaml
+  spec_ref:
+    id: spec.<feature>
+    version: v1
+    digest: <spec-digest>
+    status: approved
+    persisted_ref: docs/.scratch/<feature>/requirements/spec.md
+  prototype_ref:
+    id: prototype.<feature>
+    version: v1
+    digest: <prototype-digest>
+    status: approved
+    persisted_ref: docs/.scratch/<feature>/design/prototype.html
+  business_ticket_set_ref:
+    id: business-ticket-set.<feature>
+    version: v1
+    digest: <business-ticket-set-digest>
+    status: approved
+    persisted_ref: docs/.scratch/<feature>/tickets/business-ticket-set.yaml
+
+target:
+  team: downstream-rd-team
+  skill: yss-tactical-design
+  output: tactical-design-contract
+
+problem_and_business_outcomes:
+  - <业务问题、目标和可观测结果>
+
+bounded_context_and_subdomain_map:
+  - <限界上下文、子域分类、职责边界和非职责>
+
+context_map_and_translation_responsibility:
+  - <上下文关系、语义上下游、业务权威、传输方向和翻译责任>
+
+ubiquitous_language_and_concept_candidates:
+  - <上下文内统一语言及核心概念候选；不得直接指定 Entity 或 Aggregate>
+
+scenarios_and_business_invariants:
+  - <关键场景、领域事件候选和业务不变量>
+
+tactical_design_questions:
+  - <交给下游战术设计团队裁决的聚合、状态、一致性、Gateway 或持久化问题>
+
+deferred_decisions_and_ownership:
+  - decision: <尚未决策事项>
+    owner: <责任角色或团队>
+    next_action: <下一动作>
+    target_version: <目标版本或发布日期>
+
+evidence_and_version_digests:
+  - <可读取的战略设计、阶段决策、评审和验证证据引用>
+
+acceptance:
+  - domain-strategy-status-is-approved
+  - stage-decision-package-status-is-approved
+  - source-digests-are-current
+  - every-deferred-item-has-owner-next-action-and-target-version
+  - no-aggregate-entity-repository-or-api-is-prescribed

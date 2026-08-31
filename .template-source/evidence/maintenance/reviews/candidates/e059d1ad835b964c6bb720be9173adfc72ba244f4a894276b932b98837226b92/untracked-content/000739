@@ -1,0 +1,132 @@
+#!/usr/bin/env node
+import { validateDefaultDigitalHumanRoles, validateDigitalHumanRoles, loadDigitalHumanRoles, skillIdsFromRegistry } from "./lib/digital-human-roles.mjs";
+import { loadRegistry } from "./lib/lifecycle-registry.mjs";
+import { loadSkillRegistry } from "./lib/skill-registry.mjs";
+import { validateApprovalRecord, validateApprovalRecordFile } from "./lib/approval-record.mjs";
+
+function clone() {
+  return structuredClone(loadDigitalHumanRoles());
+}
+
+function deps() {
+  const lifecycle = loadRegistry();
+  const skills = loadSkillRegistry();
+  const ids = (records) => new Set(records.map((record) => record.id));
+  return {
+    skillIds: skillIdsFromRegistry(skills),
+    stageIds: ids(lifecycle.stages),
+    gateIds: ids(lifecycle.gates),
+    artifactIds: ids(lifecycle.artifacts),
+    evidenceIds: ids(lifecycle.evidence),
+    workUnitIds: ids(lifecycle.work_units),
+    skillRegistry: skills
+  };
+}
+
+function mustFail(doc, pattern, label) {
+  let failed = false;
+  let message = "";
+  try {
+    validateDigitalHumanRoles(doc, deps());
+  } catch (error) {
+    failed = true;
+    message = error.message;
+  }
+  if (!failed) throw new TypeError(`错误配置未被拒绝: ${label}`);
+  if (!pattern.test(message)) throw new TypeError(`${label} 失败原因不符合预期: ${message}`);
+}
+
+validateDefaultDigitalHumanRoles();
+
+const unknownMember = clone();
+unknownMember.stage_groups[0].members.push("role.unknown");
+mustFail(unknownMember, /未知成员/, "协作组不得包含未注册角色");
+
+const coupled = clone();
+coupled.roles[0].grok_title = "legacy";
+mustFail(coupled, /平台耦合字段/, "角色上残留 grok_title");
+
+const unknownSkill = clone();
+unknownSkill.roles[0].core_skills = ["not-a-registered-skill"];
+mustFail(unknownSkill, /未登记技能/, "未知技能");
+
+const overlap = clone();
+overlap.roles.find((role) => role.id === "role.product-manager").forbidden_skills.push("yss-strategic-design");
+mustFail(overlap, /重叠/, "启用且禁止同一技能");
+
+const selfSign = clone();
+selfSign.gate_policy.dual_digital_human[0].countersigners = ["role.requirements-manager"];
+mustFail(selfSign, /起草者不得会签自己/, "起草者自签");
+
+const releaseByBot = clone();
+releaseByBot.gate_policy.biological_human = ["gate.architecture-reviewed"];
+releaseByBot.gate_policy.digital_human_review.push({
+  gate: "gate.release-ready",
+  countersigners: ["role.product-manager"]
+});
+mustFail(releaseByBot, /gate\.release-ready/, "数字人关闭发布门禁");
+
+const missingSigners = clone();
+missingSigners.gate_policy.digital_human_review[0].countersigners = [];
+mustFail(missingSigners, /countersigners/, "单审门禁缺 countersigners");
+
+const stringReview = clone();
+stringReview.gate_policy.digital_human_review = ["gate.prototype-reviewed"];
+mustFail(stringReview, /必须是含 gate/, "单审门禁仍用字符串名单");
+
+const missingGeneric = clone();
+missingGeneric.runtimes = missingGeneric.runtimes.filter((runtime) => runtime.id !== "runtime.generic");
+mustFail(missingGeneric, /缺少运行时绑定: runtime.generic/, "缺少通用运行时");
+
+validateApprovalRecordFile("docs/templates/approval-record-template.yaml");
+
+const rolesDoc = loadDigitalHumanRoles();
+try {
+  validateApprovalRecord({
+    schema_version: 1,
+    gate_id: "gate.spec-baseline-approved",
+    decision: "approved",
+    actor_kind: "digital-human",
+    role_id: "role.requirements-manager",
+    runtime_id: "runtime.generic",
+    principal_ref: "instance:wrong"
+  }, { rolesDoc });
+  throw new TypeError("错误配置未被拒绝: 错误角色会签");
+} catch (error) {
+  if (!/会签角色必须是/.test(error.message)) throw new TypeError(`错误角色会签 失败原因不符合预期: ${error.message}`);
+}
+
+try {
+  validateApprovalRecord({
+    schema_version: 1,
+    gate_id: "gate.spec-baseline-approved",
+    decision: "approved",
+    actor_kind: "digital-human",
+    role_id: "role.requirements-manager",
+    runtime_id: "runtime.generic",
+    principal_ref: "instance:req",
+    drafter_role_id: "role.requirements-manager"
+  }, { rolesDoc });
+  throw new TypeError("错误配置未被拒绝: 起草者自签会签记录");
+} catch (error) {
+  if (!/会签角色必须是|起草者不得会签自己/.test(error.message)) {
+    throw new TypeError(`起草者自签会签记录 失败原因不符合预期: ${error.message}`);
+  }
+}
+
+try {
+  validateApprovalRecord({
+    schema_version: 1,
+    gate_id: "gate.release-ready",
+    decision: "approved",
+    actor_kind: "digital-human",
+    role_id: "role.product-manager",
+    runtime_id: "runtime.generic",
+    principal_ref: "instance:pm"
+  }, { rolesDoc });
+  throw new TypeError("错误配置未被拒绝: 数字人关发布会签记录");
+} catch (error) {
+  if (!/必须由生物人会签/.test(error.message)) throw new TypeError(`数字人关发布会签记录 失败原因不符合预期: ${error.message}`);
+}
+
+process.stdout.write("数字人角色压力场景验证通过\n");

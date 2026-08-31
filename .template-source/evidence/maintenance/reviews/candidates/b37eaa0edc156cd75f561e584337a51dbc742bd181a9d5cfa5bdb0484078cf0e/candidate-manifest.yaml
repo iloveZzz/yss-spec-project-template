@@ -1,0 +1,25 @@
+{
+  "review_mode": "worktree",
+  "review_base_ref": "37cc9257a0918eac187003c8f8098bfbaff2480b",
+  "merge_base": "37cc9257a0918eac187003c8f8098bfbaff2480b",
+  "implementation_candidate_ref": "working-tree:parent+dev-source+design-source+dev-cli+design-cli",
+  "candidate_snapshot_ref": ".template-source/evidence/maintenance/reviews/candidates/b37eaa0edc156cd75f561e584337a51dbc742bd181a9d5cfa5bdb0484078cf0e/candidate-manifest.yaml",
+  "candidate_digest": "b37eaa0edc156cd75f561e584337a51dbc742bd181a9d5cfa5bdb0484078cf0e",
+  "tracked_diff_command": "for each repository in parent, dev-source, design-source, dev-cli, design-cli: git diff --no-ext-diff --binary --full-index HEAD",
+  "untracked_inventory_command": "git ls-files -z --others --exclude-standard in each candidate repository before evidence capture",
+  "untracked_diff_command": "git diff --no-index --no-ext-diff --binary --full-index -- /dev/null <path>",
+  "untracked_files": [],
+  "commit_list_command": "git log HEAD..HEAD --oneline in each candidate repository",
+  "snapshot_stream_ref": ".template-source/evidence/maintenance/reviews/candidates/b37eaa0edc156cd75f561e584337a51dbc742bd181a9d5cfa5bdb0484078cf0e/candidate.bin",
+  "tracked_diff_ref": ".template-source/evidence/maintenance/reviews/candidates/b37eaa0edc156cd75f561e584337a51dbc742bd181a9d5cfa5bdb0484078cf0e/tracked.diff",
+  "source_repository": "aggregate:parent+submodules/yss-harness-dev-agent+submodules/yss-strategic-design-harness+submodules/create-yss-harness-dev+submodules/create-yss-strategic-design",
+  "repository_heads": {
+    "parent": "37cc9257a0918eac187003c8f8098bfbaff2480b",
+    "dev-source": "f381adeb0147472fd5829c097153c1a15450c30e",
+    "design-source": "73eeb8f432cbbf2629552faa2bf71763c0a757fa",
+    "dev-cli": "32c6720ebb081faffc29710c53cce31fbd532e56",
+    "design-cli": "8e6bd3f905c46f85764781ac857020639448b20f"
+  },
+  "untracked_path_bytes": [],
+  "untracked_content_refs": []
+}

@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.local/schemas/strategic-design-handoff-v1.json",
+  "title": "YSS Strategic Design Handoff",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "handoff_id",
+    "handoff_version",
+    "status",
+    "source",
+    "target",
+    "problem_and_business_outcomes",
+    "bounded_context_and_subdomain_map",
+    "context_map_and_translation_responsibility",
+    "ubiquitous_language_and_concept_candidates",
+    "scenarios_and_business_invariants",
+    "tactical_design_questions",
+    "deferred_decisions_and_ownership",
+    "evidence_and_version_digests",
+    "acceptance"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "handoff_id": { "type": "string", "pattern": "^strategic-design-handoff\\.[a-z0-9][a-z0-9-]*$" },
+    "handoff_version": { "type": "string", "pattern": "^v[0-9]+$" },
+    "status": { "enum": ["draft", "ready-for-human", "approved", "stale", "blocked"] },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domain_strategy_ref", "stage_decision_package_ref", "spec_ref", "prototype_ref", "business_ticket_set_ref"],
+      "properties": {
+        "domain_strategy_ref": { "$ref": "#/$defs/versionedRef" },
+        "stage_decision_package_ref": { "$ref": "#/$defs/versionedRef" },
+        "spec_ref": { "$ref": "#/$defs/versionedRef" },
+        "prototype_ref": { "$ref": "#/$defs/versionedRef" },
+        "business_ticket_set_ref": { "$ref": "#/$defs/versionedRef" }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["team", "skill", "output"],
+      "properties": {
+        "team": { "const": "downstream-rd-team" },
+        "skill": { "const": "yss-tactical-design" },
+        "output": { "const": "tactical-design-contract" }
+      }
+    },
+    "problem_and_business_outcomes": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "bounded_context_and_subdomain_map": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "context_map_and_translation_responsibility": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "ubiquitous_language_and_concept_candidates": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "scenarios_and_business_invariants": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "tactical_design_questions": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "deferred_decisions_and_ownership": { "type": "array", "items": { "$ref": "#/$defs/deferred" } },
+    "evidence_and_version_digests": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "acceptance": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+  },
+  "$defs": {
+    "versionedRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "digest", "status", "persisted_ref"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "pattern": "^v[0-9]+$" },
+        "digest": { "type": "string", "minLength": 1 },
+        "status": { "const": "approved" },
+        "persisted_ref": { "type": "string", "minLength": 1 }
+      }
+    },
+    "deferred": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision", "owner", "next_action", "target_version"],
+      "properties": {
+        "decision": { "type": "string", "minLength": 1 },
+        "owner": { "type": "string", "minLength": 1 },
+        "next_action": { "type": "string", "minLength": 1 },
+        "target_version": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

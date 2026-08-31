@@ -1,0 +1,58 @@
+schema_version: 1
+domain_strategy_id: domain-strategy.invalid-direction
+domain_version: v1
+status: ready-for-human
+contexts:
+  - context_id: A
+    name: A
+    responsibilities: [rule]
+    non_responsibilities: []
+    subdomain_type: Supporting Subdomain
+    owner: owner
+    status: confirmed
+  - context_id: B
+    name: B
+    responsibilities: [consume]
+    non_responsibilities: []
+    subdomain_type: Supporting Subdomain
+    owner: owner
+    status: confirmed
+subdomains:
+  - subdomain_id: subdomain.a
+    name: A
+    type: Supporting Subdomain
+    rationale: test
+    evidence_refs: [e]
+relationships:
+  - relationship_id: relationship.a-b
+    from_context: A
+    to_context: B
+    relationship_pattern: Published Language
+    semantic_upstream: A
+    semantic_downstream: B
+    business_authority: A
+    model_change_impact: B adapts
+    transport_direction: B calls A
+    translation_responsibility: B
+    direction_explanation: ""
+scenarios:
+  - scenario_id: scenario.test
+    actor: actor
+    preconditions: []
+    commands: [command]
+    rules: [rule]
+    events: []
+    failure_results: [failure]
+    responsible_context: A
+    consumers: [B]
+    status: confirmed
+concept_candidates: []
+invariants: []
+terminology_refs: [t]
+downstream_mapping: []
+evidence_refs: [e]
+approval:
+  approval_ref: a
+  approver: a
+  persisted_ref: p
+  current_version: v1

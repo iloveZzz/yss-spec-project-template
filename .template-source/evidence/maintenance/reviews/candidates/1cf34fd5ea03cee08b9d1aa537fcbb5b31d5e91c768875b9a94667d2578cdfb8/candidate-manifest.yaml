@@ -1,0 +1,18 @@
+{
+  "review_mode": "worktree",
+  "review_base_ref": "37cc9257a0918eac187003c8f8098bfbaff2480b",
+  "merge_base": "37cc9257a0918eac187003c8f8098bfbaff2480b",
+  "implementation_candidate_ref": "working-tree-plus-pushed-submodule-commits",
+  "candidate_snapshot_ref": ".template-source/evidence/maintenance/reviews/candidates/1cf34fd5ea03cee08b9d1aa537fcbb5b31d5e91c768875b9a94667d2578cdfb8/candidate-manifest.yaml",
+  "candidate_digest": "1cf34fd5ea03cee08b9d1aa537fcbb5b31d5e91c768875b9a94667d2578cdfb8",
+  "tracked_diff_command": "aggregate: parent git diff --cached HEAD; three pushed child commit ranges; strategic design CLI stable-ref no-op",
+  "untracked_inventory_command": "git ls-files -z --others --exclude-standard (captured before candidate artifacts: empty)",
+  "untracked_diff_command": "git diff --no-index --no-ext-diff --binary --full-index -- /dev/null <path>",
+  "untracked_files": [],
+  "commit_list_command": "git log --oneline over declared child commit ranges",
+  "snapshot_stream_ref": ".template-source/evidence/maintenance/reviews/candidates/1cf34fd5ea03cee08b9d1aa537fcbb5b31d5e91c768875b9a94667d2578cdfb8/candidate.bin",
+  "tracked_diff_ref": ".template-source/evidence/maintenance/reviews/candidates/1cf34fd5ea03cee08b9d1aa537fcbb5b31d5e91c768875b9a94667d2578cdfb8/tracked.diff",
+  "source_repository": "aggregate: yss-spec-project-template and ADR-retirement child repositories",
+  "untracked_path_bytes": [],
+  "untracked_content_refs": []
+}

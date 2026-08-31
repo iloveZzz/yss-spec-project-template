@@ -1,0 +1,57 @@
+# 复制到 docs/.scratch/<feature>/verification/prototype-evidence.yaml。
+# 本文件是原型验证证据清单；命令输出、截图和审查记录可存为相邻文件并由路径引用。
+schema_version: 1
+feature: <feature>
+prototype_ref: docs/.scratch/<feature>/design/prototypes/index.html
+design_baseline:
+  project_design_ref: docs/design/design.md
+  project_token_refs: []
+  upstream_design_md_source: https://ant.design/design.md
+  upstream_design_md_record_ref: <path-to-json-output-or-summary>
+  project_override_reviewed: false
+  theme_override:
+    color_primary: "#3371ff"
+    color_error: "#f5222d"
+    color_bg_layout: "#f0f2f5"
+    border_radius: 6
+    font_family: system-stack
+    recorded: false
+    note: 与官方 #1677ff / Inter / 8px 的差异必须记录；无差异则 recorded=false 并说明沿用项目默认。
+antd:
+  fact_skill: yss-antd-design
+  cli_command: antd
+  cli_version: <actual-cli-version>
+  target_antd_version: <project-selected-v6-version>
+  queries:
+    design_md: <path-to-json-output>
+    components:
+      - component: <Component>
+        info_ref: <path-to-json-output>
+        demo_ref: <path-to-json-output>
+        token_ref: <path-to-json-output>
+        semantic_ref: <path-to-json-output>
+  lint_applicable: not-applicable
+  lint_reason: html-prototype
+  lint_ref: <path-to-json-output-or-none>
+  lint_passed: false
+browser_verification:
+  executor: <browser-or-automation-name>
+  rendered_nonblank: false
+  prototype_digest: <sha256-or-version-ref>
+  viewports:
+    - name: desktop
+      size: <width>x<height>
+      result: pending
+    - name: narrow-mobile
+      size: <width>x<height>
+      result: pending
+  main_flow_result: pending
+  failure_permission_or_conflict_result: pending
+  console_error_ref: <path-to-console-output-or-none>
+review:
+  prototype_review_ref: docs/.scratch/<feature>/design/<feature>-prototype-review.md
+  result: pending
+user_confirmation:
+  confirmation_ref: docs/.scratch/<feature>/design/<feature>-prototype-confirmation.md
+  result: pending
+blockers: []

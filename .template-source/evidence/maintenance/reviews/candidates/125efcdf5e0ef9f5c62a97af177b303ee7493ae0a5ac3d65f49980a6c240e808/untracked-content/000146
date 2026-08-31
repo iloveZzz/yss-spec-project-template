@@ -1,0 +1,100 @@
+# 生命周期状态模型
+
+## 命名空间
+
+| 域 | 允许值 |
+|---|---|
+| `lifecycle.status` | `routing`、`running`、`paused-human-gate`、`blocked`、`completed` |
+| `workflow.status` | `not-started`、`active`、`paused`、`resolved`、`failed` |
+| `artifacts.*.status` | `missing`、`draft`、`ready-for-human`、`approved`、`stale`、`not-applicable` |
+| `gates.*.status` | `not-evaluated`、`blocked`、`ready-for-human`、`approved`、`stale`、`not-applicable` |
+| `tracker.kind` | `local-markdown`、`github`、`gitlab` |
+| `ticket.role` | `needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix` |
+
+Matt 五态不得扩义。资产的 `ready-for-human` 与 Ticket label 必须带命名空间表达。`paused-human-gate` 表示等待 `docs/agents/digital-human-roles.yaml` 指定的会签人（数字人或生物人），不是「必须是生物人」。
+
+## 上下文与外部输入证据
+
+状态模型不新增 context 状态域。阶段边界只在状态块或 checkpoint 中保存可选证据：
+
+```yaml
+phase_boundary:
+  decision: continue # continue / clear / handoff / subagent / compact
+  reason: <why-this-choice>
+  source_ref: null
+  destination_ref: null
+  task_package_ref: null
+  convergence_ref: null
+  next_phase: null
+```
+
+`handoff` 必须有来源和目的地；subagent 必须有任务包和汇合证据；`compact` 必须有下一阶段。`Continue`、`clear` 不要求跨上下文引用，但仍应记录判断理由。
+
+`to-questionnaire` 的暂停使用 `pause.reason_code: external-input-required`，并保存 `questionnaire_ref`、`recipient_role`、`requested_outputs` 和 `resume_route`。答案回流后补 `response_ref`、`reclassified_impact` 和 `updated_authoritative_asset`，然后重新计算 `stale`、门禁和可执行 frontier。
+
+## 战略设计交付状态
+
+本 profile 不产生 `ready-for-agent`、垂直切片或实现合同。业务级 Ticket 只有在以下条件满足后才能进入 `ready-for-human` 并纳入交付包：
+
+```text
+required strategic gates ∈ {approved, not-applicable}
+AND Spec、DDD 战略设计、阶段决策包和页面原型均为当前版本
+AND blocking edges 全部关闭
+AND Ticket 范围、优先级、验收标准、依赖和业务风险可审查
+AND 下游 Tactical DDD 问题、责任人和目标版本已记录
+```
+
+Strategic Design Handoff 批准后 `next_route=null`；任何技术契约、垂直切片、实现或发布状态由下游研发 profile 重新计算。
+
+用户显式运行 `to-tickets` 后，业务级 Ticket 初始状态固定为 `ready-for-human`。原生路径执行 `work-unit.business-ticket-formalization` 时同样必须产生等价的业务 Ticket 和 `Workflow Execution Result` 证据。本 profile 不使用 `ready-for-agent`；由 `yss-strategic-design` 复算业务 Ticket 的范围、验收、依赖和风险后，在 Strategic Design Handoff 中交付下游。生命周期不会自动调用 `to-tickets`，但不得跳过业务 Ticket 正式化工作单元。
+
+## Review 与 Git 授权状态
+
+进入代码审查时保存 `review_mode`、`review_base_ref`、`implementation_candidate_ref`、`candidate_snapshot_ref`、`candidate_digest` 及 Spec、Ticket、合同、Checklist、YSS Execution Result 引用。`worktree` 候选必须一次捕获 committed、staged、unstaged 和 untracked 文件；manifest 的按模式必填字段以及 `yss-worktree-candidate-v1`（raw path、uint64 big-endian 长度、tracked/untracked record、symlink 和不支持条目）以 `orchestration-contract.yaml.review_input` 为唯一执行定义。两个 Reviewer 消费同一不可变快照；返回后或完成 checkpoint 摘要变化则返回 `blocked` 并重新审查。不新增生命周期状态，只把该清单作为审查证据。
+
+Git 动作分别保存 `commit_authorized`、`commit_scope`、`commit_authorization_ref`、`push_authorized`、`push_scope`、`push_authorization_ref`。只有授权值严格为 `true`、范围和用户授权引用均非空时才执行相应动作；缺失授权时保持工作区不变并记录 checkpoint 判断。`git-submodule` 另保存每仓授权、`checkout_state` 和先子后父顺序；空 gitlink、detached HEAD 或 `--force` 覆盖挂载点时不得当成普通目录 commit / 脚手架。
+
+## 状态块
+
+状态块位于主 tracker 的功能父 Ticket，并使用 `docs/process/templates/lifecycle-checkpoint-template.yaml` 的结构化形状和 `lifecycle-checkpoint.schema.json` 校验；Local Markdown 使用 `docs/.scratch/<feature>/parent-ticket.md`，可将完整 checkpoint 保存在 `docs/.scratch/<feature>/gates/lifecycle-checkpoint.yaml` 后由父 Ticket 引用，远程 tracker 使用 Issue 并在本地功能包保留引用。平台不可用时才位于 stage checkpoint。只保存索引、状态、引用和因果关系：
+
+```yaml
+lifecycle:
+  schema_version: 1
+  mode: resume
+  stage: system-data-architecture-and-contract-review
+  status: blocked
+workflow:
+  matt_flow: main
+  active_skill: yss-openapi-draft-review
+  status: paused
+artifacts:
+  spec: {status: approved, ref: docs/.scratch/example/spec.md}
+  openapi: {status: stale, ref: docs/.scratch/example/api/example.yaml, stale_by: [spec]}
+gates:
+  openapi_freeze: {status: stale}
+tracker:
+  kind: local-markdown
+  root: docs/.scratch
+  parent_ticket: docs/.scratch/example/parent-ticket.md
+  role: ready-for-human
+pause:
+  reason_code: human-gate
+  gate_ref: requirement-freeze
+  owner_or_authority: product-owner
+  resume_condition: requirement-freeze-approved
+  next_work_unit: api-impact-assessment
+```
+
+## Schema 兼容与迁移
+
+- 当前只支持 `schema_version: 1`，支持版本列表以 `orchestration-contract.yaml` 为准。
+- 版本缺失、解析失败或版本不在支持列表时，必须暂停并进入迁移检查；不得按 v1 猜测、覆盖或降级写回。
+- 主 tracker 的父 Ticket 状态块优先作为主索引；Local Markdown 的 `docs/.scratch/<feature>/parent-ticket.md` 是主载体，远程 Issue 只是显式选择远程 tracker 时的主载体。根 `.scratch/` 与 `docs/requirements/tickets/` 只作为旧路径迁移来源。stage checkpoint 只在选定平台不可用时降级。两者版本或内容冲突时，不做字段级静默合并：读取真实资产重建新状态，保留旧块引用和迁移记录，再由人工确认主载体。
+- 不得用旧版本状态覆盖较新版本。迁移记录至少包含来源版本、目标版本、来源载体、冲突、真实资产证据、迁移人和时间。
+
+## Resume
+
+读取状态块后必须重新读取引用资产、审查记录、Ticket 最新事件和相关 Git 变化。时间戳只能提示变化，不能单独证明语义失效；应比较内容和影响面。冲突时以权威资产为准，记录修复原因，然后重算依赖、门禁和可执行 frontier。
+
+所有暂停/阻塞必须填写结构化 `pause`：`reason_code`、`gate_ref` 或证据引用、`owner_or_authority`、`resume_condition`、`next_work_unit`。`lifecycle.status` 保持粗粒度，恢复条件以 `pause` 为准。

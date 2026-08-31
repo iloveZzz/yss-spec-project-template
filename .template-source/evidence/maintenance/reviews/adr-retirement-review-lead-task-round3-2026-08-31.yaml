@@ -1,0 +1,30 @@
+schema_version: 1
+task_id: adr-retirement-review-lead-round3-2026-08-31
+work_unit_id: work-unit.intensity-aware-review
+actor_id: reviewer.adr-retirement.lead.r3.2026-08-31
+role_id: role.test-engineer
+runtime_id: runtime.skill-projection
+execution_state: Reviewer
+workflow_status: active
+skill_source:
+  registry_ref: docs/agents/digital-human-roles.yaml
+  defaults_ref: taskPackageDefaults(role.test-engineer)
+  core_skills: [tdd, diagnosing-bugs, code-review, alibaba-java-code-style, yss-ui, yss-design-system, yss-page-module-development, yss-domain, yss-application, yss-repository, yss-web-controller, yss-dto, mapstruct, lombok]
+  forbidden_skills: [yss-ddd-scaffold-generator, yss-frontend-scaffold-generator, implement, to-spec]
+contract: { kind: template-maintenance, contract_id: template-adr-retirement, contract_version: 3, status: issued, contract_ref: .template-source/evidence/maintenance/adr-retirement-l3-contract-2026-08-31.yaml, maintenance_ref: .template-source/evidence/maintenance/adr-retirement-l3-contract-2026-08-31.yaml }
+inputs:
+  - .template-source/evidence/maintenance/reviews/candidates/e059d1ad835b964c6bb720be9173adfc72ba244f4a894276b932b98837226b92/candidate-manifest.yaml
+  - .template-source/evidence/maintenance/reviews/adr-retirement-standards-review-round3-2026-08-31.md
+  - .template-source/evidence/maintenance/reviews/adr-retirement-spec-review-round3-2026-08-31.md
+objective: 聚合 Round 3 Standards 与 Spec 两轴结果，对同一冻结候选执行全轴正式独立审查并签署结论。
+allowed_write_paths: [.template-source/evidence/maintenance/reviews/adr-retirement-formal-independent-review-round3-2026-08-31.md]
+forbidden_actions: [修改实现资产, 修改候选快照, commit, push, 批准发布]
+expected_outputs: [正式独立审查结论, 两轴 findings 汇总, 候选 digest]
+expected_evidence_files: [.template-source/evidence/maintenance/reviews/adr-retirement-formal-independent-review-round3-2026-08-31.md]
+verification_commands: [scripts/verify-template]
+verification_results:
+  - { command: scripts/verify-template, exit_code: 0, executed_at: '2026-08-31T11:18:00Z', evidence_ref: .template-source/evidence/maintenance/adr-retirement-fresh-verification-2026-08-31.md }
+review_context: { implementation_actor_id: worker.adr-retirement.2026-08-31, implementation_task_id: adr-retirement-implementation }
+downstream_consumers: [role.lifecycle-orchestrator]
+convergence: { parent_work_unit: work-unit.intensity-aware-review, convergence_ref: .template-source/evidence/maintenance/adr-retirement-l3-contract-2026-08-31.yaml, conflict_escalation: 任一轴有阻断项时不得签署 approved }
+

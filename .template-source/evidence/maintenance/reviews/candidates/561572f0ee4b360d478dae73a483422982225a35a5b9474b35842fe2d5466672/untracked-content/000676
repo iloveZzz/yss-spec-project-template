@@ -1,0 +1,79 @@
+schema_version: 1
+profile_id: harness.business-ddd-strategy-handoff
+status: active
+name: 产品需求商务 DDD 战略设计交付模式
+purpose: >-
+  面向产品、需求和商务角色，把机会与业务约束收敛为可审查的 DDD 战略设计，
+  形成可直接交付给下游研发团队进行战术设计的交付包。
+
+audience:
+  target_user_roles:
+    - role.product-manager
+    - role.requirements-manager
+    - role.business
+  control_plane_roles:
+    - role.lifecycle-orchestrator
+  non_target_role_policy: >-
+    本分支仅注册产品、需求和商务三个业务角色；项目管理、前后端工程、测试和发布等
+    角色不在当前 profile 中注册，也不由当前 Harness 推荐或派发。主分支与下游研发
+    模板可继续保留完整角色能力，由 Strategic Design Handoff 交接后接管。
+  boundary: >-
+    当前 Harness 只负责 DDD 战略设计及 Spec、页面原型、业务级 Ticket 和交接包，
+    不进入 Tactical Design、OpenAPI、技术 Ticket、代码实现或发布。
+
+lifecycle:
+  repository_modes: [project-instance]
+  entry_work_unit: work-unit.entry-triage
+  allowed_work_units:
+    - work-unit.discovery-opportunity
+    - work-unit.discovery-requirements
+    - work-unit.domain-strategy-design
+    - work-unit.stage-decision
+    - work-unit.spec-synthesis
+    - work-unit.prototype-design
+    - work-unit.business-ticket-formalization
+    - work-unit.strategic-design-handoff
+  terminal_work_unit: work-unit.strategic-design-handoff
+  terminal_stage: stage.ticket-formalization
+  forbidden_work_units:
+    - work-unit.technical-analysis
+    - work-unit.ticket-decomposition
+    - work-unit.slice-implementation
+    - work-unit.frontend-implementation-verification
+    - work-unit.code-review
+    - work-unit.release-and-retrospective
+  forbidden_artifacts:
+    - artifact.openapi-draft
+    - artifact.openapi-freeze-record
+    - artifact.parent-ticket
+    - artifact.vertical-slice-ticket
+    - artifact.slice-implementation-contract
+    - artifact.tactical-design
+
+handoff:
+  package_template: docs/templates/strategic-design-handoff-template.yaml
+  package_schema: docs/process/schemas/strategic-design-handoff.schema.json
+  downstream_team: downstream-rd-team
+  downstream_skill: yss-tactical-design
+  downstream_output: tactical-design-contract
+  required_source_artifacts:
+    - artifact.domain-strategy
+    - artifact.stage-decision-package
+    - artifact.spec
+    - artifact.interaction-spec
+    - artifact.business-ticket-set
+  required_sections:
+    - problem-and-business-outcomes
+    - bounded-context-and-subdomain-map
+    - context-map-and-translation-responsibility
+    - ubiquitous-language-and-concept-candidates
+    - scenarios-and-business-invariants
+    - tactical-design-questions
+    - deferred-decisions-and-ownership
+    - evidence-and-version-digests
+  acceptance:
+    - domain-strategy-status-is-approved
+    - stage-decision-package-status-is-approved
+    - source-digests-are-current
+    - every-deferred-item-has-owner-next-action-and-target-version
+    - no-aggregate-entity-repository-or-api-is-prescribed

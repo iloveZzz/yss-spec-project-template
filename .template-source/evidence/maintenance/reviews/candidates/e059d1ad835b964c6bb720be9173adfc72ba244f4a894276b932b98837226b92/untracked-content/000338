@@ -1,0 +1,737 @@
+schema_version: 1
+supported_state_schema_versions: [1]
+
+implementation_path_policy:
+  harness_layout:
+    backend: apps/backend/<project>/
+    frontend: apps/frontend/<project>/
+  container_roots: [apps/backend/, apps/frontend/]
+  forbidden_roots: [app/backend/, app/frontend/]
+  container_roots_are_projects: false
+  external_repository_uses_native_root: true
+  policies: [harness-apps-multi-project, external-repository-native, git-submodule-harness-apps]
+  git_submodule:
+    repository_scope: git-submodule
+    layout_policy: git-submodule-harness-apps
+
+review_verification:
+  low_medium_combined_independent_executor: true
+  implementer_must_be_separate: true
+  split_when: [new_module, high_risk, responsibility_conflict, dual_control_required]
+
+checkpoint_policy:
+  strategy: consolidated
+  flush_on: [human_pause, handoff, implementation_entry, merge, release]
+  flush_immediately_on: [blocked, responsibility_changed, asset_approval]
+  preserve_stage_causality: true
+  required_stage_trace_fields: [stage, upstream_refs, artifact_refs, gate_decisions, downstream_impacts]
+
+modes:
+  route: read_only
+  audit: read_only
+  orchestrate: bounded_write
+  resume: rebuild_then_bounded_write
+
+# 本分支的业务上游 Harness profile。它把本地协作边界收敛到产品、需求、商务，
+# 在战略设计交付包批准后终止；下游研发团队另行执行 Tactical DDD。
+profile_registry:
+  ref: docs/process/harness-profile.yaml
+  default_profile: harness.business-ddd-strategy-handoff
+  activation: profile-aware-route
+  target_user_roles: [role.product-manager, role.requirements-manager, role.business]
+  control_plane_roles: [role.lifecycle-orchestrator]
+  terminal_work_unit: work-unit.strategic-design-handoff
+  terminal_next_route: null
+  downstream_team: downstream-rd-team
+  downstream_skill: yss-tactical-design
+  handoff_template: docs/templates/strategic-design-handoff-template.yaml
+  handoff_schema: docs/process/schemas/strategic-design-handoff.schema.json
+  allowed_local_work_units: [work-unit.discovery-opportunity, work-unit.discovery-requirements, work-unit.domain-strategy-design, work-unit.stage-decision, work-unit.spec-synthesis, work-unit.prototype-design, work-unit.business-ticket-formalization, work-unit.strategic-design-handoff]
+  forbidden_local_work_units: [work-unit.technical-analysis, work-unit.ticket-decomposition, work-unit.slice-implementation, work-unit.frontend-implementation-verification, work-unit.code-review, work-unit.release-and-retrospective]
+  forbidden_local_artifacts: [artifact.openapi-draft, artifact.openapi-freeze-record, artifact.tactical-design, artifact.parent-ticket, artifact.vertical-slice-ticket, artifact.slice-implementation-contract]
+
+# 有效的 YSS 仓库必须先由生命周期编排器接管入口；Matt flow 只负责选择工作方式。
+entry_routing:
+  manifest: yss-project.yaml
+  valid_modes: [template-source, project-instance]
+  invalid_manifest:
+    action: migration-check
+  direct_matt_entry:
+    skill: ask-matt
+    delegate_to: yss-strategic-design
+    requires_valid_manifest: true
+    action: navigate-only
+    lifecycle_state_mutation: forbidden
+    lifecycle_artifact_write: forbidden
+    return_to_orchestrator: required
+  formal_user_entry:
+    skills: [ask-matt, grill-me, grill-with-docs, to-spec, to-tickets, triage, wayfinder]
+    action: lifecycle-validate-and-accept
+    lifecycle_artifact_write: conditional-explicit-user-entry
+    return_to_orchestrator: required
+  template_source:
+    route: template-maintenance
+    forbidden_artifacts: [product-spec, prototype, openapi, vertical-slice-tickets]
+    forbidden_flows: [to-spec, to-tickets, release, retrospective]
+    on_forbidden_flow: blocked
+    block_reason: template-source-product-artifact-forbidden
+
+# 旧 Matt Skill Result 只用于兼容读取；所有生命周期新输出使用 Workflow Execution Result。
+matt_skill_result:
+  status: compatibility-read-only
+  may_influence_routing: false
+  normalize_to: workflow-execution-result-v1
+  schema_version: 1
+  result_values: [completed, blocked, needs-human, failed]
+  required: [result, skill, evidence_refs, changed_artifacts, new_impacts, stale_candidates, next_route, blocking_signals]
+  blocking_signals: [drift, new_impacts, violation, missing_evidence, stale_candidates]
+  completed_requires_empty: [new_impacts, stale_candidates]
+  completed_requires_non_empty: [evidence_refs]
+  completed_requires_readable_evidence_refs: true
+  evidence_ref_validation: readable-or-resolvable
+  completed_requires_no_blocking_signals: true
+  router_status_mapping:
+    draft: completed
+    blocked: blocked
+    ready-for-lifecycle-review: needs-human
+
+workflow_execution_result:
+  canonical_output_schema: workflow-execution-result-v1
+  accepted_input_schemas: [workflow-execution-result-v1]
+  legacy:
+    matt-skill-result-v1:
+      status: compatibility-read-only
+      may_influence_routing: false
+      normalize_to: workflow-execution-result-v1
+      removal_target: schema_version_2
+  result_values: [completed, blocked, needs-human, failed]
+  required: [result_schema, work_unit, workflow_reference, result, evidence_refs, changed_artifacts, new_impacts, stale_candidates, next_route, blocking_signals]
+  unavailable_skill:
+    required: [skill, provider, fallback, resolution]
+    blocking_result: blocked
+  blocking_signals: [drift, new_impacts, violation, missing_evidence, stale_candidates]
+  completed_requires_empty: [new_impacts, stale_candidates]
+  completed_requires_non_empty: [evidence_refs]
+  completed_requires_readable_evidence_refs: true
+  evidence_ref_validation: readable-or-resolvable
+  completed_requires_no_blocking_signals: true
+  workflow_reference:
+    required: [source, skill, invocation_mode]
+    allowed_sources: [yss-strategic-design, mattpocock/skills]
+  next_route:
+    validator: scripts/lib/lifecycle-transition.mjs
+    function: validateNextRoute
+    implementation_predecessor: work-unit.ticket-decomposition
+    null_allowed_when: [blocked, needs-human, failed, terminal_completed]
+  work_unit_requirements:
+    work-unit.ticket-decomposition:
+      completed_requires: [vertical_slice_ticket_ref, ticket_decomposition_result_ref]
+    work-unit.slice-implementation:
+      required: [predecessor_work_unit, ticket_decomposition_result_ref, ticket_decomposition_result_status, vertical_slice_ticket_ref, vertical_slice_ticket_role, vertical_slice_ticket_kind, slice_contract_ticket_ref, slice_contract_status]
+      boolean_required: [ready_for_agent, slice_contract_persisted, slice_contract_current_version]
+      validator: scripts/lib/lifecycle-transition.mjs
+      function: validateImplementationEntry
+
+task_package:
+  schema_version: 1
+  applies_to: all-formal-digital-human-dispatches
+  schema_ref: docs/process/schemas/digital-human-task-package.schema.json
+  compatibility_schema_ref: docs/process/schemas/subagent-task-package.schema.json
+  validator: scripts/verify-digital-human-task-package
+  compatibility_validator: scripts/verify-subagent-task-package
+  persistence_layout: docs/.scratch/<feature>/task-packages/<task-id>.yaml
+  required: [schema_version, task_id, work_unit_id, actor_id, role_id, runtime_id, execution_state, workflow_status, skill_source, contract, inputs, objective, allowed_write_paths, forbidden_actions, expected_outputs, expected_evidence_files, verification_commands, verification_results, downstream_consumers, convergence]
+  optional: [profile_id]
+  execution_states: [Explorer, Drafter, Worker, Reviewer, Verifier]
+  workflow_statuses: [not-started, active, paused, resolved, failed]
+  skill_source:
+    registry_ref: docs/agents/digital-human-roles.yaml
+    defaults: taskPackageDefaults(role_id)
+    copy_required: [core_skills, forbidden_skills]
+  contract:
+    kinds: [lifecycle-work-unit, slice-implementation, template-maintenance]
+    required: [kind, contract_id, contract_version, status, contract_ref]
+    status_at_dispatch: issued
+    status_after_change: [stale, blocked]
+    lifecycle-work-unit:
+      required: [lifecycle_ref]
+      forbidden: [slice_contract_ref, maintenance_ref]
+      template_source_work_unit: forbidden
+    slice-implementation:
+      required: [slice_contract_ref]
+      must_match_current_slice_contract: true
+      version_mismatch: blocked
+      stage: stage.vertical-slice-implementation
+      parent_work_unit: work-unit.slice-implementation
+      work_unit_must_be_declared_in_slice_contract: true
+    template-maintenance:
+      required: [maintenance_ref]
+      forbidden: [slice_contract_ref, lifecycle_ref]
+  dispatch:
+    owner: role.lifecycle-orchestrator
+    mode: orchestrator-one-to-one
+    per_feature_instances: forbidden
+  write_isolation:
+    policy: task-package-policy
+    changed_files_must_be_within_allowed_paths: true
+    shared_workspace_is_not_security_boundary: true
+  downstream:
+    formal_channel: [task_package_ref, contract_ref, evidence_refs, workflow_execution_result]
+    direct_chat_is_not_formal_evidence: true
+  stale:
+    owner: yss-strategic-design
+    on_contract_change: [mark_downstream_stale, remove_ready-for-agent, reroute]
+  compatibility:
+    legacy_results: read-only-normalize
+    schema_version: 1
+
+# Matt user-invoked skills remain explicit user entry points. Lifecycle work units
+# may prepare, validate and accept their results, but cannot invoke them or create
+# their formal artifacts on their behalf.
+matt_invocation_boundary:
+  user_invoked_skills: [ask-matt, grill-me, grill-with-docs, handoff, to-spec, to-tickets, triage, wayfinder]
+  lifecycle_managed_user_entries: [ask-matt, grill-me, grill-with-docs, to-spec, to-tickets, triage, wayfinder]
+  model_invoked_skills: [code-review, domain-modeling, grilling, prototype-review, research, writing-for-agents]
+  lifecycle_allowed_model_invoked_skills: [domain-modeling, grilling, prototype-review, research]
+  lifecycle_may_invoke_user_invoked: false
+  formal_artifact_owner: explicit-user-entry
+  continuous_orchestration: compatibility-prepare-and-validate-only
+  direct_user_entry: lifecycle-validate-and-accept
+
+skill_source_contract:
+  lock_version: 3
+  source_revisions_required: [mattpocock/skills]
+  adaptation_ref_required_when_effective_diff: true
+  retired_shared_skills: [batch-grill-me, product-design-prototype, yss-dictionary, yss-jdbc, yss-log, yss-taskflow, yss-backend-scaffold-application, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-backend-scaffold-web]
+
+# 生命周期默认走原生工作单元；Matt user-invoked skill 仅保留为兼容入口。
+lifecycle_native_entries:
+  default_entry: yss-strategic-design
+  formal_artifact_owner: yss-strategic-design
+  user_confirmation_required_at: [spec-baseline, prototype-confirmation, strategic-design-handoff]
+  compatibility_entries:
+    to-spec: lifecycle-validate-and-accept
+    to-tickets: lifecycle-validate-and-accept
+    triage: lifecycle-validate-and-accept
+
+work_unit_routes:
+  work-unit.discovery-opportunity:
+    native: {source: yss-strategic-design, skill: yss-strategic-design, invocation_mode: model-invoked}
+    primary_skill: yss-strategic-design
+    supporting_skills: [competitive-intelligence, research]
+    skills: [competitive-intelligence, research]
+    route_by: {market_or_competitor_fact: competitive-intelligence, technical_or_standard_fact: research, no_external_fact: yss-strategic-design}
+    applies_when: opportunity_or_external_fact_requires_validation
+    not_applicable_reason: no_external_fact
+  work-unit.discovery-requirements:
+    native: {source: yss-strategic-design, skill: yss-strategic-design, invocation_mode: model-invoked}
+    primary_skill: yss-strategic-design
+    supporting_skills: [grilling, domain-modeling]
+    skills: [grilling, domain-modeling]
+    applies_when: requirements_or_domain_boundary_unclear
+    not_applicable_reason: requirements_already_confirmed
+  work-unit.domain-strategy-design:
+    native: {source: yss-strategic-design, skill: yss-stage-decision, invocation_mode: model-invoked}
+    primary_skill: yss-stage-decision
+    supporting_skills: [domain-modeling, research, grilling]
+    skills: [yss-stage-decision, domain-modeling, research, grilling]
+    human_gate: domain-strategy-approved
+    applies_when: domain_boundary_or_language_or_core_rule_impact
+    not_applicable_reason: no_domain_strategy_impact
+  work-unit.stage-decision:
+    native: {source: yss-strategic-design, skill: yss-stage-decision, invocation_mode: model-invoked}
+    primary_skill: yss-stage-decision
+    supporting_skills: [domain-modeling]
+    skills: [yss-stage-decision, domain-modeling]
+    human_gate: stage-decision-package-approved
+    applies_when: discovery_to_spec_requires_stable_decision_package
+    not_applicable_reason: existing_approved_stage_decision_current
+  work-unit.spec-synthesis:
+    native: {source: yss-strategic-design, skill: yss-strategic-design, invocation_mode: model-invoked}
+    primary_skill: yss-strategic-design
+    supporting_skills: [domain-modeling]
+    compatibility: {source: mattpocock/skills, skill: to-spec, invocation_mode: reference, formal_artifact_owner: explicit-user-entry}
+    skills: [domain-modeling]
+    human_gate: spec-baseline
+    applies_when: new_feature_or_behavior_change
+    not_applicable_reason: existing_frozen_spec_is_current
+  work-unit.prototype-design:
+    native: {source: yss-strategic-design, skill: yss-strategic-design, invocation_mode: model-invoked}
+    primary_skill: yss-prototype-stage
+    supporting_skills: [prototype-review, yss-design-system, yss-antd-design, product-design:index]
+    skills: [prototype-review, yss-design-system, yss-prototype-stage, yss-antd-design, product-design:index]
+    human_gate: prototype-confirmation
+    applies_when: product_design_impact
+    not_applicable_reason: no_ui_or_product_design_impact
+  work-unit.technical-analysis:
+    downstream: true
+    owner: downstream-rd-team
+    handoff: strategic-design-handoff
+    applies_when: technical_or_contract_impact
+    not_applicable_reason: downstream_profile_owns_technical_analysis
+  work-unit.ticket-decomposition:
+    downstream: true
+    owner: downstream-rd-team
+    handoff: strategic-design-handoff
+    applies_when: downstream_profile_approved
+    not_applicable_reason: vertical_slicing_not_owned_by_this_profile
+  work-unit.business-ticket-formalization:
+    native: {source: yss-strategic-design, skill: yss-strategic-design, invocation_mode: model-invoked}
+    primary_skill: yss-strategic-design
+    supporting_skills: []
+    compatibility: {source: mattpocock/skills, skill: to-tickets, invocation_mode: reference, formal_artifact_owner: explicit-user-entry}
+    skills: [yss-strategic-design]
+    applies_when: approved_scope_ready_for_business_ticketing
+    not_applicable_reason: business_scope_not_frozen
+    next_route: work-unit.strategic-design-handoff
+  work-unit.strategic-design-handoff:
+    native: {source: yss-strategic-design, skill: yss-strategic-design, invocation_mode: model-invoked}
+    primary_skill: yss-strategic-design
+    supporting_skills: []
+    skills: [yss-strategic-design]
+    human_gate: strategic-design-handoff-approved
+    applies_when: strategic_inputs_ready_for_downstream
+    not_applicable_reason: strategic_inputs_incomplete
+  work-unit.slice-implementation:
+    downstream: true
+    owner: downstream-rd-team
+    handoff: strategic-design-handoff
+    applies_when: downstream_profile_approved
+    not_applicable_reason: implementation_not_owned_by_this_profile
+  work-unit.frontend-implementation-verification:
+    downstream: true
+    owner: downstream-rd-team
+    handoff: strategic-design-handoff
+    applies_when: downstream_profile_approved
+    not_applicable_reason: implementation_not_owned_by_this_profile
+  work-unit.code-review:
+    downstream: true
+    owner: downstream-rd-team
+    handoff: strategic-design-handoff
+    applies_when: downstream_profile_approved
+    not_applicable_reason: review_not_owned_by_this_profile
+  work-unit.release-and-retrospective:
+    downstream: true
+    owner: downstream-rd-team
+    handoff: strategic-design-handoff
+    applies_when: downstream_profile_approved
+    not_applicable_reason: release_not_owned_by_this_profile
+
+compatibility_flow_preconditions:
+  to-spec:
+    required: [grill_exit, no_unresolved_runnable_blocker]
+    evidence: [user_problem, mvp_and_non_goals, success_criteria, test_seam, terminology_review]
+    output_role: ready-for-human
+  to-tickets:
+    required: [required_gates_satisfied, business_scope, acceptance_criteria, dependencies_and_risks]
+    output: business-level-tickets
+    output_role: ready-for-human
+  implement:
+    status: removed
+    action: blocked-and-handoff
+    reason: implementation_is_owned_by_downstream_rd_profile
+
+ticket_formalization:
+  implementation_predecessor: work-unit.ticket-decomposition
+  result_ref_required: true
+  result_must_be: completed
+  evidence_refs_required: true
+  vertical_slice_ticket:
+    kind: vertical-slice-ticket
+    role_before_promotion: ready-for-human
+    role_for_implementation: ready-for-agent
+    local_ref_pattern: '^docs/\\.scratch/[^/]+/issues/[^/]+\\.md$'
+    parent_ticket_ref_forbidden: true
+  slice_contract_binding:
+    ticket_ref_must_equal: vertical_slice_ticket_ref
+    status: approved
+    persisted: true
+    current_version: true
+  validator:
+    module: scripts/lib/lifecycle-transition.mjs
+    functions: [validateNextRoute, validateTicketFormalization, validateImplementationEntry]
+
+transition_graph:
+  validator: scripts/lib/lifecycle-transition.mjs
+  implementation_requires_predecessor: work-unit.ticket-decomposition
+  routes:
+    work-unit.ssot-update: [work-unit.skill-projection-sync, work-unit.intensity-aware-verification]
+    work-unit.skill-projection-sync: [work-unit.template-snapshot-build, work-unit.intensity-aware-verification]
+    work-unit.template-snapshot-build: [work-unit.attach-sync-integration, work-unit.intensity-aware-verification]
+    work-unit.attach-sync-integration: [work-unit.intensity-aware-verification]
+    work-unit.intensity-aware-verification: [work-unit.intensity-aware-review]
+    work-unit.intensity-aware-review: [work-unit.release-and-rollback]
+    work-unit.release-and-rollback: []
+    work-unit.spec-synthesis: [work-unit.prototype-design]
+    work-unit.prototype-design: [work-unit.business-ticket-formalization]
+    work-unit.business-ticket-formalization: [work-unit.strategic-design-handoff]
+  forbidden_shortcuts:
+    - {from: work-unit.spec-synthesis, to: work-unit.slice-implementation}
+    - {from: work-unit.prototype-design, to: work-unit.slice-implementation}
+    - {from: work-unit.technical-analysis, to: work-unit.slice-implementation}
+
+grill_exit:
+  required: [frontier_empty, facts_resolved_or_routed, decisions_confirmed, shared_understanding_confirmed, no_unresolved_runnable_blocker]
+  facts_resolved_or_routed:
+    technical_fact: research
+    runnable_question: handoff-prototype-handoff
+    external_decision: external-input-required
+  user_confirmation_required: true
+  output: discovery-evidence
+
+ticket_role_transition:
+  yss_active:
+    to_tickets_initial_role: ready-for-human
+    promotion_owner: yss-strategic-design
+    promoted_role: ready-for-agent
+    promotion_requires: ready_for_agent
+
+review_input:
+  schema_version: 1
+  required: [review_mode, review_base_ref, implementation_candidate_ref, candidate_snapshot_ref, candidate_digest, spec_ref, ticket_ref, slice_contract_ref, build_architecture_checklist_ref, yss_execution_result_refs]
+  nullable: [spec_ref]
+  axes: [standards, spec, ui_fidelity_if_ui_impact]
+  repair_invalidates_candidate: true
+  repair_action: recapture_candidate_and_rerun_all_axes
+  modes: [committed, worktree]
+  committed:
+    candidate_ref: HEAD
+    diff_scope: merge-base-to-head
+  worktree:
+    candidate_ref: working-tree
+    diff_scope: merge-base-to-working-tree
+    required_coverage: [committed, staged, unstaged, untracked]
+    tracked_diff_command: git diff --no-ext-diff --binary --full-index <merge-base>
+    untracked_inventory_command: git ls-files -z --others --exclude-standard
+    untracked_files_encoding: nul-delimited-raw-path-bytes
+    untracked_diff_command: git diff --no-index --no-ext-diff --binary --full-index -- /dev/null <path>
+    capture_once: true
+    verify_unchanged_after_review: true
+  manifest_required_by_mode:
+    committed: [merge_base, tracked_diff_command, commit_list_command]
+    worktree: [merge_base, tracked_diff_command, untracked_inventory_command, untracked_diff_command, untracked_files, commit_list_command]
+  snapshot:
+    immutable: true
+    protocol: yss-worktree-candidate-v1
+    digest_algorithm: sha256
+    digest_framing: length-prefixed-path-and-bytes
+    path_order: bytewise
+    path_encoding: raw-bytes
+    length_encoding: uint64-big-endian
+    header_ascii: YSS-WORKTREE-CANDIDATE-V1
+    terminator_byte: "0x00"
+    tracked_record:
+      type_byte: "0x54"
+      fields: [type_byte, uint64be_content_length, binary_diff_bytes]
+      source: tracked_diff_command_stdout
+    untracked_record:
+      type_byte: "0x55"
+      fields: [type_byte, uint64be_path_length, raw_path_bytes, uint32be_file_mode, entry_kind_byte, uint64be_content_length, content_bytes]
+      order: bytewise-raw-path
+      entry_kinds: {regular: "0x52", symlink: "0x4c"}
+      regular_content_source: file_bytes
+      symlink_content_source: link_target_bytes
+    unsupported_entry_action: blocked
+    snapshot_artifact:
+      identity: candidate_digest
+      required: [candidate-manifest.yaml, tracked.diff, untracked/]
+      access: immutable-read-only
+    on_digest_change: blocked
+    completion_requires_current_digest: true
+
+git_authorization:
+  natural_language_intent_is_authorization: false
+  commit:
+    requires_explicit_user_authorization: true
+    required: [commit_authorized, commit_scope, commit_authorization_ref]
+    authorized_value: true
+    non_empty: [commit_scope, commit_authorization_ref]
+    unauthorized_action: checkpoint-only
+  push:
+    requires_explicit_user_authorization: true
+    required: [push_authorized, push_scope, push_authorization_ref]
+    authorized_value: true
+    non_empty: [push_scope, push_authorization_ref]
+    unauthorized_action: checkpoint-only
+  git_submodule:
+    applies_when: repository_scope=git-submodule
+    forbid_commit_on_detached_head: true
+    commit_order: [submodule-repositories, superproject-gitlink]
+    push_order: [submodule-repositories, superproject-gitlink]
+    push_recurse_submodules: check
+    empty_gitlink_scaffold: blocked
+    treat_empty_gitlink_as_regular_dir: blocked
+    treat_detached_head_as_regular_dir: blocked
+    force_overlay_mount: blocked
+    write_inside_detached_head: blocked
+    require_git_entry_mode: "160000"
+    working_tree_declared_scope_must_match: true
+    copy_source_into_harness: forbidden
+    clone_requires_recurse_submodules: true
+    delivery_order_must_include: superproject-gitlink-update
+    nested_authorization: per-repository
+    inspect_working_tree_writable: explicit-boolean
+    empty_gitlink_writable: false
+    force_overlay_regular_dir_path: blocked
+
+seam_deferred_required: [risk, owner, follow_up_ticket, verification_plan, target_version_or_release_date]
+
+backend_scaffold:
+  applies_when: [backend_impact]
+  scaffold_statuses: [existing, required, initialized]
+  required_status: required
+  sequence:
+    after: [prototype_review, prototype_verification, antd_cli_verification, browser_verification, prototype_confirmation, engineering_baseline]
+    before_generator: [yss-router-scaffold-contract, lifecycle-approve-scaffold-contract]
+    before: [business_code_generation]
+  generator_skill: yss-ddd-scaffold-generator
+  baseline_skill: yss-backend-scaffold-parent
+  tdd_mode: controlled-generation
+  contract_schema:
+    schema_version: 1
+    required: [contract_id, contract_version, slice_id, status, router_draft_ref, lifecycle_approval_ref, persisted_ref, current_version, implementation_repository, backend_repository, scaffold_status, target_git_url_or_output_dir, allowed_write_paths, expected_evidence_files, verification_commands, approval, work_unit, overwrite_policy]
+    status_by_owner:
+      router: [draft, ready-for-lifecycle-review, blocked]
+      lifecycle: [approved, stale, blocked]
+    approval:
+      required: [approval_ref, approver, persisted_ref, current_version]
+    overwrite_policy:
+      required: [force_allowed, overwrite_scope, rollback_ref]
+  required_inputs: [implementation_repository, backend_repository, scaffold_status, scaffold_target_confirmed, target_git_url_or_output_dir, project_name, base_package, database, scaffold_contract_file, scaffold_contract_draft, scaffold_contract_id, scaffold_contract_version, scaffold_contract_status, scaffold_contract_approved, scaffold_contract_router_draft_ref, scaffold_contract_lifecycle_approval_ref, scaffold_contract_persisted, scaffold_contract_persisted_ref, scaffold_contract_current_version]
+  required_evidence: [generator_inputs, expected_files, scaffold_generation_manifest, generated_project_structure, generation_execution_result, verification_execution_result, ./mvnw_validate, ./mvnw_test, ./mvnw_package, yss_skill_execution_result]
+  generation_options:
+    with_example: false
+    force: forbidden-by-default
+    force_requires: [contract_file, contract_id, contract_version, approval_ref, router_draft_ref, persisted_ref, overwrite_scope, rollback_ref]
+  forbidden_generation: [business_rules, state_machine, permission, transaction, complex_query, error_mapping, user_visible_behavior, business_example_crud, unapproved_force_overwrite]
+  after_generation: [yss-backend-scaffold-parent, yss-router]
+  existing_or_initialized: [baseline_evidence, wrapper_verification, yss_router_contract_recompile]
+  verification:
+    commands: ["./mvnw validate", "./mvnw test", "./mvnw package"]
+    requires_execution: true
+    printed_commands_are_not_evidence: true
+    evidence: [command, exit_code, duration_ms, stdout_ref, stderr_ref, executed_at]
+    failure_action: blocked
+  failure_action: blocked
+
+scaffold_work_unit_policy:
+  applies_to: [scaffold_generator_output]
+  scope: pre_business_code_generation
+  required: [approved_scaffold_contract, primary_yss_skill, allowed_write_paths, expected_evidence_files, verification_commands]
+  controlled_generation:
+    allowed_for: [project_scaffold, pom, mechanical_config, wrapper]
+    forbidden_when: [business_behavior, business_fields, business_state, permission, transaction, complex_query, error_mapping, business_example_crud]
+  on_violation: blocked
+
+post_scaffold_generated_code_policy:
+  applies_to: [post_scaffold_backend_code]
+  scope: post_scaffold_generated_code
+  required: [approved_persisted_current_slice_contract, primary_yss_skill, dependency_closure, allowed_write_paths, expected_evidence_files, yss_skill_execution_result]
+  business_behavior:
+    tdd_mode: behavior-tdd
+    impacts: [domain-rule, state-machine, transaction, permission, complex-query, error-mapping, user-visible-behavior]
+  controlled_generation:
+    allowed_for: [dto_boilerplate, po_boilerplate, mapstruct_generated, frozen_openapi_client, mechanical_config]
+    forbidden_when: [business_behavior, business_fields, business_state, permission, transaction, complex_query, error_mapping, business_example_crud]
+  on_violation: blocked
+
+tracker:
+  allowed_platforms: [local-markdown, github, gitlab]
+  default_platform: local-markdown
+  selection_precedence: [persisted_project_configuration, explicit_user_choice, template_default]
+  remote_origin_role: code_host_only
+  no_automatic_cross_platform_switch: true
+  local_markdown:
+    root: docs/.scratch
+    legacy_roots: [.scratch, docs/requirements/tickets]
+    feature_layout: [map.md, discovery, spec.md, spec-delta, parent-ticket.md, design, api, architecture, gates, verification, issues]
+    primary_sync: local
+    remote_ticket_required: false
+    remote_mirror: optional
+    default_remote_mirror: false
+  remote_platforms:
+    primary_sync: remote
+    remote_ticket_required: true
+    unavailable_fallback_root: docs/.scratch
+    unavailable_fallback_marker: pending-publication
+    unavailable_fallback_record: parent-ticket.md
+    unavailable_fallback_fields: [tracker, publication, pending_publication_to]
+
+setup_readiness:
+  evaluation: once_per_task
+  recheck_when: [tracker_changed, remote_changed, labels_changed, configuration_changed]
+  missing_action: needs-human
+  requested_skill: setup-matt-pocock-skills
+  resume_route: setup-readiness
+  preserves: [lifecycle.status, gate.status, ticket.role]
+  lifecycle_may_invoke_setup: false
+  legacy_artifacts_detected:
+    action: migration-check
+    setup: forbidden
+    write: paused
+  states: [ready, missing, conflict, degraded, not-applicable]
+  evidence: [platform, label_check, domain_layout, artifact_root, migration_ref]
+  semantics:
+    ready: [tracker_compatible, labels_verified, domain_layout_verified, artifact_root_verified]
+    missing: [required_configuration_absent, legacy_artifacts_detected_requires_migration]
+    conflict: [persistent_configuration_or_tracker_conflict, canonical_and_legacy_artifacts]
+    degraded: [target_platform_unavailable]
+    not-applicable: [template_source_validate_only]
+  template_source:
+    action: validate-only
+
+lifecycle_owned_work_units: [release, retrospective]
+lifecycle_work_unit_requirements:
+  release: [fresh_verification, release_or_rollback_evidence, independent_review, all_triggered_gates_approved_or_not_applicable]
+  retrospective: [fresh_verification, retrospective_record, governance_reflow_decision]
+
+release_readiness:
+  required: [fresh_verification, release_or_rollback_evidence, independent_review, all_triggered_gates_approved_or_not_applicable]
+  conditional:
+    ui_impact: [gate.frontend-implementation-verified, evidence.frontend-implementation-verification]
+  blocked_when: [triggered_gate_blocked, triggered_gate_stale, triggered_gate_not_evaluated, missing_evidence]
+
+wayfinder_completion:
+  required: [no_open_children, no_open_blocked_or_claimed_children, no_fog, destination_clear]
+
+ready_for_agent:
+  required: [gates_satisfied, no_stale_artifacts, blockers_closed, implementation_context_ready, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, predecessor_work_unit, ticket_decomposition_result_ref, ticket_decomposition_result_status, vertical_slice_ticket_ref, vertical_slice_ticket_role, vertical_slice_ticket_kind, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied, frontend_implementation_plan_if_ui_impact]
+  ticket_formalization_validator: scripts/lib/lifecycle-transition.mjs
+  requires_vertical_slice_ticket: true
+  parent_ticket_as_implementation_ref: forbidden
+
+frontend_implementation_plan:
+  applies_when: [ui_impact]
+  required_before: [ready_for_agent]
+  required: [prototype_ref, spec_ref, route_and_page_inventory, visual_acceptance_cases, desktop_viewport, narrow_viewport, state_cases, pnpm_commands]
+  schema: docs/process/schemas/frontend-implementation-evidence.schema.json
+  validator: scripts/verify-frontend-implementation-evidence
+  acceptance: [kind_plan, template_false, status_approved, no_template_placeholders, readable_baseline_refs, non_empty_acceptance_cases]
+
+frontend_implementation_verification:
+  applies_when: [ui_impact]
+  required_before: [release]
+  required: [prototype_ref, spec_ref, route_and_page_inventory, desktop_visual_evidence, narrow_view_visual_evidence, loading_empty_error_permission_interaction_results, console_warning_check, pnpm_commands, uncovered_differences, difference_owner]
+  verification: [actual_command, exit_code, executed_at, evidence_ref]
+  schema: docs/process/schemas/frontend-implementation-evidence.schema.json
+  validator: scripts/verify-frontend-implementation-evidence
+  acceptance: [kind_verification, template_false, status_approved, no_template_placeholders, console_warning_pass, independent_review_approved]
+  blocked_when: [unexplained_visual_difference, missing_visual_evidence, typecheck_only, claimed_alignment_without_evidence]
+  on_new_impact: [new_impacts, drift, reroute]
+
+unknown_impact:
+  action: pause
+  reason_code: impact-classification-required
+
+# 每个 target 必须声明 kind、传播层级和适用条件。条件不满足时保持原状态，尤其不得把 not-applicable 改成 stale。
+impact_propagation:
+  wording:
+    targets:
+      - {kind: artifact, name: spec, level: direct, when: always}
+  ui-state:
+    targets:
+      - {kind: artifact, name: product-design, level: direct, when: ui_impact}
+      - {kind: artifact, name: prototype, level: direct, when: ui_impact}
+      - {kind: gate, name: requirement-freeze, level: direct, when: ui_impact}
+      - {kind: artifact, name: openapi-draft, level: transitive, when: api_impact}
+      - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
+      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
+  api-schema:
+    targets:
+      - {kind: artifact, name: spec, level: direct, when: always}
+      - {kind: artifact, name: spec-delta, level: direct, when: existing_frozen_baseline}
+      - {kind: artifact, name: openapi-draft, level: direct, when: api_impact}
+      - {kind: gate, name: draft-review, level: transitive, when: api_impact}
+      - {kind: gate, name: design-review, level: transitive, when: api_impact}
+      - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
+      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: api_impact}
+      - {kind: artifact, name: contract-tests, level: transitive, when: api_impact}
+  state-machine:
+    targets:
+      - {kind: artifact, name: spec, level: direct, when: always}
+      - {kind: artifact, name: spec-delta, level: direct, when: existing_frozen_baseline}
+      - {kind: artifact, name: product-design, level: direct, when: ui_impact}
+      - {kind: artifact, name: system-architecture, level: direct, when: always}
+      - {kind: artifact, name: data-architecture, level: direct, when: data_impact}
+      - {kind: gate, name: requirement-freeze, level: direct, when: always}
+      - {kind: artifact, name: openapi-draft, level: transitive, when: api_impact}
+      - {kind: gate, name: design-review, level: transitive, when: always}
+      - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
+      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
+      - {kind: artifact, name: test-mapping, level: transitive, when: always}
+  data-model:
+    targets:
+      - {kind: artifact, name: spec, level: direct, when: always}
+      - {kind: artifact, name: spec-delta, level: direct, when: existing_frozen_baseline}
+      - {kind: artifact, name: data-architecture, level: direct, when: data_impact}
+      - {kind: gate, name: architecture-review, level: direct, when: data_impact}
+      - {kind: artifact, name: openapi-draft, level: transitive, when: api_impact}
+      - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
+      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
+      - {kind: artifact, name: data-migration, level: transitive, when: data_impact}
+  service-boundary:
+    targets:
+      - {kind: artifact, name: system-architecture, level: direct, when: always}
+      - {kind: artifact, name: engineering-baseline, level: direct, when: backend_impact}
+      - {kind: gate, name: architecture-review, level: direct, when: always}
+      - {kind: artifact, name: openapi-draft, level: transitive, when: api_impact}
+      - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
+      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
+  nfr:
+    targets:
+      - {kind: artifact, name: spec, level: direct, when: always}
+      - {kind: artifact, name: system-architecture, level: direct, when: always}
+      - {kind: gate, name: design-review, level: direct, when: always}
+      - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
+      - {kind: artifact, name: verification-strategy, level: transitive, when: always}
+  deployment:
+    targets:
+      - {kind: artifact, name: system-architecture, level: direct, when: always}
+      - {kind: artifact, name: rollout-plan, level: direct, when: always}
+      - {kind: artifact, name: rollback-plan, level: direct, when: always}
+      - {kind: gate, name: design-review, level: transitive, when: always}
+      - {kind: artifact, name: release-plan, level: transitive, when: always}
+prototype_return_evidence:
+  required: [prototype_mode, source_handoff, prototype_asset_or_run, conclusion, updated_authoritative_asset, remaining_questions, return_handoff]
+  allowed_modes: [matt_logic, yss_high_fidelity]
+
+# Matt phase boundaries are context decisions only. They never add a lifecycle state,
+# alter a gate, or mutate a Ticket role.
+phase_boundary:
+  choices: [continue, clear, handoff, subagent, compact]
+  precedence: [continue, clear, handoff, subagent, compact]
+  invariants: [does-not-force-clear, preserves-lifecycle-state]
+  evidence:
+    required: [decision, reason]
+    conditional:
+      handoff: [source_ref, destination_ref]
+      subagent: [task_package_ref, convergence_ref]
+      compact: [next_phase]
+  preserves: [lifecycle.status, gate.status, ticket.role]
+
+external_input_pause:
+  transition: pause
+  reason_code: external-input-required
+  reason: required decision-maker input is not available to the Agent
+  required: [questionnaire_ref, recipient_role, requested_outputs, resume_route]
+  response_required: [response_ref, reclassified_impact, updated_authoritative_asset]
+  resume_requires: [response_ref, reclassified_impact, updated_authoritative_asset]
+
+prototype_modes:
+  matt_logic:
+    asset: single_file_shareable_html
+    branch_pattern: prototype/<name>
+    required: [prototype_mode, prototype_branch, source_handoff, prototype_asset_or_run, conclusion, updated_authoritative_asset, remaining_questions, return_handoff]
+    purpose: exploratory_primary_source
+    production_delivery: false
+    replaces_yss_high_fidelity: false
+  yss_high_fidelity:
+    asset: ant_design_v6_html
+    required: [prototype_mode, prototype_review, antd_cli_verification, browser_verification, prototype_evidence, user_confirmation]
+    purpose: product_design_review
+    replaces_matt_logic: false
+
+behavioral_invariants:
+  wait_what_preserves_state: true
+  human_checkpoint_required_for_manual_steps: true
+  diagnostics_redact_secrets: true

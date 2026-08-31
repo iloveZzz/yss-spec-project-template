@@ -1,0 +1,71 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import {
+  loadInstanceDistributionManifest,
+  shouldDistribute,
+  toCliManifest,
+  validateInstanceDistribution,
+  REQUIRED_FORBIDDEN_MARKERS,
+} from "./lib/instance-distribution.mjs";
+
+const source = loadInstanceDistributionManifest();
+const valid = validateInstanceDistribution({ mode: "template-source", manifest: source });
+assert.equal(valid.profile_id, "harness.business-ddd-strategy-handoff");
+assert.equal(valid.cli_package, "create-yss-harness-design");
+
+assert.equal(shouldDistribute("docs/process/harness-profile.yaml", source), true);
+assert.equal(shouldDistribute("docs/templates/strategic-design-handoff-template.yaml", source), true);
+assert.equal(shouldDistribute(".agents/skills/yss-strategic-design/SKILL.md", source), true);
+assert.equal(shouldDistribute("docs/adr/README.md", source), true);
+assert.equal(shouldDistribute("docs/architecture/templates/business-architecture-template.md", source), true);
+assert.equal(shouldDistribute("docs/architecture/templates/functional-architecture-template.md", source), true);
+
+assert.equal(shouldDistribute("docs/templates/openapi-spec-template.yaml", source), false);
+assert.equal(shouldDistribute("docs/templates/vertical-slice-ticket-template.md", source), false);
+assert.equal(shouldDistribute("docs/process/implementation-repo-integration.md", source), false);
+assert.equal(shouldDistribute(".template-source/README.md", source), false);
+assert.equal(shouldDistribute("wiki/index.md", source), false);
+assert.equal(shouldDistribute("package.json", source), false);
+assert.equal(shouldDistribute("yss-public-skills.json", source), false);
+assert.equal(shouldDistribute("scripts/verify-yss-router-scenarios", source), false);
+assert.equal(shouldDistribute("docs/user-guide/规格与任务迁移指南.md", source), false);
+
+const projected = toCliManifest(source);
+assert.equal(projected.profileId, source.profile_id);
+assert.deepEqual(projected.instanceForbiddenPaths, source.instance_forbidden_paths);
+
+const mutations = [
+  [
+    "wrong profile",
+    (candidate) => {
+      candidate.profile_id = "harness.unknown";
+    },
+    /profile_id/,
+  ],
+  [
+    "wrong cli package",
+    (candidate) => {
+      candidate.cli_package = "create-yss-spec";
+    },
+    /cli_package|create-yss-harness-design/,
+  ],
+  [
+    "missing forbidden marker",
+    (candidate) => {
+      candidate.instance_forbidden_paths = candidate.instance_forbidden_paths.filter(
+        (item) => item !== REQUIRED_FORBIDDEN_MARKERS[3],
+      );
+      candidate.exclude_paths = candidate.exclude_paths.filter(
+        (item) => item !== REQUIRED_FORBIDDEN_MARKERS[3],
+      );
+    },
+    /OpenAPI|禁止路径/,
+  ],
+];
+for (const [name, mutate, pattern] of mutations) {
+  const candidate = structuredClone(source);
+  mutate(candidate);
+  assert.throws(() => validateInstanceDistribution({ mode: "template-source", manifest: candidate }), pattern, name);
+}
+
+process.stdout.write("实例分发清单压力场景验证通过\n");

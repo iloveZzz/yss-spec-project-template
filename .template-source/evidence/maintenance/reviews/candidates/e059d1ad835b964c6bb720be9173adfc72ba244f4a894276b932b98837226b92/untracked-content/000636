@@ -1,0 +1,182 @@
+schema_version: 1
+registry_id: yss.digital-human-roles
+status: active
+description: >-
+  数字人角色、主控、阶段协作组、技能启用/禁止与生命周期会签的单一事实源。
+  角色配置与运行时无关；Claude / Cursor / Codex / Grok 等只通过 runtimes 绑定。
+  Ticket 五态不是数字人角色。
+canonical_path: docs/agents/digital-human-roles.yaml
+runtime_policy:
+  overlay_on_lifecycle: true
+  consumed_by_lifecycle: true
+  git_is_ssot: true
+  default_invocation: orchestrator
+  dispatch: orchestrator-one-to-one
+  per_feature_instances: forbidden
+  project_instance_instantiation: duplicate-and-bind-repo-path
+  template_instantiation: publish-singleton-profiles
+  biological_veto: true
+  implementer_must_differ: true
+  write_isolation: task-package-policy
+  dual_hat_split_when: [cross-repo-load, responsibility-conflict]
+
+runtimes:
+  - id: runtime.generic
+    kind: generic
+    instance_kind: agent-session
+    skill_root: null
+    covers_skill_registry_roots: false
+    collaboration: task-package-and-handoff
+    max_collaboration_group_size: null
+    overflow: not-applicable
+    shared_workspace_is_not_security_boundary: false
+    side_effect_approval: biological-human
+    notes: 任何能加载 core_skills 并接受任务包的 Agent 会话。
+  - id: runtime.skill-projection
+    kind: projected-agent-root
+    instance_kind: agent-session-or-subagent
+    skill_root: from-skill-registry
+    covers_skill_registry_roots: true
+    collaboration: subagent-task-package
+    max_collaboration_group_size: null
+    overflow: not-applicable
+    shared_workspace_is_not_security_boundary: false
+    side_effect_approval: biological-human
+    notes: >-
+      覆盖 docs/agents/yss-skill-registry.yaml 的 agent_runtime_roots
+      （claude / codex / cursor / hermes / pi / qoder / trae）。
+      技能仍从 .agents/skills 投影，不按职称再维护一份。
+  - id: runtime.grok
+    kind: grok-bot
+    instance_kind: durable-bot
+    skill_root: null
+    covers_skill_registry_roots: false
+    collaboration: group-chat-or-async-dm
+    max_collaboration_group_size: 6
+    min_collaboration_group_size: 2
+    overflow: one-to-one-handoff
+    shared_workspace_is_not_security_boundary: true
+    side_effect_approval: biological-human
+    notes: >-
+      Grok Bot 适配。群聊 2–6 人；超出则改 1:1 交接，不改逻辑阶段协作组。
+      全部 Bot 共享云计算机，写范围只靠任务包。不新增 agent_runtime_roots.grok。
+
+orchestrator:
+  id: role.lifecycle-orchestrator
+  name: 主控数字人
+  kind: orchestrator
+  title: YSS 生命周期主控
+  default_dual_hat: []
+  stages: [stage.entry-triage, stage.discovery, stage.spec-architecture, stage.product-design, stage.ticket-formalization]
+  core_skills: [yss-strategic-design]
+  forbidden_skills: []
+  description: >-
+    Own YSS lifecycle routing. Read yss-project.yaml and CONTEXT.md first.
+    Select the next unblocked work unit, compile a task package, and assign
+    one owner per stage. Do not implement business code. Do not approve Slice
+    contracts into ready-for-agent without the full formula. Do not announce
+    releasable. Default dual-hat: project manager until a separate instance
+    is required. Authoritative artifacts live in git.
+
+roles:
+  - id: role.requirements-manager
+    name: 需求经理
+    kind: digital-human
+    title: YSS 需求经理
+    stages: [stage.discovery, stage.spec-architecture, stage.product-design, stage.ticket-formalization]
+    draft_artifact_ids: [artifact.discovery-record, artifact.spec]
+    core_skills: [grilling, domain-modeling, research, competitive-intelligence, grill-with-docs]
+    forbidden_skills: []
+    description: >-
+      Own Discovery language, users, MVP, non-goals, success criteria, test
+      seams, and Spec prose. Propose CONTEXT.md glossary entries. Do not freeze
+      visual prototypes, OpenAPI, or code. Do not guess unconfirmed business
+      rules. Hand off to the orchestrator when the frontier is empty.
+
+  - id: role.product-manager
+    name: 产品经理
+    kind: digital-human
+    title: YSS 产品经理
+    stages: [stage.discovery, stage.spec-architecture, stage.product-design, stage.ticket-formalization]
+    draft_artifact_ids: [artifact.product-overview, artifact.functional-architecture, artifact.interaction-spec, artifact.state-matrix, artifact.prototype-confirmation, artifact.business-ticket-set]
+    core_skills: [yss-strategic-design, yss-design-system, yss-prototype-stage, prototype-review, yss-antd-design]
+    forbidden_skills: []
+    description: >-
+      Own priority, product-design impact, interaction, state matrix, and
+      prototype confirmation recommendation and business-level Ticket formalization.
+      Do not write production code, OpenAPI, technical Ticket or Tactical Design.
+
+  - id: role.business
+    name: 商务
+    kind: digital-human
+    title: YSS 商务
+    stages: [stage.discovery]
+    draft_artifact_ids: [artifact.discovery-record]
+    core_skills: [yss-strategic-design, competitive-intelligence, research]
+    forbidden_skills: [to-spec, to-tickets]
+    description: >-
+      Own commercial constraints, delivery promises, and business non-goals in
+      Discovery and release windows. Do not finalize Spec, API, tickets, or
+      code. External quotes and contracts stay behind runtime side-effect
+      approval by a biological human.
+
+stage_groups:
+  - id: group.discovery
+    name: Discovery
+    stage: stage.discovery
+    members: [role.lifecycle-orchestrator, role.requirements-manager, role.product-manager, role.business]
+  - id: group.spec
+    name: Spec
+    stage: stage.spec-architecture
+    members: [role.lifecycle-orchestrator, role.requirements-manager, role.product-manager]
+  - id: group.product-design
+    name: 产品设计
+    stage: stage.product-design
+    members: [role.lifecycle-orchestrator, role.product-manager, role.requirements-manager]
+  - id: group.tickets
+    name: Ticket 正式化
+    stage: stage.ticket-formalization
+    members: [role.lifecycle-orchestrator, role.product-manager, role.requirements-manager]
+  - id: group.strategy-handoff
+    name: 战略设计交付
+    stage: stage.ticket-formalization
+    members: [role.lifecycle-orchestrator, role.product-manager, role.requirements-manager, role.business]
+
+gate_policy:
+  default_if_unlisted: biological-human
+  unlisted_kept_biological:
+    - gate.design-reviewed
+    - gate.architecture-reviewed
+  evidence_only:
+    - gate.repository-identity-valid
+    - gate.prototype-verified
+  orchestrator:
+    - gate.slice-contract-approved
+    - gate.slice-ready-for-agent
+  digital_human_review:
+    - gate: gate.prototype-reviewed
+      drafter: role.product-manager
+      countersigners: [role.requirements-manager]
+  digital_human_review_work_units:
+    - work_unit: work-unit.intensity-aware-review
+      countersigners: [role.requirements-manager]
+      implementer_must_differ: true
+  dual_digital_human:
+    - gate: gate.spec-baseline-approved
+      drafter: role.requirements-manager
+      countersigners: [role.product-manager]
+    - gate: gate.domain-strategy-approved
+      drafter: role.requirements-manager
+      countersigners: [role.product-manager]
+    - gate: gate.stage-decision-package-approved
+      drafter: role.requirements-manager
+      countersigners: [role.product-manager]
+    - gate: gate.strategic-design-handoff-approved
+      drafter: role.product-manager
+      countersigners: [role.requirements-manager]
+  product_digital_human_with_biological_veto:
+    - gate.user-confirmation
+  biological_human:
+    - gate.release-ready
+  runtime_side_effect_approval: biological-human
+  commercial_contract: biological-human

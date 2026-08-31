@@ -44,6 +44,7 @@
 3. 发布、合并或阶段完成时按整体候选重新判定；不得把共同改变整体语义的修改拆成多个 L1/L2 规避 L3。
 4. RED 用于证明行为差异。L1 不人为构造失败；L2 可使用已有失败、最小 fixture 或现有测试修改前失败；只有行为无法确定性表达时才运行聚焦压力场景。L3 使用 `maintaining-skills` 并执行本节定义的完整 RED、GREEN、REFACTOR 和压力场景要求。
 5. 模板发布候选固定按 L3 聚合验证，但不追溯补造每个既有 L1/L2 修改的独立 RED。
+6. 模板维护与产品切片使用同一 finding 闭环：`violation` / 机器检查失败 / 适用行空白由实施者修复后重新验证并按本表强度复审；`drift` / `new_impacts` 升级影响面并重新分级，禁止在旧合同或旧 checkpoint 上继续编码。审查者不得写实现。未命中的条件项才 `not-applicable`；命中后不得豁免。
 
 每个模板维护 checkpoint 使用以下轻量合同；L1/L2 可直接写入主 Ticket 或集中 checkpoint，不要求新增独立文档：
 
@@ -62,3 +63,5 @@ escalation: none | <升级原因和原等级>
 ```
 
 使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。触发项 ID 与最低等级只由 `docs/process/maintenance-intensity.yaml` 维护；校验器消费该策略。未知触发项必须先更新该权威策略和场景，不能静默接受。
+
+`focused-independent-review` 与 `formal-independent-review` 的 `command` 必须引用可读取的审查结论。L3 新记录必须使用 `docs/process/schemas/maintenance-review-record.schema.json`，绑定 Reviewer、实施者、完整 `yss-worktree-candidate-v1` 冻结字节、候选 digest、通过正式 schema 的 Reviewer 任务包、任务包声明的审查报告和已关闭 findings。仅校验器内明确登记的 2026-08-24 / 27 历史 L3 Markdown 可兼容，并仍须带 `legacy_formal_review: true`、审查身份和明确通过结论；任意新 Markdown 不能自报 legacy。审查请求、实施者自述、否定裁决、伪造或非规范候选流、无效任务包、未关闭 findings 或 symlink 越界证据都会被拒绝。可用 `scripts/verify-maintenance-review-record` 单独校验。

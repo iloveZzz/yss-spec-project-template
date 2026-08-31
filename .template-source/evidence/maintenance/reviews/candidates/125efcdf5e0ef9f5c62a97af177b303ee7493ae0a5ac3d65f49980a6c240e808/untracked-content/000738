@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+import { validateDefaultDigitalHumanRoles } from "./lib/digital-human-roles.mjs";
+
+try {
+  const result = validateDefaultDigitalHumanRoles();
+  process.stdout.write(`数字人角色注册表校验通过（${result.role_count} 个角色，${result.group_count} 个协作组，${result.runtime_count} 个运行时）\n`);
+} catch (error) {
+  process.stderr.write(`数字人角色注册表校验失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

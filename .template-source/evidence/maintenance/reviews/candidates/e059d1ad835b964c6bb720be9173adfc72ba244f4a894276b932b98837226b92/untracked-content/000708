@@ -1,0 +1,24 @@
+# 使用手册
+
+本文档面向使用本模板初始化项目的产品、需求、商务协作者和 AI Agent 操作者。
+
+## 当前范围
+
+本模板提供战略设计文档骨架、页面原型约定、业务级 Ticket 模板、Agent skills 和协作约定。本地终点是 Strategic Design Handoff。
+
+## 推荐流程
+
+1. 在 `docs/.scratch/<feature>/discovery/` 记录机会探索、市场、竞品和用户洞察。
+2. 在 `docs/.scratch/<feature>/domain/` 维护 DDD 战略设计和阶段决策包。
+3. 在 `docs/.scratch/<feature>/requirements/spec.md` 维护 Spec、用户故事和验收标准。
+4. 在 `docs/.scratch/<feature>/design/` 维护页面、原型、用户流和交互状态。
+5. 在 `docs/.scratch/<feature>/tickets/` 维护业务级 Ticket 集。
+6. 用 `docs/templates/strategic-design-handoff-template.yaml` 形成交付包，交给下游研发团队。
+
+## 继续阅读
+
+- [create-yss-harness-design 实践指南](./外部命令行工具实践指南.md)
+- [grill-with-docs 使用手册](./需求澄清指南.md)
+- [grill-with-docs 最佳实践](./需求澄清最佳实践.md)
+- [PDCA × Scrum](../process/PDCA-SCRUM.md)
+- [Matt Pocock Engineering Skills](../process/MATT-POCOCK-ENGINEERING-SKILLS.md)

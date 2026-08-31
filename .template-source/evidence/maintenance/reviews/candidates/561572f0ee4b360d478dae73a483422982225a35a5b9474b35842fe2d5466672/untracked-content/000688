@@ -1,0 +1,30 @@
+schema_version: 1
+mode: route
+status: routing
+stage: stage.entry-triage
+artifacts: {}
+gates: {}
+next_work_unit: work-unit.discovery-opportunity
+phase_boundary:
+  decision: continue
+  reason: initial routing
+stage_trace:
+  stage: stage.entry-triage
+  upstream_refs: []
+  artifact_refs: []
+  gate_decisions: []
+  downstream_impacts: []
+ticket_sync:
+  status: pending
+  refs: []
+verification:
+  commands: []
+  evidence_refs: []
+human_review:
+  required: false
+  status: not-applicable
+git_checkpoint:
+  required: false
+  status: not-applicable
+blockers: []
+rollback: []

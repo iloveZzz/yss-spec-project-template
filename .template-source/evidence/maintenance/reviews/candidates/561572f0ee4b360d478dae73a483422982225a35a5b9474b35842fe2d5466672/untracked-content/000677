@@ -1,0 +1,145 @@
+schema_version: 1
+profile_id: harness.business-ddd-strategy-handoff
+template_source: github:iloveZzz/yss-harness-design-agent
+cli_package: create-yss-harness-design
+description: >-
+  战略设计 Harness 的模板实例分发面。CLI 的 template.manifest.json 必须由此文件投影，
+  禁止在 CLI 仓库另写一套 allow/deny。
+
+allow_root_entries:
+  - .agents
+  - .claude
+  - .codex
+  - .cursor
+  - .hermes
+  - .pi
+  - .qoder
+  - .trae
+  - docs
+  - scripts
+
+allow_root_files:
+  - .cursorrules
+  - .gitignore
+  - .nvmrc
+  - AGENTS.md
+  - CLAUDE.md
+  - CONTEXT.md
+  - README.md
+  - skills-lock.json
+  - yss-project.yaml
+
+allow_files:
+  - docs/adr/README.md
+  - docs/architecture/templates/business-architecture-template.md
+  - docs/architecture/templates/functional-architecture-template.md
+
+exclude_root_entries:
+  - .git
+  - .codegraph
+  - .codebuddy
+  - .idea
+  - .uploads
+  - node_modules
+  - .ua
+  - .qwen
+  - .template-source
+  - packages
+  - .github
+  - wiki
+  - submodules
+
+exclude_root_files:
+  - package-lock.json
+  - package.json
+  - template.manifest.json
+  - template.snapshot.json
+  - .gitmodules
+  - yss-public-skills.json
+
+exclude_paths:
+  - .claude/settings.local.json
+  - .codex/hooks.json
+  - .codex/settings.local.json
+  - .cursor/environment.json
+  - .pi/settings.json
+  - docs/.scratch
+  - docs/adr
+  - docs/api
+  - docs/implementation
+  - docs/releases
+  - docs/reviews
+  - docs/architecture/README.md
+  - docs/architecture/templates/architecture-deepening-template.md
+  - docs/architecture/templates/architecture-review-checklist.md
+  - docs/architecture/templates/data-architecture-template.md
+  - docs/architecture/templates/engineering-baseline-review-template.md
+  - docs/architecture/templates/system-overview-design-template.md
+  - docs/architecture/templates/tech-design-template.md
+  - docs/process/implementation-repo-integration.md
+  - docs/process/schemas/frontend-implementation-evidence.schema.json
+  - docs/process/templates/frontend-implementation-plan-template.yaml
+  - docs/process/templates/frontend-implementation-verification-template.yaml
+  - docs/requirements/README.md
+  - docs/templates/build-architecture-checklist-template.md
+  - docs/templates/cross-repo-slice-template.md
+  - docs/templates/implementation-plan-template.md
+  - docs/templates/implementation-repo-registry-template.md
+  - docs/templates/implementation-routing-template.md
+  - docs/templates/local-parent-ticket-template.md
+  - docs/templates/openapi-spec-template.yaml
+  - docs/templates/release-note-template.md
+  - docs/templates/retro-report-template.md
+  - docs/templates/vertical-slice-ticket-template.md
+  - docs/testing/README.md
+  - docs/user-guide/产品生命周期工作流.md
+  - docs/user-guide/产品研发全生命周期最佳实践.md
+  - docs/user-guide/生命周期最佳实践.md
+  - docs/user-guide/规格与任务迁移指南.md
+  - scripts/gitworks
+  - scripts/implementation-path-policy
+  - scripts/lib/git-submodule-fixtures.mjs
+  - scripts/lib/implementation-path-policy.mjs
+  - scripts/lib/repository-scope-policy.mjs
+  - scripts/repository-scope-policy
+  - scripts/verify-frontend-implementation-evidence
+  - scripts/verify-governance-release
+  - scripts/verify-implementation-path-scenarios
+  - scripts/verify-openapi-json-handoff-scenarios
+  - scripts/verify-openapi-yaml-first-scenarios
+  - scripts/verify-prototype-backend-scaffold-scenarios
+  - scripts/verify-repository-scope-scenarios
+  - scripts/verify-scaffold-generator-scenarios
+  - scripts/verify-upstream-skill-source
+  - scripts/verify-yss-dto-openapi-profile
+  - scripts/verify-yss-dto-openapi-scenarios
+  - scripts/verify-yss-router-scenarios
+  - scripts/verify-yss-ui-scenarios
+
+render_paths:
+  - AGENTS.md
+  - README.md
+  - yss-project.yaml
+  - docs/agents/issue-tracker.md
+
+init_exclude_root_entries: []
+init_exclude_root_files:
+  - yss-public-skills.json
+init_exclude_paths: []
+
+instance_forbidden_paths:
+  - .template-source
+  - .github
+  - wiki
+  - package.json
+  - yss-public-skills.json
+  - .yss-template.json
+  - docs/templates/openapi-spec-template.yaml
+  - docs/templates/vertical-slice-ticket-template.md
+  - docs/templates/local-parent-ticket-template.md
+  - docs/templates/cross-repo-slice-template.md
+  - docs/process/implementation-repo-integration.md
+  - docs/api
+  - scripts/verify-yss-router-scenarios
+  - scripts/verify-yss-ui-scenarios
+  - scripts/verify-openapi-yaml-first-scenarios

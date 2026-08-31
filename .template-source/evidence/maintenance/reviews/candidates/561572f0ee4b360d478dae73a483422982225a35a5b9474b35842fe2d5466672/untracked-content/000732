@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+import { updateSkillLock } from "./lib/skill-supply-chain.mjs";
+
+try {
+  process.stdout.write(`${updateSkillLock()}\n`);
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+}

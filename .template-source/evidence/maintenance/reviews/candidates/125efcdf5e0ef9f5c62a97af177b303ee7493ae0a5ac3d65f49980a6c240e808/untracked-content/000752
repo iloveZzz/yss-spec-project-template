@@ -1,0 +1,47 @@
+#!/usr/bin/env node
+import { readFileSync } from "node:fs";
+import { validateMaintenanceCheckpoint } from "./lib/maintenance-intensity.mjs";
+
+const checkerSource = readFileSync(new URL("./lib/maintenance-intensity.mjs", import.meta.url), "utf8");
+if (checkerSource.includes("LEVEL_BY_TRIGGER = new Map")) {
+  throw new TypeError("触发项映射必须由 docs/process/maintenance-intensity.yaml 唯一维护");
+}
+if (!checkerSource.includes("maintenance-intensity.yaml")) {
+  throw new TypeError("维护强度校验器必须加载权威触发项映射");
+}
+
+const evidence = (...kinds) => kinds.map((kind) => ({ kind, command: `verify ${kind}`, result: "pass" }));
+const base = {
+  schema_version: 1,
+  classification_reason: "场景验证",
+  changed_assets: ["docs/example.md"],
+  escalation: "none"
+};
+
+const accepted = [
+  { ...base, intensity: "L1", triggers: ["textual-only"], verification_evidence: evidence("relevant-check"), review_mode: "self-check" },
+  { ...base, intensity: "L2", triggers: ["local-rule"], verification_evidence: evidence("counterexample", "fresh-verification", "focused-independent-review"), review_mode: "focused-independent" },
+  { ...base, intensity: "L2", triggers: [], verification_evidence: evidence("counterexample", "fresh-verification", "focused-independent-review"), review_mode: "focused-independent" },
+  { ...base, intensity: "L3", triggers: ["lifecycle-gate"], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification", "formal-independent-review"), review_mode: "formal-independent" }
+];
+
+for (const checkpoint of accepted) validateMaintenanceCheckpoint(checkpoint);
+
+const rejected = [
+  { ...accepted[1], verification_evidence: evidence("fresh-verification") },
+  { ...accepted[1], verification_evidence: evidence("counterexample", "fresh-verification") },
+  { ...accepted[0], triggers: ["release-semantics"] },
+  { ...accepted[0], triggers: ["aggregate-behavior-change"] },
+  { ...accepted[2], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario") },
+  { ...accepted[2], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification") },
+  { ...accepted[1], escalation: "发现发布语义影响但仍维持 L2", triggers: ["release-semantics"] },
+  { ...accepted[2], intensity: "L1" }
+];
+
+for (const checkpoint of rejected) {
+  let failed = false;
+  try { validateMaintenanceCheckpoint(checkpoint); } catch { failed = true; }
+  if (!failed) throw new TypeError(`错误 checkpoint 未被拒绝: ${JSON.stringify(checkpoint)}`);
+}
+
+process.stdout.write("模板维护 L1/L2/L3 强度场景验证通过\n");

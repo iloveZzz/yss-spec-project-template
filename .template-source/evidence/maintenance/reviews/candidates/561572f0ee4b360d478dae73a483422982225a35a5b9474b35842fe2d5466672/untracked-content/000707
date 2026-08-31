@@ -1,0 +1,59 @@
+# `create-yss-harness-design` 实践指南
+
+本文面向需要基于 YSS Strategic Design Harness 初始化战略设计项目实例的使用者。CLI 源码、测试和发布由独立项目 [iloveZzz/create-yss-harness-design](https://github.com/iloveZzz/create-yss-harness-design) 维护；本模板仓库只记录使用方法和跨仓库契约。
+
+本 CLI 不是 `create-yss-spec`。`create-yss-spec` 面向全生命周期模板 `yss-spec-project-template`，会带上 OpenAPI、垂直切片和实现路由。本 CLI 只生成 `harness.business-ddd-strategy-handoff` 的 `project-instance`。
+
+## 适用范围
+
+`create-yss-harness-design` 用于从空目录生成包含 Discovery、Spec、原型、业务级 Ticket 和 Strategic Design Handoff 基线的模板实例仓库。它不负责生成前后端运行时工程，也不会代替你创建远程 Git 仓库、CI 或 Ticket Board。v1 只支持 `init`。
+
+“最新模板”指用户执行的 `npx create-yss-harness-design@latest` 所携带的最新已发布快照。CLI 运行时不会直接拉取模板仓库；每个实例 metadata 都记录绑定的 `templateCommit`，便于审计和回滚。
+
+## 空目录初始化
+
+推荐使用 npm create 入口：
+
+```bash
+npm create yss-harness-design@latest
+```
+
+也可直接通过 npx 执行：
+
+```bash
+npx create-yss-harness-design@latest \
+  --project-name "项目名称" \
+  --business-domain "业务领域" \
+  --target-dir "./project" \
+  --git-init
+```
+
+初始化会把模板源身份转换为 `repository_mode: project-instance`，写入 `.yss-harness-design.json`，并按 `docs/process/instance-distribution-manifest.yaml` 裁剪分发面。`--dry-run` 只预览，不创建目录、不删除文件。
+
+非空目录默认拒绝；`--force` 才覆盖。空 gitlink / detached HEAD / git-submodule 挂载点始终阻断。
+
+## 生成后检查
+
+初始化后，至少完成以下检查：
+
+1. 运行 `git status --short`，确认实际变更范围。
+2. 检查 `AGENTS.md`、`CONTEXT.md`、`README.md`、`yss-project.yaml` 和 `docs/process/harness-profile.yaml`。
+3. 确认 `.yss-harness-design.json` 的 `templateCommit` 为 40 位 commit，`profileId` 为 `harness.business-ddd-strategy-handoff`。
+4. 确认实例中没有 `.template-source/`、`docs/templates/openapi-spec-template.yaml` 或 `docs/templates/vertical-slice-ticket-template.md`。
+5. 运行 `scripts/verify-template`。确认无误后再创建 Git checkpoint。
+
+## 问题定位边界
+
+- CLI 安装、参数解析、初始化、npm 发布或 CLI 测试问题：在 [create-yss-harness-design 独立仓库](https://github.com/iloveZzz/create-yss-harness-design) 追踪。
+- 模板内容、流程文档、Agent skills 或 `scripts/verify-template` 问题：在本模板仓库追踪。
+
+## 发布与验证
+
+模板修复并通过 fresh verification 后，CLI 发布前必须绑定确定模板 commit：
+
+```bash
+YSS_STRATEGIC_DESIGN_TEMPLATE_REF=<pinned-commit> npm test
+YSS_STRATEGIC_DESIGN_TEMPLATE_REF=<pinned-commit> npm pack --dry-run
+```
+
+发布顺序为：模板修复与验证 → CLI 绑定 commit 并完成跨仓库测试 → 独立审查 → 发布 CLI。任一仓库未通过共同验证时，不声明整体可发布。

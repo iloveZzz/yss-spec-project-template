@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS Product Lifecycle"
+  short_description: "编排 YSS 产品全生命周期、门禁、状态与专项技能"
+  default_prompt: "使用 $yss-strategic-design，判断模式并有界推进这个需求。"

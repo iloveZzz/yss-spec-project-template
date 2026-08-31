@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "wikiRoot": ".template-source/wiki",
-  "compiledAt": "2026-08-24T09:07:48.593Z",
-  "gitCommit": "6ecbbb25b6447143212b93b28b6d5cfac66ff867",
+  "compiledAt": "2026-08-31T10:39:23.044Z",
+  "gitCommit": "37cc9257a0918eac187003c8f8098bfbaff2480b",
   "profile": "documents",
   "sources": [
     {
@@ -11,7 +11,7 @@
       "livePath": "AGENTS.md",
       "rawPath": "raw/AGENTS.md",
       "role": "copy",
-      "sha256": "338553e997a37e43de73cd59f76a8f127ef2e38a02b9f7993afb46d2a51f2c67"
+      "sha256": "0b6894c2325a3ffcc1f55d1647732d7e02d6f05cc6ebc4082cb9a37637ecb480"
     },
     {
       "id": "CONTEXT.md",
@@ -19,7 +19,7 @@
       "livePath": "CONTEXT.md",
       "rawPath": "raw/CONTEXT.md",
       "role": "copy",
-      "sha256": "9d23c31f09d189978716030ff592fede25d200017bd28c265e37316ff7ff57fd"
+      "sha256": "49d9687910a187fb3c619815e34242663349ca25757e5c503d5a5072d2d33636"
     },
     {
       "id": "README.md",
@@ -27,7 +27,7 @@
       "livePath": "README.md",
       "rawPath": "raw/README.md",
       "role": "copy",
-      "sha256": "2a8e25ac4dc7798e2b7d1609644990518ece925aecff375160036eb8be611446"
+      "sha256": "d96361201b635d8af9fe82b772179e0acbb3ec981d3aaacd9e93b3a074d06b07"
     },
     {
       "id": "yss-project.yaml",
@@ -43,7 +43,7 @@
       "livePath": "docs/process/lifecycle-registry.yaml",
       "rawPath": "raw/lifecycle-registry.yaml",
       "role": "copy",
-      "sha256": "051a51ea7e5ef3c6fecb5cb43137c5cdd157c646f468614022134e51a5bc5b06"
+      "sha256": "d140f953f3e1487f8bb6831e0c924193abf39114519ffa0f108f359ec1a67829"
     },
     {
       "id": "harness-process-tailoring.md",
@@ -51,7 +51,7 @@
       "livePath": "docs/process/harness-process-tailoring.md",
       "rawPath": "raw/harness-process-tailoring.md",
       "role": "copy",
-      "sha256": "f11bb61f3034560c1607891654b0fb0b79dc82f8fb520f746585e5decf9bf41f"
+      "sha256": "638060a987a295d2ab60cdd01cb36cbb1450718d540bd4afb8c537b08a01a613"
     },
     {
       "id": "maintenance-intensity.yaml",
@@ -67,7 +67,7 @@
       "livePath": "docs/process/implementation-repo-integration.md",
       "rawPath": "raw/implementation-repo-integration.md",
       "role": "copy",
-      "sha256": "9d430f7b124cab6451d987ed7c97e27871b27a28a395fb63c1d34170724501ee"
+      "sha256": "9dad6ca3bd4a43938e091b287b55c78e93101cce5f208e74ed4add0746872999"
     },
     {
       "id": "skills-maintenance.md",
@@ -75,7 +75,7 @@
       "livePath": "docs/agents/skills-maintenance.md",
       "rawPath": "raw/skills-maintenance.md",
       "role": "copy",
-      "sha256": "9c95176cc104224b515da9b3ad189d4fc6ea917f31877e60083f1416f342f378"
+      "sha256": "d4916d59c48513856d1e347564696121e4fedb28433af223d2c02ab82b2ba6eb"
     },
     {
       "id": "yss-skill-registry.yaml",
@@ -83,7 +83,7 @@
       "livePath": "docs/agents/yss-skill-registry.yaml",
       "rawPath": "raw/yss-skill-registry.yaml",
       "role": "copy",
-      "sha256": "b265d25be9bc80166e289ca1702337457ac839aec50290d1ba078c7a100cd474"
+      "sha256": "42744e744cec9d7cef3b285ea9bd52c21a7da9513dc93fc6665877687e0e049c"
     },
     {
       "id": "issue-tracker.md",
@@ -99,15 +99,7 @@
       "livePath": "docs/agents/triage-labels.md",
       "rawPath": "raw/triage-labels.md",
       "role": "copy",
-      "sha256": "5877760bdbb9151a93736247c2dec77d67e969dd1a1b771acf5ff6dc590e5261"
-    },
-    {
-      "id": "adr-0002",
-      "kind": "document",
-      "livePath": "docs/adr/0002-yss-project-repository-mode.md",
-      "rawPath": "raw/adr-0002-repository-mode.md",
-      "role": "copy",
-      "sha256": "11d2a2b384491b4409e5a2c9b18f30d0566b6c80e1e270ef3c224d72fd264583"
+      "sha256": "41f5eb2fe11388077c73dbac7d29cf83fb1da229248b6363c273a891d00705fd"
     },
     {
       "id": "create-yss-spec-repository-mode-contract",
@@ -115,7 +107,7 @@
       "livePath": ".template-source/contracts/create-yss-spec-repository-mode-contract.md",
       "rawPath": "raw/create-yss-spec-repository-mode-contract.md",
       "role": "copy",
-      "sha256": "5a89a0f4e9ac8e8dee2c1ec310930eef39575b767e5da00ef9488d95995cf7b4"
+      "sha256": "2224a834cc4203907fc9cf0118f954f4042625656aad40b301fc540f523b8837"
     },
     {
       "id": "spec-template.md",
@@ -131,7 +123,7 @@
       "livePath": "docs/templates/vertical-slice-ticket-template.md",
       "rawPath": "raw/vertical-slice-ticket-template.md",
       "role": "copy",
-      "sha256": "49bec2cb6df81ab6d76d01920b52197274b39b6381c329baff360e34e64cc341"
+      "sha256": "3da71f03bbff42d0f7bf19e557207d7e9855b2e95f6710cceaf7ae81b9e82f29"
     },
     {
       "id": "skills-lock.json",
@@ -142,7 +134,7 @@
       "extract": {
         "kind": "skill-names"
       },
-      "sha256": "cfb9b0bd889c7673aa4207da4660aedd0d141b9f097e5477318436cf1b27ba9f"
+      "sha256": "28e930aa2962c0a691eedae5a816a01c8633de0ee6b21c057bb5536066f017ed"
     }
   ],
   "articles": [
@@ -162,7 +154,6 @@
       "file": "wiki/仓库身份与路由.md",
       "sourceIds": [
         "yss-project.yaml",
-        "adr-0002",
         "AGENTS.md",
         "create-yss-spec-repository-mode-contract"
       ],

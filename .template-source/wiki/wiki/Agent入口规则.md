@@ -17,5 +17,4 @@
 - `AGENTS.md`
 - `CONTEXT.md`
 - `yss-project.yaml`
-- `docs/adr/0002-yss-project-repository-mode.md`
 - `README.md`

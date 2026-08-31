@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { isTemplateSource } from "./lib/repository-mode.mjs";
@@ -15,23 +15,8 @@ for (const [relativePath, marker] of Object.entries({
 }
 if (isTemplateSource(root)) {
   const adrDirectory = path.join(root, ".template-source/adr");
-  const files = readdirSync(adrDirectory).filter((name) => name.endsWith(".md")).sort();
-  if (files.length === 0) failures.push("模板源 ADR 目录为空");
-  for (const name of files) {
-    const relativePath = `.template-source/adr/${name}`;
-    const body = read(relativePath);
-    const status = body.match(/状态[：:]\s*([^\n]+)/)?.[1]?.trim() ?? body.match(/##\s*状态\s*\n+\s*([^\n]+)/)?.[1]?.trim();
-    if (!status) failures.push(`${relativePath} 未声明状态`);
-    if (status === "proposed" && !/尚未|未实现|不构成|不能把/.test(body)) failures.push(`${relativePath} 的 proposed ADR 缺少未实施/非当前门禁说明`);
-  }
-}
-if (isTemplateSource(root)) {
-  for (const [relativePath, marker] of Object.entries({
-    ".template-source/adr/0003-machine-readable-lifecycle-registry.md": "状态：部分实施（Phase 1）",
-    ".template-source/adr/0006-stable-lifecycle-ids-and-generated-structure.md": "状态：部分实施（Phase 1）"
-  })) {
-    if (!read(relativePath).includes(marker)) failures.push(`${relativePath} 未声明当前实现状态`);
-  }
+  const files = existsSync(adrDirectory) ? readdirSync(adrDirectory).filter((name) => name.endsWith(".md")).sort() : [];
+  if (files.length > 0) failures.push(`模板源治理 ADR 已退役，禁止新增：${files.join(", ")}`);
 }
 if (!read("scripts/verify-lifecycle-scenarios").includes("ROUTE_REGISTRY_IDS")) failures.push("生命周期场景未校验稳定 ID 映射");
 if (failures.length > 0) {

@@ -1,0 +1,118 @@
+# <功能名称> 交互说明模板
+
+> 适用时机：Spec 初稿和产品总体设计 / 功能架构完成之后，Spec 校准 / API 影响分析 / 契约草案之前；仅用于有用户界面影响的功能。
+
+## 1. 输入资产
+
+| 资产 | 路径 / 链接 | 说明 |
+|---|---|---|
+| Spec 初稿 | `docs/.scratch/<feature>/spec.md` | 原型评审后需要回填和校准 |
+| 产品总体设计 / 功能架构 | `docs/.scratch/<feature>/design/<feature>-product-overview-design.md` | 必需；缺失时先返回产品总体设计阶段 |
+| 领域术语 | `CONTEXT.md` | 核心名词、状态和业务规则 |
+| Discovery | `docs/.scratch/<feature>/discovery/<feature>-discovery.md` | 可选 |
+| 原型阶段合同 / Product Design 路由 | `yss-prototype-stage -> product-design:index -> <focused skill>` | 必需；记录 `$get-context`、`$ideate`、`$prototype`、`$image-to-code` 或 `$url-to-code` |
+| 原型 / 线框图 | `<链接或导出图片路径>` | Excalidraw / Figma / Penpot / tldraw / Axure / Markdown |
+| 高保真 HTML 原型 | `docs/.scratch/<feature>/design/prototypes/index.html` | 低保真原型评审通过后补齐；必须使用 Ant Design v6；可由系统 / Agent 自动产出；产出后必须获得用户确认 |
+| 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 记录实际 CLI / AntD 版本、CLI JSON 输出、浏览器验证和阻塞项 |
+| 现有 API 草案 | `docs/.scratch/<feature>/api/<feature>.yaml` | 可选；通常应先完成产品设计和 Spec 校准 |
+
+## 2. 页面地图
+
+| 页面 / 面板 | 入口 | 主要用户 | 目标 | 出口 / 下一步 |
+|---|---|---|---|---|
+| 模型列表 | 主导航 | 数据建模人员 | 查询、筛选、创建和进入模型 | 模型详情 |
+| 模型详情 | 模型列表行 | 数据建模人员 | 查看基础信息、字段、校验和发布状态 | 字段编辑 / 版本历史 |
+| 字段编辑抽屉 | 编辑字段操作 | 数据建模人员 | 新增或更新模型字段 | 模型详情 |
+| 发布确认弹窗 | 发布操作 | 数据建模人员 / 管理员 | 确认校验结果和版本冻结 | 模型详情 |
+| 版本历史 | 模型详情页签 | 管理员 / 下游开发者 | 查看发布版本和变更 | 模型详情 |
+
+## 3. 用户流程
+
+### 主流程
+
+1. 用户打开模型列表。
+2. 用户按状态或关键字筛选。
+3. 用户打开一个草稿模型。
+4. 用户在字段编辑抽屉中维护字段。
+5. 用户执行发布前校验。
+6. 用户确认发布。
+7. 系统冻结发布版本并展示版本信息。
+
+### 异常流程
+
+| 触发条件 | 系统行为 | 用户恢复方式 |
+|---|---|---|
+| 校验失败 | 展示模型级和字段级错误 | 修复字段后重新校验 |
+| 无发布权限 | 隐藏或禁用发布操作；若被调用则返回权限错误 | 联系管理员 |
+| 版本冲突 | 展示最新版本，并提示放弃或刷新 | 刷新详情后重新应用修改 |
+| 存在未保存修改 | 展示离开确认 | 留在当前页或放弃修改 |
+
+## 4. 页面细节
+
+### 模型列表
+
+| 区域 | 内容 / 组件 | 说明 |
+|---|---|---|
+| 查询区 | 关键字、状态、负责人 | YSS 前端实现时优先使用 Formily |
+| 表格 | modelCode、modelName、status、owner、updatedAt、latestPublishedVersion、actions | YSS 前端实现时优先使用 YTable |
+| 操作 | 创建、编辑、校验、发布、查看版本 | 由权限决定隐藏、禁用或可点击 |
+
+### 模型详情
+
+| 区域 | 内容 / 组件 | 说明 |
+|---|---|---|
+| 头部 | modelName、modelCode、status、latestVersion | 已发布版本只读 |
+| 页签 | 基础信息、字段、版本历史 |  |
+| 校验面板 | 模型错误、字段错误、告警数量 | 字段级错误必须能定位 |
+| 底部操作 | 保存草稿、校验、发布 | 发布前必须校验通过 |
+
+### 字段编辑抽屉
+
+| 字段 | 类型 | 必填 | 校验 / 交互说明 |
+|---|---|---|---|
+| fieldCode | string | 是 | 模型内唯一 |
+| fieldName | string | 是 | 展示名称 |
+| dataType | enum | 是 | 从支持的数据类型中选择 |
+| nullable | boolean | 是 |  |
+| primaryKey | boolean | 否 | 是否必须至少一个主键由产品策略决定 |
+| defaultValue | string | 否 | 按 dataType 校验 |
+| businessMeaning | string | 否 | 长文本 |
+
+## 5. 状态矩阵
+
+引用或复制 `docs/design/templates/state-matrix-template.md`。
+
+## 6. OpenAPI 反推清单
+
+| 界面需求 | API 影响 | 说明 |
+|---|---|---|
+| 模型列表分页 | `GET /api/v1/models` 支持 page、size 和筛选条件 | 返回状态和 latestPublishedVersion |
+| 字段编辑保存 | 字段新增 / 更新接口，或模型草稿保存接口 | 包含字段级校验响应 |
+| 发布前校验 | 校验接口返回模型级和字段级错误 | 错误结构必须支持页面定位 |
+| 发布确认 | 发布接口携带草稿版本或版本 token | 需要冲突响应 |
+| 版本历史 | 版本列表接口 | 包含操作人、时间和变更摘要 |
+
+## 7. Spec 校准记录
+
+| 原型发现 | 需要回填 Spec 的内容 | 负责人 / 状态 |
+|---|---|---|
+| 字段级校验需要页面定位 | 增加字段级错误展示验收标准 | 产品 / 待确认 |
+| 已发布版本只读 | 增加发布版本不可修改规则 | 产品 / 已确认 |
+| 发布冲突需要恢复路径 | 增加并发冲突异常流程 | 产品 / 待确认 |
+
+## 8. 前端验收
+
+- loading、empty、error、no-permission、readonly、conflict、dirty-form 状态已展示，或明确不适用。
+- 每个表格列、筛选条件、表单字段、抽屉、弹窗和按钮都有数据来源或契约反推说明。
+- 设计可以拆成独立可演示的垂直切片。
+- 低保真原型评审通过后，高保真 HTML 原型使用 Ant Design v6 覆盖主流程、关键状态和响应式断点。
+- 原型产出前已使用 `antd` CLI 查询设计语言、组件 API、demo、token 和 semantic 信息；原型产出后已在 `prototype-evidence.yaml` 记录实际版本、CLI 与浏览器验证证据。
+
+## 9. 决策与未决问题
+
+| 类型 | 内容 | 负责人 | 截止 / 状态 |
+|---|---|---|---|
+| 已确认 | 已发布版本只读 | 产品 | 已确认 |
+| 待确认 | 管理员是否可以废弃已发布版本 | 产品 / 架构 | 待确认 |
+| 非目标 | 审批流 | 产品 | MVP 排除 |
+| 人工审查 | 数据库迁移生成 | 人工 | 人工确认项 |

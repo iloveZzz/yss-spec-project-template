@@ -1,0 +1,411 @@
+{
+  "version": 3,
+  "generatedBy": "scripts/update-skill-lock",
+  "canonicalRoot": ".agents/skills",
+  "projectionRoots": [
+    ".claude/skills",
+    ".codex/skills",
+    ".cursor/skills",
+    ".hermes/skills",
+    ".pi/skills",
+    ".qoder/skills",
+    ".trae/skills"
+  ],
+  "sources": {
+    "mattpocock/skills": {
+      "revision": "0ab1b63a410a03d3627979a109c8695de27af954"
+    }
+  },
+  "skills": {
+    "shared": {
+      "ask-matt": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/ask-matt/SKILL.md",
+        "effectiveHash": "8a8818ec83e3e795619aadb262b48a4a6016bb534a32c3bd6e16030f70578922",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "0261a2abbd43cc5bb391878106cda2eb7c4eabdde9ba5701b51d831f6e98f658",
+        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "code-review": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/code-review/SKILL.md",
+        "effectiveHash": "c219efcb928e6ecbb7cc258a1b257a030dde190d38234718fdf6783503180fab",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "12daafb9c4f77deb3c3303dc2e6f8a3c2a0ff7928fc004af959ba18b8bd38068",
+        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "competitive-intelligence": {
+        "source": "competitive-intelligence",
+        "sourceType": "local",
+        "skillPath": "sales/skills/competitive-intelligence/SKILL.md",
+        "effectiveHash": "d4b83600889b6045182232f0c11a9d6a563030b5f60faa4385a7886843ef0109",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "domain-modeling": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/domain-modeling/SKILL.md",
+        "effectiveHash": "e670c36709c31c0801c0635397d2d9662d74bb777825b16d707f2902dd6fad0e",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "2bc3bb0a64ea9c6f5c3bcf78fc17f0fcdc7c062edc547ef006441de0b576d248",
+        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "grill-me": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/productivity/grill-me/SKILL.md",
+        "effectiveHash": "916cf7ff0d81cf47fe578bd86695e09a53fbe8a4b371586e19dde6573549e88d",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "5a13e157f85835632b132390a162d234822658b6a544f31cc2578280062bd044",
+        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "grill-with-docs": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/grill-with-docs/SKILL.md",
+        "effectiveHash": "8d3fbdd09fc1ab2efb8046e7d61f6d50ed9db88f8fefb17d0e2ca8c31ad8caa9",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "6b1292031c4f38a11309b9dad9be1141c1921c6edf86d1ae6da8b048fa71a349",
+        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "grilling": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/productivity/grilling/SKILL.md",
+        "effectiveHash": "579b0a459f1ec960ef6a489811a285f74b4a19220d0bc8d0c1cde2c4d8bfaabb",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "0ca4cfe5105d79c6ef6755491492e056c43e88b82666376d8ecd7fac695d96e6",
+        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "handoff": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/productivity/handoff/SKILL.md",
+        "effectiveHash": "4f7ef8b1c4e907fbf0de8e1533a16df3a991def76ef67dcb6c54fa6433d7f483",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "e5a44fccc710f5402deee06beaf5178397885765773375f186aefd179565f23f",
+        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "maintaining-skills": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/maintaining-skills/SKILL.md",
+        "effectiveHash": "c88bf01f745fb85575cbfcef20a5a9dc071740b364c780490032b278313f11eb",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "prototype-review": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/prototype-review/SKILL.md",
+        "effectiveHash": "16db5d0c328afa7923bf1c37d79ca2b8ea65ab7f152ba140abdafaf6ca9c3114",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "research": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/research/SKILL.md",
+        "effectiveHash": "fb6fc6446ea4dc9db6e7863b89b77a0b4b0f1beca4a08c23d0d319fe96cd08c8",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "75b7f9bbd7ccff6755a006f8b25d319a46ecbf6bd4b4c3323965ed9cb65e78ff",
+        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "to-spec": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/to-spec/SKILL.md",
+        "effectiveHash": "7c4f7d5c27899d57e91f6fa5c8b2749280bcc1c326dcfabf862f8c9a29c14c95",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "f8041146ec1678c32304f46c9de99b73a4b5dadf664e35a8124be47c4cfe3196",
+        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "to-tickets": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/to-tickets/SKILL.md",
+        "effectiveHash": "22cc7ab4757e8757588b715bb5c01a62bddf72494c1873b9c28faab5f43babc7",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "597a1a0af4f7391ab459a02a3f33576109b6bc61ecdc5e7e05149336858b4f29",
+        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "triage": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/triage/SKILL.md",
+        "effectiveHash": "a249cdf5e4f6a6f714f7c8f315e91d2e136a923fcd54347eb34f122e40d79e39",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "461668611d1bd0eeb0533f347c11690a556c966a75938363a171914dcc42481a",
+        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "wayfinder": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/wayfinder/SKILL.md",
+        "effectiveHash": "c9c5a3a2a26c9dcba33dbe2d16f6e8f0a426349e2c960e32de00b09da6a2faa0",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "93d2a866764b048ad641e82e27e7a1940fc370e7933470bffeb937fa1fb3922b",
+        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "writing-for-agents": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/productivity/writing-for-agents/SKILL.md",
+        "effectiveHash": "88b5fd77c40e9f0eef1616ffc07f9a75563c0b32f50a473976c01c1ca1d0000d",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "0071124a923559493bc8924a90fb87bceb048d31ad2ce785fa4281d7c506bfa7",
+        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-antd-design": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-antd-design/SKILL.md",
+        "effectiveHash": "9ebed3a9b0ac94ecf1deafa096c1bfb999264d103d8fcd8cdf6eb4979196124c",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-design-system": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-design-system/SKILL.md",
+        "effectiveHash": "086955517185dd1f2d663747dcda30a89e0467e085acb18ce2f64efe9ce5eebc",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-prototype-stage": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-prototype-stage/SKILL.md",
+        "effectiveHash": "2d5665a622624c0525f41c919e69c5c0e327d1d9d678b2587cc013d491f92ff2",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-stage-decision": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-stage-decision/SKILL.md",
+        "effectiveHash": "9b0c4b26e4a92e5d26acb12b318496700ce1413c095d803c4a60286de104ec26",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
+      "yss-strategic-design": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-strategic-design/SKILL.md",
+        "effectiveHash": "8e270813858190fe0a609a48f1b562ac2e4b3293d97d94ec6317794f1aaed228",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      }
+    },
+    "platform": {
+      ".codex/skills": {
+        "product-design": {
+          "source": "project",
+          "sourceType": "local",
+          "skillPath": ".codex/skills/product-design/SKILL.md",
+          "effectiveHash": "68c51e896cbdcd9e3ddd0b88b97bd0064edf37e0eb1437291acb1e3d9ee48c0c",
+          "targets": [
+            ".codex/skills"
+          ]
+        }
+      }
+    }
+  }
+}
