@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+import { parseArgs } from "node:util";
+import { inspectMaintenanceCandidate } from "./lib/maintenance-candidate.mjs";
+
+try {
+  const { positionals } = parseArgs({ allowPositionals: true, strict: true });
+  if (positionals.length !== 1) throw new TypeError("用法: scripts/inspect-maintenance-candidate <candidate-manifest.yaml>");
+  const result = inspectMaintenanceCandidate({ manifestPath: positionals[0] });
+  process.stdout.write(`${JSON.stringify({ candidate_digest: result.manifest.candidate_digest, tracked_diff_bytes: result.trackedDiff.length, untracked: result.entries.map(({ path, mode, kind, content }) => ({ path, mode, kind, bytes: content.length })) }, null, 2)}\n`);
+} catch (error) {
+  process.stderr.write(`维护候选检查失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

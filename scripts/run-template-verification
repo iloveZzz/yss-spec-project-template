@@ -1,0 +1,134 @@
+#!/usr/bin/env node
+import { spawn, spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import { parseArgs } from "node:util";
+import { assertRequiredFiles, planTemplateVerification, ROOT } from "./lib/template-verification.mjs";
+
+function git(args) {
+  const result = spawnSync("git", args, { cwd: ROOT, encoding: "utf8" });
+  if (result.status !== 0) throw new TypeError(result.stderr.trim() || `git ${args.join(" ")} 执行失败`);
+  return result.stdout;
+}
+
+function collectChangedFiles(base) {
+  const files = new Set();
+  const collect = (source) => source.split("\n").map((line) => line.trim()).filter(Boolean).forEach((file) => files.add(file));
+  if (base) collect(git(["diff", "--name-only", "--diff-filter=ACDMRTUXB", `${base}...HEAD`]));
+  collect(git(["diff", "--name-only", "--diff-filter=ACDMRTUXB"]));
+  collect(git(["diff", "--cached", "--name-only", "--diff-filter=ACDMRTUXB"]));
+  collect(git(["ls-files", "--others", "--exclude-standard"]));
+  return [...files];
+}
+
+function runCommand(command) {
+  return new Promise((resolve) => {
+    const started = Date.now();
+    const child = spawn(command, { cwd: ROOT, shell: true, env: process.env, stdio: ["ignore", "pipe", "pipe"] });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk) => { stdout += chunk; });
+    child.stderr.on("data", (chunk) => { stderr += chunk; });
+    child.on("close", (code) => resolve({ command, code: code ?? 1, duration_ms: Date.now() - started, stdout, stderr }));
+  });
+}
+
+async function runGroups(plan, repositoryMode, concurrency) {
+  const grouped = new Map(plan.groups.map((group) => [group, []]));
+  for (const item of plan.commands) {
+    if (item.when && item.when !== repositoryMode) continue;
+    grouped.get(item.group).push(item.command);
+  }
+  const jobs = [...grouped.entries()].filter(([, commands]) => commands.length > 0).map(([group, commands]) => async () => {
+    const results = [];
+    for (const command of commands) {
+      const result = await runCommand(command);
+      results.push(result);
+      if (result.code !== 0) break;
+    }
+    return { group, results };
+  });
+  const results = [];
+  let cursor = 0;
+  async function worker() {
+    while (cursor < jobs.length) {
+      const job = jobs[cursor];
+      cursor += 1;
+      results.push(await job());
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(concurrency, jobs.length || 1) }, () => worker()));
+  return results.sort((left, right) => plan.groups.indexOf(left.group) - plan.groups.indexOf(right.group));
+}
+
+function printResults(groups) {
+  for (const group of groups) {
+    process.stdout.write(`\n[${group.group}]\n`);
+    for (const result of group.results) {
+      process.stdout.write(`$ ${result.command} (${result.duration_ms}ms)\n`);
+      if (result.stdout) process.stdout.write(result.stdout);
+      if (result.stderr) process.stderr.write(result.stderr);
+    }
+  }
+}
+
+function runValidator(command, args) {
+  const result = spawnSync(command, args, { cwd: ROOT, encoding: "utf8" });
+  if (result.status !== 0) throw new TypeError(result.stderr.trim() || `${command} 校验失败`);
+}
+
+try {
+  const { values } = parseArgs({
+    options: {
+      profile: { type: "string", default: "fast" },
+      base: { type: "string" },
+      "changed-file": { type: "string", multiple: true },
+      plan: { type: "boolean", default: false },
+      json: { type: "boolean", default: false },
+      concurrency: { type: "string" },
+      checkpoint: { type: "string", multiple: true },
+      "task-package": { type: "string", multiple: true }
+    },
+    strict: true
+  });
+  const explicit = values["changed-file"] || [];
+  const plan = planTemplateVerification({ profile: values.profile, changedFiles: explicit.length > 0 ? explicit : collectChangedFiles(values.base) });
+  if (values.plan) {
+    process.stdout.write(`${JSON.stringify(plan, null, values.json ? 2 : 0)}\n`);
+    process.exit(0);
+  }
+
+  const major = Number(process.versions.node.split(".")[0]);
+  if (major < 22 || major >= 27) throw new TypeError("模板工具需要 Node >=22 <27");
+  assertRequiredFiles(plan);
+  const before = git(["status", "--porcelain=v1", "-z"]);
+  const modeResult = spawnSync("scripts/repository-mode", [], { cwd: ROOT, encoding: "utf8" });
+  if (modeResult.status !== 0) throw new TypeError(modeResult.stderr.trim() || "仓库身份校验失败");
+  const concurrency = Number(values.concurrency || plan.max_concurrency);
+  if (!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 4) throw new TypeError("concurrency 必须为 1..4");
+
+  process.stdout.write(`模板核验 profile: ${plan.requested_profile} -> ${plan.effective_profile}\n`);
+  if (plan.escalation_reason) process.stdout.write(`自动升级原因: ${plan.escalation_reason}\n`);
+  const groups = await runGroups(plan, modeResult.stdout.trim(), concurrency);
+  printResults(groups);
+  const failed = groups.flatMap((group) => group.results).find((result) => result.code !== 0);
+  if (failed) throw new TypeError(`检查失败: ${failed.command}`);
+
+  if (plan.effective_profile === "release") {
+    for (const file of plan.syntax_files) runValidator(process.execPath, ["--check", file]);
+    const roots = ["scripts", ".template-source/scripts"].filter((dir) => existsSync(`${ROOT}/${dir}`));
+    const legacyRuntime = ["ru", "by"].join("");
+    const legacyCall = spawnSync("rg", ["-n", `^#!.*${legacyRuntime}|\\b${legacyRuntime}\\b`, ...roots, "--glob", "!*.md"], { cwd: ROOT, encoding: "utf8" });
+    if (legacyCall.status === 0) throw new TypeError("模板脚本不得保留活跃 Ruby 调用或 shebang");
+    const legacyFiles = spawnSync("sh", ["-c", `rg --files ${roots.join(" ")} | rg '\\.rb$'`], { cwd: ROOT, encoding: "utf8" });
+    if (legacyFiles.status === 0) throw new TypeError("模板脚本不得保留 .rb 路径");
+  }
+  for (const checkpoint of values.checkpoint || []) runValidator("scripts/verify-maintenance-checkpoint", [checkpoint]);
+  for (const taskPackage of values["task-package"] || []) runValidator("scripts/verify-digital-human-task-package", [taskPackage]);
+  runValidator("git", ["diff", "--check"]);
+  const after = git(["status", "--porcelain=v1", "-z"]);
+  if (after !== before) throw new TypeError("核验命令修改了工作树；检查必须只读");
+  process.stdout.write(`模板核验通过（${plan.effective_profile}）\n`);
+} catch (error) {
+  process.stderr.write(`模板核验失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

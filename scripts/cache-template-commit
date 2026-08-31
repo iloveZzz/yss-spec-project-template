@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+import { parseArgs } from "node:util";
+import { acquireTemplateCommit } from "./lib/template-commit-cache.mjs";
+
+try {
+  const { values } = parseArgs({ options: { repository: { type: "string" }, commit: { type: "string" }, "cache-root": { type: "string" } }, strict: true });
+  if (!values.repository || !values.commit) throw new TypeError("用法: scripts/cache-template-commit --repository <remote-url> --commit <40位commit> [--cache-root <path>]");
+  const result = acquireTemplateCommit({ repository: values.repository, commit: values.commit, cacheRoot: values["cache-root"] });
+  process.stdout.write(`${JSON.stringify(result)}\n`);
+} catch (error) {
+  process.stderr.write(`模板 commit 缓存失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

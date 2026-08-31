@@ -1,0 +1,28 @@
+schema_version: 2
+intensity: L3
+classification_reason: <分级理由>
+triggers: [core-validator]
+changed_assets: [<路径或资产引用>]
+verification_evidence:
+  - kind: red
+    command: <修改前失败命令或证据>
+    result: pass
+  - kind: green
+    command: <修改后通过命令或证据>
+    result: pass
+  - kind: refactor
+    command: <重构后验证命令或证据>
+    result: pass
+  - kind: pressure-scenario
+    command: <压力场景命令或证据>
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: formal-independent
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

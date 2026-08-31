@@ -1,0 +1,68 @@
+schema_version: 2
+intensity: L3
+classification_reason: 人工批准的新整改周期已关闭上一周期全部阻断项，三轴独立审查绑定同一候选摘要通过，发布前最终完整门禁 fresh 通过。
+triggers: [core-validator, release-semantics, aggregate-behavior-change]
+changed_assets:
+  - .template-source/evidence/maintenance/reviews/template-verification-efficiency-remediation-cycle1-candidate-2026-09-01/candidate-manifest.yaml
+verification_evidence:
+  - kind: red
+    command: scripts/verify-maintenance-review-workflow-scenarios 与 scripts/verify-maintenance-intensity-scenarios
+    result: pass
+  - kind: green
+    command: scripts/verify-maintenance-review-workflow-scenarios && scripts/verify-maintenance-intensity-scenarios
+    result: pass
+  - kind: refactor
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check && scripts/verify-digital-human-task-package-scenarios && scripts/verify-skill-governance
+    result: pass
+  - kind: pressure-scenario
+    command: 实现资产 exclusion、候选目录残留、candidate_kind mismatch、伪造 initial/final release command 均被 fail-closed 拒绝
+    result: pass
+  - kind: fresh-verification
+    command: .template-source/evidence/maintenance/template-verification-efficiency-remediation-cycle1-verification-2026-09-01.md
+    result: pass
+  - kind: previous-needs-human
+    command: .template-source/evidence/maintenance/template-verification-efficiency-l3-needs-human-checkpoint-2026-09-01.yaml
+    result: pass
+  - kind: candidate-verification
+    command: scripts/inspect-maintenance-candidate .template-source/evidence/maintenance/reviews/template-verification-efficiency-remediation-cycle1-candidate-2026-09-01/candidate-manifest.yaml
+    result: pass
+    executed_at: '2026-08-31T16:46:50Z'
+    duration_ms: 400
+    evidence_ref: .template-source/evidence/maintenance/template-verification-efficiency-remediation-cycle1-verification-2026-09-01.md
+  - kind: initial-release-verification
+    command: scripts/verify-template
+    result: pass
+    executed_at: '2026-08-31T16:45:00Z'
+    duration_ms: 9489
+    evidence_ref: .template-source/evidence/maintenance/template-verification-efficiency-remediation-cycle1-verification-2026-09-01.md
+  - kind: diff-verification
+    command: git diff --check
+    result: pass
+    executed_at: '2026-08-31T16:57:37Z'
+    duration_ms: 100
+    evidence_ref: .template-source/evidence/maintenance/template-verification-efficiency-remediation-cycle1-verification-2026-09-01.md
+  - kind: review-task-packages
+    command: .template-source/evidence/maintenance/reviews/template-verification-efficiency-remediation-cycle1-*-review-task-round1.yaml
+    result: pass
+  - kind: formal-independent-review
+    command: .template-source/evidence/maintenance/reviews/template-verification-efficiency-remediation-cycle1-standards-review-record-2026-09-01.yaml
+    result: pass
+  - kind: formal-independent-review
+    command: .template-source/evidence/maintenance/reviews/template-verification-efficiency-remediation-cycle1-spec-review-record-2026-09-01.yaml
+    result: pass
+  - kind: formal-independent-review
+    command: .template-source/evidence/maintenance/reviews/template-verification-efficiency-remediation-cycle1-lead-review-record-2026-09-01.yaml
+    result: pass
+  - kind: final-release-verification
+    command: scripts/verify-template
+    result: pass
+    executed_at: '2026-08-31T16:57:37Z'
+    duration_ms: 9207
+    evidence_ref: .template-source/evidence/maintenance/template-verification-efficiency-remediation-cycle1-verification-2026-09-01.md
+review_mode: formal-independent
+escalation: 人工批准从 needs-human 开启新生命周期；新周期 Round 1 三轴无 finding，已完成最终全量核验。
+target_state: release-ready
+current_state: release-ready
+verification_profile: release
+review_round: 1
+candidate_digest: aa139a1ffb80e0214b06a29407beb44aa6d18c37ba9e25a4803c221625bd1faa

@@ -28,6 +28,7 @@ dist/
 # Logs
 *.log
 logs/
+.template-source/cache/
 
 # Coverage
 htmlcov/

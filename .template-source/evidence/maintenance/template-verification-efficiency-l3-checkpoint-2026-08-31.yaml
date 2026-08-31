@@ -1,0 +1,37 @@
+schema_version: 2
+intensity: L3
+classification_reason: 三级核验入口、checkpoint 状态机、审查轮次和 CI 发布策略会改变核心验证器与发布语义，按 core-validator、release-semantics 和 aggregate-behavior-change 直接判定 L3。
+triggers: [core-validator, release-semantics, aggregate-behavior-change]
+changed_assets:
+  - docs/process/template-verification-profiles.yaml
+  - scripts/lib/template-verification.mjs
+  - scripts/lib/maintenance-intensity.mjs
+  - scripts/lib/maintenance-review-workflow.mjs
+  - scripts/lib/template-commit-cache.mjs
+  - scripts/lib/maintenance-candidate.mjs
+  - .agents/skills/maintaining-skills/SKILL.md
+  - .agents/skills/code-review/SKILL.md
+  - .github/workflows/template-node-tooling.yml
+verification_evidence:
+  - kind: red
+    command: node scripts/verify-template-verification-scenarios 与 node scripts/verify-maintenance-intensity-scenarios 在实现前分别以 ERR_MODULE_NOT_FOUND 和 checkpoint 未知字段失败
+    result: pass
+  - kind: green
+    command: node scripts/verify-template-verification-scenarios && node scripts/verify-maintenance-intensity-scenarios && node scripts/verify-maintenance-review-workflow-scenarios && node scripts/verify-template-cache-scenarios
+    result: pass
+  - kind: refactor
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check && scripts/verify-digital-human-task-package-scenarios && scripts/verify-skill-governance
+    result: pass
+  - kind: pressure-scenario
+    command: 未映射路径、核心核验升级、v1/v2 checkpoint、Round 2 needs-human、缓存篡改场景均通过
+    result: pass
+  - kind: fresh-verification
+    command: .template-source/evidence/maintenance/template-verification-efficiency-trial-2026-08-31.md
+    result: pass
+review_mode: formal-independent
+escalation: L3 直接分级；未从 L1/L2 升级
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

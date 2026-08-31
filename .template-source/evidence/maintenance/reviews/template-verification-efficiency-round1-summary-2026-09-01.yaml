@@ -1,0 +1,9 @@
+schema_version: 1
+review_round: 1
+candidate_digest: 88eaeb90cf2458667bce277054dd8f215d421ef65829162457c5f06dca6168fc
+findings:
+  - { id: ST-R1-001, disposition: violation, status: open, summary: Standards 任务包未授权读取 candidate.bin 与 tracked.diff }
+  - { id: ST-R1-002, disposition: violation, status: open, summary: Standards 任务包缺少可消费的 fresh verification results }
+  - { id: SPEC-R1-001, disposition: violation, status: open, summary: Spec 任务包未授权读取 packed 候选主体 }
+  - { id: SPEC-R1-002, disposition: violation, status: open, summary: Spec 任务包缺少绑定摘要的 fresh verification }
+  - { id: LEAD-R1-001, disposition: violation, status: open, summary: Lead 任务包无法读取冻结候选与原始核验证据 }

@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+import { readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import { parseArgs } from "node:util";
+import { parseDocument, stringify } from "./vendor/yaml.mjs";
+import { evaluateMaintenanceReviewRound } from "./lib/maintenance-review-workflow.mjs";
+import { loadMaintenanceCheckpoint, validateMaintenanceCheckpoint } from "./lib/maintenance-intensity.mjs";
+import { ROOT } from "./lib/template-verification.mjs";
+
+function load(ref) {
+  const document = parseDocument(readFileSync(path.resolve(ROOT, ref), "utf8"), { uniqueKeys: true });
+  if (document.errors.length > 0) throw document.errors[0];
+  return document.toJS({ maxAliasCount: 0 });
+}
+
+try {
+  const { values, positionals } = parseArgs({ options: { checkpoint: { type: "string" }, output: { type: "string" } }, allowPositionals: true, strict: true });
+  if (positionals.length !== 1) throw new TypeError("用法: scripts/evaluate-maintenance-review-round [--checkpoint <input> --output <new-checkpoint>] <review-summary.yaml>");
+  const result = evaluateMaintenanceReviewRound(load(positionals[0]));
+  if (values.checkpoint || values.output) {
+    if (!values.checkpoint || !values.output) throw new TypeError("--checkpoint 与 --output 必须同时提供");
+    const checkpoint = loadMaintenanceCheckpoint(path.resolve(ROOT, values.checkpoint));
+    if (checkpoint.schema_version !== 2) throw new TypeError("只能更新 schema v2 checkpoint");
+    if (checkpoint.candidate_digest !== result.candidate_digest || checkpoint.review_round !== result.review_round) throw new TypeError("review summary 与 checkpoint 身份不一致");
+    const next = { ...checkpoint, current_state: result.current_state };
+    if (result.current_state === "needs-human") next.target_state = "release-ready";
+    validateMaintenanceCheckpoint(next);
+    const outputPath = path.resolve(ROOT, values.output);
+    if (outputPath === path.resolve(ROOT, values.checkpoint)) throw new TypeError("output 必须是新 checkpoint，禁止覆盖输入");
+    if (path.relative(ROOT, outputPath).startsWith("..")) throw new TypeError("output 不得越出仓库");
+    writeFileSync(outputPath, stringify(next, { lineWidth: 0 }));
+  }
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+} catch (error) {
+  process.stderr.write(`维护审查轮次裁决失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

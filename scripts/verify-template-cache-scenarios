@@ -1,0 +1,47 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+import { acquireTemplateCommit } from "./lib/template-commit-cache.mjs";
+
+function git(args, cwd) {
+  const result = spawnSync("git", args, { cwd, encoding: "utf8" });
+  if (result.status !== 0) throw new Error(result.stderr);
+  return result.stdout.trim();
+}
+
+const root = mkdtempSync(path.join(tmpdir(), "yss-template-cache-"));
+try {
+  const remote = path.join(root, "remote");
+  const cacheRoot = path.join(root, "cache");
+  git(["init", "-q", remote], root);
+  git(["config", "user.email", "fixture@example.com"], remote);
+  git(["config", "user.name", "Fixture"], remote);
+  writeFileSync(path.join(remote, "template.txt"), "stable\n");
+  git(["add", "template.txt"], remote);
+  git(["commit", "-qm", "fixture"], remote);
+  const commit = git(["rev-parse", "HEAD"], remote);
+
+  const first = acquireTemplateCommit({ repository: remote, commit, cacheRoot, allowLocal: true });
+  assert.equal(first.cache_hit, false);
+  const second = acquireTemplateCommit({ repository: remote, commit, cacheRoot, allowLocal: true });
+  assert.equal(second.cache_hit, true);
+  assert.equal(second.commit, commit);
+
+  const metadata = JSON.parse(readFileSync(second.metadata_path, "utf8"));
+  metadata.repository = `${remote}-tampered`;
+  writeFileSync(second.metadata_path, `${JSON.stringify(metadata)}\n`);
+  assert.throws(() => acquireTemplateCommit({ repository: remote, commit, cacheRoot, allowLocal: true }), /缓存来源不一致/);
+  metadata.repository = remote;
+  writeFileSync(second.metadata_path, `${JSON.stringify(metadata)}\n`);
+  rmSync(second.repository_path, { recursive: true, force: true });
+  assert.throws(() => acquireTemplateCommit({ repository: remote, commit, cacheRoot, allowLocal: true }), /缓存不完整/);
+  assert.throws(() => acquireTemplateCommit({ repository: path.join(root, "offline"), commit, cacheRoot: path.join(root, "offline-cache"), allowLocal: true }), /执行失败|does not appear to be a git repository/);
+  assert.throws(() => acquireTemplateCommit({ repository: remote, commit: "main", cacheRoot, allowLocal: true }), /40 位 commit/);
+} finally {
+  rmSync(root, { recursive: true, force: true });
+}
+
+process.stdout.write("远程模板 commit 缓存场景验证通过\n");

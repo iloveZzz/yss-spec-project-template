@@ -14,6 +14,7 @@ if (!checkerSource.includes("maintenance-intensity.yaml")) {
 }
 
 const evidence = (...kinds) => kinds.map((kind) => ({ kind, command: `verify ${kind}`, result: "pass" }));
+const releaseEvidence = (kind) => ({ kind, command: "scripts/verify-template", result: "pass" });
 const reviewRequestOnly = "scripts/fixtures/maintenance-review/maintenance-review-request-only.md";
 const focusedReview = "scripts/fixtures/maintenance-review/maintenance-focused-review-approved.md";
 const formalReview = "scripts/fixtures/maintenance-review/maintenance-review/formal-review-record.yaml";
@@ -30,6 +31,20 @@ const base = {
   escalation: "none"
 };
 
+const v2Base = {
+  ...base,
+  schema_version: 2,
+  intensity: "L3",
+  triggers: ["core-validator"],
+  review_mode: "formal-independent",
+  target_state: "implementation-ready",
+  current_state: "implementation-ready",
+  verification_profile: "fast",
+  review_round: 0,
+  candidate_digest: null,
+  verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification")
+};
+
 const accepted = [
   { ...base, intensity: "L1", triggers: ["textual-only"], verification_evidence: evidence("relevant-check"), review_mode: "self-check" },
   { ...base, intensity: "L2", triggers: ["local-rule"], verification_evidence: [...evidence("counterexample", "fresh-verification"), { kind: "focused-independent-review", command: focusedReview, result: "pass" }], review_mode: "focused-independent" },
@@ -38,6 +53,34 @@ const accepted = [
 ];
 
 for (const checkpoint of accepted) validateMaintenanceCheckpoint(checkpoint);
+validateMaintenanceCheckpoint(v2Base);
+validateMaintenanceCheckpoint({
+  ...v2Base,
+  target_state: "review-ready",
+  current_state: "review-ready",
+  verification_profile: "candidate",
+  review_round: 1,
+  candidate_digest: "a".repeat(64),
+  verification_evidence: [...v2Base.verification_evidence, ...evidence("candidate-verification", "review-task-packages"), releaseEvidence("initial-release-verification")]
+});
+validateMaintenanceCheckpoint({
+  ...v2Base,
+  target_state: "release-ready",
+  current_state: "release-ready",
+  verification_profile: "release",
+  review_round: 2,
+  candidate_digest: "d6bf78f58d2cf0e24528bfb7806bdf255124ed5f1b2973b5bf5fbc6aac5753dc",
+  verification_evidence: [...v2Base.verification_evidence, ...evidence("candidate-verification", "review-task-packages"), releaseEvidence("initial-release-verification"), releaseEvidence("final-release-verification"), { kind: "formal-independent-review", command: formalReview, result: "pass" }]
+});
+validateMaintenanceCheckpoint({
+  ...v2Base,
+  target_state: "release-ready",
+  current_state: "needs-human",
+  verification_profile: "candidate",
+  review_round: 2,
+  candidate_digest: "a".repeat(64),
+  verification_evidence: [...v2Base.verification_evidence, ...evidence("candidate-verification", "review-task-packages"), releaseEvidence("initial-release-verification")]
+});
 
 const pendingFormalReview = {
   ...accepted[3],
@@ -57,6 +100,27 @@ const rejected = [
   { ...accepted[2], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification") },
   { ...accepted[1], escalation: "发现发布语义影响但仍维持 L2", triggers: ["release-semantics"] },
   { ...accepted[2], intensity: "L1" },
+  { ...v2Base, current_state: "review-ready", target_state: "review-ready", verification_profile: "candidate", review_round: 0, candidate_digest: null },
+  { ...v2Base, current_state: "release-ready", target_state: "release-ready", verification_profile: "release", review_round: 3, candidate_digest: "a".repeat(64) },
+  { ...v2Base, current_state: "release-ready", target_state: "release-ready", verification_profile: "release", review_round: 1, candidate_digest: "a".repeat(64) },
+  {
+    ...v2Base,
+    current_state: "review-ready",
+    target_state: "review-ready",
+    verification_profile: "candidate",
+    review_round: 1,
+    candidate_digest: "a".repeat(64),
+    verification_evidence: [...v2Base.verification_evidence, ...evidence("candidate-verification", "review-task-packages"), { kind: "initial-release-verification", command: "echo pass", result: "pass" }]
+  },
+  {
+    ...v2Base,
+    current_state: "release-ready",
+    target_state: "release-ready",
+    verification_profile: "release",
+    review_round: 2,
+    candidate_digest: "d6bf78f58d2cf0e24528bfb7806bdf255124ed5f1b2973b5bf5fbc6aac5753dc",
+    verification_evidence: [...v2Base.verification_evidence, ...evidence("candidate-verification", "review-task-packages"), releaseEvidence("initial-release-verification"), { kind: "final-release-verification", command: "scripts/verify-template-candidate", result: "pass" }, { kind: "formal-independent-review", command: formalReview, result: "pass" }]
+  },
   {
     ...accepted[3],
     verification_evidence: [

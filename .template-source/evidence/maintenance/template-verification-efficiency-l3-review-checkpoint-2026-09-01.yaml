@@ -1,0 +1,44 @@
+schema_version: 2
+intensity: L3
+classification_reason: 核心验证器和发布语义整改已通过首次完整门禁并冻结 packed-stream 候选，显式提升到 review-ready。
+triggers: [core-validator, release-semantics, aggregate-behavior-change]
+changed_assets:
+  - .template-source/evidence/maintenance/reviews/template-verification-efficiency-candidate-2026-09-01/candidate-manifest.yaml
+verification_evidence:
+  - kind: red
+    command: node scripts/verify-template-verification-scenarios 与 node scripts/verify-maintenance-intensity-scenarios 在实现前分别以 ERR_MODULE_NOT_FOUND 和 checkpoint 未知字段失败
+    result: pass
+  - kind: green
+    command: node scripts/verify-template-verification-scenarios && node scripts/verify-maintenance-intensity-scenarios && node scripts/verify-maintenance-review-workflow-scenarios && node scripts/verify-template-cache-scenarios
+    result: pass
+  - kind: refactor
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check && scripts/verify-digital-human-task-package-scenarios && scripts/verify-skill-governance
+    result: pass
+  - kind: pressure-scenario
+    command: 未映射路径、核心核验升级、v1/v2 checkpoint、Round 2 needs-human、缓存篡改、packed candidate 和历史候选兼容场景均通过
+    result: pass
+  - kind: fresh-verification
+    command: .template-source/evidence/maintenance/template-verification-efficiency-trial-2026-08-31.md
+    result: pass
+  - kind: candidate-verification
+    command: scripts/inspect-maintenance-candidate .template-source/evidence/maintenance/reviews/template-verification-efficiency-candidate-2026-09-01/candidate-manifest.yaml
+    result: pass
+    executed_at: '2026-09-01T00:00:00Z'
+    duration_ms: 300
+    evidence_ref: .template-source/evidence/maintenance/template-verification-efficiency-trial-2026-08-31.md
+  - kind: initial-release-verification
+    command: scripts/verify-template
+    result: pass
+    executed_at: '2026-09-01T00:00:00Z'
+    duration_ms: 10773
+    evidence_ref: .template-source/evidence/maintenance/template-verification-efficiency-trial-2026-08-31.md
+  - kind: review-task-packages
+    command: .template-source/evidence/maintenance/reviews/template-verification-efficiency-*-review-task-round1.yaml
+    result: pass
+review_mode: formal-independent
+escalation: 从 implementation-ready 显式提升 review-ready；未改变 L3 分类
+target_state: review-ready
+current_state: review-ready
+verification_profile: candidate
+review_round: 1
+candidate_digest: 88eaeb90cf2458667bce277054dd8f215d421ef65829162457c5f06dca6168fc

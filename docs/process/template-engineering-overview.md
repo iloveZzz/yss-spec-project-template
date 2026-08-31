@@ -69,8 +69,8 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 1. **分级**：根据 `docs/process/maintenance-intensity.yaml` 计算 L1、L2 或 L3；未知 trigger 先更新策略。
 2. **更新权威资产**：修改对应的单一事实来源，避免在说明文档中复制规则。
 3. **生成投影**：涉及 skills 时同步 Agent roots 和 `skills-lock.json`；涉及生命周期结构时同步派生视图；涉及实例分发时构建固定 commit 的 CLI 快照。
-4. **Fresh verification**：执行与影响面相匹配的真实命令。根模板发布候选执行 `scripts/verify-template`，跨仓 CLI 还要执行固定 commit 的集成测试和 `npm pack --dry-run`。
-5. **独立审查**：L2 使用聚焦独立审查，L3 使用正式独立审查；审查结论必须绑定同一不可变候选，审查请求不能充当通过结论。
+4. **Fresh verification**：实现内循环执行 `scripts/verify-template-fast` 并默认停在 `implementation-ready`；准备审查时执行 candidate 核验和首次完整 `scripts/verify-template`，跨仓 CLI 还要执行固定 commit 的集成测试和打包校验。
+5. **独立审查**：显式提升 `review-ready` 后，L2 使用聚焦独立审查，L3 使用正式独立审查；审查结论必须绑定同一不可变候选，审查请求不能充当通过结论。自动审查最多两轮。
 6. **发布与回滚**：先发布或提交子仓，再更新父仓 gitlink；跨仓版本、验证命令、发布顺序和回滚点必须可以重建。
 
 完成标准：当前强度要求的证据和审查全部通过，跨仓固定引用闭合，最终候选重新通过 fresh verification，并且不存在未处理的 `violation`、`drift` 或 `new_impacts`。
@@ -81,6 +81,8 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 |---|---|
 | 判断仓库身份和下一阶段 | `yss-product-lifecycle` |
 | 修改或退役共享 skill | `maintaining-skills` |
+| 模板实现内循环 | `scripts/verify-template-fast` |
+| 准备模板审查候选 | `scripts/verify-template-candidate`、`scripts/prepare-maintenance-review` |
 | 校验根模板发布候选 | `scripts/verify-template` |
 | 同步共享 skill 投影 | `scripts/sync-skills` |
 | 校验 skills lock | `scripts/update-skill-lock --check` |

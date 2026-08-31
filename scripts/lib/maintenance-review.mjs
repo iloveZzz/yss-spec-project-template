@@ -141,13 +141,17 @@ function validateWorktreeStream(stream, trackedDiff, manifest, baseDir) {
     ensure(offset + length.value <= stream.length, "候选流 untracked content 截断");
     const content = stream.subarray(offset, offset + length.value);
     offset += length.value;
-    const contentRef = manifest.untracked_content_refs[pathBytes.length];
-    const storedPath = resolvePortableFile(contentRef, baseDir, `untracked snapshot ${pathBytes.length}`);
-    ensure(readFileSync(storedPath).equals(content), `untracked snapshot 与候选流不一致: ${pathBytes.length}`);
+    if (manifest.storage !== "packed-stream") {
+      const contentRef = manifest.untracked_content_refs[pathBytes.length];
+      const storedPath = resolvePortableFile(contentRef, baseDir, `untracked snapshot ${pathBytes.length}`);
+      ensure(readFileSync(storedPath).equals(content), `untracked snapshot 与候选流不一致: ${pathBytes.length}`);
+    }
     pathBytes.push(rawPath.toString("base64"));
   }
   ensure(JSON.stringify(pathBytes) === JSON.stringify(manifest.untracked_path_bytes), "manifest.untracked_path_bytes 与候选流不一致");
-  ensure(manifest.untracked_files.length === pathBytes.length && manifest.untracked_content_refs.length === pathBytes.length, "manifest untracked inventory 长度不一致");
+  ensure(manifest.untracked_files.length === pathBytes.length, "manifest untracked inventory 长度不一致");
+  if (manifest.storage === "packed-stream") ensure(manifest.untracked_content_refs === undefined, "packed-stream 不得重复保存 untracked_content_refs");
+  else ensure(manifest.untracked_content_refs.length === pathBytes.length, "manifest untracked_content_refs 长度不一致");
 }
 
 function validateCandidateManifest(manifest, record, baseDir) {
@@ -162,7 +166,7 @@ function validateCandidateManifest(manifest, record, baseDir) {
     ensure(typeof manifest.untracked_diff_command === "string" && manifest.untracked_diff_command.trim(), "worktree manifest 缺少 untracked_diff_command");
     ensure(Array.isArray(manifest.untracked_files), "worktree manifest 缺少 untracked_files");
     ensure(Array.isArray(manifest.untracked_path_bytes), "worktree manifest 缺少 untracked_path_bytes");
-    ensure(Array.isArray(manifest.untracked_content_refs), "worktree manifest 缺少 untracked_content_refs");
+    if (manifest.storage !== "packed-stream") ensure(Array.isArray(manifest.untracked_content_refs), "legacy worktree manifest 缺少 untracked_content_refs");
     ensure(typeof manifest.snapshot_stream_ref === "string" && manifest.snapshot_stream_ref.trim(), "worktree manifest 缺少 snapshot_stream_ref");
     ensure(typeof manifest.tracked_diff_ref === "string" && manifest.tracked_diff_ref.trim(), "worktree manifest 缺少 tracked_diff_ref");
     const streamPath = resolvePortableFile(manifest.snapshot_stream_ref, baseDir, "snapshot_stream_ref");

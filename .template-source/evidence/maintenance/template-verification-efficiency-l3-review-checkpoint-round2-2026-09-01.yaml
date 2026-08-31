@@ -1,0 +1,53 @@
+schema_version: 2
+intensity: L3
+classification_reason: Round 1 发现 Reviewer 读取授权与 fresh verification 绑定缺口；生成器修复并以新摘要重新冻结，进入最后一轮自动审查。
+triggers: [core-validator, release-semantics, aggregate-behavior-change]
+changed_assets:
+  - .template-source/evidence/maintenance/reviews/template-verification-efficiency-candidate-round2-2026-09-01/candidate-manifest.yaml
+verification_evidence:
+  - kind: red
+    command: node scripts/verify-template-verification-scenarios 与 node scripts/verify-maintenance-intensity-scenarios 在实现前分别以 ERR_MODULE_NOT_FOUND 和 checkpoint 未知字段失败
+    result: pass
+  - kind: green
+    command: node scripts/verify-template-verification-scenarios && node scripts/verify-maintenance-intensity-scenarios && node scripts/verify-maintenance-review-workflow-scenarios && node scripts/verify-template-cache-scenarios
+    result: pass
+  - kind: refactor
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check && scripts/verify-digital-human-task-package-scenarios && scripts/verify-skill-governance
+    result: pass
+  - kind: pressure-scenario
+    command: 未映射路径、核心核验升级、v1/v2 checkpoint、Round 2 needs-human、缓存篡改、packed candidate、显式排除和历史候选兼容场景均通过
+    result: pass
+  - kind: fresh-verification
+    command: .template-source/evidence/maintenance/template-verification-efficiency-trial-2026-08-31.md
+    result: pass
+  - kind: round1-findings
+    command: .template-source/evidence/maintenance/reviews/template-verification-efficiency-round1-summary-2026-09-01.yaml
+    result: pass
+  - kind: candidate-verification
+    command: scripts/inspect-maintenance-candidate .template-source/evidence/maintenance/reviews/template-verification-efficiency-candidate-round2-2026-09-01/candidate-manifest.yaml
+    result: pass
+    executed_at: '2026-09-01T00:20:00Z'
+    duration_ms: 400
+    evidence_ref: .template-source/evidence/maintenance/template-verification-efficiency-trial-2026-08-31.md
+  - kind: initial-release-verification
+    command: scripts/verify-template
+    result: pass
+    executed_at: '2026-09-01T00:00:00Z'
+    duration_ms: 10773
+    evidence_ref: .template-source/evidence/maintenance/template-verification-efficiency-trial-2026-08-31.md
+  - kind: diff-verification
+    command: git diff --check
+    result: pass
+    executed_at: '2026-09-01T00:20:00Z'
+    duration_ms: 100
+    evidence_ref: .template-source/evidence/maintenance/template-verification-efficiency-trial-2026-08-31.md
+  - kind: review-task-packages
+    command: .template-source/evidence/maintenance/reviews/template-verification-efficiency-*-review-task-round2.yaml
+    result: pass
+review_mode: formal-independent
+escalation: Round 1 violation 在原合同路径修复；无 drift 或 new_impacts
+target_state: review-ready
+current_state: review-ready
+verification_profile: candidate
+review_round: 2
+candidate_digest: 9dec90f0541bfdcaa5bf07f2030c8b5b44901bb05317ddd6c37fd625eb081272

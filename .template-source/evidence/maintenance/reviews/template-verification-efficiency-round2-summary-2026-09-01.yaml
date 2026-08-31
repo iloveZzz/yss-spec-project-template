@@ -1,0 +1,32 @@
+schema_version: 1
+review_round: 2
+candidate_digest: 9dec90f0541bfdcaa5bf07f2030c8b5b44901bb05317ddd6c37fd625eb081272
+findings:
+  - id: ST-R2-001
+    disposition: violation
+    status: open
+    summary: Round 2 候选的新实现字节没有绑定修复后的 fresh 完整门禁证据
+  - id: ST-R2-002
+    disposition: violation
+    status: open
+    summary: 任意 --exclude 可将未跟踪实现资产排除在冻结候选摘要之外
+  - id: ST-R2-003
+    disposition: violation
+    status: open
+    summary: Reviewer 任务包的 candidate_kind 未从 candidate manifest 派生并校验一致
+  - id: SPEC-R2-001
+    disposition: violation
+    status: open
+    summary: initial-release-verification 与 final-release-verification 只校验 evidence kind，任意命令可冒充完整 scripts/verify-template
+  - id: SPEC-R2-002
+    disposition: violation
+    status: open
+    summary: packed candidate 的 --exclude 缺少实现资产 fail-closed 约束
+  - id: LEAD-R2-001
+    disposition: violation
+    status: open
+    summary: --exclude 可排除未跟踪实现资产，破坏冻结候选完整性
+  - id: LEAD-R2-002
+    disposition: violation
+    status: open
+    summary: 捕获器复用非空输出目录时可能保留历史文件，不能保证候选目录恰好三文件

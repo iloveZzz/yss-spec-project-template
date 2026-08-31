@@ -28,7 +28,10 @@ jobs:
       - run: pnpm --dir .template-source/tooling/node test
       - run: pnpm --dir .template-source/tooling/node check:vendor
       - run: git diff --exit-code -- scripts/vendor
-      - run: scripts/verify-template
+      - if: github.event_name == 'pull_request'
+        run: scripts/verify-template-candidate --base "${{ github.event.pull_request.base.sha }}"
+      - if: github.event_name == 'push'
+        run: scripts/verify-template
 
   macos-vendor:
     runs-on: macos-latest

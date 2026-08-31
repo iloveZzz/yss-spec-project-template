@@ -1,0 +1,55 @@
+schema_version: 1
+candidate_kind: yss-worktree-candidate-v1
+storage: packed-stream
+review_mode: worktree
+review_base_ref: HEAD
+merge_base: 512f057fb6bb7ba63f145c2cb774b6d73013c8a1
+implementation_candidate_ref: working-tree
+candidate_snapshot_ref: .template-source/evidence/maintenance/reviews/template-verification-efficiency-candidate-2026-09-01/candidate-manifest.yaml
+candidate_digest: 88eaeb90cf2458667bce277054dd8f215d421ef65829162457c5f06dca6168fc
+tracked_diff_command: git diff --no-ext-diff --binary --full-index 512f057fb6bb7ba63f145c2cb774b6d73013c8a1
+untracked_inventory_command: git ls-files -z --others --exclude-standard
+untracked_diff_command: packed in candidate.bin
+untracked_files:
+  - .template-source/evidence/maintenance/template-verification-efficiency-l3-checkpoint-2026-08-31.yaml
+  - .template-source/evidence/maintenance/template-verification-efficiency-trial-2026-08-31.md
+  - docs/process/template-verification-profiles.yaml
+  - docs/process/templates/maintenance-checkpoint-template.yaml
+  - scripts/cache-template-commit
+  - scripts/capture-maintenance-candidate
+  - scripts/evaluate-maintenance-review-round
+  - scripts/inspect-maintenance-candidate
+  - scripts/lib/maintenance-candidate.mjs
+  - scripts/lib/maintenance-review-workflow.mjs
+  - scripts/lib/template-commit-cache.mjs
+  - scripts/lib/template-verification.mjs
+  - scripts/prepare-maintenance-review
+  - scripts/run-template-verification
+  - scripts/verify-maintenance-review-workflow-scenarios
+  - scripts/verify-template-cache-scenarios
+  - scripts/verify-template-candidate
+  - scripts/verify-template-fast
+  - scripts/verify-template-verification-scenarios
+untracked_path_bytes:
+  - LnRlbXBsYXRlLXNvdXJjZS9ldmlkZW5jZS9tYWludGVuYW5jZS90ZW1wbGF0ZS12ZXJpZmljYXRpb24tZWZmaWNpZW5jeS1sMy1jaGVja3BvaW50LTIwMjYtMDgtMzEueWFtbA==
+  - LnRlbXBsYXRlLXNvdXJjZS9ldmlkZW5jZS9tYWludGVuYW5jZS90ZW1wbGF0ZS12ZXJpZmljYXRpb24tZWZmaWNpZW5jeS10cmlhbC0yMDI2LTA4LTMxLm1k
+  - ZG9jcy9wcm9jZXNzL3RlbXBsYXRlLXZlcmlmaWNhdGlvbi1wcm9maWxlcy55YW1s
+  - ZG9jcy9wcm9jZXNzL3RlbXBsYXRlcy9tYWludGVuYW5jZS1jaGVja3BvaW50LXRlbXBsYXRlLnlhbWw=
+  - c2NyaXB0cy9jYWNoZS10ZW1wbGF0ZS1jb21taXQ=
+  - c2NyaXB0cy9jYXB0dXJlLW1haW50ZW5hbmNlLWNhbmRpZGF0ZQ==
+  - c2NyaXB0cy9ldmFsdWF0ZS1tYWludGVuYW5jZS1yZXZpZXctcm91bmQ=
+  - c2NyaXB0cy9pbnNwZWN0LW1haW50ZW5hbmNlLWNhbmRpZGF0ZQ==
+  - c2NyaXB0cy9saWIvbWFpbnRlbmFuY2UtY2FuZGlkYXRlLm1qcw==
+  - c2NyaXB0cy9saWIvbWFpbnRlbmFuY2UtcmV2aWV3LXdvcmtmbG93Lm1qcw==
+  - c2NyaXB0cy9saWIvdGVtcGxhdGUtY29tbWl0LWNhY2hlLm1qcw==
+  - c2NyaXB0cy9saWIvdGVtcGxhdGUtdmVyaWZpY2F0aW9uLm1qcw==
+  - c2NyaXB0cy9wcmVwYXJlLW1haW50ZW5hbmNlLXJldmlldw==
+  - c2NyaXB0cy9ydW4tdGVtcGxhdGUtdmVyaWZpY2F0aW9u
+  - c2NyaXB0cy92ZXJpZnktbWFpbnRlbmFuY2UtcmV2aWV3LXdvcmtmbG93LXNjZW5hcmlvcw==
+  - c2NyaXB0cy92ZXJpZnktdGVtcGxhdGUtY2FjaGUtc2NlbmFyaW9z
+  - c2NyaXB0cy92ZXJpZnktdGVtcGxhdGUtY2FuZGlkYXRl
+  - c2NyaXB0cy92ZXJpZnktdGVtcGxhdGUtZmFzdA==
+  - c2NyaXB0cy92ZXJpZnktdGVtcGxhdGUtdmVyaWZpY2F0aW9uLXNjZW5hcmlvcw==
+snapshot_stream_ref: .template-source/evidence/maintenance/reviews/template-verification-efficiency-candidate-2026-09-01/candidate.bin
+tracked_diff_ref: .template-source/evidence/maintenance/reviews/template-verification-efficiency-candidate-2026-09-01/tracked.diff
+commit_list_command: git log HEAD..HEAD --oneline

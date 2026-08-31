@@ -1,0 +1,125 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import { mkdirSync, mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import { stringify } from "./vendor/yaml.mjs";
+import { evaluateMaintenanceReviewRound, generateReviewerTaskPackages } from "./lib/maintenance-review-workflow.mjs";
+import { captureMaintenanceCandidate, inspectMaintenanceCandidate } from "./lib/maintenance-candidate.mjs";
+import { validateTaskPackage } from "./lib/task-package.mjs";
+import { ROOT } from "./lib/template-verification.mjs";
+
+const fixtureRoot = mkdtempSync(path.join(ROOT, "scripts/fixtures/.review-workflow-"));
+try {
+  const relativeRoot = path.relative(ROOT, fixtureRoot).replaceAll(path.sep, "/");
+  const digest = "a".repeat(64);
+  const checkpointRef = `${relativeRoot}/checkpoint.yaml`;
+  const candidateRef = `${relativeRoot}/candidate-manifest.yaml`;
+  const outputDir = `${relativeRoot}/reviews`;
+  const verificationRef = `${relativeRoot}/verification.md`;
+  mkdirSync(path.join(ROOT, outputDir));
+  writeFileSync(path.join(ROOT, verificationRef), "verified\n");
+  writeFileSync(path.join(ROOT, checkpointRef), stringify({
+    schema_version: 2,
+    intensity: "L3",
+    classification_reason: "验证审查任务包生成",
+    triggers: ["core-validator"],
+    changed_assets: ["scripts/lib/template-verification.mjs"],
+    verification_evidence: ["red", "green", "refactor", "pressure-scenario", "fresh-verification", "candidate-verification", "initial-release-verification", "review-task-packages"].map((kind) => kind === "initial-release-verification" ? { kind, command: "scripts/verify-template", result: "pass", executed_at: "2026-09-01T00:00:00Z", duration_ms: 1000, evidence_ref: verificationRef } : { kind, command: `verify ${kind}`, result: "pass" }),
+    review_mode: "formal-independent",
+    escalation: "none",
+    target_state: "review-ready",
+    current_state: "review-ready",
+    verification_profile: "candidate",
+    review_round: 1,
+    candidate_digest: digest
+  }));
+  const streamRef = `${relativeRoot}/candidate.bin`;
+  const diffRef = `${relativeRoot}/tracked.diff`;
+  writeFileSync(path.join(ROOT, streamRef), "stream");
+  writeFileSync(path.join(ROOT, diffRef), "diff");
+  writeFileSync(path.join(ROOT, candidateRef), stringify({ candidate_kind: "yss-worktree-candidate-v1", candidate_digest: digest, snapshot_stream_ref: streamRef, tracked_diff_ref: diffRef }));
+
+  const packages = generateReviewerTaskPackages({
+    checkpointRef,
+    candidateRef,
+    outputDir,
+    candidateRequirement: "审查同一冻结候选字节",
+    implementationActorId: "worker.verification-efficiency",
+    round: 1
+  });
+  assert.deepEqual(packages.map((item) => item.axis), ["standards", "spec", "lead"]);
+  for (const { package: taskPackage } of packages) {
+    assert.equal(taskPackage.contract.candidate_digest, digest);
+    assert.equal(taskPackage.contract.candidate_kind, "yss-worktree-candidate-v1");
+    assert.equal(taskPackage.contract.candidate_requirement, "审查同一冻结候选字节");
+    assert.ok(taskPackage.allowed_read_paths.includes(candidateRef));
+    assert.ok(taskPackage.allowed_read_paths.includes(streamRef));
+    assert.ok(taskPackage.allowed_read_paths.includes(diffRef));
+    assert.equal(taskPackage.verification_results.length, 1);
+    assert.equal(taskPackage.verification_results[0].evidence_ref, verificationRef);
+    assert.ok(!stringify(taskPackage, { lineWidth: 0 }).includes("*a1"), "Reviewer 任务包不得依赖 YAML alias");
+    validateTaskPackage(taskPackage);
+  }
+  assert.throws(() => generateReviewerTaskPackages({
+    checkpointRef,
+    candidateRef,
+    outputDir,
+    candidateKind: "worktree-packed",
+    candidateRequirement: "审查同一冻结候选字节",
+    implementationActorId: "worker.verification-efficiency",
+    round: 1
+  }), /candidateKind.*manifest/);
+
+  assert.equal(evaluateMaintenanceReviewRound({ review_round: 1, candidate_digest: digest, findings: [{ disposition: "violation", status: "open" }] }).current_state, "review-ready");
+  const second = evaluateMaintenanceReviewRound({ review_round: 2, candidate_digest: digest, findings: [{ disposition: "violation", status: "open" }, { disposition: "judgement-call", status: "open" }] });
+  assert.equal(second.current_state, "needs-human");
+  assert.equal(second.blocking_findings.length, 1);
+  assert.equal(second.backlog_findings.length, 1);
+  assert.throws(() => evaluateMaintenanceReviewRound({ review_round: 3, candidate_digest: digest, findings: [] }), /最多允许两轮/);
+} finally {
+  rmSync(fixtureRoot, { recursive: true, force: true });
+}
+
+const candidateRepo = mkdtempSync(path.join(ROOT, "scripts/fixtures/.packed-candidate-"));
+try {
+  const git = (...args) => {
+    const result = spawnSync("git", args, { cwd: candidateRepo, encoding: "utf8" });
+    if (result.status !== 0) throw new Error(result.stderr);
+  };
+  git("init", "-q");
+  git("config", "user.email", "fixture@example.com");
+  git("config", "user.name", "Fixture");
+  writeFileSync(path.join(candidateRepo, "tracked.txt"), "before\n");
+  git("add", "tracked.txt");
+  git("commit", "-qm", "base");
+  writeFileSync(path.join(candidateRepo, "tracked.txt"), "after\n");
+  writeFileSync(path.join(candidateRepo, "untracked.txt"), "packed\n");
+  mkdirSync(path.join(candidateRepo, ".template-source/evidence/maintenance/reviews/review-evidence"), { recursive: true });
+  writeFileSync(path.join(candidateRepo, ".template-source/evidence/maintenance/reviews/review-evidence/report.md"), "not implementation\n");
+  mkdirSync(path.join(candidateRepo, "scripts"));
+  writeFileSync(path.join(candidateRepo, "scripts/new-validator.mjs"), "export default true;\n");
+  assert.throws(() => captureMaintenanceCandidate({
+    root: candidateRepo,
+    outputDir: ".template-source/evidence/maintenance/reviews/rejected-candidate",
+    baseRef: "HEAD",
+    excludePaths: ["scripts/new-validator.mjs"]
+  }), /excludePaths.*维护证据/);
+  const outputDir = ".template-source/evidence/maintenance/reviews/candidate";
+  const captured = captureMaintenanceCandidate({ root: candidateRepo, outputDir, baseRef: "HEAD", excludePaths: [".template-source/evidence/maintenance/reviews/review-evidence"] });
+  assert.equal(captured.manifest.storage, "packed-stream");
+  assert.deepEqual(captured.manifest.untracked_files, ["scripts/new-validator.mjs", "untracked.txt"]);
+  assert.deepEqual(captured.manifest.excluded_paths, [outputDir, ".template-source/evidence/maintenance/reviews/review-evidence"]);
+  assert.equal(captured.files.length, 3, "packed candidate 只保存 manifest、stream 和 tracked diff");
+  assert.deepEqual(readdirSync(path.join(candidateRepo, outputDir)).sort(), ["candidate-manifest.yaml", "candidate.bin", "tracked.diff"]);
+  const manifestPath = path.join(candidateRepo, outputDir, "candidate-manifest.yaml");
+  const inspected = inspectMaintenanceCandidate({ manifestPath });
+  assert.equal(inspected.entries.find((entry) => entry.path === "untracked.txt").content.toString(), "packed\n");
+  assert.throws(() => captureMaintenanceCandidate({ root: candidateRepo, outputDir, baseRef: "HEAD" }), /outputDir.*不存在/);
+  writeFileSync(path.join(candidateRepo, outputDir, "stale.txt"), "stale\n");
+  assert.throws(() => inspectMaintenanceCandidate({ manifestPath }), /恰好包含/);
+} finally {
+  rmSync(candidateRepo, { recursive: true, force: true });
+}
+
+process.stdout.write("模板维护审查两轮收敛场景验证通过\n");

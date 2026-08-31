@@ -135,9 +135,22 @@ function validateContract(value, registry, lifecycle) {
     if (contract.slice_contract_ref || contract.lifecycle_ref) fail("template-maintenance 不得携带其他合同引用");
     const checkpointPath = assertSafeRelativePath(contract.maintenance_ref, "contract.maintenance_ref");
     if (!existsSync(checkpointPath)) fail(`维护 checkpoint 不存在: ${contract.maintenance_ref}`);
-    validateMaintenanceCheckpoint(loadMaintenanceCheckpoint(contract.maintenance_ref), {
+    const checkpoint = loadMaintenanceCheckpoint(contract.maintenance_ref);
+    validateMaintenanceCheckpoint(checkpoint, {
       allowPendingReview: value.execution_state === "Reviewer" && value.workflow_status !== "resolved"
     });
+    if (checkpoint.schema_version === 2 && value.execution_state === "Reviewer") {
+      if (checkpoint.current_state !== "review-ready") fail("Reviewer 任务包只能绑定 review-ready checkpoint");
+      for (const field of ["candidate_kind", "candidate_requirement", "candidate_digest", "review_axis", "review_round", "applicable_rule_refs"]) {
+        if (contract[field] === undefined) fail(`template-maintenance Reviewer 合同缺少 ${field}`);
+      }
+      if (!Array.isArray(value.allowed_read_paths) || value.allowed_read_paths.length === 0) fail("template-maintenance Reviewer 缺少 allowed_read_paths");
+      if (contract.candidate_digest !== checkpoint.candidate_digest) fail("Reviewer 任务包 candidate_digest 与 checkpoint 不一致");
+      if (contract.review_round !== checkpoint.review_round) fail("Reviewer 任务包 review_round 与 checkpoint 不一致");
+      if (!value.allowed_read_paths.includes(contract.maintenance_ref)) fail("allowed_read_paths 必须包含 maintenance_ref");
+      value.allowed_read_paths.forEach((ref) => assertReadableEvidenceRef(ref, "allowed_read_paths 条目"));
+      contract.applicable_rule_refs.forEach((ref) => assertReadableEvidenceRef(ref, "applicable_rule_refs 条目"));
+    }
     if (lifecycle.work_units.find((item) => item.id === value.work_unit_id)?.scope !== "template-source") fail("template-maintenance 必须绑定 template-source work unit");
     return;
   }

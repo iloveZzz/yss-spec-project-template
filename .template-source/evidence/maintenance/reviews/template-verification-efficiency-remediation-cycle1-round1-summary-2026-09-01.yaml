@@ -1,0 +1,14 @@
+schema_version: 1
+review_round: 1
+candidate_digest: aa139a1ffb80e0214b06a29407beb44aa6d18c37ba9e25a4803c221625bd1faa
+findings: []
+axis_results:
+  standards:
+    conclusion: approved
+    report_ref: .template-source/evidence/maintenance/reviews/template-verification-efficiency-remediation-cycle1-review-checkpoint-2026-09-01-standards-review-round1.md
+  spec:
+    conclusion: approved
+    report_ref: .template-source/evidence/maintenance/reviews/template-verification-efficiency-remediation-cycle1-review-checkpoint-2026-09-01-spec-review-round1.md
+  lead:
+    conclusion: approved
+    report_ref: .template-source/evidence/maintenance/reviews/template-verification-efficiency-remediation-cycle1-review-checkpoint-2026-09-01-lead-review-round1.md

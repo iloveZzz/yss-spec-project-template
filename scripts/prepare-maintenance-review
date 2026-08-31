@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+import { mkdirSync, writeFileSync } from "node:fs";
+import path from "node:path";
+import { parseArgs } from "node:util";
+import { stringify } from "./vendor/yaml.mjs";
+import { generateReviewerTaskPackages } from "./lib/maintenance-review-workflow.mjs";
+import { ROOT } from "./lib/template-verification.mjs";
+
+try {
+  const { values } = parseArgs({ options: {
+    checkpoint: { type: "string" }, candidate: { type: "string" }, "output-dir": { type: "string" },
+    "candidate-kind": { type: "string" }, "candidate-requirement": { type: "string" },
+    "implementation-actor": { type: "string" }, round: { type: "string" }
+  }, strict: true });
+  for (const field of ["checkpoint", "candidate", "output-dir", "candidate-requirement", "implementation-actor", "round"]) if (!values[field]) throw new TypeError(`缺少 --${field}`);
+  const outputPath = path.resolve(ROOT, values["output-dir"]);
+  if (path.relative(ROOT, outputPath).startsWith("..")) throw new TypeError("output-dir 不得越出仓库");
+  mkdirSync(outputPath, { recursive: true });
+  const packages = generateReviewerTaskPackages({ checkpointRef: values.checkpoint, candidateRef: values.candidate, outputDir: values["output-dir"], candidateKind: values["candidate-kind"], candidateRequirement: values["candidate-requirement"], implementationActorId: values["implementation-actor"], round: Number(values.round) });
+  for (const item of packages) writeFileSync(path.join(ROOT, item.packageRef), stringify(item.package, { lineWidth: 0 }));
+  process.stdout.write(`${JSON.stringify(packages.map(({ axis, packageRef, reportRef }) => ({ axis, package_ref: packageRef, report_ref: reportRef })), null, 2)}\n`);
+} catch (error) {
+  process.stderr.write(`维护审查任务包生成失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

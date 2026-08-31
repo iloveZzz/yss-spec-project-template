@@ -1,0 +1,76 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import { planTemplateVerification } from "./lib/template-verification.mjs";
+
+const releaseBaseline = [
+  ".template-source/scripts/evidence-index --check",
+  "pnpm --dir .template-source/tooling/node test",
+  "pnpm --dir .template-source/tooling/node check:vendor",
+  "scripts/sync-skills --check",
+  "scripts/update-skill-lock --check",
+  "scripts/verify-skill-registry",
+  "scripts/verify-skill-governance",
+  "node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs",
+  "node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs",
+  "node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs",
+  "scripts/verify-yss-dto-openapi-profile",
+  "scripts/verify-yss-dto-openapi-scenarios",
+  "scripts/verify-digital-human-roles",
+  "scripts/verify-digital-human-roles-scenarios",
+  "scripts/verify-approval-record docs/templates/approval-record-template.yaml",
+  "scripts/verify-lifecycle-registry",
+  "scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml",
+  "scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-plan-template.yaml",
+  "scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-verification-template.yaml",
+  "scripts/verify-subagent-task-package-scenarios",
+  "scripts/verify-digital-human-task-package-scenarios",
+  "scripts/verify-digital-human-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml",
+  "scripts/verify-digital-human-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml",
+  "scripts/verify-maintenance-checkpoint .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml",
+  "scripts/verify-lifecycle-scenarios",
+  "scripts/verify-lifecycle-transition-scenarios",
+  "scripts/verify-maintenance-intensity-scenarios",
+  "scripts/verify-governance-release",
+  "scripts/verify-implementation-path-scenarios",
+  "scripts/verify-repository-scope-scenarios",
+  "scripts/verify-scaffold-generator-scenarios",
+  "scripts/verify-prototype-backend-scaffold-scenarios",
+  "scripts/verify-matt-yss-integration-scenarios",
+  "scripts/verify-yss-router-scenarios",
+  "scripts/verify-yss-ui-scenarios",
+  "scripts/verify-openapi-yaml-first-scenarios",
+  "scripts/verify-openapi-json-handoff-scenarios"
+].sort();
+
+const release = planTemplateVerification({ profile: "release", changedFiles: [] });
+assert.equal(release.effective_profile, "release");
+const releaseCommands = new Set(release.commands.map((entry) => entry.command));
+assert.deepEqual(releaseBaseline.filter((command) => !releaseCommands.has(command)), [], "release profile 必须保留旧发布门禁的全部行为命令");
+assert.ok(releaseCommands.has("node scripts/verify-template-verification-scenarios"), "release profile 必须验证三级核验路由本身");
+
+const docsOnly = planTemplateVerification({ profile: "fast", changedFiles: ["docs/user-guide/example.md"] });
+assert.equal(docsOnly.effective_profile, "fast");
+assert.ok(docsOnly.groups.includes("hygiene"));
+assert.ok(!docsOnly.groups.includes("skills"), "文档内循环不得运行无关 skill 投影检查");
+
+const skillChange = planTemplateVerification({ profile: "fast", changedFiles: [".agents/skills/maintaining-skills/SKILL.md"] });
+assert.ok(skillChange.groups.includes("skills"));
+assert.ok(skillChange.groups.includes("hygiene"));
+
+const candidate = planTemplateVerification({ profile: "candidate", changedFiles: ["docs/process/harness-process-tailoring.md"] });
+assert.equal(candidate.effective_profile, "candidate");
+assert.ok(candidate.groups.includes("maintenance"));
+assert.ok(candidate.groups.includes("candidate-integrity"));
+
+const unknown = planTemplateVerification({ profile: "candidate", changedFiles: ["new-unmapped-root/file.txt"] });
+assert.equal(unknown.effective_profile, "release");
+assert.match(unknown.escalation_reason, /未映射/);
+
+const core = planTemplateVerification({ profile: "fast", changedFiles: ["scripts/lib/template-verification.mjs"] });
+assert.equal(core.effective_profile, "release");
+assert.match(core.escalation_reason, /核心核验/);
+
+const entryRule = planTemplateVerification({ profile: "candidate", changedFiles: ["AGENTS.md"] });
+assert.equal(entryRule.effective_profile, "release", "Agent 入口规则变化必须 fail-safe 到完整门禁");
+
+process.stdout.write("模板三级核验路由场景验证通过\n");

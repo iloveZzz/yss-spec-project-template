@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+import { parseArgs } from "node:util";
+import { captureMaintenanceCandidate } from "./lib/maintenance-candidate.mjs";
+import { ROOT } from "./lib/template-verification.mjs";
+
+try {
+  const { values } = parseArgs({ options: { output: { type: "string" }, base: { type: "string", default: "HEAD" }, exclude: { type: "string", multiple: true } }, strict: true });
+  if (!values.output) throw new TypeError("用法: scripts/capture-maintenance-candidate --output <仓库相对目录> [--base <ref>]");
+  const result = captureMaintenanceCandidate({ root: ROOT, outputDir: values.output, baseRef: values.base, excludePaths: values.exclude || [] });
+  process.stdout.write(`${JSON.stringify({ candidate_digest: result.candidate_digest, manifest_ref: result.manifest_ref, files: result.files }, null, 2)}\n`);
+} catch (error) {
+  process.stderr.write(`维护候选捕获失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

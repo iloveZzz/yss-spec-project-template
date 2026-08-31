@@ -51,9 +51,16 @@
 
    新增共享 skill 时先显式登记：`scripts/update-skill-lock --add=<skill-name>`；新增平台专属 skill 使用 `scripts/update-skill-lock --add-platform=<root>:<skill-name>`。脚本不会把工作区中偶然出现的未跟踪目录自动纳入发布清单。
 
-5. 执行发布阻断校验：
+5. 日常修改先执行影响面快速核验，默认完成到 `implementation-ready`：
 
    ```bash
+   scripts/verify-template-fast
+   ```
+
+   显式准备独立审查时执行 `scripts/verify-template-candidate`，首次冻结前和最终发布前才执行完整发布阻断校验：
+
+   ```bash
+   scripts/verify-template-candidate
    scripts/verify-template
    ```
 

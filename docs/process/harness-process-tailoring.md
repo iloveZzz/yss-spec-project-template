@@ -46,10 +46,16 @@
 5. 模板发布候选固定按 L3 聚合验证，但不追溯补造每个既有 L1/L2 修改的独立 RED。
 6. 模板维护与产品切片使用同一 finding 闭环：`violation` / 机器检查失败 / 适用行空白由实施者修复后重新验证并按本表强度复审；`drift` / `new_impacts` 升级影响面并重新分级，禁止在旧合同或旧 checkpoint 上继续编码。审查者不得写实现。未命中的条件项才 `not-applicable`；命中后不得豁免。
 
-每个模板维护 checkpoint 使用以下轻量合同；L1/L2 可直接写入主 Ticket 或集中 checkpoint，不要求新增独立文档：
+模板维护默认停在 `implementation-ready`，不自动冻结候选或派发审查。需要独立审查时显式提升到 `review-ready`；完成独立审查和最终完整门禁后才能成为 `release-ready`。三个核验入口由 `docs/process/template-verification-profiles.yaml` 统一定义：
+
+- `scripts/verify-template-fast`：按 Git 影响面运行快速检查；未映射路径或核心核验资产变化时 fail-safe 升级为完整门禁。
+- `scripts/verify-template-candidate`：运行命中影响面、候选完整性和审查合同检查；PR 默认使用该入口。
+- `scripts/verify-template`：执行不可裁剪的完整发布门禁；首次正式冻结前和最终发布前各运行一次，修复内循环不重复运行。
+
+新模板维护 checkpoint 使用 schema v2；历史 schema v1 继续只读兼容，不批量迁移。L1/L2 可直接写入主 Ticket 或集中 checkpoint，不要求新增独立文档：
 
 ```yaml
-schema_version: 1
+schema_version: 2
 intensity: L1 | L2 | L3
 classification_reason: <分级理由>
 triggers: [<可观察触发项>]
@@ -60,8 +66,19 @@ verification_evidence:
     result: pass
 review_mode: self-check | human-checkpoint | focused-independent | formal-independent # L2/L3 还必须在 verification_evidence 中给出对应 review 证据引用
 escalation: none | <升级原因和原等级>
+target_state: implementation-ready | review-ready | release-ready
+current_state: implementation-ready | review-ready | release-ready | needs-human
+verification_profile: fast | candidate | release
+review_round: 0 | 1 | 2
+candidate_digest: null | <sha256>
 ```
 
-使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。触发项 ID 与最低等级只由 `docs/process/maintenance-intensity.yaml` 维护；校验器消费该策略。未知触发项必须先更新该权威策略和场景，不能静默接受。
+使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。`implementation-ready` 必须使用 fast、`review_round: 0` 且不带候选摘要；`review-ready` 必须绑定候选、candidate / 首次完整门禁和三轴任务包证据；`release-ready` 还必须绑定正式独立审查与最终完整门禁。第二轮仍有未关闭的 `violation`、`drift` 或 `new_impacts` 时，使用 `scripts/evaluate-maintenance-review-round` 形成新的 `needs-human` checkpoint，禁止自动开启第三轮。触发项 ID 与最低等级只由 `docs/process/maintenance-intensity.yaml` 维护；校验器消费该策略。未知触发项必须先更新该权威策略和场景，不能静默接受。
+
+进入 `review-ready` 后使用 `scripts/prepare-maintenance-review` 一次生成 Standards、Spec、Lead 三个任务包。任务包必须明确 `candidate_kind`、`candidate_requirement`、`candidate_digest`、审查轴、允许读取路径、报告写入路径和适用规则。候选变化会使旧报告失效；`judgement-call` 进入后续 backlog，不得在审查中升级为未由既有单一事实来源支持的新硬要求。
+
+Worktree 候选使用 `scripts/capture-maintenance-candidate --output <目录>` 捕获。新候选目录必须位于 `.template-source/evidence/maintenance/`、在捕获前不存在，并通过 staging 原子落盘；检查时该目录必须恰好包含 `candidate-manifest.yaml`、`candidate.bin` 和 `tracked.diff`。所有 untracked 路径、mode、类型和内容均已按 `yss-worktree-candidate-v1` 帧写入单一 `candidate.bin`，不得再生成逐文件 `untracked-content/000xxx` 副本。审查任务包、报告和旧候选目录可用重复的 `--exclude <仓库相对路径>` 与实现字节分离，但排除路径只允许位于 `.template-source/evidence/maintenance/`，并全部写入 manifest；`scripts/**`、`docs/**` 或其他实现 / 权威资产不能通过该接口排除。`scripts/inspect-maintenance-candidate` 只读复核摘要、清单、规范三文件和外部 `tracked.diff`；历史候选的逐文件引用继续兼容。
+
+固定远程模板输入可使用 `scripts/cache-template-commit --repository <remote-url> --commit <40位commit>`。缓存键仅由 URL 与 commit 构成，每次命中仍复核 metadata 和 Git object hash；缓存目录不进入 Git 或正式证据。
 
 `focused-independent-review` 与 `formal-independent-review` 的 `command` 必须引用可读取的审查结论。L3 新记录必须使用 `docs/process/schemas/maintenance-review-record.schema.json`，绑定 Reviewer、实施者、完整 `yss-worktree-candidate-v1` 冻结字节、候选 digest、通过正式 schema 的 Reviewer 任务包、任务包声明的审查报告和已关闭 findings。仅校验器内明确登记的 2026-08-24 / 27 历史 L3 Markdown 可兼容，并仍须带 `legacy_formal_review: true`、审查身份和明确通过结论；任意新 Markdown 不能自报 legacy。审查请求、实施者自述、否定裁决、伪造或非规范候选流、无效任务包、未关闭 findings 或 symlink 越界证据都会被拒绝。可用 `scripts/verify-maintenance-review-record` 单独校验。

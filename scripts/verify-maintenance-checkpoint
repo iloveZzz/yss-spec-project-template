@@ -6,7 +6,7 @@ try {
   const { positionals } = parseArgs({ allowPositionals: true, strict: true });
   if (positionals.length > 1) throw new TypeError("用法: scripts/verify-maintenance-checkpoint [checkpoint.yaml|checkpoint.json|-]");
   const result = validateMaintenanceCheckpoint(loadMaintenanceCheckpoint(positionals[0] ?? "-"));
-  process.stdout.write(`模板维护 checkpoint 验证通过（${result.intensity}，最低 ${result.minimum_intensity}）\n`);
+  process.stdout.write(`模板维护 checkpoint 验证通过（${result.intensity}，最低 ${result.minimum_intensity}，${result.current_state}）\n`);
 } catch (error) {
   process.stderr.write(`模板维护 checkpoint 验证失败: ${error.message}\n`);
   process.exitCode = 1;

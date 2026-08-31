@@ -63,10 +63,12 @@ export function minimumIntensity(triggers) {
 
 export function validateMaintenanceCheckpoint(data, options = {}) {
   ensure(data && typeof data === "object" && !Array.isArray(data), "checkpoint 必须是对象");
-  const exactFields = ["schema_version", "intensity", "classification_reason", "triggers", "changed_assets", "verification_evidence", "review_mode", "escalation"];
+  const v1Fields = ["schema_version", "intensity", "classification_reason", "triggers", "changed_assets", "verification_evidence", "review_mode", "escalation"];
+  const v2Fields = [...v1Fields, "target_state", "current_state", "verification_profile", "review_round", "candidate_digest"];
+  const exactFields = data.schema_version === 2 ? v2Fields : v1Fields;
   const unknown = Object.keys(data).filter((key) => !exactFields.includes(key));
   ensure(unknown.length === 0, `checkpoint 包含未知字段: ${unknown.join(", ")}`);
-  ensure(data.schema_version === 1, "schema_version 必须为 1");
+  ensure([1, 2].includes(data.schema_version), "schema_version 必须为 1 或 2");
   ensure(LEVELS.includes(data.intensity), "intensity 必须是 L1、L2 或 L3");
   ensure(typeof data.classification_reason === "string" && data.classification_reason.trim(), "classification_reason 不能为空");
   ensure(Array.isArray(data.changed_assets) && data.changed_assets.length > 0 && data.changed_assets.every((item) => typeof item === "string" && item.trim()), "changed_assets 必须包含至少一个路径或资产引用");
@@ -86,12 +88,62 @@ export function validateMaintenanceCheckpoint(data, options = {}) {
     kinds.add(evidence.kind);
   }
   const reviewKind = data.intensity === "L2" ? "focused-independent-review" : data.intensity === "L3" ? "formal-independent-review" : null;
+  if (data.schema_version === 2) validateCheckpointState(data, kinds, reviewKind);
   for (const required of REQUIRED_EVIDENCE[data.intensity]) {
-    if (options.allowPendingReview === true && required === reviewKind) continue;
+    const pendingByV2State = data.schema_version === 2 && data.current_state !== "release-ready" && required === reviewKind;
+    if ((options.allowPendingReview === true || pendingByV2State) && required === reviewKind) continue;
     ensure(kinds.has(required), `${data.intensity} 缺少 ${required} 证据`);
   }
   ensure(REVIEW_MODES[data.intensity].has(data.review_mode), `${data.intensity} 不允许 review_mode=${data.review_mode}`);
-  return { intensity: data.intensity, minimum_intensity: minimum };
+  return { intensity: data.intensity, minimum_intensity: minimum, current_state: data.schema_version === 2 ? data.current_state : "release-ready" };
+}
+
+function validateCheckpointState(data, evidenceKinds, reviewKind) {
+  const states = ["implementation-ready", "review-ready", "release-ready", "needs-human"];
+  const targets = ["implementation-ready", "review-ready", "release-ready"];
+  const profiles = ["fast", "candidate", "release"];
+  ensure(targets.includes(data.target_state), "target_state 无效");
+  ensure(states.includes(data.current_state), "current_state 无效");
+  ensure(profiles.includes(data.verification_profile), "verification_profile 无效");
+  ensure(Number.isInteger(data.review_round) && data.review_round >= 0 && data.review_round <= 2, "review_round 必须为 0、1 或 2");
+  ensure(data.candidate_digest === null || /^(?:sha256:)?[a-f0-9]{64}$/.test(data.candidate_digest), "candidate_digest 必须为 null 或 SHA-256");
+  const targetRank = targets.indexOf(data.target_state);
+  const currentRank = targets.indexOf(data.current_state);
+  if (data.current_state !== "needs-human") ensure(currentRank <= targetRank, "current_state 不得越过 target_state");
+
+  if (data.current_state === "implementation-ready") {
+    ensure(data.verification_profile === "fast", "implementation-ready 必须使用 fast profile");
+    ensure(data.review_round === 0, "implementation-ready 的 review_round 必须为 0");
+    ensure(data.candidate_digest === null, "implementation-ready 不得冻结 candidate_digest");
+    return;
+  }
+
+  ensure(data.candidate_digest !== null, `${data.current_state} 必须绑定 candidate_digest`);
+  ensure(data.review_round >= 1, `${data.current_state} 的 review_round 必须为 1 或 2`);
+  for (const required of ["candidate-verification", "initial-release-verification", "review-task-packages"]) {
+    ensure(evidenceKinds.has(required), `${data.current_state} 缺少 ${required} 证据`);
+  }
+  validateReleaseVerificationCommand(data, "initial-release-verification");
+  if (data.current_state === "review-ready") {
+    ensure(data.verification_profile === "candidate", "review-ready 必须使用 candidate profile");
+    return;
+  }
+  if (data.current_state === "needs-human") {
+    ensure(data.target_state === "release-ready", "needs-human 必须保留 release-ready 目标");
+    ensure(data.review_round === 2, "needs-human 只允许在第二轮审查后进入");
+    ensure(["candidate", "release"].includes(data.verification_profile), "needs-human 必须来自 candidate 或 release profile");
+    return;
+  }
+  ensure(data.verification_profile === "release", "release-ready 必须使用 release profile");
+  ensure(evidenceKinds.has("final-release-verification"), "release-ready 缺少 final-release-verification 证据");
+  validateReleaseVerificationCommand(data, "final-release-verification");
+  if (reviewKind) ensure(evidenceKinds.has(reviewKind), `release-ready 缺少 ${reviewKind} 证据`);
+}
+
+function validateReleaseVerificationCommand(data, kind) {
+  const evidence = data.verification_evidence.filter((item) => item.kind === kind);
+  ensure(evidence.length === 1, `${kind} 必须恰好提供一条完整门禁证据`);
+  ensure(evidence[0].command === "scripts/verify-template", `${kind}.command 必须为 scripts/verify-template`);
 }
 
 export function loadMaintenanceCheckpoint(source) {

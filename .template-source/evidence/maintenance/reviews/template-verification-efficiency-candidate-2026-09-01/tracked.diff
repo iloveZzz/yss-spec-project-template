@@ -1,0 +1,547 @@
+diff --git a/.agents/skills/code-review/SKILL.md b/.agents/skills/code-review/SKILL.md
+index c4a91da2c106f80d10f78b5ac35f055387977cdf..3675beff7b90d602a13352820d1a2066e2ad727c 100644
+--- a/.agents/skills/code-review/SKILL.md
++++ b/.agents/skills/code-review/SKILL.md
+@@ -45,7 +45,7 @@ commit_list_command: <command>
+ 
+ For a Committed candidate, resolve `HEAD` to an immutable commit and tree before review. Its manifest must include `merge_base`, `tracked_diff_command` and `commit_list_command`. For a Worktree candidate, the manifest must additionally include `untracked_inventory_command`, `untracked_diff_command` and the exact `untracked_files` inventory.
+ 
+-For a Worktree candidate, capture the tracked binary diff and every untracked file's bytes once into an immutable snapshot, compute `candidate_digest`, and make that **captured candidate** available to both reviewers. The following is normative, not illustrative: use the `yss-worktree-candidate-v1` byte stream. Start with ASCII `YSS-WORKTREE-CANDIDATE-V1` followed by one NUL byte. Append one tracked record: byte `0x54`, unsigned 64-bit big-endian binary-diff byte length, then the exact stdout bytes from `git diff --no-ext-diff --binary --full-index <merge-base>`. Then append one untracked record for each NUL-delimited raw path from `git ls-files -z --others --exclude-standard`, sorted bytewise by the raw path: byte `0x55`, unsigned 64-bit big-endian path length, raw path bytes, unsigned 32-bit big-endian `lstat` mode, entry-kind byte (`0x52` regular or `0x4c` symlink), unsigned 64-bit big-endian content length, then raw regular-file bytes or raw symlink-target bytes. Other entry kinds block capture. This is the sole length-prefixed framing and bytewise path order for the digest. SHA-256 is calculated over exactly this stream. The immutable snapshot stores `candidate-manifest.yaml`, `tracked.diff` and the `untracked/` bytes under the digest identity; both reviewers must consume those captured bytes and must not independently reread a live worktree.
++For a Worktree candidate, capture the tracked binary diff and every untracked file's bytes once into an immutable snapshot, compute `candidate_digest`, and make that **captured candidate** available to both reviewers. The following is normative, not illustrative: use the `yss-worktree-candidate-v1` byte stream. Start with ASCII `YSS-WORKTREE-CANDIDATE-V1` followed by one NUL byte. Append one tracked record: byte `0x54`, unsigned 64-bit big-endian binary-diff byte length, then the exact stdout bytes from `git diff --no-ext-diff --binary --full-index <merge-base>`. Then append one untracked record for each NUL-delimited raw path from `git ls-files -z --others --exclude-standard`, sorted bytewise by the raw path: byte `0x55`, unsigned 64-bit big-endian path length, raw path bytes, unsigned 32-bit big-endian `lstat` mode, entry-kind byte (`0x52` regular or `0x4c` symlink), unsigned 64-bit big-endian content length, then raw regular-file bytes or raw symlink-target bytes. Other entry kinds block capture. This is the sole length-prefixed framing and bytewise path order for the digest. SHA-256 is calculated over exactly this stream. New captures store only `candidate-manifest.yaml`, `candidate.bin` and `tracked.diff`; `candidate.bin` already contains every untracked byte, so do not duplicate hundreds of `untracked-content/000xxx` files. Historical per-file snapshots remain readable. Both reviewers must consume the captured stream and must not independently treat a live worktree as the reviewed candidate.
+ 
+ Before going further, confirm the fixed point and merge-base resolve. A committed candidate must have a non-empty committed diff. A Worktree candidate is non-empty when either its tracked diff or untracked inventory is non-empty. A bad ref, missing candidate part or empty candidate should fail here — not inside two parallel sub-agents. Do not silently downgrade Worktree review to `HEAD`-only review.
+ 
+@@ -103,6 +103,8 @@ If the spec is missing, skip the Spec sub-agent and note this in the final repor
+ 
+ ### 5. Aggregate
+ 
++For template-maintenance task packages carrying `review_round`, preserve the frozen scope and apply the two-round convergence contract. A hard requirement added during review must cite a rule that already applied when the candidate was frozen; otherwise report it as `judgement-call` for the backlog. Round 1 blocking findings return to the implementer and require a new digest plus all review axes. If Round 2 still has an open `violation`, `drift`, or `new_impacts`, return `needs-human` and stop; do not silently start Round 3. Candidate byte changes invalidate every earlier axis report.
++
+ Present the reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. If UI is in scope, add `## UI fidelity` from the separate pass. Fill `docs/templates/review-report-template.md` specialist tables as part of Standards evidence, not a fourth axis. Do **not** merge or rerank findings — the axes are deliberately separate (see _Why separate axes_). A YSS candidate with blank applicable specialist rows, skipped `required_skills`, or unaddressed mandatory violations is `blocked`, not `completed`. Do not close findings by writing implementation in the review session. `violation` / machine-check failure / blank applicable rows go back to the implementer on the original contract path, then recapture the candidate and rerun every axis. `drift` / `new_impacts` / `required_skills` mismatch mark the contract `stale` and return to Router; do not keep coding on the old contract. `not-applicable` is only for untriggered impacts; mandatory gates have no waiver, only repair or a complete `seam-deferred` record.
+ 
+ For Worktree mode, recapture the candidate digest after both reports return. If it differs from `candidate_digest`, mark both reports as reviewing a **stale candidate** and return `blocked`; the caller may start a new review against a new capture, but this invocation must not aggregate findings from different bytes. Recheck the same digest again at the completion/checkpoint boundary.
+diff --git a/.agents/skills/maintaining-skills/SKILL.md b/.agents/skills/maintaining-skills/SKILL.md
+index 2171170a0fe49a9397a87a3c6aece6bdecd99065..5bce9de1f3fc505971620580bd7e5435fe5ebb26 100644
+--- a/.agents/skills/maintaining-skills/SKILL.md
++++ b/.agents/skills/maintaining-skills/SKILL.md
+@@ -16,6 +16,8 @@ Create skills that add useful, non-obvious guidance without constraining unrelat
+ 5. Match specificity and validation to risk. Prefer outcome and decision criteria when several approaches are valid; use fixed steps or absolute rules only for correctness, safety, permissions, or genuinely fragile workflows.
+ 6. Follow the repository's declared maintenance and review policy. If none exists, run structural validation plus focused checks of the behavior or invariant changed. Use independent forward testing only when complexity or risk makes it meaningful; do not require a failing baseline for every ordinary edit.
+ 7. After changes, validate frontmatter, naming, references, scripts, projections, locks, and affected callers. Retire obsolete names and resources unless the repository explicitly requires compatibility.
++8. When a repository declares staged template verification, default the implementation loop to its fast impact profile and stop at `implementation-ready`. Promote explicitly to `review-ready`; do not create frozen candidates, review packages, or release evidence during ordinary iteration. Unknown paths and changes to the verification framework itself must fail safe to the full profile.
++9. For a formal L3 review, run the repository's full gate before the first frozen candidate and again before release. Between them, use focused/candidate checks. Do not weaken required evidence or independent review to gain speed.
+ 
+ ## Boundaries
+ 
+diff --git a/.github/workflows/template-node-tooling.yml b/.github/workflows/template-node-tooling.yml
+index 34958b9db38a0a7a25081de696956f653543c615..9a14d521e5d54020d361b7321698cf4cadcfe715 100644
+--- a/.github/workflows/template-node-tooling.yml
++++ b/.github/workflows/template-node-tooling.yml
+@@ -28,7 +28,10 @@ jobs:
+       - run: pnpm --dir .template-source/tooling/node test
+       - run: pnpm --dir .template-source/tooling/node check:vendor
+       - run: git diff --exit-code -- scripts/vendor
+-      - run: scripts/verify-template
++      - if: github.event_name == 'pull_request'
++        run: scripts/verify-template-candidate --base "${{ github.event.pull_request.base.sha }}"
++      - if: github.event_name == 'push'
++        run: scripts/verify-template
+ 
+   macos-vendor:
+     runs-on: macos-latest
+diff --git a/.gitignore b/.gitignore
+index 21cc6615af921f99bef630f9c3888b03d3bbc29c..41d4bfe9189d6be3b2d1a4e13b0eaff674c3ba46 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -28,6 +28,7 @@ dist/
+ # Logs
+ *.log
+ logs/
++.template-source/cache/
+ 
+ # Coverage
+ htmlcov/
+diff --git a/.qoder/skills/code-review/SKILL.md b/.qoder/skills/code-review/SKILL.md
+index c4a91da2c106f80d10f78b5ac35f055387977cdf..3675beff7b90d602a13352820d1a2066e2ad727c 100644
+--- a/.qoder/skills/code-review/SKILL.md
++++ b/.qoder/skills/code-review/SKILL.md
+@@ -45,7 +45,7 @@ commit_list_command: <command>
+ 
+ For a Committed candidate, resolve `HEAD` to an immutable commit and tree before review. Its manifest must include `merge_base`, `tracked_diff_command` and `commit_list_command`. For a Worktree candidate, the manifest must additionally include `untracked_inventory_command`, `untracked_diff_command` and the exact `untracked_files` inventory.
+ 
+-For a Worktree candidate, capture the tracked binary diff and every untracked file's bytes once into an immutable snapshot, compute `candidate_digest`, and make that **captured candidate** available to both reviewers. The following is normative, not illustrative: use the `yss-worktree-candidate-v1` byte stream. Start with ASCII `YSS-WORKTREE-CANDIDATE-V1` followed by one NUL byte. Append one tracked record: byte `0x54`, unsigned 64-bit big-endian binary-diff byte length, then the exact stdout bytes from `git diff --no-ext-diff --binary --full-index <merge-base>`. Then append one untracked record for each NUL-delimited raw path from `git ls-files -z --others --exclude-standard`, sorted bytewise by the raw path: byte `0x55`, unsigned 64-bit big-endian path length, raw path bytes, unsigned 32-bit big-endian `lstat` mode, entry-kind byte (`0x52` regular or `0x4c` symlink), unsigned 64-bit big-endian content length, then raw regular-file bytes or raw symlink-target bytes. Other entry kinds block capture. This is the sole length-prefixed framing and bytewise path order for the digest. SHA-256 is calculated over exactly this stream. The immutable snapshot stores `candidate-manifest.yaml`, `tracked.diff` and the `untracked/` bytes under the digest identity; both reviewers must consume those captured bytes and must not independently reread a live worktree.
++For a Worktree candidate, capture the tracked binary diff and every untracked file's bytes once into an immutable snapshot, compute `candidate_digest`, and make that **captured candidate** available to both reviewers. The following is normative, not illustrative: use the `yss-worktree-candidate-v1` byte stream. Start with ASCII `YSS-WORKTREE-CANDIDATE-V1` followed by one NUL byte. Append one tracked record: byte `0x54`, unsigned 64-bit big-endian binary-diff byte length, then the exact stdout bytes from `git diff --no-ext-diff --binary --full-index <merge-base>`. Then append one untracked record for each NUL-delimited raw path from `git ls-files -z --others --exclude-standard`, sorted bytewise by the raw path: byte `0x55`, unsigned 64-bit big-endian path length, raw path bytes, unsigned 32-bit big-endian `lstat` mode, entry-kind byte (`0x52` regular or `0x4c` symlink), unsigned 64-bit big-endian content length, then raw regular-file bytes or raw symlink-target bytes. Other entry kinds block capture. This is the sole length-prefixed framing and bytewise path order for the digest. SHA-256 is calculated over exactly this stream. New captures store only `candidate-manifest.yaml`, `candidate.bin` and `tracked.diff`; `candidate.bin` already contains every untracked byte, so do not duplicate hundreds of `untracked-content/000xxx` files. Historical per-file snapshots remain readable. Both reviewers must consume the captured stream and must not independently treat a live worktree as the reviewed candidate.
+ 
+ Before going further, confirm the fixed point and merge-base resolve. A committed candidate must have a non-empty committed diff. A Worktree candidate is non-empty when either its tracked diff or untracked inventory is non-empty. A bad ref, missing candidate part or empty candidate should fail here — not inside two parallel sub-agents. Do not silently downgrade Worktree review to `HEAD`-only review.
+ 
+@@ -103,6 +103,8 @@ If the spec is missing, skip the Spec sub-agent and note this in the final repor
+ 
+ ### 5. Aggregate
+ 
++For template-maintenance task packages carrying `review_round`, preserve the frozen scope and apply the two-round convergence contract. A hard requirement added during review must cite a rule that already applied when the candidate was frozen; otherwise report it as `judgement-call` for the backlog. Round 1 blocking findings return to the implementer and require a new digest plus all review axes. If Round 2 still has an open `violation`, `drift`, or `new_impacts`, return `needs-human` and stop; do not silently start Round 3. Candidate byte changes invalidate every earlier axis report.
++
+ Present the reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. If UI is in scope, add `## UI fidelity` from the separate pass. Fill `docs/templates/review-report-template.md` specialist tables as part of Standards evidence, not a fourth axis. Do **not** merge or rerank findings — the axes are deliberately separate (see _Why separate axes_). A YSS candidate with blank applicable specialist rows, skipped `required_skills`, or unaddressed mandatory violations is `blocked`, not `completed`. Do not close findings by writing implementation in the review session. `violation` / machine-check failure / blank applicable rows go back to the implementer on the original contract path, then recapture the candidate and rerun every axis. `drift` / `new_impacts` / `required_skills` mismatch mark the contract `stale` and return to Router; do not keep coding on the old contract. `not-applicable` is only for untriggered impacts; mandatory gates have no waiver, only repair or a complete `seam-deferred` record.
+ 
+ For Worktree mode, recapture the candidate digest after both reports return. If it differs from `candidate_digest`, mark both reports as reviewing a **stale candidate** and return `blocked`; the caller may start a new review against a new capture, but this invocation must not aggregate findings from different bytes. Recheck the same digest again at the completion/checkpoint boundary.
+diff --git a/AGENTS.md b/AGENTS.md
+index b398867e1224614389c3d7c5b5c276e7f477b04a..4a8b1ff8cd0ea82df52164974491a5c68e449091 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -41,7 +41,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或
+ 
+ - 创建、修改或退役 skill 时使用 `maintaining-skills`，并先按 `docs/process/harness-process-tailoring.md` 判定 L1 / L2 / L3；只有 L3 必须保留完整基线失败、压力场景、修订后验证和正式独立审查证据。
+ - `.agents/skills` 是跨 Agent 共享技能的权威内容；`.claude/skills`、`.codex/skills`、`.cursor/skills`、`.hermes/skills`、`.pi/skills`、`.qoder/skills`、`.trae/skills` 中的共享技能是生成投影，禁止分别手工修改。Cursor 的契约运行时入口是 `.cursor/skills`；不得把 canonical `.agents/skills` 与某个平台投影当作同权双入口。
+-- `scripts/verify-template` 是模板发布阻断门禁。模板与外部 `create-yss-spec` 的跨仓库契约未完成集成验证时，不得声称可发布。
++- 模板维护默认以 `scripts/verify-template-fast` 完成 `implementation-ready`；显式晋级审查时用 `scripts/verify-template-candidate`，首次冻结前和最终发布前仍必须执行完整 `scripts/verify-template`。后者是不可裁剪的模板发布阻断门禁。模板与外部 `create-yss-spec` 的跨仓库契约未完成集成验证时，不得声称可发布。
+ 
+ ## 5. `project-instance` 产品研发路由
+ 
+diff --git a/CONTEXT.md b/CONTEXT.md
+index 344b0777021fdb863a2111c49de37c517b1267fa..5e773ed0c921a9227b5231931bcac121bd7ca055 100644
+--- a/CONTEXT.md
++++ b/CONTEXT.md
+@@ -52,6 +52,9 @@
+ | YSS Skill Execution Result | YSS 专项 skill 完成工作单元后返回的结构化执行证据，记录合同版本、变更文件、证据文件、实际验证、延期 seam、偏离和新增影响。 | — | 实现者自报 `implemented` 不构成最终通过，必须由 Router、生命周期编排器和独立 Reviewer 复核。 |
+ | ADR | 架构决策记录，用于沉淀难以回滚、非显而易见且存在真实取舍的技术决策。 | — | 常规实现选择不要写 ADR。 |
+ | Fresh Verification | 完成前重新执行的验证证据，包括测试命令、契约校验、关键路径检查或人工审查结论。 | — | 不等同于“之前跑过”或实现者自述。 |
++| `implementation-ready` | 模板维护实现和命中影响面的快速核验已经完成，但尚未冻结正式审查候选。 | — | 是模板维护默认出口；不等同于 `ready-for-agent`、已审查或可发布。 |
++| `review-ready` | 模板维护候选已完成 candidate 核验、首次完整发布门禁和摘要冻结，可以派发独立审查。 | — | Reviewer 必须消费同一候选摘要；候选字节变化后旧审查失效。 |
++| `release-ready` | 模板维护冻结候选已经通过独立审查和最终完整 Fresh Verification。 | — | 仍不替代 `gate.release-ready` 所需的生物人发布裁决。 |
+ | 实现验证命令 | 前端测试 / 构建优先 `pnpm`，后端校验 / 测试 / 编译优先 `./mvnw`。 | — | 不要默认 `npm`、`yarn` 或裸 `mvn`；仓库确实缺少 pnpm 或 Maven Wrapper 时记受控例外。 |
+ | 测试质量基线 | 项目实例明确采纳的覆盖率阈值、关键流程清单和受控例外。 | — | 模板推荐值本身不构成可执行门禁；未定义关键流程时，不得声称其 E2E 覆盖率达到 100%。 |
+ | 主阶段 | 对相邻研发目标、工作单元和退出条件的粗粒度生命周期分组。 | — | 不等同于门禁编号，也不因增加门禁而自动增加主阶段。 |
+diff --git a/docs/agents/skills-maintenance.md b/docs/agents/skills-maintenance.md
+index 264bc97a863584aa5787d5c5a8ac29c46764609f..9bf20f3c222255433f94fe0780692dc6e2f001b2 100644
+--- a/docs/agents/skills-maintenance.md
++++ b/docs/agents/skills-maintenance.md
+@@ -51,9 +51,16 @@
+ 
+    新增共享 skill 时先显式登记：`scripts/update-skill-lock --add=<skill-name>`；新增平台专属 skill 使用 `scripts/update-skill-lock --add-platform=<root>:<skill-name>`。脚本不会把工作区中偶然出现的未跟踪目录自动纳入发布清单。
+ 
+-5. 执行发布阻断校验：
++5. 日常修改先执行影响面快速核验，默认完成到 `implementation-ready`：
+ 
+    ```bash
++   scripts/verify-template-fast
++   ```
++
++   显式准备独立审查时执行 `scripts/verify-template-candidate`，首次冻结前和最终发布前才执行完整发布阻断校验：
++
++   ```bash
++   scripts/verify-template-candidate
+    scripts/verify-template
+    ```
+ 
+diff --git a/docs/process/harness-process-tailoring.md b/docs/process/harness-process-tailoring.md
+index 4a81984130cac802a90ebff3cc8485b379a4c46f..673dad21271840a118afc868909e3e9fae1a27fd 100644
+--- a/docs/process/harness-process-tailoring.md
++++ b/docs/process/harness-process-tailoring.md
+@@ -46,10 +46,16 @@
+ 5. 模板发布候选固定按 L3 聚合验证，但不追溯补造每个既有 L1/L2 修改的独立 RED。
+ 6. 模板维护与产品切片使用同一 finding 闭环：`violation` / 机器检查失败 / 适用行空白由实施者修复后重新验证并按本表强度复审；`drift` / `new_impacts` 升级影响面并重新分级，禁止在旧合同或旧 checkpoint 上继续编码。审查者不得写实现。未命中的条件项才 `not-applicable`；命中后不得豁免。
+ 
+-每个模板维护 checkpoint 使用以下轻量合同；L1/L2 可直接写入主 Ticket 或集中 checkpoint，不要求新增独立文档：
++模板维护默认停在 `implementation-ready`，不自动冻结候选或派发审查。需要独立审查时显式提升到 `review-ready`；完成独立审查和最终完整门禁后才能成为 `release-ready`。三个核验入口由 `docs/process/template-verification-profiles.yaml` 统一定义：
++
++- `scripts/verify-template-fast`：按 Git 影响面运行快速检查；未映射路径或核心核验资产变化时 fail-safe 升级为完整门禁。
++- `scripts/verify-template-candidate`：运行命中影响面、候选完整性和审查合同检查；PR 默认使用该入口。
++- `scripts/verify-template`：执行不可裁剪的完整发布门禁；首次正式冻结前和最终发布前各运行一次，修复内循环不重复运行。
++
++新模板维护 checkpoint 使用 schema v2；历史 schema v1 继续只读兼容，不批量迁移。L1/L2 可直接写入主 Ticket 或集中 checkpoint，不要求新增独立文档：
+ 
+ ```yaml
+-schema_version: 1
++schema_version: 2
+ intensity: L1 | L2 | L3
+ classification_reason: <分级理由>
+ triggers: [<可观察触发项>]
+@@ -60,8 +66,19 @@ verification_evidence:
+     result: pass
+ review_mode: self-check | human-checkpoint | focused-independent | formal-independent # L2/L3 还必须在 verification_evidence 中给出对应 review 证据引用
+ escalation: none | <升级原因和原等级>
++target_state: implementation-ready | review-ready | release-ready
++current_state: implementation-ready | review-ready | release-ready | needs-human
++verification_profile: fast | candidate | release
++review_round: 0 | 1 | 2
++candidate_digest: null | <sha256>
+ ```
+ 
+-使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。触发项 ID 与最低等级只由 `docs/process/maintenance-intensity.yaml` 维护；校验器消费该策略。未知触发项必须先更新该权威策略和场景，不能静默接受。
++使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。`implementation-ready` 必须使用 fast、`review_round: 0` 且不带候选摘要；`review-ready` 必须绑定候选、candidate / 首次完整门禁和三轴任务包证据；`release-ready` 还必须绑定正式独立审查与最终完整门禁。第二轮仍有未关闭的 `violation`、`drift` 或 `new_impacts` 时，使用 `scripts/evaluate-maintenance-review-round` 形成新的 `needs-human` checkpoint，禁止自动开启第三轮。触发项 ID 与最低等级只由 `docs/process/maintenance-intensity.yaml` 维护；校验器消费该策略。未知触发项必须先更新该权威策略和场景，不能静默接受。
++
++进入 `review-ready` 后使用 `scripts/prepare-maintenance-review` 一次生成 Standards、Spec、Lead 三个任务包。任务包必须明确 `candidate_kind`、`candidate_requirement`、`candidate_digest`、审查轴、允许读取路径、报告写入路径和适用规则。候选变化会使旧报告失效；`judgement-call` 进入后续 backlog，不得在审查中升级为未由既有单一事实来源支持的新硬要求。
++
++Worktree 候选使用 `scripts/capture-maintenance-candidate --output <目录>` 捕获。默认只保存 `candidate-manifest.yaml`、`candidate.bin` 和 `tracked.diff`：所有 untracked 路径、mode、类型和内容均已按 `yss-worktree-candidate-v1` 帧写入单一 `candidate.bin`，不得再生成逐文件 `untracked-content/000xxx` 副本。`scripts/inspect-maintenance-candidate` 可只读复核摘要和清单；历史候选的逐文件引用继续兼容。
++
++固定远程模板输入可使用 `scripts/cache-template-commit --repository <remote-url> --commit <40位commit>`。缓存键仅由 URL 与 commit 构成，每次命中仍复核 metadata 和 Git object hash；缓存目录不进入 Git 或正式证据。
+ 
+ `focused-independent-review` 与 `formal-independent-review` 的 `command` 必须引用可读取的审查结论。L3 新记录必须使用 `docs/process/schemas/maintenance-review-record.schema.json`，绑定 Reviewer、实施者、完整 `yss-worktree-candidate-v1` 冻结字节、候选 digest、通过正式 schema 的 Reviewer 任务包、任务包声明的审查报告和已关闭 findings。仅校验器内明确登记的 2026-08-24 / 27 历史 L3 Markdown 可兼容，并仍须带 `legacy_formal_review: true`、审查身份和明确通过结论；任意新 Markdown 不能自报 legacy。审查请求、实施者自述、否定裁决、伪造或非规范候选流、无效任务包、未关闭 findings 或 symlink 越界证据都会被拒绝。可用 `scripts/verify-maintenance-review-record` 单独校验。
+diff --git a/docs/process/schemas/digital-human-task-package.schema.json b/docs/process/schemas/digital-human-task-package.schema.json
+index f0473b353896d7c645adbc51fd866eb8fa71b52c..032e972a3c6362aceab877f82636762e97e1df8b 100644
+--- a/docs/process/schemas/digital-human-task-package.schema.json
++++ b/docs/process/schemas/digital-human-task-package.schema.json
+@@ -38,11 +38,18 @@
+         "lifecycle_ref": { "type": "string", "minLength": 1 },
+         "slice_contract_ref": { "type": "string", "minLength": 1 },
+         "maintenance_ref": { "type": "string", "minLength": 1 },
++        "candidate_kind": { "type": "string", "minLength": 1 },
++        "candidate_requirement": { "type": "string", "minLength": 1 },
++        "candidate_digest": { "type": "string", "pattern": "^(?:sha256:)?[a-f0-9]{64}$" },
++        "review_axis": { "enum": ["standards", "spec", "lead"] },
++        "review_round": { "type": "integer", "minimum": 1, "maximum": 2 },
++        "applicable_rule_refs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+         "artifact_refs": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+         "gate_refs": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+       }
+     },
+     "inputs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
++    "allowed_read_paths": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+     "objective": { "type": "string", "minLength": 1 },
+     "allowed_write_paths": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+     "forbidden_actions": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+diff --git a/docs/process/template-engineering-overview.md b/docs/process/template-engineering-overview.md
+index 84d767d9b3e1b44a5276c6e59508e64a5b92eadc..4040d9bfa4326039ad9c61a7649917dd77741090 100644
+--- a/docs/process/template-engineering-overview.md
++++ b/docs/process/template-engineering-overview.md
+@@ -69,8 +69,8 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份
+ 1. **分级**：根据 `docs/process/maintenance-intensity.yaml` 计算 L1、L2 或 L3；未知 trigger 先更新策略。
+ 2. **更新权威资产**：修改对应的单一事实来源，避免在说明文档中复制规则。
+ 3. **生成投影**：涉及 skills 时同步 Agent roots 和 `skills-lock.json`；涉及生命周期结构时同步派生视图；涉及实例分发时构建固定 commit 的 CLI 快照。
+-4. **Fresh verification**：执行与影响面相匹配的真实命令。根模板发布候选执行 `scripts/verify-template`，跨仓 CLI 还要执行固定 commit 的集成测试和 `npm pack --dry-run`。
+-5. **独立审查**：L2 使用聚焦独立审查，L3 使用正式独立审查；审查结论必须绑定同一不可变候选，审查请求不能充当通过结论。
++4. **Fresh verification**：实现内循环执行 `scripts/verify-template-fast` 并默认停在 `implementation-ready`；准备审查时执行 candidate 核验和首次完整 `scripts/verify-template`，跨仓 CLI 还要执行固定 commit 的集成测试和打包校验。
++5. **独立审查**：显式提升 `review-ready` 后，L2 使用聚焦独立审查，L3 使用正式独立审查；审查结论必须绑定同一不可变候选，审查请求不能充当通过结论。自动审查最多两轮。
+ 6. **发布与回滚**：先发布或提交子仓，再更新父仓 gitlink；跨仓版本、验证命令、发布顺序和回滚点必须可以重建。
+ 
+ 完成标准：当前强度要求的证据和审查全部通过，跨仓固定引用闭合，最终候选重新通过 fresh verification，并且不存在未处理的 `violation`、`drift` 或 `new_impacts`。
+@@ -81,6 +81,8 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份
+ |---|---|
+ | 判断仓库身份和下一阶段 | `yss-product-lifecycle` |
+ | 修改或退役共享 skill | `maintaining-skills` |
++| 模板实现内循环 | `scripts/verify-template-fast` |
++| 准备模板审查候选 | `scripts/verify-template-candidate`、`scripts/prepare-maintenance-review` |
+ | 校验根模板发布候选 | `scripts/verify-template` |
+ | 同步共享 skill 投影 | `scripts/sync-skills` |
+ | 校验 skills lock | `scripts/update-skill-lock --check` |
+diff --git a/scripts/lib/maintenance-intensity.mjs b/scripts/lib/maintenance-intensity.mjs
+index f47494a62ce25b7281b8a1b1250ed18572e20fbd..5a1a4cff4885abdf15ba74e95be3372353a23ab8 100644
+--- a/scripts/lib/maintenance-intensity.mjs
++++ b/scripts/lib/maintenance-intensity.mjs
+@@ -63,10 +63,12 @@ export function minimumIntensity(triggers) {
+ 
+ export function validateMaintenanceCheckpoint(data, options = {}) {
+   ensure(data && typeof data === "object" && !Array.isArray(data), "checkpoint 必须是对象");
+-  const exactFields = ["schema_version", "intensity", "classification_reason", "triggers", "changed_assets", "verification_evidence", "review_mode", "escalation"];
++  const v1Fields = ["schema_version", "intensity", "classification_reason", "triggers", "changed_assets", "verification_evidence", "review_mode", "escalation"];
++  const v2Fields = [...v1Fields, "target_state", "current_state", "verification_profile", "review_round", "candidate_digest"];
++  const exactFields = data.schema_version === 2 ? v2Fields : v1Fields;
+   const unknown = Object.keys(data).filter((key) => !exactFields.includes(key));
+   ensure(unknown.length === 0, `checkpoint 包含未知字段: ${unknown.join(", ")}`);
+-  ensure(data.schema_version === 1, "schema_version 必须为 1");
++  ensure([1, 2].includes(data.schema_version), "schema_version 必须为 1 或 2");
+   ensure(LEVELS.includes(data.intensity), "intensity 必须是 L1、L2 或 L3");
+   ensure(typeof data.classification_reason === "string" && data.classification_reason.trim(), "classification_reason 不能为空");
+   ensure(Array.isArray(data.changed_assets) && data.changed_assets.length > 0 && data.changed_assets.every((item) => typeof item === "string" && item.trim()), "changed_assets 必须包含至少一个路径或资产引用");
+@@ -86,12 +88,54 @@ export function validateMaintenanceCheckpoint(data, options = {}) {
+     kinds.add(evidence.kind);
+   }
+   const reviewKind = data.intensity === "L2" ? "focused-independent-review" : data.intensity === "L3" ? "formal-independent-review" : null;
++  if (data.schema_version === 2) validateCheckpointState(data, kinds, reviewKind);
+   for (const required of REQUIRED_EVIDENCE[data.intensity]) {
+-    if (options.allowPendingReview === true && required === reviewKind) continue;
++    const pendingByV2State = data.schema_version === 2 && data.current_state !== "release-ready" && required === reviewKind;
++    if ((options.allowPendingReview === true || pendingByV2State) && required === reviewKind) continue;
+     ensure(kinds.has(required), `${data.intensity} 缺少 ${required} 证据`);
+   }
+   ensure(REVIEW_MODES[data.intensity].has(data.review_mode), `${data.intensity} 不允许 review_mode=${data.review_mode}`);
+-  return { intensity: data.intensity, minimum_intensity: minimum };
++  return { intensity: data.intensity, minimum_intensity: minimum, current_state: data.schema_version === 2 ? data.current_state : "release-ready" };
++}
++
++function validateCheckpointState(data, evidenceKinds, reviewKind) {
++  const states = ["implementation-ready", "review-ready", "release-ready", "needs-human"];
++  const targets = ["implementation-ready", "review-ready", "release-ready"];
++  const profiles = ["fast", "candidate", "release"];
++  ensure(targets.includes(data.target_state), "target_state 无效");
++  ensure(states.includes(data.current_state), "current_state 无效");
++  ensure(profiles.includes(data.verification_profile), "verification_profile 无效");
++  ensure(Number.isInteger(data.review_round) && data.review_round >= 0 && data.review_round <= 2, "review_round 必须为 0、1 或 2");
++  ensure(data.candidate_digest === null || /^(?:sha256:)?[a-f0-9]{64}$/.test(data.candidate_digest), "candidate_digest 必须为 null 或 SHA-256");
++  const targetRank = targets.indexOf(data.target_state);
++  const currentRank = targets.indexOf(data.current_state);
++  if (data.current_state !== "needs-human") ensure(currentRank <= targetRank, "current_state 不得越过 target_state");
++
++  if (data.current_state === "implementation-ready") {
++    ensure(data.verification_profile === "fast", "implementation-ready 必须使用 fast profile");
++    ensure(data.review_round === 0, "implementation-ready 的 review_round 必须为 0");
++    ensure(data.candidate_digest === null, "implementation-ready 不得冻结 candidate_digest");
++    return;
++  }
++
++  ensure(data.candidate_digest !== null, `${data.current_state} 必须绑定 candidate_digest`);
++  ensure(data.review_round >= 1, `${data.current_state} 的 review_round 必须为 1 或 2`);
++  for (const required of ["candidate-verification", "initial-release-verification", "review-task-packages"]) {
++    ensure(evidenceKinds.has(required), `${data.current_state} 缺少 ${required} 证据`);
++  }
++  if (data.current_state === "review-ready") {
++    ensure(data.verification_profile === "candidate", "review-ready 必须使用 candidate profile");
++    return;
++  }
++  if (data.current_state === "needs-human") {
++    ensure(data.target_state === "release-ready", "needs-human 必须保留 release-ready 目标");
++    ensure(data.review_round === 2, "needs-human 只允许在第二轮审查后进入");
++    ensure(["candidate", "release"].includes(data.verification_profile), "needs-human 必须来自 candidate 或 release profile");
++    return;
++  }
++  ensure(data.verification_profile === "release", "release-ready 必须使用 release profile");
++  ensure(evidenceKinds.has("final-release-verification"), "release-ready 缺少 final-release-verification 证据");
++  if (reviewKind) ensure(evidenceKinds.has(reviewKind), `release-ready 缺少 ${reviewKind} 证据`);
+ }
+ 
+ export function loadMaintenanceCheckpoint(source) {
+diff --git a/scripts/lib/maintenance-review.mjs b/scripts/lib/maintenance-review.mjs
+index c4e1c46cc86bab41f23ae4cb6d6dbb771c83607c..5aa13ba372f87b0f8912a5a81346df34200b88c1 100644
+--- a/scripts/lib/maintenance-review.mjs
++++ b/scripts/lib/maintenance-review.mjs
+@@ -141,13 +141,17 @@ function validateWorktreeStream(stream, trackedDiff, manifest, baseDir) {
+     ensure(offset + length.value <= stream.length, "候选流 untracked content 截断");
+     const content = stream.subarray(offset, offset + length.value);
+     offset += length.value;
+-    const contentRef = manifest.untracked_content_refs[pathBytes.length];
+-    const storedPath = resolvePortableFile(contentRef, baseDir, `untracked snapshot ${pathBytes.length}`);
+-    ensure(readFileSync(storedPath).equals(content), `untracked snapshot 与候选流不一致: ${pathBytes.length}`);
++    if (manifest.storage !== "packed-stream") {
++      const contentRef = manifest.untracked_content_refs[pathBytes.length];
++      const storedPath = resolvePortableFile(contentRef, baseDir, `untracked snapshot ${pathBytes.length}`);
++      ensure(readFileSync(storedPath).equals(content), `untracked snapshot 与候选流不一致: ${pathBytes.length}`);
++    }
+     pathBytes.push(rawPath.toString("base64"));
+   }
+   ensure(JSON.stringify(pathBytes) === JSON.stringify(manifest.untracked_path_bytes), "manifest.untracked_path_bytes 与候选流不一致");
+-  ensure(manifest.untracked_files.length === pathBytes.length && manifest.untracked_content_refs.length === pathBytes.length, "manifest untracked inventory 长度不一致");
++  ensure(manifest.untracked_files.length === pathBytes.length, "manifest untracked inventory 长度不一致");
++  if (manifest.storage === "packed-stream") ensure(manifest.untracked_content_refs === undefined, "packed-stream 不得重复保存 untracked_content_refs");
++  else ensure(manifest.untracked_content_refs.length === pathBytes.length, "manifest untracked_content_refs 长度不一致");
+ }
+ 
+ function validateCandidateManifest(manifest, record, baseDir) {
+@@ -162,7 +166,7 @@ function validateCandidateManifest(manifest, record, baseDir) {
+     ensure(typeof manifest.untracked_diff_command === "string" && manifest.untracked_diff_command.trim(), "worktree manifest 缺少 untracked_diff_command");
+     ensure(Array.isArray(manifest.untracked_files), "worktree manifest 缺少 untracked_files");
+     ensure(Array.isArray(manifest.untracked_path_bytes), "worktree manifest 缺少 untracked_path_bytes");
+-    ensure(Array.isArray(manifest.untracked_content_refs), "worktree manifest 缺少 untracked_content_refs");
++    if (manifest.storage !== "packed-stream") ensure(Array.isArray(manifest.untracked_content_refs), "legacy worktree manifest 缺少 untracked_content_refs");
+     ensure(typeof manifest.snapshot_stream_ref === "string" && manifest.snapshot_stream_ref.trim(), "worktree manifest 缺少 snapshot_stream_ref");
+     ensure(typeof manifest.tracked_diff_ref === "string" && manifest.tracked_diff_ref.trim(), "worktree manifest 缺少 tracked_diff_ref");
+     const streamPath = resolvePortableFile(manifest.snapshot_stream_ref, baseDir, "snapshot_stream_ref");
+diff --git a/scripts/lib/task-package.mjs b/scripts/lib/task-package.mjs
+index 8c7eb66311b06df9027937589e1bbb8ed1383ed2..db6e5a6c2c7d8ab0217db9ebe8b0b39c6830ae92 100644
+--- a/scripts/lib/task-package.mjs
++++ b/scripts/lib/task-package.mjs
+@@ -135,9 +135,22 @@ function validateContract(value, registry, lifecycle) {
+     if (contract.slice_contract_ref || contract.lifecycle_ref) fail("template-maintenance 不得携带其他合同引用");
+     const checkpointPath = assertSafeRelativePath(contract.maintenance_ref, "contract.maintenance_ref");
+     if (!existsSync(checkpointPath)) fail(`维护 checkpoint 不存在: ${contract.maintenance_ref}`);
+-    validateMaintenanceCheckpoint(loadMaintenanceCheckpoint(contract.maintenance_ref), {
++    const checkpoint = loadMaintenanceCheckpoint(contract.maintenance_ref);
++    validateMaintenanceCheckpoint(checkpoint, {
+       allowPendingReview: value.execution_state === "Reviewer" && value.workflow_status !== "resolved"
+     });
++    if (checkpoint.schema_version === 2 && value.execution_state === "Reviewer") {
++      if (checkpoint.current_state !== "review-ready") fail("Reviewer 任务包只能绑定 review-ready checkpoint");
++      for (const field of ["candidate_kind", "candidate_requirement", "candidate_digest", "review_axis", "review_round", "applicable_rule_refs"]) {
++        if (contract[field] === undefined) fail(`template-maintenance Reviewer 合同缺少 ${field}`);
++      }
++      if (!Array.isArray(value.allowed_read_paths) || value.allowed_read_paths.length === 0) fail("template-maintenance Reviewer 缺少 allowed_read_paths");
++      if (contract.candidate_digest !== checkpoint.candidate_digest) fail("Reviewer 任务包 candidate_digest 与 checkpoint 不一致");
++      if (contract.review_round !== checkpoint.review_round) fail("Reviewer 任务包 review_round 与 checkpoint 不一致");
++      if (!value.allowed_read_paths.includes(contract.maintenance_ref)) fail("allowed_read_paths 必须包含 maintenance_ref");
++      value.allowed_read_paths.forEach((ref) => assertReadableEvidenceRef(ref, "allowed_read_paths 条目"));
++      contract.applicable_rule_refs.forEach((ref) => assertReadableEvidenceRef(ref, "applicable_rule_refs 条目"));
++    }
+     if (lifecycle.work_units.find((item) => item.id === value.work_unit_id)?.scope !== "template-source") fail("template-maintenance 必须绑定 template-source work unit");
+     return;
+   }
+diff --git a/scripts/verify-maintenance-checkpoint b/scripts/verify-maintenance-checkpoint
+index ccd167a9346232f2352b8b5b9ce98cbcec73d911..160df1097fc7f4046b8cbde11062d9776981c5fa 100755
+--- a/scripts/verify-maintenance-checkpoint
++++ b/scripts/verify-maintenance-checkpoint
+@@ -6,7 +6,7 @@ try {
+   const { positionals } = parseArgs({ allowPositionals: true, strict: true });
+   if (positionals.length > 1) throw new TypeError("用法: scripts/verify-maintenance-checkpoint [checkpoint.yaml|checkpoint.json|-]");
+   const result = validateMaintenanceCheckpoint(loadMaintenanceCheckpoint(positionals[0] ?? "-"));
+-  process.stdout.write(`模板维护 checkpoint 验证通过（${result.intensity}，最低 ${result.minimum_intensity}）\n`);
++  process.stdout.write(`模板维护 checkpoint 验证通过（${result.intensity}，最低 ${result.minimum_intensity}，${result.current_state}）\n`);
+ } catch (error) {
+   process.stderr.write(`模板维护 checkpoint 验证失败: ${error.message}\n`);
+   process.exitCode = 1;
+diff --git a/scripts/verify-maintenance-intensity-scenarios b/scripts/verify-maintenance-intensity-scenarios
+index 3aed18620f156647c6b41c4b86c3773078bcd9b2..6ca1ee12b4b16774c9e4e3044fcdfda2a67f1b33 100755
+--- a/scripts/verify-maintenance-intensity-scenarios
++++ b/scripts/verify-maintenance-intensity-scenarios
+@@ -30,6 +30,20 @@ const base = {
+   escalation: "none"
+ };
+ 
++const v2Base = {
++  ...base,
++  schema_version: 2,
++  intensity: "L3",
++  triggers: ["core-validator"],
++  review_mode: "formal-independent",
++  target_state: "implementation-ready",
++  current_state: "implementation-ready",
++  verification_profile: "fast",
++  review_round: 0,
++  candidate_digest: null,
++  verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification")
++};
++
+ const accepted = [
+   { ...base, intensity: "L1", triggers: ["textual-only"], verification_evidence: evidence("relevant-check"), review_mode: "self-check" },
+   { ...base, intensity: "L2", triggers: ["local-rule"], verification_evidence: [...evidence("counterexample", "fresh-verification"), { kind: "focused-independent-review", command: focusedReview, result: "pass" }], review_mode: "focused-independent" },
+@@ -38,6 +52,34 @@ const accepted = [
+ ];
+ 
+ for (const checkpoint of accepted) validateMaintenanceCheckpoint(checkpoint);
++validateMaintenanceCheckpoint(v2Base);
++validateMaintenanceCheckpoint({
++  ...v2Base,
++  target_state: "review-ready",
++  current_state: "review-ready",
++  verification_profile: "candidate",
++  review_round: 1,
++  candidate_digest: "a".repeat(64),
++  verification_evidence: [...v2Base.verification_evidence, ...evidence("candidate-verification", "initial-release-verification", "review-task-packages")]
++});
++validateMaintenanceCheckpoint({
++  ...v2Base,
++  target_state: "release-ready",
++  current_state: "release-ready",
++  verification_profile: "release",
++  review_round: 2,
++  candidate_digest: "d6bf78f58d2cf0e24528bfb7806bdf255124ed5f1b2973b5bf5fbc6aac5753dc",
++  verification_evidence: [...v2Base.verification_evidence, ...evidence("candidate-verification", "initial-release-verification", "review-task-packages", "final-release-verification"), { kind: "formal-independent-review", command: formalReview, result: "pass" }]
++});
++validateMaintenanceCheckpoint({
++  ...v2Base,
++  target_state: "release-ready",
++  current_state: "needs-human",
++  verification_profile: "candidate",
++  review_round: 2,
++  candidate_digest: "a".repeat(64),
++  verification_evidence: [...v2Base.verification_evidence, ...evidence("candidate-verification", "initial-release-verification", "review-task-packages")]
++});
+ 
+ const pendingFormalReview = {
+   ...accepted[3],
+@@ -57,6 +99,9 @@ const rejected = [
+   { ...accepted[2], verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification") },
+   { ...accepted[1], escalation: "发现发布语义影响但仍维持 L2", triggers: ["release-semantics"] },
+   { ...accepted[2], intensity: "L1" },
++  { ...v2Base, current_state: "review-ready", target_state: "review-ready", verification_profile: "candidate", review_round: 0, candidate_digest: null },
++  { ...v2Base, current_state: "release-ready", target_state: "release-ready", verification_profile: "release", review_round: 3, candidate_digest: "a".repeat(64) },
++  { ...v2Base, current_state: "release-ready", target_state: "release-ready", verification_profile: "release", review_round: 1, candidate_digest: "a".repeat(64) },
+   {
+     ...accepted[3],
+     verification_evidence: [
+diff --git a/scripts/verify-template b/scripts/verify-template
+index 132d4ac6a248dcde57e2bb09cdeb7f115169c757..54574f7422b77983b1072c210b5ad608dee2b32d 100755
+--- a/scripts/verify-template
++++ b/scripts/verify-template
+@@ -1,72 +1,4 @@
+ #!/usr/bin/env bash
+ set -euo pipefail
+-
+ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+-cd "$ROOT_DIR"
+-node -e 'const [major]=process.versions.node.split(".").map(Number); if (major < 22 || major >= 27) { console.error("模板工具需要 Node >=22 <27"); process.exit(1); }'
+-
+-required_files=(yss-project.yaml AGENTS.md CONTEXT.md skills-lock.json docs/agents/yss-skill-registry.yaml docs/agents/digital-human-roles.yaml docs/process/lifecycle-registry.yaml docs/process/lifecycle-registry-baseline.json docs/process/maintenance-intensity.yaml docs/process/schemas/lifecycle-checkpoint.schema.json docs/process/schemas/frontend-implementation-evidence.schema.json docs/process/schemas/digital-human-task-package.schema.json docs/process/schemas/subagent-task-package.schema.json docs/process/schemas/maintenance-review-record.schema.json docs/process/templates/lifecycle-checkpoint-template.yaml docs/process/templates/frontend-implementation-plan-template.yaml docs/process/templates/frontend-implementation-verification-template.yaml docs/templates/subagent-task-package-template.md .agents/skills/yss-tactical-design/SKILL.md .agents/skills/yss-tactical-design/agents/openai.yaml .agents/skills/yss-tactical-design/references/tactical-design-contract.md .agents/skills/yss-tactical-design/references/tactical-design.schema.json .agents/skills/yss-tactical-design/references/validation-rules.md .agents/skills/yss-tactical-design/references/output-template.md .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs .agents/skills/yss-tactical-design/tests/run-scenarios.mjs scripts/repository-mode scripts/implementation-path-policy scripts/repository-scope-policy scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-lifecycle-checkpoint scripts/verify-frontend-implementation-evidence scripts/lib/task-package.mjs scripts/verify-digital-human-task-package scripts/verify-digital-human-task-package-scenarios scripts/verify-subagent-task-package scripts/verify-subagent-task-package-scenarios scripts/verify-lifecycle-transition-scenarios scripts/verify-maintenance-checkpoint scripts/verify-maintenance-review-record scripts/verify-maintenance-intensity-scenarios scripts/verify-skill-registry scripts/verify-skill-governance scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/verify-digital-human-roles scripts/verify-digital-human-roles-scenarios scripts/verify-approval-record scripts/export-yss-skills)
+-for required in "${required_files[@]}"; do test -f "$required" || { echo "缺少模板必需文件: $required" >&2; exit 1; }; done
+-test -f scripts/lib/task-package-schema.mjs || { echo "缺少模板必需文件: scripts/lib/task-package-schema.mjs" >&2; exit 1; }
+-test -f scripts/lib/json-schema.mjs || { echo "缺少模板必需文件: scripts/lib/json-schema.mjs" >&2; exit 1; }
+-
+-repository_mode="$(scripts/repository-mode)"
+-if [[ "$repository_mode" == "template-source" ]]; then
+-  test -x .template-source/scripts/evidence-index
+-  .template-source/scripts/evidence-index --check
+-  pnpm --dir .template-source/tooling/node test
+-  pnpm --dir .template-source/tooling/node check:vendor
+-fi
+-
+-scripts/sync-skills --check
+-scripts/update-skill-lock --check
+-scripts/verify-skill-registry
+-scripts/verify-skill-governance
+-node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs
+-node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs
+-node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs
+-scripts/verify-yss-dto-openapi-profile
+-scripts/verify-yss-dto-openapi-scenarios
+-scripts/verify-digital-human-roles
+-scripts/verify-digital-human-roles-scenarios
+-scripts/verify-approval-record docs/templates/approval-record-template.yaml
+-scripts/verify-lifecycle-registry
+-scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml
+-scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-plan-template.yaml
+-scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-verification-template.yaml
+-scripts/verify-subagent-task-package-scenarios
+-scripts/verify-digital-human-task-package-scenarios
+-if [[ "$repository_mode" == "template-source" ]]; then
+-  scripts/verify-digital-human-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml
+-  scripts/verify-digital-human-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml
+-  scripts/verify-maintenance-checkpoint .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml
+-fi
+-scripts/verify-lifecycle-scenarios
+-scripts/verify-lifecycle-transition-scenarios
+-scripts/verify-maintenance-intensity-scenarios
+-scripts/verify-governance-release
+-scripts/verify-implementation-path-scenarios
+-scripts/verify-repository-scope-scenarios
+-scripts/verify-scaffold-generator-scenarios
+-scripts/verify-prototype-backend-scaffold-scenarios
+-scripts/verify-matt-yss-integration-scenarios
+-scripts/verify-yss-router-scenarios
+-scripts/verify-yss-ui-scenarios
+-scripts/verify-openapi-yaml-first-scenarios
+-scripts/verify-openapi-json-handoff-scenarios
+-
+-for entry in scripts/sync-skills scripts/update-skill-lock scripts/generate-lifecycle-artifacts scripts/verify-lifecycle-registry scripts/verify-lifecycle-checkpoint scripts/verify-frontend-implementation-evidence scripts/lib/task-package.mjs scripts/lib/maintenance-review.mjs scripts/verify-digital-human-task-package scripts/verify-digital-human-task-package-scenarios scripts/verify-subagent-task-package scripts/verify-subagent-task-package-scenarios scripts/verify-maintenance-checkpoint scripts/verify-maintenance-review-record scripts/verify-maintenance-intensity-scenarios scripts/verify-skill-registry scripts/verify-skill-governance scripts/verify-yss-dto-openapi-profile scripts/verify-yss-dto-openapi-scenarios scripts/verify-digital-human-roles scripts/verify-digital-human-roles-scenarios scripts/verify-approval-record scripts/lib/lifecycle-transition.mjs scripts/verify-lifecycle-scenarios scripts/verify-lifecycle-transition-scenarios scripts/verify-matt-yss-integration-scenarios scripts/verify-prototype-backend-scaffold-scenarios scripts/verify-yss-router-scenarios scripts/verify-openapi-yaml-first-scenarios scripts/verify-openapi-json-handoff-scenarios scripts/verify-repository-scope-scenarios scripts/export-yss-skills; do node --check "$entry"; done
+-node --check scripts/lib/task-package-schema.mjs
+-node --check scripts/lib/json-schema.mjs
+-
+-legacy_runtime="ru""by"
+-script_roots=(scripts)
+-if [[ -d .template-source/scripts ]]; then
+-  script_roots+=(.template-source/scripts)
+-fi
+-if rg -n "^#!.*${legacy_runtime}|\\b${legacy_runtime}\\b" "${script_roots[@]}" --glob '!*.md'; then echo "模板脚本不得保留活跃 Ruby 调用或 shebang" >&2; exit 1; fi
+-if rg --files "${script_roots[@]}" | rg '\.rb$'; then echo "模板脚本不得保留 .rb 路径" >&2; exit 1; fi
+-if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+-  git diff --check
+-fi
+-echo "模板发布校验通过"
++exec node "$ROOT_DIR/scripts/run-template-verification" --profile release "$@"
+diff --git a/skills-lock.json b/skills-lock.json
+index 6a957c703b4c5d97e16b9629329238e6c0bca1f3..f7d308c1238cba227ae95e57bd5816286276f4b2 100644
+--- a/skills-lock.json
++++ b/skills-lock.json
+@@ -57,7 +57,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/code-review/SKILL.md",
+-        "effectiveHash": "9c0385f372ebc6a0741e35f0c654f5739e3d4aac29083d80e5af56305ce4200c",
++        "effectiveHash": "4ed6de8815b13e04275e8e1577d7247c57526ad65b32b9aa2f6f88e2a4c26386",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "12daafb9c4f77deb3c3303dc2e6f8a3c2a0ff7928fc004af959ba18b8bd38068",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -491,7 +491,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/maintaining-skills/SKILL.md",
+-        "effectiveHash": "c88bf01f745fb85575cbfcef20a5a9dc071740b364c780490032b278313f11eb",
++        "effectiveHash": "580d87f7b0345acbba37f3281857ce1022ad2dd18a21487bfd1c7ab42f70d020",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
