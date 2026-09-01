@@ -17,7 +17,7 @@ owner: ai
 | Spec 初稿 |  |  |  |
 | 产品总体设计 / 功能架构 |  |  | 必需 |
 | 产品设计 / 交互说明 |  |  |  |
-| 高保真 HTML 原型 | `docs/.scratch/<feature>/design/prototypes/index.html` |  | 有 UI 时必需；Ant Design v6 |
+| 高保真 HTML 原型 | `docs/.scratch/<feature>/design/prototypes/index.html` |  | 有 UI 时必需；Ant Design v6 主题/视觉标准 + schema v2 语义映射/浏览器/无障碍证据，生产 API 为 YSS UI + Ant Design Vue 4.x |
 | Prototype Review |  |  |  |
 | CONTEXT 术语 |  |  | 业务术语须含 PascalCase `英文标识` |
 

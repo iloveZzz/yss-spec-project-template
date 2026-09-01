@@ -42,7 +42,7 @@ try {
       const ignored = run("git", ["check-ignore", "-q", relativePath]);
       if (ignored.status === 0) throw new TypeError(`权威注册表资产不得被 Git 忽略: ${relativePath}`);
     }
-    const stalePaths = ["AGENTS.md", "README.md", "docs/user-guide/产品生命周期工作流.md", ".agents/skills/yss-product-lifecycle/SKILL.md", "docs/process/lifecycle-artifact-map.md"];
+    const stalePaths = ["AGENTS.md", "README.md", "docs/user-guide/用户手册.md", ".agents/skills/yss-product-lifecycle/SKILL.md", "docs/process/lifecycle-artifact-map.md"];
     if (isTemplateSource(ROOT)) stalePaths.push(".template-source/derived/harness-work-unit-map.md");
     for (const relativePath of stalePaths) {
       if (/\d+\s*个(?:主阶段|门禁|工作单元|职责点)/.test(readFileSync(path.join(ROOT, relativePath), "utf8"))) {

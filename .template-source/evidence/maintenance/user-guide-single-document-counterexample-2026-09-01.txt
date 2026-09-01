@@ -1,0 +1,13 @@
+变更前反例：
+
+- `docs/user-guide/` 下有 9 份 Markdown，第一次使用者需要先选择文件。
+- `output/pdf/user-guide/` 下有 9 份同名 PDF，下载和分发时容易漏文件。
+- `规格与任务迁移指南.md` 仍作为独立用户入口。
+- README 同时列出索引、入门教程、CLI 指南和迁移指南。
+
+预期结果：
+
+- `docs/user-guide/` 只保留 `用户手册.md`。
+- `output/pdf/user-guide/` 只保留 `用户手册.pdf`。
+- 迁移指南不再作为用户文档或 README 入口。
+- 快速开始、需求澄清、完整示例、团队协作、CLI 和功能手册模板在同一目录中可查。

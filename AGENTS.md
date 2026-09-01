@@ -54,7 +54,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 | 入口分诊 `stage.entry-triage` | `work-unit.entry-triage` | `yss-product-lifecycle` | 仓库身份、影响面、最近可信阶段；`gate.repository-identity-valid` |
 | Discovery `stage.discovery` | `work-unit.discovery-opportunity`、`work-unit.discovery-requirements`、`work-unit.domain-strategy-design`、`work-unit.stage-decision` | `yss-product-lifecycle`；按事实 / 领域影响使用 `competitive-intelligence`、`research`、`grilling`、`domain-modeling`、`yss-stage-decision` | Discovery、用户/MVP/非目标/成功标准、测试 seam；必要时 DDD 战略设计与阶段决策包；`gate.domain-strategy-approved`、`gate.stage-decision-package-approved` |
 | Spec / 功能架构 `stage.spec-architecture` | `work-unit.spec-synthesis` | `yss-product-lifecycle`；`to-spec` 仅为显式兼容入口 | Spec、产品总体设计、功能架构；必要时 Spec Delta；`gate.spec-baseline-approved` |
-| 产品设计 `stage.product-design` | `work-unit.prototype-design` | `yss-design-system` → `prototype-review` → `yss-prototype-stage` → `yss-antd-design` → Codex `product-design:index`；前端落地改用 `yss-ui` | 交互说明、低 / 高保真原型、状态矩阵；`gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` |
+| 产品设计 `stage.product-design` | `work-unit.prototype-design` | `yss-prototype-stage` 为主合同，内部依次消费 `yss-design-system`、低保真、独立 `prototype-review`、`yss-antd-design` pre-build facts、Codex `product-design:index` focused workflow、post-build/浏览器/无障碍验证；前端落地改用 `yss-ui` | 交互说明、低 / 高保真原型、状态矩阵；`gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` |
 | 系统 / 数据架构与工程契约 `stage.system-data-engineering` | `work-unit.technical-analysis` | `yss-router`；按影响使用 `yss-openapi-governance`、`yss-openapi-draft-review`、`codebase-design`、`implementation-repo-onboarding`、`yss-tactical-design` | OpenAPI Draft / Freeze、数据架构、工程基线、架构审查；无 API 影响记录；必要时 Tactical DDD Check；`gate.openapi-draft-reviewed`、`gate.design-reviewed`、`gate.openapi-frozen`、`gate.engineering-baseline-accepted`、`gate.architecture-reviewed` |
 | Ticket 正式化 `stage.ticket-formalization` | `work-unit.ticket-decomposition` | `yss-product-lifecycle` + `yss-router`；`to-tickets` 仅为显式兼容入口 | 功能父 Ticket、垂直切片、Slice Implementation Contract；切片初始 `ready-for-human`；`gate.slice-contract-approved`、`gate.slice-ready-for-agent` |
 | 垂直切片实现 `stage.vertical-slice-implementation` | `work-unit.slice-implementation` | `yss-router` + `tdd`；UI 影响追加 `yss-ui`、`yss-page-module-development` 及条件专项 skill；`implement` 仅为显式兼容入口 | 前后端代码、TDD、YSS Skill Execution Result；仅允许 `ready-for-agent` 且合同当前 |
@@ -96,7 +96,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 |---|---|
 | 技术事实、标准、第三方 API 或框架行为影响决策 | `research` 或等价的一手资料记录 |
 | 竞品、市场或用户口碑事实 | `competitive-intelligence` |
-| UI 设计、原型、组件或主题 | `yss-design-system` → `prototype-review` → `yss-prototype-stage`；原型事实用 `yss-antd-design`，Codex 再路由 `product-design:index`，其他 Agent 交付等价合同资产。前端代码落地改用 `yss-ui`，不要继续调用 `yss-antd-design` |
+| UI 设计、原型、组件或主题 | `yss-prototype-stage` 持有阶段合同：`yss-design-system` → 低保真 → 独立 `prototype-review` → `yss-antd-design` pre-build facts → Codex `product-design:index` focused workflow → post-build/浏览器/无障碍验证；其他 Agent 交付等价合同资产。前端代码落地改用 `yss-ui`，不要继续调用 `yss-antd-design` |
 | Bug、测试失败或性能回退 | `diagnosing-bugs` 建立可复现反馈，再用 `tdd` |
 | merge / rebase 冲突 | `resolving-merge-conflicts` |
 | 架构治理、难测模块或深模块设计 | `codebase-design`；`improve-codebase-architecture` 仅作为用户显式兼容入口 |

@@ -12,7 +12,7 @@
 | Discovery | `docs/.scratch/<feature>/discovery/<feature>-discovery.md` | 可选 |
 | 原型阶段合同 / Product Design 路由 | `yss-prototype-stage -> product-design:index -> <focused skill>` | 必需；记录 `$get-context`、`$ideate`、`$prototype`、`$image-to-code` 或 `$url-to-code` |
 | 原型 / 线框图 | `<链接或导出图片路径>` | Excalidraw / Figma / Penpot / tldraw / Axure / Markdown |
-| 高保真 HTML 原型 | `docs/.scratch/<feature>/design/prototypes/index.html` | 低保真原型评审通过后补齐；必须使用 Ant Design v6；可由系统 / Agent 自动产出；产出后必须获得用户确认 |
+| 高保真 HTML 原型 | `docs/.scratch/<feature>/design/prototypes/index.html` | 低保真原型评审通过后补齐；主题/视觉标准必须为 Ant Design v6，标准 React 组件锁定 antd@6，生产映射为 YSS UI + Ant Design Vue 4.x；产出后必须获得用户确认 |
 | 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 记录实际 CLI / AntD 版本、CLI JSON 输出、浏览器验证和阻塞项 |
 | 现有 API 草案 | `docs/.scratch/<feature>/api/<feature>.yaml` | 可选；通常应先完成产品设计和 Spec 校准 |
 
@@ -105,7 +105,7 @@
 - loading、empty、error、no-permission、readonly、conflict、dirty-form 状态已展示，或明确不适用。
 - 每个表格列、筛选条件、表单字段、抽屉、弹窗和按钮都有数据来源或契约反推说明。
 - 设计可以拆成独立可演示的垂直切片。
-- 低保真原型评审通过后，高保真 HTML 原型使用 Ant Design v6 覆盖主流程、关键状态和响应式断点。
+- 低保真原型评审通过后，高保真 HTML 原型使用 Ant Design v6 主题/视觉标准覆盖主流程、关键状态和响应式断点，并记录到生产 YSS UI/Ant Design Vue 4.x 的语义映射。
 - 原型产出前已使用 `antd` CLI 查询设计语言、组件 API、demo、token 和 semantic 信息；原型产出后已在 `prototype-evidence.yaml` 记录实际版本、CLI 与浏览器验证证据。
 
 ## 9. 决策与未决问题

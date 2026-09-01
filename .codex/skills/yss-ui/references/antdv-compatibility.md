@@ -32,7 +32,7 @@ pnpm why vue @yss-ui/components @yss-ui/hooks ant-design-vue vxe-table
 
 ## Ant Design v6 边界
 
-Ant Design v6 可以作为产品原型的视觉和 token 语义参考；Vue 生产实现使用 Ant Design Vue 4.x。禁止复制 React hooks、JSX、组件 props、theme algorithm API 或事件模型到 Vue 代码。
+Ant Design v6 是产品原型默认的主题样式、视觉和 token 语义标准；Vue 生产实现使用 Ant Design Vue 4.x。版本号不同本身不是冲突。生产映射必须消费原型证据中的 `visual_semantic_mapping`，并用实现仓 lockfile/类型验证 YSS 或 AntDV 目标；禁止复制 React hooks、JSX、组件 props、theme algorithm API 或事件模型到 Vue 代码。
 
 ## 兼容性证据
 

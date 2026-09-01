@@ -157,7 +157,7 @@ When implementing a page module, the result should usually include:
 
 ## Stage 7 Contract
 
-- Require an approved `Slice Implementation Contract`, requirement freeze, low-fidelity review, Ant Design v6 high-fidelity HTML prototype, AntD CLI evidence, user confirmation, and state matrix for UI-impact work.
+- Require an approved `Slice Implementation Contract`, requirement freeze, low-fidelity review, Ant Design v6 theme/visual-standard high-fidelity HTML prototype, schema v2 semantic mapping/browser/accessibility evidence, user confirmation, and state matrix for UI-impact work; production APIs still come from YSS UI + the actual Ant Design Vue 4.x lockfile.
 - Bind page, hooks, schema, blocks, generated API client, component tests, and E2E paths to contract fields and `allowed_write_paths`.
 - User-visible loading, empty, error, permission, selection, pagination, and action behavior use `behavior-tdd`; purely mechanical page scaffolding may use documented `controlled-generation`.
 - Return the shared `YSS Skill Execution Result`. A prototype mismatch, new API, new permission state, path overrun, or missing evidence must produce `drift`, `violation`, or `new_impacts`, not `implemented`.

@@ -38,6 +38,8 @@ const releaseBaseline = [
   "scripts/verify-matt-yss-integration-scenarios",
   "scripts/verify-yss-router-scenarios",
   "scripts/verify-yss-ui-scenarios",
+  "scripts/verify-yss-prototype-contract-scenarios",
+  "node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence docs/design/templates/prototype-evidence-template.yaml --allow-template",
   "scripts/verify-openapi-yaml-first-scenarios",
   "scripts/verify-openapi-json-handoff-scenarios"
 ].sort();
@@ -56,6 +58,9 @@ assert.ok(!docsOnly.groups.includes("skills"), "文档内循环不得运行无�
 const skillChange = planTemplateVerification({ profile: "fast", changedFiles: [".agents/skills/maintaining-skills/SKILL.md"] });
 assert.ok(skillChange.groups.includes("skills"));
 assert.ok(skillChange.groups.includes("hygiene"));
+
+const prototypeContractChange = planTemplateVerification({ profile: "fast", changedFiles: ["scripts/verify-yss-prototype-contract-scenarios"] });
+assert.ok(prototypeContractChange.groups.includes("implementation"), "原型契约脚本变化必须运行实现压力场景");
 
 const candidate = planTemplateVerification({ profile: "candidate", changedFiles: ["docs/process/harness-process-tailoring.md"] });
 assert.equal(candidate.effective_profile, "candidate");

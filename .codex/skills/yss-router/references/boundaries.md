@@ -15,7 +15,7 @@ Use this reference when multiple YSS skills seem applicable.
 - `yss-use-table-height`: Only table available-height calculation and required container/pagination/toolbar wiring.
 - `yss-use-tree-height`: Only tree available-height calculation, search offset, and virtual scrolling wiring.
 
-Default for a new page: first verify the approved product design, state matrix, Ant Design v6 high-fidelity HTML prototype, AntD CLI evidence, and user confirmation; then start with `yss-page-module-development` and add the narrow skills that match the page controls.
+Default for a new page: first verify the approved product design, state matrix, Ant Design v6 theme/visual-standard high-fidelity HTML prototype, schema v2 semantic mapping/browser/accessibility evidence, and user confirmation; then use the implementation lockfile to map into YSS UI + Ant Design Vue 4.x, start with `yss-page-module-development`, and add the narrow skills that match the page controls.
 
 中文说明：新建页面默认从页面模块技能开始，只有遇到具体组件、Hook、API、Formily 细节时再加载专项技能。
 

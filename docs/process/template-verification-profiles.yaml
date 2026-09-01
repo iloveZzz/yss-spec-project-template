@@ -61,6 +61,10 @@ required_files:
   - .agents/skills/yss-tactical-design/references/output-template.md
   - .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs
   - .agents/skills/yss-tactical-design/tests/run-scenarios.mjs
+  - .agents/skills/yss-prototype-stage/references/product-design-adapter.md
+  - .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs
+  - .agents/skills/yss-prototype-stage/tests/run-scenarios.mjs
+  - docs/design/templates/prototype-evidence-template.yaml
   - scripts/lib/template-verification.mjs
   - scripts/lib/maintenance-intensity.mjs
   - scripts/lib/maintenance-candidate.mjs
@@ -104,6 +108,7 @@ syntax_files:
   - scripts/verify-matt-yss-integration-scenarios
   - scripts/verify-prototype-backend-scaffold-scenarios
   - scripts/verify-yss-router-scenarios
+  - scripts/verify-yss-prototype-contract-scenarios
   - scripts/verify-openapi-yaml-first-scenarios
   - scripts/verify-openapi-json-handoff-scenarios
   - scripts/verify-repository-scope-scenarios
@@ -140,7 +145,7 @@ routing:
     groups: [maintenance, collaboration]
   - patterns: ["docs/templates/openapi-*", ".agents/skills/yss-openapi-*/**", ".agents/skills/yss-dto/**", "scripts/*openapi*", "scripts/*dto*"]
     groups: [contracts]
-  - patterns: ["docs/process/implementation-*", "scripts/*repository*", "scripts/*implementation*", "scripts/*scaffold*"]
+  - patterns: ["docs/process/implementation-*", "scripts/*repository*", "scripts/*implementation*", "scripts/*scaffold*", "scripts/*prototype*"]
     groups: [implementation]
   - patterns: [".template-source/**", "scripts/vendor/**"]
     groups: [tooling]
@@ -206,6 +211,8 @@ groups:
       - { run: "scripts/verify-matt-yss-integration-scenarios" }
       - { run: "scripts/verify-yss-router-scenarios" }
       - { run: "scripts/verify-yss-ui-scenarios" }
+      - { run: "scripts/verify-yss-prototype-contract-scenarios" }
+      - { run: "node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence docs/design/templates/prototype-evidence-template.yaml --allow-template" }
   governance-release:
     commands:
       - { run: "scripts/verify-governance-release" }

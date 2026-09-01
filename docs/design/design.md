@@ -2,7 +2,7 @@
 
 ## 来源与定位
 
-本文件基于本地设计系统包 `/Users/zhudaoming/Downloads/Product-Design-System` 首次分析整理，并在后续用项目 Ant Design 5 Less / `:root` CSS 变量覆盖默认亮色主题。自本文件落地后，项目内设计系统的权威来源为 `docs/design/design.md` 与 `docs/design/tokens/*`，外部 Downloads 目录和原始 Less 文件仅作为历史输入记录，不作为后续执行依赖，也不作为实现语言。
+本文件基于本地设计系统包 `/Users/zhudaoming/Downloads/Product-Design-System` 首次分析整理，并在后续用项目 Ant Design 5 Less / `:root` CSS 变量覆盖默认亮色主题。紧凑密度、间距和容器规格同时参考 `/Users/zhudaoming/Projects/demo/yss-meta/apps/frontend/metadata-platform/packages/src/styles` 的实际实现。自本文件落地后，项目内设计系统的权威来源为 `docs/design/design.md` 与 `docs/design/tokens/*`；外部目录只作为历史输入或实现样本，不作为后续工程依赖，也不作为实现语言。
 
 关键来源：
 
@@ -10,6 +10,7 @@
 | --- | --- | --- |
 | 历史 `Product-Design-System` 包 | 首次引入 Ant Design 企业级语义、状态矩阵和验收习惯 | 保留原则、组件规则和审查清单 |
 | 项目 Ant Design 5 Less / `:root` 变量 | 默认亮色主题、运行时切换别名、色板与布局 token | **默认主题权威**；冲突时以 `:root` 为准 |
+| `yss-meta` 的 `packages/src/styles` | 已落地的紧凑间距、Card 圆角、CSS 变量桥接和客户主题案例 | 只提取稳定语义；utility class、客户覆盖和兼容补丁不进入默认规范 |
 | `docs/design/tokens/tokens.default.json` | 默认亮色主题派生 token | 作为实现 token 基线 |
 | `docs/design/tokens/tokens.dark.json` | 暗色主题派生 token | 暗色仍走 `darkAlgorithm`；本轮未按新 seed 重派生完整暗色色板 |
 | `docs/design/tokens/tokens.compact.json` | 紧凑密度主题派生 token | 共享亮色 seed，紧凑高度算法保持现状 |
@@ -41,6 +42,8 @@
 当前项目覆盖与官方默认的主要差异：主色 `#3371ff` ≠ 官方 `#1677ff`，错误色 `#f5222d` ≠ 官方 `#ff4d4f`，页面背景 `#f0f2f5`，文本使用 Ant Design 透明度阶，默认圆角 `6px`。`blue` 等预设色板仍可保留官方蓝谱；**色板预设 ≠ 品牌主色**。
 
 Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以本文件和 `docs/design/tokens/*` 为 source visual truth，而不是官方默认或历史 `#1677ff` / `Inter` / `8px` 品牌圆角。执行清单见 `.agents/skills/yss-design-system/references/design-qa-theme.md`。
+
+版本边界固定为双轨：高保真原型以 React Ant Design v6 的 `design.md`、semantic token 和标准组件事实作为主题样式基线；生产实现使用 Vue 3、YSS UI 与目标实现仓 lockfile 中的 Ant Design Vue 4.x API。两者版本号不同不是冲突。原型到生产只迁移视觉角色、项目 Token、状态和验收行为，禁止迁移 React hook、props、JSX、静态 API 或事件模型。
 
 ## 设计原则
 
@@ -156,6 +159,23 @@ Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以本文�
 - 表单、筛选区、工具栏、表格和详情页应优先使用密集但有节奏的布局。
 - 不使用任意 magic number；如确需新增尺寸，应先判断是否要扩展 token。
 
+### 紧凑密度（默认原型规格）
+
+高保真原型和中后台数据密集页面默认使用紧凑密度。紧凑密度不是把所有间距机械缩小，而是使用 `docs/design/tokens/tokens.compact.json` 和下表控制页面节奏；没有明确的展示型或触屏场景时，不切回宽松密度。
+
+| 场景 | Padding | Margin / Gap | 说明 |
+| --- | --- | --- | --- |
+| 页面内容区 | 桌面端 `16px`；窄屏 `12px` | 一级区域 `16px` | 页面外缘由布局容器统一提供，子模块不得重复增加外边距 |
+| Card | 默认 `16px`；表格 / 筛选密集 Card 可用 `12px` | Card 之间 `12px` | Card header 与 body 使用同一水平 padding；禁止 Card 套 Card 制造层级 |
+| 筛选区 / 工具栏 | 垂直 `8px`、水平 `12px` | 控件间 `8px`；与主体 `12px` | 优先单行排列，空间不足时按字段组换行，不压缩到不可读 |
+| 表单 | 区块 `16px` | 表单项纵向 `12px`；同行字段 `12px` | label 与控件的局部间距由组件 token 负责，不在页面重复覆盖 |
+| 表格 / 列表 | 容器 `0` 或 `12px`，由是否独立成 Card 决定 | 工具栏与表格 `8px` | 表格内部 cell padding 使用组件紧凑规格，不用页面 CSS 逐列覆盖 |
+| Modal / Drawer | `16px` | 内容区块 `12px`；操作区 `8px` | 复杂多步流程不塞入 Modal，改用独立页面或 Drawer 分区 |
+
+紧凑模式的基础 token 为：`sizeXXS=4`、`sizeXS=8`、`sizeSM=8`、`size=12`、`sizeMD=16`、`sizeLG=16`、`sizeXL=24`、`sizeXXL=32`；默认控件高度 `28px`，小号 `21px`，大号 `35px`。业务页面只消费这些语义层级，不复制外部样例中的 `.m-*` / `.p-*` utility class。
+
+Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之间优先由父级 `gap` 管理；只有文档流语义或无法使用布局容器时才使用 margin，并仍限定在 `4/8/12/16/24/32px` 阶梯内。禁止用负 margin 修补布局。
+
 ### 布局 token
 
 | Token | 值 | 用途 |
@@ -179,9 +199,9 @@ Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以本文�
 | `borderRadiusXS` | 2 | 极小元素 |
 | `borderRadiusSM` | 4 | 小标签、小控件 |
 | `borderRadius` | 6 | 默认控件圆角 |
-| `borderRadiusLG` | 8 | 大容器 / 浮层 |
+| `borderRadiusLG` | 8 | Card、大容器 / 浮层 |
 
-保持“控件圆角小于或等于容器圆角”：默认控件 `6px`，小控件 `4px`，容器 `8px`。实现时以 `docs/design/tokens/tokens.default.json` 为准。
+保持“控件圆角小于或等于容器圆角”：默认控件 `6px`，小控件 `4px`，Card 与普通容器统一 `8px`。外部实现中的 `12px` panel 圆角属于局部产品扩展，不作为紧凑型默认值；确需使用时必须有明确层级语义，不能让同一页面的 Card 在 `8px`、`12px` 间任意混用。实现时以 `docs/design/tokens/tokens.compact.json` 为紧凑密度基线。
 
 ### 动效
 
@@ -204,8 +224,8 @@ Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以本文�
 | --- | --- |
 | Button Primary | 每个决策区域只保留一个主按钮，表达最重要动作 |
 | Button Default | 次级动作默认使用描边 / 默认按钮，不与主操作争夺注意力 |
-| Input / Select | 默认高度 32px，focus 使用主色边框和可见焦点反馈 |
-| Card | 用作真实内容容器，默认白底，容器间距清晰；避免卡片套卡片 |
+| Input / Select | 紧凑模式默认高度 28px，focus 使用主色边框和可见焦点反馈 |
+| Card | 用作真实内容容器，默认白底、`8px` 圆角、`16px` 内边距和 `12px` 外部 gap；避免卡片套卡片 |
 | Modal | 用于阻断式决策或关键表单，不承载复杂多页流程 |
 | Menu | 选中态使用淡蓝背景 + 主色文本，保证导航位置明确 |
 | Tabs | 激活态使用主色文本 + 2px 下划线，不使用背景填充 |
@@ -225,6 +245,25 @@ Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以本文�
 - 表格、筛选区、批量操作、详情面板、抽屉、弹窗和状态提示应保持一致的控件语言。
 - 避免大面积渐变、装饰插画、夸张 hero、过多卡片化包装和单色系视觉堆叠。
 - 权限不足、只读、空数据、加载中、校验失败、冲突、提交成功等状态必须在设计阶段明确。
+
+## 高保真原型交付规格
+
+高保真原型的主产物是可在浏览器运行和复验的 HTML，而不是截图、设计说明或生产前端代码。默认入口固定为 `docs/.scratch/<feature>/design/prototypes/index.html`；关联 CSS、JavaScript、字体和本地资源应与入口一起存放在该目录内，保持相对路径可移植。
+
+- HTML 必须呈现真实页面密度、Card、表单、筛选、表格、弹层和状态反馈；不得只输出静态画布或图片热区。
+- 默认启用本文件定义的紧凑密度：页面 padding、区域 gap、Card `8px` 圆角、Card padding 和 `28px` 控件高度必须可在浏览器计算样式中复核。
+- 至少覆盖主流程、一个 loading / empty 状态，以及一个 error / no-permission / conflict 状态；主操作必须产生可见反馈。
+- HTML 是评审与确认主载体；截图只作为指定视口和指定状态的验证证据，不能替代 HTML。
+- 原型可以使用构建工具生成，但交付目录必须提供稳定的 `index.html` 入口。依赖开发服务器时，证据中必须记录启动命令、实际端口和版本；不得只交付无法独立定位入口的源码目录。
+- 标准组件存在 Ant Design 实现时，React 原型必须精确锁定与 CLI 查询一致的 `antd@6.x`，使用 pnpm lockfile，并通过 `ConfigProvider` 消费由 `docs/design/tokens/theme.json` 转换出的可执行 ThemeConfig。生产映射仍以 YSS UI / Ant Design Vue 4.x lockfile 为准。
+- Design QA、浏览器验证和视觉目标必须使用同一视口与同一状态；默认 desktop `1440×900`、mobile `390×844`，按实际影响追加其他视口。
+- 原型仍须通过 `prototype-review`、AntD CLI 事实核对和浏览器验证；HTML 存在不代表 `gate.prototype-reviewed`、`gate.prototype-verified` 或 `gate.user-confirmation` 已通过。
+
+### 无障碍覆盖
+
+品牌 Seed `#3371ff` 保持项目身份，不等于每个组件状态都必须直接使用该填充。普通文本或控件状态不满足 WCAG 2.2 AA 时，优先通过组件 Token 调整实际填充色或文字色，并同时验证 default、hover、active、disabled 与 focus；不得用单页特例色绕过主题层。
+
+原型证据至少覆盖对比度、键盘导航、焦点顺序与可见焦点、语义标签和 Dialog 焦点管理、200% zoom、`prefers-reduced-motion`、目标尺寸及自动化扫描。组件库默认能力不能替代对真实页面 DOM 与交互的验证。
 
 ## 响应式验收矩阵
 
@@ -259,7 +298,7 @@ Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以本文�
 - 组件样式优先通过 Ant Design token、component token、CSS variables 或主题算法表达。
 - 消息、通知、Modal 静态方法应使用 `App`、hook API 或 context holder，避免主题上下文丢失。
 - 暗色模式使用 `darkAlgorithm` 或 `docs/design/tokens/variables.dark.css`，不要手工反转颜色。本轮只同步了暗色的字体栈和圆角 seed；完整暗色色板仍是历史算法结果，启用暗色前应再派生一次。
-- 紧凑模式使用 `compactAlgorithm` 或 `docs/design/tokens/tokens.compact.json`，不要逐组件压缩高度。
+- 紧凑模式默认使用 `compactAlgorithm` 或 `docs/design/tokens/tokens.compact.json`，不要逐组件压缩高度；高保真 HTML 必须按紧凑 token 验收实际 padding、gap、Card 圆角和控件高度。
 
 如果前端不是 Ant Design：
 
@@ -286,13 +325,13 @@ Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以本文�
 - 将 `docs/design/tokens/theme.json` 接入前端工程主题配置。
 - 将 `docs/design/tokens/variables.css` 中的 `--brand-*` 与运行时别名纳入项目 token 管理。
 - 如果项目启用暗色模式，用 `darkAlgorithm` 按新 seed 重派生 `docs/design/tokens/tokens.dark.json`，并补充截图验收。
-- 如果项目存在高密度表格 / 审批 / 运营台，补充 `docs/design/tokens/tokens.compact.json` 的适用边界。
+- 将高保真 HTML 原型模板默认接入 `docs/design/tokens/tokens.compact.json`，并在浏览器证据中记录实际计算后的 padding、gap、Card 圆角和控件高度。
 
 ## Ant Design v6 原型补充基线
 
-本节根据 `antdv6-design.md` 的设计说明提炼，用于高保真原型和后续前端实现，不替代项目 token。
+本节根据官方 `https://ant.design/design.md` 与本轮固定目标版本的 `antd design.md --format json` 提炼，用于高保真原型和后续前端实现，不替代项目 token，也不提供 Ant Design Vue API。
 
 - 先按 `bg-layout`、`bg-container`、`bg-elevated`、文本、边框、状态、圆角和阴影等 semantic token 角色设计，再映射到 `ConfigProvider`、组件 token 或 CSS variables；不得用页面局部色值替代主题层。
-- 默认亮色使用 `theme.defaultAlgorithm`；暗色和紧凑密度通过 theme algorithm 切换，禁止手工反色或逐控件压缩。
+- 默认亮色使用 `theme.defaultAlgorithm`；高保真原型默认叠加紧凑密度 algorithm，暗色和紧凑密度均通过 theme algorithm 切换，禁止手工反色或逐控件压缩。
 - 每个决策区域只保留一个 single primary action。保存、提交、审批、发布、导出和重试等动作必须提供 interaction feedback；不可逆或高风险动作使用确认弹窗。
 - 对实际字号、图标和背景复核 accessibility contrast。默认 token 不足时，通过种子 token 或组件 token 调整，不引入单页特例色。

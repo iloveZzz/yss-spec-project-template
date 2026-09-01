@@ -241,6 +241,10 @@ work_unit_routes:
     primary_skill: yss-prototype-stage
     supporting_skills: [prototype-review, yss-design-system, yss-antd-design, product-design:index]
     skills: [prototype-review, yss-design-system, yss-prototype-stage, yss-antd-design, product-design:index]
+    execution_order: [yss-design-system, low-fidelity-assets, prototype-review, yss-antd-design-pre-build, product-design-focused-workflow, yss-antd-design-post-build, browser-design-qa-accessibility, user-confirmation]
+    prototype_adapter_ref: .agents/skills/yss-prototype-stage/references/product-design-adapter.md
+    evidence_schema_version: 2
+    version_boundary: {design_standard: ant-design-v6, prototype_components: react-antd-6.x, production_components: yss-ui-ant-design-vue-4.x, production_version_source: implementation-lockfile}
     human_gate: prototype-confirmation
     applies_when: product_design_impact
     not_applicable_reason: no_ui_or_product_design_impact

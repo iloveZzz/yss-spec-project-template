@@ -42,17 +42,17 @@
 
 1. 先读取 `yss-project.yaml`，按 `repository_mode` 选择模板维护或产品研发生命周期。
 2. 必读入口为 `AGENTS.md` 与 `CONTEXT.md`；流程事实分别以生命周期映射和裁剪指南为准。
-3. `template-source` 修改流程、技能或模板后，执行 `scripts/sync-skills`、`scripts/update-skill-lock` 和 `scripts/verify-template`。
-4. `project-instance` 先做影响面分诊；进入 Spec 基线时使用 `grill-with-docs`、`to-spec`，契约冻结后再用 `to-tickets` 拆分垂直切片 Ticket。
+3. `template-source` 修改后先按 `maintenance-intensity.yaml` 判定 L1 / L2 / L3，默认用 `scripts/verify-template-fast` 达到 `implementation-ready`；只有共享 skill 变更才运行 `scripts/sync-skills` 和 `scripts/update-skill-lock`，候选审查与发布分别使用 candidate / 完整门禁。
+4. `project-instance` 默认从 `yss-product-lifecycle` 的 `route` 模式开始，再由原生 `work-unit.*` 推进 Discovery、Spec、产品设计、工程契约和 Ticket 正式化；`grill-with-docs`、`to-spec`、`to-tickets`、`implement` 仅作为用户显式调用的兼容入口。
 5. 实现仓库接入、YSS 路由、独立审查、fresh verification 和 Git checkpoint 以 `AGENTS.md` 的硬门禁为准。
 
 YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https://github.com/iloveZzz/yss-spec-dev-skills)，发布清单和导出命令见 [skills 维护说明](./docs/agents/skills-maintenance.md)。
 
 ## 模板初始化 CLI
 
-`create-yss-spec` 的目标维护位置是独立 GitHub 仓库 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec)。本仓库不再包含 CLI 源码、测试、发布配置或开发过程记录，只保留面向模板使用者的实践指南：
+`create-yss-spec` 的目标维护位置是独立 GitHub 仓库 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec)。本仓库不再包含 CLI 源码、测试、发布配置或开发过程记录。CLI 的使用方法已经合并到统一用户手册：
 
-- [create-yss-spec 外部 CLI 实践指南](./docs/user-guide/外部命令行工具实践指南.md)
+- [YSS 用户手册：创建、接管和更新项目](./docs/user-guide/用户手册.md#创建接管和更新项目)
 
 推荐入口：
 
@@ -80,13 +80,13 @@ main@6acc160e4e0cd062dbbbd7a1b26ae92855edf07e
 
 主研发流程使用 `skills/engineering`；`skills-lock.json` 同时记录本次安装的关联 `productivity`、`in-progress`、`deprecated`、`misc` 和 `personal` skill 路径。
 
-## 轻量校验
+## 模板校验
 
 ```bash
-scripts/verify-template
+scripts/verify-template-fast
 ```
 
-该脚本检查：
+快速入口按 Git 影响面执行相关检查，未映射路径或核心校验资产变化时 fail-safe 升级。它与 candidate / 发布 profile 共同检查：
 
 - `yss-project.yaml`、权威流程资产和模板是否完整。
 - 共享技能投影及 `skills-lock.json` 的完整树哈希是否一致。
@@ -96,14 +96,14 @@ scripts/verify-template
 - 示例 OpenAPI YAML 是否可解析。
 - Git diff 是否存在空白错误。
 
+显式准备审查候选时执行 `scripts/verify-template-candidate`；首次正式冻结前和最终发布前执行不可裁剪的 `scripts/verify-template`。
+
 ## 关键文档
 
 | 文档 | 内容 |
 |------|------|
 | [AGENTS.md](./AGENTS.md) | 全局 AI 指令 + 工程基线入口 + Agent 协作 |
-| [docs/user-guide/用户手册索引.md](./docs/user-guide/用户手册索引.md) | 模板使用说明 |
-| [docs/user-guide/产品生命周期工作流.md](./docs/user-guide/产品生命周期工作流.md) | 产品全生命周期使用手册 |
-| [docs/user-guide/图示生成器使用指南.md](./docs/user-guide/图示生成器使用指南.md) | Excalidraw 可视化辅助 skill 使用手册 |
+| [docs/user-guide/用户手册.md](./docs/user-guide/用户手册.md) | 从首次只读检查到需求、开发、审查、发布和 CLI 操作的统一用户手册 |
 | [docs/process/PDCA-SCRUM.md](./docs/process/PDCA-SCRUM.md) | PDCA × Scrum × AI |
 | [docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md](./docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md) | Matt Pocock Engineering Skills 集成与使用 |
 | [docs/process/lifecycle-registry.yaml](./docs/process/lifecycle-registry.yaml) | 生命周期结构事实源：主阶段、门禁、产物、工作单元、证据与稳定 ID |
@@ -113,7 +113,6 @@ scripts/verify-template
 | [docs/process/implementation-repo-integration.md](./docs/process/implementation-repo-integration.md) | 外部前端 / 后端实现仓库接入与跨仓库切片绑定 |
 | [docs/agents/README.md](./docs/agents/README.md) | Agent 协作文档目录说明 |
 | [docs/agents/skills-maintenance.md](./docs/agents/skills-maintenance.md) | Agent skills 安装与维护 |
-| [docs/user-guide/规格与任务迁移指南.md](./docs/user-guide/规格与任务迁移指南.md) | 旧规格与任务入口迁移指南 |
 | [docs/discovery/IDEATION.md](./docs/discovery/IDEATION.md) | 机会构想方法 |
 | [docs/architecture/README.md](./docs/architecture/README.md) | 架构设计 + 审查清单 |
 | [docs/testing/README.md](./docs/testing/README.md) | 测试策略 |

@@ -1,0 +1,50 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  新增高保真原型生成与证据校验器，调整产品设计生命周期技能编排、跨 Agent 投影和模板验证路由，
+  同时建立 React Ant Design v6 原型与 Vue 3 + YSS UI + Ant Design Vue 4.x 生产实现之间的语义交付契约。
+triggers:
+  - generation-semantics
+  - lifecycle-gate
+  - aggregate-behavior-change
+  - core-validator
+changed_assets:
+  - .agents/skills/yss-prototype-stage/SKILL.md
+  - .agents/skills/yss-prototype-stage/references/product-design-adapter.md
+  - .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs
+  - .agents/skills/yss-prototype-stage/tests/run-scenarios.mjs
+  - .agents/skills/yss-antd-design/references/evidence.md
+  - .agents/skills/yss-design-system/SKILL.md
+  - .agents/skills/yss-product-lifecycle/SKILL.md
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - .agents/skills/yss-router/references/boundaries.md
+  - .agents/skills/yss-ui/references/antdv-compatibility.md
+  - docs/design/design.md
+  - docs/design/templates/prototype-evidence-template.yaml
+  - docs/process/template-verification-profiles.yaml
+  - scripts/lib/skill-governance.mjs
+  - scripts/verify-yss-prototype-contract-scenarios
+  - skills-lock.json
+verification_evidence:
+  - kind: red
+    command: .template-source/evidence/maintenance/yss-prototype-antdv6-red-2026-09-01.md
+    result: pass
+  - kind: green
+    command: .template-source/evidence/maintenance/yss-prototype-antdv6-green-2026-09-01.md
+    result: pass
+  - kind: refactor
+    command: .template-source/evidence/maintenance/yss-prototype-antdv6-refactor-2026-09-01.md
+    result: pass
+  - kind: pressure-scenario
+    command: .template-source/evidence/maintenance/yss-prototype-antdv6-pressure-2026-09-01.md
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: formal-independent
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

@@ -38,6 +38,25 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
   if (exists(".agents/skills/high-fidelity-html-prototype") || aliases.has("high-fidelity-html-prototype")) {
     fail("high-fidelity-html-prototype 已退役，不得保留物理目录或运行时 alias");
   }
+  const prototypeStage = read(".agents/skills/yss-prototype-stage/SKILL.md");
+  const prototypeAdapter = read(".agents/skills/yss-prototype-stage/references/product-design-adapter.md");
+  const prototypeEvidence = read("docs/design/templates/prototype-evidence-template.yaml");
+  const projectDesign = read("docs/design/design.md");
+  const antdvCompatibility = read(".agents/skills/yss-ui/references/antdv-compatibility.md");
+  for (const marker of ["product-design-adapter.md", "schema v2", "ant-design-v6", "ant-design-vue-4.x", "accessibility_verification"]) {
+    if (!prototypeStage.includes(marker)) fail(`原型阶段合同缺少 YSS adapter 标记: ${marker}`);
+  }
+  for (const marker of ["antd@6.x", "pnpm", "ConfigProvider", "visual_semantic_mapping", "react_only_api_not_copied", "1440x900", "390x844", "verification/design-qa.md"]) {
+    if (!prototypeAdapter.includes(marker)) fail(`Product Design adapter 缺少执行约束: ${marker}`);
+  }
+  for (const marker of ["schema_version: 2", "design_standard: ant-design-v6", "runtime_component_library: ant-design-vue-4.x", "actual_antd_version", "visual_semantic_mapping", "accessibility_verification", "verification/design-qa.md"]) {
+    if (!prototypeEvidence.includes(marker)) fail(`原型证据模板缺少 schema v2 字段: ${marker}`);
+  }
+  if (prototypeEvidence.includes("与官方 #1677ff / Inter / 8px")) fail("原型证据模板仍把 Inter/8px 误写为官方 v6 默认差异");
+  if (projectDesign.includes("`antdv6-design.md`")) fail("design.md 仍引用不存在的 antdv6-design.md");
+  for (const marker of ["Ant Design v6", "Ant Design Vue 4.x", "版本号不同本身不是冲突", "visual_semantic_mapping"]) {
+    if (!antdvCompatibility.includes(marker)) fail(`AntDV 兼容策略缺少双轨边界: ${marker}`);
+  }
   for (const skill of registry.skills) {
     if (!canonicalIds.has(skill.id)) fail(`注册表 canonical skill 无效: ${skill.id}`);
     if (skill.maturity === "deprecated") {

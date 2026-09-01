@@ -40,6 +40,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 - 组件语言：优先 Ant Design / YSS UI 语义，不自造同类控件。
 - 状态完整性：loading、empty、error、readonly、disabled、no-permission、conflict、success 必须在设计或实现中可解释。
 - Ant Design v6 原型基线：先用语义 token 定义角色，再用组件 token 或 CSS variables 落地；不以局部硬编码替代主题层。
+- 双轨版本：主题/视觉标准为 React Ant Design v6；生产 API 为 Vue 3 + YSS UI + 实现仓 lockfile 的 Ant Design Vue 4.x。只迁移语义、Token、状态与验收行为。
 
 ## 强制规则
 
@@ -49,7 +50,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 - 每个页面或决策区域只保留一个 single primary action；其余动作降级为默认、链接或危险操作。
 - 不硬编码表面色、边框色、状态色；优先使用 token 或主题变量。
 - 交互原型中的每个可点击主动作都必须给出 interaction feedback：状态变化、禁用原因、成功或失败反馈至少覆盖其一。
-- accessibility contrast：默认 token 不能满足目标文本对比度时，优先通过 `ConfigProvider` seed / component token 调整，不新增页面级特例色。
+- accessibility：品牌 Seed `#3371ff` 保持不变；实际文字/背景组合不满足 WCAG 2.2 AA 时，优先通过 `ConfigProvider` component token 调整，并验证 default/hover/active/disabled/focus、键盘焦点、200% zoom、reduced motion 与目标尺寸，不新增页面级特例色。
 - React + Ant Design 的暗色或紧凑密度必须使用 theme algorithm，不手工反转颜色或逐控件压缩尺寸。
 - 不用 Tag 表达关键错误、阻断或审批状态；关键状态必须有可读文本和语义反馈。
 - 不让按钮、标签、表头、弹窗、卡片中的文字溢出或遮挡。
@@ -89,6 +90,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 | YTable / YTree / 高度自适应 | `yss-components` / `yss-use-table-height` / `yss-use-tree-height` |
 | 原型阶段的 Ant Design v6 组件 / token / demo 查询 | `yss-antd-design`（只用于原型设计构建；前端落地改用 `yss-ui`） |
 | Codex 原型交接前的视觉 QA | `design-qa`；token / 字体对照读 `references/design-qa-theme.md`，以项目覆盖为准 |
+| Product Design 通用 starter 接入 YSS | `yss-prototype-stage/references/product-design-adapter.md`；锁定 antd@6、pnpm、主题 adapter、feature 级 QA 与证据 |
 | API 契约 / 接入 | `yss-openapi-governance` / `yss-api-integration` |
 
 ## 更新设计系统

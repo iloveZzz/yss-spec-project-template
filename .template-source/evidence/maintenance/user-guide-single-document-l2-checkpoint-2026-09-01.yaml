@@ -1,0 +1,29 @@
+schema_version: 2
+intensity: L2
+classification_reason: >-
+  将九份用户指南和九份 PDF 收敛为单一手册，移除独立迁移指南，
+  并同步修正 README、校验入口和当前迁移规则引用，命中 template-structure。
+triggers: [template-structure]
+changed_assets:
+  - README.md
+  - docs/user-guide/
+  - output/pdf/user-guide/
+  - scripts/node-verify-lifecycle-registry.mjs
+  - docs/agents/skills-maintenance.md
+  - .template-source/contracts/create-yss-spec-repository-mode-contract.md
+  - .template-source/roadmap/next-major-template-governance.md
+  - .template-source/evidence/maintenance/user-guide-single-document-counterexample-2026-09-01.txt
+verification_evidence:
+  - kind: counterexample
+    command: .template-source/evidence/maintenance/user-guide-single-document-counterexample-2026-09-01.txt
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: focused-independent
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

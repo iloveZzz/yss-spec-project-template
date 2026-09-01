@@ -11,12 +11,16 @@
 - `antd.queries.components[]`：每个选用组件的 `info_ref` / `demo_ref` / `token_ref` / `semantic_ref`。
 - `design_baseline.project_design_ref`：`docs/design/design.md`。
 - `design_baseline.project_override_reviewed`：上游默认与项目 token 已对照。
+- `prototype_stack.actual_antd_version`：原型 lockfile 中的实际 React `antd@6.x`，必须与 `antd.target_antd_version` 一致。
+- `visual_semantic_mapping.components[]`：记录 v6 semantic role、项目 Token、React 原型组件、生产 YSS/Ant Design Vue 4.x 目标与 React-only API 隔离结论。
 
 JSON 输出存为相邻文件，证据清单只引用路径。不要把整份 `llms-full.txt` 或 MCP 对话贴进清单。
 
 ## lint
 
 `antd lint` 只对可解析的 React/TSX 源码有规则命中。HTML 原型会出现空 issues（假绿）或 `skippedFiles` / `parse-error` / `partial: true`。
+
+CLI JSON 只能证明查询事实，不能单独证明原型消费了目标版本或完成了 Vue/YSS 映射。`gate.prototype-verified` 还必须通过 `yss-prototype-stage/scripts/prototype-contract.mjs` 的项目与 schema v2 证据校验、Design QA、浏览器和无障碍验证。
 
 | 产物 | `lint_applicable` | 做法 |
 |---|---|---|

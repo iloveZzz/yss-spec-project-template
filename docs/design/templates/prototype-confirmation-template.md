@@ -1,6 +1,6 @@
 # <功能名称> 高保真原型确认记录
 
-> 适用时机：Ant Design v6 高保真 HTML 原型产出后、Spec 校准 / 需求冻结 / UI 驱动 OpenAPI Draft 前。未确认前不得进入下游门禁。
+> 适用时机：Ant Design v6 主题/视觉标准高保真 HTML 原型产出后、Spec 校准 / 需求冻结 / UI 驱动 OpenAPI Draft 前。生产 API 仍为 YSS UI + Ant Design Vue 4.x；未确认前不得进入下游门禁。
 
 ## 1. 原型信息
 
