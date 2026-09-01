@@ -35,15 +35,15 @@
 |---|---|---|---|
 | L1 | `maintenance-intensity.yaml` 的 `levels.L1.triggers` | 至少一项与变更直接相关的实际检查 | `self-check` 或显式 `human-checkpoint` |
 | L2 | `maintenance-intensity.yaml` 的 `levels.L2.triggers`，或该策略的 `default_level` | 修改前可失败的最小反例，以及本轮 fresh verification | 一名非实施者执行 `focused-independent` 聚焦审查；结论可内联 checkpoint |
-| L3 | `maintenance-intensity.yaml` 的 `levels.L3.triggers` | 完整 RED、GREEN、REFACTOR、压力场景与本轮 fresh verification | 冻结候选后执行 `formal-independent` 正式独立审查；需要时使用完整 `code-review` |
+| L3 | `maintenance-intensity.yaml` 的 `levels.L3.triggers` | 维护者自检与本轮 fresh verification；正式发布另执行一次完整 `scripts/verify-template` | 日常不要求独立审查；发布证据由维护者提供 |
 
 判定规则：
 
 1. 等级只由 `maintenance-intensity.yaml` 计算；未给出 trigger 时使用该策略的 `default_level`，未知 trigger 必须更新策略后才可验证。
 2. 实施者可先分级，不要求 L1/L2 预批准；发现新影响时立即更新 `escalation`、重新分级并补齐证据。
 3. 发布、合并或阶段完成时按整体候选重新判定；不得把共同改变整体语义的修改拆成多个 L1/L2 规避 L3。
-4. RED 用于证明行为差异。L1 不人为构造失败；L2 可使用已有失败、最小 fixture 或现有测试修改前失败；只有行为无法确定性表达时才运行聚焦压力场景。L3 使用 `maintaining-skills` 并执行本节定义的完整 RED、GREEN、REFACTOR 和压力场景要求。
-5. 模板发布候选固定按 L3 聚合验证，但不追溯补造每个既有 L1/L2 修改的独立 RED。
+4. RED 用于证明行为差异。L1 不人为构造失败；L2 可使用已有失败、最小 fixture 或现有测试修改前失败；L3 不再强制构造完整 RED/GREEN/REFACTOR/压力场景，记录维护者自检和 fresh verification 即可。
+5. 模板正式发布仍执行一次完整 `scripts/verify-template`，但不因 L3 额外冻结候选或派发正式独立审查。
 6. 模板维护与产品切片使用同一 finding 闭环：`violation` / 机器检查失败 / 适用行空白由实施者修复后重新验证并按本表强度复审；`drift` / `new_impacts` 升级影响面并重新分级，禁止在旧合同或旧 checkpoint 上继续编码。审查者不得写实现。未命中的条件项才 `not-applicable`；命中后不得豁免。
 
 模板维护默认停在 `implementation-ready`，不自动冻结候选或派发审查。需要独立审查时显式提升到 `review-ready`；完成独立审查和最终完整门禁后才能成为 `release-ready`。三个核验入口由 `docs/process/template-verification-profiles.yaml` 统一定义：
@@ -64,7 +64,7 @@ verification_evidence:
   - kind: relevant-check | counterexample | red | green | refactor | pressure-scenario | fresh-verification | focused-independent-review | formal-independent-review
     command: <本轮实际命令或可读取证据引用>
     result: pass
-review_mode: self-check | human-checkpoint | focused-independent | formal-independent # L2/L3 还必须在 verification_evidence 中给出对应 review 证据引用
+review_mode: self-check | human-checkpoint | focused-independent | formal-independent # L2 需聚焦审查证据；L3 使用 self-check，历史 formal 记录只读兼容
 escalation: none | <升级原因和原等级>
 target_state: implementation-ready | review-ready | release-ready
 current_state: implementation-ready | review-ready | release-ready | needs-human
@@ -81,4 +81,4 @@ Worktree 候选使用 `scripts/capture-maintenance-candidate --output <目录>` 
 
 固定远程模板输入可使用 `scripts/cache-template-commit --repository <remote-url> --commit <40位commit>`。缓存键仅由 URL 与 commit 构成，每次命中仍复核 metadata 和 Git object hash；缓存目录不进入 Git 或正式证据。
 
-`focused-independent-review` 与 `formal-independent-review` 的 `command` 必须引用可读取的审查结论。L3 新记录必须使用 `docs/process/schemas/maintenance-review-record.schema.json`，绑定 Reviewer、实施者、完整 `yss-worktree-candidate-v1` 冻结字节、候选 digest、通过正式 schema 的 Reviewer 任务包、任务包声明的审查报告和已关闭 findings。仅校验器内明确登记的 2026-08-24 / 27 历史 L3 Markdown 可兼容，并仍须带 `legacy_formal_review: true`、审查身份和明确通过结论；任意新 Markdown 不能自报 legacy。审查请求、实施者自述、否定裁决、伪造或非规范候选流、无效任务包、未关闭 findings 或 symlink 越界证据都会被拒绝。可用 `scripts/verify-maintenance-review-record` 单独校验。
+`focused-independent-review` 与 `formal-independent-review` 的 `command` 必须引用可读取的审查结论。L3 日常新记录使用 checkpoint 的 `self-check` 证据，不创建独立审查记录；历史 L3 正式记录继续使用 `docs/process/schemas/maintenance-review-record.schema.json` 并只读兼容，仍须带 `legacy_formal_review: true`、审查身份和明确通过结论。审查请求、实施者自述、否定裁决、伪造或非规范候选流、无效任务包、未关闭 findings 或 symlink 越界证据都会被拒绝。可用 `scripts/verify-maintenance-review-record` 单独校验历史记录。

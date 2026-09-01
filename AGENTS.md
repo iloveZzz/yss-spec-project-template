@@ -39,7 +39,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 
 按“影响面 → 单一事实来源 → 投影 / 派生资产 → 分级证据”维护。强度分级、最低证据和 checkpoint 合同见 `docs/process/harness-process-tailoring.md`。
 
-- 创建、修改或退役 skill 时使用 `maintaining-skills`，并先按 `docs/process/harness-process-tailoring.md` 判定 L1 / L2 / L3；只有 L3 必须保留完整基线失败、压力场景、修订后验证和正式独立审查证据。
+- 创建、修改或退役 skill 时使用 `maintaining-skills`，并先按 `docs/process/harness-process-tailoring.md` 判定 L1 / L2 / L3；L3 日常记录维护者自检与 fresh verification，正式发布前执行完整模板门禁。
 - `.agents/skills` 是跨 Agent 共享技能的权威内容；`.claude/skills`、`.codex/skills`、`.cursor/skills`、`.hermes/skills`、`.pi/skills`、`.qoder/skills`、`.trae/skills` 中的共享技能是生成投影，禁止分别手工修改。Cursor 的契约运行时入口是 `.cursor/skills`；不得把 canonical `.agents/skills` 与某个平台投影当作同权双入口。
 - 模板维护默认以 `scripts/verify-template-fast` 完成 `implementation-ready`；显式晋级审查时用 `scripts/verify-template-candidate`，首次冻结前和最终发布前仍必须执行完整 `scripts/verify-template`。后者是不可裁剪的模板发布阻断门禁。模板与外部 `create-yss-spec` 的跨仓库契约未完成集成验证时，不得声称可发布。
 
@@ -114,7 +114,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 
 ## 10. 独立审查、验证和追踪
 
-- 实现者不能承担命中的独立审查（含数字人）。模板维护按 L1 / L2 / L3 分别使用 self-check / 人工 checkpoint、聚焦独立审查、正式独立审查；模板发布、代码切片和高风险变更仍必须由其他 Agent 或独立审查者完成。产品切片与模板维护共用同一 finding 闭环：`violation` 由实现者在原合同路径修复后重新捕获并全轴复审；`drift` / `new_impacts` 使合同 `stale` 并回 Router。审查者不得写实现。命中后的 mandatory 不得豁免；未命中才 `not-applicable`。
+- 实现者不能承担命中的独立审查（含数字人）。模板维护的 L3 日常路径使用维护者自检；L2 仍按需使用聚焦独立审查，正式发布仍执行完整模板门禁。模板发布、代码切片和高风险变更仍必须满足各自独立审查要求。产品切片与模板维护共用同一 finding 闭环：`violation` 由实现者在原合同路径修复后重新捕获并全轴复审；`drift` / `new_impacts` 使合同 `stale` 并回 Router。审查者不得写实现。命中后的 mandatory 不得豁免；未命中才 `not-applicable`。
 - 任何“完成 / 可合并 / 可发布”结论必须基于 fresh verification，不接受“之前跑过”或实现者自述。
 - 会签门禁按 `docs/agents/digital-human-roles.yaml` 的 `gate_policy` 关闭，会签文件经 `scripts/verify-approval-record` 核验；`gate.release-ready`、对外商务承诺和运行时外部副作用仍须生物人。
 - 在会签暂停、handoff、进入实现、合并或发布边界集中同步范围、验证证据、风险、会签点、Ticket 状态和下一步；阻塞、责任人变化或资产单独批准时立即同步。

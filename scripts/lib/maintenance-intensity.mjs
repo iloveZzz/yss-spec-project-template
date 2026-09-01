@@ -11,13 +11,13 @@ const INTENSITY_POLICY = path.join(root, "docs/process/maintenance-intensity.yam
 const REQUIRED_EVIDENCE = {
   L1: ["relevant-check"],
   L2: ["counterexample", "fresh-verification", "focused-independent-review"],
-  L3: ["red", "green", "refactor", "pressure-scenario", "fresh-verification", "formal-independent-review"]
+  L3: ["fresh-verification", "self-check"]
 };
 
 const REVIEW_MODES = {
   L1: new Set(["self-check", "human-checkpoint"]),
   L2: new Set(["focused-independent"]),
-  L3: new Set(["formal-independent"])
+  L3: new Set(["self-check", "formal-independent"])
 };
 
 function ensure(condition, message) {
@@ -87,9 +87,13 @@ export function validateMaintenanceCheckpoint(data, options = {}) {
     }
     kinds.add(evidence.kind);
   }
-  const reviewKind = data.intensity === "L2" ? "focused-independent-review" : data.intensity === "L3" ? "formal-independent-review" : null;
+  const legacyFormalL3 = data.intensity === "L3" && data.review_mode === "formal-independent";
+  const reviewKind = data.intensity === "L2" ? "focused-independent-review" : data.intensity === "L3" ? (legacyFormalL3 ? "formal-independent-review" : "self-check") : null;
   if (data.schema_version === 2) validateCheckpointState(data, kinds, reviewKind);
-  for (const required of REQUIRED_EVIDENCE[data.intensity]) {
+  const requiredEvidence = legacyFormalL3
+    ? ["red", "green", "refactor", "pressure-scenario", "fresh-verification", "formal-independent-review"]
+    : REQUIRED_EVIDENCE[data.intensity];
+  for (const required of requiredEvidence) {
     const pendingByV2State = data.schema_version === 2 && data.current_state !== "release-ready" && required === reviewKind;
     if ((options.allowPendingReview === true || pendingByV2State) && required === reviewKind) continue;
     ensure(kinds.has(required), `${data.intensity} 缺少 ${required} 证据`);
@@ -118,14 +122,24 @@ function validateCheckpointState(data, evidenceKinds, reviewKind) {
     return;
   }
 
-  ensure(data.candidate_digest !== null, `${data.current_state} 必须绑定 candidate_digest`);
-  ensure(data.review_round >= 1, `${data.current_state} 的 review_round 必须为 1 或 2`);
-  for (const required of ["candidate-verification", "initial-release-verification", "review-task-packages"]) {
-    ensure(evidenceKinds.has(required), `${data.current_state} 缺少 ${required} 证据`);
+  const selfCheckL3 = data.intensity === "L3" && data.review_mode === "self-check";
+  if (!selfCheckL3) {
+    ensure(data.candidate_digest !== null, `${data.current_state} 必须绑定 candidate_digest`);
+    ensure(data.review_round >= 1, `${data.current_state} 的 review_round 必须为 1 或 2`);
+    for (const required of ["candidate-verification", "initial-release-verification", "review-task-packages"]) {
+      ensure(evidenceKinds.has(required), `${data.current_state} 缺少 ${required} 证据`);
+    }
+    validateReleaseVerificationCommand(data, "initial-release-verification");
+  } else {
+    ensure(data.review_round === 0, "L3 self-check 不需要审查轮次");
+    ensure(data.candidate_digest === null, "L3 self-check 不得冻结 candidate_digest");
   }
-  validateReleaseVerificationCommand(data, "initial-release-verification");
   if (data.current_state === "review-ready") {
-    ensure(data.verification_profile === "candidate", "review-ready 必须使用 candidate profile");
+    if (selfCheckL3) {
+      ensure(data.verification_profile === "fast", "L3 self-check 的 review-ready 必须使用 fast profile");
+    } else {
+      ensure(data.verification_profile === "candidate", "review-ready 必须使用 candidate profile");
+    }
     return;
   }
   if (data.current_state === "needs-human") {

@@ -513,7 +513,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/maintaining-skills/SKILL.md",
-        "effectiveHash": "580d87f7b0345acbba37f3281857ce1022ad2dd18a21487bfd1c7ab42f70d020",
+        "effectiveHash": "16f8adeeaa8fc3e8abf3ec49f9e96fe74e3dede0a0b70a918bc62931b597bff7",
         "targets": [
           ".agents/skills",
           ".claude/skills",

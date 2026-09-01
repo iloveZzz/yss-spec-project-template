@@ -36,7 +36,7 @@
 
 1. 在临时目录读取或下载锁定来源，不直接覆盖工作区。
 2. 只在 `.agents/skills/<skill-name>/` 修改共享技能；平台专属技能只在所属 root 修改。
-3. 创建、修改或退役 skill 时使用 `maintaining-skills`，并先按 `docs/process/harness-process-tailoring.md` 判定验证与审查强度：L1 执行相关检查，L2 记录最小反例和 fresh verification，L3 记录完整 RED 基线、压力场景、GREEN 结果和 REFACTOR 检查。未定义分级的外部仓库按实际风险执行结构校验和针对性行为验证，不强制为每次普通修改构造失败基线。
+3. 创建、修改或退役 skill 时使用 `maintaining-skills`，并先按 `docs/process/harness-process-tailoring.md` 判定验证与审查强度：L1 执行相关检查，L2 记录最小反例、fresh verification 和聚焦审查，L3 记录维护者自检与 fresh verification；正式发布前统一执行完整模板门禁。未定义分级的外部仓库按实际风险执行结构校验和针对性行为验证。
 4. 生成共享投影并更新锁文件：
 
    ```bash
