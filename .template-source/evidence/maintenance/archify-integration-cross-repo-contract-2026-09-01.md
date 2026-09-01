@@ -26,11 +26,12 @@ git -C submodules/create-yss-harness-dev diff 2b300e8d14077633c6934f76e0987d1130
 
 ## 发布顺序
 
-1. 推送战术模板修复后的 `main`，使战术 CLI 的模板来源 commit 可取回。
-2. 将主模板功能提交推送到 `main`，使 `create-yss-spec` 固定的模板来源 commit 可取回。
-3. 推送 `create-yss-spec` 与 `create-yss-harness-dev` 的 `main`。
-4. 推送主模板包含最终子模块指针、正式审查和最终完整门禁证据的 `main`。
-5. 对四仓执行 `git ls-remote origin refs/heads/main`，并在主模板执行 `git submodule status --recursive` 与 CLI fresh test，确认远端可取回性。
+1. 推送战术模板 `2fc7a3e47bd747eeb136e269eac57ba4a4c655dd`，再推送战术 CLI `84f0d2baf2e240917e4befef0424a9fd93abd22a`；后者固定前者。
+2. 将主模板 `f4ee19614b6206e08d47d333b08e49d4f2af93c4` 快进到 `main`，再将主 CLI 的 Round 1 祖先 `783b13f7b2f61f21edf6371006d7019a6043f0df` 推送到其 `main`；该 CLI 祖先固定 `f4ee196...`。
+3. 将主模板快进到 `96fb0900f8f49e42fe17d36e4cac4717b341bcf2`。此提交的三个 gitlink 此时都已可取回：战术模板为 `2fc7a3e...`，两套 CLI 指针是步骤 1/2 已发布 commit 的祖先。
+4. 将主 CLI 快进到 `213d79706c806552e48efae752f0444140247467`；此提交固定步骤 3 已可取回的主模板 `96fb090...`。
+5. 推送主模板包含最终子模块指针、正式审查和最终完整门禁证据的 `main`；其 gitlink 必须固定主 CLI `213d797...`、战术 CLI `84f0d2b...` 与战术模板 `2fc7a3e...`。
+6. 对四仓执行 `git ls-remote origin refs/heads/main`，并在主模板执行 `git submodule status --recursive` 与 CLI fresh test，确认远端可取回性。
 
 所有推送仅允许 fast-forward，禁止 force。任一步失败即停止后续推送，不把部分发布描述为完整成功。
 
