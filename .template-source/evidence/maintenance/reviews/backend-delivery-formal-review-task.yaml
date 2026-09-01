@@ -1,0 +1,77 @@
+schema_version: 1
+task_id: backend-delivery-formal-review-round1
+work_unit_id: work-unit.intensity-aware-review
+actor_id: reviewer.backend-delivery.round3.2026-09-02
+role_id: role.test-engineer
+runtime_id: runtime.skill-projection
+execution_state: Reviewer
+workflow_status: active
+skill_source:
+  registry_ref: docs/agents/digital-human-roles.yaml
+  defaults_ref: taskPackageDefaults(role.test-engineer)
+  core_skills: [tdd, diagnosing-bugs, code-review, alibaba-java-code-style, yss-ui, yss-design-system, yss-page-module-development, yss-domain, yss-application, yss-repository, yss-web-controller, yss-dto, mapstruct, lombok]
+  forbidden_skills: [yss-ddd-scaffold-generator, yss-frontend-scaffold-generator, implement, to-spec]
+contract:
+  kind: template-maintenance
+  contract_id: backend-delivery-l3-checkpoint-2026-09-02
+  contract_version: 1
+  status: issued
+  contract_ref: .template-source/evidence/maintenance/backend-delivery-l3-checkpoint-2026-09-02.yaml
+  maintenance_ref: .template-source/evidence/maintenance/backend-delivery-l3-checkpoint-2026-09-02.yaml
+  candidate_kind: worktree-packed
+  candidate_requirement: 只审查 candidate_digest=03479831dd06f0c25462aa20bf16f73afd57d27e48f8c11e8c1e39e8c9cd9413 的冻结候选字节
+  candidate_digest: 03479831dd06f0c25462aa20bf16f73afd57d27e48f8c11e8c1e39e8c9cd9413
+  review_axis: standards
+  review_round: 1
+  applicable_rule_refs: [AGENTS.md, CONTEXT.md, docs/process/harness-process-tailoring.md, .agents/skills/maintaining-skills/SKILL.md]
+inputs:
+  - .template-source/evidence/maintenance/backend-delivery-candidate-round5/candidate-manifest.yaml
+  - .template-source/evidence/maintenance/backend-delivery-l3-checkpoint-2026-09-02.yaml
+  - .template-source/evidence/maintenance/backend-delivery-cross-repo-contract-2026-09-02.md
+  - .template-source/evidence/maintenance/backend-delivery-submodule-diff-2026-09-02.md
+  - AGENTS.md
+  - CONTEXT.md
+  - docs/process/harness-process-tailoring.md
+  - .agents/skills/maintaining-skills/SKILL.md
+allowed_read_paths:
+  - .template-source/evidence/maintenance/backend-delivery-candidate-round5/candidate-manifest.yaml
+  - .template-source/evidence/maintenance/backend-delivery-candidate-round5/candidate.bin
+  - .template-source/evidence/maintenance/backend-delivery-candidate-round5/tracked.diff
+  - .template-source/evidence/maintenance/backend-delivery-l3-checkpoint-2026-09-02.yaml
+  - .template-source/evidence/maintenance/backend-delivery-cross-repo-contract-2026-09-02.md
+  - .template-source/evidence/maintenance/backend-delivery-submodule-diff-2026-09-02.md
+  - AGENTS.md
+  - CONTEXT.md
+  - docs/process/harness-process-tailoring.md
+  - .agents/skills/maintaining-skills/SKILL.md
+objective: 对后端交付专线冻结候选执行正式独立审查，检查范围、Docker 默认、Kubernetes 显式选择、凭据/沙箱/回滚边界、跨仓顺序和验证证据；不得修改实现或候选。
+allowed_write_paths:
+  - .template-source/evidence/maintenance/reviews/backend-delivery-formal-review-round1.md
+  - .template-source/evidence/maintenance/reviews/backend-delivery-formal-review-record-round1.yaml
+forbidden_actions: [修改实现资产, 修改候选快照, 修改 checkpoint, commit, push, 批准发布]
+expected_outputs: [正式独立审查结论, findings, candidate_digest]
+expected_evidence_files:
+  - .template-source/evidence/maintenance/reviews/backend-delivery-formal-review-round1.md
+  - .template-source/evidence/maintenance/reviews/backend-delivery-formal-review-record-round1.yaml
+verification_commands:
+  - scripts/verify-template-fast
+  - git diff --check
+verification_results:
+  - command: scripts/verify-template-fast
+    exit_code: 0
+    executed_at: '2026-09-02T00:10:00+08:00'
+    duration_ms: 12000
+    evidence_ref: .template-source/evidence/maintenance/backend-delivery-candidate-round5/candidate-manifest.yaml
+  - command: git diff --check
+    exit_code: 0
+    executed_at: '2026-09-02T00:10:01+08:00'
+    duration_ms: 20
+    evidence_ref: .template-source/evidence/maintenance/backend-delivery-candidate-round5/candidate-manifest.yaml
+review_context:
+  implementation_actor_id: worker.backend-delivery.2026-09-02
+  implementation_task_id: backend-delivery-implementation-2026-09-02
+downstream_consumers: [role.lifecycle-orchestrator]
+convergence:
+  parent_work_unit: work-unit.intensity-aware-review
+  convergence_ref: .template-source/evidence/maintenance/backend-delivery-l3-checkpoint-2026-09-02.yaml
+  conflict_escalation: violation 交实施者修复并重新冻结；drift/new_impacts 回 Router；第二轮仍阻断则 needs-human

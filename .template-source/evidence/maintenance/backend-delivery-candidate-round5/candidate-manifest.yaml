@@ -1,0 +1,39 @@
+schema_version: 1
+candidate_kind: yss-worktree-candidate-v1
+storage: packed-stream
+review_mode: worktree
+review_base_ref: HEAD
+merge_base: 60635af5f847a3f0faddc675428b93587d08ba32
+implementation_candidate_ref: working-tree
+candidate_snapshot_ref: .template-source/evidence/maintenance/backend-delivery-candidate-round5/candidate-manifest.yaml
+candidate_digest: 03479831dd06f0c25462aa20bf16f73afd57d27e48f8c11e8c1e39e8c9cd9413
+tracked_diff_command: git diff --no-ext-diff --binary --full-index 60635af5f847a3f0faddc675428b93587d08ba32
+untracked_inventory_command: git ls-files -z --others --exclude-standard
+untracked_diff_command: packed in candidate.bin
+untracked_files:
+  - .template-source/evidence/maintenance/backend-delivery-cross-repo-contract-2026-09-02.md
+  - .template-source/evidence/maintenance/backend-delivery-green-2026-09-02.md
+  - .template-source/evidence/maintenance/backend-delivery-initial-release-verification-2026-09-02.md
+  - .template-source/evidence/maintenance/backend-delivery-red-2026-09-02.md
+  - .template-source/evidence/maintenance/backend-delivery-refactor-2026-09-02.md
+  - .template-source/evidence/maintenance/backend-delivery-submodule-diff-2026-09-02.md
+  - .template-source/evidence/maintenance/backend-harness-scope-decision-2026-09-01.md
+untracked_path_bytes:
+  - LnRlbXBsYXRlLXNvdXJjZS9ldmlkZW5jZS9tYWludGVuYW5jZS9iYWNrZW5kLWRlbGl2ZXJ5LWNyb3NzLXJlcG8tY29udHJhY3QtMjAyNi0wOS0wMi5tZA==
+  - LnRlbXBsYXRlLXNvdXJjZS9ldmlkZW5jZS9tYWludGVuYW5jZS9iYWNrZW5kLWRlbGl2ZXJ5LWdyZWVuLTIwMjYtMDktMDIubWQ=
+  - LnRlbXBsYXRlLXNvdXJjZS9ldmlkZW5jZS9tYWludGVuYW5jZS9iYWNrZW5kLWRlbGl2ZXJ5LWluaXRpYWwtcmVsZWFzZS12ZXJpZmljYXRpb24tMjAyNi0wOS0wMi5tZA==
+  - LnRlbXBsYXRlLXNvdXJjZS9ldmlkZW5jZS9tYWludGVuYW5jZS9iYWNrZW5kLWRlbGl2ZXJ5LXJlZC0yMDI2LTA5LTAyLm1k
+  - LnRlbXBsYXRlLXNvdXJjZS9ldmlkZW5jZS9tYWludGVuYW5jZS9iYWNrZW5kLWRlbGl2ZXJ5LXJlZmFjdG9yLTIwMjYtMDktMDIubWQ=
+  - LnRlbXBsYXRlLXNvdXJjZS9ldmlkZW5jZS9tYWludGVuYW5jZS9iYWNrZW5kLWRlbGl2ZXJ5LXN1Ym1vZHVsZS1kaWZmLTIwMjYtMDktMDIubWQ=
+  - LnRlbXBsYXRlLXNvdXJjZS9ldmlkZW5jZS9tYWludGVuYW5jZS9iYWNrZW5kLWhhcm5lc3Mtc2NvcGUtZGVjaXNpb24tMjAyNi0wOS0wMS5tZA==
+excluded_paths:
+  - .template-source/evidence/maintenance/backend-delivery-candidate-round5
+  - .template-source/evidence/maintenance/reviews
+  - .template-source/evidence/maintenance/backend-delivery-candidate-round1
+  - .template-source/evidence/maintenance/backend-delivery-candidate-round2
+  - .template-source/evidence/maintenance/backend-delivery-candidate-round3
+  - .template-source/evidence/maintenance/backend-delivery-candidate-round4
+  - .template-source/evidence/maintenance/backend-delivery-l3-checkpoint-2026-09-02.yaml
+snapshot_stream_ref: .template-source/evidence/maintenance/backend-delivery-candidate-round5/candidate.bin
+tracked_diff_ref: .template-source/evidence/maintenance/backend-delivery-candidate-round5/tracked.diff
+commit_list_command: git log HEAD..HEAD --oneline

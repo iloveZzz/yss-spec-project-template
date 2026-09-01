@@ -1,0 +1,12 @@
+schema_version: 1
+record_kind: maintenance-independent-review
+review_mode: formal-independent
+status: approved
+reviewer_id: reviewer.backend-delivery.round3.2026-09-02
+implementation_actor_id: worker.backend-delivery.2026-09-02
+candidate_digest: 03479831dd06f0c25462aa20bf16f73afd57d27e48f8c11e8c1e39e8c9cd9413
+candidate_snapshot_ref: .template-source/evidence/maintenance/backend-delivery-candidate-round5/candidate-manifest.yaml
+task_package_ref: .template-source/evidence/maintenance/reviews/backend-delivery-formal-review-task.yaml
+review_report_ref: .template-source/evidence/maintenance/reviews/backend-delivery-formal-review-round1.md
+reviewed_at: '2026-09-02T00:30:00+08:00'
+findings: []
