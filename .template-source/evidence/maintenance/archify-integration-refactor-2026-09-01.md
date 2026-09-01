@@ -12,4 +12,4 @@
 - 供应链逻辑保留外部适配技能已有的 `adaptationRef`，再由 lock 更新和 projection 同步生成派生资产。
 - 主模板、战术设计模板以及 `create-yss-spec`、`create-yss-harness-dev` 快照同步更新。
 
-本轮没有提交或推送任何用户仓库。
+实现完成后已按用户授权形成四仓本地提交；截至本证据修订时尚未推送。提交与后续推送顺序、回滚点记录在 `archify-integration-cross-repo-contract-2026-09-01.md`，最终 GitHub 可取回性以发布前 fresh verification 和推送结果为准。

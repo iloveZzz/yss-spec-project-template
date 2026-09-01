@@ -21,7 +21,11 @@ When the current repository contains `yss-project.yaml`, these rules override th
 - Validate with the upstream `validate` command, but deliver through the repository-safe wrapper from the repository root:
 
   ```bash
-  node .agents/skills/archify/scripts/yss-safe-deliver.mjs <type> <diagram-id>.archify.json <diagram-id>.html --quality showcase
+  # project-instance
+  node .agents/skills/archify/scripts/yss-safe-deliver.mjs <type> docs/architecture/diagrams/<diagram-id>/<diagram-id>.archify.json docs/architecture/diagrams/<diagram-id>/<diagram-id>.html --quality showcase
+
+  # template-source
+  node .agents/skills/archify/scripts/yss-safe-deliver.mjs <type> .template-source/evidence/maintenance/diagrams/<diagram-id>/<diagram-id>.archify.json .template-source/evidence/maintenance/diagrams/<diagram-id>/<diagram-id>.html --quality showcase
   ```
 
 - For a `project-instance`, stable source and output must be the matching pair `docs/architecture/diagrams/<diagram-id>/<diagram-id>.archify.json` and `<diagram-id>.html`. For a `template-source`, use `.template-source/evidence/maintenance/diagrams/<diagram-id>/`. The wrapper writes `<diagram-id>.receipt.json` only after successful delivery. Temporary exploration may target the operating-system temporary directory.

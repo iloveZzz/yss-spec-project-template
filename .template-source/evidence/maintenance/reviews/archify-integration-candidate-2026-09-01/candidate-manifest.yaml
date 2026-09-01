@@ -1,0 +1,19 @@
+schema_version: 1
+candidate_kind: yss-worktree-candidate-v1
+storage: packed-stream
+review_mode: worktree
+review_base_ref: b62d97da2bdf6e0253e3a530179eaa8a0db924da
+merge_base: b62d97da2bdf6e0253e3a530179eaa8a0db924da
+implementation_candidate_ref: working-tree
+candidate_snapshot_ref: .template-source/evidence/maintenance/reviews/archify-integration-candidate-2026-09-01/candidate-manifest.yaml
+candidate_digest: 54b23c365d3a1625bfd116e3fede67db03a41bdf6bd03bbf2c87457be137f269
+tracked_diff_command: git diff --no-ext-diff --binary --full-index b62d97da2bdf6e0253e3a530179eaa8a0db924da
+untracked_inventory_command: git ls-files -z --others --exclude-standard
+untracked_diff_command: packed in candidate.bin
+untracked_files: []
+untracked_path_bytes: []
+excluded_paths:
+  - .template-source/evidence/maintenance/reviews/archify-integration-candidate-2026-09-01
+snapshot_stream_ref: .template-source/evidence/maintenance/reviews/archify-integration-candidate-2026-09-01/candidate.bin
+tracked_diff_ref: .template-source/evidence/maintenance/reviews/archify-integration-candidate-2026-09-01/tracked.diff
+commit_list_command: git log b62d97da2bdf6e0253e3a530179eaa8a0db924da..HEAD --oneline

@@ -1,0 +1,50 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  Archify 完整技能包改变架构图生成语义，并同步主模板、战术设计模板与两套 CLI；
+  候选已从提交区间冻结并通过首次完整发布门禁，因此显式提升为 review-ready。
+triggers:
+  - generation-semantics
+  - cross-repo-contract
+  - permission-boundary
+  - aggregate-behavior-change
+changed_assets:
+  - .template-source/evidence/maintenance/reviews/archify-integration-candidate-2026-09-01/candidate-manifest.yaml
+verification_evidence:
+  - kind: red
+    command: .template-source/evidence/maintenance/archify-integration-red-2026-09-01.md
+    result: pass
+  - kind: green
+    command: .template-source/evidence/maintenance/archify-integration-green-2026-09-01.md
+    result: pass
+  - kind: refactor
+    command: .template-source/evidence/maintenance/archify-integration-refactor-2026-09-01.md
+    result: pass
+  - kind: pressure-scenario
+    command: .template-source/evidence/maintenance/archify-integration-pressure-2026-09-01.md
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+  - kind: candidate-verification
+    command: scripts/inspect-maintenance-candidate .template-source/evidence/maintenance/reviews/archify-integration-candidate-2026-09-01/candidate-manifest.yaml
+    result: pass
+    executed_at: '2026-09-01T14:19:40Z'
+    duration_ms: 100
+    evidence_ref: .template-source/evidence/maintenance/archify-integration-initial-release-verification-2026-09-01.md
+  - kind: initial-release-verification
+    command: scripts/verify-template
+    result: pass
+    executed_at: '2026-09-01T14:20:50Z'
+    duration_ms: 10000
+    evidence_ref: .template-source/evidence/maintenance/archify-integration-initial-release-verification-2026-09-01.md
+  - kind: review-task-packages
+    command: .template-source/evidence/maintenance/reviews/archify-integration-l3-review-checkpoint-2026-09-01-*-review-task-round1.yaml
+    result: pass
+review_mode: formal-independent
+escalation: 从 implementation-ready 显式提升 review-ready；未改变 L3 分类
+target_state: release-ready
+current_state: review-ready
+verification_profile: candidate
+review_round: 1
+candidate_digest: 54b23c365d3a1625bfd116e3fede67db03a41bdf6bd03bbf2c87457be137f269

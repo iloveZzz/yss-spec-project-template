@@ -1,0 +1,27 @@
+schema_version: 1
+record_kind: maintenance-independent-review
+review_mode: formal-independent
+status: changes-requested
+reviewer_id: reviewer.archify-integration-l3-review-checkpoint-2026-09-01.standards.r1
+implementation_actor_id: worker.archify-integration
+candidate_digest: 54b23c365d3a1625bfd116e3fede67db03a41bdf6bd03bbf2c87457be137f269
+candidate_snapshot_ref: .template-source/evidence/maintenance/reviews/archify-integration-candidate-2026-09-01/candidate-manifest.yaml
+task_package_ref: .template-source/evidence/maintenance/reviews/archify-integration-l3-review-checkpoint-2026-09-01-standards-review-task-round1.yaml
+review_report_ref: .template-source/evidence/maintenance/reviews/archify-integration-l3-review-checkpoint-2026-09-01-standards-review-round1.md
+reviewed_at: '2026-09-01T14:30:00Z'
+findings:
+  - id: STD-ARCHIFY-001
+    severity: high
+    disposition: violation
+    status: open
+    summary: receipt 临时文件名可预测且写入会跟随预置符号链接
+  - id: STD-ARCHIFY-002
+    severity: high
+    disposition: violation
+    status: open
+    summary: REFACTOR 证据误称本轮没有提交
+  - id: STD-ARCHIFY-003
+    severity: high
+    disposition: violation
+    status: open
+    summary: 跨仓候选缺少子仓不可变字节与发布合同证据

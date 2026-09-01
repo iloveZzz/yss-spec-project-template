@@ -199,7 +199,16 @@ const wrapperReceipt = {
   output,
   archify: upstreamReceipt,
 };
-const temporaryReceipt = `${receipt}.tmp-${process.pid}`;
-fs.writeFileSync(temporaryReceipt, `${JSON.stringify(wrapperReceipt, null, 2)}\n`, { encoding: 'utf8', mode: 0o644 });
-fs.renameSync(temporaryReceipt, receipt);
+const receiptStagingDirectory = fs.mkdtempSync(path.join(path.dirname(receipt), `.${path.basename(receipt)}.tmp-`));
+const temporaryReceipt = path.join(receiptStagingDirectory, 'receipt.json');
+try {
+  fs.writeFileSync(temporaryReceipt, `${JSON.stringify(wrapperReceipt, null, 2)}\n`, {
+    encoding: 'utf8',
+    mode: 0o644,
+    flag: 'wx',
+  });
+  fs.renameSync(temporaryReceipt, receipt);
+} finally {
+  fs.rmSync(receiptStagingDirectory, { recursive: true, force: true });
+}
 process.stdout.write(`${JSON.stringify(wrapperReceipt, null, 2)}\n`);

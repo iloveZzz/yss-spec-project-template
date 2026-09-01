@@ -1,0 +1,10 @@
+review_round: 1
+candidate_digest: 54b23c365d3a1625bfd116e3fede67db03a41bdf6bd03bbf2c87457be137f269
+current_state: review-ready
+action: repair-and-refreeze
+blocking_findings:
+  - LEAD-ARCHIFY-001
+  - LEAD-ARCHIFY-002
+  - LEAD-ARCHIFY-003
+  - LEAD-ARCHIFY-004
+backlog_findings: []

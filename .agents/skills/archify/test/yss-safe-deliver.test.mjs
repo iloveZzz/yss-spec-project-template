@@ -116,6 +116,36 @@ test('uses the template-source evidence root for stable maintenance diagrams', (
   assert.ok(fs.existsSync(path.join(directory, 'workflow-map.receipt.json')));
 });
 
+test('uses an exclusive unpredictable staging directory for the receipt', () => {
+  const source = fs.readFileSync(wrapper, 'utf8');
+  assert.match(source, /fs\.mkdtempSync\(/);
+  assert.match(source, /flag: 'wx'/);
+  assert.doesNotMatch(source, /receipt}\.tmp-\$\{process\.pid\}/);
+
+  const root = repository();
+  const directory = path.join(root, 'docs', 'architecture', 'diagrams', 'runtime-map');
+  fs.mkdirSync(directory, { recursive: true });
+  const input = path.join(directory, 'runtime-map.archify.json');
+  const output = path.join(directory, 'runtime-map.html');
+  const unrelated = path.join(root, 'unrelated.txt');
+  const legacySymlink = path.join(directory, 'runtime-map.receipt.json.tmp-12345');
+  const legacyFile = path.join(directory, 'runtime-map.receipt.json.tmp-67890');
+  fs.copyFileSync(example, input);
+  fs.writeFileSync(unrelated, 'preserve-me');
+  fs.symlinkSync(unrelated, legacySymlink);
+  fs.writeFileSync(legacyFile, 'preserve-this-too');
+
+  const result = run(root, input, output);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(fs.readFileSync(unrelated, 'utf8'), 'preserve-me');
+  assert.equal(fs.readFileSync(legacyFile, 'utf8'), 'preserve-this-too');
+  assert.equal(fs.readlinkSync(legacySymlink), unrelated);
+  assert.deepEqual(
+    fs.readdirSync(directory).filter((entry) => entry.startsWith('.runtime-map.receipt.json.tmp-')),
+    [],
+  );
+});
+
 test('YSS override disables the upstream update checker', () => {
   const skill = fs.readFileSync(path.join(skillRoot, 'SKILL.md'), 'utf8');
   assert.match(skill, /Do not run `scripts\/check-update\.mjs`/);
