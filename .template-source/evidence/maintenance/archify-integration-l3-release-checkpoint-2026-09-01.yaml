@@ -1,0 +1,65 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  Archify 完整技能包及跨仓分发合同已在 Round 2 同一冻结候选上通过 Standards、Spec、Lead
+  正式独立审查和最终完整发布门禁，用户已明确授权提交并推送 GitHub。
+triggers:
+  - generation-semantics
+  - cross-repo-contract
+  - permission-boundary
+  - aggregate-behavior-change
+changed_assets:
+  - .template-source/evidence/maintenance/reviews/archify-integration-candidate-round2-2026-09-01/candidate-manifest.yaml
+verification_evidence:
+  - kind: red
+    command: .template-source/evidence/maintenance/archify-integration-red-2026-09-01.md
+    result: pass
+  - kind: green
+    command: .template-source/evidence/maintenance/archify-integration-green-2026-09-01.md
+    result: pass
+  - kind: refactor
+    command: .template-source/evidence/maintenance/archify-integration-refactor-2026-09-01.md
+    result: pass
+  - kind: pressure-scenario
+    command: node --test .agents/skills/archify/test/yss-safe-deliver.test.mjs
+    result: pass
+    executed_at: '2026-09-01T14:32:00Z'
+    duration_ms: 839
+    evidence_ref: .template-source/evidence/maintenance/archify-integration-final-release-verification-2026-09-01.md
+  - kind: cross-repo-contract
+    command: .template-source/evidence/maintenance/archify-integration-cross-repo-contract-2026-09-01.md
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+  - kind: candidate-verification
+    command: scripts/inspect-maintenance-candidate .template-source/evidence/maintenance/reviews/archify-integration-candidate-round2-2026-09-01/candidate-manifest.yaml
+    result: pass
+    executed_at: '2026-09-01T14:45:44Z'
+    duration_ms: 100
+    evidence_ref: .template-source/evidence/maintenance/archify-integration-round2-initial-release-verification-2026-09-01.md
+  - kind: initial-release-verification
+    command: scripts/verify-template
+    result: pass
+    executed_at: '2026-09-01T14:45:45Z'
+    duration_ms: 9000
+    evidence_ref: .template-source/evidence/maintenance/archify-integration-round2-initial-release-verification-2026-09-01.md
+  - kind: review-task-packages
+    command: .template-source/evidence/maintenance/reviews/archify-integration-l3-review-checkpoint-round2-2026-09-01-*-review-task-round2.yaml
+    result: pass
+  - kind: formal-independent-review
+    command: .template-source/evidence/maintenance/reviews/archify-integration-lead-review-record-round2-2026-09-01.yaml
+    result: pass
+  - kind: final-release-verification
+    command: scripts/verify-template
+    result: pass
+    executed_at: '2026-09-01T14:56:17Z'
+    duration_ms: 10000
+    evidence_ref: .template-source/evidence/maintenance/archify-integration-final-release-verification-2026-09-01.md
+review_mode: formal-independent
+escalation: none
+target_state: release-ready
+current_state: release-ready
+verification_profile: release
+review_round: 2
+candidate_digest: 5aca7275b7bc2afd2d45ef2a7e4fd6b582153f18f37b19e78b4c28fff630aad5

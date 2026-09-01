@@ -1,0 +1,6 @@
+review_round: 2
+candidate_digest: 5aca7275b7bc2afd2d45ef2a7e4fd6b582153f18f37b19e78b4c28fff630aad5
+current_state: review-ready
+action: eligible-for-final-verification
+blocking_findings: []
+backlog_findings: []

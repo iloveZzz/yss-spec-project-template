@@ -1,0 +1,12 @@
+schema_version: 1
+record_kind: maintenance-independent-review
+review_mode: formal-independent
+status: approved
+reviewer_id: reviewer.archify-integration-l3-review-checkpoint-round2-2026-09-01.spec.r2
+implementation_actor_id: worker.archify-integration
+candidate_digest: 5aca7275b7bc2afd2d45ef2a7e4fd6b582153f18f37b19e78b4c28fff630aad5
+candidate_snapshot_ref: .template-source/evidence/maintenance/reviews/archify-integration-candidate-round2-2026-09-01/candidate-manifest.yaml
+task_package_ref: .template-source/evidence/maintenance/reviews/archify-integration-l3-review-checkpoint-round2-2026-09-01-spec-review-task-round2.yaml
+review_report_ref: .template-source/evidence/maintenance/reviews/archify-integration-l3-review-checkpoint-round2-2026-09-01-spec-review-round2.md
+reviewed_at: '2026-09-01T14:54:00Z'
+findings: []
