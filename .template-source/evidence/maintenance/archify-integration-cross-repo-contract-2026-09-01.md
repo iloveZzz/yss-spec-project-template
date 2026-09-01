@@ -8,18 +8,18 @@
 |---|---|---|---|---|
 | 主模板 `yss-spec-project-template` | `https://github.com/iloveZzz/yss-spec-project-template.git` | `b62d97da2bdf6e0253e3a530179eaa8a0db924da` | Round 1 功能提交 `f4ee19614b6206e08d47d333b08e49d4f2af93c4`、聚合指针 `4725f6ab99ab819f36047b9e88aba9ff410eae75`；Round 2 以 checkpoint 绑定的 packed `candidate_digest` 为不可变候选 | `.github/workflows/template-node-tooling.yml`；`scripts/verify-template` 通过 |
 | 战术模板 `yss-harness-dev-agent` | `https://github.com/iloveZzz/yss-harness-dev-agent.git` | `b01665d25169d1704f1ff6f701e16419df1622a3` | Round 1 `63389eba0ccd4c2490cbbc3c4fd6750e9973b97a`；Round 2 修复 `2fc7a3e47bd747eeb136e269eac57ba4a4c655dd` | `.github/workflows/template-node-tooling.yml`；9/9 wrapper tests 与 `scripts/verify-template-fast` 通过 |
-| 主模板 CLI `create-yss-spec` | `https://github.com/iloveZzz/create-yss-spec.git` | `72058ce7ce690980a0fd54e87f007a177c39c890` | `783b13f7b2f61f21edf6371006d7019a6043f0df` | 仓库未配置 GitHub Actions；`node --test tests/*.test.js` 56/56 通过 |
-| 战术模板 CLI `create-yss-harness-dev` | `https://github.com/iloveZzz/create-yss-harness-dev.git` | `2b300e8d14077633c6934f76e0987d113065826f` | `5891b6245ffac4678b2d7ee525926639a8d4c825` | 仓库未配置 GitHub Actions；`node --test tests/*.test.js` 56/56 通过 |
+| 主模板 CLI `create-yss-spec` | `https://github.com/iloveZzz/create-yss-spec.git` | `72058ce7ce690980a0fd54e87f007a177c39c890` | Round 1 `783b13f7b2f61f21edf6371006d7019a6043f0df`；Round 2 `213d79706c806552e48efae752f0444140247467`，固定主模板 `96fb0900f8f49e42fe17d36e4cac4717b341bcf2` | 仓库未配置 GitHub Actions；`node --test tests/*.test.js` 56/56 通过 |
+| 战术模板 CLI `create-yss-harness-dev` | `https://github.com/iloveZzz/create-yss-harness-dev.git` | `2b300e8d14077633c6934f76e0987d113065826f` | Round 1 `5891b6245ffac4678b2d7ee525926639a8d4c825`；Round 2 `84f0d2baf2e240917e4befef0424a9fd93abd22a`，固定战术模板 `2fc7a3e47bd747eeb136e269eac57ba4a4c655dd` | 仓库未配置 GitHub Actions；`node --test tests/*.test.js` 56/56 通过 |
 
-Round 2 主模板正式审查任务包必须绑定新 `candidate_digest`；战术模板必须绑定 `2fc7a3e47bd747eeb136e269eac57ba4a4c655dd`。两套 CLI 的模板来源 commit 与生成快照未变化，因此保留上表固定 commit。
+Round 2 主模板正式审查任务包必须绑定新 `candidate_digest`；战术模板与两套 CLI 必须绑定上表 Round 2 commit。主模板 CLI 在运行时从固定 commit 同步快照；战术 CLI 将修复后的快照直接纳入其固定 commit。
 
 ## 独立复核命令
 
 ```bash
 git diff b62d97da2bdf6e0253e3a530179eaa8a0db924da..4725f6ab99ab819f36047b9e88aba9ff410eae75
 git -C submodules/yss-harness-dev-agent diff b01665d25169d1704f1ff6f701e16419df1622a3..2fc7a3e47bd747eeb136e269eac57ba4a4c655dd
-git -C submodules/create-yss-spec diff 72058ce7ce690980a0fd54e87f007a177c39c890..783b13f7b2f61f21edf6371006d7019a6043f0df
-git -C submodules/create-yss-harness-dev diff 2b300e8d14077633c6934f76e0987d113065826f..5891b6245ffac4678b2d7ee525926639a8d4c825
+git -C submodules/create-yss-spec diff 72058ce7ce690980a0fd54e87f007a177c39c890..213d79706c806552e48efae752f0444140247467
+git -C submodules/create-yss-harness-dev diff 2b300e8d14077633c6934f76e0987d113065826f..84f0d2baf2e240917e4befef0424a9fd93abd22a
 ```
 
 根候选将子仓固定为 gitlink；Round 2 任务包额外授权读取三个 submodule Git 对象库中的上述 commit，并要求先以 `git rev-parse HEAD` / `git cat-file -e <commit>^{commit}` 验证可读性，再按固定范围审查。工作树中的未提交内容不属于候选。
