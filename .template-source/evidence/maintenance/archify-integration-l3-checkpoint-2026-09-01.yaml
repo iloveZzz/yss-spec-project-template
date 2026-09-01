@@ -1,0 +1,48 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  引入会改变架构图生成语义的外部完整技能包，并同步主模板、战术设计模板与两套 CLI；
+  同时新增稳定输出路径和覆盖保护边界，因此按 generation-semantics、cross-repo-contract、
+  permission-boundary 和 aggregate-behavior-change 直接判定 L3。
+triggers:
+  - generation-semantics
+  - cross-repo-contract
+  - permission-boundary
+  - aggregate-behavior-change
+changed_assets:
+  - .agents/skills/archify/
+  - .agents/skills/yss-product-lifecycle/SKILL.md
+  - .agents/skills/codebase-design/SKILL.md
+  - .agents/skills/yss-tactical-design/SKILL.md
+  - docs/agents/archify-integration.md
+  - docs/agents/yss-skill-registry.yaml
+  - docs/agents/skills-maintenance.md
+  - scripts/lib/skill-supply-chain.mjs
+  - skills-lock.json
+  - submodules/yss-harness-dev-agent/.agents/skills/archify/
+  - submodules/yss-harness-dev-agent/docs/agents/archify-integration.md
+  - submodules/create-yss-spec/template/
+  - submodules/create-yss-harness-dev/template/
+verification_evidence:
+  - kind: red
+    command: .template-source/evidence/maintenance/archify-integration-red-2026-09-01.md
+    result: pass
+  - kind: green
+    command: .template-source/evidence/maintenance/archify-integration-green-2026-09-01.md
+    result: pass
+  - kind: refactor
+    command: .template-source/evidence/maintenance/archify-integration-refactor-2026-09-01.md
+    result: pass
+  - kind: pressure-scenario
+    command: .template-source/evidence/maintenance/archify-integration-pressure-2026-09-01.md
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: formal-independent
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

@@ -102,6 +102,10 @@ Good interfaces make testing natural:
 - An **Adapter** sits at a **Seam** and satisfies the **Interface**.
 - **Depth** produces **Leverage** for callers and **Locality** for maintainers.
 
+## Optional architecture visualization
+
+Use `archify` only when the user or the governing YSS contract explicitly asks for a system map, workflow, sequence, data-flow, lifecycle, Mermaid beautification, or Before/After architecture view. Preserve the design facts and terminology from the current evidence; the resulting diagram is derived review evidence, not a replacement for the design decision, ADR, contract, or approval. In a YSS repository, use Archify's YSS-safe delivery wrapper and retain the paired JSON, HTML, and receipt.
+
 ## Rejected framings
 
 - **Depth as ratio of implementation-lines to interface-lines** (Ousterhout): rewards padding the implementation. We use depth-as-leverage instead.
