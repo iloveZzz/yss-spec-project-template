@@ -2,7 +2,7 @@ schema_version: 1
 design_system_sync:
   baseline: yss-spec-project-template
   baseline_version: alpha
-  baseline_commit: f657e886958c60a8be1913425acb4c16529c04a9
+  baseline_commit: 36af9ac3895162cefc5da8889af8141c2dfce2cd
   baseline_sha256: 976d74b4af85b5062f9c5a365591809ff240159f0f4445ce05e7a4dcb76d0185
   synchronized_sections:
     - Colors
