@@ -1,0 +1,27 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  后端工程师 Codex Harness 改变任务提示词生成语义、角色技能漂移处理和允许写路径的
+  fail-closed 边界，命中 generation-semantics 与 permission-boundary；插件仍是运行时
+  适配器，不新增生命周期事实源。
+triggers: [generation-semantics, permission-boundary]
+changed_assets:
+  - /Users/zhudaoming/plugins/yss-backend-harness/.codex-plugin/plugin.json
+  - /Users/zhudaoming/plugins/yss-backend-harness/skills/backend-engineer-harness/SKILL.md
+  - /Users/zhudaoming/plugins/yss-backend-harness/skills/backend-engineer-harness/agents/openai.yaml
+  - /Users/zhudaoming/plugins/yss-backend-harness/scripts/render_backend_prompt.mjs
+  - .template-source/evidence/maintenance/backend-engineer-plugin-fresh-verification-2026-09-02.md
+verification_evidence:
+  - kind: self-check
+    command: python3 /Users/zhudaoming/.codex/skills/.system/plugin-creator/scripts/validate_plugin.py /Users/zhudaoming/plugins/yss-backend-harness
+    result: pass
+  - kind: fresh-verification
+    command: .template-source/evidence/maintenance/backend-engineer-plugin-fresh-verification-2026-09-02.md
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

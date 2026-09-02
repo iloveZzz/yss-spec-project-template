@@ -29,13 +29,13 @@ test("digital human roles are runtime-agnostic and grok is only an adapter", asy
   const { loadRegistry } = await import(path.join(repositoryRoot, "scripts/lib/lifecycle-registry.mjs"));
   const { loadSkillRegistry } = await import(path.join(repositoryRoot, "scripts/lib/skill-registry.mjs"));
   const result = validateDefaultDigitalHumanRoles();
-  assert.equal(result.role_count, 7);
+  assert.equal(result.role_count, 6);
   assert.equal(result.runtime_count, 3);
   const lifecycle = loadRegistry();
   const skills = loadSkillRegistry();
   const deps = depsFrom(lifecycle, skills, skillIdsFromRegistry);
   const seven = structuredClone(loadDigitalHumanRoles());
-  seven.stage_groups[0].members.push("role.frontend-engineer", "role.backend-engineer", "role.test-engineer");
+  seven.stage_groups[0].members.push("role.frontend-engineer", "role.backend-engineer", "role.test-engineer", "role.project-manager");
   assert.doesNotThrow(() => validateDigitalHumanRoles(seven, deps));
   seven.runtimes.find((runtime) => runtime.id === "runtime.grok").overflow = "forbid";
   assert.throws(() => validateDigitalHumanRoles(seven, deps), /禁止超过 6 人/);

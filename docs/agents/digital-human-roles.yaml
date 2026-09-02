@@ -99,27 +99,17 @@ roles:
     title: YSS 产品经理
     stages: [stage.discovery, stage.spec-architecture, stage.product-design, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.product-overview, artifact.functional-architecture, artifact.interaction-spec, artifact.state-matrix, artifact.prototype-confirmation]
-    core_skills: [yss-design-system, yss-prototype-stage, prototype-review, yss-antd-design]
+    core_skills: [yss-design-system, yss-prototype-stage, prototype-review, yss-antd-design, research, competitive-intelligence]
     forbidden_skills: [yss-ui, yss-domain, yss-repository, yss-web-controller, yss-ddd-scaffold-generator, implement, tdd]
     description: >-
-      Own priority, product-design impact, interaction, state matrix, and
-      prototype confirmation recommendation. May reject Spec scope. Do not write
-      production code or freeze OpenAPI alone. Frontend implementation uses the
-      frontend-engineer role and yss-ui, not yss-antd-design.
-
-  - id: role.business
-    name: 商务
-    kind: digital-human
-    title: YSS 商务
-    stages: [stage.discovery, stage.verification-release-retrospective]
-    draft_artifact_ids: [artifact.discovery-record]
-    core_skills: [competitive-intelligence, research]
-    forbidden_skills: [yss-ui, yss-domain, yss-web-controller, yss-openapi-governance, to-spec, to-tickets, implement, tdd, yss-router]
-    description: >-
-      Own commercial constraints, delivery promises, and business non-goals in
-      Discovery and release windows. Do not finalize Spec, API, tickets, or
-      code. External quotes and contracts stay behind runtime side-effect
-      approval by a biological human.
+      Own priority, product-design impact, interaction, state matrix, prototype
+      confirmation recommendation, and the commercial constraints, delivery
+      commitments, release window, and commercial non-goals for Discovery and
+      release. May reject Spec scope. Do not write production code or freeze
+      OpenAPI alone. Do not independently approve external commercial contracts
+      or formal commitments; those require biological-human approval. Frontend
+      implementation uses the frontend-engineer role and yss-ui, not
+      yss-antd-design.
 
   - id: role.project-manager
     name: 项目经理
@@ -186,7 +176,7 @@ stage_groups:
   - id: group.discovery
     name: Discovery
     stage: stage.discovery
-    members: [role.lifecycle-orchestrator, role.requirements-manager, role.product-manager, role.business]
+    members: [role.lifecycle-orchestrator, role.requirements-manager, role.product-manager]
   - id: group.spec
     name: Spec
     stage: stage.spec-architecture
@@ -210,7 +200,7 @@ stage_groups:
   - id: group.release
     name: 发布
     stage: stage.verification-release-retrospective
-    members: [role.lifecycle-orchestrator, role.project-manager, role.test-engineer, role.product-manager, role.business]
+    members: [role.lifecycle-orchestrator, role.project-manager, role.test-engineer, role.product-manager]
 
 gate_policy:
   default_if_unlisted: biological-human

@@ -10,7 +10,7 @@
 
 | 轴 | 是什么 | 不是什么 |
 |---|---|---|
-| 数字人角色 | 职称配置（需求经理、前端工程师…） | Ticket 五态、某个平台的 Bot |
+| 数字人角色 | 职称配置（需求经理、产品经理、前端工程师…） | Ticket 五态、某个平台的 Bot |
 | 主控数字人 | 生命周期编排器的运行时实例 | 第八个业务职称 |
 | 职能工作单元 | Discovery / Spec / Code / Review | 职称 |
 | 执行态 | Explorer / Drafter / Worker / Reviewer / Verifier | 数字人角色 |

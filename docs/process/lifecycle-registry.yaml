@@ -360,7 +360,7 @@ work_units:
   - id: work-unit.stage-decision
     name: 阶段决策包综合
     scope: project-instance
-    input: Discovery、DDD 战略设计、产品和商务输入。
+    input: Discovery、DDD 战略设计以及产品经理负责的商业约束输入。
     output: 带版本、digest、证据和下游映射的阶段决策包。
     completion: 必填字段、引用、影响面和下游消费验证通过；批准门禁完成。
   - id: work-unit.spec-synthesis
