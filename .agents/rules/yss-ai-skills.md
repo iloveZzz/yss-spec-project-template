@@ -8,6 +8,7 @@ trigger: always_on
 
 ## Available Skills
 
+- yss-ui-business-page-generation: .agents/skills/yss-ui-business-page-generation/SKILL.md
 - yss-page-module-development: .agents/skills/yss-page-module-development/SKILL.md
 - theme-token-usage: .agents/skills/theme-token-usage/SKILL.md
 - component-selection-imports: .agents/skills/component-selection-imports/SKILL.md
@@ -33,7 +34,7 @@ trigger: always_on
 
 ## Mandatory Workflow
 
-1. 页面/CRUD/列表/表单任务：先读 `.agents/skills/yss-page-module-development/SKILL.md`。
+1. 业务页面/CRUD/列表/表单/树表生成主入口：先读 `.agents/skills/yss-ui-business-page-generation/SKILL.md`（旧触发词读 `.agents/skills/yss-page-module-development/SKILL.md`）。
 2. 新增或修改页面、组件、Less、内联样式、TS 渲染配置、SVG 色值：必须读 `.agents/skills/theme-token-usage/SKILL.md`。
 3. 导出、报表、模板、附件、Excel、CSV、PDF、ZIP、Blob 下载任务：必须读 `.agents/skills/file-export-download/SKILL.md`。
 4. 列表或表格任务：同时读 `.agents/skills/page-list-module/SKILL.md`、`.agents/skills/ytable-usage/SKILL.md`、`.agents/skills/yss-use-table-height/SKILL.md`。
@@ -43,6 +44,7 @@ trigger: always_on
 
 ## Hard Stops
 
+- 当前会话可用 yss-ui MCP 时，生成业务代码前必须先调用一次 `get_codegen_rules`；不确定导出时用 `list_components`，配置组件/Hook/Utils 前用 `get_component_docs`，复杂场景用 `get_demo`，不确定归属时用 `search_docs`。
 - 禁止使用 YTable 不存在的 `request`、`search-params` Props 和 `actionConfig.actions`；实例 `refresh()` 只刷新当前表格数据，不得当作远程重新查询。
 - 标准列表必须使用 `:data`、`:columns`、`:loading`、`pageable`、`v-model:pagination`、`@page-change`。
 - 表格主操作必须放入 `#toolbar-right`；只有确实需要列设置时才使用 `:toolbar-config="{ custom: true }"`。

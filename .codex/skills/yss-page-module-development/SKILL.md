@@ -5,6 +5,8 @@ description: 指导创建标准 Vue 3 YSS 业务页面模块，覆盖 CRUD、列
 
 # YSS Page Module Development
 
+> **核心路由说明**：新页面生成开发请优先以 `../yss-ui-business-page-generation/SKILL.md` 为统一主规则与硬约束。当前会话可用 yss-ui MCP 时，生成业务代码前必须先调用 `get_codegen_rules`。本技能作为兼容旧触发名与流程编排入口保留。
+
 Use this skill when the user asks for a business page, CRUD module, tree-table page, detail page, or any standard YSS Vue 3 page module.
 
 ## Authoritative Docs And Skill Boundaries

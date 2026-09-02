@@ -30,7 +30,7 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
   const registry = loadSkillRegistry();
   const canonicalIds = new Set(registry.skills.map((skill) => skill.id));
   const aliases = new Map(registry.skills.flatMap((skill) => skill.aliases.map((alias) => [alias, skill.id])));
-  const legacy = new Set(["api-integration", "page-module-development", "use-table-height", "use-tree-height", "yss-ui-business-page-generation"]);
+  const legacy = new Set(["api-integration", "page-module-development", "use-table-height", "use-tree-height"]);
   for (const alias of legacy) {
     if (exists(`.agents/skills/${alias}`)) fail(`legacy alias 不得存在独立 canonical 目录: ${alias}`);
     if (!aliases.has(alias)) fail(`legacy alias 未登记: ${alias}`);
