@@ -43,7 +43,7 @@ export function treeHash(directory) {
  */
 export function validateYssUiSkillManifest(manifest) {
   if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) throw new TypeError("yss-ui 清单必须是对象");
-  const requiredStrings = ["source", "source_type", "source_root", "source_revision", "adaptation_ref"];
+  const requiredStrings = ["source", "source_type", "source_root", "source_category", "source_revision", "adaptation_ref"];
   for (const field of requiredStrings) {
     if (typeof manifest[field] !== "string" || !manifest[field].trim()) throw new TypeError(`yss-ui 清单缺少 ${field}`);
   }
@@ -52,12 +52,19 @@ export function validateYssUiSkillManifest(manifest) {
   if (!manifest.package || typeof manifest.package.name !== "string" || typeof manifest.package.version !== "string") {
     throw new TypeError("yss-ui 清单缺少 package name/version");
   }
+  if (!Array.isArray(manifest.excluded_categories) || manifest.excluded_categories.some((item) => typeof item !== "string" || !item)) {
+    throw new TypeError("yss-ui 清单缺少有效 excluded_categories");
+  }
+  if (!Array.isArray(manifest.excluded_skills) || manifest.excluded_skills.some((item) => typeof item !== "string" || !item)) {
+    throw new TypeError("yss-ui 清单缺少有效 excluded_skills");
+  }
   if (!Array.isArray(manifest.skills) || !manifest.skills.length) throw new TypeError("yss-ui 清单缺少 skills");
   const upstreamNames = new Set();
   const canonicalNames = new Set();
   for (const skill of manifest.skills) {
     if (!skill || typeof skill.upstream !== "string" || typeof skill.canonical !== "string") throw new TypeError("yss-ui skill 缺少 upstream/canonical");
     if (skill.upstream === "java-backend-commit") throw new TypeError("yss-ui 前端清单不得包含 java-backend-commit");
+    if (manifest.excluded_skills.includes(skill.upstream)) throw new TypeError(`yss-ui 清单包含已排除 skill: ${skill.upstream}`);
     if (upstreamNames.has(skill.upstream)) throw new TypeError(`upstream 重复: ${skill.upstream}`);
     if (canonicalNames.has(skill.canonical)) throw new TypeError(`canonical 重复: ${skill.canonical}`);
     if (!/^[0-9a-f]{64}$/.test(skill.upstream_hash ?? "")) throw new TypeError(`${skill.canonical} 缺少有效 upstream_hash`);

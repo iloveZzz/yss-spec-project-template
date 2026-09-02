@@ -9,12 +9,31 @@ import {
 
 const manifestPath = `${ROOT}/.agents/skills/.yss-skills-manifest.json`;
 
-test("yss-ui 前端清单完整覆盖 32 个 canonical skills 与项目级 MCP 配置", () => {
+test("yss-ui 业务项目清单覆盖 22 个 app skills 与项目级 MCP 配置", () => {
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
   const contract = validateYssUiSkillManifest(manifest);
 
-  assert.equal(contract.skills.length, 32);
+  assert.equal(contract.skills.length, 22);
+  assert.equal(contract.source_category, "app");
+  assert.deepEqual(contract.excluded_categories, ["library"]);
+  assert.deepEqual(contract.excluded_skills, ["java-backend-commit"]);
   assert.equal(contract.skills.some(({ upstream }) => upstream === "java-backend-commit"), false);
+  const librarySkills = [
+    "release-management",
+    "changelog-generation",
+    "commit-linting",
+    "component-development",
+    "component-testing",
+    "documentation",
+    "release-workflow",
+    "yss-create-microapp",
+    "sync-internal-dev",
+    "skill-development",
+  ];
+  assert.deepEqual(
+    contract.skills.filter(({ upstream }) => librarySkills.includes(upstream)),
+    [],
+  );
   assert.equal(contract.source, "iloveZzz/yss-ui");
   assert.equal(contract.package.name, "@yss-ui/skills");
   assert.equal(contract.package.version, "1.3.9");

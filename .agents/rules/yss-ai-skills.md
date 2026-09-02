@@ -9,16 +9,6 @@ trigger: always_on
 ## Available Skills
 
 - yss-ui-business-page-generation: .agents/skills/yss-ui-business-page-generation/SKILL.md
-- component-development: .agents/skills/component-development/SKILL.md
-- component-testing: .agents/skills/component-testing/SKILL.md
-- documentation: .agents/skills/documentation/SKILL.md
-- changelog-generation: .agents/skills/changelog-generation/SKILL.md
-- commit-linting: .agents/skills/commit-linting/SKILL.md
-- release-management: .agents/skills/release-management/SKILL.md
-- release-workflow: .agents/skills/release-workflow/SKILL.md
-- skill-development: .agents/skills/skill-development/SKILL.md
-- sync-internal-dev: .agents/skills/sync-internal-dev/SKILL.md
-- yss-create-microapp: .agents/skills/yss-create-microapp/SKILL.md
 - yss-page-module-development: .agents/skills/yss-page-module-development/SKILL.md
 - theme-token-usage: .agents/skills/theme-token-usage/SKILL.md
 - component-selection-imports: .agents/skills/component-selection-imports/SKILL.md

@@ -4,7 +4,8 @@
 
 ## 范围
 
-- 集成 32 个 YSS UI 前端、组件库和前端交付维护 skills。
+- 只集成 yss-ui `skills.config.json` 中 `categories.app` 的业务项目 skills，并排除后端 `java-backend-commit`，当前共 22 个。
+- `categories.library` 的 10 个组件库内部维护 skills 全部不进入模板；该分组同时位于上游 `excludeFromDefaultSync`。
 - `api-integration`、`page-module-development`、`use-table-height`、`use-tree-height` 在模板中分别映射为 `yss-api-integration`、`yss-page-module-development`、`yss-use-table-height`、`yss-use-tree-height`，旧名称只作为 registry alias。
 - `java-backend-commit` 明确不属于本合同；其内容、路由与锁定信息不随本前端同步更新。
 - 允许模板基于生命周期、组件路由和证据门禁做受控适配；适配后的 `effectiveHash` 与上游 `upstreamHash` 同时进入 `skills-lock.json`。

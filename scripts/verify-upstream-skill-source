@@ -28,7 +28,18 @@ if (source === "iloveZzz/yss-ui") {
     throw new TypeError(`yss-ui skills 包版本不匹配: expected=${manifest.package.name}@${manifest.package.version} actual=${packageJson.name}@${packageJson.version}`);
   }
   const upstreamRoot = path.join(sourceRoot, manifest.source_root);
-  const actualFrontend = skillNames(upstreamRoot).filter((name) => name !== "java-backend-commit" && existsSync(path.join(upstreamRoot, name, "SKILL.md")));
+  const sourceConfig = JSON.parse(readFileSync(path.join(upstreamRoot, "skills.config.json"), "utf8"));
+  if (!sourceConfig.defaultSync?.includes(manifest.source_category)) throw new TypeError(`yss-ui 默认同步不包含分类: ${manifest.source_category}`);
+  const categorySkills = sourceConfig.categories?.[manifest.source_category];
+  if (!Array.isArray(categorySkills)) throw new TypeError(`yss-ui 上游缺少分类: ${manifest.source_category}`);
+  const actualFrontend = categorySkills.filter((name) => !manifest.excluded_skills.includes(name)).sort();
+  const physicalSkills = new Set(skillNames(upstreamRoot).filter((name) => existsSync(path.join(upstreamRoot, name, "SKILL.md"))));
+  for (const name of actualFrontend) if (!physicalSkills.has(name)) throw new TypeError(`yss-ui 上游分类引用不存在的 skill: ${name}`);
+  for (const category of manifest.excluded_categories) {
+    for (const name of sourceConfig.categories?.[category] ?? []) {
+      if (manifest.skills.some(({ upstream }) => upstream === name)) throw new TypeError(`yss-ui 清单误包含已排除分类 ${category}: ${name}`);
+    }
+  }
   const declaredFrontend = manifest.skills.map(({ upstream }) => upstream).sort();
   if (JSON.stringify(actualFrontend) !== JSON.stringify(declaredFrontend)) {
     throw new TypeError(`yss-ui 前端 skills 清单漂移: expected=${declaredFrontend.join(",")} actual=${actualFrontend.join(",")}`);

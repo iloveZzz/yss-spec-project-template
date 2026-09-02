@@ -18,7 +18,7 @@
 | `mattpocock/skills` | `0ab1b63a410a03d3627979a109c8695de27af954` / `skills/engineering` 及锁文件记录的关联路径 | 通用工程流程及关联 skills |
 | `anthropics/knowledge-work-plugins` | `sales/skills/competitive-intelligence` | 竞品与市场事实研究 |
 | `tt-a1i/archify` | `199360cc6687a7857b54dd188d4922b09e466a4b` / `archify` | 条件式、可验证的技术架构图；YSS 适配见 `docs/agents/archify-integration.md` |
-| `iloveZzz/yss-ui` | `.agents/skills/.yss-skills-manifest.json` 锁定的 revision / `packages/skills` | 32 个 YSS UI 前端与前端维护 skills；适配见 `docs/agents/yss-ui-skills-integration.md` |
+| `iloveZzz/yss-ui` | `.agents/skills/.yss-skills-manifest.json` 锁定的 revision / `packages/skills` | 22 个 `categories.app` 业务前端 skills；排除组件库内部 `categories.library` 和后端提交 skill，适配见 `docs/agents/yss-ui-skills-integration.md` |
 | 项目本地 | `.agents/skills` 或平台专属 root | YSS 适配与项目治理 skills |
 
 `skills-lock.json` 是技能清单、来源、上游哈希、当前有效内容哈希和投影目标的权威记录：
