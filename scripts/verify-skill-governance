@@ -3,7 +3,7 @@ import { validateSkillGovernance } from "./lib/skill-governance.mjs";
 
 try {
   const result = validateSkillGovernance();
-  process.stdout.write(`技能规范冲突扫描通过（${result.legacy_aliases} 个兼容 alias）\n`);
+  process.stdout.write(`技能规范冲突扫描通过（${result.legacy_aliases} 个兼容 alias，${result.yss_ui_skills} 个 YSS UI 前端 skills）\n`);
 } catch (error) {
   process.stderr.write(`技能规范冲突扫描失败: ${error.message}\n`);
   process.exitCode = 1;

@@ -12,7 +12,7 @@ description: Use when YSS Vue 页面涉及布局、YTable、YEditTable、YFormil
 - YSS UI 组件文档：`http://192.168.164.27:3200/components`（组件契约以该手册为准；本技能依据 2026-08-18 可见内容整理）
 - 本地引用索引：`references/frontend-docs.md`
 
-本技能只负责页面组件、布局和交互呈现规范。请求、分页参数、接口映射交给 `yss-hook` 或 `yss-api-integration`；完整页面生成流程交给 `yss-page-module-development`；表格/树高度细节交给 `yss-use-table-height` 或 `yss-use-tree-height`。
+本技能只负责页面组件、布局和交互呈现规范。请求、分页参数、接口映射交给 `yss-hook` 或 `yss-api-integration`；新建或改造完整业务页面交给 `yss-ui-business-page-generation`，生命周期编排和旧触发词兼容交给 `yss-page-module-development`；表格/树高度细节交给 `yss-use-table-height` 或 `yss-use-tree-height`。
 
 组件文档与当前项目的已验证用法冲突时，先检查当前项目代码和依赖版本，再决定是否迁移；不得把上游 Ant Design Vue、vxe-table、Univer 或 Monaco 的未验证 API 当作 YSS 顶层契约。
 

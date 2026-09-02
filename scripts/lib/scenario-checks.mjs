@@ -46,7 +46,7 @@ function validateInvocationBoundary(data) {
   ensure(JSON.stringify(boundary?.lifecycle_managed_user_entries) === JSON.stringify(["setup-matt-pocock-skills", "grill-with-docs", "to-spec", "to-tickets", "implement"]), "生命周期管理的显式用户入口清单不完整");
   ensure(boundary?.lifecycle_may_invoke_user_invoked === false && boundary?.formal_artifact_owner === "explicit-user-entry", "生命周期仍可能自动调用 user-invoked skill 或产出其正式资产");
   ensure(JSON.stringify(boundary?.model_invoked_skills) === JSON.stringify(expectedModelInvoked) && JSON.stringify(boundary?.lifecycle_allowed_model_invoked_skills) === JSON.stringify(expectedLifecycleModelInvoked) && boundary?.continuous_orchestration === "compatibility-prepare-and-validate-only", "Matt invocation inventory 或生命周期 model-invoked 白名单不完整");
-  ensure(JSON.stringify(data.skill_source_contract?.source_revisions_required) === JSON.stringify(["mattpocock/skills"]) && data.skill_source_contract?.adaptation_ref_required_when_effective_diff === true && data.skill_source_contract?.retired_shared_skills?.includes("batch-grill-me"), "上游来源或退役 skill 供应链契约不完整");
+  ensure(JSON.stringify(data.skill_source_contract?.source_revisions_required) === JSON.stringify(["mattpocock/skills", "iloveZzz/yss-ui"]) && data.skill_source_contract?.adaptation_ref_required_when_effective_diff === true && data.skill_source_contract?.retired_shared_skills?.includes("batch-grill-me"), "上游来源或退役 skill 供应链契约不完整");
   validateInvocationMetadata(boundary, (skill) => read(`.agents/skills/${skill}/SKILL.md`));
   const setup = data.setup_readiness;
   ensure(setup?.missing_action === "needs-human" && setup?.requested_skill === "setup-matt-pocock-skills" && setup?.resume_route === "setup-readiness" && setup?.preserves?.includes("lifecycle.status"), "readiness=missing 未形成显式用户 setup 的结构化暂停");
@@ -60,9 +60,9 @@ function validateInvocationBoundary(data) {
   const routes = data.work_unit_routes;
   ensure(routes?.["work-unit.discovery-requirements"]?.skills?.includes("grilling") && routes?.["work-unit.discovery-requirements"]?.skills?.includes("domain-modeling"), "需求分析工作单元缺少 grilling/domain-modeling");
   ensure(routes?.["work-unit.discovery-opportunity"]?.route_by?.market_or_competitor_fact === "competitive-intelligence" && routes["work-unit.discovery-opportunity"].route_by.technical_or_standard_fact === "research", "机会调研事实路由不准确");
-  ensure(routes?.["work-unit.slice-implementation"]?.skills?.includes("tdd") && routes?.["work-unit.slice-implementation"]?.skills?.includes("yss-ui"), "原生实现工作单元缺少 TDD 或 UI 路由");
+  ensure(routes?.["work-unit.slice-implementation"]?.skills?.includes("tdd") && routes?.["work-unit.slice-implementation"]?.skills?.includes("yss-ui") && routes?.["work-unit.slice-implementation"]?.skills?.includes("yss-ui-business-page-generation"), "原生实现工作单元缺少 TDD、UI 或业务页面生成路由");
   const frontendRoute = routes?.["work-unit.slice-implementation"]?.frontend_route;
-  ensure(frontendRoute?.primary_skill === "yss-ui" && frontendRoute?.page_orchestration_skill === "yss-page-module-development", "前端实现路由缺少 yss-ui 主入口或页面编排技能");
+  ensure(frontendRoute?.primary_skill === "yss-ui" && frontendRoute?.page_generation_skill === "yss-ui-business-page-generation" && frontendRoute?.page_orchestration_skill === "yss-page-module-development", "前端实现路由缺少 yss-ui 主入口、业务页面生成或页面编排技能");
   for (const impact of ["api_impact", "formily_impact", "table_impact", "tree_impact", "height_impact", "export_impact", "theme_impact"]) {
     ensure(Array.isArray(frontendRoute?.conditional_skills?.[impact]) && frontendRoute.conditional_skills[impact].length > 0 && typeof frontendRoute.not_applicable_reasons?.[impact] === "string", `前端条件专项路由缺少 ${impact}`);
   }

@@ -46,14 +46,15 @@ pnpm why vue @yss-ui/components @yss-ui/hooks ant-design-vue vxe-table
 
 - `YTable` 替代 AntDV `Table`，列使用 `field/type` 和字段同名插槽。
 - `YTree` 替代 AntDV `Tree`。
-- `YssFormily` 是新代码 canonical name；`YFormily` 仅作为已确认导出的 deprecated alias。
+- `YFormily` 是新代码 canonical name；`YssFormily` 仅作为已确认导出的历史兼容 alias。
 - `YSplitPane`、`YButton`、`YCard` 等已有封装优先使用 YSS。
 
 ## 4. 最小专项 skill 路由
 
 | 任务 | 必须路由 |
 |---|---|
-| 完整页面模块 | `yss-page-module-development` |
+| 新建或改造完整业务页面 | `yss-ui-business-page-generation` |
+| 生命周期页面编排与旧触发词兼容 | `yss-page-module-development` |
 | 页面布局、组件和交互 | `yss-components` |
 | 请求、分页、参数、树数据映射 | `yss-hook` |
 | Formily schema、联动、校验、详情态 | `yss-formily` |
@@ -78,7 +79,7 @@ views/PageName/
 - `index.vue` 只做页面编排和事件转发。
 - `components/` 承载区块展示和局部交互。
 - `hooks/` 承载请求、分页、参数单一来源、映射和错误兜底。
-- `schemas/` 承载 `YssFormily` schema。
+- `schemas/` 承载 `YFormily` schema。
 - 页面内禁止复制请求流程、分页状态和复杂字段转换。
 
 ## 6. 跨组件强制约束
@@ -129,7 +130,7 @@ verification: pnpm type-check
 1. 读取批准合同、项目版本和组件映射。
 2. 选择最小专项 skills。
 3. 搭页面目录和布局。
-4. 接 `YssFormily`、`YTable`、`YTree` 等 YSS 主体组件。
+4. 接 `YFormily`、`YTable`、`YTree` 等 YSS 主体组件。
 5. 下沉请求、分页和映射到 `yss-hook`。
 6. 接高度、主题、locale、浮层和无障碍约束。
 7. 联调冻结 API、Mock、路由和权限。
@@ -139,7 +140,7 @@ verification: pnpm type-check
 
 - [ ] 已记录 Vue、YSS UI、AntDV、VXE 实际版本。
 - [ ] 组件选型符合 `component-routing.md`，回退有证据。
-- [ ] 新代码使用 `YssFormily` 和真实存在的 `yss-hook`。
+- [ ] 新代码使用 `YFormily` 和真实存在的 `yss-hook`。
 - [ ] YTable/YTree/Formily/高度 Hook 遵循专项 skill。
 - [ ] 主题、locale、浮层容器和微应用隔离已检查。
 - [ ] loading/empty/error/no-access/selected 状态按影响面覆盖。

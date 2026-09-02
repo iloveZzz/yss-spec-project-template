@@ -143,7 +143,7 @@ roles:
     title: YSS 前端工程师
     stages: [stage.product-design, stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.frontend-implementation-plan]
-    core_skills: [yss-ui, yss-page-module-development, yss-components, yss-formily, formily-foundation, formily-linkage-effects, formily-mode-slot-detail, formily-step-flow, ytable-usage, ytree-usage, yedit-table-usage, yss-api-integration, yss-hook, theme-token-usage, page-skeleton, page-list-module, page-form-module, component-selection-imports, vue3-best-practices, tdd]
+    core_skills: [yss-ui, yss-ui-business-page-generation, yss-page-module-development, yss-components, yss-formily, formily-foundation, formily-linkage-effects, formily-mode-slot-detail, formily-step-flow, ytable-usage, ytree-usage, yedit-table-usage, yss-api-integration, yss-hook, theme-token-usage, page-skeleton, page-list-module, page-form-module, component-selection-imports, vue3-best-practices, tdd]
     forbidden_skills: [yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-ddd-scaffold-generator, java-backend-commit]
     description: >-
       Own Vue page modules, frontend tests, and frontend_implementation_plan.

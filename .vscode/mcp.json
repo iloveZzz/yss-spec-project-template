@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "yss-ui": {
+      "command": "npx",
+      "args": ["-y", "@yss-ui/mcp"]
+    }
+  }
+}

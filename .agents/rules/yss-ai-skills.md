@@ -9,6 +9,16 @@ trigger: always_on
 ## Available Skills
 
 - yss-ui-business-page-generation: .agents/skills/yss-ui-business-page-generation/SKILL.md
+- component-development: .agents/skills/component-development/SKILL.md
+- component-testing: .agents/skills/component-testing/SKILL.md
+- documentation: .agents/skills/documentation/SKILL.md
+- changelog-generation: .agents/skills/changelog-generation/SKILL.md
+- commit-linting: .agents/skills/commit-linting/SKILL.md
+- release-management: .agents/skills/release-management/SKILL.md
+- release-workflow: .agents/skills/release-workflow/SKILL.md
+- skill-development: .agents/skills/skill-development/SKILL.md
+- sync-internal-dev: .agents/skills/sync-internal-dev/SKILL.md
+- yss-create-microapp: .agents/skills/yss-create-microapp/SKILL.md
 - yss-page-module-development: .agents/skills/yss-page-module-development/SKILL.md
 - theme-token-usage: .agents/skills/theme-token-usage/SKILL.md
 - component-selection-imports: .agents/skills/component-selection-imports/SKILL.md
@@ -44,7 +54,7 @@ trigger: always_on
 
 ## Hard Stops
 
-- 当前会话可用 yss-ui MCP 时，生成业务代码前必须先调用一次 `get_codegen_rules`；不确定导出时用 `list_components`，配置组件/Hook/Utils 前用 `get_component_docs`，复杂场景用 `get_demo`，不确定归属时用 `search_docs`。
+- 模板已预置 yss-ui 项目级 MCP 配置；当前会话可用时，生成业务代码前必须先调用一次 `get_codegen_rules`。不确定导出时用 `list_components`，配置组件/Hook/Utils 前用 `get_component_docs`，复杂场景用 `get_demo`，不确定归属时用 `search_docs`。需要全局配置的客户端按 `docs/user-guide/yss-ui-mcp.md` 人工安装，不自动修改用户主目录。
 - 禁止使用 YTable 不存在的 `request`、`search-params` Props 和 `actionConfig.actions`；实例 `refresh()` 只刷新当前表格数据，不得当作远程重新查询。
 - 标准列表必须使用 `:data`、`:columns`、`:loading`、`pageable`、`v-model:pagination`、`@page-change`。
 - 表格主操作必须放入 `#toolbar-right`；只有确实需要列设置时才使用 `:toolbar-config="{ custom: true }"`。

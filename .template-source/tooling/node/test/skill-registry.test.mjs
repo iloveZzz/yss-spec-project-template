@@ -234,6 +234,7 @@ test("frontend conditional routes require registered skills", () => {
     not_applicable_reason: "not_ready",
     frontend_route: {
       primary_skill: "yss-ui",
+      page_generation_skill: "yss-ui-business-page-generation",
       page_orchestration_skill: "yss-page-module-development",
       conditional_skills: { api_impact: ["missing-api-skill"] },
       not_applicable_reasons: { api_impact: "no_api_impact" }

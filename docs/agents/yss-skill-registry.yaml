@@ -618,6 +618,66 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
+  - id: changelog-generation
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [template-maintenance]
+  - id: commit-linting
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: component-development
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: component-testing
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: documentation
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: release-management
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [template-maintenance]
+  - id: release-workflow
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [template-maintenance]
+  - id: skill-development
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [template-maintenance]
+  - id: sync-internal-dev
+    layer: maintainer-only
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: yss-create-microapp
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
 platform_skills:
   - id: data-analytics
     root: .codex/skills

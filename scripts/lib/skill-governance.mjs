@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadSkillRegistry } from "./skill-registry.mjs";
+import { validateYssUiSkillManifest } from "./skill-supply-chain.mjs";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -25,6 +26,39 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
   }
   if (!pageSkill.includes("只有确实需要列设置时才启用 `toolbar-config.custom`")) {
     fail("页面模块 canonical 技能缺少条件化 toolbar-config 规则");
+  }
+
+  const yssUiManifest = validateYssUiSkillManifest(JSON.parse(read(".agents/skills/.yss-skills-manifest.json")));
+  const lock = JSON.parse(read("skills-lock.json"));
+  for (const skill of yssUiManifest.skills) {
+    const skillPath = `.agents/skills/${skill.canonical}/SKILL.md`;
+    if (!exists(skillPath)) fail(`yss-ui 前端清单缺少 canonical skill: ${skill.canonical}`);
+    const item = lock.skills?.shared?.[skill.canonical];
+    if (!item || item.source !== yssUiManifest.source || item.sourceRevision !== yssUiManifest.source_revision) {
+      fail(`yss-ui skill 缺少一致的来源锁定: ${skill.canonical}`);
+    }
+    if (item.skillPath !== `${yssUiManifest.source_root}/${skill.upstream}/SKILL.md` || item.upstreamHash !== skill.upstream_hash) {
+      fail(`yss-ui skill 上游路径或 hash 不一致: ${skill.canonical}`);
+    }
+    const content = read(skillPath);
+    for (const match of content.matchAll(/\.\.\/([a-z0-9-]+)\/SKILL\.md/g)) {
+      if (!exists(`.agents/skills/${match[1]}/SKILL.md`)) fail(`${skill.canonical} 引用了不存在的本地 skill: ${match[1]}`);
+    }
+  }
+  const yssUiSkill = read(".agents/skills/yss-ui/SKILL.md");
+  if (!yssUiSkill.includes("`YFormily` 是新代码 canonical name")) fail("yss-ui 必须把 YFormily 声明为新代码 canonical name");
+  if (!yssUiSkill.includes("| 新建或改造完整业务页面 | `yss-ui-business-page-generation` |")) fail("yss-ui 缺少完整业务页面生成路由");
+  const expectedServer = { command: "npx", args: ["-y", "@yss-ui/mcp"] };
+  for (const config of yssUiManifest.mcp.project_configs) {
+    if (!exists(config.path)) fail(`缺少 yss-ui MCP 项目配置: ${config.path}`);
+    const document = JSON.parse(read(config.path));
+    if (JSON.stringify(document?.[config.container]?.[yssUiManifest.mcp.server_name]) !== JSON.stringify(expectedServer)) {
+      fail(`yss-ui MCP 配置不一致: ${config.path}`);
+    }
+  }
+  const mcpGuide = read(yssUiManifest.mcp.global_install_guide);
+  for (const marker of ["npx -y @yss-ui/mcp install codex", "不写用户主目录", "get_codegen_rules", "list_components"]) {
+    if (!mcpGuide.includes(marker)) fail(`YSS UI MCP 指南缺少边界或自检标记: ${marker}`);
   }
 
   const registry = loadSkillRegistry();
@@ -65,5 +99,5 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
       }
     }
   }
-  return { checked: true, legacy_aliases: legacy.size };
+  return { checked: true, legacy_aliases: legacy.size, yss_ui_skills: yssUiManifest.skills.length };
 }

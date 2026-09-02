@@ -18,6 +18,7 @@
 | `mattpocock/skills` | `0ab1b63a410a03d3627979a109c8695de27af954` / `skills/engineering` 及锁文件记录的关联路径 | 通用工程流程及关联 skills |
 | `anthropics/knowledge-work-plugins` | `sales/skills/competitive-intelligence` | 竞品与市场事实研究 |
 | `tt-a1i/archify` | `199360cc6687a7857b54dd188d4922b09e466a4b` / `archify` | 条件式、可验证的技术架构图；YSS 适配见 `docs/agents/archify-integration.md` |
+| `iloveZzz/yss-ui` | `.agents/skills/.yss-skills-manifest.json` 锁定的 revision / `packages/skills` | 32 个 YSS UI 前端与前端维护 skills；适配见 `docs/agents/yss-ui-skills-integration.md` |
 | 项目本地 | `.agents/skills` 或平台专属 root | YSS 适配与项目治理 skills |
 
 `skills-lock.json` 是技能清单、来源、上游哈希、当前有效内容哈希和投影目标的权威记录：
@@ -44,10 +45,11 @@
    scripts/update-skill-lock
    ```
 
-   若来源来自可访问的 Matt checkout，还应显式校验锁定 revision 与每个上游目录哈希：
+   若来源来自可访问的上游 checkout，还应显式校验锁定 revision 与每个上游目录哈希：
 
    ```bash
-   scripts/verify-upstream-skill-source --source-root <matt-skills-checkout>
+   scripts/verify-upstream-skill-source --source=mattpocock/skills --source-root <matt-skills-checkout>
+   scripts/verify-upstream-skill-source --source=iloveZzz/yss-ui --source-root <yss-ui-checkout>
    ```
 
    新增共享 skill 时先显式登记：`scripts/update-skill-lock --add=<skill-name>`；新增平台专属 skill 使用 `scripts/update-skill-lock --add-platform=<root>:<skill-name>`。脚本不会把工作区中偶然出现的未跟踪目录自动纳入发布清单。
@@ -74,8 +76,9 @@
 ```bash
 scripts/sync-skills --check
 scripts/update-skill-lock --check
-# 可选：对照锁文件中的 mattpocock/skills revision 与上游目录哈希
-scripts/verify-upstream-skill-source --source-root <matt-skills-checkout>
+# 可选：对照锁文件中的 source revision 与上游目录哈希
+scripts/verify-upstream-skill-source --source=mattpocock/skills --source-root <matt-skills-checkout>
+scripts/verify-upstream-skill-source --source=iloveZzz/yss-ui --source-root <yss-ui-checkout>
 ```
 
 前者检查所有共享投影是否指向或匹配权威内容，后者检查 `skills-lock.json` 是否与当前完整目录树一致。过时技能不会保留兼容别名；旧 skill 名称和入口按 [`docs/agents/skill-migrations.md`](./skill-migrations.md) 一次性迁移，项目文件升级由 `create-yss-spec attach` / `sync` 处理。

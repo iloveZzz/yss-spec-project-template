@@ -322,6 +322,7 @@ export function validateSkillRegistry(registry, { lock, routerContract, lifecycl
       }
       if (route.frontend_route) {
         requireString(route.frontend_route.primary_skill, `${routeId}.frontend_route.primary_skill`);
+        requireString(route.frontend_route.page_generation_skill, `${routeId}.frontend_route.page_generation_skill`);
         requireString(route.frontend_route.page_orchestration_skill, `${routeId}.frontend_route.page_orchestration_skill`);
         const conditional = route.frontend_route.conditional_skills;
         if (!conditional || typeof conditional !== "object" || Array.isArray(conditional)) fail(`${routeId}.frontend_route.conditional_skills 必须是对象`);
@@ -332,7 +333,7 @@ export function validateSkillRegistry(registry, { lock, routerContract, lifecycl
             fail(`${routeId}.frontend_route.not_applicable_reasons.${impact} 必须是字符串`);
           }
         }
-        if (!resolve(route.frontend_route.primary_skill) || !resolve(route.frontend_route.page_orchestration_skill)) {
+        if (!resolve(route.frontend_route.primary_skill) || !resolve(route.frontend_route.page_generation_skill) || !resolve(route.frontend_route.page_orchestration_skill)) {
           fail(`${routeId}.frontend_route 主入口引用了未登记技能`);
         }
       }

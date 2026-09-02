@@ -87,8 +87,8 @@ rg -n "class (SingleResult|MultiResult|PageResult|Result)<|public static class .
 
 | 检查项 | 结论 | 证据 |
 |---|---|---|
-| `yss-ui` 组件路由已落实：YSS `required` 封装（如 `YTable` / `YTree` / `YssFormily`）未被 AntDV 裸组件或其他重型方案绕过；受控回退有能力缺口记录 | pass / violation / not-applicable |  |
-| `yss-page-module-development` 页面骨架已落实：`index.vue` 只编排，请求与分页不堆在页面根组件 | pass / violation / not-applicable |  |
+| `yss-ui` 组件路由已落实：YSS `required` 封装（如 `YTable` / `YTree` / `YFormily`）未被 AntDV 裸组件或其他重型方案绕过；受控回退有能力缺口记录 | pass / violation / not-applicable |  |
+| `yss-ui-business-page-generation` 页面生成与 `yss-page-module-development` 生命周期编排已落实：`index.vue` 只编排，请求与分页不堆在页面根组件 | pass / violation / not-applicable |  |
 | 切片合同 `required_skills` 中的 Formily / 表格 / 树 / 高度 / 主题 / API 专项 skill 已按影响面引用规则；未命中项有 `not-applicable` 原因 | pass / violation / not-applicable |  |
 | 前端验证使用项目根 `pnpm ...`；实际退出码已记录。只做 type-check 或声称“已对齐”不算通过 | pass / violation / not-applicable |  |
 | 机器检查（`pnpm lint` / `pnpm type-check` 等已存在脚本）已执行，或缺失工具已写 `not-applicable` 及原因 | pass / violation / not-applicable |  |

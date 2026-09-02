@@ -181,7 +181,7 @@ matt_invocation_boundary:
 
 skill_source_contract:
   lock_version: 3
-  source_revisions_required: [mattpocock/skills]
+  source_revisions_required: [mattpocock/skills, iloveZzz/yss-ui]
   adaptation_ref_required_when_effective_diff: true
   retired_shared_skills: [batch-grill-me, product-design-prototype, yss-dictionary, yss-jdbc, yss-log, yss-taskflow, yss-backend-scaffold-application, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-backend-scaffold-web]
 
@@ -277,11 +277,12 @@ work_unit_routes:
   work-unit.slice-implementation:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     primary_skill: yss-router
-    supporting_skills: [tdd, yss-ui, yss-page-module-development]
+    supporting_skills: [tdd, yss-ui, yss-ui-business-page-generation, yss-page-module-development]
     compatibility: {source: mattpocock/skills, skill: implement, invocation_mode: reference, formal_artifact_owner: explicit-user-entry}
-    skills: [tdd, yss-router, yss-ui, yss-page-module-development]
+    skills: [tdd, yss-router, yss-ui, yss-ui-business-page-generation, yss-page-module-development]
     frontend_route:
       primary_skill: yss-ui
+      page_generation_skill: yss-ui-business-page-generation
       page_orchestration_skill: yss-page-module-development
       conditional_skills:
         api_impact: [yss-api-integration]
