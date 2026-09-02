@@ -13,6 +13,8 @@ execution_result:
     contract_ref:
     contract_id:
     contract_version:
+    quality_baseline_ref:
+    context_plan_ref:
   changed_files:
     - path:
       contract_area: common | frontend | backend | contract | cross_repo
@@ -28,6 +30,9 @@ execution_result:
     - constraint:
       status: passed | failed | not-applicable
       evidence_ref:
+  doubt_driven_review:
+    status: not-applicable | completed | blocked
+    record_ref:
   seam_deferred:
     - risk:
       owner:

@@ -68,7 +68,7 @@ slice_contract_required:
   root: [schema_version, contract_id, contract_version, slice_id, status, lifecycle_refs, readiness, common, frontend, backend, contract, cross_repo, work_units]
   lifecycle_refs: [spec, ticket, requirement_freeze, low_fidelity_review, prototype_review, high_fidelity_html, prototype_verification, antd_cli_evidence, browser_verification_evidence, prototype_confirmation, openapi_freeze_or_no_impact, architecture_review, data_architecture, tactical_design, engineering_baseline, build_architecture_checklist, implementation_repository, frontend_repository, backend_repository, maven_wrapper]
   readiness: [blockers, stale_inputs, not_applicable]
-  common: [impacted_areas, implementation_path_policy, project_roots, required_skills, optional_skills, unavailable_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, human_review_points, full_reroute_triggers]
+  common: [impacted_areas, implementation_path_policy, project_roots, required_skills, optional_skills, unavailable_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, human_review_points, full_reroute_triggers, quality_baseline_ref, context_plan, doubt_driven_review]
   frontend: [status, required_skills, approved_prototype_ref, state_matrix_ref, allowed_write_paths, component_test_seams, e2e_paths]
   backend: [status, affected_layers, component_impacts, required_skills, application_boundary, transaction_boundary, persistence_strategy, allowed_write_paths, forbidden_patterns, expected_evidence_files, seam_deferred, verification_commands, tactical_ddd]
   contract: [api_impact, freeze_ref, no_api_impact_ref, generated_clients, contract_tests, regeneration_commands]
@@ -100,7 +100,12 @@ work_unit_required: [id, behavior, primary_skill, supporting_skills, tdd_mode, a
 work_unit_nonempty_arrays: [allowed_write_paths, expected_evidence, verification_commands]
 slice_contract_nonempty: [contract_id, contract_version, slice_id, status]
 slice_contract_array_fields:
-  common: [impacted_areas, implementation_path_policy, project_roots, required_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, full_reroute_triggers]
+  common: [impacted_areas, implementation_path_policy, project_roots, required_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, full_reroute_triggers, quality_baseline_ref, context_plan, doubt_driven_review]
+
+context_plan:
+  required: [required_context_refs, on_demand_context_refs, context_stop_rule, missing_context_action]
+  context_stop_rule: minimal-sufficient-evidence
+  missing_context_action: [blocked, reroute]
 
 scaffold_contract_schema:
   schema_version: 1
@@ -241,6 +246,7 @@ full_reroute_triggers:
   - test-seam-changed
   - verification-command-changed
   - delivery-order-changed
+  - doubt-review-triggered
 
 reroute_destinations:
   scaffold-baseline-drift: stage7-scaffold-revalidation
@@ -258,9 +264,30 @@ reroute_destinations:
   test-seam-changed: spec-ticket-test-seam-review
   verification-command-changed: stage7-contract-recompile
   delivery-order-changed: cross-repo-release-review
+  doubt-review-triggered: high-risk-decision-review
+
+doubt_driven_review:
+  applies_when:
+    - api-schema-impact
+    - database-schema-impact
+    - cross-repo-contract
+    - release-or-rollback
+    - authentication-authorization-tenant-or-sensitive-data-behavior
+    - lifecycle-or-generation-semantics
+  required: [claim, counterclaim, evidence_refs, residual_risks, reviewer_ref]
+  status_values: [not-applicable, required, completed, blocked]
+  blocking_when: [missing-counterclaim, insufficient-evidence, unresolved-residual-risk]
+  evidence_owner: decision-or-review-record
+  no_new_lifecycle_stage: true
+
+quality_baseline:
+  source: lifecycle_refs.engineering_baseline
+  required_for: [project-instance]
+  reused_by: [slice-contract, yss-skill-execution-result, code-review, release]
+  redefinition: forbidden
 
 execution_result_allowed_statuses: [implemented, seam-deferred, drift, violation, not-applicable]
-execution_blockers: [path-outside-contract, missing-evidence, verification-not-executed, verification-command-mismatch, seam-deferred-without-owner, constraint-failed, unapproved-deviation, drift, violation, new-impacts]
+execution_blockers: [path-outside-contract, missing-evidence, verification-not-executed, verification-command-mismatch, seam-deferred-without-owner, constraint-failed, doubt-review-missing, unapproved-deviation, drift, violation, new-impacts]
 
 contract_versioning:
   full_reroute_current_status: stale

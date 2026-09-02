@@ -54,6 +54,20 @@ slice_contract:
     verification_commands: []
     human_review_points: []
     full_reroute_triggers: []
+    quality_baseline_ref:
+    context_plan:
+      required_context_refs: []
+      on_demand_context_refs: []
+      context_stop_rule: minimal-sufficient-evidence
+      missing_context_action: blocked # or reroute
+    doubt_driven_review:
+      status: not-applicable # or required / completed / blocked
+      trigger_impacts: []
+      claim:
+      counterclaim:
+      evidence_refs: []
+      residual_risks: []
+      reviewer_ref:
   frontend:
     status: not-applicable
     required_skills: []

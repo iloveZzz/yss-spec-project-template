@@ -32,6 +32,21 @@ test("missing Cursor runtime root is rejected", () => {
   assert.throws(() => validateSkillRegistry(data), /agent_runtime_roots.cursor/);
 });
 
+test("skill invocation contract is required and derives impact triggers", () => {
+  const missing = registry();
+  delete missing.invocation_contract;
+  assert.throws(() => validateSkillRegistry(missing), /invocation_contract/);
+
+  const invalid = registry();
+  invalid.invocation_contract = {
+    ...invalid.invocation_contract,
+    default: { ...invalid.invocation_contract.default, trigger_conditions: ["registered-skill-request"] },
+    layer_defaults: Object.fromEntries(Object.entries(invalid.invocation_contract.layer_defaults).map(([layer, value]) => [layer, { ...value }]))
+  };
+  invalid.invocation_contract.layer_defaults.core = { ...invalid.invocation_contract.layer_defaults.core, primary_output: "" };
+  assert.throws(() => validateSkillRegistry(invalid), /primary_output/);
+});
+
 test("platform aliases resolve lifecycle external runtime entries", () => {
   const data = registry();
   const route = {

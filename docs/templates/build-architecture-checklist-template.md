@@ -46,6 +46,8 @@ owner: ai
 | 工程项目路径：每个 Harness 内项目必须有具体项目段，禁止直接写入容器根或单数 `app/...` | `docs/process/implementation-repo-integration.md` / implementation path validator |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 路径违规时停止 build，并回到实现路由 |
 | 文档语言：持久化生命周期文档、实施记录、审查报告、发布说明和 Git checkpoint 正文必须使用中文，英文 skill / 模板不得原样落地 | `AGENTS.md` / `yss-product-lifecycle` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 仅保留必要英文技术标识、命令和 metadata |
 | 高风险变更：按已批准的普通影响面结论记录验证证据、责任人和回滚约束 | `AGENTS.md` / Spec / 架构记录 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺验证证据或责任人时不得发布或合并 |
+| 质量基线：`baseline_id` / `baseline_version` 只从 `engineering-baseline` 引用，Slice、Execution Result、审查和发布不得重复定义 | `engineering-baseline` / `orchestration-contract.yaml` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺少基线引用或出现重复标准时阻断并回到工程基线 |
+| Doubt-Driven：命中 API、数据、跨仓、发布回滚、实际安全行为或生命周期 / 生成语义时具备主张、反证、证据、残余风险和审查引用 | Router Contract / `orchestration-contract.yaml` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺反证、证据不足或残余风险未处理时阻断 |
 |  |  |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  |  |
 
 状态说明：

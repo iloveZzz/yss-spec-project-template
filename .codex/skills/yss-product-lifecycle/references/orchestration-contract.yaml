@@ -648,8 +648,49 @@ release_readiness:
 wayfinder_completion:
   required: [no_open_children, no_open_blocked_or_claimed_children, no_fog, destination_clear]
 
+wayfinder_mode:
+  optional: true
+  enable_when:
+    - multi-session-or-multi-agent-work
+    - unclear-decision-frontier
+    - cross-domain-dependency-map-needed
+  lifecycle_position: discovery-to-spec-planning
+  completion_route: wayfinder -> handoff -> to-spec
+  does_not_replace: [lifecycle-gates, spec-baseline, ticket-formalization]
+  forbidden_state_mutations: [ready-for-agent, gate-approval, ticket-role]
+  template_source_use: only-when-template-evolution-is-long-running
+
+context_engineering:
+  contract_field: slice_contract.common.context_plan
+  required_context: [CONTEXT.md, approved-spec, current-slice-contract, applicable-adr-or-baseline]
+  on_demand_context: [specialist-references, implementation-repository-files, historical-evidence]
+  stop_rule: minimal-sufficient-evidence
+  missing_context_action: [blocked, reroute]
+  numeric_token_budget: not-required
+
+doubt_driven_review:
+  applies_when:
+    - api-schema-impact
+    - database-schema-impact
+    - cross-repo-contract
+    - release-or-rollback
+    - authentication-authorization-tenant-or-sensitive-data-behavior
+    - lifecycle-or-generation-semantics
+  required: [claim, counterclaim, evidence_refs, residual_risks, reviewer_ref]
+  record_in: [decision-record, architecture-review, contract-review, release-review]
+  blocking_when: [missing-counterclaim, insufficient-evidence, unresolved-residual-risk]
+  ordinary-low-risk_changes: not-required
+  no_new_lifecycle_stage: true
+
+quality_baseline_reuse:
+  source: artifact.engineering-baseline
+  applies_to: project-instance
+  consumers: [slice-implementation-contract, yss-skill-execution-result, code-review, release]
+  constraint_results_field: required
+  redefinition: forbidden
+
 ready_for_agent:
-  required: [gates_satisfied, no_stale_artifacts, blockers_closed, implementation_context_ready, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, predecessor_work_unit, ticket_decomposition_result_ref, ticket_decomposition_result_status, vertical_slice_ticket_ref, vertical_slice_ticket_role, vertical_slice_ticket_kind, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied, frontend_implementation_plan_if_ui_impact]
+  required: [gates_satisfied, no_stale_artifacts, blockers_closed, implementation_context_ready, context_plan, quality_baseline_ref, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, predecessor_work_unit, ticket_decomposition_result_ref, ticket_decomposition_result_status, vertical_slice_ticket_ref, vertical_slice_ticket_role, vertical_slice_ticket_kind, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied, frontend_implementation_plan_if_ui_impact]
   ticket_formalization_validator: scripts/lib/lifecycle-transition.mjs
   requires_vertical_slice_ticket: true
   parent_ticket_as_implementation_ref: forbidden

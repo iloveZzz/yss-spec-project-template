@@ -46,6 +46,13 @@
 5. 模板正式发布仍执行一次完整 `scripts/verify-template`，但不因 L3 额外冻结候选或派发正式独立审查。
 6. 模板维护与产品切片使用同一 finding 闭环：`violation` / 机器检查失败 / 适用行空白由实施者修复后重新验证并按本表强度复审；`drift` / `new_impacts` 升级影响面并重新分级，禁止在旧合同或旧 checkpoint 上继续编码。审查者不得写实现。未命中的条件项才 `not-applicable`；命中后不得豁免。
 
+## 5. 上下文、反证与质量基线裁剪
+
+- Slice Contract 的 `common.context_plan` 是实现上下文的唯一轻量计划：先读 `CONTEXT.md`、已批准 Spec、当前合同和适用 ADR / 工程基线，再按影响面按需加载 references；达到最小充分证据后停止扩展。缺失权威上下文只能 `blocked` 或 `reroute`。
+- 质量标准在 `engineering-baseline` 中定义一次，以 `baseline_id` / `baseline_version` 被 Slice Contract、YSS Skill Execution Result、`code-review` 和发布检查复用；切片不得重定义同一标准。约束结果统一写入 `constraint_results`。
+- 只有命中高风险影响时才要求 Doubt-Driven 在途反证：API / 数据迁移、跨仓契约、发布回滚、实际改变的安全行为、生命周期或生成语义。反证写入现有决策 / 架构 / 契约 / 发布审查记录，不新增生命周期阶段；缺少反证、证据不足或残余风险未处理即阻断。
+- Wayfinder 是超长工作的可选规划模式，不改变阶段、门禁或 Ticket 状态；地图收敛后按 `wayfinder → handoff → to-spec` 返回主链。
+
 模板维护默认停在 `implementation-ready`，不自动冻结候选或派发审查。需要独立审查时显式提升到 `review-ready`；完成独立审查和最终完整门禁后才能成为 `release-ready`。三个核验入口由 `docs/process/template-verification-profiles.yaml` 统一定义：
 
 - `scripts/verify-template-fast`：按 Git 影响面运行快速检查；未映射路径或核心核验资产变化时 fail-safe 升级为完整门禁。

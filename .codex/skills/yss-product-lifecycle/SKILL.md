@@ -16,6 +16,8 @@ description: 编排 YSS 产品或模块从机会调研到 Spec、原型、技术
 
 Matt 的 `grill-with-docs`、`to-spec`、`to-tickets`、`implement` 等保留为显式兼容入口；默认路径是本 skill 持有的原生工作单元，由本编排器创建正式资产、维护状态并在会签门禁暂停（级别见数字人角色注册表）。兼容入口不得自动调用它们或代替其创建正式资产；Matt 只导航，不得写生命周期资产或改变门禁/Ticket 状态；任何写入前回交本编排器。
 
+技能调用先消费 `docs/agents/yss-skill-registry.yaml` 的 `invocation_contract`：它只约束调用模式、触发/排除条件、主要输出和依赖，不替代生命周期证据或门禁。进入实现后，Slice Contract 的 `common.context_plan` 只加载当前切片的最小充分上下文；缺失权威上下文必须 `blocked` 或回 Router，不得猜测补齐。质量标准由 `engineering-baseline` 一次定义并由切片、Execution Result、审查和发布复用；命中高风险影响时在途记录 Doubt-Driven 主张、反证、证据和残余风险。Wayfinder 仅作为超长或决策前沿不清晰工作的可选 Discovery → Spec 规划模式，完成后回到 `handoff → to-spec`，不改变生命周期状态。
+
 ## 不可裁剪的主链
 
 入口分诊 → Discovery → Spec / 功能架构 → 产品设计 → 系统 / 数据架构与工程契约 → Ticket 正式化 → 垂直切片实现（前后端 TDD）→ 验证 / 发布 / 复盘。
