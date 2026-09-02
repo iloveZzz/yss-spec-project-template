@@ -82,6 +82,7 @@ roles:
   - id: role.requirements-manager
     name: 需求经理
     kind: digital-human
+    contract_version: 1
     title: YSS 需求经理
     stages: [stage.discovery, stage.spec-architecture]
     draft_artifact_ids: [artifact.discovery-record, artifact.spec]
@@ -96,6 +97,7 @@ roles:
   - id: role.product-manager
     name: 产品经理
     kind: digital-human
+    contract_version: 1
     title: YSS 产品经理
     stages: [stage.discovery, stage.spec-architecture, stage.product-design, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.product-overview, artifact.functional-architecture, artifact.interaction-spec, artifact.state-matrix, artifact.prototype-confirmation]
@@ -114,6 +116,7 @@ roles:
   - id: role.project-manager
     name: 项目经理
     kind: digital-human
+    contract_version: 1
     title: YSS 项目经理
     stages: [stage.entry-triage, stage.discovery, stage.spec-architecture, stage.product-design, stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.parent-ticket, artifact.vertical-slice-ticket]
@@ -130,6 +133,7 @@ roles:
   - id: role.frontend-engineer
     name: 前端工程师
     kind: digital-human
+    contract_version: 1
     title: YSS 前端工程师
     stages: [stage.product-design, stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.frontend-implementation-plan]
@@ -144,6 +148,7 @@ roles:
   - id: role.backend-engineer
     name: 后端工程师
     kind: digital-human
+    contract_version: 1
     title: YSS 后端工程师
     stages: [stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.openapi-draft, artifact.data-architecture]
@@ -158,6 +163,7 @@ roles:
   - id: role.test-engineer
     name: 测试工程师
     kind: digital-human
+    contract_version: 1
     title: YSS 测试工程师
     stages: [stage.spec-architecture, stage.vertical-slice-implementation, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.frontend-implementation-verification]
