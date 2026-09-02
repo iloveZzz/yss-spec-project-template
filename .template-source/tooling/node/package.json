@@ -9,7 +9,8 @@
   "scripts": {
     "build:vendor": "node scripts/build-vendor.mjs",
     "test": "node --test test/**/*.test.mjs",
-    "check:vendor": "node scripts/build-vendor.mjs --check"
+    "check:vendor": "node scripts/build-vendor.mjs --check",
+    "design-md": "node scripts/design-md.mjs"
   },
   "devDependencies": {
     "esbuild": "0.28.2",

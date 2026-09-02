@@ -1,0 +1,33 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  引入根目录 DESIGN.md 规范源、核心设计校验器、模板分发文件和跨仓快照，改变生成语义与跨仓契约。
+triggers: [core-validator, generation-semantics, cross-repo-contract]
+changed_assets:
+  - DESIGN.md
+  - docs/design/design.md
+  - docs/design/README.md
+  - docs/design/design-system-sync.yaml
+  - docs/design/preview.html
+  - docs/design/preview-dark.html
+  - docs/design/tokens/.design-md-projection.json
+  - .template-source/tooling/node/scripts/design-md.mjs
+  - docs/process/template-verification-profiles.yaml
+  - submodules/create-yss-spec/template.manifest.json
+  - submodules/create-yss-spec/template.snapshot.json
+  - submodules/yss-strategic-design-harness/DESIGN.md
+  - submodules/create-yss-strategic-design/template.snapshot.json
+verification_evidence:
+  - kind: fresh-verification
+    command: node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md && node .template-source/tooling/node/scripts/design-md.mjs drift
+    result: pass
+  - kind: self-check
+    command: pnpm --dir .template-source/tooling/node test
+    result: pass
+review_mode: self-check
+escalation: release verification and human approval remain pending
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null
