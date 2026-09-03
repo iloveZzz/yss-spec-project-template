@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+  <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+  <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+  <property name="CONSOLE_LOG_PATTERN"
+            value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"/>
+  <springProperty name="APP_NAME" scope="context" source="spring.application.name" defaultValue="{{PROJECT_NAME}}"/>
+  <springProperty name="LOG_PATH" scope="context" source="logging.file.path" defaultValue="logs"/>
+
+  <springProfile name="dev,mock">
+    <logger level="DEBUG" name="org.apache.ibatis"/>
+    <logger level="DEBUG" name="{{BASE_PACKAGE}}"/>
+    <root level="INFO">
+      <appender-ref ref="CONSOLE"/>
+    </root>
+  </springProfile>
+
+  <springProfile name="uat,pro,oracle,oceanbase-oracle">
+    <logger level="INFO" name="org.apache.ibatis"/>
+    <logger level="INFO" name="com.yss.cloud.log"/>
+    <logger level="INFO" name="com.yss.cloud.breaker"/>
+    <logger level="INFO" name="com.yss.cloud.exception"/>
+    <logger level="INFO" name="{{BASE_PACKAGE}}"/>
+    <logger level="INFO" name="com.alibaba"/>
+    <logger level="INFO" name="org.apache.commons"/>
+    <logger level="INFO" name="org.springframework"/>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <encoder>
+        <pattern>%d{yy-MM-dd.HH:mm:ss.SSS} [%-16t] %-5p %-22c{0} - %m%n</pattern>
+      </encoder>
+      <prudent>true</prudent>
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <fileNamePattern>${LOG_PATH}/${APP_NAME}_%d{yyyyMMdd}_%i.log</fileNamePattern>
+        <maxHistory>7</maxHistory>
+        <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+          <maxFileSize>100MB</maxFileSize>
+        </timeBasedFileNamingAndTriggeringPolicy>
+      </rollingPolicy>
+    </appender>
+    <root level="INFO">
+      <appender-ref ref="FILE"/>
+      <appender-ref ref="CONSOLE"/>
+    </root>
+  </springProfile>
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE"/>
+  </root>
+</configuration>
