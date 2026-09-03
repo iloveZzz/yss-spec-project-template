@@ -3,12 +3,41 @@ registry_id: yss.skill-routing
 status: active
 description: >-
   技能分层、别名、默认可发现性和 Agent 运行时入口的可执行路由注册表。
-  本文件不替代 skills-lock.json 的来源、hash 与投影完整性职责；Router 与生命周期编排器只消费通过本表校验的 canonical 技能。
+  invocation_contract 提供低成本的调用模式、触发条件、排除条件、主要输出与依赖元数据；不执行三层行为评估，也不替代 skills-lock.json 的来源、hash 与投影完整性职责。
+  Router 与生命周期编排器只消费通过本表校验的 canonical 技能。
 canonical_content_root: .agents/skills
 runtime_policy:
   consumed_by_router: true
   consumed_by_lifecycle: true
   discovery_enforced: true
+invocation_contract:
+  schema_version: 1
+  scope: routing-and-dependencies-only
+  required_fields: [invocation_mode, trigger_conditions, exclusion_conditions, primary_output, required_dependencies, optional_dependencies]
+  allowed_invocation_modes: [user, model, both]
+  trigger_source: impacts
+  trigger_encoding: "impact:<impact>"
+  default:
+    invocation_mode: model
+    trigger_conditions: [registered-skill-request]
+    exclusion_conditions: [no-trigger-match]
+    primary_output: skill-guidance
+    required_dependencies: []
+    optional_dependencies: []
+  layer_defaults:
+    core:
+      invocation_mode: both
+      primary_output: workflow-result
+    specialist:
+      invocation_mode: model
+      primary_output: implementation-guidance
+    compatibility:
+      invocation_mode: user
+      primary_output: explicit-user-compatibility-input
+    maintainer-only:
+      invocation_mode: user
+      primary_output: maintenance-operation
+  overrides: {}
 agent_runtime_roots:
   claude: .claude/skills
   codex: .codex/skills

@@ -12,7 +12,6 @@ const RUNTIME_ID = /^runtime\.[a-z0-9][a-z0-9-]*$/;
 const REQUIRED_ROLES = [
   "role.requirements-manager",
   "role.product-manager",
-  "role.business",
   "role.project-manager",
   "role.frontend-engineer",
   "role.backend-engineer",

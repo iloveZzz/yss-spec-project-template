@@ -24,6 +24,7 @@
 | 技能清单、来源、版本、哈希和投影目标      | `skills-lock.json`                          |
 | 技能分层、别名、默认可发现性和运行时入口 | `docs/agents/yss-skill-registry.yaml`（当前 `status: active`；Router / 生命周期必须消费） |
 | 数字人角色、阶段协作组、运行时绑定与生命周期会签 | `docs/agents/digital-human-roles.yaml`；`docs/agents/digital-human-roles.md` 为操作说明 |
+| 视觉令牌与组件视觉变体规范 | 根目录 `DESIGN.md`；`docs/design/design.md` 为中文治理与生命周期适配，`docs/design/tokens/*` 为派生快照 |
 
 README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或解释上述事实，不重复定义同一规则。`CLAUDE.md` 是 Claude Code 入口指针，不是第二套 Agent 规则。
 

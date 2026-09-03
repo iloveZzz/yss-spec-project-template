@@ -9,6 +9,7 @@ const ROUTER_CONTRACT = path.join(ROOT, ".agents/skills/yss-router/references/ro
 const LIFECYCLE_CONTRACT = path.join(ROOT, ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml");
 const LAYERS = new Set(["core", "specialist", "compatibility", "maintainer-only"]);
 const MATURITIES = new Set(["draft", "verified", "supported", "deprecated"]);
+const INVOCATION_MODES = new Set(["user", "model", "both"]);
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/;
 const PLATFORM_ALIAS_PATTERN = /^[a-z0-9][a-z0-9-]*(?::[a-z0-9][a-z0-9-]*)?$/;
 
@@ -49,6 +50,74 @@ function requireString(value, field) {
 
 function requireObject(value, field) {
   if (!value || typeof value !== "object" || Array.isArray(value)) fail(`${field} 必须是对象`);
+}
+
+function requireStringArray(value, field, { nonEmpty = false } = {}) {
+  if (!Array.isArray(value) || (nonEmpty && value.length === 0) || value.some((item) => typeof item !== "string" || !item.trim())) {
+    fail(`${field} 必须是${nonEmpty ? "非空" : ""}字符串数组`);
+  }
+}
+
+function validateInvocationContract(registry, skill) {
+  const contract = registry.invocation_contract;
+  requireObject(contract, "invocation_contract");
+  if (contract.schema_version !== 1) fail("invocation_contract.schema_version 必须为 1");
+  if (contract.scope !== "routing-and-dependencies-only") fail("invocation_contract.scope 必须限定为 routing-and-dependencies-only");
+  requireStringArray(contract.required_fields, "invocation_contract.required_fields", { nonEmpty: true });
+  const expected = ["invocation_mode", "trigger_conditions", "exclusion_conditions", "primary_output", "required_dependencies", "optional_dependencies"];
+  if (JSON.stringify(contract.required_fields) !== JSON.stringify(expected)) fail("invocation_contract.required_fields 顺序或字段不完整");
+  requireStringArray(contract.allowed_invocation_modes, "invocation_contract.allowed_invocation_modes", { nonEmpty: true });
+  if (![...INVOCATION_MODES].every((mode) => contract.allowed_invocation_modes.includes(mode))) {
+    fail("invocation_contract.allowed_invocation_modes 必须包含 user、model、both");
+  }
+  if (contract.trigger_source !== "impacts" || contract.trigger_encoding !== "impact:<impact>") {
+    fail("invocation_contract 必须从 impacts 生成 impact:<impact> 触发条件");
+  }
+  requireObject(contract.default, "invocation_contract.default");
+  requireObject(contract.layer_defaults, "invocation_contract.layer_defaults");
+  requireObject(contract.overrides, "invocation_contract.overrides");
+  for (const layer of LAYERS) {
+    const layerDefault = contract.layer_defaults[layer];
+    requireObject(layerDefault, `invocation_contract.layer_defaults.${layer}`);
+    if (!INVOCATION_MODES.has(layerDefault.invocation_mode)) fail(`${layer} 的 invocation_mode 无效`);
+    requireString(layerDefault.primary_output, `invocation_contract.layer_defaults.${layer}.primary_output`);
+  }
+  const defaultMode = contract.default.invocation_mode;
+  if (!INVOCATION_MODES.has(defaultMode)) fail("invocation_contract.default.invocation_mode 无效");
+  requireStringArray(contract.default.trigger_conditions, "invocation_contract.default.trigger_conditions", { nonEmpty: true });
+  requireStringArray(contract.default.exclusion_conditions, "invocation_contract.default.exclusion_conditions", { nonEmpty: true });
+  requireString(contract.default.primary_output, "invocation_contract.default.primary_output");
+  requireStringArray(contract.default.required_dependencies, "invocation_contract.default.required_dependencies");
+  requireStringArray(contract.default.optional_dependencies, "invocation_contract.default.optional_dependencies");
+  for (const [skillId, override] of Object.entries(contract.overrides)) {
+    requireObject(override, `invocation_contract.overrides.${skillId}`);
+    if (!ID_PATTERN.test(skillId)) fail(`invocation_contract.overrides id 非法: ${skillId}`);
+    if (override.invocation_mode && !INVOCATION_MODES.has(override.invocation_mode)) fail(`${skillId}.invocation_mode 无效`);
+    if (override.trigger_conditions) requireStringArray(override.trigger_conditions, `${skillId}.trigger_conditions`, { nonEmpty: true });
+    if (override.exclusion_conditions) requireStringArray(override.exclusion_conditions, `${skillId}.exclusion_conditions`, { nonEmpty: true });
+    if (override.primary_output) requireString(override.primary_output, `${skillId}.primary_output`);
+    if (override.required_dependencies) requireStringArray(override.required_dependencies, `${skillId}.required_dependencies`);
+    if (override.optional_dependencies) requireStringArray(override.optional_dependencies, `${skillId}.optional_dependencies`);
+  }
+  const overrideIds = Object.keys(contract.overrides);
+  const knownIds = new Set(registry.skills.map((item) => item?.id).filter(Boolean));
+  for (const skillId of overrideIds) if (!knownIds.has(skillId)) fail(`invocation_contract.overrides 引用了未登记技能: ${skillId}`);
+  const effective = {
+    ...contract.default,
+    ...contract.layer_defaults[skill.layer],
+    ...(contract.overrides[skill.id] ?? {})
+  };
+  effective.trigger_conditions = [...new Set([...(effective.trigger_conditions ?? []), ...skill.impacts.map((impact) => `impact:${impact}`)])];
+  if (!INVOCATION_MODES.has(effective.invocation_mode)) fail(`${skill.id}.invocation_mode 无效`);
+  requireStringArray(effective.trigger_conditions, `${skill.id}.trigger_conditions`, { nonEmpty: true });
+  requireStringArray(effective.exclusion_conditions, `${skill.id}.exclusion_conditions`, { nonEmpty: true });
+  requireString(effective.primary_output, `${skill.id}.primary_output`);
+  requireStringArray(effective.required_dependencies, `${skill.id}.required_dependencies`);
+  requireStringArray(effective.optional_dependencies, `${skill.id}.optional_dependencies`);
+  const impactTriggers = skill.impacts.map((impact) => `impact:${impact}`);
+  if (!impactTriggers.every((trigger) => effective.trigger_conditions.includes(trigger))) {
+    fail(`${skill.id} 的调用契约必须覆盖其 impacts 触发条件`);
+  }
 }
 
 function requireStringSet(value, expected, field) {
@@ -209,6 +278,7 @@ export function validateSkillRegistry(registry, { lock, routerContract, lifecycl
     if (!Array.isArray(skill.impacts) || skill.impacts.length === 0 || skill.impacts.some((item) => typeof item !== "string" || !item.trim())) {
       fail(`${skill.id} impacts 不能为空`);
     }
+    validateInvocationContract(registry, skill);
   }
   for (const skill of skills) {
     if (skill.replaced_by && !ids.has(skill.replaced_by)) fail(`${skill.id}.replaced_by 引用了未登记技能: ${skill.replaced_by}`);

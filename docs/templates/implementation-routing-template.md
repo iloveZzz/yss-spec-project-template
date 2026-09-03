@@ -95,10 +95,33 @@ owner: ai
 | verification_commands |  |
 | human_review_points |  |
 | full_reroute_triggers | 新 API/schema、状态机、数据模型、写目录、仓库、skill、风险、seam、交付顺序或其他未冻结行为等变化 |
+| quality_baseline_ref | 工程基线的 `baseline_id` / `baseline_version`；切片不得重新定义质量标准 |
+| context_plan | 必需上下文、按需上下文、停止规则和缺失动作 |
+| doubt_driven_review | 高风险影响的主张、反证、证据、残余风险和审查引用；未命中时 `not-applicable` |
 
 | 不适用 skill | 原因 |
 |---|---|
 |  |  |
+
+### Context Plan（上下文工程）
+
+| 字段 | 内容 |
+|---|---|
+| required_context_refs | `CONTEXT.md`、已批准 Spec、当前 Slice Contract、适用 ADR / 工程基线 |
+| on_demand_context_refs | 命中影响面后再加载的专项 references、实现仓库文件和历史证据 |
+| context_stop_rule | `minimal-sufficient-evidence` |
+| missing_context_action | `blocked` / `reroute`；不得猜测补齐 |
+
+### Doubt-Driven 高风险反证
+
+| 字段 | 内容 |
+|---|---|
+| status | `not-applicable` / `required` / `completed` / `blocked` |
+| trigger_impacts | API、数据迁移、跨仓契约、发布回滚、实际安全行为、生命周期 / 生成语义 |
+| claim / counterclaim |  |  |
+| evidence_refs |  |
+| residual_risks |  |
+| reviewer_ref |  |
 
 ## 3. YSS skill 最小集合
 

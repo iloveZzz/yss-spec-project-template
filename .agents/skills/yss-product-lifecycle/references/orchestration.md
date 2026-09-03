@@ -86,6 +86,12 @@ tracker 选择和冲突按 `docs/agents/issue-tracker.md` 裁决：已持久化 
 
 暂停输出：门禁、指定会签 `role_id`、`runtime_id`、会签文件路径、证据、推荐答案、一个问题、恢复动作。
 
+## Context Plan 与质量基线
+
+实现合同先消费 `common.context_plan`：必需上下文只包含 `CONTEXT.md`、已批准 Spec、当前合同和适用 ADR / 工程基线；专项 references、实现仓库文件和历史证据按影响面按需加载。达到最小充分证据后停止扩展，缺失权威上下文只能 `blocked` 或 `reroute`。
+
+质量标准由 `engineering-baseline` 以 `baseline_id` / `baseline_version` 定义一次，Slice Contract、YSS Skill Execution Result、`code-review` 和发布检查只引用它，并将约束结果写入 `constraint_results`。命中 API / 数据迁移、跨仓契约、发布回滚、实际安全行为或生命周期 / 生成语义时，必须在现有决策或审查记录中完成 Doubt-Driven 主张、反证、证据、残余风险和 Reviewer 引用；普通低风险变更不触发该流程。
+
 ## Wayfinder 完成判定
 
 “无 frontier”不等于完成。只有以下条件同时成立，才能 `wayfinder → handoff → to-spec`：

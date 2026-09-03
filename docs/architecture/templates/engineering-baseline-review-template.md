@@ -33,6 +33,23 @@ owner: ai
 | 是否影响统一响应 / DTO / VO / Query / CMD | 是 / 否 |  |
 | 是否存在高风险变更、人工确认项或回滚约束 | 是 / 否 |  |
 
+## 2.1 质量基线与高风险反证
+
+| 字段 | 内容 |
+|---|---|
+| `baseline_id` |  |
+| `baseline_version` |  |
+| 适用范围 | `project-instance` / 影响面裁剪 |
+| 复用消费者 | Slice Contract、YSS Skill Execution Result、`code-review`、发布检查 |
+| 质量标准定义 | 一次定义，后续阶段只引用，不在切片内重复定义 |
+| 约束结果字段 | `constraint_results`（required） |
+
+| 高风险影响 | Doubt-Driven 状态 | 主张 / 反证 | 证据引用 | 残余风险 / 责任人 |
+|---|---|---|---|---|
+| API / 数据 / 跨仓 / 发布回滚 / 实际安全行为 / 生命周期或生成语义 | `not-applicable` / `required` / `completed` / `blocked` |  |  |  |
+
+> Doubt-Driven 只在命中的高风险决策中启用，不新增生命周期阶段；缺少反证、证据不足或残余风险未处理时不得通过工程基线。
+
 ## 3. YSS DDD 分层检查
 
 | 层级 | 职责 | 本次影响 | 约束 / 结论 |
@@ -72,6 +89,8 @@ owner: ai
 - [ ] Controller 不穿透 Repository。
 - [ ] 对象转换优先 MapStruct，重复 mapping 有处理策略。
 - [ ] 所需 YSS skills 已最小化选择。
+- [ ] `baseline_id` / `baseline_version` 已登记，后续切片和审查只引用该质量基线，未重复定义。
+- [ ] 命中高风险影响时已完成 Doubt-Driven 主张、反证、证据和残余风险记录；未命中时已记录 `not-applicable` 原因。
 - [ ] 风险影响、验证证据和责任人已记录。
 - [ ] 原型确认后已按脚手架顺序完成工程基线、生成器、`yss-backend-scaffold-parent` 和 Router 重编译；脚手架未生成业务行为。
 

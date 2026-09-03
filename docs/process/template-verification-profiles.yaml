@@ -32,6 +32,7 @@ core_escalation_patterns:
   - scripts/cache-template-commit
   - scripts/capture-maintenance-candidate
   - scripts/inspect-maintenance-candidate
+  - .template-source/tooling/node/scripts/design-md.mjs
 required_files:
   - yss-project.yaml
   - AGENTS.md
@@ -138,6 +139,8 @@ syntax_files:
   - scripts/verify-maintenance-review-workflow-scenarios
   - scripts/verify-template-cache-scenarios
 routing:
+  - patterns: [DESIGN.md, "docs/design/**", ".template-source/tooling/node/scripts/design-md.mjs"]
+    groups: [design-system]
   - patterns: [AGENTS.md, CONTEXT.md, yss-project.yaml, package.json, .gitignore, README.md, "docs/**"]
     groups: [hygiene]
   - patterns: [AGENTS.md, yss-project.yaml, "docs/process/template-engineering-overview.md"]
@@ -167,6 +170,10 @@ routing:
   - patterns: ["scripts/**"]
     groups: [hygiene]
 groups:
+  design-system:
+    commands:
+      - { run: "node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md", when: template-source }
+      - { run: "node .template-source/tooling/node/scripts/design-md.mjs drift", when: template-source }
   hygiene:
     commands: []
   tooling:

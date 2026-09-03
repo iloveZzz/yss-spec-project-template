@@ -54,7 +54,7 @@ const seven = [
   "role.lifecycle-orchestrator",
   "role.requirements-manager",
   "role.product-manager",
-  "role.business",
+  "role.project-manager",
   "role.frontend-engineer",
   "role.backend-engineer",
   "role.test-engineer"

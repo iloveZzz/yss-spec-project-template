@@ -1,8 +1,28 @@
-# 设计系统引入说明
+# 设计系统治理与生命周期适配
+
+> 规范源：仓库根目录 [`DESIGN.md`](../../DESIGN.md)。其中的 YAML frontmatter 和组件变体是视觉令牌的唯一事实来源；本文件只记录 YSS 的中文治理说明、运行时双轨、产品生命周期衔接和验证要求。
+
+## 与 DESIGN.md 的职责边界
+
+- `DESIGN.md`：机器可读的颜色、排版、圆角、间距和组件视觉变体规范；使用 Google `design.md` alpha 格式。
+- `docs/design/tokens/*`：由规范源投影的运行时快照，禁止直接修改后作为规范依据；使用 `scripts/design-md` 执行漂移检查。
+- 本文件：解释 YSS UI / Ant Design 双轨、页面设计约束、原型证据和生命周期门禁，不重新定义规范 token 的具体值。
+- Spec、交互说明和状态矩阵：继续承载业务状态、API、权限、并发、失败恢复和页面验收，不写入 `DESIGN.md`。
+
+## 规范校验
+
+模板源维护者在修改设计令牌后执行（项目实例不包含 `.template-source` 工具目录）：
+
+```bash
+node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md
+node .template-source/tooling/node/scripts/design-md.mjs drift
+```
+
+`lint` 固定调用 `@google/design.md@0.4.0`，同时执行本地 frontmatter、章节、组件属性和引用校验；`drift` 检查规范源与全部 token/CSS 派生产物的哈希。任何漂移都必须回写规范源并重新生成投影。
 
 ## 来源与定位
 
-本文件基于本地设计系统包 `/Users/zhudaoming/Downloads/Product-Design-System` 首次分析整理，并在后续用项目 Ant Design 5 Less / `:root` CSS 变量覆盖默认亮色主题。紧凑密度、间距和容器规格同时参考 `/Users/zhudaoming/Projects/demo/yss-meta/apps/frontend/metadata-platform/packages/src/styles` 的实际实现。自本文件落地后，项目内设计系统的权威来源为 `docs/design/design.md` 与 `docs/design/tokens/*`；外部目录只作为历史输入或实现样本，不作为后续工程依赖，也不作为实现语言。
+本文件基于本地设计系统包首次分析整理，并在后续用项目 Ant Design 5 Less / `:root` CSS 变量覆盖默认亮色主题。紧凑密度、间距和容器规格同时参考既有 YSS 实现。视觉 token 的规范源改为根目录 `DESIGN.md`；本文件和 `docs/design/tokens/*` 是治理说明与派生视图。外部目录只作为历史输入或实现样本，不作为后续工程依赖，也不作为实现语言。
 
 关键来源：
 

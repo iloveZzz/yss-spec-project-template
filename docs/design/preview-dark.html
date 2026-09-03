@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YSS Design System Dark Preview</title>
+  <style>
+    :root { color-scheme:dark; --primary:#6f9bff; --primary-active:#91b2ff; --text:rgba(255,255,255,.88); --secondary:rgba(255,255,255,.65); --layout:#141414; --surface:#1f1f1f; --subtle:#262626; --border:#434343; --selected:#112a45; --success:#73d13d; --warning:#ffc53d; --error:#ff7875; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; }
+    * { box-sizing:border-box } body { margin:0; color:var(--text); background:var(--layout); font-size:14px; } .shell { max-width:1440px; margin:auto; padding:16px; } .toolbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px; } h1,h2 { margin:0 0 12px; } h1 { font-size:24px; } h2 { font-size:18px; } .card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:12px; } button,input,select { height:32px; border-radius:6px; border:1px solid var(--border); padding:0 12px; font:inherit; background:var(--surface); color:var(--text); } button.primary { border-color:var(--primary); background:var(--primary); color:#000; font-weight:600; } button.primary:hover,button.primary:focus-visible { background:var(--primary-active); } button:disabled { background:var(--subtle); color:var(--secondary); } input:focus-visible,select:focus-visible,button:focus-visible { outline:2px solid var(--primary); outline-offset:2px; } table { width:100%; border-collapse:collapse; } th,td { padding:8px 12px; border-bottom:1px solid var(--border); text-align:left; } th { background:var(--subtle); font-weight:600; } tr.selected { background:var(--selected); } .status { padding:8px 12px; border-radius:4px; margin:8px 0; } .success { background:var(--success); color:#000; } .warning { background:var(--warning); color:#000; } .error { background:var(--error); color:#000; } .muted { color:var(--secondary); } @media (max-width:768px) { .shell { padding:12px; } table { min-width:620px; } .table-wrap { overflow-x:auto; } }
+  </style>
+</head>
+<body>
+  <main class="shell"><div class="toolbar"><h1>YSS 设计系统预览</h1><span class="muted">暗色 / 紧凑密度</span><button class="primary">发布</button><button disabled>禁用</button></div><section class="card"><h2>暗色表面与状态</h2><div class="toolbar"><input aria-label="关键词" placeholder="关键词"><select aria-label="状态"><option>全部状态</option></select><button class="primary">查询</button></div><div class="status success" role="status">操作成功</div><div class="status warning" role="status">需要确认</div><div class="status error" role="alert">操作失败，请重试</div></section><section class="card"><h2>选中行与空状态</h2><div class="table-wrap"><table><thead><tr><th>名称</th><th>状态</th><th>操作</th></tr></thead><tbody><tr class="selected"><td>当前记录</td><td>已选中</td><td><button>查看</button></td></tr></tbody></table></div><p class="muted">无数据时使用可读文案，不使用空白占位。</p></section></main>
+</body>
+</html>

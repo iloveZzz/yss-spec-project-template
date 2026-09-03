@@ -4,8 +4,19 @@
 
 设计系统基线：
 
-- `docs/design/design.md`：项目设计系统说明。默认亮色覆盖来自项目 Ant Design 5 `:root` / Less 裁定（主色 `#3371ff`、系统字体、6px 圆角），不再只沿用历史 `Product-Design-System` 包；官方 `design.md` 是上游默认，项目 token 是项目覆盖，优先级以该文件为准。
+- `DESIGN.md`：机器可读的视觉 token 与组件变体规范源，按 Google `design.md` alpha 格式维护。
+- `docs/design/design-system-sync.yaml`：主模板与可独立分发的战略设计模板之间的共享章节版本与 SHA-256 同步摘要。
+- `docs/design/design.md`：YSS 设计治理、双轨运行时、生命周期和验证说明；不与规范源重复定义 token。
 - `docs/design/tokens/`：随仓库保存的主题、亮色 / 暗色 / 紧凑 token 和 CSS 变量快照，后续实现不得依赖本机 Downloads 目录或原始 Less。
+
+模板源维护工具（仅在 `template-source` 仓库执行）：
+
+```bash
+node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md
+node .template-source/tooling/node/scripts/design-md.mjs drift
+```
+
+令牌变更必须先修改 `DESIGN.md`，再更新派生快照；业务状态、API、权限和交互验收继续使用 Spec、交互说明及状态矩阵。
 
 产品原型产出默认以 `product-design:index` 为主入口。该 skill 只负责路由，实际按 Product Design plugin 规则进入 `$get-context`、`$ideate`、`$prototype`、`$image-to-code`、`$url-to-code`、`$share` 或 `$design-qa` 等 focused skill；YSS 生命周期仍负责校验低保真评审、高保真 HTML 原型、AntD CLI 校验证据、用户确认和 Spec / OpenAPI 回填。
 

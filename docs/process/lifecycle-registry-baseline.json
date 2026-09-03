@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "registry_id": "yss.lifecycle",
-  "semantic_sha256": "49ca553e83efb9cffae220d9e6fca434b1d27096126a640f8f8e172e048808df",
+  "semantic_sha256": "15375e8d7da599e2117e19399cb5e14b9c53aa4e4ce7c94c4e9c135a499e55e6",
   "published_ids": [
     "artifact.architecture-review",
     "artifact.data-architecture",

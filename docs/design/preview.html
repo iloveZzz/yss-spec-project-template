@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YSS Design System Preview</title>
+  <style>
+    :root { --primary:#3371ff; --primary-active:#245bdb; --text:rgba(0,0,0,.88); --secondary:rgba(0,0,0,.65); --layout:#f0f2f5; --surface:#fff; --subtle:#fafafa; --border:#d9d9d9; --selected:#e6f4ff; --success:#52c41a; --warning:#faad14; --error:#f5222d; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; }
+    * { box-sizing:border-box } body { margin:0; color:var(--text); background:var(--layout); font-size:14px; } .shell { max-width:1440px; margin:auto; padding:16px; } .toolbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px; } h1,h2 { margin:0 0 12px; } h1 { font-size:24px; } h2 { font-size:18px; } .card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:12px; } button,input,select { height:32px; border-radius:6px; border:1px solid var(--border); padding:0 12px; font:inherit; background:var(--surface); } button.primary { border-color:var(--primary); background:var(--primary); color:#000; font-weight:600; } button.primary:hover,button.primary:focus-visible { background:var(--primary-active); color:#fff; } button:disabled { background:#f0f0f0; color:rgba(0,0,0,.45); } input:focus-visible,select:focus-visible,button:focus-visible { outline:2px solid var(--primary); outline-offset:2px; } table { width:100%; border-collapse:collapse; } th,td { padding:8px 12px; border-bottom:1px solid var(--border); text-align:left; } th { background:var(--subtle); font-weight:600; } tr.selected { background:var(--selected); } .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; } .status { padding:8px 12px; border-radius:4px; margin:8px 0; } .success { background:var(--success); color:#000; } .warning { background:var(--warning); color:#000; } .error { background:var(--error); color:#000; } .muted { color:var(--secondary); } @media (max-width:768px) { .shell { padding:12px; } .grid { grid-template-columns:1fr; } .toolbar > * { flex:1 1 140px; } table { min-width:620px; } .table-wrap { overflow-x:auto; } }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="toolbar"><h1>YSS 设计系统预览</h1><span class="muted">默认 / 紧凑密度</span><button class="primary" onclick="this.textContent='已保存'; this.disabled=true">保存</button><button disabled>禁用</button></div>
+    <section class="card"><h2>筛选与表单</h2><div class="toolbar"><input aria-label="关键词" placeholder="关键词"><select aria-label="状态"><option>全部状态</option><option>已启用</option></select><button class="primary">查询</button><button>重置</button></div><div class="status warning" role="status">请补充必填筛选条件。</div></section>
+    <section class="card"><h2>数据表格</h2><div class="table-wrap"><table><thead><tr><th>名称</th><th>状态</th><th>更新时间</th><th>操作</th></tr></thead><tbody><tr class="selected"><td>示例任务</td><td><span class="status success">成功</span></td><td>2026-09-02 09:30</td><td><button>查看</button></td></tr><tr><td>加载中的任务</td><td>加载中…</td><td>—</td><td><button disabled>编辑</button></td></tr><tr><td>失败任务</td><td><span class="status error">失败：权限不足</span></td><td>—</td><td><button>重试</button></td></tr></tbody></table></div></section>
+    <div class="grid"><section class="card"><h2>空状态</h2><p class="muted">暂无数据，请调整筛选条件。</p><button class="primary">创建记录</button></section><section class="card"><h2>弹层触发</h2><button onclick="alert('Modal / Drawer 应提供可见反馈和焦点管理')">打开 Modal</button></section><section class="card"><h2>无障碍</h2><p class="muted">使用 Tab 检查焦点顺序；缩放到 200% 检查布局。</p></section></div>
+  </main>
+</body>
+</html>
