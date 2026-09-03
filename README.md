@@ -48,6 +48,8 @@
 
 YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https://github.com/iloveZzz/yss-spec-dev-skills)，发布清单和导出命令见 [skills 维护说明](./docs/agents/skills-maintenance.md)。
 
+YSS UI 组件知识同时通过项目级 MCP 配置提供；支持的客户端、Codex 全局安装和自检方法见 [YSS UI MCP 接入](./docs/user-guide/yss-ui-mcp.md)。
+
 ## 模板初始化 CLI
 
 `create-yss-spec` 的目标维护位置是独立 GitHub 仓库 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec)。本仓库不再包含 CLI 源码、测试、发布配置或开发过程记录。CLI 的使用方法已经合并到统一用户手册：
@@ -113,6 +115,7 @@ scripts/verify-template-fast
 | [docs/process/implementation-repo-integration.md](./docs/process/implementation-repo-integration.md) | 外部前端 / 后端实现仓库接入与跨仓库切片绑定 |
 | [docs/agents/README.md](./docs/agents/README.md) | Agent 协作文档目录说明 |
 | [docs/agents/skills-maintenance.md](./docs/agents/skills-maintenance.md) | Agent skills 安装与维护 |
+| [docs/user-guide/yss-ui-mcp.md](./docs/user-guide/yss-ui-mcp.md) | YSS UI MCP 项目配置、全局安装边界与自检 |
 | [docs/discovery/IDEATION.md](./docs/discovery/IDEATION.md) | 机会构想方法 |
 | [docs/architecture/README.md](./docs/architecture/README.md) | 架构设计 + 审查清单 |
 | [docs/testing/README.md](./docs/testing/README.md) | 测试策略 |

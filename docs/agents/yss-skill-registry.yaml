@@ -447,7 +447,7 @@ skills:
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
-    aliases: [page-module-development, yss-ui-business-page-generation]
+    aliases: [page-module-development]
     impacts: [frontend]
   - id: yss-product-lifecycle
     layer: core
@@ -498,6 +498,12 @@ skills:
     aliases: []
     impacts: [template-maintenance]
   - id: yss-ui
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [frontend]
+  - id: yss-ui-business-page-generation
     layer: specialist
     maturity: supported
     instance_default_discoverable: false

@@ -2,23 +2,58 @@
 import { existsSync, readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
-import { treeHash } from "./lib/skill-supply-chain.mjs";
+import { skillNames, treeHash, validateYssUiSkillManifest } from "./lib/skill-supply-chain.mjs";
 
 const root = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const args = process.argv.slice(2);
+const source = args.find((arg) => arg.startsWith("--source="))?.slice("--source=".length) ?? "mattpocock/skills";
 const sourceRootArg = args.find((arg) => arg.startsWith("--source-root="))?.slice("--source-root=".length);
 if (!sourceRootArg) {
-  process.stderr.write("用法: scripts/verify-upstream-skill-source --source-root=<上游 checkout>\n");
+  process.stderr.write("用法: scripts/verify-upstream-skill-source [--source=<source-id>] --source-root=<上游 checkout>\n");
   process.exit(2);
 }
 const sourceRoot = path.resolve(sourceRootArg);
 const lock = JSON.parse(readFileSync(path.join(root, "skills-lock.json"), "utf8"));
-const source = "mattpocock/skills";
 const revision = lock.sources?.[source]?.revision;
 if (!revision) throw new TypeError(`锁文件缺少 ${source} source revision`);
 const git = spawnSync("git", ["-C", sourceRoot, "rev-parse", "HEAD"], { encoding: "utf8" });
 if (git.status !== 0) throw new TypeError(`无法读取上游 checkout revision: ${sourceRoot}`);
 if (git.stdout.trim() !== revision) throw new TypeError(`上游 revision 不匹配: expected=${revision} actual=${git.stdout.trim()}`);
+
+if (source === "iloveZzz/yss-ui") {
+  const manifest = validateYssUiSkillManifest(JSON.parse(readFileSync(path.join(root, ".agents/skills/.yss-skills-manifest.json"), "utf8")));
+  if (manifest.source_revision !== revision) throw new TypeError(`yss-ui manifest revision 与锁文件不一致: ${manifest.source_revision}`);
+  const packageJson = JSON.parse(readFileSync(path.join(sourceRoot, manifest.source_root, "package.json"), "utf8"));
+  if (packageJson.name !== manifest.package.name || packageJson.version !== manifest.package.version) {
+    throw new TypeError(`yss-ui skills 包版本不匹配: expected=${manifest.package.name}@${manifest.package.version} actual=${packageJson.name}@${packageJson.version}`);
+  }
+  const upstreamRoot = path.join(sourceRoot, manifest.source_root);
+  const sourceConfig = JSON.parse(readFileSync(path.join(upstreamRoot, "skills.config.json"), "utf8"));
+  if (!sourceConfig.defaultSync?.includes(manifest.source_category)) throw new TypeError(`yss-ui 默认同步不包含分类: ${manifest.source_category}`);
+  const categorySkills = sourceConfig.categories?.[manifest.source_category];
+  if (!Array.isArray(categorySkills)) throw new TypeError(`yss-ui 上游缺少分类: ${manifest.source_category}`);
+  const actualFrontend = categorySkills.filter((name) => !manifest.excluded_skills.includes(name)).sort();
+  const physicalSkills = new Set(skillNames(upstreamRoot).filter((name) => existsSync(path.join(upstreamRoot, name, "SKILL.md"))));
+  for (const name of actualFrontend) if (!physicalSkills.has(name)) throw new TypeError(`yss-ui 上游分类引用不存在的 skill: ${name}`);
+  for (const category of manifest.excluded_categories) {
+    for (const name of sourceConfig.categories?.[category] ?? []) {
+      if (manifest.skills.some(({ upstream }) => upstream === name)) throw new TypeError(`yss-ui 清单误包含已排除分类 ${category}: ${name}`);
+    }
+  }
+  const declaredFrontend = manifest.skills.map(({ upstream }) => upstream).sort();
+  if (JSON.stringify(actualFrontend) !== JSON.stringify(declaredFrontend)) {
+    throw new TypeError(`yss-ui 前端 skills 清单漂移: expected=${declaredFrontend.join(",")} actual=${actualFrontend.join(",")}`);
+  }
+  for (const skill of manifest.skills) {
+    const item = lock.skills?.shared?.[skill.canonical];
+    if (!item || item.source !== source) throw new TypeError(`${skill.canonical} 未按 yss-ui source 锁定`);
+    if (item.skillPath !== `${manifest.source_root}/${skill.upstream}/SKILL.md`) throw new TypeError(`${skill.canonical} 上游路径不一致`);
+    const actualHash = treeHash(path.join(upstreamRoot, skill.upstream));
+    if (actualHash !== skill.upstream_hash || item.upstreamHash !== actualHash) {
+      throw new TypeError(`${skill.canonical} upstreamHash 不匹配: manifest=${skill.upstream_hash} lock=${item.upstreamHash} actual=${actualHash}`);
+    }
+  }
+}
 
 const shared = lock.skills?.shared ?? {};
 for (const [name, item] of Object.entries(shared)) {

@@ -9,7 +9,7 @@
 | 数据表格 | `YTable` | VXE Table + AntDV Pagination | specialized | 使用 `yss-components`、`field/type`、字段插槽 |
 | 编辑表格 | `YEditTable` | VXE Table | specialized | 对照 edit-table docs/demo |
 | 树 | `YTree` | AntDV Tree | specialized | 搜索、Tooltip、动作和高度路由 |
-| Schema 表单 | `YssFormily` | Formily + AntDV | specialized | `YssFormily` 为 canonical；加载 `yss-formily` |
+| Schema 表单 | `YFormily` | Formily + AntDV | specialized | `YFormily` 为 canonical；`YssFormily` 仅为历史兼容名；加载 `yss-formily` |
 | 分栏布局 | `YSplitPane` | YSS layout | required | 统一主从页面与容器高度 |
 | 文件导入 | `YFileImport` | Upload/业务适配 | required | 使用 YSS 上传结果和表单适配 |
 | 条件构建 | `YConditionBuilder` | YSS domain component | required | 使用对应 docs/demo |

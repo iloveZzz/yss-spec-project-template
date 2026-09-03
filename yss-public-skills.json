@@ -33,6 +33,7 @@
     "yss-security-algorithm",
     "yss-source-index",
     "yss-ui",
+    "yss-ui-business-page-generation",
     "yss-up-springboot3",
     "yss-use-table-height",
     "yss-use-tree-height",
@@ -78,6 +79,7 @@
         "yss-page-module-development",
         "yss-prototype-stage",
         "yss-ui",
+        "yss-ui-business-page-generation",
         "yss-use-table-height",
         "yss-use-tree-height"
       ]

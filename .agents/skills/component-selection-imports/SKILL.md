@@ -19,8 +19,8 @@ description: 指导 YSS UI 业务页面、CRUD、列表页、表单页和组件�
 
 1. 当前会话可用 yss-ui MCP 时，先用 `list_components` 确认组件、Hook 或 Utils 是否真实存在，再用 `get_component_docs` 确认名称、导出包、Props、Events 和 Slots，不只看 demo 标签名。
 2. `get_component_docs` 未命中时，先用 `search_docs` 和 `list_components` 校正别名与归属，不得立即判定为未封装。
-3. MCP 工具不可用、调用失败或校正后仍无结果时，读取当前上下文中的最新 `llms-full.txt`；上下文没有时读取 `http://192.168.164.27:3200/llms-full.txt`。
-4. 必要时读取 `../yss-page-module-development/references/component-map.md`、`hooks-map.md`、`utils-map.md` 快速缩小范围；文档与当前项目依赖版本不一致时，最终以当前源码和可编译导出为准。
+3. MCP 工具不可用、调用失败或校正后仍无结果时，读取当前上下文或文档站的最新 `llms-full.txt`。
+4. 必要时读取 `../yss-ui-business-page-generation/references/component-map.md`、`hooks-map.md`、`utils-map.md` 快速缩小范围；文档与当前项目依赖版本不一致时，最终以当前源码和可编译导出为准。
 5. 已导出的 YSS 能力优先从 `@yss-ui/components`、`@yss-ui/hooks`、`@yss-ui/utils` 导入；确认未封装后才从 `ant-design-vue` 导入原组件。
 6. 若文档与导出源码不一致，记录差异并按当前仓库可编译的导出处理，不猜测 API。
 

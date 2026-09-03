@@ -1,440 +1,98 @@
 ---
 name: yss-use-tree-height
-description: Use when working with YTree that needs responsive height, virtual scrolling, or built-in search and the useTreeHeight hook is involved.
+description: 指导 YTree、左树右表、组织树、分类树、树搜索和 Tab/抽屉内树区域使用 @yss-ui/hooks 的 useTreeHeight 实现自适应高度；当树区域需要独立滚动、容器切换后高度不正确或需要扣除 YTree 内置搜索高度时使用。
 ---
 
-# useTreeHeight 树组件高度计算 Hook
+# useTreeHeight 使用
 
-本目录是树高度的 canonical 技能；历史名称 `use-tree-height` 仅通过注册表和 Router alias 解析。
+## 触发条件
 
-## YSS canonical execution rules
+- YTree 或左树右表需要独立滚动区和自适应高度。
+- 树区域含内置搜索，或在 Tab/抽屉/折叠面板切换后高度不正确。
 
-- 使用真实签名 `useTreeHeight(containerRef, options)`，结果绑定到 `YTree` 的 `:height`。
-- `filterable` 时配置 `extraOffset: YTREE_SEARCH_HEIGHT`；不得重复扣减或添加无依据偏移。
-- 容器使用 `flex: 1; min-height: 0; overflow: hidden`，隐藏态切换后在可见的 `nextTick` 中调用 `recalculateHeight()`。
-- 不因节点数量少而强制开启虚拟滚动；按实际可见节点阈值决定是否裁剪 DOM。
+## 不适用场景
 
-## Authoritative Docs And Boundary
+- 树节点很少、无需独立滚动，且父级布局已托管高度。
+- 主要问题是树节点与右侧数据联动，而非布局高度。
 
-- YSS UI hooks documentation: `http://192.168.164.27:3200/hooks`
-- Local reference index: `references/frontend-docs.md`
+## 文档检索
 
-This skill only covers `useTreeHeight` wiring. Use `yss-components` for tree layout/rendering rules and `yss-hook` for tree request/selection state.
+1. MCP 可用时，先用 `get_component_docs` 精确查询 `useTreeHeight`，需要示例时再调用 `get_demo`；不要仅凭 Skill 中的静态签名推断当前 API。
+2. 精确查询无结果时，先用 `search_docs` 校正名称；仅在 MCP 不可用、调用失败或仍无结果时，回退读取最新 `llms-full.txt`。文档版本与当前依赖不一致时，再核对 Hook 源码、CodeGraph 和真实导出。
 
-中文说明：这里只处理树高度计算，不处理树数据请求、选中状态或业务联动。
+## 硬约束（禁止/必须）
 
-## 💡 何时使用
+- 把树区域的直接父容器 `ref` 传给 `useTreeHeight(treeAreaRef, options)`，并使用真实返回值 `treeHeight/recalculateHeight`。
+- 最外层必须有可计算高度；树区域使用 `flex: 1; min-height: 0; overflow: hidden;`。
+- 计算结果绑定到 `YTree` 的 `:height="treeHeight"`，不用固定魔法高度替代 Hook，也不为了触发虚拟滚动默认添加 `:virtual="true"`。
+- 使用 YTree 内置搜索时配置 `extraOffset: YTREE_SEARCH_HEIGHT`；搜索区已放在 `treeAreaRef` 外部时不再扣除。
+- `extraOffset` 只用于树区域内部实际占位的搜索、padding 或边框，禁止无依据叠加 `+16` 等偏移。
+- Hook 仅在挂载时为当时存在的 `treeAreaRef` 建立 `ResizeObserver`。优先保持树区域外层容器挂载（如使用 `v-show`）；Tab/抽屉可见后在 `nextTick` 调用 `recalculateHeight()`。
+- 隐藏态容器可能得到 `minHeight` 而不是真实可用高度；不把该值当成最终布局结果。
 
-当页面中使用 `YTree` 组件且需要以下功能时，**必须**使用此 Hook：
-
-- ✅ 树需要自适应容器高度
-- ✅ 树启用了虚拟滚动 (`virtual`)
-- ✅ 树启用了内置搜索框 (`filterable`)
-- ✅ 树在 YSplitPane 的左侧面板中
-
----
-
-## ⚠️ Critical Rules（必读）
-
-### 规则 1：必须使用解构语法
-
-```typescript
-// ❌ 错误：直接赋值
-const treeHeight = useTreeHeight(treeAreaRef);
-
-// ✅ 正确：必须解构返回值
-const { treeHeight } = useTreeHeight(treeAreaRef);
-```
-
-> **为什么**：`useTreeHeight` 返回的是对象 `{ treeHeight, recalculateHeight }`，不是数字。
-
----
-
-### 规则 2：启用 filterable 必须传 `extraOffset: YTREE_SEARCH_HEIGHT`
-
-```typescript
-import { useTreeHeight, YTREE_SEARCH_HEIGHT } from '@yss-ui/hooks';
-
-// ❌ 错误：YTree 启用了 filterable 但没有设置 extraOffset（搜索框会被遮挡！）
-const { treeHeight } = useTreeHeight(treeAreaRef);
-
-// ✅ 正确：必须减去搜索框高度
-const { treeHeight } = useTreeHeight(treeAreaRef, {
-  extraOffset: YTREE_SEARCH_HEIGHT,  // 48px，YTree 内置搜索框高度
-});
-```
-
-> **为什么**：YTree 的 `filterable` 会在树顶部渲染一个 48px 的搜索框，如果不减去这个高度，树底部内容会被裁剪。
-
----
-
-### 规则 3：容器必须设置 Flex 布局
-
-```vue
-<template>
-  <!-- ❌ 错误：容器没有 flex 布局 -->
-  <div ref="treeAreaRef">
-    <YTree :height="treeHeight" />
-  </div>
-
-  <!-- ✅ 正确：容器设置 flex: 1 + overflow: hidden -->
-  <div ref="treeAreaRef" class="tree-container">
-    <YTree :height="treeHeight" />
-  </div>
-</template>
-
-<style scoped lang="less">
-.tree-container {
-  flex: 1;           // ← 必须：占据剩余空间
-  overflow: hidden;  // ← 必须：防止内容溢出
-}
-</style>
-```
-
----
-
-### 规则 4：ref 绑定到容器而非 YTree
-
-```vue
-<!-- ❌ 错误：ref 绑定到 YTree 组件 -->
-<YTree ref="treeAreaRef" :height="treeHeight" />
-
-<!-- ✅ 正确：ref 绑定到包裹 YTree 的容器 div -->
-<div ref="treeAreaRef" class="tree-container">
-  <YTree :height="treeHeight" />
-</div>
-```
-
----
-
-### 规则 5：使用 `:height` 而非 `:max-height`
-
-```vue
-<!-- ❌ 错误：YTree 使用 max-height（与 YTable 不同！） -->
-<YTree :max-height="treeHeight" />
-
-<!-- ✅ 正确：YTree 使用 height -->
-<YTree :height="treeHeight" />
-```
-
-> **对比**：YTable 用 `:max-height`，YTree 用 `:height`。
-
----
-
-## 📖 API 速查
-
-### 导入
-
-```typescript
-import { useTreeHeight, YTREE_SEARCH_HEIGHT } from '@yss-ui/hooks';
-```
-
-### 基本用法
-
-```typescript
-const { treeHeight, recalculateHeight } = useTreeHeight(containerRef, options);
-//       ↑ 绑定到 :height      ↑ 手动重算（少用）
-```
-
-### 关键配置（必须掌握）
-
-| 配置 | 何时必须设置 | 不配置的后果 |
-|------|-------------|-------------|
-| `extraOffset: YTREE_SEARCH_HEIGHT` | YTree 启用 `filterable` 时 | **树底部内容被裁剪** |
-
-### 导出常量
-
-| 常量 | 值 | 说明 |
-|------|------|------|
-| `YTREE_SEARCH_HEIGHT` | `48` | YTree 内置搜索框高度 |
-
-### 完整 API 参考
-
-> 💡 **完整参数和类型定义**请查阅：
-> - 在线文档：`http://192.168.164.27:3200/hooks/use-tree-height`
-> - 源码类型：`packages/hooks/src/useTreeHeight/types.ts`
-> - LLM 索引：`http://192.168.164.27:3200/llms-full.txt`（搜索 "useTreeHeight"）
-
----
-
-## ✅ 完整正确示例
-
-### 场景：左树右表布局（YSplitPane）
-
-```vue
-<script setup lang="ts">
-import { ref, computed } from 'vue';
-import { YSplitPane, YCard, YTree, YTable } from '@yss-ui/components';
-import { useTreeHeight, useTableHeight, YTREE_SEARCH_HEIGHT } from '@yss-ui/hooks';
-
-defineOptions({ name: 'TreeTablePage' });
-
-// === 左侧树 ===
-const treeAreaRef = ref<HTMLDivElement>();
-const treeData = ref([
-  { key: '1', title: '节点1', children: [{ key: '1-1', title: '子节点1-1' }] },
-  { key: '2', title: '节点2' },
-]);
-const selectedKeys = ref<string[]>([]);
-
-// 使用 Hook（必须解构 + 启用 filterable 时必须配置 extraOffset）
-const { treeHeight } = useTreeHeight(treeAreaRef, {
-  extraOffset: YTREE_SEARCH_HEIGHT,  // ← YTree 启用了 filterable，必须开启
-});
-
-// === 右侧表格 ===
-const tableAreaRef = ref<HTMLDivElement>();
-const tableData = ref([]);
-const loading = ref(false);
-
-const { tableHeight } = useTableHeight(tableAreaRef, {
-  withPagination: true,
-});
-
-const handleTreeSelect = (keys: string[]) => {
-  selectedKeys.value = keys;
-  // 根据选中节点加载表格数据
-};
-</script>
-
-<template>
-  <div class="page-container">
-    <YSplitPane :initial-width="280" :min-width="200" :max-width="400" collapsible>
-      <!-- 左侧：树 -->
-      <template #left>
-        <div class="left-panel">
-          <YCard title="分类" class="tree-card">
-            <!-- ref 绑定到容器 div -->
-            <div ref="treeAreaRef" class="tree-container">
-              <YTree
-                v-model:selected-keys="selectedKeys"
-                :tree-data="treeData"
-                :height="treeHeight"
-                filterable
-                virtual
-                @select="handleTreeSelect"
-              />
-            </div>
-          </YCard>
-        </div>
-      </template>
-
-      <!-- 右侧：表格 -->
-      <template #right>
-        <div class="right-panel">
-          <YCard title="数据列表" class="table-card">
-            <div ref="tableAreaRef" class="table-container">
-              <YTable
-                :data="tableData"
-                :loading="loading"
-                :max-height="tableHeight"
-                pageable
-              />
-            </div>
-          </YCard>
-        </div>
-      </template>
-    </YSplitPane>
-  </div>
-</template>
-
-<style scoped lang="less">
-.page-container {
-  height: 100%;
-}
-
-.left-panel,
-.right-panel {
-  height: 100%;
-}
-
-.tree-card,
-.table-card {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-
-  :deep(.ant-card-body) {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-}
-
-// 关键：容器必须设置 flex: 1 + overflow: hidden
-.tree-container,
-.table-container {
-  flex: 1;
-  overflow: hidden;
-}
-</style>
-```
-
----
-
-### 场景：自定义搜索框（#search 插槽）
+## 标准代码骨架
 
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue';
 import { YTree } from '@yss-ui/components';
 import { useTreeHeight, YTREE_SEARCH_HEIGHT } from '@yss-ui/hooks';
-import { Input } from 'ant-design-vue';
-import { ReloadOutlined, PlusOutlined } from '@ant-design/icons-vue';
 
 const treeAreaRef = ref<HTMLDivElement>();
-const searchValue = ref('');
 const treeData = ref([]);
-
-// 即使使用自定义搜索框，仍需配置 extraOffset
-const { treeHeight } = useTreeHeight(treeAreaRef, {
+const { treeHeight, recalculateHeight } = useTreeHeight(treeAreaRef, {
   extraOffset: YTREE_SEARCH_HEIGHT,
 });
-
-const handleRefresh = () => {
-  // 刷新树数据
-};
-
-const handleAdd = () => {
-  // 新增节点
-};
 </script>
 
 <template>
-  <div ref="treeAreaRef" class="tree-container">
-    <YTree
-      v-model:search-value="searchValue"
-      :tree-data="treeData"
-      :height="treeHeight"
-      filterable
-      virtual
-    >
-      <!-- 自定义搜索区插槽 -->
-      <template #search>
-        <div class="tree-toolbar">
-          <Input
-            v-model:value="searchValue"
-            placeholder="搜索"
-            allow-clear
-            class="search-input"
-          />
-          <div class="toolbar-actions">
-            <ReloadOutlined class="action-icon" @click="handleRefresh" />
-            <PlusOutlined class="action-icon" @click="handleAdd" />
-          </div>
-        </div>
-      </template>
-    </YTree>
+  <div ref="treeAreaRef" class="tree-area">
+    <YTree :height="treeHeight" :tree-data="treeData" filterable />
   </div>
 </template>
 
 <style scoped lang="less">
-.tree-container {
-  flex: 1;
-  overflow: hidden;
-}
-
-.tree-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-
-  .search-input {
-    flex: 1;
-  }
-
-  .action-icon {
-    cursor: pointer;
-    color: #666;
-    &:hover {
-      color: #1890ff;
-    }
-  }
-}
+@import './style.less';
 </style>
 ```
 
----
-
-## ❌ 常见错误汇总
-
-### 错误 1：未解构返回值
-
-```typescript
-// ❌ 错误
-const treeHeight = useTreeHeight(treeAreaRef);
-```
-
-**结果**：树高度显示 `[object Object]` 或不生效
-
-**修复**：
-```typescript
-const { treeHeight } = useTreeHeight(treeAreaRef);
-```
-
----
-
-### 错误 2：启用 filterable 但未配置 extraOffset
-
-```typescript
-// ❌ 错误
-const { treeHeight } = useTreeHeight(treeAreaRef);
-```
-
-**结果**：树底部内容被裁剪，或搜索框与树内容重叠
-
-**修复**：
-```typescript
-import { useTreeHeight, YTREE_SEARCH_HEIGHT } from '@yss-ui/hooks';
-
-const { treeHeight } = useTreeHeight(treeAreaRef, {
-  extraOffset: YTREE_SEARCH_HEIGHT,
-});
-```
-
----
-
-### 错误 3：使用 :max-height 而非 :height
-
-```vue
-<!-- ❌ 错误：YTree 不应使用 max-height -->
-<YTree :max-height="treeHeight" />
-```
-
-**修复**：
-```vue
-<YTree :height="treeHeight" />
-```
-
----
-
-### 错误 4：容器缺少 flex 样式
-
 ```less
-// ❌ 错误
-.tree-container {
+/* style.less */
+.tree-layout {
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
-```
 
-**修复**：
-```less
-.tree-container {
+.tree-area {
   flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
 ```
 
----
+## 容器切换时机
 
-## 🔗 关联 Skills
+```typescript
+import { nextTick } from 'vue';
 
-- **page-module-development**：页面模块整体开发规范
-- **ytree-usage**：YTree 组件使用规范
-- **use-table-height**：表格高度计算（类似逻辑，但 YTable 用 `:max-height`）
+/** 容器显示后补充一次高度计算。 */
+const handleVisibleChange = async (visible: boolean) => {
+  if (!visible) return;
+  await nextTick();
+  recalculateHeight();
+};
+```
 
----
+## 交付检查清单
 
-**最后更新**: 2026-02-04
+- [ ] `treeAreaRef` 在 Hook 挂载时可用，父级高度可计算。
+- [ ] 内置搜索开关与 `YTREE_SEARCH_HEIGHT` 偏移一致，没有重复扣减。
+- [ ] Tab/抽屉切换后使用真实的 `recalculateHeight()` 重算。
+- [ ] 节点较少时未裁剪 DOM 被识别为正常虚拟滚动阈值行为。
+
+## 失败兜底策略
+
+- 树高度显示为 `minHeight` 且与容器不符时，检查是否在隐藏态完成首次计算，并在可见后重算。
+- `treeAreaRef` 由 `v-if` 延迟创建且尺寸不再自动更新时，保持外层容器挂载后重新初始化 Hook，或使用 `v-show + recalculateHeight()`。
+- 节点较少未触发 DOM 裁剪时，核对虚拟滚动阈值，不加 `virtual=true` 伪装修复。

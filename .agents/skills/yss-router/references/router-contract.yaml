@@ -5,7 +5,6 @@ skill_aliases:
   api-integration: yss-api-integration
   microapp-commit: yss-microapp-commit
   page-module-development: yss-page-module-development
-  yss-ui-business-page-generation: yss-page-module-development
   use-table-height: yss-use-table-height
   use-tree-height: yss-use-tree-height
 implementation_path_policy:
@@ -183,6 +182,11 @@ dependency_closure:
     always: [yss-exception]
   yss-exception:
     always: [yss-dto]
+  yss-ui-business-page-generation:
+    when_components: [yss-components]
+    when_hooks: [yss-hook]
+    when_form: [yss-formily]
+    when_api: [yss-api-integration]
   yss-page-module-development:
     when_components: [yss-components]
     when_hooks: [yss-hook]

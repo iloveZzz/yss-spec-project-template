@@ -1,6 +1,6 @@
 ---
 name: yss-api-integration
-description: Guide AI to correctly use Orval-generated API clients in Vue 3 micro-applications. This skill must be used whenever the user needs backend API integration, including list queries, CRUD actions, detail loading, submit flows, or API refactoring. It covers type-safe API imports, request/response mapping, and especially standardized useRequest integration patterns (manual/run/runAsync, pagination parameters, unified error handling, loading state, and success callbacks).
+description: 指导在 Vue3 业务列表、表单、详情和操作 Hook 中集成 Orval API，覆盖真实生成产物选择、mutator 响应契约、错误提示、加载状态、请求选项和长整型精度；当页面对接查询、新增、编辑、删除、详情或文件流接口时使用。
 ---
 
 # API 集成 Skill
@@ -14,8 +14,9 @@ description: Guide AI to correctly use Orval-generated API clients in Vue 3 micr
 帮助 AI 正确使用基于 **Orval** 生成的 API 客户端：
 
 - ✅ 正确导入 API 函数
-- ✅ 统一错误处理
+- ✅ 统一错误处理与 Toast 门禁
 - ✅ Loading 状态管理
+- ✅ 长整型 ID 精度保持
 - ✅ TypeScript 类型安全
 
 ## 🔍 前置条件
@@ -45,392 +46,137 @@ description: Guide AI to correctly use Orval-generated API clients in Vue 3 micr
 4. `api-integration` 只核对 JSON 派生记录、交接路径和 SHA-256，并把原始 JSON 交给既有前端代码生成流程；本 Harness 不读取或修改目标前端的生成器配置，不在此仓库执行生成，也不建立生成 CI 门禁。若 JSON SHA 与派生记录不一致，停止交接并回到治理流程。
 5. 目标前端项目在需要时手动运行其既有生成命令、类型检查和受影响组件 / API 测试；将实际命令、结果、生成输入 SHA 和偏离写入 `YSS Skill Execution Result`。
 
-## 📁 API 文件结构
+## 真实 mutator 响应契约
 
+当前微应用模板的 `mutator.ts` 行为是：
+
+- 普通 JSON 响应直接返回 `response.data`。
+- 当 JSON 对象显式包含 `success === false` 时，拦截器调用全局业务错误提示并 `Promise.reject(error)`。
+- HTTP 4xx/5xx 和网络错误由全局 `handleErrorResponse` 提示后继续 reject。
+- Blob 成功响应返回 `{ data, headers }`；HTTP 错误中的 Blob JSON 由全局错误处理器解析。
+- 当前 mutator **不会**检测 HTTP 200 Blob 内包装的 `success === false` JSON；这种契约必须先改为合理的 HTTP 错误状态，或在 mutator 中统一补齐，不得让每个业务 Hook 各自解析。
+
+## 硬约束（禁止/必须）
+
+- 禁止对普通 Orval 请求结果使用 `if (res?.success)` 或 `if/else` 判断业务成功；`success === false` 已被 reject，`await` 继续执行即为成功。
+- 禁止在 `else` 或 `catch` 中重复调用 `message.error`、`notification.error` 或项目的错误 Toast。
+- Hook 可在 `catch` 中清理局部数据、记录错误状态或阻止继续执行，但不重复展示错误。
+- 只有显式传入 `skipBusinessError: true` 或 `skipErrorHandler: true` 时，业务代码才能在 `catch` 中实现自定义错误交互。
+- 成功 Toast 必须放在 `await` 之后，不得放在 `finally` 或无条件分支中。
+- loading 必须在 `finally` 中恢复；需要阻止未处理 reject 时，在 Hook 内捕获并仅维护状态。
+
+## Orval 生成与导入
+
+生成链路通常为：
+
+```bash
+pnpm generate:api
+# orval → schema cleanup → 可选的导出扁平化 → prettier
 ```
-packages/src/api/
-├── generated/              # Orval 自动生成（不要手动修改）
-│   ├── api.ts              # API 函数定义
-│   └── model.ts            # 类型定义
-├── mutator.ts              # 自定义 Axios 实例
-└── index.ts                # API 导出入口
-```
 
-## 🚀 使用步骤
+必须先打开生成文件确认导出：
 
-## YSS canonical execution rules
+- 已存在模块级具名 API 函数时，优先具名导入。
+- 如果当前产物只导出 `getXxxApi()` 工厂，在**模块顶层**创建一次实例；禁止每次 Hook 初始化或每次请求都重新调用工厂。
+- 不得根据文档示例假定工厂一定名为 `getApi()`；Orval `title` 配置会影响真实名称。
+- 请求/响应 DTO 必须从当前生成的 `schemas` 导入，禁止重复声明。
 
-- 先检查当前生成文件、`mutator.ts` 和冻结的 OpenAPI JSON 派生证据，不根据示例猜测导出名或响应形状。
-- 普通 JSON 请求中，`success === false` 已由 mutator reject；业务 Hook 不得再写 `if (res?.success)` 或重复 `message.error`。
-- loading 在 `finally` 中恢复；只有显式传入 `skipBusinessError` 或 `skipErrorHandler` 时，才允许实现局部错误交互。
-- 文件流必须保留 `{ data, headers }`，交给 `file-export-download` 的 `handleBlobResponse`；不得修改生成文件。
-- 长整型 ID 按冻结契约保持字符串，不得用 `Number`、`parseInt` 或位运算恢复为 number。
+## 标准代码骨架
 
-### 1. 查看可用 API
-
-打开 `packages/src/api/generated/api.ts` 查看所有可用的 API 函数。
-
-**示例**：
+以微应用的真实 `getApiApi()` 产物为例：
 
 ```typescript
-// 自动生成的 API 函数
-export const getQualityIssueList = (params: GetQualityIssueListParams) => {
-  return axios.get<QualityIssueListResponse>("/api/xxx/issues", { params });
-};
-```
+import { reactive, ref } from 'vue';
+import { getApiApi } from '@/api/generated/quality';
+import type { QualityBusinessRuleVO, QualityRulePage } from '@/api/generated/quality/schemas';
 
-### 2. 导入 API（推荐方式）
+const { pageQualityRule } = getApiApi();
 
-**方式 1：从生成的 API 直接导入（推荐）**
-
-```typescript
-import { getQualityIssueList, createQualityIssue } from "@/api/generated/api";
-
-// 使用
-const fetchData = async () => {
-  const res = await getQualityIssueList({ page: 1, pageSize: 20 });
-  return res.data;
-};
-```
-
-**方式 2：通过语义化 API 对象**
-
-如果项目配置了语义化导出（如 `qualityApi`），可以使用：
-
-```typescript
-import { qualityApi } from "@/api";
-
-// 使用
-const fetchData = async () => {
-  const res = await qualityApi.getIssueList({ page: 1, pageSize: 20 });
-  return res.data;
-};
-```
-
-### 3. 错误处理
-
-**统一错误处理模式**：
-
-```typescript
-import { message } from "ant-design-vue";
-import { getQualityIssueList } from "@/api/generated/api";
-
-const fetchData = async () => {
-  loading.value = true;
-  try {
-    const res = await getQualityIssueList({ page: 1 });
-    dataList.value = res.data.list;
-    total.value = res.data.total;
-  } catch (error) {
-    console.error("加载质检问题列表失败:", error);
-  } finally {
-    loading.value = false;
-  }
-};
-```
-
-### 4. TypeScript 类型
-
-**使用生成的类型**：
-
-```typescript
-import type {
-  QualityIssueListItem,
-  CreateQualityIssueRequest,
-} from "@/api/generated/model";
-
-// 在组件中使用
-const dataList = ref<QualityIssueListItem[]>([]);
-
-const formData = reactive<CreateQualityIssueRequest>({
-  title: "",
-  description: "",
-});
-```
-
-### 5. 完整示例
-
-```typescript
-import { ref, reactive } from "vue";
-import { message } from "ant-design-vue";
-import {
-  getQualityIssueList,
-  createQualityIssue,
-  updateQualityIssue,
-  deleteQualityIssue,
-} from "@/api/generated/api";
-import type {
-  QualityIssueListItem,
-  CreateQualityIssueRequest,
-  GetQualityIssueListParams,
-} from "@/api/generated/model";
-
-export function useQualityIssueApi() {
-  const dataList = ref<QualityIssueListItem[]>([]);
+/** 管理质量规则列表请求和分页状态。 */
+export const useQualityRuleList = () => {
   const loading = ref(false);
+  const dataList = ref<QualityBusinessRuleVO[]>([]);
+  const query = reactive<QualityRulePage>({ pageIndex: 1, pageSize: 20, ruleName: '' });
   const total = ref(0);
 
-  const query = reactive<GetQualityIssueListParams>({
-    page: 1,
-    pageSize: 20,
-  });
-
-  /**
-   * 加载列表
-   */
-  const fetchList = async () => {
+  /** 加载规则列表。 */
+  const fetchData = async (): Promise<void> => {
     loading.value = true;
     try {
-      const res = await getQualityIssueList(query);
-      dataList.value = res.data.list;
-      total.value = res.data.total;
-    } catch (error) {
-      message.error("加载失败");
+      const res = await pageQualityRule(query);
+      dataList.value = res.data ?? [];
+      total.value = res.totalCount ?? 0;
+    } catch {
+      dataList.value = [];
+      total.value = 0;
     } finally {
       loading.value = false;
     }
   };
 
-  /**
-   * 创建
-   */
-  const create = async (data: CreateQualityIssueRequest) => {
-    try {
-      await createQualityIssue(data);
-      message.success("创建成功");
-      return true;
-    } catch (error) {
-      message.error("创建失败");
-      return false;
-    }
-  };
+  return { loading, dataList, query, total, fetchData };
+};
+```
 
-  /**
-   * 更新
-   */
-  const update = async (id: number, data: CreateQualityIssueRequest) => {
-    try {
-      await updateQualityIssue(id, data);
-      message.success("更新成功");
-      return true;
-    } catch (error) {
-      message.error("更新失败");
-      return false;
-    }
-  };
+> 如果所在项目已生成 `pageQualityRule` 具名导出，直接导入该函数，删除上面的工厂实例行。
 
-  /**
-   * 删除
-   */
-  const remove = async (id: number) => {
-    try {
-      await deleteQualityIssue(id);
-      message.success("删除成功");
-      return true;
-    } catch (error) {
-      message.error("删除失败");
-      return false;
-    }
-  };
+## 长整型与数值类型
 
-  return {
-    dataList,
-    loading,
-    total,
-    query,
-    fetchList,
-    create,
-    update,
-    remove,
-  };
+`JSONbig({ storeAsString: true })` 会把超出 JavaScript 安全整数范围的整数保留为字符串；**不会把所有普通 number 都转成字符串**。分页页码、状态值、普通小数和安全范围整数仍可按真实类型计算。
+
+硬约束：
+
+- ID、雪花 ID、长整型业务键一旦运行时为字符串，必须原样透传和比较，禁止 `Number()`、`parseInt()`、一元 `+` 或位运算转回 number。
+- 优先修正 OpenAPI，将可能超过 `Number.MAX_SAFE_INTEGER` 的 ID 声明为 `string`；不得以 `as unknown as number` 长期掩盖错误契约。
+- 普通数值计算按生成类型执行；金额或高精度计算使用 `decimal.js`/`big.js` 并以字符串入参。
+
+```typescript
+// ❌ 长整型 ID 会丢失精度
+await detailQualityRule(Number(row.id));
+
+// ✅ 保持 ID 的字符串契约
+await detailQualityRule(row.id);
+
+// ✅ 页码等普通数值仍使用 number
+query.pageIndex = pagination.current;
+```
+
+## 自定义请求选项
+
+Orval 配置 `options: true` 后，生成方法的最后一个可选参数会透传给 `customInstance`。必须先检查当前生成函数签名。
+
+- `skipBusinessError?: boolean`：仅跳过 `success === false` 的全局业务提示，请求仍 reject。
+- `skipErrorHandler?: boolean`：跳过业务错误与 HTTP/网络错误的全局提示，请求仍 reject。
+- Axios 原生选项：`responseType`、`headers`、`timeout`、`signal`、`onUploadProgress`、`onDownloadProgress` 等均在该参数顶层传入。
+
+```typescript
+try {
+  await addQualityRule(values, { skipBusinessError: true });
+} catch (error) {
+  // 只有显式跳过全局业务提示时，才在此实现自定义错误交互。
+  showCustomError(error);
 }
+
+const controller = new AbortController();
+await pageQualityRule(query, { signal: controller.signal, timeout: 120000 });
 ```
 
-## 🧩 useRequest 标准对接能力范围
+## 交付检查清单
 
-当任务涉及 API 对接时，本技能默认要求按 `useRequest` 标准组织逻辑。能力范围如下：
+- [ ] 已检查 Orval 配置、生成文件和 mutator 真实实现。
+- [ ] 使用生成 DTO，未手写重复接口类型。
+- [ ] 优先使用真实具名导出；只有工厂时仅在模块顶层创建一次。
+- [ ] 没有 `if (res?.success)` 冗余分支，没有在 `else/catch` 重复错误 Toast。
+- [ ] 成功后逻辑仅在 `await` 成功后执行，loading 在 `finally` 恢复。
+- [ ] 长整型 ID 保持字符串，普通 number 没有被错误当成字符串。
+- [ ] 特殊错误交互已显式传入 skip 选项，未默认关闭全局处理。
+- [ ] 文件流已按 `file-export-download` 核对 Blob、响应头和错误链路。
 
-- 列表查询：`manual + run`，支持分页、筛选、排序参数治理
-- 详情查询：`runAsync` 或 `run`，支持详情打开时懒加载
-- 提交流程：`runAsync`，支持新增、编辑、删除、发布、撤销、审批动作
-- 并发请求：`runAsync + Promise.all`，支持总览卡片与多源聚合
-- 请求生命周期：统一 `loading`、成功提示、失败兜底、回调刷新
-- 响应映射：把后端 DTO 转换为页面字段，组件层只消费最终结构
+## 失败兜底策略
 
-## 🎯 useRequest 适用场景
-
-以下场景应强制使用 `useRequest` 对接 API，而不是在组件中直接 `await`：
-
-- 查询页：表格分页查询、搜索条件变更后重置页码
-- 主从页：点击列表行后加载详情
-- 弹窗页：提交后关闭弹窗并刷新列表
-- 审批流：同意、拒绝、转交、加签、退回、撤销、删除等动作
-- 统计页：并发获取趋势、排行、汇总指标
-
-## 🧪 useRequest 标准模板
-
-### 模板 1：分页列表查询
-
-```typescript
-const currentParams = ref({
-  pageIndex: 1,
-  pageSize: 10,
-});
-
-const { loading, run: runPage } = useRequest(pageApi, {
-  manual: true,
-  onSuccess: (res) => {
-    tableData.value = res?.data || [];
-    pagination.total = res?.totalCount || 0;
-  },
-  onError: () => {
-    tableData.value = [];
-    pagination.total = 0;
-    message.error("查询失败");
-  },
-});
-
-const queryList = (extra: Record<string, any> = {}) => {
-  currentParams.value = { ...currentParams.value, ...extra };
-  runPage(currentParams.value);
-};
-```
-
-### 模板 2：提交动作请求
-
-```typescript
-const { loading: submitLoading, runAsync: runSubmit } = useRequest(submitApi, {
-  manual: true,
-});
-
-const handleSubmit = async (payload: SubmitCmd) => {
-  try {
-    const res = await runSubmit(payload);
-    if (res?.success) {
-      message.success("操作成功");
-      queryList();
-      return true;
-    }
-    message.error(res?.message || "操作失败");
-    return false;
-  } catch {
-    message.error("操作失败");
-    return false;
-  }
-};
-```
-
-
-## ✅ 验证清单
-
-- [ ] **导入正确**
-  - [ ] 从 `@/api/generated/api` 导入 API 函数
-  - [ ] 从 `@/api/generated/model` 导入类型定义
-
-- [ ] **类型安全**
-  - [ ] 使用 TypeScript 类型定义
-  - [ ] 函数参数类型正确
-  - [ ] 返回值类型正确
-
-- [ ] **错误处理**
-  - [ ] 使用 try-catch 捕获错误
-  - [ ] 使用 message 提示用户
-  - [ ] 记录错误日志（console.error）
-
-- [ ] **Loading 状态**
-  - [ ] 请求前设置 loading = true
-  - [ ] finally 中重置 loading = false
-
-## 🚨 常见错误
-
-### ❌ 错误 1：直接修改生成的文件
-
-```typescript
-// ❌ 不要修改 api/generated/ 下的文件
-// 下次运行 pnpm generate:api 会被覆盖
-```
-
-✅ **正确做法**：在 `api/` 目录外的地方使用生成的 API
-
-### ❌ 错误 2：手写不存在的 API 契约
-
-```typescript
-// ❌ 不要为了赶页面进度临时拼路径和 any 类型
-request.post("/api/v1/todo/guess", payload as any);
-```
-
-✅ **正确做法**：确认 OpenAPI Draft/Freeze 状态；Freeze 后先由 `yss-openapi-governance` 从 YAML 生成并记录 JSON，再运行 `pnpm generate:api`，最后从 `@/api/generated/api` 和 `@/api/generated/model` 导入。
-
-### ❌ 错误 3：缺少错误处理
-
-```typescript
-// ❌ 不推荐：没有 try-catch
-const fetchData = async () => {
-  const res = await getQualityIssueList({ page: 1 });
-  dataList.value = res.data;
-};
-```
-
-✅ **正确做法**：
-
-```typescript
-const fetchData = async () => {
-  try {
-    const res = await getQualityIssueList({ page: 1 });
-    dataList.value = res.data;
-  } catch (error) {
-    message.error("加载失败");
-  }
-};
-```
-
-### ❌ 错误 4：忘记 Loading 状态
-
-```typescript
-// ❌ 不推荐：用户不知道正在加载
-const fetchData = async () => {
-  const res = await getQualityIssueList({ page: 1 });
-  dataList.value = res.data;
-};
-```
-
-✅ **正确做法**：
-
-```typescript
-const fetchData = async () => {
-  loading.value = true;
-  try {
-    const res = await getQualityIssueList({ page: 1 });
-    dataList.value = res.data;
-  } finally {
-    loading.value = false;
-  }
-};
-```
-
-## 💡 最佳实践
-
-1. **API 变更先冻结再生成**：
-
-   ```bash
-   pnpm generate:api
-   ```
-
-   生成前应确认 `docs/.scratch/<feature>/api/<feature>.yaml` 中的 OpenAPI Draft 已完成设计审查并 Freeze，且 `yss-openapi-governance` 已用锁定的 `redocly bundle` 留下对应 JSON 派生记录；随后才运行 `pnpm generate:api`。
-
-2. **封装业务逻辑到 Hook**：
-   - 将 API 调用封装在 `hooks/use{Name}Api.ts`
-   - 返回状态和方法，便于复用
-
-3. **统一错误提示**：
-   - 使用 `message.error()` 而非 `alert()`
-   - 错误信息要简洁明了
-
-4. **类型优先**：
-   - 充分利用生成的 TypeScript 类型
-   - 避免使用 `any`
-
-**最后更新**: 2026-01-28
+- 生成导出与 skill 示例不同时，以生成文件为准并更新生成脚本，禁止绕过类型检查猜名调用。
+- 接口字段不稳定时，在 Hook API 边界做最小映射，不把兼容逻辑散落到模板。
+- HTTP 200 Blob 业务错误时，先修复后端状态码或 mutator 统一解析，禁止在业务 Hook 重复实现。
 
 ## 阶段 7 合同
 
