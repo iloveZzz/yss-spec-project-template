@@ -36,13 +36,13 @@
 
 - `npm run sync-template`：从已推送的 Harness 固定 commit 同步成功。
 - `node --test tests/*.test.js`：56/56 通过。
-- `npm pack --dry-run --json`：通过；包名 `create-yss-harness-dev@0.1.2`，6685 个条目，packed size 14934247 bytes，unpacked size 79175872 bytes；`prepack` 同样绑定上述远端 commit。
+- 模板快照的 `npm pack --dry-run --json`：通过；随后版本号升级为 `create-yss-harness-dev@0.1.3`，`npm pack --dry-run --ignore-scripts --json` 继续通过，共 6685 个条目，packed size 14934249 bytes，unpacked size 79175872 bytes。
 
 ## Git 交付
 
 - `yss-harness-dev-agent`：commit `a74be5287a1d0082ea1b2fe09b8d225a54d48ba2`，已推送到 `origin/codex/yss-ddd-target-profile`。
-- `create-yss-harness-dev`：commit `1ccb139aa8bd011a4db4d3f005d9c9235136d458`，已推送到 `origin/codex/yss-ddd-target-profile`。
-- 根仓在本记录随同目标变更提交时更新上述两个 gitlink，并推送同名分支。
+- `create-yss-harness-dev`：模板快照 commit `1ccb139aa8bd011a4db4d3f005d9c9235136d458`；版本升级 commit `d27293d6fcdb1e43875169a1ea80ea619dab3af0`，均已进入并推送到 `origin/main`。
+- 根仓先以 commit `049f63b1a0417e9338f23bfbbbbbaadb1677b6d0` 合入并推送目标变更，随后以独立版本升级 checkpoint 将 CLI gitlink 更新到 `d27293d6fcdb1e43875169a1ea80ea619dab3af0` 并推送 `main`。
 
 ## 尚未关闭
 
