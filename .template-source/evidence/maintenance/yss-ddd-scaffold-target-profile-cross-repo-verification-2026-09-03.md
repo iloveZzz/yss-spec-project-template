@@ -38,11 +38,21 @@
 - `node --test tests/*.test.js`：56/56 通过。
 - 模板快照的 `npm pack --dry-run --json`：通过；随后版本号升级为 `create-yss-harness-dev@0.1.3`，`npm pack --dry-run --ignore-scripts --json` 继续通过，共 6685 个条目，packed size 14934249 bytes，unpacked size 79175872 bytes。
 
+### `create-yss-spec`
+
+- CLI 从 npm `latest=2.2.9` 升级到 `2.2.10`，默认模板 ref 固定为根仓 `c2308bb36a1f835343af5de1ee9ec2666f9d18cb`。
+- 分发 manifest 补齐 `.mcp.json`、`.gemini/settings.json`、`.kiro/settings/mcp.json`、`.vscode/mcp.json`；init 回归测试同时按 active registry 正向验证 `yss-ui-business-page-generation`。
+- RED：首次对新根模板执行完整测试为 49/56，通过之外的 7 个失败分别暴露 MCP 配置未分发与旧退役技能断言。
+- GREEN：紧凑 init / ASCII attach seam 2/2 通过；完整 `npm test` 56/56 通过。
+- `npm pack --dry-run --json`：通过；包名 `create-yss-spec@2.2.10`，6851 个条目，packed size 15187561 bytes，unpacked size 80902050 bytes；内容 `snapshotHash` 为 `05389fbdab05c78f76ab92044a2643aa262bfb9caa457c687be190c0797722f3`。
+
 ## Git 交付
 
 - `yss-harness-dev-agent`：commit `a74be5287a1d0082ea1b2fe09b8d225a54d48ba2`，已推送到 `origin/codex/yss-ddd-target-profile`。
 - `create-yss-harness-dev`：模板快照 commit `1ccb139aa8bd011a4db4d3f005d9c9235136d458`；版本升级 commit `d27293d6fcdb1e43875169a1ea80ea619dab3af0`，均已进入并推送到 `origin/main`。
+- `create-yss-spec`：版本、固定根模板 ref、分发 manifest 与回归测试 commit `1ac41c4eb915c9cfb44f28d60b26e6bd04b7c1ae`，已推送到 `origin/main`。
 - 根仓先以 commit `049f63b1a0417e9338f23bfbbbbbaadb1677b6d0` 合入并推送目标变更，随后以独立版本升级 checkpoint 将 CLI gitlink 更新到 `d27293d6fcdb1e43875169a1ea80ea619dab3af0` 并推送 `main`。
+- 本轮本体 CLI checkpoint 将根仓 `create-yss-spec` gitlink 更新到 `1ac41c4eb915c9cfb44f28d60b26e6bd04b7c1ae`，与本记录一并进入 `main`。
 
 ## 尚未关闭
 

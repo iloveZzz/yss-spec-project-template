@@ -27,6 +27,7 @@ changed_assets:
   - submodules/yss-harness-dev-agent
   - submodules/create-yss-harness-dev/template
   - submodules/create-yss-harness-dev/template.snapshot.json
+  - submodules/create-yss-spec
   - .template-source/evidence/maintenance/yss-ddd-scaffold-compile-red-green-2026-09-03.md
   - .template-source/evidence/maintenance/yss-ddd-scaffold-target-profile-decision-2026-09-03.md
   - .template-source/evidence/maintenance/yss-ddd-scaffold-target-profile-red-green-2026-09-03.md
