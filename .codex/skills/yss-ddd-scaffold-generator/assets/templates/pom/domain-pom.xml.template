@@ -5,32 +5,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.yss.datamiddle</groupId>
+        <groupId>{{group_id}}</groupId>
         <artifactId>{{project_name}}-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>{{project_version}}</version>
     </parent>
 
     <artifactId>{{project_name}}-domain</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>com.yss.cloud</groupId>
-            <artifactId>yss-component-dto</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>1.6.16</version>
-            <scope>compile</scope>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

@@ -21,15 +21,17 @@ Application 层用例编排 skill。负责协调 Domain 与 Gateway，定义事�
 
 ## 工作方式
 
-1. 先探测工程是新 DDD `application/domain/infrastructure/adapter` 还是 legacy `core/client/repository` profile。
+1. 确认工程来自 `target-domain-model`；`core/client/repository` 等旧架构对本脚手架链路为 `unsupported`。
 2. 确认 Use Case、Application 边界、事务边界已在批准合同中写明。
 3. 实现 AppService 时调用 Domain Service / Gateway，核心规则下沉 Domain。
-4. 涉及 POJO 样板加载 `lombok`；涉及 App 层转换加载 `mapstruct`。
-5. 详细包结构、注解、示例和 legacy 兼容说明见 `references/application-layer-guide.md`。
+4. Web DTO 转 Application Command/Result 属于 Web，PO 转 Domain 属于 Infrastructure；Application 内确有独立模型转换时才加载 `mapstruct`，并统一 Spring Bean 与构造器注入。
+5. 详细包结构、注解、示例和旧架构阻断边界见 `references/application-layer-guide.md`。
 
 ## 产物范围
 
-- `application/.../service/*Service.java`（或 legacy `core/service`）
+- `application/.../command/*Command.java`、`application/.../query/*Query.java`、`application/.../result/*Result.java`
+- `application/.../port/*QueryPort.java`
+- `application/.../service/*Service.java`
 - `application/.../service/impl/*ServiceImpl.java`
 - `application/.../service/convertor/*Convertor.java`（MapStruct）
 
@@ -38,7 +40,7 @@ Application 层用例编排 skill。负责协调 Domain 与 Gateway，定义事�
 - 领域建模：`yss-domain`
 - 持久层：`yss-repository`
 - Web 适配：`yss-web-controller`
-- DTO 契约：`yss-dto`
+- Web DTO / Result 契约：`yss-dto` + `yss-web-controller`
 
 ## 阶段 7 合同
 

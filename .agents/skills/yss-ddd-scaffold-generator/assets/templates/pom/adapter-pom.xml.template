@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.yss.datamiddle</groupId>
+        <groupId>{{group_id}}</groupId>
         <artifactId>{{project_name}}-parent</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>{{project_version}}</version>
     </parent>
 
     <artifactId>{{project_name}}-adapter</artifactId>

@@ -1,0 +1,51 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  本次修改修复历史上“生成成功但 package 失败”的重要逃逸，改变脚手架完成语义、合同输入、
+  真实构建门禁和 CLI 跨仓分发内容，命中 generation-semantics、historical-important-escape、
+  cross-repo-contract 与 aggregate-behavior-change。
+triggers:
+  - generation-semantics
+  - historical-important-escape
+  - cross-repo-contract
+  - aggregate-behavior-change
+changed_assets:
+  - .agents/skills/yss-ddd-scaffold-generator/
+  - .agents/skills/yss-router/references/router-contract.yaml
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - docs/templates/implementation-routing-template.md
+  - scripts/verify-scaffold-generator-scenarios
+  - skills-lock.json
+  - submodules/yss-harness-dev-agent/
+  - submodules/create-yss-harness-dev/
+  - .template-source/evidence/maintenance/yss-ddd-scaffold-compile-red-green-2026-09-03.md
+  - .template-source/evidence/maintenance/yss-ddd-scaffold-compile-cross-repo-contract-2026-09-03.md
+verification_evidence:
+  - kind: red
+    command: .template-source/evidence/maintenance/yss-ddd-scaffold-compile-red-green-2026-09-03.md
+    result: pass
+  - kind: green
+    command: node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs
+    result: pass
+  - kind: refactor
+    command: .template-source/evidence/maintenance/yss-ddd-scaffold-compile-red-green-2026-09-03.md
+    result: pass
+  - kind: pressure-scenario
+    command: scripts/verify-scaffold-generator-scenarios && scripts/verify-prototype-backend-scaffold-scenarios
+    result: pass
+  - kind: cross-repo-contract
+    command: .template-source/evidence/maintenance/yss-ddd-scaffold-compile-cross-repo-contract-2026-09-03.md
+    result: pass
+  - kind: self-check
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: 正式发布、合并和 release-ready 仍需候选冻结、独立审查及完整发布门禁
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

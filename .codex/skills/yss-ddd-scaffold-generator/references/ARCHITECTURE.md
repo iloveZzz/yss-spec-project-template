@@ -1,194 +1,116 @@
-# DDD 分层架构参考文档
+# YSS DDD Target Profile
 
-## 1. 架构概述
+本文定义 `architecture=target-domain-model` 的唯一目标结构。历史 `core/client/repository`、DTO 型 Gateway、client-in-domain 以及其他旧架构全部为 `unsupported`，不存在 legacy Profile 或回退分支。
 
-本脚手架采用 DDD（领域驱动设计）分层架构，将系统划分为四个核心层次：
+## 1. 模块职责
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                         Adapter 层                           │
-│                    (外部接口适配)                             │
-├─────────────────────────────────────────────────────────────┤
-│                       Application 层                         │
-│                    (业务用例编排)                             │
-├─────────────────────────────────────────────────────────────┤
-│                         Domain 层                            │
-│                    (核心业务逻辑)                             │
-├─────────────────────────────────────────────────────────────┤
-│                     Infrastructure 层                        │
-│                      (技术实现)                              │
-└─────────────────────────────────────────────────────────────┘
-```
+### Domain
 
-## 2. 各层职责
+- 聚合根、Entity、Value Object、领域行为、不变量、Domain Event。
+- 聚合持久化使用 Domain Gateway/Port，只交换 Domain Model、领域值和领域标识。
+- 不依赖 Application、Infrastructure、Repository、Web、YSS DTO/Exception、Jackson、Swagger 或 Validation。
+- Domain error 使用稳定领域错误标识和参数，不决定 HTTP status 或公开消息。
 
-### 2.1 Domain 层（领域层）
+推荐包：
 
-**职责**:
-
-- 定义核心业务模型和规则
-- 定义数据传输对象（DTO）
-- 定义网关接口（Gateway）
-- 不包含任何技术实现细节
-
-**包结构**:
-
-```
-com.yss.datamiddle.{module}
-├── client/dto/
-│   ├── cmd/        # 命令对象（写操作）
-│   ├── query/      # 查询对象（读操作）
-│   └── vo/         # 值对象（返回结果）
-└── domain/
-    ├── gateway/    # 网关接口
-    ├── model/      # 领域模型
-    └── service/    # 领域服务
+```text
+{base_package}.domain.{segment}
+├── model
+├── gateway
+├── service
+└── event
 ```
 
-**关键规范**:
+### Application
 
-- Command 继承 `CommandDTO`，使用 JSR-303 校验
-- Query 继承 `PageQuery` 或 `QueryDTO`
-- VO 实现 `Serializable` 接口
-- Gateway 定义标准 CRUD 方法
+- 定义并编排 Use Case、事务边界、Application Command/Query/Result。
+- 写用例调用 Domain Model/Domain Gateway。
+- 分页、列表和读模型通过 Application Query Port，不把 `PageQuery`、`PageResult` 或 Web VO 放入 Domain。
+- 不依赖 Infrastructure 或 Web。
 
-### 2.2 Application 层（应用层）
+推荐包：
 
-**职责**:
-
-- 业务用例编排
-- 协调领域对象完成业务能力
-- 处理事务边界
-- 对象转换（DTO ↔ Domain）
-
-**包结构**:
-
-```
-com.yss.datamiddle.{module}.core
-├── service/
-│   ├── impl/       # 服务实现
-│   └── convertor/  # MapStruct 转换器
-├── component/      # 业务组件
-└── job/            # 任务执行逻辑
+```text
+{base_package}.application
+├── command
+├── query
+├── result
+├── port
+└── service
 ```
 
-**关键规范**:
+### Infrastructure
 
-- Service 使用 `@RequiredArgsConstructor` 注入依赖
-- 写操作添加 `@Transactional` 注解
-- 使用 MapStruct 进行对象转换
+- 实现 Domain Gateway 和 Application Query Port。
+- MyBatis-Plus Repository、PO、SQL、数据源配置和 `PO <-> Domain Model` MapStruct 转换位于本层。
+- 首个受支持 Profile 是 `persistence=mybatis-plus`；其他持久化方案必须先通过独立 fixture。
+- 事务边界由 Application 持有，不在 GatewayImpl 重复制造边界。
 
-### 2.3 Infrastructure 层（基础设施层）
+### Adapter/Web
 
-**职责**:
+- HTTP Request/Response、校验、Controller、WebConvertor 和异常到 HTTP/YSS Result 的映射。
+- Request 字段来自冻结 OpenAPI/批准 allowlist，不从数据库 metadata 全量推导。
+- WebConvertor 使用 `@Mapper(componentModel = "spring")` 和构造器注入。
+- DTO 物理位置固定为 Web；独立 client module 为 `unsupported`。如未来确需发布复用制品，必须另行设计并批准新的 Target Profile。
+- Web 不直接依赖 Infrastructure，不把 Domain Model 作为 Controller seam。
 
-- 实现 Domain 层定义的 Gateway 接口
-- 数据持久化（Repository）
-- 外部服务集成
-- 配置管理
+### Bootstrap
 
-**包结构**:
+- 组合 Web 和 Infrastructure，提供机械 Spring Boot 入口与环境配置。
+- 默认配置使用 INFO；DEBUG 和 MyBatis stdout SQL 仅存在于 `application-local.yml`。
 
-```
-com.yss.datamiddle.{module}.repository
-├── entity/         # PO 对象
-├── gateway/impl/   # Gateway 实现
-├── convertor/      # 转换器
-└── {Domain}Repository.java
-```
+## 2. 依赖方向
 
-**关键规范**:
-
-- PO 继承 `AuditableEntity`
-- Repository 继承 `BasePlusRepository`
-- 使用 `Wrappers.lambdaQuery()` 构建查询
-
-### 2.4 Adapter 层（适配器层）
-
-**职责**:
-
-- 处理外部请求（HTTP、MQ、RPC）
-- 参数校验
-- 响应格式化
-- 异常处理
-
-**包结构**:
-
-```
-com.yss.datamiddle.{module}.rest
-└── {Domain}Controller.java
+```text
+Web -> Application -> Domain
+Infrastructure -> Application + Domain
+Bootstrap -> Web + Infrastructure
 ```
 
-**关键规范**:
+禁止：
 
-- Controller 使用 `@RestController`
-- 参数使用 `@Valid` 校验
-- 响应使用 `SingleResult`、`PageResult`、`MultiResult` 包装
+- Domain → Application/Infrastructure/Web
+- Application → Infrastructure/Web
+- Web → Infrastructure
+- Domain Gateway 接收 HTTP DTO、返回 Web VO/PageResult
+- Repository 把 PO 直接返回给 Application/Web
 
-## 3. 依赖关系
+上述规则由生成工程的 `ArchitectureRulesTest` 执行，不只依赖文档约定。
 
-```
-Bootstrap -> Application -> Domain
-Infrastructure <-> Adapter (依赖倒置)
-```
+## 3. 调用链
 
-**依赖原则**:
+写模型：
 
-- Domain 层不依赖任何其他层
-- Application 层依赖 Domain 层
-- Infrastructure 层依赖 Domain 层（实现 Gateway）
-- Adapter 层依赖 Application 层
-- Bootstrap 层依赖所有层
-
-## 4. 调用链路
-
-```
-Controller -> Service -> Gateway -> Repository -> Database
-     ↓         ↓         ↓          ↓
-   DTO/VO <- DTO/VO <- Domain <- PO
+```text
+HTTP Request -> WebConvertor -> Application Command -> Use Case
+  -> Domain Model/Domain Gateway -> GatewayImpl -> Repository/MyBatis -> PO
 ```
 
-## 5. 命名规范
+读模型：
 
-| 类型       | 后缀        | 说明                   | 示例            |
-| ---------- | ----------- | ---------------------- | --------------- |
-| 持久化对象 | PO          | Persistent Object      | UserPO          |
-| 值对象     | VO          | Value Object           | UserVO          |
-| 命令对象   | Cmd         | Command                | UserAddCmd      |
-| 查询对象   | Query       | Query                  | UserPageQuery   |
-| 网关接口   | Gateway     | Gateway                | UserGateway     |
-| 服务接口   | Service     | Service                | UserService     |
-| 服务实现   | ServiceImpl | Service Implementation | UserServiceImpl |
-| 控制器     | Controller  | Controller             | UserController  |
-| 仓储接口   | Repository  | Repository             | UserRepository  |
+```text
+HTTP Page Request -> WebConvertor -> Application Query -> Query Port
+  -> Infrastructure Query Adapter -> Application Result -> Web Response
+```
 
-## 6. 最佳实践
+异常：
 
-### 6.1 CQRS 模式
+```text
+Domain Error -> Application propagation/translation -> Web Exception Translator
+  -> HTTP status + stable error code + sanitized public message
+```
 
-- 简单查询可以直接调用 Gateway
-- 复杂业务逻辑通过 Service 编排
+## 4. 生成与演进
 
-### 6.2 事务管理
+- Scaffold 只生成机械模块、POM、Wrapper、配置、架构规则和 Manifest，不生成生产业务 CRUD。
+- 初始生成器为 `initialize-only`，非空目标失败。
+- Manifest v2 记录模板/合同/downstream skill digest 与 generator-owned 文件 hash。
+- 当前不支持模板升级，不得重跑初始生成器覆盖业务工程。未来如需支持同一 Target Profile 内的模板版本升级，必须另行设计、批准并验证。
 
-- 事务边界在 Application 层
-- 使用 `@Transactional(rollbackFor = Exception.class)`
+## 5. 完成等级
 
-### 6.3 异常处理
+- `generated`：文件已原子生成，尚未完成 Wrapper 验证。
+- `empty-scaffold-verified`：根目录 `./mvnw validate/test/package` 全部通过。
+- `first-slice-verified`：golden first slice 的 Domain、Application、Repository/MyBatis、DTO/Web、Exception、Wire 与架构负例全部通过。
 
-- 业务异常抛出 `BizException`
-- 系统异常由全局异常处理器捕获
-
-### 6.4 日志规范
-
-- 使用 SLF4J + Logback
-- 关键业务节点记录日志
-- 日志级别：DEBUG、INFO、WARN、ERROR
-
-## 7. 参考资料
-
-- [YSS 后端开发规范](./yss-backend-scaffold-parent/SKILL.md)
-- [Domain 层开发指南](./yss-backend-scaffold-domain/SKILL.md) → `yss-domain`
-- [Application 层开发指南](./yss-backend-scaffold-application/SKILL.md) → `yss-application`
-- [Infrastructure 层开发指南](./yss-backend-scaffold-infrastructure/SKILL.md) → `yss-repository`
-- [Web Adapter 开发指南](./yss-backend-scaffold-web/SKILL.md) → `yss-web-controller`
+只有最后一级可以声明已满足下游 YSS skills 的首切片就绪条件。

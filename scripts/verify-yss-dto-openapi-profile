@@ -51,8 +51,10 @@ try {
   ensure(profile.canonical?.openapi?.response_wrapper_extension === "x-yss-response-wrapper", "响应包装扩展字段不正确");
   ensure(profile.canonical?.openapi?.literal_java_generic_schema === false, "不得把 Java 泛型文字作为 OpenAPI schema");
 
-  const compatibility = profile.compatibility_packages?.find((item) => item.java_package === "com.yss.cloud.dto.response");
-  ensure(compatibility?.use_for_new_contracts === false, "dto.response 必须标记为非新契约 canonical");
+  const unsupportedPackage = profile.unsupported_packages?.find((item) => item.java_package === "com.yss.cloud.dto.response");
+  ensure(unsupportedPackage?.status === "unsupported", "dto.response 必须标记为 unsupported");
+  ensure(unsupportedPackage?.use_for_new_contracts === false, "dto.response 不得用于新契约");
+  ensure(unsupportedPackage?.policy === "reject-in-new-contracts-no-auto-migration", "dto.response 必须拒绝新契约且不得自动迁移");
 
   const commonFields = profile.common_response?.fields ?? {};
   sameMembers(Object.keys(commonFields), ["success", "dataType", "code", "message", "tips"], "common response fields");

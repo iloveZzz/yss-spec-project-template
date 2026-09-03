@@ -1,0 +1,36 @@
+package {{base_package}};
+
+import com.tngtech.archunit.core.importer.ImportOption;
+import com.tngtech.archunit.junit.AnalyzeClasses;
+import com.tngtech.archunit.junit.ArchTest;
+import com.tngtech.archunit.lang.ArchRule;
+
+import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+
+/**
+ * Target DDD 的最小可执行边界。规则允许空包，首个业务切片加入后立即生效。
+ */
+@AnalyzeClasses(packages = "{{base_package}}", importOptions = ImportOption.DoNotIncludeTests.class)
+class ArchitectureRulesTest {
+
+    @ArchTest
+    static final ArchRule domain_is_technology_free = noClasses()
+            .that().resideInAPackage("..domain..")
+            .should().dependOnClassesThat().resideInAnyPackage(
+                    "..application..", "..infrastructure..", "..repository..", "..rest..")
+            .allowEmptyShould(true);
+
+    @ArchTest
+    static final ArchRule application_does_not_depend_on_adapters = noClasses()
+            .that().resideInAPackage("..application..")
+            .should().dependOnClassesThat().resideInAnyPackage(
+                    "..infrastructure..", "..repository..", "..rest..")
+            .allowEmptyShould(true);
+
+    @ArchTest
+    static final ArchRule web_does_not_reach_infrastructure = noClasses()
+            .that().resideInAPackage("..rest..")
+            .should().dependOnClassesThat().resideInAnyPackage(
+                    "..infrastructure..", "..repository..")
+            .allowEmptyShould(true);
+}

@@ -16,7 +16,7 @@ description: 用于 YSS MyBatis 与 MyBatis-Plus 持久层规范、配置和排�
 
 ## 工作方式
 
-1. 先确认项目使用的是通用 MyBatis 还是 MyBatis-Plus。
+1. 先读取批准的 `persistence_profile`。新 DDD scaffold 当前只支持 `mybatis-plus`；普通 MyBatis 必须有独立 fixture 和批准 Profile，禁止自动猜测或混用。
 2. 涉及真实类名、配置项、模块依赖或排障时，先读 `references/source-index.md`，再定位源码或文档。
 3. 先复用现有基类与配置，不手搓新的基础设施。
 4. 涉及分页时，先验证 `PageQuery` 传递链路和拦截器是否生效。
@@ -35,7 +35,7 @@ description: 用于 YSS MyBatis 与 MyBatis-Plus 持久层规范、配置和排�
 - MP 模式优先继承项目既有的 `BasePlusRepository`
 - 批量导入优先使用真正的 SQL 级批量方法，不要默认循环单条插入
 - 多数据源问题优先先看配置和扫描范围，再怀疑业务代码
-- 分页查询优先沿用 `PageQuery` 传递链路，不要在 Repository 内临时发明分页参数。
+- 分页查询经 Application Query Port 进入 Infrastructure；可以在适配层转换为组件所需 `PageQuery`，但不得把 `PageQuery` 带入 Domain Gateway，也不得在 Repository 内临时发明分页参数。
 - 生成或重构持久层时，先看当前模块已有 Repository/Mapper 命名、包路径、XML 位置。
 
 ## 检查清单

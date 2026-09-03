@@ -14,11 +14,11 @@ canonical:
     response_wrapper_extension: x-yss-response-wrapper
     literal_java_generic_schema: false
 
-compatibility_packages:
+unsupported_packages:
   - java_package: com.yss.cloud.dto.response
-    status: legacy-or-compatibility
+    status: unsupported
     use_for_new_contracts: false
-    policy: do-not-introduce-in-new-contracts
+    policy: reject-in-new-contracts-no-auto-migration
 
 common_response:
   schema_name: YssResultMeta

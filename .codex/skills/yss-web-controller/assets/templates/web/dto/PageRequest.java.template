@@ -1,0 +1,24 @@
+package ${base_package}.rest.dto.request;
+
+import com.yss.cloud.dto.QueryDTO;
+import lombok.Getter;
+import lombok.Setter;
+import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
+
+/**
+ * ${domain_desc}分页请求。仅暴露已冻结的 HTTP 查询字段。
+ */
+@Getter
+@Setter
+public class ${domain_class}PageRequest extends QueryDTO {
+    private int pageIndex = 1;
+    private int pageSize = 20;
+    private String orderBy;
+    private String orderDirection;
+    private String groupBy;
+
+${field_declarations}
+}

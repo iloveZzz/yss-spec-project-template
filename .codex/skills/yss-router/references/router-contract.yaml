@@ -107,17 +107,41 @@ context_plan:
   missing_context_action: [blocked, reroute]
 
 scaffold_contract_schema:
-  schema_version: 1
+  schema_version: 2
+  identity: service-engineering-baseline
   compiled_by: yss-router
   approved_by: yss-product-lifecycle
   status_by_owner:
     router: [draft, ready-for-lifecycle-review, blocked]
     lifecycle: [approved, stale, blocked]
-  required: [contract_id, contract_version, slice_id, status, router_draft_ref, lifecycle_approval_ref, persisted_ref, current_version, implementation_repository, backend_repository, scaffold_status, target_git_url_or_output_dir, allowed_write_paths, expected_evidence_files, verification_commands, approval, work_unit, overwrite_policy]
+  required: [contract_id, contract_version, scaffold_request_id, status, router_draft_ref, lifecycle_approval_ref, persisted_ref, current_version, implementation_repository, backend_repository, scaffold_status, project_name, target_output_dir, base_package, maven_coordinates, profiles, allowed_write_paths, expected_evidence_files, verification_commands, approval, work_unit, generation_policy]
   approval:
     required: [approval_ref, approver, persisted_ref, current_version]
-  overwrite_policy:
-    required: [force_allowed, overwrite_scope, rollback_ref]
+  generation_policy:
+    required: [mode, existing_target, old_project_migration, template_upgrade]
+    mode: initialize-only
+    existing_target: unsupported
+    old_project_migration: unsupported
+    template_upgrade: unsupported
+  maven_coordinates:
+    required: [group_id, project_version, parent, yss_components_version]
+    parent_required: [group_id, artifact_id, version]
+    yss_components_version: 2.0.0-SNAPSHOT
+  profiles:
+    required: [architecture, persistence, database, platform, validation_namespace, dto_placement, repository]
+    supported_initial:
+      architecture: target-domain-model
+      persistence: mybatis-plus
+      database: mysql
+      platform: spring-boot-2.7-jdk8
+      validation_namespace: javax
+      dto_placement: web
+      repository: yss-internal
+    unsupported: [old-architecture-profile, client-in-domain, mybatis, spring-boot-3, jakarta, separate-client-module]
+  unsupported_inputs:
+    schema_v1: reject-no-auto-upgrade
+    slice_id: forbidden-as-scaffold-identity
+    existing_project: reject-no-scaffold-migration
   lifecycle_boundary:
     router_emits: [draft, ready-for-lifecycle-review, blocked]
     lifecycle_approves: [approved]
@@ -126,12 +150,18 @@ scaffold_contract_schema:
   work_unit:
     required: [id, behavior, primary_skill, supporting_skills, tdd_mode, allowed_write_paths, expected_evidence, verification_commands, controlled_generation]
   generation_boundary:
-    allowed_for: [project_scaffold, pom, mechanical_config, wrapper]
+    allowed_for: [project_scaffold, pom, mechanical_config, wrapper, bootstrap_entrypoint, manifest_v2, architecture_rules, test_infrastructure]
     forbidden_when: [business_behavior, business_fields, business_state, permission, transaction, complex_query, error_mapping, business_example_crud]
+    initialization: initialize-only
+    regeneration: unsupported
+    template_upgrade: unsupported
+    old_project_migration: unsupported-separate-architecture-modernization-initiative
   verification:
     commands: ["./mvnw validate", "./mvnw test", "./mvnw package"]
     requires_execution: true
-    evidence: [command, exit_code, duration_ms, stdout_ref, stderr_ref, executed_at]
+    completion_levels: [generated, empty-scaffold-verified, first-slice-verified]
+    downstream_readiness_claim_requires: first-slice-verified
+    evidence: [preflight, command, exit_code, failure_category, duration_ms, stdout_ref, stderr_ref, executed_at]
 
 applicable_subcontract_nonempty:
   frontend:

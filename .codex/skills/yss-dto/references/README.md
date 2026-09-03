@@ -46,7 +46,7 @@
 
 ## HTTP/JSON 映射边界
 
-- 新契约使用 `com.yss.cloud.dto.result`；`com.yss.cloud.dto.response` 只作为 legacy / compatibility 线索。
+- 新 Target Profile 只使用 `com.yss.cloud.dto.result`；`com.yss.cloud.dto.response` 为 `unsupported`，不得由新契约或脚手架引入，也不自动迁移旧项目。
 - 公共响应 schema 使用 `YssResultMeta`，具体 endpoint schema 使用 `allOf` 组合，并声明 `x-yss-response-wrapper`。
 - `MultiResult.data` 和 `PageResult.data` 为数组；`SingleResult.data` 绑定具体 endpoint schema。不要把 `SingleResult<T>`、`MultiResult<T>` 或 `PageResult<T>` 的 Java 泛型文字直接写成 OpenAPI schema。
 - `PageQuery` 的客户端字段是 `pageIndex/pageSize/orderBy/orderDirection/groupBy`；`offset`、`needTotalCount`、`tempTotalCount` 不属于客户端输入。`totalPages` 只有目标 mapper / contract evidence 证明后才进入响应契约。
@@ -63,5 +63,5 @@
 ## 使用场景
 
 1. **API 响应**: 所有 Controller 方法应返回 `Result` 或其子类（如 `PageResult`, `SingleResult`）。
-2. **分页查询**: Controller 接收分页请求时，参数类应继承 `PageQuery`。MyBatis 分页插件会自动识别并处理。
+2. **分页查询**: `PageQuery` 用于 Application/Infrastructure 内部协作；公开 HTTP Page Request 默认只声明冻结 OpenAPI 允许的字段，再由 WebConvertor 转换，避免内部字段被继承到绑定面。MyBatis 拦截器所需形状必须由 Query Port 集成测试证明。
 3. **参数封装**: 使用 `CommandDTO` 封装增删改参数，使用 `QueryDTO` 封装查询参数，保持代码语义清晰。

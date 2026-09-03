@@ -24,6 +24,7 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 3. Use `ExceptionFactory` and `ResultErrorCode` conventions instead of ad-hoc runtime exceptions when creating YSS component errors.
 4. Check `YssGlobalExceptionProperties` when global exception output/logging behavior is configurable.
 5. Keep logging semantics aligned: business exceptions usually do not require error-stack logging; system/unknown exceptions usually do.
+6. In the `target-domain-model` profile, Domain owns stable error meaning and parameters but does not depend directly on YSS `BizException` or HTTP. Translate at the Web boundary after verifying the component handler precedence.
 
 ## Current Source Behavior
 
@@ -47,6 +48,7 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 - Stack traces are preserved for unknown/system failures.
 - Retry guidance matches exception type.
 - Known system failures use `ExceptionFactory.sysException(..., cause)`; Application code does not replace them with ad-hoc `RuntimeException`.
+- Endpoint contract tests cover business, known-system, and unknown/runtime failures; unknown public messages never expose `getLocalizedMessage()`.
 
 ## Do Not
 

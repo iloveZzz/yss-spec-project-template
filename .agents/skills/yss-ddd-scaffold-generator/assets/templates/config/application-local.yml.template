@@ -1,0 +1,8 @@
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  level:
+    {{base_package}}: DEBUG
+    org.springframework.jdbc: DEBUG

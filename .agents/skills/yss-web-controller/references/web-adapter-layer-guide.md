@@ -1,168 +1,84 @@
-本技能为开发 YSS 服务的**Web 适配器层**（REST API）提供指导和框架。
-Web 适配器负责通过 HTTP 公开业务功能、处理输入验证和格式化响应。
+# YSS Web Adapter Target Profile 指南
 
-## 1. 核心职责 (Core Responsibilities)
+Web Adapter 负责 HTTP 边界、Wire DTO、校验、YSS Result 包装、WebConvertor 和异常翻译。它只调用 Application，不直接访问 Domain Gateway、Repository 或 PO。
 
-- **Request Handling**: Map HTTP requests (GET, POST, PUT, DELETE) to Java methods.
-- **Input Validation**: Validate request bodies and parameters using JSR-303/380 annotations (`@Valid`, `@NotNull`, etc.).
-- **Response Formatting**: Wrap business results into standard `Result` objects (`SingleResult`, `PageResult`, `MultiResult`).
-- **Orchestration Delegation**: Delegate business logic to the **Application Service**. Simple queries can be delegated directly to the **Domain Gateway** (CQRS pattern).
+## 1. 包结构
 
-## 2. 代码结构 (Code Structure)
-
-Web Adapters are typically located in the `bootstrap` module or a dedicated `web` module.
-
-```
-com.yss.{module}.rest
-├── {Domain}Controller.java      # Main REST Controller
-└── {Domain}ReportController.java # Optional: For reporting/stats APIs
+```text
+{base_package}.rest
+├── dto
+│   ├── request
+│   └── response
+├── convertor
+├── exception
+└── *Controller.java
 ```
 
-## 3. 开发规范 (Development Guidelines)
+DTO 固定属于 Web module。独立 client module 与把 client DTO 放进 Domain module 均为 `unsupported`；如未来确需发布复用制品，必须另行设计并批准新的 Target Profile，不能由当前脚手架推断或回退。
 
-### 3.1 Controller 定义
+## 2. Wire 合同
 
-- **注解**: 使用 `@RestController`。
-- **路径**: `@RequestMapping("/api/{module}/{domain}")` (e.g., `/api/quality/rule`).
-- **依赖注入**: 使用 Lombok `@RequiredArgsConstructor` 进行构造器注入。
-- **命名**: `{Domain}Controller` (e.g., `QualityRuleController`).
+- Request/Response 字段必须来自冻结 OpenAPI 和批准 allowlist。
+- 数据库 metadata 只补充 Java 类型候选，不能自行扩大公开字段。
+- Web Page Request 不继承含内部协作字段的 `PageQuery`；只暴露批准的 `pageIndex/pageSize/orderBy/orderDirection/groupBy` 及业务查询字段。
+- `orderBy` / `groupBy` 必须在 Application/Infrastructure 映射到数据库列白名单。
+- `offset`、`needTotalCount`、`tempTotalCount` 禁止进入 HTTP 绑定面。
 
-### 3.2 依赖注入原则
-
-- **写操作/复杂逻辑**: 必须注入 **Application Service** (`XxxService`)。
-- **读操作 (Query)**: 允许直接注入 **Domain Gateway** (`XxxGateway`) 以减少样板代码 (CQRS)。
-
-### 3.3 参数与响应
-
-- **Command (写)**: 使用 `@PostMapping`/`@PutMapping` + `@RequestBody` + `{Domain}Cmd` 对象。
-- **Query (读)**: 使用 `@PostMapping` (for complex search) + `@RequestBody` + `{Domain}Page/Query` 对象。
-- **Wrapper**:
-  - `SingleResult<T>`: 单个对象或基本类型。
-  - `MultiResult<T>`: 列表。
-  - `PageResult<T>`: 分页数据。
-- **Validation**: 必须在参数前添加 `@Valid` 注解。
-
-### 3.4 异常处理
-
-- **不要**在 Controller 中捕获通用异常 (`Exception`)。
-- 让全局异常处理器 (`GlobalExceptionHandler`) 统一处理运行时异常。
-- 仅在需要特定 HTTP 状态码转换时捕获特定异常。
-
-## 4. 代码示例 (Code Examples)
-
-### 4.1 标准 CRUD Controller
+## 3. Controller
 
 ```java
-package com.yss.{module}.rest;
-
-import com.yss.cloud.dto.result.MultiResult;
-import com.yss.cloud.dto.result.PageResult;
-import com.yss.cloud.dto.result.SingleResult;
-import com.yss.{module}.client.dto.cmd.{Domain}AddCmd;
-import com.yss.{module}.client.dto.cmd.{Domain}UpdateCmd;
-import com.yss.{module}.client.dto.cmd.{Domain}StatusCmd;
-import com.yss.{module}.client.dto.query.{Domain}Page;
-import com.yss.{module}.client.vo.{Domain}VO;
-import com.yss.{module}.core.service.{Domain}Service;
-// Optional: Import Gateway for direct queries
-// import com.yss.{module}.domain.gateway.{Domain}Gateway;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-
-/**
- * {Domain} 管理控制器
- *
- * @author {User}
- */
 @RestController
-@RequestMapping("/api/{module}/{domain-path}")
+@RequestMapping("/api/quality/quality-rule")
 @RequiredArgsConstructor
-public class {Domain}Controller {
+@Tag(name = "质量规则管理")
+public class QualityRuleController {
+    private final QualityRuleService service;
+    private final QualityRuleWebConvertor webConvertor;
 
-    private final {Domain}Service {domainVar}Service;
-    // private final {Domain}Gateway {domainVar}Gateway; // For CQRS if needed
-
-    /**
-     * 分页查询 {Domain}
-     *
-     * @param query 查询条件
-     * @return 分页结果
-     */
-    @PostMapping("/page")
-    public PageResult<{Domain}VO> page(@Valid @RequestBody {Domain}Page query) {
-        return {domainVar}Service.page(query);
-    }
-
-    /**
-     * 根据ID查询详情
-     *
-     * @param id 主键ID
-     * @return 详情对象
-     */
-    @GetMapping("/detail/{id}")
-    public SingleResult<{Domain}VO> detail(@PathVariable String id) {
-        return SingleResult.of({domainVar}Service.detail(id));
-    }
-
-    /**
-     * 新增 {Domain}
-     *
-     * @param cmd 新增命令
-     * @return 新增结果 (通常是ID或完整对象)
-     */
     @PostMapping
-    public SingleResult<Long> add(@Valid @RequestBody {Domain}AddCmd cmd) {
-        return SingleResult.of({domainVar}Service.add(cmd));
-    }
-
-    /**
-     * 更新 {Domain}
-     *
-     * @param cmd 更新命令
-     * @return 更新结果
-     */
-    @PutMapping
-    public SingleResult<Boolean> update(@Valid @RequestBody {Domain}UpdateCmd cmd) {
-        {domainVar}Service.update(cmd);
-        return SingleResult.of(true);
-    }
-
-    /**
-     * 状态变更 (启用/禁用)
-     *
-     * @param cmd 状态命令
-     * @return 变更后的状态
-     */
-    @PostMapping("/enabled")
-    public SingleResult<Integer> switchStatus(@Valid @RequestBody {Domain}StatusCmd cmd) {
-        {domainVar}Service.switchStatus(cmd);
-        return SingleResult.of(cmd.getStatus());
+    public SingleResult<Long> create(@Valid @RequestBody QualityRuleCreateRequest request) {
+        return SingleResult.of(service.create(webConvertor.toCreateCommand(request)));
     }
 }
 ```
 
-### 4.2 复杂业务操作示例
+- 只使用 OpenAPI 3 `io.swagger.v3.oas.annotations`；Swagger 2 为 `unsupported`，不存在 legacy Profile。
+- Controller 不捕获通用 `Exception`，不写业务规则，不手工执行持久化分页。
+- Controller seam 只出现 Web Request/Response 和 Application Service。
+
+## 4. WebConvertor
 
 ```java
-    /**
-     * 执行业务操作 (e.g. 立即运行检查)
-     *
-     * @param cmd 执行命令
-     * @return 执行结果ID
-     */
-    @PostMapping("/execute")
-    public SingleResult<String> execute(@Valid @RequestBody {Domain}ExecuteCmd cmd) {
-        // 调用 Service 处理复杂业务逻辑
-        return SingleResult.of(
-                {domainVar}Service.execute(cmd)
-        );
-    }
+@Mapper(componentModel = "spring")
+public interface QualityRuleWebConvertor {
+    QualityRuleCreateCommand toCreateCommand(QualityRuleCreateRequest source);
+    QualityRuleResponse toResponse(QualityRuleResult source);
+}
 ```
 
-## 5. 阶段 7 合同
+- 使用构造器注入，不定义静态 `INSTANCE`。
+- Request → Application Command/Query；Application Result → Response。
+- 不导入 Domain Model 或 Repository PO。
+- 父 POM 必须配置 MapStruct processor、Lombok 与 `lombok-mapstruct-binding`，验证生成实现真实编译。
 
-- 只消费冻结 OpenAPI/no-impact record 和批准合同；Controller 不得穿透 Application/Domain 边界。
-- Controller/DTO/Convertor 骨架可受控生成；权限、校验、错误映射和接口行为使用 `behavior-tdd`。
-- 返回统一 `YSS Skill Execution Result`，包含代码、契约/API 测试、实际验证和新增 API/权限影响。
+## 5. Exception Translator
+
+- Domain/Application 错误经专门 Translator 映射为冻结 API 的 HTTP status、YSS error code 和消毒后的公开消息。
+- known business、known system、unknown/runtime 三类都必须有 MockMvc/HTTP contract test。
+- unknown/runtime 保留内部 cause/stack 用于日志，但公开响应禁止返回 `getLocalizedMessage()`。
+- 复用 YSS global handler 前必须实测 auto-configuration 和 precedence；未经验证不能仅凭依赖存在宣称生效。
+
+## 6. 生成门禁
+
+- `generate_controller.mjs` 必须消费 `status=approved` 的 Web generation contract。
+- 合同必须声明 `base_package`、`module_name`、`domain_segment`、`target-domain-model`、平台/validation Profile、`dto_placement=web`、OpenAPI Freeze 引用和每张表的 create/update/query/response allowlist；CLI 身份必须逐项匹配。
+- 生成器是 initialize-only，必须在写入前规划全部目标；任一文件已存在或传入 `--force` 时整体阻断，不允许“跳过已有文件后继续生成”的部分成功。
+- 权限、校验语义、异常行为和复杂查询仍使用 `behavior-tdd`，不能由 metadata 猜测。
+
+## 7. 验证
+
+- Controller 只依赖 Application。
+- WebConvertor 无 Domain/Infrastructure import，并由 Spring 注入。
+- Wire forbidden fields 无法绑定。
+- OpenAPI 3 注解、YSS Result wrapper、Validation namespace 与平台 Profile 一致。
+- 执行项目根 `./mvnw test/package`，并保留 HTTP/serialization/exception 证据。

@@ -22,30 +22,32 @@ description: Use when generating or refactoring YSS persistence models, BaseRepo
 ## 工作方式
 
 1. 先确认输入来源：领域模型、metadata、数据库表、DDL。
-2. 探测持久化 profile：新 DDD 默认 `PO <-> Domain Model`；legacy YSS 常见 `Entity + BaseRepository + GatewayImpl`。沿用现有工程命名，不混用两套模型。
+2. 确认持久化 Profile 为 `mybatis-plus` 与 `PO <-> Domain Model`；`Entity + BaseRepository + DTO/VO GatewayImpl` 等旧架构对新脚手架为 `unsupported`。
 3. 如果 metadata 不完整，先补齐 metadata、数据库表结构或 DDL 输入。
 4. 涉及 POJO 字段、getter/setter、constructor、builder 或日志时，必须加载并遵守 `lombok`。
-5. 涉及持久化模型与 Domain/VO/CMD 转换时，必须加载并遵守 `mapstruct`。
+5. 涉及持久化模型与 Domain/Application Result 转换时，必须加载并遵守 `mapstruct`；Infrastructure 不生成 Web VO/CMD 转换。
 6. 生成代码时严格保持 Domain 与 Infrastructure 分层边界。
 7. 默认先生成基础 CRUD 骨架，把复杂查询留给手工实现。
 
 ## 产物范围
 
 - `domain/{segment}/gateway/*Gateway.java`
-- `repository/entity/*PO.java`（legacy profile 沿用 `*Entity.java`）
+- `repository/entity/*PO.java`
 - `repository/*Repository.java`
 - `repository/convertor/*Convertor.java`
 - `repository/gateway/impl/*GatewayImpl.java`
+- `query/adapter/*QueryAdapter.java`（实现 Application Query Port）
 
 ## 约束
 
 - Domain 不依赖 Infrastructure。
 - Gateway 定义在 Domain，实现放在 Infrastructure。
+- Domain Gateway 只交换 Domain Model、领域值和标识；分页、列表和读模型走 Application Query Port，禁止返回 Web VO 或把 `PageQuery` 带入 Domain。
 - PO / Domain Model 等 POJO 样板代码优先使用 Lombok；不要成片手写 getter/setter、constructor、builder 或 logger。
-- Convertor 必须优先使用 MapStruct；禁止 `BeanUtils.copyProperties`、反射式通用拷贝和重复手写字段赋值，除非实现合同记录受控例外、测试和 review 证据。
+- Convertor 必须优先使用 `@Mapper(componentModel = "spring")` 和构造器注入；禁止静态 `INSTANCE`、`BeanUtils.copyProperties`、反射式通用拷贝和重复手写字段赋值，除非实现合同记录受控例外、测试和 review 证据。
 - MapStruct 与 Lombok 同时使用时，必须确认注解处理器顺序和 `lombok-mapstruct-binding` 配置；构建命令使用项目根目录 `./mvnw ...`。
 - 逻辑删除、审计字段、主键策略要显式处理，不要隐式略过。
-- 事务放在批准的 Application 用例边界；legacy GatewayImpl 已有事务时先记录并测试迁移影响，不重复嵌套制造假边界。
+- 事务放在批准的 Application 用例边界；检测到旧 GatewayImpl 事务布局时返回 `unsupported`，不在 scaffold 链路内迁移。
 
 ## 质量门禁
 

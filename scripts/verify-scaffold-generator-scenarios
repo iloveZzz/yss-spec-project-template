@@ -29,6 +29,14 @@ VERIFIER = (
     / "scripts"
     / "run_scaffold_verification.mjs"
 )
+WORKFLOW = (
+    REPOSITORY_ROOT
+    / ".agents"
+    / "skills"
+    / "yss-ddd-scaffold-generator"
+    / "scripts"
+    / "generate_and_verify_scaffold.mjs"
+)
 
 
 def run_generator(*arguments: str) -> subprocess.CompletedProcess[str]:
@@ -54,15 +62,12 @@ def write_contract(
     approval_ref: str,
     router_draft_ref: str,
     persisted_ref: str,
-    force_allowed: bool = False,
 ) -> None:
-    overwrite_scope = f"{project_name}/**" if force_allowed else None
-    rollback_ref = "git:checkpoint-001" if force_allowed else None
     contract = {
-        "schema_version": 1,
+        "schema_version": 2,
         "contract_id": contract_id,
         "contract_version": 1,
-        "slice_id": f"{project_name}-scaffold",
+        "scaffold_request_id": f"{project_name}-request",
         "status": "approved",
         "router_draft_ref": router_draft_ref,
         "lifecycle_approval_ref": approval_ref,
@@ -71,8 +76,29 @@ def write_contract(
         "implementation_repository": str(output_root),
         "backend_repository": str(output_root),
         "scaffold_status": "required",
-        "target_git_url_or_output_dir": str(output_root),
-        "allowed_write_paths": [f"{project_name}/**"],
+        "project_name": project_name,
+        "target_output_dir": str(output_root),
+        "base_package": f"com.yss.{project_name.removesuffix('-service')}",
+        "maven_coordinates": {
+            "group_id": "com.yss.datamiddle",
+            "project_version": "1.0.0-SNAPSHOT",
+            "parent": {
+                "group_id": "com.yss.datamiddle",
+                "artifact_id": "yss-datamiddle-parent",
+                "version": "2.0.0-SNAPSHOT",
+            },
+            "yss_components_version": "2.0.0-SNAPSHOT",
+        },
+        "profiles": {
+            "architecture": "target-domain-model",
+            "persistence": "mybatis-plus",
+            "database": "mysql",
+            "platform": "spring-boot-2.7-jdk8",
+            "validation_namespace": "javax",
+            "dto_placement": "web",
+            "repository": "yss-internal",
+        },
+        "allowed_write_paths": ["."],
         "expected_evidence_files": [
             f"{project_name}/.yss/scaffold-generation.json",
             "scaffold-verification.json",
@@ -94,7 +120,7 @@ def write_contract(
             "primary_skill": "yss-ddd-scaffold-generator",
             "supporting_skills": ["yss-backend-scaffold-parent", "alibaba-java-code-style"],
             "tdd_mode": "controlled-generation",
-            "allowed_write_paths": [f"{project_name}/**"],
+            "allowed_write_paths": ["."],
             "expected_evidence": [".yss/scaffold-generation.json", "scaffold-verification.json"],
             "verification_commands": [
                 "./mvnw validate",
@@ -103,10 +129,11 @@ def write_contract(
             ],
             "controlled_generation": True,
         },
-        "overwrite_policy": {
-            "force_allowed": force_allowed,
-            "overwrite_scope": overwrite_scope,
-            "rollback_ref": rollback_ref,
+        "generation_policy": {
+            "mode": "initialize-only",
+            "existing_target": "unsupported",
+            "old_project_migration": "unsupported",
+            "template_upgrade": "unsupported",
         },
     }
     path.write_text(json.dumps(contract, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -116,6 +143,11 @@ def assert_pure_scaffold(project_root: Path, contract_id: str) -> None:
     require(project_root.is_dir(), "默认生成必须创建项目目录")
     require((project_root / "pom.xml").is_file(), "默认生成必须包含父级 pom.xml")
     require((project_root / "mvnw").is_file(), "默认生成必须包含 Maven wrapper")
+    application_class = "".join(part.capitalize() for part in project_root.name.split("-")) + "Application.java"
+    require(
+        any(project_root.glob(f"*-bootstrap/src/main/java/**/{application_class}")),
+        "默认生成必须包含可被 Spring Boot 插件发现的机械启动入口",
+    )
     manifest_path = project_root / ".yss" / "scaffold-generation.json"
     require(manifest_path.is_file(), "生成项目必须携带脚手架合同元数据清单")
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
@@ -125,6 +157,13 @@ def assert_pure_scaffold(project_root: Path, contract_id: str) -> None:
     require(manifest["router_draft_ref"], "生成清单必须记录 Router draft 引用")
     require(manifest["persisted_ref"], "生成清单必须记录合同持久化引用")
     require(manifest["generation_mode"] == "controlled-generation", "生成清单必须记录受控生成模式")
+    require(manifest["schema_version"] == 2, "生成清单必须使用 schema v2")
+    require(manifest["scaffold_request_id"], "生成清单必须记录服务级 scaffold_request_id")
+    require("slice_id" not in manifest, "脚手架清单不得伪造 slice_id")
+    require(manifest["maven_coordinates_source"] == "approved-contract", "Maven 坐标必须来自批准合同")
+    require(manifest["profiles"]["architecture"] == "target-domain-model", "生成清单必须记录目标架构 Profile")
+    require(manifest["completion_level"] == "generated", "仅生成文件时完成等级必须是 generated")
+    require(manifest["base_package"].startswith("com.yss."), "生成清单必须把 base_package 与 Maven 坐标分开记录")
     require(not (project_root / "API.md").exists(), "默认生成不得写入业务 API 文档")
     require(not (project_root / "db" / "schema.sql").exists(), "默认生成不得写入业务 schema")
     require(not (project_root / "db" / "data.sql").exists(), "默认生成不得写入业务初始化数据")
@@ -144,6 +183,7 @@ def assert_pure_scaffold(project_root: Path, contract_id: str) -> None:
 
 
 def main() -> int:
+    require(WORKFLOW.is_file(), "脚手架必须提供一键生成并验证入口")
     template_root = REPOSITORY_ROOT / ".agents/skills/yss-ddd-scaffold-generator/assets/templates"
     user_templates = list(template_root.rglob("User*.java.template"))
     require(not user_templates, "脚手架资产不得保留 User 业务 Java 模板")
@@ -165,6 +205,44 @@ def main() -> int:
             missing_contract_result.returncode != 0,
             "缺少批准脚手架合同元数据时不得生成项目",
         )
+
+        schema_v1_root = temp_root / "schema-v1-output"
+        schema_v1_contract = temp_root / "schema-v1-contract.json"
+        write_contract(
+            schema_v1_contract,
+            schema_v1_root,
+            "schemav1-service",
+            "backend-scaffold-schema-v1",
+            "lifecycle/approval-schema-v1",
+            "router/draft-schema-v1",
+            "lifecycle/contracts/backend-scaffold-schema-v1.yaml",
+        )
+        schema_v1_payload = json.loads(schema_v1_contract.read_text(encoding="utf-8"))
+        schema_v1_payload["schema_version"] = 1
+        schema_v1_contract.write_text(json.dumps(schema_v1_payload), encoding="utf-8")
+        schema_v1_result = run_generator(
+            "--project-name", "schemav1-service",
+            "--base-package", "com.yss.schemav1",
+            "--output-dir", str(schema_v1_root),
+            "--contract-id", "backend-scaffold-schema-v1",
+            "--contract-version", "1",
+            "--approval-ref", "lifecycle/approval-schema-v1",
+            "--router-draft-ref", "router/draft-schema-v1",
+            "--persisted-ref", "lifecycle/contracts/backend-scaffold-schema-v1.yaml",
+            "--contract-file", str(schema_v1_contract),
+            "--group-id", "com.yss.datamiddle",
+            "--project-version", "1.0.0-SNAPSHOT",
+            "--parent-group-id", "com.yss.datamiddle",
+            "--parent-artifact-id", "yss-datamiddle-parent",
+            "--parent-version", "2.0.0-SNAPSHOT",
+            "--yss-components-version", "2.0.0-SNAPSHOT",
+        )
+        require(
+            schema_v1_result.returncode != 0
+            and "unsupported: scaffold contract schema_version=1" in (schema_v1_result.stdout + schema_v1_result.stderr),
+            "schema v1 脚手架合同必须直接返回 unsupported，且不得自动升级",
+        )
+        require(not (schema_v1_root / "schemav1-service").exists(), "schema v1 拒绝后不得留下生成目录")
 
         forbidden_harness_output = run_generator(
             "--project-name",
@@ -248,6 +326,12 @@ def main() -> int:
             "lifecycle/contracts/backend-scaffold-000.yaml",
             "--contract-file",
             str(default_contract),
+            "--group-id", "com.yss.datamiddle",
+            "--project-version", "1.0.0-SNAPSHOT",
+            "--parent-group-id", "com.yss.datamiddle",
+            "--parent-artifact-id", "yss-datamiddle-parent",
+            "--parent-version", "2.0.0-SNAPSHOT",
+            "--yss-components-version", "2.0.0-SNAPSHOT",
         )
         require(
             default_result.returncode == 0,
@@ -262,10 +346,11 @@ def main() -> int:
         verification_manifest.write_text(
             json.dumps(
                 {
-                    "schema_version": 1,
+                    "schema_version": 2,
                     "contract_id": "backend-scaffold-verification",
                     "contract_version": 1,
-                    "slice_id": "verification-service-scaffold",
+                    "scaffold_request_id": "verification-service-request",
+                    "contract_digest": "a" * 64,
                     "approval_ref": "lifecycle/verification",
                     "lifecycle_approval_ref": "lifecycle/verification",
                     "router_draft_ref": "router/verification",
@@ -281,6 +366,23 @@ def main() -> int:
                         "./mvnw package",
                     ],
                     "generation_mode": "controlled-generation",
+                    "completion_level": "generated",
+                    "profiles": {
+                        "architecture": "target-domain-model",
+                        "repository": "yss-internal",
+                    },
+                    "ownership": {"generated_files": []},
+                    "readiness": {
+                        "downstream_skills": {},
+                        "architecture_ruleset": "b" * 64,
+                    },
+                    "generation_policy": {
+                        "mode": "initialize-only",
+                        "existing_target": "unsupported",
+                        "old_project_migration": "unsupported",
+                        "template_upgrade": "unsupported",
+                    },
+                    "maven_coordinates_source": "approved-contract",
                 }
             ),
             encoding="utf-8",
@@ -293,7 +395,21 @@ def main() -> int:
             encoding="utf-8",
         )
         os.chmod(wrapper, 0o755)
+        maven_dir = verification_project / ".mvn"
+        maven_dir.mkdir()
+        (maven_dir / "maven.config").write_text(
+            "-s .mvn/settings.xml\n-P yss-internal\n", encoding="utf-8"
+        )
+        (maven_dir / "settings.xml").write_text("<settings/>\n", encoding="utf-8")
         evidence_dir = verification_project / "evidence"
+        verification_env = os.environ.copy()
+        verification_env.update(
+            {
+                "YSS_MAVEN_REPOSITORY_URL": "https://repo.example.invalid/repository/maven-public/",
+                "MAVEN_REPO_USERNAME": "test-user",
+                "MAVEN_REPO_PASSWORD": "test-password",
+            }
+        )
         verification_result = subprocess.run(
             [
                 "node",
@@ -307,6 +423,7 @@ def main() -> int:
             text=True,
             capture_output=True,
             check=False,
+            env=verification_env,
         )
         require(
             verification_result.returncode == 0,
@@ -338,6 +455,8 @@ def main() -> int:
             all(item["duration_ms"] >= 0 and item["started_at"] and item["executed_at"] for item in report["commands"]),
             "验证报告必须记录耗时和执行时间",
         )
+        require(report["failure_category"] is None, "全部成功时 failure_category 必须为空")
+        require(report["preflight"]["wrapper_executable"] is True, "验证报告必须包含 Wrapper 预检")
         require(
             (verification_project / "commands.log").read_text(encoding="utf-8").splitlines()
             == ["validate", "test", "package"],
@@ -382,17 +501,7 @@ def main() -> int:
         require(sentinel.read_text(encoding="utf-8") == "preserve me", "未批准覆盖不得改变原目录")
 
         force_contract = temp_root / "force-contract.json"
-        write_contract(
-            force_contract,
-            force_root,
-            "force-service",
-            "backend-scaffold-001",
-            "lifecycle/approval-001",
-            "router/draft-001",
-            "lifecycle/contracts/backend-scaffold-001.yaml",
-            force_allowed=True,
-        )
-
+        write_contract(force_contract, force_root, "force-service", "backend-scaffold-001", "lifecycle/approval-001", "router/draft-001", "lifecycle/contracts/backend-scaffold-001.yaml")
         approved_force_result = run_generator(
             "--project-name",
             "force-service",
@@ -413,22 +522,19 @@ def main() -> int:
             "lifecycle/contracts/backend-scaffold-001.yaml",
             "--contract-file",
             str(force_contract),
-            "--overwrite-scope",
-            "force-service/**",
-            "--rollback-ref",
-            "git:checkpoint-001",
+            "--group-id", "com.yss.datamiddle",
+            "--project-version", "1.0.0-SNAPSHOT",
+            "--parent-group-id", "com.yss.datamiddle",
+            "--parent-artifact-id", "yss-datamiddle-parent",
+            "--parent-version", "2.0.0-SNAPSHOT",
+            "--yss-components-version", "2.0.0-SNAPSHOT",
         )
         require(
-            approved_force_result.returncode == 0,
-            f"具备合同元数据的覆盖生成失败:\n{approved_force_result.stdout}\n{approved_force_result.stderr}",
+            approved_force_result.returncode != 0,
+            "即使合同已批准，initialize-only 生成器也必须拒绝 --force",
         )
-        assert_pure_scaffold(force_root / "force-service", "backend-scaffold-001")
-        backup_dirs = list(force_root.glob(".force-service.backup-*"))
-        require(backup_dirs, "批准覆盖必须保留可回滚备份")
-        require(
-            (backup_dirs[0] / "user-owned.txt").read_text(encoding="utf-8") == "preserve me",
-            "批准覆盖的备份必须保留原目录内容",
-        )
+        require(sentinel.read_text(encoding="utf-8") == "preserve me", "批准合同也不得覆盖已有目录")
+        require(not list(force_root.glob(".force-service.backup-*")), "initialize-only 不创建覆盖备份")
 
         gitlink_root = temp_root / "gitlink-superproject"
         gitlink_backend = gitlink_root / "apps" / "backend"
@@ -449,7 +555,6 @@ def main() -> int:
             "lifecycle/approval-gitlink",
             "router/draft-gitlink",
             "lifecycle/contracts/backend-scaffold-gitlink.yaml",
-            force_allowed=True,
         )
         gitlink_result = run_generator(
             "--project-name",
@@ -458,7 +563,6 @@ def main() -> int:
             "com.yss.gitlink",
             "--output-dir",
             str(gitlink_backend),
-            "--force",
             "--contract-id",
             "backend-scaffold-gitlink",
             "--contract-version",
@@ -471,10 +575,12 @@ def main() -> int:
             "lifecycle/contracts/backend-scaffold-gitlink.yaml",
             "--contract-file",
             str(gitlink_contract),
-            "--overwrite-scope",
-            "gitlink-service/**",
-            "--rollback-ref",
-            "git:checkpoint-gitlink",
+            "--group-id", "com.yss.datamiddle",
+            "--project-version", "1.0.0-SNAPSHOT",
+            "--parent-group-id", "com.yss.datamiddle",
+            "--parent-artifact-id", "yss-datamiddle-parent",
+            "--parent-version", "2.0.0-SNAPSHOT",
+            "--yss-components-version", "2.0.0-SNAPSHOT",
         )
         require(
             gitlink_result.returncode != 0

@@ -1,132 +1,87 @@
-本 Skill 约束 Application 层的用例边界。它是目标 DDD 架构规则，不等同于现有 YSS 组件仓库中所有 `core/service` 的历史实现；先探测工程布局并记录兼容 profile。
+# YSS Application Target Profile 指南
 
-## 1. 核心职责 (Core Responsibilities)
+Application 是 Web 与 Domain 之间的稳定用例边界。Target Profile 使用 `application` 包；历史 `core/service` 对新脚手架为 `unsupported`。
 
-- **业务用例编排 (Use Case Orchestration)**: 协调 Domain Service 和 Gateway 完成复杂的业务流程。
-- **服务接口实现 (Service Implementation)**: 实现 Application Service 接口，对外提供业务能力。
-- **DTO 转换 (DTO Conversion)**: 只在合同指定时负责 Domain/Application model 与 client/web DTO/VO 的转换；不得把 Repository PO 带入 Application。
-- **事务控制 (Transaction Management)**: 在应用层进行 `@Transactional` 事务管理。
+## 1. 职责
 
-## 2. 代码结构 (Code Structure)
+- 定义 Application Command、Query、Result 和 Use Case Service。
+- 编排 Domain Model、Domain Service 和 Domain Gateway。
+- 定义写用例事务边界、幂等和事件发布时点。
+- 为分页、列表和投影查询定义 Application Query Port。
+- 传播或转换领域错误语义，但不决定 HTTP status 和公开消息。
 
+Application 不接收 HTTP Request DTO，不返回 Web VO，不依赖 Infrastructure/Web，也不处理 Repository PO。
+
+## 2. 包结构
+
+```text
+{base_package}.application
+├── command
+├── query
+├── result
+├── port
+└── service
 ```
-com.yss.{module}.core
-├── service                 # 应用服务接口
-│   ├── impl                # 应用服务实现
-│   └── convertor           # MapStruct 转换器 (App 层专用)
-├── component               # 业务组件 (Exporter, Handler)
-└── job                     # 任务执行逻辑 (Runner, Func)
-```
 
-## 3. 开发规范 (Development Guidelines)
-
-### 3.1 应用服务实现 (AppServiceImpl)
-
-- **位置**: 新 DDD 工程优先 `application/.../service/impl`；legacy profile 才使用 `core/service/impl`。
-- **注解**: `@Service`，通常配合 `@RequiredArgsConstructor` 进行构造器注入。
-- **事务**: 只在已确认的用例边界添加 `@Transactional(rollbackFor = Exception.class)`；读用例明确 `readOnly` 与总数策略。
-- **逻辑**: 主要负责调用 Domain Service 或 Gateway，**不应包含核心领域逻辑**（应下沉到 Domain 层）。
-
-### 3.2 对象转换 (Convertor)
-
-- **工具**: MapStruct。
-- **位置**: `com.yss.{module}.core.service.convertor`。
-- **职责**: 将 `Domain Object` (VO/Entity) 转换为 `Application VO` 或 `Client VO`。
-- **规范**: 定义 `INSTANCE` 常量，使用 `Mappers.getMapper(...)` 获取实例。
-
-### 3.3 异常处理
-
-- **业务异常**: 使用 `ExceptionFactory.bizException(...)` 或项目已批准的 `BizException` 错误码。
-- **已知系统异常**: 使用 `ExceptionFactory.sysException(...)` 并保留 cause；未知异常交由全局处理器兜底，不在 Application 吞并或改写。
-
-## 4. Legacy 参考形状（不可复制）
-
-以下 `QualityTemplate*` 代码只是说明 legacy `core/service` 形状的占位示例，不是当前参考源码中已验证存在的通用模块，也不定义新模块的包名、接口或返回模型。新 DDD profile 必须由批准合同生成中性 Application 接口，不能复制这些名称或 DTO/VO Gateway 泄漏。
-
-### 4.1 Application Service Implementation
+## 3. 写用例
 
 ```java
-package com.yss.quality.core.service.impl;
-
-import com.yss.cloud.dto.result.PageResult;
-import com.yss.quality.client.dto.cmd.QualityTemplateAddCmd;
-import com.yss.quality.client.dto.query.QualityTemplatePage;
-import com.yss.quality.client.vo.QualityTemplateVO;
-import com.yss.quality.domain.template.gateway.QualityTemplateGateway;
-import com.yss.quality.domain.template.service.QualityTemplateService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-/**
- * 数据质量规则模板应用服务实现类
- */
 @Service
 @RequiredArgsConstructor
-@Slf4j
-public class QualityTemplateServiceImpl implements QualityTemplateService {
+public class QualityTemplateService {
+    private final QualityTemplateGateway gateway;
 
-    private final QualityTemplateGateway qualityTemplateGateway;
-
-    @Override
-    public PageResult<QualityTemplateVO> pageQualityTemplate(QualityTemplatePage query) {
-        // 直接调用 Domain Gateway
-        return qualityTemplateGateway.pageQualityTemplate(query);
-    }
-
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public Long addQualityTemplate(QualityTemplateAddCmd cmd) {
-        // 可以在此进行简单的应用层校验或编排
-        log.info("Adding quality template");
-        return qualityTemplateGateway.addQualityTemplate(cmd);
+    public QualityTemplateId create(QualityTemplateCreateCommand command) {
+        QualityTemplate aggregate = QualityTemplate.create(command.name());
+        gateway.save(aggregate);
+        return aggregate.id();
     }
 }
 ```
 
-### 4.2 Convertor (MapStruct)
+- WebConvertor 在 Controller 调用前把 Request 转成 Application Command。
+- 核心规则由 Aggregate 公开方法执行，不复制到 AppService。
+- 一次用例一个明确事务 seam；读操作按合同决定 `readOnly` 和总数策略。
+
+## 4. 查询用例
 
 ```java
-package com.yss.quality.core.service.convertor;
-
-import com.yss.quality.client.vo.QualityTechTemplateVO;
-import com.yss.quality.client.vo.QualityTemplateVO;
-import com.yss.quality.params.base.PluginParams;
-import org.mapstruct.Mapper;
-import org.mapstruct.NullValueCheckStrategy;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.factory.Mappers;
-
-import java.util.List;
-
-@Mapper(
-    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
-    nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
-)
-public interface QualityTechTemplateConvertor {
-    QualityTechTemplateConvertor INSTANCE = Mappers.getMapper(QualityTechTemplateConvertor.class);
-
-    // 将 Domain VO 和 PluginParams 组合转换为 TechTemplateVO
-    QualityTechTemplateVO useQualityTechTemplateVO(QualityTemplateVO qualityTemplateVO, List<PluginParams> pluginParams);
+public interface QualityTemplateQueryPort {
+    PageResult<QualityTemplateResult> page(QualityTemplatePageQuery query);
 }
 ```
 
-## 5. 注意事项 (Notes)
+- Query Port 属于 Application，Infrastructure 实现。
+- `QualityTemplatePageQuery` 使用 Application 语义，不接受未经白名单转换的数据库列名。
+- Application Result 不等于 Web VO；WebConvertor 负责最后一跳。
+- `PageResult` 可以作为 Application/Infrastructure 的 YSS 分页容器，但不得进入 Domain Gateway。
 
-1.  **职责分离**: Application 层关注“做什么”（流程编排），Domain 层关注“怎么做”（业务规则）。
-2.  **依赖方向**: Application 层依赖 Domain 层，不应依赖 Adapter 层（Web/Job）。
-3.  **事务边界**: 一个用例一个边界；跨聚合写入、幂等键、事件发布时点必须写入合同并用 `behavior-tdd` 验证。
-4.  **上下文能力**: 当前用户、审计、普通技术日志、校验和异常是条件依赖，按 `yss-router` 影响闭包加载，不在 AppService 内手工解析 Header/JWT。
+## 5. MapStruct
 
-## 6. 架构探测门禁
+只有 Application 内确有不同模型转换时才创建 Convertor，并统一：
 
-先确认工程是新 DDD `application/domain/infrastructure/adapter`，还是 legacy `core/client/repository`。没有 `backend_repository`、Maven Wrapper 和已批准合同版本时输出 `blocked`；不得用示例包名推断真实接口。
+```java
+@Mapper(componentModel = "spring")
+public interface QualityTemplateApplicationConvertor {
+}
+```
 
-## 7. 阶段 7 合同
+禁止静态 `INSTANCE`；使用构造器注入。Web DTO 转换仍留在 Web，PO 转换留在 Infrastructure。
 
-- 明确当前 Use Case、Application 边界、事务边界、跨聚合协调和异常映射，只消费批准后的合同版本。
-- AppService 骨架可受控生成；用例编排、事务、幂等、权限和失败行为必须使用 `behavior-tdd`。
-- 返回统一 `YSS Skill Execution Result`，证据至少包含 Application 代码、测试、MapStruct/Lombok 条件和实际 `./mvnw ...` 结果。
+## 6. Error seam
+
+- Domain error 保留稳定错误标识和参数。
+- Application 不吞掉 unknown exception，不把 `getLocalizedMessage()` 变成公开响应。
+- Web Exception Translator 依据冻结 API 合同映射 YSS error code、HTTP status 和消毒消息。
+
+## 7. 验证
+
+- 写用例通过 Application Service seam 测试事务、幂等和领域行为。
+- 查询用例通过 Query Port seam 测试分页和白名单。
+- ArchUnit 证明 Application 不依赖 Infrastructure/Web。
+- 实际执行项目根 `./mvnw test/package`。
+
+## 8. 旧架构边界
+
+检测到 AppService 接收 client Cmd、返回 client VO、调用返回 VO 的 Domain Gateway 或位于 `core/service` 时，返回 `unsupported`，不得由新 scaffold 或本指南自动改写。旧项目继续按原工程维护；现代化改造必须单独立项、先评估再逐切片迁移。

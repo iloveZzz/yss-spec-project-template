@@ -1,0 +1,68 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  本次修改改变脚手架合同/Manifest schema、默认 DDD 边界、覆盖语义、构建完成语义、
+  下游技能接口和跨平台投影，命中 generation-semantics、cross-repo-contract、
+  core-validator 与 aggregate-behavior-change。
+triggers:
+  - generation-semantics
+  - cross-repo-contract
+  - core-validator
+  - aggregate-behavior-change
+changed_assets:
+  - .agents/skills/yss-ddd-scaffold-generator/
+  - .agents/skills/yss-domain/
+  - .agents/skills/yss-application/
+  - .agents/skills/yss-repository/
+  - .agents/skills/yss-mybatis/
+  - .agents/skills/yss-dto/
+  - .agents/skills/yss-exception/
+  - .agents/skills/yss-web-controller/
+  - .agents/skills/yss-router/references/router-contract.yaml
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - docs/templates/implementation-routing-template.md
+  - scripts/verify-scaffold-generator-scenarios
+  - scripts/verify-yss-dto-openapi-profile
+  - skills-lock.json
+  - submodules/yss-harness-dev-agent
+  - submodules/create-yss-harness-dev/template
+  - submodules/create-yss-harness-dev/template.snapshot.json
+  - .template-source/evidence/maintenance/yss-ddd-scaffold-compile-red-green-2026-09-03.md
+  - .template-source/evidence/maintenance/yss-ddd-scaffold-target-profile-decision-2026-09-03.md
+  - .template-source/evidence/maintenance/yss-ddd-scaffold-target-profile-red-green-2026-09-03.md
+  - .template-source/evidence/maintenance/yss-ddd-scaffold-target-profile-cross-repo-verification-2026-09-03.md
+verification_evidence:
+  - kind: red
+    command: .template-source/evidence/maintenance/yss-ddd-scaffold-target-profile-red-green-2026-09-03.md
+    result: pass
+  - kind: green
+    command: node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs .agents/skills/yss-ddd-scaffold-generator/scripts/first-slice-compatibility.test.mjs .agents/skills/yss-web-controller/scripts/generate_controller.test.mjs
+    result: pass
+  - kind: refactor
+    command: .template-source/evidence/maintenance/yss-ddd-scaffold-target-profile-red-green-2026-09-03.md
+    result: pass
+  - kind: pressure-scenario
+    command: scripts/verify-scaffold-generator-scenarios && scripts/verify-yss-router-scenarios && scripts/verify-lifecycle-scenarios
+    result: pass
+  - kind: exception-starter-local-artifact-tdd
+    command: .template-source/evidence/maintenance/yss-ddd-scaffold-target-profile-red-green-2026-09-03.md
+    result: pass
+  - kind: cross-repo-contract
+    command: .template-source/evidence/maintenance/yss-ddd-scaffold-target-profile-cross-repo-verification-2026-09-03.md
+    result: pass
+  - kind: self-check
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: >-
+  正式发布、合并和 release-ready 仍需受控 Maven 环境中的 empty scaffold 与 golden first slice
+  根 Wrapper 三阶段验证、exception starter fresh 复验、候选冻结、独立审查及完整
+  scripts/verify-template；当前不得声明 empty-scaffold-verified、first-slice-verified 或 release-ready。
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

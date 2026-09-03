@@ -1,8 +1,8 @@
-package ${base_package}.client.dto.cmd;
+package ${base_package}.rest.dto.request;
 
 import com.yss.cloud.dto.CommandDTO;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import ${validation_namespace}.validation.constraints.NotBlank;
 import ${validation_namespace}.validation.constraints.NotNull;
 import java.util.Date;
@@ -10,14 +10,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 
-/**
- * ${domain_desc} 新增命令
- *
- * @author ${author}
- */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class ${domain_class}AddCmd extends CommandDTO {
+/** ${domain_desc}更新请求。字段来自批准的 OpenAPI allowlist。 */
+@Getter
+@Setter
+public class ${domain_class}UpdateRequest extends CommandDTO {
 
 ${field_declarations}
 }

@@ -1,0 +1,24 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  后端脚手架当前能够通过结构测试，却未在回归 seam 中真实编译生成工程；本次只读分析用于确认
+  generation-semantics 与 historical-important-escape 的影响面，后续实现另行形成最终 checkpoint。
+triggers:
+  - generation-semantics
+  - historical-important-escape
+changed_assets:
+  - .template-source/evidence/maintenance/yss-ddd-scaffold-compile-analysis-checkpoint-2026-09-03.yaml
+verification_evidence:
+  - kind: self-check
+    command: node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

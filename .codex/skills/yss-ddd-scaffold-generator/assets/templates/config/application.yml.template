@@ -21,7 +21,6 @@ spring:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
       id-type: assign_id
@@ -31,7 +30,7 @@ mybatis-plus:
 
 logging:
   level:
-    {{base_package}}: DEBUG
-    org.springframework.jdbc: DEBUG
+    root: INFO
+    {{base_package}}: INFO
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

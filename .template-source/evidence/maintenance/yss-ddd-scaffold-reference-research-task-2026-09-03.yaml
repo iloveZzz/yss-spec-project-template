@@ -1,0 +1,86 @@
+schema_version: 1
+task_id: yss-ddd-scaffold-reference-research-2026-09-03
+work_unit_id: work-unit.entry-triage
+actor_id: codex.subagent.scaffold-research-explorer
+role_id: role.backend-engineer
+runtime_id: runtime.skill-projection
+execution_state: Explorer
+workflow_status: active
+skill_source:
+  registry_ref: docs/agents/digital-human-roles.yaml
+  defaults_ref: taskPackageDefaults(role.backend-engineer)
+  core_skills:
+    - yss-router
+    - yss-tactical-design
+    - yss-domain
+    - yss-application
+    - yss-repository
+    - yss-mybatis
+    - yss-web-controller
+    - yss-dto
+    - mapstruct
+    - lombok
+    - alibaba-java-code-style
+    - yss-exception
+    - yss-validation
+    - tdd
+    - yss-ddd-scaffold-generator
+  forbidden_skills:
+    - yss-ui
+    - yss-page-module-development
+    - yss-formily
+    - yss-frontend-scaffold-generator
+    - yss-antd-design
+    - page-list-module
+    - page-form-module
+contract:
+  kind: template-maintenance
+  contract_id: maintenance.yss-ddd-scaffold-compile-analysis
+  contract_version: 1
+  status: issued
+  contract_ref: .template-source/evidence/maintenance/yss-ddd-scaffold-compile-l3-checkpoint-2026-09-03.yaml
+  maintenance_ref: .template-source/evidence/maintenance/yss-ddd-scaffold-compile-l3-checkpoint-2026-09-03.yaml
+inputs:
+  - yss-project.yaml
+  - CONTEXT.md
+  - AGENTS.md
+  - .agents/skills/yss-ddd-scaffold-generator/
+  - .agents/skills/yss-tactical-design/
+  - .agents/skills/yss-domain/
+  - .codex/skills/yss-repository/
+  - .agents/skills/yss-mybatis/
+  - .agents/skills/yss-dto/
+  - .agents/skills/yss-exception/
+  - .agents/skills/yss-web-controller/
+  - public primary sources and official project issue trackers
+allowed_read_paths:
+  - /Users/zhudaoming/Projects/yss-spec-project-template/
+objective: >-
+  研究可借鉴的后端项目生成器、DDD/模块边界校验和生成后演进方案，并审视当前 YSS DDD
+  脚手架到 yss-domain、yss-repository、yss-mybatis、yss-dto、yss-exception、
+  yss-web-controller 的开发者接力问题。外部资料只使用官方文档、官方源码仓库和官方 issue/
+  discussion；区分观察证据与对 YSS 的推断，不把外部方案直接升级为本仓规则。
+allowed_write_paths:
+  - .template-source/evidence/maintenance/yss-ddd-scaffold-reference-research-2026-09-03.md
+forbidden_actions:
+  - 修改脚手架、技能、模板、注册表、脚本或分发仓
+  - 修改现有维护证据或用户工作树改动
+  - 把外部框架约定冒充 YSS 已批准事实
+  - Git commit 或 push
+expected_outputs:
+  - 一手资料支持的参考方案与开发者体验问题排序
+  - 对当前 YSS 脚手架的可采纳模式、不可直接采纳项和验证建议
+  - workflow-execution-result-v1
+expected_evidence_files:
+  - .template-source/evidence/maintenance/yss-ddd-scaffold-reference-research-2026-09-03.md
+verification_commands:
+  - test -s .template-source/evidence/maintenance/yss-ddd-scaffold-reference-research-2026-09-03.md
+verification_results: []
+downstream_consumers:
+  - work-unit.ssot-update
+  - work-unit.intensity-aware-verification
+convergence:
+  parent_work_unit: work-unit.entry-triage
+  convergence_ref: .template-source/evidence/maintenance/yss-ddd-scaffold-reference-research-2026-09-03.md
+  conflict_escalation: >-
+    发现需要修改外部工程、扩大写路径、使用非一手事实或新增生命周期规则时停止并回交主控。

@@ -5,21 +5,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.yss.datamiddle</groupId>
+        <groupId>{{group_id}}</groupId>
         <artifactId>{{project_name}}-adapter</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>{{project_version}}</version>
     </parent>
 
     <artifactId>{{project_name}}-web</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>com.yss.datamiddle</groupId>
+            <groupId>{{group_id}}</groupId>
             <artifactId>{{project_name}}-application</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.yss.datamiddle</groupId>
-            <artifactId>{{project_name}}-domain</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -35,10 +31,28 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>io.swagger</groupId>
+            <groupId>com.yss.cloud</groupId>
+            <artifactId>yss-component-dto</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yss.cloud</groupId>
+            <artifactId>yss-component-exception</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>1.6.16</version>
+            <version>${swagger-annotations-v3.version}</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
