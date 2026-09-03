@@ -61,6 +61,21 @@ test("platform aliases resolve lifecycle external runtime entries", () => {
   }));
 });
 
+test("deprecated research alias resolves to yss-research in lifecycle routes", () => {
+  const data = registry();
+  const research = data.skills.find((skill) => skill.id === "yss-research");
+  assert.ok(research?.aliases?.includes("research"));
+  assert.doesNotThrow(() => validateSkillRegistry(data, {
+    lifecycleContract: { work_unit_routes: { "work-unit.alias-research": {
+      primary_skill: "research",
+      supporting_skills: [],
+      skills: ["research"],
+      applies_when: "external_fact_requires_validation",
+      not_applicable_reason: "no_external_fact"
+    } } }
+  }));
+});
+
 test("lifecycle route with an unregistered skill is rejected", () => {
   const data = registry();
   const route = {

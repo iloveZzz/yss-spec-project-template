@@ -86,7 +86,7 @@ roles:
     title: YSS 需求经理
     stages: [stage.discovery, stage.spec-architecture]
     draft_artifact_ids: [artifact.discovery-record, artifact.spec]
-    core_skills: [grilling, domain-modeling, research, competitive-intelligence, grill-with-docs]
+    core_skills: [grilling, domain-modeling, yss-research, competitive-intelligence, grill-with-docs]
     forbidden_skills: [yss-ui, yss-domain, yss-web-controller, yss-repository, yss-ddd-scaffold-generator, yss-frontend-scaffold-generator, implement, tdd]
     description: >-
       Own Discovery language, users, MVP, non-goals, success criteria, test
@@ -101,7 +101,7 @@ roles:
     title: YSS 产品经理
     stages: [stage.discovery, stage.spec-architecture, stage.product-design, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.product-overview, artifact.functional-architecture, artifact.interaction-spec, artifact.state-matrix, artifact.prototype-confirmation]
-    core_skills: [yss-design-system, yss-prototype-stage, prototype-review, yss-antd-design, research, competitive-intelligence]
+    core_skills: [yss-design-system, yss-prototype-stage, prototype-review, yss-antd-design, yss-research, competitive-intelligence]
     forbidden_skills: [yss-ui, yss-domain, yss-repository, yss-web-controller, yss-ddd-scaffold-generator, implement, tdd]
     description: >-
       Own priority, product-design impact, interaction, state matrix, prototype

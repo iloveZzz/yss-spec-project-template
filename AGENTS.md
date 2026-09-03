@@ -53,7 +53,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 | 主阶段（registry） | 原生工作单元 | 技能入口（按影响面裁剪） | 关键产物 / 门禁 |
 |---|---|---|---|
 | 入口分诊 `stage.entry-triage` | `work-unit.entry-triage` | `yss-product-lifecycle` | 仓库身份、影响面、最近可信阶段；`gate.repository-identity-valid` |
-| Discovery `stage.discovery` | `work-unit.discovery-opportunity`、`work-unit.discovery-requirements`、`work-unit.domain-strategy-design`、`work-unit.stage-decision` | `yss-product-lifecycle`；按事实 / 领域影响使用 `competitive-intelligence`、`research`、`grilling`、`domain-modeling`、`yss-stage-decision` | Discovery、用户/MVP/非目标/成功标准、测试 seam；必要时 DDD 战略设计与阶段决策包；`gate.domain-strategy-approved`、`gate.stage-decision-package-approved` |
+| Discovery `stage.discovery` | `work-unit.discovery-opportunity`、`work-unit.discovery-requirements`、`work-unit.domain-strategy-design`、`work-unit.stage-decision` | `yss-product-lifecycle`；按事实 / 领域影响使用 `competitive-intelligence`、`yss-research`、`grilling`、`domain-modeling`、`yss-stage-decision` | Discovery、用户/MVP/非目标/成功标准、测试 seam；必要时 DDD 战略设计与阶段决策包；`gate.domain-strategy-approved`、`gate.stage-decision-package-approved` |
 | Spec / 功能架构 `stage.spec-architecture` | `work-unit.spec-synthesis` | `yss-product-lifecycle`；`to-spec` 仅为显式兼容入口 | Spec、产品总体设计、功能架构；必要时 Spec Delta；`gate.spec-baseline-approved` |
 | 产品设计 `stage.product-design` | `work-unit.prototype-design` | `yss-prototype-stage` 为主合同，内部依次消费 `yss-design-system`、低保真、独立 `prototype-review`、`yss-antd-design` pre-build facts、Codex `product-design:index` focused workflow、post-build/浏览器/无障碍验证；前端落地改用 `yss-ui` | 交互说明、低 / 高保真原型、状态矩阵；`gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` |
 | 系统 / 数据架构与工程契约 `stage.system-data-engineering` | `work-unit.technical-analysis` | `yss-router`；按影响使用 `yss-openapi-governance`、`yss-openapi-draft-review`、`codebase-design`、`implementation-repo-onboarding`、`yss-tactical-design` | OpenAPI Draft / Freeze、数据架构、工程基线、架构审查；无 API 影响记录；必要时 Tactical DDD Check；`gate.openapi-draft-reviewed`、`gate.design-reviewed`、`gate.openapi-frozen`、`gate.engineering-baseline-accepted`、`gate.architecture-reviewed` |
@@ -95,7 +95,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 
 | 触发情形 | 必须使用 |
 |---|---|
-| 技术事实、标准、第三方 API 或框架行为影响决策 | `research` 或等价的一手资料记录 |
+| 技术事实、标准、第三方 API 或框架行为影响决策，或外部证据进入领域战略 / 阶段决策 | `yss-research`；技术事实使用 `technical-evidence`，战略决策证据使用 `strategy-evidence`；旧名 `research` 仅为 deprecated alias |
 | 竞品、市场或用户口碑事实 | `competitive-intelligence` |
 | UI 设计、原型、组件或主题 | `yss-prototype-stage` 持有阶段合同：`yss-design-system` → 低保真 → 独立 `prototype-review` → `yss-antd-design` pre-build facts → Codex `product-design:index` focused workflow → post-build/浏览器/无障碍验证；其他 Agent 交付等价合同资产。前端代码落地改用 `yss-ui`，不要继续调用 `yss-antd-design` |
 | Bug、测试失败或性能回退 | `diagnosing-bugs` 建立可复现反馈，再用 `tdd` |

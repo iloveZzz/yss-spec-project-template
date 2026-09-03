@@ -9,6 +9,13 @@ Run a fresh UX research scan for the product the user specifies.
 
 Focus on current, evidence-backed user problems. Prioritize logged-in product experience, self-serve flows, onboarding, docs/help, developer experience, support friction, and product workflows.
 
+## Modes
+
+- `quick` is the default. It produces a sharp in-chat brief from the best available current evidence.
+- `evidence-audited` is opt-in. Use it only when the user explicitly asks for deep, strict, auditable, or `evidence-audited` research. For consequential product or investment decisions, recommend this mode but do not switch silently.
+
+Both modes remain UX research workflows. Do not import academic-paper writing, peer-review, publication, or multi-agent ceremony.
+
 ## Critical Overrides
 
 - Refer to the Plugin router [$index](../index/SKILL.md) before proceeding.
@@ -25,7 +32,9 @@ Do not inspect every saved reference. Inspect only what the current task needs.
 ## Contract
 
 - Restate the product, audience, time horizon, and research scope before scanning.
+- State the active mode. In `evidence-audited`, also state the planned source classes and inclusion/exclusion criteria before searching.
 - Use public sources by default. Use internal sources when the connectors are available and the user request allows it.
+- Search user-provided or saved material first, apply the same inclusion criteria to it, then search externally to fill material gaps. Never silently omit supplied material; report exclusions or access failures.
 - Cite sources wherever available.
 - Separate observed evidence from inference.
 - Do not overclaim from anecdotes.
@@ -70,6 +79,8 @@ Do not inspect every saved reference. Inspect only what the current task needs.
 
 7. Tell a clear product story.
 
+For `evidence-audited` mode, follow [evidence-audited.md](references/evidence-audited.md) after scope restatement. This adds a reproducible Search Log, an Evidence Ledger, key-claim audit, counter-signal handling, and an explicit failure policy. It does not require sentence-by-sentence auditing.
+
 ## Output
 
 Default to an in-chat research brief unless the user asks for another format.
@@ -81,6 +92,14 @@ Include:
 - Source map: what was searched, what each source contributed, and where signal was weak.
 - Opportunity map: group recommendations into fix this week, fix this quarter, and needs deeper research.
 
+When the user explicitly asks to persist an `evidence-audited` result, create two adjacent files named `<slug>-research-brief.md` and `<slug>-evidence.yaml`. Start from [research-brief-template.md](assets/research-brief-template.md) and [evidence-template.yaml](assets/evidence-template.yaml), then run:
+
+```bash
+node scripts/validate-research-package.mjs <slug>-research-brief.md <slug>-evidence.yaml
+```
+
+Run the command from this skill directory. Do not persist research files merely because `evidence-audited` mode is active.
+
 ## Rules
 
 - Use citations wherever available.
@@ -89,4 +108,7 @@ Include:
 - Separate UX friction from missing features.
 - Separate reliability/performance issues from UX workflow issues.
 - Mark internal-only evidence separately from public evidence.
+- Do not equate source count with frequency. State whether frequency is measured, repeated across independent sources, or anecdotal.
+- In `evidence-audited` mode, audit the key claims for every ranked problem: problem existence, impact, frequency characterization, and the evidence basis for the recommended move. Audit every high-severity key claim; for lower-severity problems include at least one primary supporting item and one counter-signal or an explicit `none-found` search result.
+- Unsupported key claims must use `needs-deeper-research`; partially supported claims must be qualified. Never label a persisted package audited when its validator has not passed.
 - Keep the brief sharp, specific, and easy to consume.

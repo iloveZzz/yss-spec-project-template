@@ -197,11 +197,11 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [prototype]
-  - id: research
+  - id: yss-research
     layer: core
     maturity: supported
     instance_default_discoverable: true
-    aliases: []
+    aliases: [research]
     impacts: [discovery]
   - id: resolving-merge-conflicts
     layer: core

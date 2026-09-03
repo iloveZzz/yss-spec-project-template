@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "profile": "strategy-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "<topic>",
+    "audience": "<audience>",
+    "time_horizon": "<time horizon>",
+    "research_questions": ["<question>"],
+    "inclusion_criteria": ["<criterion>"],
+    "exclusion_criteria": ["<criterion>"]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "<lifecycle skill or role>",
+    "decision_ref": null
+  },
+  "search_log": [
+    {
+      "id": "search-001",
+      "channel": "<channel or corpus>",
+      "query_or_corpus": "<query or inspected material>",
+      "searched_at": "YYYY-MM-DD",
+      "result": "results-found"
+    },
+    {
+      "id": "search-002",
+      "channel": "<counter-signal channel>",
+      "query_or_corpus": "<counter-signal query>",
+      "searched_at": "YYYY-MM-DD",
+      "result": "none-found"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-001",
+      "source_level": "direct-experience",
+      "visibility": "internal",
+      "source_class": "<interview, support, ticket, docs, specification, source-code, dataset, report>",
+      "source_ref": "<URL or repository reference>",
+      "locator": "<line, section, record, timestamp, or comment>",
+      "stance": "support",
+      "observed_at": "YYYY-MM-DD",
+      "evidence_date": "YYYY-MM-DD",
+      "observation": "<what the source directly shows>",
+      "limitations": ["<sampling, recency, access, or independence limit>"]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-001",
+      "claim_kind": "user-problem",
+      "statement": "<decision-bearing claim>",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-001"],
+      "counter_signal_refs": ["search-002"],
+      "audit_status": "supported",
+      "confidence": "medium",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": ["claim-001"],
+    "notes": []
+  }
+}

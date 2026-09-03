@@ -17,7 +17,7 @@ description: 编排 Discovery 到 Spec 入口的阶段决策与 DDD 战略设计
 ## 执行顺序
 
 1. 读取 `yss-project.yaml`、`CONTEXT.md`、既有 Discovery/Spec、ADR 和父 Ticket/checkpoint。
-2. 分离事实、决策、假设、约束和未决项；技术事实走 `research`，市场/竞品事实走 `competitive-intelligence`。
+2. 分离事实、决策、假设、约束和未决项；技术事实走 `yss-research` 的 `technical-evidence`，领域边界、业务规则、MVP、非目标、成功标准或阶段推进依据等决策证据走 `strategy-evidence`，市场/竞品事实走 `competitive-intelligence`。
 3. 从业务场景、事件、规则、责任人和失败路径识别子域及限界上下文，不从数据库表或调用链直接反推边界。
 4. 为每个上下文建立本地统一语言；为跨上下文关系记录语义上游/下游、业务决策权、技术传输方向和翻译责任。
 5. 记录核心领域概念候选，不提前锁定 Entity 或 Aggregate。
@@ -31,6 +31,7 @@ description: 编排 Discovery 到 Spec 入口的阶段决策与 DDD 战略设计
 ## 产物与批准
 
 - DDD 资产是事实源，阶段决策包只通过 `domain_strategy_ref` 引用它们。
+- 进入 `gate.domain-strategy-approved` 或 `gate.stage-decision-package-approved` 的外部决策证据必须引用通过校验的 `yss-research` `evidence-audited` 研究包；研究包只提供证据，不得直接修改本技能资产或批准门禁。
 - `stage_decision_package` 必须经过 `draft → ready-for-human → approved`；起草者不得自签。
 - 建议门禁为 `gate.domain-strategy-approved` 和 `gate.stage-decision-package-approved`，实际状态由 `yss-product-lifecycle` 维护；阶段包批准引用必须通过 `scripts/verify-approval-record`，不得用不可读路径或聊天确认替代。
 - 下游只能消费批准且版本当前的包；发现语义冲突返回 `drift` / `new_impacts`，不得静默修改上游。

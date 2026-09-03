@@ -5,6 +5,7 @@ skill_aliases:
   api-integration: yss-api-integration
   microapp-commit: yss-microapp-commit
   page-module-development: yss-page-module-development
+  research: yss-research
   use-table-height: yss-use-table-height
   use-tree-height: yss-use-tree-height
 implementation_path_policy:

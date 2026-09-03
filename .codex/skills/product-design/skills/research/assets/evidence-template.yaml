@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "mode": "evidence-audited",
+  "scope": {
+    "product": "<product>",
+    "audience": "<audience>",
+    "time_horizon": "<time horizon>",
+    "research_questions": ["<question>"],
+    "inclusion_criteria": ["<criterion>"],
+    "exclusion_criteria": ["<criterion>"]
+  },
+  "search_log": [
+    {
+      "id": "search-001",
+      "channel": "<channel or corpus>",
+      "query_or_corpus": "<query or inspected material>",
+      "searched_at": "YYYY-MM-DD",
+      "result": "results-found"
+    },
+    {
+      "id": "search-002",
+      "channel": "<channel searched for disconfirming evidence>",
+      "query_or_corpus": "<counter-signal query>",
+      "searched_at": "YYYY-MM-DD",
+      "result": "none-found"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-001",
+      "visibility": "public",
+      "source_level": "primary",
+      "source_class": "<issue, forum, review, metric, docs, interview, support>",
+      "source_ref": "<URL or internal reference>",
+      "locator": "<section, issue comment, timestamp, or other precise locator>",
+      "stance": "support",
+      "observed_at": "YYYY-MM-DD",
+      "evidence_date": "YYYY-MM-DD",
+      "observation": "<what the source directly shows>",
+      "freshness": "current",
+      "limitations": []
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-001",
+      "problem_id": "problem-001",
+      "claim_kind": "problem-exists",
+      "statement": "<decision-bearing claim>",
+      "severity": "high",
+      "frequency_signal": "anecdotal",
+      "confidence": "medium",
+      "evidence_refs": ["evidence-001"],
+      "counter_signal_refs": ["search-002"],
+      "audit_status": "supported",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": ["claim-001"],
+    "notes": []
+  }
+}

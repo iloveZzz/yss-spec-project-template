@@ -63,7 +63,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/ask-matt/SKILL.md",
-        "effectiveHash": "8a8818ec83e3e795619aadb262b48a4a6016bb534a32c3bd6e16030f70578922",
+        "effectiveHash": "485b2180230d2696990d7379deb7efe4660c8d5196877acb103254457fa1cdf9",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "0261a2abbd43cc5bb391878106cda2eb7c4eabdde9ba5701b51d831f6e98f658",
         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
@@ -689,25 +689,6 @@
           ".trae/skills"
         ]
       },
-      "research": {
-        "source": "mattpocock/skills",
-        "sourceType": "github",
-        "skillPath": "skills/engineering/research/SKILL.md",
-        "effectiveHash": "fb6fc6446ea4dc9db6e7863b89b77a0b4b0f1beca4a08c23d0d319fe96cd08c8",
-        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
-        "upstreamHash": "75b7f9bbd7ccff6755a006f8b25d319a46ecbf6bd4b4c3323965ed9cb65e78ff",
-        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
-        "targets": [
-          ".agents/skills",
-          ".claude/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".hermes/skills",
-          ".pi/skills",
-          ".qoder/skills",
-          ".trae/skills"
-        ]
-      },
       "resolving-merge-conflicts": {
         "source": "mattpocock/skills",
         "sourceType": "github",
@@ -992,7 +973,7 @@
         "source": "mattpocock/skills",
         "sourceType": "github",
         "skillPath": "skills/engineering/wayfinder/SKILL.md",
-        "effectiveHash": "c9c5a3a2a26c9dcba33dbe2d16f6e8f0a426349e2c960e32de00b09da6a2faa0",
+        "effectiveHash": "f182c70ac8e345535519baa60626f9377ff1bbf101b682e3760f807d55298be1",
         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
         "upstreamHash": "93d2a866764b048ad641e82e27e7a1940fc370e7933470bffeb937fa1fb3922b",
         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
@@ -1466,7 +1447,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "effectiveHash": "f69d056b6b82102cf95e3cca1dc7d597882fc89dbd536834ab89f7a02f73626f",
+        "effectiveHash": "62d2272f52cd54e51f04110903f09333cfe99021d56bdbbdd35fdcbb48b8c99a",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1510,6 +1491,25 @@
           ".trae/skills"
         ]
       },
+      "yss-research": {
+        "source": "mattpocock/skills",
+        "sourceType": "github",
+        "skillPath": "skills/engineering/research/SKILL.md",
+        "effectiveHash": "a0c69c6cff59bdb6d36b03d24cceb29698e76cd6aae88919bf864284737c3aaa",
+        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+        "upstreamHash": "75b7f9bbd7ccff6755a006f8b25d319a46ecbf6bd4b4c3323965ed9cb65e78ff",
+        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
       "yss-resilience4j": {
         "source": "project",
         "sourceType": "local",
@@ -1530,7 +1530,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-router/SKILL.md",
-        "effectiveHash": "995bd87158f50cd652379ae63e845a77d509e8e76266fad05ce6e19deb956566",
+        "effectiveHash": "28e92bf42022427c9619750b0f70286c63df6dc49043d38fb1b42b3b7bdf5156",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1578,7 +1578,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-stage-decision/SKILL.md",
-        "effectiveHash": "ee846c58ba39f4ce76d94db609f7690f3e79518af54478d7b97780febc8eade3",
+        "effectiveHash": "35484ecbc72f71b3ed4a8e445d3e1bcc3a4663fc86a1e8710b56546f2258225d",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1795,7 +1795,7 @@
           "source": "project",
           "sourceType": "local",
           "skillPath": ".codex/skills/product-design/SKILL.md",
-          "effectiveHash": "68c51e896cbdcd9e3ddd0b88b97bd0064edf37e0eb1437291acb1e3d9ee48c0c",
+          "effectiveHash": "11dc7bbc9ac78ad0dc22d1a01efcdb958417aec81e79bea86c148684a744a90e",
           "targets": [
             ".codex/skills"
           ]
