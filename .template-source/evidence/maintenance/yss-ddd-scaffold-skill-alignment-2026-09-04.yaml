@@ -1,0 +1,41 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  调整 DDD 脚手架与 Domain、Application、Infrastructure、Web/DTO 的生成语义和跨技能合同，
+  新增首切片完成等级验证器，并强化技能注册表与 Router 依赖闭包的一致性校验。
+triggers:
+  - generation-semantics
+  - cross-repo-contract
+  - core-validator
+changed_assets:
+  - .agents/skills/yss-ddd-scaffold-generator/
+  - .agents/skills/yss-domain/
+  - .agents/skills/yss-repository/
+  - .agents/skills/yss-web-controller/
+  - .agents/skills/yss-dto/
+  - .agents/skills/yss-router/references/router-contract.yaml
+  - docs/agents/yss-skill-registry.yaml
+  - scripts/lib/skill-registry.mjs
+  - scripts/verify-yss-dto-openapi-profile
+  - .template-source/tooling/node/test/skill-registry.test.mjs
+  - skills-lock.json
+verification_evidence:
+  - kind: red
+    command: node --test --test-name-pattern='dependency metadata|dependency closure|conditional dependency' .template-source/tooling/node/test/skill-registry.test.mjs
+    result: pass
+  - kind: green
+    command: node --test .agents/skills/yss-web-controller/scripts/generate_controller.test.mjs && node --test .agents/skills/yss-ddd-scaffold-generator/scripts/first-slice-verification.test.mjs
+    result: pass
+  - kind: relevant-check
+    command: node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs && node --test .agents/skills/yss-ddd-scaffold-generator/scripts/first-slice-compatibility.test.mjs
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

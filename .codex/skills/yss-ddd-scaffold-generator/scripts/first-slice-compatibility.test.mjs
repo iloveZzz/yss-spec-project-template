@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
+import { createHash } from "node:crypto";
 import { chmod, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -7,9 +8,11 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { generate as generateWeb, parseArgs as parseWebArgs } from "../../yss-web-controller/scripts/generate_controller.mjs";
+import { runFirstSliceVerification } from "./run_first_slice_verification.mjs";
 
 const scripts = path.dirname(fileURLToPath(import.meta.url));
 const generator = path.join(scripts, "generate_scaffold.mjs");
+const dtoWireProfileFile = path.resolve(scripts, "../../yss-dto/references/openapi-wire-profile.yaml");
 const execute = (file, args, options = {}) => new Promise((resolve) => execFile(file, args, { encoding: "utf8", ...options }, (error, stdout, stderr) => resolve({ code: error?.code ?? 0, stdout, stderr })));
 
 function scaffoldContract(output) {
@@ -57,12 +60,19 @@ async function prepareGoldenProject(t) {
   const generated = await execute(process.execPath, [generator, ...args]);
   assert.equal(generated.code, 0, generated.stderr);
   const project = path.join(output, "golden-service");
+  const manifestPath = path.join(project, ".yss", "scaffold-generation.json");
+  const emptyVerificationPath = path.join(root, "empty-scaffold-verification.json");
+  await writeFile(emptyVerificationPath, JSON.stringify({ status: "passed", completion_level: "empty-scaffold-verified", commands: ["./mvnw validate", "./mvnw test", "./mvnw package"] }));
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  manifest.completion_level = "empty-scaffold-verified";
+  manifest.empty_scaffold_verification_ref = emptyVerificationPath;
+  await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
   const java = "src/main/java/com/yss/golden";
   const testJava = "src/test/java/com/yss/golden";
   await writeJava(project, `golden-service-domain/${java}/domain/quality/model/QualityRule.java`, `package com.yss.golden.domain.quality.model;
 public final class QualityRule { private final Long id; private final String name; public QualityRule(Long id, String name) { if (name == null || name.trim().isEmpty()) throw new IllegalArgumentException("quality-rule-name-required"); this.id=id; this.name=name; } public Long getId(){return id;} public String getName(){return name;} }`);
   await writeJava(project, `golden-service-domain/${java}/domain/quality/gateway/QualityRuleGateway.java`, `package com.yss.golden.domain.quality.gateway;
-import com.yss.golden.domain.quality.model.QualityRule; public interface QualityRuleGateway { void save(QualityRule rule); }`);
+  import com.yss.golden.domain.quality.model.QualityRule; import java.util.Optional; public interface QualityRuleGateway { Optional<QualityRule> findById(Long id); void save(QualityRule rule); void delete(Long id); }`);
   await writeJava(project, `golden-service-domain/${testJava}/domain/quality/model/QualityRuleTest.java`, `package com.yss.golden.domain.quality.model;
 import org.junit.jupiter.api.Test; import static org.junit.jupiter.api.Assertions.assertThrows; class QualityRuleTest { @Test void rejectsBlankName(){ assertThrows(IllegalArgumentException.class, () -> new QualityRule(1L, " ")); } }`);
   for (const [relative, source] of Object.entries({
@@ -72,16 +82,26 @@ import org.junit.jupiter.api.Test; import static org.junit.jupiter.api.Assertion
     [`golden-service-application/${java}/application/result/QualityRuleResult.java`]: `package com.yss.golden.application.result; import java.io.Serializable; public class QualityRuleResult implements Serializable { private Long id; private String ruleName; public Long getId(){return id;} public void setId(Long value){this.id=value;} public String getRuleName(){return ruleName;} public void setRuleName(String value){this.ruleName=value;} }`,
     [`golden-service-application/${java}/application/port/QualityRuleQueryPort.java`]: `package com.yss.golden.application.port; import com.yss.cloud.dto.result.PageResult; import com.yss.golden.application.query.QualityRulePageQuery; import com.yss.golden.application.result.QualityRuleResult; public interface QualityRuleQueryPort { PageResult<QualityRuleResult> page(QualityRulePageQuery query); }`,
     [`golden-service-application/${java}/application/service/QualityRuleService.java`]: `package com.yss.golden.application.service; import com.yss.cloud.dto.result.PageResult; import com.yss.golden.application.command.*; import com.yss.golden.application.query.QualityRulePageQuery; import com.yss.golden.application.result.QualityRuleResult; public interface QualityRuleService { PageResult<QualityRuleResult> page(QualityRulePageQuery query); QualityRuleResult detail(Long id); Long add(QualityRuleCreateCommand command); Boolean update(QualityRuleUpdateCommand command); Boolean delete(Long id); }`,
+    [`golden-service-application/${java}/application/service/impl/QualityRuleServiceImpl.java`]: `package com.yss.golden.application.service.impl;
+import com.yss.cloud.dto.result.PageResult; import com.yss.golden.application.command.*; import com.yss.golden.application.port.QualityRuleQueryPort; import com.yss.golden.application.query.QualityRulePageQuery; import com.yss.golden.application.result.QualityRuleResult; import com.yss.golden.application.service.QualityRuleService; import com.yss.golden.domain.quality.gateway.QualityRuleGateway; import com.yss.golden.domain.quality.model.QualityRule; import org.springframework.stereotype.Service; import org.springframework.transaction.annotation.Transactional;
+@Service public class QualityRuleServiceImpl implements QualityRuleService { private final QualityRuleGateway gateway; private final QualityRuleQueryPort queryPort; public QualityRuleServiceImpl(QualityRuleGateway gateway, QualityRuleQueryPort queryPort){this.gateway=gateway;this.queryPort=queryPort;} public PageResult<QualityRuleResult> page(QualityRulePageQuery query){return queryPort.page(query);} public QualityRuleResult detail(Long id){QualityRule rule=gateway.findById(id).orElseThrow(IllegalArgumentException::new); QualityRuleResult result=new QualityRuleResult(); result.setId(rule.getId()); result.setRuleName(rule.getName()); return result;} @Transactional public Long add(QualityRuleCreateCommand command){QualityRule rule=new QualityRule(null, command.getRuleName()); gateway.save(rule); return rule.getId();} @Transactional public Boolean update(QualityRuleUpdateCommand command){gateway.save(new QualityRule(command.getId(), command.getRuleName())); return true;} @Transactional public Boolean delete(Long id){gateway.delete(id); return true;} }`,
     [`golden-service-application/${java}/application/error/QualityRuleConflictException.java`]: `package com.yss.golden.application.error; public final class QualityRuleConflictException extends RuntimeException { public QualityRuleConflictException(String message) { super(message); } }`,
     [`golden-service-application/${java}/application/error/QualityRuleSystemException.java`]: `package com.yss.golden.application.error; public final class QualityRuleSystemException extends RuntimeException { public QualityRuleSystemException(String message, Throwable cause) { super(message, cause); } }`,
     [`golden-service-infrastructure/${java}/infrastructure/persistence/po/QualityRulePO.java`]: `package com.yss.golden.infrastructure.persistence.po; public class QualityRulePO { private Long id; private String name; public Long getId(){return id;} public void setId(Long value){this.id=value;} public String getName(){return name;} public void setName(String value){this.name=value;} }`,
-    [`golden-service-infrastructure/${java}/infrastructure/persistence/convertor/QualityRulePersistenceConvertor.java`]: `package com.yss.golden.infrastructure.persistence.convertor; import com.yss.golden.domain.quality.model.QualityRule; import com.yss.golden.infrastructure.persistence.po.QualityRulePO; import org.mapstruct.Mapper; @Mapper(componentModel="spring") public interface QualityRulePersistenceConvertor { QualityRule toDomain(QualityRulePO source); QualityRulePO toPO(QualityRule source); }`
+    [`golden-service-infrastructure/${java}/infrastructure/persistence/convertor/QualityRulePersistenceConvertor.java`]: `package com.yss.golden.infrastructure.persistence.convertor; import com.yss.golden.domain.quality.model.QualityRule; import com.yss.golden.infrastructure.persistence.po.QualityRulePO; import org.mapstruct.Mapper; @Mapper(componentModel="spring") public interface QualityRulePersistenceConvertor { QualityRule toDomain(QualityRulePO source); QualityRulePO toPO(QualityRule source); }`,
+    [`golden-service-infrastructure/${java}/infrastructure/persistence/repository/QualityRuleRepository.java`]: `package com.yss.golden.infrastructure.persistence.repository; import com.yss.golden.infrastructure.persistence.po.QualityRulePO; import java.util.List; import org.apache.ibatis.annotations.*; @Mapper public interface QualityRuleRepository { @Select("select id, rule_name as name from quality_rule where id = #{id}") QualityRulePO selectById(Long id); @Select("select id, rule_name as name from quality_rule") List<QualityRulePO> selectAll(); @Insert("insert into quality_rule(rule_name) values(#{name})") int insert(QualityRulePO po); @Delete("delete from quality_rule where id = #{id}") int deleteById(Long id); }`,
+    [`golden-service-infrastructure/${java}/infrastructure/persistence/gateway/QualityRuleGatewayImpl.java`]: `package com.yss.golden.infrastructure.persistence.gateway; import com.yss.golden.domain.quality.gateway.QualityRuleGateway; import com.yss.golden.domain.quality.model.QualityRule; import com.yss.golden.infrastructure.persistence.convertor.QualityRulePersistenceConvertor; import com.yss.golden.infrastructure.persistence.repository.QualityRuleRepository; import java.util.Optional; import org.springframework.stereotype.Repository; @Repository public class QualityRuleGatewayImpl implements QualityRuleGateway { private final QualityRuleRepository repository; private final QualityRulePersistenceConvertor convertor; public QualityRuleGatewayImpl(QualityRuleRepository repository, QualityRulePersistenceConvertor convertor){this.repository=repository;this.convertor=convertor;} public Optional<QualityRule> findById(Long id){return Optional.ofNullable(repository.selectById(id)).map(convertor::toDomain);} public void save(QualityRule rule){repository.insert(convertor.toPO(rule));} public void delete(Long id){repository.deleteById(id);} }`,
+    [`golden-service-infrastructure/${java}/infrastructure/query/adapter/QualityRuleQueryAdapter.java`]: `package com.yss.golden.infrastructure.query.adapter; import com.yss.cloud.dto.result.PageResult; import com.yss.golden.application.port.QualityRuleQueryPort; import com.yss.golden.application.query.QualityRulePageQuery; import com.yss.golden.application.result.QualityRuleResult; import java.util.Collections; import org.springframework.stereotype.Repository; @Repository public class QualityRuleQueryAdapter implements QualityRuleQueryPort { public PageResult<QualityRuleResult> page(QualityRulePageQuery query){return PageResult.of(Collections.emptyList(), 0L, query.getPageSize(), query.getPageIndex());} }`
   })) await writeJava(project, relative, source);
+  await writeJava(project, `golden-service-application/${testJava}/application/service/QualityRuleServiceTest.java`, `package com.yss.golden.application.service; import com.yss.golden.application.command.QualityRuleCreateCommand; import com.yss.golden.application.port.QualityRuleQueryPort; import com.yss.golden.application.service.impl.QualityRuleServiceImpl; import com.yss.golden.domain.quality.gateway.QualityRuleGateway; import org.junit.jupiter.api.Test; import static org.mockito.Mockito.*; class QualityRuleServiceTest { @Test void createPersistsThroughDomainGateway(){QualityRuleGateway gateway=mock(QualityRuleGateway.class); QualityRuleCreateCommand command=new QualityRuleCreateCommand(); command.setRuleName("rule"); new QualityRuleServiceImpl(gateway, mock(QualityRuleQueryPort.class)).add(command); verify(gateway).save(any());} }`);
+  await writeJava(project, `golden-service-infrastructure/${testJava}/infrastructure/persistence/QualityRuleGatewayIntegrationTest.java`, `package com.yss.golden.infrastructure.persistence; import com.yss.golden.infrastructure.persistence.convertor.QualityRulePersistenceConvertor; import com.yss.golden.infrastructure.persistence.po.QualityRulePO; import org.junit.jupiter.api.Test; import org.mapstruct.factory.Mappers; import static org.junit.jupiter.api.Assertions.assertEquals; class QualityRuleGatewayIntegrationTest { @Test void persistenceMappingRoundTrips(){QualityRulePO po=new QualityRulePO(); po.setId(1L); po.setName("rule"); assertEquals("rule", Mappers.getMapper(QualityRulePersistenceConvertor.class).toDomain(po).getName());} }`);
   const metadata = path.join(root, "metadata.json");
   const webContract = path.join(root, "web-contract.json");
+  const dtoWireProfileDigest = createHash("sha256").update(await readFile(dtoWireProfileFile)).digest("hex");
   await writeFile(metadata, JSON.stringify({ tables: [{ table_name: "quality_rule", table_comment: "质量规则", columns: [{ name: "id", sql_type: "bigint", primary: true, nullable: false }, { name: "rule_name", sql_type: "varchar(64)", nullable: false }] }] }));
-  await writeFile(webContract, JSON.stringify({ schema_version: 1, status: "approved", base_package: "com.yss.golden", module_name: "golden", domain_segment: "quality", architecture_profile: "target-domain-model", platform_profile: "spring-boot-2.7-jdk8", validation_namespace: "javax", dto_placement: "web", openapi_freeze_ref: "openapi://quality-rule@1", fields: { quality_rule: { create: ["rule_name"], update: ["id", "rule_name"], query: ["rule_name"], response: ["id", "rule_name"] } } }));
-  await generateWeb(parseWebArgs(["--metadata-file", metadata, "--contract-file", webContract, "--base-package", "com.yss.golden", "--module-name", "golden", "--domain-segment", "quality", "--web-project-dir", path.join(project, "golden-service-adapter", "golden-service-web"), "--application-service-package", "com.yss.golden.application.service", "--validation-namespace", "javax"]), { log() {}, warn() {} });
+  const webProject = path.join(project, "golden-service-adapter", "golden-service-web");
+  await writeFile(webContract, JSON.stringify({ schema_version: 2, contract_id: "golden-slice-1", contract_version: 1, current_version: 1, slice_id: "quality-rule-first-slice", status: "approved", integration_mode: "scaffold-v2", implementation_project_root: project, scaffold_manifest_ref: manifestPath, base_package: "com.yss.golden", module_name: "golden", domain_segment: "quality", application_service_package: "com.yss.golden.application.service", architecture_profile: "target-domain-model", platform_profile: "spring-boot-2.7-jdk8", validation_namespace: "javax", dto_placement: "web", dto_wire_profile_ref: dtoWireProfileFile, dto_wire_profile_digest: dtoWireProfileDigest, openapi_freeze_ref: "openapi://quality-rule@1", allowed_write_paths: [path.join(webProject, "src/main/java/com/yss/golden/rest")], expected_evidence_files: ["first-slice-verification.json"], verification_commands: ["./mvnw test", "./mvnw package"], fields: { quality_rule: { create: ["rule_name"], update: ["id", "rule_name"], query: ["rule_name"], pagination: ["pageIndex", "pageSize"], response: ["id", "rule_name"] } } }));
+  await generateWeb(parseWebArgs(["--metadata-file", metadata, "--contract-file", webContract, "--dto-wire-profile-file", dtoWireProfileFile, "--scaffold-manifest-file", manifestPath, "--base-package", "com.yss.golden", "--module-name", "golden", "--domain-segment", "quality", "--web-project-dir", webProject, "--application-service-package", "com.yss.golden.application.service", "--validation-namespace", "javax"]), { log() {}, warn() {} });
   await writeJava(project, `golden-service-adapter/golden-service-web/${java}/rest/advice/TargetProfileExceptionAdvice.java`, `package com.yss.golden.rest.advice;
 import com.yss.golden.application.error.QualityRuleConflictException;
 import com.yss.golden.application.error.QualityRuleSystemException;
@@ -147,7 +167,10 @@ class GoldenExceptionIntegrationTest {
     @GetMapping("/exception-probe/unknown") void unknown() { throw new RuntimeException("runtime-secret"); }
   }
 }`);
-  return { root, project };
+  const sliceContract = path.join(root, "slice-contract.json");
+  const requiredSkills = ["yss-domain", "yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "yss-exception", "yss-validation", "mapstruct", "lombok", "alibaba-java-code-style"];
+  await writeFile(sliceContract, JSON.stringify({ schema_version: 1, contract_id: "golden-slice-1", contract_version: 1, slice_id: "quality-rule-first-slice", status: "approved", readiness: { blockers: [], stale_inputs: [] }, common: { required_skills: requiredSkills }, backend: { status: "required", affected_layers: ["domain", "application", "infrastructure", "web"], required_skills: requiredSkills }, work_units: [{ id: "slice-backend", contract_id: "golden-slice-1", contract_version: 1, work_unit: { primary_skill: "yss-domain" } }] }));
+  return { root, project, sliceContract };
 }
 
 test("golden first slice 组合 Domain/Application/Infrastructure/Web 且不发生 DTO/PO 穿层", async (t) => {
@@ -158,25 +181,36 @@ test("golden first slice 组合 Domain/Application/Infrastructure/Web 且不发�
   const controller = await readFile(path.join(project, "golden-service-adapter", "golden-service-web", "src/main/java/com/yss/golden/rest/QualityRuleController.java"), "utf8");
   const convertor = await readFile(path.join(project, "golden-service-adapter", "golden-service-web", "src/main/java/com/yss/golden/rest/convertor/QualityRuleWebConvertor.java"), "utf8");
   const pageRequest = await readFile(path.join(project, "golden-service-adapter", "golden-service-web", "src/main/java/com/yss/golden/rest/dto/request/QualityRulePageRequest.java"), "utf8");
+  const serviceImpl = await readFile(path.join(project, "golden-service-application", "src/main/java/com/yss/golden/application/service/impl/QualityRuleServiceImpl.java"), "utf8");
+  const repository = await readFile(path.join(project, "golden-service-infrastructure", "src/main/java/com/yss/golden/infrastructure/persistence/repository/QualityRuleRepository.java"), "utf8");
+  const gatewayImpl = await readFile(path.join(project, "golden-service-infrastructure", "src/main/java/com/yss/golden/infrastructure/persistence/gateway/QualityRuleGatewayImpl.java"), "utf8");
+  const queryAdapter = await readFile(path.join(project, "golden-service-infrastructure", "src/main/java/com/yss/golden/infrastructure/query/adapter/QualityRuleQueryAdapter.java"), "utf8");
   assert.doesNotMatch(domainPom, /yss-component-dto|yss-component-exception|spring-web|swagger/);
   assert.match(applicationPom, /yss-component-dto/);
   assert.doesNotMatch(webPom, /golden-service-domain|golden-service-infrastructure/);
   assert.doesNotMatch(`${controller}\n${convertor}`, /\.domain\.|\.infrastructure\.|\.repository\.|Mappers\.getMapper|INSTANCE/);
   assert.match(convertor, /@Mapper\(componentModel = "spring"\)/);
   assert.doesNotMatch(pageRequest, /offset|needTotalCount|tempTotalCount|extends PageQuery/);
+  assert.match(pageRequest, /pageIndex/);
+  assert.match(pageRequest, /pageSize/);
+  assert.doesNotMatch(pageRequest, /orderBy|orderDirection|groupBy/);
+  assert.match(serviceImpl, /implements QualityRuleService/);
+  assert.match(serviceImpl, /@Transactional/);
+  assert.match(repository, /@Mapper/);
+  assert.match(gatewayImpl, /implements QualityRuleGateway/);
+  assert.match(queryAdapter, /implements QualityRuleQueryPort/);
 });
 
-test("golden first slice 通过真实 Wrapper 后才允许 first-slice-verified", { timeout: 300_000 }, async (t) => {
+test("golden first slice 通过真实 Wrapper 后才写入 first-slice-verified", { timeout: 300_000 }, async (t) => {
   if (!["YSS_MAVEN_REPOSITORY_URL", "MAVEN_REPO_USERNAME", "MAVEN_REPO_PASSWORD"].every((name) => process.env[name])) {
     t.skip("缺少受控 YSS Maven 仓库环境；不得声明 first-slice-verified");
     return;
   }
-  const { project } = await prepareGoldenProject(t);
+  const { project, sliceContract, root } = await prepareGoldenProject(t);
   await chmod(path.join(project, "mvnw"), 0o755);
-  for (const phase of ["validate", "test", "package"]) {
-    const result = await execute(path.join(project, "mvnw"), [phase], { cwd: project, timeout: 300_000 });
-    assert.equal(result.code, 0, `${phase}\n${result.stdout}\n${result.stderr}`);
-  }
+  const result = await runFirstSliceVerification(project, path.join(root, "first-slice-evidence"), sliceContract, process.env);
+  assert.equal(result.status, "passed", JSON.stringify(result, null, 2));
+  assert.equal(JSON.parse(await readFile(path.join(project, ".yss/scaffold-generation.json"), "utf8")).completion_level, "first-slice-verified");
 });
 
 test("真实 YSS exception starter 的自动配置、优先级、三类映射和序列化均受保护", { timeout: 300_000 }, async (t) => {

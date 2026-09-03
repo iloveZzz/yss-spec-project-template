@@ -1,6 +1,6 @@
 package ${base_package}.rest.dto.request;
 
-import com.yss.cloud.dto.CommandDTO;
+import ${command_dto_type};
 import lombok.Getter;
 import lombok.Setter;
 import ${validation_namespace}.validation.constraints.NotBlank;
@@ -13,7 +13,7 @@ import java.time.LocalDate;
 /** ${domain_desc}新增请求。字段来自批准的 OpenAPI allowlist。 */
 @Getter
 @Setter
-public class ${domain_class}CreateRequest extends CommandDTO {
+public class ${domain_class}CreateRequest extends ${command_dto_simple_name} {
 
 ${field_declarations}
 }

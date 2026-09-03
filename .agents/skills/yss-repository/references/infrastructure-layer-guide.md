@@ -4,7 +4,7 @@
 
 ## 1. 职责
 
-- 实现 Domain Gateway，负责 Aggregate 持久化。
+- 实现既有 Domain Gateway，负责 Aggregate 持久化；不创建或改写 Gateway interface。
 - 实现 Application Query Port，负责分页、列表和读模型。
 - 定义 PO、MyBatis-Plus Repository/Mapper、XML 和数据源适配。
 - 通过 Spring MapStruct Bean 完成 `PO <-> Domain Model`、`PO -> Application Result`。

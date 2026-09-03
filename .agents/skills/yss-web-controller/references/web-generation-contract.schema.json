@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.local/schemas/web-generation-contract.schema.json",
+  "title": "YSS Web Generation Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "contract_id",
+    "contract_version",
+    "current_version",
+    "slice_id",
+    "status",
+    "integration_mode",
+    "implementation_project_root",
+    "base_package",
+    "module_name",
+    "domain_segment",
+    "application_service_package",
+    "architecture_profile",
+    "platform_profile",
+    "validation_namespace",
+    "dto_placement",
+    "dto_wire_profile_ref",
+    "dto_wire_profile_digest",
+    "openapi_freeze_ref",
+    "allowed_write_paths",
+    "expected_evidence_files",
+    "verification_commands",
+    "fields"
+  ],
+  "properties": {
+    "schema_version": { "const": 2 },
+    "contract_id": { "$ref": "#/$defs/nonEmptyString" },
+    "contract_version": { "type": "integer", "minimum": 1 },
+    "current_version": { "type": "integer", "minimum": 1 },
+    "slice_id": { "$ref": "#/$defs/nonEmptyString" },
+    "status": { "const": "approved" },
+    "integration_mode": { "enum": ["existing-project", "scaffold-v2"] },
+    "implementation_project_root": { "$ref": "#/$defs/nonEmptyString" },
+    "scaffold_manifest_ref": { "$ref": "#/$defs/nonEmptyString" },
+    "base_package": { "$ref": "#/$defs/nonEmptyString" },
+    "module_name": { "$ref": "#/$defs/nonEmptyString" },
+    "domain_segment": { "$ref": "#/$defs/nonEmptyString" },
+    "application_service_package": { "$ref": "#/$defs/nonEmptyString" },
+    "architecture_profile": { "const": "target-domain-model" },
+    "platform_profile": { "enum": ["spring-boot-2.7-jdk8", "spring-boot-3-jdk17"] },
+    "validation_namespace": { "enum": ["javax", "jakarta"] },
+    "dto_placement": { "const": "web" },
+    "dto_wire_profile_ref": { "$ref": "#/$defs/nonEmptyString" },
+    "dto_wire_profile_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "openapi_freeze_ref": { "$ref": "#/$defs/nonEmptyString" },
+    "allowed_write_paths": { "$ref": "#/$defs/nonEmptyStringArray" },
+    "expected_evidence_files": { "$ref": "#/$defs/nonEmptyStringArray" },
+    "verification_commands": { "$ref": "#/$defs/nonEmptyStringArray" },
+    "fields": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["create", "update", "query", "pagination", "response"],
+        "properties": {
+          "create": { "$ref": "#/$defs/stringArray" },
+          "update": { "$ref": "#/$defs/stringArray" },
+          "query": { "$ref": "#/$defs/stringArray" },
+          "pagination": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "$ref": "#/$defs/nonEmptyString" }
+          },
+          "response": { "$ref": "#/$defs/stringArray" }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "integration_mode": { "const": "scaffold-v2" } } },
+      "then": { "required": ["scaffold_manifest_ref"] },
+      "else": { "not": { "required": ["scaffold_manifest_ref"] } }
+    },
+    {
+      "if": { "properties": { "platform_profile": { "const": "spring-boot-2.7-jdk8" } } },
+      "then": { "properties": { "validation_namespace": { "const": "javax" } } }
+    },
+    {
+      "if": { "properties": { "platform_profile": { "const": "spring-boot-3-jdk17" } } },
+      "then": { "properties": { "validation_namespace": { "const": "jakarta" } } }
+    }
+  ],
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "stringArray": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/nonEmptyString" } },
+    "nonEmptyStringArray": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/nonEmptyString" } }
+  }
+}

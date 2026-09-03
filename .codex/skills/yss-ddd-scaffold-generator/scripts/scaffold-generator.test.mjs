@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
+import { createHash } from "node:crypto";
 import { chmod, mkdtemp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import os from "node:os";
@@ -15,6 +16,18 @@ const generator = path.join(scripts, "generate_scaffold.mjs");
 const workflow = path.join(scripts, "generate_and_verify_scaffold.mjs");
 const command = (args, options = {}) => new Promise((resolve) => execFile(process.execPath, [generator, ...args], { encoding: "utf8", ...options }, (error, stdout, stderr) => resolve({ code: error?.code ?? 0, stdout, stderr })));
 const workflowCommand = (args, options = {}) => new Promise((resolve) => execFile(process.execPath, [workflow, ...args], { encoding: "utf8", ...options }, (error, stdout, stderr) => resolve({ code: error?.code ?? 0, stdout, stderr })));
+async function treeDigest(root) {
+  const hash = createHash("sha256");
+  async function visit(directory) {
+    for (const entry of (await readdir(directory, { withFileTypes: true })).sort((left, right) => left.name.localeCompare(right.name))) {
+      const absolute = path.join(directory, entry.name);
+      if (entry.isDirectory()) await visit(absolute);
+      else if (entry.isFile()) hash.update(path.relative(root, absolute).split(path.sep).join("/")).update("\0").update(await readFile(absolute)).update("\0");
+    }
+  }
+  await visit(root);
+  return hash.digest("hex");
+}
 function contract(outputDir, overrides = {}) {
   return {
     schema_version: 2,
@@ -99,7 +112,7 @@ async function prepareVerifierProject(project, manifest = targetManifest()) {
   await writeFile(path.join(project, ".yss", "scaffold-generation.json"), `${JSON.stringify(manifest)}\n`);
 }
 
-test("生成批准的服务级 target profile 骨架，并写入可追溯 Manifest v2", async (t) => { const data = await fixture(); t.after(() => rm(data.root, { recursive: true, force: true })); const result = await command(data.args); assert.equal(result.code, 0, result.stderr); const project = path.join(data.output, "demo-service"); const manifest = JSON.parse(await readFile(path.join(project, ".yss/scaffold-generation.json"), "utf8")); assert.equal(manifest.schema_version, 2); assert.equal(manifest.scaffold_request_id, "scaffold-request-1"); assert.equal(manifest.slice_id, undefined); assert.equal(manifest.completion_level, "generated"); assert.equal(manifest.profiles.architecture, "target-domain-model"); assert.deepEqual(manifest.generation_policy, { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }); assert.match(manifest.generator.template_digest, /^[a-f0-9]{64}$/); assert.match(manifest.contract_digest, /^[a-f0-9]{64}$/); assert.ok(manifest.ownership.generated_files.length > 8); assert.ok(manifest.ownership.generated_files.every((item) => item.owner === "generator" && /^[a-f0-9]{64}$/.test(item.sha256))); assert.equal(manifest.generation_mode, "controlled-generation"); assert.deepEqual(manifest.verification_commands, ["./mvnw validate", "./mvnw test", "./mvnw package"]); assert.equal(manifest.bootstrap_main_class, "com.yss.demo.DemoServiceApplication"); assert.equal(manifest.bootstrap_main_source, "demo-service-bootstrap/src/main/java/com/yss/demo/DemoServiceApplication.java"); assert.match(await readFile(path.join(project, manifest.bootstrap_main_source), "utf8"), /class DemoServiceApplication/); assert.match(await readFile(path.join(project, "pom.xml"), "utf8"), /demo-service/); });
+test("生成批准的服务级 target profile 骨架，并写入可追溯 Manifest v2", async (t) => { const data = await fixture(); t.after(() => rm(data.root, { recursive: true, force: true })); const result = await command(data.args); assert.equal(result.code, 0, result.stderr); const project = path.join(data.output, "demo-service"); const manifest = JSON.parse(await readFile(path.join(project, ".yss/scaffold-generation.json"), "utf8")); assert.equal(manifest.schema_version, 2); assert.equal(manifest.scaffold_request_id, "scaffold-request-1"); assert.equal(manifest.slice_id, undefined); assert.equal(manifest.completion_level, "generated"); assert.equal(manifest.profiles.architecture, "target-domain-model"); assert.deepEqual(manifest.generation_policy, { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }); assert.match(manifest.generator.template_digest, /^[a-f0-9]{64}$/); assert.match(manifest.contract_digest, /^[a-f0-9]{64}$/); assert.ok(manifest.ownership.generated_files.length > 8); assert.ok(manifest.ownership.generated_files.every((item) => item.owner === "generator" && /^[a-f0-9]{64}$/.test(item.sha256))); assert.equal(manifest.generation_mode, "controlled-generation"); assert.deepEqual(manifest.verification_commands, ["./mvnw validate", "./mvnw test", "./mvnw package"]); assert.equal(manifest.bootstrap_main_class, "com.yss.demo.DemoServiceApplication"); assert.equal(manifest.bootstrap_main_source, "demo-service-bootstrap/src/main/java/com/yss/demo/DemoServiceApplication.java"); assert.match(await readFile(path.join(project, manifest.bootstrap_main_source), "utf8"), /class DemoServiceApplication/); assert.match(await readFile(path.join(project, "pom.xml"), "utf8"), /demo-service/); assert.equal(manifest.readiness.downstream_skills["yss-domain"], await treeDigest(path.resolve(scripts, "../../yss-domain"))); assert.match(manifest.readiness.contracts.scaffold_parent, /^[a-f0-9]{64}$/); assert.match(manifest.readiness.contracts.router_contract, /^[a-f0-9]{64}$/); });
 
 test("schema v1 scaffold contract is unsupported and is never upgraded", async (t) => {
   const data = await fixture({ schema_version: 1 });

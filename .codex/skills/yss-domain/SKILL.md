@@ -47,7 +47,8 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 
 - 命名体现业务语义，不照抄表名缩写。
 - 生成代码应可编译，且没有跨层依赖泄漏。
-- 对不确定规则写出假设或 TODO，不要伪装成已确认事实。
+- Domain Gateway interface 由本 skill 唯一拥有；Infrastructure 只能实现，不得由 `yss-repository` 反向创建或改写其签名。
+- 对不确定规则返回 `new_impacts` / `drift` 并暂停；不要把未批准假设或 TODO 写进实现冒充已确认事实。
 
 ## 协同顺序
 

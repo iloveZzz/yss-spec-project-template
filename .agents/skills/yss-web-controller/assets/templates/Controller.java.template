@@ -3,8 +3,8 @@ package ${base_package}.rest;
 ${application_service_import}
 ${dto_imports}
 ${web_convertor_import}
-import com.yss.cloud.dto.result.PageResult;
-import com.yss.cloud.dto.result.SingleResult;
+import ${page_result_type};
+import ${single_result_type};
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +30,7 @@ public class ${domain_class}Controller {
      */
     @PostMapping("/page")
     @Operation(summary = "分页查询")
-    public PageResult<${response_class}> page(@Valid @RequestBody ${page_request_class} request) {
+    public ${page_result_simple_name}<${response_class}> page(@Valid @RequestBody ${page_request_class} request) {
         return webConvertor.toResponsePage(${query_call});
     }
 
@@ -39,8 +39,8 @@ public class ${domain_class}Controller {
      */
     @GetMapping("/{id}")
     @Operation(summary = "详情查询")
-    public SingleResult<${response_class}> detail(@PathVariable Long id) {
-        return SingleResult.of(webConvertor.toResponse(${detail_call}));
+    public ${single_result_simple_name}<${response_class}> detail(@PathVariable Long id) {
+        return ${single_result_simple_name}.${single_result_factory_method}(webConvertor.toResponse(${detail_call}));
     }
 
     /**
@@ -48,8 +48,8 @@ public class ${domain_class}Controller {
      */
     @PostMapping
     @Operation(summary = "新增")
-    public SingleResult<Long> add(@Valid @RequestBody ${create_request_class} request) {
-        return SingleResult.of(${add_call});
+    public ${single_result_simple_name}<Long> add(@Valid @RequestBody ${create_request_class} request) {
+        return ${single_result_simple_name}.${single_result_factory_method}(${add_call});
     }
 
     /**
@@ -57,8 +57,8 @@ public class ${domain_class}Controller {
      */
     @PutMapping
     @Operation(summary = "更新")
-    public SingleResult<Boolean> update(@Valid @RequestBody ${update_request_class} request) {
-        return SingleResult.of(${update_call});
+    public ${single_result_simple_name}<Boolean> update(@Valid @RequestBody ${update_request_class} request) {
+        return ${single_result_simple_name}.${single_result_factory_method}(${update_call});
     }
 
     /**
@@ -66,7 +66,7 @@ public class ${domain_class}Controller {
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "删除")
-    public SingleResult<Boolean> delete(@PathVariable Long id) {
-        return SingleResult.of(${delete_call});
+    public ${single_result_simple_name}<Boolean> delete(@PathVariable Long id) {
+        return ${single_result_simple_name}.${single_result_factory_method}(${delete_call});
     }
 }

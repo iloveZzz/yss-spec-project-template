@@ -41,6 +41,8 @@ DTO/VO 位于 `{base_package}.rest.dto`。独立 client Maven module 对当前 T
 
 Gateway 描述领域能力，只交换 Domain Model、领域值和领域标识。例如：
 
+Gateway interface 的签名由批准战术模型决定，并由 `yss-domain` 唯一创建和维护；Infrastructure / `yss-repository` 只能实现该接口。若实现所需能力超出既有签名，返回 `new_impacts` 并重路由，不得从 DDL 反向扩写 Domain 合同。
+
 ```java
 package com.yss.quality.domain.template.gateway;
 

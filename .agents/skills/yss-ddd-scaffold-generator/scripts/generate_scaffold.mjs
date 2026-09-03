@@ -25,7 +25,19 @@ const SUPPORTED_PROFILES = Object.freeze({
   dto_placement: "web",
   repository: "yss-internal"
 });
-const DOWNSTREAM_SKILLS = ["yss-domain", "yss-application", "yss-repository", "yss-mybatis", "yss-dto", "yss-exception", "yss-web-controller"];
+const DOWNSTREAM_SKILLS = [
+  "yss-domain",
+  "yss-application",
+  "yss-repository",
+  "yss-mybatis",
+  "yss-web-controller",
+  "yss-dto",
+  "yss-exception",
+  "yss-validation",
+  "mapstruct",
+  "lombok",
+  "alibaba-java-code-style"
+];
 function fail(message) { throw new Error(message); }
 function isoNow() { return new Date().toISOString(); }
 function localDate() { return new Date().toISOString().slice(0, 10); }
@@ -324,10 +336,12 @@ class ScaffoldGenerator {
     }
     const downstream = {};
     for (const skill of DOWNSTREAM_SKILLS) {
-      const skillFile = path.join(REPOSITORY_ROOT, ".agents", "skills", skill, "SKILL.md");
-      downstream[skill] = await isFile(skillFile) ? sha256(await readFile(skillFile)) : "unavailable";
+      const skillRoot = path.join(REPOSITORY_ROOT, ".agents", "skills", skill);
+      downstream[skill] = await isFile(path.join(skillRoot, "SKILL.md")) ? await treeDigest(skillRoot) : "unavailable";
     }
-    const manifest = { schema_version: 2, contract_id: this.options.contractId, contract_version: this.options.contractVersion, scaffold_request_id: contract.scaffold_request_id, approval_ref: this.options.approvalRef, router_draft_ref: this.options.routerDraftRef, persisted_ref: this.options.persistedRef, contract_file_ref: this.contractFile, contract_digest: this.contractDigest, lifecycle_approval_ref: contract.lifecycle_approval_ref, current_version: contract.current_version, approver: contract.approval.approver, allowed_write_paths: contract.allowed_write_paths, expected_evidence_files: contract.expected_evidence_files, project_name: this.projectName, base_package: this.basePackage, bootstrap_main_class: `${this.basePackage}.${this.applicationClassName}`, bootstrap_main_source: this.bootstrapMainSource, maven_coordinates: this.mavenCoordinates, maven_coordinates_source: this.mavenCoordinatesSource, profiles: this.profiles, database: this.options.database, generation_mode: "controlled-generation", completion_level: "generated", generator: { id: "yss-ddd-scaffold-generator", template_digest: await treeDigest(path.join(SKILL_ROOT, "assets")) }, ownership: { generated_files: generatedFiles, user_owned_globs: ["**/src/main/java/**", "**/src/test/java/**", "db/**"] }, readiness: { downstream_skills: downstream, architecture_ruleset: sha256(await readFile(path.join(this.javaTemplateDir, "architecture-rules-test.java.template"))) }, generation_policy: { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }, verification_commands: COMMANDS, generated_at: isoNow() };
+    const scaffoldParent = path.join(SKILL_ROOT, "references", "yss-backend-scaffold-parent", "SKILL.md");
+    const routerContract = path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-router", "references", "router-contract.yaml");
+    const manifest = { schema_version: 2, contract_id: this.options.contractId, contract_version: this.options.contractVersion, scaffold_request_id: contract.scaffold_request_id, approval_ref: this.options.approvalRef, router_draft_ref: this.options.routerDraftRef, persisted_ref: this.options.persistedRef, contract_file_ref: this.contractFile, contract_digest: this.contractDigest, lifecycle_approval_ref: contract.lifecycle_approval_ref, current_version: contract.current_version, approver: contract.approval.approver, allowed_write_paths: contract.allowed_write_paths, expected_evidence_files: contract.expected_evidence_files, project_name: this.projectName, base_package: this.basePackage, bootstrap_main_class: `${this.basePackage}.${this.applicationClassName}`, bootstrap_main_source: this.bootstrapMainSource, maven_coordinates: this.mavenCoordinates, maven_coordinates_source: this.mavenCoordinatesSource, profiles: this.profiles, database: this.options.database, generation_mode: "controlled-generation", completion_level: "generated", generator: { id: "yss-ddd-scaffold-generator", template_digest: await treeDigest(path.join(SKILL_ROOT, "assets")) }, ownership: { generated_files: generatedFiles, user_owned_globs: ["**/src/main/java/**", "**/src/test/java/**", "db/**"] }, readiness: { downstream_skills: downstream, contracts: { scaffold_parent: sha256(await readFile(scaffoldParent)), router_contract: sha256(await readFile(routerContract)) }, architecture_ruleset: sha256(await readFile(path.join(this.javaTemplateDir, "architecture-rules-test.java.template"))) }, generation_policy: { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }, verification_commands: COMMANDS, generated_at: isoNow() };
     await writeText(path.join(this.projectRoot, ".yss", "scaffold-generation.json"), `${JSON.stringify(manifest, null, 2)}\n`); console.log("  ✓ .yss/scaffold-generation.json");
   }
   async copyWrapperFiles() {

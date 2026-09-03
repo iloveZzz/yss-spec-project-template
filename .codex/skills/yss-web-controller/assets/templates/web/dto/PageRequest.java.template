@@ -1,8 +1,9 @@
 package ${base_package}.rest.dto.request;
 
-import com.yss.cloud.dto.QueryDTO;
+import ${query_dto_type};
 import lombok.Getter;
 import lombok.Setter;
+import ${validation_namespace}.validation.constraints.Pattern;
 import java.util.Date;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -13,12 +14,8 @@ import java.time.LocalDate;
  */
 @Getter
 @Setter
-public class ${domain_class}PageRequest extends QueryDTO {
-    private int pageIndex = 1;
-    private int pageSize = 20;
-    private String orderBy;
-    private String orderDirection;
-    private String groupBy;
+public class ${domain_class}PageRequest extends ${query_dto_simple_name} {
+${pagination_field_declarations}
 
 ${field_declarations}
 }

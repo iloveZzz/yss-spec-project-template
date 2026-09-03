@@ -9,6 +9,12 @@ description: Use when YSS `Result`, `SingleResult`, `MultiResult`, `PageResult`,
 
 本 skill 同时负责把中台 DTO 映射到公开 HTTP/JSON 边界。`references/openapi-wire-profile.yaml` 是可复用的机器可读映射源；OpenAPI 治理和 Draft Review 必须消费它，不得各自复制一份 wrapper 或分页字段表。
 
+## 所有权边界
+
+- `Result` / `SingleResult` / `MultiResult` / `PageResult`、`CommandDTO` / `QueryDTO` / `PageQuery` 的 canonical package、工厂方法、字段语义、默认值、枚举和禁用字段由本 skill 及 `references/openapi-wire-profile.yaml` 唯一持有。
+- Web skill 只生成 endpoint-specific Page Request、Request/Response 与 Convertor，并通过批准合同中的 profile 引用和 digest 消费上述协议；不得生成 wrapper/page base，也不得维护分页字段或默认值副本。
+- OpenAPI skill 只把该 profile 组合进 endpoint schema；不得从 Java getter 或本地常量反向建立第二份 wire 协议。
+
 ## 何时使用
 
 - 用户要定义新的分页查询对象。

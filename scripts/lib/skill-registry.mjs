@@ -58,6 +58,19 @@ function requireStringArray(value, field, { nonEmpty = false } = {}) {
   }
 }
 
+function effectiveInvocationContract(registry, skill) {
+  const contract = registry.invocation_contract;
+  return {
+    ...contract.default,
+    ...contract.layer_defaults[skill.layer],
+    ...(contract.overrides[skill.id] ?? {})
+  };
+}
+
+function sameStringSet(left, right) {
+  return JSON.stringify([...new Set(left)].sort()) === JSON.stringify([...new Set(right)].sort());
+}
+
 function validateInvocationContract(registry, skill) {
   const contract = registry.invocation_contract;
   requireObject(contract, "invocation_contract");
@@ -102,11 +115,7 @@ function validateInvocationContract(registry, skill) {
   const overrideIds = Object.keys(contract.overrides);
   const knownIds = new Set(registry.skills.map((item) => item?.id).filter(Boolean));
   for (const skillId of overrideIds) if (!knownIds.has(skillId)) fail(`invocation_contract.overrides 引用了未登记技能: ${skillId}`);
-  const effective = {
-    ...contract.default,
-    ...contract.layer_defaults[skill.layer],
-    ...(contract.overrides[skill.id] ?? {})
-  };
+  const effective = effectiveInvocationContract(registry, skill);
   effective.trigger_conditions = [...new Set([...(effective.trigger_conditions ?? []), ...skill.impacts.map((impact) => `impact:${impact}`)])];
   if (!INVOCATION_MODES.has(effective.invocation_mode)) fail(`${skill.id}.invocation_mode 无效`);
   requireStringArray(effective.trigger_conditions, `${skill.id}.trigger_conditions`, { nonEmpty: true });
@@ -317,6 +326,23 @@ export function validateSkillRegistry(registry, { lock, routerContract, lifecycl
     }
   }
 
+  const registeredDependency = (name) => ids.has(name)
+    || aliases.has(name)
+    || externalIds.has(name)
+    || platformAliases.has(name)
+    || [...platformIds].some((key) => key.endsWith(`:${name}`));
+  for (const skill of skills) {
+    const effective = effectiveInvocationContract(registry, skill);
+    const required = effective.required_dependencies ?? [];
+    const optional = effective.optional_dependencies ?? [];
+    for (const dependency of [...required, ...optional]) {
+      if (!registeredDependency(dependency)) fail(`${skill.id} 的调用契约依赖引用了未登记技能: ${dependency}`);
+      if (dependency === skill.id) fail(`${skill.id} 的调用契约不得依赖自身`);
+    }
+    const overlap = required.filter((dependency) => optional.includes(dependency));
+    if (overlap.length) fail(`${skill.id} 的必需依赖与可选依赖重复: ${overlap.join(", ")}`);
+  }
+
   if (lock) {
     const shared = Object.keys(lock.skills?.shared ?? {}).sort();
     const registered = [...ids].sort();
@@ -365,6 +391,24 @@ export function validateSkillRegistry(registry, { lock, routerContract, lifecycl
     for (const dependencies of Object.values(routerContract.dependency_closure ?? {})) {
       for (const names of Object.values(dependencies ?? {})) {
         for (const name of names ?? []) if (!ids.has(name) && !aliases.has(name) && !externalIds.has(name)) fail(`Router 依赖引用了未登记技能: ${name}`);
+      }
+    }
+    for (const skillId of Object.keys(registry.invocation_contract.overrides)) {
+      const closure = routerContract.dependency_closure?.[skillId];
+      if (!closure) fail(`Router dependency_closure 缺少注册表覆写技能: ${skillId}`);
+      const skill = skills.find((item) => item.id === skillId);
+      const effective = effectiveInvocationContract(registry, skill);
+      const required = effective.required_dependencies ?? [];
+      const optional = effective.optional_dependencies ?? [];
+      const always = closure.always ?? [];
+      const conditional = Object.entries(closure)
+        .filter(([condition]) => condition !== "always")
+        .flatMap(([, names]) => names ?? []);
+      if (!sameStringSet(required, always)) {
+        fail(`${skillId} 的静态必需依赖与 Router always 不一致`);
+      }
+      if (!sameStringSet(optional, conditional)) {
+        fail(`${skillId} 的可选依赖与 Router 条件依赖不一致`);
       }
     }
   }

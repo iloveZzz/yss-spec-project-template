@@ -1,5 +1,5 @@
 version: 1
 interface:
   display_name: "YSS Web Controller"
-  short_description: "Web Controller、DTO、VO 与响应封装规范"
-  default_prompt: "Use $yss-web-controller to generate or refactor a YSS REST controller, request DTO, and response VO."
+  short_description: "按批准 Slice/Web 合同生成 Controller、Wire DTO 与 Convertor"
+  default_prompt: "Use $yss-web-controller with an approved schema v2 Web generation contract, frozen OpenAPI, stable Application interfaces, and allowed write paths to generate YSS REST adapters atomically."

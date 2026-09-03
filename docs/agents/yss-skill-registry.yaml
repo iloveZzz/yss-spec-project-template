@@ -37,7 +37,22 @@ invocation_contract:
     maintainer-only:
       invocation_mode: user
       primary_output: maintenance-operation
-  overrides: {}
+  overrides:
+    yss-ddd-scaffold-generator:
+      required_dependencies: [yss-backend-scaffold-parent, alibaba-java-code-style]
+      optional_dependencies: []
+    yss-domain:
+      required_dependencies: [alibaba-java-code-style]
+      optional_dependencies: [domain-modeling, yss-tactical-design, lombok]
+    yss-application:
+      required_dependencies: [alibaba-java-code-style]
+      optional_dependencies: [mapstruct, lombok]
+    yss-repository:
+      required_dependencies: [yss-mybatis, mapstruct, lombok, alibaba-java-code-style]
+      optional_dependencies: []
+    yss-web-controller:
+      required_dependencies: [yss-dto, yss-validation, mapstruct, lombok, alibaba-java-code-style]
+      optional_dependencies: [yss-exception]
 agent_runtime_roots:
   claude: .claude/skills
   codex: .codex/skills

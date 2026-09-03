@@ -54,6 +54,9 @@ wrappers:
   SingleResult:
     java_type: com.yss.cloud.dto.result.SingleResult<T>
     response_kind: single
+    java_factory:
+      method: of
+      arguments: [data]
     data:
       direction: response
       wire_shape: endpoint-schema-or-null
@@ -72,6 +75,9 @@ wrappers:
   PageResult:
     java_type: com.yss.cloud.dto.result.PageResult<T>
     response_kind: page
+    java_factory:
+      method: of
+      arguments: [data, totalCount, pageSize, pageIndex]
     fields:
       totalCount:
         direction: response

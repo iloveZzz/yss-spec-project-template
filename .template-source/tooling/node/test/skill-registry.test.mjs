@@ -1,11 +1,20 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import test from "node:test";
 
 import { loadSkillRegistry, validateSkillRegistry } from "../../../../scripts/lib/skill-registry.mjs";
+import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
+import { ROOT } from "../../../../scripts/lib/skill-supply-chain.mjs";
 
 function registry(overrides = {}) {
   const base = loadSkillRegistry();
   return { ...base, ...overrides, runtime_policy: { ...base.runtime_policy, ...overrides.runtime_policy } };
+}
+
+function routerContract() {
+  const source = readFileSync(path.join(ROOT, ".agents/skills/yss-router/references/router-contract.yaml"), "utf8");
+  return parseDocument(source, { maxAliasCount: 0, uniqueKeys: true }).toJS({ maxAliasCount: 0 });
 }
 
 test("unknown layer is rejected", () => {
@@ -45,6 +54,30 @@ test("skill invocation contract is required and derives impact triggers", () => 
   };
   invalid.invocation_contract.layer_defaults.core = { ...invalid.invocation_contract.layer_defaults.core, primary_output: "" };
   assert.throws(() => validateSkillRegistry(invalid), /primary_output/);
+});
+
+test("invocation dependency metadata rejects unregistered skills", () => {
+  const data = registry();
+  data.invocation_contract = structuredClone(data.invocation_contract);
+  data.invocation_contract.overrides["yss-domain"] = {
+    required_dependencies: ["missing-static-dependency"],
+    optional_dependencies: []
+  };
+  assert.throws(() => validateSkillRegistry(data), /依赖引用了未登记技能/);
+});
+
+test("Router dependency closure must match registry static dependency metadata", () => {
+  const data = registry();
+  const router = routerContract();
+  router.dependency_closure["yss-domain"].always = [];
+  assert.throws(() => validateSkillRegistry(data, { routerContract: router }), /静态必需依赖.*不一致/);
+});
+
+test("Router conditional dependency union must match registry optional dependency metadata", () => {
+  const data = registry();
+  const router = routerContract();
+  router.dependency_closure["yss-domain"].when_unapproved = ["yss-cache"];
+  assert.throws(() => validateSkillRegistry(data, { routerContract: router }), /可选依赖.*不一致/);
 });
 
 test("platform aliases resolve lifecycle external runtime entries", () => {

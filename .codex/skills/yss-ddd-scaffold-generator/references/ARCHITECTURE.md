@@ -104,13 +104,13 @@ Domain Error -> Application propagation/translation -> Web Exception Translator
 
 - Scaffold 只生成机械模块、POM、Wrapper、配置、架构规则和 Manifest，不生成生产业务 CRUD。
 - 初始生成器为 `initialize-only`，非空目标失败。
-- Manifest v2 记录模板/合同/downstream skill digest 与 generator-owned 文件 hash。
+- Manifest v2 记录模板、脚手架父合同、Router 合同、downstream 完整 skill tree digest 与 generator-owned 文件 hash。
 - 当前不支持模板升级，不得重跑初始生成器覆盖业务工程。未来如需支持同一 Target Profile 内的模板版本升级，必须另行设计、批准并验证。
 
 ## 5. 完成等级
 
 - `generated`：文件已原子生成，尚未完成 Wrapper 验证。
 - `empty-scaffold-verified`：根目录 `./mvnw validate/test/package` 全部通过。
-- `first-slice-verified`：golden first slice 的 Domain、Application、Repository/MyBatis、DTO/Web、Exception、Wire 与架构负例全部通过。
+- `first-slice-verified`：批准且版本当前的 golden first slice 已具备 Domain 模型/Gateway、Application Service 实现/事务/Query Port、Repository/Mapper/GatewayImpl/QueryAdapter、DTO/Web/Exception 与分层测试；下游完整 skill tree digest 无漂移，且根 Wrapper 全部通过。该状态只能由 `scripts/run_first_slice_verification.mjs` 写入。
 
-只有最后一级可以声明已满足下游 YSS skills 的首切片就绪条件。
+只有首切片验证器可以把 Manifest 从 `empty-scaffold-verified` 升级到最后一级；手工写值、局部测试或结构扫描均无效。只有最后一级可以声明已满足下游 YSS skills 的首切片就绪条件。

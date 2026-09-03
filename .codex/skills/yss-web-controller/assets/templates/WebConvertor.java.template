@@ -1,6 +1,6 @@
 package ${base_package}.rest.convertor;
 
-import com.yss.cloud.dto.result.PageResult;
+import ${page_result_type};
 ${application_type_imports}
 import ${base_package}.rest.dto.request.${domain_class}CreateRequest;
 import ${base_package}.rest.dto.request.${domain_class}UpdateRequest;
@@ -22,12 +22,9 @@ public interface ${web_convertor_class} {
 
     List<${domain_class}Response> toResponses(List<${domain_class}Result> source);
 
-    default PageResult<${domain_class}Response> toResponsePage(PageResult<${domain_class}Result> source) {
-        return PageResult.of(
-                toResponses(source.getData()),
-                source.getTotalCount(),
-                source.getPageSize(),
-                source.getPageIndex()
+    default ${page_result_simple_name}<${domain_class}Response> toResponsePage(${page_result_simple_name}<${domain_class}Result> source) {
+        return ${page_result_simple_name}.${page_result_factory_method}(
+${page_result_factory_arguments}
         );
     }
 }

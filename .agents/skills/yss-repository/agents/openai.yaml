@@ -1,5 +1,5 @@
 version: 1
 interface:
   display_name: "YSS Repository"
-  short_description: "Repository、Convertor 与 gateway 实现规范"
-  default_prompt: "Use $yss-repository to generate or refactor YSS repository, convertor, and gateway implementation code."
+  short_description: "Infrastructure Repository、Mapper、Convertor 与端口实现规范"
+  default_prompt: "Use $yss-repository to implement Infrastructure persistence and query adapters against existing Domain Gateway and Application Query Port interfaces without creating domain contracts."

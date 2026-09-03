@@ -198,10 +198,10 @@ dependency_closure:
     always: [alibaba-java-code-style]
     when_conversion: [mapstruct, lombok]
   yss-repository:
-    always: [mapstruct, lombok, alibaba-java-code-style]
-    when_mybatis: [yss-mybatis]
+    always: [yss-mybatis, mapstruct, lombok, alibaba-java-code-style]
   yss-web-controller:
-    always: [yss-dto, mapstruct, lombok, alibaba-java-code-style]
+    always: [yss-dto, yss-validation, mapstruct, lombok, alibaba-java-code-style]
+    when_error_mapping: [yss-exception]
   yss-userinfo:
     always: [yss-dto]
     when_cache_lookup: [yss-cache]
@@ -246,8 +246,11 @@ end_to_end_backend_required:
   - yss-domain
   - yss-application
   - yss-repository
+  - yss-mybatis
   - yss-web-controller
   - yss-dto
+  - yss-exception
+  - yss-validation
   - mapstruct
   - lombok
   - alibaba-java-code-style

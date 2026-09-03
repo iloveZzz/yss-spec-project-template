@@ -1,5 +1,5 @@
 version: 1
 interface:
   display_name: "YSS Domain"
-  short_description: "领域建模、聚合根、规则与网关设计实践落地标准化规范"
-  default_prompt: "Use $yss-domain to design aggregates, entities, domain gateways, and business rules for a YSS domain model."
+  short_description: "按批准战术模型实现聚合、规则与 Domain Gateway 接口"
+  default_prompt: "Use $yss-domain to implement approved aggregates, entities, business rules, domain tests, and the sole Domain Gateway interfaces; reroute instead of inventing unresolved rules."

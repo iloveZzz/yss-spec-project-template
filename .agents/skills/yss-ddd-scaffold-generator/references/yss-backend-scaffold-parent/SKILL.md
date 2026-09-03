@@ -45,7 +45,7 @@ infrastructure-+
 - Maven 内部仓库通过命名 profile `yss-internal` 与环境变量注入；共享模板不写内部 URL 或凭据。
 - Wrapper 必须带 checksum；DEBUG 和 MyBatis stdout SQL 只允许在 `application-local.yml`。
 - `./mvnw validate`、`./mvnw test`、`./mvnw package` 全部成功只得到 `empty-scaffold-verified`。
-- 只有 golden first slice 真实组合 Domain/Application/Infrastructure/Web 并通过根 Wrapper，才能得到 `first-slice-verified`。
+- 只有批准且版本当前的 golden first slice 真实组合 Domain/Application/Infrastructure/Web、通过下游 skill tree drift 校验与根 Wrapper，才能由 `run_first_slice_verification.mjs` 写入 `first-slice-verified`。
 
 ## 下游权威技能
 
@@ -53,5 +53,6 @@ infrastructure-+
 - Application：`yss-application`
 - Persistence：`yss-repository` + `yss-mybatis`
 - Web：`yss-web-controller` + `yss-dto` + `yss-exception`
+- 横切实现约束：`yss-validation` + `mapstruct` + `lombok` + `alibaba-java-code-style`
 
 业务代码必须回到 `yss-router`，消费批准且版本当前的 Slice Implementation Contract，并采用 `behavior-tdd`；脚手架只生成机械工程资产。

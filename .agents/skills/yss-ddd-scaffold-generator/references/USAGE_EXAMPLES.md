@@ -102,7 +102,18 @@ metadata-service/
 
 ## 4. 后续路由
 
-`empty-scaffold-verified` 不等于业务切片可实现。后续必须回到 `yss-router`，消费批准且版本当前的 Slice Implementation Contract，再按影响面加载 `yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-dto`、`yss-exception`、`yss-web-controller` 等 skill，并使用 `behavior-tdd` 实现业务行为。只有 golden first slice 全部通过才能标记 `first-slice-verified`。
+`empty-scaffold-verified` 不等于业务切片可实现。后续必须回到 `yss-router`，消费批准且版本当前的 Slice Implementation Contract，再按影响面加载 `yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-web-controller`、`yss-dto`、`yss-exception`、`yss-validation`、`mapstruct`、`lombok`、`alibaba-java-code-style` 等 skill，并使用 `behavior-tdd` 实现业务行为。
+
+完成 golden first slice 后，必须运行：
+
+```bash
+node .agents/skills/yss-ddd-scaffold-generator/scripts/run_first_slice_verification.mjs \
+  --project-root /path/to/implementation-repo/metadata-service \
+  --slice-contract-file /path/to/approved-slice-contract.json \
+  --evidence-dir /path/to/evidence/first-slice
+```
+
+只有该验证器确认合同、全层产物、skill tree digest 与根 Wrapper 全部通过，并更新 Manifest 后，才能标记 `first-slice-verified`。
 
 目标目录必须不存在。`--force`、旧项目迁移和当前模板升级均为 `unsupported`。旧项目继续按原工程维护；现代化改造必须单独立项、先评估再逐切片迁移。
 

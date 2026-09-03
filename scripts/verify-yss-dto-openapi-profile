@@ -37,6 +37,12 @@ function checkArrayData(field, label, direction) {
   ensure(Array.isArray(field.empty_value) && field.empty_value.length === 0, `${label}.empty_value 必须为 []`);
 }
 
+function checkFactory(factory, label, expectedArguments) {
+  ensure(factory && typeof factory === "object", `${label} 必须是对象`);
+  ensure(/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(factory.method ?? ""), `${label}.method 必须是 Java identifier`);
+  ensure(JSON.stringify(factory.arguments) === JSON.stringify(expectedArguments), `${label}.arguments 必须按顺序为 [${expectedArguments.join(", ")}]`);
+}
+
 try {
   const document = parseDocument(readFileSync(profilePath, "utf8"), { maxAliasCount: 0 });
   ensure(document && document.errors.length === 0, `wire profile YAML 无法解析: ${document?.errors?.map((error) => error.message).join("; ")}`);
@@ -69,6 +75,8 @@ try {
   for (const name of ["SingleResult", "MultiResult", "PageResult"]) {
     ensure(profile.wrappers[name].java_type.startsWith(`com.yss.cloud.dto.result.${name}<T>`), `${name} 必须来自 canonical result package`);
   }
+  checkFactory(profile.wrappers.SingleResult?.java_factory, "SingleResult.java_factory", ["data"]);
+  checkFactory(profile.wrappers.PageResult?.java_factory, "PageResult.java_factory", ["data", "totalCount", "pageSize", "pageIndex"]);
   const singleData = profile.wrappers.SingleResult?.data;
   ensure(singleData?.direction === "response", "SingleResult.data 必须为 response");
   ensure(singleData?.wire_shape === "endpoint-schema-or-null", "SingleResult.data 必须绑定 endpoint schema 或 null");

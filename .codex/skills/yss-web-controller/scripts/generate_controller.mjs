@@ -1,18 +1,22 @@
 #!/usr/bin/env node
-import { access, mkdir, readFile, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { constants, access, copyFile, mkdir, mkdtemp, readFile, rm, unlink, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
+import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
 
 const TYPE_MAPPING = { bigint: "Long", int: "Integer", integer: "Integer", smallint: "Integer", tinyint: "Integer", number: "Long", numeric: "BigDecimal", decimal: "BigDecimal", float: "Float", double: "Double", real: "Float", varchar: "String", varchar2: "String", nvarchar2: "String", char: "String", nchar: "String", text: "String", clob: "String", nclob: "String", date: "LocalDateTime", datetime: "LocalDateTime", timestamp: "LocalDateTime", "timestamp with time zone": "LocalDateTime", boolean: "Boolean", bool: "Boolean", bit: "Boolean", json: "String", jsonb: "String", uuid: "String" };
 const PLATFORM_VALIDATION_NAMESPACES = {
   "spring-boot-2.7-jdk8": "javax",
   "spring-boot-3-jdk17": "jakarta"
 };
-const required = ["metadata-file", "contract-file", "base-package", "module-name", "domain-segment"];
-const valued = new Set([...required, "output-dir", "web-project-dir", "web-output-dir", "author", "application-service-package", "validation-namespace"]);
+const required = ["metadata-file", "contract-file", "dto-wire-profile-file", "base-package", "module-name", "domain-segment"];
+const valued = new Set([...required, "output-dir", "web-project-dir", "web-output-dir", "author", "application-service-package", "validation-namespace", "scaffold-manifest-file"]);
 
 function usage() {
-  return "Usage: node generate_controller.mjs --metadata-file FILE --contract-file FILE --base-package PACKAGE --module-name NAME --domain-segment SEGMENT [--output-dir DIR] [--web-project-dir DIR] [--web-output-dir DIR] [--author NAME] [--application-service-package PACKAGE] [--validation-namespace javax|jakarta]";
+  return "Usage: node generate_controller.mjs --metadata-file FILE --contract-file FILE --dto-wire-profile-file FILE --base-package PACKAGE --module-name NAME --domain-segment SEGMENT [--output-dir DIR] [--web-project-dir DIR] [--web-output-dir DIR] [--scaffold-manifest-file FILE] [--author NAME] [--application-service-package PACKAGE] [--validation-namespace javax|jakarta]";
 }
 export function parseArgs(argv) {
   const args = { "output-dir": "./output", author: "System", "validation-namespace": "javax", force: false };
@@ -51,6 +55,114 @@ function fields(columns, selected, { command = false } = {}) {
 }
 function render(template, context) { return template.replace(/\$(?:\{([A-Za-z_][A-Za-z0-9_]*)\}|([A-Za-z_][A-Za-z0-9_]*))/g, (_, braced, plain) => { const key = braced || plain; if (!(key in context)) throw new Error(`missing template field: ${key}`); return context[key]; }); }
 async function exists(target) { try { await access(target); return true; } catch { return false; } }
+const present = (value) => value !== undefined && value !== null && value !== "";
+function within(root, target) {
+  const relative = path.relative(path.resolve(root), path.resolve(target));
+  return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
+}
+function simpleJavaName(javaType) {
+  return javaType.replace(/<.*$/, "").split(".").at(-1);
+}
+function paginationFields(selected, dtoProfile) {
+  const definitions = dtoProfile.page_query.fields;
+  const unique = [...new Set(selected)];
+  const unsupported = unique.filter((name) => !(name in definitions) || dtoProfile.page_query.forbidden_client_fields.includes(name));
+  if (unsupported.length) throw new Error(`unsupported pagination fields: ${unsupported.join(", ")}`);
+  return unique.map((name) => {
+    const definition = definitions[name];
+    const wireType = definition.wire_types.find((item) => item !== "null");
+    const javaType = wireType === "integer" ? (definition.nullable ? "Integer" : "int") : wireType === "string" ? "String" : null;
+    if (!javaType) throw new Error(`unsupported yss-dto pagination wire type for ${name}: ${definition.wire_types.join(", ")}`);
+    const annotation = definition.enum?.length
+      ? `    @Pattern(regexp = "${definition.enum.join("|")}", message = "${name} must be one of ${definition.enum.join(", ")}")\n`
+      : "";
+    const initializer = definition.default === undefined ? "" : ` = ${typeof definition.default === "string" ? JSON.stringify(definition.default) : definition.default}`;
+    return `${annotation}    private ${javaType} ${name}${initializer};`;
+  }).join("\n");
+}
+
+async function loadDtoWireProfile(contract, args) {
+  const profilePath = path.resolve(args["dto-wire-profile-file"]);
+  if (profilePath !== path.resolve(contract.dto_wire_profile_ref ?? "")) throw new Error("--dto-wire-profile-file does not match the approved Web generation contract");
+  if (!await exists(profilePath)) throw new Error(`yss-dto wire profile not found: ${profilePath}`);
+  const source = await readFile(profilePath);
+  const digest = createHash("sha256").update(source).digest("hex");
+  if (digest !== contract.dto_wire_profile_digest) throw new Error("yss-dto wire profile digest does not match the approved Web generation contract");
+  const document = parseDocument(source.toString("utf8"), { maxAliasCount: 0, uniqueKeys: true });
+  if (document.errors.length) throw new Error(`invalid yss-dto wire profile: ${document.errors[0].message}`);
+  const profile = document.toJS({ maxAliasCount: 0 });
+  if (profile?.schema_version !== 1 || profile?.kind !== "yss-dto-openapi-wire-profile") throw new Error("unsupported yss-dto wire profile");
+  const resultPackage = profile.canonical?.java_package;
+  const pageResult = profile.wrappers?.PageResult;
+  const singleResult = profile.wrappers?.SingleResult;
+  const commandDtoType = profile.request_bases?.command?.java_type;
+  const queryDtoType = profile.request_bases?.query?.java_type;
+  if (![resultPackage, pageResult?.java_type, singleResult?.java_type, commandDtoType, queryDtoType].every(present)) throw new Error("incomplete yss-dto wire profile type mapping");
+  if (![pageResult.java_type, singleResult.java_type].every((type) => type.startsWith(`${resultPackage}.`))) throw new Error("yss-dto result wrapper package is inconsistent");
+  if (!profile.page_query?.fields || !Array.isArray(profile.page_query?.forbidden_client_fields)) throw new Error("incomplete yss-dto page_query mapping");
+  const factory = pageResult.java_factory;
+  const singleFactory = singleResult.java_factory;
+  const javaIdentifier = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
+  if (!javaIdentifier.test(factory?.method ?? "") || !Array.isArray(factory.arguments) || !factory.arguments.length) throw new Error("incomplete yss-dto PageResult factory mapping");
+  if (!javaIdentifier.test(singleFactory?.method ?? "") || JSON.stringify(singleFactory.arguments) !== JSON.stringify(["data"])) throw new Error("incomplete yss-dto SingleResult factory mapping");
+  const expressionByArgument = { data: "toResponses(source.getData())", totalCount: "source.getTotalCount()", pageSize: "source.getPageSize()", pageIndex: "source.getPageIndex()" };
+  const unsupportedArguments = factory.arguments.filter((name) => !(name in expressionByArgument));
+  if (unsupportedArguments.length) throw new Error(`unsupported yss-dto PageResult factory arguments: ${unsupportedArguments.join(", ")}`);
+  return {
+    profile,
+    resultPackage,
+    pageResultType: pageResult.java_type.replace(/<.*$/, ""),
+    singleResultType: singleResult.java_type.replace(/<.*$/, ""),
+    pageResultFactoryMethod: factory.method,
+    singleResultFactoryMethod: singleFactory.method,
+    commandDtoType,
+    queryDtoType,
+    pageResultFactoryArguments: factory.arguments.map((name, index) => `                ${expressionByArgument[name]}${index < factory.arguments.length - 1 ? "," : ""}`).join("\n")
+  };
+}
+
+async function validateContract(contract, args) {
+  if (contract.schema_version !== 2) throw new Error(`web generation contract schema_version=${contract.schema_version} is unsupported; only schema_version=2 is accepted`);
+  if (contract.status !== "approved") throw new Error("web generation contract must be approved");
+  const requiredFields = ["contract_id", "contract_version", "current_version", "slice_id", "integration_mode", "implementation_project_root", "base_package", "module_name", "domain_segment", "application_service_package", "architecture_profile", "platform_profile", "validation_namespace", "dto_placement", "dto_wire_profile_ref", "dto_wire_profile_digest", "openapi_freeze_ref", "fields", "allowed_write_paths", "expected_evidence_files", "verification_commands"];
+  const missing = requiredFields.filter((name) => !present(contract[name]));
+  if (missing.length) throw new Error(`approved web generation contract is incomplete: ${missing.join(", ")}`);
+  if (contract.current_version !== contract.contract_version) throw new Error("web generation contract is not the current approved version");
+  if (!Number.isInteger(contract.contract_version) || contract.contract_version < 1) throw new Error("web generation contract_version must be a positive integer");
+  if (!["existing-project", "scaffold-v2"].includes(contract.integration_mode)) throw new Error("unsupported web generation integration_mode");
+  if (!["allowed_write_paths", "expected_evidence_files", "verification_commands"].every((name) => Array.isArray(contract[name]) && contract[name].length)) throw new Error("web generation contract requires non-empty allowed_write_paths, expected_evidence_files, and verification_commands");
+  if (contract.architecture_profile !== "target-domain-model" || contract.dto_placement !== "web") throw new Error("web generation only supports target-domain-model with dto_placement=web");
+  if (contract.base_package !== args["base-package"] || contract.module_name !== args["module-name"] || contract.domain_segment !== args["domain-segment"]) throw new Error("CLI generation identity does not match the approved web generation contract");
+  const applicationPackage = args["application-service-package"] || `${args["base-package"]}.application.service`;
+  if (contract.application_service_package !== applicationPackage) throw new Error("--application-service-package does not match the approved web generation contract");
+  if (!(contract.platform_profile in PLATFORM_VALIDATION_NAMESPACES)) throw new Error("unsupported platform_profile in approved web generation contract");
+  if (PLATFORM_VALIDATION_NAMESPACES[contract.platform_profile] !== contract.validation_namespace) throw new Error("platform_profile and validation_namespace are inconsistent");
+  if (contract.validation_namespace !== args["validation-namespace"]) throw new Error("--validation-namespace must match the approved web generation contract");
+
+  const implementationRoot = path.resolve(contract.implementation_project_root);
+  if (contract.integration_mode === "existing-project") {
+    if (args["scaffold-manifest-file"] || present(contract.scaffold_manifest_ref)) throw new Error("existing-project Web generation must not claim a scaffold manifest");
+    return { applicationPackage, implementationRoot };
+  }
+
+  if (!args["scaffold-manifest-file"] || !present(contract.scaffold_manifest_ref)) throw new Error("scaffold-v2 Web generation requires --scaffold-manifest-file and scaffold_manifest_ref");
+  const manifestPath = path.resolve(args["scaffold-manifest-file"]);
+  if (manifestPath !== path.resolve(contract.scaffold_manifest_ref)) throw new Error("--scaffold-manifest-file does not match the approved web generation contract");
+  if (!await exists(manifestPath)) throw new Error(`scaffold manifest not found: ${manifestPath}`);
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  if (manifest.schema_version !== 2) throw new Error("scaffold manifest must use schema_version=2");
+  if (!["empty-scaffold-verified", "first-slice-verified"].includes(manifest.completion_level)) throw new Error("scaffold manifest must be empty-scaffold-verified before Web generation");
+  const scaffoldRoot = path.dirname(path.dirname(manifestPath));
+  if (implementationRoot !== scaffoldRoot) throw new Error("implementation_project_root does not match the scaffold manifest project root");
+  const expectedWebProject = path.join(scaffoldRoot, `${manifest.project_name}-adapter`, `${manifest.project_name}-web`);
+  if (!args["web-project-dir"] || path.resolve(args["web-project-dir"]) !== expectedWebProject) throw new Error("--web-project-dir does not match the scaffold manifest project layout");
+  const profilePairs = [["architecture", "architecture_profile"], ["platform", "platform_profile"], ["validation_namespace", "validation_namespace"], ["dto_placement", "dto_placement"]];
+  for (const [manifestField, contractField] of profilePairs) {
+    if (manifest.profiles?.[manifestField] !== contract[contractField]) throw new Error(`scaffold manifest ${manifestField} profile does not match the approved Web contract`);
+  }
+  if (manifest.base_package !== contract.base_package) throw new Error("scaffold manifest base_package does not match the approved Web contract");
+  return { applicationPackage, implementationRoot };
+}
 
 export async function generate(args, logger = console) {
   if (!await exists(args["metadata-file"])) throw new Error(`Metadata file not found: ${args["metadata-file"]}`);
@@ -59,14 +171,8 @@ export async function generate(args, logger = console) {
   try { metadata = JSON.parse(await readFile(args["metadata-file"], "utf8")); } catch (error) { throw new Error(`Error reading metadata file: ${error.message}`); }
   let contract;
   try { contract = JSON.parse(await readFile(args["contract-file"], "utf8")); } catch (error) { throw new Error(`Error reading contract file: ${error.message}`); }
-  if (contract.schema_version !== 1 || contract.status !== "approved") throw new Error("web generation contract must be schema_version=1 and approved");
-  if (contract.architecture_profile !== "target-domain-model" || contract.dto_placement !== "web") throw new Error("web generation only supports target-domain-model with dto_placement=web");
-  if (!contract.openapi_freeze_ref || !contract.fields || typeof contract.fields !== "object") throw new Error("approved web generation contract requires openapi_freeze_ref and fields");
-  if (!contract.base_package || !contract.module_name || !contract.domain_segment) throw new Error("approved web generation contract requires base_package, module_name, and domain_segment");
-  if (contract.base_package !== args["base-package"] || contract.module_name !== args["module-name"] || contract.domain_segment !== args["domain-segment"]) throw new Error("CLI generation identity does not match the approved web generation contract");
-  if (!(contract.platform_profile in PLATFORM_VALIDATION_NAMESPACES)) throw new Error("unsupported platform_profile in approved web generation contract");
-  if (PLATFORM_VALIDATION_NAMESPACES[contract.platform_profile] !== contract.validation_namespace) throw new Error("platform_profile and validation_namespace are inconsistent");
-  if (contract.validation_namespace !== args["validation-namespace"]) throw new Error("--validation-namespace must match the approved web generation contract");
+  const { applicationPackage, implementationRoot } = await validateContract(contract, args);
+  const dto = await loadDtoWireProfile(contract, args);
   const tables = metadata.tables || [];
   if (!tables.length) { logger.warn("Warning: No tables found in metadata."); return []; }
   const scriptDir = path.dirname(fileURLToPath(import.meta.url));
@@ -82,22 +188,37 @@ export async function generate(args, logger = console) {
   for (const table of tables) {
     const domainClass = pascal(table.table_name); const domainVar = lowerCamel(table.table_name); const domainDesc = String(table.table_comment || domainClass).trim().replaceAll("\n", " ");
     const approvedFields = contract.fields[table.table_name];
-    if (!approvedFields || ["create", "update", "query", "response"].some((name) => !Array.isArray(approvedFields[name]))) throw new Error(`approved web field contract is missing for table: ${table.table_name}`);
-    const applicationPackage = args["application-service-package"] || `${args["base-package"]}.application.service`;
-    const context = { base_package: args["base-package"], module_name: args["module-name"], domain_class: domainClass, domain_var: domainVar, domain_desc: domainDesc, domain_url_path: kebab(table.table_name), domain_pkg_name: args["domain-segment"], author: args.author, dto_imports: [`import ${args["base-package"]}.rest.dto.request.${domainClass}CreateRequest;`, `import ${args["base-package"]}.rest.dto.request.${domainClass}UpdateRequest;`, `import ${args["base-package"]}.rest.dto.request.${domainClass}PageRequest;`, `import ${args["base-package"]}.rest.dto.response.${domainClass}Response;`].join("\n"), application_type_imports: [`import ${args["base-package"]}.application.command.${domainClass}CreateCommand;`, `import ${args["base-package"]}.application.command.${domainClass}UpdateCommand;`, `import ${args["base-package"]}.application.query.${domainClass}PageQuery;`, `import ${args["base-package"]}.application.result.${domainClass}Result;`].join("\n"), application_service_import: `import ${applicationPackage}.${domainClass}Service;`, web_convertor_import: `import ${args["base-package"]}.rest.convertor.${domainClass}WebConvertor;`, web_convertor_class: `${domainClass}WebConvertor`, application_service_field: `private final ${domainClass}Service ${domainVar}Service;`, query_call: `${domainVar}Service.page(webConvertor.toPageQuery(request))`, detail_call: `${domainVar}Service.detail(id)`, add_call: `${domainVar}Service.add(webConvertor.toCreateCommand(request))`, update_call: `${domainVar}Service.update(webConvertor.toUpdateCommand(request))`, delete_call: `${domainVar}Service.delete(id)`, response_class: `${domainClass}Response`, create_request_class: `${domainClass}CreateRequest`, update_request_class: `${domainClass}UpdateRequest`, page_request_class: `${domainClass}PageRequest`, validation_namespace: args["validation-namespace"] };
+    if (!approvedFields || ["create", "update", "query", "pagination", "response"].some((name) => !Array.isArray(approvedFields[name]))) throw new Error(`approved web field contract is missing create/update/query/pagination/response allowlists for table: ${table.table_name}`);
+    const context = { base_package: args["base-package"], module_name: args["module-name"], domain_class: domainClass, domain_var: domainVar, domain_desc: domainDesc, domain_url_path: kebab(table.table_name), domain_pkg_name: args["domain-segment"], author: args.author, dto_imports: [`import ${args["base-package"]}.rest.dto.request.${domainClass}CreateRequest;`, `import ${args["base-package"]}.rest.dto.request.${domainClass}UpdateRequest;`, `import ${args["base-package"]}.rest.dto.request.${domainClass}PageRequest;`, `import ${args["base-package"]}.rest.dto.response.${domainClass}Response;`].join("\n"), application_type_imports: [`import ${args["base-package"]}.application.command.${domainClass}CreateCommand;`, `import ${args["base-package"]}.application.command.${domainClass}UpdateCommand;`, `import ${args["base-package"]}.application.query.${domainClass}PageQuery;`, `import ${args["base-package"]}.application.result.${domainClass}Result;`].join("\n"), application_service_import: `import ${applicationPackage}.${domainClass}Service;`, web_convertor_import: `import ${args["base-package"]}.rest.convertor.${domainClass}WebConvertor;`, web_convertor_class: `${domainClass}WebConvertor`, application_service_field: `private final ${domainClass}Service ${domainVar}Service;`, query_call: `${domainVar}Service.page(webConvertor.toPageQuery(request))`, detail_call: `${domainVar}Service.detail(id)`, add_call: `${domainVar}Service.add(webConvertor.toCreateCommand(request))`, update_call: `${domainVar}Service.update(webConvertor.toUpdateCommand(request))`, delete_call: `${domainVar}Service.delete(id)`, response_class: `${domainClass}Response`, create_request_class: `${domainClass}CreateRequest`, update_request_class: `${domainClass}UpdateRequest`, page_request_class: `${domainClass}PageRequest`, validation_namespace: args["validation-namespace"], result_package: dto.resultPackage, page_result_type: dto.pageResultType, page_result_simple_name: simpleJavaName(dto.pageResultType), page_result_factory_method: dto.pageResultFactoryMethod, single_result_type: dto.singleResultType, single_result_simple_name: simpleJavaName(dto.singleResultType), single_result_factory_method: dto.singleResultFactoryMethod, command_dto_type: dto.commandDtoType, command_dto_simple_name: simpleJavaName(dto.commandDtoType), query_dto_type: dto.queryDtoType, query_dto_simple_name: simpleJavaName(dto.queryDtoType), page_result_factory_arguments: dto.pageResultFactoryArguments };
     plan(path.join(webRoot, `${domainClass}Controller.java`), render(templates["Controller.java.template"], context));
     plan(path.join(webRoot, "convertor", `${domainClass}WebConvertor.java`), render(templates["WebConvertor.java.template"], context));
-    for (const [templateName, target, declaration] of [["web/dto/Response.java.template", path.join(webRoot, "dto", "response", `${domainClass}Response.java`), fields(table.columns || [], approvedFields.response)], ["web/dto/CreateRequest.java.template", path.join(webRoot, "dto", "request", `${domainClass}CreateRequest.java`), fields(table.columns || [], approvedFields.create, { command: true })], ["web/dto/UpdateRequest.java.template", path.join(webRoot, "dto", "request", `${domainClass}UpdateRequest.java`), fields(table.columns || [], approvedFields.update, { command: true })], ["web/dto/PageRequest.java.template", path.join(webRoot, "dto", "request", `${domainClass}PageRequest.java`), fields(table.columns || [], approvedFields.query)]]) plan(target, render(templates[templateName], { ...context, field_declarations: declaration }));
+    for (const [templateName, target, declaration] of [["web/dto/Response.java.template", path.join(webRoot, "dto", "response", `${domainClass}Response.java`), fields(table.columns || [], approvedFields.response)], ["web/dto/CreateRequest.java.template", path.join(webRoot, "dto", "request", `${domainClass}CreateRequest.java`), fields(table.columns || [], approvedFields.create, { command: true })], ["web/dto/UpdateRequest.java.template", path.join(webRoot, "dto", "request", `${domainClass}UpdateRequest.java`), fields(table.columns || [], approvedFields.update, { command: true })], ["web/dto/PageRequest.java.template", path.join(webRoot, "dto", "request", `${domainClass}PageRequest.java`), fields(table.columns || [], approvedFields.query)]]) plan(target, render(templates[templateName], { ...context, field_declarations: declaration, pagination_field_declarations: paginationFields(approvedFields.pagination, dto.profile) }));
   }
   const targets = planned.map(({ target }) => target);
   if (new Set(targets).size !== targets.length) throw new Error("approved metadata produces duplicate target files");
   const existing = [];
   for (const target of targets) if (await exists(target)) existing.push(target);
   if (existing.length) throw new Error(`initialize-only Web generation refuses existing targets: ${existing.join(", ")}`);
-  for (const { target, contents } of planned) {
-    await mkdir(path.dirname(target), { recursive: true });
-    await writeFile(target, contents, "utf8");
-    logger.log(`Generated: ${target}`);
+  const allowedRoots = contract.allowed_write_paths.map((item) => path.resolve(implementationRoot, String(item)));
+  const outside = targets.filter((target) => !allowedRoots.some((root) => within(root, target)));
+  if (outside.length) throw new Error(`planned Web targets are outside allowed_write_paths: ${outside.join(", ")}`);
+  const staging = await mkdtemp(path.join(tmpdir(), "yss-web-generation-"));
+  const created = [];
+  try {
+    for (const [index, { contents }] of planned.entries()) await writeFile(path.join(staging, String(index)), contents, "utf8");
+    for (const [index, { target }] of planned.entries()) {
+      await mkdir(path.dirname(target), { recursive: true });
+      await copyFile(path.join(staging, String(index)), target, constants.COPYFILE_EXCL);
+      created.push(target);
+      logger.log(`Generated: ${target}`);
+    }
+  } catch (error) {
+    for (const target of created.reverse()) {
+      try { await unlink(target); } catch (cleanupError) { if (cleanupError.code !== "ENOENT") error.cleanupError = cleanupError.message; }
+    }
+    throw error;
+  } finally {
+    await rm(staging, { recursive: true, force: true });
   }
   return targets;
 }

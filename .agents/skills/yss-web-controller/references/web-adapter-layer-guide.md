@@ -20,7 +20,7 @@ DTO 固定属于 Web module。独立 client module 与把 client DTO 放进 Doma
 
 - Request/Response 字段必须来自冻结 OpenAPI 和批准 allowlist。
 - 数据库 metadata 只补充 Java 类型候选，不能自行扩大公开字段。
-- Web Page Request 不继承含内部协作字段的 `PageQuery`；只暴露批准的 `pageIndex/pageSize/orderBy/orderDirection/groupBy` 及业务查询字段。
+- Web Page Request 不继承含内部协作字段的 `PageQuery`；分页字段、默认值、枚举和禁用字段全部来自合同绑定且 digest 匹配的 `yss-dto` wire profile，再与 `fields.<table>.pagination` allowlist 取交集。Web Adapter 不维护第二份分页协议。
 - `orderBy` / `groupBy` 必须在 Application/Infrastructure 映射到数据库列白名单。
 - `offset`、`needTotalCount`、`tempTotalCount` 禁止进入 HTTP 绑定面。
 
@@ -70,9 +70,11 @@ public interface QualityRuleWebConvertor {
 
 ## 6. 生成门禁
 
-- `generate_controller.mjs` 必须消费 `status=approved` 的 Web generation contract。
-- 合同必须声明 `base_package`、`module_name`、`domain_segment`、`target-domain-model`、平台/validation Profile、`dto_placement=web`、OpenAPI Freeze 引用和每张表的 create/update/query/response allowlist；CLI 身份必须逐项匹配。
-- 生成器是 initialize-only，必须在写入前规划全部目标；任一文件已存在或传入 `--force` 时整体阻断，不允许“跳过已有文件后继续生成”的部分成功。
+- `generate_controller.mjs` 只消费 `schema_version=2`、`status=approved` 且 `current_version=contract_version` 的 Web generation contract；schema v1 为 `unsupported`。
+- `references/web-generation-contract.schema.json` 是 Web generation contract v2 的机器可读结构合同；生成器仍执行跨字段、文件系统与 Manifest 语义校验。
+- 合同必须声明 Slice `contract_id/contract_version/slice_id`、`integration_mode`、`implementation_project_root`、`allowed_write_paths`、预期证据、验证命令、`base_package`、`module_name`、`domain_segment`、Application Service package、`target-domain-model`、平台/validation Profile、`dto_placement=web`、`dto_wire_profile_ref/digest`、OpenAPI Freeze 引用和每张表的 create/update/query/pagination/response allowlist；CLI 身份必须逐项匹配。
+- `scaffold-v2` 模式必须绑定已达 `empty-scaffold-verified` 或 `first-slice-verified` 的 Manifest，并校验标准 Web module 路径和所有 Profile；`existing-project` 模式不得伪造 scaffold manifest。
+- 生成器是 initialize-only，必须在写入前规划全部目标并校验每个目标位于批准写路径；任一文件已存在或传入 `--force` 时整体阻断。落盘使用排他创建，任一步失败都回滚本次已创建文件，不允许部分成功。
 - 权限、校验语义、异常行为和复杂查询仍使用 `behavior-tdd`，不能由 metadata 猜测。
 
 ## 7. 验证
