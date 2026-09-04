@@ -1,0 +1,25 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  将 create-yss-harness-design CLI 的默认战略设计模板提交和父仓 submodule gitlink
+  同步到已验证版本，改变新建项目的跨仓库生成输入，因此按 cross-repo-contract 判定 L3。
+triggers:
+  - cross-repo-contract
+changed_assets:
+  - submodules/create-yss-strategic-design
+verification_evidence:
+  - kind: cross-repository-verification
+    command: cd submodules/create-yss-strategic-design && npm test
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: >-
+  CLI 已分别通过远端固定 ref 与本地 sibling 两种同步路径验证；本 checkpoint 仅表示
+  父仓与 CLI 的 implementation-ready 固定点，不代替 npm 发布或模板发布批准。
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null
