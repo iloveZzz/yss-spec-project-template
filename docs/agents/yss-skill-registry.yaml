@@ -439,6 +439,12 @@ skills:
     instance_default_discoverable: false
     aliases: [microapp-commit]
     impacts: [frontend]
+  - id: yss-mvc-scaffold-generator
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
   - id: yss-mybatis
     layer: specialist
     maturity: supported

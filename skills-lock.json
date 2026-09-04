@@ -1303,13 +1303,12 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-mvc-scaffold-generator/SKILL.md",
-        "effectiveHash": "d4a4c86556739f4db9b1208f94b8e22d5901bb98dc84cbc98be720dbdae37108",
+        "effectiveHash": "ca124741e5074a1dd74868e29207ee89e7ec8e6f8c91b959e18a7b427fb6f875",
         "targets": [
           ".agents/skills",
           ".claude/skills",
           ".codex/skills",
           ".cursor/skills",
-          ".hermes/skills",
           ".pi/skills",
           ".qoder/skills",
           ".trae/skills"

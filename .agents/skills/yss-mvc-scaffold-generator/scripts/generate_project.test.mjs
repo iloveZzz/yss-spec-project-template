@@ -61,7 +61,7 @@ test("生成固定六模块和 mock endpoint", async (t) => {
   assert.match(await readFile(path.join(target, "docs/templates/implementation-routing-template.md"), "utf8"), /implementation/);
   assert.match(await readFile(path.join(target, "docs/templates/verification-record-template.md"), "utf8"), /verification/i);
   await readFile(path.join(skillUtils, ".agents/skills/yss-product-lifecycle/SKILL.md"), "utf8");
-  for (const projection of [".agents", ".claude", ".codex", ".cursor", ".hermes", ".pi", ".qoder", ".trae"]) {
+  for (const projection of [".agents", ".claude", ".codex", ".cursor", ".pi", ".qoder", ".trae"]) {
     await assert.rejects(stat(path.join(skillUtils, projection, "skills/yss-mvc-scaffold-generator")), { code: "ENOENT" });
   }
   assert.equal(path.resolve(spawnSync("git", ["-C", target, "rev-parse", "--show-toplevel"], { encoding: "utf8" }).stdout.trim()), path.resolve(target));
