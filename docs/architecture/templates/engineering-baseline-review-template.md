@@ -76,10 +76,10 @@ owner: ai
 | 检查项 | 结论 | 证据 / 备注 |
 |---|---|---|
 | 原型确认已完成，或已记录 `not-applicable` 原因 | 是 / 否 / 不适用 | `prototype_confirmation` |
-| `scaffold_status=required` 时先由 Router 编译脚手架合同并经生命周期批准，再使用 `yss-ddd-scaffold-generator` | 是 / 否 / 不适用 | 结构化 `contract_id` / `contract_version`、Router draft、批准引用、持久化引用和生成结果 |
+| `scaffold_status=required` 时先由 实现合同编译器 编译脚手架合同并经生命周期批准，再使用 `yss-ddd-scaffold-generator` | 是 / 否 / 不适用 | 结构化 `contract_id` / `contract_version`、实现合同编译器 draft、批准引用、持久化引用和生成结果 |
 | 脚手架生成结果只包含工程结构、配置和机械模板 | 是 / 否 | 禁止生成业务行为 |
 | 生成器输入、预期文件和实际 `./mvnw validate` / `./mvnw test` / `./mvnw package` 已留证 | 是 / 否 | 每条命令记录 `exit_code`、`duration_ms`、stdout/stderr 引用和执行时间；打印命令不算证据 |
-| `yss-backend-scaffold-parent` 基线校验已完成并重新进入 `yss-router` | 是 / 否 / 不适用 |  |
+| `yss-backend-scaffold-parent` 基线校验已完成并重新进入 `yss-implementation-contract-compiler` | 是 / 否 / 不适用 |  |
 | 脚手架后所有业务代码均绑定批准 Slice Implementation Contract 和 YSS Skill Execution Result | 是 / 否 |  |
 
 ## 5. 完成标准
@@ -92,7 +92,7 @@ owner: ai
 - [ ] `baseline_id` / `baseline_version` 已登记，后续切片和审查只引用该质量基线，未重复定义。
 - [ ] 命中高风险影响时已完成 Doubt-Driven 主张、反证、证据和残余风险记录；未命中时已记录 `not-applicable` 原因。
 - [ ] 风险影响、验证证据和责任人已记录。
-- [ ] 原型确认后已按脚手架顺序完成工程基线、生成器、`yss-backend-scaffold-parent` 和 Router 重编译；脚手架未生成业务行为。
+- [ ] 原型确认后已按脚手架顺序完成工程基线、生成器、`yss-backend-scaffold-parent` 和 实现合同编译器 重编译；脚手架未生成业务行为。
 
 ## 6. 下一步门禁
 

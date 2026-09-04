@@ -18,7 +18,7 @@
 | `work-unit.domain-strategy-design` | project-instance | DDD 战略设计 | 已澄清的业务场景、领域词汇、约束和现有上下文。 | 子域、限界上下文、Context Map、统一语言、事件、核心领域概念候选和不变量。 | 边界、语义方向、规则所有权和关键场景可审查；无未解释冲突。 |
 | `work-unit.stage-decision` | project-instance | 阶段决策包综合 | Discovery、DDD 战略设计以及产品经理负责的商业约束输入。 | 带版本、digest、证据和下游映射的阶段决策包。 | 必填字段、引用、影响面和下游消费验证通过；批准门禁完成。 |
 | `work-unit.spec-synthesis` | project-instance | Spec 综合 | 已确认的 Discovery 记录和测试 seam。 | Spec、产品总体设计和功能架构。 | Spec 内容完整并进入 ready-for-human；下游推进仍需 gate.spec-baseline-approved。 |
-| `work-unit.prototype-design` | project-instance | 原型设计与验证 | Spec、产品设计影响和状态矩阵。 | 交互说明、低/高保真原型、评审、AntD CLI 和浏览器证据。 | 原型评审、高保真验证和用户确认门禁均通过。 |
+| `work-unit.prototype-design` | project-instance | 原型设计与验证 | Spec、产品设计影响和状态矩阵。 | 交互说明、低保真、状态矩阵、H1/H2 原型交付物、统一 Design QA、档位验证证据与前端实现交接事项。 | 低保真评审、schema v3 原型交付物验证和用户确认门禁均通过；生产组件待验事项已交接到前端实现计划。 |
 | `work-unit.technical-analysis` | project-instance | 技术分析与契约冻结 | Spec、原型、API/数据/工程影响面。 | OpenAPI、数据架构、Tactical DDD Check、工程基线、架构审查和 Slice 合同草案。 | 命中契约已冻结；无 API 影响有可读记录；命中领域影响时战术模型无未解释冲突；工程基线通过。 |
 | `work-unit.ticket-decomposition` | project-instance | 垂直切片 Ticket 正式化 | 冻结 Spec、设计、契约和阻塞关系。 | 功能父 Ticket、垂直切片和批准的 Slice Implementation Contract。 | 切片可独立验证；生命周期复算后才能 ready-for-agent。 |
 | `work-unit.slice-implementation` | project-instance | 垂直切片实现 | 当前版本 Slice Implementation Contract 和允许写路径。 | 前后端实现、TDD 和 YSS Skill Execution Result。 | 行为通过 `behavior-tdd`；UI 影响完成还原验证计划；无 drift/violation。 |

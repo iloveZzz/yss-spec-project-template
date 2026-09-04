@@ -12,8 +12,8 @@
 | Discovery | `docs/.scratch/<feature>/discovery/<feature>-discovery.md` | 可选 |
 | 原型阶段合同 / Product Design 路由 | `yss-prototype-stage -> product-design:index -> <focused skill>` | 必需；记录 `$get-context`、`$ideate`、`$prototype`、`$image-to-code` 或 `$url-to-code` |
 | 原型 / 线框图 | `<链接或导出图片路径>` | Excalidraw / Figma / Penpot / tldraw / Axure / Markdown |
-| 高保真 HTML 原型 | `docs/.scratch/<feature>/design/prototypes/index.html` | 低保真原型评审通过后补齐；主题/视觉标准必须为 Ant Design v6，标准 React 组件锁定 antd@6，生产映射为 YSS UI + Ant Design Vue 4.x；产出后必须获得用户确认 |
-| 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 记录实际 CLI / AntD 版本、CLI JSON 输出、浏览器验证和阻塞项 |
+| 原型交付物 | `docs/.scratch/<feature>/design/prototypes/index.html` 或稳定 URL | 低保真评审后按 H1/H2 档位补齐；H2 AntD 条件取事实；真实组件待验事项交接到前端实现计划，产出后必须获得用户确认 |
+| 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 记录 schema v3 档位、浏览器、统一 Design QA、条件组件证据和阻塞项 |
 | 现有 API 草案 | `docs/.scratch/<feature>/api/<feature>.yaml` | 可选；通常应先完成产品设计和 Spec 校准 |
 
 ## 2. 页面地图
@@ -105,8 +105,8 @@
 - loading、empty、error、no-permission、readonly、conflict、dirty-form 状态已展示，或明确不适用。
 - 每个表格列、筛选条件、表单字段、抽屉、弹窗和按钮都有数据来源或契约反推说明。
 - 设计可以拆成独立可演示的垂直切片。
-- 低保真原型评审通过后，高保真 HTML 原型使用 Ant Design v6 主题/视觉标准覆盖主流程、关键状态和响应式断点，并记录到生产 YSS UI/Ant Design Vue 4.x 的语义映射。
-- 原型产出前已使用 `antd` CLI 查询设计语言、组件 API、demo、token 和 semantic 信息；原型产出后已在 `prototype-evidence.yaml` 记录实际版本、CLI 与浏览器验证证据。
+- 低保真评审通过后，记录档位触发与待确认决定；H1 覆盖视觉和少量交互，H2 覆盖主流程/关键异常。
+- H2 只有实际使用 React AntD 且 fact pack 不新鲜时才执行增量 CLI 查询；H1 不创建 AntD 证据。任何原型档位都不得调用 `yss-ui` 或声明已验证真实生产组件。
 
 ## 9. 决策与未决问题
 

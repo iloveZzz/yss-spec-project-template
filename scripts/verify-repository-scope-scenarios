@@ -217,8 +217,8 @@ const markerFiles = [
   ["docs/templates/cross-repo-slice-template.md", "superproject-gitlink-update"],
   ["docs/templates/implementation-routing-template.md", "git-submodule-harness-apps"],
   [".agents/skills/implementation-repo-onboarding/SKILL.md", "git-submodule"],
-  [".agents/skills/yss-router/references/slice-implementation-contract.md", "git-submodule-harness-apps"],
-  [".agents/skills/yss-router/references/router-contract.yaml", "git-submodule-harness-apps"],
+  [".agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md", "git-submodule-harness-apps"],
+  [".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml", "git-submodule-harness-apps"],
   [".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml", "repository_scope=git-submodule"],
   [".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs", "gitSubmoduleScaffoldViolation"],
   [".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs", "refuseGitlinkAsRegularDirectory"]

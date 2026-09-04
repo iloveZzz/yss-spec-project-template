@@ -55,4 +55,4 @@ infrastructure-+
 - Web：`yss-web-controller` + `yss-dto` + `yss-exception`
 - 横切实现约束：`yss-validation` + `mapstruct` + `lombok` + `alibaba-java-code-style`
 
-业务代码必须回到 `yss-router`，消费批准且版本当前的 Slice Implementation Contract，并采用 `behavior-tdd`；脚手架只生成机械工程资产。
+业务代码必须回到 `yss-implementation-contract-compiler`，消费批准且版本当前的 Slice Implementation Contract，并采用 `behavior-tdd`；脚手架只生成机械工程资产。

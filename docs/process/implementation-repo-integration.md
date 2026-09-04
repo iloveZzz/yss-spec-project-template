@@ -40,7 +40,7 @@ apps/
 - 后端：已登记项目根的 `./mvnw` 校验 / 测试；若工程已配置 Checkstyle、P3C 或 Spotless，审查时实际执行。
 - `git-submodule` 必须递归检出；空 gitlink 不得当作「没有工程」。
 - 模板源 `.cursor/environment.json` 只安装模板校验依赖（`jsonschema`、模板 `pnpm`），**不是**实现仓审查运行时。`project-instance` 与实现仓库的 Cloud / CI 环境自行包含 JDK、Maven Wrapper 和 `pnpm`。
-- 审查任务包只写证据路径；专项 skill 只读，不得写实现。审查 finding 按 `review_standards_route.finding_disposition` 分流：`violation` 交实现者修复后全轴复审；`drift` / `new_impacts` 回 Router，不在审查会话中改代码。
+- 审查任务包只写证据路径；专项 skill 只读，不得写实现。审查 finding 按 `review_standards_route.finding_disposition` 分流：`violation` 交实现者修复后全轴复审；`drift` / `new_impacts` 回 实现合同编译器，不在审查会话中改代码。
 
 ## 1.3 `repository_scope: git-submodule`
 

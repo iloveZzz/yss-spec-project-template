@@ -46,7 +46,7 @@ function sha256(content) { return createHash("sha256").update(content).digest("h
 function usage(error) {
   const text = `YSS DDD 脚手架生成器\n\n` +
     `用法: node scripts/generate_scaffold.mjs --project-name <kebab-case> --base-package <package> --output-dir <dir> --contract-file <json> [选项]\n\n` +
-    `必填合同元数据: --contract-id --contract-version --approval-ref --router-draft-ref --persisted-ref\n` +
+    `必填合同元数据: --contract-id --contract-version --approval-ref --compiler-draft-ref --persisted-ref\n` +
     `Maven 坐标: --group-id --project-version --parent-group-id --parent-artifact-id --parent-version --yss-components-version\n` +
     `固定 Profile: target-domain-model / mybatis-plus / spring-boot-2.7-jdk8 / javax / web / yss-internal\n` +
     `本生成器严格 initialize-only；--force 和任何已有项目目标均为 unsupported。\n` +
@@ -60,7 +60,7 @@ function parseArgs(argv) {
   const mapping = new Map([
     ["--project-name", "projectName"], ["--base-package", "basePackage"], ["--output-dir", "outputDir"],
     ["--database", "database"], ["--contract-id", "contractId"], ["--contract-version", "contractVersion"],
-    ["--approval-ref", "approvalRef"], ["--router-draft-ref", "routerDraftRef"], ["--persisted-ref", "persistedRef"],
+    ["--approval-ref", "approvalRef"], ["--compiler-draft-ref", "compilerDraftRef"], ["--persisted-ref", "persistedRef"],
     ["--contract-file", "contractFile"],
     ["--group-id", "groupId"], ["--project-version", "projectVersion"], ["--parent-group-id", "parentGroupId"],
     ["--parent-artifact-id", "parentArtifactId"], ["--parent-version", "parentVersion"],
@@ -82,7 +82,7 @@ function parseArgs(argv) {
   }
   if (options.help) return options;
   for (const [flag, key] of mapping) {
-    if (["database", "overwriteScope", "rollbackRef", "contractId", "contractVersion", "approvalRef", "routerDraftRef", "persistedRef", "groupId", "projectVersion", "parentGroupId", "parentArtifactId", "parentVersion", "yssComponentsVersion"].includes(key)) continue;
+    if (["database", "overwriteScope", "rollbackRef", "contractId", "contractVersion", "approvalRef", "compilerDraftRef", "persistedRef", "groupId", "projectVersion", "parentGroupId", "parentArtifactId", "parentVersion", "yssComponentsVersion"].includes(key)) continue;
     if (!options[key]) fail(`缺少必填参数: ${flag}`);
   }
   if (options.database !== "mysql") fail("参数 --database 只支持 mysql");
@@ -200,17 +200,17 @@ class ScaffoldGenerator {
     let contract; try { contract = JSON.parse(contractText); } catch { fail(`脚手架合同文件无法读取或不是合法 JSON: ${this.contractFile}`); }
     if (!contract || Array.isArray(contract) || typeof contract !== "object") fail("脚手架合同必须是 JSON 对象");
     if (contract.schema_version !== 2) fail(`unsupported: scaffold contract schema_version=${contract.schema_version}；只接受 Target Profile schema v2，不提供自动升级`);
-    const requiredMetadata = [["--contract-id", this.options.contractId], ["--contract-version", this.options.contractVersion], ["--approval-ref", this.options.approvalRef], ["--router-draft-ref", this.options.routerDraftRef], ["--persisted-ref", this.options.persistedRef]];
+    const requiredMetadata = [["--contract-id", this.options.contractId], ["--contract-version", this.options.contractVersion], ["--approval-ref", this.options.approvalRef], ["--compiler-draft-ref", this.options.compilerDraftRef], ["--persisted-ref", this.options.persistedRef]];
     const missing = requiredMetadata.filter(([, value]) => !isPresent(value)).map(([flag]) => flag);
     if (missing.length) fail(`生成项目必须提供当前已批准脚手架合同的完整元数据: ${missing.join(", ")}`);
-    const required = ["schema_version", "contract_id", "contract_version", "scaffold_request_id", "status", "router_draft_ref", "lifecycle_approval_ref", "persisted_ref", "current_version", "implementation_repository", "backend_repository", "scaffold_status", "project_name", "target_output_dir", "base_package", "maven_coordinates", "profiles", "allowed_write_paths", "expected_evidence_files", "verification_commands", "approval", "work_unit", "generation_policy"];
+    const required = ["schema_version", "contract_id", "contract_version", "scaffold_request_id", "status", "compiler_draft_ref", "lifecycle_approval_ref", "persisted_ref", "current_version", "implementation_repository", "backend_repository", "scaffold_status", "project_name", "target_output_dir", "base_package", "maven_coordinates", "profiles", "allowed_write_paths", "expected_evidence_files", "verification_commands", "approval", "work_unit", "generation_policy"];
     const missingFields = required.filter((field) => !isPresent(contract[field]));
     if (missingFields.length) fail(`脚手架合同缺少结构化字段: ${missingFields.join(", ")}`);
     if (contract.status !== "approved") fail("脚手架合同必须已由生命周期批准");
     if (contract.contract_id !== this.options.contractId) fail("--contract-id 与脚手架合同不一致");
     if (contract.contract_version !== this.options.contractVersion) fail("--contract-version 与脚手架合同不一致");
     if (contract.current_version !== contract.contract_version) fail("脚手架合同版本不是当前版本");
-    if (contract.router_draft_ref !== this.options.routerDraftRef) fail("--router-draft-ref 与脚手架合同不一致");
+    if (contract.compiler_draft_ref !== this.options.compilerDraftRef) fail("--compiler-draft-ref 与脚手架合同不一致");
     if (contract.persisted_ref !== this.options.persistedRef) fail("--persisted-ref 与脚手架合同不一致");
     if (contract.lifecycle_approval_ref !== this.options.approvalRef) fail("--approval-ref 与脚手架合同不一致");
     if (contract.scaffold_status !== "required") fail("脚手架生成器只接受 scaffold_status=required");
@@ -340,8 +340,8 @@ class ScaffoldGenerator {
       downstream[skill] = await isFile(path.join(skillRoot, "SKILL.md")) ? await treeDigest(skillRoot) : "unavailable";
     }
     const scaffoldParent = path.join(SKILL_ROOT, "references", "yss-backend-scaffold-parent", "SKILL.md");
-    const routerContract = path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-router", "references", "router-contract.yaml");
-    const manifest = { schema_version: 2, contract_id: this.options.contractId, contract_version: this.options.contractVersion, scaffold_request_id: contract.scaffold_request_id, approval_ref: this.options.approvalRef, router_draft_ref: this.options.routerDraftRef, persisted_ref: this.options.persistedRef, contract_file_ref: this.contractFile, contract_digest: this.contractDigest, lifecycle_approval_ref: contract.lifecycle_approval_ref, current_version: contract.current_version, approver: contract.approval.approver, allowed_write_paths: contract.allowed_write_paths, expected_evidence_files: contract.expected_evidence_files, project_name: this.projectName, base_package: this.basePackage, bootstrap_main_class: `${this.basePackage}.${this.applicationClassName}`, bootstrap_main_source: this.bootstrapMainSource, maven_coordinates: this.mavenCoordinates, maven_coordinates_source: this.mavenCoordinatesSource, profiles: this.profiles, database: this.options.database, generation_mode: "controlled-generation", completion_level: "generated", generator: { id: "yss-ddd-scaffold-generator", template_digest: await treeDigest(path.join(SKILL_ROOT, "assets")) }, ownership: { generated_files: generatedFiles, user_owned_globs: ["**/src/main/java/**", "**/src/test/java/**", "db/**"] }, readiness: { downstream_skills: downstream, contracts: { scaffold_parent: sha256(await readFile(scaffoldParent)), router_contract: sha256(await readFile(routerContract)) }, architecture_ruleset: sha256(await readFile(path.join(this.javaTemplateDir, "architecture-rules-test.java.template"))) }, generation_policy: { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }, verification_commands: COMMANDS, generated_at: isoNow() };
+    const compilerContract = path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-implementation-contract-compiler", "references", "compiler-contract.yaml");
+    const manifest = { schema_version: 2, contract_id: this.options.contractId, contract_version: this.options.contractVersion, scaffold_request_id: contract.scaffold_request_id, approval_ref: this.options.approvalRef, compiler_draft_ref: this.options.compilerDraftRef, persisted_ref: this.options.persistedRef, contract_file_ref: this.contractFile, contract_digest: this.contractDigest, lifecycle_approval_ref: contract.lifecycle_approval_ref, current_version: contract.current_version, approver: contract.approval.approver, allowed_write_paths: contract.allowed_write_paths, expected_evidence_files: contract.expected_evidence_files, project_name: this.projectName, base_package: this.basePackage, bootstrap_main_class: `${this.basePackage}.${this.applicationClassName}`, bootstrap_main_source: this.bootstrapMainSource, maven_coordinates: this.mavenCoordinates, maven_coordinates_source: this.mavenCoordinatesSource, profiles: this.profiles, database: this.options.database, generation_mode: "controlled-generation", completion_level: "generated", generator: { id: "yss-ddd-scaffold-generator", template_digest: await treeDigest(path.join(SKILL_ROOT, "assets")) }, ownership: { generated_files: generatedFiles, user_owned_globs: ["**/src/main/java/**", "**/src/test/java/**", "db/**"] }, readiness: { downstream_skills: downstream, contracts: { scaffold_parent: sha256(await readFile(scaffoldParent)), compiler_contract: sha256(await readFile(compilerContract)) }, architecture_ruleset: sha256(await readFile(path.join(this.javaTemplateDir, "architecture-rules-test.java.template"))) }, generation_policy: { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }, verification_commands: COMMANDS, generated_at: isoNow() };
     await writeText(path.join(this.projectRoot, ".yss", "scaffold-generation.json"), `${JSON.stringify(manifest, null, 2)}\n`); console.log("  ✓ .yss/scaffold-generation.json");
   }
   async copyWrapperFiles() {

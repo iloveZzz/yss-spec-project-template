@@ -21,7 +21,7 @@ Use this skill for YSS backend upgrade analysis and migration tasks around Sprin
 2. Check for Jakarta namespace changes (`javax.servlet`, `javax.validation`, `javax.annotation`, JPA APIs, and related imports).
 3. Check Spring Security configuration style, deprecated adapters, authorization server dependencies, and filter registration behavior.
 4. Check component-specific integration by loading specialist skills such as `yss-mybatis`, `yss-dto`, `yss-cache`, `yss-audit-log`, `yss-excel-mvc`, or `yss-jdbc`.
-5. Prefer source-backed evidence from the local workspace or a source root resolved via `yss-source-index/references/source-location.md` before recommending code changes.
+5. Prefer source-backed evidence from the local workspace or a source root resolved via `yss-skill-source-index-refresh/references/source-location.md` before recommending code changes.
 6. Produce an upgrade checklist or patch with explicit compatibility risks and verification commands.
 
 ## Common Checks

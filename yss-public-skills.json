@@ -29,9 +29,9 @@
     "yss-prototype-stage",
     "yss-repository",
     "yss-resilience4j",
-    "yss-router",
+    "yss-implementation-contract-compiler",
     "yss-security-algorithm",
-    "yss-source-index",
+    "yss-skill-source-index-refresh",
     "yss-ui",
     "yss-ui-business-page-generation",
     "yss-up-springboot3",
@@ -48,8 +48,8 @@
       "skills": [
         "yss-microapp-commit",
         "yss-product-lifecycle",
-        "yss-router",
-        "yss-source-index"
+        "yss-implementation-contract-compiler",
+        "yss-skill-source-index-refresh"
       ]
     },
     {

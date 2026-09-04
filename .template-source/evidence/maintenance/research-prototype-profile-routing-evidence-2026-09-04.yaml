@@ -1,0 +1,144 @@
+schema_version: 1
+profile: technical-evidence
+mode: evidence-audited
+scope:
+  topic: 原型档位、浏览器交付技术与 designer-skills 融合
+  audience: YSS 生命周期、产品设计和模板维护者
+  time_horizon: 2026-09-04 当前上游版本
+  research_questions:
+    - 是否应把 React、Ant Design CLI 与构建链作为所有高保真原型的强制前提？
+    - HTML、React/Vite、Figma 分别适合哪一类原型决策，Storybook 与真实 YSS 组件应位于哪个阶段？
+    - designer-skills 与 taste-skill 应如何进入 YSS 单一事实来源？
+  inclusion_criteria: [官方文档, 上游源码与许可证, 当前 YSS 合同]
+  exclusion_criteria: [二手教程, 未验证生产 API, 具体产品资产]
+ownership:
+  research_owner: yss-research
+  downstream_owner: maintaining-skills/yss-prototype-stage
+  decision_ref: user-confirmed-all-recommendations
+search_log:
+  - id: search-001
+    channel: official-docs
+    query_or_corpus: Ant Design CLI、Vite、Storybook、Figma、Playwright、WHATWG HTML
+    searched_at: 2026-09-04
+    result: results-found
+  - id: search-002
+    channel: upstream-source
+    query_or_corpus: Owl-Listener/designer-skills 与 leonxlnx/taste-skill pinned commits
+    searched_at: 2026-09-04
+    result: results-found
+  - id: search-003
+    channel: counter-signal
+    query_or_corpus: 单文件 HTML、全局 React/AntD、全局 Storybook 的替代与成本边界
+    searched_at: 2026-09-04
+    result: results-found
+evidence_items:
+  - id: evidence-001
+    source_level: primary
+    visibility: public
+    source_class: official-documentation
+    source_ref: https://ant.design/docs/react/cli/
+    locator: Agent Knowledge、CLI commands、lint
+    stance: mixed
+    observed_at: 2026-09-04
+    evidence_date: 2026-09-04
+    observation: Ant Design CLI 提供版本化组件与设计知识及 React 源 lint，但其范围是 Ant Design/React，不是 Vue/YSS 运行时合同。
+    limitations: [文档不评估 YSS 工作流成本]
+  - id: evidence-002
+    source_level: primary
+    visibility: public
+    source_class: official-documentation
+    source_ref: https://vite.dev/guide/static-deploy.html
+    locator: Deploying a Static Site
+    stance: support
+    observed_at: 2026-09-04
+    evidence_date: 2026-09-04
+    observation: Vite 构建结果可作为静态站点部署，浏览器交付不要求保留开发服务器。
+    limitations: [不决定原型需要哪种框架]
+  - id: evidence-003
+    source_level: primary
+    visibility: public
+    source_class: official-documentation
+    source_ref: https://storybook.js.org/docs/writing-stories
+    locator: Stories capture component states
+    stance: support
+    observed_at: 2026-09-04
+    evidence_date: 2026-09-04
+    observation: Storybook stories 能隔离表达组件状态，并可连接交互、无障碍与视觉测试。
+    limitations: [目标仓需要兼容的 harness]
+  - id: evidence-004
+    source_level: primary
+    visibility: public
+    source_class: official-documentation
+    source_ref: https://playwright.dev/docs/accessibility-testing
+    locator: Accessibility testing
+    stance: support
+    observed_at: 2026-09-04
+    evidence_date: 2026-09-04
+    observation: Playwright 可集成 axe 扫描，但官方同时说明自动测试不能发现全部无障碍问题。
+    limitations: [仍需人工键盘与焦点检查]
+  - id: evidence-005
+    source_level: primary
+    visibility: public
+    source_class: source-code
+    source_ref: https://github.com/Owl-Listener/designer-skills/tree/20e34c4a587e5eb09fcdf8351fa97b3ad761b31e
+    locator: prototype-strategy、state-machine、design-qa-checklist、handoff-spec
+    stance: support
+    observed_at: 2026-09-04
+    evidence_date: 2026-09-04
+    observation: 四个技能分别覆盖原型策略、状态建模、设计 QA 与交付说明，可映射到 YSS 现有资产。
+    limitations: [上游同时包含大量与 YSS 重叠的技能和命令]
+  - id: evidence-006
+    source_level: primary
+    visibility: public
+    source_class: source-code
+    source_ref: https://github.com/leonxlnx/taste-skill/tree/ccbc15639c97057cbfcf32ecebc38ef716e4bb37
+    locator: SKILL.md scope exclusions
+    stance: oppose
+    observed_at: 2026-09-04
+    evidence_date: 2026-09-04
+    observation: taste-skill 明确排除 dashboards、data tables 与 multi-step flows，不能覆盖 YSS 中后台主场景。
+    limitations: [未来版本可能改变范围]
+claims:
+  - id: claim-001
+    claim_kind: technical-decision
+    statement: 原型应按待决策风险选择满足需要的最低档位，而不是全局绑定单一技术栈。
+    decision_bearing: true
+    evidence_refs: [evidence-002, evidence-005]
+    counter_signal_refs: [search-003]
+    audit_status: supported
+    confidence: high
+    disposition: publish
+  - id: claim-002
+    claim_kind: technical-decision
+    statement: H1 适合无 Node 运行时的静态 HTML，H2 适合可运行流程；真实组件与 lockfile 属于前端实现和实现还原验证，不属于原型档位。
+    decision_bearing: true
+    evidence_refs: [evidence-002, evidence-003]
+    counter_signal_refs: [search-003]
+    audit_status: supported
+    confidence: high
+    disposition: publish
+  - id: claim-003
+    claim_kind: boundary
+    statement: Ant Design CLI 只在相关 React AntD 原型且事实缓存不新鲜时提供增量事实，不是所有原型的门禁。
+    decision_bearing: true
+    evidence_refs: [evidence-001]
+    counter_signal_refs: [search-003]
+    audit_status: supported
+    confidence: high
+    disposition: publish
+  - id: claim-004
+    claim_kind: integration
+    statement: designer-skills 应 pin commit 后融合四个概念，不整包安装；taste-skill 本轮不进入主合同。
+    decision_bearing: true
+    evidence_refs: [evidence-005, evidence-006]
+    counter_signal_refs: []
+    audit_status: supported
+    confidence: high
+    disposition: publish
+source_gaps:
+  - 真实 project-instance H1/H2 试点、实现阶段交接和手工证据工时数据尚未采集。
+audit_summary:
+  status: complete
+  audited_claim_ids: [claim-001, claim-002, claim-003, claim-004]
+  notes:
+    - 技术事实与 YSS 适配建议已分开表述；发布前试点另行关闭。

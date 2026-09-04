@@ -11,7 +11,7 @@ Application 层用例编排 skill。负责协调 Domain 与 Gateway，定义事�
 
 - 用户要实现 Application Service、用例编排或 `@Transactional` 边界。
 - 用户要补 App 层 MapStruct Convertor 或跨聚合协调逻辑。
-- 脚手架生成完成后进入业务实现，Router 按 `backend_impact` 加载本 skill。
+- 脚手架生成完成后进入业务实现，实现合同编译器 按 `backend_impact` 加载本 skill。
 
 ## 不适用
 
@@ -46,7 +46,7 @@ Application 层用例编排 skill。负责协调 Domain 与 Gateway，定义事�
 
 - 只消费批准后的 `Slice Implementation Contract` 和当前 `work_unit`。
 - AppService 骨架可 `controlled-generation`；用例编排、事务、幂等、权限和失败行为必须 `behavior-tdd`。
-- 按 `yss-router/references/yss-skill-execution-result.md` 返回统一 `YSS Skill Execution Result`。
+- 按 `yss-implementation-contract-compiler/references/yss-skill-execution-result.md` 返回统一 `YSS Skill Execution Result`。
 - 发现新 API、权限、状态机或跨上下文影响时填入 `new_impacts` 并暂停。
 
 ## 按需读取

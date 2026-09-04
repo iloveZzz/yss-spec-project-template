@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+import { existsSync } from "node:fs";
+import path from "node:path";
+import { loadSkillRegistry } from "./lib/skill-registry.mjs";
+import { OBSOLETE, ROOT } from "./lib/skill-supply-chain.mjs";
+
+const checkOnly = process.argv.includes("--check");
+const registry = loadSkillRegistry();
+const capabilityBySkill = new Map();
+for (const capability of registry.capabilities) {
+  if (!capabilityBySkill.has(capability.primary_skill)) capabilityBySkill.set(capability.primary_skill, []);
+  capabilityBySkill.get(capability.primary_skill).push(capability.id);
+}
+const inbound = new Map();
+for (const [owner, dependencies] of Object.entries(registry.skill_dependencies)) {
+  for (const dependency of dependencies) {
+    if (!inbound.has(dependency.skill)) inbound.set(dependency.skill, []);
+    inbound.get(dependency.skill).push({ owner, type: dependency.type, ...(dependency.when ? { when: dependency.when } : {}) });
+  }
+}
+const recipeCallers = new Map();
+for (const recipe of registry.recipes) for (const capability of recipe.capabilities) {
+  const skill = registry.capabilities.find((item) => item.id === capability)?.primary_skill;
+  if (!skill) continue;
+  if (!recipeCallers.has(skill)) recipeCallers.set(skill, []);
+  recipeCallers.get(skill).push(recipe.id);
+}
+
+const candidates = registry.skills
+  .filter((skill) => skill.impacts.includes("backend") || capabilityBySkill.has(skill.id))
+  .map((skill) => {
+    const capabilities = capabilityBySkill.get(skill.id) ?? [];
+    const callers = [...new Set(recipeCallers.get(skill.id) ?? [])].sort();
+    const dependencies = inbound.get(skill.id) ?? [];
+    const canonicalExists = existsSync(path.join(ROOT, ".agents/skills", skill.id, "SKILL.md"));
+    let classification = "keep";
+    let rationale = "unique capability or active typed caller exists";
+    if (OBSOLETE.has(skill.id)) {
+      classification = "remove";
+      rationale = "explicitly obsolete";
+    } else if (!capabilities.length && !callers.length && !dependencies.length) {
+      classification = "narrow";
+      rationale = "backend impact is declared but no capability, recipe, or typed dependency consumes it";
+    }
+    return { skill: skill.id, classification, canonical_exists: canonicalExists, capabilities, recipe_callers: callers, dependency_callers: dependencies, rationale };
+  })
+  .sort((left, right) => left.skill.localeCompare(right.skill));
+
+const blocking = candidates.filter((item) => item.classification === "remove" && item.canonical_exists);
+if (checkOnly) {
+  const counts = Object.fromEntries(["keep", "narrow", "merge", "remove"].map((classification) => [classification, candidates.filter((item) => item.classification === classification).length]));
+  process.stdout.write(`backend skill audit passed: ${candidates.length} candidates (${Object.entries(counts).map(([key, value]) => `${key}=${value}`).join(", ")})\n`);
+} else {
+  process.stdout.write(`${JSON.stringify({ schema_version: 1, generated_from: "docs/agents/yss-skill-registry.yaml", candidates }, null, 2)}\n`);
+}
+if (blocking.length) process.exitCode = 1;

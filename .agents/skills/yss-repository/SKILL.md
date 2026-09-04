@@ -43,7 +43,7 @@ description: Use when generating or refactoring YSS Infrastructure persistence m
 
 - Domain 不依赖 Infrastructure。
 - Gateway 定义在 Domain，实现放在 Infrastructure。
-- `yss-repository` 不创建或改写 Domain Gateway interface；缺少或需要改变 Gateway 时返回 `new_impacts`，由 Router 回到 `yss-domain` / `yss-tactical-design`。
+- `yss-repository` 不创建或改写 Domain Gateway interface；缺少或需要改变 Gateway 时返回 `new_impacts`，由 实现合同编译器 回到 `yss-domain` / `yss-tactical-design`。
 - Domain Gateway 只交换 Domain Model、领域值和标识；分页、列表和读模型走 Application Query Port，禁止返回 Web VO 或把 `PageQuery` 带入 Domain。
 - PO / Domain Model 等 POJO 样板代码优先使用 Lombok；不要成片手写 getter/setter、constructor、builder 或 logger。
 - Convertor 必须优先使用 `@Mapper(componentModel = "spring")` 和构造器注入；禁止静态 `INSTANCE`、`BeanUtils.copyProperties`、反射式通用拷贝和重复手写字段赋值，除非实现合同记录受控例外、测试和 review 证据。
@@ -74,7 +74,7 @@ description: Use when generating or refactoring YSS Infrastructure persistence m
 
 ## 阶段 7 合同
 
-- 前置条件：数据架构、领域元数据、实现仓库和批准后的 `Slice Implementation Contract` 均可用；否则不执行本 skill，由 Router 返回 `blocked`。
+- 前置条件：数据架构、领域元数据、实现仓库和批准后的 `Slice Implementation Contract` 均可用；否则不执行本 skill，由 实现合同编译器 返回 `blocked`。
 - PO/Repository/Convertor 骨架可使用 `controlled-generation`；复杂过滤、分页语义、并发、事务和迁移行为必须拆为 `behavior-tdd`。
 - 写入仅限合同 `allowed_write_paths`，证据必须包含实际 PO、Repository、Convertor、GatewayImpl、测试和 `./mvnw ...` 结果。
 - 按统一 `YSS Skill Execution Result` 返回 `seam_deferred/deviations/new_impacts`；发现数据模型、DDL、SQL、索引或 API schema 变化时暂停并重路由。

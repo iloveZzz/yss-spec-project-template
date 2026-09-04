@@ -1,0 +1,314 @@
+schema_version: 2
+compiled_by: yss-implementation-contract-compiler
+approved_by: yss-product-lifecycle
+capability_source: docs/agents/yss-skill-registry.yaml
+recipe_source: docs/agents/yss-skill-registry.yaml
+digest_algorithm: sha256
+unsupported_inputs:
+  registry_schema_v1: reject-with-migration-guidance
+  slice_contract_schema_v1: reject-with-migration-guidance
+allowed_statuses: [draft, blocked, ready-for-lifecycle-review]
+forbidden_statuses: [approved, ready-for-agent, completed]
+implementation_path_policy:
+  applies_to: harness-resident-runtime-code
+  project_roots:
+    backend: apps/backend/<project>/
+    frontend: apps/frontend/<project>/
+  container_roots:
+    - apps/backend/
+    - apps/frontend/
+  forbidden_roots:
+    - app/backend/
+    - app/frontend/
+  policies:
+    - harness-apps-multi-project
+    - external-repository-native
+    - git-submodule-harness-apps
+  git_submodule:
+    repository_scope: git-submodule
+    layout_policy: git-submodule-harness-apps
+    git_entry_mode: "160000"
+    empty_gitlink_scaffold: blocked
+    treat_empty_gitlink_as_regular_dir: blocked
+    treat_detached_head_as_regular_dir: blocked
+    force_overlay_mount: blocked
+    write_inside_detached_head: blocked
+    copy_source_into_harness: forbidden
+    inspect_working_tree_writable: explicit-boolean
+    empty_gitlink_writable: false
+    force_overlay_regular_dir_path: blocked
+  rules:
+    - "Harness 内每个运行时工程必须位于具体 project 目录，不能直接写入 apps/backend/ 或 apps/frontend/。"
+    - "app/backend/、app/frontend/ 及其子路径不是兼容别名，必须阻断。"
+    - "外部实现仓库使用登记的真实项目根路径，不用 Harness 容器路径冒充。"
+    - "git-submodule 挂载路径使用 git-submodule-harness-apps，必须是 gitlink 且分别登记；不得登记为 harness-apps。"
+    - "空 gitlink、detached HEAD、--force 覆盖挂载点不得当成普通目录；也不得在 detached HEAD 工作树内当普通目录写入。"
+    - "inspectWorkingTreeScope 必须返回 { writable }；空 gitlink / detached HEAD 的 writable 必为 false；--force 覆盖 gitlink 不得走普通目录覆盖路径。"
+subcontract_statuses: [required, not-applicable]
+
+readiness:
+  common: [spec, slice_ticket, architecture_review, build_architecture_checklist, implementation_repository, verification_commands]
+  ui_impact: [requirement_freeze, low_fidelity_review, prototype_review, prototype_profile_decision, prototype_deliverable, prototype_deliverable_verification, prototype_confirmation]
+  api_impact: [openapi_freeze]
+  no_api_impact: [no_api_impact_record]
+  data_impact: [data_architecture]
+  backend_impact: [engineering_baseline, backend_repository, maven_wrapper]
+  cross_repo: [repository_registry, delivery_order, integration_verification, rollback_order]
+
+compiler_input_required:
+  - slice_id
+  - impact_flags
+  - required_capabilities
+  - recipe_ids
+  - conditions
+  - lifecycle
+  - implementation
+  - acceptance
+impact_flags_required: [ui_impact, api_impact, no_api_impact, data_impact, backend_impact, cross_repo, existing_frozen_baseline]
+exclusive_flags:
+  - [api_impact, no_api_impact]
+
+slice_contract_required:
+  root: [schema_version, contract_id, contract_version, slice_id, status, lifecycle_refs, readiness, resolution, common, frontend, backend, contract, cross_repo, work_units]
+  lifecycle_refs: [spec, ticket, requirement_freeze, low_fidelity_review, prototype_review, prototype_profile_decision, prototype_deliverable, prototype_deliverable_verification, prototype_confirmation, openapi_freeze_or_no_impact, architecture_review, data_architecture, tactical_design, engineering_baseline, build_architecture_checklist, implementation_repository, frontend_repository, backend_repository, maven_wrapper]
+  readiness: [blockers, stale_inputs, not_applicable]
+  resolution: [required_capabilities, required_skills, recipe_ids, conditions, reason_chains, registry_digest, compiler_contract_digest, compiled_at, freshness]
+  common: [impacted_areas, implementation_path_policy, project_roots, required_capabilities, required_skills, optional_skills, unavailable_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, human_review_points, full_reroute_triggers, quality_baseline_ref, context_plan, doubt_driven_review]
+  frontend: [status, required_skills, approved_prototype_ref, state_matrix_ref, allowed_write_paths, component_test_seams, e2e_paths]
+  backend: [status, affected_layers, component_impacts, required_skills, application_boundary, transaction_boundary, persistence_strategy, allowed_write_paths, forbidden_patterns, expected_evidence_files, seam_deferred, verification_commands, tactical_ddd]
+  contract: [api_impact, freeze_ref, no_api_impact_ref, generated_clients, contract_tests, regeneration_commands]
+  cross_repo: [repositories, delivery_order, integration_verification, rollback_order]
+
+lifecycle_ref_by_readiness:
+  spec: spec
+  slice_ticket: ticket
+  architecture_review: architecture_review
+  build_architecture_checklist: build_architecture_checklist
+  implementation_repository: implementation_repository
+  requirement_freeze: requirement_freeze
+  low_fidelity_review: low_fidelity_review
+  prototype_review: prototype_review
+  prototype_profile_decision: prototype_profile_decision
+  prototype_deliverable: prototype_deliverable
+  prototype_deliverable_verification: prototype_deliverable_verification
+  prototype_confirmation: prototype_confirmation
+  openapi_freeze: openapi_freeze_or_no_impact
+  no_api_impact_record: openapi_freeze_or_no_impact
+  data_architecture: data_architecture
+  tactical_design: tactical_design
+  engineering_baseline: engineering_baseline
+  backend_repository: backend_repository
+  maven_wrapper: maven_wrapper
+
+work_unit_required: [id, behavior, primary_skill, supporting_skills, tdd_mode, allowed_write_paths, expected_evidence, verification_commands, controlled_generation]
+work_unit_nonempty_arrays: [allowed_write_paths, expected_evidence, verification_commands]
+slice_contract_nonempty: [contract_id, contract_version, slice_id, status]
+slice_contract_array_fields:
+  common: [impacted_areas, implementation_path_policy, project_roots, required_capabilities, required_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, full_reroute_triggers, quality_baseline_ref, context_plan, doubt_driven_review]
+
+resolution_contract:
+  required_capabilities_source: registry-capability-or-recipe-only
+  recipes_reference: capabilities-only
+  closure_recursive_types: [context-required]
+  closure_conditional_type: context-conditional
+  closure_non_expanding_types: [coordination-only, review-only, component-dependency]
+  deduplicate_skills: true
+  preserve_all_reasons: true
+  deterministic_order: [recipe-declaration, dependency-topology, skill-id]
+  digest_change_status: stale
+  stale_action: recompile-and-return-to-lifecycle-approval
+
+context_plan:
+  required: [required_context_refs, on_demand_context_refs, context_stop_rule, missing_context_action]
+  context_stop_rule: minimal-sufficient-evidence
+  missing_context_action: [blocked, reroute]
+
+scaffold_contract_schema:
+  schema_version: 2
+  identity: service-engineering-baseline
+  compiled_by: yss-implementation-contract-compiler
+  approved_by: yss-product-lifecycle
+  status_by_owner:
+    compiler: [draft, ready-for-lifecycle-review, blocked]
+    lifecycle: [approved, stale, blocked]
+  required: [contract_id, contract_version, scaffold_request_id, status, compiler_draft_ref, lifecycle_approval_ref, persisted_ref, current_version, implementation_repository, backend_repository, scaffold_status, project_name, target_output_dir, base_package, maven_coordinates, profiles, allowed_write_paths, expected_evidence_files, verification_commands, approval, work_unit, generation_policy]
+  approval:
+    required: [approval_ref, approver, persisted_ref, current_version]
+  generation_policy:
+    required: [mode, existing_target, old_project_migration, template_upgrade]
+    mode: initialize-only
+    existing_target: unsupported
+    old_project_migration: unsupported
+    template_upgrade: unsupported
+  maven_coordinates:
+    required: [group_id, project_version, parent, yss_components_version]
+    parent_required: [group_id, artifact_id, version]
+    yss_components_version: 2.0.0-SNAPSHOT
+  profiles:
+    required: [architecture, persistence, database, platform, validation_namespace, dto_placement, repository]
+    supported_initial:
+      architecture: target-domain-model
+      persistence: mybatis-plus
+      database: mysql
+      platform: spring-boot-2.7-jdk8
+      validation_namespace: javax
+      dto_placement: web
+      repository: yss-internal
+    unsupported: [old-architecture-profile, client-in-domain, mybatis, spring-boot-3, jakarta, separate-client-module]
+  unsupported_inputs:
+    schema_v1: reject-no-auto-upgrade
+    slice_id: forbidden-as-scaffold-identity
+    existing_project: reject-no-scaffold-migration
+  lifecycle_boundary:
+    compiler_emits: [draft, ready-for-lifecycle-review, blocked]
+    lifecycle_approves: [approved]
+    generator_consumes: [approved]
+    after_generation: [yss-backend-scaffold-parent, yss-implementation-contract-compiler]
+  work_unit:
+    required: [id, behavior, primary_skill, supporting_skills, tdd_mode, allowed_write_paths, expected_evidence, verification_commands, controlled_generation]
+  generation_boundary:
+    allowed_for: [project_scaffold, pom, mechanical_config, wrapper, bootstrap_entrypoint, manifest_v2, architecture_rules, test_infrastructure]
+    forbidden_when: [business_behavior, business_fields, business_state, permission, transaction, complex_query, error_mapping, business_example_crud]
+    initialization: initialize-only
+    regeneration: unsupported
+    template_upgrade: unsupported
+    old_project_migration: unsupported-separate-architecture-modernization-initiative
+  verification:
+    commands: ["./mvnw validate", "./mvnw test", "./mvnw package"]
+    requires_execution: true
+    completion_levels: [generated, empty-scaffold-verified, first-slice-verified]
+    downstream_readiness_claim_requires: first-slice-verified
+    evidence: [preflight, command, exit_code, failure_category, duration_ms, stdout_ref, stderr_ref, executed_at]
+
+applicable_subcontract_nonempty:
+  frontend:
+    scalar: [approved_prototype_ref, state_matrix_ref]
+    array: [required_skills, allowed_write_paths, component_test_seams, e2e_paths]
+  backend:
+    scalar: [application_boundary, transaction_boundary, persistence_strategy]
+    array: [affected_layers, required_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands]
+    conditional_tactical_ddd:
+      when: [aggregate-impact, state-machine-impact, invariant-impact, consistency-impact, domain-event-impact, gateway-boundary-impact, persistence-mapping-impact]
+      scalar: [tactical_design_ref, tactical_design_version, gateway_boundary_ref]
+      array: [aggregate_refs, invariant_refs, state_behavior_refs, domain_test_seams, application_test_seams]
+  contract_api:
+    scalar: [freeze_ref]
+    array: [contract_tests]
+  contract_no_api:
+    scalar: [no_api_impact_ref]
+  cross_repo:
+    array: [repositories, delivery_order, integration_verification, rollback_order]
+
+impact_to_capabilities:
+  domain-impact: [layer.domain, layer.application]
+  tactical-domain-impact: [architecture.tactical-domain]
+  persistence-impact: [layer.persistence]
+  mybatis-framework-impact: [framework.mybatis]
+  web-adapter-impact: [layer.web-adapter]
+  dto-wire-impact: [contract.dto-wire]
+  request-validation: [contract.request-validation]
+  error-mapping: [contract.error-mapping, contract.dto-wire]
+  cache: [component.cache]
+  current-user-context: [component.current-user-context]
+  user-cache-lookup: [component.current-user-context, component.cache]
+  audit-event: [component.audit-log, component.current-user-context, contract.dto-wire]
+  excel-import-export: [component.excel-import-export]
+  distributed-id: [component.distributed-id]
+  encryption-or-signing: [component.security-algorithm]
+  gateway-resilience: [component.gateway-resilience]
+  ddd-scaffold: [scaffold.ddd]
+  mvc-scaffold: [scaffold.mvc]
+  springboot3-migration: [migration.springboot3]
+
+tdd_modes:
+  behavior-tdd:
+    impacts: [domain-rule, state-machine, transaction, complex-query, permission, error-mapping, page-interaction, user-visible-state]
+  controlled-generation:
+    impacts: [project-scaffold, dto-boilerplate, po-boilerplate, mapstruct-generated, frozen-openapi-client, mechanical-config]
+    required: [exception_reason, generator, generator_inputs, expected_files, verification_commands, behavior_tests_after_generation]
+
+full_reroute_triggers:
+  - scaffold-baseline-drift
+  - api-schema-impact
+  - database-schema-impact
+  - state-machine-impact
+  - data-model-impact
+  - new-write-path
+  - new-repository
+  - aggregate-impact
+  - invariant-impact
+  - consistency-impact
+  - domain-event-impact
+  - gateway-boundary-impact
+  - persistence-mapping-impact
+  - new-required-skill
+  - not-applicable-invalidated
+  - architecture-drift
+  - contract-violation
+  - generation-became-behavior
+  - test-seam-changed
+  - verification-command-changed
+  - delivery-order-changed
+  - doubt-review-triggered
+
+reroute_destinations:
+  scaffold-baseline-drift: stage7-scaffold-revalidation
+  api-schema-impact: system-data-architecture-and-contract-review
+  database-schema-impact: data-architecture-and-migration-review
+  state-machine-impact: spec-system-data-and-contract-review
+  data-model-impact: data-architecture-and-contract-review
+  new-write-path: stage7-contract-recompile
+  new-repository: stage7-contract-recompile
+  new-required-skill: stage7-contract-recompile
+  not-applicable-invalidated: lifecycle-impact-reassessment
+  architecture-drift: architecture-recheck
+  contract-violation: stage7-contract-recompile
+  generation-became-behavior: stage7-contract-recompile
+  test-seam-changed: spec-ticket-test-seam-review
+  verification-command-changed: stage7-contract-recompile
+  delivery-order-changed: cross-repo-release-review
+  doubt-review-triggered: high-risk-decision-review
+
+doubt_driven_review:
+  applies_when:
+    - api-schema-impact
+    - database-schema-impact
+    - cross-repo-contract
+    - release-or-rollback
+    - authentication-authorization-tenant-or-sensitive-data-behavior
+    - lifecycle-or-generation-semantics
+  required: [claim, counterclaim, evidence_refs, residual_risks, reviewer_ref]
+  status_values: [not-applicable, required, completed, blocked]
+  blocking_when: [missing-counterclaim, insufficient-evidence, unresolved-residual-risk]
+  evidence_owner: decision-or-review-record
+  no_new_lifecycle_stage: true
+
+quality_baseline:
+  source: lifecycle_refs.engineering_baseline
+  required_for: [project-instance]
+  reused_by: [slice-contract, yss-skill-execution-result, code-review, release]
+  redefinition: forbidden
+
+execution_result_allowed_statuses: [implemented, seam-deferred, drift, violation, not-applicable]
+execution_blockers: [path-outside-contract, missing-evidence, verification-not-executed, verification-command-mismatch, seam-deferred-without-owner, constraint-failed, doubt-review-missing, unapproved-deviation, drift, violation, new-impacts]
+
+contract_versioning:
+  full_reroute_current_status: stale
+  next_version: increment
+  required_history: [previous_contract_ref, stale_reason, reroute_trigger]
+  affected_work_units_status: paused
+
+execution_result_required:
+  - consumed_contract
+  - changed_files
+  - evidence_files
+  - verification_results
+  - constraint_results
+  - seam_deferred
+  - deviations
+  - new_impacts
+  - not_applicable_reason
+seam_deferred_required: [risk, owner, follow_up_ticket, verification_plan, target_version_or_release_date]
+deviation_required: [rule, reason, approval_ref]
+not_applicable_required: [item, reason]
+unavailable_skill_required: [skill, provider, fallback, resolution]

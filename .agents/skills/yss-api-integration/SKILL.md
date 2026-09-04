@@ -5,9 +5,9 @@ description: 指导在 Vue3 业务列表、表单、详情和操作 Hook 中集�
 
 # API 集成 Skill
 
-本目录是 API 集成的 canonical 技能；历史名称 `api-integration` 仅通过注册表和 Router alias 解析，不再维护第二份内容。
+本目录是 API 集成的 canonical 技能；历史名称 `api-integration` 仅通过注册表和 实现合同编译器 alias 解析，不再维护第二份内容。
 
-目录、frontmatter、注册表 ID 和 Router canonical 闭包键均为 `yss-api-integration`；历史名称 `api-integration` 只在注册表和 Router alias 表中解析为本技能。
+目录、frontmatter、注册表 ID 和 实现合同编译器 canonical 闭包键均为 `yss-api-integration`；历史名称 `api-integration` 只在注册表和 实现合同编译器 alias 表中解析为本技能。
 
 ## 📋 目标
 

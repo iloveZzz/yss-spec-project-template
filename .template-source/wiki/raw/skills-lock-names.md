@@ -79,7 +79,9 @@ Derived names only. Do not copy hashes, paths, or the lock file.
 - `yss-formily-schema-generator`
 - `yss-frontend-scaffold-generator`
 - `yss-hook`
+- `yss-implementation-contract-compiler`
 - `yss-microapp-commit`
+- `yss-mvc-scaffold-generator`
 - `yss-mybatis`
 - `yss-openapi-draft-review`
 - `yss-openapi-governance`
@@ -89,9 +91,8 @@ Derived names only. Do not copy hashes, paths, or the lock file.
 - `yss-repository`
 - `yss-research`
 - `yss-resilience4j`
-- `yss-router`
 - `yss-security-algorithm`
-- `yss-source-index`
+- `yss-skill-source-index-refresh`
 - `yss-stage-decision`
 - `yss-tactical-design`
 - `yss-ui`

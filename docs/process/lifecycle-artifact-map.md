@@ -31,7 +31,7 @@
 | `gate.stage-decision-package-approved` | 阶段决策包批准 | `stage.discovery` | Discovery 到 Spec 入口需要稳定的阶段决策合同。 | `gate.domain-strategy-approved` | `evidence.stage-decision-package`、`evidence.approval-record` |
 | `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | 新功能、行为变化或范围扩大进入 Spec 基线。 | 无 | `evidence.approval-record` |
 | `gate.prototype-reviewed` | 原型评审 | `stage.product-design` | 命中产品设计影响，且低保真页面、流程、状态或 API 反推需要独立评审。 | 无 | `evidence.prototype-review-result` |
-| `gate.prototype-verified` | 高保真原型验证 | `stage.product-design` | 需要高保真 HTML 原型进行视觉与交互校准。 | 无 | `evidence.antd-cli-validation`、`evidence.browser-prototype-verification` |
+| `gate.prototype-verified` | 原型交付物验证 | `stage.product-design` | 产品设计影响需要通过 H1/H2 原型交付物进行视觉或流程校准；真实组件验证留到前端实现阶段。 | 无 | `evidence.prototype-profile-decision`、`evidence.prototype-deliverable-verification` |
 | `gate.user-confirmation` | 用户确认 | `stage.product-design` | 产品设计影响尚未被人工确认。 | 无 | `evidence.prototype-confirmation` |
 | `gate.openapi-draft-reviewed` | OpenAPI Draft Review | `stage.system-data-engineering` | 有 API 影响且 Draft 已生成。 | 无 | `evidence.openapi-draft-review` |
 | `gate.design-reviewed` | 设计审查 | `stage.system-data-engineering` | API 或架构影响。 | 无 | `evidence.design-review-result` |
@@ -57,7 +57,7 @@
 | `artifact.interaction-spec` | 交互说明 | `stage.product-design` | 命中产品设计影响。 |
 | `artifact.low-fidelity-prototype` | 低保真原型 | `stage.product-design` | 命中产品设计影响。 |
 | `artifact.state-matrix` | 状态矩阵 | `stage.product-design` | 存在状态流转、异常或恢复。 |
-| `artifact.high-fidelity-html-prototype` | 高保真 HTML 原型 | `stage.product-design` | 需要视觉与交互校准。 |
+| `artifact.prototype-deliverable` | 原型交付物 | `stage.product-design` | 低保真评审后需要 H1 视觉或 H2 流程校准。 |
 | `artifact.prototype-review` | 原型评审记录 | `stage.product-design` | 命中 gate.prototype-reviewed。 |
 | `artifact.prototype-confirmation` | 原型确认记录 | `stage.product-design` | 命中 gate.user-confirmation。 |
 | `artifact.openapi-draft` | OpenAPI Draft | `stage.system-data-engineering` | 有 API 影响。 |
@@ -89,6 +89,8 @@
 | `evidence.prototype-review-result` | 原型评审结果 | 低保真页面、流程、状态与 API 反推的独立评审结论和阻断项。 |
 | `evidence.antd-cli-validation` | Ant Design CLI 校验证据 | 设计语言、组件、demo、token、semantic 与 lint 的实际 CLI/目标版本和可读输出引用。 |
 | `evidence.browser-prototype-verification` | 浏览器原型验证证据 | 高保真原型的非空渲染、主流程、异常状态、视口和控制台验证记录。 |
+| `evidence.prototype-profile-decision` | 原型档位选择证据 | 基于低保真评审后的风险触发、决定目标、H1/H2 计算结果以及人工升降级依据。 |
+| `evidence.prototype-deliverable-verification` | 原型交付物验证证据 | schema v3 共同证据与所选档位的浏览器、Design QA、无障碍、组件事实或真实组件合同验证结果。 |
 | `evidence.prototype-confirmation` | 原型用户确认记录 | 高保真原型、验证清单和进入下游阶段范围的人工确认结论。 |
 | `evidence.openapi-draft-review` | OpenAPI Draft 审查记录 | P0、错误、分页、幂等和契约测试审查记录。 |
 | `evidence.contract-approval` | Slice 合同批准记录 | 生命周期编排器批准且已持久化的当前版本合同引用。 |

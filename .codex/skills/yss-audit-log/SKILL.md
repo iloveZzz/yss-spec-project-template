@@ -23,11 +23,11 @@ description: Use when YSS `AuditLog`, `EnableAuditLog`, audit SpEL summaries, as
 
 ## 源码索引
 
-- 源码位置不要假设固定目录；先按 `yss-source-index/references/source-location.md` 定位。
+- 源码位置不要假设固定目录；先按 `yss-skill-source-index-refresh/references/source-location.md` 定位。
 - 当前技能索引：`references/source-index.md`
 - 重点源码入口通常包括审计注解、启用注解、切面、发布服务、事件模型、默认订阅器。
 
-当组件源码变化后，用 `yss-source-index` 刷新索引；刷新或读取前先按源码定位策略确认真实位置。
+当组件源码变化后，用 `yss-skill-source-index-refresh` 刷新索引；刷新或读取前先按源码定位策略确认真实位置。
 
 ## 接入检查清单
 

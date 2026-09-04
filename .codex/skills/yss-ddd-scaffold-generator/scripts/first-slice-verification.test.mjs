@@ -35,7 +35,7 @@ async function readiness() {
     downstream_skills: downstreamSkills,
     contracts: {
       scaffold_parent: await digest(".agents/skills/yss-ddd-scaffold-generator/references/yss-backend-scaffold-parent/SKILL.md"),
-      router_contract: await digest(".agents/skills/yss-router/references/router-contract.yaml")
+      compiler_contract: await digest(".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml")
     },
     architecture_ruleset: "b".repeat(64)
   };
@@ -68,7 +68,7 @@ async function fixture({ omitGatewayImpl = false, omitReadiness = false } = {}) 
     approval_ref: "approval-1",
     approver: "maintainer",
     lifecycle_approval_ref: "approval-1",
-    router_draft_ref: "router-1",
+    compiler_draft_ref: "router-1",
     persisted_ref: "persisted-1",
     contract_file_ref: contractPath,
     current_version: 1,
@@ -135,7 +135,7 @@ test("refuses first-slice promotion when downstream skill or contract digests ar
   const report = await runFirstSliceVerification(data.project, data.evidence, data.contractPath, environment);
   assert.equal(report.status, "failed");
   assert.ok(report.downstream_skill_drift.includes("yss-domain:digest-missing"));
-  assert.ok(report.downstream_skill_drift.includes("router_contract:digest-missing"));
+  assert.ok(report.downstream_skill_drift.includes("compiler_contract:digest-missing"));
   const manifest = JSON.parse(await readFile(data.manifestPath, "utf8"));
   assert.equal(manifest.completion_level, "empty-scaffold-verified");
 });

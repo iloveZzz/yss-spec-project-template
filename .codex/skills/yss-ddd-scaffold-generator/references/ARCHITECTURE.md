@@ -104,7 +104,7 @@ Domain Error -> Application propagation/translation -> Web Exception Translator
 
 - Scaffold 只生成机械模块、POM、Wrapper、配置、架构规则和 Manifest，不生成生产业务 CRUD。
 - 初始生成器为 `initialize-only`，非空目标失败。
-- Manifest v2 记录模板、脚手架父合同、Router 合同、downstream 完整 skill tree digest 与 generator-owned 文件 hash。
+- Manifest v2 记录模板、脚手架父合同、实现合同编译器 合同、downstream 完整 skill tree digest 与 generator-owned 文件 hash。
 - 当前不支持模板升级，不得重跑初始生成器覆盖业务工程。未来如需支持同一 Target Profile 内的模板版本升级，必须另行设计、批准并验证。
 
 ## 5. 完成等级

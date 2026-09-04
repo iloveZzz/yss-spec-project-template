@@ -22,11 +22,11 @@ description: Use when 用于 YSS 分布式 ID 组件的接入与排障。当用�
 
 ## 源码索引
 
-- 源码位置不要假设固定目录；先按 `yss-source-index/references/source-location.md` 定位。
+- 源码位置不要假设固定目录；先按 `yss-skill-source-index-refresh/references/source-location.md` 定位。
 - 当前技能索引：`references/source-index.md`
 - 重点源码入口通常包括 `EnableDistributedId`、`AutoIdInterceptor`、Leaf 配置、Leaf REST/Feign/gRPC 模块、ID 策略相关类。
 
-当组件源码变化后，用 `yss-source-index` 刷新索引；刷新或读取前先按源码定位策略确认真实位置。
+当组件源码变化后，用 `yss-skill-source-index-refresh` 刷新索引；刷新或读取前先按源码定位策略确认真实位置。
 
 ## 检查清单
 

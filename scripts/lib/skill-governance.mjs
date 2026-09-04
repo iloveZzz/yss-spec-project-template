@@ -48,6 +48,7 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
   const yssUiSkill = read(".agents/skills/yss-ui/SKILL.md");
   if (!yssUiSkill.includes("`YFormily` 是新代码 canonical name")) fail("yss-ui 必须把 YFormily 声明为新代码 canonical name");
   if (!yssUiSkill.includes("| 新建或改造完整业务页面 | `yss-ui-business-page-generation` |")) fail("yss-ui 缺少完整业务页面生成路由");
+  if (!yssUiSkill.includes("原型阶段不得调用本技能") || yssUiSkill.includes("prototype-component-facts")) fail("yss-ui 必须保持生产实现边界，不得暴露原型模式");
   const expectedServer = { command: "npx", args: ["-y", "@yss-ui/mcp"] };
   for (const config of yssUiManifest.mcp.project_configs) {
     if (!exists(config.path)) fail(`缺少 yss-ui MCP 项目配置: ${config.path}`);
@@ -77,14 +78,14 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
   const prototypeEvidence = read("docs/design/templates/prototype-evidence-template.yaml");
   const projectDesign = read("docs/design/design.md");
   const antdvCompatibility = read(".agents/skills/yss-ui/references/antdv-compatibility.md");
-  for (const marker of ["product-design-adapter.md", "schema v2", "ant-design-v6", "ant-design-vue-4.x", "accessibility_verification"]) {
+  for (const marker of ["product-design-adapter.md", "schema v3", "H1", "H2", "原型阶段不得调用 `yss-ui`"]) {
     if (!prototypeStage.includes(marker)) fail(`原型阶段合同缺少 YSS adapter 标记: ${marker}`);
   }
-  for (const marker of ["antd@6.x", "pnpm", "ConfigProvider", "visual_semantic_mapping", "react_only_api_not_copied", "1440x900", "390x844", "verification/design-qa.md"]) {
+  for (const marker of ["prepare-static", "prepare-flow", "fact pack", "ConfigProvider", "1440x900", "390x844"]) {
     if (!prototypeAdapter.includes(marker)) fail(`Product Design adapter 缺少执行约束: ${marker}`);
   }
-  for (const marker of ["schema_version: 2", "design_standard: ant-design-v6", "runtime_component_library: ant-design-vue-4.x", "actual_antd_version", "visual_semantic_mapping", "accessibility_verification", "verification/design-qa.md"]) {
-    if (!prototypeEvidence.includes(marker)) fail(`原型证据模板缺少 schema v2 字段: ${marker}`);
+  for (const marker of ["schema_version: 3", "prototype_profile", "visual_review", "flow_review", "implementation_handoff", "project_token_baseline_digest", "verification/design-qa.md"]) {
+    if (!prototypeEvidence.includes(marker)) fail(`原型证据模板缺少 schema v3 字段: ${marker}`);
   }
   if (prototypeEvidence.includes("与官方 #1677ff / Inter / 8px")) fail("原型证据模板仍把 Inter/8px 误写为官方 v6 默认差异");
   if (projectDesign.includes("`antdv6-design.md`")) fail("design.md 仍引用不存在的 antdv6-design.md");

@@ -63,7 +63,7 @@ node .template-source/tooling/node/scripts/design-md.mjs drift
 
 Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以本文件和 `docs/design/tokens/*` 为 source visual truth，而不是官方默认或历史 `#1677ff` / `Inter` / `8px` 品牌圆角。执行清单见 `.agents/skills/yss-design-system/references/design-qa-theme.md`。
 
-版本边界固定为双轨：高保真原型以 React Ant Design v6 的 `design.md`、semantic token 和标准组件事实作为主题样式基线；生产实现使用 Vue 3、YSS UI 与目标实现仓 lockfile 中的 Ant Design Vue 4.x API。两者版本号不同不是冲突。原型到生产只迁移视觉角色、项目 Token、状态和验收行为，禁止迁移 React hook、props、JSX、静态 API 或事件模型。
+版本边界按原型档位处理：H1 直接消费项目 Token；H2 仅在采用 React AntD 时以 Ant Design v6 的 `design.md`、semantic token 和标准组件事实为补充。原型阶段不得调用 `yss-ui`；生产实现进入批准切片后才从目标实现仓 lockfile 中读取 Vue 3、YSS UI 与 Ant Design Vue 的真实 API。原型到生产只迁移视觉角色、项目 Token、状态和验收行为，禁止把 React hook、props、JSX、静态 API 或事件模型当作 Vue 合同。
 
 ## 设计原则
 
@@ -181,7 +181,7 @@ Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以本文�
 
 ### 紧凑密度（默认原型规格）
 
-高保真原型和中后台数据密集页面默认使用紧凑密度。紧凑密度不是把所有间距机械缩小，而是使用 `docs/design/tokens/tokens.compact.json` 和下表控制页面节奏；没有明确的展示型或触屏场景时，不切回宽松密度。
+原型交付物和中后台数据密集页面默认使用紧凑密度。紧凑密度不是把所有间距机械缩小，而是使用 `docs/design/tokens/tokens.compact.json` 和下表控制页面节奏；没有明确的展示型或触屏场景时，不切回宽松密度。
 
 | 场景 | Padding | Margin / Gap | 说明 |
 | --- | --- | --- | --- |
@@ -266,24 +266,32 @@ Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之
 - 避免大面积渐变、装饰插画、夸张 hero、过多卡片化包装和单色系视觉堆叠。
 - 权限不足、只读、空数据、加载中、校验失败、冲突、提交成功等状态必须在设计阶段明确。
 
-## 高保真原型交付规格
+## 原型交付规格
 
-高保真原型的主产物是可在浏览器运行和复验的 HTML，而不是截图、设计说明或生产前端代码。默认入口固定为 `docs/.scratch/<feature>/design/prototypes/index.html`；关联 CSS、JavaScript、字体和本地资源应与入口一起存放在该目录内，保持相对路径可移植。
+原型交付物必须提供可在浏览器运行或复验的稳定入口，而不是只给截图、设计说明或生产前端代码。默认入口为 `docs/.scratch/<feature>/design/prototypes/index.html`；也可交付稳定 URL。关联资源保持相对路径可移植，不强制内联成单文件。
 
-- HTML 必须呈现真实页面密度、Card、表单、筛选、表格、弹层和状态反馈；不得只输出静态画布或图片热区。
-- 默认启用本文件定义的紧凑密度：页面 padding、区域 gap、Card `8px` 圆角、Card padding 和 `28px` 控件高度必须可在浏览器计算样式中复核。
-- 至少覆盖主流程、一个 loading / empty 状态，以及一个 error / no-permission / conflict 状态；主操作必须产生可见反馈。
-- HTML 是评审与确认主载体；截图只作为指定视口和指定状态的验证证据，不能替代 HTML。
-- 原型可以使用构建工具生成，但交付目录必须提供稳定的 `index.html` 入口。依赖开发服务器时，证据中必须记录启动命令、实际端口和版本；不得只交付无法独立定位入口的源码目录。
-- 标准组件存在 Ant Design 实现时，React 原型必须精确锁定与 CLI 查询一致的 `antd@6.x`，使用 pnpm lockfile，并通过 `ConfigProvider` 消费由 `docs/design/tokens/theme.json` 转换出的可执行 ThemeConfig。生产映射仍以 YSS UI / Ant Design Vue 4.x lockfile 为准。
-- Design QA、浏览器验证和视觉目标必须使用同一视口与同一状态；默认 desktop `1440×900`、mobile `390×844`，按实际影响追加其他视口。
-- 原型仍须通过 `prototype-review`、AntD CLI 事实核对和浏览器验证；HTML 存在不代表 `gate.prototype-reviewed`、`gate.prototype-verified` 或 `gate.user-confirmation` 已通过。
+低保真与状态矩阵经独立 `prototype-review` 后，按风险选择满足当前决策的最低档位：
+
+| 档位 | 用途 | 技术边界 | 最低验证 |
+|---|---|---|---|
+| H1 `visual-review` | 布局、密度、层级、文案和少量关键交互 | 语义 HTML/CSS/最小 JS 或设计工具导出；无需 Node、package、lockfile 或 AntD CLI | desktop/narrow 非空渲染、项目 Token、console、关键交互、基础键盘/焦点/对比度；zoom/reduced-motion 按影响 |
+| H2 `flow-review` | 主流程、权限、失败恢复、复杂联动和冲突 | 浏览器可运行流程；React/Vite + AntD v6 是受支持默认而非强制 | H1 共同证据 + 主流程、关键异常、zoom/reduced-motion；视觉回归按风险 |
+
+- H1 不得为了“显得完整”创建空 `package.json`、lockfile 或 AntD 证据。H2 不得声明真实目标组件已验证。
+- 原型中识别出的生产组件假设与待验行为写入 `implementation_handoff`，由 `frontend_implementation_plan` 和 `frontend_implementation_verification` 承接；不得在原型阶段引入 `yss-ui`、目标 lockfile 或 Storybook。
+- 新视觉方向、信息架构不确定或有多个合理方案时执行三方案 ideation；复用已批准视觉模式时记录 source visual 与 `not-applicable` 理由。
+- 默认启用紧凑密度；页面 padding、gap、Card 圆角、Card padding 和控件高度必须在浏览器计算样式中可复核。
+- Design QA、浏览器验证和视觉目标使用同一视口与同一状态；默认 desktop `1440×900`、narrow `390×844`。
+- Design QA 统一覆盖 visual、layout、interaction、content、accessibility、cross-platform 六轴，不再复制第二份检查清单。
+- AntD fact pack 仅在精确版本、组件集合、项目 Token baseline digest 相同且没有新 API 疑问时复用；否则做增量查询。`lint/doctor` 只在存在相关 React 源时执行。
+- 原型源码默认 throwaway；项目 Token、组件语义映射、状态、测试场景和验收标准可以进入下游，源码复用仍需 实现合同编译器、Slice Contract 与 TDD。
+- 用户确认只覆盖原型确认的决定、可操作范围、模拟/gap 与接受结论；HTML、story 或截图存在都不代表三个产品设计门禁已经通过。
 
 ### 无障碍覆盖
 
 品牌 Seed `#3371ff` 保持项目身份，不等于每个组件状态都必须直接使用该填充。普通文本或控件状态不满足 WCAG 2.2 AA 时，优先通过组件 Token 调整实际填充色或文字色，并同时验证 default、hover、active、disabled 与 focus；不得用单页特例色绕过主题层。
 
-原型证据至少覆盖对比度、键盘导航、焦点顺序与可见焦点、语义标签和 Dialog 焦点管理、200% zoom、`prefers-reduced-motion`、目标尺寸及自动化扫描。组件库默认能力不能替代对真实页面 DOM 与交互的验证。
+原型证据按档位覆盖无障碍：所有档位至少检查对比度、键盘导航、焦点顺序与可见焦点；H2 追加语义标签/Dialog、200% zoom、`prefers-reduced-motion`、目标尺寸及适用扫描。组件库默认能力不能替代对真实页面 DOM 与交互的验证。
 
 ## 响应式验收矩阵
 
@@ -318,7 +326,7 @@ Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之
 - 组件样式优先通过 Ant Design token、component token、CSS variables 或主题算法表达。
 - 消息、通知、Modal 静态方法应使用 `App`、hook API 或 context holder，避免主题上下文丢失。
 - 暗色模式使用 `darkAlgorithm` 或 `docs/design/tokens/variables.dark.css`，不要手工反转颜色。本轮只同步了暗色的字体栈和圆角 seed；完整暗色色板仍是历史算法结果，启用暗色前应再派生一次。
-- 紧凑模式默认使用 `compactAlgorithm` 或 `docs/design/tokens/tokens.compact.json`，不要逐组件压缩高度；高保真 HTML 必须按紧凑 token 验收实际 padding、gap、Card 圆角和控件高度。
+- 紧凑模式默认使用 `compactAlgorithm` 或 `docs/design/tokens/tokens.compact.json`，不要逐组件压缩高度；原型交付物必须按紧凑 token 验收实际 padding、gap、Card 圆角和控件高度。
 
 如果前端不是 Ant Design：
 
@@ -345,13 +353,13 @@ Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之
 - 将 `docs/design/tokens/theme.json` 接入前端工程主题配置。
 - 将 `docs/design/tokens/variables.css` 中的 `--brand-*` 与运行时别名纳入项目 token 管理。
 - 如果项目启用暗色模式，用 `darkAlgorithm` 按新 seed 重派生 `docs/design/tokens/tokens.dark.json`，并补充截图验收。
-- 将高保真 HTML 原型模板默认接入 `docs/design/tokens/tokens.compact.json`，并在浏览器证据中记录实际计算后的 padding、gap、Card 圆角和控件高度。
+- 让三档原型适配器默认接入项目 Token，并在浏览器证据中记录实际计算后的 padding、gap、Card 圆角和控件高度。
 
 ## Ant Design v6 原型补充基线
 
-本节根据官方 `https://ant.design/design.md` 与本轮固定目标版本的 `antd design.md --format json` 提炼，用于高保真原型和后续前端实现，不替代项目 token，也不提供 Ant Design Vue API。
+本节根据官方 `https://ant.design/design.md` 与目标版本的 `antd design.md --format json` 提炼，仅用于采用 React AntD 的 H2 和语义映射，不替代项目 token，也不提供 Ant Design Vue API。
 
 - 先按 `bg-layout`、`bg-container`、`bg-elevated`、文本、边框、状态、圆角和阴影等 semantic token 角色设计，再映射到 `ConfigProvider`、组件 token 或 CSS variables；不得用页面局部色值替代主题层。
-- 默认亮色使用 `theme.defaultAlgorithm`；高保真原型默认叠加紧凑密度 algorithm，暗色和紧凑密度均通过 theme algorithm 切换，禁止手工反色或逐控件压缩。
+- 默认亮色使用 `theme.defaultAlgorithm`；相关 H2 默认叠加紧凑密度 algorithm，暗色和紧凑密度均通过 theme algorithm 切换，禁止手工反色或逐控件压缩。
 - 每个决策区域只保留一个 single primary action。保存、提交、审批、发布、导出和重试等动作必须提供 interaction feedback；不可逆或高风险动作使用确认弹窗。
 - 对实际字号、图标和背景复核 accessibility contrast。默认 token 不足时，通过种子 token 或组件 token 调整，不引入单页特例色。

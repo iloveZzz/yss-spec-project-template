@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS Implementation Contract Compiler"
+  short_description: "Compile capabilities into a minimal implementation contract"
+  default_prompt: "Use yss-implementation-contract-compiler to compile the approved slice capabilities, deterministic skill closure, evidence plan, and v2 contract draft."

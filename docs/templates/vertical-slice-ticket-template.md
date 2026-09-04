@@ -51,12 +51,12 @@ Status: ready-for-human
 | contract_id |  |
 | contract_version |  |
 | contract_ref |  |
-| Router 状态 | draft / blocked / ready-for-lifecycle-review |
+| 实现合同编译器 状态 | draft / blocked / ready-for-lifecycle-review |
 | 生命周期批准状态 | pending / approved / rejected |
-| suggested_owner_role_id | `role.frontend-engineer` / `role.backend-engineer` / `role.test-engineer`（Router 建议，编排器派活） |
+| suggested_owner_role_id | `role.frontend-engineer` / `role.backend-engineer` / `role.test-engineer`（实现合同编译器 建议，编排器派活） |
 | Build Architecture Checklist |  |
 
-> Router 不得自行将合同批准或将本 Ticket 推进为 `ready-for-agent`。只有生命周期编排器核验并持久化当前版本合同、清除阻塞边后，才能推进状态。
+> 实现合同编译器 不得自行将合同批准或将本 Ticket 推进为 `ready-for-agent`。只有生命周期编排器核验并持久化当前版本合同、清除阻塞边后，才能推进状态。
 
 ### 工作单元
 
@@ -103,7 +103,7 @@ Status: ready-for-human
 | affected_work_units |  |
 | new_impacts |  |
 | stale_contract_version |  |
-| return_stage | Router / Architecture Re-check / 产品设计 / OpenAPI Draft-Review-Freeze / 系统或数据架构 / other |
+| return_stage | 实现合同编译器 / Architecture Re-check / 产品设计 / OpenAPI Draft-Review-Freeze / 系统或数据架构 / other |
 | recovery_conditions |  |
 
 出现 `drift`、`violation` 或非空 `new_impacts` 时暂停受影响工作单元，不得先完成代码再补合同；更新合同版本并通过生命周期审查后才能恢复。

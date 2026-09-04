@@ -9,7 +9,7 @@ owner: ai
 
 > 适用场景：Spec、OpenAPI Freeze / 无 API 影响记录、Design Review 和垂直切片 Ticket 已就绪后，进入实现前。
 > 本文记录契约状态、Ticket 状态、YSS skill 最小集合、测试策略和回滚点，不替代垂直切片 Ticket 或实施计划。
-> Router 只能生成 `draft`、`blocked` 或 `ready-for-lifecycle-review`；不得自行写入 `approved`、`ready-for-agent` 或 `completed`。合同批准、持久化和 Ticket 状态推进由生命周期编排器负责。
+> 实现合同编译器 只能生成 `draft`、`blocked` 或 `ready-for-lifecycle-review`；不得自行写入 `approved`、`ready-for-agent` 或 `completed`。合同批准、持久化和 Ticket 状态推进由生命周期编排器负责。
 
 ## 1. 输入材料
 
@@ -40,7 +40,7 @@ owner: ai
 | Harness 内项目根路径符合 `apps/<backend|frontend>/<project>/` | 是 / 否 / 不适用 | `apps/backend/`、`apps/frontend/` 仅为容器 |
 | 未使用 `app/backend/`、`app/frontend/` 及其子路径 | 是 / 否 / 不适用 | 命中即阻断生成和实现 |
 | 原型确认后先完成后端脚手架，再进入业务代码路由 | 是 / 否 / 不适用 | `backend_scaffold_policy_satisfied` |
-| 后端脚手架合同字段完整且版本当前 | 是 / 否 / 不适用 | schema v2：`scaffold_request_id`、项目/输出目录、Router draft、生命周期批准、base package、Maven 坐标、target DDD/Profile、initialize-only、允许写路径、预期证据、验证命令 |
+| 后端脚手架合同字段完整且版本当前 | 是 / 否 / 不适用 | schema v2：`scaffold_request_id`、项目/输出目录、实现合同编译器 draft、生命周期批准、base package、Maven 坐标、target DDD/Profile、initialize-only、允许写路径、预期证据、验证命令 |
 | 后端构建 / 测试 / OpenAPI / CI 命令均使用项目根目录 `./mvnw ...`，或已记录受控例外 | 是 / 否 / 不适用 | 裸 `mvn ...` 默认为规范偏离 |
 | 持久化文档正文和章节标题已转换为中文，仅保留必要英文技术标识 / metadata | 是 / 否 | 英文 skill / 模板不得原样落地为交付文档 |
 | YSS skill 路由已完成 | 是 / 否 |  |
@@ -55,7 +55,7 @@ owner: ai
 | contract_version |  |
 | slice_id |  |
 | status | `draft` / `blocked` / `ready-for-lifecycle-review` |
-| compiled_by | `yss-router` |
+| compiled_by | `yss-implementation-contract-compiler` |
 | 生命周期批准状态 | pending / approved / rejected；由生命周期编排器填写 |
 | 合同持久化路径 |  |
 
@@ -238,11 +238,11 @@ owner: ai
 
 ### 4.3 后端脚手架工作单元
 
-当 backend `scaffold_status=required` 时，先登记一个 `controlled-generation` 工作单元：`primary_skill=yss-ddd-scaffold-generator`，并在后续追加 `yss-backend-scaffold-parent` 基线校验和 `yss-router` 合同重编译。`existing` / `initialized` 不重复全量生成，但必须提供等价基线和 Wrapper 证据。
+当 backend `scaffold_status=required` 时，先登记一个 `controlled-generation` 工作单元：`primary_skill=yss-ddd-scaffold-generator`，并在后续追加 `yss-backend-scaffold-parent` 基线校验和 `yss-implementation-contract-compiler` 合同重编译。`existing` / `initialized` 不重复全量生成，但必须提供等价基线和 Wrapper 证据。
 
 | 项 | 内容 |
 |---|---|
-| 前置 | `prototype_confirmation`、工程基线、实现仓库和脚手架目标已确认；Router 脚手架合同 draft 已经生命周期批准并持久化为结构化 JSON，生成器通过 `--contract-file` 消费 |
+| 前置 | `prototype_confirmation`、工程基线、实现仓库和脚手架目标已确认；实现合同编译器 脚手架合同 draft 已经生命周期批准并持久化为结构化 JSON，生成器通过 `--contract-file` 消费 |
 | 生成器 | `yss-ddd-scaffold-generator` |
 | 模式 | `controlled-generation` |
 | Java / Maven 身份 | `base_package` 与 Maven `group_id` 分开登记；项目版本、父 POM GAV、`yss-components.version` 进入批准合同并原样传给 CLI |
@@ -251,7 +251,7 @@ owner: ai
 | 生成选项 | 关闭 `--with-example`；生成器严格 initialize-only，非空目录、`--force`、旧项目迁移和当前模板升级均为 `unsupported` |
 | Profile | `target-domain-model` / `mybatis-plus` / `mysql` / `spring-boot-2.7-jdk8` / `javax` / `web` / `yss-internal`；其他组合须先通过独立 fixture |
 | 验证 | 使用一键生成验证入口，实际执行项目根目录 `./mvnw validate`、`./mvnw test`、`./mvnw package`；通过后仅为 `empty-scaffold-verified`，golden first slice 通过后才是 `first-slice-verified` |
-| 后置 | `yss-backend-scaffold-parent`、`yss-router` 业务合同重编译、YSS Skill Execution Result |
+| 后置 | `yss-backend-scaffold-parent`、`yss-implementation-contract-compiler` 业务合同重编译、YSS Skill Execution Result |
 
 所有后续生成代码必须绑定当前批准且版本一致的 Slice Implementation Contract、主 YSS skill、依赖闭包、允许写路径、预期证据和 Execution Result。业务行为必须使用 `behavior-tdd`；缺任一条件即阻断，不得以脚手架成功或时间压力豁免。
 
@@ -324,7 +324,7 @@ owner: ai
 
 - [ ] 垂直切片 Ticket 完整，且状态允许进入实现。
 - [ ] 统一合同包含 `contract_id` / `contract_version`、Common、Frontend、Backend、Contract 和 Cross-repo 子合同；不适用项均有原因。
-- [ ] 生命周期编排器已批准并持久化合同；Router 没有自行给出 `approved` 或 `ready-for-agent`。
+- [ ] 生命周期编排器已批准并持久化合同；实现合同编译器 没有自行给出 `approved` 或 `ready-for-agent`。
 - [ ] YSS skills 已最小化选择，没有绕过 Ticket、OpenAPI Freeze / 无 API 影响记录或必要的 Spec Delta。
 - [ ] 后端切片如适用，已填写 `Backend Slice Implementation Contract`，并且 required skills、禁止模式、证据文件、延期 seam 和验证命令完整。
 - [ ] 受影响外部实现仓库已登记，并绑定分支、MR / PR、CI 和验证命令。
@@ -340,7 +340,7 @@ owner: ai
 
 ## 9. 下一步门禁
 
-- Router 结论：draft / blocked / ready-for-lifecycle-review
+- 实现合同编译器 结论：draft / blocked / ready-for-lifecycle-review
 - 生命周期编排器结论：approved / rejected / pending
 - 下一步：生命周期合同审查 / TDD 实现 / 完整重路由 / Architecture Re-check / 回到 系统 / 数据架构设计 / 回到垂直切片
 - 阻断项：

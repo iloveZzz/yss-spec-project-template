@@ -1,47 +1,57 @@
 ---
 name: yss-prototype-stage
-description: Use when a YSS feature has product-design impact on a primary flow, navigation, state, recovery, permission experience, or UI-driven API contract and needs prototype assets before implementation readiness.
+description: Use when a YSS feature has product-design impact on a primary flow, navigation, state, recovery, permission experience, or UI-driven API contract and needs profile-routed prototype assets before implementation readiness.
 ---
 
 # YSS Prototype Stage
 
-把产品设计影响收敛为跨 Agent 一致的产物、证据和生命周期回流合同。它不替代 `yss-product-lifecycle` 的门禁裁决，也不把原型当作生产前端代码。
+把产品设计影响收敛为跨 Agent 一致的原型交付物、证据和生命周期回流合同。它不替代 `yss-product-lifecycle` 的门禁裁决，也不把原型当作生产前端代码。
 
 ## 进入条件与主入口
 
 - 先由 `yss-product-lifecycle` 判断产品设计影响；无行为变化的孤立视觉修复记录 `not-applicable`，不创建空资产。
-- Codex 的产出主入口是 `product-design:index`；其他 Agent 使用等价的产品设计能力，但必须产出本技能规定的相同资产和证据。能力或证据不能等价时，暂停并回到人工确认。
-- `high-fidelity-html-prototype` 仅为历史兼容入口；从它进入时立即回到本合同。已退休的原型技能（含 `product-design-prototype`）不得继续路由。
+- 先读取 Spec、产品总体设计、`CONTEXT.md`、`yss-design-system` 与 `docs/design/design.md`，形成交互说明、低保真页面/流程和状态矩阵。
+- 用独立 `prototype-review` 评审低保真与状态；未通过不得选择档位或构建原型交付物。
+- 按 [原型档位路由](references/prototype-profile-routing.md) 选择 H1/H2 中满足当前决策风险的最低档位。没有充分证据时默认 H2。
+- Codex 按档位消费 `product-design:index` 的 focused workflow；H1 可直接走静态适配器，H2 使用 `get-context/image-to-code/design-qa`。其他 Agent 必须交付等价合同资产。
+- `high-fidelity-html-prototype` 仅为历史兼容入口；新资产统一为 `artifact.prototype-deliverable` 与 schema v3。
 
-## 资产与门禁顺序
+## 执行顺序
 
-1. 以 Spec、产品总体设计、`yss-design-system` 和 `docs/design/design.md` 形成交互说明、低保真页面/流程与状态矩阵。
-2. 用 `prototype-review` 形成独立评审结论；未通过不得生成高保真或进入需求冻结。
-3. 用 `yss-antd-design` 固定目标 React `antd@6.x`，先查询 `design.md` 与本功能组件事实。
-4. 通过 `product-design:index` 的 `get-context → ideate → 用户选择 → image-to-code → design-qa` 产出 feature 级 React/Vite 原型；必须套用 `references/product-design-adapter.md`，不能把通用 starter 视为已符合 YSS。
-5. 完成 AntD post-build manifest/lint（按产物类型）、同视口 Design QA、浏览器与无障碍验证，写入 schema v2 `docs/.scratch/<feature>/verification/prototype-evidence.yaml`。
-6. 用户确认后，才可校准 Spec、分析 API 影响或进入 Router readiness。
+1. 形成交互说明、低保真与状态矩阵；状态至少包含事件、转换、guard、动作与可退出路径。
+2. 完成独立 `prototype-review`，提取仍需由原型回答的风险。
+3. 计算并记录 `prototype_profile`。新视觉方向或信息架构不确定时执行三方案 ideation；复用已批准模式时记录 `not-applicable` 与 source visual。
+4. H1 用 `prototype-contract.mjs prepare-static` 生成无 Node 运行时的静态适配器；H2 按 `references/product-design-adapter.md` 构建可运行流程。
+5. 自动采集版本、digest、视口、截图、console 与扫描结果，写入 feature 级 schema v3 `prototype-evidence.yaml`；人工只补决策、风险、允许差异和用户确认。
+6. 以统一六轴 Design QA 和档位验证矩阵完成浏览器/无障碍验证。用户确认后才可校准 Spec、分析 API 影响或进入 实现合同编译器 readiness。
 
-## 设计与 AntD 依据
+## 档位边界
 
-优先级固定为：官方 `design.md` 的上游默认 → `docs/design/design.md` 与项目 token 的 `project_design` 项目覆盖 → 当前功能的语义组件映射。不得用上游默认覆盖项目 token。
+- H1 `visual-review`：浏览器可复验的 HTML/CSS/少量 JS 或设计工具导出；不得要求 `package.json`、lockfile、Node 或 AntD CLI。
+- H2 `flow-review`：主流程与关键异常状态可操作；React/Vite + Ant Design v6 是受支持默认，但不是唯一实现。只有实际使用 AntD 时才消费版本事实或新鲜 fact pack。
+- 原型代码默认 throwaway；可复用的是项目 Token、组件语义映射、状态、测试场景和验收标准。任何源码进入生产仍需 实现合同编译器、Slice Contract 和 TDD。
+- 原型阶段不得调用 `yss-ui`，不得读取生产组件 API 来制造“真实组件原型”。需要核验真实 YSS/AntDV 组件的事项写入 `implementation_handoff`，由前端实现计划、已批准切片的实现和实现还原验证负责。
 
-Codex `$design-qa` 仍走官方对比流程；Colors/tokens 与 Fonts/typography 必须以项目覆盖为 source visual truth。对照清单见 `yss-design-system/references/design-qa-theme.md`。仍用官方 `#1677ff`、强制 `Inter` 或历史 8px 品牌圆角当默认主题，视为项目覆盖漂移。
+## 事实、QA 与确认
 
-主题与视觉标准固定为 `ant-design-v6`；生产运行时固定为 Vue 3 + YSS UI + `ant-design-vue-4.x`，精确生产版本来自实现仓 lockfile。版本号不同本身不是冲突。Ant Design v6 事实由 `yss-antd-design` 查询并回写证据，不要并列调用官方 `antd` skill，也不要在前端代码落地时继续使用它。进入实现后改走 `yss-ui`。
+优先级固定为：项目 `docs/design/design.md` / Token 覆盖 → 当前功能语义 → 相关上游组件事实。H2 使用 AntD 时，fact pack 仅在精确版本、组件集合和项目 Token digest 均匹配且无新 API 疑问时可复用；否则做增量查询。`antd lint/doctor` 只对相关 React 源执行。
 
-标准原型组件存在 Ant Design 实现时必须精确锁定与 CLI 目标一致的 `antd@6.x`，并通过 `ConfigProvider` 消费项目主题 adapter。执行与验证命令见 `references/product-design-adapter.md` 和 `scripts/prototype-contract.mjs`。
+Design QA 合并 visual、layout、interaction、content、accessibility、cross-platform 六轴，不再建立第二份评审。所有档位至少证明 desktop/narrow 非空渲染、项目 Token、console 和基础键盘/焦点/对比度；H2 追加主流程、关键异常、200% zoom/reduced motion 与按风险视觉回归。
 
-## 验证与回流
+用户确认只描述原型确认了什么、哪些范围可操作、哪些为模拟或 gap，以及接受/拒绝结论；不要求用户确认技术栈、CLI 或构建细节。
 
-`browser_verification` 至少覆盖非空渲染、主流程、一个失败/权限/冲突状态、桌面与窄屏视口和控制台错误；`accessibility_verification` 至少覆盖对比度、键盘/焦点、语义标签与 Dialog、200% zoom、reduced motion、目标尺寸和自动化扫描。优先使用 Browser 或可执行浏览器自动化，Computer Use 只作人工交互补充。把路径、命令、版本、视口、结果和阻塞项写入证据清单。
+`gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` 保持三个既有门禁。档位选择是 `gate.prototype-verified` 的输入证据，不增加新门禁，也不授权实现。
 
-`gate.prototype-reviewed` 的证据是评审记录；`gate.prototype-verified` 的证据是 AntD CLI 与浏览器验证；`gate.user-confirmation` 的证据是确认记录。三者均不是实现授权。
+## 按需读取
+
+- 档位、上游融合与迁移：[prototype-profile-routing.md](references/prototype-profile-routing.md)
+- 渲染适配、fact pack 与命令：[product-design-adapter.md](references/product-design-adapter.md)
+- 证据模板：`docs/design/templates/prototype-evidence-template.yaml`
 
 ## 常见错误
 
-- 仅有截图或 HTML，却没有可复现的 CLI、浏览器和确认记录。
-- 把 `product-design:index` 或某个旧技能当作生命周期批准者。
-- 直接复制官方默认颜色、圆角或间距，忽略项目覆盖。
-- 只证明查询过 AntD v6，却没有 v6 semantic role → 项目 Token → YSS/AntDV4 的映射证据。
-- 沿用 Product Design starter 的 npm、根目录 `design-qa.md` 或未安装 `antd` 的通用配置。
+- 把所有原型强制成 React/AntD，或把单个 HTML 文件当成所有档位的答案。
+- 低保真未评审就选择技术栈；用主观评分代替确定性触发规则。
+- H1 伪造 lockfile/AntD 段，或 H2 声称已验证生产 YSS/AntDV 真实组件。
+- 重复抄写机器可采集的版本、digest、截图和 console；创建第二份状态机、QA 或 handoff 资产。
+- 把原型源码直接复制进生产，或在原型阶段调用 `yss-ui`。

@@ -22,7 +22,7 @@ function scaffoldContract(output) {
     contract_version: 1,
     scaffold_request_id: "golden-request-1",
     status: "approved",
-    router_draft_ref: "router-golden-1",
+    compiler_draft_ref: "compiler-golden-1",
     lifecycle_approval_ref: "approval-golden-1",
     persisted_ref: "persisted-golden-1",
     current_version: 1,
@@ -38,7 +38,7 @@ function scaffoldContract(output) {
     expected_evidence_files: [".yss/scaffold-generation.json"],
     verification_commands: ["./mvnw validate", "./mvnw test", "./mvnw package"],
     approval: { approval_ref: "approval-golden-1", approver: "maintainer", persisted_ref: "persisted-golden-1", current_version: 1 },
-    work_unit: { id: "golden-unit-1", behavior: "scaffold", primary_skill: "yss-ddd-scaffold-generator", supporting_skills: ["yss-router"], tdd_mode: "controlled-generation", allowed_write_paths: ["."], expected_evidence: ["manifest"], verification_commands: ["./mvnw validate", "./mvnw test", "./mvnw package"], controlled_generation: true },
+    work_unit: { id: "golden-unit-1", behavior: "scaffold", primary_skill: "yss-ddd-scaffold-generator", supporting_skills: ["yss-implementation-contract-compiler"], tdd_mode: "controlled-generation", allowed_write_paths: ["."], expected_evidence: ["manifest"], verification_commands: ["./mvnw validate", "./mvnw test", "./mvnw package"], controlled_generation: true },
     generation_policy: { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }
   };
 }
@@ -56,7 +56,7 @@ async function prepareGoldenProject(t) {
   await mkdir(output);
   const contractFile = path.join(root, "scaffold-contract.json");
   await writeFile(contractFile, `${JSON.stringify(scaffoldContract(output), null, 2)}\n`);
-  const args = ["--project-name", "golden-service", "--base-package", "com.yss.golden", "--output-dir", output, "--database", "mysql", "--contract-id", "golden-scaffold-1", "--contract-version", "1", "--approval-ref", "approval-golden-1", "--router-draft-ref", "router-golden-1", "--persisted-ref", "persisted-golden-1", "--contract-file", contractFile, "--group-id", "com.yss.datamiddle", "--project-version", "1.0.0-SNAPSHOT", "--parent-group-id", "com.yss.datamiddle", "--parent-artifact-id", "yss-datamiddle-parent", "--parent-version", "2.0.0-SNAPSHOT", "--yss-components-version", "2.0.0-SNAPSHOT"];
+  const args = ["--project-name", "golden-service", "--base-package", "com.yss.golden", "--output-dir", output, "--database", "mysql", "--contract-id", "golden-scaffold-1", "--contract-version", "1", "--approval-ref", "approval-golden-1", "--compiler-draft-ref", "compiler-golden-1", "--persisted-ref", "persisted-golden-1", "--contract-file", contractFile, "--group-id", "com.yss.datamiddle", "--project-version", "1.0.0-SNAPSHOT", "--parent-group-id", "com.yss.datamiddle", "--parent-artifact-id", "yss-datamiddle-parent", "--parent-version", "2.0.0-SNAPSHOT", "--yss-components-version", "2.0.0-SNAPSHOT"];
   const generated = await execute(process.execPath, [generator, ...args]);
   assert.equal(generated.code, 0, generated.stderr);
   const project = path.join(output, "golden-service");

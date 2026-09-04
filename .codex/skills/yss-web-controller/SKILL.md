@@ -16,7 +16,7 @@ description: Use when generating or refactoring YSS Web Adapter Controllers, req
 ## 不适用
 
 - 用户只是要新增一个手写复杂接口，不一定要用脚本。
-- 用户还没有稳定的 Application Service、冻结 OpenAPI 或 metadata，先回 Router 补 `yss-application` / `yss-domain` 和相应合同输入。
+- 用户还没有稳定的 Application Service、冻结 OpenAPI 或 metadata，先回 实现合同编译器 补 `yss-application` / `yss-domain` 和相应合同输入。
 
 ## 优先流程
 
@@ -82,4 +82,4 @@ node scripts/generate_controller.mjs \
 - 只消费已批准且当前的 schema v2 Web generation contract 和冻结 OpenAPI/no-impact record；schema v1 为 `unsupported`，不得自动升级，也不得用 Controller 或半成品 backend 反向定义产品契约。
 - DTO/VO/WebConvertor 机械骨架可用 `controlled-generation`；权限、错误映射、校验语义和接口行为必须使用 `behavior-tdd`。
 - 写入必须位于合同 `allowed_write_paths`，并提供 Controller、DTO/VO、WebConvertor、契约/API 测试和实际验证结果。
-- 按统一 `YSS Skill Execution Result` 返回偏离与新增影响；出现新 API/schema、权限或响应包装变化时暂停并回到 Router/生命周期。
+- 按统一 `YSS Skill Execution Result` 返回偏离与新增影响；出现新 API/schema、权限或响应包装变化时暂停并回到 实现合同编译器/生命周期。

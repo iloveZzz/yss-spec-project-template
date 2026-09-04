@@ -1,0 +1,56 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  将后端技能运行时控制面升级为 capability / Recipe / typed dependency schema v2，
+  硬替换两个核心技能 ID，改变 Slice Contract、脚手架入参、投影和发布验证行为。
+triggers:
+  - core-validator
+  - lifecycle-gate
+  - generation-semantics
+  - aggregate-behavior-change
+changed_assets:
+  - docs/agents/yss-skill-registry.yaml
+  - .agents/skills/yss-implementation-contract-compiler/SKILL.md
+  - .agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+  - .agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md
+  - .agents/skills/yss-skill-source-index-refresh/SKILL.md
+  - scripts/lib/implementation-contract-compiler.mjs
+  - scripts/lib/skill-registry.mjs
+  - scripts/generate-yss-skill-boundaries
+  - scripts/audit-yss-backend-skills
+  - scripts/verify-retired-skill-ids
+  - scripts/verify-yss-implementation-contract-compiler-scenarios
+  - docs/process/template-verification-profiles.yaml
+  - skills-lock.json
+  - submodules/yss-harness-dev-agent
+  - submodules/create-yss-harness-dev
+verification_evidence:
+  - kind: self-check
+    command: >-
+      scripts/verify-skill-registry && scripts/verify-yss-implementation-contract-compiler-scenarios &&
+      scripts/verify-scaffold-generator-scenarios && scripts/generate-yss-skill-boundaries --check &&
+      scripts/audit-yss-backend-skills --check && scripts/verify-retired-skill-ids &&
+      scripts/sync-skills --check && scripts/update-skill-lock --check
+    result: pass
+  - kind: cross-repository-verification
+    command: >-
+      (cd submodules/yss-harness-dev-agent && scripts/verify-template-fast) &&
+      (cd submodules/create-yss-harness-dev && node --test tests/*.test.js)
+    result: pass
+  - kind: wiki-refresh
+    command: >-
+      node .agents/skills/llm-wiki/scripts/inventory.mjs status --wiki .template-source/wiki &&
+      node .agents/skills/llm-wiki/scripts/lint-wikilinks.mjs .template-source/wiki
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: >-
+  fast 因 AGENTS.md 和核心验证资产变化自动执行 release profile；
+  本 checkpoint 仍仅表示 implementation-ready，不代替发布批准或跨仓库 Git checkpoint。
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

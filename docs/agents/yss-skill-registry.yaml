@@ -1,19 +1,127 @@
-schema_version: 1
+schema_version: 2
 registry_id: yss.skill-routing
 status: active
 description: >-
-  技能分层、别名、默认可发现性和 Agent 运行时入口的可执行路由注册表。
-  invocation_contract 提供低成本的调用模式、触发条件、排除条件、主要输出与依赖元数据；不执行三层行为评估，也不替代 skills-lock.json 的来源、hash 与投影完整性职责。
-  Router 与生命周期编排器只消费通过本表校验的 canonical 技能。
+  技能身份、capability、任务模式、类型化依赖、分层、别名和默认可发现性的
+  单一可执行注册表。实现合同编译器与生命周期编排器只消费通过本表校验的
+  canonical 技能；skills-lock.json 继续独立持有来源、hash 与投影完整性。
 canonical_content_root: .agents/skills
 runtime_policy:
-  consumed_by_router: true
+  consumed_by_compiler: true
   consumed_by_lifecycle: true
   discovery_enforced: true
+capability_contract:
+  schema_version: 2
+  id_pattern: "^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$"
+  dependency_types: [context-required, context-conditional, coordination-only, review-only, component-dependency]
+  task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input, contract-compilation, reroute, result-validation, source-index-refresh]
+  closure:
+    recursive_types: [context-required]
+    conditional_type: context-conditional
+    non_expanding_types: [coordination-only, review-only, component-dependency]
+    deduplicate_skills: true
+    preserve_all_reasons: true
+  deterministic_order: [recipe-declaration, dependency-topology, skill-id]
+capabilities:
+  - { id: governance.implementation-contract, primary_skill: yss-implementation-contract-compiler, task_modes: [contract-compilation, reroute, result-validation] }
+  - { id: maintenance.skill-source-index, primary_skill: yss-skill-source-index-refresh, task_modes: [component-maintenance, source-index-refresh] }
+  - { id: architecture.tactical-domain, primary_skill: yss-tactical-design, task_modes: [guidance, integration, slice-implementation, review-input] }
+  - { id: layer.domain, primary_skill: yss-domain, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: layer.application, primary_skill: yss-application, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: layer.persistence, primary_skill: yss-repository, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: layer.web-adapter, primary_skill: yss-web-controller, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: contract.dto-wire, primary_skill: yss-dto, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: contract.request-validation, primary_skill: yss-validation, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: contract.error-mapping, primary_skill: yss-exception, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: framework.mybatis, primary_skill: yss-mybatis, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: quality.java-code-style, primary_skill: alibaba-java-code-style, task_modes: [guidance, slice-implementation, review-input] }
+  - { id: codegen.mapstruct, primary_skill: mapstruct, task_modes: [integration, slice-implementation, troubleshooting, review-input] }
+  - { id: codegen.lombok, primary_skill: lombok, task_modes: [integration, slice-implementation, troubleshooting, review-input] }
+  - { id: component.cache, primary_skill: yss-cache, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
+  - { id: component.current-user-context, primary_skill: yss-userinfo, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
+  - { id: component.audit-log, primary_skill: yss-audit-log, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
+  - { id: component.excel-import-export, primary_skill: yss-excel-mvc, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
+  - { id: component.distributed-id, primary_skill: yss-distributed-id, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
+  - { id: component.security-algorithm, primary_skill: yss-security-algorithm, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
+  - { id: component.gateway-resilience, primary_skill: yss-resilience4j, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
+  - { id: scaffold.ddd, primary_skill: yss-ddd-scaffold-generator, task_modes: [integration, component-maintenance] }
+  - { id: scaffold.mvc, primary_skill: yss-mvc-scaffold-generator, task_modes: [integration, component-maintenance] }
+  - { id: migration.springboot3, primary_skill: yss-up-springboot3, task_modes: [guidance, integration, troubleshooting, component-maintenance, review-input] }
+recipes:
+  - { id: backend.domain-behavior, capabilities: [layer.domain, layer.application, quality.java-code-style] }
+  - { id: backend.persistence-mybatis, capabilities: [layer.persistence, framework.mybatis, codegen.mapstruct, codegen.lombok, quality.java-code-style] }
+  - { id: backend.http-api, capabilities: [layer.web-adapter, contract.dto-wire, contract.request-validation, contract.error-mapping, codegen.mapstruct, codegen.lombok, quality.java-code-style] }
+  - { id: backend.current-user-context, capabilities: [component.current-user-context, contract.dto-wire] }
+  - { id: backend.cached-current-user, capabilities: [component.current-user-context, component.cache, contract.dto-wire] }
+  - { id: backend.audit-event, capabilities: [component.audit-log, component.current-user-context, contract.dto-wire] }
+  - { id: backend.excel-import-export, capabilities: [component.excel-import-export, contract.dto-wire, contract.request-validation, contract.error-mapping] }
+  - { id: backend.gateway-resilience, capabilities: [component.gateway-resilience, contract.error-mapping] }
+  - { id: backend.security-algorithm, capabilities: [component.security-algorithm, contract.error-mapping] }
+  - { id: backend.distributed-id, capabilities: [component.distributed-id] }
+  - { id: backend.ddd-scaffold, capabilities: [scaffold.ddd, quality.java-code-style] }
+  - { id: backend.mvc-scaffold, capabilities: [scaffold.mvc, quality.java-code-style] }
+  - { id: backend.springboot3-migration, capabilities: [migration.springboot3, quality.java-code-style] }
+skill_dependencies:
+  yss-prototype-stage:
+    - { skill: prototype-review, type: review-only }
+    - { skill: yss-design-system, type: coordination-only }
+    - { skill: yss-antd-design, type: context-conditional, when: h2-react-antd }
+  yss-ddd-scaffold-generator:
+    - { skill: yss-backend-scaffold-parent, type: context-required }
+    - { skill: alibaba-java-code-style, type: context-required }
+  yss-domain:
+    - { skill: alibaba-java-code-style, type: context-required }
+    - { skill: domain-modeling, type: coordination-only }
+    - { skill: yss-tactical-design, type: context-conditional, when: tactical-domain }
+    - { skill: lombok, type: context-conditional, when: pojo }
+  yss-tactical-design:
+    - { skill: domain-modeling, type: coordination-only }
+    - { skill: yss-openapi-draft-review, type: review-only, when: api-impact }
+    - { skill: yss-repository, type: component-dependency, when: data-impact }
+  yss-application:
+    - { skill: alibaba-java-code-style, type: context-required }
+    - { skill: mapstruct, type: context-conditional, when: conversion }
+    - { skill: lombok, type: context-conditional, when: pojo }
+  yss-repository:
+    - { skill: yss-mybatis, type: context-conditional, when: mybatis }
+    - { skill: mapstruct, type: context-conditional, when: conversion }
+    - { skill: lombok, type: context-conditional, when: pojo }
+    - { skill: alibaba-java-code-style, type: context-required }
+  yss-web-controller:
+    - { skill: yss-dto, type: context-required }
+    - { skill: yss-validation, type: context-conditional, when: request-validation }
+    - { skill: yss-exception, type: context-conditional, when: error-mapping }
+    - { skill: mapstruct, type: context-conditional, when: conversion }
+    - { skill: lombok, type: context-conditional, when: pojo }
+    - { skill: alibaba-java-code-style, type: context-required }
+  yss-userinfo:
+    - { skill: yss-dto, type: component-dependency }
+    - { skill: yss-cache, type: context-conditional, when: cache-lookup }
+  yss-audit-log:
+    - { skill: yss-userinfo, type: component-dependency }
+    - { skill: yss-dto, type: component-dependency }
+  yss-validation:
+    - { skill: yss-exception, type: component-dependency }
+  yss-security-algorithm:
+    - { skill: yss-exception, type: component-dependency }
+  yss-exception:
+    - { skill: yss-dto, type: context-required }
+  yss-ui-business-page-generation:
+    - { skill: yss-components, type: context-conditional, when: components }
+    - { skill: yss-hook, type: context-conditional, when: hooks }
+    - { skill: yss-formily, type: context-conditional, when: form }
+    - { skill: yss-api-integration, type: context-conditional, when: api }
+  yss-page-module-development:
+    - { skill: yss-components, type: context-conditional, when: components }
+    - { skill: yss-hook, type: context-conditional, when: hooks }
+    - { skill: yss-formily, type: context-conditional, when: form }
+    - { skill: yss-api-integration, type: context-conditional, when: api }
+  yss-api-integration:
+    - { skill: yss-openapi-governance, type: context-conditional, when: regeneration }
 invocation_contract:
-  schema_version: 1
-  scope: routing-and-dependencies-only
-  required_fields: [invocation_mode, trigger_conditions, exclusion_conditions, primary_output, required_dependencies, optional_dependencies]
+  schema_version: 2
+  scope: discovery-only
+  required_fields: [invocation_mode, trigger_conditions, exclusion_conditions, primary_output]
   allowed_invocation_modes: [user, model, both]
   trigger_source: impacts
   trigger_encoding: "impact:<impact>"
@@ -22,8 +130,6 @@ invocation_contract:
     trigger_conditions: [registered-skill-request]
     exclusion_conditions: [no-trigger-match]
     primary_output: skill-guidance
-    required_dependencies: []
-    optional_dependencies: []
   layer_defaults:
     core:
       invocation_mode: both
@@ -38,21 +144,16 @@ invocation_contract:
       invocation_mode: user
       primary_output: maintenance-operation
   overrides:
-    yss-ddd-scaffold-generator:
-      required_dependencies: [yss-backend-scaffold-parent, alibaba-java-code-style]
-      optional_dependencies: []
-    yss-domain:
-      required_dependencies: [alibaba-java-code-style]
-      optional_dependencies: [domain-modeling, yss-tactical-design, lombok]
-    yss-application:
-      required_dependencies: [alibaba-java-code-style]
-      optional_dependencies: [mapstruct, lombok]
-    yss-repository:
-      required_dependencies: [yss-mybatis, mapstruct, lombok, alibaba-java-code-style]
-      optional_dependencies: []
-    yss-web-controller:
-      required_dependencies: [yss-dto, yss-validation, mapstruct, lombok, alibaba-java-code-style]
-      optional_dependencies: [yss-exception]
+    yss-prototype-stage:
+      invocation_mode: both
+      trigger_conditions: [impact:prototype]
+      exclusion_conditions: [no-product-design-impact]
+      primary_output: artifact.prototype-deliverable
+    yss-antd-design:
+      invocation_mode: model
+      trigger_conditions: [prototype-profile:H2, component-basis:react-antd]
+      exclusion_conditions: [prototype-profile:H1, component-basis:not-antd]
+      primary_output: versioned-antd-facts
 agent_runtime_roots:
   claude: .claude/skills
   codex: .codex/skills
@@ -493,7 +594,7 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
-  - id: yss-router
+  - id: yss-implementation-contract-compiler
     layer: core
     maturity: supported
     instance_default_discoverable: true
@@ -511,7 +612,7 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
-  - id: yss-source-index
+  - id: yss-skill-source-index-refresh
     layer: maintainer-only
     maturity: supported
     instance_default_discoverable: false

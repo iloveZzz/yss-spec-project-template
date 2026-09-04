@@ -3,152 +3,105 @@ import assert from "node:assert/strict";
 import { mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import {
-  preparePrototype,
-  validatePrototypeEvidence,
-  validatePrototypeProject
-} from "../scripts/prototype-contract.mjs";
+import { prepareFlowPrototype, prepareStaticPrototype, validatePrototypeEvidence, validatePrototypeProject } from "../scripts/prototype-contract.mjs";
 
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), "yss-prototype-contract-"));
 const projectRoot = path.join(tempRoot, "project");
 const feature = "order-review";
-const prototypeRoot = path.join(projectRoot, "docs/.scratch", feature, "design/prototypes");
-await mkdir(path.join(prototypeRoot, "src"), { recursive: true });
 await mkdir(path.join(projectRoot, "docs/design/tokens"), { recursive: true });
-await writeFile(path.join(prototypeRoot, "package.json"), JSON.stringify({
-  name: "order-review-prototype",
-  private: true,
-  type: "module",
-  scripts: { build: "vite build" },
-  dependencies: { react: "19.2.0", "react-dom": "19.2.0", vite: "6.4.2" }
-}, null, 2));
-await writeFile(path.join(projectRoot, "docs/design/tokens/theme.json"), JSON.stringify({
-  algorithm: "default",
-  token: {
-    colorPrimary: "#3371ff",
-    borderRadius: 6,
-    controlHeight: 32,
-    layoutHeaderHeight: 64
-  }
-}, null, 2));
+await writeFile(path.join(projectRoot, "docs/design/tokens/theme.json"), JSON.stringify({ token: { colorPrimary: "#3371ff", borderRadius: 6, controlHeight: 32 } }, null, 2));
 
-const before = await validatePrototypeProject({ root: prototypeRoot, targetAntdVersion: "6.6.2" });
-assert(before.errors.some((message) => message.includes("antd")), "RED: starter without antd must fail");
-assert(before.errors.some((message) => message.includes("pnpm-lock.yaml")), "RED: missing pnpm lockfile must fail");
+const h1Root = path.join(projectRoot, "docs/.scratch", feature, "design/prototypes");
+await prepareStaticPrototype({ projectRoot, root: h1Root, feature });
+assert.match(await readFile(path.join(h1Root, "index.html"), "utf8"), /H1 · visual-review/);
+assert.deepEqual((await validatePrototypeProject({ root: h1Root, profile: "H1" })).errors, []);
+await writeFile(path.join(h1Root, "package.json"), "{}\n");
+assert((await validatePrototypeProject({ root: h1Root, profile: "H1" })).errors.some((message) => message.includes("package.json")), "H1 必须拒绝伪构建依赖");
 
-await preparePrototype({ projectRoot, root: prototypeRoot, feature, targetAntdVersion: "6.6.2", pnpmVersion: "10.15.0" });
-const pkg = JSON.parse(await readFile(path.join(prototypeRoot, "package.json"), "utf8"));
-assert.equal(pkg.dependencies.antd, "6.6.2");
-assert.equal(pkg.packageManager, "pnpm@10.15.0");
-assert.match(await readFile(path.join(prototypeRoot, "src/yss-theme.js"), "utf8"), /compactAlgorithm/);
+const h2Feature = "approval-flow";
+const h2Root = path.join(projectRoot, "docs/.scratch", h2Feature, "design/prototypes");
+await mkdir(path.join(h2Root, "src"), { recursive: true });
+await writeFile(path.join(h2Root, "index.html"), "<!doctype html><div id=app></div>\n");
+await writeFile(path.join(h2Root, "package.json"), JSON.stringify({ name: "approval-flow-prototype", private: true, type: "module", scripts: { build: "vite build" }, dependencies: { react: "19.2.0", "react-dom": "19.2.0", vite: "6.4.2" } }, null, 2));
+await prepareFlowPrototype({ projectRoot, root: h2Root, feature: h2Feature, targetAntdVersion: "6.6.2", pnpmVersion: "10.15.0" });
+await writeFile(path.join(h2Root, "pnpm-lock.yaml"), "lockfileVersion: '9.0'\n");
+await writeFile(path.join(h2Root, "src/App.jsx"), 'import { ConfigProvider } from "antd"; import { yssTheme } from "./yss-theme.js"; export function App(){return <ConfigProvider theme={yssTheme}/>;}\n');
+assert.deepEqual((await validatePrototypeProject({ root: h2Root, profile: "H2", targetAntdVersion: "6.6.2" })).errors, []);
+assert((await validatePrototypeProject({ root: h2Root, profile: "H2", targetAntdVersion: "6.6.1" })).errors.some((message) => message.includes("精确锁定")));
 
-await writeFile(path.join(prototypeRoot, "pnpm-lock.yaml"), "lockfileVersion: '9.0'\n");
-await writeFile(path.join(prototypeRoot, "src/App.jsx"), [
-  'import { ConfigProvider, Button } from "antd";',
-  'import { yssTheme } from "./yss-theme.js";',
-  'export function App() { return <ConfigProvider theme={yssTheme}><Button type="primary">提交</Button></ConfigProvider>; }'
-].join("\n"));
-const after = await validatePrototypeProject({ root: prototypeRoot, targetAntdVersion: "6.6.2" });
-assert.deepEqual(after.errors, []);
-
-const wrongTarget = await validatePrototypeProject({ root: prototypeRoot, targetAntdVersion: "6.6.1" });
-assert(wrongTarget.errors.some((message) => message.includes("精确锁定 antd 6.6.1")), "target 与实际 antd 版本不一致必须失败");
-
-const npmPackage = structuredClone(pkg);
-npmPackage.packageManager = "npm@11.0.0";
-await writeFile(path.join(prototypeRoot, "package.json"), JSON.stringify(npmPackage, null, 2));
-const npmProject = await validatePrototypeProject({ root: prototypeRoot, targetAntdVersion: "6.6.2" });
-assert(npmProject.errors.some((message) => message.includes("packageManager")), "原型包管理器漂移到 npm 必须失败");
-await writeFile(path.join(prototypeRoot, "package.json"), JSON.stringify(pkg, null, 2));
-
-await assert.rejects(
-  preparePrototype({
-    projectRoot,
-    root: path.join(projectRoot, "prototypes", feature),
+function common(profile, kind, block) {
+  return {
+    schema_version: 3,
     feature,
-    targetAntdVersion: "6.6.2",
-    pnpmVersion: "10.15.0"
-  }),
-  /docs\/.scratch/,
-  "非标准原型目录必须被拒绝"
-);
+    prototype_ref: `docs/.scratch/${feature}/design/prototypes/index.html`,
+    prototype_profile: profile,
+    profile_kind: kind,
+    profile_decision: {
+      decision_to_inform: "确认审批交互与状态",
+      risk_assumptions: ["状态必须可理解"],
+      trigger_results: [{ trigger: "visual-only", matched: profile === "H1", evidence_ref: "design/review.md" }],
+      calculated_profile: profile,
+      override: { applied: false, direction: "none", reason: "not-applicable", evidence_ref: "not-applicable" }
+    },
+    upstream_refs: { spec_ref: "spec.md", interaction_spec_ref: "interaction.md", low_fidelity_ref: "low.md", state_matrix_ref: "states.md", prototype_review_ref: "review.md" },
+    source_visual: { ideation_status: "not-applicable", selected_ref: "approved-pattern.md", reuse_reason: "复用已批准模式" },
+    design_baseline: { project_design_ref: "docs/design/design.md", project_token_refs: ["docs/design/tokens/theme.json"], project_token_baseline_digest: "sha256:tokens", project_override_reviewed: true },
+    browser_delivery: {
+      delivery_kind: "static-directory", entry_ref: `docs/.scratch/${feature}/design/prototypes/index.html`, rendered_nonblank: true, prototype_digest: "sha256:prototype",
+      viewports: [
+        { name: "desktop", size: "1440x900", result: "passed", screenshot_ref: "desktop.png" },
+        { name: "narrow", size: "390x844", result: "passed", screenshot_ref: "narrow.png" }
+      ],
+      console_result: "passed", console_ref: "console.txt"
+    },
+    design_qa: { report_ref: `docs/.scratch/${feature}/verification/design-qa.md`, result: "passed", axes: { visual: "passed", layout: "passed", interaction: "passed", content: "passed", accessibility: "passed", cross_platform: "passed" } },
+    profile_evidence: block,
+    implementation_handoff: {
+      prototype_code_reusable: false,
+      production_component_assumptions: ["YSS 组件可以表达已确认的交互语义"],
+      verification_targets: [{ behavior: "核验目标组件的真实 props/slots/events 与状态", target_stage: "frontend-implementation-plan" }]
+    },
+    review: { result: "approved", review_ref: "review.md" },
+    user_confirmation: { result: "approved", confirmation_ref: "confirmation.md", confirmed_decision: "接受当前设计", operable_scope: ["主操作"], simulations_or_gaps: [] },
+    gaps: [], blockers: []
+  };
+}
 
-const validEvidence = {
-  schema_version: 2,
-  feature,
-  prototype_ref: `docs/.scratch/${feature}/design/prototypes/index.html`,
-  prototype_stack: {
-    framework: "react",
-    package_manager: "pnpm",
-    package_manifest_ref: `docs/.scratch/${feature}/design/prototypes/package.json`,
-    lockfile_ref: `docs/.scratch/${feature}/design/prototypes/pnpm-lock.yaml`,
-    source_entry_ref: `docs/.scratch/${feature}/design/prototypes/src/App.jsx`,
-    build_entry_ref: `docs/.scratch/${feature}/design/prototypes/dist/index.html`,
-    build_command: "pnpm build",
-    build_result: "passed",
-    actual_antd_version: "6.6.2"
-  },
-  design_baseline: {
-    design_standard: "ant-design-v6",
-    project_design_ref: "docs/design/design.md",
-    project_token_refs: ["docs/design/tokens/theme.json"],
-    theme_adapter_ref: `docs/.scratch/${feature}/design/prototypes/src/yss-theme.js`,
-    project_override_reviewed: true
-  },
-  visual_semantic_mapping: {
-    runtime_component_library: "ant-design-vue-4.x",
-    runtime_version_source: "implementation-lockfile",
-    components: [{
-      semantic_role: "primary-action",
-      antd_v6_component: "Button",
-      project_token_refs: ["colorPrimary"],
-      yss_or_antdv_target: "YButton",
-      state_mapping: ["default", "hover", "active", "disabled", "loading"],
-      react_only_api_not_copied: true,
-      verification_ref: "verification/button-states.png"
-    }]
-  },
-  antd: { target_antd_version: "6.6.2", queries: { design_md: "verification/antd-design.json", components: [] } },
-  browser_verification: { rendered_nonblank: true, viewports: [], main_flow_result: "passed", failure_permission_or_conflict_result: "passed", console_error_ref: "verification/console.txt" },
-  design_qa: { report_ref: `docs/.scratch/${feature}/verification/design-qa.md`, result: "passed" },
-  accessibility_verification: {
-    contrast_results_ref: "verification/contrast.json",
-    keyboard_navigation_result: "passed",
-    focus_visible_and_order_result: "passed",
-    semantic_label_dialog_result: "passed",
-    zoom_200_result: "passed",
-    reduced_motion_result: "passed",
-    target_size_result: "passed",
-    automated_scan: { tool: "axe", version: "4", result: "passed", ref: "verification/axe.json" }
-  },
-  review: { prototype_review_ref: "design/review.md", result: "approved" },
-  user_confirmation: { confirmation_ref: "design/confirmation.md", result: "approved" },
-  blockers: []
-};
-assert.deepEqual(validatePrototypeEvidence(validEvidence).errors, []);
+const h1Evidence = common("H1", "visual-review", { visual_review: {
+  runtime_build_required: false, key_interactions_result: "passed", keyboard_result: "passed", focus_result: "passed", contrast_result: "passed",
+  zoom_200: { applicable: false, result: "not-applicable", evidence_ref: "not-applicable" },
+  reduced_motion: { applicable: false, result: "not-applicable", evidence_ref: "not-applicable" }
+} });
+assert.deepEqual(validatePrototypeEvidence(h1Evidence).errors, []);
+const fakeH1 = structuredClone(h1Evidence);
+fakeH1.profile_evidence.visual_review.lockfile_ref = "pnpm-lock.yaml";
+assert(validatePrototypeEvidence(fakeH1).errors.some((message) => message.includes("H1 禁止字段")));
 
-const missingMapping = structuredClone(validEvidence);
-delete missingMapping.visual_semantic_mapping;
-assert(validatePrototypeEvidence(missingMapping).errors.some((message) => message.includes("visual_semantic_mapping")));
+const h2Evidence = common("H2", "flow-review", { flow_review: {
+  implementation: { framework: "react", runtime_build_required: true, package_manager: "pnpm", package_manifest_ref: "package.json", lockfile_ref: "pnpm-lock.yaml", build_command: "pnpm build", build_result: "passed" },
+  main_flow_result: "passed", exceptional_state_result: "passed", exceptional_state_ref: "conflict.png", keyboard_result: "passed", focus_result: "passed", contrast_result: "passed", zoom_200_result: "passed", reduced_motion_result: "passed",
+  visual_regression: { applicable: true, result: "passed", evidence_ref: "visual.json" },
+  prototype_library_facts: { applicable: true, component_basis: "react-antd-6", source: "fact-pack", actual_antd_version: "6.6.2", manifest_ref: "docs/design/facts/antd/6.6.2/manifest.json", manifest_digest: "sha256:facts", components_covered: ["Button"], project_token_baseline_digest: "sha256:tokens", new_api_uncertainty: false }
+} });
+assert.deepEqual(validatePrototypeEvidence(h2Evidence).errors, []);
+const staleFacts = structuredClone(h2Evidence);
+staleFacts.profile_evidence.flow_review.prototype_library_facts.project_token_baseline_digest = "sha256:old";
+assert(validatePrototypeEvidence(staleFacts).errors.some((message) => message.includes("Token digest")));
+const fakeH3Claim = structuredClone(h2Evidence);
+fakeH3Claim.profile_evidence.flow_review.real_component_verified = true;
+assert(validatePrototypeEvidence(fakeH3Claim).errors.some((message) => message.includes("禁止生产组件字段")));
 
-const copiedReactApi = structuredClone(validEvidence);
-copiedReactApi.visual_semantic_mapping.components[0].react_only_api_not_copied = false;
-assert(validatePrototypeEvidence(copiedReactApi).errors.some((message) => message.includes("React-only")));
+const h3Evidence = common("H3", "component-contract", { component_contract: {
+  implementation_repo_ref: "repo:frontend", lockfile_ref: "pnpm-lock.yaml", framework: "vue-3", component_library: "@yss-ui/components", component_library_version: "4.2.1", harness_ref: "storybook-static/index.html", story_refs: ["stories/approval.stories.ts"], real_component_verified: true,
+  main_flow_result: "passed", exceptional_state_result: "passed", keyboard_result: "passed", focus_result: "passed", contrast_result: "passed", zoom_200_result: "passed", reduced_motion_result: "passed", automated_visual_regression: { result: "passed", evidence_ref: "visual-regression.json" }
+} });
+assert(validatePrototypeEvidence(h3Evidence).errors.some((message) => message.includes("H1/H2")), "H3 必须被原型合同拒绝");
 
-const inaccessible = structuredClone(validEvidence);
-inaccessible.accessibility_verification.contrast_results_ref = "";
-assert(validatePrototypeEvidence(inaccessible).errors.some((message) => message.includes("contrast_results_ref")));
+const invalidHandoff = structuredClone(h2Evidence);
+invalidHandoff.implementation_handoff.verification_targets[0].target_stage = "prototype";
+assert(validatePrototypeEvidence(invalidHandoff).errors.some((message) => message.includes("前端实现阶段")));
 
-const wrongQaRoot = structuredClone(validEvidence);
-wrongQaRoot.design_qa.report_ref = "docs/design/design-qa.md";
-assert(validatePrototypeEvidence(wrongQaRoot).errors.some((message) => message.includes("design_qa.report_ref")));
+assert(validatePrototypeEvidence({ schema_version: 2 }).errors.some((message) => message.includes("只读旧证据")));
+assert.deepEqual(validatePrototypeEvidence({ schema_version: 2 }, { allowLegacy: true }).errors, []);
 
-const versionMismatch = structuredClone(validEvidence);
-versionMismatch.antd.target_antd_version = "6.6.1";
-assert(validatePrototypeEvidence(versionMismatch).errors.some((message) => message.includes("target_antd_version")));
-
-const unresolvedBlocker = structuredClone(validEvidence);
-unresolvedBlocker.blockers = ["缺少权限失败态"];
-assert(validatePrototypeEvidence(unresolvedBlocker).errors.some((message) => message.includes("blockers")));
-
-process.stdout.write("YSS prototype contract scenarios passed\n");
+process.stdout.write("YSS prototype profile contract scenarios passed\n");

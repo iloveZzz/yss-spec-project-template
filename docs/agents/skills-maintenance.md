@@ -7,7 +7,7 @@
 - `.agents/skills` 是跨 Agent 共享技能的唯一权威内容。
 - `.claude/skills`、`.codex/skills`、`.cursor/skills`、`.pi/skills`、`.qoder/skills`、`.trae/skills` 中的同名共享技能是生成投影，不得分别手工修改。
 - Cursor 的契约运行时入口是 `.cursor/skills`。若客户端同时枚举 `.claude/skills`，仍以 `.cursor/skills` 为 Cursor 投影契约，不得把两套同名 skill 解释为两个来源。
-- 分层、别名和默认可发现性以 `docs/agents/yss-skill-registry.yaml` 为准；当前 registry 为 `active`，Router、生命周期编排器和实例发现面必须消费通过校验的 canonical 技能及其 alias 解析结果。
+- 分层、别名和默认可发现性以 `docs/agents/yss-skill-registry.yaml` 为准；当前 registry 为 `active`，实现合同编译器、生命周期编排器和实例发现面必须消费通过校验的 canonical 技能及其 alias 解析结果。
 - 只属于某个平台的 skill 继续保留在对应 root，并由 `skills-lock.json` 的 `platform` 分组记录。
 - 共享技能投影可以是指向权威目录的符号链接，也可以是完整同步副本；`scripts/sync-skills --check` 会检查链接目标或完整目录哈希。
 
@@ -31,7 +31,7 @@
 
 当前 Matt 快照为 `0ab1b63a410a03d3627979a109c8695de27af954`。`ask-matt` 的关联入口包括 `to-questionnaire`、`wait-what`、`writing-for-agents` 和 `PHASE-BOUNDARIES.md`；这些支持文件随共享 skill 目录一起计算 `effectiveHash`，不得单独投影或维护。
 
-本轮升级还将生命周期适配固定为：阶段边界只写可选 `phase_boundary` 证据；`to-questionnaire` 使用 `external-input-required` 暂停并在答案回流后重新分类影响面；Matt `prototype` 使用 `prototype/<name>` 分支和单文件 HTML，YSS 高保真原型继续执行 Prototype Review、AntD CLI 校验和用户确认。人工 checkpoint 与 `diagnosing-bugs` 的输出必须脱敏，`wait-what` 不改变生命周期状态。
+本轮升级还将生命周期适配固定为：阶段边界只写可选 `phase_boundary` 证据；`to-questionnaire` 使用 `external-input-required` 暂停并在答案回流后重新分类影响面；Matt `prototype` 的单文件 HTML 只作为回流输入，YSS 原型仍须完成低保真评审、H1/H2 档位路由、schema v3 验证和用户确认。人工 checkpoint 与 `diagnosing-bugs` 的输出必须脱敏，`wait-what` 不改变生命周期状态。
 
 ## 维护流程
 

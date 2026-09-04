@@ -241,20 +241,28 @@ work_unit_routes:
   work-unit.prototype-design:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     primary_skill: yss-prototype-stage
-    supporting_skills: [prototype-review, yss-design-system, yss-antd-design, product-design:index]
-    skills: [prototype-review, yss-design-system, yss-prototype-stage, yss-antd-design, product-design:index]
-    execution_order: [yss-design-system, low-fidelity-assets, prototype-review, yss-antd-design-pre-build, product-design-focused-workflow, yss-antd-design-post-build, browser-design-qa-accessibility, user-confirmation]
+    supporting_skills: [prototype-review, yss-design-system, product-design:index, yss-antd-design]
+    skills: [prototype-review, yss-design-system, yss-prototype-stage, product-design:index, yss-antd-design]
+    execution_order: [yss-design-system, low-fidelity-assets, prototype-review, prototype-profile-routing, profile-adapter-build, browser-design-qa-accessibility, user-confirmation]
+    profile_routing_ref: .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md
     prototype_adapter_ref: .agents/skills/yss-prototype-stage/references/product-design-adapter.md
-    evidence_schema_version: 2
-    version_boundary: {design_standard: ant-design-v6, prototype_components: react-antd-6.x, production_components: yss-ui-ant-design-vue-4.x, production_version_source: implementation-lockfile}
+    evidence_schema_version: 3
+    profile_contract:
+      default_when_uncertain: H2
+      highest_matching_profile_wins: true
+      profiles:
+        H1: {kind: visual-review, adapter: static-html, node_runtime_required: false, antd_facts: not-applicable}
+        H2: {kind: flow-review, adapter: runnable-flow, react_antd: supported-not-required, antd_facts: conditional}
+    implementation_handoff: {production_component_assumptions: required-array, verification_targets: frontend-implementation-only}
+    version_boundary: {h2_design_standard: ant-design-v6-when-applicable, prototype_must_not_call: yss-ui, production_version_source: implementation-lockfile}
     human_gate: prototype-confirmation
     applies_when: product_design_impact
     not_applicable_reason: no_ui_or_product_design_impact
   work-unit.technical-analysis:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
-    primary_skill: yss-router
+    primary_skill: yss-implementation-contract-compiler
     supporting_skills: [yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding, yss-tactical-design]
-    skills: [yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding, yss-tactical-design, yss-router]
+    skills: [yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding, yss-tactical-design, yss-implementation-contract-compiler]
     tactical_ddd:
       applies_when: [aggregate-impact, state-machine-impact, invariant-impact, consistency-impact, domain-event-impact, gateway-boundary-impact, persistence-mapping-impact]
       not_applicable_reason: no_tactical_ddd_impact
@@ -270,18 +278,18 @@ work_unit_routes:
   work-unit.ticket-decomposition:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     primary_skill: yss-product-lifecycle
-    supporting_skills: [yss-router]
+    supporting_skills: [yss-implementation-contract-compiler]
     compatibility: {source: mattpocock/skills, skill: to-tickets, invocation_mode: reference, formal_artifact_owner: explicit-user-entry}
-    skills: [yss-router]
+    skills: [yss-implementation-contract-compiler]
     applies_when: frozen_scope_ready_for_slicing
     not_applicable_reason: contract_or_scope_not_frozen
     must_complete_before: work-unit.slice-implementation
   work-unit.slice-implementation:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
-    primary_skill: yss-router
+    primary_skill: yss-implementation-contract-compiler
     supporting_skills: [tdd, yss-ui, yss-ui-business-page-generation, yss-page-module-development]
     compatibility: {source: mattpocock/skills, skill: implement, invocation_mode: reference, formal_artifact_owner: explicit-user-entry}
-    skills: [tdd, yss-router, yss-ui, yss-ui-business-page-generation, yss-page-module-development]
+    skills: [tdd, yss-implementation-contract-compiler, yss-ui, yss-ui-business-page-generation, yss-page-module-development]
     frontend_route:
       primary_skill: yss-ui
       page_generation_skill: yss-ui-business-page-generation
@@ -348,7 +356,7 @@ work_unit_routes:
           kinds: [drift, new_impacts, required_skills_mismatch]
           mark_contract: stale
           continue_coding_on_old_contract: forbidden
-          next: router-or-earlier-lifecycle
+          next: compiler-or-earlier-lifecycle
         exemption_policy:
           not_applicable: impact_not_triggered_only
           mandatory_waiver: forbidden
@@ -539,7 +547,7 @@ backend_scaffold:
   required_status: required
   sequence:
     after: [prototype_review, prototype_verification, antd_cli_verification, browser_verification, prototype_confirmation, engineering_baseline]
-    before_generator: [yss-router-scaffold-contract, lifecycle-approve-scaffold-contract]
+    before_generator: [yss-implementation-contract-compiler-scaffold-contract, lifecycle-approve-scaffold-contract]
     before: [business_code_generation, implement]
   generator_skill: yss-ddd-scaffold-generator
   baseline_skill: yss-backend-scaffold-parent
@@ -547,7 +555,7 @@ backend_scaffold:
   contract_schema:
     schema_version: 2
     identity: service-engineering-baseline
-    required: [contract_id, contract_version, scaffold_request_id, status, router_draft_ref, lifecycle_approval_ref, persisted_ref, current_version, implementation_repository, backend_repository, scaffold_status, project_name, target_output_dir, base_package, maven_coordinates, profiles, allowed_write_paths, expected_evidence_files, verification_commands, approval, work_unit, generation_policy]
+    required: [contract_id, contract_version, scaffold_request_id, status, compiler_draft_ref, lifecycle_approval_ref, persisted_ref, current_version, implementation_repository, backend_repository, scaffold_status, project_name, target_output_dir, base_package, maven_coordinates, profiles, allowed_write_paths, expected_evidence_files, verification_commands, approval, work_unit, generation_policy]
     status_by_owner:
       router: [draft, ready-for-lifecycle-review, blocked]
       lifecycle: [approved, stale, blocked]
@@ -578,7 +586,7 @@ backend_scaffold:
       schema_v1: reject-no-auto-upgrade
       slice_id: forbidden-as-scaffold-identity
       existing_project: reject-no-scaffold-migration
-  required_inputs: [implementation_repository, backend_repository, scaffold_status, scaffold_target_confirmed, scaffold_request_id, target_output_dir, project_name, base_package, maven_group_id, project_version, parent_group_id, parent_artifact_id, parent_version, yss_components_version, architecture_profile, persistence_profile, database, platform_profile, validation_namespace, dto_placement, repository_profile, scaffold_contract_file, scaffold_contract_draft, scaffold_contract_id, scaffold_contract_version, scaffold_contract_status, scaffold_contract_approved, scaffold_contract_router_draft_ref, scaffold_contract_lifecycle_approval_ref, scaffold_contract_persisted, scaffold_contract_persisted_ref, scaffold_contract_current_version]
+  required_inputs: [implementation_repository, backend_repository, scaffold_status, scaffold_target_confirmed, scaffold_request_id, target_output_dir, project_name, base_package, maven_group_id, project_version, parent_group_id, parent_artifact_id, parent_version, yss_components_version, architecture_profile, persistence_profile, database, platform_profile, validation_namespace, dto_placement, repository_profile, scaffold_contract_file, scaffold_contract_draft, scaffold_contract_id, scaffold_contract_version, scaffold_contract_status, scaffold_contract_approved, scaffold_contract_compiler_draft_ref, scaffold_contract_lifecycle_approval_ref, scaffold_contract_persisted, scaffold_contract_persisted_ref, scaffold_contract_current_version]
   required_evidence: [generator_inputs, expected_files, scaffold_generation_manifest_v2, generated_project_structure, generation_execution_result, verification_execution_result, architecture_rules, ./mvnw_validate, ./mvnw_test, ./mvnw_package, yss_skill_execution_result]
   generation_options:
     with_example: false
@@ -587,8 +595,8 @@ backend_scaffold:
     template_upgrade: unsupported
     old_project_migration: unsupported-separate-architecture-modernization-initiative
   forbidden_generation: [business_rules, state_machine, permission, transaction, complex_query, error_mapping, user_visible_behavior, business_example_crud, unapproved_force_overwrite]
-  after_generation: [yss-backend-scaffold-parent, yss-router]
-  existing_or_initialized: [baseline_evidence, wrapper_verification, yss_router_contract_recompile]
+  after_generation: [yss-backend-scaffold-parent, yss-implementation-contract-compiler]
+  existing_or_initialized: [baseline_evidence, wrapper_verification, implementation_contract_recompile]
   verification:
     commands: ["./mvnw validate", "./mvnw test", "./mvnw package"]
     requires_execution: true

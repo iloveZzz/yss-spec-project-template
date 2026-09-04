@@ -23,11 +23,11 @@ description: 用于 YSS MyBatis 与 MyBatis-Plus 持久层规范、配置和排�
 
 ## 源码索引
 
-- 源码位置不要假设固定目录；先按 `yss-source-index/references/source-location.md` 定位。
+- 源码位置不要假设固定目录；先按 `yss-skill-source-index-refresh/references/source-location.md` 定位。
 - 当前技能索引：`references/source-index.md`
 - 重点源码入口通常包括 `BaseRepository`、`BasePlusRepository`、`EntityQueryAspect`、`PageQueryEntityConfigration`、`MybatisBaseConfiguration`、`MybatisPlusConfiguration`、`MultiDataSourceConfiguration`、`MultiDataSourceHolder`。
 
-当组件源码变化后，用 `yss-source-index` 刷新索引；刷新或读取前先按源码定位策略确认真实位置。
+当组件源码变化后，用 `yss-skill-source-index-refresh` 刷新索引；刷新或读取前先按源码定位策略确认真实位置。
 
 ## 实施建议
 

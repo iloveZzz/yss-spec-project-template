@@ -51,7 +51,7 @@ owner: ai
 - UI 影响：是 / 否
 - 产品总体设计：`docs/.scratch/<feature>/design/<feature>-product-overview-design.md`
 
-> 只有存在 UI 影响时，才强制低保真页面草图、状态矩阵、高保真 HTML 原型和用户确认；否则记录 `not-applicable` 及原因。
+> 只有存在产品设计影响时，才强制低保真页面草图、状态矩阵、按 H1/H2 路由的原型交付物和用户确认；否则记录 `not-applicable` 及原因。
 
 ## OpenAPI 影响
 

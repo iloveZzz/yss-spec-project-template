@@ -12,8 +12,8 @@ function registry(overrides = {}) {
   return { ...base, ...overrides, runtime_policy: { ...base.runtime_policy, ...overrides.runtime_policy } };
 }
 
-function routerContract() {
-  const source = readFileSync(path.join(ROOT, ".agents/skills/yss-router/references/router-contract.yaml"), "utf8");
+function compilerContract() {
+  const source = readFileSync(path.join(ROOT, ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml"), "utf8");
   return parseDocument(source, { maxAliasCount: 0, uniqueKeys: true }).toJS({ maxAliasCount: 0 });
 }
 
@@ -24,8 +24,8 @@ test("unknown layer is rejected", () => {
 });
 
 test("shadow registry cannot be marked as runtime consumed", () => {
-  const data = registry({ status: "shadow", runtime_policy: { consumed_by_router: true, consumed_by_lifecycle: false, discovery_enforced: false } });
-  assert.throws(() => validateSkillRegistry(data), /shadow 注册表不得被 Router/);
+  const data = registry({ status: "shadow", runtime_policy: { consumed_by_compiler: true, consumed_by_lifecycle: false, discovery_enforced: false } });
+  assert.throws(() => validateSkillRegistry(data), /shadow 注册表不得被实现合同编译器/);
 });
 
 test("alias that collides with another id is rejected", () => {
@@ -56,28 +56,25 @@ test("skill invocation contract is required and derives impact triggers", () => 
   assert.throws(() => validateSkillRegistry(invalid), /primary_output/);
 });
 
-test("invocation dependency metadata rejects unregistered skills", () => {
+test("typed dependency metadata rejects unregistered skills", () => {
   const data = registry();
-  data.invocation_contract = structuredClone(data.invocation_contract);
-  data.invocation_contract.overrides["yss-domain"] = {
-    required_dependencies: ["missing-static-dependency"],
-    optional_dependencies: []
-  };
+  data.skill_dependencies = structuredClone(data.skill_dependencies);
+  data.skill_dependencies["yss-domain"].push({ skill: "missing-static-dependency", type: "context-required" });
   assert.throws(() => validateSkillRegistry(data), /依赖引用了未登记技能/);
 });
 
-test("Router dependency closure must match registry static dependency metadata", () => {
+test("context-required typed dependencies reject cycles", () => {
   const data = registry();
-  const router = routerContract();
-  router.dependency_closure["yss-domain"].always = [];
-  assert.throws(() => validateSkillRegistry(data, { routerContract: router }), /静态必需依赖.*不一致/);
+  data.skill_dependencies = structuredClone(data.skill_dependencies);
+  data.skill_dependencies["alibaba-java-code-style"] = [{ skill: "yss-domain", type: "context-required" }];
+  assert.throws(() => validateSkillRegistry(data), /context-required 依赖存在循环/);
 });
 
-test("Router conditional dependency union must match registry optional dependency metadata", () => {
+test("实现合同编译器合同不得重复 typed dependency 事实", () => {
   const data = registry();
-  const router = routerContract();
-  router.dependency_closure["yss-domain"].when_unapproved = ["yss-cache"];
-  assert.throws(() => validateSkillRegistry(data, { routerContract: router }), /可选依赖.*不一致/);
+  const contract = compilerContract();
+  contract.skill_dependencies = {};
+  assert.throws(() => validateSkillRegistry(data, { compilerContract: contract }), /不得重复注册表事实: skill_dependencies/);
 });
 
 test("platform aliases resolve lifecycle external runtime entries", () => {
@@ -163,7 +160,7 @@ function findingDisposition(overrides = {}) {
       kinds: ["drift", "new_impacts", "required_skills_mismatch"],
       mark_contract: "stale",
       continue_coding_on_old_contract: "forbidden",
-      next: "router-or-earlier-lifecycle"
+      next: "compiler-or-earlier-lifecycle"
     },
     exemption_policy: {
       not_applicable: "impact_not_triggered_only",

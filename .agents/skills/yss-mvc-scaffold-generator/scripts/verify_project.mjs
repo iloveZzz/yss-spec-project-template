@@ -14,7 +14,7 @@ try {
   if (manifest.skill !== "yss-mvc-scaffold-generator" || !["oracle", "oceanbase-oracle"].includes(manifest.database)) throw new Error("生成清单与 YSS MVC 脚手架合同不一致");
   if (manifest.runtime_java !== "8" || manifest.project_version !== "2.0.0-SNAPSHOT" || manifest.persistence_profile !== "yss-mybatis-plus") throw new Error("Java 8/YSS MyBatis-Plus 技术基线不正确");
   const skillUtils = path.resolve(root, manifest.skill_utils_dir);
-  await Promise.all(["skill-utils.yaml", "skills-lock.json", ".agents/skills/yss-product-lifecycle/SKILL.md", ".agents/skills/yss-router/SKILL.md"].map((relative) => required(path.join(manifest.skill_utils_dir, relative))));
+  await Promise.all(["skill-utils.yaml", "skills-lock.json", ".agents/skills/yss-product-lifecycle/SKILL.md", ".agents/skills/yss-implementation-contract-compiler/SKILL.md"].map((relative) => required(path.join(manifest.skill_utils_dir, relative))));
   for (const projection of [".agents", ".claude", ".codex", ".cursor", ".pi", ".qoder", ".trae"]) {
     const nestedGenerator = path.join(skillUtils, projection, "skills", "yss-mvc-scaffold-generator");
     if (await stat(nestedGenerator).then(() => true).catch(() => false)) throw new Error(`skillUtils 不应分发创建期生成器: ${projection}/skills/yss-mvc-scaffold-generator`);

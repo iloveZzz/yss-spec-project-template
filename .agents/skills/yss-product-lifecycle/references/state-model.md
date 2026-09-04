@@ -49,7 +49,7 @@ AND Slice Implementation Contract 已由生命周期编排器批准并持久化
 AND Slice Implementation Contract 的 `ticket_ref` 与 `vertical_slice_ticket_ref` 完全一致
 AND 当前工作单元消费的 contract_id/version 与最新批准版本一致
 AND Backend Slice Implementation Contract（后端适用）和 Build Architecture Checklist 已完成
-AND backend 影响且 scaffold_status=required 时，原型确认后的脚手架策略、`yss-backend-scaffold-parent` 基线、Wrapper 验证和 Router 重编译均已完成
+AND backend 影响且 scaffold_status=required 时，原型确认后的脚手架策略、`yss-backend-scaffold-parent` 基线、Wrapper 验证和 实现合同编译器 重编译均已完成
 AND 所有后续生成代码均绑定主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result
 AND UI 影响切片的前端实现还原计划已通过 schema 校验、`template=false`、`status=approved`，且基线引用可读取
 ```

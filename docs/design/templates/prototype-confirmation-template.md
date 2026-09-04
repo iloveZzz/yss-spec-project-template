@@ -1,6 +1,6 @@
-# <功能名称> 高保真原型确认记录
+# <功能名称> 原型交付物确认记录
 
-> 适用时机：Ant Design v6 主题/视觉标准高保真 HTML 原型产出后、Spec 校准 / 需求冻结 / UI 驱动 OpenAPI Draft 前。生产 API 仍为 YSS UI + Ant Design Vue 4.x；未确认前不得进入下游门禁。
+> 适用时机：H1/H2 原型交付物验证后、Spec 校准 / 需求冻结 / UI 驱动 OpenAPI Draft 前。用户只确认设计决定、可操作范围与模拟/gap；未确认前不得进入下游门禁。
 
 ## 1. 原型信息
 
@@ -12,24 +12,22 @@
 | 交互说明 | `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` |
 | 状态矩阵 | `docs/.scratch/<feature>/design/<feature>-state-matrix.md` |
 | 原型评审 | `docs/.scratch/<feature>/design/<feature>-prototype-review.md` |
-| 高保真 HTML 原型 | `docs/.scratch/<feature>/design/prototypes/index.html` |
+| 原型档位与交付物 | `<H1/H2>`；`docs/.scratch/<feature>/design/prototypes/index.html` 或稳定 URL |
 | 机器可读验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` |
-| Product Design 路由 | `product-design:index -> <focused skill>` |
+| 原型路由 | `yss-prototype-stage -> H1/H2 -> <adapter>` |
 | 产出方式 | 系统 / Agent 自动产出 / 人工补充 |
-| Ant Design 目标版本 | `<实际项目选择的 v6 版本>` |
 
-## 2. AntD CLI 校验证据
+## 2. 用户需要确认的范围
 
-| 校验项 | 命令 / 记录路径 | 结论 |
+| 项目 | 内容 |
 |---|---|---|
-| 设计语言 | `antd design.md --format json` |  |
-| 组件 API | `antd info <Component> --version <target_antd_version> --format json` |  |
-| 组件 demo | `antd demo <Component> <demo> --version <target_antd_version> --format json` |  |
-| 组件 token | `antd token <Component> --version <target_antd_version> --format json` |  |
-| semantic | `antd semantic <Component> --version <target_antd_version> --format json` |  |
-| lint / 替代校验 | `antd lint <prototype path> --format json` |  |
+| 本原型确认的决定 |  |
+| 可操作范围 |  |
+| 模拟数据 / 模拟行为 |  |
+| 未关闭 gap |  |
+| 接受的差异或非目标 |  |
 
-CLI 实际版本、目标 AntD 版本、完整 JSON 输出与浏览器验证结论以 `prototype-evidence.yaml` 为准；不得用本文中的示例版本替代实际记录。
+技术栈、CLI、lockfile、digest 和扫描结果由 `prototype-evidence.yaml` 自动或工程验证记录，不要求用户确认。
 
 ## 3. 用户确认
 

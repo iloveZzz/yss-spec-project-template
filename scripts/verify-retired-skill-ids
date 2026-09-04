@@ -1,0 +1,37 @@
+#!/usr/bin/env node
+import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import path from "node:path";
+import { PROJECTION_ROOTS, ROOT } from "./lib/skill-supply-chain.mjs";
+
+const retired = ["yss-router", "yss-source-index"];
+const allowed = (relative) => relative === "docs/agents/skill-migrations.md"
+  || relative.includes("/docs/agents/skill-migrations.md")
+  || relative.endsWith(".template-source/wiki/raw/skill-migrations.md")
+  || relative.startsWith(".template-source/evidence/")
+  || relative.includes("/.template-source/evidence/")
+  || relative.includes("/tests/")
+  || relative.endsWith("scripts/verify-retired-skill-ids")
+  || relative.endsWith("scripts/lib/skill-supply-chain.mjs")
+  || relative.endsWith("scripts/lib/implementation-contract-compiler.mjs");
+
+const search = spawnSync("rg", ["-n", "--hidden", "--glob", "!.git/**", "--glob", "!.codegraph/**", "--glob", "!submodules/**", retired.join("|"), "."], {
+  cwd: ROOT,
+  encoding: "utf8"
+});
+if (![0, 1].includes(search.status)) {
+  process.stderr.write(search.stderr || "无法扫描退役 skill id\n");
+  process.exit(1);
+}
+const violations = search.stdout.split(/\r?\n/).filter(Boolean).filter((line) => {
+  const match = line.match(/^\.\/(.*?):\d+:/);
+  return !match || !allowed(match[1]);
+});
+for (const name of retired) {
+  const roots = [".agents/skills", ...PROJECTION_ROOTS];
+  for (const root of roots) if (existsSync(path.join(ROOT, root, name))) violations.push(`${root}/${name}: retired physical directory remains`);
+}
+if (violations.length) {
+  process.stderr.write(`退役 skill id 仍存在于活跃资产:\n${violations.join("\n")}\n`);
+  process.exitCode = 1;
+} else process.stdout.write("retired skill ids are absent from active assets\n");

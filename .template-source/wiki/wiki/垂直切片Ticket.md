@@ -6,7 +6,7 @@
 
 Spec 初稿、产品设计、原型、OpenAPI Draft 和待冻结资产一律使用 `ready-for-human`。只有通过必要门禁、阻塞边已清除并具备直接实现条件的垂直切片，才能使用 `ready-for-agent`。五态标签为 `needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`，见 [[Ticket与流程状态]]。Ticket、Spec 和阶段证据按 `docs/agents/issue-tracker.md` 选定的主 tracker 持久化；Git remote 不代表 tracker 选择。当前模板默认 `local-markdown`，根为 `docs/.scratch/`。
 
-切片拆分以冻结 [[Spec基线]] 和 [[OpenAPI契约]]（或无 API 影响记录）为输入。每个切片进入实现前必须挂当前 [[切片实现合同]]：`contract_id`、`contract_version`、`contract_ref`，Router 状态只能是 `draft / blocked / ready-for-lifecycle-review`，生命周期批准状态为 `pending / approved / rejected`。Router 不得自行批准合同，也不得把本 Ticket 推进为 `ready-for-agent`；只有生命周期编排器核验并持久化当前版本、清除阻塞边后才能改状态。合同编译见 [[YSS路由与合同编译]]。
+切片拆分以冻结 [[Spec基线]] 和 [[OpenAPI契约]]（或无 API 影响记录）为输入。每个切片进入实现前必须挂当前 [[切片实现合同]]：`contract_id`、`contract_version`、`contract_ref`，实现合同编译器 状态只能是 `draft / blocked / ready-for-lifecycle-review`，生命周期批准状态为 `pending / approved / rejected`。实现合同编译器 不得自行批准合同，也不得把本 Ticket 推进为 `ready-for-agent`；只有生命周期编排器核验并持久化当前版本、清除阻塞边后才能改状态。合同编译见 [[YSS路由与合同编译]]。
 
 工作单元必须写验收行为、主 / 辅 skill、`behavior-tdd` 或 `controlled-generation`、允许写路径、预期证据和验证命令。业务规则、状态机、事务、权限、错误映射、复杂查询和用户可见交互必须 `behavior-tdd`；`controlled-generation` 只覆盖机械脚手架、样板、冻结客户端或配置，并记录 exception reason。涉及后端时必须填写 Backend 合同与 skill 表，不得只写「符合 YSS」。出现 `drift`、`violation` 或非空 `new_impacts` 时暂停受影响工作单元，不得先完成代码再补合同。
 
@@ -20,4 +20,4 @@ Spec 初稿、产品设计、原型、OpenAPI Draft 和待冻结资产一律使�
 - `docs/process/lifecycle-registry.yaml`
 - `docs/agents/issue-tracker.md`
 - `docs/agents/triage-labels.md`
-- `.agents/skills/yss-router/SKILL.md`
+- `.agents/skills/yss-implementation-contract-compiler/SKILL.md`

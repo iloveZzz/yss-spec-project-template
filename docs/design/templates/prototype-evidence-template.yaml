@@ -1,99 +1,123 @@
 # 复制到 docs/.scratch/<feature>/verification/prototype-evidence.yaml。
-# schema v1 只读兼容；关闭 gate.prototype-verified 前必须迁移到本 schema v2。
-schema_version: 2
+# 只保留所选档位的 profile_evidence 子块；schema v1/v2 仅允许只读迁移。
+schema_version: 3
 feature: <feature>
 prototype_ref: docs/.scratch/<feature>/design/prototypes/index.html
-prototype_stack:
-  framework: react
-  package_manager: pnpm
-  package_manifest_ref: docs/.scratch/<feature>/design/prototypes/package.json
-  lockfile_ref: docs/.scratch/<feature>/design/prototypes/pnpm-lock.yaml
-  source_entry_ref: docs/.scratch/<feature>/design/prototypes/src/App.jsx
-  build_entry_ref: docs/.scratch/<feature>/design/prototypes/dist/index.html
-  build_command: pnpm build
-  build_result: pending
-  actual_antd_version: <exact-6.x-version-from-lockfile>
+prototype_profile: H2
+profile_kind: flow-review
+profile_decision:
+  decision_to_inform: <本轮原型需要支持的决定>
+  risk_assumptions:
+    - <需要验证或接受的风险假设>
+  trigger_results:
+    - trigger: <multi-page-navigation-or-other-trigger>
+      matched: true
+      evidence_ref: <spec-state-matrix-or-review-ref>
+  calculated_profile: H2
+  override:
+    applied: false
+    direction: none
+    reason: not-applicable
+    evidence_ref: not-applicable
+upstream_refs:
+  spec_ref: docs/.scratch/<feature>/spec/<feature>-spec.md
+  interaction_spec_ref: docs/.scratch/<feature>/design/<feature>-interaction-spec.md
+  low_fidelity_ref: docs/.scratch/<feature>/design/<feature>-low-fidelity.md
+  state_matrix_ref: docs/.scratch/<feature>/design/<feature>-state-matrix.md
+  prototype_review_ref: docs/.scratch/<feature>/design/<feature>-prototype-review.md
+source_visual:
+  ideation_status: required
+  selected_ref: <selected-source-visual-ref>
+  reuse_reason: not-applicable
 design_baseline:
-  design_standard: ant-design-v6
   project_design_ref: docs/design/design.md
   project_token_refs:
     - docs/design/tokens/theme.json
     - docs/design/tokens/tokens.compact.json
-  upstream_design_md_source: https://ant.design/design.md
-  upstream_design_md_record_ref: <path-to-json-output-or-summary>
-  theme_adapter_ref: docs/.scratch/<feature>/design/prototypes/src/yss-theme.js
+  project_token_baseline_digest: <sha256>
   project_override_reviewed: false
-  theme_override:
-    color_primary: "#3371ff"
-    color_error: "#f5222d"
-    color_bg_layout: "#f0f2f5"
-    compact_control_height: 28
-    border_radius: 6
-    font_family: system-stack
-    recorded: false
-    note: 官方当前同样使用系统字体和 6px 默认控件圆角；真实项目差异主要是品牌/状态色、页面背景和默认紧凑密度，不得误写为 Inter/8px 差异。
-visual_semantic_mapping:
-  runtime_component_library: ant-design-vue-4.x
-  runtime_version_source: implementation-lockfile
-  components:
-    - semantic_role: <primary-action-or-other-role>
-      antd_v6_component: <React-AntD-component-used-by-prototype>
-      project_token_refs: [<token-name>]
-      yss_or_antdv_target: <YSS-or-AntDV-production-component>
-      state_mapping: [default, hover, active, disabled, loading]
-      react_only_api_not_copied: false
-      verification_ref: <same-state-screenshot-or-test-ref>
-antd:
-  fact_skill: yss-antd-design
-  cli_command: antd
-  cli_version: <actual-cli-version>
-  target_antd_version: <same-exact-6.x-version>
-  queries:
-    design_md: <path-to-json-output>
-    components:
-      - component: <Component>
-        info_ref: <path-to-json-output>
-        demo_ref: <path-to-json-output>
-        token_ref: <path-to-json-output>
-        semantic_ref: <path-to-json-output>
-  lint_applicable: true
-  lint_reason: react-source
-  lint_ref: <path-to-json-output>
-  lint_passed: false
-browser_verification:
-  executor: <browser-or-automation-name>
+browser_delivery:
+  delivery_kind: static-directory
+  entry_ref: docs/.scratch/<feature>/design/prototypes/index.html
   rendered_nonblank: false
-  prototype_digest: <sha256-or-version-ref>
+  prototype_digest: <sha256>
   viewports:
     - name: desktop
       size: 1440x900
       result: pending
-    - name: narrow-mobile
+      screenshot_ref: <path>
+    - name: narrow
       size: 390x844
       result: pending
-  main_flow_result: pending
-  failure_permission_or_conflict_result: pending
-  console_error_ref: <path-to-console-output-or-none>
+      screenshot_ref: <path>
+  console_result: pending
+  console_ref: <path-to-console-output-or-none>
 design_qa:
   report_ref: docs/.scratch/<feature>/verification/design-qa.md
   result: pending
-accessibility_verification:
-  contrast_results_ref: <path-to-default-hover-active-disabled-focus-results>
-  keyboard_navigation_result: pending
-  focus_visible_and_order_result: pending
-  semantic_label_dialog_result: pending
-  zoom_200_result: pending
-  reduced_motion_result: pending
-  target_size_result: pending
-  automated_scan:
-    tool: <tool-or-manual>
-    version: <actual-version-or-not-applicable>
-    result: pending
-    ref: <path-to-result-or-manual-check>
+  axes:
+    visual: pending
+    layout: pending
+    interaction: pending
+    content: pending
+    accessibility: pending
+    cross_platform: pending
+profile_evidence:
+  # H1 只保留 visual_review；不得包含 package/lockfile/AntD 字段。
+  # visual_review:
+  #   runtime_build_required: false
+  #   key_interactions_result: pending
+  #   keyboard_result: pending
+  #   focus_result: pending
+  #   contrast_result: pending
+  #   zoom_200: {applicable: false, result: not-applicable, evidence_ref: not-applicable}
+  #   reduced_motion: {applicable: false, result: not-applicable, evidence_ref: not-applicable}
+  flow_review:
+    implementation:
+      framework: react
+      runtime_build_required: true
+      package_manager: pnpm
+      package_manifest_ref: docs/.scratch/<feature>/design/prototypes/package.json
+      lockfile_ref: docs/.scratch/<feature>/design/prototypes/pnpm-lock.yaml
+      build_command: pnpm build
+      build_result: pending
+    main_flow_result: pending
+    exceptional_state_result: pending
+    exceptional_state_ref: <failure-permission-or-conflict-ref>
+    keyboard_result: pending
+    focus_result: pending
+    contrast_result: pending
+    zoom_200_result: pending
+    reduced_motion_result: pending
+    visual_regression:
+      applicable: true
+      result: pending
+      evidence_ref: <snapshot-result-ref>
+    prototype_library_facts:
+      applicable: true
+      component_basis: react-antd-6
+      source: fact-pack
+      actual_antd_version: <exact-6.x-version-from-lockfile>
+      manifest_ref: docs/design/facts/antd/<exact-version>/manifest.json
+      manifest_digest: <sha256>
+      components_covered: [<Component>]
+      project_token_baseline_digest: <same-as-design-baseline>
+      new_api_uncertainty: false
+implementation_handoff:
+  prototype_code_reusable: false
+  production_component_assumptions:
+    - <原型采用的语义预计可由目标 YSS/AntDV 组件表达>
+  verification_targets:
+    - behavior: <进入实现后需要基于真实组件验证的行为>
+      target_stage: frontend-implementation-plan
 review:
-  prototype_review_ref: docs/.scratch/<feature>/design/<feature>-prototype-review.md
   result: pending
+  review_ref: docs/.scratch/<feature>/design/<feature>-prototype-review.md
 user_confirmation:
-  confirmation_ref: docs/.scratch/<feature>/design/<feature>-prototype-confirmation.md
   result: pending
+  confirmation_ref: docs/.scratch/<feature>/design/<feature>-prototype-confirmation.md
+  confirmed_decision: <用户确认的设计决定>
+  operable_scope: [<可操作范围>]
+  simulations_or_gaps: [<模拟或缺口>]
+gaps: []
 blockers: []

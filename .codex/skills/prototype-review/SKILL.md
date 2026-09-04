@@ -1,6 +1,6 @@
 ---
 name: prototype-review
-description: Use when reviewing low-fidelity UI design, wireframes, prototype links, interaction specs, or state matrices before high-fidelity HTML prototype work, Spec calibration, OpenAPI Draft, vertical slicing, or implementation.
+description: Use when independently reviewing low-fidelity UI, interaction specs, or state matrices before choosing an H1/H2 prototype profile, calibrating Spec/OpenAPI, slicing, or implementation.
 ---
 
 # Prototype Review
@@ -17,7 +17,7 @@ Run this independent gate only when UI changes affect a primary user flow, navig
 - `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` or prototype link.
 - State matrix, preferably based on `docs/design/templates/state-matrix-template.md`.
 - Existing OpenAPI Draft only if the review is checking alignment; do not require OpenAPI before product design.
-- `docs/.scratch/<feature>/verification/prototype-evidence.yaml` may be created as a pending evidence record, but CLI/browser validation belongs to the following high-fidelity verification gate.
+- `docs/.scratch/<feature>/verification/prototype-evidence.yaml` may be created as a pending schema v3 record, but档位构建与浏览器验证属于后续 `gate.prototype-verified`。
 
 ## Review Gates
 
@@ -26,6 +26,7 @@ Run this independent gate only when UI changes affect a primary user flow, navig
 | Page coverage | All primary pages, entry points, and navigation exits are named |
 | Flow coverage | Main path, cancel/back, failure, retry, and completion paths are explicit |
 | State coverage | loading, empty, error, readonly, disabled, no-permission, conflict, and dirty-form states are addressed or explicitly not applicable |
+| State transition coverage | 每个状态列出进入事件、允许转换、guard、动作和退出路径；不存在只能进入不能退出的状态 |
 | Permission coverage | Hidden vs disabled vs rejected actions are clear |
 | Data coverage | Visible fields, filters, sort, pagination, forms, tables, drawers, modals, and audit/version data are listed |
 | API implication | Request/response fields, error structure, pagination/filtering, permissions, and concurrency implications can be drafted |
@@ -36,12 +37,12 @@ Run this independent gate only when UI changes affect a primary user flow, navig
 
 ## Decision Rules
 
-- If a feature has UI impact and lacks page map, user flow, prototype/wireframe, or state matrix, block high-fidelity HTML prototype work, Spec calibration, and OpenAPI Draft.
+- If a feature has UI impact and lacks page map, user flow, prototype/wireframe, or state matrix, block prototype profile selection, Spec calibration, and OpenAPI Draft.
 - If the prototype hides business rules behind generic text such as "校验失败", require field-level errors and recovery behavior.
-- If a page shows a user action but the OpenAPI implication list lacks endpoint/non-goal mapping, block high-fidelity HTML prototype work, Spec calibration, or OpenAPI Draft.
+- If a page shows a user action but the OpenAPI implication list lacks endpoint/non-goal mapping, block prototype profile selection, Spec calibration, or OpenAPI Draft.
 - If Spec P0 scope says a user can manage or configure an object but the design only shows read-only data, block until the write path or scope downgrade is explicit.
 - If a state is intentionally out of scope, record why and who owns the decision.
-- If implementation dependencies are unclear, route to `yss-router` only after the prototype passes this review.
+- If implementation dependencies are unclear, route to `yss-implementation-contract-compiler` only after the prototype passes this review.
 
 ## Output Contract
 
@@ -62,7 +63,7 @@ Run this independent gate only when UI changes affect a primary user flow, navig
 - <requirements gaps, acceptance criteria updates, non-goals, pending decisions>
 
 ### Frontend Prototype Readiness
-- <component states, data dependencies, frontend acceptance notes>
+- <component states, data dependencies, profile triggers, frontend acceptance notes>
 
 ### Lifecycle Evidence
 - <persistent review path; blockers; `gate.prototype-reviewed` candidate result>

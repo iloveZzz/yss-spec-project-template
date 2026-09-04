@@ -66,5 +66,5 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 - 只消费生命周期已批准的 `Slice Implementation Contract` 和当前 `work_unit`；不得扩大 `allowed_write_paths`。
 - `Slice Implementation Contract` 必须引用批准且版本当前的 `tactical_design_ref`；不得在实现阶段重新批准或替换聚合、不变量和一致性策略。
 - 领域规则、状态机和不变量必须使用 `behavior-tdd`，先形成失败测试，再实现最小行为。
-- 完成后按 `yss-router/references/yss-skill-execution-result.md` 返回统一 `YSS Skill Execution Result`：changed files、领域/测试证据、实际验证结果、偏离和新增影响。
+- 完成后按 `yss-implementation-contract-compiler/references/yss-skill-execution-result.md` 返回统一 `YSS Skill Execution Result`：changed files、领域/测试证据、实际验证结果、偏离和新增影响。
 - 发现新 API、权限、状态机、数据模型或架构影响时填入 `new_impacts` 并暂停，不得静默扩张切片。

@@ -21,7 +21,7 @@ allowed-tools: Read, Grep, Glob, Write, Edit
 
 - 消费批准后的 Slice Contract/work unit，只在允许路径内调整 POJO 样板和注解处理器配置。
 - 受控生成必须记录对象类型、选用/排除注解、实体关系和敏感字段风险、编译/测试实际结果。
-- 按 `yss-router` 的统一 Execution Result 返回 changed files、证据、偏离和新增影响；`@Data` 实体风险、处理器配置缺失或越界路径返回 `violation`。
+- 按 `yss-implementation-contract-compiler` 的统一 Execution Result 返回 changed files、证据、偏离和新增影响；`@Data` 实体风险、处理器配置缺失或越界路径返回 `violation`。
 
 ## Maven Configuration
 

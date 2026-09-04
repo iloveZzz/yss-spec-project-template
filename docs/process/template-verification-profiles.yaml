@@ -44,6 +44,12 @@ required_files:
   - .cursor/mcp.json
   - .vscode/mcp.json
   - docs/agents/yss-skill-registry.yaml
+  - .agents/skills/yss-implementation-contract-compiler/SKILL.md
+  - .agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+  - .agents/skills/yss-implementation-contract-compiler/references/boundaries.md
+  - .agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md
+  - .agents/skills/yss-implementation-contract-compiler/tests/compiler-scenarios.test.mjs
+  - .agents/skills/yss-skill-source-index-refresh/SKILL.md
   - docs/agents/yss-ui-skills-integration.md
   - docs/user-guide/yss-ui-mcp.md
   - docs/agents/digital-human-roles.yaml
@@ -70,6 +76,7 @@ required_files:
   - .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs
   - .agents/skills/yss-tactical-design/tests/run-scenarios.mjs
   - .agents/skills/yss-prototype-stage/references/product-design-adapter.md
+  - .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md
   - .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs
   - .agents/skills/yss-prototype-stage/tests/run-scenarios.mjs
   - docs/design/templates/prototype-evidence-template.yaml
@@ -104,6 +111,10 @@ syntax_files:
   - scripts/verify-maintenance-review-record
   - scripts/verify-maintenance-intensity-scenarios
   - scripts/verify-skill-registry
+  - scripts/lib/implementation-contract-compiler.mjs
+  - scripts/generate-yss-skill-boundaries
+  - scripts/audit-yss-backend-skills
+  - scripts/verify-retired-skill-ids
   - scripts/verify-skill-governance
   - scripts/verify-yss-dto-openapi-profile
   - scripts/verify-yss-dto-openapi-scenarios
@@ -115,7 +126,7 @@ syntax_files:
   - scripts/verify-lifecycle-transition-scenarios
   - scripts/verify-matt-yss-integration-scenarios
   - scripts/verify-prototype-backend-scaffold-scenarios
-  - scripts/verify-yss-router-scenarios
+  - scripts/verify-yss-implementation-contract-compiler-scenarios
   - scripts/verify-yss-prototype-contract-scenarios
   - scripts/verify-openapi-yaml-first-scenarios
   - scripts/verify-openapi-json-handoff-scenarios
@@ -225,7 +236,10 @@ groups:
       - { run: "scripts/verify-scaffold-generator-scenarios" }
       - { run: "scripts/verify-prototype-backend-scaffold-scenarios" }
       - { run: "scripts/verify-matt-yss-integration-scenarios" }
-      - { run: "scripts/verify-yss-router-scenarios" }
+      - { run: "scripts/verify-yss-implementation-contract-compiler-scenarios" }
+      - { run: "scripts/generate-yss-skill-boundaries --check" }
+      - { run: "scripts/audit-yss-backend-skills --check" }
+      - { run: "scripts/verify-retired-skill-ids" }
       - { run: "scripts/verify-yss-ui-scenarios" }
       - { run: "scripts/verify-yss-prototype-contract-scenarios" }
       - { run: "node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence docs/design/templates/prototype-evidence-template.yaml --allow-template" }

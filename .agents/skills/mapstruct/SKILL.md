@@ -21,7 +21,7 @@ allowed-tools: Read, Grep, Glob, Write, Edit
 
 - 消费批准后的 Slice Contract/work unit，只为合同中的 DTO/VO/PO/Domain 转换生成 Mapper/Convertor。
 - 受控生成必须记录 source/target、忽略字段、更新语义、Lombok processor 配置和 mapper 行为测试。
-- 按 `yss-router` 的统一 Execution Result 返回生成/源文件、测试和实际验证；未映射字段、反射/BeanUtils 退化或越界路径返回 `violation`。
+- 按 `yss-implementation-contract-compiler` 的统一 Execution Result 返回生成/源文件、测试和实际验证；未映射字段、反射/BeanUtils 退化或越界路径返回 `violation`。
 
 ## Basic Mapper
 

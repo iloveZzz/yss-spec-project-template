@@ -17,7 +17,7 @@ owner: ai
 | Spec 初稿 |  |  |  |
 | 产品总体设计 / 功能架构 |  |  | 必需 |
 | 产品设计 / 交互说明 |  |  |  |
-| 高保真 HTML 原型 | `docs/.scratch/<feature>/design/prototypes/index.html` |  | 有 UI 时必需；Ant Design v6 主题/视觉标准 + schema v2 语义映射/浏览器/无障碍证据，生产 API 为 YSS UI + Ant Design Vue 4.x |
+| 原型交付物 | `docs/.scratch/<feature>/design/prototypes/index.html` 或稳定 URL |  | 有产品设计影响时必需；按 H1/H2 档位提供 schema v3 浏览器、Design QA 与条件 AntD 事实；真实组件待验事项进入前端实现计划 |
 | Prototype Review |  |  |  |
 | CONTEXT 术语 |  |  | 业务术语须含 PascalCase `英文标识` |
 
@@ -51,7 +51,7 @@ owner: ai
 
 ## 6. 完成标准
 
-- [ ] Spec 已吸收产品总体设计 / 功能架构、产品设计、低保真原型评审和高保真 HTML 原型暴露的阻断项。
+- [ ] Spec 已吸收产品总体设计 / 功能架构、产品设计、低保真原型评审和原型交付物暴露的阻断项。
 - [ ] 本轮做什么、不做什么、延后什么已经明确。
 - [ ] OpenAPI、工程基线、系统架构、数据架构、风险影响已有明确结论。
 - [ ] 可进入 API 影响分析 / 契约草案 / 工程基线，或阻断项已列出。

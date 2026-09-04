@@ -76,7 +76,7 @@ if [ "$annotation" -nt "$index" ] || [ "$properties" -nt "$index" ] || [ "$conne
 fi
 
 if [ "$fail" -ne 0 ]; then
-  echo "RESULT: skill/source contract drift detected; refresh with yss-source-index and review semantic references"
+  echo "RESULT: skill/source contract drift detected; refresh with yss-skill-source-index-refresh and review semantic references"
   exit 1
 fi
 

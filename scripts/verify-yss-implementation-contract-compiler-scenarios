@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+import { spawnSync } from "node:child_process";
+import { runScenario } from "./lib/scenario-checks.mjs";
+
+try {
+  runScenario("implementationContractCompiler");
+  const result = spawnSync(process.execPath, ["--test", ".agents/skills/yss-implementation-contract-compiler/tests/compiler-scenarios.test.mjs"], { encoding: "utf8" });
+  process.stdout.write(result.stdout);
+  process.stderr.write(result.stderr);
+  if (result.status !== 0) process.exitCode = result.status ?? 1;
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+}

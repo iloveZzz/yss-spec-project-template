@@ -96,7 +96,7 @@ async function downstreamDrift(manifest) {
   const contracts = manifest.readiness?.contracts ?? {};
   const contractFiles = {
     scaffold_parent: path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-ddd-scaffold-generator", "references", "yss-backend-scaffold-parent", "SKILL.md"),
-    router_contract: path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-router", "references", "router-contract.yaml")
+    compiler_contract: path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-implementation-contract-compiler", "references", "compiler-contract.yaml")
   };
   for (const [name, target] of Object.entries(contractFiles)) {
     const expected = contracts[name];

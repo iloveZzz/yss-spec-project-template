@@ -1,0 +1,55 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  将固定 React/AntD schema v2 原型改为 H1/H2 档位合同，新增静态生成语义、迁移兼容、
+  生命周期原型产物/证据语义、实现阶段交接以及核心证据校验，并修正原型不得调用 yss-ui 的边界，命中 L3。
+triggers:
+  - lifecycle-gate
+  - generation-semantics
+  - core-validator
+  - aggregate-behavior-change
+changed_assets:
+  - CONTEXT.md
+  - AGENTS.md
+  - docs/process/lifecycle-registry.yaml
+  - docs/process/lifecycle-registry-baseline.json
+  - docs/process/lifecycle-artifact-map.md
+  - docs/agents/yss-skill-registry.yaml
+  - docs/design/design.md
+  - docs/design/templates/prototype-evidence-template.yaml
+  - docs/design/templates/state-matrix-template.md
+  - .agents/skills/yss-prototype-stage/SKILL.md
+  - .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md
+  - .agents/skills/yss-prototype-stage/references/product-design-adapter.md
+  - .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs
+  - .agents/skills/yss-prototype-stage/tests/run-scenarios.mjs
+  - .agents/skills/yss-antd-design/SKILL.md
+  - .agents/skills/yss-ui/SKILL.md
+  - .agents/skills/prototype-review/SKILL.md
+  - .agents/skills/yss-router/references/router-contract.yaml
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - scripts/lib/skill-governance.mjs
+  - scripts/lib/scenario-checks.mjs
+  - skills-lock.json
+  - .template-source/evidence/maintenance/research-prototype-profile-routing-2026-09-04.md
+  - .template-source/evidence/maintenance/research-prototype-profile-routing-evidence-2026-09-04.yaml
+verification_evidence:
+  - kind: self-check
+    command: >-
+      scripts/verify-skill-governance && scripts/verify-skill-registry && scripts/verify-lifecycle-registry &&
+      scripts/verify-yss-prototype-contract-scenarios && scripts/verify-yss-router-scenarios &&
+      scripts/verify-lifecycle-transition-scenarios && scripts/verify-subagent-task-package-scenarios &&
+      scripts/verify-matt-yss-integration-scenarios && scripts/sync-skills --check && scripts/update-skill-lock --check
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: >-
+  fast 命令因 AGENTS.md 属于核心核验资产而自动执行 release profile 并通过；
+  本 checkpoint 仍停在 implementation-ready，不据此省略真实 H1/H2 试点、实现阶段交接验证、跨仓集成、独立审查或发布批准。
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

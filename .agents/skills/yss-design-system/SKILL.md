@@ -15,7 +15,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 - 历史输入包：`/Users/zhudaoming/Downloads/Product-Design-System`，只用于追溯首次引入来源，不作为后续工程依赖。
 - 默认亮色覆盖：项目 Ant Design 5 Less / `:root` 变量已裁定进 `docs/design/design.md` 与 token 快照；原始 Less 不是实现语言。
 - Codex `$design-qa` 项目对照：`references/design-qa-theme.md`，不替代官方 `design-qa` 流程，也不改上游插件正文。
-- 原型阶段合同：`yss-prototype-stage`，用于统一跨 Agent 的原型资产和浏览器验证证据。AntD 事实由 `yss-antd-design` 提供，且只用于原型设计构建。
+- 原型阶段合同：`yss-prototype-stage`，用于统一 H1/H2 原型资产和浏览器验证证据。AntD 事实由 `yss-antd-design` 条件提供，且只用于相关 H2。
 
 如果只需要快速判断，先读本文件。若要写 UI 规范、实现页面、评审设计或调整 token，必须读项目内 `docs/design/design.md`；若要执行评审或实现检查，再读 `references/design-system.md`。
 
@@ -39,8 +39,8 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 - 表面层级：页面背景、内容容器、浮层三层模型。
 - 组件语言：优先 Ant Design / YSS UI 语义，不自造同类控件。
 - 状态完整性：loading、empty、error、readonly、disabled、no-permission、conflict、success 必须在设计或实现中可解释。
-- Ant Design v6 原型基线：先用语义 token 定义角色，再用组件 token 或 CSS variables 落地；不以局部硬编码替代主题层。
-- 双轨版本：主题/视觉标准为 React Ant Design v6；生产 API 为 Vue 3 + YSS UI + 实现仓 lockfile 的 Ant Design Vue 4.x。只迁移语义、Token、状态与验收行为。
+- 原型基线：先用项目语义 token 定义角色，再用组件 token 或 CSS variables 落地；不以局部硬编码替代主题层。H2 采用 React AntD 时补充 Ant Design v6 事实。
+- 档位版本边界：H1 只依赖项目 Token；H2 React AntD 精确锁版本。生产 API 只在实现阶段从目标仓 lockfile 读取 Vue 3 + YSS UI + AntDV 事实；原型只迁移语义、Token、状态与验收行为。
 
 ## 强制规则
 
@@ -83,14 +83,14 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 | --- | --- |
 | Spec 后做页面 / 原型 / 交互说明 | `yss-prototype-stage` → `product-design:index` |
 | 低保真原型进入高保真前评审 | `prototype-review` |
-| 低保真评审通过后的高保真 HTML 原型 | `yss-prototype-stage`；`high-fidelity-html-prototype` 仅兼容入口 |
+| 低保真评审后的原型交付物 | `yss-prototype-stage` 选择 H1/H2；`high-fidelity-html-prototype` 仅只读迁移 |
 | 低保真线框或流程图 | `product-design:index` |
 | 前端页面实现 | `yss-ui` / `yss-ui-business-page-generation`；生命周期兼容使用 `yss-page-module-development` |
 | 表单 schema | `yss-formily` |
 | YTable / YTree / 高度自适应 | `yss-components` / `yss-use-table-height` / `yss-use-tree-height` |
-| 原型阶段的 Ant Design v6 组件 / token / demo 查询 | `yss-antd-design`（只用于原型设计构建；前端落地改用 `yss-ui`） |
+| H2 React/AntD 的组件 / token / demo 查询 | `yss-antd-design`（fact pack 优先，不用于 H1） |
 | Codex 原型交接前的视觉 QA | `design-qa`；token / 字体对照读 `references/design-qa-theme.md`，以项目覆盖为准 |
-| Product Design 通用 starter 接入 YSS | `yss-prototype-stage/references/product-design-adapter.md`；锁定 antd@6、pnpm、主题 adapter、feature 级 QA 与证据 |
+| 原型渲染适配 | `yss-prototype-stage/references/product-design-adapter.md`；H1 静态、H2 可运行流程；不得调用 `yss-ui` |
 | API 契约 / 接入 | `yss-openapi-governance` / `yss-api-integration` |
 
 ## 更新设计系统

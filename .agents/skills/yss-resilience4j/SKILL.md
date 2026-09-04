@@ -11,7 +11,7 @@ Use this skill for YSS Resilience4j 组件. Keep implementation grounded in the 
 
 ## Source Index First
 
-- Backend source location is environment-specific; resolve it with `yss-source-index/references/source-location.md`.
+- Backend source location is environment-specific; resolve it with `yss-skill-source-index-refresh/references/source-location.md`.
 - Generated index: `references/source-index.md`
 - Component path hints: `yss-microservice-components/yss-component-resilience4j-starter`
 

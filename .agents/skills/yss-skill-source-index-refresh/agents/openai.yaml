@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS Skill Source Index Refresh"
+  short_description: "Locate sources and refresh YSS skill indexes"
+  default_prompt: "Refresh YSS skill indexes from yss-cloud-microservice and YSS UI docs."

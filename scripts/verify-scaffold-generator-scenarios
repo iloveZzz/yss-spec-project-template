@@ -60,7 +60,7 @@ def write_contract(
     project_name: str,
     contract_id: str,
     approval_ref: str,
-    router_draft_ref: str,
+    compiler_draft_ref: str,
     persisted_ref: str,
 ) -> None:
     contract = {
@@ -69,7 +69,7 @@ def write_contract(
         "contract_version": 1,
         "scaffold_request_id": f"{project_name}-request",
         "status": "approved",
-        "router_draft_ref": router_draft_ref,
+        "compiler_draft_ref": compiler_draft_ref,
         "lifecycle_approval_ref": approval_ref,
         "persisted_ref": persisted_ref,
         "current_version": 1,
@@ -154,7 +154,7 @@ def assert_pure_scaffold(project_root: Path, contract_id: str) -> None:
     require(manifest["contract_id"] == contract_id, "生成清单必须记录脚手架合同 ID")
     require(manifest["contract_version"] == 1, "生成清单必须记录脚手架合同版本")
     require(manifest["approval_ref"], "生成清单必须记录生命周期批准引用")
-    require(manifest["router_draft_ref"], "生成清单必须记录 Router draft 引用")
+    require(manifest["compiler_draft_ref"], "生成清单必须记录 实现合同编译器 draft 引用")
     require(manifest["persisted_ref"], "生成清单必须记录合同持久化引用")
     require(manifest["generation_mode"] == "controlled-generation", "生成清单必须记录受控生成模式")
     require(manifest["schema_version"] == 2, "生成清单必须使用 schema v2")
@@ -214,7 +214,7 @@ def main() -> int:
             "schemav1-service",
             "backend-scaffold-schema-v1",
             "lifecycle/approval-schema-v1",
-            "router/draft-schema-v1",
+            "compiler/draft-schema-v1",
             "lifecycle/contracts/backend-scaffold-schema-v1.yaml",
         )
         schema_v1_payload = json.loads(schema_v1_contract.read_text(encoding="utf-8"))
@@ -227,7 +227,7 @@ def main() -> int:
             "--contract-id", "backend-scaffold-schema-v1",
             "--contract-version", "1",
             "--approval-ref", "lifecycle/approval-schema-v1",
-            "--router-draft-ref", "router/draft-schema-v1",
+            "--compiler-draft-ref", "compiler/draft-schema-v1",
             "--persisted-ref", "lifecycle/contracts/backend-scaffold-schema-v1.yaml",
             "--contract-file", str(schema_v1_contract),
             "--group-id", "com.yss.datamiddle",
@@ -268,7 +268,7 @@ def main() -> int:
             "stale-service",
             "backend-scaffold-stale",
             "lifecycle/approval-stale",
-            "router/draft-stale",
+            "compiler/draft-stale",
             "lifecycle/contracts/backend-scaffold-stale.yaml",
         )
         stale_payload = json.loads(stale_contract.read_text(encoding="utf-8"))
@@ -287,8 +287,8 @@ def main() -> int:
             "1",
             "--approval-ref",
             "lifecycle/approval-stale",
-            "--router-draft-ref",
-            "router/draft-stale",
+            "--compiler-draft-ref",
+            "compiler/draft-stale",
             "--persisted-ref",
             "lifecycle/contracts/backend-scaffold-stale.yaml",
             "--contract-file",
@@ -303,7 +303,7 @@ def main() -> int:
             "pure-service",
             "backend-scaffold-000",
             "lifecycle/approval-000",
-            "router/draft-000",
+            "compiler/draft-000",
             "lifecycle/contracts/backend-scaffold-000.yaml",
         )
 
@@ -320,8 +320,8 @@ def main() -> int:
             "1",
             "--approval-ref",
             "lifecycle/approval-000",
-            "--router-draft-ref",
-            "router/draft-000",
+            "--compiler-draft-ref",
+            "compiler/draft-000",
             "--persisted-ref",
             "lifecycle/contracts/backend-scaffold-000.yaml",
             "--contract-file",
@@ -353,7 +353,7 @@ def main() -> int:
                     "contract_digest": "a" * 64,
                     "approval_ref": "lifecycle/verification",
                     "lifecycle_approval_ref": "lifecycle/verification",
-                    "router_draft_ref": "router/verification",
+                    "compiler_draft_ref": "router/verification",
                     "persisted_ref": "lifecycle/contracts/verification.yaml",
                     "contract_file_ref": "lifecycle/contracts/verification.json",
                     "current_version": 1,
@@ -501,7 +501,7 @@ def main() -> int:
         require(sentinel.read_text(encoding="utf-8") == "preserve me", "未批准覆盖不得改变原目录")
 
         force_contract = temp_root / "force-contract.json"
-        write_contract(force_contract, force_root, "force-service", "backend-scaffold-001", "lifecycle/approval-001", "router/draft-001", "lifecycle/contracts/backend-scaffold-001.yaml")
+        write_contract(force_contract, force_root, "force-service", "backend-scaffold-001", "lifecycle/approval-001", "compiler/draft-001", "lifecycle/contracts/backend-scaffold-001.yaml")
         approved_force_result = run_generator(
             "--project-name",
             "force-service",
@@ -516,8 +516,8 @@ def main() -> int:
             "1",
             "--approval-ref",
             "lifecycle/approval-001",
-            "--router-draft-ref",
-            "router/draft-001",
+            "--compiler-draft-ref",
+            "compiler/draft-001",
             "--persisted-ref",
             "lifecycle/contracts/backend-scaffold-001.yaml",
             "--contract-file",
@@ -553,7 +553,7 @@ def main() -> int:
             "gitlink-service",
             "backend-scaffold-gitlink",
             "lifecycle/approval-gitlink",
-            "router/draft-gitlink",
+            "compiler/draft-gitlink",
             "lifecycle/contracts/backend-scaffold-gitlink.yaml",
         )
         gitlink_result = run_generator(
@@ -569,8 +569,8 @@ def main() -> int:
             "1",
             "--approval-ref",
             "lifecycle/approval-gitlink",
-            "--router-draft-ref",
-            "router/draft-gitlink",
+            "--compiler-draft-ref",
+            "compiler/draft-gitlink",
             "--persisted-ref",
             "lifecycle/contracts/backend-scaffold-gitlink.yaml",
             "--contract-file",

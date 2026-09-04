@@ -5,7 +5,7 @@ description: 从空目录初始化独立 Git 管理的 YSS Java 8 MVC 数据分�
 
 # YSS MVC Scaffold Generator
 
-本 Skill 是 YSS MVC 数据分析项目的确定性机械生成器。它生成独立 `project-instance`、独立 Git 仓库，并将项目根直接作为 Maven 工程根，包含 `server`、`core`、`client`、`repository`、`adapter`、`feign-client` 六模块；业务功能仍须回到 `yss-product-lifecycle` 与 `yss-router` 按垂直切片实现。
+本 Skill 是 YSS MVC 数据分析项目的确定性机械生成器。它生成独立 `project-instance`、独立 Git 仓库，并将项目根直接作为 Maven 工程根，包含 `server`、`core`、`client`、`repository`、`adapter`、`feign-client` 六模块；业务功能仍须回到 `yss-product-lifecycle` 与 `yss-implementation-contract-compiler` 按垂直切片实现。
 
 生成器编排入口位于 `scripts/generate_project.mjs`，参数与环境解析、skillUtils 文件操作、项目治理封装和 Maven/Java 模板分别位于 `scripts/lib/`。初始化阶段只写入 staging 目录并在成功后原子重命名，不执行 Maven 或网络依赖下载。
 

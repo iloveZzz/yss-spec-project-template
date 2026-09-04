@@ -39,7 +39,7 @@
 }
 ```
 
-以上只是关键片段；实际合同还必须满足 `yss-router/references/router-contract.yaml` 中的完整 `scaffold_contract_schema`，由生命周期批准并持久化为当前版本。schema v1 合同为 `unsupported`，直接拒绝且不自动升级。
+以上只是关键片段；实际合同还必须满足 `yss-implementation-contract-compiler/references/compiler-contract.yaml` 中的完整 `scaffold_contract_schema`，由生命周期批准并持久化为当前版本。schema v1 合同为 `unsupported`，直接拒绝且不自动升级。
 
 ## 2. 一键生成并验证
 
@@ -58,7 +58,7 @@ node .agents/skills/yss-ddd-scaffold-generator/scripts/generate_and_verify_scaff
   --contract-id <approved-scaffold-contract-id> \
   --contract-version <current-version> \
   --approval-ref <lifecycle-approval-ref> \
-  --router-draft-ref <router-draft-ref> \
+  --compiler-draft-ref <compiler-draft-ref> \
   --persisted-ref <persisted-contract-ref> \
   --contract-file /path/to/persisted-scaffold-contract.json \
   --evidence-dir /path/to/evidence/scaffold
@@ -102,7 +102,7 @@ metadata-service/
 
 ## 4. 后续路由
 
-`empty-scaffold-verified` 不等于业务切片可实现。后续必须回到 `yss-router`，消费批准且版本当前的 Slice Implementation Contract，再按影响面加载 `yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-web-controller`、`yss-dto`、`yss-exception`、`yss-validation`、`mapstruct`、`lombok`、`alibaba-java-code-style` 等 skill，并使用 `behavior-tdd` 实现业务行为。
+`empty-scaffold-verified` 不等于业务切片可实现。后续必须回到 `yss-implementation-contract-compiler`，消费批准且版本当前的 Slice Implementation Contract，再按影响面加载 `yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-web-controller`、`yss-dto`、`yss-exception`、`yss-validation`、`mapstruct`、`lombok`、`alibaba-java-code-style` 等 skill，并使用 `behavior-tdd` 实现业务行为。
 
 完成 golden first slice 后，必须运行：
 

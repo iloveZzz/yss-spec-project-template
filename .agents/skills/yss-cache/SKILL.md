@@ -9,7 +9,7 @@ description: 用于 YSS 缓存框架的接入、配置、代码修改和故障�
 
 ## 工作流
 
-1. 按 `yss-source-index/references/source-location.md` 定位真实源码。当前工作区有 `.codegraph/` 时先用 CodeGraph；否则读取 [source-index.md](references/source-index.md) 后用符号或 Maven 模块搜索。
+1. 按 `yss-skill-source-index-refresh/references/source-location.md` 定位真实源码。当前工作区有 `.codegraph/` 时先用 CodeGraph；否则读取 [source-index.md](references/source-index.md) 后用符号或 Maven 模块搜索。
 2. 识别使用模型：Spring Cache 单后端路由、Redis 故障降级，或 JetCache local + remote。不要混用三者的行为假设。
 3. 明确缓存名、key、TTL、更新/删除路径、跨节点一致性和序列化兼容要求。
 4. 先检查现有依赖、启动注解、配置和注解用法，再决定修改业务代码、配置还是组件。
@@ -41,4 +41,4 @@ description: 用于 YSS 缓存框架的接入、配置、代码修改和故障�
 - `scripts/verify-cache-component.sh [--source-root PATH] [--consumer-root PATH --consumer-module MODULE]`：验证组件、真实 Redis、Java 8 字节码及可选消费模块。
 - `scripts/check-skill-freshness.sh [source-root]`：比较技能契约与当前组件源码；发现漂移返回 1。
 
-当组件源码变化后，用 `yss-source-index` 刷新 [source-index.md](references/source-index.md)，再运行 freshness 检查。不要手工修改生成索引。
+当组件源码变化后，用 `yss-skill-source-index-refresh` 刷新 [source-index.md](references/source-index.md)，再运行 freshness 检查。不要手工修改生成索引。

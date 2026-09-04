@@ -68,7 +68,7 @@ orchestrator:
   title: YSS 生命周期主控
   default_dual_hat: [role.project-manager]
   stages: [stage.entry-triage, stage.discovery, stage.spec-architecture, stage.product-design, stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
-  core_skills: [yss-product-lifecycle, yss-router]
+  core_skills: [yss-product-lifecycle, yss-implementation-contract-compiler]
   forbidden_skills: [yss-domain, yss-ui, yss-page-module-development, yss-web-controller, yss-repository, implement]
   description: >-
     Own YSS lifecycle routing. Read yss-project.yaml and CONTEXT.md first.
@@ -152,7 +152,7 @@ roles:
     title: YSS 后端工程师
     stages: [stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.openapi-draft, artifact.data-architecture]
-    core_skills: [yss-router, yss-tactical-design, yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-dto, mapstruct, lombok, alibaba-java-code-style, yss-exception, yss-validation, tdd, yss-ddd-scaffold-generator]
+    core_skills: [yss-implementation-contract-compiler, yss-tactical-design, yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-dto, mapstruct, lombok, alibaba-java-code-style, yss-exception, yss-validation, tdd, yss-ddd-scaffold-generator]
     forbidden_skills: [yss-ui, yss-page-module-development, yss-formily, yss-frontend-scaffold-generator, yss-antd-design, page-list-module, page-form-module]
     description: >-
       Own OpenAPI Draft, data-architecture contributions, and backend tests.

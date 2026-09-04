@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "registry_id": "yss.lifecycle",
-  "semantic_sha256": "15375e8d7da599e2117e19399cb5e14b9c53aa4e4ce7c94c4e9c135a499e55e6",
+  "semantic_sha256": "6fe3accf810dda1686080f1dd32f9393b22fa006acceb89ff17cb5668a8a67a6",
   "published_ids": [
     "artifact.architecture-review",
     "artifact.data-architecture",
@@ -19,6 +19,7 @@
     "artifact.openapi-freeze-record",
     "artifact.parent-ticket",
     "artifact.product-overview",
+    "artifact.prototype-deliverable",
     "artifact.prototype-confirmation",
     "artifact.prototype-review",
     "artifact.retrospective",
@@ -42,6 +43,8 @@
     "evidence.maintenance-intensity-checkpoint",
     "evidence.openapi-draft-review",
     "evidence.prototype-confirmation",
+    "evidence.prototype-deliverable-verification",
+    "evidence.prototype-profile-decision",
     "evidence.prototype-review-result",
     "evidence.repository-identity-check",
     "evidence.stage-decision-package",

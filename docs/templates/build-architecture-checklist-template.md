@@ -19,8 +19,8 @@ owner: ai
 | 系统 / 数据架构设计 |  |  |
 | 风险 / 回滚约束 | `AGENTS.md` |  |
 | Slice Implementation Contract |  | 填写 contract_id / contract_version / 生命周期批准状态 |
-| 后端脚手架策略 | `orchestration-contract.yaml` / `yss-ddd-scaffold-generator` |  | backend `scaffold_status=required` 时填写结构化合同身份、批准/持久化引用、生成器输入、预期文件、实际 `./mvnw` 结果和后置 Router 重编译 |
-| 工程项目路径策略 | `docs/process/implementation-repo-integration.md` / Router Contract |  | Harness 内必须是 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 仅为容器，`app/backend/`、`app/frontend/` 及其子路径阻断 |
+| 后端脚手架策略 | `orchestration-contract.yaml` / `yss-ddd-scaffold-generator` |  | backend `scaffold_status=required` 时填写结构化合同身份、批准/持久化引用、生成器输入、预期文件、实际 `./mvnw` 结果和后置 实现合同编译器 重编译 |
+| 工程项目路径策略 | `docs/process/implementation-repo-integration.md` / 实现合同编译器 Contract |  | Harness 内必须是 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 仅为容器，`app/backend/`、`app/frontend/` 及其子路径阻断 |
 | 垂直切片工作单元 |  |  |
 | YSS Skill Execution Result |  | 每个 skill / work_unit 的结果文件引用 |
 
@@ -30,9 +30,9 @@ owner: ai
 |---|---|---|---|---|---|
 | DDD 分层不得穿透：Domain 不依赖 Adapter、Infrastructure、Mapper、Controller 或 Web DTO | 系统架构 / YSS DDD 规范 / `AGENTS.md` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 若发现穿透依赖，标记 `violation` 并停止 build，回到架构修正 |
 | 后端切片必须回勾 `Backend Slice Implementation Contract`：required skills、允许写范围、禁止模式、证据文件、延期 seam 和验证命令完整 | implementation routing / 垂直切片 Ticket / `AGENTS.md` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺合同或合同不完整时暂停并记录替代方案 |
-| 统一合同版本：实现消费的 contract_id / contract_version 与生命周期批准并持久化的版本一致，Router 未自行批准合同或推进 `ready-for-agent` | Slice Implementation Contract / 生命周期证据 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 版本不一致时将工作单元标记 `stale` 并暂停 build |
-| 合同子项闭环：Common、Frontend、Backend、Contract、Cross-repo 子合同按影响面填写，不适用项有原因 | Slice Implementation Contract |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺失适用子合同时回到 Router |
-| 原型确认后的后端脚手架顺序：工程基线 → Router 脚手架合同 draft / 生命周期批准 → `yss-ddd-scaffold-generator` → `yss-backend-scaffold-parent` → Router 重编译；脚手架不得生成业务行为 | `yss-product-lifecycle` / `yss-ddd-scaffold-generator` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 顺序缺失、生成器混入业务行为或缺 Execution Result 时阻断 |
+| 统一合同版本：实现消费的 contract_id / contract_version 与生命周期批准并持久化的版本一致，实现合同编译器 未自行批准合同或推进 `ready-for-agent` | Slice Implementation Contract / 生命周期证据 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 版本不一致时将工作单元标记 `stale` 并暂停 build |
+| 合同子项闭环：Common、Frontend、Backend、Contract、Cross-repo 子合同按影响面填写，不适用项有原因 | Slice Implementation Contract |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺失适用子合同时回到 实现合同编译器 |
+| 原型确认后的后端脚手架顺序：工程基线 → 实现合同编译器 脚手架合同 draft / 生命周期批准 → `yss-ddd-scaffold-generator` → `yss-backend-scaffold-parent` → 实现合同编译器 重编译；脚手架不得生成业务行为 | `yss-product-lifecycle` / `yss-ddd-scaffold-generator` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 顺序缺失、生成器混入业务行为或缺 Execution Result 时阻断 |
 | 写路径与证据：Execution Result 的 changed_files 均位于 allowed_write_paths，expected_evidence_files 已实际生成 | Slice Implementation Contract / YSS Skill Execution Result |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 路径越界或证据缺失标记 `violation` 并阻断 build |
 | TDD 模式：每个工作单元唯一选择 `behavior-tdd` 或 `controlled-generation`；生成器未承载状态、权限、业务过滤、事务、错误映射或用户可见交互 | Slice Implementation Contract / 垂直切片 Ticket / Execution Result |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 模式不匹配时拆分工作单元并完整重路由 |
 | 所有后续生成代码：必须消费当前批准合同、主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result；业务行为使用 `behavior-tdd` | `post_scaffold_generated_code_policy` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺任一条件或以时间压力豁免时阻断 build |
@@ -47,7 +47,7 @@ owner: ai
 | 文档语言：持久化生命周期文档、实施记录、审查报告、发布说明和 Git checkpoint 正文必须使用中文，英文 skill / 模板不得原样落地 | `AGENTS.md` / `yss-product-lifecycle` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 仅保留必要英文技术标识、命令和 metadata |
 | 高风险变更：按已批准的普通影响面结论记录验证证据、责任人和回滚约束 | `AGENTS.md` / Spec / 架构记录 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺验证证据或责任人时不得发布或合并 |
 | 质量基线：`baseline_id` / `baseline_version` 只从 `engineering-baseline` 引用，Slice、Execution Result、审查和发布不得重复定义 | `engineering-baseline` / `orchestration-contract.yaml` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺少基线引用或出现重复标准时阻断并回到工程基线 |
-| Doubt-Driven：命中 API、数据、跨仓、发布回滚、实际安全行为或生命周期 / 生成语义时具备主张、反证、证据、残余风险和审查引用 | Router Contract / `orchestration-contract.yaml` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺反证、证据不足或残余风险未处理时阻断 |
+| Doubt-Driven：命中 API、数据、跨仓、发布回滚、实际安全行为或生命周期 / 生成语义时具备主张、反证、证据、残余风险和审查引用 | 实现合同编译器 Contract / `orchestration-contract.yaml` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺反证、证据不足或残余风险未处理时阻断 |
 |  |  |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  |  |
 
 状态说明：
