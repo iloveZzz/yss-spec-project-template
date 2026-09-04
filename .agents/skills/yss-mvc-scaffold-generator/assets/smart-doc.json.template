@@ -1,0 +1,42 @@
+{
+  "serverUrl": "http://localhost:8080",
+  "pathPrefix": "",
+  "isStrict": true,
+  "allInOne": true,
+  "outPath": "target/openapi",
+  "coverOld": true,
+  "createDebugPage": true,
+  "packageFilters": "{{BASE_PACKAGE}}.server.controller.*",
+  "md5EncryptedHtmlName": false,
+  "style": "xt256",
+  "projectName": "{{PROJECT_NAME}}",
+  "skipTransientField": true,
+  "sortByTitle": false,
+  "ignoreRequestParams": [
+    "com.yss.cloud.excel.annotation.RequestExcel",
+    "com.yss.cloud.excel.ExcelDataRequest"
+  ],
+  "showAuthor": true,
+  "requestFieldToUnderline": false,
+  "responseFieldToUnderline": false,
+  "inlineEnum": true,
+  "recursionLimit": 7,
+  "allInOneDocFileName": "{{PROJECT_NAME}}-v2.0.0",
+  "requestExample": true,
+  "responseExample": true,
+  "displayActualType": false,
+  "componentType": "NORMAL",
+  "appToken": "",
+  "openUrl": "",
+  "debugEnvName": "local",
+  "debugEnvUrl": "http://localhost:8080",
+  "revisionLogs": [
+    {
+      "version": "2.0.0",
+      "revisionTime": "{{GENERATED_AT}}",
+      "status": "create",
+      "author": "system",
+      "remarks": "项目初始化版本v2.0.0"
+    }
+  ]
+}
