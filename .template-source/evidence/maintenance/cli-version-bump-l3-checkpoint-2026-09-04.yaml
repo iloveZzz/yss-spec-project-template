@@ -1,0 +1,41 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  升级主 CLI 与两个子项目 CLI 的版本号，并将默认模板输入固定到
+  已推送的不可变 commit；该变更影响跨仓生成与发布语义，因此按 L3 执行。
+triggers:
+  - release-semantics
+  - cross-repo-contract
+changed_assets:
+  - scripts/lib/skill-governance.mjs
+  - docs/process/template-verification-profiles.yaml
+  - submodules/create-yss-spec
+  - submodules/create-yss-harness-dev
+  - submodules/create-yss-strategic-design
+  - .template-source/evidence/maintenance/cli-version-bump-l3-checkpoint-2026-09-04.yaml
+verification_evidence:
+  - kind: cross-repository-verification
+    command: cd submodules/create-yss-spec && YSS_SPEC_TEMPLATE_REPO=../.. YSS_SPEC_TEMPLATE_REF=f454f08950cad6acc6cba2e413e62a3e942677fe npm test
+    result: pass
+  - kind: cross-repository-verification
+    command: cd submodules/create-yss-harness-dev && YSS_HARNESS_TEMPLATE_REPO=https://github.com/iloveZzz/yss-harness-dev-agent.git YSS_HARNESS_TEMPLATE_REF=1c02dcdd3dd6bc4e22d453b59a0347acee40b265 npm test
+    result: pass
+  - kind: cross-repository-verification
+    command: cd submodules/create-yss-strategic-design && npm test
+    result: pass
+  - kind: relevant-check
+    command: npm pack --dry-run for create-yss-spec@3.0.1, create-yss-harness-dev@0.2.1, and create-yss-harness-design@0.2.1
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null
