@@ -204,7 +204,7 @@ groups:
       - { run: "scripts/update-skill-lock --check" }
       - { run: "scripts/verify-skill-registry" }
       - { run: "scripts/verify-skill-governance" }
-      - { run: "scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent" }
+      - { run: "scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent", when: template-source }
   tactical-design:
     commands:
       - { run: "node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs" }
