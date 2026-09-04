@@ -1,0 +1,41 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  将战略设计子项目确认为五项产品设计技能的权威来源，并把来源提交、上游哈希、
+  父模板适配说明和供应链校验纳入技能锁定合同，改变跨仓库生成与聚合验证行为。
+triggers:
+  - generation-semantics
+  - cross-repo-contract
+  - core-validator
+  - aggregate-behavior-change
+changed_assets:
+  - .agents/skills/.strategic-design-skills-manifest.json
+  - docs/agents/strategic-design-skills-integration.md
+  - scripts/lib/skill-supply-chain.mjs
+  - scripts/lib/skill-governance.mjs
+  - .template-source/tooling/node/test/yss-ui-skill-integration.test.mjs
+  - docs/process/template-verification-profiles.yaml
+  - skills-lock.json
+  - submodules/yss-harness-design-agent
+verification_evidence:
+  - kind: self-check
+    command: >-
+      scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent
+      --source-root=submodules/yss-harness-design-agent && scripts/verify-skill-governance &&
+      node --test .template-source/tooling/node/test/yss-ui-skill-integration.test.mjs
+    result: pass
+  - kind: projection-sync
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: >-
+  fast 因验证 profile 与跨仓库来源变化自动执行 release profile；本 checkpoint 固化父模板
+  对战略设计源仓的消费基线，CLI 快照同步在该固定提交之后执行，不代替发布批准。
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

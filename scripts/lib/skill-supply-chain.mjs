@@ -8,6 +8,7 @@ export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "
 const SOURCE_ROOT = path.join(ROOT, ".agents/skills");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
 const YSS_UI_MANIFEST_PATH = path.join(SOURCE_ROOT, ".yss-skills-manifest.json");
+const STRATEGIC_DESIGN_MANIFEST_PATH = path.join(SOURCE_ROOT, ".strategic-design-skills-manifest.json");
 export const PROJECTION_ROOTS = [".claude/skills", ".codex/skills", ".cursor/skills", ".pi/skills", ".qoder/skills", ".trae/skills"];
 export const OBSOLETE = new Set(["to-" + "prd", "to-" + "issues", "design-an-interface", "qa", "request-refactor-plan", "ubiquitous-language", "edit-article", "obsidian-vault", "writing-great-skills", "code-review-process", "yss-domain-modeling", "yss-dir", "yss-duckdb", "yss-file", "yss-filerunner", "yss-db2mybatis", "yss-mail", "yss-mapper-dynamic", "yss-quality", "yss-sql-condition", "yss-sql-tpl", "yss-valuation", "yss-variable", "yss-openapi", "web-design-engineer", "web-video-presentation", "wireframe-prototype", "wizard", "git-guardrails-claude-code", "claude-handoff", "batch-grill-me", "product-design-prototype", "research", "yss-dictionary", "yss-jdbc", "yss-log", "yss-taskflow", "yss-backend-scaffold-application", "yss-backend-scaffold-domain", "yss-backend-scaffold-infrastructure", "yss-backend-scaffold-web", "yss-router", "yss-source-index"]);
 export function obsoleteCanonicalResidues(names, obsolete = OBSOLETE) {
@@ -88,8 +89,32 @@ export function validateYssUiSkillManifest(manifest) {
   return manifest;
 }
 
+export function validateStrategicDesignSkillManifest(manifest) {
+  if (!manifest || typeof manifest !== "object" || Array.isArray(manifest)) throw new TypeError("战略设计 skills 清单必须是对象");
+  for (const field of ["source", "source_type", "source_root", "source_revision", "adaptation_ref"]) {
+    if (typeof manifest[field] !== "string" || !manifest[field].trim()) throw new TypeError(`战略设计 skills 清单缺少 ${field}`);
+  }
+  if (manifest.schema_version !== 1) throw new TypeError("战略设计 skills 清单 schema_version 必须为 1");
+  if (!/^[0-9a-f]{40}$/.test(manifest.source_revision)) throw new TypeError("战略设计 skills source_revision 必须是完整 Git SHA");
+  if (!Array.isArray(manifest.skills) || manifest.skills.length === 0) throw new TypeError("战略设计 skills 清单缺少 skills");
+  const upstreamNames = new Set();
+  const canonicalNames = new Set();
+  for (const skill of manifest.skills) {
+    if (!skill || typeof skill.upstream !== "string" || typeof skill.canonical !== "string") throw new TypeError("战略设计 skill 缺少 upstream/canonical");
+    if (!/^[0-9a-f]{64}$/.test(skill.upstream_hash ?? "")) throw new TypeError(`${skill.canonical} 缺少有效 upstream_hash`);
+    if (upstreamNames.has(skill.upstream)) throw new TypeError(`战略设计 upstream 重复: ${skill.upstream}`);
+    if (canonicalNames.has(skill.canonical)) throw new TypeError(`战略设计 canonical 重复: ${skill.canonical}`);
+    upstreamNames.add(skill.upstream);
+    canonicalNames.add(skill.canonical);
+  }
+  return manifest;
+}
+
 function loadYssUiSkillManifest() {
   return validateYssUiSkillManifest(JSON.parse(readFileSync(YSS_UI_MANIFEST_PATH, "utf8")));
+}
+function loadStrategicDesignSkillManifest() {
+  return validateStrategicDesignSkillManifest(JSON.parse(readFileSync(STRATEGIC_DESIGN_MANIFEST_PATH, "utf8")));
 }
 function git(args) { return spawnSync("git", args, { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }); }
 function tracked(relativePath) { return git(["ls-files", "-z", "--", relativePath]).stdout.length > 0; }
@@ -202,6 +227,9 @@ export function updateSkillLock(arguments_ = process.argv.slice(2)) {
   const yssUiManifest = loadYssUiSkillManifest();
   sources[yssUiManifest.source] = { ...(sources[yssUiManifest.source] ?? {}), revision: yssUiManifest.source_revision };
   const yssUiSkills = new Map(yssUiManifest.skills.map((skill) => [skill.canonical, skill]));
+  const strategicDesignManifest = loadStrategicDesignSkillManifest();
+  sources[strategicDesignManifest.source] = { ...(sources[strategicDesignManifest.source] ?? {}), revision: strategicDesignManifest.source_revision };
+  const strategicDesignSkills = new Map(strategicDesignManifest.skills.map((skill) => [skill.canonical, skill]));
   if (upstreamRoot && !existsSync(upstreamRoot)) throw new TypeError(`--upstream-root 不存在: ${upstreamRoot}`);
   const additions = arguments_.filter((arg) => arg.startsWith("--add=")).map((arg) => arg.slice(6));
   const removals = new Set(arguments_.filter((arg) => arg.startsWith("--remove=")).map((arg) => arg.slice(9)));
@@ -223,6 +251,16 @@ export function updateSkillLock(arguments_ = process.argv.slice(2)) {
       item.sourceRevision = yssUiManifest.source_revision;
       item.upstreamHash = yssUiSkill.upstream_hash;
       if (item.effectiveHash !== item.upstreamHash) item.adaptationRef = yssUiManifest.adaptation_ref;
+      else delete item.adaptationRef;
+    }
+    const strategicDesignSkill = strategicDesignSkills.get(name);
+    if (strategicDesignSkill) {
+      item.source = strategicDesignManifest.source;
+      item.sourceType = strategicDesignManifest.source_type;
+      item.skillPath = `${strategicDesignManifest.source_root}/${strategicDesignSkill.upstream}/SKILL.md`;
+      item.sourceRevision = strategicDesignManifest.source_revision;
+      item.upstreamHash = strategicDesignSkill.upstream_hash;
+      if (item.effectiveHash !== item.upstreamHash) item.adaptationRef = strategicDesignManifest.adaptation_ref;
       else delete item.adaptationRef;
     }
     item.targets = targets;

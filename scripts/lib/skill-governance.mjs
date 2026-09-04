@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadSkillRegistry } from "./skill-registry.mjs";
-import { validateYssUiSkillManifest } from "./skill-supply-chain.mjs";
+import { treeHash, validateStrategicDesignSkillManifest, validateYssUiSkillManifest } from "./skill-supply-chain.mjs";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -60,6 +60,24 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
   const mcpGuide = read(yssUiManifest.mcp.global_install_guide);
   for (const marker of ["npx -y @yss-ui/mcp install codex", "不写用户主目录", "get_codegen_rules", "list_components"]) {
     if (!mcpGuide.includes(marker)) fail(`YSS UI MCP 指南缺少边界或自检标记: ${marker}`);
+  }
+
+  const strategicManifest = validateStrategicDesignSkillManifest(JSON.parse(read(".agents/skills/.strategic-design-skills-manifest.json")));
+  const strategicIds = ["prototype-review", "yss-prototype-stage", "yss-design-system", "yss-antd-design", "yss-stage-decision"];
+  if (JSON.stringify(strategicManifest.skills.map(({ canonical }) => canonical).sort()) !== JSON.stringify(strategicIds.slice().sort())) {
+    fail("战略设计 skills 清单必须恰好覆盖五项公共技能");
+  }
+  for (const skill of strategicManifest.skills) {
+    const upstreamDirectory = path.join(ROOT, "submodules/yss-harness-design-agent", strategicManifest.source_root, skill.upstream);
+    if (!existsSync(path.join(upstreamDirectory, "SKILL.md"))) fail(`战略设计上游 skill 不存在: ${skill.upstream}`);
+    if (treeHash(upstreamDirectory) !== skill.upstream_hash) fail(`战略设计上游 hash 漂移: ${skill.upstream}`);
+    const item = lock.skills?.shared?.[skill.canonical];
+    if (!item || item.source !== strategicManifest.source || item.sourceRevision !== strategicManifest.source_revision || item.upstreamHash !== skill.upstream_hash) {
+      fail(`战略设计 skill 缺少一致的来源锁定: ${skill.canonical}`);
+    }
+    if (item.effectiveHash !== item.upstreamHash && item.adaptationRef !== strategicManifest.adaptation_ref) {
+      fail(`战略设计 skill 差异缺少薄适配引用: ${skill.canonical}`);
+    }
   }
 
   const registry = loadSkillRegistry();

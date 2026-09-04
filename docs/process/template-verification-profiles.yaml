@@ -39,6 +39,7 @@ required_files:
   - CONTEXT.md
   - skills-lock.json
   - .agents/skills/.yss-skills-manifest.json
+  - .agents/skills/.strategic-design-skills-manifest.json
   - .mcp.json
   - .agents/mcp_config.json
   - .cursor/mcp.json
@@ -51,6 +52,7 @@ required_files:
   - .agents/skills/yss-implementation-contract-compiler/tests/compiler-scenarios.test.mjs
   - .agents/skills/yss-skill-source-index-refresh/SKILL.md
   - docs/agents/yss-ui-skills-integration.md
+  - docs/agents/strategic-design-skills-integration.md
   - docs/user-guide/yss-ui-mcp.md
   - docs/agents/digital-human-roles.yaml
   - docs/process/lifecycle-registry.yaml
@@ -96,6 +98,8 @@ required_files:
 syntax_files:
   - scripts/sync-skills
   - scripts/update-skill-lock
+  - scripts/verify-upstream-skill-source
+  - scripts/lib/skill-supply-chain.mjs
   - scripts/generate-lifecycle-artifacts
   - scripts/verify-lifecycle-registry
   - scripts/verify-lifecycle-checkpoint
@@ -116,6 +120,8 @@ syntax_files:
   - scripts/audit-yss-backend-skills
   - scripts/verify-retired-skill-ids
   - scripts/verify-skill-governance
+  - scripts/verify-upstream-skill-source
+  - scripts/lib/skill-supply-chain.mjs
   - scripts/verify-yss-dto-openapi-profile
   - scripts/verify-yss-dto-openapi-scenarios
   - scripts/verify-digital-human-roles
@@ -158,6 +164,8 @@ routing:
     groups: [skills]
   - patterns: [.mcp.json, .agents/mcp_config.json, .cursor/mcp.json, .vscode/mcp.json, docs/user-guide/yss-ui-mcp.md, docs/agents/yss-ui-skills-integration.md]
     groups: [skills]
+  - patterns: [.agents/skills/.strategic-design-skills-manifest.json, docs/agents/strategic-design-skills-integration.md, submodules/yss-harness-design-agent/**]
+    groups: [skills]
   - patterns: ["docs/process/maintenance-*", "docs/process/harness-process-tailoring.md", "docs/process/schemas/maintenance-*", "scripts/*maintenance*", "scripts/lib/maintenance-*"]
     groups: [maintenance]
   - patterns: ["docs/process/lifecycle-*", "docs/process/templates/lifecycle-*", "scripts/*lifecycle*", "scripts/lib/lifecycle-*"]
@@ -196,6 +204,7 @@ groups:
       - { run: "scripts/update-skill-lock --check" }
       - { run: "scripts/verify-skill-registry" }
       - { run: "scripts/verify-skill-governance" }
+      - { run: "scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent" }
   tactical-design:
     commands:
       - { run: "node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs" }

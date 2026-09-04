@@ -4,10 +4,12 @@ import test from "node:test";
 
 import {
   ROOT,
+  validateStrategicDesignSkillManifest,
   validateYssUiSkillManifest,
 } from "../../../../scripts/lib/skill-supply-chain.mjs";
 
 const manifestPath = `${ROOT}/.agents/skills/.yss-skills-manifest.json`;
+const strategicManifestPath = `${ROOT}/.agents/skills/.strategic-design-skills-manifest.json`;
 
 test("yss-ui 业务项目清单覆盖 22 个 app skills 与项目级 MCP 配置", () => {
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
@@ -68,4 +70,22 @@ test("yss-ui 上游清单拒绝重复 canonical 与缺失 hash", () => {
   const missingHash = structuredClone(manifest);
   delete missingHash.skills[0].upstream_hash;
   assert.throws(() => validateYssUiSkillManifest(missingHash), /upstream_hash/);
+});
+
+test("战略设计上游清单固定五项公共技能与 Git revision", () => {
+  const manifest = JSON.parse(readFileSync(strategicManifestPath, "utf8"));
+  const contract = validateStrategicDesignSkillManifest(manifest);
+  assert.equal(contract.source, "iloveZzz/yss-harness-design-agent");
+  assert.match(contract.source_revision, /^[0-9a-f]{40}$/);
+  assert.deepEqual(contract.skills.map(({ canonical }) => canonical).sort(), [
+    "prototype-review",
+    "yss-antd-design",
+    "yss-design-system",
+    "yss-prototype-stage",
+    "yss-stage-decision",
+  ]);
+
+  const duplicate = structuredClone(manifest);
+  duplicate.skills[1].canonical = duplicate.skills[0].canonical;
+  assert.throws(() => validateStrategicDesignSkillManifest(duplicate), /canonical 重复/);
 });
