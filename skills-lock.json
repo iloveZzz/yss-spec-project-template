@@ -1395,6 +1395,22 @@
           ".trae/skills"
         ]
       },
+      "yss-mvc-scaffold-generator": {
+        "source": "project",
+        "sourceType": "local",
+        "skillPath": ".agents/skills/yss-mvc-scaffold-generator/SKILL.md",
+        "effectiveHash": "d4a4c86556739f4db9b1208f94b8e22d5901bb98dc84cbc98be720dbdae37108",
+        "targets": [
+          ".agents/skills",
+          ".claude/skills",
+          ".codex/skills",
+          ".cursor/skills",
+          ".hermes/skills",
+          ".pi/skills",
+          ".qoder/skills",
+          ".trae/skills"
+        ]
+      },
       "yss-mybatis": {
         "source": "project",
         "sourceType": "local",

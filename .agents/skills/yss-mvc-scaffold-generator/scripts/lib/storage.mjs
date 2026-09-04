@@ -10,6 +10,19 @@ import {
   exists
 } from "./runtime.mjs";
 
+const BOOTSTRAP_ONLY_SKILLS = ["yss-mvc-scaffold-generator"];
+
+async function distributedSkillLock() {
+  const source = path.join(HARNESS_ROOT, "skills-lock.json");
+  if (!await exists(source)) fail(`技能工具包源锁文件不存在: ${source}`);
+  const lock = JSON.parse(await readFile(source, "utf8"));
+  for (const name of BOOTSTRAP_ONLY_SKILLS) {
+    delete lock.skills?.shared?.[name];
+    for (const platform of Object.values(lock.skills?.platform ?? {})) delete platform?.[name];
+  }
+  return `${JSON.stringify(lock, null, 2)}\n`;
+}
+
 export async function assertEmpty(target) {
   if (!await exists(target)) return;
   if ((await readdir(target)).length) fail(`目标目录非空，拒绝生成: ${target}`);
@@ -35,26 +48,28 @@ async function populateSkillUtils(destination) {
     if (!await exists(source)) fail(`技能工具包源目录不存在: ${source}`);
     await cp(source, path.join(destination, relative), { recursive: true });
   }
-  for (const relative of ["skills-lock.json", "yss-public-skills.json"]) {
-    const source = path.join(HARNESS_ROOT, relative);
-    if (!await exists(source)) fail(`技能工具包源文件不存在: ${source}`);
-    await cp(source, path.join(destination, relative));
+  for (const root of SKILL_UTILS_DIRECTORIES) {
+    for (const name of BOOTSTRAP_ONLY_SKILLS) {
+      await rm(path.join(destination, root, name), { recursive: true, force: true });
+    }
   }
-  await writeFile(path.join(destination, "skill-utils.yaml"), `schema_version: 1\nkind: yss-skill-utils\ntool_version: 1.0.0\ncompatibility: skill-utils-v1\nsource: ${path.basename(HARNESS_ROOT)}\ncanonical_root: .agents/skills\nprojection_roots:\n  - .codex/skills\n  - .claude/skills\n  - .cursor/skills\n`, "utf8");
+  await writeFile(path.join(destination, "skills-lock.json"), await distributedSkillLock(), "utf8");
+  const publicSkills = path.join(HARNESS_ROOT, "yss-public-skills.json");
+  if (!await exists(publicSkills)) fail(`技能工具包源文件不存在: ${publicSkills}`);
+  await cp(publicSkills, path.join(destination, "yss-public-skills.json"));
+  await writeFile(path.join(destination, "skill-utils.yaml"), `schema_version: 1\nkind: yss-skill-utils\ntool_version: 1.0.0\ncompatibility: skill-utils-v1\nsource: ${path.basename(HARNESS_ROOT)}\ncanonical_root: .agents/skills\nprojection_roots:\n  - .codex/skills\n  - .claude/skills\n  - .cursor/skills\nexcluded_skills:\n  - yss-mvc-scaffold-generator\n`, "utf8");
 }
 
 export async function ensureSkillUtils(targetDir, { apply = true } = {}) {
   const parent = path.dirname(targetDir);
   const skillUtils = path.join(parent, SKILL_UTILS_NAME);
   const marker = path.join(skillUtils, "skill-utils.yaml");
-  const sourceLock = path.join(HARNESS_ROOT, "skills-lock.json");
-  if (!await exists(sourceLock)) fail(`技能工具包源锁文件不存在: ${sourceLock}`);
+  const expectedLock = await distributedSkillLock();
   if (await exists(skillUtils)) {
     if (!await exists(marker)) fail(`技能工具包目录已存在但不是受支持的 skillUtils: ${skillUtils}`);
     const installedLock = path.join(skillUtils, "skills-lock.json");
     const current = await exists(installedLock) ? await readFile(installedLock, "utf8") : "";
-    const expected = await readFile(sourceLock, "utf8");
-    if (current === expected) return { path: skillUtils, created: false, refreshed: false, backup: null };
+    if (current === expectedLock) return { path: skillUtils, created: false, refreshed: false, backup: null };
     if (!apply) return { path: skillUtils, created: false, refreshed: true, backup: null };
     const staging = await mkdtemp(path.join(parent, ".skillUtils.refresh-"));
     const backup = path.join(parent, `.skillUtils.backup-${Date.now()}`);

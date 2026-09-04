@@ -41,7 +41,7 @@ cd /path/to/mvc-analysis-item1
 
 Windows 使用 `mvnw.cmd`。指定外部 settings 时，Maven 命令必须加 `-s <settings.xml>`。启动后对 `POST /api/analysis/query` 执行 HTTP 冒烟测试。
 
-生成项目进入 API/Controller 实现后，登记命令还必须包含 Java Web/Javadoc 检查、`fmt:check` 和显式 Smart-doc openapi goal；Smart-doc 不绑定 Maven `executions`。
+生成项目进入 API/Controller 实现后，登记命令必须包含 Java Web/Javadoc 检查、`fmt:check`、测试和构建。Smart-doc 仅作为人工按需从 Controller 生成辅助文档的工具，不属于默认 AI Coding 验证链路；只有用户明确要求生成 Smart-doc 文档时才执行对应 goal。
 
 生成结果包含根 `yss-project.yaml`、`AGENTS.md`、`CONTEXT.md`、生命周期事实源、共享 skills、本地 Ticket 入口、`external-repository` 实现仓库登记和 `.gitignore`。生成器执行 `git init --initial-branch=main`；旧版 Git自动回退到 `git init` 后重命名分支。只初始化仓库，不创建 commit 或 remote。
 
@@ -67,14 +67,21 @@ Windows 使用 `mvnw.cmd`。指定外部 settings 时，Maven 命令必须加 `-
 - 标准能力默认包含审计日志、分布式 ID、Excel、Nacos、Redis Cache、OpenFeign、Smart-doc、用户信息和 Actuator。
 - server POM 必须保留 `spring-boot-maven-plugin`和默认激活的 `nacos` profile；Nacos 依赖只在该 profile 中声明。
 - `bootstrap-nacos.yml` 默认使用 `${nacosserver:192.168.165.58:8848}`、`${nacos_group:yss-dm}` 和 `${namespace:yss-datamiddle}`，Discovery/Config 在 `nacos` profile 中开启，并由 `bootstrap-mock.yml` 在 Mock 模式覆盖关闭。
-- Smart-doc 使用 `assets/smart-doc.json.template`的完整配置并动态生成项目名、Controller 包和修订时间；Torna Token 与内网地址不进入生成项目。Smart-doc 插件保留跨模块 `includes`，不绑定 Maven `executions`。
+- Smart-doc 使用 `assets/smart-doc.json.template`的完整配置并动态生成项目名、Controller 包和修订时间；Torna Token 与内网地址不进入生成项目。Smart-doc 插件保留跨模块 `includes`，但不绑定 Maven `executions`，不进入默认 `validate` / `test` / `package` / CI / AI Coding 验证命令。
 - Logback 使用 `assets/logback-spring.xml.template`；`dev,mock` 与 `uat,pro,oracle,oceanbase-oracle` 必须是并列 profile，项目名和基础包动态替换。
 - Controller 类和公开接口方法必须按真实业务语义生成 Javadoc，`@author` 使用生成时读取的 Git 用户名，`@date` 使用 `yyyy/MM/dd HH:mm`，方法按签名完整生成 `@param`和 `@return`。
-- 生成项目必须携带 `data-analysis-java-implementation/scripts/verify_java_web_style.mjs`。API 实现不得交付单行 Javadoc block tag、Mapping 注解/方法同行或方法体单行压缩代码。
-- API 完成证据必须包含 `yss-skill-execution-result.yaml`、`fresh-verification.md` 和 `smart-doc-verification.md`；只有 Maven test/package 或 HTTP 冒烟不足以声称 Smart-doc/格式门禁通过。
+- API 实现不得交付单行 Javadoc block tag、Mapping 注解/方法同行或方法体单行压缩代码；相关规范由生成项目中的工程约定和实际验证命令约束。
+- API 完成证据必须包含 `yss-skill-execution-result.yaml` 和 `fresh-verification.md`，并记录 Controller 路由、DTO、响应 Wrapper、错误响应及契约测试与冻结 OpenAPI 的一致性。Smart-doc 输出不是 OpenAPI Freeze、契约审查或功能完成证据。
 - Maven settings 始终是项目外部的私密输入；不得复制到目标目录、写入 README/生成清单或提交 Git。
 - 持久层固定使用 YSS MyBatis-Plus；标准 CRUD 使用 MP，复杂 SQL 写入 mapper.xml，主键策略为 `IdType.ASSIGN_ID`。
 - 生成范围仅包含工程骨架、示例 Mock seam 和验证测试，不声称业务 Spec、OpenAPI Freeze 或 Slice Implementation Contract 已批准。
 - 完成结论必须包含结构验证，以及实际执行的 Maven 命令；无法下载依赖时如实记录环境阻塞。
 
 模块职责和依赖方向见 [references/architecture.md](references/architecture.md)。
+
+## API 契约与人工文档边界
+
+- 冻结的 OpenAPI 3.1 YAML 是接口契约的唯一事实来源；`yss-openapi-governance` 负责契约治理与 Freeze，`yss-openapi-draft-review` 负责冻结前审查，`yss-web-controller` 负责按冻结契约实现 Controller。
+- Smart-doc 是人工可选的源码文档工具。其输出只用于查看当前 Controller 实现，不得反向定义、覆盖或批准冻结 OpenAPI。
+- AI 默认不执行 `smart-doc:html`、`smart-doc:openapi` 或 `smart-doc:torna-rest`。`torna-rest` 涉及外部写入，执行前还必须获得对应授权。
+- 本生成器只用于空目录初始化。生成项目使用已物化的 `project-instance` 资产和实现 skills 开发后续需求；其共享 `skillUtils` 不应再分发 `yss-mvc-scaffold-generator` 本身。

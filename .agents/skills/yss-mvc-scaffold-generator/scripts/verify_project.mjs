@@ -9,12 +9,16 @@ if (index < 0 || !args[index + 1]) { console.error("必须提供 --project-root"
 const root = path.resolve(args[index + 1]);
 async function required(relative) { try { await stat(path.join(root, relative)); } catch { throw new Error(`缺少必需路径: ${relative}`); } }
 try {
-  await Promise.all([".git", ".gitignore", ".artifact-workspace.yaml", "yss-project.yaml", "AGENTS.md", "CONTEXT.md", "skills-lock.json", "scripts/check-agent-environment.mjs", "docs/service/service-overview.md", "docs/service/module-map.md", "docs/service/current-capabilities.md", "docs/agents/issue-tracker.md", "docs/process/lifecycle-registry.yaml", "docs/process/harness-process-tailoring.md", "docs/process/implementation-repo-registry.yaml", "docs/templates/gate-approval-record-template.yaml", "docs/templates/impact-assessment-template.yaml", "docs/templates/repository-identity-check-template.yaml", "docs/templates/backend-slice-implementation-contract-template.yaml", "docs/templates/workflow-execution-result-template.yaml", ".yss/scaffold-generation.json"].map(required));
+  await Promise.all([".git", ".gitignore", ".artifact-workspace.yaml", "yss-project.yaml", "AGENTS.md", "CONTEXT.md", "skills-lock.json", "scripts/check-agent-environment.mjs", "docs/service/service-overview.md", "docs/service/module-map.md", "docs/service/current-capabilities.md", "docs/agents/issue-tracker.md", "docs/process/lifecycle-registry.yaml", "docs/process/harness-process-tailoring.md", "docs/process/implementation-repo-registry.yaml", "docs/templates/approval-record-template.yaml", "docs/templates/implementation-routing-template.md", "docs/templates/verification-record-template.md", "docs/templates/vertical-slice-ticket-template.md", ".yss/scaffold-generation.json"].map(required));
   const manifest = JSON.parse(await readFile(path.join(root, ".yss/scaffold-generation.json"), "utf8"));
   if (manifest.skill !== "yss-mvc-scaffold-generator" || !["oracle", "oceanbase-oracle"].includes(manifest.database)) throw new Error("生成清单与 YSS MVC 脚手架合同不一致");
   if (manifest.runtime_java !== "8" || manifest.project_version !== "2.0.0-SNAPSHOT" || manifest.persistence_profile !== "yss-mybatis-plus") throw new Error("Java 8/YSS MyBatis-Plus 技术基线不正确");
   const skillUtils = path.resolve(root, manifest.skill_utils_dir);
-  await Promise.all(["skill-utils.yaml", "skills-lock.json", ".agents/skills/yss-product-lifecycle/SKILL.md", ".codex/skills/yss-mvc-scaffold-generator"].map((relative) => required(path.join(manifest.skill_utils_dir, relative))));
+  await Promise.all(["skill-utils.yaml", "skills-lock.json", ".agents/skills/yss-product-lifecycle/SKILL.md", ".agents/skills/yss-router/SKILL.md"].map((relative) => required(path.join(manifest.skill_utils_dir, relative))));
+  for (const projection of [".agents", ".claude", ".codex", ".cursor", ".hermes", ".pi", ".qoder", ".trae"]) {
+    const nestedGenerator = path.join(skillUtils, projection, "skills", "yss-mvc-scaffold-generator");
+    if (await stat(nestedGenerator).then(() => true).catch(() => false)) throw new Error(`skillUtils 不应分发创建期生成器: ${projection}/skills/yss-mvc-scaffold-generator`);
+  }
   for (const forbidden of [".agents", ".claude", ".codex", ".cursor", ".hermes", ".pi", ".qoder", ".trae"]) if (await stat(path.join(root, forbidden)).then(() => true).catch(() => false)) throw new Error(`项目不应携带技能投影目录: ${forbidden}`);
   if (JSON.stringify(manifest.modules) !== JSON.stringify(modules)) throw new Error("模块集合或顺序不正确");
   const backendRoot = path.join(root, manifest.backend_root || "");
@@ -52,7 +56,9 @@ try {
   for (const expected of ["spring-boot-maven-plugin", "smart-doc-maven-plugin", "<id>nacos</id>", "<activeByDefault>true</activeByDefault>", "<app.env>dev</app.env>", "<app.profiles>nacos</app.profiles>", `${manifest.project_name}-client`, `${manifest.project_name}-core`, `${manifest.project_name}-repository`]) {
     if (!serverPom.includes(expected)) throw new Error(`server POM 缺少标准配置: ${expected}`);
   }
-  if (serverPom.includes("<executions>")) throw new Error("Smart-doc 不得绑定 Maven execution");
+  const smartDocPlugin = serverPom.match(/<plugin>(?:(?!<\/plugin>)[\s\S])*?<artifactId>smart-doc-maven-plugin<\/artifactId>(?:(?!<\/plugin>)[\s\S])*?<\/plugin>/)?.[0];
+  if (!smartDocPlugin) throw new Error("server POM 缺少 Smart-doc 人工文档能力");
+  if (smartDocPlugin.includes("<executions>")) throw new Error("Smart-doc 不得绑定 Maven execution");
   const smartDoc = await readFile(path.join(backendRoot, "server/src/main/resources/smart-doc.json"), "utf8");
   for (const expected of [`"projectName": "${manifest.project_name}"`, `"packageFilters": "${manifest.base_package}.server.controller.*"`, '"showAuthor": true', '"appToken": ""']) {
     if (!smartDoc.includes(expected)) throw new Error(`Smart-doc 配置不完整: ${expected}`);
@@ -74,6 +80,7 @@ try {
   const identity = await readFile(path.join(root, "yss-project.yaml"), "utf8");
   if (!identity.includes("repository_mode: project-instance")) throw new Error("项目身份不是 project-instance");
   const registry = await readFile(path.join(root, "docs/process/implementation-repo-registry.yaml"), "utf8");
+  if (/smart-doc(?:-maven-plugin[^\n]*:openapi|-verification\.md|:html|:torna-rest)/i.test(registry)) throw new Error("AI Coding 默认验证不得执行 Smart-doc 或要求其证据");
   const expectedRegistryLines = [
     `    project_name: ${manifest.project_name}`,
     `    project_root: ${manifest.backend_root}`,

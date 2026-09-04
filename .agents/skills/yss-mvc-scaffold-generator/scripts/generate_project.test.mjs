@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 
 const script = path.join(path.dirname(fileURLToPath(import.meta.url)), "generate_project.mjs");
 const verifyScript = path.join(path.dirname(fileURLToPath(import.meta.url)), "verify_project.mjs");
-const harnessRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+const harnessRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../..");
 const gitAuthorEnvironment = {
   GIT_CONFIG_COUNT: "1",
   GIT_CONFIG_KEY_0: "user.name",
@@ -20,6 +20,12 @@ function run(args, options = {}) {
     ...options,
     env: { ...process.env, ...gitAuthorEnvironment, ...(options.env ?? {}) }
   });
+}
+async function expectedDistributedLock() {
+  const lock = JSON.parse(await readFile(path.join(harnessRoot, "skills-lock.json"), "utf8"));
+  delete lock.skills?.shared?.["yss-mvc-scaffold-generator"];
+  for (const platform of Object.values(lock.skills?.platform ?? {})) delete platform?.["yss-mvc-scaffold-generator"];
+  return `${JSON.stringify(lock, null, 2)}\n`;
 }
 test("生成固定六模块和 mock endpoint", async (t) => {
   const base = await mkdtemp(path.join(os.tmpdir(), "data-analysis-scaffold-")); t.after(() => rm(base, { recursive: true, force: true }));
@@ -45,33 +51,31 @@ test("生成固定六模块和 mock endpoint", async (t) => {
   assert.match(await readFile(path.join(target, "docs/process/implementation-repo-registry.yaml"), "utf8"), /repository_scope: external-repository/);
   const analysisProject = await readFile(path.join(target, "docs/process/analysis-project.yaml"), "utf8"); assert.match(analysisProject, /project_name: data-analysis-item1/); assert.doesNotMatch(analysisProject, /galaxy-data-analysis|fegin-client/);
   assert.match(await readFile(path.join(target, "docs/process/lifecycle-registry.yaml"), "utf8"), /schema_version:/);
-  assert.match(await readFile(path.join(target, "docs/templates/vertical-slice-ticket-template.md"), "utf8"), /Delivery-State: planned/);
-  assert.match(await readFile(path.join(target, "docs/templates/local-parent-ticket-template.md"), "utf8"), /delivery_state \| planned \/ in-progress \/ implemented \/ verified \/ released/);
+  assert.match(await readFile(path.join(target, "docs/templates/vertical-slice-ticket-template.md"), "utf8"), /status: ready-for-human/);
+  assert.match(await readFile(path.join(target, "docs/templates/local-parent-ticket-template.md"), "utf8"), /lifecycle_status \| routing \/ running \/ paused-human-gate \/ blocked \/ completed/);
   const lifecycleContract = await readFile(path.join(skillUtils, ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"), "utf8");
-  assert.match(lifecycleContract, /conditional_artifacts:/);
-  assert.match(lifecycleContract, /checkpoint_sync: \[map\.md, parent-ticket\.md, issues, gates\/lifecycle-checkpoint\.yaml\]/);
-  assert.match(lifecycleContract, /broad_implementation_authorization_is_gate_approval: false/);
-  assert.match(lifecycleContract, /api_impact_required_chain: \[openapi-draft, openapi-draft-review, openapi-design-review, openapi-freeze\]/);
-  assert.match(await readFile(path.join(target, "docs/templates/gate-approval-record-template.yaml"), "utf8"), /approval_scope:/);
-  assert.match(await readFile(path.join(target, "docs/templates/backend-slice-implementation-contract-template.yaml"), "utf8"), /verification_commands:/);
-  assert.match(await readFile(path.join(target, "docs/templates/workflow-execution-result-template.yaml"), "utf8"), /verification_id:/);
+  assert.match(lifecycleContract, /entry_routing:/);
+  assert.match(lifecycleContract, /workflow_execution_result:/);
+  assert.match(lifecycleContract, /work_unit_routes:/);
+  assert.match(await readFile(path.join(target, "docs/templates/approval-record-template.yaml"), "utf8"), /gate_id:/);
+  assert.match(await readFile(path.join(target, "docs/templates/implementation-routing-template.md"), "utf8"), /implementation/);
+  assert.match(await readFile(path.join(target, "docs/templates/verification-record-template.md"), "utf8"), /verification/i);
   await readFile(path.join(skillUtils, ".agents/skills/yss-product-lifecycle/SKILL.md"), "utf8");
-  await readFile(path.join(skillUtils, ".codex/skills/yss-mvc-scaffold-generator"), "utf8");
+  for (const projection of [".agents", ".claude", ".codex", ".cursor", ".hermes", ".pi", ".qoder", ".trae"]) {
+    await assert.rejects(stat(path.join(skillUtils, projection, "skills/yss-mvc-scaffold-generator")), { code: "ENOENT" });
+  }
   assert.equal(path.resolve(spawnSync("git", ["-C", target, "rev-parse", "--show-toplevel"], { encoding: "utf8" }).stdout.trim()), path.resolve(target));
   assert.equal(spawnSync("git", ["-C", target, "branch", "--show-current"], { encoding: "utf8" }).stdout.trim(), "main");
   assert.equal(spawnSync("git", ["-C", target, "rev-list", "--all", "--count"], { encoding: "utf8" }).stdout.trim(), "0");
   assert.equal(spawnSync("git", ["-C", target, "remote"], { encoding: "utf8" }).stdout.trim(), "");
   const verification = spawnSync(process.execPath, [verifyScript, "--project-root", target], { encoding: "utf8" });
   assert.equal(verification.status, 0, verification.stderr);
-  const javaWebVerifier = path.join(skillUtils, ".agents/skills/data-analysis-java-implementation/scripts/verify_java_web_style.mjs");
-  const javaWebVerification = spawnSync(process.execPath, [javaWebVerifier, "--project-root", target], { encoding: "utf8" });
-  assert.equal(javaWebVerification.status, 0, javaWebVerification.stderr);
+  await assert.rejects(stat(path.join(skillUtils, ".agents/skills/data-analysis-java-implementation")), { code: "ENOENT" });
   const implementationRegistry = await readFile(path.join(target, "docs/process/implementation-repo-registry.yaml"), "utf8");
-  assert.match(implementationRegistry, /verify_java_web_style\.mjs/);
-  assert.match(implementationRegistry, /node \.\.\/skillUtils\/\.agents\/skills\/data-analysis-java-implementation\/scripts\/verify_java_web_style\.mjs/);
+  assert.doesNotMatch(implementationRegistry, /data-analysis-java-implementation|verify_java_web_style\.mjs/);
   assert.match(implementationRegistry, /fmt-maven-plugin:2\.9\.1:check/);
-  assert.match(implementationRegistry, /smart-doc-maven-plugin:3\.0\.5:openapi/);
-  assert.match(implementationRegistry, /smart-doc-verification\.md/);
+  assert.doesNotMatch(implementationRegistry, /smart-doc-maven-plugin:[^\s]+:openapi/);
+  assert.doesNotMatch(implementationRegistry, /smart-doc-verification\.md/);
   const projectInstanceDocs = await Promise.all([
     "AGENTS.md",
     "docs/agents/skills-maintenance.md",
@@ -88,7 +92,9 @@ test("生成固定六模块和 mock endpoint", async (t) => {
   assert.match(serverPom, /<app\.env>dev<\/app\.env>[\s\S]*<app\.profiles>nacos<\/app\.profiles>/);
   assert.match(serverPom, /spring-boot-maven-plugin/);
   assert.match(serverPom, /<includes>[\s\S]*data-analysis-item1-client[\s\S]*data-analysis-item1-core[\s\S]*data-analysis-item1-repository[\s\S]*<\/includes>/);
-  assert.doesNotMatch(serverPom, /<executions>/);
+  const smartDocPlugin = serverPom.match(/<plugin>(?:(?!<\/plugin>)[\s\S])*?<artifactId>smart-doc-maven-plugin<\/artifactId>(?:(?!<\/plugin>)[\s\S])*?<\/plugin>/)?.[0];
+  assert.ok(smartDocPlugin);
+  assert.doesNotMatch(smartDocPlugin, /<executions>/);
   const smartDoc = await readFile(path.join(backend, "server/src/main/resources/smart-doc.json"), "utf8");
   assert.match(smartDoc, /"projectName": "data-analysis-item1"/);
   assert.match(smartDoc, /"packageFilters": "com\.yss\.dataanalysis\.item1\.server\.controller\.\*"/);
@@ -137,7 +143,7 @@ test("已有 skillUtils 落后时原子刷新并保留备份", async (t) => {
   assert.equal(output.skill_utils_refreshed, true);
   assert.ok(output.skill_utils_backup);
   assert.equal(await readFile(path.join(output.skill_utils_backup, "local-marker.txt"), "utf8"), "preserve old installation\n");
-  assert.equal(await readFile(path.join(skillUtils, "skills-lock.json"), "utf8"), await readFile(path.join(harnessRoot, "skills-lock.json"), "utf8"));
+  assert.equal(await readFile(path.join(skillUtils, "skills-lock.json"), "utf8"), await expectedDistributedLock());
 });
 
 test("已有 skillUtils 与源锁一致时直接复用", async (t) => {
