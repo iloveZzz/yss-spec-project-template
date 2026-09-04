@@ -1,6 +1,6 @@
 # 数字人角色
 
-结构化事实源是 `docs/agents/digital-human-roles.yaml`。角色、技能、协作组和会签级别与运行时无关。Claude Code、Cursor、Codex、Hermes、Grok Bot 等只通过 YAML `runtimes` 绑定。冲突时以 YAML 为准。
+结构化事实源是 `docs/agents/digital-human-roles.yaml`。角色、技能、协作组和会签级别与运行时无关。Claude Code、Cursor、Codex、Grok Bot 等只通过 YAML `runtimes` 绑定。冲突时以 YAML 为准。
 
 ## 何时读本文
 
@@ -57,7 +57,7 @@
 | ID | 覆盖 | 落地方式 |
 |---|---|---|
 | `runtime.generic` | 任何能加载 `core_skills` 并接受任务包的 Agent | 通用会话 / 人设 / system prompt |
-| `runtime.skill-projection` | `yss-skill-registry.yaml` 的 `agent_runtime_roots`（claude、codex、cursor、hermes、pi、qoder、trae） | 投影技能 + subagent 任务包 |
+| `runtime.skill-projection` | `yss-skill-registry.yaml` 的 `agent_runtime_roots`（claude、codex、cursor、pi、qoder、trae） | 投影技能 + subagent 任务包 |
 | `runtime.grok` | Grok Bot | 持久 Bot、群聊或 1:1 交接；群超过 6 人改 1:1，不改逻辑协作组 |
 
 新增平台：先加 `runtimes` 条目，再写适配说明。不要把平台限制写进 `roles`。

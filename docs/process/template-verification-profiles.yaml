@@ -42,8 +42,6 @@ required_files:
   - .mcp.json
   - .agents/mcp_config.json
   - .cursor/mcp.json
-  - .gemini/settings.json
-  - .kiro/settings/mcp.json
   - .vscode/mcp.json
   - docs/agents/yss-skill-registry.yaml
   - docs/agents/yss-ui-skills-integration.md
@@ -145,9 +143,9 @@ routing:
     groups: [hygiene]
   - patterns: [AGENTS.md, yss-project.yaml, "docs/process/template-engineering-overview.md"]
     groups: [governance-release]
-  - patterns: [skills-lock.json, ".agents/skills/**", ".claude/skills/**", ".codex/skills/**", ".cursor/skills/**", ".hermes/skills/**", ".pi/skills/**", ".qoder/skills/**", ".trae/skills/**", "docs/agents/yss-skill-registry.yaml", "docs/agents/skills-maintenance.md", "scripts/*skill*"]
+  - patterns: [skills-lock.json, ".agents/skills/**", ".claude/skills/**", ".codex/skills/**", ".cursor/skills/**", ".pi/skills/**", ".qoder/skills/**", ".trae/skills/**", "docs/agents/yss-skill-registry.yaml", "docs/agents/skills-maintenance.md", "scripts/*skill*"]
     groups: [skills]
-  - patterns: [.mcp.json, .agents/mcp_config.json, .cursor/mcp.json, .gemini/settings.json, .kiro/settings/mcp.json, .vscode/mcp.json, docs/user-guide/yss-ui-mcp.md, docs/agents/yss-ui-skills-integration.md]
+  - patterns: [.mcp.json, .agents/mcp_config.json, .cursor/mcp.json, .vscode/mcp.json, docs/user-guide/yss-ui-mcp.md, docs/agents/yss-ui-skills-integration.md]
     groups: [skills]
   - patterns: ["docs/process/maintenance-*", "docs/process/harness-process-tailoring.md", "docs/process/schemas/maintenance-*", "scripts/*maintenance*", "scripts/lib/maintenance-*"]
     groups: [maintenance]

@@ -41,7 +41,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 按“影响面 → 单一事实来源 → 投影 / 派生资产 → 分级证据”维护。强度分级、最低证据和 checkpoint 合同见 `docs/process/harness-process-tailoring.md`。
 
 - 创建、修改或退役 skill 时使用 `maintaining-skills`，并先按 `docs/process/harness-process-tailoring.md` 判定 L1 / L2 / L3；L3 日常记录维护者自检与 fresh verification，正式发布前执行完整模板门禁。
-- `.agents/skills` 是跨 Agent 共享技能的权威内容；`.claude/skills`、`.codex/skills`、`.cursor/skills`、`.hermes/skills`、`.pi/skills`、`.qoder/skills`、`.trae/skills` 中的共享技能是生成投影，禁止分别手工修改。Cursor 的契约运行时入口是 `.cursor/skills`；不得把 canonical `.agents/skills` 与某个平台投影当作同权双入口。
+- `.agents/skills` 是跨 Agent 共享技能的权威内容；`.claude/skills`、`.codex/skills`、`.cursor/skills`、`.pi/skills`、`.qoder/skills`、`.trae/skills` 中的共享技能是生成投影，禁止分别手工修改。Cursor 的契约运行时入口是 `.cursor/skills`；不得把 canonical `.agents/skills` 与某个平台投影当作同权双入口。
 - 模板维护默认以 `scripts/verify-template-fast` 完成 `implementation-ready`；显式晋级审查时用 `scripts/verify-template-candidate`，首次冻结前和最终发布前仍必须执行完整 `scripts/verify-template`。后者是不可裁剪的模板发布阻断门禁。模板与外部 `create-yss-spec` 的跨仓库契约未完成集成验证时，不得声称可发布。
 
 ## 5. `project-instance` 产品研发路由

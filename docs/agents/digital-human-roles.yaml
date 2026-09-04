@@ -44,7 +44,7 @@ runtimes:
     side_effect_approval: biological-human
     notes: >-
       覆盖 docs/agents/yss-skill-registry.yaml 的 agent_runtime_roots
-      （claude / codex / cursor / hermes / pi / qoder / trae）。
+      （claude / codex / cursor / pi / qoder / trae）。
       技能仍从 .agents/skills 投影，不按职称再维护一份。
   - id: runtime.grok
     kind: grok-bot

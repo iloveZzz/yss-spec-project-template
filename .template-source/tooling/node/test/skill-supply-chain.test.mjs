@@ -43,6 +43,6 @@ test("Cursor is a first-class shared skill projection root", () => {
   assert.ok(PROJECTION_ROOTS.includes(".cursor/skills"));
   assert.deepEqual(
     PROJECTION_ROOTS,
-    [".claude/skills", ".codex/skills", ".cursor/skills", ".hermes/skills", ".pi/skills", ".qoder/skills", ".trae/skills"]
+    [".claude/skills", ".codex/skills", ".cursor/skills", ".pi/skills", ".qoder/skills", ".trae/skills"]
   );
 });

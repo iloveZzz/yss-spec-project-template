@@ -45,8 +45,6 @@
       { "path": ".mcp.json", "container": "mcpServers" },
       { "path": ".agents/mcp_config.json", "container": "mcpServers" },
       { "path": ".cursor/mcp.json", "container": "mcpServers" },
-      { "path": ".gemini/settings.json", "container": "mcpServers" },
-      { "path": ".kiro/settings/mcp.json", "container": "mcpServers" },
       { "path": ".vscode/mcp.json", "container": "servers" }
     ],
     "global_install_guide": "docs/user-guide/yss-ui-mcp.md"

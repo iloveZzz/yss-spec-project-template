@@ -233,7 +233,6 @@ export function validateSkillRegistry(registry, { lock, routerContract, lifecycl
     claude: ".claude/skills",
     codex: ".codex/skills",
     cursor: ".cursor/skills",
-    hermes: ".hermes/skills",
     pi: ".pi/skills",
     qoder: ".qoder/skills",
     trae: ".trae/skills"

@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const sourceRoot = path.join(root, ".agents/skills");
 const managed = ["skills", "skills.sh.json", ".yss-export-manifest.json"];
-const forbidden = ["AGENTS.md", "CONTEXT.md", "docs", "skills-lock.json", ".agents", ".claude", ".codex", ".hermes", ".pi", ".qoder", ".trae"];
+const forbidden = ["AGENTS.md", "CONTEXT.md", "docs", "skills-lock.json", ".agents", ".claude", ".codex", ".pi", ".qoder", ".trae"];
 const hash = (content) => createHash("sha256").update(content).digest("hex");
 const fail = (message) => { throw new TypeError("export-yss-skills: " + message); };
 
@@ -48,8 +48,8 @@ function sanitize(text, relative) {
   const prefix = prefixPath ? prefixPath + "/" : "";
   let value = text.replace(/(YSS_SKILLS_ROOT\s*=\s*["']?)\/path\/to\/\.agents\/skills/g, "$1__YSS_SKILLS_ROOT_PATH__");
   value = value.replace(/\/path\/to\/\.agents\/skills/g, "$YSS_SKILLS_ROOT");
-  value = value.replace(/(?:\$\{base_project\}\/)?(?:\/path\/to\/)?\.(?:agents|claude|codex|hermes|pi|qoder|trae)\/skills\//g, prefix);
-  value = value.replace(/\.(?:agents|claude|codex|hermes|pi|qoder|trae)\/skills\b/g, "the canonical public skill source");
+  value = value.replace(/(?:\$\{base_project\}\/)?(?:\/path\/to\/)?\.(?:agents|claude|codex|pi|qoder|trae)\/skills\//g, prefix);
+  value = value.replace(/\.(?:agents|claude|codex|pi|qoder|trae)\/skills\b/g, "the canonical public skill source");
   value = value.replace(/\/path\/to\/skill-creator/g, "skill-creator").replace(/(?<![\w.])\/path\//g, "./path/");
   value = value.replace(/\/(?:Users|home|private)\/[^\s"'()<>\]]+/g, "<local-path-removed>").replace(/\/tmp\//g, "./tmp/");
   value = value.replace(/yss-spec-project-template/g, "the consuming project").replace(/\$\{base_project\}/g, "the consuming project");
@@ -98,7 +98,7 @@ function validate(output, skillNames) {
     const text = bytes.toString("utf8");
     if (/-----BEGIN (?:[A-Z0-9 ]+ )?PRIVATE KEY-----|(?:ghp_|github_pat_|github_token_|xox[baprs]-)[A-Za-z0-9_-]+|AKIA[0-9A-Z]{16}/.test(text)) fail("suspicious credential-like content: " + absolute);
     if (/(?:^|[^.\w])\/(?:Users|home|private|tmp)\//.test(text)) fail("absolute local path in public export: " + absolute);
-    if (/\.(?:agents|claude|codex|hermes|pi|qoder|trae)\/skills/.test(text)) fail("Agent root path in public export: " + absolute);
+    if (/\.(?:agents|claude|codex|pi|qoder|trae)\/skills/.test(text)) fail("Agent root path in public export: " + absolute);
   }
   validateLinks(path.join(output, "skills"));
 }

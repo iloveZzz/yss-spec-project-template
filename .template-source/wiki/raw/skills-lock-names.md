@@ -5,6 +5,7 @@ Derived names only. Do not copy hashes, paths, or the lock file.
 ## shared
 
 - `alibaba-java-code-style`
+- `archify`
 - `ask-matt`
 - `code-review`
 - `codebase-design`
@@ -40,7 +41,6 @@ Derived names only. Do not copy hashes, paths, or the lock file.
 - `prototype`
 - `prototype-page-acceptance`
 - `prototype-review`
-- `research`
 - `resolving-merge-conflicts`
 - `scaffold-exercises`
 - `setup-matt-pocock-skills`
@@ -87,6 +87,7 @@ Derived names only. Do not copy hashes, paths, or the lock file.
 - `yss-product-lifecycle`
 - `yss-prototype-stage`
 - `yss-repository`
+- `yss-research`
 - `yss-resilience4j`
 - `yss-router`
 - `yss-security-algorithm`
@@ -94,6 +95,7 @@ Derived names only. Do not copy hashes, paths, or the lock file.
 - `yss-stage-decision`
 - `yss-tactical-design`
 - `yss-ui`
+- `yss-ui-business-page-generation`
 - `yss-up-springboot3`
 - `yss-use-table-height`
 - `yss-use-tree-height`

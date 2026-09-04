@@ -1,0 +1,19 @@
+schema_version: 2
+intensity: L3
+classification_reason: 移除运行时根、MCP 分发配置与初始化 CLI 快照，改变模板生成语义和跨仓库发布契约。
+triggers: [generation-semantics, cross-repo-contract, core-validator]
+changed_assets: [AGENTS.md, skills-lock.json, docs/agents/yss-skill-registry.yaml, docs/process/template-verification-profiles.yaml, scripts/lib/skill-supply-chain.mjs, submodules/create-yss-spec, submodules/create-yss-harness-dev, submodules/yss-harness-dev-agent, submodules/yss-strategic-design-harness]
+verification_evidence:
+  - kind: self-check
+    command: rg -i --hidden '(\\.kiro|\\.hermes|\\.gemini)' --glob '!**/.git/**' --glob '!**/.template-source/evidence/**' --glob '!**/archify/**'
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: fast profile escalated to release because AGENTS.md is a core verification asset
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

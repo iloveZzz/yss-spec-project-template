@@ -48,7 +48,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 
 ### 5.2 技能供应链
 
-`.agents/skills` 是跨 Agent 共享技能的权威内容。`.claude/skills`、`.codex/skills`、`.cursor/skills`、`.hermes/skills`、`.pi/skills`、`.qoder/skills` 和 `.trae/skills` 是生成投影。
+`.agents/skills` 是跨 Agent 共享技能的权威内容。`.claude/skills`、`.codex/skills`、`.cursor/skills`、`.pi/skills`、`.qoder/skills` 和 `.trae/skills` 是生成投影。
 
 `docs/agents/yss-skill-registry.yaml` 管理技能分层、成熟度、别名和运行时发现；`skills-lock.json` 管理来源、版本、hash 与投影完整性。修改共享技能后必须同步投影并更新 lock，不能分别编辑平台副本。
 

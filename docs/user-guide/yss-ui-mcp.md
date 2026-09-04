@@ -5,8 +5,6 @@
 - Claude Code：`.mcp.json`
 - Antigravity：`.agents/mcp_config.json`
 - Cursor：`.cursor/mcp.json`
-- Gemini CLI：`.gemini/settings.json`
-- Kiro：`.kiro/settings/mcp.json`
 - VS Code：`.vscode/mcp.json`
 
 这些配置统一通过 `npx -y @yss-ui/mcp` 启动，不写用户主目录，也不覆盖个人全局配置。首次加载模板后，重启或刷新对应客户端即可发现 MCP。

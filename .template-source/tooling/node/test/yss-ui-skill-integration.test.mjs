@@ -54,8 +54,6 @@ test("yss-ui 业务项目清单覆盖 22 个 app skills 与项目级 MCP 配置"
       ".mcp.json",
       ".agents/mcp_config.json",
       ".cursor/mcp.json",
-      ".gemini/settings.json",
-      ".kiro/settings/mcp.json",
       ".vscode/mcp.json",
     ],
   );

@@ -1,5 +1,18 @@
 # 操作日志
 
+## [2026-09-04] REFRESH | 移除 Kiro、Hermes 与 Gemini 平台支持
+- changed: AGENTS.md, README.md, skills-maintenance.md, yss-skill-registry.yaml, skills-lock.json
+- articles: 技能投影与锁定
+- unmapped: docs/agents/digital-human-roles.yaml (No material)
+- unmapped: docs/agents/digital-human-roles.md (No material)
+- unmapped: docs/process/template-engineering-overview.md (No material)
+- unmapped: docs/process/template-verification-profiles.yaml (No material)
+- unmapped: docs/user-guide/yss-ui-mcp.md (No material)
+- unmapped: .agents/skills/.yss-skills-manifest.json (No material)
+- unmapped: .agents/skills/yss-ui/assets/docs/guide/llms.md (No material)
+
+移除三个运行时入口、其 MCP 配置与 Hermes 技能投影；同步锁文件派生摘录，并刷新 [[技能投影与锁定]] 的运行时根列表。
+
 ## [2026-08-09] CREATE | 初始化 yss-spec-project-template 知识 wiki 骨架
 
 创建三层结构：`raw/`（不可变源）、文章目录、`index.md`、`log.md`、`CLAUDE.md`。
