@@ -1,0 +1,32 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  将战略设计模板源的 parent submodule 身份、远端地址和现行文档入口统一为
+  yss-harness-design-agent，改变跨仓库引用合同，因此按 cross-repo-contract 判定 L3。
+triggers:
+  - cross-repo-contract
+changed_assets:
+  - .gitmodules
+  - docs/process/template-engineering-overview.md
+  - docs/user-guide/战术设计子项目用户手册.md
+  - docs/user-guide/用户手册索引.md
+  - submodules/yss-harness-design-agent
+verification_evidence:
+  - kind: self-check
+    command: git diff --cached --check && git submodule status -- submodules/yss-harness-design-agent
+    result: pass
+  - kind: cross-repository-verification
+    command: git ls-remote https://github.com/iloveZzz/yss-harness-design-agent.git refs/heads/main
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: >-
+  fast 因 .gitmodules 属于未映射路径自动升级执行 release profile；完整门禁通过，
+  本 checkpoint 仍仅表示 implementation-ready，不代替独立审查或发布批准。
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null
