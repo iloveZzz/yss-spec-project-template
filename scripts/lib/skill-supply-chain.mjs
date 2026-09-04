@@ -23,14 +23,16 @@ function treeFiles(directory, prefix = "") {
     const absolute = path.join(directory, entry.name);
     const rel = prefix ? `${prefix}/${entry.name}` : entry.name;
     if (entry.isDirectory()) return treeFiles(absolute, rel);
-    if (rel.split("/").includes("__pycache__") || /\.(pyc|pyo)$/.test(rel)) return [];
+    if (rel.split("/").includes("__pycache__") || /\.(iml|pyc|pyo)$/.test(rel)) return [];
     return entry.isFile() || entry.isSymbolicLink() ? [[rel, absolute]] : [];
   });
 }
 export function treeHash(directory) {
   const digest = createHash("sha256");
   for (const [name, file] of treeFiles(directory).sort(([left], [right]) => left.localeCompare(right))) {
-    digest.update(name).update("\0").update(readFileSync(file)).update("\0");
+    const content = readFileSync(file);
+    const normalized = content.includes(0) ? content : Buffer.from(content.toString("utf8").replaceAll("\r\n", "\n"));
+    digest.update(name).update("\0").update(normalized).update("\0");
   }
   return digest.digest("hex");
 }

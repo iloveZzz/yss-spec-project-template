@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS MVC Scaffold Generator"
+  short_description: "初始化独立 Git 的 YSS MVC 数据分析项目实例"
+  default_prompt: "Use $yss-mvc-scaffold-generator to initialize an independent Git-managed YSS MVC data-analysis project-instance with six Oracle backend modules and a mock HTTP profile."
