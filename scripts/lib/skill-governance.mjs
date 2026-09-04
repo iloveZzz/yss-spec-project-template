@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { isTemplateSource } from "./repository-mode.mjs";
 import { loadSkillRegistry } from "./skill-registry.mjs";
 import { treeHash, validateStrategicDesignSkillManifest, validateYssUiSkillManifest } from "./skill-supply-chain.mjs";
 
@@ -68,9 +69,11 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
     fail("战略设计 skills 清单必须恰好覆盖五项公共技能");
   }
   for (const skill of strategicManifest.skills) {
-    const upstreamDirectory = path.join(ROOT, "submodules/yss-harness-design-agent", strategicManifest.source_root, skill.upstream);
-    if (!existsSync(path.join(upstreamDirectory, "SKILL.md"))) fail(`战略设计上游 skill 不存在: ${skill.upstream}`);
-    if (treeHash(upstreamDirectory) !== skill.upstream_hash) fail(`战略设计上游 hash 漂移: ${skill.upstream}`);
+    if (isTemplateSource(ROOT)) {
+      const upstreamDirectory = path.join(ROOT, "submodules/yss-harness-design-agent", strategicManifest.source_root, skill.upstream);
+      if (!existsSync(path.join(upstreamDirectory, "SKILL.md"))) fail(`战略设计上游 skill 不存在: ${skill.upstream}`);
+      if (treeHash(upstreamDirectory) !== skill.upstream_hash) fail(`战略设计上游 hash 漂移: ${skill.upstream}`);
+    }
     const item = lock.skills?.shared?.[skill.canonical];
     if (!item || item.source !== strategicManifest.source || item.sourceRevision !== strategicManifest.source_revision || item.upstreamHash !== skill.upstream_hash) {
       fail(`战略设计 skill 缺少一致的来源锁定: ${skill.canonical}`);
