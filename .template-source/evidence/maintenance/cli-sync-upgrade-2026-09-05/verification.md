@@ -11,12 +11,12 @@ L3，触发 cross-repo-contract、generation-semantics、release-semantics。变
 ## Fresh Verification
 
 - 三个 CLI 分别使用 GitHub URL 和完整模板 SHA 执行 `pnpm run sync-template`，均 exit 0。
-- 三个 CLI 分别执行 `pnpm exec node --test tests/*.test.js`：综合 57/57、设计 7/7、研发 56/56，均 exit 0；原始输出为同目录 *-tests.log。
-- `node .template-source/scripts/verify-strategic-handoff-distribution.mjs` exit 0：设计导出、移除源仓、综合/研发验包、研发导入、正式对账、战术 validator、切片消费；见 distribution-final.log。
+- 三个 CLI 分别执行 `pnpm exec node --test tests/*.test.js`：综合 57/57、设计 7/7、研发 56/56，均 exit 0；原始输出为同目录 *-tests.txt。
+- `node .template-source/scripts/verify-strategic-handoff-distribution.mjs` exit 0：设计导出、移除源仓、综合/研发验包、研发导入、正式对账、战术 validator、切片消费；见 distribution-final.txt。
 - 三个 CLI 分别执行 `npm pack --ignore-scripts --json --pack-destination /tmp/yss-cli-sync-20260905` exit 0。npm 仅用于验证 npm 实际分发格式；同步和测试优先 pnpm。打包前快照已固定，禁用 prepack 避免改写待验输入。
-- `node /tmp/yss-cli-sync-20260905/verify-packed.cjs` exit 0：解压三个实际 tgz，验证 package 版本、CLI --version、模板提交、快照树摘要、关键交接文件，执行初始化并校验 project-instance 身份。原始结果为 packed-smoke.log；tgz 为临时构建物，不进入 Git。
-- 主模板与两个子模板分别执行 `scripts/verify-template`，均 exit 0；见 root-final-verify.log、design-verify-stable.log、dev-verify-stable.log。
-- `scripts/verify-maintenance-checkpoint .template-source/evidence/maintenance/cli-sync-upgrade-2026-09-05/checkpoint.yaml` exit 0；证据落盘后 `scripts/verify-template-fast` exit 0，见 root-checkpoint-fast.log。
+- `node /tmp/yss-cli-sync-20260905/verify-packed.cjs` exit 0：解压三个实际 tgz，验证 package 版本、CLI --version、模板提交、快照树摘要、关键交接文件，执行初始化并校验 project-instance 身份。原始结果为 packed-smoke.txt；tgz 为临时构建物，不进入 Git。
+- 主模板与两个子模板分别执行 `scripts/verify-template`，均 exit 0；见 root-final-verify.txt、design-verify-stable.txt、dev-verify-stable.txt。
+- `scripts/verify-maintenance-checkpoint .template-source/evidence/maintenance/cli-sync-upgrade-2026-09-05/checkpoint.yaml` exit 0；证据落盘后 `scripts/verify-template-fast` exit 0，见 root-checkpoint-fast.txt。
 - 各仓 `git diff --check` exit 0。维护者自检确认版本、README、默认模板 revision 与快照元数据一致。
 
 ## 验证并发复盘

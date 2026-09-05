@@ -1,0 +1,15 @@
+✔ stable template commit produces byte-identical snapshot metadata (1346.023208ms)
+✔ help and version do not write files (55.87425ms)
+✔ v1 rejects attach and sync (27.833417ms)
+✔ update and upgrade query npm without overwriting a source checkout (107.322333ms)
+✔ dry-run does not create the target directory (102.965167ms)
+✔ non-empty target is rejected without --force (58.517667ms)
+✔ init generates a strategic design project-instance (21509.239041ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 23250.683584
