@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { parseArgs } from "node:util";
+import { fileURLToPath } from "node:url";
+import { parseDocument } from "./vendor/yaml.mjs";
+import { validateJsonSchema } from "./lib/json-schema.mjs";
+import { loadSkillRegistry } from "./lib/skill-registry.mjs";
+import { validateArchitectureIdentity } from "./lib/backend-architecture.mjs";
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const schemaPath = path.join(repoRoot, "docs/process/schemas/scaffold-architecture-decisions.schema.json");
+const MVC_ORDER = ["server", "service", "repository", "adapter", "client", "feign-client"];
+const DDD_MODULES = ["domain", "application", "infrastructure", "adapter", "bootstrap"];
+const CAPABILITIES = { "external-integration": ["adapter"], "published-client": ["client"], "feign-client": ["client", "feign-client"] };
+
+function mvcModules(capabilities) {
+  const result = new Set(["server", "service", "repository"]);
+  for (const capability of capabilities) for (const module of CAPABILITIES[capability] ?? []) result.add(module);
+  return MVC_ORDER.filter((module) => result.has(module));
+}
+
+try {
+  const { values, positionals } = parseArgs({ options: { "allow-template": { type: "boolean" } }, allowPositionals: true, strict: true });
+  if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-scaffold-architecture-decisions [--allow-template] <file.yaml>");
+  const document = parseDocument(readFileSync(path.resolve(positionals[0]), "utf8"), { maxAliasCount: 0, uniqueKeys: true });
+  if (document.errors.length) throw new TypeError(document.errors[0].message);
+  const value = document.toJS({ maxAliasCount: 0 });
+  validateJsonSchema(value, schemaPath, { cwd: repoRoot, label: "scaffold architecture decision schema" });
+  if (!values["allow-template"] && value.template !== false) throw new TypeError("正式决策记录必须设置 template: false");
+  const ids = new Set();
+  const projects = new Map();
+  for (const decision of value.decisions) {
+    if (ids.has(decision.decision_id) || projects.has(decision.project_id)) throw new TypeError("decision_id 与 project_id 必须唯一");
+    ids.add(decision.decision_id);
+    projects.set(decision.project_id, decision);
+    const confirmed = ["user-confirmed", "lifecycle-approved", "consumed"].includes(decision.status);
+    const confirmation = decision.user_confirmation;
+    if (confirmed && (!decision.confirmed_architecture || Object.values(confirmation).some((item) => item === null || item === ""))) throw new TypeError(`${decision.project_id} 已确认状态必须提供完整用户确认引用`);
+    if (!confirmed && decision.status !== "stale" && decision.confirmed_architecture !== null) throw new TypeError(`${decision.project_id} 未确认状态不得预填 confirmed_architecture`);
+    if (decision.confirmed_architecture && decision.confirmed_architecture !== decision.recommended_architecture && !decision.override_reason) throw new TypeError(`${decision.project_id} 覆盖 Agent 推荐时必须说明 override_reason`);
+    if (decision.inheritance_mode === "root-default" && (decision.parent_project_id !== null || decision.inherited_from !== null)) throw new TypeError(`${decision.project_id} 根默认不得声明父项目`);
+    if (["inherit", "override"].includes(decision.inheritance_mode) && (!decision.parent_project_id || decision.inherited_from !== decision.parent_project_id)) throw new TypeError(`${decision.project_id} 子项目继承引用不完整`);
+    const registry = loadSkillRegistry();
+    validateArchitectureIdentity({ ...decision, architecture_family: decision.confirmed_architecture ?? decision.recommended_architecture, generator_skill: registry.architecture_profiles?.[decision.architecture_profile]?.generator_skill, contract_digest: decision.decision_inputs_digest }, registry);
+  }
+  for (const decision of value.decisions) {
+    if (!decision.parent_project_id) continue;
+    const parent = projects.get(decision.parent_project_id);
+    if (!parent) throw new TypeError(`${decision.project_id} 引用了不存在的父项目`);
+    if (decision.inheritance_mode === "inherit" && decision.confirmed_architecture && parent.confirmed_architecture && decision.confirmed_architecture !== parent.confirmed_architecture) throw new TypeError(`${decision.project_id} 继承值与父项目不一致；需要改为 override`);
+  }
+  process.stdout.write("脚手架架构选择记录验证通过\n");
+} catch (error) {
+  process.stderr.write(`脚手架架构选择记录验证失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

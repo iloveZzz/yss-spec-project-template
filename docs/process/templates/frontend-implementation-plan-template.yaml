@@ -1,15 +1,21 @@
-schema_version: 1
+schema_version: 2
 kind: plan
 template: true
 status: draft
-prototype_ref: docs/.scratch/example/design/prototype.html
+prototype_ref: docs/.scratch/example/design/prototypes/index.html
 spec_ref: docs/.scratch/example/spec.md
+visual_baseline:
+  baseline_id: visual-baseline.example
+  version: v1
+  digest: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  manifest_ref: docs/.scratch/example/handoff/visual-baseline-v1/visual-baseline.yaml
+  status: approved
+  case_ids: [primary-desktop, primary-narrow]
 route_and_page_inventory:
   - route: /example
     page: ExamplePage
-visual_acceptance_cases:
-  - primary desktop flow
-  - narrow viewport flow
+    case_ids: [primary-desktop, primary-narrow]
+baseline_case_ids: [primary-desktop, primary-narrow]
 desktop_viewport: 1440x900
 narrow_viewport: 390x844
 state_cases: [loading, empty, error, permission, selected, key-interaction]

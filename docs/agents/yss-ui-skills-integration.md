@@ -4,10 +4,10 @@
 
 ## 范围
 
-- 只集成 yss-ui `skills.config.json` 中 `categories.app` 的业务项目 skills，并排除后端 `java-backend-commit`，当前共 22 个。
+- 从 yss-ui `skills.config.json` 的 `categories.app` 中按 YSS capability 白名单集成业务项目 skills；排除后端 `java-backend-commit`、已由统一业务页面入口替代的 `page-module-development`，以及已由 Visual Baseline 和前端实现验证替代的 `prototype-page-acceptance`，当前共 20 个。
 - `categories.library` 的 10 个组件库内部维护 skills 全部不进入模板；该分组同时位于上游 `excludeFromDefaultSync`。
-- `api-integration`、`page-module-development`、`use-table-height`、`use-tree-height` 在模板中分别映射为 `yss-api-integration`、`yss-page-module-development`、`yss-use-table-height`、`yss-use-tree-height`，旧名称只作为 registry alias。
-- `java-backend-commit` 明确不属于本合同；其内容、路由与锁定信息不随本前端同步更新。
+- `api-integration`、`use-table-height`、`use-tree-height` 在模板中分别映射为 `yss-api-integration`、`yss-use-table-height`、`yss-use-tree-height`，旧名称只作为 registry alias。
+- `java-backend-commit`、`page-module-development`、`prototype-page-acceptance` 明确不属于本合同；其内容、路由与锁定信息不随本前端同步更新。
 - 允许模板基于生命周期、组件路由和证据门禁做受控适配；适配后的 `effectiveHash` 与上游 `upstreamHash` 同时进入 `skills-lock.json`。
 
 ## 更新步骤

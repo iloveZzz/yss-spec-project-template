@@ -29,7 +29,7 @@ description: Use when a YSS vertical slice is entering implementation, spans mul
 - 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
 - Registry、Slice Contract 或编译器合同 schema v1 一律拒绝并给出迁移到 v2 的提示；不自动升级，不提供旧技能名兼容。
 - `required_capabilities` 与 `required_skills` 必须同时冻结；Registry 或编译器摘要变化后合同立即 `stale`，重新编译后仍须交生命周期重新批准。
-- UI 影响缺少正式原型确认时，不得路由页面实现。
+- UI 影响缺少正式原型确认、批准且 digest 当前的 Visual Baseline manifest 或当前切片 `case_id` 时，不得路由页面实现。模型必须先读 manifest 与语义引用，再查看对应 PNG；禁止目录 glob 和图片独立猜义。
 - Repository/数据模型影响缺少数据架构时，不得路由持久化实现。
 - 领域影响缺少批准且版本当前的 tactical-design contract 时，不得路由 Domain 实现；无领域影响必须记录 `not-applicable`。
 - API 变化必须回到生命周期 Draft/Review/Freeze；半成品 backend 不得冒充稳定 source of truth。
@@ -37,7 +37,7 @@ description: Use when a YSS vertical slice is entering implementation, spans mul
 - Harness 内实现路径必须落在 `apps/backend/<project>/` 或 `apps/frontend/<project>/` 的具体项目目录；`apps/backend/`、`apps/frontend/` 只能作为容器，`app/backend/`、`app/frontend/` 及其子路径一律阻断。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
 - 当前用户、缓存、审计、Excel、分布式 ID、请求校验、错误映射、加解密或网关韧性命中时，必须按 `compiler-contract.yaml` 的 `impact_to_capabilities` 补齐入口 capability；不能只在 `boundaries.md` 中提及。仅复用已经验证的平台认证 / 授权能力不算 component impact，不自动增加权限专项 skill。
 - 业务行为使用 `behavior-tdd`；只有机械脚手架/生成物可用 `controlled-generation`，并记录例外和验证。
-- 原型确认后若 backend `scaffold_status=required`，先由本编译器按 `scaffold_contract_schema` 编译 `yss-ddd-scaffold-generator` 的 `controlled-generation` 工作单元合同 draft；合同必须带 `contract_id`、`contract_version`、compiler draft、生命周期批准、持久化引用、允许写路径、预期证据和验证命令。经生命周期编排器批准并持久化后才能运行生成器，再由受控工作单元实际执行固定的 `./mvnw validate`、`./mvnw test`、`./mvnw package` 并记录逐条结果，随后加载 `yss-backend-scaffold-parent` 并重新编译业务合同；脚手架不承载业务行为。
+- 原型确认后若 backend `scaffold_status=required`，必须先读取工程基线中的 `scaffold-architecture-decisions.yaml`。编译器按已达到 `lifecycle-approved` 且 digest 当前的选择，把 `domain-driven` 解析为 `backend.ddd-scaffold` / `yss-ddd-scaffold-generator`，把 `layered-mvc` 解析为 `backend.mvc-scaffold` / `yss-layered-mvc-scaffold-generator`；处于 `undecided`、`recommended`、`awaiting-user-decision` 或 `stale` 时返回 `blocked`，不得默认 DDD。随后按 `scaffold_contract_schema` v3 编译 `controlled-generation` 工作单元合同 draft；合同必须带选择引用与 digest、`generator_skill`、Profile、能力模块闭包、批准/持久化引用、允许写路径、预期证据和验证命令。经生命周期批准并持久化后才能运行对应生成器，再由受控工作单元实际执行固定的 `./mvnw validate`、`./mvnw test`、`./mvnw package` 并记录逐条结果，随后重新编译业务合同；脚手架不承载业务行为。
 - 脚手架合同在编译阶段只能是 `draft` / `ready-for-lifecycle-review` / `blocked`；只有生命周期编排器可以把已持久化脚手架合同标记为 `approved`。脚手架合同只覆盖业务代码前的工程骨架工作单元；生成、基线校验和合同重编译完成后，它不能替代脚手架后的 Slice Implementation Contract。
 - 脚手架输出消费批准的脚手架合同；脚手架后的所有生成后端代码都必须绑定当前批准且版本当前的 Slice Implementation Contract、主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result。打印命令、`./mvnw validate` 单项通过或脚手架成功不能替代合同批准；生成范围从机械内容变成业务行为时触发完整重路由。
 - 专项结果中的越界路径、缺失证据、`drift`、`violation` 或 `new_impacts` 必须阻断或重路由。

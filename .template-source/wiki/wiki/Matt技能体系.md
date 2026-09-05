@@ -8,7 +8,7 @@ Matt Engineering Skills 是来自 `mattpocock/skills` 的轻量工程流程技�
 
 [[Agent入口规则]] 规定的强制入口包括：技术事实、标准、第三方 API 或框架行为走 `research`；竞品、市场或用户口碑走 `competitive-intelligence`；Bug、测试失败或性能回退先用 `diagnosing-bugs` 再建 `tdd`；merge / rebase 冲突走 `resolving-merge-conflicts`；架构治理、难测模块或深模块设计走 `improve-codebase-architecture` / `codebase-design`；跨线程、跨仓库、上下文过长或原型结论回流走 `handoff`。
 
-业务行为默认按 `tdd` 使用已确认的公开 seam 逐切片实现。一次性生成、纯配置或流程文档不适用代码 TDD 时，必须记录例外理由和可执行验证方式。一次性一手资料走 `research`；要把研究结果落成持久 wiki 则走 [[LLM Wiki]]。`ask-matt` 的关联入口包括 `to-questionnaire`、`wait-what`、`writing-for-agents` 和 `PHASE-BOUNDARIES.md`，这些支持文件随共享 skill 目录一起计算 `effectiveHash`，不得单独投影或维护。
+业务行为默认按 `tdd` 使用已确认的公开 seam 逐切片实现。一次性生成、纯配置或流程文档不适用代码 TDD 时，必须记录例外理由和可执行验证方式。一次性一手资料走 `research`；要把研究结果落成持久 wiki 则走 [[LLM Wiki]]。旧 Matt 总入口已经硬退役；需求分诊与阶段路由统一由 `yss-product-lifecycle` 持有，仍保留的兼容入口也必须回交生命周期编排器验收。
 
 过时技能不会保留兼容别名。已退休、personal 或由 YSS 有意排除的条目不再进入 `.agents/skills`、共享投影根或 `skills-lock.json`；其中 `wizard` 是最新上游仍存在但 YSS 当前有意排除的人工步骤技能，不应描述为上游已退休。
 

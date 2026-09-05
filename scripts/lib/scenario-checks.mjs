@@ -15,10 +15,8 @@ const virtualTicketDecompositionRef = "docs/.scratch/demo/evidence/ticket-decomp
 const virtualTicketDecomposition = "result_schema: workflow-execution-result-v1\nwork_unit: work-unit.ticket-decomposition\nresult: completed\nevidence_refs:\n  - docs/.scratch/demo/evidence/ticket-decomposition-result.yaml\n";
 
 function validateMattContract(data) {
-  const direct = data.entry_routing?.direct_matt_entry;
-  ensure(direct?.skill === "ask-matt" && direct?.delegate_to === "yss-product-lifecycle" && direct?.requires_valid_manifest === true && direct?.action === "navigate-only" && direct?.lifecycle_state_mutation === "forbidden" && direct?.lifecycle_artifact_write === "forbidden" && direct?.return_to_orchestrator === "required", "ask-matt 导航入口尚未形成验明身份、只导航、禁止生命周期写入并强制回交主控的完整契约");
   const formal = data.entry_routing?.formal_user_entry;
-  ensure(includesAll(formal?.skills, ["setup-matt-pocock-skills", "grill-with-docs", "to-spec", "to-tickets", "implement"]) && formal?.action === "lifecycle-validate-and-accept" && formal?.lifecycle_artifact_write === "conditional-explicit-user-entry" && formal?.return_to_orchestrator === "required", "正式用户入口未区分于 ask-matt 导航入口");
+  ensure(includesAll(formal?.skills, ["setup-matt-pocock-skills", "grill-with-docs", "to-spec", "to-tickets", "implement"]) && formal?.action === "lifecycle-validate-and-accept" && formal?.lifecycle_artifact_write === "conditional-explicit-user-entry" && formal?.return_to_orchestrator === "required", "正式用户入口缺少生命周期预检与回交约束");
   const setup = data.setup_readiness;
   ensure(setup?.missing_action === "needs-human" && setup?.requested_skill === "setup-matt-pocock-skills" && setup?.resume_route === "setup-readiness" && setup?.lifecycle_may_invoke_setup === false, "setup 缺失时未限制为显式用户入口暂停");
   ensure(includesAll(setup?.preserves, ["lifecycle.status", "gate.status", "ticket.role"]) && setup?.legacy_artifacts_detected?.action === "migration-check" && setup.legacy_artifacts_detected.setup === "forbidden" && setup.legacy_artifacts_detected.write === "paused", "setup 暂停或旧资产迁移暂停契约不完整");
@@ -39,8 +37,8 @@ function validateMattContract(data) {
 
 function validateInvocationBoundary(data) {
   const boundary = data.matt_invocation_boundary;
-  const expectedUserInvoked = ["ask-matt", "grill-me", "grill-with-docs", "handoff", "implement", "improve-codebase-architecture", "loop-me", "setup-matt-pocock-skills", "setup-ts-deep-modules", "teach", "to-questionnaire", "to-spec", "to-tickets", "triage", "wait-what", "wayfinder", "writing-beats", "writing-fragments", "writing-shape"];
-  const expectedModelInvoked = ["code-review", "codebase-design", "diagnosing-bugs", "domain-modeling", "grilling", "migrate-to-shoehorn", "prototype", "resolving-merge-conflicts", "scaffold-exercises", "setup-pre-commit", "tdd", "writing-for-agents", "yss-research"];
+  const expectedUserInvoked = ["grill-me", "grill-with-docs", "handoff", "implement", "improve-codebase-architecture", "setup-matt-pocock-skills", "to-questionnaire", "to-spec", "to-tickets", "triage", "wait-what", "wayfinder"];
+  const expectedModelInvoked = ["code-review", "codebase-design", "diagnosing-bugs", "domain-modeling", "grilling", "prototype", "resolving-merge-conflicts", "tdd", "writing-for-agents", "yss-research"];
   const expectedLifecycleModelInvoked = ["code-review", "codebase-design", "diagnosing-bugs", "domain-modeling", "grilling", "prototype", "tdd", "yss-research"];
   ensure(JSON.stringify(boundary?.user_invoked_skills) === JSON.stringify(expectedUserInvoked), "Matt user-invoked skills 清单不完整或已漂移");
   ensure(JSON.stringify(boundary?.lifecycle_managed_user_entries) === JSON.stringify(["setup-matt-pocock-skills", "grill-with-docs", "to-spec", "to-tickets", "implement"]), "生命周期管理的显式用户入口清单不完整");
@@ -69,7 +67,7 @@ function validateInvocationBoundary(data) {
   ensure(JSON.stringify(Object.keys(prototypeRoute?.profile_contract?.profiles ?? {})) === JSON.stringify(["H1", "H2"]) && prototypeRoute?.version_boundary?.prototype_must_not_call === "yss-ui", "原型档位必须仅包含 H1/H2 并明确 yss-ui 边界");
   ensure(routes?.["work-unit.slice-implementation"]?.skills?.includes("tdd") && routes?.["work-unit.slice-implementation"]?.skills?.includes("yss-ui") && routes?.["work-unit.slice-implementation"]?.skills?.includes("yss-ui-business-page-generation"), "原生实现工作单元缺少 TDD、UI 或业务页面生成路由");
   const frontendRoute = routes?.["work-unit.slice-implementation"]?.frontend_route;
-  ensure(frontendRoute?.primary_skill === "yss-ui" && frontendRoute?.page_generation_skill === "yss-ui-business-page-generation" && frontendRoute?.page_orchestration_skill === "yss-page-module-development", "前端实现路由缺少 yss-ui 主入口、业务页面生成或页面编排技能");
+  ensure(frontendRoute?.primary_skill === "yss-ui" && frontendRoute?.page_generation_skill === "yss-ui-business-page-generation" && frontendRoute?.page_orchestration_skill === "yss-ui-business-page-generation", "前端实现路由缺少 yss-ui 主入口或统一业务页面技能");
   for (const impact of ["api_impact", "formily_impact", "table_impact", "tree_impact", "height_impact", "export_impact", "theme_impact"]) {
     ensure(Array.isArray(frontendRoute?.conditional_skills?.[impact]) && frontendRoute.conditional_skills[impact].length > 0 && typeof frontendRoute.not_applicable_reasons?.[impact] === "string", `前端条件专项路由缺少 ${impact}`);
   }
@@ -349,7 +347,7 @@ export function runScenario(name) {
     } catch { metadataRejected = true; }
     ensure(metadataRejected, "user-invoked front matter 变异未被 baseline oracle 拒绝");
     const mutations = [
-      (item) => { delete item.entry_routing.direct_matt_entry.return_to_orchestrator; },
+      (item) => { delete item.entry_routing.formal_user_entry.return_to_orchestrator; },
       (item) => { item.entry_routing.formal_user_entry.lifecycle_artifact_write = "forbidden"; },
       (item) => { item.matt_invocation_boundary.user_invoked_skills.push("unexpected-user-entry"); },
       (item) => { item.setup_readiness.lifecycle_may_invoke_setup = true; },

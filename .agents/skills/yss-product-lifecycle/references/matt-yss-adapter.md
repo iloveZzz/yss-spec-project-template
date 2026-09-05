@@ -7,16 +7,14 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 ## 入口与仓库身份裁决
 
 - 所有入口先读取 `yss-project.yaml`。缺失、解析失败、schema 不支持或 `repository_mode` 非法时，停止路由并进入 migration-check。
-- **直接调用 `ask-matt`** 时，它只能提供通用 Matt flow 导航，不得写生命周期资产、改变门禁或 Ticket 状态；有效 YSS 仓库必须在任何写入前把最终阶段、影响面、门禁和状态裁决交回 `yss-product-lifecycle`。
-- **直接调用生命周期管理的 Matt user-invoked skill**（`setup-matt-pocock-skills`、`grill-with-docs`、`to-spec`、`to-tickets`、`implement`）时，用户仍是正式资产的创建者；生命周期先校验前置条件，再接受结果并重新计算阶段、门禁和状态。它们不适用 `ask-matt` 的 `navigate-only` 限制。其他 user-invoked skill 同样不得由生命周期自动调用；只有在其专属适配合同存在时才进入 YSS 流程。
+- **直接调用生命周期管理的 Matt user-invoked skill**（`setup-matt-pocock-skills`、`grill-with-docs`、`to-spec`、`to-tickets`、`implement`）时，用户仍是正式资产的创建者；生命周期先校验前置条件，再接受结果并重新计算阶段、门禁和状态。其他 user-invoked skill 同样不得由生命周期自动调用；只有在其专属适配合同存在时才进入 YSS 流程。
 - **直接调用 `yss-product-lifecycle`** 时，不机械嵌套调用任何 Matt user-invoked skill；编排器直接使用原生工作单元和允许的 model-invoked 原语。Matt user-invoked skill 保持显式兼容入口，生命周期负责准备、校验并验收其结果。
-- `template-source` 只允许进入模板维护流程。命中 `to-spec`、`to-tickets`、`implement`、Release 或 Retrospective 时返回 `blocked`，原因是 `template-source-product-artifact-forbidden`；`ask-matt` 和 `setup-matt-pocock-skills` 都不得为具体产品生成 Spec、prototype、OpenAPI 或垂直切片 Ticket。
+- `template-source` 只允许进入模板维护流程。命中 `to-spec`、`to-tickets`、`implement`、Release 或 Retrospective 时返回 `blocked`，原因是 `template-source-product-artifact-forbidden`；`setup-matt-pocock-skills` 不得为具体产品生成 Spec、prototype、OpenAPI 或垂直切片 Ticket。
 - `project-instance` 才允许进入产品 Discovery → Spec → 设计 → 契约 → Ticket → 实现 → Release / Retrospective 链路。
 
 | 情形 | Matt flow | 生命周期验收 |
 |---|---|---|
 | 首次启用或配置缺失 | `setup-matt-pocock-skills`（用户显式） | `needs-human`，说明缺失项；用户完成 setup 后重新计算 readiness |
-| 通用入口 | `ask-matt` | 检测到 YSS 后由本编排器最终裁决 |
 | 需求澄清 | `grill-with-docs`（用户显式）或 `grilling`、`domain-modeling`（生命周期原语） | 按退出判定检查未决项和回流 |
 | 信息在其他人手中 | `to-questionnaire` | 使用 `external-input-required` 暂停；答案回流后记录 response、重新分类影响面，再进入 `grill-with-docs` 或 `to-spec` |
 | 大型模糊工作 | `wayfinder`（可选） | 仅在跨会话 / 跨 Agent 或 frontier 不清晰时启用；map 真正完成后 `handoff → to-spec` |
@@ -28,7 +26,7 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 | Bug | `diagnosing-bugs`、`tdd` | 先建立红色反馈；高风险影响升级上游门禁 |
 | 审查 | `code-review` | 唯一默认代码审查入口；审查者独立且不得写实现；Standards 消费 Spec、仓库治理规则、Slice `required_skills` 和 YSS / Alibaba 专项检查输入；finding 按合同分流修复或 stale 回 实现合同编译器 |
 | 跨上下文 | `handoff` | 保存来源、阶段、未决项、命令和下一责任人 |
-| 阶段边界 | `PHASE-BOUNDARIES.md` | 按 `Continue → /clear → /handoff → subagent → /compact` 选择上下文动作；只记录证据，不扩展生命周期状态 |
+| 阶段边界 | 生命周期 phase-boundary 合同 | 按 `Continue → /clear → /handoff → subagent → /compact` 选择上下文动作；只记录证据，不扩展生命周期状态 |
 | 解释未落地 | `wait-what` | 只重新解释当前结论，不改变阶段、门禁、Ticket 或 `ready-for-agent` |
 | 人工步骤 | 人工 checkpoint | 记录 Agent 无法替代的点击、审批、凭据和迁移步骤；秘密值必须隐藏并脱敏 |
 | 编写 Agent 文档 | `writing-for-agents`；维护 skill 时使用 `maintaining-skills` | 共享 skill 只改 `.agents/skills`；流程文档保持简体中文 |
@@ -119,4 +117,4 @@ Matt 的上下文建议不能覆盖 YSS 的 phase-boundary 契约。固定按 `C
 
 ## Release / Retrospective
 
-Release 和 Retrospective 是生命周期编排器拥有的工作单元，不由 `ask-matt` 的默认 `idea → ship` 流程隐式完成。进入发布或完成结论前必须重新取得 fresh verification、发布/回滚证据和独立审查结果；复盘同样必须有 fresh verification，再按模板治理规则回流 `AGENTS.md`、`CONTEXT.md`、ADR 或 Skill。
+Release 和 Retrospective 是生命周期编排器拥有的工作单元，不由任何兼容流程隐式完成。进入发布或完成结论前必须重新取得 fresh verification、发布/回滚证据和独立审查结果；复盘同样必须有 fresh verification，再按模板治理规则回流 `AGENTS.md`、`CONTEXT.md`、ADR 或 Skill。

@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/scaffold-architecture-decisions-v1.json",
+  "title": "YSS 后端脚手架架构选择记录",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "template", "status", "decisions"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "kind": { "const": "scaffold-architecture-decisions" },
+    "template": { "type": "boolean" },
+    "status": { "enum": ["draft", "current", "stale", "blocked"] },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/decision" }
+    }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "architecture": { "enum": ["domain-driven", "layered-mvc"] },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id", "project_id", "parent_project_id", "status",
+        "recommended_architecture", "recommendation_reasons", "confirmed_architecture",
+        "override_reason", "inheritance_mode", "inherited_from", "platform_profile",
+        "architecture_profile", "verification_database", "production_database", "requested_capabilities", "resolved_modules",
+        "resolution_version", "user_confirmation", "decision_inputs_digest"
+      ],
+      "properties": {
+        "decision_id": { "type": "string", "pattern": "^scaffold-decision\\.[a-z][a-z0-9-]*$" },
+        "project_id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+        "parent_project_id": { "type": ["string", "null"], "pattern": "^[a-z][a-z0-9-]*$" },
+        "status": { "enum": ["undecided", "recommended", "awaiting-user-decision", "user-confirmed", "lifecycle-approved", "consumed", "stale"] },
+        "recommended_architecture": { "$ref": "#/$defs/architecture" },
+        "recommendation_reasons": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "confirmed_architecture": { "anyOf": [{ "$ref": "#/$defs/architecture" }, { "type": "null" }] },
+        "override_reason": { "type": ["string", "null"] },
+        "inheritance_mode": { "enum": ["root-default", "inherit", "override"] },
+        "inherited_from": { "type": ["string", "null"], "pattern": "^[a-z][a-z0-9-]*$" },
+        "platform_profile": { "const": "spring-boot-2.7-jdk8" },
+        "architecture_profile": { "enum": ["target-domain-model", "layered-mvc-service", "mvc-data-analysis-v1"] },
+        "verification_database": { "const": "h2" },
+        "production_database": { "const": "not-bound" },
+        "requested_capabilities": { "type": "array", "uniqueItems": true, "items": { "enum": ["external-integration", "published-client", "feign-client"] } },
+        "resolved_modules": { "type": "array", "minItems": 3, "uniqueItems": true, "items": { "enum": ["server", "core", "service", "repository", "adapter", "client", "feign-client", "domain", "application", "infrastructure", "bootstrap"] } },
+        "resolution_version": { "const": 1 },
+        "user_confirmation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["confirmed_by", "channel", "confirmation_ref", "confirmed_at", "normalized_text"],
+          "properties": {
+            "confirmed_by": { "type": ["string", "null"] },
+            "channel": { "type": ["string", "null"] },
+            "confirmation_ref": { "type": ["string", "null"] },
+            "confirmed_at": { "type": ["string", "null"], "format": "date-time" },
+            "normalized_text": { "type": ["string", "null"] }
+          }
+        },
+        "decision_inputs_digest": { "$ref": "#/$defs/digest" }
+      }
+    }
+  }
+}

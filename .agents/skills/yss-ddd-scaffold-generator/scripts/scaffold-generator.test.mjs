@@ -30,7 +30,7 @@ async function treeDigest(root) {
 }
 function contract(outputDir, overrides = {}) {
   return {
-    schema_version: 2,
+    schema_version: 3,
     contract_id: "scaffold-1",
     contract_version: 1,
     scaffold_request_id: "scaffold-request-1",
@@ -45,6 +45,11 @@ function contract(outputDir, overrides = {}) {
     project_name: "demo-service",
     target_output_dir: outputDir,
     base_package: "com.yss.demo",
+    architecture_family: "domain-driven", architecture_profile: "target-domain-model",
+    generator_skill: "yss-ddd-scaffold-generator",
+    decision_ref: "scaffold-architecture-decisions.yaml",
+    decision_id: "scaffold-decision.demo-service",
+    decision_digest: `sha256:${"0".repeat(64)}`,
     maven_coordinates: {
       group_id: "com.yss.datamiddle",
       project_version: "1.0.0-SNAPSHOT",
@@ -54,12 +59,13 @@ function contract(outputDir, overrides = {}) {
     profiles: {
       architecture: "target-domain-model",
       persistence: "mybatis-plus",
-      database: "mysql",
+      verification_database: "h2", production_database: "not-bound",
       platform: "spring-boot-2.7-jdk8",
       validation_namespace: "javax",
       dto_placement: "web",
       repository: "yss-internal"
     },
+    module_profile: { resolution_version: 1, requested_capabilities: [], resolved_modules: ["domain", "application", "infrastructure", "adapter", "bootstrap"] },
     allowed_write_paths: ["."],
     expected_evidence_files: [".yss/scaffold-generation.json"],
     verification_commands: ["./mvnw validate", "./mvnw test", "./mvnw package"],
@@ -69,7 +75,18 @@ function contract(outputDir, overrides = {}) {
     ...overrides
   };
 }
-async function fixture(contractOverrides = {}) { const root = await mkdtemp(path.join(os.tmpdir(), "yss-scaffold-node-")); const output = path.join(root, "implementation"); await mkdir(output); const contractFile = path.join(root, "contract.json"); await writeFile(contractFile, `${JSON.stringify(contract(output, contractOverrides), null, 2)}\n`); return { root, output, contractFile, args: ["--project-name", "demo-service", "--base-package", "com.yss.demo", "--output-dir", output, "--database", "mysql", "--contract-id", "scaffold-1", "--contract-version", "1", "--approval-ref", "approval-1", "--compiler-draft-ref", "compiler-1", "--persisted-ref", "persisted-1", "--contract-file", contractFile, "--group-id", "com.yss.datamiddle", "--project-version", "1.0.0-SNAPSHOT", "--parent-group-id", "com.yss.datamiddle", "--parent-artifact-id", "yss-datamiddle-parent", "--parent-version", "2.0.0-SNAPSHOT", "--yss-components-version", "2.0.0-SNAPSHOT"] }; }
+async function fixture(contractOverrides = {}) {
+  const root = await mkdtemp(path.join(os.tmpdir(), "yss-scaffold-node-"));
+  const output = path.join(root, "implementation");
+  await mkdir(output);
+  const decisionFile = path.join(root, "scaffold-architecture-decisions.yaml");
+  const decisionText = `${JSON.stringify({ schema_version: 1, kind: "scaffold-architecture-decisions", template: false, status: "current", decisions: [{ decision_id: "scaffold-decision.demo-service", project_id: "demo-service", parent_project_id: null, status: "lifecycle-approved", recommended_architecture: "domain-driven", recommendation_reasons: ["存在复杂领域规则"], confirmed_architecture: "domain-driven", override_reason: null, inheritance_mode: "root-default", inherited_from: null, platform_profile: "spring-boot-2.7-jdk8", architecture_profile: "target-domain-model", verification_database: "h2", production_database: "not-bound", requested_capabilities: [], resolved_modules: ["domain", "application", "infrastructure", "adapter", "bootstrap"], resolution_version: 1, user_confirmation: { confirmed_by: "tester", channel: "test", confirmation_ref: "test://confirmation", confirmed_at: "2026-09-05T00:00:00Z", normalized_text: "确认使用 DDD" }, decision_inputs_digest: `sha256:${"1".repeat(64)}` }] }, null, 2)}\n`;
+  await writeFile(decisionFile, decisionText);
+  const decisionDigest = `sha256:${createHash("sha256").update(decisionText).digest("hex")}`;
+  const contractFile = path.join(root, "contract.json");
+  await writeFile(contractFile, `${JSON.stringify(contract(output, { decision_digest: decisionDigest, ...contractOverrides }), null, 2)}\n`);
+  return { root, output, contractFile, decisionFile, args: ["--project-name", "demo-service", "--base-package", "com.yss.demo", "--output-dir", output, "--contract-id", "scaffold-1", "--contract-version", "1", "--approval-ref", "approval-1", "--compiler-draft-ref", "compiler-1", "--persisted-ref", "persisted-1", "--contract-file", contractFile, "--group-id", "com.yss.datamiddle", "--project-version", "1.0.0-SNAPSHOT", "--parent-group-id", "com.yss.datamiddle", "--parent-artifact-id", "yss-datamiddle-parent", "--parent-version", "2.0.0-SNAPSHOT", "--yss-components-version", "2.0.0-SNAPSHOT"] };
+}
 
 const controlledEnvironment = {
   ...process.env,
@@ -79,7 +96,7 @@ const controlledEnvironment = {
 };
 function targetManifest(overrides = {}) {
   return {
-    schema_version: 2,
+    schema_version: 3,
     contract_id: "id",
     contract_version: 1,
     scaffold_request_id: "request",
@@ -96,6 +113,11 @@ function targetManifest(overrides = {}) {
     verification_commands: ["./mvnw validate", "./mvnw test", "./mvnw package"],
     generation_mode: "controlled-generation",
     completion_level: "generated",
+    architecture_family: "domain-driven", architecture_profile: "target-domain-model",
+    generator_skill: "yss-ddd-scaffold-generator",
+    decision_id: "scaffold-decision.demo-service",
+    decision_digest: `sha256:${"a".repeat(64)}`,
+    module_profile: { resolution_version: 1, requested_capabilities: [], resolved_modules: ["domain", "application", "infrastructure", "adapter", "bootstrap"] },
     profiles: { architecture: "target-domain-model", repository: "yss-internal" },
     ownership: { generated_files: [] },
     readiness: { downstream_skills: {}, architecture_ruleset: "b".repeat(64) },
@@ -112,7 +134,7 @@ async function prepareVerifierProject(project, manifest = targetManifest()) {
   await writeFile(path.join(project, ".yss", "scaffold-generation.json"), `${JSON.stringify(manifest)}\n`);
 }
 
-test("生成批准的服务级 target profile 骨架，并写入可追溯 Manifest v2", async (t) => { const data = await fixture(); t.after(() => rm(data.root, { recursive: true, force: true })); const result = await command(data.args); assert.equal(result.code, 0, result.stderr); const project = path.join(data.output, "demo-service"); const manifest = JSON.parse(await readFile(path.join(project, ".yss/scaffold-generation.json"), "utf8")); assert.equal(manifest.schema_version, 2); assert.equal(manifest.scaffold_request_id, "scaffold-request-1"); assert.equal(manifest.slice_id, undefined); assert.equal(manifest.completion_level, "generated"); assert.equal(manifest.profiles.architecture, "target-domain-model"); assert.deepEqual(manifest.generation_policy, { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }); assert.match(manifest.generator.template_digest, /^[a-f0-9]{64}$/); assert.match(manifest.contract_digest, /^[a-f0-9]{64}$/); assert.ok(manifest.ownership.generated_files.length > 8); assert.ok(manifest.ownership.generated_files.every((item) => item.owner === "generator" && /^[a-f0-9]{64}$/.test(item.sha256))); assert.equal(manifest.generation_mode, "controlled-generation"); assert.deepEqual(manifest.verification_commands, ["./mvnw validate", "./mvnw test", "./mvnw package"]); assert.equal(manifest.bootstrap_main_class, "com.yss.demo.DemoServiceApplication"); assert.equal(manifest.bootstrap_main_source, "demo-service-bootstrap/src/main/java/com/yss/demo/DemoServiceApplication.java"); assert.match(await readFile(path.join(project, manifest.bootstrap_main_source), "utf8"), /class DemoServiceApplication/); assert.match(await readFile(path.join(project, "pom.xml"), "utf8"), /demo-service/); assert.equal(manifest.readiness.downstream_skills["yss-domain"], await treeDigest(path.resolve(scripts, "../../yss-domain"))); assert.match(manifest.readiness.contracts.scaffold_parent, /^[a-f0-9]{64}$/); assert.match(manifest.readiness.contracts.compiler_contract, /^[a-f0-9]{64}$/); });
+test("生成批准的服务级 target profile 骨架，并写入可追溯 Manifest v3", async (t) => { const data = await fixture(); t.after(() => rm(data.root, { recursive: true, force: true })); const result = await command(data.args); assert.equal(result.code, 0, result.stderr); const project = path.join(data.output, "demo-service"); const manifest = JSON.parse(await readFile(path.join(project, ".yss/scaffold-generation.json"), "utf8")); assert.equal(manifest.schema_version, 3); assert.equal(manifest.architecture_family, "domain-driven"); assert.equal(manifest.generator_skill, "yss-ddd-scaffold-generator"); assert.equal(manifest.decision_id, "scaffold-decision.demo-service"); assert.equal(manifest.scaffold_request_id, "scaffold-request-1"); assert.equal(manifest.slice_id, undefined); assert.equal(manifest.completion_level, "generated"); assert.equal(manifest.profiles.architecture, "target-domain-model"); assert.deepEqual(manifest.generation_policy, { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }); assert.match(manifest.generator.template_digest, /^[a-f0-9]{64}$/); assert.match(manifest.contract_digest, /^[a-f0-9]{64}$/); assert.ok(manifest.ownership.generated_files.length > 8); assert.ok(manifest.ownership.generated_files.every((item) => item.owner === "generator" && /^[a-f0-9]{64}$/.test(item.sha256))); assert.equal(manifest.generation_mode, "controlled-generation"); assert.deepEqual(manifest.verification_commands, ["./mvnw validate", "./mvnw test", "./mvnw package"]); assert.equal(manifest.bootstrap_main_class, "com.yss.demo.DemoServiceApplication"); assert.equal(manifest.bootstrap_main_source, "demo-service-bootstrap/src/main/java/com/yss/demo/DemoServiceApplication.java"); assert.match(await readFile(path.join(project, manifest.bootstrap_main_source), "utf8"), /class DemoServiceApplication/); assert.match(await readFile(path.join(project, "pom.xml"), "utf8"), /demo-service/); assert.equal(manifest.readiness.downstream_skills["yss-domain"], await treeDigest(path.resolve(scripts, "../../yss-domain"))); assert.match(manifest.readiness.contracts.scaffold_parent, /^[a-f0-9]{64}$/); assert.match(manifest.readiness.contracts.compiler_contract, /^[a-f0-9]{64}$/); });
 
 test("schema v1 scaffold contract is unsupported and is never upgraded", async (t) => {
   const data = await fixture({ schema_version: 1 });
@@ -235,9 +257,12 @@ test("生成工程固定平台 profile、Wrapper checksum，并把调试日志�
   assert.match(wrapper, /^distributionSha256Sum=[a-f0-9]{64}$/m);
   const application = await readFile(path.join(project, "demo-service-bootstrap", "src", "main", "resources", "application.yml"), "utf8");
   assert.doesNotMatch(application, /StdOutImpl|DEBUG/);
-  const local = await readFile(path.join(project, "demo-service-bootstrap", "src", "main", "resources", "application-local.yml"), "utf8");
-  assert.match(local, /StdOutImpl/);
-  assert.match(local, /DEBUG/);
+  assert.doesNotMatch(application, /datasource|jdbc:|profiles:/);
+  const local = await readFile(path.join(project, "demo-service-bootstrap", "src", "main", "resources", "application-scaffold-local.yml"), "utf8");
+  assert.match(local, /jdbc:h2:mem:/);
+  assert.match(local, /mode: never/);
+  const pom = await readFile(path.join(project, "demo-service-infrastructure/pom.xml"), "utf8");
+  assert.doesNotMatch(pom, /mysql-connector|ojdbc|oceanbase|druid/);
 });
 
 test("initialize-only 在写文件前拒绝任何已存在目标和 --force", async (t) => { const data = await fixture(); t.after(() => rm(data.root, { recursive: true, force: true })); const rejected = await command(data.args.map((value) => value === data.contractFile ? path.join(data.root, "missing.json") : value)); assert.equal(rejected.code, 1); assert.match(rejected.stderr, /合同/); await mkdir(path.join(data.output, "demo-service")); await writeFile(path.join(data.output, "demo-service", "keep.txt"), "keep"); const noForce = await command(data.args); assert.equal(noForce.code, 1); assert.match(noForce.stderr, /initialize-only/); const forced = await command([...data.args, "--force"]); assert.equal(forced.code, 1); assert.match(forced.stderr, /initialize-only/); assert.equal(await readFile(path.join(data.output, "demo-service", "keep.txt"), "utf8"), "keep"); });
@@ -279,7 +304,7 @@ test("initialize-only 拒绝以 --force 覆盖 .gitmodules 登记的挂载点", 
   await writeFile(path.join(superproject, ".gitmodules"), "[submodule \"demo-service\"]\n\tpath = apps/backend/demo-service\n\turl = https://example.invalid/demo-service.git\n");
   const contractFile = path.join(data.root, "gitlink-contract.json");
   await writeFile(contractFile, `${JSON.stringify(contract(output), null, 2)}\n`);
-  const result = await command(["--project-name", "demo-service", "--base-package", "com.yss.demo", "--output-dir", output, "--database", "mysql", "--contract-id", "scaffold-1", "--contract-version", "1", "--approval-ref", "approval-1", "--compiler-draft-ref", "compiler-1", "--persisted-ref", "persisted-1", "--contract-file", contractFile, "--force"]);
+  const result = await command(["--project-name", "demo-service", "--base-package", "com.yss.demo", "--output-dir", output, "--contract-id", "scaffold-1", "--contract-version", "1", "--approval-ref", "approval-1", "--compiler-draft-ref", "compiler-1", "--persisted-ref", "persisted-1", "--contract-file", contractFile, "--force"]);
   assert.equal(result.code, 1, result.stderr);
   assert.match(`${result.stdout}\n${result.stderr}`, /initialize-only|gitlink 不得由脚手架覆盖/);
 });
@@ -292,7 +317,7 @@ test("拒绝在 detached HEAD 子仓工作树内当成普通目录生成", async
   const output = path.join(detached.superproject, detached.mount);
   const contractFile = path.join(data.root, "detached-contract.json");
   await writeFile(contractFile, `${JSON.stringify(contract(output), null, 2)}\n`);
-  const result = await command(["--project-name", "nested-service", "--base-package", "com.yss.demo", "--output-dir", output, "--database", "mysql", "--contract-id", "scaffold-1", "--contract-version", "1", "--approval-ref", "approval-1", "--compiler-draft-ref", "compiler-1", "--persisted-ref", "persisted-1", "--contract-file", contractFile]);
+  const result = await command(["--project-name", "nested-service", "--base-package", "com.yss.demo", "--output-dir", output, "--contract-id", "scaffold-1", "--contract-version", "1", "--approval-ref", "approval-1", "--compiler-draft-ref", "compiler-1", "--persisted-ref", "persisted-1", "--contract-file", contractFile]);
   const text = `${result.stdout}\n${result.stderr}`;
   assert.equal(result.code, 1, text);
   assert.doesNotMatch(text, /请显式传入 --force/);
@@ -309,7 +334,7 @@ test("--force 覆盖真实 gitlink 不得走普通目录覆盖路径", async (t)
   const output = path.join(empty.superproject, "apps/backend");
   const contractFile = path.join(data.root, "empty-gitlink-contract.json");
   await writeFile(contractFile, `${JSON.stringify(contract(output), null, 2)}\n`);
-  const result = await command(["--project-name", "billing-service", "--base-package", "com.yss.demo", "--output-dir", output, "--database", "mysql", "--contract-id", "scaffold-1", "--contract-version", "1", "--approval-ref", "approval-1", "--compiler-draft-ref", "compiler-1", "--persisted-ref", "persisted-1", "--contract-file", contractFile, "--force"]);
+  const result = await command(["--project-name", "billing-service", "--base-package", "com.yss.demo", "--output-dir", output, "--contract-id", "scaffold-1", "--contract-version", "1", "--approval-ref", "approval-1", "--compiler-draft-ref", "compiler-1", "--persisted-ref", "persisted-1", "--contract-file", contractFile, "--force"]);
   const text = `${result.stdout}\n${result.stderr}`;
   assert.equal(result.code, 1, text);
   assert.doesNotMatch(text, /请显式传入 --force/);
@@ -357,7 +382,7 @@ test("验证器单独标记 Java 编译失败和 Bootstrap 主类缺失", async 
 
 test("验证器在全部 Maven 命令成功时通过并保留日志引用", async (t) => { const root = await mkdtemp(path.join(os.tmpdir(), "yss-scaffold-verifier-success-")); t.after(() => rm(root, { recursive: true, force: true })); const project = path.join(root, "project"); await prepareVerifierProject(project); const wrapper = path.join(project, "mvnw"); await writeFile(wrapper, "#!/bin/sh\nprintf 'ran %s\\n' \"$1\"\n"); await chmod(wrapper, 0o755); const report = await run(project, path.join(root, "evidence"), controlledEnvironment); assert.equal(report.status, "passed"); assert.ok(report.commands.every((item) => item.exit_code === 0 && item.stdout_ref.endsWith(".stdout.log"))); });
 
-test("Manifest v2 在缺少受控仓库环境时先于 Maven 执行阻断", async (t) => {
+test("Manifest v3 在缺少受控仓库环境时先于 Maven 执行阻断", async (t) => {
   const root = await mkdtemp(path.join(os.tmpdir(), "yss-scaffold-v2-preflight-"));
   t.after(() => rm(root, { recursive: true, force: true }));
   const project = path.join(root, "project");

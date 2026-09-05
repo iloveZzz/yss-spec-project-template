@@ -4,18 +4,44 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 import { PROJECTION_ROOTS, ROOT } from "./lib/skill-supply-chain.mjs";
 
-const retired = ["yss-router", "yss-source-index"];
-const allowed = (relative) => relative === "docs/agents/skill-migrations.md"
+const retired = [
+  "ask-matt",
+  "dispatching-parallel-agents",
+  "loop-me",
+  "migrate-to-shoehorn",
+  "prototype-page-acceptance",
+  "scaffold-exercises",
+  "setup-pre-commit",
+  "setup-ts-deep-modules",
+  "teach",
+  "writing-beats",
+  "writing-fragments",
+  "writing-shape",
+  "yss-microapp-commit",
+  "yss-page-module-development",
+  "yss-router",
+  "yss-source-index",
+];
+const allowed = (relative, line) => relative === "docs/agents/skill-migrations.md"
   || relative.includes("/docs/agents/skill-migrations.md")
   || relative.endsWith(".template-source/wiki/raw/skill-migrations.md")
   || relative.startsWith(".template-source/evidence/")
   || relative.includes("/.template-source/evidence/")
   || relative.includes("/tests/")
+  || relative.startsWith(".template-source/tooling/node/test/")
+  || relative.endsWith("/skills/.yss-skills-manifest.json")
+  || relative === "docs/agents/yss-ui-skills-integration.md"
+  || relative === "scripts/lib/skill-governance.mjs"
+  || (relative.endsWith("/skills/yss-product-lifecycle/references/orchestration-contract.yaml") && line.includes("retired_shared_skills:"))
   || relative.endsWith("scripts/verify-retired-skill-ids")
   || relative.endsWith("scripts/lib/skill-supply-chain.mjs")
   || relative.endsWith("scripts/lib/implementation-contract-compiler.mjs");
 
-const search = spawnSync("rg", ["-n", "--hidden", "--glob", "!.git/**", "--glob", "!.codegraph/**", "--glob", "!submodules/**", retired.join("|"), "."], {
+const escaped = retired.filter((id) => id !== "teach").map((id) => id.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+const exactSkillIdPattern = `(?<![a-z0-9-])(?:${escaped.join("|")})(?![a-z0-9-])`;
+const teachSkillPattern = "(?:`teach`|/teach(?:/|\\b)|(?:^|[\\[,])\\s*[\"']?teach[\"']?\\s*(?=[,\\]])|\\b(?:id|name)\\s*:\\s*[\"']?teach[\"']?\\b)";
+const retiredSkillPattern = `(?:${exactSkillIdPattern}|${teachSkillPattern})`;
+const search = spawnSync("rg", ["-n", "--pcre2", "--hidden", "--glob", "!.git/**", "--glob", "!.codegraph/**", "--glob", "!submodules/**", retiredSkillPattern, "."], {
   cwd: ROOT,
   encoding: "utf8"
 });
@@ -25,7 +51,7 @@ if (![0, 1].includes(search.status)) {
 }
 const violations = search.stdout.split(/\r?\n/).filter(Boolean).filter((line) => {
   const match = line.match(/^\.\/(.*?):\d+:/);
-  return !match || !allowed(match[1]);
+  return !match || !allowed(match[1], line);
 });
 for (const name of retired) {
   const roots = [".agents/skills", ...PROJECTION_ROOTS];

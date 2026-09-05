@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+
+const root = mkdtempSync(path.join(os.tmpdir(), "scaffold-decision-scenarios-"));
+process.on("exit", () => rmSync(root, { recursive: true, force: true }));
+const verifier = path.resolve("scripts/verify-scaffold-architecture-decisions");
+const digest = `sha256:${"1".repeat(64)}`;
+const confirmation = `\n    user_confirmation:\n      confirmed_by: user\n      channel: codex\n      confirmation_ref: turn://1\n      confirmed_at: 2026-09-05T01:00:00+08:00\n      normalized_text: 确认 MVC`;
+function run(name, body) {
+  const file = path.join(root, `${name}.yaml`);
+  writeFileSync(file, body);
+  return spawnSync(verifier, [file], { encoding: "utf8" });
+}
+const base = `schema_version: 1\nkind: scaffold-architecture-decisions\ntemplate: false\nstatus: current\ndecisions:\n`;
+const mvc = `${base}  - decision_id: scaffold-decision.main\n    project_id: main\n    parent_project_id: null\n    status: lifecycle-approved\n    recommended_architecture: layered-mvc\n    recommendation_reasons: [CRUD 与报表为主]\n    confirmed_architecture: layered-mvc\n    override_reason: null\n    inheritance_mode: root-default\n    inherited_from: null\n    platform_profile: spring-boot-2.7-jdk8\n    architecture_profile: layered-mvc-service\n    verification_database: h2\n    production_database: not-bound\n    requested_capabilities: [feign-client]\n    resolved_modules: [server, service, repository, client, feign-client]\n    resolution_version: 1${confirmation}\n    decision_inputs_digest: ${digest}\n`;
+assert.equal(run("mvc", mvc).status, 0);
+assert.notEqual(run("missing-confirmation", mvc.replace("confirmation_ref: turn://1", "confirmation_ref: null")).status, 0);
+assert.notEqual(run("invalid-closure", mvc.replace("[server, service, repository, client, feign-client]", "[server, service, repository]")).status, 0);
+const child = `${mvc}  - decision_id: scaffold-decision.child\n    project_id: child\n    parent_project_id: main\n    status: lifecycle-approved\n    recommended_architecture: domain-driven\n    recommendation_reasons: [存在复杂状态机]\n    confirmed_architecture: layered-mvc\n    override_reason: 继承本体的统一架构\n    inheritance_mode: inherit\n    inherited_from: main\n    platform_profile: spring-boot-2.7-jdk8\n    architecture_profile: layered-mvc-service\n    verification_database: h2\n    production_database: not-bound\n    requested_capabilities: []\n    resolved_modules: [server, service, repository]\n    resolution_version: 1${confirmation}\n    decision_inputs_digest: ${digest}\n`;
+assert.equal(run("child", child).status, 0);
+assert.notEqual(run("inherit-mismatch", child.replace("confirmed_architecture: layered-mvc\n    override_reason: 继承本体的统一架构\n    inheritance_mode: inherit", "confirmed_architecture: domain-driven\n    override_reason: null\n    inheritance_mode: inherit")).status, 0);
+process.stdout.write("脚手架架构选择场景验证通过\n");

@@ -10,7 +10,7 @@ description: 在 YSS 技术分析阶段将批准的战略领域输入细化为�
 ## 适用边界
 
 - 由 `yss-product-lifecycle` 在 `work-unit.technical-analysis` 中按领域影响条件调度。
-- 输入必须是版本当前的 Spec、功能架构、战略 DDD、状态矩阵、OpenAPI Draft / Freeze、ADR 和工程约束。若输入来自 Strategic Design Handoff，必须先用 `scripts/verify-strategic-context-import` 验证 schema v2 `source_context_snapshot` / `context_delta` 已对账到目标仓根 `CONTEXT.md`，且目标侧 `context_reconciliation` 当前有效；未完成时不得开始战术建模。
+- 输入必须是版本当前的 Spec、功能架构、战略 DDD、状态矩阵、OpenAPI Draft / Freeze、ADR 和工程约束。若输入来自 Strategic Design Handoff，必须先用 `scripts/verify-strategic-context-import` 验证 schema v3 `source_context_snapshot` / `context_delta` 已对账到目标仓根 `CONTEXT.md`，Visual Baseline Bundle 可读取且 digest 当前，并且目标侧 `context_reconciliation` 有效；未完成时不得开始战术建模。
 - 默认将结果写入系统概要设计 / 数据架构中的 Tactical DDD Check；聚合、状态机、一致性或持久化映射复杂到无法清楚表达时，才升级为独立战术设计文档。
 - 没有聚合、状态、不变量、一致性或领域边界影响时返回 `not-applicable` 及原因，不生成空设计。
 

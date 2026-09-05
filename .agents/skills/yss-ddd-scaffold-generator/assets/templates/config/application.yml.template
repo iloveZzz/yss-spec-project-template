@@ -5,19 +5,6 @@ spring:
   application:
     name: {{project_name}}
 
-  datasource:
-    primary:
-      url: {{jdbc_url}}
-      username: ${DB_USERNAME:}
-      password: ${DB_PASSWORD:}
-      driver-class-name: {{driver_class}}
-      hikari:
-        maximum-pool-size: 20
-        minimum-idle: 5
-        connection-timeout: 30000
-        idle-timeout: 600000
-        max-lifetime: 1800000
-
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true

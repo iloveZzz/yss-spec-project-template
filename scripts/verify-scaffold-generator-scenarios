@@ -9,6 +9,7 @@ import sys
 import tempfile
 import json
 import os
+import hashlib
 from pathlib import Path
 
 
@@ -63,8 +64,56 @@ def write_contract(
     compiler_draft_ref: str,
     persisted_ref: str,
 ) -> None:
+    decision_path = path.with_suffix(".architecture-decisions.yaml")
+    decision_id = f"scaffold-decision.{project_name}"
+    decision_text = json.dumps(
+        {
+            "schema_version": 1,
+            "kind": "scaffold-architecture-decisions",
+            "template": False,
+            "status": "current",
+            "decisions": [
+                {
+                    "decision_id": decision_id,
+                    "project_id": project_name,
+                    "parent_project_id": None,
+                    "status": "lifecycle-approved",
+                    "recommended_architecture": "domain-driven",
+                    "recommendation_reasons": ["场景验证固定使用 DDD"],
+                    "confirmed_architecture": "domain-driven",
+                    "override_reason": None,
+                    "inheritance_mode": "root-default",
+                    "inherited_from": None,
+                    "platform_profile": "spring-boot-2.7-jdk8",
+                    "architecture_profile": "target-domain-model",
+                    "verification_database": "h2",
+                    "production_database": "not-bound",
+                    "requested_capabilities": [],
+                    "resolved_modules": [
+                        "domain",
+                        "application",
+                        "infrastructure",
+                        "adapter",
+                        "bootstrap",
+                    ],
+                    "resolution_version": 1,
+                    "user_confirmation": {
+                        "confirmed_by": "scenario-runner",
+                        "channel": "test",
+                        "confirmation_ref": "test://scaffold-decision",
+                        "confirmed_at": "2026-09-05T00:00:00Z",
+                        "normalized_text": "确认使用 DDD",
+                    },
+                    "decision_inputs_digest": f"sha256:{'1' * 64}",
+                }
+            ],
+        },
+        ensure_ascii=False,
+        indent=2,
+    ) + "\n"
+    decision_path.write_text(decision_text, encoding="utf-8")
     contract = {
-        "schema_version": 2,
+        "schema_version": 3,
         "contract_id": contract_id,
         "contract_version": 1,
         "scaffold_request_id": f"{project_name}-request",
@@ -79,6 +128,12 @@ def write_contract(
         "project_name": project_name,
         "target_output_dir": str(output_root),
         "base_package": f"com.yss.{project_name.removesuffix('-service')}",
+        "architecture_family": "domain-driven",
+        "architecture_profile": "target-domain-model",
+        "generator_skill": "yss-ddd-scaffold-generator",
+        "decision_ref": str(decision_path),
+        "decision_id": decision_id,
+        "decision_digest": f"sha256:{hashlib.sha256(decision_text.encode('utf-8')).hexdigest()}",
         "maven_coordinates": {
             "group_id": "com.yss.datamiddle",
             "project_version": "1.0.0-SNAPSHOT",
@@ -92,11 +147,23 @@ def write_contract(
         "profiles": {
             "architecture": "target-domain-model",
             "persistence": "mybatis-plus",
-            "database": "mysql",
+            "verification_database": "h2",
+            "production_database": "not-bound",
             "platform": "spring-boot-2.7-jdk8",
             "validation_namespace": "javax",
             "dto_placement": "web",
             "repository": "yss-internal",
+        },
+        "module_profile": {
+            "resolution_version": 1,
+            "requested_capabilities": [],
+            "resolved_modules": [
+                "domain",
+                "application",
+                "infrastructure",
+                "adapter",
+                "bootstrap",
+            ],
         },
         "allowed_write_paths": ["."],
         "expected_evidence_files": [
@@ -157,7 +224,9 @@ def assert_pure_scaffold(project_root: Path, contract_id: str) -> None:
     require(manifest["compiler_draft_ref"], "生成清单必须记录 实现合同编译器 draft 引用")
     require(manifest["persisted_ref"], "生成清单必须记录合同持久化引用")
     require(manifest["generation_mode"] == "controlled-generation", "生成清单必须记录受控生成模式")
-    require(manifest["schema_version"] == 2, "生成清单必须使用 schema v2")
+    require(manifest["schema_version"] == 3, "新生成清单必须使用 schema v3")
+    require(manifest["architecture_family"] == "domain-driven", "生成清单必须记录已确认的 DDD 架构族")
+    require(manifest["generator_skill"] == "yss-ddd-scaffold-generator", "生成清单必须记录实际生成器")
     require(manifest["scaffold_request_id"], "生成清单必须记录服务级 scaffold_request_id")
     require("slice_id" not in manifest, "脚手架清单不得伪造 slice_id")
     require(manifest["maven_coordinates_source"] == "approved-contract", "Maven 坐标必须来自批准合同")

@@ -5,6 +5,9 @@ import { chmod, cp, lstat, mkdir, mkdtemp, readFile, readdir, rename, rm, stat, 
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
+import { assertLocalDatabaseProfile, localDatabaseConfiguration, scaffoldArchitectureIdentity } from "../../../../scripts/lib/scaffold-local-database.mjs";
+import { validateArchitectureIdentity } from "../../../../scripts/lib/backend-architecture.mjs";
 
 import {
   findGitRoot,
@@ -19,7 +22,8 @@ const COMMANDS = ["./mvnw validate", "./mvnw test", "./mvnw package"];
 const SUPPORTED_PROFILES = Object.freeze({
   architecture: "target-domain-model",
   persistence: "mybatis-plus",
-  database: "mysql",
+  verification_database: "h2",
+  production_database: "not-bound",
   platform: "spring-boot-2.7-jdk8",
   validation_namespace: "javax",
   dto_placement: "web",
@@ -43,6 +47,7 @@ function isoNow() { return new Date().toISOString(); }
 function localDate() { return new Date().toISOString().slice(0, 10); }
 function toUpperCamel(value) { return value.split("-").map((part) => `${part[0].toUpperCase()}${part.slice(1)}`).join(""); }
 function sha256(content) { return createHash("sha256").update(content).digest("hex"); }
+function sha256Ref(content) { return `sha256:${sha256(content)}`; }
 function usage(error) {
   const text = `YSS DDD 脚手架生成器\n\n` +
     `用法: node scripts/generate_scaffold.mjs --project-name <kebab-case> --base-package <package> --output-dir <dir> --contract-file <json> [选项]\n\n` +
@@ -56,10 +61,10 @@ function usage(error) {
 }
 
 function parseArgs(argv) {
-  const options = { database: "mysql", force: false, withExample: false };
+  const options = { force: false, withExample: false };
   const mapping = new Map([
     ["--project-name", "projectName"], ["--base-package", "basePackage"], ["--output-dir", "outputDir"],
-    ["--database", "database"], ["--contract-id", "contractId"], ["--contract-version", "contractVersion"],
+    ["--contract-id", "contractId"], ["--contract-version", "contractVersion"],
     ["--approval-ref", "approvalRef"], ["--compiler-draft-ref", "compilerDraftRef"], ["--persisted-ref", "persistedRef"],
     ["--contract-file", "contractFile"],
     ["--group-id", "groupId"], ["--project-version", "projectVersion"], ["--parent-group-id", "parentGroupId"],
@@ -85,7 +90,6 @@ function parseArgs(argv) {
     if (["database", "overwriteScope", "rollbackRef", "contractId", "contractVersion", "approvalRef", "compilerDraftRef", "persistedRef", "groupId", "projectVersion", "parentGroupId", "parentArtifactId", "parentVersion", "yssComponentsVersion"].includes(key)) continue;
     if (!options[key]) fail(`缺少必填参数: ${flag}`);
   }
-  if (options.database !== "mysql") fail("参数 --database 只支持 mysql");
   if (!/^[a-z][a-z0-9-]*$/.test(options.projectName)) fail("项目名称必须是 kebab-case 格式 (例如: user-service)");
   if (!/^[a-z](?:[a-z0-9]*)(?:\.[a-z](?:[a-z0-9]*)?)*$/.test(options.basePackage)) fail("包名格式不正确 (例如: com.yss.user)");
   if (options.contractVersion !== undefined && (!/^\d+$/.test(options.contractVersion) || Number(options.contractVersion) < 1)) fail("--contract-version(必须为正整数)");
@@ -199,11 +203,11 @@ class ScaffoldGenerator {
     const contractText = await readFile(this.contractFile, "utf8");
     let contract; try { contract = JSON.parse(contractText); } catch { fail(`脚手架合同文件无法读取或不是合法 JSON: ${this.contractFile}`); }
     if (!contract || Array.isArray(contract) || typeof contract !== "object") fail("脚手架合同必须是 JSON 对象");
-    if (contract.schema_version !== 2) fail(`unsupported: scaffold contract schema_version=${contract.schema_version}；只接受 Target Profile schema v2，不提供自动升级`);
+    if (contract.schema_version !== 3) fail(`unsupported: scaffold contract schema_version=${contract.schema_version}；新生成只接受 schema v3，不提供自动升级`);
     const requiredMetadata = [["--contract-id", this.options.contractId], ["--contract-version", this.options.contractVersion], ["--approval-ref", this.options.approvalRef], ["--compiler-draft-ref", this.options.compilerDraftRef], ["--persisted-ref", this.options.persistedRef]];
     const missing = requiredMetadata.filter(([, value]) => !isPresent(value)).map(([flag]) => flag);
     if (missing.length) fail(`生成项目必须提供当前已批准脚手架合同的完整元数据: ${missing.join(", ")}`);
-    const required = ["schema_version", "contract_id", "contract_version", "scaffold_request_id", "status", "compiler_draft_ref", "lifecycle_approval_ref", "persisted_ref", "current_version", "implementation_repository", "backend_repository", "scaffold_status", "project_name", "target_output_dir", "base_package", "maven_coordinates", "profiles", "allowed_write_paths", "expected_evidence_files", "verification_commands", "approval", "work_unit", "generation_policy"];
+    const required = ["schema_version", "contract_id", "contract_version", "scaffold_request_id", "status", "compiler_draft_ref", "lifecycle_approval_ref", "persisted_ref", "current_version", "implementation_repository", "backend_repository", "scaffold_status", "project_name", "target_output_dir", "base_package", "architecture_family", "generator_skill", "decision_ref", "decision_id", "decision_digest", "maven_coordinates", "profiles", "module_profile", "allowed_write_paths", "expected_evidence_files", "verification_commands", "approval", "work_unit", "generation_policy"];
     const missingFields = required.filter((field) => !isPresent(contract[field]));
     if (missingFields.length) fail(`脚手架合同缺少结构化字段: ${missingFields.join(", ")}`);
     if (contract.status !== "approved") fail("脚手架合同必须已由生命周期批准");
@@ -214,6 +218,7 @@ class ScaffoldGenerator {
     if (contract.persisted_ref !== this.options.persistedRef) fail("--persisted-ref 与脚手架合同不一致");
     if (contract.lifecycle_approval_ref !== this.options.approvalRef) fail("--approval-ref 与脚手架合同不一致");
     if (contract.scaffold_status !== "required") fail("脚手架生成器只接受 scaffold_status=required");
+    if (contract.architecture_family !== "domain-driven" || contract.generator_skill !== "yss-ddd-scaffold-generator") fail("脚手架合同必须绑定 domain-driven 与本生成器");
     if (contract.project_name !== this.projectName) fail("--project-name 与脚手架合同不一致");
     if (contract.base_package !== this.basePackage) fail("--base-package 与脚手架合同不一致");
     if (!["allowed_write_paths", "expected_evidence_files", "verification_commands"].every((field) => Array.isArray(contract[field]) && contract[field].length)) fail("脚手架合同的 allowed_write_paths、expected_evidence_files、verification_commands 必须非空");
@@ -233,9 +238,24 @@ class ScaffoldGenerator {
     if (JSON.stringify(workUnit.verification_commands) !== JSON.stringify(contract.verification_commands) || JSON.stringify(workUnit.allowed_write_paths) !== JSON.stringify(contract.allowed_write_paths)) fail("脚手架合同 work_unit 与根级验证/写路径约束不一致");
     this.validateMavenCoordinates(contract);
     this.validateProfiles(contract.profiles);
+    const expectedModules = ["domain", "application", "infrastructure", "adapter", "bootstrap"];
+    if (contract.module_profile?.resolution_version !== 1 || JSON.stringify(contract.module_profile.requested_capabilities) !== "[]" || JSON.stringify(contract.module_profile.resolved_modules) !== JSON.stringify(expectedModules)) fail("DDD module_profile 必须冻结固定模块闭包与 resolution_version=1");
+    const decisionPath = path.isAbsolute(contract.decision_ref) ? contract.decision_ref : path.resolve(path.dirname(this.contractFile), contract.decision_ref);
+    const decisionText = await readFile(decisionPath, "utf8").catch(() => fail(`架构决策文件不可读取: ${decisionPath}`));
+    if (sha256Ref(decisionText) !== contract.decision_digest) fail("架构决策文件 digest 与合同不一致");
+    const decisionDocument = parseDocument(decisionText, { maxAliasCount: 0, uniqueKeys: true });
+    if (decisionDocument.errors.length) fail(`架构决策 YAML 无效: ${decisionDocument.errors[0].message}`);
+    const decisionSet = decisionDocument.toJS({ maxAliasCount: 0 });
+    if (decisionSet?.kind !== "scaffold-architecture-decisions" || decisionSet?.template !== false || decisionSet?.status !== "current") fail("架构决策文件必须是 current 的正式 scaffold-architecture-decisions 记录");
+    const decision = (decisionSet.decisions ?? []).find((item) => item.decision_id === contract.decision_id);
+    if (!decision || decision.status !== "lifecycle-approved" || decision.confirmed_architecture !== "domain-driven" || decision.project_id !== contract.project_name) fail("架构决策未批准、项目不匹配或不是 domain-driven");
+    if (decision.platform_profile !== contract.profiles.platform || decision.architecture_profile !== contract.architecture_profile || decision.verification_database !== "h2" || decision.production_database !== "not-bound" || Object.hasOwn(decision, "database_profile") || JSON.stringify(decision.requested_capabilities) !== JSON.stringify(contract.module_profile.requested_capabilities) || JSON.stringify(decision.resolved_modules) !== JSON.stringify(contract.module_profile.resolved_modules)) fail("架构决策的 Profile 或模块闭包与脚手架合同不一致");
+    if (!decision.user_confirmation || Object.values(decision.user_confirmation).some((value) => !isPresent(value))) fail("架构决策缺少完整用户确认记录");
     const generationPolicy = contract.generation_policy;
     if (!generationPolicy || generationPolicy.mode !== "initialize-only" || generationPolicy.existing_target !== "unsupported" || generationPolicy.old_project_migration !== "unsupported" || generationPolicy.template_upgrade !== "unsupported") fail("脚手架合同 generation_policy 必须声明 initialize-only，且 existing_target、old_project_migration、template_upgrade 均为 unsupported");
     this.contractDigest = sha256(contractText);
+    if (contract.architecture_profile !== "target-domain-model") fail("合同必须显式绑定 target-domain-model Profile");
+    validateArchitectureIdentity(scaffoldArchitectureIdentity(contract, this.contractDigest));
     this.scaffoldContract = contract;
   }
 
@@ -249,7 +269,7 @@ class ScaffoldGenerator {
       }
     }
     this.profiles = structuredClone(profiles);
-    if (this.options.database !== profiles.database) fail("--database 与脚手架合同 profiles.database 不一致");
+    assertLocalDatabaseProfile(profiles);
   }
 
   validateMavenCoordinates(contract) {
@@ -278,10 +298,8 @@ class ScaffoldGenerator {
   }
 
   templateVars() {
-    const database = this.options.database;
-    const dependency = database === "mysql" ? `<dependency>\n    <groupId>com.mysql</groupId>\n    <artifactId>mysql-connector-j</artifactId>\n    <version>8.4.0</version>\n    <scope>compile</scope>\n</dependency>` : "";
     const coordinates = this.mavenCoordinates;
-    return { project_name: this.projectName, application_class_name: this.applicationClassName, base_package: this.basePackage, group_id: coordinates.group_id, project_version: coordinates.project_version, parent_group_id: coordinates.parent.group_id, parent_artifact_id: coordinates.parent.artifact_id, parent_version: coordinates.parent.version, yss_components_version: coordinates.yss_components_version, project_description: `${this.projectName} service`, author: this.author, date: this.date, database, driver_class: "com.mysql.cj.jdbc.Driver", db_name: this.dbName, jdbc_url: `jdbc:mysql://localhost:3306/${this.dbName}?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai`, db_dependency: dependency };
+    return { project_name: this.projectName, application_class_name: this.applicationClassName, base_package: this.basePackage, group_id: coordinates.group_id, project_version: coordinates.project_version, parent_group_id: coordinates.parent.group_id, parent_artifact_id: coordinates.parent.artifact_id, parent_version: coordinates.parent.version, yss_components_version: coordinates.yss_components_version, project_description: `${this.projectName} service`, author: this.author, date: this.date, db_dependency: "" };
   }
   render(text) { let output = text; for (const [key, value] of Object.entries(this.templateVars())) output = output.replaceAll(`{{${key}}}`, String(value)); return output; }
   async renderTemplate(template, output) { if (!await isFile(template)) fail(`模板文件不存在: ${template}`); await writeText(output, this.render(await readFile(template, "utf8"))); }
@@ -318,13 +336,15 @@ class ScaffoldGenerator {
   }
   async generateConfigFiles() {
     console.log("\n⚙️  生成配置文件..."); const base = path.join(this.projectRoot, `${this.projectName}-bootstrap`, "src/main/resources");
-    await Promise.all([["application.yml.template", "application.yml"], ["application-local.yml.template", "application-local.yml"], ["logback-spring.xml.template", "logback-spring.xml"]].map(([from, to]) => this.renderTemplate(path.join(this.configTemplateDir, from), path.join(base, to))));
-    console.log("  ✓ application.yml\n  ✓ application-local.yml\n  ✓ logback-spring.xml");
+    await Promise.all([["application.yml.template", "application.yml"], ["logback-spring.xml.template", "logback-spring.xml"]].map(([from, to]) => this.renderTemplate(path.join(this.configTemplateDir, from), path.join(base, to))));
+    await writeText(path.join(base, "application-scaffold-local.yml"), localDatabaseConfiguration(this.projectName));
+    await writeText(path.join(this.projectRoot, `${this.projectName}-bootstrap/src/test/resources/application.yml`), localDatabaseConfiguration(`${this.projectName}_test`));
+    console.log("  ✓ application.yml\n  ✓ application-scaffold-local.yml\n  ✓ test H2 configuration\n  ✓ logback-spring.xml");
   }
   generateDatabaseScripts() { console.log("\n🗃️  保留数据库目录布局...\n  ✓ db/（业务 schema 和初始化数据由批准切片合同生成）"); }
   async generateDocumentation() {
     console.log("\n📚 生成项目文档...");
-    await writeText(path.join(this.projectRoot, "README.md"), this.render("# {{project_name}}\n\n## 模块说明\n\n- {{project_name}}-domain\n- {{project_name}}-application\n- {{project_name}}-infrastructure\n- {{project_name}}-adapter\n- {{project_name}}-bootstrap\n\n业务 API、领域模型、数据结构和权限行为必须在冻结的 Slice Implementation Contract 下，由对应 YSS skill 逐切片实现。\n\n## 快速开始\n\n```bash\ncd {{project_name}}\n./mvnw clean compile\n./mvnw spring-boot:run -pl {{project_name}}-bootstrap\n```\n"));
+    await writeText(path.join(this.projectRoot, "README.md"), this.render("# {{project_name}}\n\n## 模块说明\n\n- {{project_name}}-domain\n- {{project_name}}-application\n- {{project_name}}-infrastructure\n- {{project_name}}-adapter\n- {{project_name}}-bootstrap\n\n业务 API、领域模型、数据结构和权限行为必须在冻结的 Slice Implementation Contract 下，由对应 YSS skill 逐切片实现。\n\n## 快速开始\n\n```bash\ncd {{project_name}}\n./mvnw clean compile\n./mvnw -Pscaffold-local spring-boot:run -pl {{project_name}}-bootstrap -Dspring-boot.run.profiles=scaffold-local\n```\n"));
     console.log("  ✓ README.md");
   }
   async writeGenerationManifest() {
@@ -341,7 +361,7 @@ class ScaffoldGenerator {
     }
     const scaffoldParent = path.join(SKILL_ROOT, "references", "yss-backend-scaffold-parent", "SKILL.md");
     const compilerContract = path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-implementation-contract-compiler", "references", "compiler-contract.yaml");
-    const manifest = { schema_version: 2, contract_id: this.options.contractId, contract_version: this.options.contractVersion, scaffold_request_id: contract.scaffold_request_id, approval_ref: this.options.approvalRef, compiler_draft_ref: this.options.compilerDraftRef, persisted_ref: this.options.persistedRef, contract_file_ref: this.contractFile, contract_digest: this.contractDigest, lifecycle_approval_ref: contract.lifecycle_approval_ref, current_version: contract.current_version, approver: contract.approval.approver, allowed_write_paths: contract.allowed_write_paths, expected_evidence_files: contract.expected_evidence_files, project_name: this.projectName, base_package: this.basePackage, bootstrap_main_class: `${this.basePackage}.${this.applicationClassName}`, bootstrap_main_source: this.bootstrapMainSource, maven_coordinates: this.mavenCoordinates, maven_coordinates_source: this.mavenCoordinatesSource, profiles: this.profiles, database: this.options.database, generation_mode: "controlled-generation", completion_level: "generated", generator: { id: "yss-ddd-scaffold-generator", template_digest: await treeDigest(path.join(SKILL_ROOT, "assets")) }, ownership: { generated_files: generatedFiles, user_owned_globs: ["**/src/main/java/**", "**/src/test/java/**", "db/**"] }, readiness: { downstream_skills: downstream, contracts: { scaffold_parent: sha256(await readFile(scaffoldParent)), compiler_contract: sha256(await readFile(compilerContract)) }, architecture_ruleset: sha256(await readFile(path.join(this.javaTemplateDir, "architecture-rules-test.java.template"))) }, generation_policy: { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }, verification_commands: COMMANDS, generated_at: isoNow() };
+    const manifest = { schema_version: 3, kind: "backend-scaffold", architecture_profile: contract.architecture_profile, architecture_identity: scaffoldArchitectureIdentity(contract, this.contractDigest), contract_id: this.options.contractId, contract_version: this.options.contractVersion, scaffold_request_id: contract.scaffold_request_id, architecture_family: contract.architecture_family, generator_skill: contract.generator_skill, decision_id: contract.decision_id, decision_digest: contract.decision_digest, module_profile: contract.module_profile, approval_ref: this.options.approvalRef, compiler_draft_ref: this.options.compilerDraftRef, persisted_ref: this.options.persistedRef, contract_file_ref: this.contractFile, contract_digest: this.contractDigest, lifecycle_approval_ref: contract.lifecycle_approval_ref, current_version: contract.current_version, approver: contract.approval.approver, allowed_write_paths: contract.allowed_write_paths, expected_evidence_files: contract.expected_evidence_files, project_name: this.projectName, base_package: this.basePackage, bootstrap_main_class: `${this.basePackage}.${this.applicationClassName}`, bootstrap_main_source: this.bootstrapMainSource, maven_coordinates: this.mavenCoordinates, maven_coordinates_source: this.mavenCoordinatesSource, profiles: this.profiles, generation_mode: "controlled-generation", completion_level: "generated", generator: { id: "yss-ddd-scaffold-generator", template_digest: await treeDigest(path.join(SKILL_ROOT, "assets")) }, ownership: { generated_files: generatedFiles, user_owned_globs: ["**/src/main/java/**", "**/src/test/java/**", "db/**"] }, readiness: { downstream_skills: downstream, contracts: { scaffold_parent: sha256(await readFile(scaffoldParent)), compiler_contract: sha256(await readFile(compilerContract)) }, architecture_ruleset: sha256(await readFile(path.join(this.javaTemplateDir, "architecture-rules-test.java.template"))) }, generation_policy: { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }, verification_commands: COMMANDS, generated_at: isoNow() };
     await writeText(path.join(this.projectRoot, ".yss", "scaffold-generation.json"), `${JSON.stringify(manifest, null, 2)}\n`); console.log("  ✓ .yss/scaffold-generation.json");
   }
   async copyWrapperFiles() {
@@ -353,7 +373,7 @@ class ScaffoldGenerator {
     const required = [path.join(this.projectRoot, "pom.xml"), path.join(this.projectRoot, `${this.projectName}-bootstrap`, "pom.xml"), path.join(this.projectRoot, this.bootstrapMainSource), path.join(this.projectRoot, "mvnw"), path.join(this.projectRoot, ".yss", "scaffold-generation.json")];
     const missing = []; for (const target of required) if (!await isFile(target)) missing.push(target); if (missing.length) fail(`生成产物缺失: ${missing.join(", ")}`);
     const manifest = await readJson(required[4], "脚手架生成元数据清单无法读取");
-    if (manifest.schema_version !== 2 || manifest.contract_id !== this.options.contractId || manifest.contract_version !== this.options.contractVersion || manifest.current_version !== this.options.contractVersion || manifest.generation_mode !== "controlled-generation" || manifest.bootstrap_main_class !== `${this.basePackage}.${this.applicationClassName}` || manifest.bootstrap_main_source !== this.bootstrapMainSource || manifest.profiles.architecture !== SUPPORTED_PROFILES.architecture || manifest.generation_policy.mode !== "initialize-only" || manifest.generation_policy.existing_target !== "unsupported" || JSON.stringify(manifest.verification_commands) !== JSON.stringify(COMMANDS)) fail("脚手架生成元数据清单与当前批准合同、Target Profile、initialize-only 边界、机械启动入口或固定验证命令不一致");
+    if (manifest.schema_version !== 3 || manifest.contract_id !== this.options.contractId || manifest.contract_version !== this.options.contractVersion || manifest.current_version !== this.options.contractVersion || manifest.generation_mode !== "controlled-generation" || manifest.architecture_family !== "domain-driven" || manifest.generator_skill !== "yss-ddd-scaffold-generator" || manifest.decision_id !== this.scaffoldContract.decision_id || manifest.decision_digest !== this.scaffoldContract.decision_digest || JSON.stringify(manifest.module_profile) !== JSON.stringify(this.scaffoldContract.module_profile) || manifest.bootstrap_main_class !== `${this.basePackage}.${this.applicationClassName}` || manifest.bootstrap_main_source !== this.bootstrapMainSource || manifest.profiles.architecture !== SUPPORTED_PROFILES.architecture || manifest.generation_policy.mode !== "initialize-only" || manifest.generation_policy.existing_target !== "unsupported" || JSON.stringify(manifest.verification_commands) !== JSON.stringify(COMMANDS)) fail("脚手架生成元数据清单与当前批准架构决策、合同、Target Profile、initialize-only 边界、机械启动入口或固定验证命令不一致");
     const stack = [this.projectRoot], binary = new Set([".class", ".db", ".jar", ".png", ".jpg", ".jpeg", ".gif"]);
     while (stack.length) { const dir = stack.pop(); for (const entry of await readdir(dir, { withFileTypes: true })) { const target = path.join(dir, entry.name); if (entry.isDirectory()) { stack.push(target); continue; } if (!entry.isFile() || binary.has(path.extname(entry.name))) continue; const content = await readFile(target, "utf8"); if (content.includes("{{") || content.includes("root/root")) fail(`生成文件包含未替换占位符或明文凭据: ${target}`); } }
   }

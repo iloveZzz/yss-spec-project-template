@@ -17,7 +17,7 @@ owner: ai
 | Spec 初稿 |  |  |  |
 | 产品总体设计 / 功能架构 |  |  | 必需 |
 | 产品设计 / 交互说明 |  |  |  |
-| 原型交付物 | `docs/.scratch/<feature>/design/prototypes/index.html` 或稳定 URL |  | 有产品设计影响时必需；按 H1/H2 档位提供 schema v3 浏览器、Design QA 与条件 AntD 事实；真实组件待验事项进入前端实现计划 |
+| 原型交付物 | `docs/.scratch/<feature>/design/prototypes/index.html` 或稳定 URL |  | 有产品设计影响时必需；按 H1/H2 档位提供 Prototype Evidence schema v4、Visual Baseline schema v1、浏览器、Design QA 与条件 AntD 事实；真实组件待验事项进入前端实现计划 |
 | Prototype Review |  |  |  |
 | CONTEXT 术语 |  |  | 业务术语须含 PascalCase `英文标识` |
 

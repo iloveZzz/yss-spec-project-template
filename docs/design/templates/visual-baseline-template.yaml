@@ -1,0 +1,70 @@
+# 复制到 Visual Baseline Bundle 根目录的 visual-baseline.yaml；图片由浏览器/Design QA 捕获后执行 seal。
+schema_version: 1
+baseline_id: visual-baseline.<feature>
+feature: <feature>
+version: v1
+status: draft
+bundle:
+  format: portable-directory
+  root_ref: docs/.scratch/<feature>/handoff/visual-baseline-v1
+  digest: <sha256>
+  size_bytes: <bytes>
+  max_image_bytes: 5242880
+  max_bundle_bytes: 104857600
+source:
+  prototype_ref: sources/prototype.snapshot.html
+  prototype_digest: <sha256>
+  interaction_spec_ref: sources/interaction-spec.snapshot.md
+  interaction_spec_digest: <sha256>
+  state_matrix_ref: sources/state-matrix.snapshot.md
+  state_matrix_digest: <sha256>
+capture_environment:
+  browser: chromium
+  browser_version: <exact-version>
+  operating_system: <os-and-version>
+  fonts_digest: <sha256>
+  device_scale_factor: 1
+  color_space: srgb
+  locale: zh-CN
+  timezone: Asia/Shanghai
+  animations_disabled: true
+  cursor_hidden: true
+  capture_script_ref: capture/capture.mjs
+  capture_script_digest: <sha256>
+  capture_result_ref: capture/result.json
+  capture_result_digest: <sha256>
+cases:
+  - case_id: primary-desktop
+    route: /<route>
+    page: <PageName>
+    state: normal
+    viewport: {name: desktop, width: 1440, height: 900, scroll_mode: viewport, scroll_position: 0}
+    theme: compact-light
+    locale: zh-CN
+    data_scenario: primary
+    image_ref: images/primary-desktop.png
+    image_digest: <sha256>
+    image_size_bytes: <bytes>
+    mask_ref: not-applicable
+    mask_digest: not-applicable
+    mask_size_bytes: 0
+    semantic_refs: [sources/prototype.snapshot.html, sources/interaction-spec.snapshot.md, sources/state-matrix.snapshot.md]
+    allowed_differences: []
+    result: <passed>
+  - case_id: primary-narrow
+    route: /<route>
+    page: <PageName>
+    state: normal
+    viewport: {name: narrow, width: 390, height: 844, scroll_mode: viewport, scroll_position: 0}
+    theme: compact-light
+    locale: zh-CN
+    data_scenario: primary
+    image_ref: images/primary-narrow.png
+    image_digest: <sha256>
+    image_size_bytes: <bytes>
+    mask_ref: not-applicable
+    mask_digest: not-applicable
+    mask_size_bytes: 0
+    semantic_refs: [sources/prototype.snapshot.html, sources/interaction-spec.snapshot.md, sources/state-matrix.snapshot.md]
+    allowed_differences: []
+    result: <passed>

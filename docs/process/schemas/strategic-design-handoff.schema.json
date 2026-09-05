@@ -1,23 +1,24 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://yss.local/schemas/strategic-design-handoff-v2.json",
+  "$id": "https://yss.local/schemas/strategic-design-handoff-v3.json",
   "title": "YSS 业务方案交接包",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "handoff_id", "handoff_version", "status", "source", "source_context_snapshot", "context_delta", "target_context_reconciliation", "target", "problem_and_business_outcomes", "bounded_context_and_subdomain_map", "context_map_and_translation_responsibility", "ubiquitous_language_and_concept_candidates", "scenarios_and_business_invariants", "tactical_design_questions", "deferred_decisions_and_ownership", "evidence_and_version_digests", "acceptance"],
   "properties": {
-    "schema_version": { "const": 2 },
+    "schema_version": { "const": 3 },
     "handoff_id": { "type": "string", "pattern": "^strategic-design-handoff\\.[a-z0-9][a-z0-9-]*$" },
     "handoff_version": { "type": "string", "pattern": "^v[0-9]+$" },
     "status": { "enum": ["draft", "ready-for-human", "approved", "stale", "blocked"] },
     "source": {
       "type": "object", "additionalProperties": false,
-      "required": ["domain_strategy_ref", "stage_decision_package_ref", "spec_ref", "prototype_ref", "business_ticket_set_ref"],
+      "required": ["domain_strategy_ref", "stage_decision_package_ref", "spec_ref", "prototype_ref", "visual_baseline_ref", "business_ticket_set_ref"],
       "properties": {
         "domain_strategy_ref": { "$ref": "#/$defs/versionedRef" },
         "stage_decision_package_ref": { "$ref": "#/$defs/versionedRef" },
         "spec_ref": { "$ref": "#/$defs/versionedRef" },
         "prototype_ref": { "$ref": "#/$defs/versionedRef" },
+        "visual_baseline_ref": { "$ref": "#/$defs/visualBaselineRef" },
         "business_ticket_set_ref": { "$ref": "#/$defs/versionedRef" }
       }
     },
@@ -98,6 +99,19 @@
         "digest": { "type": "string", "minLength": 1 },
         "status": { "const": "approved" },
         "persisted_ref": { "type": "string", "minLength": 1 }
+      }
+    },
+    "visualBaselineRef": {
+      "type": "object", "additionalProperties": false,
+      "required": ["baseline_id", "version", "digest", "status", "persisted_ref", "manifest_ref", "case_ids"],
+      "properties": {
+        "baseline_id": { "type": "string", "pattern": "^visual-baseline\\.[a-z0-9][a-z0-9-]*$" },
+        "version": { "type": "string", "pattern": "^v[1-9][0-9]*$" },
+        "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "status": { "const": "approved" },
+        "persisted_ref": { "type": "string", "minLength": 1 },
+        "manifest_ref": { "const": "visual-baseline.yaml" },
+        "case_ids": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" } }
       }
     },
     "deferred": {

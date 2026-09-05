@@ -2,15 +2,20 @@
 
 ## 1. 准备批准合同
 
-新合同是服务级工程基线，使用 schema v2 与 `scaffold_request_id`，并把 Java 包名、Maven 坐标和 Profile 分开登记：
+新合同是服务级工程基线，使用 schema v3 与 `scaffold_request_id`，并把已批准的架构决策、Java 包名、Maven 坐标和 Profile 分开登记：
 
 ```json
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "scaffold_request_id": "scaffold-metadata-service-1",
   "project_name": "metadata-service",
   "target_output_dir": "/path/to/implementation-repo",
   "base_package": "com.yss.metadata",
+  "architecture_family": "domain-driven",
+  "generator_skill": "yss-ddd-scaffold-generator",
+  "decision_ref": "scaffold-architecture-decisions.yaml",
+  "decision_id": "architecture-metadata-service",
+  "decision_digest": "sha256:<digest>",
   "maven_coordinates": {
     "group_id": "com.yss.datamiddle",
     "project_version": "1.0.0-SNAPSHOT",
@@ -30,6 +35,11 @@
     "dto_placement": "web",
     "repository": "yss-internal"
   },
+  "module_profile": {
+    "resolution_version": 1,
+    "requested_capabilities": [],
+    "resolved_modules": ["domain", "application", "infrastructure", "adapter", "bootstrap"]
+  },
   "generation_policy": {
     "mode": "initialize-only",
     "existing_target": "unsupported",
@@ -39,7 +49,7 @@
 }
 ```
 
-以上只是关键片段；实际合同还必须满足 `yss-implementation-contract-compiler/references/compiler-contract.yaml` 中的完整 `scaffold_contract_schema`，由生命周期批准并持久化为当前版本。schema v1 合同为 `unsupported`，直接拒绝且不自动升级。
+以上只是关键片段；实际合同还必须满足 `yss-implementation-contract-compiler/references/compiler-contract.yaml` 中的完整 `scaffold_contract_schema`，引用经用户确认并由生命周期批准的 `scaffold-architecture-decisions.yaml`，再持久化为当前版本。历史 schema v2 仅用于验证器只读兼容；新生成拒绝 schema v1/v2 且不自动升级。
 
 ## 2. 一键生成并验证
 
@@ -54,7 +64,6 @@ node .agents/skills/yss-ddd-scaffold-generator/scripts/generate_and_verify_scaff
   --parent-version 2.0.0-SNAPSHOT \
   --yss-components-version 2.0.0-SNAPSHOT \
   --output-dir /path/to/implementation-repo \
-  --database mysql \
   --contract-id <approved-scaffold-contract-id> \
   --contract-version <current-version> \
   --approval-ref <lifecycle-approval-ref> \

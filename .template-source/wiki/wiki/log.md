@@ -88,3 +88,15 @@ wiki-root 从仓库根 `wiki/` 迁到 `.template-source/wiki`。同步 raw 中�
 - articles: Agent入口规则, 产品研发生命周期, 影响面分诊与流程裁剪, 模板维护流程, 切片实现合同, YSS路由与合同编译, YSS工程技能体系, 技能投影与锁定, 实现仓库与跨仓库契约, LLM Wiki, Ticket与流程状态, Fresh验证与独立审查
 
 同步 live 源与 raw，把运行时注册表升级为 active schema v2；明确 capability / Recipe / typed dependency 与 digest freshness，并使用 `yss-implementation-contract-compiler` 和 `yss-skill-source-index-refresh` 替换旧技能 ID。
+
+## [2026-09-05] REFRESH | AGENTS.md 渐进式披露与入口纯化
+- changed: AGENTS.md
+- articles: Agent入口规则
+
+同步 `raw/AGENTS.md`，刷新 [[Agent入口规则]] 中 YSS 专项入口与通用技能下沉边界。其余由 `AGENTS.md` 命中的文章经逐项核对后语义无变化，保持零字节修改；工作区另外 7 个既有 live-source drift 不在本次刷新范围。
+
+## [2026-09-05] REFRESH | 一次性技能面收敛
+- changed: skills-maintenance.md, yss-skill-registry.yaml, skills-lock.json
+- articles: Matt技能体系, YSS工程技能体系, 技能投影与锁定
+
+同步技能维护规则与注册表 raw，重放 `skill-names` 摘录；刷新 [[Matt技能体系]] 的统一生命周期入口说明。[[YSS工程技能体系]] 与 [[技能投影与锁定]] 经核对后现有表述仍成立，保持零字节修改；工作区其他既有 live-source drift 不在本次刷新范围。

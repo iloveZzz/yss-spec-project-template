@@ -1,6 +1,6 @@
 # 复制到 docs/.scratch/<feature>/verification/prototype-evidence.yaml。
-# 只保留所选档位的 profile_evidence 子块；schema v1/v2 仅允许只读迁移。
-schema_version: 3
+# 只保留所选档位的 profile_evidence 子块；schema v1/v2/v3 仅允许只读迁移。
+schema_version: 4
 feature: <feature>
 prototype_ref: docs/.scratch/<feature>/design/prototypes/index.html
 prototype_profile: H2
@@ -38,6 +38,13 @@ design_baseline:
     - docs/design/tokens/tokens.compact.json
   project_token_baseline_digest: <sha256>
   project_override_reviewed: false
+visual_baseline:
+  manifest_ref: docs/.scratch/<feature>/handoff/visual-baseline-v1/visual-baseline.yaml
+  baseline_id: visual-baseline.<feature>
+  version: v1
+  digest: <sha256>
+  status: approved
+  case_ids: [primary-desktop, primary-narrow]
 browser_delivery:
   delivery_kind: static-directory
   entry_ref: docs/.scratch/<feature>/design/prototypes/index.html
@@ -47,11 +54,11 @@ browser_delivery:
     - name: desktop
       size: 1440x900
       result: pending
-      screenshot_ref: <path>
+      case_ids: [primary-desktop]
     - name: narrow
       size: 390x844
       result: pending
-      screenshot_ref: <path>
+      case_ids: [primary-narrow]
   console_result: pending
   console_ref: <path-to-console-output-or-none>
 design_qa:

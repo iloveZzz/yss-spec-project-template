@@ -359,7 +359,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
     for (const mode of capability.task_modes) if (!TASK_MODES.has(mode)) fail(`${capability.id} 使用未知 task mode: ${mode}`);
     capabilitySkills.add(capability.primary_skill);
   }
-  for (const skill of skills.filter((item) => item.impacts.includes("backend"))) {
+  for (const skill of skills.filter((item) => item.impacts.includes("backend") && item.maturity !== "deprecated")) {
     if (!capabilitySkills.has(skill.id)) fail(`backend skill 缺少 capability: ${skill.id}`);
   }
 

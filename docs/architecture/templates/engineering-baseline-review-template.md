@@ -5,10 +5,10 @@ status: draft
 owner: ai
 ---
 
-# <功能名称>工程基线 / YSS DDD Review
+# <功能名称>工程基线 / YSS 后端架构 Review
 
-> 适用场景：新后端服务、新模块、DDD 分层、Gateway / Repository、统一响应、MapStruct 或工程结构受影响时。
-> 本文确认本次变更是否符合 YSS DDD 工程基线，不替代系统概要设计、数据架构或代码审查。
+> 适用场景：新后端服务、新模块、DDD / Layered MVC 分层、Repository、统一响应、MapStruct 或工程结构受影响时。
+> 本文确认本次变更是否符合已选择的 YSS 后端工程基线，不替代系统概要设计、数据架构或代码审查。
 
 ## 1. 输入材料
 
@@ -21,6 +21,7 @@ owner: ai
 | YSS skill 路由 |  |  |  |
 | `prototype_confirmation` |  |  | UI 影响时必须是已确认；无 UI 影响记录 `not-applicable` 及原因 |
 | 后端脚手架登记 / 生成结果 |  |  | 记录 `scaffold_status`、目标目录、生成器输入、预期文件和 Execution Result |
+| 后端脚手架架构选择 |  |  | `scaffold-architecture-decisions.yaml` 的 decision_id、用户确认引用和 digest |
 
 ## 2. 工程影响判断
 
@@ -32,6 +33,14 @@ owner: ai
 | 是否新增 Gateway / Repository | 是 / 否 |  |
 | 是否影响统一响应 / DTO / VO / Query / CMD | 是 / 否 |  |
 | 是否存在高风险变更、人工确认项或回滚约束 | 是 / 否 |  |
+
+## 2.2 脚手架架构选择
+
+| 项目 | Agent 推荐及依据 | 继承来源 | 用户确认 | architecture_family | Profile / 模块闭包 | decision_id / digest |
+|---|---|---|---|---|---|---|
+|  |  |  |  | `domain-driven` / `layered-mvc` |  |  |
+
+> 聚合不变量、复杂状态机、跨聚合一致性、Domain Event 或复杂并发任一强信号命中时推荐 DDD；强信号均不存在且以 CRUD、报表、数据转换或外部编排为主时推荐 MVC。用户可覆盖软性推荐，但必须记录原因；不支持的 Profile 直接阻断。
 
 ## 2.1 质量基线与高风险反证
 
@@ -50,7 +59,7 @@ owner: ai
 
 > Doubt-Driven 只在命中的高风险决策中启用，不新增生命周期阶段；缺少反证、证据不足或残余风险未处理时不得通过工程基线。
 
-## 3. YSS DDD 分层检查
+## 3. YSS 后端分层检查
 
 | 层级 | 职责 | 本次影响 | 约束 / 结论 |
 |------|------|----------|-------------|
@@ -59,12 +68,15 @@ owner: ai
 | Domain | 领域模型、领域服务、Gateway 接口 |  |  |
 | Infrastructure | GatewayImpl、Repository、外部系统适配 |  |  |
 | Bootstrap | 启动、配置、依赖组装 |  |  |
+| MVC Server | 启动、Controller 与 Web 装配；仅 layered-mvc |  |  |
+| MVC Service | 事务脚本、用例编排与业务服务；仅 layered-mvc |  |  |
+| MVC Repository | PO、Mapper、SQL 与数据库访问；仅 layered-mvc |  |  |
 
 ## 4. 推荐 YSS skills
 
 | 场景 | 推荐 skill | 是否需要 | 备注 |
 |------|-------------|----------|------|
-| 新服务骨架 | `yss-ddd-scaffold-generator` | 是 / 否 |  |
+| 新服务骨架 | `yss-ddd-scaffold-generator` / `yss-layered-mvc-scaffold-generator` | 是 / 否 | 按批准的 architecture_family 选择 |
 | 后端基线检查 | `yss-backend-scaffold-parent` | 是 / 否 |  |
 | 领域建模 | `yss-domain` | 是 / 否 |  |
 | Application 用例编排 / 事务边界 | `yss-application` | 是 / 否 |  |
@@ -76,7 +88,7 @@ owner: ai
 | 检查项 | 结论 | 证据 / 备注 |
 |---|---|---|
 | 原型确认已完成，或已记录 `not-applicable` 原因 | 是 / 否 / 不适用 | `prototype_confirmation` |
-| `scaffold_status=required` 时先由 实现合同编译器 编译脚手架合同并经生命周期批准，再使用 `yss-ddd-scaffold-generator` | 是 / 否 / 不适用 | 结构化 `contract_id` / `contract_version`、实现合同编译器 draft、批准引用、持久化引用和生成结果 |
+| `scaffold_status=required` 时已由 Agent 推荐、用户确认并持久化 architecture decision，随后由实现合同编译器编译 schema v3 合同并经生命周期批准，再使用对应 DDD / MVC 生成器 | 是 / 否 / 不适用 | decision_id / digest、contract_id / contract_version、实现合同编译器 draft、批准引用、持久化引用和 Manifest v3 |
 | 脚手架生成结果只包含工程结构、配置和机械模板 | 是 / 否 | 禁止生成业务行为 |
 | 生成器输入、预期文件和实际 `./mvnw validate` / `./mvnw test` / `./mvnw package` 已留证 | 是 / 否 | 每条命令记录 `exit_code`、`duration_ms`、stdout/stderr 引用和执行时间；打印命令不算证据 |
 | `yss-backend-scaffold-parent` 基线校验已完成并重新进入 `yss-implementation-contract-compiler` | 是 / 否 / 不适用 |  |

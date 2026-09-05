@@ -25,6 +25,7 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 4. Check `YssGlobalExceptionProperties` when global exception output/logging behavior is configurable.
 5. Keep logging semantics aligned: business exceptions usually do not require error-stack logging; system/unknown exceptions usually do.
 6. In the `target-domain-model` profile, Domain owns stable error meaning and parameters but does not depend directly on YSS `BizException` or HTTP. Translate at the Web boundary after verifying the component handler precedence.
+7. MVC Profile 的稳定业务错误归 service/core；Repository 保留 cause；server 持有 HTTP 映射与脱敏。不要为了复用错误码引入 Domain 层或让 core 依赖 client。分层依据 `docs/agents/backend-architecture-profiles.md`。
 
 ## Current Source Behavior
 

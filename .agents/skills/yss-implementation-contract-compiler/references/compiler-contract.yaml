@@ -1,4 +1,11 @@
 schema_version: 2
+backend_architecture:
+  registry_source: docs/agents/yss-skill-registry.yaml
+  identity_schema: docs/process/schemas/backend-architecture-identity.schema.json
+  required_evidence: [engineering_baseline, repository_registration, manifest]
+  required_identity_surfaces: [resolution, work_unit, execution_result]
+  family_recipe_selection: explicit-ddd-or-mvc-no-legacy-alias
+  readiness: supported-profile-and-current-identical-evidence
 compiled_by: yss-implementation-contract-compiler
 approved_by: yss-product-lifecycle
 capability_source: docs/agents/yss-skill-registry.yaml
@@ -70,11 +77,11 @@ exclusive_flags:
 
 slice_contract_required:
   root: [schema_version, contract_id, contract_version, slice_id, status, lifecycle_refs, readiness, resolution, common, frontend, backend, contract, cross_repo, work_units]
-  lifecycle_refs: [spec, ticket, requirement_freeze, low_fidelity_review, prototype_review, prototype_profile_decision, prototype_deliverable, prototype_deliverable_verification, prototype_confirmation, openapi_freeze_or_no_impact, architecture_review, data_architecture, tactical_design, engineering_baseline, build_architecture_checklist, implementation_repository, frontend_repository, backend_repository, maven_wrapper]
+  lifecycle_refs: [spec, ticket, requirement_freeze, low_fidelity_review, prototype_review, prototype_profile_decision, prototype_deliverable, prototype_deliverable_verification, visual_baseline, prototype_confirmation, openapi_freeze_or_no_impact, architecture_review, data_architecture, tactical_design, engineering_baseline, build_architecture_checklist, implementation_repository, frontend_repository, backend_repository, maven_wrapper]
   readiness: [blockers, stale_inputs, not_applicable]
   resolution: [required_capabilities, required_skills, recipe_ids, conditions, reason_chains, registry_digest, compiler_contract_digest, compiled_at, freshness]
   common: [impacted_areas, implementation_path_policy, project_roots, required_capabilities, required_skills, optional_skills, unavailable_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, human_review_points, full_reroute_triggers, quality_baseline_ref, context_plan, doubt_driven_review]
-  frontend: [status, required_skills, approved_prototype_ref, state_matrix_ref, allowed_write_paths, component_test_seams, e2e_paths]
+  frontend: [status, required_skills, approved_prototype_ref, state_matrix_ref, visual_baseline_ref, visual_baseline_case_ids, allowed_write_paths, component_test_seams, e2e_paths]
   backend: [status, affected_layers, component_impacts, required_skills, application_boundary, transaction_boundary, persistence_strategy, allowed_write_paths, forbidden_patterns, expected_evidence_files, seam_deferred, verification_commands, tactical_ddd]
   contract: [api_impact, freeze_ref, no_api_impact_ref, generated_clients, contract_tests, regeneration_commands]
   cross_repo: [repositories, delivery_order, integration_verification, rollback_order]
@@ -91,6 +98,7 @@ lifecycle_ref_by_readiness:
   prototype_profile_decision: prototype_profile_decision
   prototype_deliverable: prototype_deliverable
   prototype_deliverable_verification: prototype_deliverable_verification
+  visual_baseline: visual_baseline
   prototype_confirmation: prototype_confirmation
   openapi_freeze: openapi_freeze_or_no_impact
   no_api_impact_record: openapi_freeze_or_no_impact
@@ -124,14 +132,23 @@ context_plan:
   missing_context_action: [blocked, reroute]
 
 scaffold_contract_schema:
-  schema_version: 2
+  schema_version: 3
   identity: service-engineering-baseline
   compiled_by: yss-implementation-contract-compiler
   approved_by: yss-product-lifecycle
   status_by_owner:
     compiler: [draft, ready-for-lifecycle-review, blocked]
     lifecycle: [approved, stale, blocked]
-  required: [contract_id, contract_version, scaffold_request_id, status, compiler_draft_ref, lifecycle_approval_ref, persisted_ref, current_version, implementation_repository, backend_repository, scaffold_status, project_name, target_output_dir, base_package, maven_coordinates, profiles, allowed_write_paths, expected_evidence_files, verification_commands, approval, work_unit, generation_policy]
+  required: [contract_id, contract_version, scaffold_request_id, status, compiler_draft_ref, lifecycle_approval_ref, persisted_ref, current_version, implementation_repository, backend_repository, scaffold_status, project_name, target_output_dir, base_package, architecture_family, generator_skill, decision_ref, decision_id, decision_digest, maven_coordinates, profiles, module_profile, allowed_write_paths, expected_evidence_files, verification_commands, approval, work_unit, generation_policy]
+  architecture_decision:
+    source: scaffold-architecture-decisions.yaml
+    required_status: lifecycle-approved
+    allowed_architectures: [domain-driven, layered-mvc]
+    blocked_statuses: [undecided, recommended, awaiting-user-decision, stale]
+    reference: [decision_ref, decision_id, decision_digest]
+    no_silent_default: true
+    user_confirmation_required: true
+    change_action: stale-and-recompile
   approval:
     required: [approval_ref, approver, persisted_ref, current_version]
   generation_policy:
@@ -145,29 +162,52 @@ scaffold_contract_schema:
     parent_required: [group_id, artifact_id, version]
     yss_components_version: 2.0.0-SNAPSHOT
   profiles:
-    required: [architecture, persistence, database, platform, validation_namespace, dto_placement, repository]
-    supported_initial:
-      architecture: target-domain-model
-      persistence: mybatis-plus
-      database: mysql
-      platform: spring-boot-2.7-jdk8
-      validation_namespace: javax
-      dto_placement: web
-      repository: yss-internal
-    unsupported: [old-architecture-profile, client-in-domain, mybatis, spring-boot-3, jakarta, separate-client-module]
+    discriminant: architecture_family
+    domain-driven:
+      generator_skill: yss-ddd-scaffold-generator
+      required: [architecture, persistence, verification_database, production_database, platform, validation_namespace, dto_placement, repository]
+      supported_initial: { architecture: target-domain-model, persistence: mybatis-plus, verification_database: h2, production_database: not-bound, platform: spring-boot-2.7-jdk8, validation_namespace: javax, dto_placement: web, repository: yss-internal }
+      resolved_modules: [domain, application, infrastructure, adapter, bootstrap]
+    layered-mvc:
+      generator_skill: yss-layered-mvc-scaffold-generator
+      required: [architecture, persistence, verification_database, production_database, platform, validation_namespace, repository]
+      supported_initial:
+        architecture: layered-mvc
+        persistence: mybatis-plus
+        verification_database: h2
+        production_database: not-bound
+        platform: spring-boot-2.7-jdk8
+        validation_namespace: javax
+        repository: yss-internal
+      module_resolution:
+        version: 1
+        core: [server, service, repository]
+        capabilities:
+          external-integration: [adapter]
+          published-client: [client]
+          feign-client: [client, feign-client]
+    unsupported: [old-architecture-profile, mybatis, spring-boot-3, jakarta, arbitrary-module-combination]
+  module_profile:
+    required: [requested_capabilities, resolved_modules, resolution_version]
+    resolution_version: 1
+    freeze_both_request_and_resolution: true
+    digest_change_status: stale
   unsupported_inputs:
     schema_v1: reject-no-auto-upgrade
+    schema_v2_new_generation: reject-no-auto-upgrade
     slice_id: forbidden-as-scaffold-identity
     existing_project: reject-no-scaffold-migration
   lifecycle_boundary:
     compiler_emits: [draft, ready-for-lifecycle-review, blocked]
     lifecycle_approves: [approved]
     generator_consumes: [approved]
-    after_generation: [yss-backend-scaffold-parent, yss-implementation-contract-compiler]
+    after_generation:
+      domain-driven: [yss-backend-scaffold-parent, yss-implementation-contract-compiler]
+      layered-mvc: [yss-implementation-contract-compiler]
   work_unit:
     required: [id, behavior, primary_skill, supporting_skills, tdd_mode, allowed_write_paths, expected_evidence, verification_commands, controlled_generation]
   generation_boundary:
-    allowed_for: [project_scaffold, pom, mechanical_config, wrapper, bootstrap_entrypoint, manifest_v2, architecture_rules, test_infrastructure]
+    allowed_for: [project_scaffold, pom, mechanical_config, wrapper, bootstrap_entrypoint, manifest_v3, architecture_rules, test_infrastructure]
     forbidden_when: [business_behavior, business_fields, business_state, permission, transaction, complex_query, error_mapping, business_example_crud]
     initialization: initialize-only
     regeneration: unsupported
@@ -182,8 +222,8 @@ scaffold_contract_schema:
 
 applicable_subcontract_nonempty:
   frontend:
-    scalar: [approved_prototype_ref, state_matrix_ref]
-    array: [required_skills, allowed_write_paths, component_test_seams, e2e_paths]
+    scalar: [approved_prototype_ref, state_matrix_ref, visual_baseline_ref]
+    array: [required_skills, visual_baseline_case_ids, allowed_write_paths, component_test_seams, e2e_paths]
   backend:
     scalar: [application_boundary, transaction_boundary, persistence_strategy]
     array: [affected_layers, required_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands]
@@ -217,7 +257,7 @@ impact_to_capabilities:
   encryption-or-signing: [component.security-algorithm]
   gateway-resilience: [component.gateway-resilience]
   ddd-scaffold: [scaffold.ddd]
-  mvc-scaffold: [scaffold.mvc]
+  mvc-scaffold: [scaffold.layered-mvc]
   springboot3-migration: [migration.springboot3]
 
 tdd_modes:
@@ -229,9 +269,13 @@ tdd_modes:
 
 full_reroute_triggers:
   - scaffold-baseline-drift
+  - scaffold-architecture-decision-changed
+  - scaffold-profile-changed
+  - scaffold-module-resolution-changed
   - api-schema-impact
   - database-schema-impact
   - state-machine-impact
+  - visual-baseline-version-or-digest-changed
   - data-model-impact
   - new-write-path
   - new-repository

@@ -1,0 +1,55 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  本次修改新增后端脚手架架构选择合同与 layered MVC 生成器，并升级 DDD 合同、
+  Scaffold Manifest、实现合同编译路由和本体/子项目/CLI 模板投影；生成前确认、
+  继承覆盖及历史兼容行为发生变化，命中 generation-semantics、cross-repo-contract、
+  core-validator 与 aggregate-behavior-change。
+triggers:
+  - generation-semantics
+  - cross-repo-contract
+  - core-validator
+  - aggregate-behavior-change
+changed_assets:
+  - CONTEXT.md
+  - AGENTS.md
+  - docs/process/schemas/scaffold-architecture-decisions.schema.json
+  - docs/process/templates/scaffold-architecture-decisions-template.yaml
+  - scripts/verify-scaffold-architecture-decisions
+  - scripts/verify-scaffold-architecture-decision-scenarios
+  - .agents/skills/yss-layered-mvc-scaffold-generator/
+  - .agents/skills/yss-ddd-scaffold-generator/
+  - .agents/skills/yss-implementation-contract-compiler/
+  - .agents/skills/yss-product-lifecycle/
+  - docs/agents/yss-skill-registry.yaml
+  - docs/agents/digital-human-roles.yaml
+  - docs/process/template-verification-profiles.yaml
+  - skills-lock.json
+  - submodules/yss-harness-dev-agent
+  - submodules/create-yss-harness-dev/template
+  - submodules/create-yss-harness-dev/template.snapshot.json
+verification_evidence:
+  - kind: self-check
+    command: scripts/verify-scaffold-architecture-decision-scenarios && node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs
+    result: pass
+  - kind: cross-repo-contract
+    command: submodules/yss-harness-dev-agent/scripts/run-template-verification --profile release --concurrency 1
+    result: pass
+  - kind: cli-template-snapshot
+    command: node --test --test-concurrency=1 submodules/create-yss-harness-dev/tests/*.test.js
+    result: pass
+  - kind: full-release-verification
+    command: scripts/run-template-verification --profile release --concurrency 1
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: >-
+  当前按 L3 日常维护停在 implementation-ready，不冻结候选、不声明 release-ready；
+  真实 Maven Wrapper 三阶段验证仍需要 YSS Maven 仓库地址与凭据环境。
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

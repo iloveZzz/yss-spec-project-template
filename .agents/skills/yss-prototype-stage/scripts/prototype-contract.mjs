@@ -47,8 +47,8 @@ function validateConditionalCheck(check, parent, errors, allowTemplate) {
   requiredString(check, "evidence_ref", parent, errors);
 }
 
-function validateCommonV3(data, errors, allowTemplate) {
-  for (const field of ["feature", "prototype_ref", "prototype_profile", "profile_kind", "profile_decision", "upstream_refs", "source_visual", "design_baseline", "browser_delivery", "design_qa", "profile_evidence", "implementation_handoff", "review", "user_confirmation", "gaps", "blockers"]) required(data, field, "root", errors);
+function validateCommonV4(data, errors, allowTemplate) {
+  for (const field of ["feature", "prototype_ref", "prototype_profile", "profile_kind", "profile_decision", "upstream_refs", "source_visual", "design_baseline", "visual_baseline", "browser_delivery", "design_qa", "profile_evidence", "implementation_handoff", "review", "user_confirmation", "gaps", "blockers"]) required(data, field, "root", errors);
   requiredString(data, "feature", "root", errors);
   requiredString(data, "prototype_ref", "root", errors);
   if (!Object.hasOwn(PROFILE_KIND, data.prototype_profile)) errors.push("root.prototype_profile 必须为 H1/H2；真实组件验证不属于原型档位");
@@ -80,6 +80,15 @@ function validateCommonV3(data, errors, allowTemplate) {
   required(baseline, "project_override_reviewed", "design_baseline", errors);
   if (!allowTemplate && baseline?.project_override_reviewed !== true) errors.push("design_baseline.project_override_reviewed 必须为 true");
 
+  const visualBaseline = data.visual_baseline;
+  for (const field of ["manifest_ref", "baseline_id", "version", "digest", "status", "case_ids"]) required(visualBaseline, field, "visual_baseline", errors);
+  for (const field of ["manifest_ref", "baseline_id", "version", "digest", "status"]) requiredString(visualBaseline, field, "visual_baseline", errors);
+  requireArray(visualBaseline, "case_ids", "visual_baseline", errors, { nonEmpty: true });
+  if (!allowTemplate && visualBaseline?.status !== "approved") errors.push("visual_baseline.status 必须为 approved");
+  if (!allowTemplate && !/^visual-baseline\.[a-z0-9][a-z0-9-]*$/.test(visualBaseline?.baseline_id ?? "")) errors.push("visual_baseline.baseline_id 非法");
+  if (!allowTemplate && !/^v[1-9][0-9]*$/.test(visualBaseline?.version ?? "")) errors.push("visual_baseline.version 必须形如 v1");
+  if (!allowTemplate && !/^sha256:[a-f0-9]{64}$/.test(visualBaseline?.digest ?? "")) errors.push("visual_baseline.digest 必须为 sha256 摘要");
+
   const browser = data.browser_delivery;
   for (const field of ["delivery_kind", "entry_ref", "rendered_nonblank", "prototype_digest", "viewports", "console_result", "console_ref"]) required(browser, field, "browser_delivery", errors);
   requiredString(browser, "delivery_kind", "browser_delivery", errors);
@@ -93,7 +102,7 @@ function validateCommonV3(data, errors, allowTemplate) {
     if (!viewport) errors.push(`browser_delivery.viewports 缺少 ${requiredViewport}`);
     else {
       requiredString(viewport, "size", `browser_delivery.viewports.${requiredViewport}`, errors);
-      requiredString(viewport, "screenshot_ref", `browser_delivery.viewports.${requiredViewport}`, errors);
+      requireArray(viewport, "case_ids", `browser_delivery.viewports.${requiredViewport}`, errors, { nonEmpty: true });
       if (!allowTemplate) requiredPassed(viewport, "result", `browser_delivery.viewports.${requiredViewport}`, errors, allowTemplate);
     }
   }
@@ -128,10 +137,10 @@ function validateCommonV3(data, errors, allowTemplate) {
     requireArray(data.user_confirmation, "simulations_or_gaps", "user_confirmation", errors);
   }
 
-  for (const legacy of ["prototype_stack", "visual_semantic_mapping", "antd", "browser_verification", "accessibility_verification"]) if (data[legacy] !== undefined) errors.push(`schema v3 禁止旧字段 root.${legacy}`);
+  for (const legacy of ["prototype_stack", "visual_semantic_mapping", "antd", "browser_verification", "accessibility_verification"]) if (data[legacy] !== undefined) errors.push(`schema v4 禁止旧字段 root.${legacy}`);
 }
 
-function validateProfileV3(data, errors, allowTemplate) {
+function validateProfileV4(data, errors, allowTemplate) {
   const blocks = object(data.profile_evidence) ? Object.keys(data.profile_evidence) : [];
   const expected = PROFILE_BLOCK[data.prototype_profile];
   if (blocks.length !== 1 || blocks[0] !== expected) errors.push(`profile_evidence 必须且只能包含 ${expected}`);
@@ -181,14 +190,14 @@ export function validatePrototypeEvidence(data, { allowTemplate = false, allowLe
   const errors = [];
   const warnings = [];
   if (!object(data)) return { errors: ["原型证据必须是对象"], warnings };
-  if ([1, 2].includes(data.schema_version)) {
-    if (!allowLegacy) errors.push(`schema_version ${data.schema_version} 是只读旧证据；在途工作关闭 gate.prototype-verified 前必须迁移到 3`);
+  if ([1, 2, 3].includes(data.schema_version)) {
+    if (!allowLegacy) errors.push(`schema_version ${data.schema_version} 是只读旧证据；在途工作关闭 gate.prototype-verified 前必须迁移到 4`);
     else warnings.push(`legacy prototype evidence schema v${data.schema_version}; read-only`);
     return { errors, warnings };
   }
-  if (data.schema_version !== 3) return { errors: ["schema_version 必须为 3"], warnings };
-  validateCommonV3(data, errors, allowTemplate);
-  validateProfileV3(data, errors, allowTemplate);
+  if (data.schema_version !== 4) return { errors: ["schema_version 必须为 4"], warnings };
+  validateCommonV4(data, errors, allowTemplate);
+  validateProfileV4(data, errors, allowTemplate);
   return { errors, warnings };
 }
 

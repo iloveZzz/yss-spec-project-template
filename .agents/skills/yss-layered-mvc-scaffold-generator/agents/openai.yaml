@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS Layered MVC Scaffold Generator"
+  short_description: "Generate an approved YSS layered MVC backend skeleton."
+  default_prompt: "Use $yss-layered-mvc-scaffold-generator only after a user-confirmed scaffold architecture decision and a lifecycle-approved schema v3 scaffold contract."

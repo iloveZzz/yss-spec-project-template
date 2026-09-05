@@ -5,6 +5,12 @@ description: Use when implementing YSS application use cases, transaction bounda
 
 # yss-application
 
+## 架构分流（先执行）
+
+读取当前合同的 architecture_identity 并与工程基线、仓库登记及 Manifest 核对；再且只读取 `references/profiles/<architecture_profile>.md`。支持的分支为 target-domain-model、layered-mvc-service、mvc-data-analysis-v1；成熟度以注册表为准，不能把 draft 称为受支持。MVC 不执行下文 DDD 专属规则，也不加载其旧分层 guide；组件、安全、批准合同、允许路径及执行证据规则仍共用。
+
+以下 Application / Domain Gateway / Infrastructure / Web module 叙述仅适用于 target-domain-model；MVC 的 service/core/repository/server/client 所有权由所选 Profile 引用定义。
+
 Application 层用例编排 skill。负责协调 Domain 与 Gateway，定义事务边界和跨聚合流程，不承载核心领域规则。
 
 ## 何时使用

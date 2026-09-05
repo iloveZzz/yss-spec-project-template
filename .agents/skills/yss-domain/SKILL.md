@@ -7,7 +7,7 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 
 这是一个领域实现 skill。核心目标是消费已批准的战术模型，将领域行为落实为代码；战术模型的设计与批准由 `yss-tactical-design` 和 `yss-product-lifecycle` 负责。
 
-本 skill 在新脚手架链路只支持 `target-domain-model`。`core/client/repository`、贫血对象和 VO 型 Gateway 对该链路均为 `unsupported`，不提供旧架构分支。
+本 skill 在新脚手架链路只支持 `domain-driven` / `target-domain-model`。`layered-mvc-service` 与 `mvc-data-analysis-v1` 是独立 MVC Profile，不是失败的 DDD 工程；它们不加载本 skill，也不生成 Domain Gateway。既有旧架构不在本链路内迁移。
 
 ## 何时使用
 

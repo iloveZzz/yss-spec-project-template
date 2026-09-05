@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/visual-baseline-v1.json",
+  "title": "YSS Visual Baseline Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "baseline_id", "feature", "version", "status", "bundle", "source", "capture_environment", "cases"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "baseline_id": {"type": "string", "pattern": "^visual-baseline\\.[a-z0-9][a-z0-9-]*$"},
+    "feature": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "version": {"type": "string", "pattern": "^v[1-9][0-9]*$"},
+    "status": {"enum": ["draft", "ready-for-human", "approved", "stale", "blocked"]},
+    "bundle": {
+      "type": "object", "additionalProperties": false,
+      "required": ["format", "root_ref", "digest", "size_bytes", "max_image_bytes", "max_bundle_bytes"],
+      "properties": {
+        "format": {"const": "portable-directory"}, "root_ref": {"type": "string", "minLength": 1},
+        "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}, "size_bytes": {"type": "integer", "minimum": 0, "maximum": 104857600},
+        "max_image_bytes": {"const": 5242880}, "max_bundle_bytes": {"const": 104857600}
+      }
+    },
+    "source": {"$ref": "#/$defs/source"},
+    "capture_environment": {"$ref": "#/$defs/environment"},
+    "cases": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/case"}}
+  },
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["prototype_ref", "prototype_digest", "interaction_spec_ref", "interaction_spec_digest", "state_matrix_ref", "state_matrix_digest"],
+      "properties": {
+        "prototype_ref": {"type": "string", "pattern": "^sources/[^/]+$"}, "prototype_digest": {"$ref": "#/$defs/digest"},
+        "interaction_spec_ref": {"type": "string", "pattern": "^sources/[^/]+$"}, "interaction_spec_digest": {"$ref": "#/$defs/digest"},
+        "state_matrix_ref": {"type": "string", "pattern": "^sources/[^/]+$"}, "state_matrix_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "environment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["browser", "browser_version", "operating_system", "fonts_digest", "device_scale_factor", "color_space", "locale", "timezone", "animations_disabled", "cursor_hidden", "capture_script_ref", "capture_script_digest", "capture_result_ref", "capture_result_digest"],
+      "properties": {
+        "browser": {"const": "chromium"}, "browser_version": {"type": "string", "minLength": 1}, "operating_system": {"type": "string", "minLength": 1},
+        "fonts_digest": {"$ref": "#/$defs/digest"}, "device_scale_factor": {"const": 1}, "color_space": {"const": "srgb"},
+        "locale": {"type": "string", "minLength": 1}, "timezone": {"type": "string", "minLength": 1},
+        "animations_disabled": {"const": true}, "cursor_hidden": {"const": true},
+        "capture_script_ref": {"type": "string", "pattern": "^capture/[^/]+$"}, "capture_script_digest": {"$ref": "#/$defs/digest"},
+        "capture_result_ref": {"type": "string", "pattern": "^capture/[^/]+$"}, "capture_result_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "case": {
+      "type": "object", "additionalProperties": false,
+      "required": ["case_id", "route", "page", "state", "viewport", "theme", "locale", "data_scenario", "image_ref", "image_digest", "image_size_bytes", "mask_ref", "mask_digest", "mask_size_bytes", "semantic_refs", "allowed_differences", "result"],
+      "properties": {
+        "case_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"}, "route": {"type": "string", "minLength": 1}, "page": {"type": "string", "minLength": 1}, "state": {"type": "string", "minLength": 1},
+        "viewport": {"type": "object", "additionalProperties": false, "required": ["name", "width", "height", "scroll_mode", "scroll_position"], "properties": {"name": {"type": "string", "minLength": 1}, "width": {"type": "integer", "minimum": 1}, "height": {"type": "integer", "minimum": 1}, "scroll_mode": {"enum": ["viewport", "segment"]}, "scroll_position": {"type": "integer", "minimum": 0}}},
+        "theme": {"type": "string", "minLength": 1}, "locale": {"type": "string", "minLength": 1}, "data_scenario": {"type": "string", "minLength": 1},
+        "image_ref": {"type": "string", "pattern": "^images/[^/]+\\.png$"}, "image_digest": {"$ref": "#/$defs/digest"}, "image_size_bytes": {"type": "integer", "minimum": 1, "maximum": 5242880},
+        "mask_ref": {"anyOf": [{"const": "not-applicable"}, {"type": "string", "pattern": "^masks/[^/]+\\.png$"}]},
+        "mask_digest": {"anyOf": [{"const": "not-applicable"}, {"$ref": "#/$defs/digest"}]},
+        "mask_size_bytes": {"type": "integer", "minimum": 0, "maximum": 5242880},
+        "semantic_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^sources/[^/]+$"}},
+        "allowed_differences": {"type": "array", "items": {"type": "string", "minLength": 1}}, "result": {"const": "passed"}
+      }
+    }
+  }
+}

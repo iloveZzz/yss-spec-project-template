@@ -19,7 +19,7 @@ node .template-source/tooling/node/scripts/design-md.mjs drift
 
 Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生快照；治理说明不得复制具体值。业务状态、API、权限和交互验收继续使用 Spec、交互说明及状态矩阵。
 
-产品原型由 `yss-prototype-stage` 持有阶段合同：先评审低保真/状态矩阵，再选择 H1 视觉或 H2 流程，并按需调用 `product-design:index` focused workflow。YSS 生命周期负责校验档位选择、schema v3 交付物、统一 Design QA、用户确认和 Spec / OpenAPI 回填。原型阶段不得调用生产实现技能 `yss-ui`。
+产品原型由 `yss-prototype-stage` 持有阶段合同：先评审低保真/状态矩阵，再选择 H1 视觉或 H2 流程，并按需调用 `product-design:index` focused workflow。YSS 生命周期负责校验档位选择、Prototype Evidence schema v4、Visual Baseline schema v1、统一 Design QA、用户确认和 Spec / OpenAPI 回填。原型阶段不得调用生产实现技能 `yss-ui`。
 
 进入 Spec 初稿 / 需求基线流程后，必须先沉淀产品总体设计 / 功能架构，再进入页面 / 原型 / 交互设计、Spec 校准、API 影响分析 / 契约草案或实现。产品总体设计文档必须包含低保真原型 / 页面草图，用于验证页面结构、关键操作和主流程。无 UI 的功能也需要产品总体设计 / 功能架构来说明功能域、业务对象、模块边界、API / 数据影响和不适用的页面状态；只有不进入 Spec 生命周期的小改动可在影响面评估中记录不适用原因。
 
@@ -32,7 +32,7 @@ Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生�
 - 表单、表格、弹窗、抽屉、步骤流等交互说明。
 - loading、empty、error、readonly、disabled、no-permission、conflict 等状态矩阵。
 - 页面字段、筛选条件、操作按钮和权限规则。
-- 原型交付物默认路径为 `docs/.scratch/<feature>/design/prototypes/index.html`，也可为稳定 URL。H1 无 Node/AntD 依赖；H2 默认使用 Vue/Vite + Antdv Next，React/Vite + AntD 只作为显式兼容路线。真实 Vue 3 + YSS UI/AntDV 组件只在批准后的前端实现和实现还原验证中使用。产出后必须记录 schema v3 证据、根 `DESIGN.md` digest 与 Token digest，并获得用户确认。
+- 原型交付物默认路径为 `docs/.scratch/<feature>/design/prototypes/index.html`，也可为稳定 URL。H1 无 Node/AntD 依赖；H2 默认使用 Vue/Vite + Antdv Next，React/Vite + AntD 只作为显式兼容路线。真实 Vue 3 + YSS UI/AntDV 组件只在批准后的前端实现和实现还原验证中使用。产出后必须记录 Prototype Evidence schema v4、Visual Baseline schema v1、根 `DESIGN.md` digest 与 Token digest，并获得用户确认。
 
 这些资产用于反推 API 影响、契约草案、OpenAPI 请求 / 响应字段、错误结构、分页筛选、权限状态和前端验收标准。
 
@@ -43,7 +43,8 @@ Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生�
 - `docs/design/templates/state-matrix-template.md`：loading、empty、error、readonly、no-permission、conflict 等状态。
 - `docs/design/templates/prototype-review-checklist.md`：进入 Spec 校准 / API 影响分析 / 契约草案前的原型评审门禁。
 - `docs/design/templates/prototype-confirmation-template.md`：原型交付物验证后的用户确认记录。
-- `docs/design/templates/prototype-evidence-template.yaml`：schema v3 原型档位、浏览器、统一 Design QA、条件组件事实、评审和确认的机器可读证据清单。
+- `docs/design/templates/prototype-evidence-template.yaml`：Prototype Evidence schema v4 原型档位、浏览器、统一 Design QA、Visual Baseline 引用、条件组件事实、评审和确认的机器可读证据清单。
+- `docs/design/templates/visual-baseline-template.yaml`：Visual Baseline schema v1 页面语义、视口、状态、图片、mask、来源和采集环境的可移植清单。
 
 推荐技能：
 
@@ -54,7 +55,7 @@ Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生�
 - `yss-antdv-next-design`：用于默认 H2 Vue/Antdv Next 原型的精确版本事实；不替换生产 `yss-ui` 路线。
 - `yss-antd-design`：仅用于显式 H2 React/AntD 兼容原型的版本事实或 fact pack 增量更新；H1 不适用。
 - `prototype-review`：原型阶段评审门禁；未通过则不要进入 Spec 校准 / API 影响分析 / 契约草案。
-- 兼容入口：`product-design-prototype`、`high-fidelity-html-prototype` 只读迁移；新资产统一使用 `artifact.prototype-deliverable`、`yss-prototype-stage` 与 schema v3。
+- 兼容入口：`product-design-prototype`、`high-fidelity-html-prototype` 只读迁移；新资产统一使用 `artifact.prototype-deliverable`、`yss-prototype-stage`、Prototype Evidence schema v4 与 Visual Baseline schema v1。
 
 推荐目录：
 

@@ -1,21 +1,41 @@
-schema_version: 1
+schema_version: 2
 kind: verification
 template: true
 status: draft
-prototype_ref: docs/.scratch/example/design/prototype.html
+prototype_ref: docs/.scratch/example/design/prototypes/index.html
 spec_ref: docs/.scratch/example/spec.md
+visual_baseline:
+  baseline_id: visual-baseline.example
+  version: v1
+  digest: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  manifest_ref: docs/.scratch/example/handoff/visual-baseline-v1/visual-baseline.yaml
+  status: approved
+  case_ids: [primary-desktop, primary-narrow]
 route_and_page_inventory:
   - route: /example
     page: ExamplePage
-desktop_visual_evidence: [docs/.scratch/example/verification/desktop.png]
-narrow_view_visual_evidence: [docs/.scratch/example/verification/narrow.png]
+    case_ids: [primary-desktop, primary-narrow]
+case_results:
+  - case_id: primary-desktop
+    baseline_image_ref: docs/.scratch/example/handoff/visual-baseline-v1/images/primary-desktop.png
+    implementation_image_ref: docs/.scratch/example/verification/images/primary-desktop.png
+    diff_ref: docs/.scratch/example/verification/diffs/primary-desktop.png
+    mask_ref: not-applicable
+    result: blocked
+    uncovered_difference: false
+    explanation: <difference-or-not-applicable>
 interaction_results: [loading, empty, error, permission, selected, key-interaction]
 console_warning_check: blocked
 pnpm_commands: [pnpm lint, pnpm type-check, pnpm test]
+actual_verification:
+  - command: pnpm test
+    exit_code: 0
+    executed_at: <iso-8601>
+    evidence_ref: docs/.scratch/example/verification/pnpm-test.txt
 uncovered_differences: []
 difference_owner: null
 independent_review:
   reviewer: non-implementer
-  candidate_digest: pending
+  candidate_digest: sha256:0000000000000000000000000000000000000000000000000000000000000000
   status: pending
   findings_ref: docs/.scratch/example/verification/ui-fidelity-review.md

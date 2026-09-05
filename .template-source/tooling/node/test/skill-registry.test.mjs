@@ -137,7 +137,7 @@ test("prototype design route requires independent prototype-review", () => {
 test("deprecated skills require migration and cleanup metadata", () => {
   const data = registry();
   data.skills = data.skills.map((skill) => skill.id === "yss-api-integration"
-    ? { ...skill, maturity: "deprecated", replaced_by: "yss-page-module-development" }
+    ? { ...skill, maturity: "deprecated", replaced_by: "yss-ui-business-page-generation" }
     : skill);
   assert.throws(() => validateSkillRegistry(data), /migration_deadline/);
 });
@@ -176,8 +176,8 @@ function findingDisposition(overrides = {}) {
 function codeReviewRoute(overrides = {}) {
   return {
     primary_skill: "code-review",
-    supporting_skills: ["alibaba-java-code-style", "yss-ui", "yss-design-system", "yss-page-module-development", "yss-domain", "yss-application", "yss-repository", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
-    skills: ["code-review", "alibaba-java-code-style", "yss-ui", "yss-design-system", "yss-page-module-development", "yss-domain", "yss-application", "yss-repository", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
+    supporting_skills: ["alibaba-java-code-style", "yss-ui", "yss-design-system", "yss-ui-business-page-generation", "yss-domain", "yss-application", "yss-repository", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
+    skills: ["code-review", "alibaba-java-code-style", "yss-ui", "yss-design-system", "yss-ui-business-page-generation", "yss-domain", "yss-application", "yss-repository", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
     applies_when: "implementation_candidate_exists",
     not_applicable_reason: "no_implementation_candidate",
     review_standards_route: {
@@ -193,7 +193,7 @@ function codeReviewRoute(overrides = {}) {
       },
       conditional_skills: {
         backend_impact: ["alibaba-java-code-style", "yss-domain", "yss-application", "yss-repository", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
-        ui_impact: ["yss-ui", "yss-design-system", "yss-page-module-development"]
+        ui_impact: ["yss-ui", "yss-design-system", "yss-ui-business-page-generation"]
       },
       not_applicable_reasons: {
         backend_impact: "no_backend_impact",
@@ -295,7 +295,7 @@ test("frontend conditional routes require registered skills", () => {
     frontend_route: {
       primary_skill: "yss-ui",
       page_generation_skill: "yss-ui-business-page-generation",
-      page_orchestration_skill: "yss-page-module-development",
+      page_orchestration_skill: "yss-ui-business-page-generation",
       conditional_skills: { api_impact: ["missing-api-skill"] },
       not_applicable_reasons: { api_impact: "no_api_impact" }
     }

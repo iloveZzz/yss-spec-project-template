@@ -1,5 +1,7 @@
 # Slice Implementation Contract
 
+后端合同还必须绑定 `architecture_identity`（schema 见 `docs/process/schemas/backend-architecture-identity.schema.json`），并与工程基线、登记和 Manifest 一致。将同一身份复制到 `resolution`、backend 工作单元和执行结果；Profile 的成熟度/Recipe 来源是技能注册表，draft 不得 ready-for-agent。旧 backend.domain-behavior/persistence-mybatis/http-api Recipe 只读退役，重新编译时显式选择 backend.ddd-* 或 backend.mvc-*。
+
 `yss-implementation-contract-compiler` 生成草案；`yss-product-lifecycle` 核验、批准并持久化。合同缺少必填字段时状态为 `blocked`。schema v1 已停止支持，必须重新编译为 v2，不提供自动升级。
 
 ```yaml
@@ -83,6 +85,8 @@ slice_contract:
     required_skills: []
     approved_prototype_ref:
     state_matrix_ref:
+    visual_baseline_ref:
+    visual_baseline_case_ids: []
     generated_api_client_ref:
     allowed_write_paths: []
     component_test_seams: []
@@ -194,4 +198,4 @@ work_unit:
 
 `work_units` 中的前端、后端和测试任务是切片级子任务，不是新的生命周期阶段。每个子任务必须引用独立任务包；任务包只能消费同一份已批准且版本当前的 Slice Contract。`workflow_status` 追踪执行过程，不能替代生命周期状态；`contract_id`、`contract_version` 或 resolution digest 不一致时必须阻断并回到实现合同编译器。
 
-一个切片可以组合多个窄 Recipe，但只计算一次闭包。Recipe 只能引用 capability；合同同时冻结 `required_capabilities`、`required_skills`、完整原因链和 Registry/Compiler digest。任一 digest 改变时，当前合同标记 `stale`，重新编译后仍须由 `yss-product-lifecycle` 再批准。
+一个切片可以组合多个窄 Recipe，但只计算一次闭包。Recipe 只能引用 capability；合同同时冻结 `required_capabilities`、`required_skills`、完整原因链和 Registry/Compiler digest。任一 digest 或 Visual Baseline 版本 / digest 改变时，当前合同标记 `stale`，重新编译后仍须由 `yss-product-lifecycle` 再批准。UI 切片只消费 `visual_baseline_case_ids` 指定的图片，并先读取 manifest 与语义引用，禁止按目录 glob 猜测图片含义。

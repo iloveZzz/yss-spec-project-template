@@ -1,36 +1,8 @@
-# --- YSS AI SKILLS START ---
-# The following skills are available in this project.
-# AI Assistant: When a user request matches a skill, you MUST read the corresponding SKILL.md file.
+# YSS Skills Router
 
-- yss-ui-business-page-generation: .agents/skills/yss-ui-business-page-generation/SKILL.md
-- theme-token-usage: .agents/skills/theme-token-usage/SKILL.md
-- component-selection-imports: .agents/skills/component-selection-imports/SKILL.md
-- yss-page-module-development: .agents/skills/yss-page-module-development/SKILL.md
-- page-module-development: .agents/skills/yss-page-module-development/SKILL.md
-- page-skeleton: .agents/skills/page-skeleton/SKILL.md
-- page-list-module: .agents/skills/page-list-module/SKILL.md
-- page-form-module: .agents/skills/page-form-module/SKILL.md
-- ytable-usage: .agents/skills/ytable-usage/SKILL.md
-- yedit-table-usage: .agents/skills/yedit-table-usage/SKILL.md
-- ytree-usage: .agents/skills/ytree-usage/SKILL.md
-- prototype-page-acceptance: .agents/skills/prototype-page-acceptance/SKILL.md
-- yss-api-integration: .agents/skills/yss-api-integration/SKILL.md
-- api-integration: .agents/skills/yss-api-integration/SKILL.md
-- file-export-download: .agents/skills/file-export-download/SKILL.md
-- vue3-best-practices: .agents/skills/vue3-best-practices/SKILL.md
-- frontend-commit: .agents/skills/frontend-commit/SKILL.md
-- java-backend-commit: .agents/skills/java-backend-commit/SKILL.md
-- yss-use-table-height: .agents/skills/yss-use-table-height/SKILL.md
-- use-table-height: .agents/skills/yss-use-table-height/SKILL.md
-- yss-use-tree-height: .agents/skills/yss-use-tree-height/SKILL.md
-- use-tree-height: .agents/skills/yss-use-tree-height/SKILL.md
-- yss-formily: .agents/skills/yss-formily/SKILL.md
-- formily-foundation: .agents/skills/formily-foundation/SKILL.md
-- formily-linkage-effects: .agents/skills/formily-linkage-effects/SKILL.md
-- formily-mode-slot-detail: .agents/skills/formily-mode-slot-detail/SKILL.md
-- formily-step-flow: .agents/skills/formily-step-flow/SKILL.md
+先读取根目录 `AGENTS.md` 与 `yss-project.yaml`。技能身份、别名、触发条件和默认可发现性以
+`docs/agents/yss-skill-registry.yaml` 为准；`.agents/skills` 是共享技能权威内容，
+`.cursor/skills` 是生成投影，不得手工修改。
 
-# General Instruction:
-# Before starting any complex task, check if it falls under one of the skills above.
-# If so, read the SKILL.md file to understand the standards and best practices.
-# --- YSS AI SKILLS END ---
+生产 UI 实现先消费当前 Slice Implementation Contract，再进入 `yss-ui` 和命中的 canonical skill；
+完整业务页面使用 `yss-ui-business-page-generation`。原型阶段使用 `yss-prototype-stage`，不得调用 `yss-ui`。

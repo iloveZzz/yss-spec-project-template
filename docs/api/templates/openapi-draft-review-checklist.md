@@ -16,7 +16,7 @@
 | 原型 / 线框图 |  |  |
 | 状态矩阵 | `docs/.scratch/<feature>/design/<feature>-state-matrix.md` |  |
 | 原型评审结论 | `docs/.scratch/<feature>/design/<feature>-prototype-review.md` |  |
-| 原型交付物 | `docs/.scratch/<feature>/design/prototypes/index.html` 或稳定 URL | 有产品设计影响时必需；必须引用 schema v3 档位决策与交付物验证 |
+| 原型交付物 | `docs/.scratch/<feature>/design/prototypes/index.html` 或稳定 URL | 有产品设计影响时必需；必须引用 Prototype Evidence schema v4、Visual Baseline schema v1 档位决策与交付物验证 |
 | 条件 AntD 事实 | `prototype-evidence.yaml` 的档位证据 | H1 不适用；H2 使用 AntD 时引用新鲜 fact pack 或增量 CLI；不得作为生产 YSS/AntDV 组件事实 |
 | 用户确认记录 | `docs/.scratch/<feature>/design/<feature>-prototype-confirmation.md` | 有 UI 时必需；未确认前不得进入 OpenAPI Draft 评审 |
 | YSS 工程基线 | `.codex/skills/yss-ddd-scaffold-generator/references/yss-backend-scaffold-parent/SKILL.md` |  |
@@ -37,7 +37,7 @@
 | YAML 权威性 | 单一 OAS 3.1 document；未混入生命周期 frontmatter / 根字段；`operationId` 稳定 |  |  |
 | P0 覆盖 | 每个 P0 需求有 endpoint/schema/error/test 或明确非目标 |  |  |
 | 产品总体设计完整 | Draft 已依据 Spec 和产品总体设计 / 功能架构；缺产品总体设计时返回上游补齐 |  |  |
-| 交互输入完整 | 有产品设计影响时，Draft 已同时依据交互说明、低保真、状态矩阵、prototype-review、H1/H2 原型交付物、schema v3 浏览器/Design QA/条件 AntD 事实和用户确认；无产品设计影响时说明不适用原因 |  |  |
+| 交互输入完整 | 有产品设计影响时，Draft 已同时依据交互说明、低保真、状态矩阵、prototype-review、H1/H2 原型交付物、Prototype Evidence schema v4、Visual Baseline schema v1、浏览器/Design QA/条件 AntD 事实和用户确认；无产品设计影响时说明不适用原因 |  |  |
 | DDD 契约边界 | Endpoint/schema 归属的限界上下文清楚；术语与 `CONTEXT.md` 和功能架构一致；契约不直接暴露内部聚合、Repository 或持久化表结构 |  |  |
 | 页面动作覆盖 | 每个按钮 / 抽屉 / 弹窗动作有 endpoint/non-goal、`actionKey` 和错误码；Spec 明确认认证 / 授权变化时同时映射该行为 |  |  |
 | 对象生命周期 | manage/maintain/configure/create/update/archive/retry/cancel/publish/export/create-draft 语义闭环 |  |  |

@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "./vendor/yaml.mjs";
 import { parseContextContract } from "./lib/context-contract.mjs";
+import { validateVisualBaseline } from "../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const schemaPath = path.join(repoRoot, "docs/process/schemas/strategic-design-handoff.schema.json");
@@ -32,9 +33,19 @@ try {
   if (positionals.length !== 1 || !values.reconciliation) throw new TypeError("用法: scripts/verify-strategic-context-import --root <target-repo> --reconciliation <record> <handoff.yaml|json>");
   const root = path.resolve(values.root);
   const handoff = parseFile(path.resolve(positionals[0]));
-  if (handoff.schema_version === 1) throw new TypeError("migration-required: v1 handoff 缺少可导入的结构化 context_delta");
+  if ([1, 2].includes(handoff.schema_version)) throw new TypeError(`migration-required: Strategic Design Handoff v${handoff.schema_version} 是只读历史资产；在途 UI 交接必须升级 v3 并携带 Visual Baseline`);
   const schemaResult = spawnSync("python3", ["-c", pythonValidator, schemaPath], { encoding: "utf8", input: JSON.stringify(handoff) });
   if (schemaResult.status !== 0) throw new TypeError(`${schemaResult.stdout}${schemaResult.stderr}`.trim());
+  const baselineRef = handoff.source.visual_baseline_ref;
+  const bundleRoot = path.resolve(root, baselineRef.persisted_ref);
+  const manifestPath = path.resolve(bundleRoot, baselineRef.manifest_ref);
+  if (!manifestPath.startsWith(`${bundleRoot}${path.sep}`) || !existsSync(manifestPath)) throw new TypeError("Strategic Design Handoff 的 Visual Baseline manifest 不可读或越界");
+  const baseline = parseFile(manifestPath);
+  const baselineResult = await validateVisualBaseline(baseline, { bundleRoot });
+  if (baselineResult.errors.length) throw new TypeError(`Visual Baseline 无效: ${baselineResult.errors.join("; ")}`);
+  if (baseline.baseline_id !== baselineRef.baseline_id || baseline.version !== baselineRef.version || baseline.bundle.digest !== baselineRef.digest) throw new TypeError("Strategic Design Handoff 的 Visual Baseline 身份、版本或 digest 不一致");
+  const actualCaseIds = baseline.cases.map((item) => item.case_id).sort();
+  if (JSON.stringify(actualCaseIds) !== JSON.stringify([...baselineRef.case_ids].sort())) throw new TypeError("Strategic Design Handoff 的 Visual Baseline case_ids 不一致");
   const reconciliationResult = spawnSync(path.join(repoRoot, "scripts/verify-context-reconciliation"), ["--root", root, path.resolve(values.reconciliation)], { cwd: repoRoot, encoding: "utf8" });
   if (reconciliationResult.status !== 0) throw new TypeError(reconciliationResult.stderr.trim());
   const target = parseContextContract({ root });

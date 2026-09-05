@@ -13,7 +13,7 @@
 | 原型阶段合同 / Product Design 路由 | `yss-prototype-stage -> product-design:index -> <focused skill>` | 必需；记录 `$get-context`、`$ideate`、`$prototype`、`$image-to-code` 或 `$url-to-code` |
 | 原型 / 线框图 | `<链接或导出图片路径>` | Excalidraw / Figma / Penpot / tldraw / Axure / Markdown |
 | 原型交付物 | `docs/.scratch/<feature>/design/prototypes/index.html` 或稳定 URL | 低保真评审后按 H1/H2 档位补齐；H2 AntD 条件取事实；真实组件待验事项交接到前端实现计划，产出后必须获得用户确认 |
-| 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 记录 schema v3 档位、浏览器、统一 Design QA、条件组件证据和阻塞项 |
+| 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 记录 schema v4 档位、浏览器、统一 Design QA、Visual Baseline case、条件组件证据和阻塞项 |
 | 现有 API 草案 | `docs/.scratch/<feature>/api/<feature>.yaml` | 可选；通常应先完成产品设计和 Spec 校准 |
 
 ## 2. 页面地图

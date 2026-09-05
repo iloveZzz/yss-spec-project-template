@@ -39,7 +39,7 @@ function mustFail(doc, pattern, label) {
 validateDefaultDigitalHumanRoles();
 
 const tester = loadDigitalHumanRoles().roles.find((role) => role.id === "role.test-engineer");
-for (const skill of ["code-review", "alibaba-java-code-style", "yss-ui", "yss-page-module-development", "yss-domain", "yss-application", "yss-web-controller", "yss-dto", "mapstruct", "lombok"]) {
+for (const skill of ["code-review", "alibaba-java-code-style", "yss-ui", "yss-ui-business-page-generation", "yss-domain", "yss-application", "yss-web-controller", "yss-dto", "mapstruct", "lombok"]) {
   if (!tester.core_skills.includes(skill)) throw new TypeError(`role.test-engineer 缺少只读专项检查 skill: ${skill}`);
 }
 if (tester.forbidden_skills.includes("yss-ui") || tester.forbidden_skills.includes("alibaba-java-code-style")) {

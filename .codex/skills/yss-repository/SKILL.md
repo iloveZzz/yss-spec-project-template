@@ -5,6 +5,12 @@ description: Use when generating or refactoring YSS Infrastructure persistence m
 
 # yss-repository
 
+## 架构分流（先执行）
+
+读取当前合同的 architecture_identity 并与工程基线、仓库登记及 Manifest 核对；再且只读取 `references/profiles/<architecture_profile>.md`。支持的分支为 target-domain-model、layered-mvc-service、mvc-data-analysis-v1；成熟度以注册表为准，不能把 draft 称为受支持。MVC 不执行下文 DDD 专属规则，也不加载其旧分层 guide；组件、安全、批准合同、允许路径及执行证据规则仍共用。
+
+以下 Application / Domain Gateway / Infrastructure / Web module 叙述仅适用于 target-domain-model；MVC 的 service/core/repository/server/client 所有权由所选 Profile 引用定义。
+
 这是一个偏代码生成和结构补全的 skill，适合在已有工程里补 Repository 层，不适合替代完整脚手架。
 
 ## 何时使用

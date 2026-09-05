@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.local/schemas/backend-architecture-identity.schema.json",
+  "title": "后端架构身份",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["architecture_family", "architecture_profile", "generator_skill", "requested_capabilities", "resolved_modules", "contract_digest", "verification_database", "production_database"],
+  "properties": {
+    "architecture_family": {"enum": ["domain-driven", "layered-mvc"]},
+    "architecture_profile": {"enum": ["target-domain-model", "layered-mvc-service", "mvc-data-analysis-v1"]},
+    "generator_skill": {"type": "string", "minLength": 1},
+    "requested_capabilities": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "resolved_modules": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "contract_digest": {"type": "string", "pattern": "^(sha256:)?[a-f0-9]{64}$"},
+    "verification_database": {"const": "h2"},
+    "production_database": {"const": "not-bound"}
+  },
+  "description": "各 Manifest kind、工程基线、仓库登记、Slice/work unit/Execution Result 引用此 schema；具体 Profile/生成器/模块闭包由 yss-skill-registry.yaml 定义并由 backend-architecture.mjs 校验。"
+}

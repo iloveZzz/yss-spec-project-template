@@ -63,7 +63,7 @@ packages/package.json
 - 不修改模板既有的代码生成配置，也不把客户端生成加入 CI。
 - 不得把 `apps/frontend/` 容器根登记为项目根；Harness 内每个前端项目必须有独立的 `apps/frontend/<project>/` 路径。
 - 不把模板示例页面当作业务功能交付。
-- 生成后仍需使用 `yss-page-module-development`、`yss-components`、`yss-api-integration` 等专项 skill 实现业务页面。
+- 生成后仍需使用 `yss-ui-business-page-generation`、`yss-components`、`yss-api-integration` 等专项 skill 实现业务页面。
 
 ## Output
 

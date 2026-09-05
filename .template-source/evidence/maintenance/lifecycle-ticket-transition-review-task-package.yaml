@@ -10,8 +10,8 @@ workflow_status: active
 skill_source:
   registry_ref: docs/agents/digital-human-roles.yaml
   defaults_ref: taskPackageDefaults(role.test-engineer)
-  core_skills: [tdd, diagnosing-bugs, code-review, alibaba-java-code-style, yss-ui, yss-design-system, yss-page-module-development, yss-domain, yss-application, yss-repository, yss-web-controller, yss-dto, mapstruct, lombok]
-  forbidden_skills: [yss-ddd-scaffold-generator, yss-frontend-scaffold-generator, implement, to-spec]
+  core_skills: [tdd, diagnosing-bugs, code-review, alibaba-java-code-style, yss-ui, yss-design-system, yss-ui-business-page-generation, yss-domain, yss-application, yss-repository, yss-web-controller, yss-dto, mapstruct, lombok]
+  forbidden_skills: [yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, yss-frontend-scaffold-generator, implement, to-spec]
 contract:
   kind: template-maintenance
   contract_id: lifecycle-ticket-transition-review

@@ -20,6 +20,7 @@ This skill distills the provided `阿里巴巴 Java 开发手册` 1.4.0 PDF into
 
 ## Core Priorities
 
+- 先消费 architecture_identity 与工程 Java/数据库基线。MVC 分层按 `docs/agents/backend-architecture-profiles.md`；MySQL 专属方言规则仅对批准的 MySQL 存储生效，不能要求 H2 骨架引入 MySQL 驱动。YSS 包装、命名及处理器差异逐项记录基线例外，安全、权限、敏感信息与 SQL 参数绑定不得豁免。
 - Keep names readable, English, and consistent with Java layer conventions.
 - Avoid null, equality, wrapper comparison, collection, and concurrency traps that compile cleanly but fail at runtime.
 - Make logs useful without wasting CPU, disk, or alert budget.

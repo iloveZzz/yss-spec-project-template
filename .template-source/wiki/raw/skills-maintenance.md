@@ -29,9 +29,9 @@
 
 项目允许按 YSS 流程适配上游 skill，但必须同时保留可追溯的上游信息和适配后的有效哈希。
 
-当前 Matt 快照为 `0ab1b63a410a03d3627979a109c8695de27af954`。`ask-matt` 的关联入口包括 `to-questionnaire`、`wait-what`、`writing-for-agents` 和 `PHASE-BOUNDARIES.md`；这些支持文件随共享 skill 目录一起计算 `effectiveHash`，不得单独投影或维护。
+当前 Matt 快照为 `0ab1b63a410a03d3627979a109c8695de27af954`。模板按 YSS capability 白名单收录上游 Skill；已退役的通用路由、个人工作流、教学、练习、写作实验和专项迁移 Skill 不再随 project-instance 分发。
 
-本轮升级还将生命周期适配固定为：阶段边界只写可选 `phase_boundary` 证据；`to-questionnaire` 使用 `external-input-required` 暂停并在答案回流后重新分类影响面；Matt `prototype` 的单文件 HTML 只作为回流输入，YSS 原型仍须完成低保真评审、H1/H2 档位路由、schema v3 验证和用户确认。人工 checkpoint 与 `diagnosing-bugs` 的输出必须脱敏，`wait-what` 不改变生命周期状态。
+本轮升级还将生命周期适配固定为：阶段边界只写可选 `phase_boundary` 证据；`to-questionnaire` 使用 `external-input-required` 暂停并在答案回流后重新分类影响面；Matt `prototype` 的单文件 HTML 只作为回流输入，YSS 原型仍须完成低保真评审、H1/H2 档位路由、Prototype Evidence schema v4、Visual Baseline schema v1 验证和用户确认。人工 checkpoint 与 `diagnosing-bugs` 的输出必须脱敏，`wait-what` 不改变生命周期状态。
 
 ## 维护流程
 
@@ -94,7 +94,7 @@ YSS 技能的公开发布仓库为 `iloveZzz/yss-spec-dev-skills`，它是本模
 - 发布顺序为：同步 canonical projections → 更新 lock → `scripts/verify-template` → 导出并检查 → 独立审查 → 在 `yss-spec-dev-skills` 提交人工 PR。不得从目标仓库反向覆盖 `.agents/skills`。
 - skills.sh 通过 `npx skills add iloveZzz/yss-spec-dev-skills` 的安装遥测自动发现技能，不需要手工注册；遥测可用 `DISABLE_TELEMETRY=1` 或 `DO_NOT_TRACK` 关闭。
 
-已退休、personal 或由 YSS 有意排除的条目（`design-an-interface`、`qa`、`request-refactor-plan`、`ubiquitous-language`、`edit-article`、`obsidian-vault`、`writing-great-skills`、`web-design-engineer`、`web-video-presentation`、`wireframe-prototype`、`wizard`、`git-guardrails-claude-code`、`claude-handoff`、`batch-grill-me`）不再进入 `.agents/skills`、六个共享投影根或 `skills-lock.json`。其中 `wizard` 是最新上游仍存在但 YSS 当前有意排除的人工步骤技能，不应描述为上游已退休。迁移时使用 `codebase-design`、`triage + to-tickets`、`to-spec + improve-codebase-architecture`、`domain-modeling`、`product-design:index`、普通人工 checkpoint 或 `handoff` 等现行路由，不创建兼容目录。
+已退休、personal 或由 YSS 有意排除的条目不再进入 `.agents/skills`、六个共享投影根或 `skills-lock.json`。退役 ID、日期和替代路径只在 [`skill-migrations.md`](./skill-migrations.md) 持久化，其他活跃文档不得重复维护清单或创建兼容目录。其中 `wizard` 是最新上游仍存在但 YSS 当前有意排除的人工步骤技能，不应描述为上游已退休。
 
 ## 外部工作流工具
 

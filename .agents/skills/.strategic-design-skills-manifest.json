@@ -3,18 +3,18 @@
   "source": "iloveZzz/yss-harness-design-agent",
   "source_type": "git-submodule",
   "source_root": ".agents/skills",
-  "source_revision": "33a6c46d0d40daf054fd78250e71651c6f0a309d",
+  "source_revision": "dd1ec2dbaf3ce6da528607519ef2d0888b78dbb4",
   "adaptation_ref": "docs/agents/strategic-design-skills-integration.md",
   "skills": [
     {
       "upstream": "prototype-review",
       "canonical": "prototype-review",
-      "upstream_hash": "92ab63f2c9aabf81580bd80d1a96a6174c9d4808f893a06a5180413af381e291"
+      "upstream_hash": "2e77b3093a758bb692fb3bda453c5c020d0523f875975e17e2731365f67432e1"
     },
     {
       "upstream": "yss-prototype-stage",
       "canonical": "yss-prototype-stage",
-      "upstream_hash": "e49a008c3ed82ed5e919daf09f13595100efc063056f40a5d8ac577adc731f78"
+      "upstream_hash": "e8f2f3a507da6bf7be0582e4a4dd9659381da8e291755070698a1f51a4e33808"
     },
     {
       "upstream": "yss-design-system",
@@ -24,7 +24,7 @@
     {
       "upstream": "yss-antd-design",
       "canonical": "yss-antd-design",
-      "upstream_hash": "917099caa9b76ca3cfd1d0f81f61b28111c1c54ed93e92891f81012dcd0662e2"
+      "upstream_hash": "08ce99d45586d5ea19e25fdd9e9a6ede16e66f18992b70b87e0cd23f92343b16"
     },
     {
       "upstream": "yss-antdv-next-design",

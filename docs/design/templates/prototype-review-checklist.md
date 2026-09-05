@@ -11,7 +11,7 @@
 | 原型 / 线框图 | `<链接或导出图片路径>` |  |
 | 状态矩阵 | `docs/.scratch/<feature>/design/<feature>-state-matrix.md` |  |
 | 原型阶段合同 / Product Design 路由记录 | `yss-prototype-stage -> product-design:index -> <focused skill>` |  |
-| 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 档位确定后补齐 schema v3 共同与档位证据 |
+| 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 档位确定后补齐 schema v4 共同与档位证据，并引用 Visual Baseline Bundle v1 |
 | 现有 API 草案 | `docs/.scratch/<feature>/api/<feature>.yaml` | 可选 |
 
 ## 门禁清单

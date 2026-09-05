@@ -4,6 +4,7 @@ import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { DEFAULT_REGISTRY, loadSkillRegistry } from "./skill-registry.mjs";
 import { ROOT } from "./skill-supply-chain.mjs";
+import { architectureDigest, assertArchitectureAgreement, validateArchitectureIdentity } from "./backend-architecture.mjs";
 
 export const DEFAULT_COMPILER_CONTRACT = path.join(
   ROOT,
@@ -58,7 +59,9 @@ export function compileImplementationContract({
   conditions = [],
   compiledAt = new Date().toISOString(),
   registryDigest,
-  compilerContractDigest
+  compilerContractDigest,
+  architecture_identity,
+  architecture_evidence
 }) {
   assertV2(registry, compilerContract);
   if (!Array.isArray(recipeIds) || !Array.isArray(requiredCapabilities) || !Array.isArray(conditions)) {
@@ -71,6 +74,16 @@ export function compileImplementationContract({
   const knownRecipes = new Map(registry.recipes.map((recipe) => [recipe.id, recipe]));
   for (const recipeId of requestedRecipes) if (!knownRecipes.has(recipeId)) fail(`未知 recipe: ${recipeId}`);
   const orderedRecipes = registry.recipes.filter((recipe) => requestedRecipes.has(recipe.id));
+  const retiredRecipes = new Set(["backend.domain-behavior", "backend.persistence-mybatis", "backend.http-api"]);
+  for (const recipe of orderedRecipes) if (retiredRecipes.has(recipe.id) || recipe.maturity === "deprecated") fail(`deprecated/read-only Recipe ${recipe.id}；必须按架构重新编译`);
+  const architectural = orderedRecipes.some((recipe) => recipe.architecture_family) || requiredCapabilities.some((id) => id.startsWith("layer."));
+  let architectureProfile;
+  if (architectural || architecture_identity) {
+    architectureProfile = validateArchitectureIdentity(architecture_identity, registry);
+    if (!architecture_evidence?.engineering_baseline || !architecture_evidence?.repository_registration || !architecture_evidence?.manifest) fail("缺少工程基线、仓库登记或 Manifest 架构证据");
+    assertArchitectureAgreement(architecture_identity, architecture_evidence, registry);
+    for (const recipe of orderedRecipes) if (recipe.architecture_family && recipe.architecture_family !== architecture_identity.architecture_family) fail(`Recipe ${recipe.id} 与架构族不匹配`);
+  }
 
   const capabilitySources = new Map();
   const orderedCapabilities = [];
@@ -90,6 +103,11 @@ export function compileImplementationContract({
 
   const capabilities = new Map(registry.capabilities.map((capability) => [capability.id, capability]));
   for (const capabilityId of orderedCapabilities) if (!capabilities.has(capabilityId)) fail(`未知 capability: ${capabilityId}`);
+  const dddCapabilities = new Set(["layer.domain", "layer.application", "layer.persistence", "layer.web-adapter"]);
+  for (const id of orderedCapabilities) {
+    const family = capabilities.get(id).architecture_family ?? (dddCapabilities.has(id) ? "domain-driven" : null);
+    if (family && family !== architecture_identity?.architecture_family) fail(`capability ${id} 与 architecture_identity 不匹配`);
+  }
   const knownSkills = new Set(registry.skills.map((skill) => skill.id));
   const conditionSet = new Set(conditions);
   const reasons = new Map();
@@ -142,6 +160,13 @@ export function compileImplementationContract({
   return {
     schema_version: 2,
     status: "draft",
+    ...(architecture_identity ? {
+      architecture_identity: structuredClone(architecture_identity),
+      architecture_identity_digest: architectureDigest(architecture_identity),
+      profile_maturity: architectureProfile.maturity,
+      readiness_blockers: architectureProfile.maturity === "supported" ? [] : ["backend-profile-not-supported"],
+      skill_profiles: Object.fromEntries(orderedSkills.map((skill) => [skill, architecture_identity.architecture_profile]))
+    } : {}),
     recipe_ids: orderedRecipes.map((recipe) => recipe.id),
     conditions: [...conditionSet].sort(),
     required_capabilities: orderedCapabilities,
@@ -171,6 +196,11 @@ export function evaluateContractFreshness(contract, { registry, compilerContract
   const reasons = [];
   if (resolution.registry_digest !== digestDocument(registry)) reasons.push("registry-digest-changed");
   if (resolution.compiler_contract_digest !== digestDocument(compilerContract)) reasons.push("compiler-contract-digest-changed");
+  if (resolution.architecture_identity) {
+    try { validateArchitectureIdentity(resolution.architecture_identity, registry); }
+    catch { reasons.push("architecture-identity-invalid"); }
+    if (resolution.architecture_identity_digest !== architectureDigest(resolution.architecture_identity)) reasons.push("architecture-identity-digest-changed");
+  }
   return { freshness: reasons.length ? "stale" : "current", reasons };
 }
 
@@ -183,11 +213,14 @@ export function validateExecutionResult(result, contract, current) {
   const consumed = result.consumed_contract ?? {};
   const resolution = contract.resolution ?? contract;
   const blockers = [];
+  if (resolution.architecture_identity && architectureDigest(result.architecture_identity ?? null) !== resolution.architecture_identity_digest) blockers.push("architecture-identity-mismatch");
+  if (resolution.readiness_blockers?.length) blockers.push(...resolution.readiness_blockers);
   if (consumed.contract_id !== contract.contract_id || consumed.contract_version !== contract.contract_version) blockers.push("contract-version-mismatch");
   if (consumed.registry_digest !== resolution.registry_digest || consumed.compiler_contract_digest !== resolution.compiler_contract_digest) blockers.push("resolution-digest-mismatch");
   if (!Array.isArray(result.verification_results) || !result.verification_results.length) blockers.push("verification-not-executed");
   else for (const item of result.verification_results) {
     if (!item?.command || item.exit_code === undefined || !item.executed_at) blockers.push("verification-result-incomplete");
+    else if (item.exit_code !== 0) blockers.push("verification-failed");
   }
   if (Array.isArray(result.new_impacts) && result.new_impacts.length) blockers.push("new-impacts");
   return { status: blockers.length ? "blocked" : "accepted", blockers: [...new Set(blockers)] };

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, writeFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -10,6 +10,34 @@ import { generate, parseArgs } from "./generate_controller.mjs";
 const scripts = path.dirname(fileURLToPath(import.meta.url));
 const dtoWireProfileFile = path.resolve(scripts, "../../yss-dto/references/openapi-wire-profile.yaml");
 const dtoWireProfileDigest = createHash("sha256").update(await readFile(dtoWireProfileFile)).digest("hex");
+
+for (const [profile, module, placement, modules, generator] of [
+  ["layered-mvc-service", "service", "server", ["server", "service", "repository"], "yss-layered-mvc-scaffold-generator"],
+  ["mvc-data-analysis-v1", "core", "client", ["server", "core", "client", "repository", "adapter", "feign-client"], "yss-mvc-data-analysis-project-initializer"]
+]) test(`${profile} binds MVC service types, DTO ownership and drift checks`, async (t) => {
+  const data = await fixture({ platform_profile: "spring-boot-2.7-jdk8", validation_namespace: "javax" });
+  t.after(() => rm(data.root, { recursive: true, force: true }));
+  const identity = { architecture_family: "layered-mvc", architecture_profile: profile, generator_skill: generator, requested_capabilities: [], resolved_modules: modules, contract_digest: "a".repeat(64), verification_database: "h2", production_database: "not-bound" };
+  const project = path.join(data.root, "demo-service");
+  const manifestFile = path.join(project, ".yss/scaffold-generation.json");
+  const manifest = { schema_version: 3, project_name: "demo-service", base_package: "com.yss.demo", completion_level: "empty-scaffold-verified", architecture_identity: identity, profiles: { platform: "spring-boot-2.7-jdk8", validation_namespace: "javax" } };
+  await mkdir(path.dirname(manifestFile), { recursive: true });
+  await writeFile(manifestFile, JSON.stringify(manifest));
+  const contract = webContract(project, { architecture_profile: profile, architecture_identity: identity, dto_placement: placement, integration_mode: "scaffold-v2", scaffold_manifest_ref: manifestFile, platform_profile: "spring-boot-2.7-jdk8", validation_namespace: "javax", application_service_package: `com.yss.demo.${module}.service` });
+  await writeFile(data.contract, JSON.stringify(contract));
+  const args = parseArgs([...data.args.map((x) => x === "com.yss.demo.application.service" ? `com.yss.demo.${module}.service` : x), "--scaffold-manifest-file", manifestFile, "--web-project-dir", path.join(project, "demo-service-server")]);
+  manifest.architecture_identity = { ...identity, contract_digest: "b".repeat(64) };
+  await writeFile(manifestFile, JSON.stringify(manifest));
+  await assert.rejects(() => generate(args), /stale/);
+  manifest.architecture_identity = identity;
+  await writeFile(manifestFile, JSON.stringify(manifest));
+  const files = await generate(args, { log() {}, warn() {} });
+  assert.equal(files.length, 6);
+  const convertor = await readFile(path.join(project, "demo-service-server/src/main/java/com/yss/demo/rest/convertor/QualityRuleWebConvertor.java"), "utf8");
+  assert.match(convertor, new RegExp(`com\\.yss\\.demo\\.${module}\\.command`));
+  assert.doesNotMatch(convertor, /\.application\.|\.domain\.|Gateway/);
+  await readFile(path.join(project, `demo-service-${placement}/src/main/java/com/yss/demo/rest/dto/request/QualityRuleCreateRequest.java`));
+});
 
 const metadataValue = {
   tables: [{

@@ -4,6 +4,8 @@ import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { spawn } from "node:child_process";
+import { assertArchitectureAgreement } from "../../../../scripts/lib/backend-architecture.mjs";
+import { assertLocalDatabaseProfile, scaffoldArchitectureIdentity } from "../../../../scripts/lib/scaffold-local-database.mjs";
 
 const PHASES = ["validate", "test", "package"];
 const COMMANDS = PHASES.map((phase) => `./mvnw ${phase}`);
@@ -37,11 +39,21 @@ function classifyFailure(phase, outcome) {
 }
 function parseArgs(argv) { const result = {}; for (let index = 0; index < argv.length; index += 1) { let token = argv[index]; if (token === "--help" || token === "-h") { result.help = true; continue; } const equals = token.indexOf("="); let value; if (equals !== -1) { value = token.slice(equals + 1); token = token.slice(0, equals); } if (!["--project-root", "--evidence-dir"].includes(token)) throw new Error(`不支持的参数: ${token}`); if (value === undefined) value = argv[++index]; if (!value || value.startsWith("--")) throw new Error(`参数 ${token} 缺少值`); result[token === "--project-root" ? "projectRoot" : "evidenceDir"] = path.resolve(value); } if (result.help) return result; if (!result.projectRoot || !result.evidenceDir) throw new Error("必须提供 --project-root 和 --evidence-dir"); return result; }
 function validateManifest(manifest) {
-  if (manifest.schema_version !== 2) throw new Error(`unsupported: scaffold Manifest schema_version=${manifest.schema_version}；只验证 Target Profile v2`);
+  if (![2, 3].includes(manifest.schema_version)) throw new Error(`unsupported: scaffold Manifest schema_version=${manifest.schema_version}；只读兼容 v2，并验证当前 v3`);
   const required = ["schema_version", "contract_id", "contract_version", "scaffold_request_id", "contract_digest", "profiles", "ownership", "readiness", "generation_policy", "completion_level", "approval_ref", "approver", "lifecycle_approval_ref", "compiler_draft_ref", "persisted_ref", "contract_file_ref", "current_version", "allowed_write_paths", "expected_evidence_files", "verification_commands", "generation_mode"];
+  if (manifest.schema_version === 3) required.push("architecture_family", "generator_skill", "decision_id", "decision_digest", "module_profile");
   const missing = required.filter((field) => manifest[field] === undefined || manifest[field] === null || manifest[field] === "");
   if (manifest.generation_mode !== "controlled-generation" || missing.length) throw new Error(`脚手架生成元数据清单不完整或不是 controlled-generation: ${missing.join(", ")}`);
-  if (manifest.profiles.architecture !== "target-domain-model" || manifest.generation_policy.mode !== "initialize-only" || manifest.generation_policy.existing_target !== "unsupported" || manifest.generation_policy.old_project_migration !== "unsupported" || manifest.generation_policy.template_upgrade !== "unsupported") throw new Error("Manifest v2 必须声明 Target Profile 与严格 initialize-only；已有目标、旧项目迁移和模板升级均须为 unsupported");
+  if (manifest.schema_version === 3) {
+    if (manifest.kind || manifest.architecture_identity) {
+      assertLocalDatabaseProfile(manifest.profiles);
+      assertArchitectureAgreement(manifest.architecture_identity, { manifest_fields: scaffoldArchitectureIdentity(manifest, manifest.contract_digest) });
+    }
+    const supportedArchitecture = manifest.architecture_family === "domain-driven" && manifest.generator_skill === "yss-ddd-scaffold-generator" && manifest.profiles.architecture === "target-domain-model"
+      || manifest.architecture_family === "layered-mvc" && ["yss-layered-mvc-scaffold-generator", "yss-mvc-data-analysis-project-initializer"].includes(manifest.generator_skill) && manifest.profiles.architecture === "layered-mvc";
+    if (!supportedArchitecture || manifest.module_profile?.resolution_version !== 1 || !Array.isArray(manifest.module_profile?.resolved_modules)) throw new Error("Manifest v3 的架构族、生成器、Profile 或模块闭包不一致");
+  } else if (manifest.profiles.architecture !== "target-domain-model") throw new Error("历史 Manifest v2 只读兼容仅支持 target-domain-model");
+  if (manifest.generation_policy.mode !== "initialize-only" || manifest.generation_policy.existing_target !== "unsupported" || manifest.generation_policy.old_project_migration !== "unsupported" || manifest.generation_policy.template_upgrade !== "unsupported") throw new Error("Manifest 必须声明严格 initialize-only；已有目标、旧项目迁移和模板升级均须为 unsupported");
   if (manifest.current_version !== manifest.contract_version) throw new Error("脚手架生成元数据清单不是当前合同版本");
   if (JSON.stringify(manifest.verification_commands) !== JSON.stringify(COMMANDS)) throw new Error("脚手架生成元数据清单验证命令不符合固定合同");
 }

@@ -69,7 +69,7 @@ orchestrator:
   default_dual_hat: [role.project-manager]
   stages: [stage.entry-triage, stage.discovery, stage.spec-architecture, stage.product-design, stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
   core_skills: [yss-product-lifecycle, yss-implementation-contract-compiler]
-  forbidden_skills: [yss-domain, yss-ui, yss-page-module-development, yss-web-controller, yss-repository, implement]
+  forbidden_skills: [yss-domain, yss-ui, yss-ui-business-page-generation, yss-web-controller, yss-repository, implement]
   description: >-
     Own YSS lifecycle routing. Read yss-project.yaml and CONTEXT.md first.
     Select the next unblocked work unit, compile a task package, and assign
@@ -87,7 +87,7 @@ roles:
     stages: [stage.discovery, stage.spec-architecture]
     draft_artifact_ids: [artifact.discovery-record, artifact.spec]
     core_skills: [grilling, domain-modeling, yss-research, competitive-intelligence, grill-with-docs]
-    forbidden_skills: [yss-ui, yss-domain, yss-web-controller, yss-repository, yss-ddd-scaffold-generator, yss-frontend-scaffold-generator, implement, tdd]
+    forbidden_skills: [yss-ui, yss-domain, yss-web-controller, yss-repository, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, yss-frontend-scaffold-generator, implement, tdd]
     description: >-
       Own Discovery language, users, MVP, non-goals, success criteria, test
       seams, and Spec prose. Propose CONTEXT.md glossary entries. Do not freeze
@@ -102,7 +102,7 @@ roles:
     stages: [stage.discovery, stage.spec-architecture, stage.product-design, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.product-overview, artifact.functional-architecture, artifact.interaction-spec, artifact.state-matrix, artifact.prototype-confirmation]
     core_skills: [yss-design-system, yss-prototype-stage, prototype-review, yss-antdv-next-design, yss-research, competitive-intelligence]
-    forbidden_skills: [yss-ui, yss-domain, yss-repository, yss-web-controller, yss-ddd-scaffold-generator, implement, tdd]
+    forbidden_skills: [yss-ui, yss-domain, yss-repository, yss-web-controller, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, implement, tdd]
     description: >-
       Own priority, product-design impact, interaction, state matrix, prototype
       confirmation recommendation, and the commercial constraints, delivery
@@ -138,8 +138,8 @@ roles:
     title: YSS 前端工程师
     stages: [stage.product-design, stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.frontend-implementation-plan]
-    core_skills: [yss-ui, yss-ui-business-page-generation, yss-page-module-development, yss-components, yss-formily, formily-foundation, formily-linkage-effects, formily-mode-slot-detail, formily-step-flow, ytable-usage, ytree-usage, yedit-table-usage, yss-api-integration, yss-hook, theme-token-usage, page-skeleton, page-list-module, page-form-module, component-selection-imports, vue3-best-practices, tdd]
-    forbidden_skills: [yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-ddd-scaffold-generator, java-backend-commit]
+    core_skills: [yss-ui, yss-ui-business-page-generation, yss-components, yss-formily, formily-foundation, formily-linkage-effects, formily-mode-slot-detail, formily-step-flow, ytable-usage, ytree-usage, yedit-table-usage, yss-api-integration, yss-hook, theme-token-usage, page-skeleton, page-list-module, page-form-module, component-selection-imports, vue3-best-practices, tdd]
+    forbidden_skills: [yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, java-backend-commit]
     description: >-
       Own Vue page modules, frontend tests, and frontend_implementation_plan.
       Review OpenAPI Draft for client fit and prototype feasibility. Write only
@@ -153,8 +153,8 @@ roles:
     title: YSS 后端工程师
     stages: [stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.openapi-draft, artifact.data-architecture]
-    core_skills: [yss-implementation-contract-compiler, yss-tactical-design, yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-dto, mapstruct, lombok, alibaba-java-code-style, yss-exception, yss-validation, tdd, yss-ddd-scaffold-generator]
-    forbidden_skills: [yss-ui, yss-page-module-development, yss-formily, yss-frontend-scaffold-generator, yss-antd-design, yss-antdv-next-design, page-list-module, page-form-module]
+    core_skills: [yss-implementation-contract-compiler, yss-tactical-design, yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-dto, mapstruct, lombok, alibaba-java-code-style, yss-exception, yss-validation, tdd, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator]
+    forbidden_skills: [yss-ui, yss-ui-business-page-generation, yss-formily, yss-frontend-scaffold-generator, yss-antd-design, yss-antdv-next-design, page-list-module, page-form-module]
     description: >-
       Own OpenAPI Draft, data-architecture contributions, and backend tests.
       Write only contract-allowed backend paths. Verify with ./mvnw. Do not
@@ -169,8 +169,8 @@ roles:
     stages: [stage.spec-architecture, stage.vertical-slice-implementation, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.frontend-implementation-verification]
     owned_evidence_ids: [evidence.fresh-verification, evidence.frontend-implementation-verification]
-    core_skills: [tdd, diagnosing-bugs, code-review, alibaba-java-code-style, yss-ui, yss-design-system, yss-page-module-development, yss-domain, yss-application, yss-repository, yss-web-controller, yss-dto, mapstruct, lombok]
-    forbidden_skills: [yss-ddd-scaffold-generator, yss-frontend-scaffold-generator, implement, to-spec]
+    core_skills: [tdd, diagnosing-bugs, code-review, alibaba-java-code-style, yss-ui, yss-design-system, yss-ui-business-page-generation, yss-domain, yss-application, yss-repository, yss-web-controller, yss-dto, mapstruct, lombok]
+    forbidden_skills: [yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, yss-frontend-scaffold-generator, implement, to-spec]
     description: >-
       Own test code, defect records, fresh verification, and frontend
       implementation verification evidence. Review every implementation slice

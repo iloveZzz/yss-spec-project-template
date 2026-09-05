@@ -45,7 +45,8 @@ capabilities:
   - { id: component.security-algorithm, primary_skill: yss-security-algorithm, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
   - { id: component.gateway-resilience, primary_skill: yss-resilience4j, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
   - { id: scaffold.ddd, primary_skill: yss-ddd-scaffold-generator, task_modes: [integration, component-maintenance] }
-  - { id: scaffold.mvc, primary_skill: yss-mvc-scaffold-generator, task_modes: [integration, component-maintenance] }
+  - { id: scaffold.layered-mvc, primary_skill: yss-layered-mvc-scaffold-generator, task_modes: [integration, component-maintenance] }
+  - { id: project-init.mvc-data-analysis, primary_skill: yss-mvc-scaffold-generator, task_modes: [component-maintenance] }
   - { id: migration.springboot3, primary_skill: yss-up-springboot3, task_modes: [guidance, integration, troubleshooting, component-maintenance, review-input] }
 recipes:
   - { id: backend.domain-behavior, capabilities: [layer.domain, layer.application, quality.java-code-style] }
@@ -59,15 +60,18 @@ recipes:
   - { id: backend.security-algorithm, capabilities: [component.security-algorithm, contract.error-mapping] }
   - { id: backend.distributed-id, capabilities: [component.distributed-id] }
   - { id: backend.ddd-scaffold, capabilities: [scaffold.ddd, quality.java-code-style] }
-  - { id: backend.mvc-scaffold, capabilities: [scaffold.mvc, quality.java-code-style] }
+  - { id: backend.mvc-scaffold, capabilities: [scaffold.layered-mvc, quality.java-code-style] }
   - { id: backend.springboot3-migration, capabilities: [migration.springboot3, quality.java-code-style] }
 skill_dependencies:
   yss-prototype-stage:
     - { skill: prototype-review, type: review-only }
     - { skill: yss-design-system, type: coordination-only }
-    - { skill: yss-antd-design, type: context-conditional, when: h2-react-antd }
+    - { skill: yss-antdv-next-design, type: context-conditional, when: h2-vue-antdv-next-default }
+    - { skill: yss-antd-design, type: context-conditional, when: h2-react-antd-explicit-compatibility }
   yss-ddd-scaffold-generator:
     - { skill: yss-backend-scaffold-parent, type: context-required }
+    - { skill: alibaba-java-code-style, type: context-required }
+  yss-layered-mvc-scaffold-generator:
     - { skill: alibaba-java-code-style, type: context-required }
   yss-domain:
     - { skill: alibaba-java-code-style, type: context-required }
@@ -111,11 +115,6 @@ skill_dependencies:
     - { skill: yss-hook, type: context-conditional, when: hooks }
     - { skill: yss-formily, type: context-conditional, when: form }
     - { skill: yss-api-integration, type: context-conditional, when: api }
-  yss-page-module-development:
-    - { skill: yss-components, type: context-conditional, when: components }
-    - { skill: yss-hook, type: context-conditional, when: hooks }
-    - { skill: yss-formily, type: context-conditional, when: form }
-    - { skill: yss-api-integration, type: context-conditional, when: api }
   yss-api-integration:
     - { skill: yss-openapi-governance, type: context-conditional, when: regeneration }
 invocation_contract:
@@ -154,6 +153,11 @@ invocation_contract:
       trigger_conditions: [prototype-profile:H2, component-basis:react-antd]
       exclusion_conditions: [prototype-profile:H1, component-basis:not-antd]
       primary_output: versioned-antd-facts
+    yss-antdv-next-design:
+      invocation_mode: model
+      trigger_conditions: [prototype-profile:H2, component-basis:vue-antdv-next]
+      exclusion_conditions: [prototype-profile:H1, component-basis:not-antdv-next, production-frontend-implementation]
+      primary_output: versioned-antdv-next-facts
 agent_runtime_roots:
   claude: .claude/skills
   codex: .codex/skills
@@ -174,12 +178,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [quality]
-  - id: ask-matt
-    layer: compatibility
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [lifecycle]
   - id: code-review
     layer: core
     maturity: supported
@@ -210,12 +208,6 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [quality]
-  - id: dispatching-parallel-agents
-    layer: maintainer-only
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [lifecycle]
   - id: domain-modeling
     layer: core
     maturity: supported
@@ -276,12 +268,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
-  - id: loop-me
-    layer: maintainer-only
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [setup]
   - id: maintaining-skills
     layer: core
     maturity: supported
@@ -294,12 +280,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
-  - id: migrate-to-shoehorn
-    layer: maintainer-only
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [setup]
   - id: prototype
     layer: maintainer-only
     maturity: supported
@@ -324,26 +304,8 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [quality]
-  - id: scaffold-exercises
-    layer: maintainer-only
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [setup]
   - id: setup-matt-pocock-skills
     layer: compatibility
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [setup]
-  - id: setup-pre-commit
-    layer: maintainer-only
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [setup]
-  - id: setup-ts-deep-modules
-    layer: maintainer-only
     maturity: supported
     instance_default_discoverable: false
     aliases: []
@@ -354,12 +316,6 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [quality]
-  - id: teach
-    layer: maintainer-only
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [writing]
   - id: to-questionnaire
     layer: maintainer-only
     maturity: supported
@@ -402,31 +358,19 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [lifecycle]
-  - id: writing-beats
-    layer: maintainer-only
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [writing]
   - id: writing-for-agents
     layer: maintainer-only
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [writing]
-  - id: writing-fragments
-    layer: maintainer-only
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [writing]
-  - id: writing-shape
-    layer: maintainer-only
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [writing]
   - id: yss-antd-design
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [prototype]
+  - id: yss-antdv-next-design
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
@@ -463,6 +407,12 @@ skills:
     aliases: []
     impacts: [frontend]
   - id: yss-ddd-scaffold-generator
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend]
+  - id: yss-layered-mvc-scaffold-generator
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
@@ -534,12 +484,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
-  - id: yss-microapp-commit
-    layer: maintainer-only
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: [microapp-commit]
-    impacts: [frontend]
   - id: yss-mvc-scaffold-generator
     layer: specialist
     maturity: supported
@@ -564,12 +508,6 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [api]
-  - id: yss-page-module-development
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: [page-module-development]
-    impacts: [frontend]
   - id: yss-product-lifecycle
     layer: core
     maturity: supported
@@ -732,12 +670,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
-  - id: prototype-page-acceptance
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [prototype, frontend]
   - id: theme-token-usage
     layer: specialist
     maturity: supported

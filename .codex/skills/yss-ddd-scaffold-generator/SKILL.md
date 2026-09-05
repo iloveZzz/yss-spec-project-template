@@ -23,7 +23,7 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 
 ## 优先流程
 
-1. 确认服务级 `scaffold_request_id`、项目名、基础包名、Maven 项目坐标、父 POM GAV、YSS Components BOM 版本、输出目录和批准 Profile。Java `base_package` 与 Maven `group_id` 是两个独立输入，不得相互推导；脚手架发生在 Ticket 正式化前，不使用 `slice_id` 伪造切片身份。
+1. 确认服务级 `scaffold_request_id`、已由用户确认且生命周期批准的 `domain-driven` 架构选择及 digest、项目名、基础包名、Maven 项目坐标、父 POM GAV、YSS Components BOM 版本、输出目录和批准 Profile。Java `base_package` 与 Maven `group_id` 是两个独立输入，不得相互推导；脚手架发生在 Ticket 正式化前，不使用 `slice_id` 伪造切片身份。
    Harness 内输出目录必须是 `apps/backend/` 容器，生成器再以 `project_name` 创建 `apps/backend/<project>/`；禁止使用 `app/backend/`、`app/frontend/` 或把 `apps/backend/` 之外的容器根当作后端项目根。
 2. 优先运行 `node scripts/generate_and_verify_scaffold.mjs`，在同一个受控工作流中生成骨架并执行真实 Maven 验证。`generate_scaffold.mjs` 只是底层生成原语，单独返回 0 不代表脚手架完成。
 3. 检查生成的模块名、POM、机械启动入口、基础配置文件和包路径。
@@ -45,7 +45,6 @@ node scripts/generate_and_verify_scaffold.mjs \
   --parent-version 2.0.0-SNAPSHOT \
   --yss-components-version 2.0.0-SNAPSHOT \
   --output-dir /path/to/implementation-repo \
-  --database mysql \
   --contract-id <approved-scaffold-contract-id> \
   --contract-version <current-version> \
   --approval-ref <lifecycle-approval-ref> \
@@ -89,10 +88,10 @@ node scripts/run_first_slice_verification.mjs \
 - 生成后的后端工程必须使用项目根目录 `./mvnw ...` 执行构建、测试、运行和 CI 验证；不得在 README、实施记录、Ticket、Review 或 Release 中默认写裸 `mvn ...`。既有仓库确实无法使用 wrapper 时，必须记录受控例外。
 - 原型确认后，`scaffold_status=required` 才能进入本 skill；本 skill 的生成边界是工程结构、POM、配置、Wrapper 和机械模板，不是业务实现。
 - 脚手架合同必须携带 `contract_id`、`contract_version`、实现合同编译器 draft 引用、生命周期批准引用、持久化引用、当前版本、允许写路径、预期证据文件和验证命令；字段缺失或版本过期时阻断。
-- 新脚手架合同只接受 schema v2，必须分别携带 `project_name`、`base_package` 和 `maven_coordinates`；后者包含项目 `group_id` / `project_version`、父 POM GAV 与 `yss_components_version`，并由 CLI 原样传入。schema v1 为 `unsupported`，直接拒绝且不自动升级。
+- 新脚手架合同只接受 schema v3，必须携带 `architecture_family=domain-driven`、`generator_skill`、`decision_ref/id/digest`、固定模块闭包，并分别携带 `project_name`、`base_package` 和 `maven_coordinates`；后者包含项目 `group_id` / `project_version`、父 POM GAV 与 `yss_components_version`，并由 CLI 原样传入。历史 schema v2 仅只读兼容，不用于新生成；schema v1/v2 均不自动升级。
 - 合同 `profiles` 只支持 `target-domain-model`、`mybatis-plus`、`mysql`、`spring-boot-2.7-jdk8`、`javax`、`web`、`yss-internal`。普通 MyBatis、Boot 3、独立 client module、client-in-domain 和其他旧架构均为 `unsupported`，不提供回退分支。
 - 运行生成器必须传入 `--contract-file`；生成器会校验合同 `status=approved`、`current_version`、`primary_skill`、`controlled-generation`、实际输出路径和固定三条验证命令，不接受仅凭任意字符串引用的放行。
-- 生成项目必须写入 Manifest v2 `.yss/scaffold-generation.json`，记录合同 digest、Target Profile、模板 digest、下游完整 skill tree digest、脚手架父合同与 实现合同编译器 合同 digest、generator-owned 文件 hash、严格 `generation_policy` 和完成等级；清单缺失或不一致时不得交给后续 实现合同编译器。
+- 生成项目必须写入 Manifest v3 `.yss/scaffold-generation.json`，记录架构选择及 digest、生成器、合同 digest、Target Profile、模块闭包、模板 digest、下游完整 skill tree digest、脚手架父合同与 实现合同编译器 合同 digest、generator-owned 文件 hash、严格 `generation_policy` 和完成等级；清单缺失或不一致时不得交给后续 实现合同编译器。
 - `first-slice-verified` 只能由 `run_first_slice_verification.mjs` 写入。手工改 Manifest、只生成 Controller、只通过局部模块测试或仅有结构扫描都不能升级完成等级。
 - 严禁把领域规则、状态机、权限、事务、复杂查询、错误映射、业务字段或用户可见行为塞进脚手架生成步骤。`./mvnw validate`、输出目录存在或“生成成功”都不等于生命周期批准、架构放行或 `ready-for-agent`。
 - 生命周期脚手架生成必须关闭 `--with-example`，不得把 User CRUD 或业务字段当作样板。生成器严格 `initialize-only`：非空目标、`--force`、旧项目迁移和当前模板升级一律 `unsupported`。未来若支持同一 Target Profile 内的模板升级，必须另行设计和批准，当前不预留可执行承诺。

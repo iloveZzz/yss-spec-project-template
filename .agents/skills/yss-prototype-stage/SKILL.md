@@ -14,7 +14,7 @@ description: Use when a YSS feature has product-design impact on a primary flow,
 - 用独立 `prototype-review` 评审低保真与状态；未通过不得选择档位或构建原型交付物。
 - 按 [原型档位路由](references/prototype-profile-routing.md) 选择 H1/H2 中满足当前决策风险的最低档位。没有充分证据时默认 H2。
 - Codex 按档位消费 `product-design:index` 的 focused workflow；H1 可直接走静态适配器，H2 使用 `get-context/image-to-code/design-qa`。其他 Agent 必须交付等价合同资产。
-- `high-fidelity-html-prototype` 仅为历史兼容入口；新资产统一为 `artifact.prototype-deliverable` 与 schema v3。
+- `high-fidelity-html-prototype` 仅为历史兼容入口；新资产统一为 `artifact.prototype-deliverable`、Prototype Evidence schema v4 与 Visual Baseline schema v1。
 
 ## 执行顺序
 
@@ -22,7 +22,7 @@ description: Use when a YSS feature has product-design impact on a primary flow,
 2. 完成独立 `prototype-review`，提取仍需由原型回答的风险。
 3. 计算并记录 `prototype_profile`。新视觉方向或信息架构不确定时执行三方案 ideation；复用已批准模式时记录 `not-applicable` 与 source visual。
 4. H1 用 `prototype-contract.mjs prepare-static` 生成无 Node 运行时的静态适配器；H2 按 `references/product-design-adapter.md` 构建可运行流程。
-5. 自动采集版本、digest、视口、截图、console 与扫描结果，写入 feature 级 schema v3 `prototype-evidence.yaml`；人工只补决策、风险、允许差异和用户确认。
+5. 自动采集版本、digest、视口、截图、console 与扫描结果。截图按 `route + page + state + viewport + theme + locale + data_scenario` 写入 `Visual Baseline Bundle`，执行 `visual-baseline-contract.mjs seal` 后由 feature 级 schema v4 `prototype-evidence.yaml` 引用；人工只补决策、风险、允许差异和用户确认。
 6. 以统一六轴 Design QA 和档位验证矩阵完成浏览器/无障碍验证。用户确认后才可校准 Spec、分析 API 影响或进入 实现合同编译器 readiness。
 
 ## 档位边界
@@ -36,7 +36,7 @@ description: Use when a YSS feature has product-design impact on a primary flow,
 
 优先级固定为：项目根 `DESIGN.md` 规范 Token / 组件变体 → `docs/design/design.md` 治理解释 → `docs/design/tokens/*` 派生快照 → 当前功能语义 → 相关上游组件事实。H2 默认通过 `yss-antdv-next-design` 使用 Antdv Next exact-version fact pack；只有显式选择 `react-antd-6` 时才调用 `yss-antd-design`。fact pack 仅在精确版本、组件集合、根 `DESIGN.md` digest 和项目 Token digest 均匹配且无新 API 疑问时可复用；否则做增量查询。`antd lint/doctor` 只对 React 兼容路线的相关源文件执行。
 
-Design QA 合并 visual、layout、interaction、content、accessibility、cross-platform 六轴，不再建立第二份评审。所有档位至少证明 desktop/narrow 非空渲染、项目 Token、console 和基础键盘/焦点/对比度；H2 追加主流程、关键异常、200% zoom/reduced motion 与按风险视觉回归。
+Design QA 合并 visual、layout、interaction、content、accessibility、cross-platform 六轴，不再建立第二份评审。所有档位至少证明 desktop/narrow 非空渲染、项目 Token、console 和基础键盘/焦点/对比度；H2 追加主流程、关键异常、200% zoom/reduced motion 与按风险视觉回归。图片是视觉基准而非唯一事实来源；模型必须从 `visual-baseline.yaml` 的 `case_id` 读取对应语义引用，禁止靠目录 glob 猜测页面含义。
 
 用户确认只描述原型确认了什么、哪些范围可操作、哪些为模拟或 gap，以及接受/拒绝结论；不要求用户确认技术栈、CLI 或构建细节。
 
@@ -47,6 +47,7 @@ Design QA 合并 visual、layout、interaction、content、accessibility、cross
 - 档位、上游融合与迁移：[prototype-profile-routing.md](references/prototype-profile-routing.md)
 - 渲染适配、fact pack 与命令：[product-design-adapter.md](references/product-design-adapter.md)
 - 证据模板：`docs/design/templates/prototype-evidence-template.yaml`
+- Visual Baseline 模板与 schema：`docs/design/templates/visual-baseline-template.yaml`、`docs/design/schemas/visual-baseline.schema.json`
 
 ## 常见错误
 

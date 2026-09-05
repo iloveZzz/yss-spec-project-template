@@ -69,4 +69,14 @@ node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs prepare-f
 
 映射的是 semantic role、项目 Token、状态和验收行为，不是 React API 表面。默认视口为 desktop `1440x900` 与 narrow `390x844`；按影响追加其他断点。Design QA 固定写 feature 级 verification 路径，并按 visual/layout/interaction/content/accessibility/cross-platform 六轴执行。
 
+浏览器/Design QA 将每个风险驱动 case 捕获为 PNG，写入 `docs/.scratch/<feature>/handoff/visual-baseline-v<version>/images/`，并从 `docs/design/templates/visual-baseline-template.yaml` 生成 manifest。截图必须使用固定数据、sRGB、DPR 1，等待字体完成，关闭动画、过渡和光标闪烁；长页面使用固定滚动分段。捕获完成后运行：
+
+```bash
+node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs seal \
+  docs/.scratch/<feature>/handoff/visual-baseline-v1/visual-baseline.yaml \
+  --bundle-root docs/.scratch/<feature>/handoff/visual-baseline-v1
+```
+
+`seal` 校验 PNG 尺寸与大小并写入图像和整包摘要；随后以 `validate` 重验。模型和下游实现只从 manifest 的 `case_id` 取图，不通过 glob 推断含义。工作目录可位于被忽略的 `.scratch`，但 Strategic Design Handoff 必须携带或引用可读取的自包含 Bundle。
+
 H1/H2 的条件验证矩阵与实现阶段交接规则见 [prototype-profile-routing.md](prototype-profile-routing.md)。原型阶段禁止调用 `yss-ui`；真实组件事实只在批准后的前端实现与实现还原验证中取得。

@@ -28,7 +28,9 @@ owner: ai
 | superproject_git_url | 父仓远端；必须与 `git_url` 不同 |
 | checkout_state | attached-branch / detached-head / uninitialized / empty-gitlink / 不适用 |
 | scaffold_status | existing / required / initialized |
-| scaffold_skill | `yss-ddd-scaffold-generator` / `yss-frontend-scaffold-generator` / none |
+| scaffold_architecture | `domain-driven` / `layered-mvc` / 不适用；required 时必须由用户确认 |
+| scaffold_decision_ref | `scaffold-architecture-decisions.yaml` 的 decision_id + digest |
+| scaffold_skill | `yss-ddd-scaffold-generator` / `yss-layered-mvc-scaffold-generator` / `yss-frontend-scaffold-generator` / none |
 | scaffold_target_confirmed | 是 / 否 / 不适用 |
 | target_git_url_or_output_dir |  |
 | owner |  |

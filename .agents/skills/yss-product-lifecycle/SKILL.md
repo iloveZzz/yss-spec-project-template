@@ -20,6 +20,8 @@ Matt 的 `grill-with-docs`、`to-spec`、`to-tickets`、`implement` 等保留为
 
 ## 不可裁剪的主链
 
+新后端工程先按注册表选择 architecture_profile（target-domain-model / layered-mvc-service / mvc-data-analysis-v1），禁止从模块目录反推。全部新骨架只绑定 H2 本地/测试，不绑定生产数据库。独立数据分析 project-instance 走 `work-unit.service-project-initialization` 和 `yss-mvc-data-analysis-project-initializer`；通用 MVC 不调用该初始化器。父项目只保留交接/服务引用，子项目有自己的根 CONTEXT、Git 和生命周期。规则见 `docs/agents/backend-architecture-profiles.md`；Profile 为 draft 时不得 ready-for-agent。
+
 入口分诊 → Discovery → Spec / 功能架构 → 产品设计 → 系统 / 数据架构与工程契约 → Ticket 正式化 → 垂直切片实现（前后端 TDD）→ 验证 / 发布 / 复盘。
 
 裁剪只允许将未命中的条件门禁标记为 `not-applicable` 并写原因；不得删除主阶段、已命中的门禁或必需产物。阶段是否完成取决于“内容 + 审查结论 + 上游新鲜度 + 可读证据”，文件存在不算通过。每个 `project-instance` 工作单元在请求批准或进入下一工作单元前，必须先把已确认稳定术语回写到项目根目录唯一的 `CONTEXT.md`，再产出通过 `scripts/verify-context-reconciliation` 的 `context_reconciliation`；它是横切证据，不新增门禁。存在候选术语、错误路径、无法解析的 `<ContextId>/<EnglishIdentifier>`、摘要漂移或未决冲突时返回 `blocked`。
@@ -36,7 +38,7 @@ Matt 的 `grill-with-docs`、`to-spec`、`to-tickets`、`implement` 等保留为
 | 产品设计 `stage.product-design` | 交互说明、低保真、状态矩阵、H1/H2 原型交付物、评审记录 | `work-unit.prototype-design`；`yss-prototype-stage` 先消费 `yss-design-system`、低保真与独立 `prototype-review`，再按风险选择 H1 静态视觉或 H2 可运行流程；H2 默认调用 `yss-antdv-next-design`，显式 `react-antd-6` 兼容路线才调用 `yss-antd-design`，原型阶段禁止调用 `yss-ui` | `gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` 均有 schema v3 证据；真实组件待验事项已交接到前端实现计划 |
 | 系统 / 数据架构与工程契约 `stage.system-data-engineering` | OpenAPI Draft/Freeze、数据架构、工程基线、架构审查；按领域影响执行 Tactical DDD Check | `work-unit.technical-analysis`；`yss-implementation-contract-compiler` + `yss-openapi-governance` / `yss-openapi-draft-review`、`codebase-design`、`implementation-repo-onboarding`、`yss-tactical-design`；用户或合同明确要求架构可视化时条件追加 `archify` | API/架构契约冻结；无 API 影响有明确记录；战术模型无未解释冲突；脚手架策略满足；Archify 图只作派生审查证据；`gate.openapi-draft-reviewed`、`gate.design-reviewed`、`gate.openapi-frozen`、`gate.engineering-baseline-accepted`、`gate.architecture-reviewed` |
 | Ticket 正式化 `stage.ticket-formalization` | 功能父 Ticket、垂直切片、Slice Implementation Contract | 原生 `work-unit.ticket-decomposition`；`yss-implementation-contract-compiler`；`to-tickets` 为兼容入口；生命周期复算 | 依赖、验收、测试 seam 可执行；合同已批准、持久化且为当前版本；`gate.slice-contract-approved`、`gate.slice-ready-for-agent` |
-| 垂直切片实现 `stage.vertical-slice-implementation` | 前端/后端代码、TDD 证据、YSS Skill Execution Result | 原生 `work-unit.slice-implementation`；`yss-implementation-contract-compiler` + `tdd`；前端按 `yss-ui` + `yss-page-module-development`，后端按 实现合同编译器 最小闭包；`implement` 为兼容入口 | 仅接收已完成 Ticket 正式化、已绑定垂直切片且 `ready-for-agent` 公式通过的输入；只写允许路径；业务行为用 `tdd` 的 `behavior-tdd` 模式；UI 影响必须有还原计划 |
+| 垂直切片实现 `stage.vertical-slice-implementation` | 前端/后端代码、TDD 证据、YSS Skill Execution Result | 原生 `work-unit.slice-implementation`；`yss-implementation-contract-compiler` + `tdd`；前端按 `yss-ui` + `yss-ui-business-page-generation`，后端按 实现合同编译器 最小闭包；`implement` 为兼容入口 | 仅接收已完成 Ticket 正式化、已绑定垂直切片且 `ready-for-agent` 公式通过的输入；只写允许路径；业务行为用 `tdd` 的 `behavior-tdd` 模式；UI 影响必须有还原计划 |
 | 验证 / 发布 / 复盘 `stage.verification-release-retrospective` | 不可变候选快照、review 结论、fresh verification、发布 / 回滚证据、复盘记录 | `work-unit.frontend-implementation-verification` + `work-unit.code-review` + `work-unit.release-and-retrospective`；`code-review` 独立于实现者，Standards 消费合同 `required_skills` 与 YSS / Alibaba 专项检查输入；UI 影响追加 `yss-ui` + `yss-design-system` 的 UI fidelity 轴；发布 / 复盘由生命周期持有 | findings 已按合同分流处理（修复后全轴复审或 stale 回 实现合同编译器）；同一候选快照通过全部审查轴、专项覆盖与验证；UI 影响追加 `gate.frontend-implementation-verified`；`gate.release-ready` 仍须生物人 |
 
 ## 面向业务角色的默认入口
@@ -51,7 +53,7 @@ Agent 先问清六件事：谁遇到什么问题并想得到什么结果；事�
 
 ## 前端实现还原硬检查
 
-原型通过不等于前端实现通过。`ready-for-agent` 前先产生 `frontend_implementation_plan`（原型/Spec、路由与页面清单、桌面/窄屏验收用例、加载/空态/错误/权限/关键交互状态、拟执行的 `pnpm` 命令）；实现完成、发布前再产生 `frontend_implementation_verification`，补齐截图或视觉回归、console warning、命令退出码、未覆盖差异与责任人。差异未解释、截图缺失、只做 type-check 或只声称“已对齐”均为 `blocked`；发现新 API、状态或视觉行为时返回 `new_impacts`/`drift` 并重新路由。优先使用 `yss-ui/references/verification.md` 的分层验证和既有 `pnpm` scripts。
+原型通过不等于前端实现通过。`ready-for-agent` 前先产生 `frontend_implementation_plan`，绑定批准且 digest 当前的 Visual Baseline manifest，并按垂直切片选择 `case_id`；实现完成、发布前再产生 `frontend_implementation_verification`，逐 case 配对基准图、实现图、diff/mask 与差异解释，同时补齐交互、console warning、实际 `pnpm` 命令和退出码。模型必须先读 manifest 与语义引用再查看图片，禁止通过目录 glob 猜测含义。差异未解释、图片或摘要缺失、只做 type-check 或只声称“已对齐”均为 `blocked`；Visual Baseline 版本或 digest 变化使实现计划和 Slice Contract `stale`，新 API、状态或视觉行为返回 `new_impacts`/`drift` 并重新路由。优先使用 `yss-ui/references/verification.md` 的分层验证和既有 `pnpm` scripts。
 
 ## 结果与暂停
 

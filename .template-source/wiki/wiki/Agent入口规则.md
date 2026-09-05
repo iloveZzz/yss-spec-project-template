@@ -8,7 +8,7 @@
 
 进入实现前先读 `docs/process/implementation-repo-integration.md` 并登记实现仓库，再由 `yss-implementation-contract-compiler` 编译最小 skill 集合与当前实现合同（见 [[YSS路由与合同编译]]）。当前仓库默认是研发管理仓库，运行时代码优先在独立实现仓库；只有用户明确选择时才用 `apps/backend/<project>/` 或 `apps/frontend/<project>/`。`app/backend/`、`app/frontend/` 禁止作为工程输出（见 [[实现仓库与跨仓库契约]]）。前端测试、type-check 与构建优先 `pnpm`；后端校验、测试与编译优先项目根 `./mvnw`；不要默认 `npm` / `yarn` 或裸 `mvn`。根目录 `CLAUDE.md` 只引用 `AGENTS.md`，不是第二套入口规则。
 
-专项任务必须走指定入口：技术事实、标准、第三方 API 或框架行为影响决策时用 `research` 或等价一手资料记录；竞品与市场口碑用 `competitive-intelligence`；UI 设计、原型、组件或主题先 `yss-design-system` 再 `yss-prototype-stage`；Bug 先 `diagnosing-bugs` 再 `tdd`；冲突用 `resolving-merge-conflicts`；架构治理用 `improve-codebase-architecture` / `codebase-design`；跨线程、跨仓库或上下文过长用 `handoff`。本地知识库 init / refresh / rebuild，或要把研究结果落成持久 wiki，必须使用 `llm-wiki`（落成持久 wiki 用 `ingest`；已映射 live 源变了用 `refresh`；见 [[LLM Wiki]]）。`template-source` 的 wiki-root 为 `.template-source/wiki`；`project-instance` 不附带源仓库编译树，需要时在仓库根 `wiki/` 执行 `init`。一次性一手资料笔记走 `research`，持久 wiki 走 `llm-wiki` 的 `ingest`，不把 ingest 理解成替代权威源。
+常驻专项约束只保留会改变 YSS 路由的分支：技术事实、标准、第三方 API 或框架行为使用 `yss-research`，竞品与市场口碑使用 `competitive-intelligence`；产品设计由 `yss-prototype-stage` 持有阶段合同，原型阶段禁用生产实现 Skill `yss-ui`；数字人协同和会签按角色表执行，不得越权批准 Slice 合同、设置 `ready-for-agent` 或宣布可发布。通用技能发现下沉到技能注册表和编排合同，知识库操作见 [[LLM Wiki]]。
 
 实现者不能承担命中的独立审查；任何「完成 / 可合并 / 可发布」结论必须基于 fresh verification，不接受「之前跑过」或实现者自述（见 [[Fresh验证与独立审查]]）。业务行为默认按 `tdd` 使用已确认的公开 seam 逐切片实现；YSS 专项规范见 [[YSS工程技能体系]]，通用工程流程见 [[Matt技能体系]]。
 

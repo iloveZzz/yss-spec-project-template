@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "registry_id": "yss.lifecycle",
-  "semantic_sha256": "fc5db7033379baa305840289f6fb35cb3817c91cf043722ad1311b06111d0780",
+  "semantic_sha256": "f745204885a0c335b7f87dc1e1f5fd162a556b84e4543d6e1f356da41f6c081a",
   "published_ids": [
     "artifact.architecture-review",
     "artifact.data-architecture",
@@ -19,8 +19,8 @@
     "artifact.openapi-freeze-record",
     "artifact.parent-ticket",
     "artifact.product-overview",
-    "artifact.prototype-deliverable",
     "artifact.prototype-confirmation",
+    "artifact.prototype-deliverable",
     "artifact.prototype-review",
     "artifact.retrospective",
     "artifact.slice-implementation-contract",
@@ -82,20 +82,21 @@
     "work-unit.domain-strategy-design",
     "work-unit.entry-triage",
     "work-unit.fresh-verification",
+    "work-unit.frontend-implementation-verification",
     "work-unit.independent-review",
     "work-unit.intensity-aware-review",
     "work-unit.intensity-aware-verification",
-    "work-unit.frontend-implementation-verification",
     "work-unit.prototype-design",
     "work-unit.release-and-retrospective",
     "work-unit.release-and-rollback",
+    "work-unit.service-project-initialization",
     "work-unit.skill-projection-sync",
     "work-unit.slice-implementation",
     "work-unit.spec-synthesis",
     "work-unit.ssot-update",
     "work-unit.stage-decision",
     "work-unit.technical-analysis",
-    "work-unit.ticket-decomposition",
-    "work-unit.template-snapshot-build"
+    "work-unit.template-snapshot-build",
+    "work-unit.ticket-decomposition"
   ]
 }

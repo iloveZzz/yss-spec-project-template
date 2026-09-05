@@ -26,7 +26,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 2. 读取已有资产：先读根 `DESIGN.md`，再读 `docs/design/design.md` 和 Token 派生快照，最后按任务读取相关 Spec、交互说明、状态矩阵、OpenAPI Draft、现有页面代码。
 3. 按设计系统基线约束输出或修改产物：颜色、排版、间距、圆角、动效、组件、状态、响应式。
 4. 若是产品设计阶段，先使用 `yss-prototype-stage`；Codex 以 `product-design:index` 为主入口，其他 Agent 必须交付等价合同资产和证据。
-5. 若是前端实现阶段，配合 `yss-ui`、`yss-ui-business-page-generation`、`yss-components`、`yss-formily`；生命周期编排和旧触发词兼容再使用 `yss-page-module-development`，但本技能负责风格与体验一致性门禁。
+5. 若是前端实现阶段，配合 `yss-ui`、`yss-ui-business-page-generation`、`yss-components`、`yss-formily`，但本技能负责风格与体验一致性门禁。
 6. 若发现视觉 Token 或组件变体不足，先更新根 `DESIGN.md` 并重新生成投影；只有治理、流程或验收说明不足时才更新 `docs/design/design.md`。
 
 ## 核心基线
@@ -87,7 +87,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 | 低保真原型进入高保真前评审 | `prototype-review` |
 | 低保真评审后的原型交付物 | `yss-prototype-stage` 选择 H1/H2；`high-fidelity-html-prototype` 仅只读迁移 |
 | 低保真线框或流程图 | `product-design:index` |
-| 前端页面实现 | `yss-ui` / `yss-ui-business-page-generation`；生命周期兼容使用 `yss-page-module-development` |
+| 前端页面实现 | `yss-ui` / `yss-ui-business-page-generation` |
 | 表单 schema | `yss-formily` |
 | YTable / YTree / 高度自适应 | `yss-components` / `yss-use-table-height` / `yss-use-tree-height` |
 | H2 Vue/Antdv Next 默认原型的组件 / token / demo 查询 | `yss-antdv-next-design`（精确版本 fact pack，不用于 H1） |

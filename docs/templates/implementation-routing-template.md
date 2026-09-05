@@ -142,6 +142,8 @@ owner: ai
 | required_skills |  |
 | approved_prototype_ref |  |
 | state_matrix_ref |  |
+| visual_baseline_ref | `visual-baseline.yaml` 路径、版本与 digest |
+| visual_baseline_case_ids | 当前切片实际消费的 case_id；禁止目录 glob |
 | generated_api_client_ref |  |
 | allowed_write_paths |  |
 | component_test_seams | loading / empty / error / permission / 其他公开 seam |
@@ -224,7 +226,7 @@ owner: ai
 
 | 受影响端 | 是否已有可用工程 | scaffold_status | 目标是否确认 | 处理结论 | 使用 skill | 输出位置 / 仓库 | 备注 |
 |---|---|---|---|---|---|---|---|
-| backend | 是 / 否 / 不适用 | existing / required / initialized / not-applicable | 是 / 否 / 不适用 | 复用现有 / 初始化 / 阻塞 | `yss-ddd-scaffold-generator` / none |  |  |
+| backend | 是 / 否 / 不适用 | existing / required / initialized / not-applicable | 是 / 否 / 不适用 | 复用现有 / 初始化 / 阻塞 | `yss-ddd-scaffold-generator` / `yss-layered-mvc-scaffold-generator` / none |  | 填写 architecture_family、decision_id 与 digest |
 | frontend | 是 / 否 / 不适用 | existing / required / initialized / not-applicable | 是 / 否 / 不适用 | 复用现有 / 初始化 / 阻塞 | `yss-frontend-scaffold-generator` / none |  |  |
 
 脚手架输出位置必须回指具体项目根：后端为 `apps/backend/<project>/`，前端为 `apps/frontend/<project>/`；不得把 `apps/backend/`、`apps/frontend/` 容器根或任何 `app/backend/`、`app/frontend/` 路径作为生成目标。
@@ -238,18 +240,18 @@ owner: ai
 
 ### 4.3 后端脚手架工作单元
 
-当 backend `scaffold_status=required` 时，先登记一个 `controlled-generation` 工作单元：`primary_skill=yss-ddd-scaffold-generator`，并在后续追加 `yss-backend-scaffold-parent` 基线校验和 `yss-implementation-contract-compiler` 合同重编译。`existing` / `initialized` 不重复全量生成，但必须提供等价基线和 Wrapper 证据。
+当 backend `scaffold_status=required` 时，生命周期先按领域复杂度推荐 DDD/MVC，并以批量决策表反问用户确认本体默认与子项目覆盖。选择写入 `scaffold-architecture-decisions.yaml`；缺失、未确认或 stale 时阻断。随后登记一个 `controlled-generation` 工作单元：`domain-driven` 使用 `primary_skill=yss-ddd-scaffold-generator`，`layered-mvc` 使用 `primary_skill=yss-layered-mvc-scaffold-generator`。生成后执行对应基线校验和 `yss-implementation-contract-compiler` 合同重编译。`existing` / `initialized` 不重复生成，架构转换另立迁移工作单元。
 
 | 项 | 内容 |
 |---|---|
-| 前置 | `prototype_confirmation`、工程基线、实现仓库和脚手架目标已确认；实现合同编译器 脚手架合同 draft 已经生命周期批准并持久化为结构化 JSON，生成器通过 `--contract-file` 消费 |
-| 生成器 | `yss-ddd-scaffold-generator` |
+| 前置 | `prototype_confirmation`、工程基线、实现仓库和脚手架目标已确认；`scaffold-architecture-decisions.yaml` 已由用户确认且 digest 当前；实现合同编译器 schema v3 脚手架合同 draft 已经生命周期批准并持久化为结构化 JSON，生成器通过 `--contract-file` 消费 |
+| 生成器 | `domain-driven` → `yss-ddd-scaffold-generator`；`layered-mvc` → `yss-layered-mvc-scaffold-generator` |
 | 模式 | `controlled-generation` |
 | Java / Maven 身份 | `base_package` 与 Maven `group_id` 分开登记；项目版本、父 POM GAV、`yss-components.version` 进入批准合同并原样传给 CLI |
-| 允许生成 | Domain / Application / Infrastructure / Adapter / Bootstrap 目录骨架、POM、配置、Wrapper 和非业务机械模板 |
+| 允许生成 | DDD 的 Domain / Application / Infrastructure / Adapter / Bootstrap，或 MVC 的 server / service / repository 与能力解析出的 adapter / client / feign-client；以及 POM、配置、Wrapper 和非业务机械模板 |
 | 禁止生成 | 业务规则、状态机、权限、事务、复杂查询、错误映射、业务字段和用户可见行为 |
 | 生成选项 | 关闭 `--with-example`；生成器严格 initialize-only，非空目录、`--force`、旧项目迁移和当前模板升级均为 `unsupported` |
-| Profile | `target-domain-model` / `mybatis-plus` / `mysql` / `spring-boot-2.7-jdk8` / `javax` / `web` / `yss-internal`；其他组合须先通过独立 fixture |
+| Profile | DDD：`target-domain-model` + MySQL；MVC：`layered-mvc` + MySQL/Oracle/OceanBase Oracle；共同固定 Spring Boot 2.7 / Java 8 / `javax` / MyBatis-Plus，其他组合须先通过独立 fixture |
 | 验证 | 使用一键生成验证入口，实际执行项目根目录 `./mvnw validate`、`./mvnw test`、`./mvnw package`；通过后仅为 `empty-scaffold-verified`，golden first slice 通过后才是 `first-slice-verified` |
 | 后置 | `yss-backend-scaffold-parent`、`yss-implementation-contract-compiler` 业务合同重编译、YSS Skill Execution Result |
 

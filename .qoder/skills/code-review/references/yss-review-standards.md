@@ -12,7 +12,7 @@
 2. Slice Implementation Contract 的 `required_skills`：对每个技能读取 `.agents/skills/<id>/SKILL.md` 及该 skill 指明的 references。
 3. 影响面专项检查输入（与合同并集，不得互相替代）：
    - 后端：`alibaba-java-code-style`、`yss-domain`、`yss-application`、`yss-repository`、`yss-web-controller`、`yss-dto`、`mapstruct`、`lombok`
-   - UI：`yss-ui`、`yss-design-system`、`yss-ui-business-page-generation`、`yss-page-module-development`
+   - UI：`yss-ui`、`yss-design-system`、`yss-ui-business-page-generation`
 4. 报告模板中的后端 / 前端门禁表。空着的适用行视为 `missing_evidence`。
 
 YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，不并入 UI fidelity。UI fidelity 只核原型与状态矩阵。

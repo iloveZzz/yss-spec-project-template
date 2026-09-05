@@ -5,9 +5,18 @@ import { HARNESS_ROOT, MODULES, PROJECT_SCRIPT_FILES, exists, fail } from "./run
 import { put } from "./storage.mjs";
 
 const TEMPLATE_SOURCE_COMMAND = /scripts\/(?:verify-template(?:-fast|-candidate)?|sync-skills|update-skill-lock|export-yss-skills|verify-upstream-skill-source|verify-maintenance-checkpoint|verify-implementation-path-scenarios|gitworks)/g;
+const TEMPLATE_SOURCE_SECTION = /(^## 4\. `template-source` 模板维护路由[^\S\r\n]*$)[\s\S]*?(?=^## 5\. `project-instance` 产品研发路由[^\S\r\n]*$)/m;
 
 function removeTemplateSourceCommands(content) {
   return content.replace(TEMPLATE_SOURCE_COMMAND, "上游 Harness 专用命令");
+}
+
+export function renderProjectInstanceAgents(content) {
+  if (!TEMPLATE_SOURCE_SECTION.test(content)) fail("无法定位 AGENTS.md 的模板维护章节边界");
+  return content.replace(
+    TEMPLATE_SOURCE_SECTION,
+    "$1\n\n当前仓库是 `project-instance`，模板维护只在上游 Harness 执行。\n\n"
+  );
 }
 
 export async function writeProjectEnvelope(o) {
@@ -15,10 +24,9 @@ export async function writeProjectEnvelope(o) {
   await put(o.targetDir, ".artifact-workspace.yaml", `schema_version: 1\nkind: service\nservice_id: ${o.projectName}\nowner: ${JSON.stringify(o.gitAuthor)}`);
   await cp(path.join(HARNESS_ROOT, "AGENTS.md"), path.join(o.targetDir, "AGENTS.md"));
   const generatedAgents = await readFile(path.join(o.targetDir, "AGENTS.md"), "utf8");
-  await writeFile(path.join(o.targetDir, "AGENTS.md"), generatedAgents
+  await writeFile(path.join(o.targetDir, "AGENTS.md"), renderProjectInstanceAgents(generatedAgents)
     .replaceAll(".agents/skills", "../skillUtils/.agents/skills")
-    .replaceAll(".codex/skills", "../skillUtils/.codex/skills")
-    .replace("- 模板维护默认以 `scripts/verify-template-fast` 完成 `implementation-ready`；显式晋级审查时用 `scripts/verify-template-candidate`，首次冻结前和最终发布前仍必须执行完整 `scripts/verify-template`。后者是不可裁剪的模板发布阻断门禁。模板与外部 `create-yss-spec` 的跨仓库契约未完成集成验证时，不得声称可发布。", "- 模板发布门禁只在上游 Harness 模板源执行；当前项目实例不分发或运行模板验证命令。"), "utf8");
+    .replaceAll(".codex/skills", "../skillUtils/.codex/skills"), "utf8");
   await put(o.targetDir, "CONTEXT.md", "# 领域上下文\n\n## 业务术语\n\n| 术语 | 定义 | 英文标识 | 避免 / 备注 |\n|---|---|---|---|\n| 分析数据集 | 支撑一个数据分析功能的表结构、字段语义和查询边界。 | AnalysisDataset | 具体业务术语在需求分析后补充 |\n| 分析结果 | 数据分析接口返回的分页明细或聚合结果。 | AnalysisResult | 不表示未经约束的原始结果集 |");
   for (const relative of ["docs/agents", "docs/process", "docs/templates", "docs/architecture/templates"]) {
     const source = path.join(HARNESS_ROOT, relative);

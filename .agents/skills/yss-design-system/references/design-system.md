@@ -197,7 +197,7 @@ React + Ant Design：
 
 YSS UI / Vue：
 
-- 业务页面优先走 `yss-ui` 和 `yss-ui-business-page-generation`；生命周期编排和旧触发词兼容使用 `yss-page-module-development`。
+- 业务页面实现与生命周期编排统一走 `yss-ui` 和 `yss-ui-business-page-generation`。
 - 新业务表单使用 `YFormily` schema；`YssFormily` 仅用于历史兼容。
 - 表格使用 `YTable`，列定义使用项目约定字段。
 - 高度自适应使用 `useTableHeight` / `useTreeHeight`。

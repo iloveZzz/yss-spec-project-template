@@ -11,6 +11,7 @@ description: Use when YSS `Result`, `SingleResult`, `MultiResult`, `PageResult`,
 
 ## 所有权边界
 
+- 先消费 `architecture_identity`：DDD 的 HTTP DTO 在 Web；通用 MVC 私有 DTO 在 server、已批准公开 DTO 在 client；数据分析 MVC 公开 DTO 在 client。service/core 自有内部 Command/Query/Result，不依赖 client DTO；server 用 MapStruct 转换。共用 wire profile 不意味着共用模块路径。
 - `Result` / `SingleResult` / `MultiResult` / `PageResult`、`CommandDTO` / `QueryDTO` / `PageQuery` 的 canonical package、工厂方法、字段语义、默认值、枚举和禁用字段由本 skill 及 `references/openapi-wire-profile.yaml` 唯一持有。
 - Web skill 只生成 endpoint-specific Page Request、Request/Response 与 Convertor，并通过批准合同中的 profile 引用和 digest 消费上述协议；不得生成 wrapper/page base，也不得维护分页字段或默认值副本。
 - OpenAPI skill 只把该 profile 组合进 endpoint schema；不得从 Java getter 或本地常量反向建立第二份 wire 协议。

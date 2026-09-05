@@ -40,7 +40,7 @@ infrastructure-+
 
 ## 生成与验证
 
-- 输入是批准且持久化的服务级 scaffold contract schema v2，身份为 `scaffold_request_id`，不使用 `slice_id`。
+- 输入是批准且持久化的服务级 scaffold contract schema v3，身份为 `scaffold_request_id`，并绑定已确认的 `architecture_family=domain-driven` 架构决策；不使用 `slice_id`。历史 Manifest v2 仅供验证器只读兼容。
 - 生成器严格 initialize-only：目标工程目录必须不存在，`--force`、旧项目迁移和当前模板升级均为 `unsupported`。
 - Maven 内部仓库通过命名 profile `yss-internal` 与环境变量注入；共享模板不写内部 URL 或凭据。
 - Wrapper 必须带 checksum；DEBUG 和 MyBatis stdout SQL 只允许在 `application-local.yml`。

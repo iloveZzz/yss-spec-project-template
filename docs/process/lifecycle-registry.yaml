@@ -403,6 +403,12 @@ work_units:
     input: Spec、原型、API/数据/工程影响面。
     output: OpenAPI、数据架构、Tactical DDD Check、工程基线、架构审查和 Slice 合同草案。
     completion: 命中契约已冻结；无 API 影响有可读记录；命中领域影响时战术模型无未解释冲突；工程基线通过。
+  - id: work-unit.service-project-initialization
+    name: 独立服务项目初始化
+    scope: project-instance
+    input: 逐项目批准的架构决策、schema v3 初始化合同、战略上下文交接及目标/skillUtils 写范围。
+    output: 独立 Git project-instance、锁定 skillUtils、唯一根 CONTEXT、架构身份、Manifest 和验证证据；父项目仅保留引用。
+    completion: 当前合同与交接摘要一致，真实 Wrapper 三命令通过后仅 empty-scaffold-verified；首切片仍须独立批准和验证。
   - id: work-unit.ticket-decomposition
     name: 垂直切片 Ticket 正式化
     scope: project-instance

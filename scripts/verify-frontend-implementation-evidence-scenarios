@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+import { sealVisualBaseline } from "../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs";
+
+const repoRoot = path.resolve(import.meta.dirname, "..");
+const root = mkdtempSync(path.join(os.tmpdir(), "yss-frontend-evidence-"));
+const write = (relative, value = relative) => {
+  const file = path.join(root, relative); mkdirSync(path.dirname(file), { recursive: true }); writeFileSync(file, Buffer.isBuffer(value) || typeof value === "string" ? value : JSON.stringify(value, null, 2)); return relative;
+};
+write("docs/spec.md"); write("docs/prototype.html");
+for (const file of ["verification/desktop.png", "verification/narrow.png", "verification/desktop-diff.png", "verification/narrow-diff.png", "verification/pnpm.txt", "verification/review.md"]) write(file);
+const digest = `sha256:${"a".repeat(64)}`;
+function pngHeader(width, height) { const value = Buffer.alloc(24); Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]).copy(value, 0); value.writeUInt32BE(13, 8); value.write("IHDR", 12, "ascii"); value.writeUInt32BE(width, 16); value.writeUInt32BE(height, 20); return value; }
+write("baseline/images/primary-desktop.png", pngHeader(1440, 900)); write("baseline/images/primary-narrow.png", pngHeader(390, 844));
+write("baseline/sources/prototype.html", "<main>demo</main>\n"); write("baseline/sources/interaction.md", "# Interaction\n"); write("baseline/sources/states.md", "# States\n");
+write("baseline/capture/capture.mjs", "// capture\n"); write("baseline/capture/result.json", "{\"result\":\"passed\"}\n");
+const baselineFile = write("baseline/visual-baseline.yaml", {
+  schema_version: 1, baseline_id: "visual-baseline.demo", feature: "demo", version: "v1", status: "approved",
+  bundle: { format: "portable-directory", root_ref: "baseline", digest, size_bytes: 0, max_image_bytes: 5242880, max_bundle_bytes: 104857600 },
+  source: { prototype_ref: "sources/prototype.html", prototype_digest: digest, interaction_spec_ref: "sources/interaction.md", interaction_spec_digest: digest, state_matrix_ref: "sources/states.md", state_matrix_digest: digest },
+  capture_environment: { browser: "chromium", browser_version: "140.0.0", operating_system: "linux", fonts_digest: digest, device_scale_factor: 1, color_space: "srgb", locale: "zh-CN", timezone: "Asia/Shanghai", animations_disabled: true, cursor_hidden: true, capture_script_ref: "capture/capture.mjs", capture_script_digest: digest, capture_result_ref: "capture/result.json", capture_result_digest: digest },
+  cases: [
+    { case_id: "primary-desktop", route: "/demo", page: "DemoPage", state: "normal", viewport: { name: "desktop", width: 1440, height: 900, scroll_mode: "viewport", scroll_position: 0 }, theme: "compact-light", locale: "zh-CN", data_scenario: "primary", image_ref: "images/primary-desktop.png", image_digest: digest, image_size_bytes: 1, mask_ref: "not-applicable", mask_digest: "not-applicable", mask_size_bytes: 0, semantic_refs: ["sources/prototype.html", "sources/interaction.md"], allowed_differences: [], result: "passed" },
+    { case_id: "primary-narrow", route: "/demo", page: "DemoPage", state: "normal", viewport: { name: "narrow", width: 390, height: 844, scroll_mode: "viewport", scroll_position: 0 }, theme: "compact-light", locale: "zh-CN", data_scenario: "primary", image_ref: "images/primary-narrow.png", image_digest: digest, image_size_bytes: 1, mask_ref: "not-applicable", mask_digest: "not-applicable", mask_size_bytes: 0, semantic_refs: ["sources/states.md"], allowed_differences: [], result: "passed" }
+  ]
+});
+const sealedBaseline = await sealVisualBaseline(path.join(root, baselineFile), path.join(root, "baseline"));
+const visual_baseline = { baseline_id: "visual-baseline.demo", version: "v1", digest: sealedBaseline.bundle.digest, manifest_ref: "baseline/visual-baseline.yaml", status: "approved", case_ids: ["primary-desktop", "primary-narrow"] };
+const base = {
+  schema_version: 2, template: false, status: "approved", prototype_ref: "docs/prototype.html", spec_ref: "docs/spec.md", visual_baseline,
+  route_and_page_inventory: [{ route: "/demo", page: "DemoPage", case_ids: ["primary-desktop", "primary-narrow"] }], pnpm_commands: ["pnpm test"]
+};
+const plan = { ...base, kind: "plan", baseline_case_ids: ["primary-desktop", "primary-narrow"], desktop_viewport: "1440x900", narrow_viewport: "390x844", state_cases: ["normal"] };
+const verification = {
+  ...base, kind: "verification",
+  case_results: [
+    { case_id: "primary-desktop", baseline_image_ref: "baseline/images/primary-desktop.png", implementation_image_ref: "verification/desktop.png", diff_ref: "verification/desktop-diff.png", mask_ref: "not-applicable", result: "pass", uncovered_difference: false, explanation: "无未解释差异" },
+    { case_id: "primary-narrow", baseline_image_ref: "baseline/images/primary-narrow.png", implementation_image_ref: "verification/narrow.png", diff_ref: "verification/narrow-diff.png", mask_ref: "not-applicable", result: "pass", uncovered_difference: false, explanation: "无未解释差异" }
+  ],
+  interaction_results: ["normal passed"], console_warning_check: "pass", actual_verification: [{ command: "pnpm test", exit_code: 0, executed_at: "2026-09-05T00:00:00Z", evidence_ref: "verification/pnpm.txt" }],
+  uncovered_differences: [], difference_owner: null, independent_review: { reviewer: "reviewer-1", candidate_digest: digest, status: "approved", findings_ref: "verification/review.md" }
+};
+const run = (name, value, expected, pattern) => {
+  const file = write(`${name}.json`, value);
+  const result = spawnSync("scripts/verify-frontend-implementation-evidence", ["--root", root, path.join(root, file)], { cwd: repoRoot, encoding: "utf8" });
+  if (result.status !== expected || (pattern && !pattern.test(`${result.stdout}${result.stderr}`))) throw new Error(`${name} unexpected\n${result.stdout}${result.stderr}`);
+};
+run("valid-plan", plan, 0);
+run("valid-verification", verification, 0);
+run("missing-case", { ...verification, case_results: verification.case_results.slice(0, 1) }, 1, /一一对应/);
+run("unexplained", { ...verification, uncovered_differences: ["间距偏差"], difference_owner: "frontend" }, 1, /未解释视觉差异/);
+run("nonzero", { ...verification, actual_verification: [{ ...verification.actual_verification[0], exit_code: 1 }] }, 1, /非零退出码/);
+process.stdout.write("Frontend implementation evidence v2 scenarios passed\n");

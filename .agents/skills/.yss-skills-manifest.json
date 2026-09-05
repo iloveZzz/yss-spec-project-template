@@ -5,7 +5,7 @@
   "source_root": "packages/skills",
   "source_category": "app",
   "excluded_categories": ["library"],
-  "excluded_skills": ["java-backend-commit"],
+  "excluded_skills": ["java-backend-commit", "page-module-development", "prototype-page-acceptance"],
   "source_revision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
   "adaptation_ref": "docs/agents/yss-ui-skills-integration.md",
   "package": {
@@ -23,9 +23,7 @@
     { "upstream": "frontend-commit", "canonical": "frontend-commit", "upstream_hash": "ffc1c7813607705c7c1158f4c5d3111aca79e73f1843e33bbc95eda9b5c726de" },
     { "upstream": "page-form-module", "canonical": "page-form-module", "upstream_hash": "4df686c7267c6be00680ea1faa908e0cf02e59bfe01c8111bbcaa80dea63c9b8" },
     { "upstream": "page-list-module", "canonical": "page-list-module", "upstream_hash": "303d8fc2161465ec3e81692c7b750ed814307ccf65f4fb51e0de69fe7af38d4f" },
-    { "upstream": "page-module-development", "canonical": "yss-page-module-development", "upstream_hash": "5f917ca85e522ddf2bf5a149db1c51e2e1b64b21e4fd6d7f8d3378177184244d" },
     { "upstream": "page-skeleton", "canonical": "page-skeleton", "upstream_hash": "d82c44770054d9bb0bc17849c25675e5672f01144614b3ffb846ec575ac19dec" },
-    { "upstream": "prototype-page-acceptance", "canonical": "prototype-page-acceptance", "upstream_hash": "bc5d75925ac8d7a2cbc38a0d65383faa4e8384c64be3d98b9994a506f50d6003" },
     { "upstream": "theme-token-usage", "canonical": "theme-token-usage", "upstream_hash": "b38acb4caf5012c9134df16a312b6be31b2b5d3fd6b976cfccee8d845f27c0ef" },
     { "upstream": "use-table-height", "canonical": "yss-use-table-height", "upstream_hash": "8a5baa8ca6a8dd2b2ed123391838b1a13e3f5cab8196225ed3429ca5b513d43f" },
     { "upstream": "use-tree-height", "canonical": "yss-use-tree-height", "upstream_hash": "2a9265cc997c2c20b6cfebbdc19b66b04450278fca5d5db252a5d855b2d95bed" },

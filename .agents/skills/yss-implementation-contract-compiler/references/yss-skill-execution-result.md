@@ -2,6 +2,8 @@
 
 核心 YSS skill 必须消费已批准合同版本，并返回：
 
+后端结果顶层带与当前 resolution 完全一致的 `architecture_identity`；每条验证记录还须有整数 `exit_code`。身份缺失、Profile 未 supported、验证非零或没有执行时间均不得 accepted。
+
 ```yaml
 execution_result:
   schema_version: 2

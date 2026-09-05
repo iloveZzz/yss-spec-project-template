@@ -18,12 +18,14 @@
 - `decision_to_inform`：本轮原型要支持的具体决策。
 - `risk_assumptions` 与 `trigger_results`：机器可读档位来源。
 - Spec、交互说明、状态矩阵、设计系统与低保真评审引用。
-- 浏览器入口、产物 digest、desktop/narrow 非空渲染、console 结果。
+- 浏览器入口、产物 digest、desktop/narrow 非空渲染、console 结果，以及由 `case_id` 定位的 Visual Baseline Bundle。
 - 统一 Design QA 六轴：visual、layout、interaction、content、accessibility、cross-platform。
 - 独立原型评审引用、用户确认、blockers 和 gaps。
 - `implementation_handoff`：只记录生产组件假设、待验证事项和目标阶段，不提前执行生产组件核验。
 
-机器优先采集版本、digest、视口、截图、console 与扫描结果；人只填写决策、风险解释、允许差异和用户确认。不得把同一事实复制到多个段落。
+机器优先采集版本、digest、视口、截图、console 与扫描结果；人只填写决策、风险解释、允许差异和用户确认。PNG 基准图统一使用 sRGB、DPR 1，关闭动画并隐藏光标；长页面使用固定滚动分段，full-page 只可作总览。每张图不超过 5 MiB，整包不超过 100 MiB。不得把同一事实复制到多个段落。
+
+`visual-baseline.yaml` 是模型与实现验证的唯一图片索引。每个 case 必须绑定 route、page、state、viewport、theme、locale、data scenario、PNG digest、语义引用和允许差异；至少覆盖 1440x900 与 390x844。原型用户确认时冻结版本，后续变更创建新版本并使依赖的实现计划与 Slice Contract `stale`，禁止覆盖旧版本。
 
 ## 档位证据
 
@@ -62,6 +64,6 @@
 
 ## 迁移
 
-- 新证据只生成 schema v3 与 `artifact.prototype-deliverable`。
-- schema v1/v2 和 `artifact.high-fidelity-html-prototype` 只读兼容；已经关闭的历史证据保持有效，不回写。
-- 在途 v2 证据必须迁移到 v3 后才能关闭 `gate.prototype-verified`；回滚时停止生成 v3、恢复 v2 生成器，但不删除已产生证据。
+- 新证据只生成 schema v4、Visual Baseline schema v1 与 `artifact.prototype-deliverable`。
+- prototype evidence schema v1/v2/v3 和 `artifact.high-fidelity-html-prototype` 只读兼容；已经关闭的历史证据保持有效，不补造图片。
+- 在途 UI 证据必须迁移到 v4 并产生 Visual Baseline 后才能关闭 `gate.prototype-verified`；非 UI 功能不生成空包。

@@ -15,9 +15,9 @@ const generator = path.join(scripts, "generate_scaffold.mjs");
 const dtoWireProfileFile = path.resolve(scripts, "../../yss-dto/references/openapi-wire-profile.yaml");
 const execute = (file, args, options = {}) => new Promise((resolve) => execFile(file, args, { encoding: "utf8", ...options }, (error, stdout, stderr) => resolve({ code: error?.code ?? 0, stdout, stderr })));
 
-function scaffoldContract(output) {
+function scaffoldContract(output, decisionDigest) {
   return {
-    schema_version: 2,
+    schema_version: 3,
     contract_id: "golden-scaffold-1",
     contract_version: 1,
     scaffold_request_id: "golden-request-1",
@@ -32,8 +32,14 @@ function scaffoldContract(output) {
     project_name: "golden-service",
     target_output_dir: output,
     base_package: "com.yss.golden",
+    architecture_family: "domain-driven", architecture_profile: "target-domain-model",
+    generator_skill: "yss-ddd-scaffold-generator",
+    decision_ref: "scaffold-architecture-decisions.yaml",
+    decision_id: "scaffold-decision.golden-service",
+    decision_digest: decisionDigest,
     maven_coordinates: { group_id: "com.yss.datamiddle", project_version: "1.0.0-SNAPSHOT", parent: { group_id: "com.yss.datamiddle", artifact_id: "yss-datamiddle-parent", version: "2.0.0-SNAPSHOT" }, yss_components_version: "2.0.0-SNAPSHOT" },
-    profiles: { architecture: "target-domain-model", persistence: "mybatis-plus", database: "mysql", platform: "spring-boot-2.7-jdk8", validation_namespace: "javax", dto_placement: "web", repository: "yss-internal" },
+    profiles: { architecture: "target-domain-model", persistence: "mybatis-plus", verification_database: "h2", production_database: "not-bound", platform: "spring-boot-2.7-jdk8", validation_namespace: "javax", dto_placement: "web", repository: "yss-internal" },
+    module_profile: { resolution_version: 1, requested_capabilities: [], resolved_modules: ["domain", "application", "infrastructure", "adapter", "bootstrap"] },
     allowed_write_paths: ["."],
     expected_evidence_files: [".yss/scaffold-generation.json"],
     verification_commands: ["./mvnw validate", "./mvnw test", "./mvnw package"],
@@ -54,9 +60,13 @@ async function prepareGoldenProject(t) {
   t.after(() => rm(root, { recursive: true, force: true }));
   const output = path.join(root, "implementation");
   await mkdir(output);
+  const decisionFile = path.join(root, "scaffold-architecture-decisions.yaml");
+  const decisionText = `${JSON.stringify({ schema_version: 1, kind: "scaffold-architecture-decisions", template: false, status: "current", decisions: [{ decision_id: "scaffold-decision.golden-service", project_id: "golden-service", parent_project_id: null, status: "lifecycle-approved", recommended_architecture: "domain-driven", recommendation_reasons: ["golden first slice 需要领域边界"], confirmed_architecture: "domain-driven", override_reason: null, inheritance_mode: "root-default", inherited_from: null, platform_profile: "spring-boot-2.7-jdk8", architecture_profile: "target-domain-model", verification_database: "h2", production_database: "not-bound", requested_capabilities: [], resolved_modules: ["domain", "application", "infrastructure", "adapter", "bootstrap"], resolution_version: 1, user_confirmation: { confirmed_by: "tester", channel: "test", confirmation_ref: "test://golden-confirmation", confirmed_at: "2026-09-05T00:00:00Z", normalized_text: "确认使用 DDD" }, decision_inputs_digest: `sha256:${"1".repeat(64)}` }] }, null, 2)}\n`;
+  await writeFile(decisionFile, decisionText);
+  const decisionDigest = `sha256:${createHash("sha256").update(decisionText).digest("hex")}`;
   const contractFile = path.join(root, "scaffold-contract.json");
-  await writeFile(contractFile, `${JSON.stringify(scaffoldContract(output), null, 2)}\n`);
-  const args = ["--project-name", "golden-service", "--base-package", "com.yss.golden", "--output-dir", output, "--database", "mysql", "--contract-id", "golden-scaffold-1", "--contract-version", "1", "--approval-ref", "approval-golden-1", "--compiler-draft-ref", "compiler-golden-1", "--persisted-ref", "persisted-golden-1", "--contract-file", contractFile, "--group-id", "com.yss.datamiddle", "--project-version", "1.0.0-SNAPSHOT", "--parent-group-id", "com.yss.datamiddle", "--parent-artifact-id", "yss-datamiddle-parent", "--parent-version", "2.0.0-SNAPSHOT", "--yss-components-version", "2.0.0-SNAPSHOT"];
+  await writeFile(contractFile, `${JSON.stringify(scaffoldContract(output, decisionDigest), null, 2)}\n`);
+  const args = ["--project-name", "golden-service", "--base-package", "com.yss.golden", "--output-dir", output, "--contract-id", "golden-scaffold-1", "--contract-version", "1", "--approval-ref", "approval-golden-1", "--compiler-draft-ref", "compiler-golden-1", "--persisted-ref", "persisted-golden-1", "--contract-file", contractFile, "--group-id", "com.yss.datamiddle", "--project-version", "1.0.0-SNAPSHOT", "--parent-group-id", "com.yss.datamiddle", "--parent-artifact-id", "yss-datamiddle-parent", "--parent-version", "2.0.0-SNAPSHOT", "--yss-components-version", "2.0.0-SNAPSHOT"];
   const generated = await execute(process.execPath, [generator, ...args]);
   assert.equal(generated.code, 0, generated.stderr);
   const project = path.join(output, "golden-service");
@@ -100,7 +110,7 @@ import com.yss.cloud.dto.result.PageResult; import com.yss.golden.application.co
   const dtoWireProfileDigest = createHash("sha256").update(await readFile(dtoWireProfileFile)).digest("hex");
   await writeFile(metadata, JSON.stringify({ tables: [{ table_name: "quality_rule", table_comment: "质量规则", columns: [{ name: "id", sql_type: "bigint", primary: true, nullable: false }, { name: "rule_name", sql_type: "varchar(64)", nullable: false }] }] }));
   const webProject = path.join(project, "golden-service-adapter", "golden-service-web");
-  await writeFile(webContract, JSON.stringify({ schema_version: 2, contract_id: "golden-slice-1", contract_version: 1, current_version: 1, slice_id: "quality-rule-first-slice", status: "approved", integration_mode: "scaffold-v2", implementation_project_root: project, scaffold_manifest_ref: manifestPath, base_package: "com.yss.golden", module_name: "golden", domain_segment: "quality", application_service_package: "com.yss.golden.application.service", architecture_profile: "target-domain-model", platform_profile: "spring-boot-2.7-jdk8", validation_namespace: "javax", dto_placement: "web", dto_wire_profile_ref: dtoWireProfileFile, dto_wire_profile_digest: dtoWireProfileDigest, openapi_freeze_ref: "openapi://quality-rule@1", allowed_write_paths: [path.join(webProject, "src/main/java/com/yss/golden/rest")], expected_evidence_files: ["first-slice-verification.json"], verification_commands: ["./mvnw test", "./mvnw package"], fields: { quality_rule: { create: ["rule_name"], update: ["id", "rule_name"], query: ["rule_name"], pagination: ["pageIndex", "pageSize"], response: ["id", "rule_name"] } } }));
+  await writeFile(webContract, JSON.stringify({ architecture_identity: manifest.architecture_identity, schema_version: 2, contract_id: "golden-slice-1", contract_version: 1, current_version: 1, slice_id: "quality-rule-first-slice", status: "approved", integration_mode: "scaffold-v2", implementation_project_root: project, scaffold_manifest_ref: manifestPath, base_package: "com.yss.golden", module_name: "golden", domain_segment: "quality", application_service_package: "com.yss.golden.application.service", architecture_profile: "target-domain-model", platform_profile: "spring-boot-2.7-jdk8", validation_namespace: "javax", dto_placement: "web", dto_wire_profile_ref: dtoWireProfileFile, dto_wire_profile_digest: dtoWireProfileDigest, openapi_freeze_ref: "openapi://quality-rule@1", allowed_write_paths: [path.join(webProject, "src/main/java/com/yss/golden/rest")], expected_evidence_files: ["first-slice-verification.json"], verification_commands: ["./mvnw test", "./mvnw package"], fields: { quality_rule: { create: ["rule_name"], update: ["id", "rule_name"], query: ["rule_name"], pagination: ["pageIndex", "pageSize"], response: ["id", "rule_name"] } } }));
   await generateWeb(parseWebArgs(["--metadata-file", metadata, "--contract-file", webContract, "--dto-wire-profile-file", dtoWireProfileFile, "--scaffold-manifest-file", manifestPath, "--base-package", "com.yss.golden", "--module-name", "golden", "--domain-segment", "quality", "--web-project-dir", webProject, "--application-service-package", "com.yss.golden.application.service", "--validation-namespace", "javax"]), { log() {}, warn() {} });
   await writeJava(project, `golden-service-adapter/golden-service-web/${java}/rest/advice/TargetProfileExceptionAdvice.java`, `package com.yss.golden.rest.advice;
 import com.yss.golden.application.error.QualityRuleConflictException;
@@ -169,7 +179,7 @@ class GoldenExceptionIntegrationTest {
 }`);
   const sliceContract = path.join(root, "slice-contract.json");
   const requiredSkills = ["yss-domain", "yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "yss-exception", "yss-validation", "mapstruct", "lombok", "alibaba-java-code-style"];
-  await writeFile(sliceContract, JSON.stringify({ schema_version: 1, contract_id: "golden-slice-1", contract_version: 1, slice_id: "quality-rule-first-slice", status: "approved", readiness: { blockers: [], stale_inputs: [] }, common: { required_skills: requiredSkills }, backend: { status: "required", affected_layers: ["domain", "application", "infrastructure", "web"], required_skills: requiredSkills }, work_units: [{ id: "slice-backend", contract_id: "golden-slice-1", contract_version: 1, work_unit: { primary_skill: "yss-domain" } }] }));
+  await writeFile(sliceContract, JSON.stringify({ architecture_identity: manifest.architecture_identity, schema_version: 2, contract_id: "golden-slice-1", contract_version: 1, slice_id: "quality-rule-first-slice", status: "approved", readiness: { blockers: [], stale_inputs: [] }, common: { required_skills: requiredSkills }, backend: { status: "required", affected_layers: ["domain", "application", "infrastructure", "web"], required_skills: requiredSkills }, work_units: [{ architecture_identity: manifest.architecture_identity, id: "slice-backend", contract_id: "golden-slice-1", contract_version: 1, work_unit: { primary_skill: "yss-domain" } }] }));
   return { root, project, sliceContract };
 }
 

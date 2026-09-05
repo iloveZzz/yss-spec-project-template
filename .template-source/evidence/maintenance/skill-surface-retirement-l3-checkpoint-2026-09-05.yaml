@@ -1,0 +1,76 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  一次性硬退役 14 个共享技能，删除 canonical 与六个生成投影中的物理目录，
+  同步收敛技能注册表、锁文件、生命周期路由、数字人角色、前端集成合同和退役扫描器；
+  该变更改变默认技能供应面与聚合路由行为，命中 aggregate-behavior-change。
+triggers:
+  - aggregate-behavior-change
+changed_assets:
+  - .agents/skills/ask-matt/
+  - .agents/skills/dispatching-parallel-agents/
+  - .agents/skills/loop-me/
+  - .agents/skills/migrate-to-shoehorn/
+  - .agents/skills/prototype-page-acceptance/
+  - .agents/skills/scaffold-exercises/
+  - .agents/skills/setup-pre-commit/
+  - .agents/skills/setup-ts-deep-modules/
+  - .agents/skills/teach/
+  - .agents/skills/writing-beats/
+  - .agents/skills/writing-fragments/
+  - .agents/skills/writing-shape/
+  - .agents/skills/yss-microapp-commit/
+  - .agents/skills/yss-page-module-development/
+  - .agents/skills/yss-product-lifecycle/
+  - .agents/skills/yss-ui-business-page-generation/
+  - .agents/skills/yss-ui/
+  - .claude/skills/
+  - .codex/skills/
+  - .cursor/skills/
+  - .pi/skills/
+  - .qoder/skills/
+  - .trae/skills/
+  - docs/agents/yss-skill-registry.yaml
+  - docs/agents/skill-migrations.md
+  - docs/agents/skills-maintenance.md
+  - docs/agents/digital-human-roles.yaml
+  - docs/agents/yss-ui-skills-integration.md
+  - .template-source/wiki/
+  - scripts/lib/scenario-checks.mjs
+  - scripts/lib/skill-governance.mjs
+  - scripts/lib/skill-supply-chain.mjs
+  - scripts/verify-retired-skill-ids
+  - skills-lock.json
+  - yss-public-skills.json
+verification_evidence:
+  - kind: self-check
+    command: >-
+      scripts/verify-skill-registry && scripts/verify-skill-governance &&
+      scripts/verify-digital-human-roles-scenarios && scripts/verify-matt-yss-integration-scenarios
+    result: pass
+  - kind: projection-sync
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check
+    result: pass
+  - kind: retirement-regression
+    command: scripts/verify-retired-skill-ids
+    result: pass
+  - kind: targeted-tests
+    command: >-
+      node --test .template-source/tooling/node/test/yss-ui-skill-integration.test.mjs
+      .template-source/tooling/node/test/skill-registry.test.mjs
+    result: pass
+  - kind: backend-retention-audit
+    command: scripts/audit-yss-backend-skills --check
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: >-
+  本 checkpoint 仅达到 implementation-ready，不代表候选冻结、提交、推送或发布批准；
+  Wiki 仍有本轮开始前已存在的 4 个 live-source drift，需在其所属维护范围内另行 refresh。
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

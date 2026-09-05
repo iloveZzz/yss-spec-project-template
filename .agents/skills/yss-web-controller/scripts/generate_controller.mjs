@@ -6,6 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
+import { assertArchitectureAgreement, validateArchitectureIdentity } from "../../../../scripts/lib/backend-architecture.mjs";
 
 const TYPE_MAPPING = { bigint: "Long", int: "Integer", integer: "Integer", smallint: "Integer", tinyint: "Integer", number: "Long", numeric: "BigDecimal", decimal: "BigDecimal", float: "Float", double: "Double", real: "Float", varchar: "String", varchar2: "String", nvarchar2: "String", char: "String", nchar: "String", text: "String", clob: "String", nclob: "String", date: "LocalDateTime", datetime: "LocalDateTime", timestamp: "LocalDateTime", "timestamp with time zone": "LocalDateTime", boolean: "Boolean", bool: "Boolean", bit: "Boolean", json: "String", jsonb: "String", uuid: "String" };
 const PLATFORM_VALIDATION_NAMESPACES = {
@@ -131,9 +132,15 @@ async function validateContract(contract, args) {
   if (!Number.isInteger(contract.contract_version) || contract.contract_version < 1) throw new Error("web generation contract_version must be a positive integer");
   if (!["existing-project", "scaffold-v2"].includes(contract.integration_mode)) throw new Error("unsupported web generation integration_mode");
   if (!["allowed_write_paths", "expected_evidence_files", "verification_commands"].every((name) => Array.isArray(contract[name]) && contract[name].length)) throw new Error("web generation contract requires non-empty allowed_write_paths, expected_evidence_files, and verification_commands");
-  if (contract.architecture_profile !== "target-domain-model" || contract.dto_placement !== "web") throw new Error("web generation only supports target-domain-model with dto_placement=web");
+  const mvc = contract.architecture_profile !== "target-domain-model";
+  const applicationModule = { "target-domain-model": "application", "layered-mvc-service": "service", "mvc-data-analysis-v1": "core" }[contract.architecture_profile];
+  if (!applicationModule) throw new Error("unsupported architecture_profile");
+  const allowedDto = { "target-domain-model": ["web"], "layered-mvc-service": ["server", "client"], "mvc-data-analysis-v1": ["client"] }[contract.architecture_profile];
+  if (!allowedDto.includes(contract.dto_placement)) throw new Error("dto_placement does not match architecture_profile");
+  if (mvc) validateArchitectureIdentity(contract.architecture_identity);
   if (contract.base_package !== args["base-package"] || contract.module_name !== args["module-name"] || contract.domain_segment !== args["domain-segment"]) throw new Error("CLI generation identity does not match the approved web generation contract");
-  const applicationPackage = args["application-service-package"] || `${args["base-package"]}.application.service`;
+  const applicationPackage = args["application-service-package"] || `${args["base-package"]}.${applicationModule}.service`;
+  if (mvc && !applicationPackage.startsWith(`${args["base-package"]}.${applicationModule}.`)) throw new Error("MVC service interface must belong to its application module");
   if (contract.application_service_package !== applicationPackage) throw new Error("--application-service-package does not match the approved web generation contract");
   if (!(contract.platform_profile in PLATFORM_VALIDATION_NAMESPACES)) throw new Error("unsupported platform_profile in approved web generation contract");
   if (PLATFORM_VALIDATION_NAMESPACES[contract.platform_profile] !== contract.validation_namespace) throw new Error("platform_profile and validation_namespace are inconsistent");
@@ -142,7 +149,8 @@ async function validateContract(contract, args) {
   const implementationRoot = path.resolve(contract.implementation_project_root);
   if (contract.integration_mode === "existing-project") {
     if (args["scaffold-manifest-file"] || present(contract.scaffold_manifest_ref)) throw new Error("existing-project Web generation must not claim a scaffold manifest");
-    return { applicationPackage, implementationRoot };
+    if (mvc) throw new Error("existing MVC project requires explicit onboarding support; no automatic migration");
+    return { applicationPackage, implementationRoot, applicationModule };
   }
 
   if (!args["scaffold-manifest-file"] || !present(contract.scaffold_manifest_ref)) throw new Error("scaffold-v2 Web generation requires --scaffold-manifest-file and scaffold_manifest_ref");
@@ -150,18 +158,26 @@ async function validateContract(contract, args) {
   if (manifestPath !== path.resolve(contract.scaffold_manifest_ref)) throw new Error("--scaffold-manifest-file does not match the approved web generation contract");
   if (!await exists(manifestPath)) throw new Error(`scaffold manifest not found: ${manifestPath}`);
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
-  if (manifest.schema_version !== 2) throw new Error("scaffold manifest must use schema_version=2");
+  if (![2, 3].includes(manifest.schema_version)) throw new Error("scaffold manifest must use historical schema_version=2 or current schema_version=3");
+  if (mvc && manifest.schema_version !== 3) throw new Error("MVC requires schema v3 scaffold identity");
+  if (manifest.architecture_identity || mvc) {
+    assertArchitectureAgreement(contract.architecture_identity, { manifest });
+    if (contract.architecture_identity.architecture_profile !== contract.architecture_profile) throw new Error("Web architecture profile differs from its identity");
+  } else if (manifest.schema_version === 3 && (manifest.architecture_family !== "domain-driven" || manifest.generator_skill !== "yss-ddd-scaffold-generator")) throw new Error("schema v3 scaffold manifest must bind the domain-driven generator for Web adapter generation");
   if (!["empty-scaffold-verified", "first-slice-verified"].includes(manifest.completion_level)) throw new Error("scaffold manifest must be empty-scaffold-verified before Web generation");
   const scaffoldRoot = path.dirname(path.dirname(manifestPath));
   if (implementationRoot !== scaffoldRoot) throw new Error("implementation_project_root does not match the scaffold manifest project root");
-  const expectedWebProject = path.join(scaffoldRoot, `${manifest.project_name}-adapter`, `${manifest.project_name}-web`);
+  const expectedWebProject = mvc ? path.join(scaffoldRoot, `${manifest.project_name}-server`) : path.join(scaffoldRoot, `${manifest.project_name}-adapter`, `${manifest.project_name}-web`);
   if (!args["web-project-dir"] || path.resolve(args["web-project-dir"]) !== expectedWebProject) throw new Error("--web-project-dir does not match the scaffold manifest project layout");
-  const profilePairs = [["architecture", "architecture_profile"], ["platform", "platform_profile"], ["validation_namespace", "validation_namespace"], ["dto_placement", "dto_placement"]];
+  const profilePairs = mvc ? [["platform", "platform_profile"], ["validation_namespace", "validation_namespace"]] : [["architecture", "architecture_profile"], ["platform", "platform_profile"], ["validation_namespace", "validation_namespace"], ["dto_placement", "dto_placement"]];
   for (const [manifestField, contractField] of profilePairs) {
     if (manifest.profiles?.[manifestField] !== contract[contractField]) throw new Error(`scaffold manifest ${manifestField} profile does not match the approved Web contract`);
   }
   if (manifest.base_package !== contract.base_package) throw new Error("scaffold manifest base_package does not match the approved Web contract");
-  return { applicationPackage, implementationRoot };
+  const dtoProject = contract.dto_placement === "client" ? path.join(scaffoldRoot, `${manifest.project_name}-client`) : expectedWebProject;
+  if (contract.dto_placement === "client" && !contract.architecture_identity.resolved_modules.includes("client")) throw new Error("client DTO requires approved client capability");
+  if (args["web-output-dir"] && path.resolve(args["web-output-dir"]) !== path.join(expectedWebProject, "src/main/java", packagePath(args["base-package"]))) throw new Error("web-output-dir must not override approved module ownership");
+  return { applicationPackage, implementationRoot, applicationModule, dtoProject };
 }
 
 export async function generate(args, logger = console) {
@@ -171,7 +187,7 @@ export async function generate(args, logger = console) {
   try { metadata = JSON.parse(await readFile(args["metadata-file"], "utf8")); } catch (error) { throw new Error(`Error reading metadata file: ${error.message}`); }
   let contract;
   try { contract = JSON.parse(await readFile(args["contract-file"], "utf8")); } catch (error) { throw new Error(`Error reading contract file: ${error.message}`); }
-  const { applicationPackage, implementationRoot } = await validateContract(contract, args);
+  const { applicationPackage, implementationRoot, applicationModule, dtoProject } = await validateContract(contract, args);
   const dto = await loadDtoWireProfile(contract, args);
   const tables = metadata.tables || [];
   if (!tables.length) { logger.warn("Warning: No tables found in metadata."); return []; }
@@ -183,16 +199,17 @@ export async function generate(args, logger = console) {
   const basePath = packagePath(args["base-package"]);
   const webBase = args["web-output-dir"] || (args["web-project-dir"] ? path.join(args["web-project-dir"], "src", "main", "java", basePath) : path.join(args["output-dir"], basePath));
   const webRoot = ensureSubdir(webBase, "rest");
+  const dtoRoot = dtoProject ? path.join(dtoProject, "src/main/java", basePath, "rest") : webRoot;
   const planned = [];
   const plan = (target, contents) => planned.push({ target, contents });
   for (const table of tables) {
     const domainClass = pascal(table.table_name); const domainVar = lowerCamel(table.table_name); const domainDesc = String(table.table_comment || domainClass).trim().replaceAll("\n", " ");
     const approvedFields = contract.fields[table.table_name];
     if (!approvedFields || ["create", "update", "query", "pagination", "response"].some((name) => !Array.isArray(approvedFields[name]))) throw new Error(`approved web field contract is missing create/update/query/pagination/response allowlists for table: ${table.table_name}`);
-    const context = { base_package: args["base-package"], module_name: args["module-name"], domain_class: domainClass, domain_var: domainVar, domain_desc: domainDesc, domain_url_path: kebab(table.table_name), domain_pkg_name: args["domain-segment"], author: args.author, dto_imports: [`import ${args["base-package"]}.rest.dto.request.${domainClass}CreateRequest;`, `import ${args["base-package"]}.rest.dto.request.${domainClass}UpdateRequest;`, `import ${args["base-package"]}.rest.dto.request.${domainClass}PageRequest;`, `import ${args["base-package"]}.rest.dto.response.${domainClass}Response;`].join("\n"), application_type_imports: [`import ${args["base-package"]}.application.command.${domainClass}CreateCommand;`, `import ${args["base-package"]}.application.command.${domainClass}UpdateCommand;`, `import ${args["base-package"]}.application.query.${domainClass}PageQuery;`, `import ${args["base-package"]}.application.result.${domainClass}Result;`].join("\n"), application_service_import: `import ${applicationPackage}.${domainClass}Service;`, web_convertor_import: `import ${args["base-package"]}.rest.convertor.${domainClass}WebConvertor;`, web_convertor_class: `${domainClass}WebConvertor`, application_service_field: `private final ${domainClass}Service ${domainVar}Service;`, query_call: `${domainVar}Service.page(webConvertor.toPageQuery(request))`, detail_call: `${domainVar}Service.detail(id)`, add_call: `${domainVar}Service.add(webConvertor.toCreateCommand(request))`, update_call: `${domainVar}Service.update(webConvertor.toUpdateCommand(request))`, delete_call: `${domainVar}Service.delete(id)`, response_class: `${domainClass}Response`, create_request_class: `${domainClass}CreateRequest`, update_request_class: `${domainClass}UpdateRequest`, page_request_class: `${domainClass}PageRequest`, validation_namespace: args["validation-namespace"], result_package: dto.resultPackage, page_result_type: dto.pageResultType, page_result_simple_name: simpleJavaName(dto.pageResultType), page_result_factory_method: dto.pageResultFactoryMethod, single_result_type: dto.singleResultType, single_result_simple_name: simpleJavaName(dto.singleResultType), single_result_factory_method: dto.singleResultFactoryMethod, command_dto_type: dto.commandDtoType, command_dto_simple_name: simpleJavaName(dto.commandDtoType), query_dto_type: dto.queryDtoType, query_dto_simple_name: simpleJavaName(dto.queryDtoType), page_result_factory_arguments: dto.pageResultFactoryArguments };
+    const context = { base_package: args["base-package"], module_name: args["module-name"], domain_class: domainClass, domain_var: domainVar, domain_desc: domainDesc, domain_url_path: kebab(table.table_name), domain_pkg_name: args["domain-segment"], author: args.author, dto_imports: [`import ${args["base-package"]}.rest.dto.request.${domainClass}CreateRequest;`, `import ${args["base-package"]}.rest.dto.request.${domainClass}UpdateRequest;`, `import ${args["base-package"]}.rest.dto.request.${domainClass}PageRequest;`, `import ${args["base-package"]}.rest.dto.response.${domainClass}Response;`].join("\n"), application_type_imports: [`import ${args["base-package"]}.${applicationModule}.command.${domainClass}CreateCommand;`, `import ${args["base-package"]}.${applicationModule}.command.${domainClass}UpdateCommand;`, `import ${args["base-package"]}.${applicationModule}.query.${domainClass}PageQuery;`, `import ${args["base-package"]}.${applicationModule}.result.${domainClass}Result;`].join("\n"), application_service_import: `import ${applicationPackage}.${domainClass}Service;`, web_convertor_import: `import ${args["base-package"]}.rest.convertor.${domainClass}WebConvertor;`, web_convertor_class: `${domainClass}WebConvertor`, application_service_field: `private final ${domainClass}Service ${domainVar}Service;`, query_call: `${domainVar}Service.page(webConvertor.toPageQuery(request))`, detail_call: `${domainVar}Service.detail(id)`, add_call: `${domainVar}Service.add(webConvertor.toCreateCommand(request))`, update_call: `${domainVar}Service.update(webConvertor.toUpdateCommand(request))`, delete_call: `${domainVar}Service.delete(id)`, response_class: `${domainClass}Response`, create_request_class: `${domainClass}CreateRequest`, update_request_class: `${domainClass}UpdateRequest`, page_request_class: `${domainClass}PageRequest`, validation_namespace: args["validation-namespace"], result_package: dto.resultPackage, page_result_type: dto.pageResultType, page_result_simple_name: simpleJavaName(dto.pageResultType), page_result_factory_method: dto.pageResultFactoryMethod, single_result_type: dto.singleResultType, single_result_simple_name: simpleJavaName(dto.singleResultType), single_result_factory_method: dto.singleResultFactoryMethod, command_dto_type: dto.commandDtoType, command_dto_simple_name: simpleJavaName(dto.commandDtoType), query_dto_type: dto.queryDtoType, query_dto_simple_name: simpleJavaName(dto.queryDtoType), page_result_factory_arguments: dto.pageResultFactoryArguments };
     plan(path.join(webRoot, `${domainClass}Controller.java`), render(templates["Controller.java.template"], context));
     plan(path.join(webRoot, "convertor", `${domainClass}WebConvertor.java`), render(templates["WebConvertor.java.template"], context));
-    for (const [templateName, target, declaration] of [["web/dto/Response.java.template", path.join(webRoot, "dto", "response", `${domainClass}Response.java`), fields(table.columns || [], approvedFields.response)], ["web/dto/CreateRequest.java.template", path.join(webRoot, "dto", "request", `${domainClass}CreateRequest.java`), fields(table.columns || [], approvedFields.create, { command: true })], ["web/dto/UpdateRequest.java.template", path.join(webRoot, "dto", "request", `${domainClass}UpdateRequest.java`), fields(table.columns || [], approvedFields.update, { command: true })], ["web/dto/PageRequest.java.template", path.join(webRoot, "dto", "request", `${domainClass}PageRequest.java`), fields(table.columns || [], approvedFields.query)]]) plan(target, render(templates[templateName], { ...context, field_declarations: declaration, pagination_field_declarations: paginationFields(approvedFields.pagination, dto.profile) }));
+    for (const [templateName, target, declaration] of [["web/dto/Response.java.template", path.join(dtoRoot, "dto", "response", `${domainClass}Response.java`), fields(table.columns || [], approvedFields.response)], ["web/dto/CreateRequest.java.template", path.join(dtoRoot, "dto", "request", `${domainClass}CreateRequest.java`), fields(table.columns || [], approvedFields.create, { command: true })], ["web/dto/UpdateRequest.java.template", path.join(dtoRoot, "dto", "request", `${domainClass}UpdateRequest.java`), fields(table.columns || [], approvedFields.update, { command: true })], ["web/dto/PageRequest.java.template", path.join(dtoRoot, "dto", "request", `${domainClass}PageRequest.java`), fields(table.columns || [], approvedFields.query)]]) plan(target, render(templates[templateName], { ...context, field_declarations: declaration, pagination_field_declarations: paginationFields(approvedFields.pagination, dto.profile) }));
   }
   const targets = planned.map(({ target }) => target);
   if (new Set(targets).size !== targets.length) throw new Error("approved metadata produces duplicate target files");

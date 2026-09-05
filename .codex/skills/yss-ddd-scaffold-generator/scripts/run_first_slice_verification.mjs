@@ -7,6 +7,8 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 
 import { run as runScaffoldVerification } from "./run_scaffold_verification.mjs";
+import { assertArchitectureAgreement } from "../../../../scripts/lib/backend-architecture.mjs";
+import { mvcFirstSliceProfile } from "../../../../scripts/lib/first-slice-architecture.mjs";
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPOSITORY_ROOT = path.resolve(SCRIPT_DIR, "../../../..");
@@ -60,17 +62,17 @@ async function writeJsonAtomic(target, value) {
   await writeFile(temporary, `${JSON.stringify(value, null, 2)}\n`, "utf8");
   await rename(temporary, target);
 }
-function invalidContractReasons(contract) {
+function invalidContractReasons(contract, requiredSkills = REQUIRED_SKILLS, requiredLayers = REQUIRED_LAYERS) {
   const reasons = [];
-  if (contract.schema_version !== 1) reasons.push("slice-contract-schema");
+  if (contract.schema_version !== 2) reasons.push("slice-contract-schema");
   if (contract.status !== "approved") reasons.push("slice-contract-not-approved");
   for (const field of ["contract_id", "contract_version", "slice_id"]) if (contract[field] === undefined || contract[field] === null || contract[field] === "") reasons.push(`slice-contract-${field}-missing`);
   if (contract.readiness?.blockers?.length) reasons.push("slice-contract-has-blockers");
   if (contract.readiness?.stale_inputs?.length) reasons.push("slice-contract-has-stale-inputs");
   const actualSkills = new Set([...(contract.common?.required_skills ?? []), ...(contract.backend?.required_skills ?? [])]);
-  for (const skill of REQUIRED_SKILLS) if (!actualSkills.has(skill)) reasons.push(`required-skill-missing:${skill}`);
+  for (const skill of requiredSkills) if (!actualSkills.has(skill)) reasons.push(`required-skill-missing:${skill}`);
   const actualLayers = new Set(contract.backend?.affected_layers ?? []);
-  for (const layer of REQUIRED_LAYERS) if (!actualLayers.has(layer)) reasons.push(`required-layer-missing:${layer}`);
+  for (const layer of requiredLayers) if (!actualLayers.has(layer)) reasons.push(`required-layer-missing:${layer}`);
   if (!Array.isArray(contract.work_units) || !contract.work_units.length) reasons.push("slice-contract-work-units-missing");
   else for (const [index, unit] of contract.work_units.entries()) {
     const id = unit.id || `index-${index}`;
@@ -80,10 +82,10 @@ function invalidContractReasons(contract) {
   }
   return reasons;
 }
-async function downstreamDrift(manifest) {
+async function downstreamDrift(manifest, requiredSkills = REQUIRED_SKILLS) {
   const drift = [];
   const recordedSkills = manifest.readiness?.downstream_skills ?? {};
-  for (const skill of REQUIRED_SKILLS) {
+  for (const skill of requiredSkills) {
     const expected = recordedSkills[skill];
     if (typeof expected !== "string" || !/^[a-f0-9]{64}$/.test(expected)) {
       drift.push(`${skill}:digest-missing`);
@@ -98,6 +100,10 @@ async function downstreamDrift(manifest) {
     scaffold_parent: path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-ddd-scaffold-generator", "references", "yss-backend-scaffold-parent", "SKILL.md"),
     compiler_contract: path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-implementation-contract-compiler", "references", "compiler-contract.yaml")
   };
+  if (manifest.architecture_family === "layered-mvc") {
+    delete contractFiles.scaffold_parent;
+    contractFiles.architecture_profiles = path.join(REPOSITORY_ROOT, "docs/agents/backend-architecture-profiles.md");
+  }
   for (const [name, target] of Object.entries(contractFiles)) {
     const expected = contracts[name];
     if (typeof expected !== "string" || !/^[a-f0-9]{64}$/.test(expected)) {
@@ -120,11 +126,17 @@ export async function runFirstSliceVerification(projectRoot, evidenceDir, sliceC
   if (!await isFile(sliceContractFile)) throw new Error(`missing Slice Implementation Contract: ${sliceContractFile}`);
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
   const contract = JSON.parse(await readFile(sliceContractFile, "utf8"));
-  const contractFailures = invalidContractReasons(contract);
-  if (manifest.schema_version !== 2 || manifest.completion_level !== "empty-scaffold-verified") contractFailures.push("scaffold-not-empty-scaffold-verified");
+  const adapter = manifest.architecture_family === "layered-mvc" ? mvcFirstSliceProfile(manifest.architecture_identity ?? {}) : { skills: REQUIRED_SKILLS, layers: REQUIRED_LAYERS, artifacts: ARTIFACT_CHECKS };
+  const contractFailures = invalidContractReasons(contract, adapter.skills, adapter.layers);
+  try {
+    const identity = contract.architecture_identity ?? contract.resolution?.architecture_identity;
+    assertArchitectureAgreement(identity, { manifest });
+    for (const unit of contract.work_units ?? []) assertArchitectureAgreement(identity, { work_unit: unit.architecture_identity });
+  } catch (error) { contractFailures.push(`architecture-identity:${error.message}`); }
+  if (![2, 3].includes(manifest.schema_version) || manifest.completion_level !== "empty-scaffold-verified") contractFailures.push("scaffold-not-empty-scaffold-verified");
   const projectFiles = await files(projectRoot);
-  const missingArtifacts = ARTIFACT_CHECKS.filter(([, pattern]) => !projectFiles.some((file) => pattern.test(file))).map(([name]) => name);
-  const skillDrift = await downstreamDrift(manifest);
+  const missingArtifacts = adapter.artifacts.filter(([, pattern]) => !projectFiles.some((file) => pattern.test(file))).map(([name]) => name);
+  const skillDrift = await downstreamDrift(manifest, adapter.skills);
   if (contractFailures.length || missingArtifacts.length || skillDrift.length) {
     const report = { verification_mode: "first-slice", project_root: projectRoot, slice_contract_ref: sliceContractFile, scaffold_manifest_ref: manifestPath, generated_at: isoNow(), status: "failed", completion_level: manifest.completion_level, contract_failures: contractFailures, missing_artifacts: missingArtifacts, downstream_skill_drift: skillDrift, commands: [] };
     await writeJsonAtomic(reportPath, report);

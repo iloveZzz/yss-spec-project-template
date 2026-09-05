@@ -24,6 +24,7 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 3. For expression parsing, inspect `ExpressParserFactory` and concrete `ExpressParser` implementations before adding syntax.
 4. Register new parsers as Spring beans; `ExpressParserFactory` auto-registers available parser beans by `parserType().getType()`.
 5. Keep validation failures mapped to the service/API error contract used by the local project.
+6. 消费工程基线选择 javax/jakarta，不自行升级 Java/Boot。MVC 输入校验放在 server/client，业务不变量由 service/core 验证；不生成 DDD Domain。HTTP 失败形态由 server 的合同测试验证。
 
 ## Capability Split
 

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "wikiRoot": ".template-source/wiki",
-  "compiledAt": "2026-09-04T06:27:49.442Z",
+  "compiledAt": "2026-09-05T06:30:54Z",
   "gitCommit": "a428fc4884f5196dbcb1f9b7dd77ef5096b09d11",
   "profile": "documents",
   "sources": [
@@ -11,7 +11,7 @@
       "livePath": "AGENTS.md",
       "rawPath": "raw/AGENTS.md",
       "role": "copy",
-      "sha256": "7a5bccbcaf419987e4ceacf50aa6c3225c8e3e66c56dadfcc9434a13d7c81ece"
+      "sha256": "3a6167c2029391771cf2744b82eda1d36678afc2d94c48e1f3127a66ed9e5a5b"
     },
     {
       "id": "CONTEXT.md",
@@ -75,7 +75,7 @@
       "livePath": "docs/agents/skills-maintenance.md",
       "rawPath": "raw/skills-maintenance.md",
       "role": "copy",
-      "sha256": "90fec9e2834d812bf2e2c51b1041c1ac16ba950679d8c1d8533df6e073b2bc9c"
+      "sha256": "6862245d3d000bb370426366fa6250c88b20963d9335512ebe00b8d90c904ed2"
     },
     {
       "id": "yss-skill-registry.yaml",
@@ -83,7 +83,7 @@
       "livePath": "docs/agents/yss-skill-registry.yaml",
       "rawPath": "raw/yss-skill-registry.yaml",
       "role": "copy",
-      "sha256": "4ce92f450cc7ab61db6a02724fc08dadc5467cc42c4edc18453c49292ffe02fd"
+      "sha256": "95136b6d42c7f021b457311a9bd60c77d7a56933cdd0425a7c0039e39222eef6"
     },
     {
       "id": "issue-tracker.md",
@@ -134,7 +134,7 @@
       "extract": {
         "kind": "skill-names"
       },
-      "sha256": "3d47e419b739eb639fadb30fb97e33ac0814d32d41ec031196e973498d92c928"
+      "sha256": "e2478c4bf8a6af20e038dbdfe289227bf7f49e8bc1a1f7ddb80eb78f58461631"
     }
   ],
   "articles": [

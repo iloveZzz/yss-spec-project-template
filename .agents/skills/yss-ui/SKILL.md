@@ -54,7 +54,6 @@ pnpm why vue @yss-ui/components @yss-ui/hooks ant-design-vue vxe-table
 | 任务 | 必须路由 |
 |---|---|
 | 新建或改造完整业务页面 | `yss-ui-business-page-generation` |
-| 生命周期页面编排与旧触发词兼容 | `yss-page-module-development` |
 | 页面布局、组件和交互 | `yss-components` |
 | 请求、分页、参数、树数据映射 | `yss-hook` |
 | Formily schema、联动、校验、详情态 | `yss-formily` |

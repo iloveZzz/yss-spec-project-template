@@ -1,39 +1,72 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://yss.dev/schemas/frontend-implementation-evidence.schema.json",
+  "$id": "https://yss.dev/schemas/frontend-implementation-evidence-v2.json",
   "title": "YSS 前端实现还原证据",
   "type": "object",
-  "additionalProperties": true,
-  "required": ["schema_version", "kind", "template", "status", "prototype_ref", "spec_ref", "route_and_page_inventory"],
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "template", "status", "prototype_ref", "spec_ref", "visual_baseline", "route_and_page_inventory", "pnpm_commands"],
   "properties": {
-    "schema_version": { "const": 1 },
-    "kind": { "enum": ["plan", "verification"] },
-    "template": { "type": "boolean" },
-    "status": { "enum": ["draft", "approved", "blocked"] },
-    "prototype_ref": { "type": "string", "minLength": 1 },
-    "spec_ref": { "type": "string", "minLength": 1 },
-    "route_and_page_inventory": { "type": "array", "minItems": 1 },
-    "visual_acceptance_cases": { "type": "array", "minItems": 1 },
-    "desktop_viewport": { "type": "string", "minLength": 3 },
-    "narrow_viewport": { "type": "string", "minLength": 3 },
-    "state_cases": { "type": "array", "minItems": 1 },
-    "pnpm_commands": { "type": "array", "minItems": 1 },
-    "desktop_visual_evidence": { "type": "array", "minItems": 1 },
-    "narrow_view_visual_evidence": { "type": "array", "minItems": 1 },
-    "interaction_results": { "type": "array", "minItems": 1 },
-    "console_warning_check": { "enum": ["pass", "blocked"] },
-    "uncovered_differences": { "type": "array" },
-    "difference_owner": { "type": ["string", "null"] },
-    "independent_review": { "type": "object" }
+    "schema_version": {"const": 2},
+    "kind": {"enum": ["plan", "verification"]},
+    "template": {"type": "boolean"},
+    "status": {"enum": ["draft", "approved", "blocked", "stale"]},
+    "prototype_ref": {"type": "string", "minLength": 1},
+    "spec_ref": {"type": "string", "minLength": 1},
+    "visual_baseline": {"$ref": "#/$defs/visualBaseline"},
+    "route_and_page_inventory": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/routePage"}},
+    "baseline_case_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/caseId"}},
+    "desktop_viewport": {"const": "1440x900"},
+    "narrow_viewport": {"const": "390x844"},
+    "state_cases": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "pnpm_commands": {"type": "array", "minItems": 1, "items": {"type": "string", "pattern": "^pnpm(?: |$)"}},
+    "case_results": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/caseResult"}},
+    "interaction_results": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "console_warning_check": {"enum": ["pass", "blocked"]},
+    "actual_verification": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/verification"}},
+    "uncovered_differences": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "difference_owner": {"type": ["string", "null"]},
+    "independent_review": {"$ref": "#/$defs/review"}
   },
   "allOf": [
-    {
-      "if": { "properties": { "kind": { "const": "plan" } } },
-      "then": { "required": ["visual_acceptance_cases", "desktop_viewport", "narrow_viewport", "state_cases", "pnpm_commands"] }
+    {"if": {"properties": {"kind": {"const": "plan"}}, "required": ["kind"]}, "then": {"required": ["baseline_case_ids", "desktop_viewport", "narrow_viewport", "state_cases"]}},
+    {"if": {"properties": {"kind": {"const": "verification"}}, "required": ["kind"]}, "then": {"required": ["case_results", "interaction_results", "console_warning_check", "actual_verification", "uncovered_differences", "difference_owner", "independent_review"]}}
+  ],
+  "$defs": {
+    "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "caseId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "visualBaseline": {
+      "type": "object", "additionalProperties": false,
+      "required": ["baseline_id", "version", "digest", "manifest_ref", "status", "case_ids"],
+      "properties": {
+        "baseline_id": {"type": "string", "pattern": "^visual-baseline\\.[a-z0-9][a-z0-9-]*$"},
+        "version": {"type": "string", "pattern": "^v[1-9][0-9]*$"},
+        "digest": {"$ref": "#/$defs/digest"}, "manifest_ref": {"type": "string", "minLength": 1}, "status": {"const": "approved"},
+        "case_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"$ref": "#/$defs/caseId"}}
+      }
     },
-    {
-      "if": { "properties": { "kind": { "const": "verification" } } },
-      "then": { "required": ["desktop_visual_evidence", "narrow_view_visual_evidence", "interaction_results", "console_warning_check", "pnpm_commands", "uncovered_differences", "difference_owner", "independent_review"] }
+    "routePage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["route", "page", "case_ids"],
+      "properties": {"route": {"type": "string", "minLength": 1}, "page": {"type": "string", "minLength": 1}, "case_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/caseId"}}}
+    },
+    "caseResult": {
+      "type": "object", "additionalProperties": false,
+      "required": ["case_id", "baseline_image_ref", "implementation_image_ref", "diff_ref", "mask_ref", "result", "uncovered_difference", "explanation"],
+      "properties": {
+        "case_id": {"$ref": "#/$defs/caseId"}, "baseline_image_ref": {"type": "string", "minLength": 1}, "implementation_image_ref": {"type": "string", "minLength": 1},
+        "diff_ref": {"type": "string", "minLength": 1}, "mask_ref": {"type": "string", "minLength": 1}, "result": {"enum": ["pass", "blocked"]},
+        "uncovered_difference": {"type": "boolean"}, "explanation": {"type": "string"}
+      }
+    },
+    "verification": {
+      "type": "object", "additionalProperties": false,
+      "required": ["command", "exit_code", "executed_at", "evidence_ref"],
+      "properties": {"command": {"type": "string", "minLength": 1}, "exit_code": {"type": "integer"}, "executed_at": {"type": "string", "minLength": 1}, "evidence_ref": {"type": "string", "minLength": 1}}
+    },
+    "review": {
+      "type": "object", "additionalProperties": false,
+      "required": ["reviewer", "candidate_digest", "status", "findings_ref"],
+      "properties": {"reviewer": {"type": "string", "minLength": 1}, "candidate_digest": {"$ref": "#/$defs/digest"}, "status": {"enum": ["pending", "approved", "blocked"]}, "findings_ref": {"type": "string", "minLength": 1}}
     }
-  ]
+  }
 }

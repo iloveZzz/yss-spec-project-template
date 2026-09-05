@@ -27,9 +27,11 @@ Matt phase boundary 是工作阶段之间的上下文决策，不是新的生命
 
 ## 原型到后端脚手架的接力
 
-`prototype_confirmation` 通过后，先判断实现仓库登记中的 backend `scaffold_status`。当状态为 `required` 时，先完成工程基线，由 `yss-implementation-contract-compiler` 编译脚手架 `controlled-generation` 工作单元合同，生命周期编排器批准并持久化后才能运行生成器；顺序为：工程基线 → 实现合同编译器 脚手架合同 draft → 生命周期批准/持久化 → 脚手架生成 → `yss-backend-scaffold-parent` 基线校验 → 实现合同编译器 合同重编译。`existing` / `initialized` 不重复全量生成，但不能跳过基线校验和 实现合同编译器 重编译。
+`prototype_confirmation` 通过后，先判断实现仓库登记中的 backend `scaffold_status`。当状态为 `required` 时，在工程基线中先完成脚手架架构选择：Agent 按领域复杂度给出 `domain-driven` / `layered-mvc` 推荐和依据，本体选择作为子项目预填默认值，用户通过批量表确认全部项目或逐项覆盖。选择写入 `scaffold-architecture-decisions.yaml`；处于 `undecided`、`recommended`、`awaiting-user-decision` 或 `stale` 时必须阻断，不得默认 DDD，也不得在生成器内交互。
 
-脚手架工作单元必须使用结构化合同 JSON 文件，至少记录 `contract_id`、`contract_version`、`slice_id`、实现合同编译器 draft 引用、生命周期批准引用、持久化引用、当前版本、允许写路径、预期证据文件和验证命令；批准记录至少含 `approval_ref`、`approver`、`persisted_ref`、`current_version`。生成器必须读取该合同文件并校验状态、版本、skill、工作模式和固定命令，不能只接受任意字符串参数。它还必须记录生成器输入、预期文件、目标目录、实际 `./mvnw validate` / `./mvnw test` / `./mvnw package` 结果和 YSS Skill Execution Result。三条命令必须由受控工作单元真实执行，逐条留存 `exit_code`、`duration_ms`、stdout/stderr 引用和执行时间；生成器打印的下一步命令不构成证据。生命周期生成关闭 `--with-example`；非空目标目录使用 `--force` 默认阻断，除非覆盖范围、备份、回滚点和批准引用已进入合同。脚手架不得把业务规则、状态机、权限、事务、复杂查询、错误映射或用户可见行为放进生成物；`validate` 通过、输出目录存在或生成器成功都不是生命周期批准、架构放行或 `ready-for-agent`。
+选择达到 `lifecycle-approved` 且 digest 当前后，由 `yss-implementation-contract-compiler` 编译脚手架 schema v3 `controlled-generation` 工作单元合同，生命周期批准并持久化后才能运行对应生成器。顺序为：工程基线与架构推荐 → 用户确认与选择持久化 → 实现合同编译器脚手架合同 draft → 生命周期批准/持久化 → `domain-driven` 使用 `yss-ddd-scaffold-generator` 或 `layered-mvc` 使用 `yss-layered-mvc-scaffold-generator` → 对应基线/Manifest v3 校验 → 实现合同编译器业务合同重编译。`existing` / `initialized` 不重复生成；架构转换必须单独立项。
+
+脚手架工作单元必须使用结构化 schema v3 合同 JSON，至少记录 `contract_id`、`contract_version`、`scaffold_request_id`、`architecture_family`、`generator_skill`、`decision_ref/id/digest`、Profile、能力模块闭包、实现合同编译器 draft 引用、生命周期批准引用、持久化引用、当前版本、允许写路径、预期证据文件和验证命令；不得使用 `slice_id` 伪造工程基线身份。生成器必须读取合同和决策文件并校验状态、digest、版本、skill、工作模式与固定命令。三条 Wrapper 命令必须由受控工作单元真实执行，逐条留存 `exit_code`、`duration_ms`、stdout/stderr 引用和执行时间；生成器打印的下一步命令不构成证据。非空目标、`--force`、旧项目迁移和模板升级均阻断。脚手架不得生成业务规则、状态机、权限、事务、复杂查询、错误映射、用户可见行为或示例业务 API；`validate` 通过、输出目录存在或生成器成功都不是生命周期批准、架构放行或 `ready-for-agent`。
 
 脚手架完成后，所有后续生成的后端代码仍必须重新消费当前版本的批准 Slice Implementation Contract、YSS skill 依赖闭包、允许写路径、预期证据和 Execution Result。业务行为使用 `behavior-tdd`；只有机械结构、样板、配置和冻结客户端使用 `controlled-generation`。缺少合同、skill、证据或实际验证时立即阻断；生成范围从机械内容变成业务行为时触发完整重路由。
 
