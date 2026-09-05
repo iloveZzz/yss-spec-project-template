@@ -64,9 +64,9 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
   }
 
   const strategicManifest = validateStrategicDesignSkillManifest(JSON.parse(read(".agents/skills/.strategic-design-skills-manifest.json")));
-  const strategicIds = ["prototype-review", "yss-prototype-stage", "yss-design-system", "yss-antd-design", "yss-stage-decision"];
+  const strategicIds = ["prototype-review", "yss-prototype-stage", "yss-design-system", "yss-antd-design", "yss-antdv-next-design", "yss-stage-decision"];
   if (JSON.stringify(strategicManifest.skills.map(({ canonical }) => canonical).sort()) !== JSON.stringify(strategicIds.slice().sort())) {
-    fail("战略设计 skills 清单必须恰好覆盖五项公共技能");
+    fail("战略设计 skills 清单必须恰好覆盖六项公共技能");
   }
   for (const skill of strategicManifest.skills) {
     if (isTemplateSource(ROOT)) {
@@ -102,7 +102,7 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
   for (const marker of ["product-design-adapter.md", "schema v3", "H1", "H2", "原型阶段不得调用 `yss-ui`"]) {
     if (!prototypeStage.includes(marker)) fail(`原型阶段合同缺少 YSS adapter 标记: ${marker}`);
   }
-  for (const marker of ["prepare-static", "prepare-flow", "fact pack", "ConfigProvider", "1440x900", "390x844"]) {
+  for (const marker of ["prepare-static", "prepare-flow", "vue-antdv-next", "react-antd-6", "fact pack", "ConfigProvider", "1440x900", "390x844"]) {
     if (!prototypeAdapter.includes(marker)) fail(`Product Design adapter 缺少执行约束: ${marker}`);
   }
   for (const marker of ["schema_version: 3", "prototype_profile", "visual_review", "flow_review", "implementation_handoff", "project_token_baseline_digest", "verification/design-qa.md"]) {

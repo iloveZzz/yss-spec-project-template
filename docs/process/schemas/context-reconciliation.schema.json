@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/context-reconciliation.schema.json",
+  "title": "YSS Context Reconciliation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "repository_mode", "stage", "work_unit", "status", "context_snapshot", "changes", "unresolved_terms", "evidence_refs"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "repository_mode": { "enum": ["template-source", "project-instance"] },
+    "stage": { "type": "string", "pattern": "^stage\\.[a-z0-9][a-z0-9-]*$" },
+    "work_unit": { "type": "string", "pattern": "^work-unit\\.[a-z0-9][a-z0-9-]*$" },
+    "status": { "enum": ["reconciled", "not-applicable", "blocked"] },
+    "reason": { "type": "string", "minLength": 1 },
+    "context_snapshot": { "$ref": "#/$defs/contextSnapshot" },
+    "changes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["added", "updated", "deprecated"],
+      "properties": {
+        "added": { "$ref": "#/$defs/termRefs" },
+        "updated": { "$ref": "#/$defs/termRefs" },
+        "deprecated": { "$ref": "#/$defs/termRefs" }
+      }
+    },
+    "unresolved_terms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["term", "reason", "owner", "next_action"],
+        "properties": {
+          "term": { "type": "string", "minLength": 1 },
+          "reason": { "type": "string", "minLength": 1 },
+          "owner": { "type": "string", "minLength": 1 },
+          "next_action": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "evidence_refs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+  },
+  "$defs": {
+    "termRefs": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^(Global|[A-Z][A-Za-z0-9]+)/[A-Z][A-Za-z0-9]+$" } },
+    "contextSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context_ref", "context_schema_version", "document_digest", "referenced_terms_digest", "term_refs"],
+      "properties": {
+        "context_ref": { "const": "CONTEXT.md" },
+        "context_schema_version": { "const": 1 },
+        "document_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "referenced_terms_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "term_refs": { "$ref": "#/$defs/termRefs" }
+      }
+    }
+  }
+}

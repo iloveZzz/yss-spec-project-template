@@ -101,7 +101,7 @@ roles:
     title: YSS 产品经理
     stages: [stage.discovery, stage.spec-architecture, stage.product-design, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.product-overview, artifact.functional-architecture, artifact.interaction-spec, artifact.state-matrix, artifact.prototype-confirmation]
-    core_skills: [yss-design-system, yss-prototype-stage, prototype-review, yss-antd-design, yss-research, competitive-intelligence]
+    core_skills: [yss-design-system, yss-prototype-stage, prototype-review, yss-antdv-next-design, yss-research, competitive-intelligence]
     forbidden_skills: [yss-ui, yss-domain, yss-repository, yss-web-controller, yss-ddd-scaffold-generator, implement, tdd]
     description: >-
       Own priority, product-design impact, interaction, state matrix, prototype
@@ -111,7 +111,8 @@ roles:
       OpenAPI alone. Do not independently approve external commercial contracts
       or formal commitments; those require biological-human approval. Frontend
       implementation uses the frontend-engineer role and yss-ui, not
-      yss-antd-design.
+      yss-antdv-next-design. Explicit React/AntD compatibility prototypes use
+      yss-antd-design conditionally.
 
   - id: role.project-manager
     name: 项目经理
@@ -153,7 +154,7 @@ roles:
     stages: [stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.openapi-draft, artifact.data-architecture]
     core_skills: [yss-implementation-contract-compiler, yss-tactical-design, yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-dto, mapstruct, lombok, alibaba-java-code-style, yss-exception, yss-validation, tdd, yss-ddd-scaffold-generator]
-    forbidden_skills: [yss-ui, yss-page-module-development, yss-formily, yss-frontend-scaffold-generator, yss-antd-design, page-list-module, page-form-module]
+    forbidden_skills: [yss-ui, yss-page-module-development, yss-formily, yss-frontend-scaffold-generator, yss-antd-design, yss-antdv-next-design, page-list-module, page-form-module]
     description: >-
       Own OpenAPI Draft, data-architecture contributions, and backend tests.
       Write only contract-allowed backend paths. Verify with ./mvnw. Do not

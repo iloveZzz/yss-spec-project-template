@@ -1,11 +1,12 @@
 # YSS 设计系统执行规范
 
-本文件是 `docs/design/design.md` 的 skill 侧执行清单。项目文档面向团队阅读并作为唯一规范来源，本文件面向 Agent 执行、设计评审和前端实现，不单独承载新的 token 决策。
+本文件是 YSS 设计系统的 skill 侧执行清单，面向 Agent 执行、设计评审和前端实现，不单独承载新的 Token 决策或具体值。
 
 权威资料：
 
-- 团队规范：`docs/design/design.md`
-- Token 快照：`docs/design/tokens/*`
+- 规范源：根 `DESIGN.md`（项目视觉 Token 与组件视觉变体）
+- 治理说明：`docs/design/design.md`（生命周期、组件路线、状态与验收）
+- 派生快照：`docs/design/tokens/*`（实现映射，不得反向覆盖规范源）
 - Skill 入口：`.agents/skills/yss-design-system/SKILL.md`
 
 ## 设计定位
@@ -37,24 +38,14 @@
 
 ### 颜色
 
-| Token | 值 | 用途 |
+| 角色 | 规范源 | 运行时映射 |
 | --- | --- | --- |
-| `colorPrimary` | `#3371ff` | 主操作、链接、焦点、选中态 |
-| `colorPrimaryHover` | `#4096ff` | 主色 hover |
-| `colorPrimaryActive` | `#0958d9` | 主色 active |
-| `colorSuccess` | `#52c41a` | 成功状态 |
-| `colorWarning` | `#faad14` | 警告状态 |
-| `colorError` | `#f5222d` | 错误状态 |
-| `colorInfo` | `#3371ff` | 信息提示 |
-| `colorBgLayout` | `#f0f2f5` | 页面背景 |
-| `colorBgContainer` | `#ffffff` | 内容容器 |
-| `colorBgElevated` | `#ffffff` | 浮层容器 |
-| `colorText` | `rgba(0, 0, 0, 0.88)` | 主文本 |
-| `colorTextSecondary` | `rgba(0, 0, 0, 0.65)` | 次级文本 |
-| `colorTextTertiary` | `#8c8c8c` | 弱说明 |
-| `colorTextQuaternary` | `#bfbfbf` | placeholder / disabled |
-| `colorBorder` | `#d9d9d9` | 主边框 |
-| `colorBorderSecondary` | `#f0f0f0` | 次级分割线 |
+| 品牌 seed | `colors.primary` | `colorPrimary` / `--brand-color-primary` |
+| 高对比主控件 | `components.button-primary*` | `--yss-color-primary-control*` 或组件 Token |
+| 页面 / 容器 / 浮层 | `colors.canvas-layout` / `surface` / `surface-elevated` | 对应 `colorBg*` / `--brand-color-bg-*` |
+| 主次文本 | `colors.text*` | 对应 `colorText*` / `--brand-color-text*` |
+| 功能状态 | `colors.success*` / `warning*` / `error*` / `info-bg` | 对应状态 semantic Token |
+| 边框 | `colors.border-secondary` | 对应边框 semantic Token |
 
 颜色规则：
 
@@ -64,62 +55,47 @@
 - 不硬编码白色、灰色、状态色；优先引用 token、CSS variables 或 Ant Design theme。
 - semantic token 优先于色值：页面先声明背景、容器、浮层、文本、边框、状态等角色，再映射到具体 token。
 - 运行时短名 `--primary-color`、`--text-color`、`--bg-color` 必须指向 `--brand-*`，不要再维护第二套色值。
-- `blue` 等预设色板可以仍含官方 `#1677ff`；色板预设 ≠ 品牌主色。
+- 上游预设色板与项目品牌 seed 是不同角色；色板预设 ≠ 品牌主色。
 - accessibility contrast 不足时，通过 `ConfigProvider` 的 seed token 或组件 token 调整；不要为单个页面制造不可复用的深浅色例外。
 - Codex `$design-qa` 的 token / 字体对照读 `references/design-qa-theme.md`。
 
 ### 排版
 
-| 层级 | 字号 | 字重 | 用途 |
-| --- | --- | --- | --- |
-| Heading 1 | 38 | 600 | 大标题，慎用 |
-| Heading 2 | 32 | 600 | 页面级标题 |
-| Heading 3 | 26 | 600 | 重要分区 |
-| Heading 4 | 22 | 600 | 分区标题 |
-| Heading 5 | 18 | 600 | 卡片 / 面板标题 |
-| Body | 14 | 400 | 默认正文、控件、表格 |
-| Small | 12 | 400 | 辅助信息、Tag |
+| 角色 | 规范源 | 用途 |
+| --- | --- | --- |
+| 正文 | `typography.body` | 默认正文、控件、表格 |
+| 强调正文 | `typography.body-strong` | 表头与必要强调 |
+| 大 / 中标题 | `typography.heading-lg` / `heading-md` | 页面与分区层级 |
+| 辅助文本 | `typography.caption` | 说明、Tag 与次级信息 |
+| 按钮 | `typography.button` | 控件文字 |
 
 排版规则：
 
-- UI 默认正文 14px。
-- UI 字重优先 400 / 600。
+- 正文、标题、辅助文本和按钮的字号、字重、行高均从 `DESIGN.md` 对应角色读取。
 - 字体栈使用系统字体，不强制 `Inter`。
 - 不用 700+ 粗体表达选中或激活状态。
 - 选中状态优先使用颜色、边框、下划线、背景表达。
 
 ### 间距、尺寸、圆角
 
-| 类型 | 基线 |
+| 类型 | 规范源 |
 | --- | --- |
-| 间距网格 | 4px |
-| 默认控件高度 | 32px |
-| 小控件高度 | 24px |
-| 大控件高度 | 40px |
-| 默认字号 | 14px |
-| 字体栈 | 系统栈，不强制 `Inter` |
-| 小控件圆角 | 4px |
-| 默认控件圆角 | 6px |
-| 大容器 / 浮层圆角 | 8px |
-| 顶栏高度 | 64px |
-| 深色侧栏 | `#001529` |
+| 间距 | `spacing.*` 与组件变体的 `padding` |
+| 控件高度 | `components.button-*` / `input-*` 的 `height`；算法 seed 见治理说明 |
+| 控件 / 容器圆角 | `rounded.*` 与组件变体的 `rounded` |
+| 页面 / Card 内边距 | `components.page-shell` / `card-compact` |
 
 执行规则：
 
-- 间距使用 4 / 8 / 12 / 16 / 20 / 24 / 32 / 48。
+- 间距只使用 `spacing.*`，不要补写未登记的中间值。
+- 默认工作界面叠加一次 compact algorithm；seed 与计算结果从规范源和派生快照读取，不得二次 compact。
 - 表单、筛选区、工具栏、表格、详情页使用密集但有节奏的布局。
 - 控件圆角不得明显大于容器圆角。
 - 不使用任意 magic number；确需新增尺寸时，先说明为什么 token 不够。
 
 ### 动效
 
-| Token | 值 | 用途 |
-| --- | --- | --- |
-| `motionDurationFast` | `0.1s` | hover、focus、press |
-| `motionDurationMid` | `0.2s` | 折叠、淡入淡出、控件内部状态 |
-| `motionDurationSlow` | `0.3s` | Modal、Drawer、页面级浮层 |
-
-动效只服务于状态反馈、层级变化和空间关系。不自造 easing。
+动效只服务于状态反馈、层级变化和空间关系。使用目标 Provider 的 semantic motion Token，不在页面或本执行清单中自造 duration/easing；项目需要稳定覆盖时先登记到根 `DESIGN.md`。
 
 ## 组件规则
 
@@ -127,7 +103,7 @@
 | --- | --- |
 | Button Primary | 每个决策区域只保留一个主按钮 |
 | Button Default | 次级动作默认使用默认按钮或描边按钮 |
-| Input / Select | 默认高度 32px，focus 可见 |
+| Input / Select | 使用 `components.input-*` 高度和圆角，focus 可见；不得以算法 seed 冒充 compact 结果 |
 | Card | 只用于真实内容容器，不做卡片套卡片 |
 | Modal | 用于阻断式决策和关键表单 |
 | Drawer | 用于详情、编辑、辅助流程，不打断主列表上下文 |
@@ -206,11 +182,18 @@
 React + Ant Design：
 
 - 使用 `ConfigProvider` 注入主题。
-- 默认主题使用 `theme.defaultAlgorithm`；暗色与紧凑模式通过 theme algorithm 切换，不手工反转色值或逐组件压缩。
+- 默认工作界面使用 `theme.compactAlgorithm`；暗色紧凑模式组合 `theme.darkAlgorithm` 与 `theme.compactAlgorithm`，不手工反转色值或逐组件压缩。
+- seed 与 compact 计算值以 `DESIGN.md` / `tokens.compact.json` 为准；不要重复 compact。
 - 优先通过 token、component token、CSS variables、theme algorithm 实现样式。
 - 静态反馈 API 使用 `App`、hook API 或 context holder，避免主题上下文丢失。
 - 暗色模式使用 `darkAlgorithm` 或 `variables.dark.css`。
 - 紧凑模式使用 `compactAlgorithm` 或 `tokens.compact.json`。
+
+实验 Vue + Antdv Next：
+
+- H2 默认先使用 `yss-antdv-next-design` 校验精确版本 fact pack、组件集合与项目 baseline digest。
+- 共享本规范的 semantic token、紧凑密度和验收语义；props、events、slots 与主题 API 只从 Antdv Next fact pack 读取。
+- `yss-antd-design` 只保留为显式 React/AntD 兼容路线；默认 Provider 与兼容 Provider 都不替换生产 `yss-ui` 路线。
 
 YSS UI / Vue：
 
@@ -237,7 +220,7 @@ YSS UI / Vue：
 
 - 是否消费 token，而不是硬编码颜色和尺寸。
 - 是否以 semantic token 表达颜色、圆角、阴影和状态层级。
-- 是否保持默认 14px 正文、32px 控件、4px 间距网格。
+- 是否使用当前 `DESIGN.md` 与 `tokens.compact.json` 的排版、控件和间距值，且没有重复 compact。
 - 是否保留 hover、focus、active、disabled、loading、empty、error 状态。
 - 是否只保留一个 single primary action，并让每个关键操作提供 interaction feedback。
 - 是否在目标字号和背景下复核 accessibility contrast。

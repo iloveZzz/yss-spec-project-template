@@ -1,0 +1,18 @@
+schema_version: 1
+repository_mode: project-instance
+stage: stage.discovery
+work_unit: work-unit.discovery-requirements
+status: reconciled
+context_snapshot:
+  context_ref: CONTEXT.md
+  context_schema_version: 1
+  document_digest: sha256:<current-normalized-context-digest>
+  referenced_terms_digest: sha256:<digest-of-referenced-terms>
+  term_refs: []
+changes:
+  added: []
+  updated: []
+  deprecated: []
+unresolved_terms: []
+evidence_refs:
+  - CONTEXT.md

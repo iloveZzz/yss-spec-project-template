@@ -1,4 +1,9 @@
 :root {
+  --yss-color-primary-control: #245bdb;
+  --yss-color-primary-control-hover: #2f68eb;
+  --yss-color-on-primary: #ffffff;
+  --yss-control-height-compact: 28px;
+  --yss-card-compact-padding: 16px;
   --brand-color-primary: #3371ff;
   --brand-color-primary-bg: #d6e4ff;
   --brand-color-primary-bg-hover: #adc6ff;

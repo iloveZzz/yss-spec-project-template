@@ -25,6 +25,7 @@ checkpoint_policy:
   flush_immediately_on: [blocked, responsibility_changed, asset_approval]
   preserve_stage_causality: true
   required_stage_trace_fields: [stage, upstream_refs, artifact_refs, gate_decisions, downstream_impacts]
+  project_instance_stage_exit_requires_context_reconciliation: true
 
 modes:
   route: read_only
@@ -87,7 +88,7 @@ workflow_execution_result:
       normalize_to: workflow-execution-result-v1
       removal_target: schema_version_2
   result_values: [completed, blocked, needs-human, failed]
-  required: [result_schema, work_unit, workflow_reference, result, evidence_refs, changed_artifacts, new_impacts, stale_candidates, next_route, blocking_signals]
+  required: [result_schema, work_unit, workflow_reference, result, context_reconciliation, evidence_refs, changed_artifacts, new_impacts, stale_candidates, next_route, blocking_signals]
   unavailable_skill:
     required: [skill, provider, fallback, resolution]
     blocking_result: blocked
@@ -97,6 +98,12 @@ workflow_execution_result:
   completed_requires_readable_evidence_refs: true
   evidence_ref_validation: readable-or-resolvable
   completed_requires_no_blocking_signals: true
+  context_reconciliation:
+    schema_ref: docs/process/schemas/context-reconciliation.schema.json
+    validator: scripts/verify-context-reconciliation
+    project-instance: {required_status: reconciled, readable_ref_required: true, transition_without_reconciliation: blocked}
+    template-source: {required_status: not-applicable, reason_required: true}
+    creates_gate: false
   workflow_reference:
     required: [source, skill, invocation_mode]
     allowed_sources: [yss-product-lifecycle, mattpocock/skills]
@@ -241,8 +248,8 @@ work_unit_routes:
   work-unit.prototype-design:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     primary_skill: yss-prototype-stage
-    supporting_skills: [prototype-review, yss-design-system, product-design:index, yss-antd-design]
-    skills: [prototype-review, yss-design-system, yss-prototype-stage, product-design:index, yss-antd-design]
+    supporting_skills: [prototype-review, yss-design-system, product-design:index, yss-antdv-next-design, yss-antd-design]
+    skills: [prototype-review, yss-design-system, yss-prototype-stage, product-design:index, yss-antdv-next-design, yss-antd-design]
     execution_order: [yss-design-system, low-fidelity-assets, prototype-review, prototype-profile-routing, profile-adapter-build, browser-design-qa-accessibility, user-confirmation]
     profile_routing_ref: .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md
     prototype_adapter_ref: .agents/skills/yss-prototype-stage/references/product-design-adapter.md
@@ -254,7 +261,7 @@ work_unit_routes:
         H1: {kind: visual-review, adapter: static-html, node_runtime_required: false, antd_facts: not-applicable}
         H2: {kind: flow-review, adapter: runnable-flow, react_antd: supported-not-required, antd_facts: conditional}
     implementation_handoff: {production_component_assumptions: required-array, verification_targets: frontend-implementation-only}
-    version_boundary: {h2_design_standard: ant-design-v6-when-applicable, prototype_must_not_call: yss-ui, production_version_source: implementation-lockfile}
+    version_boundary: {h2_design_standard: vue-antdv-next-default-react-antd-explicit-compatibility, prototype_must_not_call: yss-ui, production_version_source: implementation-lockfile}
     human_gate: prototype-confirmation
     applies_when: product_design_impact
     not_applicable_reason: no_ui_or_product_design_impact

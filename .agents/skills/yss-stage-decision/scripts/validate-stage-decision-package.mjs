@@ -3,10 +3,12 @@ import { readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import process from "node:process";
+import { parseArgs } from "node:util";
 import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
 import { loadApprovalRecord, resolveApprovalRef, validateApprovalRecordFile } from "../../../../scripts/lib/approval-record.mjs";
+import { verifyContextSnapshot } from "../../../../scripts/lib/context-contract.mjs";
 
-const required = ["schema_version", "stage_decision_id", "package_version", "status", "problem_statement", "target_users", "mvp", "non_goals", "success_criteria", "test_seams", "confirmed_decisions", "assumptions", "constraints", "unresolved_items", "terminology_refs", "domain_strategy_ref", "impact_assessment", "downstream_mapping", "evidence_refs", "approval"];
+const required = ["schema_version", "stage_decision_id", "package_version", "status", "problem_statement", "target_users", "mvp", "non_goals", "success_criteria", "test_seams", "confirmed_decisions", "assumptions", "constraints", "unresolved_items", "context_snapshot", "domain_strategy_ref", "impact_assessment", "downstream_mapping", "evidence_refs", "approval"];
 const idPattern = /^stage-decision\.[a-z0-9][a-z0-9-]*$/;
 
 function fail(errors) {
@@ -20,16 +22,17 @@ function requireArray(object, field, path, errors, min = 0) { requireField(objec
 function canonical(value) { if (Array.isArray(value)) return value.map(canonical); if (value && typeof value === "object") return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonical(value[key])])); return value; }
 function digest(value) { return `sha256:${createHash("sha256").update(JSON.stringify(canonical(value))).digest("hex")}`; }
 
-async function validate(data) {
+async function validate(data, contextRoot) {
   const errors = [];
   if (!data || typeof data !== "object" || Array.isArray(data)) return ["合同必须是对象"];
+  if (data.schema_version === 1) return ["migration-required: stage decision package v1 必须迁移到 v2 context_snapshot"];
   for (const field of required) requireField(data, field, "root", errors);
-  if (data.schema_version !== 1) errors.push("schema_version 必须为 1");
+  if (data.schema_version !== 2) errors.push("schema_version 必须为 2");
   if (!idPattern.test(String(data.stage_decision_id ?? ""))) errors.push("stage_decision_id 格式非法");
   if (!/^v[0-9]+$/.test(String(data.package_version ?? ""))) errors.push("package_version 必须形如 v1");
   if (!["draft", "ready-for-human", "approved", "stale", "blocked"].includes(data.status)) errors.push("status 非法");
   for (const field of ["problem_statement"]) requireString(data, field, "root", errors);
-  for (const field of ["target_users", "mvp", "non_goals", "success_criteria", "test_seams", "confirmed_decisions", "assumptions", "constraints", "terminology_refs", "evidence_refs"]) requireArray(data, field, "root", errors, ["target_users", "mvp", "success_criteria", "test_seams", "confirmed_decisions", "evidence_refs"].includes(field) ? 1 : 0);
+  for (const field of ["target_users", "mvp", "non_goals", "success_criteria", "test_seams", "confirmed_decisions", "assumptions", "constraints", "evidence_refs"]) requireArray(data, field, "root", errors, ["target_users", "mvp", "success_criteria", "test_seams", "confirmed_decisions", "evidence_refs"].includes(field) ? 1 : 0);
 
   const unresolved = Array.isArray(data.unresolved_items) ? data.unresolved_items : [];
   for (const [index, item] of unresolved.entries()) {
@@ -41,19 +44,26 @@ async function validate(data) {
   for (const field of ["domain_strategy_id", "domain_version", "digest", "status", "persisted_ref"]) requireString(domainRef, field, "domain_strategy_ref", errors);
   if (domainRef.status && !["approved", "stale", "blocked"].includes(domainRef.status)) errors.push("domain_strategy_ref.status 非法");
   if (data.status === "approved" && domainRef.status !== "approved") errors.push("approved 阶段包必须引用 approved 的 domain strategy");
+  let strategy;
   if (nonEmpty(domainRef.persisted_ref)) {
     try {
-      const strategySource = await readFile(resolve(process.cwd(), domainRef.persisted_ref), "utf8");
+      const strategySource = await readFile(resolve(contextRoot, domainRef.persisted_ref), "utf8");
       const strategyDocument = parseDocument(strategySource, { maxAliasCount: 0, uniqueKeys: true });
       if (strategyDocument.errors.length) errors.push(`domain_strategy_ref.persisted_ref YAML 非法: ${strategyDocument.errors[0].message}`);
       else {
-        const strategy = strategyDocument.toJS({ maxAliasCount: 0 });
+        strategy = strategyDocument.toJS({ maxAliasCount: 0 });
         if (strategy.domain_strategy_id !== domainRef.domain_strategy_id) errors.push("domain_strategy_ref.domain_strategy_id 与实际文件不一致");
         if (strategy.domain_version !== domainRef.domain_version) errors.push("domain_strategy_ref.domain_version 与实际文件不一致");
         if (strategy.status !== domainRef.status) errors.push("domain_strategy_ref.status 与实际文件不一致");
         if (domainRef.digest !== digest(strategy)) errors.push("domain_strategy_ref.digest 与实际领域战略内容不一致");
       }
     } catch (error) { errors.push(`domain_strategy_ref.persisted_ref 无法读取: ${error.message}`); }
+  }
+  try {
+    const contextIds = Array.isArray(strategy?.contexts) ? strategy.contexts.map((item) => item?.context_id).filter(Boolean) : [];
+    verifyContextSnapshot(data.context_snapshot, { root: contextRoot, allowedContextIds: contextIds });
+  } catch (error) {
+    errors.push(...(error.problems ?? [error.message]));
   }
 
   const impact = data.impact_assessment ?? {};
@@ -84,15 +94,16 @@ async function validate(data) {
   return errors;
 }
 
-const file = process.argv[2];
-if (!file) fail(["用法: validate-stage-decision-package.mjs <package.yaml>"]);
+const { values, positionals } = parseArgs({ options: { root: { type: "string", default: process.cwd() } }, allowPositionals: true, strict: true });
+const file = positionals[0];
+if (!file) fail(["用法: validate-stage-decision-package.mjs <package.yaml> [--root <project-root>]"]);
 else {
   try {
     const source = await readFile(file, "utf8");
     const document = parseDocument(source, { maxAliasCount: 0, uniqueKeys: true });
     if (document.errors.length) fail([document.errors[0].message]);
     else {
-      const errors = await validate(document.toJS({ maxAliasCount: 0 }));
+      const errors = await validate(document.toJS({ maxAliasCount: 0 }), values.root);
       if (errors.length) fail(errors);
       else process.stdout.write(JSON.stringify({ result: "completed", contract: file }, null, 2) + "\n");
     }

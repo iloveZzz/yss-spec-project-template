@@ -1,0 +1,54 @@
+#!/usr/bin/env node
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+import { parseArgs } from "node:util";
+import { fileURLToPath } from "node:url";
+import { parseDocument } from "./vendor/yaml.mjs";
+import { parseContextContract } from "./lib/context-contract.mjs";
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const schemaPath = path.join(repoRoot, "docs/process/schemas/strategic-design-handoff.schema.json");
+const pythonValidator = String.raw`
+import json, sys
+from jsonschema import Draft202012Validator
+schema = json.load(open(sys.argv[1], encoding="utf-8"))
+value = json.load(sys.stdin)
+errors = sorted(Draft202012Validator(schema).iter_errors(value), key=lambda error: list(error.absolute_path))
+for error in errors:
+    where = ".".join(str(part) for part in error.absolute_path) or "<root>"
+    print(f"{where}: {error.message}", file=sys.stderr)
+sys.exit(1 if errors else 0)
+`;
+
+function parseFile(file) {
+  const document = parseDocument(readFileSync(file, "utf8"), { maxAliasCount: 0, uniqueKeys: true });
+  if (document.errors.length) throw new TypeError(document.errors[0].message);
+  return document.toJS({ maxAliasCount: 0 });
+}
+
+try {
+  const { values, positionals } = parseArgs({ options: { root: { type: "string", default: process.cwd() }, reconciliation: { type: "string" } }, allowPositionals: true, strict: true });
+  if (positionals.length !== 1 || !values.reconciliation) throw new TypeError("用法: scripts/verify-strategic-context-import --root <target-repo> --reconciliation <record> <handoff.yaml|json>");
+  const root = path.resolve(values.root);
+  const handoff = parseFile(path.resolve(positionals[0]));
+  if (handoff.schema_version === 1) throw new TypeError("migration-required: v1 handoff 缺少可导入的结构化 context_delta");
+  const schemaResult = spawnSync("python3", ["-c", pythonValidator, schemaPath], { encoding: "utf8", input: JSON.stringify(handoff) });
+  if (schemaResult.status !== 0) throw new TypeError(`${schemaResult.stdout}${schemaResult.stderr}`.trim());
+  const reconciliationResult = spawnSync(path.join(repoRoot, "scripts/verify-context-reconciliation"), ["--root", root, path.resolve(values.reconciliation)], { cwd: repoRoot, encoding: "utf8" });
+  if (reconciliationResult.status !== 0) throw new TypeError(reconciliationResult.stderr.trim());
+  const target = parseContextContract({ root });
+  for (const operation of ["added", "updated"]) {
+    for (const expected of handoff.context_delta[operation]) {
+      const actual = target.terms_by_ref.get(expected.term_ref);
+      if (!actual) throw new TypeError(`目标 CONTEXT.md 尚未导入 ${operation} 术语: ${expected.term_ref}`);
+      for (const field of ["term", "meaning", "english_identifier", "context_id"]) if (actual[field] !== expected[field]) throw new TypeError(`目标 CONTEXT.md 的 ${expected.term_ref}.${field} 与交接增量不一致`);
+      if (JSON.stringify([...actual.forbidden_aliases].sort()) !== JSON.stringify([...expected.forbidden_aliases].sort())) throw new TypeError(`目标 CONTEXT.md 的 ${expected.term_ref}.forbidden_aliases 与交接增量不一致`);
+    }
+  }
+  for (const deprecated of handoff.context_delta.deprecated) if (target.terms_by_ref.has(deprecated.term_ref)) throw new TypeError(`目标 CONTEXT.md 尚未处理 deprecated 术语: ${deprecated.term_ref}`);
+  process.stdout.write("Strategic context import 与目标 reconciliation 验证通过\n");
+} catch (error) {
+  process.stderr.write(`Strategic context import 验证失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

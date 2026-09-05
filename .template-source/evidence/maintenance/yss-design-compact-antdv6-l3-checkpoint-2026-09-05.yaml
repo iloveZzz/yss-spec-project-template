@@ -1,0 +1,58 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  将 YSS 原型视觉默认从宽松 32px 控件调整为 Ant Design v6 compact algorithm 计算出的
+  28px 工作界面，并同步根 DESIGN.md、设计治理、canonical design-system skill、运行时投影与
+  Antdv Next draft Provider 的项目 baseline digest；该变更会影响后续原型聚合行为，但不替换
+  稳定 React Provider 或生产 yss-ui 路线。
+triggers:
+  - aggregate-behavior-change
+  - generation-semantics
+changed_assets:
+  - DESIGN.md
+  - docs/design/design.md
+  - docs/design/README.md
+  - docs/design/design-system-sync.yaml
+  - docs/design/preview.html
+  - docs/design/preview-dark.html
+  - docs/design/preview.css
+  - docs/design/preview.js
+  - docs/design/tokens/theme.json
+  - docs/design/tokens/.design-md-projection.json
+  - docs/design/facts/antdv-next/1.5.2
+  - .agents/skills/yss-design-system/SKILL.md
+  - .agents/skills/yss-design-system/references/design-system.md
+  - .codex/skills/yss-design-system/SKILL.md
+  - .codex/skills/yss-design-system/references/design-system.md
+  - skills-lock.json
+verification_evidence:
+  - kind: self-check
+    command: >-
+      node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md &&
+      node .template-source/tooling/node/scripts/design-md.mjs drift &&
+      node --check docs/design/preview.js &&
+      node .agents/skills/yss-design-system/scripts/validate-frontmatter.mjs &&
+      node --test .agents/skills/yss-design-system/scripts/validate-frontmatter.test.mjs &&
+      node .agents/skills/yss-antdv-next-design/scripts/validate-fact-pack.mjs
+      docs/design/facts/antdv-next/1.5.2/manifest.json
+    result: pass
+  - kind: browser-acceptance
+    command: >-
+      CUA real-browser light/dark render, 390x844 overflow check, AX heading/form/table inspection,
+      filter/reset/retry/save/dialog interaction checks, computed 28px control-height check, console warn/error check
+    result: pass
+  - kind: projection-sync
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: >-
+  fast 入口因工作区既有 AGENTS.md 核心资产变化自动升级执行 release profile 且全部通过；本轮仍停在
+  implementation-ready，未冻结候选、未执行正式独立审查，也不把升级执行等同于模板发布批准。
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

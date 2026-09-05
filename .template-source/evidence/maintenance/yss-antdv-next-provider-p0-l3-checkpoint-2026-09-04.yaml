@@ -1,0 +1,55 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  新增可被原型路由条件调用的 draft Vue Antdv Next Provider、外部 CLI 事实采集器与
+  fail-closed 校验器，并生成跨 Agent 投影和六类代表组件的参考事实包；该变更改变技能聚合行为
+  与未来 H2 生成输入语义，但不切换现有 React Provider 或原型默认路径。
+triggers:
+  - generation-semantics
+  - aggregate-behavior-change
+changed_assets:
+  - .agents/skills/yss-antdv-next-design
+  - .claude/skills/yss-antdv-next-design
+  - .codex/skills/yss-antdv-next-design
+  - .cursor/skills/yss-antdv-next-design
+  - .pi/skills/yss-antdv-next-design
+  - .qoder/skills/yss-antdv-next-design
+  - .trae/skills/yss-antdv-next-design
+  - docs/agents/yss-skill-registry.yaml
+  - .agents/skills/yss-implementation-contract-compiler/references/boundaries.md
+  - .claude/skills/yss-implementation-contract-compiler/references/boundaries.md
+  - .codex/skills/yss-implementation-contract-compiler/references/boundaries.md
+  - .cursor/skills/yss-implementation-contract-compiler/references/boundaries.md
+  - .pi/skills/yss-implementation-contract-compiler/references/boundaries.md
+  - .qoder/skills/yss-implementation-contract-compiler/references/boundaries.md
+  - .trae/skills/yss-implementation-contract-compiler/references/boundaries.md
+  - skills-lock.json
+  - .template-source/evidence/maintenance/antdv-next-p0-facts/1.5.2
+  - .template-source/evidence/maintenance/antdv-next-ai-skill-framework-2026-09-04-research-brief.md
+  - .template-source/evidence/maintenance/antdv-next-ai-skill-framework-2026-09-04-evidence.yaml
+verification_evidence:
+  - kind: self-check
+    command: >-
+      node --check .agents/skills/yss-antdv-next-design/scripts/collect-antdv-next-facts.mjs &&
+      node --check .agents/skills/yss-antdv-next-design/scripts/validate-fact-pack.mjs &&
+      node .agents/skills/yss-antdv-next-design/tests/run-scenarios.mjs &&
+      node .agents/skills/yss-antdv-next-design/scripts/validate-fact-pack.mjs
+      .template-source/evidence/maintenance/antdv-next-p0-facts/1.5.2/manifest.json &&
+      scripts/verify-skill-registry && scripts/verify-skill-governance
+    result: pass
+  - kind: projection-sync
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: >-
+  fast profile 因工作区既有 AGENTS.md 变更自动升级为 release profile；首轮发现新增 typed dependency
+  对应的生成型 boundaries 漂移，已运行生成器并重新同步投影与 lock。P0 仍停在 implementation-ready，
+  不把升级执行的完整门禁等同于候选冻结、独立审查或发布批准。
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

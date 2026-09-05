@@ -22,7 +22,7 @@ Matt 的 `grill-with-docs`、`to-spec`、`to-tickets`、`implement` 等保留为
 
 入口分诊 → Discovery → Spec / 功能架构 → 产品设计 → 系统 / 数据架构与工程契约 → Ticket 正式化 → 垂直切片实现（前后端 TDD）→ 验证 / 发布 / 复盘。
 
-裁剪只允许将未命中的条件门禁标记为 `not-applicable` 并写原因；不得删除主阶段、已命中的门禁或必需产物。阶段是否完成取决于“内容 + 审查结论 + 上游新鲜度 + 可读证据”，文件存在不算通过。
+裁剪只允许将未命中的条件门禁标记为 `not-applicable` 并写原因；不得删除主阶段、已命中的门禁或必需产物。阶段是否完成取决于“内容 + 审查结论 + 上游新鲜度 + 可读证据”，文件存在不算通过。每个 `project-instance` 工作单元在请求批准或进入下一工作单元前，必须先把已确认稳定术语回写到项目根目录唯一的 `CONTEXT.md`，再产出通过 `scripts/verify-context-reconciliation` 的 `context_reconciliation`；它是横切证据，不新增门禁。存在候选术语、错误路径、无法解析的 `<ContextId>/<EnglishIdentifier>`、摘要漂移或未决冲突时返回 `blocked`。
 
 ## 阶段路由与技能
 
@@ -31,13 +31,23 @@ Matt 的 `grill-with-docs`、`to-spec`、`to-tickets`、`implement` 等保留为
 | 主阶段 | 必需产物/门禁 | 原生工作单元与技能 | 通过条件 |
 |---|---|---|---|
 | 入口分诊 `stage.entry-triage` | 身份、影响面、最近可信阶段 | `work-unit.entry-triage`；`yss-product-lifecycle` | `yss-project.yaml` 合法且影响面可解释 |
-| Discovery `stage.discovery` | Discovery、用户/MVP/非目标/成功标准、测试 seam；命中 DDD 影响时补充领域战略设计与阶段决策包 | `work-unit.discovery-opportunity` + `work-unit.discovery-requirements` + `work-unit.domain-strategy-design` + `work-unit.stage-decision`；市场/竞品事实用 `competitive-intelligence`，技术/标准事实用 `yss-research:technical-evidence`，领域战略与阶段决策证据用 `yss-research:strategy-evidence`；需求澄清用 `grilling`，领域建模用 `domain-modeling` / `yss-stage-decision`；`grill-with-docs` 为兼容入口 | 未决事实已由 `yss-research` 核验或 handoff，进入战略 / 阶段门禁的决策证据已 `evidence-audited`，领域边界和统一语言可审查，阶段决策包完成必要批准；`gate.domain-strategy-approved`、`gate.stage-decision-package-approved` |
+| Discovery `stage.discovery` | 机会与目标、业务故事、用户/MVP/非目标/成功标准、测试 seam；需要时补充业务边界与规则设计和方案决策包 | `work-unit.discovery-opportunity` + `work-unit.discovery-requirements` + `work-unit.domain-strategy-design` + `work-unit.stage-decision`；市场/竞品事实用 `competitive-intelligence`，技术/标准事实用 `yss-research:technical-evidence`，业务边界与方案决策证据用 `yss-research:strategy-evidence`；需求澄清用 `grilling`，业务词汇和责任区梳理用 `domain-modeling` / `yss-stage-decision`；`grill-with-docs` 为兼容入口 | 未决事实已由 `yss-research` 核验或 handoff；业务板块、责任区、统一业务词汇、协作关系和不可违反规则可审查；方案决策包完成必要批准；`gate.domain-strategy-approved`、`gate.stage-decision-package-approved` |
 | Spec / 功能架构 `stage.spec-architecture` | Spec、产品总体设计、功能架构；必要时 Spec Delta | 原生 `work-unit.spec-synthesis`；`to-spec` 为兼容入口 | 初稿先为 `ready-for-human`；只有 Spec baseline 会签批准后资产才为 `approved` 并进入下游 |
-| 产品设计 `stage.product-design` | 交互说明、低保真、状态矩阵、H1/H2 原型交付物、评审记录 | `work-unit.prototype-design`；`yss-prototype-stage` 先消费 `yss-design-system`、低保真与独立 `prototype-review`，再按风险选择 H1 静态视觉或 H2 可运行流程；`yss-antd-design` 只在相关 H2 条件调用，原型阶段禁止调用 `yss-ui` | `gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` 均有 schema v3 证据；真实组件待验事项已交接到前端实现计划 |
+| 产品设计 `stage.product-design` | 交互说明、低保真、状态矩阵、H1/H2 原型交付物、评审记录 | `work-unit.prototype-design`；`yss-prototype-stage` 先消费 `yss-design-system`、低保真与独立 `prototype-review`，再按风险选择 H1 静态视觉或 H2 可运行流程；H2 默认调用 `yss-antdv-next-design`，显式 `react-antd-6` 兼容路线才调用 `yss-antd-design`，原型阶段禁止调用 `yss-ui` | `gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` 均有 schema v3 证据；真实组件待验事项已交接到前端实现计划 |
 | 系统 / 数据架构与工程契约 `stage.system-data-engineering` | OpenAPI Draft/Freeze、数据架构、工程基线、架构审查；按领域影响执行 Tactical DDD Check | `work-unit.technical-analysis`；`yss-implementation-contract-compiler` + `yss-openapi-governance` / `yss-openapi-draft-review`、`codebase-design`、`implementation-repo-onboarding`、`yss-tactical-design`；用户或合同明确要求架构可视化时条件追加 `archify` | API/架构契约冻结；无 API 影响有明确记录；战术模型无未解释冲突；脚手架策略满足；Archify 图只作派生审查证据；`gate.openapi-draft-reviewed`、`gate.design-reviewed`、`gate.openapi-frozen`、`gate.engineering-baseline-accepted`、`gate.architecture-reviewed` |
 | Ticket 正式化 `stage.ticket-formalization` | 功能父 Ticket、垂直切片、Slice Implementation Contract | 原生 `work-unit.ticket-decomposition`；`yss-implementation-contract-compiler`；`to-tickets` 为兼容入口；生命周期复算 | 依赖、验收、测试 seam 可执行；合同已批准、持久化且为当前版本；`gate.slice-contract-approved`、`gate.slice-ready-for-agent` |
 | 垂直切片实现 `stage.vertical-slice-implementation` | 前端/后端代码、TDD 证据、YSS Skill Execution Result | 原生 `work-unit.slice-implementation`；`yss-implementation-contract-compiler` + `tdd`；前端按 `yss-ui` + `yss-page-module-development`，后端按 实现合同编译器 最小闭包；`implement` 为兼容入口 | 仅接收已完成 Ticket 正式化、已绑定垂直切片且 `ready-for-agent` 公式通过的输入；只写允许路径；业务行为用 `tdd` 的 `behavior-tdd` 模式；UI 影响必须有还原计划 |
 | 验证 / 发布 / 复盘 `stage.verification-release-retrospective` | 不可变候选快照、review 结论、fresh verification、发布 / 回滚证据、复盘记录 | `work-unit.frontend-implementation-verification` + `work-unit.code-review` + `work-unit.release-and-retrospective`；`code-review` 独立于实现者，Standards 消费合同 `required_skills` 与 YSS / Alibaba 专项检查输入；UI 影响追加 `yss-ui` + `yss-design-system` 的 UI fidelity 轴；发布 / 复盘由生命周期持有 | findings 已按合同分流处理（修复后全轴复审或 stale 回 实现合同编译器）；同一候选快照通过全部审查轴、专项覆盖与验证；UI 影响追加 `gate.frontend-implementation-verified`；`gate.release-ready` 仍须生物人 |
+
+## 面向业务角色的默认入口
+
+Discovery 默认通过 Agent 引导，不要求产品、需求或商务直接填写内部模型字段。按以下主线推进：
+
+`机会与目标 → 业务故事 → 责任与交接 → 规则、例子与疑问 → 可验收需求 → 页面验证 → 业务任务 → 交接研发`
+
+Agent 先问清六件事：谁遇到什么问题并想得到什么结果；事情通常怎样发生；每一步由谁负责并交给谁；有哪些规则、例外和未决问题；哪一小段可以独立交付；用哪些例子和证据证明结果正确。需要分类业务板块时，改问“是否直接决定关键结果、是否有独特规则、是否可复用或外购”，再提出“重点业务、必要支撑、通用能力”建议，由业务负责人确认。
+
+每轮路由先输出一页派生的“业务方案总览”，引用机会与目标、业务故事、业务责任区、规则与例子、Spec、页面验证、Ticket 和交接状态。总览只显示状态、权威资产引用、未决问题、责任人和下一步，不复制正文、不成为新的事实源，也不新增门禁。内部稳定 ID 和兼容字段只在 Agent 运行结果或维护者诊断中显示。
 
 ## 前端实现还原硬检查
 
@@ -45,7 +55,7 @@ Matt 的 `grill-with-docs`、`to-spec`、`to-tickets`、`implement` 等保留为
 
 ## 结果与暂停
 
-凡主控向数字人角色或独立运行时正式派发生命周期工作单元，都必须通过结构化任务包派发，并返回 `Workflow Execution Result`（workflow reference、skill、changed files、evidence refs、actual verification、deferred seams、drift/new impacts）。任务包使用 `docs/process/schemas/digital-human-task-package.schema.json`，由 `scripts/verify-digital-human-task-package` 校验；其中 `role_id`、`runtime_id`、`execution_state`、`contract.kind/id/version`、允许写路径、预期证据和汇合引用必须完整。`slice-implementation` 任务包额外绑定批准且当前版本的 Slice Implementation Contract；Discovery、Spec、原型、技术分析、Ticket、Review、发布和模板维护分别绑定各自的生命周期资产或维护 checkpoint，不得伪造 Slice Contract。缺少可读证据、`stale`、`violation`、`drift`、`new_impacts` 或阻塞信号时不得标记 completed。实现授权不包含 Git commit/push 授权；“做完提交”等自然语言意向不构成上述结构化 Git 授权。
+凡主控向数字人角色或独立运行时正式派发生命周期工作单元，都必须通过结构化任务包派发，并返回 `Workflow Execution Result`（workflow reference、skill、changed files、`context_reconciliation`、evidence refs、actual verification、deferred seams、drift/new impacts）。任务包使用 `docs/process/schemas/digital-human-task-package.schema.json`，由 `scripts/verify-digital-human-task-package` 校验；其中 `role_id`、`runtime_id`、`execution_state`、`contract.kind/id/version`、允许写路径、预期证据和汇合引用必须完整。`slice-implementation` 任务包额外绑定批准且当前版本的 Slice Implementation Contract；Discovery、Spec、原型、技术分析、Ticket、Review、发布和模板维护分别绑定各自的生命周期资产或维护 checkpoint，不得伪造 Slice Contract。缺少可读证据、`context_reconciliation` 未通过、`stale`、`violation`、`drift`、`new_impacts` 或阻塞信号时不得标记 completed。实现授权不包含 Git commit/push 授权；“做完提交”等自然语言意向不构成上述结构化 Git 授权。
 
 输出固定包含：模式、当前阶段、影响面、资产/门禁状态、证据、Ticket 正式化状态、垂直切片引用、`ready-for-agent` 计算结果、阻塞项、本轮动作、下一工作单元、暂停/继续理由、Ticket 同步和 Git checkpoint 判断。原生路径未出现 `to-tickets` / `implement` 名称本身不构成异常；但没有完成 `work-unit.ticket-decomposition`、垂直切片仍为 `ready-for-human`、引用父 Ticket 或 `next_route` 越过 Ticket 正式化时必须返回 `blocked`。暂停会签时必须输出门禁 ID、指定 `role_id`、`runtime_id` 和会签文件路径（`docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`）。恢复前运行 `scripts/verify-approval-record`；错误会签记为 `blocked`，不得把该门禁标为 `approved`。任务包的 `core_skills` / `forbidden_skills` 必须从 `docs/agents/digital-human-roles.yaml` 复制（`taskPackageDefaults`），禁止手写第二套。
 

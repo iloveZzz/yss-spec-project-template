@@ -1,0 +1,7 @@
+{
+  "component": "Alert",
+  "name": "basic",
+  "title": "Basic",
+  "description": "The simplest usage for short messages.",
+  "code": "<template>\n  <a-alert title=\"Success Text\" type=\"success\" />\n</template>"
+}

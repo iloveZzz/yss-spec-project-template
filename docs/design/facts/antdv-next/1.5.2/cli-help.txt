@@ -1,0 +1,38 @@
+
+@antdv-next/cli v0.0.0-beta.5
+─────────────────────────────
+
+CLI tool for querying antdv-next knowledge and analyzing antdv-next usage in projects (@antdv-next/cli v0.0.0-beta.5)
+
+USAGE @antdv-next/cli [OPTIONS] init|bug|bug-cli|changelog|demo|design.md|doc|doctor|env|info|lint|list|mcp|migrate|semantic|setup|token|upgrade|usage|check
+
+OPTIONS
+
+                    -c, --cwd=<cwd>    Current working directory (Default: /Users/zhudaoming/Projects/yss-spec-project-template)
+                        --ver=<ver>    Target antdv-next version (e.g. 1.0.0) (Default: )
+  -f, --format=<text|markdown|json>    Output format (Default: text)
+
+COMMANDS
+
+       init    Initialize a fresh project
+        bug    Report a bug to the antdv-next repository
+    bug-cli    Report a bug to the @antdv-next/cli repository
+  changelog    Compare component API differences between versions
+       demo    Get demo source code for a component
+  design.md    Output the antd design-language document (design.md) for AI design tools
+        doc    Output the full API documentation for a component in markdown
+     doctor    Diagnose project-level antd configuration issues
+        env    Collect antdv-related environment information for bug reporting
+       info    Query component API: props, type definitions, default values
+       lint    Check antdv-next usage against best practices
+       list    List all components with bilingual names, descriptions, and first-supported version
+        mcp    Start MCP server for AI assistant integration
+    migrate    Version migration guide with optional auto-fix
+   semantic    Query the semantic customization structure of a component
+      setup    Set up Ant Design MCP/Skill for AI agents or GitHub Actions
+      token    Query Design Tokens (global or component-level)
+    upgrade    Upgrade the CLI to the latest version
+      usage    Scan project for antdv-next component usage statistics
+      check    Test item version
+
+Use @antdv-next/cli <command> --help for more information about a command.

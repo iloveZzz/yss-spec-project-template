@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://yss.local/schemas/domain-strategy-v1.json",
-  "title": "YSS DDD Strategic Design",
+  "$id": "https://yss.local/schemas/domain-strategy-v2.json",
+  "title": "YSS 业务边界与规则设计",
   "type": "object",
-  "required": ["schema_version", "domain_strategy_id", "domain_version", "status", "contexts", "subdomains", "relationships", "scenarios", "concept_candidates", "invariants", "terminology_refs", "downstream_mapping", "evidence_refs", "approval"],
+  "required": ["schema_version", "domain_strategy_id", "domain_version", "status", "contexts", "subdomains", "relationships", "scenarios", "concept_candidates", "invariants", "context_snapshot", "downstream_mapping", "evidence_refs", "approval"],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "domain_strategy_id": {"type": "string", "pattern": "^domain-strategy\\.[a-z0-9][a-z0-9-]*$"},
     "domain_version": {"type": "string", "pattern": "^v[0-9]+$"},
     "status": {"enum": ["draft", "ready-for-human", "approved", "stale", "blocked"]},
@@ -15,12 +15,24 @@
     "scenarios": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/scenario"}},
     "concept_candidates": {"type": "array", "items": {"$ref": "#/$defs/concept"}},
     "invariants": {"type": "array", "items": {"$ref": "#/$defs/invariant"}},
-    "terminology_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "context_snapshot": {"$ref": "#/$defs/contextSnapshot"},
     "downstream_mapping": {"type": "array", "items": {"$ref": "#/$defs/mapping"}},
     "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
     "approval": {"$ref": "#/$defs/approval"}
   },
   "$defs": {
+    "contextSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context_ref", "context_schema_version", "document_digest", "referenced_terms_digest", "term_refs"],
+      "properties": {
+        "context_ref": {"const": "CONTEXT.md"},
+        "context_schema_version": {"const": 1},
+        "document_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "referenced_terms_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "term_refs": {"type": "array", "items": {"type": "string", "pattern": "^(Global|[A-Z][A-Za-z0-9]+)/[A-Z][A-Za-z0-9]+$"}, "uniqueItems": true}
+      }
+    },
     "context": {
       "type": "object",
       "required": ["context_id", "name", "responsibilities", "non_responsibilities", "subdomain_type", "owner", "status"],

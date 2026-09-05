@@ -1,0 +1,46 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  将面向产品、需求和商务的 DDD 表达替换为业务故事、责任区、协作关系、规则与例子，
+  同时保持稳定 ID、机器合同和研发技术语义兼容；涉及生命周期展示合同、核心验证器、
+  战略设计子项目及两个 CLI 快照，命中 lifecycle-gate、cross-repo-contract、
+  core-validator 与 aggregate-behavior-change。
+triggers:
+  - lifecycle-gate
+  - cross-repo-contract
+  - core-validator
+  - aggregate-behavior-change
+changed_assets:
+  - CONTEXT.md
+  - AGENTS.md
+  - .agents/skills/domain-modeling/
+  - .agents/skills/grill-with-docs/
+  - .agents/skills/yss-product-lifecycle/
+  - .agents/skills/yss-stage-decision/
+  - docs/design/templates/product-overview-design-template.md
+  - docs/templates/spec-template.md
+  - docs/process/lifecycle-registry.yaml
+  - docs/process/schemas/lifecycle-registry.schema.json
+  - scripts/lib/lifecycle-registry.mjs
+  - scripts/verify-business-language-scenarios
+  - submodules/yss-harness-design-agent
+  - submodules/create-yss-strategic-design
+  - submodules/create-yss-spec
+verification_evidence:
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+  - kind: self-check
+    command: node scripts/verify-business-language-scenarios && scripts/verify-lifecycle-registry && scripts/sync-skills --check && scripts/update-skill-lock --check
+    result: pass
+  - kind: cross-repository-verification
+    command: cd submodules/yss-harness-design-agent && scripts/verify-template-fast; cd ../create-yss-strategic-design && pnpm test; cd ../create-yss-spec && pnpm test
+    result: pass
+review_mode: self-check
+escalation: >-
+  none；当前仅达到 implementation-ready；未冻结候选、未提交、未推送，也未执行发布。
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

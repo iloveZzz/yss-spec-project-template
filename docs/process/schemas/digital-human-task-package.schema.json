@@ -91,6 +91,15 @@
         "work_unit": { "type": "string", "minLength": 1 },
         "workflow_reference": { "type": "string", "minLength": 1 },
         "result": { "enum": ["completed", "blocked", "needs-human", "failed"] },
+        "context_reconciliation": {
+          "type": "object", "additionalProperties": false,
+          "required": ["status", "ref"],
+          "properties": {
+            "status": { "enum": ["reconciled", "not-applicable", "blocked"] },
+            "ref": { "type": "string", "minLength": 1 },
+            "reason": { "type": "string", "minLength": 1 }
+          }
+        },
         "skill": { "type": "string", "minLength": 1 },
         "changed_files": { "type": "array", "items": { "type": "string", "minLength": 1 } },
         "changed_artifacts": { "type": "array", "items": { "type": "string", "minLength": 1 } },

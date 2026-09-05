@@ -2,7 +2,7 @@
 
 ## 输入
 
-必须引用批准且版本当前的 Spec、功能架构、战略 DDD、原型状态矩阵、OpenAPI Draft / Freeze（或无 API 影响记录）、ADR 和工程约束。所有引用都必须带版本或 digest；不可读或过期引用返回 `blocked` / `stale`。
+必须引用批准且版本当前的 Spec、功能架构、战略 DDD、原型状态矩阵、OpenAPI Draft / Freeze（或无 API 影响记录）、ADR 和工程约束。来自 Strategic Design Handoff 时，额外要求 v2 交接包、`strategic_context_import_ref` 和目标仓 `context_reconciliation_ref`；目标根 `CONTEXT.md` 未完成增量对账前返回 `blocked`。所有引用都必须带版本或 digest；不可读或过期引用返回 `blocked` / `stale`。
 
 ## 输出
 

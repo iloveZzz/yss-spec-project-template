@@ -1,0 +1,41 @@
+#!/usr/bin/env node
+import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+
+const repoRoot = path.resolve(import.meta.dirname, "..");
+const root = mkdtempSync(path.join(tmpdir(), "yss-strategic-import-"));
+mkdirSync(path.join(root, "docs", "evidence"), { recursive: true });
+writeFileSync(path.join(root, "yss-project.yaml"), "schema_version: 1\nrepository_mode: project-instance\n");
+const context = (meaning = "提供产品或服务的主体") => `---
+context_schema_version: 1
+---
+# CONTEXT
+## 流程术语
+| 术语 | 含义 | 英文标识 | 避免 / 备注 |
+|---|---|---|---|
+| 阶段 | 生命周期阶段 | — | |
+## 业务术语
+| 术语 | 含义 | 英文标识 | 适用限界上下文 | 避免 / 备注 |
+|---|---|---|---|---|
+| 供应商 | ${meaning} | Supplier | Global | |
+`;
+writeFileSync(path.join(root, "CONTEXT.md"), context());
+const run = (command, args) => spawnSync(command, args, { cwd: repoRoot, encoding: "utf8" });
+const snapshot = JSON.parse(run("scripts/verify-context-contract", ["--root", root, "--term-ref", "Global/Supplier", "--json"]).stdout).context_snapshot;
+const reconciliation = { schema_version: 1, repository_mode: "project-instance", stage: "stage.system-data-engineering", work_unit: "work-unit.technical-analysis", status: "reconciled", context_snapshot: snapshot, changes: { added: ["Global/Supplier"], updated: [], deprecated: [] }, unresolved_terms: [], evidence_refs: ["CONTEXT.md"] };
+const reconciliationFile = path.join(root, "docs/evidence/context-reconciliation.json"); writeFileSync(reconciliationFile, JSON.stringify(reconciliation));
+const supplier = { term_ref: "Global/Supplier", term: "供应商", meaning: "提供产品或服务的主体", english_identifier: "Supplier", context_id: "Global", forbidden_aliases: [] };
+const ref = (id) => ({ id, version: "v2", digest: `sha256:${id}`, status: "approved", persisted_ref: `source/${id}` });
+const handoff = { schema_version: 2, handoff_id: "strategic-design-handoff.supplier", handoff_version: "v2", status: "approved", source: { domain_strategy_ref: ref("domain"), stage_decision_package_ref: ref("stage"), spec_ref: ref("spec"), prototype_ref: ref("prototype"), business_ticket_set_ref: ref("tickets") }, source_context_snapshot: snapshot, context_delta: { added: [supplier], updated: [], deprecated: [] }, target_context_reconciliation: { target_context_ref: "CONTEXT.md", reconciliation_schema_ref: "docs/process/schemas/context-reconciliation.schema.json", required_before_skill: "yss-tactical-design", status: "pending" }, target: { team: "downstream-rd-team", skill: "yss-tactical-design", output: "tactical-design-contract" }, problem_and_business_outcomes: ["准入"], bounded_context_and_subdomain_map: ["Global"], context_map_and_translation_responsibility: ["共享"], ubiquitous_language_and_concept_candidates: ["Global/Supplier"], scenarios_and_business_invariants: ["稳定"], tactical_design_questions: ["聚合边界"], deferred_decisions_and_ownership: [], evidence_and_version_digests: ["source/evidence"], acceptance: ["target-context-reconciliation-is-required-before-tactical-design"] };
+const handoffFile = path.join(root, "handoff.json"); writeFileSync(handoffFile, JSON.stringify(handoff));
+function verify(expected, pattern) { const result = run("scripts/verify-strategic-context-import", ["--root", root, "--reconciliation", reconciliationFile, handoffFile]); if (result.status !== expected || (pattern && !pattern.test(`${result.stdout}${result.stderr}`))) throw new Error(`${result.stdout}${result.stderr}`); }
+verify(0);
+writeFileSync(path.join(root, "CONTEXT.md"), context("错误含义"));
+const staleSnapshot = JSON.parse(run("scripts/verify-context-contract", ["--root", root, "--term-ref", "Global/Supplier", "--json"]).stdout).context_snapshot;
+writeFileSync(reconciliationFile, JSON.stringify({ ...reconciliation, context_snapshot: staleSnapshot }));
+verify(1, /不一致/);
+writeFileSync(handoffFile, JSON.stringify({ ...handoff, schema_version: 1 }));
+verify(1, /migration-required/);
+process.stdout.write("Strategic context import scenarios passed\n");

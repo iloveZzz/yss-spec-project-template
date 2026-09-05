@@ -35,6 +35,8 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 - 新流程统一使用 Spec、Ticket、`to-spec`、`to-tickets`。过时术语和技能名只能出现在迁移指南或明确标注的旧项目上下文。
 - `CONTEXT.md` 是 Spec 构建及其落地工具链的统一语言输入，也是所有会创建或修改稳定业务、产品、架构、实施、审查、发布和复盘资产的强制前置上下文。`yss-product-lifecycle`、其原生 work unit，以及 `grill-with-docs`、`to-spec`、`to-tickets`、`implement` 等显式兼容入口，在规划、起草、评审、拆 Ticket 或实现前都必须读取并持续消费它；工具无法读取或消费时必须暂停并返回 `blocked`，不得凭临场翻译、同义词或局部上下文继续。
 - 稳定业务术语必须先在 `CONTEXT.md` 中登记 PascalCase `英文标识`，再进入 Spec、原型、契约、Ticket、代码或验证资产；代码类型 / 字段与契约 property 使用该词干按 `CONTEXT.md` 文首规则变形。改中文术语或英文标识都先回写 `CONTEXT.md`，并重新检查受影响资产；与词汇或 ADR 冲突时立即指出并先解决冲突。
+- 每个 YSS Git 仓库只允许根目录一个大小写精确的 `CONTEXT.md`；禁止嵌套 `CONTEXT.md`、`CONTEXT-MAP.md`、跨仓相对/绝对路径和 `CONTEXT.md#...` 伪锚点。业务术语引用统一使用 `<ContextId>/<EnglishIdentifier>`，`ContextId` 必须来自已批准领域战略，真正跨上下文共享的术语使用 `Global/<EnglishIdentifier>`。
+- `project-instance` 的每个工作单元在申请批准或进入下一工作单元前，必须完成 `context_reconciliation`：稳定术语先回写根 `CONTEXT.md`，再核对全文 `document_digest` 与所引用术语的 `referenced_terms_digest`。未决候选不进入 `CONTEXT.md`；核对缺失、冲突或摘要漂移必须 `blocked`。该证据是横切完成条件，不新增生命周期门禁；`template-source` 只校验模板合同并记录带原因的 `not-applicable`。
 
 ## 4. `template-source` 模板维护路由
 
@@ -53,9 +55,9 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 | 主阶段（registry） | 原生工作单元 | 技能入口（按影响面裁剪） | 关键产物 / 门禁 |
 |---|---|---|---|
 | 入口分诊 `stage.entry-triage` | `work-unit.entry-triage` | `yss-product-lifecycle` | 仓库身份、影响面、最近可信阶段；`gate.repository-identity-valid` |
-| Discovery `stage.discovery` | `work-unit.discovery-opportunity`、`work-unit.discovery-requirements`、`work-unit.domain-strategy-design`、`work-unit.stage-decision` | `yss-product-lifecycle`；按事实 / 领域影响使用 `competitive-intelligence`、`yss-research`、`grilling`、`domain-modeling`、`yss-stage-decision` | Discovery、用户/MVP/非目标/成功标准、测试 seam；必要时 DDD 战略设计与阶段决策包；`gate.domain-strategy-approved`、`gate.stage-decision-package-approved` |
+| Discovery `stage.discovery` | `work-unit.discovery-opportunity`、`work-unit.discovery-requirements`、`work-unit.domain-strategy-design`、`work-unit.stage-decision` | `yss-product-lifecycle`；按事实 / 业务边界影响使用 `competitive-intelligence`、`yss-research`、`grilling`、`domain-modeling`、`yss-stage-decision` | 机会与目标、业务故事、用户/MVP/非目标/成功标准、测试 seam；必要时补充业务边界与规则设计和方案决策包；`gate.domain-strategy-approved`、`gate.stage-decision-package-approved` |
 | Spec / 功能架构 `stage.spec-architecture` | `work-unit.spec-synthesis` | `yss-product-lifecycle`；`to-spec` 仅为显式兼容入口 | Spec、产品总体设计、功能架构；必要时 Spec Delta；`gate.spec-baseline-approved` |
-| 产品设计 `stage.product-design` | `work-unit.prototype-design` | `yss-prototype-stage` 为主合同：`yss-design-system` → 低保真 / 状态矩阵 → 独立 `prototype-review` → H1/H2 档位路由 → 档位适配器 → 浏览器 / Design QA / 无障碍验证；`yss-antd-design` 只用于相关 H2，原型阶段禁止调用生产实现技能 `yss-ui` | 交互说明、低保真、状态矩阵、原型交付物；`gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` |
+| 产品设计 `stage.product-design` | `work-unit.prototype-design` | `yss-prototype-stage` 为主合同：`yss-design-system` → 低保真 / 状态矩阵 → 独立 `prototype-review` → H1/H2 档位路由 → 档位适配器 → 浏览器 / Design QA / 无障碍验证；H2 默认调用 `yss-antdv-next-design`，显式 React 兼容路线才调用 `yss-antd-design`，原型阶段禁止调用生产实现技能 `yss-ui` | 交互说明、低保真、状态矩阵、原型交付物；`gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` |
 | 系统 / 数据架构与工程契约 `stage.system-data-engineering` | `work-unit.technical-analysis` | `yss-implementation-contract-compiler`；按影响使用 `yss-openapi-governance`、`yss-openapi-draft-review`、`codebase-design`、`implementation-repo-onboarding`、`yss-tactical-design` | OpenAPI Draft / Freeze、数据架构、工程基线、架构审查；无 API 影响记录；必要时 Tactical DDD Check；`gate.openapi-draft-reviewed`、`gate.design-reviewed`、`gate.openapi-frozen`、`gate.engineering-baseline-accepted`、`gate.architecture-reviewed` |
 | Ticket 正式化 `stage.ticket-formalization` | `work-unit.ticket-decomposition` | `yss-product-lifecycle` + `yss-implementation-contract-compiler`；`to-tickets` 仅为显式兼容入口 | 功能父 Ticket、垂直切片、Slice Implementation Contract；切片初始 `ready-for-human`；`gate.slice-contract-approved`、`gate.slice-ready-for-agent` |
 | 垂直切片实现 `stage.vertical-slice-implementation` | `work-unit.slice-implementation` | `yss-implementation-contract-compiler` + `tdd`；UI 影响追加 `yss-ui`、`yss-page-module-development` 及条件专项 skill；`implement` 仅为显式兼容入口 | 前后端代码、TDD、YSS Skill Execution Result；仅允许 `ready-for-agent` 且合同当前 |
@@ -97,7 +99,7 @@ README、用户指南、根目录 `CLAUDE.md` 和其他说明文档只引用或�
 |---|---|
 | 技术事实、标准、第三方 API 或框架行为影响决策，或外部证据进入领域战略 / 阶段决策 | `yss-research`；技术事实使用 `technical-evidence`，战略决策证据使用 `strategy-evidence`；旧名 `research` 仅为 deprecated alias |
 | 竞品、市场或用户口碑事实 | `competitive-intelligence` |
-| UI 设计、原型、组件或主题 | `yss-prototype-stage` 持有阶段合同：`yss-design-system` → 低保真 / 状态矩阵 → 独立 `prototype-review` → 确定性选择 H1 视觉或 H2 流程 → 档位适配器 → 浏览器 / 统一 Design QA / 无障碍验证。`yss-antd-design` 仅用于相关 H2；原型阶段不得调用 `yss-ui`。真实 YSS/AntDV 组件与 lockfile 事实只在前端实现计划、已批准切片的实现和实现还原验证中消费 |
+| UI 设计、原型、组件或主题 | `yss-prototype-stage` 持有阶段合同：`yss-design-system` → 低保真 / 状态矩阵 → 独立 `prototype-review` → 确定性选择 H1 视觉或 H2 流程 → 档位适配器 → 浏览器 / 统一 Design QA / 无障碍验证。H2 默认使用 `yss-antdv-next-design` 的精确版本事实；显式 `react-antd-6` 兼容路线才使用 `yss-antd-design`。原型阶段不得调用 `yss-ui`。真实 YSS/AntDV 组件与 lockfile 事实只在前端实现计划、已批准切片的实现和实现还原验证中消费 |
 | Bug、测试失败或性能回退 | `diagnosing-bugs` 建立可复现反馈，再用 `tdd` |
 | merge / rebase 冲突 | `resolving-merge-conflicts` |
 | 架构治理、难测模块或深模块设计 | `codebase-design`；`improve-codebase-architecture` 仅作为用户显式兼容入口 |

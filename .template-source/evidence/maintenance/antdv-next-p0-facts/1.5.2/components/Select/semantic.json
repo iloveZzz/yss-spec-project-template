@@ -1,0 +1,70 @@
+{
+  "name": "Select",
+  "semanticStructure": [
+    {
+      "key": "root",
+      "description": "Root element with relative positioning, inline-flex layout, cursor styles, transitions, border and other basic selector container styles",
+      "descriptionZh": "根元素，包含相对定位、行内 flex 布局、光标样式、过渡动画、边框等选择器容器的基础样式"
+    },
+    {
+      "key": "prefix",
+      "description": "Prefix element with layout and styling for prefix content",
+      "descriptionZh": "前缀元素，包含前缀内容的布局和样式"
+    },
+    {
+      "key": "content",
+      "description": "Multiple selection container with layout, spacing, and wrapping styles for selected items",
+      "descriptionZh": "多选容器，包含已选项的布局、间距、换行相关样式"
+    },
+    {
+      "key": "placeholder",
+      "description": "Placeholder element with font styles and colors for placeholder text",
+      "descriptionZh": "占位符元素，包含占位符文本的字体样式和颜色"
+    },
+    {
+      "key": "clear",
+      "description": "Clear button element with layout, styling and interactive effects for clear button",
+      "descriptionZh": "清除按钮元素，包含清除按钮的布局、样式和交互效果"
+    },
+    {
+      "key": "input",
+      "description": "Input element with search input styling, cursor control, font inheritance and other search-related styles. Remove border styles",
+      "descriptionZh": "输入框元素，包含搜索输入框的样式、光标控制、字体继承等搜索相关样式，去除了边框样式"
+    },
+    {
+      "key": "suffix",
+      "description": "Suffix element with layout and styling for suffix content like clear button, arrow icon, etc.",
+      "descriptionZh": "后缀元素，包含后缀内容的布局和样式，如清除按钮、箭头图标等"
+    },
+    {
+      "key": "item",
+      "description": "Multiple selection item element with border, background, padding, and margin styles",
+      "descriptionZh": "多选项元素，包含边框、背景、内边距、外边距样式"
+    },
+    {
+      "key": "itemContent",
+      "description": "Multiple selection item content area with text ellipsis styles",
+      "descriptionZh": "多选项内容区域，包含文字的省略样式"
+    },
+    {
+      "key": "itemRemove",
+      "description": "Multiple selection item remove button with font-related styless",
+      "descriptionZh": "多选项移除按钮，包含字体相关样式"
+    },
+    {
+      "key": "popup.root",
+      "description": "Popup element with popup layer positioning, z-index, background, border, box-shadow and other popup container styles",
+      "descriptionZh": "弹出菜单元素，包含弹出层的定位、层级、背景、边框、阴影等弹出容器样式"
+    },
+    {
+      "key": "popup.list",
+      "description": "Popup list element with option list layout, scrolling, max-height and other list container styles",
+      "descriptionZh": "弹出菜单列表元素，包含选项列表的布局、滚动、最大高度等列表容器样式"
+    },
+    {
+      "key": "popup.listItem",
+      "description": "Popup item element with option item padding, hover effects, selected states, disabled states and other option interactive styles",
+      "descriptionZh": "弹出菜单条目元素，包含选项项的内边距、悬浮效果、选中状态、禁用状态等选项交互样式"
+    }
+  ]
+}

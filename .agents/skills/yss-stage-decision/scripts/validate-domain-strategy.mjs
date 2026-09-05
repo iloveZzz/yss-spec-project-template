@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 import { readFile } from "node:fs/promises";
 import process from "node:process";
+import { parseArgs } from "node:util";
 import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
 import { loadApprovalRecord, resolveApprovalRef, validateApprovalRecordFile } from "../../../../scripts/lib/approval-record.mjs";
+import { verifyContextSnapshot } from "../../../../scripts/lib/context-contract.mjs";
 
-const required = ["schema_version", "domain_strategy_id", "domain_version", "status", "contexts", "subdomains", "relationships", "scenarios", "concept_candidates", "invariants", "terminology_refs", "downstream_mapping", "evidence_refs", "approval"];
+const required = ["schema_version", "domain_strategy_id", "domain_version", "status", "contexts", "subdomains", "relationships", "scenarios", "concept_candidates", "invariants", "context_snapshot", "downstream_mapping", "evidence_refs", "approval"];
 const idPatterns = {
   context_id: /^[A-Z][A-Za-z0-9]+$/,
   domain_strategy_id: /^domain-strategy\.[a-z0-9][a-z0-9-]*$/,
@@ -43,11 +45,12 @@ function requireArray(object, field, path, errors, min = 0, itemKind = "string")
   if (field in object && list(object[field]) && itemKind === "string") object[field].forEach((item, index) => { if (!nonEmpty(item)) errors.push(`${path}.${field}[${index}] 必须是非空字符串`); });
 }
 
-function validate(data) {
+function validate(data, contextRoot) {
   const errors = [];
   if (!data || typeof data !== "object" || Array.isArray(data)) return ["合同必须是对象"];
+  if (data.schema_version === 1) return ["migration-required: domain strategy v1 必须迁移到 v2 context_snapshot"];
   for (const field of required) requireField(data, field, "root", errors);
-  if (data.schema_version !== 1) errors.push("schema_version 必须为 1");
+  if (data.schema_version !== 2) errors.push("schema_version 必须为 2");
   if (!idPatterns.domain_strategy_id.test(String(data.domain_strategy_id ?? ""))) errors.push("domain_strategy_id 格式非法");
   if (!/^v[0-9]+$/.test(String(data.domain_version ?? ""))) errors.push("domain_version 必须形如 v1");
   if (!["draft", "ready-for-human", "approved", "stale", "blocked"].includes(data.status)) errors.push("status 非法");
@@ -128,7 +131,11 @@ function validate(data) {
     for (const reference of invariant?.scenario_refs ?? []) if (!scenarioIds.includes(reference)) errors.push(`${path}.scenario_refs 引用了未声明场景: ${reference}`);
   }
 
-  requireArray(data, "terminology_refs", "root", errors, 0);
+  try {
+    verifyContextSnapshot(data.context_snapshot, { root: contextRoot, allowedContextIds: contextIds });
+  } catch (error) {
+    errors.push(...(error.problems ?? [error.message]));
+  }
   requireArray(data, "evidence_refs", "root", errors, 1);
   const mappings = list(data.downstream_mapping) ? data.downstream_mapping : [];
   for (const [index, mapping] of mappings.entries()) {
@@ -153,15 +160,16 @@ function validate(data) {
   return errors;
 }
 
-const file = process.argv[2];
-if (!file) fail(["用法: validate-domain-strategy.mjs <contract.yaml>"]);
+const { values, positionals } = parseArgs({ options: { root: { type: "string", default: process.cwd() } }, allowPositionals: true, strict: true });
+const file = positionals[0];
+if (!file) fail(["用法: validate-domain-strategy.mjs <contract.yaml> [--root <project-root>]"]);
 else {
   try {
     const source = await readFile(file, "utf8");
     const document = parseDocument(source, { maxAliasCount: 0, uniqueKeys: true });
     if (document.errors.length) fail([document.errors[0].message]);
     else {
-      const errors = validate(document.toJS({ maxAliasCount: 0 }));
+      const errors = validate(document.toJS({ maxAliasCount: 0 }), values.root);
       if (errors.length) fail(errors);
       else process.stdout.write(JSON.stringify({ result: "completed", contract: file }, null, 2) + "\n");
     }

@@ -1,0 +1,646 @@
+{
+  "name": "Modal",
+  "nameZh": "对话框",
+  "description": "Display a modal dialog box, providing a title, content area, and action buttons.",
+  "props": [
+    {
+      "name": "afterClose",
+      "type": "() => void",
+      "default": "-",
+      "description": "Specify a function that will be called when modal is closed completely",
+      "descriptionZh": "Modal 完全关闭后的回调"
+    },
+    {
+      "name": "afterOpenChange",
+      "type": "(open: boolean) => void",
+      "default": "-",
+      "description": "Callback when the animation ends when Modal is turned on and off",
+      "descriptionZh": "打开和关闭 Modal 时动画结束后的回调"
+    },
+    {
+      "name": "cancelButtonProps",
+      "type": "ButtonProps",
+      "default": "-",
+      "description": "The cancel button props",
+      "descriptionZh": "cancel 按钮 props"
+    },
+    {
+      "name": "cancelText",
+      "type": "VueNode",
+      "default": "`Cancel`",
+      "description": "Text of the Cancel button",
+      "descriptionZh": "取消按钮文字"
+    },
+    {
+      "name": "centered",
+      "type": "boolean",
+      "default": "false",
+      "description": "Centered Modal",
+      "descriptionZh": "垂直居中展示 Modal"
+    },
+    {
+      "name": "classes",
+      "type": "ModalClassNamesType",
+      "default": "-",
+      "description": "Customize class for each semantic structure inside the Modal component. Supports object or function.",
+      "descriptionZh": "用于自定义 Modal 组件内部各语义化结构的 class，支持对象或函数"
+    },
+    {
+      "name": "closable",
+      "type": "boolean \\| [ClosableType](#closabletype)",
+      "default": "true",
+      "description": "Whether a close (x) button is visible on top right or not",
+      "descriptionZh": "是否显示右上角的关闭按钮"
+    },
+    {
+      "name": "closeIcon",
+      "type": "VueNode",
+      "default": "&lt;CloseOutlined />",
+      "description": "Custom close icon. Close button will be hidden when setting to `null` or `false`",
+      "descriptionZh": "自定义关闭图标。设置为 `null` 或 `false` 时隐藏关闭按钮"
+    },
+    {
+      "name": "confirmLoading",
+      "type": "boolean",
+      "default": "false",
+      "description": "Whether to apply loading visual effect for OK button or not",
+      "descriptionZh": "确定按钮 loading"
+    },
+    {
+      "name": "destroyOnHidden",
+      "type": "boolean",
+      "default": "false",
+      "description": "Whether to unmount child components on close",
+      "descriptionZh": "关闭时销毁 Modal 里的子元素"
+    },
+    {
+      "name": "focusTriggerAfterClose",
+      "type": "boolean",
+      "default": "true",
+      "description": "Whether need to focus trigger element after dialog is closed",
+      "descriptionZh": "对话框关闭后是否需要聚焦触发元素"
+    },
+    {
+      "name": "footer",
+      "type": "VueNode \\| (params: { originNode: VueNode, extra: { OkBtn: any, CancelBtn: any } }) => any",
+      "default": "(OK and Cancel buttons)",
+      "description": "Footer content, set as `footer={null}` when you don't need default buttons",
+      "descriptionZh": "底部内容，当不需要默认底部按钮时，可以设为 `footer={null}`"
+    },
+    {
+      "name": "forceRender",
+      "type": "boolean",
+      "default": "false",
+      "description": "Force render Modal",
+      "descriptionZh": "强制渲染 Modal"
+    },
+    {
+      "name": "focusable",
+      "type": "`{ trap?: boolean, focusTriggerAfterClose?: boolean }`",
+      "default": "-",
+      "description": "Configuration for focus management in the Modal",
+      "descriptionZh": "对话框内焦点管理的配置"
+    },
+    {
+      "name": "getContainer",
+      "type": "string \\| HTMLElement \\| (() => HTMLElement) \\| false",
+      "default": "document.body",
+      "description": "The mounted node for Modal but still display at fullscreen",
+      "descriptionZh": "指定 Modal 挂载的节点，但依旧为全屏展示，`false` 为挂载在当前位置"
+    },
+    {
+      "name": "keyboard",
+      "type": "boolean",
+      "default": "true",
+      "description": "Whether support press esc to close",
+      "descriptionZh": "是否支持键盘 esc 关闭"
+    },
+    {
+      "name": "loading",
+      "type": "boolean",
+      "default": "false",
+      "description": "Show the skeleton",
+      "descriptionZh": "显示骨架屏"
+    },
+    {
+      "name": "mask",
+      "type": "boolean \\| `{enabled?: boolean, blur?: boolean, closable?: boolean}`",
+      "default": "true",
+      "description": "Mask effect",
+      "descriptionZh": "遮罩效果"
+    },
+    {
+      "name": "~~maskClosable~~",
+      "type": "boolean",
+      "default": "true",
+      "description": "Whether to close the modal dialog when the mask (area outside the modal) is clicked",
+      "descriptionZh": ""
+    },
+    {
+      "name": "modalRender",
+      "type": "(node: any) => any",
+      "default": "-",
+      "description": "Custom modal content render",
+      "descriptionZh": "自定义渲染对话框"
+    },
+    {
+      "name": "mousePosition",
+      "type": "MousePosition",
+      "default": "-",
+      "description": "Set animation start position",
+      "descriptionZh": "设置动画起点位置"
+    },
+    {
+      "name": "okButtonProps",
+      "type": "ButtonProps",
+      "default": "-",
+      "description": "The ok button props",
+      "descriptionZh": "ok 按钮 props"
+    },
+    {
+      "name": "okText",
+      "type": "VueNode",
+      "default": "`OK`",
+      "description": "Text of the OK button",
+      "descriptionZh": "确认按钮文字"
+    },
+    {
+      "name": "okType",
+      "type": "LegacyButtonType",
+      "default": "`primary`",
+      "description": "Button `type` of the OK button",
+      "descriptionZh": "确认按钮类型"
+    },
+    {
+      "name": "open",
+      "type": "boolean",
+      "default": "false",
+      "description": "Whether the modal dialog is visible or not, support `v-model:open`",
+      "descriptionZh": "对话框是否可见，支持 `v-model:open`"
+    },
+    {
+      "name": "rootClass",
+      "type": "string",
+      "default": "-",
+      "description": "Root container class",
+      "descriptionZh": "根容器 class"
+    },
+    {
+      "name": "rootStyle",
+      "type": "CSSProperties",
+      "default": "-",
+      "description": "Root container style",
+      "descriptionZh": "根容器样式"
+    },
+    {
+      "name": "scrollLock",
+      "type": "boolean",
+      "default": "true",
+      "description": "Whether to lock body scroll when modal opens",
+      "descriptionZh": "弹窗打开时是否锁定 body 滚动"
+    },
+    {
+      "name": "styles",
+      "type": "ModalStylesType",
+      "default": "-",
+      "description": "Customize inline style for each semantic structure inside the Modal component. Supports object or function.",
+      "descriptionZh": "用于自定义 Modal 组件内部各语义化结构的行内 style，支持对象或函数"
+    },
+    {
+      "name": "title",
+      "type": "VueNode",
+      "default": "-",
+      "description": "The modal dialog's title",
+      "descriptionZh": "标题"
+    },
+    {
+      "name": "transitionName",
+      "type": "string",
+      "default": "-",
+      "description": "Transition name of dialog",
+      "descriptionZh": "对话框过渡动效名称"
+    },
+    {
+      "name": "maskTransitionName",
+      "type": "string",
+      "default": "-",
+      "description": "Transition name of mask",
+      "descriptionZh": "遮罩过渡动效名称"
+    },
+    {
+      "name": "width",
+      "type": "string \\| number \\| Partial<Record<Breakpoint, string \\| number>>",
+      "default": "520",
+      "description": "Width of the modal dialog",
+      "descriptionZh": "宽度"
+    },
+    {
+      "name": "wrapClassName",
+      "type": "string",
+      "default": "-",
+      "description": "The class name of the container of the modal dialog",
+      "descriptionZh": "对话框外层容器的类名"
+    },
+    {
+      "name": "wrapProps",
+      "type": "Record<string, any>",
+      "default": "-",
+      "description": "Wrapper element props",
+      "descriptionZh": "对话框外层容器属性"
+    },
+    {
+      "name": "zIndex",
+      "type": "number",
+      "default": "1000",
+      "description": "The `z-index` of the Modal",
+      "descriptionZh": "设置 Modal 的 `z-index`"
+    },
+    {
+      "name": "maskClosable",
+      "type": "boolean",
+      "default": "true",
+      "description": "",
+      "descriptionZh": "点击蒙层是否允许关闭"
+    }
+  ],
+  "events": [
+    {
+      "name": "ok",
+      "type": "(e: MouseEvent) => void",
+      "default": "",
+      "description": "Callback when the OK button is clicked",
+      "descriptionZh": "点击确定回调"
+    },
+    {
+      "name": "cancel",
+      "type": "(e: MouseEvent) => void",
+      "default": "",
+      "description": "Callback when the mask, close button or Cancel button is clicked",
+      "descriptionZh": "点击遮罩层或右上角叉或取消按钮的回调"
+    },
+    {
+      "name": "update:open",
+      "type": "(open: boolean) => void",
+      "default": "",
+      "description": "",
+      "descriptionZh": "对话框显隐变化"
+    }
+  ],
+  "slots": [
+    {
+      "name": "default",
+      "type": "() => any",
+      "default": "",
+      "description": "Modal content",
+      "descriptionZh": "内容"
+    },
+    {
+      "name": "title",
+      "type": "() => any",
+      "default": "",
+      "description": "Title",
+      "descriptionZh": "标题"
+    },
+    {
+      "name": "footer",
+      "type": "(params: { originNode: VueNode, extra: { OkBtn: any, CancelBtn: any } }) => any",
+      "default": "",
+      "description": "Footer content",
+      "descriptionZh": "底部内容"
+    },
+    {
+      "name": "okText",
+      "type": "() => any",
+      "default": "",
+      "description": "OK button text",
+      "descriptionZh": "确认按钮文字"
+    },
+    {
+      "name": "cancelText",
+      "type": "() => any",
+      "default": "",
+      "description": "Cancel button text",
+      "descriptionZh": "取消按钮文字"
+    },
+    {
+      "name": "closeIcon",
+      "type": "() => any",
+      "default": "",
+      "description": "Custom close icon",
+      "descriptionZh": "自定义关闭图标"
+    },
+    {
+      "name": "modalRender",
+      "type": "(node: any) => any",
+      "default": "",
+      "description": "Custom modal content render",
+      "descriptionZh": "自定义渲染内容"
+    }
+  ],
+  "methods": [],
+  "subComponentProps": {
+    "Modalmethod": {
+      "properties": [
+        {
+          "name": "afterClose",
+          "type": "() => void",
+          "default": "-",
+          "description": "Specify a function that will be called when modal is closed completely",
+          "descriptionZh": "Modal 完全关闭后的回调"
+        },
+        {
+          "name": "autoFocusButton",
+          "type": "null \\| `ok` \\| `cancel`",
+          "default": "`ok`",
+          "description": "Specify which button to autofocus",
+          "descriptionZh": "指定自动获得焦点的按钮"
+        },
+        {
+          "name": "cancelButtonProps",
+          "type": "ButtonProps",
+          "default": "-",
+          "description": "The cancel button props",
+          "descriptionZh": "cancel 按钮 props"
+        },
+        {
+          "name": "cancelText",
+          "type": "string",
+          "default": "`Cancel`",
+          "description": "Text of the Cancel button with Modal.confirm",
+          "descriptionZh": "设置 Modal.confirm 取消按钮文字"
+        },
+        {
+          "name": "centered",
+          "type": "boolean",
+          "default": "false",
+          "description": "Centered Modal",
+          "descriptionZh": "垂直居中展示 Modal"
+        },
+        {
+          "name": "class",
+          "type": "string",
+          "default": "-",
+          "description": "Container class",
+          "descriptionZh": "容器类名"
+        },
+        {
+          "name": "rootClass",
+          "type": "string",
+          "default": "-",
+          "description": "Root container class",
+          "descriptionZh": "根容器 class"
+        },
+        {
+          "name": "closable",
+          "type": "boolean \\| [ClosableType](#closabletype)",
+          "default": "false",
+          "description": "Whether a close (x) button is visible on top right of the confirm dialog or not",
+          "descriptionZh": "是否显示右上角的关闭按钮"
+        },
+        {
+          "name": "closeIcon",
+          "type": "VueNode",
+          "default": "-",
+          "description": "Custom close icon",
+          "descriptionZh": "自定义关闭图标"
+        },
+        {
+          "name": "content",
+          "type": "VueNode",
+          "default": "-",
+          "description": "Content",
+          "descriptionZh": "内容"
+        },
+        {
+          "name": "footer",
+          "type": "VueNode \\| (params: { originNode: VueNode, extra: { OkBtn: any, CancelBtn: any } }) => any",
+          "default": "-",
+          "description": "Footer content, set as `footer: null` when you don't need default buttons",
+          "descriptionZh": "底部内容，当不需要默认底部按钮时，可以设为 `footer: null`"
+        },
+        {
+          "name": "getContainer",
+          "type": "string \\| HTMLElement \\| (() => HTMLElement) \\| false",
+          "default": "document.body",
+          "description": "Return the mount node for Modal",
+          "descriptionZh": "指定 Modal 挂载的 HTML 节点，false 为挂载在当前 dom"
+        },
+        {
+          "name": "icon",
+          "type": "VueNode",
+          "default": "&lt;ExclamationCircleFilled />",
+          "description": "Custom icon",
+          "descriptionZh": "自定义图标"
+        },
+        {
+          "name": "keyboard",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether support press esc to close",
+          "descriptionZh": "是否支持键盘 esc 关闭"
+        },
+        {
+          "name": "mask",
+          "type": "boolean \\| [MaskType](#masktype)",
+          "default": "true",
+          "description": "Mask effect",
+          "descriptionZh": "遮罩效果"
+        },
+        {
+          "name": "maskClosable",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether to close the modal dialog when the mask is clicked",
+          "descriptionZh": ""
+        },
+        {
+          "name": "okButtonProps",
+          "type": "ButtonProps",
+          "default": "-",
+          "description": "The ok button props",
+          "descriptionZh": "ok 按钮 props"
+        },
+        {
+          "name": "okText",
+          "type": "string",
+          "default": "`OK`",
+          "description": "Text of the OK button",
+          "descriptionZh": "确认按钮文字"
+        },
+        {
+          "name": "okType",
+          "type": "LegacyButtonType",
+          "default": "`primary`",
+          "description": "Button `type` of the OK button",
+          "descriptionZh": "确认按钮类型"
+        },
+        {
+          "name": "scrollLock",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether to lock body scroll when modal opens",
+          "descriptionZh": "弹窗打开时是否锁定 body 滚动"
+        },
+        {
+          "name": "style",
+          "type": "CSSProperties",
+          "default": "-",
+          "description": "Style of floating layer, typically used at least for adjusting the position",
+          "descriptionZh": "可用于设置浮层的样式，调整浮层位置等"
+        },
+        {
+          "name": "title",
+          "type": "VueNode",
+          "default": "-",
+          "description": "Title",
+          "descriptionZh": "标题"
+        },
+        {
+          "name": "type",
+          "type": "`info` \\| `success` \\| `error` \\| `warn` \\| `warning` \\| `confirm`",
+          "default": "`confirm`",
+          "description": "Dialog type",
+          "descriptionZh": "对话框类型"
+        },
+        {
+          "name": "width",
+          "type": "string \\| number",
+          "default": "416",
+          "description": "Width of the modal dialog",
+          "descriptionZh": "宽度"
+        },
+        {
+          "name": "wrapClassName",
+          "type": "string",
+          "default": "-",
+          "description": "The class name of the container of the modal dialog",
+          "descriptionZh": "对话框外层容器的类名"
+        },
+        {
+          "name": "zIndex",
+          "type": "number",
+          "default": "1000",
+          "description": "The `z-index` of the Modal",
+          "descriptionZh": "设置 Modal 的 `z-index`"
+        },
+        {
+          "name": "onCancel",
+          "type": "(close?: () => void) => void",
+          "default": "-",
+          "description": "Click to onCancel callback, the parameter is the closing function",
+          "descriptionZh": "点击取消回调，参数为关闭函数"
+        },
+        {
+          "name": "onOk",
+          "type": "(close?: () => void) => void",
+          "default": "-",
+          "description": "Click to onOk callback, the parameter is the closing function",
+          "descriptionZh": "点击确定回调，参数为关闭函数"
+        },
+        {
+          "name": "~~maskClosable~~",
+          "type": "boolean",
+          "default": "false",
+          "description": "",
+          "descriptionZh": "点击蒙层是否允许关闭"
+        }
+      ],
+      "events": [],
+      "slots": [],
+      "methods": []
+    },
+    "ClosableType": {
+      "properties": [
+        {
+          "name": "afterClose",
+          "type": "() => void",
+          "default": "-",
+          "description": "Specify a function that will be called when modal is closed completely",
+          "descriptionZh": "Modal 完全关闭后的回调"
+        },
+        {
+          "name": "closeIcon",
+          "type": "VueNode",
+          "default": "undefined",
+          "description": "Custom close icon",
+          "descriptionZh": "自定义关闭图标"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether disabled close icon",
+          "descriptionZh": "关闭图标是否禁用"
+        },
+        {
+          "name": "onClose",
+          "type": "() => void",
+          "default": "undefined",
+          "description": "Trigger when modal close",
+          "descriptionZh": "弹窗关闭即时调用"
+        }
+      ],
+      "events": [],
+      "slots": [],
+      "methods": []
+    },
+    "MaskType": {
+      "properties": [
+        {
+          "name": "enabled",
+          "type": "boolean",
+          "default": "true",
+          "description": "Do you want to enable masking",
+          "descriptionZh": "是否启用蒙层"
+        },
+        {
+          "name": "blur",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether to enable virtualization effect",
+          "descriptionZh": "是否启用虚化效果"
+        },
+        {
+          "name": "closable",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether to close the modal dialog when the mask is clicked, When using functional calls, the default value is `false`",
+          "descriptionZh": "点击蒙层是否允许关闭，函数式调用时默认 `false`"
+        }
+      ],
+      "events": [],
+      "slots": [],
+      "methods": []
+    }
+  },
+  "commonProps": [
+    {
+      "name": "style",
+      "type": "CSSProperties",
+      "default": "-",
+      "description": "The additional style",
+      "descriptionZh": "自定义样式"
+    },
+    {
+      "name": "class",
+      "type": "string",
+      "default": "-",
+      "description": "The additional css class",
+      "descriptionZh": "自定义类名"
+    },
+    {
+      "name": "rootClass",
+      "type": "string",
+      "default": "-",
+      "description": "ClassName on the root element",
+      "descriptionZh": "添加在组件最外层的 className"
+    },
+    {
+      "name": "autoFocus",
+      "type": "boolean",
+      "default": "false",
+      "description": "Auto focus when component mounted, only effective for focusable elements like forms, links, etc.",
+      "descriptionZh": "自动获取焦点，仅对表单类、链接、交互容器等可聚焦元素生效"
+    }
+  ]
+}

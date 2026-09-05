@@ -1,0 +1,321 @@
+{
+  "name": "Tag",
+  "nameZh": "标签",
+  "description": "Used for marking and categorization.",
+  "props": [
+    {
+      "name": "closable",
+      "type": "boolean",
+      "default": "false",
+      "description": "Whether the Tag can be closed",
+      "descriptionZh": "标签是否可以关闭"
+    },
+    {
+      "name": "closeIcon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "Custom close icon. Setting to `null` or `false` hides the close button",
+      "descriptionZh": "自定义关闭按钮。设置为 `null` 或 `false` 时隐藏关闭按钮"
+    },
+    {
+      "name": "color",
+      "type": "string",
+      "default": "-",
+      "description": "Color of the Tag",
+      "descriptionZh": "标签色"
+    },
+    {
+      "name": "classes",
+      "type": "TagClassNamesType",
+      "default": "-",
+      "description": "Customize class for each semantic structure inside the component. Supports object or function",
+      "descriptionZh": "用于自定义组件内部各语义化结构的 class，支持对象或函数"
+    },
+    {
+      "name": "disabled",
+      "type": "boolean",
+      "default": "false",
+      "description": "Whether the tag is disabled",
+      "descriptionZh": "是否禁用标签"
+    },
+    {
+      "name": "href",
+      "type": "string",
+      "default": "-",
+      "description": "The address to jump when clicking, when specified the tag will be rendered as `<a>` tag",
+      "descriptionZh": "点击跳转的地址，指定此属性 tag 组件会渲染成 `<a>` 标签"
+    },
+    {
+      "name": "icon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "Set the icon of tag",
+      "descriptionZh": "设置图标"
+    },
+    {
+      "name": "styles",
+      "type": "TagStylesType",
+      "default": "-",
+      "description": "Customize inline style for each semantic structure inside the component. Supports object or function",
+      "descriptionZh": "用于自定义组件内部各语义化结构的行内 style，支持对象或函数"
+    },
+    {
+      "name": "target",
+      "type": "string",
+      "default": "-",
+      "description": "Same as target attribute of `<a>`, works when href is specified",
+      "descriptionZh": "相当于 `<a>` 标签的 target 属性，href 存在时生效"
+    },
+    {
+      "name": "variant",
+      "type": "`filled` \\| `solid` \\| `outlined`",
+      "default": "`filled`",
+      "description": "Variant of the tag",
+      "descriptionZh": "标签变体"
+    }
+  ],
+  "events": [
+    {
+      "name": "close",
+      "type": "(e: MouseEvent) =&gt; void",
+      "default": "",
+      "description": "Callback executed when tag is closed (can be prevented by `e.preventDefault()`)",
+      "descriptionZh": "关闭时的回调（可通过 `e.preventDefault()` 来阻止默认行为）"
+    }
+  ],
+  "slots": [
+    {
+      "name": "closeIcon",
+      "type": "() =&gt; VueNode",
+      "default": "",
+      "description": "Custom close icon. Setting to `null` or `false` hides the close button",
+      "descriptionZh": "自定义关闭按钮。设置为 `null` 或 `false` 时隐藏关闭按钮"
+    },
+    {
+      "name": "icon",
+      "type": "() =&gt; VueNode",
+      "default": "",
+      "description": "Set the icon of tag",
+      "descriptionZh": "设置图标"
+    }
+  ],
+  "methods": [],
+  "subComponentProps": {
+    "CheckableTag": {
+      "properties": [
+        {
+          "name": "checked",
+          "type": "boolean",
+          "default": "false",
+          "description": "Checked status of Tag. This is a controlled component",
+          "descriptionZh": ""
+        },
+        {
+          "name": "icon",
+          "type": "VueNode",
+          "default": "-",
+          "description": "Set the icon of tag",
+          "descriptionZh": ""
+        }
+      ],
+      "events": [
+        {
+          "name": "change",
+          "type": "(checked: boolean) =&gt; void",
+          "default": "",
+          "description": "Callback executed when Tag is checked/unchecked",
+          "descriptionZh": ""
+        }
+      ],
+      "slots": [],
+      "methods": []
+    },
+    "CheckableTagGroup": {
+      "properties": [
+        {
+          "name": "classes",
+          "type": "Record&lt;SemanticDOM, string&gt;",
+          "default": "-",
+          "description": "Customize class for each semantic structure inside the component. Supports object or function",
+          "descriptionZh": ""
+        },
+        {
+          "name": "defaultValue",
+          "type": "string \\| number \\| Array&lt;string \\| number&gt; \\| null",
+          "default": "-",
+          "description": "Initial value",
+          "descriptionZh": ""
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Disable check/uncheck",
+          "descriptionZh": ""
+        },
+        {
+          "name": "multiple",
+          "type": "boolean",
+          "default": "false",
+          "description": "Multiple select mode",
+          "descriptionZh": ""
+        },
+        {
+          "name": "options",
+          "type": "Array&lt;&#123; label: VueNode; value: string \\| number &#125; \\| string \\| number&gt;",
+          "default": "-",
+          "description": "Option list",
+          "descriptionZh": ""
+        },
+        {
+          "name": "styles",
+          "type": "Record&lt;SemanticDOM, CSSProperties&gt;",
+          "default": "-",
+          "description": "Customize inline style for each semantic structure inside the component. Supports object or function",
+          "descriptionZh": ""
+        },
+        {
+          "name": "value",
+          "type": "string \\| number \\| Array&lt;string \\| number&gt; \\| null",
+          "default": "-",
+          "description": "Value of checked tag(s), support `v-model:value`",
+          "descriptionZh": ""
+        }
+      ],
+      "events": [
+        {
+          "name": "change",
+          "type": "(value: string \\| number \\| Array&lt;string \\| number&gt; \\| null) =&gt; void",
+          "default": "",
+          "description": "Callback when Tag is checked/unchecked",
+          "descriptionZh": ""
+        }
+      ],
+      "slots": [],
+      "methods": []
+    },
+    "TagCheckableTag": {
+      "properties": [
+        {
+          "name": "checked",
+          "type": "boolean",
+          "default": "false",
+          "description": "",
+          "descriptionZh": "设置标签的选中状态。该组件为完全受控组件"
+        },
+        {
+          "name": "icon",
+          "type": "VueNode",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "设置图标"
+        }
+      ],
+      "events": [
+        {
+          "name": "change",
+          "type": "(checked: boolean) =&gt; void",
+          "default": "",
+          "description": "",
+          "descriptionZh": "点击标签时触发的回调"
+        }
+      ],
+      "slots": [],
+      "methods": []
+    },
+    "TagCheckableTagGroup": {
+      "properties": [
+        {
+          "name": "classes",
+          "type": "Record&lt;SemanticDOM, string&gt;",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "用于自定义组件内部各语义化结构的 class，支持对象或函数"
+        },
+        {
+          "name": "defaultValue",
+          "type": "string \\| number \\| Array&lt;string \\| number&gt; \\| null",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "初始选中值"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "",
+          "descriptionZh": "禁用选中"
+        },
+        {
+          "name": "multiple",
+          "type": "boolean",
+          "default": "false",
+          "description": "",
+          "descriptionZh": "多选模式"
+        },
+        {
+          "name": "options",
+          "type": "Array&lt;&#123; label: VueNode; value: string \\| number &#125; \\| string \\| number&gt;",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "选项列表"
+        },
+        {
+          "name": "styles",
+          "type": "Record&lt;SemanticDOM, CSSProperties&gt;",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "用于自定义组件内部各语义化结构的行内 style，支持对象或函数"
+        },
+        {
+          "name": "value",
+          "type": "string \\| number \\| Array&lt;string \\| number&gt; \\| null",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "选中值，支持 `v-model:value`"
+        }
+      ],
+      "events": [
+        {
+          "name": "change",
+          "type": "(value: string \\| number \\| Array&lt;string \\| number&gt; \\| null) =&gt; void",
+          "default": "",
+          "description": "",
+          "descriptionZh": "点击标签时触发的回调"
+        }
+      ],
+      "slots": [],
+      "methods": []
+    }
+  },
+  "commonProps": [
+    {
+      "name": "style",
+      "type": "CSSProperties",
+      "default": "-",
+      "description": "The additional style",
+      "descriptionZh": "自定义样式"
+    },
+    {
+      "name": "class",
+      "type": "string",
+      "default": "-",
+      "description": "The additional css class",
+      "descriptionZh": "自定义类名"
+    },
+    {
+      "name": "rootClass",
+      "type": "string",
+      "default": "-",
+      "description": "ClassName on the root element",
+      "descriptionZh": "添加在组件最外层的 className"
+    },
+    {
+      "name": "autoFocus",
+      "type": "boolean",
+      "default": "false",
+      "description": "Auto focus when component mounted, only effective for focusable elements like forms, links, etc.",
+      "descriptionZh": "自动获取焦点，仅对表单类、链接、交互容器等可聚焦元素生效"
+    }
+  ]
+}

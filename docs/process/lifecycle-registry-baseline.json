@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "registry_id": "yss.lifecycle",
-  "semantic_sha256": "6fe3accf810dda1686080f1dd32f9393b22fa006acceb89ff17cb5668a8a67a6",
+  "semantic_sha256": "fc5db7033379baa305840289f6fb35cb3817c91cf043722ad1311b06111d0780",
   "published_ids": [
     "artifact.architecture-review",
     "artifact.data-architecture",
@@ -34,6 +34,7 @@
     "evidence.approval-record",
     "evidence.browser-prototype-verification",
     "evidence.checkpoint-and-rollback",
+    "evidence.context-reconciliation",
     "evidence.contract-approval",
     "evidence.design-review-result",
     "evidence.domain-strategy-review",

@@ -4,6 +4,7 @@
 
 ```text
 Discovery → Spec → Product Overview / Functional Architecture
+Root CONTEXT.md + current work-unit changes → Context Reconciliation → approval / next work unit
 Spec + Product Overview → Product Design / Requirement Freeze
 Spec + Product Overview → API Impact / OpenAPI Draft
 Spec + Product Overview → System / Data Architecture
@@ -34,3 +35,5 @@ Implementation → Independent Review → Fresh Verification → Release
 OpenAPI Freeze 后发生上游变化时，不得仅因父 Ticket 仍写阶段 6 就继续实现。先做影响分析，再精准更新相关资产和门禁。
 
 战术设计合同上游引用发生版本变化时，先将 tactical-design 标记为 `stale`，再传播到 Slice Contract；发现新的聚合、状态、不变量、一致性或 Gateway 影响时标记 `drift` / `new_impacts` 并重新路由。
+
+`CONTEXT.md` 全文摘要变化时，先复核当前和下游资产保存的 `document_digest`；只有其 `referenced_terms_digest` 也变化，才将实际引用这些术语的资产精准标记为 `stale`。无法解析、作用域变化或候选术语未确认时阻断批准/流转，不得用嵌套文件、跨仓路径或 Markdown 锚点绕过。

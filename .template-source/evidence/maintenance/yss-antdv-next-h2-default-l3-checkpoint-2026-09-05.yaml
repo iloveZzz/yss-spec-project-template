@@ -1,0 +1,63 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  将 H2 flow-review 的默认高保真技术基座从 React AntD 6 切换为 Vue 3 + Antdv Next，
+  同时升级原型适配器 schema、确定性 starter 生成、版本校验、证据合同、生命周期路由和
+  create-yss-spec 分发快照；该变更同时命中生成语义与技能聚合行为变化。
+triggers:
+  - generation-semantics
+  - aggregate-behavior-change
+changed_assets:
+  - AGENTS.md
+  - .agents/skills/yss-prototype-stage
+  - .agents/skills/yss-antdv-next-design
+  - .agents/skills/yss-design-system
+  - .agents/skills/yss-product-lifecycle
+  - .agents/skills/yss-implementation-contract-compiler
+  - .agents/skills/yss-ui
+  - .claude/skills
+  - .codex/skills
+  - .cursor/skills
+  - .pi/skills
+  - .qoder/skills
+  - .trae/skills
+  - docs/agents/yss-skill-registry.yaml
+  - docs/agents/digital-human-roles.yaml
+  - docs/design
+  - docs/process/template-verification-profiles.yaml
+  - scripts/lib/skill-governance.mjs
+  - skills-lock.json
+  - submodules/yss-harness-design-agent
+  - submodules/create-yss-spec
+verification_evidence:
+  - kind: self-check
+    command: >-
+      node .agents/skills/yss-prototype-stage/tests/run-scenarios.mjs &&
+      node .agents/skills/yss-antdv-next-design/tests/run-scenarios.mjs &&
+      node .agents/skills/yss-antdv-next-design/scripts/validate-fact-pack.mjs
+      docs/design/facts/antdv-next/1.5.2/manifest.json &&
+      scripts/verify-skill-governance && scripts/verify-skill-registry &&
+      scripts/verify-digital-human-roles
+    result: pass
+  - kind: projection-sync
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check
+    result: pass
+  - kind: distribution-regression
+    command: cd submodules/create-yss-spec && node --test tests/init-cli.test.js
+    result: pass
+  - kind: upstream-source-verification
+    command: >-
+      cd submodules/yss-harness-design-agent && scripts/verify-template-fast
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: >-
+  fast profile 因 AGENTS.md 变化自动升级为 release profile并全部通过；本轮目标仍为
+  implementation-ready，未冻结 candidate、未执行独立审查，也未获得提交或发布授权。
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

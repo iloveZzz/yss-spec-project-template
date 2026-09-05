@@ -115,6 +115,7 @@ function completedResult(pkg, overrides = {}) {
     result: "completed",
     skill: "yss-product-lifecycle",
     changed_files: [],
+    context_reconciliation: { status: "reconciled", ref: evidenceRef },
     evidence_refs: [evidenceRef],
     deferred_seams: [],
     drift: [],
@@ -183,7 +184,7 @@ try {
   mustFail((value) => { value.execution_state = "Reviewer"; value.review_context = { implementation_actor_id: value.actor_id }; }, /不同 actor_id/, "reviewer-implementer-conflict");
   mustFail((value) => { value.workflow_status = "resolved"; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; value.result = completedResult(value, { new_impacts: ["api-change"] }); }, /new_impacts 必须为空/, "completed-new-impact");
   mustFail((value) => { value.workflow_status = "resolved"; value.verification_commands = ["scripts/verify-template", "pnpm test"]; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; value.result = completedResult(value); }, /覆盖全部 verification_commands/, "verification-command-gap");
-  mustFail((value) => { value.workflow_status = "resolved"; value.result = completedResult(value, { evidence_refs: [".template-source/evidence/.missing.json"] }); value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; }, /不可读/, "unreadable-evidence");
+  mustFail((value) => { value.workflow_status = "resolved"; value.result = completedResult(value, { context_reconciliation: { status: "reconciled", ref: ".template-source/evidence/.missing.json" }, evidence_refs: [".template-source/evidence/.missing.json"] }); value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; }, /不可读/, "unreadable-evidence");
   mustFail((value) => { value.workflow_status = "resolved"; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; }, /Workflow Execution Result/, "resolved-without-result");
   mustFail((value) => { value.workflow_status = "resolved"; value.result = { result: "blocked" }; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; }, /Workflow Execution Result/, "resolved-blocked-result");
   mustFail((value) => { value.workflow_status = "resolved"; value.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }]; value.result = completedResult(value); value.expected_evidence_files = [".template-source/evidence/.missing.json"]; }, /expected_evidence_files.*不可读/, "missing-expected-evidence");

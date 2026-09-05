@@ -1,0 +1,246 @@
+{
+  "name": "Alert",
+  "nameZh": "警告提示",
+  "description": "Display warning messages that require attention.",
+  "props": [
+    {
+      "name": "type",
+      "type": "'success' \\| 'info' \\| 'warning' \\| 'error'",
+      "default": "`info`, in `banner` mode default is `warning`",
+      "description": "Type of Alert styles, options: `success`, `info`, `warning`, `error`",
+      "descriptionZh": "指定警告提示的样式，有四种选择 `success`、`info`、`warning`、`error`"
+    },
+    {
+      "name": "closable",
+      "type": "ClosableType",
+      "default": "`false`",
+      "description": "The config of closable, &gt;=5.15.0: support `aria-*`",
+      "descriptionZh": "可关闭配置，&gt;=5.15.0: 支持 `aria-*`"
+    },
+    {
+      "name": "title",
+      "type": "VueNode",
+      "default": "-",
+      "description": "Content of Alert",
+      "descriptionZh": "警告提示内容"
+    },
+    {
+      "name": "message",
+      "type": "VueNode",
+      "default": "-",
+      "description": "Content of Alert, please use `title` instead",
+      "descriptionZh": "警告提示内容，请使用 `title` 替换"
+    },
+    {
+      "name": "description",
+      "type": "VueNode",
+      "default": "-",
+      "description": "Additional content of Alert",
+      "descriptionZh": "警告提示的辅助性文字介绍"
+    },
+    {
+      "name": "afterClose",
+      "type": "() =&gt; void",
+      "default": "-",
+      "description": "Called when close animation is finished, please use `closable.afterClose` instead",
+      "descriptionZh": "关闭动画结束后触发的回调函数，请使用 `closable.afterClose` 替换"
+    },
+    {
+      "name": "showIcon",
+      "type": "boolean",
+      "default": "false, in `banner` mode default is true",
+      "description": "Whether to show icon",
+      "descriptionZh": "是否显示辅助图标"
+    },
+    {
+      "name": "role",
+      "type": "string",
+      "default": "-",
+      "description": "https://www.w3.org/TR/2014/REC-html5-20141028/dom.html#aria-role-attribute",
+      "descriptionZh": "https://www.w3.org/TR/2014/REC-html5-20141028/dom.html#aria-role-attribute"
+    },
+    {
+      "name": "classes",
+      "type": "AlertClassNamesType",
+      "default": "-",
+      "description": "Customize class for each semantic structure inside the component. Supports object or function",
+      "descriptionZh": "自定义组件内部各语义化结构的类名。支持对象或函数"
+    },
+    {
+      "name": "styles",
+      "type": "AlertStylesType",
+      "default": "-",
+      "description": "Customize inline style for each semantic structure inside the component. Supports object or function",
+      "descriptionZh": "自定义组件内部各语义化结构的内联样式。支持对象或函数"
+    },
+    {
+      "name": "banner",
+      "type": "boolean",
+      "default": "false",
+      "description": "Whether to show as banner",
+      "descriptionZh": "是否用作顶部公告"
+    },
+    {
+      "name": "icon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "Custom icon, effective when `showIcon` is true",
+      "descriptionZh": "自定义图标，`showIcon` 为 true 时有效"
+    },
+    {
+      "name": "successIcon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "(Only supports global configuration) Custom success icon in Alert icon",
+      "descriptionZh": "（仅支持全局配置）自定义成功图标"
+    },
+    {
+      "name": "infoIcon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "(Only supports global configuration) Custom info icon in Alert icon",
+      "descriptionZh": "（仅支持全局配置）自定义信息图标"
+    },
+    {
+      "name": "warningIcon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "(Only supports global configuration) Custom warning icon in Alert icon",
+      "descriptionZh": "（仅支持全局配置）自定义警告图标"
+    },
+    {
+      "name": "errorIcon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "(Only supports global configuration) Custom error icon in Alert icon",
+      "descriptionZh": "（仅支持全局配置）自定义错误图标"
+    },
+    {
+      "name": "closeIcon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "-",
+      "descriptionZh": "-"
+    },
+    {
+      "name": "action",
+      "type": "VueNode",
+      "default": "-",
+      "description": "The action of Alert",
+      "descriptionZh": "自定义操作项"
+    },
+    {
+      "name": "id",
+      "type": "string",
+      "default": "-",
+      "description": "-",
+      "descriptionZh": "-"
+    }
+  ],
+  "events": [
+    {
+      "name": "close",
+      "type": "(e: any) =&gt; any",
+      "default": "",
+      "description": "Callback when close Alert",
+      "descriptionZh": "Callback when close Alert"
+    },
+    {
+      "name": "mouseenter",
+      "type": "(e: any) =&gt; any",
+      "default": "",
+      "description": "-",
+      "descriptionZh": "-"
+    },
+    {
+      "name": "mouseleave",
+      "type": "(e: any) =&gt; any",
+      "default": "",
+      "description": "-",
+      "descriptionZh": "-"
+    },
+    {
+      "name": "click",
+      "type": "(e: any) =&gt; any",
+      "default": "",
+      "description": "-",
+      "descriptionZh": "-"
+    }
+  ],
+  "slots": [
+    {
+      "name": "message",
+      "type": "() =&gt; any",
+      "default": "",
+      "description": "Content of Alert, please use `title` instead",
+      "descriptionZh": "警告提示内容，请使用 `title` 替换"
+    },
+    {
+      "name": "title",
+      "type": "() =&gt; any",
+      "default": "",
+      "description": "Content of Alert",
+      "descriptionZh": "警告提示内容"
+    },
+    {
+      "name": "description",
+      "type": "() =&gt; any",
+      "default": "",
+      "description": "Additional content of Alert",
+      "descriptionZh": "警告提示的辅助性文字介绍"
+    },
+    {
+      "name": "icon",
+      "type": "() =&gt; any",
+      "default": "",
+      "description": "Custom icon, effective when `showIcon` is true",
+      "descriptionZh": "自定义图标，`showIcon` 为 true 时有效"
+    },
+    {
+      "name": "closeIcon",
+      "type": "() =&gt; any",
+      "default": "",
+      "description": "-",
+      "descriptionZh": "-"
+    },
+    {
+      "name": "action",
+      "type": "() =&gt; any",
+      "default": "",
+      "description": "The action of Alert",
+      "descriptionZh": "自定义操作项"
+    }
+  ],
+  "methods": [],
+  "subComponentProps": {},
+  "commonProps": [
+    {
+      "name": "style",
+      "type": "CSSProperties",
+      "default": "-",
+      "description": "The additional style",
+      "descriptionZh": "自定义样式"
+    },
+    {
+      "name": "class",
+      "type": "string",
+      "default": "-",
+      "description": "The additional css class",
+      "descriptionZh": "自定义类名"
+    },
+    {
+      "name": "rootClass",
+      "type": "string",
+      "default": "-",
+      "description": "ClassName on the root element",
+      "descriptionZh": "添加在组件最外层的 className"
+    },
+    {
+      "name": "autoFocus",
+      "type": "boolean",
+      "default": "false",
+      "description": "Auto focus when component mounted, only effective for focusable elements like forms, links, etc.",
+      "descriptionZh": "自动获取焦点，仅对表单类、链接、交互容器等可聚焦元素生效"
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+
+const ROOT = path.resolve(import.meta.dirname, "..");
+const validator = path.join(ROOT, "scripts/verify-context-contract");
+
+function contextSource(rows = [], scopeHeader = "适用业务责任区") {
+  return `---
+context_schema_version: 1
+---
+# 领域上下文
+
+本文档只记录稳定业务语言。
+
+## 流程术语
+
+| 术语 | 含义 | 英文标识 | 避免 / 备注 |
+|---|---|---|---|
+| Spec | 产品研发规格。 | — |  |
+
+## 业务术语
+
+| 术语 | 含义 | 英文标识 | ${scopeHeader} | 避免 / 备注 |
+|---|---|---|---|---|
+${rows.join("\n")}
+`;
+}
+
+function run(root, ...args) {
+  return spawnSync(process.execPath, [validator, "--root", root, ...args], {
+    cwd: ROOT,
+    encoding: "utf8",
+  });
+}
+
+function expectBlocked(result, pattern, label) {
+  assert.notEqual(result.status, 0, `${label} 应被阻断`);
+  assert.match(`${result.stdout}\n${result.stderr}`, pattern, label);
+}
+
+const sandbox = mkdtempSync(path.join(tmpdir(), "yss-context-contract-"));
+try {
+  const valid = path.join(sandbox, "valid");
+  mkdirSync(valid);
+  writeFileSync(path.join(valid, "CONTEXT.md"), contextSource([
+    "| 供应商 | 提供商品或服务的业务主体。 | Supplier | Global | 避免：`厂商` |",
+    "| 准入决定 | 合规审查形成的准入结论。 | AdmissionDecision | ComplianceReview | 避免：`审批结果` |",
+  ]));
+  const validResult = run(valid, "--allowed-context", "ComplianceReview", "--term-ref", "Global/Supplier", "--term-ref", "ComplianceReview/AdmissionDecision", "--json");
+  assert.equal(validResult.status, 0, validResult.stderr);
+  const validOutput = JSON.parse(validResult.stdout);
+  assert.equal(validOutput.result, "completed");
+  assert.match(validOutput.document_digest, /^sha256:[0-9a-f]{64}$/);
+  assert.match(validOutput.referenced_terms_digest, /^sha256:[0-9a-f]{64}$/);
+
+  const legacyHeader = path.join(sandbox, "legacy-header");
+  mkdirSync(legacyHeader);
+  writeFileSync(path.join(legacyHeader, "CONTEXT.md"), contextSource([
+    "| 供应商 | 提供商品或服务的业务主体。 | Supplier | Global |  |",
+  ], "适用限界上下文"));
+  assert.equal(run(legacyHeader, "--term-ref", "Global/Supplier").status, 0, "旧表头应继续兼容读取");
+
+  const lowercase = path.join(sandbox, "lowercase");
+  mkdirSync(lowercase);
+  writeFileSync(path.join(lowercase, "context.md"), contextSource());
+  expectBlocked(run(lowercase), /根目录.*CONTEXT\.md|大小写/, "小写文件名");
+
+  const nested = path.join(sandbox, "nested");
+  mkdirSync(path.join(nested, "contexts/Foo"), { recursive: true });
+  writeFileSync(path.join(nested, "CONTEXT.md"), contextSource());
+  writeFileSync(path.join(nested, "contexts/Foo/CONTEXT.md"), contextSource());
+  expectBlocked(run(nested), /嵌套.*CONTEXT\.md|只允许项目根目录/, "嵌套 CONTEXT.md");
+
+  const mapped = path.join(sandbox, "mapped");
+  mkdirSync(mapped);
+  writeFileSync(path.join(mapped, "CONTEXT.md"), contextSource());
+  writeFileSync(path.join(mapped, "CONTEXT-MAP.md"), "# Context Map\n");
+  expectBlocked(run(mapped), /CONTEXT-MAP\.md.*禁止/, "CONTEXT-MAP.md");
+
+  const duplicate = path.join(sandbox, "duplicate");
+  mkdirSync(duplicate);
+  writeFileSync(path.join(duplicate, "CONTEXT.md"), contextSource([
+    "| 准入决定 | 第一种定义。 | AdmissionDecision | ComplianceReview |  |",
+    "| 准入结论 | 第二种定义。 | AdmissionDecision | ComplianceReview |  |",
+  ]));
+  expectBlocked(run(duplicate, "--allowed-context", "ComplianceReview"), /术语身份重复/, "重复术语身份");
+
+  const unknownContext = path.join(sandbox, "unknown-context");
+  mkdirSync(unknownContext);
+  writeFileSync(path.join(unknownContext, "CONTEXT.md"), contextSource([
+    "| 准入决定 | 合规审查形成的准入结论。 | AdmissionDecision | UnknownContext |  |",
+  ]));
+  expectBlocked(run(unknownContext, "--allowed-context", "ComplianceReview"), /未在业务边界与规则设计中登记/, "未知作用域");
+
+  expectBlocked(run(valid, "--allowed-context", "ComplianceReview", "--term-ref", "CONTEXT.md#Supplier"), /术语引用格式非法/, "Markdown 伪锚点");
+  expectBlocked(run(valid, "--allowed-context", "ComplianceReview", "--term-ref", "ComplianceReview/Missing"), /无法解析/, "缺失术语引用");
+
+  process.stdout.write("CONTEXT Contract 场景验证通过\n");
+} finally {
+  rmSync(sandbox, { recursive: true, force: true });
+}

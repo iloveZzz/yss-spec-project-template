@@ -1,0 +1,89 @@
+schema_version: 1
+task_id: awesome-design-md-internal-gap-analysis-2026-09-05
+work_unit_id: work-unit.entry-triage
+actor_id: codex.subagent.awesome-design-md-internal-explorer
+role_id: role.product-manager
+runtime_id: runtime.skill-projection
+execution_state: Explorer
+workflow_status: active
+skill_source:
+  registry_ref: docs/agents/digital-human-roles.yaml
+  defaults_ref: taskPackageDefaults(role.product-manager)
+  core_skills:
+    - yss-design-system
+    - yss-prototype-stage
+    - prototype-review
+    - yss-antdv-next-design
+    - yss-research
+    - competitive-intelligence
+  forbidden_skills:
+    - yss-ui
+    - yss-domain
+    - yss-repository
+    - yss-web-controller
+    - yss-ddd-scaffold-generator
+    - implement
+    - tdd
+contract:
+  kind: template-maintenance
+  contract_id: maintenance.awesome-design-md-research-delegation
+  contract_version: 1
+  status: issued
+  contract_ref: .template-source/evidence/maintenance/awesome-design-md-research-delegation-l1-checkpoint-2026-09-05.yaml
+  maintenance_ref: .template-source/evidence/maintenance/awesome-design-md-research-delegation-l1-checkpoint-2026-09-05.yaml
+inputs:
+  - yss-project.yaml
+  - CONTEXT.md
+  - AGENTS.md
+  - DESIGN.md
+  - docs/design/
+  - .agents/skills/yss-design-system/
+  - .agents/skills/yss-prototype-stage/
+  - .agents/skills/yss-antdv-next-design/
+  - .agents/skills/yss-antd-design/
+  - .agents/skills/prototype-review/
+  - docs/agents/yss-skill-registry.yaml
+allowed_read_paths:
+  - yss-project.yaml
+  - CONTEXT.md
+  - AGENTS.md
+  - DESIGN.md
+  - docs/design/
+  - .agents/skills/yss-design-system/
+  - .agents/skills/yss-prototype-stage/
+  - .agents/skills/yss-antdv-next-design/
+  - .agents/skills/yss-antd-design/
+  - .agents/skills/prototype-review/
+  - docs/agents/yss-skill-registry.yaml
+objective: >-
+  只读盘点当前 YSS 设计相关规范与技能，围绕 design.md 的职责、结构、消费顺序、验证、渐进披露、反模式和治理边界，
+  识别已有覆盖、真实缺口、重复或冲突风险，并给出可被主研究包复核的路径与行号证据。优先使用 CodeGraph 定位；
+  不读取或评价 VoltAgent/awesome-design-md 外部仓库，不提出未经内部事实支持的上游结论。
+allowed_write_paths:
+  - .template-source/evidence/maintenance/awesome-design-md-internal-gap-analysis-2026-09-05.md
+forbidden_actions:
+  - 修改 DESIGN.md、docs/design、技能、注册表、脚本、投影或 lockfile
+  - 修改任务包与 checkpoint
+  - 访问或写入外部实现仓库
+  - Git commit 或 push
+expected_outputs:
+  - 当前设计规范与技能的职责映射
+  - 针对 design.md 结构、消费和验证的覆盖与缺口矩阵
+  - 带路径和行号的内部证据
+  - workflow-execution-result-v1
+expected_evidence_files:
+  - .template-source/evidence/maintenance/awesome-design-md-internal-gap-analysis-2026-09-05.md
+verification_commands:
+  - test -s .template-source/evidence/maintenance/awesome-design-md-internal-gap-analysis-2026-09-05.md
+verification_results:
+  - command: test -s .template-source/evidence/maintenance/awesome-design-md-internal-gap-analysis-2026-09-05.md
+    exit_code: 0
+    executed_at: '2026-09-04T17:34:09Z'
+    evidence_ref: .template-source/evidence/maintenance/awesome-design-md-internal-gap-analysis-2026-09-05.md
+downstream_consumers:
+  - work-unit.ssot-update
+convergence:
+  parent_work_unit: work-unit.entry-triage
+  convergence_ref: .template-source/evidence/maintenance/awesome-design-md-internal-gap-analysis-2026-09-05.md
+  conflict_escalation: >-
+    发现需要修改权威资产、扩大写路径、读取外部仓库或无法用当前文件证明的事实时停止并回交主控。

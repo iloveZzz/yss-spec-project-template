@@ -8,6 +8,7 @@
 - `docs/design/design-system-sync.yaml`：主模板与可独立分发的战略设计模板之间的共享章节版本与 SHA-256 同步摘要。
 - `docs/design/design.md`：YSS 设计治理、双轨运行时、生命周期和验证说明；不与规范源重复定义 token。
 - `docs/design/tokens/`：随仓库保存的主题、亮色 / 暗色 / 紧凑 token 和 CSS 变量快照，后续实现不得依赖本机 Downloads 目录或原始 Less。
+- 默认工作界面密度：`theme.json` 的 seed 叠加一次 compact algorithm，计算结果以 `tokens.compact.json` 和根 `DESIGN.md` 组件变体为准；暗色紧凑模式组合 dark 与 compact algorithm，禁止重复压缩。
 
 模板源维护工具（仅在 `template-source` 仓库执行）：
 
@@ -16,7 +17,7 @@ node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md
 node .template-source/tooling/node/scripts/design-md.mjs drift
 ```
 
-令牌变更必须先修改 `DESIGN.md`，再更新派生快照；业务状态、API、权限和交互验收继续使用 Spec、交互说明及状态矩阵。
+Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生快照；治理说明不得复制具体值。业务状态、API、权限和交互验收继续使用 Spec、交互说明及状态矩阵。
 
 产品原型由 `yss-prototype-stage` 持有阶段合同：先评审低保真/状态矩阵，再选择 H1 视觉或 H2 流程，并按需调用 `product-design:index` focused workflow。YSS 生命周期负责校验档位选择、schema v3 交付物、统一 Design QA、用户确认和 Spec / OpenAPI 回填。原型阶段不得调用生产实现技能 `yss-ui`。
 
@@ -31,7 +32,7 @@ node .template-source/tooling/node/scripts/design-md.mjs drift
 - 表单、表格、弹窗、抽屉、步骤流等交互说明。
 - loading、empty、error、readonly、disabled、no-permission、conflict 等状态矩阵。
 - 页面字段、筛选条件、操作按钮和权限规则。
-- 原型交付物默认路径为 `docs/.scratch/<feature>/design/prototypes/index.html`，也可为稳定 URL。H1 无 Node/AntD 依赖；H2 支持 React/Vite + AntD 但按需使用。真实 Vue 3 + YSS UI/AntDV 组件只在批准后的前端实现和实现还原验证中使用。产出后必须记录 schema v3 证据并获得用户确认。
+- 原型交付物默认路径为 `docs/.scratch/<feature>/design/prototypes/index.html`，也可为稳定 URL。H1 无 Node/AntD 依赖；H2 默认使用 Vue/Vite + Antdv Next，React/Vite + AntD 只作为显式兼容路线。真实 Vue 3 + YSS UI/AntDV 组件只在批准后的前端实现和实现还原验证中使用。产出后必须记录 schema v3 证据、根 `DESIGN.md` digest 与 Token digest，并获得用户确认。
 
 这些资产用于反推 API 影响、契约草案、OpenAPI 请求 / 响应字段、错误结构、分页筛选、权限状态和前端验收标准。
 
@@ -50,7 +51,8 @@ node .template-source/tooling/node/scripts/design-md.mjs drift
 - `yss-prototype-stage`：跨 Agent 的原型阶段主合同，固定资产、证据、设计优先级与生命周期回流；其 `references/product-design-adapter.md` 把 Codex `product-design:index` 通用产出接入 YSS 双轨版本、项目主题和证据合同。
 - `product-design:index`：Codex 产品原型产出的主路由；根据输入是否有 URL、截图、Figma、代码目标或视觉方向，进入 `$get-context`、`$ideate`、`$prototype`、`$image-to-code`、`$url-to-code`、`$share` 或 `$design-qa` 等 focused skill。
 - Product Design focused skills：按 H1/H2 的问题边界产出视觉或流程设计资产；ideation 只在新/不确定视觉方向时强制。
-- `yss-antd-design`：仅用于相关 H2 React/AntD 原型的版本事实或 fact pack 增量更新；H1 不适用。
+- `yss-antdv-next-design`：用于默认 H2 Vue/Antdv Next 原型的精确版本事实；不替换生产 `yss-ui` 路线。
+- `yss-antd-design`：仅用于显式 H2 React/AntD 兼容原型的版本事实或 fact pack 增量更新；H1 不适用。
 - `prototype-review`：原型阶段评审门禁；未通过则不要进入 Spec 校准 / API 影响分析 / 契约草案。
 - 兼容入口：`product-design-prototype`、`high-fidelity-html-prototype` 只读迁移；新资产统一使用 `artifact.prototype-deliverable`、`yss-prototype-stage` 与 schema v3。
 

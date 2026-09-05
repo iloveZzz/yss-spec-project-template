@@ -65,7 +65,8 @@ skill_dependencies:
   yss-prototype-stage:
     - { skill: prototype-review, type: review-only }
     - { skill: yss-design-system, type: coordination-only }
-    - { skill: yss-antd-design, type: context-conditional, when: h2-react-antd }
+    - { skill: yss-antdv-next-design, type: context-conditional, when: h2-vue-antdv-next-default }
+    - { skill: yss-antd-design, type: context-conditional, when: h2-react-antd-explicit-compatibility }
   yss-ddd-scaffold-generator:
     - { skill: yss-backend-scaffold-parent, type: context-required }
     - { skill: alibaba-java-code-style, type: context-required }
@@ -154,6 +155,11 @@ invocation_contract:
       trigger_conditions: [prototype-profile:H2, component-basis:react-antd]
       exclusion_conditions: [prototype-profile:H1, component-basis:not-antd]
       primary_output: versioned-antd-facts
+    yss-antdv-next-design:
+      invocation_mode: model
+      trigger_conditions: [prototype-profile:H2, component-basis:vue-antdv-next]
+      exclusion_conditions: [prototype-profile:H1, component-basis:not-antdv-next, production-frontend-implementation]
+      primary_output: versioned-antdv-next-facts
 agent_runtime_roots:
   claude: .claude/skills
   codex: .codex/skills
@@ -427,6 +433,12 @@ skills:
     aliases: []
     impacts: [writing]
   - id: yss-antd-design
+    layer: specialist
+    maturity: supported
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [prototype]
+  - id: yss-antdv-next-design
     layer: specialist
     maturity: supported
     instance_default_discoverable: false

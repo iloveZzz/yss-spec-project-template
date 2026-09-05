@@ -30,6 +30,8 @@ source_visual:
   selected_ref: <selected-source-visual-ref>
   reuse_reason: not-applicable
 design_baseline:
+  canonical_design_ref: DESIGN.md
+  canonical_design_digest: <sha256>
   project_design_ref: docs/design/design.md
   project_token_refs:
     - docs/design/tokens/theme.json
@@ -74,7 +76,7 @@ profile_evidence:
   #   reduced_motion: {applicable: false, result: not-applicable, evidence_ref: not-applicable}
   flow_review:
     implementation:
-      framework: react
+      framework: vue
       runtime_build_required: true
       package_manager: pnpm
       package_manifest_ref: docs/.scratch/<feature>/design/prototypes/package.json
@@ -95,12 +97,14 @@ profile_evidence:
       evidence_ref: <snapshot-result-ref>
     prototype_library_facts:
       applicable: true
-      component_basis: react-antd-6
+      component_basis: vue-antdv-next
       source: fact-pack
-      actual_antd_version: <exact-6.x-version-from-lockfile>
-      manifest_ref: docs/design/facts/antd/<exact-version>/manifest.json
+      library_package: antdv-next
+      library_version: 1.5.2
+      manifest_ref: docs/design/facts/antdv-next/1.5.2/manifest.json
       manifest_digest: <sha256>
       components_covered: [<Component>]
+      canonical_design_digest: <same-as-design-baseline>
       project_token_baseline_digest: <same-as-design-baseline>
       new_api_uncertainty: false
 implementation_handoff:

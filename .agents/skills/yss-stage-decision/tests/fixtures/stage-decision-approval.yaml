@@ -12,4 +12,4 @@ countersigner_role_ids:
 evidence_refs:
   - evidence.stage-decision-package.supplier
 biological_veto: false
-notes: 阶段决策包由需求经理起草，产品经理独立会签。
+notes: 方案决策包由需求经理起草，产品经理独立会签。

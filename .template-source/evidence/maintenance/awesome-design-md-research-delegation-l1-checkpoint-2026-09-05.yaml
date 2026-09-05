@@ -1,0 +1,18 @@
+schema_version: 2
+intensity: L1
+classification_reason: >-
+  本 checkpoint 只约束一次只读设计技能盘点的 Subagent 任务包与隔离输出路径，不改变技能、流程或生成语义。
+triggers: [textual-only]
+changed_assets:
+  - .template-source/evidence/maintenance/awesome-design-md-internal-gap-analysis-task-2026-09-05.yaml
+verification_evidence:
+  - kind: relevant-check
+    command: scripts/verify-digital-human-task-package .template-source/evidence/maintenance/awesome-design-md-internal-gap-analysis-task-2026-09-05.yaml
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

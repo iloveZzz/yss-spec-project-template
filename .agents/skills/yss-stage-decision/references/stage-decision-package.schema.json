@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://yss.local/schemas/stage-decision-package-v1.json",
+  "$id": "https://yss.local/schemas/stage-decision-package-v2.json",
   "title": "YSS Stage Decision Package",
   "type": "object",
-  "required": ["schema_version", "stage_decision_id", "package_version", "status", "problem_statement", "target_users", "mvp", "non_goals", "success_criteria", "test_seams", "confirmed_decisions", "assumptions", "constraints", "unresolved_items", "terminology_refs", "domain_strategy_ref", "impact_assessment", "downstream_mapping", "evidence_refs", "approval"],
+  "required": ["schema_version", "stage_decision_id", "package_version", "status", "problem_statement", "target_users", "mvp", "non_goals", "success_criteria", "test_seams", "confirmed_decisions", "assumptions", "constraints", "unresolved_items", "context_snapshot", "domain_strategy_ref", "impact_assessment", "downstream_mapping", "evidence_refs", "approval"],
   "properties": {
-    "schema_version": {"const": 1},
+    "schema_version": {"const": 2},
     "stage_decision_id": {"type": "string", "pattern": "^stage-decision\\.[a-z0-9][a-z0-9-]*$"},
     "package_version": {"type": "string", "pattern": "^v[0-9]+$"},
     "status": {"enum": ["draft", "ready-for-human", "approved", "stale", "blocked"]},
@@ -19,7 +19,7 @@
     "assumptions": {"type": "array", "items": {"type": "string", "minLength": 1}},
     "constraints": {"type": "array", "items": {"type": "string", "minLength": 1}},
     "unresolved_items": {"type": "array", "items": {"$ref": "#/$defs/unresolved"}},
-    "terminology_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "context_snapshot": {"$ref": "#/$defs/contextSnapshot"},
     "domain_strategy_ref": {"$ref": "#/$defs/domainRef"},
     "impact_assessment": {"$ref": "#/$defs/impact"},
     "downstream_mapping": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/mapping"}},
@@ -27,6 +27,18 @@
     "approval": {"$ref": "#/$defs/approval"}
   },
   "$defs": {
+    "contextSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context_ref", "context_schema_version", "document_digest", "referenced_terms_digest", "term_refs"],
+      "properties": {
+        "context_ref": {"const": "CONTEXT.md"},
+        "context_schema_version": {"const": 1},
+        "document_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "referenced_terms_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "term_refs": {"type": "array", "items": {"type": "string", "pattern": "^(Global|[A-Z][A-Za-z0-9]+)/[A-Z][A-Za-z0-9]+$"}, "uniqueItems": true}
+      }
+    },
     "unresolved": {
       "type": "object",
       "required": ["item", "type", "owner", "next_action", "target_version"],

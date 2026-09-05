@@ -4,6 +4,7 @@
   "canonical_root": ".agents/skills",
   "skills": [
     "yss-antd-design",
+    "yss-antdv-next-design",
     "yss-api-integration",
     "yss-audit-log",
     "yss-application",
@@ -70,6 +71,7 @@
       "description": "用于 YSS Vue、Formily、页面模块和 UI 实现的技能。",
       "skills": [
         "yss-antd-design",
+        "yss-antdv-next-design",
         "yss-components",
         "yss-design-system",
         "yss-formily",

@@ -62,9 +62,12 @@ required_files:
   - docs/process/schemas/digital-human-task-package.schema.json
   - docs/process/schemas/maintenance-review-record.schema.json
   - docs/process/schemas/lifecycle-checkpoint.schema.json
+  - docs/process/schemas/context-reconciliation.schema.json
+  - docs/process/schemas/strategic-design-handoff.schema.json
   - docs/process/schemas/frontend-implementation-evidence.schema.json
   - docs/process/schemas/subagent-task-package.schema.json
   - docs/process/templates/lifecycle-checkpoint-template.yaml
+  - docs/process/templates/context-reconciliation-template.yaml
   - docs/process/templates/frontend-implementation-plan-template.yaml
   - docs/process/templates/frontend-implementation-verification-template.yaml
   - docs/process/templates/maintenance-checkpoint-template.yaml
@@ -90,6 +93,7 @@ required_files:
   - scripts/verify-template-fast
   - scripts/verify-template-candidate
   - scripts/verify-template
+  - scripts/verify-business-language-scenarios
   - scripts/prepare-maintenance-review
   - scripts/evaluate-maintenance-review-round
   - scripts/cache-template-commit
@@ -103,6 +107,15 @@ syntax_files:
   - scripts/generate-lifecycle-artifacts
   - scripts/verify-lifecycle-registry
   - scripts/verify-lifecycle-checkpoint
+  - scripts/lib/context-contract.mjs
+  - scripts/verify-context-contract
+  - scripts/verify-context-contract-scenarios
+  - scripts/verify-business-language-scenarios
+  - scripts/verify-context-reconciliation
+  - scripts/verify-context-reconciliation-scenarios
+  - scripts/verify-grill-with-docs-context-scenarios
+  - scripts/verify-strategic-context-import
+  - scripts/verify-strategic-context-import-scenarios
   - scripts/verify-frontend-implementation-evidence
   - scripts/lib/task-package-schema.mjs
   - scripts/lib/json-schema.mjs
@@ -205,6 +218,7 @@ groups:
       - { run: "scripts/verify-skill-registry" }
       - { run: "scripts/verify-skill-governance" }
       - { run: "scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent", when: template-source }
+      - { run: "node .agents/skills/yss-antdv-next-design/tests/run-scenarios.mjs" }
   tactical-design:
     commands:
       - { run: "node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs" }
@@ -227,6 +241,12 @@ groups:
       - { run: "scripts/verify-digital-human-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml", when: template-source }
   lifecycle:
     commands:
+      - { run: "scripts/verify-context-contract --root . --json" }
+      - { run: "scripts/verify-context-contract-scenarios" }
+      - { run: "node scripts/verify-business-language-scenarios" }
+      - { run: "scripts/verify-context-reconciliation-scenarios" }
+      - { run: "scripts/verify-grill-with-docs-context-scenarios" }
+      - { run: "scripts/verify-strategic-context-import-scenarios" }
       - { run: "scripts/verify-lifecycle-registry" }
       - { run: "scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml" }
       - { run: "scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-plan-template.yaml" }

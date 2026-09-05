@@ -24,33 +24,46 @@ node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-
 
 ## H2：可运行流程
 
-H2 可选择任何能稳定浏览器交付的轻量前端实现。采用 Product Design React/Vite + Ant Design v6 时：
+H2 可选择任何能稳定浏览器交付的轻量前端实现。默认 `component_basis=vue-antdv-next`，使用 Vue 3/Vite + Antdv Next：
 
 ```bash
 node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs prepare-flow \
   --project-root <project-root> \
   --root <prototype-root> \
   --feature <feature> \
-  --target-antd-version <exact-6.x-version> \
   --pnpm-version <actual-pnpm-version>
 
 node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-project \
-  --profile H2 --root <prototype-root> \
-  --target-antd-version <exact-6.x-version>
+  --profile H2 --root <prototype-root>
 ```
 
-`prepare-flow` 只做机械适配：精确写入 `antd`、登记 pnpm、生成 `src/yss-theme.js` 与 adapter manifest。随后用 `ConfigProvider theme={yssTheme}`、`pnpm install`、`pnpm build` 形成可移植静态输出。H2 不使用 AntD 时无需执行该命令，在证据中写明 component basis，不能创建空 AntD 段。
+默认命令生成最小 Vue/Vite starter，精确写入 `antdv-next@1.5.2`、`vue@3.5.21`、`vite@6.4.2`、`@vitejs/plugin-vue@5.2.4`，登记实际 pnpm，生成 Vue 入口、`src/yss-theme.js` 与 provider-neutral adapter schema v3。设计 workflow 在 starter 中替换占位页面，再以 `ConfigProvider`、`pnpm install`、`pnpm build` 形成可移植静态输出。已有 Vue 页面不会被重写，但必须通过合同验证。
 
-### AntD fact pack
+显式兼容 React/Vite + Ant Design v6 时传入：
 
-建议目录为 `docs/design/facts/antd/<exact-version>/`，至少包含 `manifest.json`、design-md 摘要、组件事实与 digest。只有以下全部相等才为 fresh：
+```bash
+node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs prepare-flow \
+  --project-root <project-root> \
+  --root <prototype-root> \
+  --feature <feature> \
+  --component-basis react-antd-6 \
+  --library-version <exact-6.x-version> \
+  --pnpm-version <actual-pnpm-version>
+```
 
-- manifest 的 exact AntD version 等于原型 lockfile；
+历史 `--target-antd-version` 继续映射到 `react-antd-6`，只为在途兼容，不再是默认调用。其他 H2 基座必须在证据中明确记录，不得伪造 Antdv Next 或 AntD 字段。
+
+### Provider fact pack
+
+默认目录为 `docs/design/facts/antdv-next/<exact-version>/`；React 兼容路线使用 `docs/design/facts/antd/<exact-version>/`。至少包含 `manifest.json`、design-md 摘要、组件事实与 digest。只有以下全部相等才为 fresh：
+
+- manifest 的 package 与 exact version 等于原型 lockfile；
 - 所需组件均被覆盖；
-- `project_token_baseline_digest` 等于当前设计基线；
+- 根 `DESIGN.md` path / digest 与当前规范源相等；
+- `project_token_baseline_digest` 等于当前 Token 派生基线；
 - 没有新的 API/semantic 疑问。
 
-不满足时只查询缺失或变化的事实。`lint/doctor` 只在存在相关 React 源时运行。不要创建占位 fact 目录；feature 证据只引用实际 manifest。
+不满足时只查询缺失或变化的事实。默认 Vue 路线调用 `yss-antdv-next-design`；React 兼容路线调用 `yss-antd-design`，且 `lint/doctor` 只在存在相关 React 源时运行。不要创建占位 fact 目录；feature 证据只引用实际 manifest。
 
 ## 共同映射与验证
 

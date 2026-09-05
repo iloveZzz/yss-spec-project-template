@@ -1,0 +1,1130 @@
+{
+  "name": "DatePicker",
+  "nameZh": "日期选择框",
+  "description": "To select or input a date.",
+  "props": [
+    {
+      "name": "allowClear",
+      "type": "boolean \\| \\{ clearIcon?: VueNode \\}",
+      "default": "true",
+      "description": "Customize clear button",
+      "descriptionZh": ""
+    },
+    {
+      "name": "classes",
+      "type": "Record<[SemanticDOM](#semantic-dom), string> \\| (info: { props })=> Record<[SemanticDOM](#semantic-dom), string>",
+      "default": "-",
+      "description": "Customize class for each semantic structure inside the component. Supports object or function.",
+      "descriptionZh": ""
+    },
+    {
+      "name": "dateRender",
+      "type": "function(currentDate: dayjs, today: dayjs) => VueNode",
+      "default": "-",
+      "description": "Custom rendering function for date cells, >= 5.4.0 use `cellRender` instead.",
+      "descriptionZh": ""
+    },
+    {
+      "name": "cellRender",
+      "type": "(current: dayjs, info: { originNode: VueNode, today: DateType, range?: 'start' \\| 'end', type: PanelMode, locale?: Locale, subType?: 'hour' \\| 'minute' \\| 'second' \\| 'meridiem' }) => VueNode",
+      "default": "-",
+      "description": "Custom rendering function for picker cells",
+      "descriptionZh": ""
+    },
+    {
+      "name": "components",
+      "type": "Record<Panel \\| 'input', Component>",
+      "default": "-",
+      "description": "Custom panels. A custom panel component should set `inheritAttrs: false`; otherwise the picker-injected props (e.g. `prefixCls`) fall through to its root node, causing child components (such as Flex) to emit styles under the wrong prefix and break the panel layout",
+      "descriptionZh": ""
+    },
+    {
+      "name": "defaultOpen",
+      "type": "boolean",
+      "default": "-",
+      "description": "Initial open state of picker",
+      "descriptionZh": ""
+    },
+    {
+      "name": "disabled",
+      "type": "boolean",
+      "default": "false",
+      "description": "Determine whether the DatePicker is disabled",
+      "descriptionZh": ""
+    },
+    {
+      "name": "disabledDate",
+      "type": "(currentDate: dayjs, info: { from?: dayjs, type: Picker }) => boolean",
+      "default": "-",
+      "description": "Specify the date that cannot be selected",
+      "descriptionZh": ""
+    },
+    {
+      "name": "format",
+      "type": "[formatType](#formattype)",
+      "default": "[@rc-component/picker](https://github.com/react-component/picker/blob/f512f18ed59d6791280d1c3d7d37abbb9867eb0b/src/utils/uiUtil.ts#L155-L177)",
+      "description": "To set the date format, support multi-format matching when it is an array, display the first one shall prevail. refer to [dayjs#format](https://day.js.org/docs/en/display/format). for example: [Custom Format](#date-picker-demo-format)",
+      "descriptionZh": "展示的日期格式，配置参考 [dayjs#format](https://day.js.org/docs/zh-CN/display/format#%E6%94%AF%E6%8C%81%E7%9A%84%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%8D%A0%E4%BD%8D%E7%AC%A6%E5%88%97%E8%A1%A8)。"
+    },
+    {
+      "name": "valueFormat",
+      "type": "string",
+      "default": "-",
+      "description": "Set the binding value format. After setting, `value`, `defaultValue`, and `v-model:value` can use formatted strings, and `change` returns strings in the same format. Demo: [Value Format](#date-picker-demo-value-format)",
+      "descriptionZh": ""
+    },
+    {
+      "name": "order",
+      "type": "boolean",
+      "default": "true",
+      "description": "Auto order date when multiple or range selection",
+      "descriptionZh": ""
+    },
+    {
+      "name": "~~popupClassName~~",
+      "type": "string",
+      "default": "-",
+      "description": "To customize the className of the popup calendar, use `classes.popup.root` instead",
+      "descriptionZh": ""
+    },
+    {
+      "name": "preserveInvalidOnBlur",
+      "type": "boolean",
+      "default": "false",
+      "description": "Not clean input on blur even when the typing is invalidate",
+      "descriptionZh": ""
+    },
+    {
+      "name": "getPopupContainer",
+      "type": "function(trigger)",
+      "default": "-",
+      "description": "To set the container of the floating layer, while the default is to create a `div` element in `body`",
+      "descriptionZh": ""
+    },
+    {
+      "name": "inputReadOnly",
+      "type": "boolean",
+      "default": "false",
+      "description": "Set the `readonly` attribute of the input tag (avoids virtual keyboard on touch devices)",
+      "descriptionZh": ""
+    },
+    {
+      "name": "locale",
+      "type": "object",
+      "default": "[default](https://github.com/ant-design/ant-design/blob/master/components/date-picker/locale/example.json)",
+      "description": "Localization configuration",
+      "descriptionZh": ""
+    },
+    {
+      "name": "minDate",
+      "type": "dayjs",
+      "default": "-",
+      "description": "The minimum date, which also limits the range of panel switching",
+      "descriptionZh": ""
+    },
+    {
+      "name": "maxDate",
+      "type": "dayjs",
+      "default": "-",
+      "description": "The maximum date, which also limits the range of panel switching",
+      "descriptionZh": ""
+    },
+    {
+      "name": "mode",
+      "type": "`time` \\| `date` \\| `month` \\| `year` \\| `decade`",
+      "default": "-",
+      "description": "The picker panel mode（ [Cannot select year or month anymore?](/docs/vue/faq#when-set-mode-to-datepickerrangepicker-cannot-select-year-or-month-anymore) )",
+      "descriptionZh": ""
+    },
+    {
+      "name": "needConfirm",
+      "type": "boolean",
+      "default": "-",
+      "description": "Need click confirm button to trigger value change. Default `false` when `multiple`",
+      "descriptionZh": ""
+    },
+    {
+      "name": "nextIcon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "The custom next icon",
+      "descriptionZh": ""
+    },
+    {
+      "name": "open",
+      "type": "boolean",
+      "default": "-",
+      "description": "The open state of picker",
+      "descriptionZh": ""
+    },
+    {
+      "name": "panelRender",
+      "type": "(panelNode) => VueNode",
+      "default": "-",
+      "description": "Customize panel render",
+      "descriptionZh": ""
+    },
+    {
+      "name": "picker",
+      "type": "`date` \\| `week` \\| `month` \\| `quarter` \\| `year`",
+      "default": "`date`",
+      "description": "Set picker type",
+      "descriptionZh": ""
+    },
+    {
+      "name": "placeholder",
+      "type": "string \\| [string, string]",
+      "default": "-",
+      "description": "The placeholder of date input",
+      "descriptionZh": ""
+    },
+    {
+      "name": "placement",
+      "type": "`bottomLeft` `bottomRight` `topLeft` `topRight`",
+      "default": "bottomLeft",
+      "description": "The position where the selection box pops up",
+      "descriptionZh": ""
+    },
+    {
+      "name": "~~popupStyle~~",
+      "type": "CSSProperties",
+      "default": "{}",
+      "description": "To customize the style of the popup calendar, use `styles.popup.root` instead",
+      "descriptionZh": ""
+    },
+    {
+      "name": "prefix",
+      "type": "VueNode",
+      "default": "-",
+      "description": "The custom prefix",
+      "descriptionZh": ""
+    },
+    {
+      "name": "presets",
+      "type": "{ label: VueNode, value: Dayjs \\| (() => Dayjs) }[]",
+      "default": "-",
+      "description": "The preset ranges for quick selection, Since `5.8.0`, preset value supports callback function.",
+      "descriptionZh": ""
+    },
+    {
+      "name": "prevIcon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "The custom prev icon",
+      "descriptionZh": ""
+    },
+    {
+      "name": "previewValue",
+      "type": "false \\| hover",
+      "default": "hover",
+      "description": "When the user selects the date hover option, the value of the input field undergoes a temporary change",
+      "descriptionZh": ""
+    },
+    {
+      "name": "size",
+      "type": "`large` \\| `middle` \\| `small`",
+      "default": "-",
+      "description": "To determine the size of the input box, the height of `large` and `small`, are 40px and 24px respectively, while default size is 32px",
+      "descriptionZh": ""
+    },
+    {
+      "name": "status",
+      "type": "'error' \\| 'warning'",
+      "default": "-",
+      "description": "Set validation status",
+      "descriptionZh": ""
+    },
+    {
+      "name": "styles",
+      "type": "Record<[SemanticDOM](#semantic-dom), CSSProperties> \\| (info: { props })=> Record<[SemanticDOM](#semantic-dom), CSSProperties>",
+      "default": "-",
+      "description": "Customize inline style for each semantic structure inside the component. Supports object or function.",
+      "descriptionZh": ""
+    },
+    {
+      "name": "suffixIcon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "The custom suffix icon",
+      "descriptionZh": ""
+    },
+    {
+      "name": "superNextIcon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "The custom super next icon",
+      "descriptionZh": ""
+    },
+    {
+      "name": "superPrevIcon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "The custom super prev icon",
+      "descriptionZh": ""
+    },
+    {
+      "name": "clearIcon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "(Only supports global configuration) Custom clear icon",
+      "descriptionZh": ""
+    },
+    {
+      "name": "variant",
+      "type": "`outlined` \\| `borderless` \\| `filled` \\| `underlined`",
+      "default": "`outlined`",
+      "description": "Variants of picker",
+      "descriptionZh": ""
+    },
+    {
+      "name": "defaultPickerValue",
+      "type": "[dayjs](https://day.js.org/)",
+      "default": "-",
+      "description": "Default panel date, will be reset when panel open",
+      "descriptionZh": "默认面板日期，每次面板打开时会被重置到该日期"
+    },
+    {
+      "name": "defaultValue",
+      "type": "[dayjs](https://day.js.org/)",
+      "default": "-",
+      "description": "To set default date, if start time or end time is null or undefined, the date range will be an open interval",
+      "descriptionZh": "默认日期，如果开始时间或结束时间为 `null` 或者 `undefined`，日期范围将是一个开区间"
+    },
+    {
+      "name": "disabledTime",
+      "type": "function(date)",
+      "default": "-",
+      "description": "To specify the time that cannot be selected",
+      "descriptionZh": "不可选择的时间"
+    },
+    {
+      "name": "format",
+      "type": "[formatType](#formattype)",
+      "default": "`YYYY-MM-DD`",
+      "description": "To set the date format. refer to [dayjs#format](https://day.js.org/docs/en/display/format)",
+      "descriptionZh": ""
+    },
+    {
+      "name": "multiple",
+      "type": "boolean",
+      "default": "false",
+      "description": "Enable multiple selection. Not support `showTime`",
+      "descriptionZh": "是否为多选，不支持 `showTime`"
+    },
+    {
+      "name": "pickerValue",
+      "type": "[dayjs](https://day.js.org/)",
+      "default": "-",
+      "description": "Panel date. Used for controlled switching of panel date. Work with `onPanelChange`",
+      "descriptionZh": "面板日期，可以用于受控切换面板所在日期。配合 `onPanelChange` 使用。"
+    },
+    {
+      "name": "renderExtraFooter",
+      "type": "(mode) => VueNode",
+      "default": "-",
+      "description": "Render extra footer in panel",
+      "descriptionZh": "在面板中添加额外的页脚"
+    },
+    {
+      "name": "showNow",
+      "type": "boolean",
+      "default": "-",
+      "description": "Show the fast access of current datetime",
+      "descriptionZh": "显示当前日期时间的快捷选择"
+    },
+    {
+      "name": "showTime",
+      "type": "object \\| boolean",
+      "default": "[TimePicker Options](/components/time-picker/#api)",
+      "description": "To provide an additional time selection",
+      "descriptionZh": "增加时间选择功能"
+    },
+    {
+      "name": "~~showTime.defaultValue~~",
+      "type": "[dayjs](https://day.js.org/)",
+      "default": "dayjs()",
+      "description": "Use `showTime.defaultOpenValue` instead",
+      "descriptionZh": "请使用 `showTime.defaultOpenValue`"
+    },
+    {
+      "name": "showTime.defaultOpenValue",
+      "type": "[dayjs](https://day.js.org/)",
+      "default": "dayjs()",
+      "description": "To set default time of selected date, [demo](#date-picker-demo-disabled-date)",
+      "descriptionZh": "设置用户选择日期时默认的时分秒，[例子](#date-picker-demo-disabled-date)"
+    },
+    {
+      "name": "showWeek",
+      "type": "boolean",
+      "default": "false",
+      "description": "Show week info when in DatePicker",
+      "descriptionZh": "DatePicker 下展示当前周"
+    },
+    {
+      "name": "value",
+      "type": "[dayjs](https://day.js.org/)",
+      "default": "-",
+      "description": "To set date, support `v-model:value`",
+      "descriptionZh": "日期，支持 `v-model:value`"
+    }
+  ],
+  "events": [
+    {
+      "name": "change",
+      "type": "(date: Dayjs \\| Dayjs[] \\| null, dateString: string \\| string[] \\| null) => void",
+      "default": "",
+      "description": "Callback function, can be executed when the selected time is changing",
+      "descriptionZh": "时间发生变化的回调"
+    },
+    {
+      "name": "update:value",
+      "type": "(date: Dayjs \\| Dayjs[] \\| null) => void",
+      "default": "",
+      "description": "-",
+      "descriptionZh": "-"
+    },
+    {
+      "name": "calendarChange",
+      "type": "(dates: [Dayjs, Dayjs], dateStrings: [string, string], info: { range: 'start' \\| 'end' }) => void",
+      "default": "",
+      "description": "Callback function, can be executed when the start time or the end time of the range is changing. `info` argument is added in 4.4.0",
+      "descriptionZh": "待选日期发生变化的回调。`info` 参数自 4.4.0 添加"
+    },
+    {
+      "name": "panelChange",
+      "type": "(value: Dayjs, mode: PickerMode) => void",
+      "default": "",
+      "description": "Callback when picker panel mode is changed",
+      "descriptionZh": "日历面板切换的回调"
+    },
+    {
+      "name": "openChange",
+      "type": "(open: boolean) => void",
+      "default": "",
+      "description": "Callback function, can be executed whether the popup calendar is popped up or closed",
+      "descriptionZh": "弹出日历和关闭日历的回调"
+    },
+    {
+      "name": "ok",
+      "type": "() => void",
+      "default": "",
+      "description": "Callback when click ok button",
+      "descriptionZh": "点击确定按钮的回调"
+    },
+    {
+      "name": "clear",
+      "type": "() => void",
+      "default": "",
+      "description": "Callback when click clear button",
+      "descriptionZh": "点击清除按钮的回调"
+    },
+    {
+      "name": "select",
+      "type": "(date: Dayjs) => void",
+      "default": "",
+      "description": "-",
+      "descriptionZh": "-"
+    },
+    {
+      "name": "focus",
+      "type": "(event: FocusEvent, info: { range: 'start' \\| 'end' }) => void",
+      "default": "",
+      "description": "Trigger when get focus",
+      "descriptionZh": "聚焦时回调"
+    },
+    {
+      "name": "blur",
+      "type": "(event: FocusEvent, info: { range: 'start' \\| 'end' }) => void",
+      "default": "",
+      "description": "Trigger when lose focus",
+      "descriptionZh": "失焦时回调"
+    },
+    {
+      "name": "keydown",
+      "type": "(event: KeyboardEvent, preventDefault: VoidFunction) => void",
+      "default": "",
+      "description": "-",
+      "descriptionZh": "-"
+    }
+  ],
+  "slots": [
+    {
+      "name": "suffixIcon",
+      "type": "() => any",
+      "default": "",
+      "description": "The custom suffix icon",
+      "descriptionZh": "自定义的选择框后缀图标"
+    },
+    {
+      "name": "renderExtraFooter",
+      "type": "(mode: PickerMode) => any",
+      "default": "",
+      "description": "Render extra footer in panel",
+      "descriptionZh": "在面板中添加额外的页脚"
+    },
+    {
+      "name": "panelRender",
+      "type": "(originPanel: VueNode) => any",
+      "default": "",
+      "description": "Customize panel render",
+      "descriptionZh": "自定义渲染面板"
+    },
+    {
+      "name": "inputRender",
+      "type": "(props: Record<string, any>) => any",
+      "default": "",
+      "description": "-",
+      "descriptionZh": "-"
+    },
+    {
+      "name": "cellRender",
+      "type": "(ctx: { current: AnyObject, info: any }) => any",
+      "default": "",
+      "description": "Custom rendering function for picker cells",
+      "descriptionZh": "自定义单元格的内容"
+    },
+    {
+      "name": "dateRender",
+      "type": "(ctx: { date: AnyObject, today: AnyObject }) => any",
+      "default": "",
+      "description": "Custom rendering function for date cells, >= 5.4.0 use `cellRender` instead.",
+      "descriptionZh": "自定义日期单元格的内容，>= 5.4.0 起用 `cellRender` 代替"
+    },
+    {
+      "name": "monthCellRender",
+      "type": "(ctx: { date: AnyObject, locale: any }) => any",
+      "default": "",
+      "description": "-",
+      "descriptionZh": "-"
+    }
+  ],
+  "methods": [
+    {
+      "name": "blur()",
+      "type": "",
+      "default": "",
+      "description": "Remove focus",
+      "descriptionZh": "移除焦点"
+    },
+    {
+      "name": "focus()",
+      "type": "",
+      "default": "",
+      "description": "Get focus",
+      "descriptionZh": "获取焦点"
+    }
+  ],
+  "subComponentProps": {
+    "DatePickerpickeryear": {
+      "properties": [
+        {
+          "name": "defaultValue",
+          "type": "[dayjs](https://day.js.org/)",
+          "default": "-",
+          "description": "To set default date",
+          "descriptionZh": "默认日期"
+        },
+        {
+          "name": "format",
+          "type": "[formatType](#formattype)",
+          "default": "`YYYY`",
+          "description": "To set the date format. refer to [dayjs#format](https://day.js.org/docs/en/display/format)",
+          "descriptionZh": "展示的日期格式，配置参考 [dayjs#format](https://day.js.org/docs/zh-CN/display/format#%E6%94%AF%E6%8C%81%E7%9A%84%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%8D%A0%E4%BD%8D%E7%AC%A6%E5%88%97%E8%A1%A8)。"
+        },
+        {
+          "name": "multiple",
+          "type": "boolean",
+          "default": "false",
+          "description": "Enable multiple selection",
+          "descriptionZh": "是否为多选"
+        },
+        {
+          "name": "renderExtraFooter",
+          "type": "() => VueNode",
+          "default": "-",
+          "description": "Render extra footer in panel",
+          "descriptionZh": "在面板中添加额外的页脚"
+        },
+        {
+          "name": "value",
+          "type": "[dayjs](https://day.js.org/)",
+          "default": "-",
+          "description": "To set date, support `v-model:value`",
+          "descriptionZh": "日期，支持 `v-model:value`"
+        }
+      ],
+      "events": [],
+      "slots": [],
+      "methods": []
+    },
+    "DatePickerpickerquarter": {
+      "properties": [
+        {
+          "name": "defaultValue",
+          "type": "[dayjs](https://day.js.org/)",
+          "default": "-",
+          "description": "To set default date",
+          "descriptionZh": "默认日期"
+        },
+        {
+          "name": "format",
+          "type": "[formatType](#formattype)",
+          "default": "`YYYY-\\QQ`",
+          "description": "To set the date format. refer to [dayjs#format](https://day.js.org/docs/en/display/format)",
+          "descriptionZh": "展示的日期格式，配置参考 [dayjs#format](https://day.js.org/docs/zh-CN/display/format#%E6%94%AF%E6%8C%81%E7%9A%84%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%8D%A0%E4%BD%8D%E7%AC%A6%E5%88%97%E8%A1%A8)。"
+        },
+        {
+          "name": "multiple",
+          "type": "boolean",
+          "default": "false",
+          "description": "Enable multiple selection",
+          "descriptionZh": "是否为多选"
+        },
+        {
+          "name": "renderExtraFooter",
+          "type": "() => VueNode",
+          "default": "-",
+          "description": "Render extra footer in panel",
+          "descriptionZh": "在面板中添加额外的页脚"
+        },
+        {
+          "name": "value",
+          "type": "[dayjs](https://day.js.org/)",
+          "default": "-",
+          "description": "To set date, support `v-model:value`",
+          "descriptionZh": "日期，支持 `v-model:value`"
+        }
+      ],
+      "events": [],
+      "slots": [],
+      "methods": []
+    },
+    "DatePickerpickermonth": {
+      "properties": [
+        {
+          "name": "defaultValue",
+          "type": "[dayjs](https://day.js.org/)",
+          "default": "-",
+          "description": "To set default date",
+          "descriptionZh": "默认日期"
+        },
+        {
+          "name": "format",
+          "type": "[formatType](#formattype)",
+          "default": "`YYYY-MM`",
+          "description": "To set the date format. refer to [dayjs#format](https://day.js.org/docs/en/display/format)",
+          "descriptionZh": "展示的日期格式，配置参考 [dayjs#format](https://day.js.org/docs/zh-CN/display/format#%E6%94%AF%E6%8C%81%E7%9A%84%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%8D%A0%E4%BD%8D%E7%AC%A6%E5%88%97%E8%A1%A8)。"
+        },
+        {
+          "name": "multiple",
+          "type": "boolean",
+          "default": "false",
+          "description": "Enable multiple selection",
+          "descriptionZh": "是否为多选"
+        },
+        {
+          "name": "renderExtraFooter",
+          "type": "() => VueNode",
+          "default": "-",
+          "description": "Render extra footer in panel",
+          "descriptionZh": "在面板中添加额外的页脚"
+        },
+        {
+          "name": "value",
+          "type": "[dayjs](https://day.js.org/)",
+          "default": "-",
+          "description": "To set date, support `v-model:value`",
+          "descriptionZh": "日期，支持 `v-model:value`"
+        }
+      ],
+      "events": [],
+      "slots": [],
+      "methods": []
+    },
+    "DatePickerpickerweek": {
+      "properties": [
+        {
+          "name": "defaultValue",
+          "type": "[dayjs](https://day.js.org/)",
+          "default": "-",
+          "description": "To set default date",
+          "descriptionZh": "默认日期"
+        },
+        {
+          "name": "format",
+          "type": "[formatType](#formattype)",
+          "default": "`YYYY-wo`",
+          "description": "To set the date format. refer to [dayjs#format](https://day.js.org/docs/en/display/format)",
+          "descriptionZh": "展示的日期格式，配置参考 [dayjs#format](https://day.js.org/docs/zh-CN/display/format#%E6%94%AF%E6%8C%81%E7%9A%84%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%8D%A0%E4%BD%8D%E7%AC%A6%E5%88%97%E8%A1%A8)。"
+        },
+        {
+          "name": "multiple",
+          "type": "boolean",
+          "default": "false",
+          "description": "Enable multiple selection",
+          "descriptionZh": "是否为多选"
+        },
+        {
+          "name": "renderExtraFooter",
+          "type": "(mode) => VueNode",
+          "default": "-",
+          "description": "Render extra footer in panel",
+          "descriptionZh": "在面板中添加额外的页脚"
+        },
+        {
+          "name": "value",
+          "type": "[dayjs](https://day.js.org/)",
+          "default": "-",
+          "description": "To set date, support `v-model:value`",
+          "descriptionZh": "日期，支持 `v-model:value`"
+        },
+        {
+          "name": "showWeek",
+          "type": "boolean",
+          "default": "true",
+          "description": "Show week info when in DatePicker",
+          "descriptionZh": "DatePicker 下展示当前周"
+        }
+      ],
+      "events": [],
+      "slots": [],
+      "methods": []
+    },
+    "RangePicker": {
+      "properties": [
+        {
+          "name": "allowEmpty",
+          "type": "[boolean, boolean]",
+          "default": "[false, false]",
+          "description": "Allow start or end input leave empty",
+          "descriptionZh": "允许起始项部分为空"
+        },
+        {
+          "name": "cellRender",
+          "type": "(current: dayjs, info: { originNode: VueNode, today: DateType, range?: 'start' \\| 'end', type: PanelMode, locale?: Locale, subType?: 'hour' \\| 'minute' \\| 'second' \\| 'meridiem' }) => VueNode",
+          "default": "-",
+          "description": "Custom rendering function for picker cells",
+          "descriptionZh": "自定义单元格的内容"
+        },
+        {
+          "name": "dateRender",
+          "type": "function(currentDate: dayjs, today: dayjs) => VueNode",
+          "default": "-",
+          "description": "Custom rendering function for date cells, >= 5.4.0 use `cellRender` instead.",
+          "descriptionZh": "自定义日期单元格的内容，>= 5.4.0 起用 `cellRender` 代替"
+        },
+        {
+          "name": "defaultPickerValue",
+          "type": "[dayjs](https://day.js.org/)[]",
+          "default": "-",
+          "description": "Default panel date, will be reset when panel open",
+          "descriptionZh": "默认面板日期，每次面板打开时会被重置到该日期"
+        },
+        {
+          "name": "defaultValue",
+          "type": "[dayjs](https://day.js.org/)[]",
+          "default": "-",
+          "description": "To set default date",
+          "descriptionZh": "默认日期"
+        },
+        {
+          "name": "disabled",
+          "type": "[boolean, boolean]",
+          "default": "-",
+          "description": "If disable start or end",
+          "descriptionZh": "禁用起始项"
+        },
+        {
+          "name": "disabledTime",
+          "type": "`function(date: dayjs, partial: start \\| end, info: { from?: dayjs })`",
+          "default": "-",
+          "description": "To specify the time that cannot be selected",
+          "descriptionZh": "不可选择的时间"
+        },
+        {
+          "name": "format",
+          "type": "[formatType](#formattype)",
+          "default": "`YYYY-MM-DD HH:mm:ss`",
+          "description": "To set the date format. refer to [dayjs#format](https://day.js.org/docs/en/display/format)",
+          "descriptionZh": "展示的日期格式，配置参考 [dayjs#format](https://day.js.org/docs/zh-CN/display/format#%E6%94%AF%E6%8C%81%E7%9A%84%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%8D%A0%E4%BD%8D%E7%AC%A6%E5%88%97%E8%A1%A8)。"
+        },
+        {
+          "name": "id",
+          "type": "`{ start?: string, end?: string }`",
+          "default": "-",
+          "description": "Config input ids",
+          "descriptionZh": "设置输入框 `id` 属性。"
+        },
+        {
+          "name": "pickerValue",
+          "type": "[dayjs](https://day.js.org/)[]",
+          "default": "-",
+          "description": "Panel date. Used for controlled switching of panel date. Work with `onPanelChange`",
+          "descriptionZh": "面板日期，可以用于受控切换面板所在日期。配合 `onPanelChange` 使用。"
+        },
+        {
+          "name": "presets",
+          "type": "{ label: VueNode, value: (Dayjs \\| (() => Dayjs))[] }[]",
+          "default": "-",
+          "description": "The preset ranges for quick selection, Since `5.8.0`, preset value supports callback function.",
+          "descriptionZh": "预设时间范围快捷选择，自 `5.8.0` 起 value 支持函数返回值"
+        },
+        {
+          "name": "renderExtraFooter",
+          "type": "() => VueNode",
+          "default": "-",
+          "description": "Render extra footer in panel",
+          "descriptionZh": "在面板中添加额外的页脚"
+        },
+        {
+          "name": "separator",
+          "type": "VueNode",
+          "default": "`<SwapRightOutlined />`",
+          "description": "Set separator between inputs",
+          "descriptionZh": "设置分隔符"
+        },
+        {
+          "name": "showTime",
+          "type": "object \\| boolean",
+          "default": "[TimePicker Options](/components/time-picker/#api)",
+          "description": "To provide an additional time selection",
+          "descriptionZh": "增加时间选择功能"
+        },
+        {
+          "name": "~~showTime.defaultValue~~",
+          "type": "[dayjs](https://day.js.org/)[]",
+          "default": "[dayjs(), dayjs()]",
+          "description": "Use `showTime.defaultOpenValue` instead",
+          "descriptionZh": "请使用 `showTime.defaultOpenValue`"
+        },
+        {
+          "name": "showTime.defaultOpenValue",
+          "type": "[dayjs](https://day.js.org/)[]",
+          "default": "[dayjs(), dayjs()]",
+          "description": "To set default time of selected date, [demo](#date-picker-demo-disabled-date)",
+          "descriptionZh": "设置用户选择日期时默认的时分秒，[例子](#date-picker-demo-disabled-date)"
+        },
+        {
+          "name": "value",
+          "type": "[dayjs](https://day.js.org/)[]",
+          "default": "-",
+          "description": "To set date, support `v-model:value`",
+          "descriptionZh": "日期，支持 `v-model:value`"
+        }
+      ],
+      "events": [],
+      "slots": [],
+      "methods": []
+    },
+    "共同的API": {
+      "properties": [
+        {
+          "name": "allowClear",
+          "type": "boolean \\| \\{ clearIcon?: VueNode \\}",
+          "default": "true",
+          "description": "",
+          "descriptionZh": "自定义清除按钮"
+        },
+        {
+          "name": "classes",
+          "type": "Record<[SemanticDOM](#semantic-dom), string> \\| (info: { props })=> Record<[SemanticDOM](#semantic-dom), string>",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "用于自定义组件内部各语义化结构的 class，支持对象或函数"
+        },
+        {
+          "name": "dateRender",
+          "type": "function(currentDate: dayjs, today: dayjs) => VueNode",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "自定义日期单元格的内容，>= 5.4.0 起用 `cellRender` 代替"
+        },
+        {
+          "name": "cellRender",
+          "type": "(current: dayjs, info: { originNode: VueNode, today: DateType, range?: 'start' \\| 'end', type: PanelMode, locale?: Locale, subType?: 'hour' \\| 'minute' \\| 'second' \\| 'meridiem' }) => VueNode",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "自定义单元格的内容"
+        },
+        {
+          "name": "components",
+          "type": "Record<Panel \\| 'input', Component>",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "自定义面板。自定义面板组件请设置 `inheritAttrs: false`，否则 DatePicker 注入的 `prefixCls` 等会透传到根节点，导致子组件（如 Flex）以错误前缀生成样式并破坏面板布局"
+        },
+        {
+          "name": "defaultOpen",
+          "type": "boolean",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "是否默认展开控制弹层"
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "",
+          "descriptionZh": "禁用"
+        },
+        {
+          "name": "disabledDate",
+          "type": "(currentDate: dayjs, info: { from?: dayjs, type: Picker }) => boolean",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "不可选择的日期"
+        },
+        {
+          "name": "format",
+          "type": "[formatType](#formattype)",
+          "default": "[@rc-component/picker](https://github.com/react-component/picker/blob/f512f18ed59d6791280d1c3d7d37abbb9867eb0b/src/utils/uiUtil.ts#L155-L177)",
+          "description": "",
+          "descriptionZh": "设置日期格式，为数组时支持多格式匹配，展示以第一个为准。配置参考 [dayjs#format](https://day.js.org/docs/zh-CN/display/format#%E6%94%AF%E6%8C%81%E7%9A%84%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%8D%A0%E4%BD%8D%E7%AC%A6%E5%88%97%E8%A1%A8)。示例：[自定义格式](#date-picker-demo-format)"
+        },
+        {
+          "name": "valueFormat",
+          "type": "string",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "设置绑定值的格式。设置后 `value`、`defaultValue`、`v-model:value` 可使用格式化字符串，`change` 返回同格式字符串。示例：[值格式化](#date-picker-demo-value-format)"
+        },
+        {
+          "name": "order",
+          "type": "boolean",
+          "default": "true",
+          "description": "",
+          "descriptionZh": "多选、范围时是否自动排序"
+        },
+        {
+          "name": "~~popupClassName~~",
+          "type": "string",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "额外的弹出日历 className，使用 `classes.popup.root` 替代"
+        },
+        {
+          "name": "preserveInvalidOnBlur",
+          "type": "boolean",
+          "default": "false",
+          "description": "",
+          "descriptionZh": "失去焦点是否要清空输入框内无效内容"
+        },
+        {
+          "name": "getPopupContainer",
+          "type": "function(trigger)",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "定义浮层的容器，默认为 body 上新建 div"
+        },
+        {
+          "name": "inputReadOnly",
+          "type": "boolean",
+          "default": "false",
+          "description": "",
+          "descriptionZh": "设置输入框为只读（避免在移动设备上打开虚拟键盘）"
+        },
+        {
+          "name": "locale",
+          "type": "object",
+          "default": "[默认配置](https://github.com/ant-design/ant-design/blob/master/components/date-picker/locale/example.json)",
+          "description": "",
+          "descriptionZh": "国际化配置"
+        },
+        {
+          "name": "minDate",
+          "type": "dayjs",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "最小日期，同样会限制面板的切换范围"
+        },
+        {
+          "name": "maxDate",
+          "type": "dayjs",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "最大日期，同样会限制面板的切换范围"
+        },
+        {
+          "name": "mode",
+          "type": "`time` \\| `date` \\| `month` \\| `year` \\| `decade`",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "日期面板的状态（[设置后无法选择年份/月份？](/docs/vue/faq#when-set-mode-to-datepickerrangepicker-cannot-select-year-or-month-anymore)）"
+        },
+        {
+          "name": "needConfirm",
+          "type": "boolean",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "是否需要确认按钮，为 `false` 时失去焦点即代表选择。当设置 `multiple` 时默认为 `false`"
+        },
+        {
+          "name": "nextIcon",
+          "type": "VueNode",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "自定义下一个图标"
+        },
+        {
+          "name": "open",
+          "type": "boolean",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "控制弹层是否展开"
+        },
+        {
+          "name": "panelRender",
+          "type": "(panelNode) => VueNode",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "自定义渲染面板"
+        },
+        {
+          "name": "picker",
+          "type": "`date` \\| `week` \\| `month` \\| `quarter` \\| `year`",
+          "default": "`date`",
+          "description": "",
+          "descriptionZh": "设置选择器类型"
+        },
+        {
+          "name": "placeholder",
+          "type": "string \\| [string, string]",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "输入框提示文字"
+        },
+        {
+          "name": "placement",
+          "type": "`bottomLeft` `bottomRight` `topLeft` `topRight`",
+          "default": "bottomLeft",
+          "description": "",
+          "descriptionZh": "选择框弹出的位置"
+        },
+        {
+          "name": "~~popupStyle~~",
+          "type": "CSSProperties",
+          "default": "{}",
+          "description": "",
+          "descriptionZh": "额外的弹出日历样式，使用 `styles.popup.root` 替代"
+        },
+        {
+          "name": "prefix",
+          "type": "VueNode",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "自定义前缀"
+        },
+        {
+          "name": "presets",
+          "type": "{ label: VueNode, value: Dayjs \\| (() => Dayjs) }[]",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "预设时间范围快捷选择, 自 `5.8.0` 起 value 支持函数返回值"
+        },
+        {
+          "name": "prevIcon",
+          "type": "VueNode",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "自定义上一个图标"
+        },
+        {
+          "name": "previewValue",
+          "type": "false \\| hover",
+          "default": "hover",
+          "description": "",
+          "descriptionZh": "当用户选择日期悬停选项时，输入字段的值会发生临时更改"
+        },
+        {
+          "name": "size",
+          "type": "`large` \\| `middle` \\| `small`",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "输入框大小，`large` 高度为 40px，`small` 为 24px，默认是 32px"
+        },
+        {
+          "name": "status",
+          "type": "'error' \\| 'warning'",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "设置校验状态"
+        },
+        {
+          "name": "styles",
+          "type": "Record<[SemanticDOM](#semantic-dom), CSSProperties> \\| (info: { props })=> Record<[SemanticDOM](#semantic-dom), CSSProperties>",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "用于自定义组件内部各语义化结构的行内 style，支持对象或函数"
+        },
+        {
+          "name": "suffixIcon",
+          "type": "VueNode",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "自定义的选择框后缀图标"
+        },
+        {
+          "name": "superNextIcon",
+          "type": "VueNode",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "自定义 `>>` 切换图标"
+        },
+        {
+          "name": "superPrevIcon",
+          "type": "VueNode",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "自定义 `<<` 切换图标"
+        },
+        {
+          "name": "clearIcon",
+          "type": "VueNode",
+          "default": "-",
+          "description": "",
+          "descriptionZh": "（仅支持全局配置）自定义清除图标"
+        },
+        {
+          "name": "variant",
+          "type": "`outlined` \\| `borderless` \\| `filled` \\| `underlined`",
+          "default": "`outlined`",
+          "description": "",
+          "descriptionZh": "形态变体"
+        }
+      ],
+      "events": [],
+      "slots": [],
+      "methods": []
+    }
+  },
+  "commonProps": [
+    {
+      "name": "style",
+      "type": "CSSProperties",
+      "default": "-",
+      "description": "The additional style",
+      "descriptionZh": "自定义样式"
+    },
+    {
+      "name": "class",
+      "type": "string",
+      "default": "-",
+      "description": "The additional css class",
+      "descriptionZh": "自定义类名"
+    },
+    {
+      "name": "rootClass",
+      "type": "string",
+      "default": "-",
+      "description": "ClassName on the root element",
+      "descriptionZh": "添加在组件最外层的 className"
+    },
+    {
+      "name": "autoFocus",
+      "type": "boolean",
+      "default": "false",
+      "description": "Auto focus when component mounted, only effective for focusable elements like forms, links, etc.",
+      "descriptionZh": "自动获取焦点，仅对表单类、链接、交互容器等可聚焦元素生效"
+    }
+  ]
+}

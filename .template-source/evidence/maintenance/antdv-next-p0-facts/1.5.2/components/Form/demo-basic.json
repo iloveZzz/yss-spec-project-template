@@ -1,0 +1,7 @@
+{
+  "component": "Form",
+  "name": "basic",
+  "title": "Basic Usage",
+  "description": "Basic form usage.",
+  "code": "<script setup lang=\"ts\">\nimport type { FormInstance } from 'antdv-next'\nimport { reactive, shallowRef } from 'vue'\n\nconst model = reactive({\n  username: '',\n  password: '',\n  remember: true,\n})\nfunction handleFinished(values: any) {\n  console.log('Success:', values)\n}\nfunction handleFinishFailed(errorInfo: any) {\n  console.log('Failed:', errorInfo)\n}\nconst formRef = shallowRef<FormInstance>()\n</script>\n\n<template>\n  <a-form\n    ref=\"formRef\"\n    :model=\"model\"\n    :label-col=\"{ span: 8 }\"\n    :wrapper-col=\"{ span: 16 }\"\n    style=\"max-width: 600px\"\n    auto-complete=\"off\"\n    @finish=\"handleFinished\"\n    @finish-failed=\"handleFinishFailed\"\n  >\n    <a-form-item name=\"username\" label=\"Username\" :rules=\"[{ required: true, message: 'Please input your username!' }]\">\n      <a-input v-model:value=\"model.username\" />\n    </a-form-item>\n    <a-form-item name=\"password\" label=\"Password\" :rules=\"[{ required: true, message: 'Please input your password!' }]\">\n      <a-input-password v-model:value=\"model.password\" />\n    </a-form-item>\n    <a-form-item name=\"remember\" :label=\"null\">\n      <a-checkbox v-model:checked=\"model.remember\">\n        Remember me!\n      </a-checkbox>\n    </a-form-item>\n    <a-form-item :label=\"null\">\n      <a-button type=\"primary\" html-type=\"submit\">\n        Submit\n      </a-button>\n    </a-form-item>\n  </a-form>\n</template>"
+}

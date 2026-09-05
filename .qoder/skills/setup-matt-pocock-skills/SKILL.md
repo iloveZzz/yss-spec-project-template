@@ -22,19 +22,18 @@ Look at the current repo to understand its starting state. Read whatever exists;
 
 - `git remote -v` and `.git/config` — is this a GitHub repo? Which one?
 - `AGENTS.md` and `CLAUDE.md` at the repo root — does either exist? Is there already an `## Agent skills` section in either?
-- `CONTEXT.md` and `CONTEXT-MAP.md` at the repo root
+- The case-sensitive `CONTEXT.md` at the Git repository root; also detect lowercase, nested, or duplicate context files as migration problems
 - `docs/adr/` and any `src/*/docs/adr/` directories
 - `docs/agents/` — does this skill's prior output already exist?
 - `docs/.scratch/` — sign that the canonical local-markdown issue tracker convention is already in use
 - `.scratch/` and `docs/requirements/tickets/` — legacy local-tracker roots; inspect them read-only for migration and never use them as new write targets
 - Is the `triage` skill installed? (a `triage` skill folder alongside this one, or `triage` in your available skills.) This decides whether Section B runs at all.
-- Monorepo signals — a `pnpm-workspace.yaml`, a `workspaces` field in `package.json`, or a populated `packages/*` with its own `src/`. Present only in a genuinely large multi-package repo; their absence means single-context, which is almost every repo.
 
 ### 2. Present findings and ask
 
 Summarise what's present and what's missing. Then take the sections in order — one section, one answer, then the next.
 
-Lead each section with the recommended answer so the user can accept it in a word. Give a one-line explainer only when the choice genuinely branches; skip the section entirely when exploration already settled it (Section B when `triage` isn't installed, Section C when there's no monorepo).
+Lead each section with the recommended answer so the user can accept it in a word. Give a one-line explainer only when the choice genuinely branches; skip Section B entirely when `triage` isn't installed.
 
 **Section A — Issue tracker.**
 
@@ -65,9 +64,9 @@ If it is installed, ask exactly one question:
 
 The defaults are the five canonical roles, each label string equal to its name: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. On **yes**, write them as-is. Only if the user says no — usually because their tracker already uses other names (e.g. `bug:triage` for `needs-triage`) — collect the overrides so `triage` applies existing labels instead of creating duplicates.
 
-**Section C — Domain docs.** Default to **single-context** — one `CONTEXT.md` + `docs/adr/` at the repo root. This fits almost every repo; write it without asking.
+**Section C — Business vocabulary and decisions.** The layout does not branch: every YSS Git repository has exactly one case-sensitive `CONTEXT.md` at its root. Multiple business responsibility areas share that glossary and are distinguished by each business term's `适用业务责任区` and stable `<ContextId>/<EnglishIdentifier>` reference. ADRs live under root `docs/adr/` and are created lazily when the first qualifying decision is accepted.
 
-Offer **multi-context** — a root `CONTEXT-MAP.md` pointing to per-context `CONTEXT.md` files — only when exploration found monorepo signals. Then confirm which layout they want.
+If the root `CONTEXT.md` is missing, initialize it with `context_schema_version: 1`, the process-term table (`术语 | 含义 | 英文标识 | 避免 / 备注`) and the business-term table (`术语 | 含义 | 英文标识 | 适用业务责任区 | 避免 / 备注`). Do not invent business terms during setup. If a lowercase, nested, duplicate, or mapped context layout exists, stop and report `migration-required`; do not preserve or extend it as a second supported layout.
 
 ### 3. Confirm and edit
 
@@ -105,7 +104,7 @@ The block:
 
 ### Domain docs
 
-[one-line summary of layout — "single-context" or "multi-context"]. See `docs/agents/domain.md`.
+[one-line summary: one root `CONTEXT.md`, with bounded contexts represented inside its business glossary]. See `docs/agents/domain.md`.
 ```
 
 Include the `### Triage labels` sub-block, and write `docs/agents/triage-labels.md`, only when `triage` is installed and Section B ran. When it isn't, both are omitted.

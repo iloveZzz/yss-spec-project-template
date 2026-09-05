@@ -1,0 +1,460 @@
+{
+  "name": "Input",
+  "nameZh": "输入框",
+  "description": "Through mouse or keyboard input content, it is the most basic form field wrapper.",
+  "props": [
+    {
+      "name": "allowClear",
+      "type": "boolean \\| &#123; clearIcon: VueNode &#125;",
+      "default": "false",
+      "description": "If allow to remove input content with clear icon",
+      "descriptionZh": "可以点击清除图标删除内容"
+    },
+    {
+      "name": "classes",
+      "type": "Record&lt;[SemanticDOM](#semantic-input), string&gt; \\| (info: &#123; props &#125;) =&gt; Record&lt;[SemanticDOM](#semantic-input), string&gt;",
+      "default": "-",
+      "description": "Customize class for each semantic structure inside the component. Supports object or function.",
+      "descriptionZh": "用于自定义组件内部各语义化结构的 class，支持对象或函数"
+    },
+    {
+      "name": "count",
+      "type": "[CountConfig](#countconfig)",
+      "default": "-",
+      "description": "Character count config",
+      "descriptionZh": "字符计数配置"
+    },
+    {
+      "name": "defaultValue",
+      "type": "string",
+      "default": "-",
+      "description": "The initial input content",
+      "descriptionZh": ""
+    },
+    {
+      "name": "disabled",
+      "type": "boolean",
+      "default": "false",
+      "description": "Whether the input is disabled",
+      "descriptionZh": "是否禁用状态，默认为 false"
+    },
+    {
+      "name": "id",
+      "type": "string",
+      "default": "-",
+      "description": "The ID for input",
+      "descriptionZh": "输入框的 id"
+    },
+    {
+      "name": "maxlength",
+      "type": "number",
+      "default": "-",
+      "description": "The maximum number of characters in Input",
+      "descriptionZh": "最大长度"
+    },
+    {
+      "name": "prefix",
+      "type": "VueNode",
+      "default": "-",
+      "description": "The prefix icon for the Input",
+      "descriptionZh": "带有前缀图标的 input"
+    },
+    {
+      "name": "showCount",
+      "type": "boolean \\| &#123; formatter: (info: &#123; value: string, count: number, maxLength?: number &#125;) =&gt; VueNode &#125;",
+      "default": "false",
+      "description": "Whether to show character count",
+      "descriptionZh": "是否展示字数"
+    },
+    {
+      "name": "status",
+      "type": "'error' \\| 'warning'",
+      "default": "-",
+      "description": "Set validation status",
+      "descriptionZh": "设置校验状态"
+    },
+    {
+      "name": "styles",
+      "type": "Record&lt;[SemanticDOM](#semantic-input), CSSProperties&gt; \\| (info: &#123; props &#125;) =&gt; Record&lt;[SemanticDOM](#semantic-input), CSSProperties&gt;",
+      "default": "-",
+      "description": "Customize inline style for each semantic structure inside the component. Supports object or function.",
+      "descriptionZh": "用于自定义组件内部各语义化结构的行内 style，支持对象或函数"
+    },
+    {
+      "name": "size",
+      "type": "`large` \\| `middle` \\| `small`",
+      "default": "-",
+      "description": "The size of the input box. Note: in the context of a form, the `middle` size is used",
+      "descriptionZh": "控件大小。注：标准表单内的输入框大小限制为 `middle`"
+    },
+    {
+      "name": "suffix",
+      "type": "VueNode",
+      "default": "-",
+      "description": "The suffix icon for the Input",
+      "descriptionZh": "带有后缀图标的 input"
+    },
+    {
+      "name": "type",
+      "type": "string",
+      "default": "`text`",
+      "description": "The type of input, see: [MDN](https://developer.mozilla.org/docs/Web/HTML/Element/input#Form_%3Cinput%3E_types)( use `Input.TextArea` instead of `type=\"textarea\"`)",
+      "descriptionZh": "声明 input 类型，同原生 input 标签的 type 属性，见：[MDN](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/input#属性)(请直接使用 `Input.TextArea` 代替 `type=\"textarea\"`)"
+    },
+    {
+      "name": "value",
+      "type": "string",
+      "default": "-",
+      "description": "The input content value, support `v-model:value`",
+      "descriptionZh": "输入框内容，支持 `v-model:value`"
+    },
+    {
+      "name": "variant",
+      "type": "`outlined` \\| `borderless` \\| `filled` \\| `underlined`",
+      "default": "`outlined`",
+      "description": "Variants of Input",
+      "descriptionZh": "形态变体"
+    },
+    {
+      "name": "~~addonAfter~~",
+      "type": "VueNode",
+      "default": "-",
+      "description": "",
+      "descriptionZh": "带标签的 input，设置后置标签，请使用 Space.Compact 替换"
+    },
+    {
+      "name": "~~addonBefore~~",
+      "type": "VueNode",
+      "default": "-",
+      "description": "",
+      "descriptionZh": "带标签的 input，设置前置标签，请使用 Space.Compact 替换"
+    },
+    {
+      "name": "~~bordered~~",
+      "type": "boolean",
+      "default": "true",
+      "description": "",
+      "descriptionZh": "是否有边框, 请使用 `variant` 替换"
+    }
+  ],
+  "events": [
+    {
+      "name": "change",
+      "type": "function(e)",
+      "default": "",
+      "description": "Callback when user input",
+      "descriptionZh": "输入框内容变化时的回调"
+    },
+    {
+      "name": "pressEnter",
+      "type": "function(e)",
+      "default": "",
+      "description": "The callback function that is triggered when Enter key is pressed",
+      "descriptionZh": "按下回车的回调"
+    },
+    {
+      "name": "clear",
+      "type": "() =&gt; void",
+      "default": "",
+      "description": "Callback when click the clear button",
+      "descriptionZh": "按下清除按钮的回调"
+    }
+  ],
+  "slots": [
+    {
+      "name": "prefix",
+      "type": "-",
+      "default": "",
+      "description": "Customize prefix icon",
+      "descriptionZh": "自定义前缀图标"
+    },
+    {
+      "name": "suffix",
+      "type": "-",
+      "default": "",
+      "description": "Customize suffix icon",
+      "descriptionZh": "自定义后缀图标"
+    },
+    {
+      "name": "clearIcon",
+      "type": "-",
+      "default": "",
+      "description": "Customize clear icon (to be used with allowClear attribute)",
+      "descriptionZh": "自定义清除图标（需搭配allowClear属性使用）"
+    }
+  ],
+  "methods": [
+    {
+      "name": "blur",
+      "type": "",
+      "default": "",
+      "description": "Remove focus",
+      "descriptionZh": "取消焦点"
+    },
+    {
+      "name": "focus",
+      "type": "",
+      "default": "",
+      "description": "Get focus",
+      "descriptionZh": "获取焦点"
+    }
+  ],
+  "subComponentProps": {
+    "TextArea": {
+      "properties": [
+        {
+          "name": "autoSize",
+          "type": "boolean \\| object",
+          "default": "false",
+          "description": "Height auto size feature, can be set to true \\| false or an object &#123; minRows: 2, maxRows: 6 &#125;",
+          "descriptionZh": "自适应内容高度，可设置为 true \\| false 或对象：&#123; minRows: 2, maxRows: 6 &#125;"
+        },
+        {
+          "name": "classes",
+          "type": "Record&lt;[SemanticDOM](#semantic-textarea), string&gt; \\| (info: &#123; props &#125;) =&gt; Record&lt;[SemanticDOM](#semantic-textarea), string&gt;",
+          "default": "-",
+          "description": "Customize class for each semantic structure inside the component. Supports object or function.",
+          "descriptionZh": "用于自定义组件内部各语义化结构的 class，支持对象或函数"
+        },
+        {
+          "name": "styles",
+          "type": "Record&lt;[SemanticDOM](#semantic-textarea), CSSProperties&gt; \\| (info: &#123; props &#125;) =&gt; Record&lt;[SemanticDOM](#semantic-textarea), CSSProperties&gt;",
+          "default": "-",
+          "description": "Customize inline style for each semantic structure inside the component. Supports object or function.",
+          "descriptionZh": "用于自定义组件内部各语义化结构的行内 style，支持对象或函数"
+        }
+      ],
+      "events": [],
+      "slots": [],
+      "methods": []
+    },
+    "InputSearch": {
+      "properties": [
+        {
+          "name": "classes",
+          "type": "Record&lt;[SemanticDOM](#semantic-search), string&gt; \\| (info: &#123; props &#125;) =&gt; Record&lt;[SemanticDOM](#semantic-search), string&gt;",
+          "default": "-",
+          "description": "Customize class for each semantic structure inside the component. Supports object or function.",
+          "descriptionZh": "用于自定义组件内部各语义化结构的 class，支持对象或函数"
+        },
+        {
+          "name": "enterButton",
+          "type": "VueNode",
+          "default": "false",
+          "description": "false displays the default button color, true uses the primary color, or you can provide a custom button. Conflicts with addonAfter.",
+          "descriptionZh": "是否有确认按钮，可设为按钮文字。该属性会与 `addonAfter` 冲突。"
+        },
+        {
+          "name": "loading",
+          "type": "boolean",
+          "default": "false",
+          "description": "Search box with loading",
+          "descriptionZh": "搜索 loading"
+        },
+        {
+          "name": "styles",
+          "type": "Record&lt;[SemanticDOM](#semantic-search), CSSProperties&gt; \\| (info: &#123; props &#125;) =&gt; Record&lt;[SemanticDOM](#semantic-search), CSSProperties&gt;",
+          "default": "-",
+          "description": "Customize inline style for each semantic structure inside the component. Supports object or function.",
+          "descriptionZh": "用于自定义组件内部各语义化结构的行内 style，支持对象或函数"
+        },
+        {
+          "name": "variant",
+          "type": "`outlined` \\| `borderless` \\| `filled` \\| `underlined`",
+          "default": "`outlined`",
+          "description": "Variants of Input",
+          "descriptionZh": "形态变体"
+        }
+      ],
+      "events": [
+        {
+          "name": "search",
+          "type": "function(value, event, &#123; source: \"input\" \\| \"clear\" &#125;)",
+          "default": "",
+          "description": "The callback function triggered when you click on the search-icon, the clear-icon or press the Enter key",
+          "descriptionZh": "点击搜索图标、清除图标，或按下回车键时的回调"
+        }
+      ],
+      "slots": [],
+      "methods": []
+    },
+    "InputPassword": {
+      "properties": [
+        {
+          "name": "classes",
+          "type": "Record&lt;[SemanticDOM](#semantic-password), string&gt;",
+          "default": "-",
+          "description": "Semantic DOM class",
+          "descriptionZh": "语义化结构 class"
+        },
+        {
+          "name": "iconRender",
+          "type": "(visible) =&gt; VueNode",
+          "default": "(visible) =&gt; (visible ? &lt;EyeOutlined /> : &lt;EyeInvisibleOutlined />)",
+          "description": "Custom toggle button",
+          "descriptionZh": "自定义切换按钮"
+        },
+        {
+          "name": "styles",
+          "type": "Record&lt;[SemanticDOM](#semantic-password), CSSProperties&gt;",
+          "default": "-",
+          "description": "Semantic DOM style",
+          "descriptionZh": "语义化结构 style"
+        },
+        {
+          "name": "variant",
+          "type": "`outlined` \\| `borderless` \\| `filled` \\| `underlined`",
+          "default": "`outlined`",
+          "description": "Variants of Input",
+          "descriptionZh": "形态变体"
+        },
+        {
+          "name": "visibilityToggle",
+          "type": "boolean \\| [VisibilityToggle](#visibilitytoggle)",
+          "default": "true",
+          "description": "Whether show toggle button or control password visible",
+          "descriptionZh": "是否显示切换按钮或者控制密码显隐"
+        }
+      ],
+      "events": [],
+      "slots": [],
+      "methods": []
+    },
+    "InputOTP": {
+      "properties": [
+        {
+          "name": "classes",
+          "type": "Record&lt;[SemanticDOM](#semantic-otp), string&gt; \\| (info: &#123; props &#125;) =&gt; Record&lt;[SemanticDOM](#semantic-otp), string&gt;",
+          "default": "-",
+          "description": "Customize class for each semantic structure inside the component. Supports object or function.",
+          "descriptionZh": "用于自定义组件内部各语义化结构的 class，支持对象或函数"
+        },
+        {
+          "name": "defaultValue",
+          "type": "string",
+          "default": "-",
+          "description": "Default value",
+          "descriptionZh": ""
+        },
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether the input is disabled",
+          "descriptionZh": "是否禁用"
+        },
+        {
+          "name": "formatter",
+          "type": "(value: string) =&gt; string",
+          "default": "-",
+          "description": "Format display, blank fields will be filled with ` `",
+          "descriptionZh": "格式化展示，留空字段会被 ` ` 填充"
+        },
+        {
+          "name": "separator",
+          "type": "VueNode \\| ((i: number) =&gt; VueNode)",
+          "default": "-",
+          "description": "render the separator after the input box of the specified index",
+          "descriptionZh": "分隔符，在指定索引的输入框后渲染分隔符"
+        },
+        {
+          "name": "styles",
+          "type": "Record&lt;[SemanticDOM](#semantic-otp), CSSProperties&gt; \\| (info: &#123; props &#125;) =&gt; Record&lt;[SemanticDOM](#semantic-otp), CSSProperties&gt;",
+          "default": "-",
+          "description": "Customize inline style for each semantic structure inside the component. Supports object or function.",
+          "descriptionZh": "用于自定义组件内部各语义化结构的行内 style，支持对象或函数"
+        },
+        {
+          "name": "mask",
+          "type": "boolean \\| string",
+          "default": "`false`",
+          "description": "Custom display, the original value will not be modified",
+          "descriptionZh": "自定义展示，和 `formatter` 的区别是不会修改原始值"
+        },
+        {
+          "name": "length",
+          "type": "number",
+          "default": "6",
+          "description": "The number of input elements",
+          "descriptionZh": "输入元素数量"
+        },
+        {
+          "name": "status",
+          "type": "'error' \\| 'warning'",
+          "default": "-",
+          "description": "Set validation status",
+          "descriptionZh": "设置校验状态"
+        },
+        {
+          "name": "size",
+          "type": "`small` \\| `middle` \\| `large`",
+          "default": "`middle`",
+          "description": "The size of the input box",
+          "descriptionZh": "输入框大小"
+        },
+        {
+          "name": "variant",
+          "type": "`outlined` \\| `borderless` \\| `filled` \\| `underlined`",
+          "default": "`outlined`",
+          "description": "Variants of Input",
+          "descriptionZh": "形态变体"
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "default": "-",
+          "description": "The input content value",
+          "descriptionZh": "输入框内容"
+        }
+      ],
+      "events": [
+        {
+          "name": "change",
+          "type": "(value: string) =&gt; void",
+          "default": "",
+          "description": "Trigger when all the fields are filled",
+          "descriptionZh": "当输入框内容全部填充时触发回调"
+        },
+        {
+          "name": "input",
+          "type": "(value: string[]) =&gt; void",
+          "default": "",
+          "description": "Trigger when the input value changes",
+          "descriptionZh": "输入值变化时触发的回调"
+        }
+      ],
+      "slots": [],
+      "methods": []
+    }
+  },
+  "commonProps": [
+    {
+      "name": "style",
+      "type": "CSSProperties",
+      "default": "-",
+      "description": "The additional style",
+      "descriptionZh": "自定义样式"
+    },
+    {
+      "name": "class",
+      "type": "string",
+      "default": "-",
+      "description": "The additional css class",
+      "descriptionZh": "自定义类名"
+    },
+    {
+      "name": "rootClass",
+      "type": "string",
+      "default": "-",
+      "description": "ClassName on the root element",
+      "descriptionZh": "添加在组件最外层的 className"
+    },
+    {
+      "name": "autoFocus",
+      "type": "boolean",
+      "default": "false",
+      "description": "Auto focus when component mounted, only effective for focusable elements like forms, links, etc.",
+      "descriptionZh": "自动获取焦点，仅对表单类、链接、交互容器等可聚焦元素生效"
+    }
+  ]
+}

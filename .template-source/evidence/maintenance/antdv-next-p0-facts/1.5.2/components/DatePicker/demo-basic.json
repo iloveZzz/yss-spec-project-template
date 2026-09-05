@@ -1,0 +1,7 @@
+{
+  "component": "DatePicker",
+  "name": "basic",
+  "title": "Basic",
+  "description": "Basic use case. Users can select or input a date in a panel.",
+  "code": "<script setup lang=\"ts\">\nimport { shallowRef } from 'vue'\n\nconst date = shallowRef()\nconst week = shallowRef()\nconst month = shallowRef()\nconst year = shallowRef()\nconst quarter = shallowRef()\n</script>\n\n<template>\n  <a-flex gap=\"small\" justify=\"flex-start\" align=\"flex-start\" vertical>\n    <a-date-picker v-model:value=\"date\" />\n    <a-date-picker v-model:value=\"week\" picker=\"week\" />\n    <a-date-picker v-model:value=\"month\" picker=\"month\" />\n    <a-date-picker v-model:value=\"quarter\" picker=\"quarter\" />\n    <a-date-picker v-model:value=\"year\" picker=\"year\" />\n  </a-flex>\n</template>"
+}

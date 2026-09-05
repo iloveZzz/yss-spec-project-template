@@ -45,12 +45,17 @@ stages:
     exit_criteria: 所有命中门禁通过，人工审查点已完成，checkpoint 可追溯。
 
 evidence:
+  - id: evidence.context-reconciliation
+    name: Context Reconciliation 证据
+    description: 工作单元在批准或流转前对根目录唯一 CONTEXT.md 的稳定术语回写、作用域解析和双摘要核对结果；不新增门禁。
   - id: evidence.impact-assessment
     name: 影响面分析记录
     description: 受影响仓库、资产、风险与最近可信阶段。
   - id: evidence.domain-strategy-review
     name: DDD 战略设计评审证据
     description: 子域、限界上下文、统一语言、Context Map、场景和不变量的结构化评审结果。
+    public_name: 业务边界与规则评审证据
+    public_description: 业务板块、业务责任区、统一业务词汇、协作与交接关系、关键场景和不可违反规则的结构化评审结果。
   - id: evidence.tactical-design-review
     name: DDD 战术设计评审证据
     description: 聚合、Entity、Value Object、不变量、状态机、一致性、Gateway 与 API 隔离的结构化评审结果。
@@ -116,6 +121,8 @@ gates:
     name: DDD 战略设计批准
     stage: stage.discovery
     trigger: 存在 DDD 战略设计影响或需要确定领域边界、统一语言和核心规则。
+    public_name: 业务边界与规则确认
+    public_trigger: 需要确定业务板块、业务责任区、统一业务词汇、协作关系或关键规则。
     evidence: [evidence.domain-strategy-review, evidence.approval-record]
   - id: gate.stage-decision-package-approved
     name: 阶段决策包批准
@@ -199,10 +206,13 @@ artifacts:
     name: DDD 战略设计
     stage: stage.discovery
     trigger: 新产品/模块、跨上下文功能、统一语言冲突、服务边界或核心规则变化。
+    public_name: 业务边界与规则设计
+    public_trigger: 新产品/模块、跨责任区协作、业务词汇冲突、责任边界或关键规则变化。
   - id: artifact.stage-decision-package
     name: 阶段决策包
     stage: stage.discovery
     trigger: Discovery 到 Spec 入口需要结构化上游决策。
+    public_name: 方案决策包
   - id: artifact.discovery-record
     name: Discovery 记录
     stage: stage.discovery
@@ -363,12 +373,18 @@ work_units:
     input: 已澄清的业务场景、领域词汇、约束和现有上下文。
     output: 子域、限界上下文、Context Map、统一语言、事件、核心领域概念候选和不变量。
     completion: 边界、语义方向、规则所有权和关键场景可审查；无未解释冲突。
+    public_name: 业务边界与协作梳理
+    public_input: 已澄清的业务故事、业务词汇、约束和现有协作关系。
+    public_output: 业务板块、业务责任区、协作与交接关系、统一业务词汇、已发生的业务事实、待确认的关键业务对象和不可违反的业务规则。
   - id: work-unit.stage-decision
     name: 阶段决策包综合
     scope: project-instance
     input: Discovery、DDD 战略设计以及产品经理负责的商业约束输入。
     output: 带版本、digest、证据和下游映射的阶段决策包。
     completion: 必填字段、引用、影响面和下游消费验证通过；批准门禁完成。
+    public_name: 方案决策包综合
+    public_input: Discovery、业务边界与规则设计以及产品经理负责的商业约束输入。
+    public_output: 带版本、digest、证据和下游映射的方案决策包。
   - id: work-unit.spec-synthesis
     name: Spec 综合
     scope: project-instance

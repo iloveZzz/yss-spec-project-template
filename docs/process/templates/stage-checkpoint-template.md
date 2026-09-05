@@ -2,6 +2,7 @@
 
 ```yaml
 schema_version: 1
+repository_mode: <template-source|project-instance>
 mode: <route|orchestrate|resume|audit>
 status: <routing|running|paused-human-gate|blocked|completed>
 stage: <lifecycle stage>
@@ -16,6 +17,10 @@ gates:
     reason: <why this status applies>
     evidence_refs: []
     approval_ref: <docs/.scratch/<feature>/gates/<gate-id>-approval.yaml when approved countersign gate>
+context_reconciliation:
+  status: <pending|reconciled|not-applicable|blocked>
+  ref: <docs/.scratch/<feature>/evidence/context-reconciliation-<work-unit>.yaml>
+  evidence_refs: [CONTEXT.md]
 phase_boundary:
   decision: <continue|clear|handoff|subagent|compact>
   reason: <decision evidence>

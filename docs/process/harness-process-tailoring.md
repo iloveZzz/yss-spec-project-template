@@ -49,6 +49,7 @@
 ## 5. 上下文、反证与质量基线裁剪
 
 - Slice Contract 的 `common.context_plan` 是实现上下文的唯一轻量计划：先读 `CONTEXT.md`、已批准 Spec、当前合同和适用 ADR / 工程基线，再按影响面按需加载 references；达到最小充分证据后停止扩展。缺失权威上下文只能 `blocked` 或 `reroute`。
+- `project-instance` 的所有生命周期工作单元在批准或 `next_route` 前必须生成并校验 `context_reconciliation`；它绑定根目录唯一 `CONTEXT.md`、结构化术语引用以及全文/引用集双摘要，是横切证据而不是新增 gate。`template-source` 维护只验证模板、schema、场景和分发投影，结果记录带原因的 `not-applicable`。
 - 质量标准在 `engineering-baseline` 中定义一次，以 `baseline_id` / `baseline_version` 被 Slice Contract、YSS Skill Execution Result、`code-review` 和发布检查复用；切片不得重定义同一标准。约束结果统一写入 `constraint_results`。
 - 只有命中高风险影响时才要求 Doubt-Driven 在途反证：API / 数据迁移、跨仓契约、发布回滚、实际改变的安全行为、生命周期或生成语义。反证写入现有决策 / 架构 / 契约 / 发布审查记录，不新增生命周期阶段；缺少反证、证据不足或残余风险未处理即阻断。
 - Wayfinder 是超长工作的可选规划模式，不改变阶段、门禁或 Ticket 状态；地图收敛后按 `wayfinder → handoff → to-spec` 返回主链。

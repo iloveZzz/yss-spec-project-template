@@ -1,9 +1,15 @@
 schema_version: 1
+repository_mode: project-instance
 mode: route
 status: routing
 stage: stage.entry-triage
 artifacts: {}
 gates: {}
+context_reconciliation:
+  status: pending
+  ref: null
+  reason: 等待当前工作单元完成稳定术语回写与核对
+  evidence_refs: []
 next_work_unit: work-unit.discovery-opportunity
 phase_boundary:
   decision: continue

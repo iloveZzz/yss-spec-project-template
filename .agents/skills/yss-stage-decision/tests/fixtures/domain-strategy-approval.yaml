@@ -12,4 +12,4 @@ countersigner_role_ids:
 evidence_refs:
   - evidence.domain-strategy-review.supplier
 biological_veto: false
-notes: DDD 战略设计由需求经理起草，产品经理独立会签。
+notes: 业务边界与规则设计由需求经理起草，产品经理独立会签。

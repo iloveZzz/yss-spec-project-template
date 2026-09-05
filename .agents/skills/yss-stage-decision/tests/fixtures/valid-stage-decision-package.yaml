@@ -1,6 +1,6 @@
-schema_version: 1
+schema_version: 2
 stage_decision_id: stage-decision.supplier-admission
-package_version: v1
+package_version: v2
 status: approved
 problem_statement: 合规准入决定分散，采购无法稳定判断当前有效资格。
 target_users: [采购专员、合规专员]
@@ -17,13 +17,18 @@ unresolved_items:
     owner: role.product-manager
     next_action: 在 Spec synthesis 前完成数据盘点
     target_version: 2026-Q4
-terminology_refs: [CONTEXT.md#SupplierAdmission]
+context_snapshot:
+  context_ref: CONTEXT.md
+  context_schema_version: 1
+  document_digest: <document-digest>
+  referenced_terms_digest: <referenced-terms-digest>
+  term_refs: [Global/Supplier, ComplianceReview/AdmissionDecision]
 domain_strategy_ref:
   domain_strategy_id: domain-strategy.supplier-admission
-  domain_version: v1
-  digest: sha256:a1a4df23fdb59ab8b4433cedba8271c8a7f11bc8a38abe675d3c7b645d51d7a1
+  domain_version: v2
+  digest: <domain-strategy-digest>
   status: approved
-  persisted_ref: .agents/skills/yss-stage-decision/tests/fixtures/valid-supplier-domain.yaml
+  persisted_ref: domain-strategy.yaml
 impact_assessment:
   ui: true
   api: true
@@ -46,4 +51,4 @@ approval:
   approval_ref: .agents/skills/yss-stage-decision/tests/fixtures/stage-decision-approval.yaml
   approver: role.product-manager
   persisted_ref: docs/.scratch/supplier/stage-decision/stage-decision-package-v1.yaml
-  current_version: v1
+  current_version: v2

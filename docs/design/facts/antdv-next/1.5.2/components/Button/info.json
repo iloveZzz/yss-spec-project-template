@@ -1,0 +1,190 @@
+{
+  "name": "Button",
+  "nameZh": "按钮",
+  "description": "To trigger an operation.",
+  "props": [
+    {
+      "name": "autoInsertSpace",
+      "type": "boolean",
+      "default": "`true`",
+      "description": "We add a space between two Chinese characters by default. Set `autoInsertSpace` to `false` to disable.",
+      "descriptionZh": "我们默认提供两个汉字之间的空格，可以设置 `autoInsertSpace` 为 `false` 关闭"
+    },
+    {
+      "name": "block",
+      "type": "boolean",
+      "default": "false",
+      "description": "Option to fit button width to its parent width",
+      "descriptionZh": "将按钮宽度调整为其父宽度的选项"
+    },
+    {
+      "name": "classes",
+      "type": "Record&lt;[SemanticDOM](#semantic-dom), string&gt; \\| (info: &#123; props &#125;)=&gt; Record&lt;[SemanticDOM](#semantic-dom), string&gt;",
+      "default": "-",
+      "description": "Customize class for each semantic structure inside the component. Supports object or function.",
+      "descriptionZh": "用于自定义组件内部各语义化结构的 class，支持对象或函数"
+    },
+    {
+      "name": "color",
+      "type": "`default` \\| `primary` \\| `danger` \\| [PresetColors](#presetcolors)",
+      "default": "-",
+      "description": "Set button color",
+      "descriptionZh": "设置按钮的颜色"
+    },
+    {
+      "name": "danger",
+      "type": "boolean",
+      "default": "false",
+      "description": "Syntactic sugar. Set the danger status of button. Will follow `color` if provided",
+      "descriptionZh": "语法糖，设置危险按钮。当设置 `color` 时会以后者为准"
+    },
+    {
+      "name": "disabled",
+      "type": "boolean",
+      "default": "false",
+      "description": "Disabled state of button",
+      "descriptionZh": "设置按钮失效状态"
+    },
+    {
+      "name": "ghost",
+      "type": "boolean",
+      "default": "false",
+      "description": "Make background transparent and invert text and border colors",
+      "descriptionZh": "幽灵属性，使按钮背景透明"
+    },
+    {
+      "name": "href",
+      "type": "string",
+      "default": "-",
+      "description": "Redirect url of link button",
+      "descriptionZh": "点击跳转的地址，指定此属性 button 的行为和 a 链接一致"
+    },
+    {
+      "name": "htmlType",
+      "type": "`submit` \\| `reset` \\| `button`",
+      "default": "`button`",
+      "description": "Set the original html `type` of `button`, see: [HTML Standard](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/button#type)",
+      "descriptionZh": "设置 `button` 原生的 `type` 值，可选值请参考 [HTML 标准](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/button#type)"
+    },
+    {
+      "name": "iconPlacement",
+      "type": "`start` \\| `end`",
+      "default": "`start`",
+      "description": "Set the icon position of button",
+      "descriptionZh": "设置按钮图标组件的位置"
+    },
+    {
+      "name": "loading",
+      "type": "boolean \\| &#123; delay: number, icon: VueNode &#125;",
+      "default": "false",
+      "description": "Set the loading status of button",
+      "descriptionZh": "设置按钮载入状态"
+    },
+    {
+      "name": "loadingIcon",
+      "type": "VueNode",
+      "default": "`<LoadingOutlined />`",
+      "description": "(Global config only) Set the loading icon of button",
+      "descriptionZh": "（仅支持全局配置）设置按钮的加载图标"
+    },
+    {
+      "name": "shape",
+      "type": "`default` \\| `circle` \\| `round`",
+      "default": "`default`",
+      "description": "Can be used to set button shape",
+      "descriptionZh": "设置按钮形状"
+    },
+    {
+      "name": "size",
+      "type": "`large` \\| `middle` \\| `small`",
+      "default": "`middle`",
+      "description": "Set the size of button",
+      "descriptionZh": "设置按钮大小"
+    },
+    {
+      "name": "styles",
+      "type": "Record&lt;[SemanticDOM](#semantic-dom), CSSProperties&gt; \\| (info: &#123; props &#125;)=&gt; Record&lt;[SemanticDOM](#semantic-dom), CSSProperties&gt;",
+      "default": "-",
+      "description": "Customize inline style for each semantic structure inside the component. Supports object or function.",
+      "descriptionZh": "用于自定义组件内部各语义化结构的行内 style，支持对象或函数"
+    },
+    {
+      "name": "target",
+      "type": "string",
+      "default": "-",
+      "description": "Same as target attribute of a, works when href is specified",
+      "descriptionZh": "相当于 a 链接的 target 属性，href 存在时生效"
+    },
+    {
+      "name": "type",
+      "type": "`primary` \\| `dashed` \\| `link` \\| `text` \\| `default`",
+      "default": "`default`",
+      "description": "Syntactic sugar. Set button type. Will follow `variant` & `color` if provided",
+      "descriptionZh": "语法糖，设置按钮类型。当设置 `variant` 与 `color` 时以后者为准"
+    },
+    {
+      "name": "variant",
+      "type": "`outlined` \\| `dashed` \\| `solid` \\| `filled` \\| `text` \\| `link`",
+      "default": "-",
+      "description": "Set button variant",
+      "descriptionZh": "设置按钮的变体"
+    }
+  ],
+  "events": [
+    {
+      "name": "click",
+      "type": "`(event: MouseEvent) =&gt; void`",
+      "default": "",
+      "description": "Callback executed when button is clicked",
+      "descriptionZh": "点击按钮时的回调"
+    }
+  ],
+  "slots": [
+    {
+      "name": "icon",
+      "type": "-",
+      "default": "",
+      "description": "Set the icon component of button",
+      "descriptionZh": "设置按钮的图标组件"
+    },
+    {
+      "name": "loadingIcon",
+      "type": "-",
+      "default": "",
+      "description": "Set the loading icon component of button",
+      "descriptionZh": "设置按钮载入的图标组件"
+    }
+  ],
+  "methods": [],
+  "subComponentProps": {},
+  "commonProps": [
+    {
+      "name": "style",
+      "type": "CSSProperties",
+      "default": "-",
+      "description": "The additional style",
+      "descriptionZh": "自定义样式"
+    },
+    {
+      "name": "class",
+      "type": "string",
+      "default": "-",
+      "description": "The additional css class",
+      "descriptionZh": "自定义类名"
+    },
+    {
+      "name": "rootClass",
+      "type": "string",
+      "default": "-",
+      "description": "ClassName on the root element",
+      "descriptionZh": "添加在组件最外层的 className"
+    },
+    {
+      "name": "autoFocus",
+      "type": "boolean",
+      "default": "false",
+      "description": "Auto focus when component mounted, only effective for focusable elements like forms, links, etc.",
+      "descriptionZh": "自动获取焦点，仅对表单类、链接、交互容器等可聚焦元素生效"
+    }
+  ]
+}

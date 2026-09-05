@@ -1,0 +1,69 @@
+#!/usr/bin/env node
+import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+
+const repoRoot = path.resolve(import.meta.dirname, "..");
+const root = mkdtempSync(path.join(tmpdir(), "yss-context-reconciliation-"));
+mkdirSync(path.join(root, "docs", "evidence"), { recursive: true });
+writeFileSync(path.join(root, "yss-project.yaml"), "schema_version: 1\nrepository_mode: project-instance\n");
+writeFileSync(path.join(root, "CONTEXT.md"), `---
+context_schema_version: 1
+---
+
+# CONTEXT
+
+## 流程术语
+
+| 术语 | 含义 | 英文标识 | 避免 / 备注 |
+|---|---|---|---|
+| 阶段 | 生命周期阶段 | — | |
+
+## 业务术语
+
+| 术语 | 含义 | 英文标识 | 适用限界上下文 | 避免 / 备注 |
+|---|---|---|---|---|
+| 供应商 | 提供产品或服务的主体 | Supplier | Global | |
+| 准入结论 | 合规审查的准入结果 | AdmissionDecision | ComplianceReview | |
+`);
+
+function run(command, args) {
+  return spawnSync(command, args, { cwd: repoRoot, encoding: "utf8" });
+}
+
+const snapshotResult = run("scripts/verify-context-contract", ["--root", root, "--allowed-context", "ComplianceReview", "--term-ref", "Global/Supplier", "--term-ref", "ComplianceReview/AdmissionDecision", "--json"]);
+if (snapshotResult.status !== 0) throw new Error(snapshotResult.stderr || snapshotResult.stdout);
+const snapshot = JSON.parse(snapshotResult.stdout).context_snapshot;
+
+function record(overrides = {}) {
+  return {
+    schema_version: 1,
+    repository_mode: "project-instance",
+    stage: "stage.discovery",
+    work_unit: "work-unit.domain-strategy-design",
+    status: "reconciled",
+    context_snapshot: snapshot,
+    changes: { added: ["Global/Supplier", "ComplianceReview/AdmissionDecision"], updated: [], deprecated: [] },
+    unresolved_terms: [],
+    evidence_refs: ["CONTEXT.md"],
+    ...overrides,
+  };
+}
+
+function verify(name, value, expectedStatus) {
+  const file = path.join(root, "docs", "evidence", `${name}.json`);
+  writeFileSync(file, JSON.stringify(value, null, 2));
+  const result = run("scripts/verify-context-reconciliation", ["--root", root, file]);
+  if (result.status !== expectedStatus) throw new Error(`${name}: expected ${expectedStatus}, got ${result.status}\n${result.stdout}${result.stderr}`);
+}
+
+verify("valid", record(), 0);
+verify("stale", record({ context_snapshot: { ...snapshot, document_digest: "sha256:stale" } }), 1);
+verify("blocked", record({ status: "blocked", unresolved_terms: [{ term: "准入状态", reason: "英文标识未确认", owner: "product-owner", next_action: "确认命名" }] }), 1);
+verify("missing-term", record({ changes: { added: ["ComplianceReview/Unknown"], updated: [], deprecated: [] } }), 1);
+verify("not-applicable-project", record({ status: "not-applicable", reason: "无术语变化" }), 1);
+writeFileSync(path.join(root, "yss-project.yaml"), "schema_version: 1\nrepository_mode: template-source\n");
+verify("template-source", record({ repository_mode: "template-source", status: "not-applicable", reason: "模板源仅校验 CONTEXT.md 结构", changes: { added: [], updated: [], deprecated: [] } }), 0);
+
+process.stdout.write("Context reconciliation scenarios passed\n");

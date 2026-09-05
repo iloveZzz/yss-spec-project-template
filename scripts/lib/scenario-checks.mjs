@@ -53,7 +53,7 @@ function validateInvocationBoundary(data) {
   const result = data.workflow_execution_result;
   ensure(data.matt_skill_result?.status === "compatibility-read-only" && data.matt_skill_result?.may_influence_routing === false && data.matt_skill_result?.normalize_to === "workflow-execution-result-v1", "旧 Matt Skill Result 未限制为只读兼容 adapter");
   ensure(result?.canonical_output_schema === "workflow-execution-result-v1" && JSON.stringify(result?.accepted_input_schemas) === JSON.stringify(["workflow-execution-result-v1"]) && result?.legacy?.["matt-skill-result-v1"]?.status === "compatibility-read-only" && result.legacy["matt-skill-result-v1"].may_influence_routing === false && result.legacy["matt-skill-result-v1"].normalize_to === "workflow-execution-result-v1", "Workflow Execution Result 未将旧 Matt Skill Result 限制为只读兼容");
-  ensure(includesAll(result?.required, ["result_schema", "work_unit", "workflow_reference", "result", "evidence_refs", "changed_artifacts", "new_impacts", "stale_candidates", "next_route", "blocking_signals"]) && includesAll(result?.result_values, ["completed", "blocked", "needs-human", "failed"]) && includesAll(result?.blocking_signals, ["drift", "new_impacts", "violation", "missing_evidence", "stale_candidates"]) && includesAll(result?.completed_requires_empty, ["new_impacts", "stale_candidates"]) && includesAll(result?.completed_requires_non_empty, ["evidence_refs"]) && result?.completed_requires_readable_evidence_refs === true && result?.evidence_ref_validation === "readable-or-resolvable" && result?.completed_requires_no_blocking_signals === true && includesAll(result?.workflow_reference?.required, ["source", "skill", "invocation_mode"]), "Workflow Execution Result 的完成态证据、阻断信号或 workflow_reference 契约不完整");
+  ensure(includesAll(result?.required, ["result_schema", "work_unit", "workflow_reference", "result", "context_reconciliation", "evidence_refs", "changed_artifacts", "new_impacts", "stale_candidates", "next_route", "blocking_signals"]) && includesAll(result?.result_values, ["completed", "blocked", "needs-human", "failed"]) && includesAll(result?.blocking_signals, ["drift", "new_impacts", "violation", "missing_evidence", "stale_candidates"]) && includesAll(result?.completed_requires_empty, ["new_impacts", "stale_candidates"]) && includesAll(result?.completed_requires_non_empty, ["evidence_refs"]) && result?.completed_requires_readable_evidence_refs === true && result?.evidence_ref_validation === "readable-or-resolvable" && result?.completed_requires_no_blocking_signals === true && result?.context_reconciliation?.creates_gate === false && includesAll(result?.workflow_reference?.required, ["source", "skill", "invocation_mode"]), "Workflow Execution Result 的完成态证据、阻断信号、context_reconciliation 或 workflow_reference 契约不完整");
   const native = data.lifecycle_native_entries;
   ensure(native?.default_entry === "yss-product-lifecycle" && native?.formal_artifact_owner === "yss-product-lifecycle", "生命周期原生入口未持有默认正式资产所有权");
   ensure(JSON.stringify(native?.user_confirmation_required_at) === JSON.stringify(["spec-baseline", "prototype-confirmation", "openapi-freeze", "merge-or-release"]), "生命周期人工门禁集合已漂移");
@@ -107,6 +107,8 @@ function validateWorkflowExecutionResult(payload, contract, workUnitRoutes) {
   if (payload.result === "completed") {
     const routeResult = validateNextRoute(payload.work_unit, payload.next_route);
     ensure(routeResult.result === "allowed", `Workflow Execution Result next_route 非法: ${routeResult.blocking_signals.join(", ")}`);
+    ensure(payload.context_reconciliation?.status === "reconciled", "project-instance 完成态必须具有 reconciled context_reconciliation");
+    ensure(hasText(payload.context_reconciliation?.ref) && payload.evidence_refs.includes(payload.context_reconciliation.ref) && exists(payload.context_reconciliation.ref), "context_reconciliation.ref 必须可读并包含在 evidence_refs 中");
   }
   const accepted = [workUnit.native, workUnit.compatibility].filter(Boolean);
   ensure(contract.workflow_reference.allowed_sources.includes(payload.workflow_reference.source) && accepted.some((route) => route.source === payload.workflow_reference.source && route.skill === payload.workflow_reference.skill && route.invocation_mode === payload.workflow_reference.invocation_mode), "Workflow Execution Result workflow_reference 与 work_unit route 不匹配");
@@ -261,6 +263,7 @@ export function runScenario(name) {
       work_unit: "work-unit.spec-synthesis",
       workflow_reference: { source: "yss-product-lifecycle", skill: "yss-product-lifecycle", invocation_mode: "model-invoked" },
       result: "completed",
+      context_reconciliation: { status: "reconciled", ref: "docs/process/lifecycle-registry.yaml" },
       evidence_refs: ["docs/process/lifecycle-registry.yaml"],
       changed_artifacts: [],
       new_impacts: [],
@@ -324,6 +327,8 @@ export function runScenario(name) {
     validateWorkflowExecutionResult(compatibleResult, data.workflow_execution_result, data.work_unit_routes);
     for (const mutate of [
       (item) => { delete item.workflow_reference; },
+      (item) => { delete item.context_reconciliation; },
+      (item) => { item.context_reconciliation.status = "blocked"; },
       (item) => { item.evidence_refs = []; },
       (item) => { item.evidence_refs = ["docs/process/not-found.md"]; },
       (item) => { item.blocking_signals = ["drift"]; },

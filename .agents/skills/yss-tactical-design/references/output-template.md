@@ -11,6 +11,8 @@ owner: ai
 |---|---|---|---|
 | Spec |  |  |  |
 | Strategic DDD |  |  |  |
+| Strategic Design Handoff v2 |  |  |  |
+| Strategic Context Import / Context Reconciliation |  |  |  |
 | 状态矩阵 |  |  |  |
 | OpenAPI / 无 API 影响记录 |  |  |  |
 

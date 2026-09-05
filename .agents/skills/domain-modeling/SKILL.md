@@ -1,15 +1,15 @@
 ---
 name: domain-modeling
-description: Build and sharpen a project's domain model. Use when discussing codebase terminology, writing or editing a CONTEXT.md, or recording or editing an ADR.
+description: 梳理项目的业务词汇、责任范围和关键决策；讨论术语、编辑 CONTEXT.md 或记录 ADR 时使用。
 ---
 
-# Domain Modeling
+# 业务词汇与关键决策
 
-Actively build and sharpen the project's domain model as you design. This is the *active* discipline — challenging terms, inventing edge-case scenarios, and writing the glossary and decisions down the moment they crystallise. (Merely *reading* `CONTEXT.md` for vocabulary is not this skill — that's a one-line habit any skill can do. This skill is for when you're changing the model, not just consuming it.)
+在设计过程中主动澄清业务词汇、责任范围和关键决策：质疑含糊说法，用边界与失败场景检验规则，并在结论稳定时写入词汇表或决策记录。仅仅读取 `CONTEXT.md` 不需要调用本技能；只有准备改变业务语言或关键决策时才使用。
 
 ## File structure
 
-Most repos have a single context:
+YSS repositories use exactly one root context file:
 
 ```
 /
@@ -21,37 +21,21 @@ Most repos have a single context:
 └── src/
 ```
 
-If a `CONTEXT-MAP.md` exists at the root, the repo has multiple contexts. The map points to where each one lives:
-
-```
-/
-├── CONTEXT-MAP.md
-├── docs/
-│   └── adr/                          ← system-wide decisions
-├── src/
-│   ├── ordering/
-│   │   ├── CONTEXT.md
-│   │   └── docs/adr/                 ← context-specific decisions
-│   └── billing/
-│       ├── CONTEXT.md
-│       └── docs/adr/
-```
-
-Create files lazily — only when you have something to write. If no `CONTEXT.md` exists, create one when the first term is resolved. If no `docs/adr/` exists, create it when the first ADR is needed.
+不要创建嵌套 `CONTEXT.md` 或 `CONTEXT-MAP.md`。多个业务责任区统一记录在根词汇表的 `适用业务责任区` 列中；内部仍使用稳定 `ContextId`。第一次确有必要记录 ADR 时再创建 `docs/adr/`。YSS 仓库缺少根 `CONTEXT.md` 属于合同错误，必须先修复再继续生命周期工作。
 
 ## During the session
 
-### Challenge against the glossary
+### 对照词汇表检查冲突
 
 When the user uses a term that conflicts with the existing language in `CONTEXT.md`, call it out immediately. "Your glossary defines 'cancellation' as X, but you seem to mean Y — which is it?"
 
-### Sharpen fuzzy language
+### 澄清含糊语言
 
 When the user uses vague or overloaded terms, propose a precise canonical term. "You're saying 'account' — do you mean the Customer or the User? Those are different things."
 
-### Discuss concrete scenarios
+### 讨论具体业务故事
 
-When domain relationships are being discussed, stress-test them with specific scenarios. Invent scenarios that probe edge cases and force the user to be precise about the boundaries between concepts.
+讨论业务关系时，用具体故事和失败案例检验它们，促使用户明确概念边界、规则责任和例外结果。
 
 ### Cross-reference with code
 
@@ -61,7 +45,7 @@ When the user states how something works, check whether the code agrees. If you 
 
 When a term is resolved, update `CONTEXT.md` right there. Don't batch these up — capture them as they happen. Use the format in [CONTEXT-FORMAT.md](./CONTEXT-FORMAT.md).
 
-`CONTEXT.md` should be totally devoid of implementation details. Do not treat `CONTEXT.md` as a spec, a scratch pad, or a repository for implementation decisions. It is a glossary and nothing else.
+`CONTEXT.md` 不得包含实现细节。不要把它当作 Spec、草稿区或实现决策仓库；它只是一份稳定业务词汇表。
 
 ### Offer ADRs sparingly
 

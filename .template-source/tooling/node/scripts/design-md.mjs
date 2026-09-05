@@ -10,12 +10,47 @@ const designPath = path.join(repositoryRoot, "DESIGN.md");
 const projectionDir = path.join(repositoryRoot, "docs/design/tokens");
 const manifestPath = path.join(projectionDir, ".design-md-projection.json");
 const syncMetadataPath = path.join(repositoryRoot, "docs/design/design-system-sync.yaml");
-const expectedSections = ["Overview", "Colors", "Typography", "Layout", "Elevation & Depth", "Shapes", "Components", "Do’s and Don’ts"];
+const expectedSections = ["Overview", "Colors", "Typography", "Layout", "Elevation & Depth", "Shapes", "Components", "Do's and Don'ts"];
 const requiredFrontmatter = ["version", "name", "description", "colors", "typography", "rounded", "spacing", "components"];
 const componentProperties = new Set(["backgroundColor", "textColor", "typography", "rounded", "padding", "size", "height", "width"]);
 
 function sha256(value) { return createHash("sha256").update(value).digest("hex"); }
 function fail(message) { throw new Error(message); }
+function escapeRegExp(value) { return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+
+function resolveValue(value, frontmatter) {
+  const match = typeof value === "string" ? value.match(/^\{(colors|typography|rounded|spacing)\.([\w-]+)\}$/) : null;
+  return match ? frontmatter[match[1]]?.[match[2]] : value;
+}
+
+function projectedCssVariables(frontmatter) {
+  const components = frontmatter.components;
+  return {
+    "yss-color-primary-control": resolveValue(components["button-primary"].backgroundColor, frontmatter),
+    "yss-color-primary-control-hover": resolveValue(components["button-primary-hover"].backgroundColor, frontmatter),
+    "yss-color-on-primary": resolveValue(components["button-primary"].textColor, frontmatter),
+    "yss-control-height-compact": resolveValue(components["button-primary"].height, frontmatter),
+    "yss-card-compact-padding": resolveValue(components["card-compact"].padding, frontmatter)
+  };
+}
+
+function writeCssProjection(frontmatter) {
+  const cssPath = path.join(projectionDir, "variables.css");
+  let source = readFileSync(cssPath, "utf8");
+  for (const [name, value] of Object.entries(projectedCssVariables(frontmatter))) {
+    const declaration = `  --${name}: ${value};`;
+    const pattern = new RegExp(`^\\s*--${escapeRegExp(name)}:.*;$`, "m");
+    source = pattern.test(source) ? source.replace(pattern, declaration) : source.replace(":root {\n", `:root {\n${declaration}\n`);
+  }
+  writeFileSync(cssPath, source);
+}
+
+function validateCssProjection(frontmatter) {
+  const source = readFileSync(path.join(projectionDir, "variables.css"), "utf8");
+  for (const [name, value] of Object.entries(projectedCssVariables(frontmatter))) {
+    if (!new RegExp(`^\\s*--${escapeRegExp(name)}: ${escapeRegExp(String(value))};$`, "m").test(source)) fail(`variables.css 的 --${name} 与 DESIGN.md 不一致`);
+  }
+}
 
 function readDesign(file = designPath) {
   const source = readFileSync(file, "utf8");
@@ -26,9 +61,15 @@ function readDesign(file = designPath) {
   if (document.errors.length) fail(document.errors[0].message);
   const frontmatter = document.toJS({ maxAliasCount: 0 });
   for (const field of requiredFrontmatter) if (!frontmatter?.[field]) fail(`frontmatter 缺少 ${field}`);
-  const headings = [...source.slice(end + 4).matchAll(/^# ([^\n]+)$/gm)].map((match) => match[1].trim());
+  const body = source.slice(end + 4);
+  const headings = [...body.matchAll(/^## ([^\n]+)$/gm)].map((match) => match[1].trim());
   const actual = headings.slice(0, expectedSections.length);
-  if (JSON.stringify(actual) !== JSON.stringify(expectedSections)) fail(`章节顺序必须为: ${expectedSections.join(" → ")}`);
+  if (JSON.stringify(actual) !== JSON.stringify(expectedSections)) fail(`canonical H2 章节顺序必须为: ${expectedSections.join(" → ")}`);
+  for (const section of expectedSections) {
+    if (headings.filter((heading) => heading === section).length !== 1) fail(`canonical H2 章节必须且只能出现一次: ${section}`);
+  }
+  const canonicalH1 = [...body.matchAll(/^# ([^\n]+)$/gm)].map((match) => match[1].trim()).filter((heading) => expectedSections.includes(heading));
+  if (canonicalH1.length > 0) fail(`canonical 正文章节必须使用 H2，不能使用 H1: ${canonicalH1.join(", ")}`);
   for (const [name, component] of Object.entries(frontmatter.components)) {
     if (!/^[a-z][a-z0-9-]*$/.test(name)) fail(`组件变体名称非法: ${name}`);
     for (const key of Object.keys(component)) if (!componentProperties.has(key)) fail(`组件 ${name} 使用不支持的属性: ${key}`);
@@ -99,7 +140,8 @@ function writeThemeProjection(frontmatter) {
 }
 
 function driftCheck() {
-  const { source } = readDesign();
+  const { source, frontmatter } = readDesign();
+  validateCssProjection(frontmatter);
   if (!existsSync(manifestPath)) fail(`缺少 ${path.relative(repositoryRoot, manifestPath)}，请先执行 export --write-manifest`);
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
   if (manifest.source_sha256 !== sha256(source)) fail("DESIGN.md 已变化但投影未重新生成（source_sha256 漂移）");
@@ -126,7 +168,10 @@ function main() {
     const format = args[0] || "dtcg";
     const { frontmatter } = readDesign();
     process.stdout.write(runUpstream(["export", "DESIGN.md", "--format", format]));
-    if (args.includes("--write")) writeThemeProjection(frontmatter);
+    if (args.includes("--write")) {
+      writeThemeProjection(frontmatter);
+      writeCssProjection(frontmatter);
+    }
     if (args.includes("--write-manifest")) writeProjectionManifest();
     return;
   }

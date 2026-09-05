@@ -6,6 +6,7 @@
 - `yss-prototype-stage`
 - `yss-design-system`
 - `yss-antd-design`
+- `yss-antdv-next-design`
 - `yss-stage-decision`
 
 父模板通过 `.agents/skills/.strategic-design-skills-manifest.json` 固定上游 Git revision、路径和 tree hash。公共 ID 不因 profile 改名；共享规则先在战略设计源仓演进，再由父模板同步。
@@ -20,7 +21,7 @@
 | `yss-prototype-stage` | 用户确认后由完整生命周期判断 API 影响和实现准备 |
 | `yss-stage-decision` | 门禁状态由 `yss-product-lifecycle` 维护 |
 
-`yss-design-system` 与 `yss-antd-design` 当前不需要父模板内容适配，必须与锁定的上游 tree hash 一致。任何有效内容差异都必须保留本文件为 `adaptationRef`，不得复制成第二套公共技能身份。
+`yss-design-system`、`yss-antd-design` 与 `yss-antdv-next-design` 当前不需要父模板内容适配，必须与锁定的上游 tree hash 一致。任何有效内容差异都必须保留本文件为 `adaptationRef`，不得复制成第二套公共技能身份。
 
 ## 更新与验证
 

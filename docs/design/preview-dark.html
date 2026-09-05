@@ -1,15 +1,178 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" class="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>YSS Design System Dark Preview</title>
-  <style>
-    :root { color-scheme:dark; --primary:#6f9bff; --primary-active:#91b2ff; --text:rgba(255,255,255,.88); --secondary:rgba(255,255,255,.65); --layout:#141414; --surface:#1f1f1f; --subtle:#262626; --border:#434343; --selected:#112a45; --success:#73d13d; --warning:#ffc53d; --error:#ff7875; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; }
-    * { box-sizing:border-box } body { margin:0; color:var(--text); background:var(--layout); font-size:14px; } .shell { max-width:1440px; margin:auto; padding:16px; } .toolbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px; } h1,h2 { margin:0 0 12px; } h1 { font-size:24px; } h2 { font-size:18px; } .card { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:16px; margin-bottom:12px; } button,input,select { height:32px; border-radius:6px; border:1px solid var(--border); padding:0 12px; font:inherit; background:var(--surface); color:var(--text); } button.primary { border-color:var(--primary); background:var(--primary); color:#000; font-weight:600; } button.primary:hover,button.primary:focus-visible { background:var(--primary-active); } button:disabled { background:var(--subtle); color:var(--secondary); } input:focus-visible,select:focus-visible,button:focus-visible { outline:2px solid var(--primary); outline-offset:2px; } table { width:100%; border-collapse:collapse; } th,td { padding:8px 12px; border-bottom:1px solid var(--border); text-align:left; } th { background:var(--subtle); font-weight:600; } tr.selected { background:var(--selected); } .status { padding:8px 12px; border-radius:4px; margin:8px 0; } .success { background:var(--success); color:#000; } .warning { background:var(--warning); color:#000; } .error { background:var(--error); color:#000; } .muted { color:var(--secondary); } @media (max-width:768px) { .shell { padding:12px; } table { min-width:620px; } .table-wrap { overflow-x:auto; } }
-  </style>
+  <meta name="theme-color" content="#1d1d1d">
+  <title>YSS Design System · Dark Compact Preview</title>
+  <link rel="stylesheet" href="./preview.css">
 </head>
 <body>
-  <main class="shell"><div class="toolbar"><h1>YSS 设计系统预览</h1><span class="muted">暗色 / 紧凑密度</span><button class="primary">发布</button><button disabled>禁用</button></div><section class="card"><h2>暗色表面与状态</h2><div class="toolbar"><input aria-label="关键词" placeholder="关键词"><select aria-label="状态"><option>全部状态</option></select><button class="primary">查询</button></div><div class="status success" role="status">操作成功</div><div class="status warning" role="status">需要确认</div><div class="status error" role="alert">操作失败，请重试</div></section><section class="card"><h2>选中行与空状态</h2><div class="table-wrap"><table><thead><tr><th>名称</th><th>状态</th><th>操作</th></tr></thead><tbody><tr class="selected"><td>当前记录</td><td>已选中</td><td><button>查看</button></td></tr></tbody></table></div><p class="muted">无数据时使用可读文案，不使用空白占位。</p></section></main>
+  <main class="app-shell">
+    <header class="page-heading">
+      <div class="page-title-group">
+        <div class="eyebrow">YSS DESIGN SYSTEM</div>
+        <div class="title-line">
+          <h1>组件与状态预览</h1>
+          <span class="density-chip">暗色紧凑 · 28px</span>
+        </div>
+        <p class="page-description">darkAlgorithm + compactAlgorithm · YSS 项目主题覆盖</p>
+      </div>
+      <div class="heading-actions">
+        <nav class="mode-switch" aria-label="主题预览">
+          <a href="./preview.html">明亮</a>
+          <a href="./preview-dark.html" aria-current="page">暗色</a>
+        </nav>
+        <button class="button button-primary" type="button" data-primary-action>发布规范</button>
+        <button class="button" type="button" disabled title="当前没有待提交的变更">提交</button>
+      </div>
+    </header>
+
+    <section class="panel" aria-labelledby="filter-title">
+      <div class="panel-heading">
+        <div>
+          <div class="panel-title-row">
+            <h2 id="filter-title">任务筛选</h2>
+            <span class="panel-description">保持单行扫描，空间不足时按字段组换行</span>
+          </div>
+        </div>
+        <span class="count-chip" data-count>3 条记录</span>
+      </div>
+      <div class="panel-body">
+        <form class="toolbar" data-filter-form>
+          <div class="field field-keyword">
+            <label for="keyword">任务名称</label>
+            <input id="keyword" class="control" type="search" placeholder="输入名称或编号" data-keyword>
+          </div>
+          <div class="field field-status">
+            <label for="status">运行状态</label>
+            <select id="status" class="control" data-status>
+              <option value="all">全部状态</option>
+              <option value="success">已完成</option>
+              <option value="processing">处理中</option>
+              <option value="error">失败</option>
+            </select>
+          </div>
+          <div class="toolbar-actions">
+            <button class="button button-text" type="button" data-reset>重置</button>
+            <button class="button button-primary" type="submit">查询</button>
+          </div>
+        </form>
+        <div class="notice notice-info filter-feedback" role="status">
+          <span>暗色与紧凑算法组合使用，仍保留 14px 正文、28px 控件和清晰的状态层级。</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="table-title">
+      <div class="panel-heading">
+        <div class="panel-title-row">
+          <h2 id="table-title">任务列表</h2>
+          <span class="panel-description">状态使用浅色语义面，不使用高饱和整块填充</span>
+        </div>
+        <div class="table-actions">
+          <button class="button" type="button">导出</button>
+          <button class="button button-primary" type="button" data-dialog-trigger>新建任务</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <colgroup>
+            <col style="width:34%">
+            <col style="width:16%">
+            <col style="width:16%">
+            <col style="width:20%">
+            <col style="width:14%">
+          </colgroup>
+          <thead>
+            <tr>
+              <th scope="col">名称</th>
+              <th scope="col">状态</th>
+              <th scope="col">责任人</th>
+              <th scope="col">更新时间</th>
+              <th scope="col">操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-record data-status="success" data-search="示例任务 yss-1024" aria-selected="true">
+              <td><span class="cell-main">示例任务</span><span class="cell-sub">YSS-1024 · 设计系统核验</span></td>
+              <td><span class="status-label status-success" data-row-status>已完成</span></td>
+              <td>陈墨</td>
+              <td>2026-09-02 09:30</td>
+              <td><button class="link-action" type="button">查看</button></td>
+            </tr>
+            <tr data-record data-status="processing" data-search="加载中的任务 yss-1025">
+              <td><span class="cell-main">加载中的任务</span><span class="cell-sub">YSS-1025 · Token 同步</span></td>
+              <td><span class="status-label status-processing" data-row-status>处理中</span></td>
+              <td>林晓</td>
+              <td>刚刚</td>
+              <td><button class="link-action" type="button" disabled>编辑</button></td>
+            </tr>
+            <tr data-record data-status="error" data-search="失败任务 yss-1026">
+              <td><span class="cell-main">失败任务</span><span class="cell-sub">YSS-1026 · 权限快照</span></td>
+              <td><span class="status-label status-error" data-row-status>权限不足</span></td>
+              <td>周屿</td>
+              <td>2026-09-02 08:46</td>
+              <td><button class="link-action" type="button" data-retry>重试</button></td>
+            </tr>
+            <tr data-empty-row hidden>
+              <td colspan="5"><span class="muted">没有符合当前筛选条件的任务。</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="support-grid">
+      <section class="panel" aria-labelledby="feedback-title">
+        <div class="panel-heading">
+          <h2 id="feedback-title">语义反馈</h2>
+          <span class="panel-description">颜色、边框与文本共同传达状态</span>
+        </div>
+        <div class="panel-body">
+          <div class="notice notice-success"><span>配置已同步，可进入下一步核验。</span></div>
+          <div class="notice notice-warning"><span>有 2 项变更等待维护者确认。</span></div>
+          <div class="notice notice-error" role="alert"><span>权限快照失败，请检查访问范围后重试。</span></div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="empty-title">
+        <div class="panel-heading">
+          <h2 id="empty-title">空状态与无障碍</h2>
+          <span class="panel-description">下一步明确、焦点可见</span>
+        </div>
+        <div class="panel-body">
+          <div class="empty-state">
+            <div>
+              <p class="empty-title">暂无草稿</p>
+              <p class="muted">创建后即可验证 Modal、键盘焦点与操作反馈。</p>
+            </div>
+            <button class="button" type="button" data-dialog-trigger>创建草稿</button>
+          </div>
+          <ul class="check-list" aria-label="无障碍检查项">
+            <li>Tab 顺序符合视觉阅读顺序</li>
+            <li>200% 缩放时只有表格容器横向滚动</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <dialog class="dialog" data-dialog aria-labelledby="dialog-title">
+    <div class="dialog-header">
+      <h2 id="dialog-title">创建任务草稿</h2>
+      <button class="dialog-close" type="button" aria-label="关闭弹窗" data-dialog-close>关闭</button>
+    </div>
+    <div class="dialog-body">
+      <p>草稿只保存当前页面配置，不会触发正式发布或外部副作用。</p>
+    </div>
+    <div class="dialog-footer">
+      <button class="button" type="button" data-dialog-close>取消</button>
+      <button class="button button-primary" type="button" data-dialog-close>确认创建</button>
+    </div>
+  </dialog>
+
+  <div class="visually-hidden" aria-live="polite" data-live></div>
+  <script src="./preview.js"></script>
 </body>
 </html>

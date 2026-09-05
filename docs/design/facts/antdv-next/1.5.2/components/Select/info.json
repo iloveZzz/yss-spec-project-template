@@ -1,0 +1,640 @@
+{
+  "name": "Select",
+  "nameZh": "选择器",
+  "description": "A dropdown menu for displaying choices.",
+  "props": [
+    {
+      "name": "allowClear",
+      "type": "boolean \\| &#123; clearIcon?: VueNode &#125;",
+      "default": "false",
+      "description": "Show clear button",
+      "descriptionZh": "支持清除"
+    },
+    {
+      "name": "autoClearSearchValue",
+      "type": "boolean",
+      "default": "true",
+      "description": "Whether the current search will be cleared on selecting an item. Only applies when `mode` is set to `multiple` or `tags`",
+      "descriptionZh": "是否在选中项后清空搜索框，只在 `mode` 为 `multiple` 或 `tags` 时有效"
+    },
+    {
+      "name": "classes",
+      "type": "Record&lt;[SemanticDOM](#semantic-dom), string&gt; \\| (info: &#123; props &#125;) =&gt; Record&lt;[SemanticDOM](#semantic-dom), string&gt;",
+      "default": "-",
+      "description": "Customize class for each semantic structure inside the component. Supports object or function",
+      "descriptionZh": "用于自定义组件内部各语义化结构的 class，支持对象或函数"
+    },
+    {
+      "name": "defaultActiveFirstOption",
+      "type": "boolean",
+      "default": "true",
+      "description": "Whether active first option by default",
+      "descriptionZh": "是否默认高亮第一个选项"
+    },
+    {
+      "name": "disabled",
+      "type": "boolean",
+      "default": "false",
+      "description": "Whether disabled select",
+      "descriptionZh": "是否禁用"
+    },
+    {
+      "name": "dropdownClassName",
+      "type": "string",
+      "default": "-",
+      "description": "The className of dropdown menu, **Deprecated. Use `classes.popup.root` instead**",
+      "descriptionZh": "下拉菜单的 className 属性，**已废弃，请使用 `classes.popup.root` 替换**"
+    },
+    {
+      "name": "dropdownMatchSelectWidth",
+      "type": "boolean \\| number",
+      "default": "-",
+      "description": "Determine whether the dropdown menu and the select input are the same width, **Deprecated. Use `popupMatchSelectWidth` instead**",
+      "descriptionZh": "下拉菜单和选择器同宽，**已废弃，请使用 `popupMatchSelectWidth` 替换**"
+    },
+    {
+      "name": "dropdownRender",
+      "type": "(originNode: VueNode) =&gt; VueNode",
+      "default": "-",
+      "description": "Customize dropdown content, **Deprecated. Use `popupRender` instead**",
+      "descriptionZh": "自定义下拉框内容，**已废弃，请使用 `popupRender` 替换**"
+    },
+    {
+      "name": "dropdownStyle",
+      "type": "CSSProperties",
+      "default": "-",
+      "description": "The style of dropdown menu, **Deprecated. Use `styles.popup.root` instead**",
+      "descriptionZh": "下拉菜单的 style 属性，**已废弃，请使用 `styles.popup.root` 替换**"
+    },
+    {
+      "name": "fieldNames",
+      "type": "object",
+      "default": "&#123; label: 'label', value: 'value', options: 'options', groupLabel: 'label' &#125;",
+      "description": "Customize node label, value, options, groupLabel field name",
+      "descriptionZh": "自定义节点 label、value、options、groupLabel 的字段"
+    },
+    {
+      "name": "filterOption",
+      "type": "boolean \\| (inputValue: string, option?: Option) =&gt; boolean",
+      "default": "true",
+      "description": "If true, filter options by input, if function, filter options against it. The function will receive two arguments, `inputValue` and `option`, if the function returns true, the option will be included in the filtered set; Otherwise, it will be excluded",
+      "descriptionZh": "是否根据输入项进行筛选。当其为一个函数时，会接收 `inputValue` `option` 两个参数，当 `option` 符合筛选条件时，应返回 true，反之则返回 false"
+    },
+    {
+      "name": "filterSort",
+      "type": "(optionA: Option, optionB: Option, info: &#123; searchValue: string &#125;) =&gt; number",
+      "default": "-",
+      "description": "Sort function for search options sorting, see Array.sort's compareFunction",
+      "descriptionZh": "搜索时对筛选结果项的排序函数, 类似[Array.sort](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort)里的 compareFunction"
+    },
+    {
+      "name": "getPopupContainer",
+      "type": "(triggerNode: HTMLElement) =&gt; HTMLElement",
+      "default": "() =&gt; document.body",
+      "description": "Parent Node which the selector should be rendered to. Default to body. When position issues happen, try to modify it into scrollable content and position it relative",
+      "descriptionZh": "菜单渲染父节点。默认渲染到 body 上，如果你遇到菜单滚动定位问题，试试修改为滚动的区域，并相对其定位"
+    },
+    {
+      "name": "labelInValue",
+      "type": "boolean",
+      "default": "false",
+      "description": "Whether to embed label in value, turn the format of value from `string` to `&#123; value: string, label: VueNode &#125;`",
+      "descriptionZh": "是否把每个选项的 label 包装到 value 中，会把 Select 的 value 类型从 `string` 变为 `&#123; value: string, label: VueNode &#125;` 的格式"
+    },
+    {
+      "name": "listHeight",
+      "type": "number",
+      "default": "256",
+      "description": "Config popup height",
+      "descriptionZh": "设置弹窗滚动高度"
+    },
+    {
+      "name": "loading",
+      "type": "boolean",
+      "default": "false",
+      "description": "Indicate loading state",
+      "descriptionZh": "加载中状态"
+    },
+    {
+      "name": "maxCount",
+      "type": "number",
+      "default": "-",
+      "description": "The max number of items can be selected, only applies when `mode` is `multiple` or `tags`",
+      "descriptionZh": "最多可选择的项目数，仅在 `mode` 为 `multiple` 或 `tags` 时生效"
+    },
+    {
+      "name": "maxTagCount",
+      "type": "number \\| 'responsive'",
+      "default": "-",
+      "description": "Max tag count to show. `responsive` will cost render performance",
+      "descriptionZh": "最多显示多少个 tag，`responsive` 会根据宽度自适应"
+    },
+    {
+      "name": "maxTagPlaceholder",
+      "type": "VueNode \\| (omittedValues: LabeledValue[]) =&gt; VueNode",
+      "default": "-",
+      "description": "Placeholder for not showing tags",
+      "descriptionZh": "隐藏 tag 时显示的内容"
+    },
+    {
+      "name": "maxTagTextLength",
+      "type": "number",
+      "default": "-",
+      "description": "Max tag text length to show",
+      "descriptionZh": "最大显示的 tag 文本长度"
+    },
+    {
+      "name": "menuItemSelectedIcon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "The custom menuItemSelected icon with multiple options",
+      "descriptionZh": "自定义多选时当前选中的条目图标"
+    },
+    {
+      "name": "mode",
+      "type": "'multiple' \\| 'tags'",
+      "default": "-",
+      "description": "Set mode of Select",
+      "descriptionZh": "设置 Select 的模式为多选或标签"
+    },
+    {
+      "name": "notFoundContent",
+      "type": "VueNode",
+      "default": "`No data`",
+      "description": "Specify content to show when no result matches",
+      "descriptionZh": "当下拉列表为空时显示的内容"
+    },
+    {
+      "name": "open",
+      "type": "boolean",
+      "default": "-",
+      "description": "Controlled open state of dropdown",
+      "descriptionZh": "是否展开下拉菜单"
+    },
+    {
+      "name": "optionFilterProp",
+      "type": "string \\| string[]",
+      "default": "value",
+      "description": "Which prop value of option will be used for filter if filterOption is true. If options is set, it should be set to label. When a string[] is provided, multiple fields are searched using OR matching",
+      "descriptionZh": "搜索时过滤对应的 `option` 属性，如设置为 `children` 表示对内置 `option` 的 `children` 进行搜索。若通过 `options` 属性配置选项内容，建议设置 `optionFilterProp=\"label\"` 来对内容进行搜索。当为字符串数组时，会使用 OR 匹配多个字段"
+    },
+    {
+      "name": "options",
+      "type": "&#123; label: VueNode; value: string &#125;[]",
+      "default": "-",
+      "description": "Select options. Will get better perf than jsx definition",
+      "descriptionZh": "数据化配置选项内容，相比 jsx 定义会获得更好的渲染性能"
+    },
+    {
+      "name": "optionRender",
+      "type": "(option: FlattenOptionData&lt;BaseOptionType&gt;, info: &#123; index: number &#125;) =&gt; VueNode",
+      "default": "-",
+      "description": "Customize the rendering dropdown options",
+      "descriptionZh": "自定义渲染下拉选项"
+    },
+    {
+      "name": "placeholder",
+      "type": "VNode",
+      "default": "-",
+      "description": "The placeholder of select",
+      "descriptionZh": "选择框默认文本"
+    },
+    {
+      "name": "placement",
+      "type": "`bottomLeft` `bottomRight` `topLeft` `topRight`",
+      "default": "bottomLeft",
+      "description": "The position where the selection box pops up",
+      "descriptionZh": "选择框弹出的位置"
+    },
+    {
+      "name": "popupClassName",
+      "type": "string",
+      "default": "-",
+      "description": "The className of dropdown menu, use `classes.popup.root` instead",
+      "descriptionZh": "下拉菜单的 className 属性，使用 `classes.popup.root` 替换"
+    },
+    {
+      "name": "popupMatchSelectWidth",
+      "type": "boolean \\| number",
+      "default": "true",
+      "description": "Determine whether the dropdown menu and the select input are the same width. Default set `min-width` same as input. Will ignore when value less than select width. `false` will disable virtual scroll",
+      "descriptionZh": "下拉菜单和选择器同宽。默认将设置 `min-width`，当值小于选择框宽度时会被忽略。`false` 时会关闭虚拟滚动"
+    },
+    {
+      "name": "popupRender",
+      "type": "(originNode: VueNode) =&gt; VueNode",
+      "default": "-",
+      "description": "Customize dropdown content",
+      "descriptionZh": "自定义下拉框内容"
+    },
+    {
+      "name": "prefix",
+      "type": "VueNode",
+      "default": "-",
+      "description": "The custom prefix",
+      "descriptionZh": "自定义前缀"
+    },
+    {
+      "name": "removeIcon",
+      "type": "VueNode",
+      "default": "-",
+      "description": "The custom remove icon",
+      "descriptionZh": "自定义的多选框清除图标"
+    },
+    {
+      "name": "searchValue",
+      "type": "string",
+      "default": "-",
+      "description": "The current input \"search\" text",
+      "descriptionZh": "控制搜索文本"
+    },
+    {
+      "name": "showSearch",
+      "type": "boolean \\| Object",
+      "default": "single: false, multiple: true",
+      "description": "Whether select is searchable",
+      "descriptionZh": "配置是否可搜索"
+    },
+    {
+      "name": "size",
+      "type": "`large` \\| `middle` \\| `small`",
+      "default": "-",
+      "description": "Size of Select input",
+      "descriptionZh": "选择框大小"
+    },
+    {
+      "name": "status",
+      "type": "'error' \\| 'warning'",
+      "default": "-",
+      "description": "Set validation status",
+      "descriptionZh": "设置校验状态"
+    },
+    {
+      "name": "styles",
+      "type": "Record&lt;[SemanticDOM](#semantic-dom), CSSProperties&gt; \\| (info: &#123; props &#125;) =&gt; Record&lt;[SemanticDOM](#semantic-dom), CSSProperties&gt;",
+      "default": "-",
+      "description": "Customize inline style for each semantic structure inside the component. Supports object or function",
+      "descriptionZh": "用于自定义组件内部各语义化结构的行内 style，支持对象或函数"
+    },
+    {
+      "name": "suffixIcon",
+      "type": "VueNode",
+      "default": "`<DownOutlined />`",
+      "description": "The custom suffix icon. Customize icon will not response click open to avoid icon designed to do other interactive. You can use `pointer-events: none` style to bypass",
+      "descriptionZh": "自定义的选择框后缀图标。以防止图标被用于其他交互，替换的图标默认不会响应展开、收缩事件，可以通过添加 `pointer-events: none` 样式透传"
+    },
+    {
+      "name": "tagRender",
+      "type": "(props) =&gt; VueNode",
+      "default": "-",
+      "description": "Customize tag render, only applies when `mode` is set to `multiple` or `tags`",
+      "descriptionZh": "自定义 tag 内容 render，仅在 `mode` 为 `multiple` 或 `tags` 时生效"
+    },
+    {
+      "name": "labelRender",
+      "type": "(props: LabelInValueType) =&gt; VueNode",
+      "default": "-",
+      "description": "Customize selected label render",
+      "descriptionZh": "自定义当前选中的 label 内容 render"
+    },
+    {
+      "name": "tokenSeparators",
+      "type": "string[]",
+      "default": "-",
+      "description": "Separator used to tokenize, only applies when `mode=\"tags\"`",
+      "descriptionZh": "自动分词的分隔符，仅在 `mode=\"tags\"` 时生效"
+    },
+    {
+      "name": "value",
+      "type": "string \\| string[] \\| number \\| number[]",
+      "default": "-",
+      "description": "Current selected option (considered as a immutable array), support `v-model:value`",
+      "descriptionZh": "指定当前选中的条目，多选时为数组，支持 `v-model:value`"
+    },
+    {
+      "name": "variant",
+      "type": "`outlined` \\| `borderless` \\| `filled` \\| `underlined`",
+      "default": "`outlined`",
+      "description": "Variants of selector",
+      "descriptionZh": "形态变体"
+    },
+    {
+      "name": "virtual",
+      "type": "boolean",
+      "default": "true",
+      "description": "Disable virtual scroll when set to false",
+      "descriptionZh": "设置 false 时关闭虚拟滚动"
+    }
+  ],
+  "events": [
+    {
+      "name": "active",
+      "type": "(value: string \\| number) =&gt; void",
+      "default": "",
+      "description": "Called when keyboard or mouse interaction occurs",
+      "descriptionZh": "键盘和鼠标交互时触发"
+    },
+    {
+      "name": "blur",
+      "type": "(event: FocusEvent) =&gt; void",
+      "default": "",
+      "description": "Called when blur",
+      "descriptionZh": "失去焦点时回调"
+    },
+    {
+      "name": "change",
+      "type": "(value, option: Option \\| Array&lt;Option&gt;) =&gt; void",
+      "default": "",
+      "description": "Called when select an option or input value change",
+      "descriptionZh": "选中 option，或 input 的 value 变化时，调用此函数"
+    },
+    {
+      "name": "clear",
+      "type": "() =&gt; void",
+      "default": "",
+      "description": "Called when clear",
+      "descriptionZh": "清除内容时回调"
+    },
+    {
+      "name": "deselect",
+      "type": "(value: string \\| number) =&gt; void",
+      "default": "",
+      "description": "Called when an option is deselected, param is the selected option's value. Only called for `multiple` or `tags`, effective in multiple or tags mode only",
+      "descriptionZh": "取消选中时调用，参数为选中项的 value (或 key) 值，仅在 `multiple` 或 `tags` 模式下生效"
+    },
+    {
+      "name": "dropdownVisibleChange",
+      "type": "(open: boolean) =&gt; void",
+      "default": "",
+      "description": "Called when dropdown open, **Deprecated. Use `openChange` instead**",
+      "descriptionZh": "展开下拉菜单的回调，**已废弃，请使用 `openChange` 替换**"
+    },
+    {
+      "name": "focus",
+      "type": "(event: FocusEvent) =&gt; void",
+      "default": "",
+      "description": "Called when focus",
+      "descriptionZh": "获得焦点时回调"
+    },
+    {
+      "name": "inputKeydown",
+      "type": "(event: KeyboardEvent) =&gt; void",
+      "default": "",
+      "description": "Called when key pressed",
+      "descriptionZh": "按键按下时回调"
+    },
+    {
+      "name": "openChange",
+      "type": "(open: boolean) =&gt; void",
+      "default": "",
+      "description": "Called when dropdown open",
+      "descriptionZh": "下拉框展开或收起时回调"
+    },
+    {
+      "name": "popupScroll",
+      "type": "(event: UIEvent) =&gt; void",
+      "default": "",
+      "description": "Called when dropdown scrolls",
+      "descriptionZh": "下拉列表滚动时的回调"
+    },
+    {
+      "name": "search",
+      "type": "(value: string) =&gt; void",
+      "default": "",
+      "description": "Callback function that is fired when input changed",
+      "descriptionZh": "文本框值变化时回调"
+    },
+    {
+      "name": "select",
+      "type": "(value: string \\| number, option: Option) =&gt; void",
+      "default": "",
+      "description": "Called when an option is selected, the params are option's value (or key) and option instance",
+      "descriptionZh": "被选中时调用，参数为选中项的 value (或 key) 值"
+    }
+  ],
+  "slots": [
+    {
+      "name": "labelRender",
+      "type": "(props: LabelInValueType) =&gt; VueNode",
+      "default": "",
+      "description": "Customize selected label render",
+      "descriptionZh": "自定义当前选中的 label 内容 render"
+    },
+    {
+      "name": "maxTagPlaceholder",
+      "type": "(omittedValues: LabeledValue[]) =&gt; VueNode",
+      "default": "",
+      "description": "Placeholder for not showing tags",
+      "descriptionZh": "隐藏 tag 时显示的内容"
+    },
+    {
+      "name": "menuItemSelectedIcon",
+      "type": "VueNode",
+      "default": "",
+      "description": "The custom menuItemSelected icon with multiple options",
+      "descriptionZh": "自定义多选时当前选中的条目图标"
+    },
+    {
+      "name": "notFoundContent",
+      "type": "VueNode",
+      "default": "",
+      "description": "Specify content to show when no result matches",
+      "descriptionZh": "当下拉列表为空时显示的内容"
+    },
+    {
+      "name": "optionRender",
+      "type": "(option: FlattenOptionData&lt;BaseOptionType&gt;, info: &#123; index: number &#125;) =&gt; VueNode",
+      "default": "",
+      "description": "Customize the rendering dropdown options",
+      "descriptionZh": "自定义渲染下拉选项"
+    },
+    {
+      "name": "popupRender",
+      "type": "(originNode: VueNode) =&gt; VueNode",
+      "default": "",
+      "description": "Customize dropdown content",
+      "descriptionZh": "自定义下拉框内容"
+    },
+    {
+      "name": "prefix",
+      "type": "VueNode",
+      "default": "",
+      "description": "The custom prefix",
+      "descriptionZh": "自定义前缀"
+    },
+    {
+      "name": "removeIcon",
+      "type": "VueNode",
+      "default": "",
+      "description": "The custom remove icon",
+      "descriptionZh": "自定义的多选框清除图标"
+    },
+    {
+      "name": "suffixIcon",
+      "type": "VueNode",
+      "default": "",
+      "description": "The custom suffix icon. Customize icon will not response click open to avoid icon designed to do other interactive. You can use `pointer-events: none` style to bypass",
+      "descriptionZh": "自定义的选择框后缀图标。以防止图标被用于其他交互，替换的图标默认不会响应展开、收缩事件，可以通过添加 `pointer-events: none` 样式透传"
+    },
+    {
+      "name": "tagRender",
+      "type": "(props) =&gt; VueNode",
+      "default": "",
+      "description": "Customize tag render, only applies when `mode` is set to `multiple` or `tags`",
+      "descriptionZh": "自定义 tag 内容 render，仅在 `mode` 为 `multiple` 或 `tags` 时生效"
+    }
+  ],
+  "methods": [
+    {
+      "name": "blur()",
+      "type": "",
+      "default": "",
+      "description": "Remove focus",
+      "descriptionZh": "取消焦点"
+    },
+    {
+      "name": "focus()",
+      "type": "",
+      "default": "",
+      "description": "Get focus",
+      "descriptionZh": "获取焦点"
+    }
+  ],
+  "subComponentProps": {
+    "showSearch": {
+      "properties": [
+        {
+          "name": "autoClearSearchValue",
+          "type": "boolean",
+          "default": "true",
+          "description": "Whether the current search will be cleared on selecting an item. Only applies when `mode` is set to `multiple` or `tags`",
+          "descriptionZh": "是否在选中项后清空搜索框，只在 `mode` 为 `multiple` 或 `tags` 时有效"
+        },
+        {
+          "name": "filterOption",
+          "type": "boolean \\| (inputValue: string, option?: Option) =&gt; boolean",
+          "default": "true",
+          "description": "If true, filter options by input, if function, filter options against it. The function will receive two arguments, `inputValue` and `option`, if the function returns true, the option will be included in the filtered set; Otherwise, it will be excluded",
+          "descriptionZh": "是否根据输入项进行筛选。当其为一个函数时，会接收 `inputValue` `option` 两个参数，当 `option` 符合筛选条件时，应返回 true，反之则返回 false"
+        },
+        {
+          "name": "filterSort",
+          "type": "(optionA: Option, optionB: Option, info: &#123; searchValue: string &#125;) =&gt; number",
+          "default": "-",
+          "description": "Sort function for search options sorting, see Array.sort's compareFunction",
+          "descriptionZh": "搜索时对筛选结果项的排序函数"
+        },
+        {
+          "name": "optionFilterProp",
+          "type": "string \\| string[]",
+          "default": "value",
+          "description": "Which prop value of option will be used for filter if filterOption is true. If options is set, it should be set to label. When a string[] is provided, multiple fields are searched using OR matching",
+          "descriptionZh": "搜索时过滤对应的 `option` 属性，如设置为 `children` 表示对内置 `option` 的 `children` 进行搜索。若通过 `options` 属性配置选项内容，建议设置 `optionFilterProp=\"label\"` 来对内容进行搜索。当为字符串数组时，会使用 OR 匹配多个字段"
+        },
+        {
+          "name": "searchValue",
+          "type": "string",
+          "default": "-",
+          "description": "The current input \"search\" text",
+          "descriptionZh": "控制搜索文本"
+        },
+        {
+          "name": "onSearch",
+          "type": "(value: string) =&gt; void",
+          "default": "-",
+          "description": "Callback function that is fired when input changed",
+          "descriptionZh": "文本框值变化时回调"
+        }
+      ],
+      "events": [],
+      "slots": [],
+      "methods": []
+    },
+    "Optionprops": {
+      "properties": [
+        {
+          "name": "disabled",
+          "type": "boolean",
+          "default": "false",
+          "description": "Disable this option",
+          "descriptionZh": "是否禁用"
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "default": "-",
+          "description": "title attribute of Select Option",
+          "descriptionZh": "选中该 Option 后，Select 的 title"
+        },
+        {
+          "name": "value",
+          "type": "string \\| number",
+          "default": "-",
+          "description": "Default to filter with this property",
+          "descriptionZh": "默认根据此属性值进行筛选"
+        }
+      ],
+      "events": [],
+      "slots": [],
+      "methods": []
+    },
+    "OptGroupprops": {
+      "properties": [
+        {
+          "name": "key",
+          "type": "string",
+          "default": "-",
+          "description": "Group key",
+          "descriptionZh": "分组的 key"
+        },
+        {
+          "name": "label",
+          "type": "string \\| VueNode",
+          "default": "-",
+          "description": "Group label",
+          "descriptionZh": "分组名"
+        },
+        {
+          "name": "title",
+          "type": "string",
+          "default": "-",
+          "description": "title attribute of Select Option",
+          "descriptionZh": "title 属性"
+        }
+      ],
+      "events": [],
+      "slots": [],
+      "methods": []
+    }
+  },
+  "commonProps": [
+    {
+      "name": "style",
+      "type": "CSSProperties",
+      "default": "-",
+      "description": "The additional style",
+      "descriptionZh": "自定义样式"
+    },
+    {
+      "name": "class",
+      "type": "string",
+      "default": "-",
+      "description": "The additional css class",
+      "descriptionZh": "自定义类名"
+    },
+    {
+      "name": "rootClass",
+      "type": "string",
+      "default": "-",
+      "description": "ClassName on the root element",
+      "descriptionZh": "添加在组件最外层的 className"
+    },
+    {
+      "name": "autoFocus",
+      "type": "boolean",
+      "default": "false",
+      "description": "Auto focus when component mounted, only effective for focusable elements like forms, links, etc.",
+      "descriptionZh": "自动获取焦点，仅对表单类、链接、交互容器等可聚焦元素生效"
+    }
+  ]
+}

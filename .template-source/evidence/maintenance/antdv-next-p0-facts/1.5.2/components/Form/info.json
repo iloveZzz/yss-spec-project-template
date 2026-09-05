@@ -1,0 +1,612 @@
+{
+  "name": "Form",
+  "nameZh": "表单",
+  "description": "High-performance form component with data domain management. Includes data entry, validation, and corresponding styles.",
+  "props": [
+    {
+      "name": "classes",
+      "type": "FormClassNamesType",
+      "default": "-",
+      "description": "Customize class for each semantic structure inside the component. Supports object or function.",
+      "descriptionZh": "用于自定义组件内部各语义化结构的 class，支持对象或函数"
+    },
+    {
+      "name": "styles",
+      "type": "FormStylesType",
+      "default": "-",
+      "description": "Customize inline style for each semantic structure inside the component. Supports object or function.",
+      "descriptionZh": "用于自定义组件内部各语义化结构的行内 style，支持对象或函数"
+    },
+    {
+      "name": "colon",
+      "type": "boolean",
+      "default": "true",
+      "description": "Configure the default value of `colon` for Form.Item. Indicates whether the colon after the label is displayed (only effective when prop layout is horizontal)",
+      "descriptionZh": "配置 Form.Item 的 `colon` 的默认值。表示是否显示 label 后面的冒号 (只有在属性 layout 为 horizontal 时有效)"
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "default": "-",
+      "description": "Form name. Will be the prefix of Field `id`",
+      "descriptionZh": "表单名称，会作为表单字段 `id` 前缀使用"
+    },
+    {
+      "name": "layout",
+      "type": "FormLayout",
+      "default": "`horizontal`",
+      "description": "Form layout",
+      "descriptionZh": "表单布局"
+    },
+    {
+      "name": "labelAlign",
+      "type": "FormLabelAlign",
+      "default": "`right`",
+      "description": "The text align of label of all items",
+      "descriptionZh": "label 标签的文本对齐方式"
+    },
+    {
+      "name": "labelWrap",
+      "type": "boolean",
+      "default": "false",
+      "description": "whether label can be wrap",
+      "descriptionZh": "label 标签的文本换行方式"
+    },
+    {
+      "name": "labelCol",
+      "type": "ColProps",
+      "default": "-",
+      "description": "Label layout, like `Col` component. Set `span` `offset` value like `{span: 3, offset: 12}` or `sm: {span: 3, offset: 12}`",
+      "descriptionZh": "label 标签布局，同 `Col` 组件，设置 `span` `offset` 值，如 `{span: 3, offset: 12}` 或 `sm: {span: 3, offset: 12}`"
+    },
+    {
+      "name": "wrapperCol",
+      "type": "ColProps",
+      "default": "-",
+      "description": "The layout for input controls, same as `labelCol`",
+      "descriptionZh": "需要为输入控件设置布局样式时，使用该属性，用法同 labelCol"
+    },
+    {
+      "name": "feedbackIcons",
+      "type": "FeedbackIcons",
+      "default": "-",
+      "description": "Can be passed custom icons while `Form.Item` element has `hasFeedback`",
+      "descriptionZh": "当 `Form.Item` 有 `hasFeedback` 属性时可以自定义图标"
+    },
+    {
+      "name": "size",
+      "type": "SizeType",
+      "default": "-",
+      "description": "Set field component size (antd components only)",
+      "descriptionZh": "设置字段组件的尺寸（仅限 antd 组件）"
+    },
+    {
+      "name": "disabled",
+      "type": "boolean",
+      "default": "false",
+      "description": "Set form component disable, only available for antd components",
+      "descriptionZh": "设置表单组件禁用，仅对 antd 组件有效"
+    },
+    {
+      "name": "scrollToFirstError",
+      "type": "ScrollFocusOptions \\| boolean",
+      "default": "false",
+      "description": "Auto scroll to first failed field when submit",
+      "descriptionZh": "提交失败自动滚动到第一个错误字段"
+    },
+    {
+      "name": "requiredMark",
+      "type": "RequiredMark",
+      "default": "true",
+      "description": "Required mark style. Can use required mark or optional mark. You can not config to single Form.Item since this is a Form level config",
+      "descriptionZh": "必选样式，可以切换为必选或者可选展示样式。此为 Form 配置，Form.Item 无法单独配置"
+    },
+    {
+      "name": "variant",
+      "type": "Variant",
+      "default": "`outlined`",
+      "description": "Variant of components inside form",
+      "descriptionZh": "表单内控件变体"
+    },
+    {
+      "name": "validateMessages",
+      "type": "ValidateMessages",
+      "default": "-",
+      "description": "Validation prompt template, description [see below](#validatemessages)",
+      "descriptionZh": "验证提示模板，说明[见下](#validatemessages)"
+    },
+    {
+      "name": "model",
+      "type": "Record&lt;string, any&gt;",
+      "default": "-",
+      "description": "Form model",
+      "descriptionZh": "表单数据"
+    },
+    {
+      "name": "rules",
+      "type": "Record&lt;string, Rule[]&gt;",
+      "default": "-",
+      "description": "Form rules",
+      "descriptionZh": "表单规则"
+    },
+    {
+      "name": "validateTrigger",
+      "type": "string \\| string[] \\| false",
+      "default": "`change`",
+      "description": "Config field validate trigger. When set to `false`, all interaction-driven validation is disabled even if a rule declares `trigger` or `validateTrigger`; `validateFields` and submit validation still run",
+      "descriptionZh": "统一设置字段触发验证的时机。设为 `false` 时禁用所有交互事件触发的校验，即使规则单独声明了 `trigger` 或 `validateTrigger`；`validateFields` 和提交校验仍会执行"
+    },
+    {
+      "name": "preserve",
+      "type": "boolean",
+      "default": "true",
+      "description": "Keep field value even when field removed. You can get the preserve field value by `getFieldsValue(true)`",
+      "descriptionZh": "当字段被删除时保留字段值。你可以通过 `getFieldsValue(true)` 来获取保留字段值"
+    },
+    {
+      "name": "clearOnDestroy",
+      "type": "boolean",
+      "default": "false",
+      "description": "Clear form values when the form is uninstalled",
+      "descriptionZh": "当表单被卸载时清空表单值"
+    },
+    {
+      "name": "validateOnRuleChange",
+      "type": "boolean",
+      "default": "false",
+      "description": "Automatically revalidates the form when `Form.rules` changes",
+      "descriptionZh": "当 `Form.rules` 发生变化时，自动重新触发表单校验"
+    },
+    {
+      "name": "rootClass",
+      "type": "string",
+      "default": "-",
+      "description": "Root container class",
+      "descriptionZh": "根容器类名"
+    },
+    {
+      "name": "prefixCls",
+      "type": "string",
+      "default": "-",
+      "description": "Prefix class name",
+      "descriptionZh": "组件前缀类名"
+    }
+  ],
+  "events": [
+    {
+      "name": "finish",
+      "type": "(values: Record&lt;string, any&gt;) =&gt; void",
+      "default": "",
+      "description": "Trigger after submitting the form and verifying data successfully",
+      "descriptionZh": "提交表单且数据验证成功后回调事件"
+    },
+    {
+      "name": "finishFailed",
+      "type": "(errorInfo: ValidateErrorEntity) =&gt; void",
+      "default": "",
+      "description": "Trigger after submitting the form and verifying data failed",
+      "descriptionZh": "提交表单且数据验证失败后回调事件"
+    },
+    {
+      "name": "submit",
+      "type": "(e: Event) =&gt; void",
+      "default": "",
+      "description": "Triggered on native form submit before internal validation starts",
+      "descriptionZh": "原生表单提交时触发，在内部校验开始前执行"
+    },
+    {
+      "name": "reset",
+      "type": "(e: Event) =&gt; void",
+      "default": "",
+      "description": "Triggered on native form reset",
+      "descriptionZh": "原生表单重置时触发"
+    },
+    {
+      "name": "validate",
+      "type": "(name: InternalNamePath, status: boolean, errors: any[] \\| null) =&gt; void",
+      "default": "",
+      "description": "Triggered when a single field finishes validation. Returns the field path, pass status, and error messages",
+      "descriptionZh": "单个字段校验完成时触发，返回字段路径、是否通过以及错误信息"
+    },
+    {
+      "name": "valuesChange",
+      "type": "(changedValues: Record&lt;string, any&gt;, values: Record&lt;string, any&gt;) =&gt; void",
+      "default": "",
+      "description": "Trigger when value updated",
+      "descriptionZh": "字段值更新时触发回调事件"
+    },
+    {
+      "name": "fieldsChange",
+      "type": "(changedFields: FieldData[], allFields: FieldData[]) =&gt; void",
+      "default": "",
+      "description": "Trigger when field updated",
+      "descriptionZh": "字段更新时触发回调事件"
+    }
+  ],
+  "slots": [],
+  "methods": [
+    {
+      "name": "getFieldValue",
+      "type": "(name: NamePath) =&gt; StoreValue",
+      "default": "",
+      "description": "Get the value of a single field",
+      "descriptionZh": "获取单个字段值"
+    },
+    {
+      "name": "getFieldsValue",
+      "type": "(nameList?: NamePath[] \\| true) =&gt; Record&lt;string, any&gt;",
+      "default": "",
+      "description": "Get values of a group of fields. Pass `true` to return values of all currently collected fields",
+      "descriptionZh": "获取一组字段值；传 `true` 时返回当前已收集字段的值"
+    },
+    {
+      "name": "getFieldError",
+      "type": "(name: NamePath) =&gt; string[]",
+      "default": "",
+      "description": "Get error messages of a single field",
+      "descriptionZh": "获取单个字段的错误信息"
+    },
+    {
+      "name": "getFieldsError",
+      "type": "(nameList?: NamePath[]) =&gt; FieldError[]",
+      "default": "",
+      "description": "Get field error info list, including `errors` and `warnings`",
+      "descriptionZh": "获取字段错误信息列表，包含 `errors` 和 `warnings`"
+    },
+    {
+      "name": "getFieldWarning",
+      "type": "(name: NamePath) =&gt; string[]",
+      "default": "",
+      "description": "Get warning messages of a single field",
+      "descriptionZh": "获取单个字段的警告信息"
+    },
+    {
+      "name": "isFieldsTouched",
+      "type": "(nameList?: NamePath[] \\| boolean, allFieldsTouched?: boolean) =&gt; boolean",
+      "default": "",
+      "description": "Check whether fields have been operated on. When `allFieldsTouched` is `true`, all fields must be touched",
+      "descriptionZh": "检查字段是否已被操作；当 `allFieldsTouched` 为 `true` 时要求全部字段都已被操作"
+    },
+    {
+      "name": "isFieldTouched",
+      "type": "(name: NamePath) =&gt; boolean",
+      "default": "",
+      "description": "Check whether a single field has been operated on",
+      "descriptionZh": "检查单个字段是否已被操作"
+    },
+    {
+      "name": "isFieldsValidating",
+      "type": "(nameList?: NamePath[]) =&gt; boolean",
+      "default": "",
+      "description": "Check whether fields are validating",
+      "descriptionZh": "检查字段是否处于校验中"
+    },
+    {
+      "name": "isFieldValidating",
+      "type": "(name: NamePath) =&gt; boolean",
+      "default": "",
+      "description": "Check whether a single field is validating",
+      "descriptionZh": "检查单个字段是否处于校验中"
+    },
+    {
+      "name": "resetFields",
+      "type": "(nameList?: NamePath[]) =&gt; void",
+      "default": "",
+      "description": "Reset field values, status, and validation results. Resets all fields when omitted",
+      "descriptionZh": "重置字段值、状态和校验结果；不传时重置全部字段"
+    },
+    {
+      "name": "clearValidate",
+      "type": "(nameList?: NamePath[]) =&gt; void",
+      "default": "",
+      "description": "Clear validation results without changing field values",
+      "descriptionZh": "清空字段校验结果，不修改字段值"
+    },
+    {
+      "name": "setFields",
+      "type": "(data: FieldData[]) =&gt; void",
+      "default": "",
+      "description": "Set field state and values directly. Useful for writing `errors`, `warnings`, `touched`, and similar meta manually",
+      "descriptionZh": "直接设置字段状态和字段值，可手动写入 `errors`、`warnings`、`touched` 等"
+    },
+    {
+      "name": "setFieldValue",
+      "type": "(name: NamePath, value: any) =&gt; void",
+      "default": "",
+      "description": "Set the value of a single field",
+      "descriptionZh": "设置单个字段值"
+    },
+    {
+      "name": "setFieldsValue",
+      "type": "(values: Record&lt;string, any&gt;) =&gt; void",
+      "default": "",
+      "description": "Set values of multiple fields in batch",
+      "descriptionZh": "批量设置多个字段值"
+    },
+    {
+      "name": "validateFields",
+      "type": "(nameList?: NamePath[], options?: ValidateOptions) =&gt; Promise&lt;Record&lt;string, any&gt;&gt;",
+      "default": "",
+      "description": "Validate fields and return the corresponding field values",
+      "descriptionZh": "触发字段校验并返回对应字段值"
+    },
+    {
+      "name": "validate",
+      "type": "() =&gt; Promise&lt;Record&lt;string, any&gt;&gt;",
+      "default": "",
+      "description": "Alias of `validateFields()` for validating the whole form",
+      "descriptionZh": "`validateFields()` 的别名，用于校验整个表单"
+    },
+    {
+      "name": "submit",
+      "type": "() =&gt; void",
+      "default": "",
+      "description": "Submit the form. Equivalent to triggering form `submit`",
+      "descriptionZh": "提交表单，效果等同于触发表单 `submit`"
+    },
+    {
+      "name": "nativeElement",
+      "type": "HTMLFormElement \\| undefined",
+      "default": "",
+      "description": "Root `form` element",
+      "descriptionZh": "表单根 `form` 元素"
+    },
+    {
+      "name": "scrollToField",
+      "type": "(name: NamePath, options?: ScrollFocusOptions \\| boolean) =&gt; void",
+      "default": "",
+      "description": "Scroll to the specified field. By default it will also try to focus the field",
+      "descriptionZh": "滚动到指定字段位置，默认会尝试聚焦该字段"
+    },
+    {
+      "name": "focusField",
+      "type": "(name: NamePath) =&gt; void",
+      "default": "",
+      "description": "Focus the DOM element of the specified field",
+      "descriptionZh": "聚焦指定字段对应的 DOM 元素"
+    },
+    {
+      "name": "getFieldInstance",
+      "type": "(name: NamePath) =&gt; any",
+      "default": "",
+      "description": "Get the registered field instance",
+      "descriptionZh": "获取已注册字段实例"
+    }
+  ],
+  "subComponentProps": {
+    "FormItem": {
+      "properties": [
+        {
+          "name": "name",
+          "type": "NamePath",
+          "default": "-",
+          "description": "Field name",
+          "descriptionZh": "字段名"
+        },
+        {
+          "name": "label",
+          "type": "VueNode",
+          "default": "-",
+          "description": "Label text",
+          "descriptionZh": "标签文本"
+        },
+        {
+          "name": "labelAlign",
+          "type": "FormLabelAlign",
+          "default": "`right`",
+          "description": "The text align of label",
+          "descriptionZh": "label 标签的文本对齐方式"
+        },
+        {
+          "name": "labelCol",
+          "type": "ColProps",
+          "default": "-",
+          "description": "The layout of label. If both Form and Form.Item exists, use Item first",
+          "descriptionZh": "label 标签布局，同 `Col` 组件"
+        },
+        {
+          "name": "wrapperCol",
+          "type": "ColProps",
+          "default": "-",
+          "description": "The layout for input controls, same as `labelCol`",
+          "descriptionZh": "需要为输入控件设置布局样式时，使用该属性，用法同 labelCol"
+        },
+        {
+          "name": "colon",
+          "type": "boolean",
+          "default": "true",
+          "description": "Used with `label`, whether to display `:` after label text",
+          "descriptionZh": "配合 `label` 使用，是否显示 `:`"
+        },
+        {
+          "name": "extra",
+          "type": "VueNode",
+          "default": "-",
+          "description": "The extra prompt message",
+          "descriptionZh": "额外提示信息"
+        },
+        {
+          "name": "help",
+          "type": "VueNode",
+          "default": "-",
+          "description": "The prompt message. If not provided, the prompt message will be generated by the validation rule",
+          "descriptionZh": "提示信息，不配置则按校验规则生成"
+        },
+        {
+          "name": "hasFeedback",
+          "type": "boolean \\| \\{ icons: FeedbackIcons \\}",
+          "default": "false",
+          "description": "Display validation status icon",
+          "descriptionZh": "配合 `validateStatus` 展示状态图标"
+        },
+        {
+          "name": "validateStatus",
+          "type": "ValidateStatus",
+          "default": "-",
+          "description": "The validation status",
+          "descriptionZh": "校验状态"
+        },
+        {
+          "name": "required",
+          "type": "boolean",
+          "default": "-",
+          "description": "Display required style. When not set, it will be generated by the validation rule. Set it to `false` to disable the style.",
+          "descriptionZh": "必填样式设置。如不设置，则会根据校验规则自动生成。设置为 `false` 可禁用该样式"
+        },
+        {
+          "name": "rules",
+          "type": "Rule[]",
+          "default": "-",
+          "description": "Rules for field validation",
+          "descriptionZh": "校验规则"
+        },
+        {
+          "name": "validateTrigger",
+          "type": "string \\| string[] \\| false",
+          "default": "`change`",
+          "description": "When to validate the value of children node. When set to `false`, all interaction-driven validation for the field is disabled even if a rule declares `trigger` or `validateTrigger`; explicit `validateFields` and submit validation still run",
+          "descriptionZh": "触发校验的时机。设为 `false` 时禁用当前字段的所有交互事件校验，即使规则单独声明了 `trigger` 或 `validateTrigger`；显式调用 `validateFields` 或提交时仍会校验"
+        },
+        {
+          "name": "validateDebounce",
+          "type": "number",
+          "default": "-",
+          "description": "Delay milliseconds to start validation",
+          "descriptionZh": "延迟校验时间（毫秒）"
+        },
+        {
+          "name": "validateFirst",
+          "type": "boolean \\| `parallel`",
+          "default": "false",
+          "description": "Whether stop validate on first rule of error for this field. Will parallel validate when `parallel` configured",
+          "descriptionZh": "是否在第一个规则失败后停止"
+        },
+        {
+          "name": "noStyle",
+          "type": "boolean",
+          "default": "false",
+          "description": "No style for `true`, used as a pure field control",
+          "descriptionZh": "为 `true` 时不带样式，仅作为字段控制"
+        },
+        {
+          "name": "id",
+          "type": "string",
+          "default": "-",
+          "description": "Set sub label `htmlFor`",
+          "descriptionZh": "设置 `label` 的 `htmlFor`"
+        },
+        {
+          "name": "hidden",
+          "type": "boolean",
+          "default": "false",
+          "description": "Whether to hide Form.Item (still collect and validate value)",
+          "descriptionZh": "是否隐藏 Form.Item（依然收集与校验）"
+        },
+        {
+          "name": "messageVariables",
+          "type": "Record&lt;string, string&gt;",
+          "default": "-",
+          "description": "The default validate field info",
+          "descriptionZh": "校验文案变量"
+        },
+        {
+          "name": "tooltip",
+          "type": "VueNode \\| TooltipProps & \\{ icon: VueNode \\}",
+          "default": "-",
+          "description": "Config tooltip info",
+          "descriptionZh": "配置提示信息"
+        },
+        {
+          "name": "layout",
+          "type": "`horizontal` \\| `vertical`",
+          "default": "-",
+          "description": "Form item layout",
+          "descriptionZh": "表单项布局"
+        },
+        {
+          "name": "rootClass",
+          "type": "string",
+          "default": "-",
+          "description": "Root container class",
+          "descriptionZh": "根容器类名"
+        },
+        {
+          "name": "prefixCls",
+          "type": "string",
+          "default": "-",
+          "description": "Prefix class name",
+          "descriptionZh": "组件前缀类名"
+        }
+      ],
+      "events": [],
+      "slots": [
+        {
+          "name": "default",
+          "type": "() =&gt; any",
+          "default": "",
+          "description": "Form control content",
+          "descriptionZh": "表单控件内容"
+        },
+        {
+          "name": "label",
+          "type": "() =&gt; any",
+          "default": "",
+          "description": "Custom label content (higher priority than `label` prop)",
+          "descriptionZh": "自定义标签内容（优先于 `label` 属性）"
+        },
+        {
+          "name": "tooltip",
+          "type": "(tooltip?: VueNode \\| TooltipProps & &#123; icon: VueNode &#125;) =&gt; any",
+          "default": "",
+          "description": "Custom label tooltip content. The slot arg is the current `tooltip` config; when `tooltip` is an options object, returning an object from slot will be merged into it",
+          "descriptionZh": "自定义标签提示内容。插槽参数为当前 `tooltip` 配置；当 `tooltip` 为对象配置时，插槽返回对象会与原配置合并"
+        },
+        {
+          "name": "extra",
+          "type": "() =&gt; any",
+          "default": "",
+          "description": "Custom extra message (higher priority than `extra` prop)",
+          "descriptionZh": "自定义额外提示信息（优先于 `extra` 属性）"
+        },
+        {
+          "name": "help",
+          "type": "() =&gt; any",
+          "default": "",
+          "description": "Custom help/error message (higher priority than `help` prop)",
+          "descriptionZh": "自定义帮助/错误提示（优先于 `help` 属性）"
+        }
+      ],
+      "methods": []
+    }
+  },
+  "commonProps": [
+    {
+      "name": "style",
+      "type": "CSSProperties",
+      "default": "-",
+      "description": "The additional style",
+      "descriptionZh": "自定义样式"
+    },
+    {
+      "name": "class",
+      "type": "string",
+      "default": "-",
+      "description": "The additional css class",
+      "descriptionZh": "自定义类名"
+    },
+    {
+      "name": "rootClass",
+      "type": "string",
+      "default": "-",
+      "description": "ClassName on the root element",
+      "descriptionZh": "添加在组件最外层的 className"
+    },
+    {
+      "name": "autoFocus",
+      "type": "boolean",
+      "default": "false",
+      "description": "Auto focus when component mounted, only effective for focusable elements like forms, links, etc.",
+      "descriptionZh": "自动获取焦点，仅对表单类、链接、交互容器等可聚焦元素生效"
+    }
+  ]
+}

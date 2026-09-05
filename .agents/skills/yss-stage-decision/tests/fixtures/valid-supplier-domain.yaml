@@ -1,6 +1,6 @@
-schema_version: 1
+schema_version: 2
 domain_strategy_id: domain-strategy.supplier-admission
-domain_version: v1
+domain_version: v2
 status: approved
 contexts:
   - context_id: SupplierManagement
@@ -94,7 +94,12 @@ invariants:
     responsible_context: ComplianceReview
     scenario_refs: [scenario.admission-expires]
     verification_method: 领域场景测试和事件版本校验
-terminology_refs: [contexts/SupplierManagement/CONTEXT.md, contexts/ComplianceReview/CONTEXT.md]
+context_snapshot:
+  context_ref: CONTEXT.md
+  context_schema_version: 1
+  document_digest: <document-digest>
+  referenced_terms_digest: <referenced-terms-digest>
+  term_refs: [Global/Supplier, ComplianceReview/AdmissionDecision]
 downstream_mapping:
   - domain_change: admission-decision-validity
     impacts: [spec, openapi, procurement-acceptance-tests]
@@ -105,4 +110,4 @@ approval:
   approval_ref: .agents/skills/yss-stage-decision/tests/fixtures/domain-strategy-approval.yaml
   approver: role.product-manager
   persisted_ref: docs/.scratch/supplier/domain/domain-strategy-v1.yaml
-  current_version: v1
+  current_version: v2

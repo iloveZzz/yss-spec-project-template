@@ -72,7 +72,7 @@ test("yss-ui 上游清单拒绝重复 canonical 与缺失 hash", () => {
   assert.throws(() => validateYssUiSkillManifest(missingHash), /upstream_hash/);
 });
 
-test("战略设计上游清单固定五项公共技能与 Git revision", () => {
+test("战略设计上游清单固定公共技能集合与 Git revision", () => {
   const manifest = JSON.parse(readFileSync(strategicManifestPath, "utf8"));
   const contract = validateStrategicDesignSkillManifest(manifest);
   assert.equal(contract.source, "iloveZzz/yss-harness-design-agent");
@@ -80,6 +80,7 @@ test("战略设计上游清单固定五项公共技能与 Git revision", () => {
   assert.deepEqual(contract.skills.map(({ canonical }) => canonical).sort(), [
     "prototype-review",
     "yss-antd-design",
+    "yss-antdv-next-design",
     "yss-design-system",
     "yss-prototype-stage",
     "yss-stage-decision",

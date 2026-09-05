@@ -93,7 +93,8 @@
 | --- | --- | --- | --- |
 | `yss-prototype-stage` | `prototype-review` | `review-only` | — |
 | `yss-prototype-stage` | `yss-design-system` | `coordination-only` | — |
-| `yss-prototype-stage` | `yss-antd-design` | `context-conditional` | `h2-react-antd` |
+| `yss-prototype-stage` | `yss-antdv-next-design` | `context-conditional` | `h2-vue-antdv-next-default` |
+| `yss-prototype-stage` | `yss-antd-design` | `context-conditional` | `h2-react-antd-explicit-compatibility` |
 | `yss-ddd-scaffold-generator` | `yss-backend-scaffold-parent` | `context-required` | — |
 | `yss-ddd-scaffold-generator` | `alibaba-java-code-style` | `context-required` | — |
 | `yss-domain` | `alibaba-java-code-style` | `context-required` | — |

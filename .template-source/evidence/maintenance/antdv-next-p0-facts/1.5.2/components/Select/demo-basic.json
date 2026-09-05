@@ -1,0 +1,7 @@
+{
+  "component": "Select",
+  "name": "basic",
+  "title": "Basic Usage",
+  "description": "Basic Usage.",
+  "code": "<script setup lang=\"ts\">\nimport { shallowRef } from 'vue'\n\nconst options = [\n  { value: 'jack', label: 'Jack' },\n  { value: 'lucy', label: 'Lucy' },\n  { value: 'Yiminghe', label: 'yiminghe' },\n  { value: 'disabled', label: 'Disabled', disabled: true },\n]\nconst value1 = shallowRef('lucy')\nconst value2 = shallowRef('lucy')\n</script>\n\n<template>\n  <a-space wrap>\n    <div>\n      {{ value1 }}\n    </div>\n    <a-select v-model:value=\"value1\" style=\"width: 120px\" :options=\"options\" />\n    <a-select v-model:value=\"value2\" style=\"width: 120px\" disabled :options=\"[{ value: 'lucy', label: 'lucy' }]\" />\n  </a-space>\n</template>"
+}

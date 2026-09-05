@@ -1,0 +1,55 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  本轮调整根 DESIGN.md 的 canonical heading 合同、核心 design-md 校验与投影语义、
+  原型生成约束和 AntDV Next 事实包 freshness，属于 core-validator、
+  generation-semantics 与 aggregate-behavior-change。
+triggers:
+  - core-validator
+  - generation-semantics
+  - aggregate-behavior-change
+changed_assets:
+  - DESIGN.md
+  - .template-source/tooling/node/scripts/design-md.mjs
+  - .template-source/tooling/node/test/design-md.test.mjs
+  - .agents/skills/yss-design-system/SKILL.md
+  - .agents/skills/yss-design-system/references/design-system.md
+  - .agents/skills/yss-design-system/references/design-qa-theme.md
+  - .agents/skills/yss-prototype-stage/SKILL.md
+  - .agents/skills/yss-prototype-stage/references/product-design-adapter.md
+  - .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs
+  - .agents/skills/yss-prototype-stage/tests/run-scenarios.mjs
+  - .agents/skills/yss-antdv-next-design/SKILL.md
+  - .agents/skills/yss-antdv-next-design/references/fact-pack.md
+  - .agents/skills/yss-antdv-next-design/scripts/collect-antdv-next-facts.mjs
+  - .agents/skills/yss-antdv-next-design/scripts/validate-fact-pack.mjs
+  - .agents/skills/yss-antdv-next-design/tests/run-scenarios.mjs
+  - docs/design/design.md
+  - docs/design/README.md
+  - docs/design/templates/prototype-evidence-template.yaml
+  - docs/design/tokens/variables.css
+  - docs/design/tokens/.design-md-projection.json
+  - docs/design/design-system-sync.yaml
+  - docs/design/facts/antdv-next/1.5.2/manifest.json
+  - .template-source/evidence/maintenance/antdv-next-p0-facts/1.5.2/manifest.json
+  - skills-lock.json
+verification_evidence:
+  - kind: red
+    command: .template-source/evidence/maintenance/awesome-design-md-p0-red-2026-09-05.md
+    result: pass
+  - kind: green
+    command: .template-source/evidence/maintenance/awesome-design-md-p0-green-2026-09-05.md
+    result: pass
+  - kind: self-check
+    command: .template-source/evidence/maintenance/awesome-design-md-p0-green-2026-09-05.md
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

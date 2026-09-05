@@ -1,0 +1,7 @@
+{
+  "component": "Modal",
+  "name": "basic",
+  "title": "Basic",
+  "description": "Basic modal.",
+  "code": "<script setup lang=\"ts\">\nimport { shallowRef } from 'vue'\n\nconst open = shallowRef(false)\n\nfunction handleOk() {\n  open.value = false\n}\n</script>\n\n<template>\n  <a-flex gap=\"small\">\n    <a-button type=\"primary\" @click=\"open = true\">\n      Open Modal\n    </a-button>\n  </a-flex>\n  <a-modal\n    v-model:open=\"open\"\n    title=\"Basic Modal\"\n    :closable=\"{ 'aria-label': 'Custom Close Button' }\"\n    @ok=\"handleOk\"\n  >\n    <p>Some contents...</p>\n    <p>Some contents...</p>\n    <p>Some contents...</p>\n  </a-modal>\n</template>"
+}

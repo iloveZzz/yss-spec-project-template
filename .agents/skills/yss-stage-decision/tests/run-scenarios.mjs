@@ -1,68 +1,135 @@
 #!/usr/bin/env node
+import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { tmpdir } from "node:os";
+import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
 
-const root = dirname(fileURLToPath(import.meta.url));
-const validator = join(root, "..", "scripts", "validate-domain-strategy.mjs");
-const packageValidator = join(root, "..", "scripts", "validate-stage-decision-package.mjs");
-const valid = join(root, "fixtures", "valid-supplier-domain.yaml");
-const invalid = join(root, "fixtures", "invalid-direction.yaml");
-const validPackage = join(root, "fixtures", "valid-stage-decision-package.yaml");
-const invalidPackage = join(root, "fixtures", "invalid-stage-decision-blocker.yaml");
-const run = (file) => spawnSync(process.execPath, [validator, file], { encoding: "utf8" });
-const pass = run(valid);
-if (pass.status !== 0) throw new Error(`valid fixture should pass: ${pass.stderr}`);
-const fail = run(invalid);
-if (fail.status === 0 || !fail.stderr.includes("direction_explanation")) throw new Error("invalid direction fixture should be blocked");
-const packagePass = spawnSync(process.execPath, [packageValidator, validPackage], { encoding: "utf8" });
-if (packagePass.status !== 0) throw new Error(`valid stage decision package should pass: ${packagePass.stderr}`);
-const packageFail = spawnSync(process.execPath, [packageValidator, invalidPackage], { encoding: "utf8" });
-if (packageFail.status === 0 || !packageFail.stderr.includes("blocker")) throw new Error("blocker package should be blocked");
+const testsRoot = dirname(fileURLToPath(import.meta.url));
+const projectRoot = resolve(testsRoot, "../../../..");
+const validator = join(testsRoot, "..", "scripts", "validate-domain-strategy.mjs");
+const packageValidator = join(testsRoot, "..", "scripts", "validate-stage-decision-package.mjs");
+const contextValidator = join(projectRoot, "scripts", "verify-context-contract");
+const migrationTool = join(testsRoot, "..", "scripts", "migrate-context-references.mjs");
+const validTemplate = join(testsRoot, "fixtures", "valid-supplier-domain.yaml");
+const validPackageTemplate = join(testsRoot, "fixtures", "valid-stage-decision-package.yaml");
 
-const temporaryRoot = await mkdtemp(join(tmpdir(), "yss-stage-decision-pressure-"));
+function canonical(value) {
+  if (Array.isArray(value)) return value.map(canonical);
+  if (value && typeof value === "object") return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonical(value[key])]));
+  return value;
+}
+
+function digestYaml(source) {
+  const document = parseDocument(source, { maxAliasCount: 0, uniqueKeys: true });
+  if (document.errors.length) throw new Error(document.errors[0].message);
+  return `sha256:${createHash("sha256").update(JSON.stringify(canonical(document.toJS({ maxAliasCount: 0 })))).digest("hex")}`;
+}
+
+function run(command, file, contextRoot) {
+  return spawnSync(process.execPath, [command, file, "--root", contextRoot], { cwd: projectRoot, encoding: "utf8" });
+}
+
+function expectBlocked(result, pattern, label) {
+  if (result.status === 0 || !pattern.test(`${result.stdout}\n${result.stderr}`)) throw new Error(`${label} should be blocked: ${result.stderr}`);
+}
+
+const contextSource = `---
+context_schema_version: 1
+---
+# 领域上下文
+
+## 流程术语
+
+| 术语 | 含义 | 英文标识 | 避免 / 备注 |
+|---|---|---|---|
+| Spec | 产品研发规格。 | — |  |
+
+## 业务术语
+
+| 术语 | 含义 | 英文标识 | 适用业务责任区 | 避免 / 备注 |
+|---|---|---|---|---|
+| 供应商 | 提供商品或服务的业务主体。 | Supplier | Global | 避免：\`厂商\` |
+| 准入决定 | 合规审查形成的准入结论。 | AdmissionDecision | ComplianceReview | 避免：\`审批结果\` |
+`;
+
+const temporaryRoot = await mkdtemp(join(tmpdir(), "yss-stage-decision-v2-"));
 try {
-  const validSource = await readFile(valid, "utf8");
+  await writeFile(join(temporaryRoot, "CONTEXT.md"), contextSource);
+  const contextResult = spawnSync(process.execPath, [contextValidator, "--root", temporaryRoot, "--allowed-context", "SupplierManagement", "--allowed-context", "ComplianceReview", "--allowed-context", "ProcurementExecution", "--term-ref", "Global/Supplier", "--term-ref", "ComplianceReview/AdmissionDecision", "--json"], { cwd: projectRoot, encoding: "utf8" });
+  if (contextResult.status !== 0) throw new Error(`context fixture should pass: ${contextResult.stderr}`);
+  const context = JSON.parse(contextResult.stdout);
+
+  const domainSource = (await readFile(validTemplate, "utf8"))
+    .replace("<document-digest>", context.document_digest)
+    .replace("<referenced-terms-digest>", context.referenced_terms_digest);
+  const domainFile = join(temporaryRoot, "domain-strategy.yaml");
+  await writeFile(domainFile, domainSource);
+  const pass = run(validator, domainFile, temporaryRoot);
+  if (pass.status !== 0) throw new Error(`valid v2 fixture should pass: ${pass.stderr}`);
+
+  const legacyFile = join(temporaryRoot, "legacy-domain.yaml");
+  await writeFile(legacyFile, domainSource.replace("schema_version: 2", "schema_version: 1"));
+  expectBlocked(run(validator, legacyFile, temporaryRoot), /migration-required/, "legacy domain contract");
+
+  const migratableLegacy = join(temporaryRoot, "migratable-legacy-domain.yaml");
+  const migratableLegacySource = domainSource
+    .replace("schema_version: 2", "schema_version: 1")
+    .replace(/context_snapshot:\n[\s\S]*?\ndownstream_mapping:/, "terminology_refs: [CONTEXT.md#Supplier, contexts/ComplianceReview/CONTEXT.md#AdmissionDecision]\ndownstream_mapping:");
+  await writeFile(migratableLegacy, migratableLegacySource);
+  const migrated = spawnSync(process.execPath, [migrationTool, migratableLegacy, "--root", temporaryRoot], { cwd: projectRoot, encoding: "utf8" });
+  if (migrated.status !== 0) throw new Error(`migratable v1 contract should migrate: ${migrated.stderr}`);
+  const migratedValue = JSON.parse(migrated.stdout);
+  if (migratedValue.schema_version !== 2 || migratedValue.terminology_refs !== undefined || migratedValue.context_snapshot.context_ref !== "CONTEXT.md" || migratedValue.context_snapshot.term_refs.join(",") !== "ComplianceReview/AdmissionDecision,Global/Supplier") throw new Error("migrated context snapshot is incomplete");
+
+  const ambiguousLegacy = join(temporaryRoot, "ambiguous-legacy-domain.yaml");
+  await writeFile(ambiguousLegacy, migratableLegacySource.replace("CONTEXT.md#Supplier, contexts/ComplianceReview/CONTEXT.md#AdmissionDecision", "contexts/ComplianceReview/CONTEXT.md"));
+  const ambiguousMigration = spawnSync(process.execPath, [migrationTool, ambiguousLegacy, "--root", temporaryRoot], { cwd: projectRoot, encoding: "utf8" });
+  expectBlocked(ambiguousMigration, /migration-required.*无法唯一定位|无法唯一定位.*migration-required/, "ambiguous legacy reference");
+
+  const wrongPath = join(temporaryRoot, "wrong-context-path.yaml");
+  await writeFile(wrongPath, domainSource.replace("context_ref: CONTEXT.md", "context_ref: contexts/ComplianceReview/CONTEXT.md"));
+  expectBlocked(run(validator, wrongPath, temporaryRoot), /context_ref.*CONTEXT\.md/, "nested context path");
+
+  const staleContext = join(temporaryRoot, "stale-context.yaml");
+  await writeFile(staleContext, domainSource.replace(context.document_digest, "sha256:stale"));
+  expectBlocked(run(validator, staleContext, temporaryRoot), /document_digest/, "stale context digest");
+
+  const invalidDirection = join(temporaryRoot, "invalid-direction.yaml");
+  await writeFile(invalidDirection, domainSource.replace("direction_explanation: 申请资料由", "direction_explanation: \n    ignored: 申请资料由"));
+  expectBlocked(run(validator, invalidDirection, temporaryRoot), /direction_explanation/, "missing direction explanation");
+
   const sharedKernel = join(temporaryRoot, "shared-kernel.yaml");
-  await writeFile(sharedKernel, validSource.replace("relationship_pattern: Customer/Supplier", "relationship_pattern: Shared Kernel"));
-  const sharedKernelResult = run(sharedKernel);
-  if (sharedKernelResult.status === 0 || !sharedKernelResult.stderr.includes("shared_kernel_approval_ref")) throw new Error("unapproved Shared Kernel should be blocked");
+  await writeFile(sharedKernel, domainSource.replace("relationship_pattern: Customer/Supplier", "relationship_pattern: Shared Kernel"));
+  expectBlocked(run(validator, sharedKernel, temporaryRoot), /shared_kernel_approval_ref/, "unapproved Shared Kernel");
+
   const unknownContext = join(temporaryRoot, "unknown-context.yaml");
-  await writeFile(unknownContext, validSource.replace("to_context: ComplianceReview", "to_context: UnknownContext"));
-  const unknownContextResult = run(unknownContext);
-  if (unknownContextResult.status === 0 || !unknownContextResult.stderr.includes("未引用已声明上下文")) throw new Error("unknown context should be blocked");
-  const wrongArrayType = join(temporaryRoot, "wrong-array-type.yaml");
-  await writeFile(wrongArrayType, validSource.replace("responsibilities: [供应商申请、资料生命周期]", "responsibilities: [42]"));
-  const wrongArrayTypeResult = run(wrongArrayType);
-  if (wrongArrayTypeResult.status === 0 || !wrongArrayTypeResult.stderr.includes("responsibilities[0]")) throw new Error("non-string array item should be blocked");
-  const missingSubdomainType = join(temporaryRoot, "missing-subdomain-type.yaml");
-  await writeFile(missingSubdomainType, validSource.replace("    subdomain_type: Supporting Subdomain\n", ""));
-  const missingSubdomainTypeResult = run(missingSubdomainType);
-  if (missingSubdomainTypeResult.status === 0 || !missingSubdomainTypeResult.stderr.includes("subdomain_type 缺失")) throw new Error("missing subdomain type should be blocked");
-  const wrongReferenceType = join(temporaryRoot, "wrong-reference-type.yaml");
-  await writeFile(wrongReferenceType, validSource.replace("terminology_refs: [contexts/SupplierManagement/CONTEXT.md, contexts/ComplianceReview/CONTEXT.md]", "terminology_refs: [42]"));
-  const wrongReferenceTypeResult = run(wrongReferenceType);
-  if (wrongReferenceTypeResult.status === 0 || !wrongReferenceTypeResult.stderr.includes("terminology_refs[0]")) throw new Error("non-string terminology reference should be blocked");
-  const emptyDomainCollections = join(temporaryRoot, "empty-domain-collections.yaml");
-  await writeFile(emptyDomainCollections, validSource.replace(/contexts:\n[\s\S]*?subdomains:/, "contexts: []\nsubdomains:").replace(/subdomains:\n[\s\S]*?relationships:/, "subdomains: []\nrelationships:").replace(/scenarios:\n[\s\S]*?concept_candidates:/, "scenarios: []\nconcept_candidates:"));
-  const emptyDomainCollectionsResult = run(emptyDomainCollections);
-  if (emptyDomainCollectionsResult.status === 0 || !emptyDomainCollectionsResult.stderr.includes("contexts 必须是至少 1 项的数组")) throw new Error("empty DDD collections should be blocked");
-  const wrongDomainApproval = join(temporaryRoot, "wrong-domain-approval.yaml");
-  await writeFile(wrongDomainApproval, validSource.replace("approval_ref: .agents/skills/yss-stage-decision/tests/fixtures/domain-strategy-approval.yaml", "approval_ref: docs/.scratch/does-not-exist.yaml"));
-  const wrongDomainApprovalResult = run(wrongDomainApproval);
-  if (wrongDomainApprovalResult.status === 0 || !wrongDomainApprovalResult.stderr.includes("approval.approval_ref")) throw new Error("unreadable domain approval ref should be blocked");
-  const packageSource = await readFile(validPackage, "utf8");
-  const packageWrongArrayType = join(temporaryRoot, "package-wrong-array-type.yaml");
-  await writeFile(packageWrongArrayType, packageSource.replace("target_users: [采购专员、合规专员]", "target_users: [42]"));
-  const packageWrongArrayTypeResult = spawnSync(process.execPath, [packageValidator, packageWrongArrayType], { encoding: "utf8" });
-  if (packageWrongArrayTypeResult.status === 0 || !packageWrongArrayTypeResult.stderr.includes("target_users[0]")) throw new Error("package non-string array item should be blocked");
-  const packageWrongApproval = join(temporaryRoot, "package-wrong-approval.yaml");
-  await writeFile(packageWrongApproval, packageSource.replace("approval_ref: .agents/skills/yss-stage-decision/tests/fixtures/stage-decision-approval.yaml", "approval_ref: docs/.scratch/does-not-exist.yaml"));
-  const packageWrongApprovalResult = spawnSync(process.execPath, [packageValidator, packageWrongApproval], { encoding: "utf8" });
-  if (packageWrongApprovalResult.status === 0 || !packageWrongApprovalResult.stderr.includes("approval_ref")) throw new Error("unreadable approval ref should be blocked");
+  await writeFile(unknownContext, domainSource.replace("to_context: ComplianceReview", "to_context: UnknownContext"));
+  expectBlocked(run(validator, unknownContext, temporaryRoot), /未引用已声明上下文|未在领域战略中登记/, "unknown context");
+
+  const packageSource = (await readFile(validPackageTemplate, "utf8"))
+    .replace("<document-digest>", context.document_digest)
+    .replace("<referenced-terms-digest>", context.referenced_terms_digest)
+    .replace("<domain-strategy-digest>", digestYaml(domainSource));
+  const packageFile = join(temporaryRoot, "stage-decision.yaml");
+  await writeFile(packageFile, packageSource);
+  const packagePass = run(packageValidator, packageFile, temporaryRoot);
+  if (packagePass.status !== 0) throw new Error(`valid v2 stage decision package should pass: ${packagePass.stderr}`);
+
+  const packageLegacy = join(temporaryRoot, "legacy-stage-decision.yaml");
+  await writeFile(packageLegacy, packageSource.replace("schema_version: 2", "schema_version: 1"));
+  expectBlocked(run(packageValidator, packageLegacy, temporaryRoot), /migration-required/, "legacy stage decision contract");
+
+  const packageBlocker = join(temporaryRoot, "stage-decision-blocker.yaml");
+  await writeFile(packageBlocker, packageSource.replace("type: deferred", "type: blocker"));
+  expectBlocked(run(packageValidator, packageBlocker, temporaryRoot), /blocker/, "blocker package");
+
+  const packageWrongArray = join(temporaryRoot, "stage-decision-wrong-array.yaml");
+  await writeFile(packageWrongArray, packageSource.replace("target_users: [采购专员、合规专员]", "target_users: [42]"));
+  expectBlocked(run(packageValidator, packageWrongArray, temporaryRoot), /target_users\[0\]/, "package non-string array item");
 } finally {
   await rm(temporaryRoot, { recursive: true, force: true });
 }
-process.stdout.write("DDD strategic design scenarios passed\n");
+process.stdout.write("业务边界与规则设计 v2 场景验证通过\n");

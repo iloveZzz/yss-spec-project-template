@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "provider_id": "vue-antdv-next",
+  "maturity": "supported",
+  "collection_profile": "selected-components",
+  "generated_at": "2026-09-04T16:34:33.843Z",
+  "library": {
+    "package": "antdv-next",
+    "requested_version": "1.5.2",
+    "resolved_snapshot_version": "1.5.2",
+    "integrity": "sha512-IWhjaBteKcUuhtjchWPPcI7C5PngGUmiU++fJ8CEE+lKqisCgT4Yji6CHdTE2MKzIObarXI9FyhgQ+bN8SJEtQ==",
+    "tarball": "https://registry.npmjs.org/antdv-next/-/antdv-next-1.5.2.tgz",
+    "observed_dist_tags": {
+      "rc": "1.0.0-rc.4",
+      "beta": "1.3.4-beta.1",
+      "latest": "1.5.3"
+    }
+  },
+  "cli": {
+    "package": "@antdv-next/cli",
+    "version": "0.0.0-beta.5",
+    "integrity": "sha512-m2OUZdBduFNf3UMhgo4+NlYpocQAV7Y22gdZtaWyWNzMT0WMZBkPOtFCBKUHs2vOejrSNgKXrrRHmKlK1VZycw==",
+    "tarball": "https://registry.npmjs.org/@antdv-next/cli/-/cli-0.0.0-beta.5.tgz",
+    "observed_dist_tags": {
+      "latest": "0.0.0-beta.1",
+      "beta": "0.0.0-beta.5"
+    },
+    "invocation": [
+      "npx",
+      "-y",
+      "@antdv-next/cli@0.0.0-beta.5"
+    ],
+    "help_ref": "cli-help.txt",
+    "help_sha256": "7acbc5094a94d2fa81e38479128ae726e595eebfcdf16e54a463f47313247a16"
+  },
+  "resolution_probe": {
+    "command": [
+      "changelog",
+      "1.5.2",
+      "1.5.2",
+      "--format",
+      "json"
+    ],
+    "from": "1.5.2",
+    "to": "1.5.2",
+    "exact_match": true,
+    "output": {
+      "ref": "resolution-probe.json",
+      "sha256": "6c31e5db597974e8c3cdc09c1c2568976e447addf5039aee063f162149da343a"
+    }
+  },
+  "component_list": {
+    "ref": "component-list.json",
+    "sha256": "4f5e50bf2c39c78fcab9c95f8c913947db21863b9011d81ddd3abae0f03a2294"
+  },
+  "design_baseline": {
+    "version_scope": "static-alpha-not-exact",
+    "declared_version": "alpha",
+    "output": {
+      "ref": "design-md.json",
+      "sha256": "5e437c44ab1e8ccc9f745c107380403596a03bd4017cad28226837b0e44b6f73"
+    }
+  },
+  "project_baseline": {
+    "override_precedence": "project-first",
+    "canonical_design": {
+      "ref": "DESIGN.md",
+      "sha256": "59a9f90f7dd62d5e1d4c398e7b8ab8fae595622d0d5fea7bc0d43fe63802f5d5"
+    },
+    "design": {
+      "ref": "docs/design/design.md",
+      "sha256": "c66a35c2d0b71c72fa9cdd6a0c5e5cae337b1b31f88ba02cefc3cedb2faf95af"
+    },
+    "tokens": {
+      "ref": "docs/design/tokens/theme.json",
+      "sha256": "aab648fa655c9d6f6d3932081a035543fd6481902c873dd218b50f9e550bedac"
+    },
+    "override_reviewed": false
+  },
+  "components": [
+    {
+      "name": "Alert",
+      "info": {
+        "ref": "components/Alert/info.json",
+        "sha256": "8a4bd01cc1ac4967933e798f76437d198c3e2e60342d2d51260b76f496d979bc"
+      },
+      "demo": {
+        "ref": "components/Alert/demo-basic.json",
+        "sha256": "2109f9e018efd41d3ada2f514bde2bd5c21efdf3e1e8c792d5ee30a74a217c02"
+      },
+      "token": {
+        "ref": "components/Alert/token.json",
+        "sha256": "207dadae492ed766288d3f03094ccad0050c19f962f1b2f80c72f3b06381178a"
+      },
+      "semantic": {
+        "ref": "components/Alert/semantic.json",
+        "sha256": "802d1aa5bab754a41fc76952b46e31abc95d390658196a4d0fa186ff9e2ff694"
+      }
+    },
+    {
+      "name": "Button",
+      "info": {
+        "ref": "components/Button/info.json",
+        "sha256": "145221bd782ed4ce98b45af70774e169dc9527eadf81a32c8706aae2b3e9b05d"
+      },
+      "demo": {
+        "ref": "components/Button/demo-basic.json",
+        "sha256": "3ec6e46e1369864f58fec3fe5afda4860f3758afe93d2c893451f6eebd9dd3d2"
+      },
+      "token": {
+        "ref": "components/Button/token.json",
+        "sha256": "0305dcb032b087a4b0aa7ce13c0754720c6236e1e7f87547426f9ede22a618b4"
+      },
+      "semantic": {
+        "ref": "components/Button/semantic.json",
+        "sha256": "75ecccf076d1810aaf71940b132012416e8bd00f1069d506d377f6233a7dcee6"
+      }
+    },
+    {
+      "name": "Input",
+      "info": {
+        "ref": "components/Input/info.json",
+        "sha256": "0033a88079e02579c99a59d0c009d987e599fba3c95e691f80de8de7a21d4009"
+      },
+      "demo": {
+        "ref": "components/Input/demo-basic.json",
+        "sha256": "670d57656637b352e7315d14396607744e6882c936b30beebff826c37ddbe259"
+      },
+      "token": {
+        "ref": "components/Input/token.json",
+        "sha256": "36767a64c302ca2ea86d70492d0c3cd3412f31192932cd824008d88c0f722ea1"
+      },
+      "semantic": {
+        "ref": "components/Input/semantic.json",
+        "sha256": "c770ddd0ebfce5563c17707085a01eb37794af50007373ee75ec8d7bb980fe0a"
+      }
+    },
+    {
+      "name": "Modal",
+      "info": {
+        "ref": "components/Modal/info.json",
+        "sha256": "aa50eedeee60806ed6f1c8f8c6798ed8d6cd3221426db72bdb8dff8fb534dd30"
+      },
+      "demo": {
+        "ref": "components/Modal/demo-basic.json",
+        "sha256": "d1151ffb74350f20cfd4225a531197c3ee575c2107e9a5aa5db30041a4495c37"
+      },
+      "token": {
+        "ref": "components/Modal/token.json",
+        "sha256": "fd3b851f56c63a6171d521f6ac4f48aea7640652f096b3e77fa5682be5a2f022"
+      },
+      "semantic": {
+        "ref": "components/Modal/semantic.json",
+        "sha256": "f7f744481801ae49cab710e3027e6f5f41c6fb5984cd2994f9cef57e6208076e"
+      }
+    },
+    {
+      "name": "Select",
+      "info": {
+        "ref": "components/Select/info.json",
+        "sha256": "880df5a50411cca9d9a06ca7141815a5370617729c5734c65931f4f159683b31"
+      },
+      "demo": {
+        "ref": "components/Select/demo-basic.json",
+        "sha256": "07bf73b5807886e2da2562440b00ebb976fc1ad87aa1d5c4667878d00a9ca922"
+      },
+      "token": {
+        "ref": "components/Select/token.json",
+        "sha256": "5f6cc15b8e2abd887e826b71ba98e987217aae05a4fe859b7d0cf6082d28c135"
+      },
+      "semantic": {
+        "ref": "components/Select/semantic.json",
+        "sha256": "a138dc01999d1d3d972b5d811ba35ec6130e39ec4e956cdb8f14d169d2bfcf97"
+      }
+    },
+    {
+      "name": "Table",
+      "info": {
+        "ref": "components/Table/info.json",
+        "sha256": "f1e27b0a3357533034664b5237c059e518b49a3973a39e2f9f8599e14b0a1530"
+      },
+      "demo": {
+        "ref": "components/Table/demo-basic.json",
+        "sha256": "3e6c11f3e43b1056bcfe8b61bd2d2784e5eb752ecaab40a9513ff237c74385a4"
+      },
+      "token": {
+        "ref": "components/Table/token.json",
+        "sha256": "ca23d66e43faadab6e47d325e8def1e9b2ac57e9ea36d85189ec9010a332c12e"
+      },
+      "semantic": {
+        "ref": "components/Table/semantic.json",
+        "sha256": "c515d31a76255620572a6449f0bd56d2147bbfb943350cfffd4effb857b9a42c"
+      }
+    },
+    {
+      "name": "Tag",
+      "info": {
+        "ref": "components/Tag/info.json",
+        "sha256": "40b244a9f069dee377ed052677edb66fcae6daee697e6d0e0a16805773ac9a5b"
+      },
+      "demo": {
+        "ref": "components/Tag/demo-basic.json",
+        "sha256": "5fe3f1d9dc7b961de928ce7969fa9d2aece8bb8e9e687f9b2b1a9fe5a1397973"
+      },
+      "token": {
+        "ref": "components/Tag/token.json",
+        "sha256": "03e34c4dc96e403d3e7831a91adae0de0ba145551d70a321af4d71c51af6edea"
+      },
+      "semantic": {
+        "ref": "components/Tag/semantic.json",
+        "sha256": "d6df74c85da3e6394b5b1b720f41d77e461470ab6cdfdab25a47f035f8bac241"
+      }
+    }
+  ]
+}

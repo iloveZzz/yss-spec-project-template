@@ -1,0 +1,7 @@
+{
+  "component": "Input",
+  "name": "basic",
+  "title": "Basic usage",
+  "description": "Basic usage example.",
+  "code": "<script setup lang=\"ts\">\nimport { ref } from 'vue'\n\nconst value = ref()\n</script>\n\n<template>\n  <a-input v-model:value=\"value\" placeholder=\"Basic usage\" />\n</template>"
+}

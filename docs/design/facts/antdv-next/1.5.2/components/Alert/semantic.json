@@ -1,0 +1,40 @@
+{
+  "name": "Alert",
+  "semanticStructure": [
+    {
+      "key": "root",
+      "description": "Root element with border, background, padding, border-radius, and positioning styles for the alert container",
+      "descriptionZh": "根元素，包含边框、背景色、内边距、圆角、位置布局等警告提示框的基础样式"
+    },
+    {
+      "key": "section",
+      "description": "Content element with flex layout controlling content area typography and minimum width",
+      "descriptionZh": "内容元素，采用 flex 布局控制内容区域的排版和最小宽度"
+    },
+    {
+      "key": "icon",
+      "description": "Icon element with color, line-height, and margin styles, supporting different status icon types",
+      "descriptionZh": "图标元素，包含图标的颜色、行高、外边距等样式，支持不同类型的状态图标"
+    },
+    {
+      "key": "title",
+      "description": "Title element with text color and font styling for the alert title",
+      "descriptionZh": "标题元素，包含标题文字的颜色、字体等样式"
+    },
+    {
+      "key": "description",
+      "description": "Description element with font-size and line-height styles for additional content",
+      "descriptionZh": "描述元素，包含描述文字的字体大小、行高等排版样式"
+    },
+    {
+      "key": "actions",
+      "description": "Actions element with layout and spacing styles for action buttons",
+      "descriptionZh": "操作组元素，包含操作按钮的布局和间距样式"
+    },
+    {
+      "key": "close",
+      "description": "Close button element with basic button styling",
+      "descriptionZh": "关闭按钮元素，包含按钮的基础样式"
+    }
+  ]
+}

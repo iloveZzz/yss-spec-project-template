@@ -4,9 +4,10 @@
   "title": "YSS 生命周期 Checkpoint",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "mode", "status", "stage", "artifacts", "gates", "next_work_unit", "ticket_sync", "verification", "human_review", "git_checkpoint", "blockers", "rollback"],
+  "required": ["schema_version", "repository_mode", "mode", "status", "stage", "artifacts", "gates", "context_reconciliation", "next_work_unit", "ticket_sync", "verification", "human_review", "git_checkpoint", "blockers", "rollback"],
   "properties": {
     "schema_version": { "const": 1 },
+    "repository_mode": { "enum": ["template-source", "project-instance"] },
     "mode": { "enum": ["route", "orchestrate", "resume", "audit"] },
     "status": { "enum": ["routing", "running", "paused-human-gate", "blocked", "completed"] },
     "stage": { "type": "string", "pattern": "^stage\\.[a-z0-9][a-z0-9-]*$" },
@@ -43,6 +44,17 @@
         }
       },
       "additionalProperties": false
+    },
+    "context_reconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "ref", "evidence_refs"],
+      "properties": {
+        "status": { "enum": ["pending", "reconciled", "not-applicable", "blocked"] },
+        "ref": { "type": ["string", "null"] },
+        "reason": { "type": "string" },
+        "evidence_refs": { "type": "array", "items": { "type": "string" } }
+      }
     },
     "next_work_unit": { "type": ["string", "null"], "pattern": "^work-unit\\.[a-z0-9][a-z0-9-]*$" },
     "phase_boundary": { "type": "object" },

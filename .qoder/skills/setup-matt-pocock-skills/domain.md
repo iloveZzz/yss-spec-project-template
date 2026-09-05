@@ -4,15 +4,14 @@ How the engineering skills should consume this repo's domain documentation when 
 
 ## Before exploring, read these
 
-- **`CONTEXT.md`** at the repo root, or
-- **`CONTEXT-MAP.md`** at the repo root if it exists — it points at one `CONTEXT.md` per context. Read each one relevant to the topic.
-- **`docs/adr/`** — read ADRs that touch the area you're about to work in. In multi-context repos, also check `src/<context>/docs/adr/` for context-scoped decisions.
+- **`CONTEXT.md`** — the single case-sensitive glossary at the Git repository root. Its `context_schema_version` must be supported. A missing root file, lowercase or nested replacement, duplicate, or map-based layout is `blocked` / `migration-required`, not an optional omission.
+- **`docs/adr/`** — if it exists, read ADRs that touch the area you're about to work in. This directory is created lazily when the first qualifying decision is accepted.
 
-If any of these files don't exist, **proceed silently**. Don't flag their absence; don't suggest creating them upfront. The `/domain-modeling` skill (reached via `/grill-with-docs` and `/improve-codebase-architecture`) creates them lazily when terms or decisions actually get resolved.
+When the repository exposes `scripts/verify-context-contract`, run it before creating or changing stable domain, product, architecture, implementation, review, release, or retrospective assets.
 
 ## File structure
 
-Single-context repo (most repos):
+Every YSS Git repository:
 
 ```
 /
@@ -23,24 +22,11 @@ Single-context repo (most repos):
 └── src/
 ```
 
-Multi-context repo (presence of `CONTEXT-MAP.md` at the root):
-
-```
-/
-├── CONTEXT-MAP.md
-├── docs/adr/                          ← system-wide decisions
-└── src/
-    ├── ordering/
-    │   ├── CONTEXT.md
-    │   └── docs/adr/                  ← context-specific decisions
-    └── billing/
-        ├── CONTEXT.md
-        └── docs/adr/
-```
+Multiple business responsibility areas do not create additional glossary files. Each stable business term records its approved PascalCase `适用业务责任区`, and consumers reference it as `<ContextId>/<EnglishIdentifier>`. Use `Global/<EnglishIdentifier>` only for language that is genuinely shared across responsibility areas.
 
 ## Use the glossary's vocabulary
 
-When your output names a domain concept (in an issue title, a refactor proposal, a hypothesis, a test name), use the term as defined in `CONTEXT.md`. Don't drift to synonyms the glossary explicitly avoids.
+When your output names a domain concept (in an issue title, a refactor proposal, a hypothesis, a test name), use the term and stable reference defined in `CONTEXT.md`. Don't drift to synonyms the glossary explicitly avoids.
 
 If the concept you need isn't in the glossary yet, that's a signal — either you're inventing language the project doesn't use (reconsider) or there's a real gap (note it for `/domain-modeling`).
 

@@ -1,0 +1,378 @@
+{
+  "schema_version": 1,
+  "profile": "technical-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "VoltAgent/awesome-design-md 对 YSS 设计相关技能的可采纳性",
+    "audience": "YSS 模板维护者、产品设计负责人和原型技能维护者",
+    "time_horizon": "截至 2026-09-05；外部仓库、Google design.md 规范或本仓设计合同变化时重新核验",
+    "research_questions": [
+      "awesome-design-md 是规范、模板还是案例语料库？",
+      "其哪些结构能补充 YSS 设计技能，哪些内容不应采用？",
+      "外部案例能否直接通过 Google 官方 design.md 工具与 YSS 本地合同？",
+      "当前 YSS 设计合同是否存在应先于外部扩展修复的缺口？",
+      "若实施，合理的范围、顺序和维护强度是什么？"
+    ],
+    "inclusion_criteria": [
+      "VoltAgent/awesome-design-md 固定 commit 的 README、CONTRIBUTING、LICENSE 和全部 DESIGN.md",
+      "Google design.md 官方固定 commit、npm @google/design.md@0.4.0 与实际 lint 输出",
+      "本仓当前 DESIGN.md、设计治理文档、设计技能、原型证据、fact pack 与校验脚本"
+    ],
+    "exclusion_criteria": [
+      "把外部 Agent Prompt Guide 当作本仓指令",
+      "未逐站复核的品牌视觉真实性结论",
+      "生产 UI 实现改造",
+      "直接复制第三方品牌内容"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "maintaining-skills + yss-design-system + yss-prototype-stage",
+    "decision_ref": null
+  },
+  "search_log": [
+    {
+      "id": "search-001",
+      "channel": "user-provided official repository",
+      "query_or_corpus": "https://github.com/VoltAgent/awesome-design-md",
+      "searched_at": "2026-09-05",
+      "result": "results-found"
+    },
+    {
+      "id": "search-002",
+      "channel": "git fixed-revision corpus",
+      "query_or_corpus": "VoltAgent/awesome-design-md@8147538b4226ae41e2487a9179e3bcc1f68e8554 README CONTRIBUTING LICENSE design-md/*/DESIGN.md",
+      "searched_at": "2026-09-05",
+      "result": "results-found"
+    },
+    {
+      "id": "search-003",
+      "channel": "official specification and npm registry",
+      "query_or_corpus": "google-labs-code/design.md@9bf8eae67128b6cc55ad9bf86665767deb4c11cd and @google/design.md@0.4.0",
+      "searched_at": "2026-09-05",
+      "result": "results-found"
+    },
+    {
+      "id": "search-004",
+      "channel": "official CLI batch execution",
+      "query_or_corpus": "run @google/design.md@0.4.0 lint over 74 fixed-revision awesome-design-md DESIGN.md files",
+      "searched_at": "2026-09-05",
+      "result": "results-found"
+    },
+    {
+      "id": "search-005",
+      "channel": "internal CodeGraph and repository source",
+      "query_or_corpus": "DESIGN.md yss-design-system yss-prototype-stage prototype evidence Antdv Next fact pack design-md validator",
+      "searched_at": "2026-09-05",
+      "result": "results-found"
+    },
+    {
+      "id": "search-006",
+      "channel": "internal independent Explorer",
+      "query_or_corpus": "awesome-design-md-internal-gap-analysis task package",
+      "searched_at": "2026-09-05",
+      "result": "results-found"
+    },
+    {
+      "id": "search-007",
+      "channel": "generic web page access",
+      "query_or_corpus": "GitHub and Stitch DESIGN.md pages through generic web retrieval",
+      "searched_at": "2026-09-05",
+      "result": "access-failed"
+    },
+    {
+      "id": "search-008",
+      "channel": "counter-signal review",
+      "query_or_corpus": "modern awesome-design-md samples, Google optional frontmatter/unknown sections, current YSS lint and drift",
+      "searched_at": "2026-09-05",
+      "result": "results-found"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-001",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "upstream repository documentation",
+      "source_ref": "https://github.com/VoltAgent/awesome-design-md/blob/8147538b4226ae41e2487a9179e3bcc1f68e8554/README.md",
+      "locator": "purpose, how to use, DESIGN.md sections, repository structure",
+      "stance": "support",
+      "observed_at": "2026-09-05",
+      "evidence_date": "2026-07-31",
+      "observation": "上游把仓库定位为开发者网站 DESIGN.md 分析集合，建议复制根 DESIGN.md，并列出响应式、迭代、已知缺口和 Agent prompt 等扩展内容；README 还声明每个案例含 preview 文件。",
+      "limitations": ["README 是项目自述", "固定 commit，不代表后续状态"]
+    },
+    {
+      "id": "evidence-002",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "fixed-revision corpus inspection",
+      "source_ref": "https://github.com/VoltAgent/awesome-design-md/tree/8147538b4226ae41e2487a9179e3bcc1f68e8554/design-md",
+      "locator": "all 74 design-md/*/DESIGN.md and repository file tree",
+      "stance": "support",
+      "observed_at": "2026-09-05",
+      "evidence_date": "2026-07-31",
+      "observation": "固定 revision 有 74 份 DESIGN.md、64 份带 frontmatter、5 种 H2 顺序；平均 547 行和约 3674 词。仓库无 preview HTML；仅 2 份 DESIGN.md 含完整 http(s) URL，未形成统一的采集日期、revision、方法与独立验证合同。",
+      "limitations": ["统计绑定固定 revision", "关键词与文件计数不评价视觉真实性"]
+    },
+    {
+      "id": "evidence-003",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official CLI execution over upstream corpus",
+      "source_ref": "reproduce: npx --yes @google/design.md@0.4.0 lint <each fixed-revision design-md/*/DESIGN.md> --format json",
+      "locator": "batch summary captured 2026-09-05",
+      "stance": "support",
+      "observed_at": "2026-09-05",
+      "evidence_date": "2026-09-05",
+      "observation": "74/74 文件至少有一条 warning；合计 178 条 contrast-ratio、684 条 orphaned-token、466 条 broken/unknown component property 类告警、16 条未知 typography property 告警和 13 份解析告警；未出现 error。",
+      "limitations": ["官方 CLI 的 warning 不是 YSS 完成判定", "汇总依赖 0.4.0 规则"]
+    },
+    {
+      "id": "evidence-004",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official specification",
+      "source_ref": "https://github.com/google-labs-code/design.md/blob/9bf8eae67128b6cc55ad9bf86665767deb4c11cd/docs/spec.md",
+      "locator": "File Structure, Body Sections, Validation",
+      "stance": "support",
+      "observed_at": "2026-09-05",
+      "evidence_date": "2026-07-27",
+      "observation": "官方 alpha 规范定义可选 YAML frontmatter、Token normative/正文 rationale、八个 canonical H2 章节；未知章节应保留，重复章节报错。",
+      "limitations": ["规范仍是 alpha", "组件属性仍在演进"]
+    },
+    {
+      "id": "evidence-005",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "upstream license",
+      "source_ref": "https://github.com/VoltAgent/awesome-design-md/blob/8147538b4226ae41e2487a9179e3bcc1f68e8554/LICENSE",
+      "locator": "MIT License",
+      "stance": "support",
+      "observed_at": "2026-09-05",
+      "evidence_date": "2026-07-31",
+      "observation": "仓库使用 MIT License，允许复制和修改但要求在实质复制中保留许可声明。",
+      "limitations": ["许可证不证明被分析网站内容的准确性、所有权或时效性"]
+    },
+    {
+      "id": "evidence-006",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository canonical design and validator",
+      "source_ref": "DESIGN.md; .template-source/tooling/node/scripts/design-md.mjs",
+      "locator": "DESIGN.md frontmatter/body; design-md.mjs lines 13-31 and 41-51",
+      "stance": "support",
+      "observed_at": "2026-09-05",
+      "evidence_date": "2026-09-05",
+      "observation": "根 DESIGN.md 是机器可读视觉合同；本地 validator 强制八个 H1 正文章节，而 Google 官方规范使用 H2 canonical sections。当前根文件 lint/drift 通过，但上游现代 H2 文件会被本地章节层拒绝。",
+      "limitations": ["基于当前未提交 working tree", "通过只证明当前规则满足，不证明规则与上游一致"]
+    },
+    {
+      "id": "evidence-007",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository design skill and evidence contracts",
+      "source_ref": "docs/design/design.md; .agents/skills/yss-design-system/SKILL.md; docs/design/templates/prototype-evidence-template.yaml; .agents/skills/yss-antdv-next-design/references/fact-pack.md",
+      "locator": "SSOT declaration, token tables, update workflow, design_baseline and project_baseline",
+      "stance": "support",
+      "observed_at": "2026-09-05",
+      "evidence_date": "2026-09-05",
+      "observation": "治理文档声明根 DESIGN.md 是 Token SSOT 且自身不重定义具体值，但正文仍重复值；design skill 的消费措辞和 update 步骤未闭合根 SSOT；prototype evidence 与 fact pack 未直接要求根 DESIGN.md digest。",
+      "limitations": ["部分差异可能意在表达角色 token，需要在合同中显式化", "工作树有用户未提交改动"]
+    },
+    {
+      "id": "evidence-008",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository generated adapter and token projection",
+      "source_ref": ".agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs; docs/design/tokens/variables.css",
+      "locator": "prepareStaticPrototype styles.css template and generated variable names",
+      "stance": "support",
+      "observed_at": "2026-09-05",
+      "evidence_date": "2026-09-05",
+      "observation": "H1 adapter 使用未由 variables.css 投影的 --brand-primary、--container-background、--layout-background，并硬编码 32px 控件高度及 20px/24px 间距。",
+      "limitations": ["浏览器 fallback 会掩盖错误别名", "需要 fixture 证明修复后的渲染结果"]
+    },
+    {
+      "id": "evidence-009",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "maintenance policy",
+      "source_ref": "docs/process/maintenance-intensity.yaml; docs/process/harness-process-tailoring.md",
+      "locator": "levels.L3.triggers generation-semantics/core-validator and L3 verification rules",
+      "stance": "support",
+      "observed_at": "2026-09-05",
+      "evidence_date": "2026-09-05",
+      "observation": "generation-semantics 和 core-validator 变化触发 L3；不得拆分共同改变整体语义的修改以规避 L3。",
+      "limitations": ["只在后续实际修改命中这些范围时适用"]
+    },
+    {
+      "id": "evidence-010",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "positive pattern counter-signal",
+      "source_ref": "https://github.com/VoltAgent/awesome-design-md/blob/8147538b4226ae41e2487a9179e3bcc1f68e8554/design-md/linear.app/DESIGN.md",
+      "locator": "frontmatter, Responsive Behavior, Iteration Guide, Known Gaps",
+      "stance": "counter",
+      "observed_at": "2026-09-05",
+      "evidence_date": "2026-07-31",
+      "observation": "现代案例展示了清晰的 Token、组件引用、响应式、迭代与缺口结构，支持对信息架构做选择性吸收。",
+      "limitations": ["单个成熟样本不能代表全部 74 份文件"]
+    },
+    {
+      "id": "evidence-011",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "current verification counter-signal",
+      "source_ref": "reproduce: node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md && node .template-source/tooling/node/scripts/design-md.mjs drift",
+      "locator": "actual exit 0 and DESIGN.md 投影无漂移 on 2026-09-05",
+      "stance": "counter",
+      "observed_at": "2026-09-05",
+      "evidence_date": "2026-09-05",
+      "observation": "当前根 DESIGN.md 能通过本地与上游 lint，投影 manifest 也无漂移，说明现有链路已有可增量修复的基础。",
+      "limitations": ["现有 validator 没有覆盖全部 SSOT consumer 和 adapter Token 使用"]
+    },
+    {
+      "id": "evidence-012",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official extensibility counter-signal",
+      "source_ref": "https://github.com/google-labs-code/design.md/blob/9bf8eae67128b6cc55ad9bf86665767deb4c11cd/docs/spec.md",
+      "locator": "optional frontmatter and unknown section handling",
+      "stance": "counter",
+      "observed_at": "2026-09-05",
+      "evidence_date": "2026-07-27",
+      "observation": "官方规范允许 optional frontmatter 和未知章节，因此响应式、迭代、证据等 YSS 扩展可以在不另造格式的情况下保留。",
+      "limitations": ["允许扩展不代表扩展内容已达到 YSS 质量门槛"]
+    },
+    {
+      "id": "evidence-013",
+      "source_level": "secondary",
+      "visibility": "internal",
+      "source_class": "independent internal gap analysis",
+      "source_ref": ".template-source/evidence/maintenance/awesome-design-md-internal-gap-analysis-2026-09-05.md",
+      "locator": "responsibility map, coverage-gap matrix, P0/P1 recommendation",
+      "stance": "support",
+      "observed_at": "2026-09-05",
+      "evidence_date": "2026-09-05",
+      "observation": "独立 Explorer 在不读取外部仓库的前提下识别出 SSOT 消费、双写、digest freshness、H1 adapter 与验证闭环缺口；主线程已回到一手源码逐项复核。",
+      "limitations": ["派生分析，不替代一手源码", "未评价外部仓库"]
+    },
+    {
+      "id": "evidence-014",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "quality-risk counter-signal",
+      "source_ref": "reproduce: npx --yes @google/design.md@0.4.0 lint <each fixed-revision design-md/*/DESIGN.md> --format json",
+      "locator": "batch warning summary captured 2026-09-05",
+      "stance": "counter",
+      "observed_at": "2026-09-05",
+      "evidence_date": "2026-09-05",
+      "observation": "全部 74 份样本均至少有 warning，且响应式、状态和无障碍文本覆盖不均，限制了把案例结构直接提升为 YSS 规范的力度。",
+      "limitations": ["warning 不等于文件无效", "文本覆盖不证明实现结果"]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-001",
+      "claim_kind": "technical-fact",
+      "statement": "awesome-design-md 是结构和质量不完全一致的设计分析案例语料库，不是可直接替代 Google design.md 或 YSS DESIGN.md 的稳定规范。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-001", "evidence-002", "evidence-004"],
+      "counter_signal_refs": ["evidence-010"],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-002",
+      "claim_kind": "technical-fact",
+      "statement": "其现代案例中的响应式、迭代指导和已知缺口信息架构值得 YSS 选择性借鉴，但必须转换为现有生命周期、Design QA 和证据语义。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-001", "evidence-002", "evidence-004"],
+      "counter_signal_refs": ["evidence-014"],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-003",
+      "claim_kind": "technical-fact",
+      "statement": "awesome-design-md 不应整库导入或直接作为技能规范，因为格式、来源和验证闭环不一致，且全部样本在官方 lint 下至少有 warning。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-002", "evidence-003", "evidence-005"],
+      "counter_signal_refs": ["evidence-010", "evidence-012"],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-004",
+      "claim_kind": "technical-fact",
+      "statement": "当前 YSS 设计链路已具备 SSOT 和投影基础，但存在官方 H2 与本地 H1 章节合同不兼容、治理文档双写、根 DESIGN.md digest 未进入下游 freshness、H1 adapter Token 别名错误等实质缺口。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-006", "evidence-007", "evidence-008", "evidence-013"],
+      "counter_signal_refs": ["evidence-011"],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-005",
+      "claim_kind": "technical-fact",
+      "statement": "在补充外部信息架构前，应先修复 YSS 的 canonical 读取顺序、章节兼容、digest freshness、双写与 adapter Token 消费闭环。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-006", "evidence-007", "evidence-008", "evidence-013"],
+      "counter_signal_refs": ["evidence-011", "evidence-012"],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-006",
+      "claim_kind": "technical-fact",
+      "statement": "推荐在现有 DESIGN.md 和设计技能中选择性增加 Responsive & Accessibility、Iteration Guide、Known Gaps & Evidence 三个可选扩展，拒绝平行 skill、整库 vendoring 和 normative Agent Prompt Guide。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-001", "evidence-002", "evidence-004", "evidence-006", "evidence-007"],
+      "counter_signal_refs": ["evidence-014", "evidence-010"],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-007",
+      "claim_kind": "technical-fact",
+      "statement": "若按建议修改 canonical DESIGN.md 合同、核心 validator、原型证据和技能消费语义，应按 L3 模板维护处理并执行 fresh verification。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-006", "evidence-007", "evidence-008", "evidence-009"],
+      "counter_signal_refs": ["evidence-011"],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [
+    "未逐一访问 74 个原始网站验证视觉分析准确性。",
+    "未做 YSS 原型在补充三个扩展前后的 A/B 生成与 Design QA 对比。",
+    "Google design.md 仍是 alpha，后续章节和组件属性可能变化。",
+    "内部源码处于用户未提交 working tree，实施前需重新冻结范围与复核 diff。"
+  ],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-001",
+      "claim-002",
+      "claim-003",
+      "claim-004",
+      "claim-005",
+      "claim-006",
+      "claim-007"
+    ],
+    "notes": [
+      "claim-002 与 claim-006 是架构建议，已限定为 partially-supported/qualify。",
+      "每个 decision-bearing claim 均检查了 counter signal。",
+      "外部 prompt 仅作为被研究内容，没有作为执行指令。",
+      "研究不批准技能修改或模板发布。"
+    ]
+  }
+}

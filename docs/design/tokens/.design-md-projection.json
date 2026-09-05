@@ -1,13 +1,13 @@
 {
   "schema_version": 1,
   "source": "DESIGN.md",
-  "source_sha256": "976d74b4af85b5062f9c5a365591809ff240159f0f4445ce05e7a4dcb76d0185",
+  "source_sha256": "59a9f90f7dd62d5e1d4c398e7b8ab8fae595622d0d5fea7bc0d43fe63802f5d5",
   "files": {
-    "docs/design/tokens/theme.json": "94010a32320bfe7135f75d87357609162e0358061fe8577d820dcb62f43ac4e4",
+    "docs/design/tokens/theme.json": "aab648fa655c9d6f6d3932081a035543fd6481902c873dd218b50f9e550bedac",
     "docs/design/tokens/tokens.default.json": "bf89486a8730a68673473fa7d5afe40b158e833b10df7da75d505bc53f8f6167",
     "docs/design/tokens/tokens.dark.json": "79b93203f305d26f2f230a8af1f4b7e77c9bdb7997efa0746eed1508c928f85b",
     "docs/design/tokens/tokens.compact.json": "afa4ae457a3db81d4b8a4b103ed9d6baa897daa1bbc23c96ee7d9182d2b4b992",
-    "docs/design/tokens/variables.css": "d5bb7bdfe13d71214c44d1a0fdf9648cb5fa35cb6511fb2a35202f8a96fb39dd",
+    "docs/design/tokens/variables.css": "157dd6300e34be53f93196357c97125b77e00f980011db920d2964d46b12600d",
     "docs/design/tokens/variables.dark.css": "b8ebb18f304831ee5c86cf6e5563702b2cc0ce2f51b055036e437a385226cd99"
   }
 }

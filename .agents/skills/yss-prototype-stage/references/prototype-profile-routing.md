@@ -9,7 +9,7 @@
 | 档位 | 名称 | 命中条件 | 默认适配器 |
 |---|---|---|---|
 | H1 | `visual-review` | 仅需确认布局、密度、层级、文案或少量关键交互；不涉及多页面导航、复杂联动、权限、恢复、冲突或真实组件差异 | 语义 HTML + 项目 Token CSS + 最小 JavaScript；可使用设计工具导出，但必须有浏览器可复验入口 |
-| H2 | `flow-review` | 多页面/路由、复杂表单联动、权限体验、失败恢复、并发冲突或需要可操作主流程测试 | 可运行前端原型；React/Vite + Ant Design v6 是受支持默认，不是强制实现 |
+| H2 | `flow-review` | 多页面/路由、复杂表单联动、权限体验、失败恢复、并发冲突或需要可操作主流程测试 | 可运行前端原型；Vue 3/Vite + Antdv Next 是受支持默认，React/Vite + Ant Design v6 为显式兼容路线 |
 
 真实 YSS/AntDV 组件行为、lockfile、props、slots、events 或 Storybook 状态不是第三种原型档位。它们属于前端实现计划、已批准切片的生产实现与实现还原验证。原型中发现的相关不确定性写入 `implementation_handoff`，不得为解决它调用 `yss-ui` 或把实现仓组件代码引入原型。
 
@@ -37,8 +37,8 @@
 
 - 主流程与关键 failure / no-permission / conflict 状态可操作。
 - 验证键盘、焦点、对比度、200% zoom、reduced motion；按风险决定视觉回归。
-- 使用 AntD 时记录精确版本。fact pack 只有在版本、组件集合和项目 Token baseline digest 全部匹配且没有新 API 疑问时才可复用，否则只补增量查询。
-- 不使用 AntD 时记录 component basis，不创建空 AntD 字段。
+- 默认使用 `vue-antdv-next` 并记录 package 与精确版本；显式兼容路线记录 `react-antd-6`。fact pack 只有在 provider、版本、组件集合和项目 Token baseline digest 全部匹配且没有新 API 疑问时才可复用，否则只补增量查询。
+- 使用其他基座时记录 `component_basis`，不创建空 Antdv Next 或 AntD 字段。
 
 ### 实现阶段交接
 

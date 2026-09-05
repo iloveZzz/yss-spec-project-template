@@ -1,0 +1,7 @@
+{
+  "component": "Button",
+  "name": "basic",
+  "title": "Syntactic sugar",
+  "description": "Through the `type` syntactic sugar, use the preset button styles: `primary` buttons, `default` buttons, `dashed` buttons, `text` buttons, and `link` buttons.",
+  "code": "<template>\n  <a-flex gap=\"small\" wrap>\n    <a-button type=\"primary\">\n      Primary Button\n    </a-button>\n    <a-button>Default Button</a-button>\n    <a-button type=\"dashed\">\n      Dashed Button\n    </a-button>\n    <a-button type=\"text\">\n      Text Button\n    </a-button>\n    <a-button type=\"link\">\n      Link Button\n    </a-button>\n  </a-flex>\n</template>"
+}

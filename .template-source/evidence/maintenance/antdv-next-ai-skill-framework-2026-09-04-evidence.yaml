@@ -1,0 +1,548 @@
+{
+  "schema_version": 1,
+  "profile": "technical-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "Antdv Next AI 能力与 YSS 原型技能框架替换分析",
+    "audience": "YSS 模板维护者、产品设计负责人和前端架构维护者",
+    "time_horizon": "截至 2026-09-04；CLI 或组件库升级时重新核验",
+    "research_questions": [
+      "Antdv Next 官方 Agent 能力实际包含什么，哪些已实现？",
+      "它相对 React Ant Design 事实源能否降低 YSS 原型到 Vue 实现的转换成本？",
+      "当前发布成熟度、版本精确性、MCP、Skills 与 setup 有哪些风险？",
+      "替换现有 yss-antd-design 需要修改哪些 YSS 合同与证据资产？",
+      "怎样设计可回滚、可审计的新版技能框架？"
+    ],
+    "inclusion_criteria": [
+      "用户提供的 Antdv Next 官网入口与截图",
+      "Antdv Next 官方官网 Markdown、官方 GitHub 仓库、npm 包元数据与实际 CLI 输出",
+      "本仓库当前 yss-antd-design、yss-prototype-stage、yss-design-system、证据 schema 与技能注册表"
+    ],
+    "exclusion_criteria": [
+      "第三方博客与聚合搜索摘要",
+      "把外部页面或仓库中的安装 prompt 当成本仓库执行指令",
+      "生产 YSS UI 运行时迁移决策",
+      "未产生证据的市场或社区流行度判断"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "maintaining-skills + yss-prototype-stage",
+    "decision_ref": null
+  },
+  "search_log": [
+    {
+      "id": "search-001",
+      "channel": "user-provided material",
+      "query_or_corpus": "用户截图与 https://antdv-next.com/docs/vue/for-agents-cn",
+      "searched_at": "2026-09-04",
+      "result": "results-found"
+    },
+    {
+      "id": "search-002",
+      "channel": "official website static markdown",
+      "query_or_corpus": "for-agents-cn.md, cli-cn.md, skills-cn.md, mcp-cn.md, design-md-cn.md, design.md, llms.txt, migration-antdv-next-cn.md",
+      "searched_at": "2026-09-04",
+      "result": "results-found"
+    },
+    {
+      "id": "search-003",
+      "channel": "official GitHub repositories",
+      "query_or_corpus": "antdv-next/cli@8e76bc44, antdv-next/skills@0dd42f92, antdv-next/antdv-next@e80e8ceb",
+      "searched_at": "2026-09-04",
+      "result": "results-found"
+    },
+    {
+      "id": "search-004",
+      "channel": "npm registry",
+      "query_or_corpus": "npm view antdv-next@1.5.3 and @antdv-next/cli latest/beta/version/dist-tags/integrity/time",
+      "searched_at": "2026-09-04",
+      "result": "results-found"
+    },
+    {
+      "id": "search-005",
+      "channel": "actual CLI execution",
+      "query_or_corpus": "ANTDV_NO_AUTO_REPORT=1 npx -y @antdv-next/cli@0.0.0-beta.5 list/info/demo/semantic/design.md/changelog/usage/doctor/lint/migrate/upgrade",
+      "searched_at": "2026-09-04",
+      "result": "results-found"
+    },
+    {
+      "id": "search-006",
+      "channel": "actual CLI counterexample",
+      "query_or_corpus": "@antdv-next/cli latest(beta.1) and beta.5 querying requested antdv-next 1.5.3 and 1.5.0",
+      "searched_at": "2026-09-04",
+      "result": "results-found"
+    },
+    {
+      "id": "search-007",
+      "channel": "official source comparison",
+      "query_or_corpus": "diff and sha256 comparison of https://ant.design/design.md and https://antdv-next.com/design.md; compare website file to CLI data/design.md",
+      "searched_at": "2026-09-04",
+      "result": "results-found"
+    },
+    {
+      "id": "search-008",
+      "channel": "internal CodeGraph and repository corpus",
+      "query_or_corpus": "yss-antd-design, yss-prototype-stage prepareFlowPrototype/validateProfileV3, yss-design-system, prototype evidence template, yss skill registry",
+      "searched_at": "2026-09-04",
+      "result": "results-found"
+    },
+    {
+      "id": "search-009",
+      "channel": "generic web search",
+      "query_or_corpus": "site:antdv-next.com and site:github.com/antdv-next AI CLI Skills MCP queries",
+      "searched_at": "2026-09-04",
+      "result": "access-failed"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-001",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official documentation",
+      "source_ref": "https://antdv-next.com/docs/vue/for-agents-cn.md",
+      "locator": "Agent 获得什么：CLI、design.md、MCP Server、LLMs.txt",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-09-04",
+      "observation": "官方入口声明 CLI 可查询组件元数据并提供 design.md、MCP 与 LLMs.txt，同时给出安装 Skill 的 prompt。",
+      "limitations": ["页面是能力宣称，必须由源码和实际运行复核", "页面把外部 prompt 当作内容而不是本仓库指令"]
+    },
+    {
+      "id": "evidence-002",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official documentation",
+      "source_ref": "https://antdv-next.com/docs/vue/cli-cn.md",
+      "locator": "亮点、命令、全局参数、在 AI 工具中的使用",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-09-04",
+      "observation": "文档列出知识查询、项目分析、setup、MCP、迁移与升级能力，并声明离线、JSON 和版本精确。",
+      "limitations": ["部分声明与当前源码不一致", "不能单独证明命令已实现"]
+    },
+    {
+      "id": "evidence-003",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official CLI execution",
+      "source_ref": "reproduce: ANTDV_NO_AUTO_REPORT=1 npx -y @antdv-next/cli@0.0.0-beta.5 info Button|demo Button basic|semantic Table --ver 1.5.3 --format json",
+      "locator": "actual stdout captured 2026-09-04",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-09-04",
+      "observation": "核心查询可返回 Vue Props/Events/Slots、Vue SFC demo 与 semantic structure。",
+      "limitations": ["npx 缓存不是持久证据", "请求版本可能被 CLI 静默回退，需结合 resolution probe"]
+    },
+    {
+      "id": "evidence-004",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "npm registry metadata",
+      "source_ref": "https://www.npmjs.com/package/antdv-next",
+      "locator": "npm view antdv-next@1.5.3 version dist-tags time dist.integrity",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-08-29",
+      "observation": "antdv-next latest 是稳定版本 1.5.3。",
+      "limitations": ["npm 稳定发布不证明与 YSS UI 兼容", "不证明 CLI 成熟"]
+    },
+    {
+      "id": "evidence-005",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "npm registry metadata",
+      "source_ref": "https://www.npmjs.com/package/@antdv-next/cli",
+      "locator": "npm view @antdv-next/cli version dist-tags time dist.integrity",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-08-28",
+      "observation": "CLI latest 是 0.0.0-beta.1，而 beta dist-tag 是 0.0.0-beta.5；默认安装不会得到最新 beta。",
+      "limitations": ["dist-tag 可随时改变", "需要升级时重新检查"]
+    },
+    {
+      "id": "evidence-006",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official repository documentation",
+      "source_ref": "https://github.com/antdv-next/cli/blob/8e76bc44b3d135a9b4d6a9a89464c40a0ca6da4a/README.md",
+      "locator": "top IMPORTANT notice",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-08-29",
+      "observation": "官方 README 明确标记项目仍在开发、尚不可用。",
+      "limitations": ["README 状态可能晚于或早于 npm 发布状态", "绑定指定 commit"]
+    },
+    {
+      "id": "evidence-007",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official source code",
+      "source_ref": "https://github.com/antdv-next/cli/tree/8e76bc44b3d135a9b4d6a9a89464c40a0ca6da4a/src/commands",
+      "locator": "lint.ts, migrate.ts, upgrade.ts, doctor.ts and doctor/index.ts",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-08-29",
+      "observation": "lint/migrate/upgrade 含 TODO 或只输出 Parsed args；doctor 只注册 6 个检查。",
+      "limitations": ["绑定指定 commit", "usage/env 等其他命令不在此负面结论范围"]
+    },
+    {
+      "id": "evidence-008",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official source code and actual execution",
+      "source_ref": "https://github.com/antdv-next/cli/blob/8e76bc44b3d135a9b4d6a9a89464c40a0ca6da4a/src/utils/version.ts",
+      "locator": "resolveAvailableVersion and beta.5 changelog 1.4.6 1.5.3 JSON",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-08-29",
+      "observation": "缺失 exact patch 时解析器回退到同 minor 或同 major 快照；beta.5 实际把请求 1.5.3 解析为 1.5.2。",
+      "limitations": ["未来版本可能修复", "普通 info/list 输出不披露 resolved version"]
+    },
+    {
+      "id": "evidence-009",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official CLI execution",
+      "source_ref": "reproduce: ANTDV_NO_AUTO_REPORT=1 npx -y @antdv-next/cli list --ver 1.5.3 --format json",
+      "locator": "default npm latest beta.1 stderr",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-09-04",
+      "observation": "npm 默认 latest=beta.1 对 1.5.3 返回 v1.5.3 not found。",
+      "limitations": ["依赖 2026-09-04 dist-tag 状态", "未来发布会变化"]
+    },
+    {
+      "id": "evidence-010",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official source code",
+      "source_ref": "https://github.com/antdv-next/cli/blob/8e76bc44b3d135a9b4d6a9a89464c40a0ca6da4a/src/mcp/tools.ts",
+      "locator": "antdvMcpToolDefinitions",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-08-29",
+      "observation": "源码注册 8 个带 readOnlyHint 的 MCP tools，包括 changelog；mcp.ts 未注册 prompts。",
+      "limitations": ["未执行完整 MCP handshake", "绑定指定 commit"]
+    },
+    {
+      "id": "evidence-011",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official documentation",
+      "source_ref": "https://antdv-next.com/docs/vue/mcp-cn.md",
+      "locator": "工具表与官方 MCP Server 说明",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-09-04",
+      "observation": "页面文字称 6 个工具但表格列 7 个，且与源码 8 个工具不一致。",
+      "limitations": ["官网可能晚于源码更新", "只证明文档漂移"]
+    },
+    {
+      "id": "evidence-012",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official source code",
+      "source_ref": "https://github.com/antdv-next/cli/blob/8e76bc44b3d135a9b4d6a9a89464c40a0ca6da4a/src/commands/setup.ts",
+      "locator": "resolveSkillDir, createInstallSkill, createSkillInstructionsBlock",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-08-29",
+      "observation": "setup 会强制复制 skill、覆盖 MCP 配置和整个 AGENTS.md/CLAUDE.md；Codex skill 路径还可能先写入空 JSON。setup 参数未实现文档宣称的 dry-run/check。",
+      "limitations": ["本轮未实际执行写入命令", "通过固定 commit 源码独立核验写目标和控制流"]
+    },
+    {
+      "id": "evidence-013",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official generated skill repository",
+      "source_ref": "https://github.com/antdv-next/skills/tree/0dd42f92751b71bd0111cd513234f6160002210a/skills/antdv-next",
+      "locator": "SKILL.md, GENERATION.md and repository tree",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-07-03",
+      "observation": "生成物约 4.5MB、1033 文件、71 组件目录，生成于 2026-07-03，source commit 对应 antdv-next@1.4.1，早于 1.5.3 发布。",
+      "limitations": ["本地 clone 体积受 Git/文件系统计量影响", "上游可能后续再生成"]
+    },
+    {
+      "id": "evidence-014",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official design documents and digest comparison",
+      "source_ref": "https://antdv-next.com/design.md",
+      "locator": "full document compared with https://ant.design/design.md and CLI data/design.md",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-09-04",
+      "observation": "Antdv Next 与 React Ant Design v6 的视觉 token 和大部分正文一致；官网 Antdv Next design.md 与 CLI data/design.md sha256 都是 d443a33fe3261323090f860f4d8d41f4a5d6f432ffdd19a002edbd556d18687c。",
+      "limitations": ["文件 front matter 为 version alpha", "相似不等于运行时 token 完全一致"]
+    },
+    {
+      "id": "evidence-015",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official source code",
+      "source_ref": "https://github.com/antdv-next/cli/blob/8e76bc44b3d135a9b4d6a9a89464c40a0ca6da4a/src/commands/design.ts",
+      "locator": "getDesignMarkdown",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-08-29",
+      "observation": "design.md 命令直接读取单一 data/design.md，不使用 resolved target version。",
+      "limitations": ["绑定指定 commit", "不否定 design.md 作为非版本化设计基线的价值"]
+    },
+    {
+      "id": "evidence-016",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official migration documentation",
+      "source_ref": "https://antdv-next.com/docs/vue/migration-antdv-next-cn.md",
+      "locator": "升级准备、icons、DOM 结构与 API 调整",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-09-04",
+      "observation": "官方明确要求从最新 ant-design-vue@4 准备迁移、建议 Vue 3.5、改用 @antdv-next/icons，并列出 DOM 与大量 API 不兼容变化。",
+      "limitations": ["是迁移指南而非 YSS 兼容测试", "不能量化具体项目改造成本"]
+    },
+    {
+      "id": "evidence-017",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository source code",
+      "source_ref": ".agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs; docs/design/templates/prototype-evidence-template.yaml; docs/agents/yss-skill-registry.yaml",
+      "locator": "prepareFlowPrototype, validateProfileV3, H2 flow_review, yss-antd-design override",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-09-04",
+      "observation": "当前 H2 机械 adapter、schema v3 字段、模板和 registry trigger 显式绑定 React antd@6.x。",
+      "limitations": ["工作树有用户未提交改动，本轮只读未改这些文件", "yss-prototype-stage 概念层允许其他 H2 实现"]
+    },
+    {
+      "id": "evidence-018",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository skill contracts",
+      "source_ref": ".agents/skills/yss-antd-design/SKILL.md; .agents/skills/yss-prototype-stage/SKILL.md; .agents/skills/yss-design-system/SKILL.md",
+      "locator": "fact provider boundary, H2 boundary, project token precedence",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-09-04",
+      "observation": "YSS 已有正确分层：阶段由 prototype-stage 持有，项目设计/Token 优先，上游 CLI 只提供条件事实，原型不是生产代码。",
+      "limitations": ["现有 provider 仍为 React Ant Design", "不直接给出 Antdv Next 迁移实现"]
+    },
+    {
+      "id": "evidence-019",
+      "source_level": "direct-experience",
+      "visibility": "internal",
+      "source_class": "user-provided screenshot",
+      "source_ref": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/codex-clipboard-c9dabab8-fee5-459a-912e-d89c1e9fd753.png",
+      "locator": "AI navigation sidebar",
+      "stance": "support",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-09-04",
+      "observation": "截图显示 For Agents、Design.md、Skills、MCP Server、CLI 均标记为新入口。",
+      "limitations": ["只能证明导航展示与相对新鲜度", "不能证明实现或成熟度"]
+    },
+    {
+      "id": "evidence-020",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "positive adoption counter-signal",
+      "source_ref": "https://www.npmjs.com/package/antdv-next; reproduce @antdv-next/cli@0.0.0-beta.5 info/demo/semantic; https://antdv-next.com/design.md",
+      "locator": "stable component release, working core queries, design continuity",
+      "stance": "counter",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-09-04",
+      "observation": "组件库 1.5.3 已稳定发布，核心 Vue 查询可运行，design.md 与 Ant Design v6 高度连续；这些信号支持更积极的采用节奏。",
+      "limitations": ["不能消除 CLI beta 与证据精确性风险", "没有 YSS H2 spike"]
+    },
+    {
+      "id": "evidence-021",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "adoption risk counter-signal",
+      "source_ref": "https://github.com/antdv-next/cli/blob/8e76bc44b3d135a9b4d6a9a89464c40a0ca6da4a/README.md; https://github.com/antdv-next/cli/tree/8e76bc44b3d135a9b4d6a9a89464c40a0ca6da4a/src/commands",
+      "locator": "not yet usable notice, TODO commands, version and MCP documentation drift",
+      "stance": "counter",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-08-29",
+      "observation": "CLI beta、未实现命令、版本回退和文档漂移削弱了把整个官方 AI 面视为成熟工具链的结论。",
+      "limitations": ["绑定指定 commit", "不否定核心查询的实验价值"]
+    },
+    {
+      "id": "evidence-022",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository contract counter-signal",
+      "source_ref": ".agents/skills/yss-prototype-stage/SKILL.md",
+      "locator": "H2 flow-review boundary",
+      "stance": "counter",
+      "observed_at": "2026-09-04",
+      "evidence_date": "2026-09-04",
+      "observation": "概念合同明确说 React/Vite + Ant Design v6 是受支持默认但不是唯一实现，因此 Vue-native H2 不需要新增原型档位。",
+      "limitations": ["机械 adapter 和 schema 仍需迁移", "只降低概念迁移成本"]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-001",
+      "claim_kind": "technical-fact",
+      "statement": "Antdv Next 已形成由 CLI、design.md、MCP、LLMs.txt 与 Skills 组成的官方 Agent 能力面，其中核心只读知识查询可实际运行。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-001", "evidence-002", "evidence-003"],
+      "counter_signal_refs": ["evidence-021"],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-002",
+      "claim_kind": "technical-fact",
+      "statement": "相对 React AntD provider，Antdv Next 能提供 Vue-native 组件 API、SFC Demo 与 semantic facts，因而有潜力降低原型到 Vue/YSS handoff 的跨框架翻译成本。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-003", "evidence-016"],
+      "counter_signal_refs": ["evidence-021"],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-003",
+      "claim_kind": "technical-fact",
+      "statement": "antdv-next 组件库已稳定发布，但 @antdv-next/cli 仍是早期 beta 且默认 dist-tag 落后，不能把两者成熟度合并判断。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-004", "evidence-005", "evidence-006"],
+      "counter_signal_refs": ["evidence-020"],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-004",
+      "claim_kind": "technical-fact",
+      "statement": "当前 CLI 的 lint、migrate、upgrade 不能提供其文档宣称的可执行验证或迁移能力，doctor 覆盖也少于文档声明。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-007"],
+      "counter_signal_refs": ["evidence-020"],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-005",
+      "claim_kind": "technical-fact",
+      "statement": "当前 CLI 不足以单独证明 exact patch 事实，因为缺失 patch 会被静默回退且多数查询不披露 resolved version。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-008", "evidence-009"],
+      "counter_signal_refs": ["evidence-020"],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-006",
+      "claim_kind": "technical-fact",
+      "statement": "当前源码提供 8 个只读 MCP tools 且没有 prompts；官网与 README 对工具和 prompt 数量存在漂移。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-010", "evidence-011"],
+      "counter_signal_refs": ["evidence-021"],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-007",
+      "claim_kind": "technical-fact",
+      "statement": "官方 setup 与 CLI 内置 Skill 的自动安装/升级/入口写入行为不符合 YSS canonical skill、lock 与投影治理边界。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-012", "evidence-018"],
+      "counter_signal_refs": ["evidence-020"],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-008",
+      "claim_kind": "technical-fact",
+      "statement": "Antdv Next design.md 能保持 Ant Design v6 视觉连续性，但它是 alpha、单文件、非 patch-versioned 设计基线。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-014", "evidence-015"],
+      "counter_signal_refs": ["evidence-020"],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-009",
+      "claim_kind": "technical-fact",
+      "statement": "antdv-next/skills 的渐进披露结构值得借鉴，但当前全量生成包体积大且事实快照落后，不能直接成为 YSS 当前事实源。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-013"],
+      "counter_signal_refs": ["evidence-020"],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-010",
+      "claim_kind": "technical-fact",
+      "statement": "只替换 yss-antd-design 正文不足以切换原型技术栈；当前 adapter、schema、template、registry 与设计系统说明均存在 React antd@6.x 硬绑定。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-017", "evidence-018"],
+      "counter_signal_refs": ["evidence-022"],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-011",
+      "claim_kind": "technical-fact",
+      "statement": "较稳妥的技能架构是先新增 draft 的 yss-antdv-next-design canonical 候选并保留 yss-antd-design React 回退；验证后再决定提升新 canonical 或把旧名字显式改成 provider router。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-017", "evidence-018", "evidence-003", "evidence-008"],
+      "counter_signal_refs": ["evidence-021"],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-012",
+      "claim_kind": "technical-fact",
+      "statement": "默认替换应采用实验 provider、Vue H2 adapter、通用 evidence schema、代表性 fixture 验证与可回滚退役四阶段，而非一次性切换。",
+      "decision_bearing": true,
+      "evidence_refs": ["evidence-003", "evidence-005", "evidence-007", "evidence-008", "evidence-016", "evidence-017", "evidence-018"],
+      "counter_signal_refs": ["evidence-020"],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    }
+  ],
+  "source_gaps": [
+    "尚未构建 Vue 3 + Vite + antdv-next 的真实 YSS H2 spike，不能量化 adapter 与 Product Design image-to-code 的集成成本。",
+    "尚未对真实 YSS UI 生产仓 lockfile 做 antdv-next 兼容评估；原型 provider 替换不等于生产 runtime 迁移。",
+    "MCP 工具数量以源码核验但未做完整协议 handshake；进入实现前应自动捕获 tools/list。",
+    "CLI beta 变化快；任何后续实现都必须重新锁版本、integrity、commit 与 data snapshot。"
+  ],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-001",
+      "claim-002",
+      "claim-003",
+      "claim-004",
+      "claim-005",
+      "claim-006",
+      "claim-007",
+      "claim-008",
+      "claim-009",
+      "claim-010",
+      "claim-011",
+      "claim-012"
+    ],
+    "notes": [
+      "claim-002、claim-011、claim-012 含架构推论，已限定为 partially-supported/qualify。",
+      "研究不批准技能替换，不改变生命周期门禁或生产组件库选择。",
+      "用户截图仅作为导航和新鲜度线索，不支撑成熟度结论。"
+    ]
+  }
+}

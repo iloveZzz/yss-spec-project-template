@@ -22,7 +22,8 @@
 - 阶段合同：`yss-prototype-stage`
 - 原型档位与主入口：`yss-prototype-stage` 的 H1/H2 路由
 - Codex 产品设计能力：按档位条件使用 `product-design:index`
-- Ant Design v6 事实与 CLI：仅相关 H2 使用 `yss-antd-design`
+- Antdv Next 精确版本事实：默认 H2 使用 `yss-antdv-next-design`
+- Ant Design v6 事实与 CLI：仅显式 React 兼容 H2 使用 `yss-antd-design`
 - 真实组件核验：不属于原型档位；进入已批准切片后由 `yss-ui` 基于目标 lockfile 执行，并写入前端实现验证
 - 独立低保真评审：`prototype-review`
 

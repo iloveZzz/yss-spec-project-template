@@ -51,7 +51,10 @@ function canonicalize(value) {
 }
 
 export function semanticProjection(registry) {
-  return COLLECTIONS.flatMap((kind) => registry[kind].map((record) => ({ kind, record: canonicalize(record) })))
+  return COLLECTIONS.flatMap((kind) => registry[kind].map((record) => ({
+    kind,
+    record: canonicalize(Object.fromEntries(Object.entries(record).filter(([key]) => !key.startsWith("public_"))))
+  })))
     .sort((left, right) => left.record.id.localeCompare(right.record.id));
 }
 
@@ -117,6 +120,9 @@ export function validateRegistry(registry, { baseline = DEFAULT_BASELINE } = {})
       const prefix = collection === "work_units" ? "work-unit." : collection === "evidence" ? "evidence." : `${collection.slice(0, -1)}.`;
       if (!id.startsWith(prefix)) fail(`${id} 与 ${collection} 类型不匹配`);
       if (typeof record.name !== "string" || record.name.length === 0) fail(`${id} 缺少名称`);
+      for (const [key, value] of Object.entries(record).filter(([key]) => key.startsWith("public_"))) {
+        if (typeof value !== "string" || value.trim().length === 0) fail(`${id}.${key} 必须是非空字符串`);
+      }
       ids.set(id, collection);
     }
   }
@@ -143,25 +149,27 @@ export function validateRegistry(registry, { baseline = DEFAULT_BASELINE } = {})
 }
 
 export function renderLifecycleStructure(registry) {
+  const display = (record, field) => record[`public_${field}`] ?? record[field];
   const lines = [
     "<!-- lifecycle-registry:structure:start -->",
     `> 此结构区由 \`docs/process/lifecycle-registry.yaml\` 生成。当前为 \`${registry.status}\` 模式：它校验结构和派生文档，不改变运行时状态 schema 或人工批准语义。`, "",
     "## 1. 主阶段", "", "| 稳定 ID | 阶段 | 目标 | 退出标准 |", "|---|---|---|---|"
   ];
-  for (const stage of registry.stages) lines.push(`| \`${stage.id}\` | ${stage.name} | ${stage.goal} | ${stage.exit_criteria} |`);
+  for (const stage of registry.stages) lines.push(`| \`${stage.id}\` | ${display(stage, "name")} | ${display(stage, "goal")} | ${display(stage, "exit_criteria")} |`);
   lines.push("", "## 2. 生命周期对象", "", "门禁是需要裁决的审查点；产物、工作单元和证据不是门禁的同义词。未命中条件的门禁记录 \`not-applicable\` 及原因，不生成空文档。", "", "### 2.1 条件门禁", "", "| 稳定 ID | 门禁 | 所属阶段 | 触发条件 | 前置门禁 | 必须留下的证据 |", "|---|---|---|---|---|---|");
-  for (const gate of registry.gates) lines.push(`| \`${gate.id}\` | ${gate.name} | \`${gate.stage}\` | ${gate.trigger} | ${(gate.requires_gates ?? []).map((id) => `\`${id}\``).join("、") || "无"} | ${gate.evidence.map((id) => `\`${id}\``).join("、")} |`);
+  for (const gate of registry.gates) lines.push(`| \`${gate.id}\` | ${display(gate, "name")} | \`${gate.stage}\` | ${display(gate, "trigger")} | ${(gate.requires_gates ?? []).map((id) => `\`${id}\``).join("、") || "无"} | ${gate.evidence.map((id) => `\`${id}\``).join("、")} |`);
   lines.push("", "### 2.2 生命周期产物", "", "| 稳定 ID | 产物 | 所属阶段 | 触发条件 |", "|---|---|---|---|");
-  for (const artifact of registry.artifacts) lines.push(`| \`${artifact.id}\` | ${artifact.name} | \`${artifact.stage}\` | ${artifact.trigger} |`);
+  for (const artifact of registry.artifacts) lines.push(`| \`${artifact.id}\` | ${display(artifact, "name")} | \`${artifact.stage}\` | ${display(artifact, "trigger")} |`);
   lines.push("", "### 2.3 执行证据", "", "| 稳定 ID | 证据 | 说明 |", "|---|---|---|");
-  for (const evidence of registry.evidence) lines.push(`| \`${evidence.id}\` | ${evidence.name} | ${evidence.description} |`);
+  for (const evidence of registry.evidence) lines.push(`| \`${evidence.id}\` | ${display(evidence, "name")} | ${display(evidence, "description")} |`);
   lines.push("<!-- lifecycle-registry:structure:end -->");
   return `${lines.join("\n")}\n`;
 }
 
 export function renderWorkUnits(registry) {
+  const display = (record, field) => record[`public_${field}`] ?? record[field];
   const lines = ["<!-- lifecycle-registry:work-units:start -->", "> 此表由 `docs/process/lifecycle-registry.yaml` 生成；工作单元按 `scope` 区分模板维护与项目实例流程。", "", "| 稳定 ID | 范围 | 工作单元 | 输入 | 输出 | 完成条件 |", "|---|---|---|---|---|---|"];
-  for (const unit of registry.work_units) lines.push(`| \`${unit.id}\` | ${unit.scope} | ${unit.name} | ${unit.input} | ${unit.output} | ${unit.completion} |`);
+  for (const unit of registry.work_units) lines.push(`| \`${unit.id}\` | ${unit.scope} | ${display(unit, "name")} | ${display(unit, "input")} | ${display(unit, "output")} | ${display(unit, "completion")} |`);
   lines.push("<!-- lifecycle-registry:work-units:end -->");
   return `${lines.join("\n")}\n`;
 }

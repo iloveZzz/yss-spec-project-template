@@ -27,7 +27,7 @@
 | 稳定 ID | 门禁 | 所属阶段 | 触发条件 | 前置门禁 | 必须留下的证据 |
 |---|---|---|---|---|---|
 | `gate.repository-identity-valid` | 仓库身份校验 | `stage.entry-triage` | 每次进入流程。 | 无 | `evidence.repository-identity-check` |
-| `gate.domain-strategy-approved` | DDD 战略设计批准 | `stage.discovery` | 存在 DDD 战略设计影响或需要确定领域边界、统一语言和核心规则。 | 无 | `evidence.domain-strategy-review`、`evidence.approval-record` |
+| `gate.domain-strategy-approved` | 业务边界与规则确认 | `stage.discovery` | 需要确定业务板块、业务责任区、统一业务词汇、协作关系或关键规则。 | 无 | `evidence.domain-strategy-review`、`evidence.approval-record` |
 | `gate.stage-decision-package-approved` | 阶段决策包批准 | `stage.discovery` | Discovery 到 Spec 入口需要稳定的阶段决策合同。 | `gate.domain-strategy-approved` | `evidence.stage-decision-package`、`evidence.approval-record` |
 | `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | 新功能、行为变化或范围扩大进入 Spec 基线。 | 无 | `evidence.approval-record` |
 | `gate.prototype-reviewed` | 原型评审 | `stage.product-design` | 命中产品设计影响，且低保真页面、流程、状态或 API 反推需要独立评审。 | 无 | `evidence.prototype-review-result` |
@@ -48,8 +48,8 @@
 | 稳定 ID | 产物 | 所属阶段 | 触发条件 |
 |---|---|---|---|
 | `artifact.impact-assessment` | 影响面分析 | `stage.entry-triage` | 每次变更。 |
-| `artifact.domain-strategy` | DDD 战略设计 | `stage.discovery` | 新产品/模块、跨上下文功能、统一语言冲突、服务边界或核心规则变化。 |
-| `artifact.stage-decision-package` | 阶段决策包 | `stage.discovery` | Discovery 到 Spec 入口需要结构化上游决策。 |
+| `artifact.domain-strategy` | 业务边界与规则设计 | `stage.discovery` | 新产品/模块、跨责任区协作、业务词汇冲突、责任边界或关键规则变化。 |
+| `artifact.stage-decision-package` | 方案决策包 | `stage.discovery` | Discovery 到 Spec 入口需要结构化上游决策。 |
 | `artifact.discovery-record` | Discovery 记录 | `stage.discovery` | 新问题或边界不清。 |
 | `artifact.spec` | Spec | `stage.spec-architecture` | 新功能、行为变化或范围扩大。 |
 | `artifact.product-overview` | 产品总体设计 | `stage.spec-architecture` | 进入 Spec 基线。 |
@@ -78,8 +78,9 @@
 
 | 稳定 ID | 证据 | 说明 |
 |---|---|---|
+| `evidence.context-reconciliation` | Context Reconciliation 证据 | 工作单元在批准或流转前对根目录唯一 CONTEXT.md 的稳定术语回写、作用域解析和双摘要核对结果；不新增门禁。 |
 | `evidence.impact-assessment` | 影响面分析记录 | 受影响仓库、资产、风险与最近可信阶段。 |
-| `evidence.domain-strategy-review` | DDD 战略设计评审证据 | 子域、限界上下文、统一语言、Context Map、场景和不变量的结构化评审结果。 |
+| `evidence.domain-strategy-review` | 业务边界与规则评审证据 | 业务板块、业务责任区、统一业务词汇、协作与交接关系、关键场景和不可违反规则的结构化评审结果。 |
 | `evidence.tactical-design-review` | DDD 战术设计评审证据 | 聚合、Entity、Value Object、不变量、状态机、一致性、Gateway 与 API 隔离的结构化评审结果。 |
 | `evidence.stage-decision-package` | 阶段决策包验证证据 | 阶段决策包的 Schema、引用、语义一致性、影响传播和下游消费验证结果。 |
 | `evidence.maintenance-intensity-checkpoint` | 模板维护强度 checkpoint | template-source 变更的 L1 / L2 / L3 分级、触发项、最低验证证据、review 模式和升级记录。 |

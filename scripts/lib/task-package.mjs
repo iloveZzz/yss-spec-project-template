@@ -79,11 +79,17 @@ function validateCommon(value, registry, lifecycle) {
   if (completed) {
     if (!value.result || value.result.result !== "completed") fail("resolved/完成任务必须返回 result=completed 的 Workflow Execution Result");
     if (value.workflow_status !== "resolved") fail("result=completed 的任务包必须处于 resolved 状态");
-    for (const field of ["result_schema", "work_unit", "workflow_reference", "skill", "changed_files", "evidence_refs", "deferred_seams", "drift", "violation", "new_impacts", "stale_candidates", "next_route", "blocking_signals"]) {
+    for (const field of ["result_schema", "work_unit", "workflow_reference", "skill", "changed_files", "context_reconciliation", "evidence_refs", "deferred_seams", "drift", "violation", "new_impacts", "stale_candidates", "next_route", "blocking_signals"]) {
       if (value.result[field] === undefined) fail(`result=completed 时 ${field} 不能为空`);
     }
     if (value.result.result_schema !== "workflow-execution-result-v1") fail("result_schema 必须为 workflow-execution-result-v1");
     if (value.result.work_unit !== value.work_unit_id) fail("Workflow Execution Result.work_unit 必须与任务包 work_unit_id 一致");
+    const reconciliation = value.result.context_reconciliation;
+    const expectedReconciliationStatus = value.contract.kind === "template-maintenance" ? "not-applicable" : "reconciled";
+    if (reconciliation?.status !== expectedReconciliationStatus) fail(`result=completed 时 context_reconciliation.status 必须为 ${expectedReconciliationStatus}`);
+    assertReadableEvidenceRef(reconciliation.ref, "context_reconciliation.ref");
+    if (!value.result.evidence_refs.includes(reconciliation.ref)) fail("context_reconciliation.ref 必须包含在 result.evidence_refs 中");
+    if (expectedReconciliationStatus === "not-applicable" && !reconciliation.reason) fail("template-maintenance 的 context_reconciliation 必须说明 reason");
     const routeResult = validateNextRoute(value.result.work_unit, value.result.next_route);
     if (routeResult.result !== "allowed") fail(`Workflow Execution Result next_route 非法: ${routeResult.blocking_signals.join(", ")}`);
     value.expected_evidence_files.forEach((ref) => assertReadableEvidenceRef(ref, "expected_evidence_files"));
