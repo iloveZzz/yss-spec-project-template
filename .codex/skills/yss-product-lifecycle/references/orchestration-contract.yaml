@@ -203,7 +203,7 @@ skill_source_contract:
 lifecycle_native_entries:
   default_entry: yss-product-lifecycle
   formal_artifact_owner: yss-product-lifecycle
-  user_confirmation_required_at: [spec-baseline, prototype-confirmation, openapi-freeze, merge-or-release]
+  user_confirmation_policy_ref: docs/agents/digital-human-roles.yaml#user_decision_policy
   compatibility_entries:
     to-spec: lifecycle-validate-and-accept
     to-tickets: lifecycle-validate-and-accept
@@ -520,6 +520,7 @@ review_input:
 
 git_authorization:
   natural_language_intent_is_authorization: false
+  explicit_scoped_user_reply_may_be_normalized: true
   commit:
     requires_explicit_user_authorization: true
     required: [commit_authorized, commit_scope, commit_authorization_ref]
@@ -909,8 +910,8 @@ external_input_pause:
   reason_code: external-input-required
   reason: required decision-maker input is not available to the Agent
   required: [questionnaire_ref, recipient_role, requested_outputs, resume_route]
-  response_required: [response_ref, reclassified_impact, updated_authoritative_asset]
-  resume_requires: [response_ref, reclassified_impact, updated_authoritative_asset]
+  response_required: [response_ref, user_decisions, reclassified_impact, updated_authoritative_asset]
+  resume_requires: [response_ref, user_decisions, reclassified_impact, updated_authoritative_asset]
 
 prototype_modes:
   matt_logic:
@@ -930,3 +931,16 @@ behavioral_invariants:
   wait_what_preserves_state: true
   human_checkpoint_required_for_manual_steps: true
   diagnostics_redact_secrets: true
+
+user_decision_evidence:
+  policy_ref: docs/agents/digital-human-roles.yaml#user_decision_policy
+  schema_ref: docs/process/schemas/user-decision.schema.json
+  protocol_ref: references/user-decisions.md
+  verifier: scripts/verify-user-decision
+  workflow_result_fields: [user_decisions, user_decision_not_applicable]
+  implementation_fields: [user_decisions, slice_contract_ref, vertical_slice_ticket_ref]
+  checkpoint_carrier: human_review
+  professional_review_replaced: false
+  response_absent: paused-human-gate
+  invalid_response: blocked
+  basis_changed: stale

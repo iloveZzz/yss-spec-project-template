@@ -9,6 +9,9 @@ profiles:
   release:
     all_groups: true
 core_escalation_patterns:
+  - scripts/lib/user-decision.mjs
+  - scripts/lib/approval-record.mjs
+  - scripts/lib/lifecycle-transition.mjs
   - AGENTS.md
   - yss-project.yaml
   - docs/process/maintenance-intensity.yaml
@@ -34,6 +37,9 @@ core_escalation_patterns:
   - scripts/inspect-maintenance-candidate
   - .template-source/tooling/node/scripts/design-md.mjs
 required_files:
+  - docs/process/schemas/user-decision.schema.json
+  - docs/process/templates/user-decision-template.yaml
+  - .agents/skills/yss-product-lifecycle/references/user-decisions.md
   - yss-project.yaml
   - AGENTS.md
   - CONTEXT.md
@@ -113,6 +119,9 @@ required_files:
   - scripts/capture-maintenance-candidate
   - scripts/inspect-maintenance-candidate
 syntax_files:
+  - scripts/lib/user-decision.mjs
+  - scripts/verify-user-decision
+  - scripts/verify-user-decision-scenarios
   - scripts/sync-skills
   - scripts/update-skill-lock
   - scripts/verify-upstream-skill-source
@@ -182,6 +191,10 @@ syntax_files:
   - scripts/verify-maintenance-review-workflow-scenarios
   - scripts/verify-template-cache-scenarios
 routing:
+  - patterns: ["scripts/*user-decision*", "scripts/lib/user-decision*", "scripts/fixtures/user-decision/**", "docs/process/schemas/user-decision*", "docs/process/templates/user-decision*", "scripts/lib/approval-record.mjs", "scripts/verify-approval-record"]
+    groups: [lifecycle, collaboration]
+  - patterns: ["scripts/*strategic-handoff*", "scripts/lib/strategic-handoff*", "scripts/fixtures/strategic-handoff/**", "docs/process/strategic-handoff-package.md", "docs/process/schemas/strategic-handoff-*"]
+    groups: [strategic-handoff-package]
   - patterns: [DESIGN.md, "docs/design/**", ".template-source/tooling/node/scripts/design-md.mjs"]
     groups: [design-system]
   - patterns: [AGENTS.md, CONTEXT.md, yss-project.yaml, package.json, .gitignore, README.md, "docs/**"]
@@ -215,6 +228,10 @@ routing:
   - patterns: ["scripts/**"]
     groups: [hygiene]
 groups:
+  strategic-handoff-package:
+    commands:
+      - { run: "node --check scripts/lib/strategic-handoff.mjs" }
+      - { run: "scripts/verify-strategic-handoff-package-scenarios" }
   design-system:
     commands:
       - { run: "node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md", when: template-source }
@@ -249,13 +266,14 @@ groups:
     commands:
       - { run: "scripts/verify-digital-human-roles" }
       - { run: "scripts/verify-digital-human-roles-scenarios" }
-      - { run: "scripts/verify-approval-record docs/templates/approval-record-template.yaml" }
+      - { run: "scripts/verify-approval-record --history docs/templates/approval-record-template.yaml" }
       - { run: "scripts/verify-subagent-task-package-scenarios" }
       - { run: "scripts/verify-digital-human-task-package-scenarios" }
       - { run: "scripts/verify-digital-human-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml", when: template-source }
       - { run: "scripts/verify-digital-human-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml", when: template-source }
   lifecycle:
     commands:
+      - { run: "scripts/verify-user-decision-scenarios" }
       - { run: "scripts/verify-context-contract --root . --json" }
       - { run: "scripts/verify-context-contract-scenarios" }
       - { run: "node scripts/verify-business-language-scenarios" }

@@ -356,3 +356,12 @@ seam_deferred_required: [risk, owner, follow_up_ticket, verification_plan, targe
 deviation_required: [rule, reason, approval_ref]
 not_applicable_required: [item, reason]
 unavailable_skill_required: [skill, provider, fallback, resolution]
+
+strategic_handoff_consumption:
+  when: upstream-source-is-imported-strategic-handoff
+  required: [import_receipt_ref, bundle_digest, context_reconciliation_ref, rows]
+  verification: scripts/verify-strategic-handoff-consumption --root <target> --slice <slice-id> <approved-tactical-contract>
+  require_actual_exit_code: 0
+  stale_policy: latest-imported-source-digest-and-dependent-slices
+  unknown_dependency: block-all
+  compiler_must_not_approve: true

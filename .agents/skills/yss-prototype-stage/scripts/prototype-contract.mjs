@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { assertUserDecisionRequirement, decisionDigest, decisionIO } from "../../../../scripts/lib/user-decision.mjs";
 import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -186,7 +187,11 @@ function validateProfileV4(data, errors, allowTemplate) {
   }
 }
 
-export function validatePrototypeEvidence(data, { allowTemplate = false, allowLegacy = false } = {}) {
+export function prototypeDecisionSnapshot(data) {
+  return { prototype_ref: data.prototype_ref, prototype_digest: data.browser_delivery?.prototype_digest, visual_baseline: data.visual_baseline, design_baseline: data.design_baseline, upstream_refs: data.upstream_refs, operable_scope: data.user_confirmation?.operable_scope, simulations_or_gaps: data.user_confirmation?.simulations_or_gaps };
+}
+
+export function validatePrototypeEvidence(data, { allowTemplate = false, allowLegacy = false, ...decisionOptions } = {}) {
   const errors = [];
   const warnings = [];
   if (!object(data)) return { errors: ["原型证据必须是对象"], warnings };
@@ -198,6 +203,13 @@ export function validatePrototypeEvidence(data, { allowTemplate = false, allowLe
   if (data.schema_version !== 4) return { errors: ["schema_version 必须为 4"], warnings };
   validateCommonV4(data, errors, allowTemplate);
   validateProfileV4(data, errors, allowTemplate);
+  if (!allowTemplate && errors.length === 0) {
+    try {
+      const confirmation = data.user_confirmation;
+      assertUserDecisionRequirement({ boundary: "gate.user-confirmation", subject_ref: confirmation.decision_subject_ref, scope: confirmation.operable_scope, user_decision_ref: confirmation.user_decision_ref }, decisionOptions);
+      if (decisionDigest(decisionIO(decisionOptions).document(confirmation.decision_subject_ref)) !== decisionDigest(prototypeDecisionSnapshot(data))) throw new TypeError("user-decision-stale: 原型与用户所见快照不一致");
+    } catch (error) { errors.push(error.message); }
+  }
   return { errors, warnings };
 }
 

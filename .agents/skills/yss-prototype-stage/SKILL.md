@@ -38,7 +38,7 @@ description: Use when a YSS feature has product-design impact on a primary flow,
 
 Design QA 合并 visual、layout、interaction、content、accessibility、cross-platform 六轴，不再建立第二份评审。所有档位至少证明 desktop/narrow 非空渲染、项目 Token、console 和基础键盘/焦点/对比度；H2 追加主流程、关键异常、200% zoom/reduced motion 与按风险视觉回归。图片是视觉基准而非唯一事实来源；模型必须从 `visual-baseline.yaml` 的 `case_id` 读取对应语义引用，禁止靠目录 glob 猜测页面含义。
 
-用户确认只描述原型确认了什么、哪些范围可操作、哪些为模拟或 gap，以及接受/拒绝结论；不要求用户确认技术栈、CLI 或构建细节。
+用户确认必须绑定提问者或其明确指定负责人的原始回复，使用生命周期 `user_decision_policy` 和统一用户决定记录；产品数字人只提供确认建议，不能代答。正式证据追加 `user_decision_ref/decision_subject_ref`，校验原型、视觉基线和操作范围与用户所见快照一致。用户确认只描述原型确认了什么、哪些范围可操作、哪些为模拟或 gap，以及接受/拒绝结论；不要求用户确认技术栈、CLI 或构建细节。
 
 `gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` 保持三个既有门禁。档位选择是 `gate.prototype-verified` 的输入证据，不增加新门禁，也不授权实现。
 

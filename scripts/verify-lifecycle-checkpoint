@@ -5,7 +5,7 @@ import path from "node:path";
 import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "./vendor/yaml.mjs";
-import { assertCheckpointApprovals } from "./lib/approval-record.mjs";
+import { assertCheckpointApprovals, assertCheckpointUserDecisions } from "./lib/approval-record.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const schemaPath = path.join(root, "docs/process/schemas/lifecycle-checkpoint.schema.json");
@@ -32,6 +32,7 @@ try {
   const result = spawnSync("python3", ["-c", validator, schemaPath], { cwd: root, encoding: "utf8", input: JSON.stringify(value) });
   if (result.status !== 0) throw new TypeError(`${result.stdout}${result.stderr}`.trim());
   assertCheckpointApprovals(value, sourcePath);
+  assertCheckpointUserDecisions(value);
   if (value.repository_mode === "project-instance" && ["paused-human-gate", "completed"].includes(value.status)) {
     if (value.context_reconciliation?.status !== "reconciled" || !value.context_reconciliation?.ref) throw new TypeError("project-instance 在会签或完成前必须具有 reconciled context_reconciliation");
     const reconciliation = path.resolve(root, value.context_reconciliation.ref);

@@ -27,6 +27,9 @@ verification:
   commands: []
   evidence_refs: []
 human_review:
+  user_decisions: []
+  required_decisions: []
+  not_applicable: []
   required: false
   status: not-applicable
 git_checkpoint:

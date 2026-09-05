@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.local/schemas/stage-decision-package-v2.json",
+  "title": "YSS Stage Decision Package",
+  "type": "object",
+  "required": ["schema_version", "stage_decision_id", "package_version", "status", "problem_statement", "target_users", "mvp", "non_goals", "success_criteria", "test_seams", "confirmed_decisions", "assumptions", "constraints", "unresolved_items", "context_snapshot", "domain_strategy_ref", "impact_assessment", "downstream_mapping", "evidence_refs", "approval"],
+  "properties": {
+    "schema_version": {"const": 2},
+    "stage_decision_id": {"type": "string", "pattern": "^stage-decision\\.[a-z0-9][a-z0-9-]*$"},
+    "package_version": {"type": "string", "pattern": "^v[0-9]+$"},
+    "status": {"enum": ["draft", "ready-for-human", "approved", "stale", "blocked"]},
+    "problem_statement": {"type": "string", "minLength": 1},
+    "target_users": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "mvp": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "non_goals": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "success_criteria": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "test_seams": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "confirmed_decisions": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "assumptions": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "constraints": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "unresolved_items": {"type": "array", "items": {"$ref": "#/$defs/unresolved"}},
+    "context_snapshot": {"$ref": "#/$defs/contextSnapshot"},
+    "domain_strategy_ref": {"$ref": "#/$defs/domainRef"},
+    "impact_assessment": {"$ref": "#/$defs/impact"},
+    "downstream_mapping": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/mapping"}},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "approval": {"$ref": "#/$defs/approval"}
+  },
+  "$defs": {
+    "contextSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context_ref", "context_schema_version", "document_digest", "referenced_terms_digest", "term_refs"],
+      "properties": {
+        "context_ref": {"const": "CONTEXT.md"},
+        "context_schema_version": {"const": 1},
+        "document_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "referenced_terms_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "term_refs": {"type": "array", "items": {"type": "string", "pattern": "^(Global|[A-Z][A-Za-z0-9]+)/[A-Z][A-Za-z0-9]+$"}, "uniqueItems": true}
+      }
+    },
+    "unresolved": {
+      "type": "object",
+      "required": ["item", "type", "owner", "next_action", "target_version"],
+      "properties": {
+        "item": {"type": "string", "minLength": 1},
+        "type": {"enum": ["blocker", "deferred"]},
+        "owner": {"type": "string", "minLength": 1},
+        "next_action": {"type": "string", "minLength": 1},
+        "target_version": {"type": "string", "minLength": 1}
+      }
+    },
+    "domainRef": {
+      "type": "object",
+      "required": ["domain_strategy_id", "domain_version", "digest", "status", "persisted_ref"],
+      "properties": {
+        "domain_strategy_id": {"type": "string", "pattern": "^domain-strategy\\.[a-z0-9][a-z0-9-]*$"},
+        "domain_version": {"type": "string", "pattern": "^v[0-9]+$"},
+        "digest": {"type": "string", "minLength": 1},
+        "status": {"enum": ["approved", "stale", "blocked"]},
+        "persisted_ref": {"type": "string", "minLength": 1}
+      }
+    },
+    "impact": {
+      "type": "object",
+      "required": ["ui", "api", "data", "backend", "frontend", "cross_repo", "high_risk"],
+      "properties": {
+        "ui": {"type": "boolean"},
+        "api": {"type": "boolean"},
+        "data": {"type": "boolean"},
+        "backend": {"type": "boolean"},
+        "frontend": {"type": "boolean"},
+        "cross_repo": {"type": "boolean"},
+        "high_risk": {"type": "boolean"}
+      }
+    },
+    "mapping": {
+      "type": "object",
+      "required": ["domain_change", "consumer", "propagation", "reapproval_condition"],
+      "properties": {
+        "domain_change": {"type": "string", "minLength": 1},
+        "consumer": {"type": "string", "minLength": 1},
+        "propagation": {"enum": ["direct", "transitive", "not-applicable", "stale"]},
+        "reapproval_condition": {"type": "string", "minLength": 1}
+      }
+    },
+    "approval": {
+      "type": "object",
+      "required": ["approval_ref", "approver", "persisted_ref", "current_version"],
+      "properties": {
+        "approval_ref": {"type": "string", "minLength": 1},
+        "approver": {"type": "string", "minLength": 1},
+        "persisted_ref": {"type": "string", "minLength": 1},
+        "current_version": {"type": "string", "pattern": "^v[0-9]+$"}
+      }
+    }
+  }
+}

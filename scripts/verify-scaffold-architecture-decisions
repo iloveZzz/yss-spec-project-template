@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { parseDocument } from "./vendor/yaml.mjs";
 import { validateJsonSchema } from "./lib/json-schema.mjs";
 import { loadSkillRegistry } from "./lib/skill-registry.mjs";
+import { assertScaffoldUserDecision } from "./lib/user-decision.mjs";
 import { validateArchitectureIdentity } from "./lib/backend-architecture.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -41,6 +42,9 @@ try {
     if (decision.confirmed_architecture && decision.confirmed_architecture !== decision.recommended_architecture && !decision.override_reason) throw new TypeError(`${decision.project_id} 覆盖 Agent 推荐时必须说明 override_reason`);
     if (decision.inheritance_mode === "root-default" && (decision.parent_project_id !== null || decision.inherited_from !== null)) throw new TypeError(`${decision.project_id} 根默认不得声明父项目`);
     if (["inherit", "override"].includes(decision.inheritance_mode) && (!decision.parent_project_id || decision.inherited_from !== decision.parent_project_id)) throw new TypeError(`${decision.project_id} 子项目继承引用不完整`);
+    if (confirmed && value.template === false) {
+      assertScaffoldUserDecision(decision);
+    }
     const registry = loadSkillRegistry();
     validateArchitectureIdentity({ ...decision, architecture_family: decision.confirmed_architecture ?? decision.recommended_architecture, generator_skill: registry.architecture_profiles?.[decision.architecture_profile]?.generator_skill, contract_digest: decision.decision_inputs_digest }, registry);
   }

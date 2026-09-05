@@ -1,17 +1,25 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
+import { mkdtempSync, rmSync, readFileSync, existsSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { buildImplementationFixture } from "./fixtures/user-decision/build-fixture.mjs";
+const temp = mkdtempSync(path.join(os.tmpdir(), "lifecycle-decision-test-"));
+process.on("exit", () => rmSync(temp, { recursive: true, force: true }));
+const approval = buildImplementationFixture(temp, "docs/.scratch/demo/issues/01-valid-slice.md");
 import { validateImplementationEntry, validateNextRoute, validateTicketFormalization } from "./lib/lifecycle-transition.mjs";
 
 const exists = (ref) => [
   "docs/process/lifecycle-registry.yaml",
   "docs/.scratch/demo/issues/01-valid-slice.md",
   "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml",
-].includes(ref);
+].includes(ref) || existsSync(ref);
 const decompositionResult = `result_schema: workflow-execution-result-v1\nwork_unit: work-unit.ticket-decomposition\nresult: completed\nevidence_refs:\n  - docs/.scratch/demo/evidence/ticket-decomposition-result.yaml\n`;
-const read = (ref) => ref === "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml" ? decompositionResult : "";
+const read = (ref) => ref === "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml" ? decompositionResult : readFileSync(ref, "utf8");
 const options = { exists, read };
 
 const validTicketState = {
+  ...approval.state,
   predecessor_work_unit: "work-unit.ticket-decomposition",
   tracker_kind: "local-markdown",
   ticket_decomposition_result_ref: "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml",
@@ -92,14 +100,16 @@ const arbitraryReadable = validateTicketFormalization({
 }, options);
 assert.equal(arbitraryReadable.result, "blocked");
 assert.ok(arbitraryReadable.blocking_signals.includes("ticket-decomposition-incomplete"));
+const remoteApproval = buildImplementationFixture(path.join(temp, "remote"), "https://github.com/example/project/issues/1");
 assert.equal(validateTicketFormalization({
   ...validTicketState,
+  ...remoteApproval.state,
   tracker_kind: "github",
   ticket_decomposition_result_ref: "https://github.com/example/project/issues/1",
   ticket_decomposition_result: { result: "completed", evidence_refs: ["https://github.com/example/project/issues/1"] },
   vertical_slice_ticket_ref: "https://github.com/example/project/issues/1",
   vertical_slice_ticket: { ref: "https://github.com/example/project/issues/1", kind: "vertical-slice-ticket", role: "ready-for-agent" },
   slice_contract: { ...validTicketState.slice_contract, ticket_ref: "https://github.com/example/project/issues/1" },
-}, { ...options, exists: (ref) => ref === "https://github.com/example/project/issues/1", read: (ref) => ref === "https://github.com/example/project/issues/1" ? decompositionResult.replace("docs/.scratch/demo/evidence/ticket-decomposition-result.yaml", "https://github.com/example/project/issues/1") : "" }).result, "allowed");
+}, { ...options, exists: (ref) => ref === "https://github.com/example/project/issues/1", read: (ref) => ref === "https://github.com/example/project/issues/1" ? decompositionResult.replace("docs/.scratch/demo/evidence/ticket-decomposition-result.yaml", "https://github.com/example/project/issues/1") : readFileSync(ref, "utf8") }).result, "allowed");
 
 process.stdout.write("生命周期转换压力场景验证通过\n");

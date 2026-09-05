@@ -1,0 +1,91 @@
+{
+  "schema_version": 2,
+  "stage_decision_id": "stage-decision.supplier-admission",
+  "package_version": "v2",
+  "status": "approved",
+  "problem_statement": "合规准入决定分散，采购无法稳定判断当前有效资格。",
+  "target_users": [
+    "采购专员、合规专员"
+  ],
+  "mvp": [
+    "提交供应商申请、合规准入决定、采购侧有效性校验"
+  ],
+  "non_goals": [
+    "供应商结算、采购付款、通用工作流平台"
+  ],
+  "success_criteria": [
+    "新采购订单 100% 校验当前有效准入决定"
+  ],
+  "test_seams": [
+    "supplier-application-submit",
+    "admission-validity-check"
+  ],
+  "confirmed_decisions": [
+    "ComplianceReview 拥有准入规则语义，ProcurementExecution 只消费决定"
+  ],
+  "assumptions": [
+    "供应商已有唯一 subject_ref"
+  ],
+  "constraints": [
+    "保留现有采购订单流程"
+  ],
+  "unresolved_items": [
+    {
+      "item": "供应商历史资料迁移范围",
+      "type": "deferred",
+      "owner": "role.product-manager",
+      "next_action": "在 Spec synthesis 前完成数据盘点",
+      "target_version": "2026-Q4"
+    }
+  ],
+  "context_snapshot": {
+    "context_ref": "CONTEXT.md",
+    "context_schema_version": 1,
+    "document_digest": "<document-digest>",
+    "referenced_terms_digest": "<referenced-terms-digest>",
+    "term_refs": [
+      "Global/Supplier",
+      "ComplianceReview/AdmissionDecision"
+    ]
+  },
+  "domain_strategy_ref": {
+    "domain_strategy_id": "domain-strategy.supplier-admission",
+    "domain_version": "v2",
+    "digest": "<domain-strategy-digest>",
+    "status": "approved",
+    "persisted_ref": "domain-strategy.yaml"
+  },
+  "impact_assessment": {
+    "ui": true,
+    "api": true,
+    "data": true,
+    "backend": true,
+    "frontend": true,
+    "cross_repo": false,
+    "high_risk": false
+  },
+  "downstream_mapping": [
+    {
+      "domain_change": "admission-decision-validity",
+      "consumer": "spec-synthesis",
+      "propagation": "direct",
+      "reapproval_condition": "领域策略版本或有效性规则变化"
+    },
+    {
+      "domain_change": "admission-decision-validity",
+      "consumer": "ticket-decomposition",
+      "propagation": "transitive",
+      "reapproval_condition": "Spec 基线变更"
+    }
+  ],
+  "evidence_refs": [
+    "evidence.discovery.supplier",
+    "evidence.domain-strategy-review.supplier"
+  ],
+  "approval": {
+    "approval_ref": ".agents/skills/yss-stage-decision/tests/fixtures/stage-decision-approval.yaml",
+    "approver": "role.product-manager",
+    "persisted_ref": "docs/.scratch/supplier/stage-decision/stage-decision-package-v1.yaml",
+    "current_version": "v2"
+  }
+}

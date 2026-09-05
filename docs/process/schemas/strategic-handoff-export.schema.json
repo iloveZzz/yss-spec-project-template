@@ -1,0 +1,295 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/strategic-handoff-export.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "approvals",
+    "additional_files",
+    "reference_map",
+    "prototype"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "approvals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "domain_strategy_ref",
+        "stage_decision_package_ref",
+        "spec_ref",
+        "prototype_ref",
+        "visual_baseline_ref",
+        "business_ticket_set_ref",
+        "handoff"
+      ],
+      "properties": {
+        "domain_strategy_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "record_ref",
+            "gate_id",
+            "digest_kind"
+          ],
+          "properties": {
+            "record_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "gate_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest_kind": {
+              "enum": [
+                "canonical-json",
+                "sha256-bytes",
+                "visual-baseline"
+              ]
+            }
+          }
+        },
+        "stage_decision_package_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "record_ref",
+            "gate_id",
+            "digest_kind"
+          ],
+          "properties": {
+            "record_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "gate_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest_kind": {
+              "enum": [
+                "canonical-json",
+                "sha256-bytes",
+                "visual-baseline"
+              ]
+            }
+          }
+        },
+        "spec_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "record_ref",
+            "gate_id",
+            "digest_kind"
+          ],
+          "properties": {
+            "record_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "gate_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest_kind": {
+              "enum": [
+                "canonical-json",
+                "sha256-bytes",
+                "visual-baseline"
+              ]
+            }
+          }
+        },
+        "prototype_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "record_ref",
+            "gate_id",
+            "digest_kind"
+          ],
+          "properties": {
+            "record_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "gate_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest_kind": {
+              "enum": [
+                "canonical-json",
+                "sha256-bytes",
+                "visual-baseline"
+              ]
+            }
+          }
+        },
+        "visual_baseline_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "record_ref",
+            "gate_id",
+            "digest_kind"
+          ],
+          "properties": {
+            "record_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "gate_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest_kind": {
+              "enum": [
+                "canonical-json",
+                "sha256-bytes",
+                "visual-baseline"
+              ]
+            }
+          }
+        },
+        "business_ticket_set_ref": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "record_ref",
+            "gate_id",
+            "digest_kind"
+          ],
+          "properties": {
+            "record_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "gate_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest_kind": {
+              "enum": [
+                "canonical-json",
+                "sha256-bytes",
+                "visual-baseline"
+              ]
+            }
+          }
+        },
+        "handoff": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "record_ref",
+            "gate_id",
+            "digest_kind"
+          ],
+          "properties": {
+            "record_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "gate_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest_kind": {
+              "enum": [
+                "canonical-json",
+                "sha256-bytes",
+                "visual-baseline"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "additional_files": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "reference_map": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "prototype": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "preview_root",
+        "entry_ref",
+        "verification_ref",
+        "verification_digest"
+      ],
+      "properties": {
+        "profile": {
+          "enum": [
+            "H1",
+            "H2"
+          ]
+        },
+        "preview_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "entry_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verification_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_root": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lock_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "verification_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "profile": {
+                "const": "H2"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "source_root",
+              "lock_ref",
+              "source_digest"
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

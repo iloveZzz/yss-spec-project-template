@@ -1,3 +1,4 @@
+import { attachScaffoldDecisionFixture } from "../../../../scripts/fixtures/user-decision/build-fixture.mjs";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
@@ -22,7 +23,10 @@ async function fixture(t, { profile = capabilityModules.basic, architectureProfi
   t.after(() => rm(root, { recursive: true, force: true }));
   const output = path.join(root, "backend");
   await mkdir(output);
-  const decisionText = `${JSON.stringify({ schema_version: 1, kind: "scaffold-architecture-decisions", template: false, status: "current", decisions: [{ decision_id: "scaffold-decision.demo-service", project_id: "demo-service", parent_project_id: null, status: "lifecycle-approved", recommended_architecture: "layered-mvc", recommendation_reasons: ["薄 CRUD 服务"], confirmed_architecture: "layered-mvc", override_reason: null, inheritance_mode: "root-default", inherited_from: null, platform_profile: "spring-boot-2.7-jdk8", architecture_profile: architectureProfile, verification_database: "h2", production_database: "not-bound", requested_capabilities: profile.capabilities, resolved_modules: profile.modules, resolution_version: 1, user_confirmation: { confirmed_by: "tester", channel: "test", confirmation_ref: "test://confirmation", confirmed_at: "2026-09-05T00:00:00Z", normalized_text: "确认使用 MVC" }, decision_inputs_digest: `sha256:${"1".repeat(64)}` }] }, null, 2)}\n`;
+  let decisionText = `${JSON.stringify({ schema_version: 1, kind: "scaffold-architecture-decisions", template: false, status: "current", decisions: [{ decision_id: "scaffold-decision.demo-service", project_id: "demo-service", parent_project_id: null, status: "lifecycle-approved", recommended_architecture: "layered-mvc", recommendation_reasons: ["薄 CRUD 服务"], confirmed_architecture: "layered-mvc", override_reason: null, inheritance_mode: "root-default", inherited_from: null, platform_profile: "spring-boot-2.7-jdk8", architecture_profile: architectureProfile, verification_database: "h2", production_database: "not-bound", requested_capabilities: profile.capabilities, resolved_modules: profile.modules, resolution_version: 1, user_confirmation: { confirmed_by: "tester", channel: "test", confirmation_ref: "test://confirmation", confirmed_at: "2026-09-05T00:00:00Z", normalized_text: "确认使用 MVC" }, decision_inputs_digest: `sha256:${"1".repeat(64)}` }] }, null, 2)}\n`;
+  const decisionSet = JSON.parse(decisionText);
+  decisionSet.decisions = decisionSet.decisions.map((decision) => attachScaffoldDecisionFixture(path.join(root, "user-decision"), decision));
+  decisionText = JSON.stringify(decisionSet, null, 2) + "\n";
   const decisionFile = path.join(root, "scaffold-architecture-decisions.yaml");
   await writeFile(decisionFile, decisionText);
   const contract = {

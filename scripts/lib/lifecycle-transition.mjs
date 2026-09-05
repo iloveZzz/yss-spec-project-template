@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { parseDocument } from "../vendor/yaml.mjs";
+import { assertWorkUnitUserDecision, assertImplementationDecision } from "./user-decision.mjs";
 
 const IMPLEMENTATION_WORK_UNIT = "work-unit.slice-implementation";
 const TICKET_DECOMPOSITION_WORK_UNIT = "work-unit.ticket-decomposition";
@@ -110,10 +111,13 @@ function validateTicketReference(ref, trackerKind) {
  * Workflow Execution Result may omit a route; completed results are checked
  * by `validateWorkflowExecutionResult` before this function is called.
  */
-export function validateNextRoute(currentWorkUnit, nextRoute) {
+export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, options = {}) {
   const routes = NEXT_ROUTES[currentWorkUnit];
   if (!routes) return blockedResult([BLOCKING_SIGNALS.invalidRoute], ["known_current_work_unit"]);
-  if (nextRoute === null && routes.length === 0) return allowedResult();
+  if (nextRoute === null && routes.length === 0) {
+    if (decisionState) return validateDecisionBoundary(currentWorkUnit, decisionState, options);
+    return allowedResult();
+  }
   if (!hasText(nextRoute) || !routes.includes(nextRoute)) {
     const signals = [BLOCKING_SIGNALS.invalidRoute];
     if (nextRoute === IMPLEMENTATION_WORK_UNIT && currentWorkUnit !== TICKET_DECOMPOSITION_WORK_UNIT) {
@@ -121,14 +125,19 @@ export function validateNextRoute(currentWorkUnit, nextRoute) {
     }
     return blockedResult(signals, ["allowed_next_route"]);
   }
-  return allowedResult();
+  return decisionState ? validateDecisionBoundary(currentWorkUnit, decisionState, options) : allowedResult();
+}
+
+function validateDecisionBoundary(workUnit, state, options) {
+  try { assertWorkUnitUserDecision(workUnit, state, options); return allowedResult(); }
+  catch (error) { return blockedResult([error.code || "user-decision-invalid"], [error.message]); }
 }
 
 /**
  * Validate that Ticket formalization produced a real, implementable vertical slice.
  * `exists` is injectable so external adapters can resolve their own tracker refs.
  */
-export function validateTicketFormalization(state, { exists = existsSync, read = (ref) => readFileSync(ref, "utf8") } = {}) {
+export function validateTicketFormalization(state, { exists = existsSync, read = (ref) => readFileSync(ref, "utf8"), ...decisionOptions } = {}) {
   const decomposition = state?.ticket_decomposition_result;
   const ticket = state?.vertical_slice_ticket;
   const contract = state?.slice_contract;
@@ -233,6 +242,12 @@ export function validateTicketFormalization(state, { exists = existsSync, read =
     missing.push("ticket formalization inputs are current");
   }
 
+  try {
+    assertImplementationDecision(state, { ...decisionOptions, read });
+  } catch (error) {
+    signals.push(error.code || "user-decision-invalid");
+    missing.push(error.message);
+  }
   return signals.length === 0 ? allowedResult(evidenceRefs) : blockedResult(signals, missing, evidenceRefs);
 }
 

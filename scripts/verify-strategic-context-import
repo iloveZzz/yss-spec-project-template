@@ -46,7 +46,7 @@ try {
   if (baseline.baseline_id !== baselineRef.baseline_id || baseline.version !== baselineRef.version || baseline.bundle.digest !== baselineRef.digest) throw new TypeError("Strategic Design Handoff 的 Visual Baseline 身份、版本或 digest 不一致");
   const actualCaseIds = baseline.cases.map((item) => item.case_id).sort();
   if (JSON.stringify(actualCaseIds) !== JSON.stringify([...baselineRef.case_ids].sort())) throw new TypeError("Strategic Design Handoff 的 Visual Baseline case_ids 不一致");
-  const reconciliationResult = spawnSync(path.join(repoRoot, "scripts/verify-context-reconciliation"), ["--root", root, path.resolve(values.reconciliation)], { cwd: repoRoot, encoding: "utf8" });
+  const reconciliationResult = spawnSync(process.execPath, [path.join(repoRoot, "scripts/verify-context-reconciliation"), "--root", root, path.resolve(values.reconciliation)], { cwd: repoRoot, encoding: "utf8" });
   if (reconciliationResult.status !== 0) throw new TypeError(reconciliationResult.stderr.trim());
   const target = parseContextContract({ root });
   for (const operation of ["added", "updated"]) {

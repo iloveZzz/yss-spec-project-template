@@ -249,9 +249,41 @@ gate_policy:
     - gate: gate.openapi-frozen
       drafter: role.backend-engineer
       countersigners: [role.product-manager, role.test-engineer]
-  product_digital_human_with_biological_veto:
-    - gate.user-confirmation
+  product_digital_human_with_biological_veto: []
   biological_human:
+    - gate.user-confirmation
     - gate.release-ready
   runtime_side_effect_approval: biological-human
   commercial_contract: biological-human
+
+# 用户决定是关键业务/授权条件；不替代数字人专业审查，不新增 gate。
+user_decision_policy:
+  schema_version: 1
+  default_responder: requester
+  delegate_requires_requester_evidence: true
+  source_kinds: [platform-message, session-export, user-confirmation-file]
+  gates:
+    - gate.domain-strategy-approved
+    - gate.stage-decision-package-approved
+    - gate.spec-baseline-approved
+    - gate.user-confirmation
+    - gate.openapi-frozen
+    - gate.design-reviewed
+    - gate.architecture-reviewed
+    - gate.release-ready
+  work_units:
+    work-unit.discovery-requirements: discovery-conclusion
+    work-unit.service-project-initialization: scaffold-choice
+    work-unit.slice-implementation: implementation-scope
+    work-unit.release-and-retrospective: gate.release-ready
+  work_unit_gates:
+    work-unit.domain-strategy-design: [gate.domain-strategy-approved]
+    work-unit.stage-decision: [gate.stage-decision-package-approved]
+    work-unit.spec-synthesis: [gate.spec-baseline-approved]
+    work-unit.prototype-design: [gate.user-confirmation]
+    work-unit.technical-analysis: [gate.design-reviewed, gate.openapi-frozen, gate.architecture-reviewed]
+  conditional_decisions: [scaffold-choice, external-input, new-authorization, risk-acceptance]
+  waiting_allows: independent-work-only
+  expiry: basis-change-or-revocation-only
+  record_schema: docs/process/schemas/user-decision.schema.json
+  verifier: scripts/verify-user-decision

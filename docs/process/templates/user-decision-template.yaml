@@ -1,0 +1,30 @@
+# 待填写模板；不是批准证据。原始来源字段必须由真实消息提取。
+schema_version: 1
+kind: user-decision
+request:
+  id: <request-id>
+  requester_ref: <提问者原始身份>
+  requester_source:
+    kind: session-export
+    ref: <原始请求捕获文件>
+    digest: <sha256>
+    message_id: <原始消息ID>
+  items:
+    - id: <item-id>
+      boundary: <引用 user_decision_policy 中的门禁或决定类型>
+      title: <可审阅决定>
+      subject: {ref: <资产正文或冻结快照>, version: <version>, digest: <sha256>}
+      basis: []
+      scope: [<批准范围>]
+      changes: <关键变化>
+      risks: []
+      recommendation: <推荐方案>
+      next_actions: [<批准后将执行的动作>]
+      responder_ref: <提问者或其明确指定的负责人>
+      # 指定其他负责人时追加 delegation_source，与 requester_source 同形状。
+  presented_source:
+    kind: session-export
+    ref: <完整展示请求的原始消息捕获>
+    digest: <sha256>
+    message_id: <原始消息ID>
+responses: [] # 收到真实回复后追加；无回复永不预填 approved。

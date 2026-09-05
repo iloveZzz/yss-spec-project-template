@@ -125,6 +125,8 @@ review:
   result: pending
   review_ref: docs/.scratch/<feature>/design/<feature>-prototype-review.md
 user_confirmation:
+  user_decision_ref: <真实用户决定记录>
+  decision_subject_ref: <原型与基线确认快照>
   result: pending
   confirmation_ref: docs/.scratch/<feature>/design/<feature>-prototype-confirmation.md
   confirmed_decision: <用户确认的设计决定>

@@ -26,3 +26,7 @@
 ## 方案决策包
 
 方案决策包应通过内部字段 `domain_strategy_ref` 引用本合同的当前版本和 digest，并使用 `domain_to_downstream_mapping` 描述业务变化对 Spec、设计、API、数据、Ticket 和测试 seam 的传播。
+
+## 便携交付的逐条追溯
+
+正式导出要求 `traceability_version: 1`、`rule_catalog`、场景 `rule_refs / critical / success_results` 和不变量 `rule_ref`。已有 v2 文档继续只读兼容；缺稳定规则 ID 或未重新批准时禁止正式导出。具体合同见 `docs/process/strategic-handoff-package.md`，不得由导出器发明业务身份。

@@ -17,7 +17,7 @@ const releaseBaseline = [
   "scripts/verify-yss-dto-openapi-scenarios",
   "scripts/verify-digital-human-roles",
   "scripts/verify-digital-human-roles-scenarios",
-  "scripts/verify-approval-record docs/templates/approval-record-template.yaml",
+  "scripts/verify-approval-record --history docs/templates/approval-record-template.yaml",
   "scripts/verify-lifecycle-registry",
   "scripts/verify-context-contract --root . --json",
   "scripts/verify-context-contract-scenarios",

@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
+import { buildDecisionFixture } from "../../../../scripts/fixtures/user-decision/build-fixture.mjs";
 import { mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { prepareFlowPrototype, prepareStaticPrototype, validatePrototypeEvidence, validatePrototypeProject } from "../scripts/prototype-contract.mjs";
+import { prepareFlowPrototype, prepareStaticPrototype, validatePrototypeEvidence, validatePrototypeProject, prototypeDecisionSnapshot } from "../scripts/prototype-contract.mjs";
 import { sealVisualBaseline, validateVisualBaseline } from "../scripts/visual-baseline-contract.mjs";
 
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), "yss-prototype-contract-"));
@@ -46,7 +47,7 @@ await writeFile(path.join(reactRoot, "src/App.jsx"), 'import { ConfigProvider } 
 assert.deepEqual((await validatePrototypeProject({ root: reactRoot, profile: "H2", targetAntdVersion: "6.6.2" })).errors, []);
 
 function common(profile, kind, block) {
-  return {
+  const data = {
     schema_version: 4,
     feature,
     prototype_ref: `docs/.scratch/${feature}/design/prototypes/index.html`,
@@ -82,6 +83,10 @@ function common(profile, kind, block) {
     user_confirmation: { result: "approved", confirmation_ref: "confirmation.md", confirmed_decision: "接受当前设计", operable_scope: ["主操作"], simulations_or_gaps: [] },
     gaps: [], blockers: []
   };
+  const f = buildDecisionFixture(path.join(tempRoot, `decision-${profile}-${kind}`), { boundary: "gate.user-confirmation", scope: data.user_confirmation.operable_scope, subjectContent: JSON.stringify(prototypeDecisionSnapshot(data)) });
+  data.user_confirmation.user_decision_ref = f.ref;
+  data.user_confirmation.decision_subject_ref = f.requirement.subject_ref;
+  return data;
 }
 
 const h1Evidence = common("H1", "visual-review", { visual_review: {

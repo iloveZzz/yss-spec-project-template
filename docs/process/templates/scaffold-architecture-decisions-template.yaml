@@ -22,6 +22,8 @@ decisions:
     resolved_modules: [domain, application, infrastructure, adapter, bootstrap]
     resolution_version: 1
     user_confirmation:
+      user_decision_ref: null
+      decision_subject_ref: null
       confirmed_by: null
       channel: null
       confirmation_ref: null

@@ -6,6 +6,8 @@ import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
 import { loadApprovalRecord, resolveApprovalRef, validateApprovalRecordFile } from "../../../../scripts/lib/approval-record.mjs";
 import { verifyContextSnapshot } from "../../../../scripts/lib/context-contract.mjs";
 
+import { extractTraceability } from "../../../../scripts/lib/strategic-handoff-rules.mjs";
+
 const required = ["schema_version", "domain_strategy_id", "domain_version", "status", "contexts", "subdomains", "relationships", "scenarios", "concept_candidates", "invariants", "context_snapshot", "downstream_mapping", "evidence_refs", "approval"];
 const idPatterns = {
   context_id: /^[A-Z][A-Za-z0-9]+$/,
@@ -47,6 +49,7 @@ function requireArray(object, field, path, errors, min = 0, itemKind = "string")
 
 function validate(data, contextRoot) {
   const errors = [];
+  if (data?.traceability_version !== undefined) { try { extractTraceability(data); } catch(error) { errors.push(error.message); } }
   if (!data || typeof data !== "object" || Array.isArray(data)) return ["合同必须是对象"];
   if (data.schema_version === 1) return ["migration-required: domain strategy v1 必须迁移到 v2 context_snapshot"];
   for (const field of required) requireField(data, field, "root", errors);

@@ -40,3 +40,7 @@
    ```
 
 父模板、战略设计源仓与 CLI 快照必须按源仓 → 父模板 → CLI 顺序固定 revision；旧实例不回填，也不提供迁移检查器。
+
+## 真实用户决定适配
+
+模板生命周期的关键决定统一消费 `docs/agents/digital-human-roles.yaml.user_decision_policy`。本地原型确认与阶段决策批准追加真实回复、当前资产和范围校验；数字人审查保留。记录协议见 [用户决定协议](../../.agents/skills/yss-product-lifecycle/references/user-decisions.md)。此适配只更新 effective hash，不改写已锁定的上游 revision/hash，也不发布外部技能源。

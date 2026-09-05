@@ -49,3 +49,7 @@ description: 编排 Discovery 到 Spec 入口的方案决策与业务边界、�
 - 不把模板 Fixture 当作具体项目的业务事实。
 
 详细合同、字段和验证规则见 `references/domain-strategy-contract.md`、`references/stage-decision-package-contract.md` 与 `references/validation-rules.md`。机器可读合同分别为 `references/domain-strategy.schema.json` 和 `references/stage-decision-package.schema.json`；对应验证器为 `scripts/validate-domain-strategy.mjs` 与 `scripts/validate-stage-decision-package.mjs`。
+
+## 战略交接快照包
+
+跨仓交接使用 `scripts/strategic-handoff export / verify / import`。正式导出前补齐源战略的稳定规则 ID、关键场景和当前批准绑定；源资产原字节冻结、包内路径通过清单解析。目标导入只产生快照和对账/承接草案，正式 reconciliation 通过后才能进入战术设计。流程与字段见 `docs/process/strategic-handoff-package.md`。

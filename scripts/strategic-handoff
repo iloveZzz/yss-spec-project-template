@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+import { parseArgs } from 'node:util';
+import path from 'node:path';
+import { exportBundle, openBundle, importBundle } from './lib/strategic-handoff.mjs';
+try {
+  const {values,positionals}=parseArgs({allowPositionals:true,strict:true,options:{'source-root':{type:'string'},handoff:{type:'string'},output:{type:'string'},zip:{type:'boolean'},previous:{type:'string'},bundle:{type:'string'},'target-root':{type:'string'}}});
+  const [command]=positionals;
+  let result;
+  if(command==='export'&&values['source-root']&&values.handoff&&values.output)result=await exportBundle({sourceRoot:values['source-root'],handoffRef:values.handoff,output:values.output,zip:values.zip,previous:values.previous});
+  else if(command==='verify'&&values.bundle)result=await openBundle(path.resolve(values.bundle),b=>({result:'verified',bundle_id:b.manifest.bundle_id,version:b.manifest.version,bundle_digest:b.manifest.bundle_digest,rules:b.indexes.rules.length,scenarios:b.indexes.scenarios.length}));
+  else if(command==='import'&&values.bundle&&values['target-root'])result=await importBundle({bundle:path.resolve(values.bundle),targetRoot:values['target-root']});
+  else throw new TypeError('用法: strategic-handoff export --source-root <repo> --handoff <relative-file> --output <new-dir> [--zip] [--previous <bundle>] | verify --bundle <dir|zip> | import --bundle <dir|zip> --target-root <repo>');
+  process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
+}catch(error){process.stderr.write(`${JSON.stringify({result:'blocked',error:error.message})}\n`);process.exitCode=1;}

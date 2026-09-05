@@ -1,7 +1,13 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
-import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, writeFileSync, mkdtempSync, readFileSync } from "node:fs";
 import path from "node:path";
+import os from "node:os";
+import { buildDecisionFixture } from "./fixtures/user-decision/build-fixture.mjs";
+import { decisionDigest } from "./lib/user-decision.mjs";
+const decisionTemp = mkdtempSync(path.join(os.tmpdir(), "task-decision-test-"));
+process.on("exit", () => rmSync(decisionTemp, { recursive: true, force: true }));
+let decisionRequirement;
 import { spawnSync } from "node:child_process";
 import { ROOT } from "./lib/lifecycle-registry.mjs";
 import { generateTaskPackageDefaults, validateTaskPackage, validateTaskPackageSet } from "./lib/task-package.mjs";
@@ -19,7 +25,8 @@ const contract = {
   contract_version: 2,
   slice_id: "todo",
   status: "approved",
-  lifecycle_refs: {},
+  lifecycle_refs: { ticket: "docs/.scratch/todo/issues/01-todo.md", engineering_baseline: evidenceRef },
+  common: { project_roots: ["apps/frontend/todo", "apps/backend/todo"], allowed_write_paths: ["apps/frontend/todo/", "apps/backend/todo/"] },
   readiness: {},
   work_units: [
     { id: "work-unit.slice-frontend", role_id: "role.frontend-engineer", runtime_id: "runtime.skill-projection", task_package_ref: "work-unit.slice-frontend", contract_id: "slice-todo", contract_version: 2, allowed_write_paths: ["apps/frontend/todo/"] },
@@ -45,6 +52,10 @@ function writeFixtures() {
   writeFileSync(contractFile, JSON.stringify(contract));
   writeFileSync(evidenceFile, JSON.stringify({ ok: true }));
   writeFileSync(path.join(ROOT, maintenanceRef), JSON.stringify(maintenance));
+  const scopeRef = path.join(decisionTemp, "scope.json");
+  const asset = (ref) => ({ ref, version: "v1", digest: decisionDigest(readFileSync(path.join(ROOT, ref))) });
+  writeFileSync(scopeRef, JSON.stringify({ kind: "implementation-scope", slices: [{ ticket_ref: contract.lifecycle_refs.ticket, contract: asset(contractRef), repositories: contract.common.project_roots, allowed_write_paths: contract.common.allowed_write_paths, baselines: [asset(evidenceRef)] }] }));
+  decisionRequirement = buildDecisionFixture(decisionTemp, { boundary: "implementation-scope", scope: [contract.lifecycle_refs.ticket], subjectRef: scopeRef }).requirement;
 }
 
 function packageBase(roleId, taskId, workUnitId, kind, contractFields, stageId) {
@@ -95,6 +106,7 @@ function slicePackage(roleId, taskId, workUnitId, writePath) {
     workflow_status: "not-started",
     contract: { kind: "slice-implementation", contract_id: contract.contract_id, contract_version: contract.contract_version, status: "issued", contract_ref: contractRef, slice_contract_ref: contractRef },
     inputs: ["CONTEXT.md"],
+    user_decisions: [decisionRequirement],
     objective: "实现 Todo 垂直切片",
     allowed_write_paths: [writePath],
     forbidden_actions: ["不得修改合同"],
@@ -151,6 +163,7 @@ try {
   [discovery, spec, prototype, technical, tickets, review].forEach((pkg) => validateTaskPackage(pkg));
   validateTaskPackage(maintenance);
   validateTaskPackage(frontend);
+  assert.throws(() => validateTaskPackage({ ...frontend, user_decisions: [] }), /user-decision-scope-mismatch/, "Worker 派发前必须有当前实施范围批准");
   validateTaskPackage(backend);
   validateTaskPackageSet([frontend, backend]);
 

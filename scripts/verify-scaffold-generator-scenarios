@@ -112,6 +112,8 @@ def write_contract(
         indent=2,
     ) + "\n"
     decision_path.write_text(decision_text, encoding="utf-8")
+    subprocess.run(["node", str(REPOSITORY_ROOT / "scripts/fixtures/user-decision/build-fixture.mjs"), "--scaffold", str(decision_path)], check=True, cwd=REPOSITORY_ROOT)
+    decision_text = decision_path.read_text(encoding="utf-8")
     contract = {
         "schema_version": 3,
         "contract_id": contract_id,

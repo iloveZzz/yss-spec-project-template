@@ -1,0 +1,205 @@
+{
+  "schema_version": 2,
+  "domain_strategy_id": "domain-strategy.supplier-admission",
+  "domain_version": "v2",
+  "status": "approved",
+  "contexts": [
+    {
+      "context_id": "SupplierManagement",
+      "name": "供应商管理",
+      "responsibilities": [
+        "供应商申请、资料生命周期"
+      ],
+      "non_responsibilities": [
+        "合规决定、采购订单"
+      ],
+      "subdomain_type": "Supporting Subdomain",
+      "owner": "requirements-manager",
+      "status": "confirmed"
+    },
+    {
+      "context_id": "ComplianceReview",
+      "name": "合规审查",
+      "responsibilities": [
+        "资质审查、准入决定、有效期"
+      ],
+      "non_responsibilities": [
+        "供应商主档、采购订单"
+      ],
+      "subdomain_type": "Core Domain",
+      "owner": "product-manager",
+      "status": "confirmed"
+    },
+    {
+      "context_id": "ProcurementExecution",
+      "name": "采购执行",
+      "responsibilities": [
+        "采购选择、采购订单履行"
+      ],
+      "non_responsibilities": [
+        "合规规则、供应商申请"
+      ],
+      "subdomain_type": "Supporting Subdomain",
+      "owner": "project-manager",
+      "status": "confirmed"
+    }
+  ],
+  "subdomains": [
+    {
+      "subdomain_id": "subdomain.supplier-management",
+      "name": "Supplier Management",
+      "type": "Supporting Subdomain",
+      "rationale": "管理申请与资料生命周期，不承载差异化合规决策。",
+      "evidence_refs": [
+        "evidence.discovery.supplier"
+      ]
+    },
+    {
+      "subdomain_id": "subdomain.compliance-review",
+      "name": "Compliance Review",
+      "type": "Core Domain",
+      "rationale": "核心价值候选是企业自有的合规判断和风险规则。",
+      "evidence_refs": [
+        "evidence.discovery.compliance"
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "relationship_id": "relationship.supplier-to-compliance",
+      "from_context": "SupplierManagement",
+      "to_context": "ComplianceReview",
+      "relationship_pattern": "Customer/Supplier",
+      "semantic_upstream": "SupplierManagement",
+      "semantic_downstream": "ComplianceReview",
+      "business_authority": "SupplierManagement owns applicant facts",
+      "model_change_impact": "applicant schema changes require review adaptation",
+      "transport_direction": "SubmitSupplierForComplianceReview command",
+      "translation_responsibility": "ComplianceReview ACL",
+      "direction_explanation": "申请资料由 SupplierManagement 拥有，但技术请求方向不代表合规规则所有权。"
+    },
+    {
+      "relationship_id": "relationship.compliance-to-procurement",
+      "from_context": "ComplianceReview",
+      "to_context": "ProcurementExecution",
+      "relationship_pattern": "Published Language",
+      "semantic_upstream": "ComplianceReview",
+      "semantic_downstream": "ProcurementExecution",
+      "business_authority": "ComplianceReview owns admission validity",
+      "model_change_impact": "decision validity changes invalidate procurement acceptance",
+      "transport_direction": "admission decision events",
+      "translation_responsibility": "ProcurementExecution local projection",
+      "direction_explanation": "合规决定是语义上游；采购侧可通过事件接收并在下单时实时校验。"
+    }
+  ],
+  "scenarios": [
+    {
+      "scenario_id": "scenario.supplier-submits",
+      "actor": "supplier",
+      "preconditions": [
+        "供应商资料可编辑"
+      ],
+      "commands": [
+        "SubmitSupplierApplication"
+      ],
+      "rules": [
+        "申请材料必须完整"
+      ],
+      "events": [
+        "SupplierApplicationSubmitted"
+      ],
+      "failure_results": [
+        "材料不完整时拒绝提交"
+      ],
+      "responsible_context": "SupplierManagement",
+      "consumers": [
+        "ComplianceReview"
+      ],
+      "status": "confirmed"
+    },
+    {
+      "scenario_id": "scenario.admission-expires",
+      "actor": "compliance-officer",
+      "preconditions": [
+        "批准决定存在"
+      ],
+      "commands": [
+        "EvaluateAdmissionValidity"
+      ],
+      "rules": [
+        "过期决定不得支持新采购订单"
+      ],
+      "events": [
+        "SupplierAdmissionExpired"
+      ],
+      "failure_results": [
+        "采购下单时资格校验失败"
+      ],
+      "responsible_context": "ComplianceReview",
+      "consumers": [
+        "SupplierManagement",
+        "ProcurementExecution"
+      ],
+      "status": "confirmed"
+    }
+  ],
+  "concept_candidates": [
+    {
+      "concept_id": "domain-concept.admission-decision",
+      "name": "AdmissionDecision",
+      "context_id": "ComplianceReview",
+      "identity_features": [
+        "decision_id、subject_ref、rule_version"
+      ],
+      "lifecycle": [
+        "proposed、approved、rejected、expired、revoked"
+      ],
+      "possible_tactical_role": "Entity candidate",
+      "confidence": "high",
+      "status": "confirmed"
+    }
+  ],
+  "invariants": [
+    {
+      "invariant_id": "invariant.current-admission-required",
+      "statement": "新采购订单必须引用当前有效的准入决定。",
+      "responsible_context": "ComplianceReview",
+      "scenario_refs": [
+        "scenario.admission-expires"
+      ],
+      "verification_method": "领域场景测试和事件版本校验"
+    }
+  ],
+  "context_snapshot": {
+    "context_ref": "CONTEXT.md",
+    "context_schema_version": 1,
+    "document_digest": "<document-digest>",
+    "referenced_terms_digest": "<referenced-terms-digest>",
+    "term_refs": [
+      "Global/Supplier",
+      "ComplianceReview/AdmissionDecision"
+    ]
+  },
+  "downstream_mapping": [
+    {
+      "domain_change": "admission-decision-validity",
+      "impacts": [
+        "spec",
+        "openapi",
+        "procurement-acceptance-tests"
+      ],
+      "propagation": "stale",
+      "reapproval_condition": "ComplianceReview 决定和有效期重新批准"
+    }
+  ],
+  "evidence_refs": [
+    "evidence.discovery.supplier",
+    "evidence.discovery.compliance"
+  ],
+  "approval": {
+    "approval_ref": ".agents/skills/yss-stage-decision/tests/fixtures/domain-strategy-approval.yaml",
+    "approver": "role.product-manager",
+    "persisted_ref": "docs/.scratch/supplier/domain/domain-strategy-v1.yaml",
+    "current_version": "v2"
+  }
+}

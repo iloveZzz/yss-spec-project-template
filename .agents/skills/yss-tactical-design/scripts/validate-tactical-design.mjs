@@ -3,6 +3,9 @@ import { readFile } from "node:fs/promises";
 import process from "node:process";
 import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
 
+import { parseArgs } from "node:util";
+import { verifyConsumption } from "../../../../scripts/lib/strategic-handoff-consumption.mjs";
+
 const required = [
   "schema_version", "tactical_design_id", "tactical_version", "status", "context_ref",
   "aggregate_catalog", "entity_catalog", "value_object_catalog", "behavior_catalog",
@@ -196,12 +199,17 @@ function validate(data) {
 }
 
 async function main() {
-  const file = process.argv[2];
+  const { values, positionals } = parseArgs({ allowPositionals: true, options: { root: { type: "string", default: process.cwd() }, slice: { type: "string" } } });
+  const file = positionals[0];
   if (!file) throw new Error("用法: validate-tactical-design.mjs <contract.yaml>");
   const source = await readFile(file, "utf8");
   const document = parseDocument(source, { maxAliasCount: 0, uniqueKeys: true });
   if (document.errors.length) throw new Error(`无法解析合同: ${document.errors[0].message}`);
-  const errors = validate(document.toJS({ maxAliasCount: 0 }));
+  const data = document.toJS({ maxAliasCount: 0 });
+  const errors = validate(data);
+  if (data.strategic_handoff || data.strategic_context_import_ref || data.upstream_impact?.source_kind === "strategic-handoff") {
+    try { const result = await verifyConsumption(data, { root: values.root, sliceRef: values.slice }); if (result.result !== "verified") errors.push(JSON.stringify(result)); } catch (error) { errors.push(error.message); }
+  }
   if (errors.length) {
     process.stderr.write(`${JSON.stringify({ result: "blocked", errors }, null, 2)}\n`);
     process.exitCode = 1;

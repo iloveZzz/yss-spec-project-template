@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "purpose": "template-maintenance-evidence-not-product-approval",
+  "git_committed": false,
+  "published": false,
+  "files": [
+    {
+      "path": ".template-source/scripts/verify-strategic-handoff-distribution.mjs",
+      "sha256": "753e0d3945b4aac32b3a584c3e2fbde872ec3206ead02b250cf24d21ddbc4199"
+    },
+    {
+      "path": "docs/process/schemas/strategic-handoff-domain-strategy.schema.json",
+      "sha256": "e54e661565fae53866a8f2e79276f70de63508d6fd743ae58f7115f7847b7e8e"
+    },
+    {
+      "path": "docs/process/schemas/strategic-handoff-export.schema.json",
+      "sha256": "6596cc5658d2495ea05d6ebf19d0f47f2864812c7336d73b7fa3af849d463c49"
+    },
+    {
+      "path": "docs/process/schemas/strategic-handoff-package.schema.json",
+      "sha256": "0fc216457fe26b925fe9dd1d56bb230ec6c52865a712694986fc4e3a645564ba"
+    },
+    {
+      "path": "docs/process/schemas/strategic-handoff-stage-decision-package.schema.json",
+      "sha256": "9114c22e2db64909a9d7565d8b83dbf460871d36821001d3f93c897b15f8437b"
+    },
+    {
+      "path": "scripts/lib/strategic-handoff-consumption.mjs",
+      "sha256": "86a705a463b5b6016cdab592a46b3f61599856cc2b35f624e76149b379872acc"
+    },
+    {
+      "path": "scripts/lib/strategic-handoff-io.mjs",
+      "sha256": "4e66c4b87045a09df882e6162d912b5fa574f134b084c1123466e19476dbbf7b"
+    },
+    {
+      "path": "scripts/lib/strategic-handoff-rules.mjs",
+      "sha256": "f346ef52b6b790e37071d691e4a6443ec40f5f070760c8110fa2e8b5646c195e"
+    },
+    {
+      "path": "scripts/lib/strategic-handoff-zip.py",
+      "sha256": "726a86004b4bb7a38a670c81dc0b1d115411732e418688b698b1f7d4d900e180"
+    },
+    {
+      "path": "scripts/lib/strategic-handoff.mjs",
+      "sha256": "6c944d93c10bf660f0988f1fca589a4e641a85af0e3b7ee56f77f856d70fabae"
+    },
+    {
+      "path": "scripts/strategic-handoff",
+      "sha256": "52b19a4506f20139a3187b25285d56189a7cec9f6ace0be51fdec6df8ce724e5"
+    },
+    {
+      "path": "scripts/sync-strategic-handoff-tools",
+      "sha256": "fa3c4a246b93e43ec3bd6b86e29e3b47457c94ae683f6b0e7f7151344c574302"
+    },
+    {
+      "path": "scripts/verify-strategic-handoff-consumption",
+      "sha256": "9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10"
+    },
+    {
+      "path": "scripts/verify-strategic-handoff-package-scenarios",
+      "sha256": "db2eaeef1fe8db0228f533b4eac75c201c0a590c1931c5bed22a6db95fe21639"
+    }
+  ],
+  "cli_snapshots": [
+    {
+      "repository": "create-yss-spec",
+      "base_commit": "e2778a83dac29c52e61bc54a2087149e4527d28b",
+      "requested_ref": "e2778a83dac29c52e61bc54a2087149e4527d28b",
+      "snapshot_hash": "617cb7ffcf54aaa9f86d955823cf4fd8a0de880213380168d886c11fa3fdb91b",
+      "source_kind": "local-working-tree-unpublished"
+    },
+    {
+      "repository": "create-yss-strategic-design",
+      "base_commit": "dd1ec2dbaf3ce6da528607519ef2d0888b78dbb4",
+      "requested_ref": "dd1ec2dbaf3ce6da528607519ef2d0888b78dbb4",
+      "snapshot_hash": "f81aa07b0d0fef9f4eca39079099502201fa4a78e6cd4b0bdc0181e5fada0855",
+      "source_kind": "local-working-tree-unpublished"
+    },
+    {
+      "repository": "create-yss-harness-dev",
+      "base_commit": "9a0778c1bd2182fe20783a9f163dd1ba401c290b",
+      "requested_ref": "working-tree",
+      "snapshot_hash": "21bec69d136991ead0d745d228271a105582b3ac5fc8ff059f5c348f898b77a5",
+      "source_kind": "local-working-tree-unpublished"
+    }
+  ]
+}

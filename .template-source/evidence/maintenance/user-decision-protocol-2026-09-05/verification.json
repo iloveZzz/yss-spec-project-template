@@ -1,0 +1,27 @@
+{
+  "recorded_at": "2026-09-05T09:05:42.797869+00:00",
+  "repository_mode": "template-source",
+  "intensity": "L3",
+  "target_state": "implementation-ready",
+  "promoted": false,
+  "checks": [
+    {
+      "command": "scripts/verify-user-decision-scenarios",
+      "exit_code": 0,
+      "groups": 30,
+      "evidence_ref": "user-decision-scenarios.log"
+    },
+    {
+      "command": "scripts/verify-template-fast",
+      "exit_code": 1,
+      "requested_profile": "fast",
+      "effective_profile": "release",
+      "evidence_ref": "template-fast.log"
+    }
+  ],
+  "blockers": [
+    "upstream skill working tree hash differs from locked yss-stage-decision source"
+  ],
+  "git_commit": false,
+  "git_push": false
+}

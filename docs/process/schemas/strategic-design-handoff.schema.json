@@ -4,124 +4,666 @@
   "title": "YSS 业务方案交接包",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "handoff_id", "handoff_version", "status", "source", "source_context_snapshot", "context_delta", "target_context_reconciliation", "target", "problem_and_business_outcomes", "bounded_context_and_subdomain_map", "context_map_and_translation_responsibility", "ubiquitous_language_and_concept_candidates", "scenarios_and_business_invariants", "tactical_design_questions", "deferred_decisions_and_ownership", "evidence_and_version_digests", "acceptance"],
+  "required": [
+    "schema_version",
+    "handoff_id",
+    "handoff_version",
+    "status",
+    "source",
+    "source_context_snapshot",
+    "context_delta",
+    "target_context_reconciliation",
+    "target",
+    "problem_and_business_outcomes",
+    "bounded_context_and_subdomain_map",
+    "context_map_and_translation_responsibility",
+    "ubiquitous_language_and_concept_candidates",
+    "scenarios_and_business_invariants",
+    "tactical_design_questions",
+    "deferred_decisions_and_ownership",
+    "evidence_and_version_digests",
+    "acceptance"
+  ],
   "properties": {
-    "schema_version": { "const": 3 },
-    "handoff_id": { "type": "string", "pattern": "^strategic-design-handoff\\.[a-z0-9][a-z0-9-]*$" },
-    "handoff_version": { "type": "string", "pattern": "^v[0-9]+$" },
-    "status": { "enum": ["draft", "ready-for-human", "approved", "stale", "blocked"] },
+    "schema_version": {
+      "const": 3
+    },
+    "handoff_id": {
+      "type": "string",
+      "pattern": "^strategic-design-handoff\\.[a-z0-9][a-z0-9-]*$"
+    },
+    "handoff_version": {
+      "type": "string",
+      "pattern": "^v[0-9]+$"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "ready-for-human",
+        "approved",
+        "stale",
+        "blocked"
+      ]
+    },
     "source": {
-      "type": "object", "additionalProperties": false,
-      "required": ["domain_strategy_ref", "stage_decision_package_ref", "spec_ref", "prototype_ref", "visual_baseline_ref", "business_ticket_set_ref"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "domain_strategy_ref",
+        "stage_decision_package_ref",
+        "spec_ref",
+        "prototype_ref",
+        "visual_baseline_ref",
+        "business_ticket_set_ref"
+      ],
       "properties": {
-        "domain_strategy_ref": { "$ref": "#/$defs/versionedRef" },
-        "stage_decision_package_ref": { "$ref": "#/$defs/versionedRef" },
-        "spec_ref": { "$ref": "#/$defs/versionedRef" },
-        "prototype_ref": { "$ref": "#/$defs/versionedRef" },
-        "visual_baseline_ref": { "$ref": "#/$defs/visualBaselineRef" },
-        "business_ticket_set_ref": { "$ref": "#/$defs/versionedRef" }
+        "domain_strategy_ref": {
+          "$ref": "#/$defs/versionedRef"
+        },
+        "stage_decision_package_ref": {
+          "$ref": "#/$defs/versionedRef"
+        },
+        "spec_ref": {
+          "$ref": "#/$defs/versionedRef"
+        },
+        "prototype_ref": {
+          "$ref": "#/$defs/versionedRef"
+        },
+        "visual_baseline_ref": {
+          "$ref": "#/$defs/visualBaselineRef"
+        },
+        "business_ticket_set_ref": {
+          "$ref": "#/$defs/versionedRef"
+        }
       }
     },
-    "source_context_snapshot": { "$ref": "#/$defs/contextSnapshot" },
+    "source_context_snapshot": {
+      "$ref": "#/$defs/contextSnapshot"
+    },
     "context_delta": {
-      "type": "object", "additionalProperties": false,
-      "required": ["added", "updated", "deprecated"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "added",
+        "updated",
+        "deprecated"
+      ],
       "properties": {
-        "added": { "$ref": "#/$defs/contextTerms" },
-        "updated": { "$ref": "#/$defs/contextTerms" },
-        "deprecated": { "$ref": "#/$defs/contextTerms" }
+        "added": {
+          "$ref": "#/$defs/contextTerms"
+        },
+        "updated": {
+          "$ref": "#/$defs/contextTerms"
+        },
+        "deprecated": {
+          "$ref": "#/$defs/contextTerms"
+        }
       }
     },
     "target_context_reconciliation": {
-      "type": "object", "additionalProperties": false,
-      "required": ["target_context_ref", "reconciliation_schema_ref", "required_before_skill", "status"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "target_context_ref",
+        "reconciliation_schema_ref",
+        "required_before_skill",
+        "status"
+      ],
       "properties": {
-        "target_context_ref": { "const": "CONTEXT.md" },
-        "reconciliation_schema_ref": { "const": "docs/process/schemas/context-reconciliation.schema.json" },
-        "required_before_skill": { "const": "yss-tactical-design" },
-        "status": { "const": "pending" }
+        "target_context_ref": {
+          "const": "CONTEXT.md"
+        },
+        "reconciliation_schema_ref": {
+          "const": "docs/process/schemas/context-reconciliation.schema.json"
+        },
+        "required_before_skill": {
+          "const": "yss-tactical-design"
+        },
+        "status": {
+          "const": "pending"
+        }
       }
     },
     "target": {
-      "type": "object", "additionalProperties": false,
-      "required": ["team", "skill", "output"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "team",
+        "skill",
+        "output"
+      ],
       "properties": {
-        "team": { "const": "downstream-rd-team" },
-        "skill": { "const": "yss-tactical-design" },
-        "output": { "const": "tactical-design-contract" }
+        "team": {
+          "const": "downstream-rd-team"
+        },
+        "skill": {
+          "const": "yss-tactical-design"
+        },
+        "output": {
+          "const": "tactical-design-contract"
+        }
       }
     },
-    "problem_and_business_outcomes": { "$ref": "#/$defs/nonEmptyStrings" },
-    "bounded_context_and_subdomain_map": { "$ref": "#/$defs/nonEmptyStrings" },
-    "context_map_and_translation_responsibility": { "$ref": "#/$defs/nonEmptyStrings" },
-    "ubiquitous_language_and_concept_candidates": { "$ref": "#/$defs/nonEmptyStrings" },
-    "scenarios_and_business_invariants": { "$ref": "#/$defs/nonEmptyStrings" },
-    "tactical_design_questions": { "$ref": "#/$defs/nonEmptyStrings" },
-    "deferred_decisions_and_ownership": { "type": "array", "items": { "$ref": "#/$defs/deferred" } },
-    "evidence_and_version_digests": { "$ref": "#/$defs/nonEmptyStrings" },
-    "acceptance": { "$ref": "#/$defs/nonEmptyStrings" }
+    "problem_and_business_outcomes": {
+      "$ref": "#/$defs/nonEmptyStrings"
+    },
+    "bounded_context_and_subdomain_map": {
+      "$ref": "#/$defs/nonEmptyStrings"
+    },
+    "context_map_and_translation_responsibility": {
+      "$ref": "#/$defs/nonEmptyStrings"
+    },
+    "ubiquitous_language_and_concept_candidates": {
+      "$ref": "#/$defs/nonEmptyStrings"
+    },
+    "scenarios_and_business_invariants": {
+      "$ref": "#/$defs/nonEmptyStrings"
+    },
+    "tactical_design_questions": {
+      "$ref": "#/$defs/nonEmptyStrings"
+    },
+    "deferred_decisions_and_ownership": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/deferred"
+      }
+    },
+    "evidence_and_version_digests": {
+      "$ref": "#/$defs/nonEmptyStrings"
+    },
+    "acceptance": {
+      "$ref": "#/$defs/nonEmptyStrings"
+    },
+    "package_export": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "approvals",
+        "additional_files",
+        "reference_map",
+        "prototype"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "approvals": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "domain_strategy_ref",
+            "stage_decision_package_ref",
+            "spec_ref",
+            "prototype_ref",
+            "visual_baseline_ref",
+            "business_ticket_set_ref",
+            "handoff"
+          ],
+          "properties": {
+            "domain_strategy_ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "record_ref",
+                "gate_id",
+                "digest_kind"
+              ],
+              "properties": {
+                "record_ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "gate_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "digest_kind": {
+                  "enum": [
+                    "canonical-json",
+                    "sha256-bytes",
+                    "visual-baseline"
+                  ]
+                }
+              }
+            },
+            "stage_decision_package_ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "record_ref",
+                "gate_id",
+                "digest_kind"
+              ],
+              "properties": {
+                "record_ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "gate_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "digest_kind": {
+                  "enum": [
+                    "canonical-json",
+                    "sha256-bytes",
+                    "visual-baseline"
+                  ]
+                }
+              }
+            },
+            "spec_ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "record_ref",
+                "gate_id",
+                "digest_kind"
+              ],
+              "properties": {
+                "record_ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "gate_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "digest_kind": {
+                  "enum": [
+                    "canonical-json",
+                    "sha256-bytes",
+                    "visual-baseline"
+                  ]
+                }
+              }
+            },
+            "prototype_ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "record_ref",
+                "gate_id",
+                "digest_kind"
+              ],
+              "properties": {
+                "record_ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "gate_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "digest_kind": {
+                  "enum": [
+                    "canonical-json",
+                    "sha256-bytes",
+                    "visual-baseline"
+                  ]
+                }
+              }
+            },
+            "visual_baseline_ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "record_ref",
+                "gate_id",
+                "digest_kind"
+              ],
+              "properties": {
+                "record_ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "gate_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "digest_kind": {
+                  "enum": [
+                    "canonical-json",
+                    "sha256-bytes",
+                    "visual-baseline"
+                  ]
+                }
+              }
+            },
+            "business_ticket_set_ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "record_ref",
+                "gate_id",
+                "digest_kind"
+              ],
+              "properties": {
+                "record_ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "gate_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "digest_kind": {
+                  "enum": [
+                    "canonical-json",
+                    "sha256-bytes",
+                    "visual-baseline"
+                  ]
+                }
+              }
+            },
+            "handoff": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "record_ref",
+                "gate_id",
+                "digest_kind"
+              ],
+              "properties": {
+                "record_ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "gate_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "digest_kind": {
+                  "enum": [
+                    "canonical-json",
+                    "sha256-bytes",
+                    "visual-baseline"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "additional_files": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 0
+        },
+        "reference_map": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "prototype": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "profile",
+            "preview_root",
+            "entry_ref",
+            "verification_ref",
+            "verification_digest"
+          ],
+          "properties": {
+            "profile": {
+              "enum": [
+                "H1",
+                "H2"
+              ]
+            },
+            "preview_root": {
+              "type": "string",
+              "minLength": 1
+            },
+            "entry_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "verification_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_root": {
+              "type": "string",
+              "minLength": 1
+            },
+            "lock_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "verification_digest": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            },
+            "source_digest": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "profile": {
+                    "const": "H2"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "source_root",
+                  "lock_ref",
+                  "source_digest"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    }
   },
   "$defs": {
-    "termRefs": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^(Global|[A-Z][A-Za-z0-9]+)/[A-Z][A-Za-z0-9]+$" } },
+    "termRefs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^(Global|[A-Z][A-Za-z0-9]+)/[A-Z][A-Za-z0-9]+$"
+      }
+    },
     "contextTerms": {
       "type": "array",
       "items": {
-        "type": "object", "additionalProperties": false,
-        "required": ["term_ref", "term", "meaning", "english_identifier", "context_id", "forbidden_aliases"],
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "term_ref",
+          "term",
+          "meaning",
+          "english_identifier",
+          "context_id",
+          "forbidden_aliases"
+        ],
         "properties": {
-          "term_ref": { "type": "string", "pattern": "^(Global|[A-Z][A-Za-z0-9]+)/[A-Z][A-Za-z0-9]+$" },
-          "term": { "type": "string", "minLength": 1 },
-          "meaning": { "type": "string", "minLength": 1 },
-          "english_identifier": { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+$" },
-          "context_id": { "type": "string", "pattern": "^(Global|[A-Z][A-Za-z0-9]+)$" },
-          "forbidden_aliases": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+          "term_ref": {
+            "type": "string",
+            "pattern": "^(Global|[A-Z][A-Za-z0-9]+)/[A-Z][A-Za-z0-9]+$"
+          },
+          "term": {
+            "type": "string",
+            "minLength": 1
+          },
+          "meaning": {
+            "type": "string",
+            "minLength": 1
+          },
+          "english_identifier": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Za-z0-9]+$"
+          },
+          "context_id": {
+            "type": "string",
+            "pattern": "^(Global|[A-Z][A-Za-z0-9]+)$"
+          },
+          "forbidden_aliases": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
         }
       }
     },
     "contextSnapshot": {
-      "type": "object", "additionalProperties": false,
-      "required": ["context_ref", "context_schema_version", "document_digest", "referenced_terms_digest", "term_refs"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_ref",
+        "context_schema_version",
+        "document_digest",
+        "referenced_terms_digest",
+        "term_refs"
+      ],
       "properties": {
-        "context_ref": { "const": "CONTEXT.md" },
-        "context_schema_version": { "const": 1 },
-        "document_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
-        "referenced_terms_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
-        "term_refs": { "$ref": "#/$defs/termRefs" }
+        "context_ref": {
+          "const": "CONTEXT.md"
+        },
+        "context_schema_version": {
+          "const": 1
+        },
+        "document_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "referenced_terms_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "term_refs": {
+          "$ref": "#/$defs/termRefs"
+        }
       }
     },
-    "nonEmptyStrings": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "nonEmptyStrings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "versionedRef": {
-      "type": "object", "additionalProperties": false,
-      "required": ["id", "version", "digest", "status", "persisted_ref"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "version",
+        "digest",
+        "status",
+        "persisted_ref"
+      ],
       "properties": {
-        "id": { "type": "string", "minLength": 1 },
-        "version": { "type": "string", "pattern": "^v[0-9]+$" },
-        "digest": { "type": "string", "minLength": 1 },
-        "status": { "const": "approved" },
-        "persisted_ref": { "type": "string", "minLength": 1 }
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^v[0-9]+$"
+        },
+        "digest": {
+          "type": "string",
+          "minLength": 1
+        },
+        "status": {
+          "const": "approved"
+        },
+        "persisted_ref": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "visualBaselineRef": {
-      "type": "object", "additionalProperties": false,
-      "required": ["baseline_id", "version", "digest", "status", "persisted_ref", "manifest_ref", "case_ids"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baseline_id",
+        "version",
+        "digest",
+        "status",
+        "persisted_ref",
+        "manifest_ref",
+        "case_ids"
+      ],
       "properties": {
-        "baseline_id": { "type": "string", "pattern": "^visual-baseline\\.[a-z0-9][a-z0-9-]*$" },
-        "version": { "type": "string", "pattern": "^v[1-9][0-9]*$" },
-        "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
-        "status": { "const": "approved" },
-        "persisted_ref": { "type": "string", "minLength": 1 },
-        "manifest_ref": { "const": "visual-baseline.yaml" },
-        "case_ids": { "type": "array", "minItems": 2, "uniqueItems": true, "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" } }
+        "baseline_id": {
+          "type": "string",
+          "pattern": "^visual-baseline\\.[a-z0-9][a-z0-9-]*$"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^v[1-9][0-9]*$"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "status": {
+          "const": "approved"
+        },
+        "persisted_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manifest_ref": {
+          "const": "visual-baseline.yaml"
+        },
+        "case_ids": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        }
       }
     },
     "deferred": {
-      "type": "object", "additionalProperties": false,
-      "required": ["decision", "owner", "next_action", "target_version"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision",
+        "owner",
+        "next_action",
+        "target_version"
+      ],
       "properties": {
-        "decision": { "type": "string", "minLength": 1 },
-        "owner": { "type": "string", "minLength": 1 },
-        "next_action": { "type": "string", "minLength": 1 },
-        "target_version": { "type": "string", "minLength": 1 }
+        "decision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "next_action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target_version": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     }
   }

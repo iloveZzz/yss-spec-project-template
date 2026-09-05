@@ -3,10 +3,11 @@ import { parseArgs } from "node:util";
 import { validateApprovalRecordFile } from "./lib/approval-record.mjs";
 
 try {
-  const { positionals } = parseArgs({ allowPositionals: true, strict: true });
-  if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-approval-record <approval-record.yaml>");
-  validateApprovalRecordFile(positionals[0]);
-  process.stdout.write("会签记录校验通过\n");
+  const { positionals, values } = parseArgs({ allowPositionals: true, strict: true, options: { "require-approved": { type: "boolean" }, history: { type: "boolean" } } });
+  if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-approval-record [--require-approved | --history] <approval-record.yaml>");
+  if (values.history && values["require-approved"]) throw new TypeError("--history 不能用于当前批准校验");
+  validateApprovalRecordFile(positionals[0], { requireApproved: !values.history });
+  process.stdout.write(!values.history ? "会签及当前用户决定校验通过\n" : "会签记录结构校验通过（不构成放行）\n");
 } catch (error) {
   process.stderr.write(`会签记录校验失败: ${error.message}\n`);
   process.exitCode = 1;

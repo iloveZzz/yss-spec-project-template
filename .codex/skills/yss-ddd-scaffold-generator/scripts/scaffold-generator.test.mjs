@@ -1,3 +1,4 @@
+import { attachScaffoldDecisionFixture } from "../../../../scripts/fixtures/user-decision/build-fixture.mjs";
 import assert from "node:assert/strict";
 import { execFile } from "node:child_process";
 import { createHash } from "node:crypto";
@@ -80,7 +81,10 @@ async function fixture(contractOverrides = {}) {
   const output = path.join(root, "implementation");
   await mkdir(output);
   const decisionFile = path.join(root, "scaffold-architecture-decisions.yaml");
-  const decisionText = `${JSON.stringify({ schema_version: 1, kind: "scaffold-architecture-decisions", template: false, status: "current", decisions: [{ decision_id: "scaffold-decision.demo-service", project_id: "demo-service", parent_project_id: null, status: "lifecycle-approved", recommended_architecture: "domain-driven", recommendation_reasons: ["存在复杂领域规则"], confirmed_architecture: "domain-driven", override_reason: null, inheritance_mode: "root-default", inherited_from: null, platform_profile: "spring-boot-2.7-jdk8", architecture_profile: "target-domain-model", verification_database: "h2", production_database: "not-bound", requested_capabilities: [], resolved_modules: ["domain", "application", "infrastructure", "adapter", "bootstrap"], resolution_version: 1, user_confirmation: { confirmed_by: "tester", channel: "test", confirmation_ref: "test://confirmation", confirmed_at: "2026-09-05T00:00:00Z", normalized_text: "确认使用 DDD" }, decision_inputs_digest: `sha256:${"1".repeat(64)}` }] }, null, 2)}\n`;
+  let decisionText = `${JSON.stringify({ schema_version: 1, kind: "scaffold-architecture-decisions", template: false, status: "current", decisions: [{ decision_id: "scaffold-decision.demo-service", project_id: "demo-service", parent_project_id: null, status: "lifecycle-approved", recommended_architecture: "domain-driven", recommendation_reasons: ["存在复杂领域规则"], confirmed_architecture: "domain-driven", override_reason: null, inheritance_mode: "root-default", inherited_from: null, platform_profile: "spring-boot-2.7-jdk8", architecture_profile: "target-domain-model", verification_database: "h2", production_database: "not-bound", requested_capabilities: [], resolved_modules: ["domain", "application", "infrastructure", "adapter", "bootstrap"], resolution_version: 1, user_confirmation: { confirmed_by: "tester", channel: "test", confirmation_ref: "test://confirmation", confirmed_at: "2026-09-05T00:00:00Z", normalized_text: "确认使用 DDD" }, decision_inputs_digest: `sha256:${"1".repeat(64)}` }] }, null, 2)}\n`;
+  const decisionSet = JSON.parse(decisionText);
+  decisionSet.decisions = decisionSet.decisions.map((decision) => attachScaffoldDecisionFixture(path.join(root, "user-decision"), decision));
+  decisionText = JSON.stringify(decisionSet, null, 2) + "\n";
   await writeFile(decisionFile, decisionText);
   const decisionDigest = `sha256:${createHash("sha256").update(decisionText).digest("hex")}`;
   const contractFile = path.join(root, "contract.json");

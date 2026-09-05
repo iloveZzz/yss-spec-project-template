@@ -52,6 +52,8 @@
           "additionalProperties": false,
           "required": ["confirmed_by", "channel", "confirmation_ref", "confirmed_at", "normalized_text"],
           "properties": {
+            "user_decision_ref": { "type": ["string", "null"] },
+            "decision_subject_ref": { "type": ["string", "null"] },
             "confirmed_by": { "type": ["string", "null"] },
             "channel": { "type": ["string", "null"] },
             "confirmation_ref": { "type": ["string", "null"] },

@@ -48,6 +48,7 @@
         "gate_refs": { "type": "array", "items": { "type": "string", "minLength": 1 } }
       }
     },
+    "user_decisions": { "type": "array", "items": { "type": "object", "required": ["boundary", "subject_ref", "scope", "user_decision_ref"], "properties": { "boundary": { "type": "string" }, "subject_ref": { "type": "string" }, "scope": { "type": "array", "minItems": 1, "items": { "type": "string" } }, "user_decision_ref": { "type": "string" } }, "additionalProperties": false } },
     "inputs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
     "allowed_read_paths": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
     "objective": { "type": "string", "minLength": 1 },

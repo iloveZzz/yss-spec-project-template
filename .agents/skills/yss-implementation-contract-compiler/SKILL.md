@@ -53,3 +53,9 @@ description: Use when a YSS vertical slice is entering implementation, spans mul
 ## 输出
 
 输出合同草案、capability/Recipe 解析记录、技能依赖闭包、不适用理由、阻塞项、TDD 模式、工作单元、预期证据、验证命令、人工审查点、完整重路由触发器，以及建议的 `suggested_owner_role_id`（UI 影响 → `role.frontend-engineer`，后端影响 → `role.backend-engineer`，测试/审查 → `role.test-engineer`）。自然语言说明不能替代结构化合同字段。编译器不得自行批准合同、设置 `ready-for-agent` 或关闭会签门禁；owner 建议只供主控派活。
+
+## 战略交接快照包
+
+跨仓交接使用 `scripts/strategic-handoff export / verify / import`。正式导出前补齐源战略的稳定规则 ID、关键场景和当前批准绑定；源资产原字节冻结、包内路径通过清单解析。目标导入只产生快照和对账/承接草案，正式 reconciliation 通过后才能进入战术设计。流程与字段见 `docs/process/strategic-handoff-package.md`。
+
+战术合同必须绑定 `strategic_handoff` 导入收据、包摘要、正式目标对账及逐条承接 rows。来自导入包时禁止仅填 `upstream_current: true`。批准前执行 `scripts/verify-strategic-handoff-consumption --root <target> <tactical>`；存在受控延期时按切片执行 `--slice <slice-id>`，实际核验通过且合同批准后才可继续相关切片。最新源规则、关键场景或资产变化使依赖项 stale；未知依赖扩大阻断，业务冲突回交战略方。结果绑定当前包与战术摘要，不能复用旧输出宣布 ready-for-agent。

@@ -1,0 +1,102 @@
+#!/usr/bin/env node
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtempSync, mkdirSync, readFileSync, writeFileSync, cpSync, rmSync } from 'node:fs';
+import path from 'node:path';
+import { tmpdir } from 'node:os';
+import { spawnSync } from 'node:child_process';
+import { fixture, context } from './fixtures/strategic-handoff/fixture.mjs';
+import { exportBundle, openBundle, importBundle } from './lib/strategic-handoff.mjs';
+import { read, json, hash, digest } from './lib/strategic-handoff-io.mjs';
+import { parseContextContract } from './lib/context-contract.mjs';
+const setup=async t=>{const base=mkdtempSync(path.join(tmpdir(),'handoff-test-'));t.after(()=>rmSync(base,{recursive:true,force:true}));const source=path.join(base,'source');mkdirSync(source);return{base,source,...await fixture(source)};};
+function advanceStrategy(f,version='v2') {
+ f.handoff.handoff_version=version;
+ f.strategy.domain_version=version;
+ f.strategy.approval.current_version=version;
+ f.stage.package_version=version;
+ f.stage.approval.current_version=version;
+ f.stage.domain_strategy_ref.domain_version=version;
+ f.handoff.source.domain_strategy_ref.version=version;
+ f.handoff.source.stage_decision_package_ref.version=version;
+ f.strategy.rule_catalog[0].statement='材料完整且有效';
+ f.strategy.scenarios[0].rules=['材料完整且有效'];
+ f.strategy.invariants[0].statement='材料完整且有效';
+ f.put('source/strategy.yaml',f.strategy);
+ f.handoff.source.domain_strategy_ref.digest=digest(f.strategy);
+ f.stage.domain_strategy_ref.digest=digest(f.strategy);
+ f.put('source/stage.yaml',f.stage);
+ f.handoff.source.stage_decision_package_ref.digest=digest(f.stage);
+ f.sign();
+}
+test('目录和 ZIP 可脱离源仓验包；导入幂等且不修改词汇表',async t=>{
+ const f=await setup(t);const output=path.join(f.base,'package');
+ const result=await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output,zip:true});
+ rmSync(f.source,{recursive:true});
+ for(const bundle of [output,`${output}.zip`])assert.equal(await openBundle(bundle,b=>b.manifest.bundle_digest),result.bundle_digest);
+ const target=path.join(f.base,'target');mkdirSync(target);writeFileSync(path.join(target,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');writeFileSync(path.join(target,'CONTEXT.md'),context);
+ const imported=await importBundle({bundle:`${output}.zip`,targetRoot:target});assert.equal(imported.result,'imported-pending-reconciliation');
+ assert.equal(readFileSync(path.join(target,'CONTEXT.md'),'utf8'),context);parseContextContract({root:target});
+ assert.equal((await importBundle({bundle:output,targetRoot:target})).result,'already-imported');
+});
+test('规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出',async t=>{
+ const f=await setup(t);const run=()=>exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:path.join(f.base,'out')});
+ const text=readFileSync(path.join(f.source,'source/strategy.yaml'));f.put('source/strategy.yaml',{...f.strategy,traceability_version:undefined});
+ await assert.rejects(run,/不一致|过期|migration/);writeFileSync(path.join(f.source,'source/strategy.yaml'),text);
+ const approved=read(path.join(f.source,'approvals/spec_ref.yaml'));f.put('approvals/spec_ref.yaml',{...approved,artifact_bindings:[]});await assert.rejects(run,/批准记录未绑定/);f.put('approvals/spec_ref.yaml',approved);
+ const roles=read(path.join(f.source,'docs/agents/digital-human-roles.yaml'));f.put('docs/agents/digital-human-roles.yaml',{...roles,user_decision_policy:{...roles.user_decision_policy,gates:['gate.domain-strategy-approved']}});await assert.rejects(run,/user-decision|升级/);f.put('docs/agents/digital-human-roles.yaml',roles);
+ const sourceBytes=readFileSync(path.join(f.source,'prototype-src/main.js'));f.put('prototype-src/main.js','changed');await assert.rejects(run,/源码\/锁文件批准摘要/);writeFileSync(path.join(f.source,'prototype-src/main.js'),sourceBytes);
+ const verification=read(path.join(f.source,'evidence/offline.json'));f.put('evidence/offline.json',{...verification,command:'changed'});await assert.rejects(run,/验证记录批准摘要/);f.put('evidence/offline.json',verification);
+ f.put('preview/index.html','<img src="missing.png">');await assert.rejects(run,/过期/);
+});
+test('篡改 payload、重新封摘要后的虚构规则索引、额外文件均拒绝',async t=>{
+ const f=await setup(t),output=path.join(f.base,'package');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output});
+ const spec=path.join(output,'payload/files/source/spec.md'),bytes=readFileSync(spec);writeFileSync(spec,'tampered');await assert.rejects(()=>openBundle(output,()=>null),/摘要/);writeFileSync(spec,bytes);
+ writeFileSync(path.join(output,'extra.txt'),'extra');await assert.rejects(()=>openBundle(output,()=>null),/未登记/);rmSync(path.join(output,'extra.txt'));
+ const manifest=read(path.join(output,'manifest.json'));const idx=Buffer.from(json([]));writeFileSync(path.join(output,'indexes/rules.json'),idx);const row=manifest.files.find(x=>x.path==='indexes/rules.json');row.sha256=hash(idx);row.size_bytes=idx.length;delete manifest.bundle_digest;manifest.bundle_digest=digest(manifest);writeFileSync(path.join(output,'manifest.json'),json(manifest));await assert.rejects(()=>openBundle(output,()=>null),/索引与源/);
+});
+test('ZIP 路径穿越和重复条目拒绝',async t=>{
+ const f=await setup(t);
+ for(const names of [['../escape'],['manifest.json','manifest.json']]){
+  const zip=path.join(f.base,'bad.zip');rmSync(zip,{force:true});const py='import zipfile,json,sys; z=zipfile.ZipFile(sys.argv[1],"w"); [z.writestr(n,"x") for n in json.loads(sys.argv[2])]; z.close()';assert.equal(spawnSync('python3',['-c',py,zip,JSON.stringify(names)]).status,0);await assert.rejects(()=>openBundle(zip,()=>null),/ZIP/);
+ }
+});
+test('版本差异绑定前版，重复版本不允许；修改规则产生更新集合',async t=>{
+ const f=await setup(t),first=path.join(f.base,'v1');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:first});
+ await assert.rejects(()=>exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:path.join(f.base,'bad'),previous:first}),/提升/);
+ advanceStrategy(f);
+ const second=path.join(f.base,'v2');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:second,previous:first});assert.deepEqual(await openBundle(second,b=>b.changes.updated),['rule.complete','scenario.submit']);
+});
+
+test('受控延期只阻断依赖切片；未知依赖扩大阻断；目标未对账禁止消费',async t=>{
+ const {verifyConsumption}=await import('./lib/strategic-handoff-consumption.mjs');
+ const f=await setup(t),output=path.join(f.base,'package');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output});
+ const target=path.join(f.base,'target');mkdirSync(target);writeFileSync(path.join(target,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');writeFileSync(path.join(target,'CONTEXT.md'),context);
+ const result=await importBundle({bundle:output,targetRoot:target});
+ const draft=read(path.join(target,result.traceability_ref));
+ const tactical={status:'approved',strategic_handoff:{...draft,context_reconciliation_ref:'reconciliation.yaml'},behavior_catalog:[{behavior_id:'behavior.submit'}],test_seams:[{seam_id:'test-seam.submit',subject_ref:'behavior.submit'}]};
+ const record={schema_version:1,repository_mode:'project-instance',stage:'stage.system-data-engineering',work_unit:'work-unit.technical-analysis',status:'reconciled',context_snapshot:f.snapshot,changes:{added:['Global/Supplier'],updated:[],deprecated:[]},unresolved_terms:[],evidence_refs:['CONTEXT.md']};
+ writeFileSync(path.join(target,'reconciliation.yaml'),json(record));
+ for(const row of tactical.strategic_handoff.rows)Object.assign(row,{disposition:'implemented',tactical_refs:['behavior.submit'],test_seam_refs:['test-seam.submit'],scenario_tests:[{outcome:'success',seam_ref:'test-seam.submit'},{outcome:'failure',seam_ref:'test-seam.submit'}],evidence_refs:['CONTEXT.md'],dependency_status:'known',dependent_slice_refs:['slice.submit']});
+ assert.equal((await verifyConsumption(tactical,{root:target})).result,'verified');
+ const row=tactical.strategic_handoff.rows[0];Object.assign(row,{disposition:'deferred',reason:'分批实现',risk:'不能提交',owner:'需求负责人',followup_ticket_ref:'ticket.followup',verification_plan:'提交测试',target_version:'v2'});
+ assert.equal((await verifyConsumption(tactical,{root:target,sliceRef:'slice.submit'})).result,'blocked');
+ assert.equal((await verifyConsumption(tactical,{root:target,sliceRef:'slice.other'})).result,'verified');
+ row.dependency_status='unknown';assert.equal((await verifyConsumption(tactical,{root:target,sliceRef:'slice.other'})).result,'blocked');
+ row.dependency_status='known';row.disposition='implemented';advanceStrategy(f);const second=path.join(f.base,'v2');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:second,previous:output});await importBundle({bundle:second,targetRoot:target});
+ const stale=await verifyConsumption(tactical,{root:target,sliceRef:'slice.submit'});assert.equal(stale.result,'blocked');assert(stale.issues.some(x=>x.reason==='stale-source'));assert.equal((await verifyConsumption(tactical,{root:target,sliceRef:'slice.other'})).result,'verified');
+ f.strategy.contexts[0].responsibilities.push('新增责任边界');advanceStrategy(f,'v3');const third=path.join(f.base,'v3');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:third,previous:second});await importBundle({bundle:third,targetRoot:target});const changedBoundary=await verifyConsumption(tactical,{root:target,sliceRef:'slice.other'});assert.equal(changedBoundary.block_all,true);assert(changedBoundary.issues.some(x=>x.reason==='upstream-design-stale'));
+ writeFileSync(path.join(target,'reconciliation.yaml'),json({...record,status:'blocked',unresolved_terms:[{term:'Supplier',reason:'冲突',owner:'需求负责人',next_action:'回交战略方'}]}));
+ await assert.rejects(()=>verifyConsumption(tactical,{root:target}),/对账未通过/);
+});
+
+test('源规则必须稳定可追溯，关键场景不能遗漏结果',async t=>{
+ const {extractTraceability}=await import('./lib/strategic-handoff-rules.mjs');const f=await setup(t);
+ for(const mutate of [s=>delete s.traceability_version,s=>s.scenarios[0].rule_refs=['rule.missing'],s=>delete s.scenarios[0].success_results,s=>s.invariants[0].rule_ref='rule.missing',s=>s.rule_catalog.push({...s.rule_catalog[0]})]){const s=structuredClone(f.strategy);mutate(s);assert.throws(()=>extractTraceability(s));}
+});
+test('统一 CLI 在源目录消失后通过 ZIP 验包',async t=>{
+ const f=await setup(t),output=path.join(f.base,'cli');
+ const cli=path.join(import.meta.dirname,'strategic-handoff');
+ const exported=spawnSync(process.execPath,[cli,'export','--source-root',f.source,'--handoff','handoff.yaml','--output',output,'--zip'],{encoding:'utf8'});assert.equal(exported.status,0,exported.stderr);
+ rmSync(f.source,{recursive:true});const checked=spawnSync(process.execPath,[cli,'verify','--bundle',`${output}.zip`],{encoding:'utf8'});assert.equal(checked.status,0,checked.stderr);assert.equal(JSON.parse(checked.stdout).result,'verified');
+});

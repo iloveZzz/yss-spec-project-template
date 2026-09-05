@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+import { parseArgs } from 'node:util';
+import { read } from './lib/strategic-handoff-io.mjs';
+import { verifyConsumption } from './lib/strategic-handoff-consumption.mjs';
+try {
+ const {values,positionals}=parseArgs({allowPositionals:true,options:{root:{type:'string',default:process.cwd()},slice:{type:'string'}}});
+ if(positionals.length!==1)throw new TypeError('用法: verify-strategic-handoff-consumption --root <target> [--slice <slice-id>] <tactical.yaml>');
+ const result=await verifyConsumption(read(positionals[0]),{root:values.root,sliceRef:values.slice});
+ process.stdout.write(`${JSON.stringify(result,null,2)}\n`);if(result.result==='blocked')process.exitCode=1;
+}catch(error){process.stderr.write(`${JSON.stringify({result:'blocked',error:error.message})}\n`);process.exitCode=1;}

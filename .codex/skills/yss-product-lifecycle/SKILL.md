@@ -55,10 +55,22 @@ Agent 先问清六件事：谁遇到什么问题并想得到什么结果；事�
 
 原型通过不等于前端实现通过。`ready-for-agent` 前先产生 `frontend_implementation_plan`，绑定批准且 digest 当前的 Visual Baseline manifest，并按垂直切片选择 `case_id`；实现完成、发布前再产生 `frontend_implementation_verification`，逐 case 配对基准图、实现图、diff/mask 与差异解释，同时补齐交互、console warning、实际 `pnpm` 命令和退出码。模型必须先读 manifest 与语义引用再查看图片，禁止通过目录 glob 猜测含义。差异未解释、图片或摘要缺失、只做 type-check 或只声称“已对齐”均为 `blocked`；Visual Baseline 版本或 digest 变化使实现计划和 Slice Contract `stale`，新 API、状态或视觉行为返回 `new_impacts`/`drift` 并重新路由。优先使用 `yss-ui/references/verification.md` 的分层验证和既有 `pnpm` scripts。
 
+## 真实用户决定
+
+关键决定按 `docs/agents/digital-human-roles.yaml.user_decision_policy` 强制取得提问者或其明确指定的生物人负责人的原始回复。先展示资产、版本、变化、风险、推荐方案、批准范围和后续动作，再等待决定；超时、默认选项、数字人同意、无反对意见均无效。数字人审查不能替代用户批准；已有同版本同范围的有效确认复用，依据变化或撤回后重新展示并确认。单项“同意”有效，多项“继续”不算全部批准。独立工作可继续，依赖工作不得流转。
+
+统一记录、跨平台来源、机器校验、批量批准、历史兼容和实施范围绑定见 [user-decisions.md](references/user-decisions.md)。批准、恢复和实施入口必须重读来源与当前资产；不得只填 `approved`、自行创建用户同意或用旧数字人记录关闭关键门禁。
+
 ## 结果与暂停
 
-凡主控向数字人角色或独立运行时正式派发生命周期工作单元，都必须通过结构化任务包派发，并返回 `Workflow Execution Result`（workflow reference、skill、changed files、`context_reconciliation`、evidence refs、actual verification、deferred seams、drift/new impacts）。任务包使用 `docs/process/schemas/digital-human-task-package.schema.json`，由 `scripts/verify-digital-human-task-package` 校验；其中 `role_id`、`runtime_id`、`execution_state`、`contract.kind/id/version`、允许写路径、预期证据和汇合引用必须完整。`slice-implementation` 任务包额外绑定批准且当前版本的 Slice Implementation Contract；Discovery、Spec、原型、技术分析、Ticket、Review、发布和模板维护分别绑定各自的生命周期资产或维护 checkpoint，不得伪造 Slice Contract。缺少可读证据、`context_reconciliation` 未通过、`stale`、`violation`、`drift`、`new_impacts` 或阻塞信号时不得标记 completed。实现授权不包含 Git commit/push 授权；“做完提交”等自然语言意向不构成上述结构化 Git 授权。
+凡主控向数字人角色或独立运行时正式派发生命周期工作单元，都必须通过结构化任务包派发，并返回 `Workflow Execution Result`（workflow reference、skill、changed files、`context_reconciliation`、evidence refs、actual verification、deferred seams、drift/new impacts）。任务包使用 `docs/process/schemas/digital-human-task-package.schema.json`，由 `scripts/verify-digital-human-task-package` 校验；其中 `role_id`、`runtime_id`、`execution_state`、`contract.kind/id/version`、允许写路径、预期证据和汇合引用必须完整。`slice-implementation` 任务包额外绑定批准且当前版本的 Slice Implementation Contract；Discovery、Spec、原型、技术分析、Ticket、Review、发布和模板维护分别绑定各自的生命周期资产或维护 checkpoint，不得伪造 Slice Contract。缺少可读证据、`context_reconciliation` 未通过、`stale`、`violation`、`drift`、`new_impacts` 或阻塞信号时不得标记 completed。实现授权不包含 Git commit/push 授权；仅自然语言意向不构成上述结构化 Git 授权。用户已明确授权的具体动作可从原始回复整理为结构化授权并复用，不重复要求用户填写内部字段。
 
-输出固定包含：模式、当前阶段、影响面、资产/门禁状态、证据、Ticket 正式化状态、垂直切片引用、`ready-for-agent` 计算结果、阻塞项、本轮动作、下一工作单元、暂停/继续理由、Ticket 同步和 Git checkpoint 判断。原生路径未出现 `to-tickets` / `implement` 名称本身不构成异常；但没有完成 `work-unit.ticket-decomposition`、垂直切片仍为 `ready-for-human`、引用父 Ticket 或 `next_route` 越过 Ticket 正式化时必须返回 `blocked`。暂停会签时必须输出门禁 ID、指定 `role_id`、`runtime_id` 和会签文件路径（`docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`）。恢复前运行 `scripts/verify-approval-record`；错误会签记为 `blocked`，不得把该门禁标为 `approved`。任务包的 `core_skills` / `forbidden_skills` 必须从 `docs/agents/digital-human-roles.yaml` 复制（`taskPackageDefaults`），禁止手写第二套。
+输出固定包含：模式、当前阶段、影响面、资产/门禁状态、证据、Ticket 正式化状态、垂直切片引用、`ready-for-agent` 计算结果、阻塞项、本轮动作、下一工作单元、暂停/继续理由、Ticket 同步和 Git checkpoint 判断。原生路径未出现 `to-tickets` / `implement` 名称本身不构成异常；但没有完成 `work-unit.ticket-decomposition`、垂直切片仍为 `ready-for-human`、引用父 Ticket 或 `next_route` 越过 Ticket 正式化时必须返回 `blocked`。暂停会签时必须输出门禁 ID、指定 `role_id`、`runtime_id` 和会签文件路径（`docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`）。恢复前运行 `scripts/verify-approval-record --require-approved`；错误会签记为 `blocked`，不得把该门禁标为 `approved`。任务包的 `core_skills` / `forbidden_skills` 必须从 `docs/agents/digital-human-roles.yaml` 复制（`taskPackageDefaults`），禁止手写第二套。
 
 详细执行循环、readiness、脚手架（包括 `controlled-generation`）、审查快照、状态传播和 Matt 边界见 [orchestration.md](references/orchestration.md)、[orchestration-contract.yaml](references/orchestration-contract.yaml)、[artifact-dependencies.md](references/artifact-dependencies.md) 和 [state-model.md](references/state-model.md)。
+
+## 战略交接快照包
+
+跨仓交接使用 `scripts/strategic-handoff export / verify / import`。正式导出前补齐源战略的稳定规则 ID、关键场景和当前批准绑定；源资产原字节冻结、包内路径通过清单解析。目标导入只产生快照和对账/承接草案，正式 reconciliation 通过后才能进入战术设计。流程与字段见 `docs/process/strategic-handoff-package.md`。
+
+战术合同必须绑定 `strategic_handoff` 导入收据、包摘要、正式目标对账及逐条承接 rows。来自导入包时禁止仅填 `upstream_current: true`。批准前执行 `scripts/verify-strategic-handoff-consumption --root <target> <tactical>`；存在受控延期时按切片执行 `--slice <slice-id>`，实际核验通过且合同批准后才可继续相关切片。最新源规则、关键场景或资产变化使依赖项 stale；未知依赖扩大阻断，业务冲突回交战略方。结果绑定当前包与战术摘要，不能复用旧输出宣布 ready-for-agent。

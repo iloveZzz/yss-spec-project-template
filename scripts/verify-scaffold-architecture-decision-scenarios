@@ -3,7 +3,9 @@ import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
+import { attachScaffoldDecisionFixture } from "./fixtures/user-decision/build-fixture.mjs";
 import path from "node:path";
+import { parseDocument } from "./vendor/yaml.mjs";
 
 const root = mkdtempSync(path.join(os.tmpdir(), "scaffold-decision-scenarios-"));
 process.on("exit", () => rmSync(root, { recursive: true, force: true }));
@@ -12,7 +14,9 @@ const digest = `sha256:${"1".repeat(64)}`;
 const confirmation = `\n    user_confirmation:\n      confirmed_by: user\n      channel: codex\n      confirmation_ref: turn://1\n      confirmed_at: 2026-09-05T01:00:00+08:00\n      normalized_text: 确认 MVC`;
 function run(name, body) {
   const file = path.join(root, `${name}.yaml`);
-  writeFileSync(file, body);
+  const value = parseDocument(body).toJS();
+  value.decisions = value.decisions.map((decision) => attachScaffoldDecisionFixture(path.join(root, name, decision.project_id), decision));
+  writeFileSync(file, JSON.stringify(value));
   return spawnSync(verifier, [file], { encoding: "utf8" });
 }
 const base = `schema_version: 1\nkind: scaffold-architecture-decisions\ntemplate: false\nstatus: current\ndecisions:\n`;

@@ -54,7 +54,7 @@ export async function initialize(options) {
     await put(path.join(projectRoot, ".artifact-workspace.yaml"), `schema_version: 1\nkind: service\nservice_id: ${options.projectName}`);
     await cp(path.join(root, "scripts/lib"), path.join(projectRoot, "scripts/lib"), { recursive: true });
     await cp(path.join(root, "scripts/vendor"), path.join(projectRoot, "scripts/vendor"), { recursive: true });
-    for (const name of ["repository-mode", "implementation-path-policy", "repository-scope-policy", "generate-lifecycle-artifacts", "node-generate-lifecycle-artifacts.mjs", "verify-lifecycle-registry", "node-verify-lifecycle-registry.mjs", "verify-lifecycle-checkpoint", "verify-context-reconciliation", "verify-approval-record", "verify-digital-human-task-package", "verify-yss-dto-openapi-profile", "verify-frontend-implementation-evidence"]) {
+    for (const name of ["repository-mode", "implementation-path-policy", "repository-scope-policy", "generate-lifecycle-artifacts", "node-generate-lifecycle-artifacts.mjs", "verify-lifecycle-registry", "node-verify-lifecycle-registry.mjs", "verify-lifecycle-checkpoint", "verify-context-reconciliation", "verify-approval-record", "verify-user-decision", "verify-digital-human-task-package", "verify-yss-dto-openapi-profile", "verify-frontend-implementation-evidence"]) {
       await cp(path.join(root, "scripts", name), path.join(projectRoot, "scripts", name));
     }
     const lockDigest = await sharedTools(path.resolve(options.outputDir), contract);

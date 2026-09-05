@@ -11,7 +11,7 @@
 | `tracker.kind` | `local-markdown`、`github`、`gitlab` |
 | `ticket.role` | `needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix` |
 
-Matt 五态不得扩义。资产的 `ready-for-human` 与 Ticket label 必须带命名空间表达。`paused-human-gate` 表示等待 `docs/agents/digital-human-roles.yaml` 指定的会签人（数字人或生物人），不是「必须是生物人」。
+Matt 五态不得扩义。资产的 `ready-for-human` 与 Ticket label 必须带命名空间表达。`paused-human-gate` 表示等待 `docs/agents/digital-human-roles.yaml` 指定的会签人（数字人或生物人），不是「必须是生物人」。但 `user_decision_policy` 命中的关键决定还必须有真实用户回复，数字人会签不能解除该等待。
 
 ## 上下文与外部输入证据
 
@@ -38,6 +38,7 @@ phase_boundary:
 
 ```text
 required gates ∈ {approved, not-applicable}
+AND 关键决定及当前切片实施范围已有可追溯、当前且未撤回的真实用户批准
 AND related artifacts 不含 stale（若命中领域影响，`artifact.tactical-design` 或嵌入式 Tactical DDD Check 引用必须为当前版本）
 AND blocking edges 全部关闭
 AND implementation repo/branch/CI/test/rollback 已明确
@@ -112,3 +113,5 @@ pause:
 读取状态块后必须重新读取引用资产、审查记录、Ticket 最新事件和相关 Git 变化。时间戳只能提示变化，不能单独证明语义失效；应比较内容和影响面。冲突时以权威资产为准，记录修复原因，然后重算依赖、门禁和可执行 frontier。
 
 所有暂停/阻塞必须填写结构化 `pause`：`reason_code`、`gate_ref` 或证据引用、`owner_or_authority`、`resume_condition`、`next_work_unit`。`lifecycle.status` 保持粗粒度，恢复条件以 `pause` 为准。
+
+用户决定不新增状态；等待和恢复的引用字段、失效与复用规则见 [user-decisions.md](user-decisions.md)。

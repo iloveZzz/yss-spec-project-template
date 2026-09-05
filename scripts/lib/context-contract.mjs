@@ -111,7 +111,12 @@ export function parseContextContract({ root = process.cwd(), allowedContextIds }
   if (discovered.includes("context.md")) problems.push(`文件名大小写错误：必须使用根目录 ${CONTEXT_FILE}`);
   if (problems.length || !existsSync(contextPath)) fail(problems);
 
-  const source = normalizedSource(readFileSync(contextPath, "utf8"));
+  return parseContextSource(readFileSync(contextPath, "utf8"), { allowedContextIds });
+}
+
+export function parseContextSource(text, { allowedContextIds } = {}) {
+  const problems = [];
+  const source = normalizedSource(text);
   if (!/^---\ncontext_schema_version:\s*1\n---\n/.test(source)) problems.push("CONTEXT.md 顶部必须声明 context_schema_version: 1");
   const lines = source.split("\n");
   const processRows = tableAfterHeading(lines, "## 流程术语", ["术语", "含义", "英文标识", "避免 / 备注"], problems);

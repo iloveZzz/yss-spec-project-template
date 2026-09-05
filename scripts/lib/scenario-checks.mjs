@@ -1,5 +1,7 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, mkdtempSync, rmSync } from "node:fs";
 import path from "node:path";
+import os from "node:os";
+import { buildDecisionFixture, buildImplementationFixture } from "../fixtures/user-decision/build-fixture.mjs";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { parseDocument } from "../vendor/yaml.mjs";
@@ -54,7 +56,7 @@ function validateInvocationBoundary(data) {
   ensure(includesAll(result?.required, ["result_schema", "work_unit", "workflow_reference", "result", "context_reconciliation", "evidence_refs", "changed_artifacts", "new_impacts", "stale_candidates", "next_route", "blocking_signals"]) && includesAll(result?.result_values, ["completed", "blocked", "needs-human", "failed"]) && includesAll(result?.blocking_signals, ["drift", "new_impacts", "violation", "missing_evidence", "stale_candidates"]) && includesAll(result?.completed_requires_empty, ["new_impacts", "stale_candidates"]) && includesAll(result?.completed_requires_non_empty, ["evidence_refs"]) && result?.completed_requires_readable_evidence_refs === true && result?.evidence_ref_validation === "readable-or-resolvable" && result?.completed_requires_no_blocking_signals === true && result?.context_reconciliation?.creates_gate === false && includesAll(result?.workflow_reference?.required, ["source", "skill", "invocation_mode"]), "Workflow Execution Result 的完成态证据、阻断信号、context_reconciliation 或 workflow_reference 契约不完整");
   const native = data.lifecycle_native_entries;
   ensure(native?.default_entry === "yss-product-lifecycle" && native?.formal_artifact_owner === "yss-product-lifecycle", "生命周期原生入口未持有默认正式资产所有权");
-  ensure(JSON.stringify(native?.user_confirmation_required_at) === JSON.stringify(["spec-baseline", "prototype-confirmation", "openapi-freeze", "merge-or-release"]), "生命周期人工门禁集合已漂移");
+  ensure(native?.user_confirmation_policy_ref === "docs/agents/digital-human-roles.yaml#user_decision_policy", "生命周期人工门禁集合已漂移");
   const routes = data.work_unit_routes;
   ensure(routes?.["work-unit.discovery-requirements"]?.skills?.includes("grilling") && routes?.["work-unit.discovery-requirements"]?.skills?.includes("domain-modeling"), "需求分析工作单元缺少 grilling/domain-modeling");
   ensure(routes?.["work-unit.discovery-opportunity"]?.route_by?.market_or_competitor_fact === "competitive-intelligence" && routes["work-unit.discovery-opportunity"].route_by.technical_or_standard_fact === "yss-research:technical-evidence" && routes["work-unit.discovery-opportunity"].route_by.strategy_fact === "yss-research:strategy-evidence", "机会调研事实路由不准确");
@@ -103,7 +105,7 @@ function validateWorkflowExecutionResult(payload, contract, workUnitRoutes) {
   const workUnit = workUnitRoutes?.[payload.work_unit];
   ensure(workUnit, `未知 Workflow Execution Result work_unit: ${payload.work_unit}`);
   if (payload.result === "completed") {
-    const routeResult = validateNextRoute(payload.work_unit, payload.next_route);
+    const routeResult = validateNextRoute(payload.work_unit, payload.next_route, payload);
     ensure(routeResult.result === "allowed", `Workflow Execution Result next_route 非法: ${routeResult.blocking_signals.join(", ")}`);
     ensure(payload.context_reconciliation?.status === "reconciled", "project-instance 完成态必须具有 reconciled context_reconciliation");
     ensure(hasText(payload.context_reconciliation?.ref) && payload.evidence_refs.includes(payload.context_reconciliation.ref) && exists(payload.context_reconciliation.ref), "context_reconciliation.ref 必须可读并包含在 evidence_refs 中");
@@ -121,6 +123,8 @@ function validateWorkflowExecutionResult(payload, contract, workUnitRoutes) {
   }
   if (payload.work_unit === "work-unit.slice-implementation" && payload.result === "completed") {
     const implementationState = {
+      user_decisions: payload.user_decisions,
+      slice_contract_ref: payload.slice_contract_ref,
       tracker_kind: payload.tracker_kind,
       predecessor_work_unit: payload.predecessor_work_unit,
       ready_for_agent: payload.ready_for_agent,
@@ -141,7 +145,7 @@ function validateWorkflowExecutionResult(payload, contract, workUnitRoutes) {
       // The scenario uses one explicit virtual fixture; arbitrary local refs
       // must still pass the real readability check and cannot use a fallback.
       exists: (ref) => exists(ref) || ref === "docs/.scratch/demo/issues/01-valid-slice.md" || ref === virtualTicketDecompositionRef,
-      read: (ref) => ref === virtualTicketDecompositionRef ? virtualTicketDecomposition : readFileSync(path.join(root, ref), "utf8"),
+      read: (ref) => ref === virtualTicketDecompositionRef ? virtualTicketDecomposition : readFileSync(path.resolve(root, ref), "utf8"),
     });
     ensure(semantic.result === "allowed", `Workflow Execution Result implementation Ticket 语义非法: ${semantic.blocking_signals.join(", ")}`);
   }
@@ -256,7 +260,12 @@ export function runScenario(name) {
     const data = contract.toJS({ maxAliasCount: 0 });
     validateMattContract(data);
     validateInvocationBoundary(data);
+    const decisionTemp = mkdtempSync(path.join(os.tmpdir(), "matt-decision-test-"));
+    process.on("exit", () => rmSync(decisionTemp, { recursive: true, force: true }));
+    const specDecision = buildDecisionFixture(path.join(decisionTemp, "spec"));
+    const implementationDecision = buildImplementationFixture(path.join(decisionTemp, "implementation"), "docs/.scratch/demo/issues/01-valid-slice.md");
     const validResult = {
+      user_decisions: [specDecision.requirement],
       result_schema: "workflow-execution-result-v1",
       work_unit: "work-unit.spec-synthesis",
       workflow_reference: { source: "yss-product-lifecycle", skill: "yss-product-lifecycle", invocation_mode: "model-invoked" },
@@ -280,6 +289,7 @@ export function runScenario(name) {
     validateWorkflowExecutionResult(validTicketResult, data.workflow_execution_result, data.work_unit_routes);
     const validImplementationResult = {
       ...validResult,
+      ...implementationDecision.state,
       evidence_refs: [virtualTicketDecompositionRef, "docs/process/lifecycle-registry.yaml"],
       work_unit: "work-unit.slice-implementation",
       next_route: "work-unit.code-review",

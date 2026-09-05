@@ -4,6 +4,7 @@ import { parseDocument } from "../vendor/yaml.mjs";
 import { loadDigitalHumanRoles, taskPackageDefaults } from "./digital-human-roles.mjs";
 import { loadRegistry, ROOT } from "./lifecycle-registry.mjs";
 import { loadMaintenanceCheckpoint, validateMaintenanceCheckpoint } from "./maintenance-intensity.mjs";
+import { assertImplementationDecision } from "./user-decision.mjs";
 import { validateNextRoute } from "./lifecycle-transition.mjs";
 import { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSchema } from "./task-package-schema.mjs";
 
@@ -90,7 +91,7 @@ function validateCommon(value, registry, lifecycle) {
     assertReadableEvidenceRef(reconciliation.ref, "context_reconciliation.ref");
     if (!value.result.evidence_refs.includes(reconciliation.ref)) fail("context_reconciliation.ref 必须包含在 result.evidence_refs 中");
     if (expectedReconciliationStatus === "not-applicable" && !reconciliation.reason) fail("template-maintenance 的 context_reconciliation 必须说明 reason");
-    const routeResult = validateNextRoute(value.result.work_unit, value.result.next_route);
+    const routeResult = validateNextRoute(value.result.work_unit, value.result.next_route, value.result);
     if (routeResult.result !== "allowed") fail(`Workflow Execution Result next_route 非法: ${routeResult.blocking_signals.join(", ")}`);
     value.expected_evidence_files.forEach((ref) => assertReadableEvidenceRef(ref, "expected_evidence_files"));
     if (value.verification_results.length === 0) fail("已完成任务必须包含 verification_results");
@@ -175,6 +176,7 @@ function validateContract(value, registry, lifecycle) {
   for (const field of ["role_id", "runtime_id", "task_package_ref", "contract_id", "contract_version", "allowed_write_paths"]) if (sliceUnit[field] === undefined) fail(`Slice Contract work_unit 缺少 ${field}`);
   if (sliceUnit.role_id !== value.role_id || sliceUnit.runtime_id !== value.runtime_id || sliceUnit.contract_id !== contract.contract_id || sliceUnit.contract_version !== contract.contract_version || sliceUnit.task_package_ref !== value.work_unit_id) fail("任务包与 Slice Contract work_unit 不一致");
   for (const allowed of value.allowed_write_paths) if (!sliceUnit.allowed_write_paths.includes(allowed)) fail(`allowed_write_paths 未获 Slice Contract 授权: ${allowed}`);
+  if (value.execution_state === "Worker") assertImplementationDecision({ slice_contract_ref: contract.slice_contract_ref, vertical_slice_ticket_ref: slice.lifecycle_refs.ticket, user_decisions: value.user_decisions });
 }
 
 export function validateTaskPackage(value, { rolesDoc, lifecycleDoc } = {}) {

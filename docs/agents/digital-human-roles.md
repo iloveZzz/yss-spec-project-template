@@ -31,14 +31,14 @@
 | `work-unit.code-review` | 实现者 | `role.test-engineer`（必须不同实例） |
 | `gate.spec-baseline-approved` | `role.requirements-manager` | `role.product-manager` |
 | `gate.openapi-frozen` | `role.backend-engineer` | `role.product-manager`、`role.test-engineer` |
-| `gate.user-confirmation` | — | `role.product-manager`；生物人可否决 |
+| `gate.user-confirmation` | 产品数字人提供建议 | 提问者或其明确指定的生物人负责人 |
 | `gate.release-ready` | — | 生物人（`role.biological-human`） |
 
 未列入表的门禁（含 `gate.design-reviewed`、`gate.architecture-reviewed`）走 `default_if_unlisted: biological-human`。
 
-会签写入 `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`，形状见 `docs/templates/approval-record-template.yaml`。恢复前运行 `scripts/verify-approval-record`。错误会签只能得到 `blocked`，不能把门禁标成 `approved`。Checkpoint 里会签桶门禁为 `approved` 时必须有可读 `approval_ref`。
+会签写入 `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`，形状见 `docs/templates/approval-record-template.yaml`。恢复前运行 `scripts/verify-approval-record --require-approved`。错误会签只能得到 `blocked`，不能把门禁标成 `approved`。Checkpoint 里会签桶门禁为 `approved` 时必须有可读 `approval_ref`。
 
-`paused-human-gate` 表示等待上述指定会签人，不是「必须是生物人」。
+`paused-human-gate` 表示等待指定会签人；`user_decision_policy` 命中的关键决定同时强制真实用户回复，数字人审查不能代答。请求展示、原始回复证据、复用和恢复规则见 [用户决定协议](../../.agents/skills/yss-product-lifecycle/references/user-decisions.md)。
 
 主控默认兼任项目经理，直到 `dual_hat_split_when`（`cross-repo-load` 或 `responsibility-conflict`）要求分体。
 

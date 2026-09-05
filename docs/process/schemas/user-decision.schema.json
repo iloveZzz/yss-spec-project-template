@@ -1,0 +1,357 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/user-decision.schema.json",
+  "title": "用户决定记录",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "request",
+    "responses"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "kind": {
+      "const": "user-decision"
+    },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "requester_ref",
+        "requester_source",
+        "items",
+        "presented_source"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requester_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requester_source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "ref",
+            "digest",
+            "message_id"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "platform-message",
+                "session-export",
+                "user-confirmation-file"
+              ]
+            },
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            },
+            "message_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "items": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "boundary",
+              "title",
+              "subject",
+              "basis",
+              "scope",
+              "changes",
+              "risks",
+              "recommendation",
+              "next_actions",
+              "responder_ref"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1
+              },
+              "boundary": {
+                "type": "string",
+                "minLength": 1
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "subject": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "ref",
+                  "version",
+                  "digest"
+                ],
+                "properties": {
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "version": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "digest": {
+                    "type": "string",
+                    "pattern": "^sha256:[a-f0-9]{64}$"
+                  }
+                }
+              },
+              "basis": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "ref",
+                    "version",
+                    "digest"
+                  ],
+                  "properties": {
+                    "ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "version": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "digest": {
+                      "type": "string",
+                      "pattern": "^sha256:[a-f0-9]{64}$"
+                    }
+                  }
+                }
+              },
+              "scope": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true,
+                "minItems": 1
+              },
+              "changes": {
+                "type": "string",
+                "minLength": 1
+              },
+              "risks": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "recommendation": {
+                "type": "string",
+                "minLength": 1
+              },
+              "next_actions": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true,
+                "minItems": 1
+              },
+              "responder_ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "delegation_source": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "ref",
+                  "digest",
+                  "message_id"
+                ],
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "platform-message",
+                      "session-export",
+                      "user-confirmation-file"
+                    ]
+                  },
+                  "ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "digest": {
+                    "type": "string",
+                    "pattern": "^sha256:[a-f0-9]{64}$"
+                  },
+                  "message_id": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "presented_source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "ref",
+            "digest",
+            "message_id"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "platform-message",
+                "session-export",
+                "user-confirmation-file"
+              ]
+            },
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            },
+            "message_id": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "source",
+          "principal_ref",
+          "responded_at",
+          "text",
+          "request_digest",
+          "selection",
+          "item_ids",
+          "decision",
+          "approved_scope"
+        ],
+        "properties": {
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "ref",
+              "digest",
+              "message_id"
+            ],
+            "properties": {
+              "kind": {
+                "enum": [
+                  "platform-message",
+                  "session-export",
+                  "user-confirmation-file"
+                ]
+              },
+              "ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^sha256:[a-f0-9]{64}$"
+              },
+              "message_id": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "principal_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "responded_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          },
+          "request_digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "selection": {
+            "enum": [
+              "single",
+              "explicit-items",
+              "explicit-all"
+            ]
+          },
+          "item_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true,
+            "minItems": 1
+          },
+          "decision": {
+            "enum": [
+              "approved",
+              "rejected",
+              "changes-requested",
+              "unclear",
+              "revoked"
+            ]
+          },
+          "approved_scope": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      }
+    }
+  }
+}

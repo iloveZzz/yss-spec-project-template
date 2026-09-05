@@ -8,6 +8,7 @@ import {
   collectCountersignGateIds
 } from "./digital-human-roles.mjs";
 import { ROOT } from "./lifecycle-registry.mjs";
+import { assertUserDecisionRequirement, assertWorkUnitUserDecision, assertImplementationDecision } from "./user-decision.mjs";
 
 const DECISIONS = new Set(["approved", "rejected", "vetoed"]);
 const ACTOR_KINDS = new Set(["digital-human", "biological-human", "orchestrator"]);
@@ -47,7 +48,7 @@ export function resolveApprovalRef(approvalRef, fromFile = ROOT) {
   return path.resolve(path.dirname(fromFile), approvalRef);
 }
 
-export function validateApprovalRecord(record, { rolesDoc, requireApproved = false } = {}) {
+export function validateApprovalRecord(record, { rolesDoc, requireApproved = false, ...decisionOptions } = {}) {
   if (!record || typeof record !== "object" || Array.isArray(record)) fail("会签记录必须是对象");
   if (record.schema_version !== 1) fail("会签记录 schema_version 必须为 1");
   requireString(record.gate_id, "gate_id");
@@ -77,6 +78,7 @@ export function validateApprovalRecord(record, { rolesDoc, requireApproved = fal
   if (rule.bucket === "biological_human") {
     if (record.actor_kind !== "biological-human") fail(`${record.gate_id} 必须由生物人会签`);
     if (record.role_id !== BIOLOGICAL_ROLE_ID) fail(`${record.gate_id} 的 role_id 必须为 ${BIOLOGICAL_ROLE_ID}`);
+    if (requireApproved) assertRecordUserDecision(record, registry, decisionOptions);
     return rule;
   }
 
@@ -91,7 +93,14 @@ export function validateApprovalRecord(record, { rolesDoc, requireApproved = fal
   if (rule.drafter && record.drafter_role_id && record.drafter_role_id !== rule.drafter) {
     fail(`${record.gate_id} drafter_role_id 必须为 ${rule.drafter}`);
   }
+  if (requireApproved) assertRecordUserDecision(record, registry, decisionOptions);
   return rule;
+}
+
+function assertRecordUserDecision(record, registry, options) {
+  if (!registry.user_decision_policy.gates.includes(record.gate_id) && countersignRuleForGate(registry.gate_policy, record.gate_id)?.bucket !== "biological_human") return;
+  const result = assertUserDecisionRequirement({ boundary: record.gate_id, subject_ref: record.subject_ref, scope: record.approval_scope, user_decision_ref: record.user_decision_ref }, { ...options, rolesDoc: registry });
+  if (record.actor_kind === "biological-human" && result.validated.some((item) => item.principal_ref !== record.principal_ref)) fail("user-decision-responder-mismatch: 生物人会签者与原始回复者不一致");
 }
 
 export function validateApprovalRecordFile(filePath, options = {}) {
@@ -111,6 +120,11 @@ export function assertApprovedGateHasValidApproval(gateId, gateState, { checkpoi
   if (!existsSync(resolved)) fail(`${gateId} 的 approval_ref 不可读: ${gateState.approval_ref}`);
   const record = loadApprovalRecord(resolved);
   if (record.gate_id !== gateId) fail(`${gateId} 的会签记录 gate_id 不匹配`);
+  if (rolesDoc.user_decision_policy.gates.includes(gateId) || countersignRuleForGate(rolesDoc.gate_policy, gateId)?.bucket === "biological_human") {
+    if (!gateState.subject_ref || gateState.subject_ref !== record.subject_ref || JSON.stringify([...(gateState.approval_scope || [])].sort()) !== JSON.stringify([...(record.approval_scope || [])].sort())) {
+      fail(`${gateId} user-decision-subject-mismatch: 当前门禁资产与会签范围不匹配`);
+    }
+  }
   validateApprovalRecord(record, { rolesDoc, requireApproved: true });
 }
 
@@ -119,5 +133,22 @@ export function assertCheckpointApprovals(checkpoint, checkpointPath) {
   if (!gates || typeof gates !== "object") return;
   for (const [gateId, state] of Object.entries(gates)) {
     assertApprovedGateHasValidApproval(gateId, state, { checkpointPath });
+  }
+}
+
+// Called on resume/transition as well as completion; drafting while waiting stays allowed.
+export function assertCheckpointUserDecisions(checkpoint) {
+  if (checkpoint.repository_mode !== "project-instance") return;
+  const review = checkpoint.human_review || {};
+  const advancing = ["running", "completed"].includes(checkpoint.status) || (checkpoint.mode === "resume" && checkpoint.status === "routing");
+  if (!advancing) return;
+  const state = { user_decisions: review.user_decisions || [], user_decision_not_applicable: review.not_applicable || [] };
+  const completedUnit = checkpoint.stage_trace?.completed_work_unit;
+  if (completedUnit) assertWorkUnitUserDecision(completedUnit, state);
+  if (checkpoint.next_work_unit === "work-unit.slice-implementation") assertImplementationDecision({ ...review.implementation, ...state });
+  for (const requirement of review.required_decisions || []) assertUserDecisionRequirement(requirement);
+  if (review.external_input) assertUserDecisionRequirement({ ...review.external_input, boundary: "external-input" });
+  if (checkpoint.status === "completed") {
+    if (checkpoint.gates?.["gate.release-ready"]?.status !== "approved") throw new TypeError("user-decision-response-required: 阶段完成须发布就绪裁决");
   }
 }

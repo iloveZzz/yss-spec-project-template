@@ -12,3 +12,7 @@ countersigner_role_ids:
 evidence_refs: []
 biological_veto: false
 notes: 会签必须可读取；起草者不得出现在 countersigner_role_ids。运行时表情/reaction 无效。
+# 关键门禁正式放行时必填；模板/历史结构校验不构成批准。
+subject_ref: null
+approval_scope: []
+user_decision_ref: null

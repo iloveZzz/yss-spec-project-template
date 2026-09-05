@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { buildDecisionFixture } from "../../../../scripts/fixtures/user-decision/build-fixture.mjs";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
@@ -62,11 +63,16 @@ try {
   if (contextResult.status !== 0) throw new Error(`context fixture should pass: ${contextResult.stderr}`);
   const context = JSON.parse(contextResult.stdout);
 
+  const domainApprovalRef = join(temporaryRoot, "domain-approval.json");
   const domainSource = (await readFile(validTemplate, "utf8"))
+    .replace(".agents/skills/yss-stage-decision/tests/fixtures/domain-strategy-approval.yaml", domainApprovalRef)
     .replace("<document-digest>", context.document_digest)
     .replace("<referenced-terms-digest>", context.referenced_terms_digest);
   const domainFile = join(temporaryRoot, "domain-strategy.yaml");
   await writeFile(domainFile, domainSource);
+  const domainDecision = buildDecisionFixture(join(temporaryRoot, "domain-decision"), { boundary: "gate.domain-strategy-approved", subjectRef: domainFile });
+  const domainApproval = parseDocument(await readFile(join(testsRoot, "fixtures/domain-strategy-approval.yaml"), "utf8")).toJS();
+  await writeFile(domainApprovalRef, JSON.stringify({ ...domainApproval, subject_ref: domainFile, approval_scope: domainDecision.requirement.scope, user_decision_ref: domainDecision.ref }));
   const pass = run(validator, domainFile, temporaryRoot);
   if (pass.status !== 0) throw new Error(`valid v2 fixture should pass: ${pass.stderr}`);
 
@@ -109,12 +115,17 @@ try {
   await writeFile(unknownContext, domainSource.replace("to_context: ComplianceReview", "to_context: UnknownContext"));
   expectBlocked(run(validator, unknownContext, temporaryRoot), /未引用已声明上下文|未在领域战略中登记/, "unknown context");
 
+  const packageApprovalRef = join(temporaryRoot, "package-approval.json");
   const packageSource = (await readFile(validPackageTemplate, "utf8"))
+    .replace(".agents/skills/yss-stage-decision/tests/fixtures/stage-decision-approval.yaml", packageApprovalRef)
     .replace("<document-digest>", context.document_digest)
     .replace("<referenced-terms-digest>", context.referenced_terms_digest)
     .replace("<domain-strategy-digest>", digestYaml(domainSource));
   const packageFile = join(temporaryRoot, "stage-decision.yaml");
   await writeFile(packageFile, packageSource);
+  const packageDecision = buildDecisionFixture(join(temporaryRoot, "package-decision"), { boundary: "gate.stage-decision-package-approved", subjectRef: packageFile });
+  const packageApproval = parseDocument(await readFile(join(testsRoot, "fixtures/stage-decision-approval.yaml"), "utf8")).toJS();
+  await writeFile(packageApprovalRef, JSON.stringify({ ...packageApproval, subject_ref: packageFile, approval_scope: packageDecision.requirement.scope, user_decision_ref: packageDecision.ref }));
   const packagePass = run(packageValidator, packageFile, temporaryRoot);
   if (packagePass.status !== 0) throw new Error(`valid v2 stage decision package should pass: ${packagePass.stderr}`);
 

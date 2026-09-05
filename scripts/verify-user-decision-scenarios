@@ -1,0 +1,103 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import { mkdtempSync, rmSync, writeFileSync, readFileSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+import { buildDecisionFixture, buildImplementationFixture } from "./fixtures/user-decision/build-fixture.mjs";
+import { validateUserDecision, assertUserDecisionRequirement, assertImplementationDecision, decisionDigest } from "./lib/user-decision.mjs";
+import { validateApprovalRecord, assertCheckpointApprovals, assertCheckpointUserDecisions } from "./lib/approval-record.mjs";
+import { validateNextRoute } from "./lib/lifecycle-transition.mjs";
+import { loadDigitalHumanRoles, countersignRuleForGate, collectCountersignGateIds } from "./lib/digital-human-roles.mjs";
+
+const root = mkdtempSync(path.join(os.tmpdir(), "yss-user-decision-"));
+process.on("exit", () => rmSync(root, { recursive: true, force: true }));
+let count = 0;
+const check = (name, fn) => { fn(); count++; process.stdout.write(`PASS ${name}\n`); };
+const fixture = (name, opts) => buildDecisionFixture(path.join(root, name), opts);
+const verify = (f) => validateUserDecision(f.record, { expected: [f.requirement] });
+const deny = (f, code) => assert.throws(() => verify(f), (error) => error.code === code, code);
+check("真实单项回复通过，CLI 校验通过", () => {
+  const f = fixture("single"); verify(f);
+  assert.equal(spawnSync("scripts/verify-user-decision", [f.ref], { encoding: "utf8" }).status, 0);
+});
+check("无回复保持等待", () => { const f = fixture("pending"); f.record.responses = []; deny(f, "user-decision-response-required"); });
+for (const decision of ["rejected", "changes-requested", "unclear", "revoked"]) check(`${decision} 不放行`, () => { const f = fixture(decision); f.record.responses = []; f.respond({ decision, text: decision, approvedScope: [] }); deny(f, "user-decision-not-approved"); });
+check("数字人代答无效", () => { const f = fixture("bot"); f.record.responses = []; f.respond({ actor: "digital-human" }); deny(f, "user-decision-responder-mismatch"); });
+check("默认选项和无反对意见不能代替原始消息", () => { const f = fixture("default"); f.record.responses[0].source.kind = "default-option"; assert.throws(() => verify(f)); });
+check("记录原文与来源不一致无效", () => { const f = fixture("text"); f.record.responses[0].text = "我批准全部"; deny(f, "user-decision-responder-mismatch"); });
+check("缺失来源和仅 Agent 摘要无效", () => { const f = fixture("missing"); f.record.responses[0].source.ref += ".missing"; deny(f, "user-decision-source-unreadable"); const g = fixture("summary"); g.record.responses[0].source.kind = "agent-summary"; assert.throws(() => verify(g)); });
+check("来源篡改被拒绝", () => { const f = fixture("source-changed"); writeFileSync(f.record.responses[0].source.ref, "变更"); deny(f, "user-decision-source-changed"); });
+check("未展示当前请求不能批准", () => { const f = fixture("presentation"); f.record.request.items[0].recommendation = "不同方案"; deny(f, "user-decision-presentation-mismatch"); });
+check("展示前回复无效", () => { const f = fixture("time"); f.record.responses = []; f.respond({ time: "2026-09-05T01:01:00Z" }); deny(f, "user-decision-source-invalid"); });
+check("错误版本及批准依据变化重新确认", () => { const f = fixture("version"); f.record.request.items[0].subject.version = "v2"; f.present(); deny(f, "user-decision-stale"); const g = fixture("asset"); writeFileSync(g.requirement.subject_ref, "新范围"); deny(g, "user-decision-stale"); });
+check("额外依据变化重新确认，无关文件不影响", () => {
+  const f = fixture("basis"); const ref = f.write("basis.md", "v1"); f.record.request.items[0].basis = [{ ref, version: "v1", digest: decisionDigest(readFileSync(ref)) }]; f.present(); f.record.responses = []; f.respond(); verify(f); f.write("unrelated.md", "change"); verify(f); f.write("basis.md", "v2"); deny(f, "user-decision-stale");
+});
+check("同版本范围可重复使用且不按时间过期", () => { const f = fixture("reuse"); verify(f); verify(f); });
+check("范围扩大和错误事项无效", () => { const f = fixture("scope"); f.requirement.scope.push("new-feature"); deny(f, "user-decision-subject-mismatch"); const g = fixture("wrong-item"); g.record.responses[0].item_ids = ["other"]; deny(g, "user-decision-subject-mismatch"); });
+check("提问者指定负责人有效，未指定代答无效", () => {
+  const f = fixture("delegate"); const item = f.record.request.items[0]; item.responder_ref = "person.owner"; item.delegation_source = f.capture("delegate", "person.requester", "biological-human", "2026-09-05T01:01:00Z", "指定 person.owner 决定 decision.demo"); f.present(); f.record.responses = []; f.respond({ principal: "person.owner" }); verify(f); delete item.delegation_source; f.present(); deny(f, "user-decision-source-invalid");
+});
+check("多项继续无效，明确全部或部分批准有效", () => {
+  const f = fixture("multi"); const second = structuredClone(f.record.request.items[0]); second.id = "decision.second"; second.boundary = "gate.openapi-frozen"; second.scope = ["api.demo"]; f.record.request.items.push(second); f.present(); f.record.responses = []; f.respond({ text: "继续" }); deny(f, "user-decision-ambiguous");
+  f.record.responses = []; f.respond({ text: "同意以上全部事项" }); verify(f);
+  f.record.responses = []; f.respond({ text: "同意 decision.demo", selection: "explicit-items", itemIds: ["decision.demo"], approvedScope: ["feature.demo"] }); verify(f);
+  assert.throws(() => validateUserDecision(f.record, { expected: [{ ...f.requirement, boundary: second.boundary, scope: second.scope }] }), /user-decision-response-required/);
+});
+check("不能把其他对话的同意嫁接为当前批准", () => {
+  const f = fixture("unrelated-response"); const source = f.record.responses[0].source;
+  const raw = JSON.parse(readFileSync(source.ref)); raw.messages[0].reply_to = "different-request"; writeFileSync(source.ref, JSON.stringify(raw)); source.digest = decisionDigest(readFileSync(source.ref)); deny(f, "user-decision-subject-mismatch");
+});
+check("无 reply-to 的完整相邻会话导出可复用", () => {
+  const f = fixture("adjacent-export"); const source = f.record.responses[0].source;
+  const reply = JSON.parse(readFileSync(source.ref)).messages[0]; delete reply.reply_to;
+  const shown = JSON.parse(readFileSync(f.record.request.presented_source.ref)).messages[0];
+  const ref = f.write("original-session.json", { source_kind: "session-export", messages: [shown, reply] });
+  source.ref = ref; source.digest = decisionDigest(readFileSync(ref)); verify(f);
+});
+check("生物人会签者必须与原始回复者一致", () => {
+  const f = fixture("human-approval", { boundary: "gate.release-ready" });
+  const record = { schema_version: 1, gate_id: "gate.release-ready", decision: "approved", actor_kind: "biological-human", role_id: "role.biological-human", runtime_id: "runtime.generic", principal_ref: "person.requester", subject_ref: f.requirement.subject_ref, approval_scope: f.requirement.scope, user_decision_ref: f.ref };
+  validateApprovalRecord(record, { requireApproved: true });
+  assert.throws(() => validateApprovalRecord({ ...record, principal_ref: "person.someone-else" }, { requireApproved: true }), /user-decision-responder-mismatch/);
+});
+check("相反原文不能被 Agent 归一化成批准", () => { const f = fixture("false-approval"); f.record.responses = []; f.respond({ text: "不同意，需要修改", decision: "approved" }); deny(f, "user-decision-ambiguous"); });
+check("完整历史展示无需重发模板消息", () => {
+  const f = fixture("historical"); const item = f.record.request.items[0];
+  const text = [item.title, item.subject.ref, item.subject.version, item.changes, item.recommendation, ...item.scope, ...item.next_actions].join("\n");
+  f.record.request.presented_source = f.capture("old-presentation", "agent.orchestrator", "digital-human", "2026-09-05T01:02:00Z", text); f.record.responses = []; f.respond(); verify(f);
+});
+check("同一事项分批批准保留已批准范围", () => {
+  const f = fixture("incremental-scope", { scope: ["scope.a", "scope.b"] }); f.record.responses = [];
+  f.respond({ text: "同意 scope.a", approvedScope: ["scope.a"] });
+  f.respond({ text: "同意 scope.b", approvedScope: ["scope.b"], time: "2026-09-05T01:04:00Z" }); verify(f);
+});
+check("撤回后不能复用旧批准", () => { const f = fixture("revoke"); f.respond({ decision: "revoked", text: "撤回同意", time: "2026-09-05T01:04:00Z" }); deny(f, "user-decision-not-approved"); });
+check("默认生物人门禁纳入解析和 checkpoint", () => {
+  const roles = loadDigitalHumanRoles();
+  for (const gate of ["gate.design-reviewed", "gate.architecture-reviewed", "gate.user-confirmation"]) {
+    assert.equal(countersignRuleForGate(roles.gate_policy, gate).bucket, "biological_human");
+    assert.ok(collectCountersignGateIds(roles.gate_policy).includes(gate));
+    assert.throws(() => assertCheckpointApprovals({ gates: { [gate]: { status: "approved" } } }), /approval_ref/);
+  }
+});
+check("历史数字人记录可读但不能关闭关键门禁", () => {
+  const record = { schema_version: 1, gate_id: "gate.spec-baseline-approved", decision: "approved", actor_kind: "digital-human", role_id: "role.product-manager", runtime_id: "runtime.generic", principal_ref: "instance:product" };
+  validateApprovalRecord(record); assert.throws(() => validateApprovalRecord(record, { requireApproved: true }), /user-decision/);
+  const f = fixture("approval"); Object.assign(record, { subject_ref: f.requirement.subject_ref, approval_scope: f.requirement.scope, user_decision_ref: f.ref }); validateApprovalRecord(record, { requireApproved: true });
+});
+check("等待期间可保存状态但不能流转依赖工作", () => {
+  const f = fixture("workflow", { boundary: "discovery-conclusion" }); const state = { user_decisions: [f.requirement] };
+  assert.equal(validateNextRoute("work-unit.discovery-requirements", "work-unit.spec-synthesis", state).result, "allowed");
+  f.record.responses = []; f.save(); assert.equal(validateNextRoute("work-unit.discovery-requirements", "work-unit.spec-synthesis", state).result, "blocked");
+  assert.equal(validateNextRoute("work-unit.discovery-opportunity", "work-unit.discovery-requirements", state).result, "allowed");
+  assertCheckpointUserDecisions({ repository_mode: "project-instance", status: "paused-human-gate", human_review: { required_decisions: [f.requirement] } });
+  assert.throws(() => assertCheckpointUserDecisions({ repository_mode: "project-instance", status: "running", human_review: { required_decisions: [f.requirement] } }), /user-decision-response-required/);
+});
+check("实施批准绑定切片、合同、仓库、路径和基线", () => {
+  const f = buildImplementationFixture(path.join(root, "implementation"), "docs/.scratch/demo/issues/one.md"); assertImplementationDecision(f.state);
+  assert.throws(() => assertImplementationDecision({ ...f.state, vertical_slice_ticket_ref: "another.md" }), /user-decision-scope-mismatch/);
+  writeFileSync(f.state.slice_contract_ref, "changed"); assert.throws(() => assertImplementationDecision(f.state), /user-decision-stale/);
+});
+process.stdout.write(`用户决定场景验证通过：${count} 组\n`);

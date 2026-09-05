@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+// Main-template-owned shared handoff implementation; never edits runtime skill projections.
+import { readFileSync, writeFileSync, mkdirSync, existsSync, chmodSync, readdirSync } from 'node:fs';
+import path from 'node:path';
+import { inspectWorkingTreeScope } from './lib/repository-scope-policy.mjs';
+const root=path.resolve(import.meta.dirname,'..');
+const check=process.argv.includes('--check');
+const targets=['submodules/yss-harness-design-agent','submodules/yss-harness-dev-agent'];
+const shared=['scripts/strategic-handoff','scripts/verify-strategic-handoff-consumption','scripts/verify-strategic-handoff-package-scenarios','scripts/verify-strategic-context-import','scripts/verify-strategic-context-import-scenarios','scripts/lib/context-contract.mjs','docs/process/strategic-handoff-package.md','docs/process/schemas/strategic-design-handoff.schema.json',...readdirSync(path.join(root,'scripts/lib')).filter(x=>x.startsWith('strategic-handoff-')||x==='strategic-handoff.mjs').map(x=>`scripts/lib/${x}`),...readdirSync(path.join(root,'docs/process/schemas')).filter(x=>x.startsWith('strategic-handoff-')).map(x=>`docs/process/schemas/${x}`),...readdirSync(path.join(root,'scripts/fixtures/strategic-handoff')).map(x=>`scripts/fixtures/strategic-handoff/${x}`)];
+let differences=[];
+function sync(source,dest){const bytes=readFileSync(source);if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}if(!check&&path.basename(path.dirname(dest))==='scripts'&&!path.extname(dest))chmodSync(dest,0o755);}
+for(const kind of ['domain-strategy','stage-decision-package'])sync(path.join(root,`.agents/skills/yss-stage-decision/references/${kind}.schema.json`),path.join(root,`docs/process/schemas/strategic-handoff-${kind}.schema.json`));
+for(const target of targets){
+ if(!existsSync(path.join(root,target,'.git')))continue;
+ if(!check){const state=inspectWorkingTreeScope(root,{project_root:target,repository_scope:'git-submodule',checkout_state:'attached-branch'});if(!state.writable)throw new Error(`${target}: ${state.violation}`);}
+ for(const ref of new Set(shared))sync(path.join(root,ref),path.join(root,target,ref));
+}
+if(check&&differences.length){process.stderr.write(`交接工具同步漂移: ${differences.join(', ')}\n`);process.exitCode=1;}else process.stdout.write(`战略交接共享工具 ${check?'同步检查通过':`同步 ${differences.length} 文件`}\n`);

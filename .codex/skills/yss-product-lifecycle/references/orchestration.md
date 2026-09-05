@@ -78,9 +78,13 @@ tracker 选择和冲突按 `docs/agents/issue-tracker.md` 裁决：已持久化 
 
 `repository_scope: git-submodule` 时授权按仓分别计算：禁止在 detached HEAD 提交；commit / push 顺序必须先子仓、再父仓 gitlink（`superproject-gitlink-update`）；父仓 push 使用 `git push --recurse-submodules=check`。空 gitlink、detached HEAD、`--force` 覆盖挂载点不得当成普通目录脚手架，也不得把实现源码复制进 Harness。登记字段必须能与 `harness-apps` / `external-repository` 区分，并对照工作树 gitlink。
 
+## 用户决定与恢复
+
+关键决定使用 [真实用户回复协议](user-decisions.md)，消费角色注册表的 `user_decision_policy`。会签前先形成可审阅资产；恢复、阶段流转、实施派发和发布时校验原始回复及当前资产摘要。普通会签的数字人审查与用户决定分别保留，关键决定不得以数字人会签、无反对意见或超时放行。等待只阻断依赖事项；新的 `user_decisions` 引用通过 Workflow Execution Result、checkpoint 和任务包传递。
+
 ## 必须暂停
 
-- Spec baseline、需求冻结、原型确认、OpenAPI Freeze 或 Architecture Review 等普通门禁等待会签裁决（数字人或生物人，以 `docs/agents/digital-human-roles.yaml` 的 `gate_policy` 为准）。暂停输出必须包含：门禁 ID、指定 `role_id`、`runtime_id`、会签文件路径。恢复前执行 `scripts/verify-approval-record`；角色错误、起草者自签或生物人门禁被数字人关闭时返回 `blocked`，不得标 `approved`。
+- Spec baseline、需求冻结、原型确认、OpenAPI Freeze 或 Architecture Review 等普通门禁等待会签裁决（数字人或生物人，以 `docs/agents/digital-human-roles.yaml` 的 `gate_policy` 为准）。暂停输出必须包含：门禁 ID、指定 `role_id`、`runtime_id`、会签文件路径。恢复前执行 `scripts/verify-approval-record --require-approved`；角色错误、起草者自签或生物人门禁被数字人关闭时返回 `blocked`，不得标 `approved`。
 - 需要目标仓库、外部凭据、发布窗口或其他新授权。
 - 状态与证据冲突且无法可靠重建。
 - 专项 skill 失败或返回不可验收结果。
