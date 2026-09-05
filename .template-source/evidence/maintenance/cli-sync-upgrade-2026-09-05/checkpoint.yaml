@@ -1,0 +1,32 @@
+schema_version: 2
+intensity: L3
+classification_reason: 三个 CLI 同步到已推送的固定模板提交并升级版本，改变跨仓生成输入和分发语义。
+triggers:
+  - cross-repo-contract
+  - generation-semantics
+  - release-semantics
+changed_assets:
+  - submodules/create-yss-spec
+  - submodules/create-yss-strategic-design
+  - submodules/create-yss-harness-dev
+  - .template-source/evidence/maintenance/cli-sync-upgrade-2026-09-05
+verification_evidence:
+  - kind: cross-repository-verification
+    command: .template-source/evidence/maintenance/cli-sync-upgrade-2026-09-05/verification.md
+    result: pass
+  - kind: relevant-check
+    command: pnpm exec node --test tests/*.test.js (three CLI repositories)
+    result: pass
+  - kind: relevant-check
+    command: node .template-source/scripts/verify-strategic-handoff-distribution.mjs
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

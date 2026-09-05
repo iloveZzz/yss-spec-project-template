@@ -1,0 +1,50 @@
+{
+  "recorded_at": "2026-09-05T09:31:57.639673+00:00",
+  "clis": [
+    {
+      "repository": "submodules/create-yss-spec",
+      "name": "create-yss-spec",
+      "version": "3.1.0",
+      "commit": "f044e7b80b80eb3c3f40ed228fc21bb14f1f7a88",
+      "template_commit": "248c1723cc0e4e88adabcf00931f78b9aa632d48",
+      "snapshot_hash": "721bd159f49d6cd2702710c9cc253dbcf066a76634400a3084ccdf8a98a5eac0",
+      "pack": {
+        "filename": "create-yss-spec-3.1.0.tgz",
+        "size": 14131891,
+        "unpackedSize": 74194530,
+        "shasum": "a1e5623817e692911eb6f6d0c0a554375fdbcccf",
+        "integrity": "sha512-VWtIp3v1ZUtdRfDRH28PavrVKWkVfJIFvQmzL1LIYyRO7i/F8K5Y6/4sanIqo8aveTBPyGQr9wis1HrgA3HwGA=="
+      }
+    },
+    {
+      "repository": "submodules/create-yss-strategic-design",
+      "name": "create-yss-harness-design",
+      "version": "0.4.0",
+      "commit": "0787e8a90fb835d7645a9d31482c92b915693867",
+      "template_commit": "31189d2b4b78821ea8bef202d8516ac85b7a3c79",
+      "snapshot_hash": "f81aa07b0d0fef9f4eca39079099502201fa4a78e6cd4b0bdc0181e5fada0855",
+      "pack": {
+        "filename": "create-yss-harness-design-0.4.0.tgz",
+        "size": 1136905,
+        "unpackedSize": 5038055,
+        "shasum": "48eb72aa8d8ecd488cdcece9ea59f5c121ff2487",
+        "integrity": "sha512-SgB8K3sWvNyWSkFYIYv40YkIhZBXyDp1Y3XxwxLO/J7p7ZHjauzY77o4L5fINkykTbxm9UB/XAHmSTU18uP2iw=="
+      }
+    },
+    {
+      "repository": "submodules/create-yss-harness-dev",
+      "name": "create-yss-harness-dev",
+      "version": "0.4.0",
+      "commit": "c955c215248e2f8577fb84f7b86dc2a17898ccff",
+      "template_commit": "75e977bd9a839c1e0d7d432b46d0307cd2244ba3",
+      "snapshot_hash": "21bec69d136991ead0d745d228271a105582b3ac5fc8ff059f5c348f898b77a5",
+      "pack": {
+        "filename": "create-yss-harness-dev-0.4.0.tgz",
+        "size": 13851513,
+        "unpackedSize": 72024267,
+        "shasum": "1d2660fd6607fa994f376cc514831d0b263092e2",
+        "integrity": "sha512-k1NQtBAMz2AvaudM1QPq42odjDCR7fFlYuOtveoeeg2r9nb327D2/SgcJbSzhT2QXL//PFV/j3u1B0ufrj1LZA=="
+      }
+    }
+  ]
+}
