@@ -1,0 +1,35 @@
+{
+  "root": "/Users/zhudaoming/Projects/yss-spec-project-template",
+  "scratch": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d",
+  "dev": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-harness-dev",
+  "repos": {
+    "create-yss-spec": {
+      "head": "f044e7b80b80eb3c3f40ed228fc21bb14f1f7a88",
+      "status": "",
+      "workdir": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+      "source_dir": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "source_commit": "ccc53f577babbeff5d8a9e674ef883c69bfac47d",
+      "version": "3.1.1",
+      "name": "create-yss-spec"
+    },
+    "create-yss-strategic-design": {
+      "head": "0787e8a90fb835d7645a9d31482c92b915693867",
+      "status": "",
+      "workdir": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+      "source_dir": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+      "source_commit": "f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e",
+      "version": "0.4.1",
+      "name": "create-yss-harness-design"
+    },
+    "create-yss-harness-dev": {
+      "head": "c955c215248e2f8577fb84f7b86dc2a17898ccff",
+      "status": " M template.snapshot.json\n",
+      "workdir": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-harness-dev",
+      "source_dir": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
+      "source_commit": "07a126d76ad33c1e4162d2379ffb68007e01dad3",
+      "version": "0.4.1",
+      "name": "create-yss-harness-dev"
+    }
+  },
+  "original_dev_snapshot_sha256": "b48e91997174ab9a318a83511128eafc36b0441b773b02691f7972ccf6b245bb"
+}

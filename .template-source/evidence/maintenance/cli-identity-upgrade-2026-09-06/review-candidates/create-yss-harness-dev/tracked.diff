@@ -1,0 +1,1033 @@
+diff --git a/README.md b/README.md
+index ceb5df5e9cba66a97bff3c75bfd804ee29304e46..7285e300c450071ece668a21e4ec594232eb250e 100644
+--- a/README.md
++++ b/README.md
+@@ -1,6 +1,6 @@
+ # create-yss-harness-dev
+ 
+-当前版本：`0.4.0`，模板固定到 `75e977bd9a839c1e0d7d432b46d0307cd2244ba3`。该版本同步战略交接包核验与受控导入，将源规则和场景追溯到战术设计、测试 seam 及依赖切片，并按未解决依赖阻断实现。
++当前版本：`0.4.1`，模板固定到 `07a126d76ad33c1e4162d2379ffb68007e01dad3`。该版本同步战略交接包核验与受控导入，将源规则和场景追溯到战术设计、测试 seam 及依赖切片，并按未解决依赖阻断实现。
+ 
+ 把 [`yss-harness-dev-agent`](https://github.com/iloveZzz/yss-harness-dev-agent) 五阶段开发落地 Harness 初始化、接管并同步为 `project-instance` 的 npm CLI。
+ 
+@@ -43,3 +43,11 @@ YSS_HARNESS_TEMPLATE_REF=<pinned-commit> npm pack --dry-run
+ ```
+ 
+ 正式发布不得跟随浮动 `main`。模板仓与本仓未共同通过集成验证时，不得声称整体可发布。
++
++## 本次身份保护升级
++
++本版本同步前后端 Harness 拆分后的共享交接资产，保持当前模板家族。init、attach 和 sync 的适用入口在生成计划前检查五种模板身份及已有 profile；异族、多重身份、损坏或矛盾声明均拒绝，`--force` 不能绕过，`--dry-run` 同样返回非零。历史 metadata 继续兼容，`legacy-attach` 仅在旧 schema 路径接受。
++
++`update` / `upgrade` 只更新 CLI 程序，不同步实例资产。专职后端和前端新项目分别检出 `yss-harness-backend-agent`、`yss-harness-frontend-agent` 的固定提交，在各自模板目录运行 `node scripts/instantiate-harness --target <新目录>`；这两个入口不提供原地 sync 或跨 profile 迁移。
++
++旧实例升级前先保存 Git 基线，再用新版本执行 `sync --dry-run`，审阅后执行普通 `sync`；不默认添加 --force。失败按现有事务机制回滚，成功后的撤销使用升级前基线或保留备份，不用旧 CLI 强制反向同步。
+diff --git a/package.json b/package.json
+index 6742bda85a5fb4b008a435e5810f98d63b4ce8d8..2624ba6de5bfd44fcfe58e454cd5817965b67158 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "create-yss-harness-dev",
+-  "version": "0.4.0",
++  "version": "0.4.1",
+   "description": "Initialize a YSS development-landing Harness project-instance repository",
+   "repository": {
+     "type": "git",
+diff --git a/scripts/sync-template.js b/scripts/sync-template.js
+index a6a567a25b38b3cc009af7159e4dc33b21432d09..5d8e4811f37bfdda7cc075a4a19706f01ca70fd1 100644
+--- a/scripts/sync-template.js
++++ b/scripts/sync-template.js
+@@ -12,7 +12,7 @@ const targetSnapshotPath = path.join(packageRoot, "template.snapshot.json");
+ const templateRepo =
+   process.env.YSS_HARNESS_TEMPLATE_REPO ||
+   "https://github.com/iloveZzz/yss-harness-dev-agent.git";
+-const DEFAULT_TEMPLATE_REF = "75e977bd9a839c1e0d7d432b46d0307cd2244ba3";
++const DEFAULT_TEMPLATE_REF = "07a126d76ad33c1e4162d2379ffb68007e01dad3";
+ const templateRef = process.env.YSS_HARNESS_TEMPLATE_REF || DEFAULT_TEMPLATE_REF;
+ const NPM_IGNORED_BASENAMES = new Set([".gitignore", ".npmignore", ".npmrc"]);
+ 
+diff --git a/src/cli.js b/src/cli.js
+index 25234d802b9786786e0708b33436bbe3c917ab0a..d62a1cd8a9ac756c9ba92a534d8866462596a535 100644
+--- a/src/cli.js
++++ b/src/cli.js
+@@ -1,4 +1,6 @@
+ const crypto = require("node:crypto");
++const { createFamilyGuard } = require("./family-identity");
++let checkTargetFamily;
+ const fs = require("node:fs");
+ const os = require("node:os");
+ const path = require("node:path");
+@@ -32,7 +34,6 @@ const INIT_EXCLUDED_RELATIVE_PATHS = new Set(
+ const RENDERED_RELATIVE_PATHS = new Set(TEMPLATE_MANIFEST.renderPaths);
+ const EXAMPLE_DOC_PATHS = new Set(TEMPLATE_MANIFEST.exampleDocPaths);
+ const TEMPLATE_METADATA_FILENAME = ".yss-harness-dev.json";
+-const FOREIGN_METADATA_FILENAME = ".yss-template.json";
+ const PROFILE_ID = "harness.dev-agent-slice";
+ const TEMPLATE_MANIFEST_VERSION = sha256(TEMPLATE_MANIFEST_TEXT);
+ const TEMPLATE_SOURCE = "github:iloveZzz/yss-harness-dev-agent";
+@@ -137,6 +138,7 @@ function readTemplateSnapshot() {
+     throw new Error("模板快照内容 hash 不匹配，请重新构建 CLI 包");
+   }
+ 
++  checkTargetFamily(BUNDLED_TEMPLATE_ROOT, { snapshot });
+   return snapshot;
+ }
+ 
+@@ -1434,6 +1436,7 @@ function runTemplateVerification(targetDir, scriptPath) {
+ }
+ 
+ function verifyGeneratedTemplate(targetDir, mode = "managed") {
++  checkTargetFamily(targetDir);
+   if (mode === "init" || mode === "sync") {
+     verifyGeneratedInstance(targetDir, { checkForbiddenPaths: mode === "init" });
+     return;
+@@ -1479,11 +1482,7 @@ function verifyGeneratedInstance(targetDir, { checkForbiddenPaths = true } = {})
+ }
+ 
+ function assertNotForeignFamily(targetDir) {
+-  if (pathKind(targetPath(targetDir, FOREIGN_METADATA_FILENAME)) !== "missing") {
+-    throw new Error(
+-      "目标属于 create-yss-spec 全生命周期实例（存在 .yss-template.json）。请使用 create-yss-spec，不要用 create-yss-harness-dev。",
+-    );
+-  }
++  checkTargetFamily(targetDir);
+ }
+ 
+ function loadTemplateMetadata(targetDir) {
+@@ -1866,7 +1865,8 @@ function runInit(argv = []) {
+     printVersion();
+     return;
+   }
+-  return promptForMissingOptions(options).then((promptedOptions) => {
++  return promptForMissingOptions(options).then(async (promptedOptions) => {
++    checkTargetFamily = await createFamilyGuard(PACKAGE_ROOT, PACKAGE_MANIFEST.name);
+     assertRequiredOptions(promptedOptions, "init");
+     readTemplateSnapshot();
+     const targetDir = normalizeTargetDir(promptedOptions.targetDir);
+@@ -2140,6 +2140,11 @@ COMMANDS
+   update     检查 npm 最新版本，如有更新则安装
+   upgrade    update 的别名
+ 
++IDENTITY
++  仅操作本 CLI 对应的模板家族；异族、混合或矛盾身份不可用 --force 绕过。
++  update / upgrade 只升级 CLI 程序；模板资产同步与程序升级分开执行。
++  前后端专职新项目使用各自模板的 scripts/instantiate-harness，仅支持新目录。
++
+ OPTIONS
+   --project-name <name>              项目名称；init 不传则进入交互输入
+   --business-domain <domain>         业务领域；init 不传则进入交互输入
+@@ -2206,6 +2211,9 @@ async function runCli(argv = []) {
+     printVersion();
+     return;
+   }
++  if (["attach", "sync"].includes(argv[0])) {
++    checkTargetFamily = await createFamilyGuard(PACKAGE_ROOT, PACKAGE_MANIFEST.name);
++  }
+   if (argv[0] === "sync") {
+     runSync(argv.slice(1));
+     return;
+diff --git a/template.snapshot.json b/template.snapshot.json
+index e4c316cec6a9633072c9b3e90d53924a6db593c7..8e351c5c57b18d73f6ccbba9cd8436d81eb43eff 100644
+--- a/template.snapshot.json
++++ b/template.snapshot.json
+@@ -4,8 +4,8 @@
+   "profileId": "harness.dev-agent-slice",
+   "templateSource": "github:iloveZzz/yss-harness-dev-agent",
+   "templateRepository": "https://github.com/iloveZzz/yss-harness-dev-agent.git",
+-  "requestedRef": "75e977bd9a839c1e0d7d432b46d0307cd2244ba3",
+-  "templateCommit": "75e977bd9a839c1e0d7d432b46d0307cd2244ba3",
++  "requestedRef": "07a126d76ad33c1e4162d2379ffb68007e01dad3",
++  "templateCommit": "07a126d76ad33c1e4162d2379ffb68007e01dad3",
+   "manifestHash": "4dbbc0879bfd8f6628f6e378b55ebcbbaa4708723d3de8d54d06ea023fd197e7",
+   "encodedPaths": {
+     ".codex/skills/data-analytics/.gitignore": ".codex/skills/data-analytics/__yss_dotfile__.gitignore",
+@@ -13,6 +13,6 @@
+     ".codex/skills/product-design/templates/prototype/.npmrc": ".codex/skills/product-design/templates/prototype/__yss_dotfile__.npmrc",
+     ".gitignore": "__yss_dotfile__.gitignore"
+   },
+-  "snapshotHash": "21bec69d136991ead0d745d228271a105582b3ac5fc8ff059f5c348f898b77a5",
+-  "generatedAt": "2026-09-05T09:24:26.615Z"
++  "snapshotHash": "01ad39db97e96a8eafce9053d2e27c3df90ccb90d5161454d254061fb25d6492",
++  "generatedAt": "2026-09-06T13:49:36.223Z"
+ }
+diff --git a/template/.agents/skills/harness-orchestrator/SKILL.md b/template/.agents/skills/harness-orchestrator/SKILL.md
+index aa20e053ffe95755920284a73fbab8c8ad53b7fc..3b32b294083e2ba0b4fac65ac0537240b80182a8 100644
+--- a/template/.agents/skills/harness-orchestrator/SKILL.md
++++ b/template/.agents/skills/harness-orchestrator/SKILL.md
+@@ -16,6 +16,10 @@ description: 编排 DDD 战术设计到垂直切片交付的四角色 Harness Ag
+ - 不批准自己生成的专业资产，不把 实现合同编译器 草案当成 approved，也不以聊天消息代替证据。
+ - 只有当前版本 `Slice Implementation Contract` 满足就绪公式时，才能设置 `ready-for-agent`。
+ 
++## 前端联合接收
++
++专职前端 profile 或显式 `frontend_delivery` 输入，先执行 `docs/process/frontend-backend-delivery.md` 的实际校验；源战略与后端交付同时有效后才准备实现计划与合同，合同批准后再派发 Worker。接收、恢复与验收均重验，缺口回交权威方。通用研发 profile 未选择该路线时维持原行为。
++
+ ## 主流程
+ 
+ 1. 校验上游输入、仓库身份、实现仓库、影响面和当前合同版本。
+diff --git a/template/.agents/skills/yss-frontend-scaffold-generator/SKILL.md b/template/.agents/skills/yss-frontend-scaffold-generator/SKILL.md
+index 9d6c2a25e2097a243ff902426da6a9f2ff25e25c..c5aa7b06cf7dabbcfbe697dcf36e4c493b12c667 100644
+--- a/template/.agents/skills/yss-frontend-scaffold-generator/SKILL.md
++++ b/template/.agents/skills/yss-frontend-scaffold-generator/SKILL.md
+@@ -9,6 +9,8 @@ description: Use when creating a new YSS frontend micro-application from the sta
+ 
+ ## Template Source
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ ```text
+ repo: http://192.168.167.142:8081/Data-Middleground-Develop-Area/product-code/ai-frontend/yss-design/yss-frontend-template.git
+ branch: template
+diff --git a/template/.agents/skills/yss-implementation-contract-compiler/SKILL.md b/template/.agents/skills/yss-implementation-contract-compiler/SKILL.md
+index db3385e941728edf2b5f4029942cc6856c6f7428..1f3d9bf2e10dba99a235369d9d0cbf2bcf1b3dca 100644
+--- a/template/.agents/skills/yss-implementation-contract-compiler/SKILL.md
++++ b/template/.agents/skills/yss-implementation-contract-compiler/SKILL.md
+@@ -9,6 +9,8 @@ description: 将已批准的 DDD 战术设计、冻结契约和 capability 编
+ 
+ ## 输入
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ 必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、Tactical Design Contract、API / 数据 / UI 影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
+ 
+ 当 backend `scaffold_status=required` 时，还必须读取当前 `scaffold-architecture-decisions.yaml`。Harness Orchestrator 先基于领域复杂度给出 `domain-driven` / `layered-mvc` 推荐并取得用户逐项目确认，本体选择只作为子项目预填默认；编译器不得自行默认、提问或批准。确认 DDD 时绑定 `yss-ddd-scaffold-generator`，确认 MVC 时绑定 `yss-layered-mvc-scaffold-generator`，并把 decision ref / id / digest、Profile 与确定性模块闭包写入 scaffold contract schema v3。
+diff --git a/template/.agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml b/template/.agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+index 54576a84bf057cae20421567e8c616f523badaa8..a122f37c501a154ad79745ca2dbec4ca794e561b 100644
+--- a/template/.agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
++++ b/template/.agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+@@ -196,3 +196,10 @@ strategic_handoff_consumption:
+   stale_policy: latest-imported-source-digest-and-dependent-slices
+   unknown_dependency: block-all
+   compiler_must_not_approve: true
++
++frontend_delivery_readiness:
++  when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
++  source: docs/process/frontend-backend-delivery.md
++  verifier: scripts/verify-frontend-delivery
++  output_binding: frontend.delivery
++  inputs_verified_is_implementation_approval: false
+diff --git a/template/.agents/skills/yss-ui/SKILL.md b/template/.agents/skills/yss-ui/SKILL.md
+index da0ca36060e1d99b0b9bdb0bbd81883773d58526..77bbaa4952dcc2d5a64bc39d3991da2dde710320 100644
+--- a/template/.agents/skills/yss-ui/SKILL.md
++++ b/template/.agents/skills/yss-ui/SKILL.md
+@@ -9,6 +9,8 @@ description: Use when implementing or reviewing YSS Vue pages that combine YSS w
+ 
+ ## 1. 权威事实顺序
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ 发生冲突时按以下顺序决策：
+ 
+ 1. 冻结的项目工程基线和批准的 Slice Implementation Contract。
+diff --git a/template/.claude/skills/harness-orchestrator/SKILL.md b/template/.claude/skills/harness-orchestrator/SKILL.md
+index aa20e053ffe95755920284a73fbab8c8ad53b7fc..3b32b294083e2ba0b4fac65ac0537240b80182a8 100644
+--- a/template/.claude/skills/harness-orchestrator/SKILL.md
++++ b/template/.claude/skills/harness-orchestrator/SKILL.md
+@@ -16,6 +16,10 @@ description: 编排 DDD 战术设计到垂直切片交付的四角色 Harness Ag
+ - 不批准自己生成的专业资产，不把 实现合同编译器 草案当成 approved，也不以聊天消息代替证据。
+ - 只有当前版本 `Slice Implementation Contract` 满足就绪公式时，才能设置 `ready-for-agent`。
+ 
++## 前端联合接收
++
++专职前端 profile 或显式 `frontend_delivery` 输入，先执行 `docs/process/frontend-backend-delivery.md` 的实际校验；源战略与后端交付同时有效后才准备实现计划与合同，合同批准后再派发 Worker。接收、恢复与验收均重验，缺口回交权威方。通用研发 profile 未选择该路线时维持原行为。
++
+ ## 主流程
+ 
+ 1. 校验上游输入、仓库身份、实现仓库、影响面和当前合同版本。
+diff --git a/template/.claude/skills/yss-frontend-scaffold-generator/SKILL.md b/template/.claude/skills/yss-frontend-scaffold-generator/SKILL.md
+index 9d6c2a25e2097a243ff902426da6a9f2ff25e25c..c5aa7b06cf7dabbcfbe697dcf36e4c493b12c667 100644
+--- a/template/.claude/skills/yss-frontend-scaffold-generator/SKILL.md
++++ b/template/.claude/skills/yss-frontend-scaffold-generator/SKILL.md
+@@ -9,6 +9,8 @@ description: Use when creating a new YSS frontend micro-application from the sta
+ 
+ ## Template Source
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ ```text
+ repo: http://192.168.167.142:8081/Data-Middleground-Develop-Area/product-code/ai-frontend/yss-design/yss-frontend-template.git
+ branch: template
+diff --git a/template/.claude/skills/yss-implementation-contract-compiler/SKILL.md b/template/.claude/skills/yss-implementation-contract-compiler/SKILL.md
+index db3385e941728edf2b5f4029942cc6856c6f7428..1f3d9bf2e10dba99a235369d9d0cbf2bcf1b3dca 100644
+--- a/template/.claude/skills/yss-implementation-contract-compiler/SKILL.md
++++ b/template/.claude/skills/yss-implementation-contract-compiler/SKILL.md
+@@ -9,6 +9,8 @@ description: 将已批准的 DDD 战术设计、冻结契约和 capability 编
+ 
+ ## 输入
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ 必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、Tactical Design Contract、API / 数据 / UI 影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
+ 
+ 当 backend `scaffold_status=required` 时，还必须读取当前 `scaffold-architecture-decisions.yaml`。Harness Orchestrator 先基于领域复杂度给出 `domain-driven` / `layered-mvc` 推荐并取得用户逐项目确认，本体选择只作为子项目预填默认；编译器不得自行默认、提问或批准。确认 DDD 时绑定 `yss-ddd-scaffold-generator`，确认 MVC 时绑定 `yss-layered-mvc-scaffold-generator`，并把 decision ref / id / digest、Profile 与确定性模块闭包写入 scaffold contract schema v3。
+diff --git a/template/.claude/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml b/template/.claude/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+index 54576a84bf057cae20421567e8c616f523badaa8..a122f37c501a154ad79745ca2dbec4ca794e561b 100644
+--- a/template/.claude/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
++++ b/template/.claude/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+@@ -196,3 +196,10 @@ strategic_handoff_consumption:
+   stale_policy: latest-imported-source-digest-and-dependent-slices
+   unknown_dependency: block-all
+   compiler_must_not_approve: true
++
++frontend_delivery_readiness:
++  when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
++  source: docs/process/frontend-backend-delivery.md
++  verifier: scripts/verify-frontend-delivery
++  output_binding: frontend.delivery
++  inputs_verified_is_implementation_approval: false
+diff --git a/template/.claude/skills/yss-ui/SKILL.md b/template/.claude/skills/yss-ui/SKILL.md
+index da0ca36060e1d99b0b9bdb0bbd81883773d58526..77bbaa4952dcc2d5a64bc39d3991da2dde710320 100644
+--- a/template/.claude/skills/yss-ui/SKILL.md
++++ b/template/.claude/skills/yss-ui/SKILL.md
+@@ -9,6 +9,8 @@ description: Use when implementing or reviewing YSS Vue pages that combine YSS w
+ 
+ ## 1. 权威事实顺序
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ 发生冲突时按以下顺序决策：
+ 
+ 1. 冻结的项目工程基线和批准的 Slice Implementation Contract。
+diff --git a/template/.codex/skills/harness-orchestrator/SKILL.md b/template/.codex/skills/harness-orchestrator/SKILL.md
+index aa20e053ffe95755920284a73fbab8c8ad53b7fc..3b32b294083e2ba0b4fac65ac0537240b80182a8 100644
+--- a/template/.codex/skills/harness-orchestrator/SKILL.md
++++ b/template/.codex/skills/harness-orchestrator/SKILL.md
+@@ -16,6 +16,10 @@ description: 编排 DDD 战术设计到垂直切片交付的四角色 Harness Ag
+ - 不批准自己生成的专业资产，不把 实现合同编译器 草案当成 approved，也不以聊天消息代替证据。
+ - 只有当前版本 `Slice Implementation Contract` 满足就绪公式时，才能设置 `ready-for-agent`。
+ 
++## 前端联合接收
++
++专职前端 profile 或显式 `frontend_delivery` 输入，先执行 `docs/process/frontend-backend-delivery.md` 的实际校验；源战略与后端交付同时有效后才准备实现计划与合同，合同批准后再派发 Worker。接收、恢复与验收均重验，缺口回交权威方。通用研发 profile 未选择该路线时维持原行为。
++
+ ## 主流程
+ 
+ 1. 校验上游输入、仓库身份、实现仓库、影响面和当前合同版本。
+diff --git a/template/.codex/skills/yss-frontend-scaffold-generator/SKILL.md b/template/.codex/skills/yss-frontend-scaffold-generator/SKILL.md
+index 9d6c2a25e2097a243ff902426da6a9f2ff25e25c..c5aa7b06cf7dabbcfbe697dcf36e4c493b12c667 100644
+--- a/template/.codex/skills/yss-frontend-scaffold-generator/SKILL.md
++++ b/template/.codex/skills/yss-frontend-scaffold-generator/SKILL.md
+@@ -9,6 +9,8 @@ description: Use when creating a new YSS frontend micro-application from the sta
+ 
+ ## Template Source
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ ```text
+ repo: http://192.168.167.142:8081/Data-Middleground-Develop-Area/product-code/ai-frontend/yss-design/yss-frontend-template.git
+ branch: template
+diff --git a/template/.codex/skills/yss-implementation-contract-compiler/SKILL.md b/template/.codex/skills/yss-implementation-contract-compiler/SKILL.md
+index db3385e941728edf2b5f4029942cc6856c6f7428..1f3d9bf2e10dba99a235369d9d0cbf2bcf1b3dca 100644
+--- a/template/.codex/skills/yss-implementation-contract-compiler/SKILL.md
++++ b/template/.codex/skills/yss-implementation-contract-compiler/SKILL.md
+@@ -9,6 +9,8 @@ description: 将已批准的 DDD 战术设计、冻结契约和 capability 编
+ 
+ ## 输入
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ 必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、Tactical Design Contract、API / 数据 / UI 影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
+ 
+ 当 backend `scaffold_status=required` 时，还必须读取当前 `scaffold-architecture-decisions.yaml`。Harness Orchestrator 先基于领域复杂度给出 `domain-driven` / `layered-mvc` 推荐并取得用户逐项目确认，本体选择只作为子项目预填默认；编译器不得自行默认、提问或批准。确认 DDD 时绑定 `yss-ddd-scaffold-generator`，确认 MVC 时绑定 `yss-layered-mvc-scaffold-generator`，并把 decision ref / id / digest、Profile 与确定性模块闭包写入 scaffold contract schema v3。
+diff --git a/template/.codex/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml b/template/.codex/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+index 54576a84bf057cae20421567e8c616f523badaa8..a122f37c501a154ad79745ca2dbec4ca794e561b 100644
+--- a/template/.codex/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
++++ b/template/.codex/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+@@ -196,3 +196,10 @@ strategic_handoff_consumption:
+   stale_policy: latest-imported-source-digest-and-dependent-slices
+   unknown_dependency: block-all
+   compiler_must_not_approve: true
++
++frontend_delivery_readiness:
++  when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
++  source: docs/process/frontend-backend-delivery.md
++  verifier: scripts/verify-frontend-delivery
++  output_binding: frontend.delivery
++  inputs_verified_is_implementation_approval: false
+diff --git a/template/.codex/skills/yss-ui/SKILL.md b/template/.codex/skills/yss-ui/SKILL.md
+index da0ca36060e1d99b0b9bdb0bbd81883773d58526..77bbaa4952dcc2d5a64bc39d3991da2dde710320 100644
+--- a/template/.codex/skills/yss-ui/SKILL.md
++++ b/template/.codex/skills/yss-ui/SKILL.md
+@@ -9,6 +9,8 @@ description: Use when implementing or reviewing YSS Vue pages that combine YSS w
+ 
+ ## 1. 权威事实顺序
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ 发生冲突时按以下顺序决策：
+ 
+ 1. 冻结的项目工程基线和批准的 Slice Implementation Contract。
+diff --git a/template/.cursor/skills/harness-orchestrator/SKILL.md b/template/.cursor/skills/harness-orchestrator/SKILL.md
+index aa20e053ffe95755920284a73fbab8c8ad53b7fc..3b32b294083e2ba0b4fac65ac0537240b80182a8 100644
+--- a/template/.cursor/skills/harness-orchestrator/SKILL.md
++++ b/template/.cursor/skills/harness-orchestrator/SKILL.md
+@@ -16,6 +16,10 @@ description: 编排 DDD 战术设计到垂直切片交付的四角色 Harness Ag
+ - 不批准自己生成的专业资产，不把 实现合同编译器 草案当成 approved，也不以聊天消息代替证据。
+ - 只有当前版本 `Slice Implementation Contract` 满足就绪公式时，才能设置 `ready-for-agent`。
+ 
++## 前端联合接收
++
++专职前端 profile 或显式 `frontend_delivery` 输入，先执行 `docs/process/frontend-backend-delivery.md` 的实际校验；源战略与后端交付同时有效后才准备实现计划与合同，合同批准后再派发 Worker。接收、恢复与验收均重验，缺口回交权威方。通用研发 profile 未选择该路线时维持原行为。
++
+ ## 主流程
+ 
+ 1. 校验上游输入、仓库身份、实现仓库、影响面和当前合同版本。
+diff --git a/template/.cursor/skills/yss-frontend-scaffold-generator/SKILL.md b/template/.cursor/skills/yss-frontend-scaffold-generator/SKILL.md
+index 9d6c2a25e2097a243ff902426da6a9f2ff25e25c..c5aa7b06cf7dabbcfbe697dcf36e4c493b12c667 100644
+--- a/template/.cursor/skills/yss-frontend-scaffold-generator/SKILL.md
++++ b/template/.cursor/skills/yss-frontend-scaffold-generator/SKILL.md
+@@ -9,6 +9,8 @@ description: Use when creating a new YSS frontend micro-application from the sta
+ 
+ ## Template Source
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ ```text
+ repo: http://192.168.167.142:8081/Data-Middleground-Develop-Area/product-code/ai-frontend/yss-design/yss-frontend-template.git
+ branch: template
+diff --git a/template/.cursor/skills/yss-implementation-contract-compiler/SKILL.md b/template/.cursor/skills/yss-implementation-contract-compiler/SKILL.md
+index db3385e941728edf2b5f4029942cc6856c6f7428..1f3d9bf2e10dba99a235369d9d0cbf2bcf1b3dca 100644
+--- a/template/.cursor/skills/yss-implementation-contract-compiler/SKILL.md
++++ b/template/.cursor/skills/yss-implementation-contract-compiler/SKILL.md
+@@ -9,6 +9,8 @@ description: 将已批准的 DDD 战术设计、冻结契约和 capability 编
+ 
+ ## 输入
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ 必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、Tactical Design Contract、API / 数据 / UI 影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
+ 
+ 当 backend `scaffold_status=required` 时，还必须读取当前 `scaffold-architecture-decisions.yaml`。Harness Orchestrator 先基于领域复杂度给出 `domain-driven` / `layered-mvc` 推荐并取得用户逐项目确认，本体选择只作为子项目预填默认；编译器不得自行默认、提问或批准。确认 DDD 时绑定 `yss-ddd-scaffold-generator`，确认 MVC 时绑定 `yss-layered-mvc-scaffold-generator`，并把 decision ref / id / digest、Profile 与确定性模块闭包写入 scaffold contract schema v3。
+diff --git a/template/.cursor/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml b/template/.cursor/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+index 54576a84bf057cae20421567e8c616f523badaa8..a122f37c501a154ad79745ca2dbec4ca794e561b 100644
+--- a/template/.cursor/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
++++ b/template/.cursor/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+@@ -196,3 +196,10 @@ strategic_handoff_consumption:
+   stale_policy: latest-imported-source-digest-and-dependent-slices
+   unknown_dependency: block-all
+   compiler_must_not_approve: true
++
++frontend_delivery_readiness:
++  when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
++  source: docs/process/frontend-backend-delivery.md
++  verifier: scripts/verify-frontend-delivery
++  output_binding: frontend.delivery
++  inputs_verified_is_implementation_approval: false
+diff --git a/template/.cursor/skills/yss-ui/SKILL.md b/template/.cursor/skills/yss-ui/SKILL.md
+index da0ca36060e1d99b0b9bdb0bbd81883773d58526..77bbaa4952dcc2d5a64bc39d3991da2dde710320 100644
+--- a/template/.cursor/skills/yss-ui/SKILL.md
++++ b/template/.cursor/skills/yss-ui/SKILL.md
+@@ -9,6 +9,8 @@ description: Use when implementing or reviewing YSS Vue pages that combine YSS w
+ 
+ ## 1. 权威事实顺序
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ 发生冲突时按以下顺序决策：
+ 
+ 1. 冻结的项目工程基线和批准的 Slice Implementation Contract。
+diff --git a/template/.pi/skills/harness-orchestrator/SKILL.md b/template/.pi/skills/harness-orchestrator/SKILL.md
+index aa20e053ffe95755920284a73fbab8c8ad53b7fc..3b32b294083e2ba0b4fac65ac0537240b80182a8 100644
+--- a/template/.pi/skills/harness-orchestrator/SKILL.md
++++ b/template/.pi/skills/harness-orchestrator/SKILL.md
+@@ -16,6 +16,10 @@ description: 编排 DDD 战术设计到垂直切片交付的四角色 Harness Ag
+ - 不批准自己生成的专业资产，不把 实现合同编译器 草案当成 approved，也不以聊天消息代替证据。
+ - 只有当前版本 `Slice Implementation Contract` 满足就绪公式时，才能设置 `ready-for-agent`。
+ 
++## 前端联合接收
++
++专职前端 profile 或显式 `frontend_delivery` 输入，先执行 `docs/process/frontend-backend-delivery.md` 的实际校验；源战略与后端交付同时有效后才准备实现计划与合同，合同批准后再派发 Worker。接收、恢复与验收均重验，缺口回交权威方。通用研发 profile 未选择该路线时维持原行为。
++
+ ## 主流程
+ 
+ 1. 校验上游输入、仓库身份、实现仓库、影响面和当前合同版本。
+diff --git a/template/.pi/skills/yss-frontend-scaffold-generator/SKILL.md b/template/.pi/skills/yss-frontend-scaffold-generator/SKILL.md
+index 9d6c2a25e2097a243ff902426da6a9f2ff25e25c..c5aa7b06cf7dabbcfbe697dcf36e4c493b12c667 100644
+--- a/template/.pi/skills/yss-frontend-scaffold-generator/SKILL.md
++++ b/template/.pi/skills/yss-frontend-scaffold-generator/SKILL.md
+@@ -9,6 +9,8 @@ description: Use when creating a new YSS frontend micro-application from the sta
+ 
+ ## Template Source
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ ```text
+ repo: http://192.168.167.142:8081/Data-Middleground-Develop-Area/product-code/ai-frontend/yss-design/yss-frontend-template.git
+ branch: template
+diff --git a/template/.pi/skills/yss-implementation-contract-compiler/SKILL.md b/template/.pi/skills/yss-implementation-contract-compiler/SKILL.md
+index db3385e941728edf2b5f4029942cc6856c6f7428..1f3d9bf2e10dba99a235369d9d0cbf2bcf1b3dca 100644
+--- a/template/.pi/skills/yss-implementation-contract-compiler/SKILL.md
++++ b/template/.pi/skills/yss-implementation-contract-compiler/SKILL.md
+@@ -9,6 +9,8 @@ description: 将已批准的 DDD 战术设计、冻结契约和 capability 编
+ 
+ ## 输入
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ 必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、Tactical Design Contract、API / 数据 / UI 影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
+ 
+ 当 backend `scaffold_status=required` 时，还必须读取当前 `scaffold-architecture-decisions.yaml`。Harness Orchestrator 先基于领域复杂度给出 `domain-driven` / `layered-mvc` 推荐并取得用户逐项目确认，本体选择只作为子项目预填默认；编译器不得自行默认、提问或批准。确认 DDD 时绑定 `yss-ddd-scaffold-generator`，确认 MVC 时绑定 `yss-layered-mvc-scaffold-generator`，并把 decision ref / id / digest、Profile 与确定性模块闭包写入 scaffold contract schema v3。
+diff --git a/template/.pi/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml b/template/.pi/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+index 54576a84bf057cae20421567e8c616f523badaa8..a122f37c501a154ad79745ca2dbec4ca794e561b 100644
+--- a/template/.pi/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
++++ b/template/.pi/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+@@ -196,3 +196,10 @@ strategic_handoff_consumption:
+   stale_policy: latest-imported-source-digest-and-dependent-slices
+   unknown_dependency: block-all
+   compiler_must_not_approve: true
++
++frontend_delivery_readiness:
++  when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
++  source: docs/process/frontend-backend-delivery.md
++  verifier: scripts/verify-frontend-delivery
++  output_binding: frontend.delivery
++  inputs_verified_is_implementation_approval: false
+diff --git a/template/.pi/skills/yss-ui/SKILL.md b/template/.pi/skills/yss-ui/SKILL.md
+index da0ca36060e1d99b0b9bdb0bbd81883773d58526..77bbaa4952dcc2d5a64bc39d3991da2dde710320 100644
+--- a/template/.pi/skills/yss-ui/SKILL.md
++++ b/template/.pi/skills/yss-ui/SKILL.md
+@@ -9,6 +9,8 @@ description: Use when implementing or reviewing YSS Vue pages that combine YSS w
+ 
+ ## 1. 权威事实顺序
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ 发生冲突时按以下顺序决策：
+ 
+ 1. 冻结的项目工程基线和批准的 Slice Implementation Contract。
+diff --git a/template/.qoder/skills/harness-orchestrator/SKILL.md b/template/.qoder/skills/harness-orchestrator/SKILL.md
+index aa20e053ffe95755920284a73fbab8c8ad53b7fc..3b32b294083e2ba0b4fac65ac0537240b80182a8 100644
+--- a/template/.qoder/skills/harness-orchestrator/SKILL.md
++++ b/template/.qoder/skills/harness-orchestrator/SKILL.md
+@@ -16,6 +16,10 @@ description: 编排 DDD 战术设计到垂直切片交付的四角色 Harness Ag
+ - 不批准自己生成的专业资产，不把 实现合同编译器 草案当成 approved，也不以聊天消息代替证据。
+ - 只有当前版本 `Slice Implementation Contract` 满足就绪公式时，才能设置 `ready-for-agent`。
+ 
++## 前端联合接收
++
++专职前端 profile 或显式 `frontend_delivery` 输入，先执行 `docs/process/frontend-backend-delivery.md` 的实际校验；源战略与后端交付同时有效后才准备实现计划与合同，合同批准后再派发 Worker。接收、恢复与验收均重验，缺口回交权威方。通用研发 profile 未选择该路线时维持原行为。
++
+ ## 主流程
+ 
+ 1. 校验上游输入、仓库身份、实现仓库、影响面和当前合同版本。
+diff --git a/template/.qoder/skills/yss-frontend-scaffold-generator/SKILL.md b/template/.qoder/skills/yss-frontend-scaffold-generator/SKILL.md
+index 9d6c2a25e2097a243ff902426da6a9f2ff25e25c..c5aa7b06cf7dabbcfbe697dcf36e4c493b12c667 100644
+--- a/template/.qoder/skills/yss-frontend-scaffold-generator/SKILL.md
++++ b/template/.qoder/skills/yss-frontend-scaffold-generator/SKILL.md
+@@ -9,6 +9,8 @@ description: Use when creating a new YSS frontend micro-application from the sta
+ 
+ ## Template Source
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ ```text
+ repo: http://192.168.167.142:8081/Data-Middleground-Develop-Area/product-code/ai-frontend/yss-design/yss-frontend-template.git
+ branch: template
+diff --git a/template/.qoder/skills/yss-implementation-contract-compiler/SKILL.md b/template/.qoder/skills/yss-implementation-contract-compiler/SKILL.md
+index db3385e941728edf2b5f4029942cc6856c6f7428..1f3d9bf2e10dba99a235369d9d0cbf2bcf1b3dca 100644
+--- a/template/.qoder/skills/yss-implementation-contract-compiler/SKILL.md
++++ b/template/.qoder/skills/yss-implementation-contract-compiler/SKILL.md
+@@ -9,6 +9,8 @@ description: 将已批准的 DDD 战术设计、冻结契约和 capability 编
+ 
+ ## 输入
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ 必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、Tactical Design Contract、API / 数据 / UI 影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
+ 
+ 当 backend `scaffold_status=required` 时，还必须读取当前 `scaffold-architecture-decisions.yaml`。Harness Orchestrator 先基于领域复杂度给出 `domain-driven` / `layered-mvc` 推荐并取得用户逐项目确认，本体选择只作为子项目预填默认；编译器不得自行默认、提问或批准。确认 DDD 时绑定 `yss-ddd-scaffold-generator`，确认 MVC 时绑定 `yss-layered-mvc-scaffold-generator`，并把 decision ref / id / digest、Profile 与确定性模块闭包写入 scaffold contract schema v3。
+diff --git a/template/.qoder/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml b/template/.qoder/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+index 54576a84bf057cae20421567e8c616f523badaa8..a122f37c501a154ad79745ca2dbec4ca794e561b 100644
+--- a/template/.qoder/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
++++ b/template/.qoder/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+@@ -196,3 +196,10 @@ strategic_handoff_consumption:
+   stale_policy: latest-imported-source-digest-and-dependent-slices
+   unknown_dependency: block-all
+   compiler_must_not_approve: true
++
++frontend_delivery_readiness:
++  when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
++  source: docs/process/frontend-backend-delivery.md
++  verifier: scripts/verify-frontend-delivery
++  output_binding: frontend.delivery
++  inputs_verified_is_implementation_approval: false
+diff --git a/template/.qoder/skills/yss-ui/SKILL.md b/template/.qoder/skills/yss-ui/SKILL.md
+index da0ca36060e1d99b0b9bdb0bbd81883773d58526..77bbaa4952dcc2d5a64bc39d3991da2dde710320 100644
+--- a/template/.qoder/skills/yss-ui/SKILL.md
++++ b/template/.qoder/skills/yss-ui/SKILL.md
+@@ -9,6 +9,8 @@ description: Use when implementing or reviewing YSS Vue pages that combine YSS w
+ 
+ ## 1. 权威事实顺序
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ 发生冲突时按以下顺序决策：
+ 
+ 1. 冻结的项目工程基线和批准的 Slice Implementation Contract。
+diff --git a/template/.trae/skills/harness-orchestrator/SKILL.md b/template/.trae/skills/harness-orchestrator/SKILL.md
+index aa20e053ffe95755920284a73fbab8c8ad53b7fc..3b32b294083e2ba0b4fac65ac0537240b80182a8 100644
+--- a/template/.trae/skills/harness-orchestrator/SKILL.md
++++ b/template/.trae/skills/harness-orchestrator/SKILL.md
+@@ -16,6 +16,10 @@ description: 编排 DDD 战术设计到垂直切片交付的四角色 Harness Ag
+ - 不批准自己生成的专业资产，不把 实现合同编译器 草案当成 approved，也不以聊天消息代替证据。
+ - 只有当前版本 `Slice Implementation Contract` 满足就绪公式时，才能设置 `ready-for-agent`。
+ 
++## 前端联合接收
++
++专职前端 profile 或显式 `frontend_delivery` 输入，先执行 `docs/process/frontend-backend-delivery.md` 的实际校验；源战略与后端交付同时有效后才准备实现计划与合同，合同批准后再派发 Worker。接收、恢复与验收均重验，缺口回交权威方。通用研发 profile 未选择该路线时维持原行为。
++
+ ## 主流程
+ 
+ 1. 校验上游输入、仓库身份、实现仓库、影响面和当前合同版本。
+diff --git a/template/.trae/skills/yss-frontend-scaffold-generator/SKILL.md b/template/.trae/skills/yss-frontend-scaffold-generator/SKILL.md
+index 9d6c2a25e2097a243ff902426da6a9f2ff25e25c..c5aa7b06cf7dabbcfbe697dcf36e4c493b12c667 100644
+--- a/template/.trae/skills/yss-frontend-scaffold-generator/SKILL.md
++++ b/template/.trae/skills/yss-frontend-scaffold-generator/SKILL.md
+@@ -9,6 +9,8 @@ description: Use when creating a new YSS frontend micro-application from the sta
+ 
+ ## Template Source
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ ```text
+ repo: http://192.168.167.142:8081/Data-Middleground-Develop-Area/product-code/ai-frontend/yss-design/yss-frontend-template.git
+ branch: template
+diff --git a/template/.trae/skills/yss-implementation-contract-compiler/SKILL.md b/template/.trae/skills/yss-implementation-contract-compiler/SKILL.md
+index db3385e941728edf2b5f4029942cc6856c6f7428..1f3d9bf2e10dba99a235369d9d0cbf2bcf1b3dca 100644
+--- a/template/.trae/skills/yss-implementation-contract-compiler/SKILL.md
++++ b/template/.trae/skills/yss-implementation-contract-compiler/SKILL.md
+@@ -9,6 +9,8 @@ description: 将已批准的 DDD 战术设计、冻结契约和 capability 编
+ 
+ ## 输入
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ 必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、Tactical Design Contract、API / 数据 / UI 影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
+ 
+ 当 backend `scaffold_status=required` 时，还必须读取当前 `scaffold-architecture-decisions.yaml`。Harness Orchestrator 先基于领域复杂度给出 `domain-driven` / `layered-mvc` 推荐并取得用户逐项目确认，本体选择只作为子项目预填默认；编译器不得自行默认、提问或批准。确认 DDD 时绑定 `yss-ddd-scaffold-generator`，确认 MVC 时绑定 `yss-layered-mvc-scaffold-generator`，并把 decision ref / id / digest、Profile 与确定性模块闭包写入 scaffold contract schema v3。
+diff --git a/template/.trae/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml b/template/.trae/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+index 54576a84bf057cae20421567e8c616f523badaa8..a122f37c501a154ad79745ca2dbec4ca794e561b 100644
+--- a/template/.trae/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
++++ b/template/.trae/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml
+@@ -196,3 +196,10 @@ strategic_handoff_consumption:
+   stale_policy: latest-imported-source-digest-and-dependent-slices
+   unknown_dependency: block-all
+   compiler_must_not_approve: true
++
++frontend_delivery_readiness:
++  when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
++  source: docs/process/frontend-backend-delivery.md
++  verifier: scripts/verify-frontend-delivery
++  output_binding: frontend.delivery
++  inputs_verified_is_implementation_approval: false
+diff --git a/template/.trae/skills/yss-ui/SKILL.md b/template/.trae/skills/yss-ui/SKILL.md
+index da0ca36060e1d99b0b9bdb0bbd81883773d58526..77bbaa4952dcc2d5a64bc39d3991da2dde710320 100644
+--- a/template/.trae/skills/yss-ui/SKILL.md
++++ b/template/.trae/skills/yss-ui/SKILL.md
+@@ -9,6 +9,8 @@ description: Use when implementing or reviewing YSS Vue pages that combine YSS w
+ 
+ ## 1. 权威事实顺序
+ 
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
++
+ 发生冲突时按以下顺序决策：
+ 
+ 1. 冻结的项目工程基线和批准的 Slice Implementation Contract。
+diff --git a/template/docs/agents/digital-human-roles.yaml b/template/docs/agents/digital-human-roles.yaml
+index e3087cfdc7c71aaf1e93bde5e713a2b523f32926..89e7bc0976be3c910a7c7fd7a6baa417ab211fcd 100644
+--- a/template/docs/agents/digital-human-roles.yaml
++++ b/template/docs/agents/digital-human-roles.yaml
+@@ -150,7 +150,7 @@ gate_policy:
+   commercial_contract: biological-human
+   unlisted_kept_biological: [gate.high-risk-architecture-confirmed, gate.openapi-freeze-confirmed, gate.merge-approved]
+   orchestrator: [gate.slice-contract-approved, gate.slice-ready-for-agent]
+-  evidence_only: [gate.repository-identity-valid]
++  evidence_only: [gate.frontend-delivery-inputs-verified, gate.repository-identity-valid]
+   biological_human: [gate.high-risk-architecture-confirmed, gate.openapi-freeze-confirmed, gate.merge-approved]
+   digital_human_review:
+     - gate: gate.tactical-design-approved
+diff --git a/template/docs/process/lifecycle-artifact-map.md b/template/docs/process/lifecycle-artifact-map.md
+index 0a80391c94c5138e58e19acdcbc594b6bba07ebf..1357ad484aed60061a811f99276cb36558c3b2aa 100644
+--- a/template/docs/process/lifecycle-artifact-map.md
++++ b/template/docs/process/lifecycle-artifact-map.md
+@@ -23,6 +23,7 @@
+ 
+ | 稳定 ID | 门禁 | 所属阶段 | 触发条件 | 前置门禁 | 必须留下的证据 |
+ |---|---|---|---|---|---|
++| `gate.frontend-delivery-inputs-verified` | 前端联合输入核验 | `stage.slice-contract` | 专职前端 profile 或显式 frontend_delivery 绑定的任务启动、恢复、合同编译、实现和验证；实际执行 scripts/verify-frontend-delivery，输入就绪不等于实现获批。 | 无 | `evidence.fresh-verification` |
+ | `gate.repository-identity-valid` | 仓库身份有效 | `stage.harness-entry` | 每次进入 Harness。 | 无 | `evidence.repository-identity-check` |
+ | `gate.tactical-design-approved` | Tactical Design 批准 | `stage.tactical-design` | 存在领域行为、聚合、状态、不变量、一致性、事件、Gateway 或持久化影响。 | 无 | `evidence.tactical-design-review`、`evidence.approval-record` |
+ | `gate.high-risk-architecture-confirmed` | 高风险架构确认 | `stage.tactical-design` | 存在不可逆或跨边界高风险架构取舍。 | 无 | `evidence.architecture-decision`、`evidence.approval-record` |
+diff --git a/template/docs/process/lifecycle-registry-baseline.json b/template/docs/process/lifecycle-registry-baseline.json
+index e5dab29942db96f2613dd645e9f34237e4d7b73b..14b00e6cffa06794ee33929ec218b79382b4ad7e 100644
+--- a/template/docs/process/lifecycle-registry-baseline.json
++++ b/template/docs/process/lifecycle-registry-baseline.json
+@@ -26,6 +26,7 @@
+     "evidence.test-verification",
+     "evidence.upstream-input-check",
+     "gate.fresh-verification-passed",
++    "gate.frontend-delivery-inputs-verified",
+     "gate.high-risk-architecture-confirmed",
+     "gate.merge-approved",
+     "gate.openapi-freeze-confirmed",
+@@ -49,5 +50,5 @@
+     "work-unit.tactical-design",
+     "work-unit.verification"
+   ],
+-  "semantic_sha256": "e78da9613695f8c73c2bfcdb929049859256cddbaad862d8392c9d0e394145c6"
++  "semantic_sha256": "aeaa575a45e8e830a080bd98d8fc9e9ad37912709cc63ecfad2b1c85495c0386"
+ }
+diff --git a/template/docs/process/lifecycle-registry.yaml b/template/docs/process/lifecycle-registry.yaml
+index 37724753f8c0050ffd9a2197b6150537906c40d4..2e60d0e5ade8c79e27b98a24fe065668b76af991 100644
+--- a/template/docs/process/lifecycle-registry.yaml
++++ b/template/docs/process/lifecycle-registry.yaml
+@@ -68,6 +68,11 @@ evidence:
+     description: 高风险架构、OpenAPI Freeze 或合并裁决的可追溯记录。
+ 
+ gates:
++  - id: gate.frontend-delivery-inputs-verified
++    name: 前端联合输入核验
++    stage: stage.slice-contract
++    trigger: 专职前端 profile 或显式 frontend_delivery 绑定的任务启动、恢复、合同编译、实现和验证；实际执行 scripts/verify-frontend-delivery，输入就绪不等于实现获批。
++    evidence: [evidence.fresh-verification]
+   - id: gate.repository-identity-valid
+     name: 仓库身份有效
+     stage: stage.harness-entry
+diff --git a/template/docs/process/schemas/digital-human-task-package.schema.json b/template/docs/process/schemas/digital-human-task-package.schema.json
+index f0473b353896d7c645adbc51fd866eb8fa71b52c..f7e401e36f44af02c9ceffbb086599299ca575a1 100644
+--- a/template/docs/process/schemas/digital-human-task-package.schema.json
++++ b/template/docs/process/schemas/digital-human-task-package.schema.json
+@@ -6,6 +6,8 @@
+   "additionalProperties": false,
+   "required": ["schema_version", "task_id", "work_unit_id", "actor_id", "role_id", "runtime_id", "execution_state", "workflow_status", "skill_source", "contract", "inputs", "objective", "allowed_write_paths", "forbidden_actions", "expected_outputs", "expected_evidence_files", "verification_commands", "verification_results", "downstream_consumers", "convergence"],
+   "properties": {
++    "frontend_delivery": {"type":"object","additionalProperties":false,"required":["acceptance_ref"],"properties":{"acceptance_ref":{"type":"string","minLength":1},"digest":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"}}},
++    "slice_id": {"type":"string","minLength":1},
+     "schema_version": { "const": 1 },
+     "task_id": { "type": "string", "minLength": 1, "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$" },
+     "work_unit_id": { "type": "string", "minLength": 1, "pattern": "^work-unit\\.[a-z0-9][a-z0-9-]*$" },
+diff --git a/template/docs/process/schemas/frontend-implementation-evidence.schema.json b/template/docs/process/schemas/frontend-implementation-evidence.schema.json
+index 0a209ff233ecd7c13463807d956893026511dc88..a9f5582819ad0087f94751d248263eb68e230f2a 100644
+--- a/template/docs/process/schemas/frontend-implementation-evidence.schema.json
++++ b/template/docs/process/schemas/frontend-implementation-evidence.schema.json
+@@ -6,6 +6,9 @@
+   "additionalProperties": false,
+   "required": ["schema_version", "kind", "template", "status", "prototype_ref", "spec_ref", "visual_baseline", "route_and_page_inventory", "pnpm_commands"],
+   "properties": {
++    "frontend_delivery": {"type":"object","additionalProperties":false,"required":["acceptance_ref","digest"],"properties":{"acceptance_ref":{"type":"string","minLength":1},"digest":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"}}},
++    "slice_id": {"type":"string","minLength":1},
++    "slice_contract_ref": {"type":"string","minLength":1},
+     "schema_version": {"const": 2},
+     "kind": {"enum": ["plan", "verification"]},
+     "template": {"type": "boolean"},
+diff --git a/template/docs/process/template-verification-profiles.yaml b/template/docs/process/template-verification-profiles.yaml
+index 7fddd7b4729aa5c86663a3b600cdd9997224d961..9a307745f3f6a722aa73760d025bd2539cb76aa7 100644
+--- a/template/docs/process/template-verification-profiles.yaml
++++ b/template/docs/process/template-verification-profiles.yaml
+@@ -164,6 +164,8 @@ syntax_files:
+   - scripts/run-template-verification
+   - scripts/verify-template-verification-scenarios
+ routing:
++  - patterns: ["scripts/*backend-delivery*", "scripts/*frontend-delivery*", "scripts/lib/*backend-delivery*", "scripts/lib/*frontend-delivery*", "scripts/fixtures/backend-delivery/**", "docs/process/frontend-backend-delivery.md", "docs/process/schemas/backend-delivery*", "docs/process/schemas/frontend-delivery*"]
++    groups: [frontend-delivery]
+   - patterns: ["scripts/*strategic-handoff*", "scripts/lib/strategic-handoff*", "scripts/fixtures/strategic-handoff/**", "docs/process/strategic-handoff-package.md", "docs/process/schemas/strategic-handoff-*"]
+     groups: [strategic-handoff-package]
+   - patterns: [AGENTS.md, CONTEXT.md, yss-project.yaml, package.json, .gitignore, README.md, "docs/**"]
+@@ -191,6 +193,9 @@ routing:
+   - patterns: ["scripts/**"]
+     groups: [hygiene]
+ groups:
++  frontend-delivery:
++    commands:
++      - { run: "scripts/verify-frontend-delivery-scenarios" }
+   strategic-handoff-package:
+     commands:
+       - { run: "node --check scripts/lib/strategic-handoff.mjs" }
+diff --git a/template/scripts/lib/implementation-contract-compiler.mjs b/template/scripts/lib/implementation-contract-compiler.mjs
+index e8670b3c42be84d57e0c8009fb33728177ae66da..2332b7fef9c7c86b81f6c3273f04d605c1c2764b 100644
+--- a/template/scripts/lib/implementation-contract-compiler.mjs
++++ b/template/scripts/lib/implementation-contract-compiler.mjs
+@@ -1,3 +1,4 @@
++import { enforceHarnessSkillScope } from "./harness-execution-scope.mjs";
+ import { createHash } from "node:crypto";
+ import { readFileSync } from "node:fs";
+ import path from "node:path";
+@@ -5,6 +6,7 @@ import { parseDocument } from "../vendor/yaml.mjs";
+ import { DEFAULT_REGISTRY, loadSkillRegistry } from "./skill-registry.mjs";
+ import { ROOT } from "./skill-supply-chain.mjs";
+ import { architectureDigest, assertArchitectureAgreement, validateArchitectureIdentity } from "./backend-architecture.mjs";
++import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
+ 
+ export const DEFAULT_COMPILER_CONTRACT = path.join(
+   ROOT,
+@@ -61,9 +63,13 @@ export function compileImplementationContract({
+   registryDigest,
+   compilerContractDigest,
+   architecture_identity,
+-  architecture_evidence
++  architecture_evidence,
++  root = ROOT,
++  slice_id,
++  frontend_delivery
+ }) {
+   assertV2(registry, compilerContract);
++  const deliveryInput = enforceFrontendDelivery({ slice_id, frontend_delivery }, { root });
+   if (!Array.isArray(recipeIds) || !Array.isArray(requiredCapabilities) || !Array.isArray(conditions)) {
+     fail("recipeIds、requiredCapabilities 与 conditions 必须是数组");
+   }
+@@ -156,10 +162,12 @@ export function compileImplementationContract({
+     orderedSkills.push(skill);
+   };
+   for (const root of roots) visit(root);
++  enforceHarnessSkillScope(orderedSkills, registry, { root });
+ 
+   return {
+     schema_version: 2,
+     status: "draft",
++    ...(deliveryInput.result === "inputs-verified" ? { slice_id: deliveryInput.slice_id, frontend_delivery: { acceptance_ref: deliveryInput.acceptance_ref, digest: deliveryInput.acceptance_digest } } : {}),
+     ...(architecture_identity ? {
+       architecture_identity: structuredClone(architecture_identity),
+       architecture_identity_digest: architectureDigest(architecture_identity),
+@@ -189,11 +197,13 @@ export function compileDefaultImplementationContract(input = {}) {
+   });
+ }
+ 
+-export function evaluateContractFreshness(contract, { registry, compilerContract }) {
++export function evaluateContractFreshness(contract, { registry, compilerContract, root = ROOT }) {
+   assertV2(registry, compilerContract);
+   if (contract?.schema_version !== 2) fail("Slice Implementation Contract schema v1 已停止支持；必须重新编译 v2 合同");
+   const resolution = contract.resolution ?? contract;
+   const reasons = [];
++  try { enforceFrontendDelivery(contract, { root }); }
++  catch { reasons.push("frontend-delivery-stale-or-unavailable"); }
+   if (resolution.registry_digest !== digestDocument(registry)) reasons.push("registry-digest-changed");
+   if (resolution.compiler_contract_digest !== digestDocument(compilerContract)) reasons.push("compiler-contract-digest-changed");
+   if (resolution.architecture_identity) {
+diff --git a/template/scripts/lib/lifecycle-transition.mjs b/template/scripts/lib/lifecycle-transition.mjs
+index 8d5b65abd84641c7fbf63a00b708a389a6aeb172..49a1ba5944b8dcf21701e2036bc8d775f14d91c4 100644
+--- a/template/scripts/lib/lifecycle-transition.mjs
++++ b/template/scripts/lib/lifecycle-transition.mjs
+@@ -1,3 +1,4 @@
++import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
+ const IMPLEMENTATION_WORK_UNIT = "work-unit.slice-implementation";
+ const CONTRACT_WORK_UNIT = "work-unit.slice-contract";
+ const VERIFICATION_WORK_UNIT = "work-unit.verification";
+@@ -43,7 +44,11 @@ const blockedResult = (signals, missing = [], evidenceRefs = []) => ({
+   next_work_unit: null,
+ });
+ 
+-export function validateNextRoute(currentWorkUnit, nextRoute) {
++export function validateNextRoute(currentWorkUnit, nextRoute, state, options = {}) {
++  if (["work-unit.tactical-design", CONTRACT_WORK_UNIT, IMPLEMENTATION_WORK_UNIT, VERIFICATION_WORK_UNIT].includes(nextRoute)) {
++    try { enforceFrontendDelivery(state, { root: options.root, phase: nextRoute === IMPLEMENTATION_WORK_UNIT ? "implementation" : "inputs" }); }
++    catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
++  }
+   const routes = NEXT_ROUTES[currentWorkUnit];
+   if (!routes) return blockedResult([BLOCKING_SIGNALS.invalidRoute], ["known_current_work_unit"]);
+   if (nextRoute === null && routes.length === 0) return allowedResult();
+@@ -53,7 +58,9 @@ export function validateNextRoute(currentWorkUnit, nextRoute) {
+   return allowedResult();
+ }
+ 
+-export function validateSliceContractReadiness(state) {
++export function validateSliceContractReadiness(state, options = {}) {
++  try { enforceFrontendDelivery(state, { root: options.root, phase: "implementation" }); }
++  catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
+   const contract = state?.slice_contract || state;
+   const required = [
+     "upstream_inputs_current_and_approved",
+@@ -83,8 +90,8 @@ export function validateSliceContractReadiness(state) {
+     : blockedResult(signals, [...missing, ...missingSections.map((section) => "section:" + section)], contract.evidence_refs || []);
+ }
+ 
+-export function validateImplementationEntry(state) {
+-  const readiness = validateSliceContractReadiness(state?.slice_contract || state);
++export function validateImplementationEntry(state, options = {}) {
++  const readiness = validateSliceContractReadiness(state, options);
+   if (readiness.result === "blocked") return readiness;
+   if (state?.predecessor_work_unit !== CONTRACT_WORK_UNIT) {
+     return blockedResult([BLOCKING_SIGNALS.wrongPredecessor], ["predecessor_work_unit=" + CONTRACT_WORK_UNIT], readiness.evidence_refs);
+diff --git a/template/scripts/lib/strategic-handoff-consumption.mjs b/template/scripts/lib/strategic-handoff-consumption.mjs
+index 0bcad60ed959773030f33d88b73edcb86b2a864b..f8108f0a782627d094304c13f9648722e61e88ea 100644
+--- a/template/scripts/lib/strategic-handoff-consumption.mjs
++++ b/template/scripts/lib/strategic-handoff-consumption.mjs
+@@ -11,9 +11,10 @@ const strategyBasis=value=>({
+   ...without(value,['domain_version','approval','rule_catalog','scenarios','invariants']),
+   invariants:(value.invariants||[]).map(item=>without(item,['statement'])),
+ });
+-export async function verifyConsumption(data,{root=process.cwd(),sliceRef}={}) {
++export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consumer='tactical'}={}) {
+   project(root);
+-  if (sliceRef) ensure(data.status === "approved", "切片只能消费 approved 战术合同");
++  ensure(['tactical','frontend'].includes(consumer),'未知战略消费者');
++  if (sliceRef) ensure(data.status === (consumer==='frontend'?'accepted':'approved'), consumer==='frontend'?'前端接收记录尚未 accepted':'切片只能消费 approved 战术合同');
+   const binding=data.strategic_handoff;
+   ensure(binding && present(binding.import_receipt_ref) && present(binding.context_reconciliation_ref),'缺少战略交接导入收据与目标对账引用');
+   const receipt=read(safe(root,binding.import_receipt_ref));
+@@ -44,15 +45,21 @@ export async function verifyConsumption(data,{root=process.cwd(),sliceRef}={}) {
+       const catalogs=['aggregate_catalog','entity_catalog','value_object_catalog','behavior_catalog','invariant_catalog','state_transition_catalog','domain_event_catalog','gateway_catalog'];
+       const ids=new Set(catalogs.flatMap(k=>(data[k]||[]).flatMap(x=>Object.entries(x).filter(([k])=>k.endsWith('_id')).map(([,v])=>v))));
+       const seams=new Map((data.test_seams||[]).map(x=>[x.seam_id,x]));
++      const cases=new Map((data.frontend_cases||[]).map(x=>[x.case_id,x]));
+       for(const[id,source]of known){
+         const row=rows.get(id);
+         if(!row){mark(id,'missing-mapping');continue;}
+         ensure(['known','unknown'].includes(row.dependency_status) && Array.isArray(row.dependent_slice_refs),'缺少切片依赖判定');
+         if(row.source_digest!==source.source_digest){mark(id,'stale-source',row);continue;}
+-        if(row.disposition==='implemented'){
+-          ensure(list(row.tactical_refs)&&row.tactical_refs.every(x=>ids.has(x)),`战术落点悬空: ${id}`);
+-          ensure(list(row.test_seam_refs)&&row.test_seam_refs.every(x=>seams.has(x)&&row.tactical_refs.includes(seams.get(x).subject_ref)),`测试 seam 未关联战术落点: ${id}`);
+-          if(id.startsWith('scenario.'))ensure(['success','failure'].every(outcome=>(row.scenario_tests||[]).some(x=>x.outcome===outcome&&row.test_seam_refs.includes(x.seam_ref))),`关键场景缺少成功/失败测试: ${id}`);
++        if(row.disposition===(consumer==='frontend'?'mapped':'implemented')){
++          if(consumer==='frontend'){
++            ensure(list(row.frontend_case_refs)&&row.frontend_case_refs.every(ref=>cases.has(ref)&&cases.get(ref).source_ids.includes(id)),`前端用例未承接源规则/场景: ${id}`);
++            if(id.startsWith('scenario.'))ensure(['success','failure'].every(outcome=>row.frontend_case_refs.some(ref=>cases.get(ref).outcome===outcome)),`前端关键场景缺少成功/失败用例: ${id}`);
++          }else{
++            ensure(list(row.tactical_refs)&&row.tactical_refs.every(x=>ids.has(x)),`战术落点悬空: ${id}`);
++            ensure(list(row.test_seam_refs)&&row.test_seam_refs.every(x=>seams.has(x)&&row.tactical_refs.includes(seams.get(x).subject_ref)),`测试 seam 未关联战术落点: ${id}`);
++            if(id.startsWith('scenario.'))ensure(['success','failure'].every(outcome=>(row.scenario_tests||[]).some(x=>x.outcome===outcome&&row.test_seam_refs.includes(x.seam_ref))),`关键场景缺少成功/失败测试: ${id}`);
++          }
+           ensure(list(row.evidence_refs),`缺少落实证据: ${id}`);row.evidence_refs.forEach(ref=>safe(root,ref));
+         }else if(row.disposition==='deferred'){
+           for(const key of ['reason','risk','owner','followup_ticket_ref','verification_plan','target_version'])ensure(present(row[key]),`延期缺少 ${key}: ${id}`);
+@@ -70,7 +77,7 @@ export async function verifyConsumption(data,{root=process.cwd(),sliceRef}={}) {
+         all=true;issues.push({source_id:'strategic-design-basis',reason:'upstream-design-stale'});
+       }
+       const blockedHere=all||(sliceRef?blocked.has(sliceRef):issues.length>0);
+-      return {result:blockedHere?'blocked':'verified',bundle_digest:current.manifest.bundle_digest,consumed_bundle_digest:receipt.bundle_digest,tactical_digest:digest(data),scope:sliceRef||'whole-tactical-design',coverage_complete:[...known.keys()].every(id=>rows.has(id)),block_all:all,blocked_slice_refs:[...blocked].sort(),issues};
++      return {result:blockedHere?'blocked':'verified',bundle_digest:current.manifest.bundle_digest,consumed_bundle_digest:receipt.bundle_digest,...(consumer==='frontend'?{frontend_acceptance_digest:digest(data)}:{tactical_digest:digest(data)}),scope:sliceRef||`whole-${consumer}-design`,coverage_complete:[...known.keys()].every(id=>rows.has(id)),block_all:all,blocked_slice_refs:[...blocked].sort(),issues};
+     });
+   });
+ }
+diff --git a/template/scripts/lib/strategic-handoff.mjs b/template/scripts/lib/strategic-handoff.mjs
+index b8214590d40d21bc729023872d841ddea68a779b..69923e182a31e31132433e8821d90441a3f64ce0 100644
+--- a/template/scripts/lib/strategic-handoff.mjs
++++ b/template/scripts/lib/strategic-handoff.mjs
+@@ -13,7 +13,7 @@ const own = (a,b) => JSON.stringify(canonical(a)) === JSON.stringify(canonical(b
+ const nonempty = x => typeof x === 'string' && x.trim();
+ const bytesDigest = (bytes, kind) => kind === 'canonical-json' ? digest(parse(bytes)) : kind === 'sha256-bytes' ? hash(bytes) : (() => { throw new TypeError(`未知摘要算法: ${kind}`); })();
+ 
+-async function sourceApproval(record, roles, root) {
++export async function sourceApproval(record, roles, root) {
+   const options={rolesDoc:roles,requireApproved:true,root,read:ref=>readFileSync(safe(root,path.relative(root,ref).split(path.sep).join('/')))};
+   if (roles.user_decision_policy.gates.includes(record.gate_id)) {
+     ensure(existsSync(path.join(ROOT,'scripts/lib/user-decision.mjs')), '接收工具不支持源用户决定策略，请升级工具后验包');
+diff --git a/template/scripts/lib/task-package.mjs b/template/scripts/lib/task-package.mjs
+index 11686122286406028f307856d43fc261146b23b6..ed66abd093b508b67153869a4181121f60612749 100644
+--- a/template/scripts/lib/task-package.mjs
++++ b/template/scripts/lib/task-package.mjs
+@@ -1,3 +1,5 @@
++import { enforceHarnessTaskScope } from "./harness-execution-scope.mjs";
++import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
+ import { existsSync, readFileSync } from "node:fs";
+ import path from "node:path";
+ import { parseDocument } from "../vendor/yaml.mjs";
+@@ -84,7 +86,7 @@ function validateCommon(value, registry, lifecycle) {
+     }
+     if (value.result.result_schema !== "workflow-execution-result-v1") fail("result_schema 必须为 workflow-execution-result-v1");
+     if (value.result.work_unit !== value.work_unit_id) fail("Workflow Execution Result.work_unit 必须与任务包 work_unit_id 一致");
+-    const routeResult = validateNextRoute(value.result.work_unit, value.result.next_route);
++    const routeResult = validateNextRoute(value.result.work_unit, value.result.next_route, value);
+     if (routeResult.result !== "allowed") fail(`Workflow Execution Result next_route 非法: ${routeResult.blocking_signals.join(", ")}`);
+     value.expected_evidence_files.forEach((ref) => assertReadableEvidenceRef(ref, "expected_evidence_files"));
+     if (value.verification_results.length === 0) fail("已完成任务必须包含 verification_results");
+@@ -160,6 +162,11 @@ function validateContract(value, registry, lifecycle) {
+ 
+ export function validateTaskPackage(value, { rolesDoc, lifecycleDoc } = {}) {
+   validateTaskPackageSchema(value);
++  enforceHarnessTaskScope(value);
++  const intake = value.execution_state === "Explorer" && value.allowed_write_paths.length === 0 && ["work-unit.entry-triage", "work-unit.harness-entry"].includes(value.work_unit_id);
++  if (!intake) {
++    enforceFrontendDelivery(value, { phase: value.contract.kind === "slice-implementation" ? "implementation" : "inputs" });
++  }
+   const registry = rolesDoc || loadDigitalHumanRoles();
+   const lifecycle = lifecycleDoc || loadRegistry();
+   validateCommon(value, registry, lifecycle);
+diff --git a/template/scripts/verify-frontend-implementation-evidence b/template/scripts/verify-frontend-implementation-evidence
+index be058b4b5d3203be1a2592935ffc95b1c4ab3873..3a019586a7549aefe4d3e47665de0313f6cf2f74 100755
+--- a/template/scripts/verify-frontend-implementation-evidence
++++ b/template/scripts/verify-frontend-implementation-evidence
+@@ -6,6 +6,7 @@ import { parseArgs } from "node:util";
+ import { fileURLToPath } from "node:url";
+ import { parseDocument } from "./vendor/yaml.mjs";
+ import { validateVisualBaseline } from "../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs";
++import { enforceFrontendDelivery } from "./lib/frontend-delivery-boundary.mjs";
+ 
+ const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+ const schemaPath = path.join(repoRoot, "docs/process/schemas/frontend-implementation-evidence.schema.json");
+@@ -29,6 +30,7 @@ try {
+   const document = parseDocument(readFileSync(path.resolve(positionals[0]), "utf8"), { maxAliasCount: 0, uniqueKeys: true });
+   if (document.errors.length) throw new TypeError(document.errors[0].message);
+   const value = document.toJS({ maxAliasCount: 0 });
++  if (!values["allow-template"]) enforceFrontendDelivery(value, { root, phase: value.kind === "verification" ? "implementation" : "inputs" });
+   if (value.schema_version === 1 && !values["allow-template"]) throw new TypeError("migration-required: frontend implementation evidence v1 是只读历史资产；在途 UI 工作必须升级 v2 并绑定 Visual Baseline case_id");
+   const result = spawnSync("python3", ["-c", validator, schemaPath], { cwd: repoRoot, encoding: "utf8", input: JSON.stringify(value) });
+   if (result.status !== 0) throw new TypeError(`${result.stdout}${result.stderr}`.trim());
+diff --git a/template/skills-lock.json b/template/skills-lock.json
+index 0f61e4166e3aac4766d06ae17d7d4a294126160c..a2e9806d08841ac0e6c38cdd543f19375f7247a8 100644
+--- a/template/skills-lock.json
++++ b/template/skills-lock.json
+@@ -414,7 +414,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/harness-orchestrator/SKILL.md",
+-        "effectiveHash": "9dd9b2496da3e1acf8030d14b82250b4652f534a9834bba9f93e8a656f495520",
++        "effectiveHash": "d934837b6f299f69575c516403d3d42bdd7b93cbf5032484e604f85849abf1b5",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1310,7 +1310,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-frontend-scaffold-generator/SKILL.md",
+-        "effectiveHash": "d357895f684df10acb93a8cbc2b6390ab5fc25f3fdbeff66ece60345d22e6e85",
++        "effectiveHash": "83fd30bd436269eec909fa79a300d6c496ebb1450af3f5c4ee191d96025d7d46",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1340,7 +1340,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
+-        "effectiveHash": "4de6d9d27f4e00ecffa53f20bc365673745306440de03080f3db88eef7f3adbf",
++        "effectiveHash": "50acce24e846964a3d5d809586bb6f2dc57b70fe835a0383c8cac181da19fdad",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -1550,7 +1550,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-ui/SKILL.md",
+-        "effectiveHash": "9ea919bf66e7e0e3a417f24af650cae14b9b7e74abc20ab568924d35a7337442",
++        "effectiveHash": "d395673736da96e4fc574ce75a9a85f9b89aaeaafa954a8a701684d4718b9ff7",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+diff --git a/tests/sync-template.test.js b/tests/sync-template.test.js
+index 26235abd86e37ce40433e87a5bd5fa74dc7ea40b..056b83d67395c40cc22d9e006587c472bf2a8518 100644
+--- a/tests/sync-template.test.js
++++ b/tests/sync-template.test.js
+@@ -163,10 +163,9 @@ function createCliRunner() {
+   const runnerRoot = createSyncRunner();
+   fs.mkdirSync(path.join(runnerRoot, "src"), { recursive: true });
+   fs.mkdirSync(path.join(runnerRoot, "bin"), { recursive: true });
++  fs.cpSync(path.join(repoRoot, "src"), path.join(runnerRoot, "src"), { recursive: true });
+   for (const relativePath of [
+     "package.json",
+-    "src/cli.js",
+-    "src/self-update.js",
+     "bin/create-yss-harness-dev.js",
+   ]) {
+     fs.mkdirSync(path.dirname(path.join(runnerRoot, relativePath)), {
+@@ -241,6 +240,10 @@ test("sync expands internal directory projections into the bundled template", ()
+ 
+ test("sync snapshot remains valid when packaging and running use different locales", () => {
+   const fixtureRoot = createTemplateFixture();
++  // This fixture executes the real CLI, including its bundled YAML identity parser.
++  fs.copyFileSync(path.join(repoRoot, "template/scripts/vendor/yaml.mjs"), path.join(fixtureRoot, "scripts/vendor/yaml.mjs"));
++  fs.mkdirSync(path.join(fixtureRoot, "docs/process"), { recursive: true });
++  fs.writeFileSync(path.join(fixtureRoot, "docs/process/harness-profile.yaml"), "schema_version: 1\nprofile_id: harness.dev-agent-slice\n");
+   const localizedDocsRoot = path.join(fixtureRoot, "docs/user-guide");
+   fs.mkdirSync(localizedDocsRoot, { recursive: true });
+   for (const fileName of [

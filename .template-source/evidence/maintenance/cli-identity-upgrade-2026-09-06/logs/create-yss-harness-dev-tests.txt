@@ -1,0 +1,138 @@
+✔ frontend identity prevents another CLI from planning takeover, even with force (314.085292ms)
+✔ profile alone cannot bypass family protection by omitting metadata (246.604458ms)
+✔ all supported operations reject create-yss-spec before dry-run or force writes (1496.112167ms)
+✔ all supported operations reject create-yss-harness-design before dry-run or force writes (1359.269875ms)
+✔ all supported operations reject backend before dry-run or force writes (1291.709ms)
+✔ all supported operations reject frontend before dry-run or force writes (1316.14325ms)
+✔ mixed family markers are not repaired or selected (240.081625ms)
+✔ own metadata rejects malformed JSON (231.624208ms)
+✔ own metadata rejects array (244.3945ms)
+✔ own metadata rejects null (238.199875ms)
+✔ own metadata rejects wrong package (242.890375ms)
+✔ own metadata rejects unknown schema (260.854208ms)
+✔ own metadata rejects null schema (263.571084ms)
+✔ own metadata rejects wrong source (268.36025ms)
+✔ own metadata rejects wrong profile (240.133208ms)
+✔ own metadata rejects snake case wrong profile (241.423583ms)
+✔ own metadata rejects duplicate keys (236.927458ms)
+✔ profile rejects unknown profile (236.818583ms)
+✔ profile rejects missing profile (234.994666ms)
+✔ profile rejects invalid YAML (231.024042ms)
+✔ profile rejects duplicate profile (232.063708ms)
+✔ own metadata symlink is rejected without following or overwriting it (231.311791ms)
+✔ profile parent symlink is rejected before reading target content (237.264125ms)
+✔ help and version work inside foreign projects without mutation (53.105709ms)
+✔ unmanaged projects can still preview initialization (952.373708ms)
+✔ matching profile supports quoted YAML and identity fields (982.391125ms)
+✔ interactive init generates a template instance in an empty directory (1966.248541ms)
+✔ sync preserves the init distribution boundary (4858.07475ms)
+✔ attach verifies the generated template under an ASCII locale (35302.365084ms)
+✔ init fails closed for unsupported template identity (2996.081125ms)
+✔ dry-run previews the plan without writing or deleting files (1527.107667ms)
+✔ non-empty target requires --force, and --git-init initializes a repository (2165.191875ms)
+✔ manifest-driven optional flags affect rendered output and example docs (1680.382ms)
+✔ bundled template snapshot excludes untracked source files (1691.962167ms)
+✔ sync rejects projects without template metadata (229.119167ms)
+✔ sync updates unchanged managed files and restores missing managed files (4169.869958ms)
+✔ sync dry-run previews changes without mutating files or metadata (3780.325ms)
+✔ legacy attach dry-run excludes sync rollout docs from template additions (1540.313959ms)
+✔ sync skips locally modified managed files and reports removed managed files (4358.471084ms)
+✔ attach dry-run previews an arbitrary existing project without writing or deleting .git (1474.362625ms)
+✔ attach applies management assets while preserving runtime files and .git (35221.842916ms)
+✔ attach requires --force for root conflicts and keeps an external backup (36641.490833ms)
+✔ attach rejects an existing metadata file and directs the user to sync (206.212917ms)
+✔ attach blocks flat legacy tickets as unsafe even with force (1455.388167ms)
+✔ attach migrates a known legacy template path before writing metadata (46627.429458ms)
+✔ attach migrates the legacy issues directory into tickets (36078.155708ms)
+✔ attach blocks a conflicting legacy issues migration before writing (1444.559458ms)
+✔ sync force overwrites a managed conflict and retains an external backup (4271.856041ms)
+✔ sync force does not overwrite a file outside the managed baseline (4221.966791ms)
+✔ sync converts a valid template-source identity to project-instance (4252.202333ms)
+✔ attach blocks intermediate symlinks before writing outside the project (204.555208ms)
+✔ init fails closed on an empty gitlink even with --force (625.060208ms)
+✔ attach fails closed on an empty gitlink even with --force (624.576ms)
+✔ init fails closed on a detached HEAD gitlink worktree (794.602959ms)
+✔ attach on a harness with gitlink does not rewrite .gitmodules or the mount (37811.164792ms)
+✔ help flags print usage, commands, options, examples, and learn more (77.969542ms)
+✔ attach, sync, and update help flags print the same usage without requiring a target (103.557208ms)
+✔ version flags print the package version and exit (78.959167ms)
+✔ subcommand version flags print the package version without requiring a target (25.418625ms)
+✔ unknown arguments still fail closed (26.089875ms)
+✔ attach and init reject create-yss-spec family metadata (479.894667ms)
+✔ compareSemver compares major.minor.patch and ignores prerelease suffix (0.675667ms)
+✔ parseUpdateArgs accepts dry-run and force and rejects unknown flags (0.362833ms)
+✔ detectInstallKind identifies npx, source, global, and local installs (0.842208ms)
+✔ already latest version does not install (0.346417ms)
+✔ newer version on a global install runs npm install -g (0.321917ms)
+✔ newer version on a local install runs npm install in the project root (0.154709ms)
+✔ dry-run previews the install command without installing (0.158875ms)
+✔ force reinstalls when the version is already latest (0.132708ms)
+✔ does not downgrade when current version is newer than latest (0.284125ms)
+✔ source checkout and npx report advice without installing (0.36375ms)
+✔ npm view failure is fail closed and does not install (0.145291ms)
+✔ npm install failure is fail closed (0.161917ms)
+✔ update and upgrade aliases check npm and do not overwrite the source tree (101.377208ms)
+✔ update unknown flags still fail closed (25.931417ms)
+✔ sync expands internal directory projections into the bundled template (497.836125ms)
+✖ sync snapshot remains valid when packaging and running use different locales (607.777291ms)
+✔ sync encodes npm-ignored dotfiles and records their logical paths (566.995875ms)
+✔ sync recopies drifted shared skill projections from the canonical tree (561.949833ms)
+✔ sync refreshes skills-lock.json using logical dotfile names before npm encoding (584.657625ms)
+✔ sync refreshes bundled skills-lock.json after copying template files (575.776208ms)
+✔ sync rejects external symlinks without replacing the existing snapshot (453.168417ms)
+ℹ tests 82
+ℹ suites 0
+ℹ pass 81
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 295263.326959
+
+✖ failing tests:
+
+test at tests/sync-template.test.js:242:1
+✖ sync snapshot remains valid when packaging and running use different locales (607.777291ms)
+  AssertionError [ERR_ASSERTION]: node:internal/modules/cjs/loader:1408
+    throw err;
+    ^
+  
+  Error: Cannot find module './family-identity'
+  Require stack:
+  - /private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-sync-runner-aEQpsJ/src/cli.js
+  - /private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-sync-runner-aEQpsJ/bin/create-yss-harness-dev.js
+      at Function._resolveFilename (node:internal/modules/cjs/loader:1405:15)
+      at defaultResolveImpl (node:internal/modules/cjs/loader:1061:19)
+      at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1066:22)
+      at Function._load (node:internal/modules/cjs/loader:1215:37)
+      at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+      at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+      at Module.require (node:internal/modules/cjs/loader:1491:12)
+      at require (node:internal/modules/helpers:135:16)
+      at Object.<anonymous> (/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-sync-runner-aEQpsJ/src/cli.js:2:31)
+      at Module._compile (node:internal/modules/cjs/loader:1734:14) {
+    code: 'MODULE_NOT_FOUND',
+    requireStack: [
+      '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-sync-runner-aEQpsJ/src/cli.js',
+      '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-sync-runner-aEQpsJ/bin/create-yss-harness-dev.js'
+    ]
+  }
+  
+  Node.js v23.9.0
+  
+  
+  1 !== 0
+  
+      at TestContext.<anonymous> (/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-harness-dev/tests/sync-template.test.js:288:10)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+      at Test.postRun (node:internal/test_runner/test:1173:19)
+      at Test.run (node:internal/test_runner/test:1101:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:297:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 0,
+    operator: 'strictEqual'
+  }

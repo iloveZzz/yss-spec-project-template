@@ -1,0 +1,41 @@
+✔ frontend identity prevents another CLI from planning takeover, even with force (218.82225ms)
+✔ profile alone cannot bypass family protection by omitting metadata (77.512459ms)
+✔ all supported operations reject create-yss-spec before dry-run or force writes (148.18475ms)
+✔ all supported operations reject create-yss-harness-dev before dry-run or force writes (154.692334ms)
+✔ all supported operations reject backend before dry-run or force writes (150.769792ms)
+✔ all supported operations reject frontend before dry-run or force writes (143.055417ms)
+✔ mixed family markers are not repaired or selected (82.264875ms)
+✔ own metadata rejects malformed JSON (76.231375ms)
+✔ own metadata rejects array (82.37225ms)
+✔ own metadata rejects null (77.408959ms)
+✔ own metadata rejects wrong package (73.644791ms)
+✔ own metadata rejects unknown schema (77.684458ms)
+✔ own metadata rejects null schema (81.354958ms)
+✔ own metadata rejects wrong source (79.762916ms)
+✔ own metadata rejects wrong profile (79.051375ms)
+✔ own metadata rejects snake case wrong profile (81.412209ms)
+✔ own metadata rejects duplicate keys (75.631ms)
+✔ profile rejects unknown profile (77.888791ms)
+✔ profile rejects missing profile (80.050083ms)
+✔ profile rejects invalid YAML (79.822833ms)
+✔ profile rejects duplicate profile (76.055375ms)
+✔ own metadata symlink is rejected without following or overwriting it (77.937417ms)
+✔ profile parent symlink is rejected before reading target content (75.343083ms)
+✔ help and version work inside foreign projects without mutation (53.496417ms)
+✔ unmanaged projects can still preview initialization (115.248541ms)
+✔ matching profile supports quoted YAML and identity fields (118.781333ms)
+✔ stable template commit produces byte-identical snapshot metadata (11124.658584ms)
+✔ help and version do not write files (53.158375ms)
+✔ v1 rejects attach and sync (25.804833ms)
+✔ update and upgrade query npm without overwriting a source checkout (102.685959ms)
+✔ dry-run does not create the target directory (119.622209ms)
+✔ non-empty target is rejected without --force (76.188541ms)
+✔ init generates a strategic design project-instance (20716.7695ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 34807.787041

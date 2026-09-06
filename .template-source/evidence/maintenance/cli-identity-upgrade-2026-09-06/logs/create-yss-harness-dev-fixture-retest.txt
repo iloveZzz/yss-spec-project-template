@@ -1,0 +1,15 @@
+✔ sync expands internal directory projections into the bundled template (476.828292ms)
+✔ sync snapshot remains valid when packaging and running use different locales (571.530416ms)
+✔ sync encodes npm-ignored dotfiles and records their logical paths (528.544625ms)
+✔ sync recopies drifted shared skill projections from the canonical tree (508.359083ms)
+✔ sync refreshes skills-lock.json using logical dotfile names before npm encoding (534.218834ms)
+✔ sync refreshes bundled skills-lock.json after copying template files (537.7135ms)
+✔ sync rejects external symlinks without replacing the existing snapshot (408.499458ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3598.871166

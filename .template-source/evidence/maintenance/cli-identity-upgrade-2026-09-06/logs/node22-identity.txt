@@ -1,0 +1,472 @@
+TAP version 13
+# Subtest: frontend identity prevents another CLI from planning takeover, even with force
+ok 1 - frontend identity prevents another CLI from planning takeover, even with force
+  ---
+  duration_ms: 220.825333
+  type: 'test'
+  ...
+# Subtest: profile alone cannot bypass family protection by omitting metadata
+ok 2 - profile alone cannot bypass family protection by omitting metadata
+  ---
+  duration_ms: 259.879041
+  type: 'test'
+  ...
+# Subtest: all supported operations reject create-yss-spec before dry-run or force writes
+ok 3 - all supported operations reject create-yss-spec before dry-run or force writes
+  ---
+  duration_ms: 1418.062875
+  type: 'test'
+  ...
+# Subtest: all supported operations reject create-yss-harness-design before dry-run or force writes
+ok 4 - all supported operations reject create-yss-harness-design before dry-run or force writes
+  ---
+  duration_ms: 1405.600417
+  type: 'test'
+  ...
+# Subtest: all supported operations reject backend before dry-run or force writes
+ok 5 - all supported operations reject backend before dry-run or force writes
+  ---
+  duration_ms: 1409.534833
+  type: 'test'
+  ...
+# Subtest: all supported operations reject frontend before dry-run or force writes
+ok 6 - all supported operations reject frontend before dry-run or force writes
+  ---
+  duration_ms: 1477.668834
+  type: 'test'
+  ...
+# Subtest: mixed family markers are not repaired or selected
+ok 7 - mixed family markers are not repaired or selected
+  ---
+  duration_ms: 259.131875
+  type: 'test'
+  ...
+# Subtest: own metadata rejects malformed JSON
+ok 8 - own metadata rejects malformed JSON
+  ---
+  duration_ms: 260.739167
+  type: 'test'
+  ...
+# Subtest: own metadata rejects array
+ok 9 - own metadata rejects array
+  ---
+  duration_ms: 259.246708
+  type: 'test'
+  ...
+# Subtest: own metadata rejects null
+ok 10 - own metadata rejects null
+  ---
+  duration_ms: 261.414083
+  type: 'test'
+  ...
+# Subtest: own metadata rejects wrong package
+ok 11 - own metadata rejects wrong package
+  ---
+  duration_ms: 261.12675
+  type: 'test'
+  ...
+# Subtest: own metadata rejects unknown schema
+ok 12 - own metadata rejects unknown schema
+  ---
+  duration_ms: 259.46825
+  type: 'test'
+  ...
+# Subtest: own metadata rejects null schema
+ok 13 - own metadata rejects null schema
+  ---
+  duration_ms: 265.244458
+  type: 'test'
+  ...
+# Subtest: own metadata rejects wrong source
+ok 14 - own metadata rejects wrong source
+  ---
+  duration_ms: 264.657
+  type: 'test'
+  ...
+# Subtest: own metadata rejects wrong profile
+ok 15 - own metadata rejects wrong profile
+  ---
+  duration_ms: 266.179041
+  type: 'test'
+  ...
+# Subtest: own metadata rejects snake case wrong profile
+ok 16 - own metadata rejects snake case wrong profile
+  ---
+  duration_ms: 265.29725
+  type: 'test'
+  ...
+# Subtest: own metadata rejects duplicate keys
+ok 17 - own metadata rejects duplicate keys
+  ---
+  duration_ms: 262.667542
+  type: 'test'
+  ...
+# Subtest: profile rejects unknown profile
+ok 18 - profile rejects unknown profile
+  ---
+  duration_ms: 262.446875
+  type: 'test'
+  ...
+# Subtest: profile rejects missing profile
+ok 19 - profile rejects missing profile
+  ---
+  duration_ms: 265.502584
+  type: 'test'
+  ...
+# Subtest: profile rejects invalid YAML
+ok 20 - profile rejects invalid YAML
+  ---
+  duration_ms: 264.186208
+  type: 'test'
+  ...
+# Subtest: profile rejects duplicate profile
+ok 21 - profile rejects duplicate profile
+  ---
+  duration_ms: 258.212917
+  type: 'test'
+  ...
+# Subtest: own metadata symlink is rejected without following or overwriting it
+ok 22 - own metadata symlink is rejected without following or overwriting it
+  ---
+  duration_ms: 237.990625
+  type: 'test'
+  ...
+# Subtest: profile parent symlink is rejected before reading target content
+ok 23 - profile parent symlink is rejected before reading target content
+  ---
+  duration_ms: 266.050416
+  type: 'test'
+  ...
+# Subtest: help and version work inside foreign projects without mutation
+ok 24 - help and version work inside foreign projects without mutation
+  ---
+  duration_ms: 57.471334
+  type: 'test'
+  ...
+# Subtest: unmanaged projects can still preview initialization
+ok 25 - unmanaged projects can still preview initialization
+  ---
+  duration_ms: 1004.165917
+  type: 'test'
+  ...
+# Subtest: matching profile supports quoted YAML and identity fields
+ok 26 - matching profile supports quoted YAML and identity fields
+  ---
+  duration_ms: 983.146541
+  type: 'test'
+  ...
+# Subtest: frontend identity prevents another CLI from planning takeover, even with force
+ok 27 - frontend identity prevents another CLI from planning takeover, even with force
+  ---
+  duration_ms: 230.371833
+  type: 'test'
+  ...
+# Subtest: profile alone cannot bypass family protection by omitting metadata
+ok 28 - profile alone cannot bypass family protection by omitting metadata
+  ---
+  duration_ms: 225.170708
+  type: 'test'
+  ...
+# Subtest: all supported operations reject create-yss-harness-design before dry-run or force writes
+ok 29 - all supported operations reject create-yss-harness-design before dry-run or force writes
+  ---
+  duration_ms: 1336.233709
+  type: 'test'
+  ...
+# Subtest: all supported operations reject create-yss-harness-dev before dry-run or force writes
+ok 30 - all supported operations reject create-yss-harness-dev before dry-run or force writes
+  ---
+  duration_ms: 1376.586292
+  type: 'test'
+  ...
+# Subtest: all supported operations reject backend before dry-run or force writes
+ok 31 - all supported operations reject backend before dry-run or force writes
+  ---
+  duration_ms: 1389.089833
+  type: 'test'
+  ...
+# Subtest: all supported operations reject frontend before dry-run or force writes
+ok 32 - all supported operations reject frontend before dry-run or force writes
+  ---
+  duration_ms: 1484.989417
+  type: 'test'
+  ...
+# Subtest: mixed family markers are not repaired or selected
+ok 33 - mixed family markers are not repaired or selected
+  ---
+  duration_ms: 263.143541
+  type: 'test'
+  ...
+# Subtest: own metadata rejects malformed JSON
+ok 34 - own metadata rejects malformed JSON
+  ---
+  duration_ms: 261.087417
+  type: 'test'
+  ...
+# Subtest: own metadata rejects array
+ok 35 - own metadata rejects array
+  ---
+  duration_ms: 263.147584
+  type: 'test'
+  ...
+# Subtest: own metadata rejects null
+ok 36 - own metadata rejects null
+  ---
+  duration_ms: 258.937291
+  type: 'test'
+  ...
+# Subtest: own metadata rejects wrong package
+ok 37 - own metadata rejects wrong package
+  ---
+  duration_ms: 258.123792
+  type: 'test'
+  ...
+# Subtest: own metadata rejects unknown schema
+ok 38 - own metadata rejects unknown schema
+  ---
+  duration_ms: 258.514833
+  type: 'test'
+  ...
+# Subtest: own metadata rejects null schema
+ok 39 - own metadata rejects null schema
+  ---
+  duration_ms: 260.023333
+  type: 'test'
+  ...
+# Subtest: own metadata rejects wrong source
+ok 40 - own metadata rejects wrong source
+  ---
+  duration_ms: 266.093917
+  type: 'test'
+  ...
+# Subtest: own metadata rejects wrong profile
+ok 41 - own metadata rejects wrong profile
+  ---
+  duration_ms: 262.725458
+  type: 'test'
+  ...
+# Subtest: own metadata rejects snake case wrong profile
+ok 42 - own metadata rejects snake case wrong profile
+  ---
+  duration_ms: 264.011375
+  type: 'test'
+  ...
+# Subtest: own metadata rejects duplicate keys
+ok 43 - own metadata rejects duplicate keys
+  ---
+  duration_ms: 260.947042
+  type: 'test'
+  ...
+# Subtest: profile rejects unknown profile
+ok 44 - profile rejects unknown profile
+  ---
+  duration_ms: 259.412625
+  type: 'test'
+  ...
+# Subtest: profile rejects missing profile
+ok 45 - profile rejects missing profile
+  ---
+  duration_ms: 259.671083
+  type: 'test'
+  ...
+# Subtest: profile rejects invalid YAML
+ok 46 - profile rejects invalid YAML
+  ---
+  duration_ms: 255.968333
+  type: 'test'
+  ...
+# Subtest: profile rejects duplicate profile
+ok 47 - profile rejects duplicate profile
+  ---
+  duration_ms: 255.866667
+  type: 'test'
+  ...
+# Subtest: own metadata symlink is rejected without following or overwriting it
+ok 48 - own metadata symlink is rejected without following or overwriting it
+  ---
+  duration_ms: 229.254292
+  type: 'test'
+  ...
+# Subtest: profile parent symlink is rejected before reading target content
+ok 49 - profile parent symlink is rejected before reading target content
+  ---
+  duration_ms: 248.193042
+  type: 'test'
+  ...
+# Subtest: help and version work inside foreign projects without mutation
+ok 50 - help and version work inside foreign projects without mutation
+  ---
+  duration_ms: 56.276041
+  type: 'test'
+  ...
+# Subtest: unmanaged projects can still preview initialization
+ok 51 - unmanaged projects can still preview initialization
+  ---
+  duration_ms: 1014.53525
+  type: 'test'
+  ...
+# Subtest: frontend identity prevents another CLI from planning takeover, even with force
+ok 52 - frontend identity prevents another CLI from planning takeover, even with force
+  ---
+  duration_ms: 80.866375
+  type: 'test'
+  ...
+# Subtest: profile alone cannot bypass family protection by omitting metadata
+ok 53 - profile alone cannot bypass family protection by omitting metadata
+  ---
+  duration_ms: 79.780667
+  type: 'test'
+  ...
+# Subtest: all supported operations reject create-yss-spec before dry-run or force writes
+ok 54 - all supported operations reject create-yss-spec before dry-run or force writes
+  ---
+  duration_ms: 159.439958
+  type: 'test'
+  ...
+# Subtest: all supported operations reject create-yss-harness-dev before dry-run or force writes
+ok 55 - all supported operations reject create-yss-harness-dev before dry-run or force writes
+  ---
+  duration_ms: 155.580417
+  type: 'test'
+  ...
+# Subtest: all supported operations reject backend before dry-run or force writes
+ok 56 - all supported operations reject backend before dry-run or force writes
+  ---
+  duration_ms: 154.872916
+  type: 'test'
+  ...
+# Subtest: all supported operations reject frontend before dry-run or force writes
+ok 57 - all supported operations reject frontend before dry-run or force writes
+  ---
+  duration_ms: 156.858208
+  type: 'test'
+  ...
+# Subtest: mixed family markers are not repaired or selected
+ok 58 - mixed family markers are not repaired or selected
+  ---
+  duration_ms: 78.977708
+  type: 'test'
+  ...
+# Subtest: own metadata rejects malformed JSON
+ok 59 - own metadata rejects malformed JSON
+  ---
+  duration_ms: 77.197208
+  type: 'test'
+  ...
+# Subtest: own metadata rejects array
+ok 60 - own metadata rejects array
+  ---
+  duration_ms: 79.104417
+  type: 'test'
+  ...
+# Subtest: own metadata rejects null
+ok 61 - own metadata rejects null
+  ---
+  duration_ms: 78.764625
+  type: 'test'
+  ...
+# Subtest: own metadata rejects wrong package
+ok 62 - own metadata rejects wrong package
+  ---
+  duration_ms: 77.520709
+  type: 'test'
+  ...
+# Subtest: own metadata rejects unknown schema
+ok 63 - own metadata rejects unknown schema
+  ---
+  duration_ms: 77.533417
+  type: 'test'
+  ...
+# Subtest: own metadata rejects null schema
+ok 64 - own metadata rejects null schema
+  ---
+  duration_ms: 75.773084
+  type: 'test'
+  ...
+# Subtest: own metadata rejects wrong source
+ok 65 - own metadata rejects wrong source
+  ---
+  duration_ms: 69.341791
+  type: 'test'
+  ...
+# Subtest: own metadata rejects wrong profile
+ok 66 - own metadata rejects wrong profile
+  ---
+  duration_ms: 81.837042
+  type: 'test'
+  ...
+# Subtest: own metadata rejects snake case wrong profile
+ok 67 - own metadata rejects snake case wrong profile
+  ---
+  duration_ms: 72.723709
+  type: 'test'
+  ...
+# Subtest: own metadata rejects duplicate keys
+ok 68 - own metadata rejects duplicate keys
+  ---
+  duration_ms: 78.902
+  type: 'test'
+  ...
+# Subtest: profile rejects unknown profile
+ok 69 - profile rejects unknown profile
+  ---
+  duration_ms: 77.150958
+  type: 'test'
+  ...
+# Subtest: profile rejects missing profile
+ok 70 - profile rejects missing profile
+  ---
+  duration_ms: 74.331916
+  type: 'test'
+  ...
+# Subtest: profile rejects invalid YAML
+ok 71 - profile rejects invalid YAML
+  ---
+  duration_ms: 74.164083
+  type: 'test'
+  ...
+# Subtest: profile rejects duplicate profile
+ok 72 - profile rejects duplicate profile
+  ---
+  duration_ms: 72.135625
+  type: 'test'
+  ...
+# Subtest: own metadata symlink is rejected without following or overwriting it
+ok 73 - own metadata symlink is rejected without following or overwriting it
+  ---
+  duration_ms: 73.240125
+  type: 'test'
+  ...
+# Subtest: profile parent symlink is rejected before reading target content
+ok 74 - profile parent symlink is rejected before reading target content
+  ---
+  duration_ms: 72.544291
+  type: 'test'
+  ...
+# Subtest: help and version work inside foreign projects without mutation
+ok 75 - help and version work inside foreign projects without mutation
+  ---
+  duration_ms: 53.91675
+  type: 'test'
+  ...
+# Subtest: unmanaged projects can still preview initialization
+ok 76 - unmanaged projects can still preview initialization
+  ---
+  duration_ms: 111.575709
+  type: 'test'
+  ...
+# Subtest: matching profile supports quoted YAML and identity fields
+ok 77 - matching profile supports quoted YAML and identity fields
+  ---
+  duration_ms: 111.719916
+  type: 'test'
+  ...
+1..77
+# tests 77
+# suites 0
+# pass 77
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 26648.725666

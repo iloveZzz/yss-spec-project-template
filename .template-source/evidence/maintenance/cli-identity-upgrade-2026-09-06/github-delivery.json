@@ -1,0 +1,30 @@
+{
+  "user_authorization": "确认提交并推送github",
+  "executed_at": "2026-09-06T14:31:34.203461+00:00",
+  "cli_deliveries": [
+    {
+      "package": "create-yss-spec",
+      "commit": "ced179948be66fad349e2b206adf45e1ed3a3987",
+      "remote_branch": "main",
+      "remote_verified": true,
+      "workdir": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec"
+    },
+    {
+      "package": "create-yss-harness-design",
+      "commit": "f6e29b0efa341afb9a7ab51d85bff62f009c43b3",
+      "remote_branch": "main",
+      "remote_verified": true,
+      "workdir": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design"
+    },
+    {
+      "package": "create-yss-harness-dev",
+      "commit": "fa207e4b657a37058774ecea41bd22c01cf525d1",
+      "remote_branch": "main",
+      "remote_verified": true,
+      "workdir": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-harness-dev"
+    }
+  ],
+  "parent_gitlinks": "staged to the verified CLI commits",
+  "original_dev_worktree": "unchanged; remains at old checkout with pre-existing snapshot modification",
+  "npm_published": false
+}

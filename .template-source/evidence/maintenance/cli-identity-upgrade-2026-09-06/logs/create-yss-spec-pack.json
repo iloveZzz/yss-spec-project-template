@@ -1,0 +1,17 @@
+{
+  "repo": "create-yss-spec",
+  "command": "npm pack --ignore-scripts --json --pack-destination <artifact-dir>",
+  "exit_code": 0,
+  "executed_at": "2026-09-06T14:00:35.868310+00:00",
+  "duration_ms": 7028,
+  "version": "3.1.1",
+  "source_commit": "ccc53f577babbeff5d8a9e674ef883c69bfac47d",
+  "pack": {
+    "filename": "create-yss-spec-3.1.1.tgz",
+    "size": 14159049,
+    "unpackedSize": 74293861,
+    "shasum": "0974027f03d977b7c1f37477c461550a954205f6",
+    "integrity": "sha512-zhWNEbzUBZbMNMp5eqZVJqcCu6ItGY8tOu0inYQ2FANo+zid+DEbKs+HE+0SLwzUWyUpr9dxWrMRauDKO+Hc7g=="
+  },
+  "unpacked_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/unpacked/create-yss-spec/package"
+}

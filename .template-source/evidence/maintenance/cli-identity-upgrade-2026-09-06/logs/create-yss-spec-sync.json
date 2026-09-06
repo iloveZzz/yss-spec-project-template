@@ -1,0 +1,10 @@
+{
+  "repo": "create-yss-spec",
+  "exit_code": 0,
+  "duration_seconds": 12.75,
+  "env": {
+    "YSS_SPEC_TEMPLATE_REPO": "https://github.com/iloveZzz/yss-spec-project-template.git",
+    "YSS_SPEC_TEMPLATE_REF": "ccc53f577babbeff5d8a9e674ef883c69bfac47d"
+  },
+  "log": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-spec-sync.txt"
+}

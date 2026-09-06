@@ -1,0 +1,39 @@
+✔ frontend identity prevents another CLI from planning takeover, even with force (181.614542ms)
+✔ profile alone cannot bypass family protection by omitting metadata (72.30925ms)
+✔ all supported operations reject create-yss-spec before dry-run or force writes (141.699209ms)
+✔ all supported operations reject create-yss-harness-dev before dry-run or force writes (137.026958ms)
+✔ all supported operations reject backend before dry-run or force writes (137.150334ms)
+✔ all supported operations reject frontend before dry-run or force writes (145.87225ms)
+✔ mixed family markers are not repaired or selected (74.829333ms)
+✔ own metadata rejects malformed JSON (77.136125ms)
+✔ own metadata rejects array (73.721917ms)
+✔ own metadata rejects null (76.213875ms)
+✔ own metadata rejects wrong package (75.333833ms)
+✔ own metadata rejects wrong source (78.024291ms)
+✔ own metadata rejects wrong profile (80.977ms)
+✔ own metadata rejects snake case wrong profile (78.282292ms)
+✔ own metadata rejects duplicate keys (75.699875ms)
+✔ profile rejects unknown profile (78.415625ms)
+✔ profile rejects missing profile (78.747125ms)
+✔ profile rejects invalid YAML (77.953209ms)
+✔ profile rejects duplicate profile (80.7465ms)
+✔ own metadata symlink is rejected without following or overwriting it (76.384416ms)
+✔ profile parent symlink is rejected before reading target content (74.489083ms)
+✔ help and version work inside foreign projects without mutation (50.630625ms)
+✔ unmanaged projects can still preview initialization (120.766125ms)
+✔ matching profile supports quoted YAML and identity fields (118.461959ms)
+✔ stable template commit produces byte-identical snapshot metadata (10927.924583ms)
+✔ help and version do not write files (52.346625ms)
+✔ v1 rejects attach and sync (26.278667ms)
+✔ update and upgrade query npm without overwriting a source checkout (102.463833ms)
+✔ dry-run does not create the target directory (116.341291ms)
+✔ non-empty target is rejected without --force (71.260083ms)
+✔ init generates a strategic design project-instance (20932.250292ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 34567.435292

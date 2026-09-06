@@ -1,0 +1,5 @@
+
+> create-yss-spec@3.1.0 sync-template /private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/baseline-create-yss-spec
+> node scripts/sync-template.js
+
+已从 https://github.com/iloveZzz/yss-spec-project-template.git#248c1723cc0e4e88adabcf00931f78b9aa632d48 同步模板快照（commit 248c1723cc0e4e88adabcf00931f78b9aa632d48）

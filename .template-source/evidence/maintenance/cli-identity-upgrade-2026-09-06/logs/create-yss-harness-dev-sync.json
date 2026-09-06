@@ -1,0 +1,10 @@
+{
+  "repo": "create-yss-harness-dev",
+  "exit_code": 0,
+  "duration_seconds": 16.11,
+  "env": {
+    "YSS_HARNESS_TEMPLATE_REPO": "https://github.com/iloveZzz/yss-harness-dev-agent.git",
+    "YSS_HARNESS_TEMPLATE_REF": "07a126d76ad33c1e4162d2379ffb68007e01dad3"
+  },
+  "log": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-harness-dev-sync.txt"
+}

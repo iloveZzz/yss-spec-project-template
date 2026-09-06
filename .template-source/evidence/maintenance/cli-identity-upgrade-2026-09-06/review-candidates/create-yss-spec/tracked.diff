@@ -1,0 +1,160 @@
+diff --git a/README.md b/README.md
+index 2eda73e7379d5c7cd5b75dbb9001328cc824416d..fde08ce3a24c95d362acc66f66bc08766add9f39 100644
+--- a/README.md
++++ b/README.md
+@@ -48,11 +48,11 @@ npx create-yss-spec@latest --version
+ - init / sync 不把模板源治理笔记、wiki、审查证据、源仓 CI / Cloud 环境和公开发布清单写入项目实例；attach 会带上 `yss-public-skills.json` 供 `verify-template` 使用
+ - 空 gitlink / detached HEAD / git-submodule 挂载点 fail closed，`--force` 也不能覆盖
+ 
+-本轮模板快照绑定 `yss-spec-project-template@248c1723cc0e4e88adabcf00931f78b9aa632d48`。`templateCommit` 会写入实例 metadata；“最新模板”指用户执行的 `npx create-yss-spec@latest` 所携带的最新已发布快照，CLI 运行时不会拉取模板仓库。实例会带上数字人角色叠加（`docs/agents/digital-human-roles.yaml`）、YSS 前端技能叠加层、DDD Tactical Design 与生命周期转换校验资产、唯一 `code-review` 入口及其 YSS / Alibaba 专项检查与 finding 分流合同、`.cursorrules` 与 `.agents/rules/yss-ai-skills.md`；审查临时目录 `docs/.scratch/` 与已退役的独立入口不进入快照。
++本轮模板快照绑定 `yss-spec-project-template@ccc53f577babbeff5d8a9e674ef883c69bfac47d`。`templateCommit` 会写入实例 metadata；“最新模板”指用户执行的 `npx create-yss-spec@latest` 所携带的最新已发布快照，CLI 运行时不会拉取模板仓库。实例会带上数字人角色叠加（`docs/agents/digital-human-roles.yaml`）、YSS 前端技能叠加层、DDD Tactical Design 与生命周期转换校验资产、唯一 `code-review` 入口及其 YSS / Alibaba 专项检查与 finding 分流合同、`.cursorrules` 与 `.agents/rules/yss-ai-skills.md`；审查临时目录 `docs/.scratch/` 与已退役的独立入口不进入快照。
+ 
+ ## 当前版本说明
+ 
+-当前 CLI 版本为 `3.1.0`，模板固定到 `248c1723cc0e4e88adabcf00931f78b9aa632d48`。本版本同步可离线核验的战略交接快照包、受控导入与逐条战术追溯，并强化关键决定的真实用户回复校验。
++当前 CLI 版本为 `3.1.1`，模板固定到 `ccc53f577babbeff5d8a9e674ef883c69bfac47d`。本版本同步可离线核验的战略交接快照包、受控导入与逐条战术追溯，并强化关键决定的真实用户回复校验。
+ 
+ ## 接管已有项目
+ 
+@@ -149,3 +149,11 @@ YSS_SPEC_TEMPLATE_REF=<pinned-commit> npm pack --dry-run
+ - [`yss-project.yaml` 跨仓库实现记录](docs/implementation/yss-project-repository-mode-contract.md)
+ - [实施路由与 Build Architecture Checklist](docs/implementation/)
+ - [完整中文使用手册](docs/user-guide/create-yss-spec-cli-guide.md)
++
++## 本次身份保护升级
++
++本版本同步前后端 Harness 拆分后的共享交接资产，保持当前模板家族。init、attach 和 sync 的适用入口在生成计划前检查五种模板身份及已有 profile；异族、多重身份、损坏或矛盾声明均拒绝，`--force` 不能绕过，`--dry-run` 同样返回非零。历史 metadata 继续兼容，`legacy-attach` 仅在旧 schema 路径接受。
++
++`update` / `upgrade` 只更新 CLI 程序，不同步实例资产。专职后端和前端新项目分别检出 `yss-harness-backend-agent`、`yss-harness-frontend-agent` 的固定提交，在各自模板目录运行 `node scripts/instantiate-harness --target <新目录>`；这两个入口不提供原地 sync 或跨 profile 迁移。
++
++旧实例升级前先保存 Git 基线，再用新版本执行 `sync --dry-run`，审阅后执行普通 `sync`；不默认添加 --force。失败按现有事务机制回滚，成功后的撤销使用升级前基线或保留备份，不用旧 CLI 强制反向同步。
+diff --git a/package.json b/package.json
+index 6cc7a42b0e6ae5bad352e64607ebee8595d544e0..4f0605a49b90ffa68777bff66a69f8cbb72fa3c7 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "create-yss-spec",
+-  "version": "3.1.0",
++  "version": "3.1.1",
+   "description": "Initialize a YSS spec project template repository",
+   "repository": {
+     "type": "git",
+diff --git a/scripts/sync-template.js b/scripts/sync-template.js
+index de081540e74e083ff31d5a7fe068ab851a2eddd8..1aa68058a935749dbf991a15f0cc36860282fdf1 100644
+--- a/scripts/sync-template.js
++++ b/scripts/sync-template.js
+@@ -17,7 +17,7 @@ function isLocalRepo(value) {
+ const templateRepo =
+   process.env.YSS_SPEC_TEMPLATE_REPO ||
+   (isLocalRepo(siblingHarness) ? siblingHarness : defaultRemote);
+-const DEFAULT_TEMPLATE_REF = "248c1723cc0e4e88adabcf00931f78b9aa632d48";
++const DEFAULT_TEMPLATE_REF = "ccc53f577babbeff5d8a9e674ef883c69bfac47d";
+ const templateRef =
+   process.env.YSS_SPEC_TEMPLATE_REF ||
+   (isLocalRepo(templateRepo) ? "HEAD" : DEFAULT_TEMPLATE_REF);
+diff --git a/src/cli.js b/src/cli.js
+index 3127b30224e075b6012702a8c9d38f80d69625aa..2e54097f0a0a4cbbdc88e72257945d17a7bc9f74 100644
+--- a/src/cli.js
++++ b/src/cli.js
+@@ -1,4 +1,6 @@
+ const crypto = require("node:crypto");
++const { createFamilyGuard } = require("./family-identity");
++let checkTargetFamily;
+ const fs = require("node:fs");
+ const os = require("node:os");
+ const path = require("node:path");
+@@ -135,6 +137,7 @@ function readTemplateSnapshot() {
+     throw new Error("模板快照内容 hash 不匹配，请重新构建 CLI 包");
+   }
+ 
++  checkTargetFamily(BUNDLED_TEMPLATE_ROOT, { snapshot });
+   return snapshot;
+ }
+ 
+@@ -1471,6 +1474,7 @@ function runTemplateVerificationWithGit(targetDir, scriptPath, args = []) {
+ }
+ 
+ function verifyGeneratedTemplate(targetDir, mode = "managed") {
++  checkTargetFamily(targetDir);
+   if (mode === "init" || mode === "sync") {
+     verifyGeneratedInstance(targetDir, { checkForbiddenPaths: mode === "init" });
+     return;
+@@ -1889,11 +1893,13 @@ function runInit(argv = []) {
+     printVersion();
+     return;
+   }
+-  return promptForMissingOptions(options).then((promptedOptions) => {
++  return promptForMissingOptions(options).then(async (promptedOptions) => {
++    checkTargetFamily = await createFamilyGuard(PACKAGE_ROOT, PACKAGE_MANIFEST.name);
+     assertRequiredOptions(promptedOptions, "init");
+     readTemplateSnapshot();
+     const targetDir = normalizeTargetDir(promptedOptions.targetDir);
+     const targetState = inspectTargetDir(targetDir, promptedOptions.force);
++    checkTargetFamily(targetDir);
+     const operations = buildCopyPlan(
+       BUNDLED_TEMPLATE_ROOT,
+       targetDir,
+@@ -1957,6 +1963,7 @@ function runAttach(argv = []) {
+   readTemplateSnapshot();
+   const targetDir = normalizeTargetDir(options.targetDir);
+   inspectExistingTargetDir(targetDir, { force: Boolean(options.force) });
++  checkTargetFamily(targetDir);
+   if (pathKind(targetPath(targetDir, TEMPLATE_METADATA_FILENAME)) !== "missing") {
+     throw new Error("当前项目已有模板元数据，请使用 sync，不要重复 attach");
+   }
+@@ -2053,6 +2060,7 @@ function runSync(argv = []) {
+   readTemplateSnapshot();
+   const targetDir = normalizeTargetDir(options.targetDir || ".");
+   inspectExistingTargetDir(targetDir, { force: Boolean(options.force) });
++  checkTargetFamily(targetDir);
+   const { metadata } = loadTemplateMetadata(targetDir);
+   const identity = readTargetIdentity(targetDir);
+   const syncPlan = classifySyncPlan(targetDir, metadata, identity);
+@@ -2165,6 +2173,11 @@ COMMANDS
+   update     检查 npm 最新版本，如有更新则安装
+   upgrade    update 的别名
+ 
++IDENTITY
++  仅操作本 CLI 对应的模板家族；异族、混合或矛盾身份不可用 --force 绕过。
++  update / upgrade 只升级 CLI 程序；模板资产同步与程序升级分开执行。
++  前后端专职新项目使用各自模板的 scripts/instantiate-harness，仅支持新目录。
++
+ OPTIONS
+   --project-name <name>              项目名称；init 不传则进入交互输入
+   --business-domain <domain>         业务领域；init 不传则进入交互输入
+@@ -2231,6 +2244,9 @@ async function runCli(argv = []) {
+     printVersion();
+     return;
+   }
++  if (["attach", "sync"].includes(argv[0])) {
++    checkTargetFamily = await createFamilyGuard(PACKAGE_ROOT, PACKAGE_MANIFEST.name);
++  }
+   if (argv[0] === "sync") {
+     runSync(argv.slice(1));
+     return;
+diff --git a/tests/sync-template.test.js b/tests/sync-template.test.js
+index 349e71860c448b7ca836bd576738d2c9be6c4dcb..c6eb039091cbbb57516090a05b1dfa881ff57eea 100644
+--- a/tests/sync-template.test.js
++++ b/tests/sync-template.test.js
+@@ -148,10 +148,9 @@ function createCliRunner() {
+   const runnerRoot = createSyncRunner();
+   fs.mkdirSync(path.join(runnerRoot, "src"), { recursive: true });
+   fs.mkdirSync(path.join(runnerRoot, "bin"), { recursive: true });
++  fs.cpSync(path.join(repoRoot, "src"), path.join(runnerRoot, "src"), { recursive: true });
+   for (const relativePath of [
+     "package.json",
+-    "src/cli.js",
+-    "src/self-update.js",
+     "bin/create-yss-spec.js",
+   ]) {
+     fs.mkdirSync(path.dirname(path.join(runnerRoot, relativePath)), {
+@@ -252,6 +251,8 @@ test("sync omits tracked files deleted from a local working tree", () => {
+ 
+ test("sync snapshot remains valid when packaging and running use different locales", () => {
+   const fixtureRoot = createTemplateFixture();
++  // This fixture executes the real CLI, including its bundled YAML identity parser.
++  fs.copyFileSync(path.join(repoRoot, "template/scripts/vendor/yaml.mjs"), path.join(fixtureRoot, "scripts/vendor/yaml.mjs"));
+   const localizedDocsRoot = path.join(fixtureRoot, "docs/user-guide");
+   fs.mkdirSync(localizedDocsRoot, { recursive: true });
+   for (const fileName of [

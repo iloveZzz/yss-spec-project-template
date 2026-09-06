@@ -1,0 +1,10 @@
+{
+  "repo": "create-yss-strategic-design",
+  "exit_code": 0,
+  "duration_seconds": 6.91,
+  "env": {
+    "YSS_STRATEGIC_DESIGN_TEMPLATE_REPO": "https://github.com/iloveZzz/yss-harness-design-agent.git",
+    "YSS_STRATEGIC_DESIGN_TEMPLATE_REF": "f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e"
+  },
+  "log": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-strategic-design-sync.txt"
+}

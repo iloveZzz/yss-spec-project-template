@@ -1,0 +1,70 @@
+✖ frontend identity prevents another CLI from planning takeover, even with force (1843.655ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1879.293916
+
+✖ failing tests:
+
+test at tests/family-identity.test.js:19:1
+✖ frontend identity prevents another CLI from planning takeover, even with force (1843.655ms)
+  AssertionError [ERR_ASSERTION]: attach dry-run 预览
+  目标目录：/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-family-nR4UvH
+  add: .cursorrules
+  add: .gitignore
+  add: .nvmrc
+  add: AGENTS.md
+  add: CLAUDE.md
+  add: CONTEXT.md
+  add: README.md
+  add: skills-lock.json
+  add: yss-project.yaml
+  add: yss-public-skills.json
+  add: .agents/rules/yss-ai-skills.md
+  add: .agents/skills/.yss-skills-manifest.json
+  add: .agents/skills/alibaba-java-code-style/agents/openai.yaml
+  add: .agents/skills/alibaba-java-code-style/references/database-engineering-design.md
+  add: .agents/skills/alibaba-java-code-style/references/java-programming.md
+  add: .agents/skills/alibaba-java-code-style/references/reliability-test-security.md
+  add: .agents/skills/alibaba-java-code-style/SKILL.md
+  add: .agents/skills/archify/assets/template.html
+  add: .agents/skills/archify/bin/archify.mjs
+  add: .agents/skills/archify/bin/open-artifact.mjs
+  add: .agents/skills/archify/bin/preview.mjs
+  add: .agents/skills/archify/bin/visual-check.mjs
+  add: .agents/skills/archify/brand-marks/catalog.json
+  add: .agents/skills/archify/brand-marks/README.md
+  add: .agents/skills/archify/delta/architecture-delta.mjs
+  add: .agents/skills/archify/examples/agent-run.lifecycle.json
+  add: .agents/skills/archify/examples/agent-tool-call.workflow.json
+  add: .agents/skills/archify/examples/async-job-roundtrip.sequence.json
+  add: .agents/skills/archify/examples/brand-aware-delivery.architecture.json
+  add: .agents/skills/archify/examples/cache-miss-request.sequence.json
+  add: .agents/skills/archify/examples/checkout-platform.base.architecture.json
+  add: .agents/skills/archify/examples/checkout-platform.head.architecture.json
+  add: .agents/skills/archify/examples/dataflow-product-analytics.html
+  add: .agents/skills/archify/examples/deployment-release.lifecycle.json
+  add: .agents/skills/archify/examples/event-stream.dataflow.json
+  add: .agents/skills/archify/examples/incident-response.workflow.json
+  add: .agents/skills/archify/examples/lifecycle-agent-run.html
+  add: .agents/skills/archify/examples/product-analytics.dataflow.json
+  add: .agents/skills/archify/examples/production-deployment.architecture.json
+  add: .agents/skills/archify/examples/release-delivery.workflow.json
+  ... 其余 6103 项省略，可用 manifest / git diff 查看完整清单
+  统计：新增 6143，一致 0，身份转换 0，冲突 0，unsafe 0
+  
+      at TestContext.<anonymous> (/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-harness-dev/tests/family-identity.test.js:25:12)
+      at Test.runInAsyncScope (node:async_hooks:214:14)
+      at Test.run (node:internal/test_runner/test:1047:25)
+      at Test.start (node:internal/test_runner/test:944:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:297:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 0,
+    operator: 'notStrictEqual'
+  }

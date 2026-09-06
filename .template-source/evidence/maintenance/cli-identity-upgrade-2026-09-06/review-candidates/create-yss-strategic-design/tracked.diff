@@ -1,0 +1,103 @@
+diff --git a/README.md b/README.md
+index bb3da5a7b92c0e25627e1ae952db538d4660a651..79e34eab5acfc0d2c92a5e1249429a724690a503 100644
+--- a/README.md
++++ b/README.md
+@@ -1,6 +1,6 @@
+ # create-yss-harness-design
+ 
+-当前版本：`0.4.0`，模板固定到 `31189d2b4b78821ea8bef202d8516ac85b7a3c79`。该版本新增战略交接快照包导出与核验，包含完整资产快照、稳定规则与场景索引、差异和离线交付证据。
++当前版本：`0.4.1`，模板固定到 `f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e`。该版本新增战略交接快照包导出与核验，包含完整资产快照、稳定规则与场景索引、差异和离线交付证据。
+ 
+ 用于从 `yss-harness-design-agent` 初始化战略设计 `project-instance` 的 npm CLI。
+ 
+@@ -38,3 +38,11 @@ YSS_STRATEGIC_DESIGN_TEMPLATE_REPO=../yss-harness-design-agent npm test
+ ```
+ 
+ 未完成与模板仓的跨仓验证和正式独立审查前，不得 `npm publish`。
++
++## 本次身份保护升级
++
++本版本同步前后端 Harness 拆分后的共享交接资产，保持当前模板家族。init、attach 和 sync 的适用入口在生成计划前检查五种模板身份及已有 profile；异族、多重身份、损坏或矛盾声明均拒绝，`--force` 不能绕过，`--dry-run` 同样返回非零。历史 metadata 继续兼容，`legacy-attach` 仅在旧 schema 路径接受。
++
++`update` / `upgrade` 只更新 CLI 程序，不同步实例资产。专职后端和前端新项目分别检出 `yss-harness-backend-agent`、`yss-harness-frontend-agent` 的固定提交，在各自模板目录运行 `node scripts/instantiate-harness --target <新目录>`；这两个入口不提供原地 sync 或跨 profile 迁移。
++
++本 CLI 仍不支持 attach、sync；已有战略实例不因更新 CLI 而自动升级，也不要使用 init --force 代替实例升级。
+diff --git a/package.json b/package.json
+index 50b6c0268564a6803740be4b75fb830f6de9c4fa..a1e6facaf09fe64694414696d305258fb6541b83 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "create-yss-harness-design",
+-  "version": "0.4.0",
++  "version": "0.4.1",
+   "description": "Initialize a YSS strategic design harness project instance",
+   "repository": {
+     "type": "git",
+diff --git a/scripts/sync-template.js b/scripts/sync-template.js
+index 63c795038564e2529b4d135b45742a744c6fc3be..758d5c14ccfc7248d3b9a7460ccce8ed0d78fb64 100755
+--- a/scripts/sync-template.js
++++ b/scripts/sync-template.js
+@@ -21,7 +21,7 @@ function isLocalRepo(value) {
+ const templateRepo =
+   process.env.YSS_STRATEGIC_DESIGN_TEMPLATE_REPO ||
+   (isLocalRepo(siblingHarness) ? siblingHarness : defaultRemote);
+-const DEFAULT_TEMPLATE_REF = "31189d2b4b78821ea8bef202d8516ac85b7a3c79";
++const DEFAULT_TEMPLATE_REF = "f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e";
+ const templateRef =
+   process.env.YSS_STRATEGIC_DESIGN_TEMPLATE_REF ||
+   (isLocalRepo(templateRepo) ? "HEAD" : DEFAULT_TEMPLATE_REF);
+diff --git a/src/cli.js b/src/cli.js
+index 88f121480eb90878a5f3377451bddfc4eda10f5e..006f77a6e798b30df910e252a05a59c55a6e8dd9 100644
+--- a/src/cli.js
++++ b/src/cli.js
+@@ -1,4 +1,6 @@
+ const crypto = require("node:crypto");
++const { createFamilyGuard } = require("./family-identity");
++let checkTargetFamily;
+ const fs = require("node:fs");
+ const os = require("node:os");
+ const path = require("node:path");
+@@ -76,6 +78,7 @@ function readTemplateSnapshot() {
+   if (snapshot.snapshotHash !== treeHash(BUNDLED_TEMPLATE_ROOT)) {
+     throw new Error("模板快照内容 hash 不匹配，请重新构建 CLI 包");
+   }
++  checkTargetFamily(BUNDLED_TEMPLATE_ROOT, { snapshot });
+   return snapshot;
+ }
+ 
+@@ -433,6 +436,7 @@ function buildMetadata(variables, operations, targetDir, snapshot, manifestText)
+ }
+ 
+ function verifyGeneratedInstance(targetDir, manifest) {
++  checkTargetFamily(targetDir);
+   for (const relativePath of [
+     ...(manifest.instanceForbiddenPaths || []),
+     ".yss-template.json",
+@@ -489,6 +493,11 @@ COMMANDS
+   update                             检查 npm 最新版本；可用时安装更新
+   upgrade                            update 的别名
+ 
++IDENTITY
++  仅操作本 CLI 对应的模板家族；异族、混合或矛盾身份不可用 --force 绕过。
++  update / upgrade 只升级 CLI 程序；模板资产同步与程序升级分开执行。
++  前后端专职新项目使用各自模板的 scripts/instantiate-harness，仅支持新目录。
++
+ OPTIONS
+   --project-name <name>              项目名称；不传则进入交互输入
+   --business-domain <domain>         业务领域；不传则进入交互输入
+@@ -525,12 +534,14 @@ async function runInit(argv = []) {
+     return;
+   }
+   const promptedOptions = await promptForMissingOptions(options);
++  checkTargetFamily = await createFamilyGuard(PACKAGE_ROOT, PACKAGE_MANIFEST.name);
+   assertRequiredOptions(promptedOptions);
+   const snapshot = readTemplateSnapshot();
+   const manifestText = fs.readFileSync(BUNDLED_MANIFEST_PATH, "utf8");
+   const manifest = JSON.parse(manifestText);
+   const targetDir = normalizeTargetDir(promptedOptions.targetDir);
+   const targetState = inspectTargetDir(targetDir, promptedOptions.force);
++  checkTargetFamily(targetDir);
+   const operations = buildCopyPlan(
+     BUNDLED_TEMPLATE_ROOT,
+     targetDir,

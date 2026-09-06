@@ -1,0 +1,133 @@
+{
+  "task_id": "cli-identity-spec",
+  "task_kind": "independent-code-review",
+  "role_id": "role.requirements-manager",
+  "runtime_id": "runtime.skill-projection",
+  "execution_state": "Reviewer",
+  "implementation_actor_id": "codex.cli-identity-implementer",
+  "actor_id": "codex.cli-identity-spec",
+  "skill_source": {
+    "registry_ref": "docs/agents/digital-human-roles.yaml",
+    "defaults_ref": "taskPackageDefaults(role.requirements-manager)",
+    "core_skills": [
+      "grilling",
+      "domain-modeling",
+      "yss-research",
+      "competitive-intelligence",
+      "grill-with-docs"
+    ],
+    "forbidden_skills": [
+      "yss-ui",
+      "yss-domain",
+      "yss-web-controller",
+      "yss-repository",
+      "yss-ddd-scaffold-generator",
+      "yss-layered-mvc-scaffold-generator",
+      "yss-frontend-scaffold-generator",
+      "implement",
+      "tdd"
+    ]
+  },
+  "scope": "Independent CLI code review of the approved plan; not a lifecycle gate vote, Slice approval, or release decision.",
+  "review_axis": "spec",
+  "candidates": [
+    {
+      "name": "create-yss-spec",
+      "manifest": ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/create-yss-spec/candidate-manifest.yaml",
+      "digest": "6de294ffe579a53d98f6fb3438d23d8c37672358fc5d657941c706a449e9ada5",
+      "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+      "base": "f044e7b80b80eb3c3f40ed228fc21bb14f1f7a88"
+    },
+    {
+      "name": "create-yss-strategic-design",
+      "manifest": ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/create-yss-strategic-design/candidate-manifest.yaml",
+      "digest": "6c68845bf4ed5db9a81393c668dfe39cdedf08cb8dda916ceab9862e6d8efdfc",
+      "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+      "base": "0787e8a90fb835d7645a9d31482c92b915693867"
+    },
+    {
+      "name": "create-yss-harness-dev",
+      "manifest": ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/create-yss-harness-dev/candidate-manifest.yaml",
+      "digest": "55bedafa2f43dc0678b98c21524aa789b716d182871b15b340bbb0099068fa24",
+      "repository": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-harness-dev",
+      "base": "c955c215248e2f8577fb84f7b86dc2a17898ccff"
+    },
+    {
+      "name": "template-source",
+      "manifest": ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/template-source-final/candidate-manifest.yaml",
+      "digest": "0707192351bd8919ab6f67290663f5264cb55490bae7e1d7733c450a25caed9b",
+      "repository": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "base": "ccc53f577babbeff5d8a9e674ef883c69bfac47d"
+    }
+  ],
+  "contract_ref": ".template-source/contracts/cli-family-identity-contract.md",
+  "allowed_read_paths": [
+    ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/create-yss-spec/candidate-manifest.yaml",
+    ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/create-yss-strategic-design/candidate-manifest.yaml",
+    ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/create-yss-harness-dev/candidate-manifest.yaml",
+    ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/template-source/candidate-manifest.yaml",
+    "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+    "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+    "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-harness-dev",
+    "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "AGENTS.md",
+    "CONTEXT.md",
+    ".agents/skills/code-review/SKILL.md",
+    ".template-source/contracts/cli-family-identity-contract.md",
+    "docs/process/subagent-collaboration.md",
+    "docs/agents/digital-human-roles.yaml",
+    "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/unpacked/create-yss-spec/package",
+    "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/unpacked/create-yss-strategic-design/package",
+    "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/unpacked/create-yss-harness-dev/package",
+    ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/template-source-final/candidate-manifest.yaml"
+  ],
+  "allowed_write_paths": [
+    ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/reviews/spec.md"
+  ],
+  "forbidden_actions": [
+    "modify implementation",
+    "modify candidate bytes",
+    "commit",
+    "push",
+    "publish",
+    "delegate"
+  ],
+  "objective": "Verify the approved identity/upgrade scope and compatibility against captured candidates.",
+  "verification_commands": [
+    "node scripts/inspect-maintenance-candidate <manifest>",
+    "git diff --check"
+  ],
+  "acceptance_criteria": [
+    "Read captured tracked.diff and candidate.bin new file bytes, not just live worktrees.",
+    "Report actionable bugs with file/line and reproduction; distinguish required fixes from optional judgement calls.",
+    "Do not claim whole lifecycle/release readiness."
+  ],
+  "result_requirements": [
+    "candidate digests",
+    "findings severity and disposition",
+    "actual checks",
+    "blocking signals",
+    "review limitations"
+  ],
+  "fixed_package_inputs": [
+    {
+      "root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/unpacked/create-yss-spec/package",
+      "integrity": "sha512-zhWNEbzUBZbMNMp5eqZVJqcCu6ItGY8tOu0inYQ2FANo+zid+DEbKs+HE+0SLwzUWyUpr9dxWrMRauDKO+Hc7g==",
+      "snapshotHash": "62fad9422c8d0cb8ef2466a7d219fef04fe6477042d60028e6bc63ba336f1aca"
+    },
+    {
+      "root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/unpacked/create-yss-strategic-design/package",
+      "integrity": "sha512-wHpQkLw7Dz1a4pQ862fLIzu3QYNBTsBZ6VPwBNiPPeCxxe3vHZmgQ1zuiLZy3bj703V8TxftIGlUl5figxsFnQ==",
+      "snapshotHash": "b630fba60f934e93758b07d1cb7d4f4583f4d689edd5a63855b7a75e2c69d91d"
+    },
+    {
+      "root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/unpacked/create-yss-harness-dev/package",
+      "integrity": "sha512-JPllJaiqlnwjn9YIoL2tQpTqif0JZ3knMDu4obnwdOlewt9D+S18LKkIEoP9AWfdiYpfeyrhXsimLoCpg9IjnQ==",
+      "snapshotHash": "01ad39db97e96a8eafce9053d2e27c3df90ccb90d5161454d254061fb25d6492"
+    }
+  ],
+  "supplemental_evidence": [
+    "实际包升级验收通过",
+    "战略跨包接力验收通过"
+  ]
+}

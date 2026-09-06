@@ -1,0 +1,220 @@
+模板核验 profile: release -> release
+
+[strategic-handoff-package]
+$ node --check scripts/lib/strategic-handoff.mjs (25ms)
+$ scripts/verify-strategic-handoff-package-scenarios (28246ms)
+✔ 目录和 ZIP 可脱离源仓验包；导入幂等且不修改词汇表 (4104.559292ms)
+✔ 规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出 (2741.689ms)
+✔ 篡改 payload、重新封摘要后的虚构规则索引、额外文件均拒绝 (1922.4085ms)
+✔ ZIP 路径穿越和重复条目拒绝 (230.805459ms)
+✔ 版本差异绑定前版，重复版本不允许；修改规则产生更新集合 (4102.90125ms)
+✔ 受控延期只阻断依赖切片；未知依赖扩大阻断；目标未对账禁止消费 (13287.100209ms)
+✔ 源规则必须稳定可追溯，关键场景不能遗漏结果 (29.367542ms)
+✔ 统一 CLI 在源目录消失后通过 ZIP 验包 (1767.72975ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 28189.787458
+
+[tooling]
+$ .template-source/scripts/evidence-index --check (42ms)
+证据索引验证通过（pending）
+$ pnpm --dir .template-source/tooling/node test (8009ms)
+
+> yss-template-node-tooling@1.0.0 test /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/.template-source/tooling/node
+> node --test test/**/*.test.mjs
+
+✔ DESIGN.md passes local and pinned upstream lint (1870.763417ms)
+✔ DESIGN.md projection manifest is current (141.514708ms)
+✔ cross-repository design sync digest matches DESIGN.md (0.497833ms)
+✔ digital human roles are runtime-agnostic and grok is only an adapter (91.327125ms)
+✔ approval records reject the wrong signer and approved countersign gates need approval_ref (7.385833ms)
+✔ Node runtime contract exposes a vendored YAML parser for distributed scripts (11.275ms)
+✔ YAML aliases are rejected before a repository manifest is materialized (16.112334ms)
+✔ repository mode public seam is executable by Node (0.809083ms)
+✔ vendored XML parser rejects DOCTYPE and preserves scalar text (9.993417ms)
+✔ implementation path policy preserves harness and external-repository boundaries (4.39175ms)
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-xu85BW/super/apps/backend/billing-service'...
+done.
+HEAD is now at 69c108a init child
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-tD7Qg6/super/apps/backend/billing-service'...
+done.
+Reset branch 'main'
+✔ repository_scope git-submodule is a first-class layout distinct from harness-apps (5511.935542ms)
+✔ Node lifecycle registry verifier preserves the published semantic baseline (409.566542ms)
+✔ public skill export preserves its portable manifest and blocks workstation paths (252.213959ms)
+✔ evidence index writes pending and checkpointed Node records with legacy failure semantics (1165.299625ms)
+✔ evidence index pending empty is valid when this repository has no review markdown (141.743042ms)
+✔ evidence index complete fails when archive commit is missing from this repository (196.833584ms)
+✔ unknown layer is rejected (33.110833ms)
+✔ shadow registry cannot be marked as runtime consumed (10.297917ms)
+✔ alias that collides with another id is rejected (6.425583ms)
+✔ missing Cursor runtime root is rejected (6.625167ms)
+✔ platform aliases resolve lifecycle external runtime entries (13.195084ms)
+✔ deprecated research alias resolves to yss-research in lifecycle routes (7.423792ms)
+✔ lifecycle route with an unregistered skill is rejected (6.975458ms)
+✔ prototype design route requires independent prototype-review (6.20625ms)
+✔ deprecated skills require migration and cleanup metadata (5.033292ms)
+✔ frontend conditional routes require registered skills (4.39725ms)
+✔ tracked projections absent from the lock cannot escape synchronization checks (0.755ms)
+✔ obsolete canonical residues fail even when they are not in the lock (0.086958ms)
+✔ physical canonical skills must be present in the lock (0.07525ms)
+✔ Cursor is a first-class shared skill projection root (0.074958ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7782.356625
+$ pnpm --dir .template-source/tooling/node check:vendor (939ms)
+
+> yss-template-node-tooling@1.0.0 check:vendor /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/.template-source/tooling/node
+> node scripts/build-vendor.mjs --check
+
+
+[design-system]
+$ node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md (2094ms)
+{
+  "findings": [
+    {
+      "severity": "info",
+      "message": "Design system defines 15 colors, 6 typography scales, 5 rounding levels, 7 spacing tokens, 15 components.",
+      "rule": "token-summary"
+    }
+  ],
+  "summary": {
+    "errors": 0,
+    "warnings": 0,
+    "infos": 1
+  }
+}
+$ node .template-source/tooling/node/scripts/design-md.mjs drift (140ms)
+DESIGN.md 投影无漂移
+
+[skills]
+$ scripts/sync-skills --check (74ms)
+skill projections are synchronized
+$ scripts/update-skill-lock --check (84ms)
+skills-lock.json matches distributed skills
+$ scripts/verify-skill-registry (92ms)
+技能路由注册表校验通过（active，25 个共享，1 个平台）
+$ scripts/verify-skill-governance (119ms)
+技能规范冲突扫描通过（1 个兼容 alias）
+
+[strategic-design]
+$ scripts/verify-strategic-design-handoff-scenarios (1065ms)
+Strategic Design Handoff v3 scenarios passed
+$ scripts/verify-entry-alignment (97ms)
+入口规则与战略设计 profile 对齐校验通过: harness.business-ddd-strategy-handoff → work-unit.strategic-design-handoff
+$ scripts/verify-lifecycle-scenarios (515ms)
+六类生命周期压力场景验证通过
+$ node .agents/skills/yss-stage-decision/tests/run-scenarios.mjs (1506ms)
+业务边界与规则设计 v2 场景验证通过
+$ node .agents/skills/yss-research/tests/run-scenarios.mjs (444ms)
+YSS research scenarios passed (8)
+$ node .agents/skills/yss-prototype-stage/tests/run-scenarios.mjs (237ms)
+YSS prototype profile contract scenarios passed
+$ node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate docs/design/templates/visual-baseline-template.yaml --allow-template (111ms)
+Visual Baseline validate passed
+$ node --test .agents/skills/yss-design-system/scripts/validate-frontmatter.test.mjs (111ms)
+✔ accepts the required skill frontmatter (0.438291ms)
+✔ rejects missing and unsupported frontmatter fields (0.283916ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 66.550167
+$ node --test .agents/skills/yss-antd-design/scripts/validate-frontmatter.test.mjs (110ms)
+✔ accepts the required skill frontmatter (0.446625ms)
+✔ rejects missing exclusion branches in description (0.222166ms)
+✔ rejects a skill that does not forbid official setup (0.066792ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 65.676209
+$ node .agents/skills/yss-antdv-next-design/tests/run-scenarios.mjs (115ms)
+yss-antdv-next-design scenarios passed
+
+[collaboration]
+$ scripts/verify-digital-human-roles (116ms)
+数字人角色注册表校验通过（3 个角色，5 个协作组，3 个运行时）
+$ scripts/verify-digital-human-roles-scenarios (291ms)
+数字人角色压力场景验证通过
+$ scripts/verify-approval-record docs/templates/approval-record-template.yaml (75ms)
+会签记录校验通过
+
+[lifecycle]
+$ scripts/verify-context-contract --root . --json (126ms)
+{
+  "result": "completed",
+  "context_ref": "CONTEXT.md",
+  "context_schema_version": 1,
+  "document_digest": "sha256:b78591e14ca6b5d351ddef8f2daa0df0015ac9f51af8f37718e8244342fb2997",
+  "referenced_terms_digest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "term_refs": [],
+  "context_snapshot": {
+    "context_ref": "CONTEXT.md",
+    "context_schema_version": 1,
+    "document_digest": "sha256:b78591e14ca6b5d351ddef8f2daa0df0015ac9f51af8f37718e8244342fb2997",
+    "referenced_terms_digest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "term_refs": []
+  },
+  "process_term_count": 80,
+  "business_term_count": 0
+}
+$ scripts/verify-context-contract-scenarios (515ms)
+CONTEXT Contract 场景验证通过
+$ node scripts/verify-business-language-scenarios (90ms)
+业务角色通俗语言场景验证通过
+$ scripts/verify-context-reconciliation-scenarios (1379ms)
+Context reconciliation scenarios passed
+$ scripts/verify-grill-with-docs-context-scenarios (1739ms)
+grill-with-docs Context Contract scenarios passed
+$ scripts/verify-lifecycle-registry (540ms)
+生命周期注册表验证通过（shadow）
+$ scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml (177ms)
+生命周期 checkpoint 验证通过
+$ scripts/verify-lifecycle-transition-scenarios (80ms)
+生命周期转换压力场景验证通过
+
+[profile]
+$ scripts/verify-harness-profile (223ms)
+Harness profile 校验通过: harness.business-ddd-strategy-handoff → yss-tactical-design
+$ scripts/verify-harness-profile-scenarios (257ms)
+Harness profile 压力场景验证通过
+
+[workspace-fixtures]
+$ scripts/verify-subagent-task-package-scenarios (3478ms)
+数字人全生命周期任务包压力场景验证通过
+$ scripts/verify-digital-human-task-package-scenarios (3543ms)
+数字人全生命周期任务包压力场景验证通过
+$ scripts/verify-digital-human-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml (242ms)
+数字人任务包验证通过
+$ scripts/verify-digital-human-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml (228ms)
+数字人任务包验证通过
+$ scripts/verify-instance-distribution (108ms)
+实例分发清单校验通过: harness.business-ddd-strategy-handoff / create-yss-harness-design（template-source，禁止路径 15）
+$ scripts/verify-instance-distribution-scenarios (102ms)
+实例分发清单压力场景验证通过
+
+[maintenance]
+$ scripts/verify-maintenance-intensity-scenarios (81ms)
+模板维护 L1/L2/L3 强度场景验证通过
+
+[candidate-integrity]
+$ node scripts/verify-template-verification-scenarios (159ms)
+战略设计模板三级核验路由场景验证通过
+模板核验通过（release）

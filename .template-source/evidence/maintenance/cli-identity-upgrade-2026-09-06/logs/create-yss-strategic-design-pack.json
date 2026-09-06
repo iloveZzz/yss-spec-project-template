@@ -1,0 +1,17 @@
+{
+  "repo": "create-yss-strategic-design",
+  "command": "npm pack --ignore-scripts --json --pack-destination <artifact-dir>",
+  "exit_code": 0,
+  "executed_at": "2026-09-06T14:00:35.868401+00:00",
+  "duration_ms": 1235,
+  "version": "0.4.1",
+  "source_commit": "f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e",
+  "pack": {
+    "filename": "create-yss-harness-design-0.4.1.tgz",
+    "size": 1155156,
+    "unpackedSize": 5099819,
+    "shasum": "2ab1a7988389c5a7f590f40e57dbd2cc87c7542f",
+    "integrity": "sha512-wHpQkLw7Dz1a4pQ862fLIzu3QYNBTsBZ6VPwBNiPPeCxxe3vHZmgQ1zuiLZy3bj703V8TxftIGlUl5figxsFnQ=="
+  },
+  "unpacked_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/unpacked/create-yss-strategic-design/package"
+}

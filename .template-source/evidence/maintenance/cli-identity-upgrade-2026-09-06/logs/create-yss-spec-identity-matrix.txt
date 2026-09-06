@@ -1,0 +1,31 @@
+✔ frontend identity prevents another CLI from planning takeover, even with force (849.019125ms)
+✔ profile alone cannot bypass family protection by omitting metadata (273.323291ms)
+✔ all supported operations reject create-yss-harness-design before dry-run or force writes (1455.523125ms)
+✔ all supported operations reject create-yss-harness-dev before dry-run or force writes (1247.340584ms)
+✔ all supported operations reject backend before dry-run or force writes (1227.650667ms)
+✔ all supported operations reject frontend before dry-run or force writes (1141.807833ms)
+✔ mixed family markers are not repaired or selected (214.8205ms)
+✔ own metadata rejects malformed JSON (204.335416ms)
+✔ own metadata rejects array (212.622625ms)
+✔ own metadata rejects null (212.230417ms)
+✔ own metadata rejects wrong package (207.095542ms)
+✔ own metadata rejects wrong source (205.714583ms)
+✔ own metadata rejects wrong profile (206.544708ms)
+✔ own metadata rejects snake case wrong profile (207.765334ms)
+✔ own metadata rejects duplicate keys (207.63ms)
+✔ profile rejects unknown profile (208.344833ms)
+✔ profile rejects missing profile (210.928667ms)
+✔ profile rejects invalid YAML (209.627458ms)
+✔ profile rejects duplicate profile (209.799292ms)
+✔ own metadata symlink is rejected without following or overwriting it (206.515291ms)
+✔ profile parent symlink is rejected before reading target content (211.932042ms)
+✔ help and version work inside foreign projects without mutation (48.849666ms)
+✔ unmanaged projects can still preview initialization (876.900083ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 10295.650084

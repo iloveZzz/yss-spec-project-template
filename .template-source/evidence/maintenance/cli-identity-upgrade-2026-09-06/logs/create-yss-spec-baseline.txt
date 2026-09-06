@@ -1,0 +1,13 @@
+✔ help flags print usage, commands, options, examples, and learn more (80.635792ms)
+✔ attach, sync, and update help flags print the same usage without requiring a target (93.74225ms)
+✔ version flags print the package version and exit (69.815042ms)
+✔ subcommand version flags print the package version without requiring a target (23.322584ms)
+✔ unknown arguments still fail closed (23.382875ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 332.683583

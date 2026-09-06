@@ -1,0 +1,105 @@
+[
+  {
+    "repo": "create-yss-spec",
+    "command": "npm pack --ignore-scripts --json --pack-destination <artifact-dir>",
+    "exit_code": 0,
+    "executed_at": "2026-09-06T14:00:35.868310+00:00",
+    "duration_ms": 7028,
+    "version": "3.1.1",
+    "source_commit": "ccc53f577babbeff5d8a9e674ef883c69bfac47d",
+    "pack": {
+      "filename": "create-yss-spec-3.1.1.tgz",
+      "size": 14159049,
+      "unpackedSize": 74293861,
+      "shasum": "0974027f03d977b7c1f37477c461550a954205f6",
+      "integrity": "sha512-zhWNEbzUBZbMNMp5eqZVJqcCu6ItGY8tOu0inYQ2FANo+zid+DEbKs+HE+0SLwzUWyUpr9dxWrMRauDKO+Hc7g=="
+    },
+    "unpacked_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/unpacked/create-yss-spec/package",
+    "snapshot": {
+      "schemaVersion": 1,
+      "templateName": "yss-spec-project-template",
+      "templateSource": "github:iloveZzz/yss-spec-project-template",
+      "templateRepository": "https://github.com/iloveZzz/yss-spec-project-template.git",
+      "requestedRef": "ccc53f577babbeff5d8a9e674ef883c69bfac47d",
+      "templateCommit": "ccc53f577babbeff5d8a9e674ef883c69bfac47d",
+      "manifestHash": "3c72c098a0f70a8f7c80e8888c67ab76ad9023b5fc5e1019c084d1f15950db17",
+      "encodedPaths": {
+        ".codex/skills/data-analytics/.gitignore": ".codex/skills/data-analytics/__yss_dotfile__.gitignore",
+        ".codex/skills/product-design/.npmignore": ".codex/skills/product-design/__yss_dotfile__.npmignore",
+        ".codex/skills/product-design/templates/prototype/.npmrc": ".codex/skills/product-design/templates/prototype/__yss_dotfile__.npmrc",
+        ".gitignore": "__yss_dotfile__.gitignore"
+      },
+      "snapshotHash": "62fad9422c8d0cb8ef2466a7d219fef04fe6477042d60028e6bc63ba336f1aca",
+      "generatedAt": "2026-09-06T13:49:32.631Z"
+    }
+  },
+  {
+    "repo": "create-yss-strategic-design",
+    "command": "npm pack --ignore-scripts --json --pack-destination <artifact-dir>",
+    "exit_code": 0,
+    "executed_at": "2026-09-06T14:00:35.868401+00:00",
+    "duration_ms": 1235,
+    "version": "0.4.1",
+    "source_commit": "f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e",
+    "pack": {
+      "filename": "create-yss-harness-design-0.4.1.tgz",
+      "size": 1155156,
+      "unpackedSize": 5099819,
+      "shasum": "2ab1a7988389c5a7f590f40e57dbd2cc87c7542f",
+      "integrity": "sha512-wHpQkLw7Dz1a4pQ862fLIzu3QYNBTsBZ6VPwBNiPPeCxxe3vHZmgQ1zuiLZy3bj703V8TxftIGlUl5figxsFnQ=="
+    },
+    "unpacked_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/unpacked/create-yss-strategic-design/package",
+    "snapshot": {
+      "schemaVersion": 1,
+      "templateName": "yss-harness-design-agent",
+      "profileId": "harness.business-ddd-strategy-handoff",
+      "templateSource": "github:iloveZzz/yss-harness-design-agent",
+      "templateRepository": "https://github.com/iloveZzz/yss-harness-design-agent.git",
+      "requestedRef": "f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e",
+      "templateCommit": "f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e",
+      "manifestHash": "50d53e54e0225c63e8ac5478954b8466f988b5268ce2f4e06bfe0956fafd8b7c",
+      "encodedPaths": {
+        ".codex/skills/product-design/.npmignore": ".codex/skills/product-design/__yss_dotfile__.npmignore",
+        ".codex/skills/product-design/templates/prototype/.npmrc": ".codex/skills/product-design/templates/prototype/__yss_dotfile__.npmrc",
+        ".gitignore": "__yss_dotfile__.gitignore"
+      },
+      "snapshotHash": "b630fba60f934e93758b07d1cb7d4f4583f4d689edd5a63855b7a75e2c69d91d",
+      "generatedAt": "2026-09-06T13:15:16.000Z"
+    }
+  },
+  {
+    "repo": "create-yss-harness-dev",
+    "command": "npm pack --ignore-scripts --json --pack-destination <artifact-dir>",
+    "exit_code": 0,
+    "executed_at": "2026-09-06T14:00:35.869890+00:00",
+    "duration_ms": 7083,
+    "version": "0.4.1",
+    "source_commit": "07a126d76ad33c1e4162d2379ffb68007e01dad3",
+    "pack": {
+      "filename": "create-yss-harness-dev-0.4.1.tgz",
+      "size": 13890813,
+      "unpackedSize": 72116232,
+      "shasum": "d4654bd33680c8621584af76501eb11db6a4684a",
+      "integrity": "sha512-JPllJaiqlnwjn9YIoL2tQpTqif0JZ3knMDu4obnwdOlewt9D+S18LKkIEoP9AWfdiYpfeyrhXsimLoCpg9IjnQ=="
+    },
+    "unpacked_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/unpacked/create-yss-harness-dev/package",
+    "snapshot": {
+      "schemaVersion": 1,
+      "templateName": "yss-harness-dev-agent",
+      "profileId": "harness.dev-agent-slice",
+      "templateSource": "github:iloveZzz/yss-harness-dev-agent",
+      "templateRepository": "https://github.com/iloveZzz/yss-harness-dev-agent.git",
+      "requestedRef": "07a126d76ad33c1e4162d2379ffb68007e01dad3",
+      "templateCommit": "07a126d76ad33c1e4162d2379ffb68007e01dad3",
+      "manifestHash": "4dbbc0879bfd8f6628f6e378b55ebcbbaa4708723d3de8d54d06ea023fd197e7",
+      "encodedPaths": {
+        ".codex/skills/data-analytics/.gitignore": ".codex/skills/data-analytics/__yss_dotfile__.gitignore",
+        ".codex/skills/product-design/.npmignore": ".codex/skills/product-design/__yss_dotfile__.npmignore",
+        ".codex/skills/product-design/templates/prototype/.npmrc": ".codex/skills/product-design/templates/prototype/__yss_dotfile__.npmrc",
+        ".gitignore": "__yss_dotfile__.gitignore"
+      },
+      "snapshotHash": "01ad39db97e96a8eafce9053d2e27c3df90ccb90d5161454d254061fb25d6492",
+      "generatedAt": "2026-09-06T13:49:36.223Z"
+    }
+  }
+]

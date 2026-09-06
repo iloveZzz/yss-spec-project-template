@@ -1,0 +1,30 @@
+[
+  {
+    "name": "create-yss-spec",
+    "manifest": ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/create-yss-spec/candidate-manifest.yaml",
+    "digest": "6de294ffe579a53d98f6fb3438d23d8c37672358fc5d657941c706a449e9ada5",
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+    "base": "f044e7b80b80eb3c3f40ed228fc21bb14f1f7a88"
+  },
+  {
+    "name": "create-yss-strategic-design",
+    "manifest": ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/create-yss-strategic-design/candidate-manifest.yaml",
+    "digest": "6c68845bf4ed5db9a81393c668dfe39cdedf08cb8dda916ceab9862e6d8efdfc",
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+    "base": "0787e8a90fb835d7645a9d31482c92b915693867"
+  },
+  {
+    "name": "create-yss-harness-dev",
+    "manifest": ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/create-yss-harness-dev/candidate-manifest.yaml",
+    "digest": "55bedafa2f43dc0678b98c21524aa789b716d182871b15b340bbb0099068fa24",
+    "repository": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-harness-dev",
+    "base": "c955c215248e2f8577fb84f7b86dc2a17898ccff"
+  },
+  {
+    "name": "template-source",
+    "manifest": ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/template-source-final/candidate-manifest.yaml",
+    "digest": "0707192351bd8919ab6f67290663f5264cb55490bae7e1d7733c450a25caed9b",
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "base": "ccc53f577babbeff5d8a9e674ef883c69bfac47d"
+  }
+]

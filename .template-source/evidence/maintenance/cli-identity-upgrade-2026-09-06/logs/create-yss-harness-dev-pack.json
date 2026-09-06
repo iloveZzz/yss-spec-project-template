@@ -1,0 +1,17 @@
+{
+  "repo": "create-yss-harness-dev",
+  "command": "npm pack --ignore-scripts --json --pack-destination <artifact-dir>",
+  "exit_code": 0,
+  "executed_at": "2026-09-06T14:00:35.869890+00:00",
+  "duration_ms": 7083,
+  "version": "0.4.1",
+  "source_commit": "07a126d76ad33c1e4162d2379ffb68007e01dad3",
+  "pack": {
+    "filename": "create-yss-harness-dev-0.4.1.tgz",
+    "size": 13890813,
+    "unpackedSize": 72116232,
+    "shasum": "d4654bd33680c8621584af76501eb11db6a4684a",
+    "integrity": "sha512-JPllJaiqlnwjn9YIoL2tQpTqif0JZ3knMDu4obnwdOlewt9D+S18LKkIEoP9AWfdiYpfeyrhXsimLoCpg9IjnQ=="
+  },
+  "unpacked_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/unpacked/create-yss-harness-dev/package"
+}

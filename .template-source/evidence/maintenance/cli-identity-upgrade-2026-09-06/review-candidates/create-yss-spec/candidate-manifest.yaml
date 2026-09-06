@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "candidate_kind": "yss-worktree-candidate-v1",
+  "storage": "packed-stream",
+  "review_mode": "worktree",
+  "repository_root": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+  "review_base_ref": "f044e7b80b80eb3c3f40ed228fc21bb14f1f7a88",
+  "merge_base": "f044e7b80b80eb3c3f40ed228fc21bb14f1f7a88",
+  "implementation_candidate_ref": "working-tree",
+  "candidate_snapshot_ref": ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/create-yss-spec/candidate-manifest.yaml",
+  "candidate_digest": "6de294ffe579a53d98f6fb3438d23d8c37672358fc5d657941c706a449e9ada5",
+  "tracked_diff_command": "git diff --no-ext-diff --binary --full-index f044e7b80b80eb3c3f40ed228fc21bb14f1f7a88",
+  "untracked_inventory_command": "git ls-files -z --others --exclude-standard",
+  "untracked_diff_command": "packed in candidate.bin",
+  "untracked_files": [
+    "src/family-identity.js",
+    "tests/family-identity.test.js"
+  ],
+  "untracked_path_bytes": [
+    "c3JjL2ZhbWlseS1pZGVudGl0eS5qcw==",
+    "dGVzdHMvZmFtaWx5LWlkZW50aXR5LnRlc3QuanM="
+  ],
+  "excluded_paths": [
+    ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/"
+  ],
+  "snapshot_stream_ref": ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/create-yss-spec/candidate.bin",
+  "tracked_diff_ref": ".template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/create-yss-spec/tracked.diff",
+  "commit_list_command": "git log f044e7b80b80eb3c3f40ed228fc21bb14f1f7a88..HEAD --oneline"
+}

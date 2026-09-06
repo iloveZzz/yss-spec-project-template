@@ -1,0 +1,38 @@
+node:internal/modules/run_main:104
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-check-ou8eo4/fresh-SPEC/scripts/verify-entry-alignment: node:internal/modules/cjs/loader:1408
+  throw err;
+  ^
+
+Error: Cannot find module '/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-check-ou8eo4/fresh-SPEC/scripts/verify-entry-alignment'
+    at Function._resolveFilename (node:internal/modules/cjs/loader:1405:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1061:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1066:22)
+    at Function._load (node:internal/modules/cjs/loader:1215:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:151:5)
+    at node:internal/main/run_main_module:33:47 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: []
+}
+
+Node.js v23.9.0
+
+
+
+1 !== 0
+
+    at run (file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/scripts/verify-cli-upgrade.mjs:25:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async file:///Users/zhudaoming/Projects/yss-spec-project-template/.template-source/scripts/verify-cli-upgrade.mjs:50:7 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual'
+}
+
+Node.js v23.9.0

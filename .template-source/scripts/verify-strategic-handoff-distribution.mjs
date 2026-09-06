@@ -26,7 +26,9 @@ async function run(script,args,{cwd=root}={}) {
 }
 try {
   const generated=await Promise.allSettled(profiles.map(async([name,repo,bin])=>{
-    await run(path.join(root,'submodules',repo,'bin',bin),['--project-name',`Handoff ${name}`,'--business-domain','合成交接验证','--team-size','3','--target-dir',path.join(scratch,name)]);
+    // Permit isolated worktrees and unpacked release packages without changing gitlinks.
+    const cliRoot=process.env[`YSS_CLI_${name.toUpperCase()}_ROOT`]||path.join(root,'submodules',repo);
+    await run(path.join(cliRoot,'bin',bin),['--project-name',`Handoff ${name}`,'--business-domain','合成交接验证','--team-size','3','--target-dir',path.join(scratch,name)]);
     process.stdout.write(`${name}: CLI 生成实例通过\n`);
   }));
   for(const result of generated)if(result.status==='rejected')throw result.reason;

@@ -1,0 +1,288 @@
+模板核验 profile: release -> release
+
+[frontend-delivery]
+$ scripts/verify-frontend-delivery-scenarios (41224ms)
+▶ 战略与后端交付联合接收：便携、真实服务、拒绝不完整/过期输入及执行入口绕过
+  ✔ 导出拒绝缺失场景、篡改接口及错误批准 (975.237833ms)
+  ✔ 草案/缺少两类产物不能进入前端任务 (127.765833ms)
+  ✔ 源仓消失后可验 ZIP 并独立恢复；输入就绪不授予代码实施 (9417.811375ms)
+  ✔ 实现边界读取持久化合同并冻结接收记录及用例字节 (5273.360333ms)
+  ✔ 部署版本/数据失配与服务失败使旧接收记录失效 (13076.925292ms)
+  ✔ 范围、摘要和逐条承接缺口均拒绝 (5575.073833ms)
+  ✔ 已导入更新版本阻断旧切片；包篡改拒绝 (83.395375ms)
+✔ 战略与后端交付联合接收：便携、真实服务、拒绝不完整/过期输入及执行入口绕过 (41141.468ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 41144.053709
+
+[strategic-handoff-package]
+$ node --check scripts/lib/strategic-handoff.mjs (30ms)
+$ scripts/verify-strategic-handoff-package-scenarios (28125ms)
+✔ 目录和 ZIP 可脱离源仓验包；导入幂等且不修改词汇表 (4088.409667ms)
+✔ 规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出 (2914.269916ms)
+✔ 篡改 payload、重新封摘要后的虚构规则索引、额外文件均拒绝 (1867.926875ms)
+✔ ZIP 路径穿越和重复条目拒绝 (217.411375ms)
+✔ 版本差异绑定前版，重复版本不允许；修改规则产生更新集合 (3976.6475ms)
+✔ 受控延期只阻断依赖切片；未知依赖扩大阻断；目标未对账禁止消费 (13236.376167ms)
+✔ 源规则必须稳定可追溯，关键场景不能遗漏结果 (20.565792ms)
+✔ 统一 CLI 在源目录消失后通过 ZIP 验包 (1738.565042ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 28063.5285
+
+[tooling]
+$ .template-source/scripts/evidence-index --check (50ms)
+证据索引验证通过（pending）
+$ pnpm --dir .template-source/tooling/node test (8591ms)
+
+> yss-template-node-tooling@1.0.0 test /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent/.template-source/tooling/node
+> node --test test/**/*.test.mjs
+
+✔ digital human roles are runtime-agnostic and grok is only an adapter (161.385958ms)
+✔ approval records reject the wrong signer and approved countersign gates need approval_ref (14.167166ms)
+✔ Node runtime contract exposes a vendored YAML parser for distributed scripts (14.062958ms)
+✔ YAML aliases are rejected before a repository manifest is materialized (15.917916ms)
+✔ repository mode public seam is executable by Node (0.633709ms)
+✔ vendored XML parser rejects DOCTYPE and preserves scalar text (6.347125ms)
+✔ implementation path policy preserves harness and external-repository boundaries (2.409667ms)
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-bJ1bSL/super/apps/backend/billing-service'...
+done.
+HEAD is now at 69c108a init child
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-zOUzrJ/super/apps/backend/billing-service'...
+done.
+Reset branch 'main'
+✔ repository_scope git-submodule is a first-class layout distinct from harness-apps (5520.296459ms)
+✔ Node lifecycle registry verifier preserves the published semantic baseline (411.480875ms)
+✔ public skill export preserves its portable manifest and blocks workstation paths (1188.017625ms)
+✔ evidence index writes pending and checkpointed Node records with legacy failure semantics (1131.647583ms)
+✔ unknown layer is rejected (70.2845ms)
+✔ shadow registry cannot be marked as runtime consumed (34.732666ms)
+✔ alias that collides with another id is rejected (15.964417ms)
+✔ missing Cursor runtime root is rejected (14.300709ms)
+✔ skill invocation contract is required and derives impact triggers (39.960041ms)
+✔ typed dependency metadata rejects unregistered skills (11.948167ms)
+✔ context-required typed dependencies reject cycles (9.864709ms)
+✔ 实现合同编译器合同不得重复 typed dependency 事实 (14.346083ms)
+✔ platform aliases resolve lifecycle external runtime entries (13.597625ms)
+✔ lifecycle route with an unregistered skill is rejected (8.497583ms)
+✔ prototype design route requires independent prototype-review (12.537333ms)
+✔ deprecated skills require migration and cleanup metadata (11.692584ms)
+✔ frontend conditional routes require registered skills (10.036292ms)
+✔ tracked projections absent from the lock cannot escape synchronization checks (0.655958ms)
+✔ obsolete canonical residues fail even when they are not in the lock (0.076666ms)
+✔ physical canonical skills must be present in the lock (0.070833ms)
+✔ Cursor is a first-class shared skill projection root (0.126292ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8356.75875
+$ pnpm --dir .template-source/tooling/node check:vendor (740ms)
+
+> yss-template-node-tooling@1.0.0 check:vendor /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent/.template-source/tooling/node
+> node scripts/build-vendor.mjs --check
+
+
+[skills]
+$ scripts/sync-skills --check (255ms)
+skill projections are synchronized
+$ scripts/update-skill-lock --check (225ms)
+skills-lock.json matches distributed skills
+$ scripts/verify-skill-registry (138ms)
+技能路由注册表校验通过（active，104 个共享，2 个平台）
+$ scripts/verify-skill-governance (106ms)
+技能规范冲突扫描通过（5 个兼容 alias）
+
+[tactical-design]
+$ node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs (33ms)
+$ node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs (33ms)
+$ node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs (618ms)
+DDD tactical design scenarios passed
+
+[contracts]
+$ scripts/verify-yss-dto-openapi-profile (67ms)
+YSS DTO OpenAPI wire profile 验证通过
+$ scripts/verify-yss-dto-openapi-scenarios (130ms)
+YSS DTO OpenAPI wire-shape scenarios passed
+$ scripts/verify-openapi-yaml-first-scenarios (66ms)
+OpenAPI YAML-first 场景验证通过
+$ scripts/verify-openapi-json-handoff-scenarios (55ms)
+OpenAPI YAML-first JSON handoff scenarios passed
+
+[collaboration]
+$ scripts/verify-digital-human-roles (113ms)
+数字人角色注册表校验通过（4 个角色，5 个协作组，3 个运行时）
+$ scripts/verify-digital-human-roles-scenarios (304ms)
+四角色 Harness Agent 压力场景验证通过
+$ scripts/verify-approval-record docs/templates/approval-record-template.yaml (96ms)
+会签记录校验通过
+
+[lifecycle]
+$ scripts/verify-lifecycle-registry (412ms)
+生命周期注册表验证通过（active）
+$ scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml (173ms)
+生命周期 checkpoint 验证通过
+$ scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-plan-template.yaml (190ms)
+前端实现还原 plan 验证通过
+$ scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-verification-template.yaml (198ms)
+前端实现还原 verification 验证通过
+$ scripts/verify-frontend-implementation-evidence-scenarios (1153ms)
+Frontend implementation evidence v2 scenarios passed
+$ scripts/verify-scaffold-architecture-decisions --allow-template docs/process/templates/scaffold-architecture-decisions-template.yaml (261ms)
+脚手架架构选择记录验证通过
+$ scripts/verify-scaffold-architecture-decision-scenarios (1300ms)
+脚手架架构选择场景验证通过
+$ scripts/verify-lifecycle-scenarios (565ms)
+harness-agent 生命周期压力场景验证通过
+$ scripts/verify-lifecycle-transition-scenarios (140ms)
+harness-agent 生命周期转换压力场景验证通过
+
+[profile]
+$ scripts/verify-harness-profile (110ms)
+Harness profile 校验通过: harness.dev-agent-slice → create-yss-harness-dev
+$ scripts/verify-harness-profile-scenarios (310ms)
+Harness profile 压力场景验证通过
+$ scripts/verify-entry-alignment (179ms)
+入口规则与开发落地 profile 对齐校验通过: harness.dev-agent-slice / work-unit.harness-entry → work-unit.verification
+
+[workspace-fixtures]
+$ scripts/verify-subagent-task-package-scenarios (3132ms)
+四角色 Harness Agent 任务包压力场景验证通过
+$ scripts/verify-digital-human-task-package-scenarios (3049ms)
+四角色 Harness Agent 任务包压力场景验证通过
+$ scripts/verify-digital-human-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml (209ms)
+数字人任务包验证通过
+$ scripts/verify-digital-human-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml (231ms)
+数字人任务包验证通过
+$ scripts/verify-instance-distribution (81ms)
+实例分发面校验通过: create-yss-harness-dev / .yss-harness-dev.json
+$ scripts/verify-instance-distribution-scenarios (72ms)
+实例分发面压力场景验证通过
+
+[maintenance]
+$ scripts/verify-maintenance-checkpoint .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml (74ms)
+模板维护 checkpoint 验证通过（L3，最低 L3）
+$ scripts/verify-maintenance-intensity-scenarios (1033ms)
+模板维护 L1/L2/L3 强度场景验证通过
+
+[implementation]
+$ scripts/verify-implementation-path-scenarios (64ms)
+实现项目路径策略压力场景验证通过
+$ scripts/verify-repository-scope-scenarios (6190ms)
+named stress unknown_scope: PASS
+named stress layout_mismatch: PASS
+named stress same_origin_url: PASS
+named stress copy_source_into_harness: PASS
+named stress missing_git_entry_mode: PASS
+named stress empty_gitlink_as_regular_dir: PASS
+named stress declared_harness_apps_actual_gitlink: PASS
+named stress detached_head_as_regular_dir: PASS
+named stress force_overlay_mount: PASS
+实现仓库 repository_scope 压力场景验证通过
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-fUHJdq/super/apps/backend/billing-service'...
+done.
+HEAD is now at 2404302 init child
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-OSDg7Z/super/apps/backend/billing-service'...
+done.
+Reset branch 'main'
+$ scripts/verify-scaffold-generator-scenarios (784ms)
+YSS 脚手架生成器受控生成场景验证通过
+$ node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs (4609ms)
+✔ 生成批准的服务级 target profile 骨架，并写入可追溯 Manifest v3 (214.147291ms)
+✔ schema v1 scaffold contract is unsupported and is never upgraded (59.609291ms)
+﹣ 一键工作流只有在真实 Maven 三命令全部通过后才报告完成 (0.26375ms) # 缺少受控 YSS Maven 仓库环境，真实 Wrapper 验证由 L3 环境门禁执行
+✔ 显式 Maven 坐标贯穿批准合同、生成参数、全部 POM 和生成清单 (360.617375ms)
+✔ 生成工程声明命名仓库 profile、target DDD 依赖边界和构建门禁 (251.717583ms)
+✔ 生成工程固定平台 profile、Wrapper checksum，并把调试日志隔离到 local 配置 (220.150333ms)
+✔ initialize-only 在写文件前拒绝任何已存在目标和 --force (213.945875ms)
+✔ 拒绝基础包名与批准合同不一致 (56.344792ms)
+✔ 合同 project_name、profile 和 allowed_write_paths 必须约束实际输出 (195.943458ms)
+✔ initialize-only 拒绝以 --force 覆盖 .gitmodules 登记的挂载点 (63.117333ms)
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-OGvLvV/super/apps/backend/billing-service'...
+done.
+HEAD is now at 47d2994 init child
+✔ 拒绝在 detached HEAD 子仓工作树内当成普通目录生成 (1846.278584ms)
+✔ --force 覆盖真实 gitlink 不得走普通目录覆盖路径 (824.911458ms)
+✔ 验证器记录三条 wrapper 命令的成功和失败证据 (29.884917ms)
+✔ 验证器把内部仓库解析失败与编译失败分开报告 (30.232917ms)
+✔ 验证器单独标记 Java 编译失败和 Bootstrap 主类缺失 (74.643709ms)
+✔ 验证器在全部 Maven 命令成功时通过并保留日志引用 (26.252875ms)
+✔ Manifest v3 在缺少受控仓库环境时先于 Maven 执行阻断 (5.974708ms)
+✔ Manifest schema v1 is unsupported and verifier never executes its wrapper (5.181334ms)
+✔ 验证日志会脱敏 Maven 仓库凭据 (27.377375ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 4569.227791
+$ node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs (4869ms)
+✔ 数据分析初始化生成 H2 六模块和独立治理信封 (3221.432167ms)
+✔ 旧数据库和 Mock 参数在写入前被拒绝 (112.446875ms)
+﹣ 可选离线 Maven 可行性检查（不替代受控仓库验收） (0.17225ms) # SKIP
+✔ 生成 h2 基础 Profile (179.987292ms)
+✔ 能力闭包 basic (188.737125ms)
+✔ 能力闭包 adapter (194.974541ms)
+✔ 能力闭包 client (227.104708ms)
+✔ 能力闭包 feign (238.896625ms)
+✔ 能力闭包 combined (182.5135ms)
+✔ 选择缺失、digest 漂移和非空目标均阻断 (216.42975ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 4823.704625
+$ scripts/verify-prototype-backend-scaffold-scenarios (72ms)
+DDD 战术设计到实现路由场景验证通过
+$ scripts/verify-matt-yss-integration-scenarios (119ms)
+harness-agent 替换边界压力场景验证通过
+$ scripts/verify-yss-implementation-contract-compiler-scenarios (267ms)
+YSS implementation contract compiler harness-agent 场景验证通过
+✔ combines narrow recipes once and preserves deterministic output (16.098584ms)
+✔ does not promote conditional or component dependencies without explicit input (6.911416ms)
+✔ loads only explicitly satisfied context-conditional dependencies (1.634542ms)
+✔ rejects recipes that reference skills and context-required cycles (6.679291ms)
+✔ rejects removed ids and schema v1 without compatibility (0.718416ms)
+✔ marks digest drift stale and validates v2 execution evidence (11.436167ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 155.133125
+$ scripts/generate-yss-skill-boundaries --check (136ms)
+YSS skill boundaries are current
+$ scripts/audit-yss-backend-skills --check (98ms)
+backend skill audit passed: 27 candidates (keep=27, narrow=0, merge=0, remove=0)
+$ scripts/verify-retired-skill-ids (108ms)
+retired skill ids are absent from active assets
+$ scripts/verify-yss-ui-scenarios (53ms)
+YSS UI governance scenarios passed
+
+[governance-release]
+$ scripts/verify-governance-release (71ms)
+
+[candidate-integrity]
+$ node scripts/verify-template-verification-scenarios (172ms)
+战术设计模板三级核验路由场景验证通过
+模板核验通过（release）

@@ -1,0 +1,33 @@
+diff --git a/.template-source/scripts/verify-strategic-handoff-distribution.mjs b/.template-source/scripts/verify-strategic-handoff-distribution.mjs
+index 499a5ecaee611ac18e8e58cf66337e7c17a60174..2c7c04320b9996ee78183f31a084794ad5936385 100644
+--- a/.template-source/scripts/verify-strategic-handoff-distribution.mjs
++++ b/.template-source/scripts/verify-strategic-handoff-distribution.mjs
+@@ -26,7 +26,9 @@ async function run(script,args,{cwd=root}={}) {
+ }
+ try {
+   const generated=await Promise.allSettled(profiles.map(async([name,repo,bin])=>{
+-    await run(path.join(root,'submodules',repo,'bin',bin),['--project-name',`Handoff ${name}`,'--business-domain','合成交接验证','--team-size','3','--target-dir',path.join(scratch,name)]);
++    // Permit isolated worktrees and unpacked release packages without changing gitlinks.
++    const cliRoot=process.env[`YSS_CLI_${name.toUpperCase()}_ROOT`]||path.join(root,'submodules',repo);
++    await run(path.join(cliRoot,'bin',bin),['--project-name',`Handoff ${name}`,'--business-domain','合成交接验证','--team-size','3','--target-dir',path.join(scratch,name)]);
+     process.stdout.write(`${name}: CLI 生成实例通过\n`);
+   }));
+   for(const result of generated)if(result.status==='rejected')throw result.reason;
+diff --git a/submodules/create-yss-harness-dev b/submodules/create-yss-harness-dev
+--- a/submodules/create-yss-harness-dev
++++ b/submodules/create-yss-harness-dev
+@@ -1 +1 @@
+-Subproject commit c955c215248e2f8577fb84f7b86dc2a17898ccff
++Subproject commit c955c215248e2f8577fb84f7b86dc2a17898ccff-dirty
+diff --git a/submodules/create-yss-spec b/submodules/create-yss-spec
+--- a/submodules/create-yss-spec
++++ b/submodules/create-yss-spec
+@@ -1 +1 @@
+-Subproject commit f044e7b80b80eb3c3f40ed228fc21bb14f1f7a88
++Subproject commit f044e7b80b80eb3c3f40ed228fc21bb14f1f7a88-dirty
+diff --git a/submodules/create-yss-strategic-design b/submodules/create-yss-strategic-design
+--- a/submodules/create-yss-strategic-design
++++ b/submodules/create-yss-strategic-design
+@@ -1 +1 @@
+-Subproject commit 0787e8a90fb835d7645a9d31482c92b915693867
++Subproject commit 0787e8a90fb835d7645a9d31482c92b915693867-dirty

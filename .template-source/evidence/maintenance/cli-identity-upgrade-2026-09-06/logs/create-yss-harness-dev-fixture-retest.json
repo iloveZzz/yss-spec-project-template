@@ -1,0 +1,8 @@
+{
+  "repository": "create-yss-harness-dev",
+  "command": "pnpm exec node --test tests/sync-template.test.js",
+  "exit_code": 0,
+  "executed_at": "2026-09-06T13:58:21.233704+00:00",
+  "duration_ms": 3760,
+  "evidence_ref": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-harness-dev-fixture-retest.txt"
+}

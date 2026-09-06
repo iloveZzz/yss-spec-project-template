@@ -1,0 +1,24 @@
+schema_version: 1
+candidate_kind: yss-worktree-candidate-v1
+storage: packed-stream
+review_mode: worktree
+review_base_ref: HEAD
+merge_base: ccc53f577babbeff5d8a9e674ef883c69bfac47d
+implementation_candidate_ref: working-tree
+candidate_snapshot_ref: .template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/template-source-final/candidate-manifest.yaml
+candidate_digest: 0707192351bd8919ab6f67290663f5264cb55490bae7e1d7733c450a25caed9b
+tracked_diff_command: git diff --no-ext-diff --binary --full-index ccc53f577babbeff5d8a9e674ef883c69bfac47d
+untracked_inventory_command: git ls-files -z --others --exclude-standard
+untracked_diff_command: packed in candidate.bin
+untracked_files:
+  - .template-source/contracts/cli-family-identity-contract.md
+  - .template-source/scripts/verify-cli-upgrade.mjs
+untracked_path_bytes:
+  - LnRlbXBsYXRlLXNvdXJjZS9jb250cmFjdHMvY2xpLWZhbWlseS1pZGVudGl0eS1jb250cmFjdC5tZA==
+  - LnRlbXBsYXRlLXNvdXJjZS9zY3JpcHRzL3ZlcmlmeS1jbGktdXBncmFkZS5tanM=
+excluded_paths:
+  - .template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/template-source-final
+  - .template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06
+snapshot_stream_ref: .template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/template-source-final/candidate.bin
+tracked_diff_ref: .template-source/evidence/maintenance/cli-identity-upgrade-2026-09-06/review-candidates/template-source-final/tracked.diff
+commit_list_command: git log HEAD..HEAD --oneline
