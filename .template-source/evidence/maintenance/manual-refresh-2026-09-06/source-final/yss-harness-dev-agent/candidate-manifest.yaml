@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "candidate_kind": "yss-worktree-candidate-v1",
+  "storage": "packed-stream",
+  "review_mode": "worktree",
+  "repository_root": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
+  "review_base_ref": "07a126d76ad33c1e4162d2379ffb68007e01dad3",
+  "merge_base": "07a126d76ad33c1e4162d2379ffb68007e01dad3",
+  "implementation_candidate_ref": "working-tree",
+  "candidate_snapshot_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final/yss-harness-dev-agent/candidate-manifest.yaml",
+  "candidate_digest": "be49077ec1567b06b833540849dd6a05bc8fd6cfe0cbd255696fbe356f8fc9a7",
+  "tracked_diff_command": "git diff --no-ext-diff --binary --full-index 07a126d76ad33c1e4162d2379ffb68007e01dad3",
+  "untracked_inventory_command": "git ls-files -z --others --exclude-standard",
+  "untracked_diff_command": "packed in candidate.bin",
+  "untracked_files": [
+    "docs/.scratch/_verify-task-package/evidence.json",
+    "docs/.scratch/_verify-task-package/maintenance.json",
+    "docs/.scratch/_verify-task-package/slice-contract.json",
+    "docs/user-guide/\u7814\u53d1\u5b50\u9879\u76ee\u7528\u6237\u624b\u518c.md",
+    "docs/user-guide/\u8bbe\u5907\u501f\u7528\u8d2f\u7a7f\u6848\u4f8b.md"
+  ],
+  "untracked_path_bytes": [
+    "ZG9jcy8uc2NyYXRjaC9fdmVyaWZ5LXRhc2stcGFja2FnZS9ldmlkZW5jZS5qc29u",
+    "ZG9jcy8uc2NyYXRjaC9fdmVyaWZ5LXRhc2stcGFja2FnZS9tYWludGVuYW5jZS5qc29u",
+    "ZG9jcy8uc2NyYXRjaC9fdmVyaWZ5LXRhc2stcGFja2FnZS9zbGljZS1jb250cmFjdC5qc29u",
+    "ZG9jcy91c2VyLWd1aWRlL+eglOWPkeWtkOmhueebrueUqOaIt+aJi+WGjC5tZA==",
+    "ZG9jcy91c2VyLWd1aWRlL+iuvuWkh+WAn+eUqOi0r+epv+ahiOS+iy5tZA=="
+  ],
+  "excluded_paths": [
+    ".template-source/evidence/maintenance/manual-refresh-2026-09-06/"
+  ],
+  "snapshot_stream_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final/yss-harness-dev-agent/candidate.bin",
+  "tracked_diff_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final/yss-harness-dev-agent/tracked.diff",
+  "commit_list_command": "git log 07a126d76ad33c1e4162d2379ffb68007e01dad3..HEAD --oneline"
+}

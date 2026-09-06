@@ -1,0 +1,1417 @@
+diff --git a/README.md b/README.md
+index 37d941620985b24964d50f307baecf34c18f0e1f..745c26af6967cd73b99d42bf1a906473d95b9ea8 100644
+--- a/README.md
++++ b/README.md
+@@ -130,3 +130,7 @@ scripts/verify-template-fast
+ | [docs/templates/implementation-repo-registry-template.md](./docs/templates/implementation-repo-registry-template.md) | 外部实现仓库登记 |
+ | [docs/templates/cross-repo-slice-template.md](./docs/templates/cross-repo-slice-template.md) | 跨仓库垂直切片记录 |
+ | [docs/architecture/templates/architecture-deepening-template.md](./docs/architecture/templates/architecture-deepening-template.md) | 架构 deepening 候选与 seam 设计 |
++
++## 按职责使用与升级
++
++[五类项目用户手册](docs/user-guide/用户手册.md)提供选型、初始化及升级；[设备借用贯穿案例](docs/user-guide/设备借用贯穿案例.md)演示战略、后端、前端与统一验收。[全部手册](docs/user-guide/用户手册索引.md)区分日常使用与维护入口。GitHub 当前能力与 npm 发布快照分别核对。
+diff --git a/docs/user-guide/战术设计子项目用户手册.md b/docs/user-guide/战术设计子项目用户手册.md
+index 726033a41ecef9d088ca0fd3fe69eb52d18f46cb..d15e359690ca9c6ebac35e77d843328998afb637 100644
+--- a/docs/user-guide/战术设计子项目用户手册.md
++++ b/docs/user-guide/战术设计子项目用户手册.md
+@@ -1,220 +1,34 @@
+ # 战术设计子项目用户手册
+ 
+-第一次接触 Tactical Design，不需要先会写代码，也不需要背诵 DDD 术语。
++本入口保留给既有读者。Tactical Design 把已批准业务规则映射为聚合、状态、不变量、一致性边界和测试 seam；它不是新的模板家族，不代替 API Freeze 或 Slice Contract 批准。
+ 
+-这本手册把已经确认的 Strategic Design Handoff，继续细化成研发团队可以实现、测试和评审的领域模型。全文使用虚构的“客户合同审批”作为例子；示例只用于学习，不要把示例名称直接写入真实项目。
++## 输入与开始
+ 
+-## 这本手册适合谁
+-
+-- 产品经理、业务专家：想知道业务规则在技术设计中如何被保护。
+-- 架构师、开发者：需要把业务边界细化为聚合、状态和一致性规则。
+-- 测试人员：需要找到可以独立验证的领域行为。
+-- AI Agent 操作者：需要知道何时让 Agent 起草、何时要求人工确认、何时必须停下。
+-
+-不懂代码也可以读完“业务读者篇”；“研发接手篇”会出现少量工程术语，但每个术语都会先用白话解释。
+-
+-## 看完能做什么
+-
+-1. 说清 Strategic Design 和 Tactical Design 的分工。
+-2. 判断轻量 `Tactical DDD Check` 是否足够，还是需要独立的 Tactical Design 产物。
+-3. 把一个业务场景拆成聚合、Entity、Value Object、领域服务和领域事件。
+-4. 说明不变量、一致性边界、Repository / Gateway 和 API 的隔离方式。
+-5. 形成可评审、可测试、可交给实现团队的战术设计结果。
+-
+-## 先记住：它解决什么问题
+-
+-Strategic Design 解决“业务应该怎样分工和划边界”；Tactical Design 解决“在一个边界里面，具体由哪些对象协作，以及规则如何不被破坏”。
+-
+-| 工作 | 大白话 | 典型结果 |
+-|---|---|---|
+-| Strategic Design | 决定业务地图和上下文边界 | 子域、限界上下文、统一语言、Context Map |
+-| Tactical Design | 决定一个上下文内部怎样组织规则 | 聚合、状态机、不变量、领域服务、领域事件 |
+-| 工程实现 | 把设计变成可运行的软件 | OpenAPI、代码、数据映射、测试和发布 |
+-
+-本手册的终点是“战术设计已评审并可交给实现”；OpenAPI Freeze、代码和发布仍由下游研发流程负责。
+-
+-## 开始前：确认输入和仓库身份
+-
+-### 输入必须来自已确认的交接包
+-
+-开始前应能找到批准且版本当前的 `Strategic Design Handoff`，其中至少包括：
+-
+-- 已确认的业务术语和上下文边界；
+-- 关键场景、业务不变量和领域事件候选；
+-- Spec、原型或业务级 Ticket 的版本引用；
+-- 交给 Tactical Design 裁决的问题，例如聚合边界、状态、一致性和持久化；
+-- 未决问题、责任人和后续验证计划。
+-- `source_context_snapshot` 与包含术语定义的 `context_delta`，以及“目标仓在 Tactical Design 前完成 `context_reconciliation`”的约束。
+-
+-先把 `context_delta` 对账到当前项目根目录唯一 `CONTEXT.md`，生成目标侧 reconciliation，并运行 `scripts/verify-strategic-context-import --root . --reconciliation <record> <handoff>`。如果交接包缺失、仍为 v1、过期、摘要漂移或与当前 Spec / 目标词汇不一致，先回到上游处理，不要凭经验补写模型。
+-
+-### 确认项目实例
+-
+-打开项目根目录的 `yss-project.yaml`：
+-
+-| 配置 | 含义 | 处理方式 |
+-|---|---|---|
+-| `repository_mode: project-instance` | 真实业务项目 | 可以记录真实战术设计 |
+-| `repository_mode: template-source` | 模板源 | 只能维护通用模板，不能写具体产品模型 |
+-| 文件缺失或值不合法 | 身份不清楚 | 先停止并做迁移检查 |
+-
+-在项目实例中，先让 Agent 只读分诊：
+-
+-```text
+-使用 yss-product-lifecycle，以 route 模式检查“客户合同审批”的 Tactical Design 输入。
+-请先读取 yss-project.yaml、CONTEXT.md、Strategic Design Handoff 和当前已有架构资料。
+-本轮只读，不要修改文件。请用普通话告诉我：
+-1. 上游交接包是否批准且仍然有效；
+-2. 当前是轻量 Tactical DDD Check 还是需要独立 Tactical Design；
+-3. 已确认、待确认和冲突的业务规则分别是什么；
+-4. 下一步只做哪一件事。
+-正式 ID 放在普通话解释后面。
+-```
+-
+-## 业务读者篇：用白话理解核心概念
+-
+-### 1. 聚合（Aggregate）
+-
+-聚合是一组必须一起守规则的对象。聚合根是这组对象对外唯一的入口；外部不能绕过聚合根直接修改内部对象。
+-
+-例子：一次“客户合同审批”可以由 `Contract` 聚合根管理审批状态和审批记录。审批记录如果只能随合同一起新增、退回和查询，就可以放在这个聚合内；不相关的通知不要硬塞进来。
+-
+-判断一个对象是否属于同一聚合，可以问：
+-
+-- 这些数据是否必须在同一次事务中保持一致？
+-- 修改其中一个对象时，是否必须立即检查另一个对象？
+-- 聚合变得很大后，是否会造成锁、并发或性能问题？
+-
+-不要按数据库表的外键关系画聚合；表关系图和业务一致性边界不是一回事。
+-
+-### 2. Entity（实体）
+-
+-实体有自己的身份，即使其他属性变化，它仍然是“同一个东西”。例如合同有 `contractId`，合同名称或金额修改后仍是同一份合同。
+-
+-### 3. Value Object（值对象）
+-
+-值对象由它的值决定身份，没有单独的业务身份。例如合同金额、客户地址、审批意见或时间范围。两个值完全相同的金额可以互相替换；值对象通常应尽量不可变。
+-
+-### 4. 不变量（Invariant）
+-
+-不变量是无论哪条入口执行，都不能被破坏的规则。例如：
+-
+-- 合同资料完整且校验通过后才能提交审批；
+-- 已通过审批的合同不能直接改回草稿；
+-- 同一份合同不能同时存在两个正在处理的审批流程；
+-- 每次审批都必须留下操作人、时间、动作和意见。
+-
+-每条不变量都要能对应至少一个测试场景。不要把“页面上有一个发布按钮”当成不变量。
+-
+-### 5. 状态机
+-
+-状态机把允许的状态变化写清楚。合同示例：`草稿 → 待审批 → 审批中 → 已通过`；审批人退回时回到“草稿”，但“已通过”不能直接回到“草稿”。
+-
+-| 当前状态 | 动作 | 下一状态 | 必须满足 |
+-|---|---|---|---|
+-| 草稿 | 提交审批 | 待审批 | 合同资料完整 |
+-| 待审批 | 审批人接单 | 审批中 | 已分配审批人 |
+-| 审批中 | 审批通过 | 已通过 | 规则检查通过 |
+-| 审批中 | 退回 | 草稿 | 必须填写退回原因 |
+-| 已通过 | 修改 | 不允许 | 创建新的合同草稿 |
+-
+-### 6. 领域服务（Domain Service）
+-
+-当一条业务规则不自然属于某个实体，或需要协调多个聚合时，可以使用领域服务。领域服务只表达业务决策，不负责 HTTP、数据库连接或页面跳转。
+-
+-### 7. 领域事件（Domain Event）
+-
+-领域事件记录“业务上已经发生了什么”，例如 `ContractApproved`。它适合通知订阅者、触发异步处理或留下审计线索；事件名称应使用业务语言，不要直接暴露数据库表名。
+-
+-## 研发接手篇：从场景形成战术设计
+-
+-### 第一步：从用户场景开始，不从类名开始
+-
+-以“提交客户合同审批”为例，先写出：谁发起、前置条件、动作、结果、失败方式和后续影响。
++先核对本仓身份、profile、根 CONTEXT.md、当前战略交接及批准证据。导入快照后完成目标词汇对账，再逐项登记源规则/关键场景的承接；缺失、冲突或过期先回交，不能猜测业务规则。
+ 
+ ```text
+-角色：销售人员
+-前置条件：合同资料完整，且当前没有正在处理的审批流程
+-动作：提交合同审批
+-成功：合同进入“待审批”，产生 ContractSubmitted 事件
+-失败：保留原状态，返回可理解的失败原因
++请按本仓生命周期检查“设备领用”当前战略输入及目标词汇对账。
++有领域行为影响时，使用 yss-tactical-design 起草战术设计，
++解释设备占用的竞争、状态转换和一致性边界，并映射公开测试 seam。
++逐项列出已承接、冲突、延期及依赖切片，等待适用审查后再编译实现合同。
+ ```
+ 
+-### 第二步：列出规则并划一致性边界
+-
+-把规则分成“必须立即成立”和“可以稍后完成”：
+-
+-| 规则 | 一致性要求 | 设计提示 |
+-|---|---|---|
+-| 提交前资料必须完整 | 立即成立 | 放在合同聚合的不变量中 |
+-| 同一合同不能重复提交 | 立即成立 | 由聚合 + Repository 检查并发冲突 |
+-| 审批结果通知销售 | 可稍后完成 | 审批完成后发送领域事件 |
+-| 统计报表更新 | 可稍后完成 | 使用异步订阅，不阻塞审批事务 |
+-
+-跨聚合流程由 Application 编排；核心规则仍放在 Domain。不要把所有规则塞进 Controller 或 Application Service。
+-
+-### 第三步：画出对象职责，而不是字段清单
+-
+-至少记录以下内容：
+-
+-| 对象 | 类型 | 负责什么 | 不负责什么 |
+-|---|---|---|---|
+-| `Contract` | Aggregate Root / Entity | 状态变化、提交前检查 | 发送 HTTP、直接操作表 |
+-| `ApprovalRecord` | Entity 或 Value Object（需裁决） | 表达审批动作、意见和时间 | 决定整个流程 |
+-| `ApproveContract` | Domain Service（必要时） | 协调跨对象的审批规则 | 事务提交和接口适配 |
+-| `ContractRepository` | Repository seam | 保存和加载聚合 | 对外暴露数据库结构 |
+-| `ContractApproved` | Domain Event | 描述审批已通过 | 代替主事务中的规则检查 |
+-
+-“Value Object 还是 Entity”不是凭习惯决定的：如果版本需要独立追踪身份、生命周期或并发操作，可能是 Entity；如果它只是不可变的版本值，可能是 Value Object。把裁决理由写下来。
+-
+-### 第四步：隔离 Repository、Gateway 和 API
+-
+-- `Repository` 面向领域模型的保存 / 加载，不让领域层依赖 ORM 或表结构。
+-- `Gateway` 面向外部系统能力，例如通知、文件存储或规则服务；领域层只依赖抽象接口。
+-- API schema 面向调用方，不直接暴露聚合内部对象、Repository 或持久化表。
+-- Application 负责用例编排、事务边界和跨聚合协调；Domain 负责核心业务规则。
+-
+-### 第五步：写测试 seam
+-
+-每条关键规则都要有可执行的验证入口：
+-
+-- 聚合行为测试：给定状态和动作，验证状态变化或拒绝原因；
+-- Repository / Gateway 契约测试：验证抽象接口的输入输出；
+-- Application 用例测试：验证事务边界和跨聚合协调；
+-- API 契约测试：验证公开 wire shape，不验证内部类名。
+-
+-## 什么时候需要独立 Tactical Design
+-
+-大多数简单变更，在系统概要设计中的 `Tactical DDD Check` 写清楚即可。只有当以下内容复杂到无法在一节中审查时，才升级为独立 Tactical Design 产物：
+-
+-- 多个聚合之间有复杂的一致性或并发规则；
+-- 状态机有分支、补偿、重试或不可逆状态；
+-- 持久化映射会隐藏或破坏领域边界；
+-- Gateway、领域事件或最终一致性需要明确时序；
+-- 评审者无法仅凭概要设计复现关键业务行为。
++## 评审要回答的问题
+ 
+-升级不是为了增加文档数量，而是为了让复杂决策可读、可测试、可追责。无论采用轻量检查还是独立文档，都必须引用同一份 `tactical-design` contract 和 `evidence.tactical-design-review`，不能产生两套互相矛盾的事实源。
++| 设计问题 | 设备借用中的例子 |
++|---|---|
++| 谁保护不变量 | 哪个对象/边界保证设备不能同时被领用 |
++| 状态是否合法 | 未批准申请是否允许领用；重复归还如何处理 |
++| 一致性在哪里保证 | 申请与设备占用是否同事务；失败如何恢复 |
++| 外部依赖如何隔离 | API/Repository/Gateway 怎样映射而不篡改业务含义 |
++| 如何证伪设计 | 并发领用、无权限、重复请求的公开 seam 与预期结果 |
+ 
+-## 评审前自检
++案例只是提问方向，答案由项目实际业务与工程条件决定。没有领域行为影响时按当前政策记录带原因的 not-applicable，不为简单页面硬造聚合。
+ 
+-- [ ] 输入来自批准且版本当前的 `Strategic Design Handoff`。
+-- [ ] Strategic Design Handoff 为 schema v2，目标根 `CONTEXT.md` 已完成 context delta 对账，`strategic_context_import_ref` 与 `context_reconciliation_ref` 均通过校验。
+-- [ ] 统一语言与 `CONTEXT.md` 一致，没有临时创造同义词。
+-- [ ] 聚合根、Entity、Value Object 的身份和边界有理由。
+-- [ ] 每个聚合的不变量和允许的状态转换都写清楚。
+-- [ ] 一致性规则区分了立即成立与最终一致。
+-- [ ] Application、Domain、Repository、Gateway 和 API 的职责没有混淆。
+-- [ ] 领域事件表达业务事实，不暴露内部表结构。
+-- [ ] 关键规则都有测试 seam 和失败场景。
+-- [ ] 已判断轻量 `Tactical DDD Check` 是否足够；需要升级时写明原因。
+-- [ ] 未决问题有负责人、后续 Ticket、验证计划和目标版本。
++## 从设计到实现
+ 
+-## 与其他文档怎么分工
++综合项目由本仓生命周期继续路由，通用研发/后端由 Harness 流程承接。前端专职只消费上游规则、冻结接口并准备前端工程设计，不在本仓派发后端战术实现。
+ 
+-- [用户手册索引](./用户手册索引.md)：所有入门手册的入口。
+-- [战略设计子项目用户手册](../../submodules/yss-harness-design-agent/docs/user-guide/战略设计子项目用户手册.md)：上游 Discovery、DDD 战略设计、Spec、原型和 Strategic Design Handoff。
+-- [系统概要设计模板](../architecture/templates/system-overview-design-template.md)：轻量 Tactical DDD Check 的记录位置。
+-- [架构评审清单](../architecture/templates/architecture-review-checklist.md)：设计评审时的结构化检查项。
+-- `yss-implementation-contract-compiler` 与后端 / 前端专项技能：批准后的实现合同、代码和验证规则。
++编译器起草当前合同，批准与可实现状态由本仓编排和门禁控制。实现前确认工程登记、冻结接口、测试 seam、允许路径与回滚点。战术评审通过不等于 ready-for-agent。
+ 
+-本手册是模板源中的通用分发资产。真实项目应使用自己的术语、规则、合同版本和批准记录；不要把“客户合同审批”示例当成真实业务结论。
++过程示例见 [设备借用贯穿案例](设备借用贯穿案例.md)；项目选型见 [用户手册](用户手册.md)。
+diff --git a/docs/user-guide/用户手册.md b/docs/user-guide/用户手册.md
+index 97c54b8f3092e2d3a72b70a1014224cd647affc1..eebf6d3aa9be9657a8f2f4a7ffa423abc7cd3395 100644
+--- a/docs/user-guide/用户手册.md
++++ b/docs/user-guide/用户手册.md
+@@ -1,1014 +1,113 @@
+ # YSS 用户手册
+ 
+-第一次使用 YSS，不需要先读完所有规则。
++面向首次使用与已有项目升级的操作者。本仓是模板源；从模板生成项目实例后再保存真实业务材料。先选对职责，再让 Agent 根据本仓规则执行。
+ 
+-先用 CLI 准备项目，再完成一次只读检查。等你知道当前在哪一步、还缺什么，再按本手册继续。
++## 先选项目
+ 
+-## 这本手册适合谁
+-
+-- 第一次打开 YSS 项目，不知道从哪里开始。
+-- 听说过 Spec、Ticket，但不清楚它们有什么用。
+-- 需求只有一两句话，不知道应该先问什么。
+-- 团队准备开发，需要确认前端、后端和测试怎样配合。
+-- 想新建、接管或更新 YSS 项目。
+-
+-## 看完能做什么
+-
+-- 用 CLI 创建、接管或更新项目。
+-- 在项目准备好后，完成一次不会修改文件的检查。
+-- 看懂 Agent 给出的当前阶段、阻塞原因和下一步。
+-- 把模糊需求整理成能写 Spec 的内容。
+-- 知道什么时候可以开发，什么时候必须先停下。
+-- 用同一套方法处理新功能、小改动和 Bug。
+-- 正确使用 `create-yss-spec` 创建、接管或更新项目。
+-
+-## 先找到你要做的事
+-
+-| 你的情况 | 直接看这里 | 你会得到什么 |
++| 你的任务 | 选择 | 创建与更新入口 |
+ |---|---|---|
+-| 还没有 YSS 项目 | [先用 CLI 准备项目](#先用-cli-准备项目) | 创建项目的最短命令和成功结果 |
+-| 第一次使用 | [三分钟开始](#三分钟开始) | 一段可以直接复制的只读检查提示词 |
+-| 需求还很模糊 | [需求没说清楚时怎么问](#需求没说清楚时怎么问) | 固定的追问顺序和记录格式 |
+-| 想看完整过程 | [用“模型发布”走一遍完整流程](#用模型发布走一遍完整流程) | 从需求到发布的虚构示例 |
+-| 团队准备开发 | [团队怎么配合](#团队怎么配合) | 新功能、小改动、Bug 的处理方法 |
+-| 新建或接管项目 | [创建、接管和更新项目](#创建接管和更新项目) | `create-yss-spec` 的实际命令 |
+-| 遇到专业词 | [新手术语卡](#新手术语卡) | 常用状态和正式名称的普通话解释 |
+-
+-## 先用 CLI 准备项目
+-
+-还没有项目时，先运行 CLI。后面的生命周期检查都在生成好的项目目录中执行。
+-
+-### 第一步：确认本机可以运行 Node.js 和 npm
+-
+-```bash
+-node --version
+-npm --version
+-```
++| 从想法到发布，统一管理整个业务切片 | 综合模板 `yss-spec-project-template` | `create-yss-spec`：初始化、attach、sync |
++| 澄清业务、Spec、原型并交接研发 | 战略模板 `yss-harness-design-agent` | `create-yss-harness-design`：初始化；无 attach/sync |
++| 接收已批准上游，统一组织研发 | 通用研发模板 `yss-harness-dev-agent` | `create-yss-harness-dev`：初始化、attach、sync |
++| 独立团队承担后端并输出交付包 | 后端模板 `yss-harness-backend-agent` | 仓内 `scripts/instantiate-harness`；仅新目录 |
++| 接收战略及后端交付，承担前端 | 前端模板 `yss-harness-frontend-agent` | 仓内 `scripts/instantiate-harness`；仅新目录 |
+ 
+-两个命令都能输出版本号，才能继续。
++通用研发和前后端专职是可选择的组织方式，不要求现有通用项目迁移。采用专职路线时，登记一个统一管理方汇总业务切片，不能把两端自报完成直接相加当作业务验收。
+ 
+-如果提示找不到命令，请先安装符合项目要求的 Node.js。
++完整协作可以采用“战略 → 后端交付 → 前端联合接收 → 统一业务验收”。综合或通用研发也可承担协调职责，具体责任人和仓库由项目登记，不凭目录推断。
+ 
+-### 第二步：创建项目
++## 安装和首次创建
+ 
+-在准备存放项目的父目录中运行：
++先确认 Node.js 与 npm 可用，命令要求以所选 CLI README 为准。首次使用推荐下列已发布渠道，三条命令只选择与你职责匹配的一条：
+ 
+ ```bash
+ npm create yss-spec@latest
++npm create yss-harness-design@latest
++npm create yss-harness-dev@latest
+ ```
+ 
+-按提示填写项目名称、业务领域和目标目录。
+-
+-需要一次写明参数时，可以运行：
+-
+-```bash
+-npx create-yss-spec@latest \
+-  --project-name "项目名称" \
+-  --business-domain "业务领域" \
+-  --target-dir "./project" \
+-  --git-init
+-```
+-
+-### 第三步：确认初始化成功
+-
+-进入新项目目录，检查下面几项：
+-
+-- 根目录存在 `yss-project.yaml`。
+-- `repository_mode` 为 `project-instance`。
+-- 根目录存在 `CONTEXT.md`、`AGENTS.md` 和 `docs/`。
+-- `.yss-template.json` 已记录模板版本信息。
+-
+-如果这些文件缺失，请先处理 CLI 报错，不要继续做生命周期分诊。
+-
+-### 已经有项目怎么办
+-
+-| 当前情况 | 先做什么 | 详细说明 |
+-|---|---|---|
+-| 现有项目还没有 YSS 模板 | 使用 `attach --dry-run` 预览，再确认写入 | [接管已有项目](#接管已有项目) |
+-| 已经存在 `.yss-template.json` | 使用 `sync --dry-run` 预览，再同步 | [更新模板](#更新模板) |
+-
+-不要在已有 `.yss-template.json` 的项目中重复运行 `attach`。
+-
+-## 开始前准备
+-
+-CLI 初始化、接管或同步成功后，再准备：
+-
+-1. 进入项目根目录。
+-2. 确认 `yss-project.yaml` 和 `CONTEXT.md` 可以打开。
+-3. 确认 `yss-project.yaml` 中的 `repository_mode` 为 `project-instance`。
+-4. 准备当前功能已有的文档、Ticket 或代码位置。
+-
+-第四项暂时没有也可以开始。先让 Agent 告诉你缺什么。
+-
+-> 本手册使用“模型发布”作为虚构示例。不要因为教程把它写入任何项目的 `CONTEXT.md`。只有真实项目确实存在这个业务概念，并由业务方确认中文名称、含义和 PascalCase 英文标识后，才能登记。
+-
+-## 三分钟开始
+-
+-### 第一步：确认仓库身份
+-
+-打开根目录的 `yss-project.yaml`。
+-
+-| 看到的内容 | 表示什么 | 你要做什么 |
+-|---|---|---|
+-| `repository_mode: project-instance` | 这是实际产品项目 | 可以继续检查功能 |
+-| `repository_mode: template-source` | 这是模板源 | 只维护模板，不创建真实产品的 Spec、原型或 Ticket |
+-| 文件缺失或值不合法 | 仓库身份不清楚 | 先停止，让 Agent 做迁移检查 |
+-
+-### 第二步：让 Agent 只做检查
+-
+-在 `project-instance` 中，把下面这段话发给 Agent：
+-
+-```text
+-使用 yss-product-lifecycle，以 route 模式检查“模型发布”功能。
+-请先读取 yss-project.yaml、CONTEXT.md 和当前已有资料。
+-本轮只读，不要修改文件。
+-请用普通话告诉我：
+-1. 现在走到哪一步；
+-2. 哪些资料还能继续使用；
+-3. 还缺什么；
+-4. 下一步只做哪一件事。
+-正式 ID 放在普通话解释后面。
+-```
+-
+-`route` 的意思是“只检查，不写文件”。第一次使用时优先选它。
+-
+-### 第三步：检查回答
+-
+-一份能用的回答至少要说明：
+-
+-- 当前处于哪一步。
+-- 功能会影响页面、接口、后端、数据还是多个仓库。
+-- 哪些资料存在、缺失或已经过期。
+-- 有没有功能父 Ticket 和垂直切片 Ticket。
+-- 当前小任务是否已经具备开发条件（`ready-for-agent`）。
+-- 下一步具体做什么。
+-- 为什么现在要暂停或可以继续。
++本手册描述 GitHub 当前实现。`@latest` 指 npm 已发布版本，其模板快照可能落后于 GitHub。使用前运行 `npm view <包名> version` 核对；包名占位符须替换。未发布的候选不能用对应的 npm 版本号直接安装。
+ 
+-如果回答只说“可以开始开发”，却没有依据，请让 Agent 重新检查。
++要使用尚未发布的手册版本，从对应 CLI 的 GitHub 固定提交检出，按该仓 README 的候选包步骤构建；检查 `template.snapshot.json` 的 `templateCommit` 与包版本。CLI 初始化使用包内快照，不会实时拉取最新模板。不同家族的快照和版本号分别记录。
+ 
+-### 三分钟检查成功后，你应该知道
+-
+-- 当前仓库是不是 `project-instance`。
+-- 当前功能走到了哪一步。
+-- 哪些问题还没有答案。
+-- 下一步只需要完成什么。
+-
+-只要这四项说不清，就不要直接让 Agent 写代码。
+-
+-## 四种使用模式
+-
+-| 模式 | 普通话解释 | 什么时候用 | 会不会写文件 |
+-|---|---|---|---|
+-| `route` | 看现状和下一步 | 第一次检查、范围变化后 | 不会 |
+-| `orchestrate` | 按当前范围继续推进 | 已经确认可以补文档或执行工作 | 会，但只能在约定范围内 |
+-| `resume` | 中断后重新核对再继续 | 会签完成、补充资料或更换 Agent 后 | 会，但先检查状态 |
+-| `audit` | 独立检查有没有漏项 | 审查阶段或怀疑状态不对时 | 不会 |
+-
+-需要继续推进时，可以发送：
+-
+-```text
+-继续使用 yss-product-lifecycle，以 orchestrate 模式推进“模型发布”。
+-只处理当前功能范围。
+-遇到需要确认、发现新影响、资料过期或需要额外授权时停下。
+-每完成一步，请告诉我改了什么、证据在哪里、下一步是什么。
+-```
+-
+-## 可选：使用个人 Codex Plugin
+-
+-本节介绍的是个人、本机的可选工具，不属于 YSS 模板交付物。它不会自动安装到其他成员的环境，也不会改变项目的事实源、生命周期阶段或门禁。
+-
+-### 适合谁
+-
+-当前示例插件 `yss-backend-harness` 只服务后端工程角色。产品、项目、前端和测试角色应使用各自职责对应的工具或 Plugin，不要把后端插件当成全团队通用插件。
+-
+-### 安装和触发
+-
+-在已经安装 Codex、并且本机存在 `personal` marketplace 的环境中执行：
++后端/前端专职没有专用 npm 包。检出相应 GitHub 模板的完整固定提交，在干净模板根运行：
+ 
+ ```bash
+-codex plugin add yss-backend-harness@personal
+-```
+-
+-安装后刷新或重启 Codex，再在已登记的实现仓库中调用。例如：
+-
+-```text
+-请读取当前 YSS 任务包和 Slice Contract，按 role.backend-engineer 生成或执行后端任务。
+-```
+-
+-插件只能在以下条件满足后执行具体实现：
+-
+-- 仓库是 `project-instance`，不是 `template-source`；
+-- 实现仓库、项目根目录、分支和验证命令已经登记；
+-- OpenAPI 已 Freeze，或已记录无 API 影响；
+-- Slice Contract 已批准并处于 `ready-for-agent`；
+-- 任务包明确了允许写入的路径、行为和测试 seam。
+-
+-### 插件不会替代什么
+-
+-Plugin 是运行时适配器，不是新的事实源。它不会替代 `yss-product-lifecycle`、`yss-implementation-contract-compiler` 或 `tdd`，不会设置 `ready-for-agent`，不会 Freeze OpenAPI，也不能承担独立审查。
+-
+-执行结果应包含 `Workflow Execution Result`（例如 `completed`、`blocked`、`needs-human` 或 `failed`）及对应证据。发现路径越界、合同过期、影响面变化或证据缺失时，应停止并回到路由流程。
+-
+-### 不可用时怎么办
+-
+-如果插件未安装、版本不兼容或执行失败，回退到通用的 `yss-implementation-contract-compiler + tdd` 流程，并记录阻塞原因和实际验证命令。不要为了绕过插件故障而跳过生命周期门禁。
+-
+-### 其他应用的接入建议
+-
+-应用接入按项目需要逐步增加，不作为模板默认依赖：
+-
+-1. GitHub 或 GitLab：代码、分支、MR/PR 和 CI。
+-2. Jira 或 Linear：父 Ticket、Slice Ticket、状态和责任人。
+-3. GitHub Actions、GitLab CI 或 Jenkins：自动执行模板、前端和后端验证。
+-4. Confluence、Notion 或飞书文档：团队说明和知识库，但不得替代仓库事实源。
+-5. Figma：仅在产品设计和 UI 实现阶段接入。
+-6. Slack、Teams 或企业微信：仅发送阻塞、审查和发布通知，不承载正式决策。
+-7. Sentry、Grafana 或 Datadog：仅在具体产品实例上线后接入运行监控。
+-
+-推荐顺序是：本地 Git + Codex/Plugin → Git 平台 → Issue tracker → CI/CD → 知识库 → 设计、通知和监控。
+-
+-## 一张表看懂完整路线
+-
+-| 你要解决的问题 | 正式阶段 | 完成后应该看到什么 |
+-|---|---|---|
+-| 先弄清仓库和现状 | 入口分诊 `stage.entry-triage` | 仓库身份、影响范围、最近可信阶段 |
+-| 把想法问清楚 | Discovery `stage.discovery` | 用户、目标、范围、非目标、成功标准 |
+-| 写成可以确认的说明 | Spec / 功能架构 `stage.spec-architecture` | Spec、总体设计、功能架构 |
+-| 把页面和状态想清楚 | 产品设计 `stage.product-design` | 页面流、状态矩阵、原型和确认记录 |
+-| 定好接口、数据和工程约定 | 系统 / 数据架构与工程契约 `stage.system-data-engineering` | OpenAPI、数据设计、工程准备信息和审查记录 |
+-| 拆成可以单独完成的小任务 | Ticket 正式化 `stage.ticket-formalization` | 功能父 Ticket、垂直切片和实现合同 |
+-| 按合同实现和测试 | 垂直切片实现 `stage.vertical-slice-implementation` | 代码、测试和实际命令结果 |
+-| 独立检查并发布 | 验证 / 发布 / 复盘 `stage.verification-release-retrospective` | 审查、当次验证、发布和回滚记录 |
+-
+-主阶段不能删除。
+-
+-某项检查确实与当前功能无关时，记录“不适用”（`not-applicable`）和原因。不要为了凑齐目录创建空文档。
+-
+-## 用“模型发布”走一遍完整流程
+-
+-下面只是教学示例。
+-
+-假设建模人员现在只能保存草稿。团队希望增加发布功能，让下游系统读取稳定版本。
+-
+-一开始，发布后能不能修改、要不要审批、失败后能不能重试，都没有答案。因此不能直接写代码。
+-
+-### 第一步：只读分诊
+-
+-先用前面的 `route` 提示词检查仓库和已有资料。
+-
+-这个示例可能影响 UI、API、Backend 和 Data。如果前后端位于不同仓库，还会有 Cross-repo 影响。
+-
+-成功时你会看到：
+-
+-- 仓库身份合法。
+-- 当前阶段和最近可信阶段已经说明。
+-- Agent 没有修改文件。
+-- 下一步指向需求澄清，而不是直接实现。
+-
+-正式信息：
+-
+-- 阶段：`stage.entry-triage`
+-- 工作单元：`work-unit.entry-triage`
+-- 检查点：`gate.repository-identity-valid`
+-
+-### 第二步：把需求问清楚
+-
+-先确认用户和目标：
+-
+-- 用户：建模人员。
+-- 目标：把检查通过的草稿变成下游可以读取的稳定版本。
+-- 成功：页面显示发布成功，下游读取到新版本。
+-
+-再确认边界：
+-
+-| 问题 | 示例答案 |
+-|---|---|
+-| 发布后能否直接修改 | 不能，修改要产生新草稿 |
+-| 是否需要审批 | 本次 MVP 不做审批 |
+-| 发布失败怎么办 | 保留草稿，允许重试 |
+-| 下游读取哪个版本 | 只读取最后一个发布成功的版本 |
+-| 本次不做什么 | 不做定时发布，不做批量发布 |
+-
+-示例答案不能替代真实业务决定。
+-
+-成功时，已确认、待确认、非目标和外部事实已经分开记录。不确定的问题没有被 Agent 擅自决定。
+-
+-正式信息：
+-
+-- 阶段：`stage.discovery`
+-- 工作单元：`work-unit.discovery-opportunity`、`work-unit.discovery-requirements`、`work-unit.domain-strategy-design`、`work-unit.stage-decision`
+-
+-### 第三步：写 Spec
+-
+-Spec 可以先理解为“功能说明书”。它至少写清：
+-
+-1. 为什么要做。
+-2. 谁可以操作。
+-3. 操作前必须满足什么条件。
+-4. 成功、失败和重试时发生什么。
+-5. 本次明确不做什么。
+-6. 用户和测试从哪里看到结果。
+-
+-Spec 初稿通常使用 `ready-for-human`。这表示还要确认，不表示可以开发。
+-
+-成功时，用户问题、范围、主流程、异常流程和验收标准都可以被复述，Spec 基线已经完成需要的会签。
+-
+-正式信息：
+-
+-- 阶段：`stage.spec-architecture`
+-- 工作单元：`work-unit.spec-synthesis`
+-- 检查点：`gate.spec-baseline-approved`
+-
+-### 第四步：把页面和状态画清楚
+-
+-如果功能会改变页面、导航、操作流程、权限体验或状态展示，需要补产品设计。
+-
+-“模型发布”至少要考虑：
+-
+-- 发布按钮什么时候可用。
+-- 发布中、成功和失败怎么显示。
+-- 没有权限时怎么提示。
+-- 失败后能不能重试。
+-- 窄屏下是否还能完成操作。
+-
+-先独立评审低保真和状态矩阵，再选择满足风险的最低原型档位：H1 确认视觉和少量交互，H2 验证主流程与异常状态。原型阶段不调用生产实现技能 `yss-ui`；真实组件假设与待验行为交给前端实现计划和实现还原验证。成功时，交互说明、状态矩阵、低保真和原型交付物相互一致，并有评审、浏览器验证和用户确认记录。
+-
+-正式信息：
+-
+-- 阶段：`stage.product-design`
+-- 工作单元：`work-unit.prototype-design`
+-- 检查点：`gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation`
+-
+-### 第五步：定接口、数据和工程约定
+-
+-有 API 影响时，先写 OpenAPI 3.1 Draft。
+-
+-Draft 只是草案。评审通过后才能 Freeze。Freeze 可以理解为“接口版本已经确认，前后端按同一份约定实现”。
+-
+-还要回答：
+-
+-- 草稿版本和发布版本怎样区分。
+-- 什么状态允许发布。
+-- 重复请求怎样处理。
+-- 失败是否留下中间状态。
+-- 下游怎样保证只拿到成功版本。
+-
+-同时登记实现仓库、项目根、分支、CI、前端 `pnpm` 命令、后端 `./mvnw` 命令、发布顺序和回滚点。
+-
+-没有 API 影响时，留下明确记录，不要创建空 OpenAPI 文件。
+-
+-正式信息：
+-
+-- 阶段：`stage.system-data-engineering`
+-- 工作单元：`work-unit.technical-analysis`
+-- 常见检查点：`gate.openapi-draft-reviewed`、`gate.design-reviewed`、`gate.openapi-frozen`、`gate.engineering-baseline-accepted`、`gate.architecture-reviewed`
+-
+-### 第六步：拆成可以实现的 Ticket
+-
+-先创建功能父 Ticket，用来汇总整个功能。
+-
+-再按用户能看到的结果拆垂直切片：
+-
+-| 切片 | 用户能看到的结果 | 主要验证 |
+-|---|---|---|
+-| 提交发布 | 建模人员提交请求并看到明确状态 | API 契约测试、页面状态测试 |
+-| 读取发布版本 | 下游只读取最后一个成功版本 | 后端行为测试、数据验证 |
+-| 失败后重试 | 失败不破坏草稿，用户可以重试 | 失败路径和幂等测试 |
+-
+-不要只拆成“写 Controller”“写页面”“建表”。这种任务不能单独证明用户结果。
+-
+-切片进入 `ready-for-agent` 前必须确认：
+-
+-- 需要的检查点已经批准或明确不适用。
+-- 当前 Slice Implementation Contract 已批准并保存。
+-- 阻塞关系已经关闭。
+-- 实现仓库和验证命令已经登记。
+-- 有 UI 影响时，前端实现还原计划已经通过检查。
+-
+-正式信息：
+-
+-- 阶段：`stage.ticket-formalization`
+-- 工作单元：`work-unit.ticket-decomposition`
+-- 检查点：`gate.slice-contract-approved`、`gate.slice-ready-for-agent`
+-
+-### 第七步：按合同实现
+-
+-每次只实现一个 `ready-for-agent` 切片。
+-
+-前端：
+-
+-- 让 `yss-implementation-contract-compiler` 选择当前页面需要的专项 skill。
+-- 以 `yss-ui`、`yss-ui-business-page-generation` 和 `tdd` 为主。
+-- 只修改合同允许的路径。
+-- 实际运行已登记的 `pnpm` 命令。
+-
+-后端：
+-
+-- 按影响选择 `yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-web-controller` 和 `yss-dto`。
+-- 先写失败测试，再实现最小代码。
+-- 只修改合同允许的路径。
+-- 实际运行项目根目录的 `./mvnw`。
+-
+-Agent 应返回合同版本、修改文件、实际命令、退出码和证据位置。
+-
+-发现资料过期、新影响或违反合同时，Agent 必须停下并重新分诊。
+-
+-### 第八步：独立审查、发布和复盘
+-
+-1. 审查前固定一个不再变化的候选快照。
+-2. 由非实现者使用 `code-review` 审查。
+-3. 对同一候选重新运行测试、构建和关键流程检查。
+-4. 准备发布步骤、监控、回滚方法和负责人。
+-5. 由生物人决定 `gate.release-ready`。
+-6. 出现返工或重要问题时记录复盘。
+-
+-审查可能给出：
+-
+-- `violation`：实现违反当前合同，修复后重新检查。
+-- `drift`：资料和实现不一致，回到路由重新判断。
+-- `new_impacts`：出现新的 UI、API、数据或风险影响，回到路由补分析。
+-
+-成功时，同一候选已经通过独立审查和当次验证，发布和回滚证据可以读取。
+-
+-## 需求没说清楚时怎么问
+-
+-当一句需求可以有多种理解时，先问清楚，再写 Spec、接口或代码。
+-
+-### 先用普通话说明问题
+-
+-不推荐：
+-
+-```text
+-做一个模型发布功能。
+-```
+-
+-推荐：
+-
+-```text
+-建模人员现在只能保存草稿。
+-我们希望增加发布功能，让下游系统读取稳定版本。
+-我还不确定发布后能不能修改、是否需要审批、失败后怎么处理。
+-```
+-
+-第二种写法说明了用户、现状、目标和不确定点，Agent 才知道应该问什么。
+-
+-### 按这个顺序追问
+-
+-#### 1. 谁在使用
+-
+-- 谁发起操作？
+-- 谁查看结果？
+-- 谁不能操作？
+-- 不同角色看到的内容是否一样？
+-
+-#### 2. 用户要完成什么
+-
+-- 用户开始操作前处于什么状态？
+-- 用户做了什么？
+-- 什么结果表示成功？
+-- 成功后下一步是什么？
+-
+-#### 3. 哪些内容不做
+-
+-- 本次 MVP 不包括什么？
+-- 哪些角色、页面或流程以后再做？
+-- 哪些旧行为保持不变？
+-
+-#### 4. 失败时怎么办
+-
+-- 输入不合法时怎么提示？
+-- 没有权限时怎么提示？
+-- 外部服务失败时能不能重试？
+-- 重试会不会产生重复数据？
+-- 失败后怎样恢复？
+-
+-#### 5. 怎么验收
+-
+-不要只写“发布成功”。要写用户能看到或测试能读取的结果。
+-
+-例如：
+-
+-- 页面显示已发布版本号。
+-- 刷新后状态仍为已发布。
+-- 下游查询接口返回新版本。
+-- 发布失败时保留草稿，并显示可重试提示。
+-
+-### 一轮只问一个主题
+-
+-不要一次扔出十几个问题。
+-
+-先问用户和目标。得到可用答案后，再问流程、边界、失败和验收。
+-
+-不推荐：
+-
+-> 请补充角色、权限、状态、流程、异常、接口、表结构和测试方案。
+-
+-推荐：
+-
+-> 先确认用户。谁可以发布模型？谁只能查看结果？
+-
+-### 把形容词改成可以检查的结果
+-
+-| 模糊说法 | 继续追问 | 可用答案示例 |
+-|---|---|---|
+-| 发布要快 | 多久算快，在哪个环境测 | 95% 请求在 3 秒内返回受理结果 |
+-| 操作要安全 | 要防止什么问题 | 重复点击不会创建两个发布版本 |
+-| 权限要控制 | 谁能做，谁不能做 | 建模人员可发布，访客只能查看 |
+-| 失败要友好 | 用户看到什么，能做什么 | 保留草稿，显示原因和重试入口 |
+-| 支持回滚 | 回到哪里，影响谁 | 恢复到上一个成功版本，下游下一次查询生效 |
+-
+-只有真实业务方确认后，示例答案才能成为需求。
+-
+-### 用“开始、动作、结果”检查流程
+-
+-| 开始 | 动作 | 结果 |
+-|---|---|---|
+-| 模型为可发布草稿 | 点击发布并确认 | 页面进入发布中 |
+-| 发布中 | 系统处理完成 | 显示发布成功和版本号 |
+-| 发布中 | 系统处理失败 | 返回草稿，显示原因和重试入口 |
+-
+-有一格写不出来，说明需求还没有问清楚。
+-
+-### 分开记录不同类型的信息
+-
+-| 类型 | 表示什么 | 怎么处理 |
+-|---|---|---|
+-| 已确认 | 已由业务方、产品或权威资料确认 | 可以进入后续文档 |
+-| 待确认 | 暂时没有答案 | 写负责人和确认时间，不让 Agent 猜 |
+-| 非目标 | 本次明确不做 | 用来控制范围 |
+-| 外部事实 | 来自法规、第三方 API、竞品或技术资料 | 用 `yss-research` 或 `competitive-intelligence` 核对；`research` 仅为兼容旧名 |
+-| 猜测 | 还没有人确认的推测 | 保持为待确认 |
+-
+-### 处理稳定术语
+-
+-只有术语含义和使用范围都确认后，才提议写入项目实例的 `CONTEXT.md`。
+-
+-记录时包含：
+-
+-- 中文术语。
+-- 简短含义。
+-- PascalCase 英文标识。
+-- 禁用的中文和英文别名。
+-
+-不要把 Vue 组件、Java 类、表名、接口路径、临时计划或猜测写进词汇表。
+-
+-### 什么时候需要 ADR
+-
+-ADR 是架构决策记录。
+-
+-只有同时满足下面三项时才写：
+-
+-1. 决定很难回滚。
+-2. 没有上下文时，未来读者会困惑。
+-3. 团队确实比较过不同方案。
+-
+-发布版本是否永久不可变，可能需要 ADR。按钮放左边还是右边，通常不需要。
+-
+-### 推荐的需求记录格式
+-
+-```markdown
+-## 本轮结论
+-
+-### 已确认
+-- ...
+-
+-### 待确认
+-- 问题：
+-  负责人：
+-  计划确认时间：
+-
+-### 非目标
+-- ...
+-
+-### 外部事实
+-- 事实：
+-  来源：
+-
+-### 稳定术语建议
+-- 中文术语：
+-  英文标识：
+-  含义：
+-  禁用别名：
+-
+-### ADR 建议
+-- 无 / 建议记录：
+-
+-### 下一步
+-- ...
+-```
+-
+-### 什么时候可以停止追问
+-
+-满足下面条件时，可以把结果交给 `yss-product-lifecycle` 检查：
+-
+-- 用户和目标明确。
+-- 主流程能写成“开始、动作、结果”。
+-- 失败、权限和恢复路径有答案。
+-- 非目标已经记录。
+-- 验收结果可以观察。
+-- 待确认问题不会影响下一阶段，或已经明确阻塞。
+-
+-默认由 `yss-product-lifecycle` 运行 `work-unit.discovery-requirements`。
+-
+-`grill-with-docs`、`to-spec`、`to-tickets` 和 `implement` 只是用户明确点名时使用的兼容入口。它们不能跳过前置检查。
+-
+-## 团队怎么配合
+-
+-### 先判断任务类型
+-
+-| 你的情况 | 从哪里开始 | 重点检查 |
+-|---|---|---|
+-| 全新产品或新模块 | Discovery | 用户、MVP、非目标、成功标准 |
+-| 已有功能的小迭代 | 最近仍然可信的阶段 | 哪些上游内容受到影响 |
+-| 可复现 Bug | Bug 诊断 | 复现步骤、失败测试、回归范围 |
+-| 技术探索或 spike | 只读调查 | 是否值得做、风险和建议 |
+-| 高风险行为变化 | 既有冻结基线 | Spec Delta、架构、契约和回滚 |
+-
+-### 全新功能
+-
+-按完整主链推进。不要先写页面或接口。
+-
+-成功时，每一步都有可读取的结果和审查结论，Ticket 能单独实现和验证。
+-
+-### 已有功能的小改动
+-
+-小改动不用机械重跑全部流程，但必须重新判断影响。
+-
+-1. 用 `route` 找到最近仍然可信的阶段。
+-2. 写清这次改什么、不改什么。
+-3. 只补受影响的 Spec、设计、API、Ticket 和验证。
+-4. 上游内容变化后，重新检查下游资料是否过期。
+-5. 再判断切片能否进入 `ready-for-agent`。
+-
+-“发布成功后增加复制版本号按钮”可能只影响 UI。
+-
+-“发布后允许回滚”会改变业务行为、状态、API、数据和测试，不能当成小文案修改。
+-
+-### Bug
+-
+-1. 用 `diagnosing-bugs` 写出稳定复现步骤。
+-2. 找到用户能看到的失败结果。
+-3. 用 `tdd` 先写失败测试。
+-4. 实现最小修复。
+-5. 运行受影响范围的回归测试。
+-6. 发现需求或契约错误时，停止修复并重新分诊。
+-
+-成功时，同一个测试在修复前失败、修复后通过，相邻行为没有回退。
+-
+-### 技术探索或 spike
+-
+-可以调查代码、做最小实验、比较方案，但不要直接交付业务代码。
+-
+-探索结束时要回答：
+-
+-- 方案能不能做。
+-- 主要风险是什么。
+-- 会影响哪些页面、接口、数据或仓库。
+-- 建议继续、放弃还是另开正式功能。
+-
+-### 每类文档只回答一类问题
+-
+-| 文档 | 它回答什么 | 不要写什么 |
+-|---|---|---|
+-| `CONTEXT.md` | 稳定业务术语叫什么 | 临时方案、表名、类名 |
+-| Discovery | 为什么做、为谁做、MVP 是什么 | 详细实现 |
+-| Spec | 做什么、边界是什么、怎样验收 | 大段代码 |
+-| 产品设计 | 页面怎样走、有哪些状态 | 后端内部结构 |
+-| OpenAPI | 前后端怎样交换数据 | 页面布局 |
+-| 架构 / ADR | 边界、数据、风险和关键取舍 | 普通 CRUD 细节 |
+-| Ticket | 当前小任务做什么、怎样验证 | 整个产品的重复说明 |
+-| 发布记录 | 怎样发布、观察和回滚 | 未完成需求 |
+-
+-### 团队什么时候加入
+-
+-| 角色 | 提前参与什么 | 交付前重点检查 |
+-|---|---|---|
+-| 需求经理 | 用户、范围、术语、成功标准 | Spec 是否还能被业务复述 |
+-| 产品经理 | 优先级、页面流、状态、原型及商业约束、交付承诺和发布窗口 | 实现是否偏离已确认体验；对外承诺是否经过生物人批准 |
+-| 前端工程师 | 原型可行性、API 是否好用 | 页面状态、截图、console、`pnpm` |
+-| 后端工程师 | API、数据、领域规则、工程准备 | 行为测试、契约、`./mvnw` |
+-| 测试工程师 | 测试入口、异常和恢复路径 | 独立审查、当次验证 |
+-| 项目经理 | Ticket、依赖、仓库和风险 | 候选、发布顺序和回滚点 |
+-
+-角色可以由不同 Agent 运行时承载。实现者不能审查自己的候选。
+-
+-### 前端开发前后要检查什么
+-
+-开发前：
+-
+-- Spec、状态矩阵和原型已经批准并且可以读取。
+-- OpenAPI 已 Freeze，或已有无 API 影响记录。
+-- 当前垂直切片是 `ready-for-agent`。
+-- `frontend_implementation_plan` 已通过检查。
+-
+-完成前：
+-
+-- 实际运行登记的 `pnpm` 测试、type-check、lint 和 build。
+-- 检查桌面和窄屏。
+-- 覆盖加载、空态、错误、权限、成功和失败恢复。
+-- 保存截图或视觉回归、交互、console warning 和退出码。
+-
+-只跑 type-check 不能证明页面已经符合设计。
+-
+-### 后端开发前后要检查什么
+-
+-开发前：
+-
+-- OpenAPI 已 Freeze。
+-- 领域规则和数据边界已经说明。
+-- 当前垂直切片和实现合同都是当前版本。
+-
+-开发时按影响选择必要 skill。常见依赖方向是：
+-
+-```text
+-yss-domain
+--> yss-application
+--> yss-repository / yss-mybatis
+--> yss-web-controller / yss-dto
+-```
+-
+-这不表示要为每一层创建一个 Ticket。
+-
+-完成前：
+-
+-- 用公开行为写测试。
+-- 实际运行项目根目录的 `./mvnw`。
+-- 检查 DTO 的真实 HTTP / JSON 形状。
+-- 检查异常、校验、幂等和事务边界。
+-
+-### 开发、合并和发布前的检查
+-
+-开发前：
+-
+-- 仓库身份合法。
+-- 需求、Spec、设计和 API 没有未解释的矛盾。
+-- 实现仓库与验证命令已经登记。
+-- 垂直切片满足 `ready-for-agent`。
+-
+-合并前：
+-
+-- 实现者已完成本切片测试。
+-- 非实现者审查同一候选。
+-- 命中的 UI、API、Backend、Data 范围都有证据。
+-- `violation` 已修复，`drift` 和 `new_impacts` 已重新分诊。
+-
+-发布前：
+-
+-- 对同一候选重新执行验证。
+-- 发布、监控和回滚步骤可以执行。
+-- 未解决风险有负责人和日期。
+-- `gate.release-ready` 由生物人裁决。
+-
+-### 可以直接复制的团队提示词
+-
+-新功能分诊：
+-
+-```text
+-使用 yss-product-lifecycle，以 route 模式检查“<功能名>”。
+-本轮只读。请用普通话说明当前阶段、缺失内容、影响范围和下一步。
+-正式 ID 放在解释后面。
++node scripts/instantiate-harness --target /absolute/path/to/new-project --project-name "设备借用"
+ ```
+ 
+-小改动：
+-
+-```text
+-检查“<改动>”相对当前 Spec、设计、API 和 Ticket 的影响。
+-只补受影响内容。发现资料过期或新影响时停下并说明原因。
+-```
++目标必须不存在，且不能位于模板源内。`--allow-working-tree` 仅用于模板维护测试，不能当正式初始化步骤。记录模板 SHA，保留输出的 profile 和摘要。
+ 
+-Bug：
++初始化后检查 yss-project.yaml 为 `project-instance`、对应家族 metadata 和 docs/user-guide/用户手册索引.md；进入生成目录再开启 Agent。
+ 
+-```text
+-使用 diagnosing-bugs 复现“<问题>”，记录输入、实际结果和预期结果。
+-复现稳定后使用 tdd 写失败测试并完成最小修复。
+-```
++## 第一次让 Agent 工作
+ 
+-准备实现：
++先在生成的项目实例中打开 Agent，发送：
+ 
+ ```text
+-检查当前垂直切片是否满足 ready-for-agent。
+-请列出合同版本、允许写入路径、必需技能和实际验证命令。
+-条件不齐时不要实现。
+-```
+-
+-## 创建、接管和更新项目
+-
+-`create-yss-spec` 用来创建或补齐 YSS 研发管理项目。
+-
+-CLI 源码由独立项目 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec) 维护。本节只说明怎么使用。
+-
+-> CLI 不会替你创建前端、后端、远程 Git 仓库、CI 或 Ticket Board。
+-
+-### 使用前准备
+-
+-1. 安装符合项目要求的 Node.js 和 npm。
+-2. 运行 `git status --short`，记录当前 Git 状态。
+-3. 已有项目建议先创建分支或记录当前 commit。
+-4. 再次确认目标目录。
+-
+-### 选对命令
+-
+-| 你的情况 | 使用方式 |
+-|---|---|
+-| 新建项目 | `npm create yss-spec@latest` |
+-| 给已有项目补上模板 | `attach` |
+-| 更新已经接入的模板 | `sync` |
+-
+-### 新建项目
+-
+-最简单的方式：
+-
+-```bash
+-npm create yss-spec@latest
+-```
+-
+-需要明确参数时：
+-
+-```bash
+-npx create-yss-spec@latest \
+-  --project-name "项目名称" \
+-  --business-domain "业务领域" \
+-  --target-dir "./project" \
+-  --git-init
++请先只读检查 yss-project.yaml、根 CONTEXT.md、AGENTS.md，以及存在的 harness-profile.yaml。
++告诉我本仓职责、当前可信阶段、上游输入、缺失证据和下一步。
++发现身份不合法或输入过期时停止并给出恢复办法；先不要写代码。
+ ```
+ 
+-成功后会看到：
+-
+-- 目标目录已经创建。
+-- 根目录存在 `yss-project.yaml`。
+-- `repository_mode` 为 `project-instance`。
+-- `.yss-template.json` 使用 metadata schema v2，并记录 `templateCommit`。
+-
+-只想预览时加 `--dry-run`。预览不会创建目录，也不会删除文件。
+-
+-### 接管已有项目
+-
+-`attach` 只补充模板管理的文件。业务代码、用户文件和 `.git` 会保留。
++成功时应得到明确的仓库身份和可追踪输入，不是泛泛的开发计划。`template-source` 只能维护可复用模板；真实业务必须在 `project-instance` 中记录。真实业务词汇只登记在实例根 `CONTEXT.md`，不复制本手册示例当作已确认事实。
+ 
+-先预览：
++## 用户确认什么
+ 
+-```bash
+-npx create-yss-spec@latest attach \
+-  --target-dir . \
+-  --project-name "项目名称" \
+-  --business-domain "业务领域" \
+-  --dry-run
+-```
+-
+-看懂预览结果：
+-
+-| 状态 | 表示什么 | 你要做什么 |
++| 看到的材料 | 你需要判断 | 确认后的边界 |
+ |---|---|---|
+-| `missing` | 文件不存在，可以新增 | 通常可以继续 |
+-| `matched` | 文件与模板一致 | 无需处理 |
+-| `conflict` | 本地内容和模板不同 | 先看差异，再决定是否覆盖 |
+-| `unsafe` | CLI 无法确认能否安全处理 | 停下并人工确认，`--force` 也不能跳过 |
++| 目标、范围、规则及反例 | 是否符合业务、哪些不做 | 允许继续设计；不自动批准实现 |
++| 页面流程、状态与视觉基线 | 成功、失败、权限和恢复是否完整 | 形成对应产品设计输入 |
++| 工程/接口/脚手架方案 | 责任、兼容、数据和回滚是否可接受 | 按本仓角色政策完成适用会签 |
++| 当前 Slice Contract | 写哪些仓库与路径、怎么验收 | 必要门禁通过后才能实施 |
++| 本轮验证和发布方案 | 覆盖、风险、回滚和交付范围 | 发布及外部承诺仍需生物人 |
+ 
+-确认写入：
++具体批准身份和门禁以本仓 `docs/agents/digital-human-roles.yaml`、`docs/process/lifecycle-registry.yaml` 为准。Agent 起草、自报通过或文件中写 `approved` 均不能代替真实批准。`ready-for-human` 是待指定会签；只有可直接实施的切片才使用 `ready-for-agent`。
+ 
+-```bash
+-npx create-yss-spec@latest attach \
+-  --target-dir . \
+-  --project-name "项目名称" \
+-  --business-domain "业务领域" \
+-  --apply
+-```
++## 按路线推进
+ 
+-只有确认要覆盖 `conflict` 时，才追加 `--force`。
++综合模板按本仓生命周期从分诊、Discovery、Spec/功能架构、产品设计、工程契约、Ticket、切片推进到验证与发布。战略模板在业务交接停止；通用研发从批准上游接入；专职两端按交付合同接力。
+ 
+-`--dry-run` 和 `--apply` 不能一起使用。已有 `.yss-template.json` 的项目不要重复 `attach`，请使用 `sync`。
++每一步都让 Agent 说明：消费了哪些当前输入、准备了什么、缺谁确认、怎样检查结果。具体阶段和门禁从本仓注册表读取，不把别的模板阶段编号复制进本仓。
+ 
+-### 更新模板
++跟随 [设备借用贯穿案例](设备借用贯穿案例.md) 练习；战术建模说明见 [战术设计指南](战术设计子项目用户手册.md)。
+ 
+-先预览：
++## 已有项目接管与升级
+ 
+-```bash
+-npx create-yss-spec@latest sync \
+-  --target-dir . \
+-  --dry-run
+-```
+-
+-确认后执行：
++只有综合/通用研发提供 attach 和 sync。先保存可恢复的 Git 基线，再选择对应包执行；以下是综合示例，通用研发仅将包名替换为 `create-yss-harness-dev`：
+ 
+ ```bash
+-npx create-yss-spec@latest sync \
+-  --target-dir .
++npx create-yss-spec@latest attach --target-dir . --project-name "设备借用" --business-domain "内部设备管理" --dry-run
++npx create-yss-spec@latest attach --target-dir . --project-name "设备借用" --business-domain "内部设备管理" --apply
++npx create-yss-spec@latest sync --target-dir . --dry-run
++npx create-yss-spec@latest sync --target-dir .
+ ```
+ 
+-普通同步会：
+-
+-- 新增缺失文件。
+-- 更新没有被本地修改的受管文件。
+-- 报告冲突，不直接覆盖。
+-- 报告模板已经删除的文件，但默认不删除。
+-- 保留与模板无关的文件。
+-
+-确认要覆盖受管冲突时才使用 `sync --force`。CLI 会先备份。验证失败时会回滚文件，并保留旧 metadata。
++attach 用于尚未由对应 CLI 管理的既有项目；已存在本家族 metadata 时使用 sync。不要把上面四条不加区分连续执行。正常 sync 保留用户修改并报告 conflict、unsafe 和上游删除项；先审阅实际计划再决定如何处理冲突。源码、.git、gitlink 和挂载点按现有保护规则保留。
+ 
+-### 命令完成后检查
++`update`/`upgrade` 更新 CLI 程序，`sync` 更新实例受管模板，两者不同。事务校验失败会回滚本轮文件写入；成功后的撤销使用自己保存的 Git 基线或备份，不用旧 CLI 强制反向同步。
+ 
+-依次运行：
++战略和专职实例本次没有自动 sync/原地迁移：用同家族新目录比较受管资产，按计划迁移，重验输入和合同，保留原实例回滚。不能跨 profile 覆盖。
+ 
+-```bash
+-git status --short
+-scripts/sync-skills --check
+-scripts/update-skill-lock --check
+-scripts/verify-template
+-```
+-
+-成功时：
+-
+-- 命令退出码为 `0`。
+-- 模板检查全部通过。
+-- `git status --short` 只显示你预期的变更。
+-- 你知道备份或回滚信息在哪里。
+-
+-安装、参数、`attach`、`sync` 或 npm 发布问题，请到 `create-yss-spec` 仓库反馈。
+-
+-模板内容、流程文档、Agent skills 或 `scripts/verify-template` 问题，请在本模板仓库处理。
+-
+-## 新手术语卡
+-
+-| 术语 | 先这样理解 |
+-|---|---|
+-| Agent | 帮你执行特定工作步骤的 AI 协作者 |
+-| `yss-product-lifecycle` | 帮你判断当前进度和下一步的流程助手 |
+-| Spec | 把“要解决什么、怎样验收”写清楚的功能说明书 |
+-| Ticket | 一项可以跟踪的工作 |
+-| 功能父 Ticket | 汇总整个功能资料、状态和阻塞项的 Ticket |
+-| 垂直切片 Ticket | 能单独完成、单独测试的一小段功能 |
+-| 工作单元 `work-unit.*` | 一次范围明确、有输入和输出的工作 |
+-| 检查点 `gate.*` | 继续之前必须通过的检查 |
+-| `ready-for-human` | 内容还要等人或指定角色确认 |
+-| `ready-for-agent` | 当前垂直切片的开发条件已经齐全 |
+-| OpenAPI Draft | 还在评审的接口草案 |
+-| OpenAPI Freeze | 接口已经确认，前后端可以按它实现 |
+-| Fresh Verification | 完成前重新执行的测试或检查 |
+-
+-### 五种 Ticket 状态
+-
+-| 状态 | 普通话解释 | 能不能直接开发 |
+-|---|---|---|
+-| `needs-triage` | 还没分清要做什么 | 不能 |
+-| `needs-info` | 缺资料或缺决定 | 不能 |
+-| `ready-for-human` | 等人或指定角色确认 | 不能 |
+-| `ready-for-agent` | 当前垂直切片已具备实现条件 | 可以 |
+-| `wontfix` | 明确不做 | 不适用 |
++五家族由 `.yss-template.json`、`.yss-harness-design.json`、`.yss-harness-dev.json`、`.yss-harness-backend.json`、`.yss-harness-frontend.json` 及 profile 判定。不得删除或伪造 metadata 来切换家族。
+ 
+-`ready-for-agent` 只给垂直切片 Ticket。不要给 Spec 初稿、原型或 OpenAPI Draft 使用。
++异族、多重身份、损坏 metadata、未知或矛盾 profile 会在规划/写入前被拒绝；`--force` 不能绕过，`--dry-run` 同样检查。只有在身份及路径检查通过后，force 才按该命令的覆盖语义生效。遇到拒绝先核对所用家族和目标路径，保留原目录，不用战略 init 强制替代升级。
+ 
+ ## 常见卡点
+ 
+-### Agent 一上来就准备改文件
+-
+-重新说明：“使用 `route` 模式，本轮只读。”
+-
+-### 回答里的专业词太多
+-
+-让 Agent 先用普通话解释，再附上正式 ID。不要删除正式 ID，后续排查还会用到。
+-
+-### 文件存在，是不是就能继续
+-
+-不是。还要检查内容是否经过审查、是否过期、上游资料是否变化。
+-
+-### OpenAPI Draft 还没评审，前后端已经开始写
+-
+-先停止实现。完成 Draft Review、必要设计审查和 OpenAPI Freeze 后，再拆可以实现的切片。
+-
+-### Ticket 很多，却无法单独验收
+-
+-按用户能看到的结果重新拆垂直切片。不要只按前端、后端或数据库分层拆任务。
+-
+-### 实现者说“已经测试过”
+-
+-要求提供实际命令、退出码和候选引用。完成或发布前还要重新运行。
+-
+-### 用户总说“都可以”
+-
+-给出两个具体场景，让他选择，并说明各自影响。不要替他决定。
+-
+-### `--force` 仍然失败
+-
+-检查是否出现 `unsafe` 或无法判断归属的冲突。它们必须人工处理。
+-
+-## 最终成功标志
+-
+-一个功能准备发布时，你应该能找到：
+-
+-- 已确认的用户问题、范围和成功标准。
+-- 当前版本的 Spec、设计和 API 约定。
+-- 功能父 Ticket 和可以单独验证的垂直切片。
+-- 已批准的实现合同。
+-- 实际测试命令和退出码。
+-- 非实现者的审查结论。
+-- 发布、监控和回滚记录。
+-
+-少一项时，Agent 应明确说明缺什么，不要只说“已经完成”。
++| 现象 | 下一步 |
++|---|---|
++| Agent 立即开始写代码 | 要求只读分诊，展示当前合同和允许路径 |
++| 文件已有但无法继续 | 检查批准、摘要、依赖和 Fresh Verification，不只看文件存在 |
++| 前端输入已验证仍不能实现 | inputs-verified 只放行计划/合同准备，先完成合同批准 |
++| --force 仍失败 | 查家族、身份、unsafe 与 gitlink，不能靠删 metadata 绕过 |
++| npm 创建后没有本手册更新 | 核对 npm 版本与包内模板 SHA，使用已核验候选包或等待正式发布 |
++| 独立子项目自报完成 | 统一管理方核对跨仓版本及业务端到端证据 |
+ 
+-## 下一步
++## 团队与维护者
+ 
+-第一次使用时，回到[三分钟开始](#三分钟开始)，先完成一次只读 `route` 检查。
++业务人员确认规则和页面；架构与研发落实到冻结接口、当前合同和实际实现仓；Reviewer 独立核验。运行时代码默认进入登记的独立仓，前端优先 pnpm，后端优先根 ./mvnw；缺工具时记录受控例外与实际命令。
+ 
+-需要核对正式规则时，请查看[生命周期注册表](../process/lifecycle-registry.yaml)、[流程裁剪指南](../process/harness-process-tailoring.md)、[技能注册表](../agents/yss-skill-registry.yaml)、[数字人角色注册表](../agents/digital-human-roles.yaml)和 [Ticket 状态说明](../agents/triage-labels.md)。
++模板维护者先读 [AGENTS.md](../../AGENTS.md) 和 [流程裁剪](../process/harness-process-tailoring.md)，维护 canonical 事实与生成投影，运行分级验证。维护流程不混入用户的日常业务步骤。
+ 
+-这些文件负责定义正式事实。本手册只负责把它们讲明白。
++各模板与 CLI 专项手册见 [用户手册索引](用户手册索引.md)。
+diff --git a/docs/user-guide/用户手册索引.md b/docs/user-guide/用户手册索引.md
+index 19cbd936c2a11b7321e39b68c67ec8aa940f785b..51d60f8a20ed85f1cca1c39c92306a38166186be 100644
+--- a/docs/user-guide/用户手册索引.md
++++ b/docs/user-guide/用户手册索引.md
+@@ -1,21 +1,18 @@
+ # 用户手册索引
+ 
+-这里集中放置 YSS 模板和生命周期的入门手册。第一次使用时，先看总览，再进入与你当前工作阶段对应的子项目手册。
++## 第一次使用
+ 
+-## 推荐阅读顺序
++1. [YSS 用户手册](用户手册.md)：五类项目选型、首次创建、确认与升级。
++2. [设备借用贯穿案例](设备借用贯穿案例.md)：输入、提示词、命令、成功标准及异常恢复。
++3. [战术设计指南](战术设计子项目用户手册.md)：批准战略如何落到设计和测试。
+ 
+-1. [YSS 用户手册](./用户手册.md)：了解仓库身份、生命周期主链和 Agent 使用模式。
+-2. [战略设计子项目用户手册](../../submodules/yss-harness-design-agent/docs/user-guide/战略设计子项目用户手册.md)：从模糊想法形成 Strategic Design Handoff。
+-3. [战术设计子项目用户手册](./战术设计子项目用户手册.md)：把交接包细化为 Tactical Design，供研发实现和评审。
++## 专项路线
+ 
+-## 按任务查找
++- [战略：澄清、设计、交接](https://github.com/iloveZzz/yss-harness-design-agent/blob/main/docs/user-guide/用户手册索引.md)
++- [通用研发：接收、合同、实现与验证](https://github.com/iloveZzz/yss-harness-dev-agent/blob/main/docs/user-guide/用户手册索引.md)
++- [后端：接口、实现与交付](https://github.com/iloveZzz/yss-harness-backend-agent/blob/main/docs/user-guide/用户手册索引.md)
++- [前端：联合接收、页面与验收](https://github.com/iloveZzz/yss-harness-frontend-agent/blob/main/docs/user-guide/用户手册索引.md)
+ 
+-| 你现在要做什么 | 推荐手册 |
+-|---|---|
+-| 创建、接管或更新 YSS 项目 | [YSS 用户手册](./用户手册.md) |
+-| 澄清需求、确定用户和范围 | [战略设计子项目用户手册](../../submodules/yss-harness-design-agent/docs/user-guide/战略设计子项目用户手册.md) |
+-| 设计聚合、状态、不变量和领域事件 | [战术设计子项目用户手册](./战术设计子项目用户手册.md) |
+-| 了解完整生命周期和阶段门禁 | [产品生命周期工作流](../../submodules/yss-harness-design-agent/docs/user-guide/产品生命周期工作流.md) |
+-| 查找长期协作习惯和反模式 | [生命周期最佳实践](../../submodules/yss-harness-design-agent/docs/user-guide/生命周期最佳实践.md) |
++跨项目导航使用 GitHub 链接；生成实例不需要兄弟仓或 submodules 目录。链接指向各仓 main，实际执行仍核对本地 profile、包版本和固定模板 SHA。
+ 
+-> 本仓库是 `template-source`。手册中的业务名称和示例只用于教学；真实产品资料应在 `project-instance` 中建立，并遵守对应的生命周期门禁。
++CLI 参数详解：[综合 CLI](https://github.com/iloveZzz/create-yss-spec/blob/main/docs/user-guide/create-yss-spec-cli-guide.md)、[战略 CLI](https://github.com/iloveZzz/create-yss-harness-design)、[研发 CLI](https://github.com/iloveZzz/create-yss-harness-dev)。组件工具专项见 [YSS UI MCP](yss-ui-mcp.md)。
+diff --git a/submodules/create-yss-harness-dev b/submodules/create-yss-harness-dev
+index fa207e4b657a37058774ecea41bd22c01cf525d1..c955c215248e2f8577fb84f7b86dc2a17898ccff 160000
+--- a/submodules/create-yss-harness-dev
++++ b/submodules/create-yss-harness-dev
+@@ -1 +1 @@
+-Subproject commit fa207e4b657a37058774ecea41bd22c01cf525d1
++Subproject commit c955c215248e2f8577fb84f7b86dc2a17898ccff-dirty
+diff --git a/submodules/create-yss-spec b/submodules/create-yss-spec
+--- a/submodules/create-yss-spec
++++ b/submodules/create-yss-spec
+@@ -1 +1 @@
+-Subproject commit ced179948be66fad349e2b206adf45e1ed3a3987
++Subproject commit ced179948be66fad349e2b206adf45e1ed3a3987-dirty
+diff --git a/submodules/create-yss-strategic-design b/submodules/create-yss-strategic-design
+--- a/submodules/create-yss-strategic-design
++++ b/submodules/create-yss-strategic-design
+@@ -1 +1 @@
+-Subproject commit f6e29b0efa341afb9a7ab51d85bff62f009c43b3
++Subproject commit f6e29b0efa341afb9a7ab51d85bff62f009c43b3-dirty
+diff --git a/submodules/yss-harness-backend-agent b/submodules/yss-harness-backend-agent
+--- a/submodules/yss-harness-backend-agent
++++ b/submodules/yss-harness-backend-agent
+@@ -1 +1 @@
+-Subproject commit f6c66804932975a8bdc24ff1b8e0528795658e2d
++Subproject commit f6c66804932975a8bdc24ff1b8e0528795658e2d-dirty
+diff --git a/submodules/yss-harness-design-agent b/submodules/yss-harness-design-agent
+--- a/submodules/yss-harness-design-agent
++++ b/submodules/yss-harness-design-agent
+@@ -1 +1 @@
+-Subproject commit f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e
++Subproject commit f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e-dirty
+diff --git a/submodules/yss-harness-dev-agent b/submodules/yss-harness-dev-agent
+--- a/submodules/yss-harness-dev-agent
++++ b/submodules/yss-harness-dev-agent
+@@ -1 +1 @@
+-Subproject commit 07a126d76ad33c1e4162d2379ffb68007e01dad3
++Subproject commit 07a126d76ad33c1e4162d2379ffb68007e01dad3-dirty
+diff --git a/submodules/yss-harness-frontend-agent b/submodules/yss-harness-frontend-agent
+--- a/submodules/yss-harness-frontend-agent
++++ b/submodules/yss-harness-frontend-agent
+@@ -1 +1 @@
+-Subproject commit 467091c244a735ebafea726f48cae1eaeadf84de
++Subproject commit 467091c244a735ebafea726f48cae1eaeadf84de-dirty

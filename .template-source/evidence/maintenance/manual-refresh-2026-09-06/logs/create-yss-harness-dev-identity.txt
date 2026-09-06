@@ -1,0 +1,34 @@
+✔ frontend identity prevents another CLI from planning takeover, even with force (239.173625ms)
+✔ profile alone cannot bypass family protection by omitting metadata (248.448333ms)
+✔ all supported operations reject create-yss-spec before dry-run or force writes (1477.13675ms)
+✔ all supported operations reject create-yss-harness-design before dry-run or force writes (1321.427542ms)
+✔ all supported operations reject backend before dry-run or force writes (1238.28775ms)
+✔ all supported operations reject frontend before dry-run or force writes (1224.530542ms)
+✔ mixed family markers are not repaired or selected (223.0885ms)
+✔ own metadata rejects malformed JSON (224.002834ms)
+✔ own metadata rejects array (226.266458ms)
+✔ own metadata rejects null (226.835375ms)
+✔ own metadata rejects wrong package (232.634667ms)
+✔ own metadata rejects unknown schema (229.677959ms)
+✔ own metadata rejects null schema (230.986542ms)
+✔ own metadata rejects wrong source (229.031083ms)
+✔ own metadata rejects wrong profile (230.688458ms)
+✔ own metadata rejects snake case wrong profile (223.304ms)
+✔ own metadata rejects duplicate keys (228.269917ms)
+✔ profile rejects unknown profile (228.820709ms)
+✔ profile rejects missing profile (228.704917ms)
+✔ profile rejects invalid YAML (227.314625ms)
+✔ profile rejects duplicate profile (223.980583ms)
+✔ own metadata symlink is rejected without following or overwriting it (228.398167ms)
+✔ profile parent symlink is rejected before reading target content (227.380375ms)
+✔ help and version work inside foreign projects without mutation (49.732833ms)
+✔ unmanaged projects can still preview initialization (920.0745ms)
+✔ matching profile supports quoted YAML and identity fields (839.140208ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11467.888

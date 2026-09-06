@@ -1,0 +1,180 @@
+模板核验 profile: fast -> fast
+
+[tooling]
+$ .template-source/scripts/evidence-index --check (930ms)
+证据索引验证通过（complete）
+$ pnpm --dir .template-source/tooling/node test (4680ms)
+
+> yss-template-node-tooling@1.0.0 test /Users/zhudaoming/Projects/yss-spec-project-template/.template-source/tooling/node
+> node --test test/**/*.test.mjs
+
+✔ DESIGN.md passes local and pinned upstream lint (1729.466916ms)
+✔ DESIGN.md projection manifest is current (56.261542ms)
+✔ cross-repository design sync digest matches DESIGN.md (0.43475ms)
+✔ digital human roles are runtime-agnostic and grok is only an adapter (70.277792ms)
+✔ approval records reject the wrong signer and approved countersign gates need approval_ref (12.611167ms)
+✔ Node runtime contract exposes a vendored YAML parser for distributed scripts (7.663875ms)
+✔ YAML aliases are rejected before a repository manifest is materialized (4.269708ms)
+✔ repository mode public seam is executable by Node (0.570792ms)
+✔ vendored XML parser rejects DOCTYPE and preserves scalar text (4.1915ms)
+✔ implementation path policy preserves harness and external-repository boundaries (1.263959ms)
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-MF2SoU/super/apps/backend/billing-service'...
+done.
+HEAD is now at 70802d3 init child
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-q1RjYF/super/apps/backend/billing-service'...
+done.
+Reset branch 'main'
+✔ repository_scope git-submodule is a first-class layout distinct from harness-apps (3131.403916ms)
+✔ Node lifecycle registry verifier preserves the published semantic baseline (243.282458ms)
+✔ public skill export preserves its portable manifest and blocks workstation paths (452.245125ms)
+✔ evidence index writes pending and checkpointed Node records with legacy failure semantics (628.573417ms)
+✔ unknown layer is rejected (23.1185ms)
+✔ shadow registry cannot be marked as runtime consumed (10.827417ms)
+✔ alias that collides with another id is rejected (9.248792ms)
+✔ missing Cursor runtime root is rejected (8.979333ms)
+✔ skill invocation contract is required and derives impact triggers (16.747875ms)
+✔ typed dependency metadata rejects unregistered skills (8.266625ms)
+✔ context-required typed dependencies reject cycles (7.235791ms)
+✔ 实现合同编译器合同不得重复 typed dependency 事实 (11.685625ms)
+✔ platform aliases resolve lifecycle external runtime entries (8.313ms)
+✔ deprecated research alias resolves to yss-research in lifecycle routes (6.609125ms)
+✔ lifecycle route with an unregistered skill is rejected (6.653541ms)
+✔ prototype design route requires independent prototype-review (6.678459ms)
+✔ deprecated skills require migration and cleanup metadata (6.104458ms)
+✔ code-review route without specialist supporting skills is rejected (6.426291ms)
+✔ code-review route without review_standards_route is rejected (6.83025ms)
+✔ code-review route cannot replace the unique default review skill (6.198083ms)
+✔ code-review route accepts specialist check inputs on the unique skill (6.194584ms)
+✔ code-review route without finding_disposition is rejected (6.401833ms)
+✔ code-review route cannot let the reviewer write implementation (6.184917ms)
+✔ code-review route forbids mandatory waiver of triggered gates (6.0765ms)
+✔ review_input without finding disposition completion flags is rejected (6.260791ms)
+✔ frontend conditional routes require registered skills (6.351833ms)
+✔ tracked projections absent from the lock cannot escape synchronization checks (0.594292ms)
+✔ obsolete canonical residues fail even when they are not in the lock (0.071917ms)
+✔ physical canonical skills must be present in the lock (0.068125ms)
+✔ Cursor is a first-class shared skill projection root (0.068667ms)
+✔ yss-ui 业务项目清单覆盖 20 个精选 app skills 与项目级 MCP 配置 (1.348917ms)
+✔ yss-ui 上游清单拒绝重复 canonical 与缺失 hash (0.475333ms)
+✔ 战略设计上游清单固定公共技能集合与 Git revision (0.526125ms)
+ℹ tests 43
+ℹ suites 0
+ℹ pass 43
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4511.943041
+$ pnpm --dir .template-source/tooling/node check:vendor (263ms)
+
+> yss-template-node-tooling@1.0.0 check:vendor /Users/zhudaoming/Projects/yss-spec-project-template/.template-source/tooling/node
+> node scripts/build-vendor.mjs --check
+
+
+[implementation]
+$ scripts/verify-implementation-path-scenarios (27ms)
+实现项目路径策略压力场景验证通过
+$ scripts/verify-repository-scope-scenarios (3685ms)
+named stress unknown_scope: PASS
+named stress layout_mismatch: PASS
+named stress same_origin_url: PASS
+named stress copy_source_into_harness: PASS
+named stress missing_git_entry_mode: PASS
+named stress empty_gitlink_as_regular_dir: PASS
+named stress declared_harness_apps_actual_gitlink: PASS
+named stress detached_head_as_regular_dir: PASS
+named stress force_overlay_mount: PASS
+实现仓库 repository_scope 压力场景验证通过
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-PEKpas/super/apps/backend/billing-service'...
+done.
+HEAD is now at c7bfee5 init child
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-qXCqxK/super/apps/backend/billing-service'...
+done.
+Reset branch 'main'
+$ scripts/verify-scaffold-generator-scenarios (681ms)
+YSS 脚手架生成器受控生成场景验证通过
+$ node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs (2587ms)
+✔ 生成批准的服务级 target profile 骨架，并写入可追溯 Manifest v3 (164.647875ms)
+✔ schema v1 scaffold contract is unsupported and is never upgraded (37.814542ms)
+﹣ 一键工作流只有在真实 Maven 三命令全部通过后才报告完成 (0.234625ms) # 缺少受控 YSS Maven 仓库环境，真实 Wrapper 验证由 L3 环境门禁执行
+✔ 显式 Maven 坐标贯穿批准合同、生成参数、全部 POM 和生成清单 (156.879292ms)
+✔ 生成工程声明命名仓库 profile、target DDD 依赖边界和构建门禁 (164.869958ms)
+✔ 生成工程固定平台 profile、Wrapper checksum，并把调试日志隔离到 local 配置 (153.542334ms)
+✔ initialize-only 在写文件前拒绝任何已存在目标和 --force (185.247584ms)
+✔ 拒绝基础包名与批准合同不一致 (35.642291ms)
+✔ 合同 project_name、profile 和 allowed_write_paths 必须约束实际输出 (109.650875ms)
+✔ initialize-only 拒绝以 --force 覆盖 .gitmodules 登记的挂载点 (34.250208ms)
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-s3ywKL/super/apps/backend/billing-service'...
+done.
+HEAD is now at 6924ff2 init child
+✔ 拒绝在 detached HEAD 子仓工作树内当成普通目录生成 (976.260916ms)
+✔ --force 覆盖真实 gitlink 不得走普通目录覆盖路径 (436.441916ms)
+✔ 验证器记录三条 wrapper 命令的成功和失败证据 (12.218792ms)
+✔ 验证器把内部仓库解析失败与编译失败分开报告 (10.139542ms)
+✔ 验证器单独标记 Java 编译失败和 Bootstrap 主类缺失 (18.388125ms)
+✔ 验证器在全部 Maven 命令成功时通过并保留日志引用 (9.854209ms)
+✔ Manifest v3 在缺少受控仓库环境时先于 Maven 执行阻断 (1.981917ms)
+✔ Manifest schema v1 is unsupported and verifier never executes its wrapper (1.3955ms)
+✔ 验证日志会脱敏 Maven 仓库凭据 (9.866584ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 18
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 2561.568167
+$ node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs (1969ms)
+✔ 数据分析初始化生成 H2 六模块和独立治理信封 (882.887209ms)
+✔ 旧数据库和 Mock 参数在写入前被拒绝 (62.990542ms)
+﹣ 可选离线 Maven 可行性检查（不替代受控仓库验收） (0.127875ms) # SKIP
+✔ 生成 h2 基础 Profile (140.163708ms)
+✔ 能力闭包 basic (148.531083ms)
+✔ 能力闭包 adapter (141.469291ms)
+✔ 能力闭包 client (140.790416ms)
+✔ 能力闭包 feign (141.651542ms)
+✔ 能力闭包 combined (141.982875ms)
+✔ 选择缺失、digest 漂移和非空目标均阻断 (105.273667ms)
+ℹ tests 10
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 1
+ℹ todo 0
+ℹ duration_ms 1944.178875
+$ scripts/verify-prototype-backend-scaffold-scenarios (36ms)
+原型到后端脚手架及后续 YSS 代码生成压力场景验证通过
+$ scripts/verify-matt-yss-integration-scenarios (1591ms)
+Matt/YSS 集成压力场景验证通过
+$ scripts/verify-yss-implementation-contract-compiler-scenarios (135ms)
+YSS implementation contract compiler stage 7 scenarios passed
+✔ combines narrow recipes once and preserves deterministic output (8.929333ms)
+✔ does not promote conditional or component dependencies without explicit input (0.834291ms)
+✔ loads only explicitly satisfied context-conditional dependencies (0.387375ms)
+✔ rejects recipes that reference skills and context-required cycles (1.202083ms)
+✔ rejects removed ids and schema v1 without compatibility (0.180708ms)
+✔ marks digest drift stale and validates v2 execution evidence (2.517083ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 76.735084
+$ scripts/generate-yss-skill-boundaries --check (56ms)
+YSS skill boundaries are current
+$ scripts/audit-yss-backend-skills --check (55ms)
+backend skill audit passed: 26 candidates (keep=25, narrow=1, merge=0, remove=0)
+$ scripts/verify-retired-skill-ids (229ms)
+retired skill ids are absent from active assets
+$ scripts/verify-yss-ui-scenarios (31ms)
+YSS UI governance scenarios passed
+$ scripts/verify-yss-prototype-contract-scenarios (247ms)
+YSS prototype profile contract scenarios passed
+$ node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence docs/design/templates/prototype-evidence-template.yaml --allow-template (39ms)
+prototype evidence passed
+$ node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate docs/design/templates/visual-baseline-template.yaml --allow-template (35ms)
+Visual Baseline validate passed
+模板核验通过（fast）

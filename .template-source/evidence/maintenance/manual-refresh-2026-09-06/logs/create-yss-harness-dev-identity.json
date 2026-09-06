@@ -1,0 +1,7 @@
+{
+  "command": "pnpm exec node --test tests/family-identity.test.js",
+  "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-harness-dev",
+  "executed_at": "2026-09-06T15:12:36.448390+00:00",
+  "duration_seconds": 11.63,
+  "exit_code": 0
+}

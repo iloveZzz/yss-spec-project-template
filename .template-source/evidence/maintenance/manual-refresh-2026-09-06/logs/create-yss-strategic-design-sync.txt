@@ -1,0 +1,5 @@
+
+> create-yss-harness-design@0.4.2 sync-template /Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design
+> node scripts/sync-template.js
+
+已从 https://github.com/iloveZzz/yss-harness-design-agent.git#5baa45c8a8929843664ab14dcd150b4c2a12fa05 同步战略设计 Harness 快照

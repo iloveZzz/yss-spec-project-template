@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "candidate_kind": "yss-worktree-candidate-v1",
+  "storage": "packed-stream",
+  "review_mode": "worktree",
+  "repository_root": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+  "review_base_ref": "f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e",
+  "merge_base": "f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e",
+  "implementation_candidate_ref": "working-tree",
+  "candidate_snapshot_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final-2/yss-harness-design-agent/candidate-manifest.yaml",
+  "candidate_digest": "235802c084b6d28da996392e721fbb155bbae0ad0323e17cae2aa51bfac83661",
+  "tracked_diff_command": "git diff --no-ext-diff --binary --full-index f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e",
+  "untracked_inventory_command": "git ls-files -z --others --exclude-standard",
+  "untracked_diff_command": "packed in candidate.bin",
+  "untracked_files": [
+    "docs/user-guide/\u8bbe\u5907\u501f\u7528\u8d2f\u7a7f\u6848\u4f8b.md"
+  ],
+  "untracked_path_bytes": [
+    "ZG9jcy91c2VyLWd1aWRlL+iuvuWkh+WAn+eUqOi0r+epv+ahiOS+iy5tZA=="
+  ],
+  "excluded_paths": [
+    ".template-source/evidence/maintenance/manual-refresh-2026-09-06/"
+  ],
+  "snapshot_stream_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final-2/yss-harness-design-agent/candidate.bin",
+  "tracked_diff_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final-2/yss-harness-design-agent/tracked.diff",
+  "commit_list_command": "git log f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e..HEAD --oneline"
+}

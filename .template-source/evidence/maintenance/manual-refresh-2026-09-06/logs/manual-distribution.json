@@ -1,0 +1,37 @@
+{
+  "command": "python3 verify-yss-manual-distribution.py",
+  "executed_at": "2026-09-06T15:14:39.280192+00:00",
+  "exit_code": 0,
+  "families": [
+    {
+      "family": "create-yss-spec",
+      "manuals": 4,
+      "source_commit": "017925706a981aec9eadefd470232bb531acd4d6",
+      "result": "pass"
+    },
+    {
+      "family": "create-yss-strategic-design",
+      "manuals": 10,
+      "source_commit": "5baa45c8a8929843664ab14dcd150b4c2a12fa05",
+      "result": "pass"
+    },
+    {
+      "family": "create-yss-harness-dev",
+      "manuals": 10,
+      "source_commit": "baae3f6e2f474b30cf8c97292be4580bafae1f37",
+      "result": "pass"
+    },
+    {
+      "family": "yss-harness-backend-agent",
+      "manuals": 10,
+      "source_commit": "cb73b9893c8e37319f67d9f238a40e872fc57843",
+      "result": "pass"
+    },
+    {
+      "family": "yss-harness-frontend-agent",
+      "manuals": 10,
+      "source_commit": "d50e64a8901ba1fa4c3be48bc9c78eb23f56e593",
+      "result": "pass"
+    }
+  ]
+}

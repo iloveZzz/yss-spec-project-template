@@ -1,0 +1,8 @@
+{'family': 'create-yss-spec', 'manuals': 4, 'source_commit': '017925706a981aec9eadefd470232bb531acd4d6', 'result': 'pass'}
+Traceback (most recent call last):
+  File "/tmp/verify-yss-manual-distribution.py", line 28, in <module>
+    count=check(target,source)
+          ^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/verify-yss-manual-distribution.py", line 17, in check
+    assert (p.parent/dest).exists(),f'missing link: {p}: {dest}'
+AssertionError: missing link: /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-manual-instance-uyntb1tl/create-yss-strategic-design/docs/user-guide/用户手册索引.md: 产品生命周期工作流.md

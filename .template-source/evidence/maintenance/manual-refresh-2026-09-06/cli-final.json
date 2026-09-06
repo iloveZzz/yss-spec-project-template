@@ -1,0 +1,23 @@
+[
+  {
+    "name": "create-yss-spec",
+    "manifest": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/cli-final/create-yss-spec/candidate-manifest.yaml",
+    "digest": "14d61bccf903a348aab45e06f7f144172e41290bd156e94edc2c02a1a5dec437",
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+    "base": "ced179948be66fad349e2b206adf45e1ed3a3987"
+  },
+  {
+    "name": "create-yss-strategic-design",
+    "manifest": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/cli-final/create-yss-strategic-design/candidate-manifest.yaml",
+    "digest": "9939cfadb40fca49a1555f78d2fcd91c752bae55c8fbd7457234ffe83b44eb7d",
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+    "base": "f6e29b0efa341afb9a7ab51d85bff62f009c43b3"
+  },
+  {
+    "name": "create-yss-harness-dev",
+    "manifest": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/cli-final/create-yss-harness-dev/candidate-manifest.yaml",
+    "digest": "a82e8b736d613c2ee6d2a7227da64328e5cd048659f0d6c56fe63ece3f73fec1",
+    "repository": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-harness-dev",
+    "base": "fa207e4b657a37058774ecea41bd22c01cf525d1"
+  }
+]

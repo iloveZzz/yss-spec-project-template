@@ -1,0 +1,5 @@
+create-yss-spec: 包身份、快照摘要、离线初始化及入口/Skill 校验通过
+create-yss-spec: 3.1.0 → 3.1.2 同身份同步，用户修改与运行时代码保留
+create-yss-harness-dev: 包身份、快照摘要、离线初始化及入口/Skill 校验通过
+create-yss-harness-dev: 0.4.0 → 0.4.2 同身份同步，用户修改与运行时代码保留
+create-yss-harness-design: 包身份、快照摘要、离线初始化及入口/Skill 校验通过

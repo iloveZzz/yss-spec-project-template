@@ -1,0 +1,9 @@
+[
+  {
+    "name": "yss-harness-design-agent",
+    "manifest": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/strategic-distribution-fix/yss-harness-design-agent/candidate-manifest.yaml",
+    "digest": "b8c25ad60cd1568a51a35422b873f235be369086f4272667dc9853dd2cb5f9f8",
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+    "base": "f50b57a2cdb0d3be9a286fe4e8205f51b45f4b09"
+  }
+]

@@ -1,0 +1,114 @@
+diff --git a/README.md b/README.md
+index 79e34eab5acfc0d2c92a5e1249429a724690a503..6ab13eae03fb6f6a87595223d87cd74b9bdffeb1 100644
+--- a/README.md
++++ b/README.md
+@@ -1,48 +1,64 @@
+ # create-yss-harness-design
+ 
+-当前版本：`0.4.1`，模板固定到 `f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e`。该版本新增战略交接快照包导出与核验，包含完整资产快照、稳定规则与场景索引、差异和离线交付证据。
++源码候选版本：`0.4.2`。模板固定到 `5baa45c8a8929843664ab14dcd150b4c2a12fa05`；最终快照身份与摘要见 `template.snapshot.json`。本次更新用户手册、五家族导航和设备借用教学案例，命令行为沿用既有身份保护。
+ 
+-用于从 `yss-harness-design-agent` 初始化战略设计 `project-instance` 的 npm CLI。
++## 已发布安装与候选版本
+ 
+-本工具不是 [`create-yss-spec`](https://github.com/iloveZzz/create-yss-spec)。`create-yss-spec` 面向全生命周期模板 `yss-spec-project-template`。本 CLI 只生成 `harness.business-ddd-strategy-handoff` 项目实例，本地终点是业务方案交接。
+-
+-## 用法
++截至本轮核验，npm latest 为 `0.4.0`；源码候选尚未发布 npm。后续请自行查询实际发布状态：
+ 
+ ```bash
++npm view create-yss-harness-design version
+ npm create yss-harness-design@latest
+ ```
+ 
+-或：
++`@latest` 获取已发布包，不保证包含 GitHub 最新手册。每次初始化使用包内固定模板，不会在运行时拉取模板仓。
++
++## 首次初始化
+ 
+ ```bash
+-npx create-yss-harness-design@latest \
+-  --project-name "项目名称" \
+-  --business-domain "业务领域" \
+-  --target-dir "./project" \
+-  --git-init
++npx create-yss-harness-design@latest --project-name "设备借用" --business-domain "内部设备管理" --target-dir ./equipment-project
+ ```
+ 
+-CLI 协议 v1 的项目实例操作只支持空目录 `init`；`attach`、`sync` 仍不支持。CLI 自身可用 `update` 或其别名 `upgrade` 查询 npm 最新版本：全局或项目本地安装会升级，源码目录与 `npx` 运行仅给出安全提示，不会覆盖本地文件。`--dry-run` 可预览更新命令，`--force` 可在已是最新版本时重新安装。不创建远端仓库、CI 或 Ticket Board。
++生成后进入实例，核对 yss-project.yaml 为 project-instance、家族 metadata 的 templateCommit，然后阅读 docs/user-guide/用户手册索引.md。先让 Agent 只读检查身份、根 CONTEXT.md、profile 和当前上游，再按本仓流程推进。CLI 不创建远程仓、CI、Tracker 或运行时代码工程。
++
++## 家族与覆盖边界
++
++五家族分别使用 .yss-template.json、.yss-harness-design.json、.yss-harness-dev.json、.yss-harness-backend.json、.yss-harness-frontend.json。已有 profile 同样参与判定。
++
++异族、多重身份、损坏 metadata、未知/矛盾 profile 在写入前拒绝。`--force` 不能绕过，`--dry-run` 使用同一检查。不要删除 metadata 或用另一家族 CLI 覆盖。后端/前端专职只提供仓内 `node scripts/instantiate-harness --target <新目录>`，没有专用 npm 包、attach/sync 或原地迁移。
++
++## 已有战略实例
++
++本 CLI 只有初始化，没有 attach/sync。不要用 init --force 代替实例升级。需要更新时先生成同族新目录、对比受管资产，形成迁移计划并重验批准输入，保留旧目录回滚。
++
++## 更新 CLI 程序
+ 
+ ```bash
+ npx create-yss-harness-design update --dry-run
+ npx create-yss-harness-design upgrade
+ ```
+ 
+-实例 metadata 写入 `.yss-harness-design.json`，并记录 40 位 `templateCommit` 与 `profileId`。CLI 运行时不拉取模板仓库。
++update/upgrade 只处理 CLI 程序，不同步实例资产；源码目录和 npx 环境按工具给出的安全提示操作，全局/项目安装按安装位置升级。
++
++## 使用尚未发布的候选手册
+ 
+-## 开发
++从本 CLI 仓库检出需要的固定提交。先读取 scripts/sync-template.js 的 DEFAULT_TEMPLATE_REF，将下列 `<模板完整SHA>` 替换为该值；在 CLI 仓库根运行。模板源地址须保持本家族。
+ 
+ ```bash
+-YSS_STRATEGIC_DESIGN_TEMPLATE_REPO=../yss-harness-design-agent npm test
++YSS_STRATEGIC_DESIGN_TEMPLATE_REPO=https://github.com/iloveZzz/yss-harness-design-agent.git YSS_STRATEGIC_DESIGN_TEMPLATE_REF=<模板完整SHA> pnpm run sync-template
++npm pack --ignore-scripts
+ ```
+ 
+-未完成与模板仓的跨仓验证和正式独立审查前，不得 `npm publish`。
++`--ignore-scripts` 仅在上一步已成功产生并核对固定快照后使用，以免 prepack 改写输入。检查 tgz 中 template.snapshot.json 的模板 SHA 和 package.json 版本，然后使用实际包路径初始化：
++
++```bash
++npx --yes --package /absolute/path/create-yss-harness-design-0.4.2.tgz create-yss-harness-design --project-name "设备借用" --business-domain "内部设备管理" --target-dir ./equipment-candidate
++```
+ 
+-## 本次身份保护升级
++这是安装本地已构建包的示例，不是 npm 发布操作。候选验证需覆盖新建实例的本地文档链接、身份、Skill 检查与适用交接链路；不要把历史验证日志当当前发布证据。
+ 
+-本版本同步前后端 Harness 拆分后的共享交接资产，保持当前模板家族。init、attach 和 sync 的适用入口在生成计划前检查五种模板身份及已有 profile；异族、多重身份、损坏或矛盾声明均拒绝，`--force` 不能绕过，`--dry-run` 同样返回非零。历史 metadata 继续兼容，`legacy-attach` 仅在旧 schema 路径接受。
++## 详细手册与维护
+ 
+-`update` / `upgrade` 只更新 CLI 程序，不同步实例资产。专职后端和前端新项目分别检出 `yss-harness-backend-agent`、`yss-harness-frontend-agent` 的固定提交，在各自模板目录运行 `node scripts/instantiate-harness --target <新目录>`；这两个入口不提供原地 sync 或跨 profile 迁移。
++[模板使用指南](https://github.com/iloveZzz/yss-harness-design-agent/blob/main/docs/user-guide/用户手册索引.md)介绍职责、提示词、确认和案例。问题涉及参数/同步/包分发时在本 CLI 跟踪；涉及模板内容或生命周期时在模板源跟踪。
+ 
+-本 CLI 仍不支持 attach、sync；已有战略实例不因更新 CLI 而自动升级，也不要使用 init --force 代替实例升级。
++开发验证优先 `pnpm exec node --test tests/*.test.js`；需要重建快照时显式运行上面的固定输入 sync-template。模板先验证并提交，再绑定其 SHA、测试实际 tgz，最后交付 CLI 和父仓 gitlink。npm 发布须另外获得授权。
+diff --git a/package.json b/package.json
+index a1e6facaf09fe64694414696d305258fb6541b83..e9344d36ae4e2841874185d7eab6ca7751afa9e2 100644
+--- a/package.json
++++ b/package.json
+@@ -1,6 +1,6 @@
+ {
+   "name": "create-yss-harness-design",
+-  "version": "0.4.1",
++  "version": "0.4.2",
+   "description": "Initialize a YSS strategic design harness project instance",
+   "repository": {
+     "type": "git",
+diff --git a/scripts/sync-template.js b/scripts/sync-template.js
+index 758d5c14ccfc7248d3b9a7460ccce8ed0d78fb64..3a6a0c5306fba610126be6bca67865dc50d6e941 100755
+--- a/scripts/sync-template.js
++++ b/scripts/sync-template.js
+@@ -21,7 +21,7 @@ function isLocalRepo(value) {
+ const templateRepo =
+   process.env.YSS_STRATEGIC_DESIGN_TEMPLATE_REPO ||
+   (isLocalRepo(siblingHarness) ? siblingHarness : defaultRemote);
+-const DEFAULT_TEMPLATE_REF = "f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e";
++const DEFAULT_TEMPLATE_REF = "5baa45c8a8929843664ab14dcd150b4c2a12fa05";
+ const templateRef =
+   process.env.YSS_STRATEGIC_DESIGN_TEMPLATE_REF ||
+   (isLocalRepo(templateRepo) ? "HEAD" : DEFAULT_TEMPLATE_REF);

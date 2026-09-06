@@ -1,0 +1,8 @@
+{
+  "repo": "root",
+  "command": "scripts/verify-template",
+  "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+  "executed_at": "2026-09-06T14:57:39.820315+00:00",
+  "duration_seconds": 71.64,
+  "exit_code": 0
+}

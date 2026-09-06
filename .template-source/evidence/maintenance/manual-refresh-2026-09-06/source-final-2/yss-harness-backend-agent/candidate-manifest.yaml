@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "candidate_kind": "yss-worktree-candidate-v1",
+  "storage": "packed-stream",
+  "review_mode": "worktree",
+  "repository_root": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+  "review_base_ref": "f6c66804932975a8bdc24ff1b8e0528795658e2d",
+  "merge_base": "f6c66804932975a8bdc24ff1b8e0528795658e2d",
+  "implementation_candidate_ref": "working-tree",
+  "candidate_snapshot_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final-2/yss-harness-backend-agent/candidate-manifest.yaml",
+  "candidate_digest": "74196d7a760306832525eb29cdcd135b3fd34c8df1e7805ff98f3de19ba64c45",
+  "tracked_diff_command": "git diff --no-ext-diff --binary --full-index f6c66804932975a8bdc24ff1b8e0528795658e2d",
+  "untracked_inventory_command": "git ls-files -z --others --exclude-standard",
+  "untracked_diff_command": "packed in candidate.bin",
+  "untracked_files": [
+    "docs/user-guide/\u540e\u7aef\u5b50\u9879\u76ee\u7528\u6237\u624b\u518c.md",
+    "docs/user-guide/\u8bbe\u5907\u501f\u7528\u8d2f\u7a7f\u6848\u4f8b.md"
+  ],
+  "untracked_path_bytes": [
+    "ZG9jcy91c2VyLWd1aWRlL+WQjuerr+WtkOmhueebrueUqOaIt+aJi+WGjC5tZA==",
+    "ZG9jcy91c2VyLWd1aWRlL+iuvuWkh+WAn+eUqOi0r+epv+ahiOS+iy5tZA=="
+  ],
+  "excluded_paths": [
+    ".template-source/evidence/maintenance/manual-refresh-2026-09-06/"
+  ],
+  "snapshot_stream_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final-2/yss-harness-backend-agent/candidate.bin",
+  "tracked_diff_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final-2/yss-harness-backend-agent/tracked.diff",
+  "commit_list_command": "git log f6c66804932975a8bdc24ff1b8e0528795658e2d..HEAD --oneline"
+}

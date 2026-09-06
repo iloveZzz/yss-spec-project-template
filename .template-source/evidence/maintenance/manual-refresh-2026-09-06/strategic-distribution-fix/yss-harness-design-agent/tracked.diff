@@ -1,0 +1,31 @@
+diff --git a/docs/process/instance-distribution-manifest.yaml b/docs/process/instance-distribution-manifest.yaml
+index a2e066e5be40a67c7e2acb6a7cb8f22dc57f8473..e8ddc16469aed5e8e289efd17a5d67259b8a4888 100644
+--- a/docs/process/instance-distribution-manifest.yaml
++++ b/docs/process/instance-distribution-manifest.yaml
+@@ -92,10 +92,6 @@ exclude_paths:
+   - docs/templates/retro-report-template.md
+   - docs/templates/vertical-slice-ticket-template.md
+   - docs/testing/README.md
+-  - docs/user-guide/产品生命周期工作流.md
+-  - docs/user-guide/产品研发全生命周期最佳实践.md
+-  - docs/user-guide/生命周期最佳实践.md
+-  - docs/user-guide/规格与任务迁移指南.md
+   - scripts/gitworks
+   - scripts/implementation-path-policy
+   - scripts/lib/git-submodule-fixtures.mjs
+diff --git a/scripts/verify-instance-distribution-scenarios b/scripts/verify-instance-distribution-scenarios
+index cc13c08f86c4490297adef5839a906c7bf70772d..f7bc46a64c966ee00180a5ee6d66b07da21eefa9 100755
+--- a/scripts/verify-instance-distribution-scenarios
++++ b/scripts/verify-instance-distribution-scenarios
+@@ -28,7 +28,10 @@ assert.equal(shouldDistribute("wiki/index.md", source), false);
+ assert.equal(shouldDistribute("package.json", source), false);
+ assert.equal(shouldDistribute("yss-public-skills.json", source), false);
+ assert.equal(shouldDistribute("scripts/verify-yss-router-scenarios", source), false);
+-assert.equal(shouldDistribute("docs/user-guide/规格与任务迁移指南.md", source), false);
++// These guides now describe only the strategic profile and must remain readable offline.
++for (const name of ["产品生命周期工作流.md", "产品研发全生命周期最佳实践.md", "生命周期最佳实践.md", "规格与任务迁移指南.md", "设备借用贯穿案例.md"]) {
++  assert.equal(shouldDistribute(`docs/user-guide/${name}`, source), true);
++}
+ 
+ const projected = toCliManifest(source);
+ assert.equal(projected.profileId, source.profile_id);

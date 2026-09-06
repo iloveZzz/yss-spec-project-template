@@ -1,0 +1,7 @@
+{
+  "command": "pnpm exec node --test tests/family-identity.test.js",
+  "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+  "executed_at": "2026-09-06T15:12:36.448339+00:00",
+  "duration_seconds": 2.65,
+  "exit_code": 0
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "candidate_kind": "yss-worktree-candidate-v1",
+  "storage": "packed-stream",
+  "review_mode": "worktree",
+  "repository_root": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+  "review_base_ref": "f6e29b0efa341afb9a7ab51d85bff62f009c43b3",
+  "merge_base": "f6e29b0efa341afb9a7ab51d85bff62f009c43b3",
+  "implementation_candidate_ref": "working-tree",
+  "candidate_snapshot_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/cli-final/create-yss-strategic-design/candidate-manifest.yaml",
+  "candidate_digest": "9939cfadb40fca49a1555f78d2fcd91c752bae55c8fbd7457234ffe83b44eb7d",
+  "tracked_diff_command": "git diff --no-ext-diff --binary --full-index f6e29b0efa341afb9a7ab51d85bff62f009c43b3",
+  "untracked_inventory_command": "git ls-files -z --others --exclude-standard",
+  "untracked_diff_command": "packed in candidate.bin",
+  "untracked_files": [],
+  "untracked_path_bytes": [],
+  "excluded_paths": [
+    ".template-source/evidence/maintenance/manual-refresh-2026-09-06/"
+  ],
+  "snapshot_stream_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/cli-final/create-yss-strategic-design/candidate.bin",
+  "tracked_diff_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/cli-final/create-yss-strategic-design/tracked.diff",
+  "commit_list_command": "git log f6e29b0efa341afb9a7ab51d85bff62f009c43b3..HEAD --oneline"
+}

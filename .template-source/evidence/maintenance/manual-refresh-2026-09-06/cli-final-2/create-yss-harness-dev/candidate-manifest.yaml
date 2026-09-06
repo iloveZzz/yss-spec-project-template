@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "candidate_kind": "yss-worktree-candidate-v1",
+  "storage": "packed-stream",
+  "review_mode": "worktree",
+  "repository_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-harness-dev",
+  "review_base_ref": "fa207e4b657a37058774ecea41bd22c01cf525d1",
+  "merge_base": "fa207e4b657a37058774ecea41bd22c01cf525d1",
+  "implementation_candidate_ref": "working-tree",
+  "candidate_snapshot_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/cli-final-2/create-yss-harness-dev/candidate-manifest.yaml",
+  "candidate_digest": "a82e8b736d613c2ee6d2a7227da64328e5cd048659f0d6c56fe63ece3f73fec1",
+  "tracked_diff_command": "git diff --no-ext-diff --binary --full-index fa207e4b657a37058774ecea41bd22c01cf525d1",
+  "untracked_inventory_command": "git ls-files -z --others --exclude-standard",
+  "untracked_diff_command": "packed in candidate.bin",
+  "untracked_files": [
+    "template/docs/user-guide/\u7814\u53d1\u5b50\u9879\u76ee\u7528\u6237\u624b\u518c.md",
+    "template/docs/user-guide/\u8bbe\u5907\u501f\u7528\u8d2f\u7a7f\u6848\u4f8b.md"
+  ],
+  "untracked_path_bytes": [
+    "dGVtcGxhdGUvZG9jcy91c2VyLWd1aWRlL+eglOWPkeWtkOmhueebrueUqOaIt+aJi+WGjC5tZA==",
+    "dGVtcGxhdGUvZG9jcy91c2VyLWd1aWRlL+iuvuWkh+WAn+eUqOi0r+epv+ahiOS+iy5tZA=="
+  ],
+  "excluded_paths": [
+    ".template-source/evidence/maintenance/manual-refresh-2026-09-06/"
+  ],
+  "snapshot_stream_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/cli-final-2/create-yss-harness-dev/candidate.bin",
+  "tracked_diff_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/cli-final-2/create-yss-harness-dev/tracked.diff",
+  "commit_list_command": "git log fa207e4b657a37058774ecea41bd22c01cf525d1..HEAD --oneline"
+}

@@ -1,0 +1,62 @@
+{
+  "root": "/Users/zhudaoming/Projects/yss-spec-project-template",
+  "dev": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-harness-dev",
+  "original_dev_snapshot_sha256": "b48e91997174ab9a318a83511128eafc36b0441b773b02691f7972ccf6b245bb",
+  "repos": {
+    "root": {
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "base": "dc1b035e87143077e2ceb49d313ea626b9f6827b"
+    },
+    "yss-harness-design-agent": {
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+      "base": "f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e"
+    },
+    "yss-harness-dev-agent": {
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
+      "base": "07a126d76ad33c1e4162d2379ffb68007e01dad3"
+    },
+    "yss-harness-backend-agent": {
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+      "base": "f6c66804932975a8bdc24ff1b8e0528795658e2d"
+    },
+    "yss-harness-frontend-agent": {
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+      "base": "467091c244a735ebafea726f48cae1eaeadf84de"
+    },
+    "create-yss-spec": {
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+      "base": "ced179948be66fad349e2b206adf45e1ed3a3987",
+      "version": "3.1.2",
+      "package": "create-yss-spec"
+    },
+    "create-yss-strategic-design": {
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+      "base": "f6e29b0efa341afb9a7ab51d85bff62f009c43b3",
+      "version": "0.4.2",
+      "package": "create-yss-harness-design"
+    },
+    "create-yss-harness-dev": {
+      "path": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/create-yss-harness-dev",
+      "base": "fa207e4b657a37058774ecea41bd22c01cf525d1",
+      "version": "0.4.2",
+      "package": "create-yss-harness-dev"
+    }
+  },
+  "source_commits": {
+    "yss-harness-design-agent": "5baa45c8a8929843664ab14dcd150b4c2a12fa05",
+    "yss-harness-dev-agent": "baae3f6e2f474b30cf8c97292be4580bafae1f37",
+    "yss-harness-backend-agent": "cb73b9893c8e37319f67d9f238a40e872fc57843",
+    "yss-harness-frontend-agent": "d50e64a8901ba1fa4c3be48bc9c78eb23f56e593",
+    "root": "017925706a981aec9eadefd470232bb531acd4d6"
+  },
+  "unpacked": {
+    "create-yss-spec": "/tmp/yss-manual-validation/unpacked/create-yss-spec/package",
+    "create-yss-strategic-design": "/tmp/yss-manual-validation/unpacked/create-yss-strategic-design/package",
+    "create-yss-harness-dev": "/tmp/yss-manual-validation/unpacked/create-yss-harness-dev/package"
+  },
+  "cli_commits": {
+    "create-yss-spec": "632f23e519e772b36f406c10f15d9de917b43e28",
+    "create-yss-strategic-design": "309664e6d99b2e56081d2a0ea7d910b234a047fa",
+    "create-yss-harness-dev": "90cfdceeb91fb7873d466ac1ac68b3a956d9b778"
+  }
+}

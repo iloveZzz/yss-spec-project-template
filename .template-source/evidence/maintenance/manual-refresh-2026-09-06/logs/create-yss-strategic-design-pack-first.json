@@ -1,0 +1,37 @@
+{
+  "package": "create-yss-harness-design",
+  "version": "0.4.2",
+  "command": "pnpm run sync-template; npm pack --ignore-scripts --json",
+  "env": {
+    "YSS_STRATEGIC_DESIGN_TEMPLATE_REPO": "https://github.com/iloveZzz/yss-harness-design-agent.git",
+    "YSS_STRATEGIC_DESIGN_TEMPLATE_REF": "f50b57a2cdb0d3be9a286fe4e8205f51b45f4b09"
+  },
+  "executed_at": "2026-09-06T15:04:19.911475+00:00",
+  "duration_seconds": 7.56,
+  "exit_code": 0,
+  "snapshot": {
+    "schemaVersion": 1,
+    "templateName": "yss-harness-design-agent",
+    "profileId": "harness.business-ddd-strategy-handoff",
+    "templateSource": "github:iloveZzz/yss-harness-design-agent",
+    "templateRepository": "https://github.com/iloveZzz/yss-harness-design-agent.git",
+    "requestedRef": "f50b57a2cdb0d3be9a286fe4e8205f51b45f4b09",
+    "templateCommit": "f50b57a2cdb0d3be9a286fe4e8205f51b45f4b09",
+    "manifestHash": "50d53e54e0225c63e8ac5478954b8466f988b5268ce2f4e06bfe0956fafd8b7c",
+    "encodedPaths": {
+      ".codex/skills/product-design/.npmignore": ".codex/skills/product-design/__yss_dotfile__.npmignore",
+      ".codex/skills/product-design/templates/prototype/.npmrc": ".codex/skills/product-design/templates/prototype/__yss_dotfile__.npmrc",
+      ".gitignore": "__yss_dotfile__.gitignore"
+    },
+    "snapshotHash": "2d1db03a9509c4bfa0c1a0723f30d53d555fd903c4eb1997c318f6536cef9dd6",
+    "generatedAt": "2026-09-06T15:03:54.000Z"
+  },
+  "pack": {
+    "filename": "create-yss-harness-design-0.4.2.tgz",
+    "size": 1152815,
+    "unpackedSize": 5094293,
+    "shasum": "06def6a7c70adf61527a75d1f927319ad08b542a",
+    "integrity": "sha512-BTb/37lSMMYFbqz6uhGXDSjB8Hp6ZrMq3A5CBacEeJJ68NWivhXgACHTZXbXaWXbXpoNL3+JPdHt+2/qyk6jiw=="
+  },
+  "unpacked": "/tmp/yss-manual-validation/unpacked/create-yss-strategic-design/package"
+}

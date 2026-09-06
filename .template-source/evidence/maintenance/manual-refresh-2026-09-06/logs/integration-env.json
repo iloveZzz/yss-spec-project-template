@@ -1,0 +1,7 @@
+{
+  "YSS_CLI_SPEC_ROOT": "/tmp/yss-manual-validation/unpacked/create-yss-spec/package",
+  "YSS_CLI_DESIGN_ROOT": "/tmp/yss-manual-validation/unpacked/create-yss-strategic-design/package",
+  "YSS_CLI_DEV_ROOT": "/tmp/yss-manual-validation/unpacked/create-yss-harness-dev/package",
+  "YSS_OLD_SPEC_ROOT": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/baseline-create-yss-spec",
+  "YSS_OLD_DEV_ROOT": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-upgrade-20260906-d9zud90d/baseline-create-yss-harness-dev"
+}

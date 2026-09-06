@@ -1,0 +1,37 @@
+[
+  {
+    "name": "root",
+    "manifest": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final-2/root/candidate-manifest.yaml",
+    "digest": "2a8c5301fc390708cbe54082459a828e2e8103423498d7aba3b2f70b42ebdc0a",
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "base": "dc1b035e87143077e2ceb49d313ea626b9f6827b"
+  },
+  {
+    "name": "yss-harness-design-agent",
+    "manifest": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final-2/yss-harness-design-agent/candidate-manifest.yaml",
+    "digest": "235802c084b6d28da996392e721fbb155bbae0ad0323e17cae2aa51bfac83661",
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+    "base": "f41c4a4af3afe6c26d299d6f4f16b6c6d4dc2e5e"
+  },
+  {
+    "name": "yss-harness-dev-agent",
+    "manifest": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final-2/yss-harness-dev-agent/candidate-manifest.yaml",
+    "digest": "64bce210fa01055c926e519c0340427d39f458b542de54b1c5b8828ac3632efc",
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
+    "base": "07a126d76ad33c1e4162d2379ffb68007e01dad3"
+  },
+  {
+    "name": "yss-harness-backend-agent",
+    "manifest": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final-2/yss-harness-backend-agent/candidate-manifest.yaml",
+    "digest": "74196d7a760306832525eb29cdcd135b3fd34c8df1e7805ff98f3de19ba64c45",
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+    "base": "f6c66804932975a8bdc24ff1b8e0528795658e2d"
+  },
+  {
+    "name": "yss-harness-frontend-agent",
+    "manifest": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final-2/yss-harness-frontend-agent/candidate-manifest.yaml",
+    "digest": "ee89985c062e4e366bc2978cc25769b193c3dfa2305fe11195986717f8b42ef6",
+    "repository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+    "base": "467091c244a735ebafea726f48cae1eaeadf84de"
+  }
+]

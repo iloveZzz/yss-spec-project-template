@@ -1,0 +1,43 @@
+schema_version: 2
+intensity: L3
+classification_reason: 五类模板用户手册及三个CLI固定快照协同更新，战略分发清单补齐已改写指南。
+triggers:
+  - cross-repo-contract
+  - generation-semantics
+  - release-semantics
+changed_assets:
+  - README.md
+  - docs/user-guide
+  - submodules/yss-harness-design-agent
+  - submodules/yss-harness-dev-agent
+  - submodules/yss-harness-backend-agent
+  - submodules/yss-harness-frontend-agent
+  - submodules/create-yss-spec
+  - submodules/create-yss-strategic-design
+  - submodules/create-yss-harness-dev
+verification_evidence:
+  - kind: self-check
+    command: .template-source/evidence/maintenance/manual-refresh-2026-09-06/verification.md
+    result: pass
+  - kind: relevant-check
+    command: .template-source/evidence/maintenance/manual-refresh-2026-09-06/logs/manual-distribution.json
+    result: pass
+  - kind: cross-repository-verification
+    command: .template-source/evidence/maintenance/manual-refresh-2026-09-06/logs/packed-handoff.json
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template (five template sources; logs/*-full.json)
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-candidate
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

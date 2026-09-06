@@ -1,0 +1,37 @@
+{
+  "package": "create-yss-spec",
+  "version": "3.1.2",
+  "command": "pnpm run sync-template; npm pack --ignore-scripts --json",
+  "env": {
+    "YSS_SPEC_TEMPLATE_REPO": "https://github.com/iloveZzz/yss-spec-project-template.git",
+    "YSS_SPEC_TEMPLATE_REF": "017925706a981aec9eadefd470232bb531acd4d6"
+  },
+  "executed_at": "2026-09-06T15:04:19.912685+00:00",
+  "duration_seconds": 22.85,
+  "exit_code": 0,
+  "snapshot": {
+    "schemaVersion": 1,
+    "templateName": "yss-spec-project-template",
+    "templateSource": "github:iloveZzz/yss-spec-project-template",
+    "templateRepository": "https://github.com/iloveZzz/yss-spec-project-template.git",
+    "requestedRef": "017925706a981aec9eadefd470232bb531acd4d6",
+    "templateCommit": "017925706a981aec9eadefd470232bb531acd4d6",
+    "manifestHash": "3c72c098a0f70a8f7c80e8888c67ab76ad9023b5fc5e1019c084d1f15950db17",
+    "encodedPaths": {
+      ".codex/skills/data-analytics/.gitignore": ".codex/skills/data-analytics/__yss_dotfile__.gitignore",
+      ".codex/skills/product-design/.npmignore": ".codex/skills/product-design/__yss_dotfile__.npmignore",
+      ".codex/skills/product-design/templates/prototype/.npmrc": ".codex/skills/product-design/templates/prototype/__yss_dotfile__.npmrc",
+      ".gitignore": "__yss_dotfile__.gitignore"
+    },
+    "snapshotHash": "c8d94f89b4e58f8f9138f05476163bb1e83da4ecd70ed869dc24817b49b61419",
+    "generatedAt": "2026-09-06T15:04:35.111Z"
+  },
+  "pack": {
+    "filename": "create-yss-spec-3.1.2.tgz",
+    "size": 14145978,
+    "unpackedSize": 74259887,
+    "shasum": "825a0517c1e404c9dcc1c9450043102cc243832c",
+    "integrity": "sha512-1W+ZA0O+JXNeLFgOTD6MWo10TJZzRleM5LLtNp3zhf5ZWNZ1obINr9RZwA+kkZQYg1E8jYH3zzOKzL+bZBpyCA=="
+  },
+  "unpacked": "/tmp/yss-manual-validation/unpacked/create-yss-spec/package"
+}

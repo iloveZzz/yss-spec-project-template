@@ -1,0 +1,5 @@
+
+> create-yss-spec@3.1.2 sync-template /Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec
+> node scripts/sync-template.js
+
+已从 https://github.com/iloveZzz/yss-spec-project-template.git#017925706a981aec9eadefd470232bb531acd4d6 同步模板快照（commit 017925706a981aec9eadefd470232bb531acd4d6）

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "candidate_kind": "yss-worktree-candidate-v1",
+  "storage": "packed-stream",
+  "review_mode": "worktree",
+  "repository_root": "/Users/zhudaoming/Projects/yss-spec-project-template",
+  "review_base_ref": "dc1b035e87143077e2ceb49d313ea626b9f6827b",
+  "merge_base": "dc1b035e87143077e2ceb49d313ea626b9f6827b",
+  "implementation_candidate_ref": "working-tree",
+  "candidate_snapshot_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final/root/candidate-manifest.yaml",
+  "candidate_digest": "2a8c5301fc390708cbe54082459a828e2e8103423498d7aba3b2f70b42ebdc0a",
+  "tracked_diff_command": "git diff --no-ext-diff --binary --full-index dc1b035e87143077e2ceb49d313ea626b9f6827b",
+  "untracked_inventory_command": "git ls-files -z --others --exclude-standard",
+  "untracked_diff_command": "packed in candidate.bin",
+  "untracked_files": [
+    "docs/user-guide/\u8bbe\u5907\u501f\u7528\u8d2f\u7a7f\u6848\u4f8b.md"
+  ],
+  "untracked_path_bytes": [
+    "ZG9jcy91c2VyLWd1aWRlL+iuvuWkh+WAn+eUqOi0r+epv+ahiOS+iy5tZA=="
+  ],
+  "excluded_paths": [
+    ".template-source/evidence/maintenance/manual-refresh-2026-09-06/"
+  ],
+  "snapshot_stream_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final/root/candidate.bin",
+  "tracked_diff_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/source-final/root/tracked.diff",
+  "commit_list_command": "git log dc1b035e87143077e2ceb49d313ea626b9f6827b..HEAD --oneline"
+}

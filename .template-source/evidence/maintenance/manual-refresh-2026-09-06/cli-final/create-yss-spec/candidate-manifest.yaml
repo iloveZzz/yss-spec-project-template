@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "candidate_kind": "yss-worktree-candidate-v1",
+  "storage": "packed-stream",
+  "review_mode": "worktree",
+  "repository_root": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+  "review_base_ref": "ced179948be66fad349e2b206adf45e1ed3a3987",
+  "merge_base": "ced179948be66fad349e2b206adf45e1ed3a3987",
+  "implementation_candidate_ref": "working-tree",
+  "candidate_snapshot_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/cli-final/create-yss-spec/candidate-manifest.yaml",
+  "candidate_digest": "14d61bccf903a348aab45e06f7f144172e41290bd156e94edc2c02a1a5dec437",
+  "tracked_diff_command": "git diff --no-ext-diff --binary --full-index ced179948be66fad349e2b206adf45e1ed3a3987",
+  "untracked_inventory_command": "git ls-files -z --others --exclude-standard",
+  "untracked_diff_command": "packed in candidate.bin",
+  "untracked_files": [],
+  "untracked_path_bytes": [],
+  "excluded_paths": [
+    ".template-source/evidence/maintenance/manual-refresh-2026-09-06/"
+  ],
+  "snapshot_stream_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/cli-final/create-yss-spec/candidate.bin",
+  "tracked_diff_ref": ".template-source/evidence/maintenance/manual-refresh-2026-09-06/cli-final/create-yss-spec/tracked.diff",
+  "commit_list_command": "git log ced179948be66fad349e2b206adf45e1ed3a3987..HEAD --oneline"
+}

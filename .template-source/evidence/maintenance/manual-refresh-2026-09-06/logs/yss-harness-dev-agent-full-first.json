@@ -1,0 +1,8 @@
+{
+  "repo": "yss-harness-dev-agent",
+  "command": "scripts/verify-template",
+  "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
+  "executed_at": "2026-09-06T14:57:39.820623+00:00",
+  "duration_seconds": 34.23,
+  "exit_code": 1
+}
