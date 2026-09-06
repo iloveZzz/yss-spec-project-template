@@ -130,3 +130,7 @@ scripts/verify-template-fast
 | [docs/templates/implementation-repo-registry-template.md](./docs/templates/implementation-repo-registry-template.md) | 外部实现仓库登记 |
 | [docs/templates/cross-repo-slice-template.md](./docs/templates/cross-repo-slice-template.md) | 跨仓库垂直切片记录 |
 | [docs/architecture/templates/architecture-deepening-template.md](./docs/architecture/templates/architecture-deepening-template.md) | 架构 deepening 候选与 seam 设计 |
+
+## 按职责使用与升级
+
+[五类项目用户手册](docs/user-guide/用户手册.md)提供选型、初始化及升级；[设备借用贯穿案例](docs/user-guide/设备借用贯穿案例.md)演示战略、后端、前端与统一验收。[全部手册](docs/user-guide/用户手册索引.md)区分日常使用与维护入口。GitHub 当前能力与 npm 发布快照分别核对。
