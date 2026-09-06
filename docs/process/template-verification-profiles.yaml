@@ -191,6 +191,8 @@ syntax_files:
   - scripts/verify-maintenance-review-workflow-scenarios
   - scripts/verify-template-cache-scenarios
 routing:
+  - patterns: ["scripts/*backend-delivery*", "scripts/*frontend-delivery*", "scripts/lib/*backend-delivery*", "scripts/lib/*frontend-delivery*", "scripts/fixtures/backend-delivery/**", "docs/process/frontend-backend-delivery.md", "docs/process/schemas/backend-delivery*", "docs/process/schemas/frontend-delivery*"]
+    groups: [frontend-delivery]
   - patterns: ["scripts/*user-decision*", "scripts/lib/user-decision*", "scripts/fixtures/user-decision/**", "docs/process/schemas/user-decision*", "docs/process/templates/user-decision*", "scripts/lib/approval-record.mjs", "scripts/verify-approval-record"]
     groups: [lifecycle, collaboration]
   - patterns: ["scripts/*strategic-handoff*", "scripts/lib/strategic-handoff*", "scripts/fixtures/strategic-handoff/**", "docs/process/strategic-handoff-package.md", "docs/process/schemas/strategic-handoff-*"]
@@ -228,6 +230,10 @@ routing:
   - patterns: ["scripts/**"]
     groups: [hygiene]
 groups:
+  frontend-delivery:
+    commands:
+      - { run: "scripts/verify-frontend-delivery-scenarios" }
+      - { run: "node .template-source/scripts/verify-delivery-harness-distribution.mjs", when: template-source }
   strategic-handoff-package:
     commands:
       - { run: "node --check scripts/lib/strategic-handoff.mjs" }

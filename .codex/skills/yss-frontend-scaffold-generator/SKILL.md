@@ -30,6 +30,8 @@ branch: template
 
 ## Workflow
 
+采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `docs/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
+
 1. 确认当前任务已经通过 Harness 入口分诊，且实现位置已记录在 proposal、design、build entry review、实施计划或实现路由记录中。
 2. 确认目标是外部实现仓库；只有用户明确选择时才输出到 Harness 仓库的 `apps/frontend/<project>/`。`apps/frontend/` 只能作为项目容器，`app/frontend/`、`app/backend/` 及其子路径禁止作为输出位置。`git-submodule` 只能在已初始化且附加分支的子仓工作树生成；空 gitlink、detached HEAD、`--force` 覆盖挂载点不得当成普通目录。
 3. 只读检查模板分支是否可访问：`git ls-remote --heads <repo> template`。

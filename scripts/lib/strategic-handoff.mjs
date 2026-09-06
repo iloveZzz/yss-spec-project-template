@@ -13,7 +13,7 @@ const own = (a,b) => JSON.stringify(canonical(a)) === JSON.stringify(canonical(b
 const nonempty = x => typeof x === 'string' && x.trim();
 const bytesDigest = (bytes, kind) => kind === 'canonical-json' ? digest(parse(bytes)) : kind === 'sha256-bytes' ? hash(bytes) : (() => { throw new TypeError(`未知摘要算法: ${kind}`); })();
 
-async function sourceApproval(record, roles, root) {
+export async function sourceApproval(record, roles, root) {
   const options={rolesDoc:roles,requireApproved:true,root,read:ref=>readFileSync(safe(root,path.relative(root,ref).split(path.sep).join('/')))};
   if (roles.user_decision_policy.gates.includes(record.gate_id)) {
     ensure(existsSync(path.join(ROOT,'scripts/lib/user-decision.mjs')), '接收工具不支持源用户决定策略，请升级工具后验包');

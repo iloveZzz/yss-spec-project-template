@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+import { parseArgs } from 'node:util';
+import { verifyFrontendDelivery } from './lib/frontend-delivery.mjs';
+try {
+  const {values,positionals}=parseArgs({allowPositionals:true,options:{root:{type:'string',default:process.cwd()},slice:{type:'string'},'expected-digest':{type:'string'}}});
+  if(positionals.length!==1||!values.slice)throw new TypeError('用法: verify-frontend-delivery --root <repo> --slice <slice-id> [--expected-digest <sha256>] <acceptance-ref>');
+  const result=await verifyFrontendDelivery({root:values.root,sliceRef:values.slice,expectedDigest:values['expected-digest'],acceptanceRef:positionals[0]});
+  process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
+} catch(error) { process.stderr.write(`${JSON.stringify({result:'blocked',error:error.message})}\n`);process.exitCode=1; }

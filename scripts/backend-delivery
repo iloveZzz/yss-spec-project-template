@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+import { parseArgs } from 'node:util';
+import path from 'node:path';
+import { exportBackendDelivery, openBackendDelivery, importBackendDelivery } from './lib/backend-delivery.mjs';
+try {
+  const {values,positionals}=parseArgs({allowPositionals:true,options:{'source-root':{type:'string'},delivery:{type:'string'},output:{type:'string'},zip:{type:'boolean'},bundle:{type:'string'},'target-root':{type:'string'}}});
+  if(positionals.length!==1)throw new TypeError('必须指定 export / verify / import');
+  let result;
+  if(positionals[0]==='export'&&values['source-root']&&values.delivery&&values.output)result=await exportBackendDelivery({sourceRoot:values['source-root'],deliveryRef:values.delivery,output:values.output,zip:values.zip});
+  else if(positionals[0]==='verify'&&values.bundle)result=await openBackendDelivery(path.resolve(values.bundle),b=>({result:'verified',delivery_id:b.delivery.delivery_id,version:b.delivery.version,bundle_digest:b.manifest.bundle_digest,live_service_checked:false}));
+  else if(positionals[0]==='import'&&values.bundle&&values['target-root'])result=await importBackendDelivery({bundle:path.resolve(values.bundle),targetRoot:values['target-root']});
+  else throw new TypeError('用法: backend-delivery export --source-root <repo> --delivery <ref> --output <new-dir> [--zip] | verify --bundle <dir|zip> | import --bundle <dir|zip> --target-root <repo>');
+  process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
+} catch(error) { process.stderr.write(`${JSON.stringify({result:'blocked',error:error.message})}\n`);process.exitCode=1; }

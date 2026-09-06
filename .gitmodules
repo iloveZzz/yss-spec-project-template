@@ -13,3 +13,9 @@
 [submodule "submodules/create-yss-harness-dev"]
 	path = submodules/create-yss-harness-dev
 	url = https://github.com/iloveZzz/create-yss-harness-dev.git
+[submodule "submodules/yss-harness-backend-agent"]
+	path = submodules/yss-harness-backend-agent
+	url = https://github.com/iloveZzz/yss-harness-backend-agent.git
+[submodule "submodules/yss-harness-frontend-agent"]
+	path = submodules/yss-harness-frontend-agent
+	url = https://github.com/iloveZzz/yss-harness-frontend-agent.git

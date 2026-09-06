@@ -1,0 +1,22 @@
+模板核验 profile: fast -> fast
+
+[strategic-handoff-package]
+$ node --check scripts/lib/strategic-handoff.mjs (25ms)
+$ scripts/verify-strategic-handoff-package-scenarios (23233ms)
+✔ 目录和 ZIP 可脱离源仓验包；导入幂等且不修改词汇表 (3566.341292ms)
+✔ 规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出 (2129.583541ms)
+✔ 篡改 payload、重新封摘要后的虚构规则索引、额外文件均拒绝 (1578.268833ms)
+✔ ZIP 路径穿越和重复条目拒绝 (173.1945ms)
+✔ 版本差异绑定前版，重复版本不允许；修改规则产生更新集合 (3686.320583ms)
+✔ 受控延期只阻断依赖切片；未知依赖扩大阻断；目标未对账禁止消费 (10790.634875ms)
+✔ 源规则必须稳定可追溯，关键场景不能遗漏结果 (12.739333ms)
+✔ 统一 CLI 在源目录消失后通过 ZIP 验包 (1248.886708ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 23189.074625
+模板核验通过（fast）

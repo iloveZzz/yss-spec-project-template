@@ -1,0 +1,75 @@
+schema_version: 2
+intensity: L3
+classification_reason: 新增前后端跨仓交付合同、前端联合输入门禁、专职模板和固定快照初始化；命中跨仓合同、生命周期门禁和核心验证器。
+triggers:
+- cross-repo-contract
+- lifecycle-gate
+- core-validator
+changed_assets:
+- .agents/skills/.strategic-design-skills-manifest.json
+- skills-lock.json
+- docs/process/frontend-backend-delivery.md
+- docs/process/lifecycle-registry.yaml
+- docs/agents/digital-human-roles.yaml
+- docs/process/template-verification-profiles.yaml
+- scripts/lib/backend-delivery.mjs
+- scripts/lib/frontend-delivery.mjs
+- scripts/lib/frontend-delivery-boundary.mjs
+- scripts/lib/harness-execution-scope.mjs
+- scripts/instantiate-harness
+- .agents/skills/yss-product-lifecycle
+- .agents/skills/yss-implementation-contract-compiler
+- .agents/skills/yss-ui
+- .agents/skills/yss-frontend-scaffold-generator
+- .gitmodules
+- submodules/yss-harness-design-agent
+- submodules/yss-harness-dev-agent
+- submodules/yss-harness-backend-agent
+- submodules/yss-harness-frontend-agent
+verification_evidence:
+- kind: self-check
+  command: .template-source/evidence/maintenance/backend-frontend-split/self-check.md
+  result: pass
+  evidence_ref: .template-source/evidence/maintenance/backend-frontend-split/self-check.md
+- kind: fresh-verification
+  command: scripts/verify-template-fast
+  repository: .
+  result: pass
+  executed_at: '2026-09-06T13:21:17.876183+00:00'
+  duration_ms: 64670
+  evidence_ref: .template-source/evidence/maintenance/backend-frontend-split/root-verification.log
+- kind: fresh-verification
+  command: scripts/verify-template-fast
+  repository: submodules/yss-harness-design-agent
+  result: pass
+  executed_at: '2026-09-06T13:14:01.059825+00:00'
+  duration_ms: 23611
+  evidence_ref: .template-source/evidence/maintenance/backend-frontend-split/design-verification.log
+- kind: fresh-verification
+  command: scripts/verify-template-fast
+  repository: submodules/yss-harness-dev-agent
+  result: pass
+  executed_at: '2026-09-06T13:14:01.062508+00:00'
+  duration_ms: 36484
+  evidence_ref: .template-source/evidence/maintenance/backend-frontend-split/dev-verification.log
+- kind: fresh-verification
+  command: scripts/verify-template-fast
+  repository: submodules/yss-harness-backend-agent
+  result: pass
+  executed_at: '2026-09-06T13:14:01.066367+00:00'
+  duration_ms: 36656
+  evidence_ref: .template-source/evidence/maintenance/backend-frontend-split/backend-verification.log
+- kind: fresh-verification
+  command: scripts/verify-template-fast
+  repository: submodules/yss-harness-frontend-agent
+  result: pass
+  executed_at: '2026-09-06T13:14:01.070158+00:00'
+  duration_ms: 36707
+  evidence_ref: .template-source/evidence/maintenance/backend-frontend-split/frontend-verification.log
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { assertWorkUnitUserDecision, assertImplementationDecision } from "./user-decision.mjs";
+import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
 
 const IMPLEMENTATION_WORK_UNIT = "work-unit.slice-implementation";
 const TICKET_DECOMPOSITION_WORK_UNIT = "work-unit.ticket-decomposition";
@@ -112,6 +113,10 @@ function validateTicketReference(ref, trackerKind) {
  * by `validateWorkflowExecutionResult` before this function is called.
  */
 export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, options = {}) {
+  if (["work-unit.technical-analysis", TICKET_DECOMPOSITION_WORK_UNIT, IMPLEMENTATION_WORK_UNIT, "work-unit.frontend-implementation-verification"].includes(nextRoute)) {
+    try { enforceFrontendDelivery(decisionState, { root: options.root, phase: nextRoute === IMPLEMENTATION_WORK_UNIT ? "implementation" : "inputs" }); }
+    catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
+  }
   const routes = NEXT_ROUTES[currentWorkUnit];
   if (!routes) return blockedResult([BLOCKING_SIGNALS.invalidRoute], ["known_current_work_unit"]);
   if (nextRoute === null && routes.length === 0) {
@@ -138,6 +143,8 @@ function validateDecisionBoundary(workUnit, state, options) {
  * `exists` is injectable so external adapters can resolve their own tracker refs.
  */
 export function validateTicketFormalization(state, { exists = existsSync, read = (ref) => readFileSync(ref, "utf8"), ...decisionOptions } = {}) {
+  try { enforceFrontendDelivery(state, { root: decisionOptions.root, phase: "implementation" }); }
+  catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
   const decomposition = state?.ticket_decomposition_result;
   const ticket = state?.vertical_slice_ticket;
   const contract = state?.slice_contract;

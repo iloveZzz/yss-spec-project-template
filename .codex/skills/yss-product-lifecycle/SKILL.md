@@ -53,6 +53,8 @@ Agent 先问清六件事：谁遇到什么问题并想得到什么结果；事�
 
 ## 前端实现还原硬检查
 
+采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `docs/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
+
 原型通过不等于前端实现通过。`ready-for-agent` 前先产生 `frontend_implementation_plan`，绑定批准且 digest 当前的 Visual Baseline manifest，并按垂直切片选择 `case_id`；实现完成、发布前再产生 `frontend_implementation_verification`，逐 case 配对基准图、实现图、diff/mask 与差异解释，同时补齐交互、console warning、实际 `pnpm` 命令和退出码。模型必须先读 manifest 与语义引用再查看图片，禁止通过目录 glob 猜测含义。差异未解释、图片或摘要缺失、只做 type-check 或只声称“已对齐”均为 `blocked`；Visual Baseline 版本或 digest 变化使实现计划和 Slice Contract `stale`，新 API、状态或视觉行为返回 `new_impacts`/`drift` 并重新路由。优先使用 `yss-ui/references/verification.md` 的分层验证和既有 `pnpm` scripts。
 
 ## 真实用户决定

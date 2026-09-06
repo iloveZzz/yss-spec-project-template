@@ -66,6 +66,8 @@ apps/
 
 ## 2. 影响面路由
 
+采用后端交付驱动前端的专职项目，按 [前后端交付与联合接收](frontend-backend-delivery.md) 执行输入校验。该条件同时进入合同编译、任务派发、生命周期实施/恢复和正式前端证据检查；原通用研发 profile 保留兼容，不能以兼容入口替专职项目跳过接收。
+
 | 影响面 | 必须绑定的记录 | 本变更结论 |
 |---|---|---|
 | Harness-only | change、文档路径、压力场景、fresh verification、checkpoint | required：模板仓库、CLI 仓库 |

@@ -1,0 +1,69 @@
+#!/usr/bin/env node
+// Repository-local distribution for the two dedicated Harness templates.
+import { existsSync, readFileSync, mkdirSync, mkdtempSync, renameSync, rmSync, statSync, lstatSync, readlinkSync, realpathSync, symlinkSync, chmodSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import path from 'node:path';
+import { ROOT, read, safe, ensure, hash, digest, write, json } from './lib/strategic-handoff-io.mjs';
+
+try {
+  const args=process.argv.slice(2),options={};
+  while(args.length) {
+    const key=args.shift();
+    if(key==='--allow-working-tree')options.working=true;
+    else if(['--target','--project-name'].includes(key)) {ensure(args.length&&!args[0].startsWith('--'),`${key} 缺少值`);options[key.slice(2)]=args.shift();}
+    else throw new Error(`未知参数 ${key}；使用 --target <新目录> [--project-name <名称>]`);
+  }
+  ensure(options.target,'必须指定 --target <新目录>');
+  const identity=read(safe(ROOT,'yss-project.yaml'));
+  ensure(identity.schema_version===1&&identity.repository_mode==='template-source','仅模板源可初始化新项目');
+  const profile=read(safe(ROOT,'docs/process/harness-profile.yaml'));
+  ensure(['harness.backend-delivery','harness.frontend-delivery'].includes(profile.profile_id),'仅支持后端/前端专职模板');
+  const target=path.resolve(options.target);
+  ensure(!target.startsWith(ROOT+path.sep)&&!ROOT.startsWith(target+path.sep)&&target!==ROOT,'目标不得包含模板源或位于模板源内');
+  ensure(!existsSync(target),'目标已存在；不覆盖或静默转换既有项目 profile');
+  const git=args=>execFileSync('git',args,{cwd:ROOT,encoding:'utf8',maxBuffer:16*1024*1024}).trim();
+  const commit=git(['rev-parse','HEAD']);
+  ensure(/^[0-9a-f]{40}$/.test(commit),'模板必须有不可变 Git 提交');
+  const dirty=Boolean(git(['status','--porcelain','--untracked-files=all']));
+  ensure(!dirty||options.working,'模板工作树未提交；维护测试可显式使用 --allow-working-tree，正式分发须先提交');
+  const manifest=read(safe(ROOT,profile.instantiation.distribution_manifest));
+  const names=execFileSync('git',['ls-files','-co','--exclude-standard','-z'],{cwd:ROOT,encoding:'utf8',maxBuffer:16*1024*1024}).split('\0').filter(Boolean);
+  const prefix=(ref,base)=>ref===base||ref.startsWith(base+'/');
+  const selected=[...new Set(names)].filter(ref=>{
+    const top=ref.split('/')[0];
+    const allowed=(manifest.allowRootEntries||[]).includes(top)||(manifest.allowRootFiles||[]).includes(ref)||(manifest.allowFiles||[]).includes(ref);
+    return allowed&&![...(manifest.excludeRootEntries||[]),...(manifest.initExcludeRootEntries||[])].includes(top)
+      &&![...(manifest.excludeRootFiles||[]),...(manifest.initExcludeRootFiles||[])].includes(ref)
+      &&![...(manifest.excludePaths||[]),...(manifest.initExcludePaths||[])].some(excluded=>prefix(ref,excluded));
+  }).sort();
+  ensure(selected.includes('yss-project.yaml')&&selected.includes('AGENTS.md')&&selected.includes('CONTEXT.md'),'分发缺少入口合同');
+  const capture=ref=>{
+    const file=path.join(ROOT,ref);if(path.dirname(ref)!=='.')safe(ROOT,path.dirname(ref));
+    if(lstatSync(file).isSymbolicLink()) {
+      const link=readlinkSync(file),resolved=realpathSync(file);
+      ensure(!path.isAbsolute(link)&&resolved.startsWith(path.join(ROOT,'.agents/skills')+path.sep),'仅允许指向本仓 canonical skills 的相对投影链接');
+      return {ref,link,bytes:Buffer.from(`symlink:${link}`),mode:0o777};
+    }
+    return {ref,bytes:readFileSync(safe(ROOT,ref)),mode:statSync(file).mode&0o777};
+  };
+  const captured=selected.map(capture);
+  const sourceFiles=captured.map(({ref,bytes,mode})=>({ref,digest:hash(bytes),mode}));
+  const sourceDigest=digest(sourceFiles);
+  mkdirSync(path.dirname(target),{recursive:true});
+  const staging=mkdtempSync(path.join(path.dirname(target),'.harness-init-'));
+  try {
+    const managed={};
+    for(const file of captured) {
+      let bytes=file.bytes;
+      if(file.ref==='yss-project.yaml') bytes=Buffer.from('schema_version: 1\nrepository_mode: project-instance\n');
+      if(file.ref==='README.md') bytes=Buffer.from(`# ${options['project-name']||path.basename(target)}\n\n本仓是 \`${profile.profile_id}\` 的 \`project-instance\`。先读 [AGENTS.md](AGENTS.md)、根 CONTEXT.md 与 [profile](docs/process/harness-profile.yaml)。接力输入与执行条件见 [交付合同](docs/process/frontend-backend-delivery.md)。\n`);
+      if(file.link) {mkdirSync(path.dirname(path.join(staging,file.ref)),{recursive:true});symlinkSync(file.link,path.join(staging,file.ref));}
+      else {write(staging,file.ref,bytes);chmodSync(path.join(staging,file.ref),file.mode);}
+      managed[file.ref]={digest:hash(bytes),mode:file.mode};
+    }
+    write(staging,profile.instantiation.metadata_file,json({schema_version:1,profile_id:profile.profile_id,template_source:profile.instantiation.template_source,template_commit:commit,source_tree_digest:sourceDigest,source_files:sourceFiles,source_working_tree:dirty,release_snapshot:!dirty,managed_files:managed}));
+    for(const {ref,bytes} of captured)ensure(hash(capture(ref).bytes)===hash(bytes),`初始化期间模板变化: ${ref}`);
+    ensure(!existsSync(target),'目标目录并发冲突');renameSync(staging,target);
+    process.stdout.write(json({result:'initialized',profile_id:profile.profile_id,target,template_commit:commit,source_tree_digest:sourceDigest,release_snapshot:!dirty}));
+  } finally {rmSync(staging,{recursive:true,force:true});}
+} catch(error) {process.stderr.write(`${error.message}\n`);process.exitCode=1;}

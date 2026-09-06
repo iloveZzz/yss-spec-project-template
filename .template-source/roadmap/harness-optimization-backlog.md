@@ -9,3 +9,4 @@
 | 跨仓库快照一致性 | in-progress | 模板与 CLI manifest 漂移 | 固定 commit 联调、tree hash、解包测试；待本轮新快照验证 |
 | 迁移回滚演练 | in-progress | 旧路径存在目标冲突 | dry-run 计划、外部备份、失败回滚记录；待新快照下复核 |
 | 门禁可观测性 | in-progress | 验证失败原因难以定位 | 命令输出包含阶段、路径、恢复动作；待索引化门禁完成后复核 |
+| [前后端专职 Harness 拆分](backend-frontend-harness-split.md) | verified | 通用研发模板同时承接前后端，缺少战略与后端交付的联合前端启动校验 | 双输入阻断、便携接收和生成实例接力已实现；五仓校验通过，四子仓已推送，父仓更新真实 gitlink；见路线图中的交付记录 |

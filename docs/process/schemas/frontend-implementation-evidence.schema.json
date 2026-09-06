@@ -6,6 +6,9 @@
   "additionalProperties": false,
   "required": ["schema_version", "kind", "template", "status", "prototype_ref", "spec_ref", "visual_baseline", "route_and_page_inventory", "pnpm_commands"],
   "properties": {
+    "frontend_delivery": {"type":"object","additionalProperties":false,"required":["acceptance_ref","digest"],"properties":{"acceptance_ref":{"type":"string","minLength":1},"digest":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"}}},
+    "slice_id": {"type":"string","minLength":1},
+    "slice_contract_ref": {"type":"string","minLength":1},
     "schema_version": {"const": 2},
     "kind": {"enum": ["plan", "verification"]},
     "template": {"type": "boolean"},

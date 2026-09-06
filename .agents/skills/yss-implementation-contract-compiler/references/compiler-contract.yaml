@@ -61,6 +61,12 @@ readiness:
   data_impact: [data_architecture]
   backend_impact: [engineering_baseline, backend_repository, maven_wrapper]
   cross_repo: [repository_registry, delivery_order, integration_verification, rollback_order]
+  frontend_delivery:
+    when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
+    source: docs/process/frontend-backend-delivery.md
+    verifier: scripts/verify-frontend-delivery
+    output_binding: frontend.delivery
+    inputs_verified_is_implementation_approval: false
 
 compiler_input_required:
   - slice_id

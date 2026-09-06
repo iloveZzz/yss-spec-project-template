@@ -11,9 +11,10 @@ const strategyBasis=value=>({
   ...without(value,['domain_version','approval','rule_catalog','scenarios','invariants']),
   invariants:(value.invariants||[]).map(item=>without(item,['statement'])),
 });
-export async function verifyConsumption(data,{root=process.cwd(),sliceRef}={}) {
+export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consumer='tactical'}={}) {
   project(root);
-  if (sliceRef) ensure(data.status === "approved", "切片只能消费 approved 战术合同");
+  ensure(['tactical','frontend'].includes(consumer),'未知战略消费者');
+  if (sliceRef) ensure(data.status === (consumer==='frontend'?'accepted':'approved'), consumer==='frontend'?'前端接收记录尚未 accepted':'切片只能消费 approved 战术合同');
   const binding=data.strategic_handoff;
   ensure(binding && present(binding.import_receipt_ref) && present(binding.context_reconciliation_ref),'缺少战略交接导入收据与目标对账引用');
   const receipt=read(safe(root,binding.import_receipt_ref));
@@ -44,15 +45,21 @@ export async function verifyConsumption(data,{root=process.cwd(),sliceRef}={}) {
       const catalogs=['aggregate_catalog','entity_catalog','value_object_catalog','behavior_catalog','invariant_catalog','state_transition_catalog','domain_event_catalog','gateway_catalog'];
       const ids=new Set(catalogs.flatMap(k=>(data[k]||[]).flatMap(x=>Object.entries(x).filter(([k])=>k.endsWith('_id')).map(([,v])=>v))));
       const seams=new Map((data.test_seams||[]).map(x=>[x.seam_id,x]));
+      const cases=new Map((data.frontend_cases||[]).map(x=>[x.case_id,x]));
       for(const[id,source]of known){
         const row=rows.get(id);
         if(!row){mark(id,'missing-mapping');continue;}
         ensure(['known','unknown'].includes(row.dependency_status) && Array.isArray(row.dependent_slice_refs),'缺少切片依赖判定');
         if(row.source_digest!==source.source_digest){mark(id,'stale-source',row);continue;}
-        if(row.disposition==='implemented'){
-          ensure(list(row.tactical_refs)&&row.tactical_refs.every(x=>ids.has(x)),`战术落点悬空: ${id}`);
-          ensure(list(row.test_seam_refs)&&row.test_seam_refs.every(x=>seams.has(x)&&row.tactical_refs.includes(seams.get(x).subject_ref)),`测试 seam 未关联战术落点: ${id}`);
-          if(id.startsWith('scenario.'))ensure(['success','failure'].every(outcome=>(row.scenario_tests||[]).some(x=>x.outcome===outcome&&row.test_seam_refs.includes(x.seam_ref))),`关键场景缺少成功/失败测试: ${id}`);
+        if(row.disposition===(consumer==='frontend'?'mapped':'implemented')){
+          if(consumer==='frontend'){
+            ensure(list(row.frontend_case_refs)&&row.frontend_case_refs.every(ref=>cases.has(ref)&&cases.get(ref).source_ids.includes(id)),`前端用例未承接源规则/场景: ${id}`);
+            if(id.startsWith('scenario.'))ensure(['success','failure'].every(outcome=>row.frontend_case_refs.some(ref=>cases.get(ref).outcome===outcome)),`前端关键场景缺少成功/失败用例: ${id}`);
+          }else{
+            ensure(list(row.tactical_refs)&&row.tactical_refs.every(x=>ids.has(x)),`战术落点悬空: ${id}`);
+            ensure(list(row.test_seam_refs)&&row.test_seam_refs.every(x=>seams.has(x)&&row.tactical_refs.includes(seams.get(x).subject_ref)),`测试 seam 未关联战术落点: ${id}`);
+            if(id.startsWith('scenario.'))ensure(['success','failure'].every(outcome=>(row.scenario_tests||[]).some(x=>x.outcome===outcome&&row.test_seam_refs.includes(x.seam_ref))),`关键场景缺少成功/失败测试: ${id}`);
+          }
           ensure(list(row.evidence_refs),`缺少落实证据: ${id}`);row.evidence_refs.forEach(ref=>safe(root,ref));
         }else if(row.disposition==='deferred'){
           for(const key of ['reason','risk','owner','followup_ticket_ref','verification_plan','target_version'])ensure(present(row[key]),`延期缺少 ${key}: ${id}`);
@@ -70,7 +77,7 @@ export async function verifyConsumption(data,{root=process.cwd(),sliceRef}={}) {
         all=true;issues.push({source_id:'strategic-design-basis',reason:'upstream-design-stale'});
       }
       const blockedHere=all||(sliceRef?blocked.has(sliceRef):issues.length>0);
-      return {result:blockedHere?'blocked':'verified',bundle_digest:current.manifest.bundle_digest,consumed_bundle_digest:receipt.bundle_digest,tactical_digest:digest(data),scope:sliceRef||'whole-tactical-design',coverage_complete:[...known.keys()].every(id=>rows.has(id)),block_all:all,blocked_slice_refs:[...blocked].sort(),issues};
+      return {result:blockedHere?'blocked':'verified',bundle_digest:current.manifest.bundle_digest,consumed_bundle_digest:receipt.bundle_digest,...(consumer==='frontend'?{frontend_acceptance_digest:digest(data)}:{tactical_digest:digest(data)}),scope:sliceRef||`whole-${consumer}-design`,coverage_complete:[...known.keys()].every(id=>rows.has(id)),block_all:all,blocked_slice_refs:[...blocked].sort(),issues};
     });
   });
 }

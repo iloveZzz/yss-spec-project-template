@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "registry_id": "yss.lifecycle",
-  "semantic_sha256": "f745204885a0c335b7f87dc1e1f5fd162a556b84e4543d6e1f356da41f6c081a",
+  "semantic_sha256": "7757565261e3290046cd31d6b4287fc1e5ec8bdf7fae4735b0be8ac882e87b8d",
   "published_ids": [
     "artifact.architecture-review",
     "artifact.data-architecture",
@@ -55,6 +55,7 @@
     "gate.design-reviewed",
     "gate.domain-strategy-approved",
     "gate.engineering-baseline-accepted",
+    "gate.frontend-delivery-inputs-verified",
     "gate.frontend-implementation-verified",
     "gate.openapi-draft-reviewed",
     "gate.openapi-frozen",

@@ -1,3 +1,4 @@
+import { enforceHarnessSkillScope } from "./harness-execution-scope.mjs";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -5,6 +6,7 @@ import { parseDocument } from "../vendor/yaml.mjs";
 import { DEFAULT_REGISTRY, loadSkillRegistry } from "./skill-registry.mjs";
 import { ROOT } from "./skill-supply-chain.mjs";
 import { architectureDigest, assertArchitectureAgreement, validateArchitectureIdentity } from "./backend-architecture.mjs";
+import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
 
 export const DEFAULT_COMPILER_CONTRACT = path.join(
   ROOT,
@@ -61,9 +63,13 @@ export function compileImplementationContract({
   registryDigest,
   compilerContractDigest,
   architecture_identity,
-  architecture_evidence
+  architecture_evidence,
+  root = ROOT,
+  slice_id,
+  frontend_delivery
 }) {
   assertV2(registry, compilerContract);
+  const deliveryInput = enforceFrontendDelivery({ slice_id, frontend_delivery }, { root });
   if (!Array.isArray(recipeIds) || !Array.isArray(requiredCapabilities) || !Array.isArray(conditions)) {
     fail("recipeIds、requiredCapabilities 与 conditions 必须是数组");
   }
@@ -156,10 +162,12 @@ export function compileImplementationContract({
     orderedSkills.push(skill);
   };
   for (const root of roots) visit(root);
+  enforceHarnessSkillScope(orderedSkills, registry, { root });
 
   return {
     schema_version: 2,
     status: "draft",
+    ...(deliveryInput.result === "inputs-verified" ? { slice_id: deliveryInput.slice_id, frontend_delivery: { acceptance_ref: deliveryInput.acceptance_ref, digest: deliveryInput.acceptance_digest } } : {}),
     ...(architecture_identity ? {
       architecture_identity: structuredClone(architecture_identity),
       architecture_identity_digest: architectureDigest(architecture_identity),
@@ -189,11 +197,13 @@ export function compileDefaultImplementationContract(input = {}) {
   });
 }
 
-export function evaluateContractFreshness(contract, { registry, compilerContract }) {
+export function evaluateContractFreshness(contract, { registry, compilerContract, root = ROOT }) {
   assertV2(registry, compilerContract);
   if (contract?.schema_version !== 2) fail("Slice Implementation Contract schema v1 已停止支持；必须重新编译 v2 合同");
   const resolution = contract.resolution ?? contract;
   const reasons = [];
+  try { enforceFrontendDelivery(contract, { root }); }
+  catch { reasons.push("frontend-delivery-stale-or-unavailable"); }
   if (resolution.registry_digest !== digestDocument(registry)) reasons.push("registry-digest-changed");
   if (resolution.compiler_contract_digest !== digestDocument(compilerContract)) reasons.push("compiler-contract-digest-changed");
   if (resolution.architecture_identity) {

@@ -1,0 +1,8 @@
+{
+  "command": "scripts/verify-template-fast",
+  "repository": "submodules/yss-harness-backend-agent",
+  "executed_at": "2026-09-06T13:14:01.066367+00:00",
+  "duration_ms": 36656,
+  "exit_code": 0,
+  "evidence_ref": ".template-source/evidence/maintenance/backend-frontend-split/backend-verification.log"
+}

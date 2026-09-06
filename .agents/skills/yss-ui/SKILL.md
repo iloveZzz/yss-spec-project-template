@@ -22,6 +22,8 @@ description: Use when implementing or reviewing YSS Vue pages that combine YSS w
 
 ## 2. 执行前版本预检
 
+采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `docs/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
+
 进入实现前从前端工程根目录执行：
 
 ```bash

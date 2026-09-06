@@ -215,6 +215,7 @@ gate_policy:
     - gate.design-reviewed
     - gate.architecture-reviewed
   evidence_only:
+    - gate.frontend-delivery-inputs-verified
     - gate.repository-identity-valid
     - gate.prototype-verified
   orchestrator:

@@ -7,6 +7,14 @@
   "required": ["schema_version", "task_id", "work_unit_id", "actor_id", "role_id", "runtime_id", "execution_state", "workflow_status", "skill_source", "contract", "inputs", "objective", "allowed_write_paths", "forbidden_actions", "expected_outputs", "expected_evidence_files", "verification_commands", "verification_results", "downstream_consumers", "convergence"],
   "properties": {
     "schema_version": { "const": 1 },
+    "frontend_delivery": {
+      "type": "object", "additionalProperties": false, "required": ["acceptance_ref"],
+      "properties": {
+        "acceptance_ref": { "type": "string", "minLength": 1 },
+        "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      }
+    },
+    "slice_id": { "type": "string", "minLength": 1 },
     "task_id": { "type": "string", "minLength": 1, "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$" },
     "work_unit_id": { "type": "string", "minLength": 1, "pattern": "^work-unit\\.[a-z0-9][a-z0-9-]*$" },
     "actor_id": { "type": "string", "minLength": 1, "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._:-]*$" },

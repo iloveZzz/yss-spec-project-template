@@ -26,6 +26,8 @@ description: Use when a YSS vertical slice is entering implementation, spans mul
 
 ## 硬规则
 
+采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `docs/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
+
 - 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
 - Registry、Slice Contract 或编译器合同 schema v1 一律拒绝并给出迁移到 v2 的提示；不自动升级，不提供旧技能名兼容。
 - `required_capabilities` 与 `required_skills` 必须同时冻结；Registry 或编译器摘要变化后合同立即 `stale`，重新编译后仍须交生命周期重新批准。

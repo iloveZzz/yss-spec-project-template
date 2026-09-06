@@ -6,6 +6,7 @@ import { parseArgs } from "node:util";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "./vendor/yaml.mjs";
 import { validateVisualBaseline } from "../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs";
+import { enforceFrontendDelivery } from "./lib/frontend-delivery-boundary.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const schemaPath = path.join(repoRoot, "docs/process/schemas/frontend-implementation-evidence.schema.json");
@@ -29,6 +30,7 @@ try {
   const document = parseDocument(readFileSync(path.resolve(positionals[0]), "utf8"), { maxAliasCount: 0, uniqueKeys: true });
   if (document.errors.length) throw new TypeError(document.errors[0].message);
   const value = document.toJS({ maxAliasCount: 0 });
+  if (!values["allow-template"]) enforceFrontendDelivery(value, { root, phase: value.kind === "verification" ? "implementation" : "inputs" });
   if (value.schema_version === 1 && !values["allow-template"]) throw new TypeError("migration-required: frontend implementation evidence v1 是只读历史资产；在途 UI 工作必须升级 v2 并绑定 Visual Baseline case_id");
   const result = spawnSync("python3", ["-c", validator, schemaPath], { cwd: repoRoot, encoding: "utf8", input: JSON.stringify(value) });
   if (result.status !== 0) throw new TypeError(`${result.stdout}${result.stderr}`.trim());

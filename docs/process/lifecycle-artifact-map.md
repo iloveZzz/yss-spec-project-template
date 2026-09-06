@@ -26,6 +26,7 @@
 
 | 稳定 ID | 门禁 | 所属阶段 | 触发条件 | 前置门禁 | 必须留下的证据 |
 |---|---|---|---|---|---|
+| `gate.frontend-delivery-inputs-verified` | 前端联合输入核验 | `stage.system-data-engineering` | 专职前端 profile 或显式 frontend_delivery 绑定的任务启动、恢复、合同编译、实现和验证；实际执行 scripts/verify-frontend-delivery，输入就绪不等于实现获批。 | 无 | `evidence.fresh-verification` |
 | `gate.repository-identity-valid` | 仓库身份校验 | `stage.entry-triage` | 每次进入流程。 | 无 | `evidence.repository-identity-check` |
 | `gate.domain-strategy-approved` | 业务边界与规则确认 | `stage.discovery` | 需要确定业务板块、业务责任区、统一业务词汇、协作关系或关键规则。 | 无 | `evidence.domain-strategy-review`、`evidence.approval-record` |
 | `gate.stage-decision-package-approved` | 阶段决策包批准 | `stage.discovery` | Discovery 到 Spec 入口需要稳定的阶段决策合同。 | `gate.domain-strategy-approved` | `evidence.stage-decision-package`、`evidence.approval-record` |
