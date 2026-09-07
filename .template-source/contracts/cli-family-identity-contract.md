@@ -7,7 +7,7 @@
 ## 入口与兼容
 
 - `create-yss-spec` 保留 init、attach、sync；`create-yss-harness-dev` 保留同名操作；战略 `create-yss-harness-design` 只提供 init。
-- 前后端专职模板继续使用 repository-local `scripts/instantiate-harness`，只初始化新目录。不新增 npm 包、模板选择参数或跨 profile 迁移。
+- 历史范围曾限制专职模板为 repository-local。该限制由已确认的 [专职 CLI 设计 v1.1.0](dedicated-harness-cli-design.md) 定向替代：新增 backend/frontend 两包；两包拒绝旧实例，不跨 profile 迁移。旧入口仅在新包可安装并通过 smoke test 后退役。
 - `update` / `upgrade` 只更新 CLI 程序；不操作实例受管文件。战略与专职实例本次不增加自动同步入口。
 - 目标家族由五种 metadata 文件和已存在的 Harness profile 显式判定，不由路径、Git remote 或业务内容猜测。五种文件分别是 `.yss-template.json`、`.yss-harness-design.json`、`.yss-harness-dev.json`、`.yss-harness-backend.json`、`.yss-harness-frontend.json`。
 

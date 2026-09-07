@@ -1,0 +1,98 @@
+// Maintainer entry: create only an empty thin CLI working directory.
+import * as fs from "node:fs";
+import path from "node:path";
+import { ensure, write, json, stat } from "./io.mjs";
+const [side, output] = process.argv.slice(2);
+ensure(
+  ["backend", "frontend"].includes(side) && output,
+  "usage: node scaffold.mjs backend|frontend <empty-directory>",
+);
+const root = path.resolve(output),
+  name = `create-yss-harness-${side}`;
+ensure(
+  !stat(root) || fs.readdirSync(root).length === 0,
+  "薄包目标必须不存在或为空",
+);
+write(
+  root,
+  "package.json",
+  json({
+    name,
+    version: "0.1.0",
+    description: `创建和同步 YSS ${side} 专职 Harness 治理项目`,
+    type: "module",
+    license: "MIT",
+    engines: { node: ">=22 <27" },
+    packageManager: "pnpm@10.15.0",
+    repository: {
+      type: "git",
+      url: `git+https://github.com/iloveZzz/${name}.git`,
+    },
+    bin: { [name]: `bin/${name}.js` },
+    files: [
+      "bin",
+      "config",
+      "vendor/cli-core",
+      "cli-core.lock.json",
+      "template",
+      "template.manifest.json",
+      "template.snapshot.json",
+    ],
+    scripts: {
+      "sync-core": "node scripts/sync-core.mjs",
+      "sync-template": "node scripts/sync-template.mjs",
+      "verify-bundle": "node scripts/verify-bundle.mjs",
+      test: "node --test tests/*.test.mjs",
+      prepack: "node scripts/verify-bundle.mjs",
+    },
+  }),
+);
+write(
+  root,
+  `bin/${name}.js`,
+  `#!/usr/bin/env node\nimport {fileURLToPath} from 'node:url';\nimport {main} from '../vendor/cli-core/cli.mjs';\nawait main(fileURLToPath(new URL('..',import.meta.url)));\n`,
+  0o755,
+);
+for (const kind of ["core", "template"])
+  write(
+    root,
+    `scripts/sync-${kind}.mjs`,
+    `import {fileURLToPath} from 'node:url';\nimport {sync${kind[0].toUpperCase() + kind.slice(1)}} from '../vendor/cli-core/build.mjs';\nconst args=process.argv.slice(2),check=args.includes('--check'),values=args.filter(x=>x!=='--check');\nif(values.length!==2)throw new Error('usage: pnpm sync-${kind} <source-repo> <commit> [--check]');\nconsole.log(JSON.stringify(sync${kind[0].toUpperCase() + kind.slice(1)}(values[0],values[1],fileURLToPath(new URL('..',import.meta.url)),check),null,2));\n`,
+  );
+write(
+  root,
+  "scripts/verify-bundle.mjs",
+  `import {fileURLToPath} from 'node:url';\nimport {verifyCore} from '../vendor/cli-core/build.mjs';\nimport {loadBundle} from '../vendor/cli-core/bundle.mjs';\nconst root=fileURLToPath(new URL('..',import.meta.url));\nconst core=verifyCore(root),bundle=loadBundle(root);\nconsole.log(JSON.stringify({package:bundle.pkg.name,core:core.digest,template:bundle.snapshot.snapshotHash,files:bundle.files.size}));\n`,
+);
+write(
+  root,
+  "tests/package.test.mjs",
+  `import {test} from 'node:test';\nimport assert from 'node:assert/strict';\nimport * as fs from 'node:fs';\nimport os from 'node:os';\nimport path from 'node:path';\nimport {fileURLToPath} from 'node:url';\nimport {spawnSync} from 'node:child_process';\nconst root=fileURLToPath(new URL('..',import.meta.url));\ntest('固定包验证、空目录初始化及同家族预览同步',t=>{\n const scratch=fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(),'${name}-')));t.after(()=>fs.rmSync(scratch,{recursive:true,force:true}));\n const target=path.join(scratch,'project');\n const run=(...args)=>spawnSync(process.execPath,[path.join(root,'bin/${name}.js'),...args,'--json'],{encoding:'utf8',maxBuffer:32*1024*1024});\n const verify=spawnSync(process.execPath,[path.join(root,'scripts/verify-bundle.mjs')],{encoding:'utf8'});assert.equal(verify.status,0,verify.stderr);\n let r=run('init','--target-dir',target,'--project-name','验收实例');assert.equal(r.status,0,r.stderr);\n const metadata=JSON.parse(fs.readFileSync(path.join(target,'.yss-harness-${side}.json')));assert.equal(metadata.metadataSchemaVersion,2);assert.equal(metadata.profileId,'harness.${side}-delivery');\n assert.equal(fs.existsSync(path.join(target,'scripts/instantiate-harness')),false);\n r=run('sync','--target-dir',target);assert.equal(r.status,0,r.stderr);assert.equal(JSON.parse(r.stdout).status,'preview');\n for(const script of ['verify-repository-mode','verify-harness-profile']){r=spawnSync(process.execPath,[path.join(target,'scripts',script)],{cwd:target,encoding:'utf8'});assert.equal(r.status,0,r.stderr);}\n});\n`,
+);
+write(
+  root,
+  ".github/workflows/ci.yml",
+  `name: CLI\non: [push, pull_request, workflow_dispatch]\njobs:\n  verify:\n    runs-on: ubuntu-latest\n    strategy:\n      matrix:\n        node: [22, 24, 26]\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: \u0024{{ matrix.node }}\n      - uses: pnpm/action-setup@v4\n        with:\n          version: 10.15.0\n      - run: pnpm test\n      - run: pnpm verify-bundle\n      - run: npm pack\n      - run: |\n          mkdir -p /tmp/cli-consumer\n          npm install --prefix /tmp/cli-consumer --ignore-scripts ./\u0024(npm pkg get name | tr -d '\"')-\u0024(npm pkg get version | tr -d '\"').tgz\n          /tmp/cli-consumer/node_modules/.bin/${name} init --target-dir /tmp/harness-instance --project-name ci --json\n          /tmp/cli-consumer/node_modules/.bin/${name} sync --target-dir /tmp/harness-instance --json\n`,
+);
+write(root, ".gitignore", "node_modules/\n*.tgz\n.DS_Store\n");
+write(
+  root,
+  "yss-project.yaml",
+  "schema_version: 1\nrepository_mode: template-source\n",
+);
+write(
+  root,
+  "AGENTS.md",
+  "# CLI 维护入口\n\n本仓是模板工具链薄包，不生成产品 Spec / Ticket。公共实现权威位于综合模板 `.template-source/cli-core/`；`vendor/cli-core/` 和 `template/` 只通过同步脚本生成。修改身份时先更新来源 profile，再从完整提交重建。验证使用 `pnpm test`、`pnpm verify-bundle`，测试结束后才执行 `npm pack`。npm 发布和旧入口退役独立执行发布流程。\n",
+);
+write(
+  root,
+  "README.md",
+  `# ${name}\n\n创建、接入和同步 \`harness.${side}-delivery\` 的治理资产。CLI 包内包含固定模板与公共核心，init / attach / sync 离线运行。不会生成业务运行时代码。\n\n\`0.1.0\` 是首版候选；npm 发布状态以 registry 为准。本地验收可用 \`npm pack\` 后的 tgz 安装。\n\n\`\`\`sh\nnpx ${name}@latest init --target-dir ./my-project --project-name 我的项目\nnpx ${name}@latest attach --target-dir ./existing-project\nnpx ${name}@latest attach --target-dir ./existing-project --apply\nnpx ${name}@latest sync --target-dir ./my-project\nnpx ${name}@latest sync --target-dir ./my-project --apply\n${name} update --dry-run\n\`\`\`\n\ninit 只接受不存在或空目录；\`--dry-run\` 不写入。attach / sync 默认预览，写入要求 \`--apply\`。治理冲突整次暂停，确认备份覆盖后可用 \`--apply --force\`。业务源码、构建文件、Git、子模块与越界路径不能强制接管。\n\n仓内旧脚本生成的实例不受支持，不转换旧 metadata 或重建基线；其他 Harness 家族同样拒绝。已有新版实例使用 sync。\n\n参数：\`--project-name\`、\`--business-domain\`、\`--team-size\`、\`--issue-tracker local-markdown|github|gitlab\`、\`--git-init\`（仅 init）、\`--include-example-docs\` / \`--no-example-docs\`、\`--json\`。程序升级命令 \`update\` / \`upgrade\` 只更新 CLI；npx、源码或未知安装方式输出安装指引。\n\n每次应用保存 \`.yss-harness-state/${side}/transactions/<id>/journal.json\` 和原文件备份。失败自动恢复；进程中断时预览只诊断，下次 \`--apply\` 先恢复，再重新执行计划。恢复遇到后续修改会停下并保留恢复清单。成功后也保留备份，首版无独立 rollback 命令。状态目录应由项目自行排除 Git；CLI 不改已有 Git 配置。\n\nJSON 协议版本 1：成功返回 \`preview\`、\`applied\`、\`recovered\`；错误退出码 1，含 \`code\` / \`message\`，冲突含完整 \`changes\` / \`conflicts\`。存在普通可应用更新的预览退出码为 0。\n\n维护：先固定综合模板 core 与专职模板提交，运行 \`pnpm sync-core <source-repo> <commit>\` 和 \`pnpm sync-template <source-repo> <commit>\`，加 \`--check\` 只核验。\`pnpm test\` 完成后依次 \`pnpm verify-bundle\`、\`npm pack\` 和干净目录安装验收。来源锁和 blob 编码随包携带；不要手改生成文件。\n`,
+);
+write(
+  root,
+  "LICENSE",
+  'MIT License\n\nCopyright (c) 2026 YSS Harness contributors\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n',
+);
+console.log(root);

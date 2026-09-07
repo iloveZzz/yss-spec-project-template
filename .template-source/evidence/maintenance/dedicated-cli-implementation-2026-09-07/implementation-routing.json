@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "intensity": "L3",
+  "impacts": [
+    "Harness-only",
+    "release-only"
+  ],
+  "authorization": "提问者：确认，开始实施",
+  "design": "../dedicated-cli-design-2026-09-07/design-confirmation.json",
+  "repositories": [
+    {
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "scope": "template-source",
+      "branch": "main",
+      "rollback": "5eb824d776dba30b4d39522a0555df87f877501b",
+      "git_url": "https://github.com/iloveZzz/yss-spec-project-template.git"
+    },
+    {
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+      "scope": "template-ecosystem-git-submodule",
+      "branch": "main",
+      "rollback": "cb73b9893c8e37319f67d9f238a40e872fc57843",
+      "git_url": "https://github.com/iloveZzz/yss-harness-backend-agent.git"
+    },
+    {
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+      "scope": "template-ecosystem-git-submodule",
+      "branch": "main",
+      "rollback": "d50e64a8901ba1fa4c3be48bc9c78eb23f56e593",
+      "git_url": "https://github.com/iloveZzz/yss-harness-frontend-agent.git"
+    },
+    {
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev",
+      "scope": "template-ecosystem-git-submodule",
+      "branch": "main",
+      "rollback": "90cfdceeb91fb7873d466ac1ac68b3a956d9b778",
+      "git_url": "https://github.com/iloveZzz/create-yss-harness-dev.git"
+    },
+    {
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+      "scope": "template-ecosystem-git-submodule",
+      "branch": "main",
+      "rollback": "632f23e519e772b36f406c10f15d9de917b43e28",
+      "git_url": "https://github.com/iloveZzz/create-yss-spec.git"
+    },
+    {
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+      "scope": "template-ecosystem-git-submodule",
+      "branch": "main",
+      "rollback": "309664e6d99b2e56081d2a0ea7d910b234a047fa",
+      "git_url": "https://github.com/iloveZzz/create-yss-harness-design.git"
+    },
+    {
+      "path": "/Users/zhudaoming/Projects/create-yss-harness-backend",
+      "mount": "submodules/create-yss-harness-backend",
+      "scope": "external-repository-until-gitlink-registration",
+      "branch": "main",
+      "git_url": "https://github.com/iloveZzz/create-yss-harness-backend.git",
+      "rollback": "new repository; remove only task-created files",
+      "ci": ".github/workflows/ci.yml: Node 22/24/26, pnpm test, verify-bundle, npm pack"
+    },
+    {
+      "path": "/Users/zhudaoming/Projects/create-yss-harness-frontend",
+      "mount": "submodules/create-yss-harness-frontend",
+      "scope": "external-repository-until-gitlink-registration",
+      "branch": "main",
+      "git_url": "https://github.com/iloveZzz/create-yss-harness-frontend.git",
+      "rollback": "new repository; remove only task-created files",
+      "ci": ".github/workflows/ci.yml: Node 22/24/26, pnpm test, verify-bundle, npm pack"
+    }
+  ],
+  "skills": [
+    "cross-repo-implementation-routing",
+    "tdd"
+  ],
+  "seams": "已确认设计第9节：公开CLI退出码、JSON输出、文件树、实际tgz安装",
+  "not_applicable": {
+    "product-spec-openapi-slice-compiler": "template-source CLI tooling; no product runtime/API/UI",
+    "business-tdd-coverage": "Node CLI public seam tests instead of business layer thresholds"
+  },
+  "checks": [
+    "pnpm --dir .template-source/cli-core test",
+    "scripts/verify-template-fast",
+    "scripts/verify-template",
+    "per CLI pnpm test and npm pack after tests"
+  ],
+  "distribution": {
+    "github_precheck": "both intended repositories not found",
+    "npm_precheck": "both package names E404; not a reservation or publication permission",
+    "npm_publish": "not executed",
+    "legacy_retirement": "after new package install smoke verification"
+  }
+}

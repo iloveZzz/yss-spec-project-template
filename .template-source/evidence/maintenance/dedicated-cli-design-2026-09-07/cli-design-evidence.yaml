@@ -1,0 +1,511 @@
+{
+  "schema_version": 1,
+  "profile": "technical-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "新增前后端专职 CLI 的本地源码约束",
+    "audience": "主控设计起草者、提问者与后续独立审查者",
+    "time_horizon": "2026-09-07 本地源码观察；源码变化后按哈希重新核对",
+    "research_questions": [
+      "当前两个 repository-local 初始化脚本相同且依赖源仓 Git；--allow-working-tree 不取消该依赖，不能直接把现脚本当成无 Git 源仓的 npm 初始化运行时。",
+      "仓内专职实例 metadata 与现 dev CLI 的字段、受管文件基线及链接/mode 表达不同；旧格式兼容必须显式处理，现宽松历史读取路径不等于转换。",
+      "专职 profile/metadata 身份已存在；当前家族 guard 拒绝异族与多重身份，并检查已声明 cli_package，因此新 CLI 兼容 repository-local profile 需受控同族规则。",
+      "在已列明的三个 CLI package/src、dev scripts 与父模板 scripts/sync-* 和 .template-source/scripts 范围，未发现独立共享 CLI 核心依赖或源码投影生成器；此结论不覆盖未检索生态。",
+      "现 dev 初始化消费包内模板快照并检查提交与摘要；快照构建另有本地 working-tree 模式，故发布候选仍需显式锁定完整来源提交。",
+      "旧 CLI 身份合同的不新增专职 npm 包/同步是当时维护范围；该文档同时有持久身份保护，后续新增入口设计须清楚区分替代范围与继承不变量。",
+      "现 dev attach 用于无本族 metadata 的目标；已有本族 metadata 被要求走 sync，因此普通 attach 与专职旧实例接管应在新设计中分开描述。"
+    ],
+    "inclusion_criteria": [
+      "仅当前仓及已登记子模块第一方源码、配置、分发合同",
+      "只纳入影响新 CLI 初始化、兼容、核心复用和快照设计的事实"
+    ],
+    "exclusion_criteria": [
+      "不研究竞品、npm 名称占用或账号权限",
+      "不执行初始化、测试、发布、提交或推送；不以历史测试自述证明当前行为"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "主控设计起草者（grilling / role.requirements-manager）",
+    "decision_ref": ".template-source/contracts/dedicated-harness-cli-design.md"
+  },
+  "source_revisions": {
+    "root": "5eb824d776dba30b4d39522a0555df87f877501b",
+    "create-yss-harness-dev": "90cfdceeb91fb7873d466ac1ac68b3a956d9b778",
+    "yss-harness-backend-agent": "cb73b9893c8e37319f67d9f238a40e872fc57843",
+    "yss-harness-frontend-agent": "d50e64a8901ba1fa4c3be48bc9c78eb23f56e593"
+  },
+  "search_log": [
+    {
+      "id": "search-001",
+      "channel": "local CodeGraph",
+      "query_or_corpus": "codegraph explore 'create-yss-harness-dev instantiate-harness family-identity sync-template shared CLI backend frontend'；仅作源码定位，不更新索引",
+      "searched_at": "2026-09-07",
+      "result": "results-found"
+    },
+    {
+      "id": "search-002",
+      "channel": "local first-party source inspection",
+      "query_or_corpus": "nl -ba submodules/yss-harness-{backend,frontend}-agent/scripts/instantiate-harness 与 docs/process/harness-profile.yaml；检查初始化、Git依赖、旧metadata；shasum -a 256 对比两脚本",
+      "searched_at": "2026-09-07",
+      "result": "results-found"
+    },
+    {
+      "id": "search-003",
+      "channel": "local first-party source inspection",
+      "query_or_corpus": "nl -ba submodules/create-yss-harness-dev/src/cli.js：12-40、83-105、1282-1316、1490-1555、1858-1878、1927-1944；src/family-identity.js：5-12、62-103",
+      "searched_at": "2026-09-07",
+      "result": "results-found"
+    },
+    {
+      "id": "search-004",
+      "channel": "local bounded core search",
+      "query_or_corpus": "rg -n 'family-identity|self-update|template-hash|src/cli.js|shared.*cli|cli.*shared' scripts/sync-* .template-source/scripts submodules/create-yss-harness-dev/scripts submodules/create-yss-spec/package.json submodules/create-yss-strategic-design/package.json submodules/create-yss-harness-dev/package.json；命中只有本仓 hash 引用/测试；检查三 package 与 src 清单未发现公共 CLI 核心依赖或源码投影生成器",
+      "searched_at": "2026-09-07",
+      "result": "none-found"
+    },
+    {
+      "id": "search-005",
+      "channel": "local counter-signal comparison",
+      "query_or_corpus": "shasum -a 256 submodules/create-yss-{spec,harness-dev,strategic-design}/src/{family-identity,self-update,template-hash}.js；三 family-identity 哈希完全相同，self-update 有差异；重复逻辑不能证明存在共享核心治理",
+      "searched_at": "2026-09-07",
+      "result": "results-found"
+    },
+    {
+      "id": "search-006",
+      "channel": "local first-party build source",
+      "query_or_corpus": "nl -ba submodules/create-yss-harness-dev/scripts/sync-template.js：12-16、431-480；package.json：13-28；核对发布默认完整SHA与本地working-tree反证",
+      "searched_at": "2026-09-07",
+      "result": "results-found"
+    },
+    {
+      "id": "search-007",
+      "channel": "local first-party contract",
+      "query_or_corpus": "nl -ba .template-source/contracts/cli-family-identity-contract.md：1-31；检查旧范围与不可变身份保护的区别",
+      "searched_at": "2026-09-07",
+      "result": "results-found"
+    },
+    {
+      "id": "search-008",
+      "channel": "excluded external registry and release state",
+      "query_or_corpus": "npm registry 名称可用性、账号发布权限、真实发布版本、GitHub 新仓状态不属于此次本地设计事实研究，未联网或执行查询",
+      "searched_at": "2026-09-07",
+      "result": "excluded"
+    },
+    {
+      "id": "search-009",
+      "channel": "local shell failed glob",
+      "query_or_corpus": "初始 rg 命令包含 docs/process/cli-*，zsh 因该路径无匹配拒绝执行；已改显式已知文件路径重跑，失败命令不支持任何 claim。",
+      "searched_at": "2026-09-07",
+      "result": "access-failed"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-001",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "submodules/yss-harness-backend-agent/scripts/instantiate-harness",
+      "locator": "17-30, 40-67",
+      "stance": "support",
+      "observed_at": "2026-09-07",
+      "observation": "要求 template-source、新目标目录、40 位 Git HEAD，调用 git status 和 git ls-files；复制时保留 canonical skills 相对符号链接，写入 metadata 后原子 rename。",
+      "source_sha256": "065e2ba223752f4a81a48f31eea41625e9f638547605ff4736297f38b0a0a8e0",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-002",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "submodules/yss-harness-backend-agent/scripts/instantiate-harness",
+      "locator": "12, 27-28",
+      "stance": "counter",
+      "observed_at": "2026-09-07",
+      "observation": "--allow-working-tree 只允许脏工作树，仍执行 Git HEAD/status/ls-files；这提供维护例外，但不是脱离源仓 Git 的模式。",
+      "source_sha256": "065e2ba223752f4a81a48f31eea41625e9f638547605ff4736297f38b0a0a8e0",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-003",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "submodules/yss-harness-backend-agent/scripts/instantiate-harness",
+      "locator": "50-64",
+      "stance": "support",
+      "observed_at": "2026-09-07",
+      "observation": "旧 metadata 为 schema_version/profile_id/template_commit/source_tree_digest/source_files/source_working_tree/release_snapshot/managed_files；受管文件记录 digest/mode。",
+      "source_sha256": "065e2ba223752f4a81a48f31eea41625e9f638547605ff4736297f38b0a0a8e0",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-004",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "submodules/create-yss-harness-dev/src/cli.js",
+      "locator": "1282-1316, 1490-1555",
+      "stance": "support",
+      "observed_at": "2026-09-07",
+      "observation": "dev metadata 为 metadataSchemaVersion/profileId/templateCommit/managedFiles；文件项含 type/contentHash，当前版本校验还要求 cliVersion、manifest 摘要与 variables。",
+      "source_sha256": "56ed53c1d372f734cf80cfe40b49d53a51b5867b681281e074f9c3742a44ec16",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-005",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "submodules/create-yss-harness-dev/src/cli.js",
+      "locator": "1511-1555",
+      "stance": "counter",
+      "observed_at": "2026-09-07",
+      "observation": "dev 为未声明 metadataSchemaVersion 的历史 metadata 保留宽松路径，因此不能声称所有旧格式必然被解析器拒绝；但这不提供 snake_case 受管基线转换。",
+      "source_sha256": "56ed53c1d372f734cf80cfe40b49d53a51b5867b681281e074f9c3742a44ec16",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-006",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "submodules/create-yss-harness-dev/src/family-identity.js",
+      "locator": "5-12, 62-103",
+      "stance": "support",
+      "observed_at": "2026-09-07",
+      "observation": "五家族包含专职 metadata/profile；不同家族、多重身份和不同 profile 被拒绝，--force 不能绕过；已声明 cli_package 必须匹配。",
+      "source_sha256": "6b21d7bdaf3d474410c8b39c1dda42b34ec06e0c1c62e61e2bf874721438d24b",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-007",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "configuration",
+      "source_ref": "submodules/yss-harness-backend-agent/docs/process/harness-profile.yaml",
+      "locator": "46-57",
+      "stance": "counter",
+      "observed_at": "2026-09-07",
+      "observation": "后端 profile 已声明 repository-local、.yss-harness-backend.json、后端 template_source；这提供稳定同族身份，但不等同于已支持新 npm CLI。",
+      "source_sha256": "dcf62021f873b66af24413f5711d61ff5fcebe730f307249eaaa6f8dd26af2e5",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-008",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "configuration",
+      "source_ref": "submodules/yss-harness-frontend-agent/docs/process/harness-profile.yaml",
+      "locator": "46-57",
+      "stance": "support",
+      "observed_at": "2026-09-07",
+      "observation": "前端声明 repository-local、.yss-harness-frontend.json、前端 template_source，当前 npm_create=not-applicable。",
+      "source_sha256": "1deb9f787c0071cffd65e624e91c4534d2b50e56d50bbb0cf52edc714625632d",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-009",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "configuration",
+      "source_ref": "submodules/create-yss-harness-dev/package.json",
+      "locator": "13-28",
+      "stance": "support",
+      "observed_at": "2026-09-07",
+      "observation": "dev CLI 包直接携带本仓 src/template/manifest/snapshot，scripts 直接运行本仓同步脚本；无共享 CLI 核心依赖声明。",
+      "source_sha256": "af0dd1573d1cdfef6c8334ef1d01b9e88bbe2754d424a6242421d6d8d5962524",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-010",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "submodules/create-yss-harness-dev/src/family-identity.js",
+      "locator": "5-12",
+      "stance": "counter",
+      "observed_at": "2026-09-07",
+      "observation": "三现有 CLI 的 family-identity.js SHA256 相同，说明确有重复可复用实现，不能把未发现公共核心误说成没有公共逻辑。",
+      "source_sha256": "6b21d7bdaf3d474410c8b39c1dda42b34ec06e0c1c62e61e2bf874721438d24b",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-011",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "submodules/create-yss-harness-dev/src/cli.js",
+      "locator": "12-18, 83-105, 1858-1878",
+      "stance": "support",
+      "observed_at": "2026-09-07",
+      "observation": "运行时从包内 template/manifest/snapshot 建计划，检查 40 位 templateCommit 与摘要。",
+      "source_sha256": "56ed53c1d372f734cf80cfe40b49d53a51b5867b681281e074f9c3742a44ec16",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-012",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "submodules/create-yss-harness-dev/scripts/sync-template.js",
+      "locator": "431-480",
+      "stance": "counter",
+      "observed_at": "2026-09-07",
+      "observation": "构建有兄弟仓存在且未设置 REF 时的 working-tree 模式；因此固定快照运行模式不能推导每次 prepack 自动得到干净已提交发布来源。",
+      "source_sha256": "2420fd0a88cebdf518e3978bc1ad9b4ef93bd464e96401ece513c90559c33319",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-013",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "contract",
+      "source_ref": ".template-source/contracts/cli-family-identity-contract.md",
+      "locator": "9-11, 27-29",
+      "stance": "support",
+      "observed_at": "2026-09-07",
+      "observation": "旧维护合同明确当轮不新增专职 npm CLI/自动同步；版本、Git 与 npm 发布范围属于该合同所述轮次。",
+      "source_sha256": "31a2ee941a698a9999cf8eb27fac8a7564e4a2913e59f004aee95d3913baef9a",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-014",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "contract",
+      "source_ref": ".template-source/contracts/cli-family-identity-contract.md",
+      "locator": "3-5, 27-29",
+      "stance": "counter",
+      "observed_at": "2026-09-07",
+      "observation": "合同明确是本轮方案且引用当时补丁版本/发布范围；不是永远禁止新增 CLI 的不变规则。",
+      "source_sha256": "31a2ee941a698a9999cf8eb27fac8a7564e4a2913e59f004aee95d3913baef9a",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-015",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "submodules/create-yss-harness-dev/src/cli.js",
+      "locator": "1927-1944",
+      "stance": "support",
+      "observed_at": "2026-09-07",
+      "observation": "attach 必须显式 dry-run/apply；存在本族 metadata 时拒绝并提示使用 sync。",
+      "source_sha256": "56ed53c1d372f734cf80cfe40b49d53a51b5867b681281e074f9c3742a44ec16",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-016",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "submodules/create-yss-harness-dev/src/cli.js",
+      "locator": "1490-1495",
+      "stance": "counter",
+      "observed_at": "2026-09-07",
+      "observation": "缺 metadata 的 sync 会提示先 attach；这是旧 dev 入口分工，不表示新专职 CLI 已实现同族旧格式接管。",
+      "source_sha256": "56ed53c1d372f734cf80cfe40b49d53a51b5867b681281e074f9c3742a44ec16",
+      "limitations": [
+        "本地第一方文件的静态观察；未运行初始化或命令行为测试。",
+        "源码哈希绑定本次观察字节；仓库 HEAD 仅作定位，不代替工作树内容。"
+      ]
+    },
+    {
+      "id": "evidence-017",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "submodules/yss-harness-frontend-agent/scripts/instantiate-harness",
+      "locator": "17-30, 40-67",
+      "stance": "support",
+      "observed_at": "2026-09-07",
+      "observation": "前端初始化脚本 SHA256 与后端相同；逐字节相同，因而具备同样源仓 Git 与 metadata 行为。",
+      "source_sha256": "065e2ba223752f4a81a48f31eea41625e9f638547605ff4736297f38b0a0a8e0",
+      "limitations": [
+        "静态字节比对，不是运行时行为测试。"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-001",
+      "claim_kind": "technical-fact",
+      "statement": "当前两个 repository-local 初始化脚本相同且依赖源仓 Git；--allow-working-tree 不取消该依赖，不能直接把现脚本当成无 Git 源仓的 npm 初始化运行时。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-001",
+        "evidence-017"
+      ],
+      "counter_signal_refs": [
+        "evidence-002"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-002",
+      "claim_kind": "technical-fact",
+      "statement": "仓内专职实例 metadata 与现 dev CLI 的字段、受管文件基线及链接/mode 表达不同；旧格式兼容必须显式处理，现宽松历史读取路径不等于转换。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-003",
+        "evidence-004",
+        "evidence-017"
+      ],
+      "counter_signal_refs": [
+        "evidence-005"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-003",
+      "claim_kind": "technical-fact",
+      "statement": "专职 profile/metadata 身份已存在；当前家族 guard 拒绝异族与多重身份，并检查已声明 cli_package，因此新 CLI 兼容 repository-local profile 需受控同族规则。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-006",
+        "evidence-008"
+      ],
+      "counter_signal_refs": [
+        "evidence-007"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-004",
+      "claim_kind": "technical-fact",
+      "statement": "在已列明的三个 CLI package/src、dev scripts 与父模板 scripts/sync-* 和 .template-source/scripts 范围，未发现独立共享 CLI 核心依赖或源码投影生成器；此结论不覆盖未检索生态。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-009"
+      ],
+      "counter_signal_refs": [
+        "evidence-010",
+        "search-004"
+      ],
+      "audit_status": "supported",
+      "confidence": "medium",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-005",
+      "claim_kind": "technical-fact",
+      "statement": "现 dev 初始化消费包内模板快照并检查提交与摘要；快照构建另有本地 working-tree 模式，故发布候选仍需显式锁定完整来源提交。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-011"
+      ],
+      "counter_signal_refs": [
+        "evidence-012"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-006",
+      "claim_kind": "technical-fact",
+      "statement": "旧 CLI 身份合同的不新增专职 npm 包/同步是当时维护范围；该文档同时有持久身份保护，后续新增入口设计须清楚区分替代范围与继承不变量。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-013"
+      ],
+      "counter_signal_refs": [
+        "evidence-014"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-007",
+      "claim_kind": "technical-fact",
+      "statement": "现 dev attach 用于无本族 metadata 的目标；已有本族 metadata 被要求走 sync，因此普通 attach 与专职旧实例接管应在新设计中分开描述。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-015"
+      ],
+      "counter_signal_refs": [
+        "evidence-016"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [
+    "未执行运行时场景，静态源码结论不代表新 CLI 已实现或测试通过。",
+    "公共核心检索范围有限，未发现不能证明生态全局不存在。",
+    "npm 名称、版本、权限、网络与跨平台实测均未核验，不进入已确立结论。",
+    "用户新决定由主控单独保存原始回复，本研究不替代决定记录或设计批准。"
+  ],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-001",
+      "claim-002",
+      "claim-003",
+      "claim-004",
+      "claim-005",
+      "claim-006",
+      "claim-007"
+    ],
+    "notes": [
+      "逐条核对第一方源码，并将反证用于收窄结论；所有技术决定相关结论均有 primary 证据。",
+      "同源源码与配置不是独立样本；不以来源数量推导置信度。",
+      "结构校验结果由执行输出报告；校验器不证明源码语义或批准设计。"
+    ]
+  }
+}

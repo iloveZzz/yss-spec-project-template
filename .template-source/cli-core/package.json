@@ -1,0 +1,9 @@
+{
+  "name": "@yss-internal/dedicated-harness-cli-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22 <27" },
+  "packageManager": "pnpm@10.15.0",
+  "scripts": { "test": "node --test tests/*.test.mjs" }
+}

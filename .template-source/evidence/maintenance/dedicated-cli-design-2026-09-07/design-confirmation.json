@@ -1,0 +1,123 @@
+{
+  "record_kind": "design-confirmation",
+  "record_version": 1,
+  "design_id": "dedicated-harness-cli-v1",
+  "scope": "两个前后端专职 CLI 完整设计；最新 P2 排除所有仓内脚本旧实例兼容。保留普通业务/管理仓库 attach、显式 apply、失败自动回滚和成功备份恢复。",
+  "source": {
+    "kind": "current-conversation-user-message",
+    "thread_id": "01a070dc-f4b2-7520-a2f2-410e2a070576",
+    "actor": "当前提问者",
+    "exact_reply": "- P1：attach / sync 默认只预览，写入统一要求 `--apply`；init 只创建不存在或空目录。\n确认\n- P2：旧实例兼容首版只自动接入来源记录完整、内部摘要一致且能建立明确基线的实例；工作树测试快照或缺基\n线实例仅生成诊断和人工恢复指引。\n旧实例不做兼容\n- P3：失败自动回滚；成功后保留备份和恢复清单，首版不增加独立 rollback 命令。\n是的",
+    "message_id": null,
+    "response_timestamp": null,
+    "locator": "“确认方案”之后，提问者逐条引用 P1—P3 并明确 P2“旧实例不做兼容”",
+    "timestamp_note": "原消息 ID 和精确回复时间未提供；不以记录时间冒充"
+  },
+  "recorded_at": "2026-09-07T01:28:38Z",
+  "reviewed_design": {
+    "ref": ".template-source/contracts/dedicated-harness-cli-design.md",
+    "version": "0.1.0",
+    "digest": "sha256:e17dc3f06e37be2179ed0059fa1cdcaf384e094cf64c892b3074f8f1639cdb1b"
+  },
+  "confirmed_design": {
+    "ref": ".template-source/contracts/dedicated-harness-cli-design.md",
+    "version": "1.1.0",
+    "digest": "sha256:4b0581ee3bc2977a7a2aea231fdba83f9e50befaf0071c3f48f31c2ada7e9b07"
+  },
+  "prior_individual_answers": [
+    {
+      "question_id": "Q1",
+      "exact_answer": "完整覆盖 init、attach、sync、update/upgrade（推荐）"
+    },
+    {
+      "question_id": "Q2",
+      "exact_answer": "公开 npm，使用 create-yss-harness-backend/frontend（推荐）"
+    },
+    {
+      "question_id": "Q3",
+      "exact_answer": "首版支持同家族旧实例接入（推荐）",
+      "status": "superseded-by-latest-P2"
+    },
+    {
+      "question_id": "Q4",
+      "exact_answer": "支持已有业务代码仓库和独立管理仓库（推荐）"
+    },
+    {
+      "question_id": "Q5",
+      "exact_answer": "冲突时整体暂停，允许显式备份覆盖后重试（推荐）"
+    },
+    {
+      "question_id": "Q6",
+      "exact_answer": "两个独立 CLI 仓库，构建时同步同一公共核心（推荐）"
+    },
+    {
+      "question_id": "Q7",
+      "exact_answer": "保留旧入口作迁移提示，停止生成新实例（推荐）"
+    },
+    {
+      "question_id": "Q8",
+      "exact_answer": "各自独立版本、独立发布（推荐）"
+    }
+  ],
+  "finalization_changes": "按最新 P2 删除旧实例自动接入、字段转换和基线迁移；改为旧格式/旧 profile 零写入拒绝；同步范围表、核心职责、命令协议和验收。P1/P3不变。",
+  "pending_user_decisions": [],
+  "not_executed": [
+    "CLI implementation",
+    "new repository creation",
+    "Git commit/push",
+    "npm publish"
+  ],
+  "invalidation": "源码事实或范围变化时检查受影响决定；不能将本记录复用于其他家族、另增命令、跨家族迁移或发布完成声明",
+  "previous_confirmed_design": {
+    "ref": ".template-source/contracts/dedicated-harness-cli-design.md",
+    "version": "1.0.0",
+    "digest": "sha256:0d997a435f4ff5461f7158a43146552ae7baa80bfdb2abc121fa5f5ea36e1645"
+  },
+  "previous_confirmation_source": {
+    "kind": "current-conversation-user-message",
+    "thread_id": "01a070dc-f4b2-7520-a2f2-410e2a070576",
+    "actor": "当前提问者",
+    "exact_reply": "确认方案",
+    "message_id": null,
+    "response_timestamp": null,
+    "locator": "本任务展示 dedicated-harness-cli-design.md v0.1.0 并提出 Q9—Q11 后，提问者回复“确认方案”",
+    "timestamp_note": "运行时未提供原消息 ID 和回复时间，不用记录时间冒充"
+  },
+  "historical_whole_design_settings": [
+    {
+      "question_id": "Q9",
+      "decision": "attach/sync 默认预览，--apply 才写入；init 仅创建不存在或空目录"
+    },
+    {
+      "question_id": "Q10",
+      "decision": "可靠旧实例自动接入，其余输出诊断和人工恢复指引，首版不提供基线重建流程",
+      "status": "superseded-by-latest-P2"
+    },
+    {
+      "question_id": "Q11",
+      "decision": "失败自动回滚，成功后保留备份和恢复清单，首版不新增 rollback 命令"
+    }
+  ],
+  "latest_explicit_decisions": [
+    {
+      "id": "P1 / Q9",
+      "exact_answer": "确认",
+      "decision": "attach/sync 默认预览、--apply 写入；init 只创建不存在或空目录"
+    },
+    {
+      "id": "P2 / Q3 / Q10",
+      "exact_answer": "旧实例不做兼容",
+      "decision": "不接管仓内脚本旧实例，不做 metadata 转换、旧基线迁移或重建",
+      "supersedes": [
+        "Q3",
+        "Q10",
+        "historical_whole_design_settings.Q10"
+      ]
+    },
+    {
+      "id": "P3 / Q11",
+      "exact_answer": "是的",
+      "decision": "失败自动回滚；成功保留备份和恢复清单；无独立 rollback 命令"
+    }
+  ]
+}
