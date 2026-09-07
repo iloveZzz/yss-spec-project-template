@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { fork } from 'node:child_process';
 import { once } from 'node:events';
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, cpSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, cpSync, existsSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
@@ -74,7 +74,9 @@ test('战略与后端交付联合接收：便携、真实服务、拒绝不完�
   const acceptance=read(path.join(frontend,imported.acceptance_ref));
   await t.test('草案/缺少两类产物不能进入前端任务',async()=>{
     await assert.rejects(()=>verifyFrontendDelivery({root:frontend,acceptanceRef:imported.acceptance_ref,sliceRef:'slice.submit'}),/schema/);
-    put(frontend,'docs/process/harness-profile.yaml',{schema_version:1,profile_id:'harness.frontend-delivery',frontend_delivery:{required:true}});
+    const profileRef=path.join(frontend,'docs/process/harness-profile.yaml');
+    const profile=existsSync(profileRef)?read(profileRef):{schema_version:1,profile_id:'harness.frontend-delivery'};
+    put(frontend,'docs/process/harness-profile.yaml',{...profile,frontend_delivery:{required:true}});
     assert.throws(()=>enforceFrontendDelivery({}, {root:frontend}),/frontend-delivery-required/);
     assert.throws(()=>compileDefaultImplementationContract({root:frontend}),/frontend-delivery-required/);
     assert.throws(()=>enforceFrontendDelivery({contract:{kind:'template-maintenance'}},{root:frontend}),/不得用模板维护/);

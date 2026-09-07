@@ -21,10 +21,9 @@ async function run(script,args=[],{cwd=root,env=process.env,success=true}={}) {
 }
 try {
   for(const side of ['backend','frontend']) {
-    const cliRoot=path.join(process.env.YSS_DEDICATED_CLI_ROOT||path.join(root,'submodules'),`create-yss-harness-${side}`),target=path.join(scratch,side);
+    const cliRoot=path.join(process.env.YSS_DEDICATED_CLI_ROOT||path.join(root,'submodules'),`create-yss-harness-${side}`),target=path.join(process.env.YSS_DEDICATED_INSTANCE_ROOT||scratch,side);
     const entry=path.join(cliRoot,`bin/create-yss-harness-${side}.js`);
-    const initialized=JSON.parse((await run(entry,['init','--target-dir',target,'--json'])).stdout);
-    assert.equal(initialized.status,'applied');
+    if(!process.env.YSS_DEDICATED_INSTANCE_ROOT){const initialized=JSON.parse((await run(entry,['init','--target-dir',target,'--json'])).stdout);assert.equal(initialized.status,'applied');}
     const metadata=JSON.parse(readFileSync(path.join(target,`.yss-harness-${side}.json`)));
     assert.equal(metadata.metadataSchemaVersion,2);
     assert.equal(metadata.profileId,`harness.${side}-delivery`);
@@ -47,7 +46,7 @@ try {
     process.stdout.write(`${side}: 初始化身份、独立入口、禁止覆盖和跨端任务边界通过\n`);
   }
   // A frontend project must reject even contract preparation while either input is absent.
-  const frontend=path.join(scratch,'frontend');
+  const frontend=path.join(process.env.YSS_DEDICATED_INSTANCE_ROOT||scratch,'frontend');
   const {enforceFrontendDelivery}=await import(pathToFileURL(path.join(frontend,'scripts/lib/frontend-delivery-boundary.mjs')));
   assert.throws(()=>enforceFrontendDelivery({slice_id:'slice.missing'},{root:frontend}),/frontend-delivery-required/);
   const result=await run(path.join(root,'scripts/verify-frontend-delivery-scenarios'),[],{env:{...process.env,YSS_DELIVERY_TEST_BACKEND_ROOT:path.join(scratch,'backend'),YSS_DELIVERY_TEST_FRONTEND_ROOT:frontend}});
