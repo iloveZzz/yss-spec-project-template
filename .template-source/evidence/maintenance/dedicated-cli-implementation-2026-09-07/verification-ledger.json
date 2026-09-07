@@ -75,12 +75,81 @@
       "evidence_ref": "template-design-full.txt"
     }
   ],
-  "root_full": "pending final quiescent run",
+  "root_full": {
+    "command": "YSS_DEDICATED_INSTANCE_ROOT=<fresh actual-tgz instances> scripts/verify-template",
+    "exit_code": 0,
+    "candidate_commit": "c13921d5953fd065eb7cbf8ab7fb148b0f01e202",
+    "completed_at": "2026-09-07T03:21:00.566010+00:00",
+    "evidence_ref": "template-root-full.txt",
+    "note": "完整release profile；只复用本轮从真实tgz刚生成的双端实例，不裁剪检查。测试期间工作区无写入。"
+  },
   "independent_review": {
     "spec": "spec-core-delivery-review.md",
     "standards": "standards-core-delivery-review.md",
     "candidate": "a2363847effcd1e56417dcff86e0c6967229c67f",
     "subsequent_change": "仅补齐canonical来源manifest使生成锁校验一致；核心和两个已打包快照未变。"
   },
-  "npm_publish": "not executed; npm whoami E401"
+  "npm_publish": "not executed; npm whoami E401",
+  "github_ci": [
+    {
+      "package": "create-yss-harness-backend",
+      "commit": "e092a57464adc12e5095e2135a7de1426f6cf552",
+      "url": "https://github.com/iloveZzz/create-yss-harness-backend/actions/runs/34079108446",
+      "node_versions": [
+        22,
+        24,
+        26
+      ],
+      "conclusion": "success"
+    },
+    {
+      "package": "create-yss-harness-frontend",
+      "commit": "8cbc1174e795a8247e3f70a02689b8fff5bdb3eb",
+      "url": "https://github.com/iloveZzz/create-yss-harness-frontend/actions/runs/34079132381",
+      "node_versions": [
+        22,
+        24,
+        26
+      ],
+      "conclusion": "success"
+    }
+  ],
+  "github_submodule_refs": [
+    {
+      "path": "submodules/create-yss-harness-backend",
+      "verified_remote_main": "e092a57464adc12e5095e2135a7de1426f6cf552"
+    },
+    {
+      "path": "submodules/create-yss-harness-dev",
+      "verified_remote_main": "de323476c9bba03e6ca8f7c341a080c099edd807"
+    },
+    {
+      "path": "submodules/create-yss-harness-frontend",
+      "verified_remote_main": "8cbc1174e795a8247e3f70a02689b8fff5bdb3eb"
+    },
+    {
+      "path": "submodules/create-yss-spec",
+      "verified_remote_main": "bdf3780ceec6a44a54e721d855f4ad8428f2349d"
+    },
+    {
+      "path": "submodules/create-yss-strategic-design",
+      "verified_remote_main": "179b4986ab9e537c78717d3dab90c427a6ca8aab"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent",
+      "verified_remote_main": "25973a39eca1f420f9b20e53efd85b3bf293541c"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent",
+      "verified_remote_main": "5c1c98225bb181c7c1add8972c1e44b866205f76"
+    },
+    {
+      "path": "submodules/yss-harness-dev-agent",
+      "verified_remote_main": "ecda24e4e14ad0d412b27bd710a0702d092da5ac"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent",
+      "verified_remote_main": "c5131bc49416dff69bdd0240d965697e76785d0d"
+    }
+  ]
 }
