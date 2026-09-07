@@ -49,7 +49,7 @@ try {
   const frontend=path.join(process.env.YSS_DEDICATED_INSTANCE_ROOT||scratch,'frontend');
   const {enforceFrontendDelivery}=await import(pathToFileURL(path.join(frontend,'scripts/lib/frontend-delivery-boundary.mjs')));
   assert.throws(()=>enforceFrontendDelivery({slice_id:'slice.missing'},{root:frontend}),/frontend-delivery-required/);
-  const result=await run(path.join(root,'scripts/verify-frontend-delivery-scenarios'),[],{env:{...process.env,YSS_DELIVERY_TEST_BACKEND_ROOT:path.join(scratch,'backend'),YSS_DELIVERY_TEST_FRONTEND_ROOT:frontend}});
+  const result=await run(path.join(root,'scripts/verify-frontend-delivery-scenarios'),[],{env:{...process.env,YSS_DELIVERY_TEST_BACKEND_ROOT:path.join(process.env.YSS_DEDICATED_INSTANCE_ROOT||scratch,'backend'),YSS_DELIVERY_TEST_FRONTEND_ROOT:frontend}});
   process.stdout.write(result.stdout);
   process.stdout.write('生成实例接力及阻断验证通过；服务为维护测试进程，不是产品部署验收。\n');
 } finally {rmSync(scratch,{recursive:true,force:true});}
