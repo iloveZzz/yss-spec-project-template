@@ -13,60 +13,88 @@
       "scope": "template-source",
       "branch": "main",
       "rollback": "5eb824d776dba30b4d39522a0555df87f877501b",
-      "git_url": "https://github.com/iloveZzz/yss-spec-project-template.git"
+      "git_url": "https://github.com/iloveZzz/yss-spec-project-template.git",
+      "delivery_commit": "249367f20d1e3fd1c4593cf9fa6ed118ec8bb9c6"
     },
     {
       "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
       "scope": "template-ecosystem-git-submodule",
       "branch": "main",
       "rollback": "cb73b9893c8e37319f67d9f238a40e872fc57843",
-      "git_url": "https://github.com/iloveZzz/yss-harness-backend-agent.git"
+      "git_url": "https://github.com/iloveZzz/yss-harness-backend-agent.git",
+      "delivery_commit": "25973a39eca1f420f9b20e53efd85b3bf293541c"
     },
     {
       "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
       "scope": "template-ecosystem-git-submodule",
       "branch": "main",
       "rollback": "d50e64a8901ba1fa4c3be48bc9c78eb23f56e593",
-      "git_url": "https://github.com/iloveZzz/yss-harness-frontend-agent.git"
+      "git_url": "https://github.com/iloveZzz/yss-harness-frontend-agent.git",
+      "delivery_commit": "c5131bc49416dff69bdd0240d965697e76785d0d"
     },
     {
       "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev",
       "scope": "template-ecosystem-git-submodule",
       "branch": "main",
       "rollback": "90cfdceeb91fb7873d466ac1ac68b3a956d9b778",
-      "git_url": "https://github.com/iloveZzz/create-yss-harness-dev.git"
+      "git_url": "https://github.com/iloveZzz/create-yss-harness-dev.git",
+      "delivery_commit": "de323476c9bba03e6ca8f7c341a080c099edd807"
     },
     {
       "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
       "scope": "template-ecosystem-git-submodule",
       "branch": "main",
       "rollback": "632f23e519e772b36f406c10f15d9de917b43e28",
-      "git_url": "https://github.com/iloveZzz/create-yss-spec.git"
+      "git_url": "https://github.com/iloveZzz/create-yss-spec.git",
+      "delivery_commit": "bdf3780ceec6a44a54e721d855f4ad8428f2349d"
     },
     {
       "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
       "scope": "template-ecosystem-git-submodule",
       "branch": "main",
       "rollback": "309664e6d99b2e56081d2a0ea7d910b234a047fa",
-      "git_url": "https://github.com/iloveZzz/create-yss-harness-design.git"
+      "git_url": "https://github.com/iloveZzz/create-yss-harness-design.git",
+      "delivery_commit": "179b4986ab9e537c78717d3dab90c427a6ca8aab"
     },
     {
-      "path": "/Users/zhudaoming/Projects/create-yss-harness-backend",
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend",
       "mount": "submodules/create-yss-harness-backend",
-      "scope": "external-repository-until-gitlink-registration",
+      "scope": "template-ecosystem-git-submodule",
       "branch": "main",
       "git_url": "https://github.com/iloveZzz/create-yss-harness-backend.git",
       "rollback": "new repository; remove only task-created files",
-      "ci": ".github/workflows/ci.yml: Node 22/24/26, pnpm test, verify-bundle, npm pack"
+      "ci": ".github/workflows/ci.yml: Node 22/24/26, pnpm test, verify-bundle, npm pack",
+      "gitlink": "e092a57464adc12e5095e2135a7de1426f6cf552",
+      "delivery_commit": "e092a57464adc12e5095e2135a7de1426f6cf552"
     },
     {
-      "path": "/Users/zhudaoming/Projects/create-yss-harness-frontend",
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
       "mount": "submodules/create-yss-harness-frontend",
-      "scope": "external-repository-until-gitlink-registration",
+      "scope": "template-ecosystem-git-submodule",
       "branch": "main",
       "git_url": "https://github.com/iloveZzz/create-yss-harness-frontend.git",
       "rollback": "new repository; remove only task-created files",
-      "ci": ".github/workflows/ci.yml: Node 22/24/26, pnpm test, verify-bundle, npm pack"
+      "ci": ".github/workflows/ci.yml: Node 22/24/26, pnpm test, verify-bundle, npm pack",
+      "gitlink": "8cbc1174e795a8247e3f70a02689b8fff5bdb3eb",
+      "delivery_commit": "8cbc1174e795a8247e3f70a02689b8fff5bdb3eb"
+    },
+    {
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
+      "scope": "template-ecosystem-git-submodule",
+      "branch": "main",
+      "rollback": "baae3f6e2f474b30cf8c97292be4580bafae1f37",
+      "git_url": "https://github.com/iloveZzz/yss-harness-dev-agent.git",
+      "reason": "由根共享执行边界工具投影同步，显式识别新版专职metadata；不扩大旧CLI能力。",
+      "delivery_commit": "ecda24e4e14ad0d412b27bd710a0702d092da5ac"
+    },
+    {
+      "path": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+      "scope": "template-ecosystem-git-submodule",
+      "branch": "main",
+      "rollback": "5baa45c8a8929843664ab14dcd150b4c2a12fa05",
+      "git_url": "https://github.com/iloveZzz/yss-harness-design-agent.git",
+      "reason": "由根共享执行边界工具投影同步，显式识别新版专职metadata；不扩大旧CLI能力。",
+      "delivery_commit": "5c1c98225bb181c7c1add8972c1e44b866205f76"
     }
   ],
   "skills": [
@@ -85,9 +113,16 @@
     "per CLI pnpm test and npm pack after tests"
   ],
   "distribution": {
-    "github_precheck": "both intended repositories not found",
+    "github_precheck": "Both new public GitHub repositories created and implementation pushed; npm not published.",
     "npm_precheck": "both package names E404; not a reservation or publication permission",
     "npm_publish": "not executed",
-    "legacy_retirement": "after new package install smoke verification"
+    "legacy_retirement": "after public npm package availability and install smoke verification",
+    "npm_identity": "npm whoami returned E401 on 2026-09-07",
+    "github_identity": "iloveZzz"
+  },
+  "concurrent_work": {
+    "repository": "submodules/create-yss-spec",
+    "observed_commit": "afcd6a77176bb80a18561aa9da9cfdd38e787bc1",
+    "handling": "保留独立模块化提交（已在远程 main）；本任务仅提交三处家族/版本/来源变更并对当前172项测试重新验证。"
   }
 }

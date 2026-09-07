@@ -1,0 +1,29 @@
+
+> @yss-internal/dedicated-harness-cli-core@0.1.0 test /Users/zhudaoming/Projects/yss-spec-project-template/.template-source/cli-core
+> node --test tests/*.test.mjs
+
+✔ 两家族从离线固定包创建空目录实例，记录新版基线并保留可执行 mode (1930.393959ms)
+✔ attach 默认与 dry-run 零写入，碰撞整次暂停，force 备份且业务文件保持原样 (1158.26475ms)
+✔ 普通无碰撞仓 attach 预览可应用计划但不创建状态目录 (258.167125ms)
+✔ 旧格式、旧 profile、异族、多身份、未知schema和链接拒绝且 force 无法绕过 (1598.651ms)
+✔ sync 三方规则：本地保留、模板升级、新增、删除和冲突整次暂停 (1810.271542ms)
+✔ init dry-run 无写入；非空目录、未知基线、目录碰撞、嵌套仓库和快照越界均拒绝 (2199.889833ms)
+✔ 写入失败自动恢复内容与 metadata，备份失败不应用计划 (2776.418542ms)
+✔ 进程中断后预览只诊断；下次 apply 恢复再允许重试 (1942.100291ms)
+✔ update/upgrade 使用固定包名检查新版，源码安装仅输出指引且实例不变 (1013.498583ms)
+✔ init --git-init 创建独立 Git；非法参数不留下项目 (1346.938208ms)
+✔ 未检出的声明 gitlink、硬链接、未知状态目录和跨家族恢复保持零写入 (756.610542ms)
+✔ 并发修改和恢复失败保留外部修改，明确报告未恢复路径 (1340.563459ms)
+✔ 中断恢复前拒绝旧身份、嵌套仓库、声明gitlink及损坏备份，整次零写入 (6327.579875ms)
+✔ 实际入口尾斜杠的全局安装识别保留 -g，upgrade 不降级 (534.363459ms)
+✔ 重复身份字段不能通过 force 同步 (1076.755083ms)
+✔ 真实入口禁止在 CLI 包内子目录初始化，不破坏受锁核心 (260.544583ms)
+✔ update --force 不把较新 CLI 降级到 registry 的旧版本 (217.347875ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 26601.090958

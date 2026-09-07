@@ -1,0 +1,31 @@
+{
+  "new_packages": [
+    {
+      "package": "create-yss-harness-backend",
+      "version": "0.1.0",
+      "tgz_sha256": "52358e665b6d85f580e5a32865a2684a37dd5f6650e53f6dc61c9d8c578c835b",
+      "tgz_bytes": 5590171,
+      "templateCommit": "25973a39eca1f420f9b20e53efd85b3bf293541c",
+      "core": "26d57bbdf1d43bcb5e1ce16b0aa9a1bdc9d40d76",
+      "init_exit_code": 0,
+      "init_status": "applied",
+      "generated_metadata": 2,
+      "pack_install_command": "npm install --ignore-scripts --no-audit --no-fund --prefix <clean-consumer> <actual-tgz>",
+      "init_command": "node <clean-consumer>/node_modules/create-yss-harness-backend/bin/create-yss-harness-backend.js init --target-dir <clean-instance> --json"
+    },
+    {
+      "package": "create-yss-harness-frontend",
+      "version": "0.1.0",
+      "tgz_sha256": "87be38beeec2557b483eca0e88103448cbef2d5a43c4cf7750c9570b466b708c",
+      "tgz_bytes": 5585858,
+      "templateCommit": "c5131bc49416dff69bdd0240d965697e76785d0d",
+      "core": "26d57bbdf1d43bcb5e1ce16b0aa9a1bdc9d40d76",
+      "init_exit_code": 0,
+      "init_status": "applied",
+      "generated_metadata": 2,
+      "pack_install_command": "npm install --ignore-scripts --no-audit --no-fund --prefix <clean-consumer> <actual-tgz>",
+      "init_command": "node <clean-consumer>/node_modules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js init --target-dir <clean-instance> --json"
+    }
+  ],
+  "scope": "实际tgz安装、完整项目创建、身份/入口校验、sync预览；不是npm registry发布。"
+}

@@ -1,0 +1,86 @@
+{
+  "recorded_at": "2026-09-07T03:17:52.329398+00:00",
+  "checks": [
+    {
+      "name": "core-node22",
+      "command": "pnpm --package=node@22 dlx node --test .template-source/cli-core/tests/cli.test.mjs",
+      "exit_code": 0,
+      "passed_cases": 17,
+      "evidence_ref": "core-node22.txt"
+    },
+    {
+      "name": "core-node24",
+      "command": "pnpm --package=node@24 dlx node --test .template-source/cli-core/tests/cli.test.mjs",
+      "exit_code": 0,
+      "passed_cases": 17,
+      "evidence_ref": "core-node24.txt"
+    },
+    {
+      "name": "core-node26",
+      "command": "pnpm --package=node@26 dlx node --test .template-source/cli-core/tests/cli.test.mjs",
+      "exit_code": 0,
+      "passed_cases": 17,
+      "evidence_ref": "core-node26.txt"
+    },
+    {
+      "name": "spec",
+      "command": "pnpm exec node --test --test-concurrency=1 tests/*.test.js",
+      "exit_code": 0,
+      "passed_cases": 172,
+      "evidence_ref": "existing-spec-tests.txt"
+    },
+    {
+      "name": "dev",
+      "command": "pnpm test",
+      "exit_code": 0,
+      "passed_cases": 82,
+      "evidence_ref": "existing-dev-tests.txt"
+    },
+    {
+      "name": "design",
+      "command": "pnpm test",
+      "exit_code": 0,
+      "passed_cases": 33,
+      "evidence_ref": "existing-design-tests.txt"
+    },
+    {
+      "name": "five-family",
+      "command": "python3 five-family-packaged-smoke.py <workspace> <actual-tgz-consumers>",
+      "exit_code": 0,
+      "passed_cases": 108,
+      "evidence_ref": "five-family-packaged-smoke.txt"
+    },
+    {
+      "name": "template-backend",
+      "command": "submodules/yss-harness-backend-agent/scripts/verify-template",
+      "exit_code": 0,
+      "evidence_ref": "template-backend-full.txt"
+    },
+    {
+      "name": "template-frontend",
+      "command": "submodules/yss-harness-frontend-agent/scripts/verify-template",
+      "exit_code": 0,
+      "evidence_ref": "template-frontend-full.txt"
+    },
+    {
+      "name": "template-dev",
+      "command": "submodules/yss-harness-dev-agent/scripts/verify-template",
+      "exit_code": 0,
+      "evidence_ref": "template-dev-full.txt"
+    },
+    {
+      "name": "template-design",
+      "command": "submodules/yss-harness-design-agent/scripts/verify-template",
+      "exit_code": 0,
+      "evidence_ref": "template-design-full.txt"
+    }
+  ],
+  "root_full": "pending final quiescent run",
+  "independent_review": {
+    "spec": "spec-core-delivery-review.md",
+    "standards": "standards-core-delivery-review.md",
+    "candidate": "a2363847effcd1e56417dcff86e0c6967229c67f",
+    "subsequent_change": "仅补齐canonical来源manifest使生成锁校验一致；核心和两个已打包快照未变。"
+  },
+  "npm_publish": "not executed; npm whoami E401"
+}

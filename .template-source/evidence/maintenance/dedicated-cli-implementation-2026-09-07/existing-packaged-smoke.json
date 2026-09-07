@@ -1,0 +1,29 @@
+[
+  {
+    "package": "create-yss-spec",
+    "version": "3.1.3",
+    "pack_exit_code": 0,
+    "entry_count": 6277,
+    "tgz_sha256": "9da8b3422aa40fe662bf2de33756401a05e36209a0144b1eda7f73fd85a1bb47",
+    "install_ignore_scripts": 0,
+    "version_command_exit_code": 0
+  },
+  {
+    "package": "create-yss-harness-dev",
+    "version": "0.4.3",
+    "pack_exit_code": 0,
+    "entry_count": 6167,
+    "tgz_sha256": "a569e786bfd3ec3b81643597ad8c4ec1bec9709948fdca10cafdbb7958fc4af3",
+    "install_ignore_scripts": 0,
+    "version_command_exit_code": 0
+  },
+  {
+    "package": "create-yss-harness-design",
+    "version": "0.4.3",
+    "pack_exit_code": 0,
+    "entry_count": 1069,
+    "tgz_sha256": "2adc059fc3b1041b439964ee8f8a302266ac8a558cd467216e6a83b9d49dec2e",
+    "install_ignore_scripts": 0,
+    "version_command_exit_code": 0
+  }
+]

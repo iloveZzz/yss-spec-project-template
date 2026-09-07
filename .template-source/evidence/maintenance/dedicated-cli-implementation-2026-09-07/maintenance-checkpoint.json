@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "intensity": "L3",
+  "classification_reason": "专职 CLI 共享核心、跨仓分发及来源锁；本轮仍在实现并接受独立检查，不宣布发布。",
+  "triggers": [
+    "generation-semantics",
+    "cross-repo-contract",
+    "release-semantics"
+  ],
+  "changed_assets": [
+    ".template-source/cli-core/"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "fresh-verification",
+      "command": "pnpm --dir .template-source/cli-core test",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "none"
+}

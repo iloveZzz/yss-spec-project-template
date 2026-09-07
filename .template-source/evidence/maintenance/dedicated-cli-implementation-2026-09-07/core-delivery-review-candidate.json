@@ -1,0 +1,11 @@
+{
+  "review_mode": "committed",
+  "review_base_ref": "5eb824d776dba30b4d39522a0555df87f877501b",
+  "merge_base": "5eb824d776dba30b4d39522a0555df87f877501b",
+  "implementation_candidate_ref": "a2363847effcd1e56417dcff86e0c6967229c67f",
+  "candidate_snapshot_ref": "a2363847effcd1e56417dcff86e0c6967229c67f",
+  "candidate_digest": "8ecd609ff8e8f38a6d1b281f7c12fa98a2347873",
+  "tracked_diff_command": "git diff 5eb824d776dba30b4d39522a0555df87f877501b...a2363847effcd1e56417dcff86e0c6967229c67f",
+  "commit_list_command": "git log 5eb824d776dba30b4d39522a0555df87f877501b..a2363847effcd1e56417dcff86e0c6967229c67f --oneline",
+  "coverage": "共享核心、薄包生成器及最终接力测试适配；实际包/源模板全量证据由主控另行闭合。"
+}

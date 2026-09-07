@@ -1,0 +1,1 @@
+{"status": "pass", "rejected_without_writes": 108, "families": 5, "new_entries": "installed npm tgz", "legacy_adoption": "rejected"}

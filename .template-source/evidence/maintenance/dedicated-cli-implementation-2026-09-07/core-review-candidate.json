@@ -1,0 +1,11 @@
+{
+  "review_mode": "committed",
+  "review_base_ref": "5eb824d776dba30b4d39522a0555df87f877501b",
+  "merge_base": "5eb824d776dba30b4d39522a0555df87f877501b",
+  "implementation_candidate_ref": "7b2c35411c877b80e606f387a3175d42063441e7",
+  "candidate_snapshot_ref": "7b2c35411c877b80e606f387a3175d42063441e7",
+  "candidate_digest": "6458dff5080dd25d54279deb3d7da07ae820845a",
+  "tracked_diff_command": "git diff 5eb824d776dba30b4d39522a0555df87f877501b...7b2c35411c877b80e606f387a3175d42063441e7",
+  "commit_list_command": "git log 5eb824d776dba30b4d39522a0555df87f877501b..7b2c35411c877b80e606f387a3175d42063441e7 --oneline",
+  "coverage": "共享核心及薄包生成器 A-E；源模板和新CLI真实打包证据随后验收；不代表整项完成"
+}

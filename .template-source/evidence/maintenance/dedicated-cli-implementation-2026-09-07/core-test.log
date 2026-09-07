@@ -1,0 +1,24 @@
+
+> @yss-internal/dedicated-harness-cli-core@0.1.0 test /Users/zhudaoming/Projects/yss-spec-project-template/.template-source/cli-core
+> node --test tests/*.test.mjs
+
+✔ 两家族从离线固定包创建空目录实例，记录新版基线并保留可执行 mode (521.773875ms)
+✔ attach 默认与 dry-run 零写入，碰撞整次暂停，force 备份且业务文件保持原样 (433.71125ms)
+✔ 普通无碰撞仓 attach 预览可应用计划但不创建状态目录 (52.779292ms)
+✔ 旧格式、旧 profile、异族、多身份、未知schema和链接拒绝且 force 无法绕过 (618.714791ms)
+✔ sync 三方规则：本地保留、模板升级、新增、删除和冲突整次暂停 (598.894625ms)
+✔ init dry-run 无写入；非空目录、未知基线、目录碰撞、嵌套仓库和快照越界均拒绝 (553.781833ms)
+✔ 写入失败自动恢复内容与 metadata，备份失败不应用计划 (673.862667ms)
+✔ 进程中断后预览只诊断；下次 apply 恢复再允许重试 (588.930792ms)
+✔ update/upgrade 使用固定包名检查新版，源码安装仅输出指引且实例不变 (322.64525ms)
+✔ init --git-init 创建独立 Git；非法参数不留下项目 (347.419875ms)
+✔ 未检出的声明 gitlink、硬链接、未知状态目录和跨家族恢复保持零写入 (170.640208ms)
+✔ 并发修改和恢复失败保留外部修改，明确报告未恢复路径 (376.8515ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 5314.298833

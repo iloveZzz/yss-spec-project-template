@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "task_id": "dedicated-cli-core-spec-fix",
+  "work_unit_id": "work-unit.intensity-aware-review",
+  "actor_id": "reviewer.dedicated-cli-spec",
+  "role_id": "role.test-engineer",
+  "runtime_id": "runtime.generic",
+  "execution_state": "Reviewer",
+  "workflow_status": "active",
+  "skill_source": {
+    "registry_ref": "docs/agents/digital-human-roles.yaml",
+    "defaults_ref": "taskPackageDefaults(role.test-engineer)",
+    "core_skills": [
+      "tdd",
+      "diagnosing-bugs",
+      "code-review",
+      "alibaba-java-code-style",
+      "yss-ui",
+      "yss-design-system",
+      "yss-ui-business-page-generation",
+      "yss-domain",
+      "yss-application",
+      "yss-repository",
+      "yss-web-controller",
+      "yss-dto",
+      "mapstruct",
+      "lombok"
+    ],
+    "forbidden_skills": [
+      "yss-ddd-scaffold-generator",
+      "yss-layered-mvc-scaffold-generator",
+      "yss-frontend-scaffold-generator",
+      "implement",
+      "to-spec"
+    ]
+  },
+  "contract": {
+    "kind": "template-maintenance",
+    "contract_id": "dedicated-harness-cli-v1",
+    "contract_version": 1,
+    "status": "issued",
+    "contract_ref": ".template-source/contracts/dedicated-harness-cli-design.md",
+    "maintenance_ref": ".template-source/evidence/maintenance/dedicated-cli-implementation-2026-09-07/maintenance-checkpoint.json"
+  },
+  "inputs": [
+    ".template-source/evidence/maintenance/dedicated-cli-implementation-2026-09-07/core-fix-review-candidate.json",
+    ".template-source/contracts/dedicated-harness-cli-design.md"
+  ],
+  "objective": "只读独立审查固定提交共享核心的 spec 轴，返回具体问题；不写实现、不宣布发布",
+  "allowed_write_paths": [
+    ".template-source/evidence/maintenance/dedicated-cli-implementation-2026-09-07/spec-core-fix-review.md"
+  ],
+  "forbidden_actions": [
+    "修改实现",
+    "提交或推送",
+    "批准合同",
+    "宣布完成"
+  ],
+  "expected_outputs": [
+    "workflow-execution-result-v1",
+    "具体 finding 与代码位置"
+  ],
+  "expected_evidence_files": [
+    ".template-source/evidence/maintenance/dedicated-cli-implementation-2026-09-07/spec-core-fix-review.md"
+  ],
+  "verification_commands": [
+    "pnpm --dir .template-source/cli-core test"
+  ],
+  "verification_results": [
+    {
+      "command": "pnpm --dir .template-source/cli-core test",
+      "exit_code": 0,
+      "executed_at": "2026-09-07T02:32:54.463Z",
+      "evidence_ref": ".template-source/evidence/maintenance/dedicated-cli-implementation-2026-09-07/core-fix-test.txt"
+    }
+  ],
+  "review_context": {
+    "implementation_actor_id": "worker.dedicated-cli-root"
+  },
+  "downstream_consumers": [
+    "role.lifecycle-orchestrator"
+  ],
+  "convergence": {
+    "parent_work_unit": "work-unit.intensity-aware-review",
+    "convergence_ref": ".template-source/evidence/maintenance/dedicated-cli-implementation-2026-09-07/implementation-routing.json",
+    "conflict_escalation": "返回主控修复后重新验证"
+  }
+}
