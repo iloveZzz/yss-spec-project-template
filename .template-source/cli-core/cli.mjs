@@ -65,6 +65,7 @@ export function parse(argv) {
   return options;
 }
 export async function main(packageRoot, argv = process.argv.slice(2)) {
+  packageRoot = path.resolve(packageRoot);
   const wantsJson = argv.includes("--json");
   try {
     const opts = parse(argv);

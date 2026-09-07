@@ -27,10 +27,10 @@ export function update(packageRoot, pkg, opts) {
   );
   const current = version(pkg.version),
     latest = version(latestVersion);
-  let newer = false;
+  let comparison = 0;
   for (let i = 0; i < 3; i++) {
     if (latest[i] !== current[i]) {
-      newer = latest[i] > current[i];
+      comparison = latest[i] > current[i] ? 1 : -1;
       break;
     }
   }
@@ -43,7 +43,7 @@ export function update(packageRoot, pkg, opts) {
     status: "current",
     advice: `npx ${packageName}@latest --help`,
   };
-  if (!newer && !opts.force) return result;
+  if (comparison < 0 || (comparison === 0 && !opts.force)) return result;
   let kind = "unknown",
     cwd,
     args;

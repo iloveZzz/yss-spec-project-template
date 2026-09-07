@@ -11,7 +11,12 @@ export function loadDeliveryProfile(root=ROOT) {
   if(metadata.length) {
     const expected=`harness.${metadata[0]}-delivery`;
     const record=read(safe(root,`.yss-harness-${metadata[0]}.json`));
-    ensure(record.schema_version===1&&record.profile_id===expected&&profile?.profile_id===expected,'专职 Harness metadata 与 profile 不一致');
+    // Runtime scope checks preserve old projects; the new CLI still refuses their adoption.
+    const newIdentity=record.metadataSchemaVersion===2 && !('schema_version' in record) && !('profile_id' in record)
+      && record.profileId===expected && record.templateSource===`github:iloveZzz/yss-harness-${metadata[0]}-agent`
+      && profile?.instantiation?.cli_package===`create-yss-harness-${metadata[0]}`;
+    const oldIdentity=record.schema_version===1 && !('metadataSchemaVersion' in record) && record.profile_id===expected;
+    ensure((newIdentity||oldIdentity)&&profile?.profile_id===expected,'专职 Harness metadata 与 profile 不一致');
   }
   return profile;
 }

@@ -555,3 +555,40 @@ test("重复身份字段不能通过 force 同步", (t) => {
   assert.equal(f.run("sync", "--apply", "--force").status, 1);
   assert.deepEqual(tree(f.target), before);
 });
+test("真实入口禁止在 CLI 包内子目录初始化，不破坏受锁核心", (t) => {
+  const f = fixture(t);
+  put(
+    f.pkg,
+    "actual.mjs",
+    `import {fileURLToPath} from 'node:url';import {main} from ${JSON.stringify("file://" + entry)};await main(fileURLToPath(new URL('.',import.meta.url)));`,
+  );
+  const target = path.join(f.pkg, "vendor/cli-core/new-project"),
+    before = tree(f.pkg);
+  const r = spawnSync(
+    process.execPath,
+    [path.join(f.pkg, "actual.mjs"), "init", "--target-dir", target, "--json"],
+    { encoding: "utf8" },
+  );
+  assert.equal(r.status, 1);
+  assert.deepEqual(tree(f.pkg), before);
+});
+test("update --force 不把较新 CLI 降级到 registry 的旧版本", (t) => {
+  const f = fixture(t);
+  const bin = path.join(f.root, "bin");
+  put(
+    bin,
+    "npm",
+    '#!/bin/sh\nif [ "$1" = "view" ]; then echo 0.0.9; else exit 77; fi\n',
+  );
+  fs.chmodSync(path.join(bin, "npm"), 0o755);
+  const r = spawnSync(
+    process.execPath,
+    [path.join(f.pkg, "bin.mjs"), "update", "--force", "--json"],
+    {
+      env: { ...process.env, PATH: bin + path.delimiter + process.env.PATH },
+      encoding: "utf8",
+    },
+  );
+  assert.equal(r.status, 0, r.stderr);
+  assert.equal(JSON.parse(r.stdout).status, "current");
+});
