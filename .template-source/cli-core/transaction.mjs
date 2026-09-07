@@ -16,6 +16,7 @@ import {
   targetPath,
   governance,
 } from "./io.mjs";
+import { guardNestedRepository, gitlinks } from "./identity.mjs";
 const STATE = ".yss-harness-state";
 function durable(root, ref, bytes, mode = 0o644) {
   const file = safe(root, ref);
@@ -232,7 +233,7 @@ export function applyTransaction(
     return { transactionId: id, backupPath: path.join(target, base) };
   } catch (error) {
     if (journal) {
-      const unrestored = restore(target, base, journal);
+      const unrestored = restore(target, base, journal, validate);
       if (unrestored.length)
         throw Object.assign(
           new Error(
@@ -246,7 +247,7 @@ export function applyTransaction(
     if (acquired && stat(lock)) fs.unlinkSync(lock);
   }
 }
-function restore(target, base, journal) {
+function restore(target, base, journal, validate = () => {}) {
   const failed = [];
   if (journal.gitConfigHash && stat(safe(target, ".git"))) {
     try {
@@ -264,6 +265,8 @@ function restore(target, base, journal) {
     const op = journal.operations[i];
     if (!op.attempted) continue;
     try {
+      validate(op);
+      guardRecoveryPath(target, op.path);
       const current = descriptor(target, op.path);
       if (same(current, op.before)) continue;
       ensure(
@@ -282,6 +285,11 @@ function restore(target, base, journal) {
   }
   for (const dir of [...(journal.createdDirectories || [])].reverse()) {
     try {
+      ensure(
+        journal.operations.some((op) => op.path.startsWith(dir + "/")),
+        "恢复目录不在事务范围",
+      );
+      guardRecoveryPath(target, dir + "/__recovery_check__");
       const p = safe(target, dir);
       if (stat(p)?.isDirectory() && !fs.readdirSync(p).length) fs.rmdirSync(p);
     } catch {
@@ -293,7 +301,38 @@ function restore(target, base, journal) {
   durable(target, `${base}/journal.json`, json(journal));
   return failed;
 }
-export function recover(target, family, state) {
+export function recover(target, family, state, validateIdentity) {
+  // All recovery inputs are checked before touching even the stale lock.
+  validateIdentity();
+  for (const { base, journal } of state.pending) {
+    for (let i = 0; i < journal.operations.length; i++) {
+      const op = journal.operations[i];
+      if (!op.attempted) continue;
+      guardRecoveryPath(target, op.path);
+      const current = descriptor(target, op.path);
+      ensure(
+        same(current, op.before) || same(current, op.after),
+        `恢复目标已有后续修改: ${op.path}`,
+        "RECOVERY_FAILED",
+      );
+      if (op.before && !same(current, op.before)) {
+        const bytes = fs.readFileSync(safe(target, `${base}/backup/${i}`));
+        ensure(
+          hash(bytes) === op.before.digest,
+          `恢复备份摘要损坏: ${op.path}`,
+          "RECOVERY_FAILED",
+        );
+      }
+    }
+    for (const dir of journal.createdDirectories || []) {
+      ensure(
+        journal.operations.some((op) => op.path.startsWith(dir + "/")),
+        "恢复目录不在事务范围",
+        "STATE",
+      );
+      guardRecoveryPath(target, dir + "/__recovery_check__");
+    }
+  }
   const lock = safe(target, `${STATE}/lock.json`);
   if (stat(lock)) {
     const holder = readJson(target, `${STATE}/lock.json`);
@@ -320,7 +359,7 @@ export function recover(target, family, state) {
   try {
     const recovered = [];
     for (const { base, journal } of state.pending) {
-      const failed = restore(target, base, journal);
+      const failed = restore(target, base, journal, validateIdentity);
       ensure(
         !failed.length,
         `自动恢复未完成: ${failed.join(", ")}；保留 ${path.join(target, base)}`,
@@ -361,4 +400,15 @@ function clearStaleLock(target) {
   }
   ensure(!alive, "另一个 CLI 正在运行", "LOCKED");
   fs.unlinkSync(file);
+}
+
+function guardRecoveryPath(target, ref) {
+  targetPath(target);
+  safe(target, ref);
+  guardNestedRepository(target, ref);
+  ensure(
+    !gitlinks(target).some((x) => ref === x || ref.startsWith(x + "/")),
+    `受保护恢复 gitlink: ${ref}`,
+    "PROTECTED",
+  );
 }

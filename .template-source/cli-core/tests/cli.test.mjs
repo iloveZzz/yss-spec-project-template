@@ -461,3 +461,97 @@ test("并发修改和恢复失败保留外部修改，明确报告未恢复路�
     "rule v1\n",
   );
 });
+test("中断恢复前拒绝旧身份、嵌套仓库、声明gitlink及损坏备份，整次零写入", (t) => {
+  for (const kind of ["legacy", "repo", "gitlink", "backup"]) {
+    const f = fixture(t);
+    assert.equal(f.run("init").status, 0);
+    f.bundle({ "docs/new.md": "new", "docs/rule.md": "v2" });
+    const r = injected(
+      f,
+      `const original=fs.renameSync;fs.renameSync=(a,b)=>{original(a,b);if(String(b).endsWith('/docs/rule.md'))process.kill(process.pid,'SIGKILL')};`,
+    );
+    assert.equal(r.signal, "SIGKILL");
+    if (kind === "legacy")
+      put(
+        f.target,
+        f.family.metadataFile,
+        json({ schema_version: 1, profile_id: f.family.profileId }),
+      );
+    if (kind === "repo") put(f.target, "docs/.git", "gitdir: elsewhere");
+    if (kind === "gitlink")
+      put(
+        f.target,
+        ".gitmodules",
+        '[submodule "rules"]\n path = docs\n url = https://example.invalid/repo.git\n',
+      );
+    if (kind === "backup") {
+      const dir = path.join(
+        f.target,
+        ".yss-harness-state/backend/transactions",
+      );
+      for (const id of fs.readdirSync(dir)) {
+        const j = JSON.parse(
+          fs.readFileSync(path.join(dir, id, "journal.json")),
+        );
+        if (j.phase !== "committed")
+          for (const file of fs.readdirSync(path.join(dir, id, "backup")))
+            fs.writeFileSync(path.join(dir, id, "backup", file), "corrupt");
+      }
+    }
+    const before = tree(f.target);
+    const recovered = f.run("sync", "--apply", "--force");
+    assert.equal(recovered.status, 1, kind);
+    assert.deepEqual(tree(f.target), before, kind);
+  }
+});
+test("实际入口尾斜杠的全局安装识别保留 -g，upgrade 不降级", (t) => {
+  const f = fixture(t);
+  const global = path.join(f.root, "global"),
+    installed = path.join(global, "lib/node_modules", f.family.packageName);
+  fs.cpSync(f.pkg, installed, { recursive: true });
+  put(
+    installed,
+    "entry.mjs",
+    `import {fileURLToPath} from 'node:url';import {main} from ${JSON.stringify("file://" + entry)};await main(fileURLToPath(new URL('.',import.meta.url)));`,
+  );
+  const bin = path.join(f.root, "bin");
+  put(
+    bin,
+    "npm",
+    `#!/bin/sh\nif [ "$1" = "view" ]; then echo 0.2.0; elif [ "$1" = "prefix" ]; then echo '${global}'; else exit 77; fi\n`,
+  );
+  fs.chmodSync(path.join(bin, "npm"), 0o755);
+  const r = spawnSync(
+    process.execPath,
+    [path.join(installed, "entry.mjs"), "upgrade", "--dry-run", "--json"],
+    {
+      encoding: "utf8",
+      env: { ...process.env, PATH: bin + path.delimiter + process.env.PATH },
+    },
+  );
+  assert.equal(r.status, 0, r.stderr);
+  const plan = JSON.parse(r.stdout);
+  assert.equal(plan.installKind, "global");
+  assert.deepEqual(plan.commandLine, [
+    "npm",
+    "install",
+    "-g",
+    f.family.packageName + "@latest",
+  ]);
+});
+test("重复身份字段不能通过 force 同步", (t) => {
+  const f = fixture(t);
+  assert.equal(f.run("init").status, 0);
+  const ref = path.join(f.target, f.family.metadataFile),
+    meta = fs.readFileSync(ref, "utf8");
+  fs.writeFileSync(
+    ref,
+    meta.replace(
+      '"metadataSchemaVersion": 2',
+      '"metadataSchemaVersion": 99, "metadataSchemaVersion": 2',
+    ),
+  );
+  const before = tree(f.target);
+  assert.equal(f.run("sync", "--apply", "--force").status, 1);
+  assert.deepEqual(tree(f.target), before);
+});

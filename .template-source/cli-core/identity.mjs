@@ -9,6 +9,8 @@ import {
   governance,
   hash,
   relative,
+  descriptor,
+  same,
 } from "./io.mjs";
 import { yaml, PROFILE } from "./bundle.mjs";
 export const METADATA = [
@@ -43,6 +45,7 @@ export function identity(target, bundle, command) {
   let meta = null;
   if (present.length) {
     meta = readJson(target, f.metadataFile);
+    yaml(fs.readFileSync(safe(target, f.metadataFile)));
     ensure(
       meta && typeof meta === "object" && !Array.isArray(meta),
       "metadata 必须是对象",
@@ -206,4 +209,56 @@ export function gitlinks(target) {
       }
   }
   return [...new Set(paths)].sort();
+}
+// A partially applied init/attach may not have metadata yet. Every identity byte
+// that does exist must still belong to this family and to the recorded transaction.
+export function recoveryIdentity(target, bundle, state) {
+  const f = bundle.family;
+  for (const ref of METADATA)
+    if (ref !== f.metadataFile)
+      ensure(
+        !stat(safe(target, ref)),
+        "异族 metadata 禁止事务恢复",
+        "IDENTITY",
+      );
+  if (stat(safe(target, f.metadataFile))) identity(target, bundle, "sync");
+  else {
+    if (stat(safe(target, PROFILE))) {
+      const p = yaml(fs.readFileSync(safe(target, PROFILE)));
+      ensure(
+        p.instantiation?.cli_package !== "repository-local",
+        "旧实例不支持恢复或接管",
+        "LEGACY",
+      );
+      ensure(
+        p.schema_version === 1 &&
+          p.profile_id === f.profileId &&
+          p.instantiation?.cli_package === f.packageName &&
+          p.instantiation?.metadata_file === f.metadataFile &&
+          p.instantiation?.template_source === f.templateSource,
+        "恢复 profile 身份矛盾",
+        "IDENTITY",
+      );
+    }
+    if (stat(safe(target, "yss-project.yaml"))) {
+      const p = yaml(fs.readFileSync(safe(target, "yss-project.yaml")));
+      ensure(
+        p.schema_version === 1 && p.repository_mode === "project-instance",
+        "恢复仓库身份非法",
+        "IDENTITY",
+      );
+    }
+  }
+  for (const ref of [f.metadataFile, PROFILE, "yss-project.yaml"]) {
+    const current = descriptor(target, ref),
+      ops = state.pending
+        .flatMap((x) => x.journal.operations)
+        .filter((x) => x.path === ref);
+    if (ops.length)
+      ensure(
+        ops.some((op) => same(current, op.before) || same(current, op.after)),
+        `恢复身份已发生后续修改: ${ref}`,
+        "IDENTITY",
+      );
+  }
 }

@@ -15,6 +15,7 @@ function version(v) {
   return v.split(".").map(Number);
 }
 export function update(packageRoot, pkg, opts) {
+  packageRoot = path.resolve(packageRoot);
   const packageName = pkg.name;
   ensure(
     /^create-yss-harness-(backend|frontend)$/.test(packageName),
@@ -49,7 +50,7 @@ export function update(packageRoot, pkg, opts) {
   if (packageRoot.split(path.sep).includes("_npx")) kind = "npx";
   else if (stat(path.join(packageRoot, ".git"))) kind = "source";
   else {
-    const prefix = npm(["prefix", "-g"]);
+    const prefix = path.resolve(npm(["prefix", "-g"]));
     if (
       [
         path.join(prefix, "lib", "node_modules", packageName),

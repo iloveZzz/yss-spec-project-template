@@ -7,6 +7,7 @@ import {
   guardNestedRepository,
   METADATA,
   gitlinks,
+  recoveryIdentity,
 } from "./identity.mjs";
 import { PROFILE, render } from "./bundle.mjs";
 import { inspectState, applyTransaction, recover } from "./transaction.mjs";
@@ -25,7 +26,10 @@ export function execute(bundle, target, opts) {
       "发现中断事务；使用 --apply 恢复后重试",
       "INTERRUPTED",
     );
-    return recover(target, f, state);
+    recoveryIdentity(target, bundle, state);
+    return recover(target, f, state, () =>
+      recoveryIdentity(target, bundle, state),
+    );
   }
   if (opts.command === "init")
     ensure(
