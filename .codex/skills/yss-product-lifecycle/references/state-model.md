@@ -39,7 +39,7 @@ phase_boundary:
 ```text
 required gates ∈ {approved, not-applicable}
 AND 关键决定及当前切片实施范围已有可追溯、当前且未撤回的真实用户批准
-AND related artifacts 不含 stale（若命中领域影响，`artifact.tactical-design` 或嵌入式 Tactical DDD Check 引用必须为当前版本）
+AND related artifacts 不含 stale（若命中技术设计影响，`artifact.technical-design` 必须已批准且版本当前、架构一致；旧 DDD 合同仅按显式兼容入口消费）
 AND blocking edges 全部关闭
 AND implementation repo/branch/CI/test/rollback 已明确
 AND `work-unit.ticket-decomposition` 已返回 `completed`，且其 `ticket_decomposition_result_ref` 证据可读取

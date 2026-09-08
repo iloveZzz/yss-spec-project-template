@@ -274,15 +274,20 @@ work_unit_routes:
     not_applicable_reason: no_ui_or_product_design_impact
   work-unit.technical-analysis:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
-    primary_skill: yss-implementation-contract-compiler
-    supporting_skills: [yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding, yss-tactical-design]
-    skills: [yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding, yss-tactical-design, yss-implementation-contract-compiler]
-    tactical_ddd:
-      applies_when: [aggregate-impact, state-machine-impact, invariant-impact, consistency-impact, domain-event-impact, gateway-boundary-impact, persistence-mapping-impact]
-      not_applicable_reason: no_tactical_ddd_impact
-      default_artifact: system-overview-design.tactical-ddd-check
-      standalone_artifact: artifact.tactical-design
-      review_evidence: evidence.tactical-design-review
+    primary_skill: yss-technical-design
+    supporting_skills: [yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding, yss-implementation-contract-compiler]
+    skills: [yss-technical-design, yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding, yss-implementation-contract-compiler]
+    technical_design:
+      applies_when: backend_technical_design_impact
+      architecture_source: confirmed-project-architecture-before-branch-design
+      branches:
+        domain-driven: yss-tactical-design
+        layered-mvc: yss-mvc-design
+      not_applicable_reason: no_backend_technical_design_impact
+      artifact: artifact.technical-design
+      review_evidence: evidence.technical-design-review
+      legacy_ddd_artifact: artifact.tactical-design
+      legacy_ddd_review_evidence: evidence.tactical-design-review
       statuses: [draft, ready-for-human, approved, blocked, stale, drift, new_impacts, not-applicable]
       approved_by: yss-product-lifecycle
       forbidden: [self-approval, ready-for-agent, production-code-generation]

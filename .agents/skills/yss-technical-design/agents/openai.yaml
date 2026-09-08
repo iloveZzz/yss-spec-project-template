@@ -1,0 +1,4 @@
+interface:
+  display_name: "YSS 技术设计"
+  short_description: "按已确认 DDD 或 MVC 架构组织技术设计合同"
+  default_prompt: "基于当前批准输入和已确认架构，按已确认 DDD 或 MVC 架构组织技术设计合同，返回待生命周期审查的结果。"

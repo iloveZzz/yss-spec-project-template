@@ -56,6 +56,9 @@ evidence:
     description: 子域、限界上下文、统一语言、Context Map、场景和不变量的结构化评审结果。
     public_name: 业务边界与规则评审证据
     public_description: 业务板块、业务责任区、统一业务词汇、协作与交接关系、关键场景和不可违反规则的结构化评审结果。
+  - id: evidence.technical-design-review
+    name: 技术设计评审证据
+    description: 按已确认 DDD 或 MVC 架构审查规则与场景承接、分层、行为、一致性和测试边界。
   - id: evidence.tactical-design-review
     name: DDD 战术设计评审证据
     description: 聚合、Entity、Value Object、不变量、状态机、一致性、Gateway 与 API 隔离的结构化评审结果。
@@ -278,6 +281,10 @@ artifacts:
     name: 架构审查记录
     stage: stage.system-data-engineering
     trigger: 高风险或跨边界变化。
+  - id: artifact.technical-design
+    name: 技术设计合同
+    stage: stage.system-data-engineering
+    trigger: 后端技术设计需要按已确认 DDD 或 MVC 架构明确行为、分层、一致性或数据映射。
   - id: artifact.tactical-design
     name: DDD 战术设计
     stage: stage.system-data-engineering
@@ -406,8 +413,8 @@ work_units:
     name: 技术分析与契约冻结
     scope: project-instance
     input: Spec、原型、API/数据/工程影响面。
-    output: OpenAPI、数据架构、Tactical DDD Check、工程基线、架构审查和 Slice 合同草案。
-    completion: 命中契约已冻结；无 API 影响有可读记录；命中领域影响时战术模型无未解释冲突；工程基线通过。
+    output: OpenAPI、数据架构、按确认架构形成的 DDD / MVC 技术设计合同、工程基线、架构审查和 Slice 合同草案。
+    completion: 命中契约已冻结；无 API 影响有可读记录；命中技术设计影响时架构已确认、规则与场景承接无未解释冲突；工程基线通过。
   - id: work-unit.service-project-initialization
     name: 独立服务项目初始化
     scope: project-instance

@@ -19,7 +19,7 @@
 
 - [ ] 若为小改动，已完成 DDD impact check，并确认不影响统一语言、上下文边界、聚合、API、数据或风险 / 回滚约束。
 - [ ] Strategic DDD Check 已完成或明确不适用：统一语言、核心/支撑/通用子域、限界上下文、上下文映射和非目标范围清楚。
-- [ ] Tactical DDD Check 已完成或明确不适用：聚合根、Entity、Value Object、领域服务、不变量、一致性边界和 Repository / Gateway seam 清楚。
+- [ ] 技术设计使用已确认的 DDD / MVC 架构，规则与关键场景承接完整，合同及输入摘要当前。DDD 审查聚合、不变量、一致性和 Gateway；MVC 审查分层、用例、业务规则、事务和持久化映射。两者均需成功/失败测试 seam；无相关影响须明确理由。
 - [ ] OpenAPI 契约使用上下文的公开语言，不直接暴露内部聚合、Repository 或持久化表结构。
 - [ ] 领域行为测试、Application 用例测试、契约测试和必要 E2E 已与 DDD 边界对齐。
 

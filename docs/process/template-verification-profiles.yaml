@@ -82,6 +82,11 @@ required_files:
   - docs/design/templates/visual-baseline-template.yaml
   - docs/process/templates/maintenance-checkpoint-template.yaml
   - docs/templates/subagent-task-package-template.md
+  - .agents/skills/yss-technical-design/SKILL.md
+  - .agents/skills/yss-technical-design/references/technical-design.schema.json
+  - .agents/skills/yss-technical-design/scripts/validate-technical-design.mjs
+  - .agents/skills/yss-mvc-design/SKILL.md
+  - .agents/skills/yss-mvc-design/references/mvc-design.schema.json
   - .agents/skills/yss-tactical-design/SKILL.md
   - .agents/skills/yss-tactical-design/agents/openai.yaml
   - .agents/skills/yss-tactical-design/references/tactical-design-contract.md
@@ -191,6 +196,8 @@ syntax_files:
   - scripts/verify-maintenance-review-workflow-scenarios
   - scripts/verify-template-cache-scenarios
 routing:
+  - patterns: [".agents/skills/yss-technical-design/**", ".agents/skills/yss-mvc-design/**", ".agents/skills/yss-tactical-design/**", "scripts/lib/technical-design-boundary.mjs", "scripts/lib/strategic-handoff-design-targets.mjs"]
+    groups: [tactical-design, implementation]
   - patterns: ["scripts/*backend-delivery*", "scripts/*frontend-delivery*", "scripts/lib/*backend-delivery*", "scripts/lib/*frontend-delivery*", "scripts/fixtures/backend-delivery/**", "docs/process/frontend-backend-delivery.md", "docs/process/schemas/backend-delivery*", "docs/process/schemas/frontend-delivery*"]
     groups: [frontend-delivery]
   - patterns: ["scripts/*user-decision*", "scripts/lib/user-decision*", "scripts/fixtures/user-decision/**", "docs/process/schemas/user-decision*", "docs/process/templates/user-decision*", "scripts/lib/approval-record.mjs", "scripts/verify-approval-record"]
@@ -259,6 +266,8 @@ groups:
       - { run: "node .agents/skills/yss-antdv-next-design/tests/run-scenarios.mjs" }
   tactical-design:
     commands:
+      - { run: "node .agents/skills/yss-technical-design/scripts/generate-schema.mjs --check" }
+      - { run: "node .agents/skills/yss-technical-design/tests/run-scenarios.mjs" }
       - { run: "node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs" }
       - { run: "node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs" }
       - { run: "node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs" }

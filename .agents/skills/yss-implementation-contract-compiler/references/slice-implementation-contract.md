@@ -28,7 +28,8 @@ slice_contract:
     architecture_review:
     data_architecture:
     engineering_baseline:
-    tactical_design:
+    technical_design: # 阅读引用；与 resolution.technical_design.ref 指向同一文件
+    tactical_design: # 旧 DDD 引用兼容
     build_architecture_checklist:
     implementation_repository:
     frontend_repository:
@@ -41,6 +42,10 @@ slice_contract:
       - item:
         reason:
   resolution:
+    technical_design: # 有技术设计影响时由编译器绑定，DDD / MVC 共用
+      ref:
+      version:
+      digest: # 已持久化合同原始字节摘要
     required_capabilities: []
     required_skills: []
     recipe_ids: []
@@ -201,3 +206,5 @@ work_unit:
 `work_units` 中的前端、后端和测试任务是切片级子任务，不是新的生命周期阶段。每个子任务必须引用独立任务包；任务包只能消费同一份已批准且版本当前的 Slice Contract。`workflow_status` 追踪执行过程，不能替代生命周期状态；`contract_id`、`contract_version` 或 resolution digest 不一致时必须阻断并回到实现合同编译器。
 
 一个切片可以组合多个窄 Recipe，但只计算一次闭包。Recipe 只能引用 capability；合同同时冻结 `required_capabilities`、`required_skills`、完整原因链和 Registry/Compiler digest。任一 digest 或 Visual Baseline 版本 / digest 改变时，当前合同标记 `stale`，重新编译后仍须由 `yss-product-lifecycle` 再批准。UI 切片只消费 `visual_baseline_case_ids` 指定的图片，并先读取 manifest 与语义引用，禁止按目录 glob 猜测图片含义。
+
+技术设计编译绑定使用 `technical_design: {ref, version, digest}` 与 `slice_id`，校验器规则见 `yss-technical-design/references/technical-design-contract.md`。`backend.tactical_ddd` 仅适用于 `domain-driven`；MVC 消费共同技术设计绑定与 `design` 的用例、规则、事务和测试 seam，不填聚合或 Gateway 字段。

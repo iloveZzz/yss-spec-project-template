@@ -83,7 +83,7 @@ exclusive_flags:
 
 slice_contract_required:
   root: [schema_version, contract_id, contract_version, slice_id, status, lifecycle_refs, readiness, resolution, common, frontend, backend, contract, cross_repo, work_units]
-  lifecycle_refs: [spec, ticket, requirement_freeze, low_fidelity_review, prototype_review, prototype_profile_decision, prototype_deliverable, prototype_deliverable_verification, visual_baseline, prototype_confirmation, openapi_freeze_or_no_impact, architecture_review, data_architecture, tactical_design, engineering_baseline, build_architecture_checklist, implementation_repository, frontend_repository, backend_repository, maven_wrapper]
+  lifecycle_refs: [spec, ticket, requirement_freeze, low_fidelity_review, prototype_review, prototype_profile_decision, prototype_deliverable, prototype_deliverable_verification, visual_baseline, prototype_confirmation, openapi_freeze_or_no_impact, architecture_review, data_architecture, technical_design, tactical_design, engineering_baseline, build_architecture_checklist, implementation_repository, frontend_repository, backend_repository, maven_wrapper]
   readiness: [blockers, stale_inputs, not_applicable]
   resolution: [required_capabilities, required_skills, recipe_ids, conditions, reason_chains, registry_digest, compiler_contract_digest, compiled_at, freshness]
   common: [impacted_areas, implementation_path_policy, project_roots, required_capabilities, required_skills, optional_skills, unavailable_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands, human_review_points, full_reroute_triggers, quality_baseline_ref, context_plan, doubt_driven_review]
@@ -109,6 +109,7 @@ lifecycle_ref_by_readiness:
   openapi_freeze: openapi_freeze_or_no_impact
   no_api_impact_record: openapi_freeze_or_no_impact
   data_architecture: data_architecture
+  technical_design: technical_design
   tactical_design: tactical_design
   engineering_baseline: engineering_baseline
   backend_repository: backend_repository
@@ -233,7 +234,14 @@ applicable_subcontract_nonempty:
   backend:
     scalar: [application_boundary, transaction_boundary, persistence_strategy]
     array: [affected_layers, required_skills, allowed_write_paths, forbidden_patterns, expected_evidence_files, verification_commands]
+    conditional_technical_design:
+      when: backend-technical-design-impact
+      binding: resolution.technical_design
+      scalar: [ref, version, digest]
+      architecture_match: resolution.architecture_identity.architecture_family
+      verification: node .agents/skills/yss-technical-design/scripts/validate-technical-design.mjs <contract> --root <target> --slice <slice-id>
     conditional_tactical_ddd:
+      architecture_family: domain-driven
       when: [aggregate-impact, state-machine-impact, invariant-impact, consistency-impact, domain-event-impact, gateway-boundary-impact, persistence-mapping-impact]
       scalar: [tactical_design_ref, tactical_design_version, gateway_boundary_ref]
       array: [aggregate_refs, invariant_refs, state_behavior_refs, domain_test_seams, application_test_seams]
@@ -366,7 +374,7 @@ unavailable_skill_required: [skill, provider, fallback, resolution]
 strategic_handoff_consumption:
   when: upstream-source-is-imported-strategic-handoff
   required: [import_receipt_ref, bundle_digest, context_reconciliation_ref, rows]
-  verification: scripts/verify-strategic-handoff-consumption --root <target> --slice <slice-id> <approved-tactical-contract>
+  verification: scripts/verify-strategic-handoff-consumption --root <target> --slice <slice-id> <approved-technical-design-contract>
   require_actual_exit_code: 0
   stale_policy: latest-imported-source-digest-and-dependent-slices
   unknown_dependency: block-all

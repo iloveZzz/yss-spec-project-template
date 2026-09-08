@@ -1,0 +1,290 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "technical_design_id": {
+      "type": "string",
+      "pattern": "^technical-design\\.[a-z0-9][a-z0-9-]*$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^v[1-9][0-9]*$"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "ready-for-human",
+        "approved",
+        "blocked",
+        "stale",
+        "drift",
+        "new_impacts"
+      ]
+    },
+    "context_ref": {
+      "const": "CONTEXT.md"
+    },
+    "architecture": {
+      "type": "object",
+      "properties": {
+        "family": {
+          "enum": [
+            "domain-driven",
+            "layered-mvc"
+          ]
+        },
+        "project_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_kind": {
+          "enum": [
+            "scaffold-decision",
+            "existing-registration"
+          ]
+        },
+        "decision_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "family",
+        "project_id",
+        "source_kind",
+        "decision_ref",
+        "decision_digest"
+      ],
+      "additionalProperties": false
+    },
+    "inputs": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "kind": {
+            "enum": [
+              "context",
+              "spec",
+              "rules",
+              "scenarios",
+              "api",
+              "adr",
+              "engineering",
+              "strategic"
+            ]
+          }
+        },
+        "required": [
+          "ref",
+          "version",
+          "digest",
+          "kind"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "source_items": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "rule",
+              "scenario"
+            ]
+          },
+          "critical": {
+            "type": "boolean"
+          },
+          "source_ref": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "source_id",
+          "kind",
+          "critical",
+          "source_ref"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "traceability": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "disposition": {
+            "enum": [
+              "implemented",
+              "deferred",
+              "not-applicable",
+              "pending",
+              "conflict"
+            ]
+          },
+          "tactical_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "test_seam_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "dependency_status": {
+            "enum": [
+              "known",
+              "unknown"
+            ]
+          },
+          "dependent_slice_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "scenario_tests": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "outcome": {
+                  "enum": [
+                    "success",
+                    "failure"
+                  ]
+                },
+                "seam_ref": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "outcome",
+                "seam_ref"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "risk": {
+            "type": "string",
+            "minLength": 1
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "followup_ticket_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "verification_plan": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target_version": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "source_id",
+          "disposition",
+          "dependency_status",
+          "dependent_slice_refs"
+        ],
+        "additionalProperties": true
+      }
+    },
+    "strategic_handoff": {
+      "type": "object"
+    },
+    "design": {
+      "type": "object"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "schema_version",
+    "technical_design_id",
+    "version",
+    "status",
+    "context_ref",
+    "architecture",
+    "inputs",
+    "source_items",
+    "traceability",
+    "design",
+    "evidence_refs",
+    "digest"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/technical-design-v2.json",
+  "title": "YSS Technical Design Contract v2",
+  "$comment": "共同合同权威；完整分支 Schema 由 scripts/generate-schema.mjs 派生。"
+}

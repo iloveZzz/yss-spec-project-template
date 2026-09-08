@@ -152,8 +152,8 @@ roles:
     contract_version: 1
     title: YSS 后端工程师
     stages: [stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
-    draft_artifact_ids: [artifact.openapi-draft, artifact.data-architecture]
-    core_skills: [yss-implementation-contract-compiler, yss-tactical-design, yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-dto, mapstruct, lombok, alibaba-java-code-style, yss-exception, yss-validation, tdd, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator]
+    draft_artifact_ids: [artifact.openapi-draft, artifact.data-architecture, artifact.technical-design]
+    core_skills: [yss-implementation-contract-compiler, yss-technical-design, yss-tactical-design, yss-mvc-design, yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-dto, mapstruct, lombok, alibaba-java-code-style, yss-exception, yss-validation, tdd, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator]
     forbidden_skills: [yss-ui, yss-ui-business-page-generation, yss-formily, yss-frontend-scaffold-generator, yss-antd-design, yss-antdv-next-design, page-list-module, page-form-module]
     description: >-
       Own OpenAPI Draft, data-architecture contributions, and backend tests.

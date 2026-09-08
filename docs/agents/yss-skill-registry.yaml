@@ -57,12 +57,14 @@ capability_contract:
     preserve_all_reasons: true
   deterministic_order: [recipe-declaration, dependency-topology, skill-id]
 capabilities:
+  - { id: architecture.technical-design, primary_skill: yss-technical-design, task_modes: [guidance, integration, review-input] }
+  - { id: architecture.mvc-design, primary_skill: yss-mvc-design, architecture_family: layered-mvc, task_modes: [guidance, integration, review-input] }
   - { id: layer.mvc-service, primary_skill: yss-application, architecture_family: layered-mvc, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
   - { id: layer.mvc-persistence, primary_skill: yss-repository, architecture_family: layered-mvc, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
   - { id: layer.mvc-web, primary_skill: yss-web-controller, architecture_family: layered-mvc, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
   - { id: governance.implementation-contract, primary_skill: yss-implementation-contract-compiler, task_modes: [contract-compilation, reroute, result-validation] }
   - { id: maintenance.skill-source-index, primary_skill: yss-skill-source-index-refresh, task_modes: [component-maintenance, source-index-refresh] }
-  - { id: architecture.tactical-domain, primary_skill: yss-tactical-design, task_modes: [guidance, integration, slice-implementation, review-input] }
+  - { id: architecture.tactical-domain, primary_skill: yss-tactical-design, architecture_family: domain-driven, task_modes: [guidance, integration, slice-implementation, review-input] }
   - { id: layer.domain, primary_skill: yss-domain, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
   - { id: layer.application, primary_skill: yss-application, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
   - { id: layer.persistence, primary_skill: yss-repository, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
@@ -121,6 +123,11 @@ skill_dependencies:
     - { skill: domain-modeling, type: coordination-only }
     - { skill: yss-tactical-design, type: context-conditional, when: tactical-domain }
     - { skill: lombok, type: context-conditional, when: pojo }
+  yss-technical-design:
+    - { skill: yss-tactical-design, type: coordination-only, when: domain-driven }
+    - { skill: yss-mvc-design, type: coordination-only, when: layered-mvc }
+  yss-mvc-design:
+    - { skill: yss-openapi-draft-review, type: review-only, when: api-impact }
   yss-tactical-design:
     - { skill: domain-modeling, type: coordination-only }
     - { skill: yss-openapi-draft-review, type: review-only, when: api-impact }
@@ -479,6 +486,18 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+  - id: yss-technical-design
+    layer: core
+    maturity: draft
+    instance_default_discoverable: true
+    aliases: []
+    impacts: [backend, lifecycle]
+  - id: yss-mvc-design
+    layer: specialist
+    maturity: draft
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend, lifecycle]
   - id: yss-tactical-design
     layer: specialist
     maturity: draft

@@ -8,8 +8,8 @@ Root CONTEXT.md + current work-unit changes → Context Reconciliation → appro
 Spec + Product Overview → Product Design / Requirement Freeze
 Spec + Product Overview → API Impact / OpenAPI Draft
 Spec + Product Overview → System / Data Architecture
-System / Data Architecture + domain impact → Tactical DDD Check / tactical-design contract
-Tactical DDD contract → Architecture Review / Engineering Baseline / Slice Implementation Contract
+System / Data Architecture + confirmed project architecture → Technical Design Contract (DDD / MVC)
+Technical Design Contract → Architecture Review / Engineering Baseline → Slice Implementation Contract draft
 API impact = yes: Requirement Freeze + Design Review + Draft Review → OpenAPI Freeze
 API impact = no: API Impact Assessment approved → No-API-Impact record；Draft/Freeze gates = not-applicable
 Frozen Contract → Vertical Slice Tickets

@@ -9,7 +9,7 @@ import { fixture, context } from './fixtures/strategic-handoff/fixture.mjs';
 import { exportBundle, openBundle, importBundle } from './lib/strategic-handoff.mjs';
 import { read, json, hash, digest } from './lib/strategic-handoff-io.mjs';
 import { parseContextContract } from './lib/context-contract.mjs';
-const setup=async t=>{const base=mkdtempSync(path.join(tmpdir(),'handoff-test-'));t.after(()=>rmSync(base,{recursive:true,force:true}));const source=path.join(base,'source');mkdirSync(source);return{base,source,...await fixture(source)};};
+const setup=async t=>{const base=mkdtempSync(path.join(tmpdir(),'handoff-test-'));t.after(()=>rmSync(base,{recursive:true,force:true}));const source=path.join(base,'source');mkdirSync(source);return{base,source,...await fixture(source,{technicalDesign:true})};};
 function advanceStrategy(f,version='v2') {
  f.handoff.handoff_version=version;
  f.strategy.domain_version=version;
@@ -79,6 +79,12 @@ test('受控延期只阻断依赖切片；未知依赖扩大阻断；目标未�
  writeFileSync(path.join(target,'reconciliation.yaml'),json(record));
  for(const row of tactical.strategic_handoff.rows)Object.assign(row,{disposition:'implemented',tactical_refs:['behavior.submit'],test_seam_refs:['test-seam.submit'],scenario_tests:[{outcome:'success',seam_ref:'test-seam.submit'},{outcome:'failure',seam_ref:'test-seam.submit'}],evidence_refs:['CONTEXT.md'],dependency_status:'known',dependent_slice_refs:['slice.submit']});
  assert.equal((await verifyConsumption(tactical,{root:target})).result,'verified');
+ const mvc={schema_version:2,status:'approved',architecture:{family:'layered-mvc'},strategic_handoff:structuredClone(tactical.strategic_handoff),design:{use_case_catalog:[{use_case_id:'use-case.submit'}],test_seams:[{seam_id:'test-seam.submit',subject_ref:'use-case.submit'}]}};
+ for(const row of mvc.strategic_handoff.rows)row.tactical_refs=['use-case.submit'];
+ assert.equal((await verifyConsumption(mvc,{root:target})).result,'verified');
+ mvc.strategic_handoff.rows[0].tactical_refs=['aggregate.fake'];
+ await assert.rejects(()=>verifyConsumption(mvc,{root:target}),/落点悬空/);
+
  const row=tactical.strategic_handoff.rows[0];Object.assign(row,{disposition:'deferred',reason:'分批实现',risk:'不能提交',owner:'需求负责人',followup_ticket_ref:'ticket.followup',verification_plan:'提交测试',target_version:'v2'});
  assert.equal((await verifyConsumption(tactical,{root:target,sliceRef:'slice.submit'})).result,'blocked');
  assert.equal((await verifyConsumption(tactical,{root:target,sliceRef:'slice.other'})).result,'verified');

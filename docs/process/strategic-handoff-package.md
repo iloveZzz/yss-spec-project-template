@@ -31,7 +31,7 @@ scripts/strategic-handoff import --bundle <目录或ZIP> --target-root <研发�
 
 导入落盘到 `docs/handoffs/<handoff-id>/<version>/`，包含不可变 `package/`、`import-receipt.json`、`context-reconciliation-draft.json`、`tactical-traceability-draft.json`、`upstream-change-impact.json`。仅写快照与草案，不自动更新根词汇表或批准状态。目标侧确认增量后更新唯一根 `CONTEXT.md`，生成既有 schema 的正式 reconciliation 并校验。
 
-战术合同的 `strategic_handoff` 绑定 `import_receipt_ref`、`bundle_digest`、`context_reconciliation_ref` 和 `rows`。逐条覆盖全部规则与 `critical: true` 的成功/失败场景；行字段如下：
+Technical Design Contract v2（DDD / MVC 共用）的 `strategic_handoff` 绑定 `import_receipt_ref`、`bundle_digest`、`context_reconciliation_ref` 和 `rows`。逐条覆盖全部规则与 `critical: true` 的成功/失败场景；行字段如下：
 
 - `source_id`、源对象 `source_digest`、`disposition`、`dependency_status: known | unknown`、`dependent_slice_refs`。
 - `implemented`：`tactical_refs`、`test_seam_refs`、`evidence_refs` 必须可解析；关键场景另用 `scenario_tests` 分别绑定 `outcome: success | failure` 与 `seam_ref`。
@@ -42,8 +42,10 @@ scripts/strategic-handoff import --bundle <目录或ZIP> --target-root <研发�
 ```bash
 scripts/verify-strategic-handoff-consumption --root <研发项目根> <战术合同>
 scripts/verify-strategic-handoff-consumption --root <研发项目根> --slice <切片ID> <已批准战术合同>
-node .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs <战术合同> --root <研发项目根>
+node .agents/skills/yss-technical-design/scripts/validate-technical-design.mjs <技术设计合同> --root <研发项目根>
 ```
+
+新交接的 target 使用 `yss-technical-design` / `technical-design-contract`，对账必须在通用入口前完成；旧 `yss-tactical-design` / `tactical-design-contract` 成对只读兼容，不修改已冻结包。`tactical_refs` 在 v2 可指向 `design` 中的 MVC 模块、用例、规则或 DDD 对象，测试 seam 同样在对应分支解析。无战略交接包的 MVC 项目直接消费批准需求，不要求补造战略 DDD。
 
 整体验证有未落实项时返回 blocked；按切片验证可放行有证据证明不依赖这些项的切片。输出 `block_all`、`blocked_slice_refs`、`issues`、实际消费包摘要与战术摘要。通过只证明结构化映射完整和引用可核验，业务语义仍需独立评审；不能代替 Slice Contract 批准。
 

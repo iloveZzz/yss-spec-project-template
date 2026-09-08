@@ -18,6 +18,8 @@
 
 | Capability | Primary skill | Task modes |
 | --- | --- | --- |
+| `architecture.technical-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
+| `architecture.mvc-design` | `yss-mvc-design` | `guidance`, `integration`, `review-input` |
 | `layer.mvc-service` | `yss-application` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
 | `layer.mvc-persistence` | `yss-repository` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
 | `layer.mvc-web` | `yss-web-controller` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
@@ -112,6 +114,9 @@
 | `yss-domain` | `domain-modeling` | `coordination-only` | — |
 | `yss-domain` | `yss-tactical-design` | `context-conditional` | `tactical-domain` |
 | `yss-domain` | `lombok` | `context-conditional` | `pojo` |
+| `yss-technical-design` | `yss-tactical-design` | `coordination-only` | `domain-driven` |
+| `yss-technical-design` | `yss-mvc-design` | `coordination-only` | `layered-mvc` |
+| `yss-mvc-design` | `yss-openapi-draft-review` | `review-only` | `api-impact` |
 | `yss-tactical-design` | `domain-modeling` | `coordination-only` | — |
 | `yss-tactical-design` | `yss-openapi-draft-review` | `review-only` | `api-impact` |
 | `yss-tactical-design` | `yss-repository` | `component-dependency` | `data-impact` |

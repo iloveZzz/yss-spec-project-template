@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { readFile } from "node:fs/promises";
 import process from "node:process";
+import { pathToFileURL } from "node:url";
 import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
 
 import { parseArgs } from "node:util";
@@ -68,7 +69,7 @@ function refsExist(values, known, path, errors) {
   }
 }
 
-function validate(data) {
+export function validate(data) {
   const errors = [];
   if (!isObject(data)) return ["合同必须是对象"];
   for (const field of required) requireField(data, field, "root", errors);
@@ -218,4 +219,4 @@ async function main() {
   process.stdout.write(`${JSON.stringify({ result: "ready-for-lifecycle-review", tactical_design_id: document.get("tactical_design_id"), status: document.get("status") }, null, 2)}\n`);
 }
 
-main().catch((error) => { process.stderr.write(`${error.message}\n`); process.exitCode = 1; });
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main().catch((error) => { process.stderr.write(`${error.message}\n`); process.exitCode = 1; });

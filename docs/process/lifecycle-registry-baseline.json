@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "registry_id": "yss.lifecycle",
-  "semantic_sha256": "7757565261e3290046cd31d6b4287fc1e5ec8bdf7fae4735b0be8ac882e87b8d",
+  "semantic_sha256": "4eadc734957c5112dad60ec9fe4d844ac8790cbe798fbd8177ee60eae6dbe1fa",
   "published_ids": [
     "artifact.architecture-review",
     "artifact.data-architecture",
@@ -29,6 +29,7 @@
     "artifact.stage-decision-package",
     "artifact.state-matrix",
     "artifact.tactical-design",
+    "artifact.technical-design",
     "artifact.vertical-slice-ticket",
     "evidence.antd-cli-validation",
     "evidence.approval-record",
@@ -50,6 +51,7 @@
     "evidence.repository-identity-check",
     "evidence.stage-decision-package",
     "evidence.tactical-design-review",
+    "evidence.technical-design-review",
     "evidence.yss-skill-execution-result",
     "gate.architecture-reviewed",
     "gate.design-reviewed",

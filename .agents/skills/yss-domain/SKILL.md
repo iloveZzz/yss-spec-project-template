@@ -5,7 +5,7 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 
 # yss-domain
 
-这是一个领域实现 skill。核心目标是消费已批准的战术模型，将领域行为落实为代码；战术模型的设计与批准由 `yss-tactical-design` 和 `yss-product-lifecycle` 负责。
+这是一个领域实现 skill。核心目标是消费已批准的战术模型，将领域行为落实为代码；`yss-technical-design` 组织 DDD 分支，由 `yss-tactical-design` 设计、`yss-product-lifecycle` 维护批准。
 
 本 skill 在新脚手架链路只支持 `domain-driven` / `target-domain-model`。`layered-mvc-service` 与 `mvc-data-analysis-v1` 是独立 MVC Profile，不是失败的 DDD 工程；它们不加载本 skill，也不生成 Domain Gateway。既有旧架构不在本链路内迁移。
 
@@ -23,7 +23,7 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 
 ## 工作方式
 
-1. 先读取批准且版本当前的 tactical-design contract 和 Slice Implementation Contract。
+1. 先读取批准且版本当前的 Technical Design Contract 的 DDD `design` 分支和 Slice Implementation Contract；旧 v1 tactical-design contract 只按 DDD 显式兼容读取。
 2. 数据库字段只做补充，不直接决定领域对象结构。
 3. 按合同实现领域行为、状态机、不变量和 Gateway 边界。
 4. 规则不清晰或模型需要扩展时，返回 `new_impacts` / `drift` 并停止，不要静默猜测。
@@ -64,7 +64,7 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 ## 阶段 7 合同
 
 - 只消费生命周期已批准的 `Slice Implementation Contract` 和当前 `work_unit`；不得扩大 `allowed_write_paths`。
-- `Slice Implementation Contract` 必须引用批准且版本当前的 `tactical_design_ref`；不得在实现阶段重新批准或替换聚合、不变量和一致性策略。
+- `Slice Implementation Contract` 必须引用批准且版本当前的 `technical_design` 绑定（旧 DDD 显式兼容 `tactical_design_ref`）；不得在实现阶段重新批准或替换聚合、不变量和一致性策略。
 - 领域规则、状态机和不变量必须使用 `behavior-tdd`，先形成失败测试，再实现最小行为。
 - 完成后按 `yss-implementation-contract-compiler/references/yss-skill-execution-result.md` 返回统一 `YSS Skill Execution Result`：changed files、领域/测试证据、实际验证结果、偏离和新增影响。
 - 发现新 API、权限、状态机、数据模型或架构影响时填入 `new_impacts` 并暂停，不得静默扩张切片。

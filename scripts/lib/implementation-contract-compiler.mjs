@@ -1,3 +1,4 @@
+import { enforceTechnicalDesign } from './technical-design-boundary.mjs';
 import { enforceHarnessSkillScope } from "./harness-execution-scope.mjs";
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
@@ -66,7 +67,8 @@ export function compileImplementationContract({
   architecture_evidence,
   root = ROOT,
   slice_id,
-  frontend_delivery
+  frontend_delivery,
+  technical_design
 }) {
   assertV2(registry, compilerContract);
   const deliveryInput = enforceFrontendDelivery({ slice_id, frontend_delivery }, { root });
@@ -90,6 +92,8 @@ export function compileImplementationContract({
     assertArchitectureAgreement(architecture_identity, architecture_evidence, registry);
     for (const recipe of orderedRecipes) if (recipe.architecture_family && recipe.architecture_family !== architecture_identity.architecture_family) fail(`Recipe ${recipe.id} 与架构族不匹配`);
   }
+
+  enforceTechnicalDesign({ technical_design, conditions, architecture_identity, slice_id }, { root });
 
   const capabilitySources = new Map();
   const orderedCapabilities = [];
@@ -175,6 +179,7 @@ export function compileImplementationContract({
       readiness_blockers: architectureProfile.maturity === "supported" ? [] : ["backend-profile-not-supported"],
       skill_profiles: Object.fromEntries(orderedSkills.map((skill) => [skill, architecture_identity.architecture_profile]))
     } : {}),
+    ...(technical_design ? { technical_design, slice_id } : {}),
     recipe_ids: orderedRecipes.map((recipe) => recipe.id),
     conditions: [...conditionSet].sort(),
     required_capabilities: orderedCapabilities,
@@ -202,6 +207,8 @@ export function evaluateContractFreshness(contract, { registry, compilerContract
   if (contract?.schema_version !== 2) fail("Slice Implementation Contract schema v1 已停止支持；必须重新编译 v2 合同");
   const resolution = contract.resolution ?? contract;
   const reasons = [];
+  try { enforceTechnicalDesign({ ...resolution, slice_id: contract.slice_id ?? resolution.slice_id }, { root }); }
+  catch { reasons.push("technical-design-stale-or-unavailable"); }
   try { enforceFrontendDelivery(contract, { root }); }
   catch { reasons.push("frontend-delivery-stale-or-unavailable"); }
   if (resolution.registry_digest !== digestDocument(registry)) reasons.push("registry-digest-changed");

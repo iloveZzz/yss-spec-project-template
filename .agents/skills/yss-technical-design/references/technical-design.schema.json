@@ -1,0 +1,759 @@
+{
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "technical_design_id": {
+      "type": "string",
+      "pattern": "^technical-design\\.[a-z0-9][a-z0-9-]*$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^v[1-9][0-9]*$"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "ready-for-human",
+        "approved",
+        "blocked",
+        "stale",
+        "drift",
+        "new_impacts"
+      ]
+    },
+    "context_ref": {
+      "const": "CONTEXT.md"
+    },
+    "architecture": {
+      "type": "object",
+      "properties": {
+        "family": {
+          "enum": [
+            "domain-driven",
+            "layered-mvc"
+          ]
+        },
+        "project_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_kind": {
+          "enum": [
+            "scaffold-decision",
+            "existing-registration"
+          ]
+        },
+        "decision_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "family",
+        "project_id",
+        "source_kind",
+        "decision_ref",
+        "decision_digest"
+      ],
+      "additionalProperties": false
+    },
+    "inputs": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "properties": {
+          "ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "digest": {
+            "type": "string",
+            "pattern": "^sha256:[a-f0-9]{64}$"
+          },
+          "kind": {
+            "enum": [
+              "context",
+              "spec",
+              "rules",
+              "scenarios",
+              "api",
+              "adr",
+              "engineering",
+              "strategic"
+            ]
+          }
+        },
+        "required": [
+          "ref",
+          "version",
+          "digest",
+          "kind"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "source_items": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "kind": {
+            "enum": [
+              "rule",
+              "scenario"
+            ]
+          },
+          "critical": {
+            "type": "boolean"
+          },
+          "source_ref": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "source_id",
+          "kind",
+          "critical",
+          "source_ref"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "traceability": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "disposition": {
+            "enum": [
+              "implemented",
+              "deferred",
+              "not-applicable",
+              "pending",
+              "conflict"
+            ]
+          },
+          "tactical_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "test_seam_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "dependency_status": {
+            "enum": [
+              "known",
+              "unknown"
+            ]
+          },
+          "dependent_slice_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "scenario_tests": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "outcome": {
+                  "enum": [
+                    "success",
+                    "failure"
+                  ]
+                },
+                "seam_ref": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "outcome",
+                "seam_ref"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "risk": {
+            "type": "string",
+            "minLength": 1
+          },
+          "owner": {
+            "type": "string",
+            "minLength": 1
+          },
+          "followup_ticket_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "verification_plan": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target_version": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "source_id",
+          "disposition",
+          "dependency_status",
+          "dependent_slice_refs"
+        ],
+        "additionalProperties": true
+      }
+    },
+    "strategic_handoff": {
+      "type": "object"
+    },
+    "design": {
+      "type": "object"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    }
+  },
+  "required": [
+    "schema_version",
+    "technical_design_id",
+    "version",
+    "status",
+    "context_ref",
+    "architecture",
+    "inputs",
+    "source_items",
+    "traceability",
+    "design",
+    "evidence_refs",
+    "digest"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/technical-design-v2.json",
+  "title": "YSS Technical Design Contract v2",
+  "$comment": "Generated by scripts/generate-schema.mjs from common and specialist schemas. Do not hand-edit.",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "architecture": {
+            "properties": {
+              "family": {
+                "const": "domain-driven"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "design": {
+            "title": "YSS Tactical DDD Design Contract",
+            "type": "object",
+            "required": [
+              "schema_version",
+              "tactical_design_id",
+              "tactical_version",
+              "status",
+              "context_ref",
+              "aggregate_catalog",
+              "entity_catalog",
+              "value_object_catalog",
+              "behavior_catalog",
+              "invariant_catalog",
+              "state_transition_catalog",
+              "consistency_policy",
+              "domain_event_catalog",
+              "gateway_catalog",
+              "persistence_mapping",
+              "test_seams",
+              "adr_candidates",
+              "upstream_impact",
+              "version",
+              "digest",
+              "evidence_refs"
+            ],
+            "properties": {
+              "schema_version": {
+                "const": 1
+              },
+              "tactical_design_id": {
+                "type": "string",
+                "pattern": "^tactical-design\\.[a-z0-9][a-z0-9-]*$"
+              },
+              "tactical_version": {
+                "type": "string",
+                "pattern": "^v[0-9]+$"
+              },
+              "status": {
+                "enum": [
+                  "draft",
+                  "ready-for-human",
+                  "approved",
+                  "blocked",
+                  "stale",
+                  "drift",
+                  "new_impacts",
+                  "not-applicable"
+                ]
+              },
+              "context_ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "aggregate_catalog": {
+                "type": "array",
+                "minItems": 1
+              },
+              "entity_catalog": {
+                "type": "array",
+                "minItems": 1
+              },
+              "value_object_catalog": {
+                "type": "array"
+              },
+              "behavior_catalog": {
+                "type": "array",
+                "minItems": 1
+              },
+              "invariant_catalog": {
+                "type": "array",
+                "minItems": 1
+              },
+              "state_transition_catalog": {
+                "type": "array",
+                "minItems": 1
+              },
+              "consistency_policy": {
+                "type": "object",
+                "minProperties": 1
+              },
+              "domain_event_catalog": {
+                "type": "array"
+              },
+              "gateway_catalog": {
+                "type": "array",
+                "minItems": 1
+              },
+              "persistence_mapping": {
+                "type": "array",
+                "minItems": 1
+              },
+              "test_seams": {
+                "type": "array",
+                "minItems": 1
+              },
+              "adr_candidates": {
+                "type": "array"
+              },
+              "upstream_impact": {
+                "type": "object",
+                "minProperties": 1
+              },
+              "version": {
+                "type": "string",
+                "pattern": "^v[0-9]+$"
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^sha256:[A-Fa-f0-9]{64}$"
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": true
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "architecture": {
+            "properties": {
+              "family": {
+                "const": "layered-mvc"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "design": {
+            "type": "object",
+            "properties": {
+              "module_catalog": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "module_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "responsibility": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "layer": {
+                      "enum": [
+                        "server",
+                        "service",
+                        "core",
+                        "repository",
+                        "adapter",
+                        "client",
+                        "feign-client"
+                      ]
+                    },
+                    "depends_on": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "uniqueItems": true
+                    }
+                  },
+                  "required": [
+                    "module_id",
+                    "responsibility",
+                    "layer",
+                    "depends_on"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "use_case_catalog": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "use_case_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "module_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "flow": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "uniqueItems": true,
+                      "minItems": 1
+                    },
+                    "rule_refs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "uniqueItems": true,
+                      "minItems": 1
+                    },
+                    "failure_handling": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "use_case_id",
+                    "module_ref",
+                    "flow",
+                    "rule_refs",
+                    "failure_handling"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "rule_catalog": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "rule_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "statement": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "use_case_refs": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "uniqueItems": true,
+                      "minItems": 1
+                    }
+                  },
+                  "required": [
+                    "rule_id",
+                    "statement",
+                    "use_case_refs"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "state_transition_catalog": {
+                "type": "array",
+                "minItems": 0,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "transition_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "use_case_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "from": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "to": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "guard": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "transition_id",
+                    "use_case_ref",
+                    "from",
+                    "to",
+                    "guard"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "state_not_applicable_reason": {
+                "type": "string"
+              },
+              "consistency_policy": {
+                "type": "object",
+                "properties": {
+                  "transaction_boundary": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "rollback": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "concurrency": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "idempotency": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "transaction_boundary",
+                  "rollback",
+                  "concurrency",
+                  "idempotency"
+                ],
+                "additionalProperties": false
+              },
+              "persistence_mapping": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "mapping_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "use_case_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "repository_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "storage_model": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "notes": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "mapping_id",
+                    "use_case_ref",
+                    "repository_ref",
+                    "storage_model",
+                    "notes"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "integration_catalog": {
+                "type": "array",
+                "minItems": 0,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "integration_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "adapter_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "capability": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "failure_handling": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "integration_id",
+                    "adapter_ref",
+                    "capability",
+                    "failure_handling"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "integration_not_applicable_reason": {
+                "type": "string"
+              },
+              "test_seams": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "seam_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "kind": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "subject_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "assertion": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "seam_id",
+                    "kind",
+                    "subject_ref",
+                    "assertion"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "module_catalog",
+              "use_case_catalog",
+              "rule_catalog",
+              "state_transition_catalog",
+              "state_not_applicable_reason",
+              "consistency_policy",
+              "persistence_mapping",
+              "integration_catalog",
+              "integration_not_applicable_reason",
+              "test_seams"
+            ],
+            "additionalProperties": false,
+            "title": "YSS MVC 技术设计内容"
+          }
+        }
+      }
+    }
+  ]
+}

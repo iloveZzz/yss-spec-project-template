@@ -33,7 +33,7 @@ description: Use when a YSS vertical slice is entering implementation, spans mul
 - `required_capabilities` 与 `required_skills` 必须同时冻结；Registry 或编译器摘要变化后合同立即 `stale`，重新编译后仍须交生命周期重新批准。
 - UI 影响缺少正式原型确认、批准且 digest 当前的 Visual Baseline manifest 或当前切片 `case_id` 时，不得路由页面实现。模型必须先读 manifest 与语义引用，再查看对应 PNG；禁止目录 glob 和图片独立猜义。
 - Repository/数据模型影响缺少数据架构时，不得路由持久化实现。
-- 领域影响缺少批准且版本当前的 tactical-design contract 时，不得路由 Domain 实现；无领域影响必须记录 `not-applicable`。
+- 后端技术设计由 `yss-technical-design` 先行组织。消费批准且版本当前的 Technical Design Contract，核对其架构与工程基线一致；DDD 才消费聚合、Gateway 等战术字段并路由 `yss-domain`，MVC 消费用例、分层、规则和事务设计并按 Profile 路由。旧 v1 战术合同只按 DDD 显式兼容读取。无相关影响记录带原因的 `not-applicable`。
 - API 变化必须回到生命周期 Draft/Review/Freeze；半成品 backend 不得冒充稳定 source of truth。
 - 后端端到端切片必须包含 Application；对象/POJO 影响按契约自动补 `mapstruct`、`lombok`、`alibaba-java-code-style`。
 - Harness 内实现路径必须落在 `apps/backend/<project>/` 或 `apps/frontend/<project>/` 的具体项目目录；`apps/backend/`、`apps/frontend/` 只能作为容器，`app/backend/`、`app/frontend/` 及其子路径一律阻断。外部实现仓库使用其登记的真实项目根路径。`git-submodule` 使用 `implementation_path_policy: git-submodule-harness-apps`，空 gitlink、detached HEAD 或 `--force` 覆盖挂载点不得脚手架；`inspectWorkingTreeScope.writable` 必须为显式布尔值。
@@ -60,4 +60,4 @@ description: Use when a YSS vertical slice is entering implementation, spans mul
 
 跨仓交接使用 `scripts/strategic-handoff export / verify / import`。正式导出前补齐源战略的稳定规则 ID、关键场景和当前批准绑定；源资产原字节冻结、包内路径通过清单解析。目标导入只产生快照和对账/承接草案，正式 reconciliation 通过后才能进入战术设计。流程与字段见 `docs/process/strategic-handoff-package.md`。
 
-战术合同必须绑定 `strategic_handoff` 导入收据、包摘要、正式目标对账及逐条承接 rows。来自导入包时禁止仅填 `upstream_current: true`。批准前执行 `scripts/verify-strategic-handoff-consumption --root <target> <tactical>`；存在受控延期时按切片执行 `--slice <slice-id>`，实际核验通过且合同批准后才可继续相关切片。最新源规则、关键场景或资产变化使依赖项 stale；未知依赖扩大阻断，业务冲突回交战略方。结果绑定当前包与战术摘要，不能复用旧输出宣布 ready-for-agent。
+来自战略交接包的技术设计合同（DDD / MVC）必须绑定 `strategic_handoff` 导入收据、包摘要、正式目标对账及逐条承接 rows。来自导入包时禁止仅填 `upstream_current: true`。批准前执行 `scripts/verify-strategic-handoff-consumption --root <target> <tactical>`；存在受控延期时按切片执行 `--slice <slice-id>`，实际核验通过且合同批准后才可继续相关切片。最新源规则、关键场景或资产变化使依赖项 stale；未知依赖扩大阻断，业务冲突回交战略方。结果绑定当前包与战术摘要，不能复用旧输出宣布 ready-for-agent。

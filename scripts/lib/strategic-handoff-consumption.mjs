@@ -3,6 +3,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { openBundle } from './strategic-handoff.mjs';
 import { read, safe, ensure, ROOT, digest, project } from './strategic-handoff-io.mjs';
+import { designTargets } from './strategic-handoff-design-targets.mjs';
 import { parseContextContract } from './context-contract.mjs';
 const present=x=>typeof x==='string'&&x.trim();
 const list=x=>Array.isArray(x)&&x.length&&x.every(present);
@@ -14,6 +15,7 @@ const strategyBasis=value=>({
 export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consumer='tactical'}={}) {
   project(root);
   ensure(['tactical','frontend'].includes(consumer),'未知战略消费者');
+  if (data.schema_version === 2 && consumer === 'tactical') ensure(['domain-driven','layered-mvc'].includes(data.architecture?.family), '未知技术设计架构');
   if (sliceRef) ensure(data.status === (consumer==='frontend'?'accepted':'approved'), consumer==='frontend'?'前端接收记录尚未 accepted':'切片只能消费 approved 战术合同');
   const binding=data.strategic_handoff;
   ensure(binding && present(binding.import_receipt_ref) && present(binding.context_reconciliation_ref),'缺少战略交接导入收据与目标对账引用');
@@ -42,9 +44,7 @@ export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consum
       const rows=new Map();for(const row of binding.rows){ensure(!rows.has(row.source_id),`重复承接: ${row.source_id}`);rows.set(row.source_id,row);}
       const issues=[], blocked=new Set();let all=false;
       const mark=(id,reason,row)=>{issues.push({source_id:id,reason});if(row?.dependency_status!=='known'||!list(row.dependent_slice_refs))all=true;else row.dependent_slice_refs.forEach(x=>blocked.add(x));};
-      const catalogs=['aggregate_catalog','entity_catalog','value_object_catalog','behavior_catalog','invariant_catalog','state_transition_catalog','domain_event_catalog','gateway_catalog'];
-      const ids=new Set(catalogs.flatMap(k=>(data[k]||[]).flatMap(x=>Object.entries(x).filter(([k])=>k.endsWith('_id')).map(([,v])=>v))));
-      const seams=new Map((data.test_seams||[]).map(x=>[x.seam_id,x]));
+      const { ids, seams } = designTargets(data);
       const cases=new Map((data.frontend_cases||[]).map(x=>[x.case_id,x]));
       for(const[id,source]of known){
         const row=rows.get(id);
@@ -77,7 +77,7 @@ export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consum
         all=true;issues.push({source_id:'strategic-design-basis',reason:'upstream-design-stale'});
       }
       const blockedHere=all||(sliceRef?blocked.has(sliceRef):issues.length>0);
-      return {result:blockedHere?'blocked':'verified',bundle_digest:current.manifest.bundle_digest,consumed_bundle_digest:receipt.bundle_digest,...(consumer==='frontend'?{frontend_acceptance_digest:digest(data)}:{tactical_digest:digest(data)}),scope:sliceRef||`whole-${consumer}-design`,coverage_complete:[...known.keys()].every(id=>rows.has(id)),block_all:all,blocked_slice_refs:[...blocked].sort(),issues};
+      return {result:blockedHere?'blocked':'verified',bundle_digest:current.manifest.bundle_digest,consumed_bundle_digest:receipt.bundle_digest,...(consumer==='frontend'?{frontend_acceptance_digest:digest(data)}:{tactical_digest:digest(data), ...(data.schema_version === 2 ? {technical_design_digest:digest(data)} : {})}),scope:sliceRef||`whole-${consumer}-design`,coverage_complete:[...known.keys()].every(id=>rows.has(id)),block_all:all,blocked_slice_refs:[...blocked].sort(),issues};
     });
   });
 }

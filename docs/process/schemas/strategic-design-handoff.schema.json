@@ -117,7 +117,10 @@
           "const": "docs/process/schemas/context-reconciliation.schema.json"
         },
         "required_before_skill": {
-          "const": "yss-tactical-design"
+          "enum": [
+            "yss-technical-design",
+            "yss-tactical-design"
+          ]
         },
         "status": {
           "const": "pending"
@@ -137,10 +140,16 @@
           "const": "downstream-rd-team"
         },
         "skill": {
-          "const": "yss-tactical-design"
+          "enum": [
+            "yss-technical-design",
+            "yss-tactical-design"
+          ]
         },
         "output": {
-          "const": "tactical-design-contract"
+          "enum": [
+            "technical-design-contract",
+            "tactical-design-contract"
+          ]
         }
       }
     },
@@ -666,5 +675,69 @@
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "target": {
+            "properties": {
+              "skill": {
+                "const": "yss-technical-design"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "target": {
+            "properties": {
+              "output": {
+                "const": "technical-design-contract"
+              }
+            }
+          },
+          "target_context_reconciliation": {
+            "properties": {
+              "required_before_skill": {
+                "const": "yss-technical-design"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "target": {
+            "properties": {
+              "skill": {
+                "const": "yss-tactical-design"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "target": {
+            "properties": {
+              "output": {
+                "const": "tactical-design-contract"
+              }
+            }
+          },
+          "target_context_reconciliation": {
+            "properties": {
+              "required_before_skill": {
+                "const": "yss-tactical-design"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

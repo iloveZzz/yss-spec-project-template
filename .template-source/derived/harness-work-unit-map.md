@@ -19,7 +19,7 @@
 | `work-unit.stage-decision` | project-instance | 方案决策包综合 | Discovery、业务边界与规则设计以及产品经理负责的商业约束输入。 | 带版本、digest、证据和下游映射的方案决策包。 | 必填字段、引用、影响面和下游消费验证通过；批准门禁完成。 |
 | `work-unit.spec-synthesis` | project-instance | Spec 综合 | 已确认的 Discovery 记录和测试 seam。 | Spec、产品总体设计和功能架构。 | Spec 内容完整并进入 ready-for-human；下游推进仍需 gate.spec-baseline-approved。 |
 | `work-unit.prototype-design` | project-instance | 原型设计与验证 | Spec、产品设计影响和状态矩阵。 | 交互说明、低保真、状态矩阵、H1/H2 原型交付物、统一 Design QA、档位验证证据与前端实现交接事项。 | 低保真评审、schema v3 原型交付物验证和用户确认门禁均通过；生产组件待验事项已交接到前端实现计划。 |
-| `work-unit.technical-analysis` | project-instance | 技术分析与契约冻结 | Spec、原型、API/数据/工程影响面。 | OpenAPI、数据架构、Tactical DDD Check、工程基线、架构审查和 Slice 合同草案。 | 命中契约已冻结；无 API 影响有可读记录；命中领域影响时战术模型无未解释冲突；工程基线通过。 |
+| `work-unit.technical-analysis` | project-instance | 技术分析与契约冻结 | Spec、原型、API/数据/工程影响面。 | OpenAPI、数据架构、按确认架构形成的 DDD / MVC 技术设计合同、工程基线、架构审查和 Slice 合同草案。 | 命中契约已冻结；无 API 影响有可读记录；命中技术设计影响时架构已确认、规则与场景承接无未解释冲突；工程基线通过。 |
 | `work-unit.service-project-initialization` | project-instance | 独立服务项目初始化 | 逐项目批准的架构决策、schema v3 初始化合同、战略上下文交接及目标/skillUtils 写范围。 | 独立 Git project-instance、锁定 skillUtils、唯一根 CONTEXT、架构身份、Manifest 和验证证据；父项目仅保留引用。 | 当前合同与交接摘要一致，真实 Wrapper 三命令通过后仅 empty-scaffold-verified；首切片仍须独立批准和验证。 |
 | `work-unit.ticket-decomposition` | project-instance | 垂直切片 Ticket 正式化 | 冻结 Spec、设计、契约和阻塞关系。 | 功能父 Ticket、垂直切片和批准的 Slice Implementation Contract。 | 切片可独立验证；生命周期复算后才能 ready-for-agent。 |
 | `work-unit.slice-implementation` | project-instance | 垂直切片实现 | 当前版本 Slice Implementation Contract 和允许写路径。 | 前后端实现、TDD 和 YSS Skill Execution Result。 | 行为通过 `behavior-tdd`；UI 影响完成还原验证计划；无 drift/violation。 |
