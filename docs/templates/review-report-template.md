@@ -59,7 +59,8 @@ Approved / Changes requested / Blocked
 | 已存在 `Backend Slice Implementation Contract`，且 required skills / allowed paths / forbidden patterns / evidence / seam / verification 完整 | pass / violation / not-applicable |  |
 | `yss-domain` 已按影响面落实，Domain 不依赖 Adapter、Infrastructure、Mapper、Controller 或 Web DTO | pass / violation / not-applicable |  |
 | `yss-application` 已按影响面落实，Application 只做用例编排、事务边界和跨聚合协调 | pass / violation / not-applicable |  |
-| `yss-repository` 已按影响面落实，需要持久化的切片有 PO / Repository / Convertor / GatewayImpl | pass / seam-deferred / violation / not-applicable |  |
+| `yss-repository` 已按影响面落实；所选 Profile、层边界、PO / Repository / Convertor / GatewayImpl 或 MVC repository 结构、事务归属均有文件和测试证据 | pass / seam-deferred / violation / not-applicable |  |
+| `yss-mybatis` 已按影响面落实；基类、Mapper/XML 扫描、分页责任、批量 SQL、条件开关和数据源能力与当前组件索引一致；精确结论已核验 component tree / clean 状态 | pass / seam-deferred / violation / missing_evidence / not-applicable |  |
 | `yss-web-controller` / `yss-dto` 已按影响面落实，CMD / Query / VO / Result 按既有 DTO 体系定义或复用，Controller 不用内部类或非约定包临时承载主要 DTO / VO、不手工分页主要业务集合、不穿透 Repository | pass / violation / not-applicable |  |
 | `mapstruct` 已按影响面落实，PO / Domain Model / DTO / VO / CMD / Query 转换使用 MapStruct Convertor / Mapper，未使用 `BeanUtils.copyProperties`、反射拷贝或重复手写字段赋值；例外已记录测试和补齐落点 | pass / violation / not-applicable |  |
 | `lombok` 已按影响面落实，POJO 样板代码使用 Lombok，未成片手写 getter/setter、constructor、builder、logger；实体 / POJO 未触发 `@Data` 等反模式或已说明例外 | pass / violation / not-applicable |  |
@@ -72,10 +73,11 @@ Approved / Changes requested / Blocked
 ### 后端 smoke check
 
 ```bash
-rg -n "class (SingleResult|MultiResult|PageResult|Result)<|public static class .*(Command|Cmd|Query|VO)|subList\\(|InMemory.*Gateway|implements .*Gateway|extends .*Repository|@TableName|Mappers\\.getMapper" apps/backend
+# <review-root...> 必须由本体项目、实现仓登记、Slice project_roots 与 allowed_write_paths 解析。
+rg -n "class (SingleResult|MultiResult|PageResult|Result)<|public static class .*(Command|Cmd|Query|VO)|subList\\(|InMemory.*Gateway|implements .*Gateway|extends Base(Plus)?Repository|@TableName|@MapperScan|Mappers\\.getMapper|PageQuery|insertBatchSomeColumn|yss\\.mybatis" <review-root...>
 ```
 
-命中说明：`SingleResult` / `PageResult`、`CMD` / `Query` / `VO` 命中不等于失败；需要说明其是否来自 `yss-dto` / 项目既有体系、是否位于约定包路径、是否继承约定基类。
+命中说明：DTO/Result 或 MyBatis 基类、`PageQuery`、批量/扫描配置命中不等于失败；需要按当前合同、Repository Profile 和 MyBatis source index 说明其来源、分页责任与配置是否匹配。
 
 | 命中 | 解释 | 结论 |
 |---|---|---|
@@ -119,6 +121,8 @@ rg -n "from 'ant-design-vue'|<(Table|Tree|Form)[ >]|YFormily|YssFormily|YTable|Y
 | Agent 尝试用 `BeanUtils.copyProperties`、反射拷贝或大段手写字段赋值完成 POJO 转换 | 应被标记为 `violation`，回到 `mapstruct` 补 Convertor / Mapper，或补受控例外、测试和 review 证据 |  |
 | Agent 尝试成片手写 getter/setter、constructor、builder 或 logger | 应被标记为 `violation`，回到 `lombok` 补注解，或补受控例外、测试和 review 证据 |  |
 | Agent 尝试用 `InMemory*Gateway` 完成正式持久化 | 只能 `seam-deferred`，必须有补齐切片和风险说明 |  |
+| Agent 未核验 Profile/source index 就选择 `BaseRepository` / `BasePlusRepository`，或把两套分页责任混在同一查询 seam | 应按 `yss-repository` / `yss-mybatis` 标记 `violation` 或 `missing_evidence` |  |
+| Agent 把多数据源实例集合误当成线程上下文动态路由，或在事务进入后才尝试切换 | 应标记 `violation`；先核验组件能力，再由批准的上层适配承担路由 |  |
 | Agent 只写“符合 YSS”但没有 skill / 文件 / 测试证据 | 应被标记为 `violation` |  |
 | Agent 在后端验证、CI、README 或发布说明中写裸 `mvn ...` | 应改为项目根目录 `./mvnw ...`，否则标记为 `violation` |  |
 | Agent 将英文 skill / 模板的标题和说明原样输出为项目持久化文档 | 应改为中文正文和中文章节标题，否则标记为 `violation` |  |

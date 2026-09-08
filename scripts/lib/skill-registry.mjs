@@ -166,6 +166,10 @@ function validateReviewInputFinding(reviewInput) {
   if (reviewInput.completed_requires_no_open_mandatory_violations !== true) fail("未关闭的 mandatory violation 不得 completed");
   if (reviewInput.completed_requires_no_blank_applicable_rows !== true) fail("适用报告行空白不得 completed");
   if (reviewInput.reviewer_write_implementation !== "forbidden") fail("review_input 禁止审查者写实现");
+  requireObject(reviewInput.scope_resolution, "review_input.scope_resolution");
+  requireStringSet(reviewInput.scope_resolution.sources, ["candidate-project-root", "implementation-repository-registry", "slice-project-roots", "allowed-write-paths"], "review_input.scope_resolution.sources");
+  requireStringSet(reviewInput.scope_resolution.backend_includes, ["project-itself", "registered-backend-development-projects"], "review_input.scope_resolution.backend_includes");
+  requireStringSet(reviewInput.scope_resolution.excludes, ["frontend-projects", "unrelated-submodules", "vendor", "unregistered-directories"], "review_input.scope_resolution.excludes");
 }
 
 function validateCodeReviewRoute(route, resolve) {
@@ -180,6 +184,11 @@ function validateCodeReviewRoute(route, resolve) {
   if (standards.contract_required_skills !== "required") fail("Standards 必须消费 Slice 合同 required_skills");
   requireString(standards.report_template, "review_standards_route.report_template");
   if (!existsSync(path.join(ROOT, standards.report_template))) fail(`审查报告模板不存在: ${standards.report_template}`);
+  requireObject(standards.project_scope, "review_standards_route.project_scope");
+  requireStringSet(standards.project_scope.sources, ["candidate-project-root", "implementation-repository-registry", "slice-project-roots", "allowed-write-paths"], "review_standards_route.project_scope.sources");
+  requireStringSet(standards.project_scope.include, ["project-itself", "registered-backend-development-projects"], "review_standards_route.project_scope.include");
+  requireStringSet(standards.project_scope.exclude, ["frontend-projects", "unrelated-submodules", "vendor", "unregistered-directories"], "review_standards_route.project_scope.exclude");
+  if (standards.project_scope.fixed_apps_backend_assumption !== "forbidden") fail("code-review 不得把后端审查范围固定为 apps/backend");
   const conditional = standards.conditional_skills;
   if (!conditional || typeof conditional !== "object" || Array.isArray(conditional)) {
     fail("review_standards_route.conditional_skills 必须是对象");

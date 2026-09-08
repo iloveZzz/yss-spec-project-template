@@ -62,6 +62,10 @@ Look for the originating spec, in this order:
 
 Compile sources **before** spawning reviewers. For YSS implementation candidates follow [yss-review-standards.md](references/yss-review-standards.md): run machine checks that exist in the implementation repo; then collect repo docs (`CODING_STANDARDS.md` / `CONTRIBUTING.md` if present), every Slice `required_skills` skill file, the impact-conditioned specialist inputs (`alibaba-java-code-style`, `yss-ui`, `yss-domain`, …), and `docs/templates/review-report-template.md`. Missing applicable coverage is `missing_evidence`, not a pass.
 
+For YSS backend review, derive the review roots from the candidate project root, implementation-repository registry, Slice `project_roots` and `allowed_write_paths`. Review only the project itself and registered backend development projects; exclude frontend roots, unrelated submodules/vendor trees and unregistered directories. Never replace this resolution with a fixed `apps/backend` assumption.
+
+Every backend candidate must explicitly assess `yss-repository` and `yss-mybatis`. When the candidate changes persistence structure, Mapper/XML, SQL, pagination, batch operations, scanning/configuration or data-source behavior, read both skills and the selected Repository Profile; exact component claims also require a current `yss-mybatis` source index. When no persistence impact exists, record a concrete `not-applicable` reason for both instead of silently skipping them.
+
 Anything in the repo that documents how code should be written, such as `CODING_STANDARDS.md` or `CONTRIBUTING.md`, remains a source. It does **not** replace YSS or Alibaba specialist inputs.
 
 On top of whatever the repo documents, the Standards axis always carries the **smell baseline** below — a fixed set of Fowler code smells (_Refactoring_, ch.3) that applies even when a repo documents nothing. Two rules bind it:

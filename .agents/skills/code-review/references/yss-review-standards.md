@@ -11,7 +11,7 @@
 1. 仓库文档：`CODING_STANDARDS.md`、`CONTRIBUTING.md` 或实现仓等价文件（若存在）。
 2. Slice Implementation Contract 的 `required_skills`：对每个技能读取 `.agents/skills/<id>/SKILL.md` 及该 skill 指明的 references。
 3. 影响面专项检查输入（与合同并集，不得互相替代）：
-   - 后端：`alibaba-java-code-style`、`yss-domain`、`yss-application`、`yss-repository`、`yss-web-controller`、`yss-dto`、`mapstruct`、`lombok`
+   - 后端：`alibaba-java-code-style`、`yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-web-controller`、`yss-dto`、`mapstruct`、`lombok`
    - UI：`yss-ui`、`yss-design-system`、`yss-ui-business-page-generation`
 4. 报告模板中的后端 / 前端门禁表。空着的适用行视为 `missing_evidence`。
 
@@ -19,11 +19,18 @@ YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，�
 
 审查者只读这些 skill，不得用它们写实现路径。`role.test-engineer` 任务包禁止 `implement` 与脚手架生成器。
 
+### 后端范围与持久化适用性
+
+- Review roots 从候选本体项目、实现仓登记、Slice `project_roots` 和 `allowed_write_paths` 解析；只包含本体项目和已登记后端研发项目，不固定为 `apps/backend`，不扫描前端、无关 submodule/vendor 或未登记目录。
+- 每个后端候选都必须分别评估 `yss-repository` 与 `yss-mybatis`。命中 PO、Repository、Mapper/XML、SQL、分页、批量、扫描/配置或数据源行为时，两者均为 applicable，并加载所选 Repository Profile 与当前 MyBatis source index。
+- 精确组件 API/配置结论要求 source index 的组件 tree 与当前源码一致且组件子树 clean；不满足时为 `missing_evidence` / `stale`，不能判 pass。
+- 无持久化影响时，两项 Skill 分别记录具体 `not-applicable` 原因；仅写“未命中”或留空不构成证据。
+
 ## 2. 机器检查
 
 在派发 Standards / Spec 子审查之前，对实现仓**已登记且当前可执行**的命令实际跑一遍：
 
-- 后端优先：切片合同里的 `./mvnw` 验证；若工程已配置 Checkstyle / P3C / Spotless / `validate`，一并执行。
+- 后端优先：对本体项目和每个已登记后端研发项目分别执行其切片合同里的 `./mvnw` 验证；若工程已配置 Checkstyle / P3C / Spotless / `validate`，一并执行。
 - 前端优先：切片合同里的 `pnpm` 验证；若存在 `pnpm lint` / `pnpm type-check`，一并执行。
 
 记录命令、退出码、时间和证据引用。退出码非 0 记为 Standards **hard violation**。

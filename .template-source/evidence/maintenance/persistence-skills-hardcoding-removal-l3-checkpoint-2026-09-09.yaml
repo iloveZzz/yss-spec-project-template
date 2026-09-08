@@ -1,0 +1,57 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  收敛 yss-mybatis 与 yss-repository 的职责和生成语义，删除 Skill 内生产源码镜像与业务样板，
+  将外部持久化组件事实改为可生成、可校验的能力矩阵，并把两项规范接入后端 code-review
+  范围合同与核心校验器；该变更影响跨仓事实、Agent 路由和模板验证行为。
+triggers:
+  - generation-semantics
+  - cross-repo-contract
+  - core-validator
+changed_assets:
+  - .agents/skills/yss-mybatis/
+  - .agents/skills/yss-repository/
+  - .agents/skills/yss-skill-source-index-refresh/
+  - .agents/skills/code-review/
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - .agents/skills/yss-implementation-contract-compiler/references/boundaries.md
+  - docs/agents/yss-skill-registry.yaml
+  - docs/templates/review-report-template.md
+  - docs/process/template-verification-profiles.yaml
+  - scripts/lib/skill-registry.mjs
+  - scripts/lib/scenario-checks.mjs
+  - .template-source/tooling/node/test/skill-registry.test.mjs
+  - .codex/skills/yss-mybatis/
+  - .codex/skills/yss-repository/
+  - .qoder/skills/code-review/
+  - skills-lock.json
+verification_evidence:
+  - kind: self-check
+    command: >-
+      scripts/verify-skill-registry && scripts/verify-skill-governance &&
+      scripts/audit-yss-backend-skills --check && scripts/verify-lifecycle-scenarios &&
+      scripts/verify-matt-yss-integration-scenarios
+    result: pass
+  - kind: targeted-tests
+    command: >-
+      node --test .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs
+      .agents/skills/yss-repository/tests/profile-routing.test.mjs
+    result: pass
+  - kind: tooling-tests
+    command: pnpm --dir .template-source/tooling/node test
+    result: pass
+  - kind: projection-sync
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: >-
+  fast 入口因工作区核心核验资产变化自动升级并实际通过 release 级门禁；本 checkpoint
+  仍按日常维护目标停在 implementation-ready，不冻结候选，也不声明 release-ready。
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

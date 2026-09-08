@@ -103,6 +103,8 @@
 
 | Skill | Dependency | Type | Condition |
 | --- | --- | --- | --- |
+| `code-review` | `yss-repository` | `context-conditional` | `backend-persistence-impact` |
+| `code-review` | `yss-mybatis` | `context-conditional` | `backend-persistence-impact` |
 | `yss-prototype-stage` | `prototype-review` | `review-only` | — |
 | `yss-prototype-stage` | `yss-design-system` | `coordination-only` | — |
 | `yss-prototype-stage` | `yss-antdv-next-design` | `context-conditional` | `h2-vue-antdv-next-default` |

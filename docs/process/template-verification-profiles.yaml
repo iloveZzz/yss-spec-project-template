@@ -57,6 +57,9 @@ required_files:
   - .agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md
   - .agents/skills/yss-implementation-contract-compiler/tests/compiler-scenarios.test.mjs
   - .agents/skills/yss-skill-source-index-refresh/SKILL.md
+  - .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.mjs
+  - .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs
+  - .agents/skills/yss-repository/tests/profile-routing.test.mjs
   - docs/agents/yss-ui-skills-integration.md
   - docs/agents/strategic-design-skills-integration.md
   - docs/user-guide/yss-ui-mcp.md
@@ -131,6 +134,9 @@ syntax_files:
   - scripts/update-skill-lock
   - scripts/verify-upstream-skill-source
   - scripts/lib/skill-supply-chain.mjs
+  - .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.mjs
+  - .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs
+  - .agents/skills/yss-repository/tests/profile-routing.test.mjs
   - scripts/generate-lifecycle-artifacts
   - scripts/verify-lifecycle-registry
   - scripts/verify-lifecycle-checkpoint
@@ -269,6 +275,8 @@ groups:
       - { run: "scripts/verify-skill-governance" }
       - { run: "scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent", when: template-source }
       - { run: "node .agents/skills/yss-antdv-next-design/tests/run-scenarios.mjs" }
+      - { run: "node --test .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs" }
+      - { run: "node --test .agents/skills/yss-repository/tests/profile-routing.test.mjs" }
   tactical-design:
     commands:
       - { run: "node .agents/skills/yss-technical-design/scripts/generate-schema.mjs --check" }

@@ -176,8 +176,8 @@ function findingDisposition(overrides = {}) {
 function codeReviewRoute(overrides = {}) {
   return {
     primary_skill: "code-review",
-    supporting_skills: ["alibaba-java-code-style", "yss-ui", "yss-design-system", "yss-ui-business-page-generation", "yss-domain", "yss-application", "yss-repository", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
-    skills: ["code-review", "alibaba-java-code-style", "yss-ui", "yss-design-system", "yss-ui-business-page-generation", "yss-domain", "yss-application", "yss-repository", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
+    supporting_skills: ["alibaba-java-code-style", "yss-ui", "yss-design-system", "yss-ui-business-page-generation", "yss-domain", "yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
+    skills: ["code-review", "alibaba-java-code-style", "yss-ui", "yss-design-system", "yss-ui-business-page-generation", "yss-domain", "yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
     applies_when: "implementation_candidate_exists",
     not_applicable_reason: "no_implementation_candidate",
     review_standards_route: {
@@ -191,8 +191,14 @@ function codeReviewRoute(overrides = {}) {
         missing_tooling: "not-applicable-with-reason",
         checkable_rule_without_machine: "not-a-pass"
       },
+      project_scope: {
+        sources: ["candidate-project-root", "implementation-repository-registry", "slice-project-roots", "allowed-write-paths"],
+        include: ["project-itself", "registered-backend-development-projects"],
+        exclude: ["frontend-projects", "unrelated-submodules", "vendor", "unregistered-directories"],
+        fixed_apps_backend_assumption: "forbidden"
+      },
       conditional_skills: {
-        backend_impact: ["alibaba-java-code-style", "yss-domain", "yss-application", "yss-repository", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
+        backend_impact: ["alibaba-java-code-style", "yss-domain", "yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "mapstruct", "lombok"],
         ui_impact: ["yss-ui", "yss-design-system", "yss-ui-business-page-generation"]
       },
       not_applicable_reasons: {
@@ -279,7 +285,14 @@ test("review_input without finding disposition completion flags is rejected", ()
   assert.throws(() => validateSkillRegistry(data, {
     lifecycleContract: {
       work_unit_routes: { "work-unit.code-review": codeReviewRoute() },
-      review_input: { unique_default_skill: "code-review" }
+      review_input: {
+        unique_default_skill: "code-review",
+        scope_resolution: {
+          sources: ["candidate-project-root", "implementation-repository-registry", "slice-project-roots", "allowed-write-paths"],
+          backend_includes: ["project-itself", "registered-backend-development-projects"],
+          excludes: ["frontend-projects", "unrelated-submodules", "vendor", "unregistered-directories"]
+        }
+      }
     }
   }), /finding_disposition_required/);
 });

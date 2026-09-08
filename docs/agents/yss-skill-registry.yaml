@@ -108,6 +108,9 @@ recipes:
   - { id: backend.mvc-scaffold, capabilities: [scaffold.layered-mvc, quality.java-code-style] }
   - { id: backend.springboot3-migration, capabilities: [migration.springboot3, quality.java-code-style] }
 skill_dependencies:
+  code-review:
+    - { skill: yss-repository, type: context-conditional, when: backend-persistence-impact }
+    - { skill: yss-mybatis, type: context-conditional, when: backend-persistence-impact }
   yss-prototype-stage:
     - { skill: prototype-review, type: review-only }
     - { skill: yss-design-system, type: coordination-only }
