@@ -68,6 +68,7 @@ export function execute(bundle, target, opts) {
     let action;
     observed.set(ref, before);
     if (same(before, after)) action = "unchanged";
+    else if (opts.command !== "init" && ref === "CONTEXT.md" && before) action = "preserve";
     else if (same(before, baseline))
       action = after ? (before ? "update" : "add") : "delete";
     else if (same(after, baseline)) action = "preserve";

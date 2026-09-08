@@ -8,7 +8,7 @@
 
 - `create-yss-spec` 保留 init、attach、sync；`create-yss-harness-dev` 保留同名操作；战略 `create-yss-harness-design` 只提供 init。
 - 历史范围曾限制专职模板为 repository-local。该限制由已确认的 [专职 CLI 设计 v1.1.0](dedicated-harness-cli-design.md) 定向替代：新增 backend/frontend 两包；两包拒绝旧实例，不跨 profile 迁移。旧入口仅在新包可安装并通过 smoke test 后退役。
-- `update` / `upgrade` 只更新 CLI 程序；不操作实例受管文件。战略与专职实例本次不增加自动同步入口。
+- `update` / `upgrade` 只更新 CLI 程序；不操作实例受管文件。战略及专职实例通过显式 `sync` 更新治理资产，默认预览、`--apply` 执行；不跨家族迁移。
 - 目标家族由五种 metadata 文件和已存在的 Harness profile 显式判定，不由路径、Git remote 或业务内容猜测。五种文件分别是 `.yss-template.json`、`.yss-harness-design.json`、`.yss-harness-dev.json`、`.yss-harness-backend.json`、`.yss-harness-frontend.json`。
 
 ## 写入前与写入后不变量
@@ -29,3 +29,5 @@ CLI 命令是本轮已确认的测试 seam：观察退出码、输出和目标�
 验证顺序：CLI 回归完成后运行跨仓链路，再从固定快照生成并验收实际 tgz。不得将临时改写快照的测试与跨仓验收并行。GitHub 候选执行适用审查及分级验证，完整分发校验记录本轮日志；提交推送在展示具体变更及证据后取得本轮授权。先交付子仓，再更新父仓 gitlink，npm 发布不在本轮执行范围。
 
 旧 spec/dev 实例先保存 Git 基线，再预览并执行同族 sync；失败使用事务回滚，成功后撤销使用原基线或备份。不得用旧 CLI 强制反向同步，亦不得用战略 init --force 代替升级。
+
+已有 `CONTEXT.md` 属于项目词汇事实源：同步/接入只能保留，缺失时可初始化，不能以 `--force` 替换。业务语义的变更由项目自己的对账流程处理。战略版同步仅更新未改动的治理资产，有受管冲突整次暂停，不自动改批准状态。

@@ -612,3 +612,26 @@ test("技能退役清理空目录，但保留用户文件；失败后恢复技�
     if (rollback) assert.equal(fs.readFileSync(path.join(f.target, canonical), "utf8"), "old");
   }
 });
+
+test('同步与接入保留已有业务词汇表，即使模板同时更新且传入 force', t => {
+  for (const side of ['backend', 'frontend']) {
+    const f = fixture(t, side);
+    assert.equal(f.run('init').status, 0);
+    put(f.target, 'CONTEXT.md', '# 真实业务词汇\n');
+    f.bundle({ 'CONTEXT.md': '# 新模板流程词汇\n', 'docs/rule.md': 'rule v2\n' });
+    const before = tree(f.target);
+    const preview = f.run('sync', '--dry-run');
+    assert.equal(preview.status, 0, preview.stderr);
+    assert.equal(preview.data.changes.find(x => x.path === 'CONTEXT.md').action, 'preserve');
+    assert.deepEqual(tree(f.target), before);
+    const applied = f.run('sync', '--apply', '--force');
+    assert.equal(applied.status, 0, applied.stderr);
+    assert.equal(fs.readFileSync(path.join(f.target, 'CONTEXT.md'), 'utf8'), '# 真实业务词汇\n');
+    assert.equal(fs.readFileSync(path.join(f.target, 'docs/rule.md'), 'utf8'), 'rule v2\n');
+    const attached = fixture(t, side);
+    put(attached.target, 'CONTEXT.md', '# 已有项目词汇\n');
+    const adopted = attached.run('attach', '--apply');
+    assert.equal(adopted.status, 0, adopted.stderr);
+    assert.equal(fs.readFileSync(path.join(attached.target, 'CONTEXT.md'), 'utf8'), '# 已有项目词汇\n');
+  }
+});

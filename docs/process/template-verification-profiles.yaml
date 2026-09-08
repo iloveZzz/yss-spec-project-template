@@ -196,6 +196,8 @@ syntax_files:
   - scripts/verify-maintenance-review-workflow-scenarios
   - scripts/verify-template-cache-scenarios
 routing:
+  - patterns: [".template-source/cli-core/**"]
+    groups: [dedicated-cli-core]
   - patterns: [".agents/skills/yss-technical-design/**", ".agents/skills/yss-mvc-design/**", ".agents/skills/yss-tactical-design/**", "scripts/lib/technical-design-boundary.mjs", "scripts/lib/strategic-handoff-design-targets.mjs"]
     groups: [tactical-design, implementation]
   - patterns: ["scripts/*backend-delivery*", "scripts/*frontend-delivery*", "scripts/lib/*backend-delivery*", "scripts/lib/*frontend-delivery*", "scripts/fixtures/backend-delivery/**", "docs/process/frontend-backend-delivery.md", "docs/process/schemas/backend-delivery*", "docs/process/schemas/frontend-delivery*"]
@@ -237,6 +239,9 @@ routing:
   - patterns: ["scripts/**"]
     groups: [hygiene]
 groups:
+  dedicated-cli-core:
+    commands:
+      - { run: "node --test .template-source/cli-core/tests/*.test.mjs", when: template-source }
   frontend-delivery:
     commands:
       - { run: "scripts/verify-frontend-delivery-scenarios" }
