@@ -1,0 +1,2 @@
+{"producer":"design","consumer":"frontend","protocol":"legacy-ddd","portable_import":"pass","idempotent":"pass","approval":"pending-reconciliation"}
+{"producer":"design","consumer":"frontend","protocol":"technical-design-v2","portable_import":"pass","idempotent":"pass","approval":"pending-reconciliation"}

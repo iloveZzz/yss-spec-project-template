@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "跨四模板/CLI同步 DDD/MVC 技术设计、战略交接协议和已有实例保护，改变生成及跨仓消费语义。",
+  "triggers": [
+    "cross-repo-contract",
+    "generation-semantics",
+    "core-validator"
+  ],
+  "changed_assets": [
+    "scripts/sync-strategic-handoff-tools",
+    ".template-source/cli-core",
+    "docs/process/template-verification-profiles.yaml",
+    ".agents/skills/.strategic-design-skills-manifest.json",
+    "skills-lock.json",
+    "submodules/yss-harness-dev-agent",
+    "submodules/yss-harness-backend-agent",
+    "submodules/yss-harness-frontend-agent",
+    "submodules/yss-harness-design-agent",
+    "submodules/create-yss-harness-dev",
+    "submodules/create-yss-harness-backend",
+    "submodules/create-yss-harness-frontend",
+    "submodules/create-yss-strategic-design"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "fresh-verification",
+      "command": "scripts/verify-template；日志 .template-source/evidence/maintenance/technical-design-cli-families-2026-09-08/root-full.txt",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "四源模板完整门禁、CLI测试、真实tgz新建/升级与新旧交接互操作；见 .template-source/evidence/maintenance/technical-design-cli-families-2026-09-08/github-delivery.json",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "none",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

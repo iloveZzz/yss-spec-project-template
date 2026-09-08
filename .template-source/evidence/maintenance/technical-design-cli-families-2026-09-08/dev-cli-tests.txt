@@ -1,0 +1,103 @@
+
+> create-yss-harness-dev@0.5.0 pretest /Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev
+> npm run sync-template
+
+
+> create-yss-harness-dev@0.5.0 sync-template
+> node scripts/sync-template.js
+
+已从 https://github.com/iloveZzz/yss-harness-dev-agent.git#e5ddeb084adece86333166389ad9c7132bc99437 同步模板快照（commit e5ddeb084adece86333166389ad9c7132bc99437）
+
+> create-yss-harness-dev@0.5.0 test /Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev
+> node --test tests/*.test.js
+
+✔ frontend identity prevents another CLI from planning takeover, even with force (293.061584ms)
+✔ profile alone cannot bypass family protection by omitting metadata (239.511333ms)
+✔ all supported operations reject create-yss-spec before dry-run or force writes (1650.727584ms)
+✔ all supported operations reject create-yss-harness-design before dry-run or force writes (1566.286375ms)
+✔ all supported operations reject backend before dry-run or force writes (1473.933709ms)
+✔ all supported operations reject frontend before dry-run or force writes (1363.064ms)
+✔ mixed family markers are not repaired or selected (250.116333ms)
+✔ own metadata rejects malformed JSON (314.530542ms)
+✔ own metadata rejects array (316.393042ms)
+✔ own metadata rejects null (283.634834ms)
+✔ own metadata rejects wrong package (260.956375ms)
+✔ own metadata rejects unknown schema (265.101875ms)
+✔ own metadata rejects null schema (284.551666ms)
+✔ own metadata rejects wrong source (279.760916ms)
+✔ own metadata rejects wrong profile (274.466875ms)
+✔ own metadata rejects snake case wrong profile (274.467042ms)
+✔ own metadata rejects duplicate keys (292.798ms)
+✔ profile rejects unknown profile (288.11225ms)
+✔ profile rejects missing profile (303.785417ms)
+✔ profile rejects invalid YAML (296.410625ms)
+✔ profile rejects duplicate profile (322.845083ms)
+✔ own metadata symlink is rejected without following or overwriting it (271.592083ms)
+✔ profile parent symlink is rejected before reading target content (293.435083ms)
+✔ help and version work inside foreign projects without mutation (56.428667ms)
+✔ unmanaged projects can still preview initialization (1068.257167ms)
+✔ matching profile supports quoted YAML and identity fields (1168.509041ms)
+✔ interactive init generates a template instance in an empty directory (2272.177834ms)
+✔ sync preserves the init distribution boundary (4992.777541ms)
+✔ attach verifies the generated template under an ASCII locale (36309.609167ms)
+✔ init fails closed for unsupported template identity (3057.569958ms)
+✔ dry-run previews the plan without writing or deleting files (1485.956083ms)
+✔ non-empty target requires --force, and --git-init initializes a repository (2283.329459ms)
+✔ manifest-driven optional flags affect rendered output and example docs (1555.177292ms)
+✔ bundled template snapshot excludes untracked source files (1581.726208ms)
+✔ sync rejects projects without template metadata (213.344542ms)
+✔ sync updates unchanged managed files and restores missing managed files (4172.96325ms)
+✔ sync dry-run previews changes without mutating files or metadata (3324.877333ms)
+✔ legacy attach dry-run excludes sync rollout docs from template additions (1358.47375ms)
+✔ sync skips locally modified managed files and reports removed managed files (3967.345541ms)
+✔ attach dry-run previews an arbitrary existing project without writing or deleting .git (1433.195208ms)
+✔ attach applies management assets while preserving runtime files and .git (35379.664917ms)
+✔ attach requires --force for root conflicts and keeps an external backup (36667.729875ms)
+✔ attach rejects an existing metadata file and directs the user to sync (204.450958ms)
+✔ attach blocks flat legacy tickets as unsafe even with force (1389.62025ms)
+✔ attach migrates a known legacy template path before writing metadata (42440.392875ms)
+✔ attach migrates the legacy issues directory into tickets (60510.012625ms)
+✔ attach blocks a conflicting legacy issues migration before writing (1446.787917ms)
+✔ sync force overwrites a managed conflict and retains an external backup (17627.012333ms)
+✔ sync force does not overwrite a file outside the managed baseline (20110.280542ms)
+✔ sync converts a valid template-source identity to project-instance (14334.178583ms)
+✔ attach blocks intermediate symlinks before writing outside the project (281.335792ms)
+✔ init fails closed on an empty gitlink even with --force (668.703541ms)
+✔ attach fails closed on an empty gitlink even with --force (679.663333ms)
+✔ init fails closed on a detached HEAD gitlink worktree (896.54ms)
+✔ attach on a harness with gitlink does not rewrite .gitmodules or the mount (58700.446541ms)
+✔ help flags print usage, commands, options, examples, and learn more (81.577125ms)
+✔ attach, sync, and update help flags print the same usage without requiring a target (110.908583ms)
+✔ version flags print the package version and exit (84.231042ms)
+✔ subcommand version flags print the package version without requiring a target (27.086875ms)
+✔ unknown arguments still fail closed (27.279375ms)
+✔ attach and init reject create-yss-spec family metadata (444.993333ms)
+✔ compareSemver compares major.minor.patch and ignores prerelease suffix (0.734459ms)
+✔ parseUpdateArgs accepts dry-run and force and rejects unknown flags (0.377875ms)
+✔ detectInstallKind identifies npx, source, global, and local installs (0.927459ms)
+✔ already latest version does not install (0.337958ms)
+✔ newer version on a global install runs npm install -g (0.352542ms)
+✔ newer version on a local install runs npm install in the project root (0.269167ms)
+✔ dry-run previews the install command without installing (0.200917ms)
+✔ force reinstalls when the version is already latest (0.158416ms)
+✔ does not downgrade when current version is newer than latest (0.265375ms)
+✔ source checkout and npx report advice without installing (0.386875ms)
+✔ npm view failure is fail closed and does not install (0.143583ms)
+✔ npm install failure is fail closed (0.1555ms)
+✔ update and upgrade aliases check npm and do not overwrite the source tree (112.476708ms)
+✔ update unknown flags still fail closed (27.5035ms)
+✔ sync expands internal directory projections into the bundled template (523.449375ms)
+✔ sync snapshot remains valid when packaging and running use different locales (661.595541ms)
+✔ sync encodes npm-ignored dotfiles and records their logical paths (618.612458ms)
+✔ sync recopies drifted shared skill projections from the canonical tree (619.183458ms)
+✔ sync refreshes skills-lock.json using logical dotfile names before npm encoding (625.674833ms)
+✔ sync refreshes bundled skills-lock.json after copying template files (651.861459ms)
+✔ sync rejects external symlinks without replacing the existing snapshot (481.500542ms)
+ℹ tests 82
+ℹ suites 0
+ℹ pass 82
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 360168.209208

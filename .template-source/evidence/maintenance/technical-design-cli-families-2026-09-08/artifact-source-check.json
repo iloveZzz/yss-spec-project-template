@@ -1,0 +1,26 @@
+[
+  {
+    "family": "dev",
+    "artifact": "create-yss-harness-dev-0.5.0.tgz",
+    "sha256": "7bc50cf75bc711d11bdf2639f0f6d6a54fdd3b51b037317a817a5afeb3460013",
+    "matching_source_files": 8
+  },
+  {
+    "family": "backend",
+    "artifact": "create-yss-harness-backend-0.2.0.tgz",
+    "sha256": "0b4216c80cc3fb08667f4c017b396cefb4aedac18c8780b03a77f6a554a762bf",
+    "matching_source_files": 20
+  },
+  {
+    "family": "frontend",
+    "artifact": "create-yss-harness-frontend-0.1.2.tgz",
+    "sha256": "f482d4eb437cdf26670b1338754bbd64ec17dca9f41dc9a8254537a6663c52b7",
+    "matching_source_files": 20
+  },
+  {
+    "family": "design",
+    "artifact": "create-yss-harness-design-0.5.0.tgz",
+    "sha256": "b78d6267c6e1509b3b2445794e49619101cac5b53c90f159838fc4ff359d6909",
+    "matching_source_files": 10
+  }
+]

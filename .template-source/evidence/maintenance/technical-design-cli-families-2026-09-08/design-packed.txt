@@ -1,0 +1,1 @@
+{"family": "design", "version": "0.5.0", "init": "pass", "old_instance_sync": "pass", "preview_readonly": "pass", "protected_files": "pass"}

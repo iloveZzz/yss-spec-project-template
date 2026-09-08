@@ -1,0 +1,1 @@
+{"family": "frontend", "version": "0.1.2", "init": "pass", "old_instance_sync": "pass", "preview_readonly": "pass", "protected_files": "pass"}

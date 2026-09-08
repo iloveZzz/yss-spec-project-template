@@ -1,0 +1,58 @@
+
+> create-yss-harness-design@0.5.0 pretest /Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design
+> npm run sync-template
+
+
+> create-yss-harness-design@0.5.0 sync-template
+> node scripts/sync-template.js
+
+已从 https://github.com/iloveZzz/yss-harness-design-agent.git#8a67e0f5a56aa5085d18c2b42bb540c8f36c2fab 同步战略设计 Harness 快照
+
+> create-yss-harness-design@0.5.0 test /Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design
+> node --test --test-concurrency=1 tests/*.test.js
+
+✔ frontend identity prevents another CLI from planning takeover, even with force (76.708458ms)
+✔ profile alone cannot bypass family protection by omitting metadata (72.702458ms)
+✔ all supported operations reject create-yss-spec before dry-run or force writes (133.567084ms)
+✔ all supported operations reject create-yss-harness-dev before dry-run or force writes (142.79625ms)
+✔ all supported operations reject backend before dry-run or force writes (144.350958ms)
+✔ all supported operations reject frontend before dry-run or force writes (142.956334ms)
+✔ mixed family markers are not repaired or selected (73.138ms)
+✔ own metadata rejects malformed JSON (72.350041ms)
+✔ own metadata rejects array (77.140375ms)
+✔ own metadata rejects null (74.94125ms)
+✔ own metadata rejects wrong package (72.488417ms)
+✔ own metadata rejects unknown schema (70.356625ms)
+✔ own metadata rejects null schema (69.583958ms)
+✔ own metadata rejects wrong source (74.111833ms)
+✔ own metadata rejects wrong profile (76.1105ms)
+✔ own metadata rejects snake case wrong profile (75.525625ms)
+✔ own metadata rejects duplicate keys (75.729208ms)
+✔ profile rejects unknown profile (79.227542ms)
+✔ profile rejects missing profile (85.021583ms)
+✔ profile rejects invalid YAML (80.889708ms)
+✔ profile rejects duplicate profile (89.587667ms)
+✔ own metadata symlink is rejected without following or overwriting it (82.22225ms)
+✔ profile parent symlink is rejected before reading target content (80.943958ms)
+✔ help and version work inside foreign projects without mutation (54.201292ms)
+✔ unmanaged projects can still preview initialization (121.750625ms)
+✔ matching profile supports quoted YAML and identity fields (123.87475ms)
+✔ stable template commit produces byte-identical snapshot metadata (10439.245792ms)
+✔ help and version do not write files (53.790375ms)
+✔ v1 rejects attach and sync (28.025708ms)
+✔ update and upgrade query npm without overwriting a source checkout (107.099459ms)
+✔ dry-run does not create the target directory (124.641875ms)
+✔ non-empty target is rejected without --force (76.219708ms)
+✔ init generates a strategic design project-instance (22713.092333ms)
+✔ preview is read-only; apply preserves vocabulary, approved files and then becomes idempotent (5.011416ms)
+✔ local conflict prevents all writes and metadata advancement (1.748125ms)
+✔ foreign metadata, path traversal and symlink destinations cannot be updated (2.058458ms)
+✔ a mid-write failure rolls back changed files, newly created directories and metadata (3.524833ms)
+ℹ tests 37
+ℹ suites 0
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 35987.256208

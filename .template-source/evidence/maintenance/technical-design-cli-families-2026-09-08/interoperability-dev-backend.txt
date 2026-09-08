@@ -1,0 +1,4 @@
+{"producer":"design","consumer":"dev","protocol":"legacy-ddd","portable_import":"pass","idempotent":"pass","approval":"pending-reconciliation"}
+{"producer":"design","consumer":"backend","protocol":"legacy-ddd","portable_import":"pass","idempotent":"pass","approval":"pending-reconciliation"}
+{"producer":"design","consumer":"dev","protocol":"technical-design-v2","portable_import":"pass","idempotent":"pass","approval":"pending-reconciliation"}
+{"producer":"design","consumer":"backend","protocol":"technical-design-v2","portable_import":"pass","idempotent":"pass","approval":"pending-reconciliation"}

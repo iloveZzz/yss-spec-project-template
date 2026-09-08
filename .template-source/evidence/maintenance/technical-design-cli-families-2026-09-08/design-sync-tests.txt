@@ -1,0 +1,38 @@
+✔ frontend identity prevents another CLI from planning takeover, even with force (267.365875ms)
+✔ profile alone cannot bypass family protection by omitting metadata (99.793875ms)
+✔ all supported operations reject create-yss-spec before dry-run or force writes (305.716542ms)
+✔ all supported operations reject create-yss-harness-dev before dry-run or force writes (305.632167ms)
+✔ all supported operations reject backend before dry-run or force writes (335.52625ms)
+✔ all supported operations reject frontend before dry-run or force writes (306.977542ms)
+✔ mixed family markers are not repaired or selected (94.8855ms)
+✔ own metadata rejects malformed JSON (90.123208ms)
+✔ own metadata rejects array (96.997833ms)
+✔ own metadata rejects null (86.230584ms)
+✔ own metadata rejects wrong package (95.572291ms)
+✔ own metadata rejects unknown schema (94.887709ms)
+✔ own metadata rejects null schema (84.079875ms)
+✔ own metadata rejects wrong source (100.868458ms)
+✔ own metadata rejects wrong profile (87.652833ms)
+✔ own metadata rejects snake case wrong profile (83.75975ms)
+✔ own metadata rejects duplicate keys (100.625208ms)
+✔ profile rejects unknown profile (108.113541ms)
+✔ profile rejects missing profile (104.246584ms)
+✔ profile rejects invalid YAML (101.488958ms)
+✔ profile rejects duplicate profile (91.062292ms)
+✔ own metadata symlink is rejected without following or overwriting it (97.190458ms)
+✔ profile parent symlink is rejected before reading target content (93.691292ms)
+✔ help and version work inside foreign projects without mutation (62.091041ms)
+✔ unmanaged projects can still preview initialization (128.9745ms)
+✔ matching profile supports quoted YAML and identity fields (137.070584ms)
+✔ preview is read-only; apply preserves vocabulary, approved files and then becomes idempotent (93.441917ms)
+✔ local conflict prevents all writes and metadata advancement (81.556291ms)
+✔ foreign metadata, path traversal and symlink destinations cannot be updated (80.625709ms)
+✔ a mid-write failure rolls back changed files, newly created directories and metadata (91.023333ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3615.067583

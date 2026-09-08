@@ -1,0 +1,200 @@
+{
+  "scope": "four impacted CLI families; GitHub delivery only",
+  "templates": [
+    {
+      "family": "dev",
+      "repository": "submodules/yss-harness-dev-agent",
+      "before": "ecda24e4e14ad0d412b27bd710a0702d092da5ac",
+      "commit": "e5ddeb084adece86333166389ad9c7132bc99437",
+      "verification": "dev-template-full.txt"
+    },
+    {
+      "family": "backend",
+      "repository": "submodules/yss-harness-backend-agent",
+      "before": "d98c6e1501ccee333ecd8c6a41fe4e324142a01b",
+      "commit": "e3faf83da06e3dc3ddfdc83763f28f60a3c6f20d",
+      "verification": "backend-template-full.txt"
+    },
+    {
+      "family": "frontend",
+      "repository": "submodules/yss-harness-frontend-agent",
+      "before": "8b3464374b030d06d696a73088d31e23d10023e6",
+      "commit": "be68fb715d637d7a562ad3538ea5ac25395d73f3",
+      "verification": "frontend-template-full.txt"
+    },
+    {
+      "family": "design",
+      "repository": "submodules/yss-harness-design-agent",
+      "before": "2f6b2fa5ba356bb184b98be1e5a2feebae2996fb",
+      "commit": "8a67e0f5a56aa5085d18c2b42bb540c8f36c2fab",
+      "verification": "design-template-full.txt"
+    }
+  ],
+  "core": {
+    "version": "0.1.1",
+    "source_commit": "1e2437e05ac9cd6b433fa51e39e60009487ed2c8"
+  },
+  "artifacts": [
+    {
+      "family": "dev",
+      "artifact": "create-yss-harness-dev-0.5.0.tgz",
+      "sha256": "7bc50cf75bc711d11bdf2639f0f6d6a54fdd3b51b037317a817a5afeb3460013",
+      "matching_source_files": 8
+    },
+    {
+      "family": "backend",
+      "artifact": "create-yss-harness-backend-0.2.0.tgz",
+      "sha256": "0b4216c80cc3fb08667f4c017b396cefb4aedac18c8780b03a77f6a554a762bf",
+      "matching_source_files": 20
+    },
+    {
+      "family": "frontend",
+      "artifact": "create-yss-harness-frontend-0.1.2.tgz",
+      "sha256": "f482d4eb437cdf26670b1338754bbd64ec17dca9f41dc9a8254537a6663c52b7",
+      "matching_source_files": 20
+    },
+    {
+      "family": "design",
+      "artifact": "create-yss-harness-design-0.5.0.tgz",
+      "sha256": "b78d6267c6e1509b3b2445794e49619101cac5b53c90f159838fc4ff359d6909",
+      "matching_source_files": 10
+    }
+  ],
+  "verification": {
+    "template_full": [
+      "dev",
+      "backend",
+      "frontend",
+      "design"
+    ],
+    "root_full": "pass",
+    "cli_dev": {
+      "pass": 82,
+      "fail": 0
+    },
+    "cli_design": {
+      "pass": 37,
+      "fail": 0,
+      "additional_sync_identity_pass": 30
+    },
+    "dedicated_core": {
+      "pass": 19,
+      "fail": 0,
+      "additional_context_attach_pass": 1
+    },
+    "cli_backend": {
+      "pass": 1,
+      "fail": 0
+    },
+    "cli_frontend": {
+      "pass": 1,
+      "fail": 0
+    },
+    "packed_upgrades": {
+      "dev": "pass",
+      "backend": "pass",
+      "frontend": "pass",
+      "design": "pass"
+    },
+    "interoperability": "pass: legacy-ddd and technical-design-v2 from design to dev/backend/frontend; imports remain pending-reconciliation"
+  },
+  "npm_publish": false,
+  "existing_dev_snapshot_backup": {
+    "ref": "/tmp/yss-dev-snapshot-before-technical-design.json",
+    "sha256": "ed5989353145c459c8ea2720ce77979480b59533ce6471647a82582294c00878"
+  },
+  "clis": [
+    {
+      "family": "dev",
+      "repository": "submodules/create-yss-harness-dev",
+      "before": "de323476c9bba03e6ca8f7c341a080c099edd807",
+      "version": "0.5.0",
+      "commit": "5e6a0c26fe24825a83750a8a074972ed6bcb8a9f"
+    },
+    {
+      "family": "backend",
+      "repository": "submodules/create-yss-harness-backend",
+      "before": "50b141bdb9f57d68ca7b4f7125215dbb93f4ace8",
+      "version": "0.2.0",
+      "commit": "fe73b98587b1fb355d106d1368be70d37f738cf5"
+    },
+    {
+      "family": "frontend",
+      "repository": "submodules/create-yss-harness-frontend",
+      "before": "94a27457a4a72ec887b959b659db42b0d409e202",
+      "version": "0.1.2",
+      "commit": "63bc67662f4e7ea84eb703a22ec28deea6fa30c0"
+    },
+    {
+      "family": "design",
+      "repository": "submodules/create-yss-strategic-design",
+      "before": "82c608627f76738beadbfd41ed9689aa81c2e54d",
+      "version": "0.5.0",
+      "commit": "3c41e85be9de5843e763f03c06b4a3ed1f6edbee"
+    }
+  ],
+  "github_push": "verified: all eight repository main heads match delivered commits; worktrees clean",
+  "root_gitlink_checkpoint": "the repository commit containing this record",
+  "evidence": [
+    "root-full.txt",
+    "dev-template-full.txt",
+    "backend-template-full.txt",
+    "frontend-template-full.txt",
+    "design-template-full.txt",
+    "dev-cli-tests.txt",
+    "design-cli-tests.txt",
+    "design-sync-tests.txt",
+    "backend-cli-tests.txt",
+    "frontend-cli-tests.txt",
+    "core-tests.txt",
+    "core-context-attach-test.txt",
+    "dev-packed.txt",
+    "backend-packed.txt",
+    "frontend-packed.txt",
+    "design-packed.txt",
+    "interoperability-dev-backend.txt",
+    "interoperability-frontend.txt"
+  ],
+  "remote_audit": [
+    {
+      "repository": "submodules/yss-harness-dev-agent",
+      "remote_main": "e5ddeb084adece86333166389ad9c7132bc99437",
+      "worktree": "clean"
+    },
+    {
+      "repository": "submodules/yss-harness-backend-agent",
+      "remote_main": "e3faf83da06e3dc3ddfdc83763f28f60a3c6f20d",
+      "worktree": "clean"
+    },
+    {
+      "repository": "submodules/yss-harness-frontend-agent",
+      "remote_main": "be68fb715d637d7a562ad3538ea5ac25395d73f3",
+      "worktree": "clean"
+    },
+    {
+      "repository": "submodules/yss-harness-design-agent",
+      "remote_main": "8a67e0f5a56aa5085d18c2b42bb540c8f36c2fab",
+      "worktree": "clean"
+    },
+    {
+      "repository": "submodules/create-yss-harness-dev",
+      "remote_main": "5e6a0c26fe24825a83750a8a074972ed6bcb8a9f",
+      "worktree": "clean"
+    },
+    {
+      "repository": "submodules/create-yss-harness-backend",
+      "remote_main": "fe73b98587b1fb355d106d1368be70d37f738cf5",
+      "worktree": "clean"
+    },
+    {
+      "repository": "submodules/create-yss-harness-frontend",
+      "remote_main": "63bc67662f4e7ea84eb703a22ec28deea6fa30c0",
+      "worktree": "clean"
+    },
+    {
+      "repository": "submodules/create-yss-strategic-design",
+      "remote_main": "3c41e85be9de5843e763f03c06b4a3ed1f6edbee",
+      "worktree": "clean"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+
+> create-yss-harness-frontend@0.1.2 test /Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend
+> node --test tests/*.test.mjs
+
+✔ 固定包契约、真实模板计划零写入和旧实例拒绝 (1471.822458ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1510.137584
