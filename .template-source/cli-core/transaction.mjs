@@ -203,6 +203,18 @@ export function applyTransaction(
       if (op.after) durable(target, op.path, op.bytes, op.after.mode);
       else fs.unlinkSync(safe(target, op.path));
     }
+    // Retired managed files must not leave discoverable empty skill roots.
+    // Only walk ancestors of deletions; never remove nonempty user directories.
+    for (const op of operations.filter((item) => !item.after)) {
+      let parent = path.dirname(op.path);
+      while (parent !== ".") {
+        guardRecoveryPath(target, parent + "/__retirement_check__");
+        const directory = safe(target, parent);
+        if (!stat(directory)?.isDirectory() || fs.readdirSync(directory).length) break;
+        fs.rmdirSync(directory);
+        parent = path.dirname(parent);
+      }
+    }
     validate();
     journal.phase = "verify";
     durable(target, `${base}/journal.json`, json(journal));

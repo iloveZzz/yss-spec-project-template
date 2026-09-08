@@ -592,3 +592,23 @@ test("update --force 不把较新 CLI 降级到 registry 的旧版本", (t) => {
   assert.equal(r.status, 0, r.stderr);
   assert.equal(JSON.parse(r.stdout).status, "current");
 });
+
+test("技能退役清理空目录，但保留用户文件；失败后恢复技能", (t) => {
+  for (const rollback of [false, true]) {
+    const f = fixture(t);
+    const canonical = ".agents/skills/retired/SKILL.md";
+    const projection = ".codex/skills/retired/SKILL.md";
+    f.bundle({[canonical]: "old", [projection]: "old"});
+    assert.equal(f.run("init").status, 0);
+    put(f.target, ".codex/skills/retired/user-notes.md", "keep");
+    f.bundle({[canonical]: null, [projection]: null});
+    const result = rollback ? injected(f,
+      `const original=fs.rmdirSync;let failed=false;fs.rmdirSync=(p,...args)=>{const result=original(p,...args);if(!failed&&String(p).endsWith('/.agents/skills/retired')){failed=true;throw new Error('after prune')}return result;};`
+    ) : f.run("sync", "--apply");
+    assert.equal(result.status, rollback ? 1 : 0, result.stderr);
+    assert.equal(fs.existsSync(path.join(f.target, ".agents/skills/retired")), rollback);
+    assert.equal(fs.readFileSync(path.join(f.target, ".codex/skills/retired/user-notes.md"), "utf8"), "keep");
+    assert.equal(fs.existsSync(path.join(f.target, projection)), rollback);
+    if (rollback) assert.equal(fs.readFileSync(path.join(f.target, canonical), "utf8"), "old");
+  }
+});
