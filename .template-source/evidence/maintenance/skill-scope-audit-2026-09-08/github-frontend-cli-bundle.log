@@ -1,0 +1,5 @@
+
+> create-yss-harness-frontend@0.1.1 verify-bundle /Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend
+> node scripts/verify-bundle.mjs
+
+{"package":"create-yss-harness-frontend","core":"03278c7c1489065c9462672d6d5add9d7fa338f7a373708df0c9f4939ebe6a4d","template":"006d9ed96ab2cc014be2ef6b6895c9b144e2f06326ed6a92acedd79d6dc6dd7d","files":4883}

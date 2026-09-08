@@ -1,0 +1,93 @@
+模板核验 profile: fast -> fast
+
+[tooling]
+$ .template-source/scripts/evidence-index --check (41ms)
+证据索引验证通过（pending）
+$ pnpm --dir .template-source/tooling/node test (6708ms)
+
+> yss-template-node-tooling@1.0.0 test /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/.template-source/tooling/node
+> node --test test/**/*.test.mjs
+
+✔ DESIGN.md passes local and pinned upstream lint (2925.43075ms)
+✔ DESIGN.md projection manifest is current (88.781416ms)
+✔ cross-repository design sync digest matches DESIGN.md (0.854333ms)
+✔ digital human roles are runtime-agnostic and grok is only an adapter (148.808ms)
+✔ approval records reject the wrong signer and approved countersign gates need approval_ref (20.420792ms)
+✔ every excluded skill is rejected in canonical, all runtimes, lock and aliases (1106.942209ms)
+✔ cross-repository prohibitions remain representable but cannot execute or expand (4.251167ms)
+✔ optional tools may be deliberately installed and are not permanent exclusions (2.529708ms)
+✔ Node runtime contract exposes a vendored YAML parser for distributed scripts (11.472625ms)
+✔ YAML aliases are rejected before a repository manifest is materialized (7.658125ms)
+✔ repository mode public seam is executable by Node (0.6535ms)
+✔ vendored XML parser rejects DOCTYPE and preserves scalar text (4.832ms)
+✔ implementation path policy preserves harness and external-repository boundaries (13.175834ms)
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-VHonEY/super/apps/backend/billing-service'...
+done.
+HEAD is now at 94126fa init child
+Cloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-IZdegV/super/apps/backend/billing-service'...
+done.
+Reset branch 'main'
+✔ repository_scope git-submodule is a first-class layout distinct from harness-apps (4815.833041ms)
+✔ Node lifecycle registry verifier preserves the published semantic baseline (339.764042ms)
+✔ public skill export preserves its portable manifest and blocks workstation paths (213.313208ms)
+✔ evidence index writes pending and checkpointed Node records with legacy failure semantics (806.957209ms)
+✔ evidence index pending empty is valid when this repository has no review markdown (92.348667ms)
+✔ evidence index complete fails when archive commit is missing from this repository (118.384875ms)
+✔ unknown layer is rejected (44.951958ms)
+✔ shadow registry cannot be marked as runtime consumed (11.005167ms)
+✔ alias that collides with another id is rejected (7.214833ms)
+✔ missing Cursor runtime root is rejected (6.018958ms)
+✔ platform aliases resolve lifecycle external runtime entries (4.885666ms)
+✔ deprecated research alias resolves to yss-research in lifecycle routes (16.6115ms)
+✔ lifecycle route with an unregistered skill is rejected (11.126917ms)
+✔ prototype design route requires independent prototype-review (22.607458ms)
+✔ deprecated skills require migration and cleanup metadata (14.183833ms)
+✔ frontend conditional routes require registered skills (6.458166ms)
+✔ tracked projections absent from the lock cannot escape synchronization checks (0.625666ms)
+✔ obsolete canonical residues fail even when they are not in the lock (0.084625ms)
+✔ physical canonical skills must be present in the lock (0.070417ms)
+✔ Cursor is a first-class shared skill projection root (0.071666ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6492.002291
+$ pnpm --dir .template-source/tooling/node check:vendor (431ms)
+
+> yss-template-node-tooling@1.0.0 check:vendor /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/.template-source/tooling/node
+> node scripts/build-vendor.mjs --check
+
+
+[skills]
+$ scripts/sync-skills --check (65ms)
+skill projections are synchronized
+$ scripts/update-skill-lock --check (55ms)
+skills-lock.json matches distributed skills
+$ scripts/verify-skill-registry (84ms)
+技能路由注册表校验通过（active，25 个共享，1 个平台）
+$ scripts/verify-skill-governance (189ms)
+技能规范冲突扫描通过（1 个兼容 alias）
+
+[profile]
+$ scripts/verify-harness-profile (62ms)
+Harness profile 校验通过: harness.business-ddd-strategy-handoff → yss-tactical-design
+$ scripts/verify-harness-profile-scenarios (121ms)
+Harness profile 压力场景验证通过
+
+[workspace-fixtures]
+$ scripts/verify-subagent-task-package-scenarios (3051ms)
+数字人全生命周期任务包压力场景验证通过
+$ scripts/verify-digital-human-task-package-scenarios (2794ms)
+数字人全生命周期任务包压力场景验证通过
+$ scripts/verify-digital-human-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml (169ms)
+数字人任务包验证通过
+$ scripts/verify-digital-human-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml (159ms)
+数字人任务包验证通过
+$ scripts/verify-instance-distribution (69ms)
+实例分发清单校验通过: harness.business-ddd-strategy-handoff / create-yss-harness-design（template-source，禁止路径 15）
+$ scripts/verify-instance-distribution-scenarios (62ms)
+实例分发清单压力场景验证通过
+模板核验通过（fast）
