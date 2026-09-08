@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+import { parseArgs } from "node:util";
+import { queryLifecycleContext } from "./lib/lifecycle-context-query.mjs";
+
+try {
+  const { values } = parseArgs({
+    options: {
+      mode: { type: "string" },
+      stage: { type: "string" },
+      "work-unit": { type: "string" },
+      include: { type: "string", multiple: true },
+    },
+    strict: true,
+  });
+  const result = queryLifecycleContext({
+    mode: values.mode,
+    stageId: values.stage,
+    workUnitId: values["work-unit"],
+    include: values.include ?? [],
+  });
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+}

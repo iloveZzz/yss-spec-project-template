@@ -1,0 +1,2 @@
+#!/usr/bin/env node
+import "../.agents/skills/yss-frontend-scaffold-generator/scripts/scaffold-generator.test.mjs";

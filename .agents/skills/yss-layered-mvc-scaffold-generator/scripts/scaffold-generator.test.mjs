@@ -18,7 +18,7 @@ const capabilityModules = {
   combined: { capabilities: ["external-integration", "feign-client"], modules: ["server", "service", "repository", "adapter", "client", "feign-client"] }
 };
 
-async function fixture(t, { profile = capabilityModules.basic, architectureProfile = "layered-mvc-service", skillId = "yss-layered-mvc-scaffold-generator" } = {}) {
+async function fixture(t, { profile = capabilityModules.basic, architectureProfile = "layered-mvc-service", skillId = "yss-layered-mvc-scaffold-generator", schemaVersion = 3 } = {}) {
   const root = await mkdtemp(path.join(os.tmpdir(), "yss-layered-mvc-"));
   t.after(() => rm(root, { recursive: true, force: true }));
   const output = path.join(root, "backend");
@@ -30,7 +30,12 @@ async function fixture(t, { profile = capabilityModules.basic, architectureProfi
   const decisionFile = path.join(root, "scaffold-architecture-decisions.yaml");
   await writeFile(decisionFile, decisionText);
   const contract = {
-    schema_version: 3,
+    schema_version: schemaVersion,
+    kind: "project-scaffold-contract",
+    delivery_role: "backend",
+    scaffold_kind: "backend-layered-mvc",
+    repository_scope: "external-repository",
+    init_git: false,
     contract_id: "scaffold.demo-service.v1",
     contract_version: 1,
     scaffold_request_id: "request.demo-service",
@@ -95,6 +100,16 @@ test("旧数据库和 Mock 参数在写入前被拒绝", async (t) => {
     assert.notEqual(result.status, 0);
     await assert.rejects(stat(data.project), { code: "ENOENT" });
   }
+});
+
+test("统一 Project Scaffold Contract v4 可生成 Layered MVC 后端并保留 v4 Manifest", async (t) => {
+  const data = await fixture(t, { schemaVersion: 4 });
+  data.contract.current_version = true;
+  await writeFile(data.contractFile, JSON.stringify(data.contract));
+  const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
+  assert.equal(manifest.schema_version, 4);
 });
 
 test("可选离线 Maven 可行性检查（不替代受控仓库验收）", { skip: process.env.YSS_BACKEND_OFFLINE_PROBE !== "1" }, async (t) => {

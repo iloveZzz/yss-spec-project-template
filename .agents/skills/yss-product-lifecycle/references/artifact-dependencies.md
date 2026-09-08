@@ -9,10 +9,12 @@ Spec + Product Overview → Product Design / Requirement Freeze
 Spec + Product Overview → API Impact / OpenAPI Draft
 Spec + Product Overview → System / Data Architecture
 System / Data Architecture + confirmed project architecture → Technical Design Contract (DDD / MVC)
-Technical Design Contract → Architecture Review / Engineering Baseline → Slice Implementation Contract draft
+Technical Design Contract → Architecture Review / Engineering Baseline → implementation repository choice
+implementation repository choice → existing repository onboarding OR approved Project Scaffold Contract → scaffold generation / verification
+Repository Onboarding Result OR Scaffold Manifest + Verification → Implementation Repository Preparation Result → gate.implementation-repositories-ready
 API impact = yes: Requirement Freeze + Design Review + Draft Review → OpenAPI Freeze
 API impact = no: API Impact Assessment approved → No-API-Impact record；Draft/Freeze gates = not-applicable
-Frozen Contract → Vertical Slice Tickets
+Frozen Contract + gate.implementation-repositories-ready → Vertical Slice Tickets
 Tickets + Architecture → Implementation Contract / Build Architecture Checklist
 Implementation → Independent Review → Fresh Verification → Release
 ```

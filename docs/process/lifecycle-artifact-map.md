@@ -39,6 +39,7 @@
 | `gate.openapi-frozen` | OpenAPI Freeze | `stage.system-data-engineering` | API 进入实现。 | 无 | `evidence.approval-record` |
 | `gate.engineering-baseline-accepted` | 工程基线 | `stage.system-data-engineering` | 后端、前端或高风险工程变化。 | 无 | `evidence.fresh-verification` |
 | `gate.architecture-reviewed` | 架构审查 | `stage.system-data-engineering` | 高风险或跨边界变化。 | 无 | `evidence.design-review-result` |
+| `gate.implementation-repositories-ready` | 实现仓库准备就绪 | `stage.system-data-engineering` | 后端或前端交付面进入 Ticket 正式化；未命中的交付面须记录带原因的 not-applicable。 | `gate.engineering-baseline-accepted` | `evidence.implementation-repository-preparation`、`evidence.fresh-verification` |
 | `gate.slice-contract-approved` | Slice Implementation Contract 批准 | `stage.ticket-formalization` | Agent 进入实现；脚手架完成后每个后续生成代码工作单元。 | 无 | `evidence.contract-approval` |
 | `gate.slice-ready-for-agent` | 垂直切片实现就绪 | `stage.ticket-formalization` | 垂直切片具备直接实现条件。 | 无 | `evidence.contract-approval`、`evidence.approval-record` |
 | `gate.frontend-implementation-verified` | 前端实现还原验证 | `stage.verification-release-retrospective` | UI 影响切片完成实现并准备合并、发布或阶段完成。 | 无 | `evidence.frontend-implementation-verification` |
@@ -67,6 +68,8 @@
 | `artifact.engineering-baseline` | 工程基线记录 | `stage.system-data-engineering` | 后端、前端或高风险工程变化。 |
 | `artifact.architecture-review` | 架构审查记录 | `stage.system-data-engineering` | 高风险或跨边界变化。 |
 | `artifact.technical-design` | 技术设计合同 | `stage.system-data-engineering` | 后端技术设计需要按已确认 DDD 或 MVC 架构明确行为、分层、一致性或数据映射。 |
+| `artifact.project-scaffold-contract` | Project Scaffold Contract | `stage.system-data-engineering` | 命中的前端或后端交付面选择初始化新工程。 |
+| `artifact.implementation-repository-preparation-result` | 实现仓库准备结果 | `stage.system-data-engineering` | 后端或前端交付面进入 Ticket 正式化。 |
 | `artifact.tactical-design` | DDD 战术设计 | `stage.system-data-engineering` | 聚合边界、状态机、一致性或持久化映射复杂到无法在系统概要设计的 Tactical DDD Check 中清楚表达。 |
 | `artifact.spec-delta` | Spec Delta | `stage.spec-architecture` | 已有冻结 Spec 的高风险行为变化。 |
 | `artifact.parent-ticket` | 功能父 Ticket | `stage.ticket-formalization` | 每个进入追踪的功能。 |
@@ -101,6 +104,7 @@
 | `evidence.yss-skill-execution-result` | YSS Skill Execution Result | 专项 skill 的合同版本、写入、验证、延期 seam 与偏离证据。 |
 | `evidence.frontend-implementation-verification` | 前端实现还原验证证据 | UI 实现相对冻结原型和 Spec 的桌面/窄屏视觉、状态、交互、控制台与 pnpm 验证记录。 |
 | `evidence.fresh-verification` | Fresh Verification 记录 | 本轮实际执行的验证命令、结果和时间。 |
+| `evidence.implementation-repository-preparation` | 实现仓库准备证据 | 按项目记录交付面、已有仓库接入或新脚手架合同、生成清单、实际验证结果、仓库位置、Git 边界和当前版本。 |
 | `evidence.checkpoint-and-rollback` | Checkpoint 与回滚点 | 可追溯的变更边界、发布记录和恢复动作。 |
 <!-- lifecycle-registry:structure:end -->
 

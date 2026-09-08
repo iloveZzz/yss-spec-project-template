@@ -27,6 +27,10 @@ Matt phase boundary 是工作阶段之间的上下文决策，不是新的生命
 
 ## 原型到后端脚手架的接力
 
+阶段 5 在技术分析后固定进入 `work-unit.implementation-repository-preparation`。编排器按 backend / frontend 影响逐项目展示已有或新建工程、Agent 推荐、仓库 scope、目标路径、Git 初始化、验证命令和风险，取得真实用户确认后再执行。已有工程调用 `implementation-repo-onboarding`；新后端按已确认架构调用对应生成器；新前端调用 `yss-frontend-scaffold-generator`。默认 `external-repository`，`harness-apps` / `git-submodule`、`git init` 和远端仓库创建均须显式选择或授权。
+
+所有命中项目必须达到 `existing-and-onboarded` 或 `initialized-and-verified`，未命中的交付面必须有带原因的 `not-applicable`。聚合结果、Manifest、验证和 onboarding 证据必须可读且当前；否则 `gate.implementation-repositories-ready` 阻断 Ticket 正式化。旧实例恢复时保留已有 Ticket，但将相关 Ticket / Slice Contract 标为 `blocked` / `stale` 并返回本工作单元。
+
 `prototype_confirmation` 通过后，先判断实现仓库登记中的 backend `scaffold_status`。当状态为 `required` 时，在工程基线中先完成脚手架架构选择：Agent 按领域复杂度给出 `domain-driven` / `layered-mvc` 推荐和依据，本体选择作为子项目预填默认值，用户通过批量表确认全部项目或逐项覆盖。选择写入 `scaffold-architecture-decisions.yaml`；处于 `undecided`、`recommended`、`awaiting-user-decision` 或 `stale` 时必须阻断，不得默认 DDD，也不得在生成器内交互。
 
 选择达到 `lifecycle-approved` 且 digest 当前后，由 `yss-implementation-contract-compiler` 编译脚手架 schema v3 `controlled-generation` 工作单元合同，生命周期批准并持久化后才能运行对应生成器。顺序为：工程基线与架构推荐 → 用户确认与选择持久化 → 实现合同编译器脚手架合同 draft → 生命周期批准/持久化 → `domain-driven` 使用 `yss-ddd-scaffold-generator` 或 `layered-mvc` 使用 `yss-layered-mvc-scaffold-generator` → 对应基线/Manifest v3 校验 → 实现合同编译器业务合同重编译。`existing` / `initialized` 不重复生成；架构转换必须单独立项。
@@ -58,7 +62,7 @@ tracker 选择和冲突按 `docs/agents/issue-tracker.md` 裁决：已持久化 
 - `work-unit.discovery-requirements` 实际调用 `grilling` 和 `domain-modeling`；`work-unit.discovery-opportunity` 按事实类型路由 `competitive-intelligence` 或 `yss-research`。`yss-research:quick` 只用于探索；外部证据进入领域战略、阶段决策或其他生命周期批准输入前必须升级为 `evidence-audited`。生命周期原生工作单元默认负责 Spec、Ticket 和实现资产；`to-spec`、`to-tickets`、`implement` 仅保留为显式兼容入口，结果必须回交生命周期验收。
 - 原生 `work-unit.ticket-decomposition` 只能在 OpenAPI Freeze 或无 API 影响记录后创建垂直切片，初始 Ticket 状态统一为 `ready-for-human`；生命周期复算完整公式后才能提升 `ready-for-agent`。该工作单元必须返回 `ticket_decomposition_result_ref` 和垂直切片引用，并作为实现的必经前置证据。
 - 原生 `work-unit.slice-implementation` 必须在生命周期批准并持久化 Slice Implementation Contract 和 Build Architecture Checklist 后执行；用户显式 `implement` 仍走兼容入口，不得绕过生命周期。
-- `Workflow Execution Result.next_route` 必须通过生命周期转换校验；Spec、原型和技术分析不得直接跳转到 `work-unit.slice-implementation`，只能先进入 `work-unit.ticket-decomposition`。
+- `Workflow Execution Result.next_route` 必须通过生命周期转换校验；Spec、原型和技术分析不得直接跳转到 Ticket 正式化或实现，必须先完成 `work-unit.implementation-repository-preparation`，再进入 `work-unit.ticket-decomposition`。
 - `implement` 遇到 backend `scaffold_status=required` 时，还必须满足原型确认后的脚手架策略：脚手架 Execution Result、`yss-backend-scaffold-parent` 基线、Wrapper 验证和 实现合同编译器 合同重编译均已回写；否则停在工程基线，不得写业务代码。
 - `Workflow Execution Result` 出现 `drift`、`new_impacts`、`stale_candidates`、`violation`、`missing_evidence`、空 `evidence_refs` 或缺少必需字段时暂停当前工作单元；旧结果只能先经只读兼容 adapter 归一化。
 

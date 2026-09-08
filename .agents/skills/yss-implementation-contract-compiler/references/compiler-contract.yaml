@@ -138,8 +138,33 @@ context_plan:
   context_stop_rule: minimal-sufficient-evidence
   missing_context_action: [blocked, reroute]
 
+project_scaffold_contract_schema:
+  schema_version: 4
+  schema_ref: docs/process/schemas/project-scaffold-contract.schema.json
+  identity: project-engineering-baseline
+  discriminant: delivery_role
+  delivery_roles:
+    backend:
+      scaffold_kinds: [backend-ddd, backend-layered-mvc]
+      generators: [yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator]
+      requires: [scaffold_request_id, architecture_family, decision_ref, decision_id, decision_digest, project_name, base_package, maven_coordinates, profiles, module_profile]
+    frontend:
+      scaffold_kinds: [frontend-yss-vue3]
+      generators: [yss-frontend-scaffold-generator]
+      requires: [frontend, repository_scope, init_git]
+      openapi_modes: [frozen, not-applicable]
+  common_required: [contract_id, contract_version, status, persisted_ref, current_version, delivery_role, scaffold_kind, generator_skill, implementation_repository, target_output_dir, repository_scope, init_git, allowed_write_paths, expected_evidence_files, verification_commands, approval, generation_policy]
+  approved_by: yss-product-lifecycle
+  generation_mode: controlled-generation
+  target_policy: nonexistent-or-empty
+  force_overwrite: forbidden
+  compatibility:
+    backend_schema_v3: read-only-and-complete-approved-generation
+    frontend_before_v4: unsupported
+
 scaffold_contract_schema:
   schema_version: 3
+  compatibility_status: legacy-backend-read-only
   identity: service-engineering-baseline
   compiled_by: yss-implementation-contract-compiler
   approved_by: yss-product-lifecycle

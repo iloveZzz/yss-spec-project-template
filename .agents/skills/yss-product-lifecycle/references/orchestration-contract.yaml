@@ -294,6 +294,17 @@ work_unit_routes:
     human_gate: openapi-freeze_if_api_impact
     applies_when: technical_or_contract_impact
     not_applicable_reason: no_technical_or_contract_impact
+  work-unit.implementation-repository-preparation:
+    native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    primary_skill: implementation-repo-onboarding
+    supporting_skills: [yss-implementation-contract-compiler, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, yss-frontend-scaffold-generator]
+    skills: [implementation-repo-onboarding, yss-implementation-contract-compiler, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, yss-frontend-scaffold-generator]
+    applies_when: before_ticket_formalization
+    not_applicable_reason: no_frontend_or_backend_delivery_impact
+    decision_boundary: scaffold-choice
+    completion_states: [existing-and-onboarded, initialized-and-verified, not-applicable]
+    aggregate_gate: gate.implementation-repositories-ready
+    must_complete_before: work-unit.ticket-decomposition
   work-unit.ticket-decomposition:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     primary_skill: yss-product-lifecycle
@@ -404,7 +415,7 @@ compatibility_flow_preconditions:
     evidence: [user_problem, mvp_and_non_goals, success_criteria, test_seam, terminology_review]
     output_role: ready-for-human
   to-tickets:
-    required: [openapi_freeze_or_no_api_impact, required_gates_satisfied, vertical_slice_scope, blocking_edges]
+    required: [openapi_freeze_or_no_api_impact, required_gates_satisfied, implementation_repositories_ready, vertical_slice_scope, blocking_edges]
     output: vertical-slice-tickets
     output_role: ready-for-human
   implement:
@@ -412,6 +423,7 @@ compatibility_flow_preconditions:
     applies_to_single_session: true
 
 ticket_formalization:
+  repository_predecessor: work-unit.implementation-repository-preparation
   implementation_predecessor: work-unit.ticket-decomposition
   result_ref_required: true
   result_must_be: completed
@@ -429,7 +441,37 @@ ticket_formalization:
     current_version: true
   validator:
     module: scripts/lib/lifecycle-transition.mjs
-    functions: [validateNextRoute, validateTicketFormalization, validateImplementationEntry]
+    functions: [validateNextRoute, validateImplementationRepositoriesReady, validateTicketFormalization, validateImplementationEntry]
+
+implementation_repository_preparation:
+  stage: stage.system-data-engineering
+  work_unit: work-unit.implementation-repository-preparation
+  gate: gate.implementation-repositories-ready
+  applies_per_delivery_role: [backend, frontend]
+  affected_role_allowed_states: [existing-and-onboarded, initialized-and-verified]
+  unaffected_role_state: not-applicable
+  not_applicable_reason_required: true
+  existing_repository:
+    required: [repository_ref, project_root, repository_scope, onboarding_result]
+    onboarding_skill: implementation-repo-onboarding
+    architecture_migration: separate-initiative
+  new_repository:
+    default_scope: external-repository
+    allowed_scopes: [external-repository, harness-apps, git-submodule]
+    user_confirmation_required: [scope, project_root, init_git]
+    remote_repository_creation: explicit-authorization-only
+    approved_project_scaffold_contract_required: true
+    frontend_contract_minimum_schema_version: 4
+    backend_contract_compatibility_schema_versions: [3, 4]
+    target_policy: nonexistent-or-empty
+    force_overwrite: forbidden
+    completion_requires: [scaffold_manifest_ref, scaffold_verification]
+  aggregate_result:
+    required: [result, current_version, projects, evidence_refs]
+    result: completed
+    evidence_refs_readable: true
+    stale_action: return-to-work-unit.implementation-repository-preparation
+  blocking_signals: [implementation-repository-decision-required, implementation-repository-location-required, implementation-repository-onboarding-incomplete, scaffold-choice-required, scaffold-contract-unapproved, scaffold-generation-incomplete, scaffold-verification-failed, frontend-template-unavailable, implementation-repositories-stale]
 
 transition_graph:
   validator: scripts/lib/lifecycle-transition.mjs
@@ -442,14 +484,16 @@ transition_graph:
     work-unit.intensity-aware-verification: [work-unit.intensity-aware-review]
     work-unit.intensity-aware-review: [work-unit.release-and-rollback]
     work-unit.release-and-rollback: []
-    work-unit.spec-synthesis: [work-unit.prototype-design, work-unit.technical-analysis, work-unit.ticket-decomposition]
-    work-unit.prototype-design: [work-unit.technical-analysis, work-unit.ticket-decomposition]
-    work-unit.technical-analysis: [work-unit.ticket-decomposition]
+    work-unit.spec-synthesis: [work-unit.prototype-design, work-unit.technical-analysis, work-unit.implementation-repository-preparation]
+    work-unit.prototype-design: [work-unit.technical-analysis, work-unit.implementation-repository-preparation]
+    work-unit.technical-analysis: [work-unit.implementation-repository-preparation]
+    work-unit.implementation-repository-preparation: [work-unit.ticket-decomposition]
     work-unit.ticket-decomposition: [work-unit.slice-implementation]
   forbidden_shortcuts:
     - {from: work-unit.spec-synthesis, to: work-unit.slice-implementation}
     - {from: work-unit.prototype-design, to: work-unit.slice-implementation}
     - {from: work-unit.technical-analysis, to: work-unit.slice-implementation}
+    - {from: work-unit.technical-analysis, to: work-unit.ticket-decomposition}
 
 grill_exit:
   required: [frontier_empty, facts_resolved_or_routed, decisions_confirmed, shared_understanding_confirmed, no_unresolved_runnable_blocker]
@@ -627,7 +671,11 @@ backend_scaffold:
     layered-mvc: { recipe: backend.mvc-scaffold, generator_skill: yss-layered-mvc-scaffold-generator, baseline_skills: [] }
   tdd_mode: controlled-generation
   contract_schema:
-    schema_version: 3
+    schema_version: 4
+    current_schema_version: 4
+    schema_ref: docs/process/schemas/project-scaffold-contract.schema.json
+    compatible_backend_versions: [3, 4]
+    frontend_minimum_version: 4
     identity: service-engineering-baseline
     required: [contract_id, contract_version, scaffold_request_id, status, compiler_draft_ref, lifecycle_approval_ref, persisted_ref, current_version, implementation_repository, backend_repository, scaffold_status, project_name, target_output_dir, base_package, architecture_family, generator_skill, decision_ref, decision_id, decision_digest, maven_coordinates, profiles, module_profile, allowed_write_paths, expected_evidence_files, verification_commands, approval, work_unit, generation_policy]
     status_by_owner:
@@ -805,7 +853,7 @@ quality_baseline_reuse:
   redefinition: forbidden
 
 ready_for_agent:
-  required: [gates_satisfied, no_stale_artifacts, blockers_closed, implementation_context_ready, context_plan, quality_baseline_ref, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, predecessor_work_unit, ticket_decomposition_result_ref, ticket_decomposition_result_status, vertical_slice_ticket_ref, vertical_slice_ticket_role, vertical_slice_ticket_kind, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied, frontend_implementation_plan_if_ui_impact]
+  required: [gates_satisfied, no_stale_artifacts, blockers_closed, implementation_context_ready, context_plan, quality_baseline_ref, implementation_repositories_ready, implementation_repository_preparation_ref, implementation_repo, implementation_branch, ci, verification_commands, rollback_point, predecessor_work_unit, ticket_decomposition_result_ref, ticket_decomposition_result_status, vertical_slice_ticket_ref, vertical_slice_ticket_role, vertical_slice_ticket_kind, slice_contract_approved, slice_contract_persisted, slice_contract_current_version, build_architecture_checklist, backend_slice_contract_if_applicable, backend_scaffold_policy_satisfied, frontend_implementation_plan_if_ui_impact]
   ticket_formalization_validator: scripts/lib/lifecycle-transition.mjs
   requires_vertical_slice_ticket: true
   parent_ticket_as_implementation_ref: forbidden

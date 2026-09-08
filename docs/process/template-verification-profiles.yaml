@@ -75,6 +75,8 @@ required_files:
   - docs/process/schemas/strategic-design-handoff.schema.json
   - docs/process/schemas/frontend-implementation-evidence.schema.json
   - docs/process/schemas/scaffold-architecture-decisions.schema.json
+  - docs/process/schemas/project-scaffold-contract.schema.json
+  - docs/process/schemas/implementation-repository-preparation-result.schema.json
   - docs/design/schemas/visual-baseline.schema.json
   - docs/process/schemas/subagent-task-package.schema.json
   - docs/process/templates/lifecycle-checkpoint-template.yaml
@@ -120,6 +122,9 @@ required_files:
   - scripts/verify-template-candidate
   - scripts/verify-template
   - scripts/verify-business-language-scenarios
+  - scripts/query-lifecycle-context
+  - scripts/lib/lifecycle-context-query.mjs
+  - scripts/verify-lifecycle-context-query-scenarios
   - scripts/verify-frontend-implementation-evidence-scenarios
   - scripts/prepare-maintenance-review
   - scripts/evaluate-maintenance-review-round
@@ -144,6 +149,9 @@ syntax_files:
   - scripts/verify-context-contract
   - scripts/verify-context-contract-scenarios
   - scripts/verify-business-language-scenarios
+  - scripts/query-lifecycle-context
+  - scripts/lib/lifecycle-context-query.mjs
+  - scripts/verify-lifecycle-context-query-scenarios
   - scripts/verify-context-reconciliation
   - scripts/verify-context-reconciliation-scenarios
   - scripts/verify-grill-with-docs-context-scenarios
@@ -178,6 +186,10 @@ syntax_files:
   - scripts/lib/lifecycle-transition.mjs
   - scripts/verify-lifecycle-scenarios
   - scripts/verify-lifecycle-transition-scenarios
+  - scripts/verify-frontend-scaffold-generator-scenarios
+  - .agents/skills/yss-frontend-scaffold-generator/scripts/generate_scaffold.mjs
+  - .agents/skills/yss-frontend-scaffold-generator/scripts/run_scaffold_verification.mjs
+  - .agents/skills/yss-frontend-scaffold-generator/scripts/generate_and_verify_scaffold.mjs
   - scripts/verify-matt-yss-integration-scenarios
   - scripts/verify-prototype-backend-scaffold-scenarios
   - scripts/verify-yss-implementation-contract-compiler-scenarios
@@ -309,6 +321,7 @@ groups:
       - { run: "scripts/verify-grill-with-docs-context-scenarios" }
       - { run: "scripts/verify-strategic-context-import-scenarios" }
       - { run: "scripts/verify-lifecycle-registry" }
+      - { run: "scripts/verify-lifecycle-context-query-scenarios" }
       - { run: "scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml" }
       - { run: "scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-plan-template.yaml" }
       - { run: "scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-verification-template.yaml" }
@@ -317,6 +330,7 @@ groups:
       - { run: "scripts/verify-scaffold-architecture-decision-scenarios" }
       - { run: "scripts/verify-lifecycle-scenarios" }
       - { run: "scripts/verify-lifecycle-transition-scenarios" }
+      - { run: "scripts/verify-frontend-scaffold-generator-scenarios" }
   maintenance:
     commands:
       - { run: "scripts/verify-maintenance-checkpoint .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml", when: template-source }
@@ -329,6 +343,7 @@ groups:
       - { run: "scripts/verify-scaffold-generator-scenarios" }
       - { run: "node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs" }
       - { run: "node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs" }
+      - { run: "scripts/verify-frontend-scaffold-generator-scenarios" }
       - { run: "scripts/verify-prototype-backend-scaffold-scenarios" }
       - { run: "scripts/verify-matt-yss-integration-scenarios" }
       - { run: "scripts/verify-yss-implementation-contract-compiler-scenarios" }

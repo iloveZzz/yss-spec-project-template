@@ -937,7 +937,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
-        "effectiveHash": "438b92a03e9e0c80ac68db65096fd499275ad16cb69d4d751571754a97aa38a8",
+        "effectiveHash": "96e1c82c538a96af293273906db5ddefcf9943e8b76bb47b05d08772f16258cb",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1078,7 +1078,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-frontend-scaffold-generator/SKILL.md",
-        "effectiveHash": "87bc0d2f0c279d3fff14ded7a07ba7b9f72a61080e7b9ca826bb452894877e4e",
+        "effectiveHash": "968c213c90a30d719e51050a6122ef729bc03ae97d2841a5d47824d68a5d27ff",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1108,7 +1108,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
-        "effectiveHash": "4ae7055bd243f256eade79327b02857115072ac12ef77d5903f4d054240d5c9f",
+        "effectiveHash": "96582c950a13f26a7c16b2087d0614cb28a99f0f805190fc64cfc80e6456c335",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1123,7 +1123,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
-        "effectiveHash": "360389486d6bd07949c0b11ab30e266fbf073169d8ee447d89581fe583228950",
+        "effectiveHash": "50d0f704326fc523c29f4b728c08148cde372c674b9e8686829bee3e74b66fdc",
         "targets": [
           ".agents/skills",
           ".claude/skills",
@@ -1228,7 +1228,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "effectiveHash": "f6fcce3bdcc16a1d5a3b9f3d02e4773a0e2c4ee86970789d4e4f303c21b763fb",
+        "effectiveHash": "d317bd2799da0442745c8126e62f7919a0b3de03f2c3cc2e1a7ca0433dc69645",
         "targets": [
           ".agents/skills",
           ".claude/skills",

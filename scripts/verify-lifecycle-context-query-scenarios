@@ -1,0 +1,68 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { queryLifecycleContext } from "./lib/lifecycle-context-query.mjs";
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+
+const query = {
+  mode: "route",
+  stageId: "stage.discovery",
+  workUnitId: "work-unit.discovery-requirements",
+  include: ["grill_exit"],
+};
+const first = queryLifecycleContext(query);
+const second = queryLifecycleContext(query);
+
+assert.deepEqual(first, second, "同一查询必须产生确定性结果");
+assert.equal(first.query.mode, "route");
+assert.equal(first.lifecycle.stage.id, "stage.discovery");
+assert.ok(first.lifecycle.gates.every((gate) => gate.stage === "stage.discovery"));
+assert.ok(first.lifecycle.artifacts.every((artifact) => artifact.stage === "stage.discovery"));
+assert.equal(first.lifecycle.work_unit.id, "work-unit.discovery-requirements");
+assert.equal(first.execution.mode, "read_only");
+assert.equal(first.execution.work_unit_route.primary_skill, "yss-product-lifecycle");
+assert.ok(first.execution.selected.grill_exit.required.includes("frontier_empty"));
+assert.equal("review_input" in first.execution.selected, false, "不得返回未请求的合同子树");
+assert.ok(first.skills.some((skill) => skill.id === "grilling"));
+assert.match(first.sources.lifecycle_registry.semantic_sha256, /^[0-9a-f]{64}$/);
+assert.match(first.sources.orchestration_contract.sha256, /^[0-9a-f]{64}$/);
+
+for (const invalid of [
+  { mode: "invalid" },
+  { stageId: "stage.missing" },
+  { workUnitId: "work-unit.missing" },
+  { include: ["missing_contract_section"] },
+]) {
+  assert.throws(() => queryLifecycleContext(invalid), /未知|至少提供/);
+}
+
+const cli = spawnSync("node", [
+  "scripts/query-lifecycle-context",
+  "--mode", "route",
+  "--stage", "stage.discovery",
+  "--work-unit", "work-unit.discovery-requirements",
+  "--include", "grill_exit",
+], { cwd: ROOT, encoding: "utf8" });
+assert.equal(cli.status, 0, cli.stderr);
+assert.deepEqual(JSON.parse(cli.stdout), first, "CLI 输出必须等于库函数的规范投影");
+
+const skillPath = path.join(ROOT, ".agents/skills/yss-product-lifecycle/SKILL.md");
+const skill = readFileSync(skillPath, "utf8");
+assert.ok(Buffer.byteLength(skill) <= 8192, "生命周期入口 Skill 必须保持在 8KB 软预算内");
+assert.equal(skill.includes("| 主阶段 |"), false, "入口 Skill 不得复制完整阶段表");
+for (const marker of [
+  "docs/process/lifecycle-registry.yaml",
+  "references/orchestration-contract.yaml",
+  "docs/agents/yss-skill-registry.yaml",
+  "scripts/query-lifecycle-context",
+  "### 仓库身份",
+  "### 流转与实现",
+  "### 用户决定",
+  "### 外部副作用与 Git",
+]) assert.match(skill, new RegExp(marker.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+
+process.stdout.write("生命周期按需上下文查询场景验证通过\n");

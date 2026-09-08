@@ -28,11 +28,17 @@ owner: ai
 | superproject_git_url | 父仓远端；必须与 `git_url` 不同 |
 | checkout_state | attached-branch / detached-head / uninitialized / empty-gitlink / 不适用 |
 | scaffold_status | existing / required / initialized |
+| preparation_status | existing-and-onboarded / initialized-and-verified / not-applicable |
+| preparation_result_ref | `artifact.implementation-repository-preparation-result` 的当前引用 |
+| project_scaffold_contract_ref | 新建工程必填；统一 schema v4，历史已批准后端 v3 只读兼容 |
+| scaffold_manifest_ref | 新建工程必填 |
+| scaffold_verification_ref | 新建工程必填，且 status=passed |
 | scaffold_architecture | `domain-driven` / `layered-mvc` / 不适用；required 时必须由用户确认 |
 | scaffold_decision_ref | `scaffold-architecture-decisions.yaml` 的 decision_id + digest |
 | scaffold_skill | `yss-ddd-scaffold-generator` / `yss-layered-mvc-scaffold-generator` / `yss-frontend-scaffold-generator` / none |
 | scaffold_target_confirmed | 是 / 否 / 不适用 |
 | target_git_url_or_output_dir |  |
+| init_git | true / false；必须来自真实用户确认 |
 | owner |  |
 | ci_system | GitLab CI / GitHub Actions / Jenkins / other / none |
 | issue_tracker | GitLab / GitHub / other |
@@ -85,4 +91,6 @@ Harness 内项目路径约束：`apps/backend/`、`apps/frontend/` 只能作为�
 - 关联 Harness change：
 - 关联垂直切片：
 - 关联阶段 checkpoint：
+- 实现仓库准备聚合结果：
+- `gate.implementation-repositories-ready`：approved / blocked
 - fresh verification 命令：

@@ -1,0 +1,46 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  将 yss-product-lifecycle 从承载大量阶段细节的主控 Skill 收敛为薄编排入口，
+  新增基于生命周期注册表、编排合同和 Skill 注册表的确定性按需上下文查询，
+  并将脆弱的逐字断言替换为结构与语义校验；该变更影响核心 Agent 路由与模板验证行为，
+  但不改变既有生命周期阶段、门禁、工作单元或稳定 ID 语义。
+triggers:
+  - aggregate-behavior-change
+  - core-validator
+changed_assets:
+  - .agents/skills/yss-product-lifecycle/SKILL.md
+  - .codex/skills/yss-product-lifecycle/SKILL.md
+  - scripts/lib/lifecycle-context-query.mjs
+  - scripts/query-lifecycle-context
+  - scripts/verify-lifecycle-context-query-scenarios
+  - scripts/lib/scenario-checks.mjs
+  - scripts/verify-business-language-scenarios
+  - docs/process/template-verification-profiles.yaml
+  - skills-lock.json
+verification_evidence:
+  - kind: targeted-tests
+    command: >-
+      node --check scripts/lib/lifecycle-context-query.mjs &&
+      node --check scripts/query-lifecycle-context &&
+      scripts/verify-lifecycle-context-query-scenarios &&
+      scripts/verify-lifecycle-scenarios &&
+      scripts/verify-matt-yss-integration-scenarios &&
+      node scripts/verify-business-language-scenarios &&
+      scripts/verify-skill-registry
+    result: pass
+  - kind: projection-sync
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: >-
+  fast 入口因工作区核心核验资产变化自动升级并实际通过 release 级门禁；本 checkpoint
+  按本轮约定停在 implementation-ready，不冻结候选，也不声明 release-ready。
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

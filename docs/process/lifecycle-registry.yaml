@@ -110,6 +110,9 @@ evidence:
   - id: evidence.fresh-verification
     name: Fresh Verification 记录
     description: 本轮实际执行的验证命令、结果和时间。
+  - id: evidence.implementation-repository-preparation
+    name: 实现仓库准备证据
+    description: 按项目记录交付面、已有仓库接入或新脚手架合同、生成清单、实际验证结果、仓库位置、Git 边界和当前版本。
   - id: evidence.checkpoint-and-rollback
     name: Checkpoint 与回滚点
     description: 可追溯的变更边界、发布记录和恢复动作。
@@ -183,6 +186,12 @@ gates:
     stage: stage.system-data-engineering
     trigger: 高风险或跨边界变化。
     evidence: [evidence.design-review-result]
+  - id: gate.implementation-repositories-ready
+    name: 实现仓库准备就绪
+    stage: stage.system-data-engineering
+    trigger: 后端或前端交付面进入 Ticket 正式化；未命中的交付面须记录带原因的 not-applicable。
+    evidence: [evidence.implementation-repository-preparation, evidence.fresh-verification]
+    requires_gates: [gate.engineering-baseline-accepted]
   - id: gate.slice-contract-approved
     name: Slice Implementation Contract 批准
     stage: stage.ticket-formalization
@@ -285,6 +294,14 @@ artifacts:
     name: 技术设计合同
     stage: stage.system-data-engineering
     trigger: 后端技术设计需要按已确认 DDD 或 MVC 架构明确行为、分层、一致性或数据映射。
+  - id: artifact.project-scaffold-contract
+    name: Project Scaffold Contract
+    stage: stage.system-data-engineering
+    trigger: 命中的前端或后端交付面选择初始化新工程。
+  - id: artifact.implementation-repository-preparation-result
+    name: 实现仓库准备结果
+    stage: stage.system-data-engineering
+    trigger: 后端或前端交付面进入 Ticket 正式化。
   - id: artifact.tactical-design
     name: DDD 战术设计
     stage: stage.system-data-engineering
@@ -415,6 +432,12 @@ work_units:
     input: Spec、原型、API/数据/工程影响面。
     output: OpenAPI、数据架构、按确认架构形成的 DDD / MVC 技术设计合同、工程基线、架构审查和 Slice 合同草案。
     completion: 命中契约已冻结；无 API 影响有可读记录；命中技术设计影响时架构已确认、规则与场景承接无未解释冲突；工程基线通过。
+  - id: work-unit.implementation-repository-preparation
+    name: 实现仓库准备
+    scope: project-instance
+    input: 工程影响面、工程基线、逐项目用户决定、实现仓库位置；新建工程还需批准且当前的 Project Scaffold Contract。
+    output: 已有工程的 Repository Onboarding Result，或新工程的 Scaffold Manifest 与 Scaffold Verification；并汇总 Implementation Repository Preparation Result。
+    completion: 每个命中的交付面均为 existing-and-onboarded 或 initialized-and-verified，未命中的交付面有带原因的 not-applicable；聚合结果当前且证据可读。
   - id: work-unit.service-project-initialization
     name: 独立服务项目初始化
     scope: project-instance

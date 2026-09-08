@@ -5,6 +5,7 @@ import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
 
 const IMPLEMENTATION_WORK_UNIT = "work-unit.slice-implementation";
 const TICKET_DECOMPOSITION_WORK_UNIT = "work-unit.ticket-decomposition";
+const REPOSITORY_PREPARATION_WORK_UNIT = "work-unit.implementation-repository-preparation";
 
 function deepFreeze(value) {
   if (!value || typeof value !== "object" || Object.isFrozen(value)) return value;
@@ -26,9 +27,10 @@ const NEXT_ROUTES = deepFreeze({
   "work-unit.discovery-requirements": ["work-unit.domain-strategy-design", "work-unit.stage-decision", "work-unit.spec-synthesis"],
   "work-unit.domain-strategy-design": ["work-unit.stage-decision", "work-unit.spec-synthesis"],
   "work-unit.stage-decision": ["work-unit.spec-synthesis"],
-  "work-unit.spec-synthesis": ["work-unit.prototype-design", "work-unit.technical-analysis", TICKET_DECOMPOSITION_WORK_UNIT],
-  "work-unit.prototype-design": ["work-unit.technical-analysis", TICKET_DECOMPOSITION_WORK_UNIT],
-  "work-unit.technical-analysis": [TICKET_DECOMPOSITION_WORK_UNIT],
+  "work-unit.spec-synthesis": ["work-unit.prototype-design", "work-unit.technical-analysis", REPOSITORY_PREPARATION_WORK_UNIT],
+  "work-unit.prototype-design": ["work-unit.technical-analysis", REPOSITORY_PREPARATION_WORK_UNIT],
+  "work-unit.technical-analysis": [REPOSITORY_PREPARATION_WORK_UNIT],
+  [REPOSITORY_PREPARATION_WORK_UNIT]: [TICKET_DECOMPOSITION_WORK_UNIT],
   [TICKET_DECOMPOSITION_WORK_UNIT]: [IMPLEMENTATION_WORK_UNIT],
   [IMPLEMENTATION_WORK_UNIT]: ["work-unit.frontend-implementation-verification", "work-unit.code-review"],
   "work-unit.frontend-implementation-verification": ["work-unit.code-review"],
@@ -56,6 +58,15 @@ const BLOCKING_SIGNALS = Object.freeze({
   contractNotCurrent: "slice-contract-not-current",
   missingEvidence: "ticket-formalization-evidence-missing",
   stale: "ticket-formalization-stale",
+  repositoryDecisionRequired: "implementation-repository-decision-required",
+  repositoryLocationRequired: "implementation-repository-location-required",
+  repositoryOnboardingIncomplete: "implementation-repository-onboarding-incomplete",
+  scaffoldChoiceRequired: "scaffold-choice-required",
+  scaffoldContractUnapproved: "scaffold-contract-unapproved",
+  scaffoldGenerationIncomplete: "scaffold-generation-incomplete",
+  scaffoldVerificationFailed: "scaffold-verification-failed",
+  frontendTemplateUnavailable: "frontend-template-unavailable",
+  implementationRepositoriesStale: "implementation-repositories-stale",
 });
 
 const allowedResult = (evidenceRefs = []) => ({
@@ -130,7 +141,99 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
     }
     return blockedResult(signals, ["allowed_next_route"]);
   }
+  if (nextRoute === TICKET_DECOMPOSITION_WORK_UNIT) {
+    const readiness = validateImplementationRepositoriesReady(decisionState, options);
+    if (readiness.result === "blocked") return readiness;
+  }
   return decisionState ? validateDecisionBoundary(currentWorkUnit, decisionState, options) : allowedResult();
+}
+
+/**
+ * Validate the aggregate stage-5 repository-preparation result. Every affected
+ * delivery role must resolve to an onboarded existing repository or a freshly
+ * generated and verified scaffold. Unaffected roles need an explicit reason.
+ */
+export function validateImplementationRepositoriesReady(state, { exists = existsSync } = {}) {
+  const preparation = state?.implementation_repository_preparation;
+  const impacts = state?.delivery_impacts;
+  const signals = [];
+  const missing = [];
+  const evidenceRefs = Array.isArray(preparation?.evidence_refs) ? preparation.evidence_refs : [];
+
+  if (!preparation || preparation.result !== "completed" || !Array.isArray(preparation.projects)) {
+    return blockedResult([BLOCKING_SIGNALS.repositoryDecisionRequired], ["completed implementation_repository_preparation with projects"]);
+  }
+  if (preparation.current_version !== true || state?.implementation_repositories_stale === true) {
+    signals.push(BLOCKING_SIGNALS.implementationRepositoriesStale);
+    missing.push("implementation repository preparation is current");
+  }
+  if (evidenceRefs.length === 0 || evidenceRefs.some((ref) => !isReadable(ref, exists))) {
+    signals.push(BLOCKING_SIGNALS.repositoryOnboardingIncomplete);
+    missing.push("readable implementation_repository_preparation.evidence_refs");
+  }
+
+  for (const role of ["backend", "frontend"]) {
+    const affected = impacts?.[role] === true;
+    const projects = preparation.projects.filter((project) => project?.delivery_role === role);
+    if (affected && projects.length === 0) {
+      signals.push(BLOCKING_SIGNALS.repositoryDecisionRequired);
+      missing.push(`${role} repository decision`);
+    }
+    if (!affected && projects.length === 0) {
+      signals.push(BLOCKING_SIGNALS.repositoryDecisionRequired);
+      missing.push(`${role} not-applicable decision with reason`);
+    }
+    for (const project of projects) {
+      if (!hasText(project.project_id) || !hasText(project.status)) {
+        signals.push(BLOCKING_SIGNALS.repositoryDecisionRequired);
+        missing.push(`${role} project_id and status`);
+        continue;
+      }
+      if (project.status === "not-applicable") {
+        if (affected || !hasText(project.reason)) {
+          signals.push(BLOCKING_SIGNALS.repositoryDecisionRequired);
+          missing.push(`${project.project_id} not-applicable reason for an unaffected role`);
+        }
+        continue;
+      }
+      if (!hasText(project.repository_ref) || !hasText(project.project_root) || !hasText(project.repository_scope)) {
+        signals.push(BLOCKING_SIGNALS.repositoryLocationRequired);
+        missing.push(`${project.project_id} repository_ref, project_root and repository_scope`);
+      }
+      if (project.status === "existing-and-onboarded") {
+        if (project.onboarding_result?.status !== "completed" || !isReadable(project.onboarding_result?.ref, exists)) {
+          signals.push(BLOCKING_SIGNALS.repositoryOnboardingIncomplete);
+          missing.push(`${project.project_id} readable completed onboarding result`);
+        }
+      } else if (project.status === "initialized-and-verified") {
+        if (role === "backend" && !hasText(project.architecture_family)) {
+          signals.push(BLOCKING_SIGNALS.scaffoldChoiceRequired);
+          missing.push(`${project.project_id} confirmed backend architecture_family`);
+        }
+        const contract = project.scaffold_contract;
+        if (![3, 4].includes(contract?.schema_version) || contract?.status !== "approved" || contract?.persisted !== true || contract?.current_version !== true || (role === "frontend" && contract?.schema_version !== 4)) {
+          signals.push(BLOCKING_SIGNALS.scaffoldContractUnapproved);
+          missing.push(`${project.project_id} approved persisted current scaffold contract`);
+        }
+        if (!isReadable(project.scaffold_manifest_ref, exists)) {
+          signals.push(BLOCKING_SIGNALS.scaffoldGenerationIncomplete);
+          missing.push(`${project.project_id} readable scaffold manifest`);
+        }
+        if (project.scaffold_verification?.status !== "passed" || !isReadable(project.scaffold_verification?.ref, exists)) {
+          signals.push(BLOCKING_SIGNALS.scaffoldVerificationFailed);
+          missing.push(`${project.project_id} readable passed scaffold verification`);
+        }
+        if (role === "frontend" && project.template_available !== true) {
+          signals.push(BLOCKING_SIGNALS.frontendTemplateUnavailable);
+          missing.push(`${project.project_id} verified frontend template source`);
+        }
+      } else {
+        signals.push(BLOCKING_SIGNALS.repositoryDecisionRequired);
+        missing.push(`${project.project_id} supported repository preparation status`);
+      }
+    }
+  }
+  return signals.length === 0 ? allowedResult(evidenceRefs) : blockedResult(signals, missing, evidenceRefs);
 }
 
 function validateDecisionBoundary(workUnit, state, options) {
@@ -145,6 +248,8 @@ function validateDecisionBoundary(workUnit, state, options) {
 export function validateTicketFormalization(state, { exists = existsSync, read = (ref) => readFileSync(ref, "utf8"), ...decisionOptions } = {}) {
   try { enforceFrontendDelivery(state, { root: decisionOptions.root, phase: "implementation" }); }
   catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
+  const repositoryResult = validateImplementationRepositoriesReady(state, { exists });
+  if (repositoryResult.result === "blocked") return repositoryResult;
   const decomposition = state?.ticket_decomposition_result;
   const ticket = state?.vertical_slice_ticket;
   const contract = state?.slice_contract;
@@ -276,6 +381,7 @@ export function validateImplementationEntry(state, options = {}) {
 export const lifecycleTransitionContract = Object.freeze({
   implementation_work_unit: IMPLEMENTATION_WORK_UNIT,
   ticket_decomposition_work_unit: TICKET_DECOMPOSITION_WORK_UNIT,
+  repository_preparation_work_unit: REPOSITORY_PREPARATION_WORK_UNIT,
   next_routes: NEXT_ROUTES,
   blocking_signals: BLOCKING_SIGNALS,
 });

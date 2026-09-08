@@ -1,0 +1,46 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  新增阶段 5 实现仓库准备工作单元与聚合门禁，改变 Ticket 流转、跨仓接入、
+  前后端脚手架合同及受控生成语义，并修改生命周期核心校验器。
+triggers:
+  - lifecycle-gate
+  - ticket-state
+  - generation-semantics
+  - cross-repo-contract
+  - core-validator
+  - aggregate-behavior-change
+changed_assets:
+  - docs/process/lifecycle-registry.yaml
+  - docs/process/schemas/project-scaffold-contract.schema.json
+  - docs/process/schemas/implementation-repository-preparation-result.schema.json
+  - scripts/lib/lifecycle-transition.mjs
+  - scripts/verify-lifecycle-transition-scenarios
+  - .agents/skills/yss-product-lifecycle/SKILL.md
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - .agents/skills/yss-implementation-contract-compiler/SKILL.md
+  - .agents/skills/yss-frontend-scaffold-generator/SKILL.md
+  - .agents/skills/yss-frontend-scaffold-generator/scripts/generate_and_verify_scaffold.mjs
+  - .agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs
+  - .agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs
+  - docs/agents/yss-skill-registry.yaml
+  - docs/agents/digital-human-roles.yaml
+  - skills-lock.json
+verification_evidence:
+  - kind: self-check
+    command: >-
+      scripts/verify-lifecycle-transition-scenarios &&
+      scripts/verify-frontend-scaffold-generator-scenarios &&
+      node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs &&
+      node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: fast 入口因 lifecycle-registry 核心影响自动升级并实际通过 release profile
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

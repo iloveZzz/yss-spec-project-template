@@ -127,6 +127,8 @@ function validateWorkflowExecutionResult(payload, contract, workUnitRoutes) {
     const implementationState = {
       user_decisions: payload.user_decisions,
       slice_contract_ref: payload.slice_contract_ref,
+      delivery_impacts: payload.delivery_impacts,
+      implementation_repository_preparation: payload.implementation_repository_preparation,
       tracker_kind: payload.tracker_kind,
       predecessor_work_unit: payload.predecessor_work_unit,
       ready_for_agent: payload.ready_for_agent,
@@ -166,18 +168,15 @@ function validateInvocationMetadata(boundary, skillContents) {
   for (const skill of boundary.model_invoked_skills) ensure(!skillContents(skill).includes("disable-model-invocation: true"), `${skill} 不应出现在 model-invoked 白名单`);
 }
 
-function validateMattProse(skill, adapter) {
-  ensure(skill.includes("不得写生命周期资产或改变门禁/Ticket 状态") && skill.includes("任何写入前回交本编排器"), "主技能缺少 direct Matt 只导航并回交的说明");
-  ensure(adapter.includes("仅发现旧路径资产") && adapter.includes("不得调用 `setup-matt-pocock-skills`"), "适配器缺少 setup 旧资产迁移或显式用户入口条件");
-  ensure(adapter.includes("frontier 为空") && adapter.includes("双方共同理解已确认"), "适配器缺少 grill_exit 的 frontier 或共同理解条件");
-  ensure(skill.includes("自然语言意向不构成上述结构化 Git 授权") && adapter.includes("本身不是结构化授权"), "主技能或适配器缺少自然语言 Git 意向不是授权的说明");
-  ensure(adapter.includes("禁止 detached HEAD 提交") && adapter.includes("先推子仓再更新父仓 gitlink"), "适配器缺少 git-submodule 嵌套 Git 授权说明");
-}
-
-function validateInvocationProse(skill, adapter, orchestration) {
-  ensure(skill.includes("不得自动调用它们或代替其创建正式资产") && skill.includes("Workflow Execution Result"), "主技能未限制 user-invoked 调用或未采用新结果协议");
-  ensure(adapter.includes("workflow reference 不表示调用") && adapter.includes("正式 Spec、Ticket 或实现资产仍只能由对应显式用户入口创建"), "适配器未限制 workflow reference 的正式资产所有权");
-  ensure(orchestration.includes("只实际调用允许的 model-invoked skill") && orchestration.includes("用户显式启动"), "编排协议未区分 model-invoked 原语和显式用户入口");
+function validateLifecycleEntrySkill(skill) {
+  ensure(/^---\nname: yss-product-lifecycle\n/m.test(skill), "生命周期入口缺少有效 frontmatter");
+  ensure(Buffer.byteLength(skill) <= 8192, "生命周期入口超过 8KB 上下文预算");
+  for (const reference of ["docs/process/lifecycle-registry.yaml", "references/orchestration-contract.yaml", "docs/agents/yss-skill-registry.yaml", "scripts/query-lifecycle-context"]) {
+    ensure(skill.includes(reference), `生命周期入口缺少权威引用: ${reference}`);
+  }
+  for (const heading of ["### 仓库身份", "### 流转与实现", "### 用户决定", "### 外部副作用与 Git"]) {
+    ensure(skill.includes(heading), `生命周期入口缺少边界分组: ${heading}`);
+  }
 }
 
 const profiles = {
@@ -194,7 +193,7 @@ const profiles = {
   prototype: {
     message: "原型到后端脚手架及后续 YSS 代码生成压力场景验证通过",
     files: [".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs", ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml"],
-    markers: [[".agents/skills/yss-product-lifecycle/SKILL.md", "controlled-generation"]]
+    markers: [[".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml", "controlled-generation"]]
   },
   implementationContractCompiler: {
     message: "YSS implementation contract compiler stage 7 scenarios passed",
@@ -250,7 +249,10 @@ export function runScenario(name) {
       { from: "work-unit.spec-synthesis", to: "work-unit.slice-implementation" },
       { from: "work-unit.prototype-design", to: "work-unit.slice-implementation" },
       { from: "work-unit.technical-analysis", to: "work-unit.slice-implementation" },
-    ]), "生命周期转换图缺少 Spec/原型/技术分析到实现的越级阻断");
+      { from: "work-unit.technical-analysis", to: "work-unit.ticket-decomposition" },
+    ]), "生命周期转换图缺少工程准备、Ticket 正式化与实现越级阻断");
+    ensure(contract.transition_graph?.routes?.["work-unit.implementation-repository-preparation"]?.includes("work-unit.ticket-decomposition"), "实现仓库准备未成为 Ticket 正式化前置");
+    ensure(contract.implementation_repository_preparation?.gate === "gate.implementation-repositories-ready", "实现仓库准备聚合门禁缺失");
     ensure(lifecycleTransitionContract.next_routes["work-unit.ticket-decomposition"]?.includes("work-unit.slice-implementation"), "转换校验器未允许 Ticket 正式化后进入实现");
     ensure(contract.release_readiness?.conditional?.ui_impact?.includes("gate.frontend-implementation-verified") && contract.frontend_implementation_plan?.acceptance?.includes("no_template_placeholders"), "发布公式或前端计划实质校验不完整");
     const templateRejected = spawnSync("scripts/verify-frontend-implementation-evidence", ["docs/process/templates/frontend-implementation-plan-template.yaml"], { cwd: root, encoding: "utf8" });
@@ -277,7 +279,7 @@ export function runScenario(name) {
       changed_artifacts: [],
       new_impacts: [],
       stale_candidates: [],
-      next_route: "work-unit.ticket-decomposition",
+      next_route: "work-unit.implementation-repository-preparation",
       blocking_signals: []
     };
     validateWorkflowExecutionResult(validResult, data.workflow_execution_result, data.work_unit_routes);
@@ -306,6 +308,14 @@ export function runScenario(name) {
       slice_contract_status: "approved",
       slice_contract_persisted: true,
       slice_contract_current_version: true,
+      delivery_impacts: { backend: true, frontend: false },
+      implementation_repository_preparation: {
+        result: "completed", current_version: true, evidence_refs: ["docs/process/lifecycle-registry.yaml"],
+        projects: [
+          { project_id: "backend", delivery_role: "backend", status: "existing-and-onboarded", repository_ref: "git://backend", project_root: "/workspace/backend", repository_scope: "external-repository", onboarding_result: { status: "completed", ref: "docs/process/lifecycle-registry.yaml" } },
+          { project_id: "frontend-na", delivery_role: "frontend", status: "not-applicable", reason: "no frontend impact" },
+        ],
+      },
     };
     validateWorkflowExecutionResult(validImplementationResult, data.workflow_execution_result, data.work_unit_routes);
     for (const mutate of [
@@ -379,16 +389,7 @@ export function runScenario(name) {
       ensure(rejected, "Matt/YSS 契约变异未被 baseline oracle 拒绝");
     }
     const skill = read(".agents/skills/yss-product-lifecycle/SKILL.md");
-    const adapter = read(".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md");
-    const orchestration = read(".agents/skills/yss-product-lifecycle/references/orchestration.md");
-    validateMattProse(skill, adapter);
-    validateInvocationProse(skill, adapter, orchestration);
-    let proseRejected = false;
-    try { validateMattProse(skill.replace("任何写入前回交本编排器", "允许直接写入"), adapter); } catch { proseRejected = true; }
-    ensure(proseRejected, "Matt/YSS prose 变异未被 baseline oracle 拒绝");
-    let invocationProseRejected = false;
-    try { validateInvocationProse(skill.replace("不得自动调用它们或代替其创建正式资产", "可以自动调用并创建正式资产"), adapter, orchestration); } catch { invocationProseRejected = true; }
-    ensure(invocationProseRejected, "调用边界 prose 变异未被 baseline oracle 拒绝");
+    validateLifecycleEntrySkill(skill);
     for (const relative of ["SKILL.md", "references/matt-yss-adapter.md", "references/orchestration-contract.yaml"]) {
       ensure(read(`.agents/skills/yss-product-lifecycle/${relative}`) === read(`.codex/skills/yss-product-lifecycle/${relative}`), `YSS 生命周期投影未同步: ${relative}`);
     }

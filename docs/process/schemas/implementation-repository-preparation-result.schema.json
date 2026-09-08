@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.example/schemas/implementation-repository-preparation-result.schema.json",
+  "title": "Implementation Repository Preparation Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "result", "current_version", "projects", "evidence_refs"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "kind": { "const": "implementation-repository-preparation-result" },
+    "result": { "const": "completed" },
+    "current_version": { "const": true },
+    "projects": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["project_id", "delivery_role", "status"],
+        "properties": {
+          "project_id": { "type": "string", "minLength": 1 },
+          "delivery_role": { "enum": ["backend", "frontend"] },
+          "status": { "enum": ["existing-and-onboarded", "initialized-and-verified", "not-applicable"] },
+          "reason": { "type": "string" },
+          "repository_ref": { "type": "string" },
+          "project_root": { "type": "string" },
+          "repository_scope": { "enum": ["external-repository", "harness-apps", "git-submodule"] },
+          "onboarding_result": { "type": "object" },
+          "scaffold_contract": { "type": "object" },
+          "scaffold_manifest_ref": { "type": "string" },
+          "scaffold_verification": { "type": "object" },
+          "template_available": { "type": "boolean" },
+          "architecture_family": { "type": "string" }
+        }
+      }
+    },
+    "evidence_refs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+  }
+}

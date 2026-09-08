@@ -46,6 +46,7 @@
 | `component.gateway-resilience` | `yss-resilience4j` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `component-maintenance`, `review-input` |
 | `scaffold.ddd` | `yss-ddd-scaffold-generator` | `integration`, `component-maintenance` |
 | `scaffold.layered-mvc` | `yss-layered-mvc-scaffold-generator` | `integration`, `component-maintenance` |
+| `scaffold.frontend-vue3` | `yss-frontend-scaffold-generator` | `integration`, `component-maintenance` |
 | `project-init.mvc-data-analysis` | `yss-mvc-data-analysis-project-initializer` | `component-maintenance` |
 | `migration.springboot3` | `yss-up-springboot3` | `guidance`, `integration`, `troubleshooting`, `component-maintenance`, `review-input` |
 
@@ -73,6 +74,7 @@
 | `backend.distributed-id` | `component.distributed-id` |
 | `backend.ddd-scaffold` | `scaffold.ddd`, `quality.java-code-style` |
 | `backend.mvc-scaffold` | `scaffold.layered-mvc`, `quality.java-code-style` |
+| `frontend.vue3-scaffold` | `scaffold.frontend-vue3` |
 | `backend.springboot3-migration` | `migration.springboot3`, `quality.java-code-style` |
 
 ## Impact Entry Mapping

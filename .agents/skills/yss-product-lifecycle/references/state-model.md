@@ -41,6 +41,8 @@ required gates ∈ {approved, not-applicable}
 AND 关键决定及当前切片实施范围已有可追溯、当前且未撤回的真实用户批准
 AND related artifacts 不含 stale（若命中技术设计影响，`artifact.technical-design` 必须已批准且版本当前、架构一致；旧 DDD 合同仅按显式兼容入口消费）
 AND blocking edges 全部关闭
+AND `gate.implementation-repositories-ready` 已通过，所有命中的前后端项目均为 `existing-and-onboarded` 或 `initialized-and-verified`，未命中的交付面有带原因的 `not-applicable`
+AND `work-unit.implementation-repository-preparation` 已返回当前且证据可读的 `completed` 结果
 AND implementation repo/branch/CI/test/rollback 已明确
 AND `work-unit.ticket-decomposition` 已返回 `completed`，且其 `ticket_decomposition_result_ref` 证据可读取
 AND `vertical_slice_ticket_ref` 指向 `docs/.scratch/<feature>/issues/` 下的垂直切片 Ticket
@@ -50,7 +52,8 @@ AND Slice Implementation Contract 已由生命周期编排器批准并持久化
 AND Slice Implementation Contract 的 `ticket_ref` 与 `vertical_slice_ticket_ref` 完全一致
 AND 当前工作单元消费的 contract_id/version 与最新批准版本一致
 AND Backend Slice Implementation Contract（后端适用）和 Build Architecture Checklist 已完成
-AND backend 影响且 scaffold_status=required 时，脚手架架构选择已由用户确认并达到 lifecycle-approved、schema v3 合同与 Manifest v3 当前、对应 DDD / Layered MVC 基线、Wrapper 验证和 实现合同编译器重编译均已完成
+AND backend 影响且 scaffold_status=required 时，脚手架架构选择已由用户确认并达到 lifecycle-approved、兼容 schema v3 或统一 schema v4 合同与 Manifest 当前、对应 DDD / Layered MVC 基线、Wrapper 验证和 实现合同编译器重编译均已完成
+AND frontend 影响且无已有工程时，统一 schema v4 Project Scaffold Contract 已批准、持久化且当前，模板 commit 已锁定，`pnpm install --frozen-lockfile` 与工程基线要求的 lint/type-check/build 已实际通过
 AND 所有后续生成代码均绑定主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result
 AND UI 影响切片的前端实现还原计划已通过 schema 校验、`template=false`、`status=approved`，且基线引用可读取
 ```
@@ -61,7 +64,7 @@ AND UI 影响切片的前端实现还原计划已通过 schema 校验、`templat
 
 任何 `project-instance` 工作单元进入下一步、任何阶段会签暂停或阶段完成 checkpoint，还必须引用当前工作单元的 `context_reconciliation`。其中 `status=reconciled`、`context_ref=CONTEXT.md`、`document_digest` 与 `referenced_terms_digest` 必须和根目录唯一 `CONTEXT.md` 一致；该证据不改变门禁数量。`template-source` 仅允许以带原因的 `not-applicable` 表示它只校验模板合同，不产生产品业务术语。
 
-用户显式运行 `to-tickets` 后，垂直切片初始 Ticket 状态固定为 `ready-for-human`。原生路径执行 `work-unit.ticket-decomposition` 时同样必须产生等价的垂直切片和 `Workflow Execution Result` 证据。只有 `yss-product-lifecycle` 复算上述公式全部为真后，才能把它提升为 `ready-for-agent`；生命周期不会自动调用 `to-tickets`，但不得跳过 Ticket 正式化工作单元。其默认标签也不参与该裁决。
+用户显式运行 `to-tickets` 后，垂直切片初始 Ticket 状态固定为 `ready-for-human`。原生路径执行 `work-unit.ticket-decomposition` 时同样必须产生等价的垂直切片和 `Workflow Execution Result` 证据。只有 `yss-product-lifecycle` 复算上述公式全部为真后，才能把它提升为 `ready-for-agent`；生命周期不会自动调用 `to-tickets`，但不得跳过实现仓库准备和 Ticket 正式化工作单元。旧实例恢复时若缺少当前工程准备结果，保留既有 Ticket，将 Ticket 与 Slice Contract 标为 `blocked` / `stale` 并回到阶段 5。其默认标签也不参与该裁决。
 
 ## Review 与 Git 授权状态
 

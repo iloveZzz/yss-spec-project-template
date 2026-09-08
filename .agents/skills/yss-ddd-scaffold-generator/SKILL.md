@@ -88,7 +88,7 @@ node scripts/run_first_slice_verification.mjs \
 - 生成后的后端工程必须使用项目根目录 `./mvnw ...` 执行构建、测试、运行和 CI 验证；不得在 README、实施记录、Ticket、Review 或 Release 中默认写裸 `mvn ...`。既有仓库确实无法使用 wrapper 时，必须记录受控例外。
 - 原型确认后，`scaffold_status=required` 才能进入本 skill；本 skill 的生成边界是工程结构、POM、配置、Wrapper 和机械模板，不是业务实现。
 - 脚手架合同必须携带 `contract_id`、`contract_version`、实现合同编译器 draft 引用、生命周期批准引用、持久化引用、当前版本、允许写路径、预期证据文件和验证命令；字段缺失或版本过期时阻断。
-- 新脚手架合同只接受 schema v3，必须携带 `architecture_family=domain-driven`、`generator_skill`、`decision_ref/id/digest`、固定模块闭包，并分别携带 `project_name`、`base_package` 和 `maven_coordinates`；后者包含项目 `group_id` / `project_version`、父 POM GAV 与 `yss_components_version`，并由 CLI 原样传入。历史 schema v2 仅只读兼容，不用于新生成；schema v1/v2 均不自动升级。
+- 新脚手架优先接受统一 Project Scaffold Contract schema v4；已批准且当前的后端 schema v3 可完成兼容生成。两者都必须携带 `architecture_family=domain-driven`、`generator_skill`、`decision_ref/id/digest`、固定模块闭包，以及 `project_name`、`base_package` 和 `maven_coordinates`。历史 schema v2 仅只读兼容，不用于新生成；schema v1/v2 均不自动升级。
 - 合同 `profiles` 只支持 `target-domain-model`、`mybatis-plus`、`mysql`、`spring-boot-2.7-jdk8`、`javax`、`web`、`yss-internal`。普通 MyBatis、Boot 3、独立 client module、client-in-domain 和其他旧架构均为 `unsupported`，不提供回退分支。
 - 运行生成器必须传入 `--contract-file`；生成器会校验合同 `status=approved`、`current_version`、`primary_skill`、`controlled-generation`、实际输出路径和固定三条验证命令，不接受仅凭任意字符串引用的放行。
 - 生成项目必须写入 Manifest v3 `.yss/scaffold-generation.json`，记录架构选择及 digest、生成器、合同 digest、Target Profile、模块闭包、模板 digest、下游完整 skill tree digest、脚手架父合同与 实现合同编译器 合同 digest、generator-owned 文件 hash、严格 `generation_policy` 和完成等级；清单缺失或不一致时不得交给后续 实现合同编译器。

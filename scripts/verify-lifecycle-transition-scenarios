@@ -3,16 +3,24 @@ import assert from "node:assert/strict";
 import { mkdtempSync, rmSync, readFileSync, existsSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { buildImplementationFixture } from "./fixtures/user-decision/build-fixture.mjs";
+import { buildDecisionFixture, buildImplementationFixture } from "./fixtures/user-decision/build-fixture.mjs";
 const temp = mkdtempSync(path.join(os.tmpdir(), "lifecycle-decision-test-"));
 process.on("exit", () => rmSync(temp, { recursive: true, force: true }));
 const approval = buildImplementationFixture(temp, "docs/.scratch/demo/issues/01-valid-slice.md");
-import { validateImplementationEntry, validateNextRoute, validateTicketFormalization } from "./lib/lifecycle-transition.mjs";
+const scaffoldApproval = buildDecisionFixture(path.join(temp, "scaffold-choice"), { boundary: "scaffold-choice", scope: ["backend", "frontend"] });
+import { validateImplementationEntry, validateImplementationRepositoriesReady, validateNextRoute, validateTicketFormalization } from "./lib/lifecycle-transition.mjs";
 
 const exists = (ref) => [
   "docs/process/lifecycle-registry.yaml",
   "docs/.scratch/demo/issues/01-valid-slice.md",
   "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml",
+  "docs/.scratch/demo/evidence/repository-preparation.yaml",
+  "docs/.scratch/demo/evidence/backend-onboarding.yaml",
+  "docs/.scratch/demo/evidence/frontend-onboarding.yaml",
+  "docs/.scratch/demo/evidence/backend-manifest.json",
+  "docs/.scratch/demo/evidence/backend-verification.json",
+  "docs/.scratch/demo/evidence/frontend-manifest.json",
+  "docs/.scratch/demo/evidence/frontend-verification.json",
 ].includes(ref) || existsSync(ref);
 const decompositionResult = `result_schema: workflow-execution-result-v1\nwork_unit: work-unit.ticket-decomposition\nresult: completed\nevidence_refs:\n  - docs/.scratch/demo/evidence/ticket-decomposition-result.yaml\n`;
 const read = (ref) => ref === "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml" ? decompositionResult : readFileSync(ref, "utf8");
@@ -20,6 +28,17 @@ const options = { exists, read };
 
 const validTicketState = {
   ...approval.state,
+  user_decisions: [...approval.state.user_decisions, scaffoldApproval.requirement],
+  delivery_impacts: { backend: true, frontend: true },
+  implementation_repository_preparation: {
+    result: "completed",
+    current_version: true,
+    evidence_refs: ["docs/.scratch/demo/evidence/repository-preparation.yaml"],
+    projects: [
+      { project_id: "backend", delivery_role: "backend", status: "existing-and-onboarded", repository_ref: "git://backend", project_root: "/workspace/backend", repository_scope: "external-repository", onboarding_result: { status: "completed", ref: "docs/.scratch/demo/evidence/backend-onboarding.yaml" } },
+      { project_id: "frontend", delivery_role: "frontend", status: "existing-and-onboarded", repository_ref: "git://frontend", project_root: "/workspace/frontend", repository_scope: "external-repository", onboarding_result: { status: "completed", ref: "docs/.scratch/demo/evidence/frontend-onboarding.yaml" } },
+    ],
+  },
   predecessor_work_unit: "work-unit.ticket-decomposition",
   tracker_kind: "local-markdown",
   ticket_decomposition_result_ref: "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml",
@@ -45,6 +64,19 @@ const validTicketState = {
 
 const valid = validateTicketFormalization(validTicketState, options);
 assert.equal(valid.result, "allowed");
+assert.equal(validateImplementationRepositoriesReady(validTicketState, options).result, "allowed");
+const initializedState = {
+  delivery_impacts: { backend: true, frontend: true },
+  implementation_repository_preparation: {
+    result: "completed", current_version: true, evidence_refs: ["docs/.scratch/demo/evidence/repository-preparation.yaml"],
+    projects: [
+      { project_id: "backend-ddd", delivery_role: "backend", status: "initialized-and-verified", repository_ref: "git://backend", project_root: "/workspace/backend", repository_scope: "external-repository", architecture_family: "domain-driven", scaffold_contract: { schema_version: 4, status: "approved", persisted: true, current_version: true }, scaffold_manifest_ref: "docs/.scratch/demo/evidence/backend-manifest.json", scaffold_verification: { status: "passed", ref: "docs/.scratch/demo/evidence/backend-verification.json" } },
+      { project_id: "frontend", delivery_role: "frontend", status: "initialized-and-verified", repository_ref: "git://frontend", project_root: "/workspace/frontend", repository_scope: "external-repository", template_available: true, scaffold_contract: { schema_version: 4, status: "approved", persisted: true, current_version: true }, scaffold_manifest_ref: "docs/.scratch/demo/evidence/frontend-manifest.json", scaffold_verification: { status: "passed", ref: "docs/.scratch/demo/evidence/frontend-verification.json" } },
+    ],
+  },
+};
+assert.equal(validateImplementationRepositoriesReady(initializedState, options).result, "allowed");
+assert.equal(validateImplementationRepositoriesReady({ delivery_impacts: { backend: false, frontend: false }, implementation_repository_preparation: { result: "completed", current_version: true, evidence_refs: ["docs/.scratch/demo/evidence/repository-preparation.yaml"], projects: [{ project_id: "backend-na", delivery_role: "backend", status: "not-applicable", reason: "no backend impact" }, { project_id: "frontend-na", delivery_role: "frontend", status: "not-applicable", reason: "no frontend impact" }] } }, options).result, "allowed");
 
 const implementation = validateImplementationEntry({
   ...validTicketState,
@@ -53,6 +85,11 @@ const implementation = validateImplementationEntry({
 assert.equal(implementation.result, "allowed");
 
 const cases = [
+  ["missing repository preparation", { ...validTicketState, implementation_repository_preparation: undefined }, "implementation-repository-decision-required"],
+  ["stale repository preparation", { ...validTicketState, implementation_repositories_stale: true }, "implementation-repositories-stale"],
+  ["missing frontend decision", { ...validTicketState, implementation_repository_preparation: { ...validTicketState.implementation_repository_preparation, projects: validTicketState.implementation_repository_preparation.projects.filter((item) => item.delivery_role !== "frontend") } }, "implementation-repository-decision-required"],
+  ["missing repository location", { ...validTicketState, implementation_repository_preparation: { ...validTicketState.implementation_repository_preparation, projects: validTicketState.implementation_repository_preparation.projects.map((item) => item.delivery_role === "backend" ? { ...item, project_root: undefined } : item) } }, "implementation-repository-location-required"],
+  ["incomplete onboarding", { ...validTicketState, implementation_repository_preparation: { ...validTicketState.implementation_repository_preparation, projects: validTicketState.implementation_repository_preparation.projects.map((item) => item.delivery_role === "backend" ? { ...item, onboarding_result: { status: "blocked" } } : item) } }, "implementation-repository-onboarding-incomplete"],
   ["missing decomposition result ref", { ...validTicketState, ticket_decomposition_result_ref: undefined }, "ticket-decomposition-result-ref-missing"],
   ["missing slice ref", { ...validTicketState, vertical_slice_ticket_ref: undefined }, "vertical-slice-ticket-ref-missing"],
   ["missing slice role", { ...validTicketState, vertical_slice_ticket_role: undefined }, "vertical-slice-ticket-role-missing"],
@@ -90,7 +127,10 @@ for (const current of ["work-unit.spec-synthesis", "work-unit.prototype-design",
   assert.equal(result.result, "blocked", current);
   assert.ok(result.blocking_signals.includes("ticket-formalization-required"), current);
 }
-assert.equal(validateNextRoute("work-unit.spec-synthesis", "work-unit.ticket-decomposition").result, "allowed");
+assert.equal(validateNextRoute("work-unit.spec-synthesis", "work-unit.ticket-decomposition").result, "blocked");
+assert.equal(validateNextRoute("work-unit.technical-analysis", "work-unit.implementation-repository-preparation").result, "allowed");
+assert.equal(validateNextRoute("work-unit.implementation-repository-preparation", "work-unit.ticket-decomposition", validTicketState, options).result, "allowed");
+assert.ok(validateNextRoute("work-unit.implementation-repository-preparation", "work-unit.ticket-decomposition", {}, options).blocking_signals.includes("implementation-repository-decision-required"));
 assert.equal(validateNextRoute("work-unit.intensity-aware-verification", "work-unit.intensity-aware-review").result, "allowed");
 assert.equal(validateNextRoute("work-unit.release-and-rollback", null).result, "allowed");
 const arbitraryReadable = validateTicketFormalization({
@@ -110,6 +150,6 @@ assert.equal(validateTicketFormalization({
   vertical_slice_ticket_ref: "https://github.com/example/project/issues/1",
   vertical_slice_ticket: { ref: "https://github.com/example/project/issues/1", kind: "vertical-slice-ticket", role: "ready-for-agent" },
   slice_contract: { ...validTicketState.slice_contract, ticket_ref: "https://github.com/example/project/issues/1" },
-}, { ...options, exists: (ref) => ref === "https://github.com/example/project/issues/1", read: (ref) => ref === "https://github.com/example/project/issues/1" ? decompositionResult.replace("docs/.scratch/demo/evidence/ticket-decomposition-result.yaml", "https://github.com/example/project/issues/1") : readFileSync(ref, "utf8") }).result, "allowed");
+}, { ...options, exists: (ref) => ref === "https://github.com/example/project/issues/1" || exists(ref), read: (ref) => ref === "https://github.com/example/project/issues/1" ? decompositionResult.replace("docs/.scratch/demo/evidence/ticket-decomposition-result.yaml", "https://github.com/example/project/issues/1") : readFileSync(ref, "utf8") }).result, "allowed");
 
 process.stdout.write("生命周期转换压力场景验证通过\n");

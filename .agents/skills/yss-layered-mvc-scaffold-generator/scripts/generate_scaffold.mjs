@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** 依据生命周期批准的 schema v3 合同生成纯机械 YSS 分层 MVC 后端骨架。 */
+/** 依据生命周期批准的兼容 schema v3 或统一 schema v4 合同生成纯机械 YSS 分层 MVC 后端骨架。 */
 import { assertScaffoldUserDecision } from "../../../../scripts/lib/user-decision.mjs";
 import { createHash } from "node:crypto";
 import { chmod, cp, lstat, mkdir, mkdtemp, readFile, readdir, rename, rm, writeFile } from "node:fs/promises";
@@ -10,6 +10,7 @@ import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
 import { findGitRoot, gitSubmoduleScaffoldViolation, overlayMountViolation } from "../../../../scripts/lib/repository-scope-policy.mjs";
 import { assertLocalDatabaseProfile, localDatabaseConfiguration, scaffoldArchitectureIdentity } from "../../../../scripts/lib/scaffold-local-database.mjs";
 import { validateArchitectureIdentity } from "../../../../scripts/lib/backend-architecture.mjs";
+import { validateJsonSchema } from "../../../../scripts/lib/json-schema.mjs";
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const SKILL_ROOT = path.resolve(SCRIPT_DIR, "..");
@@ -151,11 +152,13 @@ async function validateContract(options, skillId, architectureProfile) {
   const contractText = await readFile(contractFile, "utf8").catch(() => fail(`脚手架合同不可读取: ${contractFile}`));
   let contract;
   try { contract = JSON.parse(contractText); } catch { fail("脚手架合同必须是 JSON 对象"); }
-  if (contract.schema_version !== 3) fail(`unsupported: 新生成只接受 scaffold contract schema v3，收到 v${contract.schema_version}`);
+  if (![3, 4].includes(contract.schema_version)) fail(`unsupported: 只接受兼容 scaffold contract v3 或统一 v4，收到 v${contract.schema_version}`);
+  if (contract.schema_version === 4 && (contract.kind !== "project-scaffold-contract" || contract.delivery_role !== "backend" || contract.scaffold_kind !== "backend-layered-mvc")) fail("schema v4 合同必须绑定 backend/backend-layered-mvc");
+  if (contract.schema_version === 4) validateJsonSchema(contract, path.join(REPOSITORY_ROOT, "docs/process/schemas/project-scaffold-contract.schema.json"), { label: "Project Scaffold Contract v4" });
   const required = ["contract_id", "contract_version", "scaffold_request_id", "status", "compiler_draft_ref", "lifecycle_approval_ref", "persisted_ref", "current_version", "implementation_repository", "backend_repository", "scaffold_status", "project_name", "target_output_dir", "base_package", "architecture_family", "generator_skill", "decision_ref", "decision_id", "decision_digest", "maven_coordinates", "profiles", "module_profile", "allowed_write_paths", "expected_evidence_files", "verification_commands", "approval", "work_unit", "generation_policy"];
   const missing = required.filter((field) => !isPresent(contract[field]));
   if (missing.length) fail(`脚手架合同缺少字段: ${missing.join(", ")}`);
-  if (contract.status !== "approved" || contract.current_version !== contract.contract_version) fail("脚手架合同必须已批准且为当前版本");
+  if (contract.status !== "approved" || (contract.current_version !== contract.contract_version && !(contract.schema_version === 4 && contract.current_version === true))) fail("脚手架合同必须已批准且为当前版本");
   if (contract.contract_id !== options.contractId || contract.contract_version !== options.contractVersion || contract.compiler_draft_ref !== options.compilerDraftRef || contract.lifecycle_approval_ref !== options.approvalRef || contract.persisted_ref !== options.persistedRef) fail("命令行合同元数据与批准合同不一致");
   if (contract.scaffold_status !== "required" || contract.architecture_family !== "layered-mvc" || contract.generator_skill !== skillId) fail("合同必须绑定 layered-mvc 与本生成器");
   if (contract.project_name !== options.projectName || contract.base_package !== options.basePackage || path.resolve(contract.target_output_dir) !== path.resolve(options.outputDir)) fail("项目身份或输出目录与合同不一致");
@@ -244,14 +247,14 @@ export async function generate(options, { skillId = SKILL_ID, architectureProfil
     await cp(wrapper, projectRoot, { recursive: true });
     await chmod(path.join(projectRoot, "mvnw"), 0o755);
     if (finalize) await finalize({ projectRoot, contract, architectureIdentity: scaffoldArchitectureIdentity(contract, sha256(contractText)) });
-    await put(projectRoot, "README.md", `# ${options.projectName}\n\n该工程由 ${skillId} 根据批准的 schema v3 合同生成。模块：${modules.join("、")}。不包含业务 API、SQL 或生产数据库绑定。\n\n本地运行需同时显式启用 Maven -Pscaffold-local 和 Spring scaffold-local Profile；测试独立使用 H2。生产数据库须由后续已批准存储工作单元接入。`);
+    await put(projectRoot, "README.md", `# ${options.projectName}\n\n该工程由 ${skillId} 根据批准的 schema v${contract.schema_version} 合同生成。模块：${modules.join("、")}。不包含业务 API、SQL 或生产数据库绑定。\n\n本地运行需同时显式启用 Maven -Pscaffold-local 和 Spring scaffold-local Profile；测试独立使用 H2。生产数据库须由后续已批准存储工作单元接入。`);
     const generatedFiles = [];
     for (const entry of await fileEntries(projectRoot, new Set([".yss/scaffold-generation.json"]))) generatedFiles.push({ path: entry.relative, owner: "generator", sha256: rawSha256(await readFile(entry.target)) });
     const architectureRuleset = `${serverRoot}/src/test/java/${packagePath}/architecture/LayeredMvcArchitectureTest.java`;
     const downstream = {};
     for (const skill of ["yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "yss-exception", "yss-validation", "mapstruct", "lombok", "alibaba-java-code-style"]) downstream[skill] = (await treeDigest(path.join(REPOSITORY_ROOT, ".agents/skills", skill))).replace(/^sha256:/, "");
     const manifest = {
-      schema_version: 3,
+      schema_version: contract.schema_version,
       kind: architectureProfile === "mvc-data-analysis-v1" ? "service-project-initialization" : "backend-scaffold",
       architecture_profile: contract.architecture_profile,
       architecture_identity: scaffoldArchitectureIdentity(contract, sha256(contractText)),

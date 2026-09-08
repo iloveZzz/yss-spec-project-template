@@ -85,6 +85,7 @@ capabilities:
   - { id: component.gateway-resilience, primary_skill: yss-resilience4j, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
   - { id: scaffold.ddd, primary_skill: yss-ddd-scaffold-generator, task_modes: [integration, component-maintenance] }
   - { id: scaffold.layered-mvc, primary_skill: yss-layered-mvc-scaffold-generator, task_modes: [integration, component-maintenance] }
+  - { id: scaffold.frontend-vue3, primary_skill: yss-frontend-scaffold-generator, task_modes: [integration, component-maintenance] }
   - { id: project-init.mvc-data-analysis, primary_skill: yss-mvc-data-analysis-project-initializer, task_modes: [component-maintenance] }
   - { id: migration.springboot3, primary_skill: yss-up-springboot3, task_modes: [guidance, integration, troubleshooting, component-maintenance, review-input] }
 recipes:
@@ -106,6 +107,7 @@ recipes:
   - { id: backend.distributed-id, capabilities: [component.distributed-id] }
   - { id: backend.ddd-scaffold, capabilities: [scaffold.ddd, quality.java-code-style] }
   - { id: backend.mvc-scaffold, capabilities: [scaffold.layered-mvc, quality.java-code-style] }
+  - { id: frontend.vue3-scaffold, capabilities: [scaffold.frontend-vue3] }
   - { id: backend.springboot3-migration, capabilities: [migration.springboot3, quality.java-code-style] }
 skill_dependencies:
   code-review:

@@ -25,13 +25,6 @@ for (const relativePath of PUBLIC_FILES) {
   }
 }
 
-const lifecycle = read(".agents/skills/yss-product-lifecycle/SKILL.md");
-for (const phrase of [
-  "机会与目标 → 业务故事 → 责任与交接 → 规则、例子与疑问 → 可验收需求 → 页面验证 → 业务任务 → 交接研发",
-  "业务方案总览",
-  "不成为新的事实源",
-]) assert.match(lifecycle, new RegExp(phrase));
-
 const registry = read("docs/process/lifecycle-registry.yaml");
 for (const stableId of ["work-unit.domain-strategy-design", "artifact.domain-strategy", "gate.domain-strategy-approved"]) {
   assert.match(registry, new RegExp(`id: ${stableId.replaceAll(".", "\\.")}`));

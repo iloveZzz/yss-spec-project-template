@@ -219,6 +219,7 @@ gate_policy:
     - gate.repository-identity-valid
     - gate.prototype-verified
   orchestrator:
+    - gate.implementation-repositories-ready
     - gate.slice-contract-approved
     - gate.slice-ready-for-agent
   digital_human_review:
@@ -275,6 +276,7 @@ user_decision_policy:
   work_units:
     work-unit.discovery-requirements: discovery-conclusion
     work-unit.service-project-initialization: scaffold-choice
+    work-unit.implementation-repository-preparation: scaffold-choice
     work-unit.slice-implementation: implementation-scope
     work-unit.release-and-retrospective: gate.release-ready
   work_unit_gates:
