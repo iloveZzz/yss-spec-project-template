@@ -1,0 +1,20 @@
+技术设计场景通过：29 项（MVC、DDD、兼容、架构、承接、切片与漂移）
+skill projections are synchronized
+skills-lock.json matches distributed skills
+技能路由注册表校验通过（active，92 个共享，2 个平台）
+YSS skill boundaries are current
+YSS implementation contract compiler stage 7 scenarios passed
+✔ combines narrow recipes once and preserves deterministic output (9.128417ms)
+✔ does not promote conditional or component dependencies without explicit input (1.188417ms)
+✔ loads only explicitly satisfied context-conditional dependencies (0.433042ms)
+✔ rejects recipes that reference skills and context-required cycles (1.219791ms)
+✔ rejects removed ids and schema v1 without compatibility (0.187ms)
+✔ marks digest drift stale and validates v2 execution evidence (2.441917ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 84.649625

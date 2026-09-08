@@ -1,0 +1,27 @@
+create-yss-spec 3.2.0
+✔ production attach uses modular planner and transaction stack (6293.9105ms)
+✔ runInTransaction prepares, executes and finishes (0.672042ms)
+✔ runInTransaction rolls back and preserves legacy error contract (0.240209ms)
+✔ runInTransaction reports rollback failure (0.084583ms)
+✔ FileTransaction rollback restores backups and removes new mutations (2.483584ms)
+✔ FileTransaction prepare collapses child backups under an existing parent backup (2.238625ms)
+✔ FileTransaction finish removes empty backup root and preserves non-empty backup root (0.767291ms)
+✔ FileTransaction move is reversible after prepare (1.047542ms)
+✔ production sync uses modular planner, lifecycle policies and transaction stack (14053.126791ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 20488.56875
+初始化完成
+输出目录：/tmp/yss-technical-design-pack.mG87Ih/instance
+下一步建议：
+1. cd /tmp/yss-technical-design-pack.mG87Ih/instance
+2. 如需版本管理，可执行 git init
+3. 检查 AGENTS.md、README 和 docs 目录是否符合预期
+技术设计场景通过：29 项（MVC、DDD、兼容、架构、承接、切片与漂移）
+skill projections are synchronized
+skills-lock.json matches distributed skills

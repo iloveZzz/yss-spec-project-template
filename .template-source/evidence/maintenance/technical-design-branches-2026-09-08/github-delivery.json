@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "github-source-delivery",
+  "scope": [
+    "yss-spec-project-template",
+    "create-yss-spec"
+  ],
+  "date": "2026-09-08",
+  "authorization": "用户明确要求相关代码 Git 提交并推送 GitHub，随后确认 CLI 范围仅 create-yss-spec。",
+  "template_commit": "0347a5f6d100791cf012ef0f4ae3e148eece644a",
+  "cli_commit": "302f0a36176af709c1a37f1ba1cc7c22ebbf162b",
+  "cli_version": "3.2.0",
+  "snapshot_hash": "1e76b9ef03e5d885ef8842e9a499d3533bc85ef030003f60965305efd8127675",
+  "package_integrity": "sha512-tLp64JA/ojeZvJKoj7ZX6RzFiqBRj317T17jciu/Y1PR4gseo8xoVIKO+PP69xZfvO+h214UtoTNYBJdCJ0oqg==",
+  "verification": {
+    "template_full": {
+      "command": "scripts/verify-template",
+      "exit_code": 0,
+      "evidence": "prepush-template-verification.log"
+    },
+    "cli_full": {
+      "command": "YSS_SPEC_TEMPLATE_REF=<template_commit> npm test",
+      "exit_code": 0,
+      "tests": 172,
+      "failed": 0,
+      "evidence": "cli-full-test.log"
+    },
+    "packed_cli": {
+      "exit_code": 0,
+      "transaction_tests": 9,
+      "technical_design_scenarios": 29,
+      "evidence": "cli-packed-test.log"
+    }
+  },
+  "npm_published": false,
+  "other_cli_scope": "not-applicable：用户只选择综合版。研发版 CLI 既有工作区改动保留。",
+  "rollback": {
+    "template_before": "c897491",
+    "cli_before": "bdf3780"
+  },
+  "next_step": "推送主仓的 CLI gitlink 与本记录；GitHub CI 由各仓 push 工作流执行。"
+}
