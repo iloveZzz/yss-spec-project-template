@@ -1,0 +1,5 @@
+import {syncCore} from "file:///private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root/.template-source/cli-core/build.mjs";
+syncCore("/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root","f4ee7ea791c4b6b7d507e3b4d93a8efc3ef2dba1","/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/cli-backend");
+syncCore("/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root","f4ee7ea791c4b6b7d507e3b4d93a8efc3ef2dba1","/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/integration/create-yss-harness-backend");
+syncCore("/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root","f4ee7ea791c4b6b7d507e3b4d93a8efc3ef2dba1","/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/cli-frontend");
+syncCore("/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root","f4ee7ea791c4b6b7d507e3b4d93a8efc3ef2dba1","/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/integration/create-yss-harness-frontend");

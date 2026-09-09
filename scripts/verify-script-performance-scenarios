@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+import assert from 'node:assert/strict';
+import * as fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { spawn, spawnSync } from 'node:child_process';
+import { once } from 'node:events';
+import { pathToFileURL } from 'node:url';
+import { validateJsonSchemas, validateJsonSchema } from './lib/json-schema.mjs';
+import { runCommand, runCommandSync } from './lib/command-runner.mjs';
+const temp=fs.mkdtempSync(path.join(os.tmpdir(),'yss-performance-scenarios-'));
+try {
+  const schema=path.join(temp,'schema.json');
+  fs.writeFileSync(schema,JSON.stringify({$defs:{name:{type:'string',minLength:2}},type:'object',required:['name'],properties:{name:{$ref:'#/$defs/name'},email:{type:'string',format:'email'},items:{type:'array',items:{type:'integer'}}},additionalProperties:false}));
+  const values=[{name:'okay'},{name:'x'},{name:'okay',email:'wrong'},null,{name:'okay',items:['bad']},{name:'okay',unknown:1}];
+  for(const formatChecker of [true,false])for(const errorStyle of ['compact','verbose']) {
+    const jobs=values.map(value=>({value,schemaPath:schema,formatChecker,errorStyle}));
+    const results=validateJsonSchemas(jobs);
+    // Independent original Python behavior, not the new single-item wrapper.
+    const legacy=spawnSync('python3',['-c',`import json,sys\nfrom jsonschema import Draft202012Validator,FormatChecker\ns=json.load(open(sys.argv[1])); rows=[]\nfor v in json.load(sys.stdin):\n e=list(Draft202012Validator(s,format_checker=${formatChecker?'FormatChecker()':'None'}).iter_errors(v))\n ${errorStyle==='compact'?"e.sort(key=lambda x:list(x.absolute_path))":"pass"}\n message=${errorStyle==='compact'?`'\\n'.join(f"{'.'.join(str(p) for p in x.absolute_path) or '<root>'}: {x.message}" for x in e)`:`'\\n'.join(str(x) for x in e)`}\n rows.append({'valid':not e,'error':message})\njson.dump(rows,sys.stdout)`,schema],{input:JSON.stringify(values),encoding:'utf8'});
+    assert.equal(legacy.status,0,legacy.stderr);
+    assert.deepEqual(results,JSON.parse(legacy.stdout));
+  }
+  assert.deepEqual(validateJsonSchemas([]),[]);
+  assert.throws(()=>validateJsonSchema({},path.join(temp,'missing.json')),/缺少/);
+  fs.writeFileSync(schema,JSON.stringify({type:'number'}));
+  assert.throws(()=>validateJsonSchema({name:'okay'},schema),/not of type/,'schema 改变后必须重新读取');
+  const log=path.join(temp,'stdout.log');
+  const split=await runCommand(process.execPath,['-e',"process.stdout.write('ab');setTimeout(()=>process.stdout.write('aba!'),20)"],{stdoutFile:log,secrets:['ababa']});
+  assert.equal(split.stdout,'[REDACTED]!');assert.equal(fs.readFileSync(log,'utf8'),'[REDACTED]!');
+  const timed=await runCommand(process.execPath,['-e',"setInterval(()=>{},1000)"],{timeoutMs:100});
+  assert.equal(timed.status,124);assert.equal(timed.termination,'timeout');
+  const controller=new AbortController();
+  const cancelled=runCommand(process.execPath,['-e',"setInterval(()=>{},1000)"],{signal:controller.signal});
+  setTimeout(()=>controller.abort(),50);assert.equal((await cancelled).termination,'cancelled');
+  const missing=await runCommand(path.join(temp,'missing'),[]);assert.notEqual(missing.status,0);
+  assert.equal(runCommandSync(process.execPath,['-e',"process.stdout.write('sync')"]).stdout,'sync');
+  const pidFile=path.join(temp,'pid');
+  const tree=await runCommand(process.execPath,['-e',`const {spawn}=require('node:child_process');const fs=require('node:fs');const c=spawn(process.execPath,['-e','setInterval(()=>{},1000)'],{stdio:'ignore'});fs.writeFileSync(${JSON.stringify(pidFile)},String(c.pid));setInterval(()=>{},1000)`],{timeoutMs:250});
+  assert.equal(tree.termination,'timeout');
+  const pid=Number(fs.readFileSync(pidFile,'utf8'));
+  // A reparented zombie may briefly exist; it must never remain a running child.
+  const state=spawnSync('ps',['-o','stat=','-p',String(pid)],{encoding:'utf8'});
+  assert.ok(state.status!==0 || !state.stdout.trim() || state.stdout.trim().startsWith('Z'),state.stdout);
+  const orphanPid=path.join(temp,'orphan-pid'), scratch=path.join(temp,'owned-fetch');fs.mkdirSync(scratch);
+  const parent=spawn(process.execPath,['--input-type=module','-e',`import {runCommandSync} from ${JSON.stringify(pathToFileURL(path.join(import.meta.dirname,'lib/command-runner.mjs')).href)};runCommandSync(process.execPath,['-e',${JSON.stringify(`require('node:fs').writeFileSync(${JSON.stringify(orphanPid)},String(process.pid));setInterval(()=>{},1000)`)}],{cleanupPathsOnFailure:[${JSON.stringify(scratch)}]});`],{stdio:'ignore'});
+  const exited=once(parent,'exit');
+  for(let n=0;n<150&&!fs.existsSync(orphanPid);n++)await new Promise(resolve=>setTimeout(resolve,20));
+  assert.ok(fs.existsSync(orphanPid),'worker 子进程应启动');
+  parent.kill('SIGTERM');await exited;
+  for(let n=0;n<150&&fs.existsSync(scratch);n++)await new Promise(resolve=>setTimeout(resolve,20));
+  assert.equal(fs.existsSync(scratch),false,'同步调用者退出后 worker 应清理其临时资源');
+  const orphanState=spawnSync('ps',['-o','stat=','-p',fs.readFileSync(orphanPid,'utf8')],{encoding:'utf8'});
+  assert.ok(orphanState.status!==0 || !orphanState.stdout.trim() || orphanState.stdout.trim().startsWith('Z'),orphanState.stdout);
+  console.log('schema 批量差分、重新读取、日志脱敏、超时、取消与进程树清理通过');
+} finally { fs.rmSync(temp,{recursive:true,force:true}); }

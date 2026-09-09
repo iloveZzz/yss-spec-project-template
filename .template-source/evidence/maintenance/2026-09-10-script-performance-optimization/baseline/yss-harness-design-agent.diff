@@ -1,0 +1,2246 @@
+diff --git a/.agents/skills/competitive-intelligence/SKILL.md b/.agents/skills/competitive-intelligence/SKILL.md
+index f6a6f4e..c50fd61 100644
+--- a/.agents/skills/competitive-intelligence/SKILL.md
++++ b/.agents/skills/competitive-intelligence/SKILL.md
+@@ -1,13 +1,13 @@
+ ---
+ name: competitive-intelligence
+-description: Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Discovery, Spec, product strategy, or roadmap decisions.
++description: Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Plan, Spec, product strategy, or roadmap decisions.
+ ---
+ 
+ # Competitive Intelligence
+ 
+ Source requested for this project: `anthropics/knowledge-work-plugins`, `sales/skills/competitive-intelligence`.
+ 
+-Use this skill when competitive or market facts are needed to shape product Discovery, Spec scope, positioning, differentiation, pricing assumptions, or roadmap tradeoffs.
++Use this skill when competitive or market facts are needed to shape product Plan, Spec scope, positioning, differentiation, pricing assumptions, or roadmap tradeoffs.
+ 
+ ## Core Rules
+ 
+@@ -45,8 +45,8 @@ Use this skill when competitive or market facts are needed to shape product Disc
+    - Risks if we copy the competitor too closely.
+    - Product opportunities for Spec or roadmap.
+ 5. Hand off to lifecycle assets:
+-   - Update Discovery findings in `docs/.scratch/<feature>/discovery/`.
+-   - Create or update a competitor matrix in `docs/.scratch/<feature>/discovery/reports/`.
++   - Update Plan findings in `docs/.scratch/<feature>/plan/`.
++   - Create or update a competitor matrix in `docs/.scratch/<feature>/plan/reports/`.
+    - Feed stable user, pain, MVP, non-goal, and success criteria into `grill-with-docs` and `to-spec`.
+    - Record uncertain claims as assumptions, not requirements.
+ 
+diff --git a/.agents/skills/domain-modeling/CONTEXT-FORMAT.md b/.agents/skills/domain-modeling/CONTEXT-FORMAT.md
+index 56b54fb..9647ae2 100644
+--- a/.agents/skills/domain-modeling/CONTEXT-FORMAT.md
++++ b/.agents/skills/domain-modeling/CONTEXT-FORMAT.md
+@@ -45,7 +45,7 @@ context_schema_version: 1
+ 
+ ## 内容边界
+ 
+-- 只写已经确认、稳定且未来资产需要复用的业务语言。候选、猜测和未决术语保留在 Discovery、业务边界与规则设计或 `context_delta`。
++- 只写已经确认、稳定且未来资产需要复用的业务语言。候选、猜测和未决术语保留在 Plan、业务边界与规则设计或 `context_delta`。
+ - 定义保持一到两句，说明概念是什么；不要写类全名、表名、接口路径、实现步骤或计划。
+ - 禁用别名使用 `避免：别名一、别名二`；需要补充说明时追加 `；备注：...`。
+ - 术语稳定时立即回写。工作单元完成、门禁批准或阶段转换前仍须执行 context reconciliation。
+diff --git a/.agents/skills/grill-with-docs/SKILL.md b/.agents/skills/grill-with-docs/SKILL.md
+index 4b944d5..581b7de 100644
+--- a/.agents/skills/grill-with-docs/SKILL.md
++++ b/.agents/skills/grill-with-docs/SKILL.md
+@@ -11,7 +11,7 @@ Call the Skill tool with `grilling`, then call it separately with `domain-modeli
+ 1. Read `yss-project.yaml` and the root glossary before the first round, then run `scripts/verify-context-contract --root . --json`. Missing or lowercase root files, nested `CONTEXT.md`, `CONTEXT-MAP.md`, unsupported schema, absolute/cross-repository references, and Markdown pseudo-anchors are `blocked` or `migration-required`.
+ 2. Separate discoverable facts from user decisions; investigate facts instead of asking the user.
+ 3. Ask the entire current decision frontier, with a recommendation for every question, then wait.
+-4. Keep candidate or disputed terms in the Discovery decision frontier. Only after confirmation, use `domain-modeling` to record true stable glossary entries in the repository root's single, case-sensitive `CONTEXT.md`; business rows use the five-column format and `<ContextId>/<EnglishIdentifier>` identity. Non-`Global` Context IDs must come from the approved business responsibility areas in the business-boundary asset.
++4. Keep candidate or disputed terms in the Plan decision frontier. Only after confirmation, use `domain-modeling` to record true stable glossary entries in the repository root's single, case-sensitive `CONTEXT.md`; business rows use the five-column format and `<ContextId>/<EnglishIdentifier>` identity. Non-`Global` Context IDs must come from the approved business responsibility areas in the business-boundary asset.
+ 5. Create an ADR only when the decision is hard to reverse, surprising without context, and a real trade-off.
+ 6. Persist factual research/validation records in the repository's existing review or research convention.
+ 7. For `project-instance`, before requesting approval or returning a next work unit, generate and validate `context_reconciliation` with a readable ref, `document_digest`, `referenced_terms_digest`, and `term_refs`. Unresolved candidates, scope conflicts, aliases, or digest drift are `blocked`; reconciliation does not create another gate. For `template-source`, do not add fictional business terms and return a reasoned `not-applicable` after validating the template contract.
+diff --git a/.agents/skills/yss-research/SKILL.md b/.agents/skills/yss-research/SKILL.md
+index fb64278..cd2fa35 100644
+--- a/.agents/skills/yss-research/SKILL.md
++++ b/.agents/skills/yss-research/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: yss-research
+-description: Research technical or product-strategy questions with traceable evidence before YSS Discovery, Spec, domain-strategy, API, architecture, or implementation decisions. Use for current facts, standards, third-party APIs, business constraints, user problems, domain-boundary evidence, or when the deprecated `research` alias is invoked.
++description: Research technical or product-strategy questions with traceable evidence before YSS Plan, Spec, domain-strategy, API, architecture, or implementation decisions. Use for current facts, standards, third-party APIs, business constraints, user problems, domain-boundary evidence, or when the deprecated `research` alias is invoked.
+ ---
+ 
+ # YSS Research
+diff --git a/.agents/skills/yss-stage-decision/SKILL.md b/.agents/skills/yss-stage-decision/SKILL.md
+index 4844921..77690b0 100644
+--- a/.agents/skills/yss-stage-decision/SKILL.md
++++ b/.agents/skills/yss-stage-decision/SKILL.md
+@@ -1,6 +1,6 @@
+ ---
+ name: yss-stage-decision
+-description: 编排 Discovery 到 Spec 入口的方案决策与业务边界、协作和规则设计；当需求、业务责任区、统一业务词汇或下游影响尚未稳定时使用。
++description: 编排 Plan 到 Spec 入口的方案决策与业务边界、协作和规则设计；当需求、业务责任区、统一业务词汇或下游影响尚未稳定时使用。
+ ---
+ 
+ # YSS Stage Decision
+@@ -9,14 +9,16 @@ description: 编排 Discovery 到 Spec 入口的方案决策与业务边界、
+ 
+ ## 适用边界
+ 
+-- 适用于 `project-instance` 的 Discovery → Spec 入口。
++- 适用于 `project-instance` 的 Plan → Spec 入口。
+ - `template-source` 只维护本技能、Schema、验证器和合成 Fixture，不生成具体产品领域资产。
+ - 业务边界与协作工作单元只回答：有哪些业务板块、每个业务责任区负责什么、不同责任区如何交接、使用哪些统一业务词汇、发生哪些业务事实、有哪些待确认的关键业务对象和不可违反的业务规则。
+ - Entity、Aggregate、Repository、Java 类、数据库表和 OpenAPI Freeze 留给下游工作单元。
+ 
+ ## 执行顺序
+ 
+-1. 读取 `yss-project.yaml`、`CONTEXT.md`、既有 Discovery/Spec、ADR 和父 Ticket/checkpoint。
++Plan 的目标与退出条件由 `docs/process/lifecycle-registry.yaml` 持有；从 `docs/plan/templates/plan-template.md` 汇总输入。旧资产按 `docs/process/plan-migration.md` 重新整理并核查，关键未决项不得延期到 Spec，非关键项记录责任人、解决时点与接收方。
++
++1. 读取 `yss-project.yaml`、`CONTEXT.md`、既有 Plan/Spec、ADR 和父 Ticket/checkpoint。
+ 2. 分离事实、决策、假设、约束和未决项；技术事实走 `yss-research` 的 `technical-evidence`，领域边界、业务规则、MVP、非目标、成功标准或阶段推进依据等决策证据走 `strategy-evidence`，市场/竞品事实走 `competitive-intelligence`。
+ 3. 从业务故事、已发生的事实、规则、责任人和失败路径识别业务板块与业务责任区，不从数据库表或调用链直接反推边界。
+ 4. 为每个业务责任区建立统一业务词汇；对跨责任区协作记录规则提供方、规则使用方、业务决策权、信息传递方向和口径转换负责人。
+diff --git a/.agents/skills/yss-stage-decision/references/stage-decision-package-contract.md b/.agents/skills/yss-stage-decision/references/stage-decision-package-contract.md
+index bf13458..73733a3 100644
+--- a/.agents/skills/yss-stage-decision/references/stage-decision-package-contract.md
++++ b/.agents/skills/yss-stage-decision/references/stage-decision-package-contract.md
+@@ -1,6 +1,6 @@
+ # 方案决策包合同
+ 
+-内部对象 `stage_decision_package` 是 Discovery、需求/产品/商务决策与业务边界和规则设计之间的冻结入口。它记录“做什么、为什么做、范围是什么、哪些仍未决”，不复制业务边界与规则事实。
++内部对象 `stage_decision_package` 是 Plan、需求/产品/商务决策与业务边界和规则设计之间的冻结入口。它记录“做什么、为什么做、范围是什么、哪些仍未决”，不复制业务边界与规则事实。
+ 
+ ## 必须包含
+ 
+diff --git a/.agents/skills/yss-strategic-design/SKILL.md b/.agents/skills/yss-strategic-design/SKILL.md
+index 688a4b5..6a3e385 100644
+--- a/.agents/skills/yss-strategic-design/SKILL.md
++++ b/.agents/skills/yss-strategic-design/SKILL.md
+@@ -9,6 +9,8 @@ description: 编排 YSS 产品或模块从机会调研到业务边界与协作
+ 
+ ## 入口与边界
+ 
++Plan 入口读取 `docs/plan/README.md` 和 `docs/process/plan-migration.md`，按注册表退出条件核查战略输入。关键未决项阻断进入 Spec；非关键项须有责任人、解决时点和接收方。只使用 Plan 标识，Plan 后仍保留 Spec、原型、业务 Ticket 与交接阶段。
++
+ 1. 先读取 `yss-project.yaml`、`CONTEXT.md`、相关 ADR、父 Ticket/checkpoint 和当前资产。
+ 2. `repository_mode=template-source` 只走模板维护流程；命中产品流程时返回 `blocked: template-source-product-artifact-forbidden`，不得生成产品 Spec、原型、OpenAPI 或切片 Ticket。
+ 3. `repository_mode=project-instance` 以 `docs/process/lifecycle-registry.yaml`、`harness-process-tailoring.md` 和本目录 references 为唯一阶段、门禁和裁剪事实源。数字人角色、阶段协作组、运行时绑定与会签级别以 `docs/agents/digital-human-roles.yaml` 为准；职称实例不另起编排器。
+@@ -56,7 +58,7 @@ Matt 的 `ask-matt`、`grill-me`、`grill-with-docs`、`to-spec`、`to-tickets`
+ | 阶段 | 必需产物/门禁 | 工作单元与技能 | 通过条件 |
+ |---|---|---|---|
+ | 入口分诊 | 身份、影响面、最近可信阶段 | `yss-strategic-design` + `triage` / `wayfinder`（兼容入口） | `yss-project.yaml` 合法且影响面可解释 |
+-| 机会、目标与业务故事 | 用户/MVP/非目标/成功标准、业务故事、规则示例、测试 seam；需要时补充业务边界与规则设计和方案决策包 | `work-unit.discovery-opportunity` + `work-unit.discovery-requirements` + `work-unit.domain-strategy-design` + `work-unit.stage-decision`；市场/竞品事实用 `competitive-intelligence`，技术/标准事实用 `yss-research:technical-evidence`，业务边界与方案决策证据用 `yss-research:strategy-evidence`；业务词汇和责任区梳理用 `domain-modeling`；`grill-with-docs` 为兼容入口 | 未决事实已由 `yss-research` 核验或 handoff；业务板块、责任区、统一业务词汇、协作关系和不可违反规则可审查；方案决策包完成必要确认 |
++| 机会、目标与业务故事 | 用户/MVP/非目标/成功标准、业务故事、规则示例、测试 seam；需要时补充业务边界与规则设计和方案决策包 | `work-unit.plan-opportunity` + `work-unit.plan-requirements` + `work-unit.domain-strategy-design` + `work-unit.stage-decision`；市场/竞品事实用 `competitive-intelligence`，技术/标准事实用 `yss-research:technical-evidence`，业务边界与方案决策证据用 `yss-research:strategy-evidence`；业务词汇和责任区梳理用 `domain-modeling`；`grill-with-docs` 为兼容入口 | 未决事实已由 `yss-research` 核验或 handoff；业务板块、责任区、统一业务词汇、协作关系和不可违反规则可审查；方案决策包完成必要确认 |
+ | Spec/功能架构 | Spec、产品总体设计、功能架构；必要时 Spec Delta | 原生 `work-unit.spec-synthesis`；`to-spec` 为兼容入口 | 初稿先为 `ready-for-human`；只有 Spec baseline 会签批准后资产才为 `approved` 并进入下游 |
+ | 原型设计 | 交互说明、低保真、状态矩阵、H1/H2 原型交付物、评审记录 | `yss-design-system` → `yss-prototype-stage` → 默认 `yss-antdv-next-design` / 显式 React 兼容 `yss-antd-design`（仅原型事实）→ Codex `product-design:index`（非 Codex 交付等价合同） | `gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` 均有证据 |
+ | 业务方案交接 | 业务方案交接包、研发待决问题和证据索引 | `yss-stage-decision` + `yss-strategic-design`；下游研发团队接管技术设计 | `artifact.domain-strategy`、`artifact.stage-decision-package`、Spec、页面原型和业务级 Ticket 已批准且版本当前，交接包字段完整；本地不生成技术模型 |
+@@ -64,9 +66,11 @@ Matt 的 `ask-matt`、`grill-me`、`grill-with-docs`、`to-spec`、`to-tickets`
+ | Ticket 正式化 | 业务级功能 Ticket 集（范围、优先级、验收、依赖、风险） | 本 profile 使用 `work-unit.business-ticket-formalization`；`to-tickets` 为兼容入口 | 业务行为可验证且不含 Adapter/Application/Domain/Infrastructure 技术拆分；下游再细化垂直切片 |
+ | 下游接管 | 技术设计、工程契约和实现 | 交接给下游研发团队；本 skill 不调用实现技能 | 业务方案交接包已批准且下游上下文、责任人和版本边界完整 |
+ 
++Plan → Spec（含正式草稿、恢复与显式 `to-spec`）写入前，按 `docs/plan/entry-review.md` 持久化审阅包并运行 `node scripts/verify-plan-spec-entry <state.yaml>`。检查默认 pending，缺项、过期或无真实回复即阻断；独立调研可继续。
++
+ ## 结果与暂停
+ 
+-凡主控向数字人角色或独立运行时正式派发生命周期工作单元，都必须通过结构化任务包派发，并返回 `Workflow Execution Result`（workflow reference、skill、changed files、`context_reconciliation`、evidence refs、actual verification、deferred seams、drift/new impacts）。任务包使用 `docs/process/schemas/digital-human-task-package.schema.json`，由 `scripts/verify-digital-human-task-package` 校验；其中 `role_id`、`runtime_id`、`execution_state`、`contract.kind/id/version`、允许写路径、预期证据和汇合引用必须完整。Discovery、Spec、原型、业务 Ticket、业务方案交接和模板维护分别绑定各自的生命周期资产或维护 checkpoint。Slice Implementation Contract、代码和发布均属于下游 profile，不得在本地任务包中创建。缺少可读证据、`context_reconciliation` 未通过、`stale`、`violation`、`drift`、`new_impacts` 或阻塞信号时不得标记 completed。实现授权不包含 Git commit/push 授权；“做完提交”等自然语言意向不构成上述结构化 Git 授权。
++凡主控向数字人角色或独立运行时正式派发生命周期工作单元，都必须通过结构化任务包派发，并返回 `Workflow Execution Result`（workflow reference、skill、changed files、`context_reconciliation`、evidence refs、actual verification、deferred seams、drift/new impacts）。任务包使用 `docs/process/schemas/digital-human-task-package.schema.json`，由 `scripts/verify-digital-human-task-package` 校验；其中 `role_id`、`runtime_id`、`execution_state`、`contract.kind/id/version`、允许写路径、预期证据和汇合引用必须完整。Plan、Spec、原型、业务 Ticket、业务方案交接和模板维护分别绑定各自的生命周期资产或维护 checkpoint。Slice Implementation Contract、代码和发布均属于下游 profile，不得在本地任务包中创建。缺少可读证据、`context_reconciliation` 未通过、`stale`、`violation`、`drift`、`new_impacts` 或阻塞信号时不得标记 completed。实现授权不包含 Git commit/push 授权；“做完提交”等自然语言意向不构成上述结构化 Git 授权。
+ 
+ 输出固定包含：模式、当前阶段、影响面、资产/门禁状态、`context_reconciliation`、证据、业务 Ticket 状态、阻塞项、本轮动作、下一工作单元、暂停/继续理由、Ticket 同步和 Git checkpoint 判断。启用本 profile 时，`work-unit.strategic-design-handoff` 完成后 `next_route` 必须为 `null`；不得生成垂直切片、`ready-for-agent`、OpenAPI、下游技术设计或实现资产。兼容入口的输入必须回交本编排器验收；`implement` 请求直接 `blocked` 并转交下游研发团队。暂停会签时必须输出门禁 ID、指定 `role_id`、`runtime_id` 和会签文件路径。任务包的 `core_skills` / `forbidden_skills` 必须从角色注册表复制。
+ 
+diff --git a/.agents/skills/yss-strategic-design/references/artifact-dependencies.md b/.agents/skills/yss-strategic-design/references/artifact-dependencies.md
+index 0522b14..ecb0e1b 100644
+--- a/.agents/skills/yss-strategic-design/references/artifact-dependencies.md
++++ b/.agents/skills/yss-strategic-design/references/artifact-dependencies.md
+@@ -3,8 +3,8 @@
+ ## 本地依赖链
+ 
+ ```text
+-Discovery → Domain Strategy → Stage Decision Package
+-Discovery + Stage Decision Package → Spec / Product Overview / Functional Architecture
++Plan → Domain Strategy → Stage Decision Package
++Plan + Stage Decision Package → Spec / Product Overview / Functional Architecture
+ Spec + Product Overview → Product Design → H1/H2 Prototype → User Confirmation
+ Approved strategic assets → Business Ticket Set → Strategic Design Handoff
+ ```
+diff --git a/.agents/skills/yss-strategic-design/references/matt-yss-adapter.md b/.agents/skills/yss-strategic-design/references/matt-yss-adapter.md
+index 202464b..6f2adf9 100644
+--- a/.agents/skills/yss-strategic-design/references/matt-yss-adapter.md
++++ b/.agents/skills/yss-strategic-design/references/matt-yss-adapter.md
+@@ -11,7 +11,7 @@ Matt skills 决定如何工作；YSS Strategic Design 决定是否允许推进
+ - **直接调用兼容入口**（`ask-matt`、`grill-me`、`grill-with-docs`、`to-spec`、`to-tickets`、`triage`、`wayfinder`）时，用户仍是正式资产的创建者；战略编排器先校验前置条件，再接受结果并重新计算阶段、门禁和状态。它们不得自动调用，也不得越过 Strategic Design Handoff。
+ - **直接调用 `yss-strategic-design`** 时，不机械嵌套调用任何 Matt user-invoked skill；编排器直接使用原生工作单元和允许的 model-invoked 原语。
+ - `template-source` 只允许进入模板维护流程。命中 `to-spec`、`to-tickets`、Release 或 Retrospective 时返回 `blocked`，原因是 `template-source-product-artifact-forbidden`；所有兼容入口都不得为具体产品生成超出本 profile 的资产。
+-- `project-instance` 才允许进入 Discovery → DDD 战略设计 → Spec → 产品设计 → 业务 Ticket → Strategic Design Handoff 链路。
++- `project-instance` 才允许进入 Plan → DDD 战略设计 → Spec → 产品设计 → 业务 Ticket → Strategic Design Handoff 链路。
+ 
+ | 情形 | Matt flow | 生命周期验收 |
+ |---|---|---|
+@@ -68,7 +68,7 @@ Router 状态映射为：`draft → completed`、`blocked → blocked`、`ready-
+ 
+ | Matt flow | 进入条件 | 生命周期结果 |
+ |---|---|---|
+-| `to-spec`（用户显式） | Discovery work unit 或 `grill-with-docs` 已满足退出条件，且不存在未回流 runnable blocker；用户问题、MVP/非目标、成功标准、测试 seam 和术语审查均有证据 | 生命周期只准备/验收；Spec 初稿为 `ready-for-human`，不等于批准 |
++| `to-spec`（用户显式） | Plan work unit 或 `grill-with-docs` 已满足退出条件，且不存在未回流 runnable blocker；用户问题、MVP/非目标、成功标准、测试 seam 和术语审查均有证据 | 生命周期只准备/验收；Spec 初稿为 `ready-for-human`，不等于批准 |
+ | `to-tickets`（用户显式） | 必要门禁、业务范围、验收标准、依赖和风险均已明确 | 生命周期只准备/验收；只能生成业务级 Ticket，初始统一为 `ready-for-human` |
+ | `implement`（已移除） | 不适用 | 直接返回 `blocked`，转交下游研发 profile |
+ 
+@@ -102,7 +102,7 @@ Matt flow 的通用提交指令不构成 YSS Git 授权。只有用户明确给
+ 
+ | Matt 产物 | Local 载体 |
+ |---|---|
+-| Discovery | `docs/.scratch/<feature>/discovery/` |
++| Plan | `docs/.scratch/<feature>/plan/` |
+ | Spec | `docs/.scratch/<feature>/spec.md` |
+ | Wayfinder map | `docs/.scratch/<feature>/map.md` |
+ | 产品设计与原型 | `docs/.scratch/<feature>/design/` |
+diff --git a/.agents/skills/yss-strategic-design/references/orchestration-contract.yaml b/.agents/skills/yss-strategic-design/references/orchestration-contract.yaml
+index 3eaa7f1..0d8cf85 100644
+--- a/.agents/skills/yss-strategic-design/references/orchestration-contract.yaml
++++ b/.agents/skills/yss-strategic-design/references/orchestration-contract.yaml
+@@ -29,7 +29,7 @@ profile_registry:
+   handoff_schema: docs/process/schemas/strategic-design-handoff.schema.json
+   handoff_schema_version: 2
+   handoff_context_contract: {source_snapshot: required, context_delta: required, target_reconciliation_before_tactical_design: required}
+-  allowed_local_work_units: [work-unit.discovery-opportunity, work-unit.discovery-requirements, work-unit.domain-strategy-design, work-unit.stage-decision, work-unit.spec-synthesis, work-unit.prototype-design, work-unit.business-ticket-formalization, work-unit.strategic-design-handoff]
++  allowed_local_work_units: [work-unit.plan-opportunity, work-unit.plan-requirements, work-unit.domain-strategy-design, work-unit.stage-decision, work-unit.spec-synthesis, work-unit.prototype-design, work-unit.business-ticket-formalization, work-unit.strategic-design-handoff]
+   forbidden_local_work_units: [work-unit.technical-analysis, work-unit.ticket-decomposition, work-unit.slice-implementation, work-unit.frontend-implementation-verification, work-unit.code-review, work-unit.release-and-retrospective]
+   forbidden_local_artifacts: [artifact.openapi-draft, artifact.openapi-freeze-record, artifact.tactical-design, artifact.parent-ticket, artifact.vertical-slice-ticket, artifact.slice-implementation-contract]
+ 
+@@ -186,7 +186,7 @@ lifecycle_native_entries:
+     triage: lifecycle-validate-and-accept
+ 
+ work_unit_routes:
+-  work-unit.discovery-opportunity:
++  work-unit.plan-opportunity:
+     native: {source: yss-strategic-design, skill: yss-strategic-design, invocation_mode: model-invoked}
+     primary_skill: yss-strategic-design
+     supporting_skills: [competitive-intelligence, yss-research]
+@@ -194,7 +194,7 @@ work_unit_routes:
+     route_by: {market_or_competitor_fact: competitive-intelligence, technical_or_standard_fact: yss-research:technical-evidence, strategy_fact: yss-research:strategy-evidence, no_external_fact: yss-strategic-design}
+     applies_when: opportunity_or_external_fact_requires_validation
+     not_applicable_reason: no_external_fact
+-  work-unit.discovery-requirements:
++  work-unit.plan-requirements:
+     native: {source: yss-strategic-design, skill: yss-strategic-design, invocation_mode: model-invoked}
+     primary_skill: yss-strategic-design
+     supporting_skills: [grilling, domain-modeling]
+@@ -217,7 +217,7 @@ work_unit_routes:
+     skills: [yss-stage-decision, domain-modeling, yss-research]
+     research_contract: {profile: strategy-evidence, mode_before_gate: evidence-audited, artifact_owner: yss-research, downstream_owner: yss-stage-decision}
+     human_gate: stage-decision-package-approved
+-    applies_when: discovery_to_spec_requires_stable_decision_package
++    applies_when: plan_to_spec_requires_stable_decision_package
+     not_applicable_reason: existing_approved_stage_decision_current
+   work-unit.spec-synthesis:
+     native: {source: yss-strategic-design, skill: yss-strategic-design, invocation_mode: model-invoked}
+@@ -314,8 +314,8 @@ transition_graph:
+     work-unit.intensity-aware-verification: [work-unit.intensity-aware-review]
+     work-unit.intensity-aware-review: [work-unit.release-and-rollback]
+     work-unit.release-and-rollback: []
+-    work-unit.discovery-opportunity: [work-unit.discovery-requirements, work-unit.domain-strategy-design, work-unit.stage-decision]
+-    work-unit.discovery-requirements: [work-unit.domain-strategy-design, work-unit.stage-decision]
++    work-unit.plan-opportunity: [work-unit.plan-requirements, work-unit.domain-strategy-design, work-unit.stage-decision]
++    work-unit.plan-requirements: [work-unit.domain-strategy-design, work-unit.stage-decision]
+     work-unit.domain-strategy-design: [work-unit.stage-decision]
+     work-unit.stage-decision: [work-unit.spec-synthesis]
+     work-unit.spec-synthesis: [work-unit.prototype-design]
+@@ -327,6 +327,25 @@ transition_graph:
+     - {from: work-unit.prototype-design, to: work-unit.slice-implementation}
+     - {from: work-unit.strategic-design-handoff, to: work-unit.slice-implementation}
+ 
++planning:
++  entry_validator: scripts/verify-plan-spec-entry
++  review_contract: docs/plan/entry-review.md
++  check_policy: docs/process/lifecycle-registry.yaml
++  default_check_status: pending
++  formal_spec_draft_requires_passed_entry: true
++  stage: stage.plan
++  record: artifact.plan-record
++  template: docs/plan/templates/plan-template.md
++  exit_policy: docs/process/lifecycle-registry.yaml
++  migration_policy: docs/process/plan-migration.md
++  critical_open_questions: block-before-spec
++  deferred_details_require: [noncritical_reason, owner, resolution_point, downstream_recipient]
++  reuse_requires: [source_ref, current_version, applicable_scope, reason]
++  downstream: work-unit.spec-synthesis
++  implementation_authorized: false
++  frontier_scope: current-plan-decisions
++  deferred_details: excluded-from-frontier-only-after-user-confirms-deferral
++
+ grill_exit:
+   required: [frontier_empty, facts_resolved_or_routed, decisions_confirmed, shared_understanding_confirmed, no_unresolved_runnable_blocker]
+   facts_resolved_or_routed:
+@@ -334,7 +353,7 @@ grill_exit:
+     runnable_question: handoff-prototype-handoff
+     external_decision: external-input-required
+   user_confirmation_required: true
+-  output: discovery-evidence
++  output: plan-evidence
+ 
+ git_authorization:
+   natural_language_intent_is_authorization: false
+@@ -382,7 +401,7 @@ tracker:
+   local_markdown:
+     root: docs/.scratch
+     legacy_roots: [.scratch, docs/requirements/tickets]
+-    feature_layout: [map.md, discovery, spec.md, design, gates, issues, strategic-design-handoff.yaml]
++    feature_layout: [map.md, plan, spec.md, design, gates, issues, strategic-design-handoff.yaml]
+     primary_sync: local
+     remote_ticket_required: false
+     remote_mirror: optional
+diff --git a/.agents/skills/yss-strategic-design/references/orchestration.md b/.agents/skills/yss-strategic-design/references/orchestration.md
+index 410e807..4d3b67a 100644
+--- a/.agents/skills/yss-strategic-design/references/orchestration.md
++++ b/.agents/skills/yss-strategic-design/references/orchestration.md
+@@ -2,7 +2,7 @@
+ 
+ ## 有界推进循环
+ 
+-当任务使用 `harness.business-ddd-strategy-handoff` profile 时，先加载 `docs/process/harness-profile.yaml`。只向产品、需求和商务角色派发 Discovery、需求分析、DDD 战略设计、Spec、页面原型、业务级 Ticket 和 Strategic Design Handoff 工作；`work-unit.strategic-design-handoff` 完成并批准后，`next_route` 必须为 `null`，并将 `downstream_consumers` 指向 `downstream-rd-team` / `yss-technical-design`。不得把 profile 的 `null` 终点改写成技术分析、Tactical DDD、实现或发布路由。
++当任务使用 `harness.business-ddd-strategy-handoff` profile 时，先加载 `docs/process/harness-profile.yaml`。只向产品、需求和商务角色派发 Plan、需求分析、DDD 战略设计、Spec、页面原型、业务级 Ticket 和 Strategic Design Handoff 工作；`work-unit.strategic-design-handoff` 完成并批准后，`next_route` 必须为 `null`，并将 `downstream_consumers` 指向 `downstream-rd-team` / `yss-technical-design`。不得把 profile 的 `null` 终点改写成技术分析、Tactical DDD、实现或发布路由。
+ 
+ 1. 识别模式、仓库身份、任务规模和影响面。
+ 2. `setup readiness`：每个任务只执行一次，核对 tracker、五态标签和领域文档布局，并在本轮缓存结果；仅在 tracker、主远端、真实标签或配置变化时重查。
+@@ -53,7 +53,7 @@ tracker 选择和冲突按 `docs/agents/issue-tracker.md` 裁决：已持久化
+ 
+ - `work-unit.technical-analysis` 是下游研发 profile 的接管工作单元；本 profile 仅在 Strategic Design Handoff 中记录待下游确认的技术问题，不生成 Tactical DDD 或 OpenAPI 资产。
+ 
+-- `work-unit.discovery-requirements` 实际调用 `grilling` 和 `domain-modeling`；`work-unit.discovery-opportunity` 按事实类型路由 `competitive-intelligence` 或 `yss-research`。`yss-research:quick` 只用于探索；外部证据进入领域战略、阶段决策或其他生命周期批准输入前必须升级为 `evidence-audited`。战略编排器原生负责 Spec、页面原型、业务 Ticket 和 Strategic Design Handoff；`ask-matt`、`grill-me`、`grill-with-docs`、`to-spec`、`to-tickets`、`triage`、`wayfinder` 仅保留为显式兼容入口，结果必须回交战略编排器验收。
++- `work-unit.plan-requirements` 实际调用 `grilling` 和 `domain-modeling`；`work-unit.plan-opportunity` 按事实类型路由 `competitive-intelligence` 或 `yss-research`。`yss-research:quick` 只用于探索；外部证据进入领域战略、阶段决策或其他生命周期批准输入前必须升级为 `evidence-audited`。战略编排器原生负责 Spec、页面原型、业务 Ticket 和 Strategic Design Handoff；`ask-matt`、`grill-me`、`grill-with-docs`、`to-spec`、`to-tickets`、`triage`、`wayfinder` 仅保留为显式兼容入口，结果必须回交战略编排器验收。
+ - `harness.business-ddd-strategy-handoff` profile 的 `work-unit.strategic-design-handoff` 是本地终点；它必须引用批准的 `domain-strategy`、`stage-decision-package`、Spec、页面原型和业务级 Ticket 集，携带 schema v2 `source_context_snapshot` / `context_delta`，并把 Tactical DDD 问题交给下游研发团队。目标仓必须先完成根 `CONTEXT.md` 对账和 `context_reconciliation`，再启动 `yss-technical-design`；profile 内不得生成或批准 `artifact.tactical-design`。
+ - `work-unit.business-ticket-formalization` 只生成业务能力/用户行为级 Ticket，保持 `ready-for-human`，不创建垂直切片、Slice Contract 或 `ready-for-agent`。
+ - `Workflow Execution Result.next_route` 必须通过生命周期转换校验；Spec → 原型 → 业务 Ticket → Strategic Design Handoff 是本 profile 的唯一主路径。
+diff --git a/.claude/skills/competitive-intelligence/SKILL.md b/.claude/skills/competitive-intelligence/SKILL.md
+index f6a6f4e..c50fd61 100644
+--- a/.claude/skills/competitive-intelligence/SKILL.md
++++ b/.claude/skills/competitive-intelligence/SKILL.md
+@@ -1,13 +1,13 @@
+ ---
+ name: competitive-intelligence
+-description: Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Discovery, Spec, product strategy, or roadmap decisions.
++description: Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Plan, Spec, product strategy, or roadmap decisions.
+ ---
+ 
+ # Competitive Intelligence
+ 
+ Source requested for this project: `anthropics/knowledge-work-plugins`, `sales/skills/competitive-intelligence`.
+ 
+-Use this skill when competitive or market facts are needed to shape product Discovery, Spec scope, positioning, differentiation, pricing assumptions, or roadmap tradeoffs.
++Use this skill when competitive or market facts are needed to shape product Plan, Spec scope, positioning, differentiation, pricing assumptions, or roadmap tradeoffs.
+ 
+ ## Core Rules
+ 
+@@ -45,8 +45,8 @@ Use this skill when competitive or market facts are needed to shape product Disc
+    - Risks if we copy the competitor too closely.
+    - Product opportunities for Spec or roadmap.
+ 5. Hand off to lifecycle assets:
+-   - Update Discovery findings in `docs/.scratch/<feature>/discovery/`.
+-   - Create or update a competitor matrix in `docs/.scratch/<feature>/discovery/reports/`.
++   - Update Plan findings in `docs/.scratch/<feature>/plan/`.
++   - Create or update a competitor matrix in `docs/.scratch/<feature>/plan/reports/`.
+    - Feed stable user, pain, MVP, non-goal, and success criteria into `grill-with-docs` and `to-spec`.
+    - Record uncertain claims as assumptions, not requirements.
+ 
+diff --git a/.codex/skills/competitive-intelligence/SKILL.md b/.codex/skills/competitive-intelligence/SKILL.md
+index f6a6f4e..c50fd61 100644
+--- a/.codex/skills/competitive-intelligence/SKILL.md
++++ b/.codex/skills/competitive-intelligence/SKILL.md
+@@ -1,13 +1,13 @@
+ ---
+ name: competitive-intelligence
+-description: Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Discovery, Spec, product strategy, or roadmap decisions.
++description: Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Plan, Spec, product strategy, or roadmap decisions.
+ ---
+ 
+ # Competitive Intelligence
+ 
+ Source requested for this project: `anthropics/knowledge-work-plugins`, `sales/skills/competitive-intelligence`.
+ 
+-Use this skill when competitive or market facts are needed to shape product Discovery, Spec scope, positioning, differentiation, pricing assumptions, or roadmap tradeoffs.
++Use this skill when competitive or market facts are needed to shape product Plan, Spec scope, positioning, differentiation, pricing assumptions, or roadmap tradeoffs.
+ 
+ ## Core Rules
+ 
+@@ -45,8 +45,8 @@ Use this skill when competitive or market facts are needed to shape product Disc
+    - Risks if we copy the competitor too closely.
+    - Product opportunities for Spec or roadmap.
+ 5. Hand off to lifecycle assets:
+-   - Update Discovery findings in `docs/.scratch/<feature>/discovery/`.
+-   - Create or update a competitor matrix in `docs/.scratch/<feature>/discovery/reports/`.
++   - Update Plan findings in `docs/.scratch/<feature>/plan/`.
++   - Create or update a competitor matrix in `docs/.scratch/<feature>/plan/reports/`.
+    - Feed stable user, pain, MVP, non-goal, and success criteria into `grill-with-docs` and `to-spec`.
+    - Record uncertain claims as assumptions, not requirements.
+ 
+diff --git a/.pi/skills/competitive-intelligence/SKILL.md b/.pi/skills/competitive-intelligence/SKILL.md
+index f6a6f4e..c50fd61 100644
+--- a/.pi/skills/competitive-intelligence/SKILL.md
++++ b/.pi/skills/competitive-intelligence/SKILL.md
+@@ -1,13 +1,13 @@
+ ---
+ name: competitive-intelligence
+-description: Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Discovery, Spec, product strategy, or roadmap decisions.
++description: Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Plan, Spec, product strategy, or roadmap decisions.
+ ---
+ 
+ # Competitive Intelligence
+ 
+ Source requested for this project: `anthropics/knowledge-work-plugins`, `sales/skills/competitive-intelligence`.
+ 
+-Use this skill when competitive or market facts are needed to shape product Discovery, Spec scope, positioning, differentiation, pricing assumptions, or roadmap tradeoffs.
++Use this skill when competitive or market facts are needed to shape product Plan, Spec scope, positioning, differentiation, pricing assumptions, or roadmap tradeoffs.
+ 
+ ## Core Rules
+ 
+@@ -45,8 +45,8 @@ Use this skill when competitive or market facts are needed to shape product Disc
+    - Risks if we copy the competitor too closely.
+    - Product opportunities for Spec or roadmap.
+ 5. Hand off to lifecycle assets:
+-   - Update Discovery findings in `docs/.scratch/<feature>/discovery/`.
+-   - Create or update a competitor matrix in `docs/.scratch/<feature>/discovery/reports/`.
++   - Update Plan findings in `docs/.scratch/<feature>/plan/`.
++   - Create or update a competitor matrix in `docs/.scratch/<feature>/plan/reports/`.
+    - Feed stable user, pain, MVP, non-goal, and success criteria into `grill-with-docs` and `to-spec`.
+    - Record uncertain claims as assumptions, not requirements.
+ 
+diff --git a/.qoder/skills/domain-modeling/CONTEXT-FORMAT.md b/.qoder/skills/domain-modeling/CONTEXT-FORMAT.md
+index 56b54fb..9647ae2 100644
+--- a/.qoder/skills/domain-modeling/CONTEXT-FORMAT.md
++++ b/.qoder/skills/domain-modeling/CONTEXT-FORMAT.md
+@@ -45,7 +45,7 @@ context_schema_version: 1
+ 
+ ## 内容边界
+ 
+-- 只写已经确认、稳定且未来资产需要复用的业务语言。候选、猜测和未决术语保留在 Discovery、业务边界与规则设计或 `context_delta`。
++- 只写已经确认、稳定且未来资产需要复用的业务语言。候选、猜测和未决术语保留在 Plan、业务边界与规则设计或 `context_delta`。
+ - 定义保持一到两句，说明概念是什么；不要写类全名、表名、接口路径、实现步骤或计划。
+ - 禁用别名使用 `避免：别名一、别名二`；需要补充说明时追加 `；备注：...`。
+ - 术语稳定时立即回写。工作单元完成、门禁批准或阶段转换前仍须执行 context reconciliation。
+diff --git a/.qoder/skills/grill-with-docs/SKILL.md b/.qoder/skills/grill-with-docs/SKILL.md
+index 4b944d5..581b7de 100644
+--- a/.qoder/skills/grill-with-docs/SKILL.md
++++ b/.qoder/skills/grill-with-docs/SKILL.md
+@@ -11,7 +11,7 @@ Call the Skill tool with `grilling`, then call it separately with `domain-modeli
+ 1. Read `yss-project.yaml` and the root glossary before the first round, then run `scripts/verify-context-contract --root . --json`. Missing or lowercase root files, nested `CONTEXT.md`, `CONTEXT-MAP.md`, unsupported schema, absolute/cross-repository references, and Markdown pseudo-anchors are `blocked` or `migration-required`.
+ 2. Separate discoverable facts from user decisions; investigate facts instead of asking the user.
+ 3. Ask the entire current decision frontier, with a recommendation for every question, then wait.
+-4. Keep candidate or disputed terms in the Discovery decision frontier. Only after confirmation, use `domain-modeling` to record true stable glossary entries in the repository root's single, case-sensitive `CONTEXT.md`; business rows use the five-column format and `<ContextId>/<EnglishIdentifier>` identity. Non-`Global` Context IDs must come from the approved business responsibility areas in the business-boundary asset.
++4. Keep candidate or disputed terms in the Plan decision frontier. Only after confirmation, use `domain-modeling` to record true stable glossary entries in the repository root's single, case-sensitive `CONTEXT.md`; business rows use the five-column format and `<ContextId>/<EnglishIdentifier>` identity. Non-`Global` Context IDs must come from the approved business responsibility areas in the business-boundary asset.
+ 5. Create an ADR only when the decision is hard to reverse, surprising without context, and a real trade-off.
+ 6. Persist factual research/validation records in the repository's existing review or research convention.
+ 7. For `project-instance`, before requesting approval or returning a next work unit, generate and validate `context_reconciliation` with a readable ref, `document_digest`, `referenced_terms_digest`, and `term_refs`. Unresolved candidates, scope conflicts, aliases, or digest drift are `blocked`; reconciliation does not create another gate. For `template-source`, do not add fictional business terms and return a reasoned `not-applicable` after validating the template contract.
+diff --git a/.template-source/derived/harness-work-unit-map.md b/.template-source/derived/harness-work-unit-map.md
+index 5106053..7249cf0 100644
+--- a/.template-source/derived/harness-work-unit-map.md
++++ b/.template-source/derived/harness-work-unit-map.md
+@@ -13,11 +13,11 @@
+ | `work-unit.intensity-aware-verification` | template-source | 分级 Fresh verification | 变更仓库、强度分级与对应最低证据。 | 命令输出与证据。 | L1 相关检查、L2 最小反例与 fresh verification、L3 完整 RED / GREEN / REFACTOR 与 fresh verification 按命中等级通过。 |
+ | `work-unit.intensity-aware-review` | template-source | 分级审查 | 变更 diff、强度分级与验证证据。 | L1 self-check / 人工 checkpoint、L2 聚焦独立审查或 L3 正式独立审查结论。 | 已按命中等级完成审查且无未处理阻断项；L1 不强制独立 reviewer。 |
+ | `work-unit.release-and-rollback` | template-source | 发布与回滚 | 已审查 commit。 | release note、观察信号、回滚点。 | 两仓库顺序和恢复动作明确。 |
+-| `work-unit.discovery-opportunity` | project-instance | 机会调研 | 用户问题、市场/竞品事实需求和现有上下文。 | Discovery 机会结论、证据、替代方案和关键假设。 | 机会继续/停止建议可审查；事实已 research 或记录为假设。 |
+-| `work-unit.discovery-requirements` | project-instance | 需求分析 | 机会结论、用户反馈和领域词汇。 | 用户、MVP、非目标、成功标准、测试 seam 和未决项。 | frontier 清空；用户确认；无 runnable blocker。 |
++| `work-unit.plan-opportunity` | project-instance | 机会调研 | 用户问题、市场/竞品事实需求和现有上下文。 | Plan 机会结论、证据、替代方案和关键假设。 | 机会继续/停止建议可审查；事实已 research 或记录为假设。 |
++| `work-unit.plan-requirements` | project-instance | 需求分析 | 机会结论、用户反馈和领域词汇。 | 用户、MVP、非目标、成功标准、测试 seam 和未决项。 | frontier 清空；用户确认；无 runnable blocker。 |
+ | `work-unit.domain-strategy-design` | project-instance | 业务边界与协作梳理 | 已澄清的业务故事、业务词汇、约束和现有协作关系。 | 业务板块、业务责任区、协作与交接关系、统一业务词汇、已发生的业务事实、待确认的关键业务对象和不可违反的业务规则。 | 边界、语义方向、规则所有权和关键场景可审查；无未解释冲突。 |
+-| `work-unit.stage-decision` | project-instance | 方案决策包综合 | Discovery、业务边界与规则设计、产品和商务输入。 | 带版本、digest、证据和下游映射的方案决策包。 | 必填字段、引用、影响面和下游消费验证通过；批准门禁完成。 |
+-| `work-unit.spec-synthesis` | project-instance | Spec 综合 | 已确认的 Discovery 记录和测试 seam。 | Spec、产品总体设计和功能架构。 | Spec 内容完整并进入 ready-for-human；下游推进仍需 gate.spec-baseline-approved。 |
++| `work-unit.stage-decision` | project-instance | 方案决策包综合 | Plan、业务边界与规则设计、产品和商务输入。 | 带版本、digest、证据和下游映射的方案决策包。 | 必填字段、引用、影响面和下游消费验证通过；批准门禁完成。 |
++| `work-unit.spec-synthesis` | project-instance | Spec 综合 | 已确认的 Plan 记录和测试 seam。 | Spec、产品总体设计和功能架构。 | Spec 内容完整并进入 ready-for-human；下游推进仍需 gate.spec-baseline-approved。 |
+ | `work-unit.prototype-design` | project-instance | 原型设计与验证 | Spec、产品设计影响和状态矩阵。 | 交互说明、低/高保真原型、评审、AntD CLI 和浏览器证据。 | 原型评审、高保真验证和用户确认门禁均通过。 |
+ | `work-unit.technical-analysis` | project-instance | 技术分析与契约冻结 | Spec、原型、API/数据/工程影响面。 | OpenAPI、数据架构、Tactical DDD Check、工程基线、架构审查和 Slice 合同草案。 | 命中契约已冻结；无 API 影响有可读记录；命中领域影响时战术模型无未解释冲突；工程基线通过。 |
+ | `work-unit.ticket-decomposition` | project-instance | 垂直切片 Ticket 正式化 | 冻结 Spec、设计、契约和阻塞关系。 | 功能父 Ticket、垂直切片和批准的 Slice Implementation Contract。 | 切片可独立验证；生命周期复算后才能 ready-for-agent。 |
+diff --git a/.trae/skills/competitive-intelligence/SKILL.md b/.trae/skills/competitive-intelligence/SKILL.md
+index f6a6f4e..c50fd61 100644
+--- a/.trae/skills/competitive-intelligence/SKILL.md
++++ b/.trae/skills/competitive-intelligence/SKILL.md
+@@ -1,13 +1,13 @@
+ ---
+ name: competitive-intelligence
+-description: Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Discovery, Spec, product strategy, or roadmap decisions.
++description: Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Plan, Spec, product strategy, or roadmap decisions.
+ ---
+ 
+ # Competitive Intelligence
+ 
+ Source requested for this project: `anthropics/knowledge-work-plugins`, `sales/skills/competitive-intelligence`.
+ 
+-Use this skill when competitive or market facts are needed to shape product Discovery, Spec scope, positioning, differentiation, pricing assumptions, or roadmap tradeoffs.
++Use this skill when competitive or market facts are needed to shape product Plan, Spec scope, positioning, differentiation, pricing assumptions, or roadmap tradeoffs.
+ 
+ ## Core Rules
+ 
+@@ -45,8 +45,8 @@ Use this skill when competitive or market facts are needed to shape product Disc
+    - Risks if we copy the competitor too closely.
+    - Product opportunities for Spec or roadmap.
+ 5. Hand off to lifecycle assets:
+-   - Update Discovery findings in `docs/.scratch/<feature>/discovery/`.
+-   - Create or update a competitor matrix in `docs/.scratch/<feature>/discovery/reports/`.
++   - Update Plan findings in `docs/.scratch/<feature>/plan/`.
++   - Create or update a competitor matrix in `docs/.scratch/<feature>/plan/reports/`.
+    - Feed stable user, pain, MVP, non-goal, and success criteria into `grill-with-docs` and `to-spec`.
+    - Record uncertain claims as assumptions, not requirements.
+ 
+diff --git a/AGENTS.md b/AGENTS.md
+index 42c3a17..9c38aa5 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -10,7 +10,7 @@
+ 
+ 每个任务先读根目录 `yss-project.yaml`：
+ 
+-- `template-source` 只维护模板，不生成具体产品的 Discovery、Spec、原型、业务级 Ticket 或交接包。
++- `template-source` 只维护模板，不生成具体产品的 Plan、Spec、原型、业务级 Ticket 或交接包。
+ - `project-instance` 使用 `harness.business-ddd-strategy-handoff`；本地终点为 `work-unit.strategic-design-handoff`。
+ - 文件缺失、schema 不支持或模式非法时停止路由并执行迁移检查；不得根据目录、Git 远程或占位符猜测身份。
+ 
+diff --git a/CONTEXT.md b/CONTEXT.md
+index 2c1dd5c..cd13994 100644
+--- a/CONTEXT.md
++++ b/CONTEXT.md
+@@ -18,6 +18,7 @@ context_schema_version: 1
+ 
+ | 术语 | 含义 | 英文标识 | 避免 / 备注 |
+ |---|---|---|---|
++| Plan（战略规划） | 确认目标、业务边界、关键规则、MVP / 非目标、优先级和交接责任，为 Spec 提供已确认的战略输入。 | — | 问题探索是其中按需开展的活动；不等同于 AI-DLC 官方阶段名、交付排期或实现合同的 Context Plan。旧阶段 ID 已弃用，不提供兼容解析。 |
+ | Agent | 执行特定工作流步骤的 AI 协作者。 | — | 不要与生物人审查者、数字人角色或 Ticket 状态混用。运行时实例（Cursor Agent、Claude Code、Grok Bot 等）是 Agent 的承载，不是角色本身。 |
+ | 运行时绑定 | 把数字人角色落到某个 Agent 平台的适配声明，权威清单在数字人角色注册表的 `runtimes`。 | — | 不要为每个平台复制一套职称职责。 |
+ | Grok Bot | Grok 平台上的持久数字队友实例；对应 `runtime.grok`。 | — | 不是数字人角色、技能或门禁。 |
+@@ -28,7 +29,7 @@ context_schema_version: 1
+ | 运行时副作用审批 | 对发消息、改生产、付款、删数据等工具动作的账号级确认。 | — | 点 Allow 不等于门禁已批准或可发布。避免只称「Grok 平台审批」。 |
+ | Ticket 状态 | Tracker 五态：`needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`。 | — | 不要称为数字人角色或「标准角色」。 |
+ | 阶段协作组 | 某阶段需要共同可见会签的逻辑成员集合。 | — | 不是某个产品的群聊；平台人数上限只写在对应 `runtimes`。 |
+-| 需求经理 | 主责 Discovery 语言、用户/MVP/非目标、Spec 正文与测试 seam 的数字人角色。 | — | 不拥有原型视觉定稿，不 Freeze API，不写实现。 |
++| 需求经理 | 主责 Plan 语言、用户/MVP/非目标、Spec 正文与测试 seam 的数字人角色。 | — | 不拥有原型视觉定稿，不 Freeze API，不写实现。 |
+ | 产品经理 | 主责优先级、产品设计影响、原型确认建议和范围裁剪的数字人角色。 | — | 不写生产代码，不单独 Freeze API。 |
+ | 商务 | 主责机会调研商业约束、交付承诺和发布窗口商务非目标的数字人角色。 | — | 不参与 Spec 定稿、契约、代码或 Ticket 状态推进。 |
+ | Agent 入口规则 | Agent 启动任务时必须先遵守的全局路由、硬门禁和禁止事项。 | — | 不作为 YSS 后端、前端或其他专项编码规范的完整手册。 |
+@@ -96,7 +97,7 @@ context_schema_version: 1
+ | 模板源治理区 | 仅供 `template-source` 使用、保存审查证据、研究记录、跨仓契约、发布路线、源仓库治理决策和源仓库 LLM Wiki 编译树的归档区域。 | — | 不随 CLI 分发；不等于产品实例的研发管理资产。`wiki-root` 为 `.template-source/wiki`。 |
+ | 仓库身份清单 | 显式声明仓库身份和清单结构版本的机器可读资产。 | — | 不承载项目名称、团队规模、Tracker 或其他易变业务配置。 |
+ | Harness 目标用户画像 | 声明某个 Harness profile 面向哪些职能角色、哪些角色不在本地协作范围内的边界配置。 | — | 不等同于数字人角色注册表；角色职责仍以 `docs/agents/digital-human-roles.yaml` 为准。 |
+-| 业务方案交接包 | 将 Discovery、方案决策和业务边界与规则设计以版本、digest、证据和研发待决问题清单封装，交给下游研发团队的交付资产。 | — | 不直接指定技术模型、API、数据库或代码；模板见 `docs/templates/strategic-design-handoff-template.yaml`。 |
++| 业务方案交接包 | 将 Plan、方案决策和业务边界与规则设计以版本、digest、证据和研发待决问题清单封装，交给下游研发团队的交付资产。 | — | 不直接指定技术模型、API、数据库或代码；模板见 `docs/templates/strategic-design-handoff-template.yaml`。 |
+ | 下游研发团队 | 消费批准的业务方案交接包，并负责技术设计、API、数据、实现和验证的研发协作方。 | — | 不是本地业务方案设计 Harness 的目标用户，也不是生命周期门禁角色。 |
+ 
+ ## 业务术语
+diff --git a/README.md b/README.md
+index 872368c..0500091 100644
+--- a/README.md
++++ b/README.md
+@@ -8,7 +8,7 @@
+ 
+ ## 定位
+ 
+-本模板默认作为业务方案设计 / 研发管理仓库，保留 Discovery、Spec、原型、业务级 Ticket、业务方案交接包、Agent skills 和协作约定。OpenAPI、实现仓库和运行时代码由下游研发 profile 接管。机器可读边界见 [`docs/process/harness-profile.yaml`](./docs/process/harness-profile.yaml)。
++本模板默认作为业务方案设计 / 研发管理仓库，保留 Plan、Spec、原型、业务级 Ticket、业务方案交接包、Agent skills 和协作约定。OpenAPI、实现仓库和运行时代码由下游研发 profile 接管。机器可读边界见 [`docs/process/harness-profile.yaml`](./docs/process/harness-profile.yaml)。
+ 
+ ## 项目结构
+ 
+@@ -108,7 +108,7 @@ scripts/verify-template
+ | [docs/process/harness-executive-blueprint.md](./docs/process/harness-executive-blueprint.md) | 面向业务方和管理者的 Harness 一页式蓝图 |
+ | [docs/agents/README.md](./docs/agents/README.md) | Agent 协作文档目录说明 |
+ | [docs/agents/skills-maintenance.md](./docs/agents/skills-maintenance.md) | Agent skills 安装与维护 |
+-| [docs/discovery/IDEATION.md](./docs/discovery/IDEATION.md) | 机会构想方法 |
++| [docs/plan/IDEATION.md](./docs/plan/IDEATION.md) | 机会构想方法 |
+ 
+ ## 核心模板
+ 
+diff --git a/docs/agents/digital-human-roles.md b/docs/agents/digital-human-roles.md
+index 42f1a29..6bf4ee3 100644
+--- a/docs/agents/digital-human-roles.md
++++ b/docs/agents/digital-human-roles.md
+@@ -18,7 +18,7 @@
+ |---|---|---|
+ | 数字人角色 | 职称配置（需求经理、前端工程师…） | Ticket 五态、某个平台的 Bot |
+ | 主控数字人 | 生命周期编排器的运行时实例 | 第八个业务职称 |
+-| 职能工作单元 | Discovery / Spec / Code / Review | 职称 |
++| 职能工作单元 | Plan / Spec / Code / Review | 职称 |
+ | 执行态 | Explorer / Drafter / Worker / Reviewer / Verifier | 数字人角色 |
+ | 运行时绑定 | 如何在 Cursor / Claude / Grok 等落地 | 角色职责本身 |
+ 
+diff --git a/docs/agents/digital-human-roles.yaml b/docs/agents/digital-human-roles.yaml
+index 6540bb2..923beda 100644
+--- a/docs/agents/digital-human-roles.yaml
++++ b/docs/agents/digital-human-roles.yaml
+@@ -1,4 +1,12 @@
+ schema_version: 1
++user_decision_policy:
++  schema_version: 1
++  default_responder: requester
++  delegate_requires_requester_evidence: true
++  source_kinds: [platform-message, session-export, user-confirmation-file]
++  gates: []
++  work_units:
++    work-unit.plan-requirements: plan-conclusion
+ registry_id: yss.digital-human-roles
+ status: active
+ description: >-
+@@ -67,7 +75,7 @@ orchestrator:
+   kind: orchestrator
+   title: YSS 生命周期主控
+   default_dual_hat: []
+-  stages: [stage.entry-triage, stage.discovery, stage.spec-architecture, stage.product-design, stage.ticket-formalization]
++  stages: [stage.entry-triage, stage.plan, stage.spec-architecture, stage.product-design, stage.ticket-formalization]
+   core_skills: [yss-strategic-design]
+   forbidden_skills: [yss-tactical-design, yss-openapi-governance, yss-implementation-contract-compiler, yss-domain, yss-ui, yss-page-module-development, yss-web-controller, yss-repository, implement, tdd]
+   description: >-
+@@ -83,12 +91,12 @@ roles:
+     name: 需求经理
+     kind: digital-human
+     title: YSS 需求经理
+-    stages: [stage.discovery, stage.spec-architecture, stage.product-design, stage.ticket-formalization]
+-    draft_artifact_ids: [artifact.discovery-record, artifact.spec]
++    stages: [stage.plan, stage.spec-architecture, stage.product-design, stage.ticket-formalization]
++    draft_artifact_ids: [artifact.plan-record, artifact.spec]
+     core_skills: [grilling, domain-modeling, yss-research, competitive-intelligence, grill-with-docs]
+     forbidden_skills: [yss-tactical-design, yss-openapi-governance, yss-implementation-contract-compiler, yss-domain, yss-ui, yss-page-module-development, yss-web-controller, yss-repository, implement, tdd]
+     description: >-
+-      Own Discovery language, users, MVP, non-goals, success criteria, test
++      Own Plan language, users, MVP, non-goals, success criteria, test
+       seams, and Spec prose. Propose CONTEXT.md glossary entries. Do not freeze
+       visual prototypes, OpenAPI, or code. Do not guess unconfirmed business
+       rules. Hand off to the orchestrator when the frontier is empty.
+@@ -97,7 +105,7 @@ roles:
+     name: 产品经理
+     kind: digital-human
+     title: YSS 产品经理
+-    stages: [stage.discovery, stage.spec-architecture, stage.product-design, stage.ticket-formalization]
++    stages: [stage.plan, stage.spec-architecture, stage.product-design, stage.ticket-formalization]
+     draft_artifact_ids: [artifact.product-overview, artifact.functional-architecture, artifact.interaction-spec, artifact.state-matrix, artifact.prototype-confirmation, artifact.business-ticket-set]
+     core_skills: [yss-strategic-design, yss-design-system, yss-prototype-stage, prototype-review, yss-antdv-next-design]
+     forbidden_skills: [yss-tactical-design, yss-openapi-governance, yss-implementation-contract-compiler, yss-domain, yss-ui, yss-page-module-development, yss-web-controller, yss-repository, implement, tdd]
+@@ -110,20 +118,20 @@ roles:
+     name: 商务
+     kind: digital-human
+     title: YSS 商务
+-    stages: [stage.discovery]
+-    draft_artifact_ids: [artifact.discovery-record]
++    stages: [stage.plan]
++    draft_artifact_ids: [artifact.plan-record]
+     core_skills: [yss-strategic-design, competitive-intelligence, yss-research]
+     forbidden_skills: [to-spec, to-tickets, yss-tactical-design, yss-openapi-governance, yss-implementation-contract-compiler, yss-domain, yss-ui, yss-page-module-development, yss-web-controller, yss-repository, implement, tdd]
+     description: >-
+       Own commercial constraints, delivery promises, and business non-goals in
+-      Discovery and release windows. Do not finalize Spec, API, tickets, or
++      Plan and release windows. Do not finalize Spec, API, tickets, or
+       code. External quotes and contracts stay behind runtime side-effect
+       approval by a biological human.
+ 
+ stage_groups:
+-  - id: group.discovery
+-    name: Discovery
+-    stage: stage.discovery
++  - id: group.plan
++    name: Plan
++    stage: stage.plan
+     members: [role.lifecycle-orchestrator, role.requirements-manager, role.product-manager, role.business]
+   - id: group.spec
+     name: Spec
+diff --git a/docs/agents/issue-tracker.md b/docs/agents/issue-tracker.md
+index eadeb29..60a5495 100644
+--- a/docs/agents/issue-tracker.md
++++ b/docs/agents/issue-tracker.md
+@@ -41,7 +41,7 @@ Local 主 tracker 的完整功能包结构如下：
+ ```text
+ docs/.scratch/<feature>/
+ ├── map.md
+-├── discovery/
++├── plan/
+ ├── spec.md
+ ├── spec-delta/
+ ├── parent-ticket.md
+diff --git a/docs/architecture/README.md b/docs/architecture/README.md
+index eb31299..b56d428 100644
+--- a/docs/architecture/README.md
++++ b/docs/architecture/README.md
+@@ -10,7 +10,7 @@
+ 
+ | 产物 | 产出阶段 | 重点问题 | 建议文件 |
+ |------|----------|----------|----------|
+-| 业务架构 | 机会探索 / Discovery / 产品定义 | 用户是谁、价值流是什么、产品在业务生态中的边界在哪里 | `<feature>-business-architecture.md` |
++| 业务架构 | 机会探索 / Plan / 产品定义 | 用户是谁、价值流是什么、产品在业务生态中的边界在哪里 | `<feature>-business-architecture.md` |
+ | 产品总体设计 / 功能架构 | Spec 初稿之后、页面 / 原型 / 交互设计之前 | 用户主流程、业务对象、功能域、模块边界、页面/API/数据影响、优先级、依赖和 MVP 非目标范围是什么 | `<feature>-product-overview-design.md` 或 `<feature>-functional-architecture.md` |
+ | 系统概要设计 / 系统总体架构 | 工程基线 / 系统 / 数据架构设计 | 服务/模块如何构建、部署、集成、运维、回滚和演进 | `<feature>-system-overview-design.md`、`<feature>-system-architecture.md` 或 `<feature>-architecture.md` |
+ | 数据架构 | 详细设计 / 持久化开发前 | 概念/逻辑/物理模型、元模型、版本、血缘、查询、索引和存储策略是什么 | `<feature>-data-architecture.md` |
+diff --git a/docs/architecture/templates/business-architecture-template.md b/docs/architecture/templates/business-architecture-template.md
+index 5321fb3..a14693e 100644
+--- a/docs/architecture/templates/business-architecture-template.md
++++ b/docs/architecture/templates/business-architecture-template.md
+@@ -14,7 +14,7 @@ owner: ai
+ 
+ | 资产 | 路径 / 链接 | 状态 | 备注 |
+ |------|-------------|------|------|
+-| Discovery |  |  |  |
++| Plan |  |  |  |
+ | 竞品 / 市场分析 |  |  |  |
+ | CONTEXT 术语 |  |  |  |
+ | 现有业务流程 |  |  |  |
+diff --git a/docs/architecture/templates/functional-architecture-template.md b/docs/architecture/templates/functional-architecture-template.md
+index 0d8a0e5..47a9235 100644
+--- a/docs/architecture/templates/functional-architecture-template.md
++++ b/docs/architecture/templates/functional-architecture-template.md
+@@ -16,7 +16,7 @@ owner: ai
+ |------|-------------|------|------|
+ | Spec 初稿 |  |  |  |
+ | 业务架构 |  |  |  |
+-| Discovery |  |  |  |
++| Plan |  |  |  |
+ | CONTEXT 术语 |  |  |  |
+ 
+ ## 2. 功能目标与边界
+diff --git a/docs/design/README.md b/docs/design/README.md
+index 3ea8922..5174551 100644
+--- a/docs/design/README.md
++++ b/docs/design/README.md
+@@ -52,5 +52,5 @@
+ docs/.scratch/<feature>/design/diagrams/
+ docs/.scratch/<feature>/design/prototypes/
+ docs/.scratch/<feature>/architecture/diagrams/
+-docs/.scratch/<feature>/discovery/diagrams/
++docs/.scratch/<feature>/plan/diagrams/
+ ```
+diff --git a/docs/design/templates/interaction-spec-template.md b/docs/design/templates/interaction-spec-template.md
+index ca450e5..1c9775b 100644
+--- a/docs/design/templates/interaction-spec-template.md
++++ b/docs/design/templates/interaction-spec-template.md
+@@ -9,7 +9,7 @@
+ | Spec 初稿 | `docs/.scratch/<feature>/spec.md` | 原型评审后需要回填和校准 |
+ | 产品总体设计 / 功能架构 | `docs/.scratch/<feature>/design/<feature>-product-overview-design.md` | 必需；缺失时先返回产品总体设计阶段 |
+ | 领域术语 | `CONTEXT.md` | 核心名词、状态和业务规则 |
+-| Discovery | `docs/.scratch/<feature>/discovery/<feature>-discovery.md` | 可选 |
++| Plan | `docs/.scratch/<feature>/plan/<feature>-discovery.md` | 可选 |
+ | 原型阶段合同 / Product Design 路由 | `yss-prototype-stage -> product-design:index -> <focused skill>` | 必需；记录 `$get-context`、`$ideate`、`$prototype`、`$image-to-code` 或 `$url-to-code` |
+ | 原型 / 线框图 | `<链接或导出图片路径>` | Excalidraw / Figma / Penpot / tldraw / Axure / Markdown |
+ | H1/H2 原型交付物 | `docs/.scratch/<feature>/design/prototypes/index.html` | 低保真原型评审通过后按档位补齐；H2 默认 Vue/Antdv Next，React/AntD 为显式兼容路线；产出后必须获得用户确认 |
+diff --git a/docs/design/templates/product-overview-design-template.md b/docs/design/templates/product-overview-design-template.md
+index bd33d22..6f1a0ff 100644
+--- a/docs/design/templates/product-overview-design-template.md
++++ b/docs/design/templates/product-overview-design-template.md
+@@ -14,7 +14,7 @@ owner: ai
+ 
+ | 资产 | 路径 / 链接 | 状态 | 备注 |
+ |------|-------------|------|------|
+-| Discovery / 竞品分析 |  |  |  |
++| Plan / 竞品分析 |  |  |  |
+ | 业务架构 |  |  |  |
+ | Spec 初稿 |  |  |  |
+ | CONTEXT 术语 |  |  |  |
+diff --git a/docs/discovery/IDEATION.md b/docs/discovery/IDEATION.md
+deleted file mode 100644
+index 82e233d..0000000
+--- a/docs/discovery/IDEATION.md
++++ /dev/null
+@@ -1,96 +0,0 @@
+-# 机会构想 (Ideation) — 发现与需求之间的假设生成
+-
+-> **Phase：生成可验证假设，再用 Discovery 事实校准。AI 是发散、挑战和组合机会的加速器。**
+-
+----
+-
+-## 定位：机会探索环中的假设生成
+-
+-Ideation 不等同于  Matt skills `需求澄清`：
+-
+-| 项 | 定位 | 输出 |
+-|---|---|---|
+-| Ideation Agent | 产品机会探索角色，回答“可能做什么、是否值得探索” | 候选机会、假设、挑战点、组合方案 |
+-| Discovery Agent | 事实验证角色，回答“证据支持什么、用户真实痛点是什么” | 市场、竞品、用户洞察、MVP 边界输入 |
+-|  Matt skills `需求澄清` | 方法论 skill，回答“某个已选方向如何形成技术方案” | 设计说明、方案取舍、风险识别、进入计划前的批准点 |
+-
+-推荐关系：
+-
+-```text
+-市场 / 竞品 / 用户事实 <-> 机会构想假设 <-> MVP 边界
+-```
+-
+-如果只有一个模糊主题，可以先 Ideation 再 Discovery；如果已经有竞品、用户或行业材料，应先 Discovery 再 Ideation。二者循环到 Spec 前，必须收敛用户、痛点、做什么、不做什么和成功标准。
+-
+----
+-
+-## AI 在机会构想中的四种角色
+-
+-### 1. 发散者 — 产生大量想法
+-
+-```python
+-delegate_task(
+-    goal="对'[主题]'做机会构想，至少产生 30 个候选机会",
+-    context="""
+-    不要过滤。不讨论可行性。数量优先。
+-    思考维度：功能/体验/运营/技术/商业模式
+-    输出：30+ 个候选机会，每个一句话 + 维度标签
+-    """
+-)
+-```
+-
+-### 2. 挑战者 — 魔鬼代言人
+-
+-```python
+-delegate_task(
+-    goal="对这 5 个候选机会，站在反对者角度逐一挑战",
+-    context="对每个候选机会：用户为什么不买账？技术上最大的坑？竞品失败过吗？"
+-)
+-```
+-
+-### 3. 连接者 — 发现模式
+-
+-```python
+-delegate_task(
+-    goal="分析 30 个候选机会，找出隐藏的模式和可组合的机会",
+-    context="归类为 5-7 个主题 / 识别可组合的 / 标注低垂果实 vs 登月计划"
+-)
+-```
+-
+-### 4. 记录者 — 结构化输出
+-
+-```python
+-delegate_task(
+-    goal="将机会构想输出整理为结构化文档",
+-    context="按主题分类 + 假设-证据-风险矩阵 + Top 5 + Next Steps"
+-)
+-```
+-
+----
+-
+-## 方法库
+-
+-### How Might We (HMW)
+-```
+-用户痛点 → "我们如何..." → 针对每个 HMW 产生想法
+-```
+-
+-### Crazy 8s
+-```
+-8 分钟画 8 个方案草图 → 投票选出最佳
+-```
+-
+-### SCAMPER
+-```
+-Substitute / Combine / Adapt / Modify / Put to another use / Eliminate / Reverse
+-```
+-
+----
+-
+-## AI-Human Loop
+-
+-```
+-人类提主题或 Discovery 事实 → AI 发散候选机会 → 人类选择 Top 10
+-→ AI 挑战者分析 → Discovery 验证证据 → AI 连接者找模式
+-→ 收敛 MVP 边界 → 确认是否进入 Spec / Ticket 或  Matt skills 需求澄清 技术方案设计
+-```
+diff --git a/docs/discovery/README.md b/docs/discovery/README.md
+deleted file mode 100644
+index c44bf8f..0000000
+--- a/docs/discovery/README.md
++++ /dev/null
+@@ -1,87 +0,0 @@
+-# 发现阶段 (Discovery) — 市场分析 · 竞品分析 · 用户洞察
+-
+-> **Phase 0 — 需求分析的前置输入。**
+-
+----
+-
+-## 工作流
+-
+-Discovery 不是固定排在 Ideation 后面的单向步骤。它和机会构想共同组成“机会探索环”，用于把事实、假设和 MVP 边界来回校准：
+-
+-```
+-市场 / 竞品 / 用户事实 <-> 机会构想假设 <-> MVP 边界
+-```
+-
+-进入 Spec 前必须收敛为：
+-
+-- 用户是谁。
+-- 痛点是什么。
+-- 为什么现在做。
+-- 第一版做什么。
+-- 明确不做什么。
+-- 成功标准是什么。
+-- 产品功能建设方向是什么。
+-- 后续可能影响哪些 UI、API、数据、权限、架构和安全门禁。
+-
+-常见入口：
+-
+-- 只有模糊想法：先机会构想，再用市场、竞品和用户洞察验证。
+-- 已有行业、竞品或用户材料：先用 `competitive-intelligence` 整理 Discovery 事实，再生成候选方案。
+-- 明确 Bug 或小调整：不走完整 Discovery，直接进入 hotfix / tweak。
+-
+----
+-
+-## 市场分析
+-
+-### 数据源
+-- 行业报告、上市公司财报、政府数据、投资机构研报
+-
+-### 产出物
+-- 市场总览报告 / 规模与增长预测 / 趋势洞察
+-
+----
+-
+-## 竞品分析
+-
+-推荐优先使用 `competitive-intelligence`，把公开证据、事实 / 推断、置信度和 Spec 输入分开记录。竞品分析结论只能作为 Discovery / Spec 输入，不能直接冻结为需求。
+-
+-### 分析维度
+-产品功能 / 用户体验 / 技术能力 / 商业模式 / 用户口碑 / 市场表现
+-
+-### 产出物
+-- 竞品情报简报 / 竞品功能矩阵 / 竞品深度分析 / 差异化机会清单 / 产品功能指引输入
+-
+----
+-
+-## 用户洞察
+-
+-### 数据源
+-- 应用商店评论 / 社交媒体 / 客服社区 / 行业报告
+-
+-### 产出物
+-- 用户画像 / 用户旅程地图 / 痛点优先级清单
+-
+----
+-
+-## Discovery 收敛产物
+-
+-Discovery 的结论用于影响 Spec、功能架构、产品设计、API 和架构阶段，但不替代这些阶段的正式产物。
+-
+-- 机会说明。
+-- MVP 范围和非目标范围。
+-- 产品功能指引 / 能力候选地图。
+-- 下游影响清单：UI、API、数据、权限、外部系统、发布回滚和风险 / 回滚约束。
+-
+----
+-
+-## 商业论证
+-
+-### AI Agent 任务
+-```python
+-delegate_task(
+-    goal="基于市场分析和竞品分析，生成商业论证草案",
+-    context="""
+-    输出：机会陈述 / 目标用户群 / 价值主张 / 商业模式 / 核心指标 / 风险评估
+-    """
+-)
+-```
+diff --git a/docs/discovery/templates/competitive-analysis-template.md b/docs/discovery/templates/competitive-analysis-template.md
+deleted file mode 100644
+index fb3317f..0000000
+--- a/docs/discovery/templates/competitive-analysis-template.md
++++ /dev/null
+@@ -1,261 +0,0 @@
+-# [主题] 竞品深度分析报告
+-
+-> AI 辅助生成，人工审核补充。
+-> 建议配套产物：`competitive-matrix-template.md` 用于横向功能矩阵，本模板用于深度分析和 Spec 前置输入。
+-> 使用 `grill-with-docs` 时，请把稳定术语同步沉淀到 `CONTEXT.md`，只有出现难以回滚、非显而易见且存在真实取舍的决策时才新增 ADR。
+-
+-## 0. 文档信息
+-
+-| 项 | 内容 |
+-|---|---|
+-| 调研主题 | [例如：数据中台数据建模] |
+-| 调研日期 | [YYYY-MM-DD] |
+-| 调研对象 | [竞品 A] / [竞品 B] / [竞品 C] |
+-| 调研人 | [姓名 / Agent] |
+-| 资料边界 | [公开官网 / 官方文档 / 白皮书 / 访谈 / 试用环境] |
+-| 可信度说明 | [哪些信息已验证，哪些信息待验证] |
+-| 关联矩阵 | [链接到对应竞品功能矩阵] |
+-
+-## 1. 调研背景
+-
+-### 1.1 业务背景
+-
+-[说明为什么现在要调研这个主题，它关联的业务目标、用户问题或产品方向是什么。]
+-
+-### 1.2 调研问题
+-
+-1. [竞品如何定义该领域能力？]
+-2. [竞品如何组织功能对象、角色和流程？]
+-3. [用户如何完成从输入到落地的完整闭环？]
+-4. [哪些能力值得进入我们的 MVP，哪些应延后？]
+-
+-### 1.3 范围与非目标
+-
+-| 类型 | 内容 |
+-|---|---|
+-| 本次包含 | [竞品范围、能力范围、用户范围] |
+-| 本次不包含 | [暂不分析的竞品、能力、商业模式或技术细节] |
+-
+-## 2. 关键结论
+-
+-### 2.1 一句话结论
+-
+-[用一段话说明整体判断。]
+-
+-### 2.2 竞品分化
+-
+-| 竞品 | 核心判断 | 对我们的启示 |
+-|---|---|---|
+-| [竞品 A] | [定位 / 强项 / 弱项] | [可学习或应规避的点] |
+-| [竞品 B] | [定位 / 强项 / 弱项] | [可学习或应规避的点] |
+-| [竞品 C] | [定位 / 强项 / 弱项] | [可学习或应规避的点] |
+-
+-### 2.3 产品机会
+-
+-1. [机会点 1]
+-2. [机会点 2]
+-3. [机会点 3]
+-
+-## 3. 竞品矩阵摘要
+-
+-> 完整矩阵建议放在独立文件中，本节只保留高层摘要。
+-
+-| 维度 | [竞品 A] | [竞品 B] | [竞品 C] |
+-|---|---|---|---|
+-| 核心定位 | | | |
+-| 目标用户 | | | |
+-| 核心流程 | | | |
+-| 关键能力 | | | |
+-| 差异化亮点 | | | |
+-| 公开资料成熟度 | 高 / 中 / 低 | 高 / 中 / 低 | 高 / 中 / 低 |
+-
+-## 4. 逐家深剖
+-
+-### 4.1 [竞品 A]
+-
+-#### 4.1.1 定义与定位
+-
+-[该竞品如何定义本领域能力，它解决的核心问题是什么。]
+-
+-#### 4.1.2 功能设计
+-
+-| 模块 | 功能点 | 说明 |
+-|---|---|---|
+-| [模块] | [功能点] | [功能说明] |
+-
+-#### 4.1.3 使用 / 落地流程
+-
+-1. [步骤 1]
+-2. [步骤 2]
+-3. [步骤 3]
+-
+-#### 4.1.4 优势与不足
+-
+-优势：
+-
+-- [优势 1]
+-- [优势 2]
+-
+-不足 / 待验证：
+-
+-- [不足或风险 1]
+-- [公开资料不足处]
+-
+-### 4.2 [竞品 B]
+-
+-#### 4.2.1 定义与定位
+-
+-[同上。]
+-
+-#### 4.2.2 功能设计
+-
+-| 模块 | 功能点 | 说明 |
+-|---|---|---|
+-| [模块] | [功能点] | [功能说明] |
+-
+-#### 4.2.3 使用 / 落地流程
+-
+-1. [步骤 1]
+-2. [步骤 2]
+-3. [步骤 3]
+-
+-#### 4.2.4 优势与不足
+-
+-优势：
+-
+-- [优势 1]
+-- [优势 2]
+-
+-不足 / 待验证：
+-
+-- [不足或风险 1]
+-- [公开资料不足处]
+-
+-### 4.3 [竞品 C]
+-
+-#### 4.3.1 定义与定位
+-
+-[同上。]
+-
+-#### 4.3.2 功能设计
+-
+-| 模块 | 功能点 | 说明 |
+-|---|---|---|
+-| [模块] | [功能点] | [功能说明] |
+-
+-#### 4.3.3 使用 / 落地流程
+-
+-1. [步骤 1]
+-2. [步骤 2]
+-3. [步骤 3]
+-
+-#### 4.3.4 优势与不足
+-
+-优势：
+-
+-- [优势 1]
+-- [优势 2]
+-
+-不足 / 待验证：
+-
+-- [不足或风险 1]
+-- [公开资料不足处]
+-
+-## 5. 功能拆解
+-
+-| 功能域 | 子功能 | [竞品 A] | [竞品 B] | [竞品 C] | 我们的建议 |
+-|---|---|---|---|---|---|
+-| [功能域] | [子功能] | ✅ / ⚠️ / ❌ / ❓ | ✅ / ⚠️ / ❌ / ❓ | ✅ / ⚠️ / ❌ / ❓ | P0 / P1 / P2 / 不做 |
+-
+-图例：✅ 明确支持；⚠️ 部分支持或资料不完整；❌ 未支持；❓ 公开资料不足。
+-
+-## 6. 流程泳道图
+-
+-```mermaid
+-flowchart LR
+-  subgraph User[用户 / 业务方]
+-    U1[提出需求]
+-    U2[确认结果]
+-  end
+-
+-  subgraph Product[产品能力]
+-    P1[能力步骤 1]
+-    P2[能力步骤 2]
+-    P3[能力步骤 3]
+-  end
+-
+-  subgraph Operation[运营 / 实施 / 开发]
+-    O1[配置 / 开发 / 审核]
+-    O2[上线 / 交付]
+-  end
+-
+-  U1 --> P1 --> P2 --> O1 --> P3 --> O2 --> U2
+-```
+-
+-## 7. 能力评分
+-
+-评分说明：1 分弱，5 分强。评分应说明依据，避免只给主观分。
+-
+-| 能力 | [竞品 A] | [竞品 B] | [竞品 C] | 评分依据 |
+-|---|---:|---:|---:|---|
+-| [能力 1] |  |  |  | [依据] |
+-| [能力 2] |  |  |  | [依据] |
+-| [能力 3] |  |  |  | [依据] |
+-
+-## 8. Grilling 问题清单
+-
+-> 本节用于把竞品分析继续压成 Spec 前的产品边界。明确的问题可进入 Spec；稳定术语进入 `CONTEXT.md`；重大取舍再考虑 ADR。
+-
+-1. 首要用户是谁？是否只能先服务一个角色？
+-2. 第一高频场景是什么？是新建、改造、迁移、治理，还是消费？
+-3. 最小闭环从哪里开始，到哪里结束？
+-4. 哪些对象必须是一等对象，哪些只是属性或配置？
+-5. 哪些能力进入 MVP，哪些能力明确不做？
+-6. 成功验收如何度量？用户如何知道能力产生了价值？
+-7. 哪些流程需要审核、版本、回滚或影响分析？
+-8. 有哪些公开资料不足，必须通过访谈、试用或厂商确认？
+-
+-## 9. 机会点
+-
+-| 机会点 | 用户痛点 | 竞品现状 / 缺口 | 实现难度 | 优先级 |
+-|---|---|---|---|---|
+-| [机会点] | [痛点] | [缺口] | 高 / 中 / 低 | P0 / P1 / P2 |
+-
+-## 10. MVP 建议
+-
+-### 10.1 MVP 目标
+-
+-[用一段话说明 MVP 要帮助哪个用户，在什么场景下，完成什么最小闭环。]
+-
+-### 10.2 MVP 功能范围
+-
+-| 模块 | MVP 能力 | 验收标准 |
+-|---|---|---|
+-| [模块] | [能力] | [可验证标准] |
+-
+-### 10.3 暂不进入 MVP
+-
+-1. [能力 / 场景 1]
+-2. [能力 / 场景 2]
+-3. [能力 / 场景 3]
+-
+-### 10.4 推荐产品路线
+-
+-第一阶段：[目标与范围]
+-
+-第二阶段：[目标与范围]
+-
+-第三阶段：[目标与范围]
+-
+-## 11. 建议下一步
+-
+-1. [补充调研 / 用户访谈 / 厂商验证]
+-2. [进入 grill-with-docs 继续澄清的问题]
+-3. [生成 Spec]
+-4. [判断是否需要 OpenAPI / 垂直切片 issue]
+-
+-## 12. 参考资料
+-
+-| 来源 | 链接 | 类型 | 可信度 | 备注 |
+-|---|---|---|---|---|
+-| [来源名称] | [URL] | 官方文档 / 产品页 / 白皮书 / 访谈 | 高 / 中 / 低 | [备注] |
+diff --git a/docs/discovery/templates/competitive-matrix-template.md b/docs/discovery/templates/competitive-matrix-template.md
+deleted file mode 100644
+index 62765e0..0000000
+--- a/docs/discovery/templates/competitive-matrix-template.md
++++ /dev/null
+@@ -1,28 +0,0 @@
+-# 竞品功能矩阵
+-
+-> AI 辅助生成，人工审核补充。状态：✅ 有 | ⚠️ 部分 | ❌ 无 | ❓ 未知
+-
+-## 竞品概览
+-
+-| 竞品 | 类型 | 目标用户 | 核心定位 |
+-|------|------|---------|---------|
+-| | | | |
+-
+-## 功能矩阵
+-
+-| 功能模块 | 功能点 | 竞品A | 竞品B | 竞品C | 我们 |
+-|---------|--------|-------|-------|-------|------|
+-| **模块1** | | | | | |
+-| | 功能1 | | | | |
+-| | 功能2 | | | | |
+-| (按需扩展) | | | | | |
+-
+-## 差异化亮点
+-（每个竞品的独特优势）
+-
+-## 功能空白区
+-| 机会点 | 用户痛点 | 竞品缺失 | 实现难度 | 优先级 |
+-|--------|---------|---------|---------|--------|
+-| | | | | |
+-
+-## 结论
+diff --git a/docs/discovery/templates/discovery-template.md b/docs/discovery/templates/discovery-template.md
+deleted file mode 100644
+index d0a45d5..0000000
+--- a/docs/discovery/templates/discovery-template.md
++++ /dev/null
+@@ -1,94 +0,0 @@
+----
+-pipeline: <feature-id>
+-stage: discovery
+-status: draft
+-owner: ai
+----
+-
+-# <功能名称> Discovery 收敛文档
+-
+-> 适用场景：机会探索、竞品分析或用户材料已经有初步输入，需要收敛为 Spec 上游事实。
+-> 本文回答“为谁、为什么、第一版做什么、不做什么、如何判断成功、产品能力往哪里建设、后续可能影响哪些设计资产”，不替代 Spec、业务架构、功能架构、OpenAPI 或系统 / 数据架构。
+-
+-## 1. 输入材料
+-
+-| 材料 | 路径 / 链接 | 状态 | 备注 |
+-|------|-------------|------|------|
+-| 机会想法 / 用户反馈 |  |  |  |
+-| 竞品 / 市场分析 |  |  |  |
+-| 现有系统 / 业务材料 |  |  |  |
+-| 约束 / 决策 |  |  |  |
+-
+-## 2. 目标用户与场景
+-
+-| 用户 / 角色 | 核心场景 | 当前痛点 | 影响范围 |
+-|-------------|----------|----------|----------|
+-|  |  |  |  |
+-
+-## 3. 问题与机会
+-
+-- 问题陈述：
+-- 为什么现在做：
+-- 差异化机会：
+-- 不做的机会：
+-
+-## 4. MVP 边界
+-
+-| 能力 | 是否进入 MVP | 理由 | 成功信号 |
+-|------|---------------|------|----------|
+-|  | 是 / 否 / 待定 |  |  |
+-
+-## 5. 非目标范围
+-
+-| 非目标 | 排除原因 | 后续观察条件 |
+-|--------|----------|--------------|
+-|  |  |  |
+-
+-## 6. 产品功能指引 / 能力候选
+-
+-> 本节用于给 Spec 和功能架构输入方向，不冻结最终功能架构或技术系统方案。
+-
+-| 能力候选 | 用户价值 | 优先级假设 | 是否进入 MVP | 证据 / 依据 | 下游影响 |
+-|----------|----------|------------|---------------|-------------|----------|
+-|  |  | P0 / P1 / P2 | 是 / 否 / 待定 |  | UI / API / 数据 / 权限 / 架构 |
+-
+-## 7. 下游影响清单
+-
+-> 只记录影响信号和待验证假设；具体方案在 Spec、产品设计、API、系统 / 数据架构和设计审查阶段收敛。
+-
+-| 影响域 | 是否可能影响 | 说明 | 需要进入的后续门禁 |
+-|--------|--------------|------|--------------------|
+-| 页面 / 交互 | 是 / 否 / 待定 |  | 产品设计 / Prototype Review |
+-| OpenAPI / 契约 | 是 / 否 / 待定 |  | API 影响分析 / 契约草案 |
+-| 数据模型 / 持久化 | 是 / 否 / 待定 |  | 数据架构 / Design Review |
+-| 外部系统 / 集成 | 是 / 否 / 待定 |  | 系统架构 / ADR |
+-| 发布 / 回滚 / 运维 | 是 / 否 / 待定 |  | 系统架构 / Release Review |
+-| 高风险变更 / 人工确认项 | 是 / 否 / 待定 |  | 人工确认项 |
+-
+-## 8. 成功标准
+-
+-| 指标 / 结果 | 目标 | 验证方式 |
+-|-------------|------|----------|
+-|  |  |  |
+-
+-## 9. 风险与待澄清
+-
+-| 风险 / 问题 | 影响 | 处理方式 | 截止点 |
+-|-------------|------|----------|--------|
+-|  |  |  | Spec 前 |
+-
+-## 10. 完成标准
+-
+-- [ ] 目标用户、痛点、为什么现在做已经明确。
+-- [ ] MVP 和非目标范围可直接输入 Spec。
+-- [ ] 产品功能指引已经形成能力候选和优先级假设，但未替代正式功能架构。
+-- [ ] 下游 UI、API、数据、权限、架构、安全影响信号已列出。
+-- [ ] 成功标准可验收。
+-- [ ] 业务架构需要的用户旅程、价值流、角色 / 外部系统线索已列出。
+-- [ ] 需要回写 `CONTEXT.md` 的术语已标注。
+-
+-## 11. 下一步门禁
+-
+-- 结论：Approved / Blocked
+-- 下一步：业务架构 / Spec / 继续 Discovery
+-- 阻断项：
+diff --git a/docs/discovery/templates/market-analysis-template.md b/docs/discovery/templates/market-analysis-template.md
+deleted file mode 100644
+index c1ce79c..0000000
+--- a/docs/discovery/templates/market-analysis-template.md
++++ /dev/null
+@@ -1,55 +0,0 @@
+-# 市场分析报告
+-
+-> 基于公开数据的市场分析（AI 辅助生成，人工审核后定稿）
+-
+-## 市场概览
+-
+-### 基本数据
+-
+-| 指标 | 数据 | 来源 | 年份 |
+-|------|------|------|------|
+-| | | | |
+-
+-### 增长趋势
+-
+-（描述市场规模变化趋势，附图表）
+-
+-## 细分赛道分析
+-
+-### 赛道一：[名称]
+-
+-- 市场规模：
+-- 增长率：
+-- 主要玩家：
+-- 用户画像：
+-- 机会点：
+-
+-## 用户行为趋势
+-
+-- 移动端 vs PC 端占比
+-- 用户决策路径变化
+-- 新消费习惯
+-
+-## 技术趋势
+-
+-- AI/ML 应用
+-- AR/VR 购物体验
+-- 新支付方式
+-
+-## 政策与监管
+-
+-- 相关法规
+-- 合规要求
+-- 政策风险
+-
+-## 关键结论
+-
+-1. 
+-2. 
+-3. 
+-
+-## 数据来源
+-
+-| 序号 | 来源 | 链接 | 可信度 |
+-|------|------|------|--------|
+-| | | | |
+diff --git a/docs/discovery/templates/user-pain-points-template.md b/docs/discovery/templates/user-pain-points-template.md
+deleted file mode 100644
+index d4eab0d..0000000
+--- a/docs/discovery/templates/user-pain-points-template.md
++++ /dev/null
+@@ -1,49 +0,0 @@
+-# 用户痛点分析
+-
+-> 数据来源：应用商店评论、社交媒体、客服社区、行业报告
+-
+-## 数据收集概览
+-
+-| 渠道 | 收集数量 | 有效样本 | 时间段 |
+-|------|---------|---------|--------|
+-| App Store 评论 | | | |
+-| 微博讨论 | | | |
+-| 小红书笔记 | | | |
+-| 客服社区 | | | |
+-
+-## Top 10 用户痛点
+-
+-| 排名 | 痛点描述 | 严重程度 | 频率 | 影响面 | 用户原话 |
+-|------|---------|---------|------|--------|---------|
+-| 1 | | 🔴 高 | 日频 | 全部用户 | |
+-| 2 | | 🔴 高 | | | |
+-| 3 | | 🟡 中 | | | |
+-| ... | | | | | |
+-
+-## 痛点分类
+-
+-### 功能痛点
+-- 
+-
+-### 体验痛点
+-- 
+-
+-### 信任痛点
+-- 
+-
+-## 未被满足的需求
+-
+-（竞品都没有做好的点）
+-
+-| 需求 | 描述 | 证据 |
+-|------|------|------|
+-| | | |
+-
+-## 机会假设
+-
+-基于痛点推导的产品方向：
+-
+-1. **假设 1**：[方向] → 待验证
+-2. **假设 2**：[方向] → 待验证
+-
+-## 附录：数据采集方法
+diff --git a/docs/process/harness-process-tailoring.md b/docs/process/harness-process-tailoring.md
+index d75b459..8140142 100644
+--- a/docs/process/harness-process-tailoring.md
++++ b/docs/process/harness-process-tailoring.md
+@@ -18,7 +18,7 @@
+ | 模板源维护 | 影响面分析 | 修改单一事实来源、按验证与审查强度分级执行证据、必要的技能投影同步、fresh verification / review | 产品 Spec、产品设计、OpenAPI、运行时代码 |
+ | 小改动 | 入口分诊 | 影响面、主 tracker 同步、fresh verification | Spec、架构、原型、切片（没有触发条件时） |
+ | 中等变更 | 最近可信的 Spec / 架构阶段 | Spec、功能架构、必要工程审查、父 Ticket 和切片 | 未命中的 UI、数据或 API 门禁 |
+-| 全新产品 / 模块 | Discovery | Discovery、Spec、产品总体设计、功能架构、必要设计 / 契约审查、父 Ticket 和切片 | 未命中的 UI、数据或 API 门禁 |
++| 全新产品 / 模块 | Plan | Plan、Spec、产品总体设计、功能架构、必要设计 / 契约审查、父 Ticket 和切片 | 未命中的 UI、数据或 API 门禁 |
+ | 高风险变更 | 既有冻结基线 | Spec Delta、架构 / 数据 / 工程审查、契约复核、切片和回滚设计 | 与风险证据无关的门禁 |
+ 
+ 任何裁剪都必须写明原因和证据，不生成空文档。对跨仓库变更，Harness 记录必须绑定实现仓库、分支、CI、验证命令、发布顺序和回滚点；没有前端、后端或 OpenAPI 影响时显式记录 `not-applicable`。
+diff --git a/docs/process/harness-profile.yaml b/docs/process/harness-profile.yaml
+index b33b2d8..249082c 100644
+--- a/docs/process/harness-profile.yaml
++++ b/docs/process/harness-profile.yaml
+@@ -25,8 +25,8 @@ lifecycle:
+   repository_modes: [project-instance]
+   entry_work_unit: work-unit.entry-triage
+   allowed_work_units:
+-    - work-unit.discovery-opportunity
+-    - work-unit.discovery-requirements
++    - work-unit.plan-opportunity
++    - work-unit.plan-requirements
+     - work-unit.domain-strategy-design
+     - work-unit.stage-decision
+     - work-unit.spec-synthesis
+diff --git a/docs/process/instance-distribution-manifest.yaml b/docs/process/instance-distribution-manifest.yaml
+index e8ddc16..ce878e5 100644
+--- a/docs/process/instance-distribution-manifest.yaml
++++ b/docs/process/instance-distribution-manifest.yaml
+@@ -58,6 +58,7 @@ exclude_root_files:
+   - yss-public-skills.json
+ 
+ exclude_paths:
++  - docs/discovery
+   - .claude/settings.local.json
+   - .codex/hooks.json
+   - .codex/settings.local.json
+diff --git a/docs/process/lifecycle-artifact-map.md b/docs/process/lifecycle-artifact-map.md
+index 8bbe9df..fee4573 100644
+--- a/docs/process/lifecycle-artifact-map.md
++++ b/docs/process/lifecycle-artifact-map.md
+@@ -10,7 +10,7 @@
+ | 稳定 ID | 阶段 | 目标 | 退出标准 |
+ |---|---|---|---|
+ | `stage.entry-triage` | 入口分诊 | 确认仓库身份、问题范围和影响面。 | yss-project.yaml 合法，影响面和最近可信阶段可解释。 |
+-| `stage.discovery` | Discovery | 澄清问题、用户、约束和机会。 | 问题边界、关键假设和待确认项已记录。 |
++| `stage.plan` | Plan（战略规划） | 确认目标、业务边界、关键规则、MVP / 非目标、优先级和交接责任，为 Spec 提供战略输入；按影响面探索并复用仍有效的结论。 | 用户确认规划结论，命中的战略与阶段决策门禁通过；影响业务边界、关键规则或 MVP 的问题已解决，其他未决项有责任人和解决时点；下游可进入 Spec，不代表可实现。 |
+ | `stage.spec-architecture` | Spec / 功能架构 | 固化解决方案和功能边界。 | Spec 基线和功能边界可审查。 |
+ | `stage.product-design` | 产品设计 | 在存在产品设计影响时校准页面流和状态。 | 命中的设计门禁通过；未命中项记录 not-applicable 及原因。 |
+ | `stage.system-data-engineering` | 系统 / 数据架构与工程契约 | 固化系统、数据、工程基线和 API 契约。 | 受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。 |
+@@ -27,8 +27,8 @@
+ | 稳定 ID | 门禁 | 所属阶段 | 触发条件 | 前置门禁 | 必须留下的证据 |
+ |---|---|---|---|---|---|
+ | `gate.repository-identity-valid` | 仓库身份校验 | `stage.entry-triage` | 每次进入流程。 | 无 | `evidence.repository-identity-check` |
+-| `gate.domain-strategy-approved` | 业务边界与规则确认 | `stage.discovery` | 需要确定业务板块、业务责任区、统一业务词汇、协作关系或关键规则。 | 无 | `evidence.domain-strategy-review`、`evidence.approval-record` |
+-| `gate.stage-decision-package-approved` | 阶段决策包批准 | `stage.discovery` | Discovery 到 Spec 入口需要稳定的阶段决策合同。 | `gate.domain-strategy-approved` | `evidence.stage-decision-package`、`evidence.approval-record` |
++| `gate.domain-strategy-approved` | 业务边界与规则确认 | `stage.plan` | 需要确定业务板块、业务责任区、统一业务词汇、协作关系或关键规则。 | 无 | `evidence.domain-strategy-review`、`evidence.approval-record` |
++| `gate.stage-decision-package-approved` | 阶段决策包批准 | `stage.plan` | Plan 到 Spec 入口需要稳定的阶段决策合同。 | `gate.domain-strategy-approved` | `evidence.stage-decision-package`、`evidence.approval-record` |
+ | `gate.strategic-design-handoff-approved` | 业务方案交接确认 | `stage.ticket-formalization` | 业务方案设计 Harness 完成 Spec、页面原型和业务级 Ticket，需要交付下游研发团队。 | `gate.stage-decision-package-approved`、`gate.spec-baseline-approved`、`gate.user-confirmation` | `evidence.strategic-design-handoff`、`evidence.approval-record` |
+ | `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | 新功能、行为变化或范围扩大进入 Spec 基线。 | 无 | `evidence.approval-record` |
+ | `gate.prototype-reviewed` | 原型评审 | `stage.product-design` | 命中产品设计影响，且低保真页面、流程、状态或 API 反推需要独立评审。 | 无 | `evidence.prototype-review-result` |
+@@ -49,10 +49,10 @@
+ | 稳定 ID | 产物 | 所属阶段 | 触发条件 |
+ |---|---|---|---|
+ | `artifact.impact-assessment` | 影响面分析 | `stage.entry-triage` | 每次变更。 |
+-| `artifact.domain-strategy` | 业务边界与规则设计 | `stage.discovery` | 新产品/模块、跨责任区协作、业务词汇冲突、责任边界或关键规则变化。 |
+-| `artifact.stage-decision-package` | 方案决策包 | `stage.discovery` | Discovery 到 Spec 入口需要结构化上游决策。 |
++| `artifact.domain-strategy` | 业务边界与规则设计 | `stage.plan` | 新产品/模块、跨责任区协作、业务词汇冲突、责任边界或关键规则变化。 |
++| `artifact.stage-decision-package` | 方案决策包 | `stage.plan` | Plan 到 Spec 入口需要结构化上游决策。 |
+ | `artifact.strategic-design-handoff` | 业务方案交接包 | `stage.ticket-formalization` | 业务方案设计 Harness 完成业务边界与规则设计、Spec、页面原型和业务级 Ticket，需要交付下游研发团队。 |
+-| `artifact.discovery-record` | Discovery 记录 | `stage.discovery` | 新问题或边界不清。 |
++| `artifact.plan-record` | Plan 记录 | `stage.plan` | 新问题或边界不清。 |
+ | `artifact.spec` | Spec | `stage.spec-architecture` | 新功能、行为变化或范围扩大。 |
+ | `artifact.product-overview` | 产品总体设计 | `stage.spec-architecture` | 进入 Spec 基线。 |
+ | `artifact.functional-architecture` | 功能架构 | `stage.spec-architecture` | 新模块或跨边界变化。 |
+diff --git a/docs/process/lifecycle-registry-baseline.json b/docs/process/lifecycle-registry-baseline.json
+index d0061a7..0c0c309 100644
+--- a/docs/process/lifecycle-registry-baseline.json
++++ b/docs/process/lifecycle-registry-baseline.json
+@@ -1,7 +1,7 @@
+ {
+   "schema_version": 1,
+   "registry_id": "yss.lifecycle",
+-  "semantic_sha256": "78b230afe5c0128b0ba9415c9ed7fd653740c964f3230527141e4e97edf32d40",
++  "semantic_sha256": "00b5426afbeeed9632e4d63d7aed277c2e42781fbcd133d72f26a6d07afbdc4e",
+   "published_ids": [
+     "artifact.architecture-review",
+     "artifact.business-ticket-set",
+@@ -19,6 +19,7 @@
+     "artifact.openapi-draft",
+     "artifact.openapi-freeze-record",
+     "artifact.parent-ticket",
++    "artifact.plan-record",
+     "artifact.product-overview",
+     "artifact.prototype-confirmation",
+     "artifact.prototype-review",
+@@ -27,8 +28,8 @@
+     "artifact.spec",
+     "artifact.spec-delta",
+     "artifact.stage-decision-package",
+-    "artifact.strategic-design-handoff",
+     "artifact.state-matrix",
++    "artifact.strategic-design-handoff",
+     "artifact.tactical-design",
+     "artifact.vertical-slice-ticket",
+     "evidence.antd-cli-validation",
+@@ -70,6 +71,7 @@
+     "gate.user-confirmation",
+     "stage.discovery",
+     "stage.entry-triage",
++    "stage.plan",
+     "stage.product-design",
+     "stage.spec-architecture",
+     "stage.system-data-engineering",
+@@ -84,10 +86,12 @@
+     "work-unit.domain-strategy-design",
+     "work-unit.entry-triage",
+     "work-unit.fresh-verification",
++    "work-unit.frontend-implementation-verification",
+     "work-unit.independent-review",
+     "work-unit.intensity-aware-review",
+     "work-unit.intensity-aware-verification",
+-    "work-unit.frontend-implementation-verification",
++    "work-unit.plan-opportunity",
++    "work-unit.plan-requirements",
+     "work-unit.prototype-design",
+     "work-unit.release-and-retrospective",
+     "work-unit.release-and-rollback",
+@@ -98,7 +102,7 @@
+     "work-unit.stage-decision",
+     "work-unit.strategic-design-handoff",
+     "work-unit.technical-analysis",
+-    "work-unit.ticket-decomposition",
+-    "work-unit.template-snapshot-build"
++    "work-unit.template-snapshot-build",
++    "work-unit.ticket-decomposition"
+   ]
+ }
+diff --git a/docs/process/lifecycle-registry.yaml b/docs/process/lifecycle-registry.yaml
+index be1f076..263e9a5 100644
+--- a/docs/process/lifecycle-registry.yaml
++++ b/docs/process/lifecycle-registry.yaml
+@@ -8,17 +8,22 @@ id_policy:
+   pattern: '^(stage|gate|artifact|work-unit|evidence)\.[a-z0-9][a-z0-9-]*$'
+   published_ids_immutable: true
+   baseline: docs/process/lifecycle-registry-baseline.json
+-  deprecated_ids: [work-unit.fresh-verification, work-unit.independent-review]
++  deprecated_ids: [work-unit.fresh-verification, work-unit.independent-review, stage.discovery, artifact.discovery-record, work-unit.discovery-opportunity, work-unit.discovery-requirements]
+ 
+ stages:
+   - id: stage.entry-triage
+     name: 入口分诊
+     goal: 确认仓库身份、问题范围和影响面。
+     exit_criteria: yss-project.yaml 合法，影响面和最近可信阶段可解释。
+-  - id: stage.discovery
+-    name: Discovery
+-    goal: 澄清问题、用户、约束和机会。
+-    exit_criteria: 问题边界、关键假设和待确认项已记录。
++  - id: stage.plan
++    name: Plan（战略规划）
++    goal: 确认目标、业务边界、关键规则、MVP / 非目标、优先级和交接责任，为 Spec 提供战略输入；按影响面探索并复用仍有效的结论。
++    exit_criteria: 用户确认规划结论，命中的战略与阶段决策门禁通过；影响业务边界、关键规则或 MVP 的问题已解决，其他未决项有责任人和解决时点；下游可进入 Spec，不代表可实现。
++    spec_entry:
++      required_checks: [goals, scope_and_priority, boundaries_and_rules, open_questions, handoff, context_reconciliation, grill_exit]
++      gate_impacts:
++        gate.domain-strategy-approved: domain_strategy
++        gate.stage-decision-package-approved: stage_decision
+   - id: stage.spec-architecture
+     name: Spec / 功能架构
+     goal: 固化解决方案和功能边界。
+@@ -118,15 +123,15 @@ gates:
+     evidence: [evidence.repository-identity-check]
+   - id: gate.domain-strategy-approved
+     name: DDD 战略设计批准
+-    stage: stage.discovery
++    stage: stage.plan
+     trigger: 存在 DDD 战略设计影响或需要确定领域边界、统一语言和核心规则。
+     public_name: 业务边界与规则确认
+     public_trigger: 需要确定业务板块、业务责任区、统一业务词汇、协作关系或关键规则。
+     evidence: [evidence.domain-strategy-review, evidence.approval-record]
+   - id: gate.stage-decision-package-approved
+     name: 阶段决策包批准
+-    stage: stage.discovery
+-    trigger: Discovery 到 Spec 入口需要稳定的阶段决策合同。
++    stage: stage.plan
++    trigger: Plan 到 Spec 入口需要稳定的阶段决策合同。
+     evidence: [evidence.stage-decision-package, evidence.approval-record]
+     requires_gates: [gate.domain-strategy-approved]
+   - id: gate.strategic-design-handoff-approved
+@@ -211,14 +216,14 @@ artifacts:
+     trigger: 每次变更。
+   - id: artifact.domain-strategy
+     name: DDD 战略设计
+-    stage: stage.discovery
++    stage: stage.plan
+     trigger: 新产品/模块、跨上下文功能、统一语言冲突、服务边界或核心规则变化。
+     public_name: 业务边界与规则设计
+     public_trigger: 新产品/模块、跨责任区协作、业务词汇冲突、责任边界或关键规则变化。
+   - id: artifact.stage-decision-package
+     name: 阶段决策包
+-    stage: stage.discovery
+-    trigger: Discovery 到 Spec 入口需要结构化上游决策。
++    stage: stage.plan
++    trigger: Plan 到 Spec 入口需要结构化上游决策。
+     public_name: 方案决策包
+   - id: artifact.strategic-design-handoff
+     name: Strategic Design Handoff
+@@ -226,9 +231,9 @@ artifacts:
+     trigger: 业务上游 Harness 完成战略设计、Spec、页面原型和业务级 Ticket，需要交付下游研发团队进行 Tactical DDD。
+     public_name: 业务方案交接包
+     public_trigger: 业务方案设计 Harness 完成业务边界与规则设计、Spec、页面原型和业务级 Ticket，需要交付下游研发团队。
+-  - id: artifact.discovery-record
+-    name: Discovery 记录
+-    stage: stage.discovery
++  - id: artifact.plan-record
++    name: Plan 记录
++    stage: stage.plan
+     trigger: 新问题或边界不清。
+   - id: artifact.spec
+     name: Spec
+@@ -372,13 +377,13 @@ work_units:
+     input: 已审查 commit。
+     output: release note、观察信号、回滚点。
+     completion: 两仓库顺序和恢复动作明确。
+-  - id: work-unit.discovery-opportunity
++  - id: work-unit.plan-opportunity
+     name: 机会调研
+     scope: project-instance
+     input: 用户问题、市场/竞品事实需求和现有上下文。
+-    output: Discovery 机会结论、证据、替代方案和关键假设。
++    output: Plan 机会结论、证据、替代方案和关键假设。
+     completion: 机会继续/停止建议可审查；事实已 research 或记录为假设。
+-  - id: work-unit.discovery-requirements
++  - id: work-unit.plan-requirements
+     name: 需求分析
+     scope: project-instance
+     input: 机会结论、用户反馈和领域词汇。
+@@ -396,16 +401,16 @@ work_units:
+   - id: work-unit.stage-decision
+     name: 阶段决策包综合
+     scope: project-instance
+-    input: Discovery、DDD 战略设计、产品和商务输入。
++    input: Plan、DDD 战略设计、产品和商务输入。
+     output: 带版本、digest、证据和下游映射的阶段决策包。
+     completion: 必填字段、引用、影响面和下游消费验证通过；批准门禁完成。
+     public_name: 方案决策包综合
+-    public_input: Discovery、业务边界与规则设计、产品和商务输入。
++    public_input: Plan、业务边界与规则设计、产品和商务输入。
+     public_output: 带版本、digest、证据和下游映射的方案决策包。
+   - id: work-unit.spec-synthesis
+     name: Spec 综合
+     scope: project-instance
+-    input: 已确认的 Discovery 记录和测试 seam。
++    input: 已确认的 Plan 记录和测试 seam。
+     output: Spec、产品总体设计和功能架构。
+     completion: Spec 内容完整并进入 ready-for-human；下游推进仍需 gate.spec-baseline-approved。
+   - id: work-unit.prototype-design
+diff --git a/docs/process/schemas/digital-human-task-package.schema.json b/docs/process/schemas/digital-human-task-package.schema.json
+index 70f29d5..ba9f965 100644
+--- a/docs/process/schemas/digital-human-task-package.schema.json
++++ b/docs/process/schemas/digital-human-task-package.schema.json
+@@ -6,6 +6,8 @@
+   "additionalProperties": false,
+   "required": ["schema_version", "task_id", "work_unit_id", "actor_id", "role_id", "runtime_id", "execution_state", "workflow_status", "skill_source", "contract", "inputs", "objective", "allowed_write_paths", "forbidden_actions", "expected_outputs", "expected_evidence_files", "verification_commands", "verification_results", "downstream_consumers", "convergence"],
+   "properties": {
++    "plan_review_ref": { "type": "string", "minLength": 1 },
++    "plan_user_decision_ref": { "type": "string", "minLength": 1 },
+     "schema_version": { "const": 1 },
+     "task_id": { "type": "string", "minLength": 1, "pattern": "^[a-zA-Z0-9][a-zA-Z0-9._-]*$" },
+     "work_unit_id": { "type": "string", "minLength": 1, "pattern": "^work-unit\\.[a-z0-9][a-z0-9-]*$" },
+diff --git a/docs/process/schemas/lifecycle-checkpoint.schema.json b/docs/process/schemas/lifecycle-checkpoint.schema.json
+index 8eb3fd0..892d7f7 100644
+--- a/docs/process/schemas/lifecycle-checkpoint.schema.json
++++ b/docs/process/schemas/lifecycle-checkpoint.schema.json
+@@ -6,6 +6,9 @@
+   "additionalProperties": false,
+   "required": ["schema_version", "repository_mode", "mode", "status", "stage", "artifacts", "gates", "context_reconciliation", "next_work_unit", "ticket_sync", "verification", "human_review", "git_checkpoint", "blockers", "rollback"],
+   "properties": {
++    "plan_review_ref": { "type": "string", "minLength": 1 },
++    "plan_user_decision_ref": { "type": "string", "minLength": 1 },
++    "feature_id": { "type": "string", "minLength": 1 },
+     "schema_version": { "const": 1 },
+     "repository_mode": { "enum": ["template-source", "project-instance"] },
+     "mode": { "enum": ["route", "orchestrate", "resume", "audit"] },
+diff --git a/docs/process/schemas/lifecycle-registry.schema.json b/docs/process/schemas/lifecycle-registry.schema.json
+index 7e955ed..8a41bf2 100644
+--- a/docs/process/schemas/lifecycle-registry.schema.json
++++ b/docs/process/schemas/lifecycle-registry.schema.json
+@@ -27,7 +27,7 @@
+   },
+   "$defs": {
+     "id": { "type": "string", "pattern": "^(stage|gate|artifact|work-unit|evidence)\\.[a-z0-9][a-z0-9-]*$" },
+-    "stages": { "type": "array", "minItems": 1, "items": { "type": "object", "additionalProperties": false, "required": ["id", "name", "goal", "exit_criteria"], "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "type": "string", "minLength": 1 }, "goal": { "type": "string", "minLength": 1 }, "exit_criteria": { "type": "string", "minLength": 1 }, "public_name": { "type": "string", "minLength": 1 }, "public_goal": { "type": "string", "minLength": 1 }, "public_exit_criteria": { "type": "string", "minLength": 1 } } } },
++    "stages": { "type": "array", "minItems": 1, "items": { "type": "object", "additionalProperties": false, "required": ["id", "name", "goal", "exit_criteria"], "properties": { "spec_entry": {"type":"object","required":["required_checks","gate_impacts"],"additionalProperties":false,"properties":{"required_checks":{"type":"array","minItems":1,"uniqueItems":true,"items":{"type":"string","minLength":1}},"gate_impacts":{"type":"object","minProperties":1,"additionalProperties":{"type":"string","minLength":1}}}}, "id": { "$ref": "#/$defs/id" }, "name": { "type": "string", "minLength": 1 }, "goal": { "type": "string", "minLength": 1 }, "exit_criteria": { "type": "string", "minLength": 1 }, "public_name": { "type": "string", "minLength": 1 }, "public_goal": { "type": "string", "minLength": 1 }, "public_exit_criteria": { "type": "string", "minLength": 1 } } } },
+     "objects": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["id", "name", "stage", "trigger"], "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "type": "string", "minLength": 1 }, "stage": { "type": "string", "pattern": "^stage\\." }, "trigger": { "type": "string", "minLength": 1 }, "public_name": { "type": "string", "minLength": 1 }, "public_trigger": { "type": "string", "minLength": 1 }, "evidence": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^evidence\\." } }, "requires_gates": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^gate\\." } } } } },
+     "workUnits": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["id", "name", "scope", "input", "output", "completion"], "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "type": "string", "minLength": 1 }, "scope": { "enum": ["template-source", "project-instance"] }, "input": { "type": "string", "minLength": 1 }, "output": { "type": "string", "minLength": 1 }, "completion": { "type": "string", "minLength": 1 }, "public_name": { "type": "string", "minLength": 1 }, "public_input": { "type": "string", "minLength": 1 }, "public_output": { "type": "string", "minLength": 1 }, "public_completion": { "type": "string", "minLength": 1 } } } },
+     "evidence": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["id", "name", "description"], "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "type": "string", "minLength": 1 }, "description": { "type": "string", "minLength": 1 }, "public_name": { "type": "string", "minLength": 1 }, "public_description": { "type": "string", "minLength": 1 } } } }
+diff --git a/docs/process/template-verification-profiles.yaml b/docs/process/template-verification-profiles.yaml
+index cce6c48..5594d30 100644
+--- a/docs/process/template-verification-profiles.yaml
++++ b/docs/process/template-verification-profiles.yaml
+@@ -198,6 +198,7 @@ groups:
+       - { run: "scripts/verify-lifecycle-registry" }
+       - { run: "scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml" }
+       - { run: "scripts/verify-lifecycle-transition-scenarios" }
++      - { run: "node scripts/verify-plan-spec-entry-scenarios" }
+   profile:
+     commands:
+       - { run: "scripts/verify-harness-profile" }
+diff --git a/docs/process/templates/context-reconciliation-template.yaml b/docs/process/templates/context-reconciliation-template.yaml
+index e7b5f87..6ad2d56 100644
+--- a/docs/process/templates/context-reconciliation-template.yaml
++++ b/docs/process/templates/context-reconciliation-template.yaml
+@@ -1,7 +1,7 @@
+ schema_version: 1
+ repository_mode: project-instance
+-stage: stage.discovery
+-work_unit: work-unit.discovery-requirements
++stage: stage.plan
++work_unit: work-unit.plan-requirements
+ status: reconciled
+ context_snapshot:
+   context_ref: CONTEXT.md
+diff --git a/docs/process/templates/lifecycle-checkpoint-template.yaml b/docs/process/templates/lifecycle-checkpoint-template.yaml
+index 167c479..d71e7be 100644
+--- a/docs/process/templates/lifecycle-checkpoint-template.yaml
++++ b/docs/process/templates/lifecycle-checkpoint-template.yaml
+@@ -10,7 +10,7 @@ context_reconciliation:
+   ref: null
+   reason: 等待当前工作单元完成稳定术语回写与核对
+   evidence_refs: []
+-next_work_unit: work-unit.discovery-opportunity
++next_work_unit: work-unit.plan-opportunity
+ phase_boundary:
+   decision: continue
+   reason: initial routing
+diff --git a/docs/requirements/README.md b/docs/requirements/README.md
+index c7e61a1..968f45f 100644
+--- a/docs/requirements/README.md
++++ b/docs/requirements/README.md
+@@ -1,6 +1,6 @@
+ # 需求定义 (Requirements) — 从想法到可执行定义
+ 
+-> **Phase: Requirements | 输入: Discovery | 输出: Spec + Stories + 验收条件**
++> **Phase: Requirements | 输入: Plan | 输出: Spec + Stories + 验收条件**
+ 
+ ---
+ 
+@@ -79,7 +79,7 @@ delegate_task(
+ ## AI-Human Loop
+ 
+ ```
+-Discovery报告 → AI生成Spec → PM审核
++Plan报告 → AI生成Spec → PM审核
+ → AI补充边界 → PM确认 → AI拆解Stories
+ → 团队估算 → AI标注风险 → TechLead确认 → 进入Architecture
+ ```
+diff --git a/docs/templates/local-parent-ticket-template.md b/docs/templates/local-parent-ticket-template.md
+index 8f79395..c68269a 100644
+--- a/docs/templates/local-parent-ticket-template.md
++++ b/docs/templates/local-parent-ticket-template.md
+@@ -37,7 +37,7 @@ Status: ready-for-human
+ 
+ ## 资产与证据
+ 
+-- Discovery：`docs/.scratch/<feature>/discovery/`
++- Plan：`docs/.scratch/<feature>/plan/`
+ - Spec Delta：`docs/.scratch/<feature>/spec-delta/`
+ - Design：`docs/.scratch/<feature>/design/`
+ - API：`docs/.scratch/<feature>/api/`
+diff --git a/docs/templates/subagent-task-package-template.md b/docs/templates/subagent-task-package-template.md
+index 0a55594..9b82813 100644
+--- a/docs/templates/subagent-task-package-template.md
++++ b/docs/templates/subagent-task-package-template.md
+@@ -35,7 +35,7 @@ owner: ai
+ 
+ | 输入 | 路径 / 链接 | 用途 |
+ |---|---|---|
+-| Spec / Discovery |  |  |
++| Spec / Plan |  |  |
+ | Product / Interaction Design |  |  |
+ | OpenAPI Draft / Freeze |  |  |
+ | Architecture / ADR / CONTEXT |  |  |
+diff --git a/scripts/fixtures/strategic-handoff/source-roles.json b/scripts/fixtures/strategic-handoff/source-roles.json
+index 8bbcdc6..3c106ae 100644
+--- a/scripts/fixtures/strategic-handoff/source-roles.json
++++ b/scripts/fixtures/strategic-handoff/source-roles.json
+@@ -73,7 +73,7 @@
+     ],
+     "stages": [
+       "stage.entry-triage",
+-      "stage.discovery",
++      "stage.plan",
+       "stage.spec-architecture",
+       "stage.product-design",
+       "stage.system-data-engineering",
+@@ -103,11 +103,11 @@
+       "contract_version": 1,
+       "title": "YSS 需求经理",
+       "stages": [
+-        "stage.discovery",
++        "stage.plan",
+         "stage.spec-architecture"
+       ],
+       "draft_artifact_ids": [
+-        "artifact.discovery-record",
++        "artifact.plan-record",
+         "artifact.spec"
+       ],
+       "core_skills": [
+@@ -137,7 +137,7 @@
+       "contract_version": 1,
+       "title": "YSS 产品经理",
+       "stages": [
+-        "stage.discovery",
++        "stage.plan",
+         "stage.spec-architecture",
+         "stage.product-design",
+         "stage.verification-release-retrospective"
+@@ -177,7 +177,7 @@
+       "title": "YSS 项目经理",
+       "stages": [
+         "stage.entry-triage",
+-        "stage.discovery",
++        "stage.plan",
+         "stage.spec-architecture",
+         "stage.product-design",
+         "stage.system-data-engineering",
+@@ -346,9 +346,9 @@
+   ],
+   "stage_groups": [
+     {
+-      "id": "group.discovery",
++      "id": "group.plan",
+       "name": "Discovery",
+-      "stage": "stage.discovery",
++      "stage": "stage.plan",
+       "members": [
+         "role.lifecycle-orchestrator",
+         "role.requirements-manager",
+diff --git a/scripts/lib/harness-profile.mjs b/scripts/lib/harness-profile.mjs
+index ebb124a..8f4bb15 100644
+--- a/scripts/lib/harness-profile.mjs
++++ b/scripts/lib/harness-profile.mjs
+@@ -11,8 +11,8 @@ export const STRATEGIC_PROFILE_ID = "harness.business-ddd-strategy-handoff";
+ const TARGET_ROLES = ["role.product-manager", "role.requirements-manager", "role.business"];
+ const CONTROL_ROLES = ["role.lifecycle-orchestrator"];
+ const ALLOWED_WORK_UNITS = [
+-  "work-unit.discovery-opportunity",
+-  "work-unit.discovery-requirements",
++  "work-unit.plan-opportunity",
++  "work-unit.plan-requirements",
+   "work-unit.domain-strategy-design",
+   "work-unit.stage-decision",
+   "work-unit.spec-synthesis",
+diff --git a/scripts/lib/lifecycle-transition.mjs b/scripts/lib/lifecycle-transition.mjs
+index 8504c5a..93e6d96 100644
+--- a/scripts/lib/lifecycle-transition.mjs
++++ b/scripts/lib/lifecycle-transition.mjs
+@@ -1,5 +1,6 @@
+ import { existsSync, readFileSync } from "node:fs";
+ import { parseDocument } from "../vendor/yaml.mjs";
++import { validatePlanSpecEntry } from './plan-spec-entry.mjs';
+ 
+ const IMPLEMENTATION_WORK_UNIT = "work-unit.slice-implementation";
+ const TICKET_DECOMPOSITION_WORK_UNIT = "work-unit.ticket-decomposition";
+@@ -13,7 +14,7 @@ function deepFreeze(value) {
+ }
+ 
+ const NEXT_ROUTES = deepFreeze({
+-  "work-unit.entry-triage": ["work-unit.discovery-opportunity", "work-unit.discovery-requirements"],
++  "work-unit.entry-triage": ["work-unit.plan-opportunity", "work-unit.plan-requirements"],
+   "work-unit.ssot-update": ["work-unit.skill-projection-sync", "work-unit.intensity-aware-verification"],
+   "work-unit.skill-projection-sync": ["work-unit.template-snapshot-build", "work-unit.intensity-aware-verification"],
+   "work-unit.template-snapshot-build": ["work-unit.attach-sync-integration", "work-unit.intensity-aware-verification"],
+@@ -21,8 +22,8 @@ const NEXT_ROUTES = deepFreeze({
+   "work-unit.intensity-aware-verification": ["work-unit.intensity-aware-review"],
+   "work-unit.intensity-aware-review": ["work-unit.release-and-rollback"],
+   "work-unit.release-and-rollback": [],
+-  "work-unit.discovery-opportunity": ["work-unit.discovery-requirements", "work-unit.domain-strategy-design", "work-unit.stage-decision", "work-unit.spec-synthesis"],
+-  "work-unit.discovery-requirements": ["work-unit.domain-strategy-design", "work-unit.stage-decision", "work-unit.spec-synthesis"],
++  "work-unit.plan-opportunity": ["work-unit.plan-requirements", "work-unit.domain-strategy-design", "work-unit.stage-decision", "work-unit.spec-synthesis"],
++  "work-unit.plan-requirements": ["work-unit.domain-strategy-design", "work-unit.stage-decision", "work-unit.spec-synthesis"],
+   "work-unit.domain-strategy-design": ["work-unit.stage-decision", "work-unit.spec-synthesis"],
+   "work-unit.stage-decision": ["work-unit.spec-synthesis"],
+   "work-unit.spec-synthesis": ["work-unit.prototype-design", "work-unit.technical-analysis", TICKET_DECOMPOSITION_WORK_UNIT],
+@@ -39,9 +40,9 @@ const NEXT_ROUTES = deepFreeze({
+ // 下游研发团队从战略设计交付包接管 Tactical DDD，不在本地 profile 内继续推进。
+ const PROFILE_NEXT_ROUTES = deepFreeze({
+   [STRATEGIC_PROFILE_ID]: {
+-    "work-unit.entry-triage": ["work-unit.discovery-opportunity", "work-unit.discovery-requirements"],
+-    "work-unit.discovery-opportunity": ["work-unit.discovery-requirements", "work-unit.domain-strategy-design", "work-unit.stage-decision"],
+-    "work-unit.discovery-requirements": ["work-unit.domain-strategy-design", "work-unit.stage-decision"],
++    "work-unit.entry-triage": ["work-unit.plan-opportunity", "work-unit.plan-requirements"],
++    "work-unit.plan-opportunity": ["work-unit.plan-requirements", "work-unit.domain-strategy-design", "work-unit.stage-decision"],
++    "work-unit.plan-requirements": ["work-unit.domain-strategy-design", "work-unit.stage-decision"],
+     "work-unit.domain-strategy-design": ["work-unit.stage-decision"],
+     "work-unit.stage-decision": ["work-unit.spec-synthesis"],
+     "work-unit.spec-synthesis": ["work-unit.prototype-design"],
+@@ -127,7 +128,9 @@ function validateTicketReference(ref, trackerKind) {
+  * Workflow Execution Result may omit a route; completed results are checked
+  * by `validateWorkflowExecutionResult` before this function is called.
+  */
+-export function validateNextRoute(currentWorkUnit, nextRoute, { profileId } = {}) {
++export function validateNextRoute(currentWorkUnit, nextRoute, state = {}, options = {}) {
++  const profileId = state.profileId || state.profile_id;
++
+   const routes = PROFILE_NEXT_ROUTES[profileId]?.[currentWorkUnit] ?? NEXT_ROUTES[currentWorkUnit];
+   if (!routes) return blockedResult([BLOCKING_SIGNALS.invalidRoute], ["known_current_work_unit"]);
+   if (nextRoute === null && routes.length === 0) return allowedResult();
+@@ -138,6 +141,10 @@ export function validateNextRoute(currentWorkUnit, nextRoute, { profileId } = {}
+     }
+     return blockedResult(signals, ["allowed_next_route"]);
+   }
++  if (nextRoute === 'work-unit.spec-synthesis' || currentWorkUnit === 'work-unit.spec-synthesis') {
++    const entry = validatePlanSpecEntry(state, options);
++    if (entry.result === 'blocked' || nextRoute === 'work-unit.spec-synthesis') return entry;
++  }
+   return allowedResult();
+ }
+ 
+diff --git a/scripts/lib/scenario-checks.mjs b/scripts/lib/scenario-checks.mjs
+index 68bec89..ba4b2f1 100644
+--- a/scripts/lib/scenario-checks.mjs
++++ b/scripts/lib/scenario-checks.mjs
+@@ -1,5 +1,7 @@
+-import { existsSync, readFileSync } from "node:fs";
++import { existsSync, readFileSync, mkdtempSync, rmSync } from "node:fs";
++import os from "node:os";
+ import path from "node:path";
++import { buildPlanFixture } from "../fixtures/user-decision/plan-fixture.mjs";
+ import { fileURLToPath } from "node:url";
+ import { spawnSync } from "node:child_process";
+ import { parseDocument } from "../vendor/yaml.mjs";
+@@ -58,8 +60,8 @@ function validateInvocationBoundary(data) {
+   ensure(native?.default_entry === "yss-strategic-design" && native?.formal_artifact_owner === "yss-strategic-design", "战略编排原生入口未持有默认正式资产所有权");
+   ensure(JSON.stringify(native?.user_confirmation_required_at) === JSON.stringify(["spec-baseline", "prototype-confirmation", "strategic-design-handoff"]), "战略设计人工门禁集合已漂移");
+   const routes = data.work_unit_routes;
+-  ensure(routes?.["work-unit.discovery-requirements"]?.skills?.includes("grilling") && routes?.["work-unit.discovery-requirements"]?.skills?.includes("domain-modeling"), "需求分析工作单元缺少 grilling/domain-modeling");
+-  ensure(routes?.["work-unit.discovery-opportunity"]?.route_by?.market_or_competitor_fact === "competitive-intelligence" && routes["work-unit.discovery-opportunity"].route_by.technical_or_standard_fact === "yss-research:technical-evidence" && routes["work-unit.discovery-opportunity"].route_by.strategy_fact === "yss-research:strategy-evidence", "机会调研事实路由不准确");
++  ensure(routes?.["work-unit.plan-requirements"]?.skills?.includes("grilling") && routes?.["work-unit.plan-requirements"]?.skills?.includes("domain-modeling"), "需求分析工作单元缺少 grilling/domain-modeling");
++  ensure(routes?.["work-unit.plan-opportunity"]?.route_by?.market_or_competitor_fact === "competitive-intelligence" && routes["work-unit.plan-opportunity"].route_by.technical_or_standard_fact === "yss-research:technical-evidence" && routes["work-unit.plan-opportunity"].route_by.strategy_fact === "yss-research:strategy-evidence", "机会调研事实路由不准确");
+   const strategyResearch = routes?.["work-unit.domain-strategy-design"]?.research_contract;
+   ensure(strategyResearch?.profile === "strategy-evidence" && strategyResearch.mode_before_gate === "evidence-audited" && strategyResearch.artifact_owner === "yss-research" && strategyResearch.downstream_owner === "yss-stage-decision", "领域战略研究合同缺少 profile、门禁前审计或资产所有权边界");
+   const stageDecisionResearch = routes?.["work-unit.stage-decision"]?.research_contract;
+@@ -75,7 +77,7 @@ function validateInvocationBoundary(data) {
+   }
+ }
+ 
+-function validateWorkflowExecutionResult(payload, contract, workUnitRoutes) {
++function validateWorkflowExecutionResult(payload, contract, workUnitRoutes, options = {}) {
+   for (const field of contract.required) ensure(Object.hasOwn(payload, field), `Workflow Execution Result 缺少 ${field}`);
+   ensure(contract.result_values.includes(payload.result), "Workflow Execution Result result 无效");
+   if (Object.hasOwn(payload, "unavailable_skill")) {
+@@ -88,7 +90,7 @@ function validateWorkflowExecutionResult(payload, contract, workUnitRoutes) {
+   const workUnit = workUnitRoutes?.[payload.work_unit];
+   ensure(workUnit, `未知 Workflow Execution Result work_unit: ${payload.work_unit}`);
+   if (payload.result === "completed") {
+-    const routeResult = validateNextRoute(payload.work_unit, payload.next_route, { profileId: payload.profile_id });
++    const routeResult = validateNextRoute(payload.work_unit, payload.next_route, { ...payload, profileId: payload.profile_id }, options);
+     ensure(routeResult.result === "allowed", `Workflow Execution Result next_route 非法: ${routeResult.blocking_signals.join(", ")}`);
+     ensure(payload.context_reconciliation?.status === "reconciled", "project-instance 完成态必须具有 reconciled context_reconciliation");
+     ensure(hasText(payload.context_reconciliation?.ref) && payload.evidence_refs.includes(payload.context_reconciliation.ref) && exists(payload.context_reconciliation.ref), "context_reconciliation.ref 必须可读并包含在 evidence_refs 中");
+@@ -231,7 +233,11 @@ export function runScenario(name) {
+     const data = contract.toJS({ maxAliasCount: 0 });
+     validateMattContract(data);
+     validateInvocationBoundary(data);
++    const decisionTemp = mkdtempSync(path.join(os.tmpdir(), "matt-plan-test-"));
++    process.on("exit", () => rmSync(decisionTemp, { recursive: true, force: true }));
++    const planFixture = buildPlanFixture(path.join(decisionTemp, 'plan'));
+     const validResult = {
++      ...planFixture.state,
+       result_schema: "workflow-execution-result-v1",
+       profile_id: "harness.business-ddd-strategy-handoff",
+       work_unit: "work-unit.spec-synthesis",
+@@ -245,35 +251,35 @@ export function runScenario(name) {
+       next_route: "work-unit.prototype-design",
+       blocking_signals: []
+     };
+-    validateWorkflowExecutionResult(validResult, data.workflow_execution_result, data.work_unit_routes);
++    validateWorkflowExecutionResult(validResult, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root });
+     const validPrototypeResult = {
+       ...validResult,
+       work_unit: "work-unit.prototype-design",
+       next_route: "work-unit.business-ticket-formalization",
+     };
+-    validateWorkflowExecutionResult(validPrototypeResult, data.workflow_execution_result, data.work_unit_routes);
++    validateWorkflowExecutionResult(validPrototypeResult, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root });
+     const validBusinessTicketResult = {
+       ...validResult,
+       work_unit: "work-unit.business-ticket-formalization",
+       next_route: "work-unit.strategic-design-handoff",
+       business_ticket_set_ref: "docs/.scratch/demo/issues",
+     };
+-    validateWorkflowExecutionResult(validBusinessTicketResult, data.workflow_execution_result, data.work_unit_routes);
++    validateWorkflowExecutionResult(validBusinessTicketResult, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root });
+     const validHandoffResult = { ...validBusinessTicketResult, work_unit: "work-unit.strategic-design-handoff", next_route: null, strategic_design_handoff_ref: "docs/templates/strategic-design-handoff-template.yaml" };
+-    validateWorkflowExecutionResult(validHandoffResult, data.workflow_execution_result, data.work_unit_routes);
++    validateWorkflowExecutionResult(validHandoffResult, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root });
+     const unavailableResult = structuredClone(validResult);
+     unavailableResult.result = "blocked";
+     unavailableResult.unavailable_skill = { skill: "yss-prototype-stage", provider: "codex", fallback: "manual-review", resolution: "needs-human" };
+     unavailableResult.blocking_signals = ["missing_evidence"];
+-    validateWorkflowExecutionResult(unavailableResult, data.workflow_execution_result, data.work_unit_routes);
++    validateWorkflowExecutionResult(unavailableResult, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root });
+     const malformedUnavailable = structuredClone(unavailableResult);
+     delete malformedUnavailable.unavailable_skill.fallback;
+     let unavailableRejected = false;
+-    try { validateWorkflowExecutionResult(malformedUnavailable, data.workflow_execution_result, data.work_unit_routes); } catch { unavailableRejected = true; }
++    try { validateWorkflowExecutionResult(malformedUnavailable, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root }); } catch { unavailableRejected = true; }
+     ensure(unavailableRejected, "技能不可用结果缺少 fallback 时未被拒绝");
+     const compatibleResult = structuredClone(validResult);
+     compatibleResult.workflow_reference = { source: "mattpocock/skills", skill: "to-spec", invocation_mode: "reference" };
+-    validateWorkflowExecutionResult(compatibleResult, data.workflow_execution_result, data.work_unit_routes);
++    validateWorkflowExecutionResult(compatibleResult, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root });
+     for (const mutate of [
+       (item) => { delete item.workflow_reference; },
+       (item) => { delete item.context_reconciliation; },
+@@ -289,7 +295,7 @@ export function runScenario(name) {
+     ]) {
+       const invalid = structuredClone(validResult); mutate(invalid);
+       let rejected = false;
+-      try { validateWorkflowExecutionResult(invalid, data.workflow_execution_result, data.work_unit_routes); } catch { rejected = true; }
++      try { validateWorkflowExecutionResult(invalid, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root }); } catch { rejected = true; }
+       ensure(rejected, "Workflow Execution Result 完成态变异未被拒绝");
+     }
+     let metadataRejected = false;
+diff --git a/scripts/lib/task-package.mjs b/scripts/lib/task-package.mjs
+index 91ef327..84cac70 100644
+--- a/scripts/lib/task-package.mjs
++++ b/scripts/lib/task-package.mjs
+@@ -6,6 +6,7 @@ import { loadDigitalHumanRoles, taskPackageDefaults } from "./digital-human-role
+ import { loadRegistry, ROOT } from "./lifecycle-registry.mjs";
+ import { loadMaintenanceCheckpoint, validateMaintenanceCheckpoint } from "./maintenance-intensity.mjs";
+ import { validateNextRoute } from "./lifecycle-transition.mjs";
++import { assertPlanSpecEntry } from './plan-spec-entry.mjs';
+ import { harnessProfileContract } from "./harness-profile.mjs";
+ 
+ export const TASK_PACKAGE_SCHEMA = path.join(ROOT, "docs/process/schemas/digital-human-task-package.schema.json");
+@@ -77,6 +78,7 @@ function validateSkillSource(value, registry) {
+ }
+ 
+ function validateCommon(value, registry, lifecycle) {
++  if (value.work_unit_id === 'work-unit.spec-synthesis') assertPlanSpecEntry(value);
+   const workUnit = lifecycle.work_units.find((item) => item.id === value.work_unit_id);
+   if (!workUnit && value.contract.kind !== "slice-implementation") fail(`未知 work_unit_id: ${value.work_unit_id}`);
+   const roleDefaults = taskPackageDefaults(value.role_id, registry);
+@@ -112,7 +114,7 @@ function validateCommon(value, registry, lifecycle) {
+     assertReadableEvidenceRef(reconciliation.ref, "context_reconciliation.ref");
+     if (!value.result.evidence_refs.includes(reconciliation.ref)) fail("context_reconciliation.ref 必须包含在 result.evidence_refs 中");
+     if (expectedReconciliationStatus === "not-applicable" && !reconciliation.reason) fail("template-maintenance 的 context_reconciliation 必须说明 reason");
+-    const routeResult = validateNextRoute(value.result.work_unit, value.result.next_route, { profileId: value.profile_id || value.result.profile_id });
++    const routeResult = validateNextRoute(value.result.work_unit, value.result.next_route, { ...value.result, profileId: value.profile_id || value.result.profile_id });
+     if (routeResult.result !== "allowed") fail(`Workflow Execution Result next_route 非法: ${routeResult.blocking_signals.join(", ")}`);
+     value.expected_evidence_files.forEach((ref) => assertReadableEvidenceRef(ref, "expected_evidence_files"));
+     if (value.verification_results.length === 0) fail("已完成任务必须包含 verification_results");
+diff --git a/scripts/verify-context-reconciliation-scenarios b/scripts/verify-context-reconciliation-scenarios
+index 5cf5fec..f15e9c3 100755
+--- a/scripts/verify-context-reconciliation-scenarios
++++ b/scripts/verify-context-reconciliation-scenarios
+@@ -40,7 +40,7 @@ function record(overrides = {}) {
+   return {
+     schema_version: 1,
+     repository_mode: "project-instance",
+-    stage: "stage.discovery",
++    stage: "stage.plan",
+     work_unit: "work-unit.domain-strategy-design",
+     status: "reconciled",
+     context_snapshot: snapshot,
+diff --git a/scripts/verify-lifecycle-checkpoint b/scripts/verify-lifecycle-checkpoint
+index 3e3d9c3..71adca4 100755
+--- a/scripts/verify-lifecycle-checkpoint
++++ b/scripts/verify-lifecycle-checkpoint
+@@ -6,6 +6,7 @@ import { parseArgs } from "node:util";
+ import { fileURLToPath } from "node:url";
+ import { parseDocument } from "./vendor/yaml.mjs";
+ import { assertCheckpointApprovals } from "./lib/approval-record.mjs";
++import { assertPlanCheckpoint } from './lib/plan-spec-entry.mjs';
+ 
+ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+ const schemaPath = path.join(root, "docs/process/schemas/lifecycle-checkpoint.schema.json");
+@@ -32,6 +33,7 @@ try {
+   const result = spawnSync("python3", ["-c", validator, schemaPath], { cwd: root, encoding: "utf8", input: JSON.stringify(value) });
+   if (result.status !== 0) throw new TypeError(`${result.stdout}${result.stderr}`.trim());
+   assertCheckpointApprovals(value, sourcePath);
++  assertPlanCheckpoint(value);
+   if (value.repository_mode === "project-instance" && ["paused-human-gate", "completed"].includes(value.status)) {
+     if (value.context_reconciliation?.status !== "reconciled" || !value.context_reconciliation?.ref) throw new TypeError("project-instance 在会签或完成前必须具有 reconciled context_reconciliation");
+     const reconciliation = path.resolve(root, value.context_reconciliation.ref);
+diff --git a/scripts/verify-lifecycle-transition-scenarios b/scripts/verify-lifecycle-transition-scenarios
+index f6fadda..fcc4d39 100755
+--- a/scripts/verify-lifecycle-transition-scenarios
++++ b/scripts/verify-lifecycle-transition-scenarios
+@@ -82,8 +82,8 @@ for (const current of ["work-unit.spec-synthesis", "work-unit.prototype-design",
+   assert.equal(result.result, "blocked", current);
+   assert.ok(result.blocking_signals.includes("ticket-formalization-required"), current);
+ }
+-assert.equal(validateNextRoute("work-unit.spec-synthesis", "work-unit.ticket-decomposition").result, "allowed");
+-assert.equal(validateNextRoute("work-unit.stage-decision", "work-unit.spec-synthesis", { profileId: "harness.business-ddd-strategy-handoff" }).result, "allowed");
++assert.equal(validateNextRoute("work-unit.spec-synthesis", "work-unit.ticket-decomposition").result, "blocked");
++assert.equal(validateNextRoute("work-unit.stage-decision", "work-unit.spec-synthesis", { profileId: "harness.business-ddd-strategy-handoff" }).result, "blocked");
+ assert.equal(validateNextRoute("work-unit.strategic-design-handoff", null, { profileId: "harness.business-ddd-strategy-handoff" }).result, "allowed");
+ assert.equal(validateNextRoute("work-unit.strategic-design-handoff", "work-unit.spec-synthesis", { profileId: "harness.business-ddd-strategy-handoff" }).result, "blocked");
+ assert.equal(validateNextRoute("work-unit.domain-strategy-design", "work-unit.stage-decision", { profileId: "harness.business-ddd-strategy-handoff" }).result, "allowed");
+diff --git a/scripts/verify-subagent-task-package-scenarios b/scripts/verify-subagent-task-package-scenarios
+index c6d9963..a45d165 100755
+--- a/scripts/verify-subagent-task-package-scenarios
++++ b/scripts/verify-subagent-task-package-scenarios
+@@ -73,7 +73,7 @@ function packageBase(roleId, taskId, workUnitId, kind, contractFields, stageId)
+ }
+ 
+ function lifecyclePackage() {
+-  return packageBase("role.requirements-manager", "task-discovery", "work-unit.discovery-opportunity", "lifecycle-work-unit", { lifecycle_ref: "docs/process/lifecycle-registry.yaml", artifact_refs: ["artifact.discovery-record"] , gate_refs: [] , contract_id: "lifecycle-discovery", contract_version: 1 }, "stage.discovery");
++  return packageBase("role.requirements-manager", "task-discovery", "work-unit.plan-opportunity", "lifecycle-work-unit", { lifecycle_ref: "docs/process/lifecycle-registry.yaml", artifact_refs: ["artifact.plan-record"] , gate_refs: [] , contract_id: "lifecycle-discovery", contract_version: 1 }, "stage.plan");
+ }
+ 
+ function lifecycleStagePackage(roleId, taskId, workUnitId, stageId) {
+@@ -123,7 +123,7 @@ function completedResult(pkg, overrides = {}) {
+     violation: [],
+     new_impacts: [],
+     stale_candidates: [],
+-    next_route: "work-unit.spec-synthesis",
++    next_route: "work-unit.plan-requirements",
+     blocking_signals: [],
+     ...overrides
+   };
+@@ -142,14 +142,15 @@ try {
+   const tickets = lifecycleStagePackage("role.product-manager", "task-tickets", "work-unit.business-ticket-formalization", "stage.ticket-formalization");
+   const handoff = lifecycleStagePackage("role.requirements-manager", "task-handoff", "work-unit.strategic-design-handoff", "stage.ticket-formalization");
+   const maintenance = templatePackage();
+-  [discovery, spec, prototype, tickets, handoff].forEach((pkg) => validateTaskPackage(pkg));
++  [discovery, prototype, tickets, handoff].forEach((pkg) => validateTaskPackage(pkg));
++  assert.throws(() => validateTaskPackage(spec), /plan-spec-entry-blocked/, "直接派发 Spec 缺 Plan 审阅须阻断");
+   validateTaskPackage(maintenance);
+ 
+-  const completedDiscovery = lifecyclePackage();
+-  completedDiscovery.workflow_status = "resolved";
+-  completedDiscovery.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }];
+-  completedDiscovery.result = completedResult(completedDiscovery);
+-  validateTaskPackage(completedDiscovery);
++  const completedPlan = lifecyclePackage();
++  completedPlan.workflow_status = "resolved";
++  completedPlan.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }];
++  completedPlan.result = completedResult(completedPlan);
++  validateTaskPackage(completedPlan);
+ 
+   const validFile = path.join(ROOT, ".template-source/evidence/.task-package-valid.json");
+   writeFileSync(validFile, JSON.stringify(discovery));
+diff --git a/skills-lock.json b/skills-lock.json
+index dcac5b2..a4641df 100644
+--- a/skills-lock.json
++++ b/skills-lock.json
+@@ -57,7 +57,7 @@
+         "source": "competitive-intelligence",
+         "sourceType": "local",
+         "skillPath": "sales/skills/competitive-intelligence/SKILL.md",
+-        "effectiveHash": "d4b83600889b6045182232f0c11a9d6a563030b5f60faa4385a7886843ef0109",
++        "effectiveHash": "df1473dfd96b1a3ba63ef929917973b613988edf62193b5b82d734de2e8418cd",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -87,7 +87,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/domain-modeling/SKILL.md",
+-        "effectiveHash": "02989ac6fd21562ba87af7a88b5d34f11661f86a3a42014e366613ecdb81bd81",
++        "effectiveHash": "7e691aeef60ee61c423f224acd3c4481a8764d3d336c8c49585b36d1a9bca9be",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "2bc3bb0a64ea9c6f5c3bcf78fc17f0fcdc7c062edc547ef006441de0b576d248",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -123,7 +123,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/grill-with-docs/SKILL.md",
+-        "effectiveHash": "c0f724b8cb4be22d10d8e8de3dfd49eb024cf131a3bcf5e7b89e109ad3d80b32",
++        "effectiveHash": "2006f65f386e79ff37c2c3294efe146e2e546845cf52e1571340dcb2a81a0df3",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "6b1292031c4f38a11309b9dad9be1141c1921c6edf86d1ae6da8b048fa71a349",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -387,7 +387,7 @@
+         "source": "mattpocock/skills",
+         "sourceType": "github",
+         "skillPath": "skills/engineering/research/SKILL.md",
+-        "effectiveHash": "a0c69c6cff59bdb6d36b03d24cceb29698e76cd6aae88919bf864284737c3aaa",
++        "effectiveHash": "0d8f94e6379ad56897a7821b4803a3ba72910e617aab730e47db719e6eb02807",
+         "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
+         "upstreamHash": "75b7f9bbd7ccff6755a006f8b25d319a46ecbf6bd4b4c3323965ed9cb65e78ff",
+         "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
+@@ -405,7 +405,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-stage-decision/SKILL.md",
+-        "effectiveHash": "1eadf230f0e17bf6d209c1df1249acef3520ab29c26a80c476a2a557a224c10a",
++        "effectiveHash": "2ec63f66aaf799d693cec0f0b5d71b8c4917e4e2822e0ddd519bc9b711fa3c95",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",
+@@ -420,7 +420,7 @@
+         "source": "project",
+         "sourceType": "local",
+         "skillPath": ".agents/skills/yss-strategic-design/SKILL.md",
+-        "effectiveHash": "93f9bba366de8fd91c9147447f4796af67c647b3cd2e0789e2318add278805e7",
++        "effectiveHash": "c857fb49f497cbda95216fe6c5de125b967f652343855c2a2a8bf3c4fb2299ec",
+         "targets": [
+           ".agents/skills",
+           ".claude/skills",

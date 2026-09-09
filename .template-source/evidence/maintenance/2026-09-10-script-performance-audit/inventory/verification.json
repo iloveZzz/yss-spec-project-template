@@ -1,0 +1,10 @@
+{
+  "command": "python3 .template-source/evidence/maintenance/2026-09-10-script-performance-audit/inventory/verify.py",
+  "exit_code": 0,
+  "checked_files": 2820,
+  "checked_hash_groups": 421,
+  "checked_dependency_edges": 7132,
+  "errors": [],
+  "elapsed_seconds": 0.4167,
+  "source_scripts_executed": 0
+}

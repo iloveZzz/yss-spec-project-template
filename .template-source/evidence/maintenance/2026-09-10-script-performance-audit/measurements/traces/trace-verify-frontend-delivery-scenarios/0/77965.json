@@ -1,0 +1,97 @@
+{
+  "pid": 77965,
+  "ppid": 35596,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-frontend-delivery-scenarios",
+  "wall_ms": 36214.8685,
+  "exit_code": 0,
+  "operations": {
+    "fs.realpathSync": {
+      "count": 121,
+      "duration_ms": 3.412876000001134
+    },
+    "fs.readFileSync": {
+      "count": 8207,
+      "duration_ms": 153.26205999995145
+    },
+    "fs.mkdirSync": {
+      "count": 2419,
+      "duration_ms": 435.33244399996045
+    },
+    "fs.writeFileSync": {
+      "count": 2290,
+      "duration_ms": 1197.2072739999396
+    },
+    "fs.existsSync": {
+      "count": 84881,
+      "duration_ms": 189.62400800066698
+    },
+    "fs.lstatSync": {
+      "count": 88155,
+      "duration_ms": 203.01423100053708
+    },
+    "fs.readdirSync": {
+      "count": 2449,
+      "duration_ms": 48.14841399998937
+    },
+    "spawnSync:python3:strategic-design-handoff.schema.json": {
+      "count": 53,
+      "duration_ms": 3731.1457010000113
+    },
+    "spawnSync:python3:strategic-handoff-export.schema.json": {
+      "count": 53,
+      "duration_ms": 3716.9510840000066
+    },
+    "spawnSync:python3:strategic-handoff-domain-strategy.schema.json": {
+      "count": 53,
+      "duration_ms": 3713.5752100000072
+    },
+    "spawnSync:python3:strategic-handoff-stage-decision-package.schema.json": {
+      "count": 53,
+      "duration_ms": 3700.582959000002
+    },
+    "spawnSync:python3:strategic-handoff-package.schema.json": {
+      "count": 52,
+      "duration_ms": 3631.660041000004
+    },
+    "spawnSync:python3:backend-delivery.schema.json": {
+      "count": 21,
+      "duration_ms": 1446.0039579999948
+    },
+    "spawnSync:python3:backend-delivery-verification.schema.json": {
+      "count": 38,
+      "duration_ms": 2601.6889999999994
+    },
+    "spawnSync:python3:.backend-export-Z7dq8a.zip": {
+      "count": 1,
+      "duration_ms": 33.38345900000013
+    },
+    "spawnSync:python3:unpacked": {
+      "count": 2,
+      "duration_ms": 67.6329169999999
+    },
+    "fs.copyFileSync": {
+      "count": 119,
+      "duration_ms": 80.09733100001995
+    },
+    "fs.cpSync": {
+      "count": 3,
+      "duration_ms": 100.30500000000029
+    },
+    "spawnSync:python3:frontend-delivery-acceptance.schema.json": {
+      "count": 16,
+      "duration_ms": 1130.6213750000052
+    },
+    "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation": {
+      "count": 11,
+      "duration_ms": 1298.0219580000048
+    },
+    "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-frontend-delivery": {
+      "count": 3,
+      "duration_ms": 6214.115
+    },
+    "fork:revision-server.mjs:/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/frontend-delivery-test-UIZ0nV/server.json": {
+      "count": 1,
+      "duration_ms": 35442.413791
+    }
+  }
+}

@@ -1,0 +1,63 @@
+schema_version: 2
+intensity: L3
+classification_reason: 将 Plan 到正式 Spec 起草的检查从文档约定落实为统一入口校验，覆盖主模板、战略子项目及 CLI 分发。
+triggers: [lifecycle-gate, cross-repo-contract, aggregate-behavior-change]
+changed_assets:
+  - docs/process/lifecycle-registry.yaml
+  - docs/process/lifecycle-registry-baseline.json
+  - docs/process/schemas/lifecycle-registry.schema.json
+  - docs/process/schemas/lifecycle-checkpoint.schema.json
+  - docs/process/schemas/digital-human-task-package.schema.json
+  - docs/process/template-verification-profiles.yaml
+  - docs/plan/entry-review.md
+  - .agents/skills/yss-product-lifecycle/
+  - scripts/lib/plan-spec-entry.mjs
+  - scripts/lib/lifecycle-transition.mjs
+  - scripts/lib/lifecycle-context-query.mjs
+  - scripts/lib/task-package.mjs
+  - scripts/lib/scenario-checks.mjs
+  - scripts/verify-lifecycle-checkpoint
+  - scripts/verify-plan-spec-entry
+  - scripts/verify-plan-spec-entry-scenarios
+  - scripts/fixtures/user-decision/plan-fixture.mjs
+  - scripts/verify-subagent-task-package-scenarios
+  - scripts/verify-user-decision-scenarios
+  - skills-lock.json
+  - submodules/yss-harness-design-agent
+  - submodules/create-yss-spec
+  - submodules/create-yss-strategic-design
+verification_evidence:
+  - kind: self-check
+    command: .template-source/evidence/maintenance/2026-09-10-plan-entry/self-check.md
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast（主模板，自动升级 release，最终稳定工作树轮次退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast（cwd=submodules/yss-harness-design-agent，最终轮次自动升级 release，退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: node scripts/verify-plan-spec-entry-scenarios（两套模板，默认 pending、绕过阻断、当前批准及延期正向场景，退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: node scripts/verify-matt-yss-integration-scenarios（两套模板，完整 Plan 夹具和显式旧入口集成，退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: node scripts/verify-user-decision-scenarios（30 组通过，退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: pnpm run sync-template（两套 CLI，最终快照同步退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: node --test --test-name-pattern='interactive init|manifest-driven optional' tests/init-cli.test.js（cwd=submodules/create-yss-spec，最终 2/2 通过，退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: node --test --test-name-pattern='init generates' tests/init-cli.test.js（cwd=submodules/create-yss-strategic-design，最终 1/1 通过，退出码 0）
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

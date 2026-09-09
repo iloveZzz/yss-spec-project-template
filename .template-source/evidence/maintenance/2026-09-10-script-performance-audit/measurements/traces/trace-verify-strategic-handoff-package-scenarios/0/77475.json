@@ -1,0 +1,61 @@
+{
+  "pid": 77475,
+  "ppid": 56410,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/strategic-handoff",
+  "wall_ms": 459.167333,
+  "exit_code": 0,
+  "operations": {
+    "fs.realpathSync": {
+      "count": 27,
+      "duration_ms": 0.3925420000000024
+    },
+    "fs.readFileSync": {
+      "count": 117,
+      "duration_ms": 3.1233300000001503
+    },
+    "fs.existsSync": {
+      "count": 1087,
+      "duration_ms": 2.757857000000577
+    },
+    "fs.lstatSync": {
+      "count": 1152,
+      "duration_ms": 3.353465999999532
+    },
+    "fs.mkdirSync": {
+      "count": 29,
+      "duration_ms": 0.49941700000001177
+    },
+    "spawnSync:python3:unpacked": {
+      "count": 1,
+      "duration_ms": 33.694584000000006
+    },
+    "spawnSync:python3:strategic-handoff-package.schema.json": {
+      "count": 1,
+      "duration_ms": 68.512375
+    },
+    "fs.readdirSync": {
+      "count": 29,
+      "duration_ms": 0.6315020000000686
+    },
+    "fs.writeFileSync": {
+      "count": 27,
+      "duration_ms": 1.8013340000000255
+    },
+    "spawnSync:python3:strategic-design-handoff.schema.json": {
+      "count": 1,
+      "duration_ms": 69.62225000000001
+    },
+    "spawnSync:python3:strategic-handoff-export.schema.json": {
+      "count": 1,
+      "duration_ms": 67.325166
+    },
+    "spawnSync:python3:strategic-handoff-domain-strategy.schema.json": {
+      "count": 1,
+      "duration_ms": 68.96200000000005
+    },
+    "spawnSync:python3:strategic-handoff-stage-decision-package.schema.json": {
+      "count": 1,
+      "duration_ms": 71.004708
+    }
+  }
+}

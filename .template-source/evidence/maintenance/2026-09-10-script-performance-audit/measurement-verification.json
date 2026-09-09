@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "runs_checked": 105,
+  "log_files_checked": 210,
+  "coverage_rows": 2820,
+  "implementation_groups": 338,
+  "limitation": "Evidence consistency only; recorded rejected inputs remain failures, not runtime validation passes."
+}

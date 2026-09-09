@@ -1,0 +1,29 @@
+{
+  "pid": 99034,
+  "ppid": 98993,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-frontend/scripts/verify-bundle.mjs",
+  "wall_ms": 202.51337500000002,
+  "exit_code": 0,
+  "operations": {
+    "fs.realpathSync": {
+      "count": 9,
+      "duration_ms": 0.2142090000000021
+    },
+    "fs.lstatSync": {
+      "count": 14663,
+      "duration_ms": 33.7596599999992
+    },
+    "fs.readFileSync": {
+      "count": 4906,
+      "duration_ms": 71.07251599999884
+    },
+    "fs.readdirSync": {
+      "count": 3,
+      "duration_ms": 0.18783300000000835
+    },
+    "fs.statSync": {
+      "count": 14,
+      "duration_ms": 0.10554100000000233
+    }
+  }
+}

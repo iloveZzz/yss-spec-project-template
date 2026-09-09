@@ -1,6 +1,6 @@
 # 需求定义 (Requirements) — 从想法到可执行定义
 
-> **Phase: Requirements | 输入: Discovery | 输出: Spec + Stories + 验收条件**
+> **Phase: Requirements | 输入: Plan | 输出: Spec + Stories + 验收条件**
 
 ---
 
@@ -79,7 +79,7 @@ delegate_task(
 ## AI-Human Loop
 
 ```
-Discovery报告 → AI生成Spec → PM审核
+Plan报告 → AI生成Spec → PM审核
 → AI补充边界 → PM确认 → AI拆解Stories
 → 团队估算 → AI标注风险 → TechLead确认 → 进入Architecture
 ```

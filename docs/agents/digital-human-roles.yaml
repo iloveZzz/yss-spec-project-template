@@ -67,7 +67,7 @@ orchestrator:
   kind: orchestrator
   title: YSS 生命周期主控
   default_dual_hat: [role.project-manager]
-  stages: [stage.entry-triage, stage.discovery, stage.spec-architecture, stage.product-design, stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
+  stages: [stage.entry-triage, stage.plan, stage.spec-architecture, stage.product-design, stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
   core_skills: [yss-product-lifecycle, yss-implementation-contract-compiler]
   forbidden_skills: [yss-domain, yss-ui, yss-ui-business-page-generation, yss-web-controller, yss-repository, implement]
   description: >-
@@ -84,12 +84,12 @@ roles:
     kind: digital-human
     contract_version: 1
     title: YSS 需求经理
-    stages: [stage.discovery, stage.spec-architecture]
-    draft_artifact_ids: [artifact.discovery-record, artifact.spec]
+    stages: [stage.plan, stage.spec-architecture]
+    draft_artifact_ids: [artifact.plan-record, artifact.spec]
     core_skills: [grilling, domain-modeling, yss-research, competitive-intelligence, grill-with-docs]
     forbidden_skills: [yss-ui, yss-domain, yss-web-controller, yss-repository, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, yss-frontend-scaffold-generator, implement, tdd]
     description: >-
-      Own Discovery language, users, MVP, non-goals, success criteria, test
+      Own Plan language, users, MVP, non-goals, success criteria, test
       seams, and Spec prose. Propose CONTEXT.md glossary entries. Do not freeze
       visual prototypes, OpenAPI, or code. Do not guess unconfirmed business
       rules. Hand off to the orchestrator when the frontier is empty.
@@ -99,14 +99,14 @@ roles:
     kind: digital-human
     contract_version: 1
     title: YSS 产品经理
-    stages: [stage.discovery, stage.spec-architecture, stage.product-design, stage.verification-release-retrospective]
+    stages: [stage.plan, stage.spec-architecture, stage.product-design, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.product-overview, artifact.functional-architecture, artifact.interaction-spec, artifact.state-matrix, artifact.prototype-confirmation]
     core_skills: [yss-design-system, yss-prototype-stage, prototype-review, yss-antdv-next-design, yss-research, competitive-intelligence]
     forbidden_skills: [yss-ui, yss-domain, yss-repository, yss-web-controller, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, implement, tdd]
     description: >-
       Own priority, product-design impact, interaction, state matrix, prototype
       confirmation recommendation, and the commercial constraints, delivery
-      commitments, release window, and commercial non-goals for Discovery and
+      commitments, release window, and commercial non-goals for Plan and
       release. May reject Spec scope. Do not write production code or freeze
       OpenAPI alone. Do not independently approve external commercial contracts
       or formal commitments; those require biological-human approval. Frontend
@@ -119,7 +119,7 @@ roles:
     kind: digital-human
     contract_version: 1
     title: YSS 项目经理
-    stages: [stage.entry-triage, stage.discovery, stage.spec-architecture, stage.product-design, stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
+    stages: [stage.entry-triage, stage.plan, stage.spec-architecture, stage.product-design, stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective]
     draft_artifact_ids: [artifact.parent-ticket, artifact.vertical-slice-ticket]
     core_skills: [yss-product-lifecycle, handoff, implementation-repo-onboarding, cross-repo-implementation-routing]
     forbidden_skills: [yss-domain, yss-ui, implement, tdd, yss-web-controller]
@@ -180,9 +180,9 @@ roles:
       feature implementation. Must be a different instance from the implementer.
 
 stage_groups:
-  - id: group.discovery
-    name: Discovery
-    stage: stage.discovery
+  - id: group.plan
+    name: Plan
+    stage: stage.plan
     members: [role.lifecycle-orchestrator, role.requirements-manager, role.product-manager]
   - id: group.spec
     name: Spec
@@ -274,7 +274,7 @@ user_decision_policy:
     - gate.architecture-reviewed
     - gate.release-ready
   work_units:
-    work-unit.discovery-requirements: discovery-conclusion
+    work-unit.plan-requirements: plan-conclusion
     work-unit.service-project-initialization: scaffold-choice
     work-unit.implementation-repository-preparation: scaffold-choice
     work-unit.slice-implementation: implementation-scope

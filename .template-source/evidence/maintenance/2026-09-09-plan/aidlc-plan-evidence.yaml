@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "profile": "technical-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "Discovery 到 Plan 的战略阶段适配",
+    "audience": "YSS 模板维护者",
+    "time_horizon": "2026-09-09 官方在线文档",
+    "research_questions": ["官方是否存在 Plan 主阶段，前置阶段职责如何划分？"],
+    "inclusion_criteria": ["AWS Labs 官方当前阶段文档"],
+    "exclusion_criteria": ["二手摘要与旧流程图不作为支持证据"]
+  },
+  "ownership": {"research_owner": "yss-research", "downstream_owner": "yss-product-lifecycle", "decision_ref": "docs/process/plan-migration.md"},
+  "search_log": [
+    {"id": "search-official", "channel": "web search", "query_or_corpus": "site.github.com/awslabs/aidlc-workflows inception phase planning workflow", "searched_at": "2026-09-09", "result": "results-found"},
+    {"id": "search-boundary", "channel": "official page inspection", "query_or_corpus": "https://awslabs.github.io/aidlc-workflows/guide/04-phases-and-stages/ — Lifecycle Overview, Ideation, Inception", "searched_at": "2026-09-09", "result": "results-found"}
+  ],
+  "evidence_items": [
+    {"id": "evidence-phases", "source_level": "primary", "visibility": "public", "source_class": "official-docs", "source_ref": "https://awslabs.github.io/aidlc-workflows/guide/04-phases-and-stages/", "locator": "Lifecycle Overview; Phase 1 Ideation; Phase 2 Inception", "stance": "support", "observed_at": "2026-09-09", "observation": "五个阶段使用 Initialization、Ideation、Inception、Construction、Operation；前置两阶段分别涵盖意图与范围，以及细化需求和交付准备。", "limitations": ["滚动文档，未绑定发布 tag"]},
+    {"id": "evidence-boundary", "source_level": "primary", "visibility": "public", "source_class": "official-docs", "source_ref": "https://awslabs.github.io/aidlc-workflows/guide/04-phases-and-stages/", "locator": "Phase 2 Inception, 2.7–2.9", "stance": "counter", "observed_at": "2026-09-09", "observation": "Inception 延伸至 Units Generation、Contract Design、Delivery Planning；不能等同于仅产出 Spec 上游战略输入的本地 Plan。", "limitations": ["与支持证据来自同一官方页面，非独立验证"]}
+  ],
+  "claims": [{"id": "claim-phases", "claim_kind": "technical-fact", "statement": "官方使用五阶段名称；本地 Plan 是战略规划适配而非官方阶段名或完整 Inception。", "decision_bearing": true, "evidence_refs": ["evidence-phases"], "counter_signal_refs": ["evidence-boundary"], "audit_status": "supported", "confidence": "high", "disposition": "publish"}],
+  "source_gaps": ["未锁定不可变 release tag；不主张实现与上游运行时逐项兼容。"],
+  "audit_summary": {"status": "complete", "audited_claim_ids": ["claim-phases"], "notes": ["命名和边界为用户确认的本地决定。"]}
+}

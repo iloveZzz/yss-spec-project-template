@@ -10,24 +10,44 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
 const query = {
   mode: "route",
-  stageId: "stage.discovery",
-  workUnitId: "work-unit.discovery-requirements",
+  stageId: "stage.plan",
+  workUnitId: "work-unit.plan-requirements",
   include: ["grill_exit"],
 };
 const first = queryLifecycleContext(query);
 const second = queryLifecycleContext(query);
 
 assert.deepEqual(first, second, "同一查询必须产生确定性结果");
+// 合并调用须保留原来三次查询的路由、阶段和技能信息。
+const modeOnly = queryLifecycleContext({ mode: query.mode });
+const stageOnly = queryLifecycleContext({ stageId: query.stageId });
+const unitOnly = queryLifecycleContext({ workUnitId: query.workUnitId });
+assert.deepEqual(first.execution.mode, modeOnly.execution.mode);
+for (const key of ["stage", "gates", "artifacts", "evidence"]) {
+  assert.deepEqual(first.lifecycle[key], stageOnly.lifecycle[key]);
+}
+assert.deepEqual(first.lifecycle.work_unit, unitOnly.lifecycle.work_unit);
+assert.deepEqual(first.execution.work_unit_route, unitOnly.execution.work_unit_route);
+assert.deepEqual(first.execution.transition, unitOnly.execution.transition);
+assert.deepEqual(first.skills, unitOnly.skills);
+const efficient = queryLifecycleContext({ ...query, include: ["grill_exit", "execution_efficiency"] });
+assert.deepEqual(efficient.lifecycle, first.lifecycle, "执行成本策略不得改变阶段门禁");
+assert.deepEqual(efficient.skills, first.skills);
+assert.deepEqual(efficient.execution.transition, first.execution.transition);
+assert.equal(efficient.execution.selected.execution_efficiency.verification.skip_triggered_gates, "forbidden");
+assert.equal("execution_efficiency" in first.execution.selected, false, "成本策略仍按需加载");
 assert.equal(first.query.mode, "route");
-assert.equal(first.lifecycle.stage.id, "stage.discovery");
-assert.ok(first.lifecycle.gates.every((gate) => gate.stage === "stage.discovery"));
-assert.ok(first.lifecycle.artifacts.every((artifact) => artifact.stage === "stage.discovery"));
-assert.equal(first.lifecycle.work_unit.id, "work-unit.discovery-requirements");
+assert.equal(first.lifecycle.stage.id, "stage.plan");
+assert.ok(first.lifecycle.gates.every((gate) => gate.stage === "stage.plan"));
+assert.ok(first.lifecycle.artifacts.every((artifact) => artifact.stage === "stage.plan"));
+assert.equal(first.lifecycle.work_unit.id, "work-unit.plan-requirements");
 assert.equal(first.execution.mode, "read_only");
 assert.equal(first.execution.work_unit_route.primary_skill, "yss-product-lifecycle");
 assert.ok(first.execution.selected.grill_exit.required.includes("frontier_empty"));
 assert.equal("review_input" in first.execution.selected, false, "不得返回未请求的合同子树");
 assert.ok(first.skills.some((skill) => skill.id === "grilling"));
+assert.throws(() => queryLifecycleContext({ stageId: "stage.discovery" }), /未知阶段/);
+assert.throws(() => queryLifecycleContext({ workUnitId: "work-unit.discovery-requirements" }), /未知工作单元/);
 assert.match(first.sources.lifecycle_registry.semantic_sha256, /^[0-9a-f]{64}$/);
 assert.match(first.sources.orchestration_contract.sha256, /^[0-9a-f]{64}$/);
 
@@ -43,8 +63,8 @@ for (const invalid of [
 const cli = spawnSync("node", [
   "scripts/query-lifecycle-context",
   "--mode", "route",
-  "--stage", "stage.discovery",
-  "--work-unit", "work-unit.discovery-requirements",
+  "--stage", "stage.plan",
+  "--work-unit", "work-unit.plan-requirements",
   "--include", "grill_exit",
 ], { cwd: ROOT, encoding: "utf8" });
 assert.equal(cli.status, 0, cli.stderr);

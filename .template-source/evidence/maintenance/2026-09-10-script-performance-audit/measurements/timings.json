@@ -1,0 +1,886 @@
+[
+  {
+    "label": "root-repository-mode",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 34.495,
+    "min_ms": 33.74,
+    "max_ms": 35.998,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/scripts/repository-mode"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template"
+  },
+  {
+    "label": "root-verify-context-contract",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 46.267,
+    "min_ms": 46.224,
+    "max_ms": 52.767,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "--json"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template"
+  },
+  {
+    "label": "root-query-lifecycle-context",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 86.951,
+    "min_ms": 86.567,
+    "max_ms": 91.697,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/scripts/query-lifecycle-context",
+      "--mode",
+      "route"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template"
+  },
+  {
+    "label": "yss-harness-design-agent-repository-mode",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 31.789,
+    "min_ms": 31.105,
+    "max_ms": 34.701,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/scripts/repository-mode"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent"
+  },
+  {
+    "label": "yss-harness-design-agent-verify-context-contract",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 35.952,
+    "min_ms": 35.939,
+    "max_ms": 38.726,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+      "--json"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent"
+  },
+  {
+    "label": "yss-harness-design-agent-query-lifecycle-context",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 68.788,
+    "min_ms": 68.25,
+    "max_ms": 73.116,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/scripts/query-lifecycle-context",
+      "--mode",
+      "route"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent"
+  },
+  {
+    "label": "yss-harness-dev-agent-repository-mode",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 33.873,
+    "min_ms": 33.18,
+    "max_ms": 33.915,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent/scripts/repository-mode"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent"
+  },
+  {
+    "label": "yss-harness-dev-agent-verify-context-contract",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 48.989,
+    "min_ms": 48.201,
+    "max_ms": 58.69,
+    "exit_codes": "1,1,1",
+    "success": false,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
+      "--json"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent"
+  },
+  {
+    "label": "yss-harness-backend-agent-repository-mode",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 33.654,
+    "min_ms": 32.495,
+    "max_ms": 34.803,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent/scripts/repository-mode"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent"
+  },
+  {
+    "label": "yss-harness-backend-agent-verify-context-contract",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 39.64,
+    "min_ms": 37.07,
+    "max_ms": 41.079,
+    "exit_codes": "1,1,1",
+    "success": false,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+      "--json"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent"
+  },
+  {
+    "label": "yss-harness-frontend-agent-repository-mode",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 32.656,
+    "min_ms": 30.988,
+    "max_ms": 35.544,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent/scripts/repository-mode"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent"
+  },
+  {
+    "label": "yss-harness-frontend-agent-verify-context-contract",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 40.106,
+    "min_ms": 39.973,
+    "max_ms": 42.383,
+    "exit_codes": "1,1,1",
+    "success": false,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+      "--json"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent"
+  },
+  {
+    "label": "create-yss-spec-template-repository-mode",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 32.385,
+    "min_ms": 31.454,
+    "max_ms": 36.229,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/template/scripts/repository-mode"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/template"
+  },
+  {
+    "label": "create-yss-spec-template-verify-context-contract",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 80.886,
+    "min_ms": 80.646,
+    "max_ms": 270.226,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/template/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/template",
+      "--json"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/template"
+  },
+  {
+    "label": "create-yss-spec-template-query-lifecycle-context",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 88.309,
+    "min_ms": 87.037,
+    "max_ms": 95.563,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/template/scripts/query-lifecycle-context",
+      "--mode",
+      "route"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/template"
+  },
+  {
+    "label": "create-yss-strategic-design-template-repository-mode",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 32.933,
+    "min_ms": 32.198,
+    "max_ms": 33.292,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/template/scripts/repository-mode"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/template"
+  },
+  {
+    "label": "create-yss-strategic-design-template-verify-context-contract",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 42.11,
+    "min_ms": 41.451,
+    "max_ms": 85.889,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/template/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/template",
+      "--json"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/template"
+  },
+  {
+    "label": "create-yss-strategic-design-template-query-lifecycle-context",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 70.021,
+    "min_ms": 69.867,
+    "max_ms": 73.382,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/template/scripts/query-lifecycle-context",
+      "--mode",
+      "route"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/template"
+  },
+  {
+    "label": "create-yss-harness-dev-template-repository-mode",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 33.089,
+    "min_ms": 32.163,
+    "max_ms": 34.395,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev/template/scripts/repository-mode"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev/template"
+  },
+  {
+    "label": "create-yss-harness-dev-template-verify-context-contract",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 82.904,
+    "min_ms": 81.371,
+    "max_ms": 99.469,
+    "exit_codes": "1,1,1",
+    "success": false,
+    "timeout": false,
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev/template/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev/template",
+      "--json"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev/template"
+  },
+  {
+    "label": "root-sync-skills-check",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 96.21,
+    "min_ms": 96.2,
+    "max_ms": 276.869,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/sync-skills",
+      "--check"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template"
+  },
+  {
+    "label": "root-update-skill-lock-check",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 83.979,
+    "min_ms": 82.582,
+    "max_ms": 213.954,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/update-skill-lock",
+      "--check"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template"
+  },
+  {
+    "label": "python-startup",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 14.931,
+    "min_ms": 14.744,
+    "max_ms": 15.293,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "python3",
+      "-c",
+      "pass"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template"
+  },
+  {
+    "label": "python-jsonschema-import",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 60.69,
+    "min_ms": 60.069,
+    "max_ms": 116.555,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "python3",
+      "-c",
+      "from jsonschema import Draft202012Validator"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template"
+  },
+  {
+    "label": "isolated-plan-entry",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 995.707,
+    "min_ms": 988.743,
+    "max_ms": 995.947,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      ".perf-plan-entry.mjs"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root"
+  },
+  {
+    "label": "trace-plan-entry",
+    "trace": true,
+    "samples": 1,
+    "median_ms": 1004.216,
+    "min_ms": 1004.216,
+    "max_ms": 1004.216,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      ".perf-plan-entry.mjs"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root"
+  },
+  {
+    "label": "isolated-verify-plan-spec-entry-scenarios",
+    "trace": false,
+    "samples": 1,
+    "median_ms": 1665.04,
+    "min_ms": 1665.04,
+    "max_ms": 1665.04,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/verify-plan-spec-entry-scenarios"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root"
+  },
+  {
+    "label": "isolated-verify-context-reconciliation-scenarios",
+    "trace": false,
+    "samples": 1,
+    "median_ms": 771.669,
+    "min_ms": 771.669,
+    "max_ms": 771.669,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/verify-context-reconciliation-scenarios"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root"
+  },
+  {
+    "label": "isolated-verify-lifecycle-transition-scenarios",
+    "trace": false,
+    "samples": 1,
+    "median_ms": 1726.646,
+    "min_ms": 1726.646,
+    "max_ms": 1726.646,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/verify-lifecycle-transition-scenarios"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root"
+  },
+  {
+    "label": "isolated-verify-strategic-handoff-package-scenarios",
+    "trace": false,
+    "samples": 1,
+    "median_ms": 20826.652,
+    "min_ms": 20826.652,
+    "max_ms": 20826.652,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/verify-strategic-handoff-package-scenarios"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root"
+  },
+  {
+    "label": "isolated-verify-frontend-delivery-scenarios",
+    "trace": false,
+    "samples": 1,
+    "median_ms": 32023.312,
+    "min_ms": 32023.312,
+    "max_ms": 32023.312,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/verify-frontend-delivery-scenarios"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root"
+  },
+  {
+    "label": "trace-verify-strategic-handoff-package-scenarios",
+    "trace": true,
+    "samples": 1,
+    "median_ms": 23475.108,
+    "min_ms": 23475.108,
+    "max_ms": 23475.108,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/verify-strategic-handoff-package-scenarios"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root"
+  },
+  {
+    "label": "trace-verify-frontend-delivery-scenarios",
+    "trace": true,
+    "samples": 1,
+    "median_ms": 36248.43,
+    "min_ms": 36248.43,
+    "max_ms": 36248.43,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/verify-frontend-delivery-scenarios"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root"
+  },
+  {
+    "label": "cli-backend-verify-bundle",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 212.219,
+    "min_ms": 177.65,
+    "max_ms": 432.119,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/verify-bundle.mjs"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-backend"
+  },
+  {
+    "label": "cli-backend-init",
+    "trace": false,
+    "samples": 1,
+    "median_ms": 185.936,
+    "min_ms": 185.936,
+    "max_ms": 185.936,
+    "exit_codes": "1",
+    "success": false,
+    "timeout": false,
+    "argv": [
+      "node",
+      "bin/create-yss-harness-backend.js",
+      "init",
+      "--target-dir",
+      "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-backend-instance",
+      "--json"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-backend"
+  },
+  {
+    "label": "trace-cli-backend-verify-bundle",
+    "trace": true,
+    "samples": 1,
+    "median_ms": 183.794,
+    "min_ms": 183.794,
+    "max_ms": 183.794,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/verify-bundle.mjs"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-backend"
+  },
+  {
+    "label": "trace-cli-backend-init",
+    "trace": true,
+    "samples": 1,
+    "median_ms": 184.098,
+    "min_ms": 184.098,
+    "max_ms": 184.098,
+    "exit_codes": "1",
+    "success": false,
+    "timeout": false,
+    "argv": [
+      "node",
+      "bin/create-yss-harness-backend.js",
+      "init",
+      "--target-dir",
+      "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/trace-cli-backend-instance",
+      "--json"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-backend"
+  },
+  {
+    "label": "cli-frontend-verify-bundle",
+    "trace": false,
+    "samples": 3,
+    "median_ms": 219.369,
+    "min_ms": 218.67,
+    "max_ms": 489.757,
+    "exit_codes": "0,0,0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/verify-bundle.mjs"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-frontend"
+  },
+  {
+    "label": "cli-frontend-init",
+    "trace": false,
+    "samples": 1,
+    "median_ms": 250.372,
+    "min_ms": 250.372,
+    "max_ms": 250.372,
+    "exit_codes": "1",
+    "success": false,
+    "timeout": false,
+    "argv": [
+      "node",
+      "bin/create-yss-harness-frontend.js",
+      "init",
+      "--target-dir",
+      "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-frontend-instance",
+      "--json"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-frontend"
+  },
+  {
+    "label": "trace-cli-frontend-verify-bundle",
+    "trace": true,
+    "samples": 1,
+    "median_ms": 240.048,
+    "min_ms": 240.048,
+    "max_ms": 240.048,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/verify-bundle.mjs"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-frontend"
+  },
+  {
+    "label": "trace-cli-frontend-init",
+    "trace": true,
+    "samples": 1,
+    "median_ms": 226.435,
+    "min_ms": 226.435,
+    "max_ms": 226.435,
+    "exit_codes": "1",
+    "success": false,
+    "timeout": false,
+    "argv": [
+      "node",
+      "bin/create-yss-harness-frontend.js",
+      "init",
+      "--target-dir",
+      "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/trace-cli-frontend-instance",
+      "--json"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-frontend"
+  },
+  {
+    "label": "cli-backend-init-physical-path",
+    "trace": false,
+    "samples": 1,
+    "median_ms": 137017.354,
+    "min_ms": 137017.354,
+    "max_ms": 137017.354,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "bin/create-yss-harness-backend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-backend-instance",
+      "--json"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-backend"
+  },
+  {
+    "label": "trace-cli-backend-init-physical-path",
+    "trace": true,
+    "samples": 1,
+    "median_ms": 114571.039,
+    "min_ms": 114571.039,
+    "max_ms": 114571.039,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "bin/create-yss-harness-backend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/trace-cli-backend-instance",
+      "--json"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-backend"
+  },
+  {
+    "label": "cli-frontend-init-physical-path",
+    "trace": false,
+    "samples": 1,
+    "median_ms": 102734.707,
+    "min_ms": 102734.707,
+    "max_ms": 102734.707,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "bin/create-yss-harness-frontend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-frontend-instance",
+      "--json"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-frontend"
+  },
+  {
+    "label": "trace-cli-frontend-init-physical-path",
+    "trace": true,
+    "samples": 1,
+    "median_ms": 100843.315,
+    "min_ms": 100843.315,
+    "max_ms": 100843.315,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "bin/create-yss-harness-frontend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/trace-cli-frontend-instance",
+      "--json"
+    ],
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-frontend"
+  },
+  {
+    "label": "create-yss-spec-sync-template",
+    "trace": false,
+    "samples": 1,
+    "median_ms": 3332.178,
+    "min_ms": 3332.178,
+    "max_ms": 3332.178,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-spec"
+  },
+  {
+    "label": "trace-create-yss-spec-sync-template",
+    "trace": true,
+    "samples": 1,
+    "median_ms": 3609.51,
+    "min_ms": 3609.51,
+    "max_ms": 3609.51,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-spec"
+  },
+  {
+    "label": "create-yss-strategic-design-sync-template",
+    "trace": false,
+    "samples": 1,
+    "median_ms": 664.444,
+    "min_ms": 664.444,
+    "max_ms": 664.444,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-strategic-design"
+  },
+  {
+    "label": "trace-create-yss-strategic-design-sync-template",
+    "trace": true,
+    "samples": 1,
+    "median_ms": 640.194,
+    "min_ms": 640.194,
+    "max_ms": 640.194,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-strategic-design"
+  },
+  {
+    "label": "create-yss-harness-dev-sync-template",
+    "trace": false,
+    "samples": 1,
+    "median_ms": 3101.782,
+    "min_ms": 3101.782,
+    "max_ms": 3101.782,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-harness-dev"
+  },
+  {
+    "label": "trace-create-yss-harness-dev-sync-template",
+    "trace": true,
+    "samples": 1,
+    "median_ms": 3559.14,
+    "min_ms": 3559.14,
+    "max_ms": 3559.14,
+    "exit_codes": "0",
+    "success": true,
+    "timeout": false,
+    "argv": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-harness-dev"
+  }
+]

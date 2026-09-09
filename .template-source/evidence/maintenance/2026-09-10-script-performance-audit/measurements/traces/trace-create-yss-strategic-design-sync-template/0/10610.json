@@ -1,0 +1,20 @@
+{
+  "pid": 10610,
+  "ppid": 10609,
+  "wall_ms": 19.7545,
+  "exit_code": 0,
+  "operations": {
+    "fs.realpathSync": {
+      "count": 27,
+      "duration_ms": 0.2722909999999885
+    },
+    "fs.existsSync": {
+      "count": 1,
+      "duration_ms": 0.018417000000003014
+    },
+    "fs.readFileSync": {
+      "count": 1,
+      "duration_ms": 0.062040999999997126
+    }
+  }
+}

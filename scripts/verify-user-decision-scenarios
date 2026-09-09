@@ -88,10 +88,10 @@ check("历史数字人记录可读但不能关闭关键门禁", () => {
   const f = fixture("approval"); Object.assign(record, { subject_ref: f.requirement.subject_ref, approval_scope: f.requirement.scope, user_decision_ref: f.ref }); validateApprovalRecord(record, { requireApproved: true });
 });
 check("等待期间可保存状态但不能流转依赖工作", () => {
-  const f = fixture("workflow", { boundary: "discovery-conclusion" }); const state = { user_decisions: [f.requirement] };
-  assert.equal(validateNextRoute("work-unit.discovery-requirements", "work-unit.spec-synthesis", state).result, "allowed");
-  f.record.responses = []; f.save(); assert.equal(validateNextRoute("work-unit.discovery-requirements", "work-unit.spec-synthesis", state).result, "blocked");
-  assert.equal(validateNextRoute("work-unit.discovery-opportunity", "work-unit.discovery-requirements", state).result, "allowed");
+  const f = fixture("workflow", { boundary: "plan-conclusion" }); const state = { user_decisions: [f.requirement] };
+  assert.equal(validateNextRoute("work-unit.plan-requirements", "work-unit.spec-synthesis", state).result, "blocked", "仅用户确认不能代替完整 Plan 入口审阅");
+  f.record.responses = []; f.save(); assert.equal(validateNextRoute("work-unit.plan-requirements", "work-unit.spec-synthesis", state).result, "blocked");
+  assert.equal(validateNextRoute("work-unit.plan-opportunity", "work-unit.plan-requirements", state).result, "allowed");
   assertCheckpointUserDecisions({ repository_mode: "project-instance", status: "paused-human-gate", human_review: { required_decisions: [f.requirement] } });
   assert.throws(() => assertCheckpointUserDecisions({ repository_mode: "project-instance", status: "running", human_review: { required_decisions: [f.requirement] } }), /user-decision-response-required/);
 });

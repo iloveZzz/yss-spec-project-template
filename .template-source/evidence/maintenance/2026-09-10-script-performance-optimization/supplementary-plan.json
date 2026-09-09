@@ -1,0 +1,54 @@
+[
+  {
+    "label": "confirm-before-plan-entry",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      ".perf-plan-entry.mjs"
+    ],
+    "repeat": 5,
+    "timeout": 60
+  },
+  {
+    "label": "confirm-after-plan-entry",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "args": [
+      "node",
+      ".perf-plan-entry.mjs"
+    ],
+    "repeat": 5,
+    "timeout": 60
+  },
+  {
+    "label": "confirm-before-projections",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      "scripts/sync-skills",
+      "--check"
+    ],
+    "repeat": 5,
+    "timeout": 60
+  },
+  {
+    "label": "confirm-after-projections",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "args": [
+      "node",
+      "scripts/sync-skills",
+      "--check"
+    ],
+    "repeat": 5,
+    "timeout": 60
+  },
+  {
+    "label": "validation-schema-crossfile",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/schema-crossfile-check.mjs"
+    ],
+    "repeat": 1,
+    "timeout": 30
+  }
+]

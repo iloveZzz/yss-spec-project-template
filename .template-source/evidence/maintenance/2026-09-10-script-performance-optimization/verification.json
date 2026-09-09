@@ -1,0 +1,395 @@
+{
+  "result": "pass",
+  "checks": [
+    {
+      "check": "all-run-logs-preserved",
+      "result": "pass",
+      "records": 143
+    },
+    {
+      "check": "final-full-profile",
+      "result": "pass"
+    },
+    {
+      "check": "profile-escalation-recorded",
+      "result": "pass"
+    },
+    {
+      "check": "338-audit-identities-preserved",
+      "result": "pass"
+    },
+    {
+      "check": "all-candidates-disposed",
+      "result": "pass",
+      "candidates": [
+        "P01",
+        "P02",
+        "P03",
+        "P04",
+        "P05",
+        "P06",
+        "P07",
+        "P08",
+        "P09",
+        "P10",
+        "P11",
+        "P12"
+      ]
+    },
+    {
+      "check": "all-dispositions-have-basis",
+      "result": "pass"
+    },
+    {
+      "check": "sample-count-plan-entry",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-plan-entry-before",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-plan-entry-after",
+      "result": "pass"
+    },
+    {
+      "check": "sample-count-strategic-handoff",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-strategic-handoff-before",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-strategic-handoff-after",
+      "result": "pass"
+    },
+    {
+      "check": "sample-count-backend-frontend-delivery",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-backend-frontend-delivery-before",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-backend-frontend-delivery-after",
+      "result": "pass"
+    },
+    {
+      "check": "sample-count-query",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-query-before",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-query-after",
+      "result": "pass"
+    },
+    {
+      "check": "sample-count-projections",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-projections-before",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-projections-after",
+      "result": "pass"
+    },
+    {
+      "check": "sample-count-sync-core",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-sync-core-before",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-sync-core-after",
+      "result": "pass"
+    },
+    {
+      "check": "sample-count-init-backend",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-init-backend-before",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-init-backend-after",
+      "result": "pass"
+    },
+    {
+      "check": "sample-count-init-frontend",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-init-frontend-before",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-init-frontend-after",
+      "result": "pass"
+    },
+    {
+      "check": "sample-count-distribution",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-distribution-before",
+      "result": "pass"
+    },
+    {
+      "check": "accepted-runs-distribution-after",
+      "result": "pass"
+    },
+    {
+      "check": "historical-failures-disclosed",
+      "result": "pass"
+    },
+    {
+      "check": "identical-init-template-input-backend",
+      "result": "pass",
+      "sha256": "fe6f7a68aa4f9bcbbb30fac80c01c0bf538ab86f3d07ff8ab6116d7385de5b68"
+    },
+    {
+      "check": "current-core-bytes-cli-backend",
+      "result": "pass",
+      "files": 10
+    },
+    {
+      "check": "current-core-bytes-integration/create-yss-harness-backend",
+      "result": "pass",
+      "files": 10
+    },
+    {
+      "check": "identical-init-template-input-frontend",
+      "result": "pass",
+      "sha256": "fd3c4764c047882c0c3d95a597b551e8ecec7145968b6b680c1b3b775ef35259"
+    },
+    {
+      "check": "current-core-bytes-cli-frontend",
+      "result": "pass",
+      "files": 10
+    },
+    {
+      "check": "current-core-bytes-integration/create-yss-harness-frontend",
+      "result": "pass",
+      "files": 10
+    },
+    {
+      "check": "declared-command-runner-mirrors",
+      "result": "pass",
+      "paths": [
+        "scripts/lib/command-runner.mjs",
+        "submodules/yss-harness-design-agent/scripts/lib/command-runner.mjs",
+        "submodules/yss-harness-dev-agent/scripts/lib/command-runner.mjs",
+        "submodules/yss-harness-backend-agent/scripts/lib/command-runner.mjs",
+        "submodules/yss-harness-frontend-agent/scripts/lib/command-runner.mjs",
+        "submodules/create-yss-spec/src/command-runner.mjs",
+        "submodules/create-yss-strategic-design/src/command-runner.mjs",
+        "submodules/create-yss-harness-dev/src/command-runner.mjs"
+      ]
+    },
+    {
+      "check": "preservation-final",
+      "result": "pass",
+      "argv": [
+        "python3",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/check-preservation.py"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 900.2950839931145,
+      "log_ref": "preservation-final.log"
+    },
+    {
+      "check": "formal-cli-locks-unchanged",
+      "result": "pass"
+    },
+    {
+      "check": "checkpoint-final",
+      "result": "pass",
+      "argv": [
+        "scripts/verify-maintenance-checkpoint",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/checkpoint.json"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 43.77983300946653,
+      "log_ref": "checkpoint-final.log"
+    },
+    {
+      "check": "shared-sync-final",
+      "result": "pass",
+      "argv": [
+        "scripts/sync-strategic-handoff-tools",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 37.03029197640717,
+      "log_ref": "shared-sync-final.log"
+    },
+    {
+      "check": "diff-check-root",
+      "result": "pass",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/zhudaoming/Projects/yss-spec-project-template",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 205.9566670213826,
+      "log_ref": "diff-check-root.log"
+    },
+    {
+      "check": "diff-check-create-yss-strategic-design",
+      "result": "pass",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 13.087291968986392,
+      "log_ref": "diff-check-create-yss-strategic-design.log"
+    },
+    {
+      "check": "diff-check-yss-harness-design-agent",
+      "result": "pass",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 23.373000032734126,
+      "log_ref": "diff-check-yss-harness-design-agent.log"
+    },
+    {
+      "check": "diff-check-yss-harness-dev-agent",
+      "result": "pass",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 26.461249974090606,
+      "log_ref": "diff-check-yss-harness-dev-agent.log"
+    },
+    {
+      "check": "diff-check-yss-harness-backend-agent",
+      "result": "pass",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 17.825166985858232,
+      "log_ref": "diff-check-yss-harness-backend-agent.log"
+    },
+    {
+      "check": "diff-check-yss-harness-frontend-agent",
+      "result": "pass",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 16.55699999537319,
+      "log_ref": "diff-check-yss-harness-frontend-agent.log"
+    },
+    {
+      "check": "diff-check-create-yss-harness-dev",
+      "result": "pass",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 22.335957968607545,
+      "log_ref": "diff-check-create-yss-harness-dev.log"
+    },
+    {
+      "check": "diff-check-create-yss-spec",
+      "result": "pass",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 12.117000005673617,
+      "log_ref": "diff-check-create-yss-spec.log"
+    },
+    {
+      "check": "diff-check-create-yss-harness-frontend",
+      "result": "pass",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 12.143249972723424,
+      "log_ref": "diff-check-create-yss-harness-frontend.log"
+    },
+    {
+      "check": "diff-check-create-yss-harness-backend",
+      "result": "pass",
+      "argv": [
+        "git",
+        "-C",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_ms": 12.113708013202995,
+      "log_ref": "diff-check-create-yss-harness-backend.log"
+    }
+  ],
+  "limitations": [
+    "No remote/private Maven/actual project/self-update performance claim.",
+    "V8 observations only bind surviving source files; missing samples are not zero-call claims.",
+    "Temporary fixture Git revisions are not formal distribution locks."
+  ]
+}

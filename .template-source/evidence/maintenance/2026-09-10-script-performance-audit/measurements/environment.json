@@ -1,0 +1,6 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "python": "3.12.1 (v3.12.1:2305ca5144, Dec  7 2023, 17:23:38) [Clang 13.0.0 (clang-1300.0.29.30)]",
+  "node": "v23.9.0",
+  "measurement_policy": "sequential measured subprocesses; other app/background activity not controlled; no deliberate filesystem cache flush; count 3 for cheap commands, 1 for slow scenarios; traces separate from baselines"
+}

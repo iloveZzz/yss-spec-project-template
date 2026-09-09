@@ -1,0 +1,16 @@
+{
+  "unique_active_code_groups": 338,
+  "unique_active_scripts_groups": 320,
+  "unique_closure_only_groups": 18,
+  "classification_counts": {
+    "static-no-confirmed-hotspot": 105,
+    "candidate-caller": 53,
+    "fixture-test-only": 94,
+    "candidate": 30,
+    "wrapper-follow-callee": 42,
+    "external-runtime-needs-input": 12,
+    "vendor-bundle-do-not-hand-optimize": 2
+  },
+  "method": "Every active SHA group receives a disposition; direct candidate refs manually read, remaining rows heuristic classification. No claim of function-level exhaustive optimization proof.",
+  "unresolved_call_edges": "见 inventory/summary.json，词法闭包不是完整语义调用图"
+}

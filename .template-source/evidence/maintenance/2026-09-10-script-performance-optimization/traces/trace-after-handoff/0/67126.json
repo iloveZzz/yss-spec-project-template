@@ -1,0 +1,88 @@
+{
+  "pid": 67126,
+  "ppid": 67125,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root/scripts/verify-strategic-handoff-package-scenarios",
+  "wall_ms": 17172.892334,
+  "exit_code": 0,
+  "write_bytes": {
+    "target-or-other": 2265414
+  },
+  "operations": {
+    "fs.realpathSync": {
+      "count": 72,
+      "duration_ms": 2.1611260000014383
+    },
+    "fs.readFileSync": {
+      "count": 4426,
+      "duration_ms": 79.16895699998892
+    },
+    "fs.mkdirSync": {
+      "count": 1642,
+      "duration_ms": 27.01675299997271
+    },
+    "fs.writeFileSync": {
+      "count": 1571,
+      "duration_ms": 93.79127499999808
+    },
+    "fs.openSync": {
+      "count": 4522,
+      "duration_ms": 68.82502499994933
+    },
+    "fs.closeSync": {
+      "count": 4522,
+      "duration_ms": 15.677151000008138
+    },
+    "fs.existsSync": {
+      "count": 43968,
+      "duration_ms": 86.76239499982798
+    },
+    "fs.lstatSync": {
+      "count": 46237,
+      "duration_ms": 92.77741099993182
+    },
+    "fs.readdirSync": {
+      "count": 1794,
+      "duration_ms": 30.429247999960964
+    },
+    "spawnSync:python3:\nimport json\nimport sys\nimport traceback\nfrom jsonschema import Draft202012Validator, FormatChecker\nvalidators = {}\nresults = []\nfor item in json.load(sys.stdin):\n    try:\n        key = (item['schemaPath'], item['formatChecker'])\n        if key not in validators:\n            with open(item['schemaPath'], encoding='utf-8') as source:\n                schema = json.load(source)\n            validators[key] = Draft202012Validator(schema, format_checker=FormatChecker() if key[1] else None)\n        errors = list(validators[key].iter_errors(item['value']))\n        if item['errorStyle'] == 'verbose':\n            message = '\\n'.join(str(error) for error in errors)\n        else:\n            errors.sort(key=lambda error: list(error.absolute_path))\n            message = '\\n'.join(f\"{'.'.join(str(part) for part in error.absolute_path) or '<root>'}: {error.message}\" for error in errors)\n        results.append({'valid': not errors, 'error': message})\n    except Exception:\n        results.append({'valid': False, 'error': traceback.format_exc().strip()})\njson.dump(results, sys.stdout)\n": {
+      "count": 200,
+      "duration_ms": 13286.947588000008
+    },
+    "spawnSync:python3:.handoff-staging-rOqwqy.zip": {
+      "count": 1,
+      "duration_ms": 31.546459000000027
+    },
+    "fs.renameSync": {
+      "count": 12,
+      "duration_ms": 0.9716669999965006
+    },
+    "spawnSync:python3:unpacked": {
+      "count": 4,
+      "duration_ms": 117.79149899999993
+    },
+    "fs.copyFileSync": {
+      "count": 130,
+      "duration_ms": 12.485203000000638
+    },
+    "fs.cpSync": {
+      "count": 4,
+      "duration_ms": 20.5099590000018
+    },
+    "spawnSync:python3:escape\"]": {
+      "count": 1,
+      "duration_ms": 29.64037499999995
+    },
+    "spawnSync:python3:[\"manifest.json\",\"manifest.json\"]": {
+      "count": 1,
+      "duration_ms": 32.25774999999976
+    },
+    "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root/scripts/verify-context-reconciliation": {
+      "count": 10,
+      "duration_ms": 1090.9229179999984
+    },
+    "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root/scripts/strategic-handoff": {
+      "count": 2,
+      "duration_ms": 1053.2407920000005
+    }
+  }
+}

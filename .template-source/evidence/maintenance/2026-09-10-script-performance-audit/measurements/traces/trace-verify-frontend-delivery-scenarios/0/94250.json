@@ -1,0 +1,33 @@
+{
+  "pid": 94250,
+  "ppid": 77965,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+  "wall_ms": 84.233083,
+  "exit_code": 0,
+  "operations": {
+    "fs.realpathSync": {
+      "count": 5,
+      "duration_ms": 0.16983299999999701
+    },
+    "fs.readFileSync": {
+      "count": 4,
+      "duration_ms": 0.17145999999999084
+    },
+    "spawnSync:python3:context-reconciliation.schema.json": {
+      "count": 1,
+      "duration_ms": 66.972125
+    },
+    "fs.readdirSync": {
+      "count": 45,
+      "duration_ms": 1.046665999999945
+    },
+    "fs.existsSync": {
+      "count": 47,
+      "duration_ms": 0.2045450000000386
+    },
+    "fs.lstatSync": {
+      "count": 1,
+      "duration_ms": 0.02420800000000156
+    }
+  }
+}

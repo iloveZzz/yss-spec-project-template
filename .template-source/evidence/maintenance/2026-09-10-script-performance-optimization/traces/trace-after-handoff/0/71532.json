@@ -1,0 +1,56 @@
+{
+  "pid": 71532,
+  "ppid": 67126,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root/scripts/strategic-handoff",
+  "wall_ms": 370.45629099999996,
+  "exit_code": 0,
+  "write_bytes": {
+    "target-or-other": 38129
+  },
+  "operations": {
+    "fs.realpathSync": {
+      "count": 28,
+      "duration_ms": 0.7077930000000059
+    },
+    "fs.readFileSync": {
+      "count": 90,
+      "duration_ms": 2.137870000000193
+    },
+    "fs.existsSync": {
+      "count": 946,
+      "duration_ms": 2.3039130000005095
+    },
+    "fs.lstatSync": {
+      "count": 1006,
+      "duration_ms": 2.6453140000002797
+    },
+    "fs.mkdirSync": {
+      "count": 29,
+      "duration_ms": 0.5139989999999628
+    },
+    "spawnSync:python3:unpacked": {
+      "count": 1,
+      "duration_ms": 32.976542
+    },
+    "spawnSync:python3:\nimport json\nimport sys\nimport traceback\nfrom jsonschema import Draft202012Validator, FormatChecker\nvalidators = {}\nresults = []\nfor item in json.load(sys.stdin):\n    try:\n        key = (item['schemaPath'], item['formatChecker'])\n        if key not in validators:\n            with open(item['schemaPath'], encoding='utf-8') as source:\n                schema = json.load(source)\n            validators[key] = Draft202012Validator(schema, format_checker=FormatChecker() if key[1] else None)\n        errors = list(validators[key].iter_errors(item['value']))\n        if item['errorStyle'] == 'verbose':\n            message = '\\n'.join(str(error) for error in errors)\n        else:\n            errors.sort(key=lambda error: list(error.absolute_path))\n            message = '\\n'.join(f\"{'.'.join(str(part) for part in error.absolute_path) or '<root>'}: {error.message}\" for error in errors)\n        results.append({'valid': not errors, 'error': message})\n    except Exception:\n        results.append({'valid': False, 'error': traceback.format_exc().strip()})\njson.dump(results, sys.stdout)\n": {
+      "count": 4,
+      "duration_ms": 264.963583
+    },
+    "fs.readdirSync": {
+      "count": 29,
+      "duration_ms": 0.5335839999999621
+    },
+    "fs.openSync": {
+      "count": 94,
+      "duration_ms": 1.5656200000000524
+    },
+    "fs.closeSync": {
+      "count": 94,
+      "duration_ms": 0.3289959999998473
+    },
+    "fs.writeFileSync": {
+      "count": 27,
+      "duration_ms": 1.5836669999999629
+    }
+  }
+}

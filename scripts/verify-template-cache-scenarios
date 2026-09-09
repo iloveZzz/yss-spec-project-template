@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -40,6 +40,16 @@ try {
   assert.throws(() => acquireTemplateCommit({ repository: remote, commit, cacheRoot, allowLocal: true }), /缓存不完整/);
   assert.throws(() => acquireTemplateCommit({ repository: path.join(root, "offline"), commit, cacheRoot: path.join(root, "offline-cache"), allowLocal: true }), /执行失败|does not appear to be a git repository/);
   assert.throws(() => acquireTemplateCommit({ repository: remote, commit: "main", cacheRoot, allowLocal: true }), /40 位 commit/);
+  const realGit = spawnSync("which", ["git"], { encoding: "utf8" }).stdout.trim();
+  const bin = path.join(root, "bin"), timeoutCache = path.join(root, "timeout-cache"), previousPath = process.env.PATH;
+  mkdirSync(bin);
+  writeFileSync(path.join(bin, "git"), `#!/usr/bin/env node\nconst {spawnSync}=require('node:child_process');const args=process.argv.slice(2);if(args.includes('fetch'))setTimeout(()=>{},10000);else process.exit(spawnSync(${JSON.stringify(realGit)},args,{stdio:'inherit'}).status ?? 1);\n`);
+  chmodSync(path.join(bin, "git"), 0o755);
+  try {
+    process.env.PATH = bin + path.delimiter + previousPath;
+    assert.throws(() => acquireTemplateCommit({ repository: remote, commit, cacheRoot: timeoutCache, allowLocal: true, timeoutMs: 100 }), /timeout/);
+    assert.deepEqual(readdirSync(timeoutCache), [], "超时 fetch 不遗留临时缓存或伪成功条目");
+  } finally { process.env.PATH = previousPath; }
 } finally {
   rmSync(root, { recursive: true, force: true });
 }

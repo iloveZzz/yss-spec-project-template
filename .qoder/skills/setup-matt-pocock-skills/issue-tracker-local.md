@@ -31,7 +31,7 @@ When `yss-product-lifecycle` is active, the same `docs/.scratch/<feature-slug>/`
 ```text
 docs/.scratch/<feature-slug>/
 ├── map.md
-├── discovery/
+├── plan/
 ├── spec.md
 ├── spec-delta/
 ├── parent-ticket.md

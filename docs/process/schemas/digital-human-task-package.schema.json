@@ -6,6 +6,8 @@
   "additionalProperties": false,
   "required": ["schema_version", "task_id", "work_unit_id", "actor_id", "role_id", "runtime_id", "execution_state", "workflow_status", "skill_source", "contract", "inputs", "objective", "allowed_write_paths", "forbidden_actions", "expected_outputs", "expected_evidence_files", "verification_commands", "verification_results", "downstream_consumers", "convergence"],
   "properties": {
+    "plan_review_ref": { "type": "string", "minLength": 1 },
+    "plan_user_decision_ref": { "type": "string", "minLength": 1 },
     "schema_version": { "const": 1 },
     "frontend_delivery": {
       "type": "object", "additionalProperties": false, "required": ["acceptance_ref"],

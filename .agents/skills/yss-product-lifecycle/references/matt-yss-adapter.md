@@ -10,7 +10,7 @@ Matt skills 决定如何工作；YSS 生命周期决定是否允许推进；YSS 
 - **直接调用生命周期管理的 Matt user-invoked skill**（`setup-matt-pocock-skills`、`grill-with-docs`、`to-spec`、`to-tickets`、`implement`）时，用户仍是正式资产的创建者；生命周期先校验前置条件，再接受结果并重新计算阶段、门禁和状态。其他 user-invoked skill 同样不得由生命周期自动调用；只有在其专属适配合同存在时才进入 YSS 流程。
 - **直接调用 `yss-product-lifecycle`** 时，不机械嵌套调用任何 Matt user-invoked skill；编排器直接使用原生工作单元和允许的 model-invoked 原语。Matt user-invoked skill 保持显式兼容入口，生命周期负责准备、校验并验收其结果。
 - `template-source` 只允许进入模板维护流程。命中 `to-spec`、`to-tickets`、`implement`、Release 或 Retrospective 时返回 `blocked`，原因是 `template-source-product-artifact-forbidden`；`setup-matt-pocock-skills` 不得为具体产品生成 Spec、prototype、OpenAPI 或垂直切片 Ticket。
-- `project-instance` 才允许进入产品 Discovery → Spec → 设计 → 契约 → Ticket → 实现 → Release / Retrospective 链路。
+- `project-instance` 才允许进入产品 Plan → Spec → 设计 → 契约 → Ticket → 实现 → Release / Retrospective 链路。
 
 | 情形 | Matt flow | 生命周期验收 |
 |---|---|---|
@@ -66,7 +66,7 @@ blocking_signals: []
 
 | Matt flow | 进入条件 | 生命周期结果 |
 |---|---|---|
-| `to-spec`（用户显式） | Discovery work unit 或 `grill-with-docs` 已满足退出条件，且不存在未回流 runnable blocker；用户问题、MVP/非目标、成功标准、测试 seam 和术语审查均有证据 | 生命周期只准备/验收；Spec 初稿为 `ready-for-human`，不等于批准 |
+| `to-spec`（用户显式） | Plan work unit 或 `grill-with-docs` 已满足退出条件，且不存在未回流 runnable blocker；用户问题、MVP/非目标、成功标准、测试 seam 和术语审查均有证据 | 生命周期只准备/验收；Spec 初稿为 `ready-for-human`，不等于批准 |
 | `to-tickets`（用户显式） | OpenAPI Freeze 或 `no-api-impact` 记录、必要门禁、垂直切片范围和阻塞边均已明确 | 生命周期只准备/验收；只能生成垂直切片 Ticket，初始统一为 `ready-for-human`；必须留下 `ticket_decomposition_result_ref` 和 `vertical_slice_ticket_ref` |
 | `implement`（用户显式） | `ready-for-agent` 公式、Ticket 正式化结果、垂直切片引用/类型/状态、Contract 已批准/持久化/版本一致、Build Architecture Checklist、实现仓库/分支/CI/验证命令/回滚点，以及后端 Contract（适用时）均满足 | 生命周期只准备/验收；单会话实现同样适用，不得绕过门禁；父 Ticket、`ready-for-human` 切片或跳过 Ticket 正式化的 `next_route` 必须 `blocked` |
 
@@ -100,7 +100,7 @@ Matt `implement` 的通用提交指令不构成 YSS Git 授权。只有用户明
 
 | Matt 产物 | Local 载体 |
 |---|---|
-| Discovery | `docs/.scratch/<feature>/discovery/` |
+| Plan | `docs/.scratch/<feature>/plan/` |
 | Spec | `docs/.scratch/<feature>/spec.md` |
 | Spec Delta | `docs/.scratch/<feature>/spec-delta/` |
 | 功能父 Ticket | `docs/.scratch/<feature>/parent-ticket.md` |

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readlinkSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
@@ -12,10 +12,19 @@ mkdirSync(template); mkdirSync(bin);
 writeFileSync(path.join(template, "package.json"), JSON.stringify({ name: "__APP_NAME__", scripts: { lint: "noop", "type-check": "noop", build: "noop" } }));
 writeFileSync(path.join(template, "pnpm-lock.yaml"), "lockfileVersion: '9.0'\n");
 writeFileSync(path.join(template, "micro-config.json"), JSON.stringify({ name: "__MICROAPP_NAME__", route: "__BASE_ROUTE__" }));
+mkdirSync(path.join(template, "assets"));
+writeFileSync(path.join(template, "assets/binary.bin"), Buffer.from([0, 255, 95, 95, 65, 80, 80, 95, 78, 65, 77, 69, 95, 95]));
+writeFileSync(path.join(template, "assets/large.txt"), "__APP_NAME__".repeat(200_000));
+writeFileSync(path.join(template, "assets/run.sh"), "#!/bin/sh\necho __APP_NAME__\n");
+chmodSync(path.join(template, "assets/run.sh"), 0o755);
+symlinkSync("run.sh", path.join(template, "assets/current"));
 for (const args of [["init"], ["config", "user.email", "test@example.com"], ["config", "user.name", "test"], ["remote", "add", "origin", template], ["add", "."], ["commit", "-m", "fixture"]]) {
   const result = spawnSync("git", args, { cwd: template, encoding: "utf8" }); assert.equal(result.status, 0, result.stderr);
 }
 const commit = spawnSync("git", ["rev-parse", "HEAD"], { cwd: template, encoding: "utf8" }).stdout.trim();
+mkdirSync(path.join(template, "node_modules"));
+writeFileSync(path.join(template, "node_modules/cache.txt"), "not approved");
+writeFileSync(path.join(template, "micro-config.json"), "uncommitted edit");
 const contract = {
   schema_version: 4, kind: "project-scaffold-contract", contract_id: "frontend.demo.v1", contract_version: "1", status: "approved", persisted_ref: "docs/.scratch/demo/scaffold-contract.json", current_version: true,
   delivery_role: "frontend", scaffold_kind: "frontend-yss-vue3", generator_skill: "yss-frontend-scaffold-generator", implementation_repository: output, target_output_dir: output, repository_scope: "external-repository", init_git: false,
@@ -31,6 +40,15 @@ assert.equal(existsSync(path.join(output, ".git")), false);
 assert.equal(JSON.parse(readFileSync(path.join(output, "package.json"))).name, "demo-app");
 assert.equal(JSON.parse(readFileSync(path.join(output, ".yss", "scaffold-generation.json"))).completion_level, "empty-scaffold-verified");
 assert.equal(JSON.parse(readFileSync(path.join(evidence, "scaffold-verification.json"))).commands.length, 4);
+assert.equal(existsSync(path.join(output, "node_modules")), false);
+assert.equal(JSON.parse(readFileSync(path.join(output, "micro-config.json"))).name, "demo");
+assert.deepEqual(readFileSync(path.join(output, "assets/binary.bin")), readFileSync(path.join(template, "assets/binary.bin")));
+assert.deepEqual(readFileSync(path.join(output, "assets/large.txt")), readFileSync(path.join(template, "assets/large.txt")));
+assert.equal(readlinkSync(path.join(output, "assets/current")), "run.sh");
+assert.equal(statSync(path.join(output, "assets/run.sh")).mode & 0o777, 0o755);
+assert.match(readFileSync(path.join(output, "assets/current"), "utf8"), /echo demo-app/);
+const generated = JSON.parse(readFileSync(path.join(output, ".yss/scaffold-generation.json"))).generated_files;
+assert.deepEqual(generated, ["assets/binary.bin", "assets/current", "assets/large.txt", "assets/run.sh", "micro-config.json", "package.json", "pnpm-lock.yaml"]);
 const second = spawnSync(process.execPath, [runner, "--contract-file", contractFile, "--template-checkout", template, "--output-dir", output, "--evidence-dir", evidence], { encoding: "utf8", env: { ...process.env, PATH: `${bin}:${process.env.PATH}` } });
 assert.notEqual(second.status, 0);
 assert.match(second.stderr, /must not exist or must be empty/);

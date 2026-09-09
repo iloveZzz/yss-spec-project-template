@@ -1,0 +1,38 @@
+{
+  "pid": 71629,
+  "ppid": 71628,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root/scripts/sync-skills",
+  "wall_ms": 171.64529100000001,
+  "exit_code": 0,
+  "write_bytes": {},
+  "operations": {
+    "fs.realpathSync": {
+      "count": 986,
+      "duration_ms": 21.135290999999945
+    },
+    "fs.readFileSync": {
+      "count": 945,
+      "duration_ms": 84.05846600000007
+    },
+    "fs.existsSync": {
+      "count": 1384,
+      "duration_ms": 3.3496310000003646
+    },
+    "fs.lstatSync": {
+      "count": 986,
+      "duration_ms": 4.139892000000113
+    },
+    "fs.readdirSync": {
+      "count": 550,
+      "duration_ms": 30.28930700000005
+    },
+    "fs.openSync": {
+      "count": 943,
+      "duration_ms": 12.487657000000521
+    },
+    "fs.closeSync": {
+      "count": 943,
+      "duration_ms": 0.8604930000000302
+    }
+  }
+}

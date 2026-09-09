@@ -40,7 +40,7 @@ function record(overrides = {}) {
   return {
     schema_version: 1,
     repository_mode: "project-instance",
-    stage: "stage.discovery",
+    stage: "stage.plan",
     work_unit: "work-unit.domain-strategy-design",
     status: "reconciled",
     context_snapshot: snapshot,

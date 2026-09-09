@@ -1,0 +1,73 @@
+{
+  "pid": 89756,
+  "ppid": 77965,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-frontend-delivery",
+  "wall_ms": 2085.812959,
+  "exit_code": 0,
+  "operations": {
+    "fs.realpathSync": {
+      "count": 41,
+      "duration_ms": 0.6020800000000257
+    },
+    "fs.readFileSync": {
+      "count": 579,
+      "duration_ms": 14.224281000001696
+    },
+    "fs.existsSync": {
+      "count": 5900,
+      "duration_ms": 16.0077820000057
+    },
+    "fs.lstatSync": {
+      "count": 6117,
+      "duration_ms": 17.816248999995352
+    },
+    "spawnSync:python3:frontend-delivery-acceptance.schema.json": {
+      "count": 1,
+      "duration_ms": 70.179667
+    },
+    "fs.readdirSync": {
+      "count": 184,
+      "duration_ms": 4.079671000000644
+    },
+    "fs.mkdirSync": {
+      "count": 156,
+      "duration_ms": 3.1097870000010346
+    },
+    "fs.writeFileSync": {
+      "count": 151,
+      "duration_ms": 10.762080000001234
+    },
+    "spawnSync:python3:backend-delivery.schema.json": {
+      "count": 1,
+      "duration_ms": 70.170833
+    },
+    "spawnSync:python3:backend-delivery-verification.schema.json": {
+      "count": 2,
+      "duration_ms": 136.34600099999997
+    },
+    "spawnSync:python3:strategic-handoff-package.schema.json": {
+      "count": 4,
+      "duration_ms": 304.71258299999994
+    },
+    "spawnSync:python3:strategic-design-handoff.schema.json": {
+      "count": 4,
+      "duration_ms": 292.01341499999967
+    },
+    "spawnSync:python3:strategic-handoff-export.schema.json": {
+      "count": 4,
+      "duration_ms": 273.04987499999993
+    },
+    "spawnSync:python3:strategic-handoff-domain-strategy.schema.json": {
+      "count": 4,
+      "duration_ms": 282.56391600000006
+    },
+    "spawnSync:python3:strategic-handoff-stage-decision-package.schema.json": {
+      "count": 4,
+      "duration_ms": 281.8970419999997
+    },
+    "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation": {
+      "count": 1,
+      "duration_ms": 140.5865
+    }
+  }
+}

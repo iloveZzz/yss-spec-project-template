@@ -1,0 +1,49 @@
+{
+  "work_unit": "work-unit.entry-triage",
+  "workflow_reference": "../scope.md",
+  "result": "analysis-ready-for-controller",
+  "skill": "yss-product-lifecycle (controller); static Explorer task",
+  "changed_files": [
+    ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/hotspots/build_report.py",
+    ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/hotspots/candidates.json",
+    ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/hotspots/classify_inventory.py",
+    ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/hotspots/coverage-summary.json",
+    ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/hotspots/findings.md",
+    ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/hotspots/implementation-assessments.csv",
+    ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/hotspots/verify_report.py"
+  ],
+  "changed_artifacts": [
+    "findings.md",
+    "candidates.json",
+    "implementation-assessments.csv",
+    "coverage-summary.json"
+  ],
+  "evidence_refs": [
+    "candidates.json",
+    "implementation-assessments.csv",
+    "../measurements/runs.jsonl",
+    "../inventory/summary.json"
+  ],
+  "actual_verification": [
+    {
+      "command": "python3 .template-source/evidence/maintenance/2026-09-10-script-performance-audit/hotspots/verify_report.py",
+      "exit_code": 0,
+      "result": "12 candidates, 61 source references, 338 SHA groups; 320 active scripts groups verified"
+    }
+  ],
+  "deferred_seams": [],
+  "drift": [],
+  "violation": [],
+  "new_impacts": [],
+  "stale_candidates": [],
+  "blocking_signals": [
+    "static lexical dependency graph is not exhaustive semantic graph",
+    "external runtime environments not measured here"
+  ],
+  "next_route": "controller consolidates measured timings, scope limitations and candidate order",
+  "not_applicable": {
+    "behavior_tdd": "分析证据生成；未修改运行行为",
+    "context_reconciliation": "template-source事实分析，不生成产品术语或工作单元",
+    "full_template_suite": "本任务只读源码分析及证据完整性检查；无需运行发布验证"
+  }
+}

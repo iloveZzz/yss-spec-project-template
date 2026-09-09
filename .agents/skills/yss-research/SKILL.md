@@ -1,6 +1,6 @@
 ---
 name: yss-research
-description: Research technical or product-strategy questions with traceable evidence before YSS Discovery, Spec, domain-strategy, API, architecture, or implementation decisions. Use for current facts, standards, third-party APIs, business constraints, user problems, domain-boundary evidence, or when the deprecated `research` alias is invoked.
+description: Research technical or product-strategy questions with traceable evidence before YSS Plan, Spec, domain-strategy, API, architecture, or implementation decisions. Use for current facts, standards, third-party APIs, business constraints, user problems, domain-boundary evidence, or when the deprecated `research` alias is invoked.
 ---
 
 # YSS Research

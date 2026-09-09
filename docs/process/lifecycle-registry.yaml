@@ -8,17 +8,22 @@ id_policy:
   pattern: '^(stage|gate|artifact|work-unit|evidence)\.[a-z0-9][a-z0-9-]*$'
   published_ids_immutable: true
   baseline: docs/process/lifecycle-registry-baseline.json
-  deprecated_ids: [artifact.high-fidelity-html-prototype, work-unit.fresh-verification, work-unit.independent-review]
+  deprecated_ids: [artifact.high-fidelity-html-prototype, work-unit.fresh-verification, work-unit.independent-review, stage.discovery, artifact.discovery-record, work-unit.discovery-opportunity, work-unit.discovery-requirements]
 
 stages:
   - id: stage.entry-triage
     name: 入口分诊
     goal: 确认仓库身份、问题范围和影响面。
     exit_criteria: yss-project.yaml 合法，影响面和最近可信阶段可解释。
-  - id: stage.discovery
-    name: Discovery
-    goal: 澄清问题、用户、约束和机会。
-    exit_criteria: 问题边界、关键假设和待确认项已记录。
+  - id: stage.plan
+    name: Plan（战略规划）
+    goal: 确认目标、业务边界、关键规则、MVP / 非目标、优先级和交接责任，为 Spec 提供战略输入；按影响面探索并复用仍有效的结论。
+    exit_criteria: 用户确认规划结论，命中的战略与阶段决策门禁通过；影响业务边界、关键规则或 MVP 的问题已解决，其他未决项有责任人和解决时点；下游可进入 Spec，不代表可实现。
+    spec_entry:
+      required_checks: [goals, scope_and_priority, boundaries_and_rules, open_questions, handoff, context_reconciliation, grill_exit]
+      gate_impacts:
+        gate.domain-strategy-approved: domain_strategy
+        gate.stage-decision-package-approved: stage_decision
   - id: stage.spec-architecture
     name: Spec / 功能架构
     goal: 固化解决方案和功能边界。
@@ -130,15 +135,15 @@ gates:
     evidence: [evidence.repository-identity-check]
   - id: gate.domain-strategy-approved
     name: DDD 战略设计批准
-    stage: stage.discovery
+    stage: stage.plan
     trigger: 存在 DDD 战略设计影响或需要确定领域边界、统一语言和核心规则。
     public_name: 业务边界与规则确认
     public_trigger: 需要确定业务板块、业务责任区、统一业务词汇、协作关系或关键规则。
     evidence: [evidence.domain-strategy-review, evidence.approval-record]
   - id: gate.stage-decision-package-approved
     name: 阶段决策包批准
-    stage: stage.discovery
-    trigger: Discovery 到 Spec 入口需要稳定的阶段决策合同。
+    stage: stage.plan
+    trigger: Plan 到 Spec 入口需要稳定的阶段决策合同。
     evidence: [evidence.stage-decision-package, evidence.approval-record]
     requires_gates: [gate.domain-strategy-approved]
   - id: gate.spec-baseline-approved
@@ -221,18 +226,18 @@ artifacts:
     trigger: 每次变更。
   - id: artifact.domain-strategy
     name: DDD 战略设计
-    stage: stage.discovery
+    stage: stage.plan
     trigger: 新产品/模块、跨上下文功能、统一语言冲突、服务边界或核心规则变化。
     public_name: 业务边界与规则设计
     public_trigger: 新产品/模块、跨责任区协作、业务词汇冲突、责任边界或关键规则变化。
   - id: artifact.stage-decision-package
     name: 阶段决策包
-    stage: stage.discovery
-    trigger: Discovery 到 Spec 入口需要结构化上游决策。
+    stage: stage.plan
+    trigger: Plan 到 Spec 入口需要结构化上游决策。
     public_name: 方案决策包
-  - id: artifact.discovery-record
-    name: Discovery 记录
-    stage: stage.discovery
+  - id: artifact.plan-record
+    name: Plan 记录
+    stage: stage.plan
     trigger: 新问题或边界不清。
   - id: artifact.spec
     name: Spec
@@ -384,13 +389,13 @@ work_units:
     input: 已审查 commit。
     output: release note、观察信号、回滚点。
     completion: 两仓库顺序和恢复动作明确。
-  - id: work-unit.discovery-opportunity
+  - id: work-unit.plan-opportunity
     name: 机会调研
     scope: project-instance
     input: 用户问题、市场/竞品事实需求和现有上下文。
-    output: Discovery 机会结论、证据、替代方案和关键假设。
+    output: Plan 机会结论、证据、替代方案和关键假设。
     completion: 机会继续/停止建议可审查；事实已 research 或记录为假设。
-  - id: work-unit.discovery-requirements
+  - id: work-unit.plan-requirements
     name: 需求分析
     scope: project-instance
     input: 机会结论、用户反馈和领域词汇。
@@ -408,16 +413,16 @@ work_units:
   - id: work-unit.stage-decision
     name: 阶段决策包综合
     scope: project-instance
-    input: Discovery、DDD 战略设计以及产品经理负责的商业约束输入。
+    input: Plan、DDD 战略设计以及产品经理负责的商业约束输入。
     output: 带版本、digest、证据和下游映射的阶段决策包。
     completion: 必填字段、引用、影响面和下游消费验证通过；批准门禁完成。
     public_name: 方案决策包综合
-    public_input: Discovery、业务边界与规则设计以及产品经理负责的商业约束输入。
+    public_input: Plan、业务边界与规则设计以及产品经理负责的商业约束输入。
     public_output: 带版本、digest、证据和下游映射的方案决策包。
   - id: work-unit.spec-synthesis
     name: Spec 综合
     scope: project-instance
-    input: 已确认的 Discovery 记录和测试 seam。
+    input: 已确认的 Plan 记录和测试 seam。
     output: Spec、产品总体设计和功能架构。
     completion: Spec 内容完整并进入 ready-for-human；下游推进仍需 gate.spec-baseline-approved。
   - id: work-unit.prototype-design

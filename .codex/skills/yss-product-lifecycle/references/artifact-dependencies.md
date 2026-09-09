@@ -3,7 +3,7 @@
 ## 基础依赖
 
 ```text
-Discovery → Spec → Product Overview / Functional Architecture
+Plan → Spec → Product Overview / Functional Architecture
 Root CONTEXT.md + current work-unit changes → Context Reconciliation → approval / next work unit
 Spec + Product Overview → Product Design / Requirement Freeze
 Spec + Product Overview → API Impact / OpenAPI Draft

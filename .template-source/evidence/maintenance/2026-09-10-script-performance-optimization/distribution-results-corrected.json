@@ -1,0 +1,62 @@
+[
+  {
+    "label": "spec-offline-dependencies",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/create-yss-spec",
+    "argv": [
+      "pnpm",
+      "install",
+      "--offline",
+      "--ignore-scripts"
+    ],
+    "exit_code": 0,
+    "duration_ms": 283.525,
+    "log_ref": "spec-offline-dependencies-corrected.log"
+  },
+  {
+    "label": "create-yss-spec-tests",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/create-yss-spec",
+    "argv": [
+      "pnpm",
+      "run",
+      "test:prepared"
+    ],
+    "exit_code": 0,
+    "duration_ms": 152602.44,
+    "log_ref": "create-yss-spec-tests-corrected.log"
+  },
+  {
+    "label": "create-yss-strategic-design-tests",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/create-yss-strategic-design",
+    "argv": [
+      "pnpm",
+      "run",
+      "test:prepared"
+    ],
+    "exit_code": 0,
+    "duration_ms": 24908.716,
+    "log_ref": "create-yss-strategic-design-tests-corrected.log"
+  },
+  {
+    "label": "create-yss-harness-dev-tests",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/create-yss-harness-dev",
+    "argv": [
+      "pnpm",
+      "run",
+      "test:prepared"
+    ],
+    "exit_code": 0,
+    "duration_ms": 284191.589,
+    "log_ref": "create-yss-harness-dev-tests-corrected.log"
+  },
+  {
+    "label": "legacy-generated-handoff",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "argv": [
+      "node",
+      ".template-source/scripts/verify-strategic-handoff-distribution.mjs"
+    ],
+    "exit_code": 0,
+    "duration_ms": 31853.842,
+    "log_ref": "legacy-generated-handoff-corrected.log"
+  }
+]

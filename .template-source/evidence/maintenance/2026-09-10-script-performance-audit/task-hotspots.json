@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "role_id": "role.test-engineer",
+  "skill_source": {
+    "registry_ref": "docs/agents/digital-human-roles.yaml",
+    "defaults_ref": "taskPackageDefaults(role.test-engineer)",
+    "core_skills": [
+      "tdd",
+      "diagnosing-bugs",
+      "code-review",
+      "alibaba-java-code-style",
+      "yss-ui",
+      "yss-design-system",
+      "yss-ui-business-page-generation",
+      "yss-domain",
+      "yss-application",
+      "yss-repository",
+      "yss-web-controller",
+      "yss-dto",
+      "mapstruct",
+      "lombok"
+    ],
+    "forbidden_skills": [
+      "yss-ddd-scaffold-generator",
+      "yss-layered-mvc-scaffold-generator",
+      "yss-frontend-scaffold-generator",
+      "implement",
+      "to-spec"
+    ]
+  },
+  "task_id": "performance-hotspots",
+  "work_unit_id": "work-unit.entry-triage",
+  "actor_id": "performance-hotspots",
+  "runtime_id": "runtime.skill-projection",
+  "execution_state": "Explorer",
+  "workflow_status": "active",
+  "contract": {
+    "kind": "template-maintenance",
+    "contract_id": "performance-hotspots",
+    "contract_version": 1,
+    "status": "issued",
+    "contract_ref": ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/scope.md",
+    "maintenance_ref": ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/scope-checkpoint.json"
+  },
+  "inputs": [
+    "CONTEXT.md",
+    ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/scope.md"
+  ],
+  "objective": "基于源码证据归并所有唯一实现的性能风险，核对权威源和分发链，设计可验证优化候选；不作未测量耗时结论。",
+  "allowed_write_paths": [
+    ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/hotspots/"
+  ],
+  "forbidden_actions": [
+    "禁止修改源脚本、门禁、投影、子仓和Git状态",
+    "禁止运行外部副作用或未审查脚本",
+    "禁止更新图索引；禁止自行派生子代理"
+  ],
+  "expected_outputs": [
+    "分析数据与事实报告"
+  ],
+  "expected_evidence_files": [
+    ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/hotspots/findings.md"
+  ],
+  "verification_commands": [
+    "核对数据行数、文件路径与当前内容SHA256"
+  ],
+  "verification_results": [],
+  "downstream_consumers": [
+    "role.lifecycle-orchestrator"
+  ],
+  "convergence": {
+    "parent_work_unit": "work-unit.entry-triage",
+    "convergence_ref": ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/scope.md",
+    "conflict_escalation": "返回主控，禁止覆盖其他工作"
+  }
+}

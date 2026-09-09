@@ -1,0 +1,54 @@
+{
+  "pid": 65946,
+  "ppid": 65945,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/cli-backend/bin/create-yss-harness-backend.js",
+  "wall_ms": 81243.56170800001,
+  "exit_code": 0,
+  "write_bytes": {
+    "target-or-other": 62225375,
+    "journal": 4671808,
+    "progress": 155819131
+  },
+  "operations": {
+    "fs.realpathSync": {
+      "count": 19,
+      "duration_ms": 0.34450300000000134
+    },
+    "fs.openSync": {
+      "count": 23718,
+      "duration_ms": 1786.5382990003434
+    },
+    "fs.closeSync": {
+      "count": 23718,
+      "duration_ms": 263.37848200051496
+    },
+    "fs.readFileSync": {
+      "count": 8050,
+      "duration_ms": 612.849922999688
+    },
+    "fs.lstatSync": {
+      "count": 422888,
+      "duration_ms": 6289.668711000349
+    },
+    "fs.mkdirSync": {
+      "count": 7841,
+      "duration_ms": 358.45438300027604
+    },
+    "fs.writeFileSync": {
+      "count": 7838,
+      "duration_ms": 1643.4753190003344
+    },
+    "fs.fchmodSync": {
+      "count": 7836,
+      "duration_ms": 317.9156849999081
+    },
+    "fs.fsyncSync": {
+      "count": 15672,
+      "duration_ms": 65186.60763399959
+    },
+    "fs.renameSync": {
+      "count": 7836,
+      "duration_ms": 2676.2901659993795
+    }
+  }
+}

@@ -1,0 +1,1112 @@
+{
+  "comparisons": {
+    "plan-entry": {
+      "before": {
+        "wall_ms": {
+          "n": 5,
+          "median": 939.82,
+          "minimum": 911.883,
+          "maximum": 959.103
+        },
+        "peak_rss_bytes": {
+          "n": 5,
+          "median": 88162304,
+          "minimum": 87638016,
+          "maximum": 88358912
+        },
+        "labels": [
+          "confirm-before-plan-entry",
+          "confirm-before-plan-entry",
+          "confirm-before-plan-entry",
+          "confirm-before-plan-entry",
+          "confirm-before-plan-entry"
+        ]
+      },
+      "after": {
+        "wall_ms": {
+          "n": 5,
+          "median": 779.363,
+          "minimum": 748.676,
+          "maximum": 786.292
+        },
+        "peak_rss_bytes": {
+          "n": 5,
+          "median": 87425024,
+          "minimum": 86638592,
+          "maximum": 87556096
+        },
+        "labels": [
+          "confirm-after-plan-entry",
+          "confirm-after-plan-entry",
+          "confirm-after-plan-entry",
+          "confirm-after-plan-entry",
+          "confirm-after-plan-entry"
+        ]
+      },
+      "median_reduction_percent": 17.073162946096055
+    },
+    "strategic-handoff": {
+      "before": {
+        "wall_ms": {
+          "n": 3,
+          "median": 24743.688,
+          "minimum": 22340.407,
+          "maximum": 28046.251
+        },
+        "peak_rss_bytes": {
+          "n": 3,
+          "median": 110575616,
+          "minimum": 109330432,
+          "maximum": 111345664
+        },
+        "labels": [
+          "before-handoff",
+          "before-handoff",
+          "before-handoff"
+        ]
+      },
+      "after": {
+        "wall_ms": {
+          "n": 3,
+          "median": 17721.574,
+          "minimum": 17528.906,
+          "maximum": 18315.781
+        },
+        "peak_rss_bytes": {
+          "n": 3,
+          "median": 117768192,
+          "minimum": 117735424,
+          "maximum": 117817344
+        },
+        "labels": [
+          "after-handoff",
+          "after-handoff",
+          "after-handoff"
+        ]
+      },
+      "median_reduction_percent": 28.37941538868417
+    },
+    "backend-frontend-delivery": {
+      "before": {
+        "wall_ms": {
+          "n": 3,
+          "median": 33190.777,
+          "minimum": 32095.319,
+          "maximum": 37851.577
+        },
+        "peak_rss_bytes": {
+          "n": 3,
+          "median": 128499712,
+          "minimum": 126386176,
+          "maximum": 132415488
+        },
+        "labels": [
+          "before-delivery",
+          "before-delivery",
+          "before-delivery"
+        ]
+      },
+      "after": {
+        "wall_ms": {
+          "n": 3,
+          "median": 29699.569,
+          "minimum": 29561.421,
+          "maximum": 30262.405
+        },
+        "peak_rss_bytes": {
+          "n": 3,
+          "median": 137412608,
+          "minimum": 132628480,
+          "maximum": 139116544
+        },
+        "labels": [
+          "after-delivery",
+          "after-delivery",
+          "after-delivery"
+        ]
+      },
+      "median_reduction_percent": 10.518608829193731
+    },
+    "query": {
+      "before": {
+        "wall_ms": {
+          "n": 5,
+          "median": 95.511,
+          "minimum": 90.728,
+          "maximum": 99.489
+        },
+        "peak_rss_bytes": {
+          "n": 5,
+          "median": 84000768,
+          "minimum": 83623936,
+          "maximum": 84197376
+        },
+        "labels": [
+          "before-query",
+          "before-query",
+          "before-query",
+          "before-query",
+          "before-query"
+        ]
+      },
+      "after": {
+        "wall_ms": {
+          "n": 5,
+          "median": 95.944,
+          "minimum": 94.639,
+          "maximum": 97.503
+        },
+        "peak_rss_bytes": {
+          "n": 5,
+          "median": 84000768,
+          "minimum": 83869696,
+          "maximum": 84295680
+        },
+        "labels": [
+          "after-query",
+          "after-query",
+          "after-query",
+          "after-query",
+          "after-query"
+        ]
+      },
+      "median_reduction_percent": -0.4533509229303512
+    },
+    "projections": {
+      "before": {
+        "wall_ms": {
+          "n": 5,
+          "median": 102.742,
+          "minimum": 95.073,
+          "maximum": 187.437
+        },
+        "peak_rss_bytes": {
+          "n": 5,
+          "median": 63799296,
+          "minimum": 63340544,
+          "maximum": 64159744
+        },
+        "labels": [
+          "confirm-before-projections",
+          "confirm-before-projections",
+          "confirm-before-projections",
+          "confirm-before-projections",
+          "confirm-before-projections"
+        ]
+      },
+      "after": {
+        "wall_ms": {
+          "n": 5,
+          "median": 98.144,
+          "minimum": 95.16,
+          "maximum": 203.115
+        },
+        "peak_rss_bytes": {
+          "n": 5,
+          "median": 63668224,
+          "minimum": 63340544,
+          "maximum": 63979520
+        },
+        "labels": [
+          "confirm-after-projections",
+          "confirm-after-projections",
+          "confirm-after-projections",
+          "confirm-after-projections",
+          "confirm-after-projections"
+        ]
+      },
+      "median_reduction_percent": 4.4752876136341495
+    },
+    "sync-core": {
+      "before": {
+        "wall_ms": {
+          "n": 5,
+          "median": 894.827,
+          "minimum": 858.891,
+          "maximum": 1112.944
+        },
+        "peak_rss_bytes": {
+          "n": 5,
+          "median": 104333312,
+          "minimum": 104153088,
+          "maximum": 104579072
+        },
+        "labels": [
+          "before-archive",
+          "before-archive",
+          "before-archive",
+          "before-archive",
+          "before-archive"
+        ]
+      },
+      "after": {
+        "wall_ms": {
+          "n": 5,
+          "median": 153.557,
+          "minimum": 147.17,
+          "maximum": 179.299
+        },
+        "peak_rss_bytes": {
+          "n": 5,
+          "median": 59162624,
+          "minimum": 58998784,
+          "maximum": 59637760
+        },
+        "labels": [
+          "after-archive",
+          "after-archive",
+          "after-archive",
+          "after-archive",
+          "after-archive"
+        ]
+      },
+      "median_reduction_percent": 82.8394762339536
+    },
+    "init-backend": {
+      "before": {
+        "wall_ms": {
+          "n": 3,
+          "median": 79580.816,
+          "minimum": 79147.716,
+          "maximum": 81937.864
+        },
+        "peak_rss_bytes": {
+          "n": 3,
+          "median": 195133440,
+          "minimum": 192069632,
+          "maximum": 207601664
+        },
+        "labels": [
+          "before-init-backend-0",
+          "before-init-backend-1",
+          "before-init-backend-2"
+        ]
+      },
+      "after": {
+        "wall_ms": {
+          "n": 3,
+          "median": 45710.465,
+          "minimum": 43575.188,
+          "maximum": 45928.682
+        },
+        "peak_rss_bytes": {
+          "n": 3,
+          "median": 231915520,
+          "minimum": 227983360,
+          "maximum": 238223360
+        },
+        "labels": [
+          "verified-init-backend-0",
+          "verified-init-backend-1",
+          "verified-init-backend-2"
+        ]
+      },
+      "median_reduction_percent": 42.56094961378633
+    },
+    "init-frontend": {
+      "before": {
+        "wall_ms": {
+          "n": 3,
+          "median": 102378.297,
+          "minimum": 101122.717,
+          "maximum": 112146.926
+        },
+        "peak_rss_bytes": {
+          "n": 3,
+          "median": 207486976,
+          "minimum": 205520896,
+          "maximum": 207978496
+        },
+        "labels": [
+          "before-init-frontend-0",
+          "before-init-frontend-1",
+          "before-init-frontend-2"
+        ]
+      },
+      "after": {
+        "wall_ms": {
+          "n": 3,
+          "median": 58256.703,
+          "minimum": 57354.509,
+          "maximum": 59902.459
+        },
+        "peak_rss_bytes": {
+          "n": 3,
+          "median": 244088832,
+          "minimum": 243957760,
+          "maximum": 248741888
+        },
+        "labels": [
+          "verified-init-frontend-0",
+          "verified-init-frontend-1",
+          "verified-init-frontend-2"
+        ]
+      },
+      "median_reduction_percent": 43.096628184780215
+    },
+    "distribution": {
+      "before": {
+        "wall_ms": {
+          "n": 3,
+          "median": 144597.706,
+          "minimum": 143136.417,
+          "maximum": 150926.546
+        },
+        "peak_rss_bytes": {
+          "n": 3,
+          "median": 527613952,
+          "minimum": 498860032,
+          "maximum": 548765696
+        },
+        "labels": [
+          "before-distribution",
+          "before-distribution",
+          "before-distribution"
+        ]
+      },
+      "after": {
+        "wall_ms": {
+          "n": 3,
+          "median": 126640.281,
+          "minimum": 125193.974,
+          "maximum": 128158.238
+        },
+        "peak_rss_bytes": {
+          "n": 3,
+          "median": 530694144,
+          "minimum": 521437184,
+          "maximum": 543965184
+        },
+        "labels": [
+          "after-distribution",
+          "after-distribution",
+          "after-distribution"
+        ]
+      },
+      "median_reduction_percent": 12.418886507092996
+    }
+  },
+  "api_measurements": {
+    "before-batch100": {
+      "timing_ms": {
+        "n": 5,
+        "median": 7103.951000000001,
+        "minimum": 6802.837374999999,
+        "maximum": 7480.388291
+      },
+      "results": [
+        50,
+        50,
+        50,
+        50,
+        50
+      ]
+    },
+    "before-frontend-generator-clean": {
+      "timing_ms": {
+        "n": 5,
+        "median": 287.615458,
+        "minimum": 274.96283399999993,
+        "maximum": 336.622083
+      },
+      "samples": [
+        {
+          "sample": 0,
+          "duration_ms": 336.622083,
+          "generated_files": 1002,
+          "copied_untracked_cache": false,
+          "untracked_bytes": 0
+        },
+        {
+          "sample": 1,
+          "duration_ms": 288.55729199999996,
+          "generated_files": 1002,
+          "copied_untracked_cache": false,
+          "untracked_bytes": 0
+        },
+        {
+          "sample": 2,
+          "duration_ms": 274.96283399999993,
+          "generated_files": 1002,
+          "copied_untracked_cache": false,
+          "untracked_bytes": 0
+        },
+        {
+          "sample": 3,
+          "duration_ms": 284.41141700000003,
+          "generated_files": 1002,
+          "copied_untracked_cache": false,
+          "untracked_bytes": 0
+        },
+        {
+          "sample": 4,
+          "duration_ms": 287.615458,
+          "generated_files": 1002,
+          "copied_untracked_cache": false,
+          "untracked_bytes": 0
+        }
+      ]
+    },
+    "before-frontend-generator-cached": {
+      "timing_ms": {
+        "n": 5,
+        "median": 861.7596250000001,
+        "minimum": 835.8202080000001,
+        "maximum": 884.029875
+      },
+      "samples": [
+        {
+          "sample": 0,
+          "duration_ms": 884.029875,
+          "generated_files": 6002,
+          "copied_untracked_cache": true,
+          "untracked_bytes": 10240000
+        },
+        {
+          "sample": 1,
+          "duration_ms": 872.691333,
+          "generated_files": 6002,
+          "copied_untracked_cache": true,
+          "untracked_bytes": 10240000
+        },
+        {
+          "sample": 2,
+          "duration_ms": 861.7596250000001,
+          "generated_files": 6002,
+          "copied_untracked_cache": true,
+          "untracked_bytes": 10240000
+        },
+        {
+          "sample": 3,
+          "duration_ms": 838.0355829999999,
+          "generated_files": 6002,
+          "copied_untracked_cache": true,
+          "untracked_bytes": 10240000
+        },
+        {
+          "sample": 4,
+          "duration_ms": 835.8202080000001,
+          "generated_files": 6002,
+          "copied_untracked_cache": true,
+          "untracked_bytes": 10240000
+        }
+      ]
+    },
+    "before-projection-matrix": {
+      "timing_ms": {
+        "n": 5,
+        "median": 3263.8766670000005,
+        "minimum": 3200.7855839999997,
+        "maximum": 3335.119334
+      },
+      "samples": [
+        {
+          "sample": 0,
+          "duration_ms": 3296.4457500000003
+        },
+        {
+          "sample": 1,
+          "duration_ms": 3200.7855839999997
+        },
+        {
+          "sample": 2,
+          "duration_ms": 3335.119334
+        },
+        {
+          "sample": 3,
+          "duration_ms": 3220.7195840000004
+        },
+        {
+          "sample": 4,
+          "duration_ms": 3263.8766670000005
+        }
+      ]
+    },
+    "before-projection-matrix-counts": {
+      "timing_ms": {
+        "n": 1,
+        "median": 3230.836042,
+        "minimum": 3230.836042,
+        "maximum": 3230.836042
+      },
+      "samples": [
+        {
+          "sample": 0,
+          "duration_ms": 3230.836042,
+          "reads": 607,
+          "scans": 13,
+          "git_processes": 120
+        }
+      ]
+    },
+    "before-context-scale": {
+      "sizes": {
+        "10": {
+          "n": 5,
+          "median": 0.6038329999999981,
+          "minimum": 0.48004200000000097,
+          "maximum": 1.5471660000000007
+        },
+        "1000": {
+          "n": 5,
+          "median": 13.259042000000008,
+          "minimum": 12.454750000000004,
+          "maximum": 16.731624999999994
+        },
+        "10000": {
+          "n": 5,
+          "median": 147.29383399999995,
+          "minimum": 144.52133400000002,
+          "maximum": 164.36604099999994
+        }
+      },
+      "nested_rejected": true
+    },
+    "after-batch100": {
+      "timing_ms": {
+        "n": 5,
+        "median": 68.36095799999998,
+        "minimum": 67.12504100000001,
+        "maximum": 97.648416
+      },
+      "results": [
+        50,
+        50,
+        50,
+        50,
+        50
+      ]
+    },
+    "after-frontend-generator-clean": {
+      "timing_ms": {
+        "n": 5,
+        "median": 478.22350000000006,
+        "minimum": 449.66200000000003,
+        "maximum": 514.856209
+      },
+      "samples": [
+        {
+          "sample": 0,
+          "duration_ms": 454.391541,
+          "generated_files": 1002,
+          "copied_untracked_cache": false,
+          "untracked_bytes": 0
+        },
+        {
+          "sample": 1,
+          "duration_ms": 478.22350000000006,
+          "generated_files": 1002,
+          "copied_untracked_cache": false,
+          "untracked_bytes": 0
+        },
+        {
+          "sample": 2,
+          "duration_ms": 514.856209,
+          "generated_files": 1002,
+          "copied_untracked_cache": false,
+          "untracked_bytes": 0
+        },
+        {
+          "sample": 3,
+          "duration_ms": 449.66200000000003,
+          "generated_files": 1002,
+          "copied_untracked_cache": false,
+          "untracked_bytes": 0
+        },
+        {
+          "sample": 4,
+          "duration_ms": 502.18958299999986,
+          "generated_files": 1002,
+          "copied_untracked_cache": false,
+          "untracked_bytes": 0
+        }
+      ]
+    },
+    "after-frontend-generator-cached": {
+      "timing_ms": {
+        "n": 5,
+        "median": 573.9892500000001,
+        "minimum": 541.3579999999997,
+        "maximum": 597.637916
+      },
+      "samples": [
+        {
+          "sample": 0,
+          "duration_ms": 597.637916,
+          "generated_files": 1002,
+          "copied_untracked_cache": false,
+          "untracked_bytes": 10240000
+        },
+        {
+          "sample": 1,
+          "duration_ms": 554.7154580000001,
+          "generated_files": 1002,
+          "copied_untracked_cache": false,
+          "untracked_bytes": 10240000
+        },
+        {
+          "sample": 2,
+          "duration_ms": 579.400333,
+          "generated_files": 1002,
+          "copied_untracked_cache": false,
+          "untracked_bytes": 10240000
+        },
+        {
+          "sample": 3,
+          "duration_ms": 541.3579999999997,
+          "generated_files": 1002,
+          "copied_untracked_cache": false,
+          "untracked_bytes": 10240000
+        },
+        {
+          "sample": 4,
+          "duration_ms": 573.9892500000001,
+          "generated_files": 1002,
+          "copied_untracked_cache": false,
+          "untracked_bytes": 10240000
+        }
+      ]
+    },
+    "after-projection-matrix": {
+      "timing_ms": {
+        "n": 5,
+        "median": 36.445042,
+        "minimum": 35.17029100000002,
+        "maximum": 43.87495800000001
+      },
+      "samples": [
+        {
+          "sample": 0,
+          "duration_ms": 43.87495800000001
+        },
+        {
+          "sample": 1,
+          "duration_ms": 37.453833
+        },
+        {
+          "sample": 2,
+          "duration_ms": 36.445042
+        },
+        {
+          "sample": 3,
+          "duration_ms": 35.17029100000002
+        },
+        {
+          "sample": 4,
+          "duration_ms": 35.32779200000002
+        }
+      ]
+    },
+    "after-projection-matrix-counts": {
+      "timing_ms": {
+        "n": 1,
+        "median": 44.041082999999986,
+        "minimum": 44.041082999999986,
+        "maximum": 44.041082999999986
+      },
+      "samples": [
+        {
+          "sample": 0,
+          "duration_ms": 44.041082999999986,
+          "reads": 405,
+          "scans": 11,
+          "git_processes": 1
+        }
+      ]
+    },
+    "after-context-scale": {
+      "sizes": {
+        "10": {
+          "n": 5,
+          "median": 0.6042920000000009,
+          "minimum": 0.3988750000000003,
+          "maximum": 1.5286670000000022
+        },
+        "1000": {
+          "n": 5,
+          "median": 13.617792000000009,
+          "minimum": 13.240542000000005,
+          "maximum": 17.04925
+        },
+        "10000": {
+          "n": 5,
+          "median": 158.88854200000003,
+          "minimum": 147.12520800000004,
+          "maximum": 163.46791600000006
+        }
+      },
+      "nested_rejected": true
+    }
+  },
+  "instrumented_counts": {
+    "trace-after-handoff": {
+      "operations": {
+        "fs.realpathSync": 199,
+        "fs.readFileSync": 4731,
+        "fs.existsSync": 46858,
+        "fs.readdirSync": 2174,
+        "fs.lstatSync": 48926,
+        "fs.openSync": 4806,
+        "fs.closeSync": 4806,
+        "fs.mkdirSync": 1731,
+        "fs.writeFileSync": 1656,
+        "fs.renameSync": 14,
+        "fs.copyFileSync": 130,
+        "fs.cpSync": 4
+      },
+      "processes": {
+        "python3": 230,
+        "node": 12
+      },
+      "write_bytes": {
+        "target-or-other": 2388254
+      },
+      "trace_refs": [
+        "traces/trace-after-handoff/0/70053.json",
+        "traces/trace-after-handoff/0/70697.json",
+        "traces/trace-after-handoff/0/69506.json",
+        "traces/trace-after-handoff/0/69864.json",
+        "traces/trace-after-handoff/0/71170.json",
+        "traces/trace-after-handoff/0/69687.json",
+        "traces/trace-after-handoff/0/71345.json",
+        "traces/trace-after-handoff/0/71365.json",
+        "traces/trace-after-handoff/0/69328.json",
+        "traces/trace-after-handoff/0/69155.json",
+        "traces/trace-after-handoff/0/71532.json",
+        "traces/trace-after-handoff/0/70525.json",
+        "traces/trace-after-handoff/0/67126.json"
+      ]
+    },
+    "trace-before-init-backend": {
+      "operations": {
+        "fs.realpathSync": 19,
+        "fs.openSync": 23718,
+        "fs.closeSync": 23718,
+        "fs.readFileSync": 8050,
+        "fs.lstatSync": 422888,
+        "fs.mkdirSync": 7841,
+        "fs.writeFileSync": 7838,
+        "fs.fchmodSync": 7836,
+        "fs.fsyncSync": 15672,
+        "fs.renameSync": 7836
+      },
+      "processes": {},
+      "write_bytes": {
+        "target-or-other": 62225375,
+        "journal": 4671808,
+        "progress": 155819131
+      },
+      "trace_refs": [
+        "traces/trace-before-init-backend/0/65946.json"
+      ]
+    },
+    "trace-before-plan-entry": {
+      "operations": {
+        "fs.realpathSync": 53,
+        "fs.readFileSync": 103,
+        "fs.readdirSync": 23,
+        "fs.existsSync": 39,
+        "fs.lstatSync": 6,
+        "fs.mkdirSync": 2,
+        "fs.writeFileSync": 10,
+        "fs.openSync": 74,
+        "fs.closeSync": 74
+      },
+      "processes": {
+        "python3": 10,
+        "node": 5
+      },
+      "write_bytes": {
+        "target-or-other": 53986
+      },
+      "trace_refs": [
+        "traces/trace-before-plan-entry/0/59375.json",
+        "traces/trace-before-plan-entry/0/59336.json",
+        "traces/trace-before-plan-entry/0/59214.json",
+        "traces/trace-before-plan-entry/0/59297.json",
+        "traces/trace-before-plan-entry/0/59219.json",
+        "traces/trace-before-plan-entry/0/59258.json"
+      ]
+    },
+    "trace-after-projections": {
+      "operations": {
+        "fs.realpathSync": 986,
+        "fs.readFileSync": 945,
+        "fs.existsSync": 1384,
+        "fs.lstatSync": 986,
+        "fs.readdirSync": 550,
+        "fs.openSync": 943,
+        "fs.closeSync": 943
+      },
+      "processes": {},
+      "write_bytes": {},
+      "trace_refs": [
+        "traces/trace-after-projections/0/71629.json"
+      ]
+    },
+    "trace-after-plan-entry": {
+      "operations": {
+        "fs.realpathSync": 31,
+        "fs.mkdirSync": 2,
+        "fs.writeFileSync": 10,
+        "fs.readFileSync": 98,
+        "fs.readdirSync": 23,
+        "fs.existsSync": 44,
+        "fs.lstatSync": 6,
+        "fs.openSync": 74,
+        "fs.closeSync": 74
+      },
+      "processes": {
+        "python3": 10
+      },
+      "write_bytes": {
+        "target-or-other": 53986
+      },
+      "trace_refs": [
+        "traces/trace-after-plan-entry/0/66926.json"
+      ]
+    },
+    "trace-verified-init-frontend": {
+      "operations": {
+        "fs.realpathSync": 20,
+        "fs.openSync": 13309,
+        "fs.closeSync": 13309,
+        "fs.readFileSync": 6213,
+        "fs.lstatSync": 631982,
+        "fs.mkdirSync": 4895,
+        "fs.fstatSync": 4891,
+        "fs.writeFileSync": 9777,
+        "fs.fchmodSync": 4891,
+        "fs.fsyncSync": 11984,
+        "fs.renameSync": 4891
+      },
+      "processes": {},
+      "write_bytes": {
+        "target-or-other": 68772806,
+        "journal": 8558962,
+        "wal": 372289
+      },
+      "trace_refs": [
+        "traces/trace-verified-init-frontend/0/17712.json"
+      ]
+    },
+    "trace-before-handoff": {
+      "operations": {
+        "fs.realpathSync": 176,
+        "fs.readFileSync": 5838,
+        "fs.readdirSync": 2174,
+        "fs.existsSync": 52567,
+        "fs.lstatSync": 54912,
+        "fs.openSync": 5913,
+        "fs.closeSync": 5913,
+        "fs.mkdirSync": 1731,
+        "fs.writeFileSync": 1656,
+        "fs.renameSync": 14,
+        "fs.copyFileSync": 130,
+        "fs.cpSync": 4
+      },
+      "processes": {
+        "python3": 286,
+        "node": 12
+      },
+      "write_bytes": {
+        "target-or-other": 2388254
+      },
+      "trace_refs": [
+        "traces/trace-before-handoff/0/63560.json",
+        "traces/trace-before-handoff/0/63995.json",
+        "traces/trace-before-handoff/0/63336.json",
+        "traces/trace-before-handoff/0/65613.json",
+        "traces/trace-before-handoff/0/63773.json",
+        "traces/trace-before-handoff/0/65825.json",
+        "traces/trace-before-handoff/0/59415.json",
+        "traces/trace-before-handoff/0/64795.json",
+        "traces/trace-before-handoff/0/63112.json",
+        "traces/trace-before-handoff/0/65382.json",
+        "traces/trace-before-handoff/0/64584.json",
+        "traces/trace-before-handoff/0/65593.json",
+        "traces/trace-before-handoff/0/62870.json"
+      ]
+    },
+    "trace-after-init-backend": {
+      "operations": {
+        "fs.realpathSync": 20,
+        "fs.openSync": 10529,
+        "fs.closeSync": 10529,
+        "fs.readFileSync": 4926,
+        "fs.lstatSync": 398213,
+        "fs.mkdirSync": 3926,
+        "fs.writeFileSync": 7839,
+        "fs.fchmodSync": 3922,
+        "fs.fsyncSync": 9522,
+        "fs.renameSync": 3922
+      },
+      "processes": {},
+      "write_bytes": {
+        "target-or-other": 62225373,
+        "journal": 4671808,
+        "wal": 289319
+      },
+      "trace_refs": [
+        "traces/trace-after-init-backend/0/71631.json"
+      ]
+    },
+    "trace-after-init-frontend": {
+      "operations": {
+        "fs.realpathSync": 20,
+        "fs.openSync": 13309,
+        "fs.closeSync": 13309,
+        "fs.readFileSync": 6213,
+        "fs.lstatSync": 572105,
+        "fs.mkdirSync": 4895,
+        "fs.writeFileSync": 9777,
+        "fs.fchmodSync": 4891,
+        "fs.fsyncSync": 11984,
+        "fs.renameSync": 4891
+      },
+      "processes": {},
+      "write_bytes": {
+        "target-or-other": 68772790,
+        "journal": 5848502,
+        "wal": 372289
+      },
+      "trace_refs": [
+        "traces/trace-after-init-frontend/0/71777.json"
+      ]
+    },
+    "trace-before-init-frontend": {
+      "operations": {
+        "fs.realpathSync": 19,
+        "fs.openSync": 29527,
+        "fs.closeSync": 29527,
+        "fs.readFileSync": 9983,
+        "fs.lstatSync": 600033,
+        "fs.mkdirSync": 9779,
+        "fs.writeFileSync": 9776,
+        "fs.fchmodSync": 9774,
+        "fs.fsyncSync": 19548,
+        "fs.renameSync": 9774
+      },
+      "processes": {},
+      "write_bytes": {
+        "target-or-other": 68772792,
+        "journal": 5848502,
+        "progress": 271728853
+      },
+      "trace_refs": [
+        "traces/trace-before-init-frontend/0/66655.json"
+      ]
+    },
+    "trace-verified-init-backend": {
+      "operations": {
+        "fs.realpathSync": 20,
+        "fs.openSync": 10529,
+        "fs.closeSync": 10529,
+        "fs.readFileSync": 4926,
+        "fs.lstatSync": 440991,
+        "fs.mkdirSync": 3926,
+        "fs.fstatSync": 3922,
+        "fs.writeFileSync": 7839,
+        "fs.fchmodSync": 3922,
+        "fs.fsyncSync": 9522,
+        "fs.renameSync": 3922
+      },
+      "processes": {},
+      "write_bytes": {
+        "target-or-other": 62225389,
+        "journal": 6846612,
+        "wal": 289319
+      },
+      "trace_refs": [
+        "traces/trace-verified-init-backend/0/17607.json"
+      ]
+    },
+    "trace-before-projections": {
+      "operations": {
+        "fs.realpathSync": 986,
+        "fs.readFileSync": 990,
+        "fs.existsSync": 1399,
+        "fs.lstatSync": 986,
+        "fs.readdirSync": 565,
+        "fs.openSync": 988,
+        "fs.closeSync": 988
+      },
+      "processes": {},
+      "write_bytes": {},
+      "trace_refs": [
+        "traces/trace-before-projections/0/65943.json"
+      ]
+    }
+  },
+  "rejected_samples": [
+    {
+      "label": "before-context",
+      "exit_code": 1,
+      "timeout": false,
+      "stderr_ref": "logs/before-context-0.stderr"
+    },
+    {
+      "label": "before-context",
+      "exit_code": 1,
+      "timeout": false,
+      "stderr_ref": "logs/before-context-1.stderr"
+    },
+    {
+      "label": "before-context",
+      "exit_code": 1,
+      "timeout": false,
+      "stderr_ref": "logs/before-context-2.stderr"
+    },
+    {
+      "label": "before-context",
+      "exit_code": 1,
+      "timeout": false,
+      "stderr_ref": "logs/before-context-3.stderr"
+    },
+    {
+      "label": "before-context",
+      "exit_code": 1,
+      "timeout": false,
+      "stderr_ref": "logs/before-context-4.stderr"
+    },
+    {
+      "label": "validation-final-release",
+      "exit_code": 1,
+      "timeout": false,
+      "stderr_ref": "logs/validation-final-release-0.stderr"
+    },
+    {
+      "label": "after-projections",
+      "exit_code": 1,
+      "timeout": false,
+      "stderr_ref": "logs/after-projections-0.stderr"
+    },
+    {
+      "label": "after-projections",
+      "exit_code": 1,
+      "timeout": false,
+      "stderr_ref": "logs/after-projections-1.stderr"
+    },
+    {
+      "label": "after-projections",
+      "exit_code": 1,
+      "timeout": false,
+      "stderr_ref": "logs/after-projections-2.stderr"
+    },
+    {
+      "label": "after-projections",
+      "exit_code": 1,
+      "timeout": false,
+      "stderr_ref": "logs/after-projections-3.stderr"
+    },
+    {
+      "label": "after-projections",
+      "exit_code": 1,
+      "timeout": false,
+      "stderr_ref": "logs/after-projections-4.stderr"
+    }
+  ],
+  "preliminary_init_samples": "after-init-* 与 final-init-* 为中间版本；后端部分与隔离修复重叠，后续恢复矩阵也修订了事务实现。最终只使用 verified-init-* 三次独立样本。",
+  "memory_method": "/usr/bin/time -l 的 maximum resident set size 字节值；不是整个进程树同时 RSS 总和。",
+  "cache_method": "同机本地文件系统顺序运行；未清理操作系统页缓存，不声称物理冷盘基准。"
+}

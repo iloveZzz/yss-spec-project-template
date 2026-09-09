@@ -1,0 +1,5 @@
+{
+  "reason": "Audit timing snapshot excluded tracked .vscode; integration requires .vscode/mcp.json and source .git identity",
+  "root_revision": "b424b47d1f52284ad7ce05bafc7aedb48d7abdaf",
+  "source_repositories_modified": false
+}

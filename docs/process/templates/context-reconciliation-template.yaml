@@ -1,7 +1,7 @@
 schema_version: 1
 repository_mode: project-instance
-stage: stage.discovery
-work_unit: work-unit.discovery-requirements
+stage: stage.plan
+work_unit: work-unit.plan-requirements
 status: reconciled
 context_snapshot:
   context_ref: CONTEXT.md

@@ -1,0 +1,934 @@
+{
+  "rows": 2820,
+  "counts": {
+    "static-only": 2722,
+    "measured-success": 34,
+    "same-content-as-measured-entry;not-measured-in-this-context": 60,
+    "measured-rejected-input": 4
+  },
+  "measured_entries": {
+    "scripts/repository-mode": [
+      {
+        "label": "root-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "root-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "root-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "scripts/verify-context-contract": [
+      {
+        "label": "root-verify-context-contract",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "root-verify-context-contract",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "root-verify-context-contract",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "scripts/query-lifecycle-context": [
+      {
+        "label": "root-query-lifecycle-context",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "root-query-lifecycle-context",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "root-query-lifecycle-context",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/yss-harness-design-agent/scripts/repository-mode": [
+      {
+        "label": "yss-harness-design-agent-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-design-agent-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-design-agent-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/yss-harness-design-agent/scripts/verify-context-contract": [
+      {
+        "label": "yss-harness-design-agent-verify-context-contract",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-design-agent-verify-context-contract",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-design-agent-verify-context-contract",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/yss-harness-design-agent/scripts/query-lifecycle-context": [
+      {
+        "label": "yss-harness-design-agent-query-lifecycle-context",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-design-agent-query-lifecycle-context",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-design-agent-query-lifecycle-context",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/yss-harness-dev-agent/scripts/repository-mode": [
+      {
+        "label": "yss-harness-dev-agent-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-dev-agent-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-dev-agent-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/yss-harness-dev-agent/scripts/verify-context-contract": [
+      {
+        "label": "yss-harness-dev-agent-verify-context-contract",
+        "exit_code": 1,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-dev-agent-verify-context-contract",
+        "exit_code": 1,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-dev-agent-verify-context-contract",
+        "exit_code": 1,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/yss-harness-backend-agent/scripts/repository-mode": [
+      {
+        "label": "yss-harness-backend-agent-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-backend-agent-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-backend-agent-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/yss-harness-backend-agent/scripts/verify-context-contract": [
+      {
+        "label": "yss-harness-backend-agent-verify-context-contract",
+        "exit_code": 1,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-backend-agent-verify-context-contract",
+        "exit_code": 1,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-backend-agent-verify-context-contract",
+        "exit_code": 1,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/yss-harness-frontend-agent/scripts/repository-mode": [
+      {
+        "label": "yss-harness-frontend-agent-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-frontend-agent-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-frontend-agent-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/yss-harness-frontend-agent/scripts/verify-context-contract": [
+      {
+        "label": "yss-harness-frontend-agent-verify-context-contract",
+        "exit_code": 1,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-frontend-agent-verify-context-contract",
+        "exit_code": 1,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "yss-harness-frontend-agent-verify-context-contract",
+        "exit_code": 1,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/create-yss-spec/template/scripts/repository-mode": [
+      {
+        "label": "create-yss-spec-template-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-spec-template-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-spec-template-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/create-yss-spec/template/scripts/verify-context-contract": [
+      {
+        "label": "create-yss-spec-template-verify-context-contract",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-spec-template-verify-context-contract",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-spec-template-verify-context-contract",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/create-yss-spec/template/scripts/query-lifecycle-context": [
+      {
+        "label": "create-yss-spec-template-query-lifecycle-context",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-spec-template-query-lifecycle-context",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-spec-template-query-lifecycle-context",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/create-yss-strategic-design/template/scripts/repository-mode": [
+      {
+        "label": "create-yss-strategic-design-template-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-strategic-design-template-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-strategic-design-template-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/create-yss-strategic-design/template/scripts/verify-context-contract": [
+      {
+        "label": "create-yss-strategic-design-template-verify-context-contract",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-strategic-design-template-verify-context-contract",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-strategic-design-template-verify-context-contract",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/create-yss-strategic-design/template/scripts/query-lifecycle-context": [
+      {
+        "label": "create-yss-strategic-design-template-query-lifecycle-context",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-strategic-design-template-query-lifecycle-context",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-strategic-design-template-query-lifecycle-context",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/create-yss-harness-dev/template/scripts/repository-mode": [
+      {
+        "label": "create-yss-harness-dev-template-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-harness-dev-template-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-harness-dev-template-repository-mode",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "submodules/create-yss-harness-dev/template/scripts/verify-context-contract": [
+      {
+        "label": "create-yss-harness-dev-template-verify-context-contract",
+        "exit_code": 1,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-harness-dev-template-verify-context-contract",
+        "exit_code": 1,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "create-yss-harness-dev-template-verify-context-contract",
+        "exit_code": 1,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "scripts/sync-skills": [
+      {
+        "label": "root-sync-skills-check",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "root-sync-skills-check",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "root-sync-skills-check",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "scripts/update-skill-lock": [
+      {
+        "label": "root-update-skill-lock-check",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "root-update-skill-lock-check",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "root-update-skill-lock-check",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "scripts/verify-plan-spec-entry-scenarios": [
+      {
+        "label": "isolated-verify-plan-spec-entry-scenarios",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "scripts/verify-context-reconciliation-scenarios": [
+      {
+        "label": "isolated-verify-context-reconciliation-scenarios",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "scripts/verify-lifecycle-transition-scenarios": [
+      {
+        "label": "isolated-verify-lifecycle-transition-scenarios",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      }
+    ],
+    "scripts/verify-strategic-handoff-package-scenarios": [
+      {
+        "label": "isolated-verify-strategic-handoff-package-scenarios",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-verify-strategic-handoff-package-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-verify-strategic-handoff-package-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      }
+    ],
+    "scripts/verify-frontend-delivery-scenarios": [
+      {
+        "label": "isolated-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      }
+    ],
+    "submodules/create-yss-harness-backend/scripts/verify-bundle.mjs": [
+      {
+        "label": "cli-backend-verify-bundle",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "cli-backend-verify-bundle",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "cli-backend-verify-bundle",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-cli-backend-verify-bundle",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-cli-backend-verify-bundle",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      }
+    ],
+    "submodules/create-yss-harness-backend/bin/create-yss-harness-backend.js": [
+      {
+        "label": "cli-backend-init",
+        "exit_code": 1,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-cli-backend-init",
+        "exit_code": 1,
+        "trace": true,
+        "kind": "process-entry"
+      },
+      {
+        "label": "cli-backend-init-physical-path",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-cli-backend-init-physical-path",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-cli-backend-init-physical-path",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-cli-backend-init",
+        "exit_code": 1,
+        "trace": true,
+        "kind": "traced-process-entry"
+      }
+    ],
+    "submodules/create-yss-harness-frontend/scripts/verify-bundle.mjs": [
+      {
+        "label": "cli-frontend-verify-bundle",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "cli-frontend-verify-bundle",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "cli-frontend-verify-bundle",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-cli-frontend-verify-bundle",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-cli-frontend-verify-bundle",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      }
+    ],
+    "submodules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js": [
+      {
+        "label": "cli-frontend-init",
+        "exit_code": 1,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-cli-frontend-init",
+        "exit_code": 1,
+        "trace": true,
+        "kind": "process-entry"
+      },
+      {
+        "label": "cli-frontend-init-physical-path",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-cli-frontend-init-physical-path",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-cli-frontend-init-physical-path",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-cli-frontend-init",
+        "exit_code": 1,
+        "trace": true,
+        "kind": "traced-process-entry"
+      }
+    ],
+    "submodules/create-yss-spec/scripts/sync-template.js": [
+      {
+        "label": "create-yss-spec-sync-template",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-create-yss-spec-sync-template",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-create-yss-spec-sync-template",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      }
+    ],
+    "submodules/create-yss-strategic-design/scripts/sync-template.js": [
+      {
+        "label": "create-yss-strategic-design-sync-template",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-create-yss-strategic-design-sync-template",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-create-yss-strategic-design-sync-template",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      }
+    ],
+    "submodules/create-yss-harness-dev/scripts/sync-template.js": [
+      {
+        "label": "create-yss-harness-dev-sync-template",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-create-yss-harness-dev-sync-template",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "process-entry"
+      },
+      {
+        "label": "trace-create-yss-harness-dev-sync-template",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      }
+    ],
+    "scripts/verify-context-reconciliation": [
+      {
+        "label": "trace-verify-strategic-handoff-package-scenarios",
+        "exit_code": 1,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-strategic-handoff-package-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-strategic-handoff-package-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-strategic-handoff-package-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-strategic-handoff-package-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-strategic-handoff-package-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-strategic-handoff-package-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-strategic-handoff-package-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-strategic-handoff-package-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-strategic-handoff-package-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-plan-entry",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-plan-entry",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-plan-entry",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-plan-entry",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-plan-entry",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      }
+    ],
+    "scripts/strategic-handoff": [
+      {
+        "label": "trace-verify-strategic-handoff-package-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-strategic-handoff-package-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      }
+    ],
+    "scripts/verify-frontend-delivery": [
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      },
+      {
+        "label": "trace-verify-frontend-delivery-scenarios",
+        "exit_code": 0,
+        "trace": true,
+        "kind": "traced-process-entry"
+      }
+    ],
+    "scripts/lib/plan-spec-entry.mjs": [
+      {
+        "label": "isolated-plan-entry",
+        "exit_code": 0,
+        "trace": false,
+        "kind": "explicit-synthetic-API-probe"
+      }
+    ]
+  },
+  "limitation": "Process entry/API probes only. Same-content and lexical reachability do not establish timing or successful execution in another repo/context."
+}

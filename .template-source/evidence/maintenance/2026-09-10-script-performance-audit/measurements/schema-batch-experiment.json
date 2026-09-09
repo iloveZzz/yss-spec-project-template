@@ -1,0 +1,37 @@
+{
+  "schema": "/Users/zhudaoming/Projects/yss-spec-project-template/docs/process/schemas/context-reconciliation.schema.json",
+  "records_per_sample": 20,
+  "python_processes": {
+    "separate": 20,
+    "batch": 1
+  },
+  "samples": [
+    {
+      "sample": 0,
+      "separate_ms": 1347.9280000319704,
+      "batch_ms": 67.3046670272015,
+      "identical_errors": true,
+      "valid": 10,
+      "invalid": 10
+    },
+    {
+      "sample": 1,
+      "separate_ms": 1354.243666981347,
+      "batch_ms": 66.98466598754749,
+      "identical_errors": true,
+      "valid": 10,
+      "invalid": 10
+    },
+    {
+      "sample": 2,
+      "separate_ms": 1340.2785420184955,
+      "batch_ms": 66.58983300440013,
+      "identical_errors": true,
+      "valid": 10,
+      "invalid": 10
+    }
+  ],
+  "scope": "schema-only; excludes filesystem snapshot, approval and freshness checks; not production implementation",
+  "median_separate_ms": 1347.9280000319704,
+  "median_batch_ms": 66.98466598754749
+}

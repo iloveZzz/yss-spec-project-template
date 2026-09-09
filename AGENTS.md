@@ -38,11 +38,11 @@
 
 ## 5. `project-instance` 产品研发路由
 
-主流程：分诊 → Discovery → Spec / 功能架构 → 产品设计 → 工程契约 → Ticket → 切片 → 验证 / 发布 / 复盘。
+主流程：分诊 → Plan → Spec / 功能架构 → 产品设计 → 工程契约 → Ticket → 切片 → 验证 / 发布 / 复盘。
 
 - 先按 `docs/process/harness-process-tailoring.md` 判定影响面和最近可信阶段，再由 `yss-product-lifecycle` 执行 `docs/process/lifecycle-registry.yaml`；阅读导航见 `docs/process/lifecycle-artifact-map.md`。
 - 命中门禁必须完成；仅未命中时记录带原因的 `not-applicable`，不得生成空文档或混淆门禁、产物、工作单元、证据。安全 / 权限写入普通 Spec、契约、架构、验收和 seam，按实际影响触发门禁。
-- 新功能和较大变更先进入 Discovery；`grill-with-docs`、`to-spec`、`to-tickets`、`implement` 仅为用户显式兼容入口。API 变更先形成 OpenAPI 3.1 Draft，审查后 Freeze，再实现。
+- 新功能和较大变更先进入 Plan；`grill-with-docs`、`to-spec`、`to-tickets`、`implement` 仅为用户显式兼容入口。API 变更先形成 OpenAPI 3.1 Draft，审查后 Freeze，再实现。
 - Spec Delta 只记冻结基线的高风险行为差异。OpenAPI Freeze 或无 API 影响记录后拆窄垂直切片，禁止仅按技术层横拆。
 - `seam-deferred` 必须记录风险、责任人、后续 Ticket、验证计划和目标版本或发布日期。
 

@@ -1,11 +1,11 @@
 import path from "node:path";
-import { spawnSync } from "node:child_process";
+import { runCommandSync } from "./command-runner.mjs";
 import { ensure, stat } from "./io.mjs";
 function npm(args, cwd) {
-  const r = spawnSync("npm", args, { cwd, encoding: "utf8", timeout: 120000 });
+  const r = runCommandSync("npm", args, { cwd, timeoutMs: 120000 });
   ensure(
     !r.error && r.status === 0,
-    `npm ${args[0]} 失败: ${r.error?.message || r.stderr}`,
+    `npm ${args[0]} 失败: ${r.termination || r.error?.message || r.stderr}`,
     "UPDATE",
   );
   return r.stdout.trim();

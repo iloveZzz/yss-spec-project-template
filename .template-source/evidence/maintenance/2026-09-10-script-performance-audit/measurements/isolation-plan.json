@@ -1,0 +1,95 @@
+[
+  {
+    "label": "isolated-plan-entry",
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root",
+    "args": [
+      "node",
+      ".perf-plan-entry.mjs"
+    ],
+    "repeat": 3,
+    "timeout": 60
+  },
+  {
+    "label": "trace-plan-entry",
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root",
+    "args": [
+      "node",
+      ".perf-plan-entry.mjs"
+    ],
+    "repeat": 1,
+    "trace": true,
+    "timeout": 60
+  },
+  {
+    "label": "isolated-verify-plan-spec-entry-scenarios",
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root",
+    "args": [
+      "node",
+      "scripts/verify-plan-spec-entry-scenarios"
+    ],
+    "repeat": 1,
+    "timeout": 90
+  },
+  {
+    "label": "isolated-verify-context-reconciliation-scenarios",
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root",
+    "args": [
+      "node",
+      "scripts/verify-context-reconciliation-scenarios"
+    ],
+    "repeat": 1,
+    "timeout": 90
+  },
+  {
+    "label": "isolated-verify-lifecycle-transition-scenarios",
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root",
+    "args": [
+      "node",
+      "scripts/verify-lifecycle-transition-scenarios"
+    ],
+    "repeat": 1,
+    "timeout": 90
+  },
+  {
+    "label": "isolated-verify-strategic-handoff-package-scenarios",
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root",
+    "args": [
+      "node",
+      "scripts/verify-strategic-handoff-package-scenarios"
+    ],
+    "repeat": 1,
+    "timeout": 90
+  },
+  {
+    "label": "isolated-verify-frontend-delivery-scenarios",
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root",
+    "args": [
+      "node",
+      "scripts/verify-frontend-delivery-scenarios"
+    ],
+    "repeat": 1,
+    "timeout": 90
+  },
+  {
+    "label": "trace-verify-strategic-handoff-package-scenarios",
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root",
+    "args": [
+      "node",
+      "scripts/verify-strategic-handoff-package-scenarios"
+    ],
+    "repeat": 1,
+    "trace": true,
+    "timeout": 90
+  },
+  {
+    "label": "trace-verify-frontend-delivery-scenarios",
+    "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root",
+    "args": [
+      "node",
+      "scripts/verify-frontend-delivery-scenarios"
+    ],
+    "repeat": 1,
+    "trace": true,
+    "timeout": 90
+  }
+]

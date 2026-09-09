@@ -9,7 +9,7 @@
 | Spec 初稿 | `docs/.scratch/<feature>/spec.md` | 原型评审后需要回填和校准 |
 | 产品总体设计 / 功能架构 | `docs/.scratch/<feature>/design/<feature>-product-overview-design.md` | 必需；缺失时先返回产品总体设计阶段 |
 | 领域术语 | `CONTEXT.md` | 核心名词、状态和业务规则 |
-| Discovery | `docs/.scratch/<feature>/discovery/<feature>-discovery.md` | 可选 |
+| Plan | `docs/.scratch/<feature>/plan/<feature>-discovery.md` | 可选 |
 | 原型阶段合同 / Product Design 路由 | `yss-prototype-stage -> product-design:index -> <focused skill>` | 必需；记录 `$get-context`、`$ideate`、`$prototype`、`$image-to-code` 或 `$url-to-code` |
 | 原型 / 线框图 | `<链接或导出图片路径>` | Excalidraw / Figma / Penpot / tldraw / Axure / Markdown |
 | 原型交付物 | `docs/.scratch/<feature>/design/prototypes/index.html` 或稳定 URL | 低保真评审后按 H1/H2 档位补齐；H2 AntD 条件取事实；真实组件待验事项交接到前端实现计划，产出后必须获得用户确认 |

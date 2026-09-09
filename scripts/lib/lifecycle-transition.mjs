@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { assertWorkUnitUserDecision, assertImplementationDecision } from "./user-decision.mjs";
 import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
+import { validatePlanSpecEntry } from "./plan-spec-entry.mjs";
 
 const IMPLEMENTATION_WORK_UNIT = "work-unit.slice-implementation";
 const TICKET_DECOMPOSITION_WORK_UNIT = "work-unit.ticket-decomposition";
@@ -15,7 +16,7 @@ function deepFreeze(value) {
 }
 
 const NEXT_ROUTES = deepFreeze({
-  "work-unit.entry-triage": ["work-unit.discovery-opportunity", "work-unit.discovery-requirements"],
+  "work-unit.entry-triage": ["work-unit.plan-opportunity", "work-unit.plan-requirements"],
   "work-unit.ssot-update": ["work-unit.skill-projection-sync", "work-unit.intensity-aware-verification"],
   "work-unit.skill-projection-sync": ["work-unit.template-snapshot-build", "work-unit.intensity-aware-verification"],
   "work-unit.template-snapshot-build": ["work-unit.attach-sync-integration", "work-unit.intensity-aware-verification"],
@@ -23,8 +24,8 @@ const NEXT_ROUTES = deepFreeze({
   "work-unit.intensity-aware-verification": ["work-unit.intensity-aware-review"],
   "work-unit.intensity-aware-review": ["work-unit.release-and-rollback"],
   "work-unit.release-and-rollback": [],
-  "work-unit.discovery-opportunity": ["work-unit.discovery-requirements", "work-unit.domain-strategy-design", "work-unit.stage-decision", "work-unit.spec-synthesis"],
-  "work-unit.discovery-requirements": ["work-unit.domain-strategy-design", "work-unit.stage-decision", "work-unit.spec-synthesis"],
+  "work-unit.plan-opportunity": ["work-unit.plan-requirements", "work-unit.domain-strategy-design", "work-unit.stage-decision", "work-unit.spec-synthesis"],
+  "work-unit.plan-requirements": ["work-unit.domain-strategy-design", "work-unit.stage-decision", "work-unit.spec-synthesis"],
   "work-unit.domain-strategy-design": ["work-unit.stage-decision", "work-unit.spec-synthesis"],
   "work-unit.stage-decision": ["work-unit.spec-synthesis"],
   "work-unit.spec-synthesis": ["work-unit.prototype-design", "work-unit.technical-analysis", REPOSITORY_PREPARATION_WORK_UNIT],
@@ -124,6 +125,7 @@ function validateTicketReference(ref, trackerKind) {
  * by `validateWorkflowExecutionResult` before this function is called.
  */
 export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, options = {}) {
+
   if (["work-unit.technical-analysis", TICKET_DECOMPOSITION_WORK_UNIT, IMPLEMENTATION_WORK_UNIT, "work-unit.frontend-implementation-verification"].includes(nextRoute)) {
     try { enforceFrontendDelivery(decisionState, { root: options.root, phase: nextRoute === IMPLEMENTATION_WORK_UNIT ? "implementation" : "inputs" }); }
     catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
@@ -140,6 +142,10 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
       signals.push(BLOCKING_SIGNALS.implementationBeforeTickets);
     }
     return blockedResult(signals, ["allowed_next_route"]);
+  }
+  if (nextRoute === 'work-unit.spec-synthesis' || currentWorkUnit === 'work-unit.spec-synthesis') {
+    const entry = validatePlanSpecEntry(decisionState, options);
+    if (entry.result === 'blocked' || nextRoute === 'work-unit.spec-synthesis') return entry;
   }
   if (nextRoute === TICKET_DECOMPOSITION_WORK_UNIT) {
     const readiness = validateImplementationRepositoriesReady(decisionState, options);

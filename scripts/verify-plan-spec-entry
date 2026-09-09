@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+import { decisionIO } from './lib/user-decision.mjs';
+import { assertPlanSpecEntry } from './lib/plan-spec-entry.mjs';
+try {
+  if (process.argv.length !== 3) throw new TypeError('用法: node scripts/verify-plan-spec-entry <state.yaml|json>');
+  assertPlanSpecEntry(decisionIO().document(process.argv[2]));
+  process.stdout.write('Plan → Spec 入口检查通过（不授权实现）\n');
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+}

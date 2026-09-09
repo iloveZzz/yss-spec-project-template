@@ -58,6 +58,7 @@ export function loadBundle(root) {
     "BUNDLE",
   );
   const files = new Map();
+  const blobs = new Map();
   for (const [ref, item] of Object.entries(snapshot.files)) {
     governance(ref);
     ensure(
@@ -68,10 +69,14 @@ export function loadBundle(root) {
       `快照类型/编码非法: ${ref}`,
       "BUNDLE",
     );
-    const bytes = fs.readFileSync(safe(root, `template/${item.blob}`));
-    ensure(hash(bytes) === item.digest, `快照内容摘要不一致: ${ref}`, "BUNDLE");
+    let bytes = blobs.get(item.digest);
+    if (!bytes) {
+      bytes = fs.readFileSync(safe(root, `template/${item.blob}`));
+      ensure(hash(bytes) === item.digest, `快照内容摘要不一致: ${ref}`, "BUNDLE");
+      blobs.set(item.digest, bytes);
+    }
     files.set(ref, {
-      bytes,
+      bytes: Buffer.from(bytes),
       baseline: { type: "file", digest: item.digest, mode: item.mode },
     });
   }

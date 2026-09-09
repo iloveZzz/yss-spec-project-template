@@ -1,0 +1,25 @@
+{
+  "schema_version": 2,
+  "intensity": "L1",
+  "classification_reason": "仅建立用户已确认的只读性能分析范围与任务包，不修改运行脚本或门禁；本checkpoint只验证分析入口资产，不代表性能审计已完成。",
+  "triggers": [
+    "textual-only"
+  ],
+  "changed_assets": [
+    ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/scope.md"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "relevant-check",
+      "command": "cat yss-project.yaml; git submodule status（本轮已执行并确认template-source与9个子仓）",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "none",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

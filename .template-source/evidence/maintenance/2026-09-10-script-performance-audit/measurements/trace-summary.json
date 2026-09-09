@@ -1,0 +1,2119 @@
+{
+  "trace-verify-strategic-handoff-package-scenarios": {
+    "processes": [
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 93.03999999999999,
+        "schema_processes": 1,
+        "schema_ms": 74.576166,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.19624999999999737
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.16254100000000093
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 74.576166
+          },
+          "fs.readdirSync": {
+            "count": 52,
+            "duration_ms": 1.2011229999999955
+          },
+          "fs.existsSync": {
+            "count": 53,
+            "duration_ms": 0.20612299999994832
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.03095899999999574
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 86.452875,
+        "schema_processes": 1,
+        "schema_ms": 68.908958,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.14516600000000146
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.18237399999999404
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 68.908958
+          },
+          "fs.readdirSync": {
+            "count": 20,
+            "duration_ms": 0.7471260000000086
+          },
+          "fs.existsSync": {
+            "count": 22,
+            "duration_ms": 0.12449900000001435
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.026292000000012195
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 88.21208399999999,
+        "schema_processes": 1,
+        "schema_ms": 71.40725,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.152999000000003
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.16825000000000934
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 71.40725
+          },
+          "fs.readdirSync": {
+            "count": 20,
+            "duration_ms": 0.5057479999999686
+          },
+          "fs.existsSync": {
+            "count": 22,
+            "duration_ms": 0.09824999999996464
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.02383299999999622
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 88.51320899999999,
+        "schema_processes": 1,
+        "schema_ms": 70.17949999999999,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.18483299999999936
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.16600000000000747
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 70.17949999999999
+          },
+          "fs.readdirSync": {
+            "count": 52,
+            "duration_ms": 1.3060820000000035
+          },
+          "fs.existsSync": {
+            "count": 54,
+            "duration_ms": 0.2782499999999999
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.03429200000000776
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/strategic-handoff",
+        "entry_note": null,
+        "wall_ms": 792.6544580000001,
+        "schema_processes": 9,
+        "schema_ms": 645.6160420000001,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 28,
+            "duration_ms": 0.4435459999999942
+          },
+          "fs.readFileSync": {
+            "count": 202,
+            "duration_ms": 5.025244999999517
+          },
+          "fs.existsSync": {
+            "count": 1756,
+            "duration_ms": 4.469748000000752
+          },
+          "fs.lstatSync": {
+            "count": 1819,
+            "duration_ms": 5.031747999999176
+          },
+          "fs.readdirSync": {
+            "count": 55,
+            "duration_ms": 1.1748340000000432
+          },
+          "spawnSync:python3:strategic-design-handoff.schema.json": {
+            "count": 2,
+            "duration_ms": 150.17837500000002
+          },
+          "spawnSync:python3:strategic-handoff-export.schema.json": {
+            "count": 2,
+            "duration_ms": 139.40920900000003
+          },
+          "spawnSync:python3:strategic-handoff-domain-strategy.schema.json": {
+            "count": 2,
+            "duration_ms": 145.903792
+          },
+          "spawnSync:python3:strategic-handoff-stage-decision-package.schema.json": {
+            "count": 2,
+            "duration_ms": 139.66508300000004
+          },
+          "fs.mkdirSync": {
+            "count": 60,
+            "duration_ms": 1.155331000000217
+          },
+          "fs.writeFileSync": {
+            "count": 58,
+            "duration_ms": 4.062996999999996
+          },
+          "spawnSync:python3:strategic-handoff-package.schema.json": {
+            "count": 1,
+            "duration_ms": 70.45958300000001
+          },
+          "spawnSync:python3:.handoff-staging-6PYZQY.zip": {
+            "count": 1,
+            "duration_ms": 33.544167000000016
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 95.041209,
+        "schema_processes": 1,
+        "schema_ms": 76.31170800000001,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.17583400000000182
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.3082910000000041
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 76.31170800000001
+          },
+          "fs.readdirSync": {
+            "count": 20,
+            "duration_ms": 0.528790999999984
+          },
+          "fs.existsSync": {
+            "count": 22,
+            "duration_ms": 0.11716799999997818
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.0587499999999892
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-strategic-handoff-package-scenarios",
+        "entry_note": null,
+        "wall_ms": 23446.77275,
+        "schema_processes": 253,
+        "schema_ms": 18213.877412999995,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 71,
+            "duration_ms": 3.1246650000032794
+          },
+          "fs.readFileSync": {
+            "count": 5479,
+            "duration_ms": 110.28380700008523
+          },
+          "fs.mkdirSync": {
+            "count": 1642,
+            "duration_ms": 131.81341300003953
+          },
+          "fs.writeFileSync": {
+            "count": 1571,
+            "duration_ms": 479.9000590000281
+          },
+          "fs.existsSync": {
+            "count": 49409,
+            "duration_ms": 115.07975700020276
+          },
+          "fs.lstatSync": {
+            "count": 51931,
+            "duration_ms": 123.50992800031291
+          },
+          "fs.readdirSync": {
+            "count": 1794,
+            "duration_ms": 36.711452999976764
+          },
+          "spawnSync:python3:strategic-design-handoff.schema.json": {
+            "count": 53,
+            "duration_ms": 3795.0247520000007
+          },
+          "spawnSync:python3:strategic-handoff-export.schema.json": {
+            "count": 53,
+            "duration_ms": 3872.1190419999925
+          },
+          "spawnSync:python3:strategic-handoff-domain-strategy.schema.json": {
+            "count": 53,
+            "duration_ms": 3846.5242899999903
+          },
+          "spawnSync:python3:strategic-handoff-stage-decision-package.schema.json": {
+            "count": 53,
+            "duration_ms": 3807.170538000011
+          },
+          "spawnSync:python3:strategic-handoff-package.schema.json": {
+            "count": 41,
+            "duration_ms": 2893.038790999999
+          },
+          "spawnSync:python3:.handoff-staging-CsJVqW.zip": {
+            "count": 1,
+            "duration_ms": 31.916875000000005
+          },
+          "spawnSync:python3:unpacked": {
+            "count": 4,
+            "duration_ms": 131.74233299999923
+          },
+          "fs.copyFileSync": {
+            "count": 130,
+            "duration_ms": 77.83854100001099
+          },
+          "fs.cpSync": {
+            "count": 4,
+            "duration_ms": 94.68279199999915
+          },
+          "spawnSync:python3:escape\"]": {
+            "count": 1,
+            "duration_ms": 31.997707999999875
+          },
+          "spawnSync:python3:[\"manifest.json\",\"manifest.json\"]": {
+            "count": 1,
+            "duration_ms": 35.088582999999744
+          },
+          "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation": {
+            "count": 10,
+            "duration_ms": 1161.2210819999982
+          },
+          "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/strategic-handoff": {
+            "count": 2,
+            "duration_ms": 1302.5900830000028
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/strategic-handoff",
+        "entry_note": null,
+        "wall_ms": 459.167333,
+        "schema_processes": 5,
+        "schema_ms": 345.42649900000004,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 27,
+            "duration_ms": 0.3925420000000024
+          },
+          "fs.readFileSync": {
+            "count": 117,
+            "duration_ms": 3.1233300000001503
+          },
+          "fs.existsSync": {
+            "count": 1087,
+            "duration_ms": 2.757857000000577
+          },
+          "fs.lstatSync": {
+            "count": 1152,
+            "duration_ms": 3.353465999999532
+          },
+          "fs.mkdirSync": {
+            "count": 29,
+            "duration_ms": 0.49941700000001177
+          },
+          "spawnSync:python3:unpacked": {
+            "count": 1,
+            "duration_ms": 33.694584000000006
+          },
+          "spawnSync:python3:strategic-handoff-package.schema.json": {
+            "count": 1,
+            "duration_ms": 68.512375
+          },
+          "fs.readdirSync": {
+            "count": 29,
+            "duration_ms": 0.6315020000000686
+          },
+          "fs.writeFileSync": {
+            "count": 27,
+            "duration_ms": 1.8013340000000255
+          },
+          "spawnSync:python3:strategic-design-handoff.schema.json": {
+            "count": 1,
+            "duration_ms": 69.62225000000001
+          },
+          "spawnSync:python3:strategic-handoff-export.schema.json": {
+            "count": 1,
+            "duration_ms": 67.325166
+          },
+          "spawnSync:python3:strategic-handoff-domain-strategy.schema.json": {
+            "count": 1,
+            "duration_ms": 68.96200000000005
+          },
+          "spawnSync:python3:strategic-handoff-stage-decision-package.schema.json": {
+            "count": 1,
+            "duration_ms": 71.004708
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 88.009333,
+        "schema_processes": 1,
+        "schema_ms": 70.624666,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.16645800000000044
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.17899999999999672
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 70.624666
+          },
+          "fs.readdirSync": {
+            "count": 36,
+            "duration_ms": 0.9437059999999775
+          },
+          "fs.existsSync": {
+            "count": 38,
+            "duration_ms": 0.16642299999993782
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.022582999999997355
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 88.152625,
+        "schema_processes": 1,
+        "schema_ms": 71.002333,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.16504200000000147
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.16224899999999387
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 71.002333
+          },
+          "fs.readdirSync": {
+            "count": 20,
+            "duration_ms": 0.7172489999999954
+          },
+          "fs.existsSync": {
+            "count": 22,
+            "duration_ms": 0.16791700000000276
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.03233400000000586
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 86.77275,
+        "schema_processes": 1,
+        "schema_ms": 69.570875,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.1639999999999997
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.18954099999998597
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 69.570875
+          },
+          "fs.readdirSync": {
+            "count": 20,
+            "duration_ms": 0.5530000000000115
+          },
+          "fs.existsSync": {
+            "count": 22,
+            "duration_ms": 0.1737059999999815
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.024957999999998037
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 93.361791,
+        "schema_processes": 1,
+        "schema_ms": 67.4285,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.40775000000000006
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.20741699999999952
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 67.4285
+          },
+          "fs.readdirSync": {
+            "count": 20,
+            "duration_ms": 0.573794000000035
+          },
+          "fs.existsSync": {
+            "count": 22,
+            "duration_ms": 0.11062599999998213
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.035790999999989026
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 90.418667,
+        "schema_processes": 1,
+        "schema_ms": 72.35245900000001,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.17479099999999725
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.19912599999999614
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 72.35245900000001
+          },
+          "fs.readdirSync": {
+            "count": 36,
+            "duration_ms": 0.880668
+          },
+          "fs.existsSync": {
+            "count": 38,
+            "duration_ms": 0.19904100000000824
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.022999999999996135
+          }
+        }
+      }
+    ],
+    "schema_processes": 277,
+    "schema_ms": 19917.282368999993
+  },
+  "trace-cli-backend-init-physical-path": {
+    "processes": [
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-backend/bin/create-yss-harness-backend.js",
+        "entry_note": null,
+        "wall_ms": 114534.12612500001,
+        "schema_processes": 0,
+        "schema_ms": 0,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 19,
+            "duration_ms": 0.25312599999999463
+          },
+          "fs.openSync": {
+            "count": 23718,
+            "duration_ms": 6533.12826899968
+          },
+          "fs.closeSync": {
+            "count": 23718,
+            "duration_ms": 340.5330849992676
+          },
+          "fs.readFileSync": {
+            "count": 8050,
+            "duration_ms": 594.1731550002587
+          },
+          "fs.lstatSync": {
+            "count": 422888,
+            "duration_ms": 5254.116231001231
+          },
+          "fs.mkdirSync": {
+            "count": 7841,
+            "duration_ms": 782.4827669997691
+          },
+          "fs.writeFileSync": {
+            "count": 7838,
+            "duration_ms": 2971.910034999853
+          },
+          "fs.fchmodSync": {
+            "count": 7836,
+            "duration_ms": 320.26580799981275
+          },
+          "fs.fsyncSync": {
+            "count": 15672,
+            "duration_ms": 91044.55963400079
+          },
+          "fs.renameSync": {
+            "count": 7836,
+            "duration_ms": 4879.817351000111
+          }
+        }
+      }
+    ],
+    "schema_processes": 0,
+    "schema_ms": 0
+  },
+  "trace-create-yss-strategic-design-sync-template": {
+    "processes": [
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-strategic-design/scripts/sync-template.js",
+        "entry_note": null,
+        "wall_ms": 614.622291,
+        "schema_processes": 0,
+        "schema_ms": 0,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 137,
+            "duration_ms": 4.605541000000091
+          },
+          "fs.readFileSync": {
+            "count": 1075,
+            "duration_ms": 18.773416999997664
+          },
+          "fs.existsSync": {
+            "count": 49,
+            "duration_ms": 0.21832900000027955
+          },
+          "spawnSync:node:\nimport { loadInstanceDistributionManifest, toCliManifest } from \"/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/scripts/lib/instance-dist": {
+            "count": 1,
+            "duration_ms": 45.748791
+          },
+          "fs.readdirSync": {
+            "count": 2270,
+            "duration_ms": 32.91904800000085
+          },
+          "fs.lstatSync": {
+            "count": 3903,
+            "duration_ms": 14.302981000000202
+          },
+          "fs.statSync": {
+            "count": 2410,
+            "duration_ms": 5.488308999999141
+          },
+          "fs.mkdirSync": {
+            "count": 1635,
+            "duration_ms": 32.27807600000033
+          },
+          "fs.copyFileSync": {
+            "count": 1761,
+            "duration_ms": 174.36029300000044
+          },
+          "fs.cpSync": {
+            "count": 150,
+            "duration_ms": 136.81112899999997
+          },
+          "fs.renameSync": {
+            "count": 4,
+            "duration_ms": 0.26029300000004696
+          },
+          "spawnSync:git:rev-parse": {
+            "count": 1,
+            "duration_ms": 29.119792000000018
+          },
+          "spawnSync:git:show": {
+            "count": 1,
+            "duration_ms": 32.71475000000004
+          },
+          "fs.openSync": {
+            "count": 1071,
+            "duration_ms": 13.48772899999733
+          },
+          "fs.closeSync": {
+            "count": 1071,
+            "duration_ms": 0.6520719999983271
+          },
+          "fs.writeFileSync": {
+            "count": 2,
+            "duration_ms": 0.27520799999990686
+          }
+        }
+      },
+      {
+        "entry": null,
+        "entry_note": "No file entry recorded (for example node -e); operations retained.",
+        "wall_ms": 19.7545,
+        "schema_processes": 0,
+        "schema_ms": 0,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 27,
+            "duration_ms": 0.2722909999999885
+          },
+          "fs.existsSync": {
+            "count": 1,
+            "duration_ms": 0.018417000000003014
+          },
+          "fs.readFileSync": {
+            "count": 1,
+            "duration_ms": 0.062040999999997126
+          }
+        }
+      }
+    ],
+    "schema_processes": 0,
+    "schema_ms": 0
+  },
+  "trace-create-yss-harness-dev-sync-template": {
+    "processes": [
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-harness-dev/.template-staging-b38M4a/scripts/update-skill-lock",
+        "entry_note": null,
+        "wall_ms": 51.670541,
+        "schema_processes": 0,
+        "schema_ms": 0,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 4,
+            "duration_ms": 0.11891599999999869
+          },
+          "fs.readFileSync": {
+            "count": 1047,
+            "duration_ms": 21.594627999999858
+          },
+          "fs.existsSync": {
+            "count": 514,
+            "duration_ms": 1.2117079999999874
+          },
+          "fs.lstatSync": {
+            "count": 108,
+            "duration_ms": 0.5408330000000063
+          },
+          "fs.readdirSync": {
+            "count": 513,
+            "duration_ms": 10.31300900000009
+          },
+          "fs.openSync": {
+            "count": 1045,
+            "duration_ms": 14.294648000000059
+          },
+          "fs.closeSync": {
+            "count": 1045,
+            "duration_ms": 0.677970000000002
+          },
+          "fs.writeFileSync": {
+            "count": 1,
+            "duration_ms": 0.18158300000000338
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-harness-dev/scripts/sync-template.js",
+        "entry_note": null,
+        "wall_ms": 3531.212,
+        "schema_processes": 0,
+        "schema_ms": 0,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 9238,
+            "duration_ms": 183.8953079999976
+          },
+          "fs.readFileSync": {
+            "count": 6253,
+            "duration_ms": 117.25660700000229
+          },
+          "fs.existsSync": {
+            "count": 118,
+            "duration_ms": 0.4769140000013934
+          },
+          "fs.copyFileSync": {
+            "count": 11169,
+            "duration_ms": 1312.3986420000163
+          },
+          "fs.readdirSync": {
+            "count": 9916,
+            "duration_ms": 152.77166600000442
+          },
+          "fs.lstatSync": {
+            "count": 23388,
+            "duration_ms": 92.74876499996799
+          },
+          "fs.statSync": {
+            "count": 13689,
+            "duration_ms": 36.2639889999935
+          },
+          "fs.mkdirSync": {
+            "count": 9326,
+            "duration_ms": 194.45311299999875
+          },
+          "fs.cpSync": {
+            "count": 636,
+            "duration_ms": 1009.3519620000025
+          },
+          "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-harness-dev/.template-staging-b38M4a/scripts/update-skill-lock": {
+            "count": 1,
+            "duration_ms": 77.72504200000003
+          },
+          "fs.renameSync": {
+            "count": 8,
+            "duration_ms": 0.5934570000003987
+          },
+          "spawnSync:git:rev-parse": {
+            "count": 1,
+            "duration_ms": 29.565875000000233
+          },
+          "fs.openSync": {
+            "count": 6249,
+            "duration_ms": 77.5979159999888
+          },
+          "fs.closeSync": {
+            "count": 6249,
+            "duration_ms": 3.78164700002435
+          },
+          "fs.writeFileSync": {
+            "count": 1,
+            "duration_ms": 0.14845800000011877
+          }
+        }
+      }
+    ],
+    "schema_processes": 0,
+    "schema_ms": 0
+  },
+  "trace-cli-frontend-init-physical-path": {
+    "processes": [
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-frontend/bin/create-yss-harness-frontend.js",
+        "entry_note": null,
+        "wall_ms": 100812.896667,
+        "schema_processes": 0,
+        "schema_ms": 0,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 19,
+            "duration_ms": 0.2627539999999957
+          },
+          "fs.openSync": {
+            "count": 29527,
+            "duration_ms": 2135.5888529995555
+          },
+          "fs.closeSync": {
+            "count": 29527,
+            "duration_ms": 371.3788940010748
+          },
+          "fs.readFileSync": {
+            "count": 9983,
+            "duration_ms": 611.6409730002752
+          },
+          "fs.lstatSync": {
+            "count": 600033,
+            "duration_ms": 6967.460245000652
+          },
+          "fs.mkdirSync": {
+            "count": 9779,
+            "duration_ms": 483.478583000209
+          },
+          "fs.writeFileSync": {
+            "count": 9776,
+            "duration_ms": 1904.3059020001626
+          },
+          "fs.fchmodSync": {
+            "count": 9774,
+            "duration_ms": 378.51781000025335
+          },
+          "fs.fsyncSync": {
+            "count": 19548,
+            "duration_ms": 82208.13877799855
+          },
+          "fs.renameSync": {
+            "count": 9774,
+            "duration_ms": 3274.3378989999783
+          }
+        }
+      }
+    ],
+    "schema_processes": 0,
+    "schema_ms": 0
+  },
+  "trace-cli-frontend-verify-bundle": {
+    "processes": [
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-frontend/scripts/verify-bundle.mjs",
+        "entry_note": null,
+        "wall_ms": 202.51337500000002,
+        "schema_processes": 0,
+        "schema_ms": 0,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 9,
+            "duration_ms": 0.2142090000000021
+          },
+          "fs.lstatSync": {
+            "count": 14663,
+            "duration_ms": 33.7596599999992
+          },
+          "fs.readFileSync": {
+            "count": 4906,
+            "duration_ms": 71.07251599999884
+          },
+          "fs.readdirSync": {
+            "count": 3,
+            "duration_ms": 0.18783300000000835
+          },
+          "fs.statSync": {
+            "count": 14,
+            "duration_ms": 0.10554100000000233
+          }
+        }
+      }
+    ],
+    "schema_processes": 0,
+    "schema_ms": 0
+  },
+  "trace-plan-entry": {
+    "processes": [
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 83.356375,
+        "schema_processes": 1,
+        "schema_ms": 67.60983399999999,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.14158299999999713
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.28287400000001384
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 67.60983399999999
+          },
+          "fs.readdirSync": {
+            "count": 4,
+            "duration_ms": 0.21704100000000892
+          },
+          "fs.existsSync": {
+            "count": 6,
+            "duration_ms": 0.03508300000001441
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.029458000000005313
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 84.798125,
+        "schema_processes": 1,
+        "schema_ms": 68.65575000000001,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.14995700000000056
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.2985839999999982
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 68.65575000000001
+          },
+          "fs.readdirSync": {
+            "count": 4,
+            "duration_ms": 0.18658300000001304
+          },
+          "fs.existsSync": {
+            "count": 6,
+            "duration_ms": 0.05354200000002152
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.02433399999999608
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 84.318041,
+        "schema_processes": 1,
+        "schema_ms": 68.533125,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.13475099999999784
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.21125000000001748
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 68.533125
+          },
+          "fs.readdirSync": {
+            "count": 4,
+            "duration_ms": 0.5946240000000103
+          },
+          "fs.existsSync": {
+            "count": 6,
+            "duration_ms": 0.04104300000001615
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.025707999999994513
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 82.343125,
+        "schema_processes": 1,
+        "schema_ms": 65.962417,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.1452510000000018
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.24712500000000048
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 65.962417
+          },
+          "fs.readdirSync": {
+            "count": 4,
+            "duration_ms": 0.18387499999998624
+          },
+          "fs.existsSync": {
+            "count": 6,
+            "duration_ms": 0.03562500000002444
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.02637500000000159
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 83.009166,
+        "schema_processes": 1,
+        "schema_ms": 67.295958,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.20491800000000104
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.25591700000000017
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 67.295958
+          },
+          "fs.readdirSync": {
+            "count": 4,
+            "duration_ms": 0.19479100000000926
+          },
+          "fs.existsSync": {
+            "count": 6,
+            "duration_ms": 0.030083000000004745
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.024749999999997385
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/.perf-plan-entry.mjs",
+        "entry_note": null,
+        "wall_ms": 977.4822089999999,
+        "schema_processes": 5,
+        "schema_ms": 335.41858199999996,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 28,
+            "duration_ms": 0.373459000000004
+          },
+          "fs.mkdirSync": {
+            "count": 2,
+            "duration_ms": 0.11933300000000102
+          },
+          "fs.writeFileSync": {
+            "count": 10,
+            "duration_ms": 0.7995839999999852
+          },
+          "fs.readFileSync": {
+            "count": 83,
+            "duration_ms": 3.1262119999998745
+          },
+          "fs.readdirSync": {
+            "count": 3,
+            "duration_ms": 0.06716600000000383
+          },
+          "fs.existsSync": {
+            "count": 9,
+            "duration_ms": 0.08904199999994944
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.01979199999999892
+          },
+          "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation": {
+            "count": 5,
+            "duration_ms": 541.8046660000001
+          },
+          "spawnSync:python3:user-decision.schema.json": {
+            "count": 5,
+            "duration_ms": 335.41858199999996
+          }
+        }
+      }
+    ],
+    "schema_processes": 10,
+    "schema_ms": 673.4756659999999
+  },
+  "trace-cli-backend-verify-bundle": {
+    "processes": [
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-backend/scripts/verify-bundle.mjs",
+        "entry_note": null,
+        "wall_ms": 155.08612499999998,
+        "schema_processes": 0,
+        "schema_ms": 0,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 9,
+            "duration_ms": 0.19587399999999633
+          },
+          "fs.lstatSync": {
+            "count": 11756,
+            "duration_ms": 25.140672000000116
+          },
+          "fs.readFileSync": {
+            "count": 3937,
+            "duration_ms": 50.46598499999996
+          },
+          "fs.readdirSync": {
+            "count": 3,
+            "duration_ms": 0.16899899999999946
+          },
+          "fs.statSync": {
+            "count": 14,
+            "duration_ms": 0.11345799999999073
+          }
+        }
+      }
+    ],
+    "schema_processes": 0,
+    "schema_ms": 0
+  },
+  "trace-create-yss-spec-sync-template": {
+    "processes": [
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-spec/scripts/sync-template.js",
+        "entry_note": null,
+        "wall_ms": 3581.970334,
+        "schema_processes": 0,
+        "schema_ms": 0,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 9176,
+            "duration_ms": 143.41808999999972
+          },
+          "fs.readFileSync": {
+            "count": 6307,
+            "duration_ms": 117.4093660000175
+          },
+          "fs.existsSync": {
+            "count": 8786,
+            "duration_ms": 21.491178000000012
+          },
+          "spawnSync:git:ls-files": {
+            "count": 1,
+            "duration_ms": 61.48808399999999
+          },
+          "fs.lstatSync": {
+            "count": 23166,
+            "duration_ms": 81.46642699998597
+          },
+          "fs.statSync": {
+            "count": 13681,
+            "duration_ms": 34.595690000014486
+          },
+          "fs.mkdirSync": {
+            "count": 9188,
+            "duration_ms": 184.83968900000653
+          },
+          "fs.copyFileSync": {
+            "count": 11210,
+            "duration_ms": 1311.6111449999976
+          },
+          "fs.cpSync": {
+            "count": 552,
+            "duration_ms": 1012.0451619999976
+          },
+          "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-spec/.template-staging-wzXcxb/scripts/update-skill-lock": {
+            "count": 1,
+            "duration_ms": 104.78125
+          },
+          "fs.readdirSync": {
+            "count": 8688,
+            "duration_ms": 126.70742099999507
+          },
+          "fs.renameSync": {
+            "count": 8,
+            "duration_ms": 0.6059580000001006
+          },
+          "spawnSync:git:rev-parse": {
+            "count": 1,
+            "duration_ms": 31.368999999999687
+          },
+          "fs.openSync": {
+            "count": 6303,
+            "duration_ms": 75.49767399998336
+          },
+          "fs.closeSync": {
+            "count": 6303,
+            "duration_ms": 4.261763000005885
+          },
+          "fs.writeFileSync": {
+            "count": 1,
+            "duration_ms": 0.12895900000012261
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-spec/.template-staging-wzXcxb/scripts/update-skill-lock",
+        "entry_note": null,
+        "wall_ms": 80.04779199999999,
+        "schema_processes": 0,
+        "schema_ms": 0,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 4,
+            "duration_ms": 0.12850099999999998
+          },
+          "fs.readFileSync": {
+            "count": 1052,
+            "duration_ms": 24.566523000000046
+          },
+          "fs.existsSync": {
+            "count": 500,
+            "duration_ms": 1.2102009999999375
+          },
+          "fs.lstatSync": {
+            "count": 94,
+            "duration_ms": 0.3996290000000329
+          },
+          "fs.readdirSync": {
+            "count": 499,
+            "duration_ms": 9.961512000000017
+          },
+          "fs.openSync": {
+            "count": 1048,
+            "duration_ms": 15.114789999999932
+          },
+          "fs.closeSync": {
+            "count": 1048,
+            "duration_ms": 0.7892970000001469
+          },
+          "fs.writeFileSync": {
+            "count": 1,
+            "duration_ms": 0.1509580000000028
+          }
+        }
+      }
+    ],
+    "schema_processes": 0,
+    "schema_ms": 0
+  },
+  "trace-verify-frontend-delivery-scenarios": {
+    "processes": [
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 105.819666,
+        "schema_processes": 1,
+        "schema_ms": 86.890583,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.17504299999999873
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.22233199999999087
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 86.890583
+          },
+          "fs.readdirSync": {
+            "count": 45,
+            "duration_ms": 1.1094979999999595
+          },
+          "fs.existsSync": {
+            "count": 47,
+            "duration_ms": 0.21467099999999562
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.036417000000000144
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-frontend-delivery",
+        "entry_note": null,
+        "wall_ms": 2092.334125,
+        "schema_processes": 24,
+        "schema_ms": 1745.5075020000004,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 41,
+            "duration_ms": 0.7765820000000758
+          },
+          "fs.readFileSync": {
+            "count": 579,
+            "duration_ms": 14.132244000003865
+          },
+          "fs.existsSync": {
+            "count": 5900,
+            "duration_ms": 14.896210999998104
+          },
+          "fs.lstatSync": {
+            "count": 6117,
+            "duration_ms": 16.69572299999579
+          },
+          "spawnSync:python3:frontend-delivery-acceptance.schema.json": {
+            "count": 1,
+            "duration_ms": 73.833292
+          },
+          "fs.readdirSync": {
+            "count": 184,
+            "duration_ms": 3.819589000000718
+          },
+          "fs.mkdirSync": {
+            "count": 156,
+            "duration_ms": 2.6405409999998426
+          },
+          "fs.writeFileSync": {
+            "count": 151,
+            "duration_ms": 10.382665999998892
+          },
+          "spawnSync:python3:backend-delivery.schema.json": {
+            "count": 1,
+            "duration_ms": 74.40741600000001
+          },
+          "spawnSync:python3:backend-delivery-verification.schema.json": {
+            "count": 2,
+            "duration_ms": 157.98979100000003
+          },
+          "spawnSync:python3:strategic-handoff-package.schema.json": {
+            "count": 4,
+            "duration_ms": 279.21891800000003
+          },
+          "spawnSync:python3:strategic-design-handoff.schema.json": {
+            "count": 4,
+            "duration_ms": 286.83841800000016
+          },
+          "spawnSync:python3:strategic-handoff-export.schema.json": {
+            "count": 4,
+            "duration_ms": 297.26250099999993
+          },
+          "spawnSync:python3:strategic-handoff-domain-strategy.schema.json": {
+            "count": 4,
+            "duration_ms": 285.597792
+          },
+          "spawnSync:python3:strategic-handoff-stage-decision-package.schema.json": {
+            "count": 4,
+            "duration_ms": 290.3593740000001
+          },
+          "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation": {
+            "count": 1,
+            "duration_ms": 111.0742919999999
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 86.631083,
+        "schema_processes": 1,
+        "schema_ms": 70.017,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.17658299999999905
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.16487399999999575
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 70.017
+          },
+          "fs.readdirSync": {
+            "count": 45,
+            "duration_ms": 0.9880859999999956
+          },
+          "fs.existsSync": {
+            "count": 47,
+            "duration_ms": 0.20358400000002064
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.022916000000009262
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 127.639375,
+        "schema_processes": 1,
+        "schema_ms": 105.770417,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.14612700000000345
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.25099999999998523
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 105.770417
+          },
+          "fs.readdirSync": {
+            "count": 45,
+            "duration_ms": 1.129166999999967
+          },
+          "fs.existsSync": {
+            "count": 47,
+            "duration_ms": 0.21262299999995093
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.031833000000005995
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 87.128792,
+        "schema_processes": 1,
+        "schema_ms": 69.45595800000001,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.14041600000000365
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.1591249999999924
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 69.45595800000001
+          },
+          "fs.readdirSync": {
+            "count": 45,
+            "duration_ms": 1.0867110000000366
+          },
+          "fs.existsSync": {
+            "count": 47,
+            "duration_ms": 0.2065000000000623
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.03133300000000361
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 83.21866700000001,
+        "schema_processes": 1,
+        "schema_ms": 66.048,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.14195699999999967
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.15045799999999865
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 66.048
+          },
+          "fs.readdirSync": {
+            "count": 45,
+            "duration_ms": 1.1000839999999954
+          },
+          "fs.existsSync": {
+            "count": 47,
+            "duration_ms": 0.18350000000008038
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.025625000000005116
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-frontend-delivery-scenarios",
+        "entry_note": null,
+        "wall_ms": 36214.8685,
+        "schema_processes": 339,
+        "schema_ms": 23672.22932800003,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 121,
+            "duration_ms": 3.412876000001134
+          },
+          "fs.readFileSync": {
+            "count": 8207,
+            "duration_ms": 153.26205999995145
+          },
+          "fs.mkdirSync": {
+            "count": 2419,
+            "duration_ms": 435.33244399996045
+          },
+          "fs.writeFileSync": {
+            "count": 2290,
+            "duration_ms": 1197.2072739999396
+          },
+          "fs.existsSync": {
+            "count": 84881,
+            "duration_ms": 189.62400800066698
+          },
+          "fs.lstatSync": {
+            "count": 88155,
+            "duration_ms": 203.01423100053708
+          },
+          "fs.readdirSync": {
+            "count": 2449,
+            "duration_ms": 48.14841399998937
+          },
+          "spawnSync:python3:strategic-design-handoff.schema.json": {
+            "count": 53,
+            "duration_ms": 3731.1457010000113
+          },
+          "spawnSync:python3:strategic-handoff-export.schema.json": {
+            "count": 53,
+            "duration_ms": 3716.9510840000066
+          },
+          "spawnSync:python3:strategic-handoff-domain-strategy.schema.json": {
+            "count": 53,
+            "duration_ms": 3713.5752100000072
+          },
+          "spawnSync:python3:strategic-handoff-stage-decision-package.schema.json": {
+            "count": 53,
+            "duration_ms": 3700.582959000002
+          },
+          "spawnSync:python3:strategic-handoff-package.schema.json": {
+            "count": 52,
+            "duration_ms": 3631.660041000004
+          },
+          "spawnSync:python3:backend-delivery.schema.json": {
+            "count": 21,
+            "duration_ms": 1446.0039579999948
+          },
+          "spawnSync:python3:backend-delivery-verification.schema.json": {
+            "count": 38,
+            "duration_ms": 2601.6889999999994
+          },
+          "spawnSync:python3:.backend-export-Z7dq8a.zip": {
+            "count": 1,
+            "duration_ms": 33.38345900000013
+          },
+          "spawnSync:python3:unpacked": {
+            "count": 2,
+            "duration_ms": 67.6329169999999
+          },
+          "fs.copyFileSync": {
+            "count": 119,
+            "duration_ms": 80.09733100001995
+          },
+          "fs.cpSync": {
+            "count": 3,
+            "duration_ms": 100.30500000000029
+          },
+          "spawnSync:python3:frontend-delivery-acceptance.schema.json": {
+            "count": 16,
+            "duration_ms": 1130.6213750000052
+          },
+          "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation": {
+            "count": 11,
+            "duration_ms": 1298.0219580000048
+          },
+          "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-frontend-delivery": {
+            "count": 3,
+            "duration_ms": 6214.115
+          },
+          "fork:revision-server.mjs:/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/frontend-delivery-test-UIZ0nV/server.json": {
+            "count": 1,
+            "duration_ms": 35442.413791
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 86.735583,
+        "schema_processes": 1,
+        "schema_ms": 69.08054200000001,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.15762499999999946
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.16358400000000373
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 69.08054200000001
+          },
+          "fs.readdirSync": {
+            "count": 45,
+            "duration_ms": 1.0375829999999695
+          },
+          "fs.existsSync": {
+            "count": 47,
+            "duration_ms": 0.19670799999992994
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.02599999999999625
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-frontend-delivery",
+        "entry_note": null,
+        "wall_ms": 2085.812959,
+        "schema_processes": 24,
+        "schema_ms": 1710.9333319999994,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 41,
+            "duration_ms": 0.6020800000000257
+          },
+          "fs.readFileSync": {
+            "count": 579,
+            "duration_ms": 14.224281000001696
+          },
+          "fs.existsSync": {
+            "count": 5900,
+            "duration_ms": 16.0077820000057
+          },
+          "fs.lstatSync": {
+            "count": 6117,
+            "duration_ms": 17.816248999995352
+          },
+          "spawnSync:python3:frontend-delivery-acceptance.schema.json": {
+            "count": 1,
+            "duration_ms": 70.179667
+          },
+          "fs.readdirSync": {
+            "count": 184,
+            "duration_ms": 4.079671000000644
+          },
+          "fs.mkdirSync": {
+            "count": 156,
+            "duration_ms": 3.1097870000010346
+          },
+          "fs.writeFileSync": {
+            "count": 151,
+            "duration_ms": 10.762080000001234
+          },
+          "spawnSync:python3:backend-delivery.schema.json": {
+            "count": 1,
+            "duration_ms": 70.170833
+          },
+          "spawnSync:python3:backend-delivery-verification.schema.json": {
+            "count": 2,
+            "duration_ms": 136.34600099999997
+          },
+          "spawnSync:python3:strategic-handoff-package.schema.json": {
+            "count": 4,
+            "duration_ms": 304.71258299999994
+          },
+          "spawnSync:python3:strategic-design-handoff.schema.json": {
+            "count": 4,
+            "duration_ms": 292.01341499999967
+          },
+          "spawnSync:python3:strategic-handoff-export.schema.json": {
+            "count": 4,
+            "duration_ms": 273.04987499999993
+          },
+          "spawnSync:python3:strategic-handoff-domain-strategy.schema.json": {
+            "count": 4,
+            "duration_ms": 282.56391600000006
+          },
+          "spawnSync:python3:strategic-handoff-stage-decision-package.schema.json": {
+            "count": 4,
+            "duration_ms": 281.8970419999997
+          },
+          "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation": {
+            "count": 1,
+            "duration_ms": 140.5865
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 86.08604199999999,
+        "schema_processes": 1,
+        "schema_ms": 68.430875,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.14666600000000152
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.184040999999997
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 68.430875
+          },
+          "fs.readdirSync": {
+            "count": 45,
+            "duration_ms": 1.1811250000000086
+          },
+          "fs.existsSync": {
+            "count": 47,
+            "duration_ms": 0.21758099999995295
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.037333000000003835
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-frontend-delivery",
+        "entry_note": null,
+        "wall_ms": 1958.989959,
+        "schema_processes": 24,
+        "schema_ms": 1631.2745419999997,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 41,
+            "duration_ms": 0.7080009999999035
+          },
+          "fs.readFileSync": {
+            "count": 579,
+            "duration_ms": 11.019530999998912
+          },
+          "fs.existsSync": {
+            "count": 5900,
+            "duration_ms": 13.256660999998633
+          },
+          "fs.lstatSync": {
+            "count": 6117,
+            "duration_ms": 14.826913000000882
+          },
+          "spawnSync:python3:frontend-delivery-acceptance.schema.json": {
+            "count": 1,
+            "duration_ms": 70.947375
+          },
+          "fs.readdirSync": {
+            "count": 184,
+            "duration_ms": 4.028334999999188
+          },
+          "fs.mkdirSync": {
+            "count": 156,
+            "duration_ms": 2.426289999999682
+          },
+          "fs.writeFileSync": {
+            "count": 151,
+            "duration_ms": 9.000218000000189
+          },
+          "spawnSync:python3:backend-delivery.schema.json": {
+            "count": 1,
+            "duration_ms": 67.508083
+          },
+          "spawnSync:python3:backend-delivery-verification.schema.json": {
+            "count": 2,
+            "duration_ms": 136.87912499999996
+          },
+          "spawnSync:python3:strategic-handoff-package.schema.json": {
+            "count": 4,
+            "duration_ms": 272.3916659999998
+          },
+          "spawnSync:python3:strategic-design-handoff.schema.json": {
+            "count": 4,
+            "duration_ms": 276.7440840000001
+          },
+          "spawnSync:python3:strategic-handoff-export.schema.json": {
+            "count": 4,
+            "duration_ms": 266.937708
+          },
+          "spawnSync:python3:strategic-handoff-domain-strategy.schema.json": {
+            "count": 4,
+            "duration_ms": 270.3410429999999
+          },
+          "spawnSync:python3:strategic-handoff-stage-decision-package.schema.json": {
+            "count": 4,
+            "duration_ms": 269.52545799999996
+          },
+          "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation": {
+            "count": 1,
+            "duration_ms": 108.01258300000006
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 88.268209,
+        "schema_processes": 1,
+        "schema_ms": 70.035084,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.15879199999999827
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.1672499999999939
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 70.035084
+          },
+          "fs.readdirSync": {
+            "count": 45,
+            "duration_ms": 1.0459169999999745
+          },
+          "fs.existsSync": {
+            "count": 47,
+            "duration_ms": 0.2895449999999613
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.036000000000001364
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 84.02054199999999,
+        "schema_processes": 1,
+        "schema_ms": 66.225,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.16050000000000075
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.16050000000000608
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 66.225
+          },
+          "fs.readdirSync": {
+            "count": 45,
+            "duration_ms": 1.0883349999999723
+          },
+          "fs.existsSync": {
+            "count": 47,
+            "duration_ms": 0.1937059999999633
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.03012499999999818
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 78.207583,
+        "schema_processes": 1,
+        "schema_ms": 62.17387500000001,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.14099999999999824
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.13308199999999282
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 62.17387500000001
+          },
+          "fs.readdirSync": {
+            "count": 45,
+            "duration_ms": 0.9964179999999629
+          },
+          "fs.existsSync": {
+            "count": 47,
+            "duration_ms": 0.1775409999999482
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.020792000000000144
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 101.22675,
+        "schema_processes": 1,
+        "schema_ms": 82.507833,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.17970799999999798
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.20020899999999742
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 82.507833
+          },
+          "fs.readdirSync": {
+            "count": 45,
+            "duration_ms": 1.2052099999999797
+          },
+          "fs.existsSync": {
+            "count": 47,
+            "duration_ms": 0.20170800000001066
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.030833999999998696
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 84.233083,
+        "schema_processes": 1,
+        "schema_ms": 66.972125,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.16983299999999701
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.17145999999999084
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 66.972125
+          },
+          "fs.readdirSync": {
+            "count": 45,
+            "duration_ms": 1.046665999999945
+          },
+          "fs.existsSync": {
+            "count": 47,
+            "duration_ms": 0.2045450000000386
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.02420800000000156
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 89.92037499999999,
+        "schema_processes": 1,
+        "schema_ms": 72.101625,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.1569160000000025
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.17250000000000654
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 72.101625
+          },
+          "fs.readdirSync": {
+            "count": 45,
+            "duration_ms": 1.1253320000000002
+          },
+          "fs.existsSync": {
+            "count": 47,
+            "duration_ms": 0.19870400000003485
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.03079199999999105
+          }
+        }
+      },
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation",
+        "entry_note": null,
+        "wall_ms": 88.94624999999999,
+        "schema_processes": 1,
+        "schema_ms": 70.34045900000001,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 5,
+            "duration_ms": 0.14383499999999927
+          },
+          "fs.readFileSync": {
+            "count": 4,
+            "duration_ms": 0.17650100000000002
+          },
+          "spawnSync:python3:context-reconciliation.schema.json": {
+            "count": 1,
+            "duration_ms": 70.34045900000001
+          },
+          "fs.readdirSync": {
+            "count": 45,
+            "duration_ms": 1.3196680000000356
+          },
+          "fs.existsSync": {
+            "count": 47,
+            "duration_ms": 0.23445700000002034
+          },
+          "fs.lstatSync": {
+            "count": 1,
+            "duration_ms": 0.040625000000005684
+          }
+        }
+      }
+    ],
+    "schema_processes": 425,
+    "schema_ms": 29785.99408000003
+  },
+  "trace-cli-backend-init": {
+    "processes": [
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-backend/bin/create-yss-harness-backend.js",
+        "entry_note": null,
+        "wall_ms": 155.444708,
+        "schema_processes": 0,
+        "schema_ms": 0,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 19,
+            "duration_ms": 0.28416800000000286
+          },
+          "fs.readFileSync": {
+            "count": 3922,
+            "duration_ms": 57.6419569999993
+          },
+          "fs.lstatSync": {
+            "count": 11753,
+            "duration_ms": 26.738111000000124
+          }
+        }
+      }
+    ],
+    "schema_processes": 0,
+    "schema_ms": 0
+  },
+  "trace-cli-frontend-init": {
+    "processes": [
+      {
+        "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-frontend/bin/create-yss-harness-frontend.js",
+        "entry_note": null,
+        "wall_ms": 194.08358299999998,
+        "schema_processes": 0,
+        "schema_ms": 0,
+        "operations": {
+          "fs.realpathSync": {
+            "count": 19,
+            "duration_ms": 0.3493330000000032
+          },
+          "fs.readFileSync": {
+            "count": 4891,
+            "duration_ms": 72.68531300000049
+          },
+          "fs.lstatSync": {
+            "count": 14660,
+            "duration_ms": 33.66345899999994
+          }
+        }
+      }
+    ],
+    "schema_processes": 0,
+    "schema_ms": 0
+  }
+}

@@ -13,6 +13,16 @@
 
 连续阶段自动推进时累积 Ticket 同步和 Git 判断证据，在人工暂停、handoff、进入实现、合并或发布边界集中 checkpoint。发生阻塞、责任人变化或资产需要单独批准时立即落 checkpoint，不因合并记录而丢失阶段因果关系。
 
+## 执行成本
+
+执行策略以 `orchestration-contract.yaml.execution_efficiency` 为准，通过同一次 `query-lifecycle-context` 查询取得。Plan → Spec → Ticket 的耗时应分清脚本执行、Agent 读取与编排、人工等待；没有计时记录时不把总时长归因于摘要计算。
+
+同一工作单元把 mode、stage、work-unit 和必要 include 放进一次查询。查询已给出的内容不再整份读取；已读资料在当前任务内未变化时复用，变化、新影响或恢复时重新加载。只问当前阶段尚缺且会影响判断的问题，独立问题可合并；依赖尚未形成资产的后续批准仍按用户决定协议逐边界取得。
+
+资产写入稳定后、批准或流转前执行当前合同要求的验证。同一边界内，只有输入字节、上游、验证器/schema、参数和仓库根均已确认未变化且实际结果可读时，才引用已执行结果；不确定就重跑。每个工作单元仍生成并校验自己的 context reconciliation；恢复、交接、实现、合并和发布边界重新执行适用验证。`verify-*-scenarios` 与模板全量核验用于模板维护或明确的回归任务，不因产品阶段切换而重复执行；实例合同显式要求的检查仍须执行。
+
+脚本命令、实际退出码和 duration_ms 记入已有 checkpoint 的验证证据；Agent 编排和人工等待仅在有计时来源时记录，否则标为 unknown。无需为耗时再建一套阶段产物。
+
 ## 阶段边界
 
 Matt phase boundary 是工作阶段之间的上下文决策，不是新的生命周期状态。按以下顺序判断，第一项适用即停止判断：
@@ -59,7 +69,7 @@ tracker 选择和冲突按 `docs/agents/issue-tracker.md` 裁决：已持久化 
 
 - `work-unit.technical-analysis` 由 `yss-technical-design` 组织后端技术设计，先按项目确认架构，再调用 DDD `yss-tactical-design` 或传统 MVC `yss-mvc-design`。状态、规则、一致性、持久化影响本身不意味着选择 DDD。无后端技术设计影响记录带原因的 `not-applicable`，其他 API / 前端技术分析继续各自路由。新合同使用 `artifact.technical-design`，通过 `evidence.technical-design-review` 回交现有架构审查；旧 DDD 稳定 ID 只读兼容。批准仍由生命周期维护，编译器消费批准且当前的设计起草实现合同；`stale`、`drift` 或 `new_impacts` 时不得继续 Ticket 正式化。
 
-- `work-unit.discovery-requirements` 实际调用 `grilling` 和 `domain-modeling`；`work-unit.discovery-opportunity` 按事实类型路由 `competitive-intelligence` 或 `yss-research`。`yss-research:quick` 只用于探索；外部证据进入领域战略、阶段决策或其他生命周期批准输入前必须升级为 `evidence-audited`。生命周期原生工作单元默认负责 Spec、Ticket 和实现资产；`to-spec`、`to-tickets`、`implement` 仅保留为显式兼容入口，结果必须回交生命周期验收。
+- `work-unit.plan-requirements` 实际调用 `grilling` 和 `domain-modeling`；`work-unit.plan-opportunity` 按事实类型路由 `competitive-intelligence` 或 `yss-research`。`yss-research:quick` 只用于探索；外部证据进入领域战略、阶段决策或其他生命周期批准输入前必须升级为 `evidence-audited`。生命周期原生工作单元默认负责 Spec、Ticket 和实现资产；`to-spec`、`to-tickets`、`implement` 仅保留为显式兼容入口，结果必须回交生命周期验收。
 - 原生 `work-unit.ticket-decomposition` 只能在 OpenAPI Freeze 或无 API 影响记录后创建垂直切片，初始 Ticket 状态统一为 `ready-for-human`；生命周期复算完整公式后才能提升 `ready-for-agent`。该工作单元必须返回 `ticket_decomposition_result_ref` 和垂直切片引用，并作为实现的必经前置证据。
 - 原生 `work-unit.slice-implementation` 必须在生命周期批准并持久化 Slice Implementation Contract 和 Build Architecture Checklist 后执行；用户显式 `implement` 仍走兼容入口，不得绕过生命周期。
 - `Workflow Execution Result.next_route` 必须通过生命周期转换校验；Spec、原型和技术分析不得直接跳转到 Ticket 正式化或实现，必须先完成 `work-unit.implementation-repository-preparation`，再进入 `work-unit.ticket-decomposition`。

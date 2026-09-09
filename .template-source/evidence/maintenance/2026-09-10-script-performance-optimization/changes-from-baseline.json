@@ -1,0 +1,1116 @@
+[
+  {
+    "path": ".agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs",
+    "before": [
+      "file",
+      "449b3786b9c261d08e98dd4685dffec826215c1a004804652887ebe62050de6c",
+      420
+    ],
+    "after": [
+      "file",
+      "458b24b9204179bb0fd4efb71d8109c717fd81044fc84f8d42f99c9c15972fbe",
+      420
+    ]
+  },
+  {
+    "path": ".agents/skills/yss-frontend-scaffold-generator/SKILL.md",
+    "before": [
+      "file",
+      "c8f5c497ebe726c31b600b65d1cd0aee50e31daba0e3960458a8670132368009",
+      420
+    ],
+    "after": [
+      "file",
+      "400d57898e7f6aa3875ce54d19dfd38dcfd297eae812b2c7e78d65556991dd10",
+      420
+    ]
+  },
+  {
+    "path": ".agents/skills/yss-frontend-scaffold-generator/scripts/generate_scaffold.mjs",
+    "before": [
+      "file",
+      "806eafcab0e42841cb07b2e1866471d09e861614e8b77f931ad89b5ee8de7c0e",
+      493
+    ],
+    "after": [
+      "file",
+      "743c168c559034eb116bd82e743e72e848c9e417f3c02fcd6de38b031631cd43",
+      493
+    ]
+  },
+  {
+    "path": ".agents/skills/yss-frontend-scaffold-generator/scripts/run_scaffold_verification.mjs",
+    "before": [
+      "file",
+      "9711092452f5ba94c53e019b87703a86a624100637431564217414fa345e362c",
+      493
+    ],
+    "after": [
+      "file",
+      "75eb6cdbd5234cb2dd1701af2f9a7f1cbbbeda0d56a060673532974833accf40",
+      493
+    ]
+  },
+  {
+    "path": ".agents/skills/yss-frontend-scaffold-generator/scripts/scaffold-generator.test.mjs",
+    "before": [
+      "file",
+      "50176ffb0d1a4f5c936b0f7c621b25351fabbc97fa91d9cadc8d03c5d0fb3fcf",
+      493
+    ],
+    "after": [
+      "file",
+      "fd5aa3b4ec05c15fa35ef4a42ac36170e027dfc2a383da0e45a8c2e376ba386a",
+      493
+    ]
+  },
+  {
+    "path": ".codex/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs",
+    "before": [
+      "file",
+      "449b3786b9c261d08e98dd4685dffec826215c1a004804652887ebe62050de6c",
+      420
+    ],
+    "after": [
+      "file",
+      "458b24b9204179bb0fd4efb71d8109c717fd81044fc84f8d42f99c9c15972fbe",
+      420
+    ]
+  },
+  {
+    "path": ".codex/skills/yss-frontend-scaffold-generator/SKILL.md",
+    "before": [
+      "file",
+      "c8f5c497ebe726c31b600b65d1cd0aee50e31daba0e3960458a8670132368009",
+      420
+    ],
+    "after": [
+      "file",
+      "400d57898e7f6aa3875ce54d19dfd38dcfd297eae812b2c7e78d65556991dd10",
+      420
+    ]
+  },
+  {
+    "path": ".codex/skills/yss-frontend-scaffold-generator/scripts/generate_scaffold.mjs",
+    "before": [
+      "file",
+      "806eafcab0e42841cb07b2e1866471d09e861614e8b77f931ad89b5ee8de7c0e",
+      493
+    ],
+    "after": [
+      "file",
+      "743c168c559034eb116bd82e743e72e848c9e417f3c02fcd6de38b031631cd43",
+      493
+    ]
+  },
+  {
+    "path": ".codex/skills/yss-frontend-scaffold-generator/scripts/run_scaffold_verification.mjs",
+    "before": [
+      "file",
+      "9711092452f5ba94c53e019b87703a86a624100637431564217414fa345e362c",
+      493
+    ],
+    "after": [
+      "file",
+      "75eb6cdbd5234cb2dd1701af2f9a7f1cbbbeda0d56a060673532974833accf40",
+      493
+    ]
+  },
+  {
+    "path": ".codex/skills/yss-frontend-scaffold-generator/scripts/scaffold-generator.test.mjs",
+    "before": [
+      "file",
+      "50176ffb0d1a4f5c936b0f7c621b25351fabbc97fa91d9cadc8d03c5d0fb3fcf",
+      493
+    ],
+    "after": [
+      "file",
+      "fd5aa3b4ec05c15fa35ef4a42ac36170e027dfc2a383da0e45a8c2e376ba386a",
+      493
+    ]
+  },
+  {
+    "path": ".template-source/cli-core/build.mjs",
+    "before": [
+      "file",
+      "c36aac74b154d63d737c530dd45ae9d16781ebc61b66588dc1b380192d49f6a4",
+      420
+    ],
+    "after": [
+      "file",
+      "64082a3b39660fff40dfa252a06dedad65fcc3fdef63473b484068a5a7849c4f",
+      420
+    ]
+  },
+  {
+    "path": ".template-source/cli-core/bundle.mjs",
+    "before": [
+      "file",
+      "e3590656ee15a107ab383a20e08a6e6e1b774d4dbc3d19aee159e8ed9329c6f7",
+      420
+    ],
+    "after": [
+      "file",
+      "0d8cf55ff78b3f58df6e7215753eb49c0d8907fa38f797cd8258fc5df6c6e3cc",
+      420
+    ]
+  },
+  {
+    "path": ".template-source/cli-core/command-runner.mjs",
+    "before": [
+      "missing"
+    ],
+    "after": [
+      "file",
+      "4fb7f3c9ca26dff3f955ddb1c6ad545519d3e55af179f834ff67b1c0bf20bffd",
+      420
+    ]
+  },
+  {
+    "path": ".template-source/cli-core/tests/cli.test.mjs",
+    "before": [
+      "file",
+      "647243c8824bcd8d9fc8a8118ac502e3c12c8e824aa03e4914467df197754f64",
+      420
+    ],
+    "after": [
+      "file",
+      "46e886c3670def1ee251cda026205275260102e8edea03b45d2c7cac73caa319",
+      420
+    ]
+  },
+  {
+    "path": ".template-source/cli-core/transaction.mjs",
+    "before": [
+      "file",
+      "38dff12fe6fe43fecf2b4243f9e65f04e42f81bcaccc44bc224df9704ce542b8",
+      420
+    ],
+    "after": [
+      "file",
+      "6a27d7d9bbaa97ab69ed4b643c0c61b87a0738cf23871a1cfa55f7b5603f5d26",
+      420
+    ]
+  },
+  {
+    "path": ".template-source/cli-core/update.mjs",
+    "before": [
+      "file",
+      "2f75905eb13a3a41d50dbb0d54c50c5303c84a468fcb4e98fd420588521d0cef",
+      420
+    ],
+    "after": [
+      "file",
+      "11b9862fe60fcb693504d136567cce36e33a9b5cca3321938429769a02a5d3b3",
+      420
+    ]
+  },
+  {
+    "path": ".template-source/scripts/verify-delivery-harness-distribution.mjs",
+    "before": [
+      "file",
+      "98143e45423ff491682b143fd9bc6a749be0ed97ff300936963a286435d0c313",
+      420
+    ],
+    "after": [
+      "file",
+      "4cff103fe1dbd2c9c5fe87a3ef1f6c736f67bc07e8b9d79c704e99a67912ebfb",
+      420
+    ]
+  },
+  {
+    "path": "docs/process/template-verification-profiles.yaml",
+    "before": [
+      "file",
+      "dab41d8c9611f21abb75838fc1a5e5b85515d81866627e4a24da44528c1df5be",
+      420
+    ],
+    "after": [
+      "file",
+      "0ef371d589cd8e9990f5027ed4873f6783b5809ffc53482277bb39a476184191",
+      420
+    ]
+  },
+  {
+    "path": "scripts/cache-template-commit",
+    "before": [
+      "file",
+      "bee5286c0c0155c6962018e16f7f13e5e0317226a88bf263449bb38ae2b872c7",
+      493
+    ],
+    "after": [
+      "file",
+      "54abe477f4607c0d073d7d04c6fea33a638d2c03ea06e091ef8db196c82e3604",
+      493
+    ]
+  },
+  {
+    "path": "scripts/lib/backend-delivery.mjs",
+    "before": [
+      "file",
+      "5d9a87eb7a9f23c7e0c8667165895648b45af97779b5f8a667cd654cf5ad1def",
+      420
+    ],
+    "after": [
+      "file",
+      "94cecc2cca6f83216857d0fef6f00ec8157d42f1f86df432d2b16c8cffc1374a",
+      420
+    ]
+  },
+  {
+    "path": "scripts/lib/command-runner.mjs",
+    "before": [
+      "missing"
+    ],
+    "after": [
+      "file",
+      "4fb7f3c9ca26dff3f955ddb1c6ad545519d3e55af179f834ff67b1c0bf20bffd",
+      420
+    ]
+  },
+  {
+    "path": "scripts/lib/context-reconciliation.mjs",
+    "before": [
+      "missing"
+    ],
+    "after": [
+      "file",
+      "0a212410b3bfe7a0c881ad05bfa64629fa36bf6c2d2fa6fd3d844f1f22770997",
+      420
+    ]
+  },
+  {
+    "path": "scripts/lib/json-schema.mjs",
+    "before": [
+      "file",
+      "1bbf66d7ab508d5ee340cdbc824199563ac100ac609759fef902ed843c3071a4",
+      420
+    ],
+    "after": [
+      "file",
+      "578b253e03267ecfbc0dcefa81f5c44892f73ac753cc126ebb385d8b73726771",
+      420
+    ]
+  },
+  {
+    "path": "scripts/lib/plan-spec-entry.mjs",
+    "before": [
+      "file",
+      "17ec4211c3732951f891acd885a88d9f9d7260d123fa3de582a6bb1dd9869d14",
+      420
+    ],
+    "after": [
+      "file",
+      "322ea4116f4e55db43732c7afa5b83b6d4e6297fb6ff2bf42a97cf34dbf04ab5",
+      420
+    ]
+  },
+  {
+    "path": "scripts/lib/skill-supply-chain.mjs",
+    "before": [
+      "file",
+      "d47b083a8ec56c5173ba21cd41ab7c6bf96543e09ff333fe7f67de61ffe3565e",
+      420
+    ],
+    "after": [
+      "file",
+      "37a210737476a028d089b3d00f446df390d176e1e67f7bf3dee5259084792bcb",
+      420
+    ]
+  },
+  {
+    "path": "scripts/lib/strategic-handoff-io.mjs",
+    "before": [
+      "file",
+      "4e66c4b87045a09df882e6162d912b5fa574f134b084c1123466e19476dbbf7b",
+      420
+    ],
+    "after": [
+      "file",
+      "9eb884abf27641c7eb7a101308d55c54f6e30d0fbe54b0d28938c7225e00c0a2",
+      420
+    ]
+  },
+  {
+    "path": "scripts/lib/strategic-handoff.mjs",
+    "before": [
+      "file",
+      "0ad17cbfa50ffa3d0348303d4e9d8c3533df72b406fe905506839aaa10d0529b",
+      420
+    ],
+    "after": [
+      "file",
+      "c14fa4164b222fd081da51c8c877b0c43f469736003fe9c7005d0311944b56b6",
+      420
+    ]
+  },
+  {
+    "path": "scripts/lib/template-commit-cache.mjs",
+    "before": [
+      "file",
+      "c2c6b9dd931a36bdf0fe728b3697b002bbea0802e99af73a4705666e1fe97468",
+      420
+    ],
+    "after": [
+      "file",
+      "5a1dc0714d13aac4ddf1bd6c5c42a74454990dbabb0dfdcfcbba31e330a45d53",
+      420
+    ]
+  },
+  {
+    "path": "scripts/run-template-verification",
+    "before": [
+      "file",
+      "bdefe1b626f10944040a989a64dfc21b055648d5622155d8a56e48bb46aa9420",
+      493
+    ],
+    "after": [
+      "file",
+      "c3ee5df8cccfcf363aa10312d070124bfaa9dd0563555d8698f5d63ec0ace371",
+      493
+    ]
+  },
+  {
+    "path": "scripts/sync-strategic-handoff-tools",
+    "before": [
+      "file",
+      "7cd0186d3dfec29f0f219790f4e283adb114647e47a396f8b26f9d3f8434d070",
+      493
+    ],
+    "after": [
+      "file",
+      "81cbc27d41c28f02bdb7c1e4e53627999f78d9b82e3403951cc991def5760a6a",
+      493
+    ]
+  },
+  {
+    "path": "scripts/verify-context-reconciliation",
+    "before": [
+      "file",
+      "114c6d7b7523bc080b737561db3ca0310e4c3fc579a44695860f6f74d213f8b7",
+      493
+    ],
+    "after": [
+      "file",
+      "b3831a29df28bdeb225e5c52619972cb238759c3bc7539dbdf15b220377dfc65",
+      493
+    ]
+  },
+  {
+    "path": "scripts/verify-script-performance-scenarios",
+    "before": [
+      "missing"
+    ],
+    "after": [
+      "file",
+      "f356ba73905daebf7e34dd798155d22bb59a45752d8fdaff5907cd3ac85e282f",
+      420
+    ]
+  },
+  {
+    "path": "scripts/verify-template-cache-scenarios",
+    "before": [
+      "file",
+      "e80cb646e35201d721e5de834f1fb245e5cca5243bef3799700dde5963a19090",
+      493
+    ],
+    "after": [
+      "file",
+      "ca5cb2310f0a8ebb612b09b8ed46bee7ebafdb0617343f751cbe380dbc21da52",
+      493
+    ]
+  },
+  {
+    "path": "skills-lock.json",
+    "before": [
+      "file",
+      "6da28d8fe57be6b3153244f920ed91ab3c1056f797e347a3aba50f22d1c0c120",
+      420
+    ],
+    "after": [
+      "file",
+      "f377e56300fff3356157f4f71f690eb0db19703dcfb22d6fab1afcfe802f9340",
+      420
+    ]
+  },
+  {
+    "path": "submodules/create-yss-strategic-design/package.json",
+    "before": [
+      "file",
+      "5ca4f7b907d346e448216944cf35b8d3f583de0f6047b17fb09781292f1c3006",
+      420
+    ],
+    "after": [
+      "file",
+      "399a6fe0c7561be5b3f98eba841b9477697fd445dd7c46a449e4d84f32b6d4b8",
+      420
+    ]
+  },
+  {
+    "path": "submodules/create-yss-strategic-design/src/command-runner.mjs",
+    "before": [
+      "missing"
+    ],
+    "after": [
+      "file",
+      "4fb7f3c9ca26dff3f955ddb1c6ad545519d3e55af179f834ff67b1c0bf20bffd",
+      420
+    ]
+  },
+  {
+    "path": "submodules/create-yss-strategic-design/src/self-update.js",
+    "before": [
+      "file",
+      "d05f6d1ed104c479cf6abba8d262a994d806d4624a3de791f923c4e05b67823f",
+      420
+    ],
+    "after": [
+      "file",
+      "48980be630c33be159be6c4d4993bd10fc4c82b9136a75978d4daffde5141fc0",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/scripts/lib/backend-delivery.mjs",
+    "before": [
+      "file",
+      "5d9a87eb7a9f23c7e0c8667165895648b45af97779b5f8a667cd654cf5ad1def",
+      420
+    ],
+    "after": [
+      "file",
+      "94cecc2cca6f83216857d0fef6f00ec8157d42f1f86df432d2b16c8cffc1374a",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/scripts/lib/command-runner.mjs",
+    "before": [
+      "missing"
+    ],
+    "after": [
+      "file",
+      "4fb7f3c9ca26dff3f955ddb1c6ad545519d3e55af179f834ff67b1c0bf20bffd",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/scripts/lib/context-reconciliation.mjs",
+    "before": [
+      "missing"
+    ],
+    "after": [
+      "file",
+      "0a212410b3bfe7a0c881ad05bfa64629fa36bf6c2d2fa6fd3d844f1f22770997",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/scripts/lib/json-schema.mjs",
+    "before": [
+      "file",
+      "1bbf66d7ab508d5ee340cdbc824199563ac100ac609759fef902ed843c3071a4",
+      420
+    ],
+    "after": [
+      "file",
+      "578b253e03267ecfbc0dcefa81f5c44892f73ac753cc126ebb385d8b73726771",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/scripts/lib/plan-spec-entry.mjs",
+    "before": [
+      "file",
+      "17ec4211c3732951f891acd885a88d9f9d7260d123fa3de582a6bb1dd9869d14",
+      420
+    ],
+    "after": [
+      "file",
+      "322ea4116f4e55db43732c7afa5b83b6d4e6297fb6ff2bf42a97cf34dbf04ab5",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/scripts/lib/skill-supply-chain.mjs",
+    "before": [
+      "file",
+      "4d209fdc4933ecf11a6e52fb2c685d082991f6cf89950a88ee8f35da26270d04",
+      420
+    ],
+    "after": [
+      "file",
+      "3a47b5cbb7183ca386652a8b1a4d46545294e4fc5273c0edf13784614570ad87",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/scripts/lib/strategic-handoff-io.mjs",
+    "before": [
+      "file",
+      "4e66c4b87045a09df882e6162d912b5fa574f134b084c1123466e19476dbbf7b",
+      420
+    ],
+    "after": [
+      "file",
+      "9eb884abf27641c7eb7a101308d55c54f6e30d0fbe54b0d28938c7225e00c0a2",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/scripts/lib/strategic-handoff.mjs",
+    "before": [
+      "file",
+      "0ad17cbfa50ffa3d0348303d4e9d8c3533df72b406fe905506839aaa10d0529b",
+      420
+    ],
+    "after": [
+      "file",
+      "c14fa4164b222fd081da51c8c877b0c43f469736003fe9c7005d0311944b56b6",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/scripts/run-template-verification",
+    "before": [
+      "file",
+      "b39ba134d72b363285b9e4ad0ac3f7de0d44cd0d0d571ccd350d5a04a31492a0",
+      493
+    ],
+    "after": [
+      "file",
+      "bb595f0b998dd8e425f3cad1beee628cf8d21359f6358c46ce0711f11dd5ae90",
+      493
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/scripts/verify-context-reconciliation",
+    "before": [
+      "file",
+      "114c6d7b7523bc080b737561db3ca0310e4c3fc579a44695860f6f74d213f8b7",
+      493
+    ],
+    "after": [
+      "file",
+      "b3831a29df28bdeb225e5c52619972cb238759c3bc7539dbdf15b220377dfc65",
+      493
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-dev-agent/.agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs",
+    "before": [
+      "file",
+      "50a5f9887c9e0399763880b8950935cdaba44fd4a80014228307fccdd1eb376d",
+      420
+    ],
+    "after": [
+      "file",
+      "c4efaaf5b6a9af829c4f8638e62821e93084947ebc674e8c762d148594385f13",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-dev-agent/.codex/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs",
+    "before": [
+      "file",
+      "50a5f9887c9e0399763880b8950935cdaba44fd4a80014228307fccdd1eb376d",
+      420
+    ],
+    "after": [
+      "file",
+      "c4efaaf5b6a9af829c4f8638e62821e93084947ebc674e8c762d148594385f13",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-dev-agent/scripts/fixtures/strategic-handoff/source-roles.json",
+    "before": [
+      "file",
+      "2bd7075372dee051e2e5c65065a365fb61eef97eaee202287fc66e26ed06e39f",
+      420
+    ],
+    "after": [
+      "file",
+      "1f15600d765b0d316b7cc1b7ffeed929b694e1b718bea04bb016dd1855f1d396",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-dev-agent/scripts/lib/backend-delivery.mjs",
+    "before": [
+      "file",
+      "5d9a87eb7a9f23c7e0c8667165895648b45af97779b5f8a667cd654cf5ad1def",
+      420
+    ],
+    "after": [
+      "file",
+      "94cecc2cca6f83216857d0fef6f00ec8157d42f1f86df432d2b16c8cffc1374a",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-dev-agent/scripts/lib/command-runner.mjs",
+    "before": [
+      "missing"
+    ],
+    "after": [
+      "file",
+      "4fb7f3c9ca26dff3f955ddb1c6ad545519d3e55af179f834ff67b1c0bf20bffd",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-dev-agent/scripts/lib/context-reconciliation.mjs",
+    "before": [
+      "missing"
+    ],
+    "after": [
+      "file",
+      "0a212410b3bfe7a0c881ad05bfa64629fa36bf6c2d2fa6fd3d844f1f22770997",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-dev-agent/scripts/lib/json-schema.mjs",
+    "before": [
+      "file",
+      "1bbf66d7ab508d5ee340cdbc824199563ac100ac609759fef902ed843c3071a4",
+      420
+    ],
+    "after": [
+      "file",
+      "578b253e03267ecfbc0dcefa81f5c44892f73ac753cc126ebb385d8b73726771",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-dev-agent/scripts/lib/skill-supply-chain.mjs",
+    "before": [
+      "file",
+      "654b52b4c1b3983e3abfcf76ca4b63cee20886c24f5081694a8eba059847a7c3",
+      420
+    ],
+    "after": [
+      "file",
+      "577d16d314262c20dee926404f9e02956ce7f6b968ae6cb6fe09466df0bb26a0",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-dev-agent/scripts/lib/strategic-handoff-io.mjs",
+    "before": [
+      "file",
+      "4e66c4b87045a09df882e6162d912b5fa574f134b084c1123466e19476dbbf7b",
+      420
+    ],
+    "after": [
+      "file",
+      "9eb884abf27641c7eb7a101308d55c54f6e30d0fbe54b0d28938c7225e00c0a2",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-dev-agent/scripts/lib/strategic-handoff.mjs",
+    "before": [
+      "file",
+      "0ad17cbfa50ffa3d0348303d4e9d8c3533df72b406fe905506839aaa10d0529b",
+      420
+    ],
+    "after": [
+      "file",
+      "c14fa4164b222fd081da51c8c877b0c43f469736003fe9c7005d0311944b56b6",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-dev-agent/scripts/run-template-verification",
+    "before": [
+      "file",
+      "b39ba134d72b363285b9e4ad0ac3f7de0d44cd0d0d571ccd350d5a04a31492a0",
+      493
+    ],
+    "after": [
+      "file",
+      "bb595f0b998dd8e425f3cad1beee628cf8d21359f6358c46ce0711f11dd5ae90",
+      493
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-dev-agent/scripts/verify-context-reconciliation",
+    "before": [
+      "file",
+      "114c6d7b7523bc080b737561db3ca0310e4c3fc579a44695860f6f74d213f8b7",
+      420
+    ],
+    "after": [
+      "file",
+      "b3831a29df28bdeb225e5c52619972cb238759c3bc7539dbdf15b220377dfc65",
+      493
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-dev-agent/skills-lock.json",
+    "before": [
+      "file",
+      "4d208eb78da03c5998efc0de33adde95e0d4a3e39050fbec5b68a0ba5b539175",
+      420
+    ],
+    "after": [
+      "file",
+      "e91483a5517edc9847c6914d4a5b3a2caf60656a89050b399f317e3389aa5ce6",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs",
+    "before": [
+      "file",
+      "50a5f9887c9e0399763880b8950935cdaba44fd4a80014228307fccdd1eb376d",
+      420
+    ],
+    "after": [
+      "file",
+      "c4efaaf5b6a9af829c4f8638e62821e93084947ebc674e8c762d148594385f13",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/scripts/fixtures/strategic-handoff/source-roles.json",
+    "before": [
+      "file",
+      "2bd7075372dee051e2e5c65065a365fb61eef97eaee202287fc66e26ed06e39f",
+      420
+    ],
+    "after": [
+      "file",
+      "1f15600d765b0d316b7cc1b7ffeed929b694e1b718bea04bb016dd1855f1d396",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/scripts/lib/backend-delivery.mjs",
+    "before": [
+      "file",
+      "5d9a87eb7a9f23c7e0c8667165895648b45af97779b5f8a667cd654cf5ad1def",
+      420
+    ],
+    "after": [
+      "file",
+      "94cecc2cca6f83216857d0fef6f00ec8157d42f1f86df432d2b16c8cffc1374a",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/scripts/lib/command-runner.mjs",
+    "before": [
+      "missing"
+    ],
+    "after": [
+      "file",
+      "4fb7f3c9ca26dff3f955ddb1c6ad545519d3e55af179f834ff67b1c0bf20bffd",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/scripts/lib/context-reconciliation.mjs",
+    "before": [
+      "missing"
+    ],
+    "after": [
+      "file",
+      "0a212410b3bfe7a0c881ad05bfa64629fa36bf6c2d2fa6fd3d844f1f22770997",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/scripts/lib/json-schema.mjs",
+    "before": [
+      "file",
+      "1bbf66d7ab508d5ee340cdbc824199563ac100ac609759fef902ed843c3071a4",
+      420
+    ],
+    "after": [
+      "file",
+      "578b253e03267ecfbc0dcefa81f5c44892f73ac753cc126ebb385d8b73726771",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/scripts/lib/skill-supply-chain.mjs",
+    "before": [
+      "file",
+      "1f30a39bd9d85e24f58ba214679254d90e30b649daf549433df643a74c774c32",
+      420
+    ],
+    "after": [
+      "file",
+      "8502c8c2ee3e3f69727afd585da2dd870487595f75307e8e905a2760a320e415",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/scripts/lib/strategic-handoff-io.mjs",
+    "before": [
+      "file",
+      "4e66c4b87045a09df882e6162d912b5fa574f134b084c1123466e19476dbbf7b",
+      420
+    ],
+    "after": [
+      "file",
+      "9eb884abf27641c7eb7a101308d55c54f6e30d0fbe54b0d28938c7225e00c0a2",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/scripts/lib/strategic-handoff.mjs",
+    "before": [
+      "file",
+      "f84b411ca90a4231883edc2953cdab5e22634c5aec631f5dccd4bd9eac76c63d",
+      420
+    ],
+    "after": [
+      "file",
+      "f218dbf3a439a4de7cab9d8d1f6975a20328c9d0b87d272cc820e287a4f1b886",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/scripts/run-template-verification",
+    "before": [
+      "file",
+      "b39ba134d72b363285b9e4ad0ac3f7de0d44cd0d0d571ccd350d5a04a31492a0",
+      493
+    ],
+    "after": [
+      "file",
+      "bb595f0b998dd8e425f3cad1beee628cf8d21359f6358c46ce0711f11dd5ae90",
+      493
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/scripts/verify-context-reconciliation",
+    "before": [
+      "file",
+      "114c6d7b7523bc080b737561db3ca0310e4c3fc579a44695860f6f74d213f8b7",
+      420
+    ],
+    "after": [
+      "file",
+      "b3831a29df28bdeb225e5c52619972cb238759c3bc7539dbdf15b220377dfc65",
+      493
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/skills-lock.json",
+    "before": [
+      "file",
+      "0996b2f3a5c7ed48dc87d81e97e003aa4d4cd12d7978a98f36a0114cb9e20726",
+      420
+    ],
+    "after": [
+      "file",
+      "7c626c1e9134a8d545c2a4aa8be683c8f47b89a02969330dfc1a0368ecb955f1",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/scripts/fixtures/strategic-handoff/source-roles.json",
+    "before": [
+      "file",
+      "2bd7075372dee051e2e5c65065a365fb61eef97eaee202287fc66e26ed06e39f",
+      420
+    ],
+    "after": [
+      "file",
+      "1f15600d765b0d316b7cc1b7ffeed929b694e1b718bea04bb016dd1855f1d396",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/scripts/lib/backend-delivery.mjs",
+    "before": [
+      "file",
+      "5d9a87eb7a9f23c7e0c8667165895648b45af97779b5f8a667cd654cf5ad1def",
+      420
+    ],
+    "after": [
+      "file",
+      "94cecc2cca6f83216857d0fef6f00ec8157d42f1f86df432d2b16c8cffc1374a",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/scripts/lib/command-runner.mjs",
+    "before": [
+      "missing"
+    ],
+    "after": [
+      "file",
+      "4fb7f3c9ca26dff3f955ddb1c6ad545519d3e55af179f834ff67b1c0bf20bffd",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/scripts/lib/context-reconciliation.mjs",
+    "before": [
+      "missing"
+    ],
+    "after": [
+      "file",
+      "0a212410b3bfe7a0c881ad05bfa64629fa36bf6c2d2fa6fd3d844f1f22770997",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/scripts/lib/json-schema.mjs",
+    "before": [
+      "file",
+      "1bbf66d7ab508d5ee340cdbc824199563ac100ac609759fef902ed843c3071a4",
+      420
+    ],
+    "after": [
+      "file",
+      "578b253e03267ecfbc0dcefa81f5c44892f73ac753cc126ebb385d8b73726771",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/scripts/lib/skill-supply-chain.mjs",
+    "before": [
+      "file",
+      "1f30a39bd9d85e24f58ba214679254d90e30b649daf549433df643a74c774c32",
+      420
+    ],
+    "after": [
+      "file",
+      "8502c8c2ee3e3f69727afd585da2dd870487595f75307e8e905a2760a320e415",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/scripts/lib/strategic-handoff-io.mjs",
+    "before": [
+      "file",
+      "4e66c4b87045a09df882e6162d912b5fa574f134b084c1123466e19476dbbf7b",
+      420
+    ],
+    "after": [
+      "file",
+      "9eb884abf27641c7eb7a101308d55c54f6e30d0fbe54b0d28938c7225e00c0a2",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/scripts/lib/strategic-handoff.mjs",
+    "before": [
+      "file",
+      "0ad17cbfa50ffa3d0348303d4e9d8c3533df72b406fe905506839aaa10d0529b",
+      420
+    ],
+    "after": [
+      "file",
+      "c14fa4164b222fd081da51c8c877b0c43f469736003fe9c7005d0311944b56b6",
+      420
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/scripts/run-template-verification",
+    "before": [
+      "file",
+      "b39ba134d72b363285b9e4ad0ac3f7de0d44cd0d0d571ccd350d5a04a31492a0",
+      493
+    ],
+    "after": [
+      "file",
+      "bb595f0b998dd8e425f3cad1beee628cf8d21359f6358c46ce0711f11dd5ae90",
+      493
+    ]
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/scripts/verify-context-reconciliation",
+    "before": [
+      "file",
+      "114c6d7b7523bc080b737561db3ca0310e4c3fc579a44695860f6f74d213f8b7",
+      420
+    ],
+    "after": [
+      "file",
+      "b3831a29df28bdeb225e5c52619972cb238759c3bc7539dbdf15b220377dfc65",
+      493
+    ]
+  },
+  {
+    "path": "submodules/create-yss-harness-dev/package.json",
+    "before": [
+      "file",
+      "07a9e055cb469480e2d78b17f1276189cad0355ff1a7465375ae81f763f81ed6",
+      420
+    ],
+    "after": [
+      "file",
+      "d6ff63ade564401797c1fade50f86218db94a8ea3da7283ea1cf5a585f7af7b1",
+      420
+    ]
+  },
+  {
+    "path": "submodules/create-yss-harness-dev/src/command-runner.mjs",
+    "before": [
+      "missing"
+    ],
+    "after": [
+      "file",
+      "4fb7f3c9ca26dff3f955ddb1c6ad545519d3e55af179f834ff67b1c0bf20bffd",
+      420
+    ]
+  },
+  {
+    "path": "submodules/create-yss-harness-dev/src/self-update.js",
+    "before": [
+      "file",
+      "acb50eb0827bdd96c963c5ddd1ee1f31a33085b3366a57efe0580d9b4ce52bdc",
+      420
+    ],
+    "after": [
+      "file",
+      "69ae62793554d568b9533adba5198cc89df716e92358d09b5e3754a1c4641113",
+      420
+    ]
+  },
+  {
+    "path": "submodules/create-yss-spec/package.json",
+    "before": [
+      "file",
+      "fe2021ed9da0a524b5a79b02151355f10d77d3ac01e1346e8e9d1245f052a3bf",
+      420
+    ],
+    "after": [
+      "file",
+      "443c8d262a5004520cc600a93a67854d68379649de543f1f17e4f4eb9c1307f7",
+      420
+    ]
+  },
+  {
+    "path": "submodules/create-yss-spec/src/command-runner.mjs",
+    "before": [
+      "missing"
+    ],
+    "after": [
+      "file",
+      "4fb7f3c9ca26dff3f955ddb1c6ad545519d3e55af179f834ff67b1c0bf20bffd",
+      420
+    ]
+  },
+  {
+    "path": "submodules/create-yss-spec/src/self-update.js",
+    "before": [
+      "file",
+      "2ea32f5e8fd1a360a9819aeec927d800a98cf4e87e9417a5af640750391a7e7a",
+      420
+    ],
+    "after": [
+      "file",
+      "9d5256885abfd5e78acb3e9cefbd363ca2803fa768c00cfb6743563524bd4113",
+      420
+    ]
+  }
+]

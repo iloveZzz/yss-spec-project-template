@@ -1,0 +1,22 @@
+diff --git a/template.snapshot.json b/template.snapshot.json
+index 40dc066..d1ad078 100644
+--- a/template.snapshot.json
++++ b/template.snapshot.json
+@@ -3,8 +3,8 @@
+   "templateName": "yss-harness-dev-agent",
+   "profileId": "harness.dev-agent-slice",
+   "templateSource": "github:iloveZzz/yss-harness-dev-agent",
+-  "templateRepository": "https://github.com/iloveZzz/yss-harness-dev-agent.git",
+-  "requestedRef": "e5ddeb084adece86333166389ad9c7132bc99437",
++  "templateRepository": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
++  "requestedRef": "working-tree",
+   "templateCommit": "e5ddeb084adece86333166389ad9c7132bc99437",
+   "manifestHash": "4dbbc0879bfd8f6628f6e378b55ebcbbaa4708723d3de8d54d06ea023fd197e7",
+   "encodedPaths": {
+@@ -14,5 +14,5 @@
+     ".gitignore": "__yss_dotfile__.gitignore"
+   },
+   "snapshotHash": "8d14cebca86ef000e2b7600439c6e0463771d785b64087dbd83f1e0683b69a16",
+-  "generatedAt": "2026-09-08T11:10:04.605Z"
++  "generatedAt": "2026-09-08T11:49:42.484Z"
+ }

@@ -41,7 +41,7 @@ Local 主 tracker 的完整功能包结构如下：
 ```text
 docs/.scratch/<feature>/
 ├── map.md
-├── discovery/
+├── plan/
 ├── spec.md
 ├── spec-delta/
 ├── parent-ticket.md

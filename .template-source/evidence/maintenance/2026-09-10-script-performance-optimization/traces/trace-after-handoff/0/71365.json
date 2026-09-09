@@ -1,0 +1,60 @@
+{
+  "pid": 71365,
+  "ppid": 67126,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root/scripts/strategic-handoff",
+  "wall_ms": 632.918708,
+  "exit_code": 0,
+  "write_bytes": {
+    "target-or-other": 84711
+  },
+  "operations": {
+    "fs.realpathSync": {
+      "count": 29,
+      "duration_ms": 0.45629199999999237
+    },
+    "fs.readFileSync": {
+      "count": 175,
+      "duration_ms": 4.302858999999454
+    },
+    "fs.existsSync": {
+      "count": 1619,
+      "duration_ms": 4.031691000000972
+    },
+    "fs.lstatSync": {
+      "count": 1673,
+      "duration_ms": 4.59105500000101
+    },
+    "fs.readdirSync": {
+      "count": 55,
+      "duration_ms": 1.1750009999999946
+    },
+    "spawnSync:python3:\nimport json\nimport sys\nimport traceback\nfrom jsonschema import Draft202012Validator, FormatChecker\nvalidators = {}\nresults = []\nfor item in json.load(sys.stdin):\n    try:\n        key = (item['schemaPath'], item['formatChecker'])\n        if key not in validators:\n            with open(item['schemaPath'], encoding='utf-8') as source:\n                schema = json.load(source)\n            validators[key] = Draft202012Validator(schema, format_checker=FormatChecker() if key[1] else None)\n        errors = list(validators[key].iter_errors(item['value']))\n        if item['errorStyle'] == 'verbose':\n            message = '\\n'.join(str(error) for error in errors)\n        else:\n            errors.sort(key=lambda error: list(error.absolute_path))\n            message = '\\n'.join(f\"{'.'.join(str(part) for part in error.absolute_path) or '<root>'}: {error.message}\" for error in errors)\n        results.append({'valid': not errors, 'error': message})\n    except Exception:\n        results.append({'valid': False, 'error': traceback.format_exc().strip()})\njson.dump(results, sys.stdout)\n": {
+      "count": 7,
+      "duration_ms": 488.59041800000006
+    },
+    "fs.openSync": {
+      "count": 190,
+      "duration_ms": 3.199495999999897
+    },
+    "fs.closeSync": {
+      "count": 190,
+      "duration_ms": 0.805114999999887
+    },
+    "fs.mkdirSync": {
+      "count": 60,
+      "duration_ms": 1.2334590000000958
+    },
+    "fs.writeFileSync": {
+      "count": 58,
+      "duration_ms": 3.7420909999998457
+    },
+    "spawnSync:python3:.handoff-staging-H0mpTw.zip": {
+      "count": 1,
+      "duration_ms": 32.83829099999991
+    },
+    "fs.renameSync": {
+      "count": 2,
+      "duration_ms": 0.154042000000004
+    }
+  }
+}

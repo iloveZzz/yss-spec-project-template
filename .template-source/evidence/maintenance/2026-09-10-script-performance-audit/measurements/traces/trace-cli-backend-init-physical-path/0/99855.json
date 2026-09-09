@@ -1,0 +1,49 @@
+{
+  "pid": 99855,
+  "ppid": 99191,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-backend/bin/create-yss-harness-backend.js",
+  "wall_ms": 114534.12612500001,
+  "exit_code": 0,
+  "operations": {
+    "fs.realpathSync": {
+      "count": 19,
+      "duration_ms": 0.25312599999999463
+    },
+    "fs.openSync": {
+      "count": 23718,
+      "duration_ms": 6533.12826899968
+    },
+    "fs.closeSync": {
+      "count": 23718,
+      "duration_ms": 340.5330849992676
+    },
+    "fs.readFileSync": {
+      "count": 8050,
+      "duration_ms": 594.1731550002587
+    },
+    "fs.lstatSync": {
+      "count": 422888,
+      "duration_ms": 5254.116231001231
+    },
+    "fs.mkdirSync": {
+      "count": 7841,
+      "duration_ms": 782.4827669997691
+    },
+    "fs.writeFileSync": {
+      "count": 7838,
+      "duration_ms": 2971.910034999853
+    },
+    "fs.fchmodSync": {
+      "count": 7836,
+      "duration_ms": 320.26580799981275
+    },
+    "fs.fsyncSync": {
+      "count": 15672,
+      "duration_ms": 91044.55963400079
+    },
+    "fs.renameSync": {
+      "count": 7836,
+      "duration_ms": 4879.817351000111
+    }
+  }
+}

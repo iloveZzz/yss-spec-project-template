@@ -83,7 +83,7 @@ function packageBase(roleId, taskId, workUnitId, kind, contractFields, stageId) 
 }
 
 function lifecyclePackage() {
-  return packageBase("role.requirements-manager", "task-discovery", "work-unit.discovery-opportunity", "lifecycle-work-unit", { lifecycle_ref: "docs/process/lifecycle-registry.yaml", artifact_refs: ["artifact.discovery-record"] , gate_refs: [] , contract_id: "lifecycle-discovery", contract_version: 1 }, "stage.discovery");
+  return packageBase("role.requirements-manager", "task-discovery", "work-unit.plan-opportunity", "lifecycle-work-unit", { lifecycle_ref: "docs/process/lifecycle-registry.yaml", artifact_refs: ["artifact.plan-record"] , gate_refs: [] , contract_id: "lifecycle-discovery", contract_version: 1 }, "stage.plan");
 }
 
 function lifecycleStagePackage(roleId, taskId, workUnitId, stageId) {
@@ -134,7 +134,7 @@ function completedResult(pkg, overrides = {}) {
     violation: [],
     new_impacts: [],
     stale_candidates: [],
-    next_route: "work-unit.spec-synthesis",
+    next_route: "work-unit.plan-requirements",
     blocking_signals: [],
     ...overrides
   };
@@ -160,18 +160,19 @@ try {
   maintenance.review_context = { implementation_actor_id: "role.lifecycle-orchestrator.instance-1" };
   const frontend = slicePackage("role.frontend-engineer", "task-frontend", "work-unit.slice-frontend", "apps/frontend/todo/");
   const backend = slicePackage("role.backend-engineer", "task-backend", "work-unit.slice-backend", "apps/backend/todo/");
-  [discovery, spec, prototype, technical, tickets, review].forEach((pkg) => validateTaskPackage(pkg));
+  [discovery, prototype, technical, tickets, review].forEach((pkg) => validateTaskPackage(pkg));
+  assert.throws(() => validateTaskPackage(spec), /plan-spec-entry-blocked/, "直接派发 Spec 缺 Plan 审阅须阻断");
   validateTaskPackage(maintenance);
   validateTaskPackage(frontend);
   assert.throws(() => validateTaskPackage({ ...frontend, user_decisions: [] }), /user-decision-scope-mismatch/, "Worker 派发前必须有当前实施范围批准");
   validateTaskPackage(backend);
   validateTaskPackageSet([frontend, backend]);
 
-  const completedDiscovery = lifecyclePackage();
-  completedDiscovery.workflow_status = "resolved";
-  completedDiscovery.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }];
-  completedDiscovery.result = completedResult(completedDiscovery);
-  validateTaskPackage(completedDiscovery);
+  const completedPlan = lifecyclePackage();
+  completedPlan.workflow_status = "resolved";
+  completedPlan.verification_results = [{ command: "scripts/verify-template", exit_code: 0, executed_at: "now", evidence_ref: evidenceRef }];
+  completedPlan.result = completedResult(completedPlan);
+  validateTaskPackage(completedPlan);
 
   const validFile = path.join(ROOT, ".template-source/evidence/.task-package-valid.json");
   writeFileSync(validFile, JSON.stringify(discovery));

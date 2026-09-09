@@ -11,6 +11,8 @@
 
 父模板通过 `.agents/skills/.strategic-design-skills-manifest.json` 固定上游 Git revision、路径和 tree hash。公共 ID 不因 profile 改名；共享规则先在战略设计源仓演进，再由父模板同步。
 
+本轮 Plan 调整的 `yss-stage-decision` hash 对应战略设计子仓工作树；`source_revision` 暂为原基线 commit，并非声称修改已发布。授权提交子仓后再更新 Git revision 与父仓 gitlink；实施记录见 `.template-source/evidence/maintenance/2026-09-09-plan/`。
+
 ## 父模板薄适配
 
 父模板承载完整产品研发生命周期，只允许在以下位置保留最小语境差异：

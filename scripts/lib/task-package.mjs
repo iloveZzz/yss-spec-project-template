@@ -6,6 +6,7 @@ import { loadRegistry, ROOT } from "./lifecycle-registry.mjs";
 import { loadMaintenanceCheckpoint, validateMaintenanceCheckpoint } from "./maintenance-intensity.mjs";
 import { assertImplementationDecision } from "./user-decision.mjs";
 import { validateNextRoute } from "./lifecycle-transition.mjs";
+import { assertPlanSpecEntry } from "./plan-spec-entry.mjs";
 import { enforceHarnessTaskScope } from "./harness-execution-scope.mjs";
 import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
 import { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSchema } from "./task-package-schema.mjs";
@@ -59,6 +60,7 @@ function validateSkillSource(value, registry) {
 }
 
 function validateCommon(value, registry, lifecycle) {
+  if (value.work_unit_id === 'work-unit.spec-synthesis') assertPlanSpecEntry(value);
   const workUnit = lifecycle.work_units.find((item) => item.id === value.work_unit_id);
   if (!workUnit && value.contract.kind !== "slice-implementation") fail(`未知 work_unit_id: ${value.work_unit_id}`);
   const roleDefaults = taskPackageDefaults(value.role_id, registry);

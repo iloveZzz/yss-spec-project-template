@@ -1,0 +1,73 @@
+{
+  "pid": 10609,
+  "ppid": 10419,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-strategic-design/scripts/sync-template.js",
+  "wall_ms": 614.622291,
+  "exit_code": 0,
+  "operations": {
+    "fs.realpathSync": {
+      "count": 137,
+      "duration_ms": 4.605541000000091
+    },
+    "fs.readFileSync": {
+      "count": 1075,
+      "duration_ms": 18.773416999997664
+    },
+    "fs.existsSync": {
+      "count": 49,
+      "duration_ms": 0.21832900000027955
+    },
+    "spawnSync:node:\nimport { loadInstanceDistributionManifest, toCliManifest } from \"/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/scripts/lib/instance-dist": {
+      "count": 1,
+      "duration_ms": 45.748791
+    },
+    "fs.readdirSync": {
+      "count": 2270,
+      "duration_ms": 32.91904800000085
+    },
+    "fs.lstatSync": {
+      "count": 3903,
+      "duration_ms": 14.302981000000202
+    },
+    "fs.statSync": {
+      "count": 2410,
+      "duration_ms": 5.488308999999141
+    },
+    "fs.mkdirSync": {
+      "count": 1635,
+      "duration_ms": 32.27807600000033
+    },
+    "fs.copyFileSync": {
+      "count": 1761,
+      "duration_ms": 174.36029300000044
+    },
+    "fs.cpSync": {
+      "count": 150,
+      "duration_ms": 136.81112899999997
+    },
+    "fs.renameSync": {
+      "count": 4,
+      "duration_ms": 0.26029300000004696
+    },
+    "spawnSync:git:rev-parse": {
+      "count": 1,
+      "duration_ms": 29.119792000000018
+    },
+    "spawnSync:git:show": {
+      "count": 1,
+      "duration_ms": 32.71475000000004
+    },
+    "fs.openSync": {
+      "count": 1071,
+      "duration_ms": 13.48772899999733
+    },
+    "fs.closeSync": {
+      "count": 1071,
+      "duration_ms": 0.6520719999983271
+    },
+    "fs.writeFileSync": {
+      "count": 2,
+      "duration_ms": 0.27520799999990686
+    }
+  }
+}

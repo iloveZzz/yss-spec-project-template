@@ -1,0 +1,25 @@
+diff --git a/tests/init-cli.test.js b/tests/init-cli.test.js
+index 89afc5c..2651d91 100644
+--- a/tests/init-cli.test.js
++++ b/tests/init-cli.test.js
+@@ -188,6 +188,20 @@ test("init generates a strategic design project-instance", () => {
+   assert.equal(typeof metadata.managedFiles, "object");
+ 
+   assert.equal(fs.existsSync(path.join(targetDir, "docs/process/harness-profile.yaml")), true);
++  assert.equal(fs.existsSync(path.join(targetDir, "docs/plan/templates/plan-template.md")), true);
++  assert.equal(fs.existsSync(path.join(targetDir, "docs/discovery")), false);
++  const planQuery = spawnSync(process.execPath, ["scripts/query-lifecycle-context", "--work-unit", "work-unit.plan-requirements"], { cwd: targetDir, encoding: "utf8" });
++  assert.equal(planQuery.status, 0, planQuery.stderr);
++  const planContext = JSON.parse(planQuery.stdout);
++  assert.ok(planContext.execution.selected.planning);
++  assert.ok(planContext.execution.plan_checks.length > 0);
++  assert.ok(planContext.execution.plan_checks.every(check => check.status === "pending"));
++  const bypass = spawnSync(process.execPath, ["--input-type=module", "-e", "import {validateNextRoute} from './scripts/lib/lifecycle-transition.mjs'; process.stdout.write(validateNextRoute('work-unit.plan-opportunity','work-unit.spec-synthesis').result)"], { cwd: targetDir, encoding: "utf8" });
++  assert.equal(bypass.status, 0, bypass.stderr);
++  assert.equal(bypass.stdout, "blocked");
++  const lifecycle = fs.readFileSync(path.join(targetDir, "docs/process/lifecycle-registry.yaml"), "utf8");
++  assert.match(lifecycle, /- id: stage\.plan\n/);
++  assert.doesNotMatch(lifecycle, /- id: stage\.discovery\n|\n  migrations:/);
+   assert.deepEqual(contextContractFiles(targetDir), ["CONTEXT.md"]);
+   assert.equal(fs.existsSync(path.join(targetDir, "scripts/verify-context-contract")), true);
+   assert.equal(fs.existsSync(path.join(targetDir, "scripts/verify-context-reconciliation")), true);

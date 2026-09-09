@@ -1,0 +1,407 @@
+{
+  "schema_version": 1,
+  "repository_root": "/Users/zhudaoming/Projects/yss-spec-project-template",
+  "repository_mode": "template-source",
+  "context_reconciliation": {
+    "status": "not-applicable",
+    "reason": "模板维护事实盘点，不生成产品工作单元或产品术语。"
+  },
+  "scan_policy": {
+    "directory_name": "scripts",
+    "recursive": true,
+    "follow_symlinks": false,
+    "supplemental_entrypoints": [
+      {
+        "path": ".template-source/cli-core/build.mjs",
+        "reason": "canonical source: CORE_PATH in vendored build.mjs"
+      },
+      {
+        "path": ".template-source/cli-core/cli.mjs",
+        "reason": "canonical CLI entry corresponding to package.bin runtime"
+      },
+      {
+        "path": ".template-source/cli-core/scaffold.mjs",
+        "reason": "canonical CLI generator emits scripts wrappers"
+      },
+      {
+        "path": "submodules/create-yss-harness-backend/bin/create-yss-harness-backend.js",
+        "reason": "submodules/create-yss-harness-backend/package.json#bin"
+      },
+      {
+        "path": "submodules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+        "reason": "submodules/create-yss-harness-frontend/package.json#bin"
+      }
+    ],
+    "excluded_directory_names": [
+      ".codegraph",
+      ".git",
+      ".graphify",
+      ".next",
+      ".nuxt",
+      ".pnpm-store",
+      ".venv",
+      "__pycache__",
+      "build",
+      "coverage",
+      "dist",
+      "node_modules",
+      "target",
+      "venv"
+    ],
+    "scope_order": [
+      "staging",
+      "historical(evidence)",
+      "projection",
+      "active"
+    ],
+    "dependency_analysis": "lexical static candidates; dynamic calls unresolved; not complete semantic graph",
+    "performance_flags": "regex presence, including comments/literals; candidates only, not execution evidence",
+    "measurement_status": "static-only"
+  },
+  "scripts": {
+    "files": 2764,
+    "code_files": 2603,
+    "unique_sha256": 403,
+    "unique_code_sha256": 378,
+    "bytes": 24616827,
+    "languages": {
+      "JS": 2269,
+      "Shell": 170,
+      "Python": 164,
+      "data": 161
+    },
+    "roles": {
+      "cli": 1362,
+      "test": 387,
+      "wrapper": 380,
+      "library": 449,
+      "fixture": 186
+    },
+    "executable_mode": 1020,
+    "shebang_files": 1670
+  },
+  "scopes": {
+    "active": {
+      "files": 1390,
+      "code_files": 1248,
+      "unique_sha256": 345,
+      "unique_code_sha256": 320,
+      "bytes": 11137492,
+      "languages": {
+        "JS": 1179,
+        "Shell": 54,
+        "data": 142,
+        "Python": 15
+      },
+      "roles": {
+        "cli": 505,
+        "test": 83,
+        "wrapper": 304,
+        "library": 331,
+        "fixture": 167
+      },
+      "executable_mode": 617,
+      "shebang_files": 778
+    },
+    "projection": {
+      "files": 968,
+      "code_files": 968,
+      "unique_sha256": 102,
+      "unique_code_sha256": 102,
+      "bytes": 9653078,
+      "languages": {
+        "Shell": 80,
+        "JS": 764,
+        "Python": 124
+      },
+      "roles": {
+        "cli": 632,
+        "library": 79,
+        "wrapper": 42,
+        "test": 215
+      },
+      "executable_mode": 270,
+      "shebang_files": 652
+    },
+    "staging": {
+      "files": 397,
+      "code_files": 378,
+      "unique_sha256": 152,
+      "unique_code_sha256": 133,
+      "bytes": 3782117,
+      "languages": {
+        "JS": 317,
+        "Shell": 36,
+        "Python": 25,
+        "data": 19
+      },
+      "roles": {
+        "cli": 225,
+        "test": 89,
+        "library": 34,
+        "wrapper": 30,
+        "fixture": 19
+      },
+      "executable_mode": 133,
+      "shebang_files": 236
+    },
+    "historical": {
+      "files": 9,
+      "code_files": 9,
+      "unique_sha256": 5,
+      "unique_code_sha256": 5,
+      "bytes": 44140,
+      "languages": {
+        "JS": 9
+      },
+      "roles": {
+        "library": 5,
+        "wrapper": 4
+      },
+      "executable_mode": 0,
+      "shebang_files": 4
+    }
+  },
+  "active_by_repo": {
+    ".": {
+      "files": 220,
+      "code_files": 198,
+      "unique_sha256": 220,
+      "unique_code_sha256": 198,
+      "bytes": 1778970,
+      "languages": {
+        "JS": 188,
+        "Shell": 8,
+        "Python": 2,
+        "data": 22
+      },
+      "roles": {
+        "cli": 88,
+        "test": 15,
+        "wrapper": 44,
+        "library": 47,
+        "fixture": 26
+      },
+      "executable_mode": 98,
+      "shebang_files": 129
+    },
+    "submodules/yss-harness-design-agent": {
+      "files": 137,
+      "code_files": 132,
+      "unique_sha256": 137,
+      "unique_code_sha256": 132,
+      "bytes": 1111793,
+      "languages": {
+        "Shell": 5,
+        "JS": 125,
+        "Python": 2,
+        "data": 5
+      },
+      "roles": {
+        "cli": 51,
+        "test": 6,
+        "wrapper": 35,
+        "fixture": 8,
+        "library": 37
+      },
+      "executable_mode": 65,
+      "shebang_files": 84
+    },
+    "submodules/yss-harness-dev-agent": {
+      "files": 181,
+      "code_files": 159,
+      "unique_sha256": 181,
+      "unique_code_sha256": 159,
+      "bytes": 1449093,
+      "languages": {
+        "JS": 149,
+        "Shell": 8,
+        "Python": 2,
+        "data": 22
+      },
+      "roles": {
+        "cli": 66,
+        "test": 12,
+        "wrapper": 37,
+        "fixture": 25,
+        "library": 41
+      },
+      "executable_mode": 80,
+      "shebang_files": 99
+    },
+    "submodules/create-yss-spec": {
+      "files": 215,
+      "code_files": 193,
+      "unique_sha256": 215,
+      "unique_code_sha256": 193,
+      "bytes": 1755236,
+      "languages": {
+        "JS": 183,
+        "Shell": 8,
+        "Python": 2,
+        "data": 22
+      },
+      "roles": {
+        "cli": 83,
+        "test": 15,
+        "wrapper": 44,
+        "library": 47,
+        "fixture": 26
+      },
+      "executable_mode": 96,
+      "shebang_files": 124
+    },
+    "submodules/create-yss-strategic-design": {
+      "files": 116,
+      "code_files": 111,
+      "unique_sha256": 116,
+      "unique_code_sha256": 111,
+      "bytes": 1021976,
+      "languages": {
+        "JS": 106,
+        "Shell": 4,
+        "data": 5,
+        "Python": 1
+      },
+      "roles": {
+        "cli": 40,
+        "test": 6,
+        "wrapper": 28,
+        "fixture": 8,
+        "library": 34
+      },
+      "executable_mode": 48,
+      "shebang_files": 66
+    },
+    "submodules/create-yss-harness-dev": {
+      "files": 180,
+      "code_files": 158,
+      "unique_sha256": 180,
+      "unique_code_sha256": 158,
+      "bytes": 1451539,
+      "languages": {
+        "JS": 148,
+        "Shell": 8,
+        "Python": 2,
+        "data": 22
+      },
+      "roles": {
+        "cli": 65,
+        "test": 12,
+        "wrapper": 37,
+        "fixture": 25,
+        "library": 41
+      },
+      "executable_mode": 79,
+      "shebang_files": 98
+    },
+    "submodules/yss-harness-backend-agent": {
+      "files": 177,
+      "code_files": 155,
+      "unique_sha256": 177,
+      "unique_code_sha256": 155,
+      "bytes": 1408718,
+      "languages": {
+        "JS": 145,
+        "Shell": 8,
+        "Python": 2,
+        "data": 22
+      },
+      "roles": {
+        "cli": 61,
+        "test": 10,
+        "wrapper": 38,
+        "fixture": 25,
+        "library": 43
+      },
+      "executable_mode": 79,
+      "shebang_files": 96
+    },
+    "submodules/yss-harness-frontend-agent": {
+      "files": 158,
+      "code_files": 136,
+      "unique_sha256": 158,
+      "unique_code_sha256": 136,
+      "bytes": 1157699,
+      "languages": {
+        "JS": 129,
+        "Shell": 5,
+        "Python": 2,
+        "data": 22
+      },
+      "roles": {
+        "cli": 51,
+        "test": 7,
+        "wrapper": 35,
+        "fixture": 24,
+        "library": 41
+      },
+      "executable_mode": 72,
+      "shebang_files": 82
+    },
+    "submodules/create-yss-harness-backend": {
+      "files": 3,
+      "code_files": 3,
+      "unique_sha256": 3,
+      "unique_code_sha256": 3,
+      "bytes": 1234,
+      "languages": {
+        "JS": 3
+      },
+      "roles": {
+        "wrapper": 3
+      },
+      "executable_mode": 0,
+      "shebang_files": 0
+    },
+    "submodules/create-yss-harness-frontend": {
+      "files": 3,
+      "code_files": 3,
+      "unique_sha256": 3,
+      "unique_code_sha256": 3,
+      "bytes": 1234,
+      "languages": {
+        "JS": 3
+      },
+      "roles": {
+        "wrapper": 3
+      },
+      "executable_mode": 0,
+      "shebang_files": 0
+    }
+  },
+  "directory_external_closure": {
+    "files": 56,
+    "code_files": 56,
+    "unique_sha256": 19,
+    "unique_code_sha256": 19,
+    "bytes": 1189316,
+    "languages": {
+      "JS": 56
+    },
+    "roles": {
+      "library": 52,
+      "test": 2,
+      "wrapper": 2
+    },
+    "executable_mode": 2,
+    "shebang_files": 4
+  },
+  "dependency_edges": {
+    "total": 7132,
+    "by_status": {
+      "external-module": 3314,
+      "resolved-file": 3202,
+      "unresolved-literal": 261,
+      "unresolved-dynamic": 355
+    }
+  },
+  "readable_regular_files_total": 2820,
+  "read_errors": [],
+  "skipped_symlinks": [],
+  "verification": {
+    "sha256_coverage": "2820/2820",
+    "source_scripts_executed": 0
+  },
+  "scan_seconds": 6.9556
+}

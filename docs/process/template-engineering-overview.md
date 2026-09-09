@@ -22,7 +22,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 | 身份 | 用途 | 允许的主要工作 | 边界 |
 |---|---|---|---|
 | `template-source` | 维护通用模板与治理规则 | 更新单一事实来源、同步技能投影、构建 CLI 快照、验证与审查 | 不生成具体产品的 Spec、原型、OpenAPI 或垂直切片 Ticket |
-| `project-instance` | 承载具体产品或模块的研发管理资产 | 执行 Discovery、Spec、设计、工程契约、Ticket、实现、验证和发布流程 | 不反向成为通用模板的权威来源 |
+| `project-instance` | 承载具体产品或模块的研发管理资产 | 执行 Plan、Spec、设计、工程契约、Ticket、实现、验证和发布流程 | 不反向成为通用模板的权威来源 |
 
 身份只由 `yss-project.yaml` 声明。目录结构、Git remote 和占位符都不能替代该清单。
 
@@ -32,7 +32,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 
 | 产品线 | 模板源 | 实例化 CLI | 生命周期边界 |
 |---|---|---|---|
-| 全产品生命周期 | `yss-spec-project-template` | `create-yss-spec` | 从 Discovery 到发布与复盘 |
+| 全产品生命周期 | `yss-spec-project-template` | `create-yss-spec` | 从 Plan 到发布与复盘 |
 | DDD 战略设计交接 | `yss-harness-design-agent` | `create-yss-harness-design` | 从机会、需求和战略设计到 Strategic Design Handoff |
 | 开发落地 | `yss-harness-dev-agent` | `create-yss-harness-dev` | 从已批准 Spec 或战略设计交接包到 Tactical Design、Slice Contract、实现与验证 |
 

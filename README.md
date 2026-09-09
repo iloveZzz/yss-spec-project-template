@@ -23,7 +23,7 @@
 │   ├── api/                 ← OpenAPI 3.1 契约
 │   ├── adr/                 ← 架构决策记录
 │   ├── requirements/        ← Spec / 用户故事 / 需求草案 / 垂直切片
-│   ├── discovery/           ← 机会探索、市场、竞品和用户材料
+│   ├── plan/                ← 战略规划与 Spec 上游输入
 │   ├── design/              ← 产品设计、原型、交互说明和状态矩阵
 │   ├── architecture/        ← 架构设计与审查模板
 │   ├── releases/            ← 发布说明
@@ -42,7 +42,7 @@
 1. 先读取 `yss-project.yaml`，按 `repository_mode` 选择模板维护或产品研发生命周期。
 2. 必读入口为 `AGENTS.md` 与 `CONTEXT.md`；流程事实分别以生命周期映射和裁剪指南为准。
 3. `template-source` 修改后先按 `maintenance-intensity.yaml` 判定 L1 / L2 / L3，默认用 `scripts/verify-template-fast` 达到 `implementation-ready`；L3 日常采用维护者自检，正式发布前执行完整门禁；只有共享 skill 变更才运行 `scripts/sync-skills` 和 `scripts/update-skill-lock`。
-4. `project-instance` 默认从 `yss-product-lifecycle` 的 `route` 模式开始，再由原生 `work-unit.*` 推进 Discovery、Spec、产品设计、工程契约和 Ticket 正式化；`grill-with-docs`、`to-spec`、`to-tickets`、`implement` 仅作为用户显式调用的兼容入口。
+4. `project-instance` 默认从 `yss-product-lifecycle` 的 `route` 模式开始，再由原生 `work-unit.*` 推进 Plan、Spec、产品设计、工程契约和 Ticket 正式化；`grill-with-docs`、`to-spec`、`to-tickets`、`implement` 仅作为用户显式调用的兼容入口。
 5. 实现仓库接入、YSS 路由、独立审查、fresh verification 和 Git checkpoint 以 `AGENTS.md` 的硬门禁为准。
 
 YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https://github.com/iloveZzz/yss-spec-dev-skills)，发布清单和导出命令见 [skills 维护说明](./docs/agents/skills-maintenance.md)。
@@ -115,7 +115,7 @@ scripts/verify-template-fast
 | [docs/agents/README.md](./docs/agents/README.md) | Agent 协作文档目录说明 |
 | [docs/agents/skills-maintenance.md](./docs/agents/skills-maintenance.md) | Agent skills 安装与维护 |
 | [docs/user-guide/yss-ui-mcp.md](./docs/user-guide/yss-ui-mcp.md) | YSS UI MCP 项目配置、全局安装边界与自检 |
-| [docs/discovery/IDEATION.md](./docs/discovery/IDEATION.md) | 机会构想方法 |
+| [docs/plan/IDEATION.md](./docs/plan/IDEATION.md) | 机会构想方法 |
 | [docs/architecture/README.md](./docs/architecture/README.md) | 架构设计 + 审查清单 |
 | [docs/testing/README.md](./docs/testing/README.md) | 测试策略 |
 

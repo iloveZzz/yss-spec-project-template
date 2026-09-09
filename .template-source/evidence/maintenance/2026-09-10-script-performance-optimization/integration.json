@@ -1,0 +1,20 @@
+{
+  "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+  "base": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn",
+  "integration": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/integration",
+  "revisions": {
+    "root": "e8d15e80bdcc3db64019b29254f7ded7ec27a85d",
+    "yss-harness-design-agent": "b5c21809542d60c21bf7241060c27600304b0617",
+    "yss-harness-dev-agent": "030ef19f39a553858db167dba8aee478e45f438d",
+    "yss-harness-backend-agent": "bfd3151c4b637b9608ee4acba579e0fbdee9df45",
+    "yss-harness-frontend-agent": "d402447c82788f9563cdf304cf0af1c0972a56de"
+  },
+  "sources": {
+    "yss-harness-design-agent": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/sources/yss-harness-design-agent",
+    "yss-harness-dev-agent": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/sources/yss-harness-dev-agent",
+    "yss-harness-backend-agent": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/sources/yss-harness-backend-agent",
+    "yss-harness-frontend-agent": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/sources/yss-harness-frontend-agent"
+  },
+  "formal_locks_updated": false,
+  "template_root_revision": "e8d15e80bdcc3db64019b29254f7ded7ec27a85d"
+}

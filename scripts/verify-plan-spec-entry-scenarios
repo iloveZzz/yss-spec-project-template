@@ -1,0 +1,79 @@
+#!/usr/bin/env node
+import assert from 'node:assert/strict';
+import { validateNextRoute } from './lib/lifecycle-transition.mjs';
+import { queryLifecycleContext } from './lib/lifecycle-context-query.mjs';
+import { mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { buildPlanFixture } from './fixtures/user-decision/plan-fixture.mjs';
+import { assertPlanSpecEntry, assertPlanCheckpoint } from './lib/plan-spec-entry.mjs';
+import { readFileSync } from 'node:fs';
+import { decisionDigest } from './lib/user-decision.mjs';
+import { buildDecisionFixture } from './fixtures/user-decision/build-fixture.mjs';
+import { loadDigitalHumanRoles, countersignRuleForGate } from './lib/digital-human-roles.mjs';
+
+for (const unit of ['plan-opportunity', 'plan-requirements', 'domain-strategy-design', 'stage-decision']) {
+  for (const state of [undefined, {}, { gates: {}, user_decisions: [] }]) {
+    assert.equal(validateNextRoute(`work-unit.${unit}`, 'work-unit.spec-synthesis', state).result, 'blocked', `${unit}: missing Plan review must block`);
+  }
+}
+const query = queryLifecycleContext({ workUnitId: 'work-unit.plan-requirements' });
+assert.ok(query.execution.selected.planning);
+assert.ok(query.execution.selected.grill_exit);
+assert.ok(query.lifecycle.gates.length);
+assert.ok(query.execution.plan_checks.every(check => check.status === 'pending'));
+const specQuery = queryLifecycleContext({ stageId: 'stage.spec-architecture' });
+assert.ok(specQuery.execution.selected.planning);
+assert.ok(specQuery.execution.plan_checks.every(check => check.status === 'pending'));
+assert.ok(specQuery.lifecycle.gates.some(gate => gate.stage === 'stage.plan'));
+const temp = mkdtempSync(path.join(tmpdir(), 'yss-plan-entry-'));
+try {
+  const mutations = [
+    ['缺检查项', f => delete f.review.checks.goals],
+    ['默认 pending', f => f.review.checks.goals.status = 'pending'],
+    ['检查项不能 N/A', f => f.review.checks.goals.status = 'not-applicable'],
+    ['缺证据', f => f.review.checks.goals.evidence_refs = []],
+    ['缺影响面', f => delete f.review.impacts.domain_strategy],
+    ['缺门禁', f => delete f.review.gates['gate.domain-strategy-approved']],
+    ['命中门禁不能 N/A', f => f.review.impacts.domain_strategy = true],
+    ['N/A 无原因', f => delete f.review.gates['gate.domain-strategy-approved'].reason],
+    ['关键问题延期', f => f.review.open_items.push({ id: 'q1', critical: true, runnable_blocker: false, status: 'deferred' })],
+    ['可执行阻塞延期', f => f.review.open_items.push({ id: 'q1', critical: false, runnable_blocker: true, status: 'deferred' })],
+    ['延期未交接', f => f.review.open_items.push({ id: 'q1', critical: false, runnable_blocker: false, status: 'deferred' })],
+    ['无回复', f => { f.approval.record.responses = []; f.approval.save(); }],
+    ['过期依据', f => f.write('plan.md', '变更后的范围')],
+    ['错误范围', f => f.state.feature_id = 'feature.other'],
+    ['调和未通过', f => f.review.context_reconciliation_ref = 'plan.md'],
+  ];
+  const valid = buildPlanFixture(path.join(temp, 'valid'));
+  assert.equal(assertPlanSpecEntry(valid.state, { root: valid.root }).result, 'allowed');
+  assert.equal(validateNextRoute('work-unit.plan-opportunity', 'work-unit.spec-synthesis', valid.state, { root: valid.root }).result, 'allowed');
+  valid.review.open_items = [{ id: 'q-detail', critical: false, runnable_blocker: false, status: 'deferred', noncritical_reason: '不影响范围或关键规则', owner: '测试负责人', resolution_point: 'Spec 评审前', downstream_recipient: '测试需求负责人', evidence_refs: ['plan.md'] }];
+  valid.reapprove();
+  assert.equal(assertPlanSpecEntry(valid.state, { root: valid.root }).result, 'allowed', '用户确认后的非关键延期可通过');
+  for (const [gateId, impact] of Object.entries({ 'gate.domain-strategy-approved': 'domain_strategy', 'gate.stage-decision-package-approved': 'stage_decision' })) {
+    const subjectRef = path.join(valid.root, 'plan.md');
+    const reply = buildDecisionFixture(path.join(valid.root, impact), { boundary: gateId, subjectRef });
+    const rule = countersignRuleForGate(loadDigitalHumanRoles().gate_policy, gateId);
+    const approvalRef = path.join(valid.root, `${impact}.json`);
+    valid.write(approvalRef, { schema_version: 1, gate_id: gateId, decision: 'approved', actor_kind: 'digital-human', role_id: rule.countersigners[0], runtime_id: 'runtime.skill-projection', principal_ref: 'test-only.reviewer', subject_ref: subjectRef, approval_scope: ['feature.demo'], user_decision_ref: reply.ref });
+    valid.review.impacts[impact] = true;
+    valid.review.gates[gateId] = { status: 'approved', approval_ref: approvalRef, subject_ref: subjectRef, approval_scope: ['feature.demo'], evidence_refs: [approvalRef, subjectRef] };
+    for (const ref of [approvalRef, subjectRef]) if (!valid.review.basis.some(asset => asset.ref === ref)) valid.review.basis.push({ ref, digest: decisionDigest(readFileSync(ref)) });
+  }
+  valid.reapprove();
+  assert.equal(assertPlanSpecEntry(valid.state, { root: valid.root }).result, 'allowed', '命中门禁、真实回复来源与当前资产绑定均通过');
+  valid.review.gates['gate.domain-strategy-approved'].approval_scope = ['feature.other']; valid.reapprove();
+  assert.throws(() => assertPlanSpecEntry(valid.state, { root: valid.root }), /会签资产或范围不匹配/);
+  for (const [name, mutate] of mutations) {
+    const f = buildPlanFixture(path.join(temp, name)); mutate(f); f.save();
+    assert.throws(() => assertPlanSpecEntry(f.state, { root: f.root }), undefined, name);
+  }
+  for (const checkpoint of [{ next_work_unit: 'work-unit.spec-synthesis' }, { stage: 'stage.spec-architecture' }, { stage_trace: { completed_work_unit: 'work-unit.spec-synthesis' } }]) {
+    assert.throws(() => assertPlanCheckpoint({ repository_mode: 'project-instance', ...checkpoint }), /plan-spec-entry-blocked/);
+  }
+  const stale = buildPlanFixture(path.join(temp, 'stale-review'));
+  stale.review.gates['gate.domain-strategy-approved'].reason += ' changed'; stale.save();
+  assert.throws(() => assertPlanSpecEntry(stale.state, { root: stale.root }), /user-decision-stale/);
+} finally { rmSync(temp, { recursive: true, force: true }); }
+process.stdout.write('Plan → Spec 无状态绕过与默认加载检查通过\n');

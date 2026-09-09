@@ -23,12 +23,18 @@ function collectChangedFiles(base) {
 function runCommand(command) {
   return new Promise((resolve) => {
     const started = Date.now();
+    process.stderr.write(`[开始] ${command}\n`);
     const child = spawn(command, { cwd: ROOT, shell: true, env: process.env, stdio: ["ignore", "pipe", "pipe"] });
     let stdout = "";
     let stderr = "";
     child.stdout.on("data", (chunk) => { stdout += chunk; });
     child.stderr.on("data", (chunk) => { stderr += chunk; });
-    child.on("close", (code) => resolve({ command, code: code ?? 1, duration_ms: Date.now() - started, stdout, stderr }));
+    child.on("error", error => { stderr += `${error.message}\n`; });
+    child.on("close", (code) => {
+      const duration_ms = Date.now() - started;
+      process.stderr.write(`[${code === 0 ? "完成" : "失败"}] ${command} (${duration_ms}ms, exit=${code ?? 1})\n`);
+      resolve({ command, code: code ?? 1, duration_ms, stdout, stderr });
+    });
   });
 }
 
@@ -106,8 +112,8 @@ try {
   const concurrency = Number(values.concurrency || plan.max_concurrency);
   if (!Number.isInteger(concurrency) || concurrency < 1 || concurrency > 4) throw new TypeError("concurrency 必须为 1..4");
 
-  process.stdout.write(`模板核验 profile: ${plan.requested_profile} -> ${plan.effective_profile}\n`);
-  if (plan.escalation_reason) process.stdout.write(`自动升级原因: ${plan.escalation_reason}\n`);
+  process.stderr.write(`模板核验 profile: ${plan.requested_profile} -> ${plan.effective_profile}\n`);
+  if (plan.escalation_reason) process.stderr.write(`自动升级原因: ${plan.escalation_reason}\n`);
   const groups = await runGroups(plan, modeResult.stdout.trim(), concurrency);
   printResults(groups);
   const failed = groups.flatMap((group) => group.results).find((result) => result.code !== 0);

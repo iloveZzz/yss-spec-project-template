@@ -1,0 +1,63 @@
+{
+  "verified_at": "2026-09-09T16:41:12.333451+00:00",
+  "scope": "Analysis assets only. No runtime optimization or whole-repository release claim.",
+  "status": "passed",
+  "checks": [
+    {
+      "argv": [
+        "python3",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-audit/inventory/verify.py"
+      ],
+      "exit_code": 0,
+      "wall_ms": 459.775,
+      "stdout": "{\"command\": \"python3 .template-source/evidence/maintenance/2026-09-10-script-performance-audit/inventory/verify.py\", \"exit_code\": 0, \"checked_files\": 2820, \"checked_hash_groups\": 421, \"checked_dependency_edges\": 7132, \"errors\": [], \"elapsed_seconds\": 0.4167, \"source_scripts_executed\": 0}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-audit/hotspots/verify_report.py"
+      ],
+      "exit_code": 0,
+      "wall_ms": 52.859,
+      "stdout": "{\"status\": \"passed\", \"candidate_count\": 12, \"source_refs_verified\": 61, \"assessment_groups_verified\": 338, \"active_scripts_sha_groups\": 320}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "python3",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-audit/verify-analysis.py"
+      ],
+      "exit_code": 0,
+      "wall_ms": 68.235,
+      "stdout": "{\"status\": \"passed\", \"runs_checked\": 105, \"log_files_checked\": 210, \"coverage_rows\": 2820, \"implementation_groups\": 338, \"limitation\": \"Evidence consistency only; recorded rejected inputs remain failures, not runtime validation passes.\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check",
+        "--",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-audit"
+      ],
+      "exit_code": 0,
+      "wall_ms": 19.617,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "scripts/verify-template-fast",
+        "--changed-file",
+        ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/scope.md",
+        "--changed-file",
+        ".template-source/evidence/maintenance/2026-09-10-script-performance-audit/report.md"
+      ],
+      "exit_code": 0,
+      "wall_ms": 10990.44,
+      "stdout": "模板核验 profile: fast -> fast\n\n[tooling]\n$ .template-source/scripts/evidence-index --check (1605ms)\n证据索引验证通过（complete）\n$ pnpm --dir .template-source/tooling/node test (7452ms)\n\n> yss-template-node-tooling@1.0.0 test /Users/zhudaoming/Projects/yss-spec-project-template/.template-source/tooling/node\n> node --test test/**/*.test.mjs\n\n✔ DESIGN.md passes local and pinned upstream lint (2771.807959ms)\n✔ DESIGN.md projection manifest is current (91.462916ms)\n✔ cross-repository design sync digest matches DESIGN.md (0.81325ms)\n✔ digital human roles are runtime-agnostic and grok is only an adapter (190.973708ms)\n✔ approval records reject the wrong signer and approved countersign gates need approval_ref (44.031084ms)\n✔ Node runtime contract exposes a vendored YAML parser for distributed scripts (20.171208ms)\n✔ YAML aliases are rejected before a repository manifest is materialized (11.297792ms)\n✔ repository mode public seam is executable by Node (1.015ms)\n✔ vendored XML parser rejects DOCTYPE and preserves scalar text (7.1845ms)\n✔ implementation path policy preserves harness and external-repository boundaries (1.457958ms)\nCloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-fzqSG1/super/apps/backend/billing-service'...\ndone.\nHEAD is now at 590abb2 init child\nCloning into '/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-gitlink-HMC5b2/super/apps/backend/billing-service'...\ndone.\nReset branch 'main'\n✔ repository_scope git-submodule is a first-class layout distinct from harness-apps (5152.869791ms)\n✔ Node lifecycle registry verifier preserves the published semantic baseline (366.298791ms)\n✔ public skill export preserves its portable manifest and blocks workstation paths (655.505375ms)\n✔ evidence index writes pending and checkpointed Node records with legacy failure semantics (845.33975ms)\n✔ unknown layer is rejected (55.975584ms)\n✔ shadow registry cannot be marked as runtime consumed (32.841625ms)\n✔ alias that collides with another id is rejected (26.015333ms)\n✔ missing Cursor runtime root is rejected (17.608625ms)\n✔ skill invocation contract is required and derives impact triggers (55.550958ms)\n✔ typed dependency metadata rejects unregistered skills (22.143458ms)\n✔ context-required typed dependencies reject cycles (29.848375ms)\n✔ 实现合同编译器合同不得重复 typed dependency 事实 (42.044334ms)\n✔ platform aliases resolve lifecycle external runtime entries (23.107ms)\n✔ deprecated research alias resolves to yss-research in lifecycle routes (20.92025ms)\n✔ lifecycle route with an unregistered skill is rejected (19.586292ms)\n✔ prototype design route requires independent prototype-review (16.305375ms)\n✔ deprecated skills require migration and cleanup metadata (15.933833ms)\n✔ code-review route without specialist supporting skills is rejected (15.235708ms)\n✔ code-review route without review_standards_route is rejected (14.926ms)\n✔ code-review route cannot replace the unique default review skill (15.148041ms)\n✔ code-review route accepts specialist check inputs on the unique skill (16.506875ms)\n✔ code-review route without finding_disposition is rejected (19.441125ms)\n✔ code-review route cannot let the reviewer write implementation (14.514625ms)\n✔ code-review route forbids mandatory waiver of triggered gates (12.082417ms)\n✔ review_input without finding disposition completion flags is rejected (11.880833ms)\n✔ frontend conditional routes require registered skills (11.436541ms)\n✔ tracked projections absent from the lock cannot escape synchronization checks (1.15025ms)\n✔ obsolete canonical residues fail even when they are not in the lock (0.145917ms)\n✔ physical canonical skills must be present in the lock (0.124458ms)\n✔ Cursor is a first-class shared skill projection root (0.118584ms)\n✔ yss-ui 业务项目清单覆盖 20 个精选 app skills 与项目级 MCP 配置 (2.914875ms)\n✔ yss-ui 上游清单拒绝重复 canonical 与缺失 hash (1.261875ms)\n✔ 战略设计上游清单固定公共技能集合与 Git revision (0.98575ms)\nℹ tests 43\nℹ suites 0\nℹ pass 43\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 7161.638708\n$ pnpm --dir .template-source/tooling/node check:vendor (362ms)\n\n> yss-template-node-tooling@1.0.0 check:vendor /Users/zhudaoming/Projects/yss-spec-project-template/.template-source/tooling/node\n> node scripts/build-vendor.mjs --check\n\n模板核验通过（fast）\n",
+      "stderr": ""
+    }
+  ]
+}

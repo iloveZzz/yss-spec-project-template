@@ -1,0 +1,68 @@
+[
+  {
+    "label": "recovery-core-sync",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "argv": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/sync-recovery-core.mjs"
+    ],
+    "exit_code": 0,
+    "duration_ms": 858.3734579733573,
+    "log_ref": "recovery-core-sync.log"
+  },
+  {
+    "label": "recovery-spec-sync",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/create-yss-spec",
+    "argv": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "exit_code": 0,
+    "duration_ms": 3707.362499961164,
+    "log_ref": "recovery-spec-sync.log"
+  },
+  {
+    "label": "backend-recovery-cli-tests",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/integration/create-yss-harness-backend",
+    "argv": [
+      "pnpm",
+      "test"
+    ],
+    "exit_code": 0,
+    "duration_ms": 1063.4936669957824,
+    "log_ref": "backend-recovery-cli-tests.log"
+  },
+  {
+    "label": "backend-recovery-bundle",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/integration/create-yss-harness-backend",
+    "argv": [
+      "pnpm",
+      "verify-bundle"
+    ],
+    "exit_code": 0,
+    "duration_ms": 247.5856249802746,
+    "log_ref": "backend-recovery-bundle.log"
+  },
+  {
+    "label": "frontend-recovery-cli-tests",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/integration/create-yss-harness-frontend",
+    "argv": [
+      "pnpm",
+      "test"
+    ],
+    "exit_code": 0,
+    "duration_ms": 1370.731542003341,
+    "log_ref": "frontend-recovery-cli-tests.log"
+  },
+  {
+    "label": "frontend-recovery-bundle",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/integration/create-yss-harness-frontend",
+    "argv": [
+      "pnpm",
+      "verify-bundle"
+    ],
+    "exit_code": 0,
+    "duration_ms": 252.96387501293793,
+    "log_ref": "frontend-recovery-bundle.log"
+  }
+]

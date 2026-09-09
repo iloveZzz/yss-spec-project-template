@@ -117,7 +117,16 @@ function loadStrategicDesignSkillManifest() {
   return validateStrategicDesignSkillManifest(JSON.parse(readFileSync(STRATEGIC_DESIGN_MANIFEST_PATH, "utf8")));
 }
 function git(args) { return spawnSync("git", args, { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] }); }
-function tracked(relativePath) { return git(["ls-files", "-z", "--", relativePath]).stdout.length > 0; }
+function trackedPaths() {
+  const result = git(["ls-files", "-z"]);
+  if (result.status !== 0) throw new TypeError("无法读取 Git 受跟踪路径");
+  const paths = new Set();
+  for (const file of result.stdout.split("\0").filter(Boolean)) {
+    let ref = file;
+    while (ref !== ".") { paths.add(ref); ref = path.posix.dirname(ref); }
+  }
+  return paths;
+}
 function parseLock() { return existsSync(LOCK_PATH) ? JSON.parse(readFileSync(LOCK_PATH, "utf8")) : null; }
 function sharedFromLock(lock) {
   const shared = lock?.version === 3 && lock.skills?.shared;
@@ -137,6 +146,13 @@ export function unlockedCanonicalEntries(names, allowedNames, hasSkillMd = () =>
   return names.filter((name) => !allowed.has(name) && !OBSOLETE.has(name) && hasSkillMd(name)).sort();
 }
 export function syncSkills({ check = false } = {}) {
+  let trackedSet;
+  const tracked = ref => (trackedSet ??= trackedPaths()).has(ref);
+  const sourceHashes = new Map();
+  const sourceHash = source => {
+    if (!sourceHashes.has(source)) sourceHashes.set(source, treeHash(source));
+    return sourceHashes.get(source);
+  };
   const lock = parseLock();
   const shared = sharedFromLock(lock);
   const absent = shared.filter((name) => !lstatSafe(path.join(SOURCE_ROOT, name))?.isDirectory());
@@ -162,7 +178,7 @@ export function syncSkills({ check = false } = {}) {
         if (info?.isSymbolicLink()) {
           if (!existsSync(target) || realpathSync(target) !== realpathSync(source)) drift.push(`projection target mismatch: ${relative(target)}`);
         } else if (!info?.isDirectory()) drift.push(`missing projection: ${relative(target)}`);
-        else if (treeHash(source) !== treeHash(target)) drift.push(`projection drift: ${relative(target)}`);
+        else if (sourceHash(source) !== treeHash(target)) drift.push(`projection drift: ${relative(target)}`);
       } else if (info?.isSymbolicLink() && existsSync(target) && realpathSync(target) === realpathSync(source)) {
         continue;
       } else {

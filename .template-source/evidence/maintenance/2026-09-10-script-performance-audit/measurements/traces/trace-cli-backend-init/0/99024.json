@@ -1,0 +1,21 @@
+{
+  "pid": 99024,
+  "ppid": 98993,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/cli-backend/bin/create-yss-harness-backend.js",
+  "wall_ms": 155.444708,
+  "exit_code": 1,
+  "operations": {
+    "fs.realpathSync": {
+      "count": 19,
+      "duration_ms": 0.28416800000000286
+    },
+    "fs.readFileSync": {
+      "count": 3922,
+      "duration_ms": 57.6419569999993
+    },
+    "fs.lstatSync": {
+      "count": 11753,
+      "duration_ms": 26.738111000000124
+    }
+  }
+}

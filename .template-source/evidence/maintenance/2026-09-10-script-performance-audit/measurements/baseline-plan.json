@@ -1,0 +1,274 @@
+[
+  {
+    "label": "root-repository-mode",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/scripts/repository-mode"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "root-verify-context-contract",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "--json"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "root-query-lifecycle-context",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/scripts/query-lifecycle-context",
+      "--mode",
+      "route"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "yss-harness-design-agent-repository-mode",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/scripts/repository-mode"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "yss-harness-design-agent-verify-context-contract",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+      "--json"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "yss-harness-design-agent-query-lifecycle-context",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/scripts/query-lifecycle-context",
+      "--mode",
+      "route"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "yss-harness-dev-agent-repository-mode",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent/scripts/repository-mode"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "yss-harness-dev-agent-verify-context-contract",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
+      "--json"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "yss-harness-backend-agent-repository-mode",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent/scripts/repository-mode"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "yss-harness-backend-agent-verify-context-contract",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+      "--json"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "yss-harness-frontend-agent-repository-mode",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent/scripts/repository-mode"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "yss-harness-frontend-agent-verify-context-contract",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+      "--json"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "create-yss-spec-template-repository-mode",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/template",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/template/scripts/repository-mode"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "create-yss-spec-template-verify-context-contract",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/template",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/template/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/template",
+      "--json"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "create-yss-spec-template-query-lifecycle-context",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/template",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/template/scripts/query-lifecycle-context",
+      "--mode",
+      "route"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "create-yss-strategic-design-template-repository-mode",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/template",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/template/scripts/repository-mode"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "create-yss-strategic-design-template-verify-context-contract",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/template",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/template/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/template",
+      "--json"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "create-yss-strategic-design-template-query-lifecycle-context",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/template",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/template/scripts/query-lifecycle-context",
+      "--mode",
+      "route"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "create-yss-harness-dev-template-repository-mode",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev/template",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev/template/scripts/repository-mode"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "create-yss-harness-dev-template-verify-context-contract",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev/template",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev/template/scripts/verify-context-contract",
+      "--root",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev/template",
+      "--json"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "root-sync-skills-check",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "args": [
+      "node",
+      "scripts/sync-skills",
+      "--check"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "root-update-skill-lock-check",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "args": [
+      "node",
+      "scripts/update-skill-lock",
+      "--check"
+    ],
+    "repeat": 3,
+    "timeout": 30
+  },
+  {
+    "label": "python-startup",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "args": [
+      "python3",
+      "-c",
+      "pass"
+    ]
+  },
+  {
+    "label": "python-jsonschema-import",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "args": [
+      "python3",
+      "-c",
+      "from jsonschema import Draft202012Validator"
+    ]
+  }
+]

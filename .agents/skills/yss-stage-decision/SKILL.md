@@ -1,6 +1,6 @@
 ---
 name: yss-stage-decision
-description: 编排 Discovery 到 Spec 入口的方案决策与业务边界、协作和规则设计；当需求、业务责任区、统一业务词汇或下游影响尚未稳定时使用。
+description: 编排 Plan 到 Spec 入口的方案决策与业务边界、协作和规则设计；当需求、业务责任区、统一业务词汇或下游影响尚未稳定时使用。
 ---
 
 # YSS Stage Decision
@@ -9,14 +9,16 @@ description: 编排 Discovery 到 Spec 入口的方案决策与业务边界、�
 
 ## 适用边界
 
-- 适用于 `project-instance` 的 Discovery → Spec 入口。
+- 适用于 `project-instance` 的 Plan → Spec 入口。
 - `template-source` 只维护本技能、Schema、验证器和合成 Fixture，不生成具体产品领域资产。
 - 业务边界与协作工作单元只回答：有哪些业务板块、每个业务责任区负责什么、不同责任区如何交接、使用哪些统一业务词汇、发生哪些业务事实、有哪些待确认的关键业务对象和不可违反的业务规则。
 - Entity、Aggregate、Repository、Java 类、数据库表和 OpenAPI Freeze 留给下游工作单元。
 
 ## 执行顺序
 
-1. 读取 `yss-project.yaml`、`CONTEXT.md`、既有 Discovery/Spec、ADR 和父 Ticket/checkpoint。
+Plan 的目标与退出条件由 `docs/process/lifecycle-registry.yaml` 持有；从 `docs/plan/templates/plan-template.md` 汇总输入。旧资产按 `docs/process/plan-migration.md` 重新整理并核查，关键未决项不得延期到 Spec，非关键项记录责任人、解决时点与接收方。
+
+1. 读取 `yss-project.yaml`、`CONTEXT.md`、既有 Plan/Spec、ADR 和父 Ticket/checkpoint。
 2. 分离事实、决策、假设、约束和未决项；技术事实走 `yss-research` 的 `technical-evidence`，领域边界、业务规则、MVP、非目标、成功标准或阶段推进依据等决策证据走 `strategy-evidence`，市场/竞品事实走 `competitive-intelligence`。
 3. 从业务故事、已发生的事实、规则、责任人和失败路径识别业务板块与业务责任区，不从数据库表或调用链直接反推边界。
 4. 为每个业务责任区建立统一业务词汇；对跨责任区协作记录规则提供方、规则使用方、业务决策权、信息传递方向和口径转换负责人。

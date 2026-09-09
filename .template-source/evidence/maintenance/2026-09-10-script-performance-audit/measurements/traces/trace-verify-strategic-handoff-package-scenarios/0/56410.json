@@ -1,0 +1,89 @@
+{
+  "pid": 56410,
+  "ppid": 35596,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-strategic-handoff-package-scenarios",
+  "wall_ms": 23446.77275,
+  "exit_code": 0,
+  "operations": {
+    "fs.realpathSync": {
+      "count": 71,
+      "duration_ms": 3.1246650000032794
+    },
+    "fs.readFileSync": {
+      "count": 5479,
+      "duration_ms": 110.28380700008523
+    },
+    "fs.mkdirSync": {
+      "count": 1642,
+      "duration_ms": 131.81341300003953
+    },
+    "fs.writeFileSync": {
+      "count": 1571,
+      "duration_ms": 479.9000590000281
+    },
+    "fs.existsSync": {
+      "count": 49409,
+      "duration_ms": 115.07975700020276
+    },
+    "fs.lstatSync": {
+      "count": 51931,
+      "duration_ms": 123.50992800031291
+    },
+    "fs.readdirSync": {
+      "count": 1794,
+      "duration_ms": 36.711452999976764
+    },
+    "spawnSync:python3:strategic-design-handoff.schema.json": {
+      "count": 53,
+      "duration_ms": 3795.0247520000007
+    },
+    "spawnSync:python3:strategic-handoff-export.schema.json": {
+      "count": 53,
+      "duration_ms": 3872.1190419999925
+    },
+    "spawnSync:python3:strategic-handoff-domain-strategy.schema.json": {
+      "count": 53,
+      "duration_ms": 3846.5242899999903
+    },
+    "spawnSync:python3:strategic-handoff-stage-decision-package.schema.json": {
+      "count": 53,
+      "duration_ms": 3807.170538000011
+    },
+    "spawnSync:python3:strategic-handoff-package.schema.json": {
+      "count": 41,
+      "duration_ms": 2893.038790999999
+    },
+    "spawnSync:python3:.handoff-staging-CsJVqW.zip": {
+      "count": 1,
+      "duration_ms": 31.916875000000005
+    },
+    "spawnSync:python3:unpacked": {
+      "count": 4,
+      "duration_ms": 131.74233299999923
+    },
+    "fs.copyFileSync": {
+      "count": 130,
+      "duration_ms": 77.83854100001099
+    },
+    "fs.cpSync": {
+      "count": 4,
+      "duration_ms": 94.68279199999915
+    },
+    "spawnSync:python3:escape\"]": {
+      "count": 1,
+      "duration_ms": 31.997707999999875
+    },
+    "spawnSync:python3:[\"manifest.json\",\"manifest.json\"]": {
+      "count": 1,
+      "duration_ms": 35.088582999999744
+    },
+    "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation": {
+      "count": 10,
+      "duration_ms": 1161.2210819999982
+    },
+    "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/strategic-handoff": {
+      "count": 2,
+      "duration_ms": 1302.5900830000028
+    }
+  }
+}

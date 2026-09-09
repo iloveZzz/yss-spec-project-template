@@ -1,0 +1,62 @@
+{
+  "root": {
+    "root": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "head": "6f5c5d80adcdb743fb06199f70a7ab0b0a640ce5",
+    "branch": "main",
+    "status": " M .agents/skills/.strategic-design-skills-manifest.json\n M .agents/skills/competitive-intelligence/SKILL.md\n M .agents/skills/domain-modeling/CONTEXT-FORMAT.md\n M .agents/skills/grill-with-docs/SKILL.md\n M .agents/skills/setup-matt-pocock-skills/issue-tracker-local.md\n M .agents/skills/yss-product-lifecycle/SKILL.md\n M .agents/skills/yss-product-lifecycle/references/artifact-dependencies.md\n M .agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md\n M .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml\n M .agents/skills/yss-product-lifecycle/references/orchestration.md\n M .agents/skills/yss-research/SKILL.md\n M .agents/skills/yss-stage-decision/SKILL.md\n M .agents/skills/yss-stage-decision/references/stage-decision-package-contract.md\n M .claude/skills/competitive-intelligence/SKILL.md\n M .codex/skills/competitive-intelligence/SKILL.md\n M .codex/skills/yss-product-lifecycle/SKILL.md\n M .codex/skills/yss-product-lifecycle/references/artifact-dependencies.md\n M .codex/skills/yss-product-lifecycle/references/matt-yss-adapter.md\n M .codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml\n M .codex/skills/yss-product-lifecycle/references/orchestration.md\n M .pi/skills/competitive-intelligence/SKILL.md\n M .qoder/skills/domain-modeling/CONTEXT-FORMAT.md\n M .qoder/skills/grill-with-docs/SKILL.md\n M .qoder/skills/setup-matt-pocock-skills/issue-tracker-local.md\n M .template-source/derived/harness-work-unit-map.md\n M .trae/skills/competitive-intelligence/SKILL.md\n M AGENTS.md\n M CONTEXT.md\n M README.md\n M docs/agents/digital-human-roles.md\n M docs/agents/digital-human-roles.yaml\n M docs/agents/issue-tracker.md\n M docs/agents/strategic-design-skills-integration.md\n M docs/architecture/README.md\n M docs/architecture/templates/business-architecture-template.md\n M docs/architecture/templates/functional-architecture-template.md\n M docs/design/README.md\n M docs/design/templates/interaction-spec-template.md\n M docs/design/templates/product-overview-design-template.md\n D docs/discovery/IDEATION.md\n D docs/discovery/README.md\n D docs/discovery/templates/competitive-analysis-template.md\n D docs/discovery/templates/competitive-matrix-template.md\n D docs/discovery/templates/discovery-template.md\n D docs/discovery/templates/market-analysis-template.md\n D docs/discovery/templates/user-pain-points-template.md\n M docs/process/harness-process-tailoring.md\n M docs/process/lifecycle-artifact-map.md\n M docs/process/lifecycle-registry-baseline.json\n M docs/process/lifecycle-registry.yaml\n M docs/process/schemas/digital-human-task-package.schema.json\n M docs/process/schemas/lifecycle-checkpoint.schema.json\n M docs/process/schemas/lifecycle-registry.schema.json\n M docs/process/template-engineering-overview.md\n M docs/process/template-verification-profiles.yaml\n M docs/process/templates/context-reconciliation-template.yaml\n M docs/process/templates/lifecycle-checkpoint-template.yaml\n M docs/requirements/README.md\n M docs/templates/local-parent-ticket-template.md\n M docs/templates/subagent-task-package-template.md\n M docs/user-guide/用户手册.md\n M scripts/fixtures/strategic-handoff/source-roles.json\n M scripts/lib/lifecycle-context-query.mjs\n M scripts/lib/lifecycle-transition.mjs\n M scripts/lib/scenario-checks.mjs\n M scripts/lib/task-package.mjs\n M scripts/verify-context-reconciliation-scenarios\n M scripts/verify-lifecycle-checkpoint\n M scripts/verify-lifecycle-context-query-scenarios\n M scripts/verify-subagent-task-package-scenarios\n M scripts/verify-user-decision-scenarios\n M skills-lock.json\n M submodules/create-yss-harness-dev\n M submodules/create-yss-spec\n M submodules/create-yss-strategic-design\n M submodules/yss-harness-design-agent\n?? .template-source/evidence/maintenance/2026-09-09-plan/\n?? .template-source/evidence/maintenance/2026-09-10-lifecycle-performance/\n?? .template-source/evidence/maintenance/2026-09-10-plan-entry/\n?? .template-source/evidence/maintenance/2026-09-10-script-performance-audit/\n?? .template-source/evidence/maintenance/2026-09-10-script-performance-optimization/\n?? docs/plan/\n?? docs/process/plan-migration.md\n?? scripts/fixtures/user-decision/plan-fixture.mjs\n?? scripts/lib/plan-spec-entry.mjs\n?? scripts/verify-plan-spec-entry\n?? scripts/verify-plan-spec-entry-scenarios\n"
+  },
+  "create-yss-strategic-design": {
+    "root": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+    "head": "3c41e85be9de5843e763f03c06b4a3ed1f6edbee",
+    "branch": "main",
+    "status": " M tests/init-cli.test.js\n"
+  },
+  "yss-harness-design-agent": {
+    "root": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+    "head": "8a67e0f5a56aa5085d18c2b42bb540c8f36c2fab",
+    "branch": "main",
+    "status": " M .agents/skills/competitive-intelligence/SKILL.md\n M .agents/skills/domain-modeling/CONTEXT-FORMAT.md\n M .agents/skills/grill-with-docs/SKILL.md\n M .agents/skills/yss-research/SKILL.md\n M .agents/skills/yss-stage-decision/SKILL.md\n M .agents/skills/yss-stage-decision/references/stage-decision-package-contract.md\n M .agents/skills/yss-strategic-design/SKILL.md\n M .agents/skills/yss-strategic-design/references/artifact-dependencies.md\n M .agents/skills/yss-strategic-design/references/matt-yss-adapter.md\n M .agents/skills/yss-strategic-design/references/orchestration-contract.yaml\n M .agents/skills/yss-strategic-design/references/orchestration.md\n M .claude/skills/competitive-intelligence/SKILL.md\n M .codex/skills/competitive-intelligence/SKILL.md\n M .pi/skills/competitive-intelligence/SKILL.md\n M .qoder/skills/domain-modeling/CONTEXT-FORMAT.md\n M .qoder/skills/grill-with-docs/SKILL.md\n M .template-source/derived/harness-work-unit-map.md\n M .trae/skills/competitive-intelligence/SKILL.md\n M AGENTS.md\n M CONTEXT.md\n M README.md\n M docs/agents/digital-human-roles.md\n M docs/agents/digital-human-roles.yaml\n M docs/agents/issue-tracker.md\n M docs/architecture/README.md\n M docs/architecture/templates/business-architecture-template.md\n M docs/architecture/templates/functional-architecture-template.md\n M docs/design/README.md\n M docs/design/templates/interaction-spec-template.md\n M docs/design/templates/product-overview-design-template.md\n D docs/discovery/IDEATION.md\n D docs/discovery/README.md\n D docs/discovery/templates/competitive-analysis-template.md\n D docs/discovery/templates/competitive-matrix-template.md\n D docs/discovery/templates/discovery-template.md\n D docs/discovery/templates/market-analysis-template.md\n D docs/discovery/templates/user-pain-points-template.md\n M docs/process/harness-process-tailoring.md\n M docs/process/harness-profile.yaml\n M docs/process/instance-distribution-manifest.yaml\n M docs/process/lifecycle-artifact-map.md\n M docs/process/lifecycle-registry-baseline.json\n M docs/process/lifecycle-registry.yaml\n M docs/process/schemas/digital-human-task-package.schema.json\n M docs/process/schemas/lifecycle-checkpoint.schema.json\n M docs/process/schemas/lifecycle-registry.schema.json\n M docs/process/template-verification-profiles.yaml\n M docs/process/templates/context-reconciliation-template.yaml\n M docs/process/templates/lifecycle-checkpoint-template.yaml\n M docs/requirements/README.md\n M docs/templates/local-parent-ticket-template.md\n M docs/templates/subagent-task-package-template.md\n M scripts/fixtures/strategic-handoff/source-roles.json\n M scripts/lib/harness-profile.mjs\n M scripts/lib/lifecycle-transition.mjs\n M scripts/lib/scenario-checks.mjs\n M scripts/lib/task-package.mjs\n M scripts/verify-context-reconciliation-scenarios\n M scripts/verify-lifecycle-checkpoint\n M scripts/verify-lifecycle-transition-scenarios\n M scripts/verify-subagent-task-package-scenarios\n M skills-lock.json\n?? docs/plan/\n?? docs/process/plan-migration.md\n?? docs/process/schemas/user-decision.schema.json\n?? scripts/fixtures/user-decision/\n?? scripts/lib/json-schema.mjs\n?? scripts/lib/lifecycle-context-query.mjs\n?? scripts/lib/plan-spec-entry.mjs\n?? scripts/lib/user-decision.mjs\n?? scripts/query-lifecycle-context\n?? scripts/verify-plan-spec-entry\n?? scripts/verify-plan-spec-entry-scenarios\n"
+  },
+  "yss-harness-dev-agent": {
+    "root": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
+    "head": "e5ddeb084adece86333166389ad9c7132bc99437",
+    "branch": "main",
+    "status": ""
+  },
+  "yss-harness-backend-agent": {
+    "root": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+    "head": "e3faf83da06e3dc3ddfdc83763f28f60a3c6f20d",
+    "branch": "main",
+    "status": ""
+  },
+  "yss-harness-frontend-agent": {
+    "root": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+    "head": "be68fb715d637d7a562ad3538ea5ac25395d73f3",
+    "branch": "main",
+    "status": ""
+  },
+  "create-yss-harness-dev": {
+    "root": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-dev",
+    "head": "5e6a0c26fe24825a83750a8a074972ed6bcb8a9f",
+    "branch": "main",
+    "status": " M template.snapshot.json\n"
+  },
+  "create-yss-spec": {
+    "root": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+    "head": "f594ada21e368a788cfe2f13ad837d1ef421e3ac",
+    "branch": "main",
+    "status": " M src/template/instance-runtime.js\n M template.manifest.json\n M tests/init-cli.test.js\n"
+  },
+  "create-yss-harness-frontend": {
+    "root": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+    "head": "63bc67662f4e7ea84eb703a22ec28deea6fa30c0",
+    "branch": "main",
+    "status": ""
+  },
+  "create-yss-harness-backend": {
+    "root": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend",
+    "head": "fe73b98587b1fb355d106d1368be70d37f738cf5",
+    "branch": "main",
+    "status": ""
+  }
+}

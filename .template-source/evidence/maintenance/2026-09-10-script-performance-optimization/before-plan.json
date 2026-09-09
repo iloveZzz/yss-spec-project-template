@@ -1,0 +1,138 @@
+[
+  {
+    "label": "before-plan-entry",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      ".perf-plan-entry.mjs"
+    ],
+    "repeat": 5,
+    "timeout": 180
+  },
+  {
+    "label": "before-handoff",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      "scripts/verify-strategic-handoff-package-scenarios"
+    ],
+    "repeat": 3,
+    "timeout": 180
+  },
+  {
+    "label": "before-delivery",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      "scripts/verify-frontend-delivery-scenarios"
+    ],
+    "repeat": 3,
+    "timeout": 180
+  },
+  {
+    "label": "before-context",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      "scripts/verify-context-contract"
+    ],
+    "repeat": 5,
+    "timeout": 180
+  },
+  {
+    "label": "before-query",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      "scripts/query-lifecycle-context",
+      "--mode",
+      "route"
+    ],
+    "repeat": 5,
+    "timeout": 180
+  },
+  {
+    "label": "before-init-backend-0",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/cli-backend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-backend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/before-backend-0",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240
+  },
+  {
+    "label": "before-init-backend-1",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/cli-backend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-backend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/before-backend-1",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240
+  },
+  {
+    "label": "before-init-backend-2",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/cli-backend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-backend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/before-backend-2",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240
+  },
+  {
+    "label": "before-init-frontend-0",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/cli-frontend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-frontend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/before-frontend-0",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240
+  },
+  {
+    "label": "before-init-frontend-1",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/cli-frontend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-frontend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/before-frontend-1",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240
+  },
+  {
+    "label": "before-init-frontend-2",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/cli-frontend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-frontend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/before-frontend-2",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240
+  }
+]

@@ -1,0 +1,25 @@
+{
+  "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+  "source": "/Users/zhudaoming/Projects/yss-spec-project-template",
+  "base": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3",
+  "copy_duration_ms": 1217.694083985407,
+  "excluded": [
+    ".DS_Store",
+    ".codegraph",
+    ".git",
+    ".graphify",
+    ".idea",
+    ".template-source",
+    ".vscode",
+    ".wiki",
+    "__pycache__",
+    "build",
+    "dist",
+    "node_modules",
+    "raw",
+    "submodules",
+    "wiki"
+  ],
+  "symlinks_preserved": true,
+  "git_metadata_copied": false
+}

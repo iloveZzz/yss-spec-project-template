@@ -48,6 +48,34 @@ modes:
   orchestrate: bounded_write
   resume: rebuild_then_bounded_write
 
+execution_efficiency:
+  context_query:
+    strategy: combine-mode-stage-work-unit-and-required-includes
+    read_scope: current-work-unit-and-triggered-impacts
+    reuse: already-read-unchanged-sources-within-current-task
+    refresh_on: [source-changed, new-impact, evidence-conflict, resume, handoff]
+  verification:
+    scope: current-artifacts-and-triggered-contracts
+    timing: after-artifact-write-before-approval-or-transition
+    duplicate_check: reuse-only-within-same-boundary-and-unchanged-inputs
+    unchanged_inputs: [artifact-bytes, upstream-bytes, validator-and-schema, command-and-options, repository-root]
+    freshness_unknown: rerun
+    always_revalidate_on: [resume, handoff, implementation-entry, merge, release]
+    template_regression_suite: template-maintenance-or-explicit-regression-task
+    per_work_unit_context_reconciliation: required
+    skip_triggered_gates: forbidden
+  interaction:
+    questions: batch-independent-current-stage-questions
+    user_decision_policy_ref: docs/agents/digital-human-roles.yaml#user_decision_policy
+    decision_evidence_ref: references/user-decisions.md
+    dependent_future_approvals: forbidden
+    checkpoint_policy_ref: checkpoint_policy
+  timing_evidence:
+    location: existing-checkpoint-verification-evidence
+    script_fields: [command, duration_ms, exit_code]
+    distinguish: [script-execution, agent-orchestration, human-wait]
+    unmeasured_duration: unknown
+
 # 有效的 YSS 仓库必须先由生命周期编排器接管入口；Matt flow 只负责选择工作方式。
 entry_routing:
   manifest: yss-project.yaml
@@ -210,7 +238,7 @@ lifecycle_native_entries:
     implement: lifecycle-validate-and-accept
 
 work_unit_routes:
-  work-unit.discovery-opportunity:
+  work-unit.plan-opportunity:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     primary_skill: yss-product-lifecycle
     supporting_skills: [competitive-intelligence, yss-research]
@@ -218,7 +246,7 @@ work_unit_routes:
     route_by: {market_or_competitor_fact: competitive-intelligence, technical_or_standard_fact: yss-research:technical-evidence, strategy_fact: yss-research:strategy-evidence, no_external_fact: yss-product-lifecycle}
     applies_when: opportunity_or_external_fact_requires_validation
     not_applicable_reason: no_external_fact
-  work-unit.discovery-requirements:
+  work-unit.plan-requirements:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     primary_skill: yss-product-lifecycle
     supporting_skills: [grilling, domain-modeling]
@@ -241,7 +269,7 @@ work_unit_routes:
     skills: [yss-stage-decision, domain-modeling, yss-research]
     research_contract: {profile: strategy-evidence, mode_before_gate: evidence-audited, artifact_owner: yss-research, downstream_owner: yss-stage-decision}
     human_gate: stage-decision-package-approved
-    applies_when: discovery_to_spec_requires_stable_decision_package
+    applies_when: plan_to_spec_requires_stable_decision_package
     not_applicable_reason: existing_approved_stage_decision_current
   work-unit.spec-synthesis:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
@@ -484,6 +512,10 @@ transition_graph:
     work-unit.intensity-aware-verification: [work-unit.intensity-aware-review]
     work-unit.intensity-aware-review: [work-unit.release-and-rollback]
     work-unit.release-and-rollback: []
+    work-unit.plan-opportunity: [work-unit.plan-requirements, work-unit.domain-strategy-design, work-unit.stage-decision, work-unit.spec-synthesis]
+    work-unit.plan-requirements: [work-unit.domain-strategy-design, work-unit.stage-decision, work-unit.spec-synthesis]
+    work-unit.domain-strategy-design: [work-unit.stage-decision, work-unit.spec-synthesis]
+    work-unit.stage-decision: [work-unit.spec-synthesis]
     work-unit.spec-synthesis: [work-unit.prototype-design, work-unit.technical-analysis, work-unit.implementation-repository-preparation]
     work-unit.prototype-design: [work-unit.technical-analysis, work-unit.implementation-repository-preparation]
     work-unit.technical-analysis: [work-unit.implementation-repository-preparation]
@@ -495,6 +527,25 @@ transition_graph:
     - {from: work-unit.technical-analysis, to: work-unit.slice-implementation}
     - {from: work-unit.technical-analysis, to: work-unit.ticket-decomposition}
 
+planning:
+  entry_validator: scripts/verify-plan-spec-entry
+  review_contract: docs/plan/entry-review.md
+  check_policy: docs/process/lifecycle-registry.yaml
+  default_check_status: pending
+  formal_spec_draft_requires_passed_entry: true
+  stage: stage.plan
+  record: artifact.plan-record
+  template: docs/plan/templates/plan-template.md
+  exit_policy: docs/process/lifecycle-registry.yaml
+  migration_policy: docs/process/plan-migration.md
+  critical_open_questions: block-before-spec
+  deferred_details_require: [noncritical_reason, owner, resolution_point, downstream_recipient]
+  reuse_requires: [source_ref, current_version, applicable_scope, reason]
+  downstream: work-unit.spec-synthesis
+  implementation_authorized: false
+  frontier_scope: current-plan-decisions
+  deferred_details: excluded-from-frontier-only-after-user-confirms-deferral
+
 grill_exit:
   required: [frontier_empty, facts_resolved_or_routed, decisions_confirmed, shared_understanding_confirmed, no_unresolved_runnable_blocker]
   facts_resolved_or_routed:
@@ -502,7 +553,7 @@ grill_exit:
     runnable_question: handoff-prototype-handoff
     external_decision: external-input-required
   user_confirmation_required: true
-  output: discovery-evidence
+  output: plan-evidence
 
 ticket_role_transition:
   yss_active:
@@ -761,7 +812,7 @@ tracker:
   local_markdown:
     root: docs/.scratch
     legacy_roots: [.scratch, docs/requirements/tickets]
-    feature_layout: [map.md, discovery, spec.md, spec-delta, parent-ticket.md, design, api, architecture, gates, verification, issues]
+    feature_layout: [map.md, plan, spec.md, spec-delta, parent-ticket.md, design, api, architecture, gates, verification, issues]
     primary_sync: local
     remote_ticket_required: false
     remote_mirror: optional
@@ -817,7 +868,7 @@ wayfinder_mode:
     - multi-session-or-multi-agent-work
     - unclear-decision-frontier
     - cross-domain-dependency-map-needed
-  lifecycle_position: discovery-to-spec-planning
+  lifecycle_position: plan-to-spec-planning
   completion_route: wayfinder -> handoff -> to-spec
   does_not_replace: [lifecycle-gates, spec-baseline, ticket-formalization]
   forbidden_state_mutations: [ready-for-agent, gate-approval, ticket-role]

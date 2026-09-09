@@ -35,7 +35,7 @@ owner: ai
 
 | 输入 | 路径 / 链接 | 用途 |
 |---|---|---|
-| Spec / Discovery |  |  |
+| Spec / Plan |  |  |
 | Product / Interaction Design |  |  |
 | OpenAPI Draft / Freeze |  |  |
 | Architecture / ADR / CONTEXT |  |  |

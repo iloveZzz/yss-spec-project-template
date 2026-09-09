@@ -63,5 +63,5 @@ Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生�
 docs/.scratch/<feature>/design/diagrams/
 docs/.scratch/<feature>/design/prototypes/
 docs/.scratch/<feature>/architecture/diagrams/
-docs/.scratch/<feature>/discovery/diagrams/
+docs/.scratch/<feature>/plan/diagrams/
 ```

@@ -70,6 +70,10 @@ export function queryLifecycleContext({ mode, stageId, workUnitId, include = [] 
   const lifecycle = validateRegistry(loadRegistry());
   const orchestration = loadYaml(ORCHESTRATION_CONTRACT_REF, "生命周期编排合同");
   const skillRegistry = loadSkillRegistry();
+  const planUnit = ['work-unit.plan-opportunity', 'work-unit.plan-requirements', 'work-unit.domain-strategy-design', 'work-unit.stage-decision', 'work-unit.spec-synthesis'].includes(workUnitId);
+  const loadPlan = ['stage.plan', 'stage.spec-architecture'].includes(stageId) || planUnit;
+  stageId ??= planUnit ? 'stage.plan' : undefined;
+  if (loadPlan) include = [...include, 'planning', 'grill_exit'];
   const stage = selectById(lifecycle.stages, stageId, "阶段");
   const workUnit = selectById(lifecycle.work_units, workUnitId, "工作单元");
 
@@ -80,8 +84,8 @@ export function queryLifecycleContext({ mode, stageId, workUnitId, include = [] 
   }
 
   const route = workUnitId ? orchestration.work_unit_routes?.[workUnitId] ?? null : null;
-  const gates = stageId ? lifecycle.gates.filter((gate) => gate.stage === stageId) : [];
-  const artifacts = stageId ? lifecycle.artifacts.filter((artifact) => artifact.stage === stageId) : [];
+  const gates = lifecycle.gates.filter((gate) => gate.stage === stageId || (loadPlan && gate.stage === 'stage.plan'));
+  const artifacts = lifecycle.artifacts.filter((artifact) => artifact.stage === stageId || (loadPlan && artifact.stage === 'stage.plan'));
   const evidenceIds = new Set(gates.flatMap((gate) => gate.evidence ?? []));
   const selected = Object.fromEntries(normalizedIncludes.map((key) => [key, orchestration[key]]));
   const transition = workUnitId ? {
@@ -124,6 +128,7 @@ export function queryLifecycleContext({ mode, stageId, workUnitId, include = [] 
     execution: {
       mode: mode ? orchestration.modes[mode] : null,
       selected,
+      ...(loadPlan ? { plan_checks: lifecycle.stages.find(stage => stage.id === 'stage.plan').spec_entry.required_checks.map(id => ({ id, status: 'pending', evidence_refs: [] })) } : {}),
       transition,
       work_unit_route: route,
     },
@@ -134,4 +139,3 @@ export function queryLifecycleContext({ mode, stageId, workUnitId, include = [] 
     .sort();
   return canonicalize(result);
 }
-

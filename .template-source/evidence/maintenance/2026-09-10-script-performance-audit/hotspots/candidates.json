@@ -1,0 +1,512 @@
+{
+  "schema_version": 1,
+  "repository_mode": "template-source",
+  "analysis_type": "static-source-risk",
+  "measured_here": false,
+  "candidates": [
+    {
+      "id": "P01",
+      "title": "Schema 校验重复启动 Python",
+      "priority": "日常优先",
+      "status": "static-candidate-unmeasured",
+      "sources": [
+        {
+          "path": "scripts/lib/json-schema.mjs",
+          "line": 20,
+          "sha256": "1bbf66d7ab508d5ee340cdbc824199563ac100ac609759fef902ed843c3071a4"
+        },
+        {
+          "path": "scripts/verify-context-reconciliation",
+          "line": 36,
+          "sha256": "114c6d7b7523bc080b737561db3ca0310e4c3fc579a44695860f6f74d213f8b7"
+        },
+        {
+          "path": "scripts/lib/plan-spec-entry.mjs",
+          "line": 71,
+          "sha256": "17ec4211c3732951f891acd885a88d9f9d7260d123fa3de582a6bb1dd9869d14"
+        },
+        {
+          "path": "scripts/lib/strategic-handoff-io.mjs",
+          "line": 55,
+          "sha256": "4e66c4b87045a09df882e6162d912b5fa574f134b084c1123466e19476dbbf7b"
+        }
+      ],
+      "trigger": "Plan entry、context reconciliation、审批/任务/交接 schema 校验",
+      "call_chain": "Plan entry → Node reconciliation CLI → Python jsonschema；其他库直接启动 Python",
+      "complexity_or_repetition": "N 次验证支付 N 次 Python 启动/import/schema 构造；多个 schema 调用在一次开包中累计。",
+      "suggestion": "先拆分启动/import/验证耗时；同一次验证批量传多个 value/schema，或导出进程内 API 复用 Node 调用。Node schema 替代仅为更高成本备选。",
+      "semantic_constraints": "保留 Draft202012、格式、错误排序、退出码、严格 YAML 和异常阻断；不跳 schema。",
+      "verification_design": "隔离副本运行 node scripts/verify-context-reconciliation-scenarios、node scripts/verify-plan-spec-entry-scenarios；对合法/非法 schema 全语料作输出和退出码差分；单条/100条比较进程数与总时长。",
+      "authority": "本体 scripts/lib 为当前本体权威；4 个 harness 子仓同名实现需逐 hash/差异核对，不把同名等同同版本。",
+      "propagation": "本体 → harness 子仓 scripts（具体同步合同待主控确认）→ 各 CLI snapshot/template → 生成实例；只改已确认权威源后按分发合同传播。"
+    },
+    {
+      "id": "P02",
+      "title": "Context 唯一性扫描按调用重复",
+      "priority": "日常优先",
+      "status": "static-candidate-unmeasured",
+      "sources": [
+        {
+          "path": "scripts/lib/context-contract.mjs",
+          "line": 26,
+          "sha256": "f62802f3c7f256a89adb0808aea068bcb06a2e92bcd02f2f9b9da7e71bf06f22"
+        },
+        {
+          "path": "scripts/lib/context-contract.mjs",
+          "line": 101,
+          "sha256": "f62802f3c7f256a89adb0808aea068bcb06a2e92bcd02f2f9b9da7e71bf06f22"
+        },
+        {
+          "path": "scripts/lib/context-contract.mjs",
+          "line": 191,
+          "sha256": "f62802f3c7f256a89adb0808aea068bcb06a2e92bcd02f2f9b9da7e71bf06f22"
+        },
+        {
+          "path": "scripts/sync-strategic-handoff-tools",
+          "line": 8,
+          "sha256": "7cd0186d3dfec29f0f219790f4e283adb114647e47a396f8b26f9d3f8434d070"
+        }
+      ],
+      "trigger": "每次 verifyContextSnapshot/parseContextContract",
+      "call_chain": "snapshot → parseContextContract → collectContextFiles → readdir/嵌套 Git 判断 → 根词汇解析",
+      "complexity_or_repetition": "每次 O(目录项数＋词汇字节)，不是仅 referenced_terms_digest 的 hash；排除目录和嵌套 Git 已存在。",
+      "suggestion": "同一边界批量快照共享一次清单；将词汇纯解析成本与目录唯一性检查成本分开计时。",
+      "semantic_constraints": "新增/移动嵌套 CONTEXT、大小写错误、CONTEXT-MAP、symlink、Git 边界变化必须失效；不能仅按根 CONTEXT hash 跨调用缓存。",
+      "verification_design": "node scripts/verify-context-contract-scenarios；node scripts/verify-context-reconciliation-scenarios；在10/1000/10000目录及新增嵌套词汇文件上比较扫描数/输出。",
+      "authority": "本体 scripts/lib 为当前本体权威；4 个 harness 子仓同名实现需逐 hash/差异核对，不把同名等同同版本。 已核对 sync-strategic-handoff-tools:8-18 显式声明本体拥有 Context/战略交接/后端交付共享工具，并同步至4个harness；后端有受控import路径替换。",
+      "propagation": "本体 → scripts/sync-strategic-handoff-tools（后端wire路径适配）→4个harness → 对应CLI快照/生成实例。"
+    },
+    {
+      "id": "P03",
+      "title": "查询与验证调度粒度及反馈",
+      "priority": "日常/fast 优先",
+      "status": "static-candidate-unmeasured",
+      "sources": [
+        {
+          "path": "scripts/lib/lifecycle-context-query.mjs",
+          "line": 65,
+          "sha256": "4cf8decf1dda01884193aa478fe17a4ae55511bc97319a41e778dbc4c36fcbe6"
+        },
+        {
+          "path": "scripts/run-template-verification",
+          "line": 23,
+          "sha256": "bdefe1b626f10944040a989a64dfc21b055648d5622155d8a56e48bb46aa9420"
+        },
+        {
+          "path": "scripts/run-template-verification",
+          "line": 35,
+          "sha256": "bdefe1b626f10944040a989a64dfc21b055648d5622155d8a56e48bb46aa9420"
+        },
+        {
+          "path": "scripts/run-template-verification",
+          "line": 111,
+          "sha256": "bdefe1b626f10944040a989a64dfc21b055648d5622155d8a56e48bb46aa9420"
+        },
+        {
+          "path": "scripts/lib/template-verification.mjs",
+          "line": 60,
+          "sha256": "12b6f76a47a32acdc5e1e9cfebf4443cdf6d9f383a833de7c332a026db583d5e"
+        }
+      ],
+      "trigger": "Agent 连续 route 查询；fast/candidate/release 聚合验证",
+      "call_chain": "query 每进程加载注册表/编排合同/技能注册表；runner 收集全工作树→映射/升级→组间并行→组内串行→末尾统一打印",
+      "complexity_or_repetition": "查询每次 O(合同大小)；runner 已支持 1..4 并发，不是完全串行；未知/core改动升级 release 可能扩大成本；stdout/stderr 累积内存。",
+      "suggestion": "保持合并查询；记录每命令开始结束、即时输出耗时与失败；测量后将真正独立命令以受限并发编排。",
+      "semantic_constraints": "不得伪造跨边界 Fresh Verification；未知路径保持 fail-closed；并行前确认共享写入、服务端口和清理；输出优化不自动等于执行提速。",
+      "verification_design": "node scripts/verify-lifecycle-context-query-scenarios；node scripts/verify-template-verification-scenarios；对固定 changed-files 比较 --plan JSON、最终退出码、顺序/错误；人工注入慢子命令检查即时进度。",
+      "authority": "本体 scripts/lib 为当前本体权威；4 个 harness 子仓同名实现需逐 hash/差异核对，不把同名等同同版本。",
+      "propagation": "本体 → harness 子仓 scripts（具体同步合同待主控确认）→ 各 CLI snapshot/template → 生成实例；只改已确认权威源后按分发合同传播。"
+    },
+    {
+      "id": "P04",
+      "title": "技能投影重复源 hash 和单项 Git 探测",
+      "priority": "fast 优先",
+      "status": "static-candidate-unmeasured",
+      "sources": [
+        {
+          "path": "scripts/lib/skill-supply-chain.mjs",
+          "line": 31,
+          "sha256": "d47b083a8ec56c5173ba21cd41ab7c6bf96543e09ff333fe7f67de61ffe3565e"
+        },
+        {
+          "path": "scripts/lib/skill-supply-chain.mjs",
+          "line": 119,
+          "sha256": "d47b083a8ec56c5173ba21cd41ab7c6bf96543e09ff333fe7f67de61ffe3565e"
+        },
+        {
+          "path": "scripts/lib/skill-supply-chain.mjs",
+          "line": 147,
+          "sha256": "d47b083a8ec56c5173ba21cd41ab7c6bf96543e09ff333fe7f67de61ffe3565e"
+        },
+        {
+          "path": "scripts/lib/skill-supply-chain.mjs",
+          "line": 165,
+          "sha256": "d47b083a8ec56c5173ba21cd41ab7c6bf96543e09ff333fe7f67de61ffe3565e"
+        }
+      ],
+      "trigger": "sync-skills --check、update-skill-lock、实体投影同步",
+      "call_chain": "每个投影root×每个skill → treeHash(source/target)；部分条目 → git ls-files",
+      "complexity_or_repetition": "最多六投影重复读源；symlink 正确目标分支已有快速判断。",
+      "suggestion": "单次调用 memoize canonical source hash；一次 git ls-files -z 构建 tracked 集；实体投影内容不变则避免无谓重拷贝需另测。",
+      "semantic_constraints": "hash 归一化、排序、二进制行为、锁语义及 symlink 判定不变；同步模式和check模式分开；不信任mtime作为唯一新鲜度。",
+      "verification_design": "隔离副本 node scripts/sync-skills --check、node scripts/verify-skill-governance；实体/符号链接混合、删除、篡改、CRLF、未跟踪条目矩阵；统计 readFile/git调用数。",
+      "authority": "本体 scripts/lib 为当前本体权威；4 个 harness 子仓同名实现需逐 hash/差异核对，不把同名等同同版本。",
+      "propagation": "本体 → harness 子仓 scripts（具体同步合同待主控确认）→ 各 CLI snapshot/template → 生成实例；只改已确认权威源后按分发合同传播。"
+    },
+    {
+      "id": "P05",
+      "title": "分发场景串行初始化和完整实例复制",
+      "priority": "全量优先",
+      "status": "static-candidate-unmeasured",
+      "sources": [
+        {
+          "path": ".template-source/scripts/verify-delivery-harness-distribution.mjs",
+          "line": 23,
+          "sha256": "98143e45423ff491682b143fd9bc6a749be0ed97ff300936963a286435d0c313"
+        },
+        {
+          "path": ".template-source/scripts/verify-delivery-harness-distribution.mjs",
+          "line": 52,
+          "sha256": "98143e45423ff491682b143fd9bc6a749be0ed97ff300936963a286435d0c313"
+        },
+        {
+          "path": "scripts/verify-frontend-delivery-scenarios",
+          "line": 30,
+          "sha256": "4ebc354fe9086df45e1bffcbbdab11ec341c5b03d2d8effce2c84c99e9e9a514"
+        },
+        {
+          "path": "docs/process/template-verification-profiles.yaml",
+          "line": 265,
+          "sha256": "dab41d8c9611f21abb75838fc1a5e5b85515d81866627e4a24da44528c1df5be"
+        },
+        {
+          "path": ".template-source/scripts/verify-strategic-handoff-distribution.mjs",
+          "line": 27,
+          "sha256": "b33b15823775b0741d68ca9125d410257a38a68556eeca219983fe5f7bc0ec45"
+        }
+      ],
+      "trigger": "完整模板分发回归",
+      "call_chain": "源场景一次；distribution → backend init → frontend init → 实例场景 → cpSync两实例",
+      "complexity_or_repetition": "源/分发两种覆盖；初始化与拷贝按总文件字节/目录项；两边生成目前串行。",
+      "suggestion": "独立实例初始化受限并行；隔离 immutable fixture 复用；按阶段计时初始化、复制、门禁、服务场景。",
+      "semantic_constraints": "源代码与生成实例来源不同不能直接删重复场景；不共享可变 fixture；保留丢失/篡改/错端阻断及服务清理。 另一 strategic-handoff-distribution 三旧CLI初始化已Promise.allSettled并行，不能统一描述全部分发测试串行。",
+      "verification_design": "仅隔离副本 node .template-source/scripts/verify-delivery-harness-distribution.mjs；node scripts/verify-frontend-delivery-scenarios；核对同一断言集、资源/服务回收、失败路径；冷/热文件缓存分开。",
+      "authority": "本体 .template-source/scripts 为分发测试权威，场景 scripts 另有实例副本。",
+      "propagation": "本体 → harness 子仓 scripts（具体同步合同待主控确认）→ 各 CLI snapshot/template → 生成实例；只改已确认权威源后按分发合同传播。"
+    },
+    {
+      "id": "P06",
+      "title": "旧 CLI 隐式全量同步与多投影物化",
+      "priority": "完整验证/打包",
+      "status": "static-candidate-unmeasured",
+      "sources": [
+        {
+          "path": "submodules/create-yss-spec/package.json",
+          "line": 26,
+          "sha256": "fe2021ed9da0a524b5a79b02151355f10d77d3ac01e1346e8e9d1245f052a3bf"
+        },
+        {
+          "path": "submodules/create-yss-spec/scripts/sync-template.js",
+          "line": 302,
+          "sha256": "3653a15c47982734926ecd6da82f1de96bc8b24770e8eb9553eb5ff7937aac9b"
+        },
+        {
+          "path": "submodules/create-yss-spec/scripts/sync-template.js",
+          "line": 342,
+          "sha256": "3653a15c47982734926ecd6da82f1de96bc8b24770e8eb9553eb5ff7937aac9b"
+        },
+        {
+          "path": "submodules/create-yss-spec/scripts/sync-template.js",
+          "line": 357,
+          "sha256": "3653a15c47982734926ecd6da82f1de96bc8b24770e8eb9553eb5ff7937aac9b"
+        },
+        {
+          "path": "submodules/create-yss-harness-dev/package.json",
+          "line": 25,
+          "sha256": "07a9e055cb469480e2d78b17f1276189cad0355ff1a7465375ae81f763f81ed6"
+        },
+        {
+          "path": "submodules/create-yss-strategic-design/package.json",
+          "line": 25,
+          "sha256": "5ca4f7b907d346e448216944cf35b8d3f583de0f6047b17fb09781292f1c3006"
+        }
+      ],
+      "trigger": "三个旧 CLI 的 pretest/prepack；spec test:integration",
+      "call_chain": "package hook → sync-template → staging → 每skill每projection cpSync → update-skill-lock → snapshot替换",
+      "complexity_or_repetition": "多投影放大IO；test不是纯只读；相邻test/pack可能重复相同输入同步。",
+      "suggestion": "显式区分“准备当前快照”和“验证已准备快照”；同输入复用临时快照，保留独立一致性check；先逐阶段测。",
+      "semantic_constraints": "必须保留快照新鲜度、分发manifest、npm点文件编码、回滚；不能直接取消hook而允许陈旧发布；三旧CLI并非逐字同源。",
+      "verification_design": "在隔离三个CLI中分别计时 node scripts/sync-template.js 与 node --test 对应tests；核对snapshot/lock/编码文件字节和初始化结果；模拟替换失败验证回滚。",
+      "authority": "三个 CLI scripts/sync-template.js 各自为其当前实现；共同上游实现契约需明确。",
+      "propagation": "模板/专用harness来源 → 各旧CLI sync-template.js → template与snapshot；不直接修改template副本。"
+    },
+    {
+      "id": "P07",
+      "title": "专职 CLI syncCore 全仓归档与同步遍历",
+      "priority": "同步/打包",
+      "status": "static-candidate-unmeasured",
+      "sources": [
+        {
+          "path": ".template-source/cli-core/build.mjs",
+          "line": 18,
+          "sha256": "c36aac74b154d63d737c530dd45ae9d16781ebc61b66588dc1b380192d49f6a4"
+        },
+        {
+          "path": ".template-source/cli-core/build.mjs",
+          "line": 79,
+          "sha256": "c36aac74b154d63d737c530dd45ae9d16781ebc61b66588dc1b380192d49f6a4"
+        },
+        {
+          "path": ".template-source/cli-core/build.mjs",
+          "line": 172,
+          "sha256": "c36aac74b154d63d737c530dd45ae9d16781ebc61b66588dc1b380192d49f6a4"
+        },
+        {
+          "path": "submodules/create-yss-harness-backend/scripts/sync-core.mjs",
+          "line": 2,
+          "sha256": "8cdef38d8cc996d8edf5d3072620b8b7be4f7f8b1b2b94bca8349a35444ea6c9"
+        }
+      ],
+      "trigger": "新 backend/frontend CLI sync-core、sync-template（含 --check）",
+      "call_chain": "薄脚本 → vendor/cli-core/build → git archive整仓 → tar全量展开 → 取core子树或manifest选择 → inventory/capture",
+      "complexity_or_repetition": "syncCore只需一子树却先O(整仓字节)归档；capture投影重复读取实体源；check也准备源快照。",
+      "suggestion": "syncCore精确git archive指定子树；syncTemplate按manifest确定可安全筛选的归档路径；单次capture共享实体字节/hash。",
+      "semantic_constraints": "必须基于固定commit、保持路径/mode/manifest与相对symlink规则、投影循环拒绝；不能把未提交工作树混进固定commit。",
+      "verification_design": "隔离CLI执行 node scripts/sync-core.mjs <local-repo> <40-char-commit> --check；源core锁/字节/mode全等；无关大文件增长时测归档体积与RSS；sync-template需额外投影路径矩阵。",
+      "authority": "确定 canonical=.template-source/cli-core；CLI cli-core.lock.json sourcePath/sourceRevision声明来源。",
+      "propagation": "本体 .template-source/cli-core → sync-core → 新CLI vendor/cli-core；template来源为各专职harness提交。"
+    },
+    {
+      "id": "P08",
+      "title": "CLI 事务持久化写放大；blob 去重为次级候选",
+      "priority": "完整实例初始化：需协议级设计后优化",
+      "status": "static-candidate-unmeasured",
+      "sources": [
+        {
+          "path": ".template-source/cli-core/bundle.mjs",
+          "line": 61,
+          "sha256": "e3590656ee15a107ab383a20e08a6e6e1b774d4dbc3d19aee159e8ed9329c6f7"
+        },
+        {
+          "path": ".template-source/cli-core/bundle.mjs",
+          "line": 71,
+          "sha256": "e3590656ee15a107ab383a20e08a6e6e1b774d4dbc3d19aee159e8ed9329c6f7"
+        },
+        {
+          "path": ".template-source/cli-core/build.mjs",
+          "line": 207,
+          "sha256": "c36aac74b154d63d737c530dd45ae9d16781ebc61b66588dc1b380192d49f6a4"
+        },
+        {
+          "path": ".template-source/cli-core/transaction.mjs",
+          "line": 21,
+          "sha256": "38dff12fe6fe43fecf2b4243f9e65f04e42f81bcaccc44bc224df9704ce542b8"
+        },
+        {
+          "path": ".template-source/cli-core/transaction.mjs",
+          "line": 164,
+          "sha256": "38dff12fe6fe43fecf2b4243f9e65f04e42f81bcaccc44bc224df9704ce542b8"
+        },
+        {
+          "path": ".template-source/cli-core/transaction.mjs",
+          "line": 198,
+          "sha256": "38dff12fe6fe43fecf2b4243f9e65f04e42f81bcaccc44bc224df9704ce542b8"
+        }
+      ],
+      "trigger": "专职 backend/frontend CLI init/apply，数千逻辑文件",
+      "call_chain": "applyTransaction逐operation → durable(progress.json) → durable(op.path)；每次durable执行临时文件fsync→rename→父目录fsync；更新已有文件先durable backup；入口loadBundle另按逻辑路径重读blob",
+      "complexity_or_repetition": "新文件约4次fsync/operation，外加journal、身份记录；已有文件备份再增加。progress重复序列化createdDirectories且includes查重随目录增长。build内容寻址去重没有减少事务实际逻辑文件写。",
+      "suggestion": "优先测每阶段与fsync总次数/等待、日志字节。设计一次持久化操作计划＋分批进度/WAL或初始化staging事务提交，先明确恢复不变量再实现；blob单次load内复用可作低风险次级优化。",
+      "semantic_constraints": "不可直接删除fsync、批量并行写或缩减恢复记录；保留日志先行、文件/目录持久化、进程中断与崩溃恢复、身份/并发变化检查、用户文件保护、rollback/resume。共享blob Buffer还需确保不可被调用方改写。",
+      "verification_design": "在隔离副本执行 pnpm --dir .template-source/cli-core test；新增每个持久化阶段的进程中断/异常/rename/fsync失败注入、恢复后目录/mode/hash全等及并发用户修改保留；同一快照init计时、fsync调用数与RSS，cold/hot磁盘分开。物理断电语义需实现设计单独核证，进程kill不能完全代表断电。",
+      "authority": "确定 canonical=.template-source/cli-core/bundle.mjs；两个新CLI为锁定副本。",
+      "propagation": "canonical → sync-core → vendor/cli-core → CLI执行；不改content-addressed格式。"
+    },
+    {
+      "id": "P09",
+      "title": "交接包安全路径、文件树及嵌套包多次验证",
+      "priority": "交接/完整场景",
+      "status": "static-candidate-unmeasured",
+      "sources": [
+        {
+          "path": "scripts/lib/strategic-handoff-io.mjs",
+          "line": 23,
+          "sha256": "4e66c4b87045a09df882e6162d912b5fa574f134b084c1123466e19476dbbf7b"
+        },
+        {
+          "path": "scripts/lib/strategic-handoff-io.mjs",
+          "line": 34,
+          "sha256": "4e66c4b87045a09df882e6162d912b5fa574f134b084c1123466e19476dbbf7b"
+        },
+        {
+          "path": "scripts/lib/strategic-handoff.mjs",
+          "line": 72,
+          "sha256": "0ad17cbfa50ffa3d0348303d4e9d8c3533df72b406fe905506839aaa10d0529b"
+        },
+        {
+          "path": "scripts/lib/backend-delivery.mjs",
+          "line": 80,
+          "sha256": "5d9a87eb7a9f23c7e0c8667165895648b45af97779b5f8a667cd654cf5ad1def"
+        },
+        {
+          "path": "scripts/lib/backend-delivery.mjs",
+          "line": 130,
+          "sha256": "5d9a87eb7a9f23c7e0c8667165895648b45af97779b5f8a667cd654cf5ad1def"
+        },
+        {
+          "path": "scripts/lib/backend-delivery.mjs",
+          "line": 147,
+          "sha256": "5d9a87eb7a9f23c7e0c8667165895648b45af97779b5f8a667cd654cf5ad1def"
+        },
+        {
+          "path": "scripts/sync-strategic-handoff-tools",
+          "line": 8,
+          "sha256": "7cd0186d3dfec29f0f219790f4e283adb114647e47a396f8b26f9d3f8434d070"
+        }
+      ],
+      "trigger": "战略/后端导出、导入、frontend joint acceptance",
+      "call_chain": "safe每级exists/lstat → files → treeDigest → schema；backend开包再验证嵌套战略包；导出/导入再开包验输出",
+      "complexity_or_repetition": "文件数×平均目录深度的重复stat，以及同包多次解析/hash；小JSON还支付P01。",
+      "suggestion": "同一次不可变包处理共享目录清单、已读取字节和schema结果；按输入/输出边界保留重新验证。",
+      "semantic_constraints": "安全路径、symlink禁止、未登记文件、审批/摘要/版本、导入前后完整性不能省；缓存必须防止包被外部改写。",
+      "verification_design": "隔离 node scripts/verify-strategic-handoff-package-scenarios 和 node scripts/verify-frontend-delivery-scenarios；目录深度/包规模矩阵与篡改/ZIP-slip拒绝；记录stat/hash/schema次数。",
+      "authority": "本体 scripts/lib 为当前本体权威；4 个 harness 子仓同名实现需逐 hash/差异核对，不把同名等同同版本。 已核对 sync-strategic-handoff-tools:8-18 显式声明本体拥有 Context/战略交接/后端交付共享工具，并同步至4个harness；后端有受控import路径替换。",
+      "propagation": "本体 → scripts/sync-strategic-handoff-tools（后端wire路径适配）→4个harness → 对应CLI快照/生成实例。"
+    },
+    {
+      "id": "P10",
+      "title": "真实 Maven/pnpm 验证成本与执行时间边界",
+      "priority": "实现/脚手架，非普通Plan",
+      "status": "static-candidate-unmeasured",
+      "sources": [
+        {
+          "path": ".agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs",
+          "line": 60,
+          "sha256": "449b3786b9c261d08e98dd4685dffec826215c1a004804652887ebe62050de6c"
+        },
+        {
+          "path": ".agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs",
+          "line": 89,
+          "sha256": "449b3786b9c261d08e98dd4685dffec826215c1a004804652887ebe62050de6c"
+        },
+        {
+          "path": ".agents/skills/yss-frontend-scaffold-generator/scripts/run_scaffold_verification.mjs",
+          "line": 22,
+          "sha256": "9711092452f5ba94c53e019b87703a86a624100637431564217414fa345e362c"
+        },
+        {
+          "path": "scripts/verify-scaffold-generator-scenarios",
+          "line": 461,
+          "sha256": "f4c1032cb768cb58656174579672086b5679ec4bc866001a9b5c977c831f0eda"
+        },
+        {
+          "path": ".agents/skills/yss-frontend-scaffold-generator/scripts/scaffold-generator.test.mjs",
+          "line": 26,
+          "sha256": "50176ffb0d1a4f5c936b0f7c621b25351fabbc97fa91d9cadc8d03c5d0fb3fcf"
+        },
+        {
+          "path": ".agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs",
+          "line": 161,
+          "sha256": "a1513759c283e34d1a871cd484052c0cbcafa938f2d03ddfcef2fe6c2476db73"
+        },
+        {
+          "path": ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs",
+          "line": 115,
+          "sha256": "5d4689e38faa2c77c573fc7db7f2d60f12496c9212b95d0a1446fee36ea30484"
+        }
+      ],
+      "trigger": "真实批准工程验证；条件开启的真实Maven测试",
+      "call_chain": "Maven validate→test→package；pnpm install→lint→type-check→build；root scenario/mock 与真实技能runner区别",
+      "complexity_or_repetition": "外部JVM/依赖下载/构建占比未知；固定三阶段可能重复插件执行，但当前合同要求三命令；runner无自身timeout并缓冲输出。",
+      "suggestion": "单阶段计时＋脱敏流式日志；复用包管理器合法缓存；测冷/热依赖仓；条件fixture与真实集成单列。",
+      "semantic_constraints": "不擅自合并Maven命令、skipTests、省install或改变验收；保留每命令退出码和证据；共享build输出禁止盲目并行。",
+      "verification_design": "有批准可用fixture后运行 node .agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs --project-root <fixture> --evidence-dir <isolated-evidence>；前端同入口；记录工具版本/缓存/网络。当前没有真实依赖环境证据，不能以mock时间预测。",
+      "authority": "canonical技能脚本；layered MVC verification引用DDD共享runner；运行命令由scaffold合同固定。",
+      "propagation": "canonical .agents/skills → Skill投影与锁 → harness/CLI → generated project；不执行或修改实际产品工程。"
+    },
+    {
+      "id": "P11",
+      "title": "网络/外部命令耗时、现有commit缓存与超时",
+      "priority": "外部依赖，单列",
+      "status": "static-candidate-unmeasured",
+      "sources": [
+        {
+          "path": "scripts/lib/template-commit-cache.mjs",
+          "line": 16,
+          "sha256": "c2c6b9dd931a36bdf0fe728b3697b002bbea0802e99af73a4705666e1fe97468"
+        },
+        {
+          "path": "scripts/lib/template-commit-cache.mjs",
+          "line": 38,
+          "sha256": "c2c6b9dd931a36bdf0fe728b3697b002bbea0802e99af73a4705666e1fe97468"
+        },
+        {
+          "path": "scripts/lib/frontend-delivery.mjs",
+          "line": 23,
+          "sha256": "8aac81dbd5437602f66a9ee4e602b5a9b8dd68fe9e4e27ce482f81dd7989a713"
+        },
+        {
+          "path": ".template-source/cli-core/update.mjs",
+          "line": 5,
+          "sha256": "2f75905eb13a3a41d50dbb0d54c50c5303c84a468fcb4e98fd420588521d0cef"
+        },
+        {
+          "path": "submodules/create-yss-spec/src/self-update.js",
+          "line": 64,
+          "sha256": "2ea32f5e8fd1a360a9819aeec927d800a98cf4e87e9417a5af640750391a7e7a"
+        }
+      ],
+      "trigger": "远程模板首次获取、真实服务revision探测、显式CLI self-update",
+      "call_chain": "缓存miss→git fetch depth1；hit→本地commit校验；frontend fetch timeout5s；newCLI npm命令timeout120s，旧CLI npm view30s",
+      "complexity_or_repetition": "网络和包管理器自身重试不可由本地静态代码估计；commit cache已按repository＋commit复用，未见脚本自己反复重试。",
+      "suggestion": "按cache hit/miss及命令类别记录；fetch加可配置总时限/取消与临时目录清理；区分npm查询和安装预算；保留cache已有快路。",
+      "semantic_constraints": "活服务revision不得用过时成功缓存替代；self-update不能自动运行以测性能；不得输出凭据；超时不等于更快成功。",
+      "verification_design": "node scripts/verify-template-cache-scenarios（local repo fixture）；网络使用本地延迟/断开fixture或注入spawn，核对超时、错误分类、清理；真实仓/服务成本待可用环境测量。",
+      "authority": "本体 scripts/lib 为当前本体权威；4 个 harness 子仓同名实现需逐 hash/差异核对，不把同名等同同版本。 新CLI canonical .template-source/cli-core；旧CLI src各自维护。",
+      "propagation": "本体 → harness 子仓 scripts（具体同步合同待主控确认）→ 各 CLI snapshot/template → 生成实例；只改已确认权威源后按分发合同传播。 self-update源不通过scripts投影同一化。"
+    },
+    {
+      "id": "P12",
+      "title": "前端模板复制范围与重复全树遍历",
+      "priority": "脚手架生成",
+      "status": "static-candidate-unmeasured",
+      "sources": [
+        {
+          "path": ".agents/skills/yss-frontend-scaffold-generator/scripts/generate_scaffold.mjs",
+          "line": 22,
+          "sha256": "806eafcab0e42841cb07b2e1866471d09e861614e8b77f931ad89b5ee8de7c0e"
+        },
+        {
+          "path": ".agents/skills/yss-frontend-scaffold-generator/scripts/generate_scaffold.mjs",
+          "line": 50,
+          "sha256": "806eafcab0e42841cb07b2e1866471d09e861614e8b77f931ad89b5ee8de7c0e"
+        },
+        {
+          "path": ".agents/skills/yss-frontend-scaffold-generator/scripts/generate_scaffold.mjs",
+          "line": 58,
+          "sha256": "806eafcab0e42841cb07b2e1866471d09e861614e8b77f931ad89b5ee8de7c0e"
+        },
+        {
+          "path": ".agents/skills/yss-frontend-scaffold-generator/scripts/generate_scaffold.mjs",
+          "line": 72,
+          "sha256": "806eafcab0e42841cb07b2e1866471d09e861614e8b77f931ad89b5ee8de7c0e"
+        }
+      ],
+      "trigger": "已批准模板checkout初始化前端工程",
+      "call_chain": "cpSync排除.git → walk全部输出替换占位符 → walk再次生成manifest",
+      "complexity_or_repetition": "O(checkout总字节＋文件数)；只排.git，工作树若已有node_modules/dist会复制并参与遍历；>2MB仅跳替换，不跳复制。",
+      "suggestion": "基准使用干净固定commit checkout；研究基于批准文件清单导出与一次遍历生成manifest；阻止无关依赖缓存进入生成范围需合同化。",
+      "semantic_constraints": "模板路径、commit/remote、替换规则、锁文件、用户批准输入均保留；不能静默排除模板有意包含文件；生成文件清单应与实际输出一致。",
+      "verification_design": "隔离 node scripts/verify-frontend-scaffold-generator-scenarios；干净/含缓存checkout、binary/>2MB、嵌套目录与占位符对照；比较manifest、文件字节和遍历次数。",
+      "authority": "canonical .agents/skills/yss-frontend-scaffold-generator/scripts；模板内容另有批准来源。",
+      "propagation": "canonical Skill → 投影/锁/分发；只在清洁临时fixture生成。"
+    }
+  ],
+  "scope_reference": "../scope.md",
+  "measurement_reference": "../measurements/runs.jsonl",
+  "limitations": [
+    "候选并非当前耗时排名；最终顺序需要主控隔离实测。",
+    "同名跨仓实现不能默认同源；传播前必须读来源锁和diff。",
+    "未运行源码、完整验证、网络、脚手架或同步；仅写分析证据。"
+  ]
+}

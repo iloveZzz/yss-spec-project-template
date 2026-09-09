@@ -3,6 +3,7 @@ import { existsSync, lstatSync, readdirSync, readFileSync, mkdirSync, writeFileS
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { validateJsonSchemas } from './json-schema.mjs';
 import { parseDocument } from '../vendor/yaml.mjs';
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 export const ensure = (condition, message) => { if (!condition) throw new TypeError(message); };
@@ -50,11 +51,11 @@ export function project(root) {
   ensure(value.schema_version === 1 && value.repository_mode === 'project-instance', '只允许 project-instance 导出或导入业务包');
   return realpathSync(root);
 }
-export function schema(value, ref) {
-  const program = 'import json,sys; from jsonschema import Draft202012Validator; s=json.load(open(sys.argv[1])); v=json.load(sys.stdin); errors=list(Draft202012Validator(s).iter_errors(v)); print("\\n".join(str(e) for e in errors)); sys.exit(bool(errors))';
-  const out = spawnSync('python3', ['-c', program, safe(ROOT, ref)], { input: JSON.stringify(value), encoding: 'utf8', maxBuffer: 4 * 1024 * 1024 });
-  ensure(out.status === 0, `schema 校验失败: ${out.error?.message || out.stdout || out.stderr}`);
+export function schemaBatch(items) {
+  const results = validateJsonSchemas(items.map(([value, ref]) => ({ value, schemaPath: safe(ROOT, ref), formatChecker: false, errorStyle: 'verbose' })));
+  for (const result of results) ensure(result.valid, `schema 校验失败: ${result.error}\n`);
 }
+export function schema(value, ref) { schemaBatch([[value, ref]]); }
 export function archive(command, source, destination) {
   const out = spawnSync('python3', [path.join(ROOT, 'scripts/lib/strategic-handoff-zip.py'), command, source, destination], { encoding: 'utf8' });
   ensure(out.status === 0, `ZIP 操作失败: ${out.error?.message || out.stderr}`);

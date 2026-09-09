@@ -1,3 +1,4 @@
+import { runCommandSync } from "./command-runner.mjs";
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from "node:fs";
@@ -7,13 +8,14 @@ import { ROOT } from "./template-verification.mjs";
 
 function fail(message) { throw new TypeError(message); }
 function ensure(condition, message) { if (!condition) fail(message); }
-function git(args, cwd) {
-  const result = spawnSync("git", args, { cwd, encoding: "utf8" });
-  if (result.status !== 0) fail(result.stderr.trim() || `git ${args.join(" ")} 执行失败`);
+function git(args, cwd, timeoutMs = 0, cleanupPathsOnFailure = []) {
+  const result = args.includes("fetch") ? runCommandSync("git", args, { cwd, timeoutMs, progress: true, cleanupPathsOnFailure }) : spawnSync("git", args, { cwd, encoding: "utf8" });
+  if (result.status !== 0) fail(result.termination || result.error?.message || result.stderr.trim() || `git ${args.join(" ")} 执行失败`);
   return result.stdout.trim();
 }
 
-export function acquireTemplateCommit({ repository, commit, cacheRoot = path.join(ROOT, ".template-source/cache/remote-templates"), allowLocal = false }) {
+export function acquireTemplateCommit({ repository, commit, cacheRoot = path.join(ROOT, ".template-source/cache/remote-templates"), allowLocal = false, timeoutMs = 0 }) {
+  ensure(Number.isFinite(timeoutMs) && timeoutMs >= 0, "timeoutMs 必须是非负毫秒数");
   ensure(typeof repository === "string" && repository.trim(), "repository 不能为空");
   ensure(/^[a-f0-9]{40}$/.test(commit), "模板 ref 必须是 40 位 commit");
   if (!allowLocal) ensure(/^(?:https?:\/\/|ssh:\/\/|git@)/.test(repository), "正式模板缓存只接受远程 repository URL");
@@ -35,7 +37,7 @@ export function acquireTemplateCommit({ repository, commit, cacheRoot = path.joi
   try {
     const temporaryRepository = path.join(temporary, "repository.git");
     git(["init", "--bare", "-q", temporaryRepository], ROOT);
-    git(["--git-dir", temporaryRepository, "fetch", "--depth=1", "--no-tags", repository, commit], ROOT);
+    git(["--git-dir", temporaryRepository, "fetch", "--depth=1", "--no-tags", repository, commit], ROOT, timeoutMs, [temporary]);
     const actual = git(["--git-dir", temporaryRepository, "rev-parse", "FETCH_HEAD^{commit}"], ROOT);
     ensure(actual === commit, `远程返回 commit 与请求不一致: ${actual}`);
     writeFileSync(path.join(temporary, "metadata.json"), `${JSON.stringify({ schema_version: 1, key, repository, commit })}\n`);

@@ -1,0 +1,57 @@
+schema_version: 2
+intensity: L3
+classification_reason: 将综合模板与战略设计模板的前置阶段切换为 Plan，明确战略退出条件，并按用户修正取消旧 Discovery 阶段和工作单元兼容。
+triggers: [lifecycle-gate, cross-repo-contract, aggregate-behavior-change]
+changed_assets:
+  - CONTEXT.md
+  - docs/process/lifecycle-registry.yaml
+  - docs/process/lifecycle-registry-baseline.json
+  - docs/process/plan-migration.md
+  - docs/plan/
+  - .agents/skills/yss-product-lifecycle/
+  - .agents/skills/yss-stage-decision/
+  - docs/agents/digital-human-roles.yaml
+  - scripts/lib/lifecycle-transition.mjs
+  - scripts/verify-lifecycle-context-query-scenarios
+  - skills-lock.json
+  - submodules/yss-harness-design-agent
+  - submodules/create-yss-spec
+  - submodules/create-yss-strategic-design
+verification_evidence:
+  - kind: self-check
+    command: .template-source/evidence/maintenance/2026-09-09-plan/self-check.md
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast（主模板；自动升级 release；最终无并发写入轮次，退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast（cwd=submodules/yss-harness-design-agent；自动升级 release；退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-lifecycle-context-query-scenarios（Plan 正常查询及旧阶段/工作单元拒绝，退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-user-decision-scenarios（30 组通过，退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-skill-governance（两套模板最终锁与投影检查，退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: pnpm run sync-template（cwd=submodules/create-yss-spec 及 submodules/create-yss-strategic-design；最终工作树快照同步均退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: node --test --test-name-pattern='interactive init|manifest-driven optional' tests/init-cli.test.js（cwd=submodules/create-yss-spec；新实例及排除示例文档 2/2 通过，退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: node --test --test-name-pattern='init generates' tests/init-cli.test.js（cwd=submodules/create-yss-strategic-design；新战略实例 1/1 通过，退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: node .agents/skills/yss-research/scripts/validate-research-package.mjs .template-source/evidence/maintenance/2026-09-09-plan/aidlc-plan-research-brief.md .template-source/evidence/maintenance/2026-09-09-plan/aidlc-plan-evidence.yaml（退出码 0）
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

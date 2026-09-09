@@ -10,7 +10,7 @@
 | 稳定 ID | 阶段 | 目标 | 退出标准 |
 |---|---|---|---|
 | `stage.entry-triage` | 入口分诊 | 确认仓库身份、问题范围和影响面。 | yss-project.yaml 合法，影响面和最近可信阶段可解释。 |
-| `stage.discovery` | Discovery | 澄清问题、用户、约束和机会。 | 问题边界、关键假设和待确认项已记录。 |
+| `stage.plan` | Plan（战略规划） | 确认目标、业务边界、关键规则、MVP / 非目标、优先级和交接责任，为 Spec 提供战略输入；按影响面探索并复用仍有效的结论。 | 用户确认规划结论，命中的战略与阶段决策门禁通过；影响业务边界、关键规则或 MVP 的问题已解决，其他未决项有责任人和解决时点；下游可进入 Spec，不代表可实现。 |
 | `stage.spec-architecture` | Spec / 功能架构 | 固化解决方案和功能边界。 | Spec 基线和功能边界可审查。 |
 | `stage.product-design` | 产品设计 | 在存在产品设计影响时校准页面流和状态。 | 命中的设计门禁通过；未命中项记录 not-applicable 及原因。 |
 | `stage.system-data-engineering` | 系统 / 数据架构与工程契约 | 固化系统、数据、工程基线和 API 契约。 | 受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。 |
@@ -28,8 +28,8 @@
 |---|---|---|---|---|---|
 | `gate.frontend-delivery-inputs-verified` | 前端联合输入核验 | `stage.system-data-engineering` | 专职前端 profile 或显式 frontend_delivery 绑定的任务启动、恢复、合同编译、实现和验证；实际执行 scripts/verify-frontend-delivery，输入就绪不等于实现获批。 | 无 | `evidence.fresh-verification` |
 | `gate.repository-identity-valid` | 仓库身份校验 | `stage.entry-triage` | 每次进入流程。 | 无 | `evidence.repository-identity-check` |
-| `gate.domain-strategy-approved` | 业务边界与规则确认 | `stage.discovery` | 需要确定业务板块、业务责任区、统一业务词汇、协作关系或关键规则。 | 无 | `evidence.domain-strategy-review`、`evidence.approval-record` |
-| `gate.stage-decision-package-approved` | 阶段决策包批准 | `stage.discovery` | Discovery 到 Spec 入口需要稳定的阶段决策合同。 | `gate.domain-strategy-approved` | `evidence.stage-decision-package`、`evidence.approval-record` |
+| `gate.domain-strategy-approved` | 业务边界与规则确认 | `stage.plan` | 需要确定业务板块、业务责任区、统一业务词汇、协作关系或关键规则。 | 无 | `evidence.domain-strategy-review`、`evidence.approval-record` |
+| `gate.stage-decision-package-approved` | 阶段决策包批准 | `stage.plan` | Plan 到 Spec 入口需要稳定的阶段决策合同。 | `gate.domain-strategy-approved` | `evidence.stage-decision-package`、`evidence.approval-record` |
 | `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | 新功能、行为变化或范围扩大进入 Spec 基线。 | 无 | `evidence.approval-record` |
 | `gate.prototype-reviewed` | 原型评审 | `stage.product-design` | 命中产品设计影响，且低保真页面、流程、状态或 API 反推需要独立评审。 | 无 | `evidence.prototype-review-result` |
 | `gate.prototype-verified` | 原型交付物验证 | `stage.product-design` | 产品设计影响需要通过 H1/H2 原型交付物进行视觉或流程校准；真实组件验证留到前端实现阶段。 | 无 | `evidence.prototype-profile-decision`、`evidence.prototype-deliverable-verification` |
@@ -50,9 +50,9 @@
 | 稳定 ID | 产物 | 所属阶段 | 触发条件 |
 |---|---|---|---|
 | `artifact.impact-assessment` | 影响面分析 | `stage.entry-triage` | 每次变更。 |
-| `artifact.domain-strategy` | 业务边界与规则设计 | `stage.discovery` | 新产品/模块、跨责任区协作、业务词汇冲突、责任边界或关键规则变化。 |
-| `artifact.stage-decision-package` | 方案决策包 | `stage.discovery` | Discovery 到 Spec 入口需要结构化上游决策。 |
-| `artifact.discovery-record` | Discovery 记录 | `stage.discovery` | 新问题或边界不清。 |
+| `artifact.domain-strategy` | 业务边界与规则设计 | `stage.plan` | 新产品/模块、跨责任区协作、业务词汇冲突、责任边界或关键规则变化。 |
+| `artifact.stage-decision-package` | 方案决策包 | `stage.plan` | Plan 到 Spec 入口需要结构化上游决策。 |
+| `artifact.plan-record` | Plan 记录 | `stage.plan` | 新问题或边界不清。 |
 | `artifact.spec` | Spec | `stage.spec-architecture` | 新功能、行为变化或范围扩大。 |
 | `artifact.product-overview` | 产品总体设计 | `stage.spec-architecture` | 进入 Spec 基线。 |
 | `artifact.functional-architecture` | 功能架构 | `stage.spec-architecture` | 新模块或跨边界变化。 |

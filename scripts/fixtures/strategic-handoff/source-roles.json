@@ -73,7 +73,7 @@
     ],
     "stages": [
       "stage.entry-triage",
-      "stage.discovery",
+      "stage.plan",
       "stage.spec-architecture",
       "stage.product-design",
       "stage.system-data-engineering",
@@ -103,11 +103,11 @@
       "contract_version": 1,
       "title": "YSS 需求经理",
       "stages": [
-        "stage.discovery",
+        "stage.plan",
         "stage.spec-architecture"
       ],
       "draft_artifact_ids": [
-        "artifact.discovery-record",
+        "artifact.plan-record",
         "artifact.spec"
       ],
       "core_skills": [
@@ -137,7 +137,7 @@
       "contract_version": 1,
       "title": "YSS 产品经理",
       "stages": [
-        "stage.discovery",
+        "stage.plan",
         "stage.spec-architecture",
         "stage.product-design",
         "stage.verification-release-retrospective"
@@ -177,7 +177,7 @@
       "title": "YSS 项目经理",
       "stages": [
         "stage.entry-triage",
-        "stage.discovery",
+        "stage.plan",
         "stage.spec-architecture",
         "stage.product-design",
         "stage.system-data-engineering",
@@ -346,9 +346,9 @@
   ],
   "stage_groups": [
     {
-      "id": "group.discovery",
+      "id": "group.plan",
       "name": "Discovery",
-      "stage": "stage.discovery",
+      "stage": "stage.plan",
       "members": [
         "role.lifecycle-orchestrator",
         "role.requirements-manager",

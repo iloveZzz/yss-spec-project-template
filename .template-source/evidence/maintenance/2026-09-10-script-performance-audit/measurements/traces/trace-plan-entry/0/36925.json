@@ -1,0 +1,45 @@
+{
+  "pid": 36925,
+  "ppid": 35596,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/.perf-plan-entry.mjs",
+  "wall_ms": 977.4822089999999,
+  "exit_code": 0,
+  "operations": {
+    "fs.realpathSync": {
+      "count": 28,
+      "duration_ms": 0.373459000000004
+    },
+    "fs.mkdirSync": {
+      "count": 2,
+      "duration_ms": 0.11933300000000102
+    },
+    "fs.writeFileSync": {
+      "count": 10,
+      "duration_ms": 0.7995839999999852
+    },
+    "fs.readFileSync": {
+      "count": 83,
+      "duration_ms": 3.1262119999998745
+    },
+    "fs.readdirSync": {
+      "count": 3,
+      "duration_ms": 0.06716600000000383
+    },
+    "fs.existsSync": {
+      "count": 9,
+      "duration_ms": 0.08904199999994944
+    },
+    "fs.lstatSync": {
+      "count": 1,
+      "duration_ms": 0.01979199999999892
+    },
+    "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/root/scripts/verify-context-reconciliation": {
+      "count": 5,
+      "duration_ms": 541.8046660000001
+    },
+    "spawnSync:python3:user-decision.schema.json": {
+      "count": 5,
+      "duration_ms": 335.41858199999996
+    }
+  }
+}

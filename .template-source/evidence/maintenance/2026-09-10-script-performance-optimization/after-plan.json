@@ -1,0 +1,425 @@
+[
+  {
+    "label": "validation-final-snapshot",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "args": [
+      "python3",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/refresh-runtime-fixture.py"
+    ],
+    "repeat": 1,
+    "timeout": 120
+  },
+  {
+    "label": "validation-final-release",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "args": [
+      "node",
+      "scripts/verify-template-fast"
+    ],
+    "repeat": 1,
+    "timeout": 1200,
+    "extra_env": {
+      "YSS_DEDICATED_CLI_ROOT": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/integration",
+      "YSS_CLI_SPEC_ROOT": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/create-yss-spec",
+      "YSS_CLI_DESIGN_ROOT": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/create-yss-strategic-design",
+      "YSS_CLI_DEV_ROOT": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/create-yss-harness-dev",
+      "NODE_V8_COVERAGE": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/coverage/raw"
+    }
+  },
+  {
+    "label": "after-plan-entry",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "args": [
+      "node",
+      ".perf-plan-entry.mjs"
+    ],
+    "repeat": 5,
+    "timeout": 180
+  },
+  {
+    "label": "after-handoff",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "args": [
+      "node",
+      "scripts/verify-strategic-handoff-package-scenarios"
+    ],
+    "repeat": 3,
+    "timeout": 180
+  },
+  {
+    "label": "after-delivery",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "args": [
+      "node",
+      "scripts/verify-frontend-delivery-scenarios"
+    ],
+    "repeat": 3,
+    "timeout": 180
+  },
+  {
+    "label": "after-query",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "args": [
+      "node",
+      "scripts/query-lifecycle-context",
+      "--mode",
+      "route"
+    ],
+    "repeat": 5,
+    "timeout": 180
+  },
+  {
+    "label": "before-context-scale",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/context-scale.mjs",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root"
+    ],
+    "repeat": 1,
+    "timeout": 120
+  },
+  {
+    "label": "before-projections",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      "scripts/sync-skills",
+      "--check"
+    ],
+    "repeat": 5,
+    "timeout": 30
+  },
+  {
+    "label": "before-archive",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/archive-benchmark.mjs",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+      "f4ee7ea791c4b6b7d507e3b4d93a8efc3ef2dba1"
+    ],
+    "repeat": 5,
+    "timeout": 60
+  },
+  {
+    "label": "before-batch100",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/schema-batch-benchmark.mjs",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+      "single"
+    ],
+    "repeat": 1,
+    "timeout": 120
+  },
+  {
+    "label": "after-context-scale",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/context-scale.mjs",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root"
+    ],
+    "repeat": 1,
+    "timeout": 120
+  },
+  {
+    "label": "after-projections",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "args": [
+      "node",
+      "scripts/sync-skills",
+      "--check"
+    ],
+    "repeat": 5,
+    "timeout": 30
+  },
+  {
+    "label": "after-archive",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/archive-benchmark.mjs",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+      "f4ee7ea791c4b6b7d507e3b4d93a8efc3ef2dba1"
+    ],
+    "repeat": 5,
+    "timeout": 60
+  },
+  {
+    "label": "after-batch100",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/schema-batch-benchmark.mjs",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+      "batch"
+    ],
+    "repeat": 1,
+    "timeout": 120
+  },
+  {
+    "label": "after-init-backend-0",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/cli-backend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-backend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/after-backend-0",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240
+  },
+  {
+    "label": "after-init-backend-1",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/cli-backend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-backend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/after-backend-1",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240
+  },
+  {
+    "label": "after-init-backend-2",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/cli-backend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-backend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/after-backend-2",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240
+  },
+  {
+    "label": "after-init-frontend-0",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/cli-frontend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-frontend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/after-frontend-0",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240
+  },
+  {
+    "label": "after-init-frontend-1",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/cli-frontend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-frontend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/after-frontend-1",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240
+  },
+  {
+    "label": "after-init-frontend-2",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/cli-frontend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-frontend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/after-frontend-2",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240
+  },
+  {
+    "label": "trace-before-plan-entry",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      ".perf-plan-entry.mjs"
+    ],
+    "repeat": 1,
+    "timeout": 120,
+    "trace": true
+  },
+  {
+    "label": "trace-before-handoff",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      "scripts/verify-strategic-handoff-package-scenarios"
+    ],
+    "repeat": 1,
+    "timeout": 120,
+    "trace": true
+  },
+  {
+    "label": "trace-before-projections",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      "scripts/sync-skills",
+      "--check"
+    ],
+    "repeat": 1,
+    "timeout": 120,
+    "trace": true
+  },
+  {
+    "label": "trace-before-init-backend",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/cli-backend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-backend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/trace-before-backend",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240,
+    "trace": true
+  },
+  {
+    "label": "trace-before-init-frontend",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/cli-frontend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-frontend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/trace-before-frontend",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240,
+    "trace": true
+  },
+  {
+    "label": "trace-after-plan-entry",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "args": [
+      "node",
+      ".perf-plan-entry.mjs"
+    ],
+    "repeat": 1,
+    "timeout": 120,
+    "trace": true
+  },
+  {
+    "label": "trace-after-handoff",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "args": [
+      "node",
+      "scripts/verify-strategic-handoff-package-scenarios"
+    ],
+    "repeat": 1,
+    "timeout": 120,
+    "trace": true
+  },
+  {
+    "label": "trace-after-projections",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "args": [
+      "node",
+      "scripts/sync-skills",
+      "--check"
+    ],
+    "repeat": 1,
+    "timeout": 120,
+    "trace": true
+  },
+  {
+    "label": "trace-after-init-backend",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/cli-backend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-backend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/trace-after-backend",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240,
+    "trace": true
+  },
+  {
+    "label": "trace-after-init-frontend",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/cli-frontend",
+    "args": [
+      "node",
+      "bin/create-yss-harness-frontend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/trace-after-frontend",
+      "--json"
+    ],
+    "repeat": 1,
+    "timeout": 240,
+    "trace": true
+  },
+  {
+    "label": "before-frontend-generator-clean",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/frontend-generator-benchmark.mjs",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+      "clean"
+    ],
+    "repeat": 1,
+    "timeout": 180
+  },
+  {
+    "label": "before-frontend-generator-cached",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/frontend-generator-benchmark.mjs",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-6fvph0w3/root",
+      "cached"
+    ],
+    "repeat": 1,
+    "timeout": 180
+  },
+  {
+    "label": "after-frontend-generator-clean",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/frontend-generator-benchmark.mjs",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+      "clean"
+    ],
+    "repeat": 1,
+    "timeout": 180
+  },
+  {
+    "label": "after-frontend-generator-cached",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+    "args": [
+      "node",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-10-script-performance-optimization/frontend-generator-benchmark.mjs",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root",
+      "cached"
+    ],
+    "repeat": 1,
+    "timeout": 180
+  }
+]

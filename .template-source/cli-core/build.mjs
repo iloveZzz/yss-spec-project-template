@@ -15,7 +15,7 @@ import {
 } from "./io.mjs";
 import { yaml, PROFILE, loadBundle } from "./bundle.mjs";
 const CORE_PATH = ".template-source/cli-core";
-function archive(source, ref, consume) {
+function archive(source, ref, consume, paths = []) {
   const revision = execFileSync(
     "git",
     ["-C", source, "rev-parse", `${ref}^{commit}`],
@@ -24,7 +24,7 @@ function archive(source, ref, consume) {
   ensure(/^[a-f0-9]{40}$/.test(revision), "source revision 必须是完整提交");
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "harness-source-"));
   try {
-    const tar = execFileSync("git", ["-C", source, "archive", revision], {
+    const tar = execFileSync("git", ["-C", source, "archive", revision, ...paths], {
       maxBuffer: 256 * 1024 * 1024,
     });
     execFileSync("tar", ["-xf", "-", "-C", scratch], { input: tar });
@@ -113,7 +113,7 @@ export function syncCore(source, ref, packageRoot, check = false) {
       );
     write(packageRoot, "cli-core.lock.json", json(lock));
     return lock;
-  });
+  }, [CORE_PATH]);
 }
 function selected(ref, m) {
   const top = ref.split("/")[0],
@@ -168,7 +168,8 @@ export function syncTemplate(source, ref, packageRoot, check = false) {
       manifest = JSON.parse(manifestBytes),
       entries = {},
       blobs = new Map(),
-      canonical = path.join(root, ".agents/skills");
+      canonical = path.join(root, ".agents/skills"),
+      captured = new Map();
     function capture(physical, logical, ancestors = []) {
       relative(logical);
       const s = fs.lstatSync(physical);
@@ -196,8 +197,13 @@ export function syncTemplate(source, ref, packageRoot, check = false) {
       if (!selected(logical, manifest)) return;
       governance(logical);
       ensure(s.isFile(), `未知分发类型: ${logical}`);
-      const bytes = fs.readFileSync(physical),
-        digest = hash(bytes);
+      let content = captured.get(physical);
+      if (!content) {
+        const bytes = fs.readFileSync(physical);
+        content = { bytes, digest: hash(bytes) };
+        captured.set(physical, content);
+      }
+      const { bytes, digest } = content;
       entries[logical] = {
         type: "file",
         digest,

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "registry_id": "yss.lifecycle",
-  "semantic_sha256": "68c053060bb837fe4bc2b40d7a6ffcea1a53fc6b5e6b929eb0858824c657a15d",
+  "semantic_sha256": "96fcbcb858eed45ba228d87c75804f28ccb464b1963c0d23be348ade094bac01",
   "published_ids": [
     "artifact.architecture-review",
     "artifact.data-architecture",
@@ -19,6 +19,7 @@
     "artifact.openapi-draft",
     "artifact.openapi-freeze-record",
     "artifact.parent-ticket",
+    "artifact.plan-record",
     "artifact.product-overview",
     "artifact.project-scaffold-contract",
     "artifact.prototype-confirmation",
@@ -76,6 +77,7 @@
     "gate.user-confirmation",
     "stage.discovery",
     "stage.entry-triage",
+    "stage.plan",
     "stage.product-design",
     "stage.spec-architecture",
     "stage.system-data-engineering",
@@ -94,6 +96,8 @@
     "work-unit.independent-review",
     "work-unit.intensity-aware-review",
     "work-unit.intensity-aware-verification",
+    "work-unit.plan-opportunity",
+    "work-unit.plan-requirements",
     "work-unit.prototype-design",
     "work-unit.release-and-retrospective",
     "work-unit.release-and-rollback",

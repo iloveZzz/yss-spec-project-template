@@ -1,0 +1,2387 @@
+{
+  "heads_and_branches_unchanged": [
+    {
+      "repository": "root",
+      "head": "6f5c5d80adcdb743fb06199f70a7ab0b0a640ce5",
+      "branch": "main"
+    },
+    {
+      "repository": "create-yss-strategic-design",
+      "head": "3c41e85be9de5843e763f03c06b4a3ed1f6edbee",
+      "branch": "main"
+    },
+    {
+      "repository": "yss-harness-design-agent",
+      "head": "8a67e0f5a56aa5085d18c2b42bb540c8f36c2fab",
+      "branch": "main"
+    },
+    {
+      "repository": "yss-harness-dev-agent",
+      "head": "e5ddeb084adece86333166389ad9c7132bc99437",
+      "branch": "main"
+    },
+    {
+      "repository": "yss-harness-backend-agent",
+      "head": "e3faf83da06e3dc3ddfdc83763f28f60a3c6f20d",
+      "branch": "main"
+    },
+    {
+      "repository": "yss-harness-frontend-agent",
+      "head": "be68fb715d637d7a562ad3538ea5ac25395d73f3",
+      "branch": "main"
+    },
+    {
+      "repository": "create-yss-harness-dev",
+      "head": "5e6a0c26fe24825a83750a8a074972ed6bcb8a9f",
+      "branch": "main"
+    },
+    {
+      "repository": "create-yss-spec",
+      "head": "f594ada21e368a788cfe2f13ad837d1ef421e3ac",
+      "branch": "main"
+    },
+    {
+      "repository": "create-yss-harness-frontend",
+      "head": "63bc67662f4e7ea84eb703a22ec28deea6fa30c0",
+      "branch": "main"
+    },
+    {
+      "repository": "create-yss-harness-backend",
+      "head": "fe73b98587b1fb355d106d1368be70d37f738cf5",
+      "branch": "main"
+    }
+  ],
+  "initial_dirty_entries": [
+    {
+      "path": ".agents/skills/.strategic-design-skills-manifest.json",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "c9bf24973e6ec372353db0d32155ebd044cdb5deaa41deb1d9f11fccc7799d80",
+        420
+      ],
+      "after": [
+        "file",
+        "c9bf24973e6ec372353db0d32155ebd044cdb5deaa41deb1d9f11fccc7799d80",
+        420
+      ]
+    },
+    {
+      "path": ".agents/skills/competitive-intelligence/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ],
+      "after": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ]
+    },
+    {
+      "path": ".agents/skills/domain-modeling/CONTEXT-FORMAT.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "efc21043f630473bc9a07749f2c34a243fe2b8202752620f394f8ac5ba235896",
+        420
+      ],
+      "after": [
+        "file",
+        "efc21043f630473bc9a07749f2c34a243fe2b8202752620f394f8ac5ba235896",
+        420
+      ]
+    },
+    {
+      "path": ".agents/skills/grill-with-docs/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "e4971132a0f33f8d052aef1616f11db741d6dc9223da7cf5197aded6b43c77a4",
+        420
+      ],
+      "after": [
+        "file",
+        "e4971132a0f33f8d052aef1616f11db741d6dc9223da7cf5197aded6b43c77a4",
+        420
+      ]
+    },
+    {
+      "path": ".agents/skills/setup-matt-pocock-skills/issue-tracker-local.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "a81e57ab1432c9ef6802a9eff7f480f014603a8c9215bbfed9a4c6fd54a98d6b",
+        420
+      ],
+      "after": [
+        "file",
+        "a81e57ab1432c9ef6802a9eff7f480f014603a8c9215bbfed9a4c6fd54a98d6b",
+        420
+      ]
+    },
+    {
+      "path": ".agents/skills/yss-product-lifecycle/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "cee5c8e7ae3bf6499cb76883e8f33dbd7f9aa7507007973d558fef6139d35c23",
+        420
+      ],
+      "after": [
+        "file",
+        "cee5c8e7ae3bf6499cb76883e8f33dbd7f9aa7507007973d558fef6139d35c23",
+        420
+      ]
+    },
+    {
+      "path": ".agents/skills/yss-product-lifecycle/references/artifact-dependencies.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "fbe48308d2df2a3d5f8761ce7d5ae8ec7df2ef76da2e044d8b5bdc727eeb3dea",
+        420
+      ],
+      "after": [
+        "file",
+        "fbe48308d2df2a3d5f8761ce7d5ae8ec7df2ef76da2e044d8b5bdc727eeb3dea",
+        420
+      ]
+    },
+    {
+      "path": ".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "193800f57b2898d5ac8910fee33fe6aa1ad2d76aa6754d674ce251da03bffde7",
+        420
+      ],
+      "after": [
+        "file",
+        "193800f57b2898d5ac8910fee33fe6aa1ad2d76aa6754d674ce251da03bffde7",
+        420
+      ]
+    },
+    {
+      "path": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "edc2805a182cf9b27af6df0ee34ed0f811d5938d63a10082363ad3a00b2e76ad",
+        420
+      ],
+      "after": [
+        "file",
+        "edc2805a182cf9b27af6df0ee34ed0f811d5938d63a10082363ad3a00b2e76ad",
+        420
+      ]
+    },
+    {
+      "path": ".agents/skills/yss-product-lifecycle/references/orchestration.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "7d38486c6901161c59155d0ca5da2d7bf044f0aec8dbf972c2793d6dce3754c1",
+        420
+      ],
+      "after": [
+        "file",
+        "7d38486c6901161c59155d0ca5da2d7bf044f0aec8dbf972c2793d6dce3754c1",
+        420
+      ]
+    },
+    {
+      "path": ".agents/skills/yss-research/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "aeff44697315f091fc36f84bd8628358488416bc94800c4011b9a362f1622cb3",
+        420
+      ],
+      "after": [
+        "file",
+        "aeff44697315f091fc36f84bd8628358488416bc94800c4011b9a362f1622cb3",
+        420
+      ]
+    },
+    {
+      "path": ".agents/skills/yss-stage-decision/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "12b3e4d7f370f9391e3222b5cdcfe12711a2f612d37d1ed507e7889b65705e73",
+        420
+      ],
+      "after": [
+        "file",
+        "12b3e4d7f370f9391e3222b5cdcfe12711a2f612d37d1ed507e7889b65705e73",
+        420
+      ]
+    },
+    {
+      "path": ".agents/skills/yss-stage-decision/references/stage-decision-package-contract.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "beb53793a2e89b0beb6f8197aef37814e75e44cc412aa6cd03fd82b4ff9aaca8",
+        420
+      ],
+      "after": [
+        "file",
+        "beb53793a2e89b0beb6f8197aef37814e75e44cc412aa6cd03fd82b4ff9aaca8",
+        420
+      ]
+    },
+    {
+      "path": ".claude/skills/competitive-intelligence/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ],
+      "after": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ]
+    },
+    {
+      "path": ".codex/skills/competitive-intelligence/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ],
+      "after": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ]
+    },
+    {
+      "path": ".codex/skills/yss-product-lifecycle/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "cee5c8e7ae3bf6499cb76883e8f33dbd7f9aa7507007973d558fef6139d35c23",
+        420
+      ],
+      "after": [
+        "file",
+        "cee5c8e7ae3bf6499cb76883e8f33dbd7f9aa7507007973d558fef6139d35c23",
+        420
+      ]
+    },
+    {
+      "path": ".codex/skills/yss-product-lifecycle/references/artifact-dependencies.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "fbe48308d2df2a3d5f8761ce7d5ae8ec7df2ef76da2e044d8b5bdc727eeb3dea",
+        420
+      ],
+      "after": [
+        "file",
+        "fbe48308d2df2a3d5f8761ce7d5ae8ec7df2ef76da2e044d8b5bdc727eeb3dea",
+        420
+      ]
+    },
+    {
+      "path": ".codex/skills/yss-product-lifecycle/references/matt-yss-adapter.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "193800f57b2898d5ac8910fee33fe6aa1ad2d76aa6754d674ce251da03bffde7",
+        420
+      ],
+      "after": [
+        "file",
+        "193800f57b2898d5ac8910fee33fe6aa1ad2d76aa6754d674ce251da03bffde7",
+        420
+      ]
+    },
+    {
+      "path": ".codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "edc2805a182cf9b27af6df0ee34ed0f811d5938d63a10082363ad3a00b2e76ad",
+        420
+      ],
+      "after": [
+        "file",
+        "edc2805a182cf9b27af6df0ee34ed0f811d5938d63a10082363ad3a00b2e76ad",
+        420
+      ]
+    },
+    {
+      "path": ".codex/skills/yss-product-lifecycle/references/orchestration.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "7d38486c6901161c59155d0ca5da2d7bf044f0aec8dbf972c2793d6dce3754c1",
+        420
+      ],
+      "after": [
+        "file",
+        "7d38486c6901161c59155d0ca5da2d7bf044f0aec8dbf972c2793d6dce3754c1",
+        420
+      ]
+    },
+    {
+      "path": ".pi/skills/competitive-intelligence/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ],
+      "after": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ]
+    },
+    {
+      "path": ".qoder/skills/domain-modeling/CONTEXT-FORMAT.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "efc21043f630473bc9a07749f2c34a243fe2b8202752620f394f8ac5ba235896",
+        420
+      ],
+      "after": [
+        "file",
+        "efc21043f630473bc9a07749f2c34a243fe2b8202752620f394f8ac5ba235896",
+        420
+      ]
+    },
+    {
+      "path": ".qoder/skills/grill-with-docs/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "e4971132a0f33f8d052aef1616f11db741d6dc9223da7cf5197aded6b43c77a4",
+        420
+      ],
+      "after": [
+        "file",
+        "e4971132a0f33f8d052aef1616f11db741d6dc9223da7cf5197aded6b43c77a4",
+        420
+      ]
+    },
+    {
+      "path": ".qoder/skills/setup-matt-pocock-skills/issue-tracker-local.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "a81e57ab1432c9ef6802a9eff7f480f014603a8c9215bbfed9a4c6fd54a98d6b",
+        420
+      ],
+      "after": [
+        "file",
+        "a81e57ab1432c9ef6802a9eff7f480f014603a8c9215bbfed9a4c6fd54a98d6b",
+        420
+      ]
+    },
+    {
+      "path": ".template-source/derived/harness-work-unit-map.md",
+      "result": "original-diff-preserved"
+    },
+    {
+      "path": ".trae/skills/competitive-intelligence/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ],
+      "after": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ]
+    },
+    {
+      "path": "AGENTS.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "fe53710183d1ae022f598ac0a44e53d1203aaca8ed54ac85aa7c503018b4fb1e",
+        420
+      ],
+      "after": [
+        "file",
+        "fe53710183d1ae022f598ac0a44e53d1203aaca8ed54ac85aa7c503018b4fb1e",
+        420
+      ]
+    },
+    {
+      "path": "CONTEXT.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "d021900c6680675233d403f03b52e782ce0ffa8910b3503a566f0fb2a9588d82",
+        420
+      ],
+      "after": [
+        "file",
+        "d021900c6680675233d403f03b52e782ce0ffa8910b3503a566f0fb2a9588d82",
+        420
+      ]
+    },
+    {
+      "path": "README.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "0689490fd7258e31dda896780a60b64db0146f56bec10e566bf919849d1ea8e1",
+        420
+      ],
+      "after": [
+        "file",
+        "0689490fd7258e31dda896780a60b64db0146f56bec10e566bf919849d1ea8e1",
+        420
+      ]
+    },
+    {
+      "path": "docs/agents/digital-human-roles.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "15c7d0d3529a25a7672b26562d77878e57289422275fba9a63d83d64777ad7e2",
+        420
+      ],
+      "after": [
+        "file",
+        "15c7d0d3529a25a7672b26562d77878e57289422275fba9a63d83d64777ad7e2",
+        420
+      ]
+    },
+    {
+      "path": "docs/agents/digital-human-roles.yaml",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "26058d96471c5c58c01c4a10a8cf9fa9c5e83368c956d772e52c198d53e3c892",
+        420
+      ],
+      "after": [
+        "file",
+        "26058d96471c5c58c01c4a10a8cf9fa9c5e83368c956d772e52c198d53e3c892",
+        420
+      ]
+    },
+    {
+      "path": "docs/agents/issue-tracker.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "e7e2c953b858addce60f1fdd6f92bdb1a850a7d1da5a587927a5a189bac1046e",
+        420
+      ],
+      "after": [
+        "file",
+        "e7e2c953b858addce60f1fdd6f92bdb1a850a7d1da5a587927a5a189bac1046e",
+        420
+      ]
+    },
+    {
+      "path": "docs/agents/strategic-design-skills-integration.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "f6fc2c617120b86a00592877bc3b13685e2d05b84f45a311ac43c32482ce1eb8",
+        420
+      ],
+      "after": [
+        "file",
+        "f6fc2c617120b86a00592877bc3b13685e2d05b84f45a311ac43c32482ce1eb8",
+        420
+      ]
+    },
+    {
+      "path": "docs/architecture/README.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "bafde9776397a235367bb780e5e84151ee0cdacea008940626d66a514f91862d",
+        420
+      ],
+      "after": [
+        "file",
+        "bafde9776397a235367bb780e5e84151ee0cdacea008940626d66a514f91862d",
+        420
+      ]
+    },
+    {
+      "path": "docs/architecture/templates/business-architecture-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "9d40c8a9cd55109b173d688371fe87bf2834159e533616c8ac62f7086083bfa9",
+        420
+      ],
+      "after": [
+        "file",
+        "9d40c8a9cd55109b173d688371fe87bf2834159e533616c8ac62f7086083bfa9",
+        420
+      ]
+    },
+    {
+      "path": "docs/architecture/templates/functional-architecture-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "1b5a9091b2866163c285883e46c6bcba91fd77c6d623b917aa3eb1ecb2490430",
+        420
+      ],
+      "after": [
+        "file",
+        "1b5a9091b2866163c285883e46c6bcba91fd77c6d623b917aa3eb1ecb2490430",
+        420
+      ]
+    },
+    {
+      "path": "docs/design/README.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "668eb411918a2310e8fe99bfdbcdfd8bf51db14e46c3c47fe495830dd431548d",
+        420
+      ],
+      "after": [
+        "file",
+        "668eb411918a2310e8fe99bfdbcdfd8bf51db14e46c3c47fe495830dd431548d",
+        420
+      ]
+    },
+    {
+      "path": "docs/design/templates/interaction-spec-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "1824433d6d37db6a30f873ac5e076350663f1b267189c55817aa573dd2c45fb1",
+        420
+      ],
+      "after": [
+        "file",
+        "1824433d6d37db6a30f873ac5e076350663f1b267189c55817aa573dd2c45fb1",
+        420
+      ]
+    },
+    {
+      "path": "docs/design/templates/product-overview-design-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "b29162ced4ad94295937b7a884539474d4f8b4a0a9eb6d662fa5c7aa7d79d57b",
+        420
+      ],
+      "after": [
+        "file",
+        "b29162ced4ad94295937b7a884539474d4f8b4a0a9eb6d662fa5c7aa7d79d57b",
+        420
+      ]
+    },
+    {
+      "path": "docs/discovery/IDEATION.md",
+      "result": "unchanged",
+      "before": [
+        "missing"
+      ],
+      "after": [
+        "missing"
+      ]
+    },
+    {
+      "path": "docs/discovery/README.md",
+      "result": "unchanged",
+      "before": [
+        "missing"
+      ],
+      "after": [
+        "missing"
+      ]
+    },
+    {
+      "path": "docs/discovery/templates/competitive-analysis-template.md",
+      "result": "unchanged",
+      "before": [
+        "missing"
+      ],
+      "after": [
+        "missing"
+      ]
+    },
+    {
+      "path": "docs/discovery/templates/competitive-matrix-template.md",
+      "result": "unchanged",
+      "before": [
+        "missing"
+      ],
+      "after": [
+        "missing"
+      ]
+    },
+    {
+      "path": "docs/discovery/templates/discovery-template.md",
+      "result": "unchanged",
+      "before": [
+        "missing"
+      ],
+      "after": [
+        "missing"
+      ]
+    },
+    {
+      "path": "docs/discovery/templates/market-analysis-template.md",
+      "result": "unchanged",
+      "before": [
+        "missing"
+      ],
+      "after": [
+        "missing"
+      ]
+    },
+    {
+      "path": "docs/discovery/templates/user-pain-points-template.md",
+      "result": "unchanged",
+      "before": [
+        "missing"
+      ],
+      "after": [
+        "missing"
+      ]
+    },
+    {
+      "path": "docs/process/harness-process-tailoring.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "bc68da9412d1bfd723abbdb6d095e97dd64d2d7f3792359a7a07473883244de0",
+        420
+      ],
+      "after": [
+        "file",
+        "bc68da9412d1bfd723abbdb6d095e97dd64d2d7f3792359a7a07473883244de0",
+        420
+      ]
+    },
+    {
+      "path": "docs/process/lifecycle-artifact-map.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "684c13b10e4dceb35ba7e3f7fdc0dd8df03abb057d22a0c1aea601540b3d5ec6",
+        420
+      ],
+      "after": [
+        "file",
+        "684c13b10e4dceb35ba7e3f7fdc0dd8df03abb057d22a0c1aea601540b3d5ec6",
+        420
+      ]
+    },
+    {
+      "path": "docs/process/lifecycle-registry-baseline.json",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "920d59c17c64ccd0780f97b35f7382eeaf1d3c99bf880136d5b04d34e7005128",
+        420
+      ],
+      "after": [
+        "file",
+        "920d59c17c64ccd0780f97b35f7382eeaf1d3c99bf880136d5b04d34e7005128",
+        420
+      ]
+    },
+    {
+      "path": "docs/process/lifecycle-registry.yaml",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "f78b8ff1e19750643a1f4789f0e41e65beed60721705b19d776eaa4cad1e0262",
+        420
+      ],
+      "after": [
+        "file",
+        "f78b8ff1e19750643a1f4789f0e41e65beed60721705b19d776eaa4cad1e0262",
+        420
+      ]
+    },
+    {
+      "path": "docs/process/schemas/digital-human-task-package.schema.json",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "d3a603cfa5d4180c7891b0722a167ff1a2c53cb3413268728824387d1ac86059",
+        420
+      ],
+      "after": [
+        "file",
+        "d3a603cfa5d4180c7891b0722a167ff1a2c53cb3413268728824387d1ac86059",
+        420
+      ]
+    },
+    {
+      "path": "docs/process/schemas/lifecycle-checkpoint.schema.json",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "2f74ec4ce70706519a9595c9cbd83455c52591b522036eb1a0ff2f54d27856fe",
+        420
+      ],
+      "after": [
+        "file",
+        "2f74ec4ce70706519a9595c9cbd83455c52591b522036eb1a0ff2f54d27856fe",
+        420
+      ]
+    },
+    {
+      "path": "docs/process/schemas/lifecycle-registry.schema.json",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "871190914f9dff7d0f672e0f724b255174b24a03438cdd57fd02ade6123a24dc",
+        420
+      ],
+      "after": [
+        "file",
+        "871190914f9dff7d0f672e0f724b255174b24a03438cdd57fd02ade6123a24dc",
+        420
+      ]
+    },
+    {
+      "path": "docs/process/template-engineering-overview.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "ce734616ca6eec19c1b7e0b9ed51896d9c4d5c7e58792bcc645eb712728404df",
+        420
+      ],
+      "after": [
+        "file",
+        "ce734616ca6eec19c1b7e0b9ed51896d9c4d5c7e58792bcc645eb712728404df",
+        420
+      ]
+    },
+    {
+      "path": "docs/process/template-verification-profiles.yaml",
+      "result": "optimization-extends-existing-change",
+      "before": [
+        "file",
+        "dab41d8c9611f21abb75838fc1a5e5b85515d81866627e4a24da44528c1df5be",
+        420
+      ],
+      "after": [
+        "file",
+        "0ef371d589cd8e9990f5027ed4873f6783b5809ffc53482277bb39a476184191",
+        420
+      ]
+    },
+    {
+      "path": "docs/process/templates/context-reconciliation-template.yaml",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "a45c630526a842ba8fca95b78995068c045355150957152b922e8cf1892e0e70",
+        420
+      ],
+      "after": [
+        "file",
+        "a45c630526a842ba8fca95b78995068c045355150957152b922e8cf1892e0e70",
+        420
+      ]
+    },
+    {
+      "path": "docs/process/templates/lifecycle-checkpoint-template.yaml",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "f818b0138ccec3e0df150ba6b846680288f00842a0dc2670be1f0400e0c0315e",
+        420
+      ],
+      "after": [
+        "file",
+        "f818b0138ccec3e0df150ba6b846680288f00842a0dc2670be1f0400e0c0315e",
+        420
+      ]
+    },
+    {
+      "path": "docs/requirements/README.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "5627286ad045856fb68ce541fed8de81573e85627873db9eb17e3b46292bc955",
+        420
+      ],
+      "after": [
+        "file",
+        "5627286ad045856fb68ce541fed8de81573e85627873db9eb17e3b46292bc955",
+        420
+      ]
+    },
+    {
+      "path": "docs/templates/local-parent-ticket-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "f56ff57fd912de4c9429751f0e0c3c600520a86fece7ab0d6cd774d2bd222b5c",
+        420
+      ],
+      "after": [
+        "file",
+        "f56ff57fd912de4c9429751f0e0c3c600520a86fece7ab0d6cd774d2bd222b5c",
+        420
+      ]
+    },
+    {
+      "path": "docs/templates/subagent-task-package-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "a561bb4746dad31acb0a94577f36b789ac4594c3a34977e077e24072ba1c36dd",
+        420
+      ],
+      "after": [
+        "file",
+        "a561bb4746dad31acb0a94577f36b789ac4594c3a34977e077e24072ba1c36dd",
+        420
+      ]
+    },
+    {
+      "path": "docs/user-guide/用户手册.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "c412f385b57d0fb5cc6e14545450641f93f62143bd382843d965c8048bd6a2a9",
+        420
+      ],
+      "after": [
+        "file",
+        "c412f385b57d0fb5cc6e14545450641f93f62143bd382843d965c8048bd6a2a9",
+        420
+      ]
+    },
+    {
+      "path": "scripts/fixtures/strategic-handoff/source-roles.json",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "1f15600d765b0d316b7cc1b7ffeed929b694e1b718bea04bb016dd1855f1d396",
+        420
+      ],
+      "after": [
+        "file",
+        "1f15600d765b0d316b7cc1b7ffeed929b694e1b718bea04bb016dd1855f1d396",
+        420
+      ]
+    },
+    {
+      "path": "scripts/lib/lifecycle-context-query.mjs",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "4cf8decf1dda01884193aa478fe17a4ae55511bc97319a41e778dbc4c36fcbe6",
+        420
+      ],
+      "after": [
+        "file",
+        "4cf8decf1dda01884193aa478fe17a4ae55511bc97319a41e778dbc4c36fcbe6",
+        420
+      ]
+    },
+    {
+      "path": "scripts/lib/lifecycle-transition.mjs",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "534c8005977d8e4a4cf93452748299ae41e3f9f47edf444cb365b5f398374604",
+        420
+      ],
+      "after": [
+        "file",
+        "534c8005977d8e4a4cf93452748299ae41e3f9f47edf444cb365b5f398374604",
+        420
+      ]
+    },
+    {
+      "path": "scripts/lib/scenario-checks.mjs",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "dab8d6fadb66bb0702cabba10b0183c15a5ffa911bd346820797f5239a3dc931",
+        420
+      ],
+      "after": [
+        "file",
+        "dab8d6fadb66bb0702cabba10b0183c15a5ffa911bd346820797f5239a3dc931",
+        420
+      ]
+    },
+    {
+      "path": "scripts/lib/task-package.mjs",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "d60339fe40bb00463e69cbf0d40f19f5457a463ace5c2925a7201d62a8bd0780",
+        420
+      ],
+      "after": [
+        "file",
+        "d60339fe40bb00463e69cbf0d40f19f5457a463ace5c2925a7201d62a8bd0780",
+        420
+      ]
+    },
+    {
+      "path": "scripts/verify-context-reconciliation-scenarios",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "6ba2858f09bdd0c1d47e1d20b809c01136ff180a3e0974e295da220e31944813",
+        493
+      ],
+      "after": [
+        "file",
+        "6ba2858f09bdd0c1d47e1d20b809c01136ff180a3e0974e295da220e31944813",
+        493
+      ]
+    },
+    {
+      "path": "scripts/verify-lifecycle-checkpoint",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "f22c44eecb873b743e791ce1fc000736db35bae52eca63d7a95298371b785789",
+        493
+      ],
+      "after": [
+        "file",
+        "f22c44eecb873b743e791ce1fc000736db35bae52eca63d7a95298371b785789",
+        493
+      ]
+    },
+    {
+      "path": "scripts/verify-lifecycle-context-query-scenarios",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "ee278104260438feafd5b4e4fe0454fd832a5da953ce1a6b83a36a34e7aaebab",
+        493
+      ],
+      "after": [
+        "file",
+        "ee278104260438feafd5b4e4fe0454fd832a5da953ce1a6b83a36a34e7aaebab",
+        493
+      ]
+    },
+    {
+      "path": "scripts/verify-subagent-task-package-scenarios",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "e795ea29dd3af160607cb3fb9d9f02ea7de2441411cf473474b099f9ed74054e",
+        493
+      ],
+      "after": [
+        "file",
+        "e795ea29dd3af160607cb3fb9d9f02ea7de2441411cf473474b099f9ed74054e",
+        493
+      ]
+    },
+    {
+      "path": "scripts/verify-user-decision-scenarios",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "3338d55a9a6b32a2ed6b80965bb2f259402c4404f08660a80e257b6c7e035e72",
+        493
+      ],
+      "after": [
+        "file",
+        "3338d55a9a6b32a2ed6b80965bb2f259402c4404f08660a80e257b6c7e035e72",
+        493
+      ]
+    },
+    {
+      "path": "skills-lock.json",
+      "result": "optimization-extends-existing-change",
+      "before": [
+        "file",
+        "6da28d8fe57be6b3153244f920ed91ab3c1056f797e347a3aba50f22d1c0c120",
+        420
+      ],
+      "after": [
+        "file",
+        "f377e56300fff3356157f4f71f690eb0db19703dcfb22d6fab1afcfe802f9340",
+        420
+      ]
+    },
+    {
+      "path": "docs/plan/IDEATION.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "4c1398703b7d5ebd693a8570567ac2c07064880fe54e6ef45b7b4338fa23bfb0",
+        420
+      ],
+      "after": [
+        "file",
+        "4c1398703b7d5ebd693a8570567ac2c07064880fe54e6ef45b7b4338fa23bfb0",
+        420
+      ]
+    },
+    {
+      "path": "docs/plan/README.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "5a51a03b35e2c870948240c90ece38fffbea5e32dae2cb507562fa4c809d8087",
+        420
+      ],
+      "after": [
+        "file",
+        "5a51a03b35e2c870948240c90ece38fffbea5e32dae2cb507562fa4c809d8087",
+        420
+      ]
+    },
+    {
+      "path": "docs/plan/entry-review.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "b7f0ba63444763834a52e303a167655932dd7e855f480bae333952fa9403e259",
+        420
+      ],
+      "after": [
+        "file",
+        "b7f0ba63444763834a52e303a167655932dd7e855f480bae333952fa9403e259",
+        420
+      ]
+    },
+    {
+      "path": "docs/plan/templates/competitive-matrix-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "fa5c4384ed90e9b39620b9a7ab0d60a8168ac53baa7547a6066f2b240188b169",
+        420
+      ],
+      "after": [
+        "file",
+        "fa5c4384ed90e9b39620b9a7ab0d60a8168ac53baa7547a6066f2b240188b169",
+        420
+      ]
+    },
+    {
+      "path": "docs/plan/templates/market-analysis-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "e1e21f343a8860945a5a61237d58a3747fda690182ede5ef9fab372c212a30db",
+        420
+      ],
+      "after": [
+        "file",
+        "e1e21f343a8860945a5a61237d58a3747fda690182ede5ef9fab372c212a30db",
+        420
+      ]
+    },
+    {
+      "path": "docs/plan/templates/user-pain-points-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "574e29d3dff337a7438d6a2d606b200de4623731805174381dfa2075d9658860",
+        420
+      ],
+      "after": [
+        "file",
+        "574e29d3dff337a7438d6a2d606b200de4623731805174381dfa2075d9658860",
+        420
+      ]
+    },
+    {
+      "path": "docs/plan/templates/competitive-analysis-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "d1b1499324d99d4bee0de1bd6209f5a25dfa475bcef19f9051c53856d17940ee",
+        420
+      ],
+      "after": [
+        "file",
+        "d1b1499324d99d4bee0de1bd6209f5a25dfa475bcef19f9051c53856d17940ee",
+        420
+      ]
+    },
+    {
+      "path": "docs/plan/templates/plan-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "f3db7615e0f4ac2d9d64d4278f19e9b4693e3eb27b18f30583c3c6fd2b4e5746",
+        420
+      ],
+      "after": [
+        "file",
+        "f3db7615e0f4ac2d9d64d4278f19e9b4693e3eb27b18f30583c3c6fd2b4e5746",
+        420
+      ]
+    },
+    {
+      "path": "docs/process/plan-migration.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "612c861ec3168a63f212a99168c778c7fe31d79fa1c1da38d40f883a0602e87a",
+        420
+      ],
+      "after": [
+        "file",
+        "612c861ec3168a63f212a99168c778c7fe31d79fa1c1da38d40f883a0602e87a",
+        420
+      ]
+    },
+    {
+      "path": "scripts/fixtures/user-decision/plan-fixture.mjs",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "2563f64017c791dd53d7c7efb53d2ca1342d47def5fb8cbc4e0d6d451f2bc3f0",
+        420
+      ],
+      "after": [
+        "file",
+        "2563f64017c791dd53d7c7efb53d2ca1342d47def5fb8cbc4e0d6d451f2bc3f0",
+        420
+      ]
+    },
+    {
+      "path": "scripts/lib/plan-spec-entry.mjs",
+      "result": "optimization-extends-existing-change",
+      "before": [
+        "file",
+        "17ec4211c3732951f891acd885a88d9f9d7260d123fa3de582a6bb1dd9869d14",
+        420
+      ],
+      "after": [
+        "file",
+        "322ea4116f4e55db43732c7afa5b83b6d4e6297fb6ff2bf42a97cf34dbf04ab5",
+        420
+      ]
+    },
+    {
+      "path": "scripts/verify-plan-spec-entry",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "e15d4edee0f79302715eab4dabe9082702890ded809e4cbf965374c387cde6b5",
+        420
+      ],
+      "after": [
+        "file",
+        "e15d4edee0f79302715eab4dabe9082702890ded809e4cbf965374c387cde6b5",
+        420
+      ]
+    },
+    {
+      "path": "scripts/verify-plan-spec-entry-scenarios",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "50186fa4c660dd9c2a6793ee05d88f91bc600190ff7d856b384698cff1b27a1d",
+        420
+      ],
+      "after": [
+        "file",
+        "50186fa4c660dd9c2a6793ee05d88f91bc600190ff7d856b384698cff1b27a1d",
+        420
+      ]
+    },
+    {
+      "path": "submodules/create-yss-strategic-design/tests/init-cli.test.js",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "da1ef8ed3444ed59e891758601c8c19ce56541fd28d613e41b02b3d32e2d50eb",
+        420
+      ],
+      "after": [
+        "file",
+        "da1ef8ed3444ed59e891758601c8c19ce56541fd28d613e41b02b3d32e2d50eb",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/competitive-intelligence/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ],
+      "after": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/domain-modeling/CONTEXT-FORMAT.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "efc21043f630473bc9a07749f2c34a243fe2b8202752620f394f8ac5ba235896",
+        420
+      ],
+      "after": [
+        "file",
+        "efc21043f630473bc9a07749f2c34a243fe2b8202752620f394f8ac5ba235896",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/grill-with-docs/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "e4971132a0f33f8d052aef1616f11db741d6dc9223da7cf5197aded6b43c77a4",
+        420
+      ],
+      "after": [
+        "file",
+        "e4971132a0f33f8d052aef1616f11db741d6dc9223da7cf5197aded6b43c77a4",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/yss-research/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "aeff44697315f091fc36f84bd8628358488416bc94800c4011b9a362f1622cb3",
+        420
+      ],
+      "after": [
+        "file",
+        "aeff44697315f091fc36f84bd8628358488416bc94800c4011b9a362f1622cb3",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/yss-stage-decision/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "7121eb52816dfb35dae440534965c08c793e44ea11d23649f2fd2bf41f029a12",
+        420
+      ],
+      "after": [
+        "file",
+        "7121eb52816dfb35dae440534965c08c793e44ea11d23649f2fd2bf41f029a12",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/yss-stage-decision/references/stage-decision-package-contract.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "beb53793a2e89b0beb6f8197aef37814e75e44cc412aa6cd03fd82b4ff9aaca8",
+        420
+      ],
+      "after": [
+        "file",
+        "beb53793a2e89b0beb6f8197aef37814e75e44cc412aa6cd03fd82b4ff9aaca8",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "f690964372777339f0420623840da999bcc058cbc3a379e399a5fb64a6559361",
+        420
+      ],
+      "after": [
+        "file",
+        "f690964372777339f0420623840da999bcc058cbc3a379e399a5fb64a6559361",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/references/artifact-dependencies.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "11c72b746600d7c7b220bff884131302b57a88c42bf5a2c41223056ed748081a",
+        420
+      ],
+      "after": [
+        "file",
+        "11c72b746600d7c7b220bff884131302b57a88c42bf5a2c41223056ed748081a",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/references/matt-yss-adapter.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "fa2f8ccaa004ba98984de1180e847c14329de0f7b5ae8e9722f198144a757af1",
+        420
+      ],
+      "after": [
+        "file",
+        "fa2f8ccaa004ba98984de1180e847c14329de0f7b5ae8e9722f198144a757af1",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/references/orchestration-contract.yaml",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "81bdf43c899014f79bb6ce35d6c596c5e2d4ee49520a0859931d75ec272f261d",
+        420
+      ],
+      "after": [
+        "file",
+        "81bdf43c899014f79bb6ce35d6c596c5e2d4ee49520a0859931d75ec272f261d",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/references/orchestration.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "ce01808c4e14671c5db7bef8a8aaf9ed2a89dd98f432f47e2d64183ef478aa91",
+        420
+      ],
+      "after": [
+        "file",
+        "ce01808c4e14671c5db7bef8a8aaf9ed2a89dd98f432f47e2d64183ef478aa91",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.claude/skills/competitive-intelligence/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ],
+      "after": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.codex/skills/competitive-intelligence/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ],
+      "after": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.pi/skills/competitive-intelligence/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ],
+      "after": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.qoder/skills/domain-modeling/CONTEXT-FORMAT.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "efc21043f630473bc9a07749f2c34a243fe2b8202752620f394f8ac5ba235896",
+        420
+      ],
+      "after": [
+        "file",
+        "efc21043f630473bc9a07749f2c34a243fe2b8202752620f394f8ac5ba235896",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.qoder/skills/grill-with-docs/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "e4971132a0f33f8d052aef1616f11db741d6dc9223da7cf5197aded6b43c77a4",
+        420
+      ],
+      "after": [
+        "file",
+        "e4971132a0f33f8d052aef1616f11db741d6dc9223da7cf5197aded6b43c77a4",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.template-source/derived/harness-work-unit-map.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "49f7bb1d6ed2d905f64f029ff9284f2860ccee2dff6a285ba5bd845dee85faec",
+        420
+      ],
+      "after": [
+        "file",
+        "49f7bb1d6ed2d905f64f029ff9284f2860ccee2dff6a285ba5bd845dee85faec",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.trae/skills/competitive-intelligence/SKILL.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ],
+      "after": [
+        "file",
+        "04be26925097ce5d02c7fe8b06c457e69e6b2d921608984dadfa0597b09ad1a0",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/AGENTS.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "a75a6145b64674cba5132ea62827fd0a1457f9603ba75bb44dc4a9ac18a18701",
+        420
+      ],
+      "after": [
+        "file",
+        "a75a6145b64674cba5132ea62827fd0a1457f9603ba75bb44dc4a9ac18a18701",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/CONTEXT.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "56d26e99ab72ca8e9950275b92a15cb421411e28f3db7b21128e440c5b55ef2b",
+        420
+      ],
+      "after": [
+        "file",
+        "56d26e99ab72ca8e9950275b92a15cb421411e28f3db7b21128e440c5b55ef2b",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/README.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "eb3ac5ed21ebf314fde73c3b1f50ef963323f8ee08463d45cf0f5afffb4b820d",
+        420
+      ],
+      "after": [
+        "file",
+        "eb3ac5ed21ebf314fde73c3b1f50ef963323f8ee08463d45cf0f5afffb4b820d",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/agents/digital-human-roles.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "bfcb94735a7490a7005499d0956561eb84edca944fe70085f6c33d9c1b04cfff",
+        420
+      ],
+      "after": [
+        "file",
+        "bfcb94735a7490a7005499d0956561eb84edca944fe70085f6c33d9c1b04cfff",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/agents/digital-human-roles.yaml",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "158ece8a48c633321eefba2a523ff4cd7020d4175ccdc31e2922f7a2f88321c8",
+        420
+      ],
+      "after": [
+        "file",
+        "158ece8a48c633321eefba2a523ff4cd7020d4175ccdc31e2922f7a2f88321c8",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/agents/issue-tracker.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "e7e2c953b858addce60f1fdd6f92bdb1a850a7d1da5a587927a5a189bac1046e",
+        420
+      ],
+      "after": [
+        "file",
+        "e7e2c953b858addce60f1fdd6f92bdb1a850a7d1da5a587927a5a189bac1046e",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/architecture/README.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "bafde9776397a235367bb780e5e84151ee0cdacea008940626d66a514f91862d",
+        420
+      ],
+      "after": [
+        "file",
+        "bafde9776397a235367bb780e5e84151ee0cdacea008940626d66a514f91862d",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/architecture/templates/business-architecture-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "9d40c8a9cd55109b173d688371fe87bf2834159e533616c8ac62f7086083bfa9",
+        420
+      ],
+      "after": [
+        "file",
+        "9d40c8a9cd55109b173d688371fe87bf2834159e533616c8ac62f7086083bfa9",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/architecture/templates/functional-architecture-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "1b5a9091b2866163c285883e46c6bcba91fd77c6d623b917aa3eb1ecb2490430",
+        420
+      ],
+      "after": [
+        "file",
+        "1b5a9091b2866163c285883e46c6bcba91fd77c6d623b917aa3eb1ecb2490430",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/design/README.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "2fcf9565d611ad3b6b5d3a6a19bc38259c72e1ee77fbe7a948b5b6e7bd6f73da",
+        420
+      ],
+      "after": [
+        "file",
+        "2fcf9565d611ad3b6b5d3a6a19bc38259c72e1ee77fbe7a948b5b6e7bd6f73da",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/design/templates/interaction-spec-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "8b59eb6c62345ab87dfcb4a3a6db73532a69c0f6613b79aeb96e303e10785188",
+        420
+      ],
+      "after": [
+        "file",
+        "8b59eb6c62345ab87dfcb4a3a6db73532a69c0f6613b79aeb96e303e10785188",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/design/templates/product-overview-design-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "b29162ced4ad94295937b7a884539474d4f8b4a0a9eb6d662fa5c7aa7d79d57b",
+        420
+      ],
+      "after": [
+        "file",
+        "b29162ced4ad94295937b7a884539474d4f8b4a0a9eb6d662fa5c7aa7d79d57b",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/discovery/IDEATION.md",
+      "result": "unchanged",
+      "before": [
+        "missing"
+      ],
+      "after": [
+        "missing"
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/discovery/README.md",
+      "result": "unchanged",
+      "before": [
+        "missing"
+      ],
+      "after": [
+        "missing"
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/discovery/templates/competitive-analysis-template.md",
+      "result": "unchanged",
+      "before": [
+        "missing"
+      ],
+      "after": [
+        "missing"
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/discovery/templates/competitive-matrix-template.md",
+      "result": "unchanged",
+      "before": [
+        "missing"
+      ],
+      "after": [
+        "missing"
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/discovery/templates/discovery-template.md",
+      "result": "unchanged",
+      "before": [
+        "missing"
+      ],
+      "after": [
+        "missing"
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/discovery/templates/market-analysis-template.md",
+      "result": "unchanged",
+      "before": [
+        "missing"
+      ],
+      "after": [
+        "missing"
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/discovery/templates/user-pain-points-template.md",
+      "result": "unchanged",
+      "before": [
+        "missing"
+      ],
+      "after": [
+        "missing"
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/process/harness-process-tailoring.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "a46d9c739fd2674ead9a8ed708aaf569e994f7b1dc2b78e29c0098aabe4ad4b5",
+        420
+      ],
+      "after": [
+        "file",
+        "a46d9c739fd2674ead9a8ed708aaf569e994f7b1dc2b78e29c0098aabe4ad4b5",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/process/harness-profile.yaml",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "7f7513259147c2ded4565dd4730729a1b90b70c94469b1320f3eb43873919782",
+        420
+      ],
+      "after": [
+        "file",
+        "7f7513259147c2ded4565dd4730729a1b90b70c94469b1320f3eb43873919782",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/process/instance-distribution-manifest.yaml",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "7eb580119aa2d1bb416a6e78f432b39887a21fb471c0e2c685e826995c10bb21",
+        420
+      ],
+      "after": [
+        "file",
+        "7eb580119aa2d1bb416a6e78f432b39887a21fb471c0e2c685e826995c10bb21",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/process/lifecycle-artifact-map.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "d44bd5715665101249b45e8b4dc81f5141311b8c00a6ea125ec55ef5c4950a59",
+        420
+      ],
+      "after": [
+        "file",
+        "d44bd5715665101249b45e8b4dc81f5141311b8c00a6ea125ec55ef5c4950a59",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/process/lifecycle-registry-baseline.json",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "0a437dca73b2ae79f8656b2fe129b4bbd44a032eeb4d60a4ef74d67e20fe984b",
+        420
+      ],
+      "after": [
+        "file",
+        "0a437dca73b2ae79f8656b2fe129b4bbd44a032eeb4d60a4ef74d67e20fe984b",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/process/lifecycle-registry.yaml",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "53216537d2b3afd0bd8722e8d9c56e43800bbf9eb011d35534908e3d763df73d",
+        420
+      ],
+      "after": [
+        "file",
+        "53216537d2b3afd0bd8722e8d9c56e43800bbf9eb011d35534908e3d763df73d",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/process/schemas/digital-human-task-package.schema.json",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "5dae5c295405fc0ff257056eca2481d469d090a959106110fcd55431128c9233",
+        420
+      ],
+      "after": [
+        "file",
+        "5dae5c295405fc0ff257056eca2481d469d090a959106110fcd55431128c9233",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/process/schemas/lifecycle-checkpoint.schema.json",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "c71f711ae1aaf67ba3a0f5d1ef65eda85727c23b0dd50a8ed2d549d58803c6c3",
+        420
+      ],
+      "after": [
+        "file",
+        "c71f711ae1aaf67ba3a0f5d1ef65eda85727c23b0dd50a8ed2d549d58803c6c3",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/process/schemas/lifecycle-registry.schema.json",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "871190914f9dff7d0f672e0f724b255174b24a03438cdd57fd02ade6123a24dc",
+        420
+      ],
+      "after": [
+        "file",
+        "871190914f9dff7d0f672e0f724b255174b24a03438cdd57fd02ade6123a24dc",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/process/template-verification-profiles.yaml",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "eb112385d1d8775991580a78fe3d297067dd9e03f98fe49c670ddf589603918e",
+        420
+      ],
+      "after": [
+        "file",
+        "eb112385d1d8775991580a78fe3d297067dd9e03f98fe49c670ddf589603918e",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/process/templates/context-reconciliation-template.yaml",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "a45c630526a842ba8fca95b78995068c045355150957152b922e8cf1892e0e70",
+        420
+      ],
+      "after": [
+        "file",
+        "a45c630526a842ba8fca95b78995068c045355150957152b922e8cf1892e0e70",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/process/templates/lifecycle-checkpoint-template.yaml",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "737a81d14dc8661a859d359633f73a376d3767d173eb2d1fc1d3ad777d5140c2",
+        420
+      ],
+      "after": [
+        "file",
+        "737a81d14dc8661a859d359633f73a376d3767d173eb2d1fc1d3ad777d5140c2",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/requirements/README.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "5627286ad045856fb68ce541fed8de81573e85627873db9eb17e3b46292bc955",
+        420
+      ],
+      "after": [
+        "file",
+        "5627286ad045856fb68ce541fed8de81573e85627873db9eb17e3b46292bc955",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/templates/local-parent-ticket-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "f56ff57fd912de4c9429751f0e0c3c600520a86fece7ab0d6cd774d2bd222b5c",
+        420
+      ],
+      "after": [
+        "file",
+        "f56ff57fd912de4c9429751f0e0c3c600520a86fece7ab0d6cd774d2bd222b5c",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/templates/subagent-task-package-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "a561bb4746dad31acb0a94577f36b789ac4594c3a34977e077e24072ba1c36dd",
+        420
+      ],
+      "after": [
+        "file",
+        "a561bb4746dad31acb0a94577f36b789ac4594c3a34977e077e24072ba1c36dd",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/fixtures/strategic-handoff/source-roles.json",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "1f15600d765b0d316b7cc1b7ffeed929b694e1b718bea04bb016dd1855f1d396",
+        420
+      ],
+      "after": [
+        "file",
+        "1f15600d765b0d316b7cc1b7ffeed929b694e1b718bea04bb016dd1855f1d396",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/lib/harness-profile.mjs",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "88bc952802f8fe72cbf320d3faca956078647fa13575b6bfd844f636a8985fa9",
+        420
+      ],
+      "after": [
+        "file",
+        "88bc952802f8fe72cbf320d3faca956078647fa13575b6bfd844f636a8985fa9",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/lib/lifecycle-transition.mjs",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "d2819e54d576eb65238f6147df4941b7ea695555f262055f4c045eefdce8e249",
+        420
+      ],
+      "after": [
+        "file",
+        "d2819e54d576eb65238f6147df4941b7ea695555f262055f4c045eefdce8e249",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/lib/scenario-checks.mjs",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "3934050dd58db0f71b20de39024d6bd1ebb0959cd37afde3f8334784b3fb7462",
+        420
+      ],
+      "after": [
+        "file",
+        "3934050dd58db0f71b20de39024d6bd1ebb0959cd37afde3f8334784b3fb7462",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/lib/task-package.mjs",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "93ce0c5dae97f9efa06fa781a019123f3693193267acf4efef4d9027aca17c5b",
+        420
+      ],
+      "after": [
+        "file",
+        "93ce0c5dae97f9efa06fa781a019123f3693193267acf4efef4d9027aca17c5b",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/verify-context-reconciliation-scenarios",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "6ba2858f09bdd0c1d47e1d20b809c01136ff180a3e0974e295da220e31944813",
+        493
+      ],
+      "after": [
+        "file",
+        "6ba2858f09bdd0c1d47e1d20b809c01136ff180a3e0974e295da220e31944813",
+        493
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/verify-lifecycle-checkpoint",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "8e2964b8ccfd794740d8fe1315d50b60354522670cc403cfcef4f699e3bebe8d",
+        493
+      ],
+      "after": [
+        "file",
+        "8e2964b8ccfd794740d8fe1315d50b60354522670cc403cfcef4f699e3bebe8d",
+        493
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/verify-lifecycle-transition-scenarios",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "082a32678aa00cd9d2ebb4573874a6362ebbb961ff0b0b5f89fbeae3b1ad7ad0",
+        493
+      ],
+      "after": [
+        "file",
+        "082a32678aa00cd9d2ebb4573874a6362ebbb961ff0b0b5f89fbeae3b1ad7ad0",
+        493
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/verify-subagent-task-package-scenarios",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "179efa8a5ec72539e10c6fd902d34f09c9cab3517599e91c69823aa9441ffa9f",
+        493
+      ],
+      "after": [
+        "file",
+        "179efa8a5ec72539e10c6fd902d34f09c9cab3517599e91c69823aa9441ffa9f",
+        493
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/skills-lock.json",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "55d8593c798cee6bdb821029de22a5eb88afff5361f45d328db9f674008357a3",
+        420
+      ],
+      "after": [
+        "file",
+        "55d8593c798cee6bdb821029de22a5eb88afff5361f45d328db9f674008357a3",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/plan/IDEATION.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "4c1398703b7d5ebd693a8570567ac2c07064880fe54e6ef45b7b4338fa23bfb0",
+        420
+      ],
+      "after": [
+        "file",
+        "4c1398703b7d5ebd693a8570567ac2c07064880fe54e6ef45b7b4338fa23bfb0",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/plan/README.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "5a51a03b35e2c870948240c90ece38fffbea5e32dae2cb507562fa4c809d8087",
+        420
+      ],
+      "after": [
+        "file",
+        "5a51a03b35e2c870948240c90ece38fffbea5e32dae2cb507562fa4c809d8087",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/plan/entry-review.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "b7f0ba63444763834a52e303a167655932dd7e855f480bae333952fa9403e259",
+        420
+      ],
+      "after": [
+        "file",
+        "b7f0ba63444763834a52e303a167655932dd7e855f480bae333952fa9403e259",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/plan/templates/competitive-matrix-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "fa5c4384ed90e9b39620b9a7ab0d60a8168ac53baa7547a6066f2b240188b169",
+        420
+      ],
+      "after": [
+        "file",
+        "fa5c4384ed90e9b39620b9a7ab0d60a8168ac53baa7547a6066f2b240188b169",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/plan/templates/market-analysis-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "e1e21f343a8860945a5a61237d58a3747fda690182ede5ef9fab372c212a30db",
+        420
+      ],
+      "after": [
+        "file",
+        "e1e21f343a8860945a5a61237d58a3747fda690182ede5ef9fab372c212a30db",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/plan/templates/user-pain-points-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "574e29d3dff337a7438d6a2d606b200de4623731805174381dfa2075d9658860",
+        420
+      ],
+      "after": [
+        "file",
+        "574e29d3dff337a7438d6a2d606b200de4623731805174381dfa2075d9658860",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/plan/templates/competitive-analysis-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "d1b1499324d99d4bee0de1bd6209f5a25dfa475bcef19f9051c53856d17940ee",
+        420
+      ],
+      "after": [
+        "file",
+        "d1b1499324d99d4bee0de1bd6209f5a25dfa475bcef19f9051c53856d17940ee",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/plan/templates/plan-template.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "f3db7615e0f4ac2d9d64d4278f19e9b4693e3eb27b18f30583c3c6fd2b4e5746",
+        420
+      ],
+      "after": [
+        "file",
+        "f3db7615e0f4ac2d9d64d4278f19e9b4693e3eb27b18f30583c3c6fd2b4e5746",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/process/plan-migration.md",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "612c861ec3168a63f212a99168c778c7fe31d79fa1c1da38d40f883a0602e87a",
+        420
+      ],
+      "after": [
+        "file",
+        "612c861ec3168a63f212a99168c778c7fe31d79fa1c1da38d40f883a0602e87a",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/docs/process/schemas/user-decision.schema.json",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "3391456766bb41766a939c8a06db39ab256f2d261bdd09fcc6bce05b243d128b",
+        420
+      ],
+      "after": [
+        "file",
+        "3391456766bb41766a939c8a06db39ab256f2d261bdd09fcc6bce05b243d128b",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/fixtures/user-decision/plan-fixture.mjs",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "2563f64017c791dd53d7c7efb53d2ca1342d47def5fb8cbc4e0d6d451f2bc3f0",
+        420
+      ],
+      "after": [
+        "file",
+        "2563f64017c791dd53d7c7efb53d2ca1342d47def5fb8cbc4e0d6d451f2bc3f0",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/fixtures/user-decision/build-fixture.mjs",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "8be5209cda2f089dca4863734d6a8802cc5f4dd5c3b14a97fa37c8bb72d6a2ad",
+        420
+      ],
+      "after": [
+        "file",
+        "8be5209cda2f089dca4863734d6a8802cc5f4dd5c3b14a97fa37c8bb72d6a2ad",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/lib/json-schema.mjs",
+      "result": "optimization-extends-existing-change",
+      "before": [
+        "file",
+        "1bbf66d7ab508d5ee340cdbc824199563ac100ac609759fef902ed843c3071a4",
+        420
+      ],
+      "after": [
+        "file",
+        "578b253e03267ecfbc0dcefa81f5c44892f73ac753cc126ebb385d8b73726771",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/lib/lifecycle-context-query.mjs",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "5145de8c43d10527a86fe30efc65530828f452a5276f38feaea1fabce5c44f70",
+        420
+      ],
+      "after": [
+        "file",
+        "5145de8c43d10527a86fe30efc65530828f452a5276f38feaea1fabce5c44f70",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/lib/plan-spec-entry.mjs",
+      "result": "optimization-extends-existing-change",
+      "before": [
+        "file",
+        "17ec4211c3732951f891acd885a88d9f9d7260d123fa3de582a6bb1dd9869d14",
+        420
+      ],
+      "after": [
+        "file",
+        "322ea4116f4e55db43732c7afa5b83b6d4e6297fb6ff2bf42a97cf34dbf04ab5",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/lib/user-decision.mjs",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "be7bec22ffebb014a51818bba403c726ece9fad33e35a9296414d00e403b13ac",
+        420
+      ],
+      "after": [
+        "file",
+        "be7bec22ffebb014a51818bba403c726ece9fad33e35a9296414d00e403b13ac",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/query-lifecycle-context",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "29ace0db500839dc5aa6fbdf0e07ff390f357ea9418658301790408451adc0ac",
+        420
+      ],
+      "after": [
+        "file",
+        "29ace0db500839dc5aa6fbdf0e07ff390f357ea9418658301790408451adc0ac",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/verify-plan-spec-entry",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "e15d4edee0f79302715eab4dabe9082702890ded809e4cbf965374c387cde6b5",
+        420
+      ],
+      "after": [
+        "file",
+        "e15d4edee0f79302715eab4dabe9082702890ded809e4cbf965374c387cde6b5",
+        420
+      ]
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/scripts/verify-plan-spec-entry-scenarios",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "50186fa4c660dd9c2a6793ee05d88f91bc600190ff7d856b384698cff1b27a1d",
+        420
+      ],
+      "after": [
+        "file",
+        "50186fa4c660dd9c2a6793ee05d88f91bc600190ff7d856b384698cff1b27a1d",
+        420
+      ]
+    },
+    {
+      "path": "submodules/create-yss-harness-dev/template.snapshot.json",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "5a9dfa26d1c52259cd0757deed51a8ad68d7dd97393f9adaadbe3b7f262373df",
+        420
+      ],
+      "after": [
+        "file",
+        "5a9dfa26d1c52259cd0757deed51a8ad68d7dd97393f9adaadbe3b7f262373df",
+        420
+      ]
+    },
+    {
+      "path": "submodules/create-yss-spec/src/template/instance-runtime.js",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "c2ed5831edac973611061bdd104e47a62afe58c6487641c4ed616fabfe08d101",
+        420
+      ],
+      "after": [
+        "file",
+        "c2ed5831edac973611061bdd104e47a62afe58c6487641c4ed616fabfe08d101",
+        420
+      ]
+    },
+    {
+      "path": "submodules/create-yss-spec/template.manifest.json",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "e1e9f7d3e00c43b3e6cc889d961c94d684d08b852d8635c0a2f6b463b24432e6",
+        420
+      ],
+      "after": [
+        "file",
+        "e1e9f7d3e00c43b3e6cc889d961c94d684d08b852d8635c0a2f6b463b24432e6",
+        420
+      ]
+    },
+    {
+      "path": "submodules/create-yss-spec/tests/init-cli.test.js",
+      "result": "unchanged",
+      "before": [
+        "file",
+        "86584e5e14ae9f16b7cc29270841e1ebab2342d8f04b1fafb24f74ad3e48da4d",
+        420
+      ],
+      "after": [
+        "file",
+        "86584e5e14ae9f16b7cc29270841e1ebab2342d8f04b1fafb24f74ad3e48da4d",
+        420
+      ]
+    }
+  ],
+  "not_copied_by_audit_isolation": [],
+  "audit_documents": "本轮未写入原审计目录；其初始验证见原 verification.json；不伪称初始审计文档字节另有副本",
+  "formal_dedicated_repositories_clean": true
+}

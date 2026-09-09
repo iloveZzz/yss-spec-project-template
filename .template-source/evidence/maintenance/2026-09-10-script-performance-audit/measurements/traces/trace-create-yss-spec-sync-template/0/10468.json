@@ -1,0 +1,73 @@
+{
+  "pid": 10468,
+  "ppid": 10419,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-spec/scripts/sync-template.js",
+  "wall_ms": 3581.970334,
+  "exit_code": 0,
+  "operations": {
+    "fs.realpathSync": {
+      "count": 9176,
+      "duration_ms": 143.41808999999972
+    },
+    "fs.readFileSync": {
+      "count": 6307,
+      "duration_ms": 117.4093660000175
+    },
+    "fs.existsSync": {
+      "count": 8786,
+      "duration_ms": 21.491178000000012
+    },
+    "spawnSync:git:ls-files": {
+      "count": 1,
+      "duration_ms": 61.48808399999999
+    },
+    "fs.lstatSync": {
+      "count": 23166,
+      "duration_ms": 81.46642699998597
+    },
+    "fs.statSync": {
+      "count": 13681,
+      "duration_ms": 34.595690000014486
+    },
+    "fs.mkdirSync": {
+      "count": 9188,
+      "duration_ms": 184.83968900000653
+    },
+    "fs.copyFileSync": {
+      "count": 11210,
+      "duration_ms": 1311.6111449999976
+    },
+    "fs.cpSync": {
+      "count": 552,
+      "duration_ms": 1012.0451619999976
+    },
+    "spawnSync:node:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-spec/.template-staging-wzXcxb/scripts/update-skill-lock": {
+      "count": 1,
+      "duration_ms": 104.78125
+    },
+    "fs.readdirSync": {
+      "count": 8688,
+      "duration_ms": 126.70742099999507
+    },
+    "fs.renameSync": {
+      "count": 8,
+      "duration_ms": 0.6059580000001006
+    },
+    "spawnSync:git:rev-parse": {
+      "count": 1,
+      "duration_ms": 31.368999999999687
+    },
+    "fs.openSync": {
+      "count": 6303,
+      "duration_ms": 75.49767399998336
+    },
+    "fs.closeSync": {
+      "count": 6303,
+      "duration_ms": 4.261763000005885
+    },
+    "fs.writeFileSync": {
+      "count": 1,
+      "duration_ms": 0.12895900000012261
+    }
+  }
+}

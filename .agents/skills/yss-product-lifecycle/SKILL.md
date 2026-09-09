@@ -22,13 +22,12 @@ description: 编排 YSS 产品或模块从机会调研到 Spec、原型、技术
 使用 `scripts/query-lifecycle-context` 获取确定性 JSON 投影，不要为普通路由整份读取编排合同：
 
 ```bash
-scripts/query-lifecycle-context --mode route
-scripts/query-lifecycle-context --stage stage.discovery
-scripts/query-lifecycle-context --work-unit work-unit.discovery-requirements
-scripts/query-lifecycle-context --work-unit work-unit.slice-implementation --include ready_for_agent --include ticket_formalization
+scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work-unit.plan-requirements --include execution_efficiency
 ```
 
 `--include` 接受编排合同的顶层键；非法模式、ID 或合同键必须失败。查询结果只是带摘要的权威事实投影，不成为新的事实源。解释性细节按需读取 `references/orchestration.md`、`references/state-model.md`、`references/artifact-dependencies.md`、`references/user-decisions.md` 和 `references/matt-yss-adapter.md`，达到最小充分证据后停止扩展上下文。
+
+按 `execution_efficiency` 合并查询、复用未变资料并验证当前资产；产品流转不重跑模板套件。词汇对账、恢复核验及门禁不变，执行细节见 `references/orchestration.md`。
 
 ## 入口与模式
 
@@ -36,6 +35,8 @@ scripts/query-lifecycle-context --work-unit work-unit.slice-implementation --inc
 2. 判定影响面和最近可信阶段；阶段完成必须同时满足内容、审查结论、上游新鲜度和可读证据，文件存在不代表通过。
 3. 模式为 `route`、`orchestrate`、`resume`、`audit`；未明确时使用只读 `route`。具体写入边界从编排合同的 `modes` 子树读取。
 4. `project-instance` 按生命周期注册表推进；`template-source` 只走模板维护流程。
+
+Plan 入口读取 `docs/plan/README.md` 和 `docs/process/plan-migration.md`，按注册表的退出条件核查战略输入。关键未决项阻断进入 Spec；非关键细节须有责任人、解决时点和下游接收方。只使用 Plan 标识；旧阶段不提供兼容解析，历史批准不自动成为 Plan 批准。
 
 ## 不可越过的边界
 
@@ -73,6 +74,8 @@ scripts/query-lifecycle-context --work-unit work-unit.slice-implementation --inc
 `机会与目标 → 业务故事 → 责任与交接 → 规则、例子与疑问 → 可验收需求 → 页面验证 → 业务任务 → 交接研发`
 
 先问清用户与结果、通常流程、责任交接、规则与例外、可独立交付的最小范围、证明结果正确的例子和证据。每轮可生成一页“业务方案总览”，只引用权威资产并显示状态、未决问题、责任人和下一步；不复制正文、不成为新的事实源、不新增门禁。
+
+Plan → Spec（含正式草稿、恢复与显式 `to-spec`）写入前，按 `docs/plan/entry-review.md` 持久化审阅包并运行 `node scripts/verify-plan-spec-entry <state.yaml>`。检查默认 pending，缺项、过期或无真实回复即阻断；独立调研可继续。
 
 ## 结果与暂停
 

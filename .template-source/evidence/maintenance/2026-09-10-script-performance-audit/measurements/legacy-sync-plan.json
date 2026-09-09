@@ -1,0 +1,92 @@
+[
+  {
+    "label": "create-yss-spec-sync-template",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-spec",
+    "args": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "repeat": 1,
+    "trace": false,
+    "timeout": 90,
+    "extra_env": {
+      "YSS_SPEC_TEMPLATE_REPO": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "YSS_SPEC_TEMPLATE_REF": null
+    }
+  },
+  {
+    "label": "trace-create-yss-spec-sync-template",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-spec",
+    "args": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "repeat": 1,
+    "trace": true,
+    "timeout": 90,
+    "extra_env": {
+      "YSS_SPEC_TEMPLATE_REPO": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "YSS_SPEC_TEMPLATE_REF": null
+    }
+  },
+  {
+    "label": "create-yss-strategic-design-sync-template",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-strategic-design",
+    "args": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "repeat": 1,
+    "trace": false,
+    "timeout": 90,
+    "extra_env": {
+      "YSS_STRATEGIC_DESIGN_TEMPLATE_REPO": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+      "YSS_STRATEGIC_DESIGN_TEMPLATE_REF": null
+    }
+  },
+  {
+    "label": "trace-create-yss-strategic-design-sync-template",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-strategic-design",
+    "args": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "repeat": 1,
+    "trace": true,
+    "timeout": 90,
+    "extra_env": {
+      "YSS_STRATEGIC_DESIGN_TEMPLATE_REPO": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+      "YSS_STRATEGIC_DESIGN_TEMPLATE_REF": null
+    }
+  },
+  {
+    "label": "create-yss-harness-dev-sync-template",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-harness-dev",
+    "args": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "repeat": 1,
+    "trace": false,
+    "timeout": 90,
+    "extra_env": {
+      "YSS_HARNESS_TEMPLATE_REPO": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
+      "YSS_HARNESS_TEMPLATE_REF": null
+    }
+  },
+  {
+    "label": "trace-create-yss-harness-dev-sync-template",
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-harness-dev",
+    "args": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "repeat": 1,
+    "trace": true,
+    "timeout": 90,
+    "extra_env": {
+      "YSS_HARNESS_TEMPLATE_REPO": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-dev-agent",
+      "YSS_HARNESS_TEMPLATE_REF": null
+    }
+  }
+]

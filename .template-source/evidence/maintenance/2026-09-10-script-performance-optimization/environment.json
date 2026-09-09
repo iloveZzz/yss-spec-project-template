@@ -1,0 +1,10 @@
+{
+  "system": "macOS-26.6.2-arm64-arm-64bit",
+  "machine": "arm64",
+  "python": "3.12.1",
+  "cpu_count": 14,
+  "node": "v23.9.0",
+  "pnpm": "10.15.0",
+  "git": "git version 2.33.0",
+  "measurement_method": "Same machine; sequential before/after; unchanged template.snapshot for init; /usr/bin/time -l; OS page cache not cleared; instrumentation separate."
+}

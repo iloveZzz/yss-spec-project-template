@@ -36,7 +36,7 @@ branch: template
 1. 确认当前任务已经通过 Harness 入口分诊、逐项目脚手架决定已由真实用户确认，且 schema v4 合同已由生命周期批准、持久化并保持当前。
 2. 确认目标是外部实现仓库；只有用户明确选择时才输出到 Harness 仓库的 `apps/frontend/<project>/`。`apps/frontend/` 只能作为项目容器，`app/frontend/`、`app/backend/` 及其子路径禁止作为输出位置。`git-submodule` 只能在已初始化且附加分支的子仓工作树生成；空 gitlink、detached HEAD、`--force` 覆盖挂载点不得当成普通目录。
 3. 只读检查模板分支和合同锁定的 40 位 commit 是否可访问；生成时使用精确 commit，不跟随浮动分支。
-4. 使用 `scripts/generate_and_verify_scaffold.mjs` 从已核验 checkout 复制工作树，排除模板 `.git`；目标必须不存在或为空。不得默认写入 Harness、不得 `--force`。仅合同 `init_git=true` 时初始化目标 Git。
+4. 使用 `scripts/generate_and_verify_scaffold.mjs` 从已核验 checkout 的批准 commit 导出模板，排除模板 `.git` 及未提交的工作树内容；目标必须不存在或为空。不得默认写入 Harness、不得 `--force`。仅合同 `init_git=true` 时初始化目标 Git。
 5. 替换应用名、微应用名、路由、`micro-config.json`、环境变量和 README 中的模板占位。
 6. 有 API 影响时核验 OpenAPI Freeze 记录和 JSON 派生记录，将摘要一致的 JSON 原样物化到 `<frontend>/openapi/openapi.json`；`openapi_impact=not-applicable` 时必须有原因并禁止生成 API client。
 7. 保持模板既有的前端代码生成配置不变；本 Harness 只将 SHA-256 一致的 JSON 原样交给既有前端代码生成流程，不修改该配置、不在此仓库执行生成，也不设置生成 CI 门禁。目标前端项目在需要时手动运行其既有命令。

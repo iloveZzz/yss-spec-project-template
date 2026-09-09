@@ -81,10 +81,13 @@ function validManifest(manifest,root) {
   ensure(manifest.files.reduce((total,file)=>total+file.size_bytes,0)<=512*1024*1024,'后端包大小超限');
   const originals=manifest.files.filter(x=>x.original_ref).map(x=>x.original_ref);
   ensure(new Set(originals.map(x=>x.toLowerCase())).size===originals.length,'后端包源路径重复');
+  const captured = new Map();
   for(const file of manifest.files) {
     const bytes=readFileSync(safe(root,file.path));
     ensure(bytes.length===file.size_bytes&&hash(bytes)===file.sha256,`后端包文件摘要不一致: ${file.path}`);
+    captured.set(file.path, bytes);
   }
+  return captured;
 }
 
 export async function openBackendDelivery(input, action) {
@@ -93,9 +96,9 @@ export async function openBackendDelivery(input, action) {
     ensure(existsSync(input)&&!lstatSync(input).isSymbolicLink(),'后端交付包不存在或是 symlink');
     let root=path.resolve(input);
     if(lstatSync(root).isFile()) { root=path.join(temporary,'unpacked');mkdirSync(root);archive('unpack',path.resolve(input),root); }
-    const manifest=read(safe(root,'manifest.json'));validManifest(manifest,root);
+    const manifest=read(safe(root,'manifest.json'));const captured=validManifest(manifest,root);
     const source=path.join(temporary,'source');mkdirSync(source);
-    for(const file of manifest.files)if(file.original_ref)write(source,file.original_ref,readFileSync(safe(root,file.path)));
+    for(const file of manifest.files)if(file.original_ref)write(source,file.original_ref,captured.get(file.path));
     const inspected=await inspectBackendDelivery(source,manifest.delivery_ref);
     ensure(manifest.delivery_id===inspected.delivery.delivery_id&&manifest.version===inspected.delivery.version,'后端包身份不一致');
     return await action({root,source,manifest,...inspected});

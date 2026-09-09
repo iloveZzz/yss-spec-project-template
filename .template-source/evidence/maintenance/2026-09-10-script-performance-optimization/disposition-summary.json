@@ -1,0 +1,13 @@
+{
+  "implementation_groups": 338,
+  "dispositions": {
+    "测量后保留": 296,
+    "优化并验证": 26,
+    "外部环境待验证": 12,
+    "分发副本": 4
+  },
+  "groups_observed_in_maintenance_workload": 137,
+  "coverage_files": 537,
+  "unresolved_module_urls": 154,
+  "scope_note": "沿用原 338 个内容组作为追踪 ID，不把同 hash 当权威归属。计数只包含能绑定 SHA 的稳定文件，是样本观察下界；未观察组记录缺少样本与验证限制。"
+}

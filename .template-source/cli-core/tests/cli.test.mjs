@@ -635,3 +635,144 @@ test('同步与接入保留已有业务词汇表，即使模板同时更新且�
     assert.equal(fs.readFileSync(path.join(attached.target, 'CONTEXT.md'), 'utf8'), '# 已有项目词汇\n');
   }
 });
+
+test("WAL 兼容旧 progress 恢复，忽略未完成尾部且拒绝完整损坏记录", t => {
+  for (const kind of ["legacy", "torn-tail", "corrupt-record"]) {
+    const f = fixture(t);
+    assert.equal(f.run("init").status, 0);
+    f.bundle({ "docs/new.md": "new", "docs/rule.md": "v2" });
+    const r = injected(f, `const original=fs.renameSync;fs.renameSync=(a,b)=>{original(a,b);if(String(b).endsWith('/docs/new.md'))process.kill(process.pid,'SIGKILL')};`);
+    assert.equal(r.signal, "SIGKILL");
+    const transactions = path.join(f.target, ".yss-harness-state/backend/transactions");
+    const pending = fs.readdirSync(transactions).map(name => path.join(transactions,name)).find(dir => JSON.parse(fs.readFileSync(path.join(dir,"journal.json"))).phase === "apply");
+    const journalPath=path.join(pending,"journal.json"), walPath=path.join(pending,"intent.wal");
+    const journal=JSON.parse(fs.readFileSync(journalPath));
+    assert.equal(journal.schemaVersion, 2);
+    const records=fs.readFileSync(walPath,"utf8").trim().split("\n").map(JSON.parse);
+    if(kind === "legacy") {
+      journal.schemaVersion=1;for(const op of journal.operations){delete op.temporaryPath;delete op.temporaryCreated;}fs.writeFileSync(journalPath,json(journal));
+      fs.writeFileSync(path.join(pending,"progress.json"),json({index:records.at(-1).index,createdDirectories:records.flatMap(x=>x.createdDirectories)}));
+      fs.unlinkSync(walPath);
+    } else fs.appendFileSync(walPath, kind === "torn-tail" ? '{"index":' : 'broken\n');
+    const recovered=f.run("sync","--apply");
+    assert.equal(recovered.status,kind === "corrupt-record" ? 1 : 0,recovered.stderr);
+    if(kind !== "corrupt-record") {
+      assert.equal(recovered.data.status,"recovered");
+      assert.equal(fs.existsSync(path.join(f.target,"docs/new.md")),false);
+      assert.equal(fs.readFileSync(path.join(f.target,"docs/rule.md"),"utf8"),"rule v1\n");
+    }
+  }
+});
+
+test("WAL 和目标持久化阶段失败均回滚且不推进 metadata", t => {
+  const hooks = [
+    `const open=fs.openSync,sync=fs.fsyncSync;let wal;fs.openSync=(p,...args)=>{const fd=open(p,...args);if(String(p).endsWith('/intent.wal')&&args[0]==='a')wal=fd;return fd};let hit=false;fs.fsyncSync=fd=>{if(fd===wal&&!hit){hit=true;throw Error('wal-fsync-fault')}return sync(fd)};`,
+    `const rename=fs.renameSync;let hit=false;fs.renameSync=(a,b)=>{if(!hit&&String(b).endsWith('/docs/new.md')){hit=true;throw Error('rename-fault')}return rename(a,b)};`,
+    `const open=fs.openSync,sync=fs.fsyncSync;let targetFd,hit=false;fs.openSync=(p,...args)=>{const fd=open(p,...args);if(String(p).includes('/docs/new.md.')&&String(p).endsWith('.tmp'))targetFd=fd;return fd};fs.fsyncSync=fd=>{if(fd===targetFd&&!hit){hit=true;throw Error('target-fsync-fault')}return sync(fd)};`,
+    `const open=fs.openSync,sync=fs.fsyncSync;let dirFd,hit=false;fs.openSync=(p,...args)=>{const fd=open(p,...args);if(String(p).endsWith('/docs')&&args[0]==='r')dirFd=fd;return fd};fs.fsyncSync=fd=>{if(fd===dirFd&&!hit){hit=true;throw Error('directory-fsync-fault')}return sync(fd)};`,
+  ];
+  for(const hook of hooks) {
+    const f=fixture(t);assert.equal(f.run("init").status,0);
+    const before=tree(f.target); delete before[".yss-harness-state"];
+    f.bundle({"docs/new.md":"new","docs/rule.md":"v2"});
+    const failed=injected(f,hook);
+    assert.equal(failed.status,1,failed.stderr);
+    const after=tree(f.target); delete after[".yss-harness-state"];
+    assert.deepEqual(after,before);
+    const journals=fs.readdirSync(path.join(f.target,".yss-harness-state/backend/transactions")).map(id=>JSON.parse(fs.readFileSync(path.join(f.target,".yss-harness-state/backend/transactions",id,"journal.json"))));
+    assert.equal(journals.filter(j=>j.phase === "rolled-back").length,1);
+    assert.equal(f.run("sync","--apply").status,0);
+  }
+});
+
+test("持久化模型：目录项未落盘时恢复接受 before/after 混合状态", t => {
+  const f=fixture(t);assert.equal(f.run("init").status,0);
+  const old=fs.readFileSync(path.join(f.target,"docs/rule.md"));
+  f.bundle({"docs/new.md":"new","docs/rule.md":"v2"});
+  const r=injected(f,`const original=fs.renameSync;fs.renameSync=(a,b)=>{original(a,b);if(String(b).endsWith('/docs/rule.md'))process.kill(process.pid,'SIGKILL')};`);
+  assert.equal(r.signal,"SIGKILL");
+  // Model the lost unflushed renames independently; this is not a physical power cut.
+  fs.writeFileSync(path.join(f.target,"docs/rule.md"),old);
+  fs.unlinkSync(path.join(f.target,"docs/new.md"));
+  const recovered=f.run("sync","--apply");
+  assert.equal(recovered.status,0,recovered.stderr);
+  assert.deepEqual(fs.readFileSync(path.join(f.target,"docs/rule.md")),old);
+});
+
+test("持久化顺序：WAL 与文件 fsync 先于 rename，目录屏障先于 metadata", t => {
+  const f=fixture(t);assert.equal(f.run("init").status,0);
+  f.bundle({"docs/new.md":"new","docs/rule.md":"v2"});
+  const log=path.join(f.root,"durability-events.json");
+  const result=injected(f,`const opened=new Map(),events=[];const open=fs.openSync,sync=fs.fsyncSync,rename=fs.renameSync;fs.openSync=(p,...args)=>{const fd=open(p,...args);opened.set(fd,String(p));return fd};fs.fsyncSync=fd=>{sync(fd);events.push(['sync',opened.get(fd)])};fs.renameSync=(a,b)=>{rename(a,b);events.push(['rename',String(a),String(b)])};process.on('exit',()=>fs.writeFileSync(${JSON.stringify(log)},JSON.stringify(events)));`);
+  assert.equal(result.status,0,result.stderr);
+  const events=JSON.parse(fs.readFileSync(log));
+  for(const ref of ['docs/new.md','docs/rule.md',f.family.metadataFile]) {
+    const position=events.findIndex(e=>e[0]==='rename'&&e[2]===path.join(f.target,ref));
+    assert.ok(position>0);
+    assert.ok(events.slice(0,position).some(e=>e[0]==='sync'&&e[1]===events[position][1]),'目标临时文件须先 fsync');
+    assert.ok(events.slice(0,position).some(e=>e[0]==='sync'&&e[1]?.endsWith('/intent.wal')),'WAL 须先 fsync');
+  }
+  const metadata=events.findIndex(e=>e[0]==='rename'&&e[2]===path.join(f.target,f.family.metadataFile));
+  const child=events.findLastIndex((e,i)=>i<metadata&&e[0]==='sync'&&e[1]===path.join(f.target,'docs'));
+  const parent=events.findLastIndex((e,i)=>i<metadata&&e[0]==='sync'&&e[1]===f.target);
+  assert.ok(child>=0&&parent>child,'子目录持久化先于父目录和 metadata');
+});
+
+test("初始化先持久化新目标的父目录；父目录刷盘失败不写入业务文件", t => {
+  for (const fail of [false, true]) {
+    const f = fixture(t), log = path.join(f.root, "target-parent-events.json");
+    const result = injected(f, `const opened=new Map(),events=[];let failed=false;const open=fs.openSync,sync=fs.fsyncSync,rename=fs.renameSync;fs.openSync=(p,...args)=>{const fd=open(p,...args);opened.set(fd,String(p));return fd};fs.fsyncSync=fd=>{const p=opened.get(fd);if(${fail}&&!failed&&p===${JSON.stringify(f.root)}){failed=true;throw Error('new-target-parent-fsync')};sync(fd);events.push(['sync',p])};fs.renameSync=(a,b)=>{rename(a,b);events.push(['rename',String(b)])};process.on('exit',()=>fs.writeFileSync(${JSON.stringify(log)},JSON.stringify(events)));`, "init");
+    assert.equal(result.status, fail ? 1 : 0, result.stderr);
+    const events = JSON.parse(fs.readFileSync(log));
+    const firstWrite = events.findIndex(e => e[0] === "rename" && e[1] === path.join(f.target, "AGENTS.md"));
+    if (fail) {
+      assert.equal(firstWrite, -1);
+      assert.equal(fs.existsSync(path.join(f.target, f.family.metadataFile)), false);
+    } else {
+      const parentSync = events.findIndex(e => e[0] === "sync" && e[1] === f.root);
+      assert.ok(parentSync >= 0 && firstWrite > parentSync);
+    }
+  }
+});
+
+test("持久化边界矩阵：异常与进程中断都保留可证明的恢复状态", async t => {
+  for (const boundary of ["backup", "wal-write", "wal-fsync", "target-fsync", "rename", "directory", "commit"]) {
+    for (const fault of ["throw", "kill"]) await t.test(`${boundary}/${fault}`, () => {
+      const f = fixture(t); assert.equal(f.run("init").status, 0);
+      const before = tree(f.target); delete before[".yss-harness-state"];
+      f.bundle({ "docs/new/nested.md": "new", "docs/rule.md": "v2" });
+      const result = injected(f, `const opened=new Map();let fired=false;const hit=label=>{if(!fired&&label===${JSON.stringify(boundary)}){fired=true;${fault === "kill" ? "process.kill(process.pid,'SIGKILL')" : "throw Error('boundary-fault')"}}};const open=fs.openSync,write=fs.writeFileSync,sync=fs.fsyncSync,rename=fs.renameSync;fs.openSync=(p,...args)=>{const fd=open(p,...args);opened.set(fd,String(p));return fd};fs.writeFileSync=(fd,...args)=>{const r=write(fd,...args);if(opened.get(fd)?.endsWith('/intent.wal')&&String(args[0]).includes('index'))hit('wal-write');return r};fs.fsyncSync=fd=>{sync(fd);const p=opened.get(fd)||'';if(p.endsWith('/intent.wal'))hit('wal-fsync');if(p.includes('/docs/new/nested.md.')&&p.endsWith('.tmp'))hit('target-fsync');if(p===${JSON.stringify(path.join(f.target, "docs"))})hit('directory')};fs.renameSync=(a,b)=>{rename(a,b);b=String(b);if(b.includes('/backup/'))hit('backup');if(b.endsWith('/docs/new/nested.md'))hit('rename');if(b.endsWith('/journal.json')&&JSON.parse(fs.readFileSync(b)).phase==='committed')hit('commit')};`);
+      if (fault === "kill") {
+        assert.equal(result.signal, "SIGKILL", result.stderr);
+        const recovered = f.run("sync", "--apply"); assert.equal(recovered.status, 0, recovered.stderr);
+        if (boundary === "commit") {
+          assert.equal(fs.readFileSync(path.join(f.target, "docs/rule.md"), "utf8"), "v2");
+          return;
+        }
+        assert.equal(recovered.data.status, "recovered");
+      } else assert.equal(result.status, 1, result.stderr);
+      const after = tree(f.target); delete after[".yss-harness-state"];
+      assert.deepEqual(after, before);
+    });
+  }
+});
+
+test("临时文件被用户修改或在独占创建前抢占时保留恢复清单", t => {
+  for (const kind of ["after-kill", "open-race"]) {
+    const f = fixture(t); assert.equal(f.run("init").status, 0);
+    f.bundle({ "docs/new.md": "new" });
+    const hook = kind === "after-kill"
+      ? `const opened=new Map(),open=fs.openSync,sync=fs.fsyncSync;fs.openSync=(p,...args)=>{const fd=open(p,...args);opened.set(fd,String(p));return fd};fs.fsyncSync=fd=>{sync(fd);const p=opened.get(fd)||'';if(p.includes('/docs/new.md.')&&p.endsWith('.tmp'))process.kill(process.pid,'SIGKILL')};`
+      : `const open=fs.openSync;let hit=false;fs.openSync=(p,...args)=>{if(!hit&&String(p).includes('/docs/new.md.')&&args[0]==='wx'){hit=true;fs.writeFileSync(p,'user edit')}return open(p,...args)};`;
+    const failed = injected(f, hook);
+    assert.equal(kind === "after-kill" ? failed.signal : JSON.parse(failed.stdout).code, kind === "after-kill" ? "SIGKILL" : "RECOVERY_FAILED", failed.stderr);
+    const transactions = path.join(f.target, ".yss-harness-state/backend/transactions");
+    const journal = fs.readdirSync(transactions).map(id => JSON.parse(fs.readFileSync(path.join(transactions, id, "journal.json")))).find(j => !["committed", "rolled-back"].includes(j.phase));
+    const temp = path.join(f.target, journal.operations.find(op => op.path === "docs/new.md").temporaryPath);
+    if (kind === "after-kill") fs.writeFileSync(temp, "user edit");
+    const before = tree(f.target), recovered = f.run("sync", "--apply");
+    assert.equal(recovered.status, 1); assert.equal(recovered.data.code, "RECOVERY_FAILED");
+    assert.deepEqual(tree(f.target), before);
+    assert.equal(fs.readFileSync(temp, "utf8"), "user edit");
+  }
+});

@@ -318,6 +318,7 @@ groups:
       - { run: "scripts/verify-context-contract-scenarios" }
       - { run: "node scripts/verify-business-language-scenarios" }
       - { run: "scripts/verify-context-reconciliation-scenarios" }
+      - { run: "node scripts/verify-script-performance-scenarios" }
       - { run: "scripts/verify-grill-with-docs-context-scenarios" }
       - { run: "scripts/verify-strategic-context-import-scenarios" }
       - { run: "scripts/verify-lifecycle-registry" }
@@ -330,6 +331,7 @@ groups:
       - { run: "scripts/verify-scaffold-architecture-decision-scenarios" }
       - { run: "scripts/verify-lifecycle-scenarios" }
       - { run: "scripts/verify-lifecycle-transition-scenarios" }
+      - { run: "node scripts/verify-plan-spec-entry-scenarios" }
       - { run: "scripts/verify-frontend-scaffold-generator-scenarios" }
   maintenance:
     commands:

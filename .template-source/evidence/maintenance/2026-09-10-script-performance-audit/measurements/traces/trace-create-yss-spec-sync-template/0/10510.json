@@ -1,0 +1,41 @@
+{
+  "pid": 10510,
+  "ppid": 10468,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-fz0sjnsm/create-yss-spec/.template-staging-wzXcxb/scripts/update-skill-lock",
+  "wall_ms": 80.04779199999999,
+  "exit_code": 0,
+  "operations": {
+    "fs.realpathSync": {
+      "count": 4,
+      "duration_ms": 0.12850099999999998
+    },
+    "fs.readFileSync": {
+      "count": 1052,
+      "duration_ms": 24.566523000000046
+    },
+    "fs.existsSync": {
+      "count": 500,
+      "duration_ms": 1.2102009999999375
+    },
+    "fs.lstatSync": {
+      "count": 94,
+      "duration_ms": 0.3996290000000329
+    },
+    "fs.readdirSync": {
+      "count": 499,
+      "duration_ms": 9.961512000000017
+    },
+    "fs.openSync": {
+      "count": 1048,
+      "duration_ms": 15.114789999999932
+    },
+    "fs.closeSync": {
+      "count": 1048,
+      "duration_ms": 0.7892970000001469
+    },
+    "fs.writeFileSync": {
+      "count": 1,
+      "duration_ms": 0.1509580000000028
+    }
+  }
+}

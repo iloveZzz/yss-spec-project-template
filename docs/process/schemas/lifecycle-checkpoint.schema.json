@@ -6,6 +6,9 @@
   "additionalProperties": false,
   "required": ["schema_version", "repository_mode", "mode", "status", "stage", "artifacts", "gates", "context_reconciliation", "next_work_unit", "ticket_sync", "verification", "human_review", "git_checkpoint", "blockers", "rollback"],
   "properties": {
+    "plan_review_ref": { "type": "string", "minLength": 1 },
+    "plan_user_decision_ref": { "type": "string", "minLength": 1 },
+    "feature_id": { "type": "string", "minLength": 1 },
     "schema_version": { "const": 1 },
     "repository_mode": { "enum": ["template-source", "project-instance"] },
     "mode": { "enum": ["route", "orchestrate", "resume", "audit"] },

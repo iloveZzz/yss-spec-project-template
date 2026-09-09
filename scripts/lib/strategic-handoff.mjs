@@ -1,7 +1,7 @@
 import { existsSync, lstatSync, readFileSync, mkdirSync, mkdtempSync, renameSync, rmSync, cpSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
-import { ensure, canonical, digest, hash, json, parse, read, safe, relative, files, write, project, schema, archive, ROOT, sourceApprovalPolicy } from './strategic-handoff-io.mjs';
+import { ensure, canonical, digest, hash, json, parse, read, safe, relative, files, write, project, schema, schemaBatch, archive, ROOT, sourceApprovalPolicy } from './strategic-handoff-io.mjs';
 import { parseContextSource, parseContextContract, resolveContextTermRefs } from './context-contract.mjs';
 import { countersignRuleForGate } from './digital-human-roles.mjs';
 import { validateApprovalRecord } from './approval-record.mjs';
@@ -91,8 +91,7 @@ export async function inspectSource(root, handoffRef) {
   snapshot(handoff.source_context_snapshot,source); checkDelta(handoff,source);
   const strategy=read(safe(root,handoff.source.domain_strategy_ref.persisted_ref));
   const stage=read(safe(root,handoff.source.stage_decision_package_ref.persisted_ref));
-  schema(strategy,'docs/process/schemas/strategic-handoff-domain-strategy.schema.json');
-  schema(stage,'docs/process/schemas/strategic-handoff-stage-decision-package.schema.json');
+  schemaBatch([[strategy,'docs/process/schemas/strategic-handoff-domain-strategy.schema.json'],[stage,'docs/process/schemas/strategic-handoff-stage-decision-package.schema.json']]);
   snapshot(strategy.context_snapshot,source); snapshot(stage.context_snapshot,source);
   ensure(strategy.status==='approved' && stage.status==='approved', '战略合同/方案决策包尚未批准');
   ensure(strategy.domain_strategy_id===handoff.source.domain_strategy_ref.id && strategy.domain_version===handoff.source.domain_strategy_ref.version, '战略身份/版本不一致');
@@ -141,21 +140,22 @@ function collect(root, handoffRef, handoff, config) {
     if(Array.isArray(value)) { if(key==='evidence_refs') value.forEach(enqueue); else value.forEach(v=>refs(v,key)); }
     else if(value && typeof value==='object') for(const [k,v]of Object.entries(value)) { if(['approval_ref','persisted_ref','user_decision_ref'].includes(k)&&typeof v==='string')enqueue(v); else if(k==='ref'&&typeof v==='string'&&!/^[a-z]+:\/\//i.test(v))enqueue(v); else refs(v,k); }
   }
+  let totalBytes = 0;
   while(queue.length) {
     const ref=symbolic[queue[0]]||queue[0]; queue.shift(); if(/^https?:\/\//i.test(ref))continue; relative(ref);
     if(collected.has(ref))continue;
     const full=safe(root,ref),stat=lstatSync(full);
     if(stat.isDirectory()) { queue.push(...files(root,ref)); continue; }
     ensure(stat.isFile() && stat.size<=MAX_BYTES,`源文件类型/大小无效: ${ref}`);
-    const bytes=readFileSync(full); collected.set(ref,bytes);
-    ensure(collected.size<=20000 && [...collected.values()].reduce((n,b)=>n+b.length,0)<=MAX_BYTES,'交接包大小超限');
+    const bytes=readFileSync(full); collected.set(ref,bytes); totalBytes += bytes.length;
+    ensure(collected.size<=20000 && totalBytes<=MAX_BYTES,'交接包大小超限');
     if(/\.(yaml|yml|json)$/.test(ref))refs(parse(bytes));
     queue.push(...documentLinks(ref,bytes));
   }
   return collected;
 }
-function materialize(bundleRoot, manifest, destination) {
-  for(const file of manifest.files.filter(x=>x.original_ref))write(destination,file.original_ref,readFileSync(safe(bundleRoot,file.path)));
+function materialize(captured, manifest, destination) {
+  for(const file of manifest.files.filter(x=>x.original_ref))write(destination,file.original_ref,captured.get(file.path));
 }
 export async function openBundle(input, action) {
   const temp=mkdtempSync(path.join(tmpdir(),'yss-handoff-'));
@@ -170,10 +170,11 @@ export async function openBundle(input, action) {
     ensure(new Set(paths.map(x=>x.toLowerCase())).size===paths.length,'包文件路径重复');
     ensure(own([...paths,'manifest.json'].sort(),files(root).sort()),'包文件缺失或存在未登记文件');
     ensure(manifest.files.length<=20000 && manifest.files.reduce((n,f)=>n+f.size_bytes,0)<=MAX_BYTES,'包大小超限');
-    for(const file of manifest.files){const bytes=readFileSync(safe(root,file.path));ensure(bytes.length===file.size_bytes && hash(bytes)===file.sha256,`文件摘要不一致: ${file.path}`);if(file.original_ref)relative(file.original_ref);}
+    const captured = new Map();
+    for(const file of manifest.files){const bytes=readFileSync(safe(root,file.path));ensure(bytes.length===file.size_bytes && hash(bytes)===file.sha256,`文件摘要不一致: ${file.path}`);if(file.original_ref)relative(file.original_ref);captured.set(file.path,bytes);}
     const originals=manifest.files.filter(x=>x.original_ref).map(x=>x.original_ref);
     ensure(new Set(originals.map(x=>x.toLowerCase())).size===originals.length,'源路径重复');
-    const source=path.join(temp,'source');mkdirSync(source);materialize(root,manifest,source);
+    const source=path.join(temp,'source');mkdirSync(source);materialize(captured,manifest,source);
     const inspected=await inspectSource(source,manifest.handoff_ref);
     ensure(manifest.bundle_id===inspected.handoff.handoff_id && manifest.version===inspected.handoff.handoff_version,'包身份与源交接不一致');
     ensure(own(read(safe(root,'indexes/rules.json')),inspected.indexes.rules) && own(read(safe(root,'indexes/scenarios.json')),inspected.indexes.scenarios),'规则/场景索引与源资产不一致');

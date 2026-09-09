@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { createHash } from "node:crypto";
-import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { tmpdir } from "node:os";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { validateJsonSchema } from "../../../../scripts/lib/json-schema.mjs";
@@ -22,7 +23,7 @@ function git(cwd, ...args) {
 function walk(root) {
   return readdirSync(root, { withFileTypes: true }).flatMap((entry) => {
     const item = path.join(root, entry.name);
-    return entry.isDirectory() ? walk(item) : entry.isFile() ? [item] : [];
+    return entry.isDirectory() ? walk(item) : entry.isFile() || entry.isSymbolicLink() ? [item] : [];
   });
 }
 function validate(contract, outputDir) {
@@ -47,7 +48,15 @@ export function generate({ contractFile, templateCheckout, outputDir }) {
   if (git(templateCheckout, "config", "--get", "remote.origin.url") !== contract.frontend.template.repository) fail("template repository differs from approved source");
   if (existsSync(outputDir) && readdirSync(outputDir).length > 0) fail("target directory must not exist or must be empty");
   mkdirSync(outputDir, { recursive: true });
-  cpSync(templateCheckout, outputDir, { recursive: true, filter: (source) => path.basename(source) !== ".git" });
+  const scratch = mkdtempSync(path.join(tmpdir(), "yss-frontend-source-"));
+  try {
+    // Read the approved Git tree, never dependency caches or edits in the checkout.
+    const archive = spawnSync("git", ["archive", contract.frontend.template.commit], { cwd: templateCheckout, maxBuffer: 256 * 1024 * 1024 });
+    if (archive.error || archive.status !== 0) fail(archive.error?.message || String(archive.stderr));
+    const unpack = spawnSync("tar", ["-xf", "-", "-C", scratch], { input: archive.stdout });
+    if (unpack.error || unpack.status !== 0) fail(unpack.error?.message || String(unpack.stderr));
+    cpSync(scratch, outputDir, { recursive: true, verbatimSymlinks: true });
+  } finally { rmSync(scratch, { recursive: true, force: true }); }
 
   const replacements = {
     "__APP_NAME__": contract.frontend.app_name,
@@ -55,10 +64,14 @@ export function generate({ contractFile, templateCheckout, outputDir }) {
     "__BASE_ROUTE__": contract.frontend.base_route,
     ...(contract.frontend.replacements || {}),
   };
-  for (const file of walk(outputDir)) {
-    if (statSync(file).size > 2_000_000) continue;
-    let text;
-    try { text = readFileSync(file, "utf8"); } catch { continue; }
+  const generatedFiles = walk(outputDir).map(file => path.relative(outputDir, file));
+  for (const ref of generatedFiles) {
+    const file = path.join(outputDir, ref);
+    const info = lstatSync(file);
+    if (info.isSymbolicLink() || info.size > 2_000_000) continue;
+    const bytes = readFileSync(file);
+    if (bytes.includes(0) || !Buffer.from(bytes.toString("utf8")).equals(bytes)) continue;
+    const text = bytes.toString("utf8");
     const replaced = Object.entries(replacements).reduce((value, [from, to]) => value.split(from).join(to), text);
     if (replaced !== text) writeFileSync(file, replaced);
   }
@@ -67,9 +80,10 @@ export function generate({ contractFile, templateCheckout, outputDir }) {
     if (sha256(bytes) !== contract.frontend.openapi_json_digest) fail("OpenAPI JSON digest mismatch");
     mkdirSync(path.join(outputDir, "openapi"), { recursive: true });
     writeFileSync(path.join(outputDir, "openapi", "openapi.json"), bytes);
+    if (!generatedFiles.includes("openapi/openapi.json")) generatedFiles.push("openapi/openapi.json");
   }
   if (contract.init_git === true) git(outputDir, "init");
-  const generatedFiles = walk(outputDir).map((file) => path.relative(outputDir, file)).filter((file) => file !== ".yss/scaffold-generation.json").sort();
+  generatedFiles.sort();
   const manifest = {
     schema_version: 4,
     kind: "frontend-scaffold",

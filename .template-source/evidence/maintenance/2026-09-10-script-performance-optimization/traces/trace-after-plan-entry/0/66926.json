@@ -1,0 +1,52 @@
+{
+  "pid": 66926,
+  "ppid": 66925,
+  "entry": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-perf-audit-o0rklmzn/root/.perf-plan-entry.mjs",
+  "wall_ms": 786.3536250000001,
+  "exit_code": 0,
+  "write_bytes": {
+    "target-or-other": 53986
+  },
+  "operations": {
+    "fs.realpathSync": {
+      "count": 31,
+      "duration_ms": 0.3944579999999931
+    },
+    "fs.mkdirSync": {
+      "count": 2,
+      "duration_ms": 0.10749999999999815
+    },
+    "fs.writeFileSync": {
+      "count": 10,
+      "duration_ms": 0.8450429999999969
+    },
+    "fs.readFileSync": {
+      "count": 98,
+      "duration_ms": 4.860086999999766
+    },
+    "fs.readdirSync": {
+      "count": 23,
+      "duration_ms": 0.5399140000000102
+    },
+    "fs.existsSync": {
+      "count": 44,
+      "duration_ms": 0.2517910000000576
+    },
+    "fs.lstatSync": {
+      "count": 6,
+      "duration_ms": 0.0918749999999875
+    },
+    "fs.openSync": {
+      "count": 74,
+      "duration_ms": 1.459705999999624
+    },
+    "fs.closeSync": {
+      "count": 74,
+      "duration_ms": 0.13162300000028537
+    },
+    "spawnSync:python3:\nimport json\nimport sys\nimport traceback\nfrom jsonschema import Draft202012Validator, FormatChecker\nvalidators = {}\nresults = []\nfor item in json.load(sys.stdin):\n    try:\n        key = (item['schemaPath'], item['formatChecker'])\n        if key not in validators:\n            with open(item['schemaPath'], encoding='utf-8') as source:\n                schema = json.load(source)\n            validators[key] = Draft202012Validator(schema, format_checker=FormatChecker() if key[1] else None)\n        errors = list(validators[key].iter_errors(item['value']))\n        if item['errorStyle'] == 'verbose':\n            message = '\\n'.join(str(error) for error in errors)\n        else:\n            errors.sort(key=lambda error: list(error.absolute_path))\n            message = '\\n'.join(f\"{'.'.join(str(part) for part in error.absolute_path) or '<root>'}: {error.message}\" for error in errors)\n        results.append({'valid': not errors, 'error': message})\n    except Exception:\n        results.append({'valid': False, 'error': traceback.format_exc().strip()})\njson.dump(results, sys.stdout)\n": {
+      "count": 10,
+      "duration_ms": 684.3899569999999
+    }
+  }
+}

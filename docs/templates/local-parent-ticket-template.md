@@ -37,7 +37,7 @@ Status: ready-for-human
 
 ## 资产与证据
 
-- Discovery：`docs/.scratch/<feature>/discovery/`
+- Plan：`docs/.scratch/<feature>/plan/`
 - Spec Delta：`docs/.scratch/<feature>/spec-delta/`
 - Design：`docs/.scratch/<feature>/design/`
 - API：`docs/.scratch/<feature>/api/`
