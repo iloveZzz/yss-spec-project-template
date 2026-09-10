@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { PROJECTION_ROOTS, ROOT } from "./lib/skill-supply-chain.mjs";
 
@@ -41,15 +41,34 @@ const escaped = retired.filter((id) => id !== "teach").map((id) => id.replace(/[
 const exactSkillIdPattern = `(?<![a-z0-9-])(?:${escaped.join("|")})(?![a-z0-9-])`;
 const teachSkillPattern = "(?:`teach`|/teach(?:/|\\b)|(?:^|[\\[,])\\s*[\"']?teach[\"']?\\s*(?=[,\\]])|\\b(?:id|name)\\s*:\\s*[\"']?teach[\"']?\\b)";
 const retiredSkillPattern = `(?:${exactSkillIdPattern}|${teachSkillPattern})`;
-const search = spawnSync("rg", ["-n", "--pcre2", "--hidden", "--glob", "!.git/**", "--glob", "!.codegraph/**", "--glob", "!submodules/**", retiredSkillPattern, "."], {
-  cwd: ROOT,
-  encoding: "utf8"
-});
-if (![0, 1].includes(search.status)) {
-  process.stderr.write(search.stderr || "无法扫描退役 skill id\n");
+const matcher = new RegExp(retiredSkillPattern, "u");
+const matches = [];
+const inventory = spawnSync(
+  "git",
+  ["ls-files", "-z", "--cached", "--others", "--exclude-standard"],
+  { cwd: ROOT, encoding: "utf8" },
+);
+if (inventory.status !== 0) {
+  process.stderr.write(inventory.stderr || "无法读取 Git 文件清单\n");
   process.exit(1);
 }
-const violations = search.stdout.split(/\r?\n/).filter(Boolean).filter((line) => {
+const files = inventory.stdout.split("\0").filter(Boolean).filter((relative) =>
+  !relative.startsWith(".git/")
+  && !relative.startsWith(".codegraph/")
+  && !relative.startsWith("submodules/"));
+for (const relative of files) {
+  const absolute = path.join(ROOT, relative);
+  if (!existsSync(absolute)) continue;
+  const stat = lstatSync(absolute);
+  if (!stat.isFile() || stat.isSymbolicLink()) continue;
+  const bytes = readFileSync(absolute);
+  if (bytes.includes(0)) continue;
+  const lines = bytes.toString("utf8").split(/\r?\n/);
+  lines.forEach((line, index) => {
+    if (matcher.test(line)) matches.push(`./${relative}:${index + 1}:${line}`);
+  });
+}
+const violations = matches.filter((line) => {
   const match = line.match(/^\.\/(.*?):\d+:/);
   return !match || !allowed(match[1], line);
 });
