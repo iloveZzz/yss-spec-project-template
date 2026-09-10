@@ -10,7 +10,7 @@
 - `.gitmodules`、gitlink（mode `160000`）以及 `apps/` 下已挂载的实现仓工作树是用户资产，不属于受管文件；`attach` / `sync` 不得创建、覆盖或删除它们。
 - 通过模板快照和 40 位 `templateCommit` 使每次初始化、升级和回滚可追踪。
 - 新模板快照的实例门禁以 Node `>=22 <27` 运行；不得执行 `npm install`、`pnpm install` 或维护侧 vendor 构建。`scripts/vendor/` 必须随快照分发且可离线使用。
-- 快照使用显式分发 allowlist 构建，不再等于 Git 跟踪树的隐式子集。根规则、共享 skills/projections、`docs/` 中的实例流程资产、`scripts/` 中的共享校验入口及 `scripts/vendor/` 属于分发面；根 `package.json`、`.cursor/environment.json`、模板源 CI、`.template-source/**`、源仓库 ADR、`wiki/`、`docs/reviews/` 和其他未登记顶层资源属于模板源资产。`.nvmrc` 与根 `.gitignore` 属于分发面。此前误随快照到达实例的文件，后续 `sync` 只 `remove-report`，不静默删除。
+- 快照使用显式分发 allowlist 构建，不再等于 Git 跟踪树的隐式子集。根规则、共享 skills/projections、`docs/` 中的实例流程资产、`scripts/` 中的共享校验入口及 `scripts/vendor/` 属于分发面；根 `package.json`、`.cursor/environment.json`、模板源 CI、`.template-source/**`、源仓库 ADR、`wiki/`、`docs/reviews/` 和其他未登记顶层资源属于模板源资产。`.nvmrc` 与根 `.gitignore` 的公共规则区属于分发面。README 仅在 `init` 时生成，随后归项目维护；误入旧实例的文件默认只报告，显式执行 `sync --prune` 时才可按旧 baseline 备份并清理。
 
 ## 生命周期接口
 
@@ -21,7 +21,7 @@
 ```bash
 scripts/sync-skills --check
 scripts/update-skill-lock --check
-scripts/verify-template
+scripts/verify-project-instance
 ```
 
 ### 已有项目 `attach`
@@ -45,7 +45,9 @@ npx create-yss-spec@latest attach \
 
 `sync` 只使用 CLI 包内置的模板快照。“最新”指用户执行 `npx create-yss-spec@latest` 所携带的最新已发布快照，不在运行时直接拉取模板仓库。普通同步新增缺失文件、更新 baseline 未被本地修改的文件、报告冲突和模板删除；`sync --force` 先备份再覆盖受管冲突，模板删除默认只报告。
 
-完成后必须重新执行三个模板门禁；任一门禁失败时回滚文件变更并保持旧 metadata 版本。
+完成后必须执行项目实例门禁；任一门禁失败时回滚文件变更并保持旧 metadata 版本。README 不属于持续同步受管文件，`.gitignore` 只更新带标记的公共规则区。
+
+`sync --prune` 是显式清理入口：只删除内容仍等于旧 baseline 且所有权仍属于模板的退出分发文件，删除前必须备份。本地修改、缺少 baseline、路径类型异常或项目所有权文件必须保留并报告；普通 `sync` 不删除。
 
 模板把共享运行脚本从 Ruby 迁移到 Node 时，CLI 同步继续将模板删除按 `remove-report` 报告；不得静默删除既有实例的 `.rb` 文件。对新快照，CLI 必须验证公开入口、Node 版本失败信息、离线门禁和回滚均符合本契约。
 
@@ -65,13 +67,13 @@ npx create-yss-spec@latest attach \
 }
 ```
 
-`managedFiles` 是每个受管文件的 baseline。CLI apply 前把将被覆盖的文件保存到目标目录外的临时备份目录；验证成功后默认保留，失败按操作日志回滚，metadata 不更新。
+`managedFiles` 是每个受管文件的 baseline。README 不进入该集合；普通同步发现退出分发文件时继续保留 baseline，直至显式 prune、文件已不存在或完成 README 所有权交接。CLI apply 前把将被覆盖或清理的文件保存到目标目录外的临时备份目录；验证成功后默认保留，失败按操作日志回滚，metadata 不更新。
 
 ## 实例分发清单
 
 `template.manifest.json` 是模板源与 CLI 共享的分发清单。它必须同时声明允许进入快照的根文件、根目录和路径前缀，明确排除的源仓库路径及其例外文件，以及 init / attach / sync 的差异化受管边界。
 
-未命中 allowlist 的新顶层文件默认不进入快照。`docs/adr/README.md` 是实例 ADR 入口，模板源 ADR 不进入快照；`.nvmrc`、根 `.gitignore`、共享 `scripts/` 和 `scripts/vendor/` 进入快照。旧实例已经存在的被排除路径只生成 `remove-report`，不得静默删除。
+未命中 allowlist 的新顶层文件默认不进入快照。`docs/adr/README.md` 是实例 ADR 入口，模板源 ADR 不进入快照；`.nvmrc`、根 `.gitignore` 公共区、共享运行脚本和 `scripts/vendor/` 进入快照。旧实例已经存在的被排除路径默认生成 `remove-report`；只有显式 `sync --prune` 且通过 baseline 与所有权校验时才删除。
 
 ## 固定迁移规则
 
@@ -85,7 +87,8 @@ CLI 必须遵循本契约的固定映射：旧 Spec / Ticket skill 和模板入�
 | 任意已有项目 attach dry-run | 不写文件、不删除 `.git`，运行时代码和无关文件不变 |
 | attach apply | 缺失资产新增；matched 纳入 baseline；conflict 需 force；unsafe 不可 force 绕过 |
 | 旧资产迁移 | 规格 / Ticket 路径和根 scratch 安全迁移；目标冲突与扁平 Ticket fail closed |
-| sync | 新增、更新、冲突、迁移和删除报告完整；force 只作用于受管文件 |
+| sync | 新增、更新、冲突、迁移、README 所有权交接和删除报告完整；force 只作用于受管文件 |
+| sync --prune | 预览、安全删除、修改保留、外部备份、回滚和幂等均通过 |
 | post-sync | 三个门禁全部 fresh 通过；失败时文件和 metadata 回滚 |
 | Node 运行时迁移 | Node 22 / 24 下 init、attach dry-run/apply、sync 都无需安装依赖；缺失或不兼容 Node 必须 fail closed 且回滚 |
 | 遗留 Ruby | 新快照无活动 Ruby 脚本；既有实例遗留 `.rb` 仅 `remove-report`，不静默删除 |

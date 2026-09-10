@@ -43,6 +43,6 @@ node .agents/skills/yss-antdv-next-design/scripts/collect-antdv-next-facts.mjs \
 - 禁止 `npx skills add antdv-next/cli`、`npx skills add antdv-next/skills`，也不得把官方 Skill 复制进任何 Agent root。
 - 禁止把 MCP 对话、`llms-full.txt`、CLI 自报的未解析版本或静态 `design.md` 当作 exact component API 证据。
 - 禁止让上游 `design.md` 覆盖项目 `DESIGN.md`、`docs/design/design.md` 或项目 Token；manifest 必须直接记录根 `DESIGN.md` path 与 digest。
-- 禁止把原型事实包当作生产兼容性、可复用代码、`gate.prototype-verified` 或组件库迁移完成证据。
+- 禁止把原型事实包当作生产兼容性、可复用代码、`check.prototype-verified` 或组件库迁移完成证据。
 
 事实包合同见 `references/fact-pack.md`，阶段及生产边界见 `references/boundaries.md`。

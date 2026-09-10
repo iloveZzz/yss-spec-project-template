@@ -1,5 +1,5 @@
 schema_version: 1
-gate_id: gate.stage-decision-package-approved
+gate_id: check.stage-decision-package-approved
 decision: approved
 actor_kind: digital-human
 role_id: role.product-manager

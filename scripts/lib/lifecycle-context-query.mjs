@@ -73,6 +73,7 @@ export function queryLifecycleContext({ mode, stageId, workUnitId, include = [] 
   const planUnit = ['work-unit.plan-opportunity', 'work-unit.plan-requirements', 'work-unit.domain-strategy-design', 'work-unit.stage-decision', 'work-unit.spec-synthesis'].includes(workUnitId);
   const loadPlan = ['stage.plan', 'stage.spec-architecture'].includes(stageId) || planUnit;
   stageId ??= planUnit ? 'stage.plan' : undefined;
+  include = [...include, 'gate_consolidation'];
   if (loadPlan) include = [...include, 'planning', 'grill_exit'];
   const stage = selectById(lifecycle.stages, stageId, "阶段");
   const workUnit = selectById(lifecycle.work_units, workUnitId, "工作单元");
@@ -85,8 +86,9 @@ export function queryLifecycleContext({ mode, stageId, workUnitId, include = [] 
 
   const route = workUnitId ? orchestration.work_unit_routes?.[workUnitId] ?? null : null;
   const gates = lifecycle.gates.filter((gate) => gate.stage === stageId || (loadPlan && gate.stage === 'stage.plan'));
+  const checks = lifecycle.checks.filter(check => check.stage === stageId || gates.some(gate => gate.requires_checks?.includes(check.id)));
   const artifacts = lifecycle.artifacts.filter((artifact) => artifact.stage === stageId || (loadPlan && artifact.stage === 'stage.plan'));
-  const evidenceIds = new Set(gates.flatMap((gate) => gate.evidence ?? []));
+  const evidenceIds = new Set([...gates, ...checks].flatMap((gate) => gate.evidence ?? []));
   const selected = Object.fromEntries(normalizedIncludes.map((key) => [key, orchestration[key]]));
   const transition = workUnitId ? {
     next: orchestration.transition_graph?.routes?.[workUnitId] ?? [],
@@ -122,6 +124,7 @@ export function queryLifecycleContext({ mode, stageId, workUnitId, include = [] 
       artifacts,
       evidence: lifecycle.evidence.filter((item) => evidenceIds.has(item.id)),
       gates,
+      checks,
       stage,
       work_unit: workUnit,
     },

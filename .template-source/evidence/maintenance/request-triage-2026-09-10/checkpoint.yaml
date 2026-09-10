@@ -1,0 +1,41 @@
+schema_version: 2
+intensity: L3
+classification_reason: 用户确认共同理解后授权实施请求分诊优化，涉及模式选择、行动边界和兼容 Ticket 状态；保留既有门禁。
+triggers: [aggregate-behavior-change, permission-boundary, ticket-state]
+changed_assets:
+  - .agents/skills/yss-product-lifecycle/SKILL.md
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - .agents/skills/yss-product-lifecycle/references/orchestration.md
+  - .agents/skills/yss-product-lifecycle/references/request-triage.md
+  - .agents/skills/yss-product-lifecycle/references/request-triage-scenarios.yaml
+  - .agents/skills/triage/SKILL.md
+  - .agents/skills/triage/AGENT-BRIEF.md
+  - docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md
+  - scripts/verify-lifecycle-context-query-scenarios
+  - skills-lock.json
+verification_evidence:
+  - kind: self-check
+    command: .template-source/evidence/maintenance/request-triage-2026-09-10/self-check.md
+    result: pass
+  - kind: fresh-verification
+    command: node scripts/verify-lifecycle-context-query-scenarios
+    result: pass
+  - kind: fresh-verification
+    command: node scripts/verify-matt-yss-integration-scenarios
+    result: pass
+  - kind: fresh-verification
+    command: scripts/sync-skills --check
+    result: pass
+  - kind: fresh-verification
+    command: scripts/update-skill-lock --check
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

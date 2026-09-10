@@ -1,0 +1,33 @@
+#!/usr/bin/env node
+import { spawnSync } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { parseDocument } from "./vendor/yaml.mjs";
+import { loadRegistry, validateRegistry } from "./lib/lifecycle-registry.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const identityPath = path.join(root, "yss-project.yaml");
+const identity = parseDocument(readFileSync(identityPath, "utf8"), {
+  maxAliasCount: 0,
+  uniqueKeys: true,
+}).toJS({ maxAliasCount: 0 });
+if (identity?.schema_version !== 1 || identity?.repository_mode !== "project-instance") {
+  throw new TypeError("verify-project-instance 仅适用于合法 project-instance");
+}
+
+const commands = [
+  ["scripts/sync-skills", ["--check"]],
+  ["scripts/update-skill-lock", ["--check"]],
+  ["scripts/verify-context-contract", ["--root", ".", "--json"]],
+];
+for (const [command, args] of commands) {
+  const executable = path.join(root, command);
+  if (!existsSync(executable)) throw new TypeError(`缺少项目实例校验入口: ${command}`);
+  const result = spawnSync(executable, args, { cwd: root, encoding: "utf8" });
+  if (result.status !== 0) {
+    throw new TypeError(result.stderr.trim() || result.stdout.trim() || `${command} 校验失败`);
+  }
+}
+validateRegistry(loadRegistry());
+process.stdout.write("项目实例校验通过\n");

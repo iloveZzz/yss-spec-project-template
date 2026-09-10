@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "measured_at": "2026-09-10",
+  "environment": {
+    "node": "v23.9.0",
+    "platform": "Darwin arm64",
+    "template_commit": "ae2a3bd"
+  },
+  "frontend_delivery": {
+    "method": "同一当前源码和输入；serial 仅清除两个 lane；/usr/bin/time -l；清除三个实例根覆盖环境变量",
+    "serial": {
+      "wall_seconds": [155.56092479103245, 159.22346729203127, 161.3645204169443],
+      "peak_rss_bytes": [531136512, 545128448, 527073280],
+      "median_wall_seconds": 159.22346729203127,
+      "median_peak_rss_mib": 506.53125
+    },
+    "parallel": {
+      "wall_seconds": [125.00443183304742, 128.31949612498283],
+      "peak_rss_bytes": [521306112, 527171584],
+      "median_wall_seconds": 126.66196397901513,
+      "median_peak_rss_mib": 499.953125
+    },
+    "wall_reduction_percent": 20.450191084769674,
+    "rss_reduction_percent": 1.2986612375840534,
+    "rss_conclusion": "波动范围，不认定收益",
+    "excluded_samples": "最初三次 parallel 与其他测试重叠，标记 contaminated，未用于结论"
+  },
+  "duplicate_command": {
+    "command": "scripts/verify-frontend-scaffold-generator-scenarios",
+    "wall_seconds": [0.8085, 0.7913, 0.8179],
+    "median_wall_seconds": 0.8085,
+    "release_plan_occurrences_before_runtime_deduplication": 2,
+    "execution_count_after_runtime_deduplication": 1
+  },
+  "runner_output": {
+    "large_output": {
+      "bytes_per_command": 33554432,
+      "commands": 4,
+      "capture_duration_ms": [331, 210, 199],
+      "capture_peak_rss_bytes": [230375424, 233586688, 227213312],
+      "spool_duration_ms": [1255, 1280, 1379],
+      "spool_peak_rss_bytes": [109035520, 108773376, 109002752],
+      "median_peak_rss_reduction_percent": 52.68
+    },
+    "ordinary_output": {
+      "bytes_per_command": 65536,
+      "commands": 4,
+      "runs_per_mode": 7,
+      "capture_median_duration_ms": 58,
+      "spool_median_duration_ms": 42,
+      "conclusion": "短路径区间重叠，未观察到延迟退化，不宣称提速"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+schema_version: 2
+intensity: L3
+classification_reason: 优化核心模板验证调度、失败传播和输出存储，并补齐 project-instance 分发边界，改变聚合验证行为但不裁剪门禁。
+triggers: [core-validator, generation-semantics, aggregate-behavior-change, cross-repo-contract]
+changed_assets:
+  - scripts/run-template-verification
+  - scripts/lib/template-verification.mjs
+  - scripts/lib/template-verification-runner.mjs
+  - scripts/verify-template-verification-scenarios
+  - docs/process/template-verification-profiles.yaml
+  - submodules/create-yss-spec/template.manifest.json
+  - submodules/create-yss-spec/scripts/sync-template.js
+  - .template-source/evidence/maintenance/2026-09-10-script-performance-followup/
+verification_evidence:
+  - kind: self-check
+    command: .template-source/evidence/maintenance/2026-09-10-script-performance-followup/report.md
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast（自动升级 release，76 条计划命令，退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: node scripts/verify-template-verification-scenarios（调度、失败、日志与分发边界，退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: node scripts/verify-script-performance-scenarios（共享实例执行器回归，退出码 0）
+    result: pass
+  - kind: fresh-verification
+    command: .template-source/evidence/maintenance/2026-09-10-script-performance-followup/measurements.json（双场景等待下降 20.45%，大输出主进程峰值 RSS 下降 52.68%）
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

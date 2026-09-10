@@ -7,6 +7,7 @@
 | `lifecycle.status` | `routing`、`running`、`paused-human-gate`、`blocked`、`completed` |
 | `workflow.status` | `not-started`、`active`、`paused`、`resolved`、`failed` |
 | `artifacts.*.status` | `missing`、`draft`、`ready-for-human`、`approved`、`stale`、`not-applicable` |
+| `checks.*.status` | `pending`、`passed`、`approved`、`failed`、`stale`、`not-applicable` |
 | `gates.*.status` | `not-evaluated`、`blocked`、`ready-for-human`、`approved`、`stale`、`not-applicable` |
 | `tracker.kind` | `local-markdown`、`github`、`gitlab` |
 | `ticket.role` | `needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix` |
@@ -41,7 +42,7 @@ required gates ∈ {approved, not-applicable}
 AND 关键决定及当前切片实施范围已有可追溯、当前且未撤回的真实用户批准
 AND related artifacts 不含 stale（若命中技术设计影响，`artifact.technical-design` 必须已批准且版本当前、架构一致；旧 DDD 合同仅按显式兼容入口消费）
 AND blocking edges 全部关闭
-AND `gate.implementation-repositories-ready` 已通过，所有命中的前后端项目均为 `existing-and-onboarded` 或 `initialized-and-verified`，未命中的交付面有带原因的 `not-applicable`
+AND `check.implementation-repositories-ready` 已通过，所有命中的前后端项目均为 `existing-and-onboarded` 或 `initialized-and-verified`，未命中的交付面有带原因的 `not-applicable`
 AND `work-unit.implementation-repository-preparation` 已返回当前且证据可读的 `completed` 结果
 AND implementation repo/branch/CI/test/rollback 已明确
 AND `work-unit.ticket-decomposition` 已返回 `completed`，且其 `ticket_decomposition_result_ref` 证据可读取
@@ -60,7 +61,7 @@ AND UI 影响切片的前端实现还原计划已通过 schema 校验、`templat
 
 父 Ticket、Spec、设计、原型、OpenAPI Draft、wayfinder map 和 decision ticket 不得使用 `ready-for-agent`。
 
-发布前还必须满足所有已触发门禁均为 `approved` 或 `not-applicable`；UI 影响切片必须额外通过 `gate.frontend-implementation-verified`，不能只凭 fresh verification 和回滚点放行。
+发布前还必须满足所有已触发门禁均为 `approved` 或 `not-applicable`；UI 影响切片必须额外通过 `check.frontend-implementation-verified`，不能只凭 fresh verification 和回滚点放行。
 
 任何 `project-instance` 工作单元进入下一步、任何阶段会签暂停或阶段完成 checkpoint，还必须引用当前工作单元的 `context_reconciliation`。其中 `status=reconciled`、`context_ref=CONTEXT.md`、`document_digest` 与 `referenced_terms_digest` 必须和根目录唯一 `CONTEXT.md` 一致；该证据不改变门禁数量。`template-source` 仅允许以带原因的 `not-applicable` 表示它只校验模板合同，不产生产品业务术语。
 

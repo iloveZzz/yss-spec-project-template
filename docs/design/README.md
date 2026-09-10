@@ -10,13 +10,6 @@
 - `docs/design/tokens/`：随仓库保存的主题、亮色 / 暗色 / 紧凑 token 和 CSS 变量快照，后续实现不得依赖本机 Downloads 目录或原始 Less。
 - 默认工作界面密度：`theme.json` 的 seed 叠加一次 compact algorithm，计算结果以 `tokens.compact.json` 和根 `DESIGN.md` 组件变体为准；暗色紧凑模式组合 dark 与 compact algorithm，禁止重复压缩。
 
-模板源维护工具（仅在 `template-source` 仓库执行）：
-
-```bash
-node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md
-node .template-source/tooling/node/scripts/design-md.mjs drift
-```
-
 Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生快照；治理说明不得复制具体值。业务状态、API、权限和交互验收继续使用 Spec、交互说明及状态矩阵。
 
 产品原型由 `yss-prototype-stage` 持有阶段合同：先评审低保真/状态矩阵，再选择 H1 视觉或 H2 流程，并按需调用 `product-design:index` focused workflow。YSS 生命周期负责校验档位选择、Prototype Evidence schema v4、Visual Baseline schema v1、统一 Design QA、用户确认和 Spec / OpenAPI 回填。原型阶段不得调用生产实现技能 `yss-ui`。

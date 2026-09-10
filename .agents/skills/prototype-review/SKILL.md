@@ -5,7 +5,7 @@ description: Use when independently reviewing low-fidelity UI, interaction specs
 
 # Prototype Review
 
-Use this skill as the independent low-fidelity review in `yss-prototype-stage`. The review is fail-closed: if the design cannot drive calibrated requirements, API, frontend acceptance, and slices, send it back to product design. `yss-product-lifecycle` alone records the resulting `gate.prototype-reviewed` decision.
+Use this skill as the independent low-fidelity review in `yss-prototype-stage`. The review is fail-closed: if the design cannot drive calibrated requirements, API, frontend acceptance, and slices, send it back to product design. `yss-product-lifecycle` alone records the resulting `check.prototype-reviewed` decision.
 
 ## Trigger Boundary
 
@@ -17,7 +17,7 @@ Run this independent gate only when UI changes affect a primary user flow, navig
 - `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` or prototype link.
 - State matrix, preferably based on `docs/design/templates/state-matrix-template.md`.
 - Existing OpenAPI Draft only if the review is checking alignment; do not require OpenAPI before product design.
-- `docs/.scratch/<feature>/verification/prototype-evidence.yaml` may be created as a pending schema v3 record, but档位构建与浏览器验证属于后续 `gate.prototype-verified`。
+- `docs/.scratch/<feature>/verification/prototype-evidence.yaml` may be created as a pending schema v3 record, but档位构建与浏览器验证属于后续 `check.prototype-verified`。
 
 ## Review Gates
 
@@ -66,7 +66,7 @@ Run this independent gate only when UI changes affect a primary user flow, navig
 - <component states, data dependencies, profile triggers, frontend acceptance notes>
 
 ### Lifecycle Evidence
-- <persistent review path; blockers; `gate.prototype-reviewed` candidate result>
+- <persistent review path; blockers; `check.prototype-reviewed` candidate result>
 
 ### Next Action
 - <yss-prototype-stage / return to product design>

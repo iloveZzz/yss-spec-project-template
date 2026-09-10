@@ -1,3 +1,4 @@
+# >>> create-yss-spec managed rules
 # Python
 __pycache__/
 *.py[cod]
@@ -13,12 +14,12 @@ dist/
 
 # IDE
 .idea/
-.vscode/
 .DS_Store
 
 # Secrets
 .env
 .env.*
+!.env.example
 *.pem
 
 # Database
@@ -28,12 +29,16 @@ dist/
 # Logs
 *.log
 logs/
-.template-source/cache/
 
 # Coverage
 htmlcov/
 .coverage
 .pytest_cache/
+# <<< create-yss-spec managed rules
+
+# Template-source only
+.template-source/cache/
+.vscode/
 Excalidraw
 .obsidian
 .ua

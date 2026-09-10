@@ -25,11 +25,11 @@ JSON 输出存为相邻文件，证据清单只引用路径。不要把整份 `l
 
 `antd lint` 只对可解析的 React/TSX 源码有规则命中。HTML 原型会出现空 issues（假绿）或 `skippedFiles` / `parse-error` / `partial: true`。
 
-CLI JSON 只能证明查询事实，不能单独证明原型消费了目标版本或完成了 Vue/YSS 映射。`gate.prototype-verified` 还必须通过 schema v3 档位证据、Design QA、浏览器和无障碍验证。
+CLI JSON 只能证明查询事实，不能单独证明原型消费了目标版本或完成了 Vue/YSS 映射。`check.prototype-verified` 还必须通过 schema v3 档位证据、Design QA、浏览器和无障碍验证。
 
 | 产物 | `lint_applicable` | 做法 |
 |---|---|---|
 | 静态 HTML / H1 | `not-applicable` | 不创建 AntD 段；由 H1 合同验证 HTML |
 | React/TSX 原型源 | `true` | 对变更文件跑 `antd lint --format json`，保存输出；无 issue 才把 `lint_passed` 设为 `true` |
 
-浏览器验证仍由 `yss-prototype-stage` 采集，不在本技能宣布 `gate.prototype-verified` 通过。
+浏览器验证仍由 `yss-prototype-stage` 采集，不在本技能宣布 `check.prototype-verified` 通过。

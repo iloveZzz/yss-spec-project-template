@@ -40,7 +40,7 @@ Design QA 合并 visual、layout、interaction、content、accessibility、cross
 
 用户确认必须绑定提问者或其明确指定负责人的原始回复，使用生命周期 `user_decision_policy` 和统一用户决定记录；产品数字人只提供确认建议，不能代答。正式证据追加 `user_decision_ref/decision_subject_ref`，校验原型、视觉基线和操作范围与用户所见快照一致。用户确认只描述原型确认了什么、哪些范围可操作、哪些为模拟或 gap，以及接受/拒绝结论；不要求用户确认技术栈、CLI 或构建细节。
 
-`gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` 保持三个既有门禁。档位选择是 `gate.prototype-verified` 的输入证据，不增加新门禁，也不授权实现。
+`check.prototype-reviewed` 和 `check.prototype-verified` 是 `gate.product-design-approved` 的内部检查；独立评审和验证通过后，用户统一确认当前原型。档位选择属于验证输入，不单独请求批准，也不授权实现。
 
 ## 按需读取
 

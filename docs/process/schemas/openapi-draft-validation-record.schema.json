@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/openapi-draft-validation-record-v1.json",
+  "title": "YSS OpenAPI Draft validation record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "template", "status", "draft", "toolchain", "checks"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "openapi-draft-validation"},
+    "template": {"type": "boolean"},
+    "status": {"enum": ["draft", "passed", "blocked", "stale"]},
+    "draft": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "sha256", "oas_version"],
+      "properties": {
+        "ref": {"type": "string", "pattern": "^docs/\\.scratch/[a-z0-9][a-z0-9-]*/api/[a-z0-9][a-z0-9-]*\\.ya?ml$"},
+        "sha256": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+        "oas_version": {"const": "3.1.0"}
+      }
+    },
+    "toolchain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["package", "version", "lockfile_ref", "command", "exit_code", "executed_at", "evidence_ref"],
+      "properties": {
+        "package": {"const": "@redocly/cli"},
+        "version": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[0-9A-Za-z.-]+)?$"},
+        "lockfile_ref": {"type": "string", "pattern": "(^|/)pnpm-lock\\.yaml$"},
+        "command": {"type": "string", "pattern": "^pnpm exec redocly lint docs/\\.scratch/\\S+\\.ya?ml$"},
+        "exit_code": {"type": "integer"},
+        "executed_at": {"type": "string", "format": "date-time"},
+        "evidence_ref": {"type": "string", "minLength": 1}
+      }
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["single_document", "oas_3_1", "ref_resolution", "path_parameters", "operation_ids", "lint"],
+      "properties": {
+        "single_document": {"enum": ["passed", "blocked"]},
+        "oas_3_1": {"enum": ["passed", "blocked"]},
+        "ref_resolution": {"enum": ["passed", "blocked"]},
+        "path_parameters": {"enum": ["passed", "blocked"]},
+        "operation_ids": {"enum": ["passed", "blocked"]},
+        "lint": {"enum": ["passed", "blocked"]}
+      }
+    }
+  }
+}

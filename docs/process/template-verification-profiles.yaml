@@ -21,6 +21,7 @@ core_escalation_patterns:
   - scripts/verify-template-candidate
   - scripts/run-template-verification
   - scripts/lib/template-verification.mjs
+  - scripts/lib/template-verification-runner.mjs
   - scripts/verify-template-verification-scenarios
   - docs/process/template-verification-profiles.yaml
   - scripts/lib/maintenance-intensity.mjs
@@ -114,6 +115,7 @@ required_files:
   - .agents/skills/yss-prototype-stage/tests/run-scenarios.mjs
   - docs/design/templates/prototype-evidence-template.yaml
   - scripts/lib/template-verification.mjs
+  - scripts/lib/template-verification-runner.mjs
   - scripts/lib/maintenance-intensity.mjs
   - scripts/lib/maintenance-candidate.mjs
   - scripts/lib/task-package.mjs
@@ -262,8 +264,13 @@ groups:
       - { run: "node --test .template-source/cli-core/tests/*.test.mjs", when: template-source }
   frontend-delivery:
     commands:
-      - { run: "scripts/verify-frontend-delivery-scenarios" }
-      - { run: "node .template-source/scripts/verify-delivery-harness-distribution.mjs", when: template-source }
+      - run: "scripts/verify-frontend-delivery-scenarios"
+        lane: source-scenarios
+        parallel_unless_env: [YSS_DEDICATED_INSTANCE_ROOT, YSS_DELIVERY_TEST_BACKEND_ROOT, YSS_DELIVERY_TEST_FRONTEND_ROOT]
+      - run: "node .template-source/scripts/verify-delivery-harness-distribution.mjs"
+        when: template-source
+        lane: generated-distribution
+        parallel_unless_env: [YSS_DEDICATED_INSTANCE_ROOT, YSS_DELIVERY_TEST_BACKEND_ROOT, YSS_DELIVERY_TEST_FRONTEND_ROOT]
   strategic-handoff-package:
     commands:
       - { run: "node --check scripts/lib/strategic-handoff.mjs" }

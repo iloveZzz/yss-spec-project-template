@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
-import { planTemplateVerification } from "./lib/template-verification.mjs";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { loadVerificationProfiles, planTemplateVerification } from "./lib/template-verification.mjs";
+import { runCommandToFiles, runGroups } from "./lib/template-verification-runner.mjs";
 
 const releaseBaseline = [
   ".template-source/scripts/evidence-index --check",
@@ -57,6 +61,18 @@ assert.equal(release.effective_profile, "release");
 const releaseCommands = new Set(release.commands.map((entry) => entry.command));
 assert.deepEqual(releaseBaseline.filter((command) => !releaseCommands.has(command)), [], "release profile 必须保留旧发布门禁的全部行为命令");
 assert.ok(releaseCommands.has("node scripts/verify-template-verification-scenarios"), "release profile 必须验证三级核验路由本身");
+const frontend = release.commands.filter((entry) => entry.group === "frontend-delivery");
+assert.deepEqual(frontend.map((entry) => entry.lane), ["source-scenarios", "generated-distribution"]);
+assert.equal(frontend.every((entry) => entry.parallel_unless_env.includes("YSS_DEDICATED_INSTANCE_ROOT")), true);
+const instanceManifest = JSON.parse(readFileSync("submodules/create-yss-spec/template.manifest.json", "utf8"));
+assert.ok(instanceManifest.excludePaths.includes("scripts/lib/template-verification-runner.mjs"), "模板验证 runner 不得分发到 project-instance");
+assert.throws(() => loadVerificationProfiles(`
+schema_version: 1
+profiles: { fast: {}, candidate: {}, release: {} }
+groups:
+  invalid:
+    commands: [{ run: check, lane: 1 }]
+`), /lane 无效/);
 
 const docsOnly = planTemplateVerification({ profile: "fast", changedFiles: ["docs/user-guide/example.md"] });
 assert.equal(docsOnly.effective_profile, "fast");
@@ -85,5 +101,76 @@ assert.match(core.escalation_reason, /核心核验/);
 
 const entryRule = planTemplateVerification({ profile: "candidate", changedFiles: ["AGENTS.md"] });
 assert.equal(entryRule.effective_profile, "release", "Agent 入口规则变化必须 fail-safe 到完整门禁");
+
+const schedulerPlan = {
+  groups: ["alpha", "beta"],
+  commands: [
+    { group: "alpha", command: "shared", when: null, lane: "one", resources: [], parallel_unless_env: [] },
+    { group: "alpha", command: "parallel", when: null, lane: "two", resources: ["fixture"], parallel_unless_env: ["SERIAL_TEST"] },
+    { group: "beta", command: "shared", when: null, lane: null, resources: [], parallel_unless_env: [] },
+  ],
+};
+let active = 0;
+let peak = 0;
+const calls = [];
+const execute = async (command) => {
+  calls.push(command);
+  active += 1;
+  peak = Math.max(peak, active);
+  await new Promise((resolve) => setTimeout(resolve, 30));
+  active -= 1;
+  return { command, code: 0, duration_ms: 30 };
+};
+const scheduled = await runGroups(schedulerPlan, "template-source", 3, { cwd: "/fixture", environment: {}, execute });
+assert.equal(peak, 2, "不同 lane 应受总并发上限调度");
+assert.deepEqual(calls.sort(), ["parallel", "shared"], "相同命令只执行一次");
+assert.equal(scheduled.find((group) => group.group === "beta").results[0].reused, true);
+
+const lockedPlan = {
+  groups: ["left", "right"],
+  commands: [
+    { group: "left", command: "left", lane: null, resources: ["shared-root"], parallel_unless_env: [] },
+    { group: "right", command: "right", lane: null, resources: ["shared-root"], parallel_unless_env: [] },
+  ],
+};
+active = 0;
+peak = 0;
+calls.length = 0;
+await runGroups(lockedPlan, "template-source", 2, { cwd: "/fixture", environment: {}, execute });
+assert.equal(peak, 1, "声明相同资源的命令必须互斥");
+
+active = 0;
+peak = 0;
+calls.length = 0;
+await runGroups(schedulerPlan, "template-source", 3, { cwd: "/fixture", environment: { SERIAL_TEST: "1" }, execute });
+assert.equal(peak, 1, "存在外部实例覆盖时必须回退组内串行");
+
+const failedPlan = {
+  groups: ["failed", "independent"],
+  commands: [
+    { group: "failed", command: "fail", lane: null, resources: [], parallel_unless_env: [] },
+    { group: "failed", command: "must-not-run", lane: null, resources: [], parallel_unless_env: [] },
+    { group: "independent", command: "continue", lane: null, resources: [], parallel_unless_env: [] },
+  ],
+};
+calls.length = 0;
+await runGroups(failedPlan, "template-source", 2, { cwd: "/fixture", environment: {}, execute: async (command) => {
+  calls.push(command);
+  return { command, code: command === "fail" ? 1 : 0, duration_ms: 1 };
+} });
+assert.deepEqual(calls.sort(), ["continue", "fail"], "失败组停止后续命令，独立组继续");
+
+const logRoot = mkdtempSync(path.join(os.tmpdir(), "yss-runner-log-test-"));
+try {
+  const spooled = await runCommandToFiles(`${JSON.stringify(process.execPath)} -e "process.stdout.write('out');process.stderr.write('err')"`, {
+    cwd: process.cwd(), environment: process.env, logRoot, sequence: 0,
+  });
+  assert.equal(spooled.code, 0);
+  assert.equal(readFileSync(spooled.stdoutFile, "utf8"), "out");
+  assert.equal(readFileSync(spooled.stderrFile, "utf8"), "err");
+  assert.equal(Object.hasOwn(spooled, "stdout"), false, "子进程输出不得累计在结果对象中");
+} finally {
+  rmSync(logRoot, { recursive: true, force: true });
+}
 
 process.stdout.write("模板三级核验路由场景验证通过\n");

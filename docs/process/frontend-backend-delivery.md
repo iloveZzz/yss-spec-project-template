@@ -12,7 +12,7 @@
 
 后端每个交付包绑定一个窄业务切片。交付描述采用 `schemas/backend-delivery.schema.json`，包含战略包路径与摘要、切片规则/场景、OpenAPI operationId、冻结接口和后端 Slice Contract 的批准绑定、构建与部署身份、测试数据准备说明及验证证据。
 
-接口和 Slice Contract 的 `digest` 均为原文件字节 SHA-256，分别由既有 `gate.openapi-frozen` 和 `gate.slice-contract-approved` 的批准记录绑定。同包携带源角色政策及所需用户决定/批准证据；接收端按源政策验证，不能只填 `status: approved`。
+接口和 Slice Contract 的 `digest` 均为原文件字节 SHA-256，分别由当前 `gate.engineering-contract-approved` 和 `gate.slice-contract-approved` 的批准记录绑定。同包携带源角色政策及所需用户决定/批准证据；接收端按源政策验证，不能只填 `status: approved`。
 
 验证记录采用 `schemas/backend-delivery-verification.schema.json`，`subject_digest` 使用 `backendDeliveryBasis()`。实际命令、执行时间、零退出码与日志摘要必须齐备；契约验证逐条覆盖交付接口及场景的成功/失败结果。`supporting_files` 显式列出批准或用户决定的其余本地依赖；导出时通过临时源视图验证闭包，漏文件会失败。
 
@@ -67,6 +67,6 @@ scripts/verify-frontend-delivery --root <frontend> --slice <slice-id> <relative-
 
 前端 `frontend_cases` 的 `evidence_ref` 必须同时绑定 `evidence_digest`（原始文件字节 SHA-256）。用例内容变化后须更新接收记录并重编译依赖合同。
 
-OpenAPI Freeze 的来源门禁兼容综合模板 `gate.openapi-frozen` 与研发模板 `gate.openapi-freeze-confirmed`；仍严格校验来源角色策略及批准字节绑定，不允许其他门禁代替。每个交付范围至少包含一个带成功/失败验证的战略场景。
+OpenAPI Freeze 的来源门禁兼容当前综合模板 `gate.engineering-contract-approved`、历史冻结包 `gate.openapi-frozen` 与研发模板 `gate.openapi-freeze-confirmed`；仍严格校验来源角色策略及批准字节绑定，不允许其他门禁代替。每个交付范围至少包含一个带成功/失败验证的战略场景。
 
-生命周期中的稳定入口为 `gate.frontend-delivery-inputs-verified`，定义见各自 `lifecycle-registry.yaml`；角色表将它登记为 evidence_only，实际核验仍由脚本执行，不增设人工批准，也不替代 Slice Contract 的批准门禁。
+生命周期中的稳定入口为 `check.frontend-delivery-inputs-verified`，定义见各自 `lifecycle-registry.yaml`；角色表将它登记为 automatic_checks，实际核验仍由脚本执行，不增设人工批准，也不替代 Slice Contract 的批准门禁。

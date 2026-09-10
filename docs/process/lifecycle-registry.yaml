@@ -1,14 +1,36 @@
 schema_version: 1
 registry_id: yss.lifecycle
-status: shadow
+status: active
 description: >-
-  YSS 生命周期结构化事实源。Phase 1 以 shadow/check 方式派生结构表并校验漂移，
-  不切换任何运行时状态 schema 或人工批准语义。
+  YSS 生命周期结构化事实源。聚合门禁与内部检查分别登记，运行时查询、批准核验和派生阅读视图共同消费本注册表。
 id_policy:
-  pattern: '^(stage|gate|artifact|work-unit|evidence)\.[a-z0-9][a-z0-9-]*$'
+  pattern: '^(stage|gate|check|artifact|work-unit|evidence)\.[a-z0-9][a-z0-9-]*$'
   published_ids_immutable: true
   baseline: docs/process/lifecycle-registry-baseline.json
-  deprecated_ids: [artifact.high-fidelity-html-prototype, work-unit.fresh-verification, work-unit.independent-review, stage.discovery, artifact.discovery-record, work-unit.discovery-opportunity, work-unit.discovery-requirements]
+  deprecated_ids:
+    - artifact.high-fidelity-html-prototype
+    - work-unit.fresh-verification
+    - work-unit.independent-review
+    - stage.discovery
+    - artifact.discovery-record
+    - work-unit.discovery-opportunity
+    - work-unit.discovery-requirements
+    - gate.frontend-delivery-inputs-verified
+    - gate.repository-identity-valid
+    - gate.domain-strategy-approved
+    - gate.stage-decision-package-approved
+    - gate.prototype-reviewed
+    - gate.prototype-verified
+    - gate.user-confirmation
+    - gate.openapi-draft-reviewed
+    - gate.design-reviewed
+    - gate.openapi-frozen
+    - gate.engineering-baseline-accepted
+    - gate.architecture-reviewed
+    - gate.implementation-repositories-ready
+    - gate.slice-ready-for-agent
+    - gate.frontend-implementation-verified
+    - gate.release-ready
 
 stages:
   - id: stage.entry-triage
@@ -18,12 +40,14 @@ stages:
   - id: stage.plan
     name: Plan（战略规划）
     goal: 确认目标、业务边界、关键规则、MVP / 非目标、优先级和交接责任，为 Spec 提供战略输入；按影响面探索并复用仍有效的结论。
-    exit_criteria: 用户确认规划结论，命中的战略与阶段决策门禁通过；影响业务边界、关键规则或 MVP 的问题已解决，其他未决项有责任人和解决时点；下游可进入 Spec，不代表可实现。
+    exit_criteria: 命中的战略与阶段决策检查通过，用户统一批准当前 Plan；影响业务边界、关键规则或 MVP 的问题已解决，其他未决项有责任人和解决时点；下游可进入 Spec，不代表可实现。
     spec_entry:
-      required_checks: [goals, scope_and_priority, boundaries_and_rules, open_questions, handoff, context_reconciliation, grill_exit]
+      required_checks: [ goals, scope_and_priority, boundaries_and_rules, open_questions, handoff, context_reconciliation, grill_exit ]
       gate_impacts:
-        gate.domain-strategy-approved: domain_strategy
-        gate.stage-decision-package-approved: stage_decision
+        gate.plan-approved: plan
+      check_impacts:
+        check.domain-strategy-approved: domain_strategy
+        check.stage-decision-package-approved: stage_decision
   - id: stage.spec-architecture
     name: Spec / 功能架构
     goal: 固化解决方案和功能边界。
@@ -123,101 +147,60 @@ evidence:
     description: 可追溯的变更边界、发布记录和恢复动作。
 
 gates:
-  - id: gate.frontend-delivery-inputs-verified
-    name: 前端联合输入核验
-    stage: stage.system-data-engineering
-    trigger: 专职前端 profile 或显式 frontend_delivery 绑定的任务启动、恢复、合同编译、实现和验证；实际执行 scripts/verify-frontend-delivery，输入就绪不等于实现获批。
-    evidence: [evidence.fresh-verification]
-  - id: gate.repository-identity-valid
-    name: 仓库身份校验
-    stage: stage.entry-triage
-    trigger: 每次进入流程。
-    evidence: [evidence.repository-identity-check]
-  - id: gate.domain-strategy-approved
-    name: DDD 战略设计批准
+  - id: gate.plan-approved
+    name: Plan 批准
     stage: stage.plan
-    trigger: 存在 DDD 战略设计影响或需要确定领域边界、统一语言和核心规则。
-    public_name: 业务边界与规则确认
-    public_trigger: 需要确定业务板块、业务责任区、统一业务词汇、协作关系或关键规则。
-    evidence: [evidence.domain-strategy-review, evidence.approval-record]
-  - id: gate.stage-decision-package-approved
-    name: 阶段决策包批准
-    stage: stage.plan
-    trigger: Plan 到 Spec 入口需要稳定的阶段决策合同。
-    evidence: [evidence.stage-decision-package, evidence.approval-record]
-    requires_gates: [gate.domain-strategy-approved]
+    trigger: Plan 结论进入 Spec；汇总战略检查后仅确认一次当前规划范围。
+    evidence:
+      - evidence.approval-record
+    requires_checks:
+      - check.domain-strategy-approved
+      - check.stage-decision-package-approved
   - id: gate.spec-baseline-approved
     name: Spec 基线批准
     stage: stage.spec-architecture
     trigger: 新功能、行为变化或范围扩大进入 Spec 基线。
-    evidence: [evidence.approval-record]
-  - id: gate.prototype-reviewed
-    name: 原型评审
+    evidence:
+      - evidence.approval-record
+    requires_checks: []
+  - id: gate.product-design-approved
+    name: 产品设计批准
     stage: stage.product-design
-    trigger: 命中产品设计影响，且低保真页面、流程、状态或 API 反推需要独立评审。
-    evidence: [evidence.prototype-review-result]
-  - id: gate.prototype-verified
-    name: 原型交付物验证
-    stage: stage.product-design
-    trigger: 产品设计影响需要通过 H1/H2 原型交付物进行视觉或流程校准；真实组件验证留到前端实现阶段。
-    evidence: [evidence.prototype-profile-decision, evidence.prototype-deliverable-verification]
-  - id: gate.user-confirmation
-    name: 用户确认
-    stage: stage.product-design
-    trigger: 产品设计影响尚未被人工确认。
-    evidence: [evidence.prototype-confirmation]
-  - id: gate.openapi-draft-reviewed
-    name: OpenAPI Draft Review
+    trigger: 存在产品设计影响；独立原型评审与交付物验证通过后确认最终原型。
+    evidence:
+      - evidence.prototype-confirmation
+    requires_checks:
+      - check.prototype-reviewed
+      - check.prototype-verified
+  - id: gate.engineering-contract-approved
+    name: 工程契约批准
     stage: stage.system-data-engineering
-    trigger: 有 API 影响且 Draft 已生成。
-    evidence: [evidence.openapi-draft-review]
-  - id: gate.design-reviewed
-    name: 设计审查
-    stage: stage.system-data-engineering
-    trigger: API 或架构影响。
-    evidence: [evidence.design-review-result]
-  - id: gate.openapi-frozen
-    name: OpenAPI Freeze
-    stage: stage.system-data-engineering
-    trigger: API 进入实现。
-    evidence: [evidence.approval-record]
-  - id: gate.engineering-baseline-accepted
-    name: 工程基线
-    stage: stage.system-data-engineering
-    trigger: 后端、前端或高风险工程变化。
-    evidence: [evidence.fresh-verification]
-  - id: gate.architecture-reviewed
-    name: 架构审查
-    stage: stage.system-data-engineering
-    trigger: 高风险或跨边界变化。
-    evidence: [evidence.design-review-result]
-  - id: gate.implementation-repositories-ready
-    name: 实现仓库准备就绪
-    stage: stage.system-data-engineering
-    trigger: 后端或前端交付面进入 Ticket 正式化；未命中的交付面须记录带原因的 not-applicable。
-    evidence: [evidence.implementation-repository-preparation, evidence.fresh-verification]
-    requires_gates: [gate.engineering-baseline-accepted]
+    trigger: 存在 API、架构或工程基线影响；完成适用专业审查后统一批准，有 API 影响时同时冻结当前 OpenAPI。
+    evidence:
+      - evidence.approval-record
+      - evidence.fresh-verification
+    requires_checks:
+      - check.openapi-draft-reviewed
+      - check.design-reviewed
+      - check.architecture-reviewed
+      - check.engineering-baseline-accepted
+      - check.openapi-frozen
   - id: gate.slice-contract-approved
-    name: Slice Implementation Contract 批准
+    name: 切片合同批准
     stage: stage.ticket-formalization
-    trigger: Agent 进入实现；脚手架完成后每个后续生成代码工作单元。
-    evidence: [evidence.contract-approval]
-  - id: gate.slice-ready-for-agent
-    name: 垂直切片实现就绪
-    stage: stage.ticket-formalization
-    trigger: 垂直切片具备直接实现条件。
-    evidence: [evidence.contract-approval, evidence.approval-record]
-  - id: gate.frontend-implementation-verified
-    name: 前端实现还原验证
+    trigger: 主控在已授权范围内批准已持久化且当前的垂直切片合同；不代替就绪计算。
+    evidence:
+      - evidence.contract-approval
+    requires_checks: []
+  - id: gate.delivery-accepted
+    name: 交付验收
     stage: stage.verification-release-retrospective
-    trigger: UI 影响切片完成实现并准备合并、发布或阶段完成。
-    evidence: [evidence.frontend-implementation-verification]
-  - id: gate.release-ready
-    name: 发布就绪
-    stage: stage.verification-release-retrospective
-    trigger: 合并、发布或阶段完成。
-    evidence: [evidence.fresh-verification, evidence.checkpoint-and-rollback]
-    requires_gates: [gate.frontend-implementation-verified]
+    trigger: 实现交付验收；汇总独立审查、Fresh Verification 和回滚证据，不授予合并或发布权限。
+    evidence:
+      - evidence.fresh-verification
+      - evidence.checkpoint-and-rollback
+    requires_checks:
+      - check.frontend-implementation-verified
 
 artifacts:
   - id: artifact.impact-assessment
@@ -479,3 +462,99 @@ work_units:
     input: 已审查候选、发布窗口和回滚点。
     output: 发布/回滚证据和复盘记录。
     completion: 人工发布裁决、fresh verification 和治理回流均完成。
+checks:
+  - id: check.frontend-delivery-inputs-verified
+    name: 前端联合输入核验
+    stage: stage.system-data-engineering
+    trigger: 专职前端 profile 或显式 frontend_delivery 绑定的任务启动、恢复、合同编译、实现和验证；实际执行 scripts/verify-frontend-delivery，输入就绪不等于实现获批。
+    evidence:
+      - evidence.fresh-verification
+  - id: check.repository-identity-valid
+    name: 仓库身份校验
+    stage: stage.entry-triage
+    trigger: 每次进入流程。
+    evidence:
+      - evidence.repository-identity-check
+  - id: check.domain-strategy-approved
+    name: 业务边界与规则评审
+    stage: stage.plan
+    trigger: 存在 DDD 战略设计影响或需要确定领域边界、统一语言和核心规则。
+    public_name: 业务边界与规则评审
+    public_trigger: 需要确定业务板块、业务责任区、统一业务词汇、协作关系或关键规则。
+    evidence:
+      - evidence.domain-strategy-review
+      - evidence.approval-record
+  - id: check.stage-decision-package-approved
+    name: 阶段决策包评审
+    stage: stage.plan
+    trigger: Plan 到 Spec 入口需要稳定的阶段决策合同。
+    evidence:
+      - evidence.stage-decision-package
+      - evidence.approval-record
+    requires_checks:
+      - check.domain-strategy-approved
+  - id: check.prototype-reviewed
+    name: 原型评审
+    stage: stage.product-design
+    trigger: 命中产品设计影响，且低保真页面、流程、状态或 API 反推需要独立评审。
+    evidence:
+      - evidence.prototype-review-result
+  - id: check.prototype-verified
+    name: 原型交付物验证
+    stage: stage.product-design
+    trigger: 产品设计影响需要通过 H1/H2 原型交付物进行视觉或流程校准；真实组件验证留到前端实现阶段。
+    evidence:
+      - evidence.prototype-profile-decision
+      - evidence.prototype-deliverable-verification
+  - id: check.openapi-draft-reviewed
+    name: OpenAPI Draft Review
+    stage: stage.system-data-engineering
+    trigger: 有 API 影响且 Draft 已生成。
+    evidence:
+      - evidence.openapi-draft-review
+  - id: check.design-reviewed
+    name: 设计审查
+    stage: stage.system-data-engineering
+    trigger: API 或架构影响。
+    evidence:
+      - evidence.design-review-result
+  - id: check.openapi-frozen
+    name: OpenAPI 冻结准备
+    stage: stage.system-data-engineering
+    trigger: 有 API 影响；确认待冻结版本、Draft 审查和契约绑定，工程契约批准后原子冻结同一版本。
+    evidence:
+      - evidence.openapi-draft-review
+  - id: check.engineering-baseline-accepted
+    name: 工程基线
+    stage: stage.system-data-engineering
+    trigger: 后端、前端或高风险工程变化。
+    evidence:
+      - evidence.fresh-verification
+  - id: check.architecture-reviewed
+    name: 架构审查
+    stage: stage.system-data-engineering
+    trigger: 高风险或跨边界变化。
+    evidence:
+      - evidence.design-review-result
+  - id: check.implementation-repositories-ready
+    name: 实现仓库准备就绪
+    stage: stage.system-data-engineering
+    trigger: 后端或前端交付面进入 Ticket 正式化；未命中的交付面须记录带原因的 not-applicable。
+    evidence:
+      - evidence.implementation-repository-preparation
+      - evidence.fresh-verification
+    requires_checks:
+      - check.engineering-baseline-accepted
+  - id: check.slice-ready-for-agent
+    name: 垂直切片实现就绪
+    stage: stage.ticket-formalization
+    trigger: 垂直切片具备直接实现条件。
+    evidence:
+      - evidence.contract-approval
+      - evidence.fresh-verification
+  - id: check.frontend-implementation-verified
+    name: 前端实现还原验证
+    stage: stage.verification-release-retrospective
+    trigger: UI 影响切片完成实现并准备合并、发布或阶段完成。
+    evidence:
+      - evidence.frontend-implementation-verification

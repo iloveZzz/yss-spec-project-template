@@ -203,8 +203,25 @@ const profiles = {
   },
   openapiYaml: {
     message: "OpenAPI YAML-first 场景验证通过",
-    files: ["docs/templates/openapi-spec-template.yaml", ".agents/skills/yss-openapi-governance/SKILL.md"],
-    markers: [["docs/templates/openapi-spec-template.yaml", "openapi: 3.1.0"], [".agents/skills/yss-openapi-governance/SKILL.md", "YAML-first"]]
+    files: [
+      "docs/templates/openapi-spec-template.yaml",
+      ".agents/skills/yss-openapi-governance/SKILL.md",
+      ".agents/skills/yss-openapi-draft-review/SKILL.md",
+      "docs/api/templates/openapi-draft-review-checklist.md",
+      "docs/api/templates/openapi-draft-validation-record-template.yaml",
+      "docs/process/schemas/openapi-draft-validation-record.schema.json",
+      "scripts/verify-openapi-draft-validation-record"
+    ],
+    markers: [
+      ["docs/templates/openapi-spec-template.yaml", "openapi: 3.1.0"],
+      [".agents/skills/yss-openapi-governance/SKILL.md", "property path"],
+      [".agents/skills/yss-openapi-draft-review/SKILL.md", "Structural Validation"],
+      [".agents/skills/yss-openapi-draft-review/SKILL.md", "omit-to-preserve"],
+      ["docs/api/templates/openapi-draft-review-checklist.md", "P0 字段级追踪矩阵"],
+      ["docs/api/templates/openapi-draft-review-checklist.md", "Create / Update requiredness"],
+      ["docs/process/schemas/openapi-draft-validation-record.schema.json", "openapi-draft-validation"],
+      ["scripts/verify-openapi-draft-validation-record", "Draft SHA-256 不匹配"]
+    ]
   },
   openapiJson: {
     message: "OpenAPI YAML-first JSON handoff scenarios passed",
@@ -239,8 +256,8 @@ export function runScenario(name) {
     const result = spawnSync("scripts/verify-lifecycle-registry", [], { cwd: root, encoding: "utf8" });
     ensure(result.status === 0, result.stderr || result.stdout);
     const registry = parseDocument(read("docs/process/lifecycle-registry.yaml"), { uniqueKeys: true }).toJS({ maxAliasCount: 0 });
-    const releaseGate = registry.gates.find((gate) => gate.id === "gate.release-ready");
-    ensure(releaseGate?.requires_gates?.includes("gate.frontend-implementation-verified"), "发布就绪未依赖前端实现还原门禁");
+    const releaseGate = registry.gates.find((gate) => gate.id === "gate.delivery-accepted");
+    ensure(releaseGate?.requires_checks?.includes("check.frontend-implementation-verified"), "发布就绪未依赖前端实现还原门禁");
     const contract = parseDocument(read(".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"), { uniqueKeys: true }).toJS({ maxAliasCount: 0 });
     ensure(contract.ready_for_agent?.requires_vertical_slice_ticket === true && contract.ready_for_agent?.parent_ticket_as_implementation_ref === "forbidden", "ready_for_agent 未强制垂直切片且禁止父 Ticket 实现引用");
     ensure(includesAll(contract.ready_for_agent?.required, ["ticket_decomposition_result_ref", "vertical_slice_ticket_ref", "vertical_slice_ticket_role", "vertical_slice_ticket_kind"]), "ready_for_agent 缺少 Ticket 正式化必填字段");
@@ -253,9 +270,9 @@ export function runScenario(name) {
       { from: "work-unit.technical-analysis", to: "work-unit.ticket-decomposition" },
     ]), "生命周期转换图缺少工程准备、Ticket 正式化与实现越级阻断");
     ensure(contract.transition_graph?.routes?.["work-unit.implementation-repository-preparation"]?.includes("work-unit.ticket-decomposition"), "实现仓库准备未成为 Ticket 正式化前置");
-    ensure(contract.implementation_repository_preparation?.gate === "gate.implementation-repositories-ready", "实现仓库准备聚合门禁缺失");
+    ensure(contract.implementation_repository_preparation?.check === "check.implementation-repositories-ready", "实现仓库准备聚合门禁缺失");
     ensure(lifecycleTransitionContract.next_routes["work-unit.ticket-decomposition"]?.includes("work-unit.slice-implementation"), "转换校验器未允许 Ticket 正式化后进入实现");
-    ensure(contract.release_readiness?.conditional?.ui_impact?.includes("gate.frontend-implementation-verified") && contract.frontend_implementation_plan?.acceptance?.includes("no_template_placeholders"), "发布公式或前端计划实质校验不完整");
+    ensure(contract.release_readiness?.conditional?.ui_impact?.includes("check.frontend-implementation-verified") && contract.frontend_implementation_plan?.acceptance?.includes("no_template_placeholders"), "发布公式或前端计划实质校验不完整");
     const templateRejected = spawnSync("scripts/verify-frontend-implementation-evidence", ["docs/process/templates/frontend-implementation-plan-template.yaml"], { cwd: root, encoding: "utf8" });
     ensure(templateRejected.status !== 0 && templateRejected.stderr.includes("template: false"), "前端实现计划占位模板可冒充正式批准证据");
   }

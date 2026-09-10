@@ -104,8 +104,10 @@ export async function inspectSource(root, handoffRef) {
   for (const [artifact, version] of [[strategy,strategy.domain_version],[stage,stage.package_version]]) {
     if(artifact.approval) { const record=read(safe(root,artifact.approval.approval_ref));await sourceApproval(record,roles,root);ensure(artifact.approval.current_version===version,'资产内置批准版本过期'); }
   }
-  const terminalGate=countersignRuleForGate(roles.gate_policy,'gate.strategic-design-handoff-approved')?'gate.strategic-design-handoff-approved':'gate.stage-decision-package-approved';
-  const expectedGates={domain_strategy_ref:'gate.domain-strategy-approved',stage_decision_package_ref:'gate.stage-decision-package-approved',spec_ref:'gate.spec-baseline-approved',prototype_ref:'gate.user-confirmation',visual_baseline_ref:'gate.user-confirmation',business_ticket_set_ref:terminalGate,handoff:terminalGate};
+  // Source packages retain their published approval vocabulary. Never promote old approvals into current checkpoint gates.
+  const currentPlan = (roles.gate_policy.dual_digital_human || []).some(rule => rule.gate === 'gate.plan-approved');
+  const terminalGate=currentPlan?'gate.plan-approved':countersignRuleForGate(roles.gate_policy,'gate.strategic-design-handoff-approved')?'gate.strategic-design-handoff-approved':'gate.stage-decision-package-approved';
+  const expectedGates={domain_strategy_ref:currentPlan?'gate.plan-approved':'gate.domain-strategy-approved',stage_decision_package_ref:currentPlan?'gate.plan-approved':'gate.stage-decision-package-approved',spec_ref:'gate.spec-baseline-approved',prototype_ref:currentPlan?'gate.product-design-approved':'gate.user-confirmation',visual_baseline_ref:currentPlan?'gate.product-design-approved':'gate.user-confirmation',business_ticket_set_ref:terminalGate,handoff:terminalGate};
   const bindings={...handoff.source,handoff:{id:handoff.handoff_id,version:handoff.handoff_version,persisted_ref:handoffRef,status:'approved'}};
   for(const [key,ref] of Object.entries(bindings)) {
     const approval=config.approvals[key];

@@ -70,7 +70,7 @@ try {
     .replace("<referenced-terms-digest>", context.referenced_terms_digest);
   const domainFile = join(temporaryRoot, "domain-strategy.yaml");
   await writeFile(domainFile, domainSource);
-  const domainDecision = buildDecisionFixture(join(temporaryRoot, "domain-decision"), { boundary: "gate.domain-strategy-approved", subjectRef: domainFile });
+  const domainDecision = buildDecisionFixture(join(temporaryRoot, "domain-decision"), { boundary: "check.domain-strategy-approved", subjectRef: domainFile });
   const domainApproval = parseDocument(await readFile(join(testsRoot, "fixtures/domain-strategy-approval.yaml"), "utf8")).toJS();
   await writeFile(domainApprovalRef, JSON.stringify({ ...domainApproval, subject_ref: domainFile, approval_scope: domainDecision.requirement.scope, user_decision_ref: domainDecision.ref }));
   const pass = run(validator, domainFile, temporaryRoot);
@@ -123,7 +123,7 @@ try {
     .replace("<domain-strategy-digest>", digestYaml(domainSource));
   const packageFile = join(temporaryRoot, "stage-decision.yaml");
   await writeFile(packageFile, packageSource);
-  const packageDecision = buildDecisionFixture(join(temporaryRoot, "package-decision"), { boundary: "gate.stage-decision-package-approved", subjectRef: packageFile });
+  const packageDecision = buildDecisionFixture(join(temporaryRoot, "package-decision"), { boundary: "check.stage-decision-package-approved", subjectRef: packageFile });
   const packageApproval = parseDocument(await readFile(join(testsRoot, "fixtures/stage-decision-approval.yaml"), "utf8")).toJS();
   await writeFile(packageApprovalRef, JSON.stringify({ ...packageApproval, subject_ref: packageFile, approval_scope: packageDecision.requirement.scope, user_decision_ref: packageDecision.ref }));
   const packagePass = run(packageValidator, packageFile, temporaryRoot);

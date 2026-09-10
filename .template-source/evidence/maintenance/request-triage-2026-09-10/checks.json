@@ -1,0 +1,30 @@
+[
+  {
+    "command": "node scripts/verify-lifecycle-context-query-scenarios",
+    "exit_code": 0,
+    "duration_ms": 505,
+    "stdout": "生命周期按需上下文查询场景验证通过\n",
+    "stderr": ""
+  },
+  {
+    "command": "scripts/sync-skills --check",
+    "exit_code": 0,
+    "duration_ms": 331,
+    "stdout": "skill projections are synchronized\n",
+    "stderr": ""
+  },
+  {
+    "command": "scripts/update-skill-lock --check",
+    "exit_code": 0,
+    "duration_ms": 287,
+    "stdout": "skills-lock.json matches distributed skills\n",
+    "stderr": ""
+  },
+  {
+    "command": "git diff --check",
+    "exit_code": 0,
+    "duration_ms": 390,
+    "stdout": "",
+    "stderr": ""
+  }
+]

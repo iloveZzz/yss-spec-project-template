@@ -1,5 +1,5 @@
 schema_version: 1
-gate_id: gate.domain-strategy-approved
+gate_id: check.domain-strategy-approved
 decision: approved
 actor_kind: digital-human
 role_id: role.product-manager

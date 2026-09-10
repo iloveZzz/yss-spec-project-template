@@ -26,23 +26,23 @@ for (const relativePath of PUBLIC_FILES) {
 }
 
 const registry = read("docs/process/lifecycle-registry.yaml");
-for (const stableId of ["work-unit.domain-strategy-design", "artifact.domain-strategy", "gate.domain-strategy-approved"]) {
+for (const stableId of ["work-unit.domain-strategy-design", "artifact.domain-strategy", "check.domain-strategy-approved"]) {
   assert.match(registry, new RegExp(`id: ${stableId.replaceAll(".", "\\.")}`));
 }
-for (const displayName of ["业务边界与协作梳理", "业务边界与规则设计", "业务边界与规则确认", "方案决策包"]) {
+for (const displayName of ["业务边界与协作梳理", "业务边界与规则设计", "业务边界与规则评审", "方案决策包"]) {
   assert.match(registry, new RegExp(displayName));
 }
 
 const registryContract = loadRegistry();
 const withoutPublicPresentation = structuredClone(registryContract);
-for (const collection of ["stages", "gates", "artifacts", "work_units", "evidence"]) {
+for (const collection of ["stages", "gates", "checks", "artifacts", "work_units", "evidence"]) {
   for (const record of withoutPublicPresentation[collection]) {
     for (const key of Object.keys(record).filter((key) => key.startsWith("public_"))) delete record[key];
   }
 }
 assert.equal(semanticDigest(registryContract), semanticDigest(withoutPublicPresentation), "public_* 展示字段不得改变稳定 ID 语义摘要");
 const rendered = `${renderLifecycleStructure(registryContract)}${renderWorkUnits(registryContract)}`;
-for (const displayName of ["业务边界与协作梳理", "业务边界与规则设计", "业务边界与规则确认", "方案决策包"]) {
+for (const displayName of ["业务边界与协作梳理", "业务边界与规则设计", "业务边界与规则评审", "方案决策包"]) {
   assert.match(rendered, new RegExp(displayName));
 }
 const invalidPresentation = structuredClone(registryContract);

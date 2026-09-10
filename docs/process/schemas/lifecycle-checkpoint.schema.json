@@ -4,28 +4,106 @@
   "title": "YSS 生命周期 Checkpoint",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "repository_mode", "mode", "status", "stage", "artifacts", "gates", "context_reconciliation", "next_work_unit", "ticket_sync", "verification", "human_review", "git_checkpoint", "blockers", "rollback"],
+  "required": [
+    "schema_version",
+    "repository_mode",
+    "mode",
+    "status",
+    "stage",
+    "artifacts",
+    "gates",
+    "context_reconciliation",
+    "next_work_unit",
+    "ticket_sync",
+    "verification",
+    "human_review",
+    "git_checkpoint",
+    "blockers",
+    "rollback"
+  ],
   "properties": {
-    "plan_review_ref": { "type": "string", "minLength": 1 },
-    "plan_user_decision_ref": { "type": "string", "minLength": 1 },
-    "feature_id": { "type": "string", "minLength": 1 },
-    "schema_version": { "const": 1 },
-    "repository_mode": { "enum": ["template-source", "project-instance"] },
-    "mode": { "enum": ["route", "orchestrate", "resume", "audit"] },
-    "status": { "enum": ["routing", "running", "paused-human-gate", "blocked", "completed"] },
-    "stage": { "type": "string", "pattern": "^stage\\.[a-z0-9][a-z0-9-]*$" },
+    "plan_review_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "plan_user_decision_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "feature_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "repository_mode": {
+      "enum": [
+        "template-source",
+        "project-instance"
+      ]
+    },
+    "mode": {
+      "enum": [
+        "route",
+        "orchestrate",
+        "resume",
+        "audit"
+      ]
+    },
+    "status": {
+      "enum": [
+        "routing",
+        "running",
+        "paused-human-gate",
+        "blocked",
+        "completed"
+      ]
+    },
+    "stage": {
+      "type": "string",
+      "pattern": "^stage\\.[a-z0-9][a-z0-9-]*$"
+    },
     "artifacts": {
       "type": "object",
       "patternProperties": {
         "^artifact\\.[a-z0-9][a-z0-9-]*$": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["status", "ref", "evidence_refs"],
+          "required": [
+            "status",
+            "ref",
+            "evidence_refs"
+          ],
           "properties": {
-            "status": { "enum": ["missing", "draft", "ready-for-human", "approved", "stale", "not-applicable"] },
-            "ref": { "type": ["string", "null"] },
-            "evidence_refs": { "type": "array", "items": { "type": "string" } },
-            "stale_by": { "type": "array", "items": { "type": "string" } }
+            "status": {
+              "enum": [
+                "missing",
+                "draft",
+                "ready-for-human",
+                "approved",
+                "stale",
+                "not-applicable"
+              ]
+            },
+            "ref": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "stale_by": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           }
         }
       },
@@ -37,14 +115,59 @@
         "^gate\\.[a-z0-9][a-z0-9-]*$": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["status", "reason", "evidence_refs"],
+          "required": [
+            "status",
+            "reason",
+            "evidence_refs"
+          ],
           "properties": {
-            "status": { "enum": ["not-evaluated", "blocked", "ready-for-human", "approved", "stale", "not-applicable"] },
-            "reason": { "type": "string" },
-            "evidence_refs": { "type": "array", "items": { "type": "string" } },
-            "approval_ref": { "type": ["string", "null"] },
-            "subject_ref": { "type": "string", "minLength": 1 },
-            "approval_scope": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+            "status": {
+              "enum": [
+                "not-evaluated",
+                "blocked",
+                "ready-for-human",
+                "approved",
+                "stale",
+                "not-applicable"
+              ]
+            },
+            "reason": {
+              "type": "string"
+            },
+            "evidence_refs": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "approval_ref": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "subject_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "approval_scope": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "evidence": {
+              "type": "object"
+            },
+            "basis": {
+              "type": "array"
+            },
+            "checks": {
+              "type": "object"
+            }
           }
         }
       },
@@ -53,22 +176,76 @@
     "context_reconciliation": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["status", "ref", "evidence_refs"],
+      "required": [
+        "status",
+        "ref",
+        "evidence_refs"
+      ],
       "properties": {
-        "status": { "enum": ["pending", "reconciled", "not-applicable", "blocked"] },
-        "ref": { "type": ["string", "null"] },
-        "reason": { "type": "string" },
-        "evidence_refs": { "type": "array", "items": { "type": "string" } }
+        "status": {
+          "enum": [
+            "pending",
+            "reconciled",
+            "not-applicable",
+            "blocked"
+          ]
+        },
+        "ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reason": {
+          "type": "string"
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
-    "next_work_unit": { "type": ["string", "null"], "pattern": "^work-unit\\.[a-z0-9][a-z0-9-]*$" },
-    "phase_boundary": { "type": "object" },
-    "stage_trace": { "type": "object" },
-    "ticket_sync": { "type": "object" },
-    "verification": { "type": "object" },
-    "human_review": { "type": "object" },
-    "git_checkpoint": { "type": "object" },
-    "blockers": { "type": "array" },
-    "rollback": { "type": "array" }
+    "next_work_unit": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^work-unit\\.[a-z0-9][a-z0-9-]*$"
+    },
+    "phase_boundary": {
+      "type": "object"
+    },
+    "stage_trace": {
+      "type": "object"
+    },
+    "ticket_sync": {
+      "type": "object"
+    },
+    "verification": {
+      "type": "object"
+    },
+    "human_review": {
+      "type": "object"
+    },
+    "git_checkpoint": {
+      "type": "object"
+    },
+    "blockers": {
+      "type": "array"
+    },
+    "rollback": {
+      "type": "array"
+    },
+    "checks": {
+      "type": "object",
+      "patternProperties": {
+        "^check\\.[a-z0-9][a-z0-9-]*$": {
+          "type": "object"
+        }
+      },
+      "additionalProperties": false
+    }
   }
 }

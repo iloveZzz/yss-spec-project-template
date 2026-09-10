@@ -1,0 +1,85 @@
+#!/usr/bin/env node
+import { createHash } from "node:crypto";
+import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+
+const repoRoot = path.resolve(import.meta.dirname, "..");
+const root = mkdtempSync(path.join(os.tmpdir(), "yss-openapi-validation-"));
+const write = (relative, value) => {
+  const file = path.join(root, relative);
+  mkdirSync(path.dirname(file), { recursive: true });
+  writeFileSync(file, value);
+  return file;
+};
+const draftRef = "docs/.scratch/example/api/example.yaml";
+const evidenceRef = "docs/.scratch/example/api/example-redocly-lint.txt";
+const draft = `openapi: 3.1.0
+info: { title: Example, version: 0.1.0-draft }
+paths:
+  /widgets/{id}:
+    get:
+      operationId: getWidget
+      parameters:
+        - { $ref: '#/components/parameters/WidgetId' }
+      responses:
+        '200':
+          description: ok
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Widget' }
+components:
+  parameters:
+    WidgetId:
+      name: id
+      in: path
+      required: true
+      schema: { type: string }
+  schemas:
+    Widget:
+      type: object
+      properties: { id: { type: string } }
+`;
+write(draftRef, draft);
+write(evidenceRef, "redocly lint passed\n");
+write("pnpm-lock.yaml", "lockfileVersion: '9.0'\npackages:\n  '@redocly/cli@2.0.0': {}\n");
+const digest = `sha256:${createHash("sha256").update(draft).digest("hex")}`;
+const base = {
+  schema_version: 1,
+  kind: "openapi-draft-validation",
+  template: false,
+  status: "passed",
+  draft: { ref: draftRef, sha256: digest, oas_version: "3.1.0" },
+  toolchain: {
+    package: "@redocly/cli",
+    version: "2.0.0",
+    lockfile_ref: "pnpm-lock.yaml",
+    command: `pnpm exec redocly lint ${draftRef}`,
+    exit_code: 0,
+    executed_at: "2026-09-10T00:00:00Z",
+    evidence_ref: evidenceRef
+  },
+  checks: { single_document: "passed", oas_3_1: "passed", ref_resolution: "passed", path_parameters: "passed", operation_ids: "passed", lint: "passed" }
+};
+
+function run(name, record, expected, pattern) {
+  const file = write(`${name}.json`, JSON.stringify(record, null, 2));
+  const result = spawnSync("scripts/verify-openapi-draft-validation-record", ["--root", root, file], { cwd: repoRoot, encoding: "utf8" });
+  const output = `${result.stdout}${result.stderr}`;
+  if (result.status !== expected || (pattern && !pattern.test(output))) throw new Error(`${name} unexpected\n${output}`);
+}
+
+run("valid", base, 0, /验证通过/);
+run("stale-digest", { ...base, draft: { ...base.draft, sha256: `sha256:${"0".repeat(64)}` } }, 1, /SHA-256 不匹配/);
+run("failed-lint", { ...base, status: "blocked", toolchain: { ...base.toolchain, exit_code: 1 }, checks: { ...base.checks, lint: "blocked" } }, 1, /status: passed/);
+run("wrong-command-target", { ...base, toolchain: { ...base.toolchain, command: "pnpm exec redocly lint docs/.scratch/example/api/other.yaml" } }, 1, /精确指向当前 Draft/);
+run("unlocked-version", { ...base, toolchain: { ...base.toolchain, version: "2.1.0" } }, 1, /lockfile 未绑定/);
+write(draftRef, draft.replace("#/components/schemas/Widget", "#/components/schemas/Missing"));
+const brokenDigest = `sha256:${createHash("sha256").update(draft.replace("#/components/schemas/Widget", "#/components/schemas/Missing")).digest("hex")}`;
+run("broken-ref", { ...base, draft: { ...base.draft, sha256: brokenDigest } }, 1, /\$ref 无法解析/);
+
+const template = path.join(repoRoot, "docs/api/templates/openapi-draft-validation-record-template.yaml");
+const templateResult = spawnSync("scripts/verify-openapi-draft-validation-record", ["--allow-template", template], { cwd: repoRoot, encoding: "utf8" });
+if (templateResult.status !== 0) throw new Error(templateResult.stderr || templateResult.stdout);
+process.stdout.write("OpenAPI Draft validation record scenarios passed\n");

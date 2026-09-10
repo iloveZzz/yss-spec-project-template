@@ -3,33 +3,312 @@
   "$id": "https://yss.dev/schemas/lifecycle-registry.schema.json",
   "title": "YSS 生命周期注册表",
   "type": "object",
-  "required": ["schema_version", "registry_id", "status", "id_policy", "stages", "gates", "artifacts", "work_units", "evidence"],
+  "required": [
+    "schema_version",
+    "registry_id",
+    "status",
+    "id_policy",
+    "stages",
+    "gates",
+    "artifacts",
+    "work_units",
+    "evidence",
+    "checks"
+  ],
   "properties": {
-    "schema_version": { "const": 1 },
-    "registry_id": { "const": "yss.lifecycle" },
-    "status": { "enum": ["shadow", "active"] },
+    "schema_version": {
+      "const": 1
+    },
+    "registry_id": {
+      "const": "yss.lifecycle"
+    },
+    "status": {
+      "enum": [
+        "shadow",
+        "active"
+      ]
+    },
     "id_policy": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["pattern", "published_ids_immutable", "baseline", "deprecated_ids"],
+      "required": [
+        "pattern",
+        "published_ids_immutable",
+        "baseline",
+        "deprecated_ids"
+      ],
       "properties": {
-        "pattern": { "const": "^(stage|gate|artifact|work-unit|evidence)\\.[a-z0-9][a-z0-9-]*$" },
-        "published_ids_immutable": { "const": true },
-        "baseline": { "const": "docs/process/lifecycle-registry-baseline.json" },
-        "deprecated_ids": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/id" } }
+        "pattern": {
+          "const": "^(stage|gate|check|artifact|work-unit|evidence)\\.[a-z0-9][a-z0-9-]*$"
+        },
+        "published_ids_immutable": {
+          "const": true
+        },
+        "baseline": {
+          "const": "docs/process/lifecycle-registry-baseline.json"
+        },
+        "deprecated_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "$ref": "#/$defs/id"
+          }
+        }
       }
     },
-    "stages": { "$ref": "#/$defs/stages" },
-    "gates": { "$ref": "#/$defs/objects" },
-    "artifacts": { "$ref": "#/$defs/objects" },
-    "work_units": { "$ref": "#/$defs/workUnits" },
-    "evidence": { "$ref": "#/$defs/evidence" }
+    "stages": {
+      "$ref": "#/$defs/stages"
+    },
+    "gates": {
+      "$ref": "#/$defs/objects"
+    },
+    "artifacts": {
+      "$ref": "#/$defs/objects"
+    },
+    "work_units": {
+      "$ref": "#/$defs/workUnits"
+    },
+    "evidence": {
+      "$ref": "#/$defs/evidence"
+    },
+    "checks": {
+      "$ref": "#/$defs/objects"
+    }
   },
   "$defs": {
-    "id": { "type": "string", "pattern": "^(stage|gate|artifact|work-unit|evidence)\\.[a-z0-9][a-z0-9-]*$" },
-    "stages": { "type": "array", "minItems": 1, "items": { "type": "object", "additionalProperties": false, "required": ["id", "name", "goal", "exit_criteria"], "properties": { "spec_entry": {"type":"object","required":["required_checks","gate_impacts"],"additionalProperties":false,"properties":{"required_checks":{"type":"array","minItems":1,"uniqueItems":true,"items":{"type":"string","minLength":1}},"gate_impacts":{"type":"object","minProperties":1,"additionalProperties":{"type":"string","minLength":1}}}}, "id": { "$ref": "#/$defs/id" }, "name": { "type": "string", "minLength": 1 }, "goal": { "type": "string", "minLength": 1 }, "exit_criteria": { "type": "string", "minLength": 1 }, "public_name": { "type": "string", "minLength": 1 }, "public_goal": { "type": "string", "minLength": 1 }, "public_exit_criteria": { "type": "string", "minLength": 1 } } } },
-    "objects": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["id", "name", "stage", "trigger"], "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "type": "string", "minLength": 1 }, "stage": { "type": "string", "pattern": "^stage\\." }, "trigger": { "type": "string", "minLength": 1 }, "public_name": { "type": "string", "minLength": 1 }, "public_trigger": { "type": "string", "minLength": 1 }, "evidence": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "^evidence\\." } }, "requires_gates": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^gate\\." } } } } },
-    "workUnits": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["id", "name", "scope", "input", "output", "completion"], "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "type": "string", "minLength": 1 }, "scope": { "enum": ["template-source", "project-instance"] }, "input": { "type": "string", "minLength": 1 }, "output": { "type": "string", "minLength": 1 }, "completion": { "type": "string", "minLength": 1 }, "public_name": { "type": "string", "minLength": 1 }, "public_input": { "type": "string", "minLength": 1 }, "public_output": { "type": "string", "minLength": 1 }, "public_completion": { "type": "string", "minLength": 1 } } } },
-    "evidence": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["id", "name", "description"], "properties": { "id": { "$ref": "#/$defs/id" }, "name": { "type": "string", "minLength": 1 }, "description": { "type": "string", "minLength": 1 }, "public_name": { "type": "string", "minLength": 1 }, "public_description": { "type": "string", "minLength": 1 } } } }
+    "id": {
+      "type": "string",
+      "pattern": "^(stage|gate|check|artifact|work-unit|evidence)\\.[a-z0-9][a-z0-9-]*$"
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "goal",
+          "exit_criteria"
+        ],
+        "properties": {
+          "spec_entry": {
+            "type": "object",
+            "required": [
+              "required_checks",
+              "gate_impacts"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "required_checks": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "gate_impacts": {
+                "type": "object",
+                "minProperties": 1,
+                "additionalProperties": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "check_impacts": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "goal": {
+            "type": "string",
+            "minLength": 1
+          },
+          "exit_criteria": {
+            "type": "string",
+            "minLength": 1
+          },
+          "public_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "public_goal": {
+            "type": "string",
+            "minLength": 1
+          },
+          "public_exit_criteria": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "objects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "stage",
+          "trigger"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "stage": {
+            "type": "string",
+            "pattern": "^stage\\."
+          },
+          "trigger": {
+            "type": "string",
+            "minLength": 1
+          },
+          "public_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "public_trigger": {
+            "type": "string",
+            "minLength": 1
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "pattern": "^evidence\\."
+            }
+          },
+          "requires_gates": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^gate\\."
+            }
+          },
+          "requires_checks": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^check\\."
+            }
+          }
+        }
+      }
+    },
+    "workUnits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "scope",
+          "input",
+          "output",
+          "completion"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scope": {
+            "enum": [
+              "template-source",
+              "project-instance"
+            ]
+          },
+          "input": {
+            "type": "string",
+            "minLength": 1
+          },
+          "output": {
+            "type": "string",
+            "minLength": 1
+          },
+          "completion": {
+            "type": "string",
+            "minLength": 1
+          },
+          "public_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "public_input": {
+            "type": "string",
+            "minLength": 1
+          },
+          "public_output": {
+            "type": "string",
+            "minLength": 1
+          },
+          "public_completion": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "description"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/$defs/id"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1
+          },
+          "public_name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "public_description": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
   }
 }

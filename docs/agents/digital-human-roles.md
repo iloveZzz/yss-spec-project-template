@@ -20,21 +20,9 @@
 
 ## 会签人
 
-`gate_policy.digital_human_review` 与 `dual_digital_human` 是「门禁 × 起草者 × 会签人」规则，不是门禁名单。主控按 `countersigners` 派会签任务。
+正式门禁的会签由 `gate_policy.digital_human_review` / `dual_digital_human` / `biological_human` 定义；内部专业审查由 `check_reviews` 定义，自动检查由 `automatic_checks` 定义。每项的起草者与会签人只读取 YAML，不在本文复制名单。
 
-| 门禁 / 工作单元 | 起草 | 会签 |
-|---|---|---|
-| `gate.prototype-reviewed` | `role.product-manager` | `role.frontend-engineer` |
-| `gate.openapi-draft-reviewed` | `role.backend-engineer` | `role.frontend-engineer` |
-| `gate.engineering-baseline-accepted` | （实现者） | `role.test-engineer` |
-| `gate.frontend-implementation-verified` | `role.frontend-engineer` | `role.test-engineer` |
-| `work-unit.code-review` | 实现者 | `role.test-engineer`（必须不同实例） |
-| `gate.spec-baseline-approved` | `role.requirements-manager` | `role.product-manager` |
-| `gate.openapi-frozen` | `role.backend-engineer` | `role.product-manager`、`role.test-engineer` |
-| `gate.user-confirmation` | 产品数字人提供建议 | 提问者或其明确指定的生物人负责人 |
-| `gate.release-ready` | — | 生物人（`role.biological-human`） |
-
-未列入表的门禁（含 `gate.design-reviewed`、`gate.architecture-reviewed`）走 `default_if_unlisted: biological-human`。
+Plan、产品设计、工程契约统一呈现适用检查后批准。`gate.delivery-accepted` 由测试角色进行交付验收，实际合并或发布仍须另有生物人授权。内部检查不独立请求用户决定；检查失败仍阻断聚合门禁。专业审查可在同一工作单元完成多个检查项，但必须保留逐项结论、资产摘要与独立执行者身份。
 
 会签写入 `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml`，形状见 `docs/templates/approval-record-template.yaml`。恢复前运行 `scripts/verify-approval-record --require-approved`。错误会签只能得到 `blocked`，不能把门禁标成 `approved`。Checkpoint 里会签桶门禁为 `approved` 时必须有可读 `approval_ref`。
 
@@ -71,7 +59,7 @@ Grok 专用操作见 `docs/templates/grok-bot-profile-template.md`。通用实�
 | 运行时副作用审批 | 发消息、改生产、付款、删数据等工具动作 | 生物人（各平台自己的 Allow / 确认框） |
 | 生命周期会签 | `gate.*` 与独立 code review | 见 YAML `gate_policy` |
 
-会签写入 `docs/templates/approval-record-template.yaml`，带 `runtime_id`、`principal_ref` 与实例引用。起草者不得出现在会签人里。`gate.release-ready`、对外商务合同、运行时外部副作用，以及未列入会签表的 `gate.design-reviewed` / `gate.architecture-reviewed` 仍须生物人。
+会签写入 `docs/templates/approval-record-template.yaml`，带 `runtime_id`、`principal_ref` 与实例引用。起草者不得出现在会签人里。对外商务合同和运行时外部副作用仍须生物人；交付验收不授予这些权限。
 
 ## 实例化
 

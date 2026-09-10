@@ -43,7 +43,7 @@ export async function inspectBackendDelivery(root, ref) {
   const delivery=read(safe(root,ref));
   schema(delivery,'docs/process/schemas/backend-delivery.schema.json');
   ensure(boundFile(root,delivery.environment.test_data).length>0,'测试数据准备说明为空');
-  await approvedFile(root,delivery.openapi,['gate.openapi-frozen','gate.openapi-freeze-confirmed']);
+  await approvedFile(root,delivery.openapi,['gate.engineering-contract-approved','gate.openapi-frozen','gate.openapi-freeze-confirmed']);
   await approvedFile(root,delivery.slice_contract,'gate.slice-contract-approved');
   const contractDoc=read(safe(root,delivery.slice_contract.ref));
   const contract=contractDoc.slice_contract||contractDoc;

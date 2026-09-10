@@ -34,9 +34,9 @@ try {
     ['检查项不能 N/A', f => f.review.checks.goals.status = 'not-applicable'],
     ['缺证据', f => f.review.checks.goals.evidence_refs = []],
     ['缺影响面', f => delete f.review.impacts.domain_strategy],
-    ['缺门禁', f => delete f.review.gates['gate.domain-strategy-approved']],
+    ['缺门禁', f => delete f.review.internal_checks['check.domain-strategy-approved']],
     ['命中门禁不能 N/A', f => f.review.impacts.domain_strategy = true],
-    ['N/A 无原因', f => delete f.review.gates['gate.domain-strategy-approved'].reason],
+    ['N/A 无原因', f => delete f.review.internal_checks['check.domain-strategy-approved'].reason],
     ['关键问题延期', f => f.review.open_items.push({ id: 'q1', critical: true, runnable_blocker: false, status: 'deferred' })],
     ['可执行阻塞延期', f => f.review.open_items.push({ id: 'q1', critical: false, runnable_blocker: true, status: 'deferred' })],
     ['延期未交接', f => f.review.open_items.push({ id: 'q1', critical: false, runnable_blocker: false, status: 'deferred' })],
@@ -51,19 +51,19 @@ try {
   valid.review.open_items = [{ id: 'q-detail', critical: false, runnable_blocker: false, status: 'deferred', noncritical_reason: '不影响范围或关键规则', owner: '测试负责人', resolution_point: 'Spec 评审前', downstream_recipient: '测试需求负责人', evidence_refs: ['plan.md'] }];
   valid.reapprove();
   assert.equal(assertPlanSpecEntry(valid.state, { root: valid.root }).result, 'allowed', '用户确认后的非关键延期可通过');
-  for (const [gateId, impact] of Object.entries({ 'gate.domain-strategy-approved': 'domain_strategy', 'gate.stage-decision-package-approved': 'stage_decision' })) {
+  for (const [gateId, impact] of Object.entries({ 'check.domain-strategy-approved': 'domain_strategy', 'check.stage-decision-package-approved': 'stage_decision' })) {
     const subjectRef = path.join(valid.root, 'plan.md');
     const reply = buildDecisionFixture(path.join(valid.root, impact), { boundary: gateId, subjectRef });
     const rule = countersignRuleForGate(loadDigitalHumanRoles().gate_policy, gateId);
     const approvalRef = path.join(valid.root, `${impact}.json`);
     valid.write(approvalRef, { schema_version: 1, gate_id: gateId, decision: 'approved', actor_kind: 'digital-human', role_id: rule.countersigners[0], runtime_id: 'runtime.skill-projection', principal_ref: 'test-only.reviewer', subject_ref: subjectRef, approval_scope: ['feature.demo'], user_decision_ref: reply.ref });
     valid.review.impacts[impact] = true;
-    valid.review.gates[gateId] = { status: 'approved', approval_ref: approvalRef, subject_ref: subjectRef, approval_scope: ['feature.demo'], evidence_refs: [approvalRef, subjectRef] };
+    valid.review.internal_checks[gateId] = { status: 'approved', approval_ref: approvalRef, subject_ref: subjectRef, approval_scope: ['feature.demo'], evidence_refs: [approvalRef, subjectRef] };
     for (const ref of [approvalRef, subjectRef]) if (!valid.review.basis.some(asset => asset.ref === ref)) valid.review.basis.push({ ref, digest: decisionDigest(readFileSync(ref)) });
   }
   valid.reapprove();
   assert.equal(assertPlanSpecEntry(valid.state, { root: valid.root }).result, 'allowed', '命中门禁、真实回复来源与当前资产绑定均通过');
-  valid.review.gates['gate.domain-strategy-approved'].approval_scope = ['feature.other']; valid.reapprove();
+  valid.review.internal_checks['check.domain-strategy-approved'].approval_scope = ['feature.other']; valid.reapprove();
   assert.throws(() => assertPlanSpecEntry(valid.state, { root: valid.root }), /会签资产或范围不匹配/);
   for (const [name, mutate] of mutations) {
     const f = buildPlanFixture(path.join(temp, name)); mutate(f); f.save();
@@ -73,7 +73,7 @@ try {
     assert.throws(() => assertPlanCheckpoint({ repository_mode: 'project-instance', ...checkpoint }), /plan-spec-entry-blocked/);
   }
   const stale = buildPlanFixture(path.join(temp, 'stale-review'));
-  stale.review.gates['gate.domain-strategy-approved'].reason += ' changed'; stale.save();
+  stale.review.internal_checks['check.domain-strategy-approved'].reason += ' changed'; stale.save();
   assert.throws(() => assertPlanSpecEntry(stale.state, { root: stale.root }), /user-decision-stale/);
 } finally { rmSync(temp, { recursive: true, force: true }); }
 process.stdout.write('Plan → Spec 无状态绕过与默认加载检查通过\n');

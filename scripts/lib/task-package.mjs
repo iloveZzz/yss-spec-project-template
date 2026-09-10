@@ -3,7 +3,7 @@ import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { loadDigitalHumanRoles, taskPackageDefaults } from "./digital-human-roles.mjs";
 import { loadRegistry, ROOT } from "./lifecycle-registry.mjs";
-import { loadMaintenanceCheckpoint, validateMaintenanceCheckpoint } from "./maintenance-intensity.mjs";
+import { readRepositoryMode } from "./repository-mode.mjs";
 import { assertImplementationDecision } from "./user-decision.mjs";
 import { validateNextRoute } from "./lifecycle-transition.mjs";
 import { assertPlanSpecEntry } from "./plan-spec-entry.mjs";
@@ -16,6 +16,11 @@ export const TASK_PACKAGE_REGISTRY_REF = "docs/agents/digital-human-roles.yaml";
 export const CONTRACT_KINDS = new Set(["lifecycle-work-unit", "slice-implementation", "template-maintenance"]);
 export const EXECUTION_STATES = new Set(["Explorer", "Drafter", "Worker", "Reviewer", "Verifier"]);
 export const WORKFLOW_STATUSES = new Set(["not-started", "active", "paused", "resolved", "failed"]);
+
+const repositoryMode = readRepositoryMode(ROOT);
+const maintenanceValidators = repositoryMode === "template-source"
+  ? await import("./maintenance-intensity.mjs")
+  : null;
 
 function fail(message) { throw new TypeError(message); }
 function requireString(value, field) { if (typeof value !== "string" || !value.trim()) fail(`${field} 不能为空`); }
@@ -143,11 +148,12 @@ function validateContract(value, registry, lifecycle) {
     return;
   }
   if (contract.kind === "template-maintenance") {
+    if (!maintenanceValidators) fail("project-instance 不支持 template-maintenance 任务包");
     if (contract.slice_contract_ref || contract.lifecycle_ref) fail("template-maintenance 不得携带其他合同引用");
     const checkpointPath = assertSafeRelativePath(contract.maintenance_ref, "contract.maintenance_ref");
     if (!existsSync(checkpointPath)) fail(`维护 checkpoint 不存在: ${contract.maintenance_ref}`);
-    const checkpoint = loadMaintenanceCheckpoint(contract.maintenance_ref);
-    validateMaintenanceCheckpoint(checkpoint, {
+    const checkpoint = maintenanceValidators.loadMaintenanceCheckpoint(contract.maintenance_ref);
+    maintenanceValidators.validateMaintenanceCheckpoint(checkpoint, {
       allowPendingReview: value.execution_state === "Reviewer" && value.workflow_status !== "resolved"
     });
     if (checkpoint.schema_version === 2 && value.execution_state === "Reviewer") {

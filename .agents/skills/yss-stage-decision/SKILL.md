@@ -33,9 +33,9 @@ Plan 的目标与退出条件由 `docs/process/lifecycle-registry.yaml` 持有�
 ## 产物与批准
 
 - 业务边界与规则设计是本类事实的权威资产，方案决策包只通过内部字段 `domain_strategy_ref` 引用它。两个合同的 `context_snapshot.context_ref` 必须精确为仓库根 `CONTEXT.md`，禁止子目录、`CONTEXT-MAP.md`、绝对路径和 Markdown 伪锚点。
-- 进入 `gate.domain-strategy-approved` 或 `gate.stage-decision-package-approved` 的外部决策证据必须引用通过校验的 `yss-research` `evidence-audited` 研究包；研究包只提供证据，不得直接修改本技能资产或批准门禁。
+- 进入 `check.domain-strategy-approved` 或 `check.stage-decision-package-approved` 的外部决策证据必须引用通过校验的 `yss-research` `evidence-audited` 研究包；研究包只提供证据，不得直接修改本技能资产或批准门禁。
 - `stage_decision_package` 必须经过 `draft → ready-for-human → approved`；起草者不得自签。
-- 建议门禁为 `gate.domain-strategy-approved` 和 `gate.stage-decision-package-approved`，实际状态由 `yss-product-lifecycle` 维护；阶段包批准引用必须通过 `scripts/verify-approval-record`，不得用不可读路径或聊天确认替代。
+- 内部专业审查为 `check.domain-strategy-approved` 和 `check.stage-decision-package-approved`，汇入 `gate.plan-approved` 一次确认，实际状态由 `yss-product-lifecycle` 维护；阶段包批准引用必须通过 `scripts/verify-approval-record`，不得用不可读路径或聊天确认替代。
 - 下游只能消费批准且版本当前的包；发现语义冲突返回 `drift` / `new_impacts`，不得静默修改上游。
 
 ## 结果合同

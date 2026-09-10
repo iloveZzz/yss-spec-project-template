@@ -1,0 +1,23 @@
+schema_version: 1
+kind: openapi-draft-validation
+template: true
+status: draft
+draft:
+  ref: docs/.scratch/example/api/example.yaml
+  sha256: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  oas_version: 3.1.0
+toolchain:
+  package: "@redocly/cli"
+  version: 2.0.0
+  lockfile_ref: pnpm-lock.yaml
+  command: pnpm exec redocly lint docs/.scratch/example/api/example.yaml
+  exit_code: 1
+  executed_at: 2026-01-01T00:00:00Z
+  evidence_ref: docs/.scratch/example/api/example-redocly-lint.txt
+checks:
+  single_document: blocked
+  oas_3_1: blocked
+  ref_resolution: blocked
+  path_parameters: blocked
+  operation_ids: blocked
+  lint: blocked

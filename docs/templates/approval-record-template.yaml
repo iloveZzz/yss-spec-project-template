@@ -16,3 +16,7 @@ notes: 会签必须可读取；起草者不得出现在 countersigner_role_ids�
 subject_ref: null
 approval_scope: []
 user_decision_ref: null
+# 聚合门禁 / 内部专业审查绑定的当前主体字节 SHA-256（64 位十六进制）。
+subject_digest: null
+# 专业检查必须与起草者为不同执行实例；不仅仅比较职称。
+drafter_principal_ref: null

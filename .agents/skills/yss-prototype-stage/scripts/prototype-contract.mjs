@@ -196,7 +196,7 @@ export function validatePrototypeEvidence(data, { allowTemplate = false, allowLe
   const warnings = [];
   if (!object(data)) return { errors: ["原型证据必须是对象"], warnings };
   if ([1, 2, 3].includes(data.schema_version)) {
-    if (!allowLegacy) errors.push(`schema_version ${data.schema_version} 是只读旧证据；在途工作关闭 gate.prototype-verified 前必须迁移到 4`);
+    if (!allowLegacy) errors.push(`schema_version ${data.schema_version} 是只读旧证据；在途工作关闭 check.prototype-verified 前必须迁移到 4`);
     else warnings.push(`legacy prototype evidence schema v${data.schema_version}; read-only`);
     return { errors, warnings };
   }
@@ -206,7 +206,7 @@ export function validatePrototypeEvidence(data, { allowTemplate = false, allowLe
   if (!allowTemplate && errors.length === 0) {
     try {
       const confirmation = data.user_confirmation;
-      assertUserDecisionRequirement({ boundary: "gate.user-confirmation", subject_ref: confirmation.decision_subject_ref, scope: confirmation.operable_scope, user_decision_ref: confirmation.user_decision_ref }, decisionOptions);
+      assertUserDecisionRequirement({ boundary: "gate.product-design-approved", subject_ref: confirmation.decision_subject_ref, scope: confirmation.operable_scope, user_decision_ref: confirmation.user_decision_ref }, decisionOptions);
       if (decisionDigest(decisionIO(decisionOptions).document(confirmation.decision_subject_ref)) !== decisionDigest(prototypeDecisionSnapshot(data))) throw new TypeError("user-decision-stale: 原型与用户所见快照不一致");
     } catch (error) { errors.push(error.message); }
   }

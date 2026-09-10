@@ -2,7 +2,7 @@
 
 ## 有界推进循环
 
-1. 识别模式、仓库身份、任务规模和影响面。
+1. 按 `orchestration-contract.yaml.request_triage` 理解请求并选择模式，再识别仓库身份、任务规模和影响面；问题理解与澄清细节见 [请求分诊协议](request-triage.md)。
 2. `setup readiness`：每个任务只执行一次，核对 tracker、五态标签和领域文档布局，并在本轮缓存结果；仅在 tracker、主远端、真实标签或配置变化时重查。
 3. 加载父 Ticket/checkpoint 与真实资产，计算最近可信阶段。
 4. 评估资产、门禁和 `stale`，选择第一个未阻塞工作单元。进入 `work-unit.slice-implementation` 前，必须先通过 `scripts/lib/lifecycle-transition.mjs` 的 Ticket 正式化、垂直切片绑定和合法 `next_route` 校验；父 Ticket、缺少垂直切片或 `ready-for-human` 的切片一律 `blocked`。
@@ -39,7 +39,7 @@ Matt phase boundary 是工作阶段之间的上下文决策，不是新的生命
 
 阶段 5 在技术分析后固定进入 `work-unit.implementation-repository-preparation`。编排器按 backend / frontend 影响逐项目展示已有或新建工程、Agent 推荐、仓库 scope、目标路径、Git 初始化、验证命令和风险，取得真实用户确认后再执行。已有工程调用 `implementation-repo-onboarding`；新后端按已确认架构调用对应生成器；新前端调用 `yss-frontend-scaffold-generator`。默认 `external-repository`，`harness-apps` / `git-submodule`、`git init` 和远端仓库创建均须显式选择或授权。
 
-所有命中项目必须达到 `existing-and-onboarded` 或 `initialized-and-verified`，未命中的交付面必须有带原因的 `not-applicable`。聚合结果、Manifest、验证和 onboarding 证据必须可读且当前；否则 `gate.implementation-repositories-ready` 阻断 Ticket 正式化。旧实例恢复时保留已有 Ticket，但将相关 Ticket / Slice Contract 标为 `blocked` / `stale` 并返回本工作单元。
+所有命中项目必须达到 `existing-and-onboarded` 或 `initialized-and-verified`，未命中的交付面必须有带原因的 `not-applicable`。聚合结果、Manifest、验证和 onboarding 证据必须可读且当前；否则 `check.implementation-repositories-ready` 阻断 Ticket 正式化。旧实例恢复时保留已有 Ticket，但将相关 Ticket / Slice Contract 标为 `blocked` / `stale` 并返回本工作单元。
 
 `prototype_confirmation` 通过后，先判断实现仓库登记中的 backend `scaffold_status`。当状态为 `required` 时，在工程基线中先完成脚手架架构选择：Agent 按领域复杂度给出 `domain-driven` / `layered-mvc` 推荐和依据，本体选择作为子项目预填默认值，用户通过批量表确认全部项目或逐项覆盖。选择写入 `scaffold-architecture-decisions.yaml`；处于 `undecided`、`recommended`、`awaiting-user-decision` 或 `stale` 时必须阻断，不得默认 DDD，也不得在生成器内交互。
 
@@ -98,7 +98,7 @@ tracker 选择和冲突按 `docs/agents/issue-tracker.md` 裁决：已持久化 
 
 ## 必须暂停
 
-- Spec baseline、需求冻结、原型确认、OpenAPI Freeze 或 Architecture Review 等普通门禁等待会签裁决（数字人或生物人，以 `docs/agents/digital-human-roles.yaml` 的 `gate_policy` 为准）。暂停输出必须包含：门禁 ID、指定 `role_id`、`runtime_id`、会签文件路径。恢复前执行 `scripts/verify-approval-record --require-approved`；角色错误、起草者自签或生物人门禁被数字人关闭时返回 `blocked`，不得标 `approved`。
+- 注册表中的聚合门禁等待会签裁决（数字人或生物人，以 `docs/agents/digital-human-roles.yaml` 的 `gate_policy` 为准）。暂停输出必须包含：门禁 ID、指定 `role_id`、`runtime_id`、会签文件路径。恢复前执行 `scripts/verify-approval-record --require-approved`；角色错误、起草者自签或生物人门禁被数字人关闭时返回 `blocked`，不得标 `approved`。
 - 需要目标仓库、外部凭据、发布窗口或其他新授权。
 - 状态与证据冲突且无法可靠重建。
 - 专项 skill 失败或返回不可验收结果。
@@ -134,3 +134,17 @@ Matt `prototype` 的回流还必须注明 `prototype_branch`，并保留单文�
 `to-questionnaire` 未收到答案时使用 `external-input-required` 暂停，记录问卷、接收人、所需输出和恢复路由；收到答案后记录 response、重新分类影响面和更新后的权威资产，再回到 `grill-with-docs` 或 `to-spec`。
 
 Release 与 Retrospective 属于生命周期编排器拥有的工作单元。发布和复盘前都必须重新取得 fresh verification；发布还需要发布/回滚证据和独立审查，复盘还需要复盘记录和治理回流判断，再回流权威资产。
+
+## 聚合门禁和检查证据
+
+`gates` 仅记录正式批准 / 验收；`checks` 记录内部专业审查、自动前置核验和就绪计算。检查职责读取角色表 `check_reviews` / `automatic_checks`，命中项失败仍阻断。Plan 内部审查使用入口审阅包的 `internal_checks`，统一以 `gate.plan-approved` 获取用户决定。工程契约审查通过并批准当前版本后同时冻结 OpenAPI，冻结准备不单独索取批准。
+
+Checkpoint 中已批准门禁必须带 `basis: [{ref, digest}]` 和按 `evidence.*` 分类的 `evidence` 引用数组；此处 digest 是实际文件字节的 64 位十六进制 SHA-256。每个适用检查带 `applicable: true`、通过状态和同样的证据绑定；不适用项须 `applicable: false`、原因和影响面证据。内部专业审查还须 `approval_ref`、`subject_ref`、`approval_scope`，审查记录带 `subject_digest` 和不同于 `principal_ref` 的 `drafter_principal_ref`。
+
+聚合门禁的 `subject_ref` 指向当前审阅包，包含 `gate_id` 和 `basis`，覆盖所有检查及其他验收依据；用户批准绑定此包，专业会签记录绑定其 `subject_digest`。检查证据、审阅包和会签记录均纳入 checkpoint 的摘要绑定，避免只改变检查结果却复用旧批准。`scripts/verify-lifecycle-checkpoint` 实际核验；旧 gate ID 只允许历史读取或按源策略校验外部冻结包，不能直接关闭当前门禁。
+
+交付验收可由测试角色完成；实际合并、推送和发布分别执行已有外部动作授权检查。阶段完成不请求发布权限。没有相关资产、依据或范围变化时复用现有批准；相关变化仅失效受影响批准。
+
+## 专项合同加载索引
+
+专项加载提示：实现仓库与脚手架查询 `implementation_repository_preparation`、`backend_scaffold`；切片实现查询 `ticket_formalization`、`ready_for_agent`；UI 查询 `frontend_implementation_plan`、`frontend_implementation_verification`；审查查询 `review_input`；发布查询 `release_readiness`、`git_authorization`、`user_decision_evidence`；战略交接读取 `docs/process/strategic-handoff-package.md` 并按其中验证器执行。

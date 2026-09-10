@@ -7,8 +7,8 @@ import { parseDocument } from "../vendor/yaml.mjs";
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 export const DEFAULT_REGISTRY = path.join(ROOT, "docs/process/lifecycle-registry.yaml");
 export const DEFAULT_BASELINE = path.join(ROOT, "docs/process/lifecycle-registry-baseline.json");
-const ID_PATTERN = /^(stage|gate|artifact|work-unit|evidence)\.[a-z0-9][a-z0-9-]*$/;
-const COLLECTIONS = ["stages", "gates", "artifacts", "work_units", "evidence"];
+const ID_PATTERN = /^(stage|gate|check|artifact|work-unit|evidence)\.[a-z0-9][a-z0-9-]*$/;
+const COLLECTIONS = ["stages", "gates", "checks", "artifacts", "work_units", "evidence"];
 
 function fail(message) {
   throw new TypeError(message);
@@ -106,7 +106,7 @@ export function validateRegistry(registry, { baseline = DEFAULT_BASELINE } = {})
     if (!(key in policy)) fail(`id_policy 缺少字段: ${key}`);
   }
   if (policy.published_ids_immutable !== true) fail("published_ids_immutable 必须为 true");
-  if (policy.pattern !== "^(stage|gate|artifact|work-unit|evidence)\\.[a-z0-9][a-z0-9-]*$") fail("id_policy.pattern 不符合固定命名空间");
+  if (policy.pattern !== "^(stage|gate|check|artifact|work-unit|evidence)\\.[a-z0-9][a-z0-9-]*$") fail("id_policy.pattern 不符合固定命名空间");
   if (policy.baseline !== "docs/process/lifecycle-registry-baseline.json") fail("id_policy.baseline 必须指向发布基线");
   if (!Array.isArray(policy.deprecated_ids)) fail("deprecated_ids 必须是数组");
   const ids = new Map();
@@ -126,7 +126,7 @@ export function validateRegistry(registry, { baseline = DEFAULT_BASELINE } = {})
       ids.set(id, collection);
     }
   }
-  for (const gate of registry.gates) {
+  for (const gate of [...registry.gates, ...registry.checks]) {
     requireReference(ids, gate.stage, `${gate.id}.stage`);
     if (ids.get(gate.stage) !== "stages") fail(`${gate.id}.stage 必须引用 stage.*`);
     if (!Array.isArray(gate.evidence) || gate.evidence.length === 0) fail(`${gate.id}.evidence 必须是非空数组`);
@@ -134,12 +134,27 @@ export function validateRegistry(registry, { baseline = DEFAULT_BASELINE } = {})
       requireReference(ids, reference, `${gate.id}.evidence`);
       if (ids.get(reference) !== "evidence") fail(`${gate.id}.evidence 必须引用 evidence.*`);
     }
+    for (const reference of gate.requires_checks ?? []) {
+      requireReference(ids, reference, `${gate.id}.requires_checks`);
+      if (ids.get(reference) !== "checks" || reference === gate.id) fail(`${gate.id}.requires_checks 必须引用其他 check.*`);
+    }
     for (const reference of gate.requires_gates ?? []) {
       requireReference(ids, reference, `${gate.id}.requires_gates`);
       if (ids.get(reference) !== "gates") fail(`${gate.id}.requires_gates 必须引用 gate.*`);
       if (reference === gate.id) fail(`${gate.id}.requires_gates 不得引用自身`);
     }
   }
+  const visiting = new Set(), visited = new Set();
+  const controls = new Map([...registry.gates, ...registry.checks].map(record => [record.id, record]));
+  function visit(id) {
+    if (visiting.has(id)) fail(`生命周期检查依赖循环: ${id}`);
+    if (visited.has(id)) return;
+    visiting.add(id);
+    const record = controls.get(id);
+    for (const next of [...(record.requires_checks || []), ...(record.requires_gates || [])]) visit(next);
+    visiting.delete(id); visited.add(id);
+  }
+  for (const id of controls.keys()) visit(id);
   for (const artifact of registry.artifacts) {
     requireReference(ids, artifact.stage, `${artifact.id}.stage`);
     if (ids.get(artifact.stage) !== "stages") fail(`${artifact.id}.stage 必须引用 stage.*`);
@@ -152,12 +167,14 @@ export function renderLifecycleStructure(registry) {
   const display = (record, field) => record[`public_${field}`] ?? record[field];
   const lines = [
     "<!-- lifecycle-registry:structure:start -->",
-    `> 此结构区由 \`docs/process/lifecycle-registry.yaml\` 生成。当前为 \`${registry.status}\` 模式：它校验结构和派生文档，不改变运行时状态 schema 或人工批准语义。`, "",
+    `> 此结构区由 \`docs/process/lifecycle-registry.yaml\` 生成。当前为 \`${registry.status}\` 模式：正式门禁、内部检查和派生文档共同消费此事实源。`, "",
     "## 1. 主阶段", "", "| 稳定 ID | 阶段 | 目标 | 退出标准 |", "|---|---|---|---|"
   ];
   for (const stage of registry.stages) lines.push(`| \`${stage.id}\` | ${display(stage, "name")} | ${display(stage, "goal")} | ${display(stage, "exit_criteria")} |`);
-  lines.push("", "## 2. 生命周期对象", "", "门禁是需要裁决的审查点；产物、工作单元和证据不是门禁的同义词。未命中条件的门禁记录 \`not-applicable\` 及原因，不生成空文档。", "", "### 2.1 条件门禁", "", "| 稳定 ID | 门禁 | 所属阶段 | 触发条件 | 前置门禁 | 必须留下的证据 |", "|---|---|---|---|---|---|");
-  for (const gate of registry.gates) lines.push(`| \`${gate.id}\` | ${display(gate, "name")} | \`${gate.stage}\` | ${display(gate, "trigger")} | ${(gate.requires_gates ?? []).map((id) => `\`${id}\``).join("、") || "无"} | ${gate.evidence.map((id) => `\`${id}\``).join("、")} |`);
+  lines.push("", "## 2. 生命周期对象", "", "门禁是需要裁决的审查点；产物、工作单元和证据不是门禁的同义词。未命中条件的门禁记录 \`not-applicable\` 及原因，不生成空文档。", "", "### 2.1 条件门禁", "", "| 稳定 ID | 门禁 | 所属阶段 | 触发条件 | 前置门禁 / 检查 | 必须留下的证据 |", "|---|---|---|---|---|---|");
+  for (const gate of registry.gates) lines.push(`| \`${gate.id}\` | ${display(gate, "name")} | \`${gate.stage}\` | ${display(gate, "trigger")} | ${[...(gate.requires_gates ?? []), ...(gate.requires_checks ?? [])].map((id) => `\`${id}\``).join("、") || "无"} | ${gate.evidence.map((id) => `\`${id}\``).join("、")} |`);
+  lines.push("", "### 内部检查与自动前置条件", "", "检查失败仍阻断。专业审查记录作为聚合门禁证据，不单独请求用户批准；自动检查通过不授权实现或发布。", "", "| 稳定 ID | 检查 | 阶段 | 触发条件 |", "|---|---|---|---|");
+  for (const check of registry.checks) lines.push(`| \`${check.id}\` | ${display(check, "name")} | \`${check.stage}\` | ${display(check, "trigger")} |`);
   lines.push("", "### 2.2 生命周期产物", "", "| 稳定 ID | 产物 | 所属阶段 | 触发条件 |", "|---|---|---|---|");
   for (const artifact of registry.artifacts) lines.push(`| \`${artifact.id}\` | ${display(artifact, "name")} | \`${artifact.stage}\` | ${display(artifact, "trigger")} |`);
   lines.push("", "### 2.3 执行证据", "", "| 稳定 ID | 证据 | 说明 |", "|---|---|---|");

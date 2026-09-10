@@ -58,7 +58,7 @@
 
 ```text
 结论：通过 / 阻断
-生命周期门禁：`gate.prototype-reviewed` 通过 / 不通过
+内部独立审查：`check.prototype-reviewed` 通过 / 不通过
 阻断项：
 - 
 非阻断建议：

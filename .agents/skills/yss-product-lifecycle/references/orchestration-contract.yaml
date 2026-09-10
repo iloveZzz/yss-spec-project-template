@@ -48,6 +48,63 @@ modes:
   orchestrate: bounded_write
   resume: rebuild_then_bounded_write
 
+# 用户请求理解与动作选择的唯一判断合同；自然语言解释由主控完成。
+request_triage:
+  owner: yss-product-lifecycle
+  interpretation:
+    inputs: [current-request, conversation-context, accessible-evidence]
+    capture: [goal, target, expected-deliverable, action-scope, facts, assumptions, unknowns]
+    multiple_intents: preserve-all-goals-and-order-dependencies
+    competing_interpretations: compare-effect-on-next-action
+    numeric_self_confidence: forbidden-as-routing-evidence
+  clarification:
+    trigger: missing-information-changes-next-action-or-authorization-scope
+    before_asking: reuse-context-and-inspect-accessible-evidence
+    short_request_alone: insufficient-reason-to-ask
+    question: explain-gap-and-ask-minimum-actionable-information
+    batch: independent-current-decision-questions
+    same_safe_next_step: investigate-before-asking
+    user_cannot_answer: narrow-problem-or-offer-bounded-guidance-keep-unresolved
+    timeout_is_answer: false
+  mode_selection:
+    priority: [explicit-current-restriction, authorized-continuation, clear-action-request, read-only-fallback]
+    explicit_read_only: route
+    explicit_audit: audit
+    authorized_continuation: resume
+    clear_action_request: orchestrate
+    unresolved_intent: route
+    investigation: read-only-actions-unless-additional-scope-authorized
+    mode_keywords_required: false
+    continuation: revalidate-scope-evidence-and-applicable-gates
+    gates_and_external_authorization: unchanged
+  next_action:
+    consultation: answer
+    investigation: inspect-evidence
+    action_request: execute-first-authorized-unblocked-work-unit
+    material_ambiguity: clarify
+    missing_prerequisite: explain-blocker-and-continue-independent-authorized-work
+    skill_name_only_is_completion: false
+  correction:
+    stop: actions-dependent-on-invalid-interpretation
+    preserve: still-valid-evidence-and-unrelated-user-work
+    report: revised-goal-and-actions-already-taken
+    existing_edits: explain-scope-and-agree-disposition-no-blind-rollback
+    recompute: [intent, scope, impacts, freshness, next-action]
+  acceptance:
+    per_goal: [requested-outcome, readable-evidence, unresolved-items]
+    mismatch: investigate-or-reroute
+    unresolved_triage_is_complete: false
+  presentation:
+    simple: direct-answer-or-action
+    complex: brief-goal-and-next-action
+    material_ambiguity: targeted-question
+    full_workflow_record: applicable-work-units-only
+  evaluation:
+    scenarios_ref: .agents/skills/yss-product-lifecycle/references/request-triage-scenarios.yaml
+    dimensions: [understanding-error, wrong-route, unnecessary-question, omitted-intent, post-triage-stall, correction-failure]
+    baseline: required-before-numeric-improvement-claim
+    structural_checks_prove_model_accuracy: false
+
 execution_efficiency:
   context_query:
     strategy: combine-mode-stage-work-unit-and-required-includes
@@ -259,7 +316,7 @@ work_unit_routes:
     supporting_skills: [domain-modeling, yss-research, grilling]
     skills: [yss-stage-decision, domain-modeling, yss-research, grilling]
     research_contract: {profile: strategy-evidence, mode_before_gate: evidence-audited, artifact_owner: yss-research, downstream_owner: yss-stage-decision}
-    human_gate: domain-strategy-approved
+    internal_review: check.domain-strategy-approved
     applies_when: domain_boundary_or_language_or_core_rule_impact
     not_applicable_reason: no_domain_strategy_impact
   work-unit.stage-decision:
@@ -268,7 +325,7 @@ work_unit_routes:
     supporting_skills: [domain-modeling, yss-research]
     skills: [yss-stage-decision, domain-modeling, yss-research]
     research_contract: {profile: strategy-evidence, mode_before_gate: evidence-audited, artifact_owner: yss-research, downstream_owner: yss-stage-decision}
-    human_gate: stage-decision-package-approved
+    internal_review: check.stage-decision-package-approved
     applies_when: plan_to_spec_requires_stable_decision_package
     not_applicable_reason: existing_approved_stage_decision_current
   work-unit.spec-synthesis:
@@ -297,7 +354,7 @@ work_unit_routes:
         H2: {kind: flow-review, adapter: runnable-flow, react_antd: supported-not-required, antd_facts: conditional}
     implementation_handoff: {production_component_assumptions: required-array, verification_targets: frontend-implementation-only}
     version_boundary: {h2_design_standard: vue-antdv-next-default-react-antd-explicit-compatibility, prototype_must_not_call: yss-ui, production_version_source: implementation-lockfile}
-    human_gate: prototype-confirmation
+    human_gate: gate.product-design-approved
     applies_when: product_design_impact
     not_applicable_reason: no_ui_or_product_design_impact
   work-unit.technical-analysis:
@@ -319,7 +376,7 @@ work_unit_routes:
       statuses: [draft, ready-for-human, approved, blocked, stale, drift, new_impacts, not-applicable]
       approved_by: yss-product-lifecycle
       forbidden: [self-approval, ready-for-agent, production-code-generation]
-    human_gate: openapi-freeze_if_api_impact
+    human_gate: gate.engineering-contract-approved
     applies_when: technical_or_contract_impact
     not_applicable_reason: no_technical_or_contract_impact
   work-unit.implementation-repository-preparation:
@@ -331,7 +388,7 @@ work_unit_routes:
     not_applicable_reason: no_frontend_or_backend_delivery_impact
     decision_boundary: scaffold-choice
     completion_states: [existing-and-onboarded, initialized-and-verified, not-applicable]
-    aggregate_gate: gate.implementation-repositories-ready
+    automatic_check: check.implementation-repositories-ready
     must_complete_before: work-unit.ticket-decomposition
   work-unit.ticket-decomposition:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
@@ -433,7 +490,8 @@ work_unit_routes:
     primary_skill: yss-product-lifecycle
     supporting_skills: []
     skills: [yss-product-lifecycle]
-    human_gate: merge_or_release
+    acceptance_gate: gate.delivery-accepted
+    external_action_authorization: explicit_merge_or_release_only
     applies_when: release_or_stage_completion
     not_applicable_reason: work_not_ready_for_release
 
@@ -474,7 +532,7 @@ ticket_formalization:
 implementation_repository_preparation:
   stage: stage.system-data-engineering
   work_unit: work-unit.implementation-repository-preparation
-  gate: gate.implementation-repositories-ready
+  check: check.implementation-repositories-ready
   applies_per_delivery_role: [backend, frontend]
   affected_role_allowed_states: [existing-and-onboarded, initialized-and-verified]
   unaffected_role_state: not-applicable
@@ -856,7 +914,7 @@ lifecycle_work_unit_requirements:
 release_readiness:
   required: [fresh_verification, release_or_rollback_evidence, independent_review, all_triggered_gates_approved_or_not_applicable]
   conditional:
-    ui_impact: [gate.frontend-implementation-verified, evidence.frontend-implementation-verification]
+    ui_impact: [check.frontend-implementation-verified, evidence.frontend-implementation-verification]
   blocked_when: [triggered_gate_blocked, triggered_gate_stale, triggered_gate_not_evaluated, missing_evidence]
 
 wayfinder_completion:
@@ -1057,3 +1115,17 @@ user_decision_evidence:
   response_absent: paused-human-gate
   invalid_response: blocked
   basis_changed: stale
+
+gate_consolidation:
+  source: docs/process/lifecycle-registry.yaml
+  check_policy: docs/agents/digital-human-roles.yaml
+  checks: automatic_or_independent_review_without_separate_user_decision
+  check_failure: blocks_aggregate_gate
+  plan_decision_boundary: gate.plan-approved
+  readiness: computed_after_current_approved_contract_and_all_applicable_preconditions
+  api_freeze: atomic_with_engineering_contract_approval_same_version
+  acceptance_does_not_authorize: [merge, push, release, production_change]
+  reuse: unchanged_subject_basis_and_scope_only
+  invalidation: affected_dependencies_or_authorization_change_only
+  historical_gate_records: read_only_no_automatic_approval_migration
+  verifier: scripts/verify-lifecycle-checkpoint

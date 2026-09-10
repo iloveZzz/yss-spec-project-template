@@ -1,0 +1,63 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  用户在当前会话确认共识并授权调整：保持阶段，合并正式门禁，保留内部自动检查、
+  独立审查和按范围复用的批准；交付验收与实际外部动作授权分离。
+  变更涉及生命周期门禁、批准核验和完成语义，属于 template-source 维护。
+triggers:
+  - lifecycle-gate
+  - core-validator
+  - permission-boundary
+  - release-semantics
+changed_assets:
+  - CONTEXT.md
+  - docs/process/lifecycle-registry.yaml
+  - docs/process/lifecycle-registry-baseline.json
+  - docs/process/lifecycle-artifact-map.md
+  - docs/agents/digital-human-roles.yaml
+  - docs/process/harness-process-tailoring.md
+  - docs/process/schemas/lifecycle-registry.schema.json
+  - docs/process/schemas/lifecycle-checkpoint.schema.json
+  - scripts/lib/lifecycle-registry.mjs
+  - scripts/lib/lifecycle-controls.mjs
+  - scripts/lib/approval-record.mjs
+  - scripts/lib/digital-human-roles.mjs
+  - scripts/lib/plan-spec-entry.mjs
+  - scripts/lib/lifecycle-context-query.mjs
+  - scripts/lib/strategic-handoff.mjs
+  - scripts/lib/backend-delivery.mjs
+  - .agents/skills/yss-product-lifecycle/SKILL.md
+  - .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml
+  - .agents/skills/yss-prototype-stage/SKILL.md
+  - .agents/skills/yss-stage-decision/SKILL.md
+  - .template-source/tooling/node/test/lifecycle-controls.test.mjs
+  - skills-lock.json
+verification_evidence:
+  - kind: self-check
+    command: git diff --check
+    result: pass
+  - kind: fresh-verification
+    command: pnpm --dir .template-source/tooling/node test
+    result: pass
+  - kind: fresh-verification
+    command: node scripts/verify-user-decision-scenarios
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-lifecycle-registry
+    result: pass
+  - kind: fresh-verification
+    command: node scripts/verify-plan-spec-entry-scenarios
+    result: pass
+  - kind: fresh-verification
+    command: node scripts/verify-lifecycle-context-query-scenarios
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast --checkpoint .template-source/evidence/maintenance/gate-consolidation-l3-checkpoint-2026-09-10.yaml
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

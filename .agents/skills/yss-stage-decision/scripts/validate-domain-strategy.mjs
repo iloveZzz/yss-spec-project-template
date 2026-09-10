@@ -156,7 +156,7 @@ function validate(data, contextRoot) {
       const approvalPath = resolveApprovalRef(approval.approval_ref);
       validateApprovalRecordFile(approvalPath, { requireApproved: true });
       const record = loadApprovalRecord(approvalPath);
-      if (record.gate_id !== "gate.domain-strategy-approved") errors.push("approval.approval_ref 的 gate_id 必须为 gate.domain-strategy-approved");
+      if (record.gate_id !== "check.domain-strategy-approved") errors.push("approval.approval_ref 的 gate_id 必须为 check.domain-strategy-approved");
       if (record.role_id !== approval.approver) errors.push("approval.approver 必须与会签记录 role_id 一致");
     } catch (error) { errors.push(`approval.approval_ref 会签记录无效: ${error.message}`); }
   }

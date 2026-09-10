@@ -6,7 +6,7 @@
 
 1. 源仓必须为 `project-instance`。业务边界与规则合同保留 schema v2，正式便携导出要求 `traceability_version: 1`。`rule_catalog` 的每行包含稳定 `rule_id`、`statement`、`responsible_context`、`status: confirmed`。不得用行号、文字 hash 或导出顺序生成业务身份。
 2. 每个场景明确 `critical`、`rule_refs`、`success_results` 和既有 `failure_results`；兼容字段 `rules` 必须与引用规则正文一致。不变量使用 `rule_ref`，并通过 `scenario_refs` 指向确实覆盖该规则的场景。缺身份或关联先回战略方确认、更新并重新批准，导出器不猜测。
-3. Handoff v3 的 `package_export` 使用导出 schema。`approvals` 按 `source` 字段及 `handoff` 绑定批准记录，声明 `record_ref`、`gate_id`、`digest_kind`。沿用源角色表的现有门禁；战略、阶段、Spec 分别对应各自批准门禁，原型和视觉基线对应 `gate.user-confirmation`，业务 Ticket 集和完整交接对应源 profile 的交接批准门禁（综合模板使用阶段决策包门禁绑定本次交接）。
+3. Handoff v3 的 `package_export` 使用导出 schema。`approvals` 按 `source` 字段及 `handoff` 绑定批准记录，声明 `record_ref`、`gate_id`、`digest_kind`。沿用源角色表的现有门禁；当前综合模板的战略、阶段决策及交接资产统一绑定 `gate.plan-approved`，Spec 对应 Spec 基线批准，原型和视觉基线对应 `gate.product-design-approved`；历史包及其他源 profile 仍按包内明确登记的源批准规则验证，不自动迁移当前门禁状态。
 4. 批准记录除既有会签字段，还要在 `artifact_bindings` 中逐项绑定 `{id, version, digest}`。战略/阶段建议 `canonical-json`；普通文件使用 `sha256-bytes`；视觉基线使用 `visual-baseline`。正文中的 `approved` 和可读取批准路径不能替代当前字节的批准绑定。源角色表要求用户决定记录时，接收端必须支持并核验该策略；旧工具缺少该能力时阻断并要求升级，不能按旧规则放行。
 5. `additional_files` 明确补充依赖；`reference_map` 将 `evidence.*` 稳定证据引用解析为仓内路径。源资产、批准记录、证据引用、Markdown 本地链接和显式目录共同形成依赖闭包。HTTP 引用保留为引用，不在导出时下载网页。
 6. `prototype` 指定 `profile`、`preview_root`、`entry_ref`、`verification_ref`、`verification_digest`（验证记录的字节摘要）；H2 另须 `source_root`、`lock_ref` 和 `source_digest`（源码目录树摘要，算法同下述预览树）。源码交付目录不含 node_modules / .git；锁文件与源码一同保存。预览目录须资源闭合，可通过本地静态服务离线浏览。源码、锁文件或验证记录变化须更新交接摘要并重新批准。
@@ -54,5 +54,3 @@ node .agents/skills/yss-technical-design/scripts/validate-technical-design.mjs <
 ## 维护与同步
 
 共享脚本和包 schema 以主模板为维护源，通过 `scripts/sync-strategic-handoff-tools` 同步到设计/研发模板；源战略 schema 的离线验证副本由该脚本从 canonical `yss-stage-decision/references` 派生。三仓技能仍只编辑 `.agents/skills`，再生成各 runtime 投影与锁。CLI 快照使用各自同步工具，工作树快照用于集成验证，不代表已发布 commit。
-
-维护者可先同步三个 CLI 快照，再运行 `node .template-source/scripts/verify-strategic-handoff-distribution.mjs`，用临时合成资产验证实际生成实例之间的完整链路；结束后清理临时项目。

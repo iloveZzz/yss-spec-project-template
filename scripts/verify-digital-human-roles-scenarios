@@ -86,19 +86,15 @@ selfSign.gate_policy.dual_digital_human[0].countersigners = ["role.requirements-
 mustFail(selfSign, /起草者不得会签自己/, "起草者自签");
 
 const releaseByBot = clone();
-releaseByBot.gate_policy.biological_human = ["gate.architecture-reviewed"];
-releaseByBot.gate_policy.digital_human_review.push({
-  gate: "gate.release-ready",
-  countersigners: ["role.product-manager"]
-});
-mustFail(releaseByBot, /gate\.release-ready/, "数字人关闭发布门禁");
+releaseByBot.gate_policy.runtime_side_effect_approval = "digital-human";
+mustFail(releaseByBot, /runtime_side_effect_approval/, "验收不能替代生物人发布授权");
 
 const missingSigners = clone();
 missingSigners.gate_policy.digital_human_review[0].countersigners = [];
 mustFail(missingSigners, /countersigners/, "单审门禁缺 countersigners");
 
 const stringReview = clone();
-stringReview.gate_policy.digital_human_review = ["gate.prototype-reviewed"];
+stringReview.gate_policy.digital_human_review = ["check.prototype-reviewed"];
 mustFail(stringReview, /必须是含 gate/, "单审门禁仍用字符串名单");
 
 const missingGeneric = clone();
@@ -144,16 +140,16 @@ try {
 try {
   validateApprovalRecord({
     schema_version: 1,
-    gate_id: "gate.release-ready",
+    gate_id: "gate.delivery-accepted",
     decision: "approved",
     actor_kind: "digital-human",
     role_id: "role.product-manager",
     runtime_id: "runtime.generic",
     principal_ref: "instance:pm"
   }, { rolesDoc });
-  throw new TypeError("错误配置未被拒绝: 数字人关发布会签记录");
+  throw new TypeError("错误配置未被拒绝: 非测试角色关闭交付验收");
 } catch (error) {
-  if (!/必须由生物人会签/.test(error.message)) throw new TypeError(`数字人关发布会签记录 失败原因不符合预期: ${error.message}`);
+  if (!/会签角色必须是/.test(error.message)) throw new TypeError(`非测试角色关闭交付验收 失败原因不符合预期: ${error.message}`);
 }
 
 process.stdout.write("数字人角色压力场景验证通过\n");

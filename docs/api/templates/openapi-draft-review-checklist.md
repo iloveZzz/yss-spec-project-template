@@ -10,6 +10,7 @@
 |---|---|---|
 | API 影响记录 / 契约草案 | issue note / design note / `docs/.scratch/<feature>/api/<feature>.yaml` |  |
 | OpenAPI Draft | `docs/.scratch/<feature>/api/<feature>.yaml` |  |
+| Draft validation record | `docs/.scratch/<feature>/api/<feature>-validation.yaml`；`scripts/verify-openapi-draft-validation-record` | 必须绑定当前 YAML SHA-256 与锁定 Redocly lint |
 | Spec / 需求冻结 |  |  |
 | 产品总体设计 / 功能架构 |  |  |
 | 交互说明 / 页面清单 | `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` |  |
@@ -28,12 +29,20 @@
 |---|---|---|---|---|---|---|---|---|
 |  |  |  |  |  |  |  |  |  |
 
+## P0 字段级追踪矩阵
+
+> 只覆盖 P0 写模型、配置模型及影响关键交互的读模型。property path 必须落到嵌套字段，例如 `items[].schemaName`。
+
+| Spec / 交互来源 | operationId | Request / Response schema | Property path | 类型 / 嵌套形状 | Create / Update requiredness | Nullable / Default / Enum / Format | Error / Contract Test | 结论 |
+|---|---|---|---|---|---|---|---|---|
+|  |  |  |  |  |  |  |  |  |
+
 ## 门禁检查
 
 | Gate | Pass 条件 | 结论 | 备注 |
 |---|---|---|---|
 | Draft 成熟度 | 明确当前仅为 review-only；实现、生成 client、契约测试固化均等待 OpenAPI Freeze |  |  |
-| OpenAPI 语法 | YAML、`$ref`、path 参数、lint 通过 |  |  |
+| OpenAPI 语法 | validation record verifier 通过且 SHA 与当前 YAML 一致；单一 YAML document、`$ref`、path 参数、operationId、锁定 Redocly lint 均通过 |  | 缺标准 lint 时可做语义预审，但总结果必须 Blocked |
 | YAML 权威性 | 单一 OAS 3.1 document；未混入生命周期 frontmatter / 根字段；`operationId` 稳定 |  |  |
 | P0 覆盖 | 每个 P0 需求有 endpoint/schema/error/test 或明确非目标 |  |  |
 | 产品总体设计完整 | Draft 已依据 Spec 和产品总体设计 / 功能架构；缺产品总体设计时返回上游补齐 |  |  |
@@ -41,6 +50,8 @@
 | DDD 契约边界 | Endpoint/schema 归属的限界上下文清楚；术语与 `CONTEXT.md` 和功能架构一致；契约不直接暴露内部聚合、Repository 或持久化表结构 |  |  |
 | 页面动作覆盖 | 每个按钮 / 抽屉 / 弹窗动作有 endpoint/non-goal、`actionKey` 和错误码；Spec 明确认认证 / 授权变化时同时映射该行为 |  |  |
 | 对象生命周期 | manage/maintain/configure/create/update/archive/retry/cancel/publish/export/create-draft 语义闭环 |  |  |
+| 共享写模型 | create/update 等操作复用 schema 时，逐操作 requiredness 与省略语义一致；凭据明确创建、更新、掩码回显、omit=保留和 clear 语义 |  | 不硬编码所有 password 必填 |
+| P0 字段追踪 | 适用模型逐 property path 对齐来源、形状、requiredness、约束和 error/test seam |  |  |
 | YSS 响应包装 | 单对象 `SingleResult<T>`；列表 `MultiResult<T>`；分页 `PageResult<T>` |  |  |
 | DTO wire shape | `com.yss.cloud.dto.result` 为新契约 canonical；`data` 落成 endpoint-specific schema，Java 泛型文字不得成为 OAS type / `$ref`；响应使用 `x-yss-response-wrapper`、`YssResultMeta` 和 `allOf` |  |  |
 | 公共响应字段 | `success:boolean`；`dataType:string|null`；`code:string|integer|null`；`message/tips` 显式 nullable；不得把全局 `code` 放宽为 arbitrary object |  |  |
@@ -55,6 +66,13 @@
 | JSON 派生准备 | 明确仅在 Freeze 后用锁定 Redocly CLI 生成 JSON；输出记录、SHA 和下游既有输入路径已定义 |  |  |
 
 ## 结论
+
+| 子结论 | 结论 | 证据 |
+|---|---|---|
+| Structural Validation | Passed / Blocked | validation record / YAML SHA / Redocly evidence |
+| Semantic Review | Passed / Blocked | P0 与字段级追踪矩阵 |
+
+只有两个子结论均为 `Passed` 时，总结论才能为 `Approved`。
 
 | 结论 | 勾选 |
 |---|---|

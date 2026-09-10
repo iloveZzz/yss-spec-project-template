@@ -17,6 +17,35 @@ const query = {
 const first = queryLifecycleContext(query);
 const second = queryLifecycleContext(query);
 
+// 请求解释策略按需查询；添加策略不得改变阶段、技能、转换或模式权限。
+const triageQuery = queryLifecycleContext({ ...query, include: ['request_triage'] });
+const triage = triageQuery.execution.selected.request_triage;
+assert.equal('request_triage' in first.execution.selected, false);
+assert.deepEqual(triageQuery.lifecycle, first.lifecycle);
+assert.deepEqual(triageQuery.skills, first.skills);
+assert.deepEqual(triageQuery.execution.transition, first.execution.transition);
+assert.equal(triageQuery.execution.mode, 'read_only');
+assert.equal(triage.mode_selection.gates_and_external_authorization, 'unchanged');
+assert.equal(triage.mode_selection.explicit_read_only, 'route');
+assert.equal(triage.mode_selection.clear_action_request, 'orchestrate');
+assert.equal(triage.mode_selection.mode_keywords_required, false);
+assert.equal(triage.clarification.timeout_is_answer, false);
+assert.equal(triage.next_action.skill_name_only_is_completion, false);
+assert.equal(triage.acceptance.unresolved_triage_is_complete, false);
+assert.equal(triage.evaluation.structural_checks_prove_model_accuracy, false);
+const triageCases = JSON.parse(readFileSync(path.join(ROOT, triage.evaluation.scenarios_ref), 'utf8'));
+assert.equal(triageCases.sample_kind, 'synthetic');
+assert.equal(triageCases.execution_status, 'not-model-replayed');
+assert.equal(new Set(triageCases.cases.map(item => item.id)).size, triageCases.cases.length);
+for (const item of triageCases.cases) {
+  assert.ok(item.input && item.context && item.expected.outcomes.length && item.forbidden.length, item.id);
+  assert.ok(['route', 'audit', 'resume', 'orchestrate'].includes(item.expected.mode), item.id);
+  assert.ok(Object.values(triage.next_action).includes(item.expected.next_action), item.id);
+}
+const triageSkill = readFileSync(path.join(ROOT, '.agents/skills/triage/SKILL.md'), 'utf8');
+assert.match(triageSkill, /disable-model-invocation: true/);
+assert.doesNotMatch(triageSkill, /trust them and apply the role directly|ready for a human to merge/);
+
 assert.deepEqual(first, second, "同一查询必须产生确定性结果");
 // 合并调用须保留原来三次查询的路由、阶段和技能信息。
 const modeOnly = queryLifecycleContext({ mode: query.mode });

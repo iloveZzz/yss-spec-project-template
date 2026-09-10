@@ -1,0 +1,42 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  本次变更新增 OpenAPI Draft validation record 核心校验器，并使
+  gate.openapi-draft-reviewed 的 Approved 结论依赖当前 YAML 摘要、锁定 lint
+  与字段级语义审查，命中 core-validator 和 lifecycle-gate。
+triggers:
+  - core-validator
+  - lifecycle-gate
+changed_assets:
+  - .agents/skills/yss-openapi-governance/SKILL.md
+  - .agents/skills/yss-openapi-draft-review/SKILL.md
+  - .codex/skills/yss-openapi-governance/SKILL.md
+  - .codex/skills/yss-openapi-draft-review/SKILL.md
+  - docs/api/templates/openapi-draft-review-checklist.md
+  - docs/api/templates/openapi-draft-validation-record-template.yaml
+  - docs/process/schemas/openapi-draft-validation-record.schema.json
+  - scripts/verify-openapi-draft-validation-record
+  - scripts/verify-openapi-draft-validation-scenarios
+  - scripts/verify-openapi-yaml-first-scenarios
+  - scripts/lib/scenario-checks.mjs
+  - skills-lock.json
+verification_evidence:
+  - kind: self-check
+    command: >-
+      scripts/verify-openapi-draft-validation-record --allow-template
+      docs/api/templates/openapi-draft-validation-record-template.yaml &&
+      scripts/verify-openapi-draft-validation-scenarios &&
+      scripts/verify-openapi-yaml-first-scenarios
+    result: pass
+  - kind: fresh-verification
+    command: >-
+      scripts/verify-template-fast（仅带入本轮 OpenAPI 补丁的隔离 Git worktree；
+      共享工作区另有活动任务持续写入）
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

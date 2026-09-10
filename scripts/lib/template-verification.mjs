@@ -32,7 +32,17 @@ export function loadVerificationProfiles(source = readFileSync(PROFILE_FILE, "ut
   ensure(config?.schema_version === 1, "核验 profile schema_version 必须为 1");
   ensure(config.profiles?.fast && config.profiles?.candidate && config.profiles?.release, "必须声明 fast、candidate、release profile");
   ensure(config.groups && typeof config.groups === "object", "核验 profile 缺少 groups");
-  for (const [name, group] of Object.entries(config.groups)) ensure(Array.isArray(group.commands), `检查组 ${name} 缺少 commands`);
+  for (const [name, group] of Object.entries(config.groups)) {
+    ensure(Array.isArray(group.commands), `检查组 ${name} 缺少 commands`);
+    for (const entry of group.commands) {
+      if (typeof entry === "string") continue;
+      ensure(entry && typeof entry === "object", `检查组 ${name} 包含无效命令`);
+      if (entry.lane !== undefined) ensure(typeof entry.lane === "string" && entry.lane, `检查组 ${name} 的 lane 无效`);
+      for (const field of ["resources", "parallel_unless_env"]) {
+        if (entry[field] !== undefined) ensure(Array.isArray(entry[field]) && entry[field].every((value) => typeof value === "string" && value), `检查组 ${name} 的 ${field} 无效`);
+      }
+    }
+  }
   return config;
 }
 
@@ -80,7 +90,13 @@ export function planTemplateVerification({ profile = "fast", changedFiles = [], 
       const command = typeof entry === "string" ? entry : entry.run;
       const when = typeof entry === "string" ? null : entry.when ?? null;
       ensure(typeof command === "string" && command, `检查组 ${group} 包含无效命令`);
-      commands.push({ group, command, when });
+      const planned = { group, command, when };
+      if (typeof entry !== "string") {
+        if (entry.lane !== undefined) planned.lane = entry.lane;
+        if (entry.resources !== undefined) planned.resources = entry.resources;
+        if (entry.parallel_unless_env !== undefined) planned.parallel_unless_env = entry.parallel_unless_env;
+      }
+      commands.push(planned);
     }
   }
   return { requested_profile: profile, effective_profile: effectiveProfile, escalation_reason: escalationReason, changed_files: normalized, unknown_files: routed.unknown, groups: orderedGroups, commands, required_files: config.required_files || [], syntax_files: config.syntax_files || [], max_concurrency: config.max_concurrency || 4 };

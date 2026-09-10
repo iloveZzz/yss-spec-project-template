@@ -1,0 +1,46 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  本次整改改变 create-yss-spec 的实例生成、跨仓同步、文件所有权和历史受管文件清理语义，
+  同时修复历史实例只能永久报告退出分发文件的重要逃逸，因此按 L3 执行。
+triggers:
+  - generation-semantics
+  - cross-repo-contract
+  - historical-important-escape
+  - aggregate-behavior-change
+changed_assets:
+  - .gitignore
+  - .template-source/contracts/create-yss-spec-repository-mode-contract.md
+  - docs/design/README.md
+  - docs/design/design.md
+  - docs/process/strategic-handoff-package.md
+  - scripts/lib/task-package.mjs
+  - scripts/verify-project-instance
+  - submodules/create-yss-spec
+  - .template-source/evidence/maintenance/cli-instance-distribution-boundary-l3-checkpoint-2026-09-10.yaml
+verification_evidence:
+  - kind: self-check
+    command: cd submodules/create-yss-spec && npm test
+    result: pass
+  - kind: cross-repository-verification
+    command: create-yss-spec init -> project modification -> sync -> sync --plan --prune --json -> sync --prune -> sync --prune
+    result: pass
+  - kind: relevant-check
+    command: cd submodules/create-yss-spec && npm pack --dry-run --json
+    result: pass
+  - kind: relevant-check
+    command: npx --yes node@22 scripts/verify-project-instance
+    result: pass
+  - kind: relevant-check
+    command: npx --yes node@24 scripts/verify-project-instance
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

@@ -66,4 +66,4 @@
 
 - 新证据只生成 schema v4、Visual Baseline schema v1 与 `artifact.prototype-deliverable`。
 - prototype evidence schema v1/v2/v3 和 `artifact.high-fidelity-html-prototype` 只读兼容；已经关闭的历史证据保持有效，不补造图片。
-- 在途 UI 证据必须迁移到 v4 并产生 Visual Baseline 后才能关闭 `gate.prototype-verified`；非 UI 功能不生成空包。
+- 在途 UI 证据必须迁移到 v4 并产生 Visual Baseline 后才能关闭 `check.prototype-verified`；非 UI 功能不生成空包。

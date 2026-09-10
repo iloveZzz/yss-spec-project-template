@@ -9,17 +9,6 @@
 - 本文件：解释 YSS UI / Ant Design 双轨、页面设计约束、原型证据和生命周期门禁，不重新定义规范 token 的具体值。
 - Spec、交互说明和状态矩阵：继续承载业务状态、API、权限、并发、失败恢复和页面验收，不写入 `DESIGN.md`。
 
-## 规范校验
-
-模板源维护者在修改设计令牌后执行（项目实例不包含 `.template-source` 工具目录）：
-
-```bash
-node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md
-node .template-source/tooling/node/scripts/design-md.mjs drift
-```
-
-`lint` 固定调用 `@google/design.md@0.4.0`，同时执行本地 frontmatter、章节、组件属性和引用校验；`drift` 检查规范源与全部 token/CSS 派生产物的哈希。任何漂移都必须回写规范源并重新生成投影。
-
 ## 来源与定位
 
 本文件基于本地设计系统包首次分析整理，并在后续用项目 Ant Design 5 Less / `:root` CSS 变量覆盖默认亮色主题。紧凑密度、间距和容器规格同时参考既有 YSS 实现。视觉 token 的规范源改为根目录 `DESIGN.md`；本文件和 `docs/design/tokens/*` 是治理说明与派生视图。外部目录只作为历史输入或实现样本，不作为后续工程依赖，也不作为实现语言。

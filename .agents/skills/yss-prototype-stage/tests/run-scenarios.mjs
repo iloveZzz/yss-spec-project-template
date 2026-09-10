@@ -83,7 +83,7 @@ function common(profile, kind, block) {
     user_confirmation: { result: "approved", confirmation_ref: "confirmation.md", confirmed_decision: "接受当前设计", operable_scope: ["主操作"], simulations_or_gaps: [] },
     gaps: [], blockers: []
   };
-  const f = buildDecisionFixture(path.join(tempRoot, `decision-${profile}-${kind}`), { boundary: "gate.user-confirmation", scope: data.user_confirmation.operable_scope, subjectContent: JSON.stringify(prototypeDecisionSnapshot(data)) });
+  const f = buildDecisionFixture(path.join(tempRoot, `decision-${profile}-${kind}`), { boundary: "gate.product-design-approved", scope: data.user_confirmation.operable_scope, subjectContent: JSON.stringify(prototypeDecisionSnapshot(data)) });
   data.user_confirmation.user_decision_ref = f.ref;
   data.user_confirmation.decision_subject_ref = f.requirement.subject_ref;
   return data;

@@ -87,7 +87,7 @@ async function validate(data, contextRoot) {
       const approvalPath = resolveApprovalRef(approval.approval_ref);
       validateApprovalRecordFile(approvalPath, { requireApproved: true });
       const record = loadApprovalRecord(approvalPath);
-      if (record.gate_id !== "gate.stage-decision-package-approved") errors.push("approval_ref 的 gate_id 必须为 gate.stage-decision-package-approved");
+      if (record.gate_id !== "check.stage-decision-package-approved") errors.push("approval_ref 的 gate_id 必须为 check.stage-decision-package-approved");
       if (record.role_id !== approval.approver) errors.push("approval.approver 必须与会签记录 role_id 一致");
     } catch (error) { errors.push(`approval_ref 会签记录无效: ${error.message}`); }
   }

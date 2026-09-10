@@ -12,6 +12,8 @@ export function planEntryPolicy(options = {}) {
   if (!policy?.required_checks?.length || !policy?.gate_impacts) fail('缺少 Plan 入口策略');
   const gateIds = registry.gates.filter(gate => gate.stage === 'stage.plan').map(gate => gate.id).sort();
   if (JSON.stringify(gateIds) !== JSON.stringify(Object.keys(policy.gate_impacts).sort())) fail('Plan 门禁触发策略覆盖不完整');
+  const checkIds = registry.checks.filter(check => check.stage === 'stage.plan').map(check => check.id).sort();
+  if (JSON.stringify(checkIds) !== JSON.stringify(Object.keys(policy.check_impacts || {}).sort())) fail('Plan 内部检查触发策略覆盖不完整');
   return policy;
 }
 
@@ -21,7 +23,7 @@ export function assertPlanSpecEntry(state, options = {}) {
   const io = decisionIO(options);
   const policy = planEntryPolicy(options);
   const review = io.document(state.plan_review_ref);
-  if (review.schema_version !== 1 || review.kind !== 'plan-entry-review' || review.feature_id !== state.feature_id) fail('审阅包身份或范围不匹配');
+  if (review.schema_version !== 1 || review.kind !== 'plan-entry-review' || review.gate_id !== 'gate.plan-approved' || review.feature_id !== state.feature_id) fail('审阅包身份或范围不匹配');
   if (!Array.isArray(review.basis) || !review.basis.length) fail('缺少带摘要依据');
   const basis = new Map();
   for (const asset of review.basis) {
@@ -48,30 +50,29 @@ export function assertPlanSpecEntry(state, options = {}) {
     for (const field of ['noncritical_reason', 'owner', 'resolution_point', 'downstream_recipient']) if (!text(item[field])) fail(`延期项缺少 ${field}`);
     evidence(item.evidence_refs);
   }
-  for (const [gateId, impact] of Object.entries(policy.gate_impacts)) {
+  for (const [gateId, impact] of Object.entries(policy.check_impacts)) {
     if (typeof review.impacts?.[impact] !== 'boolean') fail(`未评估影响面: ${impact}`);
-    const gate = review.gates?.[gateId];
+    const gate = review.internal_checks?.[gateId];
     evidence(gate?.evidence_refs);
     if (review.impacts[impact]) {
       if (gate.status !== 'approved' || !basis.has(gate.approval_ref) || !basis.has(gate.subject_ref)) fail(`命中门禁未批准或未绑定依据: ${gateId}`);
       const record = io.document(gate.approval_ref);
       if (record.gate_id !== gateId || record.subject_ref !== gate.subject_ref || !gate.approval_scope?.includes(state.feature_id) || JSON.stringify([...(gate.approval_scope || [])].sort()) !== JSON.stringify([...(record.approval_scope || [])].sort())) fail(`会签资产或范围不匹配: ${gateId}`);
       validateApprovalRecord(record, { ...options, requireApproved: true });
-      assertUserDecisionRequirement({ boundary: gateId, subject_ref: gate.subject_ref, scope: gate.approval_scope, user_decision_ref: record.user_decision_ref }, options);
     } else if (gate.status !== 'not-applicable' || !text(gate.reason)) fail(`未命中门禁须有原因和依据: ${gateId}`);
   }
   // 门禁依赖不能通过将上游标成 N/A 来跳过。
   const registry = io.document('docs/process/lifecycle-registry.yaml');
-  for (const gate of registry.gates.filter(gate => gate.stage === 'stage.plan')) {
-    if (review.gates[gate.id]?.status === 'approved') {
-      for (const dependency of gate.requires_gates || []) if (review.gates[dependency]?.status !== 'approved') fail(`门禁依赖未批准: ${dependency}`);
+  for (const gate of registry.checks.filter(gate => gate.stage === 'stage.plan')) {
+    if (review.internal_checks[gate.id]?.status === 'approved') {
+      for (const dependency of gate.requires_checks || []) if (review.internal_checks[dependency]?.status !== 'approved') fail(`门禁依赖未批准: ${dependency}`);
     }
   }
   const reconciliation = io.document(review.context_reconciliation_ref);
   if (reconciliation.status !== 'reconciled' || reconciliation.repository_mode !== 'project-instance') fail('Context 未调和');
   try { verifyContextReconciliation(path.resolve(io.root, review.context_reconciliation_ref), { root: io.root }); }
   catch (error) { fail(`Context reconciliation 验证失败: ${error.message}\n`); }
-  assertUserDecisionRequirement({ boundary: 'plan-conclusion', subject_ref: state.plan_review_ref, scope: [state.feature_id], user_decision_ref: state.plan_user_decision_ref }, options);
+  assertUserDecisionRequirement({ boundary: 'gate.plan-approved', subject_ref: state.plan_review_ref, scope: [state.feature_id], user_decision_ref: state.plan_user_decision_ref }, options);
   return { result: 'allowed', blocking_signals: [], missing_requirements: [], evidence_refs: [state.plan_review_ref, ...basis.keys()], next_work_unit: null };
 }
 

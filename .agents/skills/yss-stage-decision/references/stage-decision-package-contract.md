@@ -9,7 +9,7 @@
 - `context_snapshot`：只引用根 `CONTEXT.md`，并绑定结构化术语身份、全文摘要和引用集摘要；
 - `domain_strategy_ref`：领域战略合同的稳定 ID、版本、digest 和批准状态；
 - UI/API/Data/Backend/Frontend/跨仓/高风险影响面布尔值；
-- 每个下游消费者的传播方式、重新批准条件、证据引用和批准记录。`approval.approval_ref` 必须指向可读取且通过 `scripts/verify-approval-record` 的 `gate.stage-decision-package-approved` 会签记录；`approval.approver` 必须与记录中的 `role_id` 一致。
+- 每个下游消费者的传播方式、重新批准条件、证据引用和批准记录。`approval.approval_ref` 必须指向可读取且通过 `scripts/verify-approval-record` 的 `check.stage-decision-package-approved` 会签记录；`approval.approver` 必须与记录中的 `role_id` 一致。
 
 ## 未决项规则
 

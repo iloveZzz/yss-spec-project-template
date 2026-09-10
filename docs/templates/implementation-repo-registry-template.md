@@ -92,5 +92,5 @@ Harness 内项目路径约束：`apps/backend/`、`apps/frontend/` 只能作为�
 - 关联垂直切片：
 - 关联阶段 checkpoint：
 - 实现仓库准备聚合结果：
-- `gate.implementation-repositories-ready`：approved / blocked
+- `check.implementation-repositories-ready`：approved / blocked
 - fresh verification 命令：
