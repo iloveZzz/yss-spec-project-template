@@ -13,6 +13,12 @@ Standards and Spec run as **parallel sub-agents** so they don't pollute each oth
 
 If `docs/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`; do not invoke another user-invoked skill yourself.
 
+文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+
+## 文档写作
+
+撰写审查报告时，读取 `docs/process/document-writing.md` 的共用写法及审查指引；保留各审查轴的 findings、严重性、定位、证据及原裁决，不因压缩表达合并或降级。
+
 ## Process
 
 ### 1. Pin the fixed point and candidate

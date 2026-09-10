@@ -7,6 +7,8 @@ description: Use when independently reviewing low-fidelity UI, interaction specs
 
 Use this skill as the independent low-fidelity review in `yss-prototype-stage`. The review is fail-closed: if the design cannot drive calibrated requirements, API, frontend acceptance, and slices, send it back to product design. `yss-product-lifecycle` alone records the resulting `check.prototype-reviewed` decision.
 
+文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+
 ## Trigger Boundary
 
 Run this independent gate only when UI changes affect a primary user flow, navigation, permissions, exception/recovery states, state transitions, or OpenAPI implications. For copy edits, token/color/spacing adjustments, and isolated visual fixes with no behavior, state, permission, navigation, or API impact, record `not-applicable` with the impact assessment; do not create prototype-review artifacts.

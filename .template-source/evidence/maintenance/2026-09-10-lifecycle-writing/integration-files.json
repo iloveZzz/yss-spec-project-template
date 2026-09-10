@@ -1,0 +1,20 @@
+{
+  ".agents/skills/code-review/SKILL.md": "7fdb038a1c2b60d35a7a25223bcd347ad7d1e337bdb398d12384e8983e825663",
+  ".agents/skills/yss-implementation-contract-compiler/SKILL.md": "eea536ce6e5cbe35b213e505ea57a407ecc5e52bec9c8e522cc146ceaa9fcdfc",
+  ".agents/skills/yss-openapi-governance/SKILL.md": "89a8d020be5811aece295e82a91b59ea9b122539bdc0f2b8a5abe48dab01e7d5",
+  ".agents/skills/yss-product-lifecycle/SKILL.md": "c0dd91b2eeb93147548eb75832d976774cc9b261049bf46bc6c3d7efd3c2c3b8",
+  ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "c848c4d8ce85f013708822cb18829901ab91fb3452e3d2eb7bfb92bad7a084ac",
+  ".agents/skills/yss-prototype-stage/SKILL.md": "a8ae8048b25c756aea262aea9651f2473e89945f87e1b7513685896263ab0599",
+  ".agents/skills/yss-research/SKILL.md": "fc331f66de0c0b3fd924fd2e2c8ac763aad14d2db3b18c500b1d57c921aaff50",
+  ".agents/skills/yss-stage-decision/SKILL.md": "4824ec812208f58eb93f3c420fd3df17cedeebd3cb33bbe3c8a0467341b085e3",
+  ".agents/skills/yss-technical-design/SKILL.md": "af23e4f6f7b32a4310d1a4fd08b7393c47ec34aca2482e4accf79e5be7e4fafe",
+  ".codex/skills/yss-openapi-governance/SKILL.md": "89a8d020be5811aece295e82a91b59ea9b122539bdc0f2b8a5abe48dab01e7d5",
+  ".codex/skills/yss-product-lifecycle/SKILL.md": "c0dd91b2eeb93147548eb75832d976774cc9b261049bf46bc6c3d7efd3c2c3b8",
+  ".codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "c848c4d8ce85f013708822cb18829901ab91fb3452e3d2eb7bfb92bad7a084ac",
+  "docs/plan/templates/plan-template.md": "419720fb002e7133e66286abdeeb115f1b49b3af1a75b0b08eacb8cb6257e364",
+  "docs/templates/spec-template.md": "7594fbab61504e33f6fa9b25ca0da006441191f8eef01c1ff2984ed67b4c1dcf",
+  "docs/templates/vertical-slice-ticket-template.md": "6153b657dc1f604f8474b4ae88e34ad697538b3006f317ae8c047c3a0420f775",
+  "skills-lock.json": "bb381ef228b2a002b85aa136b4dc33c1a45142ab66ab81fdb7aaafecaba21935",
+  "docs/process/document-writing.md": "71568ec11b479da9afe60532b7668d166100558bfa50b8235a148bd211edc3cf",
+  "docs/templates/examples/lifecycle-writing-examples.md": "abcf9407675e49ecc398629de10bc73e7f064131af5e393dd10cc03c062647d0"
+}

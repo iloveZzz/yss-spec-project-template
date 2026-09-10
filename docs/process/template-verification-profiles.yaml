@@ -151,6 +151,8 @@ syntax_files:
   - scripts/update-skill-lock
   - scripts/verify-upstream-skill-source
   - scripts/lib/skill-supply-chain.mjs
+  - scripts/lib/profile-skill-sync.mjs
+  - scripts/sync-profile-skills
   - .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.mjs
   - .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs
   - .agents/skills/yss-repository/tests/profile-routing.test.mjs
@@ -298,6 +300,7 @@ groups:
       - { run: "pnpm --dir .template-source/tooling/node check:vendor", when: template-source }
   skills:
     commands:
+      - { run: "scripts/sync-profile-skills --check --profile=all" , when: template-source }
       - { run: "scripts/sync-skills --check" }
       - { run: "scripts/update-skill-lock --check" }
       - { run: "scripts/verify-skill-registry" }

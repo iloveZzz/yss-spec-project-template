@@ -7,6 +7,12 @@ description: Use when a YSS vertical slice is entering implementation, spans mul
 
 阶段 7 的实现合同编译器。它把已批准的生命周期资产、垂直切片、capability 和窄 Recipe 编译为 `Slice Implementation Contract` v2 草案；不批准合同、不写业务代码、不设置 `ready-for-agent`。
 
+文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+
+## 文档写作
+
+撰写实现合同的解释正文和切片交接说明前，读取 `docs/process/document-writing.md` 的共用写法及工程契约 / Ticket 指引；不改变结构化合同、批准状态或就绪条件。
+
 ## 输入
 
 先读取 Spec、切片 Ticket、需求冻结、适用的原型确认、OpenAPI Freeze/no-impact、系统/数据架构、Design Review、Build Architecture Checklist、实现仓库和验证命令。输入缺失、未批准或 `stale` 时输出 `blocked`，交回 `yss-product-lifecycle`。

@@ -57,6 +57,7 @@ capability_contract:
     preserve_all_reasons: true
   deterministic_order: [recipe-declaration, dependency-topology, skill-id]
 capabilities:
+  - { id: writing.lifecycle-document, primary_skill: i-have-adhd, task_modes: [guidance] }
   - { id: architecture.technical-design, primary_skill: yss-technical-design, task_modes: [guidance, integration, review-input] }
   - { id: architecture.mvc-design, primary_skill: yss-mvc-design, architecture_family: layered-mvc, task_modes: [guidance, integration, review-input] }
   - { id: layer.mvc-service, primary_skill: yss-application, architecture_family: layered-mvc, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
@@ -110,10 +111,24 @@ recipes:
   - { id: frontend.vue3-scaffold, capabilities: [scaffold.frontend-vue3] }
   - { id: backend.springboot3-migration, capabilities: [migration.springboot3, quality.java-code-style] }
 skill_dependencies:
+  prototype-review:
+    - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
+  yss-implementation-contract-compiler:
+    - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
+  yss-openapi-governance:
+    - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
+  yss-stage-decision:
+    - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
+  yss-research:
+    - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
+  yss-product-lifecycle:
+    - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
   code-review:
+    - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
     - { skill: yss-repository, type: context-conditional, when: backend-persistence-impact }
     - { skill: yss-mybatis, type: context-conditional, when: backend-persistence-impact }
   yss-prototype-stage:
+    - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
     - { skill: prototype-review, type: review-only }
     - { skill: yss-design-system, type: coordination-only }
     - { skill: yss-antdv-next-design, type: context-conditional, when: h2-vue-antdv-next-default }
@@ -129,6 +144,7 @@ skill_dependencies:
     - { skill: yss-tactical-design, type: context-conditional, when: tactical-domain }
     - { skill: lombok, type: context-conditional, when: pojo }
   yss-technical-design:
+    - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
     - { skill: yss-tactical-design, type: coordination-only, when: domain-driven }
     - { skill: yss-mvc-design, type: coordination-only, when: layered-mvc }
   yss-mvc-design:
@@ -198,6 +214,11 @@ invocation_contract:
       invocation_mode: user
       primary_output: maintenance-operation
   overrides:
+    i-have-adhd:
+      invocation_mode: model
+      trigger_conditions: [lifecycle-document-output]
+      exclusion_conditions: [code-only-work, command-only-work, unrelated-conversation, user-disabled]
+      primary_output: document-writing-assistance
     yss-prototype-stage:
       invocation_mode: both
       trigger_conditions: [impact:prototype]
@@ -218,6 +239,7 @@ agent_runtime_roots:
   cursor: .cursor/skills
   pi: .pi/skills
 skills:
+  - { id: i-have-adhd, layer: core, maturity: supported, instance_default_discoverable: true, aliases: [], impacts: [writing] }
   - id: alibaba-java-code-style
     layer: specialist
     maturity: supported

@@ -1,0 +1,38 @@
+[
+  {
+    "command": [
+      "node",
+      ".template-source/evidence/maintenance/2026-09-10-lifecycle-writing/verify-integration.mjs"
+    ],
+    "started_at": "2026-09-10T14:37:29.636789+00:00",
+    "exit_code": 0,
+    "output": "PASS: lifecycle query, 8 skill inputs, entry budget, links/anchors, single Ticket status, unchanged gate/role/glossary registries, local manifest eligibility.\n"
+  },
+  {
+    "command": [
+      "node",
+      "scripts/verify-business-language-scenarios"
+    ],
+    "started_at": "2026-09-10T14:37:29.935720+00:00",
+    "exit_code": 0,
+    "output": "本体业务角色通俗语言场景验证通过\n"
+  },
+  {
+    "command": [
+      "scripts/verify-lifecycle-context-query-scenarios"
+    ],
+    "started_at": "2026-09-10T14:37:29.997339+00:00",
+    "exit_code": 0,
+    "output": "生命周期按需上下文查询场景验证通过\n"
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "started_at": "2026-09-10T14:37:30.476843+00:00",
+    "exit_code": 0,
+    "output": ""
+  }
+]

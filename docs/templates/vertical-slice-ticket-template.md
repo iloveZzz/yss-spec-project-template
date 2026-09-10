@@ -4,7 +4,7 @@ status: ready-for-human
 
 # 垂直切片 Ticket：<标题>
 
-Status: ready-for-human
+填写前读取[中文写作规范](../process/document-writing.md)和 [Ticket 对照](examples/lifecycle-writing-examples.md#3-ticket把交付行为与实现就绪区分清楚)。状态只在 frontmatter 维护，正文记录依据。
 
 ## 父级
 
@@ -13,6 +13,8 @@ Status: ready-for-human
 ## 要构建什么
 
 描述本 Ticket 要交付的窄而完整的端到端行为。它必须贯穿所有受影响层，是可独立验证的垂直切片，不能只是某一层的横向任务。
+
+先用一句话写出用户操作及交付结果，再引用对应 Spec 规则、版本和本切片边界；不要重写冻结需求或填入未经确认的范围。
 
 ## 覆盖的用户故事
 
@@ -30,6 +32,8 @@ Status: ready-for-human
 | | | |
 
 ## 验收标准
+
+每项写条件、操作和可观察结果，关联上游规则；保留必要例外。测试未执行前保持未勾选。
 
 - [ ] 标准 1
 - [ ] 标准 2
@@ -92,7 +96,7 @@ Status: ready-for-human
 
 ## 阻塞关系
 
-- 无，可立即开始
+列出实际依赖、未决项、责任人和解除条件；尚未核验时写“待核验”。只有确认没有阻塞时才写“无”，无依赖不等于已通过实现就绪核验。
 
 ## 重路由状态
 
@@ -116,9 +120,9 @@ Status: ready-for-human
 
 ## 状态
 
-`ready-for-agent`
+状态依据：<当前版本合同、批准和就绪核验记录引用，以及尚未关闭的阻塞>。
 
-> 仅当阻塞关系为“无”且必要门禁已通过时填写 `ready-for-agent`；否则写明被哪个 Ticket 阻塞。
+> 默认 frontmatter 为 `ready-for-human`。仅在生命周期确认合同已批准且当前、阻塞已清除、全部适用门禁及就绪条件通过后更新为 `ready-for-agent`；本节不另维护第二个状态值。
 
 ## AI / 人工审查点
 

@@ -9,6 +9,12 @@ Investigate facts that a YSS decision depends on. Produce evidence and bounded c
 
 `research` is a deprecated compatibility alias. Use `yss-research` in new assets and routing.
 
+文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+
+## 文档写作
+
+撰写研究简报或结论前，读取 `docs/process/document-writing.md` 的共用写法和研究指引；既有证据结构、来源限定和校验器要求保持完整。
+
 ## Profiles
 
 - `technical-evidence`: standards, official documentation, source code, third-party APIs, framework behavior, protocols, or implementation constraints. Decision-bearing claims must trace to primary sources.

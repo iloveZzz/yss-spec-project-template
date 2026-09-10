@@ -15,6 +15,12 @@ Spec / 设计输入 → OpenAPI YAML Draft → 审查与 Freeze → JSON 派生�
 
 YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/openapi-wire-profile.yaml` 单一维护。它描述公开 wire shape，不是 Java 字段或 getter 清单；本 skill 必须消费 profile，不能在治理文档、feature YAML 和 JSON 中各自发明 `SingleResult`、`PageResult` 或 `PageQuery` 字段表。
 
+文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+
+## 文档写作
+
+编写接口说明和契约评审交接正文前，读取 `docs/process/document-writing.md` 的共用写法及工程契约指引；协议标识、schema、冻结状态和验证记录按原合同保存。
+
 ## 边界与职责
 
 使用 `yss-openapi-governance`：

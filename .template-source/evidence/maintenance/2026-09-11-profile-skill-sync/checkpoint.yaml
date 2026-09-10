@@ -1,0 +1,52 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  本次维护新增四类 Agent 子项目的跨仓 Skill 消费合同、适配与退役语义，并把漂移检查接入模板 CI；
+  同时改变研发、后端、前端 Profile 的技能投影和生成实例分发内容，因此按 cross-repo-contract、
+  generation-semantics 和 core-validator 的 L3 强度执行。
+triggers:
+  - cross-repo-contract
+  - generation-semantics
+  - core-validator
+changed_assets:
+  - .template-source/profile-skill-sync.json
+  - .template-source/profile-skill-patches
+  - scripts/sync-profile-skills
+  - scripts/lib/profile-skill-sync.mjs
+  - .template-source/tooling/node/test/profile-skill-sync.test.mjs
+  - docs/agents/skills-maintenance.md
+  - docs/process/template-verification-profiles.yaml
+  - scripts/verify-retired-skill-ids
+  - submodules/yss-harness-design-agent
+  - submodules/yss-harness-dev-agent
+  - submodules/yss-harness-backend-agent
+  - submodules/yss-harness-frontend-agent
+verification_evidence:
+  - kind: self-check
+    command: node --test .template-source/tooling/node/test/profile-skill-sync.test.mjs
+    result: pass
+  - kind: relevant-check
+    command: scripts/sync-profile-skills --check --profile=all
+    result: pass
+  - kind: relevant-check
+    command: scripts/verify-retired-skill-ids
+    result: pass
+  - kind: fresh-verification
+    command: submodules/yss-harness-design-agent/scripts/verify-template-fast
+    result: pass
+  - kind: fresh-verification
+    command: submodules/yss-harness-dev-agent/scripts/verify-template-fast
+    result: pass
+  - kind: fresh-verification
+    command: submodules/yss-harness-backend-agent/scripts/verify-template-fast
+    result: pass
+  - kind: fresh-verification
+    command: submodules/yss-harness-frontend-agent/scripts/verify-template-fast
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

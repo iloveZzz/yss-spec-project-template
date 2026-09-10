@@ -7,6 +7,12 @@ description: 在 YSS 技术分析中统一承接需求与战略输入，按已�
 
 由 `yss-product-lifecycle` 调度，负责 `work-unit.technical-analysis` 的技术设计，不另起生命周期、不生成生产代码。生命周期维护批准和状态；`yss-implementation-contract-compiler` 消费批准且当前的设计，起草实现合同。
 
+文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+
+## 文档写作
+
+起草或修订技术设计解释正文前，读取 `docs/process/document-writing.md` 的共用写法及工程契约指引，并在分支派发中传递该引用；结构化合同保持原 schema 和验证要求。
+
 ## 输入与架构选择
 
 先读根 `CONTEXT.md`、已批准且当前的 Spec、业务规则、关键场景、适用的 API 契约、ADR 和工程约束。没有 API 或其他专项影响时记录有依据的不适用，不生成占位设计。

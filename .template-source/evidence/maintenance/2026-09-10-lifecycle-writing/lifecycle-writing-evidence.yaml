@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "profile": "technical-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "中文研发文档写作适配",
+    "audience": "YSS 模板维护者和生命周期文档起草者",
+    "time_horizon": "2026-09-10 草案审阅",
+    "research_questions": [
+      "上游约束哪些输出？",
+      "现有证据是否支持直接作为中文研发文档默认规范？"
+    ],
+    "inclusion_criteria": [
+      "用户指定第一方技能及评测报告",
+      "当前 YSS 维护和文档合同"
+    ],
+    "exclusion_criteria": [
+      "医学推断、AI 检测规避",
+      "热度指标、转载和不可核验效果承诺"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "yss-product-lifecycle",
+    "decision_ref": ".template-source/evidence/maintenance/2026-09-10-lifecycle-writing/writing-guideline-draft.md"
+  },
+  "search_log": [
+    {
+      "id": "search-001",
+      "channel": "web open",
+      "query_or_corpus": "用户指定仓库 main 的 skills/i-have-adhd/SKILL.md 与 evals/RESULTS.md",
+      "searched_at": "2026-09-10",
+      "result": "results-found"
+    },
+    {
+      "id": "search-002",
+      "channel": "GitHub API and raw HTTPS",
+      "query_or_corpus": "GET /repos/ayghri/i-have-adhd/commits/main；解析为 7b9069b39972e269e61bd95c2f66ebb90cac6a02；按该 revision 读取两份原始文件并计算 SHA-256",
+      "searched_at": "2026-09-10",
+      "result": "results-found"
+    },
+    {
+      "id": "search-003",
+      "channel": "web open fixed revision",
+      "query_or_corpus": "https://github.com/ayghri/i-have-adhd/blob/7b9069b39972e269e61bd95c2f66ebb90cac6a02/skills/i-have-adhd/SKILL.md 与 https://github.com/ayghri/i-have-adhd/blob/7b9069b39972e269e61bd95c2f66ebb90cac6a02/evals/RESULTS.md；重点核对例外、失败和实验限制",
+      "searched_at": "2026-09-10",
+      "result": "results-found"
+    },
+    {
+      "id": "search-004",
+      "channel": "local repository read",
+      "query_or_corpus": "yss-project.yaml、CONTEXT.md、maintaining-skills、维护强度策略；延续前轮已读取的三个阶段模板与生命周期编排合同",
+      "searched_at": "2026-09-10",
+      "result": "results-found"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-001",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "first-party-source",
+      "source_ref": "https://github.com/ayghri/i-have-adhd/blob/7b9069b39972e269e61bd95c2f66ebb90cac6a02/skills/i-have-adhd/SKILL.md",
+      "locator": "frontmatter; Persistence; Rules; When to break the rules",
+      "stance": "support",
+      "observed_at": "2026-09-10",
+      "revision": "7b9069b39972e269e61bd95c2f66ebb90cac6a02",
+      "sha256": "3170b16ace00aecb0dd7feb54c0b5aa642e7502acda06ecd24fd89a11c7127e9",
+      "observation": "显式调用、会话持续；规则聚焦行动、步骤、状态和输出风格。",
+      "limitations": [
+        "第一方材料，非独立效果验证；按章节定位，原始文件摘要可复核。"
+      ]
+    },
+    {
+      "id": "evidence-002",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "first-party-source",
+      "source_ref": "https://github.com/ayghri/i-have-adhd/blob/7b9069b39972e269e61bd95c2f66ebb90cac6a02/skills/i-have-adhd/SKILL.md",
+      "locator": "Rules 9; When to break the rules; Pre-send check",
+      "stance": "counter",
+      "observed_at": "2026-09-10",
+      "revision": "7b9069b39972e269e61bd95c2f66ebb90cac6a02",
+      "sha256": "3170b16ace00aecb0dd7feb54c0b5aa642e7502acda06ecd24fd89a11c7127e9",
+      "observation": "允许完整性、任务及运行时约束优先，并保留真实不确定性；不能把上游概括成无条件压缩。",
+      "limitations": [
+        "第一方材料，非独立效果验证；按章节定位，原始文件摘要可复核。"
+      ]
+    },
+    {
+      "id": "evidence-003",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "first-party-source",
+      "source_ref": "https://github.com/ayghri/i-have-adhd/blob/7b9069b39972e269e61bd95c2f66ebb90cac6a02/evals/RESULTS.md",
+      "locator": "Release gate; Per-case weighted scores; Findings; Reading these numbers",
+      "stance": "support",
+      "observed_at": "2026-09-10",
+      "revision": "7b9069b39972e269e61bd95c2f66ebb90cac6a02",
+      "sha256": "a9f0375594a94d2e1c4205aa6047d0213a45d9dc163ff1a63c12a534a7941b8f",
+      "observation": "作者报告进度和错误表达收益较集中，候选仍有阻断项；有未经证实原因的回归及样本、同源评价和工具限制。",
+      "limitations": [
+        "第一方材料，非独立效果验证；按章节定位，原始文件摘要可复核。"
+      ]
+    },
+    {
+      "id": "evidence-004",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "first-party-source",
+      "source_ref": "https://github.com/ayghri/i-have-adhd/blob/7b9069b39972e269e61bd95c2f66ebb90cac6a02/evals/RESULTS.md",
+      "locator": "Scores; Per-case weighted scores",
+      "stance": "counter",
+      "observed_at": "2026-09-10",
+      "revision": "7b9069b39972e269e61bd95c2f66ebb90cac6a02",
+      "sha256": "a9f0375594a94d2e1c4205aa6047d0213a45d9dc163ff1a63c12a534a7941b8f",
+      "observation": "作者同时报告总体和多个维度改善；残余问题不能支持全盘否定。",
+      "limitations": [
+        "第一方材料，非独立效果验证；按章节定位，原始文件摘要可复核。"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-001",
+      "claim_kind": "technical-fact",
+      "statement": "上游是显式调用并在会话中持续的输出风格技能，包含任务完整性与运行时例外。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-001"
+      ],
+      "counter_signal_refs": [
+        "evidence-002"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-002",
+      "claim_kind": "technical-fact",
+      "statement": "作者评测报告中的收益主要集中于进度和错误表达，候选仍有阻断项，并记录未经证实原因的回归及实验限制。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-003"
+      ],
+      "counter_signal_refs": [
+        "evidence-004"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [
+    "未复跑上游评测；作者报告的实验和模型名称未作独立核验。",
+    "没有本项目中文 Plan、Spec、Ticket 的真实生成和用户盲评结果；效果仍待验证。",
+    "本轮三组例子为虚构维护样例，不能代表真实业务需求或模型输出分布。"
+  ],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-001",
+      "claim-002"
+    ],
+    "notes": [
+      "由本轮研究执行者对照固定来源完成逐项核对；不是独立审查。",
+      "只审计规则描述与作者报告边界；规范为建议，实际效果为待验证假设。"
+    ]
+  }
+}

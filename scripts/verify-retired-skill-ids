@@ -23,6 +23,8 @@ const retired = [
   "yss-source-index",
 ];
 const allowed = (relative, line) => relative === "docs/agents/skill-migrations.md"
+  || relative === ".template-source/profile-skill-sync.json"
+  || relative.startsWith(".template-source/profile-skill-patches/")
   || relative.includes("/docs/agents/skill-migrations.md")
   || relative.endsWith(".template-source/wiki/raw/skill-migrations.md")
   || relative.startsWith(".template-source/evidence/")

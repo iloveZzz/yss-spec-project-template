@@ -1,0 +1,59 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "将已确认中文写法接入生命周期与专项技能、模板和按需加载合同，改变生成指引；门禁、角色和词汇注册表保持不变。",
+  "triggers": [
+    "generation-semantics",
+    "aggregate-behavior-change"
+  ],
+  "changed_assets": [
+    ".agents/skills/code-review/SKILL.md",
+    ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
+    ".agents/skills/yss-openapi-governance/SKILL.md",
+    ".agents/skills/yss-product-lifecycle/SKILL.md",
+    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+    ".agents/skills/yss-prototype-stage/SKILL.md",
+    ".agents/skills/yss-research/SKILL.md",
+    ".agents/skills/yss-stage-decision/SKILL.md",
+    ".agents/skills/yss-technical-design/SKILL.md",
+    ".codex/skills/yss-openapi-governance/SKILL.md",
+    ".codex/skills/yss-product-lifecycle/SKILL.md",
+    ".codex/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+    "docs/plan/templates/plan-template.md",
+    "docs/templates/spec-template.md",
+    "docs/templates/vertical-slice-ticket-template.md",
+    "skills-lock.json",
+    "docs/process/document-writing.md",
+    "docs/templates/examples/lifecycle-writing-examples.md",
+    ".template-source/evidence/maintenance/2026-09-10-lifecycle-writing/integration-record.md",
+    ".template-source/evidence/maintenance/2026-09-10-lifecycle-writing/integration-checkpoint.yaml",
+    ".template-source/evidence/maintenance/2026-09-10-lifecycle-writing/verify-integration.mjs",
+    ".template-source/evidence/maintenance/2026-09-10-lifecycle-writing/integration-checks.json",
+    ".template-source/evidence/maintenance/2026-09-10-lifecycle-writing/integration-files.json",
+    ".template-source/evidence/maintenance/2026-09-10-lifecycle-writing/integration-fast.log"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "self-check",
+      "command": ".template-source/evidence/maintenance/2026-09-10-lifecycle-writing/integration-record.md",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "scripts/verify-template-fast",
+      "result": "pass"
+    },
+    {
+      "kind": "relevant-check",
+      "command": "node .template-source/evidence/maintenance/2026-09-10-lifecycle-writing/verify-integration.mjs",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "L1 草案审阅后进入正式生成规则接入，按实际影响升级 L3。",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

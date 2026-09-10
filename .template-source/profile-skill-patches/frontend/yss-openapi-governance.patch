@@ -1,0 +1,306 @@
+--- a/SKILL.md
++++ b/SKILL.md
+@@ -1,11 +1,11 @@
+ ---
+ name: yss-openapi-governance
+-description: Use when creating, governing, linting, freezing, or exporting YSS OpenAPI 3.1 design-time contracts. The frozen YAML is the only authority; this skill produces the reviewed JSON derivative consumed by frontend client generation.
++description: Use when consuming frozen YSS OpenAPI 3.1 contracts, validating JSON derivatives, or preparing frontend client generation; API changes return to the backend owner.
+ ---
+ 
+ # YSS OpenAPI Governance
+ 
+-本 skill 负责 YSS OpenAPI 的 **YAML-first** 工作流：
++本 skill 在前端仓只消费 YSS OpenAPI 的 **YAML-first** 工作流结果：
+ 
+ ```text
+ Spec / 设计输入 → OpenAPI YAML Draft → 审查与 Freeze → JSON 派生物 → 下游既有前端代码生成流程
+@@ -13,25 +13,24 @@
+ 
+ `docs/.scratch/<feature>/api/<feature>.yaml` 是唯一权威的 OpenAPI 3.1 契约。JSON 只能由冻结后的 YAML 可复现地产生，用于前端代码生成或分发；不得手写、不得反向覆盖 YAML、不得把运行时代码当成设计契约来源。
+ 
+-YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/openapi-wire-profile.yaml` 单一维护。它描述公开 wire shape，不是 Java 字段或 getter 清单；本 skill 必须消费 profile，不能在治理文档、feature YAML 和 JSON 中各自发明 `SingleResult`、`PageResult` 或 `PageQuery` 字段表。
++YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-openapi-governance/references/openapi-wire-profile.yaml` 提供只读快照。它描述公开 wire shape，不是 Java 字段或 getter 清单；本 skill 必须消费 profile，不能在治理文档、feature YAML 和 JSON 中各自发明 `SingleResult`、`PageResult` 或 `PageQuery` 字段表。
+ 
+ 文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+ 
+-## 文档写作
++## 前端仓消费边界
+ 
+-编写接口说明和契约评审交接正文前，读取 `docs/process/document-writing.md` 的共用写法及工程契约指引；协议标识、schema、冻结状态和验证记录按原合同保存。
++本地只读审查冻结 YAML、JSON 派生物和 wire profile；profile 是后端规范的只读分发快照，不在前端另行定义；来源仓、完整提交、源路径与 SHA-256 绑定在 `references/openapi-wire-source.json`。默认校验只证明离线快照完整，不代表已检查上游最新版本。下文涉及 Draft、Freeze、后端 mapper 或 schema 修订的步骤由后端项目执行，前端只提交消费需求与问题证据。不得在本仓起草后端契约或批准 Freeze。
+ 
+ ## 边界与职责
+ 
+ 使用 `yss-openapi-governance`：
+ 
+-- 基于冻结前的 Spec、产品设计、架构约束创建或更新 `docs/.scratch/<feature>/api/<feature>.yaml`。
++- 向后端提交消费需求，由后端基于冻结前的 Spec、产品设计、架构约束创建或更新 `docs/.scratch/<feature>/api/<feature>.yaml`。
+ - 保证 YAML 是单一 YAML document、根节点为 `openapi: 3.1.0`，且不把 `pipeline`、`stage`、`status`、`owner` 等生命周期元数据写入 OpenAPI 根节点。
+-- 按 `yss-dto` wire profile 校验 `com.yss.cloud.dto.result` canonical 包、`YssResultMeta` 公共字段、具体 wrapper schema、请求 / 响应方向和分页负向字段。
++- 按只读 HTTP/JSON wire profile 校验 `com.yss.cloud.dto.result` canonical 包、`YssResultMeta` 公共字段、具体 wrapper schema、请求 / 响应方向和分页负向字段。
+ - 运行受项目 lockfile 约束的 lint / bundle，检查 `$ref`、operationId、响应包装、错误、分页、幂等和契约测试 seam；只有 Spec 明确改变认证或授权行为时才检查对应契约。
+-- 在 `docs/.scratch/<feature>/api/<feature>-validation.yaml` 持久化结构校验记录，并用 `scripts/verify-openapi-draft-validation-record` 复核当前 YAML SHA-256、锁定的 Redocly 版本、实际命令、退出码、执行时间和证据引用。
+ - 在 OpenAPI Freeze 后，用锁定的 Redocly CLI 将 YAML bundle 为 JSON，并记录可重现证据。
+-- 维护治理记录、Freeze 记录和 JSON 派生记录。
++- 消费后端治理及 Freeze 记录，维护本地 JSON 派生与客户端生成记录。
+ - Spec Delta 影响存在时，在 `docs/.scratch/<feature>/spec-delta/` 记录与冻结 YAML 的关系；没有影响时明确记录 `not-applicable`。
+ 
+ 不使用本 skill 来替代：
+@@ -67,18 +66,14 @@
+    - 所有操作使用稳定、可生成客户端的 `operationId`；页面动作可通过 `x-yss-action-key` 或同路径的追踪矩阵关联。
+ 
+ 2. **运行结构与治理校验**
+-   - 先执行项目 lockfile 锁定版本的 `pnpm exec redocly lint`；CI 可以包装调用，但 validation record 必须记录这条实际命令与退出码。
++   - 先执行项目锁定的 `pnpm exec redocly lint` 或等价 CI 脚本。
+    - 检查 YAML 可解析、`$ref` 可解析、路径参数完整、operationId 唯一、examples 合法、schema 命名稳定。
+-   - 从 `docs/api/templates/openapi-draft-validation-record-template.yaml` 创建 `<feature>-validation.yaml`，记录 YAML SHA-256 与 lint 工具链；运行 `scripts/verify-openapi-draft-validation-record --root <project-root> <record>`。自定义解析脚本可以补充诊断，但不能代替锁定的 Redocly lint evidence。
+-   - 对每个 P0 写模型、配置模型及影响关键交互的读模型建立字段级追踪：`Spec/交互来源 → operationId → request/response schema → property path → 类型与嵌套形状 → create/update requiredness → nullable/default/enum/format → error/test seam`。数组元素使用 `items[].property` 一类稳定 property path。
+-   - create/update 或其他不同生命周期操作复用同一写 schema 时，逐操作证明 requiredness 与省略语义一致；若不一致，拆分 schema 或明确条件契约。凭据类字段还要说明创建、更新、掩码回显、省略保留与显式清空语义，不能仅凭字段名统一设为必填。
+    - 先运行 `scripts/verify-yss-dto-openapi-profile`，并记录 profile 版本；检查 `/api/v1/` 版本策略（或记录例外）、`x-yss-response-wrapper`、`YssResultMeta` + `allOf` 具体 schema、统一错误结构、分页、幂等 / 乐观锁和契约测试 seam。
+    - 每个响应都必须落成具体 endpoint schema：`SingleResult` 的 `data` 是具体对象或显式 nullable schema，`MultiResult` / `PageResult` 的 `data` 是数组；Java 的 `SingleResult<T>` / `PageResult<T>` 只能作为语义说明，不能直接写成 OAS type 或 `$ref`。
+    - `code` 按 profile 只允许 `string | integer | null`，`dataType` 按 profile 为 `string | null`；`offset`、`needTotalCount`、`tempTotalCount` 不得进入客户端分页输入；`totalPages` 只有目标 HTTP mapper / fixture 证明后才能进入契约。Spec 明确改变认证或授权行为时，把对应 `401` / `403`、资源过滤和错误语义作为普通 API 行为检查。
+ 
+ 3. **独立 Draft Review 与 Freeze**
+-   - 将通过 verifier 且 SHA-256 与当前 YAML 一致的 validation record 交给 `yss-openapi-draft-review`。缺锁定 lint 时可以先做语义预审，但独立 Review 总结果必须为 `Blocked`；不能用“Freeze 前补 lint”支持 `Approved`。
+-   - YAML、validation record 或 lint ruleset 变化后，旧结构证据与旧 Review 立即失效，必须重新校验和审查。阻断项未关闭前，YAML 仍是 review-only Draft，不得生成生产客户端。
++   - 将 fresh lint 证据交给 `yss-openapi-draft-review`；阻断项未关闭前，YAML 仍是 review-only Draft，不得生成生产客户端。
+    - Freeze 记录必须引用 YAML 路径、Git ref（如适用）和 YAML SHA-256。冻结后 API 行为变更必须先回到 YAML Draft 与审查。
+ 
+ 4. **从冻结 YAML 派生 JSON**
+@@ -99,9 +94,7 @@
+ 
+ - YAML 不是单一 OAS 3.1 document，或其根节点混入生命周期元数据。
+ - YAML / `$ref` / lint 不通过，operationId 不稳定或不唯一，或路径参数、schema、examples 无法解析。
+-- `<feature>-validation.yaml` 缺失、verifier 失败、记录的 YAML SHA-256 与当前字节不一致，或 Redocly 未由 pnpm lockfile 锁定。
+ - P0 操作缺请求、响应、错误、并发 / 幂等规则或可验证 seam；Spec 明确的认证或授权行为没有契约表示。
+-- P0 写模型、配置模型或关键交互读模型没有追到 property path、嵌套形状、requiredness、约束、来源和 test seam；跨操作复用 schema 却没有证明省略与必填语义一致。
+ - `$ref` 超出允许范围，或转换器版本、lockfile、命令、输入 YAML 无法识别。
+ - `scripts/verify-yss-dto-openapi-profile` 失败、profile 版本未记录，或 Draft 未按 profile 建模 `x-yss-response-wrapper`、`YssResultMeta` / `allOf` 和具体 `data` schema。
+ - 新契约引入 `com.yss.cloud.dto.response`、把 Java 泛型文字当成 OAS schema、把全局 `code` 放宽为任意 object，或把 `offset` / `needTotalCount` / `tempTotalCount` 作为客户端字段。
+@@ -123,9 +116,7 @@
+ 
+ ### Validation
+ - Lint command and result: <locked pnpm command / result>
+-- Validation record: <docs/.scratch/<feature>/api/<feature>-validation.yaml / verifier result / matching YAML SHA-256>
+-- YSS DTO wire profile: <`.agents/skills/yss-dto/references/openapi-wire-profile.yaml`, schema_version, verifier result>
+-- P0 field traceability: <source / operationId / schema / property path / shape / requiredness / constraints / error-test summary>
++- YSS DTO wire profile: <`.agents/skills/yss-openapi-governance/references/openapi-wire-profile.yaml`, schema_version, verifier result>
+ - Wrapper conformance: <`x-yss-response-wrapper`, `YssResultMeta`, `allOf`, concrete data schema, direction and forbidden-field result>
+ - `$ref` policy / approved exceptions: <details>
+ - Blocking findings: <file:line grounded finding>
+@@ -143,3 +134,14 @@
+ - Existing frontend code generation: <manual command in target repository / blocked reason>
+ - Template boundary: <no frontend configuration, code-generation execution, or CI change>
+ ```
++
++## wire profile 同步
++
++维护时从已登记源仓的完整提交提取原字节，同时更新 `references/openapi-wire-source.json`；不得仅为通过校验重算本地摘要。运行：
++
++```bash
++scripts/verify-yss-dto-openapi-profile --source-root <后端模板源仓根>
++scripts/verify-yss-dto-openapi-scenarios
++```
++
++带 `--source-root` 的校验同时核验源仓身份、固定提交字节和当前源工作树。源内容变化时重新审阅并同步快照及绑定；离线消费继续使用已绑定版本，已知上游变化不能被离线校验掩盖。
+--- /dev/null
++++ b/references/openapi-wire-profile.yaml
+@@ -0,0 +1,187 @@
++schema_version: 1
++kind: yss-dto-openapi-wire-profile
++
++# This profile is the reusable mapping source consumed by the OpenAPI skills.
++# It describes the public HTTP/JSON shape, not every Java field or getter.
++canonical:
++  java_package: com.yss.cloud.dto.result
++  type_parameter:
++    name: T
++    java_bound: java.io.Serializable
++  openapi:
++    response_meta_schema: YssResultMeta
++    concrete_schema_composition: allOf
++    response_wrapper_extension: x-yss-response-wrapper
++    literal_java_generic_schema: false
++
++unsupported_packages:
++  - java_package: com.yss.cloud.dto.response
++    status: unsupported
++    use_for_new_contracts: false
++    policy: reject-in-new-contracts-no-auto-migration
++
++common_response:
++  schema_name: YssResultMeta
++  fields:
++    success:
++      direction: response
++      wire_types: [boolean]
++      nullable: false
++      required: true
++    dataType:
++      direction: response
++      wire_types: [string, "null"]
++      nullable: true
++      required: true
++    code:
++      direction: response
++      wire_types: [string, integer, "null"]
++      nullable: true
++      required: true
++      policy: do-not-widen-global-wrapper
++    message:
++      direction: response
++      wire_types: [string, "null"]
++      nullable: true
++      required: true
++    tips:
++      direction: response
++      wire_types: [string, "null"]
++      nullable: true
++      required: true
++
++wrappers:
++  SingleResult:
++    java_type: com.yss.cloud.dto.result.SingleResult<T>
++    response_kind: single
++    java_factory:
++      method: of
++      arguments: [data]
++    data:
++      direction: response
++      wire_shape: endpoint-schema-or-null
++      nullable: true
++      required: true
++  MultiResult:
++    java_type: com.yss.cloud.dto.result.MultiResult<T>
++    response_kind: non-page-list
++    data:
++      direction: response
++      wire_types: [array]
++      items: endpoint-schema
++      nullable: false
++      required: true
++      empty_value: []
++  PageResult:
++    java_type: com.yss.cloud.dto.result.PageResult<T>
++    response_kind: page
++    java_factory:
++      method: of
++      arguments: [data, totalCount, pageSize, pageIndex]
++    fields:
++      totalCount:
++        direction: response
++        wire_types: [integer]
++        format: int64
++        minimum: 0
++        nullable: false
++        required: true
++      pageSize:
++        direction: response
++        wire_types: [integer]
++        format: int32
++        minimum: 1
++        nullable: false
++        required: true
++      pageIndex:
++        direction: response
++        wire_types: [integer]
++        format: int32
++        minimum: 1
++        nullable: false
++        required: true
++      data:
++        direction: response
++        wire_types: [array]
++        items: endpoint-schema
++        nullable: false
++        required: true
++        empty_value: []
++    computed_fields:
++      totalPages:
++        java_getter: getTotalPages
++        status: mapper-dependent
++        policy: include-only-with-target-wire-evidence
++
++page_query:
++  java_type: com.yss.cloud.dto.page.PageQuery
++  request_direction: query
++  fields:
++    pageIndex:
++      direction: request
++      wire_types: [integer]
++      format: int32
++      minimum: 1
++      default: 1
++      nullable: false
++      required: false
++    pageSize:
++      direction: request
++      wire_types: [integer]
++      format: int32
++      minimum: 1
++      default: 10
++      nullable: false
++      required: false
++    orderBy:
++      direction: request
++      wire_types: [string, "null"]
++      nullable: true
++      required: false
++      policy: endpoint-whitelist-required
++    orderDirection:
++      direction: request
++      wire_types: [string]
++      enum: [ASC, DESC]
++      default: DESC
++      nullable: false
++      required: false
++    groupBy:
++      direction: request
++      wire_types: [string, "null"]
++      nullable: true
++      required: false
++      policy: endpoint-whitelist-required
++  forbidden_client_fields:
++    - offset
++    - needTotalCount
++    - tempTotalCount
++  computed_fields:
++    offset:
++      java_getter: getOffset
++      status: computed
++      policy: exclude-from-client-input
++    needTotalCount:
++      java_getter: isNeedTotalCount
++      status: internal-or-ignored
++      policy: exclude-from-client-input
++    tempTotalCount:
++      java_getter: getTempTotalCount
++      status: internal-or-ignored
++      policy: exclude-from-client-input
++
++request_bases:
++  command:
++    java_type: com.yss.cloud.dto.CommandDTO
++    direction: request
++  query:
++    java_type: com.yss.cloud.dto.QueryDTO
++    direction: request
++    extends: command
++
++wire_evidence:
++  required_before_freeze:
++    - target-http-mapper-identity
++    - representative-serialization-fixtures
++    - contract-test-or-equivalent-http-evidence
++  rule: Java fields and computed getters are not public wire facts until target-boundary evidence confirms them.
+--- /dev/null
++++ b/references/openapi-wire-source.json
+@@ -0,0 +1,8 @@
++{
++  "schema_version": 1,
++  "mode": "read-only-snapshot",
++  "repository": "https://github.com/iloveZzz/yss-harness-backend-agent.git",
++  "revision": "25973a39eca1f420f9b20e53efd85b3bf293541c",
++  "path": ".agents/skills/yss-dto/references/openapi-wire-profile.yaml",
++  "sha256": "a2bfe4296f2e2e1196f34eb484f795162ab327756078de99b8f540431151b78b"
++}

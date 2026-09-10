@@ -1,0 +1,98 @@
+[
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "command": "scripts/sync-skills",
+    "exit": 0,
+    "output": "synchronized 74 shared skills\n"
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "command": "scripts/update-skill-lock",
+    "exit": 0,
+    "output": "updated skills-lock.json with 74 shared skills and 0 platform skills\n"
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "command": "scripts/verify-skill-registry",
+    "exit": 0,
+    "output": "技能路由注册表校验通过（active，74 个共享，0 个平台）\n"
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "command": "scripts/verify-skill-governance",
+    "exit": 0,
+    "output": "技能规范冲突扫描通过（0 个兼容 alias）\n"
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "command": "scripts/sync-skills",
+    "exit": 0,
+    "output": "synchronized 26 shared skills\n"
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "command": "scripts/update-skill-lock",
+    "exit": 0,
+    "output": "updated skills-lock.json with 26 shared skills and 1 platform skills\n"
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "command": "scripts/verify-skill-registry",
+    "exit": 0,
+    "output": "技能路由注册表校验通过（active，26 个共享，1 个平台）\n"
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "command": "scripts/verify-skill-governance",
+    "exit": 0,
+    "output": "技能规范冲突扫描通过（1 个兼容 alias）\n"
+  },
+  {
+    "repo": "submodules/yss-harness-dev-agent",
+    "command": "scripts/sync-skills",
+    "exit": 0,
+    "output": "synchronized 107 shared skills\n"
+  },
+  {
+    "repo": "submodules/yss-harness-dev-agent",
+    "command": "scripts/update-skill-lock",
+    "exit": 0,
+    "output": "updated skills-lock.json with 107 shared skills and 2 platform skills\n"
+  },
+  {
+    "repo": "submodules/yss-harness-dev-agent",
+    "command": "scripts/verify-skill-registry",
+    "exit": 0,
+    "output": "技能路由注册表校验通过（active，107 个共享，2 个平台）\n"
+  },
+  {
+    "repo": "submodules/yss-harness-dev-agent",
+    "command": "scripts/verify-skill-governance",
+    "exit": 0,
+    "output": "技能规范冲突扫描通过（5 个兼容 alias）\n"
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "command": "scripts/sync-skills",
+    "exit": 0,
+    "output": "synchronized 80 shared skills\n"
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "command": "scripts/update-skill-lock",
+    "exit": 0,
+    "output": "updated skills-lock.json with 80 shared skills and 2 platform skills\n"
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "command": "scripts/verify-skill-registry",
+    "exit": 0,
+    "output": "技能路由注册表校验通过（active，80 个共享，2 个平台）\n"
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "command": "scripts/verify-skill-governance",
+    "exit": 0,
+    "output": "技能规范冲突扫描通过（5 个兼容 alias）\n"
+  }
+]

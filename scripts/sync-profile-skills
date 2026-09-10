@@ -1,0 +1,43 @@
+#!/usr/bin/env node
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { applyProfileSkillSync, loadProfileSyncConfig, planProfileSkillSync, reportProfileSkillSync } from "./lib/profile-skill-sync.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+try {
+  const args = process.argv.slice(2);
+  const modes = ["--check", "--dry-run", "--apply"].filter((item) => args.includes(item));
+  if (modes.length > 1) throw new TypeError("--check、--dry-run、--apply 只能选择一个");
+  const profileArgs = [];
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+    if (["--check", "--dry-run", "--apply", "--json"].includes(arg)) continue;
+    if (arg === "--profile") {
+      const value = args[index + 1];
+      if (!value || value.startsWith("--")) throw new TypeError("--profile 缺少值");
+      profileArgs.push(value);
+      index += 1;
+      continue;
+    }
+    if (arg.startsWith("--profile=")) profileArgs.push(arg.slice(10));
+    else throw new TypeError(`未知参数: ${arg}`);
+  }
+  const json = args.includes("--json");
+  const selectedProfiles = profileArgs.some((item) => item === "all") ? [] : profileArgs.flatMap((item) => item.split(",").filter(Boolean));
+  const config = loadProfileSyncConfig(root);
+  const plan = planProfileSkillSync({ root, config, selectedProfiles });
+  const result = args.includes("--apply") ? applyProfileSkillSync({ root, config, plan }) : plan;
+  const report = reportProfileSkillSync(result);
+  if (json) process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
+  else {
+    process.stdout.write(`profile skills: ${report.profiles.join(", ")}\n`);
+    for (const [status, count] of Object.entries(report.counts)) process.stdout.write(`${status}: ${count}\n`);
+    for (const item of report.changes) process.stdout.write(`${item.profile}: ${item.status}: ${item.path}\n`);
+    for (const item of report.issues) process.stderr.write(`${item.profile}: ${item.status}: ${item.path ?? item.skill ?? item.message}\n`);
+  }
+  if (args.includes("--check") && (plan.changes.length || plan.issues.length)) process.exitCode = 1;
+  if (args.includes("--apply") && plan.issues.length) process.exitCode = 1;
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+}

@@ -7,6 +7,8 @@ description: 编排 YSS 产品或模块从机会调研到 Spec、原型、技术
 
 生命周期单一主控：识别请求、仓库身份和最近可信阶段，计算可执行 frontier，派发并验收工作单元；业务设计、实现和独立审查交给专项 skill。
 
+文档按 `document_writing` 条件调用 `i-have-adhd`，并传递 `docs/process/document-writing.md` 规范。
+
 ## 事实源与按需加载
 
 先读 `yss-project.yaml`、`CONTEXT.md`、相关 ADR、父 Ticket/checkpoint 和当前资产，按需加载合同子树：
@@ -25,7 +27,7 @@ description: 编排 YSS 产品或模块从机会调研到 Spec、原型、技术
 scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work-unit.plan-requirements --include execution_efficiency
 ```
 
-`--include` 接受编排合同的顶层键；非法模式、ID 或合同键必须失败。查询结果只是带摘要的权威事实投影，不成为新的事实源。解释性细节按需读取 `references/orchestration.md`、`references/state-model.md`、`references/artifact-dependencies.md`、`references/user-decisions.md` 和 `references/matt-yss-adapter.md`，达到最小充分证据后停止扩展上下文。
+`--include` 接受编排合同的顶层键；非法模式、ID 或合同键必须失败。结果为权威投影；细节按需读 `references/orchestration.md`、`references/state-model.md`、`references/artifact-dependencies.md`、`references/user-decisions.md` 和 `references/matt-yss-adapter.md`，证据充分即停止加载。
 
 按 `execution_efficiency` 合并查询、复用未变资料并验证当前资产；产品流转不重跑模板套件。词汇对账、恢复核验及门禁不变，执行细节见 `references/orchestration.md`。
 

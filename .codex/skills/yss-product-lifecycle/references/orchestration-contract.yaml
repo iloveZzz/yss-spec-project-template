@@ -1,4 +1,16 @@
 schema_version: 1
+document_writing:
+  supporting_skill: i-have-adhd
+  condition: lifecycle-document-output
+  scope: current-document-work-only
+  dispatch: pass-condition-and-reference-to-document-owner
+  reference: docs/process/document-writing.md
+  examples: docs/templates/examples/lifecycle-writing-examples.md
+  load_when: [lifecycle-document-draft, lifecycle-document-revision, progress-or-decision-presentation]
+  dispatch_input: include-reference-for-document-work
+  artifact_ownership: unchanged
+  gate_and_status_semantics: unchanged
+
 backend_architecture_identity_policy:
   source: docs/agents/yss-skill-registry.yaml#architecture_profiles
   schema: docs/process/schemas/backend-architecture-identity.schema.json

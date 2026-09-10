@@ -7,6 +7,12 @@ description: Use when a YSS feature has product-design impact on a primary flow,
 
 把产品设计影响收敛为跨 Agent 一致的原型交付物、证据和生命周期回流合同。它不替代 `yss-product-lifecycle` 的门禁裁决，也不把原型当作生产前端代码。
 
+文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+
+## 文档写作
+
+起草或修订交互说明、状态说明和设计结论前，读取 `docs/process/document-writing.md` 的共用写法及产品设计指引；原型视觉和行为仍消费当前设计合同。
+
 ## 进入条件与主入口
 
 - 先由 `yss-product-lifecycle` 判断产品设计影响；无行为变化的孤立视觉修复记录 `not-applicable`，不创建空资产。

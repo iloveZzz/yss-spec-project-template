@@ -18,6 +18,7 @@
 
 | Capability | Primary skill | Task modes |
 | --- | --- | --- |
+| `writing.lifecycle-document` | `i-have-adhd` | `guidance` |
 | `architecture.technical-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
 | `architecture.mvc-design` | `yss-mvc-design` | `guidance`, `integration`, `review-input` |
 | `layer.mvc-service` | `yss-application` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
@@ -105,8 +106,16 @@
 
 | Skill | Dependency | Type | Condition |
 | --- | --- | --- | --- |
+| `prototype-review` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+| `yss-implementation-contract-compiler` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+| `yss-openapi-governance` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+| `yss-stage-decision` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+| `yss-research` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+| `yss-product-lifecycle` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+| `code-review` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 | `code-review` | `yss-repository` | `context-conditional` | `backend-persistence-impact` |
 | `code-review` | `yss-mybatis` | `context-conditional` | `backend-persistence-impact` |
+| `yss-prototype-stage` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 | `yss-prototype-stage` | `prototype-review` | `review-only` | — |
 | `yss-prototype-stage` | `yss-design-system` | `coordination-only` | — |
 | `yss-prototype-stage` | `yss-antdv-next-design` | `context-conditional` | `h2-vue-antdv-next-default` |
@@ -118,6 +127,7 @@
 | `yss-domain` | `domain-modeling` | `coordination-only` | — |
 | `yss-domain` | `yss-tactical-design` | `context-conditional` | `tactical-domain` |
 | `yss-domain` | `lombok` | `context-conditional` | `pojo` |
+| `yss-technical-design` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 | `yss-technical-design` | `yss-tactical-design` | `coordination-only` | `domain-driven` |
 | `yss-technical-design` | `yss-mvc-design` | `coordination-only` | `layered-mvc` |
 | `yss-mvc-design` | `yss-openapi-draft-review` | `review-only` | `api-impact` |

@@ -1,0 +1,28 @@
+schema_version: 2
+intensity: L1
+classification_reason: 仅新增非生效的中文写作提案、虚构维护对照和研究证据；不修改技能、模板、路由、门禁或状态语义。
+triggers: [textual-only]
+changed_assets:
+  - .template-source/evidence/maintenance/2026-09-10-lifecycle-writing/writing-guideline-draft.md
+  - .template-source/evidence/maintenance/2026-09-10-lifecycle-writing/rewrite-comparisons.md
+  - .template-source/evidence/maintenance/2026-09-10-lifecycle-writing/lifecycle-writing-research-brief.md
+  - .template-source/evidence/maintenance/2026-09-10-lifecycle-writing/lifecycle-writing-evidence.yaml
+  - .template-source/evidence/maintenance/2026-09-10-lifecycle-writing/verification.md
+  - .template-source/evidence/maintenance/2026-09-10-lifecycle-writing/checkpoint.yaml
+verification_evidence:
+  - kind: relevant-check
+    command: node .agents/skills/yss-research/scripts/validate-research-package.mjs .template-source/evidence/maintenance/2026-09-10-lifecycle-writing/lifecycle-writing-research-brief.md .template-source/evidence/maintenance/2026-09-10-lifecycle-writing/lifecycle-writing-evidence.yaml
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+  - kind: self-check
+    command: .template-source/evidence/maintenance/2026-09-10-lifecycle-writing/verification.md
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

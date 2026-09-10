@@ -1,2 +1,3 @@
 .template-source/evidence/maintenance/reviews/*/candidate.bin binary
 .template-source/evidence/maintenance/reviews/*/tracked.diff binary
+.template-source/profile-skill-patches/**/*.patch -whitespace

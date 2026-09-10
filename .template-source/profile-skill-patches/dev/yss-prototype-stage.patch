@@ -1,0 +1,253 @@
+--- a/SKILL.md
++++ b/SKILL.md
+@@ -9,14 +9,10 @@
+ 
+ 文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+ 
+-## 文档写作
+-
+-起草或修订交互说明、状态说明和设计结论前，读取 `docs/process/document-writing.md` 的共用写法及产品设计指引；原型视觉和行为仍消费当前设计合同。
+-
+ ## 进入条件与主入口
+ 
+ - 先由 `yss-product-lifecycle` 判断产品设计影响；无行为变化的孤立视觉修复记录 `not-applicable`，不创建空资产。
+-- 先读取 Spec、产品总体设计、`CONTEXT.md`、`yss-design-system`，再按 `DESIGN.md` → `docs/design/design.md` → `docs/design/tokens/*` 顺序消费设计基线，形成交互说明、低保真页面/流程和状态矩阵。
++- 先读取 Spec、产品总体设计、`CONTEXT.md`、`yss-design-system` 与 `docs/design/design.md`，形成交互说明、低保真页面/流程和状态矩阵。
+ - 用独立 `prototype-review` 评审低保真与状态；未通过不得选择档位或构建原型交付物。
+ - 按 [原型档位路由](references/prototype-profile-routing.md) 选择 H1/H2 中满足当前决策风险的最低档位。没有充分证据时默认 H2。
+ - Codex 按档位消费 `product-design:index` 的 focused workflow；H1 可直接走静态适配器，H2 使用 `get-context/image-to-code/design-qa`。其他 Agent 必须交付等价合同资产。
+@@ -40,13 +36,13 @@
+ 
+ ## 事实、QA 与确认
+ 
+-优先级固定为：项目根 `DESIGN.md` 规范 Token / 组件变体 → `docs/design/design.md` 治理解释 → `docs/design/tokens/*` 派生快照 → 当前功能语义 → 相关上游组件事实。H2 默认通过 `yss-antdv-next-design` 使用 Antdv Next exact-version fact pack；只有显式选择 `react-antd-6` 时才调用 `yss-antd-design`。fact pack 仅在精确版本、组件集合、根 `DESIGN.md` digest 和项目 Token digest 均匹配且无新 API 疑问时可复用；否则做增量查询。`antd lint/doctor` 只对 React 兼容路线的相关源文件执行。
++优先级固定为：项目 `docs/design/design.md` / Token 覆盖 → 当前功能语义 → 相关上游组件事实。H2 默认通过 `yss-antdv-next-design` 使用 Antdv Next exact-version fact pack；只有显式选择 `react-antd-6` 时才调用 `yss-antd-design`。fact pack 仅在精确版本、组件集合和项目 Token digest 均匹配且无新 API 疑问时可复用；否则做增量查询。`antd lint/doctor` 只对 React 兼容路线的相关源文件执行。
+ 
+ Design QA 合并 visual、layout、interaction、content、accessibility、cross-platform 六轴，不再建立第二份评审。所有档位至少证明 desktop/narrow 非空渲染、项目 Token、console 和基础键盘/焦点/对比度；H2 追加主流程、关键异常、200% zoom/reduced motion 与按风险视觉回归。图片是视觉基准而非唯一事实来源；模型必须从 `visual-baseline.yaml` 的 `case_id` 读取对应语义引用，禁止靠目录 glob 猜测页面含义。
+ 
+-用户确认必须绑定提问者或其明确指定负责人的原始回复，使用生命周期 `user_decision_policy` 和统一用户决定记录；产品数字人只提供确认建议，不能代答。正式证据追加 `user_decision_ref/decision_subject_ref`，校验原型、视觉基线和操作范围与用户所见快照一致。用户确认只描述原型确认了什么、哪些范围可操作、哪些为模拟或 gap，以及接受/拒绝结论；不要求用户确认技术栈、CLI 或构建细节。
++用户确认只描述原型确认了什么、哪些范围可操作、哪些为模拟或 gap，以及接受/拒绝结论；不要求用户确认技术栈、CLI 或构建细节。
+ 
+-`check.prototype-reviewed` 和 `check.prototype-verified` 是 `gate.product-design-approved` 的内部检查；独立评审和验证通过后，用户统一确认当前原型。档位选择属于验证输入，不单独请求批准，也不授权实现。
++`gate.prototype-reviewed`、`gate.prototype-verified`、`gate.user-confirmation` 保持三个既有门禁。档位选择是 `gate.prototype-verified` 的输入证据，不增加新门禁，也不授权实现。
+ 
+ ## 按需读取
+ 
+--- a/references/product-design-adapter.md
++++ b/references/product-design-adapter.md
+@@ -59,8 +59,7 @@
+ 
+ - manifest 的 package 与 exact version 等于原型 lockfile；
+ - 所需组件均被覆盖；
+-- 根 `DESIGN.md` path / digest 与当前规范源相等；
+-- `project_token_baseline_digest` 等于当前 Token 派生基线；
++- `project_token_baseline_digest` 等于当前设计基线；
+ - 没有新的 API/semantic 疑问。
+ 
+ 不满足时只查询缺失或变化的事实。默认 Vue 路线调用 `yss-antdv-next-design`；React 兼容路线调用 `yss-antd-design`，且 `lint/doctor` 只在存在相关 React 源时运行。不要创建占位 fact 目录；feature 证据只引用实际 manifest。
+--- a/references/prototype-profile-routing.md
++++ b/references/prototype-profile-routing.md
+@@ -66,4 +66,4 @@
+ 
+ - 新证据只生成 schema v4、Visual Baseline schema v1 与 `artifact.prototype-deliverable`。
+ - prototype evidence schema v1/v2/v3 和 `artifact.high-fidelity-html-prototype` 只读兼容；已经关闭的历史证据保持有效，不补造图片。
+-- 在途 UI 证据必须迁移到 v4 并产生 Visual Baseline 后才能关闭 `check.prototype-verified`；非 UI 功能不生成空包。
++- 在途 UI 证据必须迁移到 v4 并产生 Visual Baseline 后才能关闭 `gate.prototype-verified`；非 UI 功能不生成空包。
+--- a/scripts/prototype-contract.mjs
++++ b/scripts/prototype-contract.mjs
+@@ -1,5 +1,4 @@
+ #!/usr/bin/env node
+-import { assertUserDecisionRequirement, decisionDigest, decisionIO } from "../../../../scripts/lib/user-decision.mjs";
+ import { existsSync } from "node:fs";
+ import { mkdir, readFile, writeFile } from "node:fs/promises";
+ import path from "node:path";
+@@ -72,9 +71,6 @@
+   if (object(visual) && !["required", "not-applicable"].includes(visual.ideation_status)) errors.push("source_visual.ideation_status 必须为 required/not-applicable");
+ 
+   const baseline = data.design_baseline;
+-  requiredString(baseline, "canonical_design_ref", "design_baseline", errors);
+-  requiredString(baseline, "canonical_design_digest", "design_baseline", errors);
+-  if (object(baseline) && baseline.canonical_design_ref !== "DESIGN.md" && !(allowTemplate && /<[^>]+>/.test(baseline.canonical_design_ref ?? ""))) errors.push("design_baseline.canonical_design_ref 必须为 DESIGN.md");
+   requiredString(baseline, "project_design_ref", "design_baseline", errors);
+   requireArray(baseline, "project_token_refs", "design_baseline", errors, { nonEmpty: true });
+   requiredString(baseline, "project_token_baseline_digest", "design_baseline", errors);
+@@ -168,7 +164,7 @@
+     required(facts, "applicable", "profile_evidence.flow_review.prototype_library_facts", errors);
+     requiredString(facts, "component_basis", "profile_evidence.flow_review.prototype_library_facts", errors);
+     if (facts?.applicable === true) {
+-      for (const field of ["source", "manifest_ref", "manifest_digest", "canonical_design_digest", "project_token_baseline_digest"]) requiredString(facts, field, "profile_evidence.flow_review.prototype_library_facts", errors);
++      for (const field of ["source", "manifest_ref", "manifest_digest", "project_token_baseline_digest"]) requiredString(facts, field, "profile_evidence.flow_review.prototype_library_facts", errors);
+       requireArray(facts, "components_covered", "profile_evidence.flow_review.prototype_library_facts", errors, { nonEmpty: true });
+       if (facts.component_basis === "react-antd-6" && facts.actual_antd_version !== undefined) {
+         if (!allowTemplate && !antdSemver.test(facts.actual_antd_version ?? "")) errors.push("H2 actual_antd_version 必须是明确 antd 6.x semver");
+@@ -180,36 +176,24 @@
+       }
+       if (!["fact-pack", "cli-run"].includes(facts.source)) errors.push("H2 prototype_library_facts.source 必须为 fact-pack/cli-run");
+       if (!allowTemplate && facts.project_token_baseline_digest !== data.design_baseline.project_token_baseline_digest) errors.push("H2 fact pack 的项目 Token digest 已失效");
+-      if (!allowTemplate && facts.canonical_design_digest !== data.design_baseline.canonical_design_digest) errors.push("H2 fact pack 的 DESIGN.md digest 已失效");
+       if (!allowTemplate && facts.new_api_uncertainty !== false) errors.push("H2 fact pack 存在新 API 疑问，必须增量查询");
+     }
+     for (const forbidden of ["real_component_verified", "implementation_repo_ref", "component_library_version", "harness_ref", "story_refs"]) if (evidence[forbidden] !== undefined) errors.push(`H2 原型禁止生产组件字段 ${forbidden}`);
+   }
+ }
+ 
+-export function prototypeDecisionSnapshot(data) {
+-  return { prototype_ref: data.prototype_ref, prototype_digest: data.browser_delivery?.prototype_digest, visual_baseline: data.visual_baseline, design_baseline: data.design_baseline, upstream_refs: data.upstream_refs, operable_scope: data.user_confirmation?.operable_scope, simulations_or_gaps: data.user_confirmation?.simulations_or_gaps };
+-}
+-
+-export function validatePrototypeEvidence(data, { allowTemplate = false, allowLegacy = false, ...decisionOptions } = {}) {
++export function validatePrototypeEvidence(data, { allowTemplate = false, allowLegacy = false } = {}) {
+   const errors = [];
+   const warnings = [];
+   if (!object(data)) return { errors: ["原型证据必须是对象"], warnings };
+   if ([1, 2, 3].includes(data.schema_version)) {
+-    if (!allowLegacy) errors.push(`schema_version ${data.schema_version} 是只读旧证据；在途工作关闭 check.prototype-verified 前必须迁移到 4`);
++    if (!allowLegacy) errors.push(`schema_version ${data.schema_version} 是只读旧证据；在途工作关闭 gate.prototype-verified 前必须迁移到 4`);
+     else warnings.push(`legacy prototype evidence schema v${data.schema_version}; read-only`);
+     return { errors, warnings };
+   }
+   if (data.schema_version !== 4) return { errors: ["schema_version 必须为 4"], warnings };
+   validateCommonV4(data, errors, allowTemplate);
+   validateProfileV4(data, errors, allowTemplate);
+-  if (!allowTemplate && errors.length === 0) {
+-    try {
+-      const confirmation = data.user_confirmation;
+-      assertUserDecisionRequirement({ boundary: "gate.product-design-approved", subject_ref: confirmation.decision_subject_ref, scope: confirmation.operable_scope, user_decision_ref: confirmation.user_decision_ref }, decisionOptions);
+-      if (decisionDigest(decisionIO(decisionOptions).document(confirmation.decision_subject_ref)) !== decisionDigest(prototypeDecisionSnapshot(data))) throw new TypeError("user-decision-stale: 原型与用户所见快照不一致");
+-    } catch (error) { errors.push(error.message); }
+-  }
+   return { errors, warnings };
+ }
+ 
+@@ -228,7 +212,7 @@
+   await mkdir(resolvedRoot, { recursive: true });
+   for (const forbidden of ["package.json", "pnpm-lock.yaml", "package-lock.json", "yarn.lock"]) if (existsSync(path.join(resolvedRoot, forbidden))) throw new TypeError(`H1 静态适配器拒绝已有 ${forbidden}`);
+   await writeFile(path.join(resolvedRoot, "index.html"), `<!doctype html>\n<html lang="zh-CN">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width,initial-scale=1">\n  <title>${feature} · H1 visual review</title>\n  <link rel="stylesheet" href="./styles.css">\n</head>\n<body>\n  <main id="prototype" aria-labelledby="page-title">\n    <header><p class="eyebrow">H1 · visual-review</p><h1 id="page-title">${feature}</h1></header>\n    <section class="surface" aria-label="原型内容"><p>请在此实现已评审的视觉布局与少量关键交互。</p><button type="button" id="prototype-action">关键操作</button><p role="status" id="prototype-status"></p></section>\n  </main>\n  <script>document.querySelector('#prototype-action').addEventListener('click',()=>{document.querySelector('#prototype-status').textContent='交互已触发';});</script>\n</body>\n</html>\n`);
+-  await writeFile(path.join(resolvedRoot, "styles.css"), `@import url("../../../../design/tokens/variables.css");\n:root{font-family:var(--brand-font-family,system-ui,sans-serif);color:var(--brand-color-text);background:var(--brand-color-bg-layout)}*{box-sizing:border-box}body{margin:0}main{max-width:1440px;margin:auto;padding:var(--brand-size-lg)}.eyebrow{color:var(--brand-color-primary)}.surface{padding:var(--yss-card-compact-padding,var(--brand-size));border-radius:var(--brand-border-radius-lg);background:var(--brand-color-bg-container);box-shadow:0 1px 3px rgb(0 0 0/.08)}button{min-height:var(--yss-control-height-compact);padding:var(--brand-size-xxs) var(--brand-size-sm);border:0;border-radius:var(--brand-border-radius);color:var(--yss-color-on-primary,var(--brand-color-bg-container));background:var(--yss-color-primary-control,var(--brand-color-primary))}button:hover{background:var(--yss-color-primary-control-hover,var(--brand-color-primary-hover))}button:focus-visible{outline:3px solid color-mix(in srgb,var(--yss-color-primary-control,var(--brand-color-primary)),white 55%);outline-offset:2px}@media(max-width:576px){main{padding:var(--brand-size-sm)}.surface{padding:var(--brand-size-sm)}}\n`);
++  await writeFile(path.join(resolvedRoot, "styles.css"), `@import url("../../../../design/tokens/variables.css");\n:root{font-family:var(--font-family,system-ui,sans-serif);color:var(--text-color,#1f2329);background:var(--layout-background,#f0f2f5)}*{box-sizing:border-box}body{margin:0}main{max-width:1440px;margin:auto;padding:24px}.eyebrow{color:var(--brand-primary,#3371ff)}.surface{padding:20px;border-radius:8px;background:var(--container-background,#fff);box-shadow:0 1px 3px rgb(0 0 0/.08)}button{min-height:32px;padding:0 16px;border:0;border-radius:6px;color:#fff;background:var(--brand-primary,#3371ff)}button:focus-visible{outline:3px solid color-mix(in srgb,var(--brand-primary,#3371ff),white 55%);outline-offset:2px}@media(max-width:576px){main{padding:12px}.surface{padding:12px}}\n`);
+   const manifest = { schema_version: 1, feature, prototype_profile: "H1", profile_kind: "visual-review", runtime_build_required: false, entry: `docs/.scratch/${feature}/design/prototypes/index.html`, theme_source: "docs/design/tokens/variables.css" };
+   await writeFile(path.join(resolvedRoot, "yss-prototype-adapter.json"), `${JSON.stringify(manifest, null, 2)}\n`);
+   return manifest;
+@@ -310,14 +294,7 @@
+   if (!existsSync(path.join(root, "yss-prototype-adapter.json"))) errors.push("缺少 yss-prototype-adapter.json");
+   if (profile === "H1") {
+     for (const forbidden of ["package.json", "pnpm-lock.yaml", "package-lock.json", "yarn.lock"] ) if (existsSync(path.join(root, forbidden))) errors.push(`H1 不得依赖 ${forbidden}`);
+-    const stylesPath = path.join(root, "styles.css");
+-    if (!existsSync(stylesPath)) errors.push("H1 缺少 styles.css");
+-    else {
+-      const styles = await readFile(stylesPath, "utf8");
+-      for (const token of ["--brand-font-family", "--brand-color-text", "--brand-color-bg-layout", "--brand-color-bg-container", "--yss-color-primary-control", "--yss-control-height-compact"]) if (!styles.includes(token)) errors.push(`H1 styles.css 未消费项目 Token ${token}`);
+-      for (const staleAlias of ["--font-family", "--layout-background", "--container-background", "--brand-primary"]) if (styles.includes(staleAlias)) errors.push(`H1 styles.css 使用过时变量 ${staleAlias}`);
+-      for (const hardcodedDeclaration of ["padding:24px", "padding:20px", "min-height:32px", "border-radius:8px", "border-radius:6px"]) if (styles.includes(hardcodedDeclaration)) errors.push(`H1 styles.css 硬编码视觉基线 ${hardcodedDeclaration}`);
+-    }
++    if (!existsSync(path.join(root, "styles.css"))) errors.push("H1 缺少 styles.css");
+     return { errors };
+   }
+   const packagePath = path.join(root, "package.json");
+--- a/tests/run-scenarios.mjs
++++ b/tests/run-scenarios.mjs
+@@ -1,26 +1,20 @@
+ #!/usr/bin/env node
+ import assert from "node:assert/strict";
+-import { buildDecisionFixture } from "../../../../scripts/fixtures/user-decision/build-fixture.mjs";
+ import { mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
+ import os from "node:os";
+ import path from "node:path";
+-import { prepareFlowPrototype, prepareStaticPrototype, validatePrototypeEvidence, validatePrototypeProject, prototypeDecisionSnapshot } from "../scripts/prototype-contract.mjs";
++import { prepareFlowPrototype, prepareStaticPrototype, validatePrototypeEvidence, validatePrototypeProject } from "../scripts/prototype-contract.mjs";
+ import { sealVisualBaseline, validateVisualBaseline } from "../scripts/visual-baseline-contract.mjs";
+ 
+ const tempRoot = await mkdtemp(path.join(os.tmpdir(), "yss-prototype-contract-"));
+ const projectRoot = path.join(tempRoot, "project");
+ const feature = "order-review";
+ await mkdir(path.join(projectRoot, "docs/design/tokens"), { recursive: true });
+-await writeFile(path.join(projectRoot, "DESIGN.md"), "---\nversion: alpha\n---\n");
+ await writeFile(path.join(projectRoot, "docs/design/tokens/theme.json"), JSON.stringify({ token: { colorPrimary: "#3371ff", borderRadius: 6, controlHeight: 32 } }, null, 2));
+ 
+ const h1Root = path.join(projectRoot, "docs/.scratch", feature, "design/prototypes");
+ await prepareStaticPrototype({ projectRoot, root: h1Root, feature });
+ assert.match(await readFile(path.join(h1Root, "index.html"), "utf8"), /H1 · visual-review/);
+-const h1Styles = await readFile(path.join(h1Root, "styles.css"), "utf8");
+-for (const token of ["--brand-font-family", "--brand-color-text", "--brand-color-bg-layout", "--brand-color-bg-container", "--yss-color-primary-control", "--yss-control-height-compact", "--brand-size-lg", "--brand-size", "--brand-size-sm", "--brand-border-radius-lg", "--brand-border-radius"]) assert.match(h1Styles, new RegExp(token));
+-for (const staleAlias of ["--font-family", "--layout-background", "--container-background", "--brand-primary"]) assert.doesNotMatch(h1Styles, new RegExp(staleAlias));
+-for (const hardcodedDeclaration of ["padding:24px", "padding:20px", "min-height:32px", "border-radius:8px", "border-radius:6px"]) assert.doesNotMatch(h1Styles, new RegExp(hardcodedDeclaration));
+ assert.deepEqual((await validatePrototypeProject({ root: h1Root, profile: "H1" })).errors, []);
+ await writeFile(path.join(h1Root, "package.json"), "{}\n");
+ assert((await validatePrototypeProject({ root: h1Root, profile: "H1" })).errors.some((message) => message.includes("package.json")), "H1 必须拒绝伪构建依赖");
+@@ -47,7 +41,7 @@
+ assert.deepEqual((await validatePrototypeProject({ root: reactRoot, profile: "H2", targetAntdVersion: "6.6.2" })).errors, []);
+ 
+ function common(profile, kind, block) {
+-  const data = {
++  return {
+     schema_version: 4,
+     feature,
+     prototype_ref: `docs/.scratch/${feature}/design/prototypes/index.html`,
+@@ -62,7 +56,7 @@
+     },
+     upstream_refs: { spec_ref: "spec.md", interaction_spec_ref: "interaction.md", low_fidelity_ref: "low.md", state_matrix_ref: "states.md", prototype_review_ref: "review.md" },
+     source_visual: { ideation_status: "not-applicable", selected_ref: "approved-pattern.md", reuse_reason: "复用已批准模式" },
+-    design_baseline: { canonical_design_ref: "DESIGN.md", canonical_design_digest: "sha256:design", project_design_ref: "docs/design/design.md", project_token_refs: ["docs/design/tokens/theme.json"], project_token_baseline_digest: "sha256:tokens", project_override_reviewed: true },
++    design_baseline: { project_design_ref: "docs/design/design.md", project_token_refs: ["docs/design/tokens/theme.json"], project_token_baseline_digest: "sha256:tokens", project_override_reviewed: true },
+     visual_baseline: { manifest_ref: `docs/.scratch/${feature}/handoff/visual-baseline-v1/visual-baseline.yaml`, baseline_id: `visual-baseline.${feature}`, version: "v1", digest: `sha256:${"a".repeat(64)}`, status: "approved", case_ids: ["primary-desktop", "primary-narrow"] },
+     browser_delivery: {
+       delivery_kind: "static-directory", entry_ref: `docs/.scratch/${feature}/design/prototypes/index.html`, rendered_nonblank: true, prototype_digest: "sha256:prototype",
+@@ -83,10 +77,6 @@
+     user_confirmation: { result: "approved", confirmation_ref: "confirmation.md", confirmed_decision: "接受当前设计", operable_scope: ["主操作"], simulations_or_gaps: [] },
+     gaps: [], blockers: []
+   };
+-  const f = buildDecisionFixture(path.join(tempRoot, `decision-${profile}-${kind}`), { boundary: "gate.product-design-approved", scope: data.user_confirmation.operable_scope, subjectContent: JSON.stringify(prototypeDecisionSnapshot(data)) });
+-  data.user_confirmation.user_decision_ref = f.ref;
+-  data.user_confirmation.decision_subject_ref = f.requirement.subject_ref;
+-  return data;
+ }
+ 
+ const h1Evidence = common("H1", "visual-review", { visual_review: {
+@@ -95,10 +85,6 @@
+   reduced_motion: { applicable: false, result: "not-applicable", evidence_ref: "not-applicable" }
+ } });
+ assert.deepEqual(validatePrototypeEvidence(h1Evidence).errors, []);
+-const missingCanonicalDesign = structuredClone(h1Evidence);
+-delete missingCanonicalDesign.design_baseline.canonical_design_ref;
+-delete missingCanonicalDesign.design_baseline.canonical_design_digest;
+-assert(validatePrototypeEvidence(missingCanonicalDesign).errors.some((message) => message.includes("canonical_design")), "schema v4 必须绑定根 DESIGN.md 及其 digest");
+ const fakeH1 = structuredClone(h1Evidence);
+ fakeH1.profile_evidence.visual_review.lockfile_ref = "pnpm-lock.yaml";
+ assert(validatePrototypeEvidence(fakeH1).errors.some((message) => message.includes("H1 禁止字段")));
+@@ -107,19 +93,16 @@
+   implementation: { framework: "vue", runtime_build_required: true, package_manager: "pnpm", package_manifest_ref: "package.json", lockfile_ref: "pnpm-lock.yaml", build_command: "pnpm build", build_result: "passed" },
+   main_flow_result: "passed", exceptional_state_result: "passed", exceptional_state_ref: "conflict.png", keyboard_result: "passed", focus_result: "passed", contrast_result: "passed", zoom_200_result: "passed", reduced_motion_result: "passed",
+   visual_regression: { applicable: true, result: "passed", evidence_ref: "visual.json" },
+-  prototype_library_facts: { applicable: true, component_basis: "vue-antdv-next", source: "fact-pack", library_package: "antdv-next", library_version: "1.5.2", manifest_ref: "docs/design/facts/antdv-next/1.5.2/manifest.json", manifest_digest: "sha256:facts", components_covered: ["Button"], canonical_design_digest: "sha256:design", project_token_baseline_digest: "sha256:tokens", new_api_uncertainty: false }
++  prototype_library_facts: { applicable: true, component_basis: "vue-antdv-next", source: "fact-pack", library_package: "antdv-next", library_version: "1.5.2", manifest_ref: "docs/design/facts/antdv-next/1.5.2/manifest.json", manifest_digest: "sha256:facts", components_covered: ["Button"], project_token_baseline_digest: "sha256:tokens", new_api_uncertainty: false }
+ } });
+ assert.deepEqual(validatePrototypeEvidence(h2Evidence).errors, []);
+ const legacyReactEvidence = structuredClone(h2Evidence);
+ legacyReactEvidence.profile_evidence.flow_review.implementation.framework = "react";
+-legacyReactEvidence.profile_evidence.flow_review.prototype_library_facts = { applicable: true, component_basis: "react-antd-6", source: "fact-pack", actual_antd_version: "6.6.2", manifest_ref: "docs/design/facts/antd/6.6.2/manifest.json", manifest_digest: "sha256:facts", components_covered: ["Button"], canonical_design_digest: "sha256:design", project_token_baseline_digest: "sha256:tokens", new_api_uncertainty: false };
++legacyReactEvidence.profile_evidence.flow_review.prototype_library_facts = { applicable: true, component_basis: "react-antd-6", source: "fact-pack", actual_antd_version: "6.6.2", manifest_ref: "docs/design/facts/antd/6.6.2/manifest.json", manifest_digest: "sha256:facts", components_covered: ["Button"], project_token_baseline_digest: "sha256:tokens", new_api_uncertainty: false };
+ assert.deepEqual(validatePrototypeEvidence(legacyReactEvidence).errors, []);
+ const staleFacts = structuredClone(h2Evidence);
+ staleFacts.profile_evidence.flow_review.prototype_library_facts.project_token_baseline_digest = "sha256:old";
+ assert(validatePrototypeEvidence(staleFacts).errors.some((message) => message.includes("Token digest")));
+-const staleCanonicalDesign = structuredClone(h2Evidence);
+-staleCanonicalDesign.profile_evidence.flow_review.prototype_library_facts.canonical_design_digest = "sha256:old-design";
+-assert(validatePrototypeEvidence(staleCanonicalDesign).errors.some((message) => message.includes("DESIGN.md digest")));
+ const fakeH3Claim = structuredClone(h2Evidence);
+ fakeH3Claim.profile_evidence.flow_review.real_component_verified = true;
+ assert(validatePrototypeEvidence(fakeH3Claim).errors.some((message) => message.includes("禁止生产组件字段")));
+@@ -140,9 +123,13 @@
+ function pngHeader(width, height) {
+   const value = Buffer.alloc(24);
+   Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]).copy(value, 0);
+-  value.writeUInt32BE(13, 8); value.write("IHDR", 12, "ascii"); value.writeUInt32BE(width, 16); value.writeUInt32BE(height, 20);
++  value.writeUInt32BE(13, 8);
++  value.write("IHDR", 12, "ascii");
++  value.writeUInt32BE(width, 16);
++  value.writeUInt32BE(height, 20);
+   return value;
+ }
++
+ const bundleRoot = path.join(projectRoot, "docs/.scratch", feature, "handoff/visual-baseline-v1");
+ await mkdir(path.join(bundleRoot, "images"), { recursive: true });
+ await mkdir(path.join(bundleRoot, "sources"), { recursive: true });
