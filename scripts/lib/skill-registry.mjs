@@ -236,12 +236,9 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   const roots = registry.agent_runtime_roots;
   if (!roots || typeof roots !== "object" || Array.isArray(roots)) fail("缺少 agent_runtime_roots");
   const expected = {
-    claude: ".claude/skills",
     codex: ".codex/skills",
     cursor: ".cursor/skills",
-    pi: ".pi/skills",
-    qoder: ".qoder/skills",
-    trae: ".trae/skills"
+    pi: ".pi/skills"
   };
   for (const [agent, root] of Object.entries(expected)) {
     if (roots[agent] !== root) fail(`agent_runtime_roots.${agent} 必须为 ${root}`);

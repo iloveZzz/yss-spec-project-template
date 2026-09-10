@@ -9,7 +9,7 @@ const SOURCE_ROOT = path.join(ROOT, ".agents/skills");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
 const YSS_UI_MANIFEST_PATH = path.join(SOURCE_ROOT, ".yss-skills-manifest.json");
 const STRATEGIC_DESIGN_MANIFEST_PATH = path.join(SOURCE_ROOT, ".strategic-design-skills-manifest.json");
-export const PROJECTION_ROOTS = [".claude/skills", ".codex/skills", ".cursor/skills", ".pi/skills", ".qoder/skills", ".trae/skills"];
+export const PROJECTION_ROOTS = [".codex/skills", ".cursor/skills", ".pi/skills"];
 export const OBSOLETE = new Set(["to-" + "prd", "to-" + "issues", "design-an-interface", "qa", "request-refactor-plan", "ubiquitous-language", "edit-article", "obsidian-vault", "writing-great-skills", "code-review-process", "yss-domain-modeling", "yss-dir", "yss-duckdb", "yss-file", "yss-filerunner", "yss-db2mybatis", "yss-mail", "yss-mapper-dynamic", "yss-quality", "yss-sql-condition", "yss-sql-tpl", "yss-valuation", "yss-variable", "yss-openapi", "web-design-engineer", "web-video-presentation", "wireframe-prototype", "wizard", "git-guardrails-claude-code", "claude-handoff", "batch-grill-me", "product-design-prototype", "research", "ask-matt", "dispatching-parallel-agents", "loop-me", "migrate-to-shoehorn", "prototype-page-acceptance", "scaffold-exercises", "setup-pre-commit", "setup-ts-deep-modules", "teach", "writing-beats", "writing-fragments", "writing-shape", "yss-microapp-commit", "yss-page-module-development", "yss-dictionary", "yss-jdbc", "yss-log", "yss-taskflow", "yss-backend-scaffold-application", "yss-backend-scaffold-domain", "yss-backend-scaffold-infrastructure", "yss-backend-scaffold-web", "yss-router", "yss-source-index"]);
 export function obsoleteCanonicalResidues(names, obsolete = OBSOLETE) {
   return names.filter((name) => obsolete.has(name)).sort();
@@ -222,7 +222,7 @@ function sourceRevisionMap(oldLock, arguments_) {
 function metadata(name, skillPath, directory, previous, canonical = false, sources = {}, upstreamRoot = null) {
   const old = previous[name] ?? {};
   let recordedPath = old.skillPath ?? skillPath;
-  if (canonical && /^\.(claude|codex|cursor|pi|qoder|trae)\/skills\//.test(recordedPath)) recordedPath = skillPath;
+  if (canonical && /^\.(codex|cursor|pi)\/skills\//.test(recordedPath)) recordedPath = skillPath;
   const result = { source: old.source ?? "project", sourceType: old.sourceType ?? "local", skillPath: recordedPath, effectiveHash: treeHash(directory) };
   const sourceInfo = sources[result.source];
   if (sourceInfo?.revision) result.sourceRevision = sourceInfo.revision;

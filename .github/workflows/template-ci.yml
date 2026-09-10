@@ -1,0 +1,95 @@
+name: Template CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: template-ci-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      compatibility: ${{ steps.plan.outputs.compatibility }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - id: plan
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          test "$(scripts/repository-mode)" = template-source
+          if [[ "$EVENT_NAME" == pull_request ]]; then
+            scripts/verify-template-candidate --base "$BASE_SHA" --plan --json > "$RUNNER_TEMP/template-plan.json"
+          else
+            scripts/verify-template --plan --json > "$RUNNER_TEMP/template-plan.json"
+          fi
+          node --input-type=module -e 'import fs from "node:fs"; const p=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+"/template-plan.json")); fs.appendFileSync(process.env.GITHUB_OUTPUT,`compatibility=${p.compatibility_required}\n`);'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: template-plan
+          path: ${{ runner.temp }}/template-plan.json
+          if-no-files-found: error
+  verify:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          persist-credentials: false
+      - uses: ./.github/actions/setup-template
+      - name: Verify template
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/template-verification"
+          { git rev-parse HEAD; printf 'base=%s\nhead=%s\n' "$BASE_SHA" "$HEAD_SHA"; git submodule status --recursive; } > "$RUNNER_TEMP/template-verification/versions.txt"
+          if [[ "$EVENT_NAME" == pull_request ]]; then
+            scripts/verify-template-candidate --base "$BASE_SHA" 2>&1 | tee "$RUNNER_TEMP/template-verification/verification.log"
+          else
+            scripts/verify-template 2>&1 | tee "$RUNNER_TEMP/template-verification/verification.log"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: template-verification
+          path: ${{ runner.temp }}/template-verification/
+          if-no-files-found: error
+  compatibility:
+    needs: plan
+    if: needs.plan.outputs.compatibility == 'true'
+    uses: ./.github/workflows/template-compatibility.yml
+    with:
+      commit: ${{ github.sha }}
+  required:
+    name: Template checks
+    if: always()
+    needs: [plan, verify, compatibility]
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        env:
+          PLAN: ${{ needs.plan.result }}
+          VERIFY: ${{ needs.verify.result }}
+          COMPATIBILITY: ${{ needs.compatibility.result }}
+          REQUIRED: ${{ needs.plan.outputs.compatibility }}
+        run: |
+          test "$PLAN" = success
+          test "$VERIFY" = success
+          if [[ "$REQUIRED" == true ]]; then test "$COMPATIBILITY" = success; else test "$COMPATIBILITY" = skipped; fi

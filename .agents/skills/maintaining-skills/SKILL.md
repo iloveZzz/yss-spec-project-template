@@ -17,7 +17,7 @@ Create skills that add useful, non-obvious guidance without constraining unrelat
 6. Follow the repository's declared maintenance and review policy. If none exists, run structural validation plus focused checks of the behavior or invariant changed. Use independent forward testing only when complexity or risk makes it meaningful; do not require a failing baseline for every ordinary edit.
 7. After changes, validate frontmatter, naming, references, scripts, projections, locks, and affected callers. Retire obsolete names and resources unless the repository explicitly requires compatibility.
 8. When a repository declares staged template verification, default the implementation loop to its fast impact profile and stop at `implementation-ready`. Promote explicitly to `review-ready`; do not create frozen candidates, review packages, or release evidence during ordinary iteration. Unknown paths and changes to the verification framework itself must fail safe to the full profile.
-9. For L3 template maintenance, record maintainer self-check plus fresh verification and do not create a frozen candidate or formal independent review during ordinary iteration. Before release, run the repository's full `scripts/verify-template` gate once; historical formal-review records remain read-only compatible.
+9. For template maintenance, let the repository intensity policy determine verification evidence. Independent review is opt-in, never implied by an intensity level; record maintainer self-check and the required fresh verification without creating a frozen candidate during ordinary iteration. Before release, run the repository's full `scripts/verify-template` gate once; historical formal-review records remain read-only compatible.
 
 ## Boundaries
 

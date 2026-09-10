@@ -1,0 +1,44 @@
+schema_version: 2
+intensity: L3
+classification_reason: 统一模板维护规则与 GitHub CI，改变核心验证路由和发布前验证语义。
+triggers: [release-semantics, core-validator, aggregate-behavior-change]
+changed_assets:
+  - .github/workflows/
+  - .github/actions/setup-template/action.yml
+  - .template-source/scripts/verify-template-release.mjs
+  - .template-source/scripts/lib/template-release.mjs
+  - .template-source/scripts/tests/template-ci.test.mjs
+  - scripts/lib/maintenance-intensity.mjs
+  - scripts/lib/template-verification.mjs
+  - scripts/verify-maintenance-intensity-scenarios
+  - scripts/verify-template-verification-scenarios
+  - docs/process/template-verification-profiles.yaml
+  - docs/process/harness-process-tailoring.md
+  - docs/process/github-workflows.md
+  - docs/process/template-engineering-overview.md
+  - AGENTS.md
+  - CONTEXT.md
+  - .agents/skills/maintaining-skills/SKILL.md
+  - .agents/skills/yss-product-lifecycle/references/orchestration.md
+  - skills-lock.json
+verification_evidence:
+  - kind: self-check
+    command: .template-source/evidence/maintenance/github-workflows-2026-09-10/implementation.md
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+    evidence_ref: .template-source/evidence/maintenance/github-workflows-2026-09-10/node24-verification.txt
+    runtime: Node 24.21.0
+    effective_profile: release
+    exit_code: 0
+  - kind: relevant-check
+    command: .template-source/evidence/maintenance/github-workflows-2026-09-10/generator-smoke.txt
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

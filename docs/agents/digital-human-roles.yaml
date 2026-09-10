@@ -2,7 +2,7 @@ schema_version: 1
 registry_id: yss.digital-human-roles
 status: active
 description: >-
-  数字人角色、主控、阶段协作组、技能启用/禁止与生命周期会签的单一事实源。 角色配置与运行时无关；Claude / Cursor / Codex / Grok 等只通过 runtimes 绑定。 Ticket 五态不是数字人角色。
+  数字人角色、主控、阶段协作组、技能启用/禁止与生命周期会签的单一事实源。 角色配置与运行时无关；Cursor / Codex / Grok 等只通过 runtimes 绑定。 Ticket 五态不是数字人角色。
 canonical_path: docs/agents/digital-human-roles.yaml
 runtime_policy:
   overlay_on_lifecycle: true
@@ -41,7 +41,7 @@ runtimes:
     shared_workspace_is_not_security_boundary: false
     side_effect_approval: biological-human
     notes: >-
-      覆盖 docs/agents/yss-skill-registry.yaml 的 agent_runtime_roots （claude / codex / cursor / pi / qoder / trae）。 技能仍从 .agents/skills 投影，不按职称再维护一份。
+      覆盖 docs/agents/yss-skill-registry.yaml 的 agent_runtime_roots （codex / cursor / pi）。 技能仍从 .agents/skills 投影，不按职称再维护一份。
   - id: runtime.grok
     kind: grok-bot
     instance_kind: durable-bot

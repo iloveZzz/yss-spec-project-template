@@ -179,7 +179,7 @@ export function syncTemplate(source, ref, packageRoot, check = false) {
         ensure(
           !path.isAbsolute(link) &&
             resolved.startsWith(canonical + path.sep) &&
-            /^\.(agents|claude|codex|cursor|pi|qoder|trae)\/skills\//.test(
+            /^\.(agents|codex|cursor|pi)\/skills\//.test(
               logical,
             ),
           `不允许的投影链接: ${logical}`,

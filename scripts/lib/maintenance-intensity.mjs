@@ -10,14 +10,14 @@ const INTENSITY_POLICY = path.join(root, "docs/process/maintenance-intensity.yam
 
 const REQUIRED_EVIDENCE = {
   L1: ["relevant-check"],
-  L2: ["counterexample", "fresh-verification", "focused-independent-review"],
+  L2: ["counterexample", "fresh-verification", "self-check"],
   L3: ["fresh-verification", "self-check"]
 };
 
 const REVIEW_MODES = {
   L1: new Set(["self-check", "human-checkpoint"]),
-  L2: new Set(["focused-independent"]),
-  L3: new Set(["self-check", "formal-independent"])
+  L2: new Set(["self-check", "human-checkpoint", "focused-independent"]),
+  L3: new Set(["self-check", "human-checkpoint", "focused-independent", "formal-independent"])
 };
 
 function ensure(condition, message) {
@@ -88,11 +88,11 @@ export function validateMaintenanceCheckpoint(data, options = {}) {
     kinds.add(evidence.kind);
   }
   const legacyFormalL3 = data.intensity === "L3" && data.review_mode === "formal-independent";
-  const reviewKind = data.intensity === "L2" ? "focused-independent-review" : data.intensity === "L3" ? (legacyFormalL3 ? "formal-independent-review" : "self-check") : null;
+  const reviewKind = legacyFormalL3 ? "formal-independent-review" : data.review_mode === "focused-independent" ? "focused-independent-review" : null;
   if (data.schema_version === 2) validateCheckpointState(data, kinds, reviewKind);
   const requiredEvidence = legacyFormalL3
     ? ["red", "green", "refactor", "pressure-scenario", "fresh-verification", "formal-independent-review"]
-    : REQUIRED_EVIDENCE[data.intensity];
+    : [...REQUIRED_EVIDENCE[data.intensity].filter((kind) => !(reviewKind && kind === "self-check")), ...(reviewKind ? [reviewKind] : [])];
   for (const required of requiredEvidence) {
     const pendingByV2State = data.schema_version === 2 && data.current_state !== "release-ready" && required === reviewKind;
     if ((options.allowPendingReview === true || pendingByV2State) && required === reviewKind) continue;
@@ -122,8 +122,8 @@ function validateCheckpointState(data, evidenceKinds, reviewKind) {
     return;
   }
 
-  const selfCheckL3 = data.intensity === "L3" && data.review_mode === "self-check";
-  if (!selfCheckL3) {
+  const selfCheck = ["self-check", "human-checkpoint"].includes(data.review_mode);
+  if (!selfCheck) {
     ensure(data.candidate_digest !== null, `${data.current_state} 必须绑定 candidate_digest`);
     ensure(data.review_round >= 1, `${data.current_state} 的 review_round 必须为 1 或 2`);
     for (const required of ["candidate-verification", "initial-release-verification", "review-task-packages"]) {
@@ -131,12 +131,12 @@ function validateCheckpointState(data, evidenceKinds, reviewKind) {
     }
     validateReleaseVerificationCommand(data, "initial-release-verification");
   } else {
-    ensure(data.review_round === 0, "L3 self-check 不需要审查轮次");
-    ensure(data.candidate_digest === null, "L3 self-check 不得冻结 candidate_digest");
+    ensure(data.review_round === 0, "维护者自检不需要审查轮次");
+    ensure(data.candidate_digest === null, "维护者自检不得冻结 candidate_digest");
   }
   if (data.current_state === "review-ready") {
-    if (selfCheckL3) {
-      ensure(data.verification_profile === "fast", "L3 self-check 的 review-ready 必须使用 fast profile");
+    if (selfCheck) {
+      ensure(data.verification_profile === "fast", "维护者自检的 review-ready 必须使用 fast profile");
     } else {
       ensure(data.verification_profile === "candidate", "review-ready 必须使用 candidate profile");
     }

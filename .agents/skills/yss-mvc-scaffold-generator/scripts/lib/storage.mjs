@@ -57,7 +57,7 @@ async function populateSkillUtils(destination) {
   const publicSkills = path.join(HARNESS_ROOT, "yss-public-skills.json");
   if (!await exists(publicSkills)) fail(`技能工具包源文件不存在: ${publicSkills}`);
   await cp(publicSkills, path.join(destination, "yss-public-skills.json"));
-  await writeFile(path.join(destination, "skill-utils.yaml"), `schema_version: 1\nkind: yss-skill-utils\ntool_version: 1.0.0\ncompatibility: skill-utils-v1\nsource: ${path.basename(HARNESS_ROOT)}\ncanonical_root: .agents/skills\nprojection_roots:\n  - .codex/skills\n  - .claude/skills\n  - .cursor/skills\nexcluded_skills:\n  - yss-mvc-scaffold-generator\n`, "utf8");
+  await writeFile(path.join(destination, "skill-utils.yaml"), `schema_version: 1\nkind: yss-skill-utils\ntool_version: 1.0.0\ncompatibility: skill-utils-v1\nsource: ${path.basename(HARNESS_ROOT)}\ncanonical_root: .agents/skills\nprojection_roots:\n  - .codex/skills\n  - .cursor/skills\n  - .pi/skills\nexcluded_skills:\n  - yss-mvc-scaffold-generator\n`, "utf8");
 }
 
 export async function ensureSkillUtils(targetDir, { apply = true } = {}) {

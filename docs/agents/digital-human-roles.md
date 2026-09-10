@@ -1,6 +1,6 @@
 # 数字人角色
 
-结构化事实源是 `docs/agents/digital-human-roles.yaml`。角色、技能、协作组和会签级别与运行时无关。Claude Code、Cursor、Codex、Grok Bot 等只通过 YAML `runtimes` 绑定。冲突时以 YAML 为准。
+结构化事实源是 `docs/agents/digital-human-roles.yaml`。角色、技能、协作组和会签级别与运行时无关。Cursor、Codex、Grok Bot 等只通过 YAML `runtimes` 绑定。冲突时以 YAML 为准。
 
 ## 何时读本文
 
@@ -14,7 +14,7 @@
 | 主控数字人 | 生命周期编排器的运行时实例 | 第八个业务职称 |
 | 职能工作单元 | Plan / Spec / Code / Review | 职称 |
 | 执行态 | Explorer / Drafter / Worker / Reviewer / Verifier | 数字人角色 |
-| 运行时绑定 | 如何在 Cursor / Claude / Grok 等落地 | 角色职责本身 |
+| 运行时绑定 | 如何在 Cursor / Codex / Grok 等落地 | 角色职责本身 |
 
 一次数字人任务包同时写明 `task_id`、`work_unit_id`、`actor_id`、数字人角色、执行态、当前 `runtime_id`，以及从角色表复制的 `core_skills` / `forbidden_skills`。可用 `taskPackageDefaults(roleId)`（`scripts/lib/digital-human-roles.mjs`）读取，禁止手写第二套技能包。`role.test-engineer` 的 core_skills 含 YSS / Alibaba 专项 skill，仅作为 `code-review` Standards 只读输入，不得写实现；finding 交实现者修复或回 实现合同编译器，审查者不得当场改代码。任务包 canonical Schema 为 `docs/process/schemas/digital-human-task-package.schema.json`，按 `contract.kind` 选择生命周期、切片实现或模板维护合同。
 
@@ -45,7 +45,7 @@ Plan、产品设计、工程契约统一呈现适用检查后批准。`gate.deli
 | ID | 覆盖 | 落地方式 |
 |---|---|---|
 | `runtime.generic` | 任何能加载 `core_skills` 并接受任务包的 Agent | 通用会话 / 人设 / system prompt |
-| `runtime.skill-projection` | `yss-skill-registry.yaml` 的 `agent_runtime_roots`（claude、codex、cursor、pi、qoder、trae） | 投影技能 + subagent 任务包 |
+| `runtime.skill-projection` | `yss-skill-registry.yaml` 的 `agent_runtime_roots`（codex、cursor、pi） | 投影技能 + subagent 任务包 |
 | `runtime.grok` | Grok Bot | 持久 Bot、群聊或 1:1 交接；群超过 6 人改 1:1，不改逻辑协作组 |
 
 新增平台：先加 `runtimes` 条目，再写适配说明。不要把平台限制写进 `roles`。

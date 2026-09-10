@@ -28,7 +28,7 @@ LLMs.txt 是一个专门为大语言模型设计的文档格式规范。通过�
 包含所有组件的完整 API 文档、使用示例和最佳实践。**强烈推荐**作为默认配置，因为：
 - ✅ **更准确的代码生成** - AI 能看到完整的 Props、Events、Slots 定义
 - ✅ **真实示例参考** - 包含实际使用代码，避免 AI 猜测用法
-- ✅ **完整上下文** - 现代 AI 工具（Claude 200K、GPT-4 128K）完全支持这个大小
+- ✅ **完整上下文** - 现代 AI 工具的大上下文窗口可完整加载文档
 
 ### 轻量级索引：llms.txt
 
@@ -93,60 +93,6 @@ Always reference the YSS UI documentation when working with components:
 ```
 
 <a href="https://docs.windsurf.com/windsurf/cascade/memories" target="_blank">详细了解 Windsurf Memories 功能</a>
-
----
-
-### Claude Code
-
-在 Claude Code 中，将 LLMs.txt 添加到工作区的知识库（Docs / Context Files）配置中，即可在代码补全与解释时引用其中的内容。
-
-**使用方法：**
-
-1. 打开 Claude Code 设置
-2. 找到 "Docs / Context Files" 配置
-3. 添加 `http://192.168.164.27:3200/llms-full.txt`
-
-<a href="https://code.claude.com/docs" target="_blank">详细了解 Claude Code 文档上下文配置</a>
-
----
-
-### Trae
-
-在 Trae 中，将 LLMs.txt 文件放入项目的 knowledge sources 并在设置里开启引用。
-
-**使用方法：**
-
-1. 打开 Trae 项目设置
-2. 找到 "Knowledge Sources" 配置
-3. 添加 `http://192.168.164.27:3200/llms-full.txt`
-4. 启用该知识源
-
-<a href="https://trae.ai/docs" target="_blank">详细了解 Trae 的知识源功能</a>
-
----
-
-### Qoder
-
-在 Qoder 中，可以在 `.qoder/config.yml` 中添加 LLMs.txt 作为外部知识文件，或在对话中通过 `@docs` 进行临时引用。
-
-**使用方法 1：配置文件**
-
-在项目根目录创建 `.qoder/config.yml`：
-
-```yaml
-knowledge:
-  external_docs:
-    - url: http://192.168.164.27:3200/llms-full.txt
-      name: YSS UI Documentation
-```
-
-**使用方法 2：临时引用**
-
-```
-@docs http://192.168.164.27:3200/llms-full.txt
-```
-
-<a href="https://docs.qoder.com/" target="_blank">详细了解 Qoder 配置方法</a>
 
 ---
 

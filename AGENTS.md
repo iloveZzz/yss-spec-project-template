@@ -34,7 +34,7 @@
 
 - 按“影响面 → 事实源 → 投影 / 派生 → 分级证据”维护；改 Skill 必须用 `maintaining-skills`，并按 `docs/process/harness-process-tailoring.md` 判定 L1 / L2 / L3。
 - `.agents/skills` 是共享 Skill 权威目录；其他 Agent root 下的同名 Skill 是生成投影，不得手改或与 canonical 并列维护。
-- 内循环运行 `scripts/verify-template-fast`；晋级审查运行 `scripts/verify-template-candidate`；首次冻结和最终发布前运行不可裁剪的 `scripts/verify-template`。外部 `create-yss-spec` 集成未闭合不得称可发布。
+- 内循环运行 `scripts/verify-template-fast`；PR 运行 `scripts/verify-template-candidate`；main 和发布前运行不可裁剪的 `scripts/verify-template`。日常维护不强制独立审查或候选冻结，L1/L2/L3 决定验证强度；外部 `create-yss-spec` 固定版本集成未闭合不得称可发布。CI 边界见 `docs/process/github-workflows.md`。
 
 ## 5. `project-instance` 产品研发路由
 

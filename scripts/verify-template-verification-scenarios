@@ -76,6 +76,10 @@ groups:
 
 const docsOnly = planTemplateVerification({ profile: "fast", changedFiles: ["docs/user-guide/example.md"] });
 assert.equal(docsOnly.effective_profile, "fast");
+assert.equal(docsOnly.compatibility_required, false);
+assert.equal(release.compatibility_required, true);
+assert.equal(planTemplateVerification({ changedFiles: [".template-source/tooling/node/package.json"] }).compatibility_required, true);
+assert.equal(planTemplateVerification({ changedFiles: [".github/workflows/template-ci.yml"] }).effective_profile, "release");
 assert.ok(docsOnly.groups.includes("hygiene"));
 assert.ok(!docsOnly.groups.includes("skills"), "文档内循环不得运行无关 skill 投影检查");
 

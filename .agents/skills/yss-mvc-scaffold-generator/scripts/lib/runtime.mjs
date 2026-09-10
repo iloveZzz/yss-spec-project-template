@@ -11,8 +11,7 @@ export const HARNESS_ROOT = findHarnessRoot();
 export const SHARED_SKILLS_ROOT = path.join(HARNESS_ROOT, ".agents", "skills");
 export const SKILL_UTILS_NAME = "skillUtils";
 export const SKILL_UTILS_DIRECTORIES = [
-  ".agents/skills", ".claude/skills", ".codex/skills", ".cursor/skills",
-  ".pi/skills", ".qoder/skills", ".trae/skills"
+  ".agents/skills", ".codex/skills", ".cursor/skills", ".pi/skills"
 ];
 export const PROJECT_SCRIPT_FILES = [
   "check-agent-environment.mjs", "implementation-path-policy", "repository-mode", "repository-scope-policy",

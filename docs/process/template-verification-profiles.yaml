@@ -8,7 +8,18 @@ profiles:
     always_groups: [hygiene, candidate-integrity]
   release:
     all_groups: true
+compatibility_patterns:
+  - scripts/**
+  - .github/**
+  - .template-source/tooling/node/**
+  - .template-source/cli-core/**
+  - .agents/skills/**/scripts/**
+  - submodules/**
 core_escalation_patterns:
+  - .github/**
+  - .template-source/scripts/verify-template-release.mjs
+  - .template-source/scripts/lib/template-release.mjs
+  - .template-source/scripts/tests/template-ci.test.mjs
   - scripts/lib/user-decision.mjs
   - scripts/lib/approval-record.mjs
   - scripts/lib/lifecycle-transition.mjs
@@ -47,7 +58,6 @@ required_files:
   - skills-lock.json
   - .agents/skills/.yss-skills-manifest.json
   - .agents/skills/.strategic-design-skills-manifest.json
-  - .mcp.json
   - .agents/mcp_config.json
   - .cursor/mcp.json
   - .vscode/mcp.json
@@ -232,9 +242,9 @@ routing:
     groups: [hygiene]
   - patterns: [AGENTS.md, yss-project.yaml, "docs/process/template-engineering-overview.md"]
     groups: [governance-release]
-  - patterns: [skills-lock.json, ".agents/skills/**", ".claude/skills/**", ".codex/skills/**", ".cursor/skills/**", ".pi/skills/**", ".qoder/skills/**", ".trae/skills/**", "docs/agents/yss-skill-registry.yaml", "docs/agents/skills-maintenance.md", "scripts/*skill*"]
+  - patterns: [skills-lock.json, ".agents/skills/**", ".codex/skills/**", ".cursor/skills/**", ".pi/skills/**", "docs/agents/yss-skill-registry.yaml", "docs/agents/skills-maintenance.md", "scripts/*skill*"]
     groups: [skills]
-  - patterns: [.mcp.json, .agents/mcp_config.json, .cursor/mcp.json, .vscode/mcp.json, docs/user-guide/yss-ui-mcp.md, docs/agents/yss-ui-skills-integration.md]
+  - patterns: [.agents/mcp_config.json, .cursor/mcp.json, .vscode/mcp.json, docs/user-guide/yss-ui-mcp.md, docs/agents/yss-ui-skills-integration.md]
     groups: [skills]
   - patterns: [.agents/skills/.strategic-design-skills-manifest.json, docs/agents/strategic-design-skills-integration.md, submodules/yss-harness-design-agent/**]
     groups: [skills]
@@ -370,3 +380,4 @@ groups:
     commands:
       - { run: "node scripts/verify-template-verification-scenarios" }
       - { run: "node scripts/verify-template-cache-scenarios" }
+      - { run: "node --test .template-source/scripts/tests/template-ci.test.mjs", when: template-source }

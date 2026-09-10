@@ -1,0 +1,47 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  退役 Claude、Qoder 和 Trae 的运行时投影、入口文件与生成适配，
+  改变支持的 Agent root 集合、技能锁定和模板分发语义。
+triggers: [generation-semantics, core-validator, aggregate-behavior-change]
+changed_assets:
+  - .claude/
+  - .qoder/
+  - .trae/
+  - CLAUDE.md
+  - .mcp.json
+  - .agents/skills/setup-matt-pocock-skills/SKILL.md
+  - .agents/skills/yss-mvc-data-analysis-project-initializer/scripts/generate_project.mjs
+  - .agents/skills/yss-mvc-scaffold-generator/scripts/
+  - .agents/skills/yss-ui/assets/docs/guide/llms.md
+  - .agents/skills/.yss-skills-manifest.json
+  - .template-source/cli-core/
+  - .template-source/tooling/node/test/
+  - docs/agents/
+  - docs/process/template-engineering-overview.md
+  - docs/process/template-verification-profiles.yaml
+  - docs/user-guide/yss-ui-mcp.md
+  - README.md
+  - CONTEXT.md
+  - scripts/lib/
+  - scripts/fixtures/strategic-handoff/source-roles.json
+  - skills-lock.json
+verification_evidence:
+  - kind: self-check
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check && scripts/verify-skill-registry && scripts/verify-skill-governance
+    result: pass
+  - kind: relevant-check
+    command: node --test .template-source/tooling/node/test/skill-supply-chain.test.mjs .template-source/tooling/node/test/yss-ui-skill-integration.test.mjs
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+    effective_profile: release
+    exit_code: 0
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

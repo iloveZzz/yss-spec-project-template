@@ -1,0 +1,76 @@
+name: Template release verification
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: 待发布模板的完整 40 位 commit SHA（本流程只验证，不发布）
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: template-release-${{ github.run_id }}
+  cancel-in-progress: false
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    outputs:
+      commit: ${{ steps.resolve.outputs.commit }}
+    steps:
+      - name: Validate input
+        shell: bash
+        env:
+          REQUESTED_COMMIT: ${{ inputs.commit }}
+        run: '[[ "$REQUESTED_COMMIT" =~ ^[0-9a-f]{40}$ ]]'
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.commit }}
+          persist-credentials: false
+      - id: resolve
+        shell: bash
+        env:
+          REQUESTED_COMMIT: ${{ inputs.commit }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$REQUESTED_COMMIT"
+          echo "commit=$REQUESTED_COMMIT" >> "$GITHUB_OUTPUT"
+  verify:
+    needs: resolve
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.resolve.outputs.commit }}
+          fetch-depth: 0
+          submodules: recursive
+          persist-credentials: false
+      - uses: ./.github/actions/setup-template
+      - name: Full verification and generator integration
+        env:
+          EXPECTED_COMMIT: ${{ needs.resolve.outputs.commit }}
+        run: node .template-source/scripts/verify-template-release.mjs --commit "$EXPECTED_COMMIT" --output "$RUNNER_TEMP/template-release"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: template-release-evidence
+          path: ${{ runner.temp }}/template-release/
+          if-no-files-found: error
+  compatibility:
+    needs: resolve
+    uses: ./.github/workflows/template-compatibility.yml
+    with:
+      commit: ${{ needs.resolve.outputs.commit }}
+  result:
+    if: always()
+    needs: [resolve, verify, compatibility]
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          RESOLVE: ${{ needs.resolve.result }}
+          VERIFY: ${{ needs.verify.result }}
+          COMPATIBILITY: ${{ needs.compatibility.result }}
+        run: |
+          test "$RESOLVE" = success
+          test "$VERIFY" = success
+          test "$COMPATIBILITY" = success
+          echo '发布前机器验证通过；实际发布仍由维护者明确发起。' >> "$GITHUB_STEP_SUMMARY"

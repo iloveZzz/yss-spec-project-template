@@ -54,7 +54,6 @@ test("yss-ui 业务项目清单覆盖 20 个精选 app skills 与项目级 MCP �
   assert.deepEqual(
     contract.mcp.project_configs.map(({ path }) => path),
     [
-      ".mcp.json",
       ".agents/mcp_config.json",
       ".cursor/mcp.json",
       ".vscode/mcp.json",

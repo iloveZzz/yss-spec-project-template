@@ -82,6 +82,23 @@ validateMaintenanceCheckpoint({
   verification_evidence: [...v2Base.verification_evidence, ...evidence("candidate-verification", "review-task-packages"), releaseEvidence("initial-release-verification")]
 });
 
+// 日常 L2/L3 自检必须闭合；不能再借 pending review 跳过自检。
+for (const intensity of ["L1", "L2", "L3"]) {
+  const kinds = intensity === "L1" ? ["relevant-check"] : intensity === "L2" ? ["counterexample", "fresh-verification", "self-check"] : ["fresh-verification", "self-check"];
+  const daily = { ...v2Base, intensity, triggers: [intensity === "L1" ? "textual-only" : intensity === "L2" ? "local-rule" : "core-validator"], review_mode: "self-check", verification_evidence: evidence(...kinds) };
+  validateMaintenanceCheckpoint(daily);
+  const released = { ...daily, target_state: "release-ready", current_state: "release-ready", verification_profile: "release", verification_evidence: [...daily.verification_evidence, releaseEvidence("final-release-verification")] };
+  validateMaintenanceCheckpoint(released);
+  for (const invalid of [
+    { ...released, verification_evidence: daily.verification_evidence },
+    ...(intensity === "L1" ? [] : [{ ...daily, verification_evidence: evidence(...kinds.filter(kind => kind !== "self-check")) }])
+  ]) {
+    let failed = false;
+    try { validateMaintenanceCheckpoint(invalid); } catch { failed = true; }
+    if (!failed) throw new TypeError("自检或发布证据缺失必须阻断");
+  }
+}
+
 const pendingFormalReview = {
   ...accepted[3],
   verification_evidence: evidence("red", "green", "refactor", "pressure-scenario", "fresh-verification")

@@ -1,0 +1,29 @@
+name: Setup template tooling
+description: 安装模板源验证环境；不构建或修改受版本管理的 vendor。
+inputs:
+  node:
+    description: Node 主版本
+    default: '24'
+  python:
+    description: 是否安装 schema 验证环境
+    default: 'true'
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node }}
+    - shell: bash
+      run: test "$(scripts/repository-mode)" = template-source
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 10.15.0
+    - shell: bash
+      run: pnpm --dir .template-source/tooling/node install --frozen-lockfile
+    - if: inputs.python == 'true'
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - if: inputs.python == 'true'
+      shell: bash
+      run: python -m pip install jsonschema==4.23.0

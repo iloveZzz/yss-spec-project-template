@@ -2,7 +2,6 @@
 
 模板已为支持项目级 MCP 配置的客户端预置 `yss-ui` server：
 
-- Claude Code：`.mcp.json`
 - Antigravity：`.agents/mcp_config.json`
 - Cursor：`.cursor/mcp.json`
 - VS Code：`.vscode/mcp.json`

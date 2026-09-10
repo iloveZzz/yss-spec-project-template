@@ -40,7 +40,6 @@
     "components_version": "1.5.18",
     "server_name": "yss-ui",
     "project_configs": [
-      { "path": ".mcp.json", "container": "mcpServers" },
       { "path": ".agents/mcp_config.json", "container": "mcpServers" },
       { "path": ".cursor/mcp.json", "container": "mcpServers" },
       { "path": ".vscode/mcp.json", "container": "servers" }

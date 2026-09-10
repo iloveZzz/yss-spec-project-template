@@ -1,0 +1,48 @@
+name: Template compatibility
+on:
+  workflow_call:
+    inputs:
+      commit:
+        type: string
+        required: true
+permissions:
+  contents: read
+jobs:
+  compatibility:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    continue-on-error: ${{ matrix.observational }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {name: linux-node-22, os: ubuntu-latest, node: '22', test: true, observational: false}
+          - {name: macos-vendor, os: macos-latest, node: '24', test: false, observational: false}
+          - {name: node-26-observational, os: ubuntu-latest, node: '26', test: true, observational: true}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.commit }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-template
+        with:
+          node: ${{ matrix.node }}
+          python: 'false'
+      - name: Compatibility checks
+        shell: bash
+        env:
+          RUN_TESTS: ${{ matrix.test }}
+          EXPECTED_COMMIT: ${{ inputs.commit }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/compatibility"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_COMMIT"
+          { git rev-parse HEAD; node --version; pnpm --version; } > "$RUNNER_TEMP/compatibility/versions.txt"
+          if [[ "$RUN_TESTS" == true ]]; then pnpm --dir .template-source/tooling/node test 2>&1 | tee "$RUNNER_TEMP/compatibility/test.log"; fi
+          pnpm --dir .template-source/tooling/node check:vendor 2>&1 | tee "$RUNNER_TEMP/compatibility/vendor.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compatibility-${{ matrix.name }}
+          path: ${{ runner.temp }}/compatibility/
+          if-no-files-found: error

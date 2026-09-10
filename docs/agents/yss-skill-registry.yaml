@@ -214,12 +214,9 @@ invocation_contract:
       exclusion_conditions: [prototype-profile:H1, component-basis:not-antdv-next, production-frontend-implementation]
       primary_output: versioned-antdv-next-facts
 agent_runtime_roots:
-  claude: .claude/skills
   codex: .codex/skills
   cursor: .cursor/skills
   pi: .pi/skills
-  qoder: .qoder/skills
-  trae: .trae/skills
 skills:
   - id: alibaba-java-code-style
     layer: specialist

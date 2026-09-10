@@ -23,7 +23,7 @@ async function sharedTools(outputDir, contract) {
   }
   const staging = await mkdtemp(path.join(outputDir, ".skillUtils.staging-"));
   try {
-    for (const relative of [".agents/skills", ".codex/skills", ".claude/skills", ".cursor/skills", ".pi/skills", ".qoder/skills", ".trae/skills", "scripts", "docs/agents", "docs/process", "AGENTS.md", "skills-lock.json"]) {
+    for (const relative of [".agents/skills", ".codex/skills", ".cursor/skills", ".pi/skills", "scripts", "docs/agents", "docs/process", "AGENTS.md", "skills-lock.json"]) {
       await mkdir(path.dirname(path.join(staging, relative)), { recursive: true });
       await cp(path.join(root, relative), path.join(staging, relative), { recursive: true });
     }
