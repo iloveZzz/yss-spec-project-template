@@ -42,9 +42,10 @@ jobs:
         with:
           ref: ${{ needs.resolve.outputs.commit }}
           fetch-depth: 0
-          submodules: recursive
           persist-credentials: false
       - uses: ./.github/actions/setup-template
+        with:
+          submodules: 'true'
       - name: Full verification and generator integration
         env:
           EXPECTED_COMMIT: ${{ needs.resolve.outputs.commit }}

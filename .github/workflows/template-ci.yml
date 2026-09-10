@@ -48,9 +48,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          submodules: recursive
           persist-credentials: false
       - uses: ./.github/actions/setup-template
+        with:
+          submodules: 'true'
       - name: Verify template
         shell: bash
         env:

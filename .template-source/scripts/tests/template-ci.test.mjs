@@ -58,6 +58,19 @@ test('固定版本发布集成真实打包安装，并产生命令证据', t => 
   assert.equal(JSON.parse(readFileSync(path.join(f.output, 'release-verification.json'))).status, 'passed');
 });
 
+test('发布检出允许兼容期私有模板未初始化，但仍要求生成器就绪', t => {
+  const f = fixture(t);
+  const legacy = path.join(f.base, 'legacy-private-template');
+  mkdirSync(legacy);
+  git(legacy, 'init', '-q');
+  put(legacy, 'README.md', 'legacy private template\n');
+  commit(legacy);
+  git(f.repo, '-c', 'protocol.file.allow=always', 'submodule', 'add', '-q', legacy, 'submodules/yss-harness-dev-agent');
+  const sha = commit(f.repo);
+  git(f.repo, 'submodule', 'deinit', '-f', '--', 'submodules/yss-harness-dev-agent');
+  assert.doesNotThrow(() => assertReleaseCheckout(f.repo, sha));
+});
+
 test('浮动版本、脏树、未初始化或漂移子模块不得用于发布', t => {
   const f = fixture(t);
   assert.throws(() => assertReleaseCheckout(f.repo, 'main'), /40 位/);
@@ -98,8 +111,14 @@ test('工作流保持读权限、失败汇总、精确版本与独立兼容职�
   assert.deepEqual(Object.keys(release.on), ['workflow_dispatch']);
   assert.equal(release.jobs.compatibility.with.commit, '${{ needs.resolve.outputs.commit }}');
   assert.equal(release.jobs.verify.steps[0].with.ref, '${{ needs.resolve.outputs.commit }}');
-  assert.equal(release.jobs.verify.steps[0].with.submodules, 'recursive');
+  assert.equal(release.jobs.verify.steps[0].with.submodules, undefined);
+  assert.equal(release.jobs.verify.steps[1].with.submodules, 'true');
+  assert.equal(ci.jobs.verify.steps[0].with.submodules, undefined);
+  assert.equal(ci.jobs.verify.steps[1].with.submodules, 'true');
   assert.equal(release.concurrency['cancel-in-progress'], false);
+  const setup = readFileSync(path.join(root, '.github/actions/setup-template/action.yml'), 'utf8');
+  assert.match(setup, /submodules\/create-yss-spec/);
+  assert.doesNotMatch(setup, /submodules\/yss-harness-dev-agent/);
   const matrix = compatibility.jobs.compatibility.strategy.matrix.include;
   assert.equal(matrix.filter(row => row.observational).length, 1);
   assert.equal(matrix.find(row => row.observational).node, '26');

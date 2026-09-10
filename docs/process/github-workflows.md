@@ -11,7 +11,7 @@
 | Template compatibility | 工具影响 PR、main 全量及发布前执行 Node 22 工具测试、macOS vendor 一致性、Node 26 非阻断观察 | 独立于 Node 24 主验证，不再重复主验证中的工具测试 |
 | 手动：Template release verification | 输入完整 40 位模板 commit，精确检出；全量验证、生成器集成与兼容矩阵 | 产出证据，不打 tag、不创建 Release、不发布包 |
 
-模板工作流首先要求 `template-source`。全量检查递归初始化 gitlink 固定的子模块，不追踪上游分支。工具依赖使用固定 pnpm 与 frozen lockfile；Node 24 为主验证环境，Python 3.12 / jsonschema 4.23.0 提供既有 schema 检查依赖。vendor 校验在临时目录重建并比较，不先覆盖受版本管理的 vendor。
+模板工作流首先要求 `template-source`。全量检查初始化验证实际依赖的公开 gitlink 固定子模块，不追踪上游分支；兼容期私有 `yss-harness-dev-agent` 不参与主模板验证，也不要求 GitHub 默认 token 具备跨仓私有读取权限。工具依赖使用固定 pnpm 与 frozen lockfile；Node 24 为主验证环境，Python 3.12 / jsonschema 4.23.0 提供既有 schema 检查依赖。vendor 校验在临时目录重建并比较，不先覆盖受版本管理的 vendor。
 
 本地复验应把独立 Node 24 的 bin 加入 PATH 后直接运行验证入口；不要用带 `--package` 的 `npm exec` 包住整条验证链，其包配置可能被内部 npx 继承，改变实际执行的工具。
 
@@ -21,7 +21,7 @@ PR 无工作流级 paths 过滤，始终产生 `Template checks` 汇总结果；
 
 `Template release verification` 必须先存在于默认分支。输入 SHA 与实际 HEAD 必须一致；该提交也必须具备本合同对应的脚本和 action。调用工作流的版本与待验证 SHA 可能不同，Actions run 保留编排版本，报告记录被验证版本。
 
-`node .template-source/scripts/verify-template-release.mjs --commit <40位SHA> --output <仓库外绝对目录>` 要求干净的模板工作树、已初始化且与 gitlink 一致的子模块。全量验证后，从 gitlink 对应的 `create-yss-spec` commit 创建隔离副本，用待发布模板重建快照；打包、干净安装、初始化、Skill 投影/锁校验，以及同步前后用户 `.github` 保留检查必须通过。不会改原始生成器工作树。既有其他专职生成器场景继续由全量 profile 执行。
+`node .template-source/scripts/verify-template-release.mjs --commit <40位SHA> --output <仓库外绝对目录>` 要求干净的模板工作树、所有必需子模块已初始化且与 gitlink 一致；仅允许兼容期私有 `yss-harness-dev-agent` 未初始化。全量验证后，从 gitlink 对应的 `create-yss-spec` commit 创建隔离副本，用待发布模板重建快照；打包、干净安装、初始化、Skill 投影/锁校验，以及同步前后用户 `.github` 保留检查必须通过。不会改原始生成器工作树。既有其他专职生成器场景继续由全量 profile 执行。
 
 生成器消费者验收使用 `npm pack --ignore-scripts` 和本地 tarball 安装，属于包格式验证的受控工具例外；模板工具测试仍用 pnpm。不会执行 npm publish，也不使用浮动生成器版本或 latest 包。
 

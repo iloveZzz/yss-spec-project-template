@@ -10,13 +10,23 @@ function git(root, args) {
   return result.stdout.trim();
 }
 
+const OPTIONAL_UNINITIALIZED_SUBMODULES = new Set([
+  'submodules/yss-harness-dev-agent',
+]);
+
 export function assertReleaseCheckout(root, commit) {
   assert.match(commit, /^[a-f0-9]{40}$/, '必须指定完整 40 位 commit SHA');
   assert.equal(git(root, ['rev-parse', 'HEAD']), commit, '检出版本与待发布版本不一致');
   assert.equal(git(root, ['status', '--porcelain', '--untracked-files=normal', '--ignore-submodules=none']), '', '发布验证要求干净工作树及子模块');
   const submodules = git(root, ['submodule', 'status', '--recursive']);
-  // git() trims the first leading space; only -, + and U denote invalid states.
-  assert.ok(!submodules.split('\n').some(line => /^[-+U]/.test(line)), '子模块必须检出 gitlink 指定版本');
+  // 兼容期私有模板不参与主模板验证；GitHub 默认 token 无跨仓私有读取权限。
+  const invalidSubmodules = submodules.split('\n').filter(line => {
+    if (/^[+U]/.test(line)) return true;
+    if (!line.startsWith('-')) return false;
+    const match = /^-[a-f0-9]{40}\s+(\S+)/.exec(line);
+    return !match || !OPTIONAL_UNINITIALIZED_SUBMODULES.has(match[1]);
+  });
+  assert.deepEqual(invalidSubmodules, [], '必需子模块必须检出 gitlink 指定版本');
   const entry = git(root, ['ls-tree', 'HEAD', '--', 'submodules/create-yss-spec']);
   const match = /^160000 commit ([a-f0-9]{40})\tsubmodules\/create-yss-spec$/.exec(entry);
   assert.ok(match, '缺少固定的 create-yss-spec gitlink');
