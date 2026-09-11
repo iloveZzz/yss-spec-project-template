@@ -3,7 +3,7 @@
   "source": "iloveZzz/yss-harness-design-agent",
   "source_type": "git-submodule",
   "source_root": ".agents/skills",
-  "source_revision": "41fb25425928153791f7d92a85eb717f4eb2d546",
+  "source_revision": "e24465921a8a51d8690a1732842274a35b935c9e",
   "adaptation_ref": "docs/agents/strategic-design-skills-integration.md",
   "skills": [
     {
@@ -34,9 +34,9 @@
     {
       "upstream": "yss-stage-decision",
       "canonical": "yss-stage-decision",
-      "upstream_hash": "53495f8c450cddffb8dd223e6772c7e056464f76c5aab240ca5bd54654505312"
+      "upstream_hash": "8752a1ed6903bd20c33e21b521d52bd4f7a0662b1d25e00152b60ba38333c93b"
     }
   ],
-  "source_state": "working-tree",
-  "source_state_note": "source_revision 为已提交基线；upstream_hash 为本轮未提交工作树。固定 revision 与分发留待源仓提交后的交付批次。"
+  "source_state": "committed",
+  "source_state_note": "source_revision 与 upstream_hash 均来自已提交设计模板。"
 }

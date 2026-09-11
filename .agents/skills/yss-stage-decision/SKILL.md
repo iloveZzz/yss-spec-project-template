@@ -39,7 +39,7 @@ Plan 的目标与退出条件由 `docs/process/lifecycle-registry.yaml` 持有�
 - 每次批准、重发和消费者流转前执行 `context_reconciliation`，核验 `CONTEXT.md` 的全文与引用术语双摘要。
 - 技术事实与第三方行为走 `yss-research` 的 `technical-evidence`；产品策略依据走 `strategy-evidence`；市场与竞品判断走 `competitive-intelligence`。
 - 修改本 Skill 时只编辑 `.agents/skills` 权威副本，再由 `maintaining-skills` 生成投影和 `skills-lock.json`。
-- 本 Skill 只能标记影响、提出待解决问题和选择消费者能力；不得预选 DDD/MVC，不得执行 `yss-technical-design`、`yss-tactical-design`、`yss-mvc-design`，也不得授权实现。
+- 本 Skill 只能标记影响、提出待解决问题和选择消费者能力；不得预选后端架构族，不得进入技术设计或实现流程，也不得授权实现。
 
 ## 语义方向规则
 
