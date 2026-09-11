@@ -113,7 +113,8 @@ export function identity(target, bundle, command) {
       "LEGACY",
     );
     ensure(
-      profile.schema_version === 1 && profile.profile_id === f.profileId,
+      [1, 2].includes(profile.schema_version) &&
+        profile.profile_id === f.profileId,
       "目标 profile 未知或属于不同家族",
       "IDENTITY",
     );

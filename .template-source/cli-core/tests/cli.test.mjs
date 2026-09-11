@@ -142,6 +142,28 @@ test("两家族从离线固定包创建空目录实例，记录新版基线并�
     );
   }
 });
+test("已初始化实例升级到 Harness profile schema v2 后仍可同步", (t) => {
+  for (const side of ["backend", "frontend"]) {
+    const f = fixture(t, side);
+    const initialized = f.run("init", "--project-name", "订单服务");
+    assert.equal(initialized.status, 0, initialized.stderr);
+    const profilePath = path.join(
+      f.target,
+      "docs/process/harness-profile.yaml",
+    );
+    fs.writeFileSync(
+      profilePath,
+      fs.readFileSync(profilePath, "utf8").replace(
+        "schema_version: 1",
+        "schema_version: 2",
+      ),
+    );
+
+    const synced = f.run("sync");
+    assert.equal(synced.status, 0, synced.stderr);
+    assert.equal(synced.data.status, "preview");
+  }
+});
 export { fixture, put, json };
 function tree(root) {
   if (!fs.existsSync(root)) return null;
