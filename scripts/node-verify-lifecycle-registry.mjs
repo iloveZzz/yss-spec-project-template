@@ -49,10 +49,12 @@ try {
         throw new TypeError(`${relativePath} 不得手工声明生命周期对象数量；请引用 lifecycle-registry.yaml`);
       }
     }
-    const publicSkills = JSON.parse(readFileSync(path.join(ROOT, "yss-public-skills.json"), "utf8"));
-    const groups = new Map(publicSkills.groupings.map((group) => [group.title, group.skills]));
-    if (!groups.get("后端")?.includes("yss-web-controller")) throw new TypeError("yss-web-controller 必须在后端分组");
-    if (groups.get("前端")?.includes("yss-web-controller")) throw new TypeError("yss-web-controller 不得在前端分组");
+    if (isTemplateSource(ROOT)) {
+      const publicSkills = JSON.parse(readFileSync(path.join(ROOT, "yss-public-skills.json"), "utf8"));
+      const groups = new Map(publicSkills.groupings.map((group) => [group.title, group.skills]));
+      if (!groups.get("后端")?.includes("yss-web-controller")) throw new TypeError("yss-web-controller 必须在后端分组");
+      if (groups.get("前端")?.includes("yss-web-controller")) throw new TypeError("yss-web-controller 不得在前端分组");
+    }
   }
   process.stdout.write(`生命周期注册表验证通过（${registry.status}）\n`);
 } catch (error) {

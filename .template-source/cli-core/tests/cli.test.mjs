@@ -75,6 +75,7 @@ function fixture(t, side = "backend") {
         schemaVersion: 1,
         ...family,
         templateCommit: "a".repeat(40),
+        sourceState: "working-tree",
         manifestHash: hash(json(manifest)),
         files: entries,
         snapshotHash: hash(JSON.stringify(entries)),
@@ -88,6 +89,7 @@ function fixture(t, side = "backend") {
         coreVersion: "0.1.0",
         protocolVersion: 1,
         sourceRevision: "b".repeat(40),
+        sourceState: "working-tree",
         digest: "c".repeat(64),
         files: {},
       }),
@@ -124,6 +126,8 @@ test("两家族从离线固定包创建空目录实例，记录新版基线并�
     );
     assert.equal(meta.metadataSchemaVersion, 2);
     assert.equal(meta.profileId, f.family.profileId);
+    assert.equal(meta.templateSourceState, "working-tree");
+    assert.equal(meta.coreSourceState, "working-tree");
     assert.match(
       fs.readFileSync(path.join(f.target, "README.md"), "utf8"),
       /订单服务/,

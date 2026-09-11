@@ -1,0 +1,223 @@
+{
+  "status": "implementation-ready",
+  "intensity": "L3",
+  "verified_at": "2026-09-11T04:12:09.027522+00:00",
+  "base_revisions": {
+    "root": "99061076f951d9fdf2f54eaa24d1edf745aefa65",
+    "design": "41fb25425928153791f7d92a85eb717f4eb2d546",
+    "dev": "55c28a8a66b9c0f8aa6fd09b7881a58c550858a9",
+    "backend": "cc222154f5e20c153a3cead93263572ff8c4bbd0",
+    "frontend": "730fb25ecf2ad7883fbf35acf8bd1a28b53b5e77"
+  },
+  "records": [
+    {
+      "repository": "root",
+      "command": "scripts/verify-template-fast",
+      "exit_code": 0,
+      "started_at_unix": 1789099600.496644,
+      "elapsed_seconds": 156.1036639213562,
+      "log": "strategic-verified-root.log",
+      "effective_profile": "release"
+    },
+    {
+      "repository": "design",
+      "command": "scripts/verify-template-fast",
+      "exit_code": 0,
+      "started_at_unix": 1789099601.654874,
+      "elapsed_seconds": 50.23589372634888,
+      "log": "strategic-verified-design.log",
+      "effective_profile": "release"
+    },
+    {
+      "repository": "dev",
+      "command": "scripts/verify-template-fast",
+      "exit_code": 0,
+      "started_at_unix": 1789099602.819179,
+      "elapsed_seconds": 47.50099205970764,
+      "log": "strategic-verified-dev.log",
+      "effective_profile": "fast"
+    },
+    {
+      "repository": "backend",
+      "command": "scripts/verify-template-fast",
+      "exit_code": 0,
+      "started_at_unix": 1789099603.984076,
+      "elapsed_seconds": 46.72806191444397,
+      "log": "strategic-verified-backend.log",
+      "effective_profile": "fast"
+    },
+    {
+      "repository": "frontend",
+      "command": "scripts/verify-template-fast",
+      "exit_code": 0,
+      "started_at_unix": 1789099605.1661901,
+      "elapsed_seconds": 46.84139800071716,
+      "log": "strategic-verified-frontend.log",
+      "effective_profile": "fast"
+    },
+    {
+      "repository": "root",
+      "command": "node scripts/verify-strategic-handoff-package-scenarios",
+      "exit_code": 0,
+      "elapsed_seconds": 31.994725227355957,
+      "log": "strategic-handoff-final-root.log"
+    },
+    {
+      "repository": "design",
+      "command": "node scripts/verify-strategic-handoff-package-scenarios",
+      "exit_code": 0,
+      "elapsed_seconds": 31.994518041610718,
+      "log": "strategic-handoff-final-design.log"
+    },
+    {
+      "repository": "dev",
+      "command": "node scripts/verify-strategic-handoff-package-scenarios",
+      "exit_code": 0,
+      "elapsed_seconds": 27.224070072174072,
+      "log": "strategic-handoff-final-dev.log"
+    },
+    {
+      "repository": "backend",
+      "command": "node scripts/verify-strategic-handoff-package-scenarios",
+      "exit_code": 0,
+      "elapsed_seconds": 27.224211931228638,
+      "log": "strategic-handoff-final-backend.log"
+    },
+    {
+      "repository": "frontend",
+      "command": "node scripts/verify-strategic-handoff-package-scenarios",
+      "exit_code": 0,
+      "elapsed_seconds": 27.223668813705444,
+      "log": "strategic-handoff-final-frontend.log"
+    },
+    {
+      "repository": "design",
+      "command": "node scripts/verify-strategic-checkpoint-scenarios",
+      "exit_code": 0,
+      "elapsed_seconds": 0.8607251644134521,
+      "log": "strategic-state-final.log"
+    },
+    {
+      "repository": "design",
+      "command": "node scripts/verify-strategic-user-decision-scenarios",
+      "exit_code": 0,
+      "elapsed_seconds": 1.4703218936920166,
+      "log": "strategic-state-final.log"
+    },
+    {
+      "repository": "design",
+      "command": "node scripts/verify-lifecycle-transition-scenarios",
+      "exit_code": 0,
+      "elapsed_seconds": 0.05305790901184082,
+      "log": "strategic-state-final.log"
+    },
+    {
+      "repository": "design",
+      "command": "node scripts/verify-lifecycle-scenarios",
+      "exit_code": 0,
+      "elapsed_seconds": 0.3346219062805176,
+      "log": "strategic-state-final.log"
+    },
+    {
+      "repository": "design",
+      "command": "node scripts/verify-subagent-task-package-scenarios",
+      "exit_code": 0,
+      "elapsed_seconds": 2.091742992401123,
+      "log": "strategic-state-final.log"
+    },
+    {
+      "repository": "design",
+      "command": "node scripts/verify-maintenance-intensity-scenarios",
+      "exit_code": 0,
+      "elapsed_seconds": 0.03609299659729004,
+      "log": "strategic-state-final.log"
+    },
+    {
+      "repository": "design",
+      "command": "node scripts/verify-plan-spec-entry-scenarios",
+      "exit_code": 0,
+      "elapsed_seconds": 1.2651481628417969,
+      "log": "strategic-state-final.log"
+    },
+    {
+      "repository": "design",
+      "command": "node scripts/update-skill-lock --check",
+      "exit_code": 0,
+      "elapsed_seconds": 0.061894893646240234,
+      "log": "strategic-state-final.log"
+    }
+  ],
+  "final_asset_digests": {
+    ".agents/skills/.strategic-design-skills-manifest.json": "sha256:efb81094b69e1f7cd087a5d14ff985b3252ff8a976955e073b002c86e91e574a",
+    ".agents/skills/yss-stage-decision/SKILL.md": "sha256:f922f0876d3c64bf9fdb2b24d8f42ed963c48583147c3e8fefed2ccb471d4c18",
+    "docs/agents/strategic-design-skills-integration.md": "sha256:0ca8a8c6fe6b5a5c70882f4fd76e96ce0267d019bef862acf6380d9727fa7add",
+    "docs/process/strategic-handoff-package.md": "sha256:91c0a82cf4e9fe969ea8d8793a44542ef7f754ca7291ee5048ec8b144cb40516",
+    "scripts/lib/approval-record.mjs": "sha256:a6f80f124e1fd85634cdb76b25701c7782498fe031b278ef0ed784a8dd2e3be4",
+    "scripts/lib/strategic-handoff-io.mjs": "sha256:7593858b9364d10c92453f9aaa9be137b0094d3fecdd631a8f530e22a4b9cde4",
+    "scripts/lib/strategic-handoff.mjs": "sha256:16b18a3772cf43975443bb2beb745f35fbda2e2b400432355f7af4c48d166b6a",
+    "scripts/lib/user-decision-reuse.mjs": "sha256:13117dcaa2af7db11aa1ec094c8a5ce1369821033d62a17e6d73024c78411f34",
+    "scripts/sync-strategic-handoff-tools": "sha256:9f3b11407c95425f5480e099f31060c7cef0b4c5efe3434c3aa3b833507a71c9",
+    "scripts/verify-strategic-handoff-package-scenarios": "sha256:a4a8d220d0a07ae3506036a432c0cd31ed637cdad9fc4d006a757e2bf1629051",
+    "skills-lock.json": "sha256:ebf8e420b3f22b935a39fb625dda61444c2b319ca6e29afd8d5adffe38434934",
+    "submodules/yss-harness-design-agent/.agents/skills/yss-stage-decision/SKILL.md": "sha256:f9ce00fa4833634164695be52658031949b36042d328a1d80a9703a702857e6e",
+    "submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/SKILL.md": "sha256:d7a1067ebd54da0a348fc6d7420c2ebb1fc7eb9af1271c2cc97b81fdd0271e55",
+    "submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/references/matt-yss-adapter.md": "sha256:c5e0465ae4715316bbb0afbd50a2a7bbbfd0209d313533dfb45e865f6048baf0",
+    "submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/references/orchestration-contract.yaml": "sha256:210008379f016d6eeb2481e5c527b24b816fa09c3c11fafb0f88f44153cd6601",
+    "submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/references/orchestration.md": "sha256:562f11f87985e05809eedb62c300b033e053a50fa14307cdaa70c4dcb57d46ff",
+    "submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/references/state-model.md": "sha256:2aadf90f185cca03ed1ad747b846880d3e61da054666d05b56154331f4845deb",
+    "submodules/yss-harness-design-agent/AGENTS.md": "sha256:23f37e73aba073817d48d78a5fd955f406657f00af6d1572347f8ae890052195",
+    "submodules/yss-harness-design-agent/docs/agents/digital-human-roles.yaml": "sha256:b598f1c389a80977a93db7a6bfdb71a7432bc9a1a78e6c789b0003dc1d7d3537",
+    "submodules/yss-harness-design-agent/docs/agents/issue-tracker.md": "sha256:ee753fdc3af6e32ef3750ccee10d7b750bc419d986e996acf784af3e751af38e",
+    "submodules/yss-harness-design-agent/docs/process/document-writing.md": "sha256:f0a0371ef1b494e370573fbdcfe3f1d56a01614c3e9d72d1a90856d482145191",
+    "submodules/yss-harness-design-agent/docs/process/harness-process-tailoring.md": "sha256:7cc0321a4b960ddc12356e58ceacf208efce6846872cc669e3f4e2988f77ac42",
+    "submodules/yss-harness-design-agent/docs/process/schemas/digital-human-task-package.schema.json": "sha256:2eb2aa03efb4a603931a26b19aa946f6eb5494a26952522c71a20cced65426c0",
+    "submodules/yss-harness-design-agent/docs/process/schemas/lifecycle-checkpoint.schema.json": "sha256:2f74ec4ce70706519a9595c9cbd83455c52591b522036eb1a0ff2f54d27856fe",
+    "submodules/yss-harness-design-agent/docs/process/strategic-handoff-package.md": "sha256:91c0a82cf4e9fe969ea8d8793a44542ef7f754ca7291ee5048ec8b144cb40516",
+    "submodules/yss-harness-design-agent/docs/process/template-verification-profiles.yaml": "sha256:7e02671df33f6bba37a7aefd77f08f136163ae0289d53e11668dd004019f6e8e",
+    "submodules/yss-harness-design-agent/docs/templates/approval-record-template.yaml": "sha256:118ffc2628b2e05ccd5ffc54db20987db85cae5e8720325d0e253a803d7584fc",
+    "submodules/yss-harness-design-agent/scripts/lib/approval-record.mjs": "sha256:4bbe1f48ae08b5c099571eb21f6f3a7ef6b4cc649f3295cd33c9778e2a6f5e1d",
+    "submodules/yss-harness-design-agent/scripts/lib/harness-profile.mjs": "sha256:7cff5005ee3a4965dbc74aa151f3b4d7cf0502ac09806db7e7814feaec90e925",
+    "submodules/yss-harness-design-agent/scripts/lib/lifecycle-transition.mjs": "sha256:cee504318e190d491e31382dd10118a316e6275e2c57ffb00856c0d94b9014a0",
+    "submodules/yss-harness-design-agent/scripts/lib/maintenance-intensity.mjs": "sha256:2bbb63a27d102c7af0b6a91de7d4eb2c85e17b51845b25fdef94b45815a9ccd5",
+    "submodules/yss-harness-design-agent/scripts/lib/scenario-checks.mjs": "sha256:2b4e328d3e8ee815f0061d64ec8d41e105ebb366d37c4139cb4b96237867e29a",
+    "submodules/yss-harness-design-agent/scripts/lib/strategic-handoff-io.mjs": "sha256:7593858b9364d10c92453f9aaa9be137b0094d3fecdd631a8f530e22a4b9cde4",
+    "submodules/yss-harness-design-agent/scripts/lib/strategic-handoff.mjs": "sha256:16b18a3772cf43975443bb2beb745f35fbda2e2b400432355f7af4c48d166b6a",
+    "submodules/yss-harness-design-agent/scripts/lib/task-package.mjs": "sha256:e0321ed096857b64e84510d2469be48e20e0201b1fc49e70fddf415a6352e788",
+    "submodules/yss-harness-design-agent/scripts/lib/user-decision-reuse.mjs": "sha256:13117dcaa2af7db11aa1ec094c8a5ce1369821033d62a17e6d73024c78411f34",
+    "submodules/yss-harness-design-agent/scripts/verify-approval-record": "sha256:f360384b3dfbe027b6f657dcec3a78c240bb50f7fe02c95249a0586a5f88da80",
+    "submodules/yss-harness-design-agent/scripts/verify-lifecycle-checkpoint": "sha256:d7030676bf0e05ea33be01d7b13b898e7bfe121419a1043cda93d2dcf884e66d",
+    "submodules/yss-harness-design-agent/scripts/verify-lifecycle-transition-scenarios": "sha256:91660673677ab40576960f133e9a920c7beb7c7f1ae89defce416a25eac2498c",
+    "submodules/yss-harness-design-agent/scripts/verify-maintenance-intensity-scenarios": "sha256:9e7dc7f1817ba6a8058ac7765929daf41274f1bc057b0e3228d8db55fbcec94f",
+    "submodules/yss-harness-design-agent/scripts/verify-strategic-checkpoint-scenarios": "sha256:7cc4b609e794ada41303eae5b8f9eb12b961a8d6ae2cedac70d418efcd657975",
+    "submodules/yss-harness-design-agent/scripts/verify-strategic-handoff-package-scenarios": "sha256:a4a8d220d0a07ae3506036a432c0cd31ed637cdad9fc4d006a757e2bf1629051",
+    "submodules/yss-harness-design-agent/scripts/verify-strategic-user-decision-scenarios": "sha256:f09dae29453c09653dad67ae3c4cbedd07ebd6ab36bd007333720e7552cb78ca",
+    "submodules/yss-harness-design-agent/scripts/verify-template-verification-scenarios": "sha256:faa1c76838004d419e2e8c8ed9dce6612a42cd8bf2d4d9b39f45fcab83be074e",
+    "submodules/yss-harness-design-agent/skills-lock.json": "sha256:0ead96873fbaa531dab5d553e5a2e13d627b475c386e046dd11d32b185345276",
+    "submodules/yss-harness-dev-agent/docs/process/strategic-handoff-package.md": "sha256:91c0a82cf4e9fe969ea8d8793a44542ef7f754ca7291ee5048ec8b144cb40516",
+    "submodules/yss-harness-dev-agent/scripts/lib/strategic-handoff-io.mjs": "sha256:7593858b9364d10c92453f9aaa9be137b0094d3fecdd631a8f530e22a4b9cde4",
+    "submodules/yss-harness-dev-agent/scripts/lib/strategic-handoff.mjs": "sha256:16b18a3772cf43975443bb2beb745f35fbda2e2b400432355f7af4c48d166b6a",
+    "submodules/yss-harness-dev-agent/scripts/lib/user-decision-reuse.mjs": "sha256:13117dcaa2af7db11aa1ec094c8a5ce1369821033d62a17e6d73024c78411f34",
+    "submodules/yss-harness-dev-agent/scripts/verify-strategic-handoff-package-scenarios": "sha256:a4a8d220d0a07ae3506036a432c0cd31ed637cdad9fc4d006a757e2bf1629051",
+    "submodules/yss-harness-backend-agent/docs/process/strategic-handoff-package.md": "sha256:91c0a82cf4e9fe969ea8d8793a44542ef7f754ca7291ee5048ec8b144cb40516",
+    "submodules/yss-harness-backend-agent/scripts/lib/strategic-handoff-io.mjs": "sha256:7593858b9364d10c92453f9aaa9be137b0094d3fecdd631a8f530e22a4b9cde4",
+    "submodules/yss-harness-backend-agent/scripts/lib/strategic-handoff.mjs": "sha256:9c5ef37f37447c556c0225beb366aed7e074d43b09a70d8cf4878f8cc1ba2843",
+    "submodules/yss-harness-backend-agent/scripts/lib/user-decision-reuse.mjs": "sha256:13117dcaa2af7db11aa1ec094c8a5ce1369821033d62a17e6d73024c78411f34",
+    "submodules/yss-harness-backend-agent/scripts/verify-strategic-handoff-package-scenarios": "sha256:a4a8d220d0a07ae3506036a432c0cd31ed637cdad9fc4d006a757e2bf1629051",
+    "submodules/yss-harness-frontend-agent/docs/process/schemas/user-decision.schema.json": "sha256:3391456766bb41766a939c8a06db39ab256f2d261bdd09fcc6bce05b243d128b",
+    "submodules/yss-harness-frontend-agent/docs/process/strategic-handoff-package.md": "sha256:91c0a82cf4e9fe969ea8d8793a44542ef7f754ca7291ee5048ec8b144cb40516",
+    "submodules/yss-harness-frontend-agent/scripts/fixtures/user-decision/build-fixture.mjs": "sha256:8be5209cda2f089dca4863734d6a8802cc5f4dd5c3b14a97fa37c8bb72d6a2ad",
+    "submodules/yss-harness-frontend-agent/scripts/lib/strategic-handoff-io.mjs": "sha256:7593858b9364d10c92453f9aaa9be137b0094d3fecdd631a8f530e22a4b9cde4",
+    "submodules/yss-harness-frontend-agent/scripts/lib/strategic-handoff.mjs": "sha256:16b18a3772cf43975443bb2beb745f35fbda2e2b400432355f7af4c48d166b6a",
+    "submodules/yss-harness-frontend-agent/scripts/lib/user-decision-reuse.mjs": "sha256:13117dcaa2af7db11aa1ec094c8a5ce1369821033d62a17e6d73024c78411f34",
+    "submodules/yss-harness-frontend-agent/scripts/lib/user-decision.mjs": "sha256:be7bec22ffebb014a51818bba403c726ece9fad33e35a9296414d00e403b13ac",
+    "submodules/yss-harness-frontend-agent/scripts/verify-strategic-handoff-package-scenarios": "sha256:a4a8d220d0a07ae3506036a432c0cd31ed637cdad9fc4d006a757e2bf1629051"
+  },
+  "verification_scope_note": "五仓 fast 完成后，交接复用细化在五仓重新运行完整交接场景；最后的恢复边界补充已重跑战略 checkpoint、用户决定、路由、生命周期、任务包、维护与 Plan 入口场景。此为 implementation-ready 增量 Fresh Verification，不声明冻结发布候选。",
+  "not_run": [
+    "正式 CLI 快照重建与固定版本分发",
+    "真实业务实例演练",
+    "PR candidate 专项流程",
+    "Git 提交、推送及发布"
+  ],
+  "self_check": "实施者自检；非独立审查。状态载体、真实回复、来源依赖及专业边界已核对；旧包按源策略检查。"
+}

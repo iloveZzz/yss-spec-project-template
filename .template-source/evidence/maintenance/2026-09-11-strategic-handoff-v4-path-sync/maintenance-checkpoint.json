@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "同步本体、战略、后端、前端与 dev 模板的生命周期门禁、Handoff v4 跨仓合同、反馈闭环和 CLI 分发语义",
+  "triggers": [
+    "lifecycle-gate",
+    "generation-semantics",
+    "cross-repo-contract",
+    "core-validator"
+  ],
+  "changed_assets": [
+    ".agents/skills/yss-stage-decision",
+    ".template-source/distribution/strategic-handoff-tools.lock.json",
+    "docs/process/frontend-backend-delivery.md",
+    "docs/process/schemas/strategic-design-handoff-v4.schema.json",
+    "docs/process/schemas/strategic-handoff-import-receipt.schema.json",
+    "docs/process/schemas/frontend-strategic-preflight.schema.json",
+    "docs/process/schemas/frontend-delivery-acceptance.schema.json",
+    "docs/process/schemas/strategic-consumer-feedback.schema.json",
+    "docs/process/schemas/strategic-feedback-adjudication.schema.json",
+    "scripts/lib/strategic-handoff.mjs",
+    "scripts/lib/strategic-feedback.mjs",
+    "scripts/sync-strategic-handoff-tools",
+    "scripts/verify-strategic-handoff-package-scenarios",
+    "scripts/verify-frontend-delivery-scenarios",
+    "submodules/yss-harness-design-agent",
+    "submodules/yss-harness-dev-agent",
+    "submodules/yss-harness-backend-agent",
+    "submodules/yss-harness-frontend-agent",
+    "submodules/create-yss-spec",
+    "submodules/create-yss-strategic-design",
+    "submodules/create-yss-harness-dev",
+    "submodules/create-yss-harness-backend",
+    "submodules/create-yss-harness-frontend"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "fresh-verification",
+      "command": "scripts/verify-strategic-handoff-package-scenarios && scripts/verify-frontend-delivery-scenarios",
+      "result": "pass"
+    },
+    {
+      "kind": "self-check",
+      "command": "scripts/sync-strategic-handoff-tools --check && scripts/sync-profile-skills --check --profile=all && scripts/update-skill-lock --check",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "candidate/release 等待公共工具与各模板源码形成已提交 revision；本轮按用户边界停在 implementation-ready",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.local/schemas/domain-strategy-v3.json",
+  "allOf": [
+    {"$ref": "domain-strategy.schema.json"},
+    {"properties": {"schema_version": {"const": 3}}, "required": ["schema_version"]}
+  ]
+}

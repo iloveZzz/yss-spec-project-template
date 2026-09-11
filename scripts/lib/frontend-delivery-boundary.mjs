@@ -7,14 +7,27 @@ import { ROOT, read, safe, ensure, digest } from './strategic-handoff-io.mjs';
 // Shared synchronous adapter for existing compiler, lifecycle and task-package seams.
 // Always re-executes the verifier; a caller-supplied "verified" flag is never evidence.
 export function enforceFrontendDelivery(state={}, {root=ROOT,phase='inputs'}={}) {
+  ensure(['preflight','design','contract','inputs','implementation','verification'].includes(phase),`未知前端交付阶段: ${phase}`);
   const profile=loadDeliveryProfile(root);
   let contract;
   const contractRef=state.slice_contract_ref||state.contract?.slice_contract_ref;
-  const selected=profile?.profile_id==='harness.frontend-delivery'||profile?.frontend_delivery?.required===true;
+  const dedicatedProfile=profile?.profile_id==='harness.frontend-delivery'||profile?.profile_id==='yss-harness-frontend';
+  const selected=dedicatedProfile||profile?.frontend_delivery?.required===true||profile?.handoff?.consumer_capabilities?.includes('frontend-engineering-design');
   const identity=selected?read(safe(root,'yss-project.yaml')):null;
   if(selected)ensure(identity.schema_version===1&&['template-source','project-instance'].includes(identity.repository_mode),'前端项目仓库身份无效');
-  const dedicated=selected&&identity.repository_mode==='project-instance';
+  const dedicated=dedicatedProfile&&identity.repository_mode==='project-instance';
   if(dedicated)ensure(state.contract?.kind!=='template-maintenance','前端产品项目不得用模板维护任务绕过输入条件');
+  if(['preflight','design'].includes(phase)) {
+    const preflight=state.frontend_preflight||state.frontend?.preflight||state.resolution?.frontend_preflight;
+    ensure(preflight?.preflight_ref,'frontend-preflight-required: 缺少 Frontend Strategic Preflight');
+    const args=[path.join(ROOT,'scripts/verify-frontend-strategic-preflight'),'--root',root];
+    if(preflight.digest)args.push('--expected-digest',preflight.digest);
+    args.push(preflight.preflight_ref);
+    const verified=spawnSync(process.execPath,args,{cwd:root,encoding:'utf8',timeout:60000,maxBuffer:2*1024*1024});
+    ensure(verified.status===0,`frontend-preflight-blocked: ${verified.error?.message||verified.stderr||verified.stdout}`);
+    const result=JSON.parse(verified.stdout);ensure(result.result==='preflight-verified'&&result.ready_for_agent===false,'前端战略预检返回非法状态');
+    return result;
+  }
   let binding=state.frontend_delivery||state.frontend?.delivery||state.resolution?.frontend_delivery;
   if(contractRef) {
     // Legacy callers may supply an absolute external contract. Discover whether
@@ -27,17 +40,20 @@ export function enforceFrontendDelivery(state={}, {root=ROOT,phase='inputs'}={})
       binding=direct||resolved||binding;
     }
   }
-  if(!dedicated&&!binding)return {result:'not-applicable'};
+  const frontendStatus=contract?.frontend?.status||state.frontend?.status;
+  const contractRequiresFrontend=typeof frontendStatus==='string'&&!['not-applicable','disabled'].includes(frontendStatus);
+  if(!dedicated&&!binding&&!contractRequiresFrontend)return {result:'not-applicable'};
   if(contractRef)safe(root,contractRef);
   ensure(binding?.acceptance_ref,'frontend-delivery-required: 缺少战略与后端联合接收记录');
   const slice=contract?.slice_id||state.slice_id;
   ensure(!contract?.slice_id||!state.slice_id||contract.slice_id===state.slice_id,'前端任务与 Slice Contract 切片不一致');
   ensure(slice,'frontend-delivery-required: 缺少明确切片');
-  if(phase==='implementation') {
+  if(['implementation','verification'].includes(phase)) {
     ensure(contract?.status==='approved','frontend-delivery-required: 必须读取已持久化的 approved Slice Contract');
     ensure(contract.frontend?.delivery||contract.resolution?.frontend_delivery,'frontend-delivery-required: Slice Contract 未绑定前端交付');
     ensure(binding.digest,'frontend-delivery-required: Slice Contract 未冻结接收记录摘要');
   }
+  if(phase==='verification')ensure(state.frontend_implementation_verification_ref||contract?.frontend?.implementation_verification_ref,'frontend-delivery-required: 验证阶段缺少 frontend_implementation_verification 引用');
   const args=[path.join(ROOT,'scripts/verify-frontend-delivery'),'--root',root,'--slice',slice];
   if(binding.digest)args.push('--expected-digest',binding.digest);
   args.push(binding.acceptance_ref);

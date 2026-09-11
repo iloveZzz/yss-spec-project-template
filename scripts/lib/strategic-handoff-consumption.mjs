@@ -23,6 +23,11 @@ export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consum
   const expectedBase=`docs/handoffs/${receipt.bundle_id}/${receipt.version}`;
   ensure(binding.import_receipt_ref===`${expectedBase}/import-receipt.json` && receipt.package_ref===`${expectedBase}/package`,'导入收据路径与包身份不一致');
   ensure(binding.bundle_digest===receipt.bundle_digest,'战术绑定与导入收据摘要不一致');
+  if(receipt.schema_version===2){
+    const capability=consumer==='frontend'?'frontend-engineering-design':'backend-technical-design';
+    const route=receipt.routes.find(item=>item.capability===capability);
+    ensure(route&&route.activation!=='not-applicable'&&binding.route_id===route.route_id,`${capability} 未绑定当前 Handoff v4 route_id`);
+  }
   const result=spawnSync(process.execPath,[path.join(ROOT,'scripts/verify-context-reconciliation'),'--root',root,safe(root,binding.context_reconciliation_ref)],{encoding:'utf8'});
   ensure(result.status===0,`目标术语对账未通过: ${result.error?.message || result.stderr}`);
   const context=parseContextContract({root});

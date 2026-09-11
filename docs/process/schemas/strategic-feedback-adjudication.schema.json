@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.local/schemas/strategic-feedback-adjudication-v1.json",
+  "title": "YSS Strategic Feedback Adjudication v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "adjudication_id", "status", "feedback", "decision", "reason", "owner", "return_work_unit", "target_version", "evidence_refs", "decided_at"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "adjudication_id": {"type": "string", "pattern": "^feedback-adjudication\\.[a-z0-9][a-z0-9-]*$"},
+    "status": {"const": "approved"},
+    "feedback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "digest"],
+      "properties": {
+        "ref": {"type": "string", "minLength": 1},
+        "digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"}
+      }
+    },
+    "decision": {"enum": ["keep", "amend", "defer"]},
+    "reason": {"type": "string", "minLength": 1},
+    "owner": {"type": "string", "minLength": 1},
+    "return_work_unit": {"type": "string", "pattern": "^work-unit\\.[a-z0-9][a-z0-9-]*$"},
+    "target_version": {"type": "string", "minLength": 1},
+    "risk": {"type": "string", "minLength": 1},
+    "verification_plan": {"type": "string", "minLength": 1},
+    "approval_ref": {"type": "string", "minLength": 1},
+    "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "decided_at": {"type": "string", "format": "date-time"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"decision": {"enum": ["keep", "amend"]}}, "required": ["decision"]},
+      "then": {"required": ["approval_ref"]}
+    },
+    {
+      "if": {"properties": {"decision": {"const": "defer"}}, "required": ["decision"]},
+      "then": {"required": ["risk", "verification_plan"]}
+    }
+  ]
+}

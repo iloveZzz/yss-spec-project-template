@@ -10,6 +10,7 @@ import { verifyContextSnapshot } from "../../../../scripts/lib/context-contract.
 
 const required = ["schema_version", "stage_decision_id", "package_version", "status", "problem_statement", "target_users", "mvp", "non_goals", "success_criteria", "test_seams", "confirmed_decisions", "assumptions", "constraints", "unresolved_items", "context_snapshot", "domain_strategy_ref", "impact_assessment", "downstream_mapping", "evidence_refs", "approval"];
 const idPattern = /^stage-decision\.[a-z0-9][a-z0-9-]*$/;
+const consumerCapabilities = new Set(["backend-technical-design", "frontend-engineering-design", "delivery-coordination"]);
 
 function fail(errors) {
   process.stderr.write(`${JSON.stringify({ result: "blocked", errors }, null, 2)}\n`);
@@ -18,7 +19,8 @@ function fail(errors) {
 function nonEmpty(value) { return typeof value === "string" && value.trim().length > 0; }
 function requireField(object, field, path, errors) { if (!(field in object) || object[field] === null || object[field] === undefined) errors.push(`${path}.${field} 缺失`); }
 function requireString(object, field, path, errors) { requireField(object, field, path, errors); if (field in object && !nonEmpty(object[field])) errors.push(`${path}.${field} 必须是非空字符串`); }
-function requireArray(object, field, path, errors, min = 0) { requireField(object, field, path, errors); if (field in object && (!Array.isArray(object[field]) || object[field].length < min)) errors.push(`${path}.${field} 必须是至少 ${min} 项的数组`); if (field in object && Array.isArray(object[field])) object[field].forEach((item, index) => { if (!nonEmpty(item)) errors.push(`${path}.${field}[${index}] 必须是非空字符串`); }); }
+function requireArray(object, field, path, errors, min = 0, itemKind = "string") { requireField(object, field, path, errors); if (field in object && (!Array.isArray(object[field]) || object[field].length < min)) errors.push(`${path}.${field} 必须是至少 ${min} 项的数组`); if (field in object && Array.isArray(object[field]) && itemKind === "string") object[field].forEach((item, index) => { if (!nonEmpty(item)) errors.push(`${path}.${field}[${index}] 必须是非空字符串`); }); }
+function unique(items, label, errors) { const seen = new Set(); for (const item of items) { if (seen.has(item)) errors.push(`${label} 重复: ${item}`); seen.add(item); } }
 function canonical(value) { if (Array.isArray(value)) return value.map(canonical); if (value && typeof value === "object") return Object.fromEntries(Object.keys(value).sort().map((key) => [key, canonical(value[key])])); return value; }
 function digest(value) { return `sha256:${createHash("sha256").update(JSON.stringify(canonical(value))).digest("hex")}`; }
 
@@ -27,12 +29,13 @@ async function validate(data, contextRoot) {
   if (!data || typeof data !== "object" || Array.isArray(data)) return ["合同必须是对象"];
   if (data.schema_version === 1) return ["migration-required: stage decision package v1 必须迁移到 v2 context_snapshot"];
   for (const field of required) requireField(data, field, "root", errors);
-  if (data.schema_version !== 2) errors.push("schema_version 必须为 2");
+  if (![2, 3].includes(data.schema_version)) errors.push("schema_version 不受支持；支持版本: 2, 3；新交付请迁移到 3");
   if (!idPattern.test(String(data.stage_decision_id ?? ""))) errors.push("stage_decision_id 格式非法");
   if (!/^v[0-9]+$/.test(String(data.package_version ?? ""))) errors.push("package_version 必须形如 v1");
   if (!["draft", "ready-for-human", "approved", "stale", "blocked"].includes(data.status)) errors.push("status 非法");
   for (const field of ["problem_statement"]) requireString(data, field, "root", errors);
-  for (const field of ["target_users", "mvp", "non_goals", "success_criteria", "test_seams", "confirmed_decisions", "assumptions", "constraints", "evidence_refs"]) requireArray(data, field, "root", errors, ["target_users", "mvp", "success_criteria", "test_seams", "confirmed_decisions", "evidence_refs"].includes(field) ? 1 : 0);
+  for (const field of ["target_users", "mvp", "non_goals", "evidence_refs"]) requireArray(data, field, "root", errors, ["target_users", "mvp", "evidence_refs"].includes(field) ? 1 : 0);
+  for (const field of ["success_criteria", "test_seams", "confirmed_decisions", "assumptions", "constraints"]) requireArray(data, field, "root", errors, ["success_criteria", "test_seams", "confirmed_decisions"].includes(field) ? 1 : 0, data.schema_version === 3 ? "object" : "string");
 
   const unresolved = Array.isArray(data.unresolved_items) ? data.unresolved_items : [];
   for (const [index, item] of unresolved.entries()) {
@@ -56,8 +59,37 @@ async function validate(data, contextRoot) {
         if (strategy.domain_version !== domainRef.domain_version) errors.push("domain_strategy_ref.domain_version 与实际文件不一致");
         if (strategy.status !== domainRef.status) errors.push("domain_strategy_ref.status 与实际文件不一致");
         if (domainRef.digest !== digest(strategy)) errors.push("domain_strategy_ref.digest 与实际领域战略内容不一致");
+        if (data.schema_version === 3 && strategy.schema_version !== 3) errors.push("Stage Decision v3 必须引用 Domain Strategy v3");
       }
     } catch (error) { errors.push(`domain_strategy_ref.persisted_ref 无法读取: ${error.message}`); }
+  }
+
+  if (data.schema_version === 3) {
+    const sourceIds = new Set([
+      ...(strategy?.rule_catalog ?? []).map((item) => item?.rule_id),
+      ...(strategy?.scenarios ?? []).map((item) => item?.scenario_id),
+      ...(strategy?.invariants ?? []).map((item) => item?.invariant_id)
+    ].filter(Boolean));
+    const recordFields = {
+      success_criteria: "success-criterion",
+      test_seams: "test-seam",
+      confirmed_decisions: "decision",
+      assumptions: "assumption",
+      constraints: "constraint"
+    };
+    const recordIds = [];
+    for (const [field, prefix] of Object.entries(recordFields)) {
+      for (const [index, record] of (Array.isArray(data[field]) ? data[field] : []).entries()) {
+        const path = `${field}[${index}]`;
+        for (const name of ["id", "statement"]) requireString(record ?? {}, name, path, errors);
+        requireArray(record ?? {}, "evidence_refs", path, errors, 1);
+        if (!new RegExp(`^${prefix}\\.[a-z0-9][a-z0-9-]*$`).test(String(record?.id ?? ""))) errors.push(`${path}.id 格式非法`);
+        for (const reference of record?.source_refs ?? []) if (!sourceIds.has(reference)) errors.push(`${path}.source_refs 未在领域战略中声明: ${reference}`);
+        if (record?.status && !["confirmed", "candidate", "stale"].includes(record.status)) errors.push(`${path}.status 非法`);
+        if (record?.id) recordIds.push(record.id);
+      }
+    }
+    unique(recordIds, "stage record id", errors);
   }
   try {
     const contextIds = Array.isArray(strategy?.contexts) ? strategy.contexts.map((item) => item?.context_id).filter(Boolean) : [];
@@ -73,9 +105,21 @@ async function validate(data, contextRoot) {
   }
   const mappings = Array.isArray(data.downstream_mapping) ? data.downstream_mapping : [];
   if (mappings.length < 1) errors.push("downstream_mapping 至少需要一项");
+  if (data.schema_version === 3) unique(mappings.map((item) => item?.mapping_id).filter(Boolean), "mapping_id", errors);
+  const strategySourceIds = new Set([
+    ...(strategy?.rule_catalog ?? []).map((item) => item?.rule_id),
+    ...(strategy?.scenarios ?? []).map((item) => item?.scenario_id),
+    ...(strategy?.invariants ?? []).map((item) => item?.invariant_id)
+  ].filter(Boolean));
   for (const [index, mapping] of mappings.entries()) {
     const path = `downstream_mapping[${index}]`;
-    for (const field of ["domain_change", "consumer", "propagation", "reapproval_condition"]) requireString(mapping ?? {}, field, path, errors);
+    if (data.schema_version === 3) {
+      for (const field of ["mapping_id", "consumer_capability", "propagation", "reapproval_condition"]) requireString(mapping ?? {}, field, path, errors);
+      requireArray(mapping ?? {}, "source_refs", path, errors, 1);
+      requireArray(mapping ?? {}, "evidence_refs", path, errors, 1);
+      if (mapping?.consumer_capability && !consumerCapabilities.has(mapping.consumer_capability)) errors.push(`${path}.consumer_capability 非法`);
+      for (const reference of mapping?.source_refs ?? []) if (!strategySourceIds.has(reference)) errors.push(`${path}.source_refs 未在领域战略中声明: ${reference}`);
+    } else for (const field of ["domain_change", "consumer", "propagation", "reapproval_condition"]) requireString(mapping ?? {}, field, path, errors);
     if (mapping?.propagation && !["direct", "transitive", "not-applicable", "stale"].includes(mapping.propagation)) errors.push(`${path}.propagation 非法`);
   }
   const approval = data.approval ?? {};

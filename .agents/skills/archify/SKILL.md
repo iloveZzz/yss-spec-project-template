@@ -16,7 +16,7 @@ Create a self-contained, interactive HTML diagram from a small typed JSON specif
 
 When the current repository contains `yss-project.yaml`, these rules override the upstream update and delivery commands below:
 
-- Treat Archify as a conditional specialist. Use it only when the user or the current YSS contract explicitly requires an architecture, workflow, sequence, data-flow, lifecycle, or Mermaid-beautification artifact. A diagram is derived evidence; it never replaces Spec, ADR, OpenAPI, Tactical Design Contract, Slice Implementation Contract, review, or approval evidence.
+- Treat Archify as a conditional specialist. Use it only when the user or the current YSS contract explicitly requires an architecture, workflow, sequence, data-flow, lifecycle, or Mermaid-beautification artifact. A diagram is derived evidence; it never replaces the active profile's architecture contract (such as backend Tactical Design or Frontend Engineering Design), Spec, ADR, OpenAPI, Slice Implementation Contract, review, or approval evidence.
 - Do not run `scripts/check-update.mjs`. YSS pins the upstream revision in `skills-lock.json`; upgrades happen only through the repository's skill-maintenance workflow.
 - Validate with the upstream `validate` command, but deliver through the repository-safe wrapper from the repository root:
 

@@ -1,3 +1,4 @@
+import { assertApprovalUserDecision } from './user-decision-reuse.mjs';
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
@@ -101,7 +102,7 @@ export function validateApprovalRecord(record, { rolesDoc, requireApproved = fal
 
 function assertRecordUserDecision(record, registry, options) {
   if (!registry.user_decision_policy.gates.includes(record.gate_id) && countersignRuleForGate(registry.gate_policy, record.gate_id)?.bucket !== "biological_human") return;
-  const result = assertUserDecisionRequirement({ boundary: record.gate_id, subject_ref: record.subject_ref, scope: record.approval_scope, user_decision_ref: record.user_decision_ref }, { ...options, rolesDoc: registry });
+  const result = assertApprovalUserDecision(record, registry, options);
   if (record.actor_kind === "biological-human" && result.validated.some((item) => item.principal_ref !== record.principal_ref)) fail("user-decision-responder-mismatch: 生物人会签者与原始回复者不一致");
 }
 

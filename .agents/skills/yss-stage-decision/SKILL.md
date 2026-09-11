@@ -24,13 +24,22 @@ description: 编排 Plan 到 Spec 入口的方案决策与业务边界、协作�
 
 Plan 的目标与退出条件由 `docs/process/lifecycle-registry.yaml` 持有；从 `docs/plan/templates/plan-template.md` 汇总输入。旧资产按 `docs/process/plan-migration.md` 重新整理并核查，关键未决项不得延期到 Spec，非关键项记录责任人、解决时点与接收方。
 
-1. 读取 `yss-project.yaml`、`CONTEXT.md`、既有 Plan/Spec、ADR 和父 Ticket/checkpoint。
+1. 读取 `yss-project.yaml`、`CONTEXT.md`、既有 Plan/Spec、ADR 和当前 profile 的主索引/checkpoint；按 `yss-product-lifecycle` 的 `request-triage` 区分事实确认、产品决定、门禁确认和普通澄清。
 2. 分离事实、决策、假设、约束和未决项；技术事实走 `yss-research` 的 `technical-evidence`，领域边界、业务规则、MVP、非目标、成功标准或阶段推进依据等决策证据走 `strategy-evidence`，市场/竞品事实走 `competitive-intelligence`。
 3. 从业务故事、已发生的事实、规则、责任人和失败路径识别业务板块与业务责任区，不从数据库表或调用链直接反推边界。
 4. 为每个业务责任区建立统一业务词汇；对跨责任区协作记录规则提供方、规则使用方、业务决策权、信息传递方向和口径转换负责人。
 5. 记录待确认的关键业务对象，不提前指定技术模型。
-6. 生成 schema v2 `domain_strategy` 和 `stage_decision_package`，使用 `context_snapshot` 绑定根 `CONTEXT.md`、术语身份、完整文档 digest、引用术语 digest、证据和下游影响映射。
-7. 运行 Schema、根路径、术语引用、digest、语义一致性和传播验证；发现关键冲突时返回 `blocked`，不得生成 `approved` 包。v1 字符串引用只读并返回 `migration-required`；可唯一定位的旧锚点用 `scripts/migrate-context-references.mjs` 迁移，歧义引用不得猜测。
+6. 生成 schema v3 `domain_strategy` 和 `stage_decision_package`，使用稳定规则、场景、决定、假设、约束、成功标准、测试 seam 和 downstream mapping ID，并以 `context_snapshot` 绑定根 `CONTEXT.md`、术语身份、完整文档 digest、引用术语 digest和证据。
+7. 运行 Schema、唯一性、悬空引用、根路径、术语引用、digest、语义一致性和传播验证；发现关键冲突时返回 `blocked`，不得生成 `approved` 包。v2 仅只读；修改或重发必须使用 `scripts/migrate-contract-v3.mjs` 显式迁移为 `draft` 并重新批准。v1 字符串引用先用 `scripts/migrate-context-references.mjs` 迁移到 v2；歧义引用不得猜测。
+
+## 控制面引用
+
+- 用户决定遵循 `docs/process/lifecycle/references/user-decisions.md`：决定必须绑定资产、版本、范围和证据；范围、风险、摘要或失效条件变化后重新确认。
+- checkpoint 是唯一机器状态源，业务 Ticket 只保存追踪引用，不复制阶段状态。
+- 每次批准、重发和消费者流转前执行 `context_reconciliation`，核验 `CONTEXT.md` 的全文与引用术语双摘要。
+- 技术事实与第三方行为走 `yss-research` 的 `technical-evidence`；产品策略依据走 `strategy-evidence`；市场与竞品判断走 `competitive-intelligence`。
+- 修改本 Skill 时只编辑 `.agents/skills` 权威副本，再由 `maintaining-skills` 生成投影和 `skills-lock.json`。
+- 本 Skill 只能标记影响、提出待解决问题和选择消费者能力；不得预选 DDD/MVC，不得执行 `yss-technical-design`、`yss-tactical-design`、`yss-mvc-design`，也不得授权实现。
 
 ## 语义方向规则
 
@@ -56,7 +65,7 @@ Plan 的目标与退出条件由 `docs/process/lifecycle-registry.yaml` 持有�
 - 不在业务方案设计阶段生成技术模型、生产代码或 API 契约。
 - 不把模板 Fixture 当作具体项目的业务事实。
 
-详细合同、字段和验证规则见 `references/domain-strategy-contract.md`、`references/stage-decision-package-contract.md` 与 `references/validation-rules.md`。机器可读合同分别为 `references/domain-strategy.schema.json` 和 `references/stage-decision-package.schema.json`；对应验证器为 `scripts/validate-domain-strategy.mjs` 与 `scripts/validate-stage-decision-package.mjs`。
+详细合同、字段和验证规则见 `references/domain-strategy-contract.md`、`references/stage-decision-package-contract.md` 与 `references/validation-rules.md`。当前机器可读合同分别为 `references/domain-strategy-v3.schema.json` 和 `references/stage-decision-package-v3.schema.json`；v2 schema 仅用于历史读取。对应验证器为 `scripts/validate-domain-strategy.mjs` 与 `scripts/validate-stage-decision-package.mjs`。
 
 ## 战略交接快照包
 

@@ -66,6 +66,7 @@ export function archive(command, source, destination) {
 export function sourceApprovalPolicy(source) {
   const roles=structuredClone(source);
   roles.user_decision_policy ||= {gates:[]};
+  ensure(!(roles.user_decision_policy.required_capabilities || []).some(id => id !== 'strategic-decision-reuse-v1'), '接收工具不支持源用户决定策略，请升级工具后验包');
   const policy=roles.gate_policy;
   for(const gate of policy.product_digital_human_with_biological_veto || []) {
     if(!(policy.biological_human||[]).includes(gate) && !(policy.digital_human_review||[]).some(x=>x.gate===gate) && !(policy.dual_digital_human||[]).some(x=>x.gate===gate)) {

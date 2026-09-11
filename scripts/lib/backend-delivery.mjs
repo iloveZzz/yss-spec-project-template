@@ -6,7 +6,7 @@ import { read, safe, ensure, hash, digest, json, files, write, project, schema, 
 
 // Evidence binds the deliverable basis, avoiding a circular hash through its own logs.
 export function backendDeliveryBasis(delivery) {
-  return digest(Object.fromEntries(['delivery_id','version','strategic_bundle_digest','scope','openapi','slice_contract','build','environment'].map(key=>[key,delivery[key]])));
+  return digest(Object.fromEntries(['delivery_id','version','strategic_bundle_digest','strategic_route_id','scope','openapi','slice_contract','build','environment'].filter(key=>delivery[key]!==undefined).map(key=>[key,delivery[key]])));
 }
 
 function boundFile(root, binding) {
@@ -57,6 +57,10 @@ export async function inspectBackendDelivery(root, ref) {
   verification(root,delivery.verification.deployment,basis,'backend-deployment');
   return openBundle(safe(root,delivery.strategic_bundle_ref),bundle=>{
     ensure(bundle.manifest.bundle_digest===delivery.strategic_bundle_digest,'后端交付与战略版本不一致');
+    if(bundle.handoff.schema_version===4){
+      const route=bundle.handoff.consumer_routes.find(item=>item.capability==='backend-technical-design');
+      ensure(route&&route.activation!=='not-applicable'&&delivery.strategic_route_id===route.route_id,'后端交付未绑定当前 backend-technical-design route_id');
+    }
     const sources=new Set([...bundle.indexes.rules.map(x=>x.rule_id),...bundle.indexes.scenarios.map(x=>x.scenario_id)]);
     ensure(delivery.scope.source_ids.every(id=>sources.has(id)),'后端交付引用未知规则/场景');
     const scenarios=bundle.indexes.scenarios.filter(x=>delivery.scope.source_ids.includes(x.scenario_id));
@@ -152,14 +156,22 @@ export async function importBackendDelivery({bundle,targetRoot}) {
     }
     const strategic=await importBundle({bundle:safe(b.source,b.delivery.strategic_bundle_ref),targetRoot:target});
     const strategicReceipt=read(safe(target,strategic.receipt_ref));
-    const trace=read(safe(target,`${path.posix.dirname(strategic.receipt_ref)}/tactical-traceability-draft.json`));
+    const strategicBase=path.posix.dirname(strategic.receipt_ref);
+    const frontendRoute=strategicReceipt.schema_version===2?strategicReceipt.routes.find(route=>route.capability==='frontend-engineering-design'):null;
+    const traceRef=frontendRoute?.artifact_refs.find(item=>item.endsWith('frontend-traceability-draft.json'))||`${strategicBase}/tactical-traceability-draft.json`;
+    const trace=read(safe(target,traceRef));
     mkdirSync(path.dirname(destination),{recursive:true});
     const staging=mkdtempSync(path.join(path.dirname(destination),'.backend-import-'));
     try {
       cpSync(b.root,path.join(staging,'package'),{recursive:true,errorOnExist:true,force:false});
       const receipt={schema_version:1,delivery_id:b.delivery.delivery_id,version:b.delivery.version,bundle_digest:b.manifest.bundle_digest,package_ref:`${ref}/package`};
       write(staging,'import-receipt.json',json(receipt));
-      write(staging,'frontend-acceptance-draft.json',json({schema_version:1,status:'draft',slice_id:b.delivery.scope.slice_id,backend_delivery:{import_receipt_ref:`${ref}/import-receipt.json`,bundle_digest:b.manifest.bundle_digest},strategic_handoff:{import_receipt_ref:strategic.receipt_ref,bundle_digest:strategicReceipt.bundle_digest,context_reconciliation_ref:'',rows:trace.rows.map(({tactical_refs,test_seam_refs,...row})=>({...row,frontend_case_refs:[]}))},frontend_cases:[]}));
+      const strategicHandoff={import_receipt_ref:strategic.receipt_ref,bundle_digest:strategicReceipt.bundle_digest,...(trace.route_id?{route_id:trace.route_id}:{}),context_reconciliation_ref:'',rows:trace.rows.map(({tactical_refs,test_seam_refs,...row})=>({...row,frontend_case_refs:[]}))};
+      if(strategicReceipt.schema_version===2){
+        ensure(frontendRoute,'Handoff v4 Import Receipt 未选择 frontend-engineering-design 能力');
+        const preflightRef=frontendRoute.artifact_refs.find(item=>item.endsWith('frontend-strategic-preflight-draft.json'));ensure(preflightRef,'Handoff v4 缺少 Frontend Strategic Preflight 草案');
+        write(staging,'frontend-acceptance-draft.json',json({schema_version:2,status:'draft',slice_id:b.delivery.scope.slice_id,strategic_preflight:{ref:preflightRef,digest:hash(readFileSync(safe(target,preflightRef)))},backend_dependency:{mode:'required',route_id:'route.backend'},backend_delivery:{import_receipt_ref:`${ref}/import-receipt.json`,bundle_digest:b.manifest.bundle_digest},strategic_handoff:strategicHandoff,frontend_cases:[]}));
+      }else write(staging,'frontend-acceptance-draft.json',json({schema_version:1,status:'draft',slice_id:b.delivery.scope.slice_id,backend_delivery:{import_receipt_ref:`${ref}/import-receipt.json`,bundle_digest:b.manifest.bundle_digest},strategic_handoff:strategicHandoff,frontend_cases:[]}));
       ensure(!existsSync(destination),'后端包导入并发冲突');renameSync(staging,destination);
       return {result:'imported-pending-acceptance',receipt_ref:`${ref}/import-receipt.json`,acceptance_ref:`${ref}/frontend-acceptance-draft.json`};
     } finally { rmSync(staging,{recursive:true,force:true}); }

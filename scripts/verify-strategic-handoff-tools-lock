@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import path from 'node:path';
+
+const root=path.resolve(process.cwd());
+const lockRef='.template-source/distribution/strategic-handoff-tools.lock.json';
+const digest=bytes=>`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
+try{
+  const lock=JSON.parse(readFileSync(path.join(root,lockRef),'utf8'));
+  if(lock.schema_version!==1||!lock.source_revision||!['committed','working-tree'].includes(lock.source_state)||!lock.effective_files||typeof lock.effective_files!=='object')throw new TypeError('战略交接工具 lock 格式无效');
+  if(process.argv.includes('--require-committed')&&lock.source_state!=='committed')throw new TypeError('candidate/release 要求战略交接工具来自已提交 revision；当前 lock 为 working-tree');
+  for(const [ref,expected]of Object.entries(lock.effective_files)){
+    const actual=digest(readFileSync(path.join(root,ref)));if(actual!==expected)throw new TypeError(`战略交接工具 lock 漂移: ${ref}`);
+  }
+  process.stdout.write(`战略交接工具 lock 验证通过：${lock.target_id}，source_state=${lock.source_state}\n`);
+}catch(error){process.stderr.write(`${error.message}\n`);process.exitCode=1;}

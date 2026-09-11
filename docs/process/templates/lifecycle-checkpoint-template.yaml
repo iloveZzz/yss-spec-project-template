@@ -22,6 +22,7 @@ stage_trace:
   downstream_impacts: []
 ticket_sync:
   status: pending
+  # 仅登记消费者收据、反馈/裁决和交付验收等权威资产引用，不复制其状态。
   refs: []
 verification:
   commands: []

@@ -18,17 +18,20 @@ const CORE_PATH = ".template-source/cli-core";
 function archive(source, ref, consume, paths = []) {
   const revision = execFileSync(
     "git",
-    ["-C", source, "rev-parse", `${ref}^{commit}`],
+    ["-C", source, "rev-parse", `${ref === "WORKTREE" ? "HEAD" : ref}^{commit}`],
     { encoding: "utf8" },
   ).trim();
   ensure(/^[a-f0-9]{40}$/.test(revision), "source revision 必须是完整提交");
+  if (ref === "WORKTREE") {
+    return consume(fs.realpathSync(source), revision, "working-tree");
+  }
   const scratch = fs.mkdtempSync(path.join(os.tmpdir(), "harness-source-"));
   try {
     const tar = execFileSync("git", ["-C", source, "archive", revision, ...paths], {
       maxBuffer: 256 * 1024 * 1024,
     });
     execFileSync("tar", ["-xf", "-", "-C", scratch], { input: tar });
-    return consume(fs.realpathSync(scratch), revision);
+    return consume(fs.realpathSync(scratch), revision, "committed");
   } finally {
     fs.rmSync(scratch, { recursive: true, force: true });
   }
@@ -60,6 +63,7 @@ export function verifyCore(packageRoot) {
   ensure(
     lock.schemaVersion === 1 &&
       lock.protocolVersion === 1 &&
+      ["committed", "working-tree"].includes(lock.sourceState || "committed") &&
       /^[a-f0-9]{40}$/.test(lock.sourceRevision),
     "核心锁格式错误",
   );
@@ -77,7 +81,7 @@ export function verifyCore(packageRoot) {
   return lock;
 }
 export function syncCore(source, ref, packageRoot, check = false) {
-  return archive(source, ref, (root, revision) => {
+  return archive(source, ref, (root, revision, sourceState) => {
     const sourceRoot = path.join(root, CORE_PATH),
       files = inventory(sourceRoot),
       coreVersion = readJson(sourceRoot, "package.json").version;
@@ -86,6 +90,7 @@ export function syncCore(source, ref, packageRoot, check = false) {
       sourceRepository:
         "https://github.com/iloveZzz/yss-spec-project-template.git",
       sourceRevision: revision,
+      sourceState,
       sourcePath: CORE_PATH,
       coreVersion,
       protocolVersion: 1,
@@ -137,7 +142,7 @@ function selected(ref, m) {
   );
 }
 export function syncTemplate(source, ref, packageRoot, check = false) {
-  return archive(source, ref, (root, revision) => {
+  return archive(source, ref, (root, revision, sourceState) => {
     const profile = yaml(fs.readFileSync(path.join(root, PROFILE))),
       identity = yaml(fs.readFileSync(path.join(root, "yss-project.yaml")));
     ensure(
@@ -179,7 +184,7 @@ export function syncTemplate(source, ref, packageRoot, check = false) {
         ensure(
           !path.isAbsolute(link) &&
             resolved.startsWith(canonical + path.sep) &&
-            /^\.(agents|codex|cursor|pi)\/skills\//.test(
+            /^\.(agents|claude|codex|cursor|pi|qoder|trae)\/skills\//.test(
               logical,
             ),
           `不允许的投影链接: ${logical}`,
@@ -224,6 +229,7 @@ export function syncTemplate(source, ref, packageRoot, check = false) {
       schemaVersion: 1,
       ...family,
       templateCommit: revision,
+      sourceState,
       manifestHash: hash(manifestBytes),
       files,
       snapshotHash: hash(JSON.stringify(files)),

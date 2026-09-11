@@ -68,6 +68,8 @@ export function identity(target, bundle, command) {
       ensure(meta[key] === f[key], `metadata 身份矛盾: ${key}`, "IDENTITY");
     ensure(
       /^[a-f0-9]{40}$/.test(meta.templateCommit) &&
+        ["committed", "working-tree"].includes(meta.templateSourceState || "committed") &&
+        ["committed", "working-tree"].includes(meta.coreSourceState || "committed") &&
         ["snapshotHash", "coreDigest", "manifestHash", "baselineDigest"].every(
           (k) => /^[a-f0-9]{64}$/.test(meta[k]),
         ),

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.local/schemas/strategic-handoff-import-receipt-v2.json",
+  "title": "YSS Strategic Handoff Import Receipt v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "bundle_id", "version", "bundle_digest", "package_ref", "target_context_digest", "target_profile_id", "selected_consumer_capabilities", "routes", "status"],
+  "properties": {
+    "schema_version": {"const": 2},
+    "bundle_id": {"type": "string", "pattern": "^strategic-design-handoff\\.[a-z0-9][a-z0-9-]*$"},
+    "version": {"type": "string", "pattern": "^v[1-9][0-9]*$"},
+    "bundle_digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "package_ref": {"type": "string", "minLength": 1},
+    "target_context_digest": {"type": "string", "pattern": "^sha256:[a-f0-9]{64}$"},
+    "target_profile_id": {"type": "string", "minLength": 1},
+    "selected_consumer_capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"enum": ["backend-technical-design", "frontend-engineering-design", "delivery-coordination"]}
+    },
+    "routes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["route_id", "capability", "activation", "artifact_refs"],
+        "properties": {
+          "route_id": {"type": "string", "pattern": "^route\\.[a-z0-9][a-z0-9-]*$"},
+          "capability": {"enum": ["backend-technical-design", "frontend-engineering-design", "delivery-coordination"]},
+          "activation": {"enum": ["required", "optional", "not-applicable"]},
+          "artifact_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+        }
+      }
+    },
+    "status": {"const": "pending-context-reconciliation"}
+  }
+}

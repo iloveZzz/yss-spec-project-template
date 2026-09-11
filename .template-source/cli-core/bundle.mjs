@@ -39,6 +39,7 @@ export function loadBundle(root) {
   );
   ensure(
     /^[0-9a-f]{40}$/.test(snapshot.templateCommit) &&
+      ["committed", "working-tree"].includes(snapshot.sourceState || "committed") &&
       hash(JSON.stringify(snapshot.files)) === snapshot.snapshotHash,
     "快照摘要或 revision 不一致",
     "BUNDLE",
@@ -52,6 +53,7 @@ export function loadBundle(root) {
   ensure(
     core.schemaVersion === 1 &&
       core.protocolVersion === 1 &&
+      ["committed", "working-tree"].includes(core.sourceState || "committed") &&
       /^[0-9a-f]{40}$/.test(core.sourceRevision) &&
       /^[0-9a-f]{64}$/.test(core.digest),
     "核心锁不合法",
@@ -97,7 +99,7 @@ export function loadBundle(root) {
     "IDENTITY",
   );
   ensure(
-    profile.schema_version === 1 &&
+    [1, 2].includes(profile.schema_version) &&
       profile.profile_id === family.profileId &&
       profile.instantiation?.cli_package === family.packageName &&
       profile.instantiation?.metadata_file === family.metadataFile &&

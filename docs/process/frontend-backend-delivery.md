@@ -6,7 +6,7 @@
 
 战略方维护业务规则、Spec、页面流程和视觉基线；后端维护 API 及后端交付；前端维护工程设计、页面和验收证据；统一管理方维护基线引用、跨仓切片与业务验收汇总。
 
-前端消费需求可在上游设计时提前反馈。前端项目在战略和后端交付尚未齐备时，只能验包、诊断和回交缺口。两类输入通过接收核验后，可以准备前端工程设计、实现计划和 Slice Contract；合同获准前不得写代码。
+前端消费需求可在上游设计时提前反馈。Handoff v4 导入后的 Frontend Strategic Preflight 可在后端交付前完成战略输入、Context、视觉基线和源规则追踪核验，并允许起草前端工程设计与实现计划；它固定返回 `ready_for_agent: false`。仅当 Backend/API/Data 影响命中时，最终接收才等待后端交付；UI-only 路径使用有依据的 `backend-not-applicable`。Slice Contract 获准前均不得写代码。
 
 ## 后端导出与前端导入
 
@@ -28,11 +28,14 @@ scripts/backend-delivery import --bundle <directory-or-zip> --target-root <front
 
 ## 接收与启动
 
-导入只产生 `frontend-acceptance-draft.json`，不会批准资产。接收方完成正式词汇对账并按 `schemas/frontend-delivery-acceptance.schema.json` 准备接收记录：
+Handoff v4 先生成 `frontend-strategic-preflight-draft.json`；补齐正式 Context Reconciliation 后执行 `scripts/verify-frontend-strategic-preflight`。通过仅允许进入前端工程设计草案。
 
-- `backend_delivery` 绑定后端导入收据和包摘要。
+后端交付导入只新增匹配的 backend binding 并产生 `frontend-acceptance-draft.json`，不会覆盖已填写的前端预检/设计草案，也不会批准资产。最终接收方按当前 `schemas/frontend-delivery-acceptance.schema.json`（v2）准备记录；v1 仅服务历史 Handoff v3，继续要求真实后端交付：
+
+- `strategic_preflight` 绑定当前预检文件及字节摘要。
+- `backend_dependency.mode: required` 时，`backend_delivery` 绑定真实后端导入收据和包摘要；`not-applicable` 时必须与 Handoff v4 backend 路由的影响引用、原因和证据一致，且不得绑定后端收据。
 - `strategic_handoff` 绑定战略导入收据、包摘要、正式 `context_reconciliation_ref` 和全部源规则/关键场景的承接 rows。
-- `frontend_cases` 绑定业务规则/场景、成功或失败结果、已交付接口、Visual Baseline `case_id` 和可读取的用例说明。
+- `frontend_cases` 绑定业务规则/场景、成功或失败结果、Visual Baseline `case_id` 和可读取的用例说明；有后端依赖时绑定已交付接口，`backend-not-applicable` 时 `operation_ids` 必须为空。
 - 已规划的承接使用 `mapped`，表示已映射用例，不声称代码已实现。当前交付范围必须 mapped 到当前切片；其他范围的 pending、conflict、deferred 或 not-applicable 沿用战略逐条承接的理由、证据和依赖阻断规则。
 
 完成接收核对后记录 `status: accepted` 并执行：

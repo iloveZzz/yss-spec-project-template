@@ -18,6 +18,7 @@ const idPatterns = {
   concept_id: /^domain-concept\.[a-z0-9][a-z0-9-]*$/,
   invariant_id: /^invariant\.[a-z0-9][a-z0-9-]*$/
 };
+const consumerCapabilities = new Set(["backend-technical-design", "frontend-engineering-design", "delivery-coordination"]);
 const relationshipPatterns = new Set(["Partnership", "Customer/Supplier", "Conformist", "Anti-Corruption Layer", "Open Host Service", "Published Language", "Shared Kernel", "Separate Ways"]);
 
 function fail(errors) {
@@ -53,7 +54,7 @@ function validate(data, contextRoot) {
   if (!data || typeof data !== "object" || Array.isArray(data)) return ["合同必须是对象"];
   if (data.schema_version === 1) return ["migration-required: domain strategy v1 必须迁移到 v2 context_snapshot"];
   for (const field of required) requireField(data, field, "root", errors);
-  if (data.schema_version !== 2) errors.push("schema_version 必须为 2");
+  if (![2, 3].includes(data.schema_version)) errors.push("schema_version 不受支持；支持版本: 2, 3；新交付请迁移到 3");
   if (!idPatterns.domain_strategy_id.test(String(data.domain_strategy_id ?? ""))) errors.push("domain_strategy_id 格式非法");
   if (!/^v[0-9]+$/.test(String(data.domain_version ?? ""))) errors.push("domain_version 必须形如 v1");
   if (!["draft", "ready-for-human", "approved", "stale", "blocked"].includes(data.status)) errors.push("status 非法");
@@ -69,6 +70,23 @@ function validate(data, contextRoot) {
     if (context?.context_id && !idPatterns.context_id.test(context.context_id)) errors.push(`${path}.context_id 格式非法`);
     if (context?.status && !["candidate", "confirmed", "stale"].includes(context.status)) errors.push(`${path}.status 非法`);
     if (context?.subdomain_type && !["Core Domain", "Supporting Subdomain", "Generic Subdomain"].includes(context.subdomain_type)) errors.push(`${path}.subdomain_type 非法`);
+  }
+
+  const sourceIds = new Set();
+  if (data.schema_version === 3) {
+    if (data.traceability_version !== 1) errors.push("traceability_version 必须为 1");
+    requireArray(data, "rule_catalog", "root", errors, 1, "object");
+    const rules = list(data.rule_catalog) ? data.rule_catalog : [];
+    unique(rules.map((item) => item?.rule_id).filter(Boolean), "rule_id", errors);
+    for (const [index, rule] of rules.entries()) {
+      const path = `rule_catalog[${index}]`;
+      for (const field of ["rule_id", "statement", "responsible_context", "status"]) requireString(rule ?? {}, field, path, errors);
+      requireArray(rule ?? {}, "evidence_refs", path, errors, 1);
+      if (!/^rule\.[a-z0-9][a-z0-9-]*$/.test(String(rule?.rule_id ?? ""))) errors.push(`${path}.rule_id 格式非法`);
+      if (rule?.responsible_context && !contextIds.includes(rule.responsible_context)) errors.push(`${path}.responsible_context 未声明`);
+      if (rule?.status !== "confirmed") errors.push(`${path}.status 必须为 confirmed`);
+      if (rule?.rule_id) sourceIds.add(rule.rule_id);
+    }
   }
 
   requireArray(data, "subdomains", "root", errors, 1, "object");
@@ -110,6 +128,14 @@ function validate(data, contextRoot) {
     if (scenario?.scenario_id && !idPatterns.scenario_id.test(scenario.scenario_id)) errors.push(`${path}.scenario_id 格式非法`);
     if (scenario?.responsible_context && !contextIds.includes(scenario.responsible_context)) errors.push(`${path}.responsible_context 未声明`);
     for (const consumer of scenario?.consumers ?? []) if (!contextIds.includes(consumer)) errors.push(`${path}.consumers 引用了未声明上下文: ${consumer}`);
+    if (scenario?.scenario_id) sourceIds.add(scenario.scenario_id);
+    if (data.schema_version === 3) {
+      requireArray(scenario ?? {}, "rule_refs", path, errors, 1);
+      requireArray(scenario ?? {}, "success_results", path, errors, 1);
+      requireArray(scenario ?? {}, "evidence_refs", path, errors, 1);
+      if (typeof scenario?.critical !== "boolean") errors.push(`${path}.critical 必须是 boolean`);
+      for (const reference of scenario?.rule_refs ?? []) if (!sourceIds.has(reference)) errors.push(`${path}.rule_refs 引用了未声明规则: ${reference}`);
+    }
   }
 
   const concepts = list(data.concept_candidates) ? data.concept_candidates : [];
@@ -132,6 +158,12 @@ function validate(data, contextRoot) {
     if (invariant?.invariant_id && !idPatterns.invariant_id.test(invariant.invariant_id)) errors.push(`${path}.invariant_id 格式非法`);
     if (invariant?.responsible_context && !contextIds.includes(invariant.responsible_context)) errors.push(`${path}.responsible_context 未声明`);
     for (const reference of invariant?.scenario_refs ?? []) if (!scenarioIds.includes(reference)) errors.push(`${path}.scenario_refs 引用了未声明场景: ${reference}`);
+    if (invariant?.invariant_id) sourceIds.add(invariant.invariant_id);
+    if (data.schema_version === 3) {
+      requireString(invariant ?? {}, "rule_ref", path, errors);
+      requireArray(invariant ?? {}, "evidence_refs", path, errors, 1);
+      if (invariant?.rule_ref && !sourceIds.has(invariant.rule_ref)) errors.push(`${path}.rule_ref 引用了未声明规则: ${invariant.rule_ref}`);
+    }
   }
 
   try {
@@ -141,11 +173,21 @@ function validate(data, contextRoot) {
   }
   requireArray(data, "evidence_refs", "root", errors, 1);
   const mappings = list(data.downstream_mapping) ? data.downstream_mapping : [];
+  if (data.schema_version === 3) unique(mappings.map((item) => item?.mapping_id).filter(Boolean), "mapping_id", errors);
   for (const [index, mapping] of mappings.entries()) {
     const path = `downstream_mapping[${index}]`;
-    for (const field of ["domain_change", "propagation", "reapproval_condition"]) requireString(mapping ?? {}, field, path, errors);
-    requireArray(mapping ?? {}, "impacts", path, errors, 1);
-    if (mapping?.propagation && !["direct", "transitive", "stale"].includes(mapping.propagation)) errors.push(`${path}.propagation 非法`);
+    if (data.schema_version === 3) {
+      for (const field of ["mapping_id", "consumer_capability", "propagation", "reapproval_condition"]) requireString(mapping ?? {}, field, path, errors);
+      for (const field of ["source_refs", "impacts", "evidence_refs"]) requireArray(mapping ?? {}, field, path, errors, 1);
+      if (!/^mapping\.[a-z0-9][a-z0-9-]*$/.test(String(mapping?.mapping_id ?? ""))) errors.push(`${path}.mapping_id 格式非法`);
+      if (mapping?.consumer_capability && !consumerCapabilities.has(mapping.consumer_capability)) errors.push(`${path}.consumer_capability 非法`);
+      for (const reference of mapping?.source_refs ?? []) if (!sourceIds.has(reference)) errors.push(`${path}.source_refs 引用了未声明来源: ${reference}`);
+      if (mapping?.propagation && !["direct", "transitive", "not-applicable", "stale"].includes(mapping.propagation)) errors.push(`${path}.propagation 非法`);
+    } else {
+      for (const field of ["domain_change", "propagation", "reapproval_condition"]) requireString(mapping ?? {}, field, path, errors);
+      requireArray(mapping ?? {}, "impacts", path, errors, 1);
+      if (mapping?.propagation && !["direct", "transitive", "stale"].includes(mapping.propagation)) errors.push(`${path}.propagation 非法`);
+    }
   }
   const approval = data.approval ?? {};
   for (const field of ["approval_ref", "approver", "persisted_ref", "current_version"]) requireString(approval, field, "approval", errors);

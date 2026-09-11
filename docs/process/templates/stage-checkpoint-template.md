@@ -33,6 +33,7 @@ stage_trace:
   downstream_impacts: []
 ticket_sync:
   status: <pending|synced|not-applicable>
+  # refs 关联消费者收据、反馈/裁决和交付验收等权威资产，不复制其机器状态。
   refs: []
 next_work_unit: <stable work-unit id>
 verification:

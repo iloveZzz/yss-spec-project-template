@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.local/schemas/stage-decision-package-v3.json",
+  "allOf": [
+    {"$ref": "stage-decision-package.schema.json"},
+    {"properties": {"schema_version": {"const": 3}}, "required": ["schema_version"]}
+  ]
+}

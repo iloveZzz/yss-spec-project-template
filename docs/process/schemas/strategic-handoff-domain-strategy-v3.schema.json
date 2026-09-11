@@ -1,0 +1,216 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.local/schemas/strategic-handoff-domain-strategy-v3.json",
+  "title": "YSS 业务边界与规则设计",
+  "type": "object",
+  "required": ["schema_version", "domain_strategy_id", "domain_version", "status", "contexts", "subdomains", "relationships", "scenarios", "concept_candidates", "invariants", "context_snapshot", "downstream_mapping", "evidence_refs", "approval"],
+  "properties": {
+    "traceability_version": {"const": 1},
+    "rule_catalog": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["rule_id", "statement", "responsible_context", "status"], "properties": {"rule_id": {"type": "string", "pattern": "^rule\\.[a-z0-9][a-z0-9-]*$"}, "statement": {"type": "string", "minLength": 1}, "responsible_context": {"type": "string", "minLength": 1}, "status": {"const": "confirmed"}, "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}}}, "minItems": 1},
+    "schema_version": {"const": 3},
+    "domain_strategy_id": {"type": "string", "pattern": "^domain-strategy\\.[a-z0-9][a-z0-9-]*$"},
+    "domain_version": {"type": "string", "pattern": "^v[0-9]+$"},
+    "status": {"enum": ["draft", "ready-for-human", "approved", "stale", "blocked"]},
+    "contexts": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/context"}},
+    "subdomains": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/subdomain"}},
+    "relationships": {"type": "array", "items": {"$ref": "#/$defs/relationship"}},
+    "scenarios": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/scenario"}},
+    "concept_candidates": {"type": "array", "items": {"$ref": "#/$defs/concept"}},
+    "invariants": {"type": "array", "items": {"$ref": "#/$defs/invariant"}},
+    "context_snapshot": {"$ref": "#/$defs/contextSnapshot"},
+    "downstream_mapping": {"type": "array"},
+    "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "approval": {"$ref": "#/$defs/approval"}
+  },
+  "$defs": {
+    "contextSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context_ref", "context_schema_version", "document_digest", "referenced_terms_digest", "term_refs"],
+      "properties": {
+        "context_ref": {"const": "CONTEXT.md"},
+        "context_schema_version": {"const": 1},
+        "document_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "referenced_terms_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "term_refs": {"type": "array", "items": {"type": "string", "pattern": "^(Global|[A-Z][A-Za-z0-9]+)/[A-Z][A-Za-z0-9]+$"}, "uniqueItems": true}
+      }
+    },
+    "context": {
+      "type": "object",
+      "required": ["context_id", "name", "responsibilities", "non_responsibilities", "subdomain_type", "owner", "status"],
+      "properties": {
+        "context_id": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]+$"},
+        "name": {"type": "string", "minLength": 1},
+        "responsibilities": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "non_responsibilities": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "subdomain_type": {"enum": ["Core Domain", "Supporting Subdomain", "Generic Subdomain"]},
+        "owner": {"type": "string", "minLength": 1},
+        "status": {"enum": ["candidate", "confirmed", "stale"]}
+      }
+    },
+    "subdomain": {
+      "type": "object",
+      "required": ["subdomain_id", "name", "type", "rationale", "evidence_refs"],
+      "properties": {
+        "subdomain_id": {"type": "string", "pattern": "^subdomain\\.[a-z0-9][a-z0-9-]*$"},
+        "name": {"type": "string", "minLength": 1},
+        "type": {"enum": ["Core Domain", "Supporting Subdomain", "Generic Subdomain"]},
+        "rationale": {"type": "string", "minLength": 1},
+        "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "relationship": {
+      "type": "object",
+      "required": ["relationship_id", "from_context", "to_context", "relationship_pattern", "semantic_upstream", "semantic_downstream", "business_authority", "model_change_impact", "transport_direction", "translation_responsibility", "direction_explanation"],
+      "properties": {
+        "relationship_id": {"type": "string", "pattern": "^relationship\\.[a-z0-9][a-z0-9-]*$"},
+        "from_context": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]+$"},
+        "to_context": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]+$"},
+        "relationship_pattern": {"enum": ["Partnership", "Customer/Supplier", "Conformist", "Anti-Corruption Layer", "Open Host Service", "Published Language", "Shared Kernel", "Separate Ways"]},
+        "semantic_upstream": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]+$"},
+        "semantic_downstream": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]+$"},
+        "business_authority": {"type": "string", "minLength": 1},
+        "model_change_impact": {"type": "string", "minLength": 1},
+        "transport_direction": {"type": "string", "minLength": 1},
+        "translation_responsibility": {"type": "string", "minLength": 1},
+        "direction_explanation": {"type": "string", "minLength": 1}
+      }
+    },
+    "scenario": {
+      "type": "object",
+      "required": ["scenario_id", "actor", "preconditions", "commands", "rules", "events", "failure_results", "responsible_context", "consumers", "status"],
+      "properties": {
+        "rule_refs": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "critical": {"type": "boolean"},
+        "success_results": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+        "scenario_id": {"type": "string", "pattern": "^scenario\\.[a-z0-9][a-z0-9-]*$"},
+        "actor": {"type": "string", "minLength": 1},
+        "preconditions": {"type": "array", "items": {"type": "string"}},
+        "commands": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "rules": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "events": {"type": "array", "items": {"type": "string"}},
+        "failure_results": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "responsible_context": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]+$"},
+        "consumers": {"type": "array", "items": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]+$"}},
+        "status": {"enum": ["candidate", "confirmed", "stale"]}
+      }
+    },
+    "concept": {
+      "type": "object",
+      "required": ["concept_id", "name", "context_id", "identity_features", "lifecycle", "confidence", "status"],
+      "properties": {
+        "concept_id": {"type": "string", "pattern": "^domain-concept\\.[a-z0-9][a-z0-9-]*$"},
+        "name": {"type": "string", "minLength": 1},
+        "context_id": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]+$"},
+        "identity_features": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "lifecycle": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "invariant_refs": {"type": "array", "items": {"type": "string"}},
+        "possible_tactical_role": {"type": "string"},
+        "confidence": {"enum": ["low", "medium", "high"]},
+        "status": {"enum": ["candidate", "confirmed", "stale"]}
+      }
+    },
+    "invariant": {
+      "type": "object",
+      "required": ["invariant_id", "statement", "responsible_context", "scenario_refs", "verification_method"],
+      "properties": {
+        "rule_ref": {"type": "string", "minLength": 1},
+        "invariant_id": {"type": "string", "pattern": "^invariant\\.[a-z0-9][a-z0-9-]*$"},
+        "statement": {"type": "string", "minLength": 1},
+        "responsible_context": {"type": "string", "pattern": "^[A-Z][A-Za-z0-9]+$"},
+        "scenario_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "verification_method": {"type": "string", "minLength": 1}
+      }
+    },
+    "mapping": {
+      "type": "object",
+      "required": ["domain_change", "impacts", "propagation", "reapproval_condition"],
+      "properties": {
+        "domain_change": {"type": "string", "minLength": 1},
+        "impacts": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "propagation": {"enum": ["direct", "transitive", "stale"]},
+        "reapproval_condition": {"type": "string", "minLength": 1}
+      }
+    },
+    "mappingV3": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mapping_id", "source_refs", "consumer_capability", "impacts", "propagation", "reapproval_condition", "evidence_refs"],
+      "properties": {
+        "mapping_id": {"type": "string", "pattern": "^mapping\\.[a-z0-9][a-z0-9-]*$"},
+        "source_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^(rule|scenario|invariant)\\.[a-z0-9][a-z0-9-]*$"}},
+        "consumer_capability": {"enum": ["backend-technical-design", "frontend-engineering-design", "delivery-coordination"]},
+        "impacts": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "propagation": {"enum": ["direct", "transitive", "not-applicable", "stale"]},
+        "reapproval_condition": {"type": "string", "minLength": 1},
+        "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "approval": {
+      "type": "object",
+      "required": ["approval_ref", "approver", "persisted_ref", "current_version"],
+      "properties": {
+        "approval_ref": {"type": "string", "minLength": 1},
+        "approver": {"type": "string", "minLength": 1},
+        "persisted_ref": {"type": "string", "minLength": 1},
+        "current_version": {"type": "string", "pattern": "^v[0-9]+$"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"schema_version": {"const": 3}}, "required": ["schema_version"]},
+      "then": {
+        "required": ["traceability_version", "rule_catalog"],
+        "properties": {
+          "traceability_version": {"const": 1},
+          "rule_catalog": {
+            "items": {
+              "required": ["evidence_refs"],
+              "properties": {
+                "evidence_refs": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1}
+                }
+              }
+            }
+          },
+          "scenarios": {
+            "items": {
+              "required": ["rule_refs", "critical", "success_results", "evidence_refs"],
+              "properties": {
+                "evidence_refs": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1}
+                }
+              }
+            }
+          },
+          "invariants": {
+            "items": {
+              "required": ["rule_ref", "evidence_refs"],
+              "properties": {
+                "evidence_refs": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {"type": "string", "minLength": 1}
+                }
+              }
+            }
+          },
+          "downstream_mapping": {"items": {"$ref": "#/$defs/mappingV3"}}
+        }
+      },
+      "else": {
+        "properties": {
+          "downstream_mapping": {"items": {"$ref": "#/$defs/mapping"}}
+        }
+      }
+    }
+  ]
+}

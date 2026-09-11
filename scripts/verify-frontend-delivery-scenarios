@@ -8,19 +8,49 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { tmpdir } from 'node:os';
 import { fixture, context } from './fixtures/strategic-handoff/fixture.mjs';
-import { exportBundle } from './lib/strategic-handoff.mjs';
+import { exportBundle, importBundle } from './lib/strategic-handoff.mjs';
 const backendTools=process.env.YSS_DELIVERY_TEST_BACKEND_ROOT;
 const frontendTools=process.env.YSS_DELIVERY_TEST_FRONTEND_ROOT;
 const { backendDeliveryBasis, exportBackendDelivery, openBackendDelivery, inspectBackendDelivery } = await import(backendTools?pathToFileURL(path.join(backendTools,'scripts/lib/backend-delivery.mjs')):'./lib/backend-delivery.mjs');
 const {importBackendDelivery}=await import(frontendTools?pathToFileURL(path.join(frontendTools,'scripts/lib/backend-delivery.mjs')):'./lib/backend-delivery.mjs');
-const { verifyFrontendDelivery } = await import(frontendTools?pathToFileURL(path.join(frontendTools,'scripts/lib/frontend-delivery.mjs')):'./lib/frontend-delivery.mjs');
+const { verifyFrontendDelivery, verifyFrontendStrategicPreflight } = await import(frontendTools?pathToFileURL(path.join(frontendTools,'scripts/lib/frontend-delivery.mjs')):'./lib/frontend-delivery.mjs');
 const { enforceFrontendDelivery } = await import(frontendTools?pathToFileURL(path.join(frontendTools,'scripts/lib/frontend-delivery-boundary.mjs')):'./lib/frontend-delivery-boundary.mjs');
 const { compileDefaultImplementationContract } = await import(frontendTools?pathToFileURL(path.join(frontendTools,'scripts/lib/implementation-contract-compiler.mjs')):'./lib/implementation-contract-compiler.mjs');
 const { validateNextRoute, validateImplementationEntry } = await import(frontendTools?pathToFileURL(path.join(frontendTools,'scripts/lib/lifecycle-transition.mjs')):'./lib/lifecycle-transition.mjs');
 import { read, hash, json, ROOT } from './lib/strategic-handoff-io.mjs';
 const runtimeRegistry=read(path.join(frontendTools||ROOT,'docs/process/lifecycle-registry.yaml'));
-const frontendStage=runtimeRegistry.stages.find(x=>x.id==='stage.frontend-engineering-design')?.id||runtimeRegistry.stages.find(x=>x.id==='stage.tactical-design')?.id||'stage.system-data-engineering';
-const frontendWorkUnit=frontendStage==='stage.frontend-engineering-design'?'work-unit.frontend-engineering-design':frontendStage==='stage.tactical-design'?'work-unit.tactical-design':'work-unit.technical-analysis';
+const lifecycleRoute=runtimeRegistry.stages.some(x=>x.id==='stage.frontend-engineering-design')
+  ?{stage:'stage.frontend-engineering-design',workUnit:'work-unit.frontend-engineering-design'}
+  :runtimeRegistry.stages.some(x=>x.id==='stage.technical-design')
+    ?{stage:'stage.technical-design',workUnit:'work-unit.technical-design'}
+  :runtimeRegistry.stages.some(x=>x.id==='stage.system-data-engineering')
+    ?{stage:'stage.system-data-engineering',workUnit:'work-unit.technical-analysis'}
+    :null;
+if(!lifecycleRoute||!runtimeRegistry.work_units.some(x=>x.id===lifecycleRoute.workUnit))throw new TypeError('lifecycle 缺少显式支持的前端工程设计入口');
+const frontendStage=lifecycleRoute.stage;
+const frontendWorkUnit=lifecycleRoute.workUnit;
+
+test('Frontend-only v4 可先完成战略预检，并以 backend-not-applicable 接收',async t=>{
+  const base=mkdtempSync(path.join(tmpdir(),'frontend-preflight-test-')),source=path.join(base,'strategy'),frontend=path.join(base,'frontend');
+  t.after(()=>rmSync(base,{recursive:true,force:true}));mkdirSync(source);mkdirSync(path.join(frontend,'docs/process'),{recursive:true});
+  const put=(root,ref,value)=>{mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});writeFileSync(path.join(root,ref),typeof value==='string'?value:json(value));};
+  const f=await fixture(source,{handoffVersion:4,impacts:{ui:true,api:false,data:false,backend:false,frontend:true,cross_repo:false,high_risk:false}});
+  put(frontend,'yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');put(frontend,'CONTEXT.md',context);
+  put(frontend,'docs/process/harness-profile.yaml',{schema_version:2,profile_id:'yss-harness-frontend',handoff:{consumer_capabilities:['frontend-engineering-design']}});
+  const output=path.join(base,'strategy-package');await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output});
+  const imported=await importBundle({bundle:output,targetRoot:frontend}),receipt=read(path.join(frontend,imported.receipt_ref));
+  const route=receipt.routes[0],preflightRef=route.artifact_refs.find(ref=>ref.endsWith('frontend-strategic-preflight-draft.json')),traceRef=route.artifact_refs.find(ref=>ref.endsWith('frontend-traceability-draft.json'));
+  assert(preflightRef&&traceRef);const preflight=read(path.join(frontend,preflightRef));assert.equal(preflight.ready_for_agent,false);assert.equal(preflight.backend_dependency.mode,'not-applicable');
+  put(frontend,'reconciliation.json',{schema_version:1,repository_mode:'project-instance',stage:'stage.frontend-engineering-design',work_unit:'work-unit.frontend-engineering-design',status:'reconciled',context_snapshot:f.snapshot,changes:{added:['Global/Supplier'],updated:[],deprecated:[]},unresolved_terms:[],evidence_refs:['CONTEXT.md']});
+  preflight.status='verified';preflight.context_reconciliation_ref='reconciliation.json';put(frontend,preflightRef,preflight);
+  const preflightResult=await verifyFrontendStrategicPreflight({root:frontend,preflightRef});assert.equal(preflightResult.result,'preflight-verified');assert.equal(preflightResult.ready_for_agent,false);
+  assert.equal(enforceFrontendDelivery({frontend_preflight:{preflight_ref:preflightRef,digest:hash(readFileSync(path.join(frontend,preflightRef)))}},{root:frontend,phase:'design'}).result,'preflight-verified');
+  put(frontend,'cases.md','Synthetic UI-only acceptance cases.');
+  const trace=read(path.join(frontend,traceRef));const frontendCases=['success','failure'].map(outcome=>({case_id:`ui-${outcome}`,source_ids:['rule.complete','scenario.submit'],outcome,operation_ids:[],visual_case_ids:['primary-desktop','primary-narrow'],evidence_ref:'cases.md',evidence_digest:hash(readFileSync(path.join(frontend,'cases.md')))}));
+  for(const row of trace.rows)Object.assign(row,{disposition:'mapped',frontend_case_refs:frontendCases.map(item=>item.case_id),dependency_status:'known',dependent_slice_refs:['slice.ui-only'],evidence_refs:['cases.md']});
+  const acceptanceRef='frontend-acceptance-v2.json';put(frontend,acceptanceRef,{schema_version:2,status:'accepted',slice_id:'slice.ui-only',strategic_preflight:{ref:preflightRef,digest:hash(readFileSync(path.join(frontend,preflightRef)))},backend_dependency:preflight.backend_dependency,strategic_handoff:{import_receipt_ref:imported.receipt_ref,bundle_digest:receipt.bundle_digest,route_id:trace.route_id,context_reconciliation_ref:'reconciliation.json',rows:trace.rows},frontend_cases:frontendCases});
+  const accepted=await verifyFrontendDelivery({root:frontend,acceptanceRef,sliceRef:'slice.ui-only'});assert.equal(accepted.result,'inputs-verified');assert.equal(accepted.backend_dependency,'not-applicable');assert.equal(accepted.ready_for_agent,false);
+});
 
 test('战略与后端交付联合接收：便携、真实服务、拒绝不完整/过期输入及执行入口绕过',async t=>{
   const base=mkdtempSync(path.join(tmpdir(),'frontend-delivery-test-'));
@@ -29,7 +59,7 @@ test('战略与后端交付联合接收：便携、真实服务、拒绝不完�
   [source,backend,frontend].forEach(root=>mkdirSync(root));
   if(backendTools)cpSync(backendTools,backend,{recursive:true});
   if(frontendTools)cpSync(frontendTools,frontend,{recursive:true});
-  const f=await fixture(source);
+  const f=await fixture(source,{handoffVersion:4});
   for(const root of [backend,frontend]) {put(root,'yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');put(root,'CONTEXT.md',context);}
   const strategic=await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output:path.join(backend,'strategy-package')});
   const roles=read(path.join(source,'docs/agents/digital-human-roles.yaml'));
@@ -52,7 +82,7 @@ test('战略与后端交付联合接收：便携、真实服务、拒绝不完�
   const server=fork(path.join(ROOT,'scripts/fixtures/backend-delivery/revision-server.mjs'),[serverState],{stdio:['ignore','ignore','inherit','ipc']});
   t.after(()=>{server.kill();rmSync(base,{recursive:true,force:true});});
   const [{port}]=await once(server,'message');
-  const delivery={schema_version:1,delivery_id:'backend-delivery.supplier',version:'v1',status:'verified',strategic_bundle_ref:'strategy-package',strategic_bundle_digest:strategic.bundle_digest,scope:{slice_id:'slice.submit',source_ids:['rule.complete','scenario.submit'],operation_ids:['submitSupplier']},openapi:approved('api.yaml','api.supplier','gate.openapi-frozen'),slice_contract:approved('slice.json','contract.backend','gate.slice-contract-approved'),build:{source_commit:'a'.repeat(40),artifact_digest:`sha256:${'b'.repeat(64)}`},environment:{id:'fixture-local',base_url:`http://127.0.0.1:${port}`,deployment_id:'fixture-v1',revision_path:'/version',revision_pointers:{deployment_id:'/deployment_id',source_commit:'/source_commit',openapi_digest:'/openapi_digest',artifact_digest:'/artifact_digest',test_data_digest:'/test_data_digest'},test_data:file('data.md')},verification:{},supporting_files:[]};
+  const delivery={schema_version:1,delivery_id:'backend-delivery.supplier',version:'v1',status:'verified',strategic_bundle_ref:'strategy-package',strategic_bundle_digest:strategic.bundle_digest,strategic_route_id:'route.backend',scope:{slice_id:'slice.submit',source_ids:['rule.complete','scenario.submit'],operation_ids:['submitSupplier']},openapi:approved('api.yaml','api.supplier','gate.openapi-frozen'),slice_contract:approved('slice.json','contract.backend','gate.slice-contract-approved'),build:{source_commit:'a'.repeat(40),artifact_digest:`sha256:${'b'.repeat(64)}`},environment:{id:'fixture-local',base_url:`http://127.0.0.1:${port}`,deployment_id:'fixture-v1',revision_path:'/version',revision_pointers:{deployment_id:'/deployment_id',source_commit:'/source_commit',openapi_digest:'/openapi_digest',artifact_digest:'/artifact_digest',test_data_digest:'/test_data_digest'},test_data:file('data.md')},verification:{},supporting_files:[]};
   const record=kind=>({schema_version:1,kind,subject_digest:backendDeliveryBasis(delivery),results:[{command:'synthetic-maintenance-test',executed_at:new Date().toISOString(),exit_code:0,evidence:[file('verification.log')]}],operation_ids:['submitSupplier'],coverage:[{source_id:'scenario.submit',outcome:'success'},{source_id:'scenario.submit',outcome:'failure'}]});
   put(backend,'contract-test.json',record('backend-contract'));put(backend,'deployment-test.json',record('backend-deployment'));
   delivery.verification={contract:file('contract-test.json'),deployment:file('deployment-test.json')};put(backend,'delivery.json',delivery);
@@ -84,6 +114,7 @@ test('战略与后端交付联合接收：便携、真实服务、拒绝不完�
     assert.equal(validateImplementationEntry({}, {root:frontend}).blocking_signals[0],'frontend-delivery-blocked');
   });
   put(frontend,'reconciliation.json',{schema_version:1,repository_mode:'project-instance',stage:frontendStage,work_unit:frontendWorkUnit,status:'reconciled',context_snapshot:f.snapshot,changes:{added:['Global/Supplier'],updated:[],deprecated:[]},unresolved_terms:[],evidence_refs:['CONTEXT.md']});
+  const preflight=read(path.join(frontend,acceptance.strategic_preflight.ref));preflight.status='verified';preflight.context_reconciliation_ref='reconciliation.json';put(frontend,acceptance.strategic_preflight.ref,preflight);acceptance.strategic_preflight.digest=hash(readFileSync(path.join(frontend,acceptance.strategic_preflight.ref)));
   put(frontend,'cases.md','Synthetic planned UI cases: complete submission succeeds; incomplete submission fails.');
   acceptance.status='accepted';acceptance.strategic_handoff.context_reconciliation_ref='reconciliation.json';
   acceptance.frontend_cases=['success','failure'].map(outcome=>({case_id:`submit-${outcome}`,source_ids:['rule.complete','scenario.submit'],outcome,operation_ids:['submitSupplier'],visual_case_ids:['primary-desktop','primary-narrow'],evidence_ref:'cases.md',evidence_digest:hash(readFileSync(path.join(frontend,'cases.md')))}));

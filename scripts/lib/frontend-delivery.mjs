@@ -1,9 +1,49 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { openBackendDelivery } from './backend-delivery.mjs';
 import { openBundle } from './strategic-handoff.mjs';
 import { verifyConsumption } from './strategic-handoff-consumption.mjs';
-import { read, safe, ensure, hash, schema, project } from './strategic-handoff-io.mjs';
+import { read, safe, ensure, hash, schema, project, ROOT } from './strategic-handoff-io.mjs';
+
+const ACCEPTANCE_SCHEMAS=new Map([[1,'docs/process/schemas/frontend-delivery-acceptance-v1.schema.json'],[2,'docs/process/schemas/frontend-delivery-acceptance.schema.json']]);
+
+function acceptanceSchema(version) {
+  ensure(ACCEPTANCE_SCHEMAS.has(version),`Frontend Delivery Acceptance 未知 schema_version: ${String(version)}；支持版本: 1, 2；新接收请迁移到 2`);
+  return ACCEPTANCE_SCHEMAS.get(version);
+}
+
+export async function verifyFrontendStrategicPreflight({root=process.cwd(),preflightRef,expectedDigest}={}) {
+  project(root);
+  const file=safe(root,preflightRef),preflight=read(file);
+  schema(preflight,'docs/process/schemas/frontend-strategic-preflight.schema.json');
+  const preflightDigest=hash(readFileSync(file));
+  if(expectedDigest)ensure(expectedDigest===preflightDigest,'前端战略预检摘要已变化，需重编译合同');
+  ensure(preflight.status==='verified','前端战略预检尚未 verified');
+  const receipt=read(safe(root,preflight.import_receipt_ref));
+  ensure(receipt.schema_version===2,'Frontend Strategic Preflight 仅接受 Import Receipt v2');
+  const base=`docs/handoffs/${receipt.bundle_id}/${receipt.version}`;
+  ensure(preflight.import_receipt_ref===`${base}/import-receipt.json`&&receipt.package_ref===`${base}/package`,'战略预检收据路径与身份不匹配');
+  ensure(preflight.bundle_digest===receipt.bundle_digest,'战略预检与收据摘要不一致');
+  const routeReceipt=receipt.routes.find(item=>item.route_id===preflight.route_id&&item.capability==='frontend-engineering-design');
+  ensure(routeReceipt&&routeReceipt.activation!=='not-applicable','当前 Handoff 未启用前端工程设计路由');
+  const reconciliation=spawnSync(process.execPath,[path.join(ROOT,'scripts/verify-context-reconciliation'),'--root',root,safe(root,preflight.context_reconciliation_ref)],{encoding:'utf8'});
+  ensure(reconciliation.status===0,`前端战略预检 Context Reconciliation 未通过: ${reconciliation.error?.message||reconciliation.stderr}`);
+  return openBundle(safe(root,receipt.package_ref),bundle=>{
+    ensure(bundle.handoff.schema_version===4&&bundle.manifest.bundle_digest===receipt.bundle_digest,'前端战略预检必须绑定 Handoff v4 当前包');
+    const frontendRoute=bundle.handoff.consumer_routes.find(item=>item.route_id===preflight.route_id&&item.capability==='frontend-engineering-design');
+    const backendRoute=bundle.handoff.consumer_routes.find(item=>item.capability==='backend-technical-design');
+    ensure(frontendRoute&&frontendRoute.activation!=='not-applicable','前端路由未启用');
+    const known=[...bundle.indexes.rules.map(item=>item.rule_id),...bundle.indexes.scenarios.filter(item=>item.critical).map(item=>item.scenario_id)].sort();
+    ensure(JSON.stringify([...preflight.source_rule_refs].sort())===JSON.stringify(known),'前端战略预检未完整绑定源规则/关键场景');
+    const expectedVisual=`${base}/package/payload/files/${bundle.handoff.source.visual_baseline_ref.persisted_ref}/${bundle.handoff.source.visual_baseline_ref.manifest_ref}`;
+    ensure(preflight.visual_baseline_ref===expectedVisual,'前端战略预检 Visual Baseline 引用不一致');
+    const expectedMode=backendRoute.activation==='not-applicable'?'not-applicable':'required';
+    ensure(preflight.backend_dependency.mode===expectedMode&&preflight.backend_dependency.route_id===backendRoute.route_id,'前端战略预检后端依赖与消费者路由不一致');
+    if(expectedMode==='not-applicable')ensure(preflight.backend_dependency.reason===backendRoute.reason&&JSON.stringify(preflight.backend_dependency.impact_refs)===JSON.stringify(backendRoute.impact_refs)&&JSON.stringify(preflight.backend_dependency.evidence_refs)===JSON.stringify(backendRoute.evidence_refs),'backend-not-applicable 依据与战略路由不一致');
+    return {result:'preflight-verified',ready_for_agent:false,preflight_ref:preflightRef,preflight_digest:preflightDigest,strategic_bundle_digest:receipt.bundle_digest,backend_dependency:expectedMode,next_action:'prepare-frontend-engineering-design-draft'};
+  });
+}
 
 function pointer(value, ref) {
   ensure(ref.startsWith('/')&&!ref.includes('//'),'服务版本 JSON Pointer 无效');
@@ -35,10 +75,33 @@ export async function probeBackend(delivery) {
 export async function verifyFrontendDelivery({root=process.cwd(),acceptanceRef,sliceRef,expectedDigest}) {
   project(root);
   const file=safe(root,acceptanceRef), acceptance=read(file);
-  schema(acceptance,'docs/process/schemas/frontend-delivery-acceptance.schema.json');
+  schema(acceptance,acceptanceSchema(acceptance?.schema_version));
   const acceptanceDigest=hash(readFileSync(file));
   if(expectedDigest)ensure(expectedDigest===acceptanceDigest,'前端接收记录摘要已变化，需重编译合同');
   ensure(sliceRef&&acceptance.slice_id===sliceRef,'前端接收记录与执行切片不匹配');
+  if(acceptance.schema_version===2) {
+    const preflight=await verifyFrontendStrategicPreflight({root,preflightRef:acceptance.strategic_preflight.ref,expectedDigest:acceptance.strategic_preflight.digest});
+    ensure(preflight.strategic_bundle_digest===acceptance.strategic_handoff.bundle_digest,'前端接收与战略预检版本不一致');
+    if(acceptance.backend_dependency.mode==='not-applicable') {
+      ensure(!acceptance.backend_delivery,'backend-not-applicable 不得绑定后端交付收据');
+      const strategic=await verifyConsumption(acceptance,{root,sliceRef,consumer:'frontend'});
+      ensure(strategic.result==='verified',`战略承接阻断: ${JSON.stringify(strategic.issues)}`);
+      const strategicReceipt=read(safe(root,acceptance.strategic_handoff.import_receipt_ref));
+      return openBundle(safe(root,strategicReceipt.package_ref),bundle=>{
+        const visualCases=bundle.handoff.source.visual_baseline_ref.case_ids;
+        const sourceIds=new Set([...bundle.indexes.rules.map(item=>item.rule_id),...bundle.indexes.scenarios.filter(item=>item.critical).map(item=>item.scenario_id)]);
+        const ids=acceptance.frontend_cases.map(item=>item.case_id);ensure(new Set(ids).size===ids.length,'前端验收用例 ID 重复');
+        for(const item of acceptance.frontend_cases){
+          ensure(item.operation_ids.length===0,'backend-not-applicable 前端用例不得绑定 operation_ids');
+          ensure(item.source_ids.every(id=>sourceIds.has(id)),'前端用例引用未知规则/场景');
+          ensure(item.visual_case_ids.every(id=>visualCases.includes(id)),'前端用例视觉基线悬空');
+          const evidence=readFileSync(safe(root,item.evidence_ref));ensure(evidence.length>0&&hash(evidence)===item.evidence_digest,'前端承接用例说明为空或摘要漂移');
+        }
+        return {result:'inputs-verified',ready_for_agent:false,slice_id:sliceRef,acceptance_ref:acceptanceRef,acceptance_digest:acceptanceDigest,strategic_bundle_digest:strategic.consumed_bundle_digest,backend_dependency:'not-applicable',next_action:'prepare-or-revalidate-frontend-plan-and-slice-contract'};
+      });
+    }
+    ensure(acceptance.backend_dependency.mode==='required','frontend backend_dependency.mode 非法');
+  }
   const binding=acceptance.backend_delivery, receipt=read(safe(root,binding.import_receipt_ref));
   const base=`docs/backend-deliveries/${receipt.delivery_id}/${receipt.version}`;
   ensure(binding.import_receipt_ref===`${base}/import-receipt.json`&&receipt.package_ref===`${base}/package`,'后端收据路径与身份不匹配');
@@ -56,6 +119,7 @@ export async function verifyFrontendDelivery({root=process.cwd(),acceptanceRef,s
     await openBundle(safe(backend.source,delivery.strategic_bundle_ref),bundle=>{
       const visualCases=bundle.handoff.source.visual_baseline_ref.case_ids;
       for(const item of acceptance.frontend_cases) {
+        if(acceptance.schema_version===2)ensure(item.operation_ids.length>0,'有后端依赖时前端用例必须绑定已交付 operation_ids');
         ensure(item.operation_ids.every(id=>delivery.scope.operation_ids.includes(id)),'前端用例依赖未交付接口');
         ensure(item.source_ids.every(id=>delivery.scope.source_ids.includes(id)),'前端用例依赖未交付规则/场景');
         ensure(item.visual_case_ids.every(id=>visualCases.includes(id)),'前端用例视觉基线悬空');

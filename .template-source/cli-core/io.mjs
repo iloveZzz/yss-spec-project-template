@@ -94,7 +94,7 @@ export function governance(ref) {
     "PROTECTED",
   );
   ensure(
-    /^(?:\.(?:agents|codex|cursor|pi)\/|docs\/|scripts\/)/.test(
+    /^(?:\.(?:agents|claude|codex|cursor|pi|qoder|trae)\/|docs\/|scripts\/)/.test(
       ref,
     ) ||
       [
@@ -102,6 +102,7 @@ export function governance(ref) {
         ".gitignore",
         ".nvmrc",
         "AGENTS.md",
+        "CLAUDE.md",
         "CONTEXT.md",
         "README.md",
         "skills-lock.json",

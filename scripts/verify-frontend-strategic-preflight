@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+import { parseArgs } from 'node:util';
+import { verifyFrontendStrategicPreflight } from './lib/frontend-delivery.mjs';
+
+try {
+  const {values,positionals}=parseArgs({options:{root:{type:'string',default:process.cwd()},'expected-digest':{type:'string'}},allowPositionals:true,strict:true});
+  if(positionals.length!==1)throw new TypeError('用法: scripts/verify-frontend-strategic-preflight [--root <frontend>] [--expected-digest <sha256>] <preflight.json>');
+  const result=await verifyFrontendStrategicPreflight({root:values.root,preflightRef:positionals[0],expectedDigest:values['expected-digest']});
+  process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
+}catch(error){
+  process.stderr.write(`${error.message}\n`);process.exitCode=1;
+}

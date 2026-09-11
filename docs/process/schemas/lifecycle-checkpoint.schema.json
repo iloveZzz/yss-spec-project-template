@@ -221,7 +221,8 @@
       "type": "object"
     },
     "ticket_sync": {
-      "type": "object"
+      "type": "object",
+      "description": "Ticket 仅保存追踪同步状态；refs 关联消费者 Import Receipt、Consumer Feedback、Feedback Adjudication 与 Delivery Acceptance 等权威资产，不复制其机器状态。"
     },
     "verification": {
       "type": "object"

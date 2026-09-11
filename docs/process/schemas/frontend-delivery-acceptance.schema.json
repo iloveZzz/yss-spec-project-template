@@ -4,7 +4,7 @@
   "additionalProperties": false,
   "properties": {
     "schema_version": {
-      "const": 1
+      "const": 2
     },
     "status": {
       "const": "accepted"
@@ -31,6 +31,27 @@
         "bundle_digest"
       ]
     },
+    "strategic_preflight": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "digest"],
+      "properties": {
+        "ref": {"type": "string", "minLength": 1},
+        "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "backend_dependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "route_id"],
+      "properties": {
+        "mode": {"enum": ["required", "not-applicable"]},
+        "route_id": {"const": "route.backend"},
+        "impact_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "reason": {"type": "string", "minLength": 1},
+        "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
     "strategic_handoff": {
       "type": "object",
       "additionalProperties": false,
@@ -42,6 +63,10 @@
         "bundle_digest": {
           "type": "string",
           "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "route_id": {
+          "type": "string",
+          "pattern": "^route\\.[a-z0-9][a-z0-9-]*$"
         },
         "context_reconciliation_ref": {
           "type": "string",
@@ -119,6 +144,7 @@
       "required": [
         "import_receipt_ref",
         "bundle_digest",
+        "route_id",
         "context_reconciliation_ref",
         "rows"
       ]
@@ -154,7 +180,7 @@
               "type": "string",
               "minLength": 1
             },
-            "minItems": 1,
+            "minItems": 0,
             "uniqueItems": true
           },
           "visual_case_ids": {
@@ -193,8 +219,16 @@
     "schema_version",
     "status",
     "slice_id",
-    "backend_delivery",
+    "strategic_preflight",
+    "backend_dependency",
     "strategic_handoff",
     "frontend_cases"
+  ],
+  "allOf": [
+    {
+      "if": {"properties": {"backend_dependency": {"properties": {"mode": {"const": "required"}}}}, "required": ["backend_dependency"]},
+      "then": {"required": ["backend_delivery"]},
+      "else": {"properties": {"backend_dependency": {"required": ["reason", "impact_refs", "evidence_refs"]}}}
+    }
   ]
 }

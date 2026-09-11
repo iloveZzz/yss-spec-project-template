@@ -34,7 +34,9 @@
     {
       "upstream": "yss-stage-decision",
       "canonical": "yss-stage-decision",
-      "upstream_hash": "b9fe9d8f5009db0289123155f1662d8d21b34e26928d6728545da7f0c0bb0de1"
+      "upstream_hash": "53495f8c450cddffb8dd223e6772c7e056464f76c5aab240ca5bd54654505312"
     }
-  ]
+  ],
+  "source_state": "working-tree",
+  "source_state_note": "source_revision 为已提交基线；upstream_hash 为本轮未提交工作树。固定 revision 与分发留待源仓提交后的交付批次。"
 }

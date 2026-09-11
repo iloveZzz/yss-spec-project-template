@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+import { parseArgs } from 'node:util';
+import { verifyConsumerFeedback, verifyFeedbackAdjudication } from './lib/strategic-feedback.mjs';
+
+try{
+  const [command,...args]=process.argv.slice(2);const {values,positionals}=parseArgs({args,options:{root:{type:'string',default:process.cwd()}},allowPositionals:true,strict:true});
+  if(positionals.length!==1||!['verify-feedback','verify-adjudication'].includes(command))throw new TypeError('用法: scripts/strategic-feedback <verify-feedback|verify-adjudication> --root <target> <contract.json>');
+  const result=command==='verify-feedback'?await verifyConsumerFeedback({root:values.root,feedbackRef:positionals[0]}):await verifyFeedbackAdjudication({root:values.root,adjudicationRef:positionals[0]});
+  process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
+}catch(error){process.stderr.write(`${error.message}\n`);process.exitCode=1;}

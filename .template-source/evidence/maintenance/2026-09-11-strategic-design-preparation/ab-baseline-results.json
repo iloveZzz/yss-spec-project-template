@@ -1,0 +1,108 @@
+{
+  "kind": "synthetic-baseline-observation",
+  "executed_at": "2026-09-11T03:18:25.364Z",
+  "root_revision": "99061076f951d9fdf2f54eaa24d1edf745aefa65",
+  "design_revision": "41fb25425928153791f7d92a85eb717f4eb2d546",
+  "command": "node .template-source/evidence/maintenance/2026-09-11-strategic-design-preparation/probe-ab-baseline.mjs",
+  "note": "Exit 0 means observation collection completed, not acceptance tests passed. Targets describe the agreed future behavior.",
+  "rows": [
+    {
+      "id": "A-01",
+      "target": "accept",
+      "observed": "accept",
+      "actual_exit_code": 0,
+      "stdout": "生命周期 checkpoint 验证通过",
+      "stderr": "",
+      "limit": "Checkpoint CLI at initial routing only; does not prove complete lifecycle acceptance."
+    },
+    {
+      "id": "A-02",
+      "target": "reject",
+      "observed": "accept",
+      "actual_exit_code": 0,
+      "stdout": "生命周期 checkpoint 验证通过",
+      "stderr": "",
+      "limit": "Checkpoint CLI at initial routing only; does not prove complete lifecycle acceptance."
+    },
+    {
+      "id": "A-03",
+      "target": "reject",
+      "observed": "accept",
+      "actual_exit_code": 0,
+      "stdout": "生命周期 checkpoint 验证通过",
+      "stderr": "",
+      "limit": "Checkpoint CLI at initial routing only; does not prove complete lifecycle acceptance."
+    },
+    {
+      "id": "B-01",
+      "target": "reject",
+      "observed": "accept",
+      "actual_exit_code": 0,
+      "stdout": "会签记录校验通过",
+      "stderr": "",
+      "limit": "Default current approval must not be confused with historical structural reading."
+    },
+    {
+      "id": "B-02",
+      "target": "reject-user-decision",
+      "observed": "reject",
+      "actual_exit_code": 1,
+      "stdout": "",
+      "stderr": "会签记录校验失败: Unknown option '--require-approved'. To specify a positional argument starting with a '-', place it at the end of the command after '--', as in '-- \"--require-approved\"",
+      "limit": "Current rejection due to unsupported option is not the intended semantic rejection."
+    },
+    {
+      "id": "B-03",
+      "target": "reject",
+      "observed": "accept",
+      "limit": "Single approval library seam only."
+    },
+    {
+      "id": "B-04",
+      "target": "accept",
+      "observed": "accept",
+      "limit": "User decision library seam; not checkpoint or offline package verification."
+    },
+    {
+      "id": "B-05",
+      "target": "reject",
+      "observed": "reject",
+      "error": "user-decision-response-required",
+      "limit": "User decision library seam; not checkpoint or offline package verification."
+    },
+    {
+      "id": "B-06",
+      "target": "reject",
+      "observed": "reject",
+      "error": "user-decision-responder-mismatch",
+      "limit": "User decision library seam; not checkpoint or offline package verification."
+    },
+    {
+      "id": "B-07",
+      "target": "reject",
+      "observed": "reject",
+      "error": "user-decision-stale",
+      "limit": "User decision library seam; not checkpoint or offline package verification."
+    },
+    {
+      "id": "B-08",
+      "target": "reject",
+      "observed": "reject",
+      "error": "user-decision-not-approved",
+      "limit": "User decision library seam; not checkpoint or offline package verification."
+    },
+    {
+      "id": "B-09",
+      "target": "reject",
+      "observed": "reject",
+      "error": "user-decision-subject-mismatch",
+      "limit": "User decision library seam; not checkpoint or offline package verification."
+    },
+    {
+      "id": "B-10",
+      "target": "accept",
+      "observed": "accept",
+      "limit": "User decision library seam; not checkpoint or offline package verification."
+    }
+  ]
+}

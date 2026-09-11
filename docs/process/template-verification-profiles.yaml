@@ -232,11 +232,11 @@ routing:
     groups: [dedicated-cli-core]
   - patterns: [".agents/skills/yss-technical-design/**", ".agents/skills/yss-mvc-design/**", ".agents/skills/yss-tactical-design/**", "scripts/lib/technical-design-boundary.mjs", "scripts/lib/strategic-handoff-design-targets.mjs"]
     groups: [tactical-design, implementation]
-  - patterns: ["scripts/*backend-delivery*", "scripts/*frontend-delivery*", "scripts/lib/*backend-delivery*", "scripts/lib/*frontend-delivery*", "scripts/fixtures/backend-delivery/**", "docs/process/frontend-backend-delivery.md", "docs/process/schemas/backend-delivery*", "docs/process/schemas/frontend-delivery*"]
+  - patterns: ["scripts/*backend-delivery*", "scripts/*frontend-delivery*", "scripts/*frontend-strategic-preflight*", "scripts/lib/*backend-delivery*", "scripts/lib/*frontend-delivery*", "scripts/fixtures/backend-delivery/**", "docs/process/frontend-backend-delivery.md", "docs/process/schemas/backend-delivery*", "docs/process/schemas/frontend-delivery*", "docs/process/schemas/frontend-strategic-preflight*"]
     groups: [frontend-delivery]
   - patterns: ["scripts/*user-decision*", "scripts/lib/user-decision*", "scripts/fixtures/user-decision/**", "docs/process/schemas/user-decision*", "docs/process/templates/user-decision*", "scripts/lib/approval-record.mjs", "scripts/verify-approval-record"]
     groups: [lifecycle, collaboration]
-  - patterns: ["scripts/*strategic-handoff*", "scripts/lib/strategic-handoff*", "scripts/fixtures/strategic-handoff/**", "docs/process/strategic-handoff-package.md", "docs/process/schemas/strategic-handoff-*"]
+  - patterns: ["scripts/*strategic-handoff*", "scripts/*strategic-feedback*", "scripts/lib/strategic-handoff*", "scripts/lib/strategic-feedback*", "scripts/fixtures/strategic-handoff/**", ".template-source/distribution/strategic-handoff-tools.lock.json", "docs/process/strategic-handoff-package.md", "docs/process/schemas/strategic-handoff-*", "docs/process/schemas/strategic-design-handoff-*", "docs/process/schemas/strategic-*feedback*"]
     groups: [strategic-handoff-package]
   - patterns: [DESIGN.md, "docs/design/**", ".template-source/tooling/node/scripts/design-md.mjs"]
     groups: [design-system]
@@ -285,6 +285,7 @@ groups:
         parallel_unless_env: [YSS_DEDICATED_INSTANCE_ROOT, YSS_DELIVERY_TEST_BACKEND_ROOT, YSS_DELIVERY_TEST_FRONTEND_ROOT]
   strategic-handoff-package:
     commands:
+      - { run: "scripts/verify-strategic-handoff-tools-lock", when: template-source }
       - { run: "node --check scripts/lib/strategic-handoff.mjs" }
       - { run: "scripts/verify-strategic-handoff-package-scenarios" }
   design-system:
@@ -381,6 +382,7 @@ groups:
       - { run: "scripts/verify-governance-release" }
   candidate-integrity:
     commands:
+      - { run: "scripts/verify-strategic-handoff-tools-lock --require-committed", when: template-source }
       - { run: "node scripts/verify-template-verification-scenarios" }
       - { run: "node scripts/verify-template-cache-scenarios" }
       - { run: "node --test .template-source/scripts/tests/template-ci.test.mjs", when: template-source }
