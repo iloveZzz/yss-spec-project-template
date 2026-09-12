@@ -6,6 +6,19 @@ description: >-
   单一可执行注册表。实现合同编译器与生命周期编排器只消费通过本表校验的
   canonical 技能；skills-lock.json 继续独立持有来源、hash 与投影完整性。
 canonical_content_root: .agents/skills
+existing_project_profiles:
+  existing-domain-driven-maven:
+    source_kind: existing-registration
+    architecture_family: domain-driven
+    build_system: maven
+    maturity: supported
+    required_roles: [domain, application, infrastructure, web]
+  existing-layered-mvc-maven:
+    source_kind: existing-registration
+    architecture_family: layered-mvc
+    build_system: maven
+    maturity: supported
+    required_roles: [application, persistence, web]
 architecture_profiles:
   target-domain-model:
     architecture_family: domain-driven

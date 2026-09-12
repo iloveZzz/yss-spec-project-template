@@ -1,0 +1,124 @@
+{
+  "profile": "design",
+  "source_state": "working-tree",
+  "snapshot_hash": "4a745584a55eb7575f53a9ede979de2449922682c8bada59258574b70c953a48",
+  "snapshot_file_sha256": "f972ea6bdcf40dd87b409e417e3d02bf897962ac5375d202e2dbbed872b83e1f",
+  "target": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-final-delivery-cli-fresh-3nh2r2ow/design",
+  "runs": [
+    {
+      "name": "cli-design-sync",
+      "command": [
+        "node",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design/bin/create-yss-harness-design.js",
+        "sync",
+        "--target-dir",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-final-delivery-cli-fresh-3nh2r2ow/design",
+        "--apply"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+      "exit_code": 0,
+      "duration_seconds": 13.83,
+      "log": "cli-design-sync.log"
+    },
+    {
+      "name": "cli-design-ui-collector",
+      "command": [
+        "node",
+        "--test",
+        "--test-name-pattern=既有 UI 全目录",
+        "scripts/verify-existing-ui-baseline-scenarios"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-final-delivery-cli-fresh-3nh2r2ow/design-sync10-protocol-harness",
+      "exit_code": 0,
+      "duration_seconds": 2.44,
+      "log": "cli-design-ui-collector.log"
+    }
+  ],
+  "bytes": [
+    {
+      "ref": "scripts/preflight-delivery",
+      "sha256": "a212fea3a1bfd758d1e18b1e5a76bb48e4f954d9b07843d8761bbbcccbd87bbb",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/delivery-preflight.mjs",
+      "sha256": "f32df3890f7979158c21962c59cff3388af5a5b940f50f3e92ae1c1447f98e6f",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/approved-execution-context.mjs",
+      "sha256": "306c4053439698c49462762b6cbfcaa861cb60455520a8283055c14f439503e5",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/json-schema.mjs",
+      "sha256": "007e39300478da6f0e359d822642f7a6aaf2466ee5781bd81924cf5897eebc72",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/strategic-handoff.mjs",
+      "sha256": "adfed7e9c8b746e0f3db4b1b85f00159f85cad5c349852b14cf22259182fdbb3",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/existing-ui-baseline.mjs",
+      "sha256": "fa2708f8afb1e3462e102a1cc13751d2bb5f5f27ca98b25c10f50a17f2e8e419",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/backend-delivery.mjs",
+      "sha256": "ed69363cdf1dc2a1e7e209ea0c5bf90364f6482e4233c1a84c00a0c9994cd8b9",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/frontend-delivery.mjs",
+      "sha256": "0bd5406f847784dc356aafde44c1f0a00a71d7beeeb10ccddbe2f0e99a1ce0e1",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "skills-lock.json",
+      "sha256": "48c4f5d212753461110874c0f9273df2a6201258e297d4e78d840ebb47004ff8",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    }
+  ],
+  "slice_structure": {
+    "status": "not-applicable",
+    "reason": "This profile does not own raw backend Slice approval; main and backend execute all 8 approval tests."
+  }
+}

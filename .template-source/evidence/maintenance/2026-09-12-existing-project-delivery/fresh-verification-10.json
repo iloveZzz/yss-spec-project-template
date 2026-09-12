@@ -1,0 +1,12 @@
+{
+  "profile": "fast",
+  "expanded_to": "release",
+  "exit_code": 1,
+  "completed_checks": 79,
+  "failed_checks": [
+    "[失败] scripts/verify-strategic-handoff-tools-lock --require-committed (48ms, exit=1)"
+  ],
+  "claim": "All executed checks except committed release provenance passed. This does not establish real S0-S6/O1 or release readiness.",
+  "uncommitted_source_is_authorized_local_delivery": true,
+  "nested_expected_failure_logs": "Six Maven failure-path logs appear in successful scaffold scenario output; they are not scheduler failures."
+}

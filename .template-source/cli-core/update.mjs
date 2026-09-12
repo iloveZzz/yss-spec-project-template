@@ -18,7 +18,7 @@ export function update(packageRoot, pkg, opts) {
   packageRoot = path.resolve(packageRoot);
   const packageName = pkg.name;
   ensure(
-    /^create-yss-harness-(backend|frontend)$/.test(packageName),
+    /^create-yss-harness-(design|backend|frontend)$/.test(packageName),
     "未知升级包名",
   );
   const latestVersion = npm(["view", packageName, "version"]).replace(

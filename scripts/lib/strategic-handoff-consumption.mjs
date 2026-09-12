@@ -1,3 +1,4 @@
+import { uiBaselineSourceKeys, uiBaselineKind } from './ui-baseline.mjs';
 import { existsSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -12,7 +13,7 @@ const strategyBasis=value=>({
   ...without(value,['domain_version','approval','rule_catalog','scenarios','invariants']),
   invariants:(value.invariants||[]).map(item=>without(item,['statement'])),
 });
-export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consumer='tactical'}={}) {
+export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consumer='tactical',readOnly=false}={}) {
   project(root);
   ensure(['tactical','frontend'].includes(consumer),'未知战略消费者');
   if (data.schema_version === 2 && consumer === 'tactical') ensure(['domain-driven','layered-mvc'].includes(data.architecture?.family), '未知技术设计架构');
@@ -74,15 +75,15 @@ export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consum
         }else {ensure(['pending','conflict'].includes(row.disposition),`非法承接状态: ${id}`);mark(id,row.disposition,row);}
       }
       for(const[id,row]of rows)if(!known.has(id))mark(id,'removed-or-unknown-source',row);
-      for(const key of ['spec_ref','prototype_ref','visual_baseline_ref','business_ticket_set_ref'])if(original.handoff.source[key].digest!==current.handoff.source[key].digest){all=true;issues.push({source_id:key,reason:'upstream-asset-stale'});}
+      for(const key of new Set(['spec_ref','business_ticket_set_ref',...uiBaselineSourceKeys(original.handoff),...uiBaselineSourceKeys(current.handoff)]))if(original.handoff.source[key]?.digest!==current.handoff.source[key]?.digest){all=true;issues.push({source_id:key,reason:'upstream-asset-stale'});}
       // Rule changes can be scoped to declared dependencies. Boundary/decision or
       // runnable-prototype changes need the tactical contract rebound as a whole.
       const stageKeys=['package_version','approval','domain_strategy_ref'];
-      if(digest(strategyBasis(original.strategy))!==digest(strategyBasis(current.strategy)) || digest(without(original.stage,stageKeys))!==digest(without(current.stage,stageKeys)) || digest(original.config.prototype)!==digest(current.config.prototype)) {
+      if(digest(strategyBasis(original.strategy))!==digest(strategyBasis(current.strategy)) || digest(without(original.stage,stageKeys))!==digest(without(current.stage,stageKeys)) || uiBaselineKind(original.handoff)!==uiBaselineKind(current.handoff) || digest(original.config.prototype||null)!==digest(current.config.prototype||null)) {
         all=true;issues.push({source_id:'strategic-design-basis',reason:'upstream-design-stale'});
       }
       const blockedHere=all||(sliceRef?blocked.has(sliceRef):issues.length>0);
       return {result:blockedHere?'blocked':'verified',bundle_digest:current.manifest.bundle_digest,consumed_bundle_digest:receipt.bundle_digest,...(consumer==='frontend'?{frontend_acceptance_digest:digest(data)}:{tactical_digest:digest(data), ...(data.schema_version === 2 ? {technical_design_digest:digest(data)} : {})}),scope:sliceRef||`whole-${consumer}-design`,coverage_complete:[...known.keys()].every(id=>rows.has(id)),block_all:all,blocked_slice_refs:[...blocked].sort(),issues};
-    });
-  });
+    },{readOnly});
+  },{readOnly});
 }

@@ -4,6 +4,10 @@ Profile、模块闭包、生成器、成熟度和 Recipe 的权威映射见 `yss
 
 执行前比较工程基线、仓库登记、Manifest 与当前合同的 `architecture_identity`。缺失、digest 漂移、Profile 不匹配或越界写路径均停止；既有工程不能自动重选架构。新 Profile 的真实编译及首切片验证未通过前保持 `draft`，不能设置 `ready-for-agent`。
 
+## 既有工程适配
+
+`existing_project_profiles` 与下述生成器 Profile 独立维护。首版两个 Maven 适配器通过真实 Git/POM 三方核验、对应架构的成功/失败行为测试与 Maven test/package 后标记 supported；依据见 `.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/maven-adapters-04.json`。这是适配协议支持证据，不是实际产品批准、数据库兼容或真实跨仓 S0 结论。每个工程仍须自己的固定来源、架构边界审查和执行证据，详见 `docs/process/existing-backend-architecture.md`。生成器原有 draft 和首切片要求保持。
+
 ## MVC 分层
 
 - `layered-mvc-service` 的用例层为 `service`；`mvc-data-analysis-v1` 的用例层为 `core`。后者是薄应用层，不是合并 Domain 的容器。MVC 不加载 `yss-domain`，不生成 DDD Gateway。

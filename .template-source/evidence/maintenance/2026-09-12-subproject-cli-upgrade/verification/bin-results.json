@@ -1,0 +1,50 @@
+[
+  {
+    "family": "design",
+    "command": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-install-xprwu2kx/final-installed-design/node_modules/.bin/create-yss-harness-design",
+      "--version",
+      "--json"
+    ],
+    "exitCode": 0,
+    "stdout": {
+      "schemaVersion": 1,
+      "command": "version",
+      "status": "ok",
+      "packageName": "create-yss-harness-design",
+      "cliVersion": "0.6.0"
+    }
+  },
+  {
+    "family": "backend",
+    "command": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-install-xprwu2kx/final-installed-backend/node_modules/.bin/create-yss-harness-backend",
+      "--version",
+      "--json"
+    ],
+    "exitCode": 0,
+    "stdout": {
+      "schemaVersion": 1,
+      "command": "version",
+      "status": "ok",
+      "packageName": "create-yss-harness-backend",
+      "cliVersion": "0.3.0"
+    }
+  },
+  {
+    "family": "frontend",
+    "command": [
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-install-xprwu2kx/final-installed-frontend/node_modules/.bin/create-yss-harness-frontend",
+      "--version",
+      "--json"
+    ],
+    "exitCode": 0,
+    "stdout": {
+      "schemaVersion": 1,
+      "command": "version",
+      "status": "ok",
+      "packageName": "create-yss-harness-frontend",
+      "cliVersion": "0.2.0"
+    }
+  }
+]

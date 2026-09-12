@@ -1,0 +1,6 @@
+{
+  "root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-slice-structure-backend-0kdhwky2/backend",
+  "exit_code": 1,
+  "duration_seconds": 13.2,
+  "boundary": "synthetic copy of successful actual backend CLI init; only two runtime guard files and test patched; not final sync10 distribution"
+}

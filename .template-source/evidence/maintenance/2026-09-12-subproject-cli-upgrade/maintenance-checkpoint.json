@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "共享 CLI 生成语义、身份与所有权、恢复、跨三个家族分发合同发生变化；以维护者自检和本轮实际安装验收闭合。",
+  "triggers": [
+    "generation-semantics",
+    "cross-repo-contract",
+    "permission-boundary"
+  ],
+  "changed_assets": [
+    ".template-source/cli-core",
+    ".template-source/contracts/cli-family-identity-contract.md",
+    ".template-source/scripts/verify-cli-upgrade.mjs",
+    ".template-source/scripts/cli-boundaries.mjs",
+    "submodules/create-yss-strategic-design",
+    "submodules/create-yss-harness-backend",
+    "submodules/create-yss-harness-frontend",
+    "submodules/yss-harness-design-agent/README.md",
+    "submodules/yss-harness-design-agent/docs/user-guide/CLI使用说明.md",
+    "submodules/yss-harness-backend-agent/CONTEXT.md",
+    "submodules/yss-harness-backend-agent/README.md",
+    "submodules/yss-harness-backend-agent/docs/user-guide/CLI使用说明.md",
+    "submodules/yss-harness-frontend-agent/CONTEXT.md",
+    "submodules/yss-harness-frontend-agent/README.md",
+    "submodules/yss-harness-frontend-agent/docs/user-guide/CLI使用说明.md"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "self-check",
+      "command": ".template-source/evidence/maintenance/2026-09-12-subproject-cli-upgrade/REPORT.md",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "scripts/verify-template-fast --changed-file .template-source/cli-core/engine.mjs --changed-file .template-source/contracts/cli-family-identity-contract.md --changed-file .template-source/scripts/verify-cli-upgrade.mjs --changed-file .template-source/scripts/cli-boundaries.mjs; 三包 pnpm test / pnpm verify-bundle / npm pack / 离线安装及安装后契约，逐命令退出码见 verification/*-results.json",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "none",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

@@ -9,6 +9,9 @@ import {
   gitlinks,
   recoveryIdentity,
 } from "./identity.mjs";
+import { preserved, userOwned } from "./family.mjs";
+import { mergeGitignore } from "./gitignore.mjs";
+import { prepareGenerated, verifyInstance } from "./verification.mjs";
 import { PROFILE, render } from "./bundle.mjs";
 import { inspectState, applyTransaction, recover } from "./transaction.mjs";
 export function execute(bundle, target, opts) {
@@ -22,7 +25,7 @@ export function execute(bundle, target, opts) {
         "IDENTITY",
       );
     ensure(
-      opts.apply && !opts.dryRun,
+      opts.apply && !opts.dryRun && !opts.plan && opts.command !== "diff",
       "发现中断事务；使用 --apply 恢复后重试",
       "INTERRUPTED",
     );
@@ -38,6 +41,7 @@ export function execute(bundle, target, opts) {
     );
   else ensure(stat(target)?.isDirectory(), "attach/sync 目标目录不存在");
   const meta = identity(target, bundle, opts.command);
+  const canForce = f.side !== "design" && opts.force && opts.apply;
   const variables = meta?.variables || {
     projectName: opts.projectName || path.basename(target),
     businessDomain: opts.businessDomain,
@@ -53,7 +57,7 @@ export function execute(bundle, target, opts) {
     conflicts = [],
     observed = new Map();
   for (const ref of [
-    ...new Set([...files.keys(), ...Object.keys(meta?.managedFiles || {})]),
+    ...new Set([...files.keys(), ...Object.keys(meta?.managedFiles || {}), ...Object.keys(bundle.retiredFiles || {})]),
   ].sort()) {
     ensure(
       !protectedLinks.some((x) => ref === x || ref.startsWith(x + "/")),
@@ -61,30 +65,37 @@ export function execute(bundle, target, opts) {
       "PROTECTED",
     );
     guardNestedRepository(target, ref);
-    const before = descriptor(target, ref),
-      next = files.get(ref),
-      after = next?.baseline || null,
-      baseline = meta?.managedFiles[ref]?.baseline || null;
-    let action;
+    const before = descriptor(target, ref);
+    let next = files.get(ref);
+    if (ref === '.gitignore' && next) {
+      const bytes = mergeGitignore(before ? fs.readFileSync(safe(target, ref)) : null, next.bytes, f);
+      next = {bytes, baseline:{type:'file',digest:hash(bytes),mode:before?.mode || 0o644}};
+    }
+    const after = next?.baseline || null, record = meta?.managedFiles[ref], retiredBaseline = bundle.retiredFiles?.[ref], transitionBaseline = meta ? bundle.transitionBaselines?.[ref] : null, baseline = record?.baseline || (transitionBaseline ? {type:'file',digest:transitionBaseline.digest,mode:transitionBaseline.mode} : null) || (retiredBaseline ? {type:'file',digest:retiredBaseline.digest,mode:retiredBaseline.mode} : null);
+    let action, reason;
     observed.set(ref, before);
-    if (same(before, after)) action = "unchanged";
-    else if (opts.command !== "init" && ref === "CONTEXT.md" && before) action = "preserve";
-    else if (same(before, baseline))
-      action = after ? (before ? "update" : "add") : "delete";
-    else if (same(after, baseline)) action = "preserve";
-    else action = "conflict";
-    if (action === "conflict") conflicts.push(ref);
-    if (next)
-      managedFiles[ref] = {
-        baseline: after,
-        lastApplied: action === "preserve" ? before : after,
-      };
-    if (
-      ["update", "add", "delete"].includes(action) ||
-      (action === "conflict" && opts.force && opts.apply)
-    )
-      operations.push({ path: ref, before, after, bytes: next?.bytes });
-    changes.push({ path: ref, action });
+    if (userOwned(ref, f)) {
+      action = before ? 'preserve' : (next && opts.command !== 'sync' && opts.command !== 'diff' ? 'add' : 'preserve');
+      reason = 'user-owned';
+    } else if (preserved(ref) && before) { action='preserve';reason='project-owned-content'; }
+    else if (!next) {
+      const retiredRecord = record || (retiredBaseline ? {baseline,lastApplied:null,ownership:'managed',retired:true} : null);
+      const eligible = retiredRecord && !retiredRecord.legacyUnproven && ref !== '.gitignore' && same(before, baseline) && before;
+      action = eligible && opts.prune ? 'delete' : 'preserve';
+      reason = eligible ? (opts.prune ? 'prune' : 'prunable') : 'retained-removed';
+      if (before && action !== 'delete' && retiredRecord) managedFiles[ref] = {...retiredRecord,retired:true};
+    } else if (same(before, after)) action='unchanged';
+    else if (ref === '.gitignore' || ref === 'skills-lock.json') action=before?'update':'add';
+    else if (!before || same(before, baseline) || (record?.legacyUnproven && before?.digest === baseline?.digest)) action=before?'update':'add';
+    else if (!record?.legacyUnproven && same(after, baseline)) action='preserve';
+    else action='conflict';
+    if (action === 'conflict') conflicts.push(ref);
+    if (next && !userOwned(ref,f)) managedFiles[ref] = {
+      baseline:after,lastApplied:action==='preserve'?before:after,ownership:ref==='skills-lock.json'?'generated':'managed',
+      ...(record?.legacyUnproven && action==='preserve' ? {legacyUnproven:true} : {}),
+    };
+    if (['update','add','delete'].includes(action) || (action==='conflict' && canForce)) operations.push({path:ref,before,after,bytes:next?.bytes});
+    changes.push({path:ref,action,...(reason?{reason}:{})});
   }
   const result = {
     schemaVersion: 1,
@@ -100,14 +111,20 @@ export function execute(bundle, target, opts) {
     conflicts,
     backupPath: null,
   };
-  if (conflicts.length && !(opts.apply && opts.force))
+  if (conflicts.length && !canForce)
     throw Object.assign(
       new Error(
         `治理文件冲突，整次暂停；确认备份覆盖后使用 --apply --force: ${conflicts.join(", ")}`,
       ),
       { code: "CONFLICT", result },
     );
-  if (opts.dryRun || (opts.command !== "init" && !opts.apply)) return result;
+  result.summary = Object.fromEntries(['add','update','delete','preserve','conflict','unchanged'].map(action=>[action,changes.filter(c=>c.action===action).length]));
+  result.prunable = changes.filter(c=>['prunable','prune'].includes(c.reason)).map(c=>c.path);
+  result.retainedRemoved = changes.filter(c=>c.reason==='retained-removed').map(c=>c.path);
+  result.pruned = [];
+  result.migrationRequired = Boolean(meta?.legacy);
+  result.legacyRetainedFiles = meta?.legacyRetainedFiles || [];
+  if (opts.dryRun || opts.plan || opts.command === 'diff' || (opts.command !== "init" && !opts.apply)) return result;
   const watched = [...METADATA, "yss-project.yaml", PROFILE, ".gitmodules"];
   const beforeIdentity = new Map(
     watched.map((ref) => [ref, descriptor(target, ref)]),
@@ -129,10 +146,14 @@ export function execute(bundle, target, opts) {
     manifestHash: snapshot.manifestHash,
     variables,
     managedFiles,
+    ...(meta?.legacyRetainedFiles?.length ? {legacyRetainedFiles:meta.legacyRetainedFiles} : {}),
     baselineDigest: hash(JSON.stringify(managedFiles)),
     initializedAt: meta?.initializedAt || new Date().toISOString(),
     lastSyncedAt: new Date().toISOString(),
   };
+  prepareGenerated(bundle, target, operations, metadata, observed);
+  if (!operations.length && meta && !meta.legacy && meta.snapshotHash === snapshot.snapshotHash && meta.coreDigest === core.digest && meta.cliVersion === pkg.version) return {...result,status:'applied',message:'受管资产已是当前版本，无需写入'};
+  metadata.baselineDigest = hash(JSON.stringify(metadata.managedFiles));
   const bytes = Buffer.from(json(metadata));
   operations.push({
     path: f.metadataFile,
@@ -180,6 +201,8 @@ export function execute(bundle, target, opts) {
       validate,
       transactionId,
       opts.gitInit,
+      () => verifyInstance(bundle, target),
     ),
+    pruned: changes.filter(c=>c.action==='delete').map(c=>c.path),
   };
 }

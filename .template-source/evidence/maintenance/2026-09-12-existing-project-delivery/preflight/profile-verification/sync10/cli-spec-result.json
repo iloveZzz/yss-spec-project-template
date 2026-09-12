@@ -1,0 +1,131 @@
+{
+  "profile": "spec",
+  "source_state": "working-tree",
+  "snapshot_hash": "2c2158af2d661eb160eee4672ef027c8550402528273b61fec82f232e9539b8b",
+  "snapshot_file_sha256": "c813a9aa95a23b21a9d4e12cfa8b2361b40408a4ae3bfd50705564b1568be190",
+  "target": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-final-delivery-cli-fresh-3nh2r2ow/spec",
+  "runs": [
+    {
+      "name": "cli-spec-sync",
+      "command": [
+        "node",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec/bin/create-yss-spec.js",
+        "sync",
+        "--target-dir",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-final-delivery-cli-fresh-3nh2r2ow/spec"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+      "exit_code": 0,
+      "duration_seconds": 11.56,
+      "log": "cli-spec-sync.log"
+    },
+    {
+      "name": "cli-spec-slice-structure",
+      "command": [
+        "node",
+        "--test",
+        "scripts/fixtures/delivery-preflight/approved-execution.test.mjs"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-final-delivery-cli-fresh-3nh2r2ow/spec-sync10-protocol-harness",
+      "exit_code": 0,
+      "duration_seconds": 21.04,
+      "log": "cli-spec-slice-structure.log"
+    },
+    {
+      "name": "cli-spec-ui-collector",
+      "command": [
+        "node",
+        "--test",
+        "--test-name-pattern=既有 UI 全目录",
+        "scripts/verify-existing-ui-baseline-scenarios"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-final-delivery-cli-fresh-3nh2r2ow/spec-sync10-protocol-harness",
+      "exit_code": 0,
+      "duration_seconds": 2.22,
+      "log": "cli-spec-ui-collector.log"
+    }
+  ],
+  "bytes": [
+    {
+      "ref": "scripts/preflight-delivery",
+      "sha256": "a212fea3a1bfd758d1e18b1e5a76bb48e4f954d9b07843d8761bbbcccbd87bbb",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/delivery-preflight.mjs",
+      "sha256": "f32df3890f7979158c21962c59cff3388af5a5b940f50f3e92ae1c1447f98e6f",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/approved-execution-context.mjs",
+      "sha256": "306c4053439698c49462762b6cbfcaa861cb60455520a8283055c14f439503e5",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/json-schema.mjs",
+      "sha256": "007e39300478da6f0e359d822642f7a6aaf2466ee5781bd81924cf5897eebc72",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/strategic-handoff.mjs",
+      "sha256": "adfed7e9c8b746e0f3db4b1b85f00159f85cad5c349852b14cf22259182fdbb3",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/existing-ui-baseline.mjs",
+      "sha256": "fa2708f8afb1e3462e102a1cc13751d2bb5f5f27ca98b25c10f50a17f2e8e419",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/backend-delivery.mjs",
+      "sha256": "ed69363cdf1dc2a1e7e209ea0c5bf90364f6482e4233c1a84c00a0c9994cd8b9",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/frontend-delivery.mjs",
+      "sha256": "0bd5406f847784dc356aafde44c1f0a00a71d7beeeb10ccddbe2f0e99a1ce0e1",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "skills-lock.json",
+      "sha256": "893b35d599279e842aa298273d4b28e5540428f5e309eed6f2b5a92b0db400fd",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    }
+  ]
+}

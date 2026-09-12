@@ -96,281 +96,6 @@
       ],
       "retired": []
     },
-    "dev": {
-      "target": "submodules/yss-harness-dev-agent",
-      "exact": [
-        {
-          "id": "alibaba-java-code-style"
-        },
-        {
-          "id": "archify"
-        },
-        {
-          "id": "codebase-design"
-        },
-        {
-          "id": "cross-repo-implementation-routing"
-        },
-        {
-          "id": "diagnosing-bugs"
-        },
-        {
-          "id": "file-export-download"
-        },
-        {
-          "id": "formily-foundation"
-        },
-        {
-          "id": "formily-linkage-effects"
-        },
-        {
-          "id": "formily-mode-slot-detail"
-        },
-        {
-          "id": "formily-step-flow"
-        },
-        {
-          "id": "grill-me"
-        },
-        {
-          "id": "grilling"
-        },
-        {
-          "id": "handoff"
-        },
-        {
-          "id": "i-have-adhd"
-        },
-        {
-          "id": "implement"
-        },
-        {
-          "id": "implementation-repo-onboarding"
-        },
-        {
-          "id": "improve-codebase-architecture"
-        },
-        {
-          "id": "java-backend-commit"
-        },
-        {
-          "id": "llm-wiki"
-        },
-        {
-          "id": "lombok"
-        },
-        {
-          "id": "maintaining-skills"
-        },
-        {
-          "id": "mapstruct"
-        },
-        {
-          "id": "page-form-module"
-        },
-        {
-          "id": "page-list-module"
-        },
-        {
-          "id": "page-skeleton"
-        },
-        {
-          "id": "prototype"
-        },
-        {
-          "id": "resolving-merge-conflicts"
-        },
-        {
-          "id": "tdd"
-        },
-        {
-          "id": "theme-token-usage"
-        },
-        {
-          "id": "to-questionnaire"
-        },
-        {
-          "id": "to-spec"
-        },
-        {
-          "id": "to-tickets"
-        },
-        {
-          "id": "using-git-worktrees"
-        },
-        {
-          "id": "vue3-best-practices"
-        },
-        {
-          "id": "writing-for-agents"
-        },
-        {
-          "id": "yedit-table-usage"
-        },
-        {
-          "id": "yss-application"
-        },
-        {
-          "id": "yss-cache"
-        },
-        {
-          "id": "yss-domain"
-        },
-        {
-          "id": "yss-exception"
-        },
-        {
-          "id": "yss-hook"
-        },
-        {
-          "id": "yss-mvc-design"
-        },
-        {
-          "id": "yss-resilience4j"
-        },
-        {
-          "id": "yss-security-algorithm"
-        },
-        {
-          "id": "yss-ui-business-page-generation"
-        },
-        {
-          "id": "yss-up-springboot3"
-        },
-        {
-          "id": "yss-userinfo"
-        },
-        {
-          "id": "yss-validation"
-        },
-        {
-          "id": "ytable-usage"
-        },
-        {
-          "id": "ytree-usage"
-        },
-        {
-          "id": "yss-research"
-        }
-      ],
-      "adapted": [
-        {
-          "id": "yss-technical-design",
-          "strategy": "replace",
-          "files": [
-            "SKILL.md"
-          ],
-          "replacements": [
-            {
-              "file": "SKILL.md",
-              "from": "由 `yss-product-lifecycle` 调度，负责 `work-unit.technical-analysis`",
-              "to": "由 `harness-orchestrator` 调度，负责 `work-unit.technical-design`"
-            }
-          ]
-        },
-        {
-          "id": "yss-tactical-design",
-          "strategy": "replace",
-          "files": [
-            "SKILL.md"
-          ],
-          "replacements": [
-            {
-              "file": "SKILL.md",
-              "from": "批准由 `yss-product-lifecycle` 维护",
-              "to": "批准由 `harness-orchestrator` 维护"
-            }
-          ]
-        },
-        {
-          "id": "code-review",
-          "strategy": "patch",
-          "patch": ".template-source/profile-skill-patches/dev/code-review.patch",
-          "source_tree_sha256": "aa58b3ee8b6dff36d49265b6eadfafc3f35fd9609efb4591a23502a9a53ffcf1"
-        },
-        {
-          "id": "yss-implementation-contract-compiler",
-          "strategy": "patch",
-          "patch": ".template-source/profile-skill-patches/dev/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "b09405b39b45ba81fa3447cece52e8ef7a1f7cb3e94c9678c3a23787142ce650"
-        },
-        {
-          "id": "yss-openapi-governance",
-          "strategy": "patch",
-          "patch": ".template-source/profile-skill-patches/dev/yss-openapi-governance.patch",
-          "source_tree_sha256": "20af32a51ccac11dc2d5d07c0dfff7486ceab20d572bd95b7916b43cffc333a4"
-        },
-        {
-          "id": "yss-prototype-stage",
-          "strategy": "patch",
-          "patch": ".template-source/profile-skill-patches/dev/yss-prototype-stage.patch",
-          "source_tree_sha256": "695cf3430197ceaddedf45cdd8b1002cac52bd3ad7182a393f4e8885db0745be"
-        },
-        {
-          "id": "frontend-commit",
-          "strategy": "patch",
-          "patch": ".template-source/profile-skill-patches/dev/frontend-commit.patch",
-          "source_tree_sha256": "0852100ceade3219ab86e7f0b8ea740c958c5ed7e631962c59d2f05bd6c1122b"
-        }
-      ],
-      "assets": [
-        {
-          "source": "docs/process/document-writing.md"
-        },
-        {
-          "source": "docs/templates/examples/lifecycle-writing-examples.md"
-        }
-      ],
-      "upstream": [],
-      "local_only": [
-        "architecture-agent",
-        "backend-agent",
-        "frontend-agent",
-        "harness-orchestrator",
-        "test-agent"
-      ],
-      "excluded": [
-        "competitive-intelligence",
-        "component-selection-imports",
-        "domain-modeling",
-        "grill-with-docs",
-        "prototype-review",
-        "setup-matt-pocock-skills",
-        "triage",
-        "wait-what",
-        "wayfinder",
-        "yss-antd-design",
-        "yss-api-integration",
-        "yss-audit-log",
-        "yss-components",
-        "yss-ddd-scaffold-generator",
-        "yss-design-system",
-        "yss-distributed-id",
-        "yss-dto",
-        "yss-excel-mvc",
-        "yss-formily",
-        "yss-formily-schema-generator",
-        "yss-frontend-scaffold-generator",
-        "yss-layered-mvc-scaffold-generator",
-        "yss-mvc-data-analysis-project-initializer",
-        "yss-mybatis",
-        "yss-openapi-draft-review",
-        "yss-product-lifecycle",
-        "yss-repository",
-        "yss-skill-source-index-refresh",
-        "yss-stage-decision",
-        "yss-strategic-design",
-        "yss-ui",
-        "yss-use-table-height",
-        "yss-use-tree-height",
-        "yss-web-controller"
-      ],
-      "retired": [
-        "research",
-        "yss-microapp-commit",
-        "yss-page-module-development"
-      ]
-    },
     "backend": {
       "target": "submodules/yss-harness-backend-agent",
       "exact": [
@@ -477,6 +202,9 @@
           "id": "yss-validation"
         },
         {
+          "id": "yss-web-controller"
+        },
+        {
           "id": "yss-research"
         }
       ],
@@ -519,7 +247,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "b09405b39b45ba81fa3447cece52e8ef7a1f7cb3e94c9678c3a23787142ce650"
+          "source_tree_sha256": "848e9618727fb41a7a31f088237b558e41d2f0e2e8e5d00a2c19bbefc8ecd63b"
         },
         {
           "id": "yss-openapi-governance",
@@ -534,6 +262,39 @@
         },
         {
           "source": "docs/templates/examples/lifecycle-writing-examples.md"
+        },
+        {
+          "source": ".agents/skills/yss-technical-design/references/technical-design.schema.json"
+        },
+        {
+          "source": ".agents/skills/yss-technical-design/references/technical-design-contract.md"
+        },
+        {
+          "source": ".agents/skills/yss-technical-design/references/technical-design-common.schema.json"
+        },
+        {
+          "source": ".agents/skills/yss-technical-design/references/engineering-design.schema.json"
+        },
+        {
+          "source": ".agents/skills/yss-technical-design/tests/run-scenarios.mjs"
+        },
+        {
+          "source": ".agents/skills/yss-technical-design/tests/fixtures.mjs"
+        },
+        {
+          "source": ".agents/skills/yss-technical-design/tests/engineering-scenarios.mjs"
+        },
+        {
+          "source": ".agents/skills/yss-technical-design/agents/openai.yaml"
+        },
+        {
+          "source": ".agents/skills/yss-technical-design/scripts/validate-technical-design.mjs"
+        },
+        {
+          "source": ".agents/skills/yss-technical-design/scripts/engineering-design.mjs"
+        },
+        {
+          "source": ".agents/skills/yss-technical-design/scripts/generate-schema.mjs"
         }
       ],
       "upstream": [],
@@ -566,8 +327,7 @@
         "yss-repository",
         "yss-skill-source-index-refresh",
         "yss-stage-decision",
-        "yss-ui",
-        "yss-web-controller"
+        "yss-ui"
       ],
       "retired": [
         "research"
@@ -699,7 +459,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "b09405b39b45ba81fa3447cece52e8ef7a1f7cb3e94c9678c3a23787142ce650"
+          "source_tree_sha256": "848e9618727fb41a7a31f088237b558e41d2f0e2e8e5d00a2c19bbefc8ecd63b"
         },
         {
           "id": "yss-openapi-governance",
@@ -711,7 +471,7 @@
           "id": "yss-prototype-stage",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-prototype-stage.patch",
-          "source_tree_sha256": "695cf3430197ceaddedf45cdd8b1002cac52bd3ad7182a393f4e8885db0745be"
+          "source_tree_sha256": "d3384ca29f44b836d5b922981b5c9098cc72580ddbf01e9e3c0aabcd607b40c1"
         },
         {
           "id": "frontend-commit",

@@ -157,6 +157,7 @@ export function applyTransaction(
   validate,
   id = randomUUID(),
   gitInit = false,
+  verify = () => {},
 ) {
   targetPath(target);
   const initial = stat(target);
@@ -290,6 +291,7 @@ export function applyTransaction(
         `应用后校验失败: ${op.path}`,
         "VERIFY",
       );
+    verify();
     if (gitInit) {
       const work = safe(target, `${base}/git-staging`);
       fs.mkdirSync(work);
@@ -403,7 +405,30 @@ function restore(target, base, journal, validate = () => {}) {
   durable(target, `${base}/journal.json`, json(journal));
   return failed;
 }
-export function recover(target, family, state, validateIdentity) {
+function checkedRecoveryLock(target) {
+  const lock = safe(target, `${STATE}/lock.json`);
+  if (stat(lock)) {
+    const holder = readJson(target, `${STATE}/lock.json`);
+    ensure(
+      holder.host === os.hostname() &&
+        Number.isInteger(holder.pid) &&
+        holder.pid > 0,
+      "无法判断事务持有者，保留恢复清单",
+      "LOCKED",
+    );
+    let alive = true;
+    try {
+      process.kill(holder.pid, 0);
+    } catch (e) {
+      if (e.code === "ESRCH") alive = false;
+      else throw e;
+    }
+    ensure(!alive, "另一个 CLI 正在运行", "LOCKED");
+
+  }
+  return lock;
+}
+export function recoveryPreview(target, family, state, validateIdentity = () => {}) {
   // All recovery inputs are checked before touching even the stale lock.
   validateIdentity();
   for (const { base, journal } of state.pending) {
@@ -436,26 +461,13 @@ export function recover(target, family, state, validateIdentity) {
       guardRecoveryPath(target, dir + "/__recovery_check__");
     }
   }
-  const lock = safe(target, `${STATE}/lock.json`);
-  if (stat(lock)) {
-    const holder = readJson(target, `${STATE}/lock.json`);
-    ensure(
-      holder.host === os.hostname() &&
-        Number.isInteger(holder.pid) &&
-        holder.pid > 0,
-      "无法判断事务持有者，保留恢复清单",
-      "LOCKED",
-    );
-    let alive = true;
-    try {
-      process.kill(holder.pid, 0);
-    } catch (e) {
-      if (e.code === "ESRCH") alive = false;
-      else throw e;
-    }
-    ensure(!alive, "另一个 CLI 正在运行", "LOCKED");
-    fs.unlinkSync(lock);
-  }
+  if (state.pending.length) checkedRecoveryLock(target);
+  return {schemaVersion:1,command:'recover',status:'preview',target,transactions:state.pending.map(({journal,base})=>({id:journal.id,phase:journal.phase,backupPath:path.join(target,base),paths:journal.operations.filter(op=>op.attempted).map(op=>op.path)}))};
+}
+export function recover(target, family, state, validateIdentity) {
+  recoveryPreview(target, family, state, validateIdentity);
+  const lock = checkedRecoveryLock(target);
+  if (stat(lock)) fs.unlinkSync(lock);
   const fd = fs.openSync(lock, "wx");
   fs.writeFileSync(fd, json({ pid: process.pid, host: os.hostname() }));
   fs.closeSync(fd);

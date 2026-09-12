@@ -1,21 +1,22 @@
 import { existsSync, lstatSync, readFileSync, mkdirSync, mkdtempSync, renameSync, rmSync, cpSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
-import { ensure, canonical, digest, hash, json, parse, read, safe, relative, files, write, project, schema, schemaBatch, archive, ROOT, sourceApprovalPolicy } from './strategic-handoff-io.mjs';
+import { ensure, canonical, digest, hash, json, parse, read, safe, relative, files, write, project, schema, schemaBatch, archive, ROOT, sourceApprovalPolicy, withSourceContextSnapshot } from './strategic-handoff-io.mjs';
 import { parseContextSource, parseContextContract, resolveContextTermRefs } from './context-contract.mjs';
 import { countersignRuleForGate } from './digital-human-roles.mjs';
 import { validateApprovalRecord } from './approval-record.mjs';
 import { treeDigest } from './strategic-handoff-io.mjs';
-import { validateVisualBaseline } from '../../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs';
+import { uiBaselineKind, uiBaselineRef, uiBaselineCaseIds, hasConsumerRoutes, validateHandoffUiBaseline } from './ui-baseline.mjs';
 import { extractTraceability, compareIndexes } from './strategic-handoff-rules.mjs';
 const MAX_BYTES = 512 * 1024 * 1024;
 const own = (a,b) => JSON.stringify(canonical(a)) === JSON.stringify(canonical(b));
 const nonempty = x => typeof x === 'string' && x.trim();
 const bytesDigest = (bytes, kind) => kind === 'canonical-json' ? digest(parse(bytes)) : kind === 'sha256-bytes' ? hash(bytes) : (() => { throw new TypeError(`未知摘要算法: ${kind}`); })();
-const HANDOFF_SCHEMAS = new Map([[3,'docs/process/schemas/strategic-design-handoff-v3.schema.json'],[4,'docs/process/schemas/strategic-design-handoff-v4.schema.json']]);
+const HANDOFF_SCHEMAS = new Map([[3,'docs/process/schemas/strategic-design-handoff-v3.schema.json'],[4,'docs/process/schemas/strategic-design-handoff-v4.schema.json'],[5,'docs/process/schemas/strategic-design-handoff-v5.schema.json']]);
 const SOURCE_SCHEMAS = new Map([
   [3,['docs/process/schemas/strategic-handoff-domain-strategy.schema.json','docs/process/schemas/strategic-handoff-stage-decision-package.schema.json']],
   [4,['docs/process/schemas/strategic-handoff-domain-strategy-v3.schema.json','docs/process/schemas/strategic-handoff-stage-decision-package-v3.schema.json']],
+  [5,['docs/process/schemas/strategic-handoff-domain-strategy-v3.schema.json','docs/process/schemas/strategic-handoff-stage-decision-package-v3.schema.json']],
 ]);
 const CAPABILITIES=['backend-technical-design','frontend-engineering-design','delivery-coordination'];
 
@@ -25,7 +26,7 @@ function versionSchema(version, schemas, label) {
 }
 
 function validateConsumerRoutes(handoff, stage) {
-  if(handoff.schema_version!==4)return;
+  if(!hasConsumerRoutes(handoff))return;
   const routes=new Map();
   for(const route of handoff.consumer_routes||[]){
     ensure(!routes.has(route.capability),`消费者能力重复: ${route.capability}`);
@@ -128,7 +129,8 @@ export async function inspectSource(root, handoffRef) {
   schema(handoff,versionSchema(handoff?.schema_version,HANDOFF_SCHEMAS,'Strategic Handoff'));
   ensure(handoff.status==='approved', '交接包尚未批准');
   const config=handoff.package_export;
-  schema(config,'docs/process/schemas/strategic-handoff-export.schema.json');
+  schema(config,handoff.schema_version===5?'docs/process/schemas/strategic-handoff-export-v2.schema.json':'docs/process/schemas/strategic-handoff-export.schema.json');
+  if(handoff.schema_version===5)ensure(config.ui_baseline_kind===uiBaselineKind(handoff),'交接与导出 UI 基线类型不一致');
   const source=parseContextSource(readFileSync(safe(root,'CONTEXT.md'),'utf8'));
   snapshot(handoff.source_context_snapshot,source); checkDelta(handoff,source);
   const strategy=read(safe(root,handoff.source.domain_strategy_ref.persisted_ref));
@@ -142,6 +144,7 @@ export async function inspectSource(root, handoffRef) {
   ensure(stage.domain_strategy_ref.domain_strategy_id===strategy.domain_strategy_id && stage.domain_strategy_ref.domain_version===strategy.domain_version && stage.domain_strategy_ref.status==='approved' && stage.domain_strategy_ref.persisted_ref===handoff.source.domain_strategy_ref.persisted_ref && stage.domain_strategy_ref.digest===digest(strategy), '阶段包引用的战略内容不一致');
   ensure(!(stage.unresolved_items || []).some(x=>x.type==='blocker'), '阶段包含 blocker');
   validateConsumerRoutes(handoff,stage);
+  if(uiBaselineKind(handoff)==='existing-ui-baseline')ensure(stage.impact_assessment?.ui===false,'existing-ui-baseline 不支持 UI 影响，返回产品设计');
   const indexes=extractTraceability(strategy);
   const sourceRoles=read(safe(root,'docs/agents/digital-human-roles.yaml'));
   const roles=sourceApprovalPolicy(sourceRoles);
@@ -152,22 +155,24 @@ export async function inspectSource(root, handoffRef) {
   const currentPlan = (roles.gate_policy.dual_digital_human || []).some(rule => rule.gate === 'gate.plan-approved');
   const terminalGate=currentPlan?'gate.plan-approved':countersignRuleForGate(roles.gate_policy,'gate.strategic-design-handoff-approved')?'gate.strategic-design-handoff-approved':'gate.stage-decision-package-approved';
   const expectedGates={domain_strategy_ref:currentPlan?'gate.plan-approved':'gate.domain-strategy-approved',stage_decision_package_ref:currentPlan?'gate.plan-approved':'gate.stage-decision-package-approved',spec_ref:'gate.spec-baseline-approved',prototype_ref:currentPlan?'gate.product-design-approved':'gate.user-confirmation',visual_baseline_ref:currentPlan?'gate.product-design-approved':'gate.user-confirmation',business_ticket_set_ref:terminalGate,handoff:terminalGate};
+  expectedGates.existing_ui_baseline_ref=expectedGates.prototype_ref;
   const bindings={...handoff.source,handoff:{id:handoff.handoff_id,version:handoff.handoff_version,persisted_ref:handoffRef,status:'approved'}};
   for(const [key,ref] of Object.entries(bindings)) {
     const approval=config.approvals[key];
     ensure(approval,`缺少资产批准绑定: ${key}`);
     ensure(approval.gate_id===expectedGates[key],`资产使用错误批准门禁: ${key}`);
-    const bytes=key==='visual_baseline_ref'?null:readFileSync(safe(root,ref.persisted_ref));
+    const baselineKey=['visual_baseline_ref','existing_ui_baseline_ref'].includes(key);
     let actual;
-    if(key==='visual_baseline_ref') {
-      const baseline=read(safe(root,`${ref.persisted_ref}/${ref.manifest_ref}`));
-      const result=await validateVisualBaseline(baseline,{bundleRoot:safe(root,ref.persisted_ref)});
-      ensure(!result.errors.length,`视觉基线无效: ${result.errors.join('; ')}`);
-      ensure(baseline.baseline_id===ref.baseline_id && baseline.version===ref.version && own([...ref.case_ids].sort(),baseline.cases.map(x=>x.case_id).sort()),'视觉基线身份不一致');
-      actual=baseline.bundle.digest;
-    } else actual=bytesDigest(bytes,approval.digest_kind);
+    if(baselineKey) {
+      const validated=await validateHandoffUiBaseline(root,handoff);actual=validated.digest;
+      if(key==='existing_ui_baseline_ref') {
+        ensure(approval.digest_kind==='sha256-bytes','既有 UI 批准必须绑定 manifest 原字节');
+        ensure(roles.user_decision_policy.gates.includes(expectedGates.existing_ui_baseline_ref),'既有 UI 承接必须使用产品设计真实用户决定策略');
+      }
+    } else actual=bytesDigest(readFileSync(safe(root,ref.persisted_ref)),approval.digest_kind);
     if(key!=='handoff')ensure(ref.digest===actual,`源资产摘要过期: ${key}`);
     const record=read(safe(root,approval.record_ref));
+    if(key==='existing_ui_baseline_ref')ensure(record.subject_ref===`${ref.persisted_ref}/${ref.manifest_ref}`,'既有 UI 用户决定必须以当前 manifest 为批准主体');
     await sourceApproval(record,roles,root);
     ensure(record.gate_id===approval.gate_id,`批准门禁不匹配: ${key}`);
     ensure((record.artifact_bindings || []).some(x=>x.id===(ref.id||ref.baseline_id) && x.version===ref.version && x.digest===actual),`批准记录未绑定当前资产: ${key}`);
@@ -180,19 +185,22 @@ export async function inspectSource(root, handoffRef) {
     ensure(scope.delivery_ref && own(read(safe(root,scope.delivery_ref)),delivery), '交付范围清单未覆盖当前交接内容或风险');
     ensure(scope.assets?.some(asset=>asset.ref===scope.delivery_ref && asset.digest===hash(readFileSync(safe(root,scope.delivery_ref)))), '交接内容快照缺少批准覆盖');
     for (const [key,ref] of Object.entries(handoff.source)) {
-      const file=key==='visual_baseline_ref'?`${ref.persisted_ref}/${ref.manifest_ref}`:ref.persisted_ref;
+      const file=['visual_baseline_ref','existing_ui_baseline_ref'].includes(key)?`${ref.persisted_ref}/${ref.manifest_ref}`:ref.persisted_ref;
       const decisionBoundaries=key==='business_ticket_set_ref'?['gate.spec-baseline-approved',terminalGate]:[expectedGates[key]];
       ensure(scope.assets?.some(asset=>asset.ref===file && asset.version===ref.version && decisionBoundaries.includes(asset.boundary) && asset.digest===hash(readFileSync(safe(root,file)))), `交付范围清单遗漏当前资产: ${key}`);
     }
   }
-  const receipt=previewFiles(root,config.prototype);
-  ensure(handoff.source.visual_baseline_ref.case_ids.every(id=>receipt.case_ids.includes(id)), '离线验证未覆盖视觉基线 case');
+  if(uiBaselineKind(handoff)==='prototype') {
+    const receipt=previewFiles(root,config.prototype);
+    ensure(uiBaselineCaseIds(handoff).every(id=>receipt.case_ids.includes(id)), '离线验证未覆盖视觉基线 case');
+  }
   return {handoff,config,indexes,strategy,stage};
 }
 
 function collect(root, handoffRef, handoff, config) {
-  const collected=new Map(), queue=[handoffRef,'CONTEXT.md','docs/agents/digital-human-roles.yaml',...Object.values(handoff.source).map(x=>x.persisted_ref),...Object.values(config.approvals).map(x=>x.record_ref),...handoff.evidence_and_version_digests,...config.additional_files,config.prototype.preview_root,config.prototype.verification_ref];
-  if(config.prototype.profile==='H2')queue.push(config.prototype.source_root,config.prototype.lock_ref);
+  const collected=new Map(), queue=[handoffRef,'CONTEXT.md','docs/agents/digital-human-roles.yaml',...Object.values(handoff.source).map(x=>x.persisted_ref),...Object.values(config.approvals).map(x=>x.record_ref),...handoff.evidence_and_version_digests,...config.additional_files];
+  if(config.prototype)queue.push(config.prototype.preview_root,config.prototype.verification_ref);
+  if(config.prototype?.profile==='H2')queue.push(config.prototype.source_root,config.prototype.lock_ref);
   const symbolic=config.reference_map || {};
   const enqueue=ref=> { if(symbolic[ref])queue.push(symbolic[ref]); else if(/^https?:\/\//i.test(ref))return; else if(ref.startsWith('evidence.'))throw new TypeError(`未解析 evidence ID: ${ref}`); else if(ref.includes('/') || /\.(?:md|yaml|json|html|png|txt|log)$/.test(ref))queue.push(ref); };
   function refs(value,key='') {
@@ -208,20 +216,23 @@ function collect(root, handoffRef, handoff, config) {
     ensure(stat.isFile() && stat.size<=MAX_BYTES,`源文件类型/大小无效: ${ref}`);
     const bytes=readFileSync(full); collected.set(ref,bytes); totalBytes += bytes.length;
     ensure(collected.size<=20000 && totalBytes<=MAX_BYTES,'交接包大小超限');
-    if(/\.(yaml|yml|json)$/.test(ref))refs(parse(bytes));
-    queue.push(...documentLinks(ref,bytes));
+    const localBaseline=uiBaselineKind(handoff)==='existing-ui-baseline'&&ref.startsWith(`${uiBaselineRef(handoff).persisted_ref}/`);
+    if(!localBaseline&&/\.(yaml|yml|json)$/.test(ref))refs(parse(bytes));
+    // The entire existing UI observation directory was validated as a byte-bound file set.
+    // Its copied source documentation is evidence, not governance dependency instructions.
+    if(!localBaseline)queue.push(...documentLinks(ref,bytes));
   }
   return collected;
 }
 function materialize(captured, manifest, destination) {
   for(const file of manifest.files.filter(x=>x.original_ref))write(destination,file.original_ref,captured.get(file.path));
 }
-export async function openBundle(input, action) {
-  const temp=mkdtempSync(path.join(tmpdir(),'yss-handoff-'));
+export async function openBundle(input, action, {readOnly=false}={}) {
+  const temp=readOnly?null:mkdtempSync(path.join(tmpdir(),'yss-handoff-'));
   try {
     ensure(existsSync(input) && !lstatSync(input).isSymbolicLink(),'交接包不存在或是 symlink');
     let root=path.resolve(input);
-    if(lstatSync(root).isFile()){ root=path.join(temp,'unpacked');mkdirSync(root);archive('unpack',path.resolve(input),root); }
+    if(lstatSync(root).isFile()){ ensure(!readOnly,'readonly-extraction-required: 只读验证需要已展开目录');root=path.join(temp,'unpacked');mkdirSync(root);archive('unpack',path.resolve(input),root); }
     const manifest=read(safe(root,'manifest.json'));
     schema(manifest,'docs/process/schemas/strategic-handoff-package.schema.json');
     const {bundle_digest,...body}=manifest;ensure(bundle_digest===digest(body),'包清单摘要不一致');
@@ -233,7 +244,12 @@ export async function openBundle(input, action) {
     for(const file of manifest.files){const bytes=readFileSync(safe(root,file.path));ensure(bytes.length===file.size_bytes && hash(bytes)===file.sha256,`文件摘要不一致: ${file.path}`);if(file.original_ref)relative(file.original_ref);captured.set(file.path,bytes);}
     const originals=manifest.files.filter(x=>x.original_ref).map(x=>x.original_ref);
     ensure(new Set(originals.map(x=>x.toLowerCase())).size===originals.length,'源路径重复');
-    const source=path.join(temp,'source');mkdirSync(source);materialize(captured,manifest,source);
+    let source;
+    if(readOnly){
+      ensure(manifest.files.filter(file=>file.original_ref).every(file=>file.path===`payload/files/${file.original_ref==='CONTEXT.md'?'source-context.snapshot.md':file.original_ref}`),'readonly-source-layout-required: 原始源布局需要只读文件映射支持');
+      source=safe(root,'payload/files');
+    }else{source=path.join(temp,'source');mkdirSync(source);materialize(captured,manifest,source);}
+    const inspect=async()=>{
     const inspected=await inspectSource(source,manifest.handoff_ref);
     ensure(manifest.bundle_id===inspected.handoff.handoff_id && manifest.version===inspected.handoff.handoff_version,'包身份与源交接不一致');
     ensure(own(read(safe(root,'indexes/rules.json')),inspected.indexes.rules) && own(read(safe(root,'indexes/scenarios.json')),inspected.indexes.scenarios),'规则/场景索引与源资产不一致');
@@ -250,14 +266,16 @@ export async function openBundle(input, action) {
     }
     ensure(own(changes,{previous_bundle:manifest.previous_bundle,...compareIndexes(inspected.indexes,previousIndexes)}),'版本差异与实际索引不一致');
     return await action({root,manifest,...inspected,changes});
-  } finally {rmSync(temp,{recursive:true,force:true});}
+    };
+    return readOnly?await withSourceContextSnapshot(source,inspect):await inspect();
+  } finally {if(temp)rmSync(temp,{recursive:true,force:true});}
 }
 export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previous}) {
   const root=project(sourceRoot); parseContextContract({root}); relative(handoffRef);
   const current=await inspectSource(root,handoffRef);
   let prior=null;
   if(previous)prior=await openBundle(previous, b=>({manifest:b.manifest,indexes:b.indexes,handoff:b.handoff,rulesBytes:readFileSync(safe(b.root,'indexes/rules.json')),scenariosBytes:readFileSync(safe(b.root,'indexes/scenarios.json'))}));
-  if(prior){ensure(prior.manifest.bundle_id===current.handoff.handoff_id,'前版属于不同交接');ensure(Number(current.handoff.handoff_version.slice(1))>Number(prior.manifest.version.slice(1)),'更新必须提升交接版本');for(const[key,ref]of Object.entries(current.handoff.source)){const old=prior.handoff.source[key];if(old.digest!==ref.digest)ensure(old.version!==ref.version,`源资产内容变化必须提升版本: ${key}`);}}
+  if(prior){ensure(prior.manifest.bundle_id===current.handoff.handoff_id,'前版属于不同交接');ensure(Number(current.handoff.handoff_version.slice(1))>Number(prior.manifest.version.slice(1)),'更新必须提升交接版本');for(const[key,ref]of Object.entries(current.handoff.source)){const old=prior.handoff.source[key];if(old&&old.digest!==ref.digest)ensure(old.version!==ref.version,`源资产内容变化必须提升版本: ${key}`);}}
   const previousBundle=prior?{bundle_id:prior.manifest.bundle_id,version:prior.manifest.version,digest:prior.manifest.bundle_digest}:null;
   const snapshotFiles=collect(root,handoffRef,current.handoff,current.config);
   const target=path.resolve(output);
@@ -270,7 +288,7 @@ export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previ
     const entries=[];
     const put=(ref,bytes,original)=>{write(staging,ref,bytes);entries.push({path:ref,sha256:hash(bytes),size_bytes:bytes.length,...(original?{original_ref:original}:{})});};
     for(const [ref,bytes]of [...snapshotFiles].sort(([a],[b])=>a.localeCompare(b))) {
-      const dest=ref===handoffRef?'handoff.yaml':ref==='CONTEXT.md'?'payload/source-context.snapshot.md':`payload/files/${ref}`;
+      const dest=current.handoff.schema_version===5?`payload/files/${ref==='CONTEXT.md'?'source-context.snapshot.md':ref}`:ref===handoffRef?'handoff.yaml':ref==='CONTEXT.md'?'payload/source-context.snapshot.md':`payload/files/${ref}`;
       ensure(!dest.endsWith('/CONTEXT.md'),'只允许源根词汇快照，禁止嵌套 CONTEXT.md');put(dest,bytes,ref);
     }
     put('indexes/rules.json',Buffer.from(json(current.indexes.rules)));
@@ -339,8 +357,8 @@ export async function importBundle({bundle,targetRoot}) {
         const coordinationRoute=b.handoff.consumer_routes.find(route=>route.capability==='delivery-coordination');
         if(capabilities.includes('backend-technical-design')&&backendRoute.activation!=='not-applicable')write(stage,'backend-technical-traceability-draft.json',json({schema_version:2,route_id:backendRoute.route_id,import_receipt_ref:`${rel}/import-receipt.json`,bundle_digest:b.manifest.bundle_digest,rows}));
         if(capabilities.includes('frontend-engineering-design')&&frontendRoute.activation!=='not-applicable'){
-          const preflight={schema_version:1,status:'draft',route_id:frontendRoute.route_id,capability:frontendRoute.capability,import_receipt_ref:`${rel}/import-receipt.json`,bundle_digest:b.manifest.bundle_digest,context_reconciliation_ref:'',visual_baseline_ref:`${rel}/package/payload/files/${b.handoff.source.visual_baseline_ref.persisted_ref}/${b.handoff.source.visual_baseline_ref.manifest_ref}`,source_rule_refs:rows.map(row=>row.source_id),backend_dependency:{mode:backendRoute.activation==='not-applicable'?'not-applicable':'required',route_id:backendRoute.route_id,...(backendRoute.activation==='not-applicable'?{reason:backendRoute.reason,impact_refs:backendRoute.impact_refs,evidence_refs:backendRoute.evidence_refs}:{})},ready_for_agent:false};
-          schema(preflight,'docs/process/schemas/frontend-strategic-preflight.schema.json');
+          const preflight={schema_version:b.handoff.schema_version===5?2:1,status:'draft',route_id:frontendRoute.route_id,capability:frontendRoute.capability,import_receipt_ref:`${rel}/import-receipt.json`,bundle_digest:b.manifest.bundle_digest,context_reconciliation_ref:'',...(b.handoff.schema_version===5?{ui_baseline_kind:uiBaselineKind(b.handoff),ui_baseline_ref:`${rel}/package/payload/files/${uiBaselineRef(b.handoff).persisted_ref}/${uiBaselineRef(b.handoff).manifest_ref}`}:{visual_baseline_ref:`${rel}/package/payload/files/${uiBaselineRef(b.handoff).persisted_ref}/${uiBaselineRef(b.handoff).manifest_ref}`}),source_rule_refs:rows.map(row=>row.source_id),backend_dependency:{mode:backendRoute.activation==='not-applicable'?'not-applicable':'required',route_id:backendRoute.route_id,...(backendRoute.activation==='not-applicable'?{reason:backendRoute.reason,impact_refs:backendRoute.impact_refs,evidence_refs:backendRoute.evidence_refs}:{})},ready_for_agent:false};
+          schema(preflight,b.handoff.schema_version===5?'docs/process/schemas/frontend-strategic-preflight-v2.schema.json':'docs/process/schemas/frontend-strategic-preflight.schema.json');
           write(stage,'frontend-strategic-preflight-draft.json',json(preflight));write(stage,'frontend-traceability-draft.json',json({schema_version:1,route_id:frontendRoute.route_id,import_receipt_ref:`${rel}/import-receipt.json`,bundle_digest:b.manifest.bundle_digest,rows:rows.map(({tactical_refs,test_seam_refs,...row})=>({...row,frontend_case_refs:[]}))}));
         }
         if(capabilities.includes('delivery-coordination')&&coordinationRoute.activation!=='not-applicable')write(stage,'consumer-status-index-draft.json',json({schema_version:1,status:'draft',import_receipt_ref:`${rel}/import-receipt.json`,routes:b.handoff.consumer_routes.map(route=>({route_id:route.route_id,capability:route.capability,activation:route.activation,consumer_status:route.activation==='not-applicable'?'not-applicable':'pending',receipt_refs:[],acceptance_refs:[],feedback_refs:[]}))}));

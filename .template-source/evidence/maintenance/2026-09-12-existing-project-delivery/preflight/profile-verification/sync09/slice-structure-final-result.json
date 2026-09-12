@@ -1,0 +1,12 @@
+[
+  {
+    "profile": "main",
+    "root": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0
+  },
+  {
+    "profile": "backend",
+    "root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-slice-structure-backend-0kdhwky2/backend",
+    "exit_code": 0
+  }
+]

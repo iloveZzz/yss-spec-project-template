@@ -1,0 +1,9 @@
+{
+  "pid": 77288,
+  "started_at": "2026-09-12T06:26:18.462758+00:00",
+  "bindings": {
+    "127.0.0.1:60050": 59385,
+    "127.0.0.1:60054": 59390
+  },
+  "scope": "transparent TCP to registered dedicated Docker; original data/config bytes unchanged"
+}

@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+import path from 'node:path';
+import { parseArgs } from 'node:util';
+import { read } from './lib/strategic-handoff-io.mjs';
+import { preflightDelivery, invalidPreflightInput } from './lib/delivery-preflight.mjs';
+
+let result;
+try {
+  const {values}=parseArgs({options:{input:{type:'string'},stage:{type:'string'},json:{type:'boolean'}},strict:true});
+  if(!values.input||!values.stage) throw new TypeError('必须提供 --input <file> 和 --stage prepare|build|export|accept');
+  result=await preflightDelivery(read(path.resolve(values.input)),{stage:values.stage,root:process.cwd()});
+} catch(error) { result=invalidPreflightInput(error.message); }
+process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
+process.exitCode=result.exit_code;

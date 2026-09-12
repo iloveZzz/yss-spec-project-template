@@ -1,0 +1,26 @@
+COMMAND   PID       USER   FD   TYPE             DEVICE SIZE/OFF                NODE NAME
+Python  32860 zhudaoming  cwd    DIR               1,14      672           325603183 /private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-new-delivery-cli-fresh-kg1g2pl3/design
+Python  32860 zhudaoming  txt    REG               1,14   151584            11382118 /Library/Frameworks/Python.framework/Versions/3.12/Resources/Python.app/Contents/MacOS/Python
+Python  32860 zhudaoming  txt    REG               1,14   346352            11382644 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_datetime.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14   192736            11382674 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_json.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14   252560            11382648 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/math.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14   152336            11382654 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_uuid.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14   153360            11382656 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_opcode.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14   154928            11382658 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_heapq.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14   292720            11382612 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_socket.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14   156016            11382625 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_bisect.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14  2562000 1152921500312573255 /usr/lib/dyld
+Python  32860 zhudaoming  txt    REG               1,14   217920            11382621 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/zlib.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14   159168            11382640 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_bz2.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14   574112            11382635 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_lzma.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14   157168            11382666 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_random.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14  2389360            11382622 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/unicodedata.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14   211712            11382649 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_sha2.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14   191760            11382673 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/binascii.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14 15987216            11381892 /Library/Frameworks/Python.framework/Versions/3.12/Python
+Python  32860 zhudaoming  txt    REG               1,14   896160           210609412 /Users/zhudaoming/Library/Python/3.12/lib/python/site-packages/rpds/rpds.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14   219824            11382598 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_struct.cpython-312-darwin.so
+Python  32860 zhudaoming  txt    REG               1,14   849360            11382613 /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/lib-dynload/_decimal.cpython-312-darwin.so
+Python  32860 zhudaoming    0u  unix 0x12276c8515ddb98d      0t0                     ->0xf1392eee3bc25f69
+Python  32860 zhudaoming    1u  unix 0xfdb2443d8adbffe7      0t0                     ->0x43b75a48765aaea3
+Python  32860 zhudaoming    2u  unix 0xa31263ed78115261      0t0                     ->0xef8a3133af727237

@@ -1,3 +1,4 @@
+import { uiBaselineRef, uiBaselineCaseIds, uiBaselineKind, hasConsumerRoutes } from './ui-baseline.mjs';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -6,17 +7,18 @@ import { openBundle } from './strategic-handoff.mjs';
 import { verifyConsumption } from './strategic-handoff-consumption.mjs';
 import { read, safe, ensure, hash, schema, project, ROOT } from './strategic-handoff-io.mjs';
 
-const ACCEPTANCE_SCHEMAS=new Map([[1,'docs/process/schemas/frontend-delivery-acceptance-v1.schema.json'],[2,'docs/process/schemas/frontend-delivery-acceptance.schema.json']]);
+const ACCEPTANCE_SCHEMAS=new Map([[1,'docs/process/schemas/frontend-delivery-acceptance-v1.schema.json'],[2,'docs/process/schemas/frontend-delivery-acceptance.schema.json'],[3,'docs/process/schemas/frontend-delivery-acceptance-v3.schema.json']]);
 
 function acceptanceSchema(version) {
-  ensure(ACCEPTANCE_SCHEMAS.has(version),`Frontend Delivery Acceptance 未知 schema_version: ${String(version)}；支持版本: 1, 2；新接收请迁移到 2`);
+  ensure(ACCEPTANCE_SCHEMAS.has(version),`Frontend Delivery Acceptance 未知 schema_version: ${String(version)}；支持版本: 1, 2, 3；既有 UI 接收请使用 3`);
   return ACCEPTANCE_SCHEMAS.get(version);
 }
 
-export async function verifyFrontendStrategicPreflight({root=process.cwd(),preflightRef,expectedDigest}={}) {
+export async function verifyFrontendStrategicPreflight({root=process.cwd(),preflightRef,expectedDigest,readOnly=false}={}) {
   project(root);
   const file=safe(root,preflightRef),preflight=read(file);
-  schema(preflight,'docs/process/schemas/frontend-strategic-preflight.schema.json');
+  ensure([1,2].includes(preflight.schema_version),'Frontend Strategic Preflight 未知 schema_version');
+  schema(preflight,preflight.schema_version===2?'docs/process/schemas/frontend-strategic-preflight-v2.schema.json':'docs/process/schemas/frontend-strategic-preflight.schema.json');
   const preflightDigest=hash(readFileSync(file));
   if(expectedDigest)ensure(expectedDigest===preflightDigest,'前端战略预检摘要已变化，需重编译合同');
   ensure(preflight.status==='verified','前端战略预检尚未 verified');
@@ -30,19 +32,21 @@ export async function verifyFrontendStrategicPreflight({root=process.cwd(),prefl
   const reconciliation=spawnSync(process.execPath,[path.join(ROOT,'scripts/verify-context-reconciliation'),'--root',root,safe(root,preflight.context_reconciliation_ref)],{encoding:'utf8'});
   ensure(reconciliation.status===0,`前端战略预检 Context Reconciliation 未通过: ${reconciliation.error?.message||reconciliation.stderr}`);
   return openBundle(safe(root,receipt.package_ref),bundle=>{
-    ensure(bundle.handoff.schema_version===4&&bundle.manifest.bundle_digest===receipt.bundle_digest,'前端战略预检必须绑定 Handoff v4 当前包');
+    ensure(hasConsumerRoutes(bundle.handoff)&&bundle.manifest.bundle_digest===receipt.bundle_digest,'前端战略预检必须绑定支持消费者路由的当前交接包');
     const frontendRoute=bundle.handoff.consumer_routes.find(item=>item.route_id===preflight.route_id&&item.capability==='frontend-engineering-design');
     const backendRoute=bundle.handoff.consumer_routes.find(item=>item.capability==='backend-technical-design');
     ensure(frontendRoute&&frontendRoute.activation!=='not-applicable','前端路由未启用');
     const known=[...bundle.indexes.rules.map(item=>item.rule_id),...bundle.indexes.scenarios.filter(item=>item.critical).map(item=>item.scenario_id)].sort();
     ensure(JSON.stringify([...preflight.source_rule_refs].sort())===JSON.stringify(known),'前端战略预检未完整绑定源规则/关键场景');
-    const expectedVisual=`${base}/package/payload/files/${bundle.handoff.source.visual_baseline_ref.persisted_ref}/${bundle.handoff.source.visual_baseline_ref.manifest_ref}`;
-    ensure(preflight.visual_baseline_ref===expectedVisual,'前端战略预检 Visual Baseline 引用不一致');
+    ensure((preflight.schema_version===2)===(bundle.handoff.schema_version===5),'前端预检与 Handoff 协议版本不匹配，禁止降级');
+    if(preflight.schema_version===2)ensure(preflight.ui_baseline_kind===uiBaselineKind(bundle.handoff),'前端预检基线类型不一致');
+    const expectedVisual=`${base}/package/payload/files/${uiBaselineRef(bundle.handoff).persisted_ref}/${uiBaselineRef(bundle.handoff).manifest_ref}`;
+    ensure((preflight.schema_version===2?preflight.ui_baseline_ref:preflight.visual_baseline_ref)===expectedVisual,'前端战略预检 Visual Baseline 引用不一致');
     const expectedMode=backendRoute.activation==='not-applicable'?'not-applicable':'required';
     ensure(preflight.backend_dependency.mode===expectedMode&&preflight.backend_dependency.route_id===backendRoute.route_id,'前端战略预检后端依赖与消费者路由不一致');
     if(expectedMode==='not-applicable')ensure(preflight.backend_dependency.reason===backendRoute.reason&&JSON.stringify(preflight.backend_dependency.impact_refs)===JSON.stringify(backendRoute.impact_refs)&&JSON.stringify(preflight.backend_dependency.evidence_refs)===JSON.stringify(backendRoute.evidence_refs),'backend-not-applicable 依据与战略路由不一致');
-    return {result:'preflight-verified',ready_for_agent:false,preflight_ref:preflightRef,preflight_digest:preflightDigest,strategic_bundle_digest:receipt.bundle_digest,backend_dependency:expectedMode,next_action:'prepare-frontend-engineering-design-draft'};
-  });
+    return {result:'preflight-verified',ready_for_agent:false,preflight_ref:preflightRef,preflight_digest:preflightDigest,strategic_bundle_digest:receipt.bundle_digest,ui_baseline_kind:uiBaselineKind(bundle.handoff),preflight_schema_version:preflight.schema_version,backend_dependency:expectedMode,next_action:'prepare-frontend-engineering-design-draft'};
+  },{readOnly});
 }
 
 function pointer(value, ref) {
@@ -79,8 +83,10 @@ export async function verifyFrontendDelivery({root=process.cwd(),acceptanceRef,s
   const acceptanceDigest=hash(readFileSync(file));
   if(expectedDigest)ensure(expectedDigest===acceptanceDigest,'前端接收记录摘要已变化，需重编译合同');
   ensure(sliceRef&&acceptance.slice_id===sliceRef,'前端接收记录与执行切片不匹配');
-  if(acceptance.schema_version===2) {
+  if(acceptance.schema_version>=2) {
     const preflight=await verifyFrontendStrategicPreflight({root,preflightRef:acceptance.strategic_preflight.ref,expectedDigest:acceptance.strategic_preflight.digest});
+    ensure((acceptance.schema_version===3)===(preflight.preflight_schema_version===2),'前端接收与预检协议版本不匹配，禁止降级');
+    if(acceptance.schema_version===3)ensure(acceptance.ui_baseline_kind===preflight.ui_baseline_kind,'前端接收基线类型不一致');
     ensure(preflight.strategic_bundle_digest===acceptance.strategic_handoff.bundle_digest,'前端接收与战略预检版本不一致');
     if(acceptance.backend_dependency.mode==='not-applicable') {
       ensure(!acceptance.backend_delivery,'backend-not-applicable 不得绑定后端交付收据');
@@ -88,13 +94,14 @@ export async function verifyFrontendDelivery({root=process.cwd(),acceptanceRef,s
       ensure(strategic.result==='verified',`战略承接阻断: ${JSON.stringify(strategic.issues)}`);
       const strategicReceipt=read(safe(root,acceptance.strategic_handoff.import_receipt_ref));
       return openBundle(safe(root,strategicReceipt.package_ref),bundle=>{
-        const visualCases=bundle.handoff.source.visual_baseline_ref.case_ids;
+        ensure(acceptance.schema_version===3||bundle.handoff.schema_version!==5,'Handoff v5 必须使用前端接收 v3');
+        const visualCases=uiBaselineCaseIds(bundle.handoff);
         const sourceIds=new Set([...bundle.indexes.rules.map(item=>item.rule_id),...bundle.indexes.scenarios.filter(item=>item.critical).map(item=>item.scenario_id)]);
         const ids=acceptance.frontend_cases.map(item=>item.case_id);ensure(new Set(ids).size===ids.length,'前端验收用例 ID 重复');
         for(const item of acceptance.frontend_cases){
           ensure(item.operation_ids.length===0,'backend-not-applicable 前端用例不得绑定 operation_ids');
           ensure(item.source_ids.every(id=>sourceIds.has(id)),'前端用例引用未知规则/场景');
-          ensure(item.visual_case_ids.every(id=>visualCases.includes(id)),'前端用例视觉基线悬空');
+          ensure((acceptance.schema_version===3?item.baseline_case_ids:item.visual_case_ids).every(id=>visualCases.includes(id)),'前端用例视觉基线悬空');
           const evidence=readFileSync(safe(root,item.evidence_ref));ensure(evidence.length>0&&hash(evidence)===item.evidence_digest,'前端承接用例说明为空或摘要漂移');
         }
         return {result:'inputs-verified',ready_for_agent:false,slice_id:sliceRef,acceptance_ref:acceptanceRef,acceptance_digest:acceptanceDigest,strategic_bundle_digest:strategic.consumed_bundle_digest,backend_dependency:'not-applicable',next_action:'prepare-or-revalidate-frontend-plan-and-slice-contract'};
@@ -117,12 +124,13 @@ export async function verifyFrontendDelivery({root=process.cwd(),acceptanceRef,s
     const ids=acceptance.frontend_cases.map(item=>item.case_id);
     ensure(new Set(ids).size===ids.length,'前端验收用例 ID 重复');
     await openBundle(safe(backend.source,delivery.strategic_bundle_ref),bundle=>{
-      const visualCases=bundle.handoff.source.visual_baseline_ref.case_ids;
+      ensure(acceptance.schema_version===3||bundle.handoff.schema_version!==5,'Handoff v5 必须使用前端接收 v3');
+      const visualCases=uiBaselineCaseIds(bundle.handoff);
       for(const item of acceptance.frontend_cases) {
-        if(acceptance.schema_version===2)ensure(item.operation_ids.length>0,'有后端依赖时前端用例必须绑定已交付 operation_ids');
+        if(acceptance.schema_version>=2)ensure(item.operation_ids.length>0,'有后端依赖时前端用例必须绑定已交付 operation_ids');
         ensure(item.operation_ids.every(id=>delivery.scope.operation_ids.includes(id)),'前端用例依赖未交付接口');
         ensure(item.source_ids.every(id=>delivery.scope.source_ids.includes(id)),'前端用例依赖未交付规则/场景');
-        ensure(item.visual_case_ids.every(id=>visualCases.includes(id)),'前端用例视觉基线悬空');
+        ensure((acceptance.schema_version===3?item.baseline_case_ids:item.visual_case_ids).every(id=>visualCases.includes(id)),'前端用例视觉基线悬空');
         const evidence=readFileSync(safe(root,item.evidence_ref));
         ensure(evidence.length>0&&hash(evidence)===item.evidence_digest,'前端承接用例说明为空或摘要漂移');
       }

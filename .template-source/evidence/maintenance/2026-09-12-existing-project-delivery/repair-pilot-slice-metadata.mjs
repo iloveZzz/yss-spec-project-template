@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+import crypto from 'node:crypto';
+const root='/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance', dir='docs/.scratch/target-preview-pilot/existing-v2';
+const base=root+'/'+dir, history=base+'/history/slice-invalid-array-metadata';
+if(fs.existsSync(history))throw Error('History already exists; do not overwrite');
+fs.mkdirSync(history,{recursive:true});
+for(const file of ['slice-contract.json','slice-review-approval.json','slice-review.md','slice-review-result.json'])if(fs.existsSync(base+'/'+file))fs.copyFileSync(base+'/'+file,history+'/'+file);
+const c=JSON.parse(fs.readFileSync(base+'/slice-contract.json')), input=JSON.parse(fs.readFileSync(base+'/compiler-input.json'));
+if(!Array.isArray(c.lifecycle_refs)||!Array.isArray(c.readiness))throw Error('Expected original malformed metadata');
+const na=dir+'/not-applicable.md', spec='docs/.scratch/target-preview-pilot/architecture/target-preview-existing-behavior-calibration.md';
+c.lifecycle_refs={spec,ticket:dir+'/slice-ticket.md',requirement_freeze:spec,openapi_freeze_or_no_impact:c.contract.freeze_ref,architecture_review:dir+'/technical-review-approval.json',technical_design:dir+'/technical-design.json',tactical_design:na,data_architecture:dir+'/engineering-constraints.md',engineering_baseline:input.architecture_evidence.engineering_baseline.ref,build_architecture_checklist:dir+'/boundary-review.md',implementation_repository:input.architecture_evidence.repository_registration.ref,backend_repository:input.architecture_evidence.repository_registration.ref,maven_wrapper:c.common.project_roots[0]+'/mvnw',frontend_repository:na};
+c.readiness={blockers:[],stale_inputs:[],not_applicable:[{ref:na,reason:'纯后端工程探针；无脚手架、前端实现或业务领域/持久化变更'}]};
+for(const ref of Object.values(c.lifecycle_refs))if(!fs.existsSync(ref.startsWith('/')?ref:root+'/'+ref))throw Error('Missing persisted source: '+ref);
+c.status='draft';
+fs.writeFileSync(base+'/slice-contract.json',JSON.stringify(c,null,2)+'\n');
+fs.writeFileSync(history+'/finding.json',JSON.stringify({finding:'lifecycle_refs/readiness incorrectly serialized as arrays; named properties lost',prior_approval_valid_for_current_candidate:false,recovery:'Restore genuine source refs and readiness objects; fresh independent review required',old_digest:crypto.createHash('sha256').update(fs.readFileSync(history+'/slice-contract.json')).digest('hex'),new_draft_digest:crypto.createHash('sha256').update(fs.readFileSync(base+'/slice-contract.json')).digest('hex')},null,2)+'\n');
+console.log('Original candidate/review/approval preserved; metadata repaired; current candidate draft awaits independent review.');

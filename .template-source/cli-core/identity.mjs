@@ -13,6 +13,7 @@ import {
   same,
 } from "./io.mjs";
 import { yaml, PROFILE } from "./bundle.mjs";
+import { normalizeLegacy } from './legacy.mjs';
 export const METADATA = [
   ".yss-template.json",
   ".yss-harness-design.json",
@@ -59,6 +60,10 @@ export function identity(target, bundle, command) {
       "不支持旧实例；请在全新目录使用新 CLI init",
       "LEGACY",
     );
+    const legacy = f.side === "design" && meta.metadataSchemaVersion === 1;
+    if (legacy) meta = normalizeLegacy(meta, f);
+    if (!legacy) {
+    ensure(!meta.legacy, "非法 legacy 标记", "BASELINE");
     ensure(
       meta.metadataSchemaVersion === 2,
       "不支持或损坏的 metadata schema",
@@ -103,6 +108,7 @@ export function identity(target, bundle, command) {
       "BASELINE",
     );
   }
+  }
   const profilePath = safe(target, PROFILE);
   let profile = null;
   if (stat(profilePath)) {
@@ -119,9 +125,9 @@ export function identity(target, bundle, command) {
       "IDENTITY",
     );
     ensure(
-      profile.instantiation?.cli_package === f.packageName &&
+      (f.side === "design" && !profile.instantiation) || (profile.instantiation?.cli_package === f.packageName &&
         profile.instantiation?.metadata_file === f.metadataFile &&
-        profile.instantiation?.template_source === f.templateSource,
+        profile.instantiation?.template_source === f.templateSource),
       "目标 profile 字段矛盾",
       "IDENTITY",
     );
@@ -145,7 +151,7 @@ export function identity(target, bundle, command) {
   }
   if (meta)
     ensure(profile && project, "metadata 存在但身份合同缺失", "IDENTITY");
-  if (command === "sync")
+  if (["sync", "diff", "doctor", "recover"].includes(command))
     ensure(meta, "sync 仅支持新 CLI 创建或 attach 的实例", "BASELINE");
   else ensure(!meta, "已接入该家族，请使用 sync", "IDENTITY");
   return meta;
@@ -234,11 +240,11 @@ export function recoveryIdentity(target, bundle, state) {
         "LEGACY",
       );
       ensure(
-        p.schema_version === 1 &&
+        [1, 2].includes(p.schema_version) &&
           p.profile_id === f.profileId &&
-          p.instantiation?.cli_package === f.packageName &&
+          ((f.side === "design" && !p.instantiation) || (p.instantiation?.cli_package === f.packageName &&
           p.instantiation?.metadata_file === f.metadataFile &&
-          p.instantiation?.template_source === f.templateSource,
+          p.instantiation?.template_source === f.templateSource)),
         "恢复 profile 身份矛盾",
         "IDENTITY",
       );

@@ -1,0 +1,14 @@
+[
+  {
+    "version": "old",
+    "exit_code": 1,
+    "module": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/preflight-profile-replay-y1g0d822/backend/scripts/lib/json-schema.mjs",
+    "module_digest": "sha256:578b253e03267ecfbc0dcefa81f5c44892f73ac753cc126ebb385d8b73726771"
+  },
+  {
+    "version": "fixed",
+    "exit_code": 0,
+    "module": "/Users/zhudaoming/Projects/yss-spec-project-template/scripts/lib/json-schema.mjs",
+    "module_digest": "sha256:007e39300478da6f0e359d822642f7a6aaf2466ee5781bd81924cf5897eebc72"
+  }
+]

@@ -1,0 +1,136 @@
+#!/usr/bin/env node
+import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { mkdtempSync, writeFileSync, readFileSync, readdirSync, lstatSync, mkdirSync, rmSync, symlinkSync, existsSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { createHash } from 'node:crypto';
+import { backendPreflightCapability } from './lib/delivery-preflight.mjs';
+const backendCapability=backendPreflightCapability();
+// Owners must fail for an incomplete install, never silently skip broken backend coverage.
+assert.ok(!backendCapability.owns_backend||backendCapability.available,backendCapability.reason);
+import { handoffFixture } from './fixtures/existing-ui-baseline/fixture.mjs';
+import { context as fixtureContext } from './fixtures/strategic-handoff/fixture.mjs';
+const cli=fileURLToPath(new URL('./preflight-delivery',import.meta.url));
+const root=mkdtempSync(path.join(tmpdir(),'delivery-preflight-tests-'));
+const hash=bytes=>`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
+let count=0;
+const test=(name,fn)=>{fn();count++;console.log(`PASS ${name}`);};
+const write=(ref,data)=>{mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});const bytes=typeof data==='string'?data:JSON.stringify(data);writeFileSync(path.join(root,ref),bytes);return{ref,digest:hash(bytes)};};
+const scope={repository_id:'repo.example',project_id:'project.example',slice_id:'slice.example',operation_ids:['getExample']};
+const input=()=>({schema_version:1,scope,governance_root:root});
+const run=(data,stage='prepare')=>{
+  write('input.json',data);
+  const result=spawnSync(process.execPath,[cli,'--input',path.join(root,'input.json'),'--stage',stage,'--json'],{encoding:'utf8'});
+  assert.ok(!result.error,result.error?.message);const body=JSON.parse(result.stdout);assert.equal(result.status,body.exit_code);return body;
+};
+const check=(result,code)=>result.checks.find(item=>item.code===code);
+const snapshot=(base=root)=>readdirSync(base).sort().flatMap(name=>{const file=path.join(base,name);const info=lstatSync(file);return info.isDirectory()?snapshot(file):[[path.relative(root,file),info.isSymbolicLink()?'symlink':hash(readFileSync(file))]];});
+try {
+  test('缺少输入是退出码 2 的协议错误',()=>{const out=spawnSync(process.execPath,[cli,'--json'],{encoding:'utf8'});assert.equal(out.status,2);assert.equal(JSON.parse(out.stdout).result,'invalid-input');});
+  test('空对象与未知阶段不能取得 ready',()=>{assert.equal(run({}).exit_code,2);assert.equal(run(input(),'wrong').exit_code,2);});
+  test('缺失原始资产一次汇总，未来构建不阻断 prepare',()=>{
+    const out=run(input());assert.equal(out.result,'blocked');
+    for(const code of ['governance','architecture.repository_registration','architecture.engineering_baseline','architecture.manifest','openapi','build','deployment'])assert.equal(check(out,code).status,'missing',code);
+    assert.equal(check(out,'architecture').status,'pending');assert.ok(!check(out,'deployment').blocking_stages.includes('prepare'));assert.ok(check(out,'deployment').blocking_stages.includes('export'));
+    for(const c of out.checks)for(const key of ['code','status','owner','source','evidence','blocking_stages','recovery','message'])assert.ok(Object.hasOwn(c,key));
+  });
+  test('拟初始化目标可诊断但不能猜测仓库身份',()=>{const out=run({...input(),planned_initialization:true});assert.equal(check(out,'governance.planned-initialization').status,'not-applicable');assert.equal(check(out,'governance').status,'missing');assert.equal(out.exit_code,1);});
+  write('yss-project.yaml','schema_version: 1\nrepository_mode: template-source\n');
+  test('模板源不能冒充产品交付来源',()=>{assert.equal(check(run(input()),'governance').status,'unsupported');});
+  write('yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');
+  write('CONTEXT.md',fixtureContext);
+  test('合法身份与根词汇可独立承接',()=>{assert.equal(check(run(input()),'governance').status,'ready');});
+  test('自洽摘要不能把空原始观测提升为可承接',()=>{const empty=write('manifest-empty.json',{});const out=run({...input(),architecture_bindings:{manifest:empty}});assert.notEqual(check(out,'architecture.manifest').status,'ready');});
+  const api=write('api.json',{openapi:'3.0.3',info:{title:'sample',version:'1'},paths:{}});
+  test('摘要自洽但错误 OpenAPI 版本仍拒绝',()=>{assert.equal(check(run({...input(),assets:{openapi:api}},'build'),'openapi').status,'conflict');});
+  test('前提内容改变标记 stale',()=>{write('api.json',{openapi:'3.1.0'});assert.equal(check(run({...input(),assets:{openapi:api}},'build'),'openapi').status,'stale');});
+  test('路径越界和 symlink 拒绝',()=>{
+    assert.notEqual(check(run({...input(),assets:{openapi:{ref:'../outside.json',digest:api.digest}}}),'openapi').status,'ready');
+    symlinkSync(path.join(root,'api.json'),path.join(root,'link.json'));
+    assert.notEqual(check(run({...input(),assets:{openapi:{ref:'link.json',digest:api.digest}}}),'openapi').status,'ready');
+  });
+  const jar=write('build/service.jar','actual-build-bytes');
+  const build=write('build.json',{source_commit:'1'.repeat(40),artifact_digest:jar.digest});
+  test('已有交付构建 shape 与原始制品核对通过',()=>{const out=run({...input(),assets:{build,build_artifact:jar}},'export');assert.equal(check(out,'build').status,'ready');assert.equal(check(out,'build_artifact').status,'ready');});
+  test('制品内容变化使构建不可承接',()=>{write('build/service.jar','changed');const out=run({...input(),assets:{build,build_artifact:jar}},'export');assert.equal(check(out,'build_artifact').status,'stale');});
+  const log=write('deployment.log','recorded run');
+  const deployment=write('deployment.json',{schema_version:1,kind:'backend-deployment',subject_digest:'sha256:'+'2'.repeat(64),results:[{command:`touch ${path.join(root,'must-not-exist')}`,executed_at:'2026-01-01T00:00:00Z',exit_code:0,evidence:[log]}],coverage:[],operation_ids:['getExample']});
+  test('只读预检不执行记录中的命令，缺交付依据仍为尚不可判定',()=>{
+    const data={...input(),assets:{deployment}};write('input.json',data);const before=snapshot();
+    const out=run(data,'export');assert.equal(check(out,'deployment.delivery-basis').status,'pending');assert.ok(!existsSync(path.join(root,'must-not-exist')));assert.deepEqual(snapshot(),before);
+  });
+  test('明确无 UI 影响必须有原因，不能静默免检',()=>{const out=run({...input(),scope:{...scope,ui_mode:'not-applicable'}},'export');assert.equal(check(out,'ui_baseline').status,'missing');const yes=run({...input(),scope:{...scope,ui_mode:'not-applicable',ui_not_applicable_reason:'独立后端批处理，无用户界面影响'}},'export');assert.equal(check(yes,'ui_baseline').status,'not-applicable');});
+  const strategicRoot=path.join(root,'strategic-source');mkdirSync(strategicRoot);
+  // Synthetic signed file fixture only; this does not represent a pilot approval.
+  const strategic=await handoffFixture(strategicRoot);
+  const ui=strategic.handoff.source.existing_ui_baseline_ref;
+  const asset=(ref,extra={})=>({ref,digest:hash(readFileSync(path.join(strategicRoot,ref))),...extra});
+  const strategicInput={schema_version:1,delivery_kind:'strategic-handoff',governance_root:strategicRoot,scope:{...scope,ui_mode:'existing-baseline'},assets:{strategic_handoff:asset('handoff.yaml'),ui_baseline:asset(`${ui.persisted_ref}/${ui.manifest_ref}`,{id:ui.baseline_id,version:ui.version,approval_ref:'approvals/existing-ui.json'})}};
+  test('synthetic 战略源可先导出，不依赖未来后端合同或包',()=>{
+    const out=run(strategicInput,'export');assert.equal(out.result,'ready',JSON.stringify(out.checks.filter(c=>c.blocking_stages.includes('export')&&c.status!=='ready'&&c.status!=='not-applicable')));
+    for(const key of ['technical_design','slice_contract','build','deployment','backend_delivery'])assert.deepEqual(check(out,key).blocking_stages,[]);
+  });
+  test('v5 既有 UI 导出 CLI 缺清单拒绝且不写输出',()=>{
+    const output=path.join(root,'must-not-export');const out=spawnSync(process.execPath,[fileURLToPath(new URL('./strategic-handoff',import.meta.url)),'export','--source-root',strategicRoot,'--handoff','handoff.yaml','--output',output],{encoding:'utf8'});
+    assert.equal(out.status,1);assert.match(JSON.parse(out.stderr).error,/preflight-required/);assert.ok(!existsSync(output));
+  });
+  test('v5 战略 CLI 通过源预检后正常导出，原始来源保持不变',()=>{
+    const inputFile=write('strategic-preflight.json',strategicInput);const output=path.join(root,'exported-v5');const before=readFileSync(path.join(strategicRoot,'handoff.yaml'));
+    const out=spawnSync(process.execPath,[fileURLToPath(new URL('./strategic-handoff',import.meta.url)),'export','--source-root',strategicRoot,'--handoff','handoff.yaml','--output',output,'--preflight-input',path.join(root,inputFile.ref)],{encoding:'utf8'});
+    assert.equal(out.status,0,out.stderr);assert.ok(existsSync(path.join(output,'manifest.json')));assert.deepEqual(readFileSync(path.join(strategicRoot,'handoff.yaml')),before);
+  });
+  test('导出不能用另一来源清单通过预检',()=>{
+    const bad=write('wrong-source-preflight.json',{...strategicInput,governance_root:root});const output=path.join(root,'must-not-export-wrong-source');
+    const out=spawnSync(process.execPath,[fileURLToPath(new URL('./strategic-handoff',import.meta.url)),'export','--source-root',strategicRoot,'--handoff','handoff.yaml','--output',output,'--preflight-input',path.join(root,bad.ref)],{encoding:'utf8'});
+    assert.equal(out.status,1);assert.match(JSON.parse(out.stderr).error,/preflight-scope-conflict/);assert.ok(!existsSync(output));
+  });
+  test('后端 CLI 对既有身份 v2 在任何写入前强制预检',()=>{
+    write('backend-contract.json',{resolution:{architecture_identity:{schema_version:2}}});write('backend-source.json',{slice_contract:{ref:'backend-contract.json'}});const output=path.join(root,'must-not-export-backend');
+    const out=spawnSync(process.execPath,[fileURLToPath(new URL('./backend-delivery',import.meta.url)),'export','--source-root',root,'--delivery','backend-source.json','--output',output],{encoding:'utf8'});
+    assert.equal(out.status,1);assert.match(JSON.parse(out.stderr).error,/preflight-required/);assert.ok(!existsSync(output));
+  });
+  test('backend 分流通过已绑定包承接战略来源，不要求复制源资产',()=>{
+    const out=run({...input(),delivery_kind:'backend-delivery'},'export');assert.ok(!check(out,'strategic_handoff'));assert.ok(!check(out,'ui_baseline'));
+    assert.equal(check(out,'strategic_handoff.delivery-package').status,'pending');assert.ok(check(out,'backend_delivery').blocking_stages.includes('export'));
+  });
+  if(backendCapability.owns_backend) {
+  const {fixture:architectureFixture}=await import('./fixtures/existing-backend/fixture.mjs');
+  for(const family of ['domain-driven','layered-mvc'])test(`synthetic ${family} 原始工程可完整核验且不伪造 profile 支持`,()=>{
+    const f=architectureFixture(family);
+    try {
+      f.write('yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');f.write('CONTEXT.md',fixtureContext);
+      const out=run({schema_version:1,governance_root:f.root,scope:{repository_id:f.identity.repository_id,project_id:f.identity.project_id,slice_id:'slice.synthetic',operation_ids:['syntheticOperation']},architecture_identity:f.identity,architecture_bindings:f.bindings});
+      const architecture=check(out,'architecture');assert.equal(architecture?.status,'ready',JSON.stringify(out.checks));
+      const blockers=out.checks.filter(c=>c.blocking_stages.includes('prepare')&&!['ready','not-applicable'].includes(c.status));
+      assert.ok(blockers.every(c=>c.code==='architecture.profile'),JSON.stringify(blockers));
+      assert.equal(out.result,check(out,'architecture.profile').status==='ready'?'ready':'blocked');
+    } finally {f.cleanup();}
+  });
+  } else {
+    test('非拥有 profile 的显式技术资产返回稳定 unsupported 与责任恢复路线',()=>{
+      const technical=write('unsupported-technical.json',{}),slice=write('unsupported-slice.json',{});
+      const out=run({...input(),assets:{technical_design:technical,slice_contract:slice}},'export');
+      for(const code of ['PREFLIGHT_TECHNICAL_DESIGN_UNSUPPORTED','PREFLIGHT_SLICE_CONTRACT_UNSUPPORTED']) {
+        const item=check(out,code);assert.equal(item?.status,'unsupported',JSON.stringify(out));
+        assert.ok(item.owner&&item.source&&item.evidence.length);assert.match(item.recovery,/backend/);assert.ok(item.blocking_stages.includes('export'));
+      }
+      assert.doesNotMatch(JSON.stringify(out),/ERR_MODULE_NOT_FOUND/);assert.equal(out.result,'blocked');
+    });
+    console.log(`NOT-APPLICABLE backend architecture and approved output delta: ${backendCapability.reason}`);
+  }
+  console.log(`delivery-preflight scenarios: ${count} passed`);
+} finally {rmSync(root,{recursive:true,force:true});}
+// Run the approved-original-input seam as part of the same registered verification command.
+if(backendCapability.owns_backend) {
+const approved=spawnSync(process.execPath,['--test',fileURLToPath(new URL('./fixtures/delivery-preflight/approved-execution.test.mjs',import.meta.url))],{encoding:'utf8'});
+process.stdout.write(approved.stdout||'');if(approved.stderr)process.stderr.write(approved.stderr);
+assert.equal(approved.status,0,'批准实现增量场景失败');
+
+}
+
+// Shared schema transport must finish even when a writer keeps stdin open.
+const framing=spawnSync(process.execPath,['--test',fileURLToPath(new URL('./fixtures/delivery-preflight/json-schema-framing.test.mjs',import.meta.url))],{encoding:'utf8'});
+process.stdout.write(framing.stdout||'');if(framing.stderr)process.stderr.write(framing.stderr);
+assert.equal(framing.status,0,'JSON Schema 输入帧与超时回归失败');

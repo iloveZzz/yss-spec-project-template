@@ -42,7 +42,7 @@
       "properties": {
         "kind": { "enum": ["lifecycle-work-unit", "slice-implementation", "template-maintenance"] },
         "contract_id": { "type": "string", "minLength": 1 },
-        "contract_version": { "type": "integer", "minimum": 1 },
+        "contract_version": { "oneOf": [{ "type": "integer", "minimum": 1 }, { "type": "string", "minLength": 1, "pattern": "\\S" }] },
         "status": { "enum": ["issued", "stale", "blocked"] },
         "contract_ref": { "type": "string", "minLength": 1 },
         "lifecycle_ref": { "type": "string", "minLength": 1 },

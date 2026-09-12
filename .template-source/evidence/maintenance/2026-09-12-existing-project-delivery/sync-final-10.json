@@ -1,0 +1,87 @@
+[
+  {
+    "name": "shared-sync",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "argv": [
+      "node",
+      "scripts/sync-strategic-handoff-tools"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 2.2,
+    "log": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/shared-sync-10.log"
+  },
+  {
+    "name": "create-yss-spec-sync",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-spec",
+    "argv": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 6.8,
+    "log": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/create-yss-spec-sync-10.log"
+  },
+  {
+    "name": "create-yss-strategic-design-sync",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+    "argv": [
+      "node",
+      "scripts/sync-template.js"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 2.99,
+    "log": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/create-yss-strategic-design-sync-10.log"
+  },
+  {
+    "name": "create-yss-harness-backend-core-sync",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend",
+    "argv": [
+      "node",
+      "scripts/sync-core.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "WORKTREE"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 0.2,
+    "log": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/create-yss-harness-backend-core-sync-10.log"
+  },
+  {
+    "name": "create-yss-harness-backend-template-sync",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend",
+    "argv": [
+      "node",
+      "scripts/sync-template.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+      "WORKTREE"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 1.59,
+    "log": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/create-yss-harness-backend-template-sync-10.log"
+  },
+  {
+    "name": "create-yss-harness-frontend-core-sync",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+    "argv": [
+      "node",
+      "scripts/sync-core.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "WORKTREE"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 0.2,
+    "log": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/create-yss-harness-frontend-core-sync-10.log"
+  },
+  {
+    "name": "create-yss-harness-frontend-template-sync",
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+    "argv": [
+      "node",
+      "scripts/sync-template.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+      "WORKTREE"
+    ],
+    "exit_code": 0,
+    "duration_seconds": 2.01,
+    "log": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/create-yss-harness-frontend-template-sync-10.log"
+  }
+]

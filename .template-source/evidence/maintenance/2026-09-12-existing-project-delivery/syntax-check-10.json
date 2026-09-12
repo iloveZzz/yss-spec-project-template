@@ -1,0 +1,192 @@
+[
+  {
+    "ref": ".agents/skills/yss-technical-design/scripts/engineering-design.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": ".agents/skills/yss-technical-design/scripts/generate-schema.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": ".agents/skills/yss-technical-design/scripts/validate-technical-design.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": ".agents/skills/yss-technical-design/tests/engineering-scenarios.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": ".template-source/scripts/verify-strategic-handoff-distribution.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/backend-delivery",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/fixtures/backend-delivery/approval-fixture.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/fixtures/delivery-preflight/approved-execution-fixture.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/fixtures/delivery-preflight/approved-execution.test.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/fixtures/delivery-preflight/json-schema-framing.test.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/fixtures/existing-backend/fixture.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/fixtures/existing-backend/scenarios.test.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/fixtures/existing-ui-baseline/fixture.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/approved-execution-context.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/backend-architecture.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/backend-delivery.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/delivery-preflight.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/existing-backend-architecture.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/existing-ui-baseline.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/frontend-delivery.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/implementation-contract-compiler.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/json-schema.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/strategic-handoff-consumption.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/strategic-handoff-design-targets.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/strategic-handoff-io.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/strategic-handoff.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/task-package.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/technical-design-boundary.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/lib/ui-baseline.mjs",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/preflight-delivery",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/strategic-handoff",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/sync-strategic-handoff-tools",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/verify-delivery-preflight-scenarios",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/verify-existing-backend-architecture-scenarios",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/verify-existing-ui-baseline-scenarios",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/verify-frontend-delivery-scenarios",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/verify-retired-skill-ids",
+    "exit_code": 0,
+    "error": ""
+  },
+  {
+    "ref": "scripts/verify-subagent-task-package-scenarios",
+    "exit_code": 0,
+    "error": ""
+  }
+]

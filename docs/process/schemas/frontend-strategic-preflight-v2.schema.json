@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/frontend-strategic-preflight-v2.schema.json",
+  "title": "YSS Frontend Strategic Preflight v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "route_id",
+    "capability",
+    "import_receipt_ref",
+    "bundle_digest",
+    "context_reconciliation_ref",
+    "source_rule_refs",
+    "backend_dependency",
+    "ready_for_agent",
+    "ui_baseline_kind",
+    "ui_baseline_ref"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "verified",
+        "blocked",
+        "stale"
+      ]
+    },
+    "route_id": {
+      "type": "string",
+      "pattern": "^route\\.[a-z0-9][a-z0-9-]*$"
+    },
+    "capability": {
+      "const": "frontend-engineering-design"
+    },
+    "import_receipt_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "bundle_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "context_reconciliation_ref": {
+      "type": "string"
+    },
+    "source_rule_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^(rule|scenario|invariant)\\.[a-z0-9][a-z0-9-]*$"
+      }
+    },
+    "backend_dependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "route_id"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "required",
+            "not-applicable"
+          ]
+        },
+        "route_id": {
+          "type": "string",
+          "pattern": "^route\\.[a-z0-9][a-z0-9-]*$"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "impact_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_refs": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "ready_for_agent": {
+      "const": false
+    },
+    "ui_baseline_kind": {
+      "enum": [
+        "prototype",
+        "existing-ui-baseline"
+      ]
+    },
+    "ui_baseline_ref": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "side": "backend",
+  "packageName": "create-yss-harness-backend",
+  "profileId": "harness.backend-delivery",
+  "metadataFile": ".yss-harness-backend.json",
+  "templateName": "yss-harness-backend-agent",
+  "templateSource": "github:iloveZzz/yss-harness-backend-agent",
+  "templateCommit": "aab3a709b96e4d8309e33bbf451156ae5abad05a",
+  "sourceState": "working-tree",
+  "manifestHash": "7d62d8123b4fb6eee545a4fefbadce975da26ffb047ef646e660a7af9f11d872",
+  "snapshotHash": "0ee9f667abfeca219cf2657196e03b94c1950dfe84efcf58071360581ba81570",
+  "projectionRepresentation": "materialized-files",
+  "pathEncoding": "sha256-blobs-v1"
+}

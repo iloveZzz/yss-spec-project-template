@@ -1,0 +1,12 @@
+{
+  "id": "create-yss-harness-frontend@0.2.0",
+  "name": "create-yss-harness-frontend",
+  "version": "0.2.0",
+  "size": 5379530,
+  "unpackedSize": 16688707,
+  "shasum": "efd61121c4e7ccb4b0376b17d431c550c55ab339",
+  "integrity": "sha512-qpMfhwvuXdv0yLaugVymLfuKSS8VXCVabZzjiUb6quKDyAPSVrnWtBbvd2f0o5tucfg5iDBM6rGmSz4cNWEUYw==",
+  "filename": "create-yss-harness-frontend-0.2.0.tgz",
+  "entryCount": 1183,
+  "bundled": []
+}

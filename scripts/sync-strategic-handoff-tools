@@ -4,38 +4,59 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, chmodSync, readdirS
 import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
+import { parseDocument } from './vendor/yaml.mjs';
 import { inspectWorkingTreeScope } from './lib/repository-scope-policy.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const check=process.argv.includes('--check');
-const targets=['submodules/yss-harness-design-agent','submodules/yss-harness-dev-agent','submodules/yss-harness-backend-agent','submodules/yss-harness-frontend-agent'];
+const targets=['submodules/yss-harness-design-agent','submodules/yss-harness-backend-agent','submodules/yss-harness-frontend-agent'];
 const shared=['scripts/strategic-handoff','scripts/verify-strategic-handoff-consumption','scripts/verify-strategic-handoff-package-scenarios','scripts/verify-strategic-context-import','scripts/verify-strategic-context-import-scenarios','scripts/lib/context-contract.mjs','docs/process/strategic-handoff-package.md','docs/process/schemas/strategic-design-handoff.schema.json',...readdirSync(path.join(root,'scripts/lib')).filter(x=>x.startsWith('strategic-handoff-')||x==='strategic-handoff.mjs').map(x=>`scripts/lib/${x}`),...readdirSync(path.join(root,'docs/process/schemas')).filter(x=>x.startsWith('strategic-handoff-')).map(x=>`docs/process/schemas/${x}`),...readdirSync(path.join(root,'scripts/fixtures/strategic-handoff')).map(x=>`scripts/fixtures/strategic-handoff/${x}`)];
 shared.push('scripts/lib/user-decision-reuse.mjs','scripts/lib/user-decision.mjs','docs/process/schemas/user-decision.schema.json','scripts/fixtures/user-decision/build-fixture.mjs','scripts/lib/command-runner.mjs','scripts/lib/json-schema.mjs','scripts/lib/context-reconciliation.mjs','scripts/verify-context-reconciliation');
 shared.push('scripts/instantiate-harness','scripts/backend-delivery','scripts/verify-frontend-delivery','scripts/verify-frontend-strategic-preflight','scripts/strategic-feedback','scripts/verify-strategic-handoff-tools-lock','scripts/lib/backend-delivery.mjs','scripts/lib/frontend-delivery.mjs','scripts/lib/frontend-delivery-boundary.mjs','scripts/lib/strategic-feedback.mjs','docs/process/frontend-backend-delivery.md','docs/process/schemas/backend-delivery.schema.json','docs/process/schemas/backend-delivery-verification.schema.json','docs/process/schemas/frontend-delivery-acceptance.schema.json','docs/process/schemas/frontend-delivery-acceptance-v1.schema.json','docs/process/schemas/frontend-strategic-preflight.schema.json','docs/process/schemas/strategic-design-handoff-v3.schema.json','docs/process/schemas/strategic-design-handoff-v4.schema.json','docs/process/schemas/strategic-consumer-feedback.schema.json','docs/process/schemas/strategic-feedback-adjudication.schema.json');
+// Existing-project evidence is wire validation, not scaffold/prototype authoring capability.
+shared.push('scripts/lib/approved-execution-context.mjs','scripts/fixtures/backend-delivery/approval-fixture.mjs',...readdirSync(path.join(root,'scripts/fixtures/delivery-preflight')).map(ref=>`scripts/fixtures/delivery-preflight/${ref}`),'scripts/fixtures/existing-backend/fixture.mjs','scripts/preflight-delivery','scripts/verify-delivery-preflight-scenarios','scripts/verify-existing-ui-baseline-scenarios','scripts/lib/delivery-preflight.mjs','scripts/lib/backend-architecture.mjs','scripts/lib/existing-backend-architecture.mjs','scripts/lib/ui-baseline.mjs','scripts/lib/existing-ui-baseline.mjs','docs/process/delivery-preflight.md','docs/process/existing-backend-architecture.md','docs/process/existing-ui-baseline.md','docs/process/schemas/delivery-preflight-input.schema.json','docs/process/schemas/delivery-preflight-result.schema.json','docs/process/schemas/backend-architecture-identity.schema.json','docs/process/schemas/existing-ui-baseline.schema.json','docs/process/schemas/strategic-design-handoff-v5.schema.json','docs/process/schemas/frontend-strategic-preflight-v2.schema.json','docs/process/schemas/frontend-delivery-acceptance-v3.schema.json',...readdirSync(path.join(root,'scripts/fixtures/existing-ui-baseline')).map(ref=>`scripts/fixtures/existing-ui-baseline/${ref}`));
 let differences=[];
 // 专职执行范围由各模板持有；后端只消费 wire 校验器，不恢复原型构建技能。
 function replaceExactly(bytes,from,to,name){const content=bytes.toString();const count=content.split(from).length-1;if(count!==1)throw new Error(`${name} 转换基线失效，预期 1 处，实际 ${count} 处`);return Buffer.from(content.replace(from,to));}
 const transformations={
  identity:bytes=>bytes,
  'backend-wire-runtime':bytes=>replaceExactly(bytes,'../../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs','./visual-baseline-contract.mjs','backend-wire-runtime'),
+ 'backend-wire-command':bytes=>replaceExactly(bytes,'../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs','./lib/visual-baseline-contract.mjs','backend-wire-command'),
  'backend-wire-fixture':bytes=>replaceExactly(bytes,'../../../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs','../../lib/visual-baseline-contract.mjs','backend-wire-fixture'),
 };
-function transformationFor(target,ref){if(!target.endsWith('yss-harness-backend-agent'))return'identity';if(ref==='scripts/lib/strategic-handoff.mjs')return'backend-wire-runtime';if(ref==='scripts/fixtures/strategic-handoff/fixture.mjs')return'backend-wire-fixture';return'identity';}
+function transformationFor(target,ref){if(!target.endsWith('yss-harness-backend-agent'))return'identity';if(['scripts/lib/ui-baseline.mjs','scripts/lib/delivery-preflight.mjs'].includes(ref))return'backend-wire-runtime';if(['scripts/verify-strategic-context-import','scripts/verify-strategic-context-import-scenarios'].includes(ref))return'backend-wire-command';if(ref==='scripts/fixtures/strategic-handoff/fixture.mjs')return'backend-wire-fixture';return'identity';}
 function sync(source,dest,transformation='identity'){const bytes=transformations[transformation](readFileSync(source));if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}if(!check&&path.basename(path.dirname(dest))==='scripts'&&!path.extname(dest))chmodSync(dest,0o755);}
 const digestBytes=bytes=>`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 const sharedRefs=[...new Set(shared)].sort();
+const registryRef='docs/agents/yss-skill-registry.yaml';
+const sourceRegistry=parseDocument(readFileSync(path.join(root,registryRef),'utf8'),{uniqueKeys:true});
+if(sourceRegistry.errors.length)throw new Error('源技能注册表不可读');
+const existingProfiles=sourceRegistry.toJS({maxAliasCount:0}).existing_project_profiles;
+if(!existingProfiles||typeof existingProfiles!=='object'||Array.isArray(existingProfiles))throw new Error('源注册表缺少 existing_project_profiles');
+// Only observation profiles are projected. Recipes, capabilities and authoring skills remain profile-owned.
+function projectedRegistry(targetRoot){
+ const bytes=readFileSync(path.join(targetRoot,registryRef));
+ const document=parseDocument(bytes.toString(),{uniqueKeys:true});if(document.errors.length)throw new Error(`${targetRoot} 技能注册表不可读`);
+ if(JSON.stringify(document.toJS({maxAliasCount:0}).existing_project_profiles)===JSON.stringify(existingProfiles))return bytes;
+ document.set('existing_project_profiles',existingProfiles);return Buffer.from(document.toString());
+}
+function syncExistingProfiles(targetRoot){const dest=path.join(targetRoot,registryRef),bytes=projectedRegistry(targetRoot);if(!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}}
+
 const revision=spawnSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).stdout.trim();
-const scopedState=spawnSync('git',['-C',root,'status','--porcelain=v1','--untracked-files=all','--','scripts/sync-strategic-handoff-tools',...sharedRefs],{encoding:'utf8'}).stdout.trim();
+const scopedState=spawnSync('git',['-C',root,'status','--porcelain=v1','--untracked-files=all','--','scripts/sync-strategic-handoff-tools',registryRef,...sharedRefs],{encoding:'utf8'}).stdout.trim();
 const sourceState=scopedState?'working-tree':'committed';
 function expectedLock(target,targetRoot){
  const sourceFiles=Object.fromEntries(sharedRefs.map(ref=>[ref,digestBytes(readFileSync(path.join(root,ref)))]));
  const effectiveFiles=Object.fromEntries(sharedRefs.map(ref=>[ref,digestBytes(transformations[transformationFor(target,ref)](readFileSync(path.join(root,ref))))]));
+ sourceFiles[registryRef]=digestBytes(readFileSync(path.join(root,registryRef)));
+ effectiveFiles[registryRef]=digestBytes(target==='.'?readFileSync(path.join(root,registryRef)):projectedRegistry(targetRoot));
  return {schema_version:1,target_id:target==='.'?'template-root':path.basename(target),source_repository:'yss-spec-project-template',source_revision:revision,source_state:sourceState,transformation_set:[...new Set(sharedRefs.map(ref=>transformationFor(target,ref)))].sort(),source_files:sourceFiles,effective_files:effectiveFiles};
 }
 function lock(target,targetRoot){const ref='.template-source/distribution/strategic-handoff-tools.lock.json',dest=path.join(targetRoot,ref),bytes=Buffer.from(`${JSON.stringify(expectedLock(target,targetRoot),null,2)}\n`);if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}}
-// CLI core owns the portable external-command runner; all runtime copies are generated here.
+// CLI core owns the portable external-command runner. Only create-yss-spec still consumes
+// the legacy src copy; the three thin subproject CLIs use their official sync-core command.
 sync(path.join(root,'.template-source/cli-core/command-runner.mjs'),path.join(root,'scripts/lib/command-runner.mjs'));
 lock('.',root);
-for(const name of ['create-yss-spec','create-yss-strategic-design','create-yss-harness-dev']) {
+for(const name of ['create-yss-spec']) {
  const target=`submodules/${name}`;
  if(!existsSync(path.join(root,target,'.git')))continue;
  if(!check){const state=inspectWorkingTreeScope(root,{project_root:target,repository_scope:'git-submodule',checkout_state:'attached-branch'});if(!state.writable)throw new Error(`${target}: ${state.violation}`);}
@@ -45,6 +66,8 @@ for(const target of targets){
  if(!existsSync(path.join(root,target,'.git')))continue;
  if(!check){const state=inspectWorkingTreeScope(root,{project_root:target,repository_scope:'git-submodule',checkout_state:'attached-branch'});if(!state.writable)throw new Error(`${target}: ${state.violation}`);}
  if(!target.endsWith('design-agent'))for(const ref of ['scripts/verify-frontend-delivery-scenarios','scripts/fixtures/backend-delivery/revision-server.mjs'])sync(path.join(root,ref),path.join(root,target,ref));
+ if(target.endsWith('backend-agent'))for(const ref of ['scripts/fixtures/existing-backend/scenarios.test.mjs','scripts/verify-existing-backend-architecture-scenarios','scripts/lib/implementation-contract-compiler.mjs','scripts/lib/technical-design-boundary.mjs'])sync(path.join(root,ref),path.join(root,target,ref));
+ syncExistingProfiles(path.join(root,target));
  for(const ref of new Set(shared))sync(path.join(root,ref),path.join(root,target,ref),transformationFor(target,ref));
  lock(target,path.join(root,target));
 }

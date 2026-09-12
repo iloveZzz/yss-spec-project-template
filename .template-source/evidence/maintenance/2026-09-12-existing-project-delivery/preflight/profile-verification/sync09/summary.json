@@ -1,0 +1,89 @@
+{
+  "recorded_at": "2026-09-11T19:41:32.405959+00:00",
+  "status": "passed-local-distribution-verification",
+  "cli_profiles": [
+    {
+      "profile": "spec",
+      "init": "passed",
+      "sourceState": "working-tree",
+      "templateCommit": "32fa044c0123f73b8d8091590d1f060440ac9ccb",
+      "runtime_files_byte_matched": 8,
+      "cli_scenarios": 22,
+      "approved_execution_scenarios": 6,
+      "schema_transport_scenarios": 3,
+      "existing_ui_scenarios": 11
+    },
+    {
+      "profile": "design",
+      "init": "passed",
+      "sourceState": "working-tree",
+      "templateCommit": "e24465921a8a51d8690a1732842274a35b935c9e",
+      "runtime_files_byte_matched": 8,
+      "cli_scenarios": 21,
+      "approved_execution_scenarios": "not-applicable: non-owning profile",
+      "schema_transport_scenarios": 3,
+      "existing_ui_scenarios": 11
+    },
+    {
+      "profile": "backend",
+      "init": "passed",
+      "sourceState": "working-tree",
+      "templateCommit": "aab3a709b96e4d8309e33bbf451156ae5abad05a",
+      "runtime_files_byte_matched": 8,
+      "cli_scenarios": 22,
+      "approved_execution_scenarios": 6,
+      "schema_transport_scenarios": 3,
+      "existing_ui_scenarios": 11
+    },
+    {
+      "profile": "frontend",
+      "init": "passed",
+      "sourceState": "working-tree",
+      "templateCommit": "204e0e0d95ba7d721aca7633b8417a90d0dd1e61",
+      "runtime_files_byte_matched": 8,
+      "cli_scenarios": 21,
+      "approved_execution_scenarios": "not-applicable: non-owning profile",
+      "schema_transport_scenarios": 3,
+      "existing_ui_scenarios": 11
+    }
+  ],
+  "receiving_templates": {
+    "design": {
+      "preflight": 21,
+      "schema_transport": 3,
+      "ui": 11
+    },
+    "backend": {
+      "preflight": 22,
+      "approved_execution": 6,
+      "schema_transport": 3,
+      "ui": 11
+    },
+    "frontend": {
+      "preflight": 21,
+      "schema_transport": 3,
+      "ui": 11
+    }
+  },
+  "actual_distribution_script": {
+    "name": "delivery-harness-distribution",
+    "command": [
+      "node",
+      ".template-source/scripts/verify-delivery-harness-distribution.mjs"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exit_code": 0,
+    "duration_seconds": 218.19,
+    "log": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/preflight/profile-verification/sync09/delivery-harness-distribution.log"
+  },
+  "core_byte_bindings": "core-byte-verification.json",
+  "raw_cli_results": "cli-results.json",
+  "raw_template_results": "template-results.json",
+  "boundaries": [
+    "All new CLI targets are temporary synthetic instances. No S0-S6/O1 product claim.",
+    "Only test harness and fixture files were copied into separate instance copies; 8 key runtime files remain byte-identical to actual successful initialized instances and CLI snapshots. No missing authoring skills were added.",
+    "All snapshots and dedicated core locks declare working-tree; no Git commit, push or release authorization is implied.",
+    "sync07 retains first fixture failure and 300-second timeouts. The JSON EOF wait is handled by byte frames and timeout; exact origin of the retained write end is not established.",
+    "A later existing-v2 Slice structure guard requested by main is separate from this completed snapshot and will receive targeted verification."
+  ]
+}

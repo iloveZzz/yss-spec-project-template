@@ -1,0 +1,40 @@
+import fs from 'node:fs';
+import {pathToFileURL} from 'node:url';
+const pilot='/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm';
+const root=pilot+'/strategy-governance',backend=pilot+'/backend-governance',d='docs/.scratch/target-preview-existing-ui/handoff-draft/',bd='docs/.scratch/target-preview-pilot/existing-v2/';
+const {digest,hash,schema}=await import(pathToFileURL(root+'/scripts/lib/strategic-handoff-io.mjs'));
+const read=(r,p)=>JSON.parse(fs.readFileSync(r+'/'+p));
+const write=(r,p,v)=>{fs.mkdirSync(r+'/'+p.slice(0,p.lastIndexOf('/')),{recursive:true});fs.writeFileSync(r+'/'+p,typeof v==='string'?v:JSON.stringify(v,null,2)+'\n');};
+const binding=(r,ref,version='v1')=>({ref,version,digest:hash(fs.readFileSync(r+'/'+ref))});
+const contract=read(backend,bd+'slice-contract.json');
+write(backend,bd+'implementation-scope.json',{kind:'implementation-scope',slices:[{ticket_ref:contract.lifecycle_refs.ticket,contract:binding(backend,bd+'slice-contract.json'),repositories:contract.common.project_roots,allowed_write_paths:contract.common.allowed_write_paths,baselines:[binding(backend,contract.lifecycle_refs.engineering_baseline),binding(backend,bd+'technical-design.json'),binding(backend,bd+'verification-command-map.md')]}]});
+const domain=read(root,d+'domain-strategy.json'),stage=read(root,d+'stage-decision.json');
+for(const name of ['domain-review-approval.json','stage-review-approval.json'])if(!fs.existsSync(root+'/'+d+name))throw Error('独立会签尚未完成');
+const recon=read(root,d+'context-reconciliation.json');recon.stage='stage.ticket-formalization';write(root,d+'context-reconciliation.json',recon);
+const refs=[d+'sources/current-maintenance-plan.md','CONTEXT.md','docs/process/lifecycle-registry.yaml','docs/agents/digital-human-roles.yaml',d+'context-reconciliation.json',d+'domain-strategy.json',d+'stage-decision.json',d+'domain-review-approval.json',d+'stage-review-approval.json',d+'independent-review-result.json',d+'sources/existing-behavior-calibration.md',d+'sources/trial-agreement-historical.md'];
+const checks={goals:[d+'stage-decision.json'],scope_and_priority:[d+'sources/current-maintenance-plan.md',d+'stage-decision.json'],boundaries_and_rules:[d+'domain-strategy.json',d+'sources/existing-behavior-calibration.md'],open_questions:[d+'stage-decision.json',d+'independent-review-result.json'],handoff:[d+'domain-strategy.json',d+'stage-decision.json'],context_reconciliation:[d+'context-reconciliation.json'],grill_exit:[d+'sources/current-maintenance-plan.md',d+'sources/trial-agreement-historical.md',d+'independent-review-result.json']};
+const gates=Object.fromEntries([['gate.domain-strategy-approved','domain-strategy.json','domain-review-approval.json'],['gate.stage-decision-package-approved','stage-decision.json','stage-review-approval.json']].map(([id,subject,approval])=>[id,{status:'approved',approval_ref:d+approval,subject_ref:d+subject,approval_scope:['target-preview-pilot'],evidence_refs:[d+subject,d+approval]}]));
+write(root,d+'plan-entry-review.json',{schema_version:1,kind:'plan-entry-review',feature_id:'target-preview-pilot',plan_ref:d+'sources/current-maintenance-plan.md',context_reconciliation_ref:d+'context-reconciliation.json',basis:refs.map(ref=>({ref,digest:hash(fs.readFileSync(root+'/'+ref))})),checks:Object.fromEntries(Object.entries(checks).map(([id,evidence_refs])=>[id,{status:'passed',evidence_refs}])),open_items:[],impacts:{domain_strategy:true,stage_decision:true},gates,notes:'已明确当前试验目标/局部责任/规则/路线及验收seam，没有未回答的业务范围问题。已有实施授权复用；新Plan入口/Spec/UI/交付scope/实施scope的当前真人决定仍待本次集中审阅。R3与S0-S6/O1待正常实施，不等于已执行。'});
+const handoff=read(root,d+'handoff-v5-draft.json');
+write(root,d+'history/handoff-v5-before-current-review.json',handoff);
+handoff.status='ready-for-human';handoff.deferred_decisions_and_ownership=[];
+handoff.bounded_context_and_subdomain_map=['FileSync为现有已登记词汇责任区；本次仅观察目标数据预览。Supporting Subdomain仅是本试验局部职责解释，不推定原企业战略。'];
+for(const [key,source]of Object.entries(handoff.source)){
+  // A review candidate describes the release prerequisites. No approval record or receipt is created here.
+  source.status='approved';
+  if(key==='existing_ui_baseline_ref')continue;
+  source.digest=key==='spec_ref'?hash(fs.readFileSync(root+'/'+source.persisted_ref)):digest(read(root,source.persisted_ref));
+}
+handoff.package_export.approvals.domain_strategy_ref.record_ref=d+'domain-review-approval.json';
+handoff.package_export.approvals.stage_decision_package_ref.record_ref=d+'stage-review-approval.json';
+write(root,d+'handoff-v5-candidate.json',handoff);
+schema(handoff,'docs/process/schemas/strategic-design-handoff-v5.schema.json');
+const {package_export,status,...delivery}=handoff;
+write(root,d+'delivery-content-snapshot.json',delivery);
+const manifestFile=handoff.source.existing_ui_baseline_ref.persisted_ref+'/'+handoff.source.existing_ui_baseline_ref.manifest_ref;
+const assets=Object.entries(handoff.source).map(([key,value])=>{const ref=key==='existing_ui_baseline_ref'?manifestFile:value.persisted_ref;return {...binding(root,ref),boundary:key==='domain_strategy_ref'?'gate.domain-strategy-approved':key==='stage_decision_package_ref'?'gate.stage-decision-package-approved':key==='existing_ui_baseline_ref'?'gate.user-confirmation':key==='spec_ref'?'gate.spec-baseline-approved':'gate.strategic-design-handoff-approved',scope:['target-preview-pilot']};});
+assets.push({...binding(root,d+'delivery-content-snapshot.json'),boundary:'gate.strategic-design-handoff-approved',scope:['target-preview-pilot']});
+write(root,d+'delivery-scope.json',{schema_version:1,kind:'strategic-delivery-scope',delivery_ref:d+'delivery-content-snapshot.json',assets,risks:['仅隔离 PostgreSQL；不代表生产兼容。','真实 S0–S6/O1 尚未执行。'],conditions:['实施 R3，执行 S0–S6/O1。']});
+write(root,d+'current-review-state.json',{schema_version:1,state:'ready-for-human',release_candidate_ref:d+'handoff-v5-candidate.json',explanation:'候选中的source.status表示请求批准后导出必须满足的前提；当前未生成Spec/UI/交付批准记录，尚不能导出。它不是批准或接收状态。',required_user_subjects:[d+'domain-strategy.json',d+'stage-decision.json',d+'plan-entry-review.json',d+'spec-review-draft.md',manifestFile,d+'delivery-scope.json'],required_backend_subject:bd+'implementation-scope.json',required_user_decision_ref:'docs/.scratch/target-preview-existing-ui/decisions/current-assets.json'});
+const preflight=read(root,d+'preflight-input.json');preflight.assets.strategic_handoff={...preflight.assets.strategic_handoff,...binding(root,d+'handoff-v5-candidate.json')};write(root,d+'current-preflight-input.json',preflight);
+console.log('当前Plan/业务事实/UI/交付scope及实施scope均已固定待审；没有生成人类批准。');

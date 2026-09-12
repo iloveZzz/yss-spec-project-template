@@ -113,8 +113,11 @@ export function validateUserDecision(record, options = {}) {
     previousTime = time;
     if (response.decision === "approved") {
       const explicit = source.decision === "approved" && Array.isArray(source.item_ids) && response.item_ids.every((id) => source.item_ids.includes(id));
+      const contextualAll = response.selection === "explicit-all" && items.size > 1
+        && /是否\s*(?:明确)?(?:确认|批准|同意|接受)[^\n]{0,32}(?:以上)?全部\s*(?:\d+|[一二三四五六七八九十]+)?\s*(?:项|事项)/i.test(presentation.text)
+        && /^(?:确认|同意|批准|接受|可以|好的|好|yes|ok)[。.!！\s]*$/i.test(source.text.trim());
       if (!explicit && (!/(同意|批准|确认|接受|可以|好的|^好[。！!\s]*$|\b(?:approve|approved|agree|agreed|accept|yes|ok)\b)/i.test(source.text) || /(不同意|不批准|拒绝|反对|不要|需[要]?修改|请修改|暂不|reject|decline|do not approve|don't approve|disagree)/i.test(source.text))) decisionError("user-decision-ambiguous", "原文不能明确支持批准结论");
-      if (!explicit && response.selection === "explicit-all" && items.size > 1 && !/(全部|所有|\ball\b)/i.test(source.text)) decisionError("user-decision-ambiguous", "批量批准原文必须明确全部事项");
+      if (!explicit && !contextualAll && response.selection === "explicit-all" && items.size > 1 && !/(全部|所有|\ball\b)/i.test(source.text)) decisionError("user-decision-ambiguous", "批量批准原文必须明确全部事项，或直接回复明确询问全部事项的当前展示");
       if (!explicit && response.selection === "explicit-items" && items.size > 1 && response.item_ids.some((id) => !source.text.includes(id) && !source.text.includes(items.get(id)?.title))) decisionError("user-decision-ambiguous", "原文未指向所选事项");
     }
     if (response.selection === "single" && items.size !== 1) decisionError("user-decision-ambiguous", "多事项不能用单项回复");

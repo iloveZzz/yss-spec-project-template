@@ -1,0 +1,102 @@
+[
+  {
+    "argv": [
+      "docker",
+      "--context",
+      "desktop-linux",
+      "context",
+      "inspect",
+      "desktop-linux",
+      "--format",
+      "{{.Endpoints.docker.Host}}"
+    ],
+    "executed_at": "2026-09-11T18:47:45.456215+00:00",
+    "exit_code": 0,
+    "stdout": "unix:///Users/zhudaoming/.docker/run/docker.sock\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "docker",
+      "--context",
+      "desktop-linux",
+      "inspect",
+      "yss-preview-0kxzmm-pg",
+      "--format",
+      "{\"id\":{{json .Id}},\"image\":{{json .Image}},\"owner\":{{json (index .Config.Labels \"yss.trial\")}},\"state\":{{json .State.Status}}}"
+    ],
+    "executed_at": "2026-09-11T18:47:45.490202+00:00",
+    "exit_code": 0,
+    "stdout": "{\"id\":\"515aa017488a44ba856647c1db604035b7e86efb2bf2faa807fc49a6bcf92a2f\",\"image\":\"sha256:65e8e7578613732cb07166ea4f1f0bd2096679f5217b5ac23de619077ed684e7\",\"owner\":\"target-preview-20260912-0kxzmm\",\"state\":\"exited\"}\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "docker",
+      "--context",
+      "desktop-linux",
+      "start",
+      "yss-preview-0kxzmm-pg"
+    ],
+    "executed_at": "2026-09-11T18:47:45.671233+00:00",
+    "exit_code": 0,
+    "stdout": "yss-preview-0kxzmm-pg\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "docker",
+      "--context",
+      "desktop-linux",
+      "port",
+      "yss-preview-0kxzmm-pg",
+      "5432"
+    ],
+    "executed_at": "2026-09-11T18:47:45.691008+00:00",
+    "exit_code": 0,
+    "stdout": "127.0.0.1:59385\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "docker",
+      "--context",
+      "desktop-linux",
+      "inspect",
+      "yss-preview-0kxzmm-redis",
+      "--format",
+      "{\"id\":{{json .Id}},\"image\":{{json .Image}},\"owner\":{{json (index .Config.Labels \"yss.trial\")}},\"state\":{{json .State.Status}}}"
+    ],
+    "executed_at": "2026-09-11T18:47:45.715609+00:00",
+    "exit_code": 0,
+    "stdout": "{\"id\":\"f37b58db2599d418b7ed01482a4c7f43c31fa9c2e14c12d629fb841cf939cdf5\",\"image\":\"sha256:2c96e8092504e99e7601bcb6f4954b4cfed77d5125c88061a49c252fb33cf6f7\",\"owner\":\"target-preview-20260912-0kxzmm\",\"state\":\"exited\"}\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "docker",
+      "--context",
+      "desktop-linux",
+      "start",
+      "yss-preview-0kxzmm-redis"
+    ],
+    "executed_at": "2026-09-11T18:47:45.823252+00:00",
+    "exit_code": 0,
+    "stdout": "yss-preview-0kxzmm-redis\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "docker",
+      "--context",
+      "desktop-linux",
+      "port",
+      "yss-preview-0kxzmm-redis",
+      "6379"
+    ],
+    "executed_at": "2026-09-11T18:47:45.847926+00:00",
+    "exit_code": 0,
+    "stdout": "127.0.0.1:59390\n",
+    "stderr": ""
+  }
+]

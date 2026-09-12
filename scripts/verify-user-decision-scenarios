@@ -5,7 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { buildDecisionFixture, buildImplementationFixture } from "./fixtures/user-decision/build-fixture.mjs";
-import { validateUserDecision, assertUserDecisionRequirement, assertImplementationDecision, decisionDigest } from "./lib/user-decision.mjs";
+import { validateUserDecision, assertUserDecisionRequirement, assertImplementationDecision, decisionDigest, renderDecisionRequest } from "./lib/user-decision.mjs";
 import { validateApprovalRecord, assertCheckpointApprovals, assertCheckpointUserDecisions } from "./lib/approval-record.mjs";
 import { validateNextRoute } from "./lib/lifecycle-transition.mjs";
 import { loadDigitalHumanRoles, countersignRuleForGate, collectCountersignGateIds } from "./lib/digital-human-roles.mjs";
@@ -44,6 +44,12 @@ check("多项继续无效，明确全部或部分批准有效", () => {
   f.record.responses = []; f.respond({ text: "同意以上全部事项" }); verify(f);
   f.record.responses = []; f.respond({ text: "同意 decision.demo", selection: "explicit-items", itemIds: ["decision.demo"], approvedScope: ["feature.demo"] }); verify(f);
   assert.throws(() => validateUserDecision(f.record, { expected: [{ ...f.requirement, boundary: second.boundary, scope: second.scope }] }), /user-decision-response-required/);
+});
+check("明确询问全部事项后的紧邻确认有效，普通多项展示仍需写明全部", () => {
+  const f = fixture("contextual-all"); const second = structuredClone(f.record.request.items[0]); second.id = "decision.second"; second.boundary = "check.openapi-frozen"; second.scope = ["api.demo"]; f.record.request.items.push(second);
+  const rendered = `${renderDecisionRequest(f.record.request)}\n是否确认以上全部 2 项？`;
+  f.record.request.presented_source = f.capture("all-presentation", "agent.orchestrator", "digital-human", "2026-09-05T01:02:00Z", rendered); f.record.responses = []; f.respond({ text: "确认" }); verify(f);
+  const g = fixture("generic-multi"); const other = structuredClone(g.record.request.items[0]); other.id = "decision.other"; other.boundary = "check.openapi-frozen"; other.scope = ["api.other"]; g.record.request.items.push(other); g.present(); g.record.responses = []; g.respond({ text: "确认" }); deny(g, "user-decision-ambiguous");
 });
 check("不能把其他对话的同意嫁接为当前批准", () => {
   const f = fixture("unrelated-response"); const source = f.record.responses[0].source;

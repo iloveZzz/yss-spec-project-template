@@ -1,6 +1,7 @@
 import * as fs from "node:fs";
 import { parseDocument } from "./vendor/yaml.mjs";
 import { ensure, hash, readJson, safe, governance } from "./io.mjs";
+import { familyFor, CHECKS } from './family.mjs';
 export const PROFILE = "docs/process/harness-profile.yaml";
 export function yaml(bytes) {
   const doc = parseDocument(String(bytes), { uniqueKeys: true });
@@ -17,15 +18,7 @@ export function loadBundle(root) {
     family = readJson(root, "config/family.json"),
     snapshot = readJson(root, "template.snapshot.json"),
     core = readJson(root, "cli-core.lock.json");
-  ensure(["backend", "frontend"].includes(family.side), "未知 CLI 家族");
-  const side = family.side;
-  const expected = {
-    packageName: `create-yss-harness-${side}`,
-    profileId: `harness.${side}-delivery`,
-    metadataFile: `.yss-harness-${side}.json`,
-    templateName: `yss-harness-${side}-agent`,
-    templateSource: `github:iloveZzz/yss-harness-${side}-agent`,
-  };
+  const expected = familyFor(family.side);
   for (const [key, value] of Object.entries(expected))
     ensure(
       family[key] === value && snapshot[key] === value,
@@ -50,6 +43,40 @@ export function loadBundle(root) {
     "分发清单摘要不一致",
     "BUNDLE",
   );
+  const retiredFiles = snapshot.retiredFiles || {};
+  ensure(
+    (!snapshot.retiredFilesHash && !Object.keys(retiredFiles).length) ||
+      hash(JSON.stringify(retiredFiles)) === snapshot.retiredFilesHash,
+    "退出分发基线摘要不一致",
+    "BUNDLE",
+  );
+  for (const [ref, item] of Object.entries(retiredFiles)) {
+    governance(ref);
+    ensure(
+      item.type === "file" &&
+        [0o644, 0o755].includes(item.mode) &&
+        /^[0-9a-f]{64}$/.test(item.digest),
+      `退出分发基线不合法: ${ref}`,
+      "BUNDLE",
+    );
+  }
+  const transitionBaselines = snapshot.transitionBaselines || {};
+  ensure(
+    (!snapshot.transitionBaselinesHash && !Object.keys(transitionBaselines).length) ||
+      hash(JSON.stringify(transitionBaselines)) === snapshot.transitionBaselinesHash,
+    "受管范围迁移基线摘要不一致",
+    "BUNDLE",
+  );
+  for (const [ref, item] of Object.entries(transitionBaselines)) {
+    governance(ref);
+    ensure(
+      snapshot.files[ref] && item.type === "file" &&
+        [0o644, 0o755].includes(item.mode) &&
+        /^[0-9a-f]{64}$/.test(item.digest),
+      `受管范围迁移基线不合法: ${ref}`,
+      "BUNDLE",
+    );
+  }
   ensure(
     core.schemaVersion === 1 &&
       core.protocolVersion === 1 &&
@@ -59,10 +86,18 @@ export function loadBundle(root) {
     "核心锁不合法",
     "BUNDLE",
   );
+  if (core.coreVersion === '0.2.0') ensure(core.files && Object.keys(core.files).length > 0, '核心文件清单缺失', 'BUNDLE');
+  for (const [ref, item] of Object.entries(core.files || {})) {
+    const file=safe(root, `vendor/cli-core/${ref}`);
+    ensure(hash(fs.readFileSync(file))===item.digest && (fs.statSync(file).mode & 0o111 ? 0o755 : 0o644)===item.mode, `核心文件漂移: ${ref}`, 'BUNDLE');
+  }
+  if (Object.keys(core.files || {}).length) ensure(hash(JSON.stringify(core.files))===core.digest, '核心清单摘要不一致', 'BUNDLE');
+  const manifest = readJson(root, "template.manifest.json");
   const files = new Map();
   const blobs = new Map();
   for (const [ref, item] of Object.entries(snapshot.files)) {
     governance(ref);
+    ensure(!(manifest.instanceForbiddenPaths || []).some(p=>ref===p || ref.startsWith(p+"/")), `快照含家族禁止分发路径: ${ref}`, "BUNDLE");
     ensure(
       item.type === "file" &&
         [0o644, 0o755].includes(item.mode) &&
@@ -101,19 +136,22 @@ export function loadBundle(root) {
   ensure(
     [1, 2].includes(profile.schema_version) &&
       profile.profile_id === family.profileId &&
-      profile.instantiation?.cli_package === family.packageName &&
+      (family.side === "design" || (profile.instantiation?.cli_package === family.packageName &&
       profile.instantiation?.metadata_file === family.metadataFile &&
-      profile.instantiation?.template_source === family.templateSource,
+      profile.instantiation?.template_source === family.templateSource)),
     "模板 profile 与包身份矛盾",
     "IDENTITY",
   );
+  if (files.has("skills-lock.json")) for (const [, ref] of CHECKS) ensure(files.has(ref), `缺少实例校验器: ${ref}`, "BUNDLE");
   return {
     root,
     pkg,
     family,
     snapshot,
     core,
-    manifest: readJson(root, "template.manifest.json"),
+    manifest,
+    retiredFiles,
+    transitionBaselines,
     files,
   };
 }
@@ -136,6 +174,8 @@ export function render(bundle, variables) {
       bytes = Buffer.from(
         `# ${variables.projectName}\n\n本仓是 \`${bundle.family.profileId}\` 的 \`project-instance\`。\n\n先读 [AGENTS.md](AGENTS.md)、[CONTEXT.md](CONTEXT.md) 与 [profile](docs/process/harness-profile.yaml)。\n\n业务领域：${variables.businessDomain}\n团队规模：${variables.teamSize}\n`,
       );
+    if (bundle.family.side === "design" && ref === "AGENTS.md")
+      bytes = Buffer.from(bytes.toString().replace("**项目名称：** [填写]", () => `**项目名称：** ${variables.projectName}`).replace("**业务领域：** [填写]", () => `**业务领域：** ${variables.businessDomain}`).replace("**团队规模：** [填写]", () => `**团队规模：** ${variables.teamSize}`));
     if (ref === "docs/agents/issue-tracker.md")
       bytes = Buffer.from(
         bytes

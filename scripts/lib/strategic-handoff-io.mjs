@@ -1,11 +1,20 @@
 import { createHash } from 'node:crypto';
 import { existsSync, lstatSync, readdirSync, readFileSync, mkdirSync, writeFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
+import { AsyncLocalStorage } from 'node:async_hooks';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { validateJsonSchemas } from './json-schema.mjs';
 import { parseDocument } from '../vendor/yaml.mjs';
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+// A v5 package keeps the source glossary as a snapshot, never a nested CONTEXT.md.
+// Only this fixed alias is supported, isolated to the current asynchronous reader.
+const sourceContextSnapshots = new AsyncLocalStorage();
+export function withSourceContextSnapshot(root, action) {
+  const roots = new Set(sourceContextSnapshots.getStore() || []);
+  roots.add(path.resolve(root));
+  return sourceContextSnapshots.run(roots, action);
+}
 export const ensure = (condition, message) => { if (!condition) throw new TypeError(message); };
 export const canonical = value => Array.isArray(value) ? value.map(canonical) : value && typeof value === 'object' ? Object.fromEntries(Object.keys(value).sort().map(k => [k, canonical(value[k])])) : value;
 export const hash = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
@@ -23,6 +32,7 @@ export function relative(ref) {
 }
 export function safe(root, ref, { missing = false } = {}) {
   relative(ref);
+  if (ref === 'CONTEXT.md' && sourceContextSnapshots.getStore()?.has(path.resolve(root))) ref = 'source-context.snapshot.md';
   let current = path.resolve(root);
   ensure(!existsSync(current) || !lstatSync(current).isSymbolicLink(), `根目录不能是 symlink: ${root}`);
   for (const part of ref.split('/')) {

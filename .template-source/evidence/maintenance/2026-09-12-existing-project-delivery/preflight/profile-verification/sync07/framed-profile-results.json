@@ -1,0 +1,26 @@
+[
+  {
+    "name": "framed-design-ui",
+    "exit_code": 0,
+    "duration_seconds": 30.105634212493896,
+    "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/schema-fixed-replay-h9_2wq43/design"
+  },
+  {
+    "name": "framed-design-package",
+    "exit_code": 0,
+    "duration_seconds": 33.370444774627686,
+    "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/schema-fixed-replay-h9_2wq43/design"
+  },
+  {
+    "name": "framed-backend-ui",
+    "exit_code": 0,
+    "duration_seconds": 26.055304050445557,
+    "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/schema-fixed-replay-h9_2wq43/backend"
+  },
+  {
+    "name": "framed-frontend-ui",
+    "exit_code": 0,
+    "duration_seconds": 25.858696937561035,
+    "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/schema-fixed-replay-h9_2wq43/frontend"
+  }
+]

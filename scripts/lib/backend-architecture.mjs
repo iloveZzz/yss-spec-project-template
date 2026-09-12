@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { loadSkillRegistry } from "./skill-registry.mjs";
+import { validateExistingArchitecture, verifyExistingArchitecture } from "./existing-backend-architecture.mjs";
 
 export function architectureDigest(value) {
   const stable = (item) => Array.isArray(item) ? item.map(stable) : item && typeof item === "object"
@@ -9,6 +10,8 @@ export function architectureDigest(value) {
 
 export function validateArchitectureIdentity(identity, registry = loadSkillRegistry()) {
   if (!identity || typeof identity !== "object") throw new TypeError("缺少 architecture_identity；请从工程基线重新编译");
+  if (identity.schema_version === 2) return validateExistingArchitecture(identity, registry);
+  if (identity.schema_version !== undefined || identity.source_kind !== undefined) throw new TypeError("不支持的 architecture_identity 来源或版本");
   const profile = registry.architecture_profiles?.[identity.architecture_profile];
   if (!profile || identity.architecture_family !== profile.architecture_family || identity.generator_skill !== profile.generator_skill) {
     throw new TypeError("architecture_identity 的架构族、Profile 或生成器不匹配");
@@ -26,6 +29,15 @@ export function validateArchitectureIdentity(identity, registry = loadSkillRegis
       modules.length !== identity.resolved_modules.length || modules.some((module) => !identity.resolved_modules.includes(module))) throw new TypeError("architecture_identity 模块闭包不匹配");
   if (typeof identity.contract_digest !== "string" || !/^(sha256:)?[a-f0-9]{64}$/.test(identity.contract_digest)) throw new TypeError("architecture_identity 缺少有效 contract_digest");
   return profile;
+}
+
+// Existing projects must present original on-disk evidence, not three copies supplied by a caller.
+export function verifyArchitectureEvidence(identity, evidence, { root, registry = loadSkillRegistry(), execution } = {}) {
+  validateArchitectureIdentity(identity, registry);
+  if (identity.schema_version === 2) return verifyExistingArchitecture(identity, evidence, { root, registry, execution });
+  if (!evidence?.engineering_baseline || !evidence?.repository_registration || !evidence?.manifest) throw new TypeError("缺少工程基线、仓库登记或 Manifest 架构证据");
+  assertArchitectureAgreement(identity, evidence, registry);
+  return { source_kind: "scaffold", bindings: evidence };
 }
 
 export function assertArchitectureAgreement(identity, evidence, registry) {

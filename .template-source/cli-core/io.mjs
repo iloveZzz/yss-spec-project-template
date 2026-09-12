@@ -105,6 +105,7 @@ export function governance(ref) {
         "CLAUDE.md",
         "CONTEXT.md",
         "README.md",
+        "DESIGN.md",
         "skills-lock.json",
         "yss-project.yaml",
         "yss-public-skills.json",

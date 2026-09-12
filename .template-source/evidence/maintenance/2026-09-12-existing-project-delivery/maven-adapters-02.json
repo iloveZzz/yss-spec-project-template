@@ -1,0 +1,20 @@
+[
+  {
+    "family": "domain-driven",
+    "command": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend/mvnw -B -o -f /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-existing-regression-am2te1/project/pom.xml test package",
+    "executed_at": "2026-09-11T18:25:24.959Z",
+    "exit_code": 0,
+    "evidence_ref": "maven-domain-driven-02.log",
+    "evidence_digest": "sha256:c8a84db0946b1f6fb784f7db7abcad1fa13f49a0130b29287e8cbccb02c008c5",
+    "scope": "synthetic existing-project adapter compile/package; not pilot S0 and no real product approval"
+  },
+  {
+    "family": "layered-mvc",
+    "command": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend/mvnw -B -o -f /var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-existing-regression-Dzyrrk/project/pom.xml test package",
+    "executed_at": "2026-09-11T18:25:26.466Z",
+    "exit_code": 0,
+    "evidence_ref": "maven-layered-mvc-02.log",
+    "evidence_digest": "sha256:1332767ec6cc07d16abf0c049ac6e2936cd157128dccc17bab289f747fbc93d0",
+    "scope": "synthetic existing-project adapter compile/package; not pilot S0 and no real product approval"
+  }
+]

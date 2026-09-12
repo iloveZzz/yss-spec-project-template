@@ -1,0 +1,45 @@
+{
+  "recorded_at": "2026-09-11T19:32:26.047516+00:00",
+  "scope": "Existing UI synthetic source-policy fixture and JSON Schema stdin frame reliability; no product or acceptance state changes",
+  "files": [
+    {
+      "ref": "scripts/lib/json-schema.mjs",
+      "digest": "sha256:007e39300478da6f0e359d822642f7a6aaf2466ee5781bd81924cf5897eebc72"
+    },
+    {
+      "ref": "scripts/verify-existing-ui-baseline-scenarios",
+      "digest": "sha256:329615f3fd27606055c61fb4949a25eae848954cda6f23b34576526148f5a658"
+    },
+    {
+      "ref": "scripts/verify-delivery-preflight-scenarios",
+      "digest": "sha256:628dfb262117e609afe38216225cc5c5c5e2b20cb83f7eb47f021af4730e39a7"
+    },
+    {
+      "ref": "scripts/fixtures/delivery-preflight/json-schema-framing.test.mjs",
+      "digest": "sha256:e4464e90facc0afb886f6b78cc4c3c71f4a991b40b9b88a350282866388fbd76"
+    },
+    {
+      "ref": "docs/process/delivery-preflight.md",
+      "digest": "sha256:e8707f734f57357e8e53d1adec44d69ff692362aeb7ae75b1ca5113df601bc71"
+    }
+  ],
+  "verification": [
+    {
+      "command": "node --test scripts/fixtures/delivery-preflight/json-schema-framing.test.mjs",
+      "tests": 3,
+      "result": "passed",
+      "log": "schema-framing-green.log"
+    },
+    {
+      "command": "node scripts/verify-delivery-preflight-scenarios",
+      "cli_tests": 22,
+      "approved_execution_tests": 6,
+      "schema_transport_tests": 3,
+      "result": "passed",
+      "log": "framed-main-preflight.log"
+    }
+  ],
+  "profile_replays": "framed-profile-results.json",
+  "not_established": "No claim is made about which process retained the EOF write end; sampled EOF wait is handled by exact byte framing and finite timeout.",
+  "source_state": "working-tree"
+}

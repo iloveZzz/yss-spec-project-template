@@ -1,0 +1,32 @@
+[
+  {
+    "attempt": 0,
+    "exit_code": 0,
+    "duration_seconds": 7.955025911331177,
+    "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/schema-hang-probe-xhvsk8au/frontend"
+  },
+  {
+    "attempt": 1,
+    "exit_code": 0,
+    "duration_seconds": 8.486346006393433,
+    "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/schema-hang-probe-xhvsk8au/frontend"
+  },
+  {
+    "attempt": 2,
+    "exit_code": 0,
+    "duration_seconds": 7.877673864364624,
+    "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/schema-hang-probe-xhvsk8au/frontend"
+  },
+  {
+    "attempt": 3,
+    "exit_code": 0,
+    "duration_seconds": 8.277910947799683,
+    "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/schema-hang-probe-xhvsk8au/frontend"
+  },
+  {
+    "attempt": 4,
+    "exit_code": 0,
+    "duration_seconds": 8.03562307357788,
+    "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/schema-hang-probe-xhvsk8au/frontend"
+  }
+]

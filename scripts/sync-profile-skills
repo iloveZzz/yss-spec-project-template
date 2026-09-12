@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { applyProfileSkillSync, loadProfileSyncConfig, planProfileSkillSync, reportProfileSkillSync } from "./lib/profile-skill-sync.mjs";
+import { applyProfileSkillSync, formatProfileSkillSync, loadProfileSyncConfig, planProfileSkillSync, reportProfileSkillSync } from "./lib/profile-skill-sync.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 try {
@@ -30,10 +30,9 @@ try {
   const report = reportProfileSkillSync(result);
   if (json) process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
   else {
-    process.stdout.write(`profile skills: ${report.profiles.join(", ")}\n`);
-    for (const [status, count] of Object.entries(report.counts)) process.stdout.write(`${status}: ${count}\n`);
-    for (const item of report.changes) process.stdout.write(`${item.profile}: ${item.status}: ${item.path}\n`);
-    for (const item of report.issues) process.stderr.write(`${item.profile}: ${item.status}: ${item.path ?? item.skill ?? item.message}\n`);
+    const output = formatProfileSkillSync(report, modes[0]);
+    process.stdout.write(output.stdout);
+    process.stderr.write(output.stderr);
   }
   if (args.includes("--check") && (plan.changes.length || plan.issues.length)) process.exitCode = 1;
   if (args.includes("--apply") && plan.issues.length) process.exitCode = 1;

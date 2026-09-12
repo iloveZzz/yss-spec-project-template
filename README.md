@@ -48,9 +48,10 @@ YSS UI 组件知识同时通过项目级 MCP 配置提供；支持的客户端�
 
 ## 模板初始化 CLI
 
-`create-yss-spec` 的目标维护位置是独立 GitHub 仓库 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec)。本仓库不再包含 CLI 源码、测试、发布配置或开发过程记录。CLI 的使用方法已经合并到统一用户手册：
+`create-yss-spec` 的发布仓库是 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec)。用户从统一手册选择家族；CLI 源码、测试、打包和发布仍在各自仓库维护：
 
-- [YSS 用户手册：创建、接管和更新项目](./docs/user-guide/用户手册.md#创建接管和更新项目)
+- [YSS 用户手册：CLI 能力与写入方式](./docs/user-guide/用户手册.md#cli-能力与写入方式)
+- [YSS 用户手册：接管、同步与恢复](./docs/user-guide/用户手册.md#接管同步与恢复)
 
 推荐入口：
 
@@ -130,4 +131,4 @@ scripts/verify-template-fast
 
 ## 按职责使用与升级
 
-[五类项目用户手册](docs/user-guide/用户手册.md)提供选型、初始化及升级；[设备借用贯穿案例](docs/user-guide/设备借用贯穿案例.md)演示战略、后端、前端与统一验收。[全部手册](docs/user-guide/用户手册索引.md)区分日常使用与维护入口。GitHub 当前能力与 npm 发布快照分别核对。
+[四个现行家族用户手册](docs/user-guide/用户手册.md)提供选型、初始化及升级；[设备借用贯穿案例](docs/user-guide/设备借用贯穿案例.md)演示战略、后端、前端与统一验收。[全部手册](docs/user-guide/用户手册索引.md)给出本体和子项目入口。GitHub 当前能力、npm 发布版本与实例模板快照分别核对。

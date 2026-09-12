@@ -1,0 +1,267 @@
+{
+  "schema_version": 1,
+  "reviewer": "delivery-binding-reviewer",
+  "kind": "read-only-current-review-self-check",
+  "checked_at": "2026-09-11T19:53:19.156418+00:00",
+  "result": "passed",
+  "subject_count": 7,
+  "checks": [
+    {
+      "check": "request_digest",
+      "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance",
+      "passed": true,
+      "actual": "sha256:968fdf503f56722652b1569c5431d5060c89c9e05b78c0cec5e0c8934244cb9d"
+    },
+    {
+      "check": "subject",
+      "id": "domain",
+      "ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance/docs/.scratch/target-preview-existing-ui/handoff-draft/domain-strategy.json",
+      "digest": "sha256:a8c613d6aafd49a52c070ebf1b62f10b33db864f9c4a10f7d1490992723ecba9",
+      "passed": true,
+      "scope": [
+        "target-preview-pilot"
+      ]
+    },
+    {
+      "check": "subject",
+      "id": "stage",
+      "ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance/docs/.scratch/target-preview-existing-ui/handoff-draft/stage-decision.json",
+      "digest": "sha256:d7acd8df933bdf85fb087f5034ebfc8f23c9cf62d1801c97180a464d679335fc",
+      "passed": true,
+      "scope": [
+        "target-preview-pilot"
+      ]
+    },
+    {
+      "check": "subject",
+      "id": "plan",
+      "ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance/docs/.scratch/target-preview-existing-ui/handoff-draft/plan-entry-review.json",
+      "digest": "sha256:ecabe7ef3d9e63d0f38ba1b4d0ef3fb3dcf976c9d4ce9e7e2c47c516a9cc1d9b",
+      "passed": true,
+      "scope": [
+        "target-preview-pilot"
+      ]
+    },
+    {
+      "check": "subject",
+      "id": "spec",
+      "ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance/docs/.scratch/target-preview-existing-ui/handoff-draft/spec-review-draft.md",
+      "digest": "sha256:2b6e4e6bb3c1e9a069c8d24e19bb9af9bd716595dfdb80959d5d44c5593bb036",
+      "passed": true,
+      "scope": [
+        "target-preview-pilot"
+      ]
+    },
+    {
+      "check": "subject",
+      "id": "ui",
+      "ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance/docs/.scratch/target-preview-existing-ui/baseline-v1/existing-ui-baseline.json",
+      "digest": "sha256:996435165b1e471926034b6ff499bbed6edfe6103a41a6c6d3ba943f73581c0f",
+      "passed": true,
+      "scope": [
+        "target-preview-pilot"
+      ]
+    },
+    {
+      "check": "subject",
+      "id": "delivery",
+      "ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance/docs/.scratch/target-preview-existing-ui/handoff-draft/delivery-scope.json",
+      "digest": "sha256:83df96b6944412b4306f68e6247143084047a38a4512ef15b0cf6a4f44240176",
+      "passed": true,
+      "scope": [
+        "target-preview-pilot"
+      ]
+    },
+    {
+      "check": "no_fabricated_response",
+      "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance",
+      "passed": true
+    },
+    {
+      "check": "requester_source",
+      "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance",
+      "passed": true
+    },
+    {
+      "check": "request_digest",
+      "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance",
+      "passed": true,
+      "actual": "sha256:cea6b0cdb7860227a4b2d8bfa9f02cecec86999a55360eb44e2a8d610ffb081d"
+    },
+    {
+      "check": "subject",
+      "id": "implementation",
+      "ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance/docs/.scratch/target-preview-pilot/existing-v2/implementation-scope.json",
+      "digest": "sha256:aa55347369fc31f0cef854545beb0873b4882c727df04cb8bac7be674561196e",
+      "passed": true,
+      "scope": [
+        "docs/.scratch/target-preview-pilot/existing-v2/slice-ticket.md"
+      ]
+    },
+    {
+      "check": "no_fabricated_response",
+      "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance",
+      "passed": true
+    },
+    {
+      "check": "requester_source",
+      "root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/.scratch/target-preview-existing-ui/handoff-draft/sources/current-maintenance-plan.md",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "CONTEXT.md",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/process/lifecycle-registry.yaml",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/agents/digital-human-roles.yaml",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/.scratch/target-preview-existing-ui/handoff-draft/context-reconciliation.json",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/.scratch/target-preview-existing-ui/handoff-draft/domain-strategy.json",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/.scratch/target-preview-existing-ui/handoff-draft/stage-decision.json",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/.scratch/target-preview-existing-ui/handoff-draft/domain-review-approval.json",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/.scratch/target-preview-existing-ui/handoff-draft/stage-review-approval.json",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/.scratch/target-preview-existing-ui/handoff-draft/independent-review-result.json",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/.scratch/target-preview-existing-ui/handoff-draft/sources/existing-behavior-calibration.md",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/.scratch/target-preview-existing-ui/handoff-draft/sources/trial-agreement-historical.md",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/.scratch/target-preview-existing-ui/handoff-draft/domain-strategy.json",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/.scratch/target-preview-existing-ui/handoff-draft/stage-decision.json",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/.scratch/target-preview-existing-ui/handoff-draft/spec-review-draft.md",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/.scratch/target-preview-existing-ui/handoff-draft/business-ticket-set.json",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/.scratch/target-preview-existing-ui/baseline-v1/existing-ui-baseline.json",
+      "passed": true
+    },
+    {
+      "check": "nested_asset_digest",
+      "ref": "docs/.scratch/target-preview-existing-ui/handoff-draft/delivery-content-snapshot.json",
+      "passed": true
+    },
+    {
+      "check": "current_corrected_slice_bound",
+      "passed": true
+    },
+    {
+      "check": "implementation_basis",
+      "ref": "docs/.scratch/target-preview-pilot/existing-v2/engineering-baseline.json",
+      "passed": true
+    },
+    {
+      "check": "implementation_basis",
+      "ref": "docs/.scratch/target-preview-pilot/existing-v2/technical-design.json",
+      "passed": true
+    },
+    {
+      "check": "implementation_basis",
+      "ref": "docs/.scratch/target-preview-pilot/existing-v2/verification-command-map.md",
+      "passed": true
+    },
+    {
+      "check": "professional_approval_current_raw_subject",
+      "ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance/docs/.scratch/target-preview-existing-ui/handoff-draft/domain-review-approval.json",
+      "passed": true
+    },
+    {
+      "check": "professional_approval_current_raw_subject",
+      "ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance/docs/.scratch/target-preview-existing-ui/handoff-draft/stage-review-approval.json",
+      "passed": true
+    },
+    {
+      "check": "professional_approval_current_raw_subject",
+      "ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance/docs/.scratch/target-preview-pilot/existing-v2/slice-review-approval.json",
+      "passed": true
+    },
+    {
+      "check": "actual_human_decision_still_missing",
+      "passed": true
+    },
+    {
+      "check": "S0_and_matrix_not_claimed_executed",
+      "passed": true
+    },
+    {
+      "check": "existing_authorization_retained",
+      "passed": true
+    }
+  ],
+  "findings": [],
+  "advisories": [
+    {
+      "severity": "non-blocking",
+      "suggestion": "最终发给提问者的正文可补一句：技术设计、Slice、Domain/Stage已完成专业会签；本次请求当前资产的人类确认，S0尚未执行。当前审阅包已明确“没有本次人类批准”，不存在把专业会签当真人批准的错误。"
+    }
+  ],
+  "read_only_inputs": {
+    "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance/docs/.scratch/target-preview-existing-ui/handoff-draft/current-review.md": "sha256:8c8e5e34945ff16083fbd88091aac0340349e6ef40d7723c79850463899f736d",
+    "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance/docs/.scratch/target-preview-existing-ui/handoff-draft/current-request-snapshot.json": "sha256:0a15f26e1e7d2217676aed1013dee5ef00e50c2674ba10754a25c8763f62581f",
+    "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance/docs/.scratch/target-preview-pilot/existing-v2/current-request-snapshot.json": "sha256:e047e0e92ebb5dfa5aa7ac9fd0dd84d6300dacf4f6e3d786177180e015f052ea",
+    "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/current-review-final-draft.md": "sha256:13a2c728da29f26b4cceb77ac5debe2176f93c47c29572de8d24340d2be3ed9f"
+  },
+  "written_file": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/current-review-self-check.json",
+  "scope_limits": [
+    "本次未重跑机制全套测试或四CLI回归，仅核对当前批准展示包",
+    "没有修改D/B当前资产、请求快照、批准或原历史文件",
+    "没有捕获或代造用户回复，没有导出/导入/派发Worker/运行S0"
+  ]
+}

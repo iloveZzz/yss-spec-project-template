@@ -1,0 +1,71 @@
+[
+  {
+    "stage": "source-test",
+    "command": [
+      "pnpm",
+      "test"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+    "exitCode": 0
+  },
+  {
+    "stage": "verify-bundle",
+    "command": [
+      "pnpm",
+      "verify-bundle"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+    "exitCode": 0
+  },
+  {
+    "stage": "pack",
+    "command": [
+      "npm",
+      "pack",
+      "--json",
+      "--pack-destination",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-install-xprwu2kx"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+    "exitCode": 0
+  },
+  {
+    "stage": "offline-install",
+    "command": [
+      "npm",
+      "install",
+      "--prefix",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-install-xprwu2kx/final-installed-frontend",
+      "--ignore-scripts",
+      "--offline",
+      "--package-lock=false",
+      "--no-audit",
+      "--no-fund",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-install-xprwu2kx/create-yss-harness-frontend-0.2.0.tgz"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exitCode": 0
+  },
+  {
+    "stage": "installed-test",
+    "command": [
+      "node",
+      "--input-type=module",
+      "-e",
+      "import {packageContract} from \"file:///private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-install-xprwu2kx/final-installed-frontend/node_modules/create-yss-harness-frontend/vendor/cli-core/tests/package-contract.mjs\";packageContract(\"/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-install-xprwu2kx/final-installed-frontend/node_modules/create-yss-harness-frontend\");"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exitCode": 0
+  },
+  {
+    "stage": "installed-version",
+    "command": [
+      "node",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-cli-install-xprwu2kx/final-installed-frontend/node_modules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+      "--version",
+      "--json"
+    ],
+    "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "exitCode": 0
+  }
+]

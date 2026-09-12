@@ -1,0 +1,29 @@
+{
+  "time": "2026-09-11T19:06:33.367695+00:00",
+  "processes": [
+    {
+      "pid": 12532,
+      "expected_command": "jsonschema",
+      "action": "SIGTERM",
+      "reason": "first full verification stalled over 13 minutes on old concurrent source"
+    },
+    {
+      "pid": 12003,
+      "expected_command": "strategic-handoff export",
+      "action": "SIGTERM",
+      "reason": "first full verification stalled over 13 minutes on old concurrent source"
+    },
+    {
+      "pid": 8639,
+      "expected_command": "verify-delivery-preflight-scenarios",
+      "action": "SIGTERM",
+      "reason": "first full verification stalled over 13 minutes on old concurrent source"
+    },
+    {
+      "pid": 59821,
+      "expected_command": "run-template-verification --profile fast",
+      "action": "SIGTERM",
+      "reason": "first full verification stalled over 13 minutes on old concurrent source"
+    }
+  ]
+}

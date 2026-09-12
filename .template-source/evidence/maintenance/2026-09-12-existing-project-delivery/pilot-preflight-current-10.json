@@ -1,0 +1,205 @@
+[
+  {
+    "role": "backend",
+    "argv": [
+      "node",
+      "scripts/preflight-delivery",
+      "--input",
+      "docs/.scratch/target-preview-pilot/existing-v2/delivery-preflight-input.json",
+      "--stage",
+      "build",
+      "--json"
+    ],
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance",
+    "exit_code": 0,
+    "expected_exit": 0,
+    "duration_seconds": 4.67,
+    "before": {
+      "sha256": "c485d9b777e76cad0486c61bb5a74fba7bc3e26bdf07ad484a2a746da000ee34",
+      "files": 8411
+    },
+    "after": {
+      "sha256": "c485d9b777e76cad0486c61bb5a74fba7bc3e26bdf07ad484a2a746da000ee34",
+      "files": 8411
+    },
+    "unchanged": true,
+    "diagnostics": [
+      {
+        "code": "build",
+        "status": "missing",
+        "message": "缺少 build 原始资产绑定；到 export 阶段前补齐",
+        "blocking_stages": [
+          "export",
+          "accept"
+        ]
+      },
+      {
+        "code": "build_artifact",
+        "status": "missing",
+        "message": "缺少 build_artifact 原始资产绑定；到 export 阶段前补齐",
+        "blocking_stages": [
+          "export",
+          "accept"
+        ]
+      },
+      {
+        "code": "deployment",
+        "status": "missing",
+        "message": "缺少 deployment 原始资产绑定；到 export 阶段前补齐",
+        "blocking_stages": [
+          "export",
+          "accept"
+        ]
+      },
+      {
+        "code": "backend_delivery",
+        "status": "missing",
+        "message": "缺少 backend_delivery 原始资产绑定；到 export 阶段前补齐",
+        "blocking_stages": [
+          "export",
+          "accept"
+        ]
+      },
+      {
+        "code": "ui_baseline.delivery-package",
+        "status": "pending",
+        "message": "尚不可判定，等待后端交付绑定的战略包核验",
+        "blocking_stages": [
+          "export",
+          "accept"
+        ]
+      },
+      {
+        "code": "strategic_handoff.delivery-package",
+        "status": "pending",
+        "message": "尚不可判定，等待后端交付绑定的战略包核验",
+        "blocking_stages": [
+          "export",
+          "accept"
+        ]
+      }
+    ],
+    "current_blockers": []
+  },
+  {
+    "role": "strategy",
+    "argv": [
+      "node",
+      "scripts/preflight-delivery",
+      "--input",
+      "docs/.scratch/target-preview-existing-ui/handoff-draft/current-preflight-input.json",
+      "--stage",
+      "export",
+      "--json"
+    ],
+    "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance",
+    "exit_code": 1,
+    "expected_exit": 1,
+    "duration_seconds": 2.71,
+    "before": {
+      "sha256": "6598be6897bf1fbac67656bd3af4f6deb1451203c8bb812f9f2ef403657cad79",
+      "files": 8821
+    },
+    "after": {
+      "sha256": "6598be6897bf1fbac67656bd3af4f6deb1451203c8bb812f9f2ef403657cad79",
+      "files": 8821
+    },
+    "unchanged": true,
+    "diagnostics": [
+      {
+        "code": "architecture.repository_registration",
+        "status": "missing",
+        "message": "缺少原始架构来源: repository_registration",
+        "blocking_stages": []
+      },
+      {
+        "code": "architecture.engineering_baseline",
+        "status": "missing",
+        "message": "缺少原始架构来源: engineering_baseline",
+        "blocking_stages": []
+      },
+      {
+        "code": "architecture.manifest",
+        "status": "missing",
+        "message": "缺少原始架构来源: manifest",
+        "blocking_stages": []
+      },
+      {
+        "code": "architecture.identity",
+        "status": "missing",
+        "message": "缺少 architecture_identity；不能从目录或数据库字符串推断",
+        "blocking_stages": []
+      },
+      {
+        "code": "architecture",
+        "status": "pending",
+        "message": "尚不可判定，依赖未就绪: architecture.identity, architecture.repository_registration, architecture.engineering_baseline, architecture.manifest",
+        "blocking_stages": []
+      },
+      {
+        "code": "openapi",
+        "status": "missing",
+        "message": "缺少 openapi 原始资产绑定",
+        "blocking_stages": []
+      },
+      {
+        "code": "technical_design",
+        "status": "missing",
+        "message": "缺少 technical_design 原始资产绑定",
+        "blocking_stages": []
+      },
+      {
+        "code": "slice_contract",
+        "status": "missing",
+        "message": "缺少 slice_contract 原始资产绑定",
+        "blocking_stages": []
+      },
+      {
+        "code": "ui_baseline",
+        "status": "missing",
+        "message": "缺少当前资产 id/version/approval_ref",
+        "blocking_stages": [
+          "export",
+          "accept"
+        ]
+      },
+      {
+        "code": "build",
+        "status": "missing",
+        "message": "缺少 build 原始资产绑定",
+        "blocking_stages": []
+      },
+      {
+        "code": "build_artifact",
+        "status": "missing",
+        "message": "缺少 build_artifact 原始资产绑定",
+        "blocking_stages": []
+      },
+      {
+        "code": "deployment",
+        "status": "missing",
+        "message": "缺少 deployment 原始资产绑定",
+        "blocking_stages": []
+      },
+      {
+        "code": "strategic_handoff",
+        "status": "conflict",
+        "message": "交接包尚未批准",
+        "blocking_stages": [
+          "export",
+          "accept"
+        ]
+      },
+      {
+        "code": "backend_delivery",
+        "status": "missing",
+        "message": "缺少 backend_delivery 原始资产绑定；到 accept 阶段前补齐",
+        "blocking_stages": []
+      }
+    ],
+    "current_blockers": [
+      "ui_baseline",
+      "strategic_handoff"
+    ]
+  }
+]

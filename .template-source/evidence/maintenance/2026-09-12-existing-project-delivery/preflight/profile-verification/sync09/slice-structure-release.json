@@ -1,0 +1,51 @@
+{
+  "recorded_at": "2026-09-11T19:47:32.410652+00:00",
+  "status": "targeted-source-verification-passed-awaiting-sync10",
+  "source_state": "working-tree",
+  "files": [
+    {
+      "ref": "scripts/lib/approved-execution-context.mjs",
+      "sha256": "306c4053439698c49462762b6cbfcaa861cb60455520a8283055c14f439503e5"
+    },
+    {
+      "ref": "scripts/lib/delivery-preflight.mjs",
+      "sha256": "f32df3890f7979158c21962c59cff3388af5a5b940f50f3e92ae1c1447f98e6f"
+    },
+    {
+      "ref": "scripts/fixtures/delivery-preflight/approved-execution.test.mjs",
+      "sha256": "dc7734e98908e64fe52b0616ad4904e7f665a54e8a7657aa3be69b3b72417696"
+    },
+    {
+      "ref": "docs/process/delivery-preflight.md",
+      "sha256": "93993e148b1b1adafea5d8bb2e8c9b4154502ff8f62a0a3f9baa72dcf8c566e0"
+    }
+  ],
+  "changes": [
+    "Existing-registration v2 Slice requires object lifecycle_refs/readiness; ticket/engineering_baseline nonempty strings; readiness blockers/stale_inputs/not_applicable arrays.",
+    "Approval and preflight read original structure before approval or .length access. Explicit EXECUTION_CONTRACT_INVALID maps to conflict; stale_inputs text cannot misclassify it.",
+    "Legacy minimal Slice without existing-registration v2 identity retains original source approval protocol; no dynamic readiness boolean fields added."
+  ],
+  "tests": {
+    "red": "slice-structure-red.log",
+    "intermediate_failures": [
+      "slice-structure-green.log",
+      "slice-structure-green-02.log",
+      "slice-structure-backend.log"
+    ],
+    "final": "slice-structure-final-result.json",
+    "main": {
+      "passed": 8,
+      "log": "slice-structure-main-final.log"
+    },
+    "backend_cli_copy": {
+      "passed": 8,
+      "log": "slice-structure-backend-final.log"
+    },
+    "syntax_checks": "node --check two runtime modules passed"
+  },
+  "boundaries": [
+    "Previous sync09 distribution evidence remains unchanged. Final sync10 receiving template and CLI snapshot verification is still required.",
+    "Backend tested on a separate copy of successful real sync09 CLI initialized runtime with only two runtime guard modules and test updated. This is targeted source verification, not final synchronized distribution.",
+    "No pilot assets, approval source bytes, Git state or release mutated."
+  ]
+}

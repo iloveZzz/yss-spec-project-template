@@ -1,0 +1,12 @@
+{
+  "id": "create-yss-harness-backend@0.3.0",
+  "name": "create-yss-harness-backend",
+  "version": "0.3.0",
+  "size": 2853328,
+  "unpackedSize": 11985924,
+  "shasum": "35c5d8f34c3cd82e4e6bcc9e65cde1a1c0b9d57d",
+  "integrity": "sha512-stpvlZw0GsJGV/J+fb0FRW9n5ZDRHOK07RVRqBfAVnQofpf3phByO7WGY/WMXYg4YD4A5VS9nhGFaehmTgX6pg==",
+  "filename": "create-yss-harness-backend-0.3.0.tgz",
+  "entryCount": 881,
+  "bundled": []
+}

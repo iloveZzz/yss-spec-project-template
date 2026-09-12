@@ -1,6 +1,6 @@
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -1,69 +1,50 @@
+@@ -1,69 +1,53 @@
  ---
  name: yss-implementation-contract-compiler
 -description: Use when a YSS vertical slice is entering implementation, spans multiple frontend/backend/API areas, needs implementation readiness checked, or requires a minimal YSS skill set, Slice Implementation Contract, TDD mode, evidence plan, or reroute decision.
@@ -27,7 +27,7 @@
 +必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、前端工程设计、已核验的后端交付、API / UI 消费影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
  
 -1. 判断 frontend/backend/API/data/domain/cross-repo 影响，并按 [compiler-contract.yaml](references/compiler-contract.yaml) 把 impact 映射为入口 capability；逐项填写 backend `component_impacts`。
--2. 检查工程存在性和核心/长尾 skill 可用性。
+-2. 按 `docs/process/delivery-preflight.md` 只读检查当前阶段交付前提，再检查工程存在性和核心/长尾 skill 可用性。既有 Java/Maven 工程按 `docs/process/existing-backend-architecture.md` 加载登记、工程基线、独立观测的原始引用与摘要；不伪填生成器或 H2。
 -3. 从 `docs/agents/yss-skill-registry.yaml` 选择一个或多个窄 Recipe，合并 `required_capabilities`；Recipe 不得直接引用 skill。
 -4. 由 capability 解析入口 skill，只递归 `context-required`；`context-conditional` 仅在显式 condition 命中时加载，其他依赖类型只进入原因链，不扩张执行上下文。
 -5. 按“Recipe 声明顺序 → 依赖拓扑 → skill ID”确定性排序，去重 skill 并保留全部原因；冻结 Registry 与编译器合同 SHA-256。
@@ -37,6 +37,9 @@
 +后端 DDD / MVC 技术设计、架构确认和脚手架由后端项目持有；本仓只读消费已冻结 API、联合交付与页面工程约束。两类战略交接合同均可导入，不为前端切片补造后端技术设计。
  
 -合同结构见 [slice-implementation-contract.md](references/slice-implementation-contract.md)，专项返回协议见 [yss-skill-execution-result.md](references/yss-skill-execution-result.md)。前端、后端和测试子任务必须由生命周期主控从批准的 Slice Contract 编译任务包；任务包 schema 为 `docs/process/schemas/subagent-task-package.schema.json`，技能列表必须来自 `taskPackageDefaults`，不能由编译器或执行 Agent 另行手写。
++
++接入与导出先按 `docs/process/delivery-preflight.md` 执行对应阶段只读预检；既有工程身份按 `docs/process/existing-backend-architecture.md` 读取原始证据，不补造生成器来源。无 UI 改动可承接当前确认的 `existing-ui-baseline`，新设计仍走原型；当前批准后仅允许登记与合同交集内的输出增量。
++
 +## 编译结果
 +
 +合同必须绑定一个 `slice-implementation-contract-v2`，包含 architecture、frontend、backend、testing 四个分区，并为前端、后端、测试任务包复制同一 contract_id / contract_version。
@@ -59,7 +62,7 @@
 -- 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
 -- Registry、Slice Contract 或编译器合同 schema v1 一律拒绝并给出迁移到 v2 的提示；不自动升级，不提供旧技能名兼容。
 -- `required_capabilities` 与 `required_skills` 必须同时冻结；Registry 或编译器摘要变化后合同立即 `stale`，重新编译后仍须交生命周期重新批准。
--- UI 影响缺少正式原型确认、批准且 digest 当前的 Visual Baseline manifest 或当前切片 `case_id` 时，不得路由页面实现。模型必须先读 manifest 与语义引用，再查看对应 PNG；禁止目录 glob 和图片独立猜义。
+-- UI 影响按来源分支核验：新设计保持正式原型确认与 Visual Baseline；无 UI 改动才允许 `existing-ui-baseline` v1，并须当前真实基线确认及 `case_id`。任一来源缺少当前批准或摘要绑定时，不得路由页面实现。模型必须先读 manifest 与语义引用，再查看对应 PNG；禁止目录 glob 和图片独立猜义。
 -- Repository/数据模型影响缺少数据架构时，不得路由持久化实现。
 -- 后端技术设计由 `yss-technical-design` 先行组织。消费批准且版本当前的 Technical Design Contract，核对其架构与工程基线一致；DDD 才消费聚合、Gateway 等战术字段并路由 `yss-domain`，MVC 消费用例、分层、规则和事务设计并按 Profile 路由。旧 v1 战术合同只按 DDD 显式兼容读取。无相关影响记录带原因的 `not-applicable`。
 -- API 变化必须回到生命周期 Draft/Review/Freeze；半成品 backend 不得冒充稳定 source of truth。
@@ -266,16 +269,20 @@
  | `yss-ui-business-page-generation` | `yss-formily` | `context-conditional` | `form` |
 --- a/references/compiler-contract.yaml
 +++ b/references/compiler-contract.yaml
-@@ -2,405 +2,450 @@
+@@ -2,409 +2,454 @@
  backend_architecture:
    registry_source: docs/agents/yss-skill-registry.yaml
    identity_schema: docs/process/schemas/backend-architecture-identity.schema.json
 -  required_evidence: [engineering_baseline, repository_registration, manifest]
--  required_identity_surfaces: [resolution, work_unit, execution_result]
 +  required_evidence:
 +  - engineering_baseline
 +  - repository_registration
 +  - manifest
+   evidence_loading: original-references-and-raw-sha256
+   existing_identity: {schema_version: 2, source_kind: existing-registration, profiles_source: existing_project_profiles}
+   generated_identity: preserve-original-generator-and-module-closure
+   existing_source_policy: fixed-input-and-approved-bounded-output
+-  required_identity_surfaces: [resolution, work_unit, execution_result]
 +  required_identity_surfaces:
 +  - resolution
 +  - work_unit

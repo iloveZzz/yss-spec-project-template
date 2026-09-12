@@ -12,7 +12,12 @@ document_writing:
   gate_and_status_semantics: unchanged
 
 backend_architecture_identity_policy:
-  source: docs/agents/yss-skill-registry.yaml#architecture_profiles
+  source: docs/agents/yss-skill-registry.yaml
+  generated_profiles: architecture_profiles
+  existing_profiles: existing_project_profiles
+  existing_evidence: [repository-registration, engineering-baseline, existing-project-observation]
+  evidence_policy: original-ref-digest-and-current-source-verification
+  delivery_preflight: scripts/preflight-delivery
   schema: docs/process/schemas/backend-architecture-identity.schema.json
   required_surfaces: [engineering-baseline, repository-registration, scaffold-manifest, slice-contract, work-unit, execution-result]
   agreement: exact-identity-and-digest

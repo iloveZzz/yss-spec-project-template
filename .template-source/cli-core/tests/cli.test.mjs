@@ -23,7 +23,7 @@ function fixture(t, side = "backend") {
   const family = {
     side,
     packageName: `create-yss-harness-${side}`,
-    profileId: `harness.${side}-delivery`,
+    profileId: side === "design" ? "harness.business-ddd-strategy-handoff" : `harness.${side}-delivery`,
     metadataFile: `.yss-harness-${side}.json`,
     templateName: `yss-harness-${side}-agent`,
     templateSource: `github:iloveZzz/yss-harness-${side}-agent`,
@@ -45,7 +45,7 @@ function fixture(t, side = "backend") {
     "AGENTS.md": "Read CONTEXT.md\n",
     "yss-project.yaml": "schema_version: 1\nrepository_mode: template-source\n",
     "docs/process/harness-profile.yaml": `schema_version: 1\nprofile_id: ${family.profileId}\ninstantiation:\n  cli_package: ${family.packageName}\n  metadata_file: ${family.metadataFile}\n  template_source: ${family.templateSource}\n`,
-    "docs/rule.md": "rule v1\n",
+    "docs/process/rule.md": "rule v1\n",
     "scripts/check": "#!/bin/sh\nexit 0\n",
   };
   function bundle(changes = {}) {
@@ -99,7 +99,7 @@ function fixture(t, side = "backend") {
   const run = (...args) => {
     const r = spawnSync(
       process.execPath,
-      [path.join(pkg, "bin.mjs"), ...args, "--target-dir", target, "--json"],
+      [path.join(pkg, "bin.mjs"), ...args, ...(side === "design" && args[0] === "init" ? ["--project-name","测试","--business-domain","测试"] : []), "--target-dir", target, "--json"],
       { encoding: "utf8" },
     );
     return {
@@ -165,6 +165,26 @@ test("已初始化实例升级到 Harness profile schema v2 后仍可同步", (t
   }
 });
 export { fixture, put, json };
+test('通用命令只读、README 保留、退出分发必须显式 prune', t => {
+  for (const side of ['design', 'backend', 'frontend']) {
+    const f = fixture(t, side);
+    put(f.target, 'README.md', 'user readme');
+    assert.equal(f.run('attach', '--apply').status, 0);
+    assert.equal(fs.readFileSync(path.join(f.target, 'README.md'), 'utf8'), 'user readme');
+    const before = tree(f.target);
+    for (const command of ['doctor', 'diff', 'recover']) {
+      const r = f.run(command);
+      assert.equal(r.status, 0, r.stderr);
+      assert.deepEqual(tree(f.target), before);
+    }
+    f.bundle({'docs/process/rule.md': null});
+    assert.equal(f.run('sync', '--apply').status, 0);
+    assert.ok(fs.existsSync(path.join(f.target, 'docs/process/rule.md')));
+    const prunePlan=f.run('sync','--plan','--prune');assert.equal(prunePlan.status,0);assert.deepEqual(prunePlan.data.pruned,[]);assert.ok(prunePlan.data.prunable.includes('docs/process/rule.md'));
+    assert.equal(f.run('sync', '--apply', '--prune').status, 0);
+    assert.equal(fs.existsSync(path.join(f.target, 'docs/process/rule.md')), false);
+  }
+});
 function tree(root) {
   if (!fs.existsSync(root)) return null;
   const result = {};
@@ -186,6 +206,7 @@ test("attach 默认与 dry-run 零写入，碰撞整次暂停，force 备份且�
   put(f.target, "src/main.js", "business");
   put(f.target, "package.json", '{"name":"existing"}');
   put(f.target, "README.md", "local README");
+  put(f.target, "AGENTS.md", "local governance");
   const before = tree(f.target);
   for (const args of [[], ["--dry-run"], ["--apply"]]) {
     const r = f.run("attach", ...args);
@@ -265,28 +286,28 @@ test("旧格式、旧 profile、异族、多身份、未知schema和链接拒绝
 test("sync 三方规则：本地保留、模板升级、新增、删除和冲突整次暂停", (t) => {
   const f = fixture(t);
   assert.equal(f.run("init").status, 0);
-  put(f.target, "docs/rule.md", "local edit\n");
+  put(f.target, "docs/process/rule.md", "local edit\n");
   const before = tree(f.target);
   let r = f.run("sync");
   assert.equal(r.status, 0, r.stderr);
   assert.ok(
     r.data.changes.some(
-      (x) => x.path === "docs/rule.md" && x.action === "preserve",
+      (x) => x.path === "docs/process/rule.md" && x.action === "preserve",
     ),
   );
   assert.deepEqual(tree(f.target), before);
   f.bundle({
-    "docs/rule.md": "upstream v2\n",
+    "docs/process/rule.md": "upstream v2\n",
     "docs/new.md": "new\n",
     "scripts/check": null,
   });
   r = f.run("sync", "--apply");
   assert.equal(r.data.code, "CONFLICT");
   assert.deepEqual(tree(f.target), before);
-  r = f.run("sync", "--apply", "--force");
+  r = f.run("sync", "--apply", "--force", "--prune");
   assert.equal(r.status, 0, r.stderr);
   assert.equal(
-    fs.readFileSync(path.join(f.target, "docs/rule.md"), "utf8"),
+    fs.readFileSync(path.join(f.target, "docs/process/rule.md"), "utf8"),
     "upstream v2\n",
   );
   assert.equal(fs.existsSync(path.join(f.target, "scripts/check")), false);
@@ -297,7 +318,7 @@ test("sync 三方规则：本地保留、模板升级、新增、删除和冲突
   assert.equal(m.lastTransactionId, r.data.transactionId);
   r = f.run("sync");
   assert.equal(r.status, 0, r.stderr);
-  assert.ok(r.data.changes.every((x) => x.action === "unchanged"));
+  assert.ok(r.data.changes.every((x) => ["unchanged","preserve"].includes(x.action)));
 });
 test("init dry-run 无写入；非空目录、未知基线、目录碰撞、嵌套仓库和快照越界均拒绝", (t) => {
   const f = fixture(t);
@@ -333,7 +354,7 @@ test("init dry-run 无写入；非空目录、未知基线、目录碰撞、嵌�
     assert.deepEqual(tree(x.target), before);
   }
 });
-function injected(f, code, command = "sync") {
+function injected(f, code, command = "sync", extra = []) {
   const hook = path.join(f.root, "fault.mjs");
   fs.writeFileSync(
     hook,
@@ -348,7 +369,8 @@ function injected(f, code, command = "sync") {
       command,
       "--target-dir",
       f.target,
-      "--apply",
+      ...(command === "init" ? [] : ["--apply"]),
+      ...extra,
       "--json",
     ],
     { encoding: "utf8" },
@@ -358,18 +380,18 @@ test("写入失败自动恢复内容与 metadata，备份失败不应用计划",
   for (const boundary of ["write", "backup"]) {
     const f = fixture(t);
     assert.equal(f.run("init").status, 0);
-    f.bundle({ "docs/new.md": "new", "docs/rule.md": "v2" });
+    f.bundle({ "docs/new.md": "new", "docs/process/rule.md": "v2" });
     const meta = fs.readFileSync(
       path.join(f.target, f.family.metadataFile),
       "utf8",
     );
     const r = injected(
       f,
-      `const original=fs.renameSync;let failed=false;fs.renameSync=(a,b)=>{if(!failed&&String(b).includes(${JSON.stringify(boundary === "write" ? "/docs/rule.md" : "/backup/")})){failed=true;throw new Error('injected disk error')}return original(a,b)};`,
+      `const original=fs.renameSync;let failed=false;fs.renameSync=(a,b)=>{if(!failed&&String(b).includes(${JSON.stringify(boundary === "write" ? "/docs/process/rule.md" : "/backup/")})){failed=true;throw new Error('injected disk error')}return original(a,b)};`,
     );
     assert.equal(r.status, 1, r.stderr);
     assert.equal(
-      fs.readFileSync(path.join(f.target, "docs/rule.md"), "utf8"),
+      fs.readFileSync(path.join(f.target, "docs/process/rule.md"), "utf8"),
       "rule v1\n",
     );
     assert.equal(
@@ -382,7 +404,7 @@ test("写入失败自动恢复内容与 metadata，备份失败不应用计划",
 test("进程中断后预览只诊断；下次 apply 恢复再允许重试", (t) => {
   const f = fixture(t);
   assert.equal(f.run("init").status, 0);
-  f.bundle({ "docs/new.md": "new", "docs/rule.md": "v2" });
+  f.bundle({ "docs/new.md": "new", "docs/process/rule.md": "v2" });
   const meta = fs.readFileSync(
     path.join(f.target, f.family.metadataFile),
     "utf8",
@@ -471,7 +493,7 @@ test("未检出的声明 gitlink、硬链接、未知状态目录和跨家族恢
 test("并发修改和恢复失败保留外部修改，明确报告未恢复路径", (t) => {
   const f = fixture(t);
   assert.equal(f.run("init").status, 0);
-  f.bundle({ "docs/new.md": "new", "docs/rule.md": "v2" });
+  f.bundle({ "docs/new.md": "new", "docs/process/rule.md": "v2" });
   const r = injected(
     f,
     `const original=fs.renameSync;fs.renameSync=(a,b)=>{original(a,b);if(String(b).endsWith('/docs/new.md')){fs.writeFileSync(${JSON.stringify(path.join(f.target, "docs/new.md"))},'concurrent');throw new Error('injected verify failure')}};`,
@@ -483,7 +505,7 @@ test("并发修改和恢复失败保留外部修改，明确报告未恢复路�
     "concurrent",
   );
   assert.equal(
-    fs.readFileSync(path.join(f.target, "docs/rule.md"), "utf8"),
+    fs.readFileSync(path.join(f.target, "docs/process/rule.md"), "utf8"),
     "rule v1\n",
   );
 });
@@ -491,10 +513,10 @@ test("中断恢复前拒绝旧身份、嵌套仓库、声明gitlink及损坏备�
   for (const kind of ["legacy", "repo", "gitlink", "backup"]) {
     const f = fixture(t);
     assert.equal(f.run("init").status, 0);
-    f.bundle({ "docs/new.md": "new", "docs/rule.md": "v2" });
+    f.bundle({ "docs/new.md": "new", "docs/process/rule.md": "v2" });
     const r = injected(
       f,
-      `const original=fs.renameSync;fs.renameSync=(a,b)=>{original(a,b);if(String(b).endsWith('/docs/rule.md'))process.kill(process.pid,'SIGKILL')};`,
+      `const original=fs.renameSync;fs.renameSync=(a,b)=>{original(a,b);if(String(b).endsWith('/docs/process/rule.md'))process.kill(process.pid,'SIGKILL')};`,
     );
     assert.equal(r.signal, "SIGKILL");
     if (kind === "legacy")
@@ -629,8 +651,8 @@ test("技能退役清理空目录，但保留用户文件；失败后恢复技�
     put(f.target, ".codex/skills/retired/user-notes.md", "keep");
     f.bundle({[canonical]: null, [projection]: null});
     const result = rollback ? injected(f,
-      `const original=fs.rmdirSync;let failed=false;fs.rmdirSync=(p,...args)=>{const result=original(p,...args);if(!failed&&String(p).endsWith('/.agents/skills/retired')){failed=true;throw new Error('after prune')}return result;};`
-    ) : f.run("sync", "--apply");
+      `const original=fs.rmdirSync;let failed=false;fs.rmdirSync=(p,...args)=>{const result=original(p,...args);if(!failed&&String(p).endsWith('/.agents/skills/retired')){failed=true;throw new Error('after prune')}return result;};`, 'sync', ['--prune']
+    ) : f.run("sync", "--apply", "--prune");
     assert.equal(result.status, rollback ? 1 : 0, result.stderr);
     assert.equal(fs.existsSync(path.join(f.target, ".agents/skills/retired")), rollback);
     assert.equal(fs.readFileSync(path.join(f.target, ".codex/skills/retired/user-notes.md"), "utf8"), "keep");
@@ -640,11 +662,11 @@ test("技能退役清理空目录，但保留用户文件；失败后恢复技�
 });
 
 test('同步与接入保留已有业务词汇表，即使模板同时更新且传入 force', t => {
-  for (const side of ['backend', 'frontend']) {
+  for (const side of ['design', 'backend', 'frontend']) {
     const f = fixture(t, side);
     assert.equal(f.run('init').status, 0);
     put(f.target, 'CONTEXT.md', '# 真实业务词汇\n');
-    f.bundle({ 'CONTEXT.md': '# 新模板流程词汇\n', 'docs/rule.md': 'rule v2\n' });
+    f.bundle({ 'CONTEXT.md': '# 新模板流程词汇\n', 'docs/process/rule.md': 'rule v2\n' });
     const before = tree(f.target);
     const preview = f.run('sync', '--dry-run');
     assert.equal(preview.status, 0, preview.stderr);
@@ -653,7 +675,7 @@ test('同步与接入保留已有业务词汇表，即使模板同时更新且�
     const applied = f.run('sync', '--apply', '--force');
     assert.equal(applied.status, 0, applied.stderr);
     assert.equal(fs.readFileSync(path.join(f.target, 'CONTEXT.md'), 'utf8'), '# 真实业务词汇\n');
-    assert.equal(fs.readFileSync(path.join(f.target, 'docs/rule.md'), 'utf8'), 'rule v2\n');
+    assert.equal(fs.readFileSync(path.join(f.target, 'docs/process/rule.md'), 'utf8'), 'rule v2\n');
     const attached = fixture(t, side);
     put(attached.target, 'CONTEXT.md', '# 已有项目词汇\n');
     const adopted = attached.run('attach', '--apply');
@@ -666,7 +688,7 @@ test("WAL 兼容旧 progress 恢复，忽略未完成尾部且拒绝完整损坏
   for (const kind of ["legacy", "torn-tail", "corrupt-record"]) {
     const f = fixture(t);
     assert.equal(f.run("init").status, 0);
-    f.bundle({ "docs/new.md": "new", "docs/rule.md": "v2" });
+    f.bundle({ "docs/new.md": "new", "docs/process/rule.md": "v2" });
     const r = injected(f, `const original=fs.renameSync;fs.renameSync=(a,b)=>{original(a,b);if(String(b).endsWith('/docs/new.md'))process.kill(process.pid,'SIGKILL')};`);
     assert.equal(r.signal, "SIGKILL");
     const transactions = path.join(f.target, ".yss-harness-state/backend/transactions");
@@ -685,7 +707,7 @@ test("WAL 兼容旧 progress 恢复，忽略未完成尾部且拒绝完整损坏
     if(kind !== "corrupt-record") {
       assert.equal(recovered.data.status,"recovered");
       assert.equal(fs.existsSync(path.join(f.target,"docs/new.md")),false);
-      assert.equal(fs.readFileSync(path.join(f.target,"docs/rule.md"),"utf8"),"rule v1\n");
+      assert.equal(fs.readFileSync(path.join(f.target,"docs/process/rule.md"),"utf8"),"rule v1\n");
     }
   }
 });
@@ -700,7 +722,7 @@ test("WAL 和目标持久化阶段失败均回滚且不推进 metadata", t => {
   for(const hook of hooks) {
     const f=fixture(t);assert.equal(f.run("init").status,0);
     const before=tree(f.target); delete before[".yss-harness-state"];
-    f.bundle({"docs/new.md":"new","docs/rule.md":"v2"});
+    f.bundle({"docs/new.md":"new","docs/process/rule.md":"v2"});
     const failed=injected(f,hook);
     assert.equal(failed.status,1,failed.stderr);
     const after=tree(f.target); delete after[".yss-harness-state"];
@@ -713,26 +735,26 @@ test("WAL 和目标持久化阶段失败均回滚且不推进 metadata", t => {
 
 test("持久化模型：目录项未落盘时恢复接受 before/after 混合状态", t => {
   const f=fixture(t);assert.equal(f.run("init").status,0);
-  const old=fs.readFileSync(path.join(f.target,"docs/rule.md"));
-  f.bundle({"docs/new.md":"new","docs/rule.md":"v2"});
-  const r=injected(f,`const original=fs.renameSync;fs.renameSync=(a,b)=>{original(a,b);if(String(b).endsWith('/docs/rule.md'))process.kill(process.pid,'SIGKILL')};`);
+  const old=fs.readFileSync(path.join(f.target,"docs/process/rule.md"));
+  f.bundle({"docs/new.md":"new","docs/process/rule.md":"v2"});
+  const r=injected(f,`const original=fs.renameSync;fs.renameSync=(a,b)=>{original(a,b);if(String(b).endsWith('/docs/process/rule.md'))process.kill(process.pid,'SIGKILL')};`);
   assert.equal(r.signal,"SIGKILL");
   // Model the lost unflushed renames independently; this is not a physical power cut.
-  fs.writeFileSync(path.join(f.target,"docs/rule.md"),old);
+  fs.writeFileSync(path.join(f.target,"docs/process/rule.md"),old);
   fs.unlinkSync(path.join(f.target,"docs/new.md"));
   const recovered=f.run("sync","--apply");
   assert.equal(recovered.status,0,recovered.stderr);
-  assert.deepEqual(fs.readFileSync(path.join(f.target,"docs/rule.md")),old);
+  assert.deepEqual(fs.readFileSync(path.join(f.target,"docs/process/rule.md")),old);
 });
 
 test("持久化顺序：WAL 与文件 fsync 先于 rename，目录屏障先于 metadata", t => {
   const f=fixture(t);assert.equal(f.run("init").status,0);
-  f.bundle({"docs/new.md":"new","docs/rule.md":"v2"});
+  f.bundle({"docs/new.md":"new","docs/process/rule.md":"v2"});
   const log=path.join(f.root,"durability-events.json");
   const result=injected(f,`const opened=new Map(),events=[];const open=fs.openSync,sync=fs.fsyncSync,rename=fs.renameSync;fs.openSync=(p,...args)=>{const fd=open(p,...args);opened.set(fd,String(p));return fd};fs.fsyncSync=fd=>{sync(fd);events.push(['sync',opened.get(fd)])};fs.renameSync=(a,b)=>{rename(a,b);events.push(['rename',String(a),String(b)])};process.on('exit',()=>fs.writeFileSync(${JSON.stringify(log)},JSON.stringify(events)));`);
   assert.equal(result.status,0,result.stderr);
   const events=JSON.parse(fs.readFileSync(log));
-  for(const ref of ['docs/new.md','docs/rule.md',f.family.metadataFile]) {
+  for(const ref of ['docs/new.md','docs/process/rule.md',f.family.metadataFile]) {
     const position=events.findIndex(e=>e[0]==='rename'&&e[2]===path.join(f.target,ref));
     assert.ok(position>0);
     assert.ok(events.slice(0,position).some(e=>e[0]==='sync'&&e[1]===events[position][1]),'目标临时文件须先 fsync');
@@ -766,13 +788,13 @@ test("持久化边界矩阵：异常与进程中断都保留可证明的恢复�
     for (const fault of ["throw", "kill"]) await t.test(`${boundary}/${fault}`, () => {
       const f = fixture(t); assert.equal(f.run("init").status, 0);
       const before = tree(f.target); delete before[".yss-harness-state"];
-      f.bundle({ "docs/new/nested.md": "new", "docs/rule.md": "v2" });
+      f.bundle({ "docs/new/nested.md": "new", "docs/process/rule.md": "v2" });
       const result = injected(f, `const opened=new Map();let fired=false;const hit=label=>{if(!fired&&label===${JSON.stringify(boundary)}){fired=true;${fault === "kill" ? "process.kill(process.pid,'SIGKILL')" : "throw Error('boundary-fault')"}}};const open=fs.openSync,write=fs.writeFileSync,sync=fs.fsyncSync,rename=fs.renameSync;fs.openSync=(p,...args)=>{const fd=open(p,...args);opened.set(fd,String(p));return fd};fs.writeFileSync=(fd,...args)=>{const r=write(fd,...args);if(opened.get(fd)?.endsWith('/intent.wal')&&String(args[0]).includes('index'))hit('wal-write');return r};fs.fsyncSync=fd=>{sync(fd);const p=opened.get(fd)||'';if(p.endsWith('/intent.wal'))hit('wal-fsync');if(p.includes('/docs/new/nested.md.')&&p.endsWith('.tmp'))hit('target-fsync');if(p===${JSON.stringify(path.join(f.target, "docs"))})hit('directory')};fs.renameSync=(a,b)=>{rename(a,b);b=String(b);if(b.includes('/backup/'))hit('backup');if(b.endsWith('/docs/new/nested.md'))hit('rename');if(b.endsWith('/journal.json')&&JSON.parse(fs.readFileSync(b)).phase==='committed')hit('commit')};`);
       if (fault === "kill") {
         assert.equal(result.signal, "SIGKILL", result.stderr);
         const recovered = f.run("sync", "--apply"); assert.equal(recovered.status, 0, recovered.stderr);
         if (boundary === "commit") {
-          assert.equal(fs.readFileSync(path.join(f.target, "docs/rule.md"), "utf8"), "v2");
+          assert.equal(fs.readFileSync(path.join(f.target, "docs/process/rule.md"), "utf8"), "v2");
           return;
         }
         assert.equal(recovered.data.status, "recovered");
@@ -801,4 +823,97 @@ test("临时文件被用户修改或在独占创建前抢占时保留恢复清�
     assert.deepEqual(tree(f.target), before);
     assert.equal(fs.readFileSync(temp, "utf8"), "user edit");
   }
+});
+
+test('三家族 .gitignore 区块保留用户字节，损坏标记阻断，prune 不删修改文件', t => {
+ for(const side of ['design','backend','frontend']) {
+  const f=fixture(t,side);f.bundle({'.gitignore':'node_modules/\n'});
+  put(f.target,'.gitignore','private\r\n');put(f.target,'approved.yaml','decision: approved\n');
+  assert.equal(f.run('attach','--apply').status,0);
+  const ignored=path.join(f.target,'.gitignore');const current=fs.readFileSync(ignored,'utf8');
+  assert.ok(current.startsWith('private\r\n'));assert.match(current,/\.yss-harness-state\//);
+  fs.appendFileSync(ignored,'outside\n');assert.equal(f.run('sync','--apply').status,0);
+  assert.ok(fs.readFileSync(ignored,'utf8').endsWith('outside\n'));
+  put(f.target,'docs/process/rule.md','local');f.bundle({'docs/process/rule.md':null});
+  const r=f.run('sync','--apply','--prune',...(side==='design'?[]:['--force']));assert.equal(r.status,0,r.stderr);
+  assert.equal(fs.readFileSync(path.join(f.target,'docs/process/rule.md'),'utf8'),'local');
+  const before=tree(f.target);fs.appendFileSync(ignored,`# >>> ${f.family.packageName} managed rules\n`);
+  const broken=tree(f.target);assert.equal(f.run('sync','--apply').data.code,'GITIGNORE');assert.deepEqual(tree(f.target),broken);
+  assert.equal(before['approved.yaml'].bytes,Buffer.from('decision: approved\n').toString('base64'));
+ }
+});
+
+test('三家族手册退出分发仅由 prune 删除未修改 baseline', t => {
+ for(const side of ['design','backend','frontend']) {
+  const f=fixture(t,side);f.bundle({'docs/user-guide/retired.md':'retired\n','docs/user-guide/retained.md':'retained\n'});
+  assert.equal(f.run('init').status,0);
+  fs.appendFileSync(path.join(f.target,'docs/user-guide/retained.md'),'用户修改\n');
+  f.bundle({'docs/user-guide/retired.md':null,'docs/user-guide/retained.md':null});
+  const normal=f.run('sync','--apply');assert.equal(normal.status,0,normal.stderr);
+  assert.ok(fs.existsSync(path.join(f.target,'docs/user-guide/retired.md')));
+  const plan=f.run('sync','--plan','--prune');assert.equal(plan.status,0,plan.stderr);
+  assert.ok(plan.data.prunable.includes('docs/user-guide/retired.md'));
+  assert.ok(plan.data.retainedRemoved.includes('docs/user-guide/retained.md'));
+  const applied=f.run('sync','--apply','--prune');assert.equal(applied.status,0,applied.stderr);
+  assert.ok(!fs.existsSync(path.join(f.target,'docs/user-guide/retired.md')));
+  assert.match(fs.readFileSync(path.join(f.target,'docs/user-guide/retained.md'),'utf8'),/用户修改/);
+ }
+});
+
+test('三家族参数、异族、硬链接和嵌套仓库不能经新命令绕过', t => {
+ for(const side of ['design','backend','frontend']) {
+  const f=fixture(t,side);assert.equal(f.run('init').status,0);
+  for(const [command,...args] of [['doctor','--apply'],['diff','--apply'],['recover','--force'],['sync','--apply','--plan'],['attach','--prune'],['sync','--project-name','ignored']]) {
+   const before=tree(f.target);assert.equal(f.run(command,...args).status,1);assert.deepEqual(tree(f.target),before);
+  }
+  for(const ref of ['.yss-template.json','.yss-harness-dev.json',...['design','backend','frontend'].filter(x=>x!==side).map(x=>`.yss-harness-${x}.json`)]) {
+   put(f.target,ref,'{}');const before=tree(f.target);
+   for(const command of ['doctor','diff','recover'])assert.equal(f.run(command).status,1);
+   assert.deepEqual(tree(f.target),before);fs.unlinkSync(path.join(f.target,ref));
+  }
+  const rule=path.join(f.target,'docs/process/rule.md');fs.linkSync(rule,path.join(f.target,'linked'));
+  assert.equal(f.run('diff').status,1);assert.equal(f.run('doctor').status,1);fs.unlinkSync(path.join(f.target,'linked'));
+  put(f.target,'docs/.git/config','');assert.equal(f.run('diff').status,1);assert.equal(f.run('doctor').status,1);
+ }
+});
+
+test('战略 v1 缺少证据不迁移，合法来源仅在 apply 转换，未知 mode 不授予 prune',t=>{
+ const f=fixture(t,'design');assert.equal(f.run('init').status,0);
+ const metadata=path.join(f.target,f.family.metadataFile), modern=JSON.parse(fs.readFileSync(metadata));
+ const legacy={metadataSchemaVersion:1,profileId:f.family.profileId,templateName:f.family.templateName,templateSource:f.family.templateSource,templateCommit:modern.templateCommit,templateSourceState:modern.templateSourceState,snapshotHash:modern.snapshotHash,managedFilesManifestVersion:modern.manifestHash,variables:modern.variables,managedFiles:Object.fromEntries(Object.entries(modern.managedFiles).map(([p,r])=>[p,{type:'copy',contentHash:r.baseline.digest}]))};
+ for(const field of ['snapshotHash','templateCommit','variables','managedFilesManifestVersion']){
+  const bad={...legacy};delete bad[field];fs.writeFileSync(metadata,json(bad));const before=tree(f.target);
+  assert.equal(f.run('sync','--apply').status,1);assert.deepEqual(tree(f.target),before);
+ }
+ put(f.target,'scripts/instantiate-harness','legacy script');legacy.managedFiles['scripts/instantiate-harness']={type:'copy',contentHash:hash('legacy script')};
+ fs.writeFileSync(metadata,json(legacy));const before=fs.readFileSync(metadata);assert.equal(f.run('diff').data.migrationRequired,true);assert.deepEqual(fs.readFileSync(metadata),before);
+ f.bundle({'docs/process/rule.md':null});const r=f.run('sync','--prune','--apply');assert.equal(r.status,0,r.stderr);
+ assert.ok(fs.existsSync(path.join(f.target,'docs/process/rule.md')));assert.equal(JSON.parse(fs.readFileSync(metadata)).metadataSchemaVersion,2);assert.equal(fs.readFileSync(path.join(f.target,'scripts/instantiate-harness'),'utf8'),'legacy script');
+ assert.equal(f.run('sync','--prune','--apply').status,0);assert.ok(fs.existsSync(path.join(f.target,'docs/process/rule.md')));
+});
+
+test('三家族真实写入、中断、备份损坏、并发修改及校验失败均保持恢复边界',t=>{
+ for(const side of ['design','backend','frontend']) for(const failure of ['write','kill','backup-corrupt','concurrent','verify']) {
+  const f=fixture(t,side);
+  if(failure==='verify')f.bundle({'skills-lock.json':json({version:3,skills:{shared:{}},projectionRoots:[]}), 'scripts/update-skill-lock':'process.exit(0);', 'scripts/verify-context-contract':'process.exit(0);','scripts/verify-harness-profile':'process.exit(0);'});
+  assert.equal(f.run('init').status,0);
+  const metadata=path.join(f.target,f.family.metadataFile),before=fs.readFileSync(metadata);
+  f.bundle({'docs/process/rule.md':'updated'});
+  let code;
+  if(failure==='verify') code=`import cp from 'node:child_process';const original=cp.spawnSync;cp.spawnSync=(cmd,args,opts)=>opts?.cwd===${JSON.stringify(f.target)}?{status:1,stderr:'injected validator failure'}:original(cmd,args,opts);`;
+  else code=`const original=fs.renameSync;fs.renameSync=(a,b)=>{original(a,b);if(String(b).endsWith('/docs/process/rule.md')){${failure==='write'?"throw new Error('injected write failure')":"process.kill(process.pid,'SIGKILL')"}}};`;
+  const result=injected(f,code);
+  if(['write','verify'].includes(failure)) {assert.equal(result.status,1,result.stderr);assert.deepEqual(fs.readFileSync(metadata),before);assert.equal(fs.readFileSync(path.join(f.target,'docs/process/rule.md'),'utf8'),'rule v1\n');continue;}
+  assert.equal(result.signal,'SIGKILL',result.stderr);
+  const transactions=path.join(f.target,'.yss-harness-state',side,'transactions');
+  const dir=fs.readdirSync(transactions).find(id=>JSON.parse(fs.readFileSync(path.join(transactions,id,'journal.json'))).phase!=='committed');
+  const base=path.join(transactions,dir),journal=JSON.parse(fs.readFileSync(path.join(base,'journal.json')));
+  if(failure==='backup-corrupt') {const index=journal.operations.findIndex(op=>op.path==='docs/process/rule.md');fs.writeFileSync(path.join(base,'backup',String(index)),'corrupt');}
+  if(failure==='concurrent') fs.writeFileSync(path.join(f.target,'docs/process/rule.md'),'user subsequent edit');
+  const recoveryBefore=tree(f.target),preview=f.run('recover');
+  assert.deepEqual(tree(f.target),recoveryBefore);
+  const recovered=f.run('recover','--apply');
+  if(failure==='kill'){assert.equal(preview.status,0,preview.stderr);assert.equal(recovered.status,0,recovered.stderr);assert.deepEqual(fs.readFileSync(metadata),before);}
+  else {assert.equal(preview.status,1);assert.equal(recovered.status,1);assert.deepEqual(tree(f.target),recoveryBefore);}
+ }
 });

@@ -1,0 +1,945 @@
+{
+  "schema_version": 1,
+  "profiles": [
+    "design",
+    "backend",
+    "frontend"
+  ],
+  "changes": [
+    {
+      "profile": "backend",
+      "skill": "implementation-repo-onboarding",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/implementation-repo-onboarding/SKILL.md",
+      "before_sha256": "84ca169fe228ddf6ca65d004329c872ca7deb5f532c80edbc0b792644d20586c",
+      "after_sha256": "6c77cfe7b500717a9ccbe68bbbedb01158a65764f488322d2b665f78493dab89"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-implementation-contract-compiler",
+      "classification": "adapted",
+      "status": "updated",
+      "path": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
+      "before_sha256": "5c8025392ffa96d46b9f8ee77eb550bc96fa6219f7ee520e6d5e6381b5233718",
+      "after_sha256": "907cf2ecc07c716b4e448d9f3380906bf153cb7c561fc0c42589eac46a0c7367"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-implementation-contract-compiler",
+      "classification": "adapted",
+      "status": "updated",
+      "path": ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml",
+      "before_sha256": "1b15573798a632f02ee2b7ddca059b5c552f5ec4f85d30becfce5eb7ddeae0e0",
+      "after_sha256": "3d670fcbce6baf0999652939f1f8823e64cb557df0d7dd9db348cca6764cd370"
+    },
+    {
+      "profile": "frontend",
+      "skill": "implementation-repo-onboarding",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".agents/skills/implementation-repo-onboarding/SKILL.md",
+      "before_sha256": "84ca169fe228ddf6ca65d004329c872ca7deb5f532c80edbc0b792644d20586c",
+      "after_sha256": "6c77cfe7b500717a9ccbe68bbbedb01158a65764f488322d2b665f78493dab89"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-implementation-contract-compiler",
+      "classification": "adapted",
+      "status": "updated",
+      "path": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
+      "before_sha256": "b8aafc77400b864dbe3477e63784ae4d1a271351a0c6130aeddf93c2f658e5da",
+      "after_sha256": "af430c6c4b01dec4da5ee3d9f940de8ddd1ccddfa5d2f74bde4242f74153bd0a"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-implementation-contract-compiler",
+      "classification": "adapted",
+      "status": "updated",
+      "path": ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml",
+      "before_sha256": "383e8779f86b0452d5510f82bbc88b9a2079b4b97835f3321544428a4e5ab6ae",
+      "after_sha256": "2f67813b009ae968a47a6c143be1f1cdc9644002e96bbccdbc20a40217f4cab3"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "adapted",
+      "status": "updated",
+      "path": ".agents/skills/yss-prototype-stage/SKILL.md",
+      "before_sha256": "2de58bfee29842171c6fe293bd762b0b8f28817d0a77e3ed04d7931c9b5c2db3",
+      "after_sha256": "0aff695ac33026c293218c47cc5c59e7cbff08dbd87d0e206f3822186540650a"
+    }
+  ],
+  "classifications": [
+    {
+      "profile": "design",
+      "skill": "competitive-intelligence",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "diagnosing-bugs",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "domain-modeling",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "grill-me",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "grill-with-docs",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "grilling",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "handoff",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "i-have-adhd",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "maintaining-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "resolving-merge-conflicts",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "to-spec",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "to-tickets",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "wayfinder",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "writing-for-agents",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-research",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "code-review",
+      "classification": "adapted"
+    },
+    {
+      "profile": "design",
+      "skill": "triage",
+      "classification": "adapted"
+    },
+    {
+      "profile": "design",
+      "skill": "ask-matt",
+      "classification": "local-only"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-strategic-design",
+      "classification": "local-only"
+    },
+    {
+      "profile": "design",
+      "skill": "harness-orchestrator",
+      "classification": "excluded"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-technical-design",
+      "classification": "excluded"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-tactical-design",
+      "classification": "excluded"
+    },
+    {
+      "profile": "design",
+      "skill": "prototype-review",
+      "classification": "upstream"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-prototype-stage",
+      "classification": "upstream"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-design-system",
+      "classification": "upstream"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-antd-design",
+      "classification": "upstream"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-antdv-next-design",
+      "classification": "upstream"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-stage-decision",
+      "classification": "upstream"
+    },
+    {
+      "profile": "backend",
+      "skill": "alibaba-java-code-style",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "archify",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "codebase-design",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "cross-repo-implementation-routing",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "diagnosing-bugs",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "grill-me",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "grilling",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "handoff",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "i-have-adhd",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "implement",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "implementation-repo-onboarding",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "improve-codebase-architecture",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "java-backend-commit",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "lombok",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "maintaining-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "mapstruct",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "resolving-merge-conflicts",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "tdd",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "to-questionnaire",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "to-spec",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "to-tickets",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "using-git-worktrees",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "writing-for-agents",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-application",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-cache",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-domain",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-exception",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-mvc-design",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-resilience4j",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-security-algorithm",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-up-springboot3",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-userinfo",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-validation",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-research",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-technical-design",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-tactical-design",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "code-review",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-implementation-contract-compiler",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-openapi-governance",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "research",
+      "classification": "retired"
+    },
+    {
+      "profile": "backend",
+      "skill": "architecture-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "backend",
+      "skill": "backend-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "backend",
+      "skill": "harness-orchestrator",
+      "classification": "local-only"
+    },
+    {
+      "profile": "backend",
+      "skill": "test-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "backend",
+      "skill": "competitive-intelligence",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "domain-modeling",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "frontend-agent",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "grill-with-docs",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "prototype",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "setup-matt-pocock-skills",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "triage",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "wait-what",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "wayfinder",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-audit-log",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-ddd-scaffold-generator",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-distributed-id",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-dto",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-excel-mvc",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-layered-mvc-scaffold-generator",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-mvc-data-analysis-project-initializer",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-mybatis",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-openapi-draft-review",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-product-lifecycle",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-repository",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-skill-source-index-refresh",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-stage-decision",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-ui",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-web-controller",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "archify",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "codebase-design",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "cross-repo-implementation-routing",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "diagnosing-bugs",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "file-export-download",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-foundation",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-linkage-effects",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-mode-slot-detail",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-step-flow",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "grill-me",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "grilling",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "handoff",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "i-have-adhd",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "implement",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "implementation-repo-onboarding",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "improve-codebase-architecture",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "maintaining-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "page-form-module",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "page-list-module",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "page-skeleton",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "prototype",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "resolving-merge-conflicts",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "tdd",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "theme-token-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "to-questionnaire",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "to-spec",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "to-tickets",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "using-git-worktrees",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "vue3-best-practices",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "writing-for-agents",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yedit-table-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-hook",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-ui-business-page-generation",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "ytable-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "ytree-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-research",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "code-review",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-implementation-contract-compiler",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-openapi-governance",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "frontend-commit",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "research",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-microapp-commit",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-page-module-development",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "architecture-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "frontend-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "harness-orchestrator",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "test-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "backend-agent",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "competitive-intelligence",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "component-selection-imports",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "domain-modeling",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "grill-with-docs",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "prototype-review",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "setup-matt-pocock-skills",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "triage",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "wait-what",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "wayfinder",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-antd-design",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-api-integration",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-components",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-design-system",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-formily",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-formily-schema-generator",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-frontend-scaffold-generator",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-openapi-draft-review",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-product-lifecycle",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-skill-source-index-refresh",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-stage-decision",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-tactical-design",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-technical-design",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-ui",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-use-table-height",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-use-tree-height",
+      "classification": "excluded"
+    }
+  ],
+  "issues": [],
+  "applied": 7,
+  "counts": {
+    "updated": 7
+  }
+}

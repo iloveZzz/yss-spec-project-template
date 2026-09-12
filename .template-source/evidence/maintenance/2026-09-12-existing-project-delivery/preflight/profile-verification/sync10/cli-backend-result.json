@@ -1,0 +1,195 @@
+{
+  "profile": "backend",
+  "source_state": "working-tree",
+  "snapshot_hash": "6fac32a51b141489e69951a3b509c69aeadaaabc13feb224c0219eb952933533",
+  "snapshot_file_sha256": "aa9375a0065ed744af607aa687a32a304e7b6135d91aac9b110e34648f15db38",
+  "target": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-final-delivery-cli-fresh-3nh2r2ow/backend",
+  "runs": [
+    {
+      "name": "cli-backend-sync",
+      "command": [
+        "node",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend/bin/create-yss-harness-backend.js",
+        "sync",
+        "--target-dir",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-final-delivery-cli-fresh-3nh2r2ow/backend",
+        "--apply"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend",
+      "exit_code": 0,
+      "duration_seconds": 3.23,
+      "log": "cli-backend-sync.log"
+    },
+    {
+      "name": "cli-backend-slice-structure",
+      "command": [
+        "node",
+        "--test",
+        "scripts/fixtures/delivery-preflight/approved-execution.test.mjs"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-final-delivery-cli-fresh-3nh2r2ow/backend-sync10-protocol-harness",
+      "exit_code": 0,
+      "duration_seconds": 14.67,
+      "log": "cli-backend-slice-structure.log"
+    },
+    {
+      "name": "cli-backend-ui-collector",
+      "command": [
+        "node",
+        "--test",
+        "--test-name-pattern=既有 UI 全目录",
+        "scripts/verify-existing-ui-baseline-scenarios"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-final-delivery-cli-fresh-3nh2r2ow/backend-sync10-protocol-harness",
+      "exit_code": 0,
+      "duration_seconds": 1.95,
+      "log": "cli-backend-ui-collector.log"
+    }
+  ],
+  "bytes": [
+    {
+      "ref": "scripts/preflight-delivery",
+      "sha256": "a212fea3a1bfd758d1e18b1e5a76bb48e4f954d9b07843d8761bbbcccbd87bbb",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/delivery-preflight.mjs",
+      "sha256": "e3385d09c95fa1ffccfe490bc73133959a66f4110d5b7e31d5dd0d2d9c44fe4a",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/approved-execution-context.mjs",
+      "sha256": "306c4053439698c49462762b6cbfcaa861cb60455520a8283055c14f439503e5",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/json-schema.mjs",
+      "sha256": "007e39300478da6f0e359d822642f7a6aaf2466ee5781bd81924cf5897eebc72",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/strategic-handoff.mjs",
+      "sha256": "adfed7e9c8b746e0f3db4b1b85f00159f85cad5c349852b14cf22259182fdbb3",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/existing-ui-baseline.mjs",
+      "sha256": "fa2708f8afb1e3462e102a1cc13751d2bb5f5f27ca98b25c10f50a17f2e8e419",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/backend-delivery.mjs",
+      "sha256": "ed69363cdf1dc2a1e7e209ea0c5bf90364f6482e4233c1a84c00a0c9994cd8b9",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "scripts/lib/frontend-delivery.mjs",
+      "sha256": "0bd5406f847784dc356aafde44c1f0a00a71d7beeeb10ccddbe2f0e99a1ce0e1",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    },
+    {
+      "ref": "skills-lock.json",
+      "sha256": "a4b211ae6fdc40cbf9840ed4ef6f4eda5d46563ed467ac329c2e7507e3fe6a22",
+      "matched": [
+        "source",
+        "snapshot",
+        "actual-cli-sync-instance"
+      ]
+    }
+  ],
+  "core_files": [
+    {
+      "ref": "build.mjs",
+      "sha256": "cc7d9e5809c2970e058840a2c42889a889e99dc45736039707bf292e2d76b322"
+    },
+    {
+      "ref": "bundle.mjs",
+      "sha256": "2a1cf876567f2a620f1bc45f53ea7eee87eac8ca3c749d9abdbd3c0111804354"
+    },
+    {
+      "ref": "cli.mjs",
+      "sha256": "477b1af17e538328e28c1093104f9bda6797ce68f2edc635b94033bdec34b77b"
+    },
+    {
+      "ref": "command-runner.mjs",
+      "sha256": "4fb7f3c9ca26dff3f955ddb1c6ad545519d3e55af179f834ff67b1c0bf20bffd"
+    },
+    {
+      "ref": "engine.mjs",
+      "sha256": "20511a35e76f0512d12f1eaa4dfc41c53358414e715b6e00944e8886cba0faa9"
+    },
+    {
+      "ref": "identity.mjs",
+      "sha256": "f27a58e0254bcb9dd9efad488b5f0c1ed8d74518046793c93bfd0763e9298c96"
+    },
+    {
+      "ref": "io.mjs",
+      "sha256": "06853e5283530904025f0b7378be746b170f76712f42ceb1a89d4cbddc439c9c"
+    },
+    {
+      "ref": "package.json",
+      "sha256": "3f46bc453a90c967e5226e1986fa31710b25da2250f94879ea89139e20431423"
+    },
+    {
+      "ref": "scaffold.mjs",
+      "sha256": "4ad5df8c0aa9c776ed39fff7193d2833ff61f29068e2a31bf64e8dadb80d41db"
+    },
+    {
+      "ref": "tests/cli.test.mjs",
+      "sha256": "297983ed72337f30de8b6a38e24a75d7c25b5d3a33bff7df3fae85962d2bb8d9"
+    },
+    {
+      "ref": "transaction.mjs",
+      "sha256": "6a27d7d9bbaa97ab69ed4b643c0c61b87a0738cf23871a1cfa55f7b5603f5d26"
+    },
+    {
+      "ref": "update.mjs",
+      "sha256": "11b9862fe60fcb693504d136567cce36e33a9b5cca3321938429769a02a5d3b3"
+    },
+    {
+      "ref": "vendor/NOTICES.md",
+      "sha256": "7eba5e5f046d1c0b1c7c02ff036925d2580682c67e09b5521c8fc4f284f3b216"
+    },
+    {
+      "ref": "vendor/yaml.LICENSE",
+      "sha256": "5bba27375d93e9119f76c1015f7672cf9ad5f70952296e0842fb2243d6376869"
+    },
+    {
+      "ref": "vendor/yaml.mjs",
+      "sha256": "58c510627769ef4e75e90bcf410d63ba33e64b46bc9cfc53149839d5ccb1709b"
+    }
+  ],
+  "core_lock_sha256": "b1f20138bd9e01a01d8b3624dfa70c9e41c8b81b700ffabf53ab3fc285207171"
+}

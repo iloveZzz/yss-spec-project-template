@@ -1,0 +1,16 @@
+[
+  {
+    "profile": "dev",
+    "patch": ".template-source/profile-skill-patches/dev/yss-prototype-stage.patch",
+    "exit_code": 0,
+    "stderr": "",
+    "existing_ui_route_preserved": true
+  },
+  {
+    "profile": "frontend",
+    "patch": ".template-source/profile-skill-patches/frontend/yss-prototype-stage.patch",
+    "exit_code": 0,
+    "stderr": "",
+    "existing_ui_route_preserved": true
+  }
+]

@@ -2,13 +2,28 @@
 import { parseArgs } from 'node:util';
 import path from 'node:path';
 import { exportBundle, openBundle, importBundle } from './lib/strategic-handoff.mjs';
+import { read, safe, ensure } from './lib/strategic-handoff-io.mjs';
+
+async function preflightExport(values) {
+  const root=path.resolve(values['source-root']),handoff=read(safe(root,values.handoff));
+  const required=handoff.schema_version===5&&handoff.ui_baseline_kind==='existing-ui-baseline';
+  ensure(!required||values['preflight-input'],'preflight-required: 既有 UI 战略导出必须提供 --preflight-input <file>；先按 docs/process/delivery-preflight.md 准备源资产清单并执行 export 阶段只读预检');
+  if(!values['preflight-input'])return;
+  const {preflightDelivery}=await import('./lib/delivery-preflight.mjs');
+  const input=read(path.resolve(values['preflight-input']));
+  ensure(!input.delivery_kind||input.delivery_kind==='strategic-handoff','preflight-scope-conflict: 战略导出只能使用 strategic-handoff 清单');
+  ensure(path.resolve(root,input.governance_root||'.')===root,'preflight-scope-conflict: 预检治理根与导出来源不同');
+  ensure(input.assets?.strategic_handoff?.ref===values.handoff,'preflight-scope-conflict: 预检未绑定本次导出的 handoff 源文件');
+  const result=await preflightDelivery({...input,delivery_kind:'strategic-handoff'},{stage:'export',root});
+  if(result.exit_code!==0){const error=new TypeError('delivery-preflight-blocked: 请按每项 recovery 补证，再从正常导出入口重试');error.preflight=result;throw error;}
+}
 try {
-  const {values,positionals}=parseArgs({allowPositionals:true,strict:true,options:{'source-root':{type:'string'},handoff:{type:'string'},output:{type:'string'},zip:{type:'boolean'},previous:{type:'string'},bundle:{type:'string'},'target-root':{type:'string'}}});
+  const {values,positionals}=parseArgs({allowPositionals:true,strict:true,options:{'source-root':{type:'string'},handoff:{type:'string'},output:{type:'string'},zip:{type:'boolean'},previous:{type:'string'},bundle:{type:'string'},'target-root':{type:'string'},'preflight-input':{type:'string'}}});
   const [command]=positionals;
   let result;
-  if(command==='export'&&values['source-root']&&values.handoff&&values.output)result=await exportBundle({sourceRoot:values['source-root'],handoffRef:values.handoff,output:values.output,zip:values.zip,previous:values.previous});
+  if(command==='export'&&values['source-root']&&values.handoff&&values.output){await preflightExport(values);result=await exportBundle({sourceRoot:values['source-root'],handoffRef:values.handoff,output:values.output,zip:values.zip,previous:values.previous});}
   else if(command==='verify'&&values.bundle)result=await openBundle(path.resolve(values.bundle),b=>({result:'verified',bundle_id:b.manifest.bundle_id,version:b.manifest.version,bundle_digest:b.manifest.bundle_digest,rules:b.indexes.rules.length,scenarios:b.indexes.scenarios.length}));
   else if(command==='import'&&values.bundle&&values['target-root'])result=await importBundle({bundle:path.resolve(values.bundle),targetRoot:values['target-root']});
-  else throw new TypeError('用法: strategic-handoff export --source-root <repo> --handoff <relative-file> --output <new-dir> [--zip] [--previous <bundle>] | verify --bundle <dir|zip> | import --bundle <dir|zip> --target-root <repo>');
+  else throw new TypeError('用法: strategic-handoff export --source-root <repo> --handoff <relative-file> --output <new-dir> [--preflight-input <file>] [--zip] [--previous <bundle>] | verify --bundle <dir|zip> | import --bundle <dir|zip> --target-root <repo>');
   process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
-}catch(error){process.stderr.write(`${JSON.stringify({result:'blocked',error:error.message})}\n`);process.exitCode=1;}
+}catch(error){process.stderr.write(`${JSON.stringify({result:'blocked',error:error.message,...(error.preflight?{preflight:error.preflight}:{})})}\n`);process.exitCode=1;}

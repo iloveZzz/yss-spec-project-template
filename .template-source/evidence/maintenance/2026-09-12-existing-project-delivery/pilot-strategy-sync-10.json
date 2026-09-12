@@ -1,0 +1,27 @@
+{
+  "status": "synced",
+  "from": "e24465921a8a51d8690a1732842274a35b935c9e",
+  "to": "e24465921a8a51d8690a1732842274a35b935c9e",
+  "changes": [
+    ".agents/skills/yss-strategic-design/SKILL.md",
+    ".claude/skills/yss-strategic-design/SKILL.md",
+    ".codex/skills/yss-strategic-design/SKILL.md",
+    ".cursor/skills/yss-strategic-design/SKILL.md",
+    ".pi/skills/yss-strategic-design/SKILL.md",
+    ".qoder/skills/yss-strategic-design/SKILL.md",
+    ".trae/skills/yss-strategic-design/SKILL.md",
+    "docs/process/delivery-preflight.md",
+    "docs/process/schemas/digital-human-task-package.schema.json",
+    "scripts/fixtures/delivery-preflight/approved-execution.test.mjs",
+    "scripts/fixtures/delivery-preflight/json-schema-framing.test.mjs",
+    "scripts/fixtures/existing-ui-baseline/fixture.mjs",
+    "scripts/lib/approved-execution-context.mjs",
+    "scripts/lib/delivery-preflight.mjs",
+    "scripts/lib/json-schema.mjs",
+    "scripts/lib/strategic-handoff.mjs",
+    "scripts/verify-delivery-preflight-scenarios",
+    "scripts/verify-existing-ui-baseline-scenarios",
+    "skills-lock.json"
+  ],
+  "conflicts": []
+}

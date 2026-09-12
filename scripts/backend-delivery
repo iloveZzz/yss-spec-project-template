@@ -2,13 +2,29 @@
 import { parseArgs } from 'node:util';
 import path from 'node:path';
 import { exportBackendDelivery, openBackendDelivery, importBackendDelivery } from './lib/backend-delivery.mjs';
+import { read, safe, ensure } from './lib/strategic-handoff-io.mjs';
+
+async function preflightExport(values) {
+  const root=path.resolve(values['source-root']),delivery=read(safe(root,values.delivery));
+  const document=read(safe(root,delivery.slice_contract.ref)),contract=document.slice_contract||document;
+  const identity=contract.resolution?.architecture_identity||contract.backend?.architecture_identity||contract.architecture_identity;
+  ensure(identity?.schema_version!==2||values['preflight-input'],'preflight-required: 既有工程身份 v2 导出必须提供 --preflight-input <file>；先按 docs/process/delivery-preflight.md 准备源资产清单并执行 export 阶段只读预检');
+  if(!values['preflight-input'])return;
+  const {preflightDelivery}=await import('./lib/delivery-preflight.mjs');
+  const input=read(path.resolve(values['preflight-input']));
+  ensure(!input.delivery_kind||input.delivery_kind==='backend-delivery','preflight-scope-conflict: 后端导出只能使用 backend-delivery 清单');
+  ensure(path.resolve(root,input.governance_root||'.')===root,'preflight-scope-conflict: 预检治理根与导出来源不同');
+  ensure(input.assets?.backend_delivery?.ref===values.delivery,'preflight-scope-conflict: 预检未绑定本次导出的 delivery 源文件');
+  const result=await preflightDelivery({...input,delivery_kind:'backend-delivery'},{stage:'export',root});
+  if(result.exit_code!==0){const error=new TypeError('delivery-preflight-blocked: 请按每项 recovery 补证，再从正常导出入口重试');error.preflight=result;throw error;}
+}
 try {
-  const {values,positionals}=parseArgs({allowPositionals:true,options:{'source-root':{type:'string'},delivery:{type:'string'},output:{type:'string'},zip:{type:'boolean'},bundle:{type:'string'},'target-root':{type:'string'}}});
+  const {values,positionals}=parseArgs({allowPositionals:true,options:{'source-root':{type:'string'},delivery:{type:'string'},output:{type:'string'},zip:{type:'boolean'},bundle:{type:'string'},'target-root':{type:'string'},'preflight-input':{type:'string'}}});
   if(positionals.length!==1)throw new TypeError('必须指定 export / verify / import');
   let result;
-  if(positionals[0]==='export'&&values['source-root']&&values.delivery&&values.output)result=await exportBackendDelivery({sourceRoot:values['source-root'],deliveryRef:values.delivery,output:values.output,zip:values.zip});
+  if(positionals[0]==='export'&&values['source-root']&&values.delivery&&values.output){await preflightExport(values);result=await exportBackendDelivery({sourceRoot:values['source-root'],deliveryRef:values.delivery,output:values.output,zip:values.zip});}
   else if(positionals[0]==='verify'&&values.bundle)result=await openBackendDelivery(path.resolve(values.bundle),b=>({result:'verified',delivery_id:b.delivery.delivery_id,version:b.delivery.version,bundle_digest:b.manifest.bundle_digest,live_service_checked:false}));
   else if(positionals[0]==='import'&&values.bundle&&values['target-root'])result=await importBackendDelivery({bundle:path.resolve(values.bundle),targetRoot:values['target-root']});
-  else throw new TypeError('用法: backend-delivery export --source-root <repo> --delivery <ref> --output <new-dir> [--zip] | verify --bundle <dir|zip> | import --bundle <dir|zip> --target-root <repo>');
+  else throw new TypeError('用法: backend-delivery export --source-root <repo> --delivery <ref> --output <new-dir> [--preflight-input <file>] [--zip] | verify --bundle <dir|zip> | import --bundle <dir|zip> --target-root <repo>');
   process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
-} catch(error) { process.stderr.write(`${JSON.stringify({result:'blocked',error:error.message})}\n`);process.exitCode=1; }
+} catch(error) { process.stderr.write(`${JSON.stringify({result:'blocked',error:error.message,...(error.preflight?{preflight:error.preflight}:{})})}\n`);process.exitCode=1; }

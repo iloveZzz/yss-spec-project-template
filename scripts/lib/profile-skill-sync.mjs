@@ -334,3 +334,29 @@ export function reportProfileSkillSync(plan) {
   for (const item of [...plan.changes, ...plan.issues]) counts[item.status] = (counts[item.status] ?? 0) + 1;
   return { ...plan, changes: plan.changes.map(({ content, ...item }) => item), counts };
 }
+
+export function formatProfileSkillSync(report, mode = "--dry-run") {
+  const affected = [...new Set([...report.changes, ...report.issues].map(({ profile }) => profile))];
+  const lines = [
+    `profile skills: ${report.profiles.join(", ")}`,
+    `模式：${mode === "--apply" ? "已执行同步" : mode === "--check" ? "只读检查" : "只读预览"}`,
+    `受影响 profile：${affected.join(", ") || "无"}`,
+  ];
+  for (const profile of affected) {
+    const skills = [...new Set(report.changes.filter((item) => item.profile === profile && item.skill).map(({ skill }) => skill))];
+    lines.push(`${profile} 变更技能：${skills.join(", ") || "无（请查看资产差异或问题）"}`);
+  }
+  lines.push(`已有问题：${report.issues.length} 项（含冲突、缺失依赖与未登记差异）`);
+  for (const [status, count] of Object.entries(report.counts)) lines.push(`${status}: ${count}`);
+  for (const item of report.changes) lines.push(`${item.profile}: ${item.status}: ${item.path}`);
+  if (!affected.length) lines.push("本次未发现同步差异或问题；不代表项目验证已通过。");
+  else {
+    // Profile names come from configuration; quote them as literal shell arguments.
+    const profiles = affected.map((profile) => `--profile '${profile.replaceAll("'", "'\\''")}'`).join(" ");
+    lines.push(`后续同步一致性检查（待执行；有差异或冲突时先处理）：scripts/sync-profile-skills --check ${profiles}`);
+    lines.push("本仓 Skill 治理验证（待执行）：scripts/verify-skill-governance");
+  }
+  lines.push("文件差异、分类与 SHA-256 继续使用现有 --json 报告；本摘要不判断下游项目兼容性。");
+  const issues = report.issues.map((item) => [item.profile, item.status, item.skill, item.path, item.message, item.marker === undefined ? undefined : `marker=${item.marker}`].filter((value) => value !== undefined).join(": "));
+  return { stdout: `${lines.join("\n")}\n`, stderr: issues.length ? `${issues.join("\n")}\n` : "" };
+}

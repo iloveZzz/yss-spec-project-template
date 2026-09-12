@@ -6,7 +6,7 @@
 
 ## 入口与兼容
 
-- `create-yss-spec` 保留 init、attach、sync；`create-yss-harness-dev` 保留同名操作；战略 `create-yss-harness-design` 只提供 init。
+- 本体 `create-yss-spec` 包保持不变。当前子项目 design/backend/frontend 统一使用公共 CLI 内核，提供 init、attach、sync、diff、doctor、recover、update/upgrade。旧 dev 仅保留身份拒绝，不恢复分发。
 - 历史范围曾限制专职模板为 repository-local。该限制由已确认的 [专职 CLI 设计 v1.1.0](dedicated-harness-cli-design.md) 定向替代：新增 backend/frontend 两包；两包拒绝旧实例，不跨 profile 迁移。旧入口仅在新包可安装并通过 smoke test 后退役。
 - `update` / `upgrade` 只更新 CLI 程序；不操作实例受管文件。战略及专职实例通过显式 `sync` 更新治理资产，默认预览、`--apply` 执行；不跨家族迁移。
 - 目标家族由五种 metadata 文件和已存在的 Harness profile 显式判定，不由路径、Git remote 或业务内容猜测。五种文件分别是 `.yss-template.json`、`.yss-harness-design.json`、`.yss-harness-dev.json`、`.yss-harness-backend.json`、`.yss-harness-frontend.json`。
@@ -18,7 +18,9 @@
 3. 缺 metadata 但有 profile 的目标仍须通过家族检查；普通无家族项目按既有 attach 规则处理。profile YAML 支持正常 YAML 表达，拒绝重复键、别名扩展、非法类型及未知 schema/profile。
 4. 身份文件和 profile 的中间目录不得是符号链接或特殊文件。检查仅使用 CLI 包内的解析器，不执行目标项目或交接包中的解析代码。
 5. 固定快照的 templateName、templateSource、profileId 和实际 profile 必须一致；写入完成后重新核对目标身份。更新受管资产不能改变原实例家族。
-6. 保留既有受管冲突、unsafe、gitlink、删除报告与回滚语义；帮助、版本查询和程序更新不受目标家族限制。
+6. init 仅接受空目录；attach/sync 默认预览。README、Context 与战略 DESIGN 保留，`.gitignore` 区块合并；退出分发仅显式 prune 删除可信且未修改的受管文件。战略冲突须人工合并，其他家族 force 不能越过所有权和路径边界。帮助、版本查询和程序更新不受目标家族限制。
+7. 战略 metadata v1 在首次成功 sync --apply 中事务化转换为 v2；缺少来源或变量时阻断，未知旧 mode/所有权不授予清理权限。doctor/diff/recover 预览不迁移。批准记录和业务状态不自动迁移。
+8. 三包测试不得隐式重建来源快照，prepack 只校验已准备输入。开发 WORKTREE 显式标注；固定交付仍要求完整来源提交和安装验证。
 
 ## 验收和交付
 

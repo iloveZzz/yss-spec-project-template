@@ -1,0 +1,16 @@
+{
+  "spec_init": {
+    "exit_code": 0,
+    "duration_seconds": 80.74,
+    "runtime_bytes_match": true
+  },
+  "design_init": {
+    "exit_code": "timeout-300s",
+    "duration_seconds": 300.06
+  },
+  "probe_corrections": [
+    "CLI snapshots do not necessarily ship new test verifier scripts; stage test-only harness in a copy of the actual initialized instance.",
+    "Dedicated CLI snapshot has sourceState and blob files but no requestedRef; interpret each schema without imposing the main CLI shape."
+  ],
+  "original_instance_root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-new-delivery-cli-fresh-kg1g2pl3"
+}

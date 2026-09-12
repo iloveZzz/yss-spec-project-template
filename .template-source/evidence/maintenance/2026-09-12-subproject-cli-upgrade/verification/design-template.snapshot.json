@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "side": "design",
+  "packageName": "create-yss-harness-design",
+  "profileId": "harness.business-ddd-strategy-handoff",
+  "metadataFile": ".yss-harness-design.json",
+  "templateName": "yss-harness-design-agent",
+  "templateSource": "github:iloveZzz/yss-harness-design-agent",
+  "templateCommit": "e24465921a8a51d8690a1732842274a35b935c9e",
+  "sourceState": "working-tree",
+  "manifestHash": "4f68b20340694df045b7069cedc57d6b2925380861409427b8e4005870db4418",
+  "snapshotHash": "75720eb7651ae5d9680fafccd895105e2dddcb068007811633bf828677f68804",
+  "projectionRepresentation": "materialized-files",
+  "pathEncoding": "sha256-blobs-v1"
+}

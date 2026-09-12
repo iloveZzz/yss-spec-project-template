@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "role_id": "role.frontend-engineer",
+  "skill_source": {
+    "registry_ref": "docs/agents/digital-human-roles.yaml",
+    "defaults_ref": "taskPackageDefaults(role.frontend-engineer)",
+    "core_skills": [
+      "yss-ui",
+      "yss-ui-business-page-generation",
+      "yss-components",
+      "yss-formily",
+      "formily-foundation",
+      "formily-linkage-effects",
+      "formily-mode-slot-detail",
+      "formily-step-flow",
+      "ytable-usage",
+      "ytree-usage",
+      "yedit-table-usage",
+      "yss-api-integration",
+      "yss-hook",
+      "theme-token-usage",
+      "page-skeleton",
+      "page-list-module",
+      "page-form-module",
+      "component-selection-imports",
+      "vue3-best-practices",
+      "tdd"
+    ],
+    "forbidden_skills": [
+      "yss-domain",
+      "yss-application",
+      "yss-repository",
+      "yss-mybatis",
+      "yss-web-controller",
+      "yss-ddd-scaffold-generator",
+      "yss-layered-mvc-scaffold-generator",
+      "java-backend-commit"
+    ]
+  },
+  "task_id": "ui-handoff",
+  "work_unit_id": "work-unit.ssot-update",
+  "actor_id": "maintenance-ui-handoff",
+  "runtime_id": "runtime.generic",
+  "execution_state": "Worker",
+  "workflow_status": "active",
+  "contract": {
+    "kind": "template-maintenance",
+    "contract_id": "existing-project-delivery-repair",
+    "contract_version": 1,
+    "status": "issued",
+    "contract_ref": ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/plan.md",
+    "maintenance_ref": ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/checkpoint.yaml"
+  },
+  "inputs": [
+    "yss-project.yaml",
+    "CONTEXT.md",
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/plan.md"
+  ],
+  "objective": "实现既有无UI改动基线、Handoff v5 和前端预检v2/接收v3，保留旧原型规则，含真实文件测试。 补齐UI事实源/技能路由和三接收模板的共享工具分发清单，暂不执行同步。 修复backend importer按preflight版本生成v3前端草案，不更改目标授权语义。",
+  "allowed_write_paths": [
+    "scripts/lib/existing-ui-baseline.mjs",
+    "scripts/lib/ui-baseline.mjs",
+    "scripts/lib/strategic-handoff.mjs",
+    "scripts/lib/frontend-delivery.mjs",
+    "scripts/lib/strategic-handoff-consumption.mjs",
+    "scripts/lib/strategic-handoff-rules.mjs",
+    "docs/process/schemas/existing-ui-baseline.schema.json",
+    "docs/process/schemas/strategic-design-handoff-v5.schema.json",
+    "docs/process/schemas/strategic-handoff-export-v2.schema.json",
+    "docs/process/schemas/frontend-strategic-preflight-v2.schema.json",
+    "docs/process/schemas/frontend-delivery-acceptance-v3.schema.json",
+    "scripts/verify-existing-ui-baseline-scenarios",
+    "scripts/fixtures/existing-ui-baseline",
+    "docs/process/existing-ui-baseline.md",
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff",
+    "docs/process/strategic-handoff-package.md",
+    "docs/process/frontend-backend-delivery.md",
+    ".agents/skills/yss-prototype-stage/SKILL.md",
+    "scripts/sync-strategic-handoff-tools",
+    ".template-source/profile-skill-sync.json",
+    ".template-source/profile-skill-patches",
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff-task.json",
+    "scripts/lib/backend-delivery.mjs"
+  ],
+  "forbidden_actions": [
+    "修改其他任务路径",
+    "修改原试验证据或业务工作区",
+    "自签批准或宣布整体完成",
+    "提交推送发布"
+  ],
+  "expected_outputs": [
+    "实现既有无UI改动基线、Handoff v5 和前端预检v2/接收v3，保留旧原型规则，含真实文件测试。"
+  ],
+  "expected_evidence_files": [
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/result.json"
+  ],
+  "verification_commands": [
+    "scripts/verify-existing-ui-baseline-scenarios"
+  ],
+  "verification_results": [],
+  "downstream_consumers": [
+    "maintenance-root"
+  ],
+  "convergence": {
+    "parent_work_unit": "work-unit.ssot-update",
+    "convergence_ref": ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/plan.md"
+  }
+}

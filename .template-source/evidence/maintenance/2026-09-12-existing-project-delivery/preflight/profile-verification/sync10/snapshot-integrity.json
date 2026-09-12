@@ -1,0 +1,30 @@
+[
+  {
+    "cli": "create-yss-spec",
+    "source_state": "working-tree",
+    "manifestHash": "191240f4716de5f93cf1b30ea917a9a14dfd4a29b12dd2ba569c6271fa46009e",
+    "snapshotHash": "2c2158af2d661eb160eee4672ef027c8550402528273b61fec82f232e9539b8b",
+    "complete_payload_integrity": "passed"
+  },
+  {
+    "cli": "create-yss-strategic-design",
+    "source_state": "working-tree",
+    "manifestHash": "4f68b20340694df045b7069cedc57d6b2925380861409427b8e4005870db4418",
+    "snapshotHash": "4a745584a55eb7575f53a9ede979de2449922682c8bada59258574b70c953a48",
+    "complete_payload_integrity": "passed"
+  },
+  {
+    "cli": "create-yss-harness-backend",
+    "source_state": "working-tree",
+    "manifestHash": "7d62d8123b4fb6eee545a4fefbadce975da26ffb047ef646e660a7af9f11d872",
+    "snapshotHash": "6fac32a51b141489e69951a3b509c69aeadaaabc13feb224c0219eb952933533",
+    "complete_payload_integrity": "passed"
+  },
+  {
+    "cli": "create-yss-harness-frontend",
+    "source_state": "working-tree",
+    "manifestHash": "7d62d8123b4fb6eee545a4fefbadce975da26ffb047ef646e660a7af9f11d872",
+    "snapshotHash": "a4c9a3993bbec2145a9d31e33c83837bfc9d43849ec4c70345ae8b34657d2d24",
+    "complete_payload_integrity": "passed"
+  }
+]

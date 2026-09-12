@@ -24,6 +24,8 @@ description: 在 YSS 技术分析中统一承接需求与战略输入，按已�
 
 已有 Strategic Design Handoff 时，两种分支都必须先完成导入和目标词汇对账，再逐条承接规则与关键场景。没有战略交接包的项目直接消费批准需求，不能为 MVC 补造战略 DDD。
 
+既有身份 v2 的纯工程变更可显式使用 `design_scope: engineering-only`；按 `references/engineering-design.schema.json` 绑定真实构建单元、写路径、只读依赖、失败处理与测试 seam。不得更改登记业务边界、领域模型、业务规则/状态、持久化、数据库 schema 或 UI；命中这些影响回原架构设计。缺省仍保留原 DDD/MVC 规则，不自动降级。工程分支仍需当前 Spec/API/工程依据、逐条承接、独立技术审查及正式 Slice 批准。
+
 ## 合同与验证
 
 新产物使用 schema v2 Technical Design Contract：共同头记录架构来源、输入版本与摘要、规则/场景承接、评审证据和状态，`design` 保存架构专属内容。合同格式与兼容规则见 `references/technical-design-contract.md`，Schema 见 `references/technical-design.schema.json`。

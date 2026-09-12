@@ -28,13 +28,7 @@ YSS 模板工程是一套可版本化的研发治理系统。它用仓库身份�
 
 ## 4. Harness 产品线
 
-模板工程按研发责任边界拆成三个互不混用的 Harness 产品：
-
-| 产品线 | 模板源 | 实例化 CLI | 生命周期边界 |
-|---|---|---|---|
-| 全产品生命周期 | `yss-spec-project-template` | `create-yss-spec` | 从 Plan 到发布与复盘 |
-| DDD 战略设计交接 | `yss-harness-design-agent` | `create-yss-harness-design` | 从机会、需求和战略设计到 Strategic Design Handoff |
-| 开发落地 | `yss-harness-dev-agent` | `create-yss-harness-dev` | 从已批准 Spec 或战略设计交接包到 Tactical Design、Slice Contract、实现与验证 |
+模板工程按研发责任边界提供综合、战略、后端、前端入口；既有通用研发实例继续核对原固定版本。选型、CLI 支持与默认写入行为集中维护在[用户手册的 CLI 能力与写入方式](../user-guide/用户手册.md#cli-能力与写入方式)。具体生命周期边界由对应实例的 profile 和生命周期注册表决定。
 
 每条产品线使用独立的 profile、metadata 和固定模板 commit。CLI 之间遇到其他产品线的 metadata 时必须 fail closed，不能自动接管。
 

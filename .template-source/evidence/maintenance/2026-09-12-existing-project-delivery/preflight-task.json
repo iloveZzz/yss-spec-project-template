@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "role_id": "role.backend-engineer",
+  "skill_source": {
+    "registry_ref": "docs/agents/digital-human-roles.yaml",
+    "defaults_ref": "taskPackageDefaults(role.backend-engineer)",
+    "core_skills": [
+      "yss-implementation-contract-compiler",
+      "yss-technical-design",
+      "yss-tactical-design",
+      "yss-mvc-design",
+      "yss-domain",
+      "yss-application",
+      "yss-repository",
+      "yss-mybatis",
+      "yss-web-controller",
+      "yss-dto",
+      "mapstruct",
+      "lombok",
+      "alibaba-java-code-style",
+      "yss-exception",
+      "yss-validation",
+      "tdd",
+      "yss-ddd-scaffold-generator",
+      "yss-layered-mvc-scaffold-generator"
+    ],
+    "forbidden_skills": [
+      "yss-ui",
+      "yss-ui-business-page-generation",
+      "yss-formily",
+      "yss-frontend-scaffold-generator",
+      "yss-antd-design",
+      "yss-antdv-next-design",
+      "page-list-module",
+      "page-form-module"
+    ]
+  },
+  "task_id": "preflight",
+  "work_unit_id": "work-unit.ssot-update",
+  "actor_id": "maintenance-preflight",
+  "runtime_id": "runtime.generic",
+  "execution_state": "Worker",
+  "workflow_status": "active",
+  "contract": {
+    "kind": "template-maintenance",
+    "contract_id": "existing-project-delivery-repair",
+    "contract_version": 1,
+    "status": "issued",
+    "contract_ref": ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/plan.md",
+    "maintenance_ref": ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/checkpoint.yaml"
+  },
+  "inputs": [
+    "yss-project.yaml",
+    "CONTEXT.md",
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/plan.md"
+  ],
+  "objective": "实现只读交付预检 CLI 与检查库，按阶段汇总所有可检查前提，结构化诊断与测试。",
+  "allowed_write_paths": [
+    "scripts/preflight-delivery",
+    "scripts/lib/delivery-preflight.mjs",
+    "docs/process/schemas/delivery-preflight-input.schema.json",
+    "docs/process/schemas/delivery-preflight-result.schema.json",
+    "scripts/verify-delivery-preflight-scenarios",
+    "scripts/fixtures/delivery-preflight",
+    "docs/process/delivery-preflight.md",
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/preflight",
+    "scripts/strategic-handoff",
+    "scripts/backend-delivery",
+    ".agents/skills/implementation-repo-onboarding/SKILL.md"
+  ],
+  "forbidden_actions": [
+    "修改其他任务路径",
+    "修改原试验证据或业务工作区",
+    "自签批准或宣布整体完成",
+    "提交推送发布"
+  ],
+  "expected_outputs": [
+    "实现只读交付预检 CLI 与检查库，按阶段汇总所有可检查前提，结构化诊断与测试。"
+  ],
+  "expected_evidence_files": [
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/preflight/result.json"
+  ],
+  "verification_commands": [
+    "scripts/verify-delivery-preflight-scenarios"
+  ],
+  "verification_results": [],
+  "downstream_consumers": [
+    "maintenance-root"
+  ],
+  "convergence": {
+    "parent_work_unit": "work-unit.ssot-update",
+    "convergence_ref": ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/plan.md"
+  }
+}

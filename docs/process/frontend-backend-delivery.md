@@ -6,7 +6,7 @@
 
 战略方维护业务规则、Spec、页面流程和视觉基线；后端维护 API 及后端交付；前端维护工程设计、页面和验收证据；统一管理方维护基线引用、跨仓切片与业务验收汇总。
 
-前端消费需求可在上游设计时提前反馈。Handoff v4 导入后的 Frontend Strategic Preflight 可在后端交付前完成战略输入、Context、视觉基线和源规则追踪核验，并允许起草前端工程设计与实现计划；它固定返回 `ready_for_agent: false`。仅当 Backend/API/Data 影响命中时，最终接收才等待后端交付；UI-only 路径使用有依据的 `backend-not-applicable`。Slice Contract 获准前均不得写代码。
+前端消费需求可在上游设计时提前反馈。Handoff v4/v5 导入后的 Frontend Strategic Preflight 可在后端交付前完成战略输入、Context、相应 UI 基线和源规则追踪核验，并允许起草前端工程设计与实现计划；它固定返回 `ready_for_agent: false`。仅当 Backend/API/Data 影响命中时，最终接收才等待后端交付；UI-only 路径使用有依据的 `backend-not-applicable`。Slice Contract 获准前均不得写代码。
 
 ## 后端导出与前端导入
 
@@ -28,14 +28,24 @@ scripts/backend-delivery import --bundle <directory-or-zip> --target-root <front
 
 ## 接收与启动
 
-Handoff v4 先生成 `frontend-strategic-preflight-draft.json`；补齐正式 Context Reconciliation 后执行 `scripts/verify-frontend-strategic-preflight`。通过仅允许进入前端工程设计草案。
+Handoff v4/v5 先生成 `frontend-strategic-preflight-draft.json`；补齐正式 Context Reconciliation 后执行 `scripts/verify-frontend-strategic-preflight`。通过仅允许进入前端工程设计草案。
 
-后端交付导入只新增匹配的 backend binding 并产生 `frontend-acceptance-draft.json`，不会覆盖已填写的前端预检/设计草案，也不会批准资产。最终接收方按当前 `schemas/frontend-delivery-acceptance.schema.json`（v2）准备记录；v1 仅服务历史 Handoff v3，继续要求真实后端交付：
+后端交付导入只新增匹配的 backend binding 并产生 `frontend-acceptance-draft.json`，不会覆盖已填写的前端预检/设计草案，也不会批准资产。最终接收方按交接版本准备记录，禁止静默降级：
+
+| 战略交接 | 前端战略预检 | 最终接收 | 用例基线字段 |
+|---|---|---|---|
+| Handoff v3（历史） | 原历史路径 | Acceptance v1，要求后端交付 | `visual_case_ids` |
+| Handoff v4 | Preflight v1 | Acceptance v2 | `visual_case_ids` |
+| Handoff v5 | Preflight v2 | Acceptance v3 | `baseline_case_ids` |
+
+v5 的预检和接收都声明 `ui_baseline_kind`，必须与战略包一致。原型分支继续原视觉/原型要求；既有 UI 分支使用 [existing-ui-baseline v1](existing-ui-baseline.md)，只允许无 UI/交互/状态/权限体验改动并已取得当前基线确认的工程。真实截图不得自行升级为原型批准。
+
+接收记录遵守以下绑定：
 
 - `strategic_preflight` 绑定当前预检文件及字节摘要。
-- `backend_dependency.mode: required` 时，`backend_delivery` 绑定真实后端导入收据和包摘要；`not-applicable` 时必须与 Handoff v4 backend 路由的影响引用、原因和证据一致，且不得绑定后端收据。
+- `backend_dependency.mode: required` 时，`backend_delivery` 绑定真实后端导入收据和包摘要；`not-applicable` 时必须与 Handoff v4/v5 backend 路由的影响引用、原因和证据一致，且不得绑定后端收据。
 - `strategic_handoff` 绑定战略导入收据、包摘要、正式 `context_reconciliation_ref` 和全部源规则/关键场景的承接 rows。
-- `frontend_cases` 绑定业务规则/场景、成功或失败结果、Visual Baseline `case_id` 和可读取的用例说明；有后端依赖时绑定已交付接口，`backend-not-applicable` 时 `operation_ids` 必须为空。
+- `frontend_cases` 绑定业务规则/场景、成功或失败结果、对应 UI 基线的 `case_id` 和可读取的用例说明；有后端依赖时绑定已交付接口，`backend-not-applicable` 时 `operation_ids` 必须为空。
 - 已规划的承接使用 `mapped`，表示已映射用例，不声称代码已实现。当前交付范围必须 mapped 到当前切片；其他范围的 pending、conflict、deferred 或 not-applicable 沿用战略逐条承接的理由、证据和依赖阻断规则。
 
 完成接收核对后记录 `status: accepted` 并执行：
@@ -66,10 +76,13 @@ scripts/verify-frontend-delivery --root <frontend> --slice <slice-id> <relative-
 
 ## 维护与验证
 
-共享实现由当前主模板维护，通过 `scripts/sync-strategic-handoff-tools` 分发；canonical Skill 变更后生成运行时投影与 lock。新/旧模板的实例初始化与 sync 不静默转换 profile。场景入口为 `scripts/verify-frontend-delivery-scenarios`，通过临时实例和明确标注的合成测试服务验证行为，不作为具体产品的交付证据。
+共享实现由当前主模板维护，通过 `scripts/sync-strategic-handoff-tools` 分发；canonical Skill 变更后生成运行时投影与 lock。新/旧模板的实例初始化与 sync 不静默转换 profile。场景入口为 `scripts/verify-frontend-delivery-scenarios` 与 `scripts/verify-existing-ui-baseline-scenarios`，通过临时实例和明确标注的合成测试服务验证行为，不作为具体产品的交付证据。
 
 前端 `frontend_cases` 的 `evidence_ref` 必须同时绑定 `evidence_digest`（原始文件字节 SHA-256）。用例内容变化后须更新接收记录并重编译依赖合同。
 
 OpenAPI Freeze 的来源门禁兼容当前综合模板 `gate.engineering-contract-approved`、历史冻结包 `gate.openapi-frozen` 与研发模板 `gate.openapi-freeze-confirmed`；仍严格校验来源角色策略及批准字节绑定，不允许其他门禁代替。每个交付范围至少包含一个带成功/失败验证的战略场景。
 
 生命周期中的稳定入口为 `check.frontend-delivery-inputs-verified`，定义见各自 `lifecycle-registry.yaml`；角色表将它登记为 automatic_checks，实际核验仍由脚本执行，不增设人工批准，也不替代 Slice Contract 的批准门禁。
+
+
+初始化、构建、导出与接收的前提通过 [只读交付预检](delivery-preflight.md) 汇总。预检不启动服务或制造接收状态；最终有后端依赖的接收仍执行本节真实服务探测，不能复用旧预检结论跳过实际边界核验。

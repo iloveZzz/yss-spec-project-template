@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { test } from 'node:test';
+import { attachSliceApproval, attachArtifactApproval } from './fixtures/backend-delivery/approval-fixture.mjs';
 import assert from 'node:assert/strict';
 import { fork } from 'node:child_process';
 import { once } from 'node:events';
@@ -62,8 +63,8 @@ test('战略与后端交付联合接收：便携、真实服务、拒绝不完�
   const f=await fixture(source,{handoffVersion:4});
   for(const root of [backend,frontend]) {put(root,'yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');put(root,'CONTEXT.md',context);}
   const strategic=await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output:path.join(backend,'strategy-package')});
-  const roles=read(path.join(source,'docs/agents/digital-human-roles.yaml'));
-  for(const gate of ['gate.openapi-frozen','gate.slice-contract-approved']) {
+  const roles=read(path.join(backendTools||source,'docs/agents/digital-human-roles.yaml'));
+  if(!backendTools)for(const gate of ['gate.openapi-frozen']) {
     roles.gate_policy.biological_human=(roles.gate_policy.biological_human||[]).filter(x=>x!==gate);
     roles.gate_policy.digital_human_review=(roles.gate_policy.digital_human_review||[]).filter(x=>x.gate!==gate);
     roles.gate_policy.digital_human_review.push({gate,countersigners:['role.product-manager']});
@@ -74,15 +75,13 @@ test('战略与后端交付联合接收：便携、真实服务、拒绝不完�
   put(backend,'data.md','Synthetic data setup for maintenance tests, not product verification.');
   put(backend,'verification.log','Synthetic test fixture: successful/failed submissions exercised.');
   const file=ref=>({ref,digest:hash(readFileSync(path.join(backend,ref)))});
-  const approved=(ref,id,gate)=>{
-    const binding={...file(ref),id,version:'v1',approval_ref:`approvals/${id}.json`};
-    put(backend,binding.approval_ref,{schema_version:1,gate_id:gate,decision:'approved',actor_kind:'digital-human',role_id:'role.product-manager',runtime_id:'runtime.generic',principal_ref:'synthetic-maintenance-fixture',artifact_bindings:[{id,version:'v1',digest:binding.digest}]});return binding;
-  };
+  const apiApproval=attachArtifactApproval(backend,'api.yaml','api.supplier',backendTools?'gate.openapi-freeze-confirmed':'gate.openapi-frozen');
+  const sliceApproval=attachSliceApproval(backend,'slice.json');
   const serverState=path.join(base,'server.json');put(base,'server.json',{body:{}});
   const server=fork(path.join(ROOT,'scripts/fixtures/backend-delivery/revision-server.mjs'),[serverState],{stdio:['ignore','ignore','inherit','ipc']});
   t.after(()=>{server.kill();rmSync(base,{recursive:true,force:true});});
   const [{port}]=await once(server,'message');
-  const delivery={schema_version:1,delivery_id:'backend-delivery.supplier',version:'v1',status:'verified',strategic_bundle_ref:'strategy-package',strategic_bundle_digest:strategic.bundle_digest,strategic_route_id:'route.backend',scope:{slice_id:'slice.submit',source_ids:['rule.complete','scenario.submit'],operation_ids:['submitSupplier']},openapi:approved('api.yaml','api.supplier','gate.openapi-frozen'),slice_contract:approved('slice.json','contract.backend','gate.slice-contract-approved'),build:{source_commit:'a'.repeat(40),artifact_digest:`sha256:${'b'.repeat(64)}`},environment:{id:'fixture-local',base_url:`http://127.0.0.1:${port}`,deployment_id:'fixture-v1',revision_path:'/version',revision_pointers:{deployment_id:'/deployment_id',source_commit:'/source_commit',openapi_digest:'/openapi_digest',artifact_digest:'/artifact_digest',test_data_digest:'/test_data_digest'},test_data:file('data.md')},verification:{},supporting_files:[]};
+  const delivery={schema_version:1,delivery_id:'backend-delivery.supplier',version:'v1',status:'verified',strategic_bundle_ref:'strategy-package',strategic_bundle_digest:strategic.bundle_digest,strategic_route_id:'route.backend',scope:{slice_id:'slice.submit',source_ids:['rule.complete','scenario.submit'],operation_ids:['submitSupplier']},openapi:apiApproval.binding,slice_contract:sliceApproval.binding,build:{source_commit:'a'.repeat(40),artifact_digest:`sha256:${'b'.repeat(64)}`},environment:{id:'fixture-local',base_url:`http://127.0.0.1:${port}`,deployment_id:'fixture-v1',revision_path:'/version',revision_pointers:{deployment_id:'/deployment_id',source_commit:'/source_commit',openapi_digest:'/openapi_digest',artifact_digest:'/artifact_digest',test_data_digest:'/test_data_digest'},test_data:file('data.md')},verification:{},supporting_files:[...sliceApproval.supportingFiles,...apiApproval.supportingFiles]};
   const record=kind=>({schema_version:1,kind,subject_digest:backendDeliveryBasis(delivery),results:[{command:'synthetic-maintenance-test',executed_at:new Date().toISOString(),exit_code:0,evidence:[file('verification.log')]}],operation_ids:['submitSupplier'],coverage:[{source_id:'scenario.submit',outcome:'success'},{source_id:'scenario.submit',outcome:'failure'}]});
   put(backend,'contract-test.json',record('backend-contract'));put(backend,'deployment-test.json',record('backend-deployment'));
   delivery.verification={contract:file('contract-test.json'),deployment:file('deployment-test.json')};put(backend,'delivery.json',delivery);

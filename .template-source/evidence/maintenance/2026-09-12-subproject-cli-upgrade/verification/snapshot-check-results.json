@@ -1,0 +1,74 @@
+[
+  {
+    "family": "design",
+    "kind": "core",
+    "command": [
+      "node",
+      "scripts/sync-core.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "WORKTREE",
+      "--check"
+    ],
+    "exitCode": 0
+  },
+  {
+    "family": "design",
+    "kind": "template",
+    "command": [
+      "node",
+      "scripts/sync-template.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+      "WORKTREE",
+      "--check"
+    ],
+    "exitCode": 0
+  },
+  {
+    "family": "backend",
+    "kind": "core",
+    "command": [
+      "node",
+      "scripts/sync-core.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "WORKTREE",
+      "--check"
+    ],
+    "exitCode": 0
+  },
+  {
+    "family": "backend",
+    "kind": "template",
+    "command": [
+      "node",
+      "scripts/sync-template.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+      "WORKTREE",
+      "--check"
+    ],
+    "exitCode": 0
+  },
+  {
+    "family": "frontend",
+    "kind": "core",
+    "command": [
+      "node",
+      "scripts/sync-core.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "WORKTREE",
+      "--check"
+    ],
+    "exitCode": 0
+  },
+  {
+    "family": "frontend",
+    "kind": "template",
+    "command": [
+      "node",
+      "scripts/sync-template.mjs",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+      "WORKTREE",
+      "--check"
+    ],
+    "exitCode": 0
+  }
+]

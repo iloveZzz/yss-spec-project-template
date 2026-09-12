@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 import { readFileSync } from 'node:fs';
+import { validateEngineeringDesign } from './engineering-design.mjs';
+import { createApprovedExecutionContext, assertApprovedExecutionContext } from '../../../../scripts/lib/approved-execution-context.mjs';
+import { verifyArchitectureEvidence } from '../../../../scripts/lib/backend-architecture.mjs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -39,7 +42,8 @@ function validateMvc(design) {
   if (!design.integration_catalog.length) ensure(text(design.integration_not_applicable_reason), '无外部集成必须说明原因');
 }
 
-export function verifyArchitecture(data, root) {
+export function verifyArchitecture(data, root, {execution,sliceRef}={}) {
+  if(execution)assertApprovedExecutionContext(execution,{root,technicalDesign:data,sliceId:sliceRef});
   const binding = data.architecture;
   const file = safe(root, binding.decision_ref);
   ensure(hash(readFileSync(file)) === binding.decision_digest, '架构来源摘要漂移');
@@ -57,6 +61,10 @@ export function verifyArchitecture(data, root) {
     const entry = record.repositories?.find(item => item.project_id === binding.project_id) ?? record;
     ensure(entry.project_id === binding.project_id && entry.architecture_identity?.architecture_family === binding.family, '技术设计与既有工程登记架构不匹配');
     ensure(!['stale','blocked'].includes(record.status) && !['stale','blocked'].includes(entry.status), '工程登记已失效');
+    if (entry.architecture_identity?.schema_version === 2) {
+      ensure(entry.architecture_evidence?.engineering_baseline && entry.architecture_evidence?.manifest, '既有工程登记缺少原始工程证据引用');
+      verifyArchitectureEvidence(entry.architecture_identity, { ...entry.architecture_evidence, repository_registration: { ref: binding.decision_ref, digest: binding.decision_digest } }, { root, execution });
+    }
   }
 }
 
@@ -87,14 +95,14 @@ function validateLocalTraceability(data, root, sliceRef) {
   }
 }
 
-export async function validateTechnicalDesign(data, { root = process.cwd(), sliceRef, legacyDdd = false } = {}) {
+export async function validateTechnicalDesign(data, { root = process.cwd(), sliceRef, legacyDdd = false, readOnly = false, execution } = {}) {
   if (data?.schema_version === 1) {
     ensure(legacyDdd, '旧 v1 合同需要显式 --legacy-ddd，仅按 DDD 兼容读取');
     const errors = validateDdd(data);
     ensure(!errors.length, errors.join('; '));
     if (sliceRef) ensure(data.status === 'approved', '切片只能消费 approved 设计');
     if (data.strategic_handoff || data.strategic_context_import_ref || data.upstream_impact?.source_kind === 'strategic-handoff') {
-      const result = await verifyConsumption(data, { root, sliceRef });
+      const result = await verifyConsumption(data, { root, sliceRef, readOnly });
       ensure(result.result === 'verified', JSON.stringify(result));
     }
     return { result: 'legacy-ddd-read-only', architecture_family: 'domain-driven', status: data.status };
@@ -103,12 +111,13 @@ export async function validateTechnicalDesign(data, { root = process.cwd(), slic
   ensure(data.digest === technicalDigest(data), '技术设计合同摘要不匹配');
   ensure(!['stale','blocked','drift','new_impacts'].includes(data.status), '设计状态不可消费');
   if (sliceRef) ensure(data.status === 'approved', '切片只能消费 approved 设计');
-  verifyArchitecture(data, root);
+  verifyArchitecture(data, root, {execution,sliceRef});
   ensure(data.inputs.some(item => item.kind === 'context' && item.ref === 'CONTEXT.md') && data.inputs.some(item => item.kind === 'spec'), '共同输入缺少根 CONTEXT.md 或 Spec');
   for (const input of data.inputs) ensure(hash(readFileSync(safe(root, input.ref))) === input.digest, `输入摘要漂移: ${input.ref}`);
   for (const ref of data.evidence_refs) safe(root, ref);
   if (data.status === 'approved') ensure(data.evidence_refs.length > 0, '已批准设计缺少评审证据');
-  if (data.architecture.family === 'domain-driven') {
+  if(data.design_scope==='engineering-only')validateEngineeringDesign(data,{root});
+  else if (data.architecture.family === 'domain-driven') {
     const errors = validateDdd(data.design);
     ensure(!errors.length, errors.join('; '));
     ensure(data.design.status === data.status, 'DDD 分支状态与共同合同不一致');
@@ -119,16 +128,19 @@ export async function validateTechnicalDesign(data, { root = process.cwd(), slic
   for (const seam of seams.values()) ensure(ids.has(seam.subject_ref), `测试 seam 设计对象悬空: ${seam.seam_id}`);
   validateLocalTraceability(data, root, sliceRef);
   if (data.strategic_handoff) {
-    const result = await verifyConsumption(data, { root, sliceRef });
+    const result = await verifyConsumption(data, { root, sliceRef, readOnly });
     ensure(result.result === 'verified', JSON.stringify(result));
   }
   return { result: 'ready-for-lifecycle-review', technical_design_id: data.technical_design_id, architecture_family: data.architecture.family, status: data.status, digest: data.digest };
 }
 
 async function main() {
-  const { values, positionals } = parseArgs({ allowPositionals: true, options: { root: { type: 'string', default: process.cwd() }, slice: { type: 'string' }, 'legacy-ddd': { type: 'boolean', default: false } } });
+  const { values, positionals } = parseArgs({ allowPositionals: true, options: { root: { type: 'string', default: process.cwd() }, slice: { type: 'string' }, 'legacy-ddd': { type: 'boolean', default: false }, 'read-only': {type:'boolean',default:false}, 'approved-slice': {type:'string'}, 'approved-slice-digest': {type:'string'}, 'approved-slice-approval': {type:'string'} } });
   ensure(positionals.length === 1, '用法: validate-technical-design.mjs <合同> --root <项目根> [--slice <ID>] [--legacy-ddd]');
-  const result = await validateTechnicalDesign(read(path.resolve(positionals[0])), { root: values.root, sliceRef: values.slice, legacyDdd: values['legacy-ddd'] });
+  const approvedOptions=['approved-slice','approved-slice-digest','approved-slice-approval'];
+  ensure(!approvedOptions.some(key=>values[key])||approvedOptions.every(key=>values[key]),'执行增量必须完整给出持久化 Slice、字节摘要及本地批准引用');
+  const execution=values['approved-slice']?createApprovedExecutionContext({ref:values['approved-slice'],digest:values['approved-slice-digest'],approval_ref:values['approved-slice-approval']},{root:values.root}):undefined;
+  const result = await validateTechnicalDesign(read(path.resolve(positionals[0])), { root: values.root, sliceRef: values.slice, legacyDdd: values['legacy-ddd'], readOnly:values['read-only'], execution });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main().catch(error => { process.stderr.write(`${JSON.stringify({ result: 'blocked', errors: [error.message] })}\n`); process.exitCode = 1; });

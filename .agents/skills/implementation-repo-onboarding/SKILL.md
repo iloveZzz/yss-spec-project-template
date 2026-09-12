@@ -16,13 +16,13 @@ description: Use when connecting an existing frontend, backend, fullstack, or ot
 
 ## Workflow
 
-1. 确认当前仓库是 Harness 仓库，读取 `docs/process/implementation-repo-integration.md`。
+1. 按根 `yss-project.yaml` 确认 `project-instance` 身份并消费根 `CONTEXT.md`，读取 `docs/process/implementation-repo-integration.md`。命中既有 Java/Maven 跨仓交付接入时，先按 `docs/process/delivery-preflight.md` 以已知原始引用准备清单并运行 `scripts/preflight-delivery --input <file> --stage prepare --json`；缺失来源保持缺失，不伪造 scope、批准、生成器或模块事实。预检可在拟初始化目标上列出当前缺项，但不会创建工程或执行输入命令。
 2. 如果输入是本地路径，只读检查 Git remote、当前分支、目录结构、构建文件和测试脚本。
 3. 如果输入是远端 URL，优先使用只读 Git 查询。需要完整工作树时：`external-repository` 只能 clone 到临时目录；`git-submodule` 只能通过 `git submodule add` / `git submodule update --init` 在已批准的 `apps/backend/<project>/` 或 `apps/frontend/<project>/` gitlink 挂载点检出，禁止普通 clone 或复制源码进 Harness。
 4. 识别技术栈、包管理器、CI、测试命令、构建命令、OpenAPI 接入和设计 token 接入。
 5. 判定实现位置与 `repository_scope`：`external-repository` 记录真实项目根；`harness-apps` 与 `git-submodule` 只能使用 `apps/backend/<project>/` 或 `apps/frontend/<project>/`。`apps/backend/`、`apps/frontend/` 仅为容器，`app/backend/`、`app/frontend/` 及其子路径必须标记为阻断。gitlink（mode `160000`）必须登记为 `git-submodule` 和 `layout_policy: git-submodule-harness-apps`，不得写成 `harness-apps`。必须对照工作树：`git ls-files --stage`、`.gitmodules` 与声明 scope 不一致时阻断；缺少 `git_entry_mode: 160000` 不得把挂载点当普通目录。
 6. 按 `docs/templates/implementation-repo-registry-template.md` 输出实现仓库登记内容。`git-submodule` 必填 `gitmodules_name`、`gitlink_path`、`git_entry_mode`、`superproject_git_url` 和 `checkout_state`。`harness-apps` / `external-repository` 这些字段填 `不适用`。
-7. 列出 `known_gaps`、人审点、fresh verification 命令和需要回写到 Harness change / Issue / checkpoint 的信息。空 gitlink、detached HEAD、`--force` 覆盖挂载点或缺少递归检出凭据时标记阻断。写入前必须看 `inspectWorkingTreeScope` / `implementationWriteViolation`：只接受对象结果且 `.writable === true` 才可写；字符串、`null` 或 `.writable !== true` 一律不可写。即使已正确登记为 `git-submodule`，空 gitlink 或 detached HEAD 也必须 `.writable === false`，不得当普通目录写文件或脚手架。
+7. 列出 `known_gaps`、人审点、fresh verification 命令和需要回写到 Harness change / Issue / checkpoint 的信息。命中交付预检时，登记和工程基线补齐后重跑 `prepare`；将结构化诊断的责任来源和恢复入口纳入缺口清单，在初始化或构建前关闭当前阶段阻断。后续阶段证据尚未形成不能被当作本阶段失败；其他技术栈/不涉及该交付协议的接入记录不适用原因，不能冒充后端 v2 正例。空 gitlink、detached HEAD、`--force` 覆盖挂载点或缺少递归检出凭据时标记阻断。写入前必须看 `inspectWorkingTreeScope` / `implementationWriteViolation`：只接受对象结果且 `.writable === true` 才可写；字符串、`null` 或 `.writable !== true` 一律不可写。即使已正确登记为 `git-submodule`，空 gitlink 或 detached HEAD 也必须 `.writable === false`，不得当普通目录写文件或脚手架。
 
 ## Baseline Checks
 

@@ -179,13 +179,21 @@ function validateContract(value, registry, lifecycle) {
   if (!existsSync(contractPath)) fail(`Slice Implementation Contract 不存在: ${contract.slice_contract_ref}`);
   const document = parseYaml(readFileSync(contractPath, "utf8"), "Slice Implementation Contract");
   const slice = document.slice_contract || document;
-  if (slice.schema_version !== 1 || typeof slice.slice_id !== "string" || !slice.lifecycle_refs || !slice.readiness || !Array.isArray(slice.work_units)) fail("Slice Implementation Contract 缺少 schema_version/slice_id/lifecycle_refs/readiness/work_units");
+  if (slice.schema_version !== 2 || typeof slice.slice_id !== "string" || !slice.lifecycle_refs || !slice.readiness || !Array.isArray(slice.work_units)) fail("Slice Implementation Contract 需要 schema v2 及 slice_id/lifecycle_refs/readiness/work_units");
   if (slice.contract_id !== contract.contract_id || slice.contract_version !== contract.contract_version || slice.status !== "approved") fail("Slice Contract 必须是当前 approved 版本");
   const sliceUnit = slice.work_units.find((item) => item && item.id === value.work_unit_id);
   if (!sliceUnit) fail(`Slice Implementation Contract 缺少 work_unit_id: ${value.work_unit_id}`);
   for (const field of ["role_id", "runtime_id", "task_package_ref", "contract_id", "contract_version", "allowed_write_paths"]) if (sliceUnit[field] === undefined) fail(`Slice Contract work_unit 缺少 ${field}`);
-  if (sliceUnit.role_id !== value.role_id || sliceUnit.runtime_id !== value.runtime_id || sliceUnit.contract_id !== contract.contract_id || sliceUnit.contract_version !== contract.contract_version || sliceUnit.task_package_ref !== value.work_unit_id) fail("任务包与 Slice Contract work_unit 不一致");
+  if (sliceUnit.role_id !== value.role_id || sliceUnit.runtime_id !== value.runtime_id || sliceUnit.contract_id !== contract.contract_id || sliceUnit.contract_version !== contract.contract_version) fail("任务包与 Slice Contract work_unit 不一致");
   for (const allowed of value.allowed_write_paths) if (!sliceUnit.allowed_write_paths.includes(allowed)) fail(`allowed_write_paths 未获 Slice Contract 授权: ${allowed}`);
+  // Older packages used the work-unit ID here; new packages bind a readable dispatch file.
+  if (sliceUnit.task_package_ref !== value.work_unit_id) {
+    const dispatchPath = assertSafeRelativePath(sliceUnit.task_package_ref, "Slice work_unit.task_package_ref");
+    if (!existsSync(dispatchPath)) fail("Slice task_package_ref 不可读");
+    const dispatched = parseDocument(readFileSync(dispatchPath, "utf8")).toJS();
+    for (const field of ["task_id", "work_unit_id", "actor_id", "role_id", "runtime_id"]) if (dispatched?.[field] !== value[field]) fail("Slice task_package_ref 与当前派发身份不一致");
+    if (JSON.stringify(dispatched.contract) !== JSON.stringify(value.contract) || JSON.stringify(dispatched.allowed_write_paths) !== JSON.stringify(value.allowed_write_paths)) fail("Slice task_package_ref 与当前合同或写范围不一致");
+  }
   if (value.execution_state === "Worker") assertImplementationDecision({ slice_contract_ref: contract.slice_contract_ref, vertical_slice_ticket_ref: slice.lifecycle_refs.ticket, user_decisions: value.user_decisions });
 }
 
@@ -223,7 +231,7 @@ export function validateTaskPackageSet(packages, options = {}) {
   packages.forEach((pkg) => validateTaskPackage(pkg, options));
   const slicePackages = packages.filter((pkg) => pkg.contract.kind === "slice-implementation");
   if (slicePackages.length > 0) {
-    const contracts = new Set(slicePackages.map((pkg) => `${pkg.contract.contract_id}@${pkg.contract.contract_version}`));
+    const contracts = new Set(slicePackages.map((pkg) => JSON.stringify([pkg.contract.contract_id, pkg.contract.contract_version])));
     if (contracts.size !== 1) fail("同一切片的任务包必须消费同一 contract_id/contract_version");
     const workers = new Set(slicePackages.filter((pkg) => pkg.execution_state === "Worker").map((pkg) => pkg.actor_id));
     slicePackages.filter((pkg) => pkg.execution_state === "Reviewer").forEach((pkg) => { if (workers.has(pkg.actor_id)) fail("Reviewer 不得与实现者使用同一 actor_id"); });

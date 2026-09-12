@@ -1,0 +1,309 @@
+{
+  "schema_version": 1,
+  "result": "ready",
+  "exit_code": 0,
+  "stage": "build",
+  "checks": [
+    {
+      "code": "governance",
+      "status": "ready",
+      "owner": "工程接入负责人",
+      "source": "yss-project.yaml / CONTEXT.md",
+      "evidence": [
+        "yss-project.yaml",
+        "CONTEXT.md"
+      ],
+      "blocking_stages": [
+        "prepare",
+        "build",
+        "export",
+        "accept"
+      ],
+      "recovery": "完成工程接入登记或正常初始化，读取有效 yss-project.yaml 和根 CONTEXT.md 后重跑预检",
+      "message": "当前原始资产与语义核验通过"
+    },
+    {
+      "code": "architecture.repository_registration",
+      "status": "ready",
+      "owner": "工程基线与边界审查负责人",
+      "source": "repository_registration",
+      "evidence": [
+        "docs/.scratch/target-preview-pilot/existing-v2/repository-registration.json"
+      ],
+      "blocking_stages": [
+        "prepare",
+        "build",
+        "export",
+        "accept"
+      ],
+      "recovery": "按工程接入与 backend-architecture 合同补齐原始登记、工程基线、观测 manifest，重新边界审查并编译",
+      "message": "当前原始资产与语义核验通过"
+    },
+    {
+      "code": "architecture.engineering_baseline",
+      "status": "ready",
+      "owner": "工程基线与边界审查负责人",
+      "source": "engineering_baseline",
+      "evidence": [
+        "docs/.scratch/target-preview-pilot/existing-v2/engineering-baseline.json"
+      ],
+      "blocking_stages": [
+        "prepare",
+        "build",
+        "export",
+        "accept"
+      ],
+      "recovery": "按工程接入与 backend-architecture 合同补齐原始登记、工程基线、观测 manifest，重新边界审查并编译",
+      "message": "当前原始资产与语义核验通过"
+    },
+    {
+      "code": "architecture.manifest",
+      "status": "ready",
+      "owner": "工程基线与边界审查负责人",
+      "source": "manifest",
+      "evidence": [
+        "docs/.scratch/target-preview-pilot/existing-v2/manifest.json"
+      ],
+      "blocking_stages": [
+        "prepare",
+        "build",
+        "export",
+        "accept"
+      ],
+      "recovery": "按工程接入与 backend-architecture 合同补齐原始登记、工程基线、观测 manifest，重新边界审查并编译",
+      "message": "当前原始资产与语义核验通过"
+    },
+    {
+      "code": "architecture.identity",
+      "status": "ready",
+      "owner": "工程基线与边界审查负责人",
+      "source": "architecture_identity",
+      "evidence": [],
+      "blocking_stages": [
+        "prepare",
+        "build",
+        "export",
+        "accept"
+      ],
+      "recovery": "按工程接入与 backend-architecture 合同补齐原始登记、工程基线、观测 manifest，重新边界审查并编译",
+      "message": "当前原始资产与语义核验通过"
+    },
+    {
+      "code": "architecture.profile",
+      "status": "ready",
+      "owner": "工程基线与边界审查负责人",
+      "source": "architecture_profile",
+      "evidence": [],
+      "blocking_stages": [
+        "prepare",
+        "build",
+        "export",
+        "accept"
+      ],
+      "recovery": "按工程接入与 backend-architecture 合同补齐原始登记、工程基线、观测 manifest，重新边界审查并编译",
+      "message": "当前原始资产与语义核验通过"
+    },
+    {
+      "code": "slice_contract.execution",
+      "status": "ready",
+      "owner": "生命周期编排与合同批准方",
+      "source": "docs/.scratch/target-preview-pilot/existing-v2/slice-review-approval.json",
+      "evidence": [
+        "docs/.scratch/target-preview-pilot/existing-v2/slice-contract.json",
+        "docs/.scratch/target-preview-pilot/existing-v2/slice-review-approval.json"
+      ],
+      "blocking_stages": [
+        "build",
+        "export",
+        "accept"
+      ],
+      "recovery": "读取当前 Slice 字节及本地主控批准，恢复 implementation-scope 原始决定后重试",
+      "message": "当前原始资产与语义核验通过"
+    },
+    {
+      "code": "architecture",
+      "status": "ready",
+      "owner": "工程基线与边界审查负责人",
+      "source": "backend-architecture",
+      "evidence": [
+        "docs/.scratch/target-preview-pilot/existing-v2/engineering-baseline.json",
+        "docs/.scratch/target-preview-pilot/existing-v2/repository-registration.json",
+        "docs/.scratch/target-preview-pilot/existing-v2/manifest.json"
+      ],
+      "blocking_stages": [
+        "prepare",
+        "build",
+        "export",
+        "accept"
+      ],
+      "recovery": "按工程接入与 backend-architecture 合同补齐原始登记、工程基线、观测 manifest，重新边界审查并编译",
+      "message": "当前原始资产与语义核验通过"
+    },
+    {
+      "code": "openapi",
+      "status": "ready",
+      "owner": "接口契约负责人",
+      "source": "docs/.scratch/target-preview-pilot/api/target-preview-pilot.yaml",
+      "evidence": [
+        "docs/.scratch/target-preview-pilot/api/target-preview-pilot.yaml",
+        "docs/.scratch/target-preview-pilot/existing-v2/freeze-approved-current-evidence.json"
+      ],
+      "blocking_stages": [
+        "build",
+        "export",
+        "accept"
+      ],
+      "recovery": "回到 OpenAPI Draft 审查与 Freeze，绑定当前字节及真实批准",
+      "message": "当前原始资产与语义核验通过"
+    },
+    {
+      "code": "technical_design",
+      "status": "ready",
+      "owner": "技术设计负责人",
+      "source": "docs/.scratch/target-preview-pilot/existing-v2/technical-design.json",
+      "evidence": [
+        "docs/.scratch/target-preview-pilot/existing-v2/technical-design.json",
+        "docs/.scratch/target-preview-pilot/existing-v2/technical-review-approval.json"
+      ],
+      "blocking_stages": [
+        "build",
+        "export",
+        "accept"
+      ],
+      "recovery": "按已登记架构更新技术设计，补齐输入与审查并重新批准",
+      "message": "当前原始资产与语义核验通过"
+    },
+    {
+      "code": "slice_contract",
+      "status": "ready",
+      "owner": "生命周期编排与合同批准方",
+      "source": "docs/.scratch/target-preview-pilot/existing-v2/slice-contract.json",
+      "evidence": [
+        "docs/.scratch/target-preview-pilot/existing-v2/slice-contract.json",
+        "docs/.scratch/target-preview-pilot/existing-v2/slice-review-approval.json"
+      ],
+      "blocking_stages": [
+        "build",
+        "export",
+        "accept"
+      ],
+      "recovery": "重新编译 Slice Implementation Contract 并取得当前合同批准",
+      "message": "当前原始资产与语义核验通过"
+    },
+    {
+      "code": "build",
+      "status": "ready",
+      "owner": "后端构建负责人",
+      "source": "docs/.scratch/target-preview-pilot/existing-v2/verification/delivery-build.json",
+      "evidence": [
+        "docs/.scratch/target-preview-pilot/existing-v2/verification/delivery-build.json"
+      ],
+      "blocking_stages": [
+        "export",
+        "accept"
+      ],
+      "recovery": "使用批准合同正常构建，并记录实际输出摘要与验证",
+      "message": "当前原始资产与语义核验通过"
+    },
+    {
+      "code": "build_artifact",
+      "status": "ready",
+      "owner": "后端构建负责人",
+      "source": "docs/.scratch/target-preview-pilot/existing-v2/verification/valuation-outsourced-starter-3.0.0-SNAPSHOT.jar",
+      "evidence": [
+        "docs/.scratch/target-preview-pilot/existing-v2/verification/valuation-outsourced-starter-3.0.0-SNAPSHOT.jar"
+      ],
+      "blocking_stages": [
+        "export",
+        "accept"
+      ],
+      "recovery": "绑定实际 JAR 文件并与构建 artifact_digest 核对",
+      "message": "当前原始资产与语义核验通过"
+    },
+    {
+      "code": "deployment",
+      "status": "ready",
+      "owner": "后端部署与验证负责人",
+      "source": "docs/.scratch/target-preview-pilot/existing-v2/verification/delivery-deployment-verification.json",
+      "evidence": [
+        "docs/.scratch/target-preview-pilot/existing-v2/verification/delivery-deployment-verification.json"
+      ],
+      "blocking_stages": [
+        "export",
+        "accept"
+      ],
+      "recovery": "部署当前构建，采集同进程身份与真实验证证据",
+      "message": "当前原始资产与语义核验通过"
+    },
+    {
+      "code": "backend_delivery",
+      "status": "conflict",
+      "owner": "后端交付方",
+      "source": "docs/.scratch/target-preview-pilot/existing-v2/backend-delivery-v1.json",
+      "evidence": [
+        "docs/.scratch/target-preview-pilot/existing-v2/backend-delivery-v1.json"
+      ],
+      "blocking_stages": [
+        "export",
+        "accept"
+      ],
+      "recovery": "从正常后端交付入口重新生成与当前来源一致的交付记录",
+      "message": "后端交付引用与预检输入不一致"
+    },
+    {
+      "code": "local_authorization",
+      "status": "not-applicable",
+      "owner": "目标仓接收负责人",
+      "source": "local_authorization",
+      "evidence": [],
+      "blocking_stages": [
+        "accept"
+      ],
+      "recovery": "由目标仓负责人确认当前生产方、项目、route 和 slice 范围",
+      "message": "当前未确认交付 v2；本地授权只在受控目标绑定协议 v2 生效"
+    },
+    {
+      "code": "ui_baseline.delivery-package",
+      "status": "pending",
+      "owner": "产品设计负责人",
+      "source": "backend_delivery.strategic_bundle_ref",
+      "evidence": [
+        "docs/.scratch/target-preview-pilot/existing-v2/backend-delivery-v1.json"
+      ],
+      "blocking_stages": [
+        "export",
+        "accept"
+      ],
+      "recovery": "由产品设计负责人确认现有 UI 基线；有 UI 改动则回到原型设计",
+      "message": "尚不可判定，等待后端交付绑定的战略包核验"
+    },
+    {
+      "code": "strategic_handoff.delivery-package",
+      "status": "pending",
+      "owner": "战略交付方",
+      "source": "backend_delivery.strategic_bundle_ref",
+      "evidence": [
+        "docs/.scratch/target-preview-pilot/existing-v2/backend-delivery-v1.json"
+      ],
+      "blocking_stages": [
+        "export",
+        "accept"
+      ],
+      "recovery": "修正战略来源与批准，重新导出当前交接资产",
+      "message": "尚不可判定，等待后端交付绑定的战略包核验"
+    },
+    {
+      "code": "deployment.delivery-basis",
+      "status": "pending",
+      "owner": "后端部署与验证负责人",
+      "source": "deployment",
+      "evidence": [],
+      "blocking_stages": [
+        "export",
+        "accept"
+      ],
+      "recovery": "部署当前构建，采集同进程身份与真实验证证据",
+      "message": "尚不可判定，依赖未就绪: backend_delivery"
+    }
+  ]
+}

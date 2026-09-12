@@ -3,6 +3,10 @@ backend_architecture:
   registry_source: docs/agents/yss-skill-registry.yaml
   identity_schema: docs/process/schemas/backend-architecture-identity.schema.json
   required_evidence: [engineering_baseline, repository_registration, manifest]
+  evidence_loading: original-references-and-raw-sha256
+  existing_identity: {schema_version: 2, source_kind: existing-registration, profiles_source: existing_project_profiles}
+  generated_identity: preserve-original-generator-and-module-closure
+  existing_source_policy: fixed-input-and-approved-bounded-output
   required_identity_surfaces: [resolution, work_unit, execution_result]
   family_recipe_selection: explicit-ddd-or-mvc-no-legacy-alias
   readiness: supported-profile-and-current-identical-evidence

@@ -1,0 +1,29 @@
+[
+  {
+    "target": "submodules/yss-harness-design-agent",
+    "result": "passed",
+    "assertions": [
+      "source profiles exactly projected",
+      "all other registry facts unchanged",
+      "target file unchanged in dry run"
+    ]
+  },
+  {
+    "target": "submodules/yss-harness-backend-agent",
+    "result": "passed",
+    "assertions": [
+      "source profiles exactly projected",
+      "all other registry facts unchanged",
+      "target file unchanged in dry run"
+    ]
+  },
+  {
+    "target": "submodules/yss-harness-frontend-agent",
+    "result": "passed",
+    "assertions": [
+      "source profiles exactly projected",
+      "all other registry facts unchanged",
+      "target file unchanged in dry run"
+    ]
+  }
+]

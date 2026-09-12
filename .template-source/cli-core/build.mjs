@@ -14,6 +14,7 @@ import {
   readJson,
 } from "./io.mjs";
 import { yaml, PROFILE, loadBundle } from "./bundle.mjs";
+import { familyFor } from "./family.mjs";
 const CORE_PATH = ".template-source/cli-core";
 function archive(source, ref, consume, paths = []) {
   const revision = execFileSync(
@@ -150,27 +151,21 @@ export function syncTemplate(source, ref, packageRoot, check = false) {
         identity.repository_mode === "template-source",
       "来源不是 template-source",
     );
-    const side = profile.profile_id?.match(
-      /^harness\.(backend|frontend)-delivery$/,
-    )?.[1];
-    ensure(side, "来源不是专职模板");
-    const family = {
-      side,
-      packageName: `create-yss-harness-${side}`,
-      profileId: profile.profile_id,
-      metadataFile: profile.instantiation.metadata_file,
-      templateName: `yss-harness-${side}-agent`,
-      templateSource: profile.instantiation.template_source,
-    };
-    ensure(
-      readJson(packageRoot, "package.json").name === family.packageName &&
-        profile.instantiation.cli_package === family.packageName,
-      "来源 profile 与薄包身份不一致",
-    );
-    const manifestBytes = fs.readFileSync(
-        safe(root, profile.instantiation.distribution_manifest),
-      ),
-      manifest = JSON.parse(manifestBytes),
+    const side = profile.profile_id === 'harness.business-ddd-strategy-handoff' ? 'design' : profile.profile_id?.match(/^harness\.(backend|frontend)-delivery$/)?.[1];
+    const family = familyFor(side);
+    ensure(readJson(packageRoot,'package.json').name === family.packageName, '来源 profile 与薄包身份不一致');
+    let manifestBytes;
+    if (side === 'design') {
+      const raw = yaml(fs.readFileSync(safe(root,'docs/process/instance-distribution-manifest.yaml')));
+      ensure(raw.profile_id === family.profileId && raw.cli_package === family.packageName && raw.template_source === family.templateSource, '战略分发清单身份矛盾');
+      const manifest = {profileId:raw.profile_id};
+      for (const key of ['allow_root_entries','allow_root_files','allow_files','exclude_root_entries','exclude_root_files','exclude_paths','render_paths','init_exclude_root_entries','init_exclude_root_files','init_exclude_paths','instance_forbidden_paths']) manifest[key.replace(/_([a-z])/g,(_,c)=>c.toUpperCase())]=raw[key] || [];
+      manifestBytes = Buffer.from(json(manifest));
+    } else {
+      ensure(profile.instantiation?.cli_package === family.packageName && profile.instantiation?.metadata_file === family.metadataFile && profile.instantiation?.template_source === family.templateSource, '来源实例化合同矛盾');
+      manifestBytes = fs.readFileSync(safe(root, profile.instantiation.distribution_manifest));
+    }
+    const manifest = JSON.parse(manifestBytes),
       entries = {},
       blobs = new Map(),
       canonical = path.join(root, ".agents/skills"),
@@ -225,6 +220,24 @@ export function syncTemplate(source, ref, packageRoot, check = false) {
     const files = Object.fromEntries(
       Object.entries(entries).sort(([a], [b]) => (a < b ? -1 : 1)),
     );
+    let previous = null;
+    try {
+      previous = process.env.YSS_TEMPLATE_BASELINE_SNAPSHOT
+        ? JSON.parse(fs.readFileSync(process.env.YSS_TEMPLATE_BASELINE_SNAPSHOT, "utf8"))
+        : readJson(packageRoot, "template.snapshot.json");
+    } catch {}
+    const retiredFiles = Object.fromEntries(
+      Object.entries({...(previous?.retiredFiles || {}), ...(previous?.files || {})})
+        .filter(([ref]) => !Object.hasOwn(files, ref))
+        .map(([ref, item]) => [ref, {type:"file", digest:item.digest, mode:item.mode}])
+        .sort(([a], [b]) => (a < b ? -1 : 1)),
+    );
+    const transitionBaselines = Object.fromEntries(
+      Object.entries({...(previous?.files || {}), ...(previous?.transitionBaselines || {})})
+        .filter(([ref, item]) => Object.hasOwn(files, ref) && item.digest !== files[ref].digest)
+        .map(([ref, item]) => [ref, {type:"file", digest:item.digest, mode:item.mode}])
+        .sort(([a], [b]) => (a < b ? -1 : 1)),
+    );
     const snapshot = {
       schemaVersion: 1,
       ...family,
@@ -232,6 +245,10 @@ export function syncTemplate(source, ref, packageRoot, check = false) {
       sourceState,
       manifestHash: hash(manifestBytes),
       files,
+      retiredFiles,
+      retiredFilesHash: hash(JSON.stringify(retiredFiles)),
+      transitionBaselines,
+      transitionBaselinesHash: hash(JSON.stringify(transitionBaselines)),
       snapshotHash: hash(JSON.stringify(files)),
       projectionRepresentation: "materialized-files",
       pathEncoding: "sha256-blobs-v1",

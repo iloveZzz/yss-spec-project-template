@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
 
-import { applyProfileSkillSync, planProfileSkillSync, reportProfileSkillSync } from "../../../../scripts/lib/profile-skill-sync.mjs";
+import { applyProfileSkillSync, formatProfileSkillSync, planProfileSkillSync, reportProfileSkillSync } from "../../../../scripts/lib/profile-skill-sync.mjs";
 
 function fixture() {
   const root = mkdtempSync(path.join(tmpdir(), "profile-skill-sync-"));
@@ -34,6 +34,41 @@ function fixture() {
 }
 
 const clean = () => new Set();
+
+test("text preview retains changes and conflict diagnostics without changing JSON or target files", () => {
+  const { root, profile, config } = fixture();
+  config.profiles.dev.adapted[0].replacements[0].from = "missing";
+  const plan = planProfileSkillSync({ root, config, dirtyProvider: () => new Set([".agents/skills/exact/SKILL.md"]) });
+  const report = reportProfileSkillSync(plan);
+  const before = JSON.stringify(report);
+  const output = formatProfileSkillSync(report);
+  assert.match(output.stdout, /只读预览/);
+  assert.match(output.stdout, /受影响 profile：dev/);
+  assert.match(output.stdout, /dev 变更技能：exact, retired/);
+  assert.match(output.stdout, /待执行.*scripts\/sync-profile-skills --check --profile 'dev'/);
+  assert.match(output.stdout, /待执行.*scripts\/verify-skill-governance/);
+  for (const change of report.changes) assert.ok(output.stdout.includes(`${change.profile}: ${change.status}: ${change.path}`));
+  for (const issue of report.issues) {
+    for (const value of [issue.profile, issue.status, issue.skill, issue.path, issue.message].filter(Boolean)) assert.ok(output.stderr.includes(value), value);
+  }
+  assert.match(output.stderr, /目标含未提交改动/);
+  assert.equal(JSON.stringify(report), before);
+  assert.equal(JSON.stringify(reportProfileSkillSync(plan)), before);
+  assert.equal(readFileSync(path.join(profile, ".agents/skills/exact/SKILL.md"), "utf8"), "old\n");
+  assert.equal(readFileSync(path.join(profile, ".agents/skills/adapted/SKILL.md"), "utf8"), "owner: child\n");
+  assert.ok(existsSync(path.join(profile, ".agents/skills/retired/SKILL.md")));
+});
+
+test("clean check does not invent affected profiles or claim project verification", () => {
+  const { root, config } = fixture();
+  applyProfileSkillSync({ root, config, plan: planProfileSkillSync({ root, config, dirtyProvider: clean }) });
+  const report = reportProfileSkillSync(planProfileSkillSync({ root, config, dirtyProvider: clean }));
+  const output = formatProfileSkillSync(report, "--check");
+  assert.match(output.stdout, /只读检查/);
+  assert.match(output.stdout, /受影响 profile：无/);
+  assert.match(output.stdout, /不代表项目验证已通过/);
+  assert.equal(output.stderr, "");
+});
 
 test("plans exact, adapted, and retired changes without writing", () => {
   const { root, profile, config } = fixture();

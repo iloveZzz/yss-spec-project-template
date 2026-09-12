@@ -1,0 +1,24 @@
+{
+  "oldVersion": "0.5.2",
+  "newVersion": "0.6.0",
+  "commands": [
+    {
+      "command": "diff",
+      "exitCode": 0
+    },
+    {
+      "command": "sync",
+      "exitCode": 0
+    },
+    {
+      "command": "doctor",
+      "exitCode": 0
+    }
+  ],
+  "protectedFiles": {
+    "CONTEXT.md": "56d26e99ab72ca8e9950275b92a15cb421411e28f3db7b21128e440c5b55ef2b",
+    "README.md": "c8d27d784d9e24c3135d9b88eb0289d628eef1e28f35ebdbd6c027ef5718b141",
+    "approved.yaml": "396c29fd1351799146e59b7a4dfffb3df8929bbc74a36a0f9687193d1908b7bf",
+    "scripts/instantiate-harness": "065e2ba223752f4a81a48f31eea41625e9f638547605ff4736297f38b0a0a8e0"
+  }
+}

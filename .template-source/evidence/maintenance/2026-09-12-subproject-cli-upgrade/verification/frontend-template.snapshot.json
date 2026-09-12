@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "side": "frontend",
+  "packageName": "create-yss-harness-frontend",
+  "profileId": "harness.frontend-delivery",
+  "metadataFile": ".yss-harness-frontend.json",
+  "templateName": "yss-harness-frontend-agent",
+  "templateSource": "github:iloveZzz/yss-harness-frontend-agent",
+  "templateCommit": "204e0e0d95ba7d721aca7633b8417a90d0dd1e61",
+  "sourceState": "working-tree",
+  "manifestHash": "7d62d8123b4fb6eee545a4fefbadce975da26ffb047ef646e660a7af9f11d872",
+  "snapshotHash": "4e262dfd921fd38064ecd192f6cb89366f62b476c75505cde1771d72dc4f7e90",
+  "projectionRepresentation": "materialized-files",
+  "pathEncoding": "sha256-blobs-v1"
+}

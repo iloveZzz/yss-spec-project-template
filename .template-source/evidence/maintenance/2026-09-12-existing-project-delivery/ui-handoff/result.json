@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "work_unit": "work-unit.ssot-update",
+  "workflow_reference": ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/plan.md",
+  "result": "implemented",
+  "skill": "maintaining-skills",
+  "task_id": "ui-handoff",
+  "execution_state": "Worker",
+  "changed_files": [
+    "scripts/lib/existing-ui-baseline.mjs",
+    "scripts/lib/ui-baseline.mjs",
+    "scripts/lib/strategic-handoff.mjs",
+    "scripts/lib/frontend-delivery.mjs",
+    "scripts/lib/strategic-handoff-consumption.mjs",
+    "docs/process/schemas/existing-ui-baseline.schema.json",
+    "docs/process/schemas/strategic-design-handoff-v5.schema.json",
+    "docs/process/schemas/strategic-handoff-export-v2.schema.json",
+    "docs/process/schemas/frontend-strategic-preflight-v2.schema.json",
+    "docs/process/schemas/frontend-delivery-acceptance-v3.schema.json",
+    "scripts/verify-existing-ui-baseline-scenarios",
+    "scripts/fixtures/existing-ui-baseline/fixture.mjs",
+    "docs/process/existing-ui-baseline.md",
+    "docs/process/strategic-handoff-package.md",
+    "docs/process/frontend-backend-delivery.md",
+    ".agents/skills/yss-prototype-stage/SKILL.md",
+    "scripts/sync-strategic-handoff-tools",
+    ".template-source/profile-skill-sync.json",
+    "scripts/lib/backend-delivery.mjs"
+  ],
+  "changed_artifacts": [],
+  "evidence_refs": [
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/verify-existing-ui-baseline-scenarios.log",
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/verify-strategic-handoff-package-scenarios.log",
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/verify-frontend-delivery-scenarios.log",
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/profile-patch-check.json",
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/registry-projection-check.json",
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/distribution-dependencies.json",
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/distribution-check.log",
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/frontend-draft-version-regression.log",
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/frontend-draft-version-fixed.log",
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/verify-existing-ui-baseline-scenarios-integration.log",
+    ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/verify-frontend-delivery-scenarios-integration.log"
+  ],
+  "verification_results": [
+    {
+      "command": "scripts/verify-existing-ui-baseline-scenarios",
+      "exit_code": 0,
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "duration_ms": 26812.610542,
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/verify-existing-ui-baseline-scenarios.log",
+      "evidence_digest": "sha256:479fe927e61f1c28b308abd55be138dcbb4565e2a152ccc79e46080053d475c9"
+    },
+    {
+      "command": "scripts/verify-strategic-handoff-package-scenarios",
+      "exit_code": 0,
+      "tests": 13,
+      "pass": 13,
+      "fail": 0,
+      "duration_ms": 35821.439875,
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/verify-strategic-handoff-package-scenarios.log",
+      "evidence_digest": "sha256:e208b5786eecef20ee6efe786d56fcb487b260b171c01738c27d158f1dcfd1b7"
+    },
+    {
+      "command": "scripts/verify-frontend-delivery-scenarios",
+      "exit_code": 0,
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "duration_ms": 42094.918334,
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/verify-frontend-delivery-scenarios.log",
+      "evidence_digest": "sha256:803d1b4391ccecc8a362b742f5520a4b1e955577d82fc6d0fabceac5d8fe4803"
+    },
+    {
+      "command": "scripts/verify-existing-ui-baseline-scenarios",
+      "exit_code": 0,
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "duration_ms": 26105.8275,
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/verify-existing-ui-baseline-scenarios-integration.log",
+      "evidence_digest": "sha256:2ac5881a93cf45fbeac0dfb2bc5c3bd8d1302f0630da8cf9932e5a3fbf0ee4a8"
+    },
+    {
+      "command": "scripts/verify-frontend-delivery-scenarios",
+      "exit_code": 0,
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "duration_ms": 40292.563,
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-12-existing-project-delivery/ui-handoff/verify-frontend-delivery-scenarios-integration.log",
+      "evidence_digest": "sha256:a9535d560e280c1e94ed6ee32ca5bc95d128fa4bbb79b45c86e867d00e6a472b"
+    }
+  ],
+  "maintainer_self_check": {
+    "result": "passed",
+    "checks": [
+      "Strict source/bundle digest and identity checks; no approval generator in runtime",
+      "Existing UI requires current gate.product-design-approved user decision for exact manifest bytes",
+      "Unknown protocol/source kinds and UI changes rejected; legacy prototype semantics regression passed",
+      "Readonly v5 uses explicit alias scope supplied by main agent; no nested CONTEXT file or temporary extraction",
+      "Backend target-authorization semantics not changed by this task",
+      "Only task-owned paths written; git diff --check exit 0"
+    ]
+  },
+  "file_digests": {
+    "scripts/lib/existing-ui-baseline.mjs": "sha256:3b42ad6bbdaefb411a086cd9daf116cc900201311982407b6e71fe090beed791",
+    "scripts/lib/ui-baseline.mjs": "sha256:7e14516c7d339c4be6c25d01c78cda5f1850e14939b109e9a297c3fc65462670",
+    "scripts/lib/strategic-handoff.mjs": "sha256:3af16e64b4fd7f7d71c117bcbb5045f30e4b455583c073b16bbdb45fc2230071",
+    "scripts/lib/frontend-delivery.mjs": "sha256:0bd5406f847784dc356aafde44c1f0a00a71d7beeeb10ccddbe2f0e99a1ce0e1",
+    "scripts/lib/strategic-handoff-consumption.mjs": "sha256:fa3751751f699fbf115785a713830806d46e5098c2e815c329089a481543efac",
+    "docs/process/schemas/existing-ui-baseline.schema.json": "sha256:56fb64e4b192b601c67f811c267d873ad5ad71a51d62a63fd49b66ba3a8f976d",
+    "docs/process/schemas/strategic-design-handoff-v5.schema.json": "sha256:8d3fbb3bb5fc5123970ca611a2b848f2a1a6d1739be80bc16ab9636dd037072b",
+    "docs/process/schemas/strategic-handoff-export-v2.schema.json": "sha256:591bce6840dcc43108b5800358c01ccaa012a3362de3c95368a7d7dc1f7dcc57",
+    "docs/process/schemas/frontend-strategic-preflight-v2.schema.json": "sha256:4404f3cc224ec950bc7263eb815fb54bc21f2371aa19fb5af4bca2f64c1f2781",
+    "docs/process/schemas/frontend-delivery-acceptance-v3.schema.json": "sha256:25ae7ce87741a27cbed6c0f262d29ff4046e028d0df8c7431091d931b2dea284",
+    "scripts/verify-existing-ui-baseline-scenarios": "sha256:4fbc2ee4e30a921ef0db4b50f290ae660a84c86fe413b2510f1299611a6a903c",
+    "scripts/fixtures/existing-ui-baseline/fixture.mjs": "sha256:971224f4943d524d6c33a6439d6d873d68556fe8ae00c0cff94220e3ea8f908b",
+    "docs/process/existing-ui-baseline.md": "sha256:4dab73472d872283af6cbff9b40f2f40395ea7c4e0b3d3854dece88d4a3c0c96",
+    "docs/process/strategic-handoff-package.md": "sha256:e544263d414ef562743787b6a020271a9e9866f2fed19bfb381eb7676b67a874",
+    "docs/process/frontend-backend-delivery.md": "sha256:2ac93f0d5b7aceed66c4de1e3acee6bd721d1702bad4a0aeb95041355fc93a9f",
+    ".agents/skills/yss-prototype-stage/SKILL.md": "sha256:fa37fe6e0c2b13ade6193e506a9ab0c7b40549354aad4e9bbe178a912f95b9b8",
+    "scripts/sync-strategic-handoff-tools": "sha256:5639293445dd4e8faf1166db00de2fd1e4e563d4aee25f7621b3678a0dc76e32",
+    ".template-source/profile-skill-sync.json": "sha256:4a28d435ac54ec1cca01bdb7718fafd77dcbc5bbc8cddb278533706390703ad5",
+    "scripts/lib/backend-delivery.mjs": "sha256:7fcda7ad7692b65b308ddb4eeee6d19577f0a4c5c8b75a1034bd3b851d2550e9"
+  },
+  "deferred_seams": [],
+  "drift": [],
+  "violation": [],
+  "new_impacts": [],
+  "stale_candidates": [],
+  "blocking_signals": [],
+  "next_route": "maintenance-root: source convergence then authorize exact receiver/CLI sync scope; final Fresh Verification and real sample matrix",
+  "scope_limits": [
+    "Tests are explicitly synthetic mechanism fixtures, including synthetic user-decision source messages; not real user approval or product S0-S6 evidence.",
+    "Real Java/Vue fixed-source capture, actual product confirmation and matrix remain parent task responsibilities.",
+    "Skill projections, receiver template/CLI snapshots and distribution maps are deliberately not changed by this task."
+  ],
+  "completed_at": "2026-09-11T18:36:52.150856+00:00",
+  "distribution_preparation": {
+    "status": "prepared-not-synchronized",
+    "shared_file_count": 74,
+    "registry_projection": "canonical existing_project_profiles only; preserves other registry facts",
+    "prototype_patches": "dev and frontend existing patches replay with updated source tree digests; no patch changes required",
+    "checks": {
+      "node_syntax": 0,
+      "git_diff_check": 0,
+      "profile_patch_replay": 0,
+      "registry_projection_dry_run": 0,
+      "sync_tools_check": 1
+    },
+    "sync_check_reason": "expected divergence: actual sync explicitly deferred until main-agent source convergence",
+    "receiver_deferred_dependencies": "design/frontend backend technical-design and compiler assets are unsupported outside profile scope; no new authoring skill installed",
+    "cli_plan": "spec/strategic use existing src command runner sync; backend/frontend use official sync-core to maintain vendor locks, followed by all four snapshot commands",
+    "excluded": [
+      "removed dev template/CLI submodules",
+      "Git commit/push",
+      "npm release"
+    ],
+    "backend_edit_scope": "importBackendDelivery frontend draft protocol selection only; approvedFile slice branch owned by preflight agent"
+  },
+  "api_route_mapping": {
+    "status": "implemented",
+    "source_kind": "vite-env-prefix-rewrite",
+    "validation": "10/10 UI mechanisms passed after preflight agent updated approved implementation-scope fixtures",
+    "evidence_ref": "api-route-mapping-scenarios.log",
+    "real_candidate": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance/docs/.scratch/target-preview-existing-ui/draft-result.json"
+  },
+  "fresh_ui_baseline": {
+    "result_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance/docs/.scratch/target-preview-existing-ui/draft-result.json",
+    "manifest_digest": "sha256:996435165b1e471926034b6ff499bbed6edfe6103a41a6c6d3ba943f73581c0f",
+    "status": "ready-for-human",
+    "build_exit": 0,
+    "capture_exit": 0,
+    "validator_errors": []
+  },
+  "source_profile_confirmation": {
+    "status": "implemented",
+    "gate_dispatch": "same current source gate as prototype; gate must be in source user_decision_policy",
+    "manifest_state": "ready-for-human is immutable readiness; effective approval owned by existing current decision and approval chain",
+    "real_policy_fixture": "scripts/fixtures/existing-ui-baseline/design-source-roles.json",
+    "validation": "11/11 full UI scenarios passed; dedicated source policy plus missing-policy negative case re-run 1/1 passed",
+    "evidence_ref": "dedicated-policy-status-scenarios.log",
+    "negative_evidence_ref": "dedicated-policy-negative-scenarios.log"
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "task_id": "preflight",
+  "status": "implemented-with-profile-aware-fresh-verification",
+  "recorded_at": "2026-09-11T19:13:26.756422+00:00",
+  "files": [
+    "scripts/preflight-delivery",
+    "scripts/lib/delivery-preflight.mjs",
+    "docs/process/schemas/delivery-preflight-input.schema.json",
+    "docs/process/schemas/delivery-preflight-result.schema.json",
+    "scripts/verify-delivery-preflight-scenarios",
+    "docs/process/delivery-preflight.md",
+    "scripts/strategic-handoff",
+    "scripts/backend-delivery",
+    ".agents/skills/implementation-repo-onboarding/SKILL.md",
+    "scripts/lib/approved-execution-context.mjs",
+    "scripts/lib/existing-backend-architecture.mjs",
+    "scripts/lib/technical-design-boundary.mjs",
+    ".agents/skills/yss-technical-design/scripts/validate-technical-design.mjs",
+    "scripts/lib/implementation-contract-compiler.mjs",
+    "scripts/lib/backend-delivery.mjs",
+    "scripts/fixtures/delivery-preflight/approved-execution-fixture.mjs",
+    "scripts/fixtures/delivery-preflight/approved-execution.test.mjs",
+    "scripts/fixtures/backend-delivery/approval-fixture.mjs",
+    "scripts/fixtures/existing-backend/scenarios.test.mjs",
+    "scripts/verify-frontend-delivery-scenarios",
+    "scripts/verify-existing-ui-baseline-scenarios",
+    "scripts/fixtures/existing-backend/fixture.mjs"
+  ],
+  "verification_results": [
+    {
+      "command": "scripts/verify-delivery-preflight-scenarios",
+      "exit_code": 0,
+      "cli_scenarios": 22,
+      "approved_execution_scenarios": 6
+    },
+    {
+      "command": "node --test scripts/fixtures/existing-backend/scenarios.test.mjs",
+      "exit_code": 0,
+      "scenarios": 7
+    },
+    {
+      "command": "node --test .agents/skills/yss-implementation-contract-compiler/tests/compiler-scenarios.test.mjs .agents/skills/yss-implementation-contract-compiler/tests/backend-profiles.test.mjs",
+      "exit_code": 0,
+      "scenarios": 11
+    },
+    {
+      "command": "node .agents/skills/yss-technical-design/tests/run-scenarios.mjs",
+      "exit_code": 0,
+      "scenarios": 29
+    },
+    {
+      "command": "scripts/verify-existing-ui-baseline-scenarios",
+      "exit_code": 0,
+      "scenarios": 10
+    },
+    {
+      "command": "scripts/verify-frontend-delivery-scenarios",
+      "exit_code": 0,
+      "scenarios": 9
+    },
+    {
+      "command": "git diff --check -- scoped tracked files",
+      "exit_code": 0
+    }
+  ],
+  "red_green_evidence": [
+    {
+      "seam": "CLI missing input protocol",
+      "before": "missing CLI exited 1 instead of required 2",
+      "after": "exits 2 with structured invalid-input"
+    },
+    {
+      "seam": "CLI independently supplied original manifest",
+      "before": "empty hash-consistent manifest incorrectly marked ready",
+      "after": "source identity/shape validation rejects before dependent agreement"
+    },
+    {
+      "seam": "Approved implementation output context",
+      "before": "Caller-supplied execution.approved true could permit code changes while technical-design verification rejected the same legitimate change.",
+      "after": "Original local checkpoint and implementation-scope decision produce process-branded context; architecture/technical-design/freshness/export/accept reuse it; raw bool, missing reply, changed bytes and replaced original references reject."
+    },
+    {
+      "seam": "Cross-profile delivery preflight",
+      "before": "Non-owning profiles imported missing backend authoring fixtures; backend source fixture used invalid review gate and main checkpoint; profile-context seed was not a valid synthetic current CONTEXT.",
+      "after": "Design/frontend pass 21 shared+unsupported tests; backend passes 22 CLI and 6 authorized delta tests using actual source policy. Cross-CLI backend/frontend source integration passes 9 including source-deleted ZIP."
+    }
+  ],
+  "integration_api": "await preflightDelivery(input,{stage,root}); returns {schema_version,result,exit_code,stage,checks}",
+  "pending": [
+    "Real pilot current product approval, S0-S6/O1 and full source/build/deploy/package/accept chain remain main-controller work; synthetic scenarios do not satisfy these.",
+    "Local authorization v2 verifier remains unsupported until real S3a establishes the protocol need.",
+    "Remaining compiler/acceptance outer integration must preserve original source facts and cannot require already accepted output records.",
+    "Cross-template/CLI synchronization, canonical skill projections and aggregate Fresh Verification remain main-controller work."
+  ],
+  "scope_notes": [
+    "No original experiment records or business worktrees modified.",
+    "No git commit/push/release, skill projections, approvals or receipts created.",
+    "Test fixtures are temporary filesystem inputs, not product acceptance evidence."
+  ],
+  "integration_notes": [
+    "delivery_kind routes checks by fact owner; strategic export never depends on downstream contracts/builds/deployment/backend package.",
+    "Backend export requires delivery source record and already exported strategy package; UI/strategic evidence is consumed from that package. No accepted record or new receipt is prerequisite.",
+    "Both export CLIs verify preflight at outer boundary before writes, pin purpose/root/source ref, require explicit input for existing UI v5 and architecture identity v2; legacy flag remains optional.",
+    "Two synthetic Git/Maven fixtures pass complete original architecture verification while profile maturity remains a separate blocker. They are not pilot evidence.",
+    "Approved deltas are now obtained only from original Slice byte binding and local lifecycle checkpoint + existing assertImplementationDecision; raw execution JSON and caller-invented approved boolean rejected.",
+    "Execution contexts are process-branded, current bytes are reread at each boundary, and technical-design subprocesses receive original binding flags and revalidate locally.",
+    "Current orchestrator Slice gate uses checkpoint subject_ref + human_review.implementation/user_decisions; historical explicitly countersigned sources retain authoritative countersignRuleForGate semantics.",
+    "Backend delivery fixture now uses portable synthetic checkpoint and original scope decision; source-deleted ZIP regression passes with complete supporting files.",
+    "Engineering-only technical branch is connected to parent-owned strict helper; forbidden domain/state/persistence impact conditions are rejected at synchronous boundary; consistency-impact retained.",
+    "Installed tool ROOT profile controls backend technical support; governance_root cannot grant missing authoring capability. Unknown/non-owning profile returns stable unsupported diagnostics with original references and recovery.",
+    "Shared CLI/read-only/stage/strategic v5 tests run on every profile; real Git architecture + authorized delta synthetic tests run on main/backend only. Missing backend installation files fail closed, never skip.",
+    "Synthetic architecture and Slice approval fixtures use each actual installed/source role policy: main uses original checkpoint+implementation decision; backend uses its explicit current countersign record. Roles are never rewritten to make Slice approval pass.",
+    "Cross-CLI frontend fixture reads provided backendTools policy for backend source instead of main ROOT. Current human OpenAPI gate has portable synthetic source reply evidence, while current Slice digital countersign binds original contract bytes.",
+    "Existing UI ready-for-human source bytes remain unchanged; external product approval is still verified.",
+    "Root/backend old CONTEXT template seeds are not reused as synthetic fixtures; test uses explicit valid shared synthetic CONTEXT. Actual root CONTEXT migrations remain separately visible to aggregate verification."
+  ],
+  "profile_verification": {
+    "scope": "isolated copies of current receiving snapshots patched only with listed changed source files; canonical receiving snapshots remain controlled by main sync",
+    "results": [
+      {
+        "profile": "main",
+        "cli_scenarios": 22,
+        "approved_execution_scenarios": 6,
+        "exit_code": 0,
+        "log": "profile-verification/main.log"
+      },
+      {
+        "profile": "design",
+        "cli_scenarios": 21,
+        "exit_code": 0,
+        "backend_tests": "not-applicable: profile does not own backend technical authoring",
+        "log": "profile-verification/design.log"
+      },
+      {
+        "profile": "frontend",
+        "cli_scenarios": 21,
+        "exit_code": 0,
+        "backend_tests": "not-applicable: profile does not own backend technical authoring",
+        "log": "profile-verification/frontend.log"
+      },
+      {
+        "profile": "backend",
+        "cli_scenarios": 22,
+        "approved_execution_scenarios": 6,
+        "exit_code": 0,
+        "log": "profile-verification/backend.log"
+      },
+      {
+        "profile": "backend/frontend cross-source distribution",
+        "scenarios": 9,
+        "exit_code": 0,
+        "log": "profile-verification/distribution.log"
+      }
+    ]
+  }
+}

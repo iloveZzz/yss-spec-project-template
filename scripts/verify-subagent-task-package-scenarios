@@ -20,7 +20,7 @@ const evidenceRef = ".template-source/evidence/.task-package-evidence.json";
 const evidenceFile = path.join(ROOT, evidenceRef);
 const maintenanceRef = ".template-source/evidence/.task-package-maintenance.json";
 const contract = {
-  schema_version: 1,
+  schema_version: 2,
   contract_id: "slice-todo",
   contract_version: 2,
   slice_id: "todo",
@@ -167,6 +167,33 @@ try {
   assert.throws(() => validateTaskPackage({ ...frontend, user_decisions: [] }), /user-decision-scope-mismatch/, "Worker 派发前必须有当前实施范围批准");
   validateTaskPackage(backend);
   validateTaskPackageSet([frontend, backend]);
+
+  contract.schema_version = 1;
+  writeFixtures();
+  assert.throws(() => validateTaskPackage(frontend), /schema v2/, "旧 Slice schema 不得被当作当前编译合同");
+  contract.schema_version = 2;
+  contract.contract_version = "v1";
+  contract.work_units.forEach(unit => { unit.contract_version = "v1"; });
+  const stringVersion = slicePackage("role.backend-engineer", "task-string-version", "work-unit.slice-backend", "apps/backend/todo/");
+  validateTaskPackage(stringVersion);
+  assert.throws(() => validateTaskPackage({ ...stringVersion, contract: { ...stringVersion.contract, contract_version: 1 } }), /当前 approved/, "版本类型不得隐式转换");
+  for (const invalid of [0, "", "   "]) assert.throws(() => validateTaskPackage({ ...stringVersion, contract: { ...stringVersion.contract, contract_version: invalid } }), /contract_version.*not valid/, "无效版本拒绝");
+  contract.contract_version = 2;
+  contract.work_units.forEach(unit => { unit.contract_version = 2; });
+  writeFixtures();
+
+  const dispatchRef = ".template-source/evidence/.task-package-dispatch.json";
+  contract.work_units[1].task_package_ref = dispatchRef;
+  const dispatched = slicePackage("role.backend-engineer", "task-bound-dispatch", "work-unit.slice-backend", "apps/backend/todo/");
+  writeFileSync(path.join(ROOT, dispatchRef), JSON.stringify(dispatched));
+  try {
+    validateTaskPackage(dispatched);
+    assert.throws(() => validateTaskPackage({ ...dispatched, task_id: "other-dispatch" }), /派发身份不一致/);
+    rmSync(path.join(ROOT, dispatchRef));
+    assert.throws(() => validateTaskPackage(dispatched), /task_package_ref 不可读/);
+  } finally { rmSync(path.join(ROOT, dispatchRef), { force: true }); }
+  contract.work_units[1].task_package_ref = "work-unit.slice-backend";
+  writeFixtures();
 
   const completedPlan = lifecyclePackage();
   completedPlan.workflow_status = "resolved";

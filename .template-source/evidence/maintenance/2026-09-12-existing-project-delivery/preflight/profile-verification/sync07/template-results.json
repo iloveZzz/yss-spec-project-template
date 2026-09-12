@@ -1,0 +1,82 @@
+{
+  "recorded_at": "2026-09-11T19:24:22.086710+00:00",
+  "results": [
+    {
+      "name": "delivery-harness-distribution",
+      "command": [
+        "node",
+        ".template-source/scripts/verify-delivery-harness-distribution.mjs"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "exit_code": 0,
+      "duration_seconds": 224.56,
+      "log": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/preflight/profile-verification/sync07/delivery-harness-distribution.log"
+    },
+    {
+      "name": "template-design-delivery-preflight",
+      "command": [
+        "node",
+        "scripts/verify-delivery-preflight-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+      "exit_code": 0,
+      "duration_seconds": 8.01,
+      "log": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/preflight/profile-verification/sync07/template-design-delivery-preflight.log"
+    },
+    {
+      "name": "template-design-existing-ui-baseline",
+      "command": [
+        "node",
+        "scripts/verify-existing-ui-baseline-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+      "exit_code": 0,
+      "duration_seconds": 81.16,
+      "log": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/preflight/profile-verification/sync07/template-design-existing-ui-baseline.log"
+    },
+    {
+      "name": "template-backend-delivery-preflight",
+      "command": [
+        "node",
+        "scripts/verify-delivery-preflight-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+      "exit_code": 0,
+      "duration_seconds": 39.6,
+      "log": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/preflight/profile-verification/sync07/template-backend-delivery-preflight.log"
+    },
+    {
+      "name": "template-backend-existing-ui-baseline",
+      "command": [
+        "node",
+        "scripts/verify-existing-ui-baseline-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+      "exit_code": 1,
+      "duration_seconds": 49.07,
+      "log": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/preflight/profile-verification/sync07/template-backend-existing-ui-baseline.log"
+    },
+    {
+      "name": "template-frontend-delivery-preflight",
+      "command": [
+        "node",
+        "scripts/verify-delivery-preflight-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+      "exit_code": 0,
+      "duration_seconds": 9.05,
+      "log": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/preflight/profile-verification/sync07/template-frontend-delivery-preflight.log"
+    },
+    {
+      "name": "template-frontend-existing-ui-baseline",
+      "command": [
+        "node",
+        "scripts/verify-existing-ui-baseline-scenarios"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+      "exit_code": "timeout-300s",
+      "duration_seconds": 300.08,
+      "log": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-12-existing-project-delivery/preflight/profile-verification/sync07/template-frontend-existing-ui-baseline.log"
+    }
+  ]
+}

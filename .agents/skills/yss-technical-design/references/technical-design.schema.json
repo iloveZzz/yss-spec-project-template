@@ -266,6 +266,12 @@
     "digest": {
       "type": "string",
       "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "design_scope": {
+      "enum": [
+        "architecture-specific",
+        "engineering-only"
+      ]
     }
   },
   "required": [
@@ -290,15 +296,31 @@
   "allOf": [
     {
       "if": {
-        "properties": {
-          "architecture": {
+        "allOf": [
+          {
+            "not": {
+              "required": [
+                "design_scope"
+              ],
+              "properties": {
+                "design_scope": {
+                  "const": "engineering-only"
+                }
+              }
+            }
+          },
+          {
             "properties": {
-              "family": {
-                "const": "domain-driven"
+              "architecture": {
+                "properties": {
+                  "family": {
+                    "const": "domain-driven"
+                  }
+                }
               }
             }
           }
-        }
+        ]
       },
       "then": {
         "properties": {
@@ -427,15 +449,31 @@
     },
     {
       "if": {
-        "properties": {
-          "architecture": {
+        "allOf": [
+          {
+            "not": {
+              "required": [
+                "design_scope"
+              ],
+              "properties": {
+                "design_scope": {
+                  "const": "engineering-only"
+                }
+              }
+            }
+          },
+          {
             "properties": {
-              "family": {
-                "const": "layered-mvc"
+              "architecture": {
+                "properties": {
+                  "family": {
+                    "const": "layered-mvc"
+                  }
+                }
               }
             }
           }
-        }
+        ]
       },
       "then": {
         "properties": {
@@ -751,6 +789,246 @@
             ],
             "additionalProperties": false,
             "title": "YSS MVC 技术设计内容"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "required": [
+          "design_scope"
+        ],
+        "properties": {
+          "design_scope": {
+            "const": "engineering-only"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "design": {
+            "type": "object",
+            "properties": {
+              "scope_reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "impact_assessment": {
+                "type": "object",
+                "properties": {
+                  "domain_model": {
+                    "const": "none"
+                  },
+                  "business_state": {
+                    "const": "none"
+                  },
+                  "business_rules": {
+                    "const": "none"
+                  },
+                  "business_persistence": {
+                    "const": "none"
+                  },
+                  "schema_migration": {
+                    "const": "none"
+                  },
+                  "ui_change": {
+                    "const": "none"
+                  },
+                  "architecture_boundary_change": {
+                    "const": "none"
+                  }
+                },
+                "required": [
+                  "domain_model",
+                  "business_state",
+                  "business_rules",
+                  "business_persistence",
+                  "schema_migration",
+                  "ui_change",
+                  "architecture_boundary_change"
+                ],
+                "additionalProperties": false
+              },
+              "component_catalog": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "component_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "responsibility": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "build_unit_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "write_paths": {
+                      "type": "array",
+                      "minItems": 1,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "depends_on": {
+                      "type": "array",
+                      "minItems": 0,
+                      "items": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "required": [
+                    "component_id",
+                    "responsibility",
+                    "build_unit_ref",
+                    "write_paths",
+                    "depends_on"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "allowed_write_paths": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "read_dependencies": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "digest": {
+                      "type": "string",
+                      "pattern": "^sha256:[a-f0-9]{64}$"
+                    },
+                    "purpose": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "ref",
+                    "digest",
+                    "purpose"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "flow": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "failure_handling": {
+                "type": "string",
+                "minLength": 1
+              },
+              "consistency_policy": {
+                "type": "object",
+                "properties": {
+                  "read_only": {
+                    "const": "read-only"
+                  },
+                  "transaction_boundary": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "concurrency": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "idempotency": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "cross_database_limit": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "timeouts": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "recovery": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "read_only",
+                  "transaction_boundary",
+                  "concurrency",
+                  "idempotency",
+                  "cross_database_limit",
+                  "timeouts",
+                  "recovery"
+                ],
+                "additionalProperties": false
+              },
+              "test_seams": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "seam_id": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "kind": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "subject_ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "assertion": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "seam_id",
+                    "kind",
+                    "subject_ref",
+                    "assertion"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "scope_reason",
+              "impact_assessment",
+              "component_catalog",
+              "allowed_write_paths",
+              "read_dependencies",
+              "flow",
+              "failure_handling",
+              "consistency_policy",
+              "test_seams"
+            ],
+            "additionalProperties": false,
+            "title": "既有工程的受控工程技术设计"
           }
         }
       }

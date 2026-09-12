@@ -1,0 +1,45 @@
+// Synthetic compiler regression only. These fixture approvals are never pilot evidence.
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {createHash} from 'node:crypto';
+import {parse} from '../../lib/strategic-handoff-io.mjs';
+import {countersignRuleForGate} from '../../lib/digital-human-roles.mjs';
+import {existingArchitectureDigest as digest} from '../../lib/existing-backend-architecture.mjs';
+export const sha=x=>`sha256:${createHash('sha256').update(x).digest('hex')}`;
+export function fixture(family='layered-mvc'){
+ const root=fs.mkdtempSync(path.join(os.tmpdir(),'yss-existing-regression-')), project=path.join(root,'project');fs.mkdirSync(project);
+ const write=(ref,value)=>{const target=path.join(root,ref);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,typeof value==='string'?value:JSON.stringify(value,null,2)+'\n');return{ref,digest:sha(fs.readFileSync(target))};};
+ const git=(...args)=>execFileSync('git',['-C',project,...args],{encoding:'utf8'}).trim();
+ git('init','-q');git('config','user.name','Synthetic Test');git('config','user.email','fixture@example.invalid');git('remote','add','origin','https://example.invalid/fixture.git');
+ write('project/pom.xml','<project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><groupId>fixture</groupId><artifactId>existing</artifactId><version>1</version><properties><maven.compiler.source>8</maven.compiler.source><maven.compiler.target>8</maven.compiler.target><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding></properties><dependencies><dependency><groupId>junit</groupId><artifactId>junit</artifactId><version>4.13.2</version><scope>test</scope></dependency></dependencies><build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>2.22.2</version></plugin></plugins></build></project>');
+ write('project/src/main/java/Example.java','final class Example {}\n');
+ const roles=family==='domain-driven'?['domain','application','infrastructure','web']:['application','persistence','web'];
+ for(const role of roles)write(`project/src/main/java/${role}/Boundary.java`,`package ${role}; public final class Boundary {}\n`);
+ write('project/src/main/java/web/Boundary.java','package web; public final class Boundary { public int accept(int n) { return new application.Boundary().execute(n); } }');
+ write('project/src/main/java/application/Boundary.java',family==='domain-driven'?'package application; public final class Boundary { public int execute(int n) { return new domain.Boundary().increment(n); } }':'package application; public final class Boundary { public int execute(int n) { if(n<0) throw new IllegalArgumentException(); return new persistence.Boundary().save(n+1); } }');
+ if(family==='domain-driven')write('project/src/main/java/domain/Boundary.java','package domain; public final class Boundary { public int increment(int n) { if(n<0) throw new IllegalArgumentException(); return n+1; } }');
+ else write('project/src/main/java/persistence/Boundary.java','package persistence; public final class Boundary { public int save(int n) { return n; } }');
+ write('project/src/test/java/BoundaryTest.java','import org.junit.Test; import static org.junit.Assert.*; public class BoundaryTest { @Test public void acceptsValidInput(){ assertEquals(3,new web.Boundary().accept(2)); } @Test(expected=IllegalArgumentException.class) public void rejectsInvalidInput(){new web.Boundary().accept(-1);} }');
+ git('add','.');git('commit','-qm','Synthetic existing source');
+ const files=git('ls-files').split('\n').map(ref=>({path:ref,base_blob:git('rev-parse',`HEAD:${ref}`),sha256:sha(fs.readFileSync(path.join(project,ref)))}));
+ const source={base_commit:git('rev-parse','HEAD'),roots:['pom.xml','src'],files};
+ const units=[{id:'app',artifact_id:'existing',pom_ref:'pom.xml',roles,role_paths:Object.fromEntries(roles.map(role=>[role,[`src/main/java/${role}`]])),depends_on:[]}];
+ const identity={schema_version:2,source_kind:'existing-registration',architecture_family:family,architecture_profile:family==='domain-driven'?'existing-domain-driven-maven':'existing-layered-mvc-maven',repository_id:'synthetic-repo',project_id:'synthetic-project',source_digest:digest(source),build_units_digest:digest(units)};
+ const common={repository_id:identity.repository_id,project_id:identity.project_id,architecture_identity:identity};
+ const manifest={schema_version:1,kind:'existing-project-observation',...common,source,build_units:units};
+ const baseline={schema_version:1,kind:'existing-engineering-baseline',id:'engineering.fixture',version:'v1',status:'current',author:'fixture-drafter',boundary_scope:['src/main/java'],...common,source,build_units:units,verification_commands:['./mvnw test'],databases:{verification:{status:'not-applicable',reason:'compiler fixture only'},production:{status:'unknown'}}};
+ const rolesBytes=fs.readFileSync(new URL('../../../docs/agents/digital-human-roles.yaml',import.meta.url),'utf8'),rolesDoc=parse(rolesBytes);
+ const reviewGate=['check.architecture-reviewed','gate.technical-design-approved'].find(gate=>countersignRuleForGate(rolesDoc.gate_policy,gate));
+ if(!reviewGate)throw new Error('Synthetic architecture fixture requires the installed source architecture review policy');
+ const reviewer=countersignRuleForGate(rolesDoc.gate_policy,reviewGate).countersigners.at(-1);
+ const review={schema_version:1,gate_id:reviewGate,decision:'approved',actor_kind:'digital-human',role_id:reviewer,runtime_id:'runtime.generic',principal_ref:'fixture-reviewer',artifact_bindings:[{id:baseline.id,version:baseline.version,digest:digest(baseline)}],evidence_refs:['review.md']};
+ write('review.md','Synthetic boundary review fixture. Not a real approval.\n');
+ baseline.boundary_review=write('review.json',review);
+ const mb=write('manifest.json',manifest),bb=write('baseline.json',baseline);
+ const registration={schema_version:1,status:'current',...common,local_worktree:project,project_root:'.',owner:'fixture-owner',allowed_write_paths:['src','pom.xml'],repository_url:'https://example.invalid/fixture.git',verification_commands:baseline.verification_commands,architecture_evidence:{engineering_baseline:bb,manifest:mb}};
+ const rb=write('registration.json',registration);
+ write('docs/agents/digital-human-roles.yaml',rolesBytes);
+ return{root,project,identity,source,units,baseline,registration,manifest,review,write,git,bindings:{engineering_baseline:bb,repository_registration:rb,manifest:mb},cleanup:()=>fs.rmSync(root,{recursive:true,force:true})};
+}

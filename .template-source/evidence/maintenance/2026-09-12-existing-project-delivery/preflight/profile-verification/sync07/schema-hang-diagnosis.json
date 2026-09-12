@@ -1,0 +1,47 @@
+{
+  "recorded_at": "2026-09-11T19:30:55.398879+00:00",
+  "confirmed_wait": "Python TextIOWrapper.read / FileIO.readall / read awaited stdin EOF; Node SyncProcessRunner awaited child completion",
+  "evidence": [
+    "historical-python-sample.txt",
+    "historical-node-sample.txt",
+    "hang-processes.txt",
+    "hang-python-fds.txt",
+    "template-results.json",
+    "schema-framing-red.log",
+    "schema-framing-green.log"
+  ],
+  "observations": {
+    "frontend_ui_fresh_timeout_seconds": 300,
+    "design_cli_init_fresh_timeout_seconds": 300,
+    "python_tcp_descriptors": 0,
+    "instrumented_targeted_replays_without_reproduction": 5
+  },
+  "not_established": "The exact process/fd ownership or runtime event that retained the stdin write end is not established. No claim that lowering concurrency solves it.",
+  "fix": {
+    "file": "scripts/lib/json-schema.mjs",
+    "protocol": "Pass known UTF-8 JSON byte count; read exactly that many bytes before parsing, so successful validation no longer depends on EOF",
+    "timeout_default_ms": 30000,
+    "temp_file_writes": false,
+    "command_runner_changed": false
+  },
+  "regression": {
+    "file": "scripts/fixtures/delivery-preflight/json-schema-framing.test.mjs",
+    "red": "Real Python child received complete JSON while the bridge deliberately retained the write end. Old validator waited for EOF and failed after 2s.",
+    "green": "All 3 tests pass including multibyte input, large input and output, invalid schema, truncated frame, and 200ms timeout."
+  },
+  "remaining": [
+    "Final synchronized CLI initialization and protocol tests remain pending main source/CLI snapshot sync."
+  ],
+  "fixed_profile_replays": "framed-profile-results.json",
+  "observed_transport_sizes": {
+    "source": "Five faulthandler-instrumented successful replays of the originally stalled frontend v2/v3 scenario; the original failed call byte count was not captured.",
+    "input_frames": 470,
+    "input_min_utf8_bytes": 1074,
+    "input_max_utf8_bytes": 8287,
+    "output_frames": 470,
+    "output_min_ascii_json_bytes": 30,
+    "output_max_ascii_json_bytes": 60,
+    "bridge_regression_large_value_utf8_bytes": 300000,
+    "bridge_regression_large_values_per_batch": 3
+  }
+}

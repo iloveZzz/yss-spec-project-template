@@ -1,3 +1,4 @@
+import { createApprovedExecutionContext, createApprovedRecompilationContext, assertApprovedExecutionContext } from './approved-execution-context.mjs';
 import { enforceTechnicalDesign } from './technical-design-boundary.mjs';
 import { enforceHarnessSkillScope } from "./harness-execution-scope.mjs";
 import { createHash } from "node:crypto";
@@ -6,7 +7,7 @@ import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { DEFAULT_REGISTRY, loadSkillRegistry } from "./skill-registry.mjs";
 import { ROOT } from "./skill-supply-chain.mjs";
-import { architectureDigest, assertArchitectureAgreement, validateArchitectureIdentity } from "./backend-architecture.mjs";
+import { architectureDigest, assertArchitectureAgreement, validateArchitectureIdentity, verifyArchitectureEvidence } from "./backend-architecture.mjs";
 import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
 
 export const DEFAULT_COMPILER_CONTRACT = path.join(
@@ -65,12 +66,14 @@ export function compileImplementationContract({
   compilerContractDigest,
   architecture_identity,
   architecture_evidence,
+  approved_slice,
   root = ROOT,
   slice_id,
   frontend_delivery,
   technical_design
 }) {
   assertV2(registry, compilerContract);
+  const recompilationExecution=approved_slice?createApprovedRecompilationContext(approved_slice,{root}):undefined;
   const deliveryInput = enforceFrontendDelivery({ slice_id, frontend_delivery }, { root });
   if (!Array.isArray(recipeIds) || !Array.isArray(requiredCapabilities) || !Array.isArray(conditions)) {
     fail("recipeIds、requiredCapabilities 与 conditions 必须是数组");
@@ -89,11 +92,11 @@ export function compileImplementationContract({
   if (architectural || architecture_identity) {
     architectureProfile = validateArchitectureIdentity(architecture_identity, registry);
     if (!architecture_evidence?.engineering_baseline || !architecture_evidence?.repository_registration || !architecture_evidence?.manifest) fail("缺少工程基线、仓库登记或 Manifest 架构证据");
-    assertArchitectureAgreement(architecture_identity, architecture_evidence, registry);
+    verifyArchitectureEvidence(architecture_identity, architecture_evidence, { root, registry, execution:recompilationExecution });
     for (const recipe of orderedRecipes) if (recipe.architecture_family && recipe.architecture_family !== architecture_identity.architecture_family) fail(`Recipe ${recipe.id} 与架构族不匹配`);
   }
 
-  enforceTechnicalDesign({ technical_design, conditions, architecture_identity, slice_id }, { root });
+  enforceTechnicalDesign({ technical_design, conditions, architecture_identity, slice_id }, { root, execution:recompilationExecution });
 
   const capabilitySources = new Map();
   const orderedCapabilities = [];
@@ -175,6 +178,7 @@ export function compileImplementationContract({
     ...(architecture_identity ? {
       architecture_identity: structuredClone(architecture_identity),
       architecture_identity_digest: architectureDigest(architecture_identity),
+      ...(architecture_identity.schema_version === 2 ? { architecture_evidence: structuredClone(architecture_evidence) } : {}),
       profile_maturity: architectureProfile.maturity,
       readiness_blockers: architectureProfile.maturity === "supported" ? [] : ["backend-profile-not-supported"],
       skill_profiles: Object.fromEntries(orderedSkills.map((skill) => [skill, architecture_identity.architecture_profile]))
@@ -202,12 +206,17 @@ export function compileDefaultImplementationContract(input = {}) {
   });
 }
 
-export function evaluateContractFreshness(contract, { registry, compilerContract, root = ROOT }) {
+export function evaluateContractFreshness(contract, { registry, compilerContract, root = ROOT, approved_slice, readOnly = false }, execution) {
   assertV2(registry, compilerContract);
   if (contract?.schema_version !== 2) fail("Slice Implementation Contract schema v1 已停止支持；必须重新编译 v2 合同");
   const resolution = contract.resolution ?? contract;
   const reasons = [];
-  try { enforceTechnicalDesign({ ...resolution, slice_id: contract.slice_id ?? resolution.slice_id }, { root }); }
+  let trustedExecution;
+  try {
+    trustedExecution=approved_slice?createApprovedExecutionContext(approved_slice,{root,contract}):execution;
+    if(trustedExecution)assertApprovedExecutionContext(trustedExecution,{root,contract});
+  } catch(error) { reasons.push(error.code||'EXECUTION_APPROVAL_INVALID');trustedExecution=undefined; }
+  try { enforceTechnicalDesign({ ...resolution, slice_id: contract.slice_id ?? resolution.slice_id }, { root,execution:trustedExecution,readOnly }); }
   catch { reasons.push("technical-design-stale-or-unavailable"); }
   try { enforceFrontendDelivery(contract, { root }); }
   catch { reasons.push("frontend-delivery-stale-or-unavailable"); }
@@ -216,6 +225,10 @@ export function evaluateContractFreshness(contract, { registry, compilerContract
   if (resolution.architecture_identity) {
     try { validateArchitectureIdentity(resolution.architecture_identity, registry); }
     catch { reasons.push("architecture-identity-invalid"); }
+    if (resolution.architecture_identity.schema_version === 2) {
+      try { verifyArchitectureEvidence(resolution.architecture_identity, resolution.architecture_evidence, { root, registry, execution:trustedExecution }); }
+      catch (error) { reasons.push(error.code ?? "architecture-evidence-stale-or-unavailable"); }
+    }
     if (resolution.architecture_identity_digest !== architectureDigest(resolution.architecture_identity)) reasons.push("architecture-identity-digest-changed");
   }
   return { freshness: reasons.length ? "stale" : "current", reasons };
@@ -225,6 +238,7 @@ export function validateExecutionResult(result, contract, current) {
   if (result?.schema_version !== 2) fail("YSS Skill Execution Result schema v1 已停止支持；请迁移到 v2");
   if (contract?.schema_version !== 2) fail("Slice Implementation Contract schema v1 已停止支持；必须重新编译 v2 合同");
   if (!EXECUTION_STATUSES.has(result.status)) fail(`未知 execution result status: ${result.status}`);
+  if(contract.resolution?.architecture_identity?.schema_version===2&&!current?.approved_slice)return {status:'stale',blockers:['EXECUTION_APPROVAL_REQUIRED']};
   const freshness = evaluateContractFreshness(contract, current);
   if (freshness.freshness === "stale") return { status: "stale", blockers: freshness.reasons };
   const consumed = result.consumed_contract ?? {};

@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "result": "blocked",
+  "exit_code": 1,
+  "stage": "export",
+  "checks": [
+    {
+      "code": "governance",
+      "status": "ready",
+      "owner": "工程接入负责人",
+      "source": "yss-project.yaml / CONTEXT.md",
+      "evidence": [
+        "yss-project.yaml",
+        "CONTEXT.md"
+      ],
+      "blocking_stages": [
+        "prepare",
+        "build",
+        "export",
+        "accept"
+      ],
+      "recovery": "完成工程接入登记或正常初始化，读取有效 yss-project.yaml 和根 CONTEXT.md 后重跑预检",
+      "message": "当前原始资产与语义核验通过"
+    },
+    {
+      "code": "architecture.repository_registration",
+      "status": "missing",
+      "owner": "工程基线与边界审查负责人",
+      "source": "repository_registration",
+      "evidence": [],
+      "blocking_stages": [],
+      "recovery": "按工程接入与 backend-architecture 合同补齐原始登记、工程基线、观测 manifest，重新边界审查并编译",
+      "message": "缺少原始架构来源: repository_registration"
+    },
+    {
+      "code": "architecture.engineering_baseline",
+      "status": "missing",
+      "owner": "工程基线与边界审查负责人",
+      "source": "engineering_baseline",
+      "evidence": [],
+      "blocking_stages": [],
+      "recovery": "按工程接入与 backend-architecture 合同补齐原始登记、工程基线、观测 manifest，重新边界审查并编译",
+      "message": "缺少原始架构来源: engineering_baseline"
+    },
+    {
+      "code": "architecture.manifest",
+      "status": "missing",
+      "owner": "工程基线与边界审查负责人",
+      "source": "manifest",
+      "evidence": [],
+      "blocking_stages": [],
+      "recovery": "按工程接入与 backend-architecture 合同补齐原始登记、工程基线、观测 manifest，重新边界审查并编译",
+      "message": "缺少原始架构来源: manifest"
+    },
+    {
+      "code": "architecture.identity",
+      "status": "missing",
+      "owner": "工程基线与边界审查负责人",
+      "source": "architecture",
+      "evidence": [],
+      "blocking_stages": [],
+      "recovery": "按工程接入与 backend-architecture 合同补齐原始登记、工程基线、观测 manifest，重新边界审查并编译",
+      "message": "缺少 architecture_identity；不能从目录或数据库字符串推断"
+    },
+    {
+      "code": "architecture",
+      "status": "pending",
+      "owner": "工程基线与边界审查负责人",
+      "source": "backend-architecture",
+      "evidence": [],
+      "blocking_stages": [],
+      "recovery": "按工程接入与 backend-architecture 合同补齐原始登记、工程基线、观测 manifest，重新边界审查并编译",
+      "message": "尚不可判定，依赖未就绪: architecture.identity, architecture.repository_registration, architecture.engineering_baseline, architecture.manifest"
+    },
+    {
+      "code": "openapi",
+      "status": "missing",
+      "owner": "接口契约负责人",
+      "source": "openapi",
+      "evidence": [],
+      "blocking_stages": [],
+      "recovery": "回到 OpenAPI Draft 审查与 Freeze，绑定当前字节及真实批准",
+      "message": "缺少 openapi 原始资产绑定"
+    },
+    {
+      "code": "technical_design",
+      "status": "missing",
+      "owner": "技术设计负责人",
+      "source": "technical_design",
+      "evidence": [],
+      "blocking_stages": [],
+      "recovery": "按已登记架构更新技术设计，补齐输入与审查并重新批准",
+      "message": "缺少 technical_design 原始资产绑定"
+    },
+    {
+      "code": "slice_contract",
+      "status": "missing",
+      "owner": "生命周期编排与合同批准方",
+      "source": "slice_contract",
+      "evidence": [],
+      "blocking_stages": [],
+      "recovery": "重新编译 Slice Implementation Contract 并取得当前合同批准",
+      "message": "缺少 slice_contract 原始资产绑定"
+    },
+    {
+      "code": "ui_baseline",
+      "status": "missing",
+      "owner": "产品设计负责人",
+      "source": "docs/.scratch/target-preview-existing-ui/baseline-v1/existing-ui-baseline.json",
+      "evidence": [
+        "docs/.scratch/target-preview-existing-ui/baseline-v1/existing-ui-baseline.json"
+      ],
+      "blocking_stages": [
+        "export",
+        "accept"
+      ],
+      "recovery": "由产品设计负责人确认现有 UI 基线；有 UI 改动则回到原型设计",
+      "message": "缺少当前资产 id/version/approval_ref"
+    },
+    {
+      "code": "build",
+      "status": "missing",
+      "owner": "后端构建负责人",
+      "source": "build",
+      "evidence": [],
+      "blocking_stages": [],
+      "recovery": "使用批准合同正常构建，并记录实际输出摘要与验证",
+      "message": "缺少 build 原始资产绑定"
+    },
+    {
+      "code": "build_artifact",
+      "status": "missing",
+      "owner": "后端构建负责人",
+      "source": "build_artifact",
+      "evidence": [],
+      "blocking_stages": [],
+      "recovery": "绑定实际 JAR 文件并与构建 artifact_digest 核对",
+      "message": "缺少 build_artifact 原始资产绑定"
+    },
+    {
+      "code": "deployment",
+      "status": "missing",
+      "owner": "后端部署与验证负责人",
+      "source": "deployment",
+      "evidence": [],
+      "blocking_stages": [],
+      "recovery": "部署当前构建，采集同进程身份与真实验证证据",
+      "message": "缺少 deployment 原始资产绑定"
+    },
+    {
+      "code": "strategic_handoff",
+      "status": "conflict",
+      "owner": "战略交付方",
+      "source": "docs/.scratch/target-preview-existing-ui/handoff-draft/handoff-v5-candidate.json",
+      "evidence": [
+        "docs/.scratch/target-preview-existing-ui/handoff-draft/handoff-v5-candidate.json"
+      ],
+      "blocking_stages": [
+        "export",
+        "accept"
+      ],
+      "recovery": "修正战略来源与批准，重新导出当前交接资产",
+      "message": "交接包尚未批准"
+    },
+    {
+      "code": "backend_delivery",
+      "status": "missing",
+      "owner": "后端交付方",
+      "source": "backend_delivery",
+      "evidence": [],
+      "blocking_stages": [],
+      "recovery": "从正常后端交付入口重新生成与当前来源一致的交付记录",
+      "message": "缺少 backend_delivery 原始资产绑定；到 accept 阶段前补齐"
+    },
+    {
+      "code": "local_authorization",
+      "status": "not-applicable",
+      "owner": "目标仓接收负责人",
+      "source": "local_authorization",
+      "evidence": [],
+      "blocking_stages": [],
+      "recovery": "由目标仓负责人确认当前生产方、项目、route 和 slice 范围",
+      "message": "当前未确认交付 v2；本地授权只在受控目标绑定协议 v2 生效"
+    }
+  ]
+}
