@@ -29,7 +29,7 @@ function fixture(t) {
   mkdirSync(cli); mkdirSync(repo);
   git(cli, 'init', '-q'); git(repo, 'init', '-q');
   put(cli, 'package.json', JSON.stringify({ name: 'create-yss-spec', version: '0.0.0', files: ['bin', 'template.snapshot.json'], bin: { 'create-yss-spec': 'bin/create-yss-spec.js' } }));
-  put(cli, 'scripts/sync-template.js', `const fs=require('fs'); const {execFileSync}=require('child_process'); const commit=execFileSync('git',['rev-parse','HEAD'],{cwd:process.env.YSS_SPEC_TEMPLATE_REPO,encoding:'utf8'}).trim(); if(commit!==process.env.YSS_SPEC_TEMPLATE_REF)throw Error('stale'); fs.writeFileSync('template.snapshot.json',JSON.stringify({templateCommit:commit,requestedRef:commit}));`);
+  put(cli, 'scripts/sync-template.js', `const fs=require('fs'); const {execFileSync}=require('child_process'); const {fileURLToPath}=require('url'); const source=process.env.YSS_SPEC_TEMPLATE_REPO; const repo=source.startsWith('file:')?fileURLToPath(source):source; const commit=execFileSync('git',['rev-parse','HEAD'],{cwd:repo,encoding:'utf8'}).trim(); if(commit!==process.env.YSS_SPEC_TEMPLATE_REF)throw Error('stale'); fs.writeFileSync('template.snapshot.json',JSON.stringify({templateCommit:commit,requestedRef:commit}));`);
   put(cli, 'bin/create-yss-spec.js', `#!/usr/bin/env node
 const fs=require('fs'),path=require('path');const args=process.argv.slice(2),target=args[args.indexOf('--target-dir')+1];
 if(args[0]!=='sync'){

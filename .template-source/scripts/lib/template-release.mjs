@@ -3,6 +3,7 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, openSync, closeSync, readFileSync, writeFileSync, rmSync, realpathSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 function git(root, args) {
   const result = spawnSync('git', args, { cwd: root, encoding: 'utf8' });
@@ -67,7 +68,11 @@ export function verifyTemplateRelease({ root, commit, output }) {
     run('git', ['clone', '--shared', '--no-checkout', path.join(root, 'submodules/create-yss-spec'), cli]);
     run('git', ['checkout', '--detach', report.generator_commit], cli);
     // 在隔离副本重建包；不改受版本管理的生成器或它原有的模板快照。
-    run(process.execPath, ['scripts/sync-template.js'], cli, { ...process.env, YSS_SPEC_TEMPLATE_REPO: root, YSS_SPEC_TEMPLATE_REF: commit });
+    run(process.execPath, ['scripts/sync-template.js'], cli, {
+      ...process.env,
+      YSS_SPEC_TEMPLATE_REPO: pathToFileURL(root).href,
+      YSS_SPEC_TEMPLATE_REF: commit,
+    });
     const snapshot = JSON.parse(readFileSync(path.join(cli, 'template.snapshot.json'), 'utf8'));
     assert.equal(snapshot.templateCommit, commit, '生成器使用了过期模板');
     assert.equal(snapshot.requestedRef, commit, '生成器必须记录固定版本');
