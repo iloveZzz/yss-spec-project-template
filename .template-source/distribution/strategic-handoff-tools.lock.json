@@ -2,7 +2,7 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "73dacb80b11bc8e93dbe12541a5df95f2f651985",
+  "source_revision": "7b414214e403b94caad716d5eb8af92f9af75737",
   "source_state": "committed",
   "transformation_set": [
     "identity"
@@ -68,7 +68,7 @@
     "scripts/lib/json-schema.mjs": "sha256:007e39300478da6f0e359d822642f7a6aaf2466ee5781bd81924cf5897eebc72",
     "scripts/lib/strategic-feedback.mjs": "sha256:f270ea41309fd4229e7351266a08c973016979bbcc2c554b1d2e9636f10e3441",
     "scripts/lib/strategic-handoff-consumption.mjs": "sha256:fa3751751f699fbf115785a713830806d46e5098c2e815c329089a481543efac",
-    "scripts/lib/strategic-handoff-design-targets.mjs": "sha256:28f7efa639c8be66503c0a566efa1ec8b85263502b49764210a17656fc70fd0d",
+    "scripts/lib/strategic-handoff-design-targets.mjs": "sha256:7535dc763c606d36a9b02ce78bff2c49b53e196a2621245ace357d1300060a37",
     "scripts/lib/strategic-handoff-io.mjs": "sha256:cfe93a3ff199bb84a9c294626cb06dda29ff61ac852ef20b949c4912194c1212",
     "scripts/lib/strategic-handoff-rules.mjs": "sha256:f346ef52b6b790e37071d691e4a6443ec40f5f070760c8110fa2e8b5646c195e",
     "scripts/lib/strategic-handoff-zip.py": "sha256:726a86004b4bb7a38a670c81dc0b1d115411732e418688b698b1f7d4d900e180",
@@ -152,7 +152,7 @@
     "scripts/lib/json-schema.mjs": "sha256:007e39300478da6f0e359d822642f7a6aaf2466ee5781bd81924cf5897eebc72",
     "scripts/lib/strategic-feedback.mjs": "sha256:f270ea41309fd4229e7351266a08c973016979bbcc2c554b1d2e9636f10e3441",
     "scripts/lib/strategic-handoff-consumption.mjs": "sha256:fa3751751f699fbf115785a713830806d46e5098c2e815c329089a481543efac",
-    "scripts/lib/strategic-handoff-design-targets.mjs": "sha256:28f7efa639c8be66503c0a566efa1ec8b85263502b49764210a17656fc70fd0d",
+    "scripts/lib/strategic-handoff-design-targets.mjs": "sha256:7535dc763c606d36a9b02ce78bff2c49b53e196a2621245ace357d1300060a37",
     "scripts/lib/strategic-handoff-io.mjs": "sha256:cfe93a3ff199bb84a9c294626cb06dda29ff61ac852ef20b949c4912194c1212",
     "scripts/lib/strategic-handoff-rules.mjs": "sha256:f346ef52b6b790e37071d691e4a6443ec40f5f070760c8110fa2e8b5646c195e",
     "scripts/lib/strategic-handoff-zip.py": "sha256:726a86004b4bb7a38a670c81dc0b1d115411732e418688b698b1f7d4d900e180",
