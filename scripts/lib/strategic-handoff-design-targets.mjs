@@ -12,4 +12,3 @@ export function designTargets(data) {
   ensure(new Set(seams.map(item => item.seam_id)).size === seams.length, '测试 seam ID 重复');
   return { ids: new Set(ids), seams: new Map(seams.map(item => [item.seam_id, item])) };
 }
-
