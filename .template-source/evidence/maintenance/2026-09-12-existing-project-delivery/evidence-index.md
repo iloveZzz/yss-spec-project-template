@@ -43,5 +43,6 @@
 - `verify-template-fast-03.log` / `fresh-verification-10.json`：fast 因核心验证配置变化自动扩大到 release；调度层唯一失败是 `--require-committed`，其余已运行检查通过。脚手架成功场景中的预期失败命令按场景结果判定，不混为额外回归失败。本轮只获本地工作树交付授权，未绕过发布来源检查。
 - `syntax-check-10.json`：38 个本轮相关 JavaScript 文件语法检查通过；`git diff --check` 通过。
 - `current-review-self-check.json`：7 项当前请求与嵌套依据 41 项只读检查通过。没有生成真实人类回复或批准。
+- Git 交付前复验发现 `approved-execution-context` 已分发而其直接依赖的 `lifecycle-checkpoint.schema.json` 未进入接收模板分发清单；补齐依赖后要求三个接收模板重新通过各自 Fresh Verification。
 
 当前状态：等待本次固定资产的真实确认。下一步是正常实施 R3、建立 S0/S1 后独立派生全部故障场景，再据真实 S3a 决定是否修补目标授权。这里不宣布原计划完成。
