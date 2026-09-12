@@ -1,0 +1,23 @@
+{
+  "name": "isolated-exact-artifact-register",
+  "argv": [
+    "./mvnw",
+    "-B",
+    "-o",
+    "-N",
+    "-Dmaven.repo.local=/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/maven-repository",
+    "org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file",
+    "-Dfile=/Users/zhudaoming/.m2/repository/com/yss/cloud/yss-component-text-search-core/2.0.0-SNAPSHOT/yss-component-text-search-core-2.0.0-20260317.052440-5.jar",
+    "-DpomFile=/Users/zhudaoming/.m2/repository/com/yss/cloud/yss-component-text-search-core/2.0.0-SNAPSHOT/yss-component-text-search-core-2.0.0-20260317.052440-5.pom",
+    "-DgroupId=com.yss.cloud",
+    "-DartifactId=yss-component-text-search-core",
+    "-Dversion=2.0.0-20260317.052440-5",
+    "-Dpackaging=jar",
+    "-DgeneratePom=false"
+  ],
+  "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+  "exit_code": 0,
+  "elapsed_seconds": 0.71,
+  "log": "isolated-exact-artifact-register.log",
+  "redaction": "URL userinfo and credential assignments"
+}

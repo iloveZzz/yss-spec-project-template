@@ -1,0 +1,64 @@
+[
+  {
+    "role": "backend",
+    "target": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance",
+    "command": [
+      "node",
+      "submodules/create-yss-harness-backend/bin/create-yss-harness-backend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance",
+      "--project-name",
+      "目标表预览交付试验",
+      "--business-domain",
+      "文件同步目标表数据预览",
+      "--issue-tracker",
+      "local-markdown",
+      "--no-example-docs",
+      "--dry-run",
+      "--json"
+    ],
+    "executed_at": "2026-09-11T16:33:53.919408+00:00",
+    "exit_code": 0,
+    "directory_created": false,
+    "status": "preview",
+    "cliVersion": "0.2.2",
+    "templateCommit": "aab3a709b96e4d8309e33bbf451156ae5abad05a",
+    "change_counts": {
+      "add": 4001
+    },
+    "stdout_ref": "init-backend-preview.stdout",
+    "stderr_ref": "init-backend-preview.stderr"
+  },
+  {
+    "role": "frontend",
+    "target": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend-governance",
+    "command": [
+      "node",
+      "submodules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend-governance",
+      "--project-name",
+      "目标表预览交付试验",
+      "--business-domain",
+      "文件同步目标表数据预览",
+      "--issue-tracker",
+      "local-markdown",
+      "--no-example-docs",
+      "--dry-run",
+      "--json"
+    ],
+    "executed_at": "2026-09-11T16:33:54.664905+00:00",
+    "exit_code": 0,
+    "directory_created": false,
+    "status": "preview",
+    "cliVersion": "0.1.4",
+    "templateCommit": "204e0e0d95ba7d721aca7633b8417a90d0dd1e61",
+    "change_counts": {
+      "add": 4868
+    },
+    "stdout_ref": "init-frontend-preview.stdout",
+    "stderr_ref": "init-frontend-preview.stderr"
+  }
+]

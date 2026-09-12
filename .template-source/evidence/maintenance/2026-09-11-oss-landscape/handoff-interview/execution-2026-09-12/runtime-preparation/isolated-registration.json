@@ -1,0 +1,19 @@
+{
+  "reason": "maven install-file normalizes timestamp to base SNAPSHOT; register verified exact timestamp files as local in isolated cache only",
+  "tracking_file": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/maven-repository/com/yss/cloud/yss-component-text-search-core/2.0.0-SNAPSHOT/_remote.repositories",
+  "before_sha256": "5877030b4825476129d339b7b2c43da50d7d9c496709ef1511ce55bcee0f2191",
+  "after_sha256": "f2c2c541c0fa4c979733ddc494c9ce238a76c758dbaf1c20e599bb9d27409807",
+  "files": [
+    {
+      "file": "yss-component-text-search-core-2.0.0-20260317.052440-5.jar",
+      "source_sha256": "cf9b033e80cde2927782c3aae98fe327c3cc7dd01b313ba5664fcc63b1be3b39",
+      "isolated_sha256": "cf9b033e80cde2927782c3aae98fe327c3cc7dd01b313ba5664fcc63b1be3b39"
+    },
+    {
+      "file": "yss-component-text-search-core-2.0.0-20260317.052440-5.pom",
+      "source_sha256": "ba72eb779b66df48632c82251870f73ddac424fb236ede417b5843d4b8a41137",
+      "isolated_sha256": "ba72eb779b66df48632c82251870f73ddac424fb236ede417b5843d4b8a41137"
+    }
+  ],
+  "shared_cache_modified": false
+}

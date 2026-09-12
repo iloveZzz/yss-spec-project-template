@@ -1,0 +1,12 @@
+[
+  {
+    "role": "backend",
+    "tracked_changed_paths": [],
+    "exit_code": 0
+  },
+  {
+    "role": "frontend",
+    "tracked_changed_paths": [],
+    "exit_code": 0
+  }
+]

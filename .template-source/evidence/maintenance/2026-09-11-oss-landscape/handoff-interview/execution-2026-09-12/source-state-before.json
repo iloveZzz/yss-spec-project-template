@@ -1,0 +1,31 @@
+[
+  {
+    "root": "/Users/zhudaoming/yss-valuation-outsourced",
+    "observed_at": "2026-09-11T16:27:47.485166+00:00",
+    "head": "714fd4223d202b29c410d4d5533913e44874b3f1",
+    "branch": "dev-biz-module",
+    "status_sha256": "66e37d1baa505e34ce18adae006083bfd13a4cbbbc5703c05d07ded199f7c48c",
+    "status_entries": 192,
+    "yss-project.yaml": {
+      "exists": false
+    },
+    "CONTEXT.md": {
+      "exists": true,
+      "sha256": "9306ced7a65cdd787c55b11f4d49df5c28870732558d5461a48fc8246994dd1c"
+    }
+  },
+  {
+    "root": "/Users/zhudaoming/yss-valuation-outsourced/valuation-outsourced-frontend",
+    "observed_at": "2026-09-11T16:27:47.567487+00:00",
+    "head": "76f2d1627f797d5b12a99c48cf49125544933b18",
+    "branch": "dev",
+    "status_sha256": "7fbb336b4b9c927e9259c9e86dad634066a241923e640e72dd1377a9ba35e9c8",
+    "status_entries": 106,
+    "yss-project.yaml": {
+      "exists": false
+    },
+    "CONTEXT.md": {
+      "exists": false
+    }
+  }
+]

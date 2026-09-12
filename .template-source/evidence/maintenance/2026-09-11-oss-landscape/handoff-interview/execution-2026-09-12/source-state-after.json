@@ -1,0 +1,14 @@
+[
+  {
+    "root": "/Users/zhudaoming/yss-valuation-outsourced",
+    "status_sha256": "2f712d49fb96a3e54f6478fce2d753a6f7c93c2f7f9fbae98fca045a095ebcc1",
+    "status_entries": 193,
+    "status_unchanged_since_start": false
+  },
+  {
+    "root": "/Users/zhudaoming/yss-valuation-outsourced/valuation-outsourced-frontend",
+    "status_sha256": "7fbb336b4b9c927e9259c9e86dad634066a241923e640e72dd1377a9ba35e9c8",
+    "status_entries": 106,
+    "status_unchanged_since_start": true
+  }
+]

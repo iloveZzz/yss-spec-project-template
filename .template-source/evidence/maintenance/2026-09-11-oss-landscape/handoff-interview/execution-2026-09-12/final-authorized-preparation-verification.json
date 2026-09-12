@@ -1,0 +1,97 @@
+{
+  "executed_at": "2026-09-11T17:26:40.691428+00:00",
+  "checks": [
+    {
+      "role": "backend",
+      "command": [
+        "git",
+        "diff",
+        "--quiet"
+      ],
+      "exit_code": 0
+    },
+    {
+      "role": "backend",
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--quiet"
+      ],
+      "exit_code": 0
+    },
+    {
+      "role": "frontend",
+      "command": [
+        "git",
+        "diff",
+        "--quiet"
+      ],
+      "exit_code": 0
+    },
+    {
+      "role": "frontend",
+      "command": [
+        "git",
+        "diff",
+        "--cached",
+        "--quiet"
+      ],
+      "exit_code": 0
+    },
+    {
+      "role": "backend",
+      "command": [
+        "node",
+        "scripts/verify-context-reconciliation",
+        "docs/.scratch/target-preview-pilot/context-reconciliation.json"
+      ],
+      "exit_code": 0,
+      "stdout": "Context reconciliation 验证通过"
+    },
+    {
+      "role": "frontend",
+      "command": [
+        "node",
+        "scripts/verify-context-reconciliation",
+        "docs/.scratch/target-preview-pilot/context-reconciliation.json"
+      ],
+      "exit_code": 0,
+      "stdout": "Context reconciliation 验证通过"
+    },
+    {
+      "role": "strategy",
+      "command": [
+        "node",
+        "scripts/verify-context-reconciliation",
+        "docs/.scratch/target-preview-pilot/context-reconciliation.json"
+      ],
+      "exit_code": 0,
+      "stdout": "Context reconciliation 验证通过"
+    },
+    {
+      "container": "yss-preview-0kxzmm-pg",
+      "status": "exited"
+    },
+    {
+      "container": "yss-preview-0kxzmm-redis",
+      "status": "exited"
+    },
+    {
+      "port": 61111,
+      "listening": false
+    },
+    {
+      "port": 61112,
+      "listening": false
+    },
+    {
+      "freeze_manifest_assets": 6,
+      "all_current": true,
+      "user_response_received": false
+    }
+  ],
+  "scoped_source_files_verified": 33,
+  "product_scenarios_executed": [],
+  "requested_goal_completed": false
+}

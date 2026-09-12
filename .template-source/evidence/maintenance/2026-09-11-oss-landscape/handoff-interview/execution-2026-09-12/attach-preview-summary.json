@@ -1,0 +1,43 @@
+[
+  {
+    "schemaVersion": 1,
+    "command": "attach",
+    "status": "error",
+    "target": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+    "cliVersion": "0.2.2",
+    "templateCommit": "aab3a709b96e4d8309e33bbf451156ae5abad05a",
+    "templateSourceState": "committed",
+    "coreSourceState": "committed",
+    "coreVersion": "0.1.2",
+    "conflicts": [
+      ".gitignore",
+      "README.md"
+    ],
+    "backupPath": null,
+    "code": "CONFLICT",
+    "message": "治理文件冲突，整次暂停；确认备份覆盖后使用 --apply --force: .gitignore, README.md",
+    "role": "backend",
+    "change_counts": {
+      "add": 3998,
+      "conflict": 2,
+      "preserve": 1
+    },
+    "conflict_changes": [
+      {
+        "path": ".gitignore",
+        "action": "conflict"
+      },
+      {
+        "path": "README.md",
+        "action": "conflict"
+      }
+    ]
+  },
+  {
+    "schemaVersion": 1,
+    "status": "error",
+    "code": "PATH",
+    "message": "路径不允许符号链接: .claude/skills/component-selection-imports/.git",
+    "role": "frontend"
+  }
+]

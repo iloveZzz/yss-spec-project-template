@@ -1,0 +1,15 @@
+{
+  "verified_at": "2026-09-11T17:41:29.796512+00:00",
+  "test_data_file": "test-data.json",
+  "test_data_digest": "sha256:ac19dbec9bfb2e280a5a4bbe060f92e36727bdd9b733438eff1914122010181d",
+  "query_registry_file": "fixed-queries.json",
+  "query_registry_sha256": "cf8e255f192a7b3f0b606d025e18d4f30ef9b280e3101cf231bd4e384f2efe1e",
+  "psql_jdbc_snapshots_equal": true,
+  "query_count": 18,
+  "selected_cases": [
+    "PILOT_PREVIEW",
+    "PILOT_EMPTY"
+  ],
+  "verification_exit_code": 0,
+  "original_baseline_modified": false
+}

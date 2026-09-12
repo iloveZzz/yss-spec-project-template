@@ -1,0 +1,78 @@
+{
+  "observed_at": "2026-09-11T16:56:31.207436+00:00",
+  "status": "prepared-for-governance-consumption",
+  "formal_product_contract": false,
+  "source_inputs": [
+    {
+      "path": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend/valuation-outsourced-starter/pom.xml",
+      "sha256": "01be5942e2ad2f9b3961a45429a96a9179ef9f16a694484e13c7fb8dc75c38c6"
+    },
+    {
+      "path": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend/valuation-outsourced-starter/src/main/java/com/yss/datamiddle/valuation/YssValuationOutsourcedApplication.java",
+      "sha256": "c6bb25ebaeb827db21bf68192dcf4f3cbf20a933ecb85a03a406dc3156508906"
+    }
+  ],
+  "backend_governance_root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance",
+  "backend_implementation_root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+  "source_commit_semantics": "base commit plus explicitly bound finite patch provenance; not full probe implementation commit",
+  "field_sources": {
+    "source_commit": "embedded provenance base commit plus separately verified patch/tree supporting file",
+    "openapi_digest": "SHA-256 packaged frozen OpenAPI raw bytes",
+    "artifact_digest": "SHA-256 actual launched final executable JAR, never embedded in same JAR",
+    "deployment_id": "unique per-launch manifest bound to running process",
+    "test_data_digest": "SHA-256 frozen data-description JSON, returned only after actual readback matches its snapshot"
+  },
+  "implementation_written": false,
+  "approved": false,
+  "verification_results": [
+    {
+      "command": "read project identity/AGENTS/CONTEXT and source POM/main entry",
+      "exit_code": 0,
+      "kind": "read-only"
+    },
+    {
+      "command": "verify Maven profile behavior against official Maven introduction to profiles",
+      "exit_code": 0,
+      "kind": "web-source-read",
+      "source": "https://maven.apache.org/guides/introduction/introduction-to-profiles"
+    }
+  ],
+  "result": {
+    "result_schema": "workflow-execution-result-v1",
+    "work_unit": "work-unit.entry-triage",
+    "workflow_reference": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md",
+    "result": "needs-human",
+    "context_reconciliation": {
+      "status": "not-applicable",
+      "ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md",
+      "reason": "template-source研究输入；正式产品词汇和合同由新治理实例承接"
+    },
+    "skill": "yss-research",
+    "changed_files": [
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/probe-preparation/proposal.md",
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/probe-preparation/result.json"
+    ],
+    "changed_artifacts": [
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/probe-preparation/proposal.md",
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/probe-preparation/result.json"
+    ],
+    "evidence_refs": [
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/probe-preparation/proposal.md"
+    ],
+    "deferred_seams": [],
+    "drift": [],
+    "violation": [],
+    "new_impacts": [],
+    "stale_candidates": [],
+    "blocking_signals": [
+      "missing_evidence"
+    ],
+    "next_route": null
+  },
+  "remaining_inputs": [
+    "current backend-governance Context reconciliation",
+    "frozen 3.1 API and approval",
+    "technical/slice contract with provenance semantics",
+    "isolated data/readback/environment parameters"
+  ]
+}

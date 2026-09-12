@@ -1,0 +1,79 @@
+{
+  "recorded_at": "2026-09-11T17:17:35.431005+00:00",
+  "containers": [
+    {
+      "container_id": "515aa017488a44ba856647c1db604035b7e86efb2bf2faa807fc49a6bcf92a2f",
+      "image_id": "sha256:65e8e7578613732cb07166ea4f1f0bd2096679f5217b5ac23de619077ed684e7",
+      "status": "running",
+      "started_at": "2026-09-11T17:03:49.987294669Z",
+      "ports": {
+        "5432/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": ""
+          }
+        ]
+      },
+      "mounts": [
+        {
+          "Destination": "/var/lib/postgresql/data",
+          "Driver": "local",
+          "Mode": "z",
+          "Name": "yss-preview-0kxzmm-pg-data",
+          "Propagation": "",
+          "RW": true,
+          "Source": "/var/lib/docker/volumes/yss-preview-0kxzmm-pg-data/_data",
+          "Type": "volume"
+        }
+      ],
+      "labels": {
+        "yss.trial": "target-preview-20260912-0kxzmm"
+      },
+      "name": "yss-preview-0kxzmm-pg"
+    },
+    {
+      "container_id": "f37b58db2599d418b7ed01482a4c7f43c31fa9c2e14c12d629fb841cf939cdf5",
+      "image_id": "sha256:2c96e8092504e99e7601bcb6f4954b4cfed77d5125c88061a49c252fb33cf6f7",
+      "status": "running",
+      "started_at": "2026-09-11T17:03:50.203250752Z",
+      "ports": {
+        "6379/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": ""
+          }
+        ]
+      },
+      "mounts": [
+        {
+          "Destination": "/data",
+          "Driver": "local",
+          "Mode": "z",
+          "Name": "yss-preview-0kxzmm-redis-data",
+          "Propagation": "",
+          "RW": true,
+          "Source": "/var/lib/docker/volumes/yss-preview-0kxzmm-redis-data/_data",
+          "Type": "volume"
+        }
+      ],
+      "labels": {
+        "yss.trial": "target-preview-20260912-0kxzmm"
+      },
+      "name": "yss-preview-0kxzmm-redis"
+    }
+  ],
+  "java": {
+    "pid": 34793,
+    "os_process_start": "Sat Sep 12 01:13:54 2026",
+    "process_check_exit_code": 0,
+    "launch_ref": "service-launch-08.json",
+    "artifact_sha256": "3aa6dd5626a4b4531a67cd33b25f8610479ce2ad418198424744ca734b97969c",
+    "base_url": "http://127.0.0.1:61111",
+    "config_sha256": "072510d43a5142c33ee8fa029f4c7164000c302c59a9b8216a3cab7a64337a14"
+  },
+  "data_manifest_ref": "test-data-manifest.json",
+  "schema_setup_ref": "database-setup.json",
+  "stop_script": "stop-trial.py",
+  "restart_script": "restart-original-java.py",
+  "cleanup_policy": "stop only verifies labels/process identity; volumes retained; no broad deletion"
+}

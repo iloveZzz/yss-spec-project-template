@@ -1,0 +1,29 @@
+{
+  "scope": "actual existing-project compilation prerequisite; no production edits",
+  "results": [
+    {
+      "command": [
+        "node",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/reproduce-existing-project-compiler.mjs",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance",
+        "backend.ddd-http-api"
+      ],
+      "executed_at": "2026-09-11T17:41:57.981759+00:00",
+      "exit_code": 1,
+      "log_ref": "compiler-backend.ddd-http-api.log",
+      "log_sha256": "sha256:a4c8a84e4f775bc9b69525821c4595c4215372f5060c01005c4729b09b5ac90d"
+    },
+    {
+      "command": [
+        "node",
+        "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/reproduce-existing-project-compiler.mjs",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance",
+        "backend.mvc-http-api"
+      ],
+      "executed_at": "2026-09-11T17:41:58.470179+00:00",
+      "exit_code": 1,
+      "log_ref": "compiler-backend.mvc-http-api.log",
+      "log_sha256": "sha256:01c289b235d63d1f9e6a0f1bff68e350c5674ddf65a58e8afe7c809c4aa6e410"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "docker-images",
+  "argv": [
+    "docker",
+    "--context",
+    "desktop-linux",
+    "image",
+    "ls",
+    "--format",
+    "{{.Repository}}:{{.Tag}} {{.ID}}"
+  ],
+  "cwd": "/tmp",
+  "exit_code": 0,
+  "elapsed_seconds": 0.11,
+  "log": "docker-images.log",
+  "redaction": "URL userinfo and credential assignments"
+}

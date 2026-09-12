@@ -1,0 +1,449 @@
+{
+  "schema": "workflow-execution-result-v1",
+  "task_id": "pilot-environment-authorized-preparation",
+  "contract": "pilot-environment@2",
+  "execution_state": "Explorer",
+  "repository_mode": "template-source",
+  "workflow_status": "completed-runtime-preparation",
+  "recorded_at": "2026-09-11T16:58:16.306472+00:00",
+  "result": "原版Java与专用PG/Redis运行；六个合成HTTP场景已实际验证，S0交付接收仍归主控判定",
+  "commands": [
+    {
+      "name": "backend-local-repository-path",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-o",
+        "-q",
+        "-N",
+        "help:evaluate",
+        "-Dexpression=settings.localRepository",
+        "-DforceStdout"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+      "exit_code": 0,
+      "elapsed_seconds": 0.88,
+      "log": "backend-local-repository-path.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "c6f250a38fbb2d747a07a7c71fc8bf430bc0ede83b8d677c330ffe1b38c6b805",
+      "log_modified_at": "2026-09-11T16:57:30.673292+00:00"
+    },
+    {
+      "name": "backend-offline-package",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-o",
+        "-pl",
+        "valuation-outsourced-starter",
+        "-am",
+        "-DskipTests",
+        "package"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+      "exit_code": 1,
+      "elapsed_seconds": 58.77,
+      "log": "backend-offline-package.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "b4fd1d42398954e884cc069e7703fab0cfeeb645ad8420e529baf659fade3fa8",
+      "log_modified_at": "2026-09-11T16:55:14.224241+00:00"
+    },
+    {
+      "name": "backend-online-package",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-pl",
+        "valuation-outsourced-starter",
+        "-am",
+        "-DskipTests",
+        "package"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+      "exit_code": 1,
+      "elapsed_seconds": 3.55,
+      "log": "backend-online-package.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "4d448816784dbf9f071b4e71424dbcc3a015d8780c6509fc317bfd4a75a97dc6",
+      "log_modified_at": "2026-09-11T16:55:46.047226+00:00"
+    },
+    {
+      "name": "backend-preview-tests",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-o",
+        "-pl",
+        "valset-standardizer-tools/file-sync",
+        "-am",
+        "-Dtest=FileSyncTargetPreviewControllerTest,SyncTargetDataPreviewAppServiceTest,JdbcSyncTargetDataPreviewAdapterTest",
+        "-Dsurefire.failIfNoSpecifiedTests=false",
+        "test"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+      "exit_code": 0,
+      "elapsed_seconds": 8.96,
+      "log": "backend-preview-tests.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "aeebc7e782641d538260336af02268fb4612a8a25f3d1fe8765df10381ae2c55",
+      "log_modified_at": "2026-09-11T16:56:16.993165+00:00"
+    },
+    {
+      "name": "backend-update-package",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-U",
+        "-pl",
+        "valuation-outsourced-starter",
+        "-am",
+        "-DskipTests",
+        "package"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+      "exit_code": 1,
+      "elapsed_seconds": 2.91,
+      "log": "backend-update-package.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "8b82d2e1f14dbaaaa191b328f54432f2a2ce97588e91a467320e8630c1586889",
+      "log_modified_at": "2026-09-11T16:56:10.934057+00:00"
+    },
+    {
+      "name": "docker-images",
+      "argv": [
+        "docker",
+        "--context",
+        "desktop-linux",
+        "image",
+        "ls",
+        "--format",
+        "{{.Repository}}:{{.Tag}} {{.ID}}"
+      ],
+      "cwd": "/tmp",
+      "exit_code": 0,
+      "elapsed_seconds": 0.11,
+      "log": "docker-images.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "66a24fbd5763dea8bb774d756e5e2e61b65af2e9bdd946d04f2872e8952a78f7",
+      "log_modified_at": "2026-09-11T16:54:15.569294+00:00"
+    },
+    {
+      "name": "docker-selected-images",
+      "argv": [
+        "docker",
+        "--context",
+        "desktop-linux",
+        "image",
+        "inspect",
+        "postgres:15",
+        "redis:7.0",
+        "--format",
+        "{{.Id}} {{.Architecture}} {{json .RepoDigests}}"
+      ],
+      "cwd": "/tmp",
+      "exit_code": 0,
+      "elapsed_seconds": 0.14,
+      "log": "docker-selected-images.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "bb80282630d6fb51ecc66b40fa1f0bf04fd1be9942adc4576c50d048b1b356db",
+      "log_modified_at": "2026-09-11T16:55:05.759336+00:00"
+    },
+    {
+      "name": "docker-server",
+      "argv": [
+        "docker",
+        "--context",
+        "desktop-linux",
+        "version",
+        "--format",
+        "{{.Server.Version}}"
+      ],
+      "cwd": "/tmp",
+      "exit_code": 0,
+      "elapsed_seconds": 0.1,
+      "log": "docker-server.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "192810742b73c1e5e7226e070cc85be0f626f41b8d36e39da78fe434e3d58ac3",
+      "log_modified_at": "2026-09-11T16:54:15.553760+00:00"
+    },
+    {
+      "name": "frontend-offline-install",
+      "argv": [
+        "pnpm",
+        "install",
+        "--offline",
+        "--frozen-lockfile",
+        "--ignore-scripts"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend",
+      "exit_code": 0,
+      "elapsed_seconds": 3.87,
+      "log": "frontend-offline-install.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "40e7574830e37fe50bb007aa91fcba3dc55fb0bbc2fb53a6d2676f7b078d888f",
+      "log_modified_at": "2026-09-11T16:54:19.329847+00:00"
+    },
+    {
+      "name": "frontend-packages-offline-install",
+      "argv": [
+        "pnpm",
+        "install",
+        "--offline",
+        "--frozen-lockfile",
+        "--ignore-scripts"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend/packages",
+      "exit_code": 0,
+      "elapsed_seconds": 3.64,
+      "log": "frontend-packages-offline-install.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "672ff5d036f8e5fc2921f1db6995e721edf2ec1e9b5109ff2abf1416802aa038",
+      "log_modified_at": "2026-09-11T16:54:48.832577+00:00"
+    },
+    {
+      "name": "frontend-preview-api-tests",
+      "argv": [
+        "pnpm",
+        "test",
+        "--",
+        "packages/src/views/FileSyncWorkbench/fileSyncWorkbenchApi.spec.ts"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend",
+      "exit_code": 1,
+      "elapsed_seconds": 6.66,
+      "log": "frontend-preview-api-tests.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "e08d77a2e0cc0fcc04a9e2ea78e0abbb567c3e6463efd3c8fb42c3f8a1687376",
+      "log_modified_at": "2026-09-11T16:55:12.275827+00:00"
+    },
+    {
+      "name": "frontend-preview-modal-tests",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "packages/src/views/FileSyncWorkbench/components/TargetDataPreviewModal.spec.ts"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend",
+      "exit_code": 0,
+      "elapsed_seconds": 0.69,
+      "log": "frontend-preview-modal-tests.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "8a9f890316670522f89eb29e1bad80d8759420345691b530735de9146f1f09b2",
+      "log_modified_at": "2026-09-11T16:56:08.720699+00:00"
+    },
+    {
+      "name": "frontend-standalone-build",
+      "argv": [
+        "pnpm",
+        "build:standalone"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend",
+      "exit_code": 0,
+      "elapsed_seconds": 35.05,
+      "log": "frontend-standalone-build.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "236cea2b8a75a0e309193893193c7cd99872b273e34a0b778a32675143a7e24b",
+      "log_modified_at": "2026-09-11T16:55:40.667205+00:00"
+    },
+    {
+      "name": "frontend-targeted-api-tests",
+      "argv": [
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "packages/src/views/FileSyncWorkbench/fileSyncWorkbenchApi.spec.ts"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend",
+      "exit_code": 0,
+      "elapsed_seconds": 1.3,
+      "log": "frontend-targeted-api-tests.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "bc181b39e29e53f142d5aefeab895a65ca9238acc0422c0c20a1bbd7330e99dd",
+      "log_modified_at": "2026-09-11T16:55:43.805045+00:00"
+    },
+    {
+      "name": "backend-exact-timestamp-package",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-o",
+        "-Dmaven.repo.local=/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/maven-repository",
+        "-pl",
+        "valuation-outsourced-starter",
+        "-am",
+        "-DskipTests",
+        "package"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+      "exit_code": 0,
+      "elapsed_seconds": 11.25,
+      "log": "backend-exact-timestamp-package.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "f379d750e1255d622ec6eabd1588c5c550bdaf98b8804badd8c8cffab78100ab",
+      "log_modified_at": "2026-09-11T17:00:19.447796+00:00"
+    },
+    {
+      "name": "backend-isolated-repository-package",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-o",
+        "-Dmaven.repo.local=/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/maven-repository",
+        "-pl",
+        "valuation-outsourced-starter",
+        "-am",
+        "-DskipTests",
+        "package"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+      "exit_code": 1,
+      "elapsed_seconds": 3.31,
+      "log": "backend-isolated-repository-package.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "0a1a5c0b63a2b8c5821ccca276312e678d77cbe13fce07900b626021355eb8f1",
+      "log_modified_at": "2026-09-11T16:59:46.654902+00:00"
+    },
+    {
+      "name": "isolated-exact-artifact-install",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-o",
+        "-N",
+        "-Dmaven.repo.local=/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/maven-repository",
+        "org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file",
+        "-Dfile=/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/maven-repository/com/yss/cloud/yss-component-text-search-core/2.0.0-SNAPSHOT/yss-component-text-search-core-2.0.0-20260317.052440-5.jar",
+        "-DpomFile=/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/maven-repository/com/yss/cloud/yss-component-text-search-core/2.0.0-SNAPSHOT/yss-component-text-search-core-2.0.0-20260317.052440-5.pom",
+        "-DgroupId=com.yss.cloud",
+        "-DartifactId=yss-component-text-search-core",
+        "-Dversion=2.0.0-20260317.052440-5",
+        "-Dpackaging=jar",
+        "-DgeneratePom=false"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+      "exit_code": 1,
+      "elapsed_seconds": 0.77,
+      "log": "isolated-exact-artifact-install.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "a511984e31eb4346b0fb674aa0732fc72033a63c8004e70d68602fbeed20ab34",
+      "log_modified_at": "2026-09-11T16:59:28.292299+00:00"
+    },
+    {
+      "name": "isolated-exact-artifact-register",
+      "argv": [
+        "./mvnw",
+        "-B",
+        "-o",
+        "-N",
+        "-Dmaven.repo.local=/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/maven-repository",
+        "org.apache.maven.plugins:maven-install-plugin:2.5.2:install-file",
+        "-Dfile=/Users/zhudaoming/.m2/repository/com/yss/cloud/yss-component-text-search-core/2.0.0-SNAPSHOT/yss-component-text-search-core-2.0.0-20260317.052440-5.jar",
+        "-DpomFile=/Users/zhudaoming/.m2/repository/com/yss/cloud/yss-component-text-search-core/2.0.0-SNAPSHOT/yss-component-text-search-core-2.0.0-20260317.052440-5.pom",
+        "-DgroupId=com.yss.cloud",
+        "-DartifactId=yss-component-text-search-core",
+        "-Dversion=2.0.0-20260317.052440-5",
+        "-Dpackaging=jar",
+        "-DgeneratePom=false"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+      "exit_code": 0,
+      "elapsed_seconds": 0.71,
+      "log": "isolated-exact-artifact-register.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "a8c57c955d0d275fad1491a3a76f1573ce1af1688604b30caf0ac58fb598405f",
+      "log_modified_at": "2026-09-11T16:59:43.348758+00:00"
+    },
+    {
+      "name": "isolated-maven-cache-clone",
+      "argv": [
+        "cp",
+        "-cR",
+        "/Users/zhudaoming/.m2/repository",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/maven-repository"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm",
+      "exit_code": 0,
+      "elapsed_seconds": 31.1,
+      "log": "isolated-maven-cache-clone.log",
+      "redaction": "URL userinfo and credential assignments",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "log_modified_at": "2026-09-11T16:59:13.240954+00:00"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "starter-private-dependency-resolution",
+      "coordinate": "com.yss.cloud:yss-component-text-search-core:2.0.0-20260317.052440-5",
+      "failed_module": "valuatioin-outsourced-subjectmap",
+      "attempts": [
+        "offline",
+        "online",
+        "online-U"
+      ],
+      "observed_local_exact_jar": true,
+      "jar_sha256": "cf9b033e80cde2927782c3aae98fe327c3cc7dd01b313ba5664fcc63b1be3b39",
+      "cause_status": "exact JAR and POM exist in active local repository; resolution cause not established; do not call artifact absent",
+      "resolution": "resolved in isolated Maven tracking metadata, exact original artifact/POM bytes retained"
+    }
+  ],
+  "passed": {
+    "java_targeted_tests": 7,
+    "frontend_api_tests": 8,
+    "frontend_modal_source_assertions": 3,
+    "frontend_standalone_build": true,
+    "docker_server": "29.6.2",
+    "postgres_and_redis_images_present": true,
+    "backend_starter_package": true,
+    "actual_preview_http_requests": 6,
+    "actual_current_rows": 1,
+    "actual_all_rows": 2,
+    "actual_empty_rows": 0
+  },
+  "limitations": [
+    "API实库HTTP已执行，但未由本任务执行Vue浏览器和交付包S0–S6/O1",
+    "完整starter仍有无关后台t_etl_workflow_instance/t_transfer_object缺表日志与重复mapper ERROR；不是全业务健康证明",
+    "首次pnpm test -- filter未生效，扩大suite失败保留；精确11项前端测试通过",
+    "Java目标7项单元测试与实库HTTP是不同证据",
+    "Docker PG/Redis、Java均为本轮专用资源，仍运行供主控继续；停止/清理须只按本轮资源标签/PID",
+    "共享Maven缓存未修写；独立CoW缓存仅对精确同字节构件登记本地来源"
+  ],
+  "next_action": "主控消费实际wire证据完成R2审阅、R3身份探针、真实Vue采证与交付包试验；本任务不批准或宣称S0通过",
+  "context_reconciliation": {
+    "status": "not-applicable",
+    "reason": "template-source维护查证；不创建产品词汇"
+  },
+  "ready_for_agent": false,
+  "git_checkpoint": "not performed",
+  "evidence_files": [
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/runtime-preparation/result.json",
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/runtime-preparation/report.md",
+    "preview-http-observations-02.json",
+    "test-data-manifest.json",
+    "http-validation.json",
+    "local-services.json",
+    "source-integrity-final.json"
+  ],
+  "verification": {
+    "command": "python3 -m json.tool .template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/runtime-preparation/result.json",
+    "exit_code": 0
+  },
+  "running_service": {
+    "pid": 34793,
+    "port": 61111,
+    "launch_ref": "service-launch-08.json",
+    "config_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/runtime-private/pilot-application.yml",
+    "config_sha256": "072510d43a5142c33ee8fa029f4c7164000c302c59a9b8216a3cab7a64337a14",
+    "raw_logs_private": true
+  },
+  "actual_http_ref": "preview-http-observations-02.json",
+  "test_data_ref": "test-data-manifest.json",
+  "runtime_manifest_ref": "runtime-manifest.json",
+  "safety_scripts": [
+    "stop-trial.py",
+    "restart-original-java.py"
+  ],
+  "command_timestamps_note": "early runner commands recorded elapsed time, not wall start; log filesystem mtime below is observation metadata, not invented actual start"
+}

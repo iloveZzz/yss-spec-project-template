@@ -1,0 +1,6 @@
+{
+  "source": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend/db/local-compose/postgresql/yss_datamiddle_valset_standardizer_3.0.0_postgresql_ddl.sql",
+  "exit_code": 0,
+  "stdout": "CREATE TABLE\n",
+  "stderr": ""
+}

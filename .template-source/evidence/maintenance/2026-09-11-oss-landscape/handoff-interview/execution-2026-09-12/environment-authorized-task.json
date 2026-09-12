@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "task_id": "pilot-environment-authorized-preparation",
+  "work_unit_id": "work-unit.entry-triage",
+  "actor_id": "pilot-environment-explorer",
+  "role_id": "role.product-manager",
+  "runtime_id": "runtime.skill-projection",
+  "execution_state": "Explorer",
+  "workflow_status": "active",
+  "skill_source": {
+    "registry_ref": "docs/agents/digital-human-roles.yaml",
+    "defaults_ref": "taskPackageDefaults(role.product-manager)",
+    "core_skills": [
+      "yss-design-system",
+      "yss-prototype-stage",
+      "prototype-review",
+      "yss-antdv-next-design",
+      "yss-research",
+      "competitive-intelligence"
+    ],
+    "forbidden_skills": [
+      "yss-ui",
+      "yss-domain",
+      "yss-repository",
+      "yss-web-controller",
+      "yss-ddd-scaffold-generator",
+      "yss-layered-mvc-scaffold-generator",
+      "implement",
+      "tdd"
+    ]
+  },
+  "contract": {
+    "kind": "template-maintenance",
+    "contract_id": "pilot-environment",
+    "contract_version": 2,
+    "status": "issued",
+    "contract_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md",
+    "maintenance_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/triage-checkpoint.json"
+  },
+  "inputs": [
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md",
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/trial-agreement.md",
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/discovery.md",
+    "CONTEXT.md",
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/preparation-decision.md",
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/preparation-authorization.json"
+  ],
+  "objective": "用户已授权 R1–R3。实际验证隔离源码 baseline 构建、依赖和本地 Docker daemon，建立可运行性证据。允许 ./mvnw 和 pnpm 安装/测试/构建，在隔离副本产生 target/node_modules 等生成输出；可准备独立本地 Docker Postgres/Redis 与合成数据，先核实 local Unix socket。禁止改业务源码、绕过批准、连接共享数据库或生产服务。优先尽快定位真实构建阻塞；不得打印 settings/凭证。 工作包的 allowed_write_paths 限定受管证据写入；外部隔离工程仅运行已授权构建命令生成未跟踪构建产物，不编辑任何受控源码或锁文件。",
+  "allowed_write_paths": [
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/runtime-preparation"
+  ],
+  "forbidden_actions": [
+    "修改范围外文件",
+    "Git 提交推送发布",
+    "批准生命周期或需求",
+    "把未验证宣传当成事实"
+  ],
+  "expected_outputs": [
+    "候选与实际源码/证据位置、缺口、验证命令；workflow-execution-result-v1"
+  ],
+  "expected_evidence_files": [
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/runtime-preparation/result.json"
+  ],
+  "verification_commands": [
+    "python3 -m json.tool .template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/runtime-preparation/result.json"
+  ],
+  "verification_results": [],
+  "downstream_consumers": [
+    "yss-research",
+    "yss-product-lifecycle"
+  ],
+  "convergence": {
+    "parent_work_unit": "work-unit.entry-triage",
+    "convergence_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md",
+    "conflict_escalation": "主控核实后综合；不能自行消除相反证据"
+  }
+}

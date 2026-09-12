@@ -1,0 +1,15 @@
+{
+  "name": "frontend-offline-install",
+  "argv": [
+    "pnpm",
+    "install",
+    "--offline",
+    "--frozen-lockfile",
+    "--ignore-scripts"
+  ],
+  "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend",
+  "exit_code": 0,
+  "elapsed_seconds": 3.87,
+  "log": "frontend-offline-install.log",
+  "redaction": "URL userinfo and credential assignments"
+}

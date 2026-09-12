@@ -1,0 +1,6 @@
+{
+  "checked_at": "2026-09-11T17:16:30.004412+00:00",
+  "source": "preview-http-observations-02.json",
+  "checks": "six actual HTTP status/body shapes; CURRENT1 ALL2 empty0; distinct invalid scope error envelope",
+  "exit_code": 0
+}

@@ -1,0 +1,56 @@
+{
+  "status": "passed-scoped-browser-baseline",
+  "executed_at": "2026-09-11T17:22:07.487Z",
+  "browser": "153.0.8010.12",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "actual_command": "node browser-preparation/preview-interactions.mjs preview-interactions-04",
+  "actual_exit_code": 0,
+  "preview_http_200": 5,
+  "row_counts_in_request_order": [
+    1,
+    2,
+    2,
+    0,
+    1
+  ],
+  "scenarios": [
+    "open-current",
+    "switch-all",
+    "refresh-all",
+    "empty",
+    "reopen-current"
+  ],
+  "source_commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+  "console_warnings": [],
+  "console_errors": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+    }
+  ],
+  "external_block_reason": "Only external template Admin avatar blocked by isolated browser routing; not an API or product runtime failure",
+  "failed_attempts": [
+    {
+      "ref": "../preview-interactions-01/evidence.json",
+      "reason": "locator case-insensitive substring also matched pilot_preview_empty target table; replaced with exact task-code line, no UI change"
+    },
+    {
+      "ref": "../preview-interactions-02/evidence.json",
+      "reason": "refresh tooltip intercepted close; moved pointer outside naturally and waited tooltip hidden; no force click or DOM mutation"
+    }
+  ],
+  "visual_checks": {
+    "all": "2 rows and ALL selection visible",
+    "empty": "0 rows and empty state visible",
+    "screenshots": "animations completed by screenshot animations=disabled; original intermediate capture retained"
+  },
+  "evidence_sha256": "sha256:a0c24074abc173fcf76f3cee7d66d3796c21d3bf24152a3e29a91b47db42d093",
+  "limitations": [
+    "Not cross-repo acceptance S0",
+    "No product code changed",
+    "No claim of complete UI test coverage or whole-app health"
+  ]
+}

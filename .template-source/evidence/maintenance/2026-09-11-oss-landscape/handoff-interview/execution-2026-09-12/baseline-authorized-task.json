@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "task_id": "pilot-baseline-authorized-preparation",
+  "work_unit_id": "work-unit.entry-triage",
+  "actor_id": "pilot-baseline-explorer",
+  "role_id": "role.product-manager",
+  "runtime_id": "runtime.skill-projection",
+  "execution_state": "Explorer",
+  "workflow_status": "active",
+  "skill_source": {
+    "registry_ref": "docs/agents/digital-human-roles.yaml",
+    "defaults_ref": "taskPackageDefaults(role.product-manager)",
+    "core_skills": [
+      "yss-design-system",
+      "yss-prototype-stage",
+      "prototype-review",
+      "yss-antdv-next-design",
+      "yss-research",
+      "competitive-intelligence"
+    ],
+    "forbidden_skills": [
+      "yss-ui",
+      "yss-domain",
+      "yss-repository",
+      "yss-web-controller",
+      "yss-ddd-scaffold-generator",
+      "yss-layered-mvc-scaffold-generator",
+      "implement",
+      "tdd"
+    ]
+  },
+  "contract": {
+    "kind": "template-maintenance",
+    "contract_id": "pilot-baseline",
+    "contract_version": 2,
+    "status": "issued",
+    "contract_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md",
+    "maintenance_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/triage-checkpoint.json"
+  },
+  "inputs": [
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md",
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/trial-agreement.md",
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/discovery.md",
+    "CONTEXT.md",
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/preparation-decision.md",
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/preparation-authorization.json"
+  ],
+  "objective": "用户已授权 R1–R3。读取新建 backend-governance 入口与 Context，核查并起草 R3 部署身份探针的当前可审阅实现方案/最小合同输入（不批准、不写源码），包括真实 Maven 布局、打包/运行身份来源、必要测试、五字段每项可证实的获取方式、source_commit 与未提交补丁的消费者语义限制。只准备当前资产并返回确切阻塞。",
+  "allowed_write_paths": [
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/probe-preparation"
+  ],
+  "forbidden_actions": [
+    "修改范围外文件",
+    "Git 提交推送发布",
+    "批准生命周期或需求",
+    "把未验证宣传当成事实"
+  ],
+  "expected_outputs": [
+    "候选与实际源码/证据位置、缺口、验证命令；workflow-execution-result-v1"
+  ],
+  "expected_evidence_files": [
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/probe-preparation/result.json"
+  ],
+  "verification_commands": [
+    "python3 -m json.tool .template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/probe-preparation/result.json"
+  ],
+  "verification_results": [],
+  "downstream_consumers": [
+    "yss-research",
+    "yss-product-lifecycle"
+  ],
+  "convergence": {
+    "parent_work_unit": "work-unit.entry-triage",
+    "convergence_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md",
+    "conflict_escalation": "主控核实后综合；不能自行消除相反证据"
+  }
+}

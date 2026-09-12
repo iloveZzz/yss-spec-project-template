@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "contract": "workflow-execution-result-v1",
+  "work_unit": "work-unit.technical-design",
+  "workflow_reference": "docs/process/lifecycle-registry.yaml",
+  "result": "blocked",
+  "skill": "yss-technical-design + yss-implementation-contract-compiler",
+  "task_id": "pilot-r3-contract-compilation",
+  "actor_id": "pilot-r3-architecture-drafter",
+  "role_id": "role.architecture-agent",
+  "runtime_id": "runtime.skill-projection",
+  "execution_state": "Drafter",
+  "changed_files": [
+    "docs/.scratch/target-preview-pilot/architecture/r3/README.md",
+    "docs/.scratch/target-preview-pilot/architecture/r3/compile-probe.mjs",
+    "docs/.scratch/target-preview-pilot/architecture/r3/compiler-entry-import-attempt-01.stderr.log",
+    "docs/.scratch/target-preview-pilot/architecture/r3/compiler-entry-import-attempt-01.stdout.log",
+    "docs/.scratch/target-preview-pilot/architecture/r3/compiler.stderr.log",
+    "docs/.scratch/target-preview-pilot/architecture/r3/compiler.stdout.log",
+    "docs/.scratch/target-preview-pilot/architecture/r3/task-package.stderr.log",
+    "docs/.scratch/target-preview-pilot/architecture/r3/task-package.stdout.log",
+    "docs/.scratch/target-preview-pilot/architecture/r3/technical-design-preparation.json",
+    "docs/.scratch/target-preview-pilot/architecture/r3/verification-results.json",
+    "docs/.scratch/target-preview-pilot/contracts/compiler-input.json",
+    "docs/.scratch/target-preview-pilot/contracts/slice-contract-draft.json",
+    "docs/.scratch/target-preview-pilot/architecture/implementation-compilation-readiness.json",
+    "docs/.scratch/target-preview-pilot/architecture/r3/compilation-result.json"
+  ],
+  "changed_artifacts": [
+    "R3技术设计准备材料",
+    "四分区未编译Slice草案",
+    "真实编译失败记录"
+  ],
+  "evidence_refs": [
+    "docs/.scratch/target-preview-pilot/architecture/r3/README.md",
+    "docs/.scratch/target-preview-pilot/architecture/r3/verification-results.json",
+    "docs/.scratch/target-preview-pilot/architecture/r3/compiler.stderr.log"
+  ],
+  "verification_results": [
+    {
+      "name": "task-package",
+      "argv": [
+        "node",
+        "scripts/verify-digital-human-task-package",
+        "docs/.scratch/target-preview-pilot/architecture/r3-contract-task.json"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance",
+      "exit_code": 0,
+      "duration_ms": 855,
+      "executed_at": "2026-09-11T17:40:30.183831+00:00",
+      "stdout_ref": "docs/.scratch/target-preview-pilot/architecture/r3/task-package.stdout.log",
+      "stderr_ref": "docs/.scratch/target-preview-pilot/architecture/r3/task-package.stderr.log"
+    },
+    {
+      "name": "compiler-entry-import-attempt-01",
+      "argv": [
+        "node",
+        "docs/.scratch/target-preview-pilot/architecture/r3/compile-probe.mjs"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance",
+      "exit_code": 1,
+      "duration_ms": 29,
+      "executed_at": "2026-09-11T17:40:30.213360+00:00",
+      "stdout_ref": "docs/.scratch/target-preview-pilot/architecture/r3/compiler-entry-import-attempt-01.stdout.log",
+      "stderr_ref": "docs/.scratch/target-preview-pilot/architecture/r3/compiler-entry-import-attempt-01.stderr.log"
+    },
+    {
+      "name": "compiler",
+      "argv": [
+        "node",
+        "docs/.scratch/target-preview-pilot/architecture/r3/compile-probe.mjs"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance",
+      "exit_code": 1,
+      "duration_ms": 459,
+      "executed_at": "2026-09-11T17:40:45.760568+00:00",
+      "stdout_ref": "docs/.scratch/target-preview-pilot/architecture/r3/compiler.stdout.log",
+      "stderr_ref": "docs/.scratch/target-preview-pilot/architecture/r3/compiler.stderr.log"
+    }
+  ],
+  "deferred_seams": [],
+  "drift": [],
+  "violation": [],
+  "new_impacts": [],
+  "stale_candidates": [],
+  "blocking_signals": [
+    "existing-architecture-identity-not-registered",
+    "engineering-baseline-and-manifest-architecture-evidence-missing",
+    "technical-design-not-approved",
+    "slice-contract-independent-countersignatures-missing"
+  ],
+  "next_route": "harness-orchestrator：本轮基线未就绪；不进入实现；独立身份入口复核由主控汇合。",
+  "limitations": [
+    "没有正式Technical Design v2与compiler resolution，不声称schema验证通过",
+    "未实现探针或运行R3测试",
+    "原API Freeze与原版运行证据保留有效",
+    "本轮不修机制、不改业务、不造架构身份"
+  ],
+  "current_input_hashes": [
+    {
+      "kind": "context",
+      "ref": "CONTEXT.md",
+      "digest": "sha256:a1567ba14628bd72f54c555f0e1bc2ce42114e66c685412b3581a9f06bdba746"
+    },
+    {
+      "kind": "spec",
+      "ref": "docs/.scratch/target-preview-pilot/architecture/target-preview-existing-behavior-calibration.md",
+      "digest": "sha256:fc7e8bc3e00a291b0e524d654824dc263c0a64d340a3c911d0de5225e329de41"
+    },
+    {
+      "kind": "api",
+      "ref": "docs/.scratch/target-preview-pilot/api/target-preview-pilot.yaml",
+      "digest": "sha256:8d696f69a62bee50545d418a458f848941e4e84647fea465b524779c8708259b"
+    },
+    {
+      "kind": "engineering",
+      "ref": "docs/.scratch/target-preview-pilot/architecture/delivery-identity-design-input.md",
+      "digest": "sha256:283576c585bdfc8398dd6c42db5dca3f8ce4b08f088d214d0fd4c49a2d3eab94"
+    },
+    {
+      "kind": "engineering",
+      "ref": "docs/.scratch/target-preview-pilot/architecture/repository-registration.json",
+      "digest": "sha256:64f5b7f47bad47e1569bfcfe42b5cb80498524e7708a9763e944289bd95b9d07"
+    }
+  ],
+  "recorded_at": "2026-09-11T17:41:54.055287+00:00"
+}

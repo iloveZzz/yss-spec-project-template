@@ -1,0 +1,5 @@
+{
+  "exit_code": 65,
+  "stdout": "",
+  "stderr": "sandbox-exec: invalid argument \"/private/var/run/mDNSResponder\"\n\nBacktrace: \n/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/runtime-private/local-only.sb:7:26:\n\t(remote unix-socket \"/private/var/run/mDNSResponder\")\n\n"
+}

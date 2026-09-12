@@ -1,0 +1,158 @@
+{
+  "recorded_at": "2026-09-11T16:38:33.928647+00:00",
+  "checks": [
+    {
+      "check": "initial combined completion check",
+      "exit_code": 1,
+      "reason": "原后端 Git 状态192条变为193条，首次 source status unchanged 断言失败；后续分项检查确认隔离副本33文件摘要一致，原仓并发变化未纳入基线"
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+      "executed_at": "2026-09-11T16:38:33.065395+00:00",
+      "exit_code": 0,
+      "stdout": "714fd4223d202b29c410d4d5533913e44874b3f1\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "-uall"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+      "executed_at": "2026-09-11T16:38:33.173999+00:00",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend",
+      "executed_at": "2026-09-11T16:38:33.211445+00:00",
+      "exit_code": 0,
+      "stdout": "76f2d1627f797d5b12a99c48cf49125544933b18\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--porcelain=v1",
+        "-uall"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend",
+      "executed_at": "2026-09-11T16:38:33.261024+00:00",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "check": "isolated committed baseline file digests",
+      "file_count": 33,
+      "result": "pass"
+    },
+    {
+      "command": [
+        "node",
+        "-e",
+        "JSON.parse(require('fs').readFileSync('.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/baseline.json','utf8'))"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "executed_at": "2026-09-11T16:38:33.294500+00:00",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "scripts/verify-digital-human-task-package",
+        ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/baseline-task.json"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "executed_at": "2026-09-11T16:38:33.472704+00:00",
+      "exit_code": 0,
+      "stdout": "数字人任务包验证通过\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "-e",
+        "JSON.parse(require('fs').readFileSync('.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/environment.json','utf8'))"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "executed_at": "2026-09-11T16:38:33.496037+00:00",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "scripts/verify-digital-human-task-package",
+        ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/environment-task.json"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "executed_at": "2026-09-11T16:38:33.634379+00:00",
+      "exit_code": 0,
+      "stdout": "数字人任务包验证通过\n",
+      "stderr": ""
+    },
+    {
+      "check": "source worktree status comparison",
+      "results": [
+        {
+          "root": "/Users/zhudaoming/yss-valuation-outsourced",
+          "status_sha256": "2f712d49fb96a3e54f6478fce2d753a6f7c93c2f7f9fbae98fca045a095ebcc1",
+          "status_entries": 193,
+          "status_unchanged_since_start": false
+        },
+        {
+          "root": "/Users/zhudaoming/yss-valuation-outsourced/valuation-outsourced-frontend",
+          "status_sha256": "7fbb336b4b9c927e9259c9e86dad634066a241923e640e72dd1377a9ba35e9c8",
+          "status_entries": 106,
+          "status_unchanged_since_start": true
+        }
+      ]
+    },
+    {
+      "command": [
+        "scripts/verify-frontend-delivery-scenarios"
+      ],
+      "exit_code": 0,
+      "tests": 9,
+      "pass": 9,
+      "fail": 0,
+      "evidence_ref": "template-delivery-baseline.log",
+      "scope": "synthetic template regression, not product pilot"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template",
+      "executed_at": "2026-09-11T16:38:33.926933+00:00",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "check": "execution Markdown local file links",
+      "result": "pass",
+      "broken": []
+    }
+  ],
+  "requested_goal_completed": false,
+  "product_scenarios_executed": false
+}

@@ -1,0 +1,25 @@
+{
+  "started_at": "2026-09-11T17:16:17.650Z",
+  "browser_version": "153.0.8010.12",
+  "console": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+    }
+  ],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:61112/api/quality-v3/file-sync/workbench/tasks?current=1&pageSize=20",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"success\":true,\"dataType\":null,\"code\":\"DM-A0001\",\"message\":\"数据返回正常\",\"tips\":\"信息返回正常\",\"data\":{\"items\":[{\"taskId\":2,\"taskCode\":\"PILOT_EMPTY\",\"taskName\":\"synthetic preview\",\"lifecycleStatus\":\"DRAFT\",\"sourceLocation\":\"pilot-inbox\",\"sourceFormat\":\"CSV\",\"targetDataSource\":\"target\",\"targetTable\":\"public.pilot_preview_empty\",\"ownerId\":\"pilot\",\"latestExecutionId\":null,\"latestExecutionState\":null,\"latestExecutionAt\":null,\"modifiedAt\":\"2026-09-11T17:05:26.802929\",\"configurationBlockers\":[]},{\"taskId\":1,\"taskCode\":\"PILOT_PREVIEW\",\"taskName\":\"synthetic preview\",\"lifecycleStatus\":\"DRAFT\",\"sourceLocation\":\"pilot-inbox\",\"sourceFormat\":\"CSV\",\"targetDataSource\":\"target\",\"targetTable\":\"public.pilot_preview_rows\",\"ownerId\":\"pilot\",\"latestExecutionId\":null,\"latestExecutionState\":null,\"latestExecutionAt\":null,\"modifiedAt\":\"2026-09-11T17:05:26.800077\",\"configurationBlockers\":[]}],\"current\":1,\"pageSize\":20,\"total\":2,\"hasNext\":false,\"summary\":{\"taskCount\":2,\"runningCount\":0,\"failedPendingCount\":0,\"pendingValidationCount\":2,\"processedFileCountToday\":0}}}"
+    }
+  ],
+  "external_requests_blocked": [
+    "https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png"
+  ],
+  "error": "Error: locator.click: Error: strict mode violation: getByRole('row').filter({ hasText: 'PILOT_PREVIEW' }).getByRole('button', { name: '预览', exact: true }) resolved to 2 elements:\n    1) <button title=\"预览\" type=\"button\" data-v-376ded2b=\"\" data-v-9f272299=\"\" class=\"css-irqtjt ant-btn ant-btn-link ant-btn-sm y-table-action-link\">…</button> aka getByRole('button', { name: '预览' }).first()\n    2) <button title=\"预览\" type=\"button\" data-v-376ded2b=\"\" data-v-9f272299=\"\" class=\"css-irqtjt ant-btn ant-btn-link ant-btn-sm y-table-action-link\">…</button> aka getByRole('button', { name: '预览' }).nth(1)\n\nCall log:\n\u001b[2m  - waiting for getByRole('row').filter({ hasText: 'PILOT_PREVIEW' }).getByRole('button', { name: '预览', exact: true })\u001b[22m\n",
+  "status": "failed",
+  "snapshots": []
+}

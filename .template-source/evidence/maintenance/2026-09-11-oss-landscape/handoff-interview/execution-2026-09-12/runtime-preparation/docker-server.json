@@ -1,0 +1,16 @@
+{
+  "name": "docker-server",
+  "argv": [
+    "docker",
+    "--context",
+    "desktop-linux",
+    "version",
+    "--format",
+    "{{.Server.Version}}"
+  ],
+  "cwd": "/tmp",
+  "exit_code": 0,
+  "elapsed_seconds": 0.1,
+  "log": "docker-server.log",
+  "redaction": "URL userinfo and credential assignments"
+}

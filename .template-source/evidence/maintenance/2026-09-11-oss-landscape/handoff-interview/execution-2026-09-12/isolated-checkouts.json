@@ -1,0 +1,159 @@
+{
+  "created_at": "2026-09-11T16:30:33.877309+00:00",
+  "isolation_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm",
+  "purpose": "已提交源码隔离副本；未接入、未构建、无产品就绪结论",
+  "repositories": [
+    {
+      "role": "backend",
+      "source_root": "/Users/zhudaoming/yss-valuation-outsourced",
+      "checkout_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+      "commit": "714fd4223d202b29c410d4d5533913e44874b3f1",
+      "branch": "codex/target-preview-pilot",
+      "clean": true,
+      "product_identity_present": false,
+      "source_worktree_copied": false,
+      "source_git_mutated": false,
+      "physical_checkout_root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend"
+    },
+    {
+      "role": "frontend",
+      "source_root": "/Users/zhudaoming/yss-valuation-outsourced/valuation-outsourced-frontend",
+      "checkout_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend",
+      "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+      "branch": "codex/target-preview-pilot",
+      "clean": true,
+      "product_identity_present": false,
+      "source_worktree_copied": false,
+      "source_git_mutated": false,
+      "physical_checkout_root": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "clone",
+        "--no-hardlinks",
+        "--no-checkout",
+        "--no-recurse-submodules",
+        "/Users/zhudaoming/yss-valuation-outsourced",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend"
+      ],
+      "exit_code": 0,
+      "duration_ms": 1027,
+      "stdout": "",
+      "stderr": "Cloning into '/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend'...\ndone.\n"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "filter.lfs.smudge=",
+        "-c",
+        "filter.lfs.required=false",
+        "checkout",
+        "-b",
+        "codex/target-preview-pilot",
+        "714fd4223d202b29c410d4d5533913e44874b3f1"
+      ],
+      "exit_code": 0,
+      "duration_ms": 483,
+      "stdout": "",
+      "stderr": "Switched to a new branch 'codex/target-preview-pilot'\n"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "duration_ms": 12,
+      "stdout": "714fd4223d202b29c410d4d5533913e44874b3f1\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+        "status",
+        "--porcelain=v1",
+        "-uall"
+      ],
+      "exit_code": 0,
+      "duration_ms": 131,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "clone",
+        "--no-hardlinks",
+        "--no-checkout",
+        "--no-recurse-submodules",
+        "/Users/zhudaoming/yss-valuation-outsourced/valuation-outsourced-frontend",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend"
+      ],
+      "exit_code": 0,
+      "duration_ms": 537,
+      "stdout": "",
+      "stderr": "Cloning into '/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend'...\ndone.\n"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "filter.lfs.smudge=",
+        "-c",
+        "filter.lfs.required=false",
+        "checkout",
+        "-b",
+        "codex/target-preview-pilot",
+        "76f2d1627f797d5b12a99c48cf49125544933b18"
+      ],
+      "exit_code": 0,
+      "duration_ms": 286,
+      "stdout": "",
+      "stderr": "Switched to a new branch 'codex/target-preview-pilot'\n"
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "duration_ms": 11,
+      "stdout": "76f2d1627f797d5b12a99c48cf49125544933b18\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "-C",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend",
+        "status",
+        "--porcelain=v1",
+        "-uall"
+      ],
+      "exit_code": 0,
+      "duration_ms": 123,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

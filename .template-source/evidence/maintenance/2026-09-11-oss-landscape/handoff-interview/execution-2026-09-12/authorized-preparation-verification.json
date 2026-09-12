@@ -1,0 +1,274 @@
+{
+  "recorded_at": "2026-09-11T17:09:02.418271+00:00",
+  "scope_authorization_valid": true,
+  "baseline_checks": [
+    {
+      "role": "backend",
+      "path": "docs/api/specs/file-sync-target-data-preview.yaml",
+      "expected": "sha256:5436020b120ed2b2ea57f9a08f9bca3b37acb4959864b72bb1f5d759eabd5d01",
+      "actual": "sha256:5436020b120ed2b2ea57f9a08f9bca3b37acb4959864b72bb1f5d759eabd5d01",
+      "matches": true
+    },
+    {
+      "role": "backend",
+      "path": "docs/architecture/file-sync-target-data-preview-openapi-review.md",
+      "expected": "sha256:12c63acc3169c05eba0997304d9b5dca0ae10d170ba7f5317d582c2a2670626a",
+      "actual": "sha256:12c63acc3169c05eba0997304d9b5dca0ae10d170ba7f5317d582c2a2670626a",
+      "matches": true
+    },
+    {
+      "role": "backend",
+      "path": "docs/file-sync-acceptance.md",
+      "expected": "sha256:da37d576e538be09757610dc35994b8025a21ae8bfa9e58db63e1e68f4509b10",
+      "actual": "sha256:da37d576e538be09757610dc35994b8025a21ae8bfa9e58db63e1e68f4509b10",
+      "matches": true
+    },
+    {
+      "role": "backend",
+      "path": "valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/application/dto/SyncTargetDataPreviewDTO.java",
+      "expected": "sha256:c003204e38cf701ded06d3860e3d3026e36a254426e87bfda520eb5800d15094",
+      "actual": "sha256:c003204e38cf701ded06d3860e3d3026e36a254426e87bfda520eb5800d15094",
+      "matches": true
+    },
+    {
+      "role": "backend",
+      "path": "valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/application/port/SyncTargetDataPreviewQueryPort.java",
+      "expected": "sha256:793cbd0b2f648ffec4c5eadb769cb347f6f7db6bc87a27d1900f43f237b02e36",
+      "actual": "sha256:793cbd0b2f648ffec4c5eadb769cb347f6f7db6bc87a27d1900f43f237b02e36",
+      "matches": true
+    },
+    {
+      "role": "backend",
+      "path": "valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/application/service/SyncTargetDataPreviewAppService.java",
+      "expected": "sha256:3d4838ceb499a7d397b735f890f878e5daa195f530068fad0cd8aa8b2e63714d",
+      "actual": "sha256:3d4838ceb499a7d397b735f890f878e5daa195f530068fad0cd8aa8b2e63714d",
+      "matches": true
+    },
+    {
+      "role": "backend",
+      "path": "valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/application/service/SyncTargetDataPreviewException.java",
+      "expected": "sha256:75fd3e1fca8491074f5c4c951771fda800f951dbe286b8a789be11f752a301f2",
+      "actual": "sha256:75fd3e1fca8491074f5c4c951771fda800f951dbe286b8a789be11f752a301f2",
+      "matches": true
+    },
+    {
+      "role": "backend",
+      "path": "valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/infrastructure/target/JdbcSyncTargetDataPreviewAdapter.java",
+      "expected": "sha256:96c674c0cb4d6ea1c9603280cf0d30d521b0f40f034fb64050faa47908baab4b",
+      "actual": "sha256:96c674c0cb4d6ea1c9603280cf0d30d521b0f40f034fb64050faa47908baab4b",
+      "matches": true
+    },
+    {
+      "role": "backend",
+      "path": "valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/web/FileSyncTargetPreviewController.java",
+      "expected": "sha256:6b6838a2d41869a409dfa4cf5c304f4a36b7e50a6dde5d3c631ecfd81bd87aed",
+      "actual": "sha256:6b6838a2d41869a409dfa4cf5c304f4a36b7e50a6dde5d3c631ecfd81bd87aed",
+      "matches": true
+    },
+    {
+      "role": "backend",
+      "path": "valset-standardizer-tools/file-sync/src/test/java/com/yss/datamiddle/valuation/filesync/application/service/SyncTargetDataPreviewAppServiceTest.java",
+      "expected": "sha256:a834fa95cb6dca80024fecc7abb32bacf9eac97c7cd218a00e86e069724d7ff9",
+      "actual": "sha256:a834fa95cb6dca80024fecc7abb32bacf9eac97c7cd218a00e86e069724d7ff9",
+      "matches": true
+    },
+    {
+      "role": "backend",
+      "path": "valset-standardizer-tools/file-sync/src/test/java/com/yss/datamiddle/valuation/filesync/infrastructure/target/JdbcSyncTargetDataPreviewAdapterTest.java",
+      "expected": "sha256:e65e8f7df076d0633b5d3e8e33a147ae3e89099d2dd79be9749af85342858e71",
+      "actual": "sha256:e65e8f7df076d0633b5d3e8e33a147ae3e89099d2dd79be9749af85342858e71",
+      "matches": true
+    },
+    {
+      "role": "backend",
+      "path": "valset-standardizer-tools/file-sync/src/test/java/com/yss/datamiddle/valuation/filesync/web/FileSyncTargetPreviewControllerTest.java",
+      "expected": "sha256:5b475dd454cb9794e081a24cc49e5619bd633d262287739cfbb8921d34476cb3",
+      "actual": "sha256:5b475dd454cb9794e081a24cc49e5619bd633d262287739cfbb8921d34476cb3",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "openapi/openapi.json",
+      "expected": "sha256:742a60325481fb29034a7e615c256b35fff2dffc091c00fdaebe06c79b852212",
+      "actual": "sha256:742a60325481fb29034a7e615c256b35fff2dffc091c00fdaebe06c79b852212",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/api/generated/quality/index.ts",
+      "expected": "sha256:6e6ae2ab03a8e11af48d5fc3acaccc488e360c7d162b74755d657449b0473508",
+      "actual": "sha256:6e6ae2ab03a8e11af48d5fc3acaccc488e360c7d162b74755d657449b0473508",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/api/generated/quality/schemas/fileSyncPreviewTargetDataParams.ts",
+      "expected": "sha256:b6df7b1f1c4e3850194d3bf4b044e37326f3d6bbc0602aa63ec7510610b90b55",
+      "actual": "sha256:b6df7b1f1c4e3850194d3bf4b044e37326f3d6bbc0602aa63ec7510610b90b55",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/api/generated/quality/schemas/fileSyncPreviewTargetDataScope.ts",
+      "expected": "sha256:65dfb9b398df5510e99a8beb8bae760814de5a2292ff6d8b6742d157737c2e53",
+      "actual": "sha256:65dfb9b398df5510e99a8beb8bae760814de5a2292ff6d8b6742d157737c2e53",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/api/generated/quality/schemas/index.ts",
+      "expected": "sha256:5585aae0bce78d1a1141fce8876fc1e75e24243ff3dcdfb925330e2b02021641",
+      "actual": "sha256:5585aae0bce78d1a1141fce8876fc1e75e24243ff3dcdfb925330e2b02021641",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/api/generated/quality/schemas/singleResultSyncTargetDataPreviewDTO.ts",
+      "expected": "sha256:5cd6a7468742876574db6ced836e37cb0164c55a4b7e2a76af991082fa81587e",
+      "actual": "sha256:5cd6a7468742876574db6ced836e37cb0164c55a4b7e2a76af991082fa81587e",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/api/generated/quality/schemas/singleResultSyncTargetDataPreviewDTOCode.ts",
+      "expected": "sha256:3da6dd93edadf28c174294dcf994a7daf2bd4e5b426897fdce006a7b5831640d",
+      "actual": "sha256:3da6dd93edadf28c174294dcf994a7daf2bd4e5b426897fdce006a7b5831640d",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/api/generated/quality/schemas/syncTargetDataPreviewDTO.ts",
+      "expected": "sha256:d8601db790b498b415bff4c5c8b9ee3c7bebc5819453e318acd5b939f5c13b5c",
+      "actual": "sha256:d8601db790b498b415bff4c5c8b9ee3c7bebc5819453e318acd5b939f5c13b5c",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/api/generated/quality/schemas/syncTargetDataPreviewDTOCell.ts",
+      "expected": "sha256:9ce5ab9d90a7d9cfca1cf204d3ad12913807a5a76c4b465590dede16de419446",
+      "actual": "sha256:9ce5ab9d90a7d9cfca1cf204d3ad12913807a5a76c4b465590dede16de419446",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/api/generated/quality/schemas/syncTargetDataPreviewDTOColumn.ts",
+      "expected": "sha256:c47b39f0f1dd116a2ea9e42d258fc99df0044738439591b00a41747c0de558fc",
+      "actual": "sha256:c47b39f0f1dd116a2ea9e42d258fc99df0044738439591b00a41747c0de558fc",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/api/generated/quality/schemas/syncTargetDataPreviewDTORow.ts",
+      "expected": "sha256:66081a3239b004fd9765d66c66479f615cfe518efd855c73baab062de77b5180",
+      "actual": "sha256:66081a3239b004fd9765d66c66479f615cfe518efd855c73baab062de77b5180",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/api/generated/quality/schemas/syncTargetDataPreviewDTOTarget.ts",
+      "expected": "sha256:1c376d2ba098b646607f8a807cdf13d1822ee98d3caa9f05a0cf0d8a888b278b",
+      "actual": "sha256:1c376d2ba098b646607f8a807cdf13d1822ee98d3caa9f05a0cf0d8a888b278b",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/views/FileSyncWorkbench/components/TargetDataPreviewModal.less",
+      "expected": "sha256:eed4d649d9b6acf20d3b76370302bd058deb8e0411f445c270e2f67a30a47053",
+      "actual": "sha256:eed4d649d9b6acf20d3b76370302bd058deb8e0411f445c270e2f67a30a47053",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/views/FileSyncWorkbench/components/TargetDataPreviewModal.spec.ts",
+      "expected": "sha256:8823c24e8e6bb6b9fe477f843b12ea8af42ea001160bc5be395b7c6516969352",
+      "actual": "sha256:8823c24e8e6bb6b9fe477f843b12ea8af42ea001160bc5be395b7c6516969352",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/views/FileSyncWorkbench/components/TargetDataPreviewModal.vue",
+      "expected": "sha256:09b764ea299273a6ba6a28721622da66f1defb0e1fe791e2e77451e96f2ca76a",
+      "actual": "sha256:09b764ea299273a6ba6a28721622da66f1defb0e1fe791e2e77451e96f2ca76a",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/views/FileSyncWorkbench/dataSource.ts",
+      "expected": "sha256:8d2015923fc5b02a58e4fd222078e2cc4c7ca48f4034d6e2a6911406c2f3dd40",
+      "actual": "sha256:8d2015923fc5b02a58e4fd222078e2cc4c7ca48f4034d6e2a6911406c2f3dd40",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/views/FileSyncWorkbench/fileSyncWorkbenchApi.spec.ts",
+      "expected": "sha256:7db1c4b47f2373be11dd1d3ffa77ef306aabf57947a2ceabcbe71ba13e6e4caf",
+      "actual": "sha256:7db1c4b47f2373be11dd1d3ffa77ef306aabf57947a2ceabcbe71ba13e6e4caf",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/views/FileSyncWorkbench/hooks/useFileSyncWorkbench.ts",
+      "expected": "sha256:6be8f1b2c8232478a26f75eafaf9ef17d355aea2df310df60aea764c0a172c07",
+      "actual": "sha256:6be8f1b2c8232478a26f75eafaf9ef17d355aea2df310df60aea764c0a172c07",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/views/FileSyncWorkbench/index.vue",
+      "expected": "sha256:961f412261d680075363fe418e46b292bcf8074bd74d8e827c74972f8d258b2a",
+      "actual": "sha256:961f412261d680075363fe418e46b292bcf8074bd74d8e827c74972f8d258b2a",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/views/FileSyncWorkbench/targetDataPreview.spec.ts",
+      "expected": "sha256:d275558a83ee44f71e9da703074ad42eafd6284d298e09be1899cef789f08837",
+      "actual": "sha256:d275558a83ee44f71e9da703074ad42eafd6284d298e09be1899cef789f08837",
+      "matches": true
+    },
+    {
+      "role": "frontend",
+      "path": "packages/src/views/FileSyncWorkbench/targetDataPreview.ts",
+      "expected": "sha256:3b1181cfdff248e18043c09cc0887a2aafbac2a5bb3b756cdb8f7cb0bb839e0a",
+      "actual": "sha256:3b1181cfdff248e18043c09cc0887a2aafbac2a5bb3b756cdb8f7cb0bb839e0a",
+      "matches": true
+    }
+  ],
+  "context_checks": [
+    {
+      "command": [
+        "node",
+        "scripts/verify-context-reconciliation",
+        "docs/.scratch/target-preview-pilot/context-reconciliation.json"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance",
+      "executed_at": "2026-09-11T17:09:02.035182+00:00",
+      "exit_code": 0,
+      "output": "Context reconciliation 验证通过\n"
+    },
+    {
+      "command": [
+        "node",
+        "scripts/verify-context-reconciliation",
+        "docs/.scratch/target-preview-pilot/context-reconciliation.json"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend-governance",
+      "executed_at": "2026-09-11T17:09:02.269742+00:00",
+      "exit_code": 0,
+      "output": "Context reconciliation 验证通过\n"
+    },
+    {
+      "command": [
+        "node",
+        "scripts/verify-context-reconciliation",
+        "docs/.scratch/target-preview-pilot/context-reconciliation.json"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance",
+      "executed_at": "2026-09-11T17:09:02.418227+00:00",
+      "exit_code": 0,
+      "output": "Context reconciliation 验证通过\n"
+    }
+  ],
+  "requested_goal_completed": false,
+  "product_scenarios_executed": []
+}

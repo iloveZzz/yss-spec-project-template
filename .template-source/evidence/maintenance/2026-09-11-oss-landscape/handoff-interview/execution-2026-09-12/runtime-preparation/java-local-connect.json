@@ -1,0 +1,14 @@
+[
+  {
+    "sandbox": true,
+    "exit_code": 10,
+    "stdout": "",
+    "stderr": "java.lang.RuntimeException: java.net.SocketException: Operation not permitted (connect failed)\n\tat jdk.nashorn.internal.runtime.ScriptRuntime.apply(ScriptRuntime.java:397)\n\tat jdk.nashorn.api.scripting.NashornScriptEngine.evalImpl(NashornScriptEngine.java:449)\n\tat jdk.nashorn.api.scripting.NashornScriptEngine.evalImpl(NashornScriptEngine.java:406)\n\tat jdk.nashorn.api.scripting.NashornScriptEngine.evalImpl(NashornScriptEngine.java:402)\n\tat jdk.nashorn.api.scripting.NashornScriptEngine.eval(NashornScriptEngine.java:155)\n\tat javax.script.AbstractScriptEngine.eval(AbstractScriptEngine.java:264)\n\tat com.sun.tools.script.shell.Main.evaluateString(Main.java:298)\n\tat com.sun.tools.script.shell.Main.evaluateString(Main.java:319)\n\tat com.sun.tools.script.shell.Main.access$300(Main.java:37)\n\tat com.sun.tools.script.shell.Main$3.run(Main.java:217)\n\tat com.sun.tools.script.shell.Main.main(Main.java:48)\nCaused by: java.net.SocketException: Operation not permitted (connect failed)\n\tat java.net.PlainSocketImpl.socketConnect(Native Method)\n\tat java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:350)\n\tat java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:206)\n\tat java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:188)\n\tat java.net.SocksSocketImpl.connect(SocksSocketImpl.java:392)\n\tat java.net.Socket.connect(Socket.java:607)\n\tat java.net.Socket.connect(Socket.java:556)\n\tat java.net.Socket.<init>(Socket.java:452)\n\tat java.net.Socket.<init>(Socket.java:229)\n\tat jdk.nashorn.internal.scripts.Script$1$\\^string\\_.:program(<string>:1)\n\tat jdk.nashorn.internal.runtime.ScriptFunctionData.invoke(ScriptFunctionData.java:637)\n\tat jdk.nashorn.internal.runtime.ScriptFunction.invoke(ScriptFunction.java:494)\n\tat jdk.nashorn.internal.runtime.ScriptRuntime.apply(ScriptRuntime.java:393)\n\t... 10 more\n"
+  },
+  {
+    "sandbox": false,
+    "exit_code": 0,
+    "stdout": "Java local PG TCP connected\n",
+    "stderr": ""
+  }
+]

@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "task_id": "pilot-environment",
+  "work_unit_id": "work-unit.entry-triage",
+  "actor_id": "pilot-environment-explorer",
+  "role_id": "role.product-manager",
+  "runtime_id": "runtime.skill-projection",
+  "execution_state": "Explorer",
+  "workflow_status": "paused",
+  "skill_source": {
+    "registry_ref": "docs/agents/digital-human-roles.yaml",
+    "defaults_ref": "taskPackageDefaults(role.product-manager)",
+    "core_skills": [
+      "yss-design-system",
+      "yss-prototype-stage",
+      "prototype-review",
+      "yss-antdv-next-design",
+      "yss-research",
+      "competitive-intelligence"
+    ],
+    "forbidden_skills": [
+      "yss-ui",
+      "yss-domain",
+      "yss-repository",
+      "yss-web-controller",
+      "yss-ddd-scaffold-generator",
+      "yss-layered-mvc-scaffold-generator",
+      "implement",
+      "tdd"
+    ]
+  },
+  "contract": {
+    "kind": "template-maintenance",
+    "contract_id": "pilot-environment",
+    "contract_version": 1,
+    "status": "issued",
+    "contract_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md",
+    "maintenance_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/triage-checkpoint.json"
+  },
+  "inputs": [
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md",
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/trial-agreement.md",
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/discovery.md",
+    "CONTEXT.md"
+  ],
+  "objective": "查明可执行最小环境与部署身份：本机工具版本与可用性、现有启动档位/依赖、现有部署产物身份来源，形成具体最小探针方案及无需改造的替代可能。只读，不启动安装服务数据库。",
+  "allowed_write_paths": [
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/environment.md",
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/environment.json"
+  ],
+  "forbidden_actions": [
+    "修改范围外文件",
+    "Git 提交推送发布",
+    "批准生命周期或需求",
+    "把未验证宣传当成事实"
+  ],
+  "expected_outputs": [
+    "候选与实际源码/证据位置、缺口、验证命令；workflow-execution-result-v1"
+  ],
+  "expected_evidence_files": [
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/environment.json"
+  ],
+  "verification_commands": [
+    "node -e \"JSON.parse(require('fs').readFileSync('.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/environment.json','utf8'))\""
+  ],
+  "verification_results": [
+    {
+      "command": "node -e \"JSON.parse(require('fs').readFileSync('.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/environment.json','utf8'))\"",
+      "exit_code": 0,
+      "executed_at": "2026-09-11T16:37:40.126983+00:00",
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/environment.json"
+    }
+  ],
+  "downstream_consumers": [
+    "yss-research",
+    "yss-product-lifecycle"
+  ],
+  "convergence": {
+    "parent_work_unit": "work-unit.entry-triage",
+    "convergence_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md",
+    "conflict_escalation": "主控核实后综合；不能自行消除相反证据"
+  },
+  "result": {
+    "result_schema": "workflow-execution-result-v1",
+    "work_unit": "work-unit.entry-triage",
+    "workflow_reference": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md",
+    "result": "needs-human",
+    "context_reconciliation": {
+      "status": "not-applicable",
+      "ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md",
+      "reason": "template-source 前置查证，无产品阶段流转"
+    },
+    "skill": "yss-research",
+    "changed_files": [
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/environment.md",
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/environment.json"
+    ],
+    "changed_artifacts": [
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/environment.md",
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/environment.json"
+    ],
+    "evidence_refs": [
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/environment.json",
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md"
+    ],
+    "deferred_seams": [],
+    "drift": [],
+    "violation": [],
+    "new_impacts": [],
+    "stale_candidates": [],
+    "blocking_signals": [
+      "Q12 preparation scope decision needed for actual onboarding, current approval and probe"
+    ],
+    "next_route": null
+  }
+}

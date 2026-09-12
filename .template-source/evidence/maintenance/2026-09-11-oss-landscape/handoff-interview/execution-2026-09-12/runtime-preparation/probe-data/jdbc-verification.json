@@ -1,0 +1,25 @@
+{
+  "executed_at": "2026-09-11T17:40:38.925Z",
+  "driver": "org.postgresql.Driver 42.7.8",
+  "queries": 18,
+  "transactions": [
+    {
+      "datasource": "control",
+      "transaction": [
+        "on",
+        "repeatable read",
+        "UTC"
+      ]
+    },
+    {
+      "datasource": "target",
+      "transaction": [
+        "on",
+        "repeatable read",
+        "UTC"
+      ]
+    }
+  ],
+  "failed_query_ids": [],
+  "exit_code": 0
+}

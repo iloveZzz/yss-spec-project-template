@@ -1,0 +1,41 @@
+{
+  "schema": "workflow-execution-result-v1",
+  "task_id": "pilot-environment-authorized-preparation",
+  "contract": "pilot-environment@2",
+  "execution_state": "Explorer",
+  "repository_mode": "template-source",
+  "workflow_status": "completed-bounded-preparation",
+  "recorded_at": "2026-09-11T17:42:55.088679+00:00",
+  "outcome": "18固定SQL和两case数据准备完成；产品探针/交付未实现未验证",
+  "verification": {
+    "psql_commands_ref": "readback-commands.json",
+    "jdbc_command_ref": "jdbc-command.json",
+    "jdbc_exit_code": 0,
+    "snapshot_equality": true,
+    "query_hash_validation_exit_code": 0
+  },
+  "evidence_files": [
+    "test-data.json",
+    "fixed-queries.json",
+    "normalization.md",
+    "report.md",
+    "verification.json",
+    "restore-commands.json",
+    "stop-commands.json"
+  ],
+  "runtime_state": {
+    "postgres": "stopped",
+    "redis": "stopped",
+    "volumes": "retained",
+    "java_started": false,
+    "vite_started": false
+  },
+  "original_baseline_modified": false,
+  "business_code_modified": false,
+  "ready_for_agent": false,
+  "next_route": "主控综合R3治理阻塞；不绕过已有门禁",
+  "context_reconciliation": {
+    "status": "not-applicable",
+    "reason": "template-source维护准备证据，不改变产品词汇"
+  }
+}

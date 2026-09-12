@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "task_id": "research-platforms",
+  "work_unit_id": "work-unit.entry-triage",
+  "actor_id": "research-platforms",
+  "role_id": "role.product-manager",
+  "runtime_id": "runtime.skill-projection",
+  "execution_state": "Explorer",
+  "workflow_status": "paused",
+  "skill_source": {
+    "registry_ref": "docs/agents/digital-human-roles.yaml",
+    "defaults_ref": "taskPackageDefaults(role.product-manager)",
+    "core_skills": [
+      "yss-design-system",
+      "yss-prototype-stage",
+      "prototype-review",
+      "yss-antdv-next-design",
+      "yss-research",
+      "competitive-intelligence"
+    ],
+    "forbidden_skills": [
+      "yss-ui",
+      "yss-domain",
+      "yss-repository",
+      "yss-web-controller",
+      "yss-ddd-scaffold-generator",
+      "yss-layered-mvc-scaffold-generator",
+      "implement",
+      "tdd"
+    ]
+  },
+  "contract": {
+    "kind": "template-maintenance",
+    "contract_id": "research-platforms",
+    "contract_version": 1,
+    "status": "issued",
+    "contract_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/scope.md",
+    "maintenance_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/triage-checkpoint.json"
+  },
+  "inputs": [
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/scope.md",
+    "CONTEXT.md",
+    ".agents/skills/yss-research/SKILL.md",
+    ".agents/skills/competitive-intelligence/SKILL.md",
+    "docs/process/document-writing.md"
+  ],
+  "objective": "调研分配的竞品，返回原始来源、精确定位、检索记录、反证、局限和可验证机会；不得批准路线",
+  "allowed_write_paths": [
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/agents/platforms.md",
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/agents/platforms.json"
+  ],
+  "forbidden_actions": [
+    "修改范围外文件",
+    "Git 提交推送发布",
+    "批准生命周期或需求",
+    "把未验证宣传当成事实"
+  ],
+  "expected_outputs": [
+    "中文比较及 claim/source 映射；workflow-execution-result-v1"
+  ],
+  "expected_evidence_files": [
+    ".template-source/evidence/maintenance/2026-09-11-oss-landscape/agents/platforms.json"
+  ],
+  "verification_commands": [
+    "node -e \"JSON.parse(require('fs').readFileSync('.template-source/evidence/maintenance/2026-09-11-oss-landscape/agents/platforms.json','utf8'))\""
+  ],
+  "verification_results": [
+    {
+      "command": "node -e \"JSON.parse(require('fs').readFileSync('.template-source/evidence/maintenance/2026-09-11-oss-landscape/agents/platforms.json','utf8'))\"",
+      "exit_code": 0,
+      "executed_at": "2026-09-11T14:11:34.258289+00:00",
+      "duration_ms": 22,
+      "evidence_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/completion-checks.json"
+    }
+  ],
+  "downstream_consumers": [
+    "yss-research",
+    "yss-product-lifecycle"
+  ],
+  "convergence": {
+    "parent_work_unit": "work-unit.entry-triage",
+    "convergence_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/scope.md",
+    "conflict_escalation": "主控核实后综合；不能自行消除相反证据"
+  },
+  "result": {
+    "result_schema": "workflow-execution-result-v1",
+    "work_unit": "work-unit.entry-triage",
+    "workflow_reference": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/scope.md",
+    "result": "blocked",
+    "context_reconciliation": {
+      "status": "not-applicable",
+      "ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/scope.md",
+      "reason": "template-source 文档研究不创建产品业务术语或阶段批准"
+    },
+    "skill": "yss-research",
+    "changed_files": [
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/agents/platforms.md",
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/agents/platforms.json"
+    ],
+    "changed_artifacts": [
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/agents/platforms.md",
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/agents/platforms.json"
+    ],
+    "evidence_refs": [
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/agents/platforms.json",
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/scope.md"
+    ],
+    "deferred_seams": [],
+    "drift": [],
+    "violation": [],
+    "new_impacts": [],
+    "stale_candidates": [],
+    "blocking_signals": [
+      "研究资产已交付；现有 entry-triage 路由只接受产品 Plan 后继，无法表示 template-source 研究就地结束，保持正式任务包暂停，不伪造产品流转"
+    ],
+    "next_route": null
+  }
+}

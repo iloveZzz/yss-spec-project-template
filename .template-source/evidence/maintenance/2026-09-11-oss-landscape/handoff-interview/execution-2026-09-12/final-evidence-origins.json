@@ -1,0 +1,22 @@
+[
+  {
+    "evidence_ref": "independent-continuation-audit.md",
+    "original_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance/docs/.scratch/target-preview-pilot/architecture/continuation-audit.md",
+    "sha256": "sha256:5e807372446f589911a4643fde666fc7fc3328a1678f81b72c97aa5f1dbf90c1"
+  },
+  {
+    "evidence_ref": "independent-continuation-audit-result.json",
+    "original_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance/docs/.scratch/target-preview-pilot/architecture/continuation-audit-result.json",
+    "sha256": "sha256:5b92e3d94249f42ffb8be77d2f3aac174356c64579770cead77a6ae78dbf29c5"
+  },
+  {
+    "evidence_ref": "r3-compilation-result.json",
+    "original_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance/docs/.scratch/target-preview-pilot/architecture/r3/compilation-result.json",
+    "sha256": "sha256:0e04f5cbfef99dd53970166a71ead176ec0d334d24c5e3cf64e60ae69338589d"
+  },
+  {
+    "evidence_ref": "freeze-approval-verification.json",
+    "original_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance/docs/.scratch/target-preview-pilot/evidence/freeze-approval-verification.json",
+    "sha256": "sha256:3b4d1bdd5837ac45bcb3ff7de9235117481f8a19d92216c0f85350a0c0aa5b70"
+  }
+]

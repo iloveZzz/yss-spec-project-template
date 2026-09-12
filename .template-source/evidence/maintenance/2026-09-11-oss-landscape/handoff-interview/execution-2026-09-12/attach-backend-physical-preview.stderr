@@ -1,0 +1,1 @@
+治理文件冲突，整次暂停；确认备份覆盖后使用 --apply --force: .gitignore, README.md

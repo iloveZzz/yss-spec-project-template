@@ -1,0 +1,18 @@
+{
+  "name": "backend-update-package",
+  "argv": [
+    "./mvnw",
+    "-B",
+    "-U",
+    "-pl",
+    "valuation-outsourced-starter",
+    "-am",
+    "-DskipTests",
+    "package"
+  ],
+  "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+  "exit_code": 1,
+  "elapsed_seconds": 2.91,
+  "log": "backend-update-package.log",
+  "redaction": "URL userinfo and credential assignments"
+}

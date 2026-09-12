@@ -1,0 +1,569 @@
+{
+  "schema_version": 1,
+  "task_id": "research-spec-frameworks",
+  "profile": "strategy-evidence",
+  "mode": "evidence-audited",
+  "scope": "3 direct OSS comparators; public documentary research; template-source maintenance",
+  "accessed_at": "2026-09-11",
+  "search_log": [
+    {
+      "id": "SSL01",
+      "date": "2026-09-11",
+      "queries": [
+        "site:github.com/github/spec-kit brownfield extensions",
+        "site:github.com/Fission-AI/OpenSpec schema brownfield",
+        "site:github.com/bmad-code-org/BMAD-METHOD workflow brownfield"
+      ],
+      "platform": "web search + GitHub",
+      "result": "定位官方 README、深文档、社区扩展与旧 workflow map；后续直接读取核实。"
+    },
+    {
+      "id": "SSL02",
+      "date": "2026-09-11",
+      "queries": [
+        "site:github.com/Fission-AI/OpenSpec/issues archive specs conflict",
+        "site:github.com/bmad-code-org/BMAD-METHOD/issues review context upgrade"
+      ],
+      "platform": "web search + GitHub",
+      "result": "定位归档/跨仓/文件增长与脚手架反馈；排除无关搜索命中。"
+    },
+    {
+      "id": "SSL03",
+      "date": "2026-09-11",
+      "queries": [
+        "README → Releases",
+        "README → Stores User Guide",
+        "BMAD README → current docs navigation → Existing Codebases / Organization / Customize / Review"
+      ],
+      "platform": "GitHub direct + official docs",
+      "result": "三项 README + 至少一份深文档 + Release 全部读到；命令和版本以直接页面优先。"
+    },
+    {
+      "id": "SSL04",
+      "date": "2026-09-11",
+      "queries": [
+        "https://github.com/bmad-code-org/BMAD-METHOD/blob/main/docs/reference/workflow-map.md",
+        "https://github.com/github/spec-kit/blob/main/workflows/speckit.yml"
+      ],
+      "platform": "web direct open",
+      "result": "Internal Error；不据此否定文件存在；BMAD 改用当前 README 链接正式站点，Spec Kit 改用可读 workflow reference。"
+    },
+    {
+      "id": "SSL05",
+      "date": "2026-09-11",
+      "queries": [
+        "Google"
+      ],
+      "platform": "delegation boundary",
+      "result": "主控负责 Google 直接访问与跨平台搜索，本子任务不声称已经完成 Google 页面检索。"
+    },
+    {
+      "id": "SSL06",
+      "date": "2026-09-11",
+      "queries": [
+        "OpenSpec #872; BMAD #2415; Spec Kit #2046; OpenSpec #1436/#1456"
+      ],
+      "platform": "GitHub direct",
+      "result": "直接读状态和正文；#872 搜索缓存 Open 与当前 Closed as not planned 冲突，采用当前页面。"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "SK01",
+      "url": "https://github.com/github/spec-kit",
+      "locator": "README: SDD Quickstart; Available Slash Commands; License; Stars",
+      "observation": "MIT；公开页面约 135.4k stars、12.2k forks。核心含 constitution/specify/plan/tasks/implement/converge；Python uv/PyPI 分发并支持 30+ Agent。",
+      "limitation": "主分支与公开计数可变；关注量不是用户量；未执行产品工作流。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "SK02",
+      "url": "https://github.github.io/spec-kit/reference/workflows.html",
+      "locator": "Workflows: Run/Resume; Step Types; Security note",
+      "observation": "工作流有 JSON 状态、暂停恢复、human gate、条件和扇出汇合；shell 用本机权限执行，requires 不是能力沙箱。",
+      "limitation": "具有审批机制不能推导为不可绕过的安全边界；仅文档核查。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "SK03",
+      "url": "https://github.com/github/spec-kit/blob/main/docs/community/extensions.md",
+      "locator": "Community Extensions: disclaimer; category/effect; API Evolve/Brownfield rows",
+      "observation": "存在 Brownfield、API 演进、治理等社区扩展；目录维护者审核元数据格式，不审计或背书扩展代码。",
+      "limitation": "目录条目是能力线索，扩展本身未逐一安装/审计。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "SK04",
+      "url": "https://github.com/github/spec-kit/blob/main/extensions/EXTENSION-API-REFERENCE.md",
+      "locator": "Extension Manifest / Schema Version 1.0",
+      "observation": "扩展 manifest 声明 id、版本、作者、许可证、仓库、speckit 版本要求等。",
+      "limitation": "来源/依赖元数据不自动等于内容供应链审计。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "SK05",
+      "url": "https://github.com/github/spec-kit/releases/tag/v1.0.6",
+      "locator": "Release title; released 10 Sep 13:27; What's Changed",
+      "observation": "最新 Release 列表标记 v1.0.6，2026-09-10；包含 unreadable extensions.yml 不再静默跳过 hooks、工作流逐步 integration 配置等改进。",
+      "limitation": "Release 证明发布者列出的变化，非本研究复现；时区按 GitHub 页面显示。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": false
+    },
+    {
+      "id": "SK06",
+      "url": "https://github.com/github/spec-kit/discussions/2046",
+      "locator": "2026-04-01 initial post; maintainer reply; 2026-04-13 reply",
+      "observation": "一位使用者报告规格审阅额外成本，倾向 IDE 内建 Plan→Implement；维护者举 brownfield/扩展反例，另一参与者认为 clarify/analyze 关键。",
+      "limitation": "小样本自选择讨论；旧版本体验不能代表当前普遍行为或 ROI。",
+      "accessed_at": "2026-09-11",
+      "source_class": "direct-experience",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "SK07",
+      "url": "https://github.com/github/spec-kit/blob/main/docs/reference/overview.md",
+      "locator": "Presets; Workflows; Bundles",
+      "observation": "官方区分 extensions 扩能力、presets 改模板、workflows 编排、bundles 组合版本化安装单元。",
+      "limitation": "组织治理和定制已有丰富供给，不支持将它们视为 YSS 独有。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "OS01",
+      "url": "https://github.com/Fission-AI/OpenSpec",
+      "locator": "README: philosophy; Quick Start; License; Stars",
+      "observation": "MIT；公开页面约 68.0k stars、4.7k forks；Node >=20.19、npm 全局安装；默认展示 explore/propose/apply/archive。",
+      "limitation": "最受欢迎等宣传不采信；stars 非用户；main 快照。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "OS02",
+      "url": "https://github.com/Fission-AI/OpenSpec/blob/main/docs/concepts.md",
+      "locator": "Delta Specs; Delta Sections; Schemas",
+      "observation": "以当前 specs 与 change deltas 区分存量行为和变更，Schema 定义产物及依赖图。",
+      "limitation": "依赖图就绪不等于语义实现已满足。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "OS03",
+      "url": "https://github.com/Fission-AI/OpenSpec/blob/main/docs/stores-beta/user-guide.md",
+      "locator": "Example one feature two component repos; How implementation starts; Known limitations",
+      "observation": "Stores beta 允许独立规划仓和只读 references；文档明确不把任务路由到代码仓，不自动读所有消费者；不 clone/pull/push，陈旧 checkout 显示陈旧 specs。",
+      "limitation": "beta 名称/格式可变；跨仓共享上下文已存在，不能说不支持跨仓。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "OS04",
+      "url": "https://github.com/Fission-AI/OpenSpec/issues/1436",
+      "locator": "Open; 2026-07-23; Problem / What exists today",
+      "observation": "维护者整理跨仓用户反馈：消费者仓职责重复叙述，目前通过 context/CLAUDE.md 自由文本补充，讨论标准化。",
+      "limitation": "公开维护者转述近一手 Discord 反馈；未访问原 Discord；单一场景不代表频率。",
+      "accessed_at": "2026-09-11",
+      "source_class": "near-primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "OS05",
+      "url": "https://github.com/Fission-AI/OpenSpec/blob/main/docs/commands.md",
+      "locator": "/opsx:archive tips; /opsx:bulk-archive",
+      "observation": "Agent archive 提示未完成任务但不强制阻断；bulk archive 冲突通过 Agent 对照实现判断。",
+      "limitation": "这是 Agent 命令指导；不要与确定性 CLI 校验/事务能力混同。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "OS06",
+      "url": "https://github.com/Fission-AI/OpenSpec/blob/main/docs/cli.md",
+      "locator": "Lifecycle Commands / openspec archive",
+      "observation": "CLI archive 有验证、确认、先占归档目录、失败恢复；可显式 --no-validate；非交互缺 --yes 会在写入前停止。",
+      "limitation": "行为来自官方合同，未故障注入；存在安全归档能力，不能称完全没有保护。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "OS07",
+      "url": "https://github.com/Fission-AI/OpenSpec/releases/tag/v1.13.0",
+      "locator": "Release list Latest; 2026-09-09 21:10; What's New",
+      "observation": "v1.13.0 发布于 2026-09-09；apply 对无 specs 发警告，修复归档改写 fenced code 和特定 Markdown 列表删除失效。",
+      "limitation": "已修复事项仅支持故障类别/可靠性需求，不作为当前缺陷宣称。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": false
+    },
+    {
+      "id": "OS08",
+      "url": "https://github.com/Fission-AI/OpenSpec/issues/872",
+      "locator": "Closed as not planned; opened 2026-03-25; Description",
+      "observation": "一位使用者报告长期归档/规格文件增长，尝试 summary 干扰 explore；当前页面状态 Closed as not planned。",
+      "limitation": "搜索结果仍显示 Open，已以直读页面纠正；未获得当前复现或维护者结论。",
+      "accessed_at": "2026-09-11",
+      "source_class": "direct-experience",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "OS09",
+      "url": "https://github.com/Fission-AI/OpenSpec/issues/1456",
+      "locator": "Open; 2026-07-27; Intended split / inconsistent today",
+      "observation": "维护者将 schema 与项目 config 的 workflow phase 指引位置及合并优先级记为设计问题；明确 advice 与 CLI check 不同。",
+      "limitation": "不是 bug；不能推断任意自定义不工作。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "OS10",
+      "url": "https://github.com/Fission-AI/OpenSpec/blob/main/schemas/spec-driven/schema.yaml",
+      "locator": "artifacts proposal/specs/design/tasks; apply",
+      "observation": "默认 schema 将产物要求与 apply 指令结构化。",
+      "limitation": "只检查此默认 schema，未覆盖所有自定义 schema。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "BM01",
+      "url": "https://github.com/bmad-code-org/BMAD-METHOD",
+      "locator": "README: Start Building; Why BMad; License; Stars",
+      "observation": "MIT，另有商标声明；公开约 52.9k stars、6.0k forks；当前推荐 Skills CLI 或 Claude/Codex plugin 分发，配套 uv；强调按工作大小裁剪。",
+      "limitation": "搜索返回的旧 npm installer 文档与当前 main 导航不一致，采用当前 README；未代表安装量。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "BM02",
+      "url": "https://docs.bmad-method.org/existing-codebases/start-in-an-existing-codebase/",
+      "locator": "Prepare Project Context or Skip It; Build Follows What It Finds",
+      "observation": "已有工程小改动可直接 Build；已有维护良好 Agent 规则可跳过 context 生成；先调查现有代码再决定复用。",
+      "limitation": "反对无差别补文档；该建议不是效果实验。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "BM03",
+      "url": "https://docs.bmad-method.org/plan/choose-a-planning-path/",
+      "locator": "Start from Intent; Planning Skills; Prerequisites",
+      "observation": "独立规划工具按意图缺口选择；明显低风险编辑无需 BMAD；规划产物汇入 Spec 后按工作规模 Build。",
+      "limitation": "README 的全生命周期不是每次必须走全程。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "BM04",
+      "url": "https://docs.bmad-method.org/plan/plan-inside-an-organization/",
+      "locator": "Where Sign-Off Happens; Several Epics; Requirements Change",
+      "observation": "组织文档有五类 human decision 及阻断对象，单一文档 owner、共享 spine、多 epic 稳定能力 ID 和变更传播；部分检查可无人模式。",
+      "limitation": "有审批文档不代表与 YSS 的批准字节绑定等价；也不能说 BMAD 无人工治理。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "BM05",
+      "url": "https://docs.bmad-method.org/customize/customize-bmad/",
+      "locator": "Customize workflow; Central configuration; Override one invocation",
+      "observation": "团队/个人 TOML 分层覆盖，安装器文件与 human-authored custom 文件分离；支持每次运行覆盖、review layers，未使用覆盖会停止渲染。",
+      "limitation": "不是不可定制；全复制默认配置会遮蔽未来升级，官方明确提醒。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "BM06",
+      "url": "https://docs.bmad-method.org/build/review-a-change/",
+      "locator": "What a Run Does; Customize the Layers; Your platform",
+      "observation": "四类独立审查视角，逐 finding 定位核实、理由化剔除、patch/defer/decision 分诊；运行时能力不足可导致串行或回主会话。",
+      "limitation": "文档中的成本倍数/优于平台评价不采纳；独立性与时延受 runtime 影响，未测。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "BM07",
+      "url": "https://docs.bmad-method.org/existing-codebases/set-and-maintain-project-context/",
+      "locator": "Approve Block; Keep Healthy; What Earns a Line",
+      "observation": "context 保留手写 AGENTS.md 并用 managed block，刷新对照变更、audit 只缩减；保留项目已确认规则和观察到的陷阱。",
+      "limitation": "上下文卫生已有直接竞品供给；未测其规则保真度。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": true
+    },
+    {
+      "id": "BM08",
+      "url": "https://github.com/bmad-code-org/BMAD-METHOD/releases/tag/v6.12.0",
+      "locator": "Latest release; 2026-09-04 02:31; Breaking",
+      "observation": "v6.12.0，2026-09-04；简易变更两段 spec，同次会话闭环；逐 finding 记录 verdict/evidence；含 persistent_facts、diff 变量等迁移注意。",
+      "limitation": "旧 workflow-map 搜索摘要不能当当前正式路线；发行说明非安装验证。",
+      "accessed_at": "2026-09-11",
+      "source_class": "primary",
+      "content_kind": "paraphrase",
+      "mutable": false
+    },
+    {
+      "id": "BM09",
+      "url": "https://github.com/bmad-code-org/BMAD-METHOD/issues/2415",
+      "locator": "Closed; 2026-05-23; Context / proposed workflow",
+      "observation": "用户提出从想法到可运行模板工程的 ignition 需求，反映规划与启动仓库衔接问题。",
+      "limitation": "当前 Closed；非维护者承诺，不能推断现版本仍缺脚手架或普遍流失。",
+      "accessed_at": "2026-09-11",
+      "source_class": "direct-experience",
+      "content_kind": "paraphrase",
+      "mutable": true
+    }
+  ],
+  "claims": [
+    {
+      "id": "SC01",
+      "type": "observation",
+      "claim": "三项目都覆盖不止提示词模板；治理、已有工程支持和自定义是有公开实物的竞争能力。",
+      "evidence": [
+        "SK01",
+        "SK02",
+        "SK07",
+        "OS02",
+        "OS03",
+        "BM02",
+        "BM04",
+        "BM05"
+      ],
+      "status": "supported",
+      "confidence": "high",
+      "counter_signal": "不同能力成熟度/执行保证不能由功能标签判断，未做端到端测试。"
+    },
+    {
+      "id": "SC02",
+      "type": "observation",
+      "claim": "OpenSpec 跨仓共享规划已经存在，但文档明确任务按仓路由、自动获取新版本不在 Stores 当前职责内。",
+      "evidence": [
+        "OS03",
+        "OS04"
+      ],
+      "status": "supported",
+      "confidence": "high",
+      "counter_signal": "消费者可借 references 与本地 changes 手工形成独立实现循环。"
+    },
+    {
+      "id": "SC03",
+      "type": "inference",
+      "claim": "YSS 若主张机会，应展示跨仓责任、合同版本新鲜度和联合验收可机器校验的闭环，不能只展示跨仓目录。",
+      "evidence": [
+        "OS03",
+        "OS04",
+        "BM04",
+        "SK02"
+      ],
+      "status": "hypothesis",
+      "confidence": "medium",
+      "counter_signal": "社区扩展可覆盖部分能力；未完成其全目录审计，不作唯一性结论。"
+    },
+    {
+      "id": "SC04",
+      "type": "inference",
+      "claim": "轻量入口和可观察成本是采纳实验的必要候选；过多文档与审查成本有直接体验信号，BMAD 已主动按风险裁剪。",
+      "evidence": [
+        "SK06",
+        "OS08",
+        "BM02",
+        "BM03",
+        "BM08"
+      ],
+      "status": "hypothesis",
+      "confidence": "medium",
+      "counter_signal": "Spec Kit 讨论同时有人认为 clarify/analyze 有价值；样本不支持全市场抱怨或减门禁收益。"
+    },
+    {
+      "id": "SC05",
+      "type": "inference",
+      "claim": "技能供应链机会应聚焦组织可审计来源、适配差异、升级回归证据；仅版本化 bundle/分层覆盖已是现有供给。",
+      "evidence": [
+        "SK03",
+        "SK04",
+        "SK07",
+        "BM05",
+        "BM08"
+      ],
+      "status": "hypothesis",
+      "confidence": "medium",
+      "counter_signal": "未审计全部 Spec Kit 社区安全扩展；YSS 对外可用性需本地主控核验。"
+    },
+    {
+      "id": "SC06",
+      "type": "observation",
+      "claim": "不能把 OpenSpec 已修复归档问题写成当前缺陷；应将发布记录用于选择故障注入场景。",
+      "evidence": [
+        "OS06",
+        "OS07"
+      ],
+      "status": "supported",
+      "confidence": "high",
+      "counter_signal": "本研究没有复现修复前后版本。"
+    },
+    {
+      "id": "SC07",
+      "type": "observation",
+      "claim": "三项目 MIT 且拥有明显公开关注度；这些数据不能支持企业部署量、付费意愿或市场份额。",
+      "evidence": [
+        "SK01",
+        "OS01",
+        "BM01"
+      ],
+      "status": "supported",
+      "confidence": "high",
+      "counter_signal": "公开关注不等于持续采用。"
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "SO01",
+      "title": "跨仓联合交付证据",
+      "basis": [
+        "SC02",
+        "SC03"
+      ],
+      "user_job": "一个共享 API 变更落到多个实现仓时，负责人知道每仓消费哪个版本、谁未就绪及何时可联合验收。",
+      "experiment": "用两个 API/前端仓的已知变更，对比当前 YSS 与 OpenSpec references 手工流程；注入 stale 合同、漏仓任务和单仓验证失败。",
+      "success_measures": [
+        "能否拒绝陈旧合同",
+        "遗漏仓/无证据是否明确阻断",
+        "人工重述次数",
+        "到首个可实现切片的耗时"
+      ],
+      "non_goal": "不是实现自动 Git push 或声称替代所有 workflow engines",
+      "confidence": "medium"
+    },
+    {
+      "id": "SO02",
+      "title": "最小可信入口",
+      "basis": [
+        "SC04"
+      ],
+      "user_job": "已有工程的小改动希望保留必要检查，但不重建历史完整规划。",
+      "experiment": "选低风险 bug、跨 API 变更两档任务，记录必须读取 token、文档数、人工中断和真实故障检出；先验证 YSS 当前裁剪是否足够。",
+      "success_measures": [
+        "首次有效结果耗时",
+        "无价值人工中断",
+        "关键缺陷检出",
+        "错误放行"
+      ],
+      "non_goal": "不以删除所有文档/门禁为成功",
+      "confidence": "medium"
+    },
+    {
+      "id": "SO03",
+      "title": "可追溯的组织技能发行",
+      "basis": [
+        "SC05"
+      ],
+      "user_job": "企业复用多来源 skills 时需要知道每个生效规则来源、局部适配、升级冲突及验证记录。",
+      "experiment": "以一个固定上游技能版本升级为案例，对照 Spec Kit bundle/BMAD custom 的现有能力，展示 YSS 差异摘要、回滚和重放验证。",
+      "success_measures": [
+        "来源与生效内容是否可重建",
+        "适配是否被覆盖",
+        "升级失败是否回滚",
+        "跨 agent 投影是否一致"
+      ],
+      "non_goal": "不再建一个只有数量的技能市场",
+      "confidence": "medium"
+    },
+    {
+      "id": "SO04",
+      "title": "确定性归档与语义漂移实验套件",
+      "basis": [
+        "SC06",
+        "SC04"
+      ],
+      "user_job": "长周期团队希望修改/归档不会丢失需求、错认完成或让旧摘要误导 agent。",
+      "experiment": "以 fenced code、不同列表符号、重复规格、并发修改同一 requirement、陈旧证据为公开 fixtures；在允许隔离环境后跑版本化对比。",
+      "success_measures": [
+        "数据无损",
+        "同一 fixture 可复验",
+        "通过/阻断理由一致",
+        "摘要可定位原始规则"
+      ],
+      "non_goal": "本轮不宣称 YSS 通过或竞品失败",
+      "confidence": "medium"
+    }
+  ],
+  "result": {
+    "schema": "workflow-execution-result-v1",
+    "role_id": "role.product-manager",
+    "runtime_id": "runtime.skill-projection",
+    "execution_state": "Explorer",
+    "work_unit_id": "work-unit.entry-triage",
+    "contract_id": "research-spec-frameworks",
+    "contract_version": 1,
+    "status": "research-complete-for-parent-audit",
+    "context_reconciliation": {
+      "status": "not-applicable",
+      "reason": "template-source；仅消费 CONTEXT，不新增产品稳定词汇"
+    },
+    "actual_validation": {
+      "command": "JSON.parse + claim/evidence reference checks",
+      "exit_code": 0,
+      "evidence_count": 26,
+      "claim_count": 7
+    },
+    "writes": [
+      "agents/spec-frameworks.md",
+      "agents/spec-frameworks.json"
+    ],
+    "product_test_status": "not-run",
+    "review_status": "owner must verify decision-bearing claims",
+    "ticket_status": "not-applicable",
+    "ready_for_agent": false,
+    "approval": "not-requested/not-granted",
+    "git_checkpoint": "not-authorized; none",
+    "next_route": "主控核实后纳入总研究包，不批准机会或实现",
+    "limitations": [
+      "未安装任何竞品，未做性能或故障注入",
+      "动态 main 文档可能先于或晚于已发布版本",
+      "没有使用量、流失率、付费意愿实测",
+      "社区扩展未逐个审计",
+      "本子任务 Google 直接访问由主控负责"
+    ]
+  }
+}

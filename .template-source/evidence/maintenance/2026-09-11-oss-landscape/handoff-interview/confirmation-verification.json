@@ -1,0 +1,62 @@
+{
+  "verified_at": "2026-09-11T15:39:21.726258+00:00",
+  "scope": "interview confirmation and prerequisite proposal documents only",
+  "checks": [
+    {
+      "check": "presented-snapshot SHA-256 and verbatim reply",
+      "result": "pass"
+    },
+    {
+      "check": "changed documents local links, JSON syntax and trailing whitespace",
+      "result": "pass"
+    },
+    {
+      "check": "current agreement and scope final confirmation consistency",
+      "result": "pass"
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "status",
+        "--short"
+      ],
+      "exit_code": 0,
+      "stdout": "M  .gitmodules\nD  submodules/create-yss-harness-dev\nD  submodules/yss-harness-dev-agent\n?? .template-source/evidence/maintenance/2026-09-11-oss-landscape/\n",
+      "stderr": ""
+    }
+  ],
+  "files": [
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/trial-agreement.md",
+      "sha256": "3766596ff23de74bc24b04ca409cdcb86802a93af06b55069843bd7f521c6f86"
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/trial-agreement-presented-v1.md",
+      "sha256": "f45735e8d98080299d220c203500cc31f320487c1e39a32fe5574b8d02ab5786"
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/scope.md",
+      "sha256": "2cc809639257a36f3013c5bde0a12aadc08893cfb14212663c03cb493a478a40"
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/prerequisite-plan.md",
+      "sha256": "e5a9bc1b2c7350d9adca2ca55b24d7e76936da1fda2dff43eafbd0d40eb5f082"
+    },
+    {
+      "path": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/confirmation.json",
+      "sha256": "081b40f75826fde3b5a12296d5ec5f6d60eb085ce6ffb2e150bf9d9567ad5af6"
+    }
+  ],
+  "product_tests_executed": false,
+  "implementation_or_release_approved": false
+}

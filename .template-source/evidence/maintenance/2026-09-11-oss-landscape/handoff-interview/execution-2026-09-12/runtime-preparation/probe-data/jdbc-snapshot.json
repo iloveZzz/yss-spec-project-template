@@ -1,0 +1,80 @@
+{
+  "fs_sync_task_columns": [
+    "[\"1\", \"id\", \"bigint\", true, null, \"分布式主键\"]",
+    "[\"2\", \"task_code\", \"character varying(128)\", true, null, \"任务唯一编码\"]",
+    "[\"3\", \"task_name\", \"character varying(128)\", true, null, \"任务名称\"]",
+    "[\"4\", \"task_status\", \"character varying(32)\", true, null, \"任务生命周期状态\"]",
+    "[\"5\", \"published_version\", \"integer\", true, \"0\", \"当前已发布版本号\"]",
+    "[\"6\", \"gmt_create\", \"timestamp without time zone\", true, \"CURRENT_TIMESTAMP\", \"创建时间\"]",
+    "[\"7\", \"gmt_modified\", \"timestamp without time zone\", true, \"CURRENT_TIMESTAMP\", \"最后修改时间\"]",
+    "[\"8\", \"owner_id\", \"character varying(128)\", false, null, \"任务负责人稳定人员标识\"]",
+    "[\"9\", \"snapshot_retention_days\", \"integer\", true, \"7\", null]"
+  ],
+  "fs_sync_task_primary_key": [
+    "[\"fs_sync_task_pkey\", [\"id\"]]"
+  ],
+  "fs_sync_task_draft_columns": [
+    "[\"1\", \"id\", \"bigint\", true, null, \"分布式主键\"]",
+    "[\"2\", \"task_id\", \"bigint\", true, null, \"所属同步任务主键\"]",
+    "[\"3\", \"revision\", \"integer\", true, null, \"草稿乐观锁修订号\"]",
+    "[\"4\", \"config_json\", \"text\", true, null, \"草稿同步配置 JSON\"]",
+    "[\"5\", \"gmt_create\", \"timestamp without time zone\", true, \"CURRENT_TIMESTAMP\", \"创建时间\"]",
+    "[\"6\", \"gmt_modified\", \"timestamp without time zone\", true, \"CURRENT_TIMESTAMP\", \"最后修改时间\"]",
+    "[\"7\", \"validation_config_digest\", \"character varying(64)\", false, null, \"最近校验时的配置摘要\"]",
+    "[\"8\", \"validation_environment_digest\", \"character varying(128)\", false, null, \"最近校验时的环境绑定摘要\"]",
+    "[\"9\", \"validated_at\", \"timestamp(3) without time zone\", false, null, \"最近校验通过时间\"]",
+    "[\"10\", \"validation_expires_at\", \"timestamp(3) without time zone\", false, null, \"最近校验结果失效时间\"]"
+  ],
+  "fs_sync_task_draft_primary_key": [
+    "[\"fs_sync_task_draft_pkey\", [\"id\"]]"
+  ],
+  "fs_sync_task_version_columns": [
+    "[\"1\", \"id\", \"bigint\", true, null, \"分布式主键\"]",
+    "[\"2\", \"task_id\", \"bigint\", true, null, \"所属同步任务主键\"]",
+    "[\"3\", \"version_number\", \"integer\", true, null, \"任务版本号\"]",
+    "[\"4\", \"config_digest\", \"character varying(64)\", true, null, \"发布配置摘要\"]",
+    "[\"5\", \"config_json\", \"text\", true, null, \"发布配置 JSON 快照\"]",
+    "[\"6\", \"gmt_create\", \"timestamp without time zone\", true, \"CURRENT_TIMESTAMP\", \"创建时间\"]",
+    "[\"7\", \"gmt_modified\", \"timestamp without time zone\", true, \"CURRENT_TIMESTAMP\", \"最后修改时间\"]"
+  ],
+  "fs_sync_task_version_primary_key": [
+    "[\"fs_sync_task_version_pkey\", [\"id\"]]"
+  ],
+  "populated_task": [
+    "[\"1\", \"PILOT_PREVIEW\", \"synthetic preview\", \"ACTIVE\", \"0\", \"pilot\", \"7\", \"2026-09-11T17:05:26.800077\", \"2026-09-11T17:05:26.800077\"]"
+  ],
+  "populated_draft": [
+    "[\"101\", \"1\", \"1\", \"{\\\"schemaVersion\\\":1,\\\"source\\\":{\\\"locationRef\\\":\\\"pilot-inbox\\\",\\\"includeGlob\\\":\\\"*.csv\\\",\\\"format\\\":\\\"CSV\\\"},\\\"mapping\\\":{\\\"columns\\\":[{\\\"source\\\":\\\"id\\\",\\\"target\\\":\\\"id\\\"}]},\\\"target\\\":{\\\"dataSourceRef\\\":\\\"target\\\",\\\"schema\\\":\\\"public\\\",\\\"table\\\":\\\"pilot_preview_rows\\\"},\\\"mode\\\":{\\\"type\\\":\\\"HISTORICAL\\\",\\\"effectiveDateColumn\\\":\\\"start_date\\\",\\\"expiryDateColumn\\\":\\\"end_date\\\"}}\", null, null, null, null, \"2026-09-11T17:05:26.801379\", \"2026-09-11T17:05:26.801379\"]"
+  ],
+  "populated_versions": [],
+  "empty_task": [
+    "[\"2\", \"PILOT_EMPTY\", \"synthetic preview\", \"ACTIVE\", \"0\", \"pilot\", \"7\", \"2026-09-11T17:05:26.802929\", \"2026-09-11T17:05:26.802929\"]"
+  ],
+  "empty_draft": [
+    "[\"102\", \"2\", \"1\", \"{\\\"schemaVersion\\\":1,\\\"source\\\":{\\\"locationRef\\\":\\\"pilot-inbox\\\",\\\"includeGlob\\\":\\\"*.csv\\\",\\\"format\\\":\\\"CSV\\\"},\\\"mapping\\\":{\\\"columns\\\":[{\\\"source\\\":\\\"id\\\",\\\"target\\\":\\\"id\\\"}]},\\\"target\\\":{\\\"dataSourceRef\\\":\\\"target\\\",\\\"schema\\\":\\\"public\\\",\\\"table\\\":\\\"pilot_preview_empty\\\"},\\\"mode\\\":{\\\"type\\\":\\\"HISTORICAL\\\",\\\"effectiveDateColumn\\\":\\\"start_date\\\",\\\"expiryDateColumn\\\":\\\"end_date\\\"}}\", null, null, null, null, \"2026-09-11T17:05:26.803280\", \"2026-09-11T17:05:26.803280\"]"
+  ],
+  "empty_versions": [],
+  "populated_target_columns": [
+    "[\"1\", \"id\", \"bigint\", true, null, null]",
+    "[\"2\", \"label\", \"character varying(64)\", false, null, null]",
+    "[\"3\", \"start_date\", \"timestamp without time zone\", true, null, null]",
+    "[\"4\", \"end_date\", \"timestamp without time zone\", false, null, null]"
+  ],
+  "populated_target_primary_key": [
+    "[\"pilot_preview_rows_pkey\", [\"id\"]]"
+  ],
+  "empty_target_columns": [
+    "[\"1\", \"id\", \"bigint\", true, null, null]",
+    "[\"2\", \"label\", \"character varying(64)\", false, null, null]",
+    "[\"3\", \"start_date\", \"timestamp without time zone\", true, null, null]",
+    "[\"4\", \"end_date\", \"timestamp without time zone\", false, null, null]"
+  ],
+  "empty_target_primary_key": [
+    "[\"pilot_preview_empty_pkey\", [\"id\"]]"
+  ],
+  "populated_rows": [
+    "[\"1\", \"current-example\", \"2026-01-01T00:00:00.000000\", null]",
+    "[\"2\", \"historical-example\", \"2025-01-01T00:00:00.000000\", \"2025-12-31T00:00:00.000000\"]"
+  ],
+  "empty_rows": []
+}

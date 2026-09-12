@@ -1,0 +1,41 @@
+{
+  "started_at": "2026-09-11T17:10:47.986Z",
+  "browser_version": "153.0.8010.12",
+  "console": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+    },
+    {
+      "type": "error",
+      "text": "Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    }
+  ],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:61112/api/quality-v3/file-sync/workbench/tasks?current=1&pageSize=20",
+      "method": "GET",
+      "status": 500,
+      "content_type": "text/plain",
+      "body": ""
+    }
+  ],
+  "external_requests_blocked": [
+    "https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png"
+  ],
+  "url": "http://127.0.0.1:61112/transfer/file-sync",
+  "body": "微应用平台\n质量问题\n规则维护\n源文件管理\n标准数据\n科目映射管理\n基本信息\n上传与导出管理\n分拣HUB\n文件批任务处理\n数据任务处理\n运维管理\n转持仓配置\nAdmin\n文件同步\n\n集中设计、发布和运维所有文件同步任务\n\n最近更新 --:--:--\n自动刷新\n0s（停止）\n新建同步任务\n同步任务\n0\n运行中\n0\n失败待处理\n0\n待设计/验证\n0\n今日处理文件\n0\n任务\n:\n任务状态\n:\n全部状态\n查询\n重置\n文件同步任务加载失败，请检查服务状态后重试。\n任务\n\t\n格式\n\t\n落地目标\n\t\n任务状态\n\t\n最近执行\n\t\n更新时间\n\t\n操作\n暂无数据\n共 0 条\n1\n20 条/页\n服务器内部错误，请稍后重试",
+  "buttons": [
+    "",
+    "新建同步任务",
+    "同步任务0",
+    "运行中0",
+    "失败待处理0",
+    "待设计/验证0",
+    "今日处理文件0",
+    "查询",
+    "重置",
+    "",
+    ""
+  ]
+}

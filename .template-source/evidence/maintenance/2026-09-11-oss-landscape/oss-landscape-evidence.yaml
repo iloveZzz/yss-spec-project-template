@@ -1,0 +1,2710 @@
+{
+  "schema_version": 1,
+  "profile": "strategy-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "YSS相似开源研发框架与机会",
+    "audience": "模板维护者",
+    "time_horizon": "2026-09-11快照，未来1–2迭代试验",
+    "research_questions": [
+      "哪些能力已成为基线？",
+      "跨仓交付/使用体验/生态的机会与反证是什么？",
+      "怎样验证收益而非从功能推导需求？"
+    ],
+    "inclusion_criteria": [
+      "有公开源码并与研发工作流或治理重叠",
+      "官方源支持能力；原始issue仅为带限制需求信号"
+    ],
+    "exclusion_criteria": [
+      "通用Agent库作为直接竞品",
+      "GoogleAI概览/广告/二手榜单作为支持证据",
+      "旧归档实现冒充当前活跃产品"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "yss-product-lifecycle",
+    "decision_ref": null
+  },
+  "search_log": [
+    {
+      "id": "search-spec-frameworks-1",
+      "channel": "web search + GitHub",
+      "query_or_corpus": "site:github.com/github/spec-kit brownfield extensions; site:github.com/Fission-AI/OpenSpec schema brownfield; site:github.com/bmad-code-org/BMAD-METHOD workflow brownfield",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "SSL01",
+        "date": "2026-09-11",
+        "queries": [
+          "site:github.com/github/spec-kit brownfield extensions",
+          "site:github.com/Fission-AI/OpenSpec schema brownfield",
+          "site:github.com/bmad-code-org/BMAD-METHOD workflow brownfield"
+        ],
+        "platform": "web search + GitHub",
+        "result": "定位官方 README、深文档、社区扩展与旧 workflow map；后续直接读取核实。"
+      }
+    },
+    {
+      "id": "search-spec-frameworks-2",
+      "channel": "web search + GitHub",
+      "query_or_corpus": "site:github.com/Fission-AI/OpenSpec/issues archive specs conflict; site:github.com/bmad-code-org/BMAD-METHOD/issues review context upgrade",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "SSL02",
+        "date": "2026-09-11",
+        "queries": [
+          "site:github.com/Fission-AI/OpenSpec/issues archive specs conflict",
+          "site:github.com/bmad-code-org/BMAD-METHOD/issues review context upgrade"
+        ],
+        "platform": "web search + GitHub",
+        "result": "定位归档/跨仓/文件增长与脚手架反馈；排除无关搜索命中。"
+      }
+    },
+    {
+      "id": "search-spec-frameworks-3",
+      "channel": "GitHub direct + official docs",
+      "query_or_corpus": "README → Releases; README → Stores User Guide; BMAD README → current docs navigation → Existing Codebases / Organization / Customize / Review",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "SSL03",
+        "date": "2026-09-11",
+        "queries": [
+          "README → Releases",
+          "README → Stores User Guide",
+          "BMAD README → current docs navigation → Existing Codebases / Organization / Customize / Review"
+        ],
+        "platform": "GitHub direct + official docs",
+        "result": "三项 README + 至少一份深文档 + Release 全部读到；命令和版本以直接页面优先。"
+      }
+    },
+    {
+      "id": "search-spec-frameworks-4",
+      "channel": "web direct open",
+      "query_or_corpus": "https://github.com/bmad-code-org/BMAD-METHOD/blob/main/docs/reference/workflow-map.md; https://github.com/github/spec-kit/blob/main/workflows/speckit.yml",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "SSL04",
+        "date": "2026-09-11",
+        "queries": [
+          "https://github.com/bmad-code-org/BMAD-METHOD/blob/main/docs/reference/workflow-map.md",
+          "https://github.com/github/spec-kit/blob/main/workflows/speckit.yml"
+        ],
+        "platform": "web direct open",
+        "result": "Internal Error；不据此否定文件存在；BMAD 改用当前 README 链接正式站点，Spec Kit 改用可读 workflow reference。"
+      }
+    },
+    {
+      "id": "search-spec-frameworks-5",
+      "channel": "delegation boundary",
+      "query_or_corpus": "Google",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "SSL05",
+        "date": "2026-09-11",
+        "queries": [
+          "Google"
+        ],
+        "platform": "delegation boundary",
+        "result": "主控负责 Google 直接访问与跨平台搜索，本子任务不声称已经完成 Google 页面检索。"
+      }
+    },
+    {
+      "id": "search-spec-frameworks-6",
+      "channel": "GitHub direct",
+      "query_or_corpus": "OpenSpec #872; BMAD #2415; Spec Kit #2046; OpenSpec #1436/#1456",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "SSL06",
+        "date": "2026-09-11",
+        "queries": [
+          "OpenSpec #872; BMAD #2415; Spec Kit #2046; OpenSpec #1436/#1456"
+        ],
+        "platform": "GitHub direct",
+        "result": "直接读状态和正文；#872 搜索缓存 Open 与当前 Closed as not planned 冲突，采用当前页面。"
+      }
+    },
+    {
+      "id": "search-agent-workflows-1",
+      "channel": "web.search",
+      "query_or_corpus": "{\"id\": \"search-aw-01\", \"executed_at\": \"2026-09-11\", \"channel\": \"web.search\", \"query\": \"site:github.com/obra/superpowers; site:github.com gsd-build get-shit-done; site:github.com/mattpocock/skills; site:github.com cc-sdd spec-kitty\", \"result\": \"results-found\", \"notes\": \"最后一条结果被无关简历 PDF 淹没，排除；按官方 GSD 迁移增加 Pi，未继续 cc-sdd。\"}",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "search-aw-01",
+        "executed_at": "2026-09-11",
+        "channel": "web.search",
+        "query": "site:github.com/obra/superpowers; site:github.com gsd-build get-shit-done; site:github.com/mattpocock/skills; site:github.com cc-sdd spec-kitty",
+        "result": "results-found",
+        "notes": "最后一条结果被无关简历 PDF 淹没，排除；按官方 GSD 迁移增加 Pi，未继续 cc-sdd。"
+      }
+    },
+    {
+      "id": "search-agent-workflows-2",
+      "channel": "web.open + GitHub REST API",
+      "query_or_corpus": "{\"id\": \"search-aw-02\", \"executed_at\": \"2026-09-11\", \"channel\": \"web.open + GitHub REST API\", \"query\": \"官方 README / repository metadata / latest releases / commits / git tree\", \"result\": \"results-found\", \"notes\": \"发现 GSD 旧仓归档和双迁移；元数据非 fork 验证；Core default next 与阅读 main 区分。\"}",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "search-aw-02",
+        "executed_at": "2026-09-11",
+        "channel": "web.open + GitHub REST API",
+        "query": "官方 README / repository metadata / latest releases / commits / git tree",
+        "result": "results-found",
+        "notes": "发现 GSD 旧仓归档和双迁移；元数据非 fork 验证；Core default next 与阅读 main 区分。"
+      }
+    },
+    {
+      "id": "search-agent-workflows-3",
+      "channel": "raw.githubusercontent.com",
+      "query_or_corpus": "{\"id\": \"search-aw-03\", \"executed_at\": \"2026-09-11\", \"channel\": \"raw.githubusercontent.com\", \"query\": \"Superpowers verification/SDD/brainstorming; Matt ADR/handoff/implement/code-review; Core architecture/state contract/update docs and src/state-contract.cts\", \"result\": \"results-found\", \"notes\": \"源码和文档交叉核验，未运行项目。\"}",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "search-aw-03",
+        "executed_at": "2026-09-11",
+        "channel": "raw.githubusercontent.com",
+        "query": "Superpowers verification/SDD/brainstorming; Matt ADR/handoff/implement/code-review; Core architecture/state contract/update docs and src/state-contract.cts",
+        "result": "results-found",
+        "notes": "源码和文档交叉核验，未运行项目。"
+      }
+    },
+    {
+      "id": "search-agent-workflows-4",
+      "channel": "web.search",
+      "query_or_corpus": "{\"id\": \"search-aw-04\", \"executed_at\": \"2026-09-11\", \"channel\": \"web.search\", \"query\": \"site:github.com/obra/superpowers/issues context compaction review cost; site:github.com/open-gsd/gsd-core/issues state drift update; site:github.com/mattpocock/skills/issues plugin update\", \"result\": \"results-found\", \"notes\": \"搜索返回的 Superpowers #2112 显示 Open，REST 实时核实为 closed/completed，采用后者。\"}",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "search-aw-04",
+        "executed_at": "2026-09-11",
+        "channel": "web.search",
+        "query": "site:github.com/obra/superpowers/issues context compaction review cost; site:github.com/open-gsd/gsd-core/issues state drift update; site:github.com/mattpocock/skills/issues plugin update",
+        "result": "results-found",
+        "notes": "搜索返回的 Superpowers #2112 显示 Open，REST 实时核实为 closed/completed，采用后者。"
+      }
+    },
+    {
+      "id": "search-agent-workflows-5",
+      "channel": "GitHub REST API",
+      "query_or_corpus": "{\"id\": \"search-aw-05\", \"executed_at\": \"2026-09-11\", \"channel\": \"GitHub REST API\", \"query\": \"Superpowers issues/2112,1735; Matt releases/tags/v1.2.3; Core issues?state=open&per_page=8; issues/4623,4624\", \"result\": \"results-found\", \"notes\": \"issue 为原始用户报告；本轮不复现。Open issues API 混含 PR，手动按 html_url 区分。\"}",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "search-aw-05",
+        "executed_at": "2026-09-11",
+        "channel": "GitHub REST API",
+        "query": "Superpowers issues/2112,1735; Matt releases/tags/v1.2.3; Core issues?state=open&per_page=8; issues/4623,4624",
+        "result": "results-found",
+        "notes": "issue 为原始用户报告；本轮不复现。Open issues API 混含 PR，手动按 html_url 区分。"
+      }
+    },
+    {
+      "id": "search-platforms-1",
+      "channel": "web-search",
+      "query_or_corpus": "site.github.com OpenHands OpenHands security confirmation mode sandbox enterprise license; site:github.com Aider-AI aider issues restore context cost",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "search-platforms-001",
+        "channel": "web-search",
+        "query_or_corpus": "site.github.com OpenHands OpenHands security confirmation mode sandbox enterprise license; site:github.com Aider-AI aider issues restore context cost",
+        "searched_at": "2026-09-11",
+        "result": "results-found"
+      }
+    },
+    {
+      "id": "search-platforms-2",
+      "channel": "web-open",
+      "query_or_corpus": "OpenHands/OpenHands; aider.chat/docs; humanlayer/humanlayer",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "search-platforms-002",
+        "channel": "web-open",
+        "query_or_corpus": "OpenHands/OpenHands; aider.chat/docs; humanlayer/humanlayer",
+        "searched_at": "2026-09-11",
+        "result": "results-found"
+      }
+    },
+    {
+      "id": "search-platforms-3",
+      "channel": "web-search",
+      "query_or_corpus": "site:github.com/OpenHands/OpenHands/issues resume 2026; permission 2026; site:docs.openhands.dev cost metrics",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "search-platforms-003",
+        "channel": "web-search",
+        "query_or_corpus": "site:github.com/OpenHands/OpenHands/issues resume 2026; permission 2026; site:docs.openhands.dev cost metrics",
+        "searched_at": "2026-09-11",
+        "result": "results-found"
+      }
+    },
+    {
+      "id": "search-platforms-4",
+      "channel": "web-open",
+      "query_or_corpus": "Aider issue 4113 / 5567; OpenHands issue 15912; SDK security / persistence / metrics / observability; aider git / commands / modes / docker / LICENSE",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "search-platforms-004",
+        "channel": "web-open",
+        "query_or_corpus": "Aider issue 4113 / 5567; OpenHands issue 15912; SDK security / persistence / metrics / observability; aider git / commands / modes / docker / LICENSE",
+        "searched_at": "2026-09-11",
+        "result": "results-found"
+      }
+    },
+    {
+      "id": "search-platforms-5",
+      "channel": "web-open",
+      "query_or_corpus": "openhands.dev/pricing; openhands.dev/enterprise",
+      "searched_at": "2026-09-11",
+      "result": "results-found",
+      "detail": {
+        "id": "search-platforms-005",
+        "channel": "web-open",
+        "query_or_corpus": "openhands.dev/pricing; openhands.dev/enterprise",
+        "searched_at": "2026-09-11",
+        "result": "results-found"
+      }
+    },
+    {
+      "id": "search-platforms-6",
+      "channel": "screening",
+      "query_or_corpus": "humanlayer/humanlayer current README: exclude deprecated code as current implementation",
+      "searched_at": "2026-09-11",
+      "result": "excluded",
+      "detail": {
+        "id": "search-platforms-006",
+        "channel": "screening",
+        "query_or_corpus": "humanlayer/humanlayer current README: exclude deprecated code as current implementation",
+        "searched_at": "2026-09-11",
+        "result": "excluded"
+      }
+    },
+    {
+      "id": "search-platforms-7",
+      "channel": "screening",
+      "query_or_corpus": "Search surfaced taptap/open-hands fork, DocCompiler.ai generated guide, github-actions weekly AI quality reports: exclude from decision support",
+      "searched_at": "2026-09-11",
+      "result": "excluded",
+      "detail": {
+        "id": "search-platforms-007",
+        "channel": "screening",
+        "query_or_corpus": "Search surfaced taptap/open-hands fork, DocCompiler.ai generated guide, github-actions weekly AI quality reports: exclude from decision support",
+        "searched_at": "2026-09-11",
+        "result": "excluded"
+      }
+    },
+    {
+      "id": "search-platforms-8",
+      "channel": "web-find",
+      "query_or_corpus": "aider chat modes: approve; OpenHands pricing: $",
+      "searched_at": "2026-09-11",
+      "result": "none-found",
+      "detail": {
+        "id": "search-platforms-008",
+        "channel": "web-find",
+        "query_or_corpus": "aider chat modes: approve; OpenHands pricing: $",
+        "searched_at": "2026-09-11",
+        "result": "none-found"
+      }
+    },
+    {
+      "id": "search-owner-01",
+      "channel": "local",
+      "query_or_corpus": "本地 yss-project.yaml CONTEXT.md README AGENTS 工程说明 用户手册; CodeGraph explore及对应脚本核查",
+      "searched_at": "2026-09-11",
+      "result": "results-found"
+    },
+    {
+      "id": "search-owner-02",
+      "channel": "web-search",
+      "query_or_corpus": "open source spec driven development github spec-kit OpenSpec BMAD method; open source agent workflow superpowers get shit done gsd spec driven development github",
+      "searched_at": "2026-09-11",
+      "result": "results-found"
+    },
+    {
+      "id": "search-owner-03",
+      "channel": "web-open",
+      "query_or_corpus": "https://www.google.com/search?q=open+source+spec+driven+development+github+spec-kit+OpenSpec+BMAD",
+      "searched_at": "2026-09-11",
+      "result": "access-failed"
+    },
+    {
+      "id": "search-owner-04",
+      "channel": "Google browser",
+      "query_or_corpus": "open source spec driven development framework GitHub",
+      "searched_at": "2026-09-11",
+      "result": "results-found"
+    },
+    {
+      "id": "search-owner-05",
+      "channel": "web-search",
+      "query_or_corpus": "site.github.com spec driven development cross-repo governance; site:github.com agent skills lock provenance update conflict workflow; site:github.com spec-kit approval extension; site:github.com cc-sdd spec-kitty",
+      "searched_at": "2026-09-11",
+      "result": "results-found"
+    },
+    {
+      "id": "search-owner-06",
+      "channel": "web-search",
+      "query_or_corpus": "site:github.com awslabs aidlc workflows; site:github.com spec-kitty cc-sdd spec driven development",
+      "searched_at": "2026-09-11",
+      "result": "results-found"
+    },
+    {
+      "id": "search-owner-07",
+      "channel": "web-search",
+      "query_or_corpus": "site:github.com/gotalab/cc-sdd cc-sdd; site:github.com/Priivacy-ai/spec-kitty spec kitty; AI 研发 规范驱动 开源 spec BMAD 中文 工作流",
+      "searched_at": "2026-09-11",
+      "result": "results-found"
+    },
+    {
+      "id": "search-owner-08",
+      "channel": "GitHub API",
+      "query_or_corpus": "github-metadata.json source_url for each requested repo",
+      "searched_at": "2026-09-11",
+      "result": "results-found"
+    },
+    {
+      "id": "search-owner-09",
+      "channel": "GitHub API",
+      "query_or_corpus": "https://api.github.com/repos/Priivacy-ai/spec-kitty ; anonymous rate limit 403",
+      "searched_at": "2026-09-11",
+      "result": "access-failed"
+    },
+    {
+      "id": "search-owner-10",
+      "channel": "source exclusions",
+      "query_or_corpus": "Google AI overview, sponsored links, aggregator comparisons; HumanLayer deprecated public code; old GSD historical repos",
+      "searched_at": "2026-09-11",
+      "result": "excluded"
+    },
+    {
+      "id": "search-owner-11",
+      "channel": "web-open",
+      "query_or_corpus": "https://github.github.com/gh-aw/reference/cost/ and /opentelemetry/; failed; followed observed navigation to cost-management/ and open-telemetry/",
+      "searched_at": "2026-09-11",
+      "result": "access-failed"
+    },
+    {
+      "id": "search-owner-12",
+      "channel": "official direct open",
+      "query_or_corpus": "AI-DLC engine,profiles,doctor; gh-aw README SpecOps Safe Outputs cost-management/open-telemetry; cc-sdd README guide; Spec Kitty README/governed invocation; skills-lock/SkilLock README",
+      "searched_at": "2026-09-11",
+      "result": "results-found"
+    },
+    {
+      "id": "search-owner-13",
+      "channel": "owner revalidation",
+      "query_or_corpus": "Spec Kit README/workflows; BMAD organization/customize; OpenSpec Stores and issue1436; OpenHands Canvas, persistence, enterprise; Aider git and issue5567; spec-kit discussion2046; Superpowers release6.3.0; GSD Core README",
+      "searched_at": "2026-09-11",
+      "result": "results-found"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "SK01",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/github/spec-kit",
+      "locator": "README: SDD Quickstart; Available Slash Commands; License; Stars",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "MIT；公开页面约 135.4k stars、12.2k forks。核心含 constitution/specify/plan/tasks/implement/converge；Python uv/PyPI 分发并支持 30+ Agent。",
+      "limitations": [
+        "主分支与公开计数可变；关注量不是用户量；未执行产品工作流。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#SK01"
+    },
+    {
+      "id": "SK02",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.github.io/spec-kit/reference/workflows.html",
+      "locator": "Workflows: Run/Resume; Step Types; Security note",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "工作流有 JSON 状态、暂停恢复、human gate、条件和扇出汇合；shell 用本机权限执行，requires 不是能力沙箱。",
+      "limitations": [
+        "具有审批机制不能推导为不可绕过的安全边界；仅文档核查。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#SK02"
+    },
+    {
+      "id": "SK03",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/github/spec-kit/blob/main/docs/community/extensions.md",
+      "locator": "Community Extensions: disclaimer; category/effect; API Evolve/Brownfield rows",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "存在 Brownfield、API 演进、治理等社区扩展；目录维护者审核元数据格式，不审计或背书扩展代码。",
+      "limitations": [
+        "目录条目是能力线索，扩展本身未逐一安装/审计。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#SK03"
+    },
+    {
+      "id": "SK04",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/github/spec-kit/blob/main/extensions/EXTENSION-API-REFERENCE.md",
+      "locator": "Extension Manifest / Schema Version 1.0",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "扩展 manifest 声明 id、版本、作者、许可证、仓库、speckit 版本要求等。",
+      "limitations": [
+        "来源/依赖元数据不自动等于内容供应链审计。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#SK04"
+    },
+    {
+      "id": "SK05",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/github/spec-kit/releases/tag/v1.0.6",
+      "locator": "Release title; released 10 Sep 13:27; What's Changed",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "最新 Release 列表标记 v1.0.6，2026-09-10；包含 unreadable extensions.yml 不再静默跳过 hooks、工作流逐步 integration 配置等改进。",
+      "limitations": [
+        "Release 证明发布者列出的变化，非本研究复现；时区按 GitHub 页面显示。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#SK05"
+    },
+    {
+      "id": "SK06",
+      "source_level": "direct-experience",
+      "visibility": "public",
+      "source_class": "issue-or-discussion",
+      "source_ref": "https://github.com/github/spec-kit/discussions/2046",
+      "locator": "2026-04-01 initial post; maintainer reply; 2026-04-13 reply",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "一位使用者报告规格审阅额外成本，倾向 IDE 内建 Plan→Implement；维护者举 brownfield/扩展反例，另一参与者认为 clarify/analyze 关键。",
+      "limitations": [
+        "小样本自选择讨论；旧版本体验不能代表当前普遍行为或 ROI。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#SK06"
+    },
+    {
+      "id": "SK07",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/github/spec-kit/blob/main/docs/reference/overview.md",
+      "locator": "Presets; Workflows; Bundles",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "官方区分 extensions 扩能力、presets 改模板、workflows 编排、bundles 组合版本化安装单元。",
+      "limitations": [
+        "组织治理和定制已有丰富供给，不支持将它们视为 YSS 独有。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#SK07"
+    },
+    {
+      "id": "OS01",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec",
+      "locator": "README: philosophy; Quick Start; License; Stars",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "MIT；公开页面约 68.0k stars、4.7k forks；Node >=20.19、npm 全局安装；默认展示 explore/propose/apply/archive。",
+      "limitations": [
+        "最受欢迎等宣传不采信；stars 非用户；main 快照。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#OS01"
+    },
+    {
+      "id": "OS02",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/blob/main/docs/concepts.md",
+      "locator": "Delta Specs; Delta Sections; Schemas",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "以当前 specs 与 change deltas 区分存量行为和变更，Schema 定义产物及依赖图。",
+      "limitations": [
+        "依赖图就绪不等于语义实现已满足。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#OS02"
+    },
+    {
+      "id": "OS03",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/blob/main/docs/stores-beta/user-guide.md",
+      "locator": "Example one feature two component repos; How implementation starts; Known limitations",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "Stores beta 允许独立规划仓和只读 references；文档明确不把任务路由到代码仓，不自动读所有消费者；不 clone/pull/push，陈旧 checkout 显示陈旧 specs。",
+      "limitations": [
+        "beta 名称/格式可变；跨仓共享上下文已存在，不能说不支持跨仓。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#OS03"
+    },
+    {
+      "id": "OS04",
+      "source_level": "near-primary",
+      "visibility": "public",
+      "source_class": "issue-or-discussion",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/issues/1436",
+      "locator": "Open; 2026-07-23; Problem / What exists today",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "维护者整理跨仓用户反馈：消费者仓职责重复叙述，目前通过 context/CLAUDE.md 自由文本补充，讨论标准化。",
+      "limitations": [
+        "公开维护者转述近一手 Discord 反馈；未访问原 Discord；单一场景不代表频率。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#OS04"
+    },
+    {
+      "id": "OS05",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/blob/main/docs/commands.md",
+      "locator": "/opsx:archive tips; /opsx:bulk-archive",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "Agent archive 提示未完成任务但不强制阻断；bulk archive 冲突通过 Agent 对照实现判断。",
+      "limitations": [
+        "这是 Agent 命令指导；不要与确定性 CLI 校验/事务能力混同。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#OS05"
+    },
+    {
+      "id": "OS06",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/blob/main/docs/cli.md",
+      "locator": "Lifecycle Commands / openspec archive",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "CLI archive 有验证、确认、先占归档目录、失败恢复；可显式 --no-validate；非交互缺 --yes 会在写入前停止。",
+      "limitations": [
+        "行为来自官方合同，未故障注入；存在安全归档能力，不能称完全没有保护。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#OS06"
+    },
+    {
+      "id": "OS07",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/releases/tag/v1.13.0",
+      "locator": "Release list Latest; 2026-09-09 21:10; What's New",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "v1.13.0 发布于 2026-09-09；apply 对无 specs 发警告，修复归档改写 fenced code 和特定 Markdown 列表删除失效。",
+      "limitations": [
+        "已修复事项仅支持故障类别/可靠性需求，不作为当前缺陷宣称。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#OS07"
+    },
+    {
+      "id": "OS08",
+      "source_level": "direct-experience",
+      "visibility": "public",
+      "source_class": "issue-or-discussion",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/issues/872",
+      "locator": "Closed as not planned; opened 2026-03-25; Description",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "一位使用者报告长期归档/规格文件增长，尝试 summary 干扰 explore；当前页面状态 Closed as not planned。",
+      "limitations": [
+        "搜索结果仍显示 Open，已以直读页面纠正；未获得当前复现或维护者结论。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#OS08"
+    },
+    {
+      "id": "OS09",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/issues/1456",
+      "locator": "Open; 2026-07-27; Intended split / inconsistent today",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "维护者将 schema 与项目 config 的 workflow phase 指引位置及合并优先级记为设计问题；明确 advice 与 CLI check 不同。",
+      "limitations": [
+        "不是 bug；不能推断任意自定义不工作。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#OS09"
+    },
+    {
+      "id": "OS10",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/blob/main/schemas/spec-driven/schema.yaml",
+      "locator": "artifacts proposal/specs/design/tasks; apply",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "默认 schema 将产物要求与 apply 指令结构化。",
+      "limitations": [
+        "只检查此默认 schema，未覆盖所有自定义 schema。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#OS10"
+    },
+    {
+      "id": "BM01",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/bmad-code-org/BMAD-METHOD",
+      "locator": "README: Start Building; Why BMad; License; Stars",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "MIT，另有商标声明；公开约 52.9k stars、6.0k forks；当前推荐 Skills CLI 或 Claude/Codex plugin 分发，配套 uv；强调按工作大小裁剪。",
+      "limitations": [
+        "搜索返回的旧 npm installer 文档与当前 main 导航不一致，采用当前 README；未代表安装量。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#BM01"
+    },
+    {
+      "id": "BM02",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://docs.bmad-method.org/existing-codebases/start-in-an-existing-codebase/",
+      "locator": "Prepare Project Context or Skip It; Build Follows What It Finds",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "已有工程小改动可直接 Build；已有维护良好 Agent 规则可跳过 context 生成；先调查现有代码再决定复用。",
+      "limitations": [
+        "反对无差别补文档；该建议不是效果实验。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#BM02"
+    },
+    {
+      "id": "BM03",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://docs.bmad-method.org/plan/choose-a-planning-path/",
+      "locator": "Start from Intent; Planning Skills; Prerequisites",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "独立规划工具按意图缺口选择；明显低风险编辑无需 BMAD；规划产物汇入 Spec 后按工作规模 Build。",
+      "limitations": [
+        "README 的全生命周期不是每次必须走全程。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#BM03"
+    },
+    {
+      "id": "BM04",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://docs.bmad-method.org/plan/plan-inside-an-organization/",
+      "locator": "Where Sign-Off Happens; Several Epics; Requirements Change",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "组织文档有五类 human decision 及阻断对象，单一文档 owner、共享 spine、多 epic 稳定能力 ID 和变更传播；部分检查可无人模式。",
+      "limitations": [
+        "有审批文档不代表与 YSS 的批准字节绑定等价；也不能说 BMAD 无人工治理。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#BM04"
+    },
+    {
+      "id": "BM05",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://docs.bmad-method.org/customize/customize-bmad/",
+      "locator": "Customize workflow; Central configuration; Override one invocation",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "团队/个人 TOML 分层覆盖，安装器文件与 human-authored custom 文件分离；支持每次运行覆盖、review layers，未使用覆盖会停止渲染。",
+      "limitations": [
+        "不是不可定制；全复制默认配置会遮蔽未来升级，官方明确提醒。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#BM05"
+    },
+    {
+      "id": "BM06",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://docs.bmad-method.org/build/review-a-change/",
+      "locator": "What a Run Does; Customize the Layers; Your platform",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "四类独立审查视角，逐 finding 定位核实、理由化剔除、patch/defer/decision 分诊；运行时能力不足可导致串行或回主会话。",
+      "limitations": [
+        "文档中的成本倍数/优于平台评价不采纳；独立性与时延受 runtime 影响，未测。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#BM06"
+    },
+    {
+      "id": "BM07",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://docs.bmad-method.org/existing-codebases/set-and-maintain-project-context/",
+      "locator": "Approve Block; Keep Healthy; What Earns a Line",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "context 保留手写 AGENTS.md 并用 managed block，刷新对照变更、audit 只缩减；保留项目已确认规则和观察到的陷阱。",
+      "limitations": [
+        "上下文卫生已有直接竞品供给；未测其规则保真度。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#BM07"
+    },
+    {
+      "id": "BM08",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/bmad-code-org/BMAD-METHOD/releases/tag/v6.12.0",
+      "locator": "Latest release; 2026-09-04 02:31; Breaking",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "v6.12.0，2026-09-04；简易变更两段 spec，同次会话闭环；逐 finding 记录 verdict/evidence；含 persistent_facts、diff 变量等迁移注意。",
+      "limitations": [
+        "旧 workflow-map 搜索摘要不能当当前正式路线；发行说明非安装验证。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#BM08"
+    },
+    {
+      "id": "BM09",
+      "source_level": "direct-experience",
+      "visibility": "public",
+      "source_class": "issue-or-discussion",
+      "source_ref": "https://github.com/bmad-code-org/BMAD-METHOD/issues/2415",
+      "locator": "Closed; 2026-05-23; Context / proposed workflow",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "用户提出从想法到可运行模板工程的 ignition 需求，反映规划与启动仓库衔接问题。",
+      "limitations": [
+        "当前 Closed；非维护者承诺，不能推断现版本仍缺脚手架或普遍流失。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#BM09"
+    },
+    {
+      "id": "evidence-aw-01",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://api.github.com/repos/obra/superpowers",
+      "locator": "full_name, archived, license, pushed_at",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "canonical obra/superpowers，非 fork、未归档、MIT；pushed_at 2026-09-11T03:48:04Z。HEAD b36e0829c6d0140e93cfef2ca599b1b07d4a7797。",
+      "limitations": [
+        "仓库活动不等于可靠性；未将 star 当用户。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-01"
+    },
+    {
+      "id": "evidence-aw-02",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/obra/superpowers/blob/b36e0829c6d0140e93cfef2ca599b1b07d4a7797/skills/verification-before-completion/SKILL.md",
+      "locator": "The Iron Law; The Gate Function",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "完成声明前运行完整验证命令，阅读输出与退出码；历史结果和 Agent 成功自述不够。",
+      "limitations": [
+        "未安装运行；文档或源码事实不代表实测效果。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-02"
+    },
+    {
+      "id": "evidence-aw-03",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/obra/superpowers/blob/b36e0829c6d0140e93cfef2ca599b1b07d4a7797/skills/subagent-driven-development/SKILL.md",
+      "locator": "lines 8-31, 354-443, 471-500",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "按任务派独立 implementer，task reviewer 给 Spec 与质量结论；最多五轮修复后由主控留 ruling；计划范围 ledger 跨 compaction，最终报告汇总 ruling。",
+      "limitations": [
+        "未安装运行；文档或源码事实不代表实测效果。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-03"
+    },
+    {
+      "id": "evidence-aw-04",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/obra/superpowers/releases/tag/v6.3.0",
+      "locator": "Brainstorming; Subagent-Driven Development",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-08-12T16:58:30Z",
+      "observation": "发布说明引入 spike/bounded/architectural 裁剪、同构小任务合并 dispatch、冲突 ruling；修复 worktree 清理时未跟踪文件保护。",
+      "limitations": [
+        "未安装运行；文档或源码事实不代表实测效果。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-04"
+    },
+    {
+      "id": "evidence-aw-05",
+      "source_level": "direct-experience",
+      "visibility": "public",
+      "source_class": "issue-or-discussion",
+      "source_ref": "https://github.com/obra/superpowers/issues/2112",
+      "locator": "issue body Environment, What happened; API state",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-08-08T22:21:49Z",
+      "observation": "用户报告 v6.2.0 Codex Desktop 中审查不断增加超出冻结验收的边界测试；API 当前 closed/completed，更新时间 2026-08-12。",
+      "limitations": [
+        "单个用户报告，未复现；不证明 v6.3.0 仍有同一缺陷，也不代表发生率。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-05"
+    },
+    {
+      "id": "evidence-aw-06",
+      "source_level": "direct-experience",
+      "visibility": "public",
+      "source_class": "issue-or-discussion",
+      "source_ref": "https://github.com/obra/superpowers/issues/1735",
+      "locator": "What worked; The problem",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-06-11T06:55:45Z",
+      "observation": "v5.1.0 用户认为小项目流程重，同时明确承认审查发现无效测试、反序列化缺口和版本下限问题；API closed/completed。",
+      "limitations": [
+        "单例体验，旧版；不能拿其调度数与成本概括现版。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-06"
+    },
+    {
+      "id": "evidence-aw-07",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/gsd-build/get-shit-done/blob/bdcaab2c752d9a33a1a1ca9acf3a3c81fb991815/README.md",
+      "locator": "lines 3-12; repo archived banner",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "旧仓当前 README 说明现行开发在 open-gsd/gsd-core；页面显示 2026-06-26 归档。",
+      "limitations": [
+        "检索缓存仍展示旧安装命令，正式比较以跳转目标为准。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-07"
+    },
+    {
+      "id": "evidence-aw-08",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://api.github.com/repos/open-gsd/gsd-core",
+      "locator": "metadata; /commits/main; /commits/HEAD; /releases?per_page=2",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "非 fork、未归档、MIT，默认分支 next。阅读基线 main b67f6028ce572f0504a035f9cdf5e11b0cb86bf0；最新正式 release v1.13.0 (2026-09-06)，默认分支 HEAD aad96e0b5f14a8d9eee0872b6313faefd4714837 (2026-09-11)。",
+      "limitations": [
+        "latest main README 的 what is new 仍写 1.7.0，不能用于判断最新发布。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-08"
+    },
+    {
+      "id": "evidence-aw-09",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/open-gsd/gsd-core/blob/b67f6028ce572f0504a035f9cdf5e11b0cb86bf0/docs/ARCHITECTURE.md",
+      "locator": "Fresh Context Per Agent; File-Based State; Command namespace meta-skills; workflow size budget",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "研究/规划/执行用独立上下文，.planning 保存 Markdown/JSON。部分非递归运行时走 namespace router，递归或未确认运行时用平铺技能；按实际运行时区别安装。",
+      "limitations": [
+        "up to 200K 是作者描述的上下文上限，非跨模型保证；未验证节省比例。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-09"
+    },
+    {
+      "id": "evidence-aw-10",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/open-gsd/gsd-core/blob/b67f6028ce572f0504a035f9cdf5e11b0cb86bf0/src/state-contract.cts",
+      "locator": "lines 72-117, 195-203, 298-306, 318-376",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "定义 state.json v1.0.0、固定 keys/状态枚举；next 复用 classifyProject。投影 best-effort；缺资料可为 null/空数组，Deferred 映射 pending。",
+      "limitations": [
+        "投影是展示 cache；不能从其字段推出 YSS 相同的批准、新鲜度合同。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-10"
+    },
+    {
+      "id": "evidence-aw-11",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/open-gsd/gsd-core/blob/b67f6028ce572f0504a035f9cdf5e11b0cb86bf0/docs/features/statemd-consistency-gates.md",
+      "locator": "REQ-STATE-01 to REQ-STATE-06",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "state validate 对照文件系统检查漂移；sync 重建；--verify 预览；--strict 让 valid 影响进程退出码。",
+      "limitations": [
+        "未安装运行；文档或源码事实不代表实测效果。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-11"
+    },
+    {
+      "id": "evidence-aw-12",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/open-gsd/gsd-core/blob/b67f6028ce572f0504a035f9cdf5e11b0cb86bf0/docs/how-to/update-gsd.md",
+      "locator": "lines 102-146, 164",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "更新前备份用户文件；manifest hash 识别被改过的托管文件并备份本地 patches；--reapply 合回。恢复兼容警告是 advisory。",
+      "limitations": [
+        "未安装运行；文档或源码事实不代表实测效果。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-12"
+    },
+    {
+      "id": "evidence-aw-13",
+      "source_level": "direct-experience",
+      "visibility": "public",
+      "source_class": "issue-or-discussion",
+      "source_ref": "https://github.com/open-gsd/gsd-core/issues/4623",
+      "locator": "issue body sections 1,2; Environment",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11T09:55:21Z",
+      "observation": "1.13.0 用户报告 covered_digest 含共享 ROADMAP/REQUIREMENTS，完成别的阶段使未改实现 stale；另报告 fingerprint CLI 参数问题，库函数可工作。API 当前 open。",
+      "limitations": [
+        "单例、未复现且尚无本轮维护者裁决；可作诊断实验输入，不能直接断言实现缺陷已确认。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-13"
+    },
+    {
+      "id": "evidence-aw-14",
+      "source_level": "direct-experience",
+      "visibility": "public",
+      "source_class": "issue-or-discussion",
+      "source_ref": "https://github.com/open-gsd/gsd-core/issues/4624",
+      "locator": "What happened; Steps to reproduce; GSD Configuration",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11T10:49:19Z",
+      "observation": "1.13.0 Codex 用户报告 worktree 外部进程完成或 blocked 后主控未自动收敛，下一用户消息才检查结果；已有 artifact reconciliation 仍需主控执行。API 当前 open。",
+      "limitations": [
+        "单例、未复现；未确认默认配置、其他运行时或未来补丁。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-14"
+    },
+    {
+      "id": "evidence-aw-15",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/mattpocock/skills/blob/3cca18b368ae95cdbdebbff572ccafa662551015/README.md",
+      "locator": "Installation",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "技能主张小、可组合、可修改。Claude plugin 是托管 bundle；skills.sh 是可编辑副本。一次设置 tracker、labels、domain docs。",
+      "limitations": [
+        "30 秒安装和任意模型可用是作者定位，未作时间或模型评测。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-15"
+    },
+    {
+      "id": "evidence-aw-16",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/mattpocock/skills/blob/3cca18b368ae95cdbdebbff572ccafa662551015/.agents/adr/0002-ship-as-a-claude-code-plugin.md",
+      "locator": "lines 7-23, 30-41",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-08-05",
+      "observation": "Claude 插件 curated promoted skills；Codex native plugin 因技能桶目录与单路径接口取舍而延期，skills.sh 仍可用。官方 marketplace source SHA 被 pin，发布 tag 不等于用户已更新。",
+      "limitations": [
+        "ADR 是 Matt 当时环境的实现经验；本轮未复测当前 Codex manifest 或缓存行为。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-16"
+    },
+    {
+      "id": "evidence-aw-17",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/mattpocock/skills/blob/3cca18b368ae95cdbdebbff572ccafa662551015/skills/productivity/handoff/SKILL.md",
+      "locator": "lines 8-16",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "handoff 写到 OS 临时目录，引用已有 specs/plans/ADR/issues/commits/diffs，列建议技能并要求敏感信息脱敏。",
+      "limitations": [
+        "未安装运行；文档或源码事实不代表实测效果。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-17"
+    },
+    {
+      "id": "evidence-aw-18",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/mattpocock/skills/blob/3cca18b368ae95cdbdebbff572ccafa662551015/skills/engineering/code-review/SKILL.md",
+      "locator": "lines 6-32, 58-87",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "以固定点 diff 对 standards/spec 双轴并行独立审查；找不到 Spec 时向用户确认，确认无 Spec 后可以跳过该轴并报告。",
+      "limitations": [
+        "此文件不是完整生命周期审批或测试证据验证器；不能将灵活跳过推成没有审查。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-18"
+    },
+    {
+      "id": "evidence-aw-19",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/mattpocock/skills/releases/tag/v1.2.3",
+      "locator": "Patch Changes",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-08-06T14:05:28Z",
+      "observation": "v1.2.3 补 diagnosing-bugs 脱敏、移除调度提示里的 Claude 专属工具名以支持 Codex 等运行时；仓库 API 显示 MIT，未归档，HEAD 2026-09-04。",
+      "limitations": [
+        "未安装运行；文档或源码事实不代表实测效果。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-19"
+    },
+    {
+      "id": "evidence-aw-20",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/gsd-build/gsd-2",
+      "locator": "README: GSD 2 Has Moved",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "GSD 2 当前 README 指向 open-gsd/gsd-pi，旧仓不再是活跃开发地址。",
+      "limitations": [
+        "未安装运行；文档或源码事实不代表实测效果。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-20"
+    },
+    {
+      "id": "evidence-aw-21",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/open-gsd/gsd-pi/blob/0fd02c1ea7a87d9d9a8bb8323322de597520e1b4/README.md",
+      "locator": "lines 12-24, 80-125, 189-196",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "local-first coding agent，.gsd 本地数据库与 Markdown 投影，worktree 自动化，多 provider、TUI/可选 Web；旧 unscoped npm 包需迁移至 @opengsd/gsd-pi。",
+      "limitations": [
+        "这是相邻运行时替代，不等同于可直接混入任意 Agent 的模板。未测试迁移过程。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-21"
+    },
+    {
+      "id": "evidence-aw-22",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/open-gsd/gsd-pi/releases/tag/v1.19.0",
+      "locator": "release tag and published_at",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-09T13:29:17Z",
+      "observation": "API 最新 release v1.19.0，2026-09-09T13:29:17Z；仓库非 fork、未归档、MIT。",
+      "limitations": [
+        "未安装运行；文档或源码事实不代表实测效果。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-22"
+    },
+    {
+      "id": "evidence-platforms-001",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://github.com/OpenHands/OpenHands",
+      "locator": "README: Agent Canvas; Quickstart; Architecture; Repository boundaries (web lines 215-311)",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "当前主分支定义 Agent Canvas，可接 OpenHands/Claude Code/Codex/Gemini/ACP、多后端与调度/webhook。提供宿主机与 Docker 安装；前者有全文件系统访问警告。",
+      "limitations": [
+        "文档能力，未安装；不能把部署选项当已经验证的隔离强度。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-001"
+    },
+    {
+      "id": "evidence-platforms-002",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://docs.openhands.dev/sdk/guides/security",
+      "locator": "Confirmation Policy; Defense-in-Depth; direct execute_tool warning (lines 122-125, 595-652)",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "SDK 有 AlwaysConfirm/NeverConfirm/ConfirmRisky 与可组合风险分析器；direct execute_tool 绕过分析与确认策略。",
+      "limitations": [
+        "SDK 接口级说明，不代表所有 Canvas/ACP/自定义工具行为相同。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-002"
+    },
+    {
+      "id": "evidence-platforms-003",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://docs.openhands.dev/sdk/guides/convo-persistence",
+      "locator": "How to use Persistence; What Gets Persisted; Directory Structure (lines 80-173)",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "提供 conversation_id+persistence_dir 恢复；持久化事件、执行状态、工具输出、LLM统计和技能状态。",
+      "limitations": [
+        "持久化文档不证明跨运行时迁移或门禁批准新鲜度。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-003"
+    },
+    {
+      "id": "evidence-platforms-004",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://docs.openhands.dev/sdk/guides/metrics",
+      "locator": "Using LLM Registry; Getting Aggregated Conversation Costs; Conversation Stats",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "可按 usage_id 记录/汇总会话中多LLM的成本、token和延迟指标。",
+      "limitations": [
+        "未核算真实账单；不是成功率或ROI实测。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-004"
+    },
+    {
+      "id": "evidence-platforms-005",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://docs.openhands.dev/sdk/guides/observability",
+      "locator": "Overview; What Gets Traced; Trace Hierarchy (lines 109-121, 219-250)",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "通过 OpenTelemetry/OTLP 导出 agent step、工具、LLM和会话事件。",
+      "limitations": [
+        "文档能力；没有验证导出完整性和生产开销。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-005"
+    },
+    {
+      "id": "evidence-platforms-006",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "product-page",
+      "source_ref": "https://www.openhands.dev/enterprise",
+      "locator": "Agent Control Plane; Cost Control; Governance; Source-available (lines 68-101, 122-156, 188-205)",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "官方以 Agent Control Plane 包装企业产品，列出RBAC、预算、组织策略、审计和工作流指标；企业版称 source-available。",
+      "limitations": [
+        "营销页证明其公开包装与主张，不证明效果、所有能力当前可用或OSI开源许可。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-006"
+    },
+    {
+      "id": "evidence-platforms-007",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "pricing",
+      "source_ref": "https://www.openhands.dev/pricing",
+      "locator": "Local; Individual; Enterprise; FAQs (lines 58-150, 334-355)",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "官网本地OSS标为免费，Individual标为免费+BYOK或模型按量付费，Enterprise定制报价/SSO/VPC/支持；FAQ称OSS为MIT。",
+      "limitations": [
+        "套餐快照，不能推算总拥有成本；比较表的纯文本勾选列不用于判断每项套餐归属。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-007"
+    },
+    {
+      "id": "evidence-platforms-008",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://aider.chat/docs/git.html",
+      "locator": "Git integration; Disabling git integration (lines 104-132)",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "Aider默认自动提交修改，并先提交待修改文件的既有dirty changes；可关闭 auto/dirty commits，可配置启用提交hook。",
+      "limitations": [
+        "可配置行为，不能将默认自动提交推断为无法遵守YSS授权。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-008"
+    },
+    {
+      "id": "evidence-platforms-009",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://aider.chat/docs/usage/commands.html",
+      "locator": "Slash commands (lines 117-156)",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "提供 /save /load 文件集重建、/clear /reset /drop /tokens /undo /read-only 等控制。",
+      "limitations": [
+        "文件集重建和聊天管理不等于批准合同、环境和跨仓状态恢复。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-009"
+    },
+    {
+      "id": "evidence-platforms-010",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://aider.chat/docs/usage/modes.html",
+      "locator": "Chat modes; Ask/code workflow; Architect mode (lines 106-141, 180-190)",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "Aider有ask/code及architect-editor分工；官方说明双请求可能增加耗时与成本。",
+      "limitations": [
+        "不是结构化独立Reviewer或固定Spec批准；不能据此否定用户另行配置流程。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-010"
+    },
+    {
+      "id": "evidence-platforms-011",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://aider.chat/docs/install/docker.html",
+      "locator": "Aider core; Full version; How to use; Limitations (lines 111-133)",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "提供Docker镜像和项目目录挂载；/run在容器内执行，文档提示本机测试环境差异。",
+      "limitations": [
+        "安装方式不是沙箱安全认证。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-011"
+    },
+    {
+      "id": "evidence-platforms-012",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "license",
+      "source_ref": "https://github.com/Aider-AI/aider/blob/main/LICENSE.txt",
+      "locator": "LICENSE.txt: Apache License Version 2.0",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "Aider主仓许可证文本为Apache License 2.0。",
+      "limitations": [
+        "仅标识许可，不给出法律意见或全部依赖许可证判断。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-012"
+    },
+    {
+      "id": "evidence-platforms-013",
+      "source_level": "direct-experience",
+      "visibility": "public",
+      "source_class": "issue",
+      "source_ref": "https://github.com/Aider-AI/aider/issues/4113",
+      "locator": "Issue body by coogle, opened 2025-05-27; observed Open",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2025-05-27",
+      "observation": "用户报告长会话/复杂任务后回答质量下降，通过重启和手工摘取聊天历史继续；本人猜测与上下文有关。",
+      "limitations": [
+        "单个自报，无根因复现，不能证明现版本普遍缺陷或市场频率。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-013"
+    },
+    {
+      "id": "evidence-platforms-014",
+      "source_level": "direct-experience",
+      "visibility": "public",
+      "source_class": "issue",
+      "source_ref": "https://github.com/Aider-AI/aider/issues/5567",
+      "locator": "Issue body by AayushBehera, opened 2026-08-13; observed Open",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-08-13",
+      "observation": "用户请求本地/OpenAI兼容BYOK模型能力可视化和连接诊断，描述元数据来源、上下文和成本信息不透明。",
+      "limitations": [
+        "单条需求报告，未复现，不能证明本地模型普遍不可靠。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-014"
+    },
+    {
+      "id": "evidence-platforms-015",
+      "source_level": "direct-experience",
+      "visibility": "public",
+      "source_class": "issue",
+      "source_ref": "https://github.com/OpenHands/OpenHands/issues/15912",
+      "locator": "Issue body by simonrosenberg, opened 2026-05-18; observed Open; Context / Whats missing / native dev",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-05-18",
+      "observation": "议题提出ACP暂停/恢复/取消的Canvas界面和旧租约恢复体验，同时明确底层API原语已存在。",
+      "limitations": [
+        "工程提案而非代表性用户调查；Open状态不证明当前主分支仍未实现全部列项。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-015"
+    },
+    {
+      "id": "evidence-platforms-016",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://github.com/humanlayer/humanlayer",
+      "locator": "README: HumanLayer (web lines 192-194)",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "当前README明确公开仓为issues repo，代码基本deprecated，指向 humanlayer.com 重建版。",
+      "limitations": [
+        "仅排除旧公开实现的当前维护能力推断；不能推断重建产品闭源程度或商业成败。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-016"
+    },
+    {
+      "id": "evidence-platforms-017",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://aider.chat/docs/",
+      "locator": "Aider Documentation; Connecting to LLMs; More info",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "Aider定位终端AI结对编程；文档提供本地模型与多家API接入、repo map、lint/test和脚本化入口。",
+      "limitations": [
+        "未穷尽生态插件；本次不对商业收入、团队版是否绝对不存在作结论。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-017"
+    },
+    {
+      "id": "evidence-platforms-018",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "docs",
+      "source_ref": "CONTEXT.md",
+      "locator": "流程术语: 生命周期编排器; 运行时副作用审批; Slice Implementation Contract; Fresh Verification; 跨仓库契约变更",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "YSS定义生命周期控制、实现合同批准与当前版本、工具授权分离以及跨仓整体就绪的治理边界。",
+      "limitations": [
+        "本地合同定义不证明执行可靠性、用户收益或相对竞品独占。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-018"
+    },
+    {
+      "id": "evidence-platforms-019",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://docs.openhands.dev/overview/introduction",
+      "locator": "Everything Else; enterprise directory note",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "该官方页仍描述 enterprise/ 目录与旧产品边界，而当前主仓已重构为Agent Canvas并拆分多仓职责。",
+      "limitations": [
+        "版本漂移反证：不以旧页面目录/一个月许可说法定义当前Enterprise法律边界。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-019"
+    },
+    {
+      "id": "evidence-yss",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-or-docs",
+      "source_ref": "scripts/lib/backend-delivery.mjs",
+      "locator": "backendDeliveryBasis; verify functions lines 8-59; strategic-handoff.mjs 129-185, 227-260",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "本地交付检查绑定包摘要、批准、OpenAPI、切片合同和战略来源；当前源码有拒绝不匹配逻辑。",
+      "limitations": [
+        "静态核查，未执行本轮完整跨仓交付；根源码摘要在local-source-manifest.json。"
+      ]
+    },
+    {
+      "id": "evidence-yss-governance",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-or-docs",
+      "source_ref": "AGENTS.md",
+      "locator": "sections 1-10; CONTEXT.md 流程术语; scripts/lib/context-reconciliation.mjs 13-32",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "当前治理合同区分身份、词汇对账、会签、实现合同、Fresh Verification及Git授权。",
+      "limitations": [
+        "规则/源码存在不是不可旁路或用户收益证明。"
+      ]
+    },
+    {
+      "id": "evidence-yss-supply",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-or-docs",
+      "source_ref": "scripts/lib/skill-supply-chain.mjs",
+      "locator": "SOURCE_ROOT/PROJECTION_ROOTS; updateSkillLock; docs/agents/yss-skill-registry.yaml",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "本地以canonical和投影分离、锁哈希及注册表管理技能。",
+      "limitations": [
+        "本轮不重测供应链与分发包，不把记录的来源能力当原创。"
+      ]
+    },
+    {
+      "id": "evidence-doc-drift",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-or-docs",
+      "source_ref": "docs/user-guide/用户手册.md",
+      "locator": "lines 12-13,40 versus 78,91; docs/process/template-engineering-overview.md lines31-37",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "手册列五家族且前后端支持attach/sync，后文却排除专职sync；工程说明仍称三产品。",
+      "limitations": [
+        "证明说明不一致，不裁定外部CLI真实支持；不是本轮修复范围。"
+      ]
+    },
+    {
+      "id": "evidence-yss-onboarding",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-or-docs",
+      "source_ref": "docs/user-guide/用户手册.md",
+      "locator": "第一次让 Agent 工作; 已有项目接管与升级; 设备借用贯穿案例链接",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "已有只读检查提示词、贯穿案例及升级说明；CLI包快照与GitHub当前状态分别解释。",
+      "limitations": [
+        "不能说没有文档或案例；未做新用户可用性实验。"
+      ]
+    },
+    {
+      "id": "evidence-aidlc",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.com/awslabs/aidlc-workflows/blob/main/docs/harness-engineering/00-overview.md",
+      "locator": "The mental model; engine/conductor; sensors; source versus distribution",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "确定性engine决定下一指令，conductor执行；核心源生成各harness投影；sensors可 advisory或blocking。",
+      "limitations": [
+        "滚动文档；未安装运行，不能推断所有旁路被阻断。"
+      ]
+    },
+    {
+      "id": "evidence-aidlc-doctor",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.com/awslabs/aidlc-workflows/blob/main/docs/guide/01-getting-started.md",
+      "locator": "configure project; doctor; Updating",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "doctor诊断runtime/project/provider/hook/trust/state；更新runtime与项目config分开；项目内容有ownership保护。",
+      "limitations": [
+        "未实测诊断准确性或全部升级路线。"
+      ]
+    },
+    {
+      "id": "evidence-aidlc-profiles",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.com/awslabs/aidlc-workflows/blob/main/docs/guide/workflow-profiles.md",
+      "locator": "Quick chooser; express; enterprise",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "有Express/Bugfix/Feature/Enterprise等路由，阶段深度测试与review按任务裁剪。",
+      "limitations": [
+        "较短路线以删除不适用决策面为条件；不能套给跨团队高风险工作。"
+      ]
+    },
+    {
+      "id": "evidence-ghaw",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.com/github/gh-aw",
+      "locator": "README: How Agentic Workflows work; Security and permissions",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "Markdown编译为Actions lock workflow，默认只读Agent job，配置写入由独立safe outputs步骤校验执行。",
+      "limitations": [
+        "可配置安全边界，不能证明适配YSS语义或绝对安全。"
+      ]
+    },
+    {
+      "id": "evidence-ghaw-cross",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.github.com/gh-aw/patterns/spec-ops/",
+      "locator": "How SpecOps Works; Propagate Changes",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "SpecOps将规格变更传播至消费者仓，更新实现/测试并创建关联PR及追踪issue。",
+      "limitations": [
+        "模式文档，不是本轮真实跨仓运行结果。"
+      ]
+    },
+    {
+      "id": "evidence-ghaw-cost",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.github.com/gh-aw/reference/cost-management/",
+      "locator": "Cost Components; Monitoring Costs; best-effort AIC note",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "模型推理和Actions费用分开；logs/audit导出时长、token、回合与成本估计；估计不保证等于账单。",
+      "limitations": [
+        "不引用页面示例价格作当前YSS成本；未跑账单核对。"
+      ]
+    },
+    {
+      "id": "evidence-ghaw-otel",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.github.com/gh-aw/reference/open-telemetry/",
+      "locator": "OpenTelemetry overview",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "官方提供执行观测集成，供运行监控接入参考。",
+      "limitations": [
+        "本轮不测试导出完整度或服务端配置。"
+      ]
+    },
+    {
+      "id": "evidence-ccsdd",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.com/gotalab/cc-sdd",
+      "locator": "README v3; What is new; Supported Agents",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "Agent Skills按任务隔离实现/审查，边界依赖标注、批量规格与可恢复执行；区分stable/beta适配；Kiro规格可移植。",
+      "limitations": [
+        "文档合同，未运行；作者速度/效率宣传不采用。"
+      ]
+    },
+    {
+      "id": "evidence-speckitty",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.com/spec-kitty/spec-kitty",
+      "locator": "README; original Priivacy-ai/spec-kitty redirects here",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "当前项目公开展示工作包、看板/worktree和治理；原地址已跳转到新组织。",
+      "limitations": [
+        "API访问403限流；只作有限深挖，未给API关注数或整体成熟度评分。"
+      ]
+    },
+    {
+      "id": "evidence-speckitty-governance",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.com/Priivacy-ai/spec-kitty/blob/main/docs/architecture/governed-profile-invocation.md",
+      "locator": "governed profile invocation; spec-kitty next",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "next按mission step解析action，把治理context渲染到prompt。",
+      "limitations": [
+        "不等同于执行所有YSS门禁或安全隔离。"
+      ]
+    },
+    {
+      "id": "evidence-lock",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.com/luisalima/skills-lock",
+      "locator": "Why; Commands",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "manifest/commit/content lock/frozen install等确定性安装工具已存在。",
+      "limitations": [
+        "极小关注量的设计参考；未运行、不证明生态采用。"
+      ]
+    },
+    {
+      "id": "evidence-skillock",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.com/skills-lock/skil-lock",
+      "locator": "What it actually does; License",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "记录shell/network/path能力面差异并生成PR审阅报告；主仓Apache-2.0。",
+      "limitations": [
+        "未验证静态检测准确率；README自报统计不作市场结论。"
+      ]
+    },
+    {
+      "id": "evidence-metadata",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-or-docs",
+      "source_ref": "github-metadata.json",
+      "locator": "18 requested repositories; source_url + observed_at per record",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "GitHub API保存了身份、归档、许可证及关注量快照；Spec Kitty条目403保留。",
+      "limitations": [
+        "18为请求数，含旧仓/迁移，不是18个独立深研产品；star不是活跃用户；pushed_at不等于最新Release。"
+      ]
+    },
+    {
+      "id": "evidence-scope",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-or-docs",
+      "source_ref": "scope.md",
+      "locator": "研究范围和限制预声明",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "本轮没有竞品运行对照、客户访谈或账单数据；建议验证而不承诺效果。",
+      "limitations": [
+        "证据边界，不是外部市场反证。"
+      ]
+    },
+    {
+      "id": "counter-evidence-yss-onboarding",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-or-docs",
+      "source_ref": "docs/user-guide/用户手册.md",
+      "locator": "第一次让 Agent 工作; 已有项目接管与升级; 设备借用贯穿案例链接",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "已有只读检查提示词、贯穿案例及升级说明；CLI包快照与GitHub当前状态分别解释。",
+      "limitations": [
+        "不能说没有文档或案例；未做新用户可用性实验。"
+      ]
+    },
+    {
+      "id": "counter-evidence-aidlc",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.com/awslabs/aidlc-workflows/blob/main/docs/harness-engineering/00-overview.md",
+      "locator": "The mental model; engine/conductor; sensors; source versus distribution",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "确定性engine决定下一指令，conductor执行；核心源生成各harness投影；sensors可 advisory或blocking。",
+      "limitations": [
+        "滚动文档；未安装运行，不能推断所有旁路被阻断。"
+      ]
+    },
+    {
+      "id": "counter-evidence-aidlc-profiles",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.com/awslabs/aidlc-workflows/blob/main/docs/guide/workflow-profiles.md",
+      "locator": "Quick chooser; express; enterprise",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "有Express/Bugfix/Feature/Enterprise等路由，阶段深度测试与review按任务裁剪。",
+      "limitations": [
+        "较短路线以删除不适用决策面为条件；不能套给跨团队高风险工作。"
+      ]
+    },
+    {
+      "id": "counter-evidence-ghaw-cross",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.github.com/gh-aw/patterns/spec-ops/",
+      "locator": "How SpecOps Works; Propagate Changes",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "SpecOps将规格变更传播至消费者仓，更新实现/测试并创建关联PR及追踪issue。",
+      "limitations": [
+        "模式文档，不是本轮真实跨仓运行结果。"
+      ]
+    },
+    {
+      "id": "counter-evidence-ghaw-cost",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.github.com/gh-aw/reference/cost-management/",
+      "locator": "Cost Components; Monitoring Costs; best-effort AIC note",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "模型推理和Actions费用分开；logs/audit导出时长、token、回合与成本估计；估计不保证等于账单。",
+      "limitations": [
+        "不引用页面示例价格作当前YSS成本；未跑账单核对。"
+      ]
+    },
+    {
+      "id": "counter-SK02",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.github.io/spec-kit/reference/workflows.html",
+      "locator": "Workflows: Run/Resume; Step Types; Security note",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "工作流有 JSON 状态、暂停恢复、human gate、条件和扇出汇合；shell 用本机权限执行，requires 不是能力沙箱。",
+      "limitations": [
+        "具有审批机制不能推导为不可绕过的安全边界；仅文档核查。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#SK02"
+    },
+    {
+      "id": "counter-SK03",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/github/spec-kit/blob/main/docs/community/extensions.md",
+      "locator": "Community Extensions: disclaimer; category/effect; API Evolve/Brownfield rows",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "存在 Brownfield、API 演进、治理等社区扩展；目录维护者审核元数据格式，不审计或背书扩展代码。",
+      "limitations": [
+        "目录条目是能力线索，扩展本身未逐一安装/审计。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#SK03"
+    },
+    {
+      "id": "counter-SK06",
+      "source_level": "direct-experience",
+      "visibility": "public",
+      "source_class": "issue-or-discussion",
+      "source_ref": "https://github.com/github/spec-kit/discussions/2046",
+      "locator": "2026-04-01 initial post; maintainer reply; 2026-04-13 reply",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "一位使用者报告规格审阅额外成本，倾向 IDE 内建 Plan→Implement；维护者举 brownfield/扩展反例，另一参与者认为 clarify/analyze 关键。",
+      "limitations": [
+        "小样本自选择讨论；旧版本体验不能代表当前普遍行为或 ROI。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#SK06"
+    },
+    {
+      "id": "counter-OS03",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/blob/main/docs/stores-beta/user-guide.md",
+      "locator": "Example one feature two component repos; How implementation starts; Known limitations",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "Stores beta 允许独立规划仓和只读 references；文档明确不把任务路由到代码仓，不自动读所有消费者；不 clone/pull/push，陈旧 checkout 显示陈旧 specs。",
+      "limitations": [
+        "beta 名称/格式可变；跨仓共享上下文已存在，不能说不支持跨仓。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#OS03"
+    },
+    {
+      "id": "counter-OS06",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/Fission-AI/OpenSpec/blob/main/docs/cli.md",
+      "locator": "Lifecycle Commands / openspec archive",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "CLI archive 有验证、确认、先占归档目录、失败恢复；可显式 --no-validate；非交互缺 --yes 会在写入前停止。",
+      "limitations": [
+        "行为来自官方合同，未故障注入；存在安全归档能力，不能称完全没有保护。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#OS06"
+    },
+    {
+      "id": "counter-BM04",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://docs.bmad-method.org/plan/plan-inside-an-organization/",
+      "locator": "Where Sign-Off Happens; Several Epics; Requirements Change",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "组织文档有五类 human decision 及阻断对象，单一文档 owner、共享 spine、多 epic 稳定能力 ID 和变更传播；部分检查可无人模式。",
+      "limitations": [
+        "有审批文档不代表与 YSS 的批准字节绑定等价；也不能说 BMAD 无人工治理。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#BM04"
+    },
+    {
+      "id": "counter-BM05",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://docs.bmad-method.org/customize/customize-bmad/",
+      "locator": "Customize workflow; Central configuration; Override one invocation",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "团队/个人 TOML 分层覆盖，安装器文件与 human-authored custom 文件分离；支持每次运行覆盖、review layers，未使用覆盖会停止渲染。",
+      "limitations": [
+        "不是不可定制；全复制默认配置会遮蔽未来升级，官方明确提醒。"
+      ],
+      "contributor_record": "agents/spec-frameworks.json#BM05"
+    },
+    {
+      "id": "counter-evidence-aw-04",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/obra/superpowers/releases/tag/v6.3.0",
+      "locator": "Brainstorming; Subagent-Driven Development",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-08-12T16:58:30Z",
+      "observation": "发布说明引入 spike/bounded/architectural 裁剪、同构小任务合并 dispatch、冲突 ruling；修复 worktree 清理时未跟踪文件保护。",
+      "limitations": [
+        "未安装运行；文档或源码事实不代表实测效果。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-04"
+    },
+    {
+      "id": "counter-evidence-aw-06",
+      "source_level": "direct-experience",
+      "visibility": "public",
+      "source_class": "issue-or-discussion",
+      "source_ref": "https://github.com/obra/superpowers/issues/1735",
+      "locator": "What worked; The problem",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-06-11T06:55:45Z",
+      "observation": "v5.1.0 用户认为小项目流程重，同时明确承认审查发现无效测试、反序列化缺口和版本下限问题；API closed/completed。",
+      "limitations": [
+        "单例体验，旧版；不能拿其调度数与成本概括现版。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-06"
+    },
+    {
+      "id": "counter-evidence-aw-10",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/open-gsd/gsd-core/blob/b67f6028ce572f0504a035f9cdf5e11b0cb86bf0/src/state-contract.cts",
+      "locator": "lines 72-117, 195-203, 298-306, 318-376",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "定义 state.json v1.0.0、固定 keys/状态枚举；next 复用 classifyProject。投影 best-effort；缺资料可为 null/空数组，Deferred 映射 pending。",
+      "limitations": [
+        "投影是展示 cache；不能从其字段推出 YSS 相同的批准、新鲜度合同。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-10"
+    },
+    {
+      "id": "counter-evidence-aw-12",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/open-gsd/gsd-core/blob/b67f6028ce572f0504a035f9cdf5e11b0cb86bf0/docs/how-to/update-gsd.md",
+      "locator": "lines 102-146, 164",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "更新前备份用户文件；manifest hash 识别被改过的托管文件并备份本地 patches；--reapply 合回。恢复兼容警告是 advisory。",
+      "limitations": [
+        "未安装运行；文档或源码事实不代表实测效果。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-12"
+    },
+    {
+      "id": "counter-evidence-aw-16",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs-or-source",
+      "source_ref": "https://github.com/mattpocock/skills/blob/3cca18b368ae95cdbdebbff572ccafa662551015/.agents/adr/0002-ship-as-a-claude-code-plugin.md",
+      "locator": "lines 7-23, 30-41",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-08-05",
+      "observation": "Claude 插件 curated promoted skills；Codex native plugin 因技能桶目录与单路径接口取舍而延期，skills.sh 仍可用。官方 marketplace source SHA 被 pin，发布 tag 不等于用户已更新。",
+      "limitations": [
+        "ADR 是 Matt 当时环境的实现经验；本轮未复测当前 Codex manifest 或缓存行为。"
+      ],
+      "contributor_record": "agents/agent-workflows.json#evidence-aw-16"
+    },
+    {
+      "id": "counter-evidence-platforms-002",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://docs.openhands.dev/sdk/guides/security",
+      "locator": "Confirmation Policy; Defense-in-Depth; direct execute_tool warning (lines 122-125, 595-652)",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "SDK 有 AlwaysConfirm/NeverConfirm/ConfirmRisky 与可组合风险分析器；direct execute_tool 绕过分析与确认策略。",
+      "limitations": [
+        "SDK 接口级说明，不代表所有 Canvas/ACP/自定义工具行为相同。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-002"
+    },
+    {
+      "id": "counter-evidence-platforms-003",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://docs.openhands.dev/sdk/guides/convo-persistence",
+      "locator": "How to use Persistence; What Gets Persisted; Directory Structure (lines 80-173)",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "提供 conversation_id+persistence_dir 恢复；持久化事件、执行状态、工具输出、LLM统计和技能状态。",
+      "limitations": [
+        "持久化文档不证明跨运行时迁移或门禁批准新鲜度。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-003"
+    },
+    {
+      "id": "counter-evidence-platforms-006",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "product-page",
+      "source_ref": "https://www.openhands.dev/enterprise",
+      "locator": "Agent Control Plane; Cost Control; Governance; Source-available (lines 68-101, 122-156, 188-205)",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "官方以 Agent Control Plane 包装企业产品，列出RBAC、预算、组织策略、审计和工作流指标；企业版称 source-available。",
+      "limitations": [
+        "营销页证明其公开包装与主张，不证明效果、所有能力当前可用或OSI开源许可。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-006"
+    },
+    {
+      "id": "counter-evidence-platforms-009",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://aider.chat/docs/usage/commands.html",
+      "locator": "Slash commands (lines 117-156)",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "提供 /save /load 文件集重建、/clear /reset /drop /tokens /undo /read-only 等控制。",
+      "limitations": [
+        "文件集重建和聊天管理不等于批准合同、环境和跨仓状态恢复。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-009"
+    },
+    {
+      "id": "counter-evidence-platforms-010",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://aider.chat/docs/usage/modes.html",
+      "locator": "Chat modes; Ask/code workflow; Architect mode (lines 106-141, 180-190)",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "Aider有ask/code及architect-editor分工；官方说明双请求可能增加耗时与成本。",
+      "limitations": [
+        "不是结构化独立Reviewer或固定Spec批准；不能据此否定用户另行配置流程。"
+      ],
+      "contributor_record": "agents/platforms.json#evidence-platforms-010"
+    },
+    {
+      "id": "counter-evidence-lock",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-or-docs",
+      "source_ref": "https://github.com/luisalima/skills-lock",
+      "locator": "Why; Commands",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "manifest/commit/content lock/frozen install等确定性安装工具已存在。",
+      "limitations": [
+        "极小关注量的设计参考；未运行、不证明生态采用。"
+      ]
+    },
+    {
+      "id": "counter-evidence-scope",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-or-docs",
+      "source_ref": "scope.md",
+      "locator": "研究范围和限制预声明",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "本轮没有竞品运行对照、客户访谈或账单数据；建议验证而不承诺效果。",
+      "limitations": [
+        "证据边界，不是外部市场反证。"
+      ]
+    },
+    {
+      "id": "counter-evidence-doc-drift",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-or-docs",
+      "source_ref": "docs/user-guide/用户手册.md",
+      "locator": "lines 12-13,40 versus 78,91; docs/process/template-engineering-overview.md lines31-37",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": null,
+      "observation": "手册列五家族且前后端支持attach/sync，后文却排除专职sync；工程说明仍称三产品。",
+      "limitations": [
+        "证明说明不一致，不裁定外部CLI真实支持；不是本轮修复范围。"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-yss-baseline",
+      "claim_kind": "technical-fact",
+      "statement": "YSS本地已有生命周期、批准/版本绑定与交付检查基础；仅确认规则和源码存在。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-yss",
+        "evidence-yss-governance",
+        "evidence-yss-supply"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-aidlc",
+        "counter-evidence-scope"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-doc-drift",
+      "claim_kind": "technical-fact",
+      "statement": "本地产品线数量和专职attach/sync说明不一致，未据此裁定CLI运行行为。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-doc-drift"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-yss-onboarding"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-speckit",
+      "claim_kind": "technical-fact",
+      "statement": "Spec Kit具有可定制、可恢复、含人工检查点的工作流；不是仅四步提示词。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "SK02",
+        "SK07"
+      ],
+      "counter_signal_refs": [
+        "counter-SK03"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-openspec",
+      "claim_kind": "technical-fact",
+      "statement": "OpenSpec有delta与Stores beta共享规划；指南明确不按仓派任务或自动同步Git。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "OS02",
+        "OS03"
+      ],
+      "counter_signal_refs": [
+        "counter-OS06"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-bmad",
+      "claim_kind": "technical-fact",
+      "statement": "BMAD有组织会签、文档owner和团队/个人定制；不得称无治理。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "BM04",
+        "BM05"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-scope"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-aidlc",
+      "claim_kind": "technical-fact",
+      "statement": "AI-DLC提供确定性引擎、统一核心投影、profiles和doctor，与YSS多项重叠。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-aidlc",
+        "evidence-aidlc-doctor",
+        "evidence-aidlc-profiles"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-scope"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-superpowers",
+      "claim_kind": "technical-fact",
+      "statement": "Superpowers已有验证纪律、独立审查和任务裁剪；v6.3.0调整仪式及回路。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-aw-02",
+        "evidence-aw-03",
+        "evidence-aw-04"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-aw-06"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-gsd",
+      "claim_kind": "technical-fact",
+      "statement": "当前GSD Core有持久规划、机器状态与更新保护；旧仓为迁移线索。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-aw-07",
+        "evidence-aw-08",
+        "evidence-aw-09",
+        "evidence-aw-10",
+        "evidence-aw-11",
+        "evidence-aw-12"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-scope"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-matt",
+      "claim_kind": "technical-fact",
+      "statement": "Matt技能可组合且是本地部分技能上游；不能把其能力全算为YSS原创。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-aw-15",
+        "evidence-aw-18",
+        "evidence-yss-supply"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-aw-16"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-ccsdd",
+      "claim_kind": "technical-fact",
+      "statement": "cc-sdd提供任务边界、独立审查和恢复路线，并区分stable/beta适配。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-ccsdd"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-scope"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-speckitty",
+      "claim_kind": "technical-fact",
+      "statement": "Spec Kitty已有工作包/状态面/治理调用，属于有限深挖的相邻候选。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-speckitty",
+        "evidence-speckitty-governance"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-scope"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-ghaw",
+      "claim_kind": "technical-fact",
+      "statement": "gh-aw有编译工作流、默认只读及safe outputs，SpecOps支持跨仓传播模式。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-ghaw",
+        "evidence-ghaw-cross"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-scope"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-openhands",
+      "claim_kind": "technical-fact",
+      "statement": "OpenHands当前主仓为Agent Canvas；SDK持久化与企业治理包装要分别理解。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-platforms-001",
+        "evidence-platforms-003",
+        "evidence-platforms-006"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-platforms-002"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-aider",
+      "claim_kind": "technical-fact",
+      "statement": "Aider为终端执行相邻工具，默认Git行为可配置，接入YSS需重新绑定提交授权。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-platforms-008",
+        "evidence-platforms-017"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-platforms-009",
+        "counter-evidence-platforms-010"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-supply-chain",
+      "claim_kind": "technical-fact",
+      "statement": "commit/hash锁和行为差异工具已有公开供给；小项目只提供设计线索。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-lock",
+        "evidence-skillock"
+      ],
+      "counter_signal_refs": [
+        "counter-BM05",
+        "counter-evidence-aw-12"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-release-boundary",
+      "claim_kind": "background",
+      "statement": "抽样正式Release为SpecKit1.0.6/OpenSpec1.13.0/BMAD6.12.0，不保证main所有能力已进入包。",
+      "decision_bearing": false,
+      "evidence_refs": [
+        "SK05",
+        "OS07",
+        "BM08"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-scope"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-competition-baseline",
+      "claim_kind": "stage-decision-basis",
+      "statement": "Spec、审批、状态、恢复、多Agent、跨仓规划不能单独证明YSS差异；应比较交付边界及操作成本。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "SK02",
+        "OS03",
+        "BM04",
+        "evidence-aidlc",
+        "evidence-aw-10",
+        "evidence-yss"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-scope"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-user-signals",
+      "claim_kind": "user-problem",
+      "statement": "所选公开讨论显示跨仓描述、审阅成本、诊断相关需求信号；只支持试验，不支持发生率结论。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "OS04",
+        "SK06",
+        "evidence-platforms-014"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-aidlc-profiles",
+        "counter-evidence-yss-onboarding"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-opportunity-handoff",
+      "claim_kind": "mvp",
+      "statement": "建议用一个真实跨仓切片验证版本化交付接收闭环；收益待测。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-yss",
+        "OS03",
+        "OS04"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-ghaw-cross",
+        "counter-BM04"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-opportunity-frontdoor",
+      "claim_kind": "mvp",
+      "statement": "建议统一家族版本说明并派生状态/原因/下一动作入口；是否降低成本待测。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-doc-drift",
+        "evidence-aidlc-doctor",
+        "SK02"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-yss-onboarding"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-opportunity-import",
+      "claim_kind": "mvp",
+      "statement": "建议有需求时先验证固定版本OpenSpec只读导入，保留来源并重新确认批准。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "OS03",
+        "evidence-ccsdd",
+        "evidence-yss-governance"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-ghaw-cross"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-opportunity-upgrade",
+      "claim_kind": "mvp",
+      "statement": "建议在现有lock之上验证上游/适配冲突的可解释审阅，不先重造包管理器。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-yss-supply",
+        "evidence-lock",
+        "evidence-skillock"
+      ],
+      "counter_signal_refs": [
+        "counter-BM05",
+        "counter-evidence-aw-12"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-opportunity-eval",
+      "claim_kind": "success-criterion",
+      "statement": "建议同模型预算下测验收、人工时间、错误接收、恢复及成本；具体目标阈值须试验前确认。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-scope",
+        "SK06",
+        "evidence-ghaw-cost"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-aw-06"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-opportunity-runtime",
+      "claim_kind": "mvp",
+      "statement": "建议已有真实使用者后只读接入执行指标并绑定切片；不自动继承外部批准。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-ghaw",
+        "evidence-ghaw-otel",
+        "evidence-platforms-004",
+        "evidence-platforms-005"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-platforms-006"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-target-segment",
+      "claim_kind": "stage-decision-basis",
+      "statement": "优先试点多仓且验收职责明确、与YSS Java/Vue能力吻合的团队；市场需求尚未验证。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-yss",
+        "OS04",
+        "evidence-yss-governance"
+      ],
+      "counter_signal_refs": [
+        "counter-SK06",
+        "counter-evidence-aidlc-profiles"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-cost-license",
+      "claim_kind": "business-constraint",
+      "statement": "主仓开源许可与模型/执行/审阅成本分开；企业包装不能证明YSS付费意愿。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-metadata",
+        "evidence-platforms-007",
+        "evidence-platforms-012",
+        "evidence-ghaw-cost"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-platforms-006"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-non-goals",
+      "claim_kind": "non-goal",
+      "statement": "本研究建议暂不优先通用IDE/执行平台或无接入需求的新规格语法，先验证YSS匹配的交付工作。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-yss",
+        "evidence-ghaw",
+        "evidence-platforms-001"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-scope"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-recommendation-limits",
+      "claim_kind": "stage-decision-basis",
+      "statement": "机会推荐基于能力与有限信号；不构成最优、独占、效率或市场规模结论。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-scope",
+        "evidence-yss"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-aidlc",
+        "counter-evidence-ghaw-cross",
+        "counter-SK06"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-current-identity",
+      "claim_kind": "technical-fact",
+      "statement": "GSD旧仓与GSD2均迁移；HumanLayer公开实现标为deprecated，不能以旧索引代表当前维护。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-aw-07",
+        "evidence-aw-20",
+        "evidence-platforms-016"
+      ],
+      "counter_signal_refs": [
+        "counter-evidence-scope"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [
+    "未安装竞品、未做性能/成本/公平任务实测。",
+    "无客户访谈、活跃使用数据、收入或付费意愿；机会部分支持仅限试验建议。",
+    "API Spec Kitty 403；网页已确认组织跳转，不补造元数据。",
+    "主分支/滚动文档与正式包可能不同；GSDCore源码使用main固定SHA而默认分支为next。",
+    "Google web open失败，浏览器搜索成功；AI概览与广告排除。",
+    "部分历史issue已关闭/版本已修复，不称现存缺陷。"
+  ],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-yss-baseline",
+      "claim-doc-drift",
+      "claim-speckit",
+      "claim-openspec",
+      "claim-bmad",
+      "claim-aidlc",
+      "claim-superpowers",
+      "claim-gsd",
+      "claim-matt",
+      "claim-ccsdd",
+      "claim-speckitty",
+      "claim-ghaw",
+      "claim-openhands",
+      "claim-aider",
+      "claim-supply-chain",
+      "claim-release-boundary",
+      "claim-competition-baseline",
+      "claim-user-signals",
+      "claim-opportunity-handoff",
+      "claim-opportunity-frontdoor",
+      "claim-opportunity-import",
+      "claim-opportunity-upgrade",
+      "claim-opportunity-eval",
+      "claim-opportunity-runtime",
+      "claim-target-segment",
+      "claim-cost-license",
+      "claim-non-goals",
+      "claim-recommendation-limits",
+      "claim-current-identity"
+    ],
+    "notes": [
+      "主控复核决策关键一手源；探索代理报告不是独立审查批准。",
+      "supported用于有边界事实；partially-supported/qualify用于有事实依据而收益待测的建议。",
+      "审计完成指主张与来源对齐，不是产品测试或市场验证。",
+      "证据条目含额外背景来源；本报告只有claims明确列出的主张构成审计结论。"
+    ]
+  }
+}

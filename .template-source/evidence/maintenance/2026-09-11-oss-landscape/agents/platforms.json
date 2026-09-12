@@ -1,0 +1,606 @@
+{
+  "schema_version": 1,
+  "profile": "strategy-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "相邻开源研发执行平台：OpenHands、Aider",
+    "audience": "YSS模板维护者",
+    "time_horizon": "2026-09-11观察，未来1-2迭代机会选择",
+    "research_questions": [
+      "运行时执行和生命周期治理哪里重叠？",
+      "恢复/授权/协作/可观测/许可/分发中有何已证实能力和痛点？"
+    ],
+    "inclusion_criteria": [
+      "公开源码且有研发工作流",
+      "官方文档及原始issue"
+    ],
+    "exclusion_criteria": [
+      "通用Agent库",
+      "未经核查的榜单/AI总结",
+      "deprecated实现不能充当当前维护产品"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "yss-product-lifecycle",
+    "decision_ref": null
+  },
+  "search_log": [
+    {
+      "id": "search-platforms-001",
+      "channel": "web-search",
+      "query_or_corpus": "site.github.com OpenHands OpenHands security confirmation mode sandbox enterprise license; site:github.com Aider-AI aider issues restore context cost",
+      "searched_at": "2026-09-11",
+      "result": "results-found"
+    },
+    {
+      "id": "search-platforms-002",
+      "channel": "web-open",
+      "query_or_corpus": "OpenHands/OpenHands; aider.chat/docs; humanlayer/humanlayer",
+      "searched_at": "2026-09-11",
+      "result": "results-found"
+    },
+    {
+      "id": "search-platforms-003",
+      "channel": "web-search",
+      "query_or_corpus": "site:github.com/OpenHands/OpenHands/issues resume 2026; permission 2026; site:docs.openhands.dev cost metrics",
+      "searched_at": "2026-09-11",
+      "result": "results-found"
+    },
+    {
+      "id": "search-platforms-004",
+      "channel": "web-open",
+      "query_or_corpus": "Aider issue 4113 / 5567; OpenHands issue 15912; SDK security / persistence / metrics / observability; aider git / commands / modes / docker / LICENSE",
+      "searched_at": "2026-09-11",
+      "result": "results-found"
+    },
+    {
+      "id": "search-platforms-005",
+      "channel": "web-open",
+      "query_or_corpus": "openhands.dev/pricing; openhands.dev/enterprise",
+      "searched_at": "2026-09-11",
+      "result": "results-found"
+    },
+    {
+      "id": "search-platforms-006",
+      "channel": "screening",
+      "query_or_corpus": "humanlayer/humanlayer current README: exclude deprecated code as current implementation",
+      "searched_at": "2026-09-11",
+      "result": "excluded"
+    },
+    {
+      "id": "search-platforms-007",
+      "channel": "screening",
+      "query_or_corpus": "Search surfaced taptap/open-hands fork, DocCompiler.ai generated guide, github-actions weekly AI quality reports: exclude from decision support",
+      "searched_at": "2026-09-11",
+      "result": "excluded"
+    },
+    {
+      "id": "search-platforms-008",
+      "channel": "web-find",
+      "query_or_corpus": "aider chat modes: approve; OpenHands pricing: $",
+      "searched_at": "2026-09-11",
+      "result": "none-found"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-platforms-001",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://github.com/OpenHands/OpenHands",
+      "locator": "README: Agent Canvas; Quickstart; Architecture; Repository boundaries (web lines 215-311)",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "当前主分支定义 Agent Canvas，可接 OpenHands/Claude Code/Codex/Gemini/ACP、多后端与调度/webhook。提供宿主机与 Docker 安装；前者有全文件系统访问警告。",
+      "limitations": [
+        "文档能力，未安装；不能把部署选项当已经验证的隔离强度。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-002",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://docs.openhands.dev/sdk/guides/security",
+      "locator": "Confirmation Policy; Defense-in-Depth; direct execute_tool warning (lines 122-125, 595-652)",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "SDK 有 AlwaysConfirm/NeverConfirm/ConfirmRisky 与可组合风险分析器；direct execute_tool 绕过分析与确认策略。",
+      "limitations": [
+        "SDK 接口级说明，不代表所有 Canvas/ACP/自定义工具行为相同。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-003",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://docs.openhands.dev/sdk/guides/convo-persistence",
+      "locator": "How to use Persistence; What Gets Persisted; Directory Structure (lines 80-173)",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "提供 conversation_id+persistence_dir 恢复；持久化事件、执行状态、工具输出、LLM统计和技能状态。",
+      "limitations": [
+        "持久化文档不证明跨运行时迁移或门禁批准新鲜度。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-004",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://docs.openhands.dev/sdk/guides/metrics",
+      "locator": "Using LLM Registry; Getting Aggregated Conversation Costs; Conversation Stats",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "可按 usage_id 记录/汇总会话中多LLM的成本、token和延迟指标。",
+      "limitations": [
+        "未核算真实账单；不是成功率或ROI实测。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-005",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://docs.openhands.dev/sdk/guides/observability",
+      "locator": "Overview; What Gets Traced; Trace Hierarchy (lines 109-121, 219-250)",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "通过 OpenTelemetry/OTLP 导出 agent step、工具、LLM和会话事件。",
+      "limitations": [
+        "文档能力；没有验证导出完整性和生产开销。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-006",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "product-page",
+      "source_ref": "https://www.openhands.dev/enterprise",
+      "locator": "Agent Control Plane; Cost Control; Governance; Source-available (lines 68-101, 122-156, 188-205)",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "官方以 Agent Control Plane 包装企业产品，列出RBAC、预算、组织策略、审计和工作流指标；企业版称 source-available。",
+      "limitations": [
+        "营销页证明其公开包装与主张，不证明效果、所有能力当前可用或OSI开源许可。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-007",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "pricing",
+      "source_ref": "https://www.openhands.dev/pricing",
+      "locator": "Local; Individual; Enterprise; FAQs (lines 58-150, 334-355)",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "官网本地OSS标为免费，Individual标为免费+BYOK或模型按量付费，Enterprise定制报价/SSO/VPC/支持；FAQ称OSS为MIT。",
+      "limitations": [
+        "套餐快照，不能推算总拥有成本；比较表的纯文本勾选列不用于判断每项套餐归属。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-008",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://aider.chat/docs/git.html",
+      "locator": "Git integration; Disabling git integration (lines 104-132)",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "Aider默认自动提交修改，并先提交待修改文件的既有dirty changes；可关闭 auto/dirty commits，可配置启用提交hook。",
+      "limitations": [
+        "可配置行为，不能将默认自动提交推断为无法遵守YSS授权。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-009",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://aider.chat/docs/usage/commands.html",
+      "locator": "Slash commands (lines 117-156)",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "提供 /save /load 文件集重建、/clear /reset /drop /tokens /undo /read-only 等控制。",
+      "limitations": [
+        "文件集重建和聊天管理不等于批准合同、环境和跨仓状态恢复。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-010",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://aider.chat/docs/usage/modes.html",
+      "locator": "Chat modes; Ask/code workflow; Architect mode (lines 106-141, 180-190)",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "Aider有ask/code及architect-editor分工；官方说明双请求可能增加耗时与成本。",
+      "limitations": [
+        "不是结构化独立Reviewer或固定Spec批准；不能据此否定用户另行配置流程。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-011",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://aider.chat/docs/install/docker.html",
+      "locator": "Aider core; Full version; How to use; Limitations (lines 111-133)",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "提供Docker镜像和项目目录挂载；/run在容器内执行，文档提示本机测试环境差异。",
+      "limitations": [
+        "安装方式不是沙箱安全认证。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-012",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "license",
+      "source_ref": "https://github.com/Aider-AI/aider/blob/main/LICENSE.txt",
+      "locator": "LICENSE.txt: Apache License Version 2.0",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "Aider主仓许可证文本为Apache License 2.0。",
+      "limitations": [
+        "仅标识许可，不给出法律意见或全部依赖许可证判断。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-013",
+      "source_level": "direct-experience",
+      "visibility": "public",
+      "source_class": "issue",
+      "source_ref": "https://github.com/Aider-AI/aider/issues/4113",
+      "locator": "Issue body by coogle, opened 2025-05-27; observed Open",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2025-05-27",
+      "observation": "用户报告长会话/复杂任务后回答质量下降，通过重启和手工摘取聊天历史继续；本人猜测与上下文有关。",
+      "limitations": [
+        "单个自报，无根因复现，不能证明现版本普遍缺陷或市场频率。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-014",
+      "source_level": "direct-experience",
+      "visibility": "public",
+      "source_class": "issue",
+      "source_ref": "https://github.com/Aider-AI/aider/issues/5567",
+      "locator": "Issue body by AayushBehera, opened 2026-08-13; observed Open",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-08-13",
+      "observation": "用户请求本地/OpenAI兼容BYOK模型能力可视化和连接诊断，描述元数据来源、上下文和成本信息不透明。",
+      "limitations": [
+        "单条需求报告，未复现，不能证明本地模型普遍不可靠。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-015",
+      "source_level": "direct-experience",
+      "visibility": "public",
+      "source_class": "issue",
+      "source_ref": "https://github.com/OpenHands/OpenHands/issues/15912",
+      "locator": "Issue body by simonrosenberg, opened 2026-05-18; observed Open; Context / Whats missing / native dev",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-05-18",
+      "observation": "议题提出ACP暂停/恢复/取消的Canvas界面和旧租约恢复体验，同时明确底层API原语已存在。",
+      "limitations": [
+        "工程提案而非代表性用户调查；Open状态不证明当前主分支仍未实现全部列项。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-016",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://github.com/humanlayer/humanlayer",
+      "locator": "README: HumanLayer (web lines 192-194)",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "当前README明确公开仓为issues repo，代码基本deprecated，指向 humanlayer.com 重建版。",
+      "limitations": [
+        "仅排除旧公开实现的当前维护能力推断；不能推断重建产品闭源程度或商业成败。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-017",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://aider.chat/docs/",
+      "locator": "Aider Documentation; Connecting to LLMs; More info",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "Aider定位终端AI结对编程；文档提供本地模型与多家API接入、repo map、lint/test和脚本化入口。",
+      "limitations": [
+        "未穷尽生态插件；本次不对商业收入、团队版是否绝对不存在作结论。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-018",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "docs",
+      "source_ref": "CONTEXT.md",
+      "locator": "流程术语: 生命周期编排器; 运行时副作用审批; Slice Implementation Contract; Fresh Verification; 跨仓库契约变更",
+      "stance": "support",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "YSS定义生命周期控制、实现合同批准与当前版本、工具授权分离以及跨仓整体就绪的治理边界。",
+      "limitations": [
+        "本地合同定义不证明执行可靠性、用户收益或相对竞品独占。"
+      ]
+    },
+    {
+      "id": "evidence-platforms-019",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "docs",
+      "source_ref": "https://docs.openhands.dev/overview/introduction",
+      "locator": "Everything Else; enterprise directory note",
+      "stance": "counter",
+      "observed_at": "2026-09-11",
+      "evidence_date": "2026-09-11",
+      "observation": "该官方页仍描述 enterprise/ 目录与旧产品边界，而当前主仓已重构为Agent Canvas并拆分多仓职责。",
+      "limitations": [
+        "版本漂移反证：不以旧页面目录/一个月许可说法定义当前Enterprise法律边界。"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-platforms-001",
+      "claim_kind": "domain-boundary",
+      "statement": "OpenHands当前已扩展到多Agent/多后端的运行与自动化控制中心，与YSS存在控制面重叠；把它只归为编码执行器会低估竞争。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-platforms-001",
+        "evidence-platforms-006",
+        "evidence-platforms-018"
+      ],
+      "counter_signal_refs": [
+        "evidence-platforms-002",
+        "evidence-platforms-019"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-platforms-002",
+      "claim_kind": "business-constraint",
+      "statement": "OpenHands已具备工具确认、会话持久化、成本及trace原语；YSS机会应解释这些原语如何绑定当前合同和验收证据，不能宣称竞品完全没有治理或恢复。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-platforms-002",
+        "evidence-platforms-003",
+        "evidence-platforms-004",
+        "evidence-platforms-005",
+        "evidence-platforms-018"
+      ],
+      "counter_signal_refs": [
+        "evidence-platforms-006",
+        "evidence-platforms-009"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-platforms-003",
+      "claim_kind": "business-constraint",
+      "statement": "Aider的默认Git提交方式与YSS逐动作Git授权约束有适配差异，但官方开关允许关闭自动和dirty提交，因此可作为候选执行适配器。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-platforms-008",
+        "evidence-platforms-018"
+      ],
+      "counter_signal_refs": [
+        "evidence-platforms-010"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-platforms-004",
+      "claim_kind": "business-constraint",
+      "statement": "OpenHands公开商业包装包含企业治理与支持，Aider本次可核实为Apache-2.0终端工具；不能从免费或开源标签推断零模型成本、零维护成本或YSS付费意愿。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-platforms-007",
+        "evidence-platforms-012",
+        "evidence-platforms-017"
+      ],
+      "counter_signal_refs": [
+        "evidence-platforms-006",
+        "evidence-platforms-010"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-platforms-005",
+      "claim_kind": "user-problem",
+      "statement": "抽样Issue显示上下文重建、BYOK能力诊断及ACP恢复体验是有人明确提出的问题；这些是访谈与故障实验线索，尚非问题发生率或现版本普遍缺陷。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-platforms-013",
+        "evidence-platforms-014",
+        "evidence-platforms-015"
+      ],
+      "counter_signal_refs": [
+        "evidence-platforms-003",
+        "evidence-platforms-009"
+      ],
+      "audit_status": "supported",
+      "confidence": "medium",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-platforms-006",
+      "claim_kind": "non-goal",
+      "statement": "建议暂不复制完整聊天客户端/沙箱/成本平台：已有开源原语和商业供给；优先验证YSS的合同-运行结果接收是否有增量价值。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-platforms-001",
+        "evidence-platforms-004",
+        "evidence-platforms-005",
+        "evidence-platforms-018"
+      ],
+      "counter_signal_refs": [
+        "evidence-platforms-006"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-platforms-007",
+      "claim_kind": "mvp",
+      "statement": "候选试验：在现有YSS工作单元上记录执行器版本、合同摘要、repo SHA、结果证据与恢复差异，故障注入后检查旧批准会否被误复用；这是待验证方案，不是已确认需求。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-platforms-003",
+        "evidence-platforms-008",
+        "evidence-platforms-015",
+        "evidence-platforms-018"
+      ],
+      "counter_signal_refs": [
+        "evidence-platforms-002",
+        "evidence-platforms-009"
+      ],
+      "audit_status": "partially-supported",
+      "confidence": "medium",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-platforms-008",
+      "claim_kind": "stage-decision-basis",
+      "statement": "HumanLayer旧公开代码应作为历史参考而非当前仍在维护的可直接采用实现；正式跟踪需另外核查其重建产品。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-platforms-016"
+      ],
+      "counter_signal_refs": [
+        "evidence-platforms-006"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opportunity-platforms-01",
+      "status": "hypothesis",
+      "title": "跨执行器的合同与证据接收",
+      "target_user": "已有Codex/Claude Code/OpenHands等执行器的研发管理者",
+      "value": "减少从一次Agent结束到可审阅交付之间的人工对账",
+      "basis": [
+        "claim-platforms-002",
+        "claim-platforms-007"
+      ],
+      "candidate_scope": "单个YSS工作单元+两个执行器的只读导入/校验；记录合同摘要、Git快照、实际退出码、日志与缺口，不接管模型和沙箱",
+      "validation": "同一任务中途换执行器或改Spec，检查能否发现批准过期、遗漏测试、Git范围差异；与纯运行时会话恢复基线比较人工核对时间和漏判",
+      "counter_signal": "OpenHands已有状态/指标/事件，并可能把治理扩展上移；只有接入后的额外价值才支持继续。",
+      "stop_rule": "若目标用户只需要运行控制面，或既有事件+模板已满足接收，不建设新平台"
+    },
+    {
+      "id": "opportunity-platforms-02",
+      "status": "hypothesis",
+      "title": "可解释的中断恢复预检",
+      "target_user": "跨天长任务、断线或换模型后继续研发的人",
+      "value": "恢复前明确哪些事实仍可信、哪些需要重验",
+      "basis": [
+        "claim-platforms-005",
+        "claim-platforms-007"
+      ],
+      "candidate_scope": "生成版本/授权/环境/证据差异清单与最小上下文包，不重放全部聊天、不自动批准",
+      "validation": "定点注入上下文丢失、旧租约、repo HEAD变化和模型能力元数据缺失，盲查恢复建议是否完整；先复现Issue涉及场景再计收益",
+      "counter_signal": "Aider已有命令管理上下文，OpenHands有持久化；不能将这些已有能力重新包装为独创。",
+      "stop_rule": "复现实验无法发现额外恢复错误，或预检成本超过人工对账节省，则缩小范围"
+    }
+  ],
+  "source_gaps": [
+    "未安装运行任何竞品，未验证隔离、恢复完整性、SLA、性能或账单。",
+    "Issue为目的性抽样，不具代表性；Open状态不等同当前缺陷仍存在。",
+    "OpenHands官方文档与主仓存在架构版本漂移，当前README优先；enterprise具体许可条款待单独核实。",
+    "未穷尽Aider插件和企业服务，不作其绝无团队功能的断言。",
+    "未找到两者与YSS完全同构的Spec版本绑定门禁证明，但本次未穷尽源代码，不能据此断言没有。",
+    "HumanLayer重建版未深入，旧代码已deprecated。"
+  ],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-platforms-001",
+      "claim-platforms-002",
+      "claim-platforms-003",
+      "claim-platforms-004",
+      "claim-platforms-005",
+      "claim-platforms-006",
+      "claim-platforms-007",
+      "claim-platforms-008"
+    ],
+    "notes": [
+      "支持的事实与机会假设分开；所有方案仍需主控核验和真实用户决定。"
+    ]
+  },
+  "result": {
+    "schema": "workflow-execution-result-v1",
+    "mode": "research",
+    "repository_mode": "template-source",
+    "work_unit": "work-unit.entry-triage",
+    "contract": "research-platforms@1",
+    "execution_state": "Explorer",
+    "workflow_status": "completed-research",
+    "allowed_write_paths": [
+      "agents/platforms.md",
+      "agents/platforms.json"
+    ],
+    "context_reconciliation": {
+      "status": "not-applicable",
+      "reason": "template-source维护研究，只消费根术语不新增产品词汇"
+    },
+    "verification": {
+      "command": "node JSON.parse platforms.json",
+      "exit_code": 0,
+      "status": "passed",
+      "package_validator": {
+        "command": "node .agents/skills/yss-research/scripts/validate-research-package.mjs agents/platforms.md agents/platforms.json",
+        "exit_code": 1,
+        "reason": "bundled validator requires <slug>-research-brief.md and <slug>-evidence.yaml; task authorizes fixed md/json handoff names; root integration must run validator on final package"
+      }
+    },
+    "ticket_status": "not-applicable",
+    "slice_contract_status": "not-applicable",
+    "ready_for_agent": false,
+    "gate_state": "unchanged",
+    "git_checkpoint": "not-authorized-not-performed",
+    "next_route": "主控综合研究证据并验证关键claim；未批准路线"
+  }
+}

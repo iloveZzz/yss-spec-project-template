@@ -1,0 +1,27 @@
+{
+  "pid": 25522,
+  "argv": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/runtime-private/local-only.sb",
+    "/Library/Java/JavaVirtualMachines/amazon-corretto-8.jdk/Contents/Home/bin/java",
+    "-Djava.net.preferIPv4Stack=true",
+    "-Dspring.cloud.bootstrap.enabled=false",
+    "-Dspring.cloud.nacos.config.enabled=false",
+    "-Dspring.cloud.nacos.discovery.enabled=false",
+    "-DsocksProxyHost=",
+    "-Djava.net.useSystemProxies=false",
+    "-jar",
+    "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend/valuation-outsourced-starter/target/valuation-outsourced-starter-3.0.0-SNAPSHOT.jar",
+    "--spring.config.location=file:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/runtime-private/pilot-application.yml",
+    "--logging.config=file:/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/runtime-private/pilot-logback.xml"
+  ],
+  "port": 61111,
+  "config_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/runtime-private/pilot-application.yml",
+  "raw_log_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/runtime-private/java-start-06.raw.log",
+  "jar_sha256": "3aa6dd5626a4b4531a67cd33b25f8610479ce2ad418198424744ca734b97969c",
+  "status": "starting",
+  "constraints": "outbound/inbound local-only sandbox profile; explicit config replaces defaults; original business source",
+  "attempt": 6,
+  "exit_code": 1
+}

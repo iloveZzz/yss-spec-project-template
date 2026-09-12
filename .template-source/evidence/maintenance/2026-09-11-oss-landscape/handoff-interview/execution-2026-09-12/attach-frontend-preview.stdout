@@ -1,0 +1,6 @@
+{
+  "schemaVersion": 1,
+  "status": "error",
+  "code": "PATH",
+  "message": "目标路径不是普通目录: /var"
+}

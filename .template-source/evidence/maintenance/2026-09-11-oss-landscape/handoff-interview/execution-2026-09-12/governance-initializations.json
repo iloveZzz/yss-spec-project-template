@@ -1,0 +1,69 @@
+[
+  {
+    "role": "backend",
+    "target": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance",
+    "command": [
+      "node",
+      "submodules/create-yss-harness-backend/bin/create-yss-harness-backend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance",
+      "--project-name",
+      "目标表预览交付试验",
+      "--business-domain",
+      "文件同步目标表数据预览",
+      "--issue-tracker",
+      "local-markdown",
+      "--no-example-docs",
+      "--json"
+    ],
+    "executed_at": "2026-09-11T16:48:28.869688+00:00",
+    "exit_code": 0,
+    "identity": "schema_version: 1\nrepository_mode: project-instance\n",
+    "stdout_ref": "init-backend-applied.stdout",
+    "stderr_ref": "init-backend-applied.stderr"
+  },
+  {
+    "role": "frontend",
+    "target": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend-governance",
+    "command": [
+      "node",
+      "submodules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+      "init",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend-governance",
+      "--project-name",
+      "目标表预览交付试验",
+      "--business-domain",
+      "文件同步目标表数据预览",
+      "--issue-tracker",
+      "local-markdown",
+      "--no-example-docs",
+      "--json"
+    ],
+    "executed_at": "2026-09-11T16:49:25.675212+00:00",
+    "exit_code": 0,
+    "identity": "schema_version: 1\nrepository_mode: project-instance\n",
+    "stdout_ref": "init-frontend-applied.stdout",
+    "stderr_ref": "init-frontend-applied.stderr"
+  },
+  {
+    "role": "strategy",
+    "target": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance",
+    "command": [
+      "node",
+      "submodules/create-yss-strategic-design/bin/create-yss-harness-design.js",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance",
+      "--project-name",
+      "目标表预览交付试验",
+      "--business-domain",
+      "文件同步目标表数据预览"
+    ],
+    "executed_at": "2026-09-11T16:50:28.072274+00:00",
+    "exit_code": 0,
+    "identity": "schema_version: 1\nrepository_mode: project-instance\n",
+    "stdout_ref": "init-strategy-applied.stdout",
+    "stderr_ref": "init-strategy-applied.stderr"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "status": "approved",
+  "gate_id": "gate.openapi-freeze-confirmed",
+  "draft_version": "1.0.0-pilot.3",
+  "draft_sha256": "sha256:8d696f69a62bee50545d418a458f848941e4e84647fea465b524779c8708259b",
+  "request_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance/docs/.scratch/target-preview-pilot/architecture/freeze-decision.md",
+  "request_sha256": "sha256:3c2e5155d16195e2e25bf8d328607d865acf0f8314e55278d8790663e57ea19e",
+  "manifest_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance/docs/.scratch/target-preview-pilot/architecture/freeze-review-manifest.json",
+  "tool": "request_user_input_async",
+  "response": "确认",
+  "prior_scope_authorization_remains_valid": true,
+  "decision_record_ref": "freeze-confirmation.json",
+  "recorded_at": "2026-09-11T17:39:51.424390+00:00"
+}

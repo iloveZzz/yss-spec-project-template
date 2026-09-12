@@ -1,0 +1,9 @@
+{
+  "verified_at": "2026-09-11T17:41:06.845Z",
+  "exit_code": 0,
+  "method": "bundled validateApprovalRecordFile({requireApproved:true}) and exact artifact byte binding",
+  "cli_limitation": "bundled CLI does not expose --require-approved",
+  "api_digest": "sha256:8d696f69a62bee50545d418a458f848941e4e84647fea465b524779c8708259b",
+  "approval_digest": "sha256:53d32ee4225553532c08b29aab95a5cd6342e6f9e700ebc4274090fb68c05172",
+  "scope": "current human API Freeze only; no Slice or release approval"
+}

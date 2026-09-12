@@ -1,0 +1,534 @@
+{
+  "schema_version": 1,
+  "scope": "Agent workflows: Superpowers, GSD historical/current Core, Matt Skills, adjacent GSD Pi",
+  "accessed_at": "2026-09-11",
+  "profile": "strategy-evidence",
+  "mode": "evidence-audited",
+  "search_log": [
+    {
+      "id": "search-aw-01",
+      "executed_at": "2026-09-11",
+      "channel": "web.search",
+      "query": "site:github.com/obra/superpowers; site:github.com gsd-build get-shit-done; site:github.com/mattpocock/skills; site:github.com cc-sdd spec-kitty",
+      "result": "results-found",
+      "notes": "最后一条结果被无关简历 PDF 淹没，排除；按官方 GSD 迁移增加 Pi，未继续 cc-sdd。"
+    },
+    {
+      "id": "search-aw-02",
+      "executed_at": "2026-09-11",
+      "channel": "web.open + GitHub REST API",
+      "query": "官方 README / repository metadata / latest releases / commits / git tree",
+      "result": "results-found",
+      "notes": "发现 GSD 旧仓归档和双迁移；元数据非 fork 验证；Core default next 与阅读 main 区分。"
+    },
+    {
+      "id": "search-aw-03",
+      "executed_at": "2026-09-11",
+      "channel": "raw.githubusercontent.com",
+      "query": "Superpowers verification/SDD/brainstorming; Matt ADR/handoff/implement/code-review; Core architecture/state contract/update docs and src/state-contract.cts",
+      "result": "results-found",
+      "notes": "源码和文档交叉核验，未运行项目。"
+    },
+    {
+      "id": "search-aw-04",
+      "executed_at": "2026-09-11",
+      "channel": "web.search",
+      "query": "site:github.com/obra/superpowers/issues context compaction review cost; site:github.com/open-gsd/gsd-core/issues state drift update; site:github.com/mattpocock/skills/issues plugin update",
+      "result": "results-found",
+      "notes": "搜索返回的 Superpowers #2112 显示 Open，REST 实时核实为 closed/completed，采用后者。"
+    },
+    {
+      "id": "search-aw-05",
+      "executed_at": "2026-09-11",
+      "channel": "GitHub REST API",
+      "query": "Superpowers issues/2112,1735; Matt releases/tags/v1.2.3; Core issues?state=open&per_page=8; issues/4623,4624",
+      "result": "results-found",
+      "notes": "issue 为原始用户报告；本轮不复现。Open issues API 混含 PR，手动按 html_url 区分。"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "evidence-aw-01",
+      "title": "Superpowers 当前仓库与许可",
+      "url": "https://api.github.com/repos/obra/superpowers",
+      "locator": "full_name, archived, license, pushed_at",
+      "accessed_at": "2026-09-11",
+      "published_at": null,
+      "source_class": "primary",
+      "role": "support",
+      "observation": "canonical obra/superpowers，非 fork、未归档、MIT；pushed_at 2026-09-11T03:48:04Z。HEAD b36e0829c6d0140e93cfef2ca599b1b07d4a7797。",
+      "limitations": "仓库活动不等于可靠性；未将 star 当用户。"
+    },
+    {
+      "id": "evidence-aw-02",
+      "title": "Superpowers 的 Fresh Verification",
+      "url": "https://github.com/obra/superpowers/blob/b36e0829c6d0140e93cfef2ca599b1b07d4a7797/skills/verification-before-completion/SKILL.md",
+      "locator": "The Iron Law; The Gate Function",
+      "accessed_at": "2026-09-11",
+      "published_at": null,
+      "source_class": "primary",
+      "role": "counter",
+      "observation": "完成声明前运行完整验证命令，阅读输出与退出码；历史结果和 Agent 成功自述不够。",
+      "limitations": "未安装运行；文档或源码事实不代表实测效果。"
+    },
+    {
+      "id": "evidence-aw-03",
+      "title": "Superpowers SDD 源码合同",
+      "url": "https://github.com/obra/superpowers/blob/b36e0829c6d0140e93cfef2ca599b1b07d4a7797/skills/subagent-driven-development/SKILL.md",
+      "locator": "lines 8-31, 354-443, 471-500",
+      "accessed_at": "2026-09-11",
+      "published_at": null,
+      "source_class": "primary",
+      "role": "counter",
+      "observation": "按任务派独立 implementer，task reviewer 给 Spec 与质量结论；最多五轮修复后由主控留 ruling；计划范围 ledger 跨 compaction，最终报告汇总 ruling。",
+      "limitations": "未安装运行；文档或源码事实不代表实测效果。"
+    },
+    {
+      "id": "evidence-aw-04",
+      "title": "Superpowers v6.3.0",
+      "url": "https://github.com/obra/superpowers/releases/tag/v6.3.0",
+      "locator": "Brainstorming; Subagent-Driven Development",
+      "accessed_at": "2026-09-11",
+      "published_at": "2026-08-12T16:58:30Z",
+      "source_class": "primary",
+      "role": "counter",
+      "observation": "发布说明引入 spike/bounded/architectural 裁剪、同构小任务合并 dispatch、冲突 ruling；修复 worktree 清理时未跟踪文件保护。",
+      "limitations": "未安装运行；文档或源码事实不代表实测效果。"
+    },
+    {
+      "id": "evidence-aw-05",
+      "title": "Superpowers 审查不收敛单例",
+      "url": "https://github.com/obra/superpowers/issues/2112",
+      "locator": "issue body Environment, What happened; API state",
+      "accessed_at": "2026-09-11",
+      "published_at": "2026-08-08T22:21:49Z",
+      "source_class": "direct-experience",
+      "role": "support",
+      "observation": "用户报告 v6.2.0 Codex Desktop 中审查不断增加超出冻结验收的边界测试；API 当前 closed/completed，更新时间 2026-08-12。",
+      "limitations": "单个用户报告，未复现；不证明 v6.3.0 仍有同一缺陷，也不代表发生率。"
+    },
+    {
+      "id": "evidence-aw-06",
+      "title": "Superpowers 轻任务成本反证",
+      "url": "https://github.com/obra/superpowers/issues/1735",
+      "locator": "What worked; The problem",
+      "accessed_at": "2026-09-11",
+      "published_at": "2026-06-11T06:55:45Z",
+      "source_class": "direct-experience",
+      "role": "counter",
+      "observation": "v5.1.0 用户认为小项目流程重，同时明确承认审查发现无效测试、反序列化缺口和版本下限问题；API closed/completed。",
+      "limitations": "单例体验，旧版；不能拿其调度数与成本概括现版。"
+    },
+    {
+      "id": "evidence-aw-07",
+      "title": "GSD 旧仓官方迁移",
+      "url": "https://github.com/gsd-build/get-shit-done/blob/bdcaab2c752d9a33a1a1ca9acf3a3c81fb991815/README.md",
+      "locator": "lines 3-12; repo archived banner",
+      "accessed_at": "2026-09-11",
+      "published_at": null,
+      "source_class": "primary",
+      "role": "counter",
+      "observation": "旧仓当前 README 说明现行开发在 open-gsd/gsd-core；页面显示 2026-06-26 归档。",
+      "limitations": "检索缓存仍展示旧安装命令，正式比较以跳转目标为准。"
+    },
+    {
+      "id": "evidence-aw-08",
+      "title": "GSD Core 仓库、分支和发布",
+      "url": "https://api.github.com/repos/open-gsd/gsd-core",
+      "locator": "metadata; /commits/main; /commits/HEAD; /releases?per_page=2",
+      "accessed_at": "2026-09-11",
+      "published_at": null,
+      "source_class": "primary",
+      "role": "support",
+      "observation": "非 fork、未归档、MIT，默认分支 next。阅读基线 main b67f6028ce572f0504a035f9cdf5e11b0cb86bf0；最新正式 release v1.13.0 (2026-09-06)，默认分支 HEAD aad96e0b5f14a8d9eee0872b6313faefd4714837 (2026-09-11)。",
+      "limitations": "latest main README 的 what is new 仍写 1.7.0，不能用于判断最新发布。"
+    },
+    {
+      "id": "evidence-aw-09",
+      "title": "GSD Core 架构",
+      "url": "https://github.com/open-gsd/gsd-core/blob/b67f6028ce572f0504a035f9cdf5e11b0cb86bf0/docs/ARCHITECTURE.md",
+      "locator": "Fresh Context Per Agent; File-Based State; Command namespace meta-skills; workflow size budget",
+      "accessed_at": "2026-09-11",
+      "published_at": null,
+      "source_class": "primary",
+      "role": "support",
+      "observation": "研究/规划/执行用独立上下文，.planning 保存 Markdown/JSON。部分非递归运行时走 namespace router，递归或未确认运行时用平铺技能；按实际运行时区别安装。",
+      "limitations": "up to 200K 是作者描述的上下文上限，非跨模型保证；未验证节省比例。"
+    },
+    {
+      "id": "evidence-aw-10",
+      "title": "GSD Core 状态投影源码",
+      "url": "https://github.com/open-gsd/gsd-core/blob/b67f6028ce572f0504a035f9cdf5e11b0cb86bf0/src/state-contract.cts",
+      "locator": "lines 72-117, 195-203, 298-306, 318-376",
+      "accessed_at": "2026-09-11",
+      "published_at": null,
+      "source_class": "primary",
+      "role": "counter",
+      "observation": "定义 state.json v1.0.0、固定 keys/状态枚举；next 复用 classifyProject。投影 best-effort；缺资料可为 null/空数组，Deferred 映射 pending。",
+      "limitations": "投影是展示 cache；不能从其字段推出 YSS 相同的批准、新鲜度合同。"
+    },
+    {
+      "id": "evidence-aw-11",
+      "title": "GSD Core STATE.md consistency gates",
+      "url": "https://github.com/open-gsd/gsd-core/blob/b67f6028ce572f0504a035f9cdf5e11b0cb86bf0/docs/features/statemd-consistency-gates.md",
+      "locator": "REQ-STATE-01 to REQ-STATE-06",
+      "accessed_at": "2026-09-11",
+      "published_at": null,
+      "source_class": "primary",
+      "role": "counter",
+      "observation": "state validate 对照文件系统检查漂移；sync 重建；--verify 预览；--strict 让 valid 影响进程退出码。",
+      "limitations": "未安装运行；文档或源码事实不代表实测效果。"
+    },
+    {
+      "id": "evidence-aw-12",
+      "title": "GSD Core 更新保护",
+      "url": "https://github.com/open-gsd/gsd-core/blob/b67f6028ce572f0504a035f9cdf5e11b0cb86bf0/docs/how-to/update-gsd.md",
+      "locator": "lines 102-146, 164",
+      "accessed_at": "2026-09-11",
+      "published_at": null,
+      "source_class": "primary",
+      "role": "counter",
+      "observation": "更新前备份用户文件；manifest hash 识别被改过的托管文件并备份本地 patches；--reapply 合回。恢复兼容警告是 advisory。",
+      "limitations": "未安装运行；文档或源码事实不代表实测效果。"
+    },
+    {
+      "id": "evidence-aw-13",
+      "title": "GSD Core 验证误失效用户报告",
+      "url": "https://github.com/open-gsd/gsd-core/issues/4623",
+      "locator": "issue body sections 1,2; Environment",
+      "accessed_at": "2026-09-11",
+      "published_at": "2026-09-11T09:55:21Z",
+      "source_class": "direct-experience",
+      "role": "support",
+      "observation": "1.13.0 用户报告 covered_digest 含共享 ROADMAP/REQUIREMENTS，完成别的阶段使未改实现 stale；另报告 fingerprint CLI 参数问题，库函数可工作。API 当前 open。",
+      "limitations": "单例、未复现且尚无本轮维护者裁决；可作诊断实验输入，不能直接断言实现缺陷已确认。"
+    },
+    {
+      "id": "evidence-aw-14",
+      "title": "GSD Core 外部 worker 回收报告",
+      "url": "https://github.com/open-gsd/gsd-core/issues/4624",
+      "locator": "What happened; Steps to reproduce; GSD Configuration",
+      "accessed_at": "2026-09-11",
+      "published_at": "2026-09-11T10:49:19Z",
+      "source_class": "direct-experience",
+      "role": "support",
+      "observation": "1.13.0 Codex 用户报告 worktree 外部进程完成或 blocked 后主控未自动收敛，下一用户消息才检查结果；已有 artifact reconciliation 仍需主控执行。API 当前 open。",
+      "limitations": "单例、未复现；未确认默认配置、其他运行时或未来补丁。"
+    },
+    {
+      "id": "evidence-aw-15",
+      "title": "Matt 仓库定位与安装",
+      "url": "https://github.com/mattpocock/skills/blob/3cca18b368ae95cdbdebbff572ccafa662551015/README.md",
+      "locator": "Installation",
+      "accessed_at": "2026-09-11",
+      "published_at": null,
+      "source_class": "primary",
+      "role": "support",
+      "observation": "技能主张小、可组合、可修改。Claude plugin 是托管 bundle；skills.sh 是可编辑副本。一次设置 tracker、labels、domain docs。",
+      "limitations": "30 秒安装和任意模型可用是作者定位，未作时间或模型评测。"
+    },
+    {
+      "id": "evidence-aw-16",
+      "title": "Matt native plugin ADR",
+      "url": "https://github.com/mattpocock/skills/blob/3cca18b368ae95cdbdebbff572ccafa662551015/.agents/adr/0002-ship-as-a-claude-code-plugin.md",
+      "locator": "lines 7-23, 30-41",
+      "accessed_at": "2026-09-11",
+      "published_at": "2026-08-05",
+      "source_class": "primary",
+      "role": "counter",
+      "observation": "Claude 插件 curated promoted skills；Codex native plugin 因技能桶目录与单路径接口取舍而延期，skills.sh 仍可用。官方 marketplace source SHA 被 pin，发布 tag 不等于用户已更新。",
+      "limitations": "ADR 是 Matt 当时环境的实现经验；本轮未复测当前 Codex manifest 或缓存行为。"
+    },
+    {
+      "id": "evidence-aw-17",
+      "title": "Matt handoff",
+      "url": "https://github.com/mattpocock/skills/blob/3cca18b368ae95cdbdebbff572ccafa662551015/skills/productivity/handoff/SKILL.md",
+      "locator": "lines 8-16",
+      "accessed_at": "2026-09-11",
+      "published_at": null,
+      "source_class": "primary",
+      "role": "counter",
+      "observation": "handoff 写到 OS 临时目录，引用已有 specs/plans/ADR/issues/commits/diffs，列建议技能并要求敏感信息脱敏。",
+      "limitations": "未安装运行；文档或源码事实不代表实测效果。"
+    },
+    {
+      "id": "evidence-aw-18",
+      "title": "Matt implement 与 code-review",
+      "url": "https://github.com/mattpocock/skills/blob/3cca18b368ae95cdbdebbff572ccafa662551015/skills/engineering/code-review/SKILL.md",
+      "locator": "lines 6-32, 58-87",
+      "accessed_at": "2026-09-11",
+      "published_at": null,
+      "source_class": "primary",
+      "role": "counter",
+      "observation": "以固定点 diff 对 standards/spec 双轴并行独立审查；找不到 Spec 时向用户确认，确认无 Spec 后可以跳过该轴并报告。",
+      "limitations": "此文件不是完整生命周期审批或测试证据验证器；不能将灵活跳过推成没有审查。"
+    },
+    {
+      "id": "evidence-aw-19",
+      "title": "Matt 最新发布",
+      "url": "https://github.com/mattpocock/skills/releases/tag/v1.2.3",
+      "locator": "Patch Changes",
+      "accessed_at": "2026-09-11",
+      "published_at": "2026-08-06T14:05:28Z",
+      "source_class": "primary",
+      "role": "support",
+      "observation": "v1.2.3 补 diagnosing-bugs 脱敏、移除调度提示里的 Claude 专属工具名以支持 Codex 等运行时；仓库 API 显示 MIT，未归档，HEAD 2026-09-04。",
+      "limitations": "未安装运行；文档或源码事实不代表实测效果。"
+    },
+    {
+      "id": "evidence-aw-20",
+      "title": "GSD 2 官方迁移",
+      "url": "https://github.com/gsd-build/gsd-2",
+      "locator": "README: GSD 2 Has Moved",
+      "accessed_at": "2026-09-11",
+      "published_at": null,
+      "source_class": "primary",
+      "role": "counter",
+      "observation": "GSD 2 当前 README 指向 open-gsd/gsd-pi，旧仓不再是活跃开发地址。",
+      "limitations": "未安装运行；文档或源码事实不代表实测效果。"
+    },
+    {
+      "id": "evidence-aw-21",
+      "title": "GSD Pi 当前 README",
+      "url": "https://github.com/open-gsd/gsd-pi/blob/0fd02c1ea7a87d9d9a8bb8323322de597520e1b4/README.md",
+      "locator": "lines 12-24, 80-125, 189-196",
+      "accessed_at": "2026-09-11",
+      "published_at": null,
+      "source_class": "primary",
+      "role": "support",
+      "observation": "local-first coding agent，.gsd 本地数据库与 Markdown 投影，worktree 自动化，多 provider、TUI/可选 Web；旧 unscoped npm 包需迁移至 @opengsd/gsd-pi。",
+      "limitations": "这是相邻运行时替代，不等同于可直接混入任意 Agent 的模板。未测试迁移过程。"
+    },
+    {
+      "id": "evidence-aw-22",
+      "title": "GSD Pi 发布",
+      "url": "https://github.com/open-gsd/gsd-pi/releases/tag/v1.19.0",
+      "locator": "release tag and published_at",
+      "accessed_at": "2026-09-11",
+      "published_at": "2026-09-09T13:29:17Z",
+      "source_class": "primary",
+      "role": "support",
+      "observation": "API 最新 release v1.19.0，2026-09-09T13:29:17Z；仓库非 fork、未归档、MIT。",
+      "limitations": "未安装运行；文档或源码事实不代表实测效果。"
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-aw-01",
+      "text": "GSD 比较必须跟到官方现行地址：Core 与 Pi 是不同路线，旧仓搜索缓存不能代表现状。",
+      "kind": "observation",
+      "supporting_evidence": [
+        "evidence-aw-07",
+        "evidence-aw-08",
+        "evidence-aw-20",
+        "evidence-aw-22"
+      ],
+      "counter_signals": [
+        "evidence-aw-09",
+        "evidence-aw-21"
+      ],
+      "confidence": "high",
+      "audit_outcome": "supported",
+      "disposition": "accept-with-stated-scope"
+    },
+    {
+      "id": "claim-aw-02",
+      "text": "Fresh Verification、独立审查与恢复 ledger 已是 Superpowers 的公开能力，不构成 YSS 的独占差异。",
+      "kind": "observation",
+      "supporting_evidence": [
+        "evidence-aw-02",
+        "evidence-aw-03"
+      ],
+      "counter_signals": [
+        "evidence-aw-05"
+      ],
+      "confidence": "high",
+      "audit_outcome": "supported",
+      "disposition": "accept-with-stated-scope"
+    },
+    {
+      "id": "claim-aw-03",
+      "text": "审查成本和不收敛是有公开单例支撑的问题信号；现行 Superpowers 已提供裁剪、合并调度和修复上限，机会必须通过新版本对照实验确认。",
+      "kind": "inference",
+      "supporting_evidence": [
+        "evidence-aw-05",
+        "evidence-aw-06"
+      ],
+      "counter_signals": [
+        "evidence-aw-03",
+        "evidence-aw-04"
+      ],
+      "confidence": "medium",
+      "audit_outcome": "supported",
+      "disposition": "accept-with-stated-scope"
+    },
+    {
+      "id": "claim-aw-04",
+      "text": "GSD Core 已有持久状态、机器投影、漂移检测和 hash/patch 更新保护，YSS 不宜以对手没有这些能力定位。",
+      "kind": "observation",
+      "supporting_evidence": [
+        "evidence-aw-09",
+        "evidence-aw-10",
+        "evidence-aw-11",
+        "evidence-aw-12"
+      ],
+      "counter_signals": [
+        "evidence-aw-13",
+        "evidence-aw-14"
+      ],
+      "confidence": "high",
+      "audit_outcome": "supported",
+      "disposition": "accept-with-stated-scope"
+    },
+    {
+      "id": "claim-aw-05",
+      "text": "GSD Core 的状态解释和外部 worker 终态收敛值得优先实验，但本轮不能将两个新 issue 当成已证实的产品缺陷或普遍痛点。",
+      "kind": "inference",
+      "supporting_evidence": [
+        "evidence-aw-13",
+        "evidence-aw-14"
+      ],
+      "counter_signals": [
+        "evidence-aw-10",
+        "evidence-aw-11"
+      ],
+      "confidence": "medium",
+      "audit_outcome": "partially-supported",
+      "disposition": "qualify"
+    },
+    {
+      "id": "claim-aw-06",
+      "text": "Matt 提供可组合技能与明确可编辑/托管安装选择；YSS 已使用 Matt 概念，应优先解决适配后的可升级性与责任边界而非复制更多流程。",
+      "kind": "inference",
+      "supporting_evidence": [
+        "evidence-aw-15",
+        "evidence-aw-16",
+        "evidence-aw-17",
+        "evidence-aw-18"
+      ],
+      "counter_signals": [
+        "evidence-aw-19"
+      ],
+      "confidence": "medium",
+      "audit_outcome": "supported",
+      "disposition": "accept-with-stated-scope"
+    },
+    {
+      "id": "claim-aw-07",
+      "text": "GSD Pi 把状态与执行纳入独立本地运行时并有 Web 界面，是 YSS 可观察性设计的相邻替代样本；不等于同类轻量模板。",
+      "kind": "observation",
+      "supporting_evidence": [
+        "evidence-aw-20",
+        "evidence-aw-21",
+        "evidence-aw-22"
+      ],
+      "counter_signals": [
+        "evidence-aw-09"
+      ],
+      "confidence": "high",
+      "audit_outcome": "supported",
+      "disposition": "accept-with-stated-scope"
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opportunity-aw-01",
+      "title": "有解释的 Fresh Verification 失效与恢复",
+      "basis": [
+        "claim-aw-04",
+        "claim-aw-05"
+      ],
+      "hypothesis": "跨阶段或跨仓共享资产变化时，用户需要看到哪条证据为何失效、哪些代码仍未变化及最小重验动作。",
+      "suggested_experiment": "用本地虚构项目构造代码变更、共享说明变更、冻结契约变更三种事件，对比 YSS 与 GSD Core 1.13.0 的 stale 原因、误阻断次数及恢复命令。",
+      "acceptance": "三个事件均能定位到变化文件和关联证据；不以 blanket 忽略共享文档达成通过。阈值须实验后由维护者确认。",
+      "counter": "GSD 已有 covered digest 和状态校验；优势需实测，不能靠增加 schema。",
+      "status": "hypothesis-not-approved"
+    },
+    {
+      "id": "opportunity-aw-02",
+      "title": "外部 Agent 的可靠终态收敛",
+      "basis": [
+        "claim-aw-05"
+      ],
+      "hypothesis": "使用多 worktree、多运行时的团队需要可恢复的 launch/wait/reconcile 记录，避免必须再次发消息才发现完成或阻塞。",
+      "suggested_experiment": "模拟 worker 正常完成、失败、根 Agent 中断、SUMMARY 缺失、commit 不匹配；记录恢复后是否重复派发或误合并。",
+      "acceptance": "每个 worker 终态均可追溯到身份、结果和产物；未知保持未通过；不自动授予 merge/push。",
+      "counter": "GSD 已有 artifact reconciliation，新增可靠生命周期必须体现较现有做法的增益；跨运行时能力需分别验证。",
+      "status": "hypothesis-not-approved"
+    },
+    {
+      "id": "opportunity-aw-03",
+      "title": "可升级的 YSS 适配补丁包",
+      "basis": [
+        "claim-aw-06",
+        "claim-aw-04"
+      ],
+      "hypothesis": "在使用公开 skill 又保留组织门禁时，用户更需要看到上游新增、YSS 适配和本地修改三方差异及冲突原因。",
+      "suggested_experiment": "选择一个 Matt 上游小改动和一个接口冲突，在 YSS 现有 source/effective hash 机制上测试 dry-run、三方解释、回滚及不同 Agent 安装包一致性。",
+      "acceptance": "用户能逐项看见保留、覆盖、冲突和未分发项；在冲突时不覆盖适配；升级失败可恢复。",
+      "counter": "GSD 已有 hash/patch/reapply；Matt marketplace 已 pin SHA；不能以 hash 存在当差异。",
+      "status": "hypothesis-not-approved"
+    },
+    {
+      "id": "opportunity-aw-04",
+      "title": "按影响面显示最短合规路径及成本",
+      "basis": [
+        "claim-aw-02",
+        "claim-aw-03"
+      ],
+      "hypothesis": "保留关键门禁时展示当前下一步、必需证据和预计调用范围，可减少用户把完整治理当重复仪式。",
+      "suggested_experiment": "用低风险文案修复、公开接口变更、跨仓契约三种任务对比 YSS 当前、Superpowers 6.3.0 和 Matt 组合；记录首次产出耗时、读取字节、调用数和缺漏。",
+      "acceptance": "流程裁剪理由可定位到影响面；成本改善同时不遗漏授权、Spec 或验证；不预设节省百分比。",
+      "counter": "Superpowers 已有三档裁剪；Matt 主打轻量可组合。机会是可证明的合规成本，而非更短文件或更多技能。",
+      "status": "hypothesis-not-approved"
+    }
+  ],
+  "source_gaps": [
+    "未安装和运行竞品；无使用率、成本或 ROI 测量。",
+    "Google 直接检索由主控统一记录；本子任务实际使用 web search 与 GitHub 官方 API/raw。",
+    "GSD Core default next 在研究中移动，能力引用固定 main SHA；发布版并不等于默认开发分支。",
+    "Matt ADR 关于 Codex manifest 的内容仅作为该项目延期决策及当时实验记录，不推广成当前平台限制。"
+  ],
+  "result": {
+    "schema": "workflow-execution-result-v1",
+    "task_id": "research-agent-workflows",
+    "work_unit_id": "work-unit.entry-triage",
+    "contract_id": "research-agent-workflows",
+    "contract_version": 1,
+    "mode": "evidence-audited",
+    "repository_identity": "template-source",
+    "actor_id": "research-agent-workflows",
+    "role_id": "role.product-manager",
+    "runtime_id": "runtime.skill-projection",
+    "status": "completed-research-subtask",
+    "context_reconciliation": {
+      "status": "not-applicable",
+      "reason": "template-source 维护研究只消费根 CONTEXT.md，无词汇改动或产品阶段流转"
+    },
+    "allowed_write_paths": [
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/agents/agent-workflows.md",
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/agents/agent-workflows.json"
+    ],
+    "changed_files": [
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/agents/agent-workflows.md",
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/agents/agent-workflows.json"
+    ],
+    "verification": [
+      {
+        "command": "node JSON.parse plus supporting_evidence/counter_signals reference integrity check",
+        "status": "passed",
+        "exit_code": 0,
+        "output": "PASS JSON parse and 7 claim references",
+        "executed_at": "2026-09-11"
+      }
+    ],
+    "deviations": [
+      "新兴候选改为官方现行 GSD Pi，因为旧 GSD 2 已迁移且比额外 cc-sdd 更能纠正当前竞品身份。"
+    ],
+    "new_impacts": [],
+    "gate_changes": [],
+    "ticket_changes": [],
+    "git_checkpoint": "not-authorized",
+    "next_route": "主控核对 material claims 后汇总，机会仍待用户决定"
+  }
+}

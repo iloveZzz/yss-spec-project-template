@@ -1,0 +1,12 @@
+{
+  "component_path_exists": true,
+  "jar_files": [
+    "3.0.0-SNAPSHOT/yss-component-text-search-core-3.0.0-SNAPSHOT.jar",
+    "3.0.0-SNAPSHOT/yss-component-text-search-core-3.0.0-SNAPSHOT-sources.jar",
+    "2.0.0-SNAPSHOT/yss-component-text-search-core-2.0.0-20250322.064722-4.jar",
+    "2.0.0-SNAPSHOT/yss-component-text-search-core-2.0.0-SNAPSHOT-sources.jar",
+    "2.0.0-SNAPSHOT/yss-component-text-search-core-2.0.0-20260317.052440-5.jar",
+    "2.0.0-SNAPSHOT/yss-component-text-search-core-2.0.0-20260317.052440-5-sources.jar",
+    "2.0.0-SNAPSHOT/yss-component-text-search-core-2.0.0-SNAPSHOT.jar"
+  ]
+}

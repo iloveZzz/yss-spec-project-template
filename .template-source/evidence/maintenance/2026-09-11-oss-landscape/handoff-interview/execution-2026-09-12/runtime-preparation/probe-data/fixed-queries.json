@@ -1,0 +1,167 @@
+{
+  "schema_version": 1,
+  "queries": [
+    {
+      "id": "fs_sync_task_columns",
+      "datasource": "control",
+      "phase": "structure",
+      "sql_ref": "sql/fs_sync_task_columns.sql",
+      "sql_sha256": "64c96b30f1da17763bb4fdf02c5d7c1dd8727016f9d6695c19b1f5638e6e8ba6",
+      "sql": "SELECT jsonb_build_array(a.attnum::text, a.attname, pg_catalog.format_type(a.atttypid,a.atttypmod), a.attnotnull, pg_catalog.pg_get_expr(d.adbin,d.adrelid), pg_catalog.col_description(c.oid,a.attnum))::text AS canonical_value\nFROM pg_catalog.pg_attribute a JOIN pg_catalog.pg_class c ON c.oid=a.attrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace LEFT JOIN pg_catalog.pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum\nWHERE n.nspname='public' AND c.relname='fs_sync_task' AND a.attnum>0 AND NOT a.attisdropped ORDER BY a.attnum LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "fs_sync_task_primary_key",
+      "datasource": "control",
+      "phase": "structure",
+      "sql_ref": "sql/fs_sync_task_primary_key.sql",
+      "sql_sha256": "aef25ebc15979b7eeb64b3b9590a8e9228f434c6562a534a13f4e71d390c07fb",
+      "sql": "SELECT jsonb_build_array(con.conname, array_agg(a.attname ORDER BY k.ordinality))::text AS canonical_value\nFROM pg_catalog.pg_constraint con JOIN pg_catalog.pg_class c ON c.oid=con.conrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace CROSS JOIN LATERAL unnest(con.conkey) WITH ORDINALITY k(attnum,ordinality) JOIN pg_catalog.pg_attribute a ON a.attrelid=c.oid AND a.attnum=k.attnum\nWHERE n.nspname='public' AND c.relname='fs_sync_task' AND con.contype='p' GROUP BY con.conname ORDER BY con.conname COLLATE \"C\" LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "fs_sync_task_draft_columns",
+      "datasource": "control",
+      "phase": "structure",
+      "sql_ref": "sql/fs_sync_task_draft_columns.sql",
+      "sql_sha256": "8450dadcebcb3049229094b1b4c2c6a8fe30d03a596527807a66027c1e9fce72",
+      "sql": "SELECT jsonb_build_array(a.attnum::text, a.attname, pg_catalog.format_type(a.atttypid,a.atttypmod), a.attnotnull, pg_catalog.pg_get_expr(d.adbin,d.adrelid), pg_catalog.col_description(c.oid,a.attnum))::text AS canonical_value\nFROM pg_catalog.pg_attribute a JOIN pg_catalog.pg_class c ON c.oid=a.attrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace LEFT JOIN pg_catalog.pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum\nWHERE n.nspname='public' AND c.relname='fs_sync_task_draft' AND a.attnum>0 AND NOT a.attisdropped ORDER BY a.attnum LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "fs_sync_task_draft_primary_key",
+      "datasource": "control",
+      "phase": "structure",
+      "sql_ref": "sql/fs_sync_task_draft_primary_key.sql",
+      "sql_sha256": "3886b3aa5f1e4d7c2cd00ed7a348f5f63f6f79fde3100fad100c60ef10a4c4cd",
+      "sql": "SELECT jsonb_build_array(con.conname, array_agg(a.attname ORDER BY k.ordinality))::text AS canonical_value\nFROM pg_catalog.pg_constraint con JOIN pg_catalog.pg_class c ON c.oid=con.conrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace CROSS JOIN LATERAL unnest(con.conkey) WITH ORDINALITY k(attnum,ordinality) JOIN pg_catalog.pg_attribute a ON a.attrelid=c.oid AND a.attnum=k.attnum\nWHERE n.nspname='public' AND c.relname='fs_sync_task_draft' AND con.contype='p' GROUP BY con.conname ORDER BY con.conname COLLATE \"C\" LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "fs_sync_task_version_columns",
+      "datasource": "control",
+      "phase": "structure",
+      "sql_ref": "sql/fs_sync_task_version_columns.sql",
+      "sql_sha256": "c662e793c6feaa12cd0d5cab51f3c82725ba07a7b7780b1fe7575dfecbe430db",
+      "sql": "SELECT jsonb_build_array(a.attnum::text, a.attname, pg_catalog.format_type(a.atttypid,a.atttypmod), a.attnotnull, pg_catalog.pg_get_expr(d.adbin,d.adrelid), pg_catalog.col_description(c.oid,a.attnum))::text AS canonical_value\nFROM pg_catalog.pg_attribute a JOIN pg_catalog.pg_class c ON c.oid=a.attrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace LEFT JOIN pg_catalog.pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum\nWHERE n.nspname='public' AND c.relname='fs_sync_task_version' AND a.attnum>0 AND NOT a.attisdropped ORDER BY a.attnum LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "fs_sync_task_version_primary_key",
+      "datasource": "control",
+      "phase": "structure",
+      "sql_ref": "sql/fs_sync_task_version_primary_key.sql",
+      "sql_sha256": "857ace4004acc178a7aba52e967585e64080389cc0c7e35e4b411596495ce69a",
+      "sql": "SELECT jsonb_build_array(con.conname, array_agg(a.attname ORDER BY k.ordinality))::text AS canonical_value\nFROM pg_catalog.pg_constraint con JOIN pg_catalog.pg_class c ON c.oid=con.conrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace CROSS JOIN LATERAL unnest(con.conkey) WITH ORDINALITY k(attnum,ordinality) JOIN pg_catalog.pg_attribute a ON a.attrelid=c.oid AND a.attnum=k.attnum\nWHERE n.nspname='public' AND c.relname='fs_sync_task_version' AND con.contype='p' GROUP BY con.conname ORDER BY con.conname COLLATE \"C\" LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "populated_task",
+      "datasource": "control",
+      "phase": "content",
+      "sql_ref": "sql/populated_task.sql",
+      "sql_sha256": "4236f5bd5a7885515b9378b9637046fe6efc4dbb13f0f1c056b356a4c2780b38",
+      "sql": "SELECT jsonb_build_array(t.id::text,t.task_code,t.task_name,t.task_status,t.published_version::text,t.owner_id,t.snapshot_retention_days::text,to_char(t.gmt_create,'YYYY-MM-DD\"T\"HH24:MI:SS.US'),to_char(t.gmt_modified,'YYYY-MM-DD\"T\"HH24:MI:SS.US'))::text AS canonical_value FROM public.fs_sync_task t WHERE t.task_code='PILOT_PREVIEW' ORDER BY t.id LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "populated_draft",
+      "datasource": "control",
+      "phase": "content",
+      "sql_ref": "sql/populated_draft.sql",
+      "sql_sha256": "a5067750dbb7e1182e08f847b875bd54587f128e616f719d867b51f4b746ca58",
+      "sql": "SELECT jsonb_build_array(d.id::text,d.task_id::text,d.revision::text,d.config_json,d.validation_config_digest,d.validation_environment_digest,to_char(d.validated_at,'YYYY-MM-DD\"T\"HH24:MI:SS.US'),to_char(d.validation_expires_at,'YYYY-MM-DD\"T\"HH24:MI:SS.US'),to_char(d.gmt_create,'YYYY-MM-DD\"T\"HH24:MI:SS.US'),to_char(d.gmt_modified,'YYYY-MM-DD\"T\"HH24:MI:SS.US'))::text AS canonical_value FROM public.fs_sync_task_draft d JOIN public.fs_sync_task t ON t.id=d.task_id WHERE t.task_code='PILOT_PREVIEW' ORDER BY d.id LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "populated_versions",
+      "datasource": "control",
+      "phase": "content",
+      "sql_ref": "sql/populated_versions.sql",
+      "sql_sha256": "f23bf199c5e95e829280c2a92d28d157c85a71ae9696dee3c657438667a32a26",
+      "sql": "SELECT jsonb_build_array(v.id::text,v.task_id::text,v.version_number::text,v.config_digest,v.config_json,to_char(v.gmt_create,'YYYY-MM-DD\"T\"HH24:MI:SS.US'),to_char(v.gmt_modified,'YYYY-MM-DD\"T\"HH24:MI:SS.US'))::text AS canonical_value FROM public.fs_sync_task_version v JOIN public.fs_sync_task t ON t.id=v.task_id WHERE t.task_code='PILOT_PREVIEW' ORDER BY v.version_number,v.id LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "populated_target_columns",
+      "datasource": "target",
+      "phase": "structure",
+      "sql_ref": "sql/populated_target_columns.sql",
+      "sql_sha256": "5063fc8501a23bdf2eca135adfce1a0d9f974caab0fb8372a1cf4a03c591d1d7",
+      "sql": "SELECT jsonb_build_array(a.attnum::text, a.attname, pg_catalog.format_type(a.atttypid,a.atttypmod), a.attnotnull, pg_catalog.pg_get_expr(d.adbin,d.adrelid), pg_catalog.col_description(c.oid,a.attnum))::text AS canonical_value\nFROM pg_catalog.pg_attribute a JOIN pg_catalog.pg_class c ON c.oid=a.attrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace LEFT JOIN pg_catalog.pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum\nWHERE n.nspname='public' AND c.relname='pilot_preview_rows' AND a.attnum>0 AND NOT a.attisdropped ORDER BY a.attnum LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "populated_target_primary_key",
+      "datasource": "target",
+      "phase": "structure",
+      "sql_ref": "sql/populated_target_primary_key.sql",
+      "sql_sha256": "168ebf6536d3f02d8898abe2b956ee85cb16ccc8f3de24dabbcaa80ba251ba91",
+      "sql": "SELECT jsonb_build_array(con.conname, array_agg(a.attname ORDER BY k.ordinality))::text AS canonical_value\nFROM pg_catalog.pg_constraint con JOIN pg_catalog.pg_class c ON c.oid=con.conrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace CROSS JOIN LATERAL unnest(con.conkey) WITH ORDINALITY k(attnum,ordinality) JOIN pg_catalog.pg_attribute a ON a.attrelid=c.oid AND a.attnum=k.attnum\nWHERE n.nspname='public' AND c.relname='pilot_preview_rows' AND con.contype='p' GROUP BY con.conname ORDER BY con.conname COLLATE \"C\" LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "populated_rows",
+      "datasource": "target",
+      "phase": "content",
+      "sql_ref": "sql/populated_rows.sql",
+      "sql_sha256": "234caaaef697a3359878ac6520ace772b7f23f096b53e49b000c686a85792011",
+      "sql": "SELECT jsonb_build_array(id::text,label,to_char(start_date,'YYYY-MM-DD\"T\"HH24:MI:SS.US'),to_char(end_date,'YYYY-MM-DD\"T\"HH24:MI:SS.US'))::text AS canonical_value FROM public.pilot_preview_rows ORDER BY id LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "empty_task",
+      "datasource": "control",
+      "phase": "content",
+      "sql_ref": "sql/empty_task.sql",
+      "sql_sha256": "1e4382457989a55cd7cf4b625eb3423bfcde34dc1da7170756c579e6e096f143",
+      "sql": "SELECT jsonb_build_array(t.id::text,t.task_code,t.task_name,t.task_status,t.published_version::text,t.owner_id,t.snapshot_retention_days::text,to_char(t.gmt_create,'YYYY-MM-DD\"T\"HH24:MI:SS.US'),to_char(t.gmt_modified,'YYYY-MM-DD\"T\"HH24:MI:SS.US'))::text AS canonical_value FROM public.fs_sync_task t WHERE t.task_code='PILOT_EMPTY' ORDER BY t.id LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "empty_draft",
+      "datasource": "control",
+      "phase": "content",
+      "sql_ref": "sql/empty_draft.sql",
+      "sql_sha256": "db24d8dfdf3ddf506a4f3474ef5a0794d2e5c1de302b2442b4a3a20ae8ece36d",
+      "sql": "SELECT jsonb_build_array(d.id::text,d.task_id::text,d.revision::text,d.config_json,d.validation_config_digest,d.validation_environment_digest,to_char(d.validated_at,'YYYY-MM-DD\"T\"HH24:MI:SS.US'),to_char(d.validation_expires_at,'YYYY-MM-DD\"T\"HH24:MI:SS.US'),to_char(d.gmt_create,'YYYY-MM-DD\"T\"HH24:MI:SS.US'),to_char(d.gmt_modified,'YYYY-MM-DD\"T\"HH24:MI:SS.US'))::text AS canonical_value FROM public.fs_sync_task_draft d JOIN public.fs_sync_task t ON t.id=d.task_id WHERE t.task_code='PILOT_EMPTY' ORDER BY d.id LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "empty_versions",
+      "datasource": "control",
+      "phase": "content",
+      "sql_ref": "sql/empty_versions.sql",
+      "sql_sha256": "a9d35ba8cbce210f98fe65495b922a28bfc91e87ac3779f2791e416f83e5e55f",
+      "sql": "SELECT jsonb_build_array(v.id::text,v.task_id::text,v.version_number::text,v.config_digest,v.config_json,to_char(v.gmt_create,'YYYY-MM-DD\"T\"HH24:MI:SS.US'),to_char(v.gmt_modified,'YYYY-MM-DD\"T\"HH24:MI:SS.US'))::text AS canonical_value FROM public.fs_sync_task_version v JOIN public.fs_sync_task t ON t.id=v.task_id WHERE t.task_code='PILOT_EMPTY' ORDER BY v.version_number,v.id LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "empty_target_columns",
+      "datasource": "target",
+      "phase": "structure",
+      "sql_ref": "sql/empty_target_columns.sql",
+      "sql_sha256": "b7c2c36b4785bcd3811ee3bebddfa6416f9e3bf817c30f06b42151d298723f4a",
+      "sql": "SELECT jsonb_build_array(a.attnum::text, a.attname, pg_catalog.format_type(a.atttypid,a.atttypmod), a.attnotnull, pg_catalog.pg_get_expr(d.adbin,d.adrelid), pg_catalog.col_description(c.oid,a.attnum))::text AS canonical_value\nFROM pg_catalog.pg_attribute a JOIN pg_catalog.pg_class c ON c.oid=a.attrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace LEFT JOIN pg_catalog.pg_attrdef d ON d.adrelid=a.attrelid AND d.adnum=a.attnum\nWHERE n.nspname='public' AND c.relname='pilot_preview_empty' AND a.attnum>0 AND NOT a.attisdropped ORDER BY a.attnum LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "empty_target_primary_key",
+      "datasource": "target",
+      "phase": "structure",
+      "sql_ref": "sql/empty_target_primary_key.sql",
+      "sql_sha256": "d0894edaf0a08e139470a53bc6323b159dd93f273b2e3d1563a895ca53301ec9",
+      "sql": "SELECT jsonb_build_array(con.conname, array_agg(a.attname ORDER BY k.ordinality))::text AS canonical_value\nFROM pg_catalog.pg_constraint con JOIN pg_catalog.pg_class c ON c.oid=con.conrelid JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace CROSS JOIN LATERAL unnest(con.conkey) WITH ORDINALITY k(attnum,ordinality) JOIN pg_catalog.pg_attribute a ON a.attrelid=c.oid AND a.attnum=k.attnum\nWHERE n.nspname='public' AND c.relname='pilot_preview_empty' AND con.contype='p' GROUP BY con.conname ORDER BY con.conname COLLATE \"C\" LIMIT 1001\n",
+      "max_rows": 1001
+    },
+    {
+      "id": "empty_rows",
+      "datasource": "target",
+      "phase": "content",
+      "sql_ref": "sql/empty_rows.sql",
+      "sql_sha256": "49eb4073502f7012e6ca98321accf3e33dc130ecc5eb56001db2b16c9b262f23",
+      "sql": "SELECT jsonb_build_array(id::text,label,to_char(start_date,'YYYY-MM-DD\"T\"HH24:MI:SS.US'),to_char(end_date,'YYYY-MM-DD\"T\"HH24:MI:SS.US'))::text AS canonical_value FROM public.pilot_preview_empty ORDER BY id LIMIT 1001\n",
+      "max_rows": 1001
+    }
+  ]
+}

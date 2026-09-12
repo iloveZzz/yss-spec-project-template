@@ -1,0 +1,19 @@
+{
+  "name": "backend-preview-tests",
+  "argv": [
+    "./mvnw",
+    "-B",
+    "-o",
+    "-pl",
+    "valset-standardizer-tools/file-sync",
+    "-am",
+    "-Dtest=FileSyncTargetPreviewControllerTest,SyncTargetDataPreviewAppServiceTest,JdbcSyncTargetDataPreviewAdapterTest",
+    "-Dsurefire.failIfNoSpecifiedTests=false",
+    "test"
+  ],
+  "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+  "exit_code": 0,
+  "elapsed_seconds": 8.96,
+  "log": "backend-preview-tests.log",
+  "redaction": "URL userinfo and credential assignments"
+}

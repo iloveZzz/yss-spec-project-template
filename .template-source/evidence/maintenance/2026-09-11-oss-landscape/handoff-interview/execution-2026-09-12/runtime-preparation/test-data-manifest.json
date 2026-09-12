@@ -1,0 +1,17 @@
+{
+  "scope": "synthetic preview task/draft rows and current/historical/empty target rows; scheduler/ops runtime records excluded",
+  "snapshot_ref": "test-data-snapshot.json",
+  "snapshot_sha256": "d4acdf0f631406482b757056e5e86c02636a6037121ac2cee2c9dec51b9d735c",
+  "seed_files": [
+    {
+      "path": "control-seed.sql",
+      "sha256": "6bc85e8c442ac647af965a2b601559f7e78fb852c5b172640d44375180b481ae"
+    },
+    {
+      "path": "target-seed.sql",
+      "sha256": "40845dbf99a8a5f602d79c9c74e7828842a7226b266d1922c60c988febc93592"
+    }
+  ],
+  "schema_ref": "database-setup.json",
+  "seed_has_business_data": false
+}

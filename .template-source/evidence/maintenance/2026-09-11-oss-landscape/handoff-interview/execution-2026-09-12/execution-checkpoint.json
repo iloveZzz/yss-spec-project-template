@@ -1,0 +1,68 @@
+{
+  "recorded_at": "2026-09-11T17:46:03.949816+00:00",
+  "repository_mode": "template-source",
+  "execution_scope": "authorized-real-cross-repository-pilot",
+  "user_scope_authorization": "preparation-authorization.json",
+  "scope_authorization_status": "confirmed-current",
+  "r1": "three governed project instances initialized; external source records and current Context reconciled",
+  "r2": {
+    "status": "frozen",
+    "version": "1.0.0-pilot.3",
+    "sha256": "sha256:8d696f69a62bee50545d418a458f848941e4e84647fea465b524779c8708259b",
+    "review_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance/docs/.scratch/target-preview-pilot/architecture/openapi-v2-review-result.json",
+    "freeze_request_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance/docs/.scratch/target-preview-pilot/architecture/freeze-decision.md",
+    "approval_record": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance/docs/.scratch/target-preview-pilot/gates/gate.openapi-freeze-confirmed-approval.yaml",
+    "user_confirmation_ref": "freeze-confirmation.json"
+  },
+  "r3": {
+    "status": "blocked-before-implementation",
+    "reason": "current compiler requires unavailable generator architecture identity for existing project",
+    "fresh_reproduction_ref": "compiler-fresh-reproduction.json",
+    "independent_audit_ref": "independent-continuation-audit-result.json",
+    "code_written": false
+  },
+  "baseline": {
+    "java_build": "passed",
+    "java_targeted_tests": 7,
+    "frontend_build": "passed",
+    "frontend_api_tests": 8,
+    "frontend_modal_source_assertions": 3,
+    "real_http_rounds": 2,
+    "real_http_cases_each_round": 6,
+    "real_vue_preview_requests": 5,
+    "preview_row_counts": [
+      1,
+      2,
+      2,
+      0,
+      1
+    ],
+    "scoped_source_files_unchanged": 33,
+    "whole_application_health": "not-claimed: unrelated background missing tables and mapper logs"
+  },
+  "product_scenarios": {
+    "S0": "not-executed: current approved package and same-process identity not ready",
+    "S1": "not-executed: current approved package and same-process identity not ready",
+    "S2": "not-executed: current approved package and same-process identity not ready",
+    "S3a": "not-executed: current approved package and same-process identity not ready",
+    "S3b": "not-executed: current approved package and same-process identity not ready",
+    "S4": "not-executed: current approved package and same-process identity not ready",
+    "S5": "not-executed: current approved package and same-process identity not ready",
+    "S6": "not-executed: current approved package and same-process identity not ready",
+    "O1": "not-executed: current approved package and same-process identity not ready"
+  },
+  "services": {
+    "status": "stopped",
+    "evidence_ref": "runtime-preparation/probe-data/stop-commands.json",
+    "volumes_and_evidence_retained": true,
+    "java_vite_restarted_this_turn": false
+  },
+  "ticket_state": "no ready-for-agent; no completed product slice",
+  "git_checkpoint": "no commit/push authorized or performed",
+  "requested_goal_completed": false,
+  "pause_reason": "existing-repository-architecture-identity-unsupported",
+  "next_action": "后续单独处理既有工程身份接入能力，再以相同固定样本恢复R3及S0–S6；本轮不修机制",
+  "trial_status": "ended-with-evidenced-prerequisite-blocker",
+  "trial_outcome": "baseline-not-ready",
+  "final_verification_ref": "final-pilot-verification.json"
+}

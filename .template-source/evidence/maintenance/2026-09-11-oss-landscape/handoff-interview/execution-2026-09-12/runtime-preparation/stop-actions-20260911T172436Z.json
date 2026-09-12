@@ -1,0 +1,20 @@
+[
+  {
+    "action": "SIGTERM",
+    "pid": 34793
+  },
+  {
+    "action": "stop-container",
+    "name": "yss-preview-0kxzmm-pg",
+    "exit_code": 0,
+    "stdout": "yss-preview-0kxzmm-pg\n",
+    "stderr": ""
+  },
+  {
+    "action": "stop-container",
+    "name": "yss-preview-0kxzmm-redis",
+    "exit_code": 0,
+    "stdout": "yss-preview-0kxzmm-redis\n",
+    "stderr": ""
+  }
+]

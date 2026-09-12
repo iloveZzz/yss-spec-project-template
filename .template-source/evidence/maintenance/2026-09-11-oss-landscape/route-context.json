@@ -1,0 +1,178 @@
+{
+  "execution": {
+    "mode": "read_only",
+    "selected": {
+      "gate_consolidation": {
+        "acceptance_does_not_authorize": [
+          "merge",
+          "push",
+          "release",
+          "production_change"
+        ],
+        "api_freeze": "atomic_with_engineering_contract_approval_same_version",
+        "check_failure": "blocks_aggregate_gate",
+        "check_policy": "docs/agents/digital-human-roles.yaml",
+        "checks": "automatic_or_independent_review_without_separate_user_decision",
+        "historical_gate_records": "read_only_no_automatic_approval_migration",
+        "invalidation": "affected_dependencies_or_authorization_change_only",
+        "plan_decision_boundary": "gate.plan-approved",
+        "readiness": "computed_after_current_approved_contract_and_all_applicable_preconditions",
+        "reuse": "unchanged_subject_basis_and_scope_only",
+        "source": "docs/process/lifecycle-registry.yaml",
+        "verifier": "scripts/verify-lifecycle-checkpoint"
+      },
+      "request_triage": {
+        "acceptance": {
+          "mismatch": "investigate-or-reroute",
+          "per_goal": [
+            "requested-outcome",
+            "readable-evidence",
+            "unresolved-items"
+          ],
+          "unresolved_triage_is_complete": false
+        },
+        "clarification": {
+          "batch": "independent-current-decision-questions",
+          "before_asking": "reuse-context-and-inspect-accessible-evidence",
+          "question": "explain-gap-and-ask-minimum-actionable-information",
+          "same_safe_next_step": "investigate-before-asking",
+          "short_request_alone": "insufficient-reason-to-ask",
+          "timeout_is_answer": false,
+          "trigger": "missing-information-changes-next-action-or-authorization-scope",
+          "user_cannot_answer": "narrow-problem-or-offer-bounded-guidance-keep-unresolved"
+        },
+        "correction": {
+          "existing_edits": "explain-scope-and-agree-disposition-no-blind-rollback",
+          "preserve": "still-valid-evidence-and-unrelated-user-work",
+          "recompute": [
+            "intent",
+            "scope",
+            "impacts",
+            "freshness",
+            "next-action"
+          ],
+          "report": "revised-goal-and-actions-already-taken",
+          "stop": "actions-dependent-on-invalid-interpretation"
+        },
+        "evaluation": {
+          "baseline": "required-before-numeric-improvement-claim",
+          "dimensions": [
+            "understanding-error",
+            "wrong-route",
+            "unnecessary-question",
+            "omitted-intent",
+            "post-triage-stall",
+            "correction-failure"
+          ],
+          "scenarios_ref": ".agents/skills/yss-product-lifecycle/references/request-triage-scenarios.yaml",
+          "structural_checks_prove_model_accuracy": false
+        },
+        "interpretation": {
+          "capture": [
+            "goal",
+            "target",
+            "expected-deliverable",
+            "action-scope",
+            "facts",
+            "assumptions",
+            "unknowns"
+          ],
+          "competing_interpretations": "compare-effect-on-next-action",
+          "inputs": [
+            "current-request",
+            "conversation-context",
+            "accessible-evidence"
+          ],
+          "multiple_intents": "preserve-all-goals-and-order-dependencies",
+          "numeric_self_confidence": "forbidden-as-routing-evidence"
+        },
+        "mode_selection": {
+          "authorized_continuation": "resume",
+          "clear_action_request": "orchestrate",
+          "continuation": "revalidate-scope-evidence-and-applicable-gates",
+          "explicit_audit": "audit",
+          "explicit_read_only": "route",
+          "gates_and_external_authorization": "unchanged",
+          "investigation": "read-only-actions-unless-additional-scope-authorized",
+          "mode_keywords_required": false,
+          "priority": [
+            "explicit-current-restriction",
+            "authorized-continuation",
+            "clear-action-request",
+            "read-only-fallback"
+          ],
+          "unresolved_intent": "route"
+        },
+        "next_action": {
+          "action_request": "execute-first-authorized-unblocked-work-unit",
+          "consultation": "answer",
+          "investigation": "inspect-evidence",
+          "material_ambiguity": "clarify",
+          "missing_prerequisite": "explain-blocker-and-continue-independent-authorized-work",
+          "skill_name_only_is_completion": false
+        },
+        "owner": "yss-product-lifecycle",
+        "presentation": {
+          "complex": "brief-goal-and-next-action",
+          "full_workflow_record": "applicable-work-units-only",
+          "material_ambiguity": "targeted-question",
+          "simple": "direct-answer-or-action"
+        }
+      }
+    },
+    "transition": {
+      "forbidden_shortcuts": [],
+      "next": []
+    },
+    "work_unit_route": null
+  },
+  "lifecycle": {
+    "artifacts": [],
+    "checks": [],
+    "evidence": [],
+    "gates": [],
+    "stage": null,
+    "work_unit": {
+      "completion": "身份和影响面可解释。",
+      "id": "work-unit.entry-triage",
+      "input": "用户请求、仓库身份。",
+      "name": "入口分诊",
+      "output": "影响面与最近可信阶段。",
+      "scope": "template-source"
+    }
+  },
+  "query": {
+    "include": [
+      "gate_consolidation",
+      "request_triage"
+    ],
+    "mode": "route",
+    "stage": null,
+    "work_unit": "work-unit.entry-triage"
+  },
+  "references": [
+    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+    ".agents/skills/yss-product-lifecycle/references/request-triage-scenarios.yaml",
+    "docs/agents/digital-human-roles.yaml",
+    "docs/agents/yss-skill-registry.yaml",
+    "docs/process/lifecycle-registry.yaml"
+  ],
+  "schema_version": 1,
+  "skills": [],
+  "sources": {
+    "lifecycle_registry": {
+      "ref": "docs/process/lifecycle-registry.yaml",
+      "semantic_sha256": "38ec430630bbaee2c94f5d0d3dcd31f1d5481482b8cec52e44e983e4af6b638e",
+      "status": "active"
+    },
+    "orchestration_contract": {
+      "ref": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+      "sha256": "28c1e289868b48b6565f2bf81c3e2ddea7232959a1a02664553639ec879c95cf"
+    },
+    "skill_registry": {
+      "ref": "docs/agents/yss-skill-registry.yaml",
+      "sha256": "344fb24f930fb8253d2cf72ebcb897187c85fa65a83e4d2261de3dd3a8279b16",
+      "status": "active"
+    }
+  }
+}

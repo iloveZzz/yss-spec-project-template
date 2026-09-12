@@ -1,0 +1,300 @@
+{
+  "verified_at": "2026-09-11T17:44:14.240408+00:00",
+  "verification_exit_code": 0,
+  "baseline_scope_files": 33,
+  "checks": [
+    {
+      "name": "frozen api/target-preview-pilot.yaml",
+      "passed": true
+    },
+    {
+      "name": "frozen architecture/target-preview-existing-behavior-calibration.md",
+      "passed": true
+    },
+    {
+      "name": "frozen architecture/delivery-identity-design-input.md",
+      "passed": true
+    },
+    {
+      "name": "frozen architecture/openapi-v2-review-result.json",
+      "passed": true
+    },
+    {
+      "name": "frozen api/target-preview-pilot-validation.yaml",
+      "passed": true
+    },
+    {
+      "name": "frozen architecture/context-reconciliation.json",
+      "passed": true
+    },
+    {
+      "name": "audit docs/.scratch/target-preview-pilot/evidence/freeze-user-confirmation.json",
+      "passed": true
+    },
+    {
+      "name": "audit docs/.scratch/target-preview-pilot/architecture/repository-registration.json",
+      "passed": true
+    },
+    {
+      "name": "audit scripts/lib/backend-architecture.mjs",
+      "passed": true
+    },
+    {
+      "name": "audit scripts/lib/implementation-contract-compiler.mjs",
+      "passed": true
+    },
+    {
+      "name": "audit docs/process/schemas/backend-architecture-identity.schema.json",
+      "passed": true
+    },
+    {
+      "name": "audit docs/agents/yss-skill-registry.yaml",
+      "passed": true
+    },
+    {
+      "name": "audit docs/agents/digital-human-roles.yaml",
+      "passed": true
+    },
+    {
+      "name": "audit /Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/compiler-source-comparison.json",
+      "passed": true
+    },
+    {
+      "name": "backend baseline docs/api/specs/file-sync-target-data-preview.yaml",
+      "passed": true
+    },
+    {
+      "name": "backend baseline docs/architecture/file-sync-target-data-preview-openapi-review.md",
+      "passed": true
+    },
+    {
+      "name": "backend baseline docs/file-sync-acceptance.md",
+      "passed": true
+    },
+    {
+      "name": "backend baseline valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/application/dto/SyncTargetDataPreviewDTO.java",
+      "passed": true
+    },
+    {
+      "name": "backend baseline valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/application/port/SyncTargetDataPreviewQueryPort.java",
+      "passed": true
+    },
+    {
+      "name": "backend baseline valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/application/service/SyncTargetDataPreviewAppService.java",
+      "passed": true
+    },
+    {
+      "name": "backend baseline valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/application/service/SyncTargetDataPreviewException.java",
+      "passed": true
+    },
+    {
+      "name": "backend baseline valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/infrastructure/target/JdbcSyncTargetDataPreviewAdapter.java",
+      "passed": true
+    },
+    {
+      "name": "backend baseline valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/web/FileSyncTargetPreviewController.java",
+      "passed": true
+    },
+    {
+      "name": "backend baseline valset-standardizer-tools/file-sync/src/test/java/com/yss/datamiddle/valuation/filesync/application/service/SyncTargetDataPreviewAppServiceTest.java",
+      "passed": true
+    },
+    {
+      "name": "backend baseline valset-standardizer-tools/file-sync/src/test/java/com/yss/datamiddle/valuation/filesync/infrastructure/target/JdbcSyncTargetDataPreviewAdapterTest.java",
+      "passed": true
+    },
+    {
+      "name": "backend baseline valset-standardizer-tools/file-sync/src/test/java/com/yss/datamiddle/valuation/filesync/web/FileSyncTargetPreviewControllerTest.java",
+      "passed": true
+    },
+    {
+      "name": "backend clean",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "frontend baseline openapi/openapi.json",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/api/generated/quality/index.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/api/generated/quality/schemas/fileSyncPreviewTargetDataParams.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/api/generated/quality/schemas/fileSyncPreviewTargetDataScope.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/api/generated/quality/schemas/index.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/api/generated/quality/schemas/singleResultSyncTargetDataPreviewDTO.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/api/generated/quality/schemas/singleResultSyncTargetDataPreviewDTOCode.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/api/generated/quality/schemas/syncTargetDataPreviewDTO.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/api/generated/quality/schemas/syncTargetDataPreviewDTOCell.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/api/generated/quality/schemas/syncTargetDataPreviewDTOColumn.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/api/generated/quality/schemas/syncTargetDataPreviewDTORow.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/api/generated/quality/schemas/syncTargetDataPreviewDTOTarget.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/views/FileSyncWorkbench/components/TargetDataPreviewModal.less",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/views/FileSyncWorkbench/components/TargetDataPreviewModal.spec.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/views/FileSyncWorkbench/components/TargetDataPreviewModal.vue",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/views/FileSyncWorkbench/dataSource.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/views/FileSyncWorkbench/fileSyncWorkbenchApi.spec.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/views/FileSyncWorkbench/hooks/useFileSyncWorkbench.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/views/FileSyncWorkbench/index.vue",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/views/FileSyncWorkbench/targetDataPreview.spec.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend baseline packages/src/views/FileSyncWorkbench/targetDataPreview.ts",
+      "passed": true
+    },
+    {
+      "name": "frontend clean",
+      "passed": true,
+      "exit_code": 0
+    },
+    {
+      "name": "strategy-governance context",
+      "passed": true,
+      "command": [
+        "node",
+        "scripts/verify-context-reconciliation",
+        "--root",
+        ".",
+        "docs/.scratch/target-preview-pilot/context-reconciliation.json"
+      ],
+      "exit_code": 0,
+      "output": "Context reconciliation 验证通过\n"
+    },
+    {
+      "name": "backend-governance context",
+      "passed": true,
+      "command": [
+        "node",
+        "scripts/verify-context-reconciliation",
+        "--root",
+        ".",
+        "docs/.scratch/target-preview-pilot/context-reconciliation.json"
+      ],
+      "exit_code": 0,
+      "output": "Context reconciliation 验证通过\n"
+    },
+    {
+      "name": "frontend-governance context",
+      "passed": true,
+      "command": [
+        "node",
+        "scripts/verify-context-reconciliation",
+        "--root",
+        ".",
+        "docs/.scratch/target-preview-pilot/context-reconciliation.json"
+      ],
+      "exit_code": 0,
+      "output": "Context reconciliation 验证通过\n"
+    },
+    {
+      "name": "test data bytes",
+      "passed": true
+    },
+    {
+      "name": "psql and JDBC snapshots",
+      "passed": true
+    },
+    {
+      "name": "yss-preview-0kxzmm-pg stopped",
+      "passed": true,
+      "command": [
+        "docker",
+        "--context",
+        "desktop-linux",
+        "inspect",
+        "yss-preview-0kxzmm-pg",
+        "--format",
+        "{{.State.Status}} {{index .Config.Labels \"yss.trial\"}}"
+      ],
+      "exit_code": 0,
+      "output": "exited target-preview-20260912-0kxzmm\n"
+    },
+    {
+      "name": "yss-preview-0kxzmm-redis stopped",
+      "passed": true,
+      "command": [
+        "docker",
+        "--context",
+        "desktop-linux",
+        "inspect",
+        "yss-preview-0kxzmm-redis",
+        "--format",
+        "{{.State.Status}} {{index .Config.Labels \"yss.trial\"}}"
+      ],
+      "exit_code": 0,
+      "output": "exited target-preview-20260912-0kxzmm\n"
+    },
+    {
+      "name": "java and vite ports inactive",
+      "passed": true,
+      "exit_code": 1,
+      "meaning": "lsof exit1 with no rows means no listeners"
+    },
+    {
+      "name": "compiler failure evidence compiler-backend.ddd-http-api.log",
+      "passed": true
+    },
+    {
+      "name": "compiler failure evidence compiler-backend.mvc-http-api.log",
+      "passed": true
+    }
+  ],
+  "trial_outcome": "baseline-not-ready",
+  "mechanism_pass_claimed": false,
+  "probe_implemented": false,
+  "S0_S6_executed": false
+}

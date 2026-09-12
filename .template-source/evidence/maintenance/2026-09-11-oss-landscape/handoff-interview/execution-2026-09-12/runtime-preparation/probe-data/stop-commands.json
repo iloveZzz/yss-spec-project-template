@@ -1,0 +1,56 @@
+[
+  {
+    "argv": [
+      "docker",
+      "--context",
+      "desktop-linux",
+      "stop",
+      "yss-preview-0kxzmm-pg"
+    ],
+    "started_at": "2026-09-11T17:41:29.900814+00:00",
+    "finished_at": "2026-09-11T17:41:30.142873+00:00",
+    "exit_code": 0,
+    "stdout": "yss-preview-0kxzmm-pg\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "docker",
+      "--context",
+      "desktop-linux",
+      "inspect",
+      "yss-preview-0kxzmm-pg",
+      "--format",
+      "{{.State.Status}}"
+    ],
+    "exit_code": 0,
+    "stdout": "exited\n"
+  },
+  {
+    "argv": [
+      "docker",
+      "--context",
+      "desktop-linux",
+      "stop",
+      "yss-preview-0kxzmm-redis"
+    ],
+    "started_at": "2026-09-11T17:41:30.185504+00:00",
+    "finished_at": "2026-09-11T17:41:30.450743+00:00",
+    "exit_code": 0,
+    "stdout": "yss-preview-0kxzmm-redis\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "docker",
+      "--context",
+      "desktop-linux",
+      "inspect",
+      "yss-preview-0kxzmm-redis",
+      "--format",
+      "{{.State.Status}}"
+    ],
+    "exit_code": 0,
+    "stdout": "exited\n"
+  }
+]

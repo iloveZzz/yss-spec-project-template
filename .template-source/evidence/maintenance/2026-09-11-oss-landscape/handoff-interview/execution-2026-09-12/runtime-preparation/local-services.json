@@ -1,0 +1,157 @@
+{
+  "records": [
+    {
+      "argv": [
+        "docker",
+        "--context",
+        "desktop-linux",
+        "network",
+        "create",
+        "--label",
+        "yss.trial=target-preview-20260912-0kxzmm",
+        "yss-preview-0kxzmm-net"
+      ],
+      "exit_code": 0,
+      "output": "e9b0aae629d53b042de203f678e777253d1e63eabd151d407016a3ec2f529c26\n"
+    },
+    {
+      "argv": [
+        "docker",
+        "--context",
+        "desktop-linux",
+        "volume",
+        "create",
+        "--label",
+        "yss.trial=target-preview-20260912-0kxzmm",
+        "yss-preview-0kxzmm-pg-data"
+      ],
+      "exit_code": 0,
+      "output": "yss-preview-0kxzmm-pg-data\n"
+    },
+    {
+      "argv": [
+        "docker",
+        "--context",
+        "desktop-linux",
+        "run",
+        "-d",
+        "--name",
+        "yss-preview-0kxzmm-pg",
+        "--label",
+        "yss.trial=target-preview-20260912-0kxzmm",
+        "--network",
+        "yss-preview-0kxzmm-net",
+        "--publish",
+        "127.0.0.1::5432",
+        "--mount",
+        "type=volume,source=yss-preview-0kxzmm-pg-data,target=/var/lib/postgresql/data",
+        "--env",
+        "POSTGRES_PASSWORD",
+        "--env",
+        "POSTGRES_USER=pilot",
+        "--env",
+        "POSTGRES_DB=pilot_control",
+        "sha256:65e8e7578613732cb07166ea4f1f0bd2096679f5217b5ac23de619077ed684e7"
+      ],
+      "exit_code": 0,
+      "output": "515aa017488a44ba856647c1db604035b7e86efb2bf2faa807fc49a6bcf92a2f\n"
+    },
+    {
+      "argv": [
+        "docker",
+        "--context",
+        "desktop-linux",
+        "port",
+        "yss-preview-0kxzmm-pg",
+        "5432"
+      ],
+      "exit_code": 0,
+      "output": "127.0.0.1:60050\n"
+    },
+    {
+      "argv": [
+        "docker",
+        "--context",
+        "desktop-linux",
+        "volume",
+        "create",
+        "--label",
+        "yss.trial=target-preview-20260912-0kxzmm",
+        "yss-preview-0kxzmm-redis-data"
+      ],
+      "exit_code": 0,
+      "output": "yss-preview-0kxzmm-redis-data\n"
+    },
+    {
+      "argv": [
+        "docker",
+        "--context",
+        "desktop-linux",
+        "run",
+        "-d",
+        "--name",
+        "yss-preview-0kxzmm-redis",
+        "--label",
+        "yss.trial=target-preview-20260912-0kxzmm",
+        "--network",
+        "yss-preview-0kxzmm-net",
+        "--publish",
+        "127.0.0.1::6379",
+        "--mount",
+        "type=volume,source=yss-preview-0kxzmm-redis-data,target=/data",
+        "sha256:2c96e8092504e99e7601bcb6f4954b4cfed77d5125c88061a49c252fb33cf6f7"
+      ],
+      "exit_code": 0,
+      "output": "f37b58db2599d418b7ed01482a4c7f43c31fa9c2e14c12d629fb841cf939cdf5\n"
+    },
+    {
+      "argv": [
+        "docker",
+        "--context",
+        "desktop-linux",
+        "port",
+        "yss-preview-0kxzmm-redis",
+        "6379"
+      ],
+      "exit_code": 0,
+      "output": "127.0.0.1:60054\n"
+    },
+    {
+      "argv": [
+        "docker",
+        "--context",
+        "desktop-linux",
+        "exec",
+        "yss-preview-0kxzmm-pg",
+        "psql",
+        "-U",
+        "pilot",
+        "-d",
+        "pilot_control",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-c",
+        "CREATE DATABASE pilot_target;"
+      ],
+      "exit_code": 0,
+      "output": "CREATE DATABASE\n"
+    },
+    {
+      "argv": [
+        "docker",
+        "--context",
+        "desktop-linux",
+        "exec",
+        "yss-preview-0kxzmm-redis",
+        "redis-cli",
+        "PING"
+      ],
+      "exit_code": 0,
+      "output": "PONG\n"
+    }
+  ],
+  "network": "yss-preview-0kxzmm-net",
+  "credentials_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/runtime-private/database.json",
+  "ownership": "only this trial",
+  "external_connections": "dedicated Docker bridge network, host ports loopback"
+}

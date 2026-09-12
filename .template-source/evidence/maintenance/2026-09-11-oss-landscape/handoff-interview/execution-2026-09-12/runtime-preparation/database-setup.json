@@ -1,0 +1,218 @@
+[
+  {
+    "ref": "synthetic leaf table matches checked source DDL",
+    "database": "pilot_control",
+    "sha256": "e55bd2e50974093e98dc8a0b679fb22c2931c625c73bd0b60c412dc62fa29950",
+    "exit_code": 0,
+    "stdout": "CREATE TABLE\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V1.0.0__create_file_sync_control.sql",
+    "database": "pilot_control",
+    "sha256": "4aa4fa9e2b8048d63b0dcba00e593c4ba8df53d8f09ac6a2dfe90636221a0a7b",
+    "exit_code": 0,
+    "stdout": "CREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE INDEX\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V1.1.0__rename_file_sync_row_number.sql",
+    "database": "pilot_control",
+    "sha256": "1fc6bbfefbda62126c0ec3ff0be66fbbfcb28704594d1c346f0b76c3d3957b7b",
+    "exit_code": 0,
+    "stdout": "ALTER TABLE\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V1.2.0__add_file_sync_task_owner.sql",
+    "database": "pilot_control",
+    "sha256": "49e124b3418f6328308879524f7f7df4051384e5e16262b216f4e02b2fd775b1",
+    "exit_code": 0,
+    "stdout": "ALTER TABLE\nCREATE INDEX\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V1.3.0__add_draft_validation_fact.sql",
+    "database": "pilot_control",
+    "sha256": "f299cf62d9027572ef7b2e973e7da64d4be3b34a783cd979a8fef56ccc3e9602",
+    "exit_code": 0,
+    "stdout": "ALTER TABLE\nALTER TABLE\nALTER TABLE\nALTER TABLE\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V1.4.0__add_execution_type.sql",
+    "database": "pilot_control",
+    "sha256": "938c1f9f0cba4a41113e74a93402d504afc95ea03f6fd665dc146a3b7410ec19",
+    "exit_code": 0,
+    "stdout": "ALTER TABLE\nALTER TABLE\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V1.5.0__add_correction_and_change_history.sql",
+    "database": "pilot_control",
+    "sha256": "ee529266e7d5ad6231f2f75de67194fb1a9b710f9350c8b660918c050711b6bb",
+    "exit_code": 0,
+    "stdout": "CREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V1.6.0__add_file_sync_schedule.sql",
+    "database": "pilot_control",
+    "sha256": "19e2f5a16f6052070a2be395184729d738052bc4196de87e70bf2170f682d46b",
+    "exit_code": 0,
+    "stdout": "CREATE TABLE\nALTER TABLE\nCREATE TABLE\nCREATE INDEX\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V1.7.0__add_file_sync_descriptions.sql",
+    "database": "pilot_control",
+    "sha256": "a5625c4709cf1e3e2b59c0449283fd117f79dd44dfb291d41dc54387b43f296e",
+    "exit_code": 0,
+    "stdout": "COMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V1.8.0__remove_change_record_operator.sql",
+    "database": "pilot_control",
+    "sha256": "f596fa42b66c1289fb3f839d9aec153563067f2d342d7cae6850b170ff4c5a1d",
+    "exit_code": 0,
+    "stdout": "ALTER TABLE\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V1.9.0__remove_change_record.sql",
+    "database": "pilot_control",
+    "sha256": "2bc09308d9eaad9edc689f40c9eba5afc4e3631d7b48ac59dac1d0cc4b7bb970",
+    "exit_code": 0,
+    "stdout": "DROP TABLE\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V2.0.0__remove_correction_item.sql",
+    "database": "pilot_control",
+    "sha256": "eac7fbf6ff59b87e1a9739786bc67c51e116a7e8705427af31a99a91d6871b4d",
+    "exit_code": 0,
+    "stdout": "DROP TABLE\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V2.1.0__rename_disabled_task_status_to_offline.sql",
+    "database": "pilot_control",
+    "sha256": "cccec3b9ca926740d83a387158ecf026281890c52f6e5fbf05453f68a7ade813",
+    "exit_code": 0,
+    "stdout": "UPDATE 0\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V2.2.0__add_execution_trigger_mode.sql",
+    "database": "pilot_control",
+    "sha256": "f193abf23846536d7269d294b034e56ca4a720b3dd1271205343d223ace74f69",
+    "exit_code": 0,
+    "stdout": "ALTER TABLE\nCOMMENT\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V2.3.0__add_prepared_dataset_snapshot.sql",
+    "database": "pilot_control",
+    "sha256": "67e16d0bcd77085e4b2175edc5f45f36c93c9dfce1a75744b0519b5420a02dd8",
+    "exit_code": 0,
+    "stdout": "ALTER TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCOMMENT\nCOMMENT\nCOMMENT\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V2.4.0__simplify_file_sync_runtime.sql",
+    "database": "pilot_control",
+    "sha256": "65c0e4ddc6fe21985a1935500b760e1d0e5a05249adb1855b7f719d7dd15937c",
+    "exit_code": 0,
+    "stdout": "DO\nCREATE TABLE\nCREATE INDEX\nDROP TABLE\nDROP TABLE\nDROP TABLE\nDROP TABLE\nDROP TABLE\nDROP TABLE\nDROP TABLE\nDROP TABLE\n",
+    "stderr": "NOTICE:  table \"fs_sync_correction_item\" does not exist, skipping\nNOTICE:  table \"fs_sync_change_record\" does not exist, skipping\n"
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V2.5.0__add_file_sync_operation_audit.sql",
+    "database": "pilot_control",
+    "sha256": "177a1309e478068207c2640d84f4d221f6ca9bb7ea174aea09ff1fbf8b5bd101",
+    "exit_code": 0,
+    "stdout": "ALTER TABLE\nCOMMENT\nCREATE TABLE\nCOMMENT\nCREATE INDEX\nCREATE INDEX\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/control/postgresql/V2.6.0__repair_disabled_file_sync_schedule.sql",
+    "database": "pilot_control",
+    "sha256": "86556185fd170ef896058c8e14003dbd313980d3d92edfe23b21ce3d1679648b",
+    "exit_code": 0,
+    "stdout": "UPDATE 0\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/batch/postgresql/V1.0.0__create_file_sync_batch.sql",
+    "database": "pilot_control",
+    "sha256": "8016abcd7b134b5f8b647c0826a0046a2a5968b6d5ed4bc8ce1af2010d6b61f0",
+    "exit_code": 0,
+    "stdout": "CREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\nDO\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/targetdb/postgresql/V1.0.0__create_file_sync_target.sql",
+    "database": "pilot_target",
+    "sha256": "92845e38316de8dc0571aac26f916f50d7bd851fbb83ad1c1639564894cc4a8b",
+    "exit_code": 0,
+    "stdout": "CREATE TABLE\nCREATE INDEX\nCREATE TABLE\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/targetdb/postgresql/V1.1.0__create_file_sync_target_fence.sql",
+    "database": "pilot_target",
+    "sha256": "294edab614148225477c71c52eb2faaebd838691b14a1484361ba3a60245c9a6",
+    "exit_code": 0,
+    "stdout": "CREATE TABLE\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/targetdb/postgresql/V1.2.0__rename_file_sync_row_number.sql",
+    "database": "pilot_target",
+    "sha256": "3ca46db1056712e4cae45f3664fb9d3ea702481080ca50c92324d2acb9f59559",
+    "exit_code": 0,
+    "stdout": "ALTER TABLE\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/targetdb/postgresql/V1.3.0__add_file_sync_descriptions.sql",
+    "database": "pilot_target",
+    "sha256": "c1789cf656015b8164347e0ed6b8959a2211a945f3cba681d74a598f0addbbae",
+    "exit_code": 0,
+    "stdout": "COMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\nCOMMENT\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/targetdb/postgresql/V1.4.0__add_prepared_dataset_snapshot.sql",
+    "database": "pilot_target",
+    "sha256": "c5d51dd0d3b8ddeb86673d0c601e1ceba3f7eff32a0d64fb7cebfd47a33aa80c",
+    "exit_code": 0,
+    "stdout": "CREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCOMMENT\nCOMMENT\n",
+    "stderr": ""
+  },
+  {
+    "ref": "db/file-sync/targetdb/postgresql/V1.5.0__consolidate_file_sync_target_state.sql",
+    "database": "pilot_target",
+    "sha256": "5d321a0393d8af475fd9a779d09c3eac25eeabf9a7a574bd6caf8f48c4a05403",
+    "exit_code": 0,
+    "stdout": "INSERT 0 0\nINSERT 0 0\nDROP TABLE\nDROP TABLE\nDROP TABLE\n",
+    "stderr": ""
+  },
+  {
+    "ref": "target-seed.sql",
+    "database": "pilot_target",
+    "sha256": "40845dbf99a8a5f602d79c9c74e7828842a7226b266d1922c60c988febc93592",
+    "exit_code": 0,
+    "stdout": "CREATE TABLE\nINSERT 0 2\nCREATE TABLE\n",
+    "stderr": ""
+  },
+  {
+    "ref": "control-seed.sql",
+    "database": "pilot_control",
+    "sha256": "6bc85e8c442ac647af965a2b601559f7e78fb852c5b172640d44375180b481ae",
+    "exit_code": 0,
+    "stdout": "INSERT 0 1\nINSERT 0 1\nINSERT 0 1\nINSERT 0 1\n",
+    "stderr": ""
+  }
+]

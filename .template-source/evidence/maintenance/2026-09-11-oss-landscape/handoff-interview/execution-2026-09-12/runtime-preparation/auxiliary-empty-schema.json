@@ -1,0 +1,18 @@
+[
+  {
+    "source": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend/valuation-outsourced-operations/src/main/resources/db/operations/postgresql.sql",
+    "execution_ref": "ops-empty-schema.sql",
+    "sha256": "09bcdb44a057caeafaea154b760f17ff429985da47be70498539bafd7c736952",
+    "exit_code": 0,
+    "stdout": "CREATE TABLE\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE INDEX\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\nCREATE TABLE\nCREATE INDEX\n",
+    "stderr": ""
+  },
+  {
+    "source": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend/db/local-compose/postgresql/t_data_push_tables.sql",
+    "execution_ref": "data-push-empty-schema.sql",
+    "sha256": "ddbb7b842ce0e05d94d194c0910a46eb5b7a87967595bcd4d74972c02da4dec5",
+    "exit_code": 0,
+    "stdout": "CREATE TABLE\n",
+    "stderr": ""
+  }
+]

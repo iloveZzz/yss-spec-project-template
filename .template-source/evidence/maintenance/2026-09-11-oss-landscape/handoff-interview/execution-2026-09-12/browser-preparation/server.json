@@ -1,0 +1,12 @@
+{
+  "started_at": "2026-09-11T17:10:05.139807+00:00",
+  "command": "VITE_PROXY_TARGET=http://127.0.0.1:61111 pnpm --dir packages exec vite preview --mode production.standalone --host 127.0.0.1 --port 61112 --strictPort",
+  "source_commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+  "server_session_id": 18871,
+  "frontend_url": "http://127.0.0.1:61112/transfer/file-sync",
+  "api_prefix": "/api/quality-v3",
+  "proxy_target": "http://127.0.0.1:61111",
+  "browser_expected_cache_revision": "chromium-1228 absent",
+  "browser_selected_executable": "/Users/zhudaoming/Library/Caches/ms-playwright/chromium-1243/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+  "reason": "Use existing separate test browser executable; record actual version and do not modify project lock"
+}

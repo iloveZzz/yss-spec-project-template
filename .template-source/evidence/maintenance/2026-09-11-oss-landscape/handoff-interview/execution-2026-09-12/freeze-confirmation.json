@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-09-11T17:33:27.711129+00:00",
+  "source_kind": "platform-message",
+  "source_ref": "current conversation, latest user reply following displayed freeze review packet",
+  "request_ref": "../architecture/freeze-decision.md",
+  "request_sha256": "sha256:3c2e5155d16195e2e25bf8d328607d865acf0f8314e55278d8790663e57ea19e",
+  "verbatim_response": "确认",
+  "responder": "requester",
+  "decision": "approved",
+  "gate_id": "gate.openapi-freeze-confirmed",
+  "assets": [
+    {
+      "ref": "api/target-preview-pilot.yaml",
+      "sha256": "sha256:8d696f69a62bee50545d418a458f848941e4e84647fea465b524779c8708259b"
+    },
+    {
+      "ref": "architecture/target-preview-existing-behavior-calibration.md",
+      "sha256": "sha256:fc7e8bc3e00a291b0e524d654824dc263c0a64d340a3c911d0de5225e329de41"
+    },
+    {
+      "ref": "architecture/delivery-identity-design-input.md",
+      "sha256": "sha256:283576c585bdfc8398dd6c42db5dca3f8ce4b08f088d214d0fd4c49a2d3eab94"
+    },
+    {
+      "ref": "architecture/openapi-v2-review-result.json",
+      "sha256": "sha256:e8d883c776baf055c33951ab708f7257e412d8e62f03493659308397c609e709"
+    },
+    {
+      "ref": "api/target-preview-pilot-validation.yaml",
+      "sha256": "sha256:573cd8b71c8b0082c8984468467edaf6a50d127cd4ae7f97b76b32021c36891d"
+    },
+    {
+      "ref": "architecture/context-reconciliation.json",
+      "sha256": "sha256:39b72d16f5eb42aac2cff831f395c0ae00ec28e267efdba807b21da26e06a354"
+    }
+  ],
+  "scope": "批准当前行为校准规格，并冻结OpenAPI 1.0.0-pilot.3作为隔离试验的工程契约",
+  "exclusions": [
+    "原仓修改",
+    "Git提交或推送",
+    "发布",
+    "宣称跨仓接收通过"
+  ],
+  "source_limitation": "No platform message ID or user-send timestamp exposed; recorded_at is capture time, not send time."
+}

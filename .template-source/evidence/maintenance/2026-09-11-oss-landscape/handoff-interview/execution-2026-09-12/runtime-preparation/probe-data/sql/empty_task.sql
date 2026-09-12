@@ -1,0 +1,1 @@
+SELECT jsonb_build_array(t.id::text,t.task_code,t.task_name,t.task_status,t.published_version::text,t.owner_id,t.snapshot_retention_days::text,to_char(t.gmt_create,'YYYY-MM-DD"T"HH24:MI:SS.US'),to_char(t.gmt_modified,'YYYY-MM-DD"T"HH24:MI:SS.US'))::text AS canonical_value FROM public.fs_sync_task t WHERE t.task_code='PILOT_EMPTY' ORDER BY t.id LIMIT 1001

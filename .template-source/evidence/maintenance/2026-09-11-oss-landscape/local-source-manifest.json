@@ -1,0 +1,54 @@
+[
+  {
+    "path": "yss-project.yaml",
+    "sha256": "dae2ddacbb024ba25b70a18830fc26ab7d3dcd8aaa361cc8b3767d68307f98af"
+  },
+  {
+    "path": "CONTEXT.md",
+    "sha256": "8426febce19ebf36f67b4abc9ea2adf91d3f6473f1aed2fadc092bb8b98c5d71"
+  },
+  {
+    "path": "README.md",
+    "sha256": "fa407338be18305b295bf36c2c1870c436842488d9b551fbce6bdf7ba5a8f29f"
+  },
+  {
+    "path": "AGENTS.md",
+    "sha256": "1c28d766fccc682ca8bc9457f082d292a362a9597c3035d383d571a92a369271"
+  },
+  {
+    "path": "docs/process/template-engineering-overview.md",
+    "sha256": "9ddd8dee6ca69b906294087e01f8f7e378cc884c878172c07bbac97caca5e6ce"
+  },
+  {
+    "path": "docs/user-guide/用户手册.md",
+    "sha256": "c412f385b57d0fb5cc6e14545450641f93f62143bd382843d965c8048bd6a2a9"
+  },
+  {
+    "path": "docs/process/lifecycle-registry.yaml",
+    "sha256": "acf16e280c7e9c43c94606f01bcd5cf4bcb75ab2a59abebec2fc2accaaebfe2c"
+  },
+  {
+    "path": "docs/agents/yss-skill-registry.yaml",
+    "sha256": "344fb24f930fb8253d2cf72ebcb897187c85fa65a83e4d2261de3dd3a8279b16"
+  },
+  {
+    "path": "scripts/lib/context-reconciliation.mjs",
+    "sha256": "0a212410b3bfe7a0c881ad05bfa64629fa36bf6c2d2fa6fd3d844f1f22770997"
+  },
+  {
+    "path": "scripts/lib/backend-delivery.mjs",
+    "sha256": "fa5cf7dbc1e5c672eaf804a5b63480b05b4f2c3ba42928daa097e43b7fc79979"
+  },
+  {
+    "path": "scripts/lib/strategic-handoff.mjs",
+    "sha256": "6cce2a77e19242d763268b1da4538df559ea283f6857871495d102c0213aea46"
+  },
+  {
+    "path": "scripts/lib/skill-supply-chain.mjs",
+    "sha256": "e50c92cc2a91f3ac0f5949eea3c4f93aae7f6431c388a6b851dcb94270083bf7"
+  },
+  {
+    "path": ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml",
+    "sha256": "28c1e289868b48b6565f2bf81c3e2ddea7232959a1a02664553639ec879c95cf"
+  }
+]

@@ -1,0 +1,50 @@
+[
+  {
+    "argv": [
+      "docker",
+      "--context",
+      "desktop-linux",
+      "exec",
+      "-i",
+      "yss-preview-0kxzmm-pg",
+      "psql",
+      "-U",
+      "pilot",
+      "-d",
+      "pilot_control",
+      "-A",
+      "-t",
+      "-v",
+      "ON_ERROR_STOP=1"
+    ],
+    "started_at": "2026-09-11T17:39:08.398622+00:00",
+    "finished_at": "2026-09-11T17:39:08.569750+00:00",
+    "exit_code": 0,
+    "sql_sha256": "a6c483ee526c22d979d605a7a700d65e855ad59eae17cb72cb71cfbaea9ebfcd",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "docker",
+      "--context",
+      "desktop-linux",
+      "exec",
+      "-i",
+      "yss-preview-0kxzmm-pg",
+      "psql",
+      "-U",
+      "pilot",
+      "-d",
+      "pilot_target",
+      "-A",
+      "-t",
+      "-v",
+      "ON_ERROR_STOP=1"
+    ],
+    "started_at": "2026-09-11T17:39:08.570243+00:00",
+    "finished_at": "2026-09-11T17:39:08.666208+00:00",
+    "exit_code": 0,
+    "sql_sha256": "57c2f76c853abf8c2953c2f37cfe82e22aeb1b9bfa7cbce3bc2fce650a15a4f6",
+    "stderr": ""
+  }
+]

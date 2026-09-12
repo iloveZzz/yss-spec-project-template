@@ -1,0 +1,1 @@
+SELECT jsonb_build_array(id::text,label,to_char(start_date,'YYYY-MM-DD"T"HH24:MI:SS.US'),to_char(end_date,'YYYY-MM-DD"T"HH24:MI:SS.US'))::text AS canonical_value FROM public.pilot_preview_rows ORDER BY id LIMIT 1001

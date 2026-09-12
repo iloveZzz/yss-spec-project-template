@@ -1,0 +1,28 @@
+{
+  "record_kind": "interview-confirmation",
+  "record_version": 1,
+  "user_reply": "采纳推荐，确认",
+  "source": {
+    "kind": "conversation-user-message",
+    "thread_id": "01a090ed-fcb3-7890-bb35-591f79a01d0e",
+    "locator": "用户对 Q13 及整份试验约定的最终回复",
+    "verbatim": "采纳推荐，确认"
+  },
+  "recorded_at": "2026-09-11T15:38:48.877337+00:00",
+  "presented_artifact": {
+    "path": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/trial-agreement-presented-v1.md",
+    "sha256": "f45735e8d98080299d220c203500cc31f320487c1e39a32fe5574b8d02ab5786"
+  },
+  "confirmed_scope": [
+    "Q1–Q13 与整份 trial-agreement 的共同理解",
+    "本地隔离 PostgreSQL、真实 Java 和 Vue、合成数据",
+    "结束访谈，先整理前置缺口处理方案，不直接启动试验"
+  ],
+  "not_granted": [
+    "产品门禁或 Slice Implementation Contract 批准",
+    "原业务仓库修改或身份接入",
+    "新增版本探针",
+    "Git 提交推送或发布"
+  ],
+  "note": "记录实际用户回复和所展示文档快照；不是生命周期 approval-record，不替代业务/API/实现批准。"
+}

@@ -1,0 +1,24 @@
+{
+  "record_kind": "preparation-scope-authorization",
+  "recorded_at": "2026-09-11T16:48:28.868658+00:00",
+  "source": {
+    "kind": "conversation-user-message",
+    "thread_id": "01a090ed-fcb3-7890-bb35-591f79a01d0e",
+    "verbatim": "授权，确认",
+    "locator": "用户对R1–R3具体方案的回复"
+  },
+  "proposal_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/preparation-decision.md",
+  "proposal_sha256": "5eceb67f663787c47779b260175d245f203d58df65ee21a45d408da0fa1dbc35",
+  "authorized": [
+    "R1 isolated governance initialization and onboarding",
+    "R2 current 3.1 contract drafting and legitimate review/approval process",
+    "R3 trial-only same-process deployment identity probe preparation/review/implementation"
+  ],
+  "not_granted": [
+    "source business worktree edits",
+    "Git commit/push",
+    "API/Slice approval bypass",
+    "release",
+    "real business data"
+  ]
+}

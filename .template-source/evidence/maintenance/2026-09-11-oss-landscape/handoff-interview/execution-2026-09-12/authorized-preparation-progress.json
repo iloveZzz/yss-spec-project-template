@@ -1,0 +1,31 @@
+{
+  "executed_at": "2026-09-11T17:02:13.360479+00:00",
+  "r1": {
+    "initialization": "three CLI exits 0",
+    "repository_registration": "two existing external-repository records",
+    "context_reconciliation": "three current records verified",
+    "implementation_ready": false
+  },
+  "r2": {
+    "candidate_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance/docs/.scratch/target-preview-pilot/api/target-preview-pilot.yaml",
+    "sha256": "056a4af643a6d827d6795a71bd8f667672f0a91ea00853b9516a4a1fc44211f7",
+    "redocly_version": "2.0.0",
+    "lint_exit_code": 0,
+    "warnings": [
+      "info-license",
+      "operation-4xx-response for new probe",
+      "security-defined for both operations"
+    ],
+    "validation_verifier_exit_code": 0,
+    "validation_verifier_origin": "template-source scripts/verify-openapi-draft-validation-record --root backend-governance; bundled instance omitted this executable",
+    "api_status": "Draft",
+    "review_status": "v1 Blocked retained; v2 awaiting actual HTTP and independent re-review",
+    "version": "1.0.0-pilot.2"
+  },
+  "r3": {
+    "design_input_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend-governance/docs/.scratch/target-preview-pilot/architecture/delivery-identity-design-input.md",
+    "implementation_status": "not-started",
+    "authorization": "R1-R3 scope confirmed; specific unchanged current gate rules retained",
+    "api_candidate": "v2 includes getDeliveryIdentity; implementation pending current Freeze"
+  }
+}

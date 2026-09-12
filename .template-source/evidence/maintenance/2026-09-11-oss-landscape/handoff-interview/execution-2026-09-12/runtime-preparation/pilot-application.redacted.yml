@@ -1,0 +1,110 @@
+data-push:
+  enabled: false
+  features:
+    schedule-enabled: false
+db-scheduler:
+  enabled: true
+  immediate-execution-enabled: false
+  polling-interval: 3600s
+  threads: 1
+eureka:
+  client:
+    enabled: false
+management:
+  endpoints:
+    enabled-by-default: false
+mybatis-plus:
+  mapper-locations: classpath*:mappers/**/*.xml
+ops:
+  enabled: true
+  node-base-url: http://127.0.0.1:61111
+  node-id: pilot-preview
+  schema-initialize: false
+server:
+  address: 127.0.0.1
+  port: 61111
+spring:
+  application:
+    name: yss-preview-pilot
+  batch:
+    jdbc:
+      initialize-schema: never
+    job:
+      enabled: false
+  cloud:
+    bootstrap:
+      enabled: false
+    discovery:
+      enabled: false
+    nacos:
+      config:
+        enabled: false
+      discovery:
+        enabled: false
+  datasource:
+    primary:
+      driver-class-name: org.postgresql.Driver
+      hikari:
+        maximum-pool-size: 4
+        minimum-idle: 0
+      password: <runtime-generated-password>
+      url: jdbc:postgresql://127.0.0.1:60050/pilot_control
+      username: pilot
+    target:
+      driver-class-name: org.postgresql.Driver
+      hikari:
+        maximum-pool-size: 4
+        minimum-idle: 0
+      password: <runtime-generated-password>
+      url: jdbc:postgresql://127.0.0.1:60050/pilot_target
+      username: pilot
+  main:
+    allow-bean-definition-overriding: true
+    lazy-initialization: true
+  redis:
+    host: 127.0.0.1
+    port: 60054
+transfer:
+  worker:
+    leader:
+      enabled: false
+valuation:
+  features:
+    parse-queue-observer:
+      enabled: false
+  local-storage-root: /private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/runtime-private/storage
+  product-taskflow-plan:
+    enabled: false
+  workflow-plan-queue-observer:
+    enabled: false
+yss:
+  cache:
+    active-type: redis
+  file-sync:
+    control-data-source:
+      driver-class-name: org.postgresql.Driver
+      hikari:
+        maximum-pool-size: 4
+        minimum-idle: 0
+      password: <runtime-generated-password>
+      url: jdbc:postgresql://127.0.0.1:60050/pilot_control
+      username: pilot
+    enabled: true
+    locations:
+      pilot-inbox: /private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/runtime-private/inbox
+    node-id: pilot-preview
+    target-data-source-types:
+      target: POSTGRESQL
+    target-data-sources:
+      target: target
+    target-schemas:
+      target: public
+  leaf:
+    leafSegmentEnable: true
+    segment:
+      database-type: postgresql
+  mybatis:
+    db-type: postgresql
+    mapper-location: classpath*:mappers/**/*.xml
+    pageInterceptor:
+      helperDialect: postgresql

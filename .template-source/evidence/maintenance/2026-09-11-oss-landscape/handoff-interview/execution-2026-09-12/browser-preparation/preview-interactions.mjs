@@ -1,0 +1,48 @@
+import {createRequire} from 'node:module';
+import fs from 'node:fs';
+import path from 'node:path';
+const frontend='/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend';
+const require=createRequire(path.join(frontend,'package.json'));
+const {chromium}=require('@playwright/test');
+const out=path.join(import.meta.dirname,process.argv[2]||'preview-interactions');fs.mkdirSync(out,{recursive:true});
+const browser=await chromium.launch({headless:true,executablePath:'/Users/zhudaoming/Library/Caches/ms-playwright/chromium-1243/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing'});
+const context=await browser.newContext({viewport:{width:1440,height:1000},serviceWorkers:'block'});
+const evidence={started_at:new Date().toISOString(),browser_version:browser.version(),console:[],requests:[],external_requests_blocked:[]};
+await context.route('**/*',async route=>{const u=new URL(route.request().url()); if(['http:','https:'].includes(u.protocol)&&!['127.0.0.1','localhost','[::1]'].includes(u.hostname)){evidence.external_requests_blocked.push(u.origin+u.pathname);await route.abort('blockedbyclient');}else await route.continue();});
+const page=await context.newPage();
+page.on('console',x=>evidence.console.push({type:x.type(),text:x.text()}));page.on('pageerror',x=>evidence.console.push({type:'pageerror',text:x.message}));
+const pending=[];
+page.on('response',res=>{if(res.url().includes('/api/'))pending.push((async()=>{evidence.requests.push({url:res.url(),method:res.request().method(),status:res.status(),content_type:res.headers()['content-type'],body:(await res.text().catch(()=>'<unreadable>')).slice(0,25000)});})());});
+const snapshots=[];
+const snap=async name=>{await page.screenshot({path:path.join(out,name+'.png'),fullPage:true,animations:'disabled'});snapshots.push({name,body:await page.locator('body').innerText()});};
+try{
+ await page.goto('http://127.0.0.1:61112/transfer/file-sync',{waitUntil:'networkidle',timeout:20000});
+ await page.getByRole('row').filter({hasText:'pilot-inbox · PILOT_PREVIEW'}).getByRole('button',{name:'预览',exact:true}).click();
+ await page.getByText('current-example',{exact:true}).waitFor();
+ await snap('current');
+ await page.getByText('全部版本',{exact:true}).click();
+ await page.getByText('historical-example',{exact:true}).waitFor();
+ await snap('all');
+ await Promise.all([page.waitForResponse(r=>r.url().includes('PILOT_PREVIEW/target-data-preview')&&r.url().includes('scope=ALL')&&r.status()===200),page.getByRole('button',{name:'刷新目标数据',exact:true}).click()]);
+ await page.getByText('historical-example',{exact:true}).waitFor();
+ await snap('refresh-all');
+ await page.mouse.move(400,300);
+ await page.getByRole('tooltip').waitFor({state:'hidden',timeout:5000});
+ await page.getByRole('button',{name:'Close',exact:true}).click();
+ await page.getByRole('row').filter({hasText:'pilot-inbox · PILOT_EMPTY'}).getByRole('button',{name:'预览',exact:true}).click();
+ await page.getByText('目标表暂无数据',{exact:true}).waitFor();
+ await snap('empty');
+ await page.mouse.move(400,300);
+ await page.getByRole('tooltip').waitFor({state:'hidden',timeout:5000});
+ await page.getByRole('button',{name:'Close',exact:true}).click();
+ await page.getByRole('row').filter({hasText:'pilot-inbox · PILOT_PREVIEW'}).getByRole('button',{name:'预览',exact:true}).click();
+ await page.getByText('current-example',{exact:true}).waitFor();
+ if(await page.getByText('historical-example',{exact:true}).count())throw new Error('reopen retained historical rows');
+ await snap('reopen-current');
+ evidence.url=page.url();evidence.body=await page.locator('body').innerText();evidence.status='passed';
+}catch(e){evidence.error=String(e);evidence.status='failed';await page.screenshot({path:path.join(out,'failure.png'),fullPage:true,animations:'disabled'}).catch(()=>{});}
+evidence.snapshots=snapshots;
+await Promise.allSettled(pending);fs.writeFileSync(path.join(out,'evidence.json'),JSON.stringify(evidence,null,2)+'\n');await browser.close();
+console.log(JSON.stringify({browser:evidence.browser_version,error:evidence.error,body:evidence.body?.slice(0,4000),requests:evidence.requests.map(x=>({url:x.url,status:x.status})),console_errors:evidence.console.filter(x=>['error','pageerror'].includes(x.type)),output:out},null,2));
+
+process.exitCode=evidence.status==='passed'?0:1;

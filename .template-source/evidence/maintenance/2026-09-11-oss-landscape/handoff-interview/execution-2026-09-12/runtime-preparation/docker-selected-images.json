@@ -1,0 +1,19 @@
+{
+  "name": "docker-selected-images",
+  "argv": [
+    "docker",
+    "--context",
+    "desktop-linux",
+    "image",
+    "inspect",
+    "postgres:15",
+    "redis:7.0",
+    "--format",
+    "{{.Id}} {{.Architecture}} {{json .RepoDigests}}"
+  ],
+  "cwd": "/tmp",
+  "exit_code": 0,
+  "elapsed_seconds": 0.14,
+  "log": "docker-selected-images.log",
+  "redaction": "URL userinfo and credential assignments"
+}

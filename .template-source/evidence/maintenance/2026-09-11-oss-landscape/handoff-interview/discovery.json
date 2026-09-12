@@ -1,0 +1,119 @@
+{
+  "scope": "只读查证完成；不代表产品试验完成或生命周期路由完成",
+  "observed_at": "2026-09-11T14:51:24.060803+00:00",
+  "candidate": {
+    "status": "not-found-in-registered-scope",
+    "real_completed_java_vue_slice": false,
+    "fixture_ref": "scripts/verify-frontend-delivery-scenarios:58-86",
+    "fixture_is_product_evidence": false
+  },
+  "findings_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/discovery.md",
+  "verification_results": [
+    {
+      "command": "codegraph explore \"backend-delivery exportBackendDelivery importBackendDelivery verifyBackendDelivery implementation repositories completed slices\"",
+      "exit_code": 0,
+      "kind": "read-only-discovery"
+    },
+    {
+      "command": "rg --files --hidden docs submodules .template-source/contracts with skill/projection/dependency excludes and Java/Vue globs",
+      "exit_code": 1,
+      "kind": "read-only-no-matches"
+    },
+    {
+      "command": "node -e \"JSON.parse(require('fs').readFileSync('.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/discovery.json','utf8'))\"",
+      "exit_code": 0,
+      "executed_at": "2026-09-11T14:51:35.876414+00:00",
+      "kind": "syntax-only"
+    },
+    {
+      "command": "codegraph explore in yss-valuation-outsourced and yss-datamiddle-datamodeling (candidate queries)",
+      "exit_code": 0,
+      "kind": "read-only-discovery"
+    },
+    {
+      "command": "git rev-parse HEAD and yss-project.yaml existence checks in all three candidate roots",
+      "exit_code": 0,
+      "kind": "read-only-identity-inventory"
+    },
+    {
+      "command": "rg deployment identity fields, BuildProperties/GitProperties and /version mappings in Java sources excluding generated/skills/frontend",
+      "exit_code": 1,
+      "kind": "read-only-no-matches"
+    }
+  ],
+  "result": {
+    "result_schema": "workflow-execution-result-v1",
+    "work_unit": "work-unit.entry-triage",
+    "workflow_reference": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/scope.md",
+    "result": "needs-human",
+    "context_reconciliation": {
+      "status": "not-applicable",
+      "ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/scope.md",
+      "reason": "template-source 只读候选与机制查证，不登记产品词汇"
+    },
+    "skill": "grilling",
+    "changed_files": [
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/discovery.md",
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/discovery.json"
+    ],
+    "changed_artifacts": [
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/discovery.md",
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/discovery.json"
+    ],
+    "evidence_refs": [
+      ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/discovery.md"
+    ],
+    "deferred_seams": [],
+    "drift": [],
+    "violation": [],
+    "new_impacts": [],
+    "stale_candidates": [],
+    "blocking_signals": [
+      "missing_evidence"
+    ],
+    "next_route": null
+  },
+  "limitations": [
+    "尚未取得真实完成切片仓库入口",
+    "无本轮场景执行、构建、部署或API联调",
+    "entry-triage未伪造Plan后继"
+  ],
+  "supplemental_discovery": {
+    "observed_at": "2026-09-11T14:56:00.670309+00:00",
+    "scope_source": "scope.md saved-project candidate extension",
+    "roots": [
+      "/Users/zhudaoming/yss-valuation-outsourced",
+      "/Users/zhudaoming/yss-datamiddle-datamodeling",
+      "/Users/zhudaoming/Documents/yss-project/yss-datamiddle-sysmanager"
+    ],
+    "identity_files": "missing in all three roots",
+    "candidate": "file-sync target-data-preview Java Controller plus actual Vue modal",
+    "candidate_status": "real-pair-found-completed-baseline-not-verified",
+    "frontend_root": "/Users/zhudaoming/yss-valuation-outsourced/valuation-outsourced-frontend",
+    "details_ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/discovery.md",
+    "executed_trials": false
+  },
+  "runtime_preconditions": {
+    "observed_at": "2026-09-11T15:00:36.956025+00:00",
+    "frontend_head": "76f2d1627f797d5b12a99c48cf49125544933b18",
+    "frontend_dirty": {
+      "tracked_modified": 8,
+      "untracked": 98
+    },
+    "backend_dirty": {
+      "tracked_modified": 21,
+      "untracked": 140
+    },
+    "five_field_probe": "not-found-in-searched-Java-source; external deployment provider not inspected",
+    "candidate_database": "PostgreSQL-only-isolated-proposal; not executed",
+    "required_inputs": [
+      "fixed source snapshot",
+      "available private Maven components and starter dependencies",
+      "isolated control schema and managed target table",
+      "configured task and managed target resource",
+      "verifiable deployment identity"
+    ],
+    "stop_if_new_implementation_required": true,
+    "runtime_executed": false
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "started_at": "2026-09-11T17:22:07.487Z",
+  "browser_version": "153.0.8010.12",
+  "console": [
+    {
+      "type": "error",
+      "text": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector"
+    }
+  ],
+  "requests": [
+    {
+      "url": "http://127.0.0.1:61112/api/quality-v3/file-sync/workbench/tasks?current=1&pageSize=20",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"success\":true,\"dataType\":null,\"code\":\"DM-A0001\",\"message\":\"数据返回正常\",\"tips\":\"信息返回正常\",\"data\":{\"items\":[{\"taskId\":2,\"taskCode\":\"PILOT_EMPTY\",\"taskName\":\"synthetic preview\",\"lifecycleStatus\":\"DRAFT\",\"sourceLocation\":\"pilot-inbox\",\"sourceFormat\":\"CSV\",\"targetDataSource\":\"target\",\"targetTable\":\"public.pilot_preview_empty\",\"ownerId\":\"pilot\",\"latestExecutionId\":null,\"latestExecutionState\":null,\"latestExecutionAt\":null,\"modifiedAt\":\"2026-09-11T17:05:26.802929\",\"configurationBlockers\":[]},{\"taskId\":1,\"taskCode\":\"PILOT_PREVIEW\",\"taskName\":\"synthetic preview\",\"lifecycleStatus\":\"DRAFT\",\"sourceLocation\":\"pilot-inbox\",\"sourceFormat\":\"CSV\",\"targetDataSource\":\"target\",\"targetTable\":\"public.pilot_preview_rows\",\"ownerId\":\"pilot\",\"latestExecutionId\":null,\"latestExecutionState\":null,\"latestExecutionAt\":null,\"modifiedAt\":\"2026-09-11T17:05:26.800077\",\"configurationBlockers\":[]}],\"current\":1,\"pageSize\":20,\"total\":2,\"hasNext\":false,\"summary\":{\"taskCount\":2,\"runningCount\":0,\"failedPendingCount\":0,\"pendingValidationCount\":2,\"processedFileCountToday\":0}}}"
+    },
+    {
+      "url": "http://127.0.0.1:61112/api/quality-v3/file-sync/tasks/PILOT_PREVIEW/target-data-preview?scope=CURRENT",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"success\":true,\"dataType\":null,\"code\":\"DM-A0001\",\"message\":\"数据返回正常\",\"tips\":\"信息返回正常\",\"data\":{\"taskCode\":\"PILOT_PREVIEW\",\"taskName\":\"synthetic preview\",\"configurationSource\":\"DRAFT\",\"modeType\":\"HISTORICAL\",\"target\":{\"dataSourceRef\":\"target\",\"catalog\":null,\"schema\":\"public\",\"table\":\"pilot_preview_rows\"},\"columns\":[{\"name\":\"id\",\"databaseType\":\"int8\",\"nullable\":false,\"comment\":null},{\"name\":\"label\",\"databaseType\":\"varchar\",\"nullable\":true,\"comment\":null},{\"name\":\"start_date\",\"databaseType\":\"timestamp\",\"nullable\":false,\"comment\":null},{\"name\":\"end_date\",\"databaseType\":\"timestamp\",\"nullable\":true,\"comment\":null}],\"rows\":[{\"cells\":[{\"kind\":\"NUMBER\",\"value\":\"1\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TEXT\",\"value\":\"current-example\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TIMESTAMP\",\"value\":\"2026-01-01 00:00:00.0\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"NULL\",\"value\":null,\"truncated\":false,\"byteLength\":null}]}],\"returnedRows\":1,\"rowLimit\":100,\"responseLimited\":false,\"stableOrder\":true,\"queriedAt\":\"2026-09-11T17:22:08.917Z\"}}"
+    },
+    {
+      "url": "http://127.0.0.1:61112/api/quality-v3/file-sync/tasks/PILOT_PREVIEW/target-data-preview?scope=ALL",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"success\":true,\"dataType\":null,\"code\":\"DM-A0001\",\"message\":\"数据返回正常\",\"tips\":\"信息返回正常\",\"data\":{\"taskCode\":\"PILOT_PREVIEW\",\"taskName\":\"synthetic preview\",\"configurationSource\":\"DRAFT\",\"modeType\":\"HISTORICAL\",\"target\":{\"dataSourceRef\":\"target\",\"catalog\":null,\"schema\":\"public\",\"table\":\"pilot_preview_rows\"},\"columns\":[{\"name\":\"id\",\"databaseType\":\"int8\",\"nullable\":false,\"comment\":null},{\"name\":\"label\",\"databaseType\":\"varchar\",\"nullable\":true,\"comment\":null},{\"name\":\"start_date\",\"databaseType\":\"timestamp\",\"nullable\":false,\"comment\":null},{\"name\":\"end_date\",\"databaseType\":\"timestamp\",\"nullable\":true,\"comment\":null}],\"rows\":[{\"cells\":[{\"kind\":\"NUMBER\",\"value\":\"1\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TEXT\",\"value\":\"current-example\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TIMESTAMP\",\"value\":\"2026-01-01 00:00:00.0\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"NULL\",\"value\":null,\"truncated\":false,\"byteLength\":null}]},{\"cells\":[{\"kind\":\"NUMBER\",\"value\":\"2\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TEXT\",\"value\":\"historical-example\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TIMESTAMP\",\"value\":\"2025-01-01 00:00:00.0\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TIMESTAMP\",\"value\":\"2025-12-31 00:00:00.0\",\"truncated\":false,\"byteLength\":null}]}],\"returnedRows\":2,\"rowLimit\":100,\"responseLimited\":false,\"stableOrder\":true,\"queriedAt\":\"2026-09-11T17:22:09.060Z\"}}"
+    },
+    {
+      "url": "http://127.0.0.1:61112/api/quality-v3/file-sync/tasks/PILOT_PREVIEW/target-data-preview?scope=ALL",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"success\":true,\"dataType\":null,\"code\":\"DM-A0001\",\"message\":\"数据返回正常\",\"tips\":\"信息返回正常\",\"data\":{\"taskCode\":\"PILOT_PREVIEW\",\"taskName\":\"synthetic preview\",\"configurationSource\":\"DRAFT\",\"modeType\":\"HISTORICAL\",\"target\":{\"dataSourceRef\":\"target\",\"catalog\":null,\"schema\":\"public\",\"table\":\"pilot_preview_rows\"},\"columns\":[{\"name\":\"id\",\"databaseType\":\"int8\",\"nullable\":false,\"comment\":null},{\"name\":\"label\",\"databaseType\":\"varchar\",\"nullable\":true,\"comment\":null},{\"name\":\"start_date\",\"databaseType\":\"timestamp\",\"nullable\":false,\"comment\":null},{\"name\":\"end_date\",\"databaseType\":\"timestamp\",\"nullable\":true,\"comment\":null}],\"rows\":[{\"cells\":[{\"kind\":\"NUMBER\",\"value\":\"1\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TEXT\",\"value\":\"current-example\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TIMESTAMP\",\"value\":\"2026-01-01 00:00:00.0\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"NULL\",\"value\":null,\"truncated\":false,\"byteLength\":null}]},{\"cells\":[{\"kind\":\"NUMBER\",\"value\":\"2\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TEXT\",\"value\":\"historical-example\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TIMESTAMP\",\"value\":\"2025-01-01 00:00:00.0\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TIMESTAMP\",\"value\":\"2025-12-31 00:00:00.0\",\"truncated\":false,\"byteLength\":null}]}],\"returnedRows\":2,\"rowLimit\":100,\"responseLimited\":false,\"stableOrder\":true,\"queriedAt\":\"2026-09-11T17:22:09.166Z\"}}"
+    },
+    {
+      "url": "http://127.0.0.1:61112/api/quality-v3/file-sync/tasks/PILOT_EMPTY/target-data-preview?scope=CURRENT",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"success\":true,\"dataType\":null,\"code\":\"DM-A0001\",\"message\":\"数据返回正常\",\"tips\":\"信息返回正常\",\"data\":{\"taskCode\":\"PILOT_EMPTY\",\"taskName\":\"synthetic preview\",\"configurationSource\":\"DRAFT\",\"modeType\":\"HISTORICAL\",\"target\":{\"dataSourceRef\":\"target\",\"catalog\":null,\"schema\":\"public\",\"table\":\"pilot_preview_empty\"},\"columns\":[{\"name\":\"id\",\"databaseType\":\"int8\",\"nullable\":false,\"comment\":null},{\"name\":\"label\",\"databaseType\":\"varchar\",\"nullable\":true,\"comment\":null},{\"name\":\"start_date\",\"databaseType\":\"timestamp\",\"nullable\":false,\"comment\":null},{\"name\":\"end_date\",\"databaseType\":\"timestamp\",\"nullable\":true,\"comment\":null}],\"rows\":[],\"returnedRows\":0,\"rowLimit\":100,\"responseLimited\":false,\"stableOrder\":true,\"queriedAt\":\"2026-09-11T17:22:09.619Z\"}}"
+    },
+    {
+      "url": "http://127.0.0.1:61112/api/quality-v3/file-sync/tasks/PILOT_PREVIEW/target-data-preview?scope=CURRENT",
+      "method": "GET",
+      "status": 200,
+      "content_type": "application/json",
+      "body": "{\"success\":true,\"dataType\":null,\"code\":\"DM-A0001\",\"message\":\"数据返回正常\",\"tips\":\"信息返回正常\",\"data\":{\"taskCode\":\"PILOT_PREVIEW\",\"taskName\":\"synthetic preview\",\"configurationSource\":\"DRAFT\",\"modeType\":\"HISTORICAL\",\"target\":{\"dataSourceRef\":\"target\",\"catalog\":null,\"schema\":\"public\",\"table\":\"pilot_preview_rows\"},\"columns\":[{\"name\":\"id\",\"databaseType\":\"int8\",\"nullable\":false,\"comment\":null},{\"name\":\"label\",\"databaseType\":\"varchar\",\"nullable\":true,\"comment\":null},{\"name\":\"start_date\",\"databaseType\":\"timestamp\",\"nullable\":false,\"comment\":null},{\"name\":\"end_date\",\"databaseType\":\"timestamp\",\"nullable\":true,\"comment\":null}],\"rows\":[{\"cells\":[{\"kind\":\"NUMBER\",\"value\":\"1\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TEXT\",\"value\":\"current-example\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TIMESTAMP\",\"value\":\"2026-01-01 00:00:00.0\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"NULL\",\"value\":null,\"truncated\":false,\"byteLength\":null}]}],\"returnedRows\":1,\"rowLimit\":100,\"responseLimited\":false,\"stableOrder\":true,\"queriedAt\":\"2026-09-11T17:22:10.058Z\"}}"
+    }
+  ],
+  "external_requests_blocked": [
+    "https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png"
+  ],
+  "url": "http://127.0.0.1:61112/transfer/file-sync",
+  "body": "微应用平台\n质量问题\n规则维护\n源文件管理\n标准数据\n科目映射管理\n基本信息\n上传与导出管理\n分拣HUB\n文件批任务处理\n数据任务处理\n运维管理\n转持仓配置\nAdmin\n文件同步\n\n集中设计、发布和运维所有文件同步任务\n\n最近更新 01:22:08\n自动刷新\n0s（停止）\n新建同步任务\n同步任务\n2\n运行中\n0\n失败待处理\n0\n待设计/验证\n2\n今日处理文件\n0\n任务\n:\n任务状态\n:\n全部状态\n查询\n重置\n任务\n\t\n格式\n\t\n落地目标\n\t\n任务状态\n\t\n最近执行\n\t\n更新时间\n\t\n操作\nsynthetic preview\npilot-inbox · PILOT_EMPTY\n\t\nCSV\n\t\n数据源: target\npublic.pilot_preview_empty\n\t\n草稿\n\t\n-\n\t\n-\n\t\n进入任务\n预览\n运行记录\n\n\nsynthetic preview\npilot-inbox · PILOT_PREVIEW\n\t\nCSV\n\t\n数据源: target\npublic.pilot_preview_rows\n\t\n草稿\n\t\n-\n\t\n-\n\t\n进入任务\n预览\n运行记录\n共 2 条\n1\n20 条/页\nsynthetic preview - 目标数据预览\n本次预览 1 条（最多 100 条）\n最新版本\n全部版本\nid\n\t\nlabel\n\t\nstart_date\n\t\nend_date\n1\n\t\ncurrent-example\n\t\n2026-01-01 00:00:00.0\n\t\nNULL",
+  "status": "passed",
+  "snapshots": [
+    {
+      "name": "current",
+      "body": "微应用平台\n质量问题\n规则维护\n源文件管理\n标准数据\n科目映射管理\n基本信息\n上传与导出管理\n分拣HUB\n文件批任务处理\n数据任务处理\n运维管理\n转持仓配置\nAdmin\n文件同步\n\n集中设计、发布和运维所有文件同步任务\n\n最近更新 01:22:08\n自动刷新\n0s（停止）\n新建同步任务\n同步任务\n2\n运行中\n0\n失败待处理\n0\n待设计/验证\n2\n今日处理文件\n0\n任务\n:\n任务状态\n:\n全部状态\n查询\n重置\n任务\n\t\n格式\n\t\n落地目标\n\t\n任务状态\n\t\n最近执行\n\t\n更新时间\n\t\n操作\nsynthetic preview\npilot-inbox · PILOT_EMPTY\n\t\nCSV\n\t\n数据源: target\npublic.pilot_preview_empty\n\t\n草稿\n\t\n-\n\t\n-\n\t\n进入任务\n预览\n运行记录\n\n\nsynthetic preview\npilot-inbox · PILOT_PREVIEW\n\t\nCSV\n\t\n数据源: target\npublic.pilot_preview_rows\n\t\n草稿\n\t\n-\n\t\n-\n\t\n进入任务\n预览\n运行记录\n共 2 条\n1\n20 条/页\nsynthetic preview - 目标数据预览\n本次预览 1 条（最多 100 条）\n最新版本\n全部版本\nid\n\t\nlabel\n\t\nstart_date\n\t\nend_date\n1\n\t\ncurrent-example\n\t\n2026-01-01 00:00:00.0\n\t\nNULL"
+    },
+    {
+      "name": "all",
+      "body": "微应用平台\n质量问题\n规则维护\n源文件管理\n标准数据\n科目映射管理\n基本信息\n上传与导出管理\n分拣HUB\n文件批任务处理\n数据任务处理\n运维管理\n转持仓配置\nAdmin\n文件同步\n\n集中设计、发布和运维所有文件同步任务\n\n最近更新 01:22:08\n自动刷新\n0s（停止）\n新建同步任务\n同步任务\n2\n运行中\n0\n失败待处理\n0\n待设计/验证\n2\n今日处理文件\n0\n任务\n:\n任务状态\n:\n全部状态\n查询\n重置\n任务\n\t\n格式\n\t\n落地目标\n\t\n任务状态\n\t\n最近执行\n\t\n更新时间\n\t\n操作\nsynthetic preview\npilot-inbox · PILOT_EMPTY\n\t\nCSV\n\t\n数据源: target\npublic.pilot_preview_empty\n\t\n草稿\n\t\n-\n\t\n-\n\t\n进入任务\n预览\n运行记录\n\n\nsynthetic preview\npilot-inbox · PILOT_PREVIEW\n\t\nCSV\n\t\n数据源: target\npublic.pilot_preview_rows\n\t\n草稿\n\t\n-\n\t\n-\n\t\n进入任务\n预览\n运行记录\n共 2 条\n1\n20 条/页\nsynthetic preview - 目标数据预览\n本次预览 2 条（最多 100 条）\n最新版本\n全部版本\nid\n\t\nlabel\n\t\nstart_date\n\t\nend_date\n1\n\t\ncurrent-example\n\t\n2026-01-01 00:00:00.0\n\t\nNULL\n\n\n2\n\t\nhistorical-example\n\t\n2025-01-01 00:00:00.0\n\t\n2025-12-31 00:00:00.0"
+    },
+    {
+      "name": "refresh-all",
+      "body": "微应用平台\n质量问题\n规则维护\n源文件管理\n标准数据\n科目映射管理\n基本信息\n上传与导出管理\n分拣HUB\n文件批任务处理\n数据任务处理\n运维管理\n转持仓配置\nAdmin\n文件同步\n\n集中设计、发布和运维所有文件同步任务\n\n最近更新 01:22:08\n自动刷新\n0s（停止）\n新建同步任务\n同步任务\n2\n运行中\n0\n失败待处理\n0\n待设计/验证\n2\n今日处理文件\n0\n任务\n:\n任务状态\n:\n全部状态\n查询\n重置\n任务\n\t\n格式\n\t\n落地目标\n\t\n任务状态\n\t\n最近执行\n\t\n更新时间\n\t\n操作\nsynthetic preview\npilot-inbox · PILOT_EMPTY\n\t\nCSV\n\t\n数据源: target\npublic.pilot_preview_empty\n\t\n草稿\n\t\n-\n\t\n-\n\t\n进入任务\n预览\n运行记录\n\n\nsynthetic preview\npilot-inbox · PILOT_PREVIEW\n\t\nCSV\n\t\n数据源: target\npublic.pilot_preview_rows\n\t\n草稿\n\t\n-\n\t\n-\n\t\n进入任务\n预览\n运行记录\n共 2 条\n1\n20 条/页\nsynthetic preview - 目标数据预览\n本次预览 2 条（最多 100 条）\n最新版本\n全部版本\nid\n\t\nlabel\n\t\nstart_date\n\t\nend_date\n1\n\t\ncurrent-example\n\t\n2026-01-01 00:00:00.0\n\t\nNULL\n\n\n2\n\t\nhistorical-example\n\t\n2025-01-01 00:00:00.0\n\t\n2025-12-31 00:00:00.0"
+    },
+    {
+      "name": "empty",
+      "body": "微应用平台\n质量问题\n规则维护\n源文件管理\n标准数据\n科目映射管理\n基本信息\n上传与导出管理\n分拣HUB\n文件批任务处理\n数据任务处理\n运维管理\n转持仓配置\nAdmin\n文件同步\n\n集中设计、发布和运维所有文件同步任务\n\n最近更新 01:22:08\n自动刷新\n0s（停止）\n新建同步任务\n同步任务\n2\n运行中\n0\n失败待处理\n0\n待设计/验证\n2\n今日处理文件\n0\n任务\n:\n任务状态\n:\n全部状态\n查询\n重置\n任务\n\t\n格式\n\t\n落地目标\n\t\n任务状态\n\t\n最近执行\n\t\n更新时间\n\t\n操作\nsynthetic preview\npilot-inbox · PILOT_EMPTY\n\t\nCSV\n\t\n数据源: target\npublic.pilot_preview_empty\n\t\n草稿\n\t\n-\n\t\n-\n\t\n进入任务\n预览\n运行记录\n\n\nsynthetic preview\npilot-inbox · PILOT_PREVIEW\n\t\nCSV\n\t\n数据源: target\npublic.pilot_preview_rows\n\t\n草稿\n\t\n-\n\t\n-\n\t\n进入任务\n预览\n运行记录\n共 2 条\n1\n20 条/页\nsynthetic preview - 目标数据预览\n本次预览 0 条（最多 100 条）\n最新版本\n全部版本\n\n目标表暂无数据"
+    },
+    {
+      "name": "reopen-current",
+      "body": "微应用平台\n质量问题\n规则维护\n源文件管理\n标准数据\n科目映射管理\n基本信息\n上传与导出管理\n分拣HUB\n文件批任务处理\n数据任务处理\n运维管理\n转持仓配置\nAdmin\n文件同步\n\n集中设计、发布和运维所有文件同步任务\n\n最近更新 01:22:08\n自动刷新\n0s（停止）\n新建同步任务\n同步任务\n2\n运行中\n0\n失败待处理\n0\n待设计/验证\n2\n今日处理文件\n0\n任务\n:\n任务状态\n:\n全部状态\n查询\n重置\n任务\n\t\n格式\n\t\n落地目标\n\t\n任务状态\n\t\n最近执行\n\t\n更新时间\n\t\n操作\nsynthetic preview\npilot-inbox · PILOT_EMPTY\n\t\nCSV\n\t\n数据源: target\npublic.pilot_preview_empty\n\t\n草稿\n\t\n-\n\t\n-\n\t\n进入任务\n预览\n运行记录\n\n\nsynthetic preview\npilot-inbox · PILOT_PREVIEW\n\t\nCSV\n\t\n数据源: target\npublic.pilot_preview_rows\n\t\n草稿\n\t\n-\n\t\n-\n\t\n进入任务\n预览\n运行记录\n共 2 条\n1\n20 条/页\nsynthetic preview - 目标数据预览\n本次预览 1 条（最多 100 条）\n最新版本\n全部版本\nid\n\t\nlabel\n\t\nstart_date\n\t\nend_date\n1\n\t\ncurrent-example\n\t\n2026-01-01 00:00:00.0\n\t\nNULL"
+    }
+  ]
+}

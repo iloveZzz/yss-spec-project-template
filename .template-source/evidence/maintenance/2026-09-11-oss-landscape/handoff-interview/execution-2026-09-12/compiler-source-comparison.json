@@ -1,0 +1,25 @@
+{
+  "verified_at": "2026-09-11T17:38:34.956267+00:00",
+  "evidence_kind": "current-source-comparison-not-execution",
+  "files": [
+    {
+      "ref": "scripts/lib/backend-architecture.mjs",
+      "root_sha256": "3eb81355ad66e7a0c79aa00ad4ad04fc95e43ad1b52eb3f50c6906c4478ba5af",
+      "fixed_instance_sha256": "3eb81355ad66e7a0c79aa00ad4ad04fc95e43ad1b52eb3f50c6906c4478ba5af",
+      "identical": true
+    },
+    {
+      "ref": "scripts/lib/implementation-contract-compiler.mjs",
+      "root_sha256": "5610b737b8be2b328ce78dc7af434a4e63c06c5c3df80109a6e5072d64fd1cb0",
+      "fixed_instance_sha256": "5610b737b8be2b328ce78dc7af434a4e63c06c5c3df80109a6e5072d64fd1cb0",
+      "identical": true
+    },
+    {
+      "ref": "docs/process/schemas/backend-architecture-identity.schema.json",
+      "root_sha256": "b62a3e843589b5bc702dc3dcd88d909271bc338e821ece1f80daaa955245ef56",
+      "fixed_instance_sha256": "b62a3e843589b5bc702dc3dcd88d909271bc338e821ece1f80daaa955245ef56",
+      "identical": true
+    }
+  ],
+  "note": "确认缺口是否仅固定CLI旧快照导致。源码相同不替代真实编译。"
+}

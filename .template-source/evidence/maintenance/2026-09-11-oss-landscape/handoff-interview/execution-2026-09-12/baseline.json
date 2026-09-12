@@ -1,0 +1,394 @@
+{
+  "observed_at": "2026-09-11T16:29:46.709489+00:00",
+  "mode": "read-only-baseline-candidate",
+  "repositories": [
+    {
+      "root": "/Users/zhudaoming/yss-valuation-outsourced",
+      "recommended_commit": "714fd4223d202b29c410d4d5533913e44874b3f1",
+      "files": [
+        {
+          "path": "docs/api/specs/file-sync-target-data-preview.yaml",
+          "commit": "714fd4223d202b29c410d4d5533913e44874b3f1",
+          "head_blob": "829baa88ad99e1f260a974f90d29e24ae690411b",
+          "head_sha256": "sha256:5436020b120ed2b2ea57f9a08f9bca3b37acb4959864b72bb1f5d759eabd5d01",
+          "worktree_sha256": "sha256:5436020b120ed2b2ea57f9a08f9bca3b37acb4959864b72bb1f5d759eabd5d01",
+          "worktree_matches_commit": true,
+          "last_path_commit": "be7b7711fe09b913d7ec0fb33c678a7a53298028"
+        },
+        {
+          "path": "docs/architecture/file-sync-target-data-preview-openapi-review.md",
+          "commit": "714fd4223d202b29c410d4d5533913e44874b3f1",
+          "head_blob": "6ee066d5b2152b8c300908adb6f7564c2f155b2c",
+          "head_sha256": "sha256:12c63acc3169c05eba0997304d9b5dca0ae10d170ba7f5317d582c2a2670626a",
+          "worktree_sha256": "sha256:12c63acc3169c05eba0997304d9b5dca0ae10d170ba7f5317d582c2a2670626a",
+          "worktree_matches_commit": true,
+          "last_path_commit": "be7b7711fe09b913d7ec0fb33c678a7a53298028"
+        },
+        {
+          "path": "docs/file-sync-acceptance.md",
+          "commit": "714fd4223d202b29c410d4d5533913e44874b3f1",
+          "head_blob": "7da19f5663874749ac4ee0249b44aa4da78af64a",
+          "head_sha256": "sha256:da37d576e538be09757610dc35994b8025a21ae8bfa9e58db63e1e68f4509b10",
+          "worktree_sha256": "sha256:da37d576e538be09757610dc35994b8025a21ae8bfa9e58db63e1e68f4509b10",
+          "worktree_matches_commit": true,
+          "last_path_commit": "6fb797b425d0c6ed24c099e2423c5287c49ea8b6"
+        },
+        {
+          "path": "valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/application/dto/SyncTargetDataPreviewDTO.java",
+          "commit": "714fd4223d202b29c410d4d5533913e44874b3f1",
+          "head_blob": "eb89891eecfb071648f0053d0e7e203f9862f126",
+          "head_sha256": "sha256:c003204e38cf701ded06d3860e3d3026e36a254426e87bfda520eb5800d15094",
+          "worktree_sha256": "sha256:c003204e38cf701ded06d3860e3d3026e36a254426e87bfda520eb5800d15094",
+          "worktree_matches_commit": true,
+          "last_path_commit": "6fb797b425d0c6ed24c099e2423c5287c49ea8b6"
+        },
+        {
+          "path": "valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/application/port/SyncTargetDataPreviewQueryPort.java",
+          "commit": "714fd4223d202b29c410d4d5533913e44874b3f1",
+          "head_blob": "f26110cd07dce77301de123c36497e983605acf8",
+          "head_sha256": "sha256:793cbd0b2f648ffec4c5eadb769cb347f6f7db6bc87a27d1900f43f237b02e36",
+          "worktree_sha256": "sha256:793cbd0b2f648ffec4c5eadb769cb347f6f7db6bc87a27d1900f43f237b02e36",
+          "worktree_matches_commit": true,
+          "last_path_commit": "6fb797b425d0c6ed24c099e2423c5287c49ea8b6"
+        },
+        {
+          "path": "valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/application/service/SyncTargetDataPreviewAppService.java",
+          "commit": "714fd4223d202b29c410d4d5533913e44874b3f1",
+          "head_blob": "7c9cea52b77e37c883f5daf84ce80c65147bbb5c",
+          "head_sha256": "sha256:3d4838ceb499a7d397b735f890f878e5daa195f530068fad0cd8aa8b2e63714d",
+          "worktree_sha256": "sha256:3d4838ceb499a7d397b735f890f878e5daa195f530068fad0cd8aa8b2e63714d",
+          "worktree_matches_commit": true,
+          "last_path_commit": "6fb797b425d0c6ed24c099e2423c5287c49ea8b6"
+        },
+        {
+          "path": "valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/application/service/SyncTargetDataPreviewException.java",
+          "commit": "714fd4223d202b29c410d4d5533913e44874b3f1",
+          "head_blob": "e78a053ca912c6c1516e0ff182caac31815689c8",
+          "head_sha256": "sha256:75fd3e1fca8491074f5c4c951771fda800f951dbe286b8a789be11f752a301f2",
+          "worktree_sha256": "sha256:75fd3e1fca8491074f5c4c951771fda800f951dbe286b8a789be11f752a301f2",
+          "worktree_matches_commit": true,
+          "last_path_commit": "6fb797b425d0c6ed24c099e2423c5287c49ea8b6"
+        },
+        {
+          "path": "valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/infrastructure/target/JdbcSyncTargetDataPreviewAdapter.java",
+          "commit": "714fd4223d202b29c410d4d5533913e44874b3f1",
+          "head_blob": "2505cf793be49f09e7586371d9247b92a9269417",
+          "head_sha256": "sha256:96c674c0cb4d6ea1c9603280cf0d30d521b0f40f034fb64050faa47908baab4b",
+          "worktree_sha256": "sha256:96c674c0cb4d6ea1c9603280cf0d30d521b0f40f034fb64050faa47908baab4b",
+          "worktree_matches_commit": true,
+          "last_path_commit": "6fb797b425d0c6ed24c099e2423c5287c49ea8b6"
+        },
+        {
+          "path": "valset-standardizer-tools/file-sync/src/main/java/com/yss/datamiddle/valuation/filesync/web/FileSyncTargetPreviewController.java",
+          "commit": "714fd4223d202b29c410d4d5533913e44874b3f1",
+          "head_blob": "adc23852120d079462904528aaa4081cdaefcee4",
+          "head_sha256": "sha256:6b6838a2d41869a409dfa4cf5c304f4a36b7e50a6dde5d3c631ecfd81bd87aed",
+          "worktree_sha256": "sha256:6b6838a2d41869a409dfa4cf5c304f4a36b7e50a6dde5d3c631ecfd81bd87aed",
+          "worktree_matches_commit": true,
+          "last_path_commit": "6fb797b425d0c6ed24c099e2423c5287c49ea8b6"
+        },
+        {
+          "path": "valset-standardizer-tools/file-sync/src/test/java/com/yss/datamiddle/valuation/filesync/application/service/SyncTargetDataPreviewAppServiceTest.java",
+          "commit": "714fd4223d202b29c410d4d5533913e44874b3f1",
+          "head_blob": "da83d786f87be6c9eaf7ae94922c1b6ba3dd537c",
+          "head_sha256": "sha256:a834fa95cb6dca80024fecc7abb32bacf9eac97c7cd218a00e86e069724d7ff9",
+          "worktree_sha256": "sha256:a834fa95cb6dca80024fecc7abb32bacf9eac97c7cd218a00e86e069724d7ff9",
+          "worktree_matches_commit": true,
+          "last_path_commit": "6fb797b425d0c6ed24c099e2423c5287c49ea8b6"
+        },
+        {
+          "path": "valset-standardizer-tools/file-sync/src/test/java/com/yss/datamiddle/valuation/filesync/infrastructure/target/JdbcSyncTargetDataPreviewAdapterTest.java",
+          "commit": "714fd4223d202b29c410d4d5533913e44874b3f1",
+          "head_blob": "85aa1b5e040d2d7ebe5155d3c8e0ec7f092aa8b0",
+          "head_sha256": "sha256:e65e8f7df076d0633b5d3e8e33a147ae3e89099d2dd79be9749af85342858e71",
+          "worktree_sha256": "sha256:e65e8f7df076d0633b5d3e8e33a147ae3e89099d2dd79be9749af85342858e71",
+          "worktree_matches_commit": true,
+          "last_path_commit": "6fb797b425d0c6ed24c099e2423c5287c49ea8b6"
+        },
+        {
+          "path": "valset-standardizer-tools/file-sync/src/test/java/com/yss/datamiddle/valuation/filesync/web/FileSyncTargetPreviewControllerTest.java",
+          "commit": "714fd4223d202b29c410d4d5533913e44874b3f1",
+          "head_blob": "15076f2f0d2803c70e6204c8905844214d07bcdd",
+          "head_sha256": "sha256:5b475dd454cb9794e081a24cc49e5619bd633d262287739cfbb8921d34476cb3",
+          "worktree_sha256": "sha256:5b475dd454cb9794e081a24cc49e5619bd633d262287739cfbb8921d34476cb3",
+          "worktree_matches_commit": true,
+          "last_path_commit": "6fb797b425d0c6ed24c099e2423c5287c49ea8b6"
+        }
+      ],
+      "requires_uncommitted_files": false
+    },
+    {
+      "root": "/Users/zhudaoming/yss-valuation-outsourced/valuation-outsourced-frontend",
+      "recommended_commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+      "files": [
+        {
+          "path": "openapi/openapi.json",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "849b25d9a350f6ad241d7564fd82d046cd75aebd",
+          "head_sha256": "sha256:742a60325481fb29034a7e615c256b35fff2dffc091c00fdaebe06c79b852212",
+          "worktree_sha256": "sha256:742a60325481fb29034a7e615c256b35fff2dffc091c00fdaebe06c79b852212",
+          "worktree_matches_commit": true,
+          "last_path_commit": "ee12630dc21240be482cddadd8db53bda987fcb7"
+        },
+        {
+          "path": "packages/src/api/generated/quality/index.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "6cd031c81ea87fb438ad3374b0cd97ba415a9d78",
+          "head_sha256": "sha256:6e6ae2ab03a8e11af48d5fc3acaccc488e360c7d162b74755d657449b0473508",
+          "worktree_sha256": "sha256:6e6ae2ab03a8e11af48d5fc3acaccc488e360c7d162b74755d657449b0473508",
+          "worktree_matches_commit": true,
+          "last_path_commit": "ee12630dc21240be482cddadd8db53bda987fcb7"
+        },
+        {
+          "path": "packages/src/api/generated/quality/schemas/fileSyncPreviewTargetDataParams.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "092048f653523b940914f640770b8cbddcc1c030",
+          "head_sha256": "sha256:b6df7b1f1c4e3850194d3bf4b044e37326f3d6bbc0602aa63ec7510610b90b55",
+          "worktree_sha256": "sha256:b6df7b1f1c4e3850194d3bf4b044e37326f3d6bbc0602aa63ec7510610b90b55",
+          "worktree_matches_commit": true,
+          "last_path_commit": "ee12630dc21240be482cddadd8db53bda987fcb7"
+        },
+        {
+          "path": "packages/src/api/generated/quality/schemas/fileSyncPreviewTargetDataScope.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "0656df16f5c7ae775085fe033eb8117d67bc888d",
+          "head_sha256": "sha256:65dfb9b398df5510e99a8beb8bae760814de5a2292ff6d8b6742d157737c2e53",
+          "worktree_sha256": "sha256:65dfb9b398df5510e99a8beb8bae760814de5a2292ff6d8b6742d157737c2e53",
+          "worktree_matches_commit": true,
+          "last_path_commit": "b2c8430b7f58181bcb604d192e1eb37da6c94d01"
+        },
+        {
+          "path": "packages/src/api/generated/quality/schemas/index.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "7581429e5d3c74d985fdddad79c98f0078b5af09",
+          "head_sha256": "sha256:5585aae0bce78d1a1141fce8876fc1e75e24243ff3dcdfb925330e2b02021641",
+          "worktree_sha256": "sha256:5585aae0bce78d1a1141fce8876fc1e75e24243ff3dcdfb925330e2b02021641",
+          "worktree_matches_commit": true,
+          "last_path_commit": "ee12630dc21240be482cddadd8db53bda987fcb7"
+        },
+        {
+          "path": "packages/src/api/generated/quality/schemas/singleResultSyncTargetDataPreviewDTO.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "67b68dcfbe16062e643ef2d765d177033a26b8dc",
+          "head_sha256": "sha256:5cd6a7468742876574db6ced836e37cb0164c55a4b7e2a76af991082fa81587e",
+          "worktree_sha256": "sha256:5cd6a7468742876574db6ced836e37cb0164c55a4b7e2a76af991082fa81587e",
+          "worktree_matches_commit": true,
+          "last_path_commit": "2c0b2501aee5e847c5b883d3310de0ff92f76377"
+        },
+        {
+          "path": "packages/src/api/generated/quality/schemas/singleResultSyncTargetDataPreviewDTOCode.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "3997d6542fc2aab09d5607b10d6ee0cafcc9f6c6",
+          "head_sha256": "sha256:3da6dd93edadf28c174294dcf994a7daf2bd4e5b426897fdce006a7b5831640d",
+          "worktree_sha256": "sha256:3da6dd93edadf28c174294dcf994a7daf2bd4e5b426897fdce006a7b5831640d",
+          "worktree_matches_commit": true,
+          "last_path_commit": "2c0b2501aee5e847c5b883d3310de0ff92f76377"
+        },
+        {
+          "path": "packages/src/api/generated/quality/schemas/syncTargetDataPreviewDTO.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "bddcce9cd6a4bcd147c1a7d3c4754aaa58ead893",
+          "head_sha256": "sha256:d8601db790b498b415bff4c5c8b9ee3c7bebc5819453e318acd5b939f5c13b5c",
+          "worktree_sha256": "sha256:d8601db790b498b415bff4c5c8b9ee3c7bebc5819453e318acd5b939f5c13b5c",
+          "worktree_matches_commit": true,
+          "last_path_commit": "b2c8430b7f58181bcb604d192e1eb37da6c94d01"
+        },
+        {
+          "path": "packages/src/api/generated/quality/schemas/syncTargetDataPreviewDTOCell.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "06664b9762ba6d5498de671cd9da393b0a5460c9",
+          "head_sha256": "sha256:9ce5ab9d90a7d9cfca1cf204d3ad12913807a5a76c4b465590dede16de419446",
+          "worktree_sha256": "sha256:9ce5ab9d90a7d9cfca1cf204d3ad12913807a5a76c4b465590dede16de419446",
+          "worktree_matches_commit": true,
+          "last_path_commit": "2c0b2501aee5e847c5b883d3310de0ff92f76377"
+        },
+        {
+          "path": "packages/src/api/generated/quality/schemas/syncTargetDataPreviewDTOColumn.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "b16251baea18798ad19a1de4a76d770949c971df",
+          "head_sha256": "sha256:c47b39f0f1dd116a2ea9e42d258fc99df0044738439591b00a41747c0de558fc",
+          "worktree_sha256": "sha256:c47b39f0f1dd116a2ea9e42d258fc99df0044738439591b00a41747c0de558fc",
+          "worktree_matches_commit": true,
+          "last_path_commit": "2c0b2501aee5e847c5b883d3310de0ff92f76377"
+        },
+        {
+          "path": "packages/src/api/generated/quality/schemas/syncTargetDataPreviewDTORow.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "a68e19bedda21b5e6e6934cf8e276e4c1f749cd9",
+          "head_sha256": "sha256:66081a3239b004fd9765d66c66479f615cfe518efd855c73baab062de77b5180",
+          "worktree_sha256": "sha256:66081a3239b004fd9765d66c66479f615cfe518efd855c73baab062de77b5180",
+          "worktree_matches_commit": true,
+          "last_path_commit": "2c0b2501aee5e847c5b883d3310de0ff92f76377"
+        },
+        {
+          "path": "packages/src/api/generated/quality/schemas/syncTargetDataPreviewDTOTarget.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "79ca2f889be61cb109d16dba5e9d2229774aff4c",
+          "head_sha256": "sha256:1c376d2ba098b646607f8a807cdf13d1822ee98d3caa9f05a0cf0d8a888b278b",
+          "worktree_sha256": "sha256:1c376d2ba098b646607f8a807cdf13d1822ee98d3caa9f05a0cf0d8a888b278b",
+          "worktree_matches_commit": true,
+          "last_path_commit": "2c0b2501aee5e847c5b883d3310de0ff92f76377"
+        },
+        {
+          "path": "packages/src/views/FileSyncWorkbench/components/TargetDataPreviewModal.less",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "bb2e385cd7cbc9b30f3ddbdf2f8ab40ff1495bbe",
+          "head_sha256": "sha256:eed4d649d9b6acf20d3b76370302bd058deb8e0411f445c270e2f67a30a47053",
+          "worktree_sha256": "sha256:eed4d649d9b6acf20d3b76370302bd058deb8e0411f445c270e2f67a30a47053",
+          "worktree_matches_commit": true,
+          "last_path_commit": "2c0b2501aee5e847c5b883d3310de0ff92f76377"
+        },
+        {
+          "path": "packages/src/views/FileSyncWorkbench/components/TargetDataPreviewModal.spec.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "e92d74c0c42526d392169d5308c1329966fd73d8",
+          "head_sha256": "sha256:8823c24e8e6bb6b9fe477f843b12ea8af42ea001160bc5be395b7c6516969352",
+          "worktree_sha256": "sha256:8823c24e8e6bb6b9fe477f843b12ea8af42ea001160bc5be395b7c6516969352",
+          "worktree_matches_commit": true,
+          "last_path_commit": "2c0b2501aee5e847c5b883d3310de0ff92f76377"
+        },
+        {
+          "path": "packages/src/views/FileSyncWorkbench/components/TargetDataPreviewModal.vue",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "97d3a4aa290ba1f6cbbe8339c1f71467a78af817",
+          "head_sha256": "sha256:09b764ea299273a6ba6a28721622da66f1defb0e1fe791e2e77451e96f2ca76a",
+          "worktree_sha256": "sha256:09b764ea299273a6ba6a28721622da66f1defb0e1fe791e2e77451e96f2ca76a",
+          "worktree_matches_commit": true,
+          "last_path_commit": "76f2d1627f797d5b12a99c48cf49125544933b18"
+        },
+        {
+          "path": "packages/src/views/FileSyncWorkbench/dataSource.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "e3346fdc766d8c1061fbf56610f6241f69ccd84b",
+          "head_sha256": "sha256:8d2015923fc5b02a58e4fd222078e2cc4c7ca48f4034d6e2a6911406c2f3dd40",
+          "worktree_sha256": "sha256:8d2015923fc5b02a58e4fd222078e2cc4c7ca48f4034d6e2a6911406c2f3dd40",
+          "worktree_matches_commit": true,
+          "last_path_commit": "99ffefe5225438383f324f25aad762b67e79fc78"
+        },
+        {
+          "path": "packages/src/views/FileSyncWorkbench/fileSyncWorkbenchApi.spec.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "1cd171bbdbb71fe9504ba5f0f9bd6947ae9a0b4d",
+          "head_sha256": "sha256:7db1c4b47f2373be11dd1d3ffa77ef306aabf57947a2ceabcbe71ba13e6e4caf",
+          "worktree_sha256": "sha256:7db1c4b47f2373be11dd1d3ffa77ef306aabf57947a2ceabcbe71ba13e6e4caf",
+          "worktree_matches_commit": true,
+          "last_path_commit": "6153a71fb0ea62721a2c4ab9b55f667e6c128ebf"
+        },
+        {
+          "path": "packages/src/views/FileSyncWorkbench/hooks/useFileSyncWorkbench.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "c1f34a3324a627cbf88a1931766cd6dae11ed3a2",
+          "head_sha256": "sha256:6be8f1b2c8232478a26f75eafaf9ef17d355aea2df310df60aea764c0a172c07",
+          "worktree_sha256": "sha256:6be8f1b2c8232478a26f75eafaf9ef17d355aea2df310df60aea764c0a172c07",
+          "worktree_matches_commit": true,
+          "last_path_commit": "ee12630dc21240be482cddadd8db53bda987fcb7"
+        },
+        {
+          "path": "packages/src/views/FileSyncWorkbench/index.vue",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "aec21416a4c4816d6ff80da6bcdb09b0c0b3924b",
+          "head_sha256": "sha256:961f412261d680075363fe418e46b292bcf8074bd74d8e827c74972f8d258b2a",
+          "worktree_sha256": "sha256:961f412261d680075363fe418e46b292bcf8074bd74d8e827c74972f8d258b2a",
+          "worktree_matches_commit": true,
+          "last_path_commit": "76f2d1627f797d5b12a99c48cf49125544933b18"
+        },
+        {
+          "path": "packages/src/views/FileSyncWorkbench/targetDataPreview.spec.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "a20f0eea58961c68c1ed714cd54e69dd23a43309",
+          "head_sha256": "sha256:d275558a83ee44f71e9da703074ad42eafd6284d298e09be1899cef789f08837",
+          "worktree_sha256": "sha256:d275558a83ee44f71e9da703074ad42eafd6284d298e09be1899cef789f08837",
+          "worktree_matches_commit": true,
+          "last_path_commit": "2c0b2501aee5e847c5b883d3310de0ff92f76377"
+        },
+        {
+          "path": "packages/src/views/FileSyncWorkbench/targetDataPreview.ts",
+          "commit": "76f2d1627f797d5b12a99c48cf49125544933b18",
+          "head_blob": "5033047b7203b8a2bbce7ad63ce7b2ee8200ed7c",
+          "head_sha256": "sha256:3b1181cfdff248e18043c09cc0887a2aafbac2a5bb3b756cdb8f7cb0bb839e0a",
+          "worktree_sha256": "sha256:3b1181cfdff248e18043c09cc0887a2aafbac2a5bb3b756cdb8f7cb0bb839e0a",
+          "worktree_matches_commit": true,
+          "last_path_commit": "2c0b2501aee5e847c5b883d3310de0ff92f76377"
+        }
+      ],
+      "requires_uncommitted_files": false
+    }
+  ],
+  "checked_files": 33,
+  "all_scoped_files_match_committed_bytes": true,
+  "approval_status": "not-established-for-selected-commits",
+  "runtime_validation": "not-run",
+  "verification_results": [
+    {
+      "command": "codegraph explore FileSyncTargetPreviewController SyncTargetDataPreviewAppService JdbcSyncTargetDataPreviewAdapter",
+      "exit_code": 0
+    },
+    {
+      "command": "git show/git rev-parse/git log and SHA-256 comparison for each manifest path",
+      "exit_code": 0
+    },
+    {
+      "command": "node -e JSON.parse(baseline.json)",
+      "exit_code": 0,
+      "kind": "syntax-only",
+      "executed_at": "2026-09-11T16:30:46.037394+00:00"
+    }
+  ],
+  "result": {
+    "result_schema": "workflow-execution-result-v1",
+    "work_unit": "work-unit.entry-triage",
+    "workflow_reference": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md",
+    "result": "needs-human",
+    "context_reconciliation": {
+      "status": "not-applicable",
+      "ref": ".template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/scope.md",
+      "reason": "template-source 只读源码基线查证，不进入外仓产品流转"
+    },
+    "skill": "yss-research",
+    "changed_files": [
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/baseline.md",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/baseline.json"
+    ],
+    "changed_artifacts": [
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/baseline.md",
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/baseline.json"
+    ],
+    "evidence_refs": [
+      "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/baseline.md"
+    ],
+    "deferred_seams": [],
+    "drift": [],
+    "violation": [],
+    "new_impacts": [],
+    "stale_candidates": [],
+    "blocking_signals": [
+      "missing_evidence"
+    ],
+    "next_route": null
+  },
+  "openapi_candidates": {
+    "backend_handwritten": {
+      "root": "/Users/zhudaoming/yss-valuation-outsourced",
+      "ref": "docs/api/specs/file-sync-target-data-preview.yaml",
+      "version": "3.0.3",
+      "scope_required": false,
+      "scope_default": "CURRENT",
+      "fits_backend_delivery_3_1_requirement": false
+    },
+    "frontend_generated": {
+      "root": "/Users/zhudaoming/yss-valuation-outsourced/valuation-outsourced-frontend",
+      "ref": "openapi/openapi.json",
+      "version": "3.1.0",
+      "scope_required": true,
+      "scope_default": null,
+      "scope_example": "CURRENT",
+      "preview_response_statuses": [
+        "200"
+      ],
+      "approved_equivalence_to_handwritten": "not-established"
+    },
+    "historical_design_ref": ".scratch/file-sync-target-data-preview/DESIGN.md",
+    "historical_design_readability": "missing-at-exact-root-path-and-not-found-in-HEAD-tree",
+    "decision_needed": "Select and legitimately approve current 3.1 contract bytes preserving intended behavior; do not relabel or assume generated snapshot equivalent"
+  }
+}

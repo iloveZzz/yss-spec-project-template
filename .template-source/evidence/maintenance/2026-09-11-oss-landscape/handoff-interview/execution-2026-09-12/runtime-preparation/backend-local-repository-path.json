@@ -1,0 +1,18 @@
+{
+  "name": "backend-local-repository-path",
+  "argv": [
+    "./mvnw",
+    "-B",
+    "-o",
+    "-q",
+    "-N",
+    "help:evaluate",
+    "-Dexpression=settings.localRepository",
+    "-DforceStdout"
+  ],
+  "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+  "exit_code": 0,
+  "elapsed_seconds": 0.88,
+  "log": "backend-local-repository-path.log",
+  "redaction": "URL userinfo and credential assignments"
+}

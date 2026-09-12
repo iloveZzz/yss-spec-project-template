@@ -1,0 +1,74 @@
+{
+  "files": [
+    {
+      "name": "yss-component-text-search-core-2.0.0-20250322.064722-4.jar",
+      "size": 35417,
+      "sha256": "6e36167a2205377d0662bfc3e0e6c0cba0c3f9a4c25b9f443af575f2ca77374b"
+    },
+    {
+      "name": "yss-component-text-search-core-2.0.0-20250322.064722-4.pom",
+      "size": 1329,
+      "sha256": "ba72eb779b66df48632c82251870f73ddac424fb236ede417b5843d4b8a41137",
+      "coordinates": {
+        "groupId": null,
+        "artifactId": "yss-component-text-search-core",
+        "version": null
+      },
+      "parent": {
+        "groupId": "com.yss.cloud",
+        "artifactId": "yss-component-text-search",
+        "version": "2.0.0-SNAPSHOT"
+      }
+    },
+    {
+      "name": "yss-component-text-search-core-2.0.0-SNAPSHOT-sources.jar",
+      "size": 25654,
+      "sha256": "857b7a2e939470f22bc416264b89575e44640a1219cd5219ebd2ecab9d096492"
+    },
+    {
+      "name": "yss-component-text-search-core-2.0.0-20260317.052440-5.jar",
+      "size": 35417,
+      "sha256": "cf9b033e80cde2927782c3aae98fe327c3cc7dd01b313ba5664fcc63b1be3b39"
+    },
+    {
+      "name": "yss-component-text-search-core-2.0.0-20260317.052440-5-sources.jar",
+      "size": 25654,
+      "sha256": "857b7a2e939470f22bc416264b89575e44640a1219cd5219ebd2ecab9d096492"
+    },
+    {
+      "name": "yss-component-text-search-core-2.0.0-SNAPSHOT.pom",
+      "size": 1329,
+      "sha256": "ba72eb779b66df48632c82251870f73ddac424fb236ede417b5843d4b8a41137",
+      "coordinates": {
+        "groupId": null,
+        "artifactId": "yss-component-text-search-core",
+        "version": null
+      },
+      "parent": {
+        "groupId": "com.yss.cloud",
+        "artifactId": "yss-component-text-search",
+        "version": "2.0.0-SNAPSHOT"
+      }
+    },
+    {
+      "name": "yss-component-text-search-core-2.0.0-SNAPSHOT.jar",
+      "size": 35417,
+      "sha256": "cf9b033e80cde2927782c3aae98fe327c3cc7dd01b313ba5664fcc63b1be3b39"
+    },
+    {
+      "name": "yss-component-text-search-core-2.0.0-20260317.052440-5.pom",
+      "size": 1329,
+      "sha256": "ba72eb779b66df48632c82251870f73ddac424fb236ede417b5843d4b8a41137",
+      "coordinates": {
+        "groupId": null,
+        "artifactId": "yss-component-text-search-core",
+        "version": null
+      },
+      "parent": {
+        "groupId": "com.yss.cloud",
+        "artifactId": "yss-component-text-search",
+        "version": "2.0.0-SNAPSHOT"
+      }
+    }
+  ]
+}

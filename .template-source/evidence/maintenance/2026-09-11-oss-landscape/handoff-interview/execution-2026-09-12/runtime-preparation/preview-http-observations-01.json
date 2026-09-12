@@ -1,0 +1,80 @@
+[
+  {
+    "name": "default",
+    "url": "http://127.0.0.1:61111/file-sync/tasks/PILOT_PREVIEW/target-data-preview",
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "Transfer-Encoding": "chunked",
+      "Date": "Fri, 11 Sep 2026 17:12:20 GMT",
+      "Connection": "close"
+    },
+    "body": "{\"success\":true,\"dataType\":null,\"code\":\"DM-A0001\",\"message\":\"数据返回正常\",\"tips\":\"信息返回正常\",\"data\":{\"taskCode\":\"PILOT_PREVIEW\",\"taskName\":\"synthetic preview\",\"configurationSource\":\"DRAFT\",\"modeType\":\"HISTORICAL\",\"target\":{\"dataSourceRef\":\"target\",\"catalog\":null,\"schema\":\"public\",\"table\":\"pilot_preview_rows\"},\"columns\":[{\"name\":\"id\",\"databaseType\":\"int8\",\"nullable\":false,\"comment\":null},{\"name\":\"label\",\"databaseType\":\"varchar\",\"nullable\":true,\"comment\":null},{\"name\":\"start_date\",\"databaseType\":\"timestamp\",\"nullable\":false,\"comment\":null},{\"name\":\"end_date\",\"databaseType\":\"timestamp\",\"nullable\":true,\"comment\":null}],\"rows\":[{\"cells\":[{\"kind\":\"NUMBER\",\"value\":\"1\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TEXT\",\"value\":\"current-example\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TIMESTAMP\",\"value\":\"2026-01-01 00:00:00.0\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"NULL\",\"value\":null,\"truncated\":false,\"byteLength\":null}]}],\"returnedRows\":1,\"rowLimit\":100,\"responseLimited\":false,\"stableOrder\":true,\"queriedAt\":\"2026-09-11T17:12:20.301Z\"}}",
+    "observed_at": "2026-09-11T17:12:20.330888+00:00"
+  },
+  {
+    "name": "current",
+    "url": "http://127.0.0.1:61111/file-sync/tasks/PILOT_PREVIEW/target-data-preview?scope=CURRENT",
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "Transfer-Encoding": "chunked",
+      "Date": "Fri, 11 Sep 2026 17:12:20 GMT",
+      "Connection": "close"
+    },
+    "body": "{\"success\":true,\"dataType\":null,\"code\":\"DM-A0001\",\"message\":\"数据返回正常\",\"tips\":\"信息返回正常\",\"data\":{\"taskCode\":\"PILOT_PREVIEW\",\"taskName\":\"synthetic preview\",\"configurationSource\":\"DRAFT\",\"modeType\":\"HISTORICAL\",\"target\":{\"dataSourceRef\":\"target\",\"catalog\":null,\"schema\":\"public\",\"table\":\"pilot_preview_rows\"},\"columns\":[{\"name\":\"id\",\"databaseType\":\"int8\",\"nullable\":false,\"comment\":null},{\"name\":\"label\",\"databaseType\":\"varchar\",\"nullable\":true,\"comment\":null},{\"name\":\"start_date\",\"databaseType\":\"timestamp\",\"nullable\":false,\"comment\":null},{\"name\":\"end_date\",\"databaseType\":\"timestamp\",\"nullable\":true,\"comment\":null}],\"rows\":[{\"cells\":[{\"kind\":\"NUMBER\",\"value\":\"1\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TEXT\",\"value\":\"current-example\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TIMESTAMP\",\"value\":\"2026-01-01 00:00:00.0\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"NULL\",\"value\":null,\"truncated\":false,\"byteLength\":null}]}],\"returnedRows\":1,\"rowLimit\":100,\"responseLimited\":false,\"stableOrder\":true,\"queriedAt\":\"2026-09-11T17:12:20.355Z\"}}",
+    "observed_at": "2026-09-11T17:12:20.357445+00:00"
+  },
+  {
+    "name": "all",
+    "url": "http://127.0.0.1:61111/file-sync/tasks/PILOT_PREVIEW/target-data-preview?scope=ALL",
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "Transfer-Encoding": "chunked",
+      "Date": "Fri, 11 Sep 2026 17:12:20 GMT",
+      "Connection": "close"
+    },
+    "body": "{\"success\":true,\"dataType\":null,\"code\":\"DM-A0001\",\"message\":\"数据返回正常\",\"tips\":\"信息返回正常\",\"data\":{\"taskCode\":\"PILOT_PREVIEW\",\"taskName\":\"synthetic preview\",\"configurationSource\":\"DRAFT\",\"modeType\":\"HISTORICAL\",\"target\":{\"dataSourceRef\":\"target\",\"catalog\":null,\"schema\":\"public\",\"table\":\"pilot_preview_rows\"},\"columns\":[{\"name\":\"id\",\"databaseType\":\"int8\",\"nullable\":false,\"comment\":null},{\"name\":\"label\",\"databaseType\":\"varchar\",\"nullable\":true,\"comment\":null},{\"name\":\"start_date\",\"databaseType\":\"timestamp\",\"nullable\":false,\"comment\":null},{\"name\":\"end_date\",\"databaseType\":\"timestamp\",\"nullable\":true,\"comment\":null}],\"rows\":[{\"cells\":[{\"kind\":\"NUMBER\",\"value\":\"1\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TEXT\",\"value\":\"current-example\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TIMESTAMP\",\"value\":\"2026-01-01 00:00:00.0\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"NULL\",\"value\":null,\"truncated\":false,\"byteLength\":null}]},{\"cells\":[{\"kind\":\"NUMBER\",\"value\":\"2\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TEXT\",\"value\":\"historical-example\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TIMESTAMP\",\"value\":\"2025-01-01 00:00:00.0\",\"truncated\":false,\"byteLength\":null},{\"kind\":\"TIMESTAMP\",\"value\":\"2025-12-31 00:00:00.0\",\"truncated\":false,\"byteLength\":null}]}],\"returnedRows\":2,\"rowLimit\":100,\"responseLimited\":false,\"stableOrder\":true,\"queriedAt\":\"2026-09-11T17:12:20.382Z\"}}",
+    "observed_at": "2026-09-11T17:12:20.383752+00:00"
+  },
+  {
+    "name": "invalid",
+    "url": "http://127.0.0.1:61111/file-sync/tasks/PILOT_PREVIEW/target-data-preview?scope=INVALID",
+    "status": 400,
+    "headers": {
+      "Content-Type": "application/json",
+      "Transfer-Encoding": "chunked",
+      "Date": "Fri, 11 Sep 2026 17:12:20 GMT",
+      "Connection": "close"
+    },
+    "body": "{\"errCode\":\"A0106\",\"tips\":\"请根据错误提示将参数修改正确后请重试。\",\"message\":\"参数绑定错误！\"}",
+    "observed_at": "2026-09-11T17:12:20.393098+00:00"
+  },
+  {
+    "name": "unknown",
+    "url": "http://127.0.0.1:61111/file-sync/tasks/PILOT_UNKNOWN/target-data-preview",
+    "status": 404,
+    "headers": {
+      "Content-Type": "application/json",
+      "Transfer-Encoding": "chunked",
+      "Date": "Fri, 11 Sep 2026 17:12:20 GMT",
+      "Connection": "close"
+    },
+    "body": "{\"success\":false,\"dataType\":null,\"code\":\"FILE_SYNC_TASK_NOT_FOUND\",\"message\":\"同步任务不存在或已不可用\",\"tips\":\"信息返回正常\",\"data\":null}",
+    "observed_at": "2026-09-11T17:12:20.400466+00:00"
+  },
+  {
+    "name": "empty",
+    "url": "http://127.0.0.1:61111/file-sync/tasks/PILOT_EMPTY/target-data-preview",
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json",
+      "Transfer-Encoding": "chunked",
+      "Date": "Fri, 11 Sep 2026 17:12:20 GMT",
+      "Connection": "close"
+    },
+    "body": "{\"success\":true,\"dataType\":null,\"code\":\"DM-A0001\",\"message\":\"数据返回正常\",\"tips\":\"信息返回正常\",\"data\":{\"taskCode\":\"PILOT_EMPTY\",\"taskName\":\"synthetic preview\",\"configurationSource\":\"DRAFT\",\"modeType\":\"HISTORICAL\",\"target\":{\"dataSourceRef\":\"target\",\"catalog\":null,\"schema\":\"public\",\"table\":\"pilot_preview_empty\"},\"columns\":[{\"name\":\"id\",\"databaseType\":\"int8\",\"nullable\":false,\"comment\":null},{\"name\":\"label\",\"databaseType\":\"varchar\",\"nullable\":true,\"comment\":null},{\"name\":\"start_date\",\"databaseType\":\"timestamp\",\"nullable\":false,\"comment\":null},{\"name\":\"end_date\",\"databaseType\":\"timestamp\",\"nullable\":true,\"comment\":null}],\"rows\":[],\"returnedRows\":0,\"rowLimit\":100,\"responseLimited\":false,\"stableOrder\":true,\"queriedAt\":\"2026-09-11T17:12:20.420Z\"}}",
+    "observed_at": "2026-09-11T17:12:20.421514+00:00"
+  }
+]

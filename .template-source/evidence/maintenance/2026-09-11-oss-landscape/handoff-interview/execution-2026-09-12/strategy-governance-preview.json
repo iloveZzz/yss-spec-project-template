@@ -1,0 +1,20 @@
+{
+  "role": "strategy",
+  "target": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance",
+  "command": [
+    "node",
+    "submodules/create-yss-strategic-design/bin/create-yss-harness-design.js",
+    "--target-dir",
+    "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance",
+    "--project-name",
+    "目标表预览交付试验",
+    "--business-domain",
+    "文件同步目标表数据预览",
+    "--dry-run"
+  ],
+  "executed_at": "2026-09-11T16:34:27.302575+00:00",
+  "exit_code": 0,
+  "directory_created": false,
+  "stdout_ref": "init-strategy-preview.stdout",
+  "stderr_ref": "init-strategy-preview.stderr"
+}

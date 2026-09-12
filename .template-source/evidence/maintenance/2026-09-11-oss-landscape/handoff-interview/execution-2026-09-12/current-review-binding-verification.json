@@ -1,0 +1,74 @@
+{
+  "verified_at": "2026-09-11T17:24:10.575339+00:00",
+  "independent_review": "Approved-design-only",
+  "checks": [
+    {
+      "ref": "docs/.scratch/target-preview-pilot/api/target-preview-pilot.yaml",
+      "expected": "sha256:8d696f69a62bee50545d418a458f848941e4e84647fea465b524779c8708259b",
+      "actual": "sha256:8d696f69a62bee50545d418a458f848941e4e84647fea465b524779c8708259b",
+      "matches": true
+    },
+    {
+      "ref": "docs/.scratch/target-preview-pilot/api/target-preview-pilot-validation.yaml",
+      "expected": "sha256:573cd8b71c8b0082c8984468467edaf6a50d127cd4ae7f97b76b32021c36891d",
+      "actual": "sha256:573cd8b71c8b0082c8984468467edaf6a50d127cd4ae7f97b76b32021c36891d",
+      "matches": true
+    },
+    {
+      "ref": "docs/.scratch/target-preview-pilot/api/http-schema-validation.json",
+      "expected": "sha256:5baac72c06547e606220dc72b15a5c7622841ef6468e75bb81d8423cec6d5588",
+      "actual": "sha256:5baac72c06547e606220dc72b15a5c7622841ef6468e75bb81d8423cec6d5588",
+      "matches": true
+    },
+    {
+      "ref": "docs/.scratch/target-preview-pilot/evidence/preview-http-observations-01.json",
+      "expected": "sha256:16277846cfbf4b8512e805edb1c696c3a8b42f2fec5b1863f6d3d3f18fd8c08e",
+      "actual": "sha256:16277846cfbf4b8512e805edb1c696c3a8b42f2fec5b1863f6d3d3f18fd8c08e",
+      "matches": true
+    },
+    {
+      "ref": "docs/.scratch/target-preview-pilot/architecture/target-preview-existing-behavior-calibration.md",
+      "expected": "sha256:fc7e8bc3e00a291b0e524d654824dc263c0a64d340a3c911d0de5225e329de41",
+      "actual": "sha256:fc7e8bc3e00a291b0e524d654824dc263c0a64d340a3c911d0de5225e329de41",
+      "matches": true
+    },
+    {
+      "ref": "docs/.scratch/target-preview-pilot/architecture/delivery-identity-design-input.md",
+      "expected": "sha256:283576c585bdfc8398dd6c42db5dca3f8ce4b08f088d214d0fd4c49a2d3eab94",
+      "actual": "sha256:283576c585bdfc8398dd6c42db5dca3f8ce4b08f088d214d0fd4c49a2d3eab94",
+      "matches": true
+    },
+    {
+      "ref": "docs/.scratch/target-preview-pilot/architecture/context-reconciliation.json",
+      "expected": "sha256:39b72d16f5eb42aac2cff831f395c0ae00ec28e267efdba807b21da26e06a354",
+      "actual": "sha256:39b72d16f5eb42aac2cff831f395c0ae00ec28e267efdba807b21da26e06a354",
+      "matches": true
+    },
+    {
+      "ref": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/runtime-preparation/backend-artifacts.json",
+      "expected": "sha256:cc7277040a8282d413db8961b30dff5f48e75f9f79d5765c02fd1e4a60911d99",
+      "actual": "sha256:cc7277040a8282d413db8961b30dff5f48e75f9f79d5765c02fd1e4a60911d99",
+      "matches": true
+    },
+    {
+      "ref": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/runtime-preparation/backend-exact-timestamp-package.json",
+      "expected": "sha256:ce1f808377f3f198d97021f6585aaeaad8c618e58c0ef534fc015d40b6a90d78",
+      "actual": "sha256:ce1f808377f3f198d97021f6585aaeaad8c618e58c0ef534fc015d40b6a90d78",
+      "matches": true
+    },
+    {
+      "ref": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/runtime-preparation/service-launch-08.json",
+      "expected": "sha256:3fdbccfe93dcf49461c46621f3ad9f45d0e27fb6a3edf76d4048320415dc0350",
+      "actual": "sha256:3fdbccfe93dcf49461c46621f3ad9f45d0e27fb6a3edf76d4048320415dc0350",
+      "matches": true
+    },
+    {
+      "ref": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/runtime-preparation/preview-http-observations-02.json",
+      "expected": "sha256:e66c1d3d2c3bc3ea83c5f631c84d74c9c158a952fcd9a9d38b5b65f2768846d3",
+      "actual": "sha256:e66c1d3d2c3bc3ea83c5f631c84d74c9c158a952fcd9a9d38b5b65f2768846d3",
+      "matches": true
+    }
+  ],
+  "freeze": "awaiting-real-user-response",
+  "requested_goal_completed": false
+}

@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "/Library/Java/JavaVirtualMachines/amazon-corretto-8.jdk/Contents/Home/bin/jrunscript",
+    "-J-DsocksProxyHost=",
+    "-J-Djava.net.useSystemProxies=false",
+    "-J-Djava.net.preferIPv4Stack=true",
+    "-cp",
+    "/Users/zhudaoming/.m2/repository/org/postgresql/postgresql/42.7.8/postgresql-42.7.8.jar",
+    "-f",
+    "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/runtime-preparation/probe-data/verify-jdbc.js"
+  ],
+  "started_at": "2026-09-11T17:40:38.269870+00:00",
+  "finished_at": "2026-09-11T17:40:38.957100+00:00",
+  "exit_code": 0,
+  "stdout": "18 JDBC queries match frozen two-case baseline; read-only/repeatable-read/UTC confirmed\n",
+  "stderr": "",
+  "env_refs_only": {
+    "YSS_PROBE_DATA_ROOT": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-11-oss-landscape/handoff-interview/execution-2026-09-12/runtime-preparation/probe-data",
+    "YSS_PROBE_CONNECTION_FILE": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/runtime-private/probe-connection.json"
+  }
+}

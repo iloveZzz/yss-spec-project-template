@@ -1,0 +1,229 @@
+团队规模（可留空）:
+[strategic-handoff-package]
+$ node --check scripts/lib/strategic-handoff.mjs (38ms)
+$ scripts/verify-strategic-handoff-package-scenarios (35112ms)
+✔ 目录和 ZIP 可脱离源仓验包；导入幂等且不修改词汇表 (3117.552584ms)
+✔ v4 按消费者能力导入 Import Receipt v2 并生成路由草案 (971.97275ms)
+✔ v4 路由必须与影响矩阵一致；未知版本 fail closed (231.098417ms)
+✔ v4 无实现影响时三条路由均 N/A，且不生成消费者空合同 (963.393041ms)
+✔ 消费者反馈按源摘要裁决，amend 与 blocking defer 保持阻断 (3360.603041ms)
+✔ 规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断导出 (1310.810834ms)
+✔ 篡改 payload、重新封摘要后的虚构规则索引、额外文件均拒绝 (974.318584ms)
+✔ ZIP 路径穿越和重复条目拒绝 (137.364375ms)
+✔ 版本差异绑定前版，重复版本不允许；修改规则产生更新集合 (2183.008459ms)
+✔ 受控延期只阻断依赖切片；未知依赖扩大阻断；目标未对账禁止消费 (9644.202958ms)
+✔ 源规则必须稳定可追溯，关键场景不能遗漏结果 (11.418709ms)
+✔ 统一 CLI 在源目录消失后通过 ZIP 验包 (1053.985792ms)
+✔ 当前决定与交接复用可离线验证；范围缺失、回复丢失和未知能力拒绝 (10828.876708ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 34796.809625
+
+[skills]
+$ scripts/sync-skills --check (374ms)
+skill projections are synchronized
+$ scripts/update-skill-lock --check (53ms)
+skills-lock.json matches distributed skills
+$ scripts/verify-skill-registry (69ms)
+技能路由注册表校验通过（active，26 个共享，1 个平台）
+$ scripts/verify-skill-governance (76ms)
+技能规范冲突扫描通过（1 个兼容 alias）
+
+[strategic-design]
+$ scripts/verify-strategic-design-handoff-scenarios (1505ms)
+Strategic Design Handoff v3 scenarios passed
+$ scripts/verify-entry-alignment (68ms)
+入口规则与战略设计 profile 对齐校验通过: harness.business-ddd-strategy-handoff → work-unit.strategic-design-handoff
+$ scripts/verify-lifecycle-scenarios (340ms)
+六类生命周期压力场景验证通过
+$ node .agents/skills/yss-stage-decision/tests/run-scenarios.mjs (1605ms)
+业务边界与规则设计 v2/v3 场景验证通过
+$ node .agents/skills/yss-research/tests/run-scenarios.mjs (255ms)
+YSS research scenarios passed (8)
+$ node .agents/skills/yss-prototype-stage/tests/run-scenarios.mjs (68ms)
+YSS prototype profile contract scenarios passed
+$ node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate docs/design/templates/visual-baseline-template.yaml --allow-template (46ms)
+Visual Baseline validate passed
+$ node --test .agents/skills/yss-design-system/scripts/validate-frontmatter.test.mjs (74ms)
+✔ accepts the required skill frontmatter (0.427625ms)
+✔ rejects missing and unsupported frontmatter fields (0.434625ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 43.064417
+$ node --test .agents/skills/yss-antd-design/scripts/validate-frontmatter.test.mjs (71ms)
+✔ accepts the required skill frontmatter (0.453541ms)
+✔ rejects missing exclusion branches in description (0.230542ms)
+✔ rejects a skill that does not forbid official setup (0.067209ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 41.535125
+$ node .agents/skills/yss-antdv-next-design/tests/run-scenarios.mjs (78ms)
+yss-antdv-next-design scenarios passed
+
+[collaboration]
+$ scripts/verify-digital-human-roles (62ms)
+数字人角色注册表校验通过（3 个角色，5 个协作组，3 个运行时）
+$ scripts/verify-digital-human-roles-scenarios (185ms)
+数字人角色压力场景验证通过
+$ scripts/verify-approval-record --history docs/templates/approval-record-template.yaml (136ms)
+历史结构校验通过；不构成当前放行
+
+[lifecycle]
+$ scripts/verify-context-contract --root . --json (51ms)
+{
+  "result": "completed",
+  "context_ref": "CONTEXT.md",
+  "context_schema_version": 1,
+  "document_digest": "sha256:56d26e99ab72ca8e9950275b92a15cb421411e28f3db7b21128e440c5b55ef2b",
+  "referenced_terms_digest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "term_refs": [],
+  "context_snapshot": {
+    "context_ref": "CONTEXT.md",
+    "context_schema_version": 1,
+    "document_digest": "sha256:56d26e99ab72ca8e9950275b92a15cb421411e28f3db7b21128e440c5b55ef2b",
+    "referenced_terms_digest": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "term_refs": []
+  },
+  "process_term_count": 81,
+  "business_term_count": 0
+}
+$ scripts/verify-context-contract-scenarios (321ms)
+CONTEXT Contract 场景验证通过
+$ node scripts/verify-business-language-scenarios (60ms)
+业务角色通俗语言场景验证通过
+$ scripts/verify-context-reconciliation-scenarios (799ms)
+Context reconciliation scenarios passed
+$ scripts/verify-grill-with-docs-context-scenarios (1450ms)
+grill-with-docs Context Contract scenarios passed
+$ scripts/verify-lifecycle-registry (277ms)
+生命周期注册表验证通过（active）
+$ scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml (127ms)
+生命周期 checkpoint 验证通过
+$ scripts/verify-lifecycle-transition-scenarios (63ms)
+生命周期转换压力场景验证通过
+$ node scripts/verify-plan-spec-entry-scenarios (1333ms)
+Plan → Spec 无状态绕过与默认加载检查通过
+
+[profile]
+$ node scripts/verify-strategic-checkpoint-scenarios (1151ms)
+战略 checkpoint 场景通过: 14
+$ node scripts/verify-strategic-user-decision-scenarios (1917ms)
+战略用户决定场景通过：当前批准、历史读取、原始回复反例与交接复用
+$ scripts/verify-harness-profile (70ms)
+Harness profile 校验通过: harness.business-ddd-strategy-handoff → backend-technical-design, frontend-engineering-design, delivery-coordination
+$ scripts/verify-harness-profile-scenarios (110ms)
+Harness profile 压力场景验证通过
+
+[workspace-fixtures]
+$ scripts/verify-subagent-task-package-scenarios (2424ms)
+数字人全生命周期任务包压力场景验证通过
+$ scripts/verify-digital-human-task-package-scenarios (2458ms)
+数字人全生命周期任务包压力场景验证通过
+$ scripts/verify-instance-distribution (52ms)
+实例分发清单校验通过: harness.business-ddd-strategy-handoff / create-yss-harness-design（project-instance，禁止路径 15）
+
+[maintenance]
+$ scripts/verify-maintenance-intensity-scenarios (42ms)
+模板维护 L1/L2/L3 强度场景验证通过
+
+[candidate-integrity]
+$ node scripts/verify-template-verification-scenarios (68ms)
+战略设计模板三级核验路由场景验证通过
+模板核验通过（release）
+模板核验 profile: release -> release
+[开始] node --check scripts/lib/strategic-handoff.mjs
+[开始] scripts/sync-skills --check
+[开始] scripts/verify-strategic-design-handoff-scenarios
+[开始] scripts/verify-digital-human-roles
+[完成] node --check scripts/lib/strategic-handoff.mjs (38ms, exit=0)
+[开始] scripts/verify-strategic-handoff-package-scenarios
+[完成] scripts/verify-digital-human-roles (62ms, exit=0)
+[开始] scripts/verify-digital-human-roles-scenarios
+[完成] scripts/verify-digital-human-roles-scenarios (185ms, exit=0)
+[开始] scripts/verify-approval-record --history docs/templates/approval-record-template.yaml
+[完成] scripts/sync-skills --check (374ms, exit=0)
+[开始] scripts/update-skill-lock --check
+[完成] scripts/verify-approval-record --history docs/templates/approval-record-template.yaml (136ms, exit=0)
+[开始] scripts/verify-context-contract --root . --json
+[完成] scripts/update-skill-lock --check (53ms, exit=0)
+[开始] scripts/verify-skill-registry
+[完成] scripts/verify-context-contract --root . --json (51ms, exit=0)
+[开始] scripts/verify-context-contract-scenarios
+[完成] scripts/verify-skill-registry (69ms, exit=0)
+[开始] scripts/verify-skill-governance
+[完成] scripts/verify-skill-governance (76ms, exit=0)
+[开始] node scripts/verify-strategic-checkpoint-scenarios
+[完成] scripts/verify-context-contract-scenarios (321ms, exit=0)
+[开始] node scripts/verify-business-language-scenarios
+[完成] node scripts/verify-business-language-scenarios (60ms, exit=0)
+[开始] scripts/verify-context-reconciliation-scenarios
+[完成] scripts/verify-strategic-design-handoff-scenarios (1505ms, exit=0)
+[开始] scripts/verify-entry-alignment
+[完成] scripts/verify-entry-alignment (68ms, exit=0)
+[开始] scripts/verify-lifecycle-scenarios
+[完成] scripts/verify-context-reconciliation-scenarios (799ms, exit=0)
+[开始] scripts/verify-grill-with-docs-context-scenarios
+[完成] node scripts/verify-strategic-checkpoint-scenarios (1151ms, exit=0)
+[开始] node scripts/verify-strategic-user-decision-scenarios
+[完成] scripts/verify-lifecycle-scenarios (340ms, exit=0)
+[开始] node .agents/skills/yss-stage-decision/tests/run-scenarios.mjs
+[完成] scripts/verify-grill-with-docs-context-scenarios (1450ms, exit=0)
+[开始] scripts/verify-lifecycle-registry
+[完成] scripts/verify-lifecycle-registry (277ms, exit=0)
+[开始] scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml
+[完成] scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml (127ms, exit=0)
+[开始] scripts/verify-lifecycle-transition-scenarios
+[完成] node .agents/skills/yss-stage-decision/tests/run-scenarios.mjs (1605ms, exit=0)
+[开始] node .agents/skills/yss-research/tests/run-scenarios.mjs
+[完成] scripts/verify-lifecycle-transition-scenarios (63ms, exit=0)
+[开始] node scripts/verify-plan-spec-entry-scenarios
+[完成] node scripts/verify-strategic-user-decision-scenarios (1917ms, exit=0)
+[开始] scripts/verify-harness-profile
+[完成] scripts/verify-harness-profile (70ms, exit=0)
+[开始] scripts/verify-harness-profile-scenarios
+[完成] node .agents/skills/yss-research/tests/run-scenarios.mjs (255ms, exit=0)
+[开始] node .agents/skills/yss-prototype-stage/tests/run-scenarios.mjs
+[完成] scripts/verify-harness-profile-scenarios (110ms, exit=0)
+[开始] scripts/verify-subagent-task-package-scenarios
+[完成] node .agents/skills/yss-prototype-stage/tests/run-scenarios.mjs (68ms, exit=0)
+[开始] node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate docs/design/templates/visual-baseline-template.yaml --allow-template
+[完成] node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate docs/design/templates/visual-baseline-template.yaml --allow-template (46ms, exit=0)
+[开始] node --test .agents/skills/yss-design-system/scripts/validate-frontmatter.test.mjs
+[完成] node --test .agents/skills/yss-design-system/scripts/validate-frontmatter.test.mjs (74ms, exit=0)
+[开始] node --test .agents/skills/yss-antd-design/scripts/validate-frontmatter.test.mjs
+[完成] node --test .agents/skills/yss-antd-design/scripts/validate-frontmatter.test.mjs (71ms, exit=0)
+[开始] node .agents/skills/yss-antdv-next-design/tests/run-scenarios.mjs
+[完成] node .agents/skills/yss-antdv-next-design/tests/run-scenarios.mjs (78ms, exit=0)
+[开始] scripts/verify-maintenance-intensity-scenarios
+[完成] scripts/verify-maintenance-intensity-scenarios (42ms, exit=0)
+[开始] node scripts/verify-template-verification-scenarios
+[完成] node scripts/verify-template-verification-scenarios (68ms, exit=0)
+[完成] node scripts/verify-plan-spec-entry-scenarios (1333ms, exit=0)
+[完成] scripts/verify-subagent-task-package-scenarios (2424ms, exit=0)
+[开始] scripts/verify-digital-human-task-package-scenarios
+[完成] scripts/verify-digital-human-task-package-scenarios (2458ms, exit=0)
+[开始] scripts/verify-instance-distribution
+[完成] scripts/verify-instance-distribution (52ms, exit=0)
+[完成] scripts/verify-strategic-handoff-package-scenarios (35112ms, exit=0)
+初始化完成
+输出目录：/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance
+下一步建议：
+1. cd /private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/strategy-governance
+2. 读取 AGENTS.md 与 CONTEXT.md
+3. 用 yss-strategic-design 做入口分诊；本地终点是业务方案交接
+4. 数字人运行时绑定仍按 docs/templates/digital-human-runtime-profile-template.md 手工 duplicate

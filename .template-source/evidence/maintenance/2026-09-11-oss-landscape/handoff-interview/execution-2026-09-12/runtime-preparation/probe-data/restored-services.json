@@ -1,0 +1,28 @@
+{
+  "observed_at": "2026-09-11T17:36:19.031766+00:00",
+  "containers": [
+    {
+      "id": "515aa017488a44ba856647c1db604035b7e86efb2bf2faa807fc49a6bcf92a2f",
+      "image": "sha256:65e8e7578613732cb07166ea4f1f0bd2096679f5217b5ac23de619077ed684e7",
+      "owner": "target-preview-20260912-0kxzmm",
+      "state": "exited",
+      "name": "yss-preview-0kxzmm-pg",
+      "host": "127.0.0.1",
+      "host_port": 57977,
+      "container_port": 5432
+    },
+    {
+      "id": "f37b58db2599d418b7ed01482a4c7f43c31fa9c2e14c12d629fb841cf939cdf5",
+      "image": "sha256:2c96e8092504e99e7601bcb6f4954b4cfed77d5125c88061a49c252fb33cf6f7",
+      "owner": "target-preview-20260912-0kxzmm",
+      "state": "exited",
+      "name": "yss-preview-0kxzmm-redis",
+      "host": "127.0.0.1",
+      "host_port": 57978,
+      "container_port": 6379
+    }
+  ],
+  "connection_config_ref": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/runtime-private/probe-connection.json",
+  "java_started": false,
+  "vite_started": false
+}

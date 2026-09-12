@@ -1,0 +1,100 @@
+[
+  {
+    "role": "backend",
+    "command": [
+      "node",
+      "submodules/create-yss-harness-backend/bin/create-yss-harness-backend.js",
+      "attach",
+      "--target-dir",
+      "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+      "--project-name",
+      "目标表预览交付试验",
+      "--business-domain",
+      "文件同步目标表数据预览",
+      "--issue-tracker",
+      "local-markdown",
+      "--no-example-docs",
+      "--json"
+    ],
+    "executed_at": "2026-09-11T16:32:00.845621+00:00",
+    "exit_code": 1,
+    "dry_run": true,
+    "worktree_unchanged": true,
+    "stdout_ref": "attach-backend-preview.stdout",
+    "stderr_ref": "attach-backend-preview.stderr"
+  },
+  {
+    "role": "frontend",
+    "command": [
+      "node",
+      "submodules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+      "attach",
+      "--target-dir",
+      "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend",
+      "--project-name",
+      "目标表预览交付试验",
+      "--business-domain",
+      "文件同步目标表数据预览",
+      "--issue-tracker",
+      "local-markdown",
+      "--no-example-docs",
+      "--json"
+    ],
+    "executed_at": "2026-09-11T16:32:01.394083+00:00",
+    "exit_code": 1,
+    "dry_run": true,
+    "worktree_unchanged": true,
+    "stdout_ref": "attach-frontend-preview.stdout",
+    "stderr_ref": "attach-frontend-preview.stderr"
+  },
+  {
+    "role": "backend",
+    "command": [
+      "node",
+      "submodules/create-yss-harness-backend/bin/create-yss-harness-backend.js",
+      "attach",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/backend",
+      "--project-name",
+      "目标表预览交付试验",
+      "--business-domain",
+      "文件同步目标表数据预览",
+      "--issue-tracker",
+      "local-markdown",
+      "--no-example-docs",
+      "--json"
+    ],
+    "executed_at": "2026-09-11T16:32:37.131348+00:00",
+    "exit_code": 1,
+    "dry_run": true,
+    "path_correction": "resolved macOS /var symlink to physical path",
+    "worktree_unchanged": true,
+    "stdout_ref": "attach-backend-physical-preview.stdout",
+    "stderr_ref": "attach-backend-physical-preview.stderr"
+  },
+  {
+    "role": "frontend",
+    "command": [
+      "node",
+      "submodules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+      "attach",
+      "--target-dir",
+      "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-preview-pilot-20260912-0k_x_zmm/frontend",
+      "--project-name",
+      "目标表预览交付试验",
+      "--business-domain",
+      "文件同步目标表数据预览",
+      "--issue-tracker",
+      "local-markdown",
+      "--no-example-docs",
+      "--json"
+    ],
+    "executed_at": "2026-09-11T16:32:37.983072+00:00",
+    "exit_code": 1,
+    "dry_run": true,
+    "path_correction": "resolved macOS /var symlink to physical path",
+    "worktree_unchanged": true,
+    "stdout_ref": "attach-frontend-physical-preview.stdout",
+    "stderr_ref": "attach-frontend-physical-preview.stderr"
+  }
+]
