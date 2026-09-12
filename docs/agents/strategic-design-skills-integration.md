@@ -47,4 +47,4 @@
 
 模板生命周期的关键决定统一消费 `docs/agents/digital-human-roles.yaml.user_decision_policy`。本地原型确认与阶段决策批准追加真实回复、当前资产和范围校验；数字人审查保留。记录协议见 [用户决定协议](../../.agents/skills/yss-product-lifecycle/references/user-decisions.md)。此适配只更新 effective hash，不改写已锁定的上游 revision/hash，也不发布外部技能源。
 
-本轮职责修复处于未提交工作树集成：manifest 的 `source_revision` 保留已提交基线，`source_state: working-tree` 与当前 tree hash 明确表示尚未固定交付 revision。本体继续持有完整生命周期状态，战略侧通过 profile 绑定战略主控。固定源提交、gitlink 和 CLI 快照留到后续获授权的分发批次；当前验证不构成可发布证据。
+本轮既有 UI 交接入口已固定到战略设计源仓提交 `bde081f0086e807391340a2d58053306a743ef5a`；manifest 的 `source_revision`、`upstream_hash` 与 gitlink 使用同一已提交来源。本体继续持有完整生命周期状态，战略侧通过 profile 绑定战略主控；后续 CLI 快照必须从该固定提交重建。GitHub 源码交付不等于 npm 发布或产品资产批准。

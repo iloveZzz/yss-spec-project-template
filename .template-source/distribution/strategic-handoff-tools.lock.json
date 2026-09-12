@@ -2,8 +2,8 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "32fa044c0123f73b8d8091590d1f060440ac9ccb",
-  "source_state": "working-tree",
+  "source_revision": "73dacb80b11bc8e93dbe12541a5df95f2f651985",
+  "source_state": "committed",
   "transformation_set": [
     "identity"
   ],
@@ -23,6 +23,7 @@
     "docs/process/schemas/frontend-delivery-acceptance.schema.json": "sha256:5f7a7f66c84c56937c37d248dac0e82ccc1370d767bc4ec0dfb01fae5649fbb4",
     "docs/process/schemas/frontend-strategic-preflight-v2.schema.json": "sha256:fe14a116af9d1b27555e32f2550c7db22a96139dd1f86bca5e0d53b86eec788d",
     "docs/process/schemas/frontend-strategic-preflight.schema.json": "sha256:890cfa882c5638d73544805ee87a396719716a7a0f0afb0268819c8b457533e5",
+    "docs/process/schemas/lifecycle-checkpoint.schema.json": "sha256:f5df1728017fec2353f1547b07f536a746144b7fe07a0df1f7c03644efba008b",
     "docs/process/schemas/strategic-consumer-feedback.schema.json": "sha256:e9ff177b80bd0e13fb6584d51c10b4ac7bebdc5adfc700869e7e41d342638388",
     "docs/process/schemas/strategic-design-handoff-v3.schema.json": "sha256:37b4ce4a6f1a09de01e3abb476af4b7c62cc0f8e19bc936990f07c5e9b464b74",
     "docs/process/schemas/strategic-design-handoff-v4.schema.json": "sha256:de44e715fda8a06c0edfef9894acff33147987314ad42d841dd71ab999bf7bda",
@@ -106,6 +107,7 @@
     "docs/process/schemas/frontend-delivery-acceptance.schema.json": "sha256:5f7a7f66c84c56937c37d248dac0e82ccc1370d767bc4ec0dfb01fae5649fbb4",
     "docs/process/schemas/frontend-strategic-preflight-v2.schema.json": "sha256:fe14a116af9d1b27555e32f2550c7db22a96139dd1f86bca5e0d53b86eec788d",
     "docs/process/schemas/frontend-strategic-preflight.schema.json": "sha256:890cfa882c5638d73544805ee87a396719716a7a0f0afb0268819c8b457533e5",
+    "docs/process/schemas/lifecycle-checkpoint.schema.json": "sha256:f5df1728017fec2353f1547b07f536a746144b7fe07a0df1f7c03644efba008b",
     "docs/process/schemas/strategic-consumer-feedback.schema.json": "sha256:e9ff177b80bd0e13fb6584d51c10b4ac7bebdc5adfc700869e7e41d342638388",
     "docs/process/schemas/strategic-design-handoff-v3.schema.json": "sha256:37b4ce4a6f1a09de01e3abb476af4b7c62cc0f8e19bc936990f07c5e9b464b74",
     "docs/process/schemas/strategic-design-handoff-v4.schema.json": "sha256:de44e715fda8a06c0edfef9894acff33147987314ad42d841dd71ab999bf7bda",
