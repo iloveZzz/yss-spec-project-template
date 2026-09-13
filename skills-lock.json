@@ -1132,7 +1132,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-tactical-design/SKILL.md",
-        "effectiveHash": "2ffb26709fd68184e0fe8f724318dc748fc479dcf52af236fe63f49a17540bfa",
+        "effectiveHash": "4229d14cd6a5d354db8e88752f4ce050482421720c95b97506a00df42bc371e3",
         "targets": [
           ".agents/skills",
           ".codex/skills",

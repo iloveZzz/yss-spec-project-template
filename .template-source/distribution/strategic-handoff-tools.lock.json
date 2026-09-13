@@ -2,8 +2,8 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "81a55a3e5080a969cb461f3e054dc78f6fd026f2",
-  "source_state": "committed",
+  "source_revision": "848c66f829db67cd71ab2d0f043ee9108356fa73",
+  "source_state": "working-tree",
   "transformation_set": [
     "identity"
   ],
@@ -87,7 +87,7 @@
     "scripts/verify-existing-ui-baseline-scenarios": "sha256:673cf917da431237f1d713a861da824dd0f23e67e62c9833cb9c7fde25691a84",
     "scripts/verify-frontend-delivery": "sha256:b592aaa6bba168f4ac39f9caa89a01590357f574cc9748bcf7148b622bf3837f",
     "scripts/verify-frontend-strategic-preflight": "sha256:7543e9dbe7f710bf28d4187b97f234a76d239cb3eb07d4f2921e9442c76a8dd2",
-    "scripts/verify-strategic-context-import": "sha256:0d0459514d5d2981753cf0ecbff45634fb276598c760b77c4982f9fe3fa6e1f1",
+    "scripts/verify-strategic-context-import": "sha256:06af5ae4943666d1521160b79d9eb5de3048fd02b6f2db336f614970e5c92788",
     "scripts/verify-strategic-context-import-scenarios": "sha256:671a1c19d324361f3ca60b754c97eca6bca83c25077c83d4cfbc94ee174f20fa",
     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
     "scripts/verify-strategic-handoff-package-scenarios": "sha256:9d702f3d04fda88103e2f6e2ff45ff02e54fc006f2981bd33b554867a8336d09",
@@ -174,7 +174,7 @@
     "scripts/verify-existing-ui-baseline-scenarios": "sha256:673cf917da431237f1d713a861da824dd0f23e67e62c9833cb9c7fde25691a84",
     "scripts/verify-frontend-delivery": "sha256:b592aaa6bba168f4ac39f9caa89a01590357f574cc9748bcf7148b622bf3837f",
     "scripts/verify-frontend-strategic-preflight": "sha256:7543e9dbe7f710bf28d4187b97f234a76d239cb3eb07d4f2921e9442c76a8dd2",
-    "scripts/verify-strategic-context-import": "sha256:0d0459514d5d2981753cf0ecbff45634fb276598c760b77c4982f9fe3fa6e1f1",
+    "scripts/verify-strategic-context-import": "sha256:06af5ae4943666d1521160b79d9eb5de3048fd02b6f2db336f614970e5c92788",
     "scripts/verify-strategic-context-import-scenarios": "sha256:671a1c19d324361f3ca60b754c97eca6bca83c25077c83d4cfbc94ee174f20fa",
     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
     "scripts/verify-strategic-handoff-package-scenarios": "sha256:9d702f3d04fda88103e2f6e2ff45ff02e54fc006f2981bd33b554867a8336d09",
