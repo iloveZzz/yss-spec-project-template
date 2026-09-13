@@ -6,14 +6,14 @@ export async function verifyConsumerFeedback({root=process.cwd(),feedbackRef}={}
   project(root);const file=safe(root,feedbackRef),feedback=read(file);
   schema(feedback,'docs/process/schemas/strategic-consumer-feedback.schema.json');
   const receipt=read(safe(root,feedback.import_receipt_ref));
-  ensure(receipt.schema_version===2,'Consumer Feedback v1 只接受 Handoff v4 的 Import Receipt v2');
+  ensure([2,3].includes(receipt.schema_version),'Consumer Feedback v1 只接受 route-aware Import Receipt v2/v3');
   const base=`docs/handoffs/${receipt.bundle_id}/${receipt.version}`;
   ensure(feedback.import_receipt_ref===`${base}/import-receipt.json`&&receipt.package_ref===`${base}/package`,'Consumer Feedback 导入收据路径无效');
   ensure(feedback.bundle.id===receipt.bundle_id&&feedback.bundle.version===receipt.version&&feedback.bundle.digest===receipt.bundle_digest,'Consumer Feedback 绑定的 bundle 身份或摘要不一致');
   const route=receipt.routes.find(item=>item.route_id===feedback.route_id);ensure(route&&route.activation!=='not-applicable','Consumer Feedback route_id 未被当前消费者激活');
   for(const ref of feedback.evidence_refs)ensure(readFileSync(safe(root,ref)).length>0,`Consumer Feedback evidence 为空: ${ref}`);
   return openBundle(safe(root,receipt.package_ref),bundle=>{
-    ensure(bundle.handoff.schema_version===4&&bundle.manifest.bundle_digest===receipt.bundle_digest,'Consumer Feedback 必须绑定当前 Handoff v4 包');
+    ensure([4,5].includes(bundle.handoff.schema_version)&&bundle.manifest.bundle_digest===receipt.bundle_digest,'Consumer Feedback 必须绑定当前 Handoff v4/v5 包');
     const source=[...bundle.indexes.rules.map(item=>({id:item.rule_id,digest:item.source_digest})),...bundle.indexes.scenarios.map(item=>({id:item.scenario_id,digest:item.source_digest}))].find(item=>item.id===feedback.source.id);
     ensure(source&&source.digest===feedback.source.digest,'Consumer Feedback source ID 或摘要不是当前包内容');
     return {result:'feedback-verified',feedback_ref:feedbackRef,feedback_digest:hash(readFileSync(file)),severity:feedback.severity,route_id:feedback.route_id,bundle_digest:receipt.bundle_digest};

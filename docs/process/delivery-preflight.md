@@ -55,7 +55,7 @@
 工程接入技能在既有 Java/Maven 跨仓接入前运行 `prepare`，补证后重跑。两个导出 CLI 已在外层、任何导出写入之前复验 `export`。v5 的既有 UI 战略导出与包含既有架构身份 v2 的后端导出必须提供 `--preflight-input`；旧路径可选，原批准规则仍独立有效。以下命令中的清单必须绑定对应源文件及其当前摘要：
 
 ```sh
-scripts/strategic-handoff export --source-root /governance/source --handoff docs/handoff.yaml --output /delivery/strategy-v1 --preflight-input /inputs/strategic-preflight.json
+scripts/strategic-handoff finalize --source-root /governance/source --handoff docs/handoff.yaml --preflight-input /inputs/strategic-preflight.json
 scripts/backend-delivery export --source-root /governance/backend --delivery docs/backend-delivery.yaml --output /delivery/backend-v1 --preflight-input /inputs/backend-preflight.json
 ```
 

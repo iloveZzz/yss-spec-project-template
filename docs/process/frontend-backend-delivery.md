@@ -6,7 +6,7 @@
 
 战略方维护业务规则、Spec、页面流程和视觉基线；后端维护 API 及后端交付；前端维护工程设计、页面和验收证据；统一管理方维护基线引用、跨仓切片与业务验收汇总。
 
-前端消费需求可在上游设计时提前反馈。Handoff v4/v5 导入后的 Frontend Strategic Preflight 可在后端交付前完成战略输入、Context、相应 UI 基线和源规则追踪核验，并允许起草前端工程设计与实现计划；它固定返回 `ready_for_agent: false`。仅当 Backend/API/Data 影响命中时，最终接收才等待后端交付；UI-only 路径使用有依据的 `backend-not-applicable`。Slice Contract 获准前均不得写代码。
+前端消费需求可在上游设计时提前反馈。新 Handoff v5 交付目录导入后生成 Import Receipt v3；历史裸 v4/v5 包继续生成 v2。Frontend Strategic Preflight 可在后端交付前完成战略输入、Context、相应 UI 基线和源规则追踪核验，并允许起草前端工程设计与实现计划；它固定返回 `ready_for_agent: false`。仅当 Backend/API/Data 影响命中时，最终接收才等待后端交付；UI-only 路径使用有依据的 `backend-not-applicable`。Slice Contract 获准前均不得写代码。
 
 ## 后端导出与前端导入
 
@@ -36,6 +36,7 @@ Handoff v4/v5 先生成 `frontend-strategic-preflight-draft.json`；补齐正式
 |---|---|---|---|
 | Handoff v3（历史） | 原历史路径 | Acceptance v1，要求后端交付 | `visual_case_ids` |
 | Handoff v4 | Preflight v1 | Acceptance v2 | `visual_case_ids` |
+| Handoff v5 delivery | Preflight v2 | Acceptance v3 | `ui_baseline_kind`、`ui_baseline_ref`、source delivery record |
 | Handoff v5 | Preflight v2 | Acceptance v3 | `baseline_case_ids` |
 
 v5 的预检和接收都声明 `ui_baseline_kind`，必须与战略包一致。原型分支继续原视觉/原型要求；既有 UI 分支使用 [existing-ui-baseline v1](existing-ui-baseline.md)，只允许无 UI/交互/状态/权限体验改动并已取得当前基线确认的工程。真实截图不得自行升级为原型批准。

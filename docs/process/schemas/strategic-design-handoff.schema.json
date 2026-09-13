@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://yss.local/schemas/strategic-design-handoff-v3.json",
+  "$id": "https://yss.dev/schemas/strategic-design-handoff-v5.schema.json",
   "title": "YSS 业务方案交接包",
   "type": "object",
   "additionalProperties": false,
@@ -12,8 +12,7 @@
     "source",
     "source_context_snapshot",
     "context_delta",
-    "target_context_reconciliation",
-    "target",
+    "consumer_routes",
     "problem_and_business_outcomes",
     "bounded_context_and_subdomain_map",
     "context_map_and_translation_responsibility",
@@ -22,11 +21,12 @@
     "tactical_design_questions",
     "deferred_decisions_and_ownership",
     "evidence_and_version_digests",
-    "acceptance"
+    "acceptance",
+    "ui_baseline_kind"
   ],
   "properties": {
     "schema_version": {
-      "const": 3
+      "const": 5
     },
     "handoff_id": {
       "type": "string",
@@ -52,8 +52,6 @@
         "domain_strategy_ref",
         "stage_decision_package_ref",
         "spec_ref",
-        "prototype_ref",
-        "visual_baseline_ref",
         "business_ticket_set_ref"
       ],
       "properties": {
@@ -74,6 +72,9 @@
         },
         "business_ticket_set_ref": {
           "$ref": "#/$defs/versionedRef"
+        },
+        "existing_ui_baseline_ref": {
+          "$ref": "#/$defs/existingUiBaselineRef"
         }
       }
     },
@@ -100,57 +101,12 @@
         }
       }
     },
-    "target_context_reconciliation": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "target_context_ref",
-        "reconciliation_schema_ref",
-        "required_before_skill",
-        "status"
-      ],
-      "properties": {
-        "target_context_ref": {
-          "const": "CONTEXT.md"
-        },
-        "reconciliation_schema_ref": {
-          "const": "docs/process/schemas/context-reconciliation.schema.json"
-        },
-        "required_before_skill": {
-          "enum": [
-            "yss-technical-design",
-            "yss-tactical-design"
-          ]
-        },
-        "status": {
-          "const": "pending"
-        }
-      }
-    },
-    "target": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "team",
-        "skill",
-        "output"
-      ],
-      "properties": {
-        "team": {
-          "const": "downstream-rd-team"
-        },
-        "skill": {
-          "enum": [
-            "yss-technical-design",
-            "yss-tactical-design"
-          ]
-        },
-        "output": {
-          "enum": [
-            "technical-design-contract",
-            "tactical-design-contract"
-          ]
-        }
+    "consumer_routes": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "$ref": "#/$defs/consumerRoute"
       }
     },
     "problem_and_business_outcomes": {
@@ -184,6 +140,8 @@
       "$ref": "#/$defs/nonEmptyStrings"
     },
     "package_export": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://yss.dev/schemas/strategic-handoff-export.schema.json",
       "type": "object",
       "additionalProperties": false,
       "required": [
@@ -191,11 +149,11 @@
         "approvals",
         "additional_files",
         "reference_map",
-        "prototype"
+        "ui_baseline_kind"
       ],
       "properties": {
         "schema_version": {
-          "const": 1
+          "const": 2
         },
         "approvals": {
           "type": "object",
@@ -204,8 +162,6 @@
             "domain_strategy_ref",
             "stage_decision_package_ref",
             "spec_ref",
-            "prototype_ref",
-            "visual_baseline_ref",
             "business_ticket_set_ref",
             "handoff"
           ],
@@ -391,6 +347,28 @@
                   ]
                 }
               }
+            },
+            "existing_ui_baseline_ref": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "record_ref",
+                "gate_id",
+                "digest_kind"
+              ],
+              "properties": {
+                "record_ref": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "gate_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "digest_kind": {
+                  "const": "sha256-bytes"
+                }
+              }
             }
           }
         },
@@ -473,8 +451,77 @@
               }
             }
           ]
+        },
+        "ui_baseline_kind": {
+          "enum": [
+            "prototype",
+            "existing-ui-baseline"
+          ]
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "ui_baseline_kind": {
+                "const": "prototype"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "prototype"
+            ],
+            "properties": {
+              "approvals": {
+                "required": [
+                  "prototype_ref",
+                  "visual_baseline_ref"
+                ],
+                "not": {
+                  "required": [
+                    "existing_ui_baseline_ref"
+                  ]
+                }
+              }
+            }
+          },
+          "else": {
+            "not": {
+              "required": [
+                "prototype"
+              ]
+            },
+            "properties": {
+              "approvals": {
+                "required": [
+                  "existing_ui_baseline_ref"
+                ],
+                "not": {
+                  "anyOf": [
+                    {
+                      "required": [
+                        "prototype_ref"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "visual_baseline_ref"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ui_baseline_kind": {
+      "enum": [
+        "prototype",
+        "existing-ui-baseline"
+      ]
     }
   },
   "$defs": {
@@ -647,6 +694,117 @@
         }
       }
     },
+    "consumerRoute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "route_id",
+        "capability",
+        "activation",
+        "impact_refs",
+        "entry_work_unit",
+        "expected_outputs",
+        "dependencies",
+        "context_reconciliation"
+      ],
+      "properties": {
+        "route_id": {
+          "type": "string",
+          "pattern": "^route\\.[a-z0-9][a-z0-9-]*$"
+        },
+        "capability": {
+          "enum": [
+            "backend-technical-design",
+            "frontend-engineering-design",
+            "delivery-coordination"
+          ]
+        },
+        "activation": {
+          "enum": [
+            "required",
+            "optional",
+            "not-applicable"
+          ]
+        },
+        "impact_refs": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^impact_assessment\\.(ui|api|data|backend|frontend|cross_repo|high_risk)$"
+          }
+        },
+        "entry_work_unit": {
+          "enum": [
+            "work-unit.technical-design",
+            "work-unit.frontend-engineering-design",
+            "work-unit.delivery-coordination"
+          ]
+        },
+        "expected_outputs": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        },
+        "dependencies": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^route\\.[a-z0-9][a-z0-9-]*$"
+          }
+        },
+        "context_reconciliation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "required",
+            "target_context_ref",
+            "schema_ref"
+          ],
+          "properties": {
+            "required": {
+              "const": true
+            },
+            "target_context_ref": {
+              "const": "CONTEXT.md"
+            },
+            "schema_ref": {
+              "const": "docs/process/schemas/context-reconciliation.schema.json"
+            }
+          }
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence_refs": {
+          "$ref": "#/$defs/nonEmptyStrings"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "activation": {
+                "enum": [
+                  "optional",
+                  "not-applicable"
+                ]
+              }
+            },
+            "required": [
+              "activation"
+            ]
+          },
+          "then": {
+            "required": [
+              "reason",
+              "evidence_refs"
+            ]
+          }
+        }
+      ]
+    },
     "deferred": {
       "type": "object",
       "additionalProperties": false,
@@ -674,66 +832,97 @@
           "minLength": 1
         }
       }
+    },
+    "existingUiBaselineRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baseline_id",
+        "version",
+        "digest",
+        "status",
+        "persisted_ref",
+        "manifest_ref",
+        "case_ids"
+      ],
+      "properties": {
+        "baseline_id": {
+          "type": "string",
+          "pattern": "^existing-ui-baseline\\.[a-z0-9][a-z0-9-]*$"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^v[1-9][0-9]*$"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "status": {
+          "const": "approved"
+        },
+        "persisted_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "manifest_ref": {
+          "const": "existing-ui-baseline.json"
+        },
+        "case_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        }
+      }
     }
   },
   "allOf": [
     {
       "if": {
         "properties": {
-          "target": {
-            "properties": {
-              "skill": {
-                "const": "yss-technical-design"
-              }
-            }
+          "ui_baseline_kind": {
+            "const": "prototype"
           }
         }
       },
       "then": {
         "properties": {
-          "target": {
-            "properties": {
-              "output": {
-                "const": "technical-design-contract"
-              }
-            }
-          },
-          "target_context_reconciliation": {
-            "properties": {
-              "required_before_skill": {
-                "const": "yss-technical-design"
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "target": {
-            "properties": {
-              "skill": {
-                "const": "yss-tactical-design"
-              }
+          "source": {
+            "required": [
+              "prototype_ref",
+              "visual_baseline_ref"
+            ],
+            "not": {
+              "required": [
+                "existing_ui_baseline_ref"
+              ]
             }
           }
         }
       },
-      "then": {
+      "else": {
         "properties": {
-          "target": {
-            "properties": {
-              "output": {
-                "const": "tactical-design-contract"
-              }
-            }
-          },
-          "target_context_reconciliation": {
-            "properties": {
-              "required_before_skill": {
-                "const": "yss-tactical-design"
-              }
+          "source": {
+            "required": [
+              "existing_ui_baseline_ref"
+            ],
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "prototype_ref"
+                  ]
+                },
+                {
+                  "required": [
+                    "visual_baseline_ref"
+                  ]
+                }
+              ]
             }
           }
         }

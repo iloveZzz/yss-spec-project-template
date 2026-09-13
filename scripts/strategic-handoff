@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { parseArgs } from 'node:util';
 import path from 'node:path';
-import { exportBundle, openBundle, importBundle } from './lib/strategic-handoff.mjs';
+import { existsSync } from 'node:fs';
+import { exportBundle, finalizeDelivery, openBundle, openDelivery, importBundle } from './lib/strategic-handoff.mjs';
 import { read, safe, ensure } from './lib/strategic-handoff-io.mjs';
 
 async function preflightExport(values) {
@@ -21,9 +22,10 @@ try {
   const {values,positionals}=parseArgs({allowPositionals:true,strict:true,options:{'source-root':{type:'string'},handoff:{type:'string'},output:{type:'string'},zip:{type:'boolean'},previous:{type:'string'},bundle:{type:'string'},'target-root':{type:'string'},'preflight-input':{type:'string'}}});
   const [command]=positionals;
   let result;
-  if(command==='export'&&values['source-root']&&values.handoff&&values.output){await preflightExport(values);result=await exportBundle({sourceRoot:values['source-root'],handoffRef:values.handoff,output:values.output,zip:values.zip,previous:values.previous});}
-  else if(command==='verify'&&values.bundle)result=await openBundle(path.resolve(values.bundle),b=>({result:'verified',bundle_id:b.manifest.bundle_id,version:b.manifest.version,bundle_digest:b.manifest.bundle_digest,rules:b.indexes.rules.length,scenarios:b.indexes.scenarios.length}));
+  if(command==='finalize'&&values['source-root']&&values.handoff){await preflightExport(values);result=await finalizeDelivery({sourceRoot:values['source-root'],handoffRef:values.handoff,zip:values.zip,previous:values.previous});}
+  else if(command==='export'&&values['source-root']&&values.handoff&&values.output){const sourceRoot=path.resolve(values['source-root']),handoff=read(safe(sourceRoot,values.handoff));ensure(handoff.schema_version===5,'migration-required: v3/v4 不再创建新 export；请迁移到 Handoff v5、重新批准并使用 finalize');await preflightExport(values);result=await exportBundle({sourceRoot:sourceRoot,handoffRef:values.handoff,output:values.output,zip:values.zip,previous:values.previous});}
+  else if(command==='verify'&&values.bundle){const input=path.resolve(values.bundle),action=b=>({result:'verified',bundle_id:b.manifest.bundle_id,version:b.manifest.version,bundle_digest:b.manifest.bundle_digest,rules:b.indexes.rules.length,scenarios:b.indexes.scenarios.length});result=existsSync(path.join(input,'delivery-record.json'))?await openDelivery(input,action):await openBundle(input,action);}
   else if(command==='import'&&values.bundle&&values['target-root'])result=await importBundle({bundle:path.resolve(values.bundle),targetRoot:values['target-root']});
-  else throw new TypeError('用法: strategic-handoff export --source-root <repo> --handoff <relative-file> --output <new-dir> [--preflight-input <file>] [--zip] [--previous <bundle>] | verify --bundle <dir|zip> | import --bundle <dir|zip> --target-root <repo>');
+  else throw new TypeError('用法: strategic-handoff finalize --source-root <repo> --handoff <relative-file> [--preflight-input <file>] [--previous <delivery-or-package>] [--zip] | verify --bundle <delivery-dir|package-dir|zip> | import --bundle <delivery-dir|package-dir|zip> --target-root <repo>');
   process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
 }catch(error){process.stderr.write(`${JSON.stringify({result:'blocked',error:error.message,...(error.preflight?{preflight:error.preflight}:{})})}\n`);process.exitCode=1;}

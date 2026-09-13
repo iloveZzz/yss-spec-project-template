@@ -20,6 +20,18 @@ const SOURCE_SCHEMAS = new Map([
 ]);
 const CAPABILITIES=['backend-technical-design','frontend-engineering-design','delivery-coordination'];
 
+function deliveryReadme(handoff) {
+  const sources=Object.entries(handoff.source).sort(([a],[b])=>a.localeCompare(b)).map(([key,value])=>`- \`${key}\`: \`${value.persisted_ref}\` (${value.version}, ${value.digest})`);
+  const routes=handoff.consumer_routes.map(route=>`- \`${route.capability}\`: \`${route.activation}\` (${route.route_id})`);
+  const questions=handoff.tactical_design_questions.length?handoff.tactical_design_questions.map((_,index)=>`- tactical-design-question-${index+1}`).join('\n'):'- 无';
+  const deferred=handoff.deferred_decisions_and_ownership.length?handoff.deferred_decisions_and_ownership.map(item=>`- ${item.decision_id||item.id||'deferred-decision'} / ${item.owner||'owner-unset'}`).join('\n'):'- 无';
+  return `# 战略交接快照包\n\n此目录是由 Handoff v5 确定性生成的不可变研发交付件。业务正文保留在 \`payload/\`，本页只提供接收导航。\n\n## 范围\n\n- Handoff: \`${handoff.handoff_id}\`\n- Version: \`${handoff.handoff_version}\`\n- Schema: \`5\`\n\n## 来源资产\n\n${sources.join('\n')}\n\n## 消费者路线\n\n${routes.join('\n')}\n\n## 待决问题索引\n\n${questions}\n\n## 延期决定索引\n\n${deferred}\n\n## 接收命令\n\n\`\`\`bash\nscripts/strategic-handoff import --bundle <delivery-dir> --target-root <implementation-repository>\n\`\`\`\n`;
+}
+
+function isDeliveryDirectory(input) {
+  return existsSync(input) && lstatSync(input).isDirectory() && existsSync(path.join(input,'delivery-record.json'));
+}
+
 function versionSchema(version, schemas, label) {
   ensure(schemas.has(version), `${label} 未知 schema_version: ${String(version)}；支持版本: ${[...schemas.keys()].join(', ')}；请使用显式迁移器升级`);
   return schemas.get(version);
@@ -294,6 +306,7 @@ export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previ
     put('indexes/rules.json',Buffer.from(json(current.indexes.rules)));
     put('indexes/scenarios.json',Buffer.from(json(current.indexes.scenarios)));
     put('indexes/changes.json',Buffer.from(json({previous_bundle:previousBundle,...compareIndexes(current.indexes,prior?.indexes)})));
+    if(current.handoff.schema_version===5)put('README.md',Buffer.from(deliveryReadme(current.handoff)));
     if(prior){put('indexes/previous-manifest.json',Buffer.from(json(prior.manifest)));put('indexes/previous-rules.json',prior.rulesBytes);put('indexes/previous-scenarios.json',prior.scenariosBytes);}
     const body={schema_version:1,bundle_id:current.handoff.handoff_id,version:current.handoff.handoff_version,handoff_ref:handoffRef,previous_bundle:previousBundle,files:entries.sort((a,b)=>a.path.localeCompare(b.path))};
     const manifest={...body,bundle_digest:digest(body)};write(staging,'manifest.json',json(manifest));
@@ -306,9 +319,68 @@ export async function exportBundle({sourceRoot,handoffRef,output,zip=false,previ
     return {result:'exported',bundle_id:manifest.bundle_id,version:manifest.version,bundle_digest:manifest.bundle_digest,output:target,...(zip?{zip:`${target}.zip`,zip_sha256:hash(readFileSync(`${target}.zip`))}:{})};
   } finally {rmSync(staging,{recursive:true,force:true});rmSync(`${staging}.zip`,{force:true});}
 }
+
+export async function openDelivery(input, action) {
+  const root=path.resolve(input);
+  ensure(isDeliveryDirectory(root),'交付目录缺少 delivery-record.json');
+  ensure(!lstatSync(root).isSymbolicLink(),'交付目录不能是 symlink');
+  const recordBytes=readFileSync(safe(root,'delivery-record.json'));
+  const record=parse(recordBytes);schema(record,'docs/process/schemas/strategic-handoff-delivery.schema.json');
+  const verification=read(safe(root,record.verification_ref));schema(verification,'docs/process/schemas/strategic-handoff-delivery-verification.schema.json');
+  const packageRoot=safe(root,record.package_ref);
+  ensure(lstatSync(packageRoot).isDirectory()&&!lstatSync(packageRoot).isSymbolicLink(),'package_ref 必须指向普通目录');
+  if(record.zip){const archiveRef=safe(root,record.zip.ref);ensure(lstatSync(archiveRef).isFile()&&hash(readFileSync(archiveRef))===record.zip.sha256,'ZIP 摘要不一致');}
+  else ensure(!existsSync(path.join(root,'package.zip')),'未登记的 package.zip');
+  const allowed=new Set(['delivery-record.json','verification.json',...(record.zip?['package.zip']:[])]);
+  for(const ref of files(root))ensure(ref.startsWith('package/')||allowed.has(ref),`交付目录存在未登记文件: ${ref}`);
+  return openBundle(packageRoot,async bundle=>{
+    ensure(record.handoff.id===bundle.manifest.bundle_id&&record.handoff.version===bundle.manifest.version&&record.handoff.schema_version===bundle.handoff.schema_version,'delivery record 的 Handoff 身份不一致');
+    ensure(record.bundle_digest===bundle.manifest.bundle_digest&&record.manifest_ref==='package/manifest.json','delivery record 的包摘要或清单引用不一致');
+    ensure(verification.bundle_digest===bundle.manifest.bundle_digest&&verification.package_ref===record.package_ref&&verification.manifest_ref===record.manifest_ref&&verification.exit_code===0&&verification.result==='verified','delivery verification 与包不一致');
+    const handoffEntry=bundle.manifest.files.find(file=>file.original_ref===record.handoff.ref);
+    ensure(handoffEntry&&handoffEntry.sha256===record.handoff.sha256,'delivery record 的 Handoff 源摘要不一致');
+    const sourceAssets=Object.entries(bundle.handoff.source).sort(([a],[b])=>a.localeCompare(b)).map(([sourceKey,value])=>({source_key:sourceKey,id:value.id||value.baseline_id,version:value.version,ref:value.persisted_ref,digest:value.digest}));
+    ensure(own(sourceAssets,record.source_assets),'delivery record 的来源资产不一致');
+    ensure(own(bundle.handoff.consumer_routes.map(({route_id,capability,activation})=>({route_id,capability,activation})),record.consumer_routes),'delivery record 的消费者路由不一致');
+    const previous=bundle.manifest.previous_bundle?{handoff_id:bundle.manifest.previous_bundle.bundle_id,version:bundle.manifest.previous_bundle.version,bundle_digest:bundle.manifest.previous_bundle.digest}:null;
+    ensure(own(previous,record.previous_delivery),'delivery record 的上一版本身份不一致');
+    return action({...bundle,deliveryRoot:root,packageRoot,record,recordBytes,verification});
+  });
+}
+
+export async function finalizeDelivery({sourceRoot,handoffRef,zip=false,previous}) {
+  const root=project(sourceRoot);parseContextContract({root});relative(handoffRef);
+  const current=await inspectSource(root,handoffRef);
+  ensure(current.handoff.schema_version===5,'migration-required: v3/v4 只允许历史 verify/import；修改或重新交付必须迁移到 Handoff v5 并重新批准');
+  const delivery=path.join(root,'docs/deliveries/strategic',current.handoff.handoff_id,current.handoff.handoff_version);
+  const parent=path.dirname(delivery);mkdirSync(parent,{recursive:true});
+  let previousPackage=previous;
+  if(previous&&isDeliveryDirectory(path.resolve(previous)))previousPackage=await openDelivery(path.resolve(previous),value=>value.packageRoot);
+  const stage=mkdtempSync(path.join(parent,'.delivery-staging-'));
+  try {
+    const exported=await exportBundle({sourceRoot:root,handoffRef,output:path.join(stage,'package'),zip,previous:previousPackage});
+    const handoffEntry=await openBundle(path.join(stage,'package'),bundle=>bundle.manifest.files.find(file=>file.original_ref===handoffRef));
+    ensure(handoffEntry,'交付包缺少 Handoff 源文件');
+    const verification={schema_version:1,kind:'strategic-delivery-verification-v1',result:'verified',command:`scripts/strategic-handoff verify --bundle docs/deliveries/strategic/${current.handoff.handoff_id}/${current.handoff.handoff_version}`,exit_code:0,executed_at:new Date().toISOString(),package_ref:'package',manifest_ref:'package/manifest.json',bundle_digest:exported.bundle_digest};
+    schema(verification,'docs/process/schemas/strategic-handoff-delivery-verification.schema.json');write(stage,'verification.json',json(verification));
+    const sourceAssets=Object.entries(current.handoff.source).sort(([a],[b])=>a.localeCompare(b)).map(([sourceKey,value])=>({source_key:sourceKey,id:value.id||value.baseline_id,version:value.version,ref:value.persisted_ref,digest:value.digest}));
+    const previousDelivery=await openBundle(path.join(stage,'package'),bundle=>bundle.manifest.previous_bundle?{handoff_id:bundle.manifest.previous_bundle.bundle_id,version:bundle.manifest.previous_bundle.version,bundle_digest:bundle.manifest.previous_bundle.digest}:null);
+    const record={schema_version:1,kind:'strategic-handoff-delivery-v1',status:'packaged',handoff:{id:current.handoff.handoff_id,version:current.handoff.handoff_version,ref:handoffRef,sha256:handoffEntry.sha256,schema_version:5},source_assets:sourceAssets,package_ref:'package',manifest_ref:'package/manifest.json',bundle_digest:exported.bundle_digest,verification_ref:'verification.json',consumer_routes:current.handoff.consumer_routes.map(({route_id,capability,activation})=>({route_id,capability,activation})),...(zip?{zip:{ref:'package.zip',sha256:exported.zip_sha256}}:{}),previous_delivery:previousDelivery};
+    schema(record,'docs/process/schemas/strategic-handoff-delivery.schema.json');write(stage,'delivery-record.json',json(record));
+    await openDelivery(stage,()=>null);
+    if(existsSync(delivery)){
+      const existing=await openDelivery(delivery,value=>value.record);
+      ensure(existing.bundle_digest===record.bundle_digest&&existing.handoff.sha256===record.handoff.sha256,'delivery-version-conflict: 同 Handoff ID/version 已存在不同内容；请提升 handoff_version 并重新批准');
+      return {result:'already-packaged',handoff_id:record.handoff.id,version:record.handoff.version,bundle_digest:record.bundle_digest,delivery};
+    }
+    renameSync(stage,delivery);
+    return {result:'packaged',handoff_id:record.handoff.id,version:record.handoff.version,bundle_digest:record.bundle_digest,delivery,...(zip?{zip:path.join(delivery,'package.zip'),zip_sha256:record.zip.sha256}:{})};
+  } finally {rmSync(stage,{recursive:true,force:true});}
+}
 export async function importBundle({bundle,targetRoot}) {
   const target=project(targetRoot);const context=parseContextContract({root:target});
-  return openBundle(bundle,async b=>{
+  const open=isDeliveryDirectory(path.resolve(bundle))?action=>openDelivery(path.resolve(bundle),action):action=>openBundle(bundle,action);
+  return open(async b=>{
     const rel=`docs/handoffs/${b.manifest.bundle_id}/${b.manifest.version}`,dest=safe(target,rel,{missing:true});
     if(existsSync(dest)) {
       const receipt=read(safe(dest,'import-receipt.json'));
@@ -347,8 +419,10 @@ export async function importBundle({bundle,targetRoot}) {
           if(route.activation!=='not-applicable'&&route.capability==='delivery-coordination')artifactRefs.push(`${rel}/consumer-status-index-draft.json`);
           return {route_id:route.route_id,capability:route.capability,activation:route.activation,artifact_refs:artifactRefs};
         });
-        receipt={schema_version:2,bundle_id:b.manifest.bundle_id,version:b.manifest.version,bundle_digest:b.manifest.bundle_digest,package_ref:`${rel}/package`,target_context_digest:context.document_digest,target_profile_id:profile?.profile_id||'yss-full-lifecycle',selected_consumer_capabilities:capabilities,routes:routeRecords,status:'pending-context-reconciliation'};
-        schema(receipt,'docs/process/schemas/strategic-handoff-import-receipt.schema.json');
+        const fromDelivery=Boolean(b.recordBytes);
+        if(fromDelivery)write(stage,'source-delivery-record.json',b.recordBytes);
+        receipt={schema_version:fromDelivery?3:2,bundle_id:b.manifest.bundle_id,version:b.manifest.version,bundle_digest:b.manifest.bundle_digest,package_ref:`${rel}/package`,...(fromDelivery?{source_delivery_record_ref:`${rel}/source-delivery-record.json`,source_delivery_record_sha256:hash(b.recordBytes),ready_for_agent:false}:{}),target_context_digest:context.document_digest,target_profile_id:profile?.profile_id||'yss-full-lifecycle',selected_consumer_capabilities:capabilities,routes:routeRecords,status:'pending-context-reconciliation'};
+        schema(receipt,fromDelivery?'docs/process/schemas/strategic-handoff-import-receipt-v3.schema.json':'docs/process/schemas/strategic-handoff-import-receipt.schema.json');
         write(stage,'import-receipt.json',json(receipt));
         write(stage,'context-reconciliation-draft.json',json({schema_version:2,status:'draft',import_receipt_ref:`${rel}/import-receipt.json`,target_context_digest:context.document_digest,route_ids:selected.map(route=>route.route_id),terms}));
         write(stage,'upstream-change-impact.json',json({schema_version:2,previous_bundle:b.manifest.previous_bundle,routes:selected.map(route=>({route_id:route.route_id,capability:route.capability,activation:route.activation,changed_source_ids:[...b.changes.updated,...b.changes.removed],added_source_ids:b.changes.added,status:'requires-lifecycle-reconciliation'})),policy:'mark-only-known-dependent-contracts-stale; unknown-dependency-or-design-basis-change-blocks-all'}));
