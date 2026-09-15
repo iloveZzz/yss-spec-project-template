@@ -14,7 +14,7 @@
  
  ```text
  Spec / 设计输入 → OpenAPI YAML Draft → 审查与 Freeze → JSON 派生物 → 下游既有前端代码生成流程
-@@ -13,25 +13,24 @@
+@@ -13,26 +13,24 @@
  
  `docs/.scratch/<feature>/api/<feature>.yaml` 是唯一权威的 OpenAPI 3.1 契约。JSON 只能由冻结后的 YAML 可复现地产生，用于前端代码生成或分发；不得手写、不得反向覆盖 YAML、不得把运行时代码当成设计契约来源。
  
@@ -42,11 +42,12 @@
 -- 在 `docs/.scratch/<feature>/api/<feature>-validation.yaml` 持久化结构校验记录，并用 `scripts/verify-openapi-draft-validation-record` 复核当前 YAML SHA-256、锁定的 Redocly 版本、实际命令、退出码、执行时间和证据引用。
  - 在 OpenAPI Freeze 后，用锁定的 Redocly CLI 将 YAML bundle 为 JSON，并记录可重现证据。
 -- 维护治理记录、Freeze 记录和 JSON 派生记录。
+-- 在技术分析中生成 `api-contract-decision-v1`：有 API 影响时以原始字节摘要闭包绑定权威 YAML、Validation、独立 Draft Review 和 Freeze；无 API 影响时绑定影响评估、明确原因和至少一项可读证据，且不得生成空占位资产。
 +- 消费后端治理及 Freeze 记录，维护本地 JSON 派生与客户端生成记录。
  - Spec Delta 影响存在时，在 `docs/.scratch/<feature>/spec-delta/` 记录与冻结 YAML 的关系；没有影响时明确记录 `not-applicable`。
  
  不使用本 skill 来替代：
-@@ -67,18 +66,14 @@
+@@ -68,20 +66,15 @@
     - 所有操作使用稳定、可生成客户端的 `operationId`；页面动作可通过 `x-yss-action-key` 或同路径的追踪矩阵关联。
  
  2. **运行结构与治理校验**
@@ -65,9 +66,11 @@
 -   - YAML、validation record 或 lint ruleset 变化后，旧结构证据与旧 Review 立即失效，必须重新校验和审查。阻断项未关闭前，YAML 仍是 review-only Draft，不得生成生产客户端。
 +   - 将 fresh lint 证据交给 `yss-openapi-draft-review`；阻断项未关闭前，YAML 仍是 review-only Draft，不得生成生产客户端。
     - Freeze 记录必须引用 YAML 路径、Git ref（如适用）和 YAML SHA-256。冻结后 API 行为变更必须先回到 YAML Draft 与审查。
+-   - 将同一 YAML 的版本与摘要、validation record、独立 Review 和 Freeze 写入 API Contract Decision v1。`gate.engineering-contract-approved` 一次批准同时绑定 Technical Design、Data Architecture Decision、API Contract Decision；API `required` 时还必须直接绑定冻结 YAML。不得另造字符串 URI 或仅凭 `status: approved` 关闭门禁。
  
  4. **从冻结 YAML 派生 JSON**
-@@ -99,9 +94,7 @@
+    - 使用上面的锁定 `redocly bundle` 命令生成 `docs/.scratch/<feature>/api/<feature>.json`，JSON 不纳入人工编辑面。
+@@ -101,9 +94,7 @@
  
  - YAML 不是单一 OAS 3.1 document，或其根节点混入生命周期元数据。
  - YAML / `$ref` / lint 不通过，operationId 不稳定或不唯一，或路径参数、schema、examples 无法解析。
@@ -77,7 +80,7 @@
  - `$ref` 超出允许范围，或转换器版本、lockfile、命令、输入 YAML 无法识别。
  - `scripts/verify-yss-dto-openapi-profile` 失败、profile 版本未记录，或 Draft 未按 profile 建模 `x-yss-response-wrapper`、`YssResultMeta` / `allOf` 和具体 `data` schema。
  - 新契约引入 `com.yss.cloud.dto.response`、把 Java 泛型文字当成 OAS schema、把全局 `code` 放宽为任意 object，或把 `offset` / `needTotalCount` / `tempTotalCount` 作为客户端字段。
-@@ -123,9 +116,7 @@
+@@ -125,9 +116,7 @@
  
  ### Validation
  - Lint command and result: <locked pnpm command / result>
@@ -88,7 +91,7 @@
  - Wrapper conformance: <`x-yss-response-wrapper`, `YssResultMeta`, `allOf`, concrete data schema, direction and forbidden-field result>
  - `$ref` policy / approved exceptions: <details>
  - Blocking findings: <file:line grounded finding>
-@@ -143,3 +134,14 @@
+@@ -145,3 +134,14 @@
  - Existing frontend code generation: <manual command in target repository / blocked reason>
  - Template boundary: <no frontend configuration, code-generation execution, or CI change>
  ```
@@ -103,7 +106,7 @@
 +```
 +
 +带 `--source-root` 的校验同时核验源仓身份、固定提交字节和当前源工作树。源内容变化时重新审阅并同步快照及绑定；离线消费继续使用已绑定版本，已知上游变化不能被离线校验掩盖。
---- /dev/null
+--- a/references/openapi-wire-profile.yaml
 +++ b/references/openapi-wire-profile.yaml
 @@ -0,0 +1,187 @@
 +schema_version: 1
@@ -293,7 +296,7 @@
 +    - representative-serialization-fixtures
 +    - contract-test-or-equivalent-http-evidence
 +  rule: Java fields and computed getters are not public wire facts until target-boundary evidence confirms them.
---- /dev/null
+--- a/references/openapi-wire-source.json
 +++ b/references/openapi-wire-source.json
 @@ -0,0 +1,8 @@
 +{

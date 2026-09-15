@@ -6,17 +6,18 @@
 |---|---|---|---|---|
 | 普通按钮、权限按钮 | `YButton` | AntDV Button | required | 权限、主题和统一动作语义；不得直接导入 Button |
 | 卡片 | `YCard` | AntDV Card | required | YSS 布局与间距扩展 |
-| 数据表格 | `YTable` | VXE Table + AntDV Pagination | specialized | 使用 `yss-components`、`field/type`、字段插槽 |
-| 编辑表格 | `YEditTable` | VXE Table | specialized | 对照 edit-table docs/demo |
-| 树 | `YTree` | AntDV Tree | specialized | 搜索、Tooltip、动作和高度路由 |
+| 数据表格 | `YTable` | VXE Table + AntDV Pagination | specialized | 使用 `ytable-usage`；远程分页交给 `page-list-module`，高度交给 `yss-use-table-height` |
+| 编辑表格 | `YEditTable` | VXE Table | specialized | 使用 `yedit-table-usage`，不要把编辑与普通展示表格混为一套 API |
+| 树 | `YTree` | AntDV Tree | specialized | 使用 `ytree-usage`；高度交给 `yss-use-tree-height` |
 | Schema 表单 | `YFormily` | Formily + AntDV | specialized | `YFormily` 为 canonical；`YssFormily` 仅为历史兼容名；加载 `yss-formily` |
-| 分栏布局 | `YSplitPane` | YSS layout | required | 统一主从页面与容器高度 |
-| 文件导入 | `YFileImport` | Upload/业务适配 | required | 使用 YSS 上传结果和表单适配 |
-| 条件构建 | `YConditionBuilder` | YSS domain component | required | 使用对应 docs/demo |
-| Cron | `YCron` | YSS domain component | required | 底层 Popover 可 fallback |
-| 图表 | `YEcharts` | ECharts | required | 主题、resize、darkMode 使用 YSS API |
-| 编辑器 | `YMonaco` | Monaco | required | 按需加载和尺寸治理 |
-| Sheet | `YSheet` | Univer | required | locale 与资源包按 YSS 文档 |
+| 分栏布局 | `YSplitPane` | YSS layout | required | 页面骨架使用 `page-skeleton`；组件边界见 `specialized-components.md` |
+| 文件导入 | `YFileImport` | Upload/业务适配 | required | 两步导入边界见 `specialized-components.md` |
+| 条件构建 | `YConditionBuilder` | YSS domain component | required | 标准模型与校验边界见 `specialized-components.md` |
+| 月历 | `YMonthCalendar` | YSS domain component | required | 日期、月份、高度与事件边界见 `specialized-components.md` |
+| Cron | `YCron` | YSS domain component | required | 七段表达式边界见 `specialized-components.md` |
+| 图表 | `YssEcharts` | ECharts | required | 主题、更新和尺寸边界见 `specialized-components.md` |
+| 编辑器 | `YMonaco` / `YMonacoDiff` | Monaco | required | 按需加载和尺寸治理见 `specialized-components.md` |
+| Sheet | `YSheet` | Univer | required | Facade、释放和依赖边界见 `specialized-components.md` |
 | 输入、选择、日期 | 无独立通用 Wrapper | AntDV Input/Select/DatePicker 等 | fallback | 读取实际 AntDV 版本；服从 theme/locale/popup 规则 |
 | 浮层反馈 | 无统一 Wrapper | Modal/Drawer/Popover/Tooltip/Alert | fallback | 服从容器、焦点、销毁、z-index 规则 |
 | 服务式反馈 | 无统一 Wrapper | message/notification | fallback | 检查 App/ConfigProvider 上下文 |

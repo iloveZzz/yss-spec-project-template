@@ -20,17 +20,34 @@ const requiredReferences = [
   "theme-locale-overlay.md",
   "accessibility.md",
   "verification.md",
-  "migration-antdv-to-yss.md"
+  "migration-antdv-to-yss.md",
+  "specialized-components.md"
 ];
 for (const name of requiredReferences) if (!existsSync(path.join(skillRoot, "references", name))) failures.push(`Missing YSS UI governance reference: ${name}`);
 
-for (const skillName of ["yss-ui", "yss-components"]) if (read(path.join(root, ".agents/skills", skillName, "SKILL.md")).includes("yss-hooks")) failures.push(`Nonexistent yss-hooks route remains in ${skillName}`);
+for (const skillName of ["yss-ui", "yss-formily"]) if (read(path.join(root, ".agents/skills", skillName, "SKILL.md")).includes("yss-hooks")) failures.push(`Nonexistent yss-hooks route remains in ${skillName}`);
+
+const retiredComponentsId = ["yss", "components"].join("-");
+if (existsSync(path.join(root, ".agents/skills", retiredComponentsId))) failures.push("Retired yss-components canonical directory remains");
+const lock = JSON.parse(read(path.join(root, "skills-lock.json")));
+if (lock.skills?.shared?.[retiredComponentsId]) failures.push("Retired yss-components remains in skills-lock.json");
+const registryBody = read(path.join(root, "docs/agents/yss-skill-registry.yaml"));
+if (new RegExp(`^\\s*- id: ${retiredComponentsId}\\s*$`, "m").test(registryBody)) failures.push("Retired yss-components remains in the skill registry");
+const publicSkillsPath = path.join(root, "yss-public-skills.json");
+if (existsSync(publicSkillsPath) && JSON.parse(read(publicSkillsPath)).skills?.includes(retiredComponentsId)) failures.push("Retired yss-components remains public");
 
 const uiBody = read(path.join(skillRoot, "SKILL.md"));
 for (const marker of ["yss-hook", "YssFormily", "component-routing.md", "antdv-compatibility.md", "ConfigProvider", "accessibility"]) if (!uiBody.includes(marker)) failures.push(`YSS UI router missing marker: ${marker}`);
 
 const routingBody = read(path.join(skillRoot, "references/component-routing.md"));
-for (const marker of ["YButton", "YCard", "YTable", "YTree", "YssFormily", "YSplitPane", "required", "fallback", "specialized"]) if (!routingBody.includes(marker)) failures.push(`Component routing missing marker: ${marker}`);
+for (const marker of ["YButton", "YCard", "YTable", "YTree", "YssFormily", "YSplitPane", "YMonthCalendar", "required", "fallback", "specialized"]) if (!routingBody.includes(marker)) failures.push(`Component routing missing marker: ${marker}`);
+
+const specializedBody = read(path.join(skillRoot, "references/specialized-components.md"));
+for (const marker of ["YSplitPane", "YConditionBuilder", "YMonthCalendar", "YFileImport", "YMonaco", "YCron", "YSheet", "YssEcharts"]) if (!specializedBody.includes(marker)) failures.push(`Specialized component contract missing marker: ${marker}`);
+
+const formilyBody = read(path.join(root, ".agents/skills/yss-formily/SKILL.md"));
+for (const marker of ["formily-foundation", "formily-linkage-effects", "formily-mode-slot-detail", "formily-step-flow", "page-form-module", "yss-formily-schema-generator"]) if (!formilyBody.includes(marker)) failures.push(`YFormily router missing marker: ${marker}`);
+for (const forbidden of ["## 标准代码骨架", "<YFormily", "const schema:"]) if (formilyBody.includes(forbidden)) failures.push(`YFormily router still embeds implementation body: ${forbidden}`);
 
 const compatibilityBody = read(path.join(skillRoot, "references/antdv-compatibility.md"));
 for (const marker of ["pnpm why", "4.2.6", "2026-08-08", "lockfile"]) if (!compatibilityBody.includes(marker)) failures.push(`AntDV compatibility reference missing marker: ${marker}`);

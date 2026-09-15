@@ -53,3 +53,35 @@ const second = spawnSync(process.execPath, [runner, "--contract-file", contractF
 assert.notEqual(second.status, 0);
 assert.match(second.stderr, /must not exist or must be empty/);
 process.stdout.write("前端脚手架受控生成场景验证通过\n");
+
+// Bundled source proves portability without the source project's checkout or credentials.
+const { generate } = await import('./generate_scaffold.mjs');
+const { createHash } = await import('node:crypto');
+const bundleManifest = readFileSync(path.resolve('.agents/skills/yss-frontend-scaffold-generator/references/data-quality-v1.manifest.json'));
+const bundle = structuredClone(contract);
+bundle.frontend.template = { kind: 'bundled', baseline_id: 'data-quality-v1', manifest_digest: `sha256:${createHash('sha256').update(bundleManifest).digest('hex')}` };
+bundle.verification_commands = ['pnpm install --frozen-lockfile', 'pnpm lint:check', 'pnpm type-check', 'pnpm build', 'pnpm build:standalone'];
+bundle.target_output_dir = path.join(root, 'bundled'); bundle.implementation_repository = bundle.target_output_dir; bundle.allowed_write_paths = [bundle.target_output_dir];
+const saveBundle = () => writeFileSync(contractFile, JSON.stringify(bundle));
+saveBundle();
+const bundled = generate({ contractFile, outputDir: bundle.target_output_dir });
+assert.equal(bundled.template.checkout, undefined);
+assert.equal(JSON.parse(readFileSync(path.join(bundle.target_output_dir, 'packages/package.json'))).dependencies['ant-design-vue'], '4.2.6');
+assert.equal(JSON.parse(readFileSync(path.join(bundle.target_output_dir, 'packages/src/config/theme.json'))).algorithm, 'default');
+for (const forbidden of ['.npmrc', 'node_modules', '.git', 'packages/src/views/datasource/index.vue', 'scripts/sync-openapi.js']) assert.equal(existsSync(path.join(bundle.target_output_dir, forbidden)), false, forbidden);
+assert.throws(() => generate({ contractFile, outputDir: bundle.target_output_dir }), /must not exist or must be empty/);
+bundle.target_output_dir = path.join(root, 'rejected'); bundle.implementation_repository = bundle.target_output_dir; bundle.allowed_write_paths = [bundle.target_output_dir];
+const goodDigest = bundle.frontend.template.manifest_digest;
+bundle.frontend.template.manifest_digest = `sha256:${'0'.repeat(64)}`; saveBundle();
+assert.throws(() => generate({ contractFile, outputDir: bundle.target_output_dir }), /manifest digest/);
+assert.equal(existsSync(bundle.target_output_dir), false);
+bundle.frontend.template.manifest_digest = goodDigest;
+bundle.frontend.app_name = 'invalid";execute()'; saveBundle();
+assert.throws(() => generate({ contractFile, outputDir: bundle.target_output_dir }), /kebab-case/);
+bundle.frontend.app_name = 'safe'; bundle.frontend.base_route = '/../escape'; saveBundle();
+assert.throws(() => generate({ contractFile, outputDir: bundle.target_output_dir }), /base_route/);
+bundle.frontend.base_route = '/safe'; bundle.frontend.openapi_impact = 'frozen'; bundle.frontend.openapi_json_ref = path.join(root, 'openapi.json'); bundle.frontend.openapi_json_digest = `sha256:${'0'.repeat(64)}`;
+writeFileSync(bundle.frontend.openapi_json_ref, '{"openapi":"3.1.0"}'); saveBundle();
+assert.throws(() => generate({ contractFile, outputDir: bundle.target_output_dir }), /OpenAPI JSON digest mismatch/);
+assert.equal(existsSync(bundle.target_output_dir), false);
+process.stdout.write('Data Quality bundled baseline / source binding / no-write rejection scenarios passed\n');

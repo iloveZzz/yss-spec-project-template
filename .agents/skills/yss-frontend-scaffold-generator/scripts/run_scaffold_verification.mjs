@@ -6,8 +6,10 @@ import { runCommandSync } from "../../../../scripts/lib/command-runner.mjs";
 const ALLOWED = new Map([
   ["pnpm install --frozen-lockfile", ["install", "--frozen-lockfile"]],
   ["pnpm lint", ["lint"]],
+  ["pnpm lint:check", ["lint:check"]],
   ["pnpm type-check", ["type-check"]],
   ["pnpm build", ["build"]],
+  ["pnpm build:standalone", ["build:standalone"]],
 ]);
 function argsOf(argv) { const args = {}; for (let i = 0; i < argv.length; i += 2) args[argv[i].replace(/^--/, "")] = argv[i + 1]; return args; }
 export function verify(projectRoot, evidenceDir, { timeoutMs = 0 } = {}) {
@@ -17,7 +19,9 @@ export function verify(projectRoot, evidenceDir, { timeoutMs = 0 } = {}) {
   if (manifest.schema_version !== 4 || manifest.kind !== "frontend-scaffold" || manifest.generation_mode !== "controlled-generation") throw new TypeError("invalid frontend scaffold manifest");
   if (!manifest.generated_files.includes("pnpm-lock.yaml")) throw new TypeError("frontend template must contain pnpm-lock.yaml");
   const commands = manifest.verification_commands;
-  for (const required of ALLOWED.keys()) if (!commands.includes(required)) throw new TypeError(`missing required verification command: ${required}`);
+  const requiredCommands = ["pnpm install --frozen-lockfile", manifest.template?.kind === "bundled" ? "pnpm lint:check" : "pnpm lint", "pnpm type-check", "pnpm build", ...(manifest.template?.kind === "bundled" ? ["pnpm build:standalone"] : [])];
+  for (const required of requiredCommands) if (!commands.includes(required)) throw new TypeError(`missing required verification command: ${required}`);
+  for (const command of commands) if (!ALLOWED.has(command)) throw new TypeError(`unsupported verification command: ${command}`);
   mkdirSync(evidenceDir, { recursive: true });
   const results = commands.map((command, index) => {
     const argv = ALLOWED.get(command);

@@ -32,6 +32,7 @@ YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/open
 - 在 `docs/.scratch/<feature>/api/<feature>-validation.yaml` 持久化结构校验记录，并用 `scripts/verify-openapi-draft-validation-record` 复核当前 YAML SHA-256、锁定的 Redocly 版本、实际命令、退出码、执行时间和证据引用。
 - 在 OpenAPI Freeze 后，用锁定的 Redocly CLI 将 YAML bundle 为 JSON，并记录可重现证据。
 - 维护治理记录、Freeze 记录和 JSON 派生记录。
+- 在技术分析中生成 `api-contract-decision-v1`：有 API 影响时以原始字节摘要闭包绑定权威 YAML、Validation、独立 Draft Review 和 Freeze；无 API 影响时绑定影响评估、明确原因和至少一项可读证据，且不得生成空占位资产。
 - Spec Delta 影响存在时，在 `docs/.scratch/<feature>/spec-delta/` 记录与冻结 YAML 的关系；没有影响时明确记录 `not-applicable`。
 
 不使用本 skill 来替代：
@@ -80,6 +81,7 @@ pnpm exec redocly bundle \
    - 将通过 verifier 且 SHA-256 与当前 YAML 一致的 validation record 交给 `yss-openapi-draft-review`。缺锁定 lint 时可以先做语义预审，但独立 Review 总结果必须为 `Blocked`；不能用“Freeze 前补 lint”支持 `Approved`。
    - YAML、validation record 或 lint ruleset 变化后，旧结构证据与旧 Review 立即失效，必须重新校验和审查。阻断项未关闭前，YAML 仍是 review-only Draft，不得生成生产客户端。
    - Freeze 记录必须引用 YAML 路径、Git ref（如适用）和 YAML SHA-256。冻结后 API 行为变更必须先回到 YAML Draft 与审查。
+   - 将同一 YAML 的版本与摘要、validation record、独立 Review 和 Freeze 写入 API Contract Decision v1。`gate.engineering-contract-approved` 一次批准同时绑定 Technical Design、Data Architecture Decision、API Contract Decision；API `required` 时还必须直接绑定冻结 YAML。不得另造字符串 URI 或仅凭 `status: approved` 关闭门禁。
 
 4. **从冻结 YAML 派生 JSON**
    - 使用上面的锁定 `redocly bundle` 命令生成 `docs/.scratch/<feature>/api/<feature>.json`，JSON 不纳入人工编辑面。

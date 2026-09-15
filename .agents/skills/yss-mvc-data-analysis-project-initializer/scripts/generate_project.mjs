@@ -71,7 +71,7 @@ export async function initialize(options) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   try {
     const options = parseArgs(process.argv.slice(2));
-    if (options.help) process.stdout.write("使用批准的 MVC schema v3 合同与 Maven 坐标参数；输出独立数据分析项目，无数据库/Mock 选项。\n");
+    if (options.help) process.stdout.write("使用批准且绑定技术/数据设计的 MVC schema v4 合同与 Maven 坐标参数；输出独立数据分析项目，无数据库/Mock 选项。\n");
     else await initialize(options);
   } catch (error) { process.stderr.write(`数据分析项目初始化失败: ${error.message}\n`); process.exitCode = 1; }
 }

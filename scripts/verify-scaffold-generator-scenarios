@@ -63,7 +63,7 @@ def write_contract(
     approval_ref: str,
     compiler_draft_ref: str,
     persisted_ref: str,
-) -> None:
+) -> str:
     decision_path = path.with_suffix(".architecture-decisions.yaml")
     decision_id = f"scaffold-decision.{project_name}"
     decision_text = json.dumps(
@@ -115,7 +115,12 @@ def write_contract(
     subprocess.run(["node", str(REPOSITORY_ROOT / "scripts/fixtures/user-decision/build-fixture.mjs"), "--scaffold", str(decision_path)], check=True, cwd=REPOSITORY_ROOT)
     decision_text = decision_path.read_text(encoding="utf-8")
     contract = {
-        "schema_version": 3,
+        "schema_version": 4,
+        "kind": "project-scaffold-contract",
+        "delivery_role": "backend",
+        "scaffold_kind": "backend-ddd",
+        "repository_scope": "external-repository",
+        "init_git": False,
         "contract_id": contract_id,
         "contract_version": 1,
         "scaffold_request_id": f"{project_name}-request",
@@ -123,7 +128,7 @@ def write_contract(
         "compiler_draft_ref": compiler_draft_ref,
         "lifecycle_approval_ref": approval_ref,
         "persisted_ref": persisted_ref,
-        "current_version": 1,
+        "current_version": True,
         "implementation_repository": str(output_root),
         "backend_repository": str(output_root),
         "scaffold_status": "required",
@@ -185,7 +190,7 @@ def write_contract(
         },
         "work_unit": {
             "id": f"{project_name}-scaffold",
-            "behavior": "create pure project scaffold",
+            "behavior": "scaffold",
             "primary_skill": "yss-ddd-scaffold-generator",
             "supporting_skills": ["yss-backend-scaffold-parent", "alibaba-java-code-style"],
             "tdd_mode": "controlled-generation",
@@ -206,6 +211,14 @@ def write_contract(
         },
     }
     path.write_text(json.dumps(contract, ensure_ascii=False, indent=2), encoding="utf-8")
+    attached = subprocess.run(
+        ["node", str(REPOSITORY_ROOT / "scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs"), str(path)],
+        cwd=REPOSITORY_ROOT,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+    return attached.stdout.strip()
 
 
 def assert_pure_scaffold(project_root: Path, contract_id: str) -> None:
@@ -226,7 +239,9 @@ def assert_pure_scaffold(project_root: Path, contract_id: str) -> None:
     require(manifest["compiler_draft_ref"], "生成清单必须记录 实现合同编译器 draft 引用")
     require(manifest["persisted_ref"], "生成清单必须记录合同持久化引用")
     require(manifest["generation_mode"] == "controlled-generation", "生成清单必须记录受控生成模式")
-    require(manifest["schema_version"] == 3, "新生成清单必须使用 schema v3")
+    require(manifest["schema_version"] == 4, "新生成清单必须使用 schema v4")
+    require(manifest["design_prerequisites"]["technical_design"]["digest"], "新生成清单必须记录 Technical Design 摘要")
+    require(manifest["design_prerequisites"]["data_architecture_decision"]["impact"] in ("required", "not-applicable"), "新生成清单必须记录数据架构影响决定")
     require(manifest["architecture_family"] == "domain-driven", "生成清单必须记录已确认的 DDD 架构族")
     require(manifest["generator_skill"] == "yss-ddd-scaffold-generator", "生成清单必须记录实际生成器")
     require(manifest["scaffold_request_id"], "生成清单必须记录服务级 scaffold_request_id")
@@ -310,7 +325,7 @@ def main() -> int:
         )
         require(
             schema_v1_result.returncode != 0
-            and "unsupported: scaffold contract schema_version=1" in (schema_v1_result.stdout + schema_v1_result.stderr),
+            and "后端新生成只接受 Project Scaffold Contract v4" in (schema_v1_result.stdout + schema_v1_result.stderr),
             "schema v1 脚手架合同必须直接返回 unsupported，且不得自动升级",
         )
         require(not (schema_v1_root / "schemav1-service").exists(), "schema v1 拒绝后不得留下生成目录")
@@ -368,7 +383,7 @@ def main() -> int:
         require(stale_result.returncode != 0, "过期脚手架合同不得生成项目")
 
         default_contract = temp_root / "pure-contract.json"
-        write_contract(
+        default_approval_ref = write_contract(
             default_contract,
             output_root,
             "pure-service",
@@ -390,7 +405,7 @@ def main() -> int:
             "--contract-version",
             "1",
             "--approval-ref",
-            "lifecycle/approval-000",
+            default_approval_ref,
             "--compiler-draft-ref",
             "compiler/draft-000",
             "--persisted-ref",

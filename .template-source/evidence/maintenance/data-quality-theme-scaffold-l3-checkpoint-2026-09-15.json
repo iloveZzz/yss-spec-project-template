@@ -1,0 +1,42 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "采用Data Quality默认设计主题、重建随包Vue前端骨架并新增manifest绑定来源，扩展兼容schema v4模板来源与分发回归。",
+  "triggers": [
+    "generation-semantics",
+    "cross-repo-contract",
+    "core-validator"
+  ],
+  "changed_assets": [
+    "DESIGN.md",
+    "docs/design",
+    ".agents/skills/yss-design-system",
+    ".agents/skills/yss-prototype-stage",
+    ".agents/skills/yss-frontend-scaffold-generator",
+    ".agents/skills/yss-product-lifecycle/references/state-model.md",
+    "docs/process/schemas/project-scaffold-contract.schema.json",
+    ".template-source/tooling/node/scripts/design-md.mjs",
+    ".template-source/profile-skill-sync.json",
+    ".gitignore",
+    "submodules/create-yss-spec/tests/init-cli.test.js"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "self-check",
+      "command": "git diff --check; scripts/sync-profile-skills --check --profile=all; scripts/update-skill-lock --check; scripts/sync-skills --check; scripts/verify-skill-governance; refresh_baseline.mjs; source and protected backend dirty bytes checked against turn-start backup",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "Node design-md and scaffold scenarios; generated fixture pnpm install --frozen-lockfile/lint:check/type-check/build/build:standalone; native and React AntD offline browser suites; real qiankun2.10.16 host lifecycle and theme browser checks; root fast 81 top-level commands passed with separate WORKTREE release blocker; three thin CLI tests and final verify-bundle; create-yss-spec 183 tests plus final init/sync regression. Evidence: .template-source/evidence/maintenance/data-quality-theme-scaffold-2026-09-15/",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "fast因核心工具变更升级release，唯一顶层失败为require-committed拒绝working-tree；不构成发布就绪。Data Quality项目不改动；产品批准不适用。首次分发漏3个公开.env模式文件，已限定白名单并补CLI初始化逐资产摘要回归。",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

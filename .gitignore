@@ -20,6 +20,10 @@ dist/
 .env
 .env.*
 !.env.example
+# Public scaffold mode files (no credentials)
+!**/yss-frontend-scaffold-generator/assets/data-quality-v1/packages/.env.development
+!**/yss-frontend-scaffold-generator/assets/data-quality-v1/packages/.env.production
+!**/yss-frontend-scaffold-generator/assets/data-quality-v1/packages/.env.production.standalone
 *.pem
 
 # Database

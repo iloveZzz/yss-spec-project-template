@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
-import { PROJECTION_ROOTS, ROOT } from "./skill-supply-chain.mjs";
+import { nestedSkillPaths, PROJECTION_ROOTS, ROOT, unregisteredNestedSkillPaths } from "./skill-supply-chain.mjs";
 
 export const DEFAULT_REGISTRY = path.join(ROOT, "docs/agents/yss-skill-registry.yaml");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
@@ -217,7 +217,7 @@ function validateCodeReviewRoute(route, resolve) {
   validateFindingDisposition(standards.finding_disposition);
 }
 
-export function validateSkillRegistry(registry, { lock, compilerContract, lifecycleContract, skillSource } = {}) {
+export function validateSkillRegistry(registry, { lock, compilerContract, lifecycleContract, skillSource, externalSkillSource, nestedSkillSources } = {}) {
   if (!registry || typeof registry !== "object" || Array.isArray(registry)) fail("技能路由注册表必须是对象");
   if (registry.schema_version !== 2) fail("schema_version 必须为 2；v1 已停止支持，请迁移 capability、typed dependencies 与 recipes");
   if (registry.registry_id !== "yss.skill-routing") fail("registry_id 必须为 yss.skill-routing");
@@ -315,11 +315,23 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   const external = registry.external_skills ?? [];
   if (!Array.isArray(external)) fail("external_skills 必须是数组");
   const externalIds = new Set();
+  const externalSources = new Set();
   for (const skill of external) {
     requireString(skill.id, "external_skills.id");
     requireString(skill.source, `${skill.id}.source`);
     if (externalIds.has(skill.id) || ids.has(skill.id) || aliases.has(skill.id) || platformAliases.has(skill.id)) fail(`external skill 冲突: ${skill.id}`);
+    const canonicalExternalSource = skill.source.startsWith(`${registry.canonical_content_root}/`);
+    if (canonicalExternalSource && externalSources.has(skill.source)) fail(`external skill source 重复: ${skill.source}`);
+    if (externalSkillSource && canonicalExternalSource) {
+      const discovered = frontmatterName(externalSkillSource(skill.source));
+      if (discovered !== skill.id) fail(`${skill.id} 的 external SKILL.md name=${discovered} 与 id 不一致`);
+    }
     externalIds.add(skill.id);
+    externalSources.add(skill.source);
+  }
+  if (nestedSkillSources) {
+    const unregistered = unregisteredNestedSkillPaths(nestedSkillSources, externalSources);
+    if (unregistered.length) fail(`嵌套 SKILL.md 必须登记到 external_skills: ${unregistered.join(", ")}`);
   }
   for (const skill of platform) {
     for (const alias of skill.aliases) {
@@ -523,6 +535,8 @@ export function validateDefaultSkillRegistry() {
     lock,
     compilerContract,
     lifecycleContract: yamlFromFile(LIFECYCLE_CONTRACT, "生命周期编排合同"),
-    skillSource: (id) => readFileSync(path.join(ROOT, ".agents/skills", id, "SKILL.md"), "utf8")
+    skillSource: (id) => readFileSync(path.join(ROOT, ".agents/skills", id, "SKILL.md"), "utf8"),
+    externalSkillSource: (source) => readFileSync(path.join(ROOT, source), "utf8"),
+    nestedSkillSources: nestedSkillPaths().map((source) => `.agents/skills/${source}`)
   });
 }

@@ -1,0 +1,32 @@
+{
+  "root": {
+    "exit_code": 1,
+    "passed": 81,
+    "failed": [
+      {
+        "command": "scripts/verify-strategic-handoff-tools-lock --require-committed",
+        "exit_code": 1
+      }
+    ]
+  },
+  "design": {
+    "exit_code": 1,
+    "passed": 44,
+    "failed": [
+      {
+        "command": "scripts/verify-strategic-handoff-tools-lock --require-committed",
+        "exit_code": 1
+      }
+    ]
+  },
+  "frontend": {
+    "exit_code": 1,
+    "passed": 45,
+    "failed": [
+      {
+        "command": "scripts/verify-strategic-handoff-tools-lock --require-committed",
+        "exit_code": 1
+      }
+    ]
+  }
+}

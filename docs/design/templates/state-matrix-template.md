@@ -1,6 +1,6 @@
 # <功能名称> 状态矩阵模板
 
-> 适用时机：配合 `product-design:index` 路由后的 Product Design focused skill 使用，在 Spec 校准和 API 影响分析 / 契约草案之前补齐页面状态。
+> 适用时机：由 `yss-prototype-stage` 统一消费；规范直出与条件独立视觉稿使用同一状态矩阵，在 Spec 校准和 API 影响分析 / 契约草案之前补齐页面状态。
 
 状态矩阵同时承担轻量状态机合同：每个可进入状态都必须有触发事件、允许转换、guard、动作与退出路径。不要另建第二份 state-machine 资产。
 

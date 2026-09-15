@@ -9,6 +9,7 @@ import { validateJsonSchema } from "../../../../scripts/lib/json-schema.mjs";
 
 const fail = (message) => { throw new TypeError(message); };
 const REPOSITORY_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../..");
+const SKILL_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const sha256 = (value) => `sha256:${createHash("sha256").update(value).digest("hex")}`;
 function argsOf(argv) {
   const args = {};
@@ -33,7 +34,11 @@ function validate(contract, outputDir) {
   if (contract.delivery_role !== "frontend" || contract.scaffold_kind !== "frontend-yss-vue3" || contract.generator_skill !== "yss-frontend-scaffold-generator") fail("contract is not for the YSS frontend generator");
   if (path.resolve(contract.target_output_dir) !== outputDir) fail("output directory differs from approved contract");
   if (contract.generation_policy?.mode !== "initialize-only" || contract.generation_policy?.existing_target !== "unsupported") fail("unsupported generation policy");
-  if (!contract.frontend?.template?.repository || !/^[a-f0-9]{40}$/.test(contract.frontend.template.commit || "")) fail("template repository and exact 40-character commit are required");
+  if (contract.frontend.template.kind === "bundled") {
+    for (const value of [contract.frontend.app_name, contract.frontend.microapp_name]) if (!/^[a-z][a-z0-9-]{0,62}$/.test(value)) fail("bundled app names must be lowercase kebab-case");
+    if (!/^\/(?:[a-zA-Z0-9_-]+\/?)*$/.test(contract.frontend.base_route)) fail("bundled base_route must be an absolute path without query, quotes or traversal");
+    if (Object.keys(contract.frontend.replacements || {}).length) fail("bundled baseline does not accept arbitrary replacements");
+  } else if (!contract.frontend?.template?.repository || !/^[a-f0-9]{40}$/.test(contract.frontend.template.commit || "")) fail("template repository and exact 40-character commit are required");
   if (contract.frontend.openapi_impact === "frozen" && (!contract.frontend.openapi_json_ref || !contract.frontend.openapi_json_digest)) fail("frozen OpenAPI JSON and digest are required");
   if (contract.frontend.openapi_impact === "not-applicable" && !contract.frontend.openapi_not_applicable_reason) fail("no-API scaffold requires a reason");
 }
@@ -41,20 +46,45 @@ function validate(contract, outputDir) {
 export function generate({ contractFile, templateCheckout, outputDir }) {
   const contract = JSON.parse(readFileSync(contractFile, "utf8"));
   outputDir = path.resolve(outputDir);
-  templateCheckout = path.resolve(templateCheckout);
   validate(contract, outputDir);
-  if (!existsSync(path.join(templateCheckout, ".git"))) fail("template checkout must be a Git worktree");
-  if (git(templateCheckout, "rev-parse", "HEAD") !== contract.frontend.template.commit) fail("template checkout does not match approved commit");
-  if (git(templateCheckout, "config", "--get", "remote.origin.url") !== contract.frontend.template.repository) fail("template repository differs from approved source");
+  const bundled = contract.frontend.template.kind === "bundled";
+  let sourceRoot;
+  if (bundled) {
+    const bytes = readFileSync(path.join(SKILL_ROOT, "references/data-quality-v1.manifest.json"));
+    if (sha256(bytes) !== contract.frontend.template.manifest_digest) fail("bundled manifest digest differs from approved contract");
+    const manifest = JSON.parse(bytes);
+    if (manifest.baseline_id !== contract.frontend.template.baseline_id) fail("bundled baseline mismatch");
+    sourceRoot = path.join(SKILL_ROOT, "assets/data-quality-v1");
+    const actual = walk(sourceRoot).map(file => path.relative(sourceRoot, file)).sort();
+    if (JSON.stringify(actual) !== JSON.stringify(Object.keys(manifest.files).sort())) fail("bundled file inventory mismatch");
+    for (const relative of actual) {
+      const file = path.join(sourceRoot, relative);
+      if (lstatSync(file).isSymbolicLink() || sha256(readFileSync(file)) !== manifest.files[relative]) fail(`bundled file digest mismatch: ${relative}`);
+    }
+  } else {
+    if (!templateCheckout) fail("Git template requires --template-checkout");
+    templateCheckout = path.resolve(templateCheckout);
+    if (!existsSync(path.join(templateCheckout, ".git"))) fail("template checkout must be a Git worktree");
+    if (git(templateCheckout, "rev-parse", "HEAD") !== contract.frontend.template.commit) fail("template checkout does not match approved commit");
+    if (git(templateCheckout, "config", "--get", "remote.origin.url") !== contract.frontend.template.repository) fail("template repository differs from approved source");
+  }
+  let openapi;
+  if (contract.frontend.openapi_impact === "frozen") {
+    openapi = readFileSync(contract.frontend.openapi_json_ref);
+    if (sha256(openapi) !== contract.frontend.openapi_json_digest) fail("OpenAPI JSON digest mismatch");
+  }
   if (existsSync(outputDir) && readdirSync(outputDir).length > 0) fail("target directory must not exist or must be empty");
   mkdirSync(outputDir, { recursive: true });
   const scratch = mkdtempSync(path.join(tmpdir(), "yss-frontend-source-"));
   try {
     // Read the approved Git tree, never dependency caches or edits in the checkout.
-    const archive = spawnSync("git", ["archive", contract.frontend.template.commit], { cwd: templateCheckout, maxBuffer: 256 * 1024 * 1024 });
-    if (archive.error || archive.status !== 0) fail(archive.error?.message || String(archive.stderr));
-    const unpack = spawnSync("tar", ["-xf", "-", "-C", scratch], { input: archive.stdout });
-    if (unpack.error || unpack.status !== 0) fail(unpack.error?.message || String(unpack.stderr));
+    if (bundled) cpSync(sourceRoot, scratch, { recursive: true });
+    else {
+      const archive = spawnSync("git", ["archive", contract.frontend.template.commit], { cwd: templateCheckout, maxBuffer: 256 * 1024 * 1024 });
+      if (archive.error || archive.status !== 0) fail(archive.error?.message || String(archive.stderr));
+      const unpack = spawnSync("tar", ["-xf", "-", "-C", scratch], { input: archive.stdout });
+      if (unpack.error || unpack.status !== 0) fail(unpack.error?.message || String(unpack.stderr));
+    }
     cpSync(scratch, outputDir, { recursive: true, verbatimSymlinks: true });
   } finally { rmSync(scratch, { recursive: true, force: true }); }
 
@@ -76,10 +106,8 @@ export function generate({ contractFile, templateCheckout, outputDir }) {
     if (replaced !== text) writeFileSync(file, replaced);
   }
   if (contract.frontend.openapi_impact === "frozen") {
-    const bytes = readFileSync(contract.frontend.openapi_json_ref);
-    if (sha256(bytes) !== contract.frontend.openapi_json_digest) fail("OpenAPI JSON digest mismatch");
     mkdirSync(path.join(outputDir, "openapi"), { recursive: true });
-    writeFileSync(path.join(outputDir, "openapi", "openapi.json"), bytes);
+    writeFileSync(path.join(outputDir, "openapi", "openapi.json"), openapi);
     if (!generatedFiles.includes("openapi/openapi.json")) generatedFiles.push("openapi/openapi.json");
   }
   if (contract.init_git === true) git(outputDir, "init");
@@ -95,7 +123,7 @@ export function generate({ contractFile, templateCheckout, outputDir }) {
     contract_file_ref: path.resolve(contractFile),
     persisted_ref: contract.persisted_ref,
     approval_ref: contract.approval.approval_ref,
-    template: { ...contract.frontend.template, checkout: templateCheckout },
+    template: { ...contract.frontend.template, ...(!bundled ? { checkout: templateCheckout } : {}) },
     repository_scope: contract.repository_scope,
     target_output_dir: outputDir,
     init_git: contract.init_git,

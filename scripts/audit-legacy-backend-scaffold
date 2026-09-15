@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+import process from "node:process";
+import { auditLegacyBackendScaffold } from "./lib/legacy-backend-scaffold-audit.mjs";
+
+function parse(argv) {
+  const options = {};
+  for (let index = 0; index < argv.length; index += 1) {
+    const token = argv[index];
+    if (token === "--project-root") options.projectRoot = argv[++index];
+    else if (token === "--manifest-ref") options.manifestRef = argv[++index];
+    else if (token === "--help" || token === "-h") options.help = true;
+    else throw new TypeError(`不支持的参数: ${token}`);
+  }
+  if (!options.help && !options.projectRoot) throw new TypeError("缺少 --project-root");
+  return options;
+}
+
+try {
+  const options = parse(process.argv.slice(2));
+  if (options.help) process.stdout.write("用法: scripts/audit-legacy-backend-scaffold --project-root <path> [--manifest-ref .yss/scaffold-generation.json]\n");
+  else {
+    const result = await auditLegacyBackendScaffold(options.projectRoot, { manifestRef: options.manifestRef });
+    process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+    if (result.status === "blocked") process.exitCode = 2;
+  }
+} catch (error) {
+  process.stderr.write(`❌ 历史后端脚手架审计失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

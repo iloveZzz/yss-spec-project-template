@@ -1,0 +1,93 @@
+{
+  "result": "passed",
+  "scope": "maintenance starters only; not product QA or approval",
+  "browser": "153.0.8010.37",
+  "os": "darwin",
+  "delivery": "file:// isolated directory offline=true",
+  "results": [
+    {
+      "kind": "native",
+      "width": 1440,
+      "result": "passed",
+      "control": {
+        "height": 32,
+        "color": "rgb(36, 91, 219)"
+      },
+      "screenshot": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-workbench-browser-n0YdAj/native-1440.png",
+      "scenarios": [
+        "query",
+        "detail-escape",
+        "edit-failure-retry",
+        "reset",
+        "no-permission",
+        "empty",
+        "loading",
+        "conflict-reload"
+      ]
+    },
+    {
+      "kind": "native",
+      "width": 390,
+      "result": "passed",
+      "control": {
+        "height": 32,
+        "color": "rgb(36, 91, 219)"
+      },
+      "screenshot": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-workbench-browser-n0YdAj/native-390.png",
+      "scenarios": [
+        "query",
+        "detail-escape",
+        "edit-failure-retry",
+        "reset",
+        "no-permission",
+        "empty",
+        "loading",
+        "conflict-reload"
+      ]
+    },
+    {
+      "kind": "antd",
+      "width": 1440,
+      "result": "passed",
+      "control": {
+        "height": 32,
+        "color": "rgb(36, 91, 219)"
+      },
+      "screenshot": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-workbench-browser-n0YdAj/antd-1440.png",
+      "scenarios": [
+        "query",
+        "detail-escape",
+        "edit-failure-retry",
+        "reset",
+        "no-permission",
+        "empty",
+        "loading",
+        "conflict-reload",
+        "select",
+        "date-panel"
+      ]
+    },
+    {
+      "kind": "antd",
+      "width": 390,
+      "result": "passed",
+      "control": {
+        "height": 32,
+        "color": "rgb(36, 91, 219)"
+      },
+      "screenshot": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-workbench-browser-n0YdAj/antd-390.png",
+      "scenarios": [
+        "query",
+        "detail-escape",
+        "edit-failure-retry",
+        "reset",
+        "no-permission",
+        "empty",
+        "loading",
+        "conflict-reload",
+        "select",
+        "date-panel"
+      ]
+    }
+  ]
+}

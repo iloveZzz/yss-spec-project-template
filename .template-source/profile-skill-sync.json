@@ -75,14 +75,66 @@
         },
         {
           "source": "docs/templates/examples/lifecycle-writing-examples.md"
+        },
+        {
+          "source": "DESIGN.md"
+        },
+        {
+          "source": "docs/design/design.md"
+        },
+        {
+          "source": "docs/design/templates/prototype-evidence-template.yaml"
+        },
+        {
+          "source": "docs/design/templates/visual-baseline-template.yaml"
+        },
+        {
+          "source": "docs/design/tokens/.design-md-projection.json"
+        },
+        {
+          "source": "docs/design/tokens/tokens.default.json"
+        },
+        {
+          "source": "docs/design/tokens/theme.json"
+        },
+        {
+          "source": "docs/design/tokens/variables.css"
+        },
+        {
+          "source": "docs/design/tokens/tokens.compact.json"
+        },
+        {
+          "source": "docs/design/tokens/tokens.dark.json"
+        },
+        {
+          "source": "docs/design/tokens/variables.dark.css"
+        },
+        {
+          "source": "docs/design/design-system-sync.yaml"
+        },
+        {
+          "source": ".template-source/tooling/node/scripts/design-md.mjs"
+        },
+        {
+          "source": "docs/design/README.md"
+        },
+        {
+          "source": "docs/design/preview.css"
+        },
+        {
+          "source": "docs/design/preview.html"
+        },
+        {
+          "source": "docs/design/preview-dark.html"
+        },
+        {
+          "source": ".template-source/tooling/node/test/design-md.test.mjs"
         }
       ],
       "upstream": [
         "prototype-review",
         "yss-prototype-stage",
         "yss-design-system",
-        "yss-antd-design",
-        "yss-antdv-next-design",
         "yss-stage-decision"
       ],
       "local_only": [
@@ -94,7 +146,10 @@
         "yss-technical-design",
         "yss-tactical-design"
       ],
-      "retired": []
+      "retired": [
+        "yss-antd-design",
+        "yss-antdv-next-design"
+      ]
     },
     "backend": {
       "target": "submodules/yss-harness-backend-agent",
@@ -247,13 +302,13 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "848e9618727fb41a7a31f088237b558e41d2f0e2e8e5d00a2c19bbefc8ecd63b"
+          "source_tree_sha256": "edf25b462c951315777d8fdb4765f128aeaaf903294ee4da616460dff9e10d04"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-openapi-governance.patch",
-          "source_tree_sha256": "20af32a51ccac11dc2d5d07c0dfff7486ceab20d572bd95b7916b43cffc333a4"
+          "source_tree_sha256": "d4a8b8fc98ccd984aa99461f151218e98c18c48c6d9e698bcdd21513e7cb1149"
         }
       ],
       "assets": [
@@ -295,6 +350,42 @@
         },
         {
           "source": ".agents/skills/yss-technical-design/scripts/generate-schema.mjs"
+        },
+        {
+          "source": "docs/process/schemas/project-scaffold-contract.schema.json"
+        },
+        {
+          "source": "docs/process/schemas/data-architecture-decision.schema.json"
+        },
+        {
+          "source": "docs/process/schemas/api-contract-decision.schema.json"
+        },
+        {
+          "source": "docs/process/schemas/implementation-repository-preparation-result.schema.json"
+        },
+        {
+          "source": "docs/process/schemas/openapi-draft-validation-record.schema.json"
+        },
+        {
+          "source": "docs/api/templates/openapi-draft-validation-record-template.yaml"
+        },
+        {
+          "source": "scripts/lib/backend-scaffold-prerequisites.mjs"
+        },
+        {
+          "source": "scripts/lib/api-contract-decision.mjs"
+        },
+        {
+          "source": "scripts/lib/openapi-draft-validation.mjs"
+        },
+        {
+          "source": "scripts/lib/api-contract-decision.test.mjs"
+        },
+        {
+          "source": "scripts/verify-openapi-draft-validation-record"
+        },
+        {
+          "source": "scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs"
         }
       ],
       "upstream": [],
@@ -330,7 +421,9 @@
         "yss-ui"
       ],
       "retired": [
-        "research"
+        "research",
+        "yss-antd-design",
+        "yss-antdv-next-design"
       ]
     },
     "frontend": {
@@ -446,6 +539,12 @@
         },
         {
           "id": "yss-research"
+        },
+        {
+          "id": "yss-prototype-stage"
+        },
+        {
+          "id": "yss-design-system"
         }
       ],
       "adapted": [
@@ -459,19 +558,13 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "848e9618727fb41a7a31f088237b558e41d2f0e2e8e5d00a2c19bbefc8ecd63b"
+          "source_tree_sha256": "edf25b462c951315777d8fdb4765f128aeaaf903294ee4da616460dff9e10d04"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-openapi-governance.patch",
-          "source_tree_sha256": "20af32a51ccac11dc2d5d07c0dfff7486ceab20d572bd95b7916b43cffc333a4"
-        },
-        {
-          "id": "yss-prototype-stage",
-          "strategy": "patch",
-          "patch": ".template-source/profile-skill-patches/frontend/yss-prototype-stage.patch",
-          "source_tree_sha256": "d3384ca29f44b836d5b922981b5c9098cc72580ddbf01e9e3c0aabcd607b40c1"
+          "source_tree_sha256": "d4a8b8fc98ccd984aa99461f151218e98c18c48c6d9e698bcdd21513e7cb1149"
         },
         {
           "id": "frontend-commit",
@@ -486,6 +579,60 @@
         },
         {
           "source": "docs/templates/examples/lifecycle-writing-examples.md"
+        },
+        {
+          "source": "DESIGN.md"
+        },
+        {
+          "source": "docs/design/design.md"
+        },
+        {
+          "source": "docs/design/templates/prototype-evidence-template.yaml"
+        },
+        {
+          "source": "docs/design/templates/visual-baseline-template.yaml"
+        },
+        {
+          "source": "docs/design/tokens/.design-md-projection.json"
+        },
+        {
+          "source": "docs/design/tokens/tokens.default.json"
+        },
+        {
+          "source": "docs/design/tokens/theme.json"
+        },
+        {
+          "source": "docs/design/tokens/variables.css"
+        },
+        {
+          "source": "docs/design/tokens/tokens.compact.json"
+        },
+        {
+          "source": "docs/design/tokens/tokens.dark.json"
+        },
+        {
+          "source": "docs/design/tokens/variables.dark.css"
+        },
+        {
+          "source": "docs/design/design-system-sync.yaml"
+        },
+        {
+          "source": ".template-source/tooling/node/scripts/design-md.mjs"
+        },
+        {
+          "source": "docs/design/README.md"
+        },
+        {
+          "source": "docs/design/preview.css"
+        },
+        {
+          "source": "docs/design/preview.html"
+        },
+        {
+          "source": "docs/design/preview-dark.html"
+        },
+        {
+          "source": ".template-source/tooling/node/test/design-md.test.mjs"
         }
       ],
       "upstream": [],
@@ -506,10 +653,7 @@
         "triage",
         "wait-what",
         "wayfinder",
-        "yss-antd-design",
         "yss-api-integration",
-        "yss-components",
-        "yss-design-system",
         "yss-formily",
         "yss-formily-schema-generator",
         "yss-frontend-scaffold-generator",
@@ -525,6 +669,9 @@
       ],
       "retired": [
         "research",
+        "yss-antd-design",
+        "yss-antdv-next-design",
+        "yss-components",
         "yss-microapp-commit",
         "yss-page-module-development"
       ]

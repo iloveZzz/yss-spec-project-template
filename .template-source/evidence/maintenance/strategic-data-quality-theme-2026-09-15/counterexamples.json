@@ -1,0 +1,34 @@
+{
+  "executed_at": "2026-09-15T02:07:51.096100+08:00",
+  "backup": "/tmp/yss-strategic-theme-before-20260915-020327",
+  "results": [
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/SKILL.md",
+      "counterexample": "阶段表产品设计行",
+      "before_observed": true,
+      "old_conflict_removed": true,
+      "current_expected_observed": true
+    },
+    {
+      "path": "docs/design/templates/prototype-evidence-template.yaml",
+      "counterexample": "默认主题证据引用",
+      "before_observed": true,
+      "old_conflict_removed": true,
+      "current_expected_observed": true
+    },
+    {
+      "path": "docs/design/templates/visual-baseline-template.yaml",
+      "counterexample": "默认截图主题",
+      "before_observed": true,
+      "old_conflict_removed": true,
+      "current_expected_observed": true
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/yss-design-system/references/design-qa-theme.md",
+      "counterexample": "暗色验收陈述",
+      "before_observed": true,
+      "old_conflict_removed": true,
+      "current_expected_observed": true
+    }
+  ]
+}

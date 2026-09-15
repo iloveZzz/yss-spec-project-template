@@ -2,7 +2,7 @@
 
 :root {
   color-scheme: light;
-  --preview-control-height: 28px;
+  --preview-control-height: 32px;
   --preview-primary-control: #245bdb;
   --preview-primary-control-hover: #2f68eb;
   --preview-panel-padding: 16px;

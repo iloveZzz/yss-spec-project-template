@@ -1,0 +1,10 @@
+{
+  "result": "passed",
+  "command": "npm pack --dry-run --json",
+  "package_file_count": 4110,
+  "scaffold_manifest_files": 32,
+  "missing": [],
+  "packed_gitignore": "existing encodedPaths mapping",
+  "source_state": "working-tree",
+  "published": false
+}

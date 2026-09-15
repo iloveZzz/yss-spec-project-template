@@ -1,0 +1,34 @@
+[
+  {
+    "source": "submodules/yss-harness-design-agent",
+    "cli": "create-yss-strategic-design",
+    "source_state": "working-tree",
+    "snapshot_hash": "ae7b0bc2be44a1a8a59b60b48072a6dc36f7dce783d3fe09e18ec898d962b4df",
+    "verified_paths": [
+      "DESIGN.md",
+      ".agents/skills/yss-design-system/SKILL.md",
+      ".agents/skills/yss-design-system/references/design-system.md",
+      ".agents/skills/yss-design-system/references/design-qa-theme.md",
+      "docs/design/templates/prototype-evidence-template.yaml",
+      "docs/design/templates/visual-baseline-template.yaml",
+      "docs/design/templates/prototype-review-checklist.md",
+      "AGENTS.md",
+      ".agents/skills/yss-strategic-design/SKILL.md"
+    ]
+  },
+  {
+    "source": "submodules/yss-harness-frontend-agent",
+    "cli": "create-yss-harness-frontend",
+    "source_state": "working-tree",
+    "snapshot_hash": "77d3b047757d3f9f5a986e7fb7dcf63dd2958a9f1333828b1cc1e036ced42482",
+    "verified_paths": [
+      "DESIGN.md",
+      ".agents/skills/yss-design-system/SKILL.md",
+      ".agents/skills/yss-design-system/references/design-system.md",
+      ".agents/skills/yss-design-system/references/design-qa-theme.md",
+      "docs/design/templates/prototype-evidence-template.yaml",
+      "docs/design/templates/visual-baseline-template.yaml",
+      "docs/design/templates/prototype-review-checklist.md"
+    ]
+  }
+]

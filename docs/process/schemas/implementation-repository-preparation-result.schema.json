@@ -1,38 +1,94 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://yss.example/schemas/implementation-repository-preparation-result.schema.json",
-  "title": "Implementation Repository Preparation Result",
+  "title": "Implementation Repository Preparation Result v2",
   "type": "object",
   "additionalProperties": false,
   "required": ["schema_version", "kind", "result", "current_version", "projects", "evidence_refs"],
   "properties": {
-    "schema_version": { "const": 1 },
+    "schema_version": { "const": 2 },
     "kind": { "const": "implementation-repository-preparation-result" },
     "result": { "const": "completed" },
     "current_version": { "const": true },
-    "projects": {
-      "type": "array",
-      "minItems": 2,
-      "items": {
-        "type": "object",
-        "required": ["project_id", "delivery_role", "status"],
-        "properties": {
-          "project_id": { "type": "string", "minLength": 1 },
-          "delivery_role": { "enum": ["backend", "frontend"] },
-          "status": { "enum": ["existing-and-onboarded", "initialized-and-verified", "not-applicable"] },
-          "reason": { "type": "string" },
-          "repository_ref": { "type": "string" },
-          "project_root": { "type": "string" },
-          "repository_scope": { "enum": ["external-repository", "harness-apps", "git-submodule"] },
-          "onboarding_result": { "type": "object" },
-          "scaffold_contract": { "type": "object" },
-          "scaffold_manifest_ref": { "type": "string" },
-          "scaffold_verification": { "type": "object" },
-          "template_available": { "type": "boolean" },
-          "architecture_family": { "type": "string" }
-        }
+    "projects": { "type": "array", "minItems": 2, "items": { "$ref": "#/$defs/project" } },
+    "evidence_refs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+  },
+  "$defs": {
+    "artifactBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "version", "digest"],
+      "properties": {
+        "ref": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "pattern": "^v[1-9][0-9]*$" },
+        "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "impact": { "enum": ["required", "not-applicable"] }
       }
     },
-    "evidence_refs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+    "designPrerequisites": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["technical_design", "data_architecture_decision", "api_contract_decision", "engineering_contract_approval_ref"],
+      "properties": {
+        "technical_design": { "$ref": "#/$defs/artifactBinding" },
+        "data_architecture_decision": { "$ref": "#/$defs/artifactBinding" },
+        "api_contract_decision": { "$ref": "#/$defs/artifactBinding" },
+        "engineering_contract_approval_ref": { "type": "string", "minLength": 1 }
+      }
+    },
+    "legacyReconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "status", "manifest_ref", "manifest_digest", "ownership_check_ref", "ownership_state", "premature_implementation", "recovery_approval_ref"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "status": { "const": "approved" },
+        "manifest_ref": { "type": "string", "minLength": 1 },
+        "manifest_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "ownership_check_ref": { "type": "string", "minLength": 1 },
+        "ownership_state": { "const": "unchanged-mechanical-scaffold" },
+        "premature_implementation": { "const": false },
+        "recovery_approval_ref": { "type": "string", "minLength": 1 }
+      }
+    },
+    "project": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project_id", "delivery_role", "status"],
+      "properties": {
+        "project_id": { "type": "string", "minLength": 1 },
+        "delivery_role": { "enum": ["backend", "frontend"] },
+        "status": { "enum": ["existing-and-onboarded", "initialized-and-verified", "not-applicable"] },
+        "reason": { "type": "string", "minLength": 1 },
+        "repository_ref": { "type": "string", "minLength": 1 },
+        "project_root": { "type": "string", "minLength": 1 },
+        "repository_scope": { "enum": ["external-repository", "harness-apps", "git-submodule"] },
+        "onboarding_result": { "type": "object" },
+        "scaffold_contract": {
+          "type": "object",
+          "required": ["schema_version", "status", "persisted", "current_version"],
+          "properties": {
+            "schema_version": { "enum": [3, 4] },
+            "status": { "const": "approved" },
+            "persisted": { "const": true },
+            "current_version": { "const": true }
+          }
+        },
+        "scaffold_manifest_ref": { "type": "string", "minLength": 1 },
+        "scaffold_verification": { "type": "object" },
+        "template_available": { "type": "boolean" },
+        "architecture_family": { "type": "string", "minLength": 1 },
+        "design_prerequisites": { "$ref": "#/$defs/designPrerequisites" },
+        "legacy_reconciliation": { "$ref": "#/$defs/legacyReconciliation" }
+      },
+      "allOf": [
+        { "if": { "properties": { "status": { "const": "not-applicable" } }, "required": ["status"] }, "then": { "required": ["reason"] } },
+        { "if": { "properties": { "status": { "enum": ["existing-and-onboarded", "initialized-and-verified"] } }, "required": ["status"] }, "then": { "required": ["repository_ref", "project_root", "repository_scope"] } },
+        { "if": { "properties": { "status": { "const": "existing-and-onboarded" } }, "required": ["status"] }, "then": { "required": ["onboarding_result"] } },
+        { "if": { "properties": { "status": { "const": "initialized-and-verified" } }, "required": ["status"] }, "then": { "required": ["scaffold_contract", "scaffold_manifest_ref", "scaffold_verification"] } },
+        { "if": { "properties": { "delivery_role": { "const": "backend" }, "status": { "enum": ["existing-and-onboarded", "initialized-and-verified"] } }, "required": ["delivery_role", "status"] }, "then": { "required": ["architecture_family", "design_prerequisites"] } },
+        { "if": { "properties": { "delivery_role": { "const": "backend" }, "status": { "const": "initialized-and-verified" }, "scaffold_contract": { "properties": { "schema_version": { "const": 3 } }, "required": ["schema_version"] } }, "required": ["delivery_role", "status", "scaffold_contract"] }, "then": { "required": ["legacy_reconciliation"] } }
+      ]
+    }
   }
 }

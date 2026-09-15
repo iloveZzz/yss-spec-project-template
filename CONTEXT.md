@@ -46,6 +46,7 @@ context_schema_version: 1
 | `ready-for-agent` | 表示垂直切片已通过必要门禁并具备直接实现条件的流程状态。 | — | 不得用于 Spec 初稿、原型、OpenAPI Draft 或其他未冻结资产。 |
 | OpenAPI Draft | review-only 的 OpenAPI 3.1 契约草案。 | — | Freeze 前不得作为前后端稳定实现契约。 |
 | OpenAPI Freeze | 已通过评审、可作为前后端实现和契约测试输入的 OpenAPI 3.1 契约。 | — | Freeze 后变更必须回到 API 影响分析和设计审查。 |
+| API Contract Decision | 以原始字节摘要记录 API 影响结论；有影响时闭包绑定 OpenAPI Draft、Validation、独立 Review 与 Freeze，无影响时绑定评估、原因和证据。 | — | 与 Technical Design、Data Architecture Decision 一起由 `gate.engineering-contract-approved` 原子批准；不得用空 OpenAPI 或字符串自证代替。 |
 | YSS 响应包装 | 对外 API 使用 `Result` 基础字段及 `SingleResult`、`MultiResult`、`PageResult` 表达单对象、非分页列表和分页查询结果的统一返回结构。 | — | Java 泛型记法是语义简称；公开 schema 必须落成具体 endpoint wire shape。 |
 | DTO wire shape | DTO 在 HTTP/JSON 边界实际暴露的字段、类型、可空性和方向性；与 Java 字段、getter 或内部协作字段区分。 | — | 以目标 mapper / contract evidence 为准，不从 getter、Lombok 或 `@JsonIgnore` 机械推断。 |
 | UI 影响 | 会改变用户可见页面、导航、交互流程、状态呈现或权限体验的功能影响。 | — | 纯后端、API、批处理或数据变更不自动构成 UI 影响。 |

@@ -18,7 +18,6 @@
 | 来源 | 作用 | 采用结论 |
 | --- | --- | --- |
 | Ant Design v6 官方主题与迁移文档 | semantic token、CSS variables、theme algorithm 组合与 DOM 兼容边界 | **上游机制权威**；项目覆盖不得改变其算法语义 |
-| `docs/design/facts/antdv-next/1.5.2/manifest.json` | Antdv Next 精确版本的 Design.md、组件 API 与示例事实 | **默认 H2 Provider 事实源**；仅在版本和 digest 新鲜时使用 |
 | 历史 `Product-Design-System` 包 | 首次引入 Ant Design 企业级语义、状态矩阵和验收习惯 | 仅保留原则、组件规则和审查清单 |
 | 项目 Ant Design 5 Less / `:root` 变量 | 品牌主色、运行时切换别名、色板与布局 token 的历史项目覆盖 | 保留经批准的品牌覆盖；不作为 v6 / Antdv Next API 事实 |
 | `yss-meta` 的 `packages/src/styles` | 已落地的紧凑间距、Card 圆角、CSS 变量桥接和客户主题案例 | 只提取稳定语义；utility class、客户覆盖和兼容补丁不进入默认规范 |
@@ -42,15 +41,11 @@
 
 Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以根 `DESIGN.md` 为 source visual truth，并用 `docs/design/tokens/*` 复核实际投影；不得回退到上游默认或历史品牌值。执行清单见 `.agents/skills/yss-design-system/references/design-qa-theme.md`。
 
-版本边界按原型档位处理：H1 直接消费项目 Token；H2 默认通过 `yss-antdv-next-design` 消费 Vue/Antdv Next 精确版本 fact pack；显式 `react-antd-6` 兼容路线才通过 `yss-antd-design` 消费 Ant Design v6 事实。两条原型路线都不替换生产实现路线。原型阶段不得调用 `yss-ui`；生产实现进入批准切片后才从目标实现仓 lockfile 中读取 Vue 3、YSS UI 与 Ant Design Vue 的真实 API。原型到生产只迁移视觉角色、项目 Token、状态和验收行为，禁止在 React/Vue 间搬运 hook、props、JSX、静态 API 或事件模型。
+原型 H1/H2 统一使用 `html-css-js`，以本地 Token CSS 保留 YSS 企业后台视觉语言。生产实现只在目标工程按 lockfile 核验组件 API；原型阶段不调用 `yss-ui`。已冻结的组件库原型和 fact pack 保留历史只读，不再生成新的 Provider 事实包。
 
-### Ant Design v6 / Antdv Next 视觉映射
+### HTML 与生产主题的映射
 
-- Ant Design v6 是以 CSS variables、现代浏览器与内部实现更新为主的技术升级，不应被误解为一套脱离 semantic token 的新皮肤。
-- `defaultAlgorithm`、`darkAlgorithm`、`compactAlgorithm` 可以组合。项目的默认工作界面采用 compact；暗色紧凑模式按 `[darkAlgorithm, compactAlgorithm]` 的等价顺序组合，不手工反色。
-- 基础 seed 从 `docs/design/tokens/theme.json` 读取，compact 结果从 `tokens.compact.json` 读取。禁止把计算结果反写为 seed 后再叠加 compact，避免重复压缩。
-- v6 内部 DOM 和生成类名不是稳定合同；原型和实现只依赖公开组件 API、semantic token、组件 token 与项目 CSS variables。
-- React Ant Design 与 Vue Antdv Next 可共享视觉角色和验收口径，但组件 props、事件、插槽、静态 API 与上下文机制必须分别从精确版本事实读取。
+HTML 直接使用 DESIGN.md 当前默认尺寸与主题 CSS，不要求 ConfigProvider 或组件库算法。生产库若使用 `defaultAlgorithm`、`darkAlgorithm`、`compactAlgorithm`，仍按其版本合同执行，避免把 compact 结果当 seed 再压缩。暗色能力只在派生 Token 和浏览器状态均核验后声明。
 
 ## 设计原则
 
@@ -133,9 +128,9 @@ Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以根 `DE
 - 表单、筛选区、工具栏、表格和详情页应优先使用密集但有节奏的布局。
 - 不使用任意 magic number；如确需新增尺寸，应先判断是否要扩展 token。
 
-### 紧凑密度（默认原型规格）
+### 默认密度与可选紧凑密度
 
-原型交付物和中后台数据密集页面默认使用紧凑密度。紧凑密度不是把所有间距机械缩小，而是使用 `docs/design/tokens/tokens.compact.json` 和下表控制页面节奏；没有明确的展示型或触屏场景时，不切回宽松密度。
+原型和前端工程默认采用 Data Quality 全局主题：浅色、14px 正文、32px 控件、20px Card 内距，不默认开启 compact。下表仅用于明确选择紧凑模式的页面；紧凑模式消费 `tokens.compact.json`，不得再次压缩。
 
 | 场景 | Padding | Margin / Gap | 说明 |
 | --- | --- | --- | --- |
@@ -154,7 +149,7 @@ Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之
 
 | 角色 | 值来源 | 用途 |
 | --- | --- | --- |
-| 顶栏 / 侧栏 / 页面背景 | `docs/design/tokens/theme.json` 的 `layout*` | 应用壳布局 |
+| 顶栏 / 侧栏 / 页面背景 | `DESIGN.md` 的 `colors.surface` / `colors.canvas-layout` | 应用壳布局 |
 | Provider 断点 | 目标组件库精确版本的公开 Grid Token | 栅格和布局折叠 |
 | 截图视口 | 本文件“响应式与多端验收”矩阵 | 浏览器验收，不反写为组件 Token |
 
@@ -169,7 +164,7 @@ Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之
 | `borderRadius` | 6 | 默认控件圆角 |
 | `borderRadiusLG` | 8 | Card、大容器 / 浮层 |
 
-保持“控件圆角小于或等于容器圆角”：控件使用 `rounded.sm/md`，Card 与普通容器使用 `rounded.lg`。更大的 panel 圆角属于局部产品扩展，不作为紧凑型默认值；确需使用时必须先登记规范角色，不能让同一页面任意混用。实现时以根 `DESIGN.md` 与 `docs/design/tokens/tokens.compact.json` 为基线。
+保持“控件圆角小于或等于容器圆角”：控件使用 `rounded.sm/md`，Card 与普通容器使用 `rounded.lg`。更大的 panel 圆角属于局部产品扩展，不作为紧凑型默认值；确需使用时必须先登记规范角色，不能让同一页面任意混用。实现时以根 `DESIGN.md` 与 `docs/design/tokens/tokens.default.json` 为默认基线。
 
 ### 动效
 
@@ -223,17 +218,17 @@ Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之
 | 档位 | 用途 | 技术边界 | 最低验证 |
 |---|---|---|---|
 | H1 `visual-review` | 布局、密度、层级、文案和少量关键交互 | 语义 HTML/CSS/最小 JS 或设计工具导出；无需 Node、package、lockfile 或 AntD CLI | desktop/narrow 非空渲染、项目 Token、console、关键交互、基础键盘/焦点/对比度；zoom/reduced-motion 按影响 |
-| H2 `flow-review` | 主流程、权限、失败恢复、复杂联动和冲突 | 浏览器可运行流程；React/Vite + AntD v6 是受支持默认而非强制 | H1 共同证据 + 主流程、关键异常、zoom/reduced-motion；视觉回归按风险 |
+| H2 `flow-review` | 主流程、权限、失败恢复、复杂联动和冲突 | 浏览器可运行流程；默认 HTML/CSS/JavaScript 离线资源包，场景可重复触发和重置 | H1 共同证据 + 主流程、关键异常、zoom/reduced-motion；视觉回归按风险 |
 
 - H1 不得为了“显得完整”创建空 `package.json`、lockfile 或 AntD 证据。H2 不得声明真实目标组件已验证。
 - 原型中识别出的生产组件假设与待验行为写入 `implementation_handoff`，由 `frontend_implementation_plan` 和 `frontend_implementation_verification` 承接；不得在原型阶段引入 `yss-ui`、目标 lockfile 或 Storybook。
 - 新视觉方向、信息架构不确定或有多个合理方案时执行三方案 ideation；复用已批准视觉模式时记录 source visual 与 `not-applicable` 理由。
-- 默认启用紧凑密度；页面 padding、gap、Card 圆角、Card padding 和控件高度必须在浏览器计算样式中可复核。
+- 默认使用 Data Quality 的32px控件与20px Card内距，紧凑模式显式选择；页面 padding、gap、Card 圆角、Card padding 和控件高度必须在浏览器计算样式中可复核。
 - Design QA、浏览器验证和视觉目标使用同一视口与同一状态；默认 desktop `1440×900`、narrow `390×844`。
 - Design QA 统一覆盖 visual、layout、interaction、content、accessibility、cross-platform 六轴，不再复制第二份检查清单。
-- AntD fact pack 仅在精确版本、组件集合、项目 Token baseline digest 相同且没有新 API 疑问时复用；否则做增量查询。`lint/doctor` 只在存在相关 React 源时执行。
+- 交付包包含所有实际使用的本地资源和 Token 副本，登记摘要；复制到独立目录后以 `file://` 无网络复验。模板结构检查不替代浏览器证据。
 - 原型源码默认 throwaway；项目 Token、组件语义映射、状态、测试场景和验收标准可以进入下游，源码复用仍需 实现合同编译器、Slice Contract 与 TDD。
-- 用户确认只覆盖原型确认的决定、可操作范围、模拟/gap 与接受结论；HTML、story 或截图存在都不代表三个产品设计门禁已经通过。
+- 用户确认只覆盖原型确认的决定、可操作范围、模拟/gap 与接受结论；HTML、story 或截图存在都不代表产品设计聚合门禁已经通过。
 
 ### 无障碍覆盖
 
@@ -271,17 +266,17 @@ Margin 使用规则：组件自身默认不声明外部 margin，兄弟元素之
 如果前端使用 React + Ant Design：
 
 - 使用 `ConfigProvider` 注入 `docs/design/tokens/theme.json` 中的 theme 配置。
-- 默认工作界面使用 `compactAlgorithm`；暗色工作界面组合 `darkAlgorithm` 与 `compactAlgorithm`。seed 与计算结果分别从 `theme.json`、`tokens.compact.json` 读取。
+- 默认采用 Data Quality 浅色与 32px 控件；仅显式紧凑模式使用 `compactAlgorithm`；暗色工作界面组合 `darkAlgorithm` 与 `compactAlgorithm`。seed 与计算结果分别从 `theme.json`、`tokens.compact.json` 读取。
 - 组件样式优先通过 Ant Design token、component token、CSS variables 或主题算法表达。
 - 消息、通知、Modal 静态方法应使用 `App`、hook API 或 context holder，避免主题上下文丢失。
 - 暗色模式使用 `darkAlgorithm` 或 `docs/design/tokens/variables.dark.css`，不要手工反转颜色。本轮只同步了暗色的字体栈和圆角 seed；完整暗色色板仍是历史算法结果，启用暗色前应再派生一次。
-- 紧凑模式默认使用 `compactAlgorithm` 或 `docs/design/tokens/tokens.compact.json`，不要逐组件压缩高度；原型交付物必须按紧凑 token 验收实际 padding、gap、Card 圆角和控件高度。
+- 紧凑模式默认使用 `compactAlgorithm` 或 `docs/design/tokens/tokens.compact.json`，不要逐组件压缩高度；选择紧凑模式的原型交付物按紧凑 token 验收实际 padding、gap、Card 圆角和控件高度。
 
-H2 默认使用 Vue + Antdv Next：
+H1/H2 原型使用 HTML/CSS/JavaScript：
 
-- 先由 `yss-antdv-next-design` 校验精确版本、组件集合和项目 baseline digest，再消费 fact pack；不得把在线最新版示例直接当成本地版本合同。
-- 视觉层沿用本文件的 semantic token、紧凑密度和状态规则；Vue props、events、slots、ConfigProvider 主题结构从 Antdv Next fact pack 读取。
-- `yss-antd-design` 只保留为显式 React/AntD 兼容路线；两者都不替代生产 `yss-ui` 路线。
+- 使用根 `DESIGN.md` 派生的本地 Token CSS，保留来源摘要。
+- 规范直出按 Token、状态矩阵和页面模式验收；已有批准视觉稿时按相同视口与状态比对。首版截图通过审查与用户确认后冻结，不能自我比较作为质量证明。
+- 提供场景入口和重置，覆盖关键异常恢复、代表性业务内容、长文本与窄屏。复杂控件的生产能力假设进入既有 handoff。
 
 如果前端不是 Ant Design：
 
@@ -305,18 +300,15 @@ H2 默认使用 Vue + Antdv Next：
 
 ## 后续落地 TODO
 
-- 将 `docs/design/tokens/theme.json` 作为 compact 默认主题接入原型主题配置。
+- 将 `docs/design/tokens/theme.json` 作为 Data Quality 默认主题接入原型主题配置。
 - 将 `docs/design/tokens/variables.css` 中的 `--brand-*` 与运行时别名纳入项目 token 管理。
 - 如果项目启用暗色模式，用 `darkAlgorithm` 按新 seed 重派生 `docs/design/tokens/tokens.dark.json`，并补充截图验收。
 - 让 H1/H2 原型适配器默认接入项目 Token，并在浏览器证据中记录实际计算后的 padding、gap、Card 圆角和控件高度。
 
-## Ant Design v6 原型补充基线
+## HTML 原型补充基线
 
-本节根据官方 `https://ant.design/design.md` 与目标版本的 `antd design.md --format json` 提炼，仅用于采用 React AntD 的 H2 和语义映射，不替代项目 token，也不提供 Ant Design Vue API。
+参见 `.agents/skills/yss-prototype-stage/references/html-prototype-practices.md`。复用现有六轴 QA 与 Visual Baseline，新增能力只补充其执行方式，不另建交接文档。原生语义优先，弹窗与自定义控件的 ARIA 属性必须对应真实键盘/焦点行为。样式采用项目 Token，关键反馈保留可读文本，场景重置后再采集浏览器证据。
 
-- 先按 `bg-layout`、`bg-container`、`bg-elevated`、文本、边框、状态、圆角和阴影等 semantic token 角色设计，再映射到 `ConfigProvider`、组件 token 或 CSS variables；不得用页面局部色值替代主题层。
-- 默认亮色工作界面使用 `compactAlgorithm`；需要宽松展示态时才使用 `defaultAlgorithm`。暗色紧凑模式组合 `darkAlgorithm` 与 `compactAlgorithm`，禁止手工反色或逐控件压缩。
-- seed `controlHeight` 与 compact 计算值分别读取 `theme.json` 和 `tokens.compact.json`；不得同时下调 seed 和叠加 compact algorithm。
-- Alert、状态标签和选中态使用浅色语义面、边框与可读文本共同表达，避免把成功、警告、错误色铺成高饱和整块背景。
-- 每个决策区域只保留一个 single primary action。保存、提交、审批、发布、导出和重试等动作必须提供 interaction feedback；不可逆或高风险动作使用确认弹窗。
-- 对实际字号、图标和背景复核 accessibility contrast。默认 token 不足时，通过种子 token 或组件 token 调整，不引入单页特例色。
+## AntD 条件预构建
+
+高保真默认原生 HTML；简化模拟影响关键评审结论时，按原型技能的 `references/antd-integration.md` 条件使用 `react-antd-prebuilt`。交付格式与视觉权威不变；React 仅作为随包浏览器运行时，作者依赖与构建工具不交付给接收者。

@@ -2,7 +2,7 @@
 
 ## 1. 准备批准合同
 
-新合同是服务级工程基线，使用 schema v3 与 `scaffold_request_id`，并把已批准的架构决策、Java 包名、Maven 坐标和 Profile 分开登记：
+新合同是服务级工程基线，使用 schema v4 与 `scaffold_request_id`，并把已批准的技术/数据设计、工程合同批准、架构决策、Java 包名、Maven 坐标和 Profile 分开登记：
 
 ```json
 {

@@ -1,0 +1,45 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "统一 DESIGN.md 驱动的离线高保真原型；条件集成真实 AntD 预构建，退役两项 Provider，并同步设计/前端模板、公开分发、生成投影和 CLI WORKTREE 快照。",
+  "triggers": [
+    "generation-semantics",
+    "cross-repo-contract",
+    "core-validator"
+  ],
+  "changed_assets": [
+    ".agents/skills/yss-prototype-stage",
+    ".agents/skills/yss-design-system",
+    "DESIGN.md",
+    "docs/design",
+    "docs/agents/yss-skill-registry.yaml",
+    "yss-public-skills.json",
+    ".template-source/profile-skill-sync.json",
+    "scripts/lib/skill-governance.mjs",
+    "scripts/lib/skill-supply-chain.mjs",
+    "submodules/yss-harness-design-agent",
+    "submodules/yss-harness-frontend-agent",
+    "submodules/create-yss-strategic-design",
+    "submodules/create-yss-harness-frontend",
+    "submodules/create-yss-spec/tests/init-cli.test.js"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "self-check",
+      "command": "git diff --check; scripts/verify-skill-governance; scripts/sync-profile-skills --check --profile=all; scripts/sync-skills --check; scripts/update-skill-lock --check; scripts/sync-strategic-handoff-tools --check; screenshots inspected and unrelated dirty backend/API bytes compared with pre-resume backup",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "node .agents/skills/yss-prototype-stage/tests/run-scenarios.mjs; node --test .agents/skills/yss-prototype-stage/tests/antd-reference.test.mjs; browser-smoke.mjs and workbench-smoke.mjs with Chrome file:// offline=true at 1440x900 and 390x844; pnpm tooling tests root=64 design=33 frontend=33; three thin CLI pnpm verify-bundle and pnpm test; create-yss-spec pnpm test:prepared (183 passed). Raw evidence: .template-source/evidence/maintenance/antd-html-prototype-2026-09-15/",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "fast 因核心资产影响自动升级 release；根/设计/前端的命令组分别 81/44/45 项通过，均仅 require-committed 拒绝 working-tree 来源，退出码 1。完整 release 未通过；不提交、不伪造固定 revision。普通功能/原型验证已闭合，产品 context_reconciliation 与产品批准 not-applicable（template-source 维护）。",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

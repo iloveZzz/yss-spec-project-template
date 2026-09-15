@@ -31,7 +31,6 @@ const BACKEND = {
 
 const FRONTEND = {
   "yss-ui": ["components", "hooks", "skills"],
-  "yss-components": ["components"],
   "yss-hook": ["hooks"],
   "yss-ui-business-page-generation": ["components", "hooks", "skills"],
   "yss-use-table-height": ["hooks"],

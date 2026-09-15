@@ -34,7 +34,7 @@ test("DESIGN.md projection manifest is current", () => {
   assert.equal(manifest.source, "DESIGN.md");
   assert.equal(Object.keys(manifest.files).length, 6);
   const css = readFileSync(path.join(repositoryRoot, "docs/design/tokens/variables.css"), "utf8");
-  for (const declaration of ["--yss-color-primary-control: #245bdb", "--yss-color-primary-control-hover: #2f68eb", "--yss-color-on-primary: #ffffff", "--yss-control-height-compact: 28px", "--yss-card-compact-padding: 16px"]) assert.match(css, new RegExp(declaration));
+  for (const declaration of ["--yss-color-primary-control: #245bdb", "--yss-color-primary-control-hover: #2f68eb", "--yss-color-on-primary: #ffffff", "--yss-control-height: 32px", "--yss-card-padding: 20px"]) assert.match(css, new RegExp(declaration));
 });
 
 test("cross-repository design sync digest matches DESIGN.md", () => {

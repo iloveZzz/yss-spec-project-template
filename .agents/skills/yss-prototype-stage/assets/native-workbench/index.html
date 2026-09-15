@@ -1,0 +1,11 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>资料维护</title><link rel="stylesheet" href="./tokens.css"><link rel="stylesheet" href="./styles.css"><script defer src="./app.js"></script></head><body>
+<header><strong>业务工作台</strong><span>资料管理 / 资料维护</span></header><main>
+<div class="heading"><div><h1>资料维护</h1><p>查询资料、核对详情并维护负责人。</p></div><span class="tag">示例数据</span></div>
+<section class="surface"><form id="query"><label for="keyword">资料名称</label><div class="actions"><input id="keyword" placeholder="输入名称或编号"><button type="submit">查询</button><button id="clear" type="button">重置筛选</button></div></form></section>
+<section class="surface"><h2>资料列表 <small id="count"></small></h2><p id="list-status" role="status"></p><div class="table-scroll"><table><thead><tr><th>编号</th><th>资料名称</th><th>负责人</th><th>状态</th><th>操作</th></tr></thead><tbody id="rows"></tbody></table></div></section>
+<p id="feedback" role="status" aria-live="polite"></p>
+<details class="review-controls"><summary>评审场景</summary><label for="scenario">场景</label><select id="scenario"><option value="primary">正常</option><option value="empty">空数据</option><option value="loading">加载中</option><option value="failure">保存失败</option><option value="no-permission">无编辑权限</option><option value="conflict">并发冲突</option></select> <button id="reset" type="button">重置场景</button><p>供评审使用；所有数据和保存结果均为本地模拟。</p></details>
+</main>
+<dialog id="detail" aria-labelledby="detail-title"><h2 id="detail-title">资料详情</h2><dl id="detail-content"></dl><button id="detail-close" type="button">关闭详情</button></dialog>
+<dialog id="edit" aria-labelledby="edit-title"><form id="editor"><h2 id="edit-title">编辑资料</h2><label for="name">资料名称</label><input id="name" required maxlength="80"><label for="owner">负责人</label><input id="owner" required maxlength="40"><p id="edit-status" role="status"></p><div class="actions"><button id="save" type="submit">保存</button><button id="retry" type="button" hidden>重试</button><button id="reload" type="button" hidden>重新加载</button><button id="cancel" type="button">取消</button></div></form></dialog>
+</body></html>

@@ -88,7 +88,7 @@
 执行规则：
 
 - 间距只使用 `spacing.*`，不要补写未登记的中间值。
-- 默认工作界面叠加一次 compact algorithm；seed 与计算结果从规范源和派生快照读取，不得二次 compact。
+- 默认采用 Data Quality 浅色、32px 控件；仅显式紧凑模式叠加一次 compact algorithm；seed 与计算结果从规范源和派生快照读取，不得二次 compact。
 - 表单、筛选区、工具栏、表格、详情页使用密集但有节奏的布局。
 - 控件圆角不得明显大于容器圆角。
 - 不使用任意 magic number；确需新增尺寸时，先说明为什么 token 不够。
@@ -182,18 +182,16 @@
 React + Ant Design：
 
 - 使用 `ConfigProvider` 注入主题。
-- 默认工作界面使用 `theme.compactAlgorithm`；暗色紧凑模式组合 `theme.darkAlgorithm` 与 `theme.compactAlgorithm`，不手工反转色值或逐组件压缩。
-- seed 与 compact 计算值以 `DESIGN.md` / `tokens.compact.json` 为准；不要重复 compact。
+- 默认采用 Data Quality 浅色与 32px 控件；仅显式紧凑模式使用 `theme.compactAlgorithm`；暗色紧凑模式组合 `theme.darkAlgorithm` 与 `theme.compactAlgorithm`，不手工反转色值或逐组件压缩。
+- seed 与所选主题计算值以 `DESIGN.md` 和对应快照为准；默认使用 `tokens.default.json`，显式紧凑模式才使用 `tokens.compact.json`，不要重复 compact。
 - 优先通过 token、component token、CSS variables、theme algorithm 实现样式。
 - 静态反馈 API 使用 `App`、hook API 或 context holder，避免主题上下文丢失。
 - 暗色模式使用 `darkAlgorithm` 或 `variables.dark.css`。
 - 紧凑模式使用 `compactAlgorithm` 或 `tokens.compact.json`。
 
-实验 Vue + Antdv Next：
+HTML 原型：
 
-- H2 默认先使用 `yss-antdv-next-design` 校验精确版本 fact pack、组件集合与项目 baseline digest。
-- 共享本规范的 semantic token、紧凑密度和验收语义；props、events、slots 与主题 API 只从 Antdv Next fact pack 读取。
-- `yss-antd-design` 只保留为显式 React/AntD 兼容路线；默认 Provider 与兼容 Provider 都不替换生产 `yss-ui` 路线。
+- 使用 `yss-prototype-stage` 的 HTML/CSS/JavaScript adapter，消费项目 semantic token、所选密度和状态合同；生产组件 API 只在下游实现阶段从目标仓实际依赖核验。
 
 YSS UI / Vue：
 
@@ -207,7 +205,7 @@ YSS UI / Vue：
 
 设计评审时检查：
 
-- 是否引用 `docs/design/design.md`。
+- 是否引用根 `DESIGN.md`、治理说明 `docs/design/design.md` 与所选主题快照，并在原型证据中记录摘要。
 - 是否符合中后台定位。
 - 页面清单、主路径、异常路径是否清楚。
 - 状态矩阵是否完整。
@@ -220,7 +218,7 @@ YSS UI / Vue：
 
 - 是否消费 token，而不是硬编码颜色和尺寸。
 - 是否以 semantic token 表达颜色、圆角、阴影和状态层级。
-- 是否使用当前 `DESIGN.md` 与 `tokens.compact.json` 的排版、控件和间距值，且没有重复 compact。
+- 是否使用当前 `DESIGN.md` 与所选主题快照的排版、控件和间距值；默认使用 default，仅显式紧凑模式使用 compact，且没有重复 compact。
 - 是否保留 hover、focus、active、disabled、loading、empty、error 状态。
 - 是否只保留一个 single primary action，并让每个关键操作提供 interaction feedback。
 - 是否在目标字号和背景下复核 accessibility contrast。

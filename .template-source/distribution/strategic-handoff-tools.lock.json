@@ -2,8 +2,8 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "ba2401c4875e8a51bb9157f2c2578eb9c5c9f95e",
-  "source_state": "committed",
+  "source_revision": "dfe94792b99941d36a0d9e740b09ee07fe345b7b",
+  "source_state": "working-tree",
   "transformation_set": [
     "identity"
   ],
@@ -54,7 +54,7 @@
     "scripts/fixtures/strategic-handoff/base-stage.json": "sha256:2df5dbea262cf2bee39972da58e3e0fab844615e272d1e7c8ec2d262bcf486dd",
     "scripts/fixtures/strategic-handoff/base-strategy.json": "sha256:f0e2979af57aca8b33277e8f4fd043c16935c2b037f3562a7e4108c90fab2d3e",
     "scripts/fixtures/strategic-handoff/fixture.mjs": "sha256:fa4eaf6208ed80c1d19d3cf5f42c0367011a360e733143b1c19c38f226a2b17d",
-    "scripts/fixtures/strategic-handoff/source-roles.json": "sha256:9fa3119c0299087675107fde5a54ea0ed5523448bb0601bef51eebad3569b243",
+    "scripts/fixtures/strategic-handoff/source-roles.json": "sha256:3f53ac405ebc45bef6dee1e283f62c5f2a4a5ad7ae3c7d3790897b48e74cea7a",
     "scripts/fixtures/user-decision/build-fixture.mjs": "sha256:8be5209cda2f089dca4863734d6a8802cc5f4dd5c3b14a97fa37c8bb72d6a2ad",
     "scripts/instantiate-harness": "sha256:065e2ba223752f4a81a48f31eea41625e9f638547605ff4736297f38b0a0a8e0",
     "scripts/lib/approved-execution-context.mjs": "sha256:22f325c9cd704b24b5b7c633283291e08e510fa63232005c80581faf4e97ed59",
@@ -92,7 +92,7 @@
     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
     "scripts/verify-strategic-handoff-package-scenarios": "sha256:9d702f3d04fda88103e2f6e2ff45ff02e54fc006f2981bd33b554867a8336d09",
     "scripts/verify-strategic-handoff-tools-lock": "sha256:7b413ccc4ab4dc606113ec9e3f51ddac0d2045a761b18130483a70118c566d9b",
-    "docs/agents/yss-skill-registry.yaml": "sha256:b34a8bffdaadf6c2e740c5a955ec755d482c2fc0f2cc7109cea277ceff2a2a3a"
+    "docs/agents/yss-skill-registry.yaml": "sha256:334433e66208ba0e26941620c8c16bc29727e0254a902070d0f4b1bf3d05eb47"
   },
   "effective_files": {
     "docs/process/delivery-preflight.md": "sha256:334a2d4df29ae8213b3e8214d17a2eb48662649fa895c3a9d68fcd23b3a1499d",
@@ -141,7 +141,7 @@
     "scripts/fixtures/strategic-handoff/base-stage.json": "sha256:2df5dbea262cf2bee39972da58e3e0fab844615e272d1e7c8ec2d262bcf486dd",
     "scripts/fixtures/strategic-handoff/base-strategy.json": "sha256:f0e2979af57aca8b33277e8f4fd043c16935c2b037f3562a7e4108c90fab2d3e",
     "scripts/fixtures/strategic-handoff/fixture.mjs": "sha256:fa4eaf6208ed80c1d19d3cf5f42c0367011a360e733143b1c19c38f226a2b17d",
-    "scripts/fixtures/strategic-handoff/source-roles.json": "sha256:9fa3119c0299087675107fde5a54ea0ed5523448bb0601bef51eebad3569b243",
+    "scripts/fixtures/strategic-handoff/source-roles.json": "sha256:3f53ac405ebc45bef6dee1e283f62c5f2a4a5ad7ae3c7d3790897b48e74cea7a",
     "scripts/fixtures/user-decision/build-fixture.mjs": "sha256:8be5209cda2f089dca4863734d6a8802cc5f4dd5c3b14a97fa37c8bb72d6a2ad",
     "scripts/instantiate-harness": "sha256:065e2ba223752f4a81a48f31eea41625e9f638547605ff4736297f38b0a0a8e0",
     "scripts/lib/approved-execution-context.mjs": "sha256:22f325c9cd704b24b5b7c633283291e08e510fa63232005c80581faf4e97ed59",
@@ -179,6 +179,6 @@
     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
     "scripts/verify-strategic-handoff-package-scenarios": "sha256:9d702f3d04fda88103e2f6e2ff45ff02e54fc006f2981bd33b554867a8336d09",
     "scripts/verify-strategic-handoff-tools-lock": "sha256:7b413ccc4ab4dc606113ec9e3f51ddac0d2045a761b18130483a70118c566d9b",
-    "docs/agents/yss-skill-registry.yaml": "sha256:b34a8bffdaadf6c2e740c5a955ec755d482c2fc0f2cc7109cea277ceff2a2a3a"
+    "docs/agents/yss-skill-registry.yaml": "sha256:334433e66208ba0e26941620c8c16bc29727e0254a902070d0f4b1bf3d05eb47"
   }
 }

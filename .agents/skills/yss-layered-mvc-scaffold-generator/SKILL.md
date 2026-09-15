@@ -11,7 +11,7 @@ description: 用于在生命周期已批准的脚手架合同下生成通用 YSS
 
 - backend `scaffold_status=required`，目标目录已确认且不存在。
 - `scaffold-architecture-decisions.yaml` 中对应项目已达到 `lifecycle-approved`，确认架构为 `layered-mvc`。
-- `yss-implementation-contract-compiler` 已编译统一 Project Scaffold Contract schema v4；已批准且当前的后端 schema v3 可完成兼容生成。合同须由生命周期批准并持久化。
+- `yss-implementation-contract-compiler` 已编译统一 Project Scaffold Contract schema v4，并绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision v1 和真实工程合同批准记录。API `required` 时 Draft、Validation、独立 Review、Freeze 与工程批准必须绑定同一 OpenAPI YAML 字节；`not-applicable` 时必须有评估、原因和证据且不得携带占位资产。合同须由生命周期批准并持久化。
 - 合同中的 `decision_id`、文件 digest、Profile、能力闭包、写路径和验证命令仍为当前版本。
 
 任一条件缺失时返回 `blocked`。本生成器无交互、无默认回退；用户选择由 `yss-product-lifecycle` 在 `work-unit.technical-analysis` 的工程基线内完成。
@@ -55,7 +55,7 @@ node scripts/generate_and_verify_scaffold.mjs \
 
 ## 硬约束
 
-- 接受统一 schema v4，兼容已批准后端 schema v3；验证器接受对应 Manifest v3/v4。历史 v2 只读兼容，不用于新生成。
+- 新生成只接受包含 API Contract Decision 的统一 schema v4；缺 API 字段的预发布 v4 不得静默接受。验证器可只读检查历史 Manifest v3，恢复必须另行完成所有权审计、技术/数据/API 设计补齐与当前批准。历史 v2/v3 均不用于新生成。
 - `architecture_family` 必须为 `layered-mvc`，`generator_skill` 必须为本 skill。
 - 目标存在、`--force`、旧项目迁移、模板升级均为 `unsupported`。
 - Harness 内只允许以 `apps/backend/` 为输出父容器；外部实现仓库使用已登记真实路径。

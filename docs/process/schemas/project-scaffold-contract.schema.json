@@ -17,8 +17,8 @@
     "persisted_ref": { "type": "string", "minLength": 1 },
     "current_version": { "const": true },
     "delivery_role": { "enum": ["backend", "frontend"] },
-    "scaffold_kind": { "enum": ["backend-ddd", "backend-layered-mvc", "frontend-yss-vue3"] },
-    "generator_skill": { "enum": ["yss-ddd-scaffold-generator", "yss-layered-mvc-scaffold-generator", "yss-frontend-scaffold-generator"] },
+    "scaffold_kind": { "enum": ["backend-ddd", "backend-layered-mvc", "backend-mvc-data-analysis", "frontend-yss-vue3"] },
+    "generator_skill": { "enum": ["yss-ddd-scaffold-generator", "yss-layered-mvc-scaffold-generator", "yss-mvc-data-analysis-project-initializer", "yss-frontend-scaffold-generator"] },
     "implementation_repository": { "type": "string", "minLength": 1 },
     "backend_repository": { "type": "string", "minLength": 1 },
     "scaffold_status": { "const": "required" },
@@ -35,6 +35,8 @@
     "maven_coordinates": { "type": "object" },
     "profiles": { "type": "object" },
     "module_profile": { "type": "object" },
+    "context_handoff_ref": { "type": "string", "minLength": 1 },
+    "context_handoff_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
     "frontend": {
       "type": "object",
       "additionalProperties": false,
@@ -45,13 +47,47 @@
         "base_route": { "type": "string", "pattern": "^/" },
         "package_manager": { "const": "pnpm" },
         "template": {
-          "type": "object",
-          "additionalProperties": false,
-          "required": ["repository", "commit"],
-          "properties": {
-            "repository": { "type": "string", "minLength": 1 },
-            "commit": { "type": "string", "pattern": "^[a-f0-9]{40}$" }
-          }
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "repository",
+                "commit"
+              ],
+              "properties": {
+                "repository": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "commit": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{40}$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "baseline_id",
+                "manifest_digest"
+              ],
+              "properties": {
+                "kind": {
+                  "const": "bundled"
+                },
+                "baseline_id": {
+                  "const": "data-quality-v1"
+                },
+                "manifest_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[a-f0-9]{64}$"
+                }
+              }
+            }
+          ]
         },
         "openapi_impact": { "enum": ["frozen", "not-applicable"] },
         "openapi_json_ref": { "type": "string", "minLength": 1 },
@@ -84,6 +120,17 @@
         "template_upgrade": { "const": "unsupported" }
       }
     },
+    "design_prerequisites": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["technical_design", "data_architecture_decision", "api_contract_decision", "engineering_contract_approval_ref"],
+      "properties": {
+        "technical_design": { "$ref": "#/$defs/versionedArtifactBinding" },
+        "data_architecture_decision": { "$ref": "#/$defs/impactArtifactBinding" },
+        "api_contract_decision": { "$ref": "#/$defs/impactArtifactBinding" },
+        "engineering_contract_approval_ref": { "type": "string", "minLength": 1 }
+      }
+    },
     "work_unit": {
       "type": "object",
       "required": ["id", "behavior", "primary_skill", "supporting_skills", "tdd_mode", "allowed_write_paths", "expected_evidence", "verification_commands", "controlled_generation"],
@@ -107,7 +154,34 @@
     },
     {
       "if": { "properties": { "delivery_role": { "const": "backend" } } },
-      "then": { "required": ["scaffold_request_id", "compiler_draft_ref", "lifecycle_approval_ref", "backend_repository", "scaffold_status", "project_name", "base_package", "architecture_family", "decision_ref", "decision_id", "decision_digest", "maven_coordinates", "profiles", "module_profile", "work_unit"] }
+      "then": { "required": ["scaffold_request_id", "compiler_draft_ref", "lifecycle_approval_ref", "backend_repository", "scaffold_status", "project_name", "base_package", "architecture_family", "decision_ref", "decision_id", "decision_digest", "maven_coordinates", "profiles", "module_profile", "work_unit", "design_prerequisites"] }
+    },
+    {
+      "if": { "properties": { "generator_skill": { "const": "yss-mvc-data-analysis-project-initializer" } }, "required": ["generator_skill"] },
+      "then": { "required": ["context_handoff_ref", "context_handoff_digest"], "properties": { "scaffold_kind": { "const": "backend-mvc-data-analysis" }, "architecture_family": { "const": "layered-mvc" } } }
     }
-  ]
+  ],
+  "$defs": {
+    "versionedArtifactBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "version", "digest"],
+      "properties": {
+        "ref": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "pattern": "^v[1-9][0-9]*$" },
+        "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+        "impact": { "enum": ["required", "not-applicable"] }
+      }
+    },
+    "impactArtifactBinding": {
+      "allOf": [
+        { "$ref": "#/$defs/versionedArtifactBinding" },
+        {
+          "type": "object",
+          "required": ["impact"],
+          "properties": { "impact": { "enum": ["required", "not-applicable"] } }
+        }
+      ]
+    }
+  }
 }

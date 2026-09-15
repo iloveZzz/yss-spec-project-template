@@ -7,6 +7,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { attachDesignPrerequisites } from "../../../../scripts/fixtures/backend-scaffold/design-prerequisites.mjs";
 
 import { generate as generateWeb, parseArgs as parseWebArgs } from "../../yss-web-controller/scripts/generate_controller.mjs";
 import { runFirstSliceVerification } from "./run_first_slice_verification.mjs";
@@ -18,7 +19,12 @@ const execute = (file, args, options = {}) => new Promise((resolve) => execFile(
 
 function scaffoldContract(output, decisionDigest) {
   return {
-    schema_version: 3,
+    schema_version: 4,
+    kind: "project-scaffold-contract",
+    delivery_role: "backend",
+    scaffold_kind: "backend-ddd",
+    repository_scope: "external-repository",
+    init_git: false,
     contract_id: "golden-scaffold-1",
     contract_version: 1,
     scaffold_request_id: "golden-request-1",
@@ -26,7 +32,7 @@ function scaffoldContract(output, decisionDigest) {
     compiler_draft_ref: "compiler-golden-1",
     lifecycle_approval_ref: "approval-golden-1",
     persisted_ref: "persisted-golden-1",
-    current_version: 1,
+    current_version: true,
     implementation_repository: "external",
     backend_repository: "external",
     scaffold_status: "required",
@@ -69,8 +75,11 @@ async function prepareGoldenProject(t) {
   await writeFile(decisionFile, decisionText);
   const decisionDigest = `sha256:${createHash("sha256").update(decisionText).digest("hex")}`;
   const contractFile = path.join(root, "scaffold-contract.json");
-  await writeFile(contractFile, `${JSON.stringify(scaffoldContract(output, decisionDigest), null, 2)}\n`);
-  const args = ["--project-name", "golden-service", "--base-package", "com.yss.golden", "--output-dir", output, "--contract-id", "golden-scaffold-1", "--contract-version", "1", "--approval-ref", "approval-golden-1", "--compiler-draft-ref", "compiler-golden-1", "--persisted-ref", "persisted-golden-1", "--contract-file", contractFile, "--group-id", "com.yss.datamiddle", "--project-version", "1.0.0-SNAPSHOT", "--parent-group-id", "com.yss.datamiddle", "--parent-artifact-id", "yss-datamiddle-parent", "--parent-version", "2.0.0-SNAPSHOT", "--yss-components-version", "2.0.0-SNAPSHOT"];
+  const contract = scaffoldContract(output, decisionDigest);
+  contract.decision_ref = decisionFile;
+  attachDesignPrerequisites(root, contract);
+  await writeFile(contractFile, `${JSON.stringify(contract, null, 2)}\n`);
+  const args = ["--project-name", "golden-service", "--base-package", "com.yss.golden", "--output-dir", output, "--contract-id", "golden-scaffold-1", "--contract-version", "1", "--approval-ref", contract.lifecycle_approval_ref, "--compiler-draft-ref", "compiler-golden-1", "--persisted-ref", "persisted-golden-1", "--contract-file", contractFile, "--group-id", "com.yss.datamiddle", "--project-version", "1.0.0-SNAPSHOT", "--parent-group-id", "com.yss.datamiddle", "--parent-artifact-id", "yss-datamiddle-parent", "--parent-version", "2.0.0-SNAPSHOT", "--yss-components-version", "2.0.0-SNAPSHOT"];
   const generated = await execute(process.execPath, [generator, ...args]);
   assert.equal(generated.code, 0, generated.stderr);
   const project = path.join(output, "golden-service");

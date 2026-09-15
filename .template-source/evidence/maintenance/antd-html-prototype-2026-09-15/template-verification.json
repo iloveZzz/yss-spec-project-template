@@ -1,0 +1,47 @@
+{
+  "scope": "Final full command groups. Release requires committed provenance; runner stops before post-success syntax/readonly checks.",
+  "results": [
+    {
+      "repository": "root",
+      "command": "scripts/verify-template-fast",
+      "effective_profile": "release",
+      "exit_code": 1,
+      "passed_commands": 81,
+      "failures": [
+        {
+          "command": "scripts/verify-strategic-handoff-tools-lock --require-committed",
+          "exit_code": 1
+        }
+      ],
+      "log": "root-verification.log"
+    },
+    {
+      "repository": "design",
+      "command": "scripts/verify-template-fast",
+      "effective_profile": "release",
+      "exit_code": 1,
+      "passed_commands": 44,
+      "failures": [
+        {
+          "command": "scripts/verify-strategic-handoff-tools-lock --require-committed",
+          "exit_code": 1
+        }
+      ],
+      "log": "design-verification.log"
+    },
+    {
+      "repository": "frontend",
+      "command": "scripts/verify-template-fast",
+      "effective_profile": "release",
+      "exit_code": 1,
+      "passed_commands": 45,
+      "failures": [
+        {
+          "command": "scripts/verify-strategic-handoff-tools-lock --require-committed",
+          "exit_code": 1
+        }
+      ],
+      "log": "frontend-verification.log"
+    }
+  ]
+}

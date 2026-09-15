@@ -1,0 +1,13 @@
+{
+  "requested_profile": "fast",
+  "effective_profile": "release",
+  "exit_code": 1,
+  "passed_command_count": 81,
+  "failed": [
+    [
+      "scripts/verify-strategic-handoff-tools-lock --require-committed",
+      "33",
+      "1"
+    ]
+  ]
+}

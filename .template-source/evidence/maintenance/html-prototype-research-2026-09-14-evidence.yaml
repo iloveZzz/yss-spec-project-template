@@ -1,0 +1,475 @@
+{
+  "schema_version": 1,
+  "profile": "technical-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "保留 YSS 视觉的离线 HTML 高保真原型与技能补强",
+    "audience": "模板维护者与原型技能所有者",
+    "time_horizon": "2026-09-14；线上文档为当日读取，Owl 采用登记固定 revision",
+    "research_questions": [
+      "离线 HTML 原型需要哪些可执行质量补强？",
+      "已有设计方法如何复用，哪些 focused workflow 必须条件适配？",
+      "哪些来源不能作为离线可用、无障碍或视觉正确的实测证据？"
+    ],
+    "inclusion_criteria": [
+      "登记上游固定源码",
+      "官方设计格式、浏览器及测试文档",
+      "本地技能调用合同"
+    ],
+    "exclusion_criteria": [
+      "二手教程和聚合摘要",
+      "新第三方代码或整包技能安装",
+      "未经实测的效率或兼容性提升宣称"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "maintaining-skills / yss-prototype-stage / yss-design-system",
+    "decision_ref": null
+  },
+  "search_log": [
+    {
+      "id": "search-001",
+      "channel": "registered-local-source",
+      "query_or_corpus": "prototype-profile-routing、state-matrix、Product Design 0.1.42 focused workflows、原型生成验证器",
+      "searched_at": "2026-09-14",
+      "result": "results-found"
+    },
+    {
+      "id": "search-002",
+      "channel": "web",
+      "query_or_corpus": "GitHub Owl-Listener/designer-skills tree 20e34c4a587e5eb09fcdf8351fa97b3ad761b31e",
+      "searched_at": "2026-09-14",
+      "result": "access-failed"
+    },
+    {
+      "id": "search-003",
+      "channel": "official-github-api-and-raw",
+      "query_or_corpus": "同固定 revision 的 tree API 及 prototype-strategy/state-machine/design-qa-checklist/handoff-spec 原文",
+      "searched_at": "2026-09-14",
+      "result": "results-found"
+    },
+    {
+      "id": "search-004",
+      "channel": "official-web-and-raw",
+      "query_or_corpus": "Google design.md README/spec、GOV.UK pass-data、WAI APG modal/read-me-first、Playwright test-snapshots、MDN Modules/localStorage",
+      "searched_at": "2026-09-14",
+      "result": "results-found"
+    },
+    {
+      "id": "search-005",
+      "channel": "counter-signals-in-primary-sources",
+      "query_or_corpus": "alpha 状态、服务端 session、ARIA 非自动行为、截图环境差异、file URL 限制、focused workflow 视觉目标和 Node 前提",
+      "searched_at": "2026-09-14",
+      "result": "results-found"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-001",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation-or-source",
+      "source_ref": "https://github.com/google-labs-code/design.md/blob/main/docs/spec.md",
+      "locator": "DESIGN.md Format; Design Tokens; Prose and Tokens",
+      "stance": "support",
+      "observed_at": "2026-09-14",
+      "source_version": "alpha; main observed 2026-09-14; not commit-pinned",
+      "observation": "DESIGN.md 以 YAML 表达机器可读 Token，以 Markdown 解释设计意图；Token 是规范值，文字解释应用方式。",
+      "limitations": [
+        "这是上游格式能力，不证明生成页面实际使用了 Token。"
+      ]
+    },
+    {
+      "id": "evidence-002",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation-or-source",
+      "source_ref": "https://github.com/google-labs-code/design.md/blob/main/README.md",
+      "locator": "Status",
+      "stance": "counter",
+      "observed_at": "2026-09-14",
+      "source_version": "alpha; main observed 2026-09-14; not commit-pinned",
+      "observation": "上游明确格式、schema 和 CLI 仍处于 alpha 演进中。",
+      "limitations": [
+        "不能将其描述为已冻结的行业标准；不代表本仓固定工具必须升级。"
+      ]
+    },
+    {
+      "id": "evidence-003",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation-or-source",
+      "source_ref": "https://prototype-kit.service.gov.uk/pass-data/",
+      "locator": "Pass data from page to page; Set default data; Use links to set data",
+      "stance": "support",
+      "observed_at": "2026-09-14",
+      "source_version": "2026-09-14 online documentation; no fixed revision",
+      "observation": "原型保留回答供后续页面使用，支持默认数据、按场景设置数据，以及 Clear data 重置。",
+      "limitations": [
+        "只借鉴体验和场景设计；不采用其 Nunjucks 或服务端代码。"
+      ]
+    },
+    {
+      "id": "evidence-004",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation-or-source",
+      "source_ref": "https://prototype-kit.service.gov.uk/pass-data/",
+      "locator": "Use the data on the server",
+      "stance": "counter",
+      "observed_at": "2026-09-14",
+      "source_version": "2026-09-14 online documentation; no fixed revision",
+      "observation": "文档同时使用服务端 req.session.data；这份方案本身不是双击 HTML 的离线运行方案。",
+      "limitations": [
+        "不能照搬服务端数据实现来证明 file URL 可用。"
+      ]
+    },
+    {
+      "id": "evidence-005",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation-or-source",
+      "source_ref": "https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/",
+      "locator": "Keyboard Interaction; WAI-ARIA Roles, States, and Properties",
+      "stance": "support",
+      "observed_at": "2026-09-14",
+      "source_version": "2026-09-14 online documentation; no fixed revision",
+      "observation": "模态对话框应管理初始焦点、内部 Tab 顺序、Escape 关闭，以及关闭后的合理焦点恢复，并使背景不可交互。",
+      "limitations": [
+        "用于提炼验收行为；并未执行本仓原型的浏览器或辅助技术测试。"
+      ]
+    },
+    {
+      "id": "evidence-006",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation-or-source",
+      "source_ref": "https://www.w3.org/WAI/ARIA/apg/practices/read-me-first/",
+      "locator": "A role is a promise; Browser and Assistive Technology Support",
+      "stance": "counter",
+      "observed_at": "2026-09-14",
+      "source_version": "2026-09-14 online documentation; no fixed revision",
+      "observation": "ARIA role 不会自动提供键盘行为；APG 示例不替代目标浏览器与辅助技术组合测试。",
+      "limitations": [
+        "不能用 role 字段存在或参考 APG 自述无障碍合规。"
+      ]
+    },
+    {
+      "id": "evidence-007",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation-or-source",
+      "source_ref": "https://playwright.dev/docs/test-snapshots",
+      "locator": "Introduction; Generating screenshots; rendering environment warning",
+      "stance": "support",
+      "observed_at": "2026-09-14",
+      "source_version": "2026-09-14 online documentation; no fixed revision",
+      "observation": "Playwright 可比较参考截图；官方说明浏览器、系统、字体及运行环境会改变渲染，建议在生成基线的同一环境执行比较。",
+      "limitations": [
+        "截图方法不验证业务规则或首版设计意图。"
+      ]
+    },
+    {
+      "id": "evidence-008",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation-or-source",
+      "source_ref": "https://playwright.dev/docs/test-snapshots",
+      "locator": "Introduction; Generating screenshots",
+      "stance": "counter",
+      "observed_at": "2026-09-14",
+      "source_version": "2026-09-14 online documentation; no fixed revision",
+      "observation": "首次执行可生成参考截图，之后进行比较；生成参考文件本身不包含人对设计正确性的判断。",
+      "limitations": [
+        "后半句为该机制的适用边界：不能让新生成图作为自身符合设计的独立证明。"
+      ]
+    },
+    {
+      "id": "evidence-009",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation-or-source",
+      "source_ref": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules",
+      "locator": "Other differences between modules and classic scripts; Troubleshooting",
+      "stance": "support",
+      "observed_at": "2026-09-14",
+      "source_version": "2026-09-14 online documentation; no fixed revision",
+      "observation": "MDN 说明通过 file URL 加载模块存在 CORS 安全要求，应通过服务器测试模块示例。",
+      "limitations": [
+        "不推导所有普通脚本或资源均不可本地打开；本轮仅据此收窄离线包运行依赖。"
+      ]
+    },
+    {
+      "id": "evidence-010",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation-or-source",
+      "source_ref": "https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage",
+      "locator": "Exceptions; Description",
+      "stance": "support",
+      "observed_at": "2026-09-14",
+      "source_version": "2026-09-14 online documentation; no fixed revision",
+      "observation": "file URL 的 localStorage 行为未定义且可能随浏览器变化，访问还可能抛出 SecurityError。",
+      "limitations": [
+        "这是不能依赖存储持续可用的反向限制，不是特定浏览器实测。"
+      ]
+    },
+    {
+      "id": "evidence-011",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source",
+      "source_ref": ".codex/skills/product-design/references/local-prototype-preflight.md",
+      "locator": "本轮变更前读取 lines 8-15",
+      "stance": "counter",
+      "observed_at": "2026-09-14",
+      "source_version": "local Product Design package 0.1.42; pre-change read 2026-09-14",
+      "observation": "本地 Product Design preflight 要求 bootstrap 与 npm install，并不提供既定的无接收方 Node 交付路线。",
+      "limitations": [
+        "记录变更前依赖；主控正在修改模板，后续应核对当前路由。"
+      ]
+    },
+    {
+      "id": "evidence-012",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation-or-source",
+      "source_ref": "https://github.com/Owl-Listener/designer-skills/blob/20e34c4a587e5eb09fcdf8351fa97b3ad761b31e/design-ops/skills/design-qa-checklist/SKILL.md",
+      "locator": "QA Categories; Best Practices, lines 9-57",
+      "stance": "support",
+      "observed_at": "2026-09-14",
+      "source_version": "20e34c4a587e5eb09fcdf8351fa97b3ad761b31e; fixed inspected revision, not latest",
+      "observation": "上游覆盖视觉、布局、交互、内容、无障碍和跨平台；要求真实内容、边界和异常，而非仅成功路径。",
+      "limitations": [
+        "并未证明 YSS 中后台特定内容样例已覆盖；具体样例必须按批准范围选择。"
+      ]
+    },
+    {
+      "id": "evidence-013",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation-or-source",
+      "source_ref": "https://github.com/Owl-Listener/designer-skills/blob/20e34c4a587e5eb09fcdf8351fa97b3ad761b31e/design-ops/skills/handoff-spec/SKILL.md",
+      "locator": "Content Specifications; Asset Delivery; Edge Cases, lines 21-35",
+      "stance": "support",
+      "observed_at": "2026-09-14",
+      "source_version": "20e34c4a587e5eb09fcdf8351fa97b3ad761b31e",
+      "observation": "交接说明覆盖内容长度、截断、国际化、空/加载/错误状态以及图标、图片、字体和边界内容。",
+      "limitations": [
+        "用于增强已有交接，不新建第二份 Handoff Spec。"
+      ]
+    },
+    {
+      "id": "evidence-014",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation-or-source",
+      "source_ref": "https://github.com/Owl-Listener/designer-skills/blob/20e34c4a587e5eb09fcdf8351fa97b3ad761b31e/design-ops/skills/handoff-spec/SKILL.md",
+      "locator": "Asset Delivery, line 29",
+      "stance": "counter",
+      "observed_at": "2026-09-14",
+      "source_version": "20e34c4a587e5eb09fcdf8351fa97b3ad761b31e",
+      "observation": "上游字体交付允许本地文件或服务链接；服务链接选项不满足本次离线资源要求。",
+      "limitations": [
+        "本次只采纳本地资源方法，来源不决定 YSS 字体版权或再分发授权。"
+      ]
+    },
+    {
+      "id": "evidence-015",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source",
+      "source_ref": ".codex/skills/product-design/skills/image-to-code/SKILL.md",
+      "locator": "本轮变更前 lines 27-29, 66, 87-97; 同目录 ../design-qa/SKILL.md lines 14-19",
+      "stance": "support",
+      "observed_at": "2026-09-14",
+      "source_version": "local Product Design 0.1.42; pre-change read 2026-09-14",
+      "observation": "image-to-code 要求选定图片；design-qa 要求 source visual target 与渲染结果，缺失时 blocked。",
+      "limitations": [
+        "这只证明 focused workflow 适用条件，不证明 DESIGN.md 无法指导独立原型。"
+      ]
+    },
+    {
+      "id": "evidence-016",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source",
+      "source_ref": ".agents/skills/yss-prototype-stage/SKILL.md",
+      "locator": "本轮变更前 lines 19, 43-45; references/prototype-profile-routing.md lines 51-62",
+      "stance": "counter",
+      "observed_at": "2026-09-14",
+      "source_version": "repository pre-change read 2026-09-14",
+      "observation": "YSS 已规定根 DESIGN.md 优先、图片非唯一事实源、统一六轴 QA；已融合 Owl 四个概念并允许复用批准模式时不再 ideation。",
+      "limitations": [
+        "这是路由设计，不表示当前生成器与 focused workflow 已完全一致。"
+      ]
+    },
+    {
+      "id": "evidence-017",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation-or-source",
+      "source_ref": "https://github.com/Owl-Listener/designer-skills/blob/20e34c4a587e5eb09fcdf8351fa97b3ad761b31e/interaction-design/skills/state-machine/SKILL.md",
+      "locator": "Modeling Approach; Best Practices, lines 24-41",
+      "stance": "support",
+      "observed_at": "2026-09-14",
+      "source_version": "20e34c4a587e5eb09fcdf8351fa97b3ad761b31e",
+      "observation": "上游用状态、事件、允许转换、guard 和退出动作表达行为，并要求每个状态有退出路径。",
+      "limitations": [
+        "本仓状态矩阵已承载同类合同，不应再装独立状态机流程。"
+      ]
+    },
+    {
+      "id": "evidence-018",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation-or-source",
+      "source_ref": "https://github.com/Owl-Listener/designer-skills/blob/20e34c4a587e5eb09fcdf8351fa97b3ad761b31e/prototyping-testing/skills/prototype-strategy/SKILL.md",
+      "locator": "Fidelity Spectrum; Prototyping Methods; Best Practices, lines 9-34",
+      "stance": "support",
+      "observed_at": "2026-09-14",
+      "source_version": "20e34c4a587e5eb09fcdf8351fa97b3ad761b31e",
+      "observation": "上游认可 HTML/CSS/JS 编码原型和模拟后端，以待决策风险决定方法并接受丢弃原型。",
+      "limitations": [
+        "并未提供 YSS 离线模板或生产组件兼容性保证。"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-001",
+      "claim_kind": "technical-fact",
+      "statement": "DESIGN.md 的规范 Token 与设计解释可作为视觉来源，但上游仍为 alpha，格式验证不能证明页面实际符合设计。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-001"
+      ],
+      "counter_signal_refs": [
+        "evidence-002"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-002",
+      "claim_kind": "technical-fact",
+      "statement": "原型场景可以用默认数据、跨步骤回答和重置控制进行设计；状态机方法要求显式转换与退出；GOV.UK 实现不能直接当作离线实现。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-003",
+        "evidence-017",
+        "evidence-018"
+      ],
+      "counter_signal_refs": [
+        "evidence-004"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-003",
+      "claim_kind": "technical-fact",
+      "statement": "模态语义需要实际键盘和焦点行为，添加 ARIA 属性不等于行为或兼容性已验证。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-005"
+      ],
+      "counter_signal_refs": [
+        "evidence-006"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-004",
+      "claim_kind": "technical-fact",
+      "statement": "截图比较需要控制运行环境，并且首次生成基线不等于首版设计获认可。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-007"
+      ],
+      "counter_signal_refs": [
+        "evidence-008"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-005",
+      "claim_kind": "technical-fact",
+      "statement": "file URL 交付需避开未经验证的模块加载和持久存储前提；现有 Node starter 及外部字体链接不能直接充当离线交付证据。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-009",
+        "evidence-010"
+      ],
+      "counter_signal_refs": [
+        "evidence-011",
+        "evidence-014"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-006",
+      "claim_kind": "technical-fact",
+      "statement": "设计 QA 与交接已有真实内容、截断、空/错误和边界内容方法，但通用方法不会自动给出业务完整覆盖。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-012",
+        "evidence-013"
+      ],
+      "counter_signal_refs": [
+        "evidence-008"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-007",
+      "claim_kind": "technical-fact",
+      "statement": "本地 Product Design 的图片还原路线需要视觉目标；YSS 已有规范和语义来源，因此两者应按来源条件适配，不能把缺图片等同于缺设计合同。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-015",
+        "evidence-001"
+      ],
+      "counter_signal_refs": [
+        "evidence-016"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [
+    "本研究未执行原型浏览器验收、无障碍测试、资源离线加载或交付接收实测；这些由模板实现与后续项目验证关闭。",
+    "线上 Google/WAI/Playwright/MDN/GOV.UK 文档未固定 commit，仅记录访问日期；Owl 固定 revision 不代表最新版。",
+    "Product Design 本地来源记录变更前行为；模板维护会改变其路由适配，历史观察不能冒充迁移后状态。",
+    "用户确认由主控会话承载；本研究不新造审批文件或生命周期决定引用。"
+  ],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-001",
+      "claim-002",
+      "claim-003",
+      "claim-004",
+      "claim-005",
+      "claim-006",
+      "claim-007"
+    ],
+    "notes": [
+      "审计仅表示以上文字与原始来源匹配，不表示模板完成、可合并或可发布。",
+      "六项采纳建议属于用户已确认的模板维护方向；研究本身不批准产品资产。",
+      "只提炼方法，不复制第三方实现、不改变版权信息、不安装上游技能或升级工具。"
+    ]
+  }
+}

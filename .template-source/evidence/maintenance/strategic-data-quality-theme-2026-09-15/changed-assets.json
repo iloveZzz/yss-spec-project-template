@@ -1,0 +1,142 @@
+[
+  {
+    "path": ".agents/skills/yss-design-system/SKILL.md",
+    "before": "e174f582e61096e89a080a257ef036f741baf39eab9a914a7e7870182df53866",
+    "after": "a873c2382a9e4fdea7566659d7748528b6d1f722e8aa60081027a6c5357f389c"
+  },
+  {
+    "path": ".agents/skills/yss-design-system/references/design-qa-theme.md",
+    "before": "58b0cbec50951d4057d117ac1dec8daec7311ddf759b5cf3a0efd0489526eed9",
+    "after": "6b21cd920d09df65bf61a9de438c60aa7b8611a4d501967efa28c53b7fb03d0b"
+  },
+  {
+    "path": ".agents/skills/yss-design-system/references/design-system.md",
+    "before": "a3db1069e103db98a6e49f8c11c6bb795dc7710704d19bff452da6c739ecf2a7",
+    "after": "ef8a93f126f57d3707f988d6c82efcb25bcb39cba03e7864b5f73f979c32269b"
+  },
+  {
+    "path": "docs/design/templates/prototype-evidence-template.yaml",
+    "before": "50e3a35eb70f0770e315beec5a48202524567e60c26b2f89cc6dfbcfd1d9e003",
+    "after": "d39d9f58b0b89e176c9b4b35c9052f5187473a30e6883ae6b00dd2890b5c8870"
+  },
+  {
+    "path": "docs/design/templates/prototype-review-checklist.md",
+    "before": "2cbcef8280b75f44128a167f03cf81388decb6a865261c1a9ec065f40516ef0b",
+    "after": "68c6983df82621791935778aaa2cfa4e4f3c50419faeaa255f0db0bfbd3a3481"
+  },
+  {
+    "path": "skills-lock.json",
+    "before": "079dad689b7fd2d965034152654a7154f11850b80d9524d31da981c9ba0f5a50",
+    "after": "a69cd5c312510210ddb31d4aef1c7ff2318bb660ae0120e66c92edcec759beeb"
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/.agents/skills/yss-design-system/SKILL.md",
+    "before": "e174f582e61096e89a080a257ef036f741baf39eab9a914a7e7870182df53866",
+    "after": "a873c2382a9e4fdea7566659d7748528b6d1f722e8aa60081027a6c5357f389c"
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/.agents/skills/yss-design-system/references/design-qa-theme.md",
+    "before": "58b0cbec50951d4057d117ac1dec8daec7311ddf759b5cf3a0efd0489526eed9",
+    "after": "6b21cd920d09df65bf61a9de438c60aa7b8611a4d501967efa28c53b7fb03d0b"
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/.agents/skills/yss-design-system/references/design-system.md",
+    "before": "a3db1069e103db98a6e49f8c11c6bb795dc7710704d19bff452da6c739ecf2a7",
+    "after": "ef8a93f126f57d3707f988d6c82efcb25bcb39cba03e7864b5f73f979c32269b"
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/docs/design/templates/prototype-evidence-template.yaml",
+    "before": "50e3a35eb70f0770e315beec5a48202524567e60c26b2f89cc6dfbcfd1d9e003",
+    "after": "d39d9f58b0b89e176c9b4b35c9052f5187473a30e6883ae6b00dd2890b5c8870"
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/docs/design/templates/prototype-review-checklist.md",
+    "before": "50a791f7d5d3b55f7e2b03f89bdbf82fb72a57ddb326c043cfe20ec5e7bda597",
+    "after": "aae0397ed37c6d072735e2eed8c822388dba13224c2135ed05cbbcb606706cdf"
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/skills-lock.json",
+    "before": "b53d53c06ffeaedbe1ab7efd7025077bef3c6882e45073f5fbf9b58ddfe0150a",
+    "after": "edeffb1f7a516632cbedb8386dc2bb9dd9548128905f81ca19efcdfc4332527e"
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-design-system/SKILL.md",
+    "before": "e174f582e61096e89a080a257ef036f741baf39eab9a914a7e7870182df53866",
+    "after": "a873c2382a9e4fdea7566659d7748528b6d1f722e8aa60081027a6c5357f389c"
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-design-system/references/design-qa-theme.md",
+    "before": "58b0cbec50951d4057d117ac1dec8daec7311ddf759b5cf3a0efd0489526eed9",
+    "after": "6b21cd920d09df65bf61a9de438c60aa7b8611a4d501967efa28c53b7fb03d0b"
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-design-system/references/design-system.md",
+    "before": "a3db1069e103db98a6e49f8c11c6bb795dc7710704d19bff452da6c739ecf2a7",
+    "after": "ef8a93f126f57d3707f988d6c82efcb25bcb39cba03e7864b5f73f979c32269b"
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/docs/design/templates/prototype-evidence-template.yaml",
+    "before": "50e3a35eb70f0770e315beec5a48202524567e60c26b2f89cc6dfbcfd1d9e003",
+    "after": "d39d9f58b0b89e176c9b4b35c9052f5187473a30e6883ae6b00dd2890b5c8870"
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/docs/design/templates/prototype-review-checklist.md",
+    "before": "91c179179dfaf92ebf05d959db5555bcb0ce653a9448b2aa463fb503c2fe070b",
+    "after": "f822003d9e4bc3b21c8d3f1820413f52cc91f6d5260239454570e15c0f6a5686"
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/skills-lock.json",
+    "before": "e6085c9bf62fb62b04f872348670147536eef5f6de394445be3131a7ff867869",
+    "after": "9f68ed574bd12cf642cf2da9af47a79162ef8f343189126d3a9910b60ee39776"
+  },
+  {
+    "path": ".agents/skills/.strategic-design-skills-manifest.json",
+    "before": "8158cbdedb5d77805d217c43fab870bc04749b2ac70681899162e9262b74ce28",
+    "after": "82c4beafb80383d2f0d8dc139afcca703b653523a2f26871c2482cf9ff7f1cb3"
+  },
+  {
+    "path": ".template-source/profile-skill-sync.json",
+    "before": "ffed66343d49437a5fce6995db7e4058bfbff546ebfe0fced7b1e0202ab47778",
+    "after": "426315938ffc1287f3c72178803c1d881dd9dbd3e45d693abac2deed7df4b5ba"
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/AGENTS.md",
+    "before": "8b1c0c53b1835e49a892324982543ef534839dc57e578446ca179b5526804870",
+    "after": "d7d516fc6bb347976f902ecb5ee47ec9e6217f9a7349612942c4a4f1618d3979"
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/SKILL.md",
+    "before": "2e35e30d6bf7cef2d054585a371a9f0f28e9831be9b6127197b91f4ac4c6b2cd",
+    "after": "b787c470a5ce4d1a576c6cff76f5a44adea8fe50ceaa477279f06c546bb4515f"
+  },
+  {
+    "path": "docs/design/templates/visual-baseline-template.yaml",
+    "before": "995175103889f921d4f9fd9b9b41760709e8c679b8c076328d76a6c195485645",
+    "after": "fd43497e1f80fdb63f0180755b87bad7786be2cb055e412fef3bd13ada7a9ef9"
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/docs/design/templates/visual-baseline-template.yaml",
+    "before": "995175103889f921d4f9fd9b9b41760709e8c679b8c076328d76a6c195485645",
+    "after": "fd43497e1f80fdb63f0180755b87bad7786be2cb055e412fef3bd13ada7a9ef9"
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/docs/design/templates/visual-baseline-template.yaml",
+    "before": "995175103889f921d4f9fd9b9b41760709e8c679b8c076328d76a6c195485645",
+    "after": "fd43497e1f80fdb63f0180755b87bad7786be2cb055e412fef3bd13ada7a9ef9"
+  },
+  {
+    "path": "submodules/create-yss-harness-frontend/template.manifest.json",
+    "before": "85d99d140544d30a016cca23ebb166bd57e26debbc76cf403447d0d880d89f26",
+    "after": "d989f260d8a74c0052ead6b7941b9559cdaa139ad62e2be87bb81da6856e5601"
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/.template-source/distribution/template.manifest.json",
+    "before": "85d99d140544d30a016cca23ebb166bd57e26debbc76cf403447d0d880d89f26",
+    "after": "d989f260d8a74c0052ead6b7941b9559cdaa139ad62e2be87bb81da6856e5601"
+  },
+  {
+    "path": "submodules/create-yss-harness-frontend/tests/design-baseline.test.mjs",
+    "before": null,
+    "after": "49208ad47e5fa148124042fb27dae1db5233fb9170e79de046e0ac9caecd9a56"
+  }
+]

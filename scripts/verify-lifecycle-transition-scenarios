@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
-import { mkdtempSync, rmSync, readFileSync, existsSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { mkdtempSync, mkdirSync, rmSync, readFileSync, existsSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { buildDecisionFixture, buildImplementationFixture } from "./fixtures/user-decision/build-fixture.mjs";
@@ -9,6 +10,61 @@ process.on("exit", () => rmSync(temp, { recursive: true, force: true }));
 const approval = buildImplementationFixture(temp, "docs/.scratch/demo/issues/01-valid-slice.md");
 const scaffoldApproval = buildDecisionFixture(path.join(temp, "scaffold-choice"), { boundary: "scaffold-choice", scope: ["backend", "frontend"] });
 import { validateImplementationEntry, validateImplementationRepositoriesReady, validateNextRoute, validateTicketFormalization } from "./lib/lifecycle-transition.mjs";
+
+const digest = (bytes) => `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
+const writeProjectFile = (ref, value) => {
+  const file = path.join(temp, ref);
+  mkdirSync(path.dirname(file), { recursive: true });
+  writeFileSync(file, typeof value === "string" ? value : `${JSON.stringify(value, null, 2)}\n`);
+  return { ref, file, digest: digest(readFileSync(file)) };
+};
+const apiAssessment = writeProjectFile("docs/.scratch/demo/evidence/api-impact.json", { schema_version: 1, backend: true, api: false });
+const apiEvidence = writeProjectFile("docs/.scratch/demo/evidence/api-decision.md", "无 API 影响测试证据。\n");
+const apiDecisionValue = {
+  schema_version: 1,
+  kind: "api-contract-decision",
+  decision_id: "api-contract.backend",
+  decision_version: "v1",
+  status: "approved",
+  current_version: true,
+  impact: "not-applicable",
+  assessment_ref: apiAssessment.ref,
+  assessment_digest: apiAssessment.digest,
+  evidence_refs: [apiEvidence.ref],
+  reason: "后端仓库接入不新增或修改 API",
+};
+const apiDecision = writeProjectFile("docs/.scratch/demo/evidence/api-contract-decision.json", apiDecisionValue);
+const technicalDesign = writeProjectFile("docs/.scratch/demo/evidence/technical-design.json", { schema_version: 2, technical_design_id: "technical-design.backend", version: "v1", status: "approved" });
+const dataDecisionValue = { schema_version: 1, kind: "data-architecture-decision", decision_id: "data-architecture.backend", decision_version: "v1", status: "approved", current_version: true, impact: "not-applicable" };
+const dataDecision = writeProjectFile("docs/.scratch/demo/evidence/data-architecture-decision.json", dataDecisionValue);
+const engineeringPackage = writeProjectFile("docs/.scratch/demo/evidence/engineering-contract-package.json", {
+  schema_version: 1,
+  kind: "engineering-contract-package",
+  project_id: "backend",
+  technical_design: { ref: technicalDesign.ref, version: "v1", digest: technicalDesign.digest },
+  data_architecture_decision: { ref: dataDecision.ref, version: "v1", digest: dataDecision.digest, impact: "not-applicable" },
+  api_contract_decision: { ref: apiDecision.ref, version: "v1", digest: apiDecision.digest, impact: "not-applicable" },
+});
+const engineeringApproval = buildDecisionFixture(path.join(temp, "engineering-contract"), { boundary: "gate.engineering-contract-approved", scope: ["backend", "backend-ddd"], subjectRef: engineeringPackage.file });
+writeProjectFile("docs/.scratch/demo/evidence/engineering-contract-approval.json", {
+  schema_version: 1,
+  gate_id: "gate.engineering-contract-approved",
+  decision: "approved",
+  actor_kind: "digital-human",
+  role_id: "role.product-manager",
+  runtime_id: "runtime.generic",
+  principal_ref: "synthetic-product-reviewer",
+  subject_ref: engineeringApproval.requirement.subject_ref,
+  approval_scope: engineeringApproval.requirement.scope,
+  drafter_role_id: "role.backend-engineer",
+  user_decision_ref: engineeringApproval.ref,
+  artifact_bindings: [
+    { id: "technical-design.backend", version: "v1", digest: technicalDesign.digest },
+    { id: dataDecisionValue.decision_id, version: "v1", digest: dataDecision.digest },
+    { id: apiDecisionValue.decision_id, version: "v1", digest: apiDecision.digest },
+  ],
+  evidence_refs: [apiEvidence.ref],
+});
 
 const exists = (ref) => [
   "docs/process/lifecycle-registry.yaml",
@@ -21,21 +77,46 @@ const exists = (ref) => [
   "docs/.scratch/demo/evidence/backend-verification.json",
   "docs/.scratch/demo/evidence/frontend-manifest.json",
   "docs/.scratch/demo/evidence/frontend-verification.json",
-].includes(ref) || existsSync(ref);
+  "docs/.scratch/demo/evidence/technical-analysis-result.yaml",
+  "docs/.scratch/demo/evidence/technical-design.json",
+  "docs/.scratch/demo/evidence/data-architecture-decision.json",
+  "docs/.scratch/demo/evidence/engineering-contract-approval.json",
+].includes(ref) || existsSync(path.resolve(temp, ref)) || existsSync(ref);
 const decompositionResult = `result_schema: workflow-execution-result-v1\nwork_unit: work-unit.ticket-decomposition\nresult: completed\nevidence_refs:\n  - docs/.scratch/demo/evidence/ticket-decomposition-result.yaml\n`;
-const read = (ref) => ref === "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml" ? decompositionResult : readFileSync(ref, "utf8");
-const options = { exists, read };
+const technicalAnalysisResult = `${JSON.stringify({
+  result_schema: "workflow-execution-result-v1",
+  work_unit: "work-unit.technical-analysis",
+  result: "completed",
+  current_version: true,
+  api_contract_decision: { ref: apiDecision.ref, version: "v1", digest: apiDecision.digest, impact: "not-applicable" },
+  context_reconciliation: { status: "reconciled", ref: "docs/process/lifecycle-registry.yaml" },
+  evidence_refs: ["docs/.scratch/demo/evidence/technical-analysis-result.yaml", apiDecision.ref],
+}, null, 2)}\n`;
+const backendDesignPrerequisites = {
+  technical_design: { ref: technicalDesign.ref, version: "v1", digest: technicalDesign.digest },
+  data_architecture_decision: { ref: dataDecision.ref, version: "v1", digest: dataDecision.digest, impact: "not-applicable" },
+  api_contract_decision: { ref: apiDecision.ref, version: "v1", digest: apiDecision.digest, impact: "not-applicable" },
+  engineering_contract_approval_ref: "docs/.scratch/demo/evidence/engineering-contract-approval.json",
+};
+const manifests = {
+  "docs/.scratch/demo/evidence/backend-manifest.json": JSON.stringify({ schema_version: 4, completion_level: "empty-scaffold-verified", design_prerequisites: backendDesignPrerequisites }),
+  "docs/.scratch/demo/evidence/frontend-manifest.json": JSON.stringify({ schema_version: 4, completion_level: "empty-scaffold-verified" }),
+};
+const read = (ref) => ref === "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml" ? decompositionResult : ref === "docs/.scratch/demo/evidence/technical-analysis-result.yaml" ? technicalAnalysisResult : manifests[ref] ?? readFileSync(existsSync(path.resolve(temp, ref)) ? path.resolve(temp, ref) : ref, "utf8");
+const options = { exists, read, root: temp };
 
 const validTicketState = {
   ...approval.state,
   user_decisions: [...approval.state.user_decisions, scaffoldApproval.requirement],
   delivery_impacts: { backend: true, frontend: true },
   implementation_repository_preparation: {
+    schema_version: 2,
+    kind: "implementation-repository-preparation-result",
     result: "completed",
     current_version: true,
     evidence_refs: ["docs/.scratch/demo/evidence/repository-preparation.yaml"],
     projects: [
-      { project_id: "backend", delivery_role: "backend", status: "existing-and-onboarded", repository_ref: "git://backend", project_root: "/workspace/backend", repository_scope: "external-repository", onboarding_result: { status: "completed", ref: "docs/.scratch/demo/evidence/backend-onboarding.yaml" } },
+      { project_id: "backend", delivery_role: "backend", status: "existing-and-onboarded", repository_ref: "git://backend", project_root: "/workspace/backend", repository_scope: "external-repository", architecture_family: "domain-driven", design_prerequisites: backendDesignPrerequisites, onboarding_result: { status: "completed", ref: "docs/.scratch/demo/evidence/backend-onboarding.yaml" } },
       { project_id: "frontend", delivery_role: "frontend", status: "existing-and-onboarded", repository_ref: "git://frontend", project_root: "/workspace/frontend", repository_scope: "external-repository", onboarding_result: { status: "completed", ref: "docs/.scratch/demo/evidence/frontend-onboarding.yaml" } },
     ],
   },
@@ -65,18 +146,42 @@ const validTicketState = {
 const valid = validateTicketFormalization(validTicketState, options);
 assert.equal(valid.result, "allowed");
 assert.equal(validateImplementationRepositoriesReady(validTicketState, options).result, "allowed");
+const missingApiDecision = structuredClone(validTicketState);
+delete missingApiDecision.implementation_repository_preparation.projects[0].design_prerequisites.api_contract_decision;
+assert.ok(validateImplementationRepositoriesReady(missingApiDecision, options).blocking_signals.includes("backend-design-prerequisites-missing"));
 const initializedState = {
   delivery_impacts: { backend: true, frontend: true },
   implementation_repository_preparation: {
-    result: "completed", current_version: true, evidence_refs: ["docs/.scratch/demo/evidence/repository-preparation.yaml"],
+    schema_version: 2, kind: "implementation-repository-preparation-result", result: "completed", current_version: true, evidence_refs: ["docs/.scratch/demo/evidence/repository-preparation.yaml"],
     projects: [
-      { project_id: "backend-ddd", delivery_role: "backend", status: "initialized-and-verified", repository_ref: "git://backend", project_root: "/workspace/backend", repository_scope: "external-repository", architecture_family: "domain-driven", scaffold_contract: { schema_version: 4, status: "approved", persisted: true, current_version: true }, scaffold_manifest_ref: "docs/.scratch/demo/evidence/backend-manifest.json", scaffold_verification: { status: "passed", ref: "docs/.scratch/demo/evidence/backend-verification.json" } },
+      { project_id: "backend", delivery_role: "backend", status: "initialized-and-verified", repository_ref: "git://backend", project_root: "/workspace/backend", repository_scope: "external-repository", architecture_family: "domain-driven", design_prerequisites: backendDesignPrerequisites, scaffold_contract: { schema_version: 4, status: "approved", persisted: true, current_version: true }, scaffold_manifest_ref: "docs/.scratch/demo/evidence/backend-manifest.json", scaffold_verification: { status: "passed", ref: "docs/.scratch/demo/evidence/backend-verification.json" } },
       { project_id: "frontend", delivery_role: "frontend", status: "initialized-and-verified", repository_ref: "git://frontend", project_root: "/workspace/frontend", repository_scope: "external-repository", template_available: true, scaffold_contract: { schema_version: 4, status: "approved", persisted: true, current_version: true }, scaffold_manifest_ref: "docs/.scratch/demo/evidence/frontend-manifest.json", scaffold_verification: { status: "passed", ref: "docs/.scratch/demo/evidence/frontend-verification.json" } },
     ],
   },
 };
 assert.equal(validateImplementationRepositoriesReady(initializedState, options).result, "allowed");
-assert.equal(validateImplementationRepositoriesReady({ delivery_impacts: { backend: false, frontend: false }, implementation_repository_preparation: { result: "completed", current_version: true, evidence_refs: ["docs/.scratch/demo/evidence/repository-preparation.yaml"], projects: [{ project_id: "backend-na", delivery_role: "backend", status: "not-applicable", reason: "no backend impact" }, { project_id: "frontend-na", delivery_role: "frontend", status: "not-applicable", reason: "no frontend impact" }] } }, options).result, "allowed");
+assert.equal(validateImplementationRepositoriesReady({ delivery_impacts: { backend: false, frontend: false }, implementation_repository_preparation: { schema_version: 2, kind: "implementation-repository-preparation-result", result: "completed", current_version: true, evidence_refs: ["docs/.scratch/demo/evidence/repository-preparation.yaml"], projects: [{ project_id: "backend-na", delivery_role: "backend", status: "not-applicable", reason: "no backend impact" }, { project_id: "frontend-na", delivery_role: "frontend", status: "not-applicable", reason: "no frontend impact" }] } }, options).result, "allowed");
+
+const legacyManifest = writeProjectFile("docs/.scratch/demo/evidence/backend-manifest-v3.json", { schema_version: 3, completion_level: "empty-scaffold-verified" });
+const legacyOwnership = writeProjectFile("docs/.scratch/demo/evidence/backend-v3-ownership.json", { ownership_state: "unchanged-mechanical-scaffold", extra_files: [] });
+const legacyRecovery = writeProjectFile("docs/.scratch/demo/evidence/backend-v3-recovery-approval.json", { status: "approved", api_reconciled: true });
+const legacyState = {
+  delivery_impacts: { backend: true, frontend: false },
+  implementation_repository_preparation: {
+    schema_version: 2, kind: "implementation-repository-preparation-result", result: "completed", current_version: true, evidence_refs: ["docs/.scratch/demo/evidence/repository-preparation.yaml"],
+    projects: [
+      { project_id: "backend", delivery_role: "backend", status: "initialized-and-verified", repository_ref: "git://backend", project_root: "/workspace/backend", repository_scope: "external-repository", architecture_family: "domain-driven", design_prerequisites: backendDesignPrerequisites, scaffold_contract: { schema_version: 3, status: "approved", persisted: true, current_version: true }, scaffold_manifest_ref: legacyManifest.ref, scaffold_verification: { status: "passed", ref: "docs/.scratch/demo/evidence/backend-verification.json" }, legacy_reconciliation: { status: "approved", ownership_state: "unchanged-mechanical-scaffold", premature_implementation: false, manifest_ref: legacyManifest.ref, manifest_digest: legacyManifest.digest, ownership_check_ref: legacyOwnership.ref, recovery_approval_ref: legacyRecovery.ref } },
+      { project_id: "frontend-na", delivery_role: "frontend", status: "not-applicable", reason: "backend-only recovery" },
+    ],
+  },
+};
+assert.equal(validateImplementationRepositoriesReady(legacyState, options).result, "allowed");
+const legacyMissingApi = structuredClone(legacyState);
+delete legacyMissingApi.implementation_repository_preparation.projects[0].design_prerequisites.api_contract_decision;
+assert.ok(validateImplementationRepositoriesReady(legacyMissingApi, options).blocking_signals.includes("backend-design-prerequisites-missing"));
+const legacyPremature = structuredClone(legacyState);
+legacyPremature.implementation_repository_preparation.projects[0].legacy_reconciliation.premature_implementation = true;
+assert.ok(validateImplementationRepositoriesReady(legacyPremature, options).blocking_signals.includes("premature-implementation-detected"));
 
 const implementation = validateImplementationEntry({
   ...validTicketState,
@@ -128,7 +233,37 @@ for (const current of ["work-unit.spec-synthesis", "work-unit.prototype-design",
   assert.ok(result.blocking_signals.includes("ticket-formalization-required"), current);
 }
 assert.equal(validateNextRoute("work-unit.spec-synthesis", "work-unit.ticket-decomposition").result, "blocked");
-assert.equal(validateNextRoute("work-unit.technical-analysis", "work-unit.implementation-repository-preparation").result, "allowed");
+for (const current of ["work-unit.spec-synthesis", "work-unit.prototype-design"]) {
+  const result = validateNextRoute(current, "work-unit.implementation-repository-preparation");
+  assert.equal(result.result, "blocked", `${current} must not bypass technical analysis`);
+  assert.ok(result.blocking_signals.includes("technical-analysis-required"), current);
+}
+assert.ok(validateNextRoute("work-unit.technical-analysis", "work-unit.implementation-repository-preparation", {}, options).blocking_signals.includes("technical-analysis-required"));
+assert.equal(validateNextRoute("work-unit.technical-analysis", "work-unit.implementation-repository-preparation", {
+  user_decisions: [engineeringApproval.requirement],
+  technical_analysis_result_ref: "docs/.scratch/demo/evidence/technical-analysis-result.yaml",
+  technical_analysis_result: {
+    result_schema: "workflow-execution-result-v1",
+    work_unit: "work-unit.technical-analysis",
+    result: "completed",
+    current_version: true,
+    api_contract_decision: { ref: apiDecision.ref, version: "v1", digest: apiDecision.digest, impact: "not-applicable" },
+    context_reconciliation: { status: "reconciled", ref: "docs/process/lifecycle-registry.yaml" },
+    evidence_refs: ["docs/.scratch/demo/evidence/technical-analysis-result.yaml", apiDecision.ref],
+  },
+}, options).result, "allowed");
+assert.ok(validateNextRoute("work-unit.technical-analysis", "work-unit.implementation-repository-preparation", {
+  user_decisions: [engineeringApproval.requirement],
+  technical_analysis_result_ref: "docs/.scratch/demo/evidence/technical-analysis-result.yaml",
+  technical_analysis_result: {
+    result_schema: "workflow-execution-result-v1",
+    work_unit: "work-unit.technical-analysis",
+    result: "completed",
+    current_version: true,
+    context_reconciliation: { status: "reconciled", ref: "docs/process/lifecycle-registry.yaml" },
+    evidence_refs: ["docs/.scratch/demo/evidence/technical-analysis-result.yaml"],
+  },
+}, options).blocking_signals.includes("technical-analysis-required"));
 assert.equal(validateNextRoute("work-unit.implementation-repository-preparation", "work-unit.ticket-decomposition", validTicketState, options).result, "allowed");
 assert.ok(validateNextRoute("work-unit.implementation-repository-preparation", "work-unit.ticket-decomposition", {}, options).blocking_signals.includes("implementation-repository-decision-required"));
 assert.equal(validateNextRoute("work-unit.intensity-aware-verification", "work-unit.intensity-aware-review").result, "allowed");

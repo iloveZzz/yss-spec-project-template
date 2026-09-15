@@ -26,16 +26,19 @@ upstream_refs:
   state_matrix_ref: docs/.scratch/<feature>/design/<feature>-state-matrix.md
   prototype_review_ref: docs/.scratch/<feature>/design/<feature>-prototype-review.md
 source_visual:
-  ideation_status: required
-  selected_ref: <selected-source-visual-ref>
-  reuse_reason: not-applicable
+  kind: design-system # 有独立视觉稿时用 visual-reference
+  ideation_status: not-applicable
+  selected_ref: DESIGN.md
+  reuse_reason: <说明规范及已有页面模式足以支持设计的依据>
 design_baseline:
   canonical_design_ref: DESIGN.md
   canonical_design_digest: <sha256>
   project_design_ref: docs/design/design.md
   project_token_refs:
+    # 默认 Data Quality 浅色；显式暗色 / 紧凑模式改为实际消费的对应快照，并同步摘要和视觉基线 cases[].theme。
     - docs/design/tokens/theme.json
-    - docs/design/tokens/tokens.compact.json
+    - docs/design/tokens/tokens.default.json
+    - docs/design/tokens/variables.css
   project_token_baseline_digest: <sha256>
   project_override_reviewed: false
 visual_baseline:
@@ -46,6 +49,10 @@ visual_baseline:
   status: approved
   case_ids: [primary-desktop, primary-narrow]
 browser_delivery:
+  delivery_contract: offline-html-v1
+  resource_manifest_ref: docs/.scratch/<feature>/design/prototypes/yss-prototype-adapter.json
+  offline_verification_ref: <file-url-offline-browser-evidence>
+  offline_verification_result: pending
   delivery_kind: static-directory
   entry_ref: docs/.scratch/<feature>/design/prototypes/index.html
   rendered_nonblank: false
@@ -62,6 +69,7 @@ browser_delivery:
   console_result: pending
   console_ref: <path-to-console-output-or-none>
 design_qa:
+  mode: design-contract # visual-reference 对应 visual-comparison
   report_ref: docs/.scratch/<feature>/verification/design-qa.md
   result: pending
   axes:
@@ -83,13 +91,10 @@ profile_evidence:
   #   reduced_motion: {applicable: false, result: not-applicable, evidence_ref: not-applicable}
   flow_review:
     implementation:
-      framework: vue
-      runtime_build_required: true
-      package_manager: pnpm
-      package_manifest_ref: docs/.scratch/<feature>/design/prototypes/package.json
-      lockfile_ref: docs/.scratch/<feature>/design/prototypes/pnpm-lock.yaml
-      build_command: pnpm build
-      build_result: pending
+      framework: html-css-js
+      runtime_build_required: false
+    scenario_replay_ref: <case-id-and-data-scenario-action-evidence>
+    scenario_reset_result: pending
     main_flow_result: pending
     exceptional_state_result: pending
     exceptional_state_ref: <failure-permission-or-conflict-ref>
@@ -103,17 +108,8 @@ profile_evidence:
       result: pending
       evidence_ref: <snapshot-result-ref>
     prototype_library_facts:
-      applicable: true
-      component_basis: vue-antdv-next
-      source: fact-pack
-      library_package: antdv-next
-      library_version: 1.5.2
-      manifest_ref: docs/design/facts/antdv-next/1.5.2/manifest.json
-      manifest_digest: <sha256>
-      components_covered: [<Component>]
-      canonical_design_digest: <same-as-design-baseline>
-      project_token_baseline_digest: <same-as-design-baseline>
-      new_api_uncertainty: false
+      applicable: false
+      component_basis: html-css-js
 implementation_handoff:
   prototype_code_reusable: false
   production_component_assumptions:

@@ -9,7 +9,7 @@
 | 档位 | 名称 | 命中条件 | 默认适配器 |
 |---|---|---|---|
 | H1 | `visual-review` | 仅需确认布局、密度、层级、文案或少量关键交互；不涉及多页面导航、复杂联动、权限、恢复、冲突或真实组件差异 | 语义 HTML + 项目 Token CSS + 最小 JavaScript；可使用设计工具导出，但必须有浏览器可复验入口 |
-| H2 | `flow-review` | 多页面/路由、复杂表单联动、权限体验、失败恢复、并发冲突或需要可操作主流程测试 | 可运行前端原型；Vue 3/Vite + Antdv Next 是受支持默认，React/Vite + Ant Design v6 为显式兼容路线 |
+| H2 | `flow-review` | 多页面/路由、复杂表单联动、权限体验、失败恢复、并发冲突或需要可操作主流程测试 | HTML/CSS/JavaScript 可操作流程；默认离线资源包，保持同等流程和异常验收 |
 
 真实 YSS/AntDV 组件行为、lockfile、props、slots、events 或 Storybook 状态不是第三种原型档位。它们属于前端实现计划、已批准切片的生产实现与实现还原验证。原型中发现的相关不确定性写入 `implementation_handoff`，不得为解决它调用 `yss-ui` 或把实现仓组件代码引入原型。
 
@@ -39,8 +39,9 @@
 
 - 主流程与关键 failure / no-permission / conflict 状态可操作。
 - 验证键盘、焦点、对比度、200% zoom、reduced motion；按风险决定视觉回归。
-- 默认使用 `vue-antdv-next` 并记录 package 与精确版本；显式兼容路线记录 `react-antd-6`。fact pack 只有在 provider、版本、组件集合和项目 Token baseline digest 全部匹配且没有新 API 疑问时才可复用，否则只补增量查询。
-- 使用其他基座时记录 `component_basis`，不创建空 Antdv Next 或 AntD 字段。
+- 默认 `component_basis=html-css-js`、`runtime_build_required=false`、`prototype_library_facts.applicable=false`，不创建 package、lockfile 或空事实包。
+- 场景使用现有 `case_id/data_scenario` 对应状态矩阵；固定初始输入与结果，提供切换、深链接和重置，验证失败后的输入保留、重试、权限边界及冲突恢复。
+- `offline-html-v1` 交付包记录所有本地资源及摘要；断开网络后通过 `file://` 从独立目录复验，保存 console、资源、交互和截图结果。静态扫描不能替代浏览器行为证明。
 
 ### 实现阶段交接
 
@@ -50,7 +51,9 @@
 
 ## 条件 ideation
 
-新视觉方向、信息架构不确定或存在两个以上合理布局时，`product-design:ideate` 的三方案比较为 mandatory。沿用已批准模式且 source visual 可定位时记录 `not-applicable`、复用来源和理由，不制造三份无意义变体。
+新视觉方向、信息架构不确定或存在多个合理布局时比较三个候选方案，由用户选择后构建。可用低保真、HTML 或按需 `product-design:ideate`；不把 ImageGen 当作所有原型的前置依赖。已批准模式或当前设计规范足以约束页面时，记录 `not-applicable`、来源与理由。
+
+`source_visual.kind=design-system` 引用 `DESIGN.md`，走规范直出和 `design-contract` QA；`visual-reference` 引用独立视觉稿，走 `visual-comparison` QA。两者都要求统一六轴 QA 和用户确认；首版截图只在确认后成为后续回归基线。
 
 ## 上游融合记录
 
@@ -67,3 +70,11 @@
 - 新证据只生成 schema v4、Visual Baseline schema v1 与 `artifact.prototype-deliverable`。
 - prototype evidence schema v1/v2/v3 和 `artifact.high-fidelity-html-prototype` 只读兼容；已经关闭的历史证据保持有效，不补造图片。
 - 在途 UI 证据必须迁移到 v4 并产生 Visual Baseline 后才能关闭 `check.prototype-verified`；非 UI 功能不生成空包。
+
+### HTML 路线迁移
+
+两个原型组件 Provider 已从当前技能与生成路线退役。历史 Vue/React 原型、fact pack 与批准证据保留原字节；`--allow-legacy` 只读校验不代表通过当前门禁。在途原型继续演进时生成新的 HTML 工作版本、补离线与场景证据并重新确认，禁止覆盖旧版本。
+
+采纳的外部方法与适用边界见 [HTML 原型实践](html-prototype-practices.md)；不安装上游整包或引入第二套状态、QA、交接体系。
+
+真实组件确有评审价值时，H2 可条件使用 `react-antd-prebuilt`，仍交付离线 HTML 资源包；启用条件、版本与验证见 [AntD 集成](antd-integration.md)。

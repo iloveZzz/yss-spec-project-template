@@ -7,6 +7,7 @@ import os from "node:os";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { attachDesignPrerequisites } from "../../../../scripts/fixtures/backend-scaffold/design-prerequisites.mjs";
 
 const script = path.join(path.dirname(fileURLToPath(import.meta.url)), "generate_scaffold.mjs");
 const digest = (value) => `sha256:${createHash("sha256").update(value).digest("hex")}`;
@@ -18,7 +19,7 @@ const capabilityModules = {
   combined: { capabilities: ["external-integration", "feign-client"], modules: ["server", "service", "repository", "adapter", "client", "feign-client"] }
 };
 
-async function fixture(t, { profile = capabilityModules.basic, architectureProfile = "layered-mvc-service", skillId = "yss-layered-mvc-scaffold-generator", schemaVersion = 3 } = {}) {
+async function fixture(t, { profile = capabilityModules.basic, architectureProfile = "layered-mvc-service", skillId = "yss-layered-mvc-scaffold-generator", schemaVersion = 4, dataImpact = "not-applicable", apiImpact = "not-applicable" } = {}) {
   const root = await mkdtemp(path.join(os.tmpdir(), "yss-layered-mvc-"));
   t.after(() => rm(root, { recursive: true, force: true }));
   const output = path.join(root, "backend");
@@ -33,7 +34,7 @@ async function fixture(t, { profile = capabilityModules.basic, architectureProfi
     schema_version: schemaVersion,
     kind: "project-scaffold-contract",
     delivery_role: "backend",
-    scaffold_kind: "backend-layered-mvc",
+    scaffold_kind: architectureProfile === "mvc-data-analysis-v1" ? "backend-mvc-data-analysis" : "backend-layered-mvc",
     repository_scope: "external-repository",
     init_git: false,
     contract_id: "scaffold.demo-service.v1",
@@ -43,7 +44,7 @@ async function fixture(t, { profile = capabilityModules.basic, architectureProfi
     compiler_draft_ref: "compiler://demo/1",
     lifecycle_approval_ref: "approval://demo/1",
     persisted_ref: "contract://demo/1",
-    current_version: 1,
+    current_version: schemaVersion === 4 ? true : 1,
     implementation_repository: "external",
     backend_repository: "external",
     scaffold_status: "required",
@@ -65,10 +66,11 @@ async function fixture(t, { profile = capabilityModules.basic, architectureProfi
     work_unit: { id: "scaffold.demo", behavior: "project-scaffold", primary_skill: skillId, supporting_skills: ["yss-implementation-contract-compiler"], tdd_mode: "controlled-generation", allowed_write_paths: ["."], expected_evidence: [".yss/scaffold-generation.json"], verification_commands: ["./mvnw validate", "./mvnw test", "./mvnw package"], controlled_generation: true },
     generation_policy: { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }
   };
+  const design = attachDesignPrerequisites(root, contract, { dataImpact, apiImpact });
   const contractFile = path.join(root, "contract.json");
   await writeFile(contractFile, `${JSON.stringify(contract, null, 2)}\n`);
   const args = ["--project-name", "demo-service", "--base-package", "com.yss.demo", "--output-dir", output, "--contract-file", contractFile, "--contract-id", contract.contract_id, "--contract-version", "1", "--approval-ref", contract.lifecycle_approval_ref, "--compiler-draft-ref", contract.compiler_draft_ref, "--persisted-ref", contract.persisted_ref, "--group-id", "com.yss.demo", "--project-version", "1.0.0-SNAPSHOT", "--parent-group-id", "com.yss.cloud", "--parent-artifact-id", "yss-cloud-microservice", "--parent-version", "2.0.0-SNAPSHOT", "--yss-components-version", "2.0.0-SNAPSHOT"];
-  return { root, output, decisionFile, contractFile, contract, args, project: path.join(output, "demo-service") };
+  return { root, output, decisionFile, contractFile, contract, design, args, project: path.join(output, "demo-service") };
 }
 
 test("数据分析初始化生成 H2 六模块和独立治理信封", async (t) => {
@@ -102,14 +104,100 @@ test("旧数据库和 Mock 参数在写入前被拒绝", async (t) => {
   }
 });
 
-test("统一 Project Scaffold Contract v4 可生成 Layered MVC 后端并保留 v4 Manifest", async (t) => {
-  const data = await fixture(t, { schemaVersion: 4 });
-  data.contract.current_version = true;
-  await writeFile(data.contractFile, JSON.stringify(data.contract));
+test("统一 Project Scaffold Contract v4 可生成 Layered MVC 后端并保留设计门禁", async (t) => {
+  const data = await fixture(t);
   const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
   assert.equal(result.status, 0, result.stderr);
   const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
   assert.equal(manifest.schema_version, 4);
+  assert.equal(manifest.design_prerequisites.data_architecture_decision.impact, "not-applicable");
+});
+
+test("数据影响为 required 时绑定数据架构后可生成 Layered MVC 后端", async (t) => {
+  const data = await fixture(t, { dataImpact: "required" });
+  const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
+  assert.equal(manifest.design_prerequisites.data_architecture_decision.impact, "required");
+});
+
+test("API 影响为 required 时绑定同字节 Draft、Validation、Review 和 Freeze 后可生成 Layered MVC 后端", async (t) => {
+  const data = await fixture(t, { apiImpact: "required" });
+  const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+  assert.equal(result.status, 0, result.stderr);
+  const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
+  assert.equal(manifest.design_prerequisites.api_contract_decision.impact, "required");
+});
+
+test("缺少设计门禁时在写文件前拒绝 Layered MVC 新生成", async (t) => {
+  const data = await fixture(t);
+  delete data.contract.design_prerequisites;
+  await writeFile(data.contractFile, JSON.stringify(data.contract));
+  const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /design_prerequisites|Technical Design/);
+  await assert.rejects(stat(data.project), { code: "ENOENT" });
+});
+
+test("技术和数据设计齐全但缺少 API Decision 时在写文件前拒绝 Layered MVC 新生成", async (t) => {
+  const data = await fixture(t);
+  delete data.contract.design_prerequisites.api_contract_decision;
+  await writeFile(data.contractFile, JSON.stringify(data.contract));
+  const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /API Contract Decision|api_contract_decision/);
+  await assert.rejects(stat(data.project), { code: "ENOENT" });
+});
+
+test("API Draft、Validation、Review 或工程批准异常时均在零写入状态阻断 Layered MVC", async (t) => {
+  const mutations = [
+    async (data) => writeFile(data.design.openapi.file, "\n# drift\n", { flag: "a" }),
+    async (data) => {
+      const decision = JSON.parse(await readFile(data.design.api.file, "utf8"));
+      const file = path.join(data.root, decision.validation_record.ref);
+      const record = JSON.parse(await readFile(file, "utf8"));
+      record.status = "blocked";
+      record.toolchain.exit_code = 1;
+      record.checks.lint = "blocked";
+      await writeFile(file, `${JSON.stringify(record, null, 2)}\n`);
+      decision.validation_record.digest = digest(await readFile(file));
+      await writeFile(data.design.api.file, `${JSON.stringify(decision, null, 2)}\n`);
+      data.contract.design_prerequisites.api_contract_decision.digest = digest(await readFile(data.design.api.file));
+      await writeFile(data.contractFile, `${JSON.stringify(data.contract, null, 2)}\n`);
+    },
+    async (data) => {
+      const decision = JSON.parse(await readFile(data.design.api.file, "utf8"));
+      const file = path.join(data.root, decision.draft_review.ref);
+      const review = JSON.parse(await readFile(file, "utf8"));
+      review.result = "blocked";
+      review.blocking_findings = ["breaking response"];
+      await writeFile(file, `${JSON.stringify(review, null, 2)}\n`);
+      decision.draft_review.digest = digest(await readFile(file));
+      await writeFile(data.design.api.file, `${JSON.stringify(decision, null, 2)}\n`);
+      data.contract.design_prerequisites.api_contract_decision.digest = digest(await readFile(data.design.api.file));
+      await writeFile(data.contractFile, `${JSON.stringify(data.contract, null, 2)}\n`);
+    },
+    async (data) => {
+      const approval = JSON.parse(await readFile(data.design.approval.file, "utf8"));
+      approval.subject_ref = "approval://self-asserted";
+      await writeFile(data.design.approval.file, `${JSON.stringify(approval, null, 2)}\n`);
+    },
+  ];
+  for (const mutate of mutations) {
+    const data = await fixture(t, { apiImpact: "required" });
+    await mutate(data);
+    const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+    assert.notEqual(result.status, 0, result.stderr);
+    await assert.rejects(stat(data.project), { code: "ENOENT" });
+  }
+});
+
+test("schema v3 只读兼容但禁止用于 Layered MVC 新生成", async (t) => {
+  const data = await fixture(t, { schemaVersion: 3 });
+  const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /Project Scaffold Contract v4|新生成/);
+  await assert.rejects(stat(data.project), { code: "ENOENT" });
 });
 
 test("可选离线 Maven 可行性检查（不替代受控仓库验收）", { skip: process.env.YSS_BACKEND_OFFLINE_PROBE !== "1" }, async (t) => {
@@ -129,7 +217,7 @@ for (const database of ["h2"]) {
     const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
     assert.equal(result.status, 0, result.stderr);
     const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
-    assert.equal(manifest.schema_version, 3);
+    assert.equal(manifest.schema_version, 4);
     assert.equal(manifest.architecture_family, "layered-mvc");
     assert.equal(manifest.profiles.verification_database, database);
     assert.equal(manifest.profiles.production_database, "not-bound");

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { obsoleteCanonicalResidues, PROJECTION_ROOTS, unlockedCanonicalEntries, unlockedProjectionEntries } from "../../../../scripts/lib/skill-supply-chain.mjs";
+import { obsoleteCanonicalResidues, PROJECTION_ROOTS, unlockedCanonicalEntries, unlockedProjectionEntries, unregisteredNestedSkillPaths } from "../../../../scripts/lib/skill-supply-chain.mjs";
 
 function entry(name, type) {
   return {
@@ -44,5 +44,18 @@ test("Cursor is a first-class shared skill projection root", () => {
   assert.deepEqual(
     PROJECTION_ROOTS,
     [".codex/skills", ".cursor/skills", ".pi/skills"]
+  );
+});
+
+test("nested SKILL.md files cannot bypass external skill registration", () => {
+  assert.deepEqual(
+    unregisteredNestedSkillPaths(
+      [
+        ".agents/skills/example/references/registered/SKILL.md",
+        ".agents/skills/example/references/hidden/SKILL.md",
+      ],
+      [".agents/skills/example/references/registered/SKILL.md"],
+    ),
+    [".agents/skills/example/references/hidden/SKILL.md"],
   );
 });

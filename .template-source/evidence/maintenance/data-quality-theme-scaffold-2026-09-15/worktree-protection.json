@@ -1,0 +1,6 @@
+{
+  "protected_backend_bytes": "unchanged-versus-turn-start-backup",
+  "source_head": "532509a59856fc02f3b9bcb28a062663ce887d71",
+  "source_status": " M package.json\n M packages/src/api/modules/quality.ts\n M packages/src/components/TaskMonitorDrawer.vue\n M packages/src/store/issue.ts\n M packages/src/views/datasource/constant.ts\n M packages/src/views/datasource/hooks/useDatasource.ts\n M packages/src/views/datasource/index.vue\n D packages/src/views/datasource/schemas/formSchema.ts\n M packages/src/views/datasource/schemas/searchSchema.ts\n M packages/src/views/datasource/style.less\n M packages/src/views/issues/hooks/useIssues.ts\n M packages/src/views/quality-rule/components/CustomQualityRuleModal.vue\n M packages/src/views/quality-rule/components/StandardRuleWizardModal.less\n M packages/src/views/quality-rule/components/StandardRuleWizardModal.vue\n M packages/src/views/quality-rule/index.vue\n M packages/src/views/reports/hooks/useReports.ts\n M packages/src/views/variables/hooks/useVariables.ts\n",
+  "source_write_operations": "none; readonly npm userconfig used by temporary fixture install"
+}

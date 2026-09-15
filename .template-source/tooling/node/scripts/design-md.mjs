@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { createRequire } from "node:module";
 import { parseDocument } from "../vendor-entry-yaml.mjs";
 
 const repositoryRoot = path.resolve(new URL("../../../..", import.meta.url).pathname);
@@ -29,7 +30,9 @@ function projectedCssVariables(frontmatter) {
     "yss-color-primary-control": resolveValue(components["button-primary"].backgroundColor, frontmatter),
     "yss-color-primary-control-hover": resolveValue(components["button-primary-hover"].backgroundColor, frontmatter),
     "yss-color-on-primary": resolveValue(components["button-primary"].textColor, frontmatter),
-    "yss-control-height-compact": resolveValue(components["button-primary"].height, frontmatter),
+    "yss-control-height": resolveValue(components["button-primary"].height, frontmatter),
+    "yss-card-padding": resolveValue(components["card-default"].padding, frontmatter),
+    "yss-control-height-compact": resolveValue(components["button-compact"].height, frontmatter),
     "yss-card-compact-padding": resolveValue(components["card-compact"].padding, frontmatter)
   };
 }
@@ -111,7 +114,7 @@ function writeProjectionManifest() {
 
 function writeThemeProjection(frontmatter) {
   const themeFile = path.join(projectionDir, "theme.json");
-  const theme = existsSync(themeFile) ? JSON.parse(readFileSync(themeFile, "utf8")) : { token: {}, algorithm: "default" };
+  const theme = { token: {}, algorithm: "default" };
   const token = theme.token || (theme.token = {});
   const colors = frontmatter.colors;
   const typography = frontmatter.typography;
@@ -134,9 +137,51 @@ function writeThemeProjection(frontmatter) {
     borderRadius: Number.parseInt(rounded.md, 10),
     sizeUnit: Number.parseInt(spacing.xxs, 10),
     sizeStep: Number.parseInt(spacing.xxs, 10),
-    controlHeight: 32
+    controlHeight: Number.parseInt(frontmatter.components["button-primary"].height, 10),
+    controlHeightSM: Number.parseInt(frontmatter.components["button-small"].height, 10),
+    controlHeightLG: Number.parseInt(frontmatter.components["button-large"].height, 10),
+    fontSizeSM: Number.parseInt(typography.caption.fontSize, 10),
+    borderRadiusSM: Number.parseInt(rounded.sm, 10),
+    borderRadiusLG: Number.parseInt(rounded.lg, 10),
+    padding: Number.parseInt(spacing.md, 10),
+    paddingSM: Number.parseInt(spacing.sm, 10),
+    paddingXS: Number.parseInt(spacing.xs, 10),
+    paddingLG: Number.parseInt(spacing.card, 10)
   });
+  theme.components = { Card: { borderRadiusLG: token.borderRadiusLG, paddingLG: token.paddingLG } };
   writeFileSync(themeFile, `${JSON.stringify(theme, null, 2)}\n`);
+}
+
+function writeAlgorithmProjections(toolchain) {
+  if (!toolchain) fail("export --write 需要 --antd-toolchain <独立作者工具目录>，固定 antd 6.6.4");
+  const require = createRequire(path.join(path.resolve(toolchain), "package.json"));
+  if (require("antd/package.json").version !== "6.6.4") fail("主题算法需要 antd 6.6.4");
+  const { theme } = require("antd");
+  const config = JSON.parse(readFileSync(path.join(projectionDir, "theme.json")));
+  const kebab = key => key.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
+  const snapshots = {};
+  for (const [mode, algorithm] of Object.entries({ default: theme.defaultAlgorithm, dark: theme.darkAlgorithm, compact: theme.compactAlgorithm })) {
+    const token = { ...config.token };
+    // Let the dark algorithm derive neutral colors instead of pinning light aliases.
+    if (mode === "dark") for (const key of ["colorBgBase", "colorTextBase", "colorBgLayout", "colorText", "colorTextSecondary", "colorBorder"]) delete token[key];
+    snapshots[mode] = theme.getDesignToken({ token, algorithm });
+    writeFileSync(path.join(projectionDir, `tokens.${mode}.json`), JSON.stringify(snapshots[mode], null, 2) + "\n");
+  }
+  const rewrite = (css, token) => {
+    const values = Object.fromEntries(Object.entries(token).map(([key,value]) => [kebab(key),value]));
+    return css.replace(/(--brand-([\w-]+):\s*)([^;]+);/g, (all, prefix, key, old) => {
+      const value = values[key];
+      if (value === undefined || typeof value === "object") return all;
+      const unit = typeof value === "number" ? old.trim().match(/(?:px|ms|s)$/)?.[0] || "" : "";
+      return `${prefix}${value}${unit};`;
+    });
+  };
+  const cssPath = path.join(projectionDir, "variables.css");
+  const css = readFileSync(cssPath, "utf8");
+  const darkStart = css.indexOf('[data-theme="dark"]');
+  writeFileSync(cssPath, darkStart < 0 ? rewrite(css, snapshots.default) : rewrite(css.slice(0, darkStart), snapshots.default) + rewrite(css.slice(darkStart), snapshots.dark));
+  const darkPath = path.join(projectionDir, "variables.dark.css");
+  writeFileSync(darkPath, rewrite(readFileSync(darkPath, "utf8"), snapshots.dark));
 }
 
 function driftCheck() {
@@ -169,7 +214,10 @@ function main() {
     const { frontmatter } = readDesign();
     process.stdout.write(runUpstream(["export", "DESIGN.md", "--format", format]));
     if (args.includes("--write")) {
+      const toolchain = args[args.indexOf("--antd-toolchain") + 1];
+      if (!args.includes("--antd-toolchain") || !toolchain) fail("缺少 --antd-toolchain");
       writeThemeProjection(frontmatter);
+      writeAlgorithmProjections(toolchain);
       writeCssProjection(frontmatter);
     }
     if (args.includes("--write-manifest")) writeProjectionManifest();

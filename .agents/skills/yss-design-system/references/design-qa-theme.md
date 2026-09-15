@@ -7,6 +7,7 @@
 - 规范：根 `DESIGN.md`
 - 治理说明：`docs/design/design.md`
 - Token 投影：`docs/design/tokens/theme.json`、`docs/design/tokens/tokens.default.json`、`docs/design/tokens/variables.css`
+- 主题选择：默认采用根 `DESIGN.md` 的 Data Quality 浅色主题；仅显式暗色 / 紧凑模式使用对应的 `tokens.dark.json` / `variables.dark.css` / `tokens.compact.json`，以实际消费文件记录摘要。
 - 实现截图：当前原型或页面在同一 viewport / 主题 / 状态下的渲染
 
 官方 `https://ant.design/design.md` 只是上游默认。项目覆盖与官方不同时，以根 `DESIGN.md` 为准；本清单不复制规范值。
@@ -51,12 +52,13 @@
 
 - 使用上游默认、历史品牌值或未登记字体/圆角覆盖根 `DESIGN.md`：P1。
 - 只改局部组件、且 `prototype-evidence.yaml` 的 `theme_override` 已记录：按官方 severity 评估，不自动升 P1。
-- 暗色模式：本轮未重派生完整暗色色板；暗色对照前若缺少新的 algorithm 派生证据，`final result: blocked`，写明 blocker。
+- 暗色模式：核验派生记录与当前根规范摘要一致，并取得相同 viewport / 主题 / 状态的实际浏览器证据；缺失或漂移时 `final result: blocked`，写明 blocker。历史暗色验证不能代替当前原型或页面的验收。
 
 ## 报告要求
 
 `design-qa.md` 必须写明：
 
 - source visual truth path：根 `DESIGN.md`、治理说明与对应 Token 投影文件
+- 原型证据中 `design_baseline` 的规范与 Token 摘要，以及视觉基线 `cases[].theme` 和截图对应关系
 - 已按本清单核对 Colors/tokens 与 Fonts/typography
 - 与官方默认的差异是否被接受为项目覆盖

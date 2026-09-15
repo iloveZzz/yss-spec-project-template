@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
 import { buildDecisionFixture } from "../../../../scripts/fixtures/user-decision/build-fixture.mjs";
-import { mkdtemp, mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdtemp, mkdir, readFile, writeFile, rm, cp, symlink } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { prepareFlowPrototype, prepareStaticPrototype, validatePrototypeEvidence, validatePrototypeProject, prototypeDecisionSnapshot } from "../scripts/prototype-contract.mjs";
 import { sealVisualBaseline, validateVisualBaseline } from "../scripts/visual-baseline-contract.mjs";
+
+import { sealOfflineHtml } from "../scripts/offline-html.mjs";
 
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), "yss-prototype-contract-"));
 const projectRoot = path.join(tempRoot, "project");
@@ -14,37 +16,48 @@ await mkdir(path.join(projectRoot, "docs/design/tokens"), { recursive: true });
 await writeFile(path.join(projectRoot, "DESIGN.md"), "---\nversion: alpha\n---\n");
 await writeFile(path.join(projectRoot, "docs/design/tokens/theme.json"), JSON.stringify({ token: { colorPrimary: "#3371ff", borderRadius: 6, controlHeight: 32 } }, null, 2));
 
+await cp(new URL("../../../../docs/design/tokens/variables.css", import.meta.url), path.join(projectRoot, "docs/design/tokens/variables.css"));
+
 const h1Root = path.join(projectRoot, "docs/.scratch", feature, "design/prototypes");
 await prepareStaticPrototype({ projectRoot, root: h1Root, feature });
-assert.match(await readFile(path.join(h1Root, "index.html"), "utf8"), /H1 · visual-review/);
-const h1Styles = await readFile(path.join(h1Root, "styles.css"), "utf8");
-for (const token of ["--brand-font-family", "--brand-color-text", "--brand-color-bg-layout", "--brand-color-bg-container", "--yss-color-primary-control", "--yss-control-height-compact", "--brand-size-lg", "--brand-size", "--brand-size-sm", "--brand-border-radius-lg", "--brand-border-radius"]) assert.match(h1Styles, new RegExp(token));
-for (const staleAlias of ["--font-family", "--layout-background", "--container-background", "--brand-primary"]) assert.doesNotMatch(h1Styles, new RegExp(staleAlias));
-for (const hardcodedDeclaration of ["padding:24px", "padding:20px", "min-height:32px", "border-radius:8px", "border-radius:6px"]) assert.doesNotMatch(h1Styles, new RegExp(hardcodedDeclaration));
 assert.deepEqual((await validatePrototypeProject({ root: h1Root, profile: "H1" })).errors, []);
+const originalHtml = await readFile(path.join(h1Root, "index.html"), "utf8");
+await assert.rejects(prepareStaticPrototype({ projectRoot, root: h1Root, feature }), /已有内容|已存在内容/);
+assert.equal(await readFile(path.join(h1Root, "index.html"), "utf8"), originalHtml);
 await writeFile(path.join(h1Root, "package.json"), "{}\n");
-assert((await validatePrototypeProject({ root: h1Root, profile: "H1" })).errors.some((message) => message.includes("package.json")), "H1 必须拒绝伪构建依赖");
+assert((await validatePrototypeProject({ root: h1Root, profile: "H1" })).errors.some(message => message.includes("package.json")));
+await rm(path.join(h1Root, "package.json"));
 
 const h2Feature = "approval-flow";
 const h2Root = path.join(projectRoot, "docs/.scratch", h2Feature, "design/prototypes");
-const h2Manifest = await prepareFlowPrototype({ projectRoot, root: h2Root, feature: h2Feature, pnpmVersion: "10.15.0" });
-await writeFile(path.join(h2Root, "pnpm-lock.yaml"), "lockfileVersion: '9.0'\n");
-assert.equal(h2Manifest.component_basis, "vue-antdv-next");
-assert.equal(h2Manifest.library.version, "1.5.2");
-assert.match(await readFile(path.join(h2Root, "src/App.vue"), "utf8"), /a-config-provider/);
-assert.match(await readFile(path.join(h2Root, "src/yss-theme.js"), "utf8"), /compactAlgorithm/);
+const h2Manifest = await prepareFlowPrototype({ projectRoot, root: h2Root, feature: h2Feature });
+assert.equal(h2Manifest.component_basis, "html-css-js");
+assert.equal(h2Manifest.runtime_build_required, false);
 assert.deepEqual((await validatePrototypeProject({ root: h2Root, profile: "H2" })).errors, []);
-assert((await validatePrototypeProject({ root: h2Root, profile: "H2", componentBasis: "vue-antdv-next", libraryVersion: "1.5.1" })).errors.some((message) => message.includes("精确锁定")));
-
-const reactFeature = "legacy-react-flow";
-const reactRoot = path.join(projectRoot, "docs/.scratch", reactFeature, "design/prototypes");
-await mkdir(path.join(reactRoot, "src"), { recursive: true });
-await writeFile(path.join(reactRoot, "index.html"), "<!doctype html><div id=app></div>\n");
-await writeFile(path.join(reactRoot, "package.json"), JSON.stringify({ name: "legacy-react-flow-prototype", private: true, type: "module", scripts: { build: "vite build" }, dependencies: { react: "19.2.0", "react-dom": "19.2.0", vite: "6.4.2" } }, null, 2));
-await prepareFlowPrototype({ projectRoot, root: reactRoot, feature: reactFeature, targetAntdVersion: "6.6.2", pnpmVersion: "10.15.0" });
-await writeFile(path.join(reactRoot, "pnpm-lock.yaml"), "lockfileVersion: '9.0'\n");
-await writeFile(path.join(reactRoot, "src/App.jsx"), 'import { ConfigProvider } from "antd"; import { yssTheme } from "./yss-theme.js"; export function App(){return <ConfigProvider theme={yssTheme}/>;}\n');
-assert.deepEqual((await validatePrototypeProject({ root: reactRoot, profile: "H2", targetAntdVersion: "6.6.2" })).errors, []);
+await assert.rejects(prepareFlowPrototype({ projectRoot, root: h2Root, feature: h2Feature, componentBasis: "vue-antdv-next" }), /已退役/);
+await assert.rejects(prepareFlowPrototype({ projectRoot, root: h2Root, feature: h2Feature, targetAntdVersion: "6.6.2" }), /已退役/);
+const portableRoot = path.join(tempRoot, "portable");
+await cp(h2Root, portableRoot, { recursive: true });
+assert.deepEqual((await validatePrototypeProject({ root: portableRoot, profile: "H2" })).errors, [], "脱离源仓后仍可校验");
+const styles = await readFile(path.join(portableRoot, "styles.css"), "utf8");
+await writeFile(path.join(portableRoot, "styles.css"), styles + '\n@import "../outside.css";');
+await assert.rejects(sealOfflineHtml(portableRoot, "H2"), /资源缺失或越出交付包/);
+await writeFile(path.join(portableRoot, "styles.css"), styles);
+await writeFile(path.join(portableRoot, "tokens.css"), "/* tampered */");
+await assert.rejects(sealOfflineHtml(portableRoot, "H2"), /Token 来源摘要/);
+await cp(path.join(h2Root, "tokens.css"), path.join(portableRoot, "tokens.css"));
+await symlink(path.join(projectRoot, "DESIGN.md"), path.join(portableRoot, "escaped.md"));
+assert((await validatePrototypeProject({ root: portableRoot, profile: "H2" })).errors.some(message => message.includes("符号链接")));
+await rm(path.join(portableRoot, "escaped.md"));
+const html = await readFile(path.join(portableRoot, "index.html"), "utf8");
+for (const addition of ['<script type="module" src="./app.js"></script>', '<script src="https://example.test/app.js"></script>', '<script>fetch("./data.json")</script>']) {
+  await writeFile(path.join(portableRoot, "index.html"), html + addition);
+  await assert.rejects(sealOfflineHtml(portableRoot, "H2"));
+}
+await writeFile(path.join(portableRoot, "index.html"), html + "<!-- changed -->");
+assert((await validatePrototypeProject({ root: portableRoot, profile: "H2" })).errors.some(message => message.includes("摘要")));
+await sealOfflineHtml(portableRoot, "H2");
+assert.deepEqual((await validatePrototypeProject({ root: portableRoot, profile: "H2" })).errors, []);
 
 function common(profile, kind, block) {
   const data = {
@@ -109,11 +122,12 @@ const h2Evidence = common("H2", "flow-review", { flow_review: {
   visual_regression: { applicable: true, result: "passed", evidence_ref: "visual.json" },
   prototype_library_facts: { applicable: true, component_basis: "vue-antdv-next", source: "fact-pack", library_package: "antdv-next", library_version: "1.5.2", manifest_ref: "docs/design/facts/antdv-next/1.5.2/manifest.json", manifest_digest: "sha256:facts", components_covered: ["Button"], canonical_design_digest: "sha256:design", project_token_baseline_digest: "sha256:tokens", new_api_uncertainty: false }
 } });
-assert.deepEqual(validatePrototypeEvidence(h2Evidence).errors, []);
+assert(validatePrototypeEvidence(h2Evidence).errors.some(message => message.includes("Provider 已退役")));
+assert.deepEqual(validatePrototypeEvidence(h2Evidence, { allowLegacy: true }).errors, []);
 const legacyReactEvidence = structuredClone(h2Evidence);
 legacyReactEvidence.profile_evidence.flow_review.implementation.framework = "react";
 legacyReactEvidence.profile_evidence.flow_review.prototype_library_facts = { applicable: true, component_basis: "react-antd-6", source: "fact-pack", actual_antd_version: "6.6.2", manifest_ref: "docs/design/facts/antd/6.6.2/manifest.json", manifest_digest: "sha256:facts", components_covered: ["Button"], canonical_design_digest: "sha256:design", project_token_baseline_digest: "sha256:tokens", new_api_uncertainty: false };
-assert.deepEqual(validatePrototypeEvidence(legacyReactEvidence).errors, []);
+assert.deepEqual(validatePrototypeEvidence(legacyReactEvidence, { allowLegacy: true }).errors, []);
 const staleFacts = structuredClone(h2Evidence);
 staleFacts.profile_evidence.flow_review.prototype_library_facts.project_token_baseline_digest = "sha256:old";
 assert(validatePrototypeEvidence(staleFacts).errors.some((message) => message.includes("Token digest")));
@@ -136,6 +150,39 @@ assert(validatePrototypeEvidence(invalidHandoff).errors.some((message) => messag
 
 assert(validatePrototypeEvidence({ schema_version: 3 }).errors.some((message) => message.includes("只读旧证据")));
 assert.deepEqual(validatePrototypeEvidence({ schema_version: 3 }, { allowLegacy: true }).errors, []);
+
+
+const htmlEvidence = common("H2", "flow-review", { flow_review: {
+  implementation: { framework: "html-css-js", runtime_build_required: false },
+  main_flow_result: "passed", exceptional_state_result: "passed", exceptional_state_ref: "exceptions.md",
+  keyboard_result: "passed", focus_result: "passed", contrast_result: "passed", zoom_200_result: "passed", reduced_motion_result: "passed",
+  scenario_replay_ref: "replay.json", scenario_reset_result: "passed",
+  visual_regression: { applicable: false, result: "not-applicable", evidence_ref: "first-version.md" },
+  prototype_library_facts: { applicable: false, component_basis: "html-css-js" }
+} });
+htmlEvidence.source_visual = { kind: "design-system", ideation_status: "not-applicable", selected_ref: "DESIGN.md", reuse_reason: "已有规范覆盖当前页面模式" };
+htmlEvidence.design_qa.mode = "design-contract";
+Object.assign(htmlEvidence.browser_delivery, { delivery_contract: "offline-html-v1", resource_manifest_ref: "yss-prototype-adapter.json", offline_verification_ref: "offline.json", offline_verification_result: "passed" });
+assert.deepEqual(validatePrototypeEvidence(htmlEvidence).errors, []);
+for (const field of ["offline_verification_result", "offline_verification_ref", "resource_manifest_ref"]) {
+  const invalid = structuredClone(htmlEvidence); delete invalid.browser_delivery[field];
+  assert(validatePrototypeEvidence(invalid).errors.some(message => message.includes(field)));
+}
+const selfComparison = structuredClone(htmlEvidence); selfComparison.design_qa.mode = "visual-comparison";
+assert(validatePrototypeEvidence(selfComparison).errors.some(message => message.includes("source_visual.kind")));
+const incompleteFlow = structuredClone(htmlEvidence); incompleteFlow.profile_evidence.flow_review.scenario_reset_result = "pending";
+assert(validatePrototypeEvidence(incompleteFlow).errors.some(message => message.includes("scenario_reset_result")));
+
+const prebuiltEvidence = structuredClone(htmlEvidence);
+Object.assign(prebuiltEvidence.profile_evidence.flow_review.implementation, { framework: "react-antd-prebuilt", selection_reason: "日期与受控表单影响评审结论" });
+prebuiltEvidence.profile_evidence.flow_review.prototype_library_facts = { applicable: true, component_basis: "react-antd-prebuilt", library_package: "antd", library_version: "6.6.4", source: "fact-pack", manifest_ref: "reference/manifest.json", manifest_digest: "sha256:" + "c".repeat(64), canonical_design_digest: prebuiltEvidence.design_baseline.canonical_design_digest, project_token_baseline_digest: prebuiltEvidence.design_baseline.project_token_baseline_digest, new_api_uncertainty: false, components_covered: ["Table", "Select"], build_provenance_ref: "build-provenance.json" };
+assert.deepEqual(validatePrototypeEvidence(prebuiltEvidence).errors, []);
+for (const field of ["build_provenance_ref", "library_version"]) {
+  const invalid = structuredClone(prebuiltEvidence); delete invalid.profile_evidence.flow_review.prototype_library_facts[field];
+  assert(validatePrototypeEvidence(invalid).errors.length > 0);
+}
+const noPrebuiltReason = structuredClone(prebuiltEvidence); delete noPrebuiltReason.profile_evidence.flow_review.implementation.selection_reason;
+assert(validatePrototypeEvidence(noPrebuiltReason).errors.some(x => x.includes("selection_reason")));
 
 function pngHeader(width, height) {
   const value = Buffer.alloc(24);

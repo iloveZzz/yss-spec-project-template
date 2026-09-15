@@ -133,7 +133,8 @@ export async function runFirstSliceVerification(projectRoot, evidenceDir, sliceC
     assertArchitectureAgreement(identity, { manifest });
     for (const unit of contract.work_units ?? []) assertArchitectureAgreement(identity, { work_unit: unit.architecture_identity });
   } catch (error) { contractFailures.push(`architecture-identity:${error.message}`); }
-  if (![2, 3].includes(manifest.schema_version) || manifest.completion_level !== "empty-scaffold-verified") contractFailures.push("scaffold-not-empty-scaffold-verified");
+  if (![2, 3, 4].includes(manifest.schema_version) || manifest.completion_level !== "empty-scaffold-verified") contractFailures.push("scaffold-not-empty-scaffold-verified");
+  if (manifest.schema_version === 3 && manifest.legacy_reconciliation?.status !== "approved") contractFailures.push("legacy-scaffold-reconciliation-required");
   const projectFiles = await files(projectRoot);
   const missingArtifacts = adapter.artifacts.filter(([, pattern]) => !projectFiles.some((file) => pattern.test(file))).map(([name]) => name);
   const skillDrift = await downstreamDrift(manifest, adapter.skills);

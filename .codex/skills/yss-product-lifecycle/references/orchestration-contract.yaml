@@ -28,7 +28,7 @@ service_project_initialization:
   skill: yss-mvc-data-analysis-project-initializer
   architecture_profile: mvc-data-analysis-v1
   context_inputs: [context_handoff_ref, context_handoff_digest]
-  approval: current-schema-v3-scaffold-contract-and-user-confirmed-architecture
+  approval: current-schema-v4-scaffold-contract-with-approved-technical-and-data-design
   parent_ownership: service-references-and-handoff-only
   child_ownership: independent-git-project-instance-root-context-and-lifecycle
 supported_state_schema_versions: [1]
@@ -299,7 +299,7 @@ skill_source_contract:
   lock_version: 3
   source_revisions_required: [mattpocock/skills, iloveZzz/yss-ui]
   adaptation_ref_required_when_effective_diff: true
-  retired_shared_skills: [ask-matt, batch-grill-me, dispatching-parallel-agents, loop-me, migrate-to-shoehorn, product-design-prototype, prototype-page-acceptance, scaffold-exercises, setup-pre-commit, setup-ts-deep-modules, teach, writing-beats, writing-fragments, writing-shape, yss-dictionary, yss-jdbc, yss-log, yss-microapp-commit, yss-page-module-development, yss-taskflow, yss-backend-scaffold-application, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-backend-scaffold-web]
+  retired_shared_skills: [yss-antd-design, yss-antdv-next-design, ask-matt, batch-grill-me, dispatching-parallel-agents, loop-me, migrate-to-shoehorn, product-design-prototype, prototype-page-acceptance, scaffold-exercises, setup-pre-commit, setup-ts-deep-modules, teach, writing-beats, writing-fragments, writing-shape, yss-components, yss-dictionary, yss-jdbc, yss-log, yss-microapp-commit, yss-mvc-scaffold-generator, yss-page-module-development, yss-taskflow, yss-backend-scaffold-application, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-backend-scaffold-web, yss-backend-scaffold-adapter, yss-application-layer-reference, yss-domain-layer-reference, yss-infrastructure-layer-reference, yss-web-layer-reference]
 
 # 生命周期默认走原生工作单元；Matt user-invoked skill 仅保留为兼容入口。
 lifecycle_native_entries:
@@ -357,8 +357,8 @@ work_unit_routes:
   work-unit.prototype-design:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
     primary_skill: yss-prototype-stage
-    supporting_skills: [prototype-review, yss-design-system, product-design:index, yss-antdv-next-design, yss-antd-design]
-    skills: [prototype-review, yss-design-system, yss-prototype-stage, product-design:index, yss-antdv-next-design, yss-antd-design]
+    supporting_skills: [prototype-review, yss-design-system, product-design:index]
+    skills: [prototype-review, yss-design-system, yss-prototype-stage, product-design:index]
     execution_order: [yss-design-system, low-fidelity-assets, prototype-review, prototype-profile-routing, profile-adapter-build, browser-design-qa-accessibility, user-confirmation]
     profile_routing_ref: .agents/skills/yss-prototype-stage/references/prototype-profile-routing.md
     prototype_adapter_ref: .agents/skills/yss-prototype-stage/references/product-design-adapter.md
@@ -370,7 +370,7 @@ work_unit_routes:
         H1: {kind: visual-review, adapter: static-html, node_runtime_required: false, antd_facts: not-applicable}
         H2: {kind: flow-review, adapter: runnable-flow, react_antd: supported-not-required, antd_facts: conditional}
     implementation_handoff: {production_component_assumptions: required-array, verification_targets: frontend-implementation-only}
-    version_boundary: {h2_design_standard: vue-antdv-next-default-react-antd-explicit-compatibility, prototype_must_not_call: yss-ui, production_version_source: implementation-lockfile}
+    version_boundary: {h2_design_standard: html-css-js-offline, prototype_must_not_call: yss-ui, production_version_source: implementation-lockfile}
     human_gate: gate.product-design-approved
     applies_when: product_design_impact
     not_applicable_reason: no_ui_or_product_design_impact
@@ -380,7 +380,8 @@ work_unit_routes:
     supporting_skills: [yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding, yss-implementation-contract-compiler]
     skills: [yss-technical-design, yss-openapi-governance, yss-openapi-draft-review, codebase-design, implementation-repo-onboarding, yss-implementation-contract-compiler]
     technical_design:
-      applies_when: backend_technical_design_impact
+      applies_when: backend_delivery_impact
+      new_backend_repository: required
       architecture_source: confirmed-project-architecture-before-branch-design
       branches:
         domain-driven: yss-tactical-design
@@ -393,6 +394,25 @@ work_unit_routes:
       statuses: [draft, ready-for-human, approved, blocked, stale, drift, new_impacts, not-applicable]
       approved_by: yss-product-lifecycle
       forbidden: [self-approval, ready-for-agent, production-code-generation]
+    data_architecture_decision:
+      schema_version: 1
+      applies_when: backend_delivery_impact
+      impact_modes: [required, not-applicable]
+      required: [impact_assessment_ref, impact_assessment_digest, evidence_refs]
+      required_when_data_impact: [data_architecture_ref, data_architecture_digest, review_evidence_refs]
+      not_applicable_requires: [explicit_reason, evidence_refs]
+      empty_data_architecture_document: forbidden
+    api_contract_decision:
+      schema_version: 1
+      impact_modes: [required, not-applicable]
+      required: [impact_assessment_ref, impact_assessment_digest, evidence_refs]
+      required_when_api_impact: [openapi_ref, openapi_version, openapi_digest, validation_record_ref, validation_record_digest, draft_review_ref, draft_review_digest, freeze_version, freeze_time]
+      same_draft_bytes_required_across: [openapi, validation, draft-review, freeze, engineering-approval]
+      validation_requires: [openapi-3.1, locked-redocly, exit-code-zero, all-checks-passed]
+      review_requires: [approved, no-blocking-findings, independent-review-evidence]
+      not_applicable_requires: [explicit_reason, evidence_refs]
+      placeholder_assets: forbidden
+      atomic_approval_gate: gate.engineering-contract-approved
     human_gate: gate.engineering-contract-approved
     applies_when: technical_or_contract_impact
     not_applicable_reason: no_technical_or_contract_impact
@@ -406,6 +426,8 @@ work_unit_routes:
     decision_boundary: scaffold-choice
     completion_states: [existing-and-onboarded, initialized-and-verified, not-applicable]
     automatic_check: check.implementation-repositories-ready
+    result_schema_version: 2
+    backend_design_prerequisites_required: [technical_design, data_architecture_decision, api_contract_decision, engineering_contract_approval_ref]
     must_complete_before: work-unit.ticket-decomposition
   work-unit.ticket-decomposition:
     native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
@@ -428,7 +450,7 @@ work_unit_routes:
       page_orchestration_skill: yss-ui-business-page-generation
       conditional_skills:
         api_impact: [yss-api-integration]
-        formily_impact: [yss-formily, formily-foundation, formily-linkage-effects, formily-mode-slot-detail, formily-step-flow]
+        formily_impact: [yss-formily]
         table_impact: [ytable-usage, yedit-table-usage]
         tree_impact: [ytree-usage]
         height_impact: [yss-use-table-height, yss-use-tree-height]
@@ -565,10 +587,13 @@ implementation_repository_preparation:
     remote_repository_creation: explicit-authorization-only
     approved_project_scaffold_contract_required: true
     frontend_contract_minimum_schema_version: 4
-    backend_contract_compatibility_schema_versions: [3, 4]
+    backend_new_generation_schema_version: 4
+    backend_historical_read_only_schema_versions: [3]
     target_policy: nonexistent-or-empty
     force_overwrite: forbidden
-    completion_requires: [scaffold_manifest_ref, scaffold_verification]
+    completion_requires: [scaffold_manifest_ref, scaffold_verification, technical_design, data_architecture_decision, api_contract_decision, engineering_contract_approval_ref]
+    legacy_v3_requires: [legacy_reconciliation, unchanged_mechanical_ownership, completed_technical_data_api_prerequisites, recovery_approval]
+    premature_implementation: blocked-preserve-files
   aggregate_result:
     required: [result, current_version, projects, evidence_refs]
     result: completed
@@ -591,12 +616,14 @@ transition_graph:
     work-unit.plan-requirements: [work-unit.domain-strategy-design, work-unit.stage-decision, work-unit.spec-synthesis]
     work-unit.domain-strategy-design: [work-unit.stage-decision, work-unit.spec-synthesis]
     work-unit.stage-decision: [work-unit.spec-synthesis]
-    work-unit.spec-synthesis: [work-unit.prototype-design, work-unit.technical-analysis, work-unit.implementation-repository-preparation]
-    work-unit.prototype-design: [work-unit.technical-analysis, work-unit.implementation-repository-preparation]
+    work-unit.spec-synthesis: [work-unit.prototype-design, work-unit.technical-analysis]
+    work-unit.prototype-design: [work-unit.technical-analysis]
     work-unit.technical-analysis: [work-unit.implementation-repository-preparation]
     work-unit.implementation-repository-preparation: [work-unit.ticket-decomposition]
     work-unit.ticket-decomposition: [work-unit.slice-implementation]
   forbidden_shortcuts:
+    - {from: work-unit.spec-synthesis, to: work-unit.implementation-repository-preparation}
+    - {from: work-unit.prototype-design, to: work-unit.implementation-repository-preparation}
     - {from: work-unit.spec-synthesis, to: work-unit.slice-implementation}
     - {from: work-unit.prototype-design, to: work-unit.slice-implementation}
     - {from: work-unit.technical-analysis, to: work-unit.slice-implementation}
@@ -789,7 +816,7 @@ backend_scaffold:
   scaffold_statuses: [existing, required, initialized]
   required_status: required
   sequence:
-    after: [prototype_review, prototype_verification, antd_cli_verification, browser_verification, prototype_confirmation, engineering_baseline]
+    after: [prototype_review, prototype_verification, offline_html_verification, browser_verification, prototype_confirmation, engineering_baseline]
     before_generator: [scaffold-architecture-decision-user-confirmed, scaffold-architecture-decision-lifecycle-approved, yss-implementation-contract-compiler-scaffold-contract, lifecycle-approve-scaffold-contract]
     before: [business_code_generation, implement]
   generator_routes:
@@ -830,10 +857,11 @@ backend_scaffold:
     unsupported_inputs:
       schema_v1: reject-no-auto-upgrade
       schema_v2_new_generation: reject-no-auto-upgrade
+      schema_v3_new_generation: reject-historical-read-only
       slice_id: forbidden-as-scaffold-identity
       existing_project: reject-no-scaffold-migration
-  required_inputs: [implementation_repository, backend_repository, scaffold_status, scaffold_target_confirmed, scaffold_request_id, target_output_dir, project_name, base_package, architecture_family, generator_skill, decision_ref, decision_id, decision_digest, maven_group_id, project_version, parent_group_id, parent_artifact_id, parent_version, yss_components_version, architecture_profile, persistence_profile, verification_database, production_database, platform_profile, validation_namespace, dto_placement, repository_profile, requested_capabilities, resolved_modules, resolution_version, scaffold_contract_file, scaffold_contract_draft, scaffold_contract_id, scaffold_contract_version, scaffold_contract_status, scaffold_contract_approved, scaffold_contract_compiler_draft_ref, scaffold_contract_lifecycle_approval_ref, scaffold_contract_persisted, scaffold_contract_persisted_ref, scaffold_contract_current_version]
-  required_evidence: [scaffold_architecture_decision, user_confirmation_ref, decision_digest, generator_inputs, expected_files, scaffold_generation_manifest_v3, generated_project_structure, generation_execution_result, verification_execution_result, architecture_rules, ./mvnw_validate, ./mvnw_test, ./mvnw_package, yss_skill_execution_result]
+  required_inputs: [implementation_repository, backend_repository, scaffold_status, scaffold_target_confirmed, scaffold_request_id, target_output_dir, project_name, base_package, architecture_family, generator_skill, decision_ref, decision_id, decision_digest, technical_design_ref, technical_design_version, technical_design_digest, data_architecture_decision_ref, data_architecture_decision_version, data_architecture_decision_digest, engineering_contract_approval_ref, maven_group_id, project_version, parent_group_id, parent_artifact_id, parent_version, yss_components_version, architecture_profile, persistence_profile, verification_database, production_database, platform_profile, validation_namespace, dto_placement, repository_profile, requested_capabilities, resolved_modules, resolution_version, scaffold_contract_file, scaffold_contract_draft, scaffold_contract_id, scaffold_contract_version, scaffold_contract_status, scaffold_contract_approved, scaffold_contract_compiler_draft_ref, scaffold_contract_lifecycle_approval_ref, scaffold_contract_persisted, scaffold_contract_persisted_ref, scaffold_contract_current_version]
+  required_evidence: [scaffold_architecture_decision, user_confirmation_ref, decision_digest, technical_design, data_architecture_decision, engineering_contract_approval, generator_inputs, expected_files, scaffold_generation_manifest_v4, generated_project_structure, generation_execution_result, verification_execution_result, architecture_rules, ./mvnw_validate, ./mvnw_test, ./mvnw_package, yss_skill_execution_result]
   generation_options:
     with_example: false
     force: forbidden-by-default
@@ -1111,7 +1139,7 @@ prototype_modes:
     replaces_yss_high_fidelity: false
   yss_high_fidelity:
     asset: ant_design_v6_html
-    required: [prototype_mode, prototype_review, antd_cli_verification, browser_verification, prototype_evidence, user_confirmation]
+    required: [prototype_mode, prototype_review, offline_html_verification, browser_verification, prototype_evidence, user_confirmation]
     purpose: product_design_review
     replaces_matt_logic: false
 

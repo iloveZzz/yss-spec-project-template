@@ -5,11 +5,11 @@ description: 在生命周期批准的初始化合同下创建独立 Git 管理�
 
 # 数据分析 MVC 项目初始化
 
-这是 `work-unit.service-project-initialization` 的执行器，不是通用 MVC 脚手架。通用 MVC 使用 `yss-layered-mvc-scaffold-generator`；DDD 使用 `yss-ddd-scaffold-generator`。旧 `yss-mvc-scaffold-generator` 已退役且不提供自动别名。
+这是 `work-unit.service-project-initialization` 的执行器，不是通用 MVC 脚手架。通用 MVC 使用 `yss-layered-mvc-scaffold-generator`；DDD 使用 `yss-ddd-scaffold-generator`。历史数据分析初始化入口不提供自动别名，迁移关系只在 `docs/agents/skill-migrations.md` 记录。
 
 ## 执行合同
 
-- 必须有生命周期批准且当前的 schema v3 scaffold contract，绑定 `architecture_profile=mvc-data-analysis-v1`、本生成器及已批准的架构决策。
+- 必须有生命周期批准且当前的 schema v4 scaffold contract，绑定 `architecture_profile=mvc-data-analysis-v1`、本生成器、已批准的架构决策、Technical Design、Data Architecture Decision v1 和真实工程合同批准记录。
 - 固定 server/core/client/repository/adapter/feign-client；core 是薄应用层，规则见 `docs/agents/backend-architecture-profiles.md`。不生成业务接口、SQL、DDL、Mock、生产数据库配置或额外数据源。
 - `verification_database=h2` / `production_database=not-bound`；Java 8 / Boot 2.7 / javax。目标不存在，禁止覆盖、迁移、自动提交和推送。
 - 合同必须包含 `context_handoff_ref`、`context_handoff_digest`：批准交接的完整根 CONTEXT.md（含 schema frontmatter），不得用跨仓路径替代本仓词汇表。初始化只复制已确认内容，不创造业务术语；父项目只保留服务引用和 handoff 证据。

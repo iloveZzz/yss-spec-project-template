@@ -87,6 +87,8 @@ required_files:
   - docs/process/schemas/frontend-implementation-evidence.schema.json
   - docs/process/schemas/scaffold-architecture-decisions.schema.json
   - docs/process/schemas/project-scaffold-contract.schema.json
+  - docs/process/schemas/data-architecture-decision.schema.json
+  - docs/process/schemas/api-contract-decision.schema.json
   - docs/process/schemas/implementation-repository-preparation-result.schema.json
   - docs/design/schemas/visual-baseline.schema.json
   - docs/process/schemas/subagent-task-package.schema.json
@@ -186,6 +188,16 @@ syntax_files:
   - scripts/verify-maintenance-intensity-scenarios
   - scripts/verify-skill-registry
   - scripts/lib/implementation-contract-compiler.mjs
+  - scripts/lib/backend-scaffold-prerequisites.mjs
+  - scripts/lib/api-contract-decision.mjs
+  - scripts/lib/openapi-draft-validation.mjs
+  - scripts/lib/api-contract-decision.test.mjs
+  - scripts/verify-openapi-draft-validation-record
+  - scripts/lib/legacy-backend-scaffold-audit.mjs
+  - scripts/lib/legacy-backend-scaffold-audit.test.mjs
+  - scripts/audit-legacy-backend-scaffold
+  - scripts/fixtures/backend-scaffold/design-prerequisites.mjs
+  - scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs
   - scripts/generate-yss-skill-boundaries
   - scripts/audit-yss-backend-skills
   - scripts/verify-retired-skill-ids
@@ -198,6 +210,16 @@ syntax_files:
   - scripts/verify-digital-human-roles-scenarios
   - scripts/verify-approval-record
   - scripts/lib/lifecycle-transition.mjs
+  - scripts/lib/backend-scaffold-prerequisites.mjs
+  - scripts/lib/api-contract-decision.mjs
+  - scripts/lib/openapi-draft-validation.mjs
+  - scripts/lib/api-contract-decision.test.mjs
+  - scripts/verify-openapi-draft-validation-record
+  - scripts/lib/legacy-backend-scaffold-audit.mjs
+  - scripts/lib/legacy-backend-scaffold-audit.test.mjs
+  - scripts/audit-legacy-backend-scaffold
+  - scripts/fixtures/backend-scaffold/design-prerequisites.mjs
+  - scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs
   - scripts/verify-lifecycle-scenarios
   - scripts/verify-lifecycle-transition-scenarios
   - scripts/verify-frontend-scaffold-generator-scenarios
@@ -309,7 +331,6 @@ groups:
       - { run: "scripts/verify-skill-registry" }
       - { run: "scripts/verify-skill-governance" }
       - { run: "scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent", when: template-source }
-      - { run: "node .agents/skills/yss-antdv-next-design/tests/run-scenarios.mjs" }
       - { run: "node --test .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs" }
       - { run: "node --test .agents/skills/yss-repository/tests/profile-routing.test.mjs" }
   tactical-design:
@@ -374,6 +395,8 @@ groups:
       - { run: "scripts/verify-scaffold-generator-scenarios" }
       - { run: "node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs" }
       - { run: "node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs" }
+      - { run: "node --test scripts/lib/legacy-backend-scaffold-audit.test.mjs" }
+      - { run: "node --test scripts/lib/api-contract-decision.test.mjs" }
       - { run: "scripts/verify-frontend-scaffold-generator-scenarios" }
       - { run: "scripts/verify-prototype-backend-scaffold-scenarios" }
       - { run: "scripts/verify-matt-yss-integration-scenarios" }
@@ -383,6 +406,7 @@ groups:
       - { run: "scripts/verify-retired-skill-ids" }
       - { run: "scripts/verify-yss-ui-scenarios" }
       - { run: "scripts/verify-yss-prototype-contract-scenarios" }
+      - { run: "node --test .agents/skills/yss-prototype-stage/tests/antd-reference.test.mjs" }
       - { run: "node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence docs/design/templates/prototype-evidence-template.yaml --allow-template" }
       - { run: "node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate docs/design/templates/visual-baseline-template.yaml --allow-template" }
   governance-release:

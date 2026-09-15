@@ -1,0 +1,736 @@
+{
+  "schema_version": 1,
+  "source_url": "https://ant.design/components/overview-cn/",
+  "checked_at": "2026-09-14T16:00:46Z",
+  "documented_version": "6.6.4",
+  "source_revision": "db0488c167154941ce4686074ef69e757e1f3492",
+  "source_repository": "https://github.com/ant-design/ant-design",
+  "counts": {
+    "entries": 73,
+    "external_entries": 6,
+    "categories": {
+      "其他": 5,
+      "反馈": 11,
+      "导航": 7,
+      "数据录入": 18,
+      "数据展示": 21,
+      "通用": 4,
+      "布局": 7
+    }
+  },
+  "notes": [
+    "73 是基础目录条目数，包含废弃 List、Icon 独立包和 Util 工具入口，不等同于 73 个 antd 组件导出。",
+    "introduced_version 仅记录固定源码 frontmatter 的版本 tag，不推测所有组件的首次发布版本。",
+    "external_entries 是总览附加的 Pro Components 外链，不属于 antd 内置目录；package 为已核实 umbrella package，未核验它与此 AntD 版本的运行兼容性。",
+    "source_revision 来自当日读取 master 后锁定的实际 SHA；每项 source_blob_sha 来自该提交 tree。"
+  ],
+  "external_package_source_url": "https://raw.githubusercontent.com/ant-design/pro-components/fabe5aeb1c671b2b03531029bbadc276f6f3d21d/package.json",
+  "external_package_source_revision": "fabe5aeb1c671b2b03531029bbadc276f6f3d21d",
+  "entries": [
+    {
+      "name": "Button",
+      "category": "通用",
+      "doc_url": "https://ant.design/components/button-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/button/index.zh-CN.md",
+      "source_blob_sha": "9a8b6a023f888f65b093cb93e85e1c787f6680dc"
+    },
+    {
+      "name": "FloatButton",
+      "category": "通用",
+      "doc_url": "https://ant.design/components/float-button-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/float-button/index.zh-CN.md",
+      "source_blob_sha": "0a8f588f1dd796ee9e71f91b0dd8e39cb0c6202e"
+    },
+    {
+      "name": "Icon",
+      "category": "通用",
+      "doc_url": "https://ant.design/components/icon-cn/",
+      "status": "active",
+      "package": "@ant-design/icons",
+      "source_path": "components/icon/index.zh-CN.md",
+      "source_blob_sha": "1cfb01bdafbeb6075838b60c0d3c74be5d7293a6"
+    },
+    {
+      "name": "Typography",
+      "category": "通用",
+      "doc_url": "https://ant.design/components/typography-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/typography/index.zh-CN.md",
+      "source_blob_sha": "ecc2e8ea04dcd5749dde8ac8ae4b562d71080360"
+    },
+    {
+      "name": "Divider",
+      "category": "布局",
+      "doc_url": "https://ant.design/components/divider-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/divider/index.zh-CN.md",
+      "source_blob_sha": "44fcbdb1eb1c8b10df6f678fa610ac00eed7eb07"
+    },
+    {
+      "name": "Flex",
+      "category": "布局",
+      "doc_url": "https://ant.design/components/flex-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/flex/index.zh-CN.md",
+      "source_blob_sha": "b638739751c2b02588276e3ca32d7a323697d2d1"
+    },
+    {
+      "name": "Grid",
+      "category": "布局",
+      "doc_url": "https://ant.design/components/grid-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/grid/index.zh-CN.md",
+      "source_blob_sha": "3d3f02ad23eb6e8e27f867e821d9549e0b478465"
+    },
+    {
+      "name": "Layout",
+      "category": "布局",
+      "doc_url": "https://ant.design/components/layout-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/layout/index.zh-CN.md",
+      "source_blob_sha": "0f69329038b0a4ab1d5ef101836cbf20ef33260b"
+    },
+    {
+      "name": "Masonry",
+      "category": "布局",
+      "doc_url": "https://ant.design/components/masonry-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/masonry/index.zh-CN.md",
+      "source_blob_sha": "b22812b1ac8f895ada3b825660c023148c4876bc",
+      "introduced_version": "6.0.0"
+    },
+    {
+      "name": "Space",
+      "category": "布局",
+      "doc_url": "https://ant.design/components/space-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/space/index.zh-CN.md",
+      "source_blob_sha": "45e3b64c6bac5ac29260912749243060410a3d28"
+    },
+    {
+      "name": "Splitter",
+      "category": "布局",
+      "doc_url": "https://ant.design/components/splitter-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/splitter/index.zh-CN.md",
+      "source_blob_sha": "110833dbc645cf60ac81724d8e3298b32d72b979"
+    },
+    {
+      "name": "Anchor",
+      "category": "导航",
+      "doc_url": "https://ant.design/components/anchor-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/anchor/index.zh-CN.md",
+      "source_blob_sha": "2faf48fee0a18140a14d5b0ee98e0b261d5bdf25"
+    },
+    {
+      "name": "Breadcrumb",
+      "category": "导航",
+      "doc_url": "https://ant.design/components/breadcrumb-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/breadcrumb/index.zh-CN.md",
+      "source_blob_sha": "5ba1555cad382b9e43e5370422e3becbe066f471"
+    },
+    {
+      "name": "Dropdown",
+      "category": "导航",
+      "doc_url": "https://ant.design/components/dropdown-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/dropdown/index.zh-CN.md",
+      "source_blob_sha": "db59caa580034341af13b597807f6e32692c3c56"
+    },
+    {
+      "name": "Menu",
+      "category": "导航",
+      "doc_url": "https://ant.design/components/menu-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/menu/index.zh-CN.md",
+      "source_blob_sha": "d8a29f5b1693b720cf006f869f29998767681a5a"
+    },
+    {
+      "name": "Pagination",
+      "category": "导航",
+      "doc_url": "https://ant.design/components/pagination-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/pagination/index.zh-CN.md",
+      "source_blob_sha": "0f64274466af26dce48bccd62d52b4d8f41c1d62"
+    },
+    {
+      "name": "Steps",
+      "category": "导航",
+      "doc_url": "https://ant.design/components/steps-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/steps/index.zh-CN.md",
+      "source_blob_sha": "d8288da2bd3b2842c926ba9445180ee2da0a8c57"
+    },
+    {
+      "name": "Tabs",
+      "category": "导航",
+      "doc_url": "https://ant.design/components/tabs-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/tabs/index.zh-CN.md",
+      "source_blob_sha": "1f23adf51e32a956a0589a6d2eff9468dfe0de94"
+    },
+    {
+      "name": "AutoComplete",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/auto-complete-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/auto-complete/index.zh-CN.md",
+      "source_blob_sha": "6e354d986ee8df03a85e67e6626aa5ef9f3fd4ba"
+    },
+    {
+      "name": "Cascader",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/cascader-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/cascader/index.zh-CN.md",
+      "source_blob_sha": "d4c7356f6e4cc527bd18f81d0db2ab78390d2682"
+    },
+    {
+      "name": "Checkbox",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/checkbox-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/checkbox/index.zh-CN.md",
+      "source_blob_sha": "bf61334ad641d4496de14d6c0d1775584103f71d"
+    },
+    {
+      "name": "ColorPicker",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/color-picker-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/color-picker/index.zh-CN.md",
+      "source_blob_sha": "73e36c7e76ab751f8b3a9ce5649eaafee4d31dc5"
+    },
+    {
+      "name": "DatePicker",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/date-picker-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/date-picker/index.zh-CN.md",
+      "source_blob_sha": "fdb786f0398a1bb1091b4ff5d6dc5c3c069ba81d"
+    },
+    {
+      "name": "Form",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/form-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/form/index.zh-CN.md",
+      "source_blob_sha": "64b859fdccf73799af1e74b1cacd22d5bc61f84b"
+    },
+    {
+      "name": "Input",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/input-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/input/index.zh-CN.md",
+      "source_blob_sha": "cbab5d682a35b262608c6a6d46818681331e3a0c"
+    },
+    {
+      "name": "InputNumber",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/input-number-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/input-number/index.zh-CN.md",
+      "source_blob_sha": "2578e34922d7dcb015deecc46d774c4c8ceefb58"
+    },
+    {
+      "name": "Mentions",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/mentions-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/mentions/index.zh-CN.md",
+      "source_blob_sha": "bd379e4ac8f11f583a08e0f17df198445fbb92d7"
+    },
+    {
+      "name": "Radio",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/radio-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/radio/index.zh-CN.md",
+      "source_blob_sha": "946d81882e250aec5a7b23d32c97045bda580d37"
+    },
+    {
+      "name": "Rate",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/rate-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/rate/index.zh-CN.md",
+      "source_blob_sha": "df75aa599d03922a9f2f7cfc7ac80d390926193a"
+    },
+    {
+      "name": "Select",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/select-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/select/index.zh-CN.md",
+      "source_blob_sha": "9f869d8bd6803b50f46b22b5aeac91776e85bff1"
+    },
+    {
+      "name": "Slider",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/slider-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/slider/index.zh-CN.md",
+      "source_blob_sha": "c4a21feb1b44c335bf4c354699d2e8ae6ccd9bac"
+    },
+    {
+      "name": "Switch",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/switch-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/switch/index.zh-CN.md",
+      "source_blob_sha": "c82de49bc0a8dc4ee2081526a48f0c1e6e12cbb5"
+    },
+    {
+      "name": "TimePicker",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/time-picker-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/time-picker/index.zh-CN.md",
+      "source_blob_sha": "313a9fc412b5d89638b8029156538b6897402b58"
+    },
+    {
+      "name": "Transfer",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/transfer-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/transfer/index.zh-CN.md",
+      "source_blob_sha": "4fdb600881e2cac67a1d3ff9b3c75b0be324eb87"
+    },
+    {
+      "name": "TreeSelect",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/tree-select-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/tree-select/index.zh-CN.md",
+      "source_blob_sha": "4d71e69810b00392abc933f1e68f1199eb5839d6"
+    },
+    {
+      "name": "Upload",
+      "category": "数据录入",
+      "doc_url": "https://ant.design/components/upload-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/upload/index.zh-CN.md",
+      "source_blob_sha": "bdd6056edf89c8b5b86b76e012559e897c72a29e"
+    },
+    {
+      "name": "Avatar",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/avatar-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/avatar/index.zh-CN.md",
+      "source_blob_sha": "ccac66a274e656806bda132d75c80ed62159aea7"
+    },
+    {
+      "name": "Badge",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/badge-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/badge/index.zh-CN.md",
+      "source_blob_sha": "d9a6bbdac8864efcf07db89eb5a11ed364970ae3"
+    },
+    {
+      "name": "Calendar",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/calendar-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/calendar/index.zh-CN.md",
+      "source_blob_sha": "119af8a823d5c42de63c8ab4a6bec806ef132fa4"
+    },
+    {
+      "name": "Card",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/card-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/card/index.zh-CN.md",
+      "source_blob_sha": "ca379e30494da51a91e898379a6ddeef0cfe80e0"
+    },
+    {
+      "name": "Carousel",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/carousel-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/carousel/index.zh-CN.md",
+      "source_blob_sha": "a22023604f171e23c95475665cd1f98d5ddeadb2"
+    },
+    {
+      "name": "Collapse",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/collapse-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/collapse/index.zh-CN.md",
+      "source_blob_sha": "4760062300917e94600ea6a3983a7008b2bbc016"
+    },
+    {
+      "name": "Descriptions",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/descriptions-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/descriptions/index.zh-CN.md",
+      "source_blob_sha": "c37889ae046740b5e085e82356a5a2a125536bac"
+    },
+    {
+      "name": "Empty",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/empty-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/empty/index.zh-CN.md",
+      "source_blob_sha": "07b9224b233f4fc30f2b204f6c033821279c9881"
+    },
+    {
+      "name": "Image",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/image-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/image/index.zh-CN.md",
+      "source_blob_sha": "631f38b23c92382c0a5f43b40f28a169773847ed"
+    },
+    {
+      "name": "List",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/list-cn/",
+      "status": "deprecated",
+      "package": "antd",
+      "source_path": "components/list/index.zh-CN.md",
+      "source_blob_sha": "22c76a212c86da2b0890f360a41bdac9dcb3100f"
+    },
+    {
+      "name": "Listy",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/listy-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/listy/index.zh-CN.md",
+      "source_blob_sha": "d4138ee2008b203f53fe10cd26590408d1a56c67",
+      "introduced_version": "6.6.0"
+    },
+    {
+      "name": "Popover",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/popover-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/popover/index.zh-CN.md",
+      "source_blob_sha": "5afb6df02250fba93ae2b9e7405b3a76b0c07361"
+    },
+    {
+      "name": "QRCode",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/qr-code-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/qr-code/index.zh-CN.md",
+      "source_blob_sha": "6164057bda5bb1246fddc3cbf4639b9f5ce473fb"
+    },
+    {
+      "name": "Segmented",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/segmented-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/segmented/index.zh-CN.md",
+      "source_blob_sha": "c5f0b58b48f8c8e5748d7a94ca6731c33fd2b31f"
+    },
+    {
+      "name": "Statistic",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/statistic-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/statistic/index.zh-CN.md",
+      "source_blob_sha": "61c9748d21cd05f372f7be675007c8e2b1f38099"
+    },
+    {
+      "name": "Table",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/table-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/table/index.zh-CN.md",
+      "source_blob_sha": "7b2a03c16cc3d743fb6ad5b848c2c720895e1617"
+    },
+    {
+      "name": "Tag",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/tag-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/tag/index.zh-CN.md",
+      "source_blob_sha": "fc59d1289ff9ca9685a707db95f04fe73cd8c2aa"
+    },
+    {
+      "name": "Timeline",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/timeline-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/timeline/index.zh-CN.md",
+      "source_blob_sha": "0d77918e4bed864f5d6edaaf82c7959dd67d0709"
+    },
+    {
+      "name": "Tooltip",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/tooltip-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/tooltip/index.zh-CN.md",
+      "source_blob_sha": "6c14bb4e3e0a8f316a748ac96a19e45fb2a52cc4"
+    },
+    {
+      "name": "Tour",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/tour-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/tour/index.zh-CN.md",
+      "source_blob_sha": "84d36968c2bdab87e3ebeea615459f725a742dc9"
+    },
+    {
+      "name": "Tree",
+      "category": "数据展示",
+      "doc_url": "https://ant.design/components/tree-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/tree/index.zh-CN.md",
+      "source_blob_sha": "d15b6bcae0a651a8b665c0e03ab386280114c116"
+    },
+    {
+      "name": "Alert",
+      "category": "反馈",
+      "doc_url": "https://ant.design/components/alert-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/alert/index.zh-CN.md",
+      "source_blob_sha": "857baf7fe659427839e1f3eed021d44126f0e945"
+    },
+    {
+      "name": "Drawer",
+      "category": "反馈",
+      "doc_url": "https://ant.design/components/drawer-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/drawer/index.zh-CN.md",
+      "source_blob_sha": "62166036489f2e760ff3cb71884f5c4cb1710bf3"
+    },
+    {
+      "name": "Message",
+      "category": "反馈",
+      "doc_url": "https://ant.design/components/message-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/message/index.zh-CN.md",
+      "source_blob_sha": "db1a0280516c6d9471d48a8d09024362c7e5ab0e"
+    },
+    {
+      "name": "Modal",
+      "category": "反馈",
+      "doc_url": "https://ant.design/components/modal-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/modal/index.zh-CN.md",
+      "source_blob_sha": "771b405e32e1e6408b209027246dd31cc0096ecd"
+    },
+    {
+      "name": "Notification",
+      "category": "反馈",
+      "doc_url": "https://ant.design/components/notification-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/notification/index.zh-CN.md",
+      "source_blob_sha": "8456654555a43a3c26d9cd3fd40d23abc1427dc8"
+    },
+    {
+      "name": "Popconfirm",
+      "category": "反馈",
+      "doc_url": "https://ant.design/components/popconfirm-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/popconfirm/index.zh-CN.md",
+      "source_blob_sha": "97f5ce98fec5cf3f484a1e6afa9d5c5ba39f12f5"
+    },
+    {
+      "name": "Progress",
+      "category": "反馈",
+      "doc_url": "https://ant.design/components/progress-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/progress/index.zh-CN.md",
+      "source_blob_sha": "d804b4af15c348131b4865d50bd54efed7ea0d1b"
+    },
+    {
+      "name": "Result",
+      "category": "反馈",
+      "doc_url": "https://ant.design/components/result-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/result/index.zh-CN.md",
+      "source_blob_sha": "dd7c9814b796e7afcd1d6631e2458a32cdee8282"
+    },
+    {
+      "name": "Skeleton",
+      "category": "反馈",
+      "doc_url": "https://ant.design/components/skeleton-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/skeleton/index.zh-CN.md",
+      "source_blob_sha": "a613923adbd0d4a19a8353426d5c5e8a0214da72"
+    },
+    {
+      "name": "Spin",
+      "category": "反馈",
+      "doc_url": "https://ant.design/components/spin-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/spin/index.zh-CN.md",
+      "source_blob_sha": "dffe4029b99246bfdee58878035062322ca985dc"
+    },
+    {
+      "name": "Watermark",
+      "category": "反馈",
+      "doc_url": "https://ant.design/components/watermark-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/watermark/index.zh-CN.md",
+      "source_blob_sha": "09e88698dd220ed7887ac23e4900303a66a52b66"
+    },
+    {
+      "name": "Affix",
+      "category": "其他",
+      "doc_url": "https://ant.design/components/affix-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/affix/index.zh-CN.md",
+      "source_blob_sha": "a226e617c020f995981ba6d844943f316a701dbe"
+    },
+    {
+      "name": "App",
+      "category": "其他",
+      "doc_url": "https://ant.design/components/app-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/app/index.zh-CN.md",
+      "source_blob_sha": "6168ff87c545138e8bcc7dfbccf36ddfcc399b53"
+    },
+    {
+      "name": "BorderBeam",
+      "category": "其他",
+      "doc_url": "https://ant.design/components/border-beam-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/border-beam/index.zh-CN.md",
+      "source_blob_sha": "85fa3cf209919b73ae04e25d8e42a3bdb38a2ce0",
+      "introduced_version": "6.4.0"
+    },
+    {
+      "name": "ConfigProvider",
+      "category": "其他",
+      "doc_url": "https://ant.design/components/config-provider-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/config-provider/index.zh-CN.md",
+      "source_blob_sha": "2925a3e7769205d3af13ace0804f102508804f7a"
+    },
+    {
+      "name": "Util",
+      "category": "其他",
+      "doc_url": "https://ant.design/components/_util-cn/",
+      "status": "active",
+      "package": "antd",
+      "source_path": "components/_util/index.zh-CN.md",
+      "source_blob_sha": "4a0cd5f8a28c7884a6302e0f3a43457fbb2052aa"
+    }
+  ],
+  "external_entries": [
+    {
+      "name": "ProLayout",
+      "category": "重型组件",
+      "doc_url": "https://procomponents.ant.design/components/layout",
+      "status": "external",
+      "package": "@ant-design/pro-components"
+    },
+    {
+      "name": "ProForm",
+      "category": "重型组件",
+      "doc_url": "https://procomponents.ant.design/components/form",
+      "status": "external",
+      "package": "@ant-design/pro-components"
+    },
+    {
+      "name": "ProTable",
+      "category": "重型组件",
+      "doc_url": "https://procomponents.ant.design/components/table",
+      "status": "external",
+      "package": "@ant-design/pro-components"
+    },
+    {
+      "name": "ProDescriptions",
+      "category": "重型组件",
+      "doc_url": "https://procomponents.ant.design/components/descriptions",
+      "status": "external",
+      "package": "@ant-design/pro-components"
+    },
+    {
+      "name": "ProList",
+      "category": "重型组件",
+      "doc_url": "https://procomponents.ant.design/components/list",
+      "status": "external",
+      "package": "@ant-design/pro-components"
+    },
+    {
+      "name": "EditableProTable",
+      "category": "重型组件",
+      "doc_url": "https://procomponents.ant.design/components/editable-table",
+      "status": "external",
+      "package": "@ant-design/pro-components"
+    }
+  ],
+  "checked_at_local": "2026-09-15T00:00:46+08:00"
+}

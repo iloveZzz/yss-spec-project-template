@@ -63,6 +63,16 @@ test("typed dependency metadata rejects unregistered skills", () => {
   assert.throws(() => validateSkillRegistry(data), /依赖引用了未登记技能/);
 });
 
+test("nested SKILL.md requires an external_skills source registration", () => {
+  const data = registry();
+  assert.throws(() => validateSkillRegistry(data, {
+    nestedSkillSources: [
+      ".agents/skills/yss-ddd-scaffold-generator/references/yss-backend-scaffold-parent/SKILL.md",
+      ".agents/skills/example/references/hidden/SKILL.md",
+    ],
+  }), /嵌套 SKILL\.md 必须登记到 external_skills/);
+});
+
 test("context-required typed dependencies reject cycles", () => {
   const data = registry();
   data.skill_dependencies = structuredClone(data.skill_dependencies);

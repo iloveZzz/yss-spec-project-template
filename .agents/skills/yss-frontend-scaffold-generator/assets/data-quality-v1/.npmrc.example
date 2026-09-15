@@ -1,0 +1,2 @@
+# 在用户级 npm 配置中配置企业 @yss-ui registry 和认证；禁止提交 token。
+registry=https://registry.npmjs.org/

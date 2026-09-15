@@ -5,8 +5,8 @@
 - `prototype-review`
 - `yss-prototype-stage`
 - `yss-design-system`
-- `yss-antd-design`
-- `yss-antdv-next-design`
+组件 Provider 入口已退役；当前原型由 yss-prototype-stage 统一编排。
+组件 Provider 入口已退役；当前原型由 yss-prototype-stage 统一编排。
 - `yss-stage-decision`
 
 父模板通过 `.agents/skills/.strategic-design-skills-manifest.json` 固定上游 Git revision、路径和 tree hash。公共 ID 不因 profile 改名；共享规则先在战略设计源仓演进，再由父模板同步。
@@ -23,7 +23,7 @@
 | `yss-prototype-stage` | 用户确认后由完整生命周期判断 API 影响和实现准备 |
 | `yss-stage-decision` | 门禁状态由 `yss-product-lifecycle` 维护 |
 
-`yss-design-system`、`yss-antd-design` 与 `yss-antdv-next-design` 当前不需要父模板内容适配，必须与锁定的上游 tree hash 一致。任何有效内容差异都必须保留本文件为 `adaptationRef`，不得复制成第二套公共技能身份。
+组件 Provider 入口已退役；当前原型由 yss-prototype-stage 统一编排。
 
 ## 更新与验证
 
@@ -47,4 +47,8 @@
 
 模板生命周期的关键决定统一消费 `docs/agents/digital-human-roles.yaml.user_decision_policy`。本地原型确认与阶段决策批准追加真实回复、当前资产和范围校验；数字人审查保留。记录协议见 [用户决定协议](../../.agents/skills/yss-product-lifecycle/references/user-decisions.md)。此适配只更新 effective hash，不改写已锁定的上游 revision/hash，也不发布外部技能源。
 
-当前既有 UI 交接入口已固定到战略设计源仓提交 `7eea711b82a02c97d503200264f8fd6f42f48629`；manifest 的 `source_revision`、`upstream_hash` 与 gitlink 使用同一已提交来源。本体继续持有完整生命周期状态，战略侧通过 profile 绑定战略主控；后续 CLI 快照必须从该固定提交重建。GitHub 源码交付不等于 npm 发布或产品资产批准。
+当前既有 UI 交接入口已固定到战略设计源仓提交 `86317169db387188d06a7109754882f67f867aa5`；manifest 的 `source_revision`、`upstream_hash` 与 gitlink 使用同一已提交来源。本体继续持有完整生命周期状态，战略侧通过 profile 绑定战略主控；后续 CLI 快照必须从该固定提交重建。GitHub 源码交付不等于 npm 发布或产品资产批准。
+
+## 2026-09-15 工作版本
+
+本轮使用 DESIGN.md 驱动的原生 HTML 默认路线，并条件支持真实 AntD 离线预构建。公共四项技能已固定到上述战略设计源仓提交；父模板完成提交后，CLI 快照必须从父模板与各 Agent 的固定提交重新生成。

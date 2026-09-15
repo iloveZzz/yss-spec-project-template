@@ -118,8 +118,6 @@
 | `yss-prototype-stage` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 | `yss-prototype-stage` | `prototype-review` | `review-only` | — |
 | `yss-prototype-stage` | `yss-design-system` | `coordination-only` | — |
-| `yss-prototype-stage` | `yss-antdv-next-design` | `context-conditional` | `h2-vue-antdv-next-default` |
-| `yss-prototype-stage` | `yss-antd-design` | `context-conditional` | `h2-react-antd-explicit-compatibility` |
 | `yss-ddd-scaffold-generator` | `yss-backend-scaffold-parent` | `context-required` | — |
 | `yss-ddd-scaffold-generator` | `alibaba-java-code-style` | `context-required` | — |
 | `yss-layered-mvc-scaffold-generator` | `alibaba-java-code-style` | `context-required` | — |
@@ -154,8 +152,12 @@
 | `yss-validation` | `yss-exception` | `component-dependency` | — |
 | `yss-security-algorithm` | `yss-exception` | `component-dependency` | — |
 | `yss-exception` | `yss-dto` | `context-required` | — |
-| `yss-ui-business-page-generation` | `yss-components` | `context-conditional` | `components` |
+| `yss-ui-business-page-generation` | `component-selection-imports` | `context-conditional` | `components` |
 | `yss-ui-business-page-generation` | `yss-hook` | `context-conditional` | `hooks` |
 | `yss-ui-business-page-generation` | `yss-formily` | `context-conditional` | `form` |
 | `yss-ui-business-page-generation` | `yss-api-integration` | `context-conditional` | `api` |
+| `yss-formily` | `formily-foundation` | `context-required` | — |
+| `yss-formily` | `formily-linkage-effects` | `context-conditional` | `formily-linkage` |
+| `yss-formily` | `formily-mode-slot-detail` | `context-conditional` | `formily-mode-detail` |
+| `yss-formily` | `formily-step-flow` | `context-conditional` | `formily-step-flow` |
 | `yss-api-integration` | `yss-openapi-governance` | `context-conditional` | `regeneration` |

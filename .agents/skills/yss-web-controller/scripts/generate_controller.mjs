@@ -158,12 +158,13 @@ async function validateContract(contract, args) {
   if (manifestPath !== path.resolve(contract.scaffold_manifest_ref)) throw new Error("--scaffold-manifest-file does not match the approved web generation contract");
   if (!await exists(manifestPath)) throw new Error(`scaffold manifest not found: ${manifestPath}`);
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
-  if (![2, 3].includes(manifest.schema_version)) throw new Error("scaffold manifest must use historical schema_version=2 or current schema_version=3");
-  if (mvc && manifest.schema_version !== 3) throw new Error("MVC requires schema v3 scaffold identity");
+  if (![2, 3, 4].includes(manifest.schema_version)) throw new Error("scaffold manifest must use supported schema_version=2/3/4");
+  if (manifest.schema_version === 3 && manifest.legacy_reconciliation?.status !== "approved") throw new Error("historical schema v3 scaffold requires approved legacy reconciliation before business generation");
+  if (mvc && ![3, 4].includes(manifest.schema_version)) throw new Error("MVC requires schema v3/v4 scaffold identity");
   if (manifest.architecture_identity || mvc) {
     assertArchitectureAgreement(contract.architecture_identity, { manifest });
     if (contract.architecture_identity.architecture_profile !== contract.architecture_profile) throw new Error("Web architecture profile differs from its identity");
-  } else if (manifest.schema_version === 3 && (manifest.architecture_family !== "domain-driven" || manifest.generator_skill !== "yss-ddd-scaffold-generator")) throw new Error("schema v3 scaffold manifest must bind the domain-driven generator for Web adapter generation");
+  } else if (manifest.schema_version >= 3 && (manifest.architecture_family !== "domain-driven" || manifest.generator_skill !== "yss-ddd-scaffold-generator")) throw new Error("schema v3/v4 scaffold manifest must bind the domain-driven generator for Web adapter generation");
   if (!["empty-scaffold-verified", "first-slice-verified"].includes(manifest.completion_level)) throw new Error("scaffold manifest must be empty-scaffold-verified before Web generation");
   const scaffoldRoot = path.dirname(path.dirname(manifestPath));
   if (implementationRoot !== scaffoldRoot) throw new Error("implementation_project_root does not match the scaffold manifest project root");

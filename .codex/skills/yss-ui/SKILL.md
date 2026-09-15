@@ -32,7 +32,7 @@ pnpm why vue @yss-ui/components @yss-ui/hooks ant-design-vue vxe-table
 
 记录实际版本、lockfile、验证命令和环境阻塞。完整策略见 `references/antdv-compatibility.md`。
 
-产品设计使用的 Antdv Next 或 Ant Design v6 视觉/token 语义，不等于 Vue 生产实现 API。生产代码必须使用项目安装的 Ant Design Vue 4.x API，禁止把原型 props、events、slots、hook 或组件写法当作生产合同。`yss-antdv-next-design` 只用于默认 H2 Vue 原型，`yss-antd-design` 只用于显式 React 兼容原型；原型阶段不得调用本技能。只有进入前端实现计划、已批准切片的生产实现或实现还原验证后，才从目标 lockfile、类型、本地文档和既有用法取得真实组件事实。
+产品设计使用的 Antdv Next 或 Ant Design v6 视觉/token 语义，不等于 Vue 生产实现 API。生产代码必须使用项目安装的 Ant Design Vue 4.x API，禁止把原型 props、events、slots、hook 或组件写法当作生产合同。原型统一使用 HTML/CSS/JavaScript；原型阶段不得调用本技能。只有进入前端实现计划、已批准切片的生产实现或实现还原验证后，才从目标 lockfile、类型、本地文档和既有用法取得真实组件事实。
 
 ## 3. 组件选型门禁
 
@@ -56,7 +56,7 @@ pnpm why vue @yss-ui/components @yss-ui/hooks ant-design-vue vxe-table
 | 任务 | 必须路由 |
 |---|---|
 | 新建或改造完整业务页面 | `yss-ui-business-page-generation` |
-| 页面布局、组件和交互 | `yss-components` |
+| 页面布局与无独立 Skill 的专项组件 | `page-skeleton`、`component-selection-imports`、`references/specialized-components.md` |
 | 请求、分页、参数、树数据映射 | `yss-hook` |
 | Formily schema、联动、校验、详情态 | `yss-formily` |
 | 表格高度 | `yss-use-table-height` |
@@ -153,6 +153,7 @@ verification: pnpm type-check
 ## 10. 按需读取
 
 - 组件路由：`references/component-routing.md`
+- 无独立 Skill 的专项组件：`references/specialized-components.md`
 - 版本兼容：`references/antdv-compatibility.md`
 - 主题/locale/浮层：`references/theme-locale-overlay.md`
 - 可访问性与性能：`references/accessibility.md`

@@ -33,13 +33,14 @@ capture_environment:
   capture_script_digest: <sha256>
   capture_result_ref: capture/result.json
   capture_result_digest: <sha256>
+# 默认 Data Quality 浅色；显式选择暗色 / 紧凑模式时按实际渲染修改 theme，并与原型证据中的 Token 快照保持一致。
 cases:
   - case_id: primary-desktop
     route: /<route>
     page: <PageName>
     state: normal
     viewport: {name: desktop, width: 1440, height: 900, scroll_mode: viewport, scroll_position: 0}
-    theme: compact-light
+    theme: default-light
     locale: zh-CN
     data_scenario: primary
     image_ref: images/primary-desktop.png
@@ -56,7 +57,7 @@ cases:
     page: <PageName>
     state: normal
     viewport: {name: narrow, width: 390, height: 844, scroll_mode: viewport, scroll_position: 0}
-    theme: compact-light
+    theme: default-light
     locale: zh-CN
     data_scenario: primary
     image_ref: images/primary-narrow.png

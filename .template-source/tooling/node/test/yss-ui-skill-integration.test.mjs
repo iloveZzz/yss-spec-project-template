@@ -79,8 +79,6 @@ test("战略设计上游清单固定公共技能集合与 Git revision", () => {
   assert.match(contract.source_revision, /^[0-9a-f]{40}$/);
   assert.deepEqual(contract.skills.map(({ canonical }) => canonical).sort(), [
     "prototype-review",
-    "yss-antd-design",
-    "yss-antdv-next-design",
     "yss-design-system",
     "yss-prototype-stage",
     "yss-stage-decision",

@@ -1,0 +1,56 @@
+{
+  "result": "passed",
+  "browser": "153.0.8010.37",
+  "results": [
+    {
+      "mode": "standalone",
+      "width": 1440,
+      "light": {
+        "height": 32,
+        "font": "14px",
+        "background": "rgb(240, 242, 245)",
+        "cardPadding": "20px",
+        "overflow": false
+      },
+      "dark": {
+        "height": 32,
+        "font": "14px",
+        "background": "rgb(0, 0, 0)",
+        "cardPadding": "20px",
+        "overflow": false
+      },
+      "compact": 28
+    },
+    {
+      "mode": "standalone",
+      "width": 390,
+      "light": {
+        "height": 32,
+        "font": "14px",
+        "background": "rgb(240, 242, 245)",
+        "cardPadding": "20px",
+        "overflow": false
+      },
+      "dark": {
+        "height": 32,
+        "font": "14px",
+        "background": "rgb(0, 0, 0)",
+        "cardPadding": "20px",
+        "overflow": false
+      },
+      "compact": 28
+    },
+    {
+      "mode": "qiankun",
+      "host": "qiankun@2.10.16",
+      "scenarios": [
+        "mount",
+        "theme-update",
+        "unmount-cleanup",
+        "remount-default"
+      ],
+      "documentThemeUnchanged": true
+    }
+  ],
+  "consoleWarnings": []
+}

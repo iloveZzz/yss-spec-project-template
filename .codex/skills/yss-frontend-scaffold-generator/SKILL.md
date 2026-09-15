@@ -9,19 +9,20 @@ description: Use when creating a new YSS frontend micro-application from the sta
 
 ## Template Source
 
-```text
-repo: http://192.168.167.142:8081/Data-Middleground-Develop-Area/product-code/ai-frontend/yss-design/yss-frontend-template.git
-branch: template
-```
+默认使用随 Skill 分发的 `assets/data-quality-v1/`，从 Data Quality 抽取工作区、主题与微应用模式，重建为通用空骨架。来源、差异、支持范围见 `references/data-quality-baseline.md`；`references/data-quality-v1.manifest.json` 是文件白名单与 SHA-256 依据。
 
-模板基线：Vue 3、TypeScript、Vite、Qiankun、pnpm、Ant Design Vue、`@yss-ui/components`、`@yss-ui/hooks`、Orval。
+技术栈：Vue 3、TypeScript、Vite、Pinia、Vue Router、Qiankun、pnpm、Ant Design Vue 4、YSS UI、Orval。Ant Design v6 是视觉设计参考，不是此 Vue 工程的运行时包。默认主题继承根 `DESIGN.md` 的 Data Quality 浅色、14px 正文、32px 控件、20px Card 内距；暗色 / compact 显式开启。
+
+合同 `frontend.template` 默认填 `{ "kind": "bundled", "baseline_id": "data-quality-v1", "manifest_digest": "sha256:<当前manifest字节摘要>" }`。用 `node .agents/skills/yss-frontend-scaffold-generator/scripts/refresh_baseline.mjs` 只读核验摘要；维护主题或骨架后先审阅改动，再用 `--write` 更新派生。
+
+兼容已有 `{ repository, commit }` 合同：只有明确选择外部 Git 模板时传 `--template-checkout` 并核验 origin 与精确 40 位 commit；不再默认从私网浮动分支获取模板。
 
 ## Inputs
 
 - `app_name`：应用名。
 - `microapp_name`：微应用注册名。
 - `base_route`：基础路由。
-- Project Scaffold Contract schema v4：包含用户确认的仓库 scope、目标路径、`init_git`、模板 commit、应用参数、允许写路径和验证命令。
+- Project Scaffold Contract schema v4：包含用户确认的仓库 scope、目标路径、`init_git`、模板 manifest 摘要或 Git commit、应用参数、允许写路径和验证命令。
 - OpenAPI Freeze 记录：有 API 影响时提供已批准的冻结 YAML 版本和引用；无 API 影响时提供带原因的 `not-applicable`。
 - OpenAPI JSON 派生记录：`docs/.scratch/<feature>/api/<feature>-json-export.md`，包含 YAML / JSON SHA-256、Redocly CLI 版本和 lockfile 引用。
 - 冻结 JSON 产物：`docs/.scratch/<feature>/api/<feature>.json`；这是唯一允许交给既有前端代码生成流程的上游产物。
@@ -35,18 +36,20 @@ branch: template
 
 1. 确认当前任务已经通过 Harness 入口分诊、逐项目脚手架决定已由真实用户确认，且 schema v4 合同已由生命周期批准、持久化并保持当前。
 2. 确认目标是外部实现仓库；只有用户明确选择时才输出到 Harness 仓库的 `apps/frontend/<project>/`。`apps/frontend/` 只能作为项目容器，`app/frontend/`、`app/backend/` 及其子路径禁止作为输出位置。`git-submodule` 只能在已初始化且附加分支的子仓工作树生成；空 gitlink、detached HEAD、`--force` 覆盖挂载点不得当成普通目录。
-3. 只读检查模板分支和合同锁定的 40 位 commit 是否可访问；生成时使用精确 commit，不跟随浮动分支。
-4. 使用 `scripts/generate_and_verify_scaffold.mjs` 从已核验 checkout 的批准 commit 导出模板，排除模板 `.git` 及未提交的工作树内容；目标必须不存在或为空。不得默认写入 Harness、不得 `--force`。仅合同 `init_git=true` 时初始化目标 Git。
+3. 默认核验 bundled manifest 摘要、白名单和每个文件字节；Git 兼容方式核验合同的精确 commit。生成不读取 Data Quality 本机路径或未提交业务代码。
+4. 使用 `scripts/generate_and_verify_scaffold.mjs --contract-file <合同> --output-dir <目录> --evidence-dir <证据目录>` 生成白名单骨架；Git 来源额外提供 checkout，导出批准 commit 并排除 `.git` 及未提交工作树内容；目标必须不存在或为空。不得默认写入 Harness、不得 `--force`。仅合同 `init_git=true` 时初始化目标 Git。
 5. 替换应用名、微应用名、路由、`micro-config.json`、环境变量和 README 中的模板占位。
 6. 有 API 影响时核验 OpenAPI Freeze 记录和 JSON 派生记录，将摘要一致的 JSON 原样物化到 `<frontend>/openapi/openapi.json`；`openapi_impact=not-applicable` 时必须有原因并禁止生成 API client。
 7. 保持模板既有的前端代码生成配置不变；本 Harness 只将 SHA-256 一致的 JSON 原样交给既有前端代码生成流程，不修改该配置、不在此仓库执行生成，也不设置生成 CI 门禁。目标前端项目在需要时手动运行其既有命令。
-8. 实际执行并记录 `pnpm install --frozen-lockfile`、`pnpm lint`、`pnpm type-check`、`pnpm build` 的退出码和日志；缺失脚本只能由批准的工程基线提供替代命令。任何必需命令失败都阻断。
+8. 企业 registry / 认证由目标环境用户级 npm 配置提供，禁止复制来源 `.npmrc` 或 token。实际执行并记录 `pnpm install --frozen-lockfile`、`pnpm lint:check`、`pnpm type-check`、`pnpm build`、`pnpm build:standalone` 的退出码和日志；缺失脚本只能由批准的工程基线提供替代命令。任何必需命令失败都阻断。
 9. 按 `docs/templates/implementation-repo-registry-template.md` 回写前端实现仓库登记。
 
 ## Expected Template Shape
 
 ```text
-openapi/
+DESIGN.md
+packages/src/config/theme.json
+openapi/ # 仅有冻结 API 时物化
 packages/src/api/
 packages/src/router/
 packages/src/views/
@@ -64,15 +67,16 @@ packages/package.json
 - 不推送、不创建 MR / PR，除非用户明确要求。
 - 不绕过 OpenAPI Draft / Freeze；API client 只消费与 OpenAPI JSON 派生记录 SHA-256 一致的冻结 JSON。
 - 不接受任意 URL、未冻结 YAML、后端运行时输出或手工 JSON 作为既有前端代码生成流程的输入。
-- 不修改模板既有的代码生成配置，也不把客户端生成加入 CI。
+- 目标生成时不修改既有代码生成配置，也不把客户端生成加入 CI；本模板维护允许审阅和更新标准配置。
+- 不携带 Data Quality 业务页面、默认管理员、生产接口、私网 Postman 同步、部署凭证或残缺 JSP 命令；当前支持 Qiankun 与 standalone，JSP 不在可用基线内。
 - 不得把 `apps/frontend/` 容器根登记为项目根；Harness 内每个前端项目必须有独立的 `apps/frontend/<project>/` 路径。
 - 不把模板示例页面当作业务功能交付。
-- 生成后仍需使用 `yss-ui-business-page-generation`、`yss-components`、`yss-api-integration` 等专项 skill 实现业务页面。
+- 生成后仍需使用 `yss-ui-business-page-generation`、`component-selection-imports`、`yss-api-integration` 以及实际命中的表格、树、Formily 等专项 skill 实现业务页面。
 
 ## Output
 
 - 前端工程生成位置或目标仓库信息。
-- 模板来源和 commit / branch 证据。
+- 模板 baseline / manifest 摘要，或 Git repository / commit 证据。
 - 替换参数清单。
 - install / lint / type-check / build 命令，以及目标前端项目既有的手动客户端生成命令（如有）。
 - OpenAPI Freeze 记录、OpenAPI JSON 派生记录、JSON SHA-256 和 `openapi/openapi.json` 物化证据。

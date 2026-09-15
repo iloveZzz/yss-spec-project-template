@@ -1,0 +1,29 @@
+{
+  "scope": "maintenance evidence; not product approval",
+  "files": {
+    "antd-1440.png": "sha256:538903d24f5d4ccb82916734741858a3ed36d6723417d2cd3dd58ddaf62f7677",
+    "antd-390.png": "sha256:b17e2ad9f993c1cdb1f62ebfb59b8dbaf6b3da3bf412276543d002750fb76f82",
+    "backend-cli.log": "sha256:834423c679fb1239fb673b32cd2b3287c20885a125ad3f1eac8708674c7fc255",
+    "design-bundle-final.log": "sha256:d3c317d76aee7c0c97751d01458d4de81cc934960fd61924b14405e8150b88a2",
+    "design-cli.log": "sha256:ea5dc975892c410d7e3cd566de6f1a6e921157eaa695916c76b15132755190c7",
+    "design-tooling.log": "sha256:1dc428ac23b2fa574351fe75712e13470250392b8e6bee943d4c0f6cc8d3ee66",
+    "design-verification.log": "sha256:896ac372f70520fa036e06f16bda4c39e3f3987f4e9387f0f66f2a78d9d506f6",
+    "editor-result.json": "sha256:612fafd1a542e99347920d1285ba3f35f7c69169162b47d2c583dfd2e976402d",
+    "frontend-bundle-final.log": "sha256:3143f1f344d72c89100bf476b0be8892179420501d5fe590bd99ba7dc354d12e",
+    "frontend-cli.log": "sha256:34e1826bc53a7aa9ca0d7add865ae735c1d9d6f6078f5887b179fab7ce92c3ad",
+    "frontend-tooling.log": "sha256:04e56902f5a66bc9cf7be418c571d6e19fce581763659421a94b761a2346a8ba",
+    "frontend-verification.log": "sha256:1c674055104a9c5c75863584ec5383aee94b14aed914a31d1603fa189eb92688",
+    "h2-1440.png": "sha256:7ba865642f7964fed592c7b5203fcf23ff160555aca63842954d713b4c637bf9",
+    "h2-390.png": "sha256:0fe14076570b33ac9aa53d7a120be32487716d2c594c4ec2b1f6fd324412a38e",
+    "native-1440.png": "sha256:84cbda57c9389665f3b747db322477058677728650d98720d5d90b924f51dea7",
+    "native-390.png": "sha256:349ea97184409a74a371a4a51012a145653455932c626f6f4fa59b1f487d47de",
+    "reference-collection-result.json": "sha256:d05518e5e945c3ab4f44e63669448956fb2738af53077c955bf3e4598e1600f1",
+    "root-tooling.log": "sha256:e127700f061530d6801f941e4b31d800319a1aa8710ca4c6b07e6a07c57ce9a1",
+    "root-verification.log": "sha256:caa75632bf67d5d25e3fe71bbdc6603d15f580e20283e9449148885024a2f107",
+    "spec-cli.log": "sha256:9960e8cc0f5dd3914a2528bd3dd6e537457c7e8c9c733d3348cd9143c0ab6e8a",
+    "spec-doc-sync.log": "sha256:b4f4369bc14617a5d7bb49a0f8af2508c8bf1f51eb0e5e9599e32ecde3359687",
+    "template-verification.json": "sha256:9dd20a8452b780e63bf88c439ed93975cb71b95906f45287f44cb4c6f9b66b9e",
+    "verification-summary.md": "sha256:35684f5fd0ec47affbb6df5ba7af4127cff5720ece6acd20a181767cc4011ad0",
+    "workbench-result.json": "sha256:9d92e0d2fec180de893945281aedac24349f38d25f2cb560f1ed3eabbf6e0297"
+  }
+}

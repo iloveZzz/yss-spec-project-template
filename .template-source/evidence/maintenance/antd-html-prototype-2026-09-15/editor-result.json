@@ -1,0 +1,47 @@
+{
+  "result": "passed",
+  "browser": "153.0.8010.37",
+  "operating_system": "darwin",
+  "delivery": "file://, isolated directory, offline=true",
+  "console_and_resource_failures": [],
+  "results": [
+    {
+      "width": 1440,
+      "layout": {
+        "overflow": false,
+        "height": "28px",
+        "color": "rgb(36, 91, 219)",
+        "reducedMotion": true
+      },
+      "screenshot": "h2-1440.png",
+      "scenarios": [
+        "failure-retry-input-preserved",
+        "reset",
+        "no-permission",
+        "conflict-reload",
+        "keyboard-submit"
+      ],
+      "result": "passed"
+    },
+    {
+      "width": 390,
+      "layout": {
+        "overflow": false,
+        "height": "28px",
+        "color": "rgb(36, 91, 219)",
+        "reducedMotion": true
+      },
+      "screenshot": "h2-390.png",
+      "scenarios": [
+        "failure-retry-input-preserved",
+        "reset",
+        "no-permission",
+        "conflict-reload",
+        "keyboard-submit"
+      ],
+      "result": "passed"
+    }
+  ],
+  "scope": "template starter smoke, not product QA or user approval",
+  "original_report": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-offline-browser-yy4mdO/browser-result.json"
+}

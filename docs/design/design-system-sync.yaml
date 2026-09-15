@@ -3,7 +3,8 @@ design_system_sync:
   baseline: yss-spec-project-template
   baseline_version: alpha
   baseline_commit: 36af9ac3895162cefc5da8889af8141c2dfce2cd
-  baseline_sha256: 59a9f90f7dd62d5e1d4c398e7b8ab8fae595622d0d5fea7bc0d43fe63802f5d5
+  baseline_sha256: e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec
+  baseline_state: worktree
   synchronized_sections:
     - Colors
     - Typography

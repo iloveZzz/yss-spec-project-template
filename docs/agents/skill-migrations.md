@@ -2,6 +2,20 @@
 
 本文记录已退役技能入口的迁移路径。退役技能不保留物理目录、投影或 lock 条目；本文件是历史名称的唯一持久兼容说明。
 
+## DDD 分层包装与前端组件总入口收敛（2026-09-15）
+
+以下入口已硬退役，不保留 alias、物理目录、投影或 lock 条目：
+
+- DDD 嵌套包装：`yss-backend-scaffold-adapter`、`yss-application-layer-reference`、`yss-domain-layer-reference`、`yss-infrastructure-layer-reference`、`yss-web-layer-reference`。
+- 旧数据分析初始化器：`yss-mvc-scaffold-generator`，新工作使用 `yss-mvc-data-analysis-project-initializer`；通用 MVC 使用 `yss-layered-mvc-scaffold-generator`。
+- 前端组件总入口：`yss-components`。
+
+DDD 脚手架只保留已登记并被生成合同消费的 `yss-backend-scaffold-parent`。生成后的 Application、Domain、Infrastructure、Web 和 Adapter 实现从 `yss-ddd-scaffold-generator/references/layer-skill-routing.md` 路由到顶层权威 Skill，不再把普通参考目录暴露为可发现 Skill。
+
+前端页面统一从 `yss-ui` 路由：页面骨架使用 `page-skeleton`，组件选型使用 `component-selection-imports`，表格、树、Formily、Hook 和高度使用各自专项 Skill；没有独立 Skill 的复杂组件契约集中在 `yss-ui/references/specialized-components.md`。`yss-formily` 保留为薄路由器，不再复制表单代码骨架和专项规则。
+
+旧 ID 只允许存在于本迁移记录、retired/obsolete 清单、负向测试和不可变历史证据中。
+
 ## 技能面收敛与前端入口合并（2026-09-05）
 
 以下 Skill 已一次性硬退役，不保留 alias、兼容目录、投影或 lock 条目：
@@ -39,8 +53,7 @@
 - 阶段合同：`yss-prototype-stage`
 - 原型档位与主入口：`yss-prototype-stage` 的 H1/H2 路由
 - Codex 产品设计能力：按档位条件使用 `product-design:index`
-- Antdv Next 精确版本事实：默认 H2 使用 `yss-antdv-next-design`
-- Ant Design v6 事实与 CLI：仅显式 React 兼容 H2 使用 `yss-antd-design`
+- 当前 H1/H2：根 `DESIGN.md` 驱动的离线 HTML/CSS/JS；旧 Provider 路线见下方退役记录
 - 真实组件核验：不属于原型档位；进入已批准切片后由 `yss-ui` 基于目标 lockfile 执行，并写入前端实现验证
 - 独立低保真评审：`prototype-review`
 

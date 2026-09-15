@@ -1,0 +1,651 @@
+--- before/.agents/skills/yss-design-system/SKILL.md
++++ after/.agents/skills/yss-design-system/SKILL.md
+@@ -14,7 +14,7 @@
+ - 项目 Token 快照：`docs/design/tokens/theme.json`、`docs/design/tokens/tokens.default.json`、`docs/design/tokens/tokens.dark.json`、`docs/design/tokens/tokens.compact.json`、`docs/design/tokens/variables.css`、`docs/design/tokens/variables.dark.css`；它们是派生实现视图，不得反向覆盖规范源。
+ - 本技能执行清单：`references/design-system.md`，用于 Agent 执行和评审，不替代 `docs/design/design.md`。
+ - 历史输入包：`/Users/zhudaoming/Downloads/Product-Design-System`，只用于追溯首次引入来源，不作为后续工程依赖。
+-- 默认亮色覆盖：项目 Ant Design 5 Less / `:root` 变量已裁定进 `docs/design/design.md` 与 token 快照；原始 Less 不是实现语言。
++- 默认主题来源：Data Quality 主题经项目适配后落到根 `DESIGN.md`；来源与 AntD v6 设计参考 / Vue 运行时的区别见 `references/data-quality-theme.md`。
+ - Codex `$design-qa` 项目对照：`references/design-qa-theme.md`，不替代官方 `design-qa` 流程，也不改上游插件正文。
+ - 原型阶段合同：`yss-prototype-stage`，用于统一 H1/H2 原型资产和浏览器验证证据。H1/H2 默认使用项目 Token 驱动的 HTML/CSS/JavaScript 离线原型。
+ 
+@@ -52,7 +52,7 @@
+ - 不硬编码表面色、边框色、状态色；优先使用 token 或主题变量。
+ - 交互原型中的每个可点击主动作都必须给出 interaction feedback：状态变化、禁用原因、成功或失败反馈至少覆盖其一。
+ - accessibility：品牌 Seed 保持 `colors.primary`；实际文字/背景组合不满足 WCAG 2.2 AA 时，优先使用 `components.*` 中的高对比变体或 `ConfigProvider` component token 调整，并验证 default/hover/active/disabled/focus、键盘焦点、200% zoom、reduced motion 与目标尺寸，不新增页面级特例色。
+-- 离线原型直接消费已派生的主题与紧凑值，避免重复 compact。生产组件库的主题算法由其实现合同约束；暗色启用前必须核验派生 Token 与浏览器截图。
++- 离线原型直接消费所选主题的派生值；默认使用 default 快照，显式紧凑模式才使用 compact 快照，避免重复 compact。生产组件库的主题算法由其实现合同约束；暗色启用前必须核验当前派生 Token 与浏览器截图。
+ - 原型使用语义 HTML、项目主题变量与当前行为合同；生产实现不得依赖组件库内部 DOM、生成类名或未记录 API。
+ - 不用 Tag 表达关键错误、阻断或审批状态；关键状态必须有可读文本和语义反馈。
+ - 不让按钮、标签、表头、弹窗、卡片中的文字溢出或遮挡。
+@@ -62,7 +62,7 @@
+ 
+ 设计类任务至少输出：
+ 
+-- 设计系统引用：明确引用 `docs/design/design.md`。
++- 设计系统引用：明确引用根 `DESIGN.md`、治理说明 `docs/design/design.md` 和所选主题的 Token 快照；原型证据记录规范与 Token 摘要。
+ - 页面和模块：页面清单、布局结构、主路径、异常路径。
+ - 组件选择：YSS UI / Ant Design 组件映射。
+ - 状态矩阵：加载、空、错、禁用、只读、无权限、冲突、成功。
+@@ -73,7 +73,7 @@
+ 
+ - 是否通过 `ConfigProvider`、CSS variables 或项目 token 消费主题。
+ - 是否将颜色、圆角、阴影和状态样式绑定到 semantic token，而不是复制表面色和交互色。
+-- 是否使用当前 `DESIGN.md` 和 compact 派生快照中的控件、排版与间距值，且没有重复 compact。
++- 是否使用当前 `DESIGN.md` 和所选主题派生快照中的控件、排版与间距值；默认使用 default，仅显式紧凑模式使用 compact，且没有重复 compact。
+ - 是否使用 YSS UI / Ant Design 的语义组件，而不是自造同类组件。
+ - 是否保留 hover、focus、active、disabled、loading、error、empty 状态。
+ - 是否为可提交、导出、保存、发布、审批等操作提供明确的 interaction feedback 与不可逆操作确认。
+--- before/.agents/skills/yss-design-system/references/design-qa-theme.md
++++ after/.agents/skills/yss-design-system/references/design-qa-theme.md
+@@ -7,6 +7,7 @@
+ - 规范：根 `DESIGN.md`
+ - 治理说明：`docs/design/design.md`
+ - Token 投影：`docs/design/tokens/theme.json`、`docs/design/tokens/tokens.default.json`、`docs/design/tokens/variables.css`
++- 主题选择：默认采用根 `DESIGN.md` 的 Data Quality 浅色主题；仅显式暗色 / 紧凑模式使用对应的 `tokens.dark.json` / `variables.dark.css` / `tokens.compact.json`，以实际消费文件记录摘要。
+ - 实现截图：当前原型或页面在同一 viewport / 主题 / 状态下的渲染
+ 
+ 官方 `https://ant.design/design.md` 只是上游默认。项目覆盖与官方不同时，以根 `DESIGN.md` 为准；本清单不复制规范值。
+@@ -51,12 +52,13 @@
+ 
+ - 使用上游默认、历史品牌值或未登记字体/圆角覆盖根 `DESIGN.md`：P1。
+ - 只改局部组件、且 `prototype-evidence.yaml` 的 `theme_override` 已记录：按官方 severity 评估，不自动升 P1。
+-- 暗色模式：本轮未重派生完整暗色色板；暗色对照前若缺少新的 algorithm 派生证据，`final result: blocked`，写明 blocker。
++- 暗色模式：核验派生记录与当前根规范摘要一致，并取得相同 viewport / 主题 / 状态的实际浏览器证据；缺失或漂移时 `final result: blocked`，写明 blocker。历史暗色验证不能代替当前原型或页面的验收。
+ 
+ ## 报告要求
+ 
+ `design-qa.md` 必须写明：
+ 
+ - source visual truth path：根 `DESIGN.md`、治理说明与对应 Token 投影文件
++- 原型证据中 `design_baseline` 的规范与 Token 摘要，以及视觉基线 `cases[].theme` 和截图对应关系
+ - 已按本清单核对 Colors/tokens 与 Fonts/typography
+ - 与官方默认的差异是否被接受为项目覆盖
+--- before/.agents/skills/yss-design-system/references/design-system.md
++++ after/.agents/skills/yss-design-system/references/design-system.md
+@@ -183,17 +183,15 @@
+ 
+ - 使用 `ConfigProvider` 注入主题。
+ - 默认采用 Data Quality 浅色与 32px 控件；仅显式紧凑模式使用 `theme.compactAlgorithm`；暗色紧凑模式组合 `theme.darkAlgorithm` 与 `theme.compactAlgorithm`，不手工反转色值或逐组件压缩。
+-- seed 与 compact 计算值以 `DESIGN.md` / `tokens.compact.json` 为准；不要重复 compact。
++- seed 与所选主题计算值以 `DESIGN.md` 和对应快照为准；默认使用 `tokens.default.json`，显式紧凑模式才使用 `tokens.compact.json`，不要重复 compact。
+ - 优先通过 token、component token、CSS variables、theme algorithm 实现样式。
+ - 静态反馈 API 使用 `App`、hook API 或 context holder，避免主题上下文丢失。
+ - 暗色模式使用 `darkAlgorithm` 或 `variables.dark.css`。
+ - 紧凑模式使用 `compactAlgorithm` 或 `tokens.compact.json`。
+ 
+-实验 Vue + Antdv Next：
+-
+-原型统一使用 `yss-prototype-stage` 的 HTML/CSS/JavaScript adapter；生产组件 API 只在实现阶段核验。
+-- 共享本规范的 semantic token、紧凑密度和验收语义；props、events、slots 与主题 API 只从 Antdv Next fact pack 读取。
+-原型统一使用 `yss-prototype-stage` 的 HTML/CSS/JavaScript adapter；生产组件 API 只在实现阶段核验。
++HTML 原型：
++
++- 使用 `yss-prototype-stage` 的 HTML/CSS/JavaScript adapter，消费项目 semantic token、所选密度和状态合同；生产组件 API 只在下游实现阶段从目标仓实际依赖核验。
+ 
+ YSS UI / Vue：
+ 
+@@ -207,7 +205,7 @@
+ 
+ 设计评审时检查：
+ 
+-- 是否引用 `docs/design/design.md`。
++- 是否引用根 `DESIGN.md`、治理说明 `docs/design/design.md` 与所选主题快照，并在原型证据中记录摘要。
+ - 是否符合中后台定位。
+ - 页面清单、主路径、异常路径是否清楚。
+ - 状态矩阵是否完整。
+@@ -220,7 +218,7 @@
+ 
+ - 是否消费 token，而不是硬编码颜色和尺寸。
+ - 是否以 semantic token 表达颜色、圆角、阴影和状态层级。
+-- 是否使用当前 `DESIGN.md` 与 `tokens.compact.json` 的排版、控件和间距值，且没有重复 compact。
++- 是否使用当前 `DESIGN.md` 与所选主题快照的排版、控件和间距值；默认使用 default，仅显式紧凑模式使用 compact，且没有重复 compact。
+ - 是否保留 hover、focus、active、disabled、loading、empty、error 状态。
+ - 是否只保留一个 single primary action，并让每个关键操作提供 interaction feedback。
+ - 是否在目标字号和背景下复核 accessibility contrast。
+--- before/docs/design/templates/prototype-evidence-template.yaml
++++ after/docs/design/templates/prototype-evidence-template.yaml
+@@ -35,8 +35,10 @@
+   canonical_design_digest: <sha256>
+   project_design_ref: docs/design/design.md
+   project_token_refs:
++    # 默认 Data Quality 浅色；显式暗色 / 紧凑模式改为实际消费的对应快照，并同步摘要和视觉基线 cases[].theme。
++    - docs/design/tokens/theme.json
++    - docs/design/tokens/tokens.default.json
+     - docs/design/tokens/variables.css
+-    - docs/design/tokens/tokens.compact.json
+   project_token_baseline_digest: <sha256>
+   project_override_reviewed: false
+ visual_baseline:
+--- before/docs/design/templates/prototype-review-checklist.md
++++ after/docs/design/templates/prototype-review-checklist.md
+@@ -10,6 +10,7 @@
+ | 交互说明 | `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` |  |
+ | 原型 / 线框图 | `<链接或导出图片路径>` |  |
+ | 状态矩阵 | `docs/.scratch/<feature>/design/<feature>-state-matrix.md` |  |
++| 视觉规范与主题快照 | 根 `DESIGN.md`、`docs/design/design.md`、实际消费的 Token 快照 | 默认 Data Quality 浅色；显式暗色 / 紧凑模式注明选择依据 |
+ | 原型阶段合同 / Product Design 路由记录 | `yss-prototype-stage`；规范直出或条件独立视觉稿路线 |  |
+ | 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 档位确定后补齐 schema v4 共同与档位证据，并引用 Visual Baseline Bundle v1 |
+ | 现有 API 草案 | `docs/.scratch/<feature>/api/<feature>.yaml` | 可选 |
+@@ -28,6 +29,7 @@
+ | 能从界面需求反推出 API 影响和契约草案 |  |  |
+ | 已列出原型需要回答的决定、风险触发及 H1/H2 推荐档位；无充分证据时回退 H2 |  |  |
+ | 状态矩阵中的每个状态均有事件、转换、guard、动作和退出路径 |  |  |
++| 高保真证据的 `design_baseline` 绑定当前规范与 Token 摘要，视觉基线的 `cases[].theme` 与实际截图一致 |  |  |
+ | 前端验收、组件状态和数据依赖已明确 |  |  |
+ | 风险 / 回滚约束和人工确认项已记录 |  |  |
+ 
+--- before/submodules/yss-harness-design-agent/.agents/skills/yss-design-system/SKILL.md
++++ after/submodules/yss-harness-design-agent/.agents/skills/yss-design-system/SKILL.md
+@@ -14,7 +14,7 @@
+ - 项目 Token 快照：`docs/design/tokens/theme.json`、`docs/design/tokens/tokens.default.json`、`docs/design/tokens/tokens.dark.json`、`docs/design/tokens/tokens.compact.json`、`docs/design/tokens/variables.css`、`docs/design/tokens/variables.dark.css`；它们是派生实现视图，不得反向覆盖规范源。
+ - 本技能执行清单：`references/design-system.md`，用于 Agent 执行和评审，不替代 `docs/design/design.md`。
+ - 历史输入包：`/Users/zhudaoming/Downloads/Product-Design-System`，只用于追溯首次引入来源，不作为后续工程依赖。
+-- 默认亮色覆盖：项目 Ant Design 5 Less / `:root` 变量已裁定进 `docs/design/design.md` 与 token 快照；原始 Less 不是实现语言。
++- 默认主题来源：Data Quality 主题经项目适配后落到根 `DESIGN.md`；来源与 AntD v6 设计参考 / Vue 运行时的区别见 `references/data-quality-theme.md`。
+ - Codex `$design-qa` 项目对照：`references/design-qa-theme.md`，不替代官方 `design-qa` 流程，也不改上游插件正文。
+ - 原型阶段合同：`yss-prototype-stage`，用于统一 H1/H2 原型资产和浏览器验证证据。H1/H2 默认使用项目 Token 驱动的 HTML/CSS/JavaScript 离线原型。
+ 
+@@ -52,7 +52,7 @@
+ - 不硬编码表面色、边框色、状态色；优先使用 token 或主题变量。
+ - 交互原型中的每个可点击主动作都必须给出 interaction feedback：状态变化、禁用原因、成功或失败反馈至少覆盖其一。
+ - accessibility：品牌 Seed 保持 `colors.primary`；实际文字/背景组合不满足 WCAG 2.2 AA 时，优先使用 `components.*` 中的高对比变体或 `ConfigProvider` component token 调整，并验证 default/hover/active/disabled/focus、键盘焦点、200% zoom、reduced motion 与目标尺寸，不新增页面级特例色。
+-- 离线原型直接消费已派生的主题与紧凑值，避免重复 compact。生产组件库的主题算法由其实现合同约束；暗色启用前必须核验派生 Token 与浏览器截图。
++- 离线原型直接消费所选主题的派生值；默认使用 default 快照，显式紧凑模式才使用 compact 快照，避免重复 compact。生产组件库的主题算法由其实现合同约束；暗色启用前必须核验当前派生 Token 与浏览器截图。
+ - 原型使用语义 HTML、项目主题变量与当前行为合同；生产实现不得依赖组件库内部 DOM、生成类名或未记录 API。
+ - 不用 Tag 表达关键错误、阻断或审批状态；关键状态必须有可读文本和语义反馈。
+ - 不让按钮、标签、表头、弹窗、卡片中的文字溢出或遮挡。
+@@ -62,7 +62,7 @@
+ 
+ 设计类任务至少输出：
+ 
+-- 设计系统引用：明确引用 `docs/design/design.md`。
++- 设计系统引用：明确引用根 `DESIGN.md`、治理说明 `docs/design/design.md` 和所选主题的 Token 快照；原型证据记录规范与 Token 摘要。
+ - 页面和模块：页面清单、布局结构、主路径、异常路径。
+ - 组件选择：YSS UI / Ant Design 组件映射。
+ - 状态矩阵：加载、空、错、禁用、只读、无权限、冲突、成功。
+@@ -73,7 +73,7 @@
+ 
+ - 是否通过 `ConfigProvider`、CSS variables 或项目 token 消费主题。
+ - 是否将颜色、圆角、阴影和状态样式绑定到 semantic token，而不是复制表面色和交互色。
+-- 是否使用当前 `DESIGN.md` 和 compact 派生快照中的控件、排版与间距值，且没有重复 compact。
++- 是否使用当前 `DESIGN.md` 和所选主题派生快照中的控件、排版与间距值；默认使用 default，仅显式紧凑模式使用 compact，且没有重复 compact。
+ - 是否使用 YSS UI / Ant Design 的语义组件，而不是自造同类组件。
+ - 是否保留 hover、focus、active、disabled、loading、error、empty 状态。
+ - 是否为可提交、导出、保存、发布、审批等操作提供明确的 interaction feedback 与不可逆操作确认。
+--- before/submodules/yss-harness-design-agent/.agents/skills/yss-design-system/references/design-qa-theme.md
++++ after/submodules/yss-harness-design-agent/.agents/skills/yss-design-system/references/design-qa-theme.md
+@@ -7,6 +7,7 @@
+ - 规范：根 `DESIGN.md`
+ - 治理说明：`docs/design/design.md`
+ - Token 投影：`docs/design/tokens/theme.json`、`docs/design/tokens/tokens.default.json`、`docs/design/tokens/variables.css`
++- 主题选择：默认采用根 `DESIGN.md` 的 Data Quality 浅色主题；仅显式暗色 / 紧凑模式使用对应的 `tokens.dark.json` / `variables.dark.css` / `tokens.compact.json`，以实际消费文件记录摘要。
+ - 实现截图：当前原型或页面在同一 viewport / 主题 / 状态下的渲染
+ 
+ 官方 `https://ant.design/design.md` 只是上游默认。项目覆盖与官方不同时，以根 `DESIGN.md` 为准；本清单不复制规范值。
+@@ -51,12 +52,13 @@
+ 
+ - 使用上游默认、历史品牌值或未登记字体/圆角覆盖根 `DESIGN.md`：P1。
+ - 只改局部组件、且 `prototype-evidence.yaml` 的 `theme_override` 已记录：按官方 severity 评估，不自动升 P1。
+-- 暗色模式：本轮未重派生完整暗色色板；暗色对照前若缺少新的 algorithm 派生证据，`final result: blocked`，写明 blocker。
++- 暗色模式：核验派生记录与当前根规范摘要一致，并取得相同 viewport / 主题 / 状态的实际浏览器证据；缺失或漂移时 `final result: blocked`，写明 blocker。历史暗色验证不能代替当前原型或页面的验收。
+ 
+ ## 报告要求
+ 
+ `design-qa.md` 必须写明：
+ 
+ - source visual truth path：根 `DESIGN.md`、治理说明与对应 Token 投影文件
++- 原型证据中 `design_baseline` 的规范与 Token 摘要，以及视觉基线 `cases[].theme` 和截图对应关系
+ - 已按本清单核对 Colors/tokens 与 Fonts/typography
+ - 与官方默认的差异是否被接受为项目覆盖
+--- before/submodules/yss-harness-design-agent/.agents/skills/yss-design-system/references/design-system.md
++++ after/submodules/yss-harness-design-agent/.agents/skills/yss-design-system/references/design-system.md
+@@ -183,17 +183,15 @@
+ 
+ - 使用 `ConfigProvider` 注入主题。
+ - 默认采用 Data Quality 浅色与 32px 控件；仅显式紧凑模式使用 `theme.compactAlgorithm`；暗色紧凑模式组合 `theme.darkAlgorithm` 与 `theme.compactAlgorithm`，不手工反转色值或逐组件压缩。
+-- seed 与 compact 计算值以 `DESIGN.md` / `tokens.compact.json` 为准；不要重复 compact。
++- seed 与所选主题计算值以 `DESIGN.md` 和对应快照为准；默认使用 `tokens.default.json`，显式紧凑模式才使用 `tokens.compact.json`，不要重复 compact。
+ - 优先通过 token、component token、CSS variables、theme algorithm 实现样式。
+ - 静态反馈 API 使用 `App`、hook API 或 context holder，避免主题上下文丢失。
+ - 暗色模式使用 `darkAlgorithm` 或 `variables.dark.css`。
+ - 紧凑模式使用 `compactAlgorithm` 或 `tokens.compact.json`。
+ 
+-实验 Vue + Antdv Next：
+-
+-原型统一使用 `yss-prototype-stage` 的 HTML/CSS/JavaScript adapter；生产组件 API 只在实现阶段核验。
+-- 共享本规范的 semantic token、紧凑密度和验收语义；props、events、slots 与主题 API 只从 Antdv Next fact pack 读取。
+-原型统一使用 `yss-prototype-stage` 的 HTML/CSS/JavaScript adapter；生产组件 API 只在实现阶段核验。
++HTML 原型：
++
++- 使用 `yss-prototype-stage` 的 HTML/CSS/JavaScript adapter，消费项目 semantic token、所选密度和状态合同；生产组件 API 只在下游实现阶段从目标仓实际依赖核验。
+ 
+ YSS UI / Vue：
+ 
+@@ -207,7 +205,7 @@
+ 
+ 设计评审时检查：
+ 
+-- 是否引用 `docs/design/design.md`。
++- 是否引用根 `DESIGN.md`、治理说明 `docs/design/design.md` 与所选主题快照，并在原型证据中记录摘要。
+ - 是否符合中后台定位。
+ - 页面清单、主路径、异常路径是否清楚。
+ - 状态矩阵是否完整。
+@@ -220,7 +218,7 @@
+ 
+ - 是否消费 token，而不是硬编码颜色和尺寸。
+ - 是否以 semantic token 表达颜色、圆角、阴影和状态层级。
+-- 是否使用当前 `DESIGN.md` 与 `tokens.compact.json` 的排版、控件和间距值，且没有重复 compact。
++- 是否使用当前 `DESIGN.md` 与所选主题快照的排版、控件和间距值；默认使用 default，仅显式紧凑模式使用 compact，且没有重复 compact。
+ - 是否保留 hover、focus、active、disabled、loading、empty、error 状态。
+ - 是否只保留一个 single primary action，并让每个关键操作提供 interaction feedback。
+ - 是否在目标字号和背景下复核 accessibility contrast。
+--- before/submodules/yss-harness-design-agent/docs/design/templates/prototype-evidence-template.yaml
++++ after/submodules/yss-harness-design-agent/docs/design/templates/prototype-evidence-template.yaml
+@@ -35,8 +35,10 @@
+   canonical_design_digest: <sha256>
+   project_design_ref: docs/design/design.md
+   project_token_refs:
++    # 默认 Data Quality 浅色；显式暗色 / 紧凑模式改为实际消费的对应快照，并同步摘要和视觉基线 cases[].theme。
++    - docs/design/tokens/theme.json
++    - docs/design/tokens/tokens.default.json
+     - docs/design/tokens/variables.css
+-    - docs/design/tokens/tokens.compact.json
+   project_token_baseline_digest: <sha256>
+   project_override_reviewed: false
+ visual_baseline:
+--- before/submodules/yss-harness-design-agent/docs/design/templates/prototype-review-checklist.md
++++ after/submodules/yss-harness-design-agent/docs/design/templates/prototype-review-checklist.md
+@@ -1,6 +1,6 @@
+ # <功能名称> 原型评审清单
+ 
+-> 适用时机：配合 `prototype-review` 使用。评审采用 记录阻塞原因：有阻断项时必须回到产品设计阶段；产品原型产出以 `product-design:index` 路由到 Product Design focused skill 为主；低保真评审通过后必须产出高保真 HTML 原型，可由系统 / Agent 自动产出；产出后必须获得用户确认，确认前不能直接进入 Spec 校准或 API 影响分析 / 契约草案。
++> 适用时机：配合 `prototype-review` 使用。低保真与状态矩阵有阻断项时回产品设计；通过后由 `yss-prototype-stage` 根据风险选择 H1/H2，默认按根 `DESIGN.md` 直出离线 HTML 原型；独立视觉稿路线按需使用 `product-design:index`。产出后取得当前用户确认，再进入 Spec 校准与战略交接。API 影响只记录为下游输入，技术契约由下游研发 profile 接管。
+ 
+ ## 评审输入
+ 
+@@ -10,9 +10,10 @@
+ | 交互说明 | `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` |  |
+ | 原型 / 线框图 | `<链接或导出图片路径>` |  |
+ | 状态矩阵 | `docs/.scratch/<feature>/design/<feature>-state-matrix.md` |  |
++| 视觉规范与主题快照 | 根 `DESIGN.md`、`docs/design/design.md`、实际消费的 Token 快照 | 默认 Data Quality 浅色；显式暗色 / 紧凑模式注明选择依据 |
+ | 原型阶段合同 / Product Design 路由记录 | `yss-prototype-stage`；规范直出或条件独立视觉稿路线 |  |
+-| 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 高保真完成后补齐 CLI 与浏览器验证 |
+-| 现有 API 草案 | `docs/.scratch/<feature>/api/<feature>.yaml` | 可选 |
++| 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 档位确定后补齐 schema v4 共同与档位证据，并引用 Visual Baseline Bundle v1 |
++| 现有 API 资料 | `<已有资料引用>` | 可选，只读下游输入；本 profile 不生成 API 草案 |
+ 
+ ## 门禁清单
+ 
+@@ -25,8 +26,10 @@
+ | 可见字段、筛选、排序、分页、表单、抽屉、弹窗和操作按钮已列出 |  |  |
+ | 权限行为能区分隐藏、禁用和调用后拒绝 |  |  |
+ | 校验错误能区分模型级和字段级展示位置 |  |  |
+-| 能从界面需求反推出 API 影响和契约草案 |  |  |
+-| 高保真 HTML 原型已按 `yss-prototype-stage` 通过 `product-design:index` 路由产出，或记录等价 Agent 适配及例外原因 |  |  |
++| 能从界面需求列出数据、动作与异常反馈，以及下游待决问题 |  |  |
++| 已列出原型需要回答的决定、风险触发及 H1/H2 推荐档位；无充分证据时回退 H2 |  |  |
++| 状态矩阵中的每个状态均有事件、转换、guard、动作和退出路径 |  |  |
++| 高保真证据的 `design_baseline` 绑定当前规范与 Token 摘要，视觉基线的 `cases[].theme` 与实际截图一致 |  |  |
+ | 前端验收、组件状态和数据依赖已明确 |  |  |
+ | 风险 / 回滚约束和人工确认项已记录 |  |  |
+ 
+@@ -40,7 +43,9 @@
+ | 待确认决策已排除在冻结范围外 |  |  |
+ | Spec 中已补充设计资产链接 |  |  |
+ 
+-## API 影响分析 / 契约草案就绪度
++## 下游 API 影响输入
++
++仅记录页面提出的需求、现有事实和待决问题；路径、字段 wire shape 与技术契约由下游研发 profile 确定。
+ 
+ | 范围 | 是否就绪 | 说明 |
+ |---|---|---|
+@@ -63,5 +68,5 @@
+ 非阻断建议：
+ -
+ 下一步：
+-- product-design:index 路由高保真 HTML 原型产出 / 回到 Product Design focused skill 补齐原型 / 进入用户确认
++- yss-prototype-stage 计算档位并进入对应适配器 / 回到产品设计补齐状态与风险 / 高保真验证后进入用户确认
+ ```
+--- before/submodules/yss-harness-frontend-agent/.agents/skills/yss-design-system/SKILL.md
++++ after/submodules/yss-harness-frontend-agent/.agents/skills/yss-design-system/SKILL.md
+@@ -14,7 +14,7 @@
+ - 项目 Token 快照：`docs/design/tokens/theme.json`、`docs/design/tokens/tokens.default.json`、`docs/design/tokens/tokens.dark.json`、`docs/design/tokens/tokens.compact.json`、`docs/design/tokens/variables.css`、`docs/design/tokens/variables.dark.css`；它们是派生实现视图，不得反向覆盖规范源。
+ - 本技能执行清单：`references/design-system.md`，用于 Agent 执行和评审，不替代 `docs/design/design.md`。
+ - 历史输入包：`/Users/zhudaoming/Downloads/Product-Design-System`，只用于追溯首次引入来源，不作为后续工程依赖。
+-- 默认亮色覆盖：项目 Ant Design 5 Less / `:root` 变量已裁定进 `docs/design/design.md` 与 token 快照；原始 Less 不是实现语言。
++- 默认主题来源：Data Quality 主题经项目适配后落到根 `DESIGN.md`；来源与 AntD v6 设计参考 / Vue 运行时的区别见 `references/data-quality-theme.md`。
+ - Codex `$design-qa` 项目对照：`references/design-qa-theme.md`，不替代官方 `design-qa` 流程，也不改上游插件正文。
+ - 原型阶段合同：`yss-prototype-stage`，用于统一 H1/H2 原型资产和浏览器验证证据。H1/H2 默认使用项目 Token 驱动的 HTML/CSS/JavaScript 离线原型。
+ 
+@@ -52,7 +52,7 @@
+ - 不硬编码表面色、边框色、状态色；优先使用 token 或主题变量。
+ - 交互原型中的每个可点击主动作都必须给出 interaction feedback：状态变化、禁用原因、成功或失败反馈至少覆盖其一。
+ - accessibility：品牌 Seed 保持 `colors.primary`；实际文字/背景组合不满足 WCAG 2.2 AA 时，优先使用 `components.*` 中的高对比变体或 `ConfigProvider` component token 调整，并验证 default/hover/active/disabled/focus、键盘焦点、200% zoom、reduced motion 与目标尺寸，不新增页面级特例色。
+-- 离线原型直接消费已派生的主题与紧凑值，避免重复 compact。生产组件库的主题算法由其实现合同约束；暗色启用前必须核验派生 Token 与浏览器截图。
++- 离线原型直接消费所选主题的派生值；默认使用 default 快照，显式紧凑模式才使用 compact 快照，避免重复 compact。生产组件库的主题算法由其实现合同约束；暗色启用前必须核验当前派生 Token 与浏览器截图。
+ - 原型使用语义 HTML、项目主题变量与当前行为合同；生产实现不得依赖组件库内部 DOM、生成类名或未记录 API。
+ - 不用 Tag 表达关键错误、阻断或审批状态；关键状态必须有可读文本和语义反馈。
+ - 不让按钮、标签、表头、弹窗、卡片中的文字溢出或遮挡。
+@@ -62,7 +62,7 @@
+ 
+ 设计类任务至少输出：
+ 
+-- 设计系统引用：明确引用 `docs/design/design.md`。
++- 设计系统引用：明确引用根 `DESIGN.md`、治理说明 `docs/design/design.md` 和所选主题的 Token 快照；原型证据记录规范与 Token 摘要。
+ - 页面和模块：页面清单、布局结构、主路径、异常路径。
+ - 组件选择：YSS UI / Ant Design 组件映射。
+ - 状态矩阵：加载、空、错、禁用、只读、无权限、冲突、成功。
+@@ -73,7 +73,7 @@
+ 
+ - 是否通过 `ConfigProvider`、CSS variables 或项目 token 消费主题。
+ - 是否将颜色、圆角、阴影和状态样式绑定到 semantic token，而不是复制表面色和交互色。
+-- 是否使用当前 `DESIGN.md` 和 compact 派生快照中的控件、排版与间距值，且没有重复 compact。
++- 是否使用当前 `DESIGN.md` 和所选主题派生快照中的控件、排版与间距值；默认使用 default，仅显式紧凑模式使用 compact，且没有重复 compact。
+ - 是否使用 YSS UI / Ant Design 的语义组件，而不是自造同类组件。
+ - 是否保留 hover、focus、active、disabled、loading、error、empty 状态。
+ - 是否为可提交、导出、保存、发布、审批等操作提供明确的 interaction feedback 与不可逆操作确认。
+--- before/submodules/yss-harness-frontend-agent/.agents/skills/yss-design-system/references/design-qa-theme.md
++++ after/submodules/yss-harness-frontend-agent/.agents/skills/yss-design-system/references/design-qa-theme.md
+@@ -7,6 +7,7 @@
+ - 规范：根 `DESIGN.md`
+ - 治理说明：`docs/design/design.md`
+ - Token 投影：`docs/design/tokens/theme.json`、`docs/design/tokens/tokens.default.json`、`docs/design/tokens/variables.css`
++- 主题选择：默认采用根 `DESIGN.md` 的 Data Quality 浅色主题；仅显式暗色 / 紧凑模式使用对应的 `tokens.dark.json` / `variables.dark.css` / `tokens.compact.json`，以实际消费文件记录摘要。
+ - 实现截图：当前原型或页面在同一 viewport / 主题 / 状态下的渲染
+ 
+ 官方 `https://ant.design/design.md` 只是上游默认。项目覆盖与官方不同时，以根 `DESIGN.md` 为准；本清单不复制规范值。
+@@ -51,12 +52,13 @@
+ 
+ - 使用上游默认、历史品牌值或未登记字体/圆角覆盖根 `DESIGN.md`：P1。
+ - 只改局部组件、且 `prototype-evidence.yaml` 的 `theme_override` 已记录：按官方 severity 评估，不自动升 P1。
+-- 暗色模式：本轮未重派生完整暗色色板；暗色对照前若缺少新的 algorithm 派生证据，`final result: blocked`，写明 blocker。
++- 暗色模式：核验派生记录与当前根规范摘要一致，并取得相同 viewport / 主题 / 状态的实际浏览器证据；缺失或漂移时 `final result: blocked`，写明 blocker。历史暗色验证不能代替当前原型或页面的验收。
+ 
+ ## 报告要求
+ 
+ `design-qa.md` 必须写明：
+ 
+ - source visual truth path：根 `DESIGN.md`、治理说明与对应 Token 投影文件
++- 原型证据中 `design_baseline` 的规范与 Token 摘要，以及视觉基线 `cases[].theme` 和截图对应关系
+ - 已按本清单核对 Colors/tokens 与 Fonts/typography
+ - 与官方默认的差异是否被接受为项目覆盖
+--- before/submodules/yss-harness-frontend-agent/.agents/skills/yss-design-system/references/design-system.md
++++ after/submodules/yss-harness-frontend-agent/.agents/skills/yss-design-system/references/design-system.md
+@@ -183,17 +183,15 @@
+ 
+ - 使用 `ConfigProvider` 注入主题。
+ - 默认采用 Data Quality 浅色与 32px 控件；仅显式紧凑模式使用 `theme.compactAlgorithm`；暗色紧凑模式组合 `theme.darkAlgorithm` 与 `theme.compactAlgorithm`，不手工反转色值或逐组件压缩。
+-- seed 与 compact 计算值以 `DESIGN.md` / `tokens.compact.json` 为准；不要重复 compact。
++- seed 与所选主题计算值以 `DESIGN.md` 和对应快照为准；默认使用 `tokens.default.json`，显式紧凑模式才使用 `tokens.compact.json`，不要重复 compact。
+ - 优先通过 token、component token、CSS variables、theme algorithm 实现样式。
+ - 静态反馈 API 使用 `App`、hook API 或 context holder，避免主题上下文丢失。
+ - 暗色模式使用 `darkAlgorithm` 或 `variables.dark.css`。
+ - 紧凑模式使用 `compactAlgorithm` 或 `tokens.compact.json`。
+ 
+-实验 Vue + Antdv Next：
+-
+-原型统一使用 `yss-prototype-stage` 的 HTML/CSS/JavaScript adapter；生产组件 API 只在实现阶段核验。
+-- 共享本规范的 semantic token、紧凑密度和验收语义；props、events、slots 与主题 API 只从 Antdv Next fact pack 读取。
+-原型统一使用 `yss-prototype-stage` 的 HTML/CSS/JavaScript adapter；生产组件 API 只在实现阶段核验。
++HTML 原型：
++
++- 使用 `yss-prototype-stage` 的 HTML/CSS/JavaScript adapter，消费项目 semantic token、所选密度和状态合同；生产组件 API 只在下游实现阶段从目标仓实际依赖核验。
+ 
+ YSS UI / Vue：
+ 
+@@ -207,7 +205,7 @@
+ 
+ 设计评审时检查：
+ 
+-- 是否引用 `docs/design/design.md`。
++- 是否引用根 `DESIGN.md`、治理说明 `docs/design/design.md` 与所选主题快照，并在原型证据中记录摘要。
+ - 是否符合中后台定位。
+ - 页面清单、主路径、异常路径是否清楚。
+ - 状态矩阵是否完整。
+@@ -220,7 +218,7 @@
+ 
+ - 是否消费 token，而不是硬编码颜色和尺寸。
+ - 是否以 semantic token 表达颜色、圆角、阴影和状态层级。
+-- 是否使用当前 `DESIGN.md` 与 `tokens.compact.json` 的排版、控件和间距值，且没有重复 compact。
++- 是否使用当前 `DESIGN.md` 与所选主题快照的排版、控件和间距值；默认使用 default，仅显式紧凑模式使用 compact，且没有重复 compact。
+ - 是否保留 hover、focus、active、disabled、loading、empty、error 状态。
+ - 是否只保留一个 single primary action，并让每个关键操作提供 interaction feedback。
+ - 是否在目标字号和背景下复核 accessibility contrast。
+--- before/submodules/yss-harness-frontend-agent/docs/design/templates/prototype-evidence-template.yaml
++++ after/submodules/yss-harness-frontend-agent/docs/design/templates/prototype-evidence-template.yaml
+@@ -35,8 +35,10 @@
+   canonical_design_digest: <sha256>
+   project_design_ref: docs/design/design.md
+   project_token_refs:
++    # 默认 Data Quality 浅色；显式暗色 / 紧凑模式改为实际消费的对应快照，并同步摘要和视觉基线 cases[].theme。
++    - docs/design/tokens/theme.json
++    - docs/design/tokens/tokens.default.json
+     - docs/design/tokens/variables.css
+-    - docs/design/tokens/tokens.compact.json
+   project_token_baseline_digest: <sha256>
+   project_override_reviewed: false
+ visual_baseline:
+--- before/submodules/yss-harness-frontend-agent/docs/design/templates/prototype-review-checklist.md
++++ after/submodules/yss-harness-frontend-agent/docs/design/templates/prototype-review-checklist.md
+@@ -10,6 +10,7 @@
+ | 交互说明 | `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` |  |
+ | 原型 / 线框图 | `<链接或导出图片路径>` |  |
+ | 状态矩阵 | `docs/.scratch/<feature>/design/<feature>-state-matrix.md` |  |
++| 视觉规范与主题快照 | 根 `DESIGN.md`、`docs/design/design.md`、实际消费的 Token 快照 | 默认 Data Quality 浅色；显式暗色 / 紧凑模式注明选择依据 |
+ | 原型阶段合同 / Product Design 路由记录 | `yss-prototype-stage`；规范直出或条件独立视觉稿路线 |  |
+ | 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 高保真完成后补齐 CLI 与浏览器验证 |
+ | 现有 API 草案 | `docs/.scratch/<feature>/api/<feature>.yaml` | 可选 |
+@@ -27,6 +28,7 @@
+ | 校验错误能区分模型级和字段级展示位置 |  |  |
+ | 能从界面需求反推出 API 影响和契约草案 |  |  |
+ | 高保真 HTML 原型已按 `yss-prototype-stage` 通过 `product-design:index` 路由产出，或记录等价 Agent 适配及例外原因 |  |  |
++| 高保真证据的 `design_baseline` 绑定当前规范与 Token 摘要，视觉基线的 `cases[].theme` 与实际截图一致 |  |  |
+ | 前端验收、组件状态和数据依赖已明确 |  |  |
+ | 风险 / 回滚约束和人工确认项已记录 |  |  |
+ 
+--- before/.agents/skills/.strategic-design-skills-manifest.json
++++ after/.agents/skills/.strategic-design-skills-manifest.json
+@@ -19,7 +19,7 @@
+     {
+       "upstream": "yss-design-system",
+       "canonical": "yss-design-system",
+-      "upstream_hash": "0224b375c47c61cd782b72d6f8d83752bedbbc54b9a10bec43c95528a7378276"
++      "upstream_hash": "c917ecf40a67c52f0fa7894fbdfbf827cc1ed6aff1037be2911377387fede1a0"
+     },
+     {
+       "upstream": "yss-stage-decision",
+--- before/.template-source/profile-skill-sync.json
++++ after/.template-source/profile-skill-sync.json
+@@ -84,6 +84,9 @@
+         },
+         {
+           "source": "docs/design/templates/prototype-evidence-template.yaml"
++        },
++        {
++          "source": "docs/design/templates/visual-baseline-template.yaml"
+         },
+         {
+           "source": "docs/design/tokens/.design-md-projection.json"
+@@ -585,6 +588,9 @@
+         },
+         {
+           "source": "docs/design/templates/prototype-evidence-template.yaml"
++        },
++        {
++          "source": "docs/design/templates/visual-baseline-template.yaml"
+         },
+         {
+           "source": "docs/design/tokens/.design-md-projection.json"
+--- before/submodules/yss-harness-design-agent/AGENTS.md
++++ after/submodules/yss-harness-design-agent/AGENTS.md
+@@ -24,6 +24,7 @@
+ | 影响面与维护强度 | `docs/process/harness-process-tailoring.md`、`docs/process/maintenance-intensity.yaml` |
+ | 技能身份与路由 | `docs/agents/yss-skill-registry.yaml`（`status: active`；由生命周期消费，Router 不消费）；来源与投影见 `skills-lock.json` |
+ | 数字人角色与会签 | `docs/agents/digital-human-roles.yaml` |
++| 视觉规范 | 根 `DESIGN.md`；治理见 `docs/design/design.md`，Token 快照为派生视图 |
+ | 实例分发 | `docs/process/instance-distribution-manifest.yaml`；CLI `template.manifest.json` 是投影 |
+ 
+ README、用户指南和 `CLAUDE.md` 只解释或指向上述事实，不定义第二套规则。
+@@ -65,7 +66,7 @@
+ ## 8. 专项入口
+ 
+ - 技术事实或外部证据影响决策时使用 `yss-research`；竞品、市场或用户口碑事实使用 `competitive-intelligence`。
+-- UI / 原型影响使用 `yss-design-system` → `yss-prototype-stage` → 独立 `prototype-review`；H1/H2 默认使用 DESIGN.md 驱动的离线 HTML/CSS/JavaScript；分别验证视觉与流程。生产前端转交下游，原型阶段不调用 `yss-ui`。
++- UI / 原型影响使用 `yss-design-system` → `yss-prototype-stage` → 独立 `prototype-review`；H1/H2 默认使用根 `DESIGN.md` 驱动的离线 HTML/CSS/JavaScript，采用其中的 Data Quality 默认浅色主题；暗色或紧凑模式仅在明确选择时启用。分别验证视觉与流程，证据绑定当前规范与所选 Token 摘要。生产前端转交下游，原型阶段不调用 `yss-ui`。
+ - 数字人协同先读 `docs/agents/digital-human-roles.yaml`；角色实例不另起生命周期，不批准下游 Slice 合同、不设置 `ready-for-agent`、不宣布产品可发布。
+ - 模板脚本或校验故障使用 `diagnosing-bugs`；其它技能按 `docs/agents/yss-skill-registry.yaml` 的触发条件按需加载。
+ 
+--- before/submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/SKILL.md
++++ after/submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/SKILL.md
+@@ -62,11 +62,13 @@
+ | 入口分诊 | 身份、影响面、最近可信阶段 | `yss-strategic-design` + `triage` / `wayfinder`（兼容入口） | `yss-project.yaml` 合法且影响面可解释 |
+ | 机会、目标与业务故事 | 用户/MVP/非目标/成功标准、业务故事、规则示例、测试 seam；需要时补充业务边界与规则设计和方案决策包 | `work-unit.plan-opportunity` + `work-unit.plan-requirements` + `work-unit.domain-strategy-design` + `work-unit.stage-decision`；市场/竞品事实用 `competitive-intelligence`，技术/标准事实用 `yss-research:technical-evidence`，业务边界与方案决策证据用 `yss-research:strategy-evidence`；业务词汇和责任区梳理用 `domain-modeling`；`grill-with-docs` 为兼容入口 | 未决事实已由 `yss-research` 核验或 handoff；业务板块、责任区、统一业务词汇、协作关系和不可违反规则可审查；方案决策包完成必要确认 |
+ | Spec/功能架构 | Spec、产品总体设计、功能架构；必要时 Spec Delta | 原生 `work-unit.spec-synthesis`；`to-spec` 为兼容入口 | 初稿先为 `ready-for-human`；只有 Spec baseline 会签批准后资产才为 `approved` 并进入下游 |
+-原型使用 `yss-prototype-stage` 的 html-css-js 适配器，消费 DESIGN.md 与状态矩阵。
++| 产品设计与页面验证 | 交互说明、低保真评审、状态矩阵、H1/H2 原型、视觉基线与用户确认 | `yss-prototype-stage` 持有合同，配合 `yss-design-system` 和独立 `prototype-review`；默认 `html-css-js` 适配器，条件使用独立视觉稿 | 消费当前根 `DESIGN.md` 与所选主题快照；视觉、状态和流程证据完整，产品设计取得当前真实负责人确认 |
+ | 业务方案交接 | 业务方案交接包、研发待决问题和证据索引 | `yss-stage-decision` + `yss-strategic-design`；下游研发团队接管技术设计 | `artifact.domain-strategy`、`artifact.stage-decision-package`、Spec、适用的原型或既有 UI 基线、业务级 Ticket 已批准且版本当前，交接包字段完整；本地不生成技术模型 |
+ | 技术分析（下游兼容阶段） | OpenAPI Draft/Freeze、数据架构、工程基线和架构审查 | 下游研发团队的技术技能 | 不属于本 profile 的本地工作单元 |
+ | Ticket 正式化 | 业务级功能 Ticket 集（范围、优先级、验收、依赖、风险） | 本 profile 使用 `work-unit.business-ticket-formalization`；`to-tickets` 为兼容入口 | 业务行为可验证且不含 Adapter/Application/Domain/Infrastructure 技术拆分；下游再细化垂直切片 |
+ | 下游接管 | 技术设计、工程契约和实现 | 交接给下游研发团队；本 skill 不调用实现技能 | 业务方案交接包已批准且下游上下文、责任人和版本边界完整 |
++
++页面验证默认采用根 `DESIGN.md` 中的 Data Quality 浅色主题；AntD v6 是设计参考，组件运行时由下游实现合同确定。暗色或紧凑模式仅在明确选择时启用，并使用对应派生快照。交接复用 `prototype-evidence.yaml` 的 `design_baseline`（规范与 Token 引用、摘要）和 `visual_baseline`，视觉基线的 `cases[].theme` 与截图保持一致；按既有 Handoff v5 合同核验当前证据，不另建主题合同。脚手架与生产前端实现由下游研发 profile 接管。
+ 
+ Plan → Spec（含正式草稿、恢复与显式 `to-spec`）写入前，按 `docs/plan/entry-review.md` 持久化审阅包并运行 `node scripts/verify-plan-spec-entry <state.yaml>`。检查默认 pending，缺项、过期或无真实回复即阻断；独立调研可继续。
+ 
+--- before/docs/design/templates/visual-baseline-template.yaml
++++ after/docs/design/templates/visual-baseline-template.yaml
+@@ -33,13 +33,14 @@
+   capture_script_digest: <sha256>
+   capture_result_ref: capture/result.json
+   capture_result_digest: <sha256>
++# 默认 Data Quality 浅色；显式选择暗色 / 紧凑模式时按实际渲染修改 theme，并与原型证据中的 Token 快照保持一致。
+ cases:
+   - case_id: primary-desktop
+     route: /<route>
+     page: <PageName>
+     state: normal
+     viewport: {name: desktop, width: 1440, height: 900, scroll_mode: viewport, scroll_position: 0}
+-    theme: compact-light
++    theme: default-light
+     locale: zh-CN
+     data_scenario: primary
+     image_ref: images/primary-desktop.png
+@@ -56,7 +57,7 @@
+     page: <PageName>
+     state: normal
+     viewport: {name: narrow, width: 390, height: 844, scroll_mode: viewport, scroll_position: 0}
+-    theme: compact-light
++    theme: default-light
+     locale: zh-CN
+     data_scenario: primary
+     image_ref: images/primary-narrow.png
+--- before/submodules/yss-harness-design-agent/docs/design/templates/visual-baseline-template.yaml
++++ after/submodules/yss-harness-design-agent/docs/design/templates/visual-baseline-template.yaml
+@@ -33,13 +33,14 @@
+   capture_script_digest: <sha256>
+   capture_result_ref: capture/result.json
+   capture_result_digest: <sha256>
++# 默认 Data Quality 浅色；显式选择暗色 / 紧凑模式时按实际渲染修改 theme，并与原型证据中的 Token 快照保持一致。
+ cases:
+   - case_id: primary-desktop
+     route: /<route>
+     page: <PageName>
+     state: normal
+     viewport: {name: desktop, width: 1440, height: 900, scroll_mode: viewport, scroll_position: 0}
+-    theme: compact-light
++    theme: default-light
+     locale: zh-CN
+     data_scenario: primary
+     image_ref: images/primary-desktop.png
+@@ -56,7 +57,7 @@
+     page: <PageName>
+     state: normal
+     viewport: {name: narrow, width: 390, height: 844, scroll_mode: viewport, scroll_position: 0}
+-    theme: compact-light
++    theme: default-light
+     locale: zh-CN
+     data_scenario: primary
+     image_ref: images/primary-narrow.png
+--- before/submodules/yss-harness-frontend-agent/docs/design/templates/visual-baseline-template.yaml
++++ after/submodules/yss-harness-frontend-agent/docs/design/templates/visual-baseline-template.yaml
+@@ -33,13 +33,14 @@
+   capture_script_digest: <sha256>
+   capture_result_ref: capture/result.json
+   capture_result_digest: <sha256>
++# 默认 Data Quality 浅色；显式选择暗色 / 紧凑模式时按实际渲染修改 theme，并与原型证据中的 Token 快照保持一致。
+ cases:
+   - case_id: primary-desktop
+     route: /<route>
+     page: <PageName>
+     state: normal
+     viewport: {name: desktop, width: 1440, height: 900, scroll_mode: viewport, scroll_position: 0}
+-    theme: compact-light
++    theme: default-light
+     locale: zh-CN
+     data_scenario: primary
+     image_ref: images/primary-desktop.png
+@@ -56,7 +57,7 @@
+     page: <PageName>
+     state: normal
+     viewport: {name: narrow, width: 390, height: 844, scroll_mode: viewport, scroll_position: 0}
+-    theme: compact-light
++    theme: default-light
+     locale: zh-CN
+     data_scenario: primary
+     image_ref: images/primary-narrow.png
+--- before/submodules/create-yss-harness-frontend/template.manifest.json
++++ after/submodules/create-yss-harness-frontend/template.manifest.json
+@@ -14,6 +14,7 @@
+     "AGENTS.md",
+     "CLAUDE.md",
+     "CONTEXT.md",
++    "DESIGN.md",
+     "README.md",
+     "skills-lock.json",
+     "yss-project.yaml",
+--- before/submodules/yss-harness-frontend-agent/.template-source/distribution/template.manifest.json
++++ after/submodules/yss-harness-frontend-agent/.template-source/distribution/template.manifest.json
+@@ -14,6 +14,7 @@
+     "AGENTS.md",
+     "CLAUDE.md",
+     "CONTEXT.md",
++    "DESIGN.md",
+     "README.md",
+     "skills-lock.json",
+     "yss-project.yaml",
+--- /dev/null
++++ after/submodules/create-yss-harness-frontend/tests/design-baseline.test.mjs
+@@ -0,0 +1,31 @@
++import {test} from 'node:test';
++import assert from 'node:assert/strict';
++import {mkdtempSync, readFileSync, rmSync, existsSync, realpathSync} from 'node:fs';
++import {tmpdir} from 'node:os';
++import path from 'node:path';
++import {fileURLToPath} from 'node:url';
++import {createHash} from 'node:crypto';
++import {spawnSync} from 'node:child_process';
++
++test('真实初始化同时交付视觉规范源与主题快照', t => {
++  const root = fileURLToPath(new URL('..', import.meta.url));
++  const scratch = realpathSync(mkdtempSync(path.join(tmpdir(), 'frontend-design-baseline-')));
++  t.after(() => rmSync(scratch, {recursive: true, force: true}));
++  const target = path.join(scratch, 'project');
++  const result = spawnSync(process.execPath, [
++    path.join(root, 'bin/create-yss-harness-frontend.js'), 'init',
++    '--target-dir', target, '--project-name', '主题分发验证', '--json',
++  ], {encoding: 'utf8', timeout: 120000, maxBuffer: 32 * 1024 * 1024});
++  assert.equal(result.status, 0, result.stderr || result.error?.message);
++  const snapshot = JSON.parse(readFileSync(path.join(root, 'template.snapshot.json'), 'utf8'));
++  for (const ref of [
++    'DESIGN.md', 'docs/design/design.md', 'docs/design/tokens/theme.json',
++    'docs/design/tokens/tokens.default.json', 'docs/design/tokens/variables.css',
++    'docs/design/templates/prototype-evidence-template.yaml',
++    'docs/design/templates/visual-baseline-template.yaml',
++  ]) {
++    assert.ok(existsSync(path.join(target, ref)), `初始化缺少设计资产: ${ref}`);
++    const actual = createHash('sha256').update(readFileSync(path.join(target, ref))).digest('hex');
++    assert.equal(actual, snapshot.files[ref]?.digest, `设计资产与分发快照不一致: ${ref}`);
++  }
++});

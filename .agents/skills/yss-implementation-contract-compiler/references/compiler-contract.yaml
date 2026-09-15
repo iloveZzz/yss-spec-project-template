@@ -149,9 +149,17 @@ project_scaffold_contract_schema:
   discriminant: delivery_role
   delivery_roles:
     backend:
-      scaffold_kinds: [backend-ddd, backend-layered-mvc]
-      generators: [yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator]
-      requires: [scaffold_request_id, architecture_family, decision_ref, decision_id, decision_digest, project_name, base_package, maven_coordinates, profiles, module_profile]
+      scaffold_kinds: [backend-ddd, backend-layered-mvc, backend-mvc-data-analysis]
+      generators: [yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, yss-mvc-data-analysis-project-initializer]
+      requires: [scaffold_request_id, architecture_family, decision_ref, decision_id, decision_digest, project_name, base_package, maven_coordinates, profiles, module_profile, design_prerequisites]
+      design_prerequisites:
+        required: [technical_design, data_architecture_decision, api_contract_decision, engineering_contract_approval_ref]
+        artifact_binding: [ref, version, digest]
+        data_impact_modes: [required, not-applicable]
+        api_impact_modes: [required, not-applicable]
+        api_required_closure: [openapi_yaml, validation_record, independent_draft_review, freeze]
+        api_same_original_bytes: true
+        approval_gate: gate.engineering-contract-approved
     frontend:
       scaffold_kinds: [frontend-yss-vue3]
       generators: [yss-frontend-scaffold-generator]
@@ -163,7 +171,7 @@ project_scaffold_contract_schema:
   target_policy: nonexistent-or-empty
   force_overwrite: forbidden
   compatibility:
-    backend_schema_v3: read-only-and-complete-approved-generation
+    backend_schema_v3: historical-manifest-read-only-recovery-audit
     frontend_before_v4: unsupported
 
 scaffold_contract_schema:
@@ -236,7 +244,7 @@ scaffold_contract_schema:
   lifecycle_boundary:
     compiler_emits: [draft, ready-for-lifecycle-review, blocked]
     lifecycle_approves: [approved]
-    generator_consumes: [approved]
+    generator_consumes: []
     after_generation:
       domain-driven: [yss-backend-scaffold-parent, yss-implementation-contract-compiler]
       layered-mvc: [yss-implementation-contract-compiler]

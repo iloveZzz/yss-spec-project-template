@@ -1,0 +1,30 @@
+{
+  "name": "__APP_NAME__",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.15.0",
+  "engines": {
+    "node": ">=22.12.0",
+    "pnpm": ">=10.15.0 <11"
+  },
+  "scripts": {
+    "dev": "pnpm -C packages dev",
+    "build": "pnpm -C packages build",
+    "build:standalone": "pnpm -C packages build:standalone",
+    "preview": "pnpm -C packages preview",
+    "lint": "pnpm lint:check",
+    "lint:check": "eslint packages/src packages/vite.config.ts orval.config.ts --ext .ts,.vue --max-warnings 0",
+    "lint:fix": "pnpm lint:check --fix",
+    "type-check": "pnpm -C packages type-check",
+    "generate:api": "orval --config orval.config.ts"
+  },
+  "devDependencies": {
+    "@typescript-eslint/parser": "8.70.0",
+    "@typescript-eslint/eslint-plugin": "8.70.0",
+    "eslint": "8.57.1",
+    "eslint-plugin-vue": "9.33.0",
+    "@types/node": "20.19.43",
+    "orval": "6.31.0",
+    "typescript": "5.9.3"
+  }
+}

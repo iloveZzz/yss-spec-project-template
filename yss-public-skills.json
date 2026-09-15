@@ -3,13 +3,10 @@
   "repository": "iloveZzz/yss-spec-dev-skills",
   "canonical_root": ".agents/skills",
   "skills": [
-    "yss-antd-design",
-    "yss-antdv-next-design",
     "yss-api-integration",
     "yss-audit-log",
     "yss-application",
     "yss-cache",
-    "yss-components",
     "yss-ddd-scaffold-generator",
     "yss-design-system",
     "yss-distributed-id",
@@ -69,9 +66,6 @@
       "title": "前端",
       "description": "用于 YSS Vue、Formily、页面模块和 UI 实现的技能。",
       "skills": [
-        "yss-antd-design",
-        "yss-antdv-next-design",
-        "yss-components",
         "yss-design-system",
         "yss-formily",
         "yss-formily-schema-generator",

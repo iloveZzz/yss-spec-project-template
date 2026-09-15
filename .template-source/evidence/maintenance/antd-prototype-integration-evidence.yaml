@@ -1,0 +1,520 @@
+{
+  "schema_version": 1,
+  "profile": "technical-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "Ant Design全量组件目录、React原型集成与离线交付边界",
+    "audience": "YSS原型模板维护主控",
+    "time_horizon": "clock工具返回2026-09-14 15:52:30 UTC；当日在线目录与固定源码",
+    "research_questions": [
+      "当前官方目录有哪些基础分类、废弃项和外部重型条目？",
+      "React依赖、CLI版本知识及Token/zeroRuntime分别约束什么？",
+      "哪些事实不能证明离线资源包已经运行通过？"
+    ],
+    "inclusion_criteria": [
+      "官方当前总览",
+      "AntD/CLI/Pro Components已核验固定提交源码",
+      "本会话已读取MDN官方浏览器说明"
+    ],
+    "exclusion_criteria": [
+      "二手组件清单",
+      "未核验版本猜测",
+      "插件安装、共享仓修改及生产兼容宣称"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "主控 / maintaining-skills / yss-prototype-stage",
+    "decision_ref": null
+  },
+  "search_log": [
+    {
+      "id": "search-001",
+      "channel": "clock",
+      "query_or_corpus": "clock.curr_time => 2026-09-14 15:52:30 UTC",
+      "searched_at": "2026-09-14T15:52:30Z",
+      "result": "results-found"
+    },
+    {
+      "id": "search-002",
+      "channel": "official-web",
+      "query_or_corpus": "overview-cn、cli-cn、customize-theme-cn：当前显示6.6.4",
+      "searched_at": "2026-09-14T15:52:30Z",
+      "result": "results-found"
+    },
+    {
+      "id": "search-003",
+      "channel": "official-web",
+      "query_or_corpus": "css-variables-cn 页面读取",
+      "searched_at": "2026-09-14T15:52:30Z",
+      "result": "access-failed"
+    },
+    {
+      "id": "search-004",
+      "channel": "github-api-fixed-raw",
+      "query_or_corpus": "AntD master固定db0488c...，tree及73个中文frontmatter、Overview实现、ProComponentsList、package和主题文档",
+      "searched_at": "2026-09-14T15:52:30Z",
+      "result": "results-found"
+    },
+    {
+      "id": "search-005",
+      "channel": "github-api-fixed-raw",
+      "query_or_corpus": "CLI main固定bf8c683...：package、loader、version解析、versions.json及v6.json",
+      "searched_at": "2026-09-14T15:52:30Z",
+      "result": "results-found"
+    },
+    {
+      "id": "search-006",
+      "channel": "github-raw",
+      "query_or_corpus": "Pro Components packages/components/package.json路径猜测返回404，未用于包归属结论",
+      "searched_at": "2026-09-14T15:52:30Z",
+      "result": "access-failed"
+    },
+    {
+      "id": "search-007",
+      "channel": "github-api-fixed-raw",
+      "query_or_corpus": "Pro Components实际root package.json于固定fabe5aeb...：name=@ant-design/pro-components",
+      "searched_at": "2026-09-14T15:52:30Z",
+      "result": "results-found"
+    },
+    {
+      "id": "search-008",
+      "channel": "same-session-primary-evidence",
+      "query_or_corpus": "2026-09-14已读取MDN Modules/localStorage对file URL的限制，作为离线结论反证",
+      "searched_at": "2026-09-14T15:52:30Z",
+      "result": "results-found"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-001",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://ant.design/components/overview-cn/",
+      "locator": "七个基础分类及重型组件分组",
+      "stance": "support",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "online 6.6.4 checked 2026-09-14",
+      "observation": "总览当前显示 6.6.4；基础分类计数为通用4、布局7、导航7、数据录入18、数据展示21、反馈11、其他5，另有6个重型条目。",
+      "limitations": [
+        "73 是目录条目数，含废弃及工具入口；线上页面会更新。"
+      ]
+    },
+    {
+      "id": "evidence-002",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://github.com/ant-design/ant-design/blob/db0488c167154941ce4686074ef69e757e1f3492/components/overview/index.zh-CN.md",
+      "locator": "line 9; .dumi/theme/builtins/ComponentOverview/index.tsx groups",
+      "stance": "support",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "db0488c167154941ce4686074ef69e757e1f3492",
+      "observation": "总览由 ComponentOverview 从 sidebar/frontmatter 生成，并追加独立 ProComponentsList。按固定 tree 抓取73份有group的中文组件文档，计数与在线目录一致。",
+      "limitations": [
+        "目录数据不证明所有组件已被原型采用或验证。"
+      ]
+    },
+    {
+      "id": "evidence-003",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://github.com/ant-design/ant-design/blob/db0488c167154941ce4686074ef69e757e1f3492/components/list/index.zh-CN.md",
+      "locator": "frontmatter tag; 废弃提示",
+      "stance": "counter",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "db0488c167154941ce4686074ef69e757e1f3492",
+      "observation": "List 的 tag 为 DEPRECATED，文档要求转向 Listy。",
+      "limitations": [
+        "基础目录包含这个废弃条目，因此73不能解释为73个推荐用于新原型的有效组件。"
+      ]
+    },
+    {
+      "id": "evidence-004",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://github.com/ant-design/ant-design/blob/db0488c167154941ce4686074ef69e757e1f3492/package.json",
+      "locator": "version; peerDependencies; description",
+      "stance": "support",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "db0488c167154941ce4686074ef69e757e1f3492",
+      "observation": "固定源码包版本为6.6.4，react和react-dom的peer依赖均为>=18.0.0，包描述为React组件实现。",
+      "limitations": [
+        "源码peer范围不是所有React版本及目标浏览器均已实测兼容。"
+      ]
+    },
+    {
+      "id": "evidence-005",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://github.com/ant-design/ant-design/blob/db0488c167154941ce4686074ef69e757e1f3492/docs/react/customize-theme.zh-CN.md",
+      "locator": "零运行时 zeroRuntime; lines 76-101",
+      "stance": "support",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "db0488c167154941ce4686074ef69e757e1f3492",
+      "observation": "zeroRuntime从6.0.0起停止运行时生成组件样式，需要显式引入antd/dist/antd.css；默认CSS不含hashed className，定制prefix等配置可能需要静态抽取。",
+      "limitations": [
+        "zeroRuntime仅描述样式路径，不意味着没有React/JavaScript运行时或天然file URL兼容。"
+      ]
+    },
+    {
+      "id": "evidence-006",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://github.com/ant-design/ant-design-cli/blob/bf8c683eec626e810e8cb190c2d21daba928dd75/package.json",
+      "locator": "version; engines; files",
+      "stance": "support",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "bf8c683eec626e810e8cb190c2d21daba928dd75",
+      "observation": "CLI固定源码版本6.6.4，Node要求>=20.0.0，发布文件包含dist/data/skills。",
+      "limitations": [
+        "源码版本不等于已安装或运行该版本；本任务未安装或执行CLI。"
+      ]
+    },
+    {
+      "id": "evidence-007",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://github.com/ant-design/ant-design/blob/db0488c167154941ce4686074ef69e757e1f3492/docs/react/cli.zh-CN.md",
+      "locator": "知识查询; 全局参数; 环境变量",
+      "stance": "support",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "db0488c167154941ce4686074ef69e757e1f3492",
+      "observation": "CLI文档提供list/info/doc/demo/token/design.md/semantic/changelog知识入口，支持JSON和目标版本；元数据随包提供。",
+      "limitations": [
+        "安装和制作工具环境与原型接收方运行环境不同。"
+      ]
+    },
+    {
+      "id": "evidence-008",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://github.com/ant-design/ant-design-cli/blob/bf8c683eec626e810e8cb190c2d21daba928dd75/src/data/loader.ts",
+      "locator": "lines 89-95, 148-173",
+      "stance": "counter",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "bf8c683eec626e810e8cb190c2d21daba928dd75",
+      "observation": "版本元数据按同minor快照、最近较早minor、major快照顺序解析；并非每个patch都有独立元数据。",
+      "limitations": [
+        "--version参数和顶层自报不能独立证明精确patch事实。"
+      ]
+    },
+    {
+      "id": "evidence-009",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://github.com/ant-design/ant-design-cli/blob/bf8c683eec626e810e8cb190c2d21daba928dd75/data/versions.json",
+      "locator": "v6.6 mapping; data/v6.json.version and components",
+      "stance": "support",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "bf8c683eec626e810e8cb190c2d21daba928dd75",
+      "observation": "本次固定CLI源码的6.6 minor映射6.6.4；major元数据version也为6.6.4，共72项，与73项目录相比仅缺Util。",
+      "limitations": [
+        "数据版本相等不证明每项API、demo及语义数据无遗漏；catalog使用官方目录和固定组件文档，不依赖CLI覆盖率。"
+      ]
+    },
+    {
+      "id": "evidence-010",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://github.com/ant-design/ant-design-cli/blob/bf8c683eec626e810e8cb190c2d21daba928dd75/src/data/loader.ts",
+      "locator": "lines 51-65 loadDesignDoc",
+      "stance": "counter",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "bf8c683eec626e810e8cb190c2d21daba928dd75",
+      "observation": "CLI的design.md按major粒度提供人工整理的默认light主题描述。",
+      "limitations": [
+        "不是patch级组件API证据，也不是项目YSS设计规范。"
+      ]
+    },
+    {
+      "id": "evidence-011",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://github.com/ant-design/ant-design/blob/db0488c167154941ce4686074ef69e757e1f3492/docs/react/customize-theme.zh-CN.md",
+      "locator": "ConfigProvider theme; Seed/Map/Alias Token; components; algorithms",
+      "stance": "support",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "db0488c167154941ce4686074ef69e757e1f3492",
+      "observation": "AntD通过ConfigProvider主题、全局Token、组件Token及默认/暗色/紧凑算法定制视觉，Seed→Map→Alias构成派生关系。",
+      "limitations": [
+        "项目规范到AntD Token的映射仍需逐项核对；不能用默认视觉替代项目视觉。"
+      ]
+    },
+    {
+      "id": "evidence-012",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://github.com/ant-design/ant-design/blob/db0488c167154941ce4686074ef69e757e1f3492/.dumi/theme/builtins/ComponentOverview/ProComponentsList.ts",
+      "locator": "六项title/link",
+      "stance": "support",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "db0488c167154941ce4686074ef69e757e1f3492",
+      "observation": "重型条目是ProLayout、ProForm、ProTable、ProDescriptions、ProList、EditableProTable六个外链。",
+      "limitations": [
+        "并非antd直接导出；未核验它们与目标AntD/React版本的组合兼容性。"
+      ]
+    },
+    {
+      "id": "evidence-013",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://github.com/ant-design/pro-components/blob/fabe5aeb1c671b2b03531029bbadc276f6f3d21d/package.json",
+      "locator": "name",
+      "stance": "support",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "fabe5aeb1c671b2b03531029bbadc276f6f3d21d",
+      "observation": "Pro Components固定源码包名为@ant-design/pro-components。",
+      "limitations": [
+        "这里只核实umbrella package归属，不作包版本选型或兼容性结论。"
+      ]
+    },
+    {
+      "id": "evidence-014",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://github.com/ant-design/ant-design/blob/db0488c167154941ce4686074ef69e757e1f3492/components/icon/index.zh-CN.md",
+      "locator": "使用方法 lines 12-20",
+      "stance": "support",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "db0488c167154941ce4686074ef69e757e1f3492",
+      "observation": "Icon目录对应独立@ant-design/icons包，文档对antd6要求配套icons6以避免Context版本问题。",
+      "limitations": [
+        "目录覆盖和实际依赖安装是两个不同事实。"
+      ]
+    },
+    {
+      "id": "evidence-015",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules",
+      "locator": "Other differences between modules and classic scripts",
+      "stance": "counter",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "online observed 2026-09-14",
+      "observation": "MDN说明file URL模块加载受CORS安全要求限制。",
+      "limitations": [
+        "使用本会话2026-09-14已读取资料；不是本次打包浏览器实测。"
+      ]
+    },
+    {
+      "id": "evidence-016",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage",
+      "locator": "Description; Exceptions",
+      "stance": "counter",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "online observed 2026-09-14",
+      "observation": "file URL下localStorage行为未定义，可能因来源或用户策略抛出SecurityError。",
+      "limitations": [
+        "不能断言所有浏览器都会失败，也不能依赖始终可用。"
+      ]
+    },
+    {
+      "id": "evidence-017",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://github.com/ant-design/ant-design/blob/db0488c167154941ce4686074ef69e757e1f3492/docs/react/for-agents.zh-CN.md",
+      "locator": "CLI; MCP Server; design.md; LLMs.txt",
+      "stance": "support",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "db0488c167154941ce4686074ef69e757e1f3492",
+      "observation": "官方为Agent提供CLI、MCP、默认light设计语言与文档入口；这些是知识和工具接入方式。",
+      "limitations": [
+        "其安装/setup建议不是本项目必须采纳的流程；本任务没有安装插件或修改任何配置。"
+      ]
+    },
+    {
+      "id": "evidence-018",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-source-or-documentation",
+      "source_ref": "https://github.com/ant-design/ant-design/blob/db0488c167154941ce4686074ef69e757e1f3492/docs/react/cli.zh-CN.md",
+      "locator": "CLI管理; 环境变量",
+      "stance": "counter",
+      "observed_at": "2026-09-14T15:52:30Z",
+      "source_version": "db0488c167154941ce4686074ef69e757e1f3492",
+      "observation": "setup可能写入MCP配置或安装Skill；upgrade改变CLI版本；环境变量提供禁用自动报告建议和更新检查的选择。",
+      "limitations": [
+        "知识采集不需要主动触发这些副作用。"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-001",
+      "claim_kind": "technical-fact",
+      "statement": "固定AntD6.6.4源码和当日总览对应73个基础目录条目与6个外部重型条目；73不是组件导出数量。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-001",
+        "evidence-002",
+        "evidence-012"
+      ],
+      "counter_signal_refs": [
+        "evidence-003"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-002",
+      "claim_kind": "technical-fact",
+      "statement": "antd6.6.4依赖React及ReactDOM>=18；zeroRuntime只减少样式运行时生成，不能消除组件JavaScript运行时。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-004",
+        "evidence-005"
+      ],
+      "counter_signal_refs": [
+        "evidence-015"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-003",
+      "claim_kind": "technical-fact",
+      "statement": "CLI提供随包知识与结构化查询，但版本解析可能采用minor或major快照，必须区分请求版本与实际知识版本。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-006",
+        "evidence-007",
+        "evidence-009"
+      ],
+      "counter_signal_refs": [
+        "evidence-008"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-004",
+      "claim_kind": "technical-fact",
+      "statement": "全量目录与CLI元数据不是相同集合：本次CLI6.6.4元数据72项，唯一缺少的总览项为Util。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-002",
+        "evidence-009"
+      ],
+      "counter_signal_refs": [
+        "evidence-003"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-005",
+      "claim_kind": "technical-fact",
+      "statement": "项目视觉可通过全局/组件Token和算法映射到AntD；默认light的major级design.md不能代替项目设计事实。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-011"
+      ],
+      "counter_signal_refs": [
+        "evidence-010"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-006",
+      "claim_kind": "technical-fact",
+      "statement": "zeroRuntime需要引入或生成匹配配置的静态CSS，文档并不提供目标离线资源包的运行通过证据。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-005"
+      ],
+      "counter_signal_refs": [
+        "evidence-015",
+        "evidence-016"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-007",
+      "claim_kind": "technical-fact",
+      "statement": "Icon有独立包归属，六项Pro组件属于外部目录及独立umbrella package；这些事实不表示组合兼容已通过。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-012",
+        "evidence-013",
+        "evidence-014"
+      ],
+      "counter_signal_refs": [
+        "evidence-003"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-008",
+      "claim_kind": "technical-fact",
+      "statement": "CLI/MCP是制作阶段知识与工具接入；可以只采用查询能力，安装Skill、写配置和升级不属于获取组件目录所必需的动作。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-007",
+        "evidence-017"
+      ],
+      "counter_signal_refs": [
+        "evidence-018"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [
+    "未安装或执行CLI；其命令能力基于官方固定源码/文档，未宣称某本地安装已经工作。",
+    "未构建或运行浏览器原型，React打包、CSS资源、file URL与断网验收由主控后续关闭。",
+    "外部Pro Components仅核目录与package归属，没有版本组合、包大小或运行兼容性验证。",
+    "introduced_version仅取官方frontmatter的版本tag，其余不猜测引入版本。",
+    "没有量化效率或可访问性改善实测；目录完整性不是每组件API事实或浏览器行为完整性。"
+  ],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-001",
+      "claim-002",
+      "claim-003",
+      "claim-004",
+      "claim-005",
+      "claim-006",
+      "claim-007",
+      "claim-008"
+    ],
+    "notes": [
+      "research完成仅表示结论与来源已对照及结构引用可校验；不批准实现、合并或发布。",
+      "component-catalog.json由固定tree和frontmatter生成并与在线分类计数核对。",
+      "只写/tmp/yss-antd-integration-research/，共享仓保持只读。",
+      "目录校验发现Pro条目title/subtitle匹配错误，已按固定官方源码修正并重验六个英文稳定名称；未隐藏失败检查。"
+    ],
+    "completed_at": "2026-09-14T16:00:46Z",
+    "completed_at_local": "2026-09-15T00:00:46+08:00"
+  }
+}

@@ -1,0 +1,111 @@
+import { createHash } from "node:crypto";
+import { existsSync, lstatSync, readFileSync, realpathSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { parseAllDocuments, parseDocument } from "../vendor/yaml.mjs";
+import { validateJsonSchema } from "./json-schema.mjs";
+
+const TEMPLATE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
+const METHODS = new Set(["get", "put", "post", "delete", "options", "head", "patch", "trace"]);
+
+function ensure(condition, message) { if (!condition) throw new TypeError(message); }
+export const openApiDigest = (bytes) => `sha256:${createHash("sha256").update(bytes).digest("hex")}`;
+
+export function resolveOpenApiRef(root, reference) {
+  ensure(typeof reference === "string" && reference.length > 0, "引用不能为空");
+  ensure(!path.isAbsolute(reference) && !reference.includes("\\") && !reference.split("/").includes(".."), `引用必须位于项目内: ${reference}`);
+  const target = path.resolve(root, reference);
+  ensure(target === root || target.startsWith(`${root}${path.sep}`), `引用越出项目根: ${reference}`);
+  ensure(existsSync(target), `引用不可读取: ${reference}`);
+  ensure(!lstatSync(target).isSymbolicLink(), `引用不能是 symlink: ${reference}`);
+  return target;
+}
+
+function parseOne(file, label) {
+  const source = readFileSync(file, "utf8");
+  const documents = parseAllDocuments(source, { uniqueKeys: true, maxAliasCount: 0 });
+  ensure(documents.length === 1, `${label} 必须是单一 YAML document`);
+  ensure(!documents[0].errors.length, `${label} YAML 无效: ${documents[0].errors[0]?.message}`);
+  return documents[0].toJS({ maxAliasCount: 0 });
+}
+
+function pointer(value, fragment, reference) {
+  if (!fragment || fragment === "#") return value;
+  ensure(fragment.startsWith("#/"), `仅支持 JSON Pointer fragment: ${reference}`);
+  return fragment.slice(2).split("/").reduce((current, part) => {
+    const key = decodeURIComponent(part).replaceAll("~1", "/").replaceAll("~0", "~");
+    ensure(current && Object.hasOwn(current, key), `$ref 无法解析: ${reference}`);
+    return current[key];
+  }, value);
+}
+
+function verifyReferences(rootDocument, draftFile) {
+  const apiRoot = realpathSync(path.dirname(draftFile));
+  const cache = new Map([[realpathSync(draftFile), rootDocument]]);
+  const active = new Set();
+  function load(reference, ownerFile) {
+    ensure(!/^[a-z][a-z0-9+.-]*:/i.test(reference) && !path.isAbsolute(reference), `$ref 禁止远程或绝对路径: ${reference}`);
+    const [filePart, fragment = ""] = reference.split("#", 2);
+    const targetFile = filePart ? path.resolve(path.dirname(ownerFile), filePart) : ownerFile;
+    ensure(existsSync(targetFile), `$ref 文件不存在: ${reference}`);
+    const realTarget = realpathSync(targetFile);
+    ensure(realTarget === apiRoot || realTarget.startsWith(`${apiRoot}${path.sep}`), `$ref 越出 feature API 目录: ${reference}`);
+    if (!cache.has(realTarget)) cache.set(realTarget, parseOne(realTarget, `$ref ${reference}`));
+    return { value: pointer(cache.get(realTarget), fragment ? `#${fragment}` : "", reference), file: realTarget };
+  }
+  function walk(value, ownerFile) {
+    if (!value || typeof value !== "object") return;
+    if (typeof value.$ref === "string") {
+      const key = `${ownerFile}|${value.$ref}`;
+      if (active.has(key)) return;
+      active.add(key); const resolved = load(value.$ref, ownerFile); walk(resolved.value, resolved.file); active.delete(key);
+    }
+    for (const child of Object.values(value)) walk(child, ownerFile);
+  }
+  walk(rootDocument, realpathSync(draftFile));
+  return (reference, ownerFile = realpathSync(draftFile)) => load(reference, ownerFile);
+}
+
+function verifyOperations(document, resolveReference) {
+  const operationIds = new Set();
+  for (const [route, pathItem] of Object.entries(document.paths ?? {})) {
+    if (!pathItem || typeof pathItem !== "object") continue;
+    const placeholders = [...route.matchAll(/\{([^}]+)\}/g)].map((match) => match[1]);
+    for (const [method, operation] of Object.entries(pathItem)) {
+      if (!METHODS.has(method) || !operation || typeof operation !== "object") continue;
+      ensure(typeof operation.operationId === "string" && operation.operationId.length > 0, `${method.toUpperCase()} ${route} 缺少 operationId`);
+      ensure(!operationIds.has(operation.operationId), `operationId 重复: ${operation.operationId}`);
+      operationIds.add(operation.operationId);
+      const parameters = [...(pathItem.parameters ?? []), ...(operation.parameters ?? [])].map((item) => typeof item?.$ref === "string" ? resolveReference(item.$ref).value : item);
+      for (const name of placeholders) ensure(parameters.some((item) => item?.in === "path" && item?.name === name && item.required === true), `${method.toUpperCase()} ${route} 缺少 required path parameter: ${name}`);
+    }
+  }
+}
+
+export function validateOpenApiDraftValidationRecord(recordFile, { root = TEMPLATE_ROOT, allowTemplate = false, schemaPath = path.join(TEMPLATE_ROOT, "docs/process/schemas/openapi-draft-validation-record.schema.json") } = {}) {
+  const projectRoot = path.resolve(root);
+  const recordDocument = parseDocument(readFileSync(recordFile, "utf8"), { uniqueKeys: true, maxAliasCount: 0 });
+  ensure(!recordDocument.errors.length, `validation record YAML 无效: ${recordDocument.errors[0]?.message}`);
+  const record = recordDocument.toJS({ maxAliasCount: 0 });
+  validateJsonSchema(record, schemaPath, { cwd: TEMPLATE_ROOT, label: "OpenAPI Draft validation record schema" });
+  if (allowTemplate) { ensure(record.template === true, "--allow-template 只接受模板记录"); return { record, template: true }; }
+  ensure(record.template === false, "正式 validation record 必须设置 template: false");
+  ensure(record.status === "passed", "正式 validation record 必须达到 status: passed");
+  ensure(record.toolchain.exit_code === 0, "Redocly lint 必须以退出码 0 完成");
+  ensure(Object.values(record.checks).every((result) => result === "passed"), "所有结构与 lint checks 必须为 passed");
+  ensure(record.toolchain.command === `pnpm exec redocly lint ${record.draft.ref}`, "lint command 必须精确指向当前 Draft");
+  const draftFile = resolveOpenApiRef(projectRoot, record.draft.ref);
+  const lockfile = resolveOpenApiRef(projectRoot, record.toolchain.lockfile_ref);
+  resolveOpenApiRef(projectRoot, record.toolchain.evidence_ref);
+  const draftBytes = readFileSync(draftFile);
+  ensure(openApiDigest(draftBytes) === record.draft.sha256, `Draft SHA-256 不匹配: record=${record.draft.sha256}, actual=${openApiDigest(draftBytes)}`);
+  const lock = readFileSync(lockfile, "utf8");
+  const version = record.toolchain.version.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const lockedPackage = new RegExp(`['\"]?@redocly/cli@${version}(?:['\":\\s(]|$)`).test(lock)
+    || new RegExp(`['\"]?@redocly/cli['\"]?:[\\s\\S]{0,240}?\\n\\s+version:\\s*['\"]?${version}(?:\\(|['\"\\s]|$)`).test(lock);
+  ensure(lockedPackage, "pnpm lockfile 未绑定记录中的 @redocly/cli 版本");
+  const draft = parseOne(draftFile, "OpenAPI Draft");
+  ensure(draft?.openapi === "3.1.0" && record.draft.oas_version === draft.openapi, "OpenAPI Draft 必须为 OAS 3.1.0");
+  verifyOperations(draft, verifyReferences(draft, draftFile));
+  return { record, draft, draftFile, draftDigest: openApiDigest(draftBytes) };
+}

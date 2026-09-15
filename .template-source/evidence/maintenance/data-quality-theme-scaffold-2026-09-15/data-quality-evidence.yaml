@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "profile": "technical-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "Data Quality主题与前端骨架标准化",
+    "audience": "YSS模板维护者",
+    "time_horizon": "2026-09-15 本地源与精确锁版本",
+    "research_questions": [
+      "全局默认主题与局部页面风格分别是什么？",
+      "哪些机械工程资产可复用，哪些源缺陷必须修复？"
+    ],
+    "inclusion_criteria": [
+      "用户指定项目源码/锁文件",
+      "官方AntD主题文档及npm元数据",
+      "临时骨架实际命令/浏览器证据"
+    ],
+    "exclusion_criteria": [
+      "源业务功能和认证凭证",
+      "本次产品批准或生产就绪声明"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "maintaining-skills / yss-design-system / yss-frontend-scaffold-generator",
+    "decision_ref": null
+  },
+  "search_log": [
+    {
+      "id": "search-001",
+      "channel": "local-source",
+      "query_or_corpus": "source-analysis.md的40份源文件及Git HEAD/dirty核验",
+      "searched_at": "2026-09-15",
+      "result": "results-found"
+    },
+    {
+      "id": "search-002",
+      "channel": "official-web",
+      "query_or_corpus": "https://ant.design/docs/react/customize-theme-cn/ 6.6.4",
+      "searched_at": "2026-09-15",
+      "result": "results-found"
+    },
+    {
+      "id": "search-003",
+      "channel": "official-web",
+      "query_or_corpus": "https://antdv.com/docs/vue/customize-theme-cn/",
+      "searched_at": "2026-09-15",
+      "result": "access-failed"
+    },
+    {
+      "id": "search-004",
+      "channel": "npm-registry",
+      "query_or_corpus": "@typescript-eslint/typescript-estree@8.70.0 peerDependencies +实际pnpm依赖解析",
+      "searched_at": "2026-09-15",
+      "result": "results-found"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-001",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "source-analysis.md",
+      "locator": "S02/S12及store/theme.ts摘要",
+      "stance": "support",
+      "observed_at": "2026-09-15",
+      "evidence_date": "2026-09-15",
+      "observation": "Vue3/ant-design-vue4.2.6/YSS UI；默认蓝3371ff/14px/32px，dark=false compact=false",
+      "limitations": [
+        "完整路径、摘要及工作树差异见source-analysis.md；维护结论不替代目标项目批准"
+      ]
+    },
+    {
+      "id": "evidence-002",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "source-analysis.md",
+      "locator": "S01/S03/S05/S09",
+      "stance": "support",
+      "observed_at": "2026-09-15",
+      "evidence_date": "2026-09-15",
+      "observation": "packages工作区、Qiankun/standalone、带dispose路由桥及本地OpenAPI代码生成模式可复用",
+      "limitations": [
+        "完整路径、摘要及工作树差异见source-analysis.md；维护结论不替代目标项目批准"
+      ]
+    },
+    {
+      "id": "evidence-003",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "source-analysis.md",
+      "locator": "具体冲突和反证/最小白名单",
+      "stance": "counter",
+      "observed_at": "2026-09-15",
+      "evidence_date": "2026-09-15",
+      "observation": "锁specifier不一致、Node范围过宽、TS6不在旧parser范围、缺JSP配置、业务/认证/全局样式不能原样纳入",
+      "limitations": [
+        "完整路径、摘要及工作树差异见source-analysis.md；维护结论不替代目标项目批准"
+      ]
+    },
+    {
+      "id": "evidence-004",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "source-code",
+      "source_ref": "https://ant.design/docs/react/customize-theme-cn/",
+      "locator": "预设算法/静态消费/局部主题",
+      "stance": "support",
+      "observed_at": "2026-09-15",
+      "evidence_date": "2026-09-15",
+      "observation": "AntD6支持default/dark/compact与getDesignToken；并不证明Vue4导出相同API",
+      "limitations": [
+        "完整路径、摘要及工作树差异见source-analysis.md；维护结论不替代目标项目批准"
+      ]
+    },
+    {
+      "id": "evidence-005",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "source-analysis.md",
+      "locator": "主题/页面/客户端主题差异",
+      "stance": "counter",
+      "observed_at": "2026-09-15",
+      "evidence_date": "2026-09-15",
+      "observation": "局部玻璃样式及客户JSP主题不能代表全局默认，品牌底色白字对比需保留已声明YSS适配",
+      "limitations": [
+        "完整路径、摘要及工作树差异见source-analysis.md；维护结论不替代目标项目批准"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-001",
+      "claim_kind": "technical-fact",
+      "statement": "默认视觉采用Data Quality全局light主题，保持AntD6语义；Vue实际依赖仍为ant-design-vue4",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-001",
+        "evidence-004"
+      ],
+      "counter_signal_refs": [
+        "evidence-005"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-002",
+      "claim_kind": "technical-fact",
+      "statement": "采用白名单重建的bundled骨架；不复制整个Data Quality工程，JSP暂不支持",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-002"
+      ],
+      "counter_signal_refs": [
+        "evidence-003"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [
+    "AntDV官方页面读取失败，以精确已安装类型/源码和实际Vue构建弥补；不将React getDesignToken API用于Vue4",
+    "企业registry曾ECONNRESET，最终使用缓存与独立公共registry完成安装；不宣称无缓存新机器可访问私网",
+    "Formily传递vue-frag旧Vue2 peer警告保留；不掩盖依赖元数据，业务Formily能力另按切片验证"
+  ],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-001",
+      "claim-002"
+    ],
+    "notes": [
+      "以上为来源与抽取决策审计；实际构建/浏览器验证结果单列，不把研究代替验证"
+    ]
+  }
+}

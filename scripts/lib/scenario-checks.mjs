@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { lifecycleTransitionContract, validateImplementationEntry, validateNextRoute } from "./lifecycle-transition.mjs";
+import { decisionDigest } from "./user-decision.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const read = (relative) => readFileSync(path.join(root, relative), "utf8");
@@ -147,12 +148,13 @@ function validateWorkflowExecutionResult(payload, contract, workUnitRoutes, opti
       },
     };
     const semantic = validateImplementationEntry(implementationState, {
+      root: options.root ?? root,
       // The scenario uses one explicit virtual fixture; arbitrary local refs
       // must still pass the real readability check and cannot use a fallback.
-      exists: (ref) => exists(ref) || ref === "docs/.scratch/demo/issues/01-valid-slice.md" || ref === virtualTicketDecompositionRef,
-      read: (ref) => ref === virtualTicketDecompositionRef ? virtualTicketDecomposition : readFileSync(path.resolve(root, ref), "utf8"),
+      exists: (ref) => existsSync(ref) || existsSync(path.resolve(options.root ?? root, ref)) || exists(ref) || ref === "docs/.scratch/demo/issues/01-valid-slice.md" || ref === virtualTicketDecompositionRef,
+      read: (ref) => ref === virtualTicketDecompositionRef ? virtualTicketDecomposition : readFileSync(path.resolve(options.root ?? root, ref), "utf8"),
     });
-    ensure(semantic.result === "allowed", `Workflow Execution Result implementation Ticket 语义非法: ${semantic.blocking_signals.join(", ")}`);
+    ensure(semantic.result === "allowed", `Workflow Execution Result implementation Ticket 语义非法: ${semantic.blocking_signals.join(", ")} / ${semantic.missing_requirements.join("; ")}`);
   }
   if (payload.result !== "completed") return;
   for (const field of contract.completed_requires_empty) ensure(Array.isArray(payload[field]) && payload[field].length === 0, `completed 的 ${field} 必须为空`);
@@ -210,7 +212,8 @@ const profiles = {
       "docs/api/templates/openapi-draft-review-checklist.md",
       "docs/api/templates/openapi-draft-validation-record-template.yaml",
       "docs/process/schemas/openapi-draft-validation-record.schema.json",
-      "scripts/verify-openapi-draft-validation-record"
+      "scripts/verify-openapi-draft-validation-record",
+      "scripts/lib/openapi-draft-validation.mjs"
     ],
     markers: [
       ["docs/templates/openapi-spec-template.yaml", "openapi: 3.1.0"],
@@ -220,7 +223,7 @@ const profiles = {
       ["docs/api/templates/openapi-draft-review-checklist.md", "P0 字段级追踪矩阵"],
       ["docs/api/templates/openapi-draft-review-checklist.md", "Create / Update requiredness"],
       ["docs/process/schemas/openapi-draft-validation-record.schema.json", "openapi-draft-validation"],
-      ["scripts/verify-openapi-draft-validation-record", "Draft SHA-256 不匹配"]
+      ["scripts/lib/openapi-draft-validation.mjs", "Draft SHA-256 不匹配"]
     ]
   },
   openapiJson: {
@@ -264,6 +267,8 @@ export function runScenario(name) {
     ensure(contract.ticket_formalization?.implementation_predecessor === "work-unit.ticket-decomposition" && contract.ticket_formalization?.vertical_slice_ticket?.parent_ticket_ref_forbidden === true, "Ticket 正式化实现前置或父 Ticket 禁止规则缺失");
     ensure(contract.transition_graph?.implementation_requires_predecessor === "work-unit.ticket-decomposition", "生命周期转换图未声明实现前置工作单元");
     ensure(JSON.stringify(contract.transition_graph?.forbidden_shortcuts) === JSON.stringify([
+      { from: "work-unit.spec-synthesis", to: "work-unit.implementation-repository-preparation" },
+      { from: "work-unit.prototype-design", to: "work-unit.implementation-repository-preparation" },
       { from: "work-unit.spec-synthesis", to: "work-unit.slice-implementation" },
       { from: "work-unit.prototype-design", to: "work-unit.slice-implementation" },
       { from: "work-unit.technical-analysis", to: "work-unit.slice-implementation" },
@@ -299,7 +304,7 @@ export function runScenario(name) {
       changed_artifacts: [],
       new_impacts: [],
       stale_candidates: [],
-      next_route: "work-unit.implementation-repository-preparation",
+      next_route: "work-unit.technical-analysis",
       blocking_signals: []
     };
     validateWorkflowExecutionResult(validResult, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root });
@@ -311,6 +316,101 @@ export function runScenario(name) {
       vertical_slice_ticket_ref: "docs/.scratch/demo/issues/01-valid-slice.md",
     };
     validateWorkflowExecutionResult(validTicketResult, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root });
+    const technicalDesignRef = path.join(planFixture.root, "technical-design.json");
+    const dataArchitectureDecisionRef = path.join(planFixture.root, "data-architecture-decision.json");
+    const apiImpactRef = "api-impact.json";
+    const apiEvidenceRef = "api-decision-evidence.md";
+    const apiContractDecisionRef = "api-contract-decision.json";
+    const apiImpactFile = path.join(planFixture.root, apiImpactRef);
+    const apiContractDecisionFile = path.join(planFixture.root, apiContractDecisionRef);
+    const engineeringPackageRef = path.join(planFixture.root, "engineering-contract-package.json");
+    const engineeringApprovalRef = path.join(planFixture.root, "engineering-contract-approval.json");
+    planFixture.write("technical-design.json", {
+      schema_version: 2,
+      kind: "technical-design-contract",
+      technical_design_id: "technical-design.demo",
+      version: "v1",
+      status: "approved",
+      current_version: true,
+    });
+    planFixture.write("data-architecture-decision.json", {
+      schema_version: 1,
+      kind: "data-architecture-decision",
+      decision_id: "data-architecture.demo",
+      decision_version: "v1",
+      status: "approved",
+      current_version: true,
+      impact: "not-applicable",
+      reason: "测试切片不改变数据模型、存储、一致性或迁移策略",
+    });
+    planFixture.write("api-impact.json", { schema_version: 1, backend: true, api: false });
+    planFixture.write("api-decision-evidence.md", "无 API 影响的测试证据。\n");
+    planFixture.write("api-contract-decision.json", {
+      schema_version: 1,
+      kind: "api-contract-decision",
+      decision_id: "api-contract.demo",
+      decision_version: "v1",
+      status: "approved",
+      current_version: true,
+      impact: "not-applicable",
+      assessment_ref: apiImpactRef,
+      assessment_digest: decisionDigest(readFileSync(apiImpactFile)),
+      evidence_refs: [apiEvidenceRef],
+      reason: "测试切片不新增或修改 API、消息契约或集成接口",
+    });
+    planFixture.write("engineering-contract-package.json", {
+      schema_version: 1,
+      kind: "engineering-contract-package",
+      project_id: "backend",
+      technical_design: { ref: technicalDesignRef, version: "v1", digest: decisionDigest(readFileSync(technicalDesignRef)) },
+      data_architecture_decision: { ref: dataArchitectureDecisionRef, version: "v1", digest: decisionDigest(readFileSync(dataArchitectureDecisionRef)), impact: "not-applicable" },
+      api_contract_decision: { ref: apiContractDecisionRef, version: "v1", digest: decisionDigest(readFileSync(apiContractDecisionFile)), impact: "not-applicable" },
+    });
+    const engineeringDecision = buildDecisionFixture(path.join(planFixture.root, "engineering-contract-decision"), { boundary: "gate.engineering-contract-approved", scope: ["backend"], subjectRef: engineeringPackageRef });
+    planFixture.write("engineering-contract-approval.json", {
+      schema_version: 1,
+      gate_id: "gate.engineering-contract-approved",
+      decision: "approved",
+      actor_kind: "digital-human",
+      role_id: "role.product-manager",
+      runtime_id: "runtime.generic",
+      principal_ref: "synthetic-product-reviewer",
+      subject_ref: engineeringPackageRef,
+      approval_scope: ["backend"],
+      drafter_role_id: "role.backend-engineer",
+      user_decision_ref: engineeringDecision.ref,
+      artifact_bindings: [
+        { id: "technical-design.demo", version: "v1", digest: decisionDigest(readFileSync(technicalDesignRef)) },
+        { id: "data-architecture.demo", version: "v1", digest: decisionDigest(readFileSync(dataArchitectureDecisionRef)) },
+        { id: "api-contract.demo", version: "v1", digest: decisionDigest(readFileSync(apiContractDecisionFile)) },
+      ],
+      evidence_refs: [apiEvidenceRef],
+    });
+    const validRepositoryPreparation = {
+      schema_version: 2,
+      kind: "implementation-repository-preparation-result",
+      result: "completed",
+      current_version: true,
+      evidence_refs: ["docs/process/lifecycle-registry.yaml"],
+      projects: [
+        {
+          project_id: "backend",
+          delivery_role: "backend",
+          status: "existing-and-onboarded",
+          repository_ref: "git://backend",
+          project_root: "/workspace/backend",
+          repository_scope: "external-repository",
+          design_prerequisites: {
+            technical_design: { ref: technicalDesignRef, version: "v1", digest: decisionDigest(readFileSync(technicalDesignRef)) },
+            data_architecture_decision: { ref: dataArchitectureDecisionRef, version: "v1", digest: decisionDigest(readFileSync(dataArchitectureDecisionRef)), impact: "not-applicable" },
+            api_contract_decision: { ref: apiContractDecisionRef, version: "v1", digest: decisionDigest(readFileSync(apiContractDecisionFile)), impact: "not-applicable" },
+            engineering_contract_approval_ref: engineeringApprovalRef,
+          },
+          onboarding_result: { status: "completed", ref: "docs/process/lifecycle-registry.yaml" },
+        },
+        { project_id: "frontend-na", delivery_role: "frontend", status: "not-applicable", reason: "no frontend impact" },
+      ],
+    };
     const validImplementationResult = {
       ...validResult,
       ...implementationDecision.state,
@@ -329,13 +429,7 @@ export function runScenario(name) {
       slice_contract_persisted: true,
       slice_contract_current_version: true,
       delivery_impacts: { backend: true, frontend: false },
-      implementation_repository_preparation: {
-        result: "completed", current_version: true, evidence_refs: ["docs/process/lifecycle-registry.yaml"],
-        projects: [
-          { project_id: "backend", delivery_role: "backend", status: "existing-and-onboarded", repository_ref: "git://backend", project_root: "/workspace/backend", repository_scope: "external-repository", onboarding_result: { status: "completed", ref: "docs/process/lifecycle-registry.yaml" } },
-          { project_id: "frontend-na", delivery_role: "frontend", status: "not-applicable", reason: "no frontend impact" },
-        ],
-      },
+      implementation_repository_preparation: validRepositoryPreparation,
     };
     validateWorkflowExecutionResult(validImplementationResult, data.workflow_execution_result, data.work_unit_routes, { root: planFixture.root });
     for (const mutate of [

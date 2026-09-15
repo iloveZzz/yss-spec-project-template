@@ -1,0 +1,54 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "封闭战略交接到后端生成的生命周期旁路，并将 Technical Design、Data Architecture Decision 与 API Contract Decision 纳入同一原子工程门禁；强化后端脚手架合同、生成器零写入前置校验、历史 v3 恢复审计并同步后端模板与 CLI WORKTREE 快照",
+  "triggers": [
+    "lifecycle-gate",
+    "generation-semantics",
+    "cross-repo-contract",
+    "core-validator"
+  ],
+  "changed_assets": [
+    "docs/process/lifecycle-registry.yaml",
+    "docs/process/schemas/project-scaffold-contract.schema.json",
+    "docs/process/schemas/data-architecture-decision.schema.json",
+    "docs/process/schemas/api-contract-decision.schema.json",
+    "docs/process/schemas/implementation-repository-preparation-result.schema.json",
+    "scripts/lib/backend-scaffold-prerequisites.mjs",
+    "scripts/lib/api-contract-decision.mjs",
+    "scripts/lib/openapi-draft-validation.mjs",
+    "scripts/lib/lifecycle-transition.mjs",
+    "scripts/lib/legacy-backend-scaffold-audit.mjs",
+    ".agents/skills/yss-product-lifecycle",
+    ".agents/skills/yss-ddd-scaffold-generator",
+    ".agents/skills/yss-layered-mvc-scaffold-generator",
+    ".agents/skills/yss-implementation-contract-compiler",
+    ".agents/skills/yss-openapi-governance",
+    "submodules/yss-harness-backend-agent",
+    "submodules/create-yss-harness-backend"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "self-check",
+      "command": "git diff --check && scripts/sync-profile-skills --check --profile backend && scripts/sync-skills --check && scripts/update-skill-lock --check && scripts/generate-lifecycle-artifacts --check",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "scripts/verify-lifecycle-transition-scenarios && scripts/verify-scaffold-generator-scenarios && scripts/verify-openapi-yaml-first-scenarios && node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs && node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs && node --test scripts/lib/api-contract-decision.test.mjs scripts/lib/legacy-backend-scaffold-audit.test.mjs",
+      "result": "pass"
+    },
+    {
+      "kind": "pressure-scenario",
+      "command": "backend scripts/verify-template-fast (auto release); create-yss-harness-backend pnpm verify-bundle and pnpm test; generated WORKTREE instance scripts/verify-template",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "根模板 fast、candidate、release 全量验证仅被既有且并行修改中的 yss-harness-frontend-agent yss-prototype-stage 未提交工作导致的 profile adaptation_conflict 阻断；本次范围不覆盖或改写该前端工作树",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

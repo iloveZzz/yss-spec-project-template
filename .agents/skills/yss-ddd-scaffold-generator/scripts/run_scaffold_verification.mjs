@@ -41,20 +41,22 @@ function parseArgs(argv) { const result = {}; for (let index = 0; index < argv.l
 function validateManifest(manifest) {
   if (![2, 3, 4].includes(manifest.schema_version)) throw new Error(`unsupported: scaffold Manifest schema_version=${manifest.schema_version}；只读兼容 v2，并验证当前 v3/v4`);
   const required = ["schema_version", "contract_id", "contract_version", "scaffold_request_id", "contract_digest", "profiles", "ownership", "readiness", "generation_policy", "completion_level", "approval_ref", "approver", "lifecycle_approval_ref", "compiler_draft_ref", "persisted_ref", "contract_file_ref", "current_version", "allowed_write_paths", "expected_evidence_files", "verification_commands", "generation_mode"];
-  if (manifest.schema_version === 3) required.push("architecture_family", "generator_skill", "decision_id", "decision_digest", "module_profile");
+  if (manifest.schema_version >= 3) required.push("architecture_family", "generator_skill", "decision_id", "decision_digest", "module_profile");
+  if (manifest.schema_version === 4) required.push("design_prerequisites");
   const missing = required.filter((field) => manifest[field] === undefined || manifest[field] === null || manifest[field] === "");
   if (manifest.generation_mode !== "controlled-generation" || missing.length) throw new Error(`脚手架生成元数据清单不完整或不是 controlled-generation: ${missing.join(", ")}`);
-  if (manifest.schema_version === 3) {
+  if (manifest.schema_version >= 3) {
     if (manifest.kind || manifest.architecture_identity) {
       assertLocalDatabaseProfile(manifest.profiles);
       assertArchitectureAgreement(manifest.architecture_identity, { manifest_fields: scaffoldArchitectureIdentity(manifest, manifest.contract_digest) });
     }
     const supportedArchitecture = manifest.architecture_family === "domain-driven" && manifest.generator_skill === "yss-ddd-scaffold-generator" && manifest.profiles.architecture === "target-domain-model"
       || manifest.architecture_family === "layered-mvc" && ["yss-layered-mvc-scaffold-generator", "yss-mvc-data-analysis-project-initializer"].includes(manifest.generator_skill) && manifest.profiles.architecture === "layered-mvc";
-    if (!supportedArchitecture || manifest.module_profile?.resolution_version !== 1 || !Array.isArray(manifest.module_profile?.resolved_modules)) throw new Error("Manifest v3 的架构族、生成器、Profile 或模块闭包不一致");
+    if (!supportedArchitecture || manifest.module_profile?.resolution_version !== 1 || !Array.isArray(manifest.module_profile?.resolved_modules)) throw new Error("Manifest v3/v4 的架构族、生成器、Profile 或模块闭包不一致");
+    if (manifest.schema_version === 4 && (!manifest.design_prerequisites?.technical_design || !manifest.design_prerequisites?.data_architecture_decision || !manifest.design_prerequisites?.engineering_contract_approval_ref)) throw new Error("Manifest v4 缺少设计门禁绑定");
   } else if (manifest.profiles.architecture !== "target-domain-model") throw new Error("历史 Manifest v2 只读兼容仅支持 target-domain-model");
   if (manifest.generation_policy.mode !== "initialize-only" || manifest.generation_policy.existing_target !== "unsupported" || manifest.generation_policy.old_project_migration !== "unsupported" || manifest.generation_policy.template_upgrade !== "unsupported") throw new Error("Manifest 必须声明严格 initialize-only；已有目标、旧项目迁移和模板升级均须为 unsupported");
-  if (manifest.current_version !== manifest.contract_version) throw new Error("脚手架生成元数据清单不是当前合同版本");
+  if (manifest.schema_version === 4 ? manifest.current_version !== true : manifest.current_version !== manifest.contract_version) throw new Error("脚手架生成元数据清单不是当前合同版本");
   if (JSON.stringify(manifest.verification_commands) !== JSON.stringify(COMMANDS)) throw new Error("脚手架生成元数据清单验证命令不符合固定合同");
 }
 export async function run(projectRoot, evidenceDir, environment = process.env, { timeoutMs = 0, signal } = {}) {

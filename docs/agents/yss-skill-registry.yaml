@@ -144,8 +144,6 @@ skill_dependencies:
     - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
     - { skill: prototype-review, type: review-only }
     - { skill: yss-design-system, type: coordination-only }
-    - { skill: yss-antdv-next-design, type: context-conditional, when: h2-vue-antdv-next-default }
-    - { skill: yss-antd-design, type: context-conditional, when: h2-react-antd-explicit-compatibility }
   yss-ddd-scaffold-generator:
     - { skill: yss-backend-scaffold-parent, type: context-required }
     - { skill: alibaba-java-code-style, type: context-required }
@@ -195,10 +193,15 @@ skill_dependencies:
   yss-exception:
     - { skill: yss-dto, type: context-required }
   yss-ui-business-page-generation:
-    - { skill: yss-components, type: context-conditional, when: components }
+    - { skill: component-selection-imports, type: context-conditional, when: components }
     - { skill: yss-hook, type: context-conditional, when: hooks }
     - { skill: yss-formily, type: context-conditional, when: form }
     - { skill: yss-api-integration, type: context-conditional, when: api }
+  yss-formily:
+    - { skill: formily-foundation, type: context-required }
+    - { skill: formily-linkage-effects, type: context-conditional, when: formily-linkage }
+    - { skill: formily-mode-slot-detail, type: context-conditional, when: formily-mode-detail }
+    - { skill: formily-step-flow, type: context-conditional, when: formily-step-flow }
   yss-api-integration:
     - { skill: yss-openapi-governance, type: context-conditional, when: regeneration }
 invocation_contract:
@@ -237,16 +240,6 @@ invocation_contract:
       trigger_conditions: [impact:prototype]
       exclusion_conditions: [no-product-design-impact]
       primary_output: artifact.prototype-deliverable
-    yss-antd-design:
-      invocation_mode: model
-      trigger_conditions: [prototype-profile:H2, component-basis:react-antd]
-      exclusion_conditions: [prototype-profile:H1, component-basis:not-antd]
-      primary_output: versioned-antd-facts
-    yss-antdv-next-design:
-      invocation_mode: model
-      trigger_conditions: [prototype-profile:H2, component-basis:vue-antdv-next]
-      exclusion_conditions: [prototype-profile:H1, component-basis:not-antdv-next, production-frontend-implementation]
-      primary_output: versioned-antdv-next-facts
 agent_runtime_roots:
   codex: .codex/skills
   cursor: .cursor/skills
@@ -451,18 +444,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [writing]
-  - id: yss-antd-design
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [prototype]
-  - id: yss-antdv-next-design
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [prototype]
   - id: yss-api-integration
     layer: specialist
     maturity: supported
@@ -487,12 +468,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
-  - id: yss-components
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
   - id: yss-ddd-scaffold-generator
     layer: specialist
     maturity: supported
@@ -583,15 +558,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
-  - id: yss-mvc-scaffold-generator
-    layer: specialist
-    maturity: deprecated
-    replaced_by: yss-mvc-data-analysis-project-initializer
-    migration_deadline: explicit-lifecycle-reapproval-before-next-generation
-    cleanup_status: read-only-entrypoint-and-historical-sources-retained
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [backend]
   - id: yss-mvc-data-analysis-project-initializer
     layer: specialist
     maturity: draft

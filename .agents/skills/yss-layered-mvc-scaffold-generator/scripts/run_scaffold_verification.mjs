@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** 复用统一 Manifest v3 / Maven Wrapper 验证协议。 */
+/** 复用统一 Manifest v4 / Maven Wrapper 验证协议，并只读兼容历史 v2/v3。 */
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";

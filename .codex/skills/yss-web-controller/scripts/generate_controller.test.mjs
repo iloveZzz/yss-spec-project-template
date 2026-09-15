@@ -20,7 +20,7 @@ for (const [profile, module, placement, modules, generator] of [
   const identity = { architecture_family: "layered-mvc", architecture_profile: profile, generator_skill: generator, requested_capabilities: [], resolved_modules: modules, contract_digest: "a".repeat(64), verification_database: "h2", production_database: "not-bound" };
   const project = path.join(data.root, "demo-service");
   const manifestFile = path.join(project, ".yss/scaffold-generation.json");
-  const manifest = { schema_version: 3, project_name: "demo-service", base_package: "com.yss.demo", completion_level: "empty-scaffold-verified", architecture_identity: identity, profiles: { platform: "spring-boot-2.7-jdk8", validation_namespace: "javax" } };
+  const manifest = { schema_version: 4, project_name: "demo-service", base_package: "com.yss.demo", completion_level: "empty-scaffold-verified", architecture_identity: identity, profiles: { platform: "spring-boot-2.7-jdk8", validation_namespace: "javax" } };
   await mkdir(path.dirname(manifestFile), { recursive: true });
   await writeFile(manifestFile, JSON.stringify(manifest));
   const contract = webContract(project, { architecture_profile: profile, architecture_identity: identity, dto_placement: placement, integration_mode: "scaffold-v2", scaffold_manifest_ref: manifestFile, platform_profile: "spring-boot-2.7-jdk8", validation_namespace: "javax", application_service_package: `com.yss.demo.${module}.service` });

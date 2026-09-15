@@ -1,8 +1,13 @@
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { assertWorkUnitUserDecision, assertImplementationDecision } from "./user-decision.mjs";
 import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
 import { validatePlanSpecEntry } from "./plan-spec-entry.mjs";
+import path from "node:path";
+import { validateApiContractDecision } from "./api-contract-decision.mjs";
+import { loadApprovalRecord, validateApprovalRecord } from "./approval-record.mjs";
+import { ROOT } from "./lifecycle-registry.mjs";
 
 const IMPLEMENTATION_WORK_UNIT = "work-unit.slice-implementation";
 const TICKET_DECOMPOSITION_WORK_UNIT = "work-unit.ticket-decomposition";
@@ -28,8 +33,8 @@ const NEXT_ROUTES = deepFreeze({
   "work-unit.plan-requirements": ["work-unit.domain-strategy-design", "work-unit.stage-decision", "work-unit.spec-synthesis"],
   "work-unit.domain-strategy-design": ["work-unit.stage-decision", "work-unit.spec-synthesis"],
   "work-unit.stage-decision": ["work-unit.spec-synthesis"],
-  "work-unit.spec-synthesis": ["work-unit.prototype-design", "work-unit.technical-analysis", REPOSITORY_PREPARATION_WORK_UNIT],
-  "work-unit.prototype-design": ["work-unit.technical-analysis", REPOSITORY_PREPARATION_WORK_UNIT],
+  "work-unit.spec-synthesis": ["work-unit.prototype-design", "work-unit.technical-analysis"],
+  "work-unit.prototype-design": ["work-unit.technical-analysis"],
   "work-unit.technical-analysis": [REPOSITORY_PREPARATION_WORK_UNIT],
   [REPOSITORY_PREPARATION_WORK_UNIT]: [TICKET_DECOMPOSITION_WORK_UNIT],
   [TICKET_DECOMPOSITION_WORK_UNIT]: [IMPLEMENTATION_WORK_UNIT],
@@ -68,6 +73,10 @@ const BLOCKING_SIGNALS = Object.freeze({
   scaffoldVerificationFailed: "scaffold-verification-failed",
   frontendTemplateUnavailable: "frontend-template-unavailable",
   implementationRepositoriesStale: "implementation-repositories-stale",
+  technicalAnalysisRequired: "technical-analysis-required",
+  backendDesignPrerequisitesMissing: "backend-design-prerequisites-missing",
+  legacyScaffoldReconciliationRequired: "legacy-scaffold-reconciliation-required",
+  prematureImplementationDetected: "premature-implementation-detected",
 });
 
 const allowedResult = (evidenceRefs = []) => ({
@@ -106,6 +115,118 @@ function readDecompositionResult(ref, read) {
   }
 }
 
+function artifactBindingReady(binding, exists) {
+  return hasText(binding?.ref) && /^v[1-9][0-9]*$/.test(binding?.version ?? "") && /^sha256:[a-f0-9]{64}$/.test(binding?.digest ?? "") && isReadable(binding.ref, exists);
+}
+
+function approvalHasBinding(approval, expected) {
+  return Array.isArray(approval?.artifact_bindings) && approval.artifact_bindings.some((binding) =>
+    binding?.id === expected.id && binding.version === expected.version && binding.digest === expected.digest);
+}
+
+function loadBoundArtifact(root, binding, idField, versionField) {
+  const file = path.isAbsolute(binding.ref) ? binding.ref : path.resolve(root, binding.ref);
+  const bytes = readFileSync(file);
+  if (`sha256:${createHash("sha256").update(bytes).digest("hex")}` !== binding.digest) throw new TypeError(`${binding.ref} 原始字节摘要漂移`);
+  const document = parseDocument(bytes.toString("utf8"), { maxAliasCount: 0, uniqueKeys: true });
+  if (document.errors.length) throw new TypeError(`${binding.ref} 无法解析`);
+  const value = document.toJS({ maxAliasCount: 0 });
+  if (!value || typeof value !== "object" || value.status !== "approved" || value[versionField] !== binding.version || !hasText(value[idField])) throw new TypeError(`${binding.ref} 不是当前批准资产`);
+  return { value, expected: { id: value[idField], version: value[versionField], digest: binding.digest } };
+}
+
+function samePackageBinding(actual, expected, includeImpact = false) {
+  return actual?.ref === expected.ref && actual.version === expected.version && actual.digest === expected.digest
+    && (!includeImpact || actual.impact === expected.impact);
+}
+
+function approvalPackageReady(approval, prerequisites, technical, data, api, root, projectId) {
+  const file = path.isAbsolute(approval.subject_ref) ? approval.subject_ref : path.resolve(root, approval.subject_ref);
+  const document = parseDocument(readFileSync(file, "utf8"), { maxAliasCount: 0, uniqueKeys: true });
+  if (document.errors.length) return false;
+  const value = document.toJS({ maxAliasCount: 0 });
+  if (value?.schema_version !== 1 || value?.kind !== "engineering-contract-package" || value?.project_id !== projectId) return false;
+  if (!samePackageBinding(value.technical_design, { ...prerequisites.technical_design, version: technical.value.version })) return false;
+  if (!samePackageBinding(value.data_architecture_decision, { ...prerequisites.data_architecture_decision, version: data.value.decision_version, impact: data.value.impact }, true)) return false;
+  if (!samePackageBinding(value.api_contract_decision, { ...prerequisites.api_contract_decision, version: api.decision.decision_version, impact: api.decision.impact }, true)) return false;
+  if (api.decision.impact === "required") return samePackageBinding(value.frozen_openapi, api.decision.openapi) && value.frozen_openapi.id === api.decision.openapi.id;
+  return !Object.hasOwn(value, "frozen_openapi");
+}
+
+function backendDesignPrerequisitesReady(prerequisites, exists, root, projectId) {
+  const structurallyReady = artifactBindingReady(prerequisites?.technical_design, exists)
+    && artifactBindingReady(prerequisites?.data_architecture_decision, exists)
+    && ["required", "not-applicable"].includes(prerequisites?.data_architecture_decision?.impact)
+    && artifactBindingReady(prerequisites?.api_contract_decision, exists)
+    && ["required", "not-applicable"].includes(prerequisites?.api_contract_decision?.impact)
+    && isReadable(prerequisites?.engineering_contract_approval_ref, exists);
+  if (!structurallyReady) return false;
+  try {
+    const technical = loadBoundArtifact(root, prerequisites.technical_design, "technical_design_id", "version");
+    const data = loadBoundArtifact(root, prerequisites.data_architecture_decision, "decision_id", "decision_version");
+    const api = validateApiContractDecision(prerequisites.api_contract_decision, { root });
+    const approvalFile = path.isAbsolute(prerequisites.engineering_contract_approval_ref)
+      ? prerequisites.engineering_contract_approval_ref
+      : path.resolve(root, prerequisites.engineering_contract_approval_ref);
+    const approval = loadApprovalRecord(approvalFile);
+    validateApprovalRecord(approval, { requireApproved: true, root });
+    if (approval.gate_id !== "gate.engineering-contract-approved" || !approval.approval_scope?.includes(projectId)) return false;
+    if (!approvalHasBinding(approval, technical.expected) || !approvalHasBinding(approval, data.expected)) return false;
+    if (!approvalHasBinding(approval, { id: api.decision.decision_id, version: api.decision.decision_version, digest: prerequisites.api_contract_decision.digest })) return false;
+    if (api.decision.impact === "required" && !approvalHasBinding(approval, api.decision.openapi)) return false;
+    return approvalPackageReady(approval, prerequisites, technical, data, api, root, projectId);
+  } catch {
+    return false;
+  }
+}
+
+function sameBackendDesignPrerequisites(expected, actual) {
+  return ["technical_design", "data_architecture_decision", "api_contract_decision"].every((key) =>
+    expected?.[key]?.ref === actual?.[key]?.ref
+    && expected?.[key]?.version === actual?.[key]?.version
+    && expected?.[key]?.digest === actual?.[key]?.digest)
+    && expected?.engineering_contract_approval_ref === actual?.engineering_contract_approval_ref;
+}
+
+function validateTechnicalAnalysisCompletion(state, { exists = existsSync, read = (ref) => readFileSync(ref, "utf8"), root = ROOT } = {}) {
+  const result = state?.technical_analysis_result;
+  const resultRef = state?.technical_analysis_result_ref;
+  const signals = [];
+  const missing = [];
+  const persisted = readDecompositionResult(resultRef, read);
+  if (!result || result.result_schema !== "workflow-execution-result-v1" || result.work_unit !== "work-unit.technical-analysis" || result.result !== "completed" || result.current_version !== true) {
+    signals.push(BLOCKING_SIGNALS.technicalAnalysisRequired);
+    missing.push("completed current work-unit.technical-analysis result");
+  }
+  if (!isReadable(resultRef, exists) || !persisted || persisted.result_schema !== "workflow-execution-result-v1" || persisted.work_unit !== "work-unit.technical-analysis" || persisted.result !== "completed" || persisted.current_version !== true) {
+    signals.push(BLOCKING_SIGNALS.technicalAnalysisRequired);
+    missing.push("readable persisted technical_analysis_result_ref");
+  }
+  if (result?.context_reconciliation?.status !== "reconciled" || !isReadable(result?.context_reconciliation?.ref, exists)) {
+    signals.push(BLOCKING_SIGNALS.technicalAnalysisRequired);
+    missing.push("reconciled readable technical analysis context");
+  }
+  const evidenceRefs = Array.isArray(result?.evidence_refs) ? result.evidence_refs : [];
+  if (!evidenceRefs.includes(resultRef) || evidenceRefs.some((ref) => !isReadable(ref, exists))) {
+    signals.push(BLOCKING_SIGNALS.technicalAnalysisRequired);
+    missing.push("readable technical analysis evidence including its persisted result");
+  }
+  try {
+    const api = validateApiContractDecision(result?.api_contract_decision, { root: path.resolve(root) });
+    if (!artifactBindingReady(result.api_contract_decision, exists)
+      || !evidenceRefs.includes(result.api_contract_decision.ref)
+      || !persisted?.api_contract_decision
+      || !sameBackendDesignPrerequisites({ api_contract_decision: result.api_contract_decision }, { api_contract_decision: persisted.api_contract_decision })) {
+      throw new TypeError("技术分析执行结果未一致绑定当前 API Contract Decision");
+    }
+    if (api.decision.current_version !== true || api.decision.status !== "approved") throw new TypeError("API Contract Decision 非当前批准版本");
+  } catch (error) {
+    signals.push(BLOCKING_SIGNALS.technicalAnalysisRequired);
+    missing.push(error.message);
+  }
+  return signals.length ? blockedResult(signals, missing, evidenceRefs) : allowedResult(evidenceRefs);
+}
+
 function validateTicketPath(ref) {
   if (!hasText(ref)) return false;
   return /^docs\/\.scratch\/[^/]+\/issues\/[^/]+\.md$/.test(ref);
@@ -132,6 +253,9 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
   }
   const routes = NEXT_ROUTES[currentWorkUnit];
   if (!routes) return blockedResult([BLOCKING_SIGNALS.invalidRoute], ["known_current_work_unit"]);
+  if (nextRoute === REPOSITORY_PREPARATION_WORK_UNIT && currentWorkUnit !== "work-unit.technical-analysis") {
+    return blockedResult([BLOCKING_SIGNALS.technicalAnalysisRequired], ["work-unit.technical-analysis predecessor"]);
+  }
   if (nextRoute === null && routes.length === 0) {
     if (decisionState) return validateDecisionBoundary(currentWorkUnit, decisionState, options);
     return allowedResult();
@@ -142,6 +266,10 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
       signals.push(BLOCKING_SIGNALS.implementationBeforeTickets);
     }
     return blockedResult(signals, ["allowed_next_route"]);
+  }
+  if (nextRoute === REPOSITORY_PREPARATION_WORK_UNIT) {
+    const analysis = validateTechnicalAnalysisCompletion(decisionState, options);
+    if (analysis.result === "blocked") return analysis;
   }
   if (nextRoute === 'work-unit.spec-synthesis' || currentWorkUnit === 'work-unit.spec-synthesis') {
     const entry = validatePlanSpecEntry(decisionState, options);
@@ -159,14 +287,14 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
  * delivery role must resolve to an onboarded existing repository or a freshly
  * generated and verified scaffold. Unaffected roles need an explicit reason.
  */
-export function validateImplementationRepositoriesReady(state, { exists = existsSync } = {}) {
+export function validateImplementationRepositoriesReady(state, { exists = existsSync, read = (ref) => readFileSync(ref, "utf8"), root = ROOT } = {}) {
   const preparation = state?.implementation_repository_preparation;
   const impacts = state?.delivery_impacts;
   const signals = [];
   const missing = [];
   const evidenceRefs = Array.isArray(preparation?.evidence_refs) ? preparation.evidence_refs : [];
 
-  if (!preparation || preparation.result !== "completed" || !Array.isArray(preparation.projects)) {
+  if (!preparation || preparation.schema_version !== 2 || preparation.kind !== "implementation-repository-preparation-result" || preparation.result !== "completed" || !Array.isArray(preparation.projects)) {
     return blockedResult([BLOCKING_SIGNALS.repositoryDecisionRequired], ["completed implementation_repository_preparation with projects"]);
   }
   if (preparation.current_version !== true || state?.implementation_repositories_stale === true) {
@@ -206,6 +334,10 @@ export function validateImplementationRepositoriesReady(state, { exists = exists
         signals.push(BLOCKING_SIGNALS.repositoryLocationRequired);
         missing.push(`${project.project_id} repository_ref, project_root and repository_scope`);
       }
+      if (role === "backend" && !backendDesignPrerequisitesReady(project.design_prerequisites, exists, path.resolve(root), project.project_id)) {
+        signals.push(BLOCKING_SIGNALS.backendDesignPrerequisitesMissing);
+        missing.push(`${project.project_id} readable Technical Design, Data Architecture Decision, API Contract Decision and atomic engineering approval bindings`);
+      }
       if (project.status === "existing-and-onboarded") {
         if (project.onboarding_result?.status !== "completed" || !isReadable(project.onboarding_result?.ref, exists)) {
           signals.push(BLOCKING_SIGNALS.repositoryOnboardingIncomplete);
@@ -224,6 +356,22 @@ export function validateImplementationRepositoriesReady(state, { exists = exists
         if (!isReadable(project.scaffold_manifest_ref, exists)) {
           signals.push(BLOCKING_SIGNALS.scaffoldGenerationIncomplete);
           missing.push(`${project.project_id} readable scaffold manifest`);
+        }
+        const manifest = readDecompositionResult(project.scaffold_manifest_ref, read);
+        if (role === "backend" && contract?.schema_version === 4) {
+          if (manifest?.schema_version !== 4 || manifest?.completion_level !== "empty-scaffold-verified" || !sameBackendDesignPrerequisites(project.design_prerequisites, manifest?.design_prerequisites)) {
+            signals.push(BLOCKING_SIGNALS.scaffoldGenerationIncomplete);
+            missing.push(`${project.project_id} v4 Manifest with empty-scaffold-verified and matching design prerequisites`);
+          }
+        }
+        if (role === "backend" && contract?.schema_version === 3) {
+          const legacy = project.legacy_reconciliation;
+          let digestMatches = false;
+          try { digestMatches = legacy?.manifest_digest === `sha256:${createHash("sha256").update(read(project.scaffold_manifest_ref)).digest("hex")}`; } catch {}
+          if (manifest?.schema_version !== 3 || manifest?.completion_level !== "empty-scaffold-verified" || legacy?.status !== "approved" || legacy?.ownership_state !== "unchanged-mechanical-scaffold" || legacy?.premature_implementation !== false || legacy?.manifest_ref !== project.scaffold_manifest_ref || !digestMatches || !isReadable(legacy?.ownership_check_ref, exists) || !isReadable(legacy?.recovery_approval_ref, exists)) {
+            signals.push(legacy?.premature_implementation === true ? BLOCKING_SIGNALS.prematureImplementationDetected : BLOCKING_SIGNALS.legacyScaffoldReconciliationRequired);
+            missing.push(`${project.project_id} approved legacy v3 reconciliation with unchanged mechanical ownership and recovery approval`);
+          }
         }
         if (project.scaffold_verification?.status !== "passed" || !isReadable(project.scaffold_verification?.ref, exists)) {
           signals.push(BLOCKING_SIGNALS.scaffoldVerificationFailed);
@@ -254,7 +402,7 @@ function validateDecisionBoundary(workUnit, state, options) {
 export function validateTicketFormalization(state, { exists = existsSync, read = (ref) => readFileSync(ref, "utf8"), ...decisionOptions } = {}) {
   try { enforceFrontendDelivery(state, { root: decisionOptions.root, phase: "implementation" }); }
   catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
-  const repositoryResult = validateImplementationRepositoriesReady(state, { exists });
+  const repositoryResult = validateImplementationRepositoriesReady(state, { exists, read, ...decisionOptions });
   if (repositoryResult.result === "blocked") return repositoryResult;
   const decomposition = state?.ticket_decomposition_result;
   const ticket = state?.vertical_slice_ticket;

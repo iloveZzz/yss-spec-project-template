@@ -1,0 +1,62 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "补齐战略设计对 Data Quality 默认主题的入口、评审和交接引用；实际 CLI 验证发现前端分发遗漏 DESIGN.md，修正来源清单并增加初始化回归。",
+  "triggers": [
+    "generation-semantics"
+  ],
+  "changed_assets": [
+    ".agents/skills/yss-design-system/SKILL.md",
+    ".agents/skills/yss-design-system/references/design-qa-theme.md",
+    ".agents/skills/yss-design-system/references/design-system.md",
+    "docs/design/templates/prototype-evidence-template.yaml",
+    "docs/design/templates/prototype-review-checklist.md",
+    "skills-lock.json",
+    "submodules/yss-harness-design-agent/.agents/skills/yss-design-system/SKILL.md",
+    "submodules/yss-harness-design-agent/.agents/skills/yss-design-system/references/design-qa-theme.md",
+    "submodules/yss-harness-design-agent/.agents/skills/yss-design-system/references/design-system.md",
+    "submodules/yss-harness-design-agent/docs/design/templates/prototype-evidence-template.yaml",
+    "submodules/yss-harness-design-agent/docs/design/templates/prototype-review-checklist.md",
+    "submodules/yss-harness-design-agent/skills-lock.json",
+    "submodules/yss-harness-frontend-agent/.agents/skills/yss-design-system/SKILL.md",
+    "submodules/yss-harness-frontend-agent/.agents/skills/yss-design-system/references/design-qa-theme.md",
+    "submodules/yss-harness-frontend-agent/.agents/skills/yss-design-system/references/design-system.md",
+    "submodules/yss-harness-frontend-agent/docs/design/templates/prototype-evidence-template.yaml",
+    "submodules/yss-harness-frontend-agent/docs/design/templates/prototype-review-checklist.md",
+    "submodules/yss-harness-frontend-agent/skills-lock.json",
+    ".agents/skills/.strategic-design-skills-manifest.json",
+    ".template-source/profile-skill-sync.json",
+    "submodules/yss-harness-design-agent/AGENTS.md",
+    "submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/SKILL.md",
+    "docs/design/templates/visual-baseline-template.yaml",
+    "submodules/yss-harness-design-agent/docs/design/templates/visual-baseline-template.yaml",
+    "submodules/yss-harness-frontend-agent/docs/design/templates/visual-baseline-template.yaml",
+    "submodules/create-yss-harness-frontend/template.manifest.json",
+    "submodules/yss-harness-frontend-agent/.template-source/distribution/template.manifest.json",
+    "submodules/create-yss-harness-frontend/tests/design-baseline.test.mjs"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "counterexample",
+      "command": ".template-source/evidence/maintenance/strategic-data-quality-theme-2026-09-15/counterexamples.json；.template-source/evidence/maintenance/strategic-data-quality-theme-2026-09-15/frontend-design-baseline-red.log",
+      "result": "pass"
+    },
+    {
+      "kind": "self-check",
+      "command": ".template-source/evidence/maintenance/strategic-data-quality-theme-2026-09-15/scope-diff.patch；design-md lint/drift；sync-profile-skills --check --profile=all；三仓 lock/projection/governance 和 git diff --check；.template-source/evidence/maintenance/strategic-data-quality-theme-2026-09-15/cli-snapshot-integrity.json",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "战略 CLI pnpm test/verify-bundle 通过；前端 CLI 最终 pnpm test 两项通过、verify-bundle 通过；综合 CLI init/sync 43 项通过。三仓 fast 顶层功能检查通过 81/44/45 项，均有独立 WORKTREE 发布阻塞。详见 .template-source/evidence/maintenance/strategic-data-quality-theme-2026-09-15/verification-summary.md",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "L2 局部规则清理升级 L3：实际分发丢失规范源。三仓 fast 因既有核心改动升级 release 并 exit 1，仅 require-committed 拒绝 working-tree；不宣称整套验证通过或发布就绪。",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

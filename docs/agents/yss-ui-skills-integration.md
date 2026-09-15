@@ -7,6 +7,8 @@
 - 从 yss-ui `skills.config.json` 的 `categories.app` 中按 YSS capability 白名单集成业务项目 skills；排除后端 `java-backend-commit`、已由统一业务页面入口替代的 `page-module-development`，以及已由 Visual Baseline 和前端实现验证替代的 `prototype-page-acceptance`，当前共 20 个。
 - `categories.library` 的 10 个组件库内部维护 skills 全部不进入模板；该分组同时位于上游 `excludeFromDefaultSync`。
 - `api-integration`、`use-table-height`、`use-tree-height` 在模板中分别映射为 `yss-api-integration`、`yss-use-table-height`、`yss-use-tree-height`，旧名称只作为 registry alias。
+- 上游 `yss-formily` 在模板内有意适配为薄场景路由器；API、schema、联动、详情和分步规则由 `formily-*` 专项持有，差异通过 lock 的 `upstreamHash`、`effectiveHash` 与 `adaptationRef` 审计。
+- 旧的本地聚合入口 `yss-components` 已退役；组件事实从 `yss-ui` 路由到具体专项或 `references/specialized-components.md`，不再恢复第二套组件规范。
 - `java-backend-commit`、`page-module-development`、`prototype-page-acceptance` 明确不属于本合同；其内容、路由与锁定信息不随本前端同步更新。
 - 允许模板基于生命周期、组件路由和证据门禁做受控适配；适配后的 `effectiveHash` 与上游 `upstreamHash` 同时进入 `skills-lock.json`。
 

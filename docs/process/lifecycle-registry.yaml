@@ -419,17 +419,17 @@ work_units:
     scope: project-instance
     input: Spec、原型、API/数据/工程影响面。
     output: OpenAPI、数据架构、按确认架构形成的 DDD / MVC 技术设计合同、工程基线、架构审查和 Slice 合同草案。
-    completion: 命中契约已冻结；无 API 影响有可读记录；命中技术设计影响时架构已确认、规则与场景承接无未解释冲突；工程基线通过。
+    completion: 命中契约已冻结；无 API 影响有可读记录；所有后端交付均有批准且当前的 Technical Design；数据影响为真时数据架构已批准，否则有可核验的不适用记录；架构、规则与场景承接无未解释冲突；gate.engineering-contract-approved 通过。
   - id: work-unit.implementation-repository-preparation
     name: 实现仓库准备
     scope: project-instance
-    input: 工程影响面、工程基线、逐项目用户决定、实现仓库位置；新建工程还需批准且当前的 Project Scaffold Contract。
-    output: 已有工程的 Repository Onboarding Result，或新工程的 Scaffold Manifest 与 Scaffold Verification；并汇总 Implementation Repository Preparation Result。
-    completion: 每个命中的交付面均为 existing-and-onboarded 或 initialized-and-verified，未命中的交付面有带原因的 not-applicable；聚合结果当前且证据可读。
+    input: 已完成的技术分析执行结果、Context reconciliation、战略交接消费结果、工程合同批准、工程影响面和实现仓库位置；新建后端还需批准且当前并绑定设计前置的 Project Scaffold Contract v4。
+    output: 已有工程的 Repository Onboarding Result，或新工程的 Scaffold Manifest v4 与 Scaffold Verification；并汇总 Implementation Repository Preparation Result v2。
+    completion: 每个后端项目均携带技术/数据设计门禁结果；新生成只接受 v4；历史 v3 仅在机械骨架未修改、设计补齐和恢复批准均通过时对账复用；检测到提前业务实现时保持 blocked。每个命中的交付面均为 existing-and-onboarded 或 initialized-and-verified，未命中的交付面有带原因的 not-applicable；聚合结果当前且证据可读。
   - id: work-unit.service-project-initialization
     name: 独立服务项目初始化
     scope: project-instance
-    input: 逐项目批准的架构决策、schema v3 初始化合同、战略上下文交接及目标/skillUtils 写范围。
+    input: 逐项目批准的架构决策、Technical Design、Data Architecture Decision、工程合同批准、schema v4 初始化合同、战略上下文交接及目标/skillUtils 写范围。
     output: 独立 Git project-instance、锁定 skillUtils、唯一根 CONTEXT、架构身份、Manifest 和验证证据；父项目仅保留引用。
     completion: 当前合同与交接摘要一致，真实 Wrapper 三命令通过后仅 empty-scaffold-verified；首切片仍须独立批准和验证。
   - id: work-unit.ticket-decomposition

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "kind": "frontend-scaffold-verification",
+  "status": "passed",
+  "project_root": "/tmp/yss-dq-scaffold-verified",
+  "scaffold_manifest_ref": "/tmp/yss-dq-scaffold-verified/.yss/scaffold-generation.json",
+  "commands": [
+    {
+      "command": "pnpm install --frozen-lockfile",
+      "exit_code": 0,
+      "duration_ms": 4606,
+      "stdout_ref": "/tmp/yss-dq-scaffold-verification/1-stdout.log",
+      "stderr_ref": "/tmp/yss-dq-scaffold-verification/1-stderr.log",
+      "executed_at": "2026-09-14T17:36:56.145Z"
+    },
+    {
+      "command": "pnpm lint:check",
+      "exit_code": 0,
+      "duration_ms": 1137,
+      "stdout_ref": "/tmp/yss-dq-scaffold-verification/2-stdout.log",
+      "stderr_ref": "/tmp/yss-dq-scaffold-verification/2-stderr.log",
+      "executed_at": "2026-09-14T17:36:57.283Z"
+    },
+    {
+      "command": "pnpm type-check",
+      "exit_code": 0,
+      "duration_ms": 2666,
+      "stdout_ref": "/tmp/yss-dq-scaffold-verification/3-stdout.log",
+      "stderr_ref": "/tmp/yss-dq-scaffold-verification/3-stderr.log",
+      "executed_at": "2026-09-14T17:36:59.949Z"
+    },
+    {
+      "command": "pnpm build",
+      "exit_code": 0,
+      "duration_ms": 10999,
+      "stdout_ref": "/tmp/yss-dq-scaffold-verification/4-stdout.log",
+      "stderr_ref": "/tmp/yss-dq-scaffold-verification/4-stderr.log",
+      "executed_at": "2026-09-14T17:37:10.948Z"
+    },
+    {
+      "command": "pnpm build:standalone",
+      "exit_code": 0,
+      "duration_ms": 10312,
+      "stdout_ref": "/tmp/yss-dq-scaffold-verification/5-stdout.log",
+      "stderr_ref": "/tmp/yss-dq-scaffold-verification/5-stderr.log",
+      "executed_at": "2026-09-14T17:37:21.260Z"
+    }
+  ]
+}

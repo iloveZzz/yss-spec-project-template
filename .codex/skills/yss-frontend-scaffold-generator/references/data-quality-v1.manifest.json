@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "baseline_id": "data-quality-v1",
+  "upstream": {
+    "project": "next-gen-data-quality",
+    "commit": "532509a59856fc02f3b9bcb28a062663ce887d71",
+    "use": "selected source patterns, reconstructed neutral scaffold; not a complete upstream Git tree",
+    "copied_and_adapted": [
+      "packages/src/types/microAppBridge.ts",
+      "packages/src/utils/microAppRouterBridge.ts"
+    ]
+  },
+  "design_source": "DESIGN.md",
+  "design_digest": "sha256:e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec",
+  "files": {
+    ".eslintrc.cjs": "sha256:3c2915cf2fff0efaba285fdc2d8c503a8597bcb062a396dfb54701e7672239f9",
+    ".gitignore": "sha256:fb8288522033f645a728dfb53cef24a11824bdbec858b93279d4809924b4539d",
+    ".npmrc.example": "sha256:cee4433295152854b58babea9072215a2d84b8de086d218b15ffb7e84f1fe9e1",
+    "DESIGN.md": "sha256:e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec",
+    "README.md": "sha256:6d8ed1aed45267f3c581733a7d12b0b891dc94c800d1416a0b172355031b4b96",
+    "micro-config.json": "sha256:8266b0eb806696d6bb2023a0d1e72113cdffc355bb0fafd8b2095d727f827711",
+    "orval.config.ts": "sha256:d918458e4ee972ae94740899dd15701530bdc31fd758240fc00e96aba3ba9b3a",
+    "package.json": "sha256:29cd516ba688ae3a3625b4f3a3921c47825134cff27622732ef942c4129c7222",
+    "packages/.env.development": "sha256:e698b56d83ad282c221e2c8067bc4e3e90789c610fd31da2489bd3ac2d8efc5f",
+    "packages/.env.example": "sha256:b8cf60af269af3f4dc3c167df88045af949683b302bd9b77e50fb77fa1adf81f",
+    "packages/.env.production": "sha256:b0a96ab02559a99fc95c37b967f604675686c8de336731a1721d54f43b047249",
+    "packages/.env.production.standalone": "sha256:e698b56d83ad282c221e2c8067bc4e3e90789c610fd31da2489bd3ac2d8efc5f",
+    "packages/index.html": "sha256:bdd33ab639ff63efe8f4c7d36dcae28f40f5b0586b1430714a86583789a3fd97",
+    "packages/package.json": "sha256:c680eaddad5e5a817ff31b65c80d45b12d7ef74d79b91e0bd5b6c16da5c96349",
+    "packages/public/favicon.svg": "sha256:9fb2de7c9d8b4333d5c660e81e6040195148afa2e05a4203e8be539cac915f2c",
+    "packages/src/App.vue": "sha256:fcc1e774142ba53dbeda8f425c0b00beffc4282c3d5254538be9b2cc104b811a",
+    "packages/src/api/mutator.ts": "sha256:7573bd2ff68454b0df42e120a049c75510df86579157d172a78cda97159747ea",
+    "packages/src/components/ThemeScope.vue": "sha256:216193e89cf104c72df8729f9ac2d616ac2ed7236f9d85f1a2744ab65e2efbef",
+    "packages/src/config/theme.json": "sha256:42a229ee534c87490924ddc0d9c985ae931c41da500d4be9bce819f4df638961",
+    "packages/src/env.d.ts": "sha256:65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+    "packages/src/main.ts": "sha256:7b91453f1f158b0da95a4195c5824d688f7556364c0e7dbffa9dd4a03c04c4e2",
+    "packages/src/router/index.ts": "sha256:c41c9400650c15945b9e6376a19ac6a9c08d2eb76d7a07b9624b266c39269c5a",
+    "packages/src/store/theme.ts": "sha256:1dc35947f93976f448e608298b593a873815b94442e263e15fbc4679187ae107",
+    "packages/src/styles/index.less": "sha256:90bbe2444c49eb983d49aa5618c27c57e0932e12f4f0d6aab52e266cb6843cb2",
+    "packages/src/types/microAppBridge.ts": "sha256:054f8c35eb33196f4bddb56d26957776b783e2a84f965229891d13fb0dae1274",
+    "packages/src/utils/microAppRouterBridge.ts": "sha256:f20d045be96c9034136da9296b718915555945a967a118d8aed9fd6ee93193bc",
+    "packages/src/views/NotFound.vue": "sha256:e420747300ff1b7c8575c6113cf276adcf5781d92ceeb92250e54bca9f977988",
+    "packages/src/views/Welcome.vue": "sha256:0498edee6e25b45644a2d12c6fded1e3c0fda830c9196d4fc5389b94fb1a0e0d",
+    "packages/tsconfig.json": "sha256:40e27bb07cd4ae8c0c636b5d9581fe378d00e21acb28423cc2a08bfa1a67c11f",
+    "packages/vite.config.ts": "sha256:d3c1775bdca54e1b0f2b267a7dae992cc61836891588e93e02caa49184cb2ab2",
+    "pnpm-lock.yaml": "sha256:dd05bbc9c948cb47de017fa215806d04f0f9f143d3c953b43076a62e5fd85d9b",
+    "pnpm-workspace.yaml": "sha256:d5cdbd2e0a167297976d11695d1593a4e71694ed462120569e20e98fd9c63fbe"
+  }
+}

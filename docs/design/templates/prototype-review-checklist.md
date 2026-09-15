@@ -10,7 +10,8 @@
 | 交互说明 | `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` |  |
 | 原型 / 线框图 | `<链接或导出图片路径>` |  |
 | 状态矩阵 | `docs/.scratch/<feature>/design/<feature>-state-matrix.md` |  |
-| 原型阶段合同 / Product Design 路由记录 | `yss-prototype-stage -> product-design:index -> <focused skill>` |  |
+| 视觉规范与主题快照 | 根 `DESIGN.md`、`docs/design/design.md`、实际消费的 Token 快照 | 默认 Data Quality 浅色；显式暗色 / 紧凑模式注明选择依据 |
+| 原型阶段合同 / Product Design 路由记录 | `yss-prototype-stage`；规范直出或条件独立视觉稿路线 |  |
 | 原型验证清单 | `docs/.scratch/<feature>/verification/prototype-evidence.yaml` | 档位确定后补齐 schema v4 共同与档位证据，并引用 Visual Baseline Bundle v1 |
 | 现有 API 草案 | `docs/.scratch/<feature>/api/<feature>.yaml` | 可选 |
 
@@ -28,6 +29,7 @@
 | 能从界面需求反推出 API 影响和契约草案 |  |  |
 | 已列出原型需要回答的决定、风险触发及 H1/H2 推荐档位；无充分证据时回退 H2 |  |  |
 | 状态矩阵中的每个状态均有事件、转换、guard、动作和退出路径 |  |  |
+| 高保真证据的 `design_baseline` 绑定当前规范与 Token 摘要，视觉基线的 `cases[].theme` 与实际截图一致 |  |  |
 | 前端验收、组件状态和数据依赖已明确 |  |  |
 | 风险 / 回滚约束和人工确认项已记录 |  |  |
 
