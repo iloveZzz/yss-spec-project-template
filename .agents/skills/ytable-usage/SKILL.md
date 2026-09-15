@@ -1,6 +1,6 @@
 ---
 name: ytable-usage
-description: 指导 YSS UI 业务列表页、CRUD 表格、远程分页、操作列、气泡确认、列筛选、字典翻译、行拖拽、工具栏和自定义插槽正确使用 @yss-ui/components 的 YTable；当需要配置 YTableColumn、YTableActionConfig、pagination、filter-change 或表格实例方法时使用。
+description: "配置或修复 YSS UI YTable 的列、分页、行操作、筛选、拖拽与插槽；完整列表流程用 page-list-module。"
 ---
 
 # YTable 使用

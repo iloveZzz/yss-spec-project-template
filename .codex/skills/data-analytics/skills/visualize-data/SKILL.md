@@ -1,6 +1,6 @@
 ---
 name: visualize-data
-description: "Design, specify, implement, revise, and QA quantitative visuals and chart choices. Use when an analytical answer needs visual judgment; for example comparing values, showing how a total breaks apart, reading concentration in a ranking, or understanding movement over time. This may mean rendering a chart for a report or dashboard, or simply choosing, rendering and QAing the right chart form for an inline answer."
+description: "Choose, build or review quantitative charts for analytical answers, reports and dashboards."
 ---
 
 # Data Visualization

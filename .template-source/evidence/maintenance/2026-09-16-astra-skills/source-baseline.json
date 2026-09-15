@@ -1,0 +1,10 @@
+{
+  ".": "a0fbb41aec24d5ca1c1ef3df0b3c3a67fa3e6a2c",
+  "submodules/create-yss-harness-backend": "d6dee7d413c4dc8747c78c329607780784443a4a",
+  "submodules/create-yss-harness-frontend": "e2add253713897159c07decbd9a872ac71ec4545",
+  "submodules/create-yss-spec": "ad0cbb1b170f2866464a134a44cf17736147ea26",
+  "submodules/create-yss-strategic-design": "b3b2fd4f1a830b73403601d4b1414c3605a1f679",
+  "submodules/yss-harness-backend-agent": "05e8a351e0039d381895df2e76afd9ca81fdf4ee",
+  "submodules/yss-harness-design-agent": "e5cc1b2b9a99297b475551174057dbeb1d5f1a24",
+  "submodules/yss-harness-frontend-agent": "17a317666cbbb043ba112342ae868c9d3ee30a72"
+}

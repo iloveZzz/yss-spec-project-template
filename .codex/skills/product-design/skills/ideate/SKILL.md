@@ -1,6 +1,6 @@
 ---
 name: ideate
-description: "Generate image-based visual alternatives, remixes, or concept directions after Product Design get-context has confirmed the design brief. Use when the user asks for design variants, visual exploration, remixes, or image-generated approaches from provided context."
+description: "Generate visual alternatives or remixes after the Product Design brief is confirmed."
 ---
 
 # Ideate

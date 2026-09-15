@@ -1,6 +1,6 @@
 ---
 name: yss-excel-mvc
-description: Use when 用于 Spring MVC 下的 Excel 导入导出实现。当用户提到 RequestExcel、ResponseExcel、Excel 导入解析、Excel 下载、动态列导出或导入导出接口异常时调用。
+description: "实现或排查 YSS Spring MVC Excel 导入导出、RequestExcel、ResponseExcel 和动态列。"
 ---
 
 # yss-excel-mvc

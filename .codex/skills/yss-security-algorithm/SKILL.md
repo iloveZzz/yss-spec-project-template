@@ -1,6 +1,6 @@
 ---
 name: yss-security-algorithm
-description: Use when YSS RSA/AES/DES/SM2/SM4 encryption, JWT/JWK configuration, password encoding, key loading, rotation, or decryption failures are involved.
+description: "接入或排查 YSS 加解密、JWT/JWK、密码编码、密钥加载与轮换。"
 ---
 
 # yss-security-algorithm

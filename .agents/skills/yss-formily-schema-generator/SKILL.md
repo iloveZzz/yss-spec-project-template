@@ -1,6 +1,6 @@
 ---
 name: yss-formily-schema-generator
-description: Use when the user wants YssFormily JSON Schema or rendered form code from natural-language requirements, screenshots, local images, mockups, or Figma designs.
+description: "从需求或设计图生成 YFormily JSON Schema 与表单代码；仅用于生产表单实现。"
 ---
 
 # YssFormily Schema Generator

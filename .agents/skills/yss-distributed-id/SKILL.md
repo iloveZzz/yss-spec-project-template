@@ -1,6 +1,6 @@
 ---
 name: yss-distributed-id
-description: Use when 用于 YSS 分布式 ID 组件的接入与排障。当用户提到 Leaf、CosId、号段模式、雪花算法、AutoIdInterceptor、MyBatis 自动注入 ID 或主键生成策略时调用。
+description: "接入或排查 YSS 分布式 ID：Leaf、CosId、号段、雪花算法或 MyBatis 主键注入。"
 ---
 
 # yss-distributed-id

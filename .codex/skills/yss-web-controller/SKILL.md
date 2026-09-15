@@ -1,6 +1,6 @@
 ---
 name: yss-web-controller
-description: Use when generating or refactoring YSS Web Adapter Controllers, request DTOs, response VOs, validation, result wrappers, or Web Convertors from frozen contracts and stable Application interfaces.
+description: "按冻结合同与稳定 Application 接口生成或重构 YSS Controller、请求 DTO、响应 VO 和 Web Convertor。"
 ---
 
 # yss-web-controller

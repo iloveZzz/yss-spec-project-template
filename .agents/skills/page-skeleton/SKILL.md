@@ -1,6 +1,6 @@
 ---
 name: page-skeleton
-description: 指导搭建 Vue3 YSS UI 列表、表单、详情和弹窗页面模块骨架，统一 index.vue、constant.ts、style.less、hooks 与私有组件职责；当新建页面或需要拆分超过 150 行的业务组件时使用。
+description: "创建或拆分 Vue3 YSS UI 页面模块骨架，明确页面、配置、hooks 与私有组件职责。"
 ---
 
 # Page Skeleton Skill

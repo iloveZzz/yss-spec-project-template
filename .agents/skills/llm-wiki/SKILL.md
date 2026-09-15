@@ -1,11 +1,6 @@
 ---
 name: llm-wiki
-description: >
-  Compile and maintain a Karpathy-pattern LLM wiki (raw + wiki + schema) with
-  init, incremental refresh, global rebuild, lint, and narrow ingest. Use when
-  the user wants a local knowledge wiki, incremental wiki refresh, wiki rebuild,
-  compiling a named research note into the wiki, `/llm-wiki`, or an answer from
-  an existing wiki.
+description: "Build or refresh a local LLM wiki; use for wiki init, ingest, rebuild, lint, or source-backed wiki questions."
 ---
 
 # llm-wiki

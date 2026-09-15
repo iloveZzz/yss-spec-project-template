@@ -1,6 +1,6 @@
 ---
 name: user-context
-description: Load or manage Product Design's saved user context. Use when the user asks to set up Product Design, get started, onboard, save product or design sources, see what Product Design remembers, update saved context, or remember Product Design preferences. Examples include product URLs, Figma files, screenshots, reference images, codebase paths, Storybook, tokens, design systems, brand assets, and general product/design notes.
+description: "Manage saved Product Design context when asked to onboard, remember sources or update design preferences."
 ---
 
 # User Context

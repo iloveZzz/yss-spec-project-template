@@ -1,6 +1,6 @@
 ---
 name: market-sizing
-description: "Estimate a market or opportunity size, such as TAM/SAM/SOM, by defining scope, choosing a sizing model, checking connected context and public sources, and presenting transparent assumptions, sensitivity, uncertainty, and validation priorities. Use for market or opportunity sizing; not for KPI reporting or metric diagnostics."
+description: "Estimate TAM/SAM/SOM or another opportunity size with explicit assumptions, sensitivity and uncertainty."
 ---
 
 # Market Sizing

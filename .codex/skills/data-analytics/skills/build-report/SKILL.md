@@ -1,6 +1,6 @@
 ---
 name: build-report
-description: "Build polished analytical reports for executive, product, business, and technical audiences, and act as the completion contract for Data Analytics report runs. Use when the final artifact needs an answer-first narrative, evidence-backed findings, charts/tables, caveats, source metadata, and either an MCP app report or an HTML report with Seaborn-generated charts."
+description: "Create a source-backed analytical report with findings, charts, caveats and delivery checks."
 ---
 
 # Report Building

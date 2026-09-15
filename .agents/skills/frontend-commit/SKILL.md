@@ -1,6 +1,6 @@
 ---
 name: frontend-commit
-description: 分析并提交 Vue、React、TypeScript、JavaScript、Vite、微前端和前端 monorepo 项目的 Git 改动；当用户要求生成 commit message、检查提交规范、拆分原子提交、暂存并执行 git commit，或修复 commitlint 与 commit-msg hook 拒绝时使用。读取仓库实际规则和 diff，选择业务 scope，生成英文 type/scope 与中文标题和正文，并安全验证提交。
+description: "为前端改动生成提交信息、审查原子提交或修复 Git hook；用户明确要求提交时执行 git commit。"
 ---
 
 # 前端规范提交

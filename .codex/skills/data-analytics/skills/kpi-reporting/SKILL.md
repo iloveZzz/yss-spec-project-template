@@ -1,6 +1,6 @@
 ---
 name: kpi-reporting
-description: "Produce leadership-ready KPI updates, scorecards, WBR/MBR/QBR summaries, target and pacing readouts, operating status narratives, and performance updates for known KPIs. Use when the work is to define KPI reporting context, validate metric definitions, present actuals versus comparison or plan, summarize validated drivers, and state implications or next actions."
+description: "Report known KPIs against targets or prior periods in scorecards, performance updates and WBR/MBR/QBR summaries."
 ---
 
 # KPI Reporting

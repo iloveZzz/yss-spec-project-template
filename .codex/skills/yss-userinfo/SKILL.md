@@ -1,6 +1,6 @@
 ---
 name: yss-userinfo
-description: Use when YSS current-user context, `AuthUserInfoUtil`, propagated user headers, JWT user payloads, Redis user cache, or background-user fallback is involved.
+description: "接入或排查 YSS AuthUserInfoUtil、用户头透传、JWT、Redis 用户缓存与后台用户上下文。"
 ---
 
 # yss-userinfo

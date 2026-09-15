@@ -1,11 +1,6 @@
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -1,11 +1,11 @@
- ---
- name: yss-openapi-governance
--description: Use when creating, governing, linting, freezing, or exporting YSS OpenAPI 3.1 design-time contracts. The frozen YAML is the only authority; this skill produces the reviewed JSON derivative consumed by frontend client generation.
-+description: Use when consuming frozen YSS OpenAPI 3.1 contracts, validating JSON derivatives, or preparing frontend client generation; API changes return to the backend owner.
- ---
+@@ -5,7 +5,7 @@
  
  # YSS OpenAPI Governance
  
@@ -106,7 +101,9 @@
 +```
 +
 +带 `--source-root` 的校验同时核验源仓身份、固定提交字节和当前源工作树。源内容变化时重新审阅并同步快照及绑定；离线消费继续使用已绑定版本，已知上游变化不能被离线校验掩盖。
---- a/references/openapi-wire-profile.yaml
+diff --git a/references/openapi-wire-profile.yaml b/references/openapi-wire-profile.yaml
+new file mode 100644
+--- /dev/null
 +++ b/references/openapi-wire-profile.yaml
 @@ -0,0 +1,187 @@
 +schema_version: 1
@@ -296,7 +293,9 @@
 +    - representative-serialization-fixtures
 +    - contract-test-or-equivalent-http-evidence
 +  rule: Java fields and computed getters are not public wire facts until target-boundary evidence confirms them.
---- a/references/openapi-wire-source.json
+diff --git a/references/openapi-wire-source.json b/references/openapi-wire-source.json
+new file mode 100644
+--- /dev/null
 +++ b/references/openapi-wire-source.json
 @@ -0,0 +1,8 @@
 +{

@@ -302,13 +302,13 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "edf25b462c951315777d8fdb4765f128aeaaf903294ee4da616460dff9e10d04"
+          "source_tree_sha256": "070ac06a2b899f95cb9a8bd3eb2b634cc49ad30eeb21aea03c8bd86c3a4fa3d5"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-openapi-governance.patch",
-          "source_tree_sha256": "d4a8b8fc98ccd984aa99461f151218e98c18c48c6d9e698bcdd21513e7cb1149"
+          "source_tree_sha256": "6c50ab0d2593b590f7fff4e978dc555222400e76067011b256eadf9bb5ba0d3c"
         }
       ],
       "assets": [
@@ -558,19 +558,19 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "edf25b462c951315777d8fdb4765f128aeaaf903294ee4da616460dff9e10d04"
+          "source_tree_sha256": "070ac06a2b899f95cb9a8bd3eb2b634cc49ad30eeb21aea03c8bd86c3a4fa3d5"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-openapi-governance.patch",
-          "source_tree_sha256": "d4a8b8fc98ccd984aa99461f151218e98c18c48c6d9e698bcdd21513e7cb1149"
+          "source_tree_sha256": "6c50ab0d2593b590f7fff4e978dc555222400e76067011b256eadf9bb5ba0d3c"
         },
         {
           "id": "frontend-commit",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/frontend-commit.patch",
-          "source_tree_sha256": "0852100ceade3219ab86e7f0b8ea740c958c5ed7e631962c59d2f05bd6c1122b"
+          "source_tree_sha256": "06b27a250369d04c398c502c68e141702f359ff2149dbca88163815e48075a73"
         }
       ],
       "assets": [

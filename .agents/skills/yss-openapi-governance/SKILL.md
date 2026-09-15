@@ -1,6 +1,6 @@
 ---
 name: yss-openapi-governance
-description: Use when creating, governing, linting, freezing, or exporting YSS OpenAPI 3.1 design-time contracts. The frozen YAML is the only authority; this skill produces the reviewed JSON derivative consumed by frontend client generation.
+description: "维护、校验、冻结或导出 YSS OpenAPI 3.1 设计合同；以冻结 YAML 生成受审查的 JSON。"
 ---
 
 # YSS OpenAPI Governance

@@ -1,6 +1,6 @@
 ---
 name: ytree-usage
-description: 指导 YSS UI 左树右表、组织树、分类树、目录树和节点管理页使用 @yss-ui/components 的 YTree，覆盖 fieldNames 字段映射、搜索过滤、受控选中、节点动作、删除确认、虚拟滚动和自适应高度；当生成或修改树形筛选、左树右表、树搜索或树节点操作时使用。
+description: "配置或修复 YSS UI YTree 的字段映射、搜索、选中与节点操作；用于树形筛选和节点管理。"
 ---
 
 # YTree 使用

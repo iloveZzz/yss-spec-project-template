@@ -1,6 +1,6 @@
 ---
 name: index
-description: "Use to discover specific skills for the Product Design plugin, when it is at-mentioned directly, or for any mentions of potentially relevant work, including: UX research; product, screen, or flow audits; visual ideation; app or interface design, redesign, cloning, prototyping, or implementation from ideas, URLs, images, Figma, or code; design QA; and prototype sharing or deployment."
+description: "Route Product Design requests for UX research, product audits, visual ideation, prototypes and design QA."
 ---
 
 # Skill Purpose

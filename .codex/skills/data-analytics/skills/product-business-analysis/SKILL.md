@@ -1,6 +1,6 @@
 ---
 name: product-business-analysis
-description: "Analyze product or business data to inform decisions with focused quantitative work, decision-relevant context, measurable opportunities, and a clear recommendation. Use when the user needs data-backed evidence to choose a direction, prioritize an opportunity, evaluate a change, understand implications, or decide what to do next; not for routine KPI reporting, metric diagnostics, or dashboard building."
+description: "Analyze product or business data to support a decision, prioritize opportunities or evaluate a change."
 ---
 
 # Product And Business Analysis

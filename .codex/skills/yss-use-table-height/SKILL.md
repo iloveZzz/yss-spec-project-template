@@ -1,6 +1,6 @@
 ---
 name: yss-use-table-height
-description: 指导 YTable、YEditTable、左树右表、分页列表、工具栏表格和弹窗/抽屉内表格使用 @yss-ui/hooks 的 useTableHeight 实现稳定自适应高度；当需要避免双滚动条、底部空白、容器撑开闪烁，或需要计入分页、工具栏、添加按钮偏移时使用。
+description: "用 useTableHeight 修复 YTable、YEditTable 自适应高度、双滚动条及分页或工具栏偏移。"
 ---
 
 # useTableHeight 使用

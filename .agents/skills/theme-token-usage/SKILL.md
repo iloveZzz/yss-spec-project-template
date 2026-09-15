@@ -1,6 +1,6 @@
 ---
 name: theme-token-usage
-description: 指导 Vue3 YSS UI 微应用业务页面、公共组件、原型还原和主题修复使用可动态换肤的 CSS/Ant Design Token，覆盖主色、hover/active/selected/focus、状态色、中性色、透明色派生和暗色模式；当新增或修改 .vue、style.less、内联样式、TS 渲染配置、SVG 色值，或审查硬编码 #hex/rgb/渐变时使用。
+description: "实现或修复 Vue3 YSS UI 主题、交互状态色与动态换肤；用于 token 映射和硬编码色值审查。"
 ---
 
 # YSS UI 主题 Token 使用 Skill

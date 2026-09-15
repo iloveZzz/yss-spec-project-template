@@ -1,6 +1,6 @@
 ---
 name: yss-up-springboot3
-description: Use when YSS Spring Boot 3 / Spring Cloud 升级辅助技能。Use when auditing or migrating YSS backend services/components from Spring Boot 2.x or Spring Cloud 2021-era dependencies toward Spring Boot 3, Jakarta namespace, newer Spring Security, MyBatis, OpenFeign, gateway, validation, and related compatibility changes.
+description: "审查或迁移 YSS Spring Boot 2 到 3 的依赖、Jakarta 与 Spring Cloud 兼容性。"
 ---
 
 # yss-up-springboot3

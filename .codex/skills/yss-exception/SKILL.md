@@ -1,6 +1,6 @@
 ---
 name: yss-exception
-description: Use when 用于 YSS exception 组件、统一异常模型、异常处理、错误码和异常 starter 接入排障。
+description: "接入或排查 YSS 统一异常、错误码、异常处理器与 exception starter。"
 ---
 
 # yss-exception

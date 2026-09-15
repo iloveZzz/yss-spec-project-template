@@ -1,6 +1,6 @@
 ---
 name: yss-resilience4j
-description: Use when 用于 YSS Resilience4j starter、网关熔断、限流降级、GlobalCircuitExceptionAdvice、GatewayConfiguration 和断路器配置排障。
+description: "接入或排查 YSS Resilience4j starter、网关熔断、限流降级与断路器配置。"
 ---
 
 # yss-resilience4j

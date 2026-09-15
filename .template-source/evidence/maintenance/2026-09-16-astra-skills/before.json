@@ -1,0 +1,2662 @@
+[
+  {
+    "repo": ".",
+    "path": ".agents/skills/alibaba-java-code-style/SKILL.md",
+    "name": "alibaba-java-code-style",
+    "description": "Apply Alibaba Java Development Manual conventions when implementing, refactoring, or reviewing Java/JVM code, Spring-style services, MyBatis/ORM mappings, SQL, Maven dependencies, unit tests, exception/logging behavior, security checks, and design documentation. Use when the user asks for Java code规范, 阿里规范, P3C-style review, Java code style, or compliance with Alibaba Java coding guidelines.",
+    "description_chars": 394,
+    "lines": 52,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/archify/SKILL.md",
+    "name": "archify",
+    "description": "Create polished, validated architecture, workflow, sequence, data-flow, and lifecycle/state diagrams as explorable standalone HTML with inline SVG, dark/light themes, optional trace motion, and PNG/JPEG/WebP/SVG/WebM export. Accept plain-language requirements or pasted Mermaid flowchart, sequenceDiagram, and stateDiagram input; inspect repository evidence when the diagram must reflect real code. Use when the user asks to visualize system architecture, infrastructure, cloud/security/network topology, technical workflows, API call sequences, request lifecycles, data pipelines, ETL/ELT, data lineage, state machines, or to convert/beautify Mermaid.",
+    "description_chars": 652,
+    "lines": 156,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/code-review/SKILL.md",
+    "name": "code-review",
+    "description": "Use when the user wants to review a branch, PR, committed candidate, uncommitted work-in-progress changes, or changes since a fixed point. For YSS implementation, Standards must load Slice contract required_skills plus specialist check inputs such as alibaba-java-code-style and yss-ui; do not add a second generic review skill.",
+    "description_chars": 328,
+    "lines": 132,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/codebase-design/SKILL.md",
+    "name": "codebase-design",
+    "description": "Shared vocabulary for designing deep modules. Use when the user wants to design or improve a module's interface, find deepening opportunities, decide where a seam goes, make code more testable or AI-navigable, or when another skill needs the deep-module vocabulary.",
+    "description_chars": 265,
+    "lines": 118,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/competitive-intelligence/SKILL.md",
+    "name": "competitive-intelligence",
+    "description": "Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Plan, Spec, product strategy, or roadmap decisions.",
+    "description_chars": 174,
+    "lines": 94,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/component-selection-imports/SKILL.md",
+    "name": "component-selection-imports",
+    "description": "指导 YSS UI 业务页面、CRUD、列表页、表单页和组件评审在编码前判定组件、Hook 与工具函数的真实导出来源；当需要在 @yss-ui/components、@yss-ui/hooks、@yss-ui/utils 与 ant-design-vue 之间选择，或需要排查虚构 Y 前缀组件、错误导入、Formily UI 边界时使用。",
+    "description_chars": 170,
+    "lines": 64,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/cross-repo-implementation-routing/SKILL.md",
+    "name": "cross-repo-implementation-routing",
+    "description": "Use when a Harness change or vertical slice may require work across external frontend/backend implementation repositories.",
+    "description_chars": 122,
+    "lines": 51,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/diagnosing-bugs/SKILL.md",
+    "name": "diagnosing-bugs",
+    "description": "Diagnosis loop for hard bugs and performance regressions. Use when the user says \"diagnose\"/\"debug this\", or reports something broken/throwing/failing/slow.",
+    "description_chars": 156,
+    "lines": 138,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/domain-modeling/SKILL.md",
+    "name": "domain-modeling",
+    "description": "梳理项目的业务词汇、责任范围和关键决策；讨论术语、编辑 CONTEXT.md 或记录 ADR 时使用。",
+    "description_chars": 51,
+    "lines": 58,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/file-export-download/SKILL.md",
+    "name": "file-export-download",
+    "description": "指导 Vue3 YSS UI 微应用实现文件导出、报表下载、模板下载和附件下载，覆盖 OpenAPI binary 响应、Orval 生成方法检查、responseType blob 兜底、Blob 响应类型、Content-Disposition 文件名、handleBlobResponse、loading 与错误处理；当需求出现导出、下载、Excel、CSV、PDF、ZIP、Blob 或文件流时使用。",
+    "description_chars": 204,
+    "lines": 160,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/formily-foundation/SKILL.md",
+    "name": "formily-foundation",
+    "description": "指导 YFormily 基础表单开发；当创建或修复普通单页表单、字段校验、提交链路、查询表单布局、scope 表达式或导入边界时使用。",
+    "description_chars": 67,
+    "lines": 176,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/formily-linkage-effects/SKILL.md",
+    "name": "formily-linkage-effects",
+    "description": "指导 YFormily 字段联动与表单级副作用；当实现动态显隐、禁用、级联选项、scope 事件、x-reactions、effects、异步联动或客户端校验失败兜底时使用。",
+    "description_chars": 87,
+    "lines": 167,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/formily-mode-slot-detail/SKILL.md",
+    "name": "formily-mode-slot-detail",
+    "description": "指导 YFormily 新增、编辑、查看三态与插槽渲染；当配置 mode 0/1/2、查看态只读、详情页 Descriptions 展示、detail-options、Schema Slot 或详情字段插槽时使用。",
+    "description_chars": 107,
+    "lines": 137,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/formily-step-flow/SKILL.md",
+    "name": "formily-step-flow",
+    "description": "指导 YSS UI 分步表单与流程录入；当需要 Ant Design Vue Steps、多 YFormily 独立校验、跨步数据保留、确认预览或最终聚合提交时使用。",
+    "description_chars": 83,
+    "lines": 194,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/frontend-commit/SKILL.md",
+    "name": "frontend-commit",
+    "description": "分析并提交 Vue、React、TypeScript、JavaScript、Vite、微前端和前端 monorepo 项目的 Git 改动；当用户要求生成 commit message、检查提交规范、拆分原子提交、暂存并执行 git commit，或修复 commitlint 与 commit-msg hook 拒绝时使用。读取仓库实际规则和 diff，选择业务 scope，生成英文 type/scope 与中文标题和正文，并安全验证提交。",
+    "description_chars": 222,
+    "lines": 118,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/grill-me/SKILL.md",
+    "name": "grill-me",
+    "description": "A relentless interview to sharpen a plan or design.",
+    "description_chars": 51,
+    "lines": 7,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/grill-with-docs/SKILL.md",
+    "name": "grill-with-docs",
+    "description": "Use when the user explicitly requests a relentless design interview that must preserve resolved glossary terms, ADR-worthy decisions, and factual research evidence.",
+    "description_chars": 164,
+    "lines": 20,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/grilling/SKILL.md",
+    "name": "grilling",
+    "description": "Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.",
+    "description_chars": 152,
+    "lines": 28,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/handoff/SKILL.md",
+    "name": "handoff",
+    "description": "Compact the current conversation into a handoff document for another agent to pick up.",
+    "description_chars": 86,
+    "lines": 16,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/i-have-adhd/SKILL.md",
+    "name": "i-have-adhd",
+    "description": "在研发文档起草、修订、审查报告和交接表达时，按 YSS 中文规范组织具体、完整、可执行的输出；仅作用于当前文档工作。",
+    "description_chars": 58,
+    "lines": 26,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/implement/SKILL.md",
+    "name": "implement",
+    "description": "Implement a piece of work based on a spec or set of tickets.",
+    "description_chars": 60,
+    "lines": 15,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/implementation-repo-onboarding/SKILL.md",
+    "name": "implementation-repo-onboarding",
+    "description": "Use when connecting an existing frontend, backend, fullstack, or other implementation Git repository to this Harness repository.",
+    "description_chars": 128,
+    "lines": 50,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/improve-codebase-architecture/SKILL.md",
+    "name": "improve-codebase-architecture",
+    "description": "Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.",
+    "description_chars": 125,
+    "lines": 71,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/java-backend-commit/SKILL.md",
+    "name": "java-backend-commit",
+    "description": "分析并提交 Java、Spring Boot、Maven、Gradle、单体服务和多模块后端项目的 Git 改动；当用户要求生成 commit message、检查提交规范、拆分原子提交、暂存并执行 git commit，或修复 commitlint 与 commit-msg hook 拒绝时使用。读取仓库实际规则、模块结构和 diff，选择服务或业务域 scope，生成英文 type/scope 与中文标题和正文，并安全验证提交。",
+    "description_chars": 218,
+    "lines": 121,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/llm-wiki/SKILL.md",
+    "name": "llm-wiki",
+    "description": "Compile and maintain a Karpathy-pattern LLM wiki (raw + wiki + schema) with init, incremental refresh, global rebuild, lint, and narrow ingest. Use when the user wants a local knowledge wiki, incremental wiki refresh, wiki rebuild, compiling a named research note into the wiki, `/llm-wiki`, or an answer from an existing wiki.\n",
+    "description_chars": 328,
+    "lines": 60,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/lombok/SKILL.md",
+    "name": "lombok",
+    "description": "Project Lombok for reducing Java boilerplate. Covers annotations for getters,\nsetters, constructors, builders, logging, and more. Based on production\npatterns from castellino and gestionale-presenze projects.\n\nUSE WHEN: user mentions \"lombok\", \"@Data\", \"@Builder\", \"@Slf4j\", asks about\n\"boilerplate reduction\", \"getters/setters\", \"@RequiredArgsConstructor\", \"@Value\"\n\nDO NOT USE FOR: Java language features - use `java` skill instead\nDO NOT USE FOR: MapStruct integration - use `mapstruct` skill\nDO NOT USE FOR: Spring annotations - use `backend-spring-boot` skill\n",
+    "description_chars": 565,
+    "lines": 352,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/maintaining-skills/SKILL.md",
+    "name": "maintaining-skills",
+    "description": "Use when creating, modifying, validating, or retiring reusable Agent skills.",
+    "description_chars": 76,
+    "lines": 27,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/mapstruct/SKILL.md",
+    "name": "mapstruct",
+    "description": "MapStruct Java mapping framework. Covers basic mappers, update mappings,\nnested objects, collections, custom methods, and Lombok integration.\nBased on castellino and gestionale-presenze production patterns.\n\nUSE WHEN: user mentions \"mapstruct\", \"@Mapper\", \"@Mapping\", asks about\n\"DTO mapping\", \"entity conversion\", \"@MappingTarget\", \"nested mapping\"\n\nDO NOT USE FOR: Java language - use `java` skill instead\nDO NOT USE FOR: Lombok - use `lombok` skill instead\nDO NOT USE FOR: JPA entities - use JPA-specific skills\n",
+    "description_chars": 515,
+    "lines": 335,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/page-form-module/SKILL.md",
+    "name": "page-form-module",
+    "description": "指导实现 YSS UI 新增、编辑和查看表单模块，覆盖 YFormily Schema、mode 0/1/2、详情渲染、数据回显与回填、表单值被意外清空排查、校验、提交 loading、弹窗销毁和列表刷新；当页面包含表单页、Modal 或 Drawer 表单，或编辑时回显丢失、提交后表单未重置时使用。",
+    "description_chars": 151,
+    "lines": 168,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/page-list-module/SKILL.md",
+    "name": "page-list-module",
+    "description": "指导实现 YSS UI 标准列表、远程分页、查询重置、YTable 工具栏、行操作、批量操作和左树右表模块；当页面需要查询、表格、分页或 CRUD 列表闭环时使用。",
+    "description_chars": 82,
+    "lines": 137,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/page-skeleton/SKILL.md",
+    "name": "page-skeleton",
+    "description": "指导搭建 Vue3 YSS UI 列表、表单、详情和弹窗页面模块骨架，统一 index.vue、constant.ts、style.less、hooks 与私有组件职责；当新建页面或需要拆分超过 150 行的业务组件时使用。",
+    "description_chars": 112,
+    "lines": 76,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/prototype/SKILL.md",
+    "name": "prototype",
+    "description": "Build a throwaway prototype to answer a design question. Use when the user wants to sanity-check whether a state model or logic feels right, or explore what a UI should look like.",
+    "description_chars": 179,
+    "lines": 26,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/prototype-review/SKILL.md",
+    "name": "prototype-review",
+    "description": "Use when independently reviewing low-fidelity UI, interaction specs, or state matrices before choosing an H1/H2 prototype profile, calibrating Spec/OpenAPI, slicing, or implementation.",
+    "description_chars": 184,
+    "lines": 77,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/resolving-merge-conflicts/SKILL.md",
+    "name": "resolving-merge-conflicts",
+    "description": "Use when you need to resolve an in-progress git merge/rebase conflict.",
+    "description_chars": 70,
+    "lines": 14,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/setup-matt-pocock-skills/SKILL.md",
+    "name": "setup-matt-pocock-skills",
+    "description": "Configure this repo for the engineering skills — set up its issue tracker, triage label vocabulary, and domain doc layout. Run once before first use of the other engineering skills.",
+    "description_chars": 181,
+    "lines": 121,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/tdd/SKILL.md",
+    "name": "tdd",
+    "description": "Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions \"red-green-refactor\", or wants integration tests.",
+    "description_chars": 149,
+    "lines": 38,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/theme-token-usage/SKILL.md",
+    "name": "theme-token-usage",
+    "description": "指导 Vue3 YSS UI 微应用业务页面、公共组件、原型还原和主题修复使用可动态换肤的 CSS/Ant Design Token，覆盖主色、hover/active/selected/focus、状态色、中性色、透明色派生和暗色模式；当新增或修改 .vue、style.less、内联样式、TS 渲染配置、SVG 色值，或审查硬编码",
+    "description_chars": 168,
+    "lines": 123,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/to-questionnaire/SKILL.md",
+    "name": "to-questionnaire",
+    "description": "Turn a decision you can't fully answer into a questionnaire for someone else to fill in.",
+    "description_chars": 88,
+    "lines": 53,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/to-spec/SKILL.md",
+    "name": "to-spec",
+    "description": "Turn the current conversation into a spec and publish it to the project issue tracker — no interview, just synthesis of what you've already discussed.",
+    "description_chars": 150,
+    "lines": 75,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/to-tickets/SKILL.md",
+    "name": "to-tickets",
+    "description": "Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker — edges as text in one file per ticket locally, or native blocking links on a real tracker.",
+    "description_chars": 247,
+    "lines": 105,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/triage/SKILL.md",
+    "name": "triage",
+    "description": "Move issues and external PRs through a state machine of triage roles — categorise, verify, grill if needed, and write agent-ready briefs.",
+    "description_chars": 137,
+    "lines": 100,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/using-git-worktrees/SKILL.md",
+    "name": "using-git-worktrees",
+    "description": "Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists via native tools or git worktree fallback",
+    "description_chars": 196,
+    "lines": 202,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/vue3-best-practices/SKILL.md",
+    "name": "vue3-best-practices",
+    "description": "在 Vue3 业务页面、组件和 composable 中规范响应式状态、组件通信、异步竞态与大数精度；实现或重构 Vue3 逻辑时使用。",
+    "description_chars": 68,
+    "lines": 68,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/wait-what/SKILL.md",
+    "name": "wait-what",
+    "description": "Stop. That last message did not land: re-pitch it.",
+    "description_chars": 50,
+    "lines": 7,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/wayfinder/SKILL.md",
+    "name": "wayfinder",
+    "description": "Plan a huge chunk of work — more than one agent session can hold — as a shared map of decision tickets on your issue tracker, and resolve them one at a time until the way to the destination is clear.",
+    "description_chars": 199,
+    "lines": 128,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/writing-for-agents/SKILL.md",
+    "name": "writing-for-agents",
+    "description": "Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.",
+    "description_chars": 103,
+    "lines": 81,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yedit-table-usage/SKILL.md",
+    "name": "yedit-table-usage",
+    "description": "指导 YSS UI 业务页面使用 @yss-ui/components 的 YEditTable 实现可编辑表格、行内编辑、添加/删除行、下拉多选与可创建 tags、行级候选联动、表头筛选、校验和查看态；当需求出现编辑表格、明细行、扩展属性、可编辑列或 YEditTableColumn 时使用。",
+    "description_chars": 148,
+    "lines": 227,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-api-integration/SKILL.md",
+    "name": "yss-api-integration",
+    "description": "指导在 Vue3 业务列表、表单、详情和操作 Hook 中集成 Orval API，覆盖真实生成产物选择、mutator 响应契约、错误提示、加载状态、请求选项和长整型精度；当页面对接查询、新增、编辑、删除、详情或文件流接口时使用。",
+    "description_chars": 116,
+    "lines": 185,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-application/SKILL.md",
+    "name": "yss-application",
+    "description": "Use when implementing YSS application use cases, transaction boundaries, cross-aggregate orchestration, idempotency, or application-level DTO conversion.",
+    "description_chars": 153,
+    "lines": 60,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-audit-log/SKILL.md",
+    "name": "yss-audit-log",
+    "description": "Use when YSS `AuditLog`, `EnableAuditLog`, audit SpEL summaries, async publication, subscriber registration, queue loss, or audit delivery failures are involved.",
+    "description_chars": 161,
+    "lines": 67,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-cache/SKILL.md",
+    "name": "yss-cache",
+    "description": "用于 YSS 缓存框架的接入、配置、代码修改和故障诊断。Use when tasks involve QueryCache、UpdateCache、ClearCache、TTL、SpEL key、事务提交后缓存操作、Redis/Caffeine/Hazelcast 后端切换、Redis Standalone/Sentinel/Cluster、Jedis 连接池、Redis fallback、JetCache、多级缓存、序列化兼容、缓存不命中或失效不一致。",
+    "description_chars": 229,
+    "lines": 44,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-ddd-scaffold-generator/SKILL.md",
+    "name": "yss-ddd-scaffold-generator",
+    "description": "用于生成完整的 YSS DDD 多模块后端脚手架。当用户要求从零创建符合 YSS 规范的 Domain、Application、Infrastructure、Adapter、Bootstrap 工程骨架时调用。",
+    "description_chars": 105,
+    "lines": 120,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-ddd-scaffold-generator/references/yss-backend-scaffold-parent/SKILL.md",
+    "name": "yss-backend-scaffold-parent",
+    "description": "YSS DDD scaffold Engineering Baseline entry for profile, module, dependency, build, and downstream-skill routing checks.",
+    "description_chars": 120,
+    "lines": 58,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-design-system/SKILL.md",
+    "name": "yss-design-system",
+    "description": "Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格基线。涉及页面设计、原型评审、UI 实现、组件选型、主题 token、颜色排版间距、响应式验收、Ant Design/YSS UI 风格一致性、docs/design/design.md 更新或从外部设计系统引入规范时必须使用。",
+    "description_chars": 155,
+    "lines": 108,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-distributed-id/SKILL.md",
+    "name": "yss-distributed-id",
+    "description": "Use when 用于 YSS 分布式 ID 组件的接入与排障。当用户提到 Leaf、CosId、号段模式、雪花算法、AutoIdInterceptor、MyBatis 自动注入 ID 或主键生成策略时调用。",
+    "description_chars": 104,
+    "lines": 69,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-domain/SKILL.md",
+    "name": "yss-domain",
+    "description": "用于构建或重构 YSS 领域层代码。当用户要求设计聚合、Entity、Domain Gateway、领域规则、状态流转或先做领域建模再补持久层时调用。",
+    "description_chars": 75,
+    "lines": 70,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-dto/SKILL.md",
+    "name": "yss-dto",
+    "description": "Use when YSS `Result`, `SingleResult`, `MultiResult`, `PageResult`, `PageQuery`, `CommandDTO`, `QueryDTO`, pagination, or response-wrapper boundaries are involved.",
+    "description_chars": 163,
+    "lines": 93,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-excel-mvc/SKILL.md",
+    "name": "yss-excel-mvc",
+    "description": "Use when 用于 Spring MVC 下的 Excel 导入导出实现。当用户提到 RequestExcel、ResponseExcel、Excel 导入解析、Excel 下载、动态列导出或导入导出接口异常时调用。",
+    "description_chars": 110,
+    "lines": 66,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-exception/SKILL.md",
+    "name": "yss-exception",
+    "description": "Use when 用于 YSS exception 组件、统一异常模型、异常处理、错误码和异常 starter 接入排障。",
+    "description_chars": 61,
+    "lines": 58,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-formily/SKILL.md",
+    "name": "yss-formily",
+    "description": "路由 YSS UI 业务页面中的 YFormily 场景；当查询、编辑、详情、联动、分步表单或 schema 生成需求出现时，加载最小 Formily 专项 Skill。",
+    "description_chars": 85,
+    "lines": 35,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-formily-schema-generator/SKILL.md",
+    "name": "yss-formily-schema-generator",
+    "description": "Use when the user wants YssFormily JSON Schema or rendered form code from natural-language requirements, screenshots, local images, mockups, or Figma designs.",
+    "description_chars": 158,
+    "lines": 189,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-frontend-scaffold-generator/SKILL.md",
+    "name": "yss-frontend-scaffold-generator",
+    "description": "Use when creating a new YSS frontend micro-application from the standard frontend template.",
+    "description_chars": 91,
+    "lines": 85,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-hook/SKILL.md",
+    "name": "yss-hook",
+    "description": "Use when YSS Vue 页面涉及 vue-hooks-plus/useRequest、分页、请求缓存、轮询、URL query、异步 loading、数据转换或树数据加载。",
+    "description_chars": 91,
+    "lines": 200,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-implementation-contract-compiler/SKILL.md",
+    "name": "yss-implementation-contract-compiler",
+    "description": "Use when a YSS vertical slice is entering implementation, spans multiple frontend/backend/API areas, needs implementation readiness checked, or requires a minimal YSS skill set, Slice Implementation Contract, TDD mode, evidence plan, or reroute decision.",
+    "description_chars": 254,
+    "lines": 69,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
+    "name": "yss-layered-mvc-scaffold-generator",
+    "description": "用于在生命周期已批准的脚手架合同下生成通用 YSS Java 8 分层 MVC 后端工程；核心模块为 server、service、repository，并按能力确定性增加 adapter、client、feign-client。",
+    "description_chars": 115,
+    "lines": 64,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-mvc-data-analysis-project-initializer/SKILL.md",
+    "name": "yss-mvc-data-analysis-project-initializer",
+    "description": "在生命周期批准的初始化合同下创建独立 Git 管理的数据分析 project-instance；固定 mvc-data-analysis-v1 六模块、Java 8 和本地测试 H2。",
+    "description_chars": 92,
+    "lines": 22,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-mvc-design/SKILL.md",
+    "name": "yss-mvc-design",
+    "description": "为已确认 layered-mvc 的 YSS 项目设计分层职责、用例、业务规则、事务和持久化映射，不生成代码。",
+    "description_chars": 55,
+    "lines": 16,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-mybatis/SKILL.md",
+    "name": "yss-mybatis",
+    "description": "用于 YSS MyBatis / MyBatis-Plus 组件能力核验、接入决策和排障；涉及 Mapper/Repository 基类、分页、批量 SQL、扫描配置或数据源能力时使用，不负责生成持久层结构。",
+    "description_chars": 104,
+    "lines": 53,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-openapi-draft-review/SKILL.md",
+    "name": "yss-openapi-draft-review",
+    "description": "Use when reviewing a `docs/.scratch/<feature>/api/` OpenAPI Draft before Engineering Baseline, YSS DDD Review, architecture/Spec Delta design, OpenAPI Freeze, vertical slicing, frontend/backend implementation, or when checking P0 requirement coverage, page action to endpoint mapping, YSS response wrappers, errors, pagination, optimistic locking, and contract test seams.",
+    "description_chars": 372,
+    "lines": 97,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-openapi-governance/SKILL.md",
+    "name": "yss-openapi-governance",
+    "description": "Use when creating, governing, linting, freezing, or exporting YSS OpenAPI 3.1 design-time contracts. The frozen YAML is the only authority; this skill produces the reviewed JSON derivative consumed by frontend client generation.",
+    "description_chars": 228,
+    "lines": 147,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-product-lifecycle/SKILL.md",
+    "name": "yss-product-lifecycle",
+    "description": "编排 YSS 产品或模块从机会调研到 Spec、原型、技术契约、垂直切片实现、审查、发布和复盘；当阶段、产物、门禁或 YSS skill 不清晰时使用。",
+    "description_chars": 76,
+    "lines": 94,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-prototype-stage/SKILL.md",
+    "name": "yss-prototype-stage",
+    "description": "Use when a YSS feature has product-design impact on a primary flow, navigation, state, recovery, permission experience, or UI-driven API contract and needs profile-routed prototype assets before implementation readiness, or when handing off a confirmed unchanged existing UI baseline.",
+    "description_chars": 284,
+    "lines": 77,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-repository/SKILL.md",
+    "name": "yss-repository",
+    "description": "用于按批准的 YSS 架构与持久化合同实现或重构 PO、Repository、Convertor、Domain Gateway/Query Adapter；负责结构路由、分层边界和验证，不内置可照抄的业务代码模板。",
+    "description_chars": 107,
+    "lines": 44,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-research/SKILL.md",
+    "name": "yss-research",
+    "description": "Research technical or product-strategy questions with traceable evidence before YSS Plan, Spec, domain-strategy, API, architecture, or implementation decisions. Use for current facts, standards, third-party APIs, business constraints, user problems, domain-boundary evidence, or when the deprecated `research` alias is invoked.",
+    "description_chars": 327,
+    "lines": 79,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-resilience4j/SKILL.md",
+    "name": "yss-resilience4j",
+    "description": "Use when 用于 YSS Resilience4j starter、网关熔断、限流降级、GlobalCircuitExceptionAdvice、GatewayConfiguration 和断路器配置排障。",
+    "description_chars": 106,
+    "lines": 46,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-security-algorithm/SKILL.md",
+    "name": "yss-security-algorithm",
+    "description": "Use when YSS RSA/AES/DES/SM2/SM4 encryption, JWT/JWK configuration, password encoding, key loading, rotation, or decryption failures are involved.",
+    "description_chars": 146,
+    "lines": 52,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-skill-source-index-refresh/SKILL.md",
+    "name": "yss-skill-source-index-refresh",
+    "description": "Use when YSS backend component source or frontend UI documentation changes and skill source indexes need refreshing.",
+    "description_chars": 116,
+    "lines": 66,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-stage-decision/SKILL.md",
+    "name": "yss-stage-decision",
+    "description": "编排 Plan 到 Spec 入口的方案决策与业务边界、协作和规则设计；当需求、业务责任区、统一业务词汇或下游影响尚未稳定时使用。",
+    "description_chars": 65,
+    "lines": 72,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-tactical-design/SKILL.md",
+    "name": "yss-tactical-design",
+    "description": "在 YSS 技术分析阶段将批准的战略领域输入细化为可审查的聚合、行为、一致性和 Gateway 设计；不生成生产代码。",
+    "description_chars": 59,
+    "lines": 41,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-technical-design/SKILL.md",
+    "name": "yss-technical-design",
+    "description": "在 YSS 技术分析中统一承接需求与战略输入，按已确认的 DDD 或传统 MVC 架构组织设计合同。",
+    "description_chars": 50,
+    "lines": 39,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-ui/SKILL.md",
+    "name": "yss-ui",
+    "description": "Use when implementing or reviewing YSS Vue pages that combine YSS wrappers with Ant Design Vue, including component selection, version compatibility, layout, Formily, tables, trees, hooks, overlays, themes, accessibility, API integration, and delivery verification.",
+    "description_chars": 265,
+    "lines": 173,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-ui-business-page-generation/SKILL.md",
+    "name": "yss-ui-business-page-generation",
+    "description": "指导生成或改造 Vue3 YSS UI CRUD、列表、表单、详情、左树右表和弹窗抽屉页面，覆盖组件选型、模块拆分、Orval API、响应式高度、主题和原型验收；当用户要求生成 YSS UI 业务页或 CRUD 模块时使用。",
+    "description_chars": 113,
+    "lines": 159,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-up-springboot3/SKILL.md",
+    "name": "yss-up-springboot3",
+    "description": "Use when YSS Spring Boot 3 / Spring Cloud 升级辅助技能。Use when auditing or migrating YSS backend services/components from Spring Boot 2.x or Spring Cloud 2021-era dependencies toward Spring Boot 3, Jakarta namespace, newer Spring Security, MyBatis, OpenFeign, gateway, validation, and related compatibility changes.",
+    "description_chars": 310,
+    "lines": 40,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-use-table-height/SKILL.md",
+    "name": "yss-use-table-height",
+    "description": "指导 YTable、YEditTable、左树右表、分页列表、工具栏表格和弹窗/抽屉内表格使用 @yss-ui/hooks 的 useTableHeight 实现稳定自适应高度；当需要避免双滚动条、底部空白、容器撑开闪烁，或需要计入分页、工具栏、添加按钮偏移时使用。",
+    "description_chars": 133,
+    "lines": 130,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-use-tree-height/SKILL.md",
+    "name": "yss-use-tree-height",
+    "description": "指导 YTree、左树右表、组织树、分类树、树搜索和 Tab/抽屉内树区域使用 @yss-ui/hooks 的 useTreeHeight 实现自适应高度；当树区域需要独立滚动、容器切换后高度不正确或需要扣除 YTree 内置搜索高度时使用。",
+    "description_chars": 121,
+    "lines": 98,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-userinfo/SKILL.md",
+    "name": "yss-userinfo",
+    "description": "Use when YSS current-user context, `AuthUserInfoUtil`, propagated user headers, JWT user payloads, Redis user cache, or background-user fallback is involved.",
+    "description_chars": 157,
+    "lines": 49,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-validation/SKILL.md",
+    "name": "yss-validation",
+    "description": "Use when YSS Bean Validation/JSR-303 dependencies, validation messages, LiteFlow EL parsing, `ExpressParserFactory`, parser registration, or validation-error mapping is involved.",
+    "description_chars": 178,
+    "lines": 57,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/yss-web-controller/SKILL.md",
+    "name": "yss-web-controller",
+    "description": "Use when generating or refactoring YSS Web Adapter Controllers, request DTOs, response VOs, validation, result wrappers, or Web Convertors from frozen contracts and stable Application interfaces.",
+    "description_chars": 195,
+    "lines": 91,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/ytable-usage/SKILL.md",
+    "name": "ytable-usage",
+    "description": "指导 YSS UI 业务列表页、CRUD 表格、远程分页、操作列、气泡确认、列筛选、字典翻译、行拖拽、工具栏和自定义插槽正确使用 @yss-ui/components 的 YTable；当需要配置 YTableColumn、YTableActionConfig、pagination、filter-change 或表格实例方法时使用。",
+    "description_chars": 167,
+    "lines": 251,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": ".",
+    "path": ".agents/skills/ytree-usage/SKILL.md",
+    "name": "ytree-usage",
+    "description": "指导 YSS UI 左树右表、组织树、分类树、目录树和节点管理页使用 @yss-ui/components 的 YTree，覆盖 fieldNames 字段映射、搜索过滤、受控选中、节点动作、删除确认、虚拟滚动和自适应高度；当生成或修改树形筛选、左树右表、树搜索或树节点操作时使用。",
+    "description_chars": 141,
+    "lines": 132,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/alibaba-java-code-style/SKILL.md",
+    "name": "alibaba-java-code-style",
+    "description": "Apply Alibaba Java Development Manual conventions when implementing, refactoring, or reviewing Java/JVM code, Spring-style services, MyBatis/ORM mappings, SQL, Maven dependencies, unit tests, exception/logging behavior, security checks, and design documentation. Use when the user asks for Java code规范, 阿里规范, P3C-style review, Java code style, or compliance with Alibaba Java coding guidelines.",
+    "description_chars": 394,
+    "lines": 52,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/archify/SKILL.md",
+    "name": "archify",
+    "description": "Create polished, validated architecture, workflow, sequence, data-flow, and lifecycle/state diagrams as explorable standalone HTML with inline SVG, dark/light themes, optional trace motion, and PNG/JPEG/WebP/SVG/WebM export. Accept plain-language requirements or pasted Mermaid flowchart, sequenceDiagram, and stateDiagram input; inspect repository evidence when the diagram must reflect real code. Use when the user asks to visualize system architecture, infrastructure, cloud/security/network topology, technical workflows, API call sequences, request lifecycles, data pipelines, ETL/ELT, data lineage, state machines, or to convert/beautify Mermaid.",
+    "description_chars": 652,
+    "lines": 156,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/architecture-agent/SKILL.md",
+    "name": "architecture-agent",
+    "description": "按已确认的 DDD 或 MVC 架构完成技术设计、边界决策和 Slice Contract 架构分区。",
+    "description_chars": 51,
+    "lines": 15,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/ask-matt/SKILL.md",
+    "name": "ask-matt",
+    "description": "Ask which skill or flow fits your situation. A router over the skills in this repo.",
+    "description_chars": 83,
+    "lines": 95,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/backend-agent/SKILL.md",
+    "name": "backend-agent",
+    "description": "根据批准的 DDD 战术设计和 Slice Contract 完成后端垂直切片、API、数据访问、测试以及可审查的交付验证。",
+    "description_chars": 62,
+    "lines": 26,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/code-review/SKILL.md",
+    "name": "code-review",
+    "description": "Use when the user wants to review a branch, PR, committed candidate, uncommitted work-in-progress changes, or changes since a fixed point.",
+    "description_chars": 138,
+    "lines": 119,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/codebase-design/SKILL.md",
+    "name": "codebase-design",
+    "description": "Shared vocabulary for designing deep modules. Use when the user wants to design or improve a module's interface, find deepening opportunities, decide where a seam goes, make code more testable or AI-navigable, or when another skill needs the deep-module vocabulary.",
+    "description_chars": 265,
+    "lines": 118,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/competitive-intelligence/SKILL.md",
+    "name": "competitive-intelligence",
+    "description": "Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Discovery, Spec, product strategy, or roadmap decisions.",
+    "description_chars": 179,
+    "lines": 94,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/cross-repo-implementation-routing/SKILL.md",
+    "name": "cross-repo-implementation-routing",
+    "description": "Use when a Harness change or vertical slice may require work across external frontend/backend implementation repositories.",
+    "description_chars": 122,
+    "lines": 51,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/diagnosing-bugs/SKILL.md",
+    "name": "diagnosing-bugs",
+    "description": "Diagnosis loop for hard bugs and performance regressions. Use when the user says \"diagnose\"/\"debug this\", or reports something broken/throwing/failing/slow.",
+    "description_chars": 156,
+    "lines": 138,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/dispatching-parallel-agents/SKILL.md",
+    "name": "dispatching-parallel-agents",
+    "description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies",
+    "description_chars": 106,
+    "lines": 185,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/domain-modeling/SKILL.md",
+    "name": "domain-modeling",
+    "description": "Build and sharpen a project's domain model. Use when discussing codebase terminology, writing or editing a CONTEXT.md, or recording or editing an ADR.",
+    "description_chars": 150,
+    "lines": 74,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/grill-me/SKILL.md",
+    "name": "grill-me",
+    "description": "A relentless interview to sharpen a plan or design.",
+    "description_chars": 51,
+    "lines": 7,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/grill-with-docs/SKILL.md",
+    "name": "grill-with-docs",
+    "description": "Use when the user explicitly requests a relentless design interview that must preserve resolved glossary terms, ADR-worthy decisions, and factual research evidence.",
+    "description_chars": 164,
+    "lines": 19,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/grilling/SKILL.md",
+    "name": "grilling",
+    "description": "Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.",
+    "description_chars": 152,
+    "lines": 28,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/handoff/SKILL.md",
+    "name": "handoff",
+    "description": "Compact the current conversation into a handoff document for another agent to pick up.",
+    "description_chars": 86,
+    "lines": 16,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/harness-orchestrator/SKILL.md",
+    "name": "harness-orchestrator",
+    "description": "编排后端专职 Harness 的输入接收、合同、任务派发与验证；当需要后端流程路由或恢复时使用。",
+    "description_chars": 48,
+    "lines": 46,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/i-have-adhd/SKILL.md",
+    "name": "i-have-adhd",
+    "description": "在研发文档起草、修订、审查报告和交接表达时，按 YSS 中文规范组织具体、完整、可执行的输出；仅作用于当前文档工作。",
+    "description_chars": 58,
+    "lines": 26,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/implement/SKILL.md",
+    "name": "implement",
+    "description": "Implement a piece of work based on a spec or set of tickets.",
+    "description_chars": 60,
+    "lines": 15,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/implementation-repo-onboarding/SKILL.md",
+    "name": "implementation-repo-onboarding",
+    "description": "Use when connecting an existing frontend, backend, fullstack, or other implementation Git repository to this Harness repository.",
+    "description_chars": 128,
+    "lines": 50,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/improve-codebase-architecture/SKILL.md",
+    "name": "improve-codebase-architecture",
+    "description": "Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.",
+    "description_chars": 125,
+    "lines": 71,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/java-backend-commit/SKILL.md",
+    "name": "java-backend-commit",
+    "description": "分析并提交 Java、Spring Boot、Maven、Gradle、单体服务和多模块后端项目的 Git 改动；当用户要求生成 commit message、检查提交规范、拆分原子提交、暂存并执行 git commit，或修复 commitlint 与 commit-msg hook 拒绝时使用。读取仓库实际规则、模块结构和 diff，选择服务或业务域 scope，生成英文 type/scope 与中文标题和正文，并安全验证提交。",
+    "description_chars": 218,
+    "lines": 121,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/SKILL.md",
+    "name": "llm-wiki",
+    "description": "Compile and maintain a Karpathy-pattern LLM wiki (raw + wiki + schema) with init, incremental refresh, global rebuild, lint, and narrow ingest. Use when the user wants a local knowledge wiki, incremental wiki refresh, wiki rebuild, compiling a named research note into the wiki, `/llm-wiki`, or an answer from an existing wiki.\n",
+    "description_chars": 328,
+    "lines": 60,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/lombok/SKILL.md",
+    "name": "lombok",
+    "description": "Project Lombok for reducing Java boilerplate. Covers annotations for getters,\nsetters, constructors, builders, logging, and more. Based on production\npatterns from castellino and gestionale-presenze projects.\n\nUSE WHEN: user mentions \"lombok\", \"@Data\", \"@Builder\", \"@Slf4j\", asks about\n\"boilerplate reduction\", \"getters/setters\", \"@RequiredArgsConstructor\", \"@Value\"\n\nDO NOT USE FOR: Java language features - use `java` skill instead\nDO NOT USE FOR: MapStruct integration - use `mapstruct` skill\nDO NOT USE FOR: Spring annotations - use `backend-spring-boot` skill\n",
+    "description_chars": 565,
+    "lines": 352,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/loop-me/SKILL.md",
+    "name": "loop-me",
+    "description": "Grill me about specs for the workflows I want to build, within this workspace.",
+    "description_chars": 78,
+    "lines": 32,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/maintaining-skills/SKILL.md",
+    "name": "maintaining-skills",
+    "description": "Use when creating, modifying, validating, or retiring reusable Agent skills.",
+    "description_chars": 76,
+    "lines": 27,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/mapstruct/SKILL.md",
+    "name": "mapstruct",
+    "description": "MapStruct Java mapping framework. Covers basic mappers, update mappings,\nnested objects, collections, custom methods, and Lombok integration.\nBased on castellino and gestionale-presenze production patterns.\n\nUSE WHEN: user mentions \"mapstruct\", \"@Mapper\", \"@Mapping\", asks about\n\"DTO mapping\", \"entity conversion\", \"@MappingTarget\", \"nested mapping\"\n\nDO NOT USE FOR: Java language - use `java` skill instead\nDO NOT USE FOR: Lombok - use `lombok` skill instead\nDO NOT USE FOR: JPA entities - use JPA-specific skills\n",
+    "description_chars": 515,
+    "lines": 335,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/migrate-to-shoehorn/SKILL.md",
+    "name": "migrate-to-shoehorn",
+    "description": "Migrate test files from `as` type assertions to @total-typescript/shoehorn. Use when user mentions shoehorn, wants to replace `as` in tests, or needs partial test data.",
+    "description_chars": 168,
+    "lines": 118,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/prototype/SKILL.md",
+    "name": "prototype",
+    "description": "Build a throwaway backend logic experiment to test a state model, algorithm, or interface assumption; use before committing to an implementation design.",
+    "description_chars": 152,
+    "lines": 22,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/resolving-merge-conflicts/SKILL.md",
+    "name": "resolving-merge-conflicts",
+    "description": "Use when you need to resolve an in-progress git merge/rebase conflict.",
+    "description_chars": 70,
+    "lines": 14,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/scaffold-exercises/SKILL.md",
+    "name": "scaffold-exercises",
+    "description": "Create exercise directory structures with sections, problems, solutions, and explainers that pass linting. Use when user wants to scaffold exercises, create exercise stubs, or set up a new course section.",
+    "description_chars": 204,
+    "lines": 106,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/setup-matt-pocock-skills/SKILL.md",
+    "name": "setup-matt-pocock-skills",
+    "description": "Configure this repo for the engineering skills — set up its issue tracker, triage label vocabulary, and domain doc layout. Run once before first use of the other engineering skills.",
+    "description_chars": 181,
+    "lines": 125,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/setup-pre-commit/SKILL.md",
+    "name": "setup-pre-commit",
+    "description": "Set up Husky pre-commit hooks with lint-staged (Prettier), type checking, and tests in the current repo. Use when user wants to add pre-commit hooks, set up Husky, configure lint-staged, or add commit-time formatting/typechecking/testing.",
+    "description_chars": 238,
+    "lines": 91,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/tdd/SKILL.md",
+    "name": "tdd",
+    "description": "Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions \"red-green-refactor\", or wants integration tests.",
+    "description_chars": 149,
+    "lines": 38,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/teach/SKILL.md",
+    "name": "teach",
+    "description": "Teach the user a new skill or concept, within this workspace.",
+    "description_chars": 61,
+    "lines": 140,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/test-agent/SKILL.md",
+    "name": "test-agent",
+    "description": "从 DDD 战术设计和 Slice Contract 建立测试 seam，独立验证前后端垂直切片并输出 Fresh Verification 证据。",
+    "description_chars": 74,
+    "lines": 24,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/to-questionnaire/SKILL.md",
+    "name": "to-questionnaire",
+    "description": "Turn a decision you can't fully answer into a questionnaire for someone else to fill in.",
+    "description_chars": 88,
+    "lines": 53,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/to-spec/SKILL.md",
+    "name": "to-spec",
+    "description": "Turn the current conversation into a spec and publish it to the project issue tracker — no interview, just synthesis of what you've already discussed.",
+    "description_chars": 150,
+    "lines": 75,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/to-tickets/SKILL.md",
+    "name": "to-tickets",
+    "description": "Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker — edges as text in one file per ticket locally, or native blocking links on a real tracker.",
+    "description_chars": 247,
+    "lines": 105,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/triage/SKILL.md",
+    "name": "triage",
+    "description": "Move issues and external PRs through a state machine of triage roles — categorise, verify, grill if needed, and write agent-ready briefs.",
+    "description_chars": 137,
+    "lines": 112,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/using-git-worktrees/SKILL.md",
+    "name": "using-git-worktrees",
+    "description": "Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists via native tools or git worktree fallback",
+    "description_chars": 196,
+    "lines": 202,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/wait-what/SKILL.md",
+    "name": "wait-what",
+    "description": "Stop. That last message did not land: re-pitch it.",
+    "description_chars": 50,
+    "lines": 7,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/wayfinder/SKILL.md",
+    "name": "wayfinder",
+    "description": "Plan a huge chunk of work — more than one agent session can hold — as a shared map of decision tickets on your issue tracker, and resolve them one at a time until the way to the destination is clear.",
+    "description_chars": 199,
+    "lines": 128,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/writing-beats/SKILL.md",
+    "name": "writing-beats",
+    "description": "Writing, exploit — assemble raw material into a journey of beats, grounding each term before a beat leans on it.",
+    "description_chars": 112,
+    "lines": 67,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/writing-for-agents/SKILL.md",
+    "name": "writing-for-agents",
+    "description": "Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.",
+    "description_chars": 103,
+    "lines": 81,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/writing-fragments/SKILL.md",
+    "name": "writing-fragments",
+    "description": "Writing, explore — mine raw fragments, no structure yet.",
+    "description_chars": 56,
+    "lines": 79,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/writing-shape/SKILL.md",
+    "name": "writing-shape",
+    "description": "Writing, exploit — shape raw material into an article, paragraph by paragraph.",
+    "description_chars": 78,
+    "lines": 79,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-application/SKILL.md",
+    "name": "yss-application",
+    "description": "Use when implementing YSS application use cases, transaction boundaries, cross-aggregate orchestration, idempotency, or application-level DTO conversion.",
+    "description_chars": 153,
+    "lines": 60,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-audit-log/SKILL.md",
+    "name": "yss-audit-log",
+    "description": "Use when YSS `AuditLog`, `EnableAuditLog`, audit SpEL summaries, async publication, subscriber registration, queue loss, or audit delivery failures are involved.",
+    "description_chars": 161,
+    "lines": 67,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-cache/SKILL.md",
+    "name": "yss-cache",
+    "description": "用于 YSS 缓存框架的接入、配置、代码修改和故障诊断。Use when tasks involve QueryCache、UpdateCache、ClearCache、TTL、SpEL key、事务提交后缓存操作、Redis/Caffeine/Hazelcast 后端切换、Redis Standalone/Sentinel/Cluster、Jedis 连接池、Redis fallback、JetCache、多级缓存、序列化兼容、缓存不命中或失效不一致。",
+    "description_chars": 229,
+    "lines": 44,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-ddd-scaffold-generator/SKILL.md",
+    "name": "yss-ddd-scaffold-generator",
+    "description": "用于生成完整的 YSS DDD 多模块后端脚手架。当用户要求从零创建符合 YSS 规范的 Domain、Application、Infrastructure、Adapter、Bootstrap 工程骨架时调用。",
+    "description_chars": 105,
+    "lines": 120,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-ddd-scaffold-generator/references/yss-backend-scaffold-parent/SKILL.md",
+    "name": "yss-backend-scaffold-parent",
+    "description": "YSS DDD scaffold Engineering Baseline entry for profile, module, dependency, build, and downstream-skill routing checks.",
+    "description_chars": 120,
+    "lines": 58,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-distributed-id/SKILL.md",
+    "name": "yss-distributed-id",
+    "description": "Use when 用于 YSS 分布式 ID 组件的接入与排障。当用户提到 Leaf、CosId、号段模式、雪花算法、AutoIdInterceptor、MyBatis 自动注入 ID 或主键生成策略时调用。",
+    "description_chars": 104,
+    "lines": 69,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-domain/SKILL.md",
+    "name": "yss-domain",
+    "description": "用于构建或重构 YSS 领域层代码。当用户要求设计聚合、Entity、Domain Gateway、领域规则、状态流转或先做领域建模再补持久层时调用。",
+    "description_chars": 75,
+    "lines": 70,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-dto/SKILL.md",
+    "name": "yss-dto",
+    "description": "Use when YSS `Result`, `SingleResult`, `MultiResult`, `PageResult`, `PageQuery`, `CommandDTO`, `QueryDTO`, pagination, or response-wrapper boundaries are involved.",
+    "description_chars": 163,
+    "lines": 93,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-excel-mvc/SKILL.md",
+    "name": "yss-excel-mvc",
+    "description": "Use when 用于 Spring MVC 下的 Excel 导入导出实现。当用户提到 RequestExcel、ResponseExcel、Excel 导入解析、Excel 下载、动态列导出或导入导出接口异常时调用。",
+    "description_chars": 110,
+    "lines": 66,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-exception/SKILL.md",
+    "name": "yss-exception",
+    "description": "Use when 用于 YSS exception 组件、统一异常模型、异常处理、错误码和异常 starter 接入排障。",
+    "description_chars": 61,
+    "lines": 58,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-implementation-contract-compiler/SKILL.md",
+    "name": "yss-implementation-contract-compiler",
+    "description": "将已批准的 DDD / MVC 技术设计、冻结契约和 capability 编译为 Slice Implementation Contract v2 草案；当垂直切片进入实现、验证结果或需要重路由时使用。",
+    "description_chars": 102,
+    "lines": 53,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-layered-mvc-scaffold-generator/SKILL.md",
+    "name": "yss-layered-mvc-scaffold-generator",
+    "description": "用于在生命周期已批准的脚手架合同下生成通用 YSS Java 8 分层 MVC 后端工程；核心模块为 server、service、repository，并按能力确定性增加 adapter、client、feign-client。",
+    "description_chars": 115,
+    "lines": 64,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-mvc-data-analysis-project-initializer/SKILL.md",
+    "name": "yss-mvc-data-analysis-project-initializer",
+    "description": "在生命周期批准的初始化合同下创建独立 Git 管理的数据分析 project-instance；固定 mvc-data-analysis-v1 六模块、Java 8 和本地测试 H2。",
+    "description_chars": 92,
+    "lines": 22,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-mvc-design/SKILL.md",
+    "name": "yss-mvc-design",
+    "description": "为已确认 layered-mvc 的 YSS 项目设计分层职责、用例、业务规则、事务和持久化映射，不生成代码。",
+    "description_chars": 55,
+    "lines": 16,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-mybatis/SKILL.md",
+    "name": "yss-mybatis",
+    "description": "用于 YSS MyBatis 与 MyBatis-Plus 持久层规范、配置和排障。当用户提到 BaseRepository、BasePlusRepository、PageQuery 自动分页、多数据源、批量插入或 MyBatis 配置异常时调用。",
+    "description_chars": 124,
+    "lines": 77,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-openapi-draft-review/SKILL.md",
+    "name": "yss-openapi-draft-review",
+    "description": "Use when reviewing a `docs/.scratch/<feature>/api/` OpenAPI Draft before Engineering Baseline, YSS DDD Review, architecture/Spec Delta design, OpenAPI Freeze, vertical slicing, frontend/backend implementation, or when checking P0 requirement coverage, page action to endpoint mapping, YSS response wrappers, errors, pagination, optimistic locking, and contract test seams.",
+    "description_chars": 372,
+    "lines": 82,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-openapi-governance/SKILL.md",
+    "name": "yss-openapi-governance",
+    "description": "Use when creating, governing, linting, freezing, or exporting YSS OpenAPI 3.1 design-time contracts. The frozen YAML is the only authority; this skill produces the reviewed JSON derivative consumed by frontend client generation.",
+    "description_chars": 228,
+    "lines": 139,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-repository/SKILL.md",
+    "name": "yss-repository",
+    "description": "Use when generating or refactoring YSS Infrastructure persistence models, repositories, MapStruct convertors, Domain Gateway implementations, or metadata/DDL-backed queries.",
+    "description_chars": 173,
+    "lines": 86,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-research/SKILL.md",
+    "name": "yss-research",
+    "description": "Research technical or product-strategy questions with traceable evidence before YSS Plan, Spec, domain-strategy, API, architecture, or implementation decisions. Use for current facts, standards, third-party APIs, business constraints, user problems, domain-boundary evidence, or when the deprecated `research` alias is invoked.",
+    "description_chars": 327,
+    "lines": 79,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-resilience4j/SKILL.md",
+    "name": "yss-resilience4j",
+    "description": "Use when 用于 YSS Resilience4j starter、网关熔断、限流降级、GlobalCircuitExceptionAdvice、GatewayConfiguration 和断路器配置排障。",
+    "description_chars": 106,
+    "lines": 46,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-security-algorithm/SKILL.md",
+    "name": "yss-security-algorithm",
+    "description": "Use when YSS RSA/AES/DES/SM2/SM4 encryption, JWT/JWK configuration, password encoding, key loading, rotation, or decryption failures are involved.",
+    "description_chars": 146,
+    "lines": 52,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-skill-source-index-refresh/SKILL.md",
+    "name": "yss-skill-source-index-refresh",
+    "description": "Use when YSS backend component source or frontend UI documentation changes and skill source indexes need refreshing.",
+    "description_chars": 116,
+    "lines": 63,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-tactical-design/SKILL.md",
+    "name": "yss-tactical-design",
+    "description": "在 YSS 技术分析阶段将批准的战略领域输入细化为可审查的聚合、行为、一致性和 Gateway 设计；不生成生产代码。",
+    "description_chars": 59,
+    "lines": 41,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-technical-design/SKILL.md",
+    "name": "yss-technical-design",
+    "description": "在 YSS 技术分析中统一承接需求与战略输入，按已确认的 DDD 或传统 MVC 架构组织设计合同。",
+    "description_chars": 50,
+    "lines": 39,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-up-springboot3/SKILL.md",
+    "name": "yss-up-springboot3",
+    "description": "Use when YSS Spring Boot 3 / Spring Cloud 升级辅助技能。Use when auditing or migrating YSS backend services/components from Spring Boot 2.x or Spring Cloud 2021-era dependencies toward Spring Boot 3, Jakarta namespace, newer Spring Security, MyBatis, OpenFeign, gateway, validation, and related compatibility changes.",
+    "description_chars": 310,
+    "lines": 40,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-userinfo/SKILL.md",
+    "name": "yss-userinfo",
+    "description": "Use when YSS current-user context, `AuthUserInfoUtil`, propagated user headers, JWT user payloads, Redis user cache, or background-user fallback is involved.",
+    "description_chars": 157,
+    "lines": 49,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-validation/SKILL.md",
+    "name": "yss-validation",
+    "description": "Use when YSS Bean Validation/JSR-303 dependencies, validation messages, LiteFlow EL parsing, `ExpressParserFactory`, parser registration, or validation-error mapping is involved.",
+    "description_chars": 178,
+    "lines": 57,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-web-controller/SKILL.md",
+    "name": "yss-web-controller",
+    "description": "Use when generating or refactoring YSS Web Adapter Controllers, request DTOs, response VOs, validation, result wrappers, or Web Convertors from frozen contracts and stable Application interfaces.",
+    "description_chars": 195,
+    "lines": 91,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/ask-matt/SKILL.md",
+    "name": "ask-matt",
+    "description": "Ask which skill or flow fits your situation. A router over the skills in this repo.",
+    "description_chars": 83,
+    "lines": 95,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/code-review/SKILL.md",
+    "name": "code-review",
+    "description": "Use when the user wants to review a branch, PR, committed candidate, uncommitted work-in-progress changes, or changes since a fixed point.",
+    "description_chars": 138,
+    "lines": 119,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/competitive-intelligence/SKILL.md",
+    "name": "competitive-intelligence",
+    "description": "Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Plan, Spec, product strategy, or roadmap decisions.",
+    "description_chars": 174,
+    "lines": 94,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/diagnosing-bugs/SKILL.md",
+    "name": "diagnosing-bugs",
+    "description": "Diagnosis loop for hard bugs and performance regressions. Use when the user says \"diagnose\"/\"debug this\", or reports something broken/throwing/failing/slow.",
+    "description_chars": 156,
+    "lines": 138,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/domain-modeling/SKILL.md",
+    "name": "domain-modeling",
+    "description": "梳理项目的业务词汇、责任范围和关键决策；讨论术语、编辑 CONTEXT.md 或记录 ADR 时使用。",
+    "description_chars": 51,
+    "lines": 58,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/grill-me/SKILL.md",
+    "name": "grill-me",
+    "description": "A relentless interview to sharpen a plan or design.",
+    "description_chars": 51,
+    "lines": 7,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/grill-with-docs/SKILL.md",
+    "name": "grill-with-docs",
+    "description": "Use when the user explicitly requests a relentless design interview that must preserve resolved glossary terms, ADR-worthy decisions, and factual research evidence.",
+    "description_chars": 164,
+    "lines": 20,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/grilling/SKILL.md",
+    "name": "grilling",
+    "description": "Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.",
+    "description_chars": 152,
+    "lines": 28,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/handoff/SKILL.md",
+    "name": "handoff",
+    "description": "Compact the current conversation into a handoff document for another agent to pick up.",
+    "description_chars": 86,
+    "lines": 16,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/i-have-adhd/SKILL.md",
+    "name": "i-have-adhd",
+    "description": "在研发文档起草、修订、审查报告和交接表达时，按 YSS 中文规范组织具体、完整、可执行的输出；仅作用于当前文档工作。",
+    "description_chars": 58,
+    "lines": 26,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/SKILL.md",
+    "name": "llm-wiki",
+    "description": "Compile and maintain a Karpathy-pattern LLM wiki (raw + wiki + schema) with init, incremental refresh, global rebuild, lint, and narrow ingest. Use when the user wants a local knowledge wiki, incremental wiki refresh, wiki rebuild, compiling a named research note into the wiki, `/llm-wiki`, or an answer from an existing wiki.\n",
+    "description_chars": 328,
+    "lines": 60,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/maintaining-skills/SKILL.md",
+    "name": "maintaining-skills",
+    "description": "Use when creating, modifying, validating, or retiring reusable Agent skills.",
+    "description_chars": 76,
+    "lines": 27,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/prototype-review/SKILL.md",
+    "name": "prototype-review",
+    "description": "Use when independently reviewing low-fidelity UI, interaction specs, or state matrices before choosing an H1/H2 prototype profile, calibrating Spec/OpenAPI, slicing, or implementation.",
+    "description_chars": 184,
+    "lines": 77,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/resolving-merge-conflicts/SKILL.md",
+    "name": "resolving-merge-conflicts",
+    "description": "Use when you need to resolve an in-progress git merge/rebase conflict.",
+    "description_chars": 70,
+    "lines": 14,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/to-spec/SKILL.md",
+    "name": "to-spec",
+    "description": "Turn the current conversation into a spec and publish it to the project issue tracker — no interview, just synthesis of what you've already discussed.",
+    "description_chars": 150,
+    "lines": 75,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/to-tickets/SKILL.md",
+    "name": "to-tickets",
+    "description": "Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker — edges as text in one file per ticket locally, or native blocking links on a real tracker.",
+    "description_chars": 247,
+    "lines": 105,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/triage/SKILL.md",
+    "name": "triage",
+    "description": "Move issues and external PRs through a state machine of triage roles — categorise, verify, grill if needed, and write agent-ready briefs.",
+    "description_chars": 137,
+    "lines": 112,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/wayfinder/SKILL.md",
+    "name": "wayfinder",
+    "description": "Plan a huge chunk of work — more than one agent session can hold — as a shared map of decision tickets on your issue tracker, and resolve them one at a time until the way to the destination is clear.",
+    "description_chars": 199,
+    "lines": 128,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/writing-for-agents/SKILL.md",
+    "name": "writing-for-agents",
+    "description": "Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.",
+    "description_chars": 103,
+    "lines": 81,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/yss-design-system/SKILL.md",
+    "name": "yss-design-system",
+    "description": "Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格基线。涉及页面设计、原型评审、UI 实现、组件选型、主题 token、颜色排版间距、响应式验收、Ant Design/YSS UI 风格一致性、docs/design/design.md 更新或从外部设计系统引入规范时必须使用。",
+    "description_chars": 155,
+    "lines": 108,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/yss-prototype-stage/SKILL.md",
+    "name": "yss-prototype-stage",
+    "description": "Use when a YSS feature has product-design impact on a primary flow, navigation, state, recovery, permission experience, or UI-driven API contract and needs profile-routed prototype assets before implementation readiness, or when handing off a confirmed unchanged existing UI baseline.",
+    "description_chars": 284,
+    "lines": 77,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/yss-research/SKILL.md",
+    "name": "yss-research",
+    "description": "Research technical or product-strategy questions with traceable evidence before YSS Plan, Spec, domain-strategy, API, architecture, or implementation decisions. Use for current facts, standards, third-party APIs, business constraints, user problems, domain-boundary evidence, or when the deprecated `research` alias is invoked.",
+    "description_chars": 327,
+    "lines": 79,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/yss-stage-decision/SKILL.md",
+    "name": "yss-stage-decision",
+    "description": "编排 Plan 到 Spec 入口的方案决策与业务边界、协作和规则设计；当需求、业务责任区、统一业务词汇或下游影响尚未稳定时使用。",
+    "description_chars": 65,
+    "lines": 68,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "path": "submodules/yss-harness-design-agent/.agents/skills/yss-strategic-design/SKILL.md",
+    "name": "yss-strategic-design",
+    "description": "编排 YSS 产品或模块从机会调研到业务边界与协作、Spec、页面原型、业务级 Ticket 和业务方案交接；不进入下游技术设计、实现、审查或发布。",
+    "description_chars": 74,
+    "lines": 89,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/archify/SKILL.md",
+    "name": "archify",
+    "description": "Create polished, validated architecture, workflow, sequence, data-flow, and lifecycle/state diagrams as explorable standalone HTML with inline SVG, dark/light themes, optional trace motion, and PNG/JPEG/WebP/SVG/WebM export. Accept plain-language requirements or pasted Mermaid flowchart, sequenceDiagram, and stateDiagram input; inspect repository evidence when the diagram must reflect real code. Use when the user asks to visualize system architecture, infrastructure, cloud/security/network topology, technical workflows, API call sequences, request lifecycles, data pipelines, ETL/ELT, data lineage, state machines, or to convert/beautify Mermaid.",
+    "description_chars": 652,
+    "lines": 156,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/architecture-agent/SKILL.md",
+    "name": "architecture-agent",
+    "description": "在战略与后端交付联合接收通过后，定义前端工程边界、API 消费和 Slice Contract 架构分区。",
+    "description_chars": 53,
+    "lines": 24,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/ask-matt/SKILL.md",
+    "name": "ask-matt",
+    "description": "Ask which skill or flow fits your situation. A router over the skills in this repo.",
+    "description_chars": 83,
+    "lines": 95,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/code-review/SKILL.md",
+    "name": "code-review",
+    "description": "Use when the user wants to review a branch, PR, committed candidate, uncommitted work-in-progress changes, or changes since a fixed point.",
+    "description_chars": 138,
+    "lines": 119,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/codebase-design/SKILL.md",
+    "name": "codebase-design",
+    "description": "Shared vocabulary for designing deep modules. Use when the user wants to design or improve a module's interface, find deepening opportunities, decide where a seam goes, make code more testable or AI-navigable, or when another skill needs the deep-module vocabulary.",
+    "description_chars": 265,
+    "lines": 118,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/competitive-intelligence/SKILL.md",
+    "name": "competitive-intelligence",
+    "description": "Use when researching competitors, market positioning, pricing, feature gaps, customer sentiment, or category trends before Discovery, Spec, product strategy, or roadmap decisions.",
+    "description_chars": 179,
+    "lines": 94,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/component-selection-imports/SKILL.md",
+    "name": "component-selection-imports",
+    "description": "指导 YSS UI 业务页面、CRUD、列表页、表单页和组件评审在编码前判定组件、Hook 与工具函数的真实导出来源；当需要在 @yss-ui/components、@yss-ui/hooks、@yss-ui/utils 与 ant-design-vue 之间选择，或需要排查虚构 Y 前缀组件、错误导入、Formily UI 边界时使用。",
+    "description_chars": 170,
+    "lines": 64,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/cross-repo-implementation-routing/SKILL.md",
+    "name": "cross-repo-implementation-routing",
+    "description": "Use when a Harness change or vertical slice may require work across external frontend/backend implementation repositories.",
+    "description_chars": 122,
+    "lines": 51,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/diagnosing-bugs/SKILL.md",
+    "name": "diagnosing-bugs",
+    "description": "Diagnosis loop for hard bugs and performance regressions. Use when the user says \"diagnose\"/\"debug this\", or reports something broken/throwing/failing/slow.",
+    "description_chars": 156,
+    "lines": 138,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/dispatching-parallel-agents/SKILL.md",
+    "name": "dispatching-parallel-agents",
+    "description": "Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies",
+    "description_chars": 106,
+    "lines": 185,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/domain-modeling/SKILL.md",
+    "name": "domain-modeling",
+    "description": "Build and sharpen a project's domain model. Use when discussing codebase terminology, writing or editing a CONTEXT.md, or recording or editing an ADR.",
+    "description_chars": 150,
+    "lines": 74,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/file-export-download/SKILL.md",
+    "name": "file-export-download",
+    "description": "指导 Vue3 YSS UI 微应用实现文件导出、报表下载、模板下载和附件下载，覆盖 OpenAPI binary 响应、Orval 生成方法检查、responseType blob 兜底、Blob 响应类型、Content-Disposition 文件名、handleBlobResponse、loading 与错误处理；当需求出现导出、下载、Excel、CSV、PDF、ZIP、Blob 或文件流时使用。",
+    "description_chars": 204,
+    "lines": 160,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/formily-foundation/SKILL.md",
+    "name": "formily-foundation",
+    "description": "指导 YFormily 基础表单开发；当创建或修复普通单页表单、字段校验、提交链路、查询表单布局、scope 表达式或导入边界时使用。",
+    "description_chars": 67,
+    "lines": 176,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/formily-linkage-effects/SKILL.md",
+    "name": "formily-linkage-effects",
+    "description": "指导 YFormily 字段联动与表单级副作用；当实现动态显隐、禁用、级联选项、scope 事件、x-reactions、effects、异步联动或客户端校验失败兜底时使用。",
+    "description_chars": 87,
+    "lines": 167,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/formily-mode-slot-detail/SKILL.md",
+    "name": "formily-mode-slot-detail",
+    "description": "指导 YFormily 新增、编辑、查看三态与插槽渲染；当配置 mode 0/1/2、查看态只读、详情页 Descriptions 展示、detail-options、Schema Slot 或详情字段插槽时使用。",
+    "description_chars": 107,
+    "lines": 137,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/formily-step-flow/SKILL.md",
+    "name": "formily-step-flow",
+    "description": "指导 YSS UI 分步表单与流程录入；当需要 Ant Design Vue Steps、多 YFormily 独立校验、跨步数据保留、确认预览或最终聚合提交时使用。",
+    "description_chars": 83,
+    "lines": 194,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/frontend-agent/SKILL.md",
+    "name": "frontend-agent",
+    "description": "根据冻结的交互、状态和 Slice Contract 实现 Vue 前端垂直切片并提供可复验的前端工程证据。",
+    "description_chars": 54,
+    "lines": 23,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/frontend-commit/SKILL.md",
+    "name": "frontend-commit",
+    "description": "分析并提交 Vue、React、TypeScript、JavaScript、Vite、微前端和前端 monorepo 项目的 Git 改动；当用户要求生成 commit message、检查提交规范、拆分原子提交、暂存并执行 git commit，或修复 commitlint 与 commit-msg hook 拒绝时使用。读取仓库实际规则和 diff，选择业务 scope，生成英文 type/scope 与中文标题和正文，并安全验证提交。",
+    "description_chars": 222,
+    "lines": 118,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/grill-me/SKILL.md",
+    "name": "grill-me",
+    "description": "A relentless interview to sharpen a plan or design.",
+    "description_chars": 51,
+    "lines": 7,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/grill-with-docs/SKILL.md",
+    "name": "grill-with-docs",
+    "description": "Use when the user explicitly requests a relentless design interview that must preserve resolved glossary terms, ADR-worthy decisions, and factual research evidence.",
+    "description_chars": 164,
+    "lines": 19,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/grilling/SKILL.md",
+    "name": "grilling",
+    "description": "Grill the user relentlessly about a plan, decision, or idea. Use when the user wants to stress-test their thinking, or uses any 'grill' trigger phrases.",
+    "description_chars": 152,
+    "lines": 28,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/handoff/SKILL.md",
+    "name": "handoff",
+    "description": "Compact the current conversation into a handoff document for another agent to pick up.",
+    "description_chars": 86,
+    "lines": 16,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/harness-orchestrator/SKILL.md",
+    "name": "harness-orchestrator",
+    "description": "编排前端专职 Harness 的输入接收、合同、任务派发与验证；当需要前端流程路由或恢复时使用。",
+    "description_chars": 48,
+    "lines": 45,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/i-have-adhd/SKILL.md",
+    "name": "i-have-adhd",
+    "description": "在研发文档起草、修订、审查报告和交接表达时，按 YSS 中文规范组织具体、完整、可执行的输出；仅作用于当前文档工作。",
+    "description_chars": 58,
+    "lines": 26,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/implement/SKILL.md",
+    "name": "implement",
+    "description": "Implement a piece of work based on a spec or set of tickets.",
+    "description_chars": 60,
+    "lines": 15,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/implementation-repo-onboarding/SKILL.md",
+    "name": "implementation-repo-onboarding",
+    "description": "Use when connecting an existing frontend, backend, fullstack, or other implementation Git repository to this Harness repository.",
+    "description_chars": 128,
+    "lines": 50,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/improve-codebase-architecture/SKILL.md",
+    "name": "improve-codebase-architecture",
+    "description": "Scan a codebase for deepening opportunities, present them as a visual HTML report, then grill through whichever one you pick.",
+    "description_chars": 125,
+    "lines": 71,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/SKILL.md",
+    "name": "llm-wiki",
+    "description": "Compile and maintain a Karpathy-pattern LLM wiki (raw + wiki + schema) with init, incremental refresh, global rebuild, lint, and narrow ingest. Use when the user wants a local knowledge wiki, incremental wiki refresh, wiki rebuild, compiling a named research note into the wiki, `/llm-wiki`, or an answer from an existing wiki.\n",
+    "description_chars": 328,
+    "lines": 60,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/loop-me/SKILL.md",
+    "name": "loop-me",
+    "description": "Grill me about specs for the workflows I want to build, within this workspace.",
+    "description_chars": 78,
+    "lines": 32,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/maintaining-skills/SKILL.md",
+    "name": "maintaining-skills",
+    "description": "Use when creating, modifying, validating, or retiring reusable Agent skills.",
+    "description_chars": 76,
+    "lines": 27,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/migrate-to-shoehorn/SKILL.md",
+    "name": "migrate-to-shoehorn",
+    "description": "Migrate test files from `as` type assertions to @total-typescript/shoehorn. Use when user mentions shoehorn, wants to replace `as` in tests, or needs partial test data.",
+    "description_chars": 168,
+    "lines": 118,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/page-form-module/SKILL.md",
+    "name": "page-form-module",
+    "description": "指导实现 YSS UI 新增、编辑和查看表单模块，覆盖 YFormily Schema、mode 0/1/2、详情渲染、数据回显与回填、表单值被意外清空排查、校验、提交 loading、弹窗销毁和列表刷新；当页面包含表单页、Modal 或 Drawer 表单，或编辑时回显丢失、提交后表单未重置时使用。",
+    "description_chars": 151,
+    "lines": 168,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/page-list-module/SKILL.md",
+    "name": "page-list-module",
+    "description": "指导实现 YSS UI 标准列表、远程分页、查询重置、YTable 工具栏、行操作、批量操作和左树右表模块；当页面需要查询、表格、分页或 CRUD 列表闭环时使用。",
+    "description_chars": 82,
+    "lines": 137,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/page-skeleton/SKILL.md",
+    "name": "page-skeleton",
+    "description": "指导搭建 Vue3 YSS UI 列表、表单、详情和弹窗页面模块骨架，统一 index.vue、constant.ts、style.less、hooks 与私有组件职责；当新建页面或需要拆分超过 150 行的业务组件时使用。",
+    "description_chars": 112,
+    "lines": 76,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/prototype/SKILL.md",
+    "name": "prototype",
+    "description": "Build a throwaway prototype to answer a design question. Use when the user wants to sanity-check whether a state model or logic feels right, or explore what a UI should look like.",
+    "description_chars": 179,
+    "lines": 26,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/prototype-page-acceptance/SKILL.md",
+    "name": "prototype-page-acceptance",
+    "description": "当用户提供原型截图、老项目路径、旧页面截图或要求按既有页面复刻业务页面时，指导先提取视觉和交互验收清单，开发后用截图/运行结果逐项对照，避免只实现字段而忽略布局、按钮、表格高度和控件类型。",
+    "description_chars": 94,
+    "lines": 62,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/prototype-review/SKILL.md",
+    "name": "prototype-review",
+    "description": "Use when reviewing low-fidelity UI design, wireframes, prototype links, interaction specs, or state matrices before high-fidelity HTML prototype work, Spec calibration, OpenAPI Draft, vertical slicing, or implementation.",
+    "description_chars": 220,
+    "lines": 76,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/resolving-merge-conflicts/SKILL.md",
+    "name": "resolving-merge-conflicts",
+    "description": "Use when you need to resolve an in-progress git merge/rebase conflict.",
+    "description_chars": 70,
+    "lines": 14,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/scaffold-exercises/SKILL.md",
+    "name": "scaffold-exercises",
+    "description": "Create exercise directory structures with sections, problems, solutions, and explainers that pass linting. Use when user wants to scaffold exercises, create exercise stubs, or set up a new course section.",
+    "description_chars": 204,
+    "lines": 106,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/setup-matt-pocock-skills/SKILL.md",
+    "name": "setup-matt-pocock-skills",
+    "description": "Configure this repo for the engineering skills — set up its issue tracker, triage label vocabulary, and domain doc layout. Run once before first use of the other engineering skills.",
+    "description_chars": 181,
+    "lines": 125,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/setup-pre-commit/SKILL.md",
+    "name": "setup-pre-commit",
+    "description": "Set up Husky pre-commit hooks with lint-staged (Prettier), type checking, and tests in the current repo. Use when user wants to add pre-commit hooks, set up Husky, configure lint-staged, or add commit-time formatting/typechecking/testing.",
+    "description_chars": 238,
+    "lines": 91,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/setup-ts-deep-modules/SKILL.md",
+    "name": "setup-ts-deep-modules",
+    "description": "Wire dependency-cruiser into a TypeScript repo so each package is a deep module — implementation hidden in subfolders, reachable only through its entry-point files. User-invoked.",
+    "description_chars": 178,
+    "lines": 102,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/tdd/SKILL.md",
+    "name": "tdd",
+    "description": "Test-driven development. Use when the user wants to build features or fix bugs test-first, mentions \"red-green-refactor\", or wants integration tests.",
+    "description_chars": 149,
+    "lines": 38,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/teach/SKILL.md",
+    "name": "teach",
+    "description": "Teach the user a new skill or concept, within this workspace.",
+    "description_chars": 61,
+    "lines": 140,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/test-agent/SKILL.md",
+    "name": "test-agent",
+    "description": "从前端工程设计和 Slice Contract 建立测试 seam，独立验证前端垂直切片及后端交付绑定并输出 Fresh Verification 证据。",
+    "description_chars": 77,
+    "lines": 24,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/theme-token-usage/SKILL.md",
+    "name": "theme-token-usage",
+    "description": "指导 Vue3 YSS UI 微应用业务页面、公共组件、原型还原和主题修复使用可动态换肤的 CSS/Ant Design Token，覆盖主色、hover/active/selected/focus、状态色、中性色、透明色派生和暗色模式；当新增或修改 .vue、style.less、内联样式、TS 渲染配置、SVG 色值，或审查硬编码",
+    "description_chars": 168,
+    "lines": 123,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/to-questionnaire/SKILL.md",
+    "name": "to-questionnaire",
+    "description": "Turn a decision you can't fully answer into a questionnaire for someone else to fill in.",
+    "description_chars": 88,
+    "lines": 53,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/to-spec/SKILL.md",
+    "name": "to-spec",
+    "description": "Turn the current conversation into a spec and publish it to the project issue tracker — no interview, just synthesis of what you've already discussed.",
+    "description_chars": 150,
+    "lines": 75,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/to-tickets/SKILL.md",
+    "name": "to-tickets",
+    "description": "Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker — edges as text in one file per ticket locally, or native blocking links on a real tracker.",
+    "description_chars": 247,
+    "lines": 105,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/triage/SKILL.md",
+    "name": "triage",
+    "description": "Move issues and external PRs through a state machine of triage roles — categorise, verify, grill if needed, and write agent-ready briefs.",
+    "description_chars": 137,
+    "lines": 112,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/using-git-worktrees/SKILL.md",
+    "name": "using-git-worktrees",
+    "description": "Use when starting feature work that needs isolation from current workspace or before executing implementation plans - ensures an isolated workspace exists via native tools or git worktree fallback",
+    "description_chars": 196,
+    "lines": 202,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/vue3-best-practices/SKILL.md",
+    "name": "vue3-best-practices",
+    "description": "在 Vue3 业务页面、组件和 composable 中规范响应式状态、组件通信、异步竞态与大数精度；实现或重构 Vue3 逻辑时使用。",
+    "description_chars": 68,
+    "lines": 68,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/wait-what/SKILL.md",
+    "name": "wait-what",
+    "description": "Stop. That last message did not land: re-pitch it.",
+    "description_chars": 50,
+    "lines": 7,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/wayfinder/SKILL.md",
+    "name": "wayfinder",
+    "description": "Plan a huge chunk of work — more than one agent session can hold — as a shared map of decision tickets on your issue tracker, and resolve them one at a time until the way to the destination is clear.",
+    "description_chars": 199,
+    "lines": 128,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/writing-beats/SKILL.md",
+    "name": "writing-beats",
+    "description": "Writing, exploit — assemble raw material into a journey of beats, grounding each term before a beat leans on it.",
+    "description_chars": 112,
+    "lines": 67,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/writing-for-agents/SKILL.md",
+    "name": "writing-for-agents",
+    "description": "Writing documents for agents. Use when creating or editing skills, or modifying AGENTS.md or CLAUDE.md.",
+    "description_chars": 103,
+    "lines": 81,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/writing-fragments/SKILL.md",
+    "name": "writing-fragments",
+    "description": "Writing, explore — mine raw fragments, no structure yet.",
+    "description_chars": 56,
+    "lines": 79,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/writing-shape/SKILL.md",
+    "name": "writing-shape",
+    "description": "Writing, exploit — shape raw material into an article, paragraph by paragraph.",
+    "description_chars": 78,
+    "lines": 79,
+    "explicit_only": true,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yedit-table-usage/SKILL.md",
+    "name": "yedit-table-usage",
+    "description": "指导 YSS UI 业务页面使用 @yss-ui/components 的 YEditTable 实现可编辑表格、行内编辑、添加/删除行、下拉多选与可创建 tags、行级候选联动、表头筛选、校验和查看态；当需求出现编辑表格、明细行、扩展属性、可编辑列或 YEditTableColumn 时使用。",
+    "description_chars": 148,
+    "lines": 227,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-api-integration/SKILL.md",
+    "name": "yss-api-integration",
+    "description": "Guide AI to correctly use Orval-generated API clients in Vue 3 micro-applications. This skill must be used whenever the user needs backend API integration, including list queries, CRUD actions, detail loading, submit flows, or API refactoring. It covers type-safe API imports, request/response mapping, and especially standardized useRequest integration patterns (manual/run/runAsync, pagination parameters, unified error handling, loading state, and success callbacks).",
+    "description_chars": 470,
+    "lines": 439,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-design-system/SKILL.md",
+    "name": "yss-design-system",
+    "description": "Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格基线。涉及页面设计、原型评审、UI 实现、组件选型、主题 token、颜色排版间距、响应式验收、Ant Design/YSS UI 风格一致性、docs/design/design.md 更新或从外部设计系统引入规范时必须使用。",
+    "description_chars": 155,
+    "lines": 108,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-formily/SKILL.md",
+    "name": "yss-formily",
+    "description": "路由 YSS UI 业务页面中的 YFormily 场景；当查询、编辑、详情、联动、分步表单或 schema 生成需求出现时，加载最小 Formily 专项 Skill。",
+    "description_chars": 85,
+    "lines": 35,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-formily-schema-generator/SKILL.md",
+    "name": "yss-formily-schema-generator",
+    "description": "Use when the user wants YssFormily JSON Schema or rendered form code from natural-language requirements, screenshots, local images, mockups, or Figma designs.",
+    "description_chars": 158,
+    "lines": 189,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-frontend-scaffold-generator/SKILL.md",
+    "name": "yss-frontend-scaffold-generator",
+    "description": "Use when creating a new YSS frontend micro-application from the standard frontend template.",
+    "description_chars": 91,
+    "lines": 78,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-hook/SKILL.md",
+    "name": "yss-hook",
+    "description": "Use when YSS Vue 页面涉及 vue-hooks-plus/useRequest、分页、请求缓存、轮询、URL query、异步 loading、数据转换或树数据加载。",
+    "description_chars": 91,
+    "lines": 200,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-implementation-contract-compiler/SKILL.md",
+    "name": "yss-implementation-contract-compiler",
+    "description": "将已批准的前端工程设计和上游联合交付、冻结契约和 capability 编译为 Slice Implementation Contract v2 草案；当垂直切片进入实现、验证结果或需要重路由时使用。",
+    "description_chars": 100,
+    "lines": 53,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-openapi-draft-review/SKILL.md",
+    "name": "yss-openapi-draft-review",
+    "description": "Use when reviewing a `docs/.scratch/<feature>/api/` OpenAPI Draft before Engineering Baseline, YSS DDD Review, architecture/Spec Delta design, OpenAPI Freeze, vertical slicing, frontend/backend implementation, or when checking P0 requirement coverage, page action to endpoint mapping, YSS response wrappers, errors, pagination, optimistic locking, and contract test seams.",
+    "description_chars": 372,
+    "lines": 84,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-openapi-governance/SKILL.md",
+    "name": "yss-openapi-governance",
+    "description": "Use when consuming frozen YSS OpenAPI 3.1 contracts, validating JSON derivatives, or preparing frontend client generation; API changes return to the backend owner.",
+    "description_chars": 163,
+    "lines": 147,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-prototype-stage/SKILL.md",
+    "name": "yss-prototype-stage",
+    "description": "Use when a YSS feature has product-design impact on a primary flow, navigation, state, recovery, permission experience, or UI-driven API contract and needs profile-routed prototype assets before implementation readiness, or when handing off a confirmed unchanged existing UI baseline.",
+    "description_chars": 284,
+    "lines": 77,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-research/SKILL.md",
+    "name": "yss-research",
+    "description": "Research technical or product-strategy questions with traceable evidence before YSS Plan, Spec, domain-strategy, API, architecture, or implementation decisions. Use for current facts, standards, third-party APIs, business constraints, user problems, domain-boundary evidence, or when the deprecated `research` alias is invoked.",
+    "description_chars": 327,
+    "lines": 79,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-skill-source-index-refresh/SKILL.md",
+    "name": "yss-skill-source-index-refresh",
+    "description": "Refresh frontend YSS UI documentation entry-point indexes when component, hook, or page-module references change; frontend maintenance only.",
+    "description_chars": 140,
+    "lines": 19,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-ui/SKILL.md",
+    "name": "yss-ui",
+    "description": "Use when implementing or reviewing YSS Vue pages that combine YSS wrappers with Ant Design Vue, including component selection, version compatibility, layout, Formily, tables, trees, hooks, overlays, themes, accessibility, API integration, and delivery verification.",
+    "description_chars": 265,
+    "lines": 172,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-ui-business-page-generation/SKILL.md",
+    "name": "yss-ui-business-page-generation",
+    "description": "指导生成或改造 Vue3 YSS UI CRUD、列表、表单、详情、左树右表和弹窗抽屉页面，覆盖组件选型、模块拆分、Orval API、响应式高度、主题和原型验收；当用户要求生成 YSS UI 业务页或 CRUD 模块时使用。",
+    "description_chars": 113,
+    "lines": 159,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-use-table-height/SKILL.md",
+    "name": "yss-use-table-height",
+    "description": "Use when working with YTable that needs responsive height, pagination, or a toolbar and the useTableHeight hook is involved.",
+    "description_chars": 124,
+    "lines": 349,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-use-tree-height/SKILL.md",
+    "name": "yss-use-tree-height",
+    "description": "Use when working with YTree that needs responsive height, virtual scrolling, or built-in search and the useTreeHeight hook is involved.",
+    "description_chars": 135,
+    "lines": 440,
+    "explicit_only": false,
+    "openai_policy": true
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/ytable-usage/SKILL.md",
+    "name": "ytable-usage",
+    "description": "指导 YSS UI 业务列表页、CRUD 表格、远程分页、操作列、气泡确认、列筛选、字典翻译、行拖拽、工具栏和自定义插槽正确使用 @yss-ui/components 的 YTable；当需要配置 YTableColumn、YTableActionConfig、pagination、filter-change 或表格实例方法时使用。",
+    "description_chars": 167,
+    "lines": 251,
+    "explicit_only": false,
+    "openai_policy": false
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/ytree-usage/SKILL.md",
+    "name": "ytree-usage",
+    "description": "指导 YSS UI 左树右表、组织树、分类树、目录树和节点管理页使用 @yss-ui/components 的 YTree，覆盖 fieldNames 字段映射、搜索过滤、受控选中、节点动作、删除确认、虚拟滚动和自适应高度；当生成或修改树形筛选、左树右表、树搜索或树节点操作时使用。",
+    "description_chars": 141,
+    "lines": 132,
+    "explicit_only": false,
+    "openai_policy": false
+  }
+]

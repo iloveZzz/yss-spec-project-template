@@ -1,6 +1,6 @@
 ---
 name: "yss-ui"
-description: Use when implementing or reviewing YSS Vue pages that combine YSS wrappers with Ant Design Vue, including component selection, version compatibility, layout, Formily, tables, trees, hooks, overlays, themes, accessibility, API integration, and delivery verification.
+description: "选择和核验 YSS Vue 生产页面组件及 Ant Design Vue 兼容性；原型任务用 yss-prototype-stage。"
 ---
 
 # YSS UI 统一路由与交付门禁

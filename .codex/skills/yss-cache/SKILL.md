@@ -1,6 +1,6 @@
 ---
 name: yss-cache
-description: 用于 YSS 缓存框架的接入、配置、代码修改和故障诊断。Use when tasks involve QueryCache、UpdateCache、ClearCache、TTL、SpEL key、事务提交后缓存操作、Redis/Caffeine/Hazelcast 后端切换、Redis Standalone/Sentinel/Cluster、Jedis 连接池、Redis fallback、JetCache、多级缓存、序列化兼容、缓存不命中或失效不一致。
+description: "接入或排查 YSS QueryCache、UpdateCache、ClearCache、TTL、缓存后端与一致性问题。"
 ---
 
 # yss-cache

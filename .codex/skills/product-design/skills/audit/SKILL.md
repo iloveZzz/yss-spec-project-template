@@ -1,6 +1,6 @@
 ---
 name: audit
-description: "Audit or critique a product flow, journey, workflow, funnel, onboarding path, checkout path, settings path, screen, or multi-step product experience by capturing screenshots first, placing them in Figma or a local folder, then reporting UX, design, and accessibility findings from that evidence. Use when the user asks to audit, critique, review, inspect, assess, or evaluate a product experience."
+description: "Audit an existing product screen or flow using screenshots; report UX and accessibility findings."
 ---
 
 # Audit

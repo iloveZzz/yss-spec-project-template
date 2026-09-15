@@ -37,7 +37,7 @@
 
 1. 在临时目录读取或下载锁定来源，不直接覆盖工作区。
 2. 只在 `.agents/skills/<skill-name>/` 修改共享技能；平台专属技能只在所属 root 修改。
-3. 创建、修改或退役 skill 时使用 `maintaining-skills`，并先按 `docs/process/harness-process-tailoring.md` 判定验证与审查强度：L1 执行相关检查，L2 记录最小反例、fresh verification 和聚焦审查，L3 记录维护者自检与 fresh verification；正式发布前统一执行完整模板门禁。未定义分级的外部仓库按实际风险执行结构校验和针对性行为验证。
+3. 创建、修改或退役 skill 时使用 `maintaining-skills`，并按 `docs/process/harness-process-tailoring.md` 与 `maintenance-intensity.yaml` 判定验证强度；独立审查按需，不由 L2 自动触发。发现描述或提示结构调整时读取该 Skill 的 `references/authoring.md`，保留具体业务约束和跨运行时兼容性。
 4. 生成共享投影并更新锁文件：
 
    ```bash
@@ -60,7 +60,7 @@
    scripts/verify-template-fast
    ```
 
-   显式准备独立审查时执行 `scripts/verify-template-candidate`，首次冻结前和最终发布前才执行完整发布阻断校验：
+   PR 使用 `scripts/verify-template-candidate`；main 与发布前使用 `scripts/verify-template`。是否冻结候选或做独立审查按权威策略判定，candidate 命令本身不要求冻结：
 
    ```bash
    scripts/verify-template-candidate

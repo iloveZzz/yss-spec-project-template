@@ -1,0 +1,70 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "精简共享与平台发现描述、调整条件加载与维护完成边界，并跨三个 Agent 和四个 CLI 同步。",
+  "triggers": [
+    "aggregate-behavior-change",
+    "cross-repo-contract"
+  ],
+  "changed_assets": [
+    "AGENTS.md",
+    ".agents/skills",
+    ".codex/skills/data-analytics",
+    ".codex/skills/product-design",
+    "docs/agents/skills-maintenance.md",
+    ".template-source/profile-skill-sync.json",
+    ".template-source/profile-skill-patches",
+    "skills-lock.json",
+    "submodules/yss-harness-backend-agent",
+    "submodules/yss-harness-design-agent",
+    "submodules/yss-harness-frontend-agent",
+    "submodules/create-yss-spec",
+    "submodules/create-yss-harness-backend",
+    "submodules/create-yss-harness-frontend",
+    "submodules/create-yss-strategic-design"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "self-check",
+      "command": "python3 .template-source/evidence/maintenance/2026-09-16-astra-skills/verify-optimization.py",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "scripts/verify-template-fast",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "python3 .template-source/evidence/maintenance/2026-09-16-astra-skills/verify-delivery.py",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "pnpm --dir submodules/create-yss-spec test:prepared",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "pnpm --dir submodules/create-yss-harness-backend test:prepared",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "pnpm --dir submodules/create-yss-strategic-design test:prepared",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "pnpm exec node --test --test-concurrency=1 tests/*.test.mjs (cwd=submodules/create-yss-harness-frontend)",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "none",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

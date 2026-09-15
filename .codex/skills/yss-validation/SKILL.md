@@ -1,6 +1,6 @@
 ---
 name: yss-validation
-description: Use when YSS Bean Validation/JSR-303 dependencies, validation messages, LiteFlow EL parsing, `ExpressParserFactory`, parser registration, or validation-error mapping is involved.
+description: "接入或排查 YSS Bean Validation、校验消息、LiteFlow EL 解析器与校验错误映射。"
 ---
 
 # yss-validation

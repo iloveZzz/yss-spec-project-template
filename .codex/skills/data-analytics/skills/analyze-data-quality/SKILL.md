@@ -1,6 +1,6 @@
 ---
 name: analyze-data-quality
-description: "Assess whether tables, query results, files, or dataframes are trustworthy enough for analysis, modeling, dashboards, experiments, or pipelines. Use for grain, freshness, nulls, duplicates, schema drift, broken joins, referential integrity, distribution shifts, leakage, backfills, source mismatches, automated quality checks, and data-quality regressions."
+description: "Assess analytical data quality: grain, freshness, nulls, duplicates, joins, schema drift and source consistency."
 ---
 
 # Analyze Data Quality

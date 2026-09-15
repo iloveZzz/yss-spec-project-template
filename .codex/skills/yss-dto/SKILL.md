@@ -1,6 +1,6 @@
 ---
 name: yss-dto
-description: Use when YSS `Result`, `SingleResult`, `MultiResult`, `PageResult`, `PageQuery`, `CommandDTO`, `QueryDTO`, pagination, or response-wrapper boundaries are involved.
+description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO、QueryDTO 及 wire 边界。"
 ---
 
 # yss-dto

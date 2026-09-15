@@ -1,11 +1,6 @@
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -1,69 +1,53 @@
- ---
- name: yss-implementation-contract-compiler
--description: Use when a YSS vertical slice is entering implementation, spans multiple frontend/backend/API areas, needs implementation readiness checked, or requires a minimal YSS skill set, Slice Implementation Contract, TDD mode, evidence plan, or reroute decision.
-+description: 将已批准的前端工程设计和上游联合交付、冻结契约和 capability 编译为 Slice Implementation Contract v2 草案；当垂直切片进入实现、验证结果或需要重路由时使用。
- ---
+@@ -5,65 +5,49 @@
  
  # YSS Implementation Contract Compiler
  

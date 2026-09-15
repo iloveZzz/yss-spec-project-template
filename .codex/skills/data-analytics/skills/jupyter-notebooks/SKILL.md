@@ -1,6 +1,6 @@
 ---
 name: jupyter-notebooks
-description: "Create, scaffold, edit, refactor, and validate Jupyter notebooks (`.ipynb`) for reproducible SQL/Python analysis, experiments, modeling, tutorials, diagnostics, data-quality checks, market-sizing calculations, and report support. Use when the notebook itself is a deliverable, review artifact, runnable analysis companion, or handoff artifact that other people should be able to skim, rerun, or extend."
+description: "Create or revise a reproducible Jupyter notebook when the notebook itself is a deliverable or runnable analysis."
 ---
 
 # Jupyter Notebooks

@@ -1,6 +1,6 @@
 ---
 name: file-export-download
-description: 指导 Vue3 YSS UI 微应用实现文件导出、报表下载、模板下载和附件下载，覆盖 OpenAPI binary 响应、Orval 生成方法检查、responseType blob 兜底、Blob 响应类型、Content-Disposition 文件名、handleBlobResponse、loading 与错误处理；当需求出现导出、下载、Excel、CSV、PDF、ZIP、Blob 或文件流时使用。
+description: "在 Vue3 YSS UI 中实现或修复文件下载与导出，处理 Orval 文件流、Blob、文件名和错误响应。"
 ---
 
 # YSS 文件导出下载 Skill

@@ -1,6 +1,6 @@
 ---
 name: research
-description: "Run fast, source-grounded UX research on the highest-signal problems users are experiencing with a user-specified digital product. Use when the user asks to research user pain, UX friction, onboarding issues, docs/help problems, developer experience friction, support pain, product workflow issues, or current user complaints for a named product."
+description: "Research UX friction, user pain or current complaints about a named digital product using traceable sources."
 ---
 
 # Research

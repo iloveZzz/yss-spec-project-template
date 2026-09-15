@@ -1,6 +1,6 @@
 ---
 name: prototype
-description: "Route coded prototype requests after Product Design get-context has confirmed the design brief. Use for building prototypes from URLs, images, mockups, Figma, existing code, or ideas that need visual exploration before build."
+description: "Route prototype builds from URLs, images, Figma, code or ideas after confirming the Product Design brief."
 ---
 
 # Design Prototypes

@@ -1,6 +1,6 @@
 ---
 name: yss-api-integration
-description: 指导在 Vue3 业务列表、表单、详情和操作 Hook 中集成 Orval API，覆盖真实生成产物选择、mutator 响应契约、错误提示、加载状态、请求选项和长整型精度；当页面对接查询、新增、编辑、删除、详情或文件流接口时使用。
+description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator、错误反馈、loading 与长整型精度。"
 ---
 
 # API 集成 Skill

@@ -1,6 +1,6 @@
 ---
 name: yedit-table-usage
-description: 指导 YSS UI 业务页面使用 @yss-ui/components 的 YEditTable 实现可编辑表格、行内编辑、添加/删除行、下拉多选与可创建 tags、行级候选联动、表头筛选、校验和查看态；当需求出现编辑表格、明细行、扩展属性、可编辑列或 YEditTableColumn 时使用。
+description: "配置或修复 YSS UI YEditTable 的行内编辑、候选联动、增删行、校验与查看态。"
 ---
 
 # YEditTable 使用

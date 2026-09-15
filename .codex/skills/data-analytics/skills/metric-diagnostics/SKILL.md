@@ -1,6 +1,6 @@
 ---
 name: metric-diagnostics
-description: "Diagnose why a metric changed or differs from expectation by reproducing the metric, choosing the right comparison, validating likely drivers, and producing a calibrated explanation. Use when the user needs to understand what drove a metric movement, anomaly, gap, or discrepancy."
+description: "Explain a metric movement, anomaly or gap by validating the metric, comparison and likely drivers."
 ---
 
 # Metric Diagnostics

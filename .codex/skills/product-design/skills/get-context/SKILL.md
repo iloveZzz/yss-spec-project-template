@@ -1,6 +1,6 @@
 ---
 name: get-context
-description: "Mandatory design-brief gate for Product Design build and design workflows. Use before ideation, prototyping, image-to-code builds, redesigns, or product UI work to clarify missing product, visual, and interactivity context or play back the supplied brief before proceeding."
+description: "Establish the Product Design brief before ideation or builds; reuse supplied context and clarify missing decisions."
 ---
 
 # Get Context

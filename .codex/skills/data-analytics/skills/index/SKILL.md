@@ -1,6 +1,6 @@
 ---
 name: index
-description: Primary router for Data Analytics. Use when the plugin is at-mentioned or for data work where source-backed analysis, quantitative reasoning, analytical delivery, or reusable data context may be useful; examples include analyzing data, explaining or diagnosing metrics, validating data or results, creating data visualizations, building analytics reports or dashboards, working with notebooks or spreadsheets, designing KPIs, sizing opportunities, and saving reusable data context for future analysis.
+description: "Route Data Analytics requests to the relevant analysis, metric, chart, report or data-context skill."
 ---
 
 # Skill Purpose

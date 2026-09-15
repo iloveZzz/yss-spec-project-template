@@ -1,6 +1,6 @@
 ---
 name: build-dashboard
-description: "Build source-backed analytical dashboards that help teams monitor performance, explore drivers, and act on product or business metrics. Use when the user needs a dashboard, scorecard, monitoring view, BI dashboard, MCP artifact dashboard, or Streamlit dashboard with clear metrics, filters, validation, and handoff."
+description: "Build an analytical dashboard or scorecard with defined metrics, filters, source evidence and validation."
 ---
 
 # Dashboard Building

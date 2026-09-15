@@ -1,6 +1,6 @@
 ---
 name: validate-data
-description: "QA an analysis before sharing: review methodology, metric definitions, SQL/query logic, calculation checks, chart integrity, bias risks, caveats, reproducibility, and whether conclusions are supported by evidence. Use when reviewing a report, notebook, spreadsheet, SQL query/results, dashboard, chart, recommendation, or stakeholder-ready analysis before presentation or publication."
+description: "Review analytical methodology, calculations, sources, charts and conclusions before a report or analysis is shared."
 ---
 
 # Validate Data Analysis

@@ -1,0 +1,62 @@
+[
+  {
+    "repository": "submodules/yss-harness-backend-agent",
+    "command": "scripts/verify-skill-registry",
+    "exit_code": 0
+  },
+  {
+    "repository": "submodules/yss-harness-backend-agent",
+    "command": "scripts/verify-skill-governance",
+    "exit_code": 0
+  },
+  {
+    "repository": "submodules/yss-harness-backend-agent",
+    "command": "scripts/sync-skills --check",
+    "exit_code": 0
+  },
+  {
+    "repository": "submodules/yss-harness-backend-agent",
+    "command": "scripts/update-skill-lock --check",
+    "exit_code": 0
+  },
+  {
+    "repository": "submodules/yss-harness-design-agent",
+    "command": "scripts/verify-skill-registry",
+    "exit_code": 0
+  },
+  {
+    "repository": "submodules/yss-harness-design-agent",
+    "command": "scripts/verify-skill-governance",
+    "exit_code": 0
+  },
+  {
+    "repository": "submodules/yss-harness-design-agent",
+    "command": "scripts/sync-skills --check",
+    "exit_code": 0
+  },
+  {
+    "repository": "submodules/yss-harness-design-agent",
+    "command": "scripts/update-skill-lock --check",
+    "exit_code": 0
+  },
+  {
+    "repository": "submodules/yss-harness-frontend-agent",
+    "command": "scripts/verify-skill-registry",
+    "exit_code": 0
+  },
+  {
+    "repository": "submodules/yss-harness-frontend-agent",
+    "command": "scripts/verify-skill-governance",
+    "exit_code": 0
+  },
+  {
+    "repository": "submodules/yss-harness-frontend-agent",
+    "command": "scripts/sync-skills --check",
+    "exit_code": 0
+  },
+  {
+    "repository": "submodules/yss-harness-frontend-agent",
+    "command": "scripts/update-skill-lock --check",
+    "exit_code": 0
+  }
+]

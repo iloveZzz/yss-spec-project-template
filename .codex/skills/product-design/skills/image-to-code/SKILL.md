@@ -1,6 +1,6 @@
 ---
 name: image-to-code
-description: "Implement a selected image, screenshot, mockup, or Image Gen reference as a faithful responsive frontend after Product Design get-context has confirmed the design brief."
+description: "Implement a selected image, screenshot or mockup as a responsive frontend after confirming the design brief."
 ---
 
 # Image to Code

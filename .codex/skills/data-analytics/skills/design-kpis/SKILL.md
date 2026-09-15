@@ -1,6 +1,6 @@
 ---
 name: design-kpis
-description: "Design KPI frameworks, set targets, and develop measurement plans that help teams make product or business decisions. Use when success metrics, drivers, guardrails, targets, or measurement approach need to be defined or improved. Use $metric-diagnostics when the task is to explain why an existing metric moved."
+description: "Define KPI frameworks, targets and measurement plans. Use metric-diagnostics to explain an existing metric change."
 ---
 
 # Design KPIs

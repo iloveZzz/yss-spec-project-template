@@ -1,6 +1,6 @@
 ---
 name: yss-ui-business-page-generation
-description: 指导生成或改造 Vue3 YSS UI CRUD、列表、表单、详情、左树右表和弹窗抽屉页面，覆盖组件选型、模块拆分、Orval API、响应式高度、主题和原型验收；当用户要求生成 YSS UI 业务页或 CRUD 模块时使用。
+description: "生成或改造完整 YSS UI CRUD、列表、表单、详情或左树右表模块；组织页面、API 与验收。"
 ---
 
 # YSS UI 业务页面生成 Skill

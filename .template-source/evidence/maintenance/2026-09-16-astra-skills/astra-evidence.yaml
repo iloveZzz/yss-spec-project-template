@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "profile": "technical-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "GPT-6 Astra Skill 优化",
+    "audience": "YSS 模板维护者",
+    "time_horizon": "2026-09-16 当前官方规范与本地基线",
+    "research_questions": [
+      "如何精简发现面且保留 YSS 约束？",
+      "如何覆盖三个 Profile 和四个 CLI？"
+    ],
+    "inclusion_criteria": [
+      "官方文档、当前源码与本仓治理规则"
+    ],
+    "exclusion_criteria": [
+      "转载、未证实的模型性能、计费与模型配置变更"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "maintaining-skills",
+    "decision_ref": null
+  },
+  "search_log": [
+    {
+      "id": "search-001",
+      "channel": "local",
+      "query_or_corpus": "maintaining-skills; yss-research; skills registry; git submodule status",
+      "searched_at": "2026-09-16",
+      "result": "results-found"
+    },
+    {
+      "id": "search-002",
+      "channel": "web",
+      "query_or_corpus": "site.developers.openai.com GPT-6 Astra; Codex skills best practices",
+      "searched_at": "2026-09-16",
+      "result": "results-found"
+    },
+    {
+      "id": "search-003",
+      "channel": "web",
+      "query_or_corpus": "Open official Astra Skills, Codex Skills and model guide pages",
+      "searched_at": "2026-09-16",
+      "result": "results-found"
+    },
+    {
+      "id": "search-004",
+      "channel": "web",
+      "query_or_corpus": "Official Markdown page fetch",
+      "searched_at": "2026-09-16",
+      "result": "access-failed"
+    },
+    {
+      "id": "search-005",
+      "channel": "curl",
+      "query_or_corpus": "Official Astra Skills and Codex Skills .md URLs",
+      "searched_at": "2026-09-16",
+      "result": "results-found"
+    },
+    {
+      "id": "search-006",
+      "channel": "web",
+      "query_or_corpus": "MapStruct Configuration options; Lombok ToString official pages",
+      "searched_at": "2026-09-16",
+      "result": "results-found"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-001",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs",
+      "source_ref": "https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra",
+      "locator": "Better skills; Persistence",
+      "stance": "support",
+      "observed_at": "2026-09-16",
+      "observation": "短描述、渐进加载、检查旧约束并明确完成边界。",
+      "limitations": [
+        "当前版本观察，不等于模型效果评测。"
+      ]
+    },
+    {
+      "id": "evidence-002",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs",
+      "source_ref": "https://developers.openai.com/codex/skills",
+      "locator": "Optional metadata; Best practices",
+      "stance": "support",
+      "observed_at": "2026-09-16",
+      "observation": "支持 allow_implicit_invocation；元数据与正文按需加载。",
+      "limitations": [
+        "当前版本观察，不等于模型效果评测。"
+      ]
+    },
+    {
+      "id": "evidence-003",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "before.json; .agents/skills/mapstruct/SKILL.md; .agents/skills/lombok/SKILL.md",
+      "locator": "2026-09-16 编辑前 inventory 与 git HEAD",
+      "stance": "support",
+      "observed_at": "2026-09-16",
+      "observation": "266 个入口；存在长描述、入口通用示例以及 MapStruct IGNORE 冲突。",
+      "limitations": [
+        "当前版本观察，不等于模型效果评测。"
+      ]
+    },
+    {
+      "id": "evidence-004",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs",
+      "source_ref": "https://mapstruct.org/documentation/stable/reference/html/",
+      "locator": "Configuration options; Lombok",
+      "stance": "support",
+      "observed_at": "2026-09-16",
+      "observation": "ERROR 可暴露未映射目标字段；处理器及 Lombok 集成需明确配置。",
+      "limitations": [
+        "当前版本观察，不等于模型效果评测。"
+      ]
+    },
+    {
+      "id": "evidence-005",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs",
+      "source_ref": "https://projectlombok.org/features/ToString",
+      "locator": "Overview",
+      "stance": "support",
+      "observed_at": "2026-09-16",
+      "observation": "支持显式选择或排除 toString 字段。",
+      "limitations": [
+        "当前版本观察，不等于模型效果评测。"
+      ]
+    },
+    {
+      "id": "evidence-006",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-docs",
+      "source_ref": "https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra",
+      "locator": "Better skills: shared repositories and other models",
+      "stance": "counter",
+      "observed_at": "2026-09-16",
+      "observation": "共享 Skills 还被其他模型使用，不能将全部过程约束视为过时。",
+      "limitations": [
+        "当前版本观察，不等于模型效果评测。"
+      ]
+    },
+    {
+      "id": "evidence-007",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "source-code",
+      "source_ref": "AGENTS.md; docs/process/maintenance-intensity.yaml",
+      "locator": "维护、实现和发布边界",
+      "stance": "counter",
+      "observed_at": "2026-09-16",
+      "observation": "YSS 强制门禁依然适用；精简不等于批准或验证通过。",
+      "limitations": [
+        "当前版本观察，不等于模型效果评测。"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-001",
+      "claim_kind": "technical-fact",
+      "statement": "Astra 官方建议短描述和渐进加载，并复核过度约束。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-001"
+      ],
+      "counter_signal_refs": [
+        "evidence-006",
+        "evidence-007"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-002",
+      "claim_kind": "technical-fact",
+      "statement": "Codex 支持渐进加载和显式调用元数据。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-002"
+      ],
+      "counter_signal_refs": [
+        "evidence-006",
+        "evidence-007"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-003",
+      "claim_kind": "technical-fact",
+      "statement": "本地存在入口过长和与 YSS 合同冲突的 MapStruct 示例。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-003"
+      ],
+      "counter_signal_refs": [
+        "evidence-006",
+        "evidence-007"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-004",
+      "claim_kind": "technical-fact",
+      "statement": "第三方工具支持暴露目标字段遗漏及限定 toString 字段。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-004",
+        "evidence-005"
+      ],
+      "counter_signal_refs": [
+        "evidence-006",
+        "evidence-007"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [
+    "未运行独立 GPT-6 Astra A/B 评测；Markdown web Content-Type 限制以 curl 恢复。"
+  ],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-001",
+      "claim-002",
+      "claim-003",
+      "claim-004"
+    ],
+    "notes": [
+      "逐条核对当前官方页面与编辑前源码。"
+    ]
+  }
+}

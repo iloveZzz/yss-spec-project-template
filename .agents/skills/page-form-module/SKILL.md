@@ -1,6 +1,6 @@
 ---
 name: page-form-module
-description: 指导实现 YSS UI 新增、编辑和查看表单模块，覆盖 YFormily Schema、mode 0/1/2、详情渲染、数据回显与回填、表单值被意外清空排查、校验、提交 loading、弹窗销毁和列表刷新；当页面包含表单页、Modal 或 Drawer 表单，或编辑时回显丢失、提交后表单未重置时使用。
+description: "实现 YSS UI 新增、编辑、查看表单模块及弹窗闭环；排查回显丢失、重置、提交与列表刷新。"
 ---
 
 # Page Form Module Skill

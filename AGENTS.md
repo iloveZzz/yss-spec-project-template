@@ -32,6 +32,8 @@
 
 ## 4. `template-source` 模板维护路由
 
+在用户已授权的模板维护范围内，继续完成受影响 Skill、投影、锁文件和分发快照的同步与适用验证；按当前影响面读取文档。首次编辑完成不等于交付完成。只有新增决定、缺失必要输入或命中既有审批边界时才暂停；提交、推送、发布仍按本仓授权规则执行。
+
 - 按“影响面 → 事实源 → 投影 / 派生 → 分级证据”维护；改 Skill 必须用 `maintaining-skills`，并按 `docs/process/harness-process-tailoring.md` 判定 L1 / L2 / L3。
 - `.agents/skills` 是共享 Skill 权威目录；其他 Agent root 下的同名 Skill 是生成投影，不得手改或与 canonical 并列维护。
 - 内循环运行 `scripts/verify-template-fast`；PR 运行 `scripts/verify-template-candidate`；main 和发布前运行不可裁剪的 `scripts/verify-template`。日常维护不强制独立审查或候选冻结，L1/L2/L3 决定验证强度；外部 `create-yss-spec` 固定版本集成未闭合不得称可发布。CI 边界见 `docs/process/github-workflows.md`。

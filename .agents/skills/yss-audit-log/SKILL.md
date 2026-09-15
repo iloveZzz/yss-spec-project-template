@@ -1,6 +1,6 @@
 ---
 name: yss-audit-log
-description: Use when YSS `AuditLog`, `EnableAuditLog`, audit SpEL summaries, async publication, subscriber registration, queue loss, or audit delivery failures are involved.
+description: "接入或排查 YSS AuditLog 的 SpEL 摘要、异步发布、订阅注册与审计投递。"
 ---
 
 # yss-audit-log

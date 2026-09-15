@@ -1,6 +1,6 @@
 ---
 name: yss-implementation-contract-compiler
-description: Use when a YSS vertical slice is entering implementation, spans multiple frontend/backend/API areas, needs implementation readiness checked, or requires a minimal YSS skill set, Slice Implementation Contract, TDD mode, evidence plan, or reroute decision.
+description: "编译或重验 YSS Slice Implementation Contract、最小 Skill 集与证据计划；判定偏离及重新路由。"
 ---
 
 # YSS Implementation Contract Compiler

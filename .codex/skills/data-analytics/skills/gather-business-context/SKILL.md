@@ -1,6 +1,6 @@
 ---
 name: gather-business-context
-description: "Gather business context from connected or provided sources so downstream analysis starts with the right framing. Use before deeper analysis when an analytical question depends on context the prompt does not provide, for example to understand what a metric means, how the work is defined, what changed recently, or which sources should be checked."
+description: "Find missing business or metric context in provided or connected sources before dependent analysis."
 ---
 
 # Gather Business Context
