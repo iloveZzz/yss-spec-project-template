@@ -1,0 +1,105 @@
+{
+  "recorded_at": "2026-09-16T15:56:30.054995+00:00",
+  "repository_mode": "template-source",
+  "maintenance_intensity": "L3",
+  "target": "implementation-ready",
+  "target_achieved": true,
+  "review_mode": "self-check",
+  "context_reconciliation": {
+    "status": "not-applicable",
+    "reason": "模板维护，不创建产品生命周期资产"
+  },
+  "focused_checks": [
+    {
+      "command": "scripts/verify-yss-implementation-contract-compiler-scenarios",
+      "result": "pass",
+      "tests": 23,
+      "log": "compiler-close.log"
+    },
+    {
+      "command": "node --test --test-name-pattern=\"review reads\" scripts/fixtures/slice-contract-v3/round2.test.mjs",
+      "result": "pass",
+      "log": "view-final.log"
+    },
+    {
+      "command": "scripts/verify-user-decision-scenarios",
+      "result": "pass",
+      "groups": 31,
+      "log": "user-decisions.log"
+    },
+    {
+      "command": "scripts/verify-digital-human-task-package-scenarios",
+      "result": "pass",
+      "log": "task-package.log"
+    },
+    {
+      "command": "scripts/verify-delivery-preflight-scenarios",
+      "result": "pass",
+      "log": "preflight-final.log"
+    }
+  ],
+  "workspace_verification": {
+    "command": "scripts/verify-template-fast --concurrency 2",
+    "effective_profile": "release",
+    "reason": "已有 AGENTS.md 等核心核验资产改动使自动检查升级",
+    "passed_commands": 56,
+    "failed_commands": [
+      "scripts/verify-strategic-handoff-tools-lock",
+      "scripts/sync-profile-skills --check --profile=all",
+      "node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs",
+      "scripts/verify-strategic-handoff-tools-lock --require-committed"
+    ],
+    "result": "blocked",
+    "current_boundary": "此前非发布检查失败已专项重验通过；--require-committed 仍只适用于正式发布，未执行提交。未宣称完整 release 验证通过。"
+  },
+  "distribution_check": "战略交接共享工具 同步检查通过",
+  "profile_issues": [],
+  "source_sha256": {
+    "scripts/slice-contract": "54a7ee000cf83e04d733e3d6c27edd08feca35fa00744d4dffdf9e6e697ae8b4",
+    "scripts/lib/slice-contract.mjs": "96de1dbd8b7f7b1d80a054c20bfc50d8589f018351def5ee408a94bef206605a",
+    "scripts/lib/slice-contract-preparation.mjs": "c4c5e5fd519830db724faa942747792cde450ae327696846a99ade8159afb856",
+    "scripts/lib/slice-contract-views.mjs": "6b8b3803b520ac68e880fffcff155b443d2117efc2cbbc758b021563f2ff4751",
+    "scripts/lib/slice-repositories.mjs": "af928eaf769ca7714dd47bc49b665ab43470d6b53618baac5fecd0db9fc2645c",
+    "scripts/lib/slice-applicability.mjs": "c899fd31a39e3a4237a4a21e13c5fa718b319b792b6365b23b602cf792281e1c",
+    "scripts/lib/slice-task-package.mjs": "5b8daa1f81be2c89baffd0de269f9ab120b0946311af2a6d20e7f9371bf2a813",
+    "scripts/lib/approved-execution-context.mjs": "dbbf64a893091e582f815c3951c32a34b78db4394f4fb949f7f49af7bf70fc56",
+    "scripts/lib/implementation-contract-compiler.mjs": "19c099e1356034bd3b539ab827c2a9ff145eaec4f0180b69d3a62e1374b48af2",
+    "scripts/lib/technical-design-boundary.mjs": "d64bbb685df7073a5b7a44138329d4270c726a94d9fec898cf06f3e948b3cca0",
+    "scripts/lib/delivery-preflight.mjs": "421cb007073b1734edd16ebe5051a0341274cc64b57feb4e0d6a08a31698bf63",
+    "scripts/preflight-delivery": "cd83fa432847207b7167cfb5434846baff7615d5f2ffc33c7e9d4779c419f68f",
+    "scripts/lib/lifecycle-transition.mjs": "b250c66f46036994b28423a7bb445bd7747400c8699b7927fc461b8394148173",
+    "scripts/fixtures/slice-contract-v3/round2.test.mjs": "632091077a45a159d902de38e55874059f3158cf76794f4d76bc4d10c57ab5be",
+    "scripts/fixtures/slice-contract-v3/cross-repo-fixture.mjs": "9613c091f9304d541543762a1fd35eba04d4d99331710410d07ce305fc9f4132",
+    "docs/process/schemas/slice-implementation-contract-v3.schema.json": "9b82763d7a5a05a73829a829d10870651a899ae26482dc003ffed81fd1743343",
+    ".agents/skills/yss-technical-design/scripts/validate-technical-design.mjs": "252dc20cc9e44f0a863f3c0dd79ad15d03f2d4e0b5a3171e24b00fc459a2985f",
+    ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml": "55d41e73e076c76c407b1b8751e31d8496eb91107ff322babcd380caa9af76b7",
+    "docs/agents/yss-skill-registry.yaml": "334433e66208ba0e26941620c8c16bc29727e0254a902070d0f4b1bf3d05eb47"
+  },
+  "real_time_savings_claimed": false,
+  "git_commit_push_publish": false,
+  "current_state": "implementation-ready",
+  "closure_rechecks": [
+    {
+      "command": "node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs",
+      "result": "pass",
+      "tests": 19,
+      "log": "platform-recheck.log"
+    },
+    {
+      "command": "scripts/verify-strategic-handoff-tools-lock",
+      "result": "pass",
+      "source_state": "working-tree",
+      "log": "lock-final.log"
+    },
+    {
+      "command": "scripts/sync-profile-skills --check",
+      "result": "pass",
+      "log": "profile-final.log"
+    },
+    {
+      "command": "scripts/sync-skills --check",
+      "result": "pass",
+      "log": "projections-final.log"
+    }
+  ]
+}

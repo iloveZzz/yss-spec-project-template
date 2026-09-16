@@ -1159,7 +1159,7 @@ user_decision_evidence:
   professional_review_replaced: false
   response_absent: paused-human-gate
   invalid_response: blocked
-  basis_changed: stale
+  basis_changed: revalidate_then_continue_only_with_independent_equivalence_evidence
 
 gate_consolidation:
   source: docs/process/lifecycle-registry.yaml
@@ -1170,7 +1170,12 @@ gate_consolidation:
   readiness: computed_after_current_approved_contract_and_all_applicable_preconditions
   api_freeze: atomic_with_engineering_contract_approval_same_version
   acceptance_does_not_authorize: [merge, push, release, production_change]
-  reuse: unchanged_subject_basis_and_scope_only
+  reuse: unchanged_approval_or_verified_approved_scope_continuation
+  default_review: one_owner_one_independent_reviewer
+  adjacent_reviews: one_bundle_with_explicit_per_check_outcomes
+  extra_reviewers: uncovered_expertise_conflict_or_external_requirement
+  suggestions: recorded_backlog_without_blocking
+  continuation_protocol: references/user-decisions.md
   invalidation: affected_dependencies_or_authorization_change_only
   historical_gate_records: read_only_no_automatic_approval_migration
   verifier: scripts/verify-lifecycle-checkpoint

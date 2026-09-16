@@ -89,3 +89,7 @@ node scripts/generate_controller.mjs \
 - DTO/VO/WebConvertor 机械骨架可用 `controlled-generation`；权限、错误映射、校验语义和接口行为必须使用 `behavior-tdd`。
 - 写入必须位于合同 `allowed_write_paths`，并提供 Controller、DTO/VO、WebConvertor、契约/API 测试和实际验证结果。
 - 按统一 `YSS Skill Execution Result` 返回偏离与新增影响；出现新 API/schema、权限或响应包装变化时暂停并回到 实现合同编译器/生命周期。
+
+## 新脚手架平台约束
+
+消费批准切片架构身份中的 `platform_configuration`，与工程 Manifest 核对后使用对应 YSS 组件。Boot 2.7 使用 `javax` Web/Validation API；Boot 3.5/4.1 使用 `jakarta`。Boot 4 按 Jackson 3、对应自动配置和 starter 适配；不替换 `javax.sql` 等 Java SE 包。平台不一致、兼容条目缺失或候选未验证时回合同编译器阻断，不在业务实现中升级或替换组件。详见 仓库共享合同 `docs/engineering/backend-platforms.md`。

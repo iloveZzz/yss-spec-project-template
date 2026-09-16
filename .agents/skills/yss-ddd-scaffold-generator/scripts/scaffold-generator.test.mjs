@@ -16,7 +16,7 @@ import { attachDesignPrerequisites } from "../../../../scripts/fixtures/backend-
 const scripts = path.dirname(fileURLToPath(import.meta.url));
 const generator = path.join(scripts, "generate_scaffold.mjs");
 const workflow = path.join(scripts, "generate_and_verify_scaffold.mjs");
-const command = (args, options = {}) => new Promise((resolve) => execFile(process.execPath, [generator, ...args], { encoding: "utf8", ...options }, (error, stdout, stderr) => resolve({ code: error?.code ?? 0, stdout, stderr })));
+const command = (args, options = {}) => new Promise((resolve) => execFile(process.execPath, [path.resolve(scripts, "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), generator, ...args], { encoding: "utf8", ...options }, (error, stdout, stderr) => resolve({ code: error?.code ?? 0, stdout, stderr })));
 const workflowCommand = (args, options = {}) => new Promise((resolve) => execFile(process.execPath, [workflow, ...args], { encoding: "utf8", ...options }, (error, stdout, stderr) => resolve({ code: error?.code ?? 0, stdout, stderr })));
 async function treeDigest(root) {
   const hash = createHash("sha256");

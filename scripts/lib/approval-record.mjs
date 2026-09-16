@@ -10,7 +10,7 @@ import {
 } from "./digital-human-roles.mjs";
 import { assertGateChecks } from "./lifecycle-controls.mjs";
 import { ROOT, loadRegistry } from "./lifecycle-registry.mjs";
-import { assertUserDecisionRequirement, assertWorkUnitUserDecision, assertImplementationDecision } from "./user-decision.mjs";
+import { assertUserDecisionRequirement, assertWorkUnitUserDecision, assertImplementationDecision, decisionIO, decisionDigest } from "./user-decision.mjs";
 
 const DECISIONS = new Set(["approved", "rejected", "vetoed"]);
 const ACTOR_KINDS = new Set(["digital-human", "biological-human", "orchestrator"]);
@@ -38,8 +38,16 @@ function yamlFromFile(filePath, label) {
   return value;
 }
 
-export function loadApprovalRecord(filePath) {
-  return yamlFromFile(filePath, "会签记录");
+export function loadApprovalRecord(filePath, gateId) {
+  return selectApprovalRecord(yamlFromFile(filePath, "会签记录"), gateId);
+}
+
+export function selectApprovalRecord(record, gateId) {
+  if (record.kind !== 'review-bundle') return record;
+  if (record.schema_version !== 1 || !Array.isArray(record.reviews) || !record.reviews.length || new Set(record.reviews.map(x => x.gate_id)).size !== record.reviews.length) fail('组合审查身份无效或重复');
+  const selected = record.reviews.filter(x => x.gate_id === gateId);
+  if (selected.length !== 1) fail('组合审查缺少当前检查的明确结论');
+  return selected[0];
 }
 
 export function resolveApprovalRef(approvalRef, fromFile = ROOT) {
@@ -68,7 +76,12 @@ export function validateApprovalRecord(record, { rolesDoc, requireApproved = fal
   if (record.actor_kind === "orchestrator") fail("编排器门禁不使用会签记录关闭");
 
   if (!requireApproved && loadRegistry().id_policy.deprecated_ids.includes(record.gate_id)) return { bucket: "historical", gate: record.gate_id };
-  const rule = countersignRuleForGate(registry.gate_policy, record.gate_id);
+  let rule = countersignRuleForGate(registry.gate_policy, record.gate_id);
+  const continuationReviewers = registry.gate_policy.continuation_reviews?.[record.gate_id];
+  if (record.continuation_ref && record.actor_kind === 'digital-human' && continuationReviewers) {
+    rule = { bucket: 'digital_human_review', gate: record.gate_id, countersigners: continuationReviewers };
+    if (!record.drafter_principal_ref || record.drafter_principal_ref === record.principal_ref) fail('延续批准必须由独立审查者核验');
+  }
   if (!rule) fail(`${record.gate_id} 不是会签门禁；evidence_only / orchestrator 门禁不写 approval-record`);
 
   if (requireApproved && record.decision !== "approved") {
@@ -107,7 +120,20 @@ function assertRecordUserDecision(record, registry, options) {
 }
 
 export function validateApprovalRecordFile(filePath, options = {}) {
-  return validateApprovalRecord(loadApprovalRecord(filePath), options);
+  const record = yamlFromFile(filePath, "会签记录");
+  if (record.kind === 'review-bundle') {
+    if (!Array.isArray(record.reviews) || !record.reviews.length) fail('组合审查不能为空');
+    return record.reviews.map(item => {
+      const row = loadApprovalRecord(filePath, item.gate_id);
+      if (options.requireApproved) {
+        if (!row.drafter_principal_ref || row.drafter_principal_ref === row.principal_ref) fail('组合审查必须保留独立身份');
+        const io = decisionIO(options);
+        if (!row.subject_ref || decisionDigest(io.bytes(row.subject_ref)) !== `sha256:${row.subject_digest}`) fail('组合审查主体缺失或已过期');
+      }
+      return validateApprovalRecord(row, options);
+    });
+  }
+  return validateApprovalRecord(record, options);
 }
 
 export function assertApprovedGateHasValidApproval(gateId, gateState, { checkpointPath } = {}) {
@@ -121,7 +147,7 @@ export function assertApprovedGateHasValidApproval(gateId, gateState, { checkpoi
   }
   const resolved = resolveApprovalRef(gateState.approval_ref, checkpointPath || ROOT);
   if (!existsSync(resolved)) fail(`${gateId} 的 approval_ref 不可读: ${gateState.approval_ref}`);
-  const record = loadApprovalRecord(resolved);
+  const record = loadApprovalRecord(resolved, gateId);
   if (record.gate_id !== gateId) fail(`${gateId} 的会签记录 gate_id 不匹配`);
   if (!gateState.subject_ref || gateState.subject_ref !== record.subject_ref || !gateState.approval_scope?.length || JSON.stringify([...gateState.approval_scope].sort()) !== JSON.stringify([...(record.approval_scope || [])].sort())) {
     fail(`${gateId} user-decision-subject-mismatch: 当前门禁资产与会签范围不匹配`);

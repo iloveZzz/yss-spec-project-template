@@ -1,0 +1,45 @@
+{
+  "kind": "synthetic-mechanism-measurement",
+  "before": {
+    "measurement.yaml": 1,
+    "tickets/synthetic.md": 2,
+    "spec.md": 2,
+    "baseline.json": 2,
+    "registration.json": 6,
+    "manifest.json": 2,
+    "technical-design.json": 2,
+    "review.json": 2,
+    "review.md": 2,
+    "project/mvnw": 2,
+    "api.yaml": 2,
+    "CONTEXT.md": 2
+  },
+  "after": {
+    "measurement.yaml": 1,
+    "tickets/synthetic.md": 1,
+    "spec.md": 1,
+    "baseline.json": 1,
+    "registration.json": 1,
+    "manifest.json": 1,
+    "technical-design.json": 1,
+    "review.json": 1,
+    "review.md": 1,
+    "project/mvnw": 1,
+    "api.yaml": 1,
+    "CONTEXT.md": 1
+  },
+  "total_reads_before": 27,
+  "total_reads_after": 12,
+  "observed_preparation": {
+    "elapsed_ms": 605,
+    "preparation_round": null,
+    "additional_human_confirmations": null,
+    "reapproval_reasons": [],
+    "measurement": "observed-preparation-only; interaction counts not recorded",
+    "unique_source_files": 11,
+    "refinement_fields": 9,
+    "contract_bytes": 5478
+  },
+  "real_labor_savings": null,
+  "additional_human_confirmations": "0 in valid-existing-approval regression; not a real project measurement"
+}

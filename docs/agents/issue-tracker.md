@@ -34,6 +34,8 @@ tracker:
 4. 多个持久化配置声明不同平台时返回 `conflict`，暂停并要求迁移，不覆盖任何配置。
 5. 选定 GitHub / GitLab 但凭据或平台暂不可用时，先在 `docs/.scratch/<feature>/` 生成“待发布平台”草案；`parent-ticket.md` 保留目标平台、标记 `publication: pending` 和 `pending_publication_to`；不得自动改投另一远程平台。
 
+Slice v3 声明冻结需求时，合同绑定的 Ticket 文件只保留冻结时状态。当前状态、验收结果和执行记录继续进入主 tracker；Local Markdown 使用现有父 Ticket / 任务包记录进度，远程平台不可用时沿用待发布记录。需求文件版本不得作为当前执行状态读取，也不得因更新进度而改写。协议见 [Slice 合同](../../.agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md#第二轮增量规则)。
+
 ## Local Markdown 主 tracker
 
 Local 主 tracker 的完整功能包结构如下：

@@ -1,3 +1,6 @@
+import { normalizeSliceContract } from './slice-contract.mjs';
+import { assertSliceV3TaskPackage } from './slice-task-package.mjs';
+export { compileSliceTaskPackage, assertSliceV3TaskPackage } from './slice-task-package.mjs';
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
@@ -178,11 +181,12 @@ function validateContract(value, registry, lifecycle) {
   const contractPath = assertSafeRelativePath(contract.slice_contract_ref, "contract.slice_contract_ref");
   if (!existsSync(contractPath)) fail(`Slice Implementation Contract 不存在: ${contract.slice_contract_ref}`);
   const document = parseYaml(readFileSync(contractPath, "utf8"), "Slice Implementation Contract");
-  const slice = document.slice_contract || document;
-  if (slice.schema_version !== 2 || typeof slice.slice_id !== "string" || !slice.lifecycle_refs || !slice.readiness || !Array.isArray(slice.work_units)) fail("Slice Implementation Contract 需要 schema v2 及 slice_id/lifecycle_refs/readiness/work_units");
+  const slice = normalizeSliceContract(document,{root:ROOT});
+  if (![2,3].includes(slice.schema_version) || typeof slice.slice_id !== "string" || !slice.lifecycle_refs || !slice.readiness || !Array.isArray(slice.work_units)) fail("Slice Implementation Contract 需要 schema v2 及 slice_id/lifecycle_refs/readiness/work_units");
   if (slice.contract_id !== contract.contract_id || slice.contract_version !== contract.contract_version || slice.status !== "approved") fail("Slice Contract 必须是当前 approved 版本");
   const sliceUnit = slice.work_units.find((item) => item && item.id === value.work_unit_id);
   if (!sliceUnit) fail(`Slice Implementation Contract 缺少 work_unit_id: ${value.work_unit_id}`);
+  if(slice.schema_version===3)return assertSliceV3TaskPackage(value,slice,{root:ROOT});
   for (const field of ["role_id", "runtime_id", "task_package_ref", "contract_id", "contract_version", "allowed_write_paths"]) if (sliceUnit[field] === undefined) fail(`Slice Contract work_unit 缺少 ${field}`);
   if (sliceUnit.role_id !== value.role_id || sliceUnit.runtime_id !== value.runtime_id || sliceUnit.contract_id !== contract.contract_id || sliceUnit.contract_version !== contract.contract_version) fail("任务包与 Slice Contract work_unit 不一致");
   for (const allowed of value.allowed_write_paths) if (!sliceUnit.allowed_write_paths.includes(allowed)) fail(`allowed_write_paths 未获 Slice Contract 授权: ${allowed}`);

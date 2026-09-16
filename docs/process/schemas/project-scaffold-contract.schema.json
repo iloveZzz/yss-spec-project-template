@@ -4,48 +4,193 @@
   "title": "YSS Project Scaffold Contract v4",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "kind", "contract_id", "contract_version", "status", "persisted_ref", "current_version", "delivery_role", "scaffold_kind", "generator_skill", "implementation_repository", "target_output_dir", "repository_scope", "init_git", "allowed_write_paths", "expected_evidence_files", "verification_commands", "approval", "generation_policy"],
+  "required": [
+    "schema_version",
+    "kind",
+    "contract_id",
+    "contract_version",
+    "status",
+    "persisted_ref",
+    "current_version",
+    "delivery_role",
+    "scaffold_kind",
+    "generator_skill",
+    "implementation_repository",
+    "target_output_dir",
+    "repository_scope",
+    "init_git",
+    "allowed_write_paths",
+    "expected_evidence_files",
+    "verification_commands",
+    "approval",
+    "generation_policy"
+  ],
   "properties": {
-    "schema_version": { "const": 4 },
-    "kind": { "const": "project-scaffold-contract" },
-    "contract_id": { "type": "string", "minLength": 1 },
-    "contract_version": { "oneOf": [{ "type": "string", "minLength": 1 }, { "type": "integer", "minimum": 1 }] },
-    "scaffold_request_id": { "type": "string", "minLength": 1 },
-    "compiler_draft_ref": { "type": "string", "minLength": 1 },
-    "lifecycle_approval_ref": { "type": "string", "minLength": 1 },
-    "status": { "const": "approved" },
-    "persisted_ref": { "type": "string", "minLength": 1 },
-    "current_version": { "const": true },
-    "delivery_role": { "enum": ["backend", "frontend"] },
-    "scaffold_kind": { "enum": ["backend-ddd", "backend-layered-mvc", "backend-mvc-data-analysis", "frontend-yss-vue3"] },
-    "generator_skill": { "enum": ["yss-ddd-scaffold-generator", "yss-layered-mvc-scaffold-generator", "yss-mvc-data-analysis-project-initializer", "yss-frontend-scaffold-generator"] },
-    "implementation_repository": { "type": "string", "minLength": 1 },
-    "backend_repository": { "type": "string", "minLength": 1 },
-    "scaffold_status": { "const": "required" },
-    "target_output_dir": { "type": "string", "minLength": 1 },
-    "repository_scope": { "enum": ["external-repository", "harness-apps", "git-submodule"] },
-    "init_git": { "type": "boolean" },
-    "project_name": { "type": "string", "minLength": 1 },
-    "base_package": { "type": "string", "minLength": 1 },
-    "architecture_family": { "enum": ["domain-driven", "layered-mvc"] },
-    "architecture_profile": { "type": "string", "minLength": 1 },
-    "decision_ref": { "type": "string", "minLength": 1 },
-    "decision_id": { "type": "string", "minLength": 1 },
-    "decision_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
-    "maven_coordinates": { "type": "object" },
-    "profiles": { "type": "object" },
-    "module_profile": { "type": "object" },
-    "context_handoff_ref": { "type": "string", "minLength": 1 },
-    "context_handoff_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "schema_version": {
+      "const": 4
+    },
+    "kind": {
+      "const": "project-scaffold-contract"
+    },
+    "contract_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contract_version": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "integer",
+          "minimum": 1
+        }
+      ]
+    },
+    "scaffold_request_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "compiler_draft_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "lifecycle_approval_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "approved"
+    },
+    "persisted_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "current_version": {
+      "const": true
+    },
+    "delivery_role": {
+      "enum": [
+        "backend",
+        "frontend"
+      ]
+    },
+    "scaffold_kind": {
+      "enum": [
+        "backend-ddd",
+        "backend-layered-mvc",
+        "backend-mvc-data-analysis",
+        "frontend-yss-vue3"
+      ]
+    },
+    "generator_skill": {
+      "enum": [
+        "yss-ddd-scaffold-generator",
+        "yss-layered-mvc-scaffold-generator",
+        "yss-mvc-data-analysis-project-initializer",
+        "yss-frontend-scaffold-generator"
+      ]
+    },
+    "implementation_repository": {
+      "type": "string",
+      "minLength": 1
+    },
+    "backend_repository": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scaffold_status": {
+      "const": "required"
+    },
+    "target_output_dir": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_scope": {
+      "enum": [
+        "external-repository",
+        "harness-apps",
+        "git-submodule"
+      ]
+    },
+    "init_git": {
+      "type": "boolean"
+    },
+    "project_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_package": {
+      "type": "string",
+      "minLength": 1
+    },
+    "architecture_family": {
+      "enum": [
+        "domain-driven",
+        "layered-mvc"
+      ]
+    },
+    "architecture_profile": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "maven_coordinates": {
+      "type": "object"
+    },
+    "profiles": {
+      "type": "object"
+    },
+    "module_profile": {
+      "type": "object"
+    },
+    "context_handoff_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "context_handoff_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
     "frontend": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["app_name", "microapp_name", "base_route", "package_manager", "template", "openapi_impact"],
+      "required": [
+        "app_name",
+        "microapp_name",
+        "base_route",
+        "package_manager",
+        "template",
+        "openapi_impact"
+      ],
       "properties": {
-        "app_name": { "type": "string", "minLength": 1 },
-        "microapp_name": { "type": "string", "minLength": 1 },
-        "base_route": { "type": "string", "pattern": "^/" },
-        "package_manager": { "const": "pnpm" },
+        "app_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "microapp_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "base_route": {
+          "type": "string",
+          "pattern": "^/"
+        },
+        "package_manager": {
+          "const": "pnpm"
+        },
         "template": {
           "oneOf": [
             {
@@ -89,97 +234,471 @@
             }
           ]
         },
-        "openapi_impact": { "enum": ["frozen", "not-applicable"] },
-        "openapi_json_ref": { "type": "string", "minLength": 1 },
-        "openapi_json_digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
-        "openapi_not_applicable_reason": { "type": "string", "minLength": 1 },
-        "replacements": { "type": "object", "additionalProperties": { "type": "string" } }
+        "openapi_impact": {
+          "enum": [
+            "frozen",
+            "not-applicable"
+          ]
+        },
+        "openapi_json_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openapi_json_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "openapi_not_applicable_reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "replacements": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
       },
       "allOf": [
-        { "if": { "properties": { "openapi_impact": { "const": "frozen" } } }, "then": { "required": ["openapi_json_ref", "openapi_json_digest"] } },
-        { "if": { "properties": { "openapi_impact": { "const": "not-applicable" } } }, "then": { "required": ["openapi_not_applicable_reason"] } }
+        {
+          "if": {
+            "properties": {
+              "openapi_impact": {
+                "const": "frozen"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "openapi_json_ref",
+              "openapi_json_digest"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "openapi_impact": {
+                "const": "not-applicable"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "openapi_not_applicable_reason"
+            ]
+          }
+        }
       ]
     },
-    "allowed_write_paths": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-    "expected_evidence_files": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
-    "verification_commands": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "allowed_write_paths": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "expected_evidence_files": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "verification_commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
     "approval": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["approval_ref", "approver"],
-      "properties": { "approval_ref": { "type": "string", "minLength": 1 }, "approver": { "type": "string", "minLength": 1 }, "persisted_ref": { "type": "string", "minLength": 1 }, "current_version": { "oneOf": [{ "type": "boolean" }, { "type": "integer" }, { "type": "string" }] } }
+      "required": [
+        "approval_ref",
+        "approver"
+      ],
+      "properties": {
+        "approval_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "approver": {
+          "type": "string",
+          "minLength": 1
+        },
+        "persisted_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "current_version": {
+          "oneOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        }
+      }
     },
     "generation_policy": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["mode", "existing_target", "old_project_migration", "template_upgrade"],
+      "required": [
+        "mode",
+        "existing_target",
+        "old_project_migration",
+        "template_upgrade"
+      ],
       "properties": {
-        "mode": { "const": "initialize-only" },
-        "existing_target": { "const": "unsupported" },
-        "old_project_migration": { "const": "unsupported" },
-        "template_upgrade": { "const": "unsupported" }
+        "mode": {
+          "const": "initialize-only"
+        },
+        "existing_target": {
+          "const": "unsupported"
+        },
+        "old_project_migration": {
+          "const": "unsupported"
+        },
+        "template_upgrade": {
+          "const": "unsupported"
+        }
       }
     },
     "design_prerequisites": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["technical_design", "data_architecture_decision", "api_contract_decision", "engineering_contract_approval_ref"],
+      "required": [
+        "technical_design",
+        "data_architecture_decision",
+        "api_contract_decision",
+        "engineering_contract_approval_ref"
+      ],
       "properties": {
-        "technical_design": { "$ref": "#/$defs/versionedArtifactBinding" },
-        "data_architecture_decision": { "$ref": "#/$defs/impactArtifactBinding" },
-        "api_contract_decision": { "$ref": "#/$defs/impactArtifactBinding" },
-        "engineering_contract_approval_ref": { "type": "string", "minLength": 1 }
+        "technical_design": {
+          "$ref": "#/$defs/versionedArtifactBinding"
+        },
+        "data_architecture_decision": {
+          "$ref": "#/$defs/impactArtifactBinding"
+        },
+        "api_contract_decision": {
+          "$ref": "#/$defs/impactArtifactBinding"
+        },
+        "engineering_contract_approval_ref": {
+          "type": "string",
+          "minLength": 1
+        }
       }
     },
     "work_unit": {
       "type": "object",
-      "required": ["id", "behavior", "primary_skill", "supporting_skills", "tdd_mode", "allowed_write_paths", "expected_evidence", "verification_commands", "controlled_generation"],
+      "required": [
+        "id",
+        "behavior",
+        "primary_skill",
+        "supporting_skills",
+        "tdd_mode",
+        "allowed_write_paths",
+        "expected_evidence",
+        "verification_commands",
+        "controlled_generation"
+      ],
       "properties": {
-        "id": { "type": "string" },
-        "behavior": { "enum": ["project-scaffold", "scaffold"] },
-        "primary_skill": { "type": "string" },
-        "supporting_skills": { "type": "array", "items": { "type": "string" } },
-        "tdd_mode": { "const": "controlled-generation" },
-        "allowed_write_paths": { "type": "array", "minItems": 1, "items": { "type": "string" } },
-        "expected_evidence": { "type": "array", "minItems": 1, "items": { "type": "string" } },
-        "verification_commands": { "type": "array", "minItems": 1, "items": { "type": "string" } },
-        "controlled_generation": { "const": true }
+        "id": {
+          "type": "string"
+        },
+        "behavior": {
+          "enum": [
+            "project-scaffold",
+            "scaffold"
+          ]
+        },
+        "primary_skill": {
+          "type": "string"
+        },
+        "supporting_skills": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tdd_mode": {
+          "const": "controlled-generation"
+        },
+        "allowed_write_paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "expected_evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "verification_commands": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "controlled_generation": {
+          "const": true
+        }
+      }
+    },
+    "platform_configuration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "profile_id",
+        "spring_boot_version",
+        "java_version",
+        "parent",
+        "bom",
+        "compatibility_id",
+        "compatibility_digest"
+      ],
+      "properties": {
+        "schema_version": {
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "profile_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "spring_boot_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "java_version": {
+          "enum": [
+            8,
+            17,
+            21
+          ]
+        },
+        "compatibility_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "compatibility_digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "parent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "group_id",
+            "artifact_id",
+            "version"
+          ],
+          "properties": {
+            "group_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.-]+$"
+            },
+            "artifact_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.-]+$"
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.-]+$"
+            }
+          }
+        },
+        "bom": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "group_id",
+            "artifact_id",
+            "version"
+          ],
+          "properties": {
+            "group_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.-]+$"
+            },
+            "artifact_id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.-]+$"
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_.-]+$"
+            }
+          }
+        }
       }
     }
   },
   "allOf": [
     {
-      "if": { "properties": { "delivery_role": { "const": "frontend" } } },
-      "then": { "required": ["frontend"], "properties": { "generator_skill": { "const": "yss-frontend-scaffold-generator" }, "scaffold_kind": { "const": "frontend-yss-vue3" } } }
+      "if": {
+        "properties": {
+          "delivery_role": {
+            "const": "frontend"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "frontend"
+        ],
+        "properties": {
+          "generator_skill": {
+            "const": "yss-frontend-scaffold-generator"
+          },
+          "scaffold_kind": {
+            "const": "frontend-yss-vue3"
+          }
+        }
+      }
     },
     {
-      "if": { "properties": { "delivery_role": { "const": "backend" } } },
-      "then": { "required": ["scaffold_request_id", "compiler_draft_ref", "lifecycle_approval_ref", "backend_repository", "scaffold_status", "project_name", "base_package", "architecture_family", "decision_ref", "decision_id", "decision_digest", "maven_coordinates", "profiles", "module_profile", "work_unit", "design_prerequisites"] }
+      "if": {
+        "properties": {
+          "delivery_role": {
+            "const": "backend"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "scaffold_request_id",
+          "compiler_draft_ref",
+          "lifecycle_approval_ref",
+          "backend_repository",
+          "scaffold_status",
+          "project_name",
+          "base_package",
+          "architecture_family",
+          "decision_ref",
+          "decision_id",
+          "decision_digest",
+          "maven_coordinates",
+          "profiles",
+          "module_profile",
+          "work_unit",
+          "design_prerequisites"
+        ]
+      }
     },
     {
-      "if": { "properties": { "generator_skill": { "const": "yss-mvc-data-analysis-project-initializer" } }, "required": ["generator_skill"] },
-      "then": { "required": ["context_handoff_ref", "context_handoff_digest"], "properties": { "scaffold_kind": { "const": "backend-mvc-data-analysis" }, "architecture_family": { "const": "layered-mvc" } } }
+      "if": {
+        "properties": {
+          "generator_skill": {
+            "const": "yss-mvc-data-analysis-project-initializer"
+          }
+        },
+        "required": [
+          "generator_skill"
+        ]
+      },
+      "then": {
+        "required": [
+          "context_handoff_ref",
+          "context_handoff_digest"
+        ],
+        "properties": {
+          "scaffold_kind": {
+            "const": "backend-mvc-data-analysis"
+          },
+          "architecture_family": {
+            "const": "layered-mvc"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "generator_skill": {
+            "enum": [
+              "yss-ddd-scaffold-generator",
+              "yss-layered-mvc-scaffold-generator"
+            ]
+          }
+        },
+        "required": [
+          "generator_skill"
+        ]
+      },
+      "then": {
+        "required": [
+          "platform_configuration"
+        ]
+      }
     }
   ],
   "$defs": {
     "versionedArtifactBinding": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["ref", "version", "digest"],
+      "required": [
+        "ref",
+        "version",
+        "digest"
+      ],
       "properties": {
-        "ref": { "type": "string", "minLength": 1 },
-        "version": { "type": "string", "pattern": "^v[1-9][0-9]*$" },
-        "digest": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
-        "impact": { "enum": ["required", "not-applicable"] }
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^v[1-9][0-9]*$"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "impact": {
+          "enum": [
+            "required",
+            "not-applicable"
+          ]
+        }
       }
     },
     "impactArtifactBinding": {
       "allOf": [
-        { "$ref": "#/$defs/versionedArtifactBinding" },
+        {
+          "$ref": "#/$defs/versionedArtifactBinding"
+        },
         {
           "type": "object",
-          "required": ["impact"],
-          "properties": { "impact": { "enum": ["required", "not-applicable"] } }
+          "required": [
+            "impact"
+          ],
+          "properties": {
+            "impact": {
+              "enum": [
+                "required",
+                "not-applicable"
+              ]
+            }
+          }
         }
       ]
     }

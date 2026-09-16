@@ -1,3 +1,4 @@
+import { normalizeSliceContract } from './slice-contract.mjs';
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -5,6 +6,7 @@ import { parseDocument } from "../vendor/yaml.mjs";
 import { ROOT } from "./lifecycle-registry.mjs";
 import { loadDigitalHumanRoles } from "./digital-human-roles.mjs";
 import { validateJsonSchema } from "./json-schema.mjs";
+import { assertDecisionContinuation } from './decision-continuation.mjs';
 
 export function decisionError(code, detail) {
   const error = new TypeError(`${code}: ${detail}`);
@@ -161,6 +163,7 @@ export function verifyUserDecisionFile(ref, options = {}) {
 
 export function assertUserDecisionRequirement(requirement, options = {}) {
   if (!requirement) decisionError("user-decision-response-required", "缺少当前决定及其范围");
+  if (requirement.continuation_ref) return assertDecisionContinuation(requirement, options.rolesDoc || loadDigitalHumanRoles(), options);
   return verifyUserDecisionFile(requirement.user_decision_ref, { ...options, expected: [requirement] });
 }
 
@@ -191,7 +194,7 @@ export function assertImplementationDecision(state, options = {}) {
   if (state.slice_contract_ref !== slice.contract?.ref) decisionError("user-decision-subject-mismatch", "当前合同不在批准清单中");
   checkAsset(slice.contract, io);
   const content = io.document(slice.contract.ref);
-  const contract = content.slice_contract || content;
+  const contract = content.slice_contract?.schema_version === 3 || content.schema_version === 3 ? normalizeSliceContract(content, { root: options.root || ROOT }) : content.slice_contract || content;
   if (contract.lifecycle_refs?.ticket !== ticketRef) decisionError("user-decision-subject-mismatch", "持久化合同的切片引用不匹配");
   for (const [manifestKey, contractKey] of [["repositories", "project_roots"], ["allowed_write_paths", "allowed_write_paths"]]) {
     if (!Array.isArray(slice[manifestKey]) || slice[manifestKey].length === 0 || JSON.stringify([...slice[manifestKey]].sort()) !== JSON.stringify([...(contract.common?.[contractKey] || [])].sort())) decisionError("user-decision-scope-mismatch", manifestKey);

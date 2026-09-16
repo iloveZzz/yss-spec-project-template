@@ -150,7 +150,7 @@ gates:
   - id: gate.plan-approved
     name: Plan 批准
     stage: stage.plan
-    trigger: Plan 结论进入 Spec；汇总战略检查后仅确认一次当前规划范围。
+    trigger: Plan 结论进入 Spec；汇总战略检查，核验当前规划范围的原始批准或有效授权延续。
     evidence:
       - evidence.approval-record
     requires_checks:
@@ -159,14 +159,14 @@ gates:
   - id: gate.spec-baseline-approved
     name: Spec 基线批准
     stage: stage.spec-architecture
-    trigger: 新功能、行为变化或范围扩大进入 Spec 基线。
+    trigger: 新功能、行为变化或范围扩大进入 Spec 基线；已授权范围内细化复用当前有效授权，实质变化重新决定。
     evidence:
       - evidence.approval-record
     requires_checks: []
   - id: gate.product-design-approved
     name: 产品设计批准
     stage: stage.product-design
-    trigger: 存在产品设计影响；独立原型评审与交付物验证通过后确认最终原型。
+    trigger: 存在产品设计影响；独立原型评审与交付物验证通过后核验原批准或授权延续，新增体验取舍由用户决定。
     evidence:
       - evidence.prototype-confirmation
     requires_checks:
@@ -175,7 +175,7 @@ gates:
   - id: gate.engineering-contract-approved
     name: 工程契约批准
     stage: stage.system-data-engineering
-    trigger: 存在 API、架构或工程基线影响；完成适用专业审查后统一批准，有 API 影响时同时冻结当前 OpenAPI。
+    trigger: 存在 API、架构或工程基线影响；组合适用专业审查后统一批准并核验授权，有 API 影响时同时冻结当前 OpenAPI；范围内细化不重复请求用户确认。
     evidence:
       - evidence.approval-record
       - evidence.fresh-verification

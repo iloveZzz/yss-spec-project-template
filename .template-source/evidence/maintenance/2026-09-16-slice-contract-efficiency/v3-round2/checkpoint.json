@@ -1,0 +1,66 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "Slice 需求冻结、批准与执行范围、跨仓合同及直接消费者变更",
+  "triggers": [
+    "ticket-state",
+    "permission-boundary",
+    "cross-repo-contract",
+    "core-validator"
+  ],
+  "changed_assets": [
+    "scripts/slice-contract",
+    "scripts/lib/slice-contract.mjs",
+    "scripts/lib/slice-contract-preparation.mjs",
+    "scripts/lib/slice-contract-views.mjs",
+    "scripts/lib/slice-repositories.mjs",
+    "scripts/lib/slice-applicability.mjs",
+    "scripts/lib/slice-task-package.mjs",
+    "scripts/lib/approved-execution-context.mjs",
+    "scripts/lib/implementation-contract-compiler.mjs",
+    "scripts/lib/technical-design-boundary.mjs",
+    "scripts/lib/delivery-preflight.mjs",
+    "scripts/preflight-delivery",
+    "scripts/lib/lifecycle-transition.mjs",
+    "scripts/fixtures/slice-contract-v3/round2.test.mjs",
+    "scripts/fixtures/slice-contract-v3/cross-repo-fixture.mjs",
+    "docs/process/schemas/slice-implementation-contract-v3.schema.json",
+    ".agents/skills/yss-technical-design/scripts/validate-technical-design.mjs",
+    ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml",
+    "docs/agents/yss-skill-registry.yaml"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "self-check",
+      "command": ".template-source/evidence/maintenance/2026-09-16-slice-contract-efficiency/v3-round2/report.md",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "scripts/verify-yss-implementation-contract-compiler-scenarios",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "scripts/verify-user-decision-scenarios",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "scripts/verify-digital-human-task-package-scenarios",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "scripts/sync-profile-skills --check",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "none",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}

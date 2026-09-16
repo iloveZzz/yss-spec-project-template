@@ -42,3 +42,7 @@ description: 用于按批准的 YSS 架构与持久化合同实现或重构 PO�
 ## Review 输入
 
 `code-review` 仅对本体项目及合同/实现仓登记的后端研发项目执行本 Skill。候选命中持久化结构或数据访问时，Standards 轴必须读取所选 Profile 并引用规则与代码证据；未命中时记录带原因的 `not-applicable`。Reviewer 只报告 finding，不写实现。
+
+## 新脚手架平台约束
+
+消费批准切片架构身份中的 `platform_configuration`，与工程 Manifest 核对后使用对应 YSS 组件。Boot 2.7 使用 `javax` Web/Validation API；Boot 3.5/4.1 使用 `jakarta`。Boot 4 按 Jackson 3、对应自动配置和 starter 适配；不替换 `javax.sql` 等 Java SE 包。平台不一致、兼容条目缺失或候选未验证时回合同编译器阻断，不在业务实现中升级或替换组件。详见 仓库共享合同 `docs/engineering/backend-platforms.md`。

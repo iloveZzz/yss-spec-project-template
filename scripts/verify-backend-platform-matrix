@@ -1,0 +1,69 @@
+#!/usr/bin/env node
+// Maintenance-only candidate verification. Never updates the supported catalog or approvals.
+import { assertResumableCandidate } from "./lib/backend-platform-provenance.mjs";
+import { readFile, mkdir, writeFile } from "node:fs/promises";
+import { spawnSync } from "node:child_process";
+import path from "node:path";
+import { parseArgs } from "node:util";
+import { loadBackendPlatforms, assertJavaPlatform, platformDigest } from "./lib/backend-platform.mjs";
+import { ScaffoldGenerator, parseArgs as dddArgs } from "../.agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs";
+import { generate, validateContract as validateMvcContract, parseArgs as mvcArgs } from "../.agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs";
+import { run } from "../.agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs";
+
+const { values } = parseArgs({ options: { "evidence-dir": { type: "string" }, inputs: { type: "string" }, resume: { type: "boolean", default: false } }, strict: true });
+if (!values["evidence-dir"]) throw new Error("--evidence-dir is required; optional --inputs points to real approved contracts and candidate catalog");
+const evidence = path.resolve(values["evidence-dir"]);
+await mkdir(evidence, { recursive: true });
+const input = values.inputs ? JSON.parse(await readFile(path.resolve(values.inputs), "utf8")) : {};
+const inputRoot = values.inputs ? path.dirname(path.resolve(values.inputs)) : process.cwd();
+const catalog = input.catalog_ref ? JSON.parse(await readFile(path.resolve(inputRoot, input.catalog_ref), "utf8")) : loadBackendPlatforms();
+if (catalog.schema_version !== 1 || catalog.kind !== "backend-platform-catalog" || !Array.isArray(catalog.compatibility) || platformDigest(catalog.profiles) !== platformDigest(loadBackendPlatforms().profiles)) throw new Error("candidate input must preserve the maintained platform profiles; only supply actual YSS combinations");
+const keys = new Set();
+for (const item of input.combinations ?? []) {
+  const key = `${item.profile_id}:${item.spring_boot_version}:${item.architecture_family}`;
+  if (keys.has(key) || !catalog.profiles.some(p => p.id === item.profile_id && p.spring_boot_version === item.spring_boot_version) || !["domain-driven", "layered-mvc"].includes(item.architecture_family)) throw new Error("duplicate or unknown exact matrix combination");
+  keys.add(key);
+}
+const rows = [];
+for (const profile of loadBackendPlatforms().profiles) for (const family of ["domain-driven", "layered-mvc"]) {
+  const row = { profile_id: profile.id, spring_boot_version: profile.spring_boot_version, java_version: profile.java_version, architecture_family: family, status: "blocked", blockers: [], commands: [], executed_at: new Date().toISOString() };
+  const configuration = input.combinations?.find(item => item.profile_id === profile.id && item.spring_boot_version === profile.spring_boot_version && item.architecture_family === family);
+  for (const key of ["YSS_MAVEN_REPOSITORY_URL", "MAVEN_REPO_USERNAME", "MAVEN_REPO_PASSWORD"]) if (!process.env[key]) row.blockers.push(`missing environment: ${key}`);
+  if (!configuration?.contract_ref) row.blockers.push("missing real approved scaffold contract/YSS compatibility coordinates");
+  const javaHome = input.java_homes?.[String(profile.java_version)];
+  if (!javaHome) row.blockers.push(`missing explicit java_homes.${profile.java_version}`);
+  else {
+    try { const result = spawnSync(path.join(javaHome, "bin/java"), ["-version"], { encoding: "utf8" }); if (result.status !== 0) throw new Error("java -version failed"); assertJavaPlatform(`${result.stdout}\n${result.stderr}`, { java_version: profile.java_version }); row.java_preflight = "passed"; }
+    catch (error) {
+      row.blockers.push(`JDK preflight: ${error.message}`);
+    }
+  }
+  if (!row.blockers.length) {
+    const dir = path.join(evidence, `${profile.id}-${profile.spring_boot_version}-${family}-${Date.now()}`); await mkdir(dir, { recursive: true });
+    try {
+      const contractFile = path.resolve(inputRoot, configuration.contract_ref);
+      const contractBytes = await readFile(contractFile);
+      const contract = JSON.parse(contractBytes);
+      if (contract.architecture_family !== family || contract.platform_configuration?.profile_id !== profile.id || contract.platform_configuration?.spring_boot_version !== profile.spring_boot_version) throw new Error("matrix/contract identity mismatch");
+      const c = contract.maven_coordinates;
+      const pairs = { "project-name": contract.project_name, "base-package": contract.base_package, "output-dir": contract.target_output_dir, "contract-file": contractFile, "contract-id": contract.contract_id, "contract-version": contract.contract_version, "approval-ref": contract.lifecycle_approval_ref, "compiler-draft-ref": contract.compiler_draft_ref, "persisted-ref": contract.persisted_ref, "group-id": c.group_id, "project-version": c.project_version, "parent-group-id": c.parent.group_id, "parent-artifact-id": c.parent.artifact_id, "parent-version": c.parent.version, "yss-components-version": c.yss_components_version };
+      const args = Object.entries(pairs).flatMap(([key, value]) => [`--${key}`, String(value)]);
+      const platformOptions = { catalog, root: inputRoot, candidate: true };
+      if (values.resume) {
+        // Revalidate current approval/design sources without invoking any generation writes.
+        if (family === "domain-driven") await new ScaffoldGenerator(dddArgs(args), platformOptions).validateContractMetadata();
+        else await validateMvcContract(mvcArgs(args), "yss-layered-mvc-scaffold-generator", "layered-mvc-service", platformOptions);
+        assertResumableCandidate(path.join(contract.target_output_dir, contract.project_name), contract, contractBytes);
+      } else if (family === "domain-driven") await new ScaffoldGenerator(dddArgs(args), platformOptions).generate();
+      else await generate(mvcArgs(args), { platformOptions });
+      const report = await run(path.join(contract.target_output_dir, contract.project_name), dir, { ...process.env, JAVA_HOME: javaHome }, { timeoutMs: 180000, platformOptions });
+      await writeFile(path.join(dir, "scaffold-verification.json"), JSON.stringify(report, null, 2));
+      Object.assign(row, report, { evidence_ref: path.join(dir, "scaffold-verification.json") });
+    } catch (error) { row.blockers.push(error.message); }
+  }
+  rows.push(row);
+}
+const report = { schema_version: 1, kind: "backend-platform-matrix", generated_at: new Date().toISOString(), status: rows.every(row => row.status === "passed") ? "passed" : "blocked", combinations: rows };
+await writeFile(path.join(evidence, "platform-matrix.json"), JSON.stringify(report, null, 2));
+process.stdout.write(`${report.status}: ${path.join(evidence, "platform-matrix.json")}\n`);
+if (report.status !== "passed") process.exitCode = 1;

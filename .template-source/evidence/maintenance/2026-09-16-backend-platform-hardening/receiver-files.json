@@ -1,0 +1,127 @@
+[
+  {
+    "ref": "docs/engineering/backend-platforms.json",
+    "sha256": "8079bbbaa4cd7bfbcd8d42d60002a4527d2dbda8c8a6a781466a9313e6e38325",
+    "receivers": [
+      "backend-template",
+      "backend-cli",
+      "main-cli"
+    ]
+  },
+  {
+    "ref": "scripts/lib/backend-platform.mjs",
+    "sha256": "32f23a5d48a79877a325cfdb8c751afbbd5584b94b1ee717db14b33f4a606aad",
+    "receivers": [
+      "backend-template",
+      "backend-cli",
+      "main-cli"
+    ]
+  },
+  {
+    "ref": "scripts/lib/backend-platform-provenance.mjs",
+    "sha256": "b75b6fb52f88ebff1db78460ec1347c6a30173a41580c6af407a2511984c2386",
+    "receivers": [
+      "backend-template",
+      "backend-cli",
+      "main-cli"
+    ]
+  },
+  {
+    "ref": "scripts/lib/backend-platform-verification.mjs",
+    "sha256": "c09407e61e15a02b7f7b110e4bfcc1dbad42591ef2fe24d987cdbc8a0b88f609",
+    "receivers": [
+      "backend-template",
+      "backend-cli",
+      "main-cli"
+    ]
+  },
+  {
+    "ref": "scripts/lib/backend-architecture.mjs",
+    "sha256": "ea9903fd7e05946ffd4c6fef2173ff778d47d5ea1bb746e0a3e80b37365ae5e8",
+    "receivers": [
+      "backend-template",
+      "backend-cli",
+      "main-cli"
+    ]
+  },
+  {
+    "ref": "scripts/verify-backend-platform-matrix",
+    "sha256": "427f46c1589d27d031baa1d81bec29f2951031bfc3472e0a899063e5689d9095",
+    "receivers": [
+      "backend-template",
+      "backend-cli",
+      "main-cli"
+    ]
+  },
+  {
+    "ref": "scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs",
+    "sha256": "5f9598df884bd745350c0a9259fdb06440ce3673156b5340f38d260ec3aef84e",
+    "receivers": [
+      "backend-template",
+      "backend-cli"
+    ]
+  },
+  {
+    "ref": "docs/process/schemas/project-scaffold-contract.schema.json",
+    "sha256": "5295d6d428306db2d64161071789f4977f7ce9c7f9524ba0f5ce595284c98163",
+    "receivers": [
+      "backend-template",
+      "backend-cli",
+      "main-cli"
+    ]
+  },
+  {
+    "ref": "docs/process/schemas/backend-architecture-identity.schema.json",
+    "sha256": "befc5ecc83d983a774ff66f89ffc8b3e1e2f956f600b51c09ce26c7181b90c00",
+    "receivers": [
+      "backend-template",
+      "backend-cli",
+      "main-cli"
+    ]
+  },
+  {
+    "ref": "docs/process/schemas/scaffold-architecture-decisions.schema.json",
+    "sha256": "094b14170e142da038b2d963fe9d8af4ccf1aebdde862666f3185850afa0c39b",
+    "receivers": [
+      "backend-template",
+      "backend-cli",
+      "main-cli"
+    ]
+  },
+  {
+    "ref": ".agents/skills/yss-ddd-scaffold-generator/scripts/generate_scaffold.mjs",
+    "sha256": "68a4ef244b9b907c5db8fc08e1d3704c697a6f4eca75f1a2f2e76c648653a36f",
+    "receivers": [
+      "backend-template",
+      "backend-cli",
+      "main-cli"
+    ]
+  },
+  {
+    "ref": ".agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs",
+    "sha256": "517adab6bfc14626eec25dba559dc53374094c573f34bbc2340e6845cd506c9f",
+    "receivers": [
+      "backend-template",
+      "backend-cli",
+      "main-cli"
+    ]
+  },
+  {
+    "ref": ".agents/skills/yss-ddd-scaffold-generator/scripts/run_first_slice_verification.mjs",
+    "sha256": "67786676093526095de2dbd07eaf8180645609458763165d8e60a173901dbd7e",
+    "receivers": [
+      "backend-template",
+      "backend-cli",
+      "main-cli"
+    ]
+  },
+  {
+    "ref": ".agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs",
+    "sha256": "d2db4d560712daead0577f373b024f0c7616aa0f74ffd1ed9afd06540a2d9d92",
+    "receivers": [
+      "backend-template",
+      "backend-cli",
+      "main-cli"
+    ]
+  }
+]

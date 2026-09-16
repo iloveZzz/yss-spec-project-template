@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /** YSS DDD 后端纯工程骨架生成器；只生成工程结构，不生成任何业务行为。 */
+import { platformSourceFingerprint, generatedTreeDigest } from "../../../../scripts/lib/backend-platform-provenance.mjs";
+import { assertContractPlatform, platformTemplateVars, platformSmokeTest } from "../../../../scripts/lib/backend-platform.mjs";
 import { assertScaffoldUserDecision } from "../../../../scripts/lib/user-decision.mjs";
 import { createHash } from "node:crypto";
 import { chmod, cp, lstat, mkdir, mkdtemp, readFile, readdir, rename, rm, stat, writeFile, copyFile } from "node:fs/promises";
@@ -27,8 +29,6 @@ const SUPPORTED_PROFILES = Object.freeze({
   persistence: "mybatis-plus",
   verification_database: "h2",
   production_database: "not-bound",
-  platform: "spring-boot-2.7-jdk8",
-  validation_namespace: "javax",
   dto_placement: "web",
   repository: "yss-internal"
 });
@@ -56,14 +56,14 @@ function usage(error) {
     `用法: node scripts/generate_scaffold.mjs --project-name <kebab-case> --base-package <package> --output-dir <dir> --contract-file <json> [选项]\n\n` +
     `必填合同元数据: --contract-id --contract-version --approval-ref --compiler-draft-ref --persisted-ref\n` +
     `Maven 坐标: --group-id --project-version --parent-group-id --parent-artifact-id --parent-version --yss-components-version\n` +
-    `固定 Profile: target-domain-model / mybatis-plus / spring-boot-2.7-jdk8 / javax / web / yss-internal\n` +
+    `固定 Profile: target-domain-model / mybatis-plus / approved Boot/Java platform / derived validation namespace / web / yss-internal\n` +
     `本生成器严格 initialize-only；--force 和任何已有项目目标均为 unsupported。\n` +
     `--with-example 已禁用；--without-example 仅保留为无操作参数。`;
   if (error) process.stderr.write(`错误: ${error}\n\n`);
   process.stdout.write(`${text}\n`);
 }
 
-function parseArgs(argv) {
+export function parseArgs(argv) {
   const options = { force: false, withExample: false };
   const mapping = new Map([
     ["--project-name", "projectName"], ["--base-package", "basePackage"], ["--output-dir", "outputDir"],
@@ -130,8 +130,9 @@ async function treeDigest(root) {
   return hash.digest("hex");
 }
 
-class ScaffoldGenerator {
-  constructor(options) {
+export class ScaffoldGenerator {
+  constructor(options, platformOptions = {}) {
+    this.platformOptions = platformOptions;
     this.options = options;
     this.projectName = options.projectName;
     this.basePackage = options.basePackage;
@@ -258,6 +259,7 @@ class ScaffoldGenerator {
     if (!decision.user_confirmation || Object.values(decision.user_confirmation).some((value) => !isPresent(value))) fail("架构决策缺少完整用户确认记录");
     assertScaffoldUserDecision(decision);
     this.designPrerequisites = await validateBackendScaffoldPrerequisites(contract, { contractFile: this.contractFile });
+    this.platform = assertContractPlatform(contract, decision, { ...this.platformOptions, requireVerified: this.platformOptions.candidate !== true }).profile;
     const generationPolicy = contract.generation_policy;
     if (!generationPolicy || generationPolicy.mode !== "initialize-only" || generationPolicy.existing_target !== "unsupported" || generationPolicy.old_project_migration !== "unsupported" || generationPolicy.template_upgrade !== "unsupported") fail("脚手架合同 generation_policy 必须声明 initialize-only，且 existing_target、old_project_migration、template_upgrade 均为 unsupported");
     this.contractDigest = sha256(contractText);
@@ -306,7 +308,7 @@ class ScaffoldGenerator {
 
   templateVars() {
     const coordinates = this.mavenCoordinates;
-    return { project_name: this.projectName, application_class_name: this.applicationClassName, base_package: this.basePackage, group_id: coordinates.group_id, project_version: coordinates.project_version, parent_group_id: coordinates.parent.group_id, parent_artifact_id: coordinates.parent.artifact_id, parent_version: coordinates.parent.version, yss_components_version: coordinates.yss_components_version, project_description: `${this.projectName} service`, author: this.author, date: this.date, db_dependency: "" };
+    return { ...platformTemplateVars(this.platform), project_name: this.projectName, application_class_name: this.applicationClassName, base_package: this.basePackage, group_id: coordinates.group_id, project_version: coordinates.project_version, parent_group_id: coordinates.parent.group_id, parent_artifact_id: coordinates.parent.artifact_id, parent_version: coordinates.parent.version, yss_components_version: coordinates.yss_components_version, project_description: `${this.projectName} service`, author: this.author, date: this.date, db_dependency: "" };
   }
   render(text) { let output = text; for (const [key, value] of Object.entries(this.templateVars())) output = output.replaceAll(`{{${key}}}`, String(value)); return output; }
   async renderTemplate(template, output) { if (!await isFile(template)) fail(`模板文件不存在: ${template}`); await writeText(output, this.render(await readFile(template, "utf8"))); }
@@ -333,6 +335,7 @@ class ScaffoldGenerator {
     const source = path.join(this.javaTemplateDir, "bootstrap-application.java.template");
     const target = path.join(this.projectRoot, this.bootstrapMainSource);
     await this.renderTemplate(source, target);
+    await writeText(path.join(this.projectRoot, `${this.projectName}-bootstrap/src/test/java/${this.basePackage.replaceAll(".", "/")}/PlatformIntegrationTest.java`), platformSmokeTest(this.basePackage, this.platform));
     console.log(`\n☕ 生成机械启动入口...\n  ✓ ${this.applicationClassName}.java`);
   }
   async generateArchitectureRules() {
@@ -351,7 +354,7 @@ class ScaffoldGenerator {
   generateDatabaseScripts() { console.log("\n🗃️  保留数据库目录布局...\n  ✓ db/（业务 schema 和初始化数据由批准切片合同生成）"); }
   async generateDocumentation() {
     console.log("\n📚 生成项目文档...");
-    await writeText(path.join(this.projectRoot, "README.md"), this.render("# {{project_name}}\n\n## 模块说明\n\n- {{project_name}}-domain\n- {{project_name}}-application\n- {{project_name}}-infrastructure\n- {{project_name}}-adapter\n- {{project_name}}-bootstrap\n\n业务 API、领域模型、数据结构和权限行为必须在冻结的 Slice Implementation Contract 下，由对应 YSS skill 逐切片实现。\n\n## 快速开始\n\n```bash\ncd {{project_name}}\n./mvnw clean compile\n./mvnw -Pscaffold-local spring-boot:run -pl {{project_name}}-bootstrap -Dspring-boot.run.profiles=scaffold-local\n```\n"));
+    await writeText(path.join(this.projectRoot, "README.md"), this.render("# {{project_name}}\n\n平台：Spring Boot {{boot_version}} / Java {{java_version}}。\n\n## 模块说明\n\n- {{project_name}}-domain\n- {{project_name}}-application\n- {{project_name}}-infrastructure\n- {{project_name}}-adapter\n- {{project_name}}-bootstrap\n\n业务 API、领域模型、数据结构和权限行为必须在冻结的 Slice Implementation Contract 下，由对应 YSS skill 逐切片实现。\n\n## 快速开始\n\n```bash\ncd {{project_name}}\n./mvnw clean compile\n./mvnw -Pscaffold-local spring-boot:run -pl {{project_name}}-bootstrap -Dspring-boot.run.profiles=scaffold-local\n```\n"));
     console.log("  ✓ README.md");
   }
   async writeGenerationManifest() {
@@ -368,7 +371,7 @@ class ScaffoldGenerator {
     }
     const scaffoldParent = path.join(SKILL_ROOT, "references", "yss-backend-scaffold-parent", "SKILL.md");
     const compilerContract = path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-implementation-contract-compiler", "references", "compiler-contract.yaml");
-    const manifest = { schema_version: 4, kind: "backend-scaffold", architecture_profile: contract.architecture_profile, architecture_identity: scaffoldArchitectureIdentity(contract, this.contractDigest), contract_id: this.options.contractId, contract_version: this.options.contractVersion, scaffold_request_id: contract.scaffold_request_id, architecture_family: contract.architecture_family, generator_skill: contract.generator_skill, decision_id: contract.decision_id, decision_digest: contract.decision_digest, module_profile: contract.module_profile, design_prerequisites: this.designPrerequisites, approval_ref: this.options.approvalRef, compiler_draft_ref: this.options.compilerDraftRef, persisted_ref: this.options.persistedRef, contract_file_ref: this.contractFile, contract_digest: this.contractDigest, lifecycle_approval_ref: contract.lifecycle_approval_ref, current_version: contract.current_version, approver: contract.approval.approver, allowed_write_paths: contract.allowed_write_paths, expected_evidence_files: contract.expected_evidence_files, project_name: this.projectName, base_package: this.basePackage, bootstrap_main_class: `${this.basePackage}.${this.applicationClassName}`, bootstrap_main_source: this.bootstrapMainSource, maven_coordinates: this.mavenCoordinates, maven_coordinates_source: this.mavenCoordinatesSource, profiles: this.profiles, generation_mode: "controlled-generation", completion_level: "generated", generator: { id: "yss-ddd-scaffold-generator", template_digest: await treeDigest(path.join(SKILL_ROOT, "assets")) }, ownership: { generated_files: generatedFiles, user_owned_globs: ["**/src/main/java/**", "**/src/test/java/**", "db/**"] }, readiness: { downstream_skills: downstream, contracts: { scaffold_parent: sha256(await readFile(scaffoldParent)), compiler_contract: sha256(await readFile(compilerContract)) }, architecture_ruleset: sha256(await readFile(path.join(this.javaTemplateDir, "architecture-rules-test.java.template"))) }, generation_policy: { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }, verification_commands: COMMANDS, generated_at: isoNow() };
+    const manifest = { source_fingerprint: platformSourceFingerprint(contract.architecture_family), generated_tree_digest: generatedTreeDigest(this.projectRoot, { ownership: { generated_files: generatedFiles } }), platform_verification: this.platformOptions.candidate === true ? "candidate" : "verified", platform_configuration: contract.platform_configuration, schema_version: 4, kind: "backend-scaffold", architecture_profile: contract.architecture_profile, architecture_identity: scaffoldArchitectureIdentity(contract, this.contractDigest), contract_id: this.options.contractId, contract_version: this.options.contractVersion, scaffold_request_id: contract.scaffold_request_id, architecture_family: contract.architecture_family, generator_skill: contract.generator_skill, decision_id: contract.decision_id, decision_digest: contract.decision_digest, module_profile: contract.module_profile, design_prerequisites: this.designPrerequisites, approval_ref: this.options.approvalRef, compiler_draft_ref: this.options.compilerDraftRef, persisted_ref: this.options.persistedRef, contract_file_ref: this.contractFile, contract_digest: this.contractDigest, lifecycle_approval_ref: contract.lifecycle_approval_ref, current_version: contract.current_version, approver: contract.approval.approver, allowed_write_paths: contract.allowed_write_paths, expected_evidence_files: contract.expected_evidence_files, project_name: this.projectName, base_package: this.basePackage, bootstrap_main_class: `${this.basePackage}.${this.applicationClassName}`, bootstrap_main_source: this.bootstrapMainSource, maven_coordinates: this.mavenCoordinates, maven_coordinates_source: this.mavenCoordinatesSource, profiles: this.profiles, generation_mode: "controlled-generation", completion_level: "generated", generator: { id: "yss-ddd-scaffold-generator", template_digest: await treeDigest(path.join(SKILL_ROOT, "assets")) }, ownership: { generated_files: generatedFiles, user_owned_globs: ["**/src/main/java/**", "**/src/test/java/**", "db/**"] }, readiness: { downstream_skills: downstream, contracts: { scaffold_parent: sha256(await readFile(scaffoldParent)), compiler_contract: sha256(await readFile(compilerContract)) }, architecture_ruleset: sha256(await readFile(path.join(this.javaTemplateDir, "architecture-rules-test.java.template"))) }, generation_policy: { mode: "initialize-only", existing_target: "unsupported", old_project_migration: "unsupported", template_upgrade: "unsupported" }, verification_commands: COMMANDS, generated_at: isoNow() };
     await writeText(path.join(this.projectRoot, ".yss", "scaffold-generation.json"), `${JSON.stringify(manifest, null, 2)}\n`); console.log("  ✓ .yss/scaffold-generation.json");
   }
   async copyWrapperFiles() {
@@ -387,4 +390,4 @@ class ScaffoldGenerator {
 }
 
 async function main() { let options; try { options = parseArgs(process.argv.slice(2)); if (options.help) { usage(); return 0; } await new ScaffoldGenerator(options).generate(); return 0; } catch (error) { process.stderr.write(`\n❌ 生成失败: ${error.message}\n`); return 1; } }
-process.exitCode = await main();
+if (process.argv[1] === fileURLToPath(import.meta.url)) process.exitCode = await main();

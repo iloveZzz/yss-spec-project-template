@@ -8,6 +8,7 @@ const sameSet = (a,b) => Array.isArray(a) && Array.isArray(b) && a.length === ne
 export function assertApprovalUserDecision(record, roles, options = {}) {
   const policy = roles.user_decision_policy;
   const io = decisionIO(options);
+  if (record.continuation_ref) return assertUserDecisionRequirement({boundary:record.gate_id,subject_ref:record.subject_ref,scope:record.approval_scope,continuation_ref:record.continuation_ref}, {...options,rolesDoc:roles});
   if (policy.required_capabilities?.some(id => id !== DECISION_REUSE_CAPABILITY)) fail('接收工具不支持源用户决定策略，请升级');
   if (!record.decision_reuse_ref) return assertUserDecisionRequirement({boundary:record.gate_id,subject_ref:record.subject_ref,scope:record.approval_scope,user_decision_ref:record.user_decision_ref}, {...options,rolesDoc:roles});
   if (record.gate_id !== 'gate.strategic-design-handoff-approved' || !policy.required_capabilities?.includes(DECISION_REUSE_CAPABILITY)) fail('未登记的复用边界或能力');

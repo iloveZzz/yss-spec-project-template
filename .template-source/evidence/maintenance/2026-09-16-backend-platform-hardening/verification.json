@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "scope": "backend-platform-hardening",
+  "intensity": "L3",
+  "generated_at": "2026-09-16T16:04:32.258130+00:00",
+  "root_tests": {
+    "tests": 76,
+    "passed": 72,
+    "skipped": 4
+  },
+  "backend_tests": {
+    "tests": 76,
+    "passed": 72,
+    "skipped": 4
+  },
+  "fresh_cli_tests": {
+    "tests": 19,
+    "passed": 19
+  },
+  "real_maven_matrix": "blocked",
+  "workspace_release_gate": "blocked: WORKTREE is not a committed distribution source",
+  "logs": [
+    {
+      "log": "root-tests.log",
+      "exit_code": 0,
+      "sha256": "29e88e72afaa2f2e74003efc035d860e050e8106f29684d957bc12de2f6f4920"
+    },
+    {
+      "log": "backend-tests.log",
+      "exit_code": 0,
+      "sha256": "037b260bf5caacfbf65118e6ab3e6e91d0c2b46e1c87c2e9b4f54bb2a0c5de10"
+    },
+    {
+      "log": "distribution.log",
+      "exit_code": 0,
+      "sha256": "25e8d804db5d398d52f02f77c75837c5084677e0eb676c752f29b719e038ad4b"
+    },
+    {
+      "log": "fast-scoped.log",
+      "exit_code": 0,
+      "sha256": "3f63353507e12d89e242228e44bcd538e9d78ac3124b98dbec7c7a72603b5954"
+    },
+    {
+      "log": "fast-workspace.log",
+      "exit_code": 1,
+      "sha256": "feecf1d2c31e6e1085b2026e953860e7e6bbca65b8a3f0481c80d6df2ed13491"
+    },
+    {
+      "log": "matrix.log",
+      "exit_code": 1,
+      "sha256": "e1aeb4b9092a103d67f26d76a5b232f3145a0fa22c95d792f2b7d7d6e26311ed"
+    }
+  ]
+}

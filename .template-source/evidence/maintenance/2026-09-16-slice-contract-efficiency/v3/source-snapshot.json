@@ -1,0 +1,17 @@
+{
+  "recorded_at": "2026-09-16T23:00:52+0800",
+  "purpose": "收尾来源记录，不是冻结候选或批准",
+  "files": {
+    "docs/process/schemas/slice-implementation-contract-v3.schema.json": "294bc3c5e054179b665d13a780bbcb8fa92824976102c7279f7ea367f223f222",
+    "scripts/lib/slice-contract.mjs": "bfb802f9081e558a8a6335dc8e95f3755500a427f6734a9e8db5fb4672f37a2f",
+    "scripts/lib/slice-contract-preparation.mjs": "3dbc2b3815b140858025ab465a653326b42c772a823fe14c4d1be0f794eae527",
+    "scripts/lib/slice-contract-views.mjs": "6c8e183a72dfc29da7fbe59c8cf26aa0be4442bae793ab46556de5f513d2b6a2",
+    "scripts/lib/slice-task-package.mjs": "0cd9292bd6f325925c8717946b4cd485892cd7fba33575361b178bc4d65d4f8d",
+    "scripts/slice-contract": "54a7ee000cf83e04d733e3d6c27edd08feca35fa00744d4dffdf9e6e697ae8b4",
+    "scripts/lib/approved-execution-context.mjs": "0ad9626c22ec009d78f1c83ba891121b5c043f473b5932ab90240083a7f7c7d6",
+    "scripts/lib/implementation-contract-compiler.mjs": "5e273dde12ca01cb2073743d164c23fd2de332a234f9ed8431c42dec3a6c86c9",
+    "scripts/fixtures/slice-contract-v3/scenarios.test.mjs": "6b675481404e4407a6ae957c6296d75597de8298473ba803aee1829b2f1ae916",
+    ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml": "4d7c2c7bcb1f7011ee7f56060b7f3aa158a4ee6ccbf70f560909a610b7efd7e3",
+    ".template-source/profile-skill-sync.json": "15cebe14a795f4d38ca284c1be663543a3a0f4d7a83854e086e2b13513493a74"
+  }
+}

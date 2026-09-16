@@ -102,7 +102,7 @@ export async function validateBackendScaffoldPrerequisites(contract, { contractF
   const approvalRef = prerequisites.engineering_contract_approval_ref;
   if (approvalRef !== contract.lifecycle_approval_ref || approvalRef !== contract.approval?.approval_ref) fail("工程合同批准引用与脚手架合同不一致");
   const approvalFile = resolveLocalRef(root, approvalRef, "工程合同批准记录");
-  const approval = loadApprovalRecord(approvalFile);
+  const approval = loadApprovalRecord(approvalFile, 'gate.engineering-contract-approved');
   validateApprovalRecord(approval, { requireApproved: true, root });
   if (approval.gate_id !== "gate.engineering-contract-approved") fail("工程合同批准记录 gate_id 必须为 gate.engineering-contract-approved");
   if (!Array.isArray(approval.approval_scope) || !approval.approval_scope.includes(contract.contract_id) || !approval.approval_scope.includes(contract.project_name)) fail("工程合同批准范围未覆盖当前合同和项目");

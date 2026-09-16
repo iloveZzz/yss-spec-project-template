@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "kind": "backend-platform-maintenance-evidence",
+  "recorded_at": "2026-09-16T15:25:23.193507+00:00",
+  "intensity": "L3",
+  "triggers": [
+    "generation-semantics",
+    "cross-repo-contract"
+  ],
+  "status": "implementation-present-runtime-qualification-blocked",
+  "verification": [
+    {
+      "command": "node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs .agents/skills/yss-ddd-scaffold-generator/scripts/*.test.mjs .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs .agents/skills/yss-web-controller/scripts/*.test.mjs",
+      "cwd": ".",
+      "exit_code": 0,
+      "tests": 73,
+      "passed": 69,
+      "skipped": 4,
+      "log": "root-tests.log"
+    },
+    {
+      "command": "node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs .agents/skills/yss-ddd-scaffold-generator/scripts/*.test.mjs .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs .agents/skills/yss-web-controller/scripts/*.test.mjs",
+      "cwd": "submodules/yss-harness-backend-agent",
+      "exit_code": 0,
+      "tests": 73,
+      "passed": 69,
+      "skipped": 4,
+      "log": "backend-tests.log"
+    },
+    {
+      "command": "node .template-source/evidence/maintenance/2026-09-16-backend-platforms/distribution-check.mjs",
+      "exit_code": 0,
+      "log": "distribution.log",
+      "tests": 16,
+      "passed": 16,
+      "skipped": 0
+    },
+    {
+      "command": "scripts/verify-template-fast --concurrency 2",
+      "exit_code": 1,
+      "requested_profile": "fast",
+      "effective_profile": "release",
+      "log": "template-fast.log",
+      "failures": [
+        "lifecycle registry slice_contract schema mismatch in concurrently changing Slice v3 work",
+        "Slice v2 migration existing-target error assertion mismatch",
+        "working-tree source rejected by --require-committed"
+      ]
+    },
+    {
+      "command": "scripts/verify-backend-platform-matrix --evidence-dir <this directory> --inputs <local JDK paths and real contracts>",
+      "exit_code": 1,
+      "log": "platform-matrix.json",
+      "status": "blocked",
+      "combinations": 10,
+      "maven_commands_executed": 0
+    },
+    {
+      "command": "scripts/sync-profile-skills --check --profile all; scripts/sync-skills --check; scripts/update-skill-lock --check; scripts/verify-skill-governance; git diff --check",
+      "exit_code": 0,
+      "status": "passed"
+    },
+    {
+      "command": "backend: scripts/sync-skills --check; scripts/update-skill-lock --check; scripts/verify-skill-governance",
+      "exit_code": 0,
+      "status": "passed"
+    }
+  ],
+  "artifacts": [
+    {
+      "ref": "root-tests.log",
+      "sha256": "482097c0bfee72048b78a0bde921a735cd9a5c54d2d7ccb1b67a4134d28b52be"
+    },
+    {
+      "ref": "backend-tests.log",
+      "sha256": "44a59a99b71f8ac73ff17511f716998a488f5183de1f74c758b500a6bf01418a"
+    },
+    {
+      "ref": "distribution.log",
+      "sha256": "be819b520974737ee445abf38b75ddeea54f8f4c2eaa75456d865c703319878c"
+    },
+    {
+      "ref": "platform-sync.log",
+      "sha256": "af53a3e087ee628564e738ec6200e22f631d5f4ec8047ef185ed35e5998cb107"
+    },
+    {
+      "ref": "template-fast.log",
+      "sha256": "c0db470f148d7cee521c66140a1839e3f2f938424257a3751bd9f5ac104c9918"
+    },
+    {
+      "ref": "backend-skill-governance.log",
+      "sha256": "ad2984ae2f219efa236d8aedded1c242c0ce565431f2def30998d7847fb202f8"
+    },
+    {
+      "ref": "platform-matrix.json",
+      "sha256": "4474c32905fa46db6941f114971dd5574b0fb32fb539829c3e3e02686551844a"
+    },
+    {
+      "ref": "distribution-check.mjs",
+      "sha256": "bdf2a026cf5dd894311be6b71353f34218e51142fffea277906b48405d94a991"
+    }
+  ]
+}

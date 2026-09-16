@@ -1,0 +1,30 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import { prepareSliceImplementationContract, migrateSliceContractV2, persistSliceDraft } from './lib/slice-contract-preparation.mjs';
+import { renderSliceContractView, diffSliceContracts } from './lib/slice-contract-views.mjs';
+import { parseSliceYaml, readSliceContract } from './lib/slice-contract.mjs';
+
+try {
+  const args=process.argv.slice(2),mode=args.shift(),options={},positional=[];
+  for(let i=0;i<args.length;i++) {
+    if(args[i]==='--json'){options.json=true;continue;}
+    if(args[i].startsWith('--')) {
+      const key=args[i].slice(2);if(!['root','input','output','unit','before-root'].includes(key)||!args[i+1])throw new Error(`未知或缺值参数 ${args[i]}`);
+      options[key]=args[++i];
+    }else positional.push(args[i]);
+  }
+  const root=path.resolve(options.root||process.cwd());
+  let result;
+  if(mode==='prepare'||mode==='migrate') {
+    const input=options.input?parseSliceYaml(fs.readFileSync(path.resolve(root,options.input))):{};
+    if(mode==='prepare')result=prepareSliceImplementationContract({...input,root,ticket_ref:positional[0]});
+    else result=migrateSliceContractV2(readSliceContract(positional[0],{root}).raw,{...input,root});
+    if(options.output)persistSliceDraft(result,options.output,{root});
+    if(result.report.blockers.length)process.exitCode=1;
+  }else if(mode==='view')result=renderSliceContractView(positional[0],{root,unit_id:options.unit});
+  else if(mode==='diff')result=diffSliceContracts(positional[0],positional[1],{root,beforeRoot:options['before-root']?path.resolve(options['before-root']):root});
+  else if(mode==='verify')result={read_only:true,approval_validity:'not-checked',...readSliceContract(positional[0],{root}).binding};
+  else throw new Error('用法: scripts/slice-contract prepare <ticket> --input <补充.yaml> --output <新合同.yaml> | migrate <v2.yaml> --input <补充.yaml> --output <新合同.yaml> | view <合同.yaml> [--unit <id>] | diff <旧合同> <新合同> | verify <合同> [--root <项目根>]');
+  process.stdout.write(options.json||!result.markdown?`${JSON.stringify(result,null,2)}\n`:`${result.markdown}\n`);
+}catch(error){process.stderr.write(`${error.message}\n`);process.exitCode=1;}

@@ -6,9 +6,9 @@ import { preflightDelivery, invalidPreflightInput } from './lib/delivery-preflig
 
 let result;
 try {
-  const {values}=parseArgs({options:{input:{type:'string'},stage:{type:'string'},json:{type:'boolean'}},strict:true});
+  const {values}=parseArgs({options:{input:{type:'string'},stage:{type:'string'},'work-unit':{type:'string'},json:{type:'boolean'}},strict:true});
   if(!values.input||!values.stage) throw new TypeError('必须提供 --input <file> 和 --stage prepare|build|export|accept');
-  result=await preflightDelivery(read(path.resolve(values.input)),{stage:values.stage,root:process.cwd()});
+  result=await preflightDelivery(read(path.resolve(values.input)),{stage:values.stage,root:process.cwd(),work_unit_id:values['work-unit']});
 } catch(error) { result=invalidPreflightInput(error.message); }
 process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
 process.exitCode=result.exit_code;

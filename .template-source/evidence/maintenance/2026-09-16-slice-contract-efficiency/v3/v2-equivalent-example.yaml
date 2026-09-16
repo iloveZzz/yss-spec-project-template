@@ -1,0 +1,273 @@
+slice_contract:
+  schema_version: 2
+  contract_id: contract.synthetic
+  contract_version: v3-pilot
+  slice_id: slice.synthetic
+  status: ready-for-lifecycle-review
+  lifecycle_refs:
+    spec: spec.md
+    ticket: tickets/synthetic.md
+    requirement_freeze: []
+    low_fidelity_review: []
+    prototype_review: []
+    prototype_profile_decision: []
+    prototype_deliverable: []
+    prototype_deliverable_verification: []
+    visual_baseline: []
+    prototype_confirmation: []
+    openapi_freeze_or_no_impact: api.yaml
+    architecture_review: review.json
+    data_architecture: []
+    technical_design: technical-design.json
+    tactical_design: []
+    engineering_baseline: baseline.json
+    build_architecture_checklist: review.md
+    implementation_repository: registration.json
+    frontend_repository: []
+    backend_repository: registration.json
+    maven_wrapper: project/mvnw
+  readiness:
+    blockers: []
+    stale_inputs: []
+    not_applicable:
+      - item: frontend
+        reason: 无 UI 变化
+      - item: cross_repo
+        reason: 单个后端工程
+  resolution:
+    required_capabilities:
+      - layer.mvc-service
+      - quality.java-code-style
+      - layer.mvc-web
+      - contract.dto-wire
+      - contract.request-validation
+      - contract.error-mapping
+      - codegen.mapstruct
+      - codegen.lombok
+    required_skills:
+      - alibaba-java-code-style
+      - yss-application
+      - yss-dto
+      - yss-web-controller
+      - yss-validation
+      - yss-exception
+      - mapstruct
+      - lombok
+    recipe_ids:
+      - backend.mvc-service-behavior
+      - backend.mvc-http-api
+    conditions: []
+    registry_digest: 648743d4d91b0d03ecd32c29c074bc7ca70dff954bf95b66967998bf9cdcbe9f
+    compiler_contract_digest: e143d8052a1cf997412b447745b65d0b4e9b5f97929b42f1648f6c484f86753e
+    architecture_identity:
+      schema_version: 2
+      source_kind: existing-registration
+      architecture_family: layered-mvc
+      architecture_profile: existing-layered-mvc-maven
+      repository_id: synthetic-repo
+      project_id: synthetic-project
+      source_digest: sha256:9e3d92ab62c01d29f14a5077fc020a6ceb85039a8734fc46e3277cab5c9f4217
+      build_units_digest: sha256:bc21a765280f16a529d078e13cc9e865bd9f91130ab211afaca33ee60fc52584
+    freshness: current
+    architecture_identity_digest: 4980c8a3b4546e74e16bbc96acbff5e2360cd2210516c3e1018a53442f76df21
+    architecture_evidence:
+      repository_registration:
+        ref: registration.json
+        digest: sha256:ace1088a8cd6c882debce37f56fdbb61c9b11ab32b02ac160ab76521c55ec89c
+      engineering_baseline:
+        ref: baseline.json
+        digest: sha256:0b55cbf1a8e5c35914b50df3ccbd2515cd767492f2687000634483988673bff4
+      manifest:
+        ref: manifest.json
+        digest: sha256:8c3f4898eeb33f70d60fb21829f56bcfd9f381dfb097050e004bce6b3e5d7503
+    technical_design:
+      ref: technical-design.json
+      digest: sha256:e490cb4b0d87e9801d8be03eb560b39a728dc6c2a3a419d79833910670933d56
+      version: v1
+      approval_ref: technical-approval.json
+    reason_chains:
+      alibaba-java-code-style:
+        - kind: recipe
+          recipe_id: backend.mvc-service-behavior
+          capability: quality.java-code-style
+        - kind: recipe
+          recipe_id: backend.mvc-http-api
+          capability: quality.java-code-style
+        - kind: dependency
+          from: yss-application
+          type: context-required
+        - kind: dependency
+          from: yss-web-controller
+          type: context-required
+      yss-application:
+        - kind: recipe
+          recipe_id: backend.mvc-service-behavior
+          capability: layer.mvc-service
+      yss-dto:
+        - kind: recipe
+          recipe_id: backend.mvc-http-api
+          capability: contract.dto-wire
+        - kind: dependency
+          from: yss-web-controller
+          type: context-required
+        - kind: dependency
+          from: yss-exception
+          type: context-required
+      yss-web-controller:
+        - kind: recipe
+          recipe_id: backend.mvc-http-api
+          capability: layer.mvc-web
+      yss-validation:
+        - kind: recipe
+          recipe_id: backend.mvc-http-api
+          capability: contract.request-validation
+      yss-exception:
+        - kind: recipe
+          recipe_id: backend.mvc-http-api
+          capability: contract.error-mapping
+      mapstruct:
+        - kind: recipe
+          recipe_id: backend.mvc-http-api
+          capability: codegen.mapstruct
+      lombok:
+        - kind: recipe
+          recipe_id: backend.mvc-http-api
+          capability: codegen.lombok
+  common:
+    impacted_areas:
+      - backend
+      - api
+    implementation_path_policy: external-repository-native
+    project_roots:
+      - /synthetic/project-root/project
+    required_capabilities:
+      - layer.mvc-service
+      - quality.java-code-style
+      - layer.mvc-web
+      - contract.dto-wire
+      - contract.request-validation
+      - contract.error-mapping
+      - codegen.mapstruct
+      - codegen.lombok
+    required_skills:
+      - alibaba-java-code-style
+      - yss-application
+      - yss-dto
+      - yss-web-controller
+      - yss-validation
+      - yss-exception
+      - mapstruct
+      - lombok
+    optional_skills: []
+    unavailable_skills: []
+    allowed_write_paths:
+      - src/main/java
+    forbidden_patterns:
+      - 不得绕过持久化约束
+    expected_evidence_files:
+      - results/test.log
+    verification_commands:
+      - ./mvnw test
+    human_review_points: []
+    full_reroute_triggers:
+      - scaffold-baseline-drift
+      - scaffold-architecture-decision-changed
+      - scaffold-profile-changed
+      - scaffold-module-resolution-changed
+      - api-schema-impact
+      - database-schema-impact
+      - state-machine-impact
+      - visual-baseline-version-or-digest-changed
+      - data-model-impact
+      - new-write-path
+      - new-repository
+      - aggregate-impact
+      - invariant-impact
+      - consistency-impact
+      - domain-event-impact
+      - gateway-boundary-impact
+      - persistence-mapping-impact
+      - new-required-skill
+      - not-applicable-invalidated
+      - architecture-drift
+      - contract-violation
+      - generation-became-behavior
+      - test-seam-changed
+      - verification-command-changed
+      - delivery-order-changed
+      - doubt-review-triggered
+    quality_baseline_ref: baseline.json
+    context_plan: []
+    doubt_driven_review: []
+  frontend:
+    status: not-applicable
+    required_skills: []
+    approved_prototype_ref: []
+    state_matrix_ref: []
+    visual_baseline_ref: []
+    visual_baseline_case_ids: []
+    allowed_write_paths: []
+    component_test_seams: []
+    e2e_paths: []
+  backend:
+    status: required
+    affected_layers:
+      - application
+      - web
+    component_impacts: []
+    required_skills:
+      - alibaba-java-code-style
+      - yss-application
+      - yss-dto
+      - yss-web-controller
+      - yss-validation
+      - yss-exception
+      - mapstruct
+      - lombok
+    application_boundary: []
+    transaction_boundary: []
+    persistence_strategy: []
+    allowed_write_paths:
+      - src/main/java
+    forbidden_patterns: []
+    expected_evidence_files:
+      - results/test.log
+    seam_deferred: []
+    verification_commands:
+      - ./mvnw test
+    tactical_ddd: []
+  contract:
+    api_impact: true
+    freeze_ref: api.yaml
+    no_api_impact_ref: []
+    generated_clients: []
+    contract_tests:
+      - test-seam.success
+      - test-seam.failure
+    regeneration_commands: []
+  cross_repo:
+    repositories: []
+    delivery_order: []
+    integration_verification: []
+    rollback_order: []
+  work_units:
+    - id: work-unit.slice-backend
+      role_id: role.backend-engineer
+      contract_id: contract.synthetic
+      contract_version: v3-pilot
+      workflow_status: not-started
+      work_unit:
+        behavior: 提交申请并校验必填材料
+        primary_skill: yss-web-controller
+        supporting_skills:
+          - yss-application
+        tdd_mode: behavior-tdd
+        project_root: /synthetic/project-root/project
+        allowed_write_paths:
+          - src/main/java
+        forbidden_patterns:
+          - 不得绕过持久化约束
+        verification_commands:
+          - ./mvnw test
+        expected_evidence:
+          - results/test.log

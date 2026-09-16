@@ -1,6 +1,6 @@
 ---
 name: yss-layered-mvc-scaffold-generator
-description: 用于在生命周期已批准的脚手架合同下生成通用 YSS Java 8 分层 MVC 后端工程；核心模块为 server、service、repository，并按能力确定性增加 adapter、client、feign-client。
+description: 用于在生命周期已批准的脚手架合同下生成按批准 Spring Boot / Java 平台生成通用 YSS 分层 MVC 后端工程；核心模块为 server、service、repository，并按能力确定性增加 adapter、client、feign-client。
 ---
 
 # YSS Layered MVC Scaffold Generator
@@ -16,13 +16,26 @@ description: 用于在生命周期已批准的脚手架合同下生成通用 YSS
 
 任一条件缺失时返回 `blocked`。本生成器无交互、无默认回退；用户选择由 `yss-product-lifecycle` 在 `work-unit.technical-analysis` 的工程基线内完成。
 
+## Spring Boot / Java 平台选择
+
+调用本技能时先展示 `scripts/backend-platforms` 的精确版本清单及兼容状态。由生命周期编排器把架构、Spring Boot、Java 和 YSS 父 POM/BOM 合并展示并取得真实用户确认；生成器不提问、不猜版本、不使用 `x` 或 `latest`。已有批准且当前的选择展示摘要后复用。
+
+- 候选平台：Boot 2.7.18 / Java 8，Boot 3.5.16 / Java 17 或 21，Boot 4.1.1 / Java 17 或 21。新 Boot 默认推荐 Java 17；候选不等于可生成。
+- 独立子项目可继承主项目组合或覆盖，必须逐项目确认（允许一次确认明确列出的项目）；同一 Maven Reactor 使用一个平台。
+- 只开放共享兼容清单中已有真实 YSS 构建、依赖和启动证据的组合。缺少兼容父 POM、BOM、starter 或相应能力证据即 `blocked`；不替换官方组件、不降级回退。
+- 新生成合同必须有 `platform_configuration` v2，与架构决策、Maven 坐标及兼容条目摘要一致。Boot、Java、YSS 坐标或依赖配方变化时回生命周期重新确认并编译合同；仅追加同配置验证记录不重复确认，仍核验证据有效性。
+- Spring MVC、Servlet、Validation、Jackson 和 starter 坐标消费共享平台清单；Boot 3.5 / 4.1 拒绝 Java 8/11。Jakarta 转换不包括 `javax.sql` 等 Java SE API。
+- 平台候选维护验证产物标记 `platform_verification=candidate`，不能交给业务生成、升级完成等级或进入首切片验证。测试夹具不证明 YSS 兼容。
+
+版本清单、合同字段、候选验证和支持晋级规则见 仓库共享合同 `docs/engineering/backend-platforms.md`。
+
 ## 架构与 Profile
 
 - 固定核心模块：`server`、`service`、`repository`。
 - `external-integration` 增加 `adapter`。
 - `published-client` 增加 `client`。
 - `feign-client` 增加 `client`、`feign-client`。
-- 固定平台：Java 8、Spring Boot 2.7、`javax`、YSS BOM、MyBatis-Plus。
+- 平台来自批准的 `platform_configuration`；保留 YSS BOM、MyBatis-Plus，不固定单一 Boot/Java/Validation 命名空间。
 - 固定 architecture_profile=layered-mvc-service；verification_database=h2、production_database=not-bound。测试使用 H2，本地运行显式启用 scaffold-local；不引入外部驱动/数据源。
 
 能力解析规则、模块职责和依赖方向见 [architecture.md](references/architecture.md)。生成器必须同时校验 `requested_capabilities` 与 `resolved_modules`，不得自行补猜模块。

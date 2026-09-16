@@ -1,3 +1,4 @@
+import { platformProfile, resolveBackendPlatform } from "./backend-platform.mjs";
 import { createHash } from "node:crypto";
 import { loadSkillRegistry } from "./skill-registry.mjs";
 import { validateExistingArchitecture, verifyExistingArchitecture } from "./existing-backend-architecture.mjs";
@@ -12,6 +13,10 @@ export function validateArchitectureIdentity(identity, registry = loadSkillRegis
   if (!identity || typeof identity !== "object") throw new TypeError("缺少 architecture_identity；请从工程基线重新编译");
   if (identity.schema_version === 2) return validateExistingArchitecture(identity, registry);
   if (identity.schema_version !== undefined || identity.source_kind !== undefined) throw new TypeError("不支持的 architecture_identity 来源或版本");
+  if (identity.platform_configuration) {
+    const selected = platformProfile(identity.platform_configuration.profile_id, undefined, identity.platform_configuration.spring_boot_version);
+    if (selected.spring_boot_version !== identity.platform_configuration.spring_boot_version || selected.java_version !== identity.platform_configuration.java_version) throw new TypeError("backend-platform: invalid architecture platform binding");
+  }
   const profile = registry.architecture_profiles?.[identity.architecture_profile];
   if (!profile || identity.architecture_family !== profile.architecture_family || identity.generator_skill !== profile.generator_skill) {
     throw new TypeError("architecture_identity 的架构族、Profile 或生成器不匹配");
@@ -51,5 +56,6 @@ export function assertArchitectureAgreement(identity, evidence, registry) {
 
 export function architectureReady(identity, registry = loadSkillRegistry()) {
   const profile = validateArchitectureIdentity(identity, registry);
+  if (identity.platform_configuration) { try { resolveBackendPlatform(identity.platform_configuration); } catch { return false; } }
   return profile.maturity === "supported";
 }

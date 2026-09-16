@@ -24,6 +24,7 @@ export function enforceTechnicalDesign(state = {}, { root = ROOT, execution, rea
   if(execution){
     assertApprovedExecutionContext(execution,{root,technicalDesign:data,architectureIdentity:state.architecture_identity,sliceId:state.slice_id});
     const approved=approvedExecutionBinding(execution);
+    if(approved.work_unit_id)args.push('--work-unit',approved.work_unit_id);
     args.push('--approved-slice',approved.ref,'--approved-slice-digest',approved.digest,'--approved-slice-approval',approved.approval_ref);
   }
   const verified = spawnSync(process.execPath, args, { cwd: root, encoding: 'utf8', timeout: 60000, maxBuffer: 2 * 1024 * 1024 });

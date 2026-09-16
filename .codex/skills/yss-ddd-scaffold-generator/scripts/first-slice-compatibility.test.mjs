@@ -80,13 +80,17 @@ async function prepareGoldenProject(t) {
   attachDesignPrerequisites(root, contract);
   await writeFile(contractFile, `${JSON.stringify(contract, null, 2)}\n`);
   const args = ["--project-name", "golden-service", "--base-package", "com.yss.golden", "--output-dir", output, "--contract-id", "golden-scaffold-1", "--contract-version", "1", "--approval-ref", contract.lifecycle_approval_ref, "--compiler-draft-ref", "compiler-golden-1", "--persisted-ref", "persisted-golden-1", "--contract-file", contractFile, "--group-id", "com.yss.datamiddle", "--project-version", "1.0.0-SNAPSHOT", "--parent-group-id", "com.yss.datamiddle", "--parent-artifact-id", "yss-datamiddle-parent", "--parent-version", "2.0.0-SNAPSHOT", "--yss-components-version", "2.0.0-SNAPSHOT"];
-  const generated = await execute(process.execPath, [generator, ...args]);
+  const generated = await execute(process.execPath, [path.resolve(scripts, "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), generator, ...args]);
   assert.equal(generated.code, 0, generated.stderr);
   const project = path.join(output, "golden-service");
   const manifestPath = path.join(project, ".yss", "scaffold-generation.json");
   const emptyVerificationPath = path.join(root, "empty-scaffold-verification.json");
   await writeFile(emptyVerificationPath, JSON.stringify({ status: "passed", completion_level: "empty-scaffold-verified", commands: ["./mvnw validate", "./mvnw test", "./mvnw package"] }));
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  // Legacy Manifest compatibility fixture only; this does not qualify a new platform.
+  delete manifest.platform_configuration;
+  delete manifest.platform_verification;
+  delete manifest.architecture_identity.platform_configuration;
   manifest.completion_level = "empty-scaffold-verified";
   manifest.empty_scaffold_verification_ref = emptyVerificationPath;
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);

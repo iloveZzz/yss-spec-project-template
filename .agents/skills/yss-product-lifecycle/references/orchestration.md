@@ -148,3 +148,7 @@ Checkpoint 中已批准门禁必须带 `basis: [{ref, digest}]` 和按 `evidence
 ## 专项合同加载索引
 
 专项加载提示：实现仓库与脚手架查询 `implementation_repository_preparation`、`backend_scaffold`；切片实现查询 `ticket_formalization`、`ready_for_agent`；UI 查询 `frontend_implementation_plan`、`frontend_implementation_verification`；审查查询 `review_input`；发布查询 `release_readiness`、`git_authorization`、`user_decision_evidence`；战略交接读取 `docs/process/strategic-handoff-package.md` 并按其中验证器执行。
+
+## 后端脚手架平台
+
+在工程基线中合并展示、确认架构和 Boot 精确版本、Java、YSS 父 POM/BOM；缺少选择时询问，当前批准可复用。独立子项目可继承或覆盖，并可一次确认明确列出的多个项目。同一 Maven 工程统一平台。执行 `scripts/backend-platforms` 展示兼容状态；只允许已验证组合。决定、合同、Manifest 和下游身份绑定同一平台摘要；变更重新确认。合同见仓库 `docs/engineering/backend-platforms.md`。

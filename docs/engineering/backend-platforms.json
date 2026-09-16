@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "kind": "backend-platform-catalog",
+  "profiles": [
+    {
+      "id": "spring-boot-2.7-jdk8",
+      "spring_boot_version": "2.7.18",
+      "java_version": 8,
+      "framework_line": "5.3",
+      "tomcat_line": "9.0",
+      "servlet_version": "4.0",
+      "validation_namespace": "javax",
+      "validation_group": "javax.validation",
+      "validation_artifact": "validation-api",
+      "web_starter": "spring-boot-starter-web",
+      "web_test_starter": "spring-boot-starter-test",
+      "aop_starter": "spring-boot-starter-aop",
+      "mybatis_plus_starter": "mybatis-plus-boot-starter",
+      "springdoc_major": 1,
+      "jackson_major": 2,
+      "swagger_artifact": "swagger-annotations",
+      "versions": {
+        "mapstruct": "1.5.5.Final",
+        "lombok": "1.18.30",
+        "lombok_mapstruct_binding": "0.2.0",
+        "swagger": "2.2.22",
+        "archunit": "1.2.1",
+        "compiler": "3.11.0",
+        "enforcer": "3.5.0",
+        "surefire": "3.2.5"
+      },
+      "candidate_blockers": [
+        "YSS parent/BOM/starter combination and real Maven/startup evidence required"
+      ],
+      "spring_cloud_line": "2021.0",
+      "openfeign_line": "3.1"
+    },
+    {
+      "id": "spring-boot-3.5-jdk17",
+      "spring_boot_version": "3.5.16",
+      "java_version": 17,
+      "framework_line": "6.2",
+      "tomcat_line": "10.1",
+      "servlet_version": "6.0",
+      "validation_namespace": "jakarta",
+      "validation_group": "jakarta.validation",
+      "validation_artifact": "jakarta.validation-api",
+      "web_starter": "spring-boot-starter-web",
+      "web_test_starter": "spring-boot-starter-test",
+      "aop_starter": "spring-boot-starter-aop",
+      "mybatis_plus_starter": "mybatis-plus-spring-boot3-starter",
+      "springdoc_major": 2,
+      "jackson_major": 2,
+      "swagger_artifact": "swagger-annotations-jakarta",
+      "versions": {
+        "mapstruct": "1.6.3",
+        "lombok": "1.18.42",
+        "lombok_mapstruct_binding": "0.2.0",
+        "swagger": "2.2.22",
+        "archunit": "1.4.1",
+        "compiler": "3.14.1",
+        "enforcer": "3.5.0",
+        "surefire": "3.5.4"
+      },
+      "candidate_blockers": [
+        "YSS parent/BOM/starter combination and real Maven/startup evidence required"
+      ],
+      "spring_cloud_line": "2025.0",
+      "openfeign_line": "4.3"
+    },
+    {
+      "id": "spring-boot-3.5-jdk21",
+      "spring_boot_version": "3.5.16",
+      "java_version": 21,
+      "framework_line": "6.2",
+      "tomcat_line": "10.1",
+      "servlet_version": "6.0",
+      "validation_namespace": "jakarta",
+      "validation_group": "jakarta.validation",
+      "validation_artifact": "jakarta.validation-api",
+      "web_starter": "spring-boot-starter-web",
+      "web_test_starter": "spring-boot-starter-test",
+      "aop_starter": "spring-boot-starter-aop",
+      "mybatis_plus_starter": "mybatis-plus-spring-boot3-starter",
+      "springdoc_major": 2,
+      "jackson_major": 2,
+      "swagger_artifact": "swagger-annotations-jakarta",
+      "versions": {
+        "mapstruct": "1.6.3",
+        "lombok": "1.18.42",
+        "lombok_mapstruct_binding": "0.2.0",
+        "swagger": "2.2.22",
+        "archunit": "1.4.1",
+        "compiler": "3.14.1",
+        "enforcer": "3.5.0",
+        "surefire": "3.5.4"
+      },
+      "candidate_blockers": [
+        "YSS parent/BOM/starter combination and real Maven/startup evidence required"
+      ],
+      "spring_cloud_line": "2025.0",
+      "openfeign_line": "4.3"
+    },
+    {
+      "id": "spring-boot-4.1-jdk17",
+      "spring_boot_version": "4.1.1",
+      "java_version": 17,
+      "framework_line": "7.0",
+      "tomcat_line": "11.0",
+      "servlet_version": "6.1",
+      "validation_namespace": "jakarta",
+      "validation_group": "jakarta.validation",
+      "validation_artifact": "jakarta.validation-api",
+      "web_starter": "spring-boot-starter-webmvc",
+      "web_test_starter": "spring-boot-starter-webmvc-test",
+      "aop_starter": "spring-boot-starter-aspectj",
+      "mybatis_plus_starter": "mybatis-plus-spring-boot4-starter",
+      "springdoc_major": 3,
+      "jackson_major": 3,
+      "swagger_artifact": "swagger-annotations-jakarta",
+      "versions": {
+        "mapstruct": "1.6.3",
+        "lombok": "1.18.42",
+        "lombok_mapstruct_binding": "0.2.0",
+        "swagger": "2.2.22",
+        "archunit": "1.4.1",
+        "compiler": "3.14.1",
+        "enforcer": "3.5.0",
+        "surefire": "3.5.4"
+      },
+      "candidate_blockers": [
+        "YSS parent/BOM/starter combination and real Maven/startup evidence required"
+      ],
+      "spring_cloud_line": "2025.1",
+      "openfeign_line": "5.0",
+      "spring_cloud_minimum": "2025.1.2"
+    },
+    {
+      "id": "spring-boot-4.1-jdk21",
+      "spring_boot_version": "4.1.1",
+      "java_version": 21,
+      "framework_line": "7.0",
+      "tomcat_line": "11.0",
+      "servlet_version": "6.1",
+      "validation_namespace": "jakarta",
+      "validation_group": "jakarta.validation",
+      "validation_artifact": "jakarta.validation-api",
+      "web_starter": "spring-boot-starter-webmvc",
+      "web_test_starter": "spring-boot-starter-webmvc-test",
+      "aop_starter": "spring-boot-starter-aspectj",
+      "mybatis_plus_starter": "mybatis-plus-spring-boot4-starter",
+      "springdoc_major": 3,
+      "jackson_major": 3,
+      "swagger_artifact": "swagger-annotations-jakarta",
+      "versions": {
+        "mapstruct": "1.6.3",
+        "lombok": "1.18.42",
+        "lombok_mapstruct_binding": "0.2.0",
+        "swagger": "2.2.22",
+        "archunit": "1.4.1",
+        "compiler": "3.14.1",
+        "enforcer": "3.5.0",
+        "surefire": "3.5.4"
+      },
+      "candidate_blockers": [
+        "YSS parent/BOM/starter combination and real Maven/startup evidence required"
+      ],
+      "spring_cloud_line": "2025.1",
+      "openfeign_line": "5.0",
+      "spring_cloud_minimum": "2025.1.2"
+    }
+  ],
+  "compatibility": []
+}

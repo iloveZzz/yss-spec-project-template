@@ -1,0 +1,491 @@
+{
+  "recorded_at": "2026-09-16T09:55:22.251179+00:00",
+  "repository_mode": "template-source",
+  "intensity": "L3",
+  "implementation_verification": "passed",
+  "release_ready": false,
+  "template_verification": {
+    "command": "scripts/verify-template-fast",
+    "effective_profile": "release",
+    "exit_code": 1,
+    "passed_commands": 82,
+    "commands": [
+      {
+        "command": "scripts/verify-strategic-handoff-tools-lock",
+        "duration_ms": 36,
+        "exit_code": 0
+      },
+      {
+        "command": "node --check scripts/lib/strategic-handoff.mjs",
+        "duration_ms": 28,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-frontend-delivery-scenarios",
+        "duration_ms": 65817,
+        "exit_code": 0
+      },
+      {
+        "command": "node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md",
+        "duration_ms": 2030,
+        "exit_code": 0
+      },
+      {
+        "command": "node .template-source/tooling/node/scripts/design-md.mjs drift",
+        "duration_ms": 68,
+        "exit_code": 0
+      },
+      {
+        "command": ".template-source/scripts/evidence-index --check",
+        "duration_ms": 1104,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-strategic-handoff-package-scenarios",
+        "duration_ms": 69041,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/sync-profile-skills --check --profile=all",
+        "duration_ms": 911,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/sync-skills --check",
+        "duration_ms": 209,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/update-skill-lock --check",
+        "duration_ms": 159,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-skill-registry",
+        "duration_ms": 110,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-skill-governance",
+        "duration_ms": 99,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent",
+        "duration_ms": 86,
+        "exit_code": 0
+      },
+      {
+        "command": "node --test .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs",
+        "duration_ms": 1074,
+        "exit_code": 0
+      },
+      {
+        "command": "node --test .agents/skills/yss-repository/tests/profile-routing.test.mjs",
+        "duration_ms": 79,
+        "exit_code": 0
+      },
+      {
+        "command": "node --test .template-source/cli-core/tests/*.test.mjs",
+        "duration_ms": 71868,
+        "exit_code": 0
+      },
+      {
+        "command": "node .agents/skills/yss-technical-design/scripts/generate-schema.mjs --check",
+        "duration_ms": 32,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-yss-dto-openapi-profile",
+        "duration_ms": 45,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-yss-dto-openapi-scenarios",
+        "duration_ms": 87,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-openapi-yaml-first-scenarios",
+        "duration_ms": 873,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-openapi-json-handoff-scenarios",
+        "duration_ms": 50,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-digital-human-roles",
+        "duration_ms": 81,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-digital-human-roles-scenarios",
+        "duration_ms": 231,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-approval-record --history docs/templates/approval-record-template.yaml",
+        "duration_ms": 62,
+        "exit_code": 0
+      },
+      {
+        "command": "node .agents/skills/yss-technical-design/tests/run-scenarios.mjs",
+        "duration_ms": 2107,
+        "exit_code": 0
+      },
+      {
+        "command": "pnpm --dir .template-source/tooling/node test",
+        "duration_ms": 6725,
+        "exit_code": 0
+      },
+      {
+        "command": "pnpm --dir .template-source/tooling/node check:vendor",
+        "duration_ms": 295,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-subagent-task-package-scenarios",
+        "duration_ms": 4139,
+        "exit_code": 0
+      },
+      {
+        "command": "node --test .agents/skills/yss-technical-design/tests/engineering-scenarios.mjs",
+        "duration_ms": 3829,
+        "exit_code": 0
+      },
+      {
+        "command": "node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs",
+        "duration_ms": 27,
+        "exit_code": 0
+      },
+      {
+        "command": "node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs",
+        "duration_ms": 26,
+        "exit_code": 0
+      },
+      {
+        "command": "node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs",
+        "duration_ms": 486,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-maintenance-checkpoint .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml",
+        "duration_ms": 61,
+        "exit_code": 0
+      },
+      {
+        "command": "node --test .template-source/tooling/node/test/decision-continuation.test.mjs",
+        "duration_ms": 2837,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-maintenance-intensity-scenarios",
+        "duration_ms": 978,
+        "exit_code": 0
+      },
+      {
+        "command": "node scripts/verify-maintenance-review-workflow-scenarios",
+        "duration_ms": 598,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-digital-human-task-package-scenarios",
+        "duration_ms": 4190,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-digital-human-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml",
+        "duration_ms": 141,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-digital-human-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml",
+        "duration_ms": 142,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-implementation-path-scenarios",
+        "duration_ms": 32,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-user-decision-scenarios",
+        "duration_ms": 3428,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-context-contract --root . --json",
+        "duration_ms": 55,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-context-contract-scenarios",
+        "duration_ms": 331,
+        "exit_code": 0
+      },
+      {
+        "command": "node scripts/verify-business-language-scenarios",
+        "duration_ms": 62,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-context-reconciliation-scenarios",
+        "duration_ms": 781,
+        "exit_code": 0
+      },
+      {
+        "command": "node scripts/verify-script-performance-scenarios",
+        "duration_ms": 1368,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-grill-with-docs-context-scenarios",
+        "duration_ms": 1130,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-repository-scope-scenarios",
+        "duration_ms": 4419,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-existing-backend-architecture-scenarios",
+        "duration_ms": 6502,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-strategic-context-import-scenarios",
+        "duration_ms": 617,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-lifecycle-registry",
+        "duration_ms": 290,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-lifecycle-context-query-scenarios",
+        "duration_ms": 460,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml",
+        "duration_ms": 131,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-plan-template.yaml",
+        "duration_ms": 122,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-verification-template.yaml",
+        "duration_ms": 119,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-scaffold-generator-scenarios",
+        "duration_ms": 1706,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-frontend-implementation-evidence-scenarios",
+        "duration_ms": 660,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-scaffold-architecture-decisions --allow-template docs/process/templates/scaffold-architecture-decisions-template.yaml",
+        "duration_ms": 137,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-scaffold-architecture-decision-scenarios",
+        "duration_ms": 1210,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-lifecycle-scenarios",
+        "duration_ms": 479,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-lifecycle-transition-scenarios",
+        "duration_ms": 6442,
+        "exit_code": 0
+      },
+      {
+        "command": "node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs",
+        "duration_ms": 9885,
+        "exit_code": 0
+      },
+      {
+        "command": "node scripts/verify-plan-spec-entry-scenarios",
+        "duration_ms": 1272,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-frontend-scaffold-generator-scenarios",
+        "duration_ms": 1289,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-governance-release",
+        "duration_ms": 37,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-strategic-handoff-tools-lock --require-committed",
+        "duration_ms": 33,
+        "exit_code": 1
+      },
+      {
+        "command": "node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs",
+        "duration_ms": 10521,
+        "exit_code": 0
+      },
+      {
+        "command": "node --test scripts/lib/legacy-backend-scaffold-audit.test.mjs",
+        "duration_ms": 95,
+        "exit_code": 0
+      },
+      {
+        "command": "node --test scripts/lib/api-contract-decision.test.mjs",
+        "duration_ms": 436,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-prototype-backend-scaffold-scenarios",
+        "duration_ms": 45,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-matt-yss-integration-scenarios",
+        "duration_ms": 4642,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-yss-implementation-contract-compiler-scenarios",
+        "duration_ms": 175,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/generate-yss-skill-boundaries --check",
+        "duration_ms": 74,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/audit-yss-backend-skills --check",
+        "duration_ms": 66,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-retired-skill-ids",
+        "duration_ms": 1623,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-yss-ui-scenarios",
+        "duration_ms": 41,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-delivery-preflight-scenarios",
+        "duration_ms": 29210,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-yss-prototype-contract-scenarios",
+        "duration_ms": 503,
+        "exit_code": 0
+      },
+      {
+        "command": "node --test .agents/skills/yss-prototype-stage/tests/antd-reference.test.mjs",
+        "duration_ms": 79,
+        "exit_code": 0
+      },
+      {
+        "command": "node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence docs/design/templates/prototype-evidence-template.yaml --allow-template",
+        "duration_ms": 48,
+        "exit_code": 0
+      },
+      {
+        "command": "node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate docs/design/templates/visual-baseline-template.yaml --allow-template",
+        "duration_ms": 42,
+        "exit_code": 0
+      },
+      {
+        "command": "node .template-source/scripts/verify-delivery-harness-distribution.mjs",
+        "duration_ms": 123437,
+        "exit_code": 0
+      },
+      {
+        "command": "scripts/verify-existing-ui-baseline-scenarios",
+        "duration_ms": 32559,
+        "exit_code": 0
+      }
+    ],
+    "remaining_failure": "未提交的 working-tree 分发来源不满足 require-committed；本轮没有提交或发布授权"
+  },
+  "post_run_checks": [
+    {
+      "command": "pnpm --dir .template-source/tooling/node test",
+      "exit_code": 0,
+      "tests": 81,
+      "new_continuation_cases": 15,
+      "log": "node-tests.log"
+    },
+    {
+      "command": "scripts/verify-strategic-handoff-package-scenarios",
+      "exit_code": 0,
+      "log": "portable-handoff.log"
+    },
+    {
+      "command": "node scripts/verify-template-verification-scenarios",
+      "exit_code": 0,
+      "log": "verification-runner.log"
+    },
+    {
+      "command": "node scripts/verify-template-cache-scenarios",
+      "exit_code": 0,
+      "log": "template-cache.log"
+    },
+    {
+      "command": "node --test .template-source/scripts/tests/template-ci.test.mjs",
+      "exit_code": 0,
+      "log": "template-ci.log"
+    },
+    {
+      "command": "scripts/verify-scaffold-generator-scenarios",
+      "exit_code": 0,
+      "log": "scaffold.log"
+    },
+    {
+      "command": "node --check (103 registered syntax files, followed by changed continuation and handoff modules)",
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/sync-profile-skills --check",
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/sync-skills --check",
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/sync-strategic-handoff-tools --check",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ],
+  "external_requirements": "待具体项目确认；不假定不存在",
+  "git_actions": {
+    "committed": false,
+    "pushed": false,
+    "published": false
+  }
+}

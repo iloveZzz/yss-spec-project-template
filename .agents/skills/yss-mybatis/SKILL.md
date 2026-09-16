@@ -51,3 +51,7 @@ description: 用于 YSS MyBatis / MyBatis-Plus 组件能力核验、接入决策
 - 行为变更使用 `behavior-tdd`；纯 Mapper/XML 骨架仅在批准合同明确为 `controlled-generation` 时允许。
 - 使用项目根 `./mvnw ...` 记录实际命令、退出码和时间；H2 只证明本地/测试行为，不证明生产方言。
 - 按 [YSS Skill Execution Result v2](../yss-implementation-contract-compiler/references/yss-skill-execution-result.md) 返回证据、`seam_deferred`、`deviations`、`new_impacts`、`drift` 和 `violation`。
+
+## 新脚手架平台约束
+
+消费批准切片架构身份中的 `platform_configuration`，与工程 Manifest 核对后使用对应 YSS 组件。Boot 2.7 使用 `javax` Web/Validation API；Boot 3.5/4.1 使用 `jakarta`。Boot 4 按 Jackson 3、对应自动配置和 starter 适配；不替换 `javax.sql` 等 Java SE 包。平台不一致、兼容条目缺失或候选未验证时回合同编译器阻断，不在业务实现中升级或替换组件。详见 仓库共享合同 `docs/engineering/backend-platforms.md`。

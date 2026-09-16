@@ -1,3 +1,5 @@
+// Wire capability marker: profile-local readiness rules are not interchangeable.
+export const SLICE_REPOSITORY_PREPARATION_PROTOCOL = 1;
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { parseDocument } from "../vendor/yaml.mjs";
@@ -168,7 +170,7 @@ function backendDesignPrerequisitesReady(prerequisites, exists, root, projectId)
     const approvalFile = path.isAbsolute(prerequisites.engineering_contract_approval_ref)
       ? prerequisites.engineering_contract_approval_ref
       : path.resolve(root, prerequisites.engineering_contract_approval_ref);
-    const approval = loadApprovalRecord(approvalFile);
+    const approval = loadApprovalRecord(approvalFile, 'gate.engineering-contract-approved');
     validateApprovalRecord(approval, { requireApproved: true, root });
     if (approval.gate_id !== "gate.engineering-contract-approved" || !approval.approval_scope?.includes(projectId)) return false;
     if (!approvalHasBinding(approval, technical.expected) || !approvalHasBinding(approval, data.expected)) return false;

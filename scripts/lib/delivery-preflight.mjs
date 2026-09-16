@@ -1,3 +1,4 @@
+import { normalizeSliceContract, sourceSliceContract, parseSliceYaml } from './slice-contract.mjs';
 import { assertExistingSliceStructure, createApprovedExecutionContext, verifySliceContractApproval } from './approved-execution-context.mjs';
 import path from 'node:path';
 import { readFileSync, existsSync } from 'node:fs';
@@ -46,7 +47,7 @@ function requireBackendCapability(key) {
 }
 
 /** Read-only: never executes input commands, starts services, unpacks archives or writes receipts. */
-export async function preflightDelivery(input,{stage,root=process.cwd()}={}) {
+export async function preflightDelivery(input,{stage,root=process.cwd(),work_unit_id}={}) {
   try { ensure(STAGES.includes(stage),'未知阶段；必须是 prepare|build|export|accept');schema(input,'docs/process/schemas/delivery-preflight-input.schema.json'); }
   catch(error) { return invalidPreflightInput(error.message); }
   root=path.resolve(root,input.governance_root||'.');
@@ -78,7 +79,7 @@ export async function preflightDelivery(input,{stage,root=process.cwd()}={}) {
     if(input.architecture_identity.source_kind==='existing-registration')ensure(input.architecture_identity.repository_id===input.scope.repository_id&&input.architecture_identity.project_id===input.scope.project_id,'架构身份与预检目标仓库/项目不一致');
   },{source:'architecture_identity'});
   if(valid.has('architecture.identity'))await run('architecture.profile',()=>{ensure(architecture.validateArchitectureIdentity(input.architecture_identity).maturity==='supported','不支持未达到 supported 的 architecture_profile');},{source:'architecture_profile'});
-  if(['build','export','accept'].includes(stage)&&assets.slice_contract)await run('slice_contract.execution',()=>{requireBackendCapability('slice_contract');execution=createApprovedExecutionContext(assets.slice_contract,{root});},{from:'build',source:assets.slice_contract.approval_ref||'slice_contract',evidence:[assets.slice_contract.ref,...(assets.slice_contract.approval_ref?[assets.slice_contract.approval_ref]:[])]});
+  if(['build','export','accept'].includes(stage)&&assets.slice_contract)await run('slice_contract.execution',()=>{requireBackendCapability('slice_contract');execution=createApprovedExecutionContext(assets.slice_contract,{root,work_unit_id});},{from:'build',source:assets.slice_contract.approval_ref||'slice_contract',evidence:[assets.slice_contract.ref,...(assets.slice_contract.approval_ref?[assets.slice_contract.approval_ref]:[])]});
   const archDeps=['architecture.identity',...['repository_registration','engineering_baseline','manifest'].map(x=>`architecture.${x}`)];
   if(archDeps.every(x=>valid.has(x)))await run('architecture',()=>{
     ensure(typeof architecture.verifyArchitectureEvidence==='function','不支持既有工程原始证据验证，请同步支持该身份版本的模板运行时');
@@ -143,12 +144,12 @@ async function verifyAsset(key,data,binding,{root,input,documents,assets,executi
     await validateTechnicalDesign(data,{root,sliceRef:input.scope.slice_id,readOnly:true,execution});
     await approved(root,binding,['gate.engineering-contract-approved','gate.technical-design-approved']);
   } else if(key==='slice_contract') {
-    const contract=data.slice_contract||data;
+    const contract=normalizeSliceContract(data,{root});
     assertExistingSliceStructure(contract);
-    ensure(contract.schema_version===2&&contract.status==='approved'&&contract.slice_id===input.scope.slice_id,'Slice 合同版本、批准状态或切片不匹配');
+    ensure([2,3].includes(contract.schema_version)&&contract.status==='approved'&&contract.slice_id===input.scope.slice_id,'Slice 合同版本、批准状态或切片不匹配');
     ensure(binding.id===contract.contract_id&&binding.version===contract.contract_version,'Slice 合同身份与引用不一致');
     const compiler=read(safe(ROOT,'.agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml'));
-    for(const [section,fields]of Object.entries(compiler.slice_contract_required))for(const field of fields)ensure(Object.hasOwn(section==='root'?contract:contract[section]||{},field),`合同缺少 ${section}.${field}`);
+    if(contract.schema_version===2)for(const [section,fields]of Object.entries(compiler.slice_contract_required))for(const field of fields)ensure(Object.hasOwn(section==='root'?contract:contract[section]||{},field),`合同缺少 ${section}.${field}`);
     ensure(contract.readiness.blockers.length===0&&contract.readiness.stale_inputs.length===0,'Slice 合同仍有 blocker 或 stale input');
     const resolution=contract.resolution;
     ensure(resolution.freshness==='current','Slice resolution 非 current');

@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /** 依据生命周期批准的 schema v4 合同生成纯机械 YSS 分层 MVC 后端骨架。 */
+import { platformSourceFingerprint, generatedTreeDigest } from "../../../../scripts/lib/backend-platform-provenance.mjs";
+import { assertContractPlatform, platformProfile, platformTemplateVars, platformSmokeTest } from "../../../../scripts/lib/backend-platform.mjs";
 import { assertScaffoldUserDecision } from "../../../../scripts/lib/user-decision.mjs";
 import { validateBackendScaffoldPrerequisites } from "../../../../scripts/lib/backend-scaffold-prerequisites.mjs";
 import { createHash } from "node:crypto";
@@ -106,49 +108,51 @@ function dependency(groupId, artifactId, version = null, scope = null) {
   return `<dependency><groupId>${xml(groupId)}</groupId><artifactId>${xml(artifactId)}</artifactId>${version ? `<version>${xml(version)}</version>` : ""}${scope ? `<scope>${scope}</scope>` : ""}</dependency>`;
 }
 
-function parentPom(contract, modules) {
+function parentPom(contract, modules, platform) {
+  const v = platformTemplateVars(platform);
   const c = contract.maven_coordinates;
   return `<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent><groupId>${xml(c.parent.group_id)}</groupId><artifactId>${xml(c.parent.artifact_id)}</artifactId><version>${xml(c.parent.version)}</version><relativePath/></parent>
   <groupId>${xml(c.group_id)}</groupId><artifactId>${xml(contract.project_name)}</artifactId><version>${xml(c.project_version)}</version><packaging>pom</packaging>
-  <properties><java.version>1.8</java.version><maven.compiler.source>1.8</maven.compiler.source><maven.compiler.target>1.8</maven.compiler.target><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding><yss-components.version>${xml(c.yss_components_version)}</yss-components.version></properties>
+  <properties><java.version>${v.java_version}</java.version><spring-boot.version>${v.boot_version}</spring-boot.version><maven.compiler.source>${v.java_version}</maven.compiler.source><maven.compiler.target>${v.java_version}</maven.compiler.target><project.build.sourceEncoding>UTF-8</project.build.sourceEncoding><yss-components.version>${xml(c.yss_components_version)}</yss-components.version></properties>
   <modules>${modules.map((module) => `<module>${contract.project_name}-${module}</module>`).join("")}</modules>
-  <dependencyManagement><dependencies>${dependency("com.yss.cloud", "yss-components-bom", "${yss-components.version}", "import").replace("</dependency>", "<type>pom</type></dependency>")}</dependencies></dependencyManagement>
-  <build><pluginManagement><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.11.0</version><configuration><source>1.8</source><target>1.8</target><annotationProcessorPaths><path><groupId>org.projectlombok</groupId><artifactId>lombok</artifactId><version>1.18.30</version></path><path><groupId>org.mapstruct</groupId><artifactId>mapstruct-processor</artifactId><version>1.5.5.Final</version></path><path><groupId>org.projectlombok</groupId><artifactId>lombok-mapstruct-binding</artifactId><version>0.2.0</version></path></annotationProcessorPaths></configuration></plugin></plugins></pluginManagement></build>
+  <dependencyManagement><dependencies>${dependency("org.springframework.boot", "spring-boot-dependencies", v.boot_version, "import").replace("</dependency>", "<type>pom</type></dependency>")}${dependency("com.yss.cloud", "yss-components-bom", "${yss-components.version}", "import").replace("</dependency>", "<type>pom</type></dependency>")}</dependencies></dependencyManagement>
+  <build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-enforcer-plugin</artifactId><version>${v.enforcer_version}</version><executions><execution><id>enforce-platform</id><goals><goal>enforce</goal></goals><configuration><rules><requireJavaVersion><version>${v.java_range}</version></requireJavaVersion><requireMavenVersion><version>[3.6.3,)</version></requireMavenVersion><dependencyConvergence/></rules></configuration></execution></executions></plugin></plugins><pluginManagement><plugins><plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId><version>${v.boot_version}</version><executions><execution><goals><goal>repackage</goal></goals></execution></executions></plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>${v.surefire_version}</version></plugin><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>${v.compiler_version}</version><configuration><source>${v.java_version}</source><target>${v.java_version}</target><parameters>true</parameters><annotationProcessorPaths><path><groupId>org.projectlombok</groupId><artifactId>lombok</artifactId><version>${v.lombok_version}</version></path><path><groupId>org.mapstruct</groupId><artifactId>mapstruct-processor</artifactId><version>${v.mapstruct_version}</version></path><path><groupId>org.projectlombok</groupId><artifactId>lombok-mapstruct-binding</artifactId><version>0.2.0</version></path></annotationProcessorPaths></configuration></plugin></plugins></pluginManagement></build>
 </project>`;
 }
 
-function modulePom(contract, module, modules) {
+function modulePom(contract, module, modules, platform) {
   const applicationModule = modules.includes("core") ? "core" : "service";
   const own = (name) => dependency(contract.maven_coordinates.group_id, `${contract.project_name}-${name}`, "${project.version}");
   const dependencies = [];
   if (module === "server") {
-    dependencies.push(own(applicationModule), dependency("org.springframework.boot", "spring-boot-starter-web"), dependency("org.springframework.boot", "spring-boot-starter-validation"), dependency("org.springframework.boot", "spring-boot-starter-test", null, "test"), dependency("com.tngtech.archunit", "archunit-junit5", "1.2.1", "test"));
+    dependencies.push(own(applicationModule), dependency("org.springframework.boot", platform.web_starter), dependency("org.springframework.boot", "spring-boot-starter-validation"), dependency("org.springframework.boot", "spring-boot-starter-test", null, "test"), dependency("com.tngtech.archunit", "archunit-junit5", platform.versions.archunit, "test"));
+    if (platform.web_test_starter !== "spring-boot-starter-test") dependencies.push(dependency("org.springframework.boot", platform.web_test_starter, null, "test"));
     if (modules.includes("client")) dependencies.push(own("client"));
-    dependencies.push(dependency("com.h2database", "h2", null, "test"), dependency("org.mapstruct", "mapstruct", "1.5.5.Final"), dependency("com.yss.cloud", "yss-component-dto"));
+    dependencies.push(dependency("com.h2database", "h2", null, "test"), dependency("org.mapstruct", "mapstruct", platform.versions.mapstruct), dependency("com.yss.cloud", "yss-component-dto"));
   }
   if (module === applicationModule) {
     dependencies.push(own("repository"), dependency("org.springframework", "spring-tx"), dependency("com.yss.cloud", "yss-component-dto"), dependency("org.springframework.boot", "spring-boot-starter-test", null, "test"));
     if (modules.includes("adapter")) dependencies.push(own("adapter"));
   }
   if (module === "repository") {
-    dependencies.push(dependency("com.yss.cloud", "yss-component-mybatis-plus-starter"), dependency("org.mapstruct", "mapstruct", "1.5.5.Final"), dependency("org.springframework.boot", "spring-boot-starter-test", null, "test"), dependency("com.h2database", "h2", null, "test"));
+    dependencies.push(dependency("com.yss.cloud", "yss-component-mybatis-plus-starter"), dependency("org.mapstruct", "mapstruct", platform.versions.mapstruct), dependency("org.springframework.boot", "spring-boot-starter-test", null, "test"), dependency("com.h2database", "h2", null, "test"));
   }
   if (module === "adapter") {
     dependencies.push(dependency("org.springframework", "spring-context"));
     if (modules.includes("feign-client")) dependencies.push(own("feign-client"));
   }
-  if (module === "client") dependencies.push(dependency("com.yss.cloud", "yss-component-dto"), dependency("javax.validation", "validation-api"));
-  if (["server", "service", "core", "client", "repository"].includes(module)) dependencies.push(dependency("org.projectlombok", "lombok", "1.18.30", "provided"));
-  if (module === "feign-client") dependencies.push(own("client"), dependency("org.springframework.cloud", "spring-cloud-openfeign-core"));
+  if (module === "client") dependencies.push(dependency("com.yss.cloud", "yss-component-dto"), dependency(platform.validation_group, platform.validation_artifact));
+  if (["server", "service", "core", "client", "repository"].includes(module)) dependencies.push(dependency("org.projectlombok", "lombok", platform.versions.lombok, "provided"));
+  if (module === "feign-client") dependencies.push(own("client"), dependency("org.springframework.cloud", contract.generator_skill === SKILL_ID ? "spring-cloud-starter-openfeign" : "spring-cloud-openfeign-core"));
   const plugin = module === "server" ? `<profiles><profile><id>scaffold-local</id><dependencies>${dependency("com.h2database", "h2", null, "runtime")}</dependencies></profile></profiles><build><plugins><plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId></plugin></plugins></build>` : "";
   return `<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><parent><groupId>${xml(contract.maven_coordinates.group_id)}</groupId><artifactId>${xml(contract.project_name)}</artifactId><version>${xml(contract.maven_coordinates.project_version)}</version></parent><artifactId>${xml(contract.project_name)}-${module}</artifactId><dependencies>${dependencies.join("")}</dependencies>${plugin}</project>`;
 }
 
-async function validateContract(options, skillId, architectureProfile) {
+export async function validateContract(options, skillId, architectureProfile, platformOptions) {
   const contractFile = path.resolve(options.contractFile);
   const contractText = await readFile(contractFile, "utf8").catch(() => fail(`脚手架合同不可读取: ${contractFile}`));
   let contract;
@@ -168,7 +172,7 @@ async function validateContract(options, skillId, architectureProfile) {
   const finalProjectRoot = path.join(path.resolve(options.outputDir), options.projectName);
   const allowedRoots = contract.allowed_write_paths.map((item) => path.resolve(options.outputDir, String(item)));
   if (!allowedRoots.some((root) => isWithin(root, finalProjectRoot))) fail("实际项目根不在合同 allowed_write_paths 内");
-  const expectedProfiles = { architecture: "layered-mvc", persistence: "mybatis-plus", platform: "spring-boot-2.7-jdk8", validation_namespace: "javax", repository: "yss-internal" };
+  const expectedProfiles = { architecture: "layered-mvc", persistence: "mybatis-plus", repository: "yss-internal" };
   for (const [field, value] of Object.entries(expectedProfiles)) if (contract.profiles?.[field] !== value) fail(`unsupported profile ${field}: ${contract.profiles?.[field]}`);
   assertLocalDatabaseProfile(contract.profiles);
   if (contract.architecture_profile !== architectureProfile) fail(`合同必须显式绑定 ${architectureProfile} Profile`);
@@ -205,7 +209,9 @@ async function validateContract(options, skillId, architectureProfile) {
   assertScaffoldUserDecision(decision);
   validateArchitectureIdentity(scaffoldArchitectureIdentity(contract, sha256(contractText)));
   const designPrerequisites = await validateBackendScaffoldPrerequisites(contract, { contractFile });
-  return { contract, contractText, modules: resolved, designPrerequisites };
+  const platform = skillId === SKILL_ID ? assertContractPlatform(contract, decision, { ...platformOptions, requireVerified: platformOptions.candidate !== true }).profile : platformProfile("spring-boot-2.7-jdk8", undefined, "2.7.18");
+  if (skillId !== SKILL_ID && (contract.platform_configuration || contract.profiles.platform !== "spring-boot-2.7-jdk8" || contract.profiles.validation_namespace !== "javax")) fail("unsupported: data-analysis initializer remains on legacy Boot 2.7/Java 8");
+  return { contract, contractText, modules: resolved, designPrerequisites, platform };
 }
 
 async function validateOutputLayout(outputDir, projectName) {
@@ -221,10 +227,10 @@ async function validateOutputLayout(outputDir, projectName) {
   if (await exists(target)) fail(`unsupported: 目标已存在 ${target}`);
 }
 
-export async function generate(options, { skillId = SKILL_ID, architectureProfile = "layered-mvc-service", finalize } = {}) {
+export async function generate(options, { skillId = SKILL_ID, architectureProfile = "layered-mvc-service", finalize, platformOptions = {} } = {}) {
   if (!((skillId === SKILL_ID && architectureProfile === "layered-mvc-service") || (skillId === "yss-mvc-data-analysis-project-initializer" && architectureProfile === "mvc-data-analysis-v1"))) fail("unsupported MVC generator/Profile pair");
   await validateOutputLayout(options.outputDir, options.projectName);
-  const { contract, contractText, modules, designPrerequisites } = await validateContract(options, skillId, architectureProfile);
+  const { contract, contractText, modules, designPrerequisites, platform } = await validateContract(options, skillId, architectureProfile, platformOptions);
   const outputDir = path.resolve(options.outputDir);
   await mkdir(outputDir, { recursive: true });
   const staging = await mkdtemp(path.join(outputDir, `.${options.projectName}.staging-`));
@@ -232,10 +238,10 @@ export async function generate(options, { skillId = SKILL_ID, architectureProfil
   const packagePath = options.basePackage.replaceAll(".", "/");
   try {
     await mkdir(projectRoot, { recursive: true });
-    await put(projectRoot, "pom.xml", parentPom(contract, modules));
+    await put(projectRoot, "pom.xml", parentPom(contract, modules, platform));
     for (const module of modules) {
       const moduleRoot = `${options.projectName}-${module}`;
-      await put(projectRoot, `${moduleRoot}/pom.xml`, modulePom(contract, module, modules));
+      await put(projectRoot, `${moduleRoot}/pom.xml`, modulePom(contract, module, modules, platform));
       await put(projectRoot, `${moduleRoot}/src/main/java/${packagePath}/${module.replaceAll("-", "/")}/package-info.java`, `/** ${module} mechanical package boundary. */\npackage ${options.basePackage}.${module.replaceAll("-", ".")};`);
     }
     const applicationClass = `${toUpperCamel(options.projectName)}Application`;
@@ -246,17 +252,20 @@ export async function generate(options, { skillId = SKILL_ID, architectureProfil
     await put(projectRoot, `${serverRoot}/src/test/resources/application-scaffold-test.yml`, localDatabaseConfiguration(`${options.projectName}_test`));
     await put(projectRoot, `${serverRoot}/src/test/java/${packagePath}/${applicationClass}Test.java`, `package ${options.basePackage};\n\nimport org.junit.jupiter.api.Test;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.test.context.ActiveProfiles;\n\n@SpringBootTest\n@ActiveProfiles("scaffold-test")\nclass ${applicationClass}Test {\n    @Test\n    void contextLoads() {\n    }\n}`);
     await put(projectRoot, `${serverRoot}/src/test/java/${packagePath}/architecture/LayeredMvcArchitectureTest.java`, `package ${options.basePackage}.architecture;\n\nimport static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;\n\nimport com.tngtech.archunit.core.importer.ImportOption;\nimport com.tngtech.archunit.junit.AnalyzeClasses;\nimport com.tngtech.archunit.junit.ArchTest;\nimport com.tngtech.archunit.lang.ArchRule;\n\n@AnalyzeClasses(packages = "${options.basePackage}", importOptions = ImportOption.DoNotIncludeTests.class)\nclass LayeredMvcArchitectureTest {\n    @ArchTest\n    static final ArchRule repositoryDoesNotDependOnUpperLayers = noClasses().that().resideInAPackage("..repository..").should().dependOnClassesThat().resideInAnyPackage("..service..", "..server..");\n}`);
+    if (skillId === SKILL_ID) await put(projectRoot, `${serverRoot}/src/test/java/${packagePath}/PlatformIntegrationTest.java`, platformSmokeTest(options.basePackage, platform, contract.module_profile.requested_capabilities));
     const wrapper = path.join(REPOSITORY_ROOT, ".agents/skills/yss-ddd-scaffold-generator/assets/wrapper");
     await cp(wrapper, projectRoot, { recursive: true });
     await chmod(path.join(projectRoot, "mvnw"), 0o755);
     if (finalize) await finalize({ projectRoot, contract, architectureIdentity: scaffoldArchitectureIdentity(contract, sha256(contractText)) });
-    await put(projectRoot, "README.md", `# ${options.projectName}\n\n该工程由 ${skillId} 根据批准的 schema v${contract.schema_version} 合同生成。模块：${modules.join("、")}。不包含业务 API、SQL 或生产数据库绑定。\n\n本地运行需同时显式启用 Maven -Pscaffold-local 和 Spring scaffold-local Profile；测试独立使用 H2。生产数据库须由后续已批准存储工作单元接入。`);
+    await put(projectRoot, "README.md", `# ${options.projectName}\n\n平台：Spring Boot ${platform.spring_boot_version} / Java ${platform.java_version}。\n\n该工程由 ${skillId} 根据批准的 schema v${contract.schema_version} 合同生成。模块：${modules.join("、")}。不包含业务 API、SQL 或生产数据库绑定。\n\n本地运行需同时显式启用 Maven -Pscaffold-local 和 Spring scaffold-local Profile；测试独立使用 H2。生产数据库须由后续已批准存储工作单元接入。`);
     const generatedFiles = [];
     for (const entry of await fileEntries(projectRoot, new Set([".yss/scaffold-generation.json"]))) generatedFiles.push({ path: entry.relative, owner: "generator", sha256: rawSha256(await readFile(entry.target)) });
     const architectureRuleset = `${serverRoot}/src/test/java/${packagePath}/architecture/LayeredMvcArchitectureTest.java`;
     const downstream = {};
     for (const skill of ["yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "yss-exception", "yss-validation", "mapstruct", "lombok", "alibaba-java-code-style"]) downstream[skill] = (await treeDigest(path.join(REPOSITORY_ROOT, ".agents/skills", skill))).replace(/^sha256:/, "");
     const manifest = {
+      ...(contract.platform_configuration ? { source_fingerprint: platformSourceFingerprint(contract.architecture_family), generated_tree_digest: generatedTreeDigest(projectRoot, { ownership: { generated_files: generatedFiles } }) } : {}),
+      ...(contract.platform_configuration ? { platform_verification: platformOptions.candidate === true ? "candidate" : "verified", platform_configuration: contract.platform_configuration } : {}),
       schema_version: 4,
       kind: architectureProfile === "mvc-data-analysis-v1" ? "service-project-initialization" : "backend-scaffold",
       architecture_profile: contract.architecture_profile,

@@ -21,6 +21,7 @@ core_escalation_patterns:
   - .template-source/scripts/lib/template-release.mjs
   - .template-source/scripts/tests/template-ci.test.mjs
   - scripts/lib/user-decision.mjs
+  - scripts/lib/decision-continuation.mjs
   - scripts/lib/approval-record.mjs
   - scripts/lib/lifecycle-transition.mjs
   - AGENTS.md
@@ -358,6 +359,7 @@ groups:
       - { run: "scripts/verify-digital-human-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml", when: template-source }
   lifecycle:
     commands:
+      - { run: "node --test .template-source/tooling/node/test/decision-continuation.test.mjs", when: template-source }
       - { run: "scripts/verify-user-decision-scenarios" }
       - { run: "scripts/verify-context-contract --root . --json" }
       - { run: "scripts/verify-context-contract-scenarios" }
@@ -393,6 +395,7 @@ groups:
       - { run: "scripts/verify-implementation-path-scenarios" }
       - { run: "scripts/verify-repository-scope-scenarios" }
       - { run: "scripts/verify-scaffold-generator-scenarios" }
+      - { run: "node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs" }
       - { run: "node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs" }
       - { run: "node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs" }
       - { run: "node --test scripts/lib/legacy-backend-scaffold-audit.test.mjs" }

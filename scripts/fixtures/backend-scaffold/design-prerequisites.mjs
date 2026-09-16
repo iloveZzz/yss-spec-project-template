@@ -1,4 +1,6 @@
 // Synthetic design and approval sources for generator mechanism tests only.
+import { countersignRuleForGate, loadDigitalHumanRoles } from "../../lib/digital-human-roles.mjs";
+import { attachPlatformFixture } from "./platform-fixture.mjs";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -41,6 +43,7 @@ function approvedTechnicalDesign(root, contract) {
 }
 
 export function attachDesignPrerequisites(root, contract, { dataImpact = "not-applicable", apiImpact = "not-applicable" } = {}) {
+  attachPlatformFixture(root, contract);
   const technical = approvedTechnicalDesign(root, contract);
   const assessment = write(root, "data-impact.json", { schema_version: 1, backend: true, data: dataImpact === "required", project_id: contract.project_name });
   const review = write(root, "data-review.md", "数据影响和数据架构评审测试证据；不构成真实项目批准。\n");
@@ -159,17 +162,19 @@ export function attachDesignPrerequisites(root, contract, { dataImpact = "not-ap
   });
   const scope = [contract.contract_id, contract.project_name];
   const decision = buildDecisionFixture(path.join(root, "engineering-contract-decision"), { boundary: "gate.engineering-contract-approved", scope, subjectRef: engineeringPackage.file });
+  const rule = countersignRuleForGate(loadDigitalHumanRoles().gate_policy, "gate.engineering-contract-approved");
+  const reviewer = rule.countersigners[0];
   const approval = write(root, "engineering-contract-approval.json", {
     schema_version: 1,
     gate_id: "gate.engineering-contract-approved",
     decision: "approved",
     actor_kind: "digital-human",
-    role_id: "role.product-manager",
+    role_id: reviewer,
     runtime_id: "runtime.generic",
     principal_ref: "synthetic-product-reviewer",
     subject_ref: engineeringPackage.file,
     approval_scope: scope,
-    drafter_role_id: "role.backend-engineer",
+    drafter_role_id: rule.drafter,
     user_decision_ref: decision.ref,
     artifact_bindings: [
       { id: `technical-design.${contract.project_name}`, version: "v1", digest: technical.digest },
@@ -180,7 +185,7 @@ export function attachDesignPrerequisites(root, contract, { dataImpact = "not-ap
     evidence_refs: [review.ref, apiEvidence.ref],
   });
   contract.lifecycle_approval_ref = approval.file;
-  contract.approval = { approval_ref: approval.file, approver: "role.product-manager", persisted_ref: contract.persisted_ref, current_version: contract.contract_version };
+  contract.approval = { approval_ref: approval.file, approver: reviewer, persisted_ref: contract.persisted_ref, current_version: contract.contract_version };
   contract.design_prerequisites = {
     technical_design: { ref: technical.ref, version: "v1", digest: technical.digest },
     data_architecture_decision: { ref: data.ref, version: "v1", digest: data.digest, impact: dataImpact },

@@ -27,7 +27,7 @@ description: 编排 YSS 产品或模块从机会调研到 Spec、原型、技术
 scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work-unit.plan-requirements --include execution_efficiency
 ```
 
-`--include` 接受编排合同的顶层键；非法模式、ID 或合同键必须失败。结果为权威投影；细节按需读 `references/orchestration.md`、`references/state-model.md`、`references/artifact-dependencies.md`、`references/user-decisions.md` 和 `references/matt-yss-adapter.md`，证据充分即停止加载。
+`--include` 接受合同顶层键，非法键或 ID 失败。细节按需读 `references/orchestration.md` 及其索引，证据充分即停止加载。
 
 按 `execution_efficiency` 合并查询、复用未变资料并验证当前资产；产品流转不重跑模板套件。词汇对账、恢复核验及门禁不变，执行细节见 `references/orchestration.md`。
 
@@ -52,11 +52,11 @@ Plan 入口读取 `docs/plan/README.md` 和 `docs/process/plan-migration.md`，�
 
 不得越过命中的阶段、门禁、实现仓库准备或 Ticket 正式化。实现只接收绑定垂直切片、已批准且持久化、版本当前并通过完整 `ready-for-agent` 计算的合同；父 Ticket、`ready-for-human` 切片、`stale`、`drift`、`new_impacts`、`violation` 或缺失证据均阻断。实现仓库、脚手架、UI 还原、review input 和发布条件从对应合同子树查询，不在入口重复定义。
 
-聚合批准见 `gate_consolidation`。
+聚合批准见 `gate_consolidation`。普通功能默认一个独立审查者，按能力缺口、冲突或外部制度增员；相邻检查组合审查、逐项留证。
 
 ### 用户决定
 
-命中 `docs/agents/digital-human-roles.yaml.user_decision_policy` 的关键决定，必须先展示当前资产、版本、变化、风险、推荐方案、批准范围和后续动作，再取得提问者或其明确指定生物人负责人的原始回复。数字人同意、超时、默认项或无反对意见不能代答；恢复前按 `references/user-decisions.md` 验证当前资产与原始回复绑定。
+按角色表 `user_decision_policy` 和 `references/user-decisions.md` 先展示可审阅资产、范围、风险及后续动作，再取得提问者或其指定生物人的原始回复。数字人、超时和默认项不能代答。已有授权优先用 `continuation_ref` 核验延续；未知/实质变化或强制审批缺失才重新决定。缺陷和缺证据阻断，建议记待办；合同、验证及外部动作授权仍须满足。
 
 ### 外部副作用与 Git
 
@@ -68,7 +68,7 @@ Plan 入口读取 `docs/plan/README.md` 和 `docs/process/plan-migration.md`，�
 2. 评估影响面、上游新鲜度、门禁和阻塞，选择第一个未阻塞工作单元；不把 `not-applicable` 当作豁免。
 3. 原生工作单元由主控持有正式资产；专项工作通过结构化任务包派发，只调用编排合同允许的 model-invoked skill。
 4. Matt 的 `grill-with-docs`、`to-spec`、`to-tickets`、`implement` 等仅为显式 user-invoked 兼容入口。主控不得自动调用它们或代替其创建正式资产；Matt 仅导航，不得写生命周期资产或改变门禁/Ticket 状态，任何写入前回交本编排器。
-5. 先对照用户目标逐项验收，检查遗漏诉求、错误假设与尚未解决的问题，再验收 `Workflow Execution Result`：工作单元、合同、允许写路径、`context_reconciliation`、证据、实际验证、延期 seam、漂移和下一路由必须可核验。实现派发额外绑定当前 Slice Implementation Contract；其他阶段不得伪造该合同。
+5. 先对照用户目标逐项验收，检查遗漏诉求、错误假设与尚未解决的问题，再验收 `Workflow Execution Result`：工作单元、合同、允许写路径、`context_reconciliation`、证据、实际验证、延期 seam、漂移和下一路由必须可核验。实现派发额外绑定当前 Slice Implementation Contract v3；其他阶段不得伪造该合同。
 6. 在授权边界内继续下一工作单元；遇到人工决定、新授权、证据冲突、专项失败或合并/发布结论时暂停。暂停不得阻断无依赖的独立工作。
 
 每个 `project-instance` 工作单元在申请批准或流转前，先把稳定术语回写到根目录唯一 `CONTEXT.md`，并生成通过校验的 `context_reconciliation`。候选术语、错误路径、摘要漂移或未决冲突必须阻断。质量标准只由 `engineering-baseline` 定义一次；高风险影响按裁剪合同补充反证和残余风险。

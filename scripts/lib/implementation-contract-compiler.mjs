@@ -1,3 +1,6 @@
+import { resolveBackendPlatform } from "./backend-platform.mjs";
+import { safe } from './strategic-handoff-io.mjs';
+import { selectSliceWorkUnit, normalizeSliceContract, withinSlicePath } from './slice-contract.mjs';
 import { createApprovedExecutionContext, createApprovedRecompilationContext, assertApprovedExecutionContext } from './approved-execution-context.mjs';
 import { enforceTechnicalDesign } from './technical-design-boundary.mjs';
 import { enforceHarnessSkillScope } from "./harness-execution-scope.mjs";
@@ -67,13 +70,15 @@ export function compileImplementationContract({
   architecture_identity,
   architecture_evidence,
   approved_slice,
+  work_unit_id,
   root = ROOT,
   slice_id,
   frontend_delivery,
-  technical_design
+  technical_design,
+  readOnly = false
 }) {
   assertV2(registry, compilerContract);
-  const recompilationExecution=approved_slice?createApprovedRecompilationContext(approved_slice,{root}):undefined;
+  const recompilationExecution=approved_slice?createApprovedRecompilationContext(approved_slice,{root,work_unit_id}):undefined;
   const deliveryInput = enforceFrontendDelivery({ slice_id, frontend_delivery }, { root });
   if (!Array.isArray(recipeIds) || !Array.isArray(requiredCapabilities) || !Array.isArray(conditions)) {
     fail("recipeIds、requiredCapabilities 与 conditions 必须是数组");
@@ -96,7 +101,8 @@ export function compileImplementationContract({
     for (const recipe of orderedRecipes) if (recipe.architecture_family && recipe.architecture_family !== architecture_identity.architecture_family) fail(`Recipe ${recipe.id} 与架构族不匹配`);
   }
 
-  enforceTechnicalDesign({ technical_design, conditions, architecture_identity, slice_id }, { root, execution:recompilationExecution });
+  if (architecture_identity?.platform_configuration) resolveBackendPlatform(architecture_identity.platform_configuration);
+  enforceTechnicalDesign({ technical_design, conditions, architecture_identity, slice_id }, { root, execution:recompilationExecution, readOnly });
 
   const capabilitySources = new Map();
   const orderedCapabilities = [];
@@ -206,14 +212,17 @@ export function compileDefaultImplementationContract(input = {}) {
   });
 }
 
-export function evaluateContractFreshness(contract, { registry, compilerContract, root = ROOT, approved_slice, readOnly = false }, execution) {
+export function evaluateContractFreshness(contract, { registry, compilerContract, root = ROOT, approved_slice, readOnly = false, work_unit_id }, execution) {
   assertV2(registry, compilerContract);
-  if (contract?.schema_version !== 2) fail("Slice Implementation Contract schema v1 已停止支持；必须重新编译 v2 合同");
+  try { contract=normalizeSliceContract(contract,{root}); } catch(error) { return {freshness:'stale',reasons:[error.message]}; }
+  if (![2,3].includes(contract?.schema_version)) fail("Slice Implementation Contract schema v1 已停止支持；必须重新编译 v2 合同");
+  const all=contract;
+  try {contract=selectSliceWorkUnit(contract,work_unit_id);} catch(error){return {freshness:'stale',reasons:[error.message]};}
   const resolution = contract.resolution ?? contract;
   const reasons = [];
   let trustedExecution;
   try {
-    trustedExecution=approved_slice?createApprovedExecutionContext(approved_slice,{root,contract}):execution;
+    trustedExecution=approved_slice?createApprovedExecutionContext(approved_slice,{root,contract:all,work_unit_id}):execution;
     if(trustedExecution)assertApprovedExecutionContext(trustedExecution,{root,contract});
   } catch(error) { reasons.push(error.code||'EXECUTION_APPROVAL_INVALID');trustedExecution=undefined; }
   try { enforceTechnicalDesign({ ...resolution, slice_id: contract.slice_id ?? resolution.slice_id }, { root,execution:trustedExecution,readOnly }); }
@@ -236,11 +245,13 @@ export function evaluateContractFreshness(contract, { registry, compilerContract
 
 export function validateExecutionResult(result, contract, current) {
   if (result?.schema_version !== 2) fail("YSS Skill Execution Result schema v1 已停止支持；请迁移到 v2");
-  if (contract?.schema_version !== 2) fail("Slice Implementation Contract schema v1 已停止支持；必须重新编译 v2 合同");
+  contract=normalizeSliceContract(contract,{root:current?.root || ROOT});
+  if (![2,3].includes(contract?.schema_version)) fail("Slice Implementation Contract schema v1 已停止支持；必须重新编译 v2 合同");
   if (!EXECUTION_STATUSES.has(result.status)) fail(`未知 execution result status: ${result.status}`);
-  if(contract.resolution?.architecture_identity?.schema_version===2&&!current?.approved_slice)return {status:'stale',blockers:['EXECUTION_APPROVAL_REQUIRED']};
-  const freshness = evaluateContractFreshness(contract, current);
+  if((contract.schema_version===3||contract.resolution?.architecture_identity?.schema_version===2)&&!current?.approved_slice)return {status:'stale',blockers:['EXECUTION_APPROVAL_REQUIRED']};
+  const freshness = evaluateContractFreshness(contract, {...current,work_unit_id:result.work_unit_id});
   if (freshness.freshness === "stale") return { status: "stale", blockers: freshness.reasons };
+  contract=selectSliceWorkUnit(contract,result.work_unit_id);
   const consumed = result.consumed_contract ?? {};
   const resolution = contract.resolution ?? contract;
   const blockers = [];
@@ -252,6 +263,28 @@ export function validateExecutionResult(result, contract, current) {
   else for (const item of result.verification_results) {
     if (!item?.command || item.exit_code === undefined || !item.executed_at) blockers.push("verification-result-incomplete");
     else if (item.exit_code !== 0) blockers.push("verification-failed");
+  }
+  if(contract.schema_version===3) {
+    const unit=contract.work_units.find(item=>item.id===result.work_unit_id);
+    if(!unit)blockers.push('work-unit-mismatch');
+    else {
+      const checks=unit.work_unit.verification;
+      for(const check of checks)if(!result.verification_results?.some(item=>item.command===check.command&&item.exit_code===0&&item.cwd===check.cwd&&(!check.dependency_roots||JSON.stringify(item.dependency_roots)===JSON.stringify(check.dependency_roots))))blockers.push('verification-coverage-or-cwd-missing');
+      if(!Array.isArray(result.changed_files))blockers.push('changed-files-missing');
+      else for(const item of result.changed_files) {
+        const changed=typeof item==='string'?item:item.path;
+        if(contract.repositories&&(typeof item==='string'||item.project_root!==unit.project_root))blockers.push('changed-file-repository-mismatch');
+        if(!unit.allowed_write_paths.some(parent=>withinSlicePath(changed,parent)))blockers.push('write-scope-violation');
+      }
+      const evidence=result.evidence_files||[];
+      for(const ref of unit.work_unit.expected_evidence) {
+        if(!evidence.some(item=>(typeof item==='string'?item:item.path)===ref&&(!contract.repositories||item.project_root===unit.project_root)))blockers.push('expected-evidence-missing');
+        else {try {readFileSync(safe(contract.repositories?unit.project_root:(current.root||ROOT),ref));}catch {blockers.push('expected-evidence-unreadable');}}
+      }
+    }
+    if(['drift','violation'].includes(result.status))blockers.push(result.status);
+    if(result.status==='not-applicable'&&!result.not_applicable_reason?.trim())blockers.push('not-applicable-reason-missing');
+    if(result.status==='seam-deferred'&&(!result.seam_deferred?.length||result.seam_deferred.some(item=>['risk','owner','follow_up_ticket','verification_plan','target_version_or_release_date'].some(key=>!item[key]))))blockers.push('seam-deferred-incomplete');
   }
   if (Array.isArray(result.new_impacts) && result.new_impacts.length) blockers.push("new-impacts");
   return { status: blockers.length ? "blocked" : "accepted", blockers: [...new Set(blockers)] };

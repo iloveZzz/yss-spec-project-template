@@ -1,0 +1,20 @@
+{
+  "kind": "isolated-read-only-verification-copy",
+  "snapshot_root": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/slice-round2-verification-9_akuc85",
+  "files": {
+    "scripts/lib/slice-contract.mjs": "96de1dbd8b7f7b1d80a054c20bfc50d8589f018351def5ee408a94bef206605a",
+    "scripts/lib/slice-contract-preparation.mjs": "7db14ac6205827067728aafaf9e7cca7409eed5dcb1570f2fdce2d7190d22f1d",
+    "scripts/lib/slice-contract-views.mjs": "9d3f594a774ab3dd316a2d3abc00bc0166dd0562c444553552ed63ece96424f8",
+    "scripts/lib/slice-repositories.mjs": "af928eaf769ca7714dd47bc49b665ab43470d6b53618baac5fecd0db9fc2645c",
+    "scripts/lib/slice-applicability.mjs": "c899fd31a39e3a4237a4a21e13c5fa718b319b792b6365b23b602cf792281e1c",
+    "scripts/lib/approved-execution-context.mjs": "dbbf64a893091e582f815c3951c32a34b78db4394f4fb949f7f49af7bf70fc56",
+    "scripts/lib/slice-task-package.mjs": "5b8daa1f81be2c89baffd0de269f9ab120b0946311af2a6d20e7f9371bf2a813",
+    "scripts/lib/implementation-contract-compiler.mjs": "19c099e1356034bd3b539ab827c2a9ff145eaec4f0180b69d3a62e1374b48af2",
+    "scripts/lib/technical-design-boundary.mjs": "d64bbb685df7073a5b7a44138329d4270c726a94d9fec898cf06f3e948b3cca0",
+    "scripts/lib/lifecycle-transition.mjs": "b250c66f46036994b28423a7bb445bd7747400c8699b7927fc461b8394148173",
+    "docs/process/schemas/slice-implementation-contract-v3.schema.json": "9b82763d7a5a05a73829a829d10870651a899ae26482dc003ffed81fd1743343",
+    ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml": "55d41e73e076c76c407b1b8751e31d8496eb91107ff322babcd380caa9af76b7",
+    "docs/agents/yss-skill-registry.yaml": "334433e66208ba0e26941620c8c16bc29727e0254a902070d0f4b1bf3d05eb47"
+  },
+  "workspace_match_at_copy": true
+}

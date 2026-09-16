@@ -173,6 +173,20 @@ stage_groups:
     members: [ role.lifecycle-orchestrator, role.project-manager, role.test-engineer, role.product-manager ]
 
 gate_policy:
+  # countersigners 是可胜任该边界的候选角色，不是必须集齐的签字名单。
+  review_execution:
+    default_owner_count: 1
+    default_independent_reviewer_count: 1
+    additional_reviewers: uncovered-expertise-or-external-requirement
+    adjacent_checks: one-review-with-per-check-conclusions
+    suggestions: backlog-without-blocking
+    violations_or_missing_evidence: blocking
+  continuation_reviews:
+    gate.plan-approved: [role.product-manager]
+    gate.spec-baseline-approved: [role.product-manager]
+    gate.product-design-approved: [role.frontend-engineer, role.test-engineer]
+    gate.engineering-contract-approved: [role.backend-engineer, role.test-engineer]
+    implementation-scope: [role.test-engineer]
   default_if_unlisted: biological-human
   evidence_only: []
   orchestrator:
@@ -198,8 +212,9 @@ gate_policy:
     - gate: gate.engineering-contract-approved
       drafter: role.backend-engineer
       countersigners:
-        - role.product-manager
         - role.test-engineer
+        # 保留既有合法记录的角色兼容；并非要求再增加一次产品会签。
+        - role.product-manager
   product_digital_human_with_biological_veto: []
   biological_human:
     - gate.product-design-approved
@@ -250,6 +265,15 @@ user_decision_policy:
   schema_version: 1
   default_responder: requester
   delegate_requires_requester_evidence: true
+  # 专业批准仍逐项核验；已有明确授权通过延续证明复用，不再重复询问用户。
+  continuation:
+    capability: approved-scope-continuation-v1
+    source_boundary: delivery-scope
+    boundaries: [gate.plan-approved, gate.spec-baseline-approved, gate.product-design-approved, gate.engineering-contract-approved, implementation-scope]
+    material_changes: [business-scope, acceptance, contract-commitments, authorization, risk-acceptance, quality, external-commitments]
+    unknown_change: blocked
+    external_requirements: preserve-project-policy
+    external_policy_unconfirmed: no-automatic-continuation
   source_kinds: [ platform-message, session-export, user-confirmation-file ]
   gates:
     - gate.plan-approved

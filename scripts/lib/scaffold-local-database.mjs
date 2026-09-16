@@ -14,6 +14,7 @@ export function localDatabaseConfiguration(name) {
 
 export function scaffoldArchitectureIdentity(contract, contractDigest) {
   return {
+    ...(contract.platform_configuration ? { platform_configuration: contract.platform_configuration } : {}),
     architecture_family: contract.architecture_family,
     architecture_profile: contract.architecture_profile,
     generator_skill: contract.generator_skill,

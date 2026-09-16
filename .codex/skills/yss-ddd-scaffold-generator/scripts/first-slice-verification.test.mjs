@@ -54,7 +54,9 @@ async function fixture({ omitGatewayImpl = false, omitReadiness = false } = {}) 
   const manifestPath = path.join(project, ".yss", "scaffold-generation.json");
   const contractPath = path.join(root, "slice-contract.json");
   await mkdir(path.dirname(manifestPath), { recursive: true });
+  const architectureIdentity = { architecture_family: "domain-driven", architecture_profile: "target-domain-model", generator_skill: "yss-ddd-scaffold-generator", requested_capabilities: [], resolved_modules: ["domain", "application", "infrastructure", "adapter", "bootstrap"], contract_digest: "a".repeat(64), verification_database: "h2", production_database: "not-bound" };
   await writeFile(manifestPath, JSON.stringify({
+    architecture_identity: architectureIdentity,
     schema_version: 2,
     contract_id: "scaffold-1",
     contract_version: 1,
@@ -79,7 +81,8 @@ async function fixture({ omitGatewayImpl = false, omitReadiness = false } = {}) 
     maven_coordinates_source: "approved-contract"
   }));
   await writeFile(contractPath, JSON.stringify({
-    schema_version: 1,
+    architecture_identity: architectureIdentity,
+    schema_version: 2,
     contract_id: "slice-1",
     contract_version: 1,
     slice_id: "quality-rule-first-slice",
@@ -87,7 +90,7 @@ async function fixture({ omitGatewayImpl = false, omitReadiness = false } = {}) 
     readiness: { blockers: [], stale_inputs: [] },
     common: { required_skills: requiredSkills },
     backend: { status: "required", affected_layers: ["domain", "application", "infrastructure", "web"], required_skills: requiredSkills },
-    work_units: [{ id: "slice-backend", contract_id: "slice-1", contract_version: 1, work_unit: { primary_skill: "yss-domain" } }]
+    work_units: [{ architecture_identity: architectureIdentity, id: "slice-backend", contract_id: "slice-1", contract_version: 1, work_unit: { primary_skill: "yss-domain" } }]
   }));
   await write(project, "mvnw", "#!/bin/sh\nexit 0\n");
   await chmod(path.join(project, "mvnw"), 0o755);

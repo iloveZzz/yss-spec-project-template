@@ -126,6 +126,7 @@ export async function runFirstSliceVerification(projectRoot, evidenceDir, sliceC
   if (!await isFile(sliceContractFile)) throw new Error(`missing Slice Implementation Contract: ${sliceContractFile}`);
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
   const contract = JSON.parse(await readFile(sliceContractFile, "utf8"));
+  if (manifest.platform_verification === "candidate") throw new Error("backend-platform: candidate scaffold cannot become first-slice-verified");
   const adapter = manifest.architecture_family === "layered-mvc" ? mvcFirstSliceProfile(manifest.architecture_identity ?? {}) : { skills: REQUIRED_SKILLS, layers: REQUIRED_LAYERS, artifacts: ARTIFACT_CHECKS };
   const contractFailures = invalidContractReasons(contract, adapter.skills, adapter.layers);
   try {
@@ -145,7 +146,7 @@ export async function runFirstSliceVerification(projectRoot, evidenceDir, sliceC
   }
 
   const mavenEvidence = path.join(evidenceDir, "maven");
-  const wrapper = await runScaffoldVerification(projectRoot, mavenEvidence, environment);
+  const wrapper = await runScaffoldVerification(projectRoot, mavenEvidence, environment, { firstSlice: true });
   const passed = wrapper.status === "passed";
   const report = { verification_mode: "first-slice", project_root: projectRoot, slice_contract_ref: sliceContractFile, scaffold_manifest_ref: manifestPath, generated_at: isoNow(), status: passed ? "passed" : "failed", failure_category: wrapper.failure_category, completion_level: passed ? "first-slice-verified" : manifest.completion_level, contract_failures: [], missing_artifacts: [], downstream_skill_drift: [], commands: wrapper.commands };
   await writeJsonAtomic(reportPath, report);

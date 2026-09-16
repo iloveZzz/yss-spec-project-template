@@ -46,7 +46,7 @@ export function assertGateChecks(gateId, state, { root = ROOT, registry = loadRe
     const rule = countersignRuleForGate(rolesDoc.gate_policy, id);
     if (rule) {
       if (!refs.has(item.approval_ref) || !refs.has(item.subject_ref)) fail(`${id} 未绑定审查与资产`);
-      const record = loadApprovalRecord(path.resolve(root, item.approval_ref));
+      const record = loadApprovalRecord(path.resolve(root, item.approval_ref), id);
       if (record.gate_id !== id || record.subject_ref !== item.subject_ref) fail(`${id} 审查对象不匹配`);
       if (!item.approval_scope?.length || JSON.stringify([...item.approval_scope].sort()) !== JSON.stringify([...(record.approval_scope || [])].sort())) fail(`${id} 审查范围不匹配`);
       const subjectDigest = createHash('sha256').update(readFileSync(path.resolve(root, item.subject_ref))).digest('hex');
@@ -65,7 +65,7 @@ export function assertGateChecks(gateId, state, { root = ROOT, registry = loadRe
   const approvalRequired = countersignRuleForGate(rolesDoc.gate_policy, gateId);
   if (approvalRequired) {
     if (!refs.has(item.approval_ref) || !refs.has(item.subject_ref)) fail(`${gateId} 缺少已绑定批准记录和审阅包`);
-    const record = loadApprovalRecord(path.resolve(root, item.approval_ref));
+    const record = loadApprovalRecord(path.resolve(root, item.approval_ref), gateId);
     if (!record.drafter_principal_ref || record.drafter_principal_ref === record.principal_ref) fail(`${gateId} 缺少独立审查身份或起草者自签`);
     const bytes = readFileSync(path.resolve(root, item.subject_ref));
     if (record.subject_ref !== item.subject_ref || record.subject_digest !== createHash('sha256').update(bytes).digest('hex')) fail(`${gateId} 批准依据过期`);

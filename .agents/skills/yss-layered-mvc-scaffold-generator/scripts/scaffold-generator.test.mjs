@@ -106,7 +106,7 @@ test("旧数据库和 Mock 参数在写入前被拒绝", async (t) => {
 
 test("统一 Project Scaffold Contract v4 可生成 Layered MVC 后端并保留设计门禁", async (t) => {
   const data = await fixture(t);
-  const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+  const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
   assert.equal(result.status, 0, result.stderr);
   const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
   assert.equal(manifest.schema_version, 4);
@@ -115,7 +115,7 @@ test("统一 Project Scaffold Contract v4 可生成 Layered MVC 后端并保留�
 
 test("数据影响为 required 时绑定数据架构后可生成 Layered MVC 后端", async (t) => {
   const data = await fixture(t, { dataImpact: "required" });
-  const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+  const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
   assert.equal(result.status, 0, result.stderr);
   const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
   assert.equal(manifest.design_prerequisites.data_architecture_decision.impact, "required");
@@ -123,7 +123,7 @@ test("数据影响为 required 时绑定数据架构后可生成 Layered MVC 后
 
 test("API 影响为 required 时绑定同字节 Draft、Validation、Review 和 Freeze 后可生成 Layered MVC 后端", async (t) => {
   const data = await fixture(t, { apiImpact: "required" });
-  const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+  const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
   assert.equal(result.status, 0, result.stderr);
   const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
   assert.equal(manifest.design_prerequisites.api_contract_decision.impact, "required");
@@ -133,7 +133,7 @@ test("缺少设计门禁时在写文件前拒绝 Layered MVC 新生成", async (
   const data = await fixture(t);
   delete data.contract.design_prerequisites;
   await writeFile(data.contractFile, JSON.stringify(data.contract));
-  const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+  const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /design_prerequisites|Technical Design/);
   await assert.rejects(stat(data.project), { code: "ENOENT" });
@@ -143,7 +143,7 @@ test("技术和数据设计齐全但缺少 API Decision 时在写文件前拒绝
   const data = await fixture(t);
   delete data.contract.design_prerequisites.api_contract_decision;
   await writeFile(data.contractFile, JSON.stringify(data.contract));
-  const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+  const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /API Contract Decision|api_contract_decision/);
   await assert.rejects(stat(data.project), { code: "ENOENT" });
@@ -186,7 +186,7 @@ test("API Draft、Validation、Review 或工程批准异常时均在零写入状
   for (const mutate of mutations) {
     const data = await fixture(t, { apiImpact: "required" });
     await mutate(data);
-    const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+    const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
     assert.notEqual(result.status, 0, result.stderr);
     await assert.rejects(stat(data.project), { code: "ENOENT" });
   }
@@ -194,7 +194,7 @@ test("API Draft、Validation、Review 或工程批准异常时均在零写入状
 
 test("schema v3 只读兼容但禁止用于 Layered MVC 新生成", async (t) => {
   const data = await fixture(t, { schemaVersion: 3 });
-  const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+  const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /Project Scaffold Contract v4|新生成/);
   await assert.rejects(stat(data.project), { code: "ENOENT" });
@@ -202,7 +202,7 @@ test("schema v3 只读兼容但禁止用于 Layered MVC 新生成", async (t) =>
 
 test("可选离线 Maven 可行性检查（不替代受控仓库验收）", { skip: process.env.YSS_BACKEND_OFFLINE_PROBE !== "1" }, async (t) => {
   const data = await fixture(t);
-  const generated = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+  const generated = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
   assert.equal(generated.status, 0, generated.stderr);
   for (const phase of ["validate", "test", "package"]) {
     const result = spawnSync(path.join(data.project, "mvnw"), ["-o", phase], { cwd: data.project, encoding: "utf8", timeout: 60_000 });
@@ -214,7 +214,7 @@ test("可选离线 Maven 可行性检查（不替代受控仓库验收）", { sk
 for (const database of ["h2"]) {
   test(`生成 ${database} 基础 Profile`, async (t) => {
     const data = await fixture(t, { database });
-    const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+    const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
     assert.equal(result.status, 0, result.stderr);
     const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
     assert.equal(manifest.schema_version, 4);
@@ -235,7 +235,7 @@ for (const database of ["h2"]) {
 for (const [name, profile] of Object.entries(capabilityModules)) {
   test(`能力闭包 ${name}`, async (t) => {
     const data = await fixture(t, { profile });
-    const result = spawnSync(process.execPath, [script, ...data.args], { encoding: "utf8" });
+    const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
     assert.equal(result.status, 0, result.stderr);
     const pom = await readFile(path.join(data.project, "pom.xml"), "utf8");
     for (const module of profile.modules) assert.match(pom, new RegExp(`<module>demo-service-${module}</module>`));

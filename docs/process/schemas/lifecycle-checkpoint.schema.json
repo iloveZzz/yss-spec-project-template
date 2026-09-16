@@ -22,6 +22,10 @@
     "rollback"
   ],
   "properties": {
+    "plan_continuation_ref": {
+      "type": "string",
+      "minLength": 1
+    },
     "plan_review_ref": {
       "type": "string",
       "minLength": 1

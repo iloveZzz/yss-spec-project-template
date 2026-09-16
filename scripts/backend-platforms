@@ -1,0 +1,14 @@
+#!/usr/bin/env node
+import { loadBackendPlatforms, platformBinding, resolveBackendPlatform } from "./lib/backend-platform.mjs";
+try {
+  const catalog = loadBackendPlatforms();
+  const rows = catalog.profiles.map(profile => {
+    const combinations = catalog.compatibility.filter(entry => entry.profile_id === profile.id && entry.spring_boot_version === profile.spring_boot_version).map(entry => {
+      try { resolveBackendPlatform(platformBinding(profile, entry)); return { id: entry.id, status: "verified", parent: entry.parent, bom: entry.bom, architectures: entry.evidence.map(item => item.architecture_family), capabilities: entry.capabilities ?? [] }; }
+      catch (error) { return { id: entry.id, status: "blocked", reason: error.message }; }
+    });
+    return { profile_id: profile.id, spring_boot_version: profile.spring_boot_version, java_version: profile.java_version, recommended_java: profile.java_version === 8 || profile.java_version === 17, selectable: combinations.some(entry => entry.status === "verified"), combinations, blockers: combinations.some(entry => entry.status === "verified") ? [] : profile.candidate_blockers };
+  });
+  process.stdout.write(`${JSON.stringify({ schema_version: 1, profiles: rows }, null, 2)}\n`);
+  if (process.argv.includes("--require-verified") && rows.some(row => !row.selectable)) process.exitCode = 1;
+} catch (error) { process.stderr.write(`${error.message}\n`); process.exitCode = 1; }

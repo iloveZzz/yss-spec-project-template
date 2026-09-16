@@ -75,6 +75,17 @@ export async function sourceApproval(record, roles, root) {
     const { assertApprovalUserDecision } = await import('./user-decision-reuse.mjs');
     assertApprovalUserDecision(record, roles, options);
   }
+  // Older dedicated receivers retain their own lifecycle policy. Normalize only
+  // this already-verified source approval, without granting local capabilities.
+  if (record.continuation_ref) {
+    ensure(roles.user_decision_policy.gates.includes(record.gate_id), '未登记的源延续批准边界');
+    const reviewers = roles.gate_policy.continuation_reviews?.[record.gate_id];
+    ensure(reviewers?.includes(record.role_id) && record.drafter_principal_ref && record.drafter_principal_ref !== record.principal_ref, '源授权延续缺少独立审查身份');
+    options.rolesDoc = structuredClone(roles);
+    const policy = options.rolesDoc.gate_policy;
+    policy.dual_digital_human = (policy.dual_digital_human || []).filter(x => x.gate !== record.gate_id);
+    policy.digital_human_review = [...(policy.digital_human_review || []).filter(x => x.gate !== record.gate_id), { gate: record.gate_id, countersigners: reviewers }];
+  }
   validateApprovalRecord(record,options);
 }
 
@@ -217,7 +228,7 @@ function collect(root, handoffRef, handoff, config) {
   const enqueue=ref=> { if(symbolic[ref])queue.push(symbolic[ref]); else if(/^https?:\/\//i.test(ref))return; else if(ref.startsWith('evidence.'))throw new TypeError(`未解析 evidence ID: ${ref}`); else if(ref.includes('/') || /\.(?:md|yaml|json|html|png|txt|log)$/.test(ref))queue.push(ref); };
   function refs(value,key='') {
     if(Array.isArray(value)) { if(key==='evidence_refs') value.forEach(enqueue); else value.forEach(v=>refs(v,key)); }
-    else if(value && typeof value==='object') for(const [k,v]of Object.entries(value)) { if(['approval_ref','persisted_ref','user_decision_ref','decision_reuse_ref','scope_ref','subject_ref','delivery_ref'].includes(k)&&typeof v==='string')enqueue(v); else if(k==='ref'&&typeof v==='string'&&!/^[a-z]+:\/\//i.test(v))enqueue(v); else refs(v,k); }
+    else if(value && typeof value==='object') for(const [k,v]of Object.entries(value)) { if(['approval_ref','persisted_ref','user_decision_ref','decision_reuse_ref','continuation_ref','plan_continuation_ref','scope_ref','subject_ref','delivery_ref'].includes(k)&&typeof v==='string')enqueue(v); else if(k==='ref'&&typeof v==='string'&&!/^[a-z]+:\/\//i.test(v))enqueue(v); else refs(v,k); }
   }
   let totalBytes = 0;
   while(queue.length) {

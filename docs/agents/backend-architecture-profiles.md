@@ -21,7 +21,7 @@ Profile、模块闭包、生成器、成熟度和 Recipe 的权威映射见 `yss
 
 - 新脚手架统一 `verification_database=h2`、`production_database=not-bound`。仅测试和显式 `scaffold-local` 使用 H2；普通配置不设置数据库或默认激活 Profile。不另加生产驱动、第三方数据源或 Mock 服务。
 - 生产数据库、DDL、索引和方言在后续批准的存储工作单元接入；H2 测试不能证明生产方言兼容。脚手架不包含业务 SQL、schema/data 占位或业务 API。
-- 三种新 Profile 使用 `spring-boot-2.7-jdk8` / `javax`。组件 Skill 消费工程基线，不擅自升级 Java、Boot、处理器版本或替换依赖。MapStruct + Lombok 必须验证 binding 与生成代码编译。
+- DDD / 通用 MVC 消费批准的 `platform_configuration` v1，平台清单与证据规则见 `docs/engineering/backend-platforms.md`。数据分析初始化器保留 `spring-boot-2.7-jdk8` / `javax`，不自动开放新平台。组件 Skill 不擅自升级 Java、Boot、处理器或替换 YSS 依赖。MapStruct + Lombok 必须验证 binding 与生成代码编译。
 - 对 SQL 注入、敏感信息、权限和事务的规则不因 H2 或模板而豁免。MySQL 专属语法规则仅适用于批准的 MySQL 存储工作单元；框架命名/返回包装等差异须记录明确的 YSS 基线例外。
 
 ## 验证含义

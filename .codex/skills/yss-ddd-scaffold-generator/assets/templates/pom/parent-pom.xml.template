@@ -20,16 +20,18 @@
 
     <properties>
         <yss-components.version>{{yss_components_version}}</yss-components.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <java.version>{{java_version}}</java.version>
+        <spring-boot.version>{{boot_version}}</spring-boot.version>
+        <maven.compiler.source>{{java_version}}</maven.compiler.source>
+        <maven.compiler.target>{{java_version}}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <mapstruct.version>1.5.5.Final</mapstruct.version>
-        <lombok.version>1.18.30</lombok.version>
-        <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
-        <swagger-annotations-v3.version>2.2.22</swagger-annotations-v3.version>
-        <archunit.version>1.2.1</archunit.version>
-        <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
-        <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
+        <mapstruct.version>{{mapstruct_version}}</mapstruct.version>
+        <lombok.version>{{lombok_version}}</lombok.version>
+        <lombok-mapstruct-binding.version>{{lombok_mapstruct_binding_version}}</lombok-mapstruct-binding.version>
+        <swagger-annotations-v3.version>{{swagger_version}}</swagger-annotations-v3.version>
+        <archunit.version>{{archunit_version}}</archunit.version>
+        <maven-compiler-plugin.version>{{compiler_version}}</maven-compiler-plugin.version>
+        <maven-enforcer-plugin.version>{{enforcer_version}}</maven-enforcer-plugin.version>
     </properties>
 
     <modules>
@@ -42,6 +44,7 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-dependencies</artifactId><version>{{boot_version}}</version><type>pom</type><scope>import</scope></dependency>
             <dependency>
                 <groupId>com.yss.cloud</groupId>
                 <artifactId>yss-components-bom</artifactId>
@@ -94,6 +97,8 @@
 
     <build>
         <plugins>
+            <plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId><version>{{boot_version}}</version></plugin>
+            <plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>{{surefire_version}}</version></plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -129,7 +134,7 @@
                         <goals><goal>enforce</goal></goals>
                         <configuration>
                             <rules>
-                                <requireJavaVersion><version>[1.8,1.9)</version></requireJavaVersion>
+                                <requireJavaVersion><version>{{java_range}}</version></requireJavaVersion>
                                 <requireMavenVersion><version>[3.6.3,)</version></requireMavenVersion>
                                 <reactorModuleConvergence/>
                                 <dependencyConvergence/>

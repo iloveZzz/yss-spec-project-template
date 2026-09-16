@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { loadBackendPlatforms, assertPlatformAgreement } from "../../../../scripts/lib/backend-platform.mjs";
 import { createHash } from "node:crypto";
 import { constants, access, copyFile, mkdir, mkdtemp, readFile, rm, unlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -10,8 +11,8 @@ import { assertArchitectureAgreement, validateArchitectureIdentity } from "../..
 
 const TYPE_MAPPING = { bigint: "Long", int: "Integer", integer: "Integer", smallint: "Integer", tinyint: "Integer", number: "Long", numeric: "BigDecimal", decimal: "BigDecimal", float: "Float", double: "Double", real: "Float", varchar: "String", varchar2: "String", nvarchar2: "String", char: "String", nchar: "String", text: "String", clob: "String", nclob: "String", date: "LocalDateTime", datetime: "LocalDateTime", timestamp: "LocalDateTime", "timestamp with time zone": "LocalDateTime", boolean: "Boolean", bool: "Boolean", bit: "Boolean", json: "String", jsonb: "String", uuid: "String" };
 const PLATFORM_VALIDATION_NAMESPACES = {
-  "spring-boot-2.7-jdk8": "javax",
-  "spring-boot-3-jdk17": "jakarta"
+  ...Object.fromEntries(loadBackendPlatforms().profiles.map(profile => [profile.id, profile.validation_namespace])),
+  "spring-boot-3-jdk17": "jakarta" // Existing-project compatibility only; new scaffolds use exact catalog profiles.
 };
 const required = ["metadata-file", "contract-file", "dto-wire-profile-file", "base-package", "module-name", "domain-segment"];
 const valued = new Set([...required, "output-dir", "web-project-dir", "web-output-dir", "author", "application-service-package", "validation-namespace", "scaffold-manifest-file"]);
@@ -170,6 +171,8 @@ async function validateContract(contract, args) {
   if (implementationRoot !== scaffoldRoot) throw new Error("implementation_project_root does not match the scaffold manifest project root");
   const expectedWebProject = mvc ? path.join(scaffoldRoot, `${manifest.project_name}-server`) : path.join(scaffoldRoot, `${manifest.project_name}-adapter`, `${manifest.project_name}-web`);
   if (!args["web-project-dir"] || path.resolve(args["web-project-dir"]) !== expectedWebProject) throw new Error("--web-project-dir does not match the scaffold manifest project layout");
+  if (manifest.platform_verification === "candidate") throw new Error("backend-platform: candidate scaffold is not ready for downstream generation");
+  if (manifest.platform_configuration) assertPlatformAgreement(manifest.platform_configuration, contract.architecture_identity?.platform_configuration);
   const profilePairs = mvc ? [["platform", "platform_profile"], ["validation_namespace", "validation_namespace"]] : [["architecture", "architecture_profile"], ["platform", "platform_profile"], ["validation_namespace", "validation_namespace"], ["dto_placement", "dto_placement"]];
   for (const [manifestField, contractField] of profilePairs) {
     if (manifest.profiles?.[manifestField] !== contract[contractField]) throw new Error(`scaffold manifest ${manifestField} profile does not match the approved Web contract`);

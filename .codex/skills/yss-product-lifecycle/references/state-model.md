@@ -14,6 +14,8 @@
 
 Matt 五态不得扩义。资产的 `ready-for-human` 与 Ticket label 必须带命名空间表达。`paused-human-gate` 表示等待 `docs/agents/digital-human-roles.yaml` 指定的会签人（数字人或生物人），不是「必须是生物人」。但 `user_decision_policy` 命中的关键决定还必须有真实用户回复，数字人会签不能解除该等待。
 
+Slice v3 冻结需求文件的 status 是冻结时快照，不能用来推断当前执行状态。状态流转和验收结果写入已配置主 tracker / 任务包；需求改版后重新编译、审查与绑定批准，见 [Slice 冻结需求协议](../../yss-implementation-contract-compiler/references/slice-implementation-contract.md#第二轮增量规则)。
+
 ## 上下文与外部输入证据
 
 状态模型不新增 context 状态域。阶段边界只在状态块或 checkpoint 中保存可选证据：

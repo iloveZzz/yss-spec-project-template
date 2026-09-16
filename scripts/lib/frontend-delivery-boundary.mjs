@@ -1,3 +1,4 @@
+import { normalizeSliceContract, sourceSliceContract, parseSliceYaml } from './slice-contract.mjs';
 import { loadDeliveryProfile } from './harness-execution-scope.mjs';
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -8,6 +9,7 @@ import { ROOT, read, safe, ensure, digest } from './strategic-handoff-io.mjs';
 // Always re-executes the verifier; a caller-supplied "verified" flag is never evidence.
 export function enforceFrontendDelivery(state={}, {root=ROOT,phase='inputs'}={}) {
   ensure(['preflight','design','contract','inputs','implementation','verification'].includes(phase),`未知前端交付阶段: ${phase}`);
+  if(state.schema_version===3)state=normalizeSliceContract(state,{root});
   const profile=loadDeliveryProfile(root);
   let contract;
   const contractRef=state.slice_contract_ref||state.contract?.slice_contract_ref;
@@ -35,6 +37,7 @@ export function enforceFrontendDelivery(state={}, {root=ROOT,phase='inputs'}={})
     const file=path.resolve(root,contractRef);
     if(existsSync(file)) {
       const document=read(file);contract=document.slice_contract||document;
+      if(contract.schema_version===3)contract=normalizeSliceContract(contract,{root});
       const direct=contract.frontend?.delivery, resolved=contract.resolution?.frontend_delivery;
       ensure(!direct||!resolved||digest(direct)===digest(resolved),'Slice Contract 前端交付绑定冲突');
       binding=direct||resolved||binding;

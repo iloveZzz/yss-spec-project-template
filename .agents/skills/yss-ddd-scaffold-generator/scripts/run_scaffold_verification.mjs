@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 /** 在生成项目根目录实际执行 YSS 脚手架的固定验证命令并留证。 */
+import { assertSourceFingerprint, generatedTreeDigest } from "../../../../scripts/lib/backend-platform-provenance.mjs";
+import { assertContractPlatform, assertPlatformAgreement, platformDigest } from "../../../../scripts/lib/backend-platform.mjs";
+import { verifyPlatformDependencies, verifyPlatformStartup, verifyPlatformTests, platformEvidenceArtifacts } from "../../../../scripts/lib/backend-platform-verification.mjs";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
@@ -59,12 +62,30 @@ function validateManifest(manifest) {
   if (manifest.schema_version === 4 ? manifest.current_version !== true : manifest.current_version !== manifest.contract_version) throw new Error("脚手架生成元数据清单不是当前合同版本");
   if (JSON.stringify(manifest.verification_commands) !== JSON.stringify(COMMANDS)) throw new Error("脚手架生成元数据清单验证命令不符合固定合同");
 }
-export async function run(projectRoot, evidenceDir, environment = process.env, { timeoutMs = 0, signal } = {}) {
+export async function run(projectRoot, evidenceDir, environment = process.env, { timeoutMs = 0, signal, platformOptions = {}, firstSlice = false } = {}) {
   const wrapper = path.join(projectRoot, "mvnw"), manifestPath = path.join(projectRoot, ".yss", "scaffold-generation.json");
   if (!await isFile(wrapper)) throw new Error(`项目根目录缺少 Maven wrapper: ${wrapper}`);
   if (!await isFile(manifestPath)) throw new Error(`项目根目录缺少脚手架生成元数据清单: ${manifestPath}`);
   let manifest; try { manifest = JSON.parse(await readFile(manifestPath, "utf8")); } catch { throw new Error(`脚手架生成元数据清单无法读取或不是合法 JSON: ${manifestPath}`); }
   validateManifest(manifest);
+  let selectedPlatform, selectedEntry;
+  if (manifest.platform_verification && !manifest.platform_configuration) throw new Error("backend-platform: Manifest missing platform_configuration");
+  if (manifest.platform_configuration) {
+    if (manifest.platform_verification === "candidate" && platformOptions.candidate !== true) throw new Error("backend-platform: candidate scaffold cannot enter production verification");
+    const contractBytes = await readFile(manifest.contract_file_ref);
+    if (platformDigest(contractBytes).replace(/^sha256:/, "") !== manifest.contract_digest.replace(/^sha256:/, "")) throw new Error("backend-platform: contract digest drift");
+    const contract = JSON.parse(contractBytes);
+    assertPlatformAgreement(manifest.platform_configuration, contract.platform_configuration);
+    if (firstSlice) {
+      if (manifest.platform_verification !== "verified" || manifest.completion_level !== "empty-scaffold-verified") throw new Error("backend-platform: first slice requires a verified empty scaffold");
+    } else {
+      const relativeEvidence = path.relative(path.resolve(projectRoot), path.resolve(evidenceDir));
+      if (!relativeEvidence || (!relativeEvidence.startsWith(`..${path.sep}`) && relativeEvidence !== ".." && !path.isAbsolute(relativeEvidence))) throw new Error("backend-platform: empty scaffold evidence must be outside the generated project");
+      assertSourceFingerprint(manifest.source_fingerprint, manifest.architecture_family);
+      if (generatedTreeDigest(projectRoot, manifest) !== manifest.generated_tree_digest) throw new Error("backend-platform: generated tree drift");
+    }
+    ({ profile: selectedPlatform, entry: selectedEntry } = assertContractPlatform(contract, null, { ...platformOptions, requireVerified: platformOptions.candidate !== true }));
+  }
   await mkdir(evidenceDir, { recursive: true });
   const mavenConfig = await readTextIfPresent(path.join(projectRoot, ".mvn", "maven.config"));
   const preflight = {
@@ -86,6 +107,7 @@ export async function run(projectRoot, evidenceDir, environment = process.env, {
   if (!preflight.maven_repository_url_configured) failed.push("repository-url-not-configured");
   if (!preflight.maven_repository_credentials_configured) failed.push("repository-credentials-not-configured");
   if (failed.length) return { verification_mode: "controlled-generation", project_root: projectRoot, scaffold_manifest_ref: manifestPath, generated_at: isoNow(), status: "failed", failure_category: "verification-preflight", completion_level: "generated", preflight: { ...preflight, failures: failed }, commands: [] };
+  const verificationStartedAt = Date.now();
   const commands = [];
   for (const phase of PHASES) {
     const stdoutPath = path.join(evidenceDir, `mvnw-${phase}.stdout.log`);
@@ -109,15 +131,25 @@ export async function run(projectRoot, evidenceDir, environment = process.env, {
       stderr_ref: stderrPath
     });
   }
-  const failureCategory = commands.find((item) => item.failure_category)?.failure_category ?? null;
+  let failureCategory = commands.find((item) => item.failure_category)?.failure_category ?? null;
+  const platformDependencies = selectedPlatform && failureCategory === null ? await verifyPlatformDependencies(projectRoot, evidenceDir, selectedPlatform, environment, { timeoutMs, signal, manifest, components: selectedEntry.components }) : null;
+  if (platformDependencies?.status === "failed") failureCategory = "platform-dependencies";
+  const integrationTests = selectedPlatform && failureCategory === null ? await verifyPlatformTests(projectRoot, evidenceDir, manifest, verificationStartedAt) : null;
+  if (integrationTests?.status === "failed") failureCategory = "platform-integration-tests";
+  const startup = selectedPlatform && failureCategory === null ? await verifyPlatformStartup(projectRoot, evidenceDir, manifest, environment, { timeoutMs, signal, runtimeArtifacts: platformDependencies.runtime_artifacts, providedLombokVersion: selectedPlatform.versions.lombok }) : null;
+  if (startup?.status === "failed") failureCategory = "platform-startup";
+  if (selectedPlatform && !firstSlice && generatedTreeDigest(projectRoot, manifest) !== manifest.generated_tree_digest) throw new Error("backend-platform: Maven modified generated source bytes");
   return {
+    verification_scope: firstSlice ? "first-slice" : "empty-scaffold",
+    ...(selectedPlatform && !firstSlice ? { recipe_digest: manifest.platform_configuration.compatibility_digest, source_fingerprint: manifest.source_fingerprint, generated_tree_digest: manifest.generated_tree_digest, evidence_artifacts: await platformEvidenceArtifacts(evidenceDir), verified_capabilities: manifest.module_profile?.requested_capabilities ?? [], integration_tests: integrationTests } : {}),
+    ...(selectedPlatform ? { spring_boot_version: selectedPlatform.spring_boot_version, java_version: selectedPlatform.java_version, parent: manifest.platform_configuration.parent, bom: manifest.platform_configuration.bom, architecture_family: manifest.architecture_family, platform_dependencies: platformDependencies, dependency_check: platformDependencies?.status ?? "not-executed", startup, startup_check: startup?.status ?? "not-executed", platform_verification: manifest.platform_verification } : {}),
     verification_mode: "controlled-generation",
     project_root: projectRoot,
     scaffold_manifest_ref: manifestPath,
     generated_at: isoNow(),
     status: failureCategory === null ? "passed" : "failed",
     failure_category: failureCategory,
-    completion_level: failureCategory === null ? "empty-scaffold-verified" : "generated",
+    completion_level: firstSlice ? manifest.completion_level : failureCategory === null && manifest.platform_verification !== "candidate" ? "empty-scaffold-verified" : "generated",
     preflight,
     commands
   };

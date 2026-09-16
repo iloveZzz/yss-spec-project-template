@@ -42,7 +42,7 @@ WORKFLOW = (
 
 def run_generator(*arguments: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        ["node", str(GENERATOR), *arguments],
+        ["node", str(REPOSITORY_ROOT / "scripts/fixtures/backend-scaffold/generate-candidate.mjs"), str(GENERATOR), *arguments],
         cwd=REPOSITORY_ROOT,
         text=True,
         capture_output=True,

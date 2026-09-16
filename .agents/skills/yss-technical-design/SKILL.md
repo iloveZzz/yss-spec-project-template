@@ -37,3 +37,7 @@ schema v1 战术合同只按 DDD 显式兼容读取；使用 `--legacy-ddd`，�
 ## 交接
 
 按现有架构审查门禁进行独立评审。批准且版本当前后交回生命周期，再交编译器；DDD 实现使用 `yss-domain`，MVC 实现按已登记 Profile 的能力与 Recipe 路由。发现 `stale`、`drift`、`new_impacts` 或路径越界时回交重路由。需要图示时按用户或合同要求调用 `archify`，图只作派生证据。
+
+## 后端脚手架平台承接
+
+消费生命周期已确认的架构与 `platform_configuration` v2；不得自行选择、批准或静默升级 Boot/Java。平台清单执行 `scripts/backend-platforms` 查询；只允许已验证 YSS 组合，新生成缺少配置或证据即阻断。决定、合同、Manifest 与下游架构身份须绑定同一平台及兼容摘要。详见 仓库共享合同 `docs/engineering/backend-platforms.md`。

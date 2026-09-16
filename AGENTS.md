@@ -81,6 +81,7 @@
 - 实现者不做独立审查，Reviewer 不写实现；代码审查统一用 `code-review`。mandatory 不豁免；`violation` 修复后重审，`drift` / `new_impacts` 使合同 `stale` 并回编译器。
 - “完成 / 可合并 / 可发布”仅基于 Fresh Verification；历史结果、自述无效。
 - 会签按角色表 `gate_policy` 并经 `scripts/verify-approval-record --require-approved` 核验；`user_decision_policy` 命中的关键决定必须先展示可审阅资产，再取得提问者或其明确指定负责人的真实回复。无回复保持等待，数字人不能代答；原始来源、范围、复用和失效见生命周期 `references/user-decisions.md`。发布、商务承诺、运行时外部副作用仍须生物人。
+- 普通功能默认一个推进负责人和一个独立审查者；候选角色列表不要求逐角色签字。相邻检查可组合审查、逐项留结论。已有范围授权按用户决定协议验证延续，实质变化或未知影响才重新决定；外部强制审批不得裁掉，缺陷和缺证据仍阻断，非阻断建议进入待办。
 - 会签暂停、handoff、实现、合并、发布边界同步范围、证据、风险、会签点、Ticket 状态和下一步。Git checkpoint 只含本轮范围；提交 / 推送须用户授权。
 - 发布或阶段完成时判断复盘；架构 / 验证返工、IMPORTANT / CRITICAL finding、人工确认延期时，落中文复盘并修订事实源。
 

@@ -60,7 +60,7 @@
           "id": "code-review",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/design/code-review.patch",
-          "source_tree_sha256": "aa58b3ee8b6dff36d49265b6eadfafc3f35fd9609efb4591a23502a9a53ffcf1"
+          "source_tree_sha256": "dedd028ae161e8664b014b640a587d01642be61541a8768b8cfd94102aaa9295"
         },
         {
           "id": "triage",
@@ -261,6 +261,15 @@
         },
         {
           "id": "yss-research"
+        },
+        {
+          "id": "yss-ddd-scaffold-generator"
+        },
+        {
+          "id": "yss-layered-mvc-scaffold-generator"
+        },
+        {
+          "id": "yss-dto"
         }
       ],
       "adapted": [
@@ -296,19 +305,31 @@
           "id": "code-review",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/code-review.patch",
-          "source_tree_sha256": "aa58b3ee8b6dff36d49265b6eadfafc3f35fd9609efb4591a23502a9a53ffcf1"
+          "source_tree_sha256": "dedd028ae161e8664b014b640a587d01642be61541a8768b8cfd94102aaa9295"
         },
         {
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "070ac06a2b899f95cb9a8bd3eb2b634cc49ad30eeb21aea03c8bd86c3a4fa3d5"
+          "source_tree_sha256": "f53a39440cd3b0f55b0729c4675c669c9cf727cb7e036d94da1b1e1fe4b29943"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-openapi-governance.patch",
           "source_tree_sha256": "6c50ab0d2593b590f7fff4e978dc555222400e76067011b256eadf9bb5ba0d3c"
+        },
+        {
+          "id": "yss-mybatis",
+          "strategy": "patch",
+          "patch": ".template-source/profile-skill-patches/backend/yss-mybatis.patch",
+          "source_tree_sha256": "73e4371492c03facf112c672f3f03155d9ed0e237986d255b26dd899c447b96e"
+        },
+        {
+          "id": "yss-repository",
+          "strategy": "patch",
+          "patch": ".template-source/profile-skill-patches/backend/yss-repository.patch",
+          "source_tree_sha256": "aa9ef4077d2a0ee5c3e64a7335c164ccfd8ace02c7a549d9e0a780c1adfcf587"
         }
       ],
       "assets": [
@@ -406,16 +427,11 @@
         "wait-what",
         "wayfinder",
         "yss-audit-log",
-        "yss-ddd-scaffold-generator",
         "yss-distributed-id",
-        "yss-dto",
         "yss-excel-mvc",
-        "yss-layered-mvc-scaffold-generator",
         "yss-mvc-data-analysis-project-initializer",
-        "yss-mybatis",
         "yss-openapi-draft-review",
         "yss-product-lifecycle",
-        "yss-repository",
         "yss-skill-source-index-refresh",
         "yss-stage-decision",
         "yss-ui"
@@ -552,13 +568,13 @@
           "id": "code-review",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/code-review.patch",
-          "source_tree_sha256": "aa58b3ee8b6dff36d49265b6eadfafc3f35fd9609efb4591a23502a9a53ffcf1"
+          "source_tree_sha256": "dedd028ae161e8664b014b640a587d01642be61541a8768b8cfd94102aaa9295"
         },
         {
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "070ac06a2b899f95cb9a8bd3eb2b634cc49ad30eeb21aea03c8bd86c3a4fa3d5"
+          "source_tree_sha256": "f53a39440cd3b0f55b0729c4675c669c9cf727cb7e036d94da1b1e1fe4b29943"
         },
         {
           "id": "yss-openapi-governance",

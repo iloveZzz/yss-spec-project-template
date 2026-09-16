@@ -1,0 +1,168 @@
+{
+  "schema_version": 1,
+  "kind": "backend-platform-matrix",
+  "generated_at": "2026-09-16T15:23:51.887Z",
+  "status": "blocked",
+  "combinations": [
+    {
+      "profile_id": "spring-boot-2.7-jdk8",
+      "spring_boot_version": "2.7.18",
+      "java_version": 8,
+      "architecture_family": "domain-driven",
+      "status": "blocked",
+      "blockers": [
+        "missing environment: YSS_MAVEN_REPOSITORY_URL",
+        "missing environment: MAVEN_REPO_USERNAME",
+        "missing environment: MAVEN_REPO_PASSWORD",
+        "missing real approved scaffold contract/YSS compatibility coordinates"
+      ],
+      "commands": [],
+      "executed_at": "2026-09-16T15:23:51.412Z",
+      "java_preflight": "passed"
+    },
+    {
+      "profile_id": "spring-boot-2.7-jdk8",
+      "spring_boot_version": "2.7.18",
+      "java_version": 8,
+      "architecture_family": "layered-mvc",
+      "status": "blocked",
+      "blockers": [
+        "missing environment: YSS_MAVEN_REPOSITORY_URL",
+        "missing environment: MAVEN_REPO_USERNAME",
+        "missing environment: MAVEN_REPO_PASSWORD",
+        "missing real approved scaffold contract/YSS compatibility coordinates"
+      ],
+      "commands": [],
+      "executed_at": "2026-09-16T15:23:51.497Z",
+      "java_preflight": "passed"
+    },
+    {
+      "profile_id": "spring-boot-3.5-jdk17",
+      "spring_boot_version": "3.5.16",
+      "java_version": 17,
+      "architecture_family": "domain-driven",
+      "status": "blocked",
+      "blockers": [
+        "missing environment: YSS_MAVEN_REPOSITORY_URL",
+        "missing environment: MAVEN_REPO_USERNAME",
+        "missing environment: MAVEN_REPO_PASSWORD",
+        "missing real approved scaffold contract/YSS compatibility coordinates"
+      ],
+      "commands": [],
+      "executed_at": "2026-09-16T15:23:51.531Z",
+      "java_preflight": "passed"
+    },
+    {
+      "profile_id": "spring-boot-3.5-jdk17",
+      "spring_boot_version": "3.5.16",
+      "java_version": 17,
+      "architecture_family": "layered-mvc",
+      "status": "blocked",
+      "blockers": [
+        "missing environment: YSS_MAVEN_REPOSITORY_URL",
+        "missing environment: MAVEN_REPO_USERNAME",
+        "missing environment: MAVEN_REPO_PASSWORD",
+        "missing real approved scaffold contract/YSS compatibility coordinates"
+      ],
+      "commands": [],
+      "executed_at": "2026-09-16T15:23:51.632Z",
+      "java_preflight": "passed"
+    },
+    {
+      "profile_id": "spring-boot-3.5-jdk21",
+      "spring_boot_version": "3.5.16",
+      "java_version": 21,
+      "architecture_family": "domain-driven",
+      "status": "blocked",
+      "blockers": [
+        "missing environment: YSS_MAVEN_REPOSITORY_URL",
+        "missing environment: MAVEN_REPO_USERNAME",
+        "missing environment: MAVEN_REPO_PASSWORD",
+        "missing real approved scaffold contract/YSS compatibility coordinates"
+      ],
+      "commands": [],
+      "executed_at": "2026-09-16T15:23:51.659Z",
+      "java_preflight": "passed"
+    },
+    {
+      "profile_id": "spring-boot-3.5-jdk21",
+      "spring_boot_version": "3.5.16",
+      "java_version": 21,
+      "architecture_family": "layered-mvc",
+      "status": "blocked",
+      "blockers": [
+        "missing environment: YSS_MAVEN_REPOSITORY_URL",
+        "missing environment: MAVEN_REPO_USERNAME",
+        "missing environment: MAVEN_REPO_PASSWORD",
+        "missing real approved scaffold contract/YSS compatibility coordinates"
+      ],
+      "commands": [],
+      "executed_at": "2026-09-16T15:23:51.742Z",
+      "java_preflight": "passed"
+    },
+    {
+      "profile_id": "spring-boot-4.1-jdk17",
+      "spring_boot_version": "4.1.1",
+      "java_version": 17,
+      "architecture_family": "domain-driven",
+      "status": "blocked",
+      "blockers": [
+        "missing environment: YSS_MAVEN_REPOSITORY_URL",
+        "missing environment: MAVEN_REPO_USERNAME",
+        "missing environment: MAVEN_REPO_PASSWORD",
+        "missing real approved scaffold contract/YSS compatibility coordinates"
+      ],
+      "commands": [],
+      "executed_at": "2026-09-16T15:23:51.772Z",
+      "java_preflight": "passed"
+    },
+    {
+      "profile_id": "spring-boot-4.1-jdk17",
+      "spring_boot_version": "4.1.1",
+      "java_version": 17,
+      "architecture_family": "layered-mvc",
+      "status": "blocked",
+      "blockers": [
+        "missing environment: YSS_MAVEN_REPOSITORY_URL",
+        "missing environment: MAVEN_REPO_USERNAME",
+        "missing environment: MAVEN_REPO_PASSWORD",
+        "missing real approved scaffold contract/YSS compatibility coordinates"
+      ],
+      "commands": [],
+      "executed_at": "2026-09-16T15:23:51.798Z",
+      "java_preflight": "passed"
+    },
+    {
+      "profile_id": "spring-boot-4.1-jdk21",
+      "spring_boot_version": "4.1.1",
+      "java_version": 21,
+      "architecture_family": "domain-driven",
+      "status": "blocked",
+      "blockers": [
+        "missing environment: YSS_MAVEN_REPOSITORY_URL",
+        "missing environment: MAVEN_REPO_USERNAME",
+        "missing environment: MAVEN_REPO_PASSWORD",
+        "missing real approved scaffold contract/YSS compatibility coordinates"
+      ],
+      "commands": [],
+      "executed_at": "2026-09-16T15:23:51.828Z",
+      "java_preflight": "passed"
+    },
+    {
+      "profile_id": "spring-boot-4.1-jdk21",
+      "spring_boot_version": "4.1.1",
+      "java_version": 21,
+      "architecture_family": "layered-mvc",
+      "status": "blocked",
+      "blockers": [
+        "missing environment: YSS_MAVEN_REPOSITORY_URL",
+        "missing environment: MAVEN_REPO_USERNAME",
+        "missing environment: MAVEN_REPO_PASSWORD",
+        "missing real approved scaffold contract/YSS compatibility coordinates"
+      ],
+      "commands": [],
+      "executed_at": "2026-09-16T15:23:51.858Z",
+      "java_preflight": "passed"
+    }
+  ]
+}

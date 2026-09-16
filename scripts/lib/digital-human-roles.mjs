@@ -388,6 +388,16 @@ export function validateDigitalHumanRoles(doc, { skillIds, stageIds, gateIds, ar
   }
 
   const decisions = doc.user_decision_policy;
+  if (decisions?.continuation) {
+    const continuation = decisions.continuation;
+    if (continuation.capability !== 'approved-scope-continuation-v1' || continuation.source_boundary !== 'delivery-scope' || continuation.unknown_change !== 'blocked' || continuation.external_policy_unconfirmed !== 'no-automatic-continuation') fail('授权延续策略不能省略未知变化或外部制度保护');
+    requireStringArray(continuation.boundaries, 'continuation.boundaries');
+    for (const boundary of continuation.boundaries) {
+      if (!gateIds.has(boundary) && boundary !== 'implementation-scope') fail(`未支持的延续边界: ${boundary}`);
+      requireStringArray(policy.continuation_reviews?.[boundary], `${boundary}.continuation_reviews`);
+      for (const role of policy.continuation_reviews[boundary]) if (!actors.has(role)) fail(`未知延续审查角色: ${role}`);
+    }
+  }
   if (decisions?.schema_version !== 1 || decisions.default_responder !== "requester" || decisions.delegate_requires_requester_evidence !== true) fail("缺少统一用户决定策略");
   requireStringArray(decisions.gates, "user_decision_policy.gates");
   for (const gate of decisions.gates) if (!gateIds.has(gate)) fail(`用户决定引用未知门禁: ${gate}`);

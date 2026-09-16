@@ -11,9 +11,9 @@ description: YSS DDD scaffold Engineering Baseline entry for profile, module, de
 
 - Architecture: `target-domain-model`
 - Persistence: `mybatis-plus`
-- Database: `mysql`
-- Platform: `spring-boot-2.7-jdk8`
-- Validation namespace: `javax`
+- Verification database: `h2`; production database: `not-bound`
+- Platform: approved `platform_configuration` v2 from the shared backend platform catalog
+- Validation namespace: derived from that platform (`javax` for Boot 2.7; `jakarta` for Boot 3.5/4.1)
 - DTO placement: `web`
 - Repository: `yss-internal`
 

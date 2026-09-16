@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { verifyContextReconciliation } from './context-reconciliation.mjs';
 import { decisionIO, decisionDigest, assertUserDecisionRequirement } from './user-decision.mjs';
-import { validateApprovalRecord } from './approval-record.mjs';
+import { validateApprovalRecord, selectApprovalRecord } from './approval-record.mjs';
 
 const fail = message => { throw new TypeError(`plan-spec-entry-blocked: ${message}`); };
 const text = value => typeof value === 'string' && value.trim().length > 0;
@@ -56,7 +56,7 @@ export function assertPlanSpecEntry(state, options = {}) {
     evidence(gate?.evidence_refs);
     if (review.impacts[impact]) {
       if (gate.status !== 'approved' || !basis.has(gate.approval_ref) || !basis.has(gate.subject_ref)) fail(`命中门禁未批准或未绑定依据: ${gateId}`);
-      const record = io.document(gate.approval_ref);
+      const record = selectApprovalRecord(io.document(gate.approval_ref), gateId);
       if (record.gate_id !== gateId || record.subject_ref !== gate.subject_ref || !gate.approval_scope?.includes(state.feature_id) || JSON.stringify([...(gate.approval_scope || [])].sort()) !== JSON.stringify([...(record.approval_scope || [])].sort())) fail(`会签资产或范围不匹配: ${gateId}`);
       validateApprovalRecord(record, { ...options, requireApproved: true });
     } else if (gate.status !== 'not-applicable' || !text(gate.reason)) fail(`未命中门禁须有原因和依据: ${gateId}`);
@@ -72,7 +72,7 @@ export function assertPlanSpecEntry(state, options = {}) {
   if (reconciliation.status !== 'reconciled' || reconciliation.repository_mode !== 'project-instance') fail('Context 未调和');
   try { verifyContextReconciliation(path.resolve(io.root, review.context_reconciliation_ref), { root: io.root }); }
   catch (error) { fail(`Context reconciliation 验证失败: ${error.message}\n`); }
-  assertUserDecisionRequirement({ boundary: 'gate.plan-approved', subject_ref: state.plan_review_ref, scope: [state.feature_id], user_decision_ref: state.plan_user_decision_ref }, options);
+  assertUserDecisionRequirement({ boundary: 'gate.plan-approved', subject_ref: state.plan_review_ref, scope: [state.feature_id], user_decision_ref: state.plan_user_decision_ref, continuation_ref: state.plan_continuation_ref }, options);
   return { result: 'allowed', blocking_signals: [], missing_requirements: [], evidence_refs: [state.plan_review_ref, ...basis.keys()], next_work_unit: null };
 }
 

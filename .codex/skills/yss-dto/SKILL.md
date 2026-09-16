@@ -91,3 +91,7 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 - DTO/VO 必须消费冻结 OpenAPI/no-impact record 和批准合同，写入合同允许路径。
 - POJO 样板可 `controlled-generation`；校验、权限输入、错误结构和序列化行为必须由对应 `behavior-tdd` 工作单元覆盖。
 - 必须加载合同要求的 `lombok`、`mapstruct` 和 `alibaba-java-code-style`，并按统一 `YSS Skill Execution Result` 返回文件、契约测试和偏离。
+
+## 新脚手架平台约束
+
+消费批准切片架构身份中的 `platform_configuration`，与工程 Manifest 核对后使用对应 YSS 组件。Boot 2.7 使用 `javax` Web/Validation API；Boot 3.5/4.1 使用 `jakarta`。Boot 4 按 Jackson 3、对应自动配置和 starter 适配；不替换 `javax.sql` 等 Java SE 包。平台不一致、兼容条目缺失或候选未验证时回合同编译器阻断，不在业务实现中升级或替换组件。详见 仓库共享合同 `docs/engineering/backend-platforms.md`。

@@ -1,4 +1,10 @@
 schema_version: 2
+slice_contract_versions:
+  default: 3
+  accepted: [2, 3]
+  v3_schema: docs/process/schemas/slice-implementation-contract-v3.schema.json
+  normalization: scripts/lib/slice-contract.mjs
+  v2_migration: explicit-new-draft-no-inherited-approval
 backend_architecture:
   registry_source: docs/agents/yss-skill-registry.yaml
   identity_schema: docs/process/schemas/backend-architecture-identity.schema.json
@@ -85,6 +91,7 @@ impact_flags_required: [ui_impact, api_impact, no_api_impact, data_impact, backe
 exclusive_flags:
   - [api_impact, no_api_impact]
 
+# 以下 required 表仅供历史 Slice v2；v3 由 v3_schema 校验。
 slice_contract_required:
   root: [schema_version, contract_id, contract_version, slice_id, status, lifecycle_refs, readiness, resolution, common, frontend, backend, contract, cross_repo, work_units]
   lifecycle_refs: [spec, ticket, requirement_freeze, low_fidelity_review, prototype_review, prototype_profile_decision, prototype_deliverable, prototype_deliverable_verification, visual_baseline, prototype_confirmation, openapi_freeze_or_no_impact, architecture_review, data_architecture, technical_design, tactical_design, engineering_baseline, build_architecture_checklist, implementation_repository, frontend_repository, backend_repository, maven_wrapper]
@@ -416,3 +423,12 @@ strategic_handoff_consumption:
   stale_policy: latest-imported-source-digest-and-dependent-slices
   unknown_dependency: block-all
   compiler_must_not_approve: true
+
+backend_platform_contract:
+  schema_version: 2
+  catalog_ref: docs/engineering/backend-platforms.json
+  configuration_field: platform_configuration
+  selection_owner: yss-product-lifecycle
+  new_generation_requires: [exact-boot-java, confirmed-decision, matching-yss-coordinates, verified-compatibility-entry]
+  candidate_generation: maintenance-only
+  candidate_downstream: blocked

@@ -1,0 +1,117 @@
+{
+  "recorded_at": "2026-09-16T22:59:33+0800",
+  "checks": [
+    {
+      "command": "scripts/verify-yss-implementation-contract-compiler-scenarios",
+      "exit_code": 0,
+      "seconds": 16.82,
+      "log": "check-01.log",
+      "log_sha256": "cbb4d15bcc07fac55f5d77bd0b64b21b46f65838ea0c1f7f22f930237920a89f"
+    },
+    {
+      "command": "scripts/verify-user-decision-scenarios",
+      "exit_code": 0,
+      "seconds": 3.36,
+      "log": "check-02.log",
+      "log_sha256": "76ddbfd42d61d838daac8ca5dd619fe837f5a5061661972b891c3c8e0c6bc434"
+    },
+    {
+      "command": "node --test .template-source/tooling/node/test/decision-continuation.test.mjs",
+      "exit_code": 0,
+      "seconds": 3.5,
+      "log": "check-03.log",
+      "log_sha256": "5aedec54fe11a5c10a26678ecabbf655fd7d3fdab066b14a6553bcc07e46c4dd"
+    },
+    {
+      "command": "scripts/verify-subagent-task-package-scenarios",
+      "exit_code": 0,
+      "seconds": 4.09,
+      "log": "check-04.log",
+      "log_sha256": "219d0cabfd75461b397c10c6e31f6997673f1ba59087a12ca06513f480c139ca"
+    },
+    {
+      "command": "scripts/verify-digital-human-task-package-scenarios",
+      "exit_code": 0,
+      "seconds": 4.17,
+      "log": "check-05.log",
+      "log_sha256": "219d0cabfd75461b397c10c6e31f6997673f1ba59087a12ca06513f480c139ca"
+    },
+    {
+      "command": "scripts/verify-delivery-preflight-scenarios",
+      "exit_code": 1,
+      "seconds": 20.3,
+      "log": "check-06.log",
+      "log_sha256": "3afa9cb47f0d6f27b02c4eafe20022438ab410e61ef87f20199beea59d810118"
+    },
+    {
+      "command": "scripts/sync-profile-skills --check",
+      "exit_code": 0,
+      "seconds": 0.46,
+      "log": "check-07.log",
+      "log_sha256": "bbe3ecd89effec2fb74411065cdd2aae2ad5b152f2d27c7e3ac78935b09d38a6"
+    },
+    {
+      "command": "scripts/sync-strategic-handoff-tools --check",
+      "exit_code": 0,
+      "seconds": 0.24,
+      "log": "check-08.log",
+      "log_sha256": "807886257206389246335ccfa9e609a66f192c5cb6f951d6c2972ce0c5a739fc"
+    },
+    {
+      "command": "scripts/verify-strategic-handoff-tools-lock",
+      "exit_code": 0,
+      "seconds": 0.03,
+      "log": "check-09.log",
+      "log_sha256": "1af9bf465eb3a7a8ec3b9ba0abfbbe6441ac53fe98cd16dea6eb599b12ddd5c3"
+    },
+    {
+      "command": "scripts/verify-skill-governance",
+      "exit_code": 0,
+      "seconds": 0.08,
+      "log": "check-10.log",
+      "log_sha256": "65a416f5eb83afd7184a118b3745d51c940cc19c9cec598ce28ddcded8a0436b"
+    },
+    {
+      "command": "scripts/verify-lifecycle-context-query-scenarios",
+      "exit_code": 0,
+      "seconds": 0.47,
+      "log": "check-11.log",
+      "log_sha256": "6873c8a329994ee9ed350c916ddc43ff5aeaaeac557b5100252579698cbaece8"
+    },
+    {
+      "command": "scripts/verify-repository-scope-scenarios",
+      "exit_code": 0,
+      "seconds": 4.64,
+      "log": "check-12.log",
+      "log_sha256": "539bc156dd5d415c5f5a6324c779b965af45d2104ee04f3bec0f3fa9784b8b57"
+    },
+    {
+      "command": "git diff --check",
+      "exit_code": 0,
+      "seconds": 0.23,
+      "log": "check-13.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "rechecks": [
+    {
+      "command": "scripts/verify-delivery-preflight-scenarios",
+      "exit_code": 0,
+      "log": "preflight-recheck.log",
+      "log_sha256": "29b97634d6383d01b54412f8be22c11b283e70c5a085ac15308da83069da3361",
+      "note": "单独重验通过；此前读取期间编译依据变化，原失败保留。"
+    },
+    {
+      "command": "scripts/sync-profile-skills --check",
+      "exit_code": 1,
+      "log": "profile-final.log",
+      "log_sha256": "8799eed44cdfdd0affac4ca09e8170bf9f2d733d3e558aa1b2c027f5766a266c"
+    },
+    {
+      "command": "scripts/sync-strategic-handoff-tools --check",
+      "exit_code": 0,
+      "log": "distribution-final.log",
+      "log_sha256": "807886257206389246335ccfa9e609a66f192c5cb6f951d6c2972ce0c5a739fc"
+    }
+  ]
+}

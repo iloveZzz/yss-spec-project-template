@@ -135,11 +135,11 @@ export async function validateTechnicalDesign(data, { root = process.cwd(), slic
 }
 
 async function main() {
-  const { values, positionals } = parseArgs({ allowPositionals: true, options: { root: { type: 'string', default: process.cwd() }, slice: { type: 'string' }, 'legacy-ddd': { type: 'boolean', default: false }, 'read-only': {type:'boolean',default:false}, 'approved-slice': {type:'string'}, 'approved-slice-digest': {type:'string'}, 'approved-slice-approval': {type:'string'} } });
+  const { values, positionals } = parseArgs({ allowPositionals: true, options: { root: { type: 'string', default: process.cwd() }, slice: { type: 'string' }, 'legacy-ddd': { type: 'boolean', default: false }, 'read-only': {type:'boolean',default:false}, 'work-unit': {type:'string'}, 'approved-slice': {type:'string'}, 'approved-slice-digest': {type:'string'}, 'approved-slice-approval': {type:'string'} } });
   ensure(positionals.length === 1, '用法: validate-technical-design.mjs <合同> --root <项目根> [--slice <ID>] [--legacy-ddd]');
   const approvedOptions=['approved-slice','approved-slice-digest','approved-slice-approval'];
   ensure(!approvedOptions.some(key=>values[key])||approvedOptions.every(key=>values[key]),'执行增量必须完整给出持久化 Slice、字节摘要及本地批准引用');
-  const execution=values['approved-slice']?createApprovedExecutionContext({ref:values['approved-slice'],digest:values['approved-slice-digest'],approval_ref:values['approved-slice-approval']},{root:values.root}):undefined;
+  const execution=values['approved-slice']?createApprovedExecutionContext({ref:values['approved-slice'],digest:values['approved-slice-digest'],approval_ref:values['approved-slice-approval']},{root:values.root,work_unit_id:values['work-unit']}):undefined;
   const result = await validateTechnicalDesign(read(path.resolve(positionals[0])), { root: values.root, sliceRef: values.slice, legacyDdd: values['legacy-ddd'], readOnly:values['read-only'], execution });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 }

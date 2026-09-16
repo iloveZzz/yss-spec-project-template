@@ -21,6 +21,19 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 - 只补持久层时，优先 `yss-repository`。
 - 只补 Web 层时，优先 `yss-web-controller`。
 
+## Spring Boot / Java 平台选择
+
+调用本技能时先展示 `scripts/backend-platforms` 的精确版本清单及兼容状态。由生命周期编排器把架构、Spring Boot、Java 和 YSS 父 POM/BOM 合并展示并取得真实用户确认；生成器不提问、不猜版本、不使用 `x` 或 `latest`。已有批准且当前的选择展示摘要后复用。
+
+- 候选平台：Boot 2.7.18 / Java 8，Boot 3.5.16 / Java 17 或 21，Boot 4.1.1 / Java 17 或 21。新 Boot 默认推荐 Java 17；候选不等于可生成。
+- 独立子项目可继承主项目组合或覆盖，必须逐项目确认（允许一次确认明确列出的项目）；同一 Maven Reactor 使用一个平台。
+- 只开放共享兼容清单中已有真实 YSS 构建、依赖和启动证据的组合。缺少兼容父 POM、BOM、starter 或相应能力证据即 `blocked`；不替换官方组件、不降级回退。
+- 新生成合同必须有 `platform_configuration` v2，与架构决策、Maven 坐标及兼容条目摘要一致。Boot、Java、YSS 坐标或依赖配方变化时回生命周期重新确认并编译合同；仅追加同配置验证记录不重复确认，仍核验证据有效性。
+- Spring MVC、Servlet、Validation、Jackson 和 starter 坐标消费共享平台清单；Boot 3.5 / 4.1 拒绝 Java 8/11。Jakarta 转换不包括 `javax.sql` 等 Java SE API。
+- 平台候选维护验证产物标记 `platform_verification=candidate`，不能交给业务生成、升级完成等级或进入首切片验证。测试夹具不证明 YSS 兼容。
+
+版本清单、合同字段、候选验证和支持晋级规则见 仓库共享合同 `docs/engineering/backend-platforms.md`。
+
 ## 优先流程
 
 1. 确认服务级 `scaffold_request_id`、已由用户确认且生命周期批准的 `domain-driven` 架构选择及 digest、项目名、基础包名、Maven 项目坐标、父 POM GAV、YSS Components BOM 版本、输出目录和批准 Profile。Java `base_package` 与 Maven `group_id` 是两个独立输入，不得相互推导；脚手架发生在 Ticket 正式化前，不使用 `slice_id` 伪造切片身份。
@@ -84,12 +97,12 @@ node scripts/run_first_slice_verification.mjs \
 - 不要在 skill 里硬编码用户业务字段或真实连接信息。
 - 生成后要检查依赖关系是否仍符合分层约束。
 - 生成时的静态依赖由技能注册表与 实现合同编译器 共同约束为 `yss-backend-scaffold-parent`、`alibaba-java-code-style`。生成后必须回到 实现合同编译器，并按批准切片加载 `yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-web-controller`、`yss-dto`、`yss-exception`、`yss-validation`、`mapstruct`、`lombok`、`alibaba-java-code-style` 等实际命中的行为 skill。
-- 当前脚手架第一阶段仅支持经过验证的 `mysql`；未提供完整模板和验证的数据库类型不得伪装成已支持。
+- 验证数据库固定 H2，生产数据库 `not-bound`；后续存储接入按批准的切片合同执行。
 - 生成后的后端工程必须使用项目根目录 `./mvnw ...` 执行构建、测试、运行和 CI 验证；不得在 README、实施记录、Ticket、Review 或 Release 中默认写裸 `mvn ...`。既有仓库确实无法使用 wrapper 时，必须记录受控例外。
 - 原型确认后，`scaffold_status=required` 才能进入本 skill；本 skill 的生成边界是工程结构、POM、配置、Wrapper 和机械模板，不是业务实现。
 - 脚手架合同必须携带 `contract_id`、`contract_version`、实现合同编译器 draft 引用、生命周期批准引用、持久化引用、当前版本、允许写路径、预期证据文件和验证命令；字段缺失或版本过期时阻断。
 - 新脚手架只接受统一 Project Scaffold Contract schema v4，并必须以原始字节摘要绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision v1 和真实工程合同批准记录。API `required` 必须闭包绑定同一 OpenAPI YAML 字节的 Validation、独立 Review、Freeze 与工程批准；`not-applicable` 必须绑定评估、明确原因和证据且禁止空占位资产。历史 schema v3/v2 仅用于 Manifest 只读验证和补齐 API 对账后的恢复审计，不用于新生成。
-- 合同 `profiles` 只支持 `target-domain-model`、`mybatis-plus`、`mysql`、`spring-boot-2.7-jdk8`、`javax`、`web`、`yss-internal`。普通 MyBatis、Boot 3、独立 client module、client-in-domain 和其他旧架构均为 `unsupported`，不提供回退分支。
+- DDD 固定 `target-domain-model`、`mybatis-plus`、H2 验证、`web` DTO、`yss-internal`；平台与 Validation 命名空间由共享清单约束。普通 MyBatis、独立 client module、client-in-domain 和其他旧架构仍为 `unsupported`。
 - 运行生成器必须传入 `--contract-file`；生成器会校验合同 `status=approved`、`current_version`、`primary_skill`、`controlled-generation`、实际输出路径和固定三条验证命令，不接受仅凭任意字符串引用的放行。
 - 生成项目必须写入 Manifest v4 `.yss/scaffold-generation.json`，记录技术、数据与 API 设计门禁、架构选择及 digest、生成器、合同 digest、Target Profile、模块闭包、模板 digest、下游完整 skill tree digest、generator-owned 文件 hash、严格 `generation_policy` 和完成等级；清单缺失或不一致时不得交给后续 实现合同编译器。
 - `first-slice-verified` 只能由 `run_first_slice_verification.mjs` 写入。手工改 Manifest、只生成 Controller、只通过局部模块测试或仅有结构扫描都不能升级完成等级。

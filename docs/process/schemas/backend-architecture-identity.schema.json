@@ -59,6 +59,97 @@
         },
         "production_database": {
           "const": "not-bound"
+        },
+        "platform_configuration": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schema_version",
+            "profile_id",
+            "spring_boot_version",
+            "java_version",
+            "parent",
+            "bom",
+            "compatibility_id",
+            "compatibility_digest"
+          ],
+          "properties": {
+            "schema_version": {
+              "enum": [
+                1,
+                2
+              ]
+            },
+            "profile_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "spring_boot_version": {
+              "type": "string",
+              "pattern": "^\\d+\\.\\d+\\.\\d+$"
+            },
+            "java_version": {
+              "enum": [
+                8,
+                17,
+                21
+              ]
+            },
+            "compatibility_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "compatibility_digest": {
+              "type": "string",
+              "pattern": "^sha256:[a-f0-9]{64}$"
+            },
+            "parent": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "group_id",
+                "artifact_id",
+                "version"
+              ],
+              "properties": {
+                "group_id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_.-]+$"
+                },
+                "artifact_id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_.-]+$"
+                },
+                "version": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_.-]+$"
+                }
+              }
+            },
+            "bom": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "group_id",
+                "artifact_id",
+                "version"
+              ],
+              "properties": {
+                "group_id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_.-]+$"
+                },
+                "artifact_id": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_.-]+$"
+                },
+                "version": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9_.-]+$"
+                }
+              }
+            }
+          }
         }
       }
     },

@@ -26,10 +26,10 @@
 
 | 稳定 ID | 门禁 | 所属阶段 | 触发条件 | 前置门禁 / 检查 | 必须留下的证据 |
 |---|---|---|---|---|---|
-| `gate.plan-approved` | Plan 批准 | `stage.plan` | Plan 结论进入 Spec；汇总战略检查后仅确认一次当前规划范围。 | `check.domain-strategy-approved`、`check.stage-decision-package-approved` | `evidence.approval-record` |
-| `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | 新功能、行为变化或范围扩大进入 Spec 基线。 | 无 | `evidence.approval-record` |
-| `gate.product-design-approved` | 产品设计批准 | `stage.product-design` | 存在产品设计影响；独立原型评审与交付物验证通过后确认最终原型。 | `check.prototype-reviewed`、`check.prototype-verified` | `evidence.prototype-confirmation` |
-| `gate.engineering-contract-approved` | 工程契约批准 | `stage.system-data-engineering` | 存在 API、架构或工程基线影响；完成适用专业审查后统一批准，有 API 影响时同时冻结当前 OpenAPI。 | `check.openapi-draft-reviewed`、`check.design-reviewed`、`check.architecture-reviewed`、`check.engineering-baseline-accepted`、`check.openapi-frozen` | `evidence.approval-record`、`evidence.fresh-verification` |
+| `gate.plan-approved` | Plan 批准 | `stage.plan` | Plan 结论进入 Spec；汇总战略检查，核验当前规划范围的原始批准或有效授权延续。 | `check.domain-strategy-approved`、`check.stage-decision-package-approved` | `evidence.approval-record` |
+| `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | 新功能、行为变化或范围扩大进入 Spec 基线；已授权范围内细化复用当前有效授权，实质变化重新决定。 | 无 | `evidence.approval-record` |
+| `gate.product-design-approved` | 产品设计批准 | `stage.product-design` | 存在产品设计影响；独立原型评审与交付物验证通过后核验原批准或授权延续，新增体验取舍由用户决定。 | `check.prototype-reviewed`、`check.prototype-verified` | `evidence.prototype-confirmation` |
+| `gate.engineering-contract-approved` | 工程契约批准 | `stage.system-data-engineering` | 存在 API、架构或工程基线影响；组合适用专业审查后统一批准并核验授权，有 API 影响时同时冻结当前 OpenAPI；范围内细化不重复请求用户确认。 | `check.openapi-draft-reviewed`、`check.design-reviewed`、`check.architecture-reviewed`、`check.engineering-baseline-accepted`、`check.openapi-frozen` | `evidence.approval-record`、`evidence.fresh-verification` |
 | `gate.slice-contract-approved` | 切片合同批准 | `stage.ticket-formalization` | 主控在已授权范围内批准已持久化且当前的垂直切片合同；不代替就绪计算。 | 无 | `evidence.contract-approval` |
 | `gate.delivery-accepted` | 交付验收 | `stage.verification-release-retrospective` | 实现交付验收；汇总独立审查、Fresh Verification 和回滚证据，不授予合并或发布权限。 | `check.frontend-implementation-verified` | `evidence.fresh-verification`、`evidence.checkpoint-and-rollback` |
 

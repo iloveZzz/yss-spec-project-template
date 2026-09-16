@@ -1,0 +1,55 @@
+{
+  "schema_version": 2,
+  "intensity": "L3",
+  "classification_reason": "已确认的审批提效矩阵：保留专业检查、允许有证据的授权延续、调整默认审查人数并同步生成投影与跨仓校验依赖。发布来源门禁未通过的实际退出码另记录于 verification.json。",
+  "triggers": [
+    "lifecycle-gate",
+    "permission-boundary",
+    "core-validator",
+    "cross-repo-contract"
+  ],
+  "changed_assets": [
+    "docs/agents/digital-human-roles.yaml",
+    "docs/process/lifecycle-registry.yaml",
+    "scripts/lib/decision-continuation.mjs",
+    ".agents/skills/code-review",
+    ".agents/skills/yss-product-lifecycle",
+    ".agents/skills/yss-prototype-stage",
+    "scripts/lib/strategic-handoff.mjs",
+    "docs/process/schemas/digital-human-task-package.schema.json",
+    "skills-lock.json",
+    ".template-source/profile-skill-sync.json",
+    "submodules/yss-harness-design-agent",
+    "submodules/yss-harness-backend-agent",
+    "submodules/yss-harness-frontend-agent"
+  ],
+  "verification_evidence": [
+    {
+      "kind": "self-check",
+      "command": "git diff --check",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "pnpm --dir .template-source/tooling/node test",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "scripts/verify-strategic-handoff-package-scenarios",
+      "result": "pass"
+    },
+    {
+      "kind": "fresh-verification",
+      "command": "scripts/sync-profile-skills --check",
+      "result": "pass"
+    }
+  ],
+  "review_mode": "self-check",
+  "escalation": "none",
+  "target_state": "implementation-ready",
+  "current_state": "implementation-ready",
+  "verification_profile": "fast",
+  "review_round": 0,
+  "candidate_digest": null
+}
