@@ -2,7 +2,7 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "452dbc7003a7d37482e65548957abfd7faf713e4",
+  "source_revision": "9548429d1a46b641c8279d05914644165b9308a1",
   "source_state": "working-tree",
   "transformation_set": [
     "identity"
@@ -114,6 +114,7 @@
     "scripts/verify-existing-ui-baseline-scenarios": "sha256:673cf917da431237f1d713a861da824dd0f23e67e62c9833cb9c7fde25691a84",
     "scripts/verify-frontend-delivery": "sha256:b592aaa6bba168f4ac39f9caa89a01590357f574cc9748bcf7148b622bf3837f",
     "scripts/verify-frontend-strategic-preflight": "sha256:7543e9dbe7f710bf28d4187b97f234a76d239cb3eb07d4f2921e9442c76a8dd2",
+    "scripts/verify-scaffold-architecture-decision-scenarios": "sha256:9a7ab1424b1a2b187bcc2105d16dee9fe84bc4018ecc7e5db75ce07455f17360",
     "scripts/verify-scaffold-architecture-decisions": "sha256:32baba252d070fd9f737ca569f78b3b529f96c78e8f2b9be9152592095543a6d",
     "scripts/verify-scaffold-generator-scenarios": "sha256:dda7b40e337a581aa62fa352315edc0f7c47f05d72ce01e31952ad764e85b535",
     "scripts/verify-strategic-context-import": "sha256:06af5ae4943666d1521160b79d9eb5de3048fd02b6f2db336f614970e5c92788",
@@ -230,6 +231,7 @@
     "scripts/verify-existing-ui-baseline-scenarios": "sha256:673cf917da431237f1d713a861da824dd0f23e67e62c9833cb9c7fde25691a84",
     "scripts/verify-frontend-delivery": "sha256:b592aaa6bba168f4ac39f9caa89a01590357f574cc9748bcf7148b622bf3837f",
     "scripts/verify-frontend-strategic-preflight": "sha256:7543e9dbe7f710bf28d4187b97f234a76d239cb3eb07d4f2921e9442c76a8dd2",
+    "scripts/verify-scaffold-architecture-decision-scenarios": "sha256:9a7ab1424b1a2b187bcc2105d16dee9fe84bc4018ecc7e5db75ce07455f17360",
     "scripts/verify-scaffold-architecture-decisions": "sha256:32baba252d070fd9f737ca569f78b3b529f96c78e8f2b9be9152592095543a6d",
     "scripts/verify-scaffold-generator-scenarios": "sha256:dda7b40e337a581aa62fa352315edc0f7c47f05d72ce01e31952ad764e85b535",
     "scripts/verify-strategic-context-import": "sha256:06af5ae4943666d1521160b79d9eb5de3048fd02b6f2db336f614970e5c92788",

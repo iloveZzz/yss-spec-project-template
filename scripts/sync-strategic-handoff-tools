@@ -31,7 +31,7 @@ function sync(source,dest,transformation='identity'){const bytes=transformations
 const digestBytes=bytes=>`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 const sharedRefs=[...new Set(shared)].sort();
 const sliceExecutionRefs=['scripts/slice-contract','scripts/lib/slice-contract-preparation.mjs','scripts/lib/slice-contract-views.mjs','scripts/lib/slice-task-package.mjs','scripts/lib/implementation-contract-compiler.mjs','scripts/lib/technical-design-boundary.mjs'];
-const backendPlatformRefs=['scripts/verify-backend-platform-matrix','scripts/fixtures/backend-scaffold/generate-candidate.mjs','scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs','scripts/verify-scaffold-generator-scenarios'];
+const backendPlatformRefs=['scripts/verify-backend-platform-matrix','scripts/fixtures/backend-scaffold/generate-candidate.mjs','scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs','scripts/verify-scaffold-architecture-decision-scenarios','scripts/verify-scaffold-generator-scenarios'];
 const registryRef='docs/agents/yss-skill-registry.yaml';
 const sourceRegistry=parseDocument(readFileSync(path.join(root,registryRef),'utf8'),{uniqueKeys:true});
 if(sourceRegistry.errors.length)throw new Error('源技能注册表不可读');
