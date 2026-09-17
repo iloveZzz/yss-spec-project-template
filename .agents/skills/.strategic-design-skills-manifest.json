@@ -3,7 +3,7 @@
   "source": "iloveZzz/yss-harness-design-agent",
   "source_type": "git-submodule",
   "source_root": ".agents/skills",
-  "source_revision": "fa294bf74b9a5225861b9b92288797b28f8ad1ac",
+  "source_revision": "e9a28b4cb0d3003a730b0113bb4dad59665e38b5",
   "adaptation_ref": "docs/agents/strategic-design-skills-integration.md",
   "skills": [
     {
@@ -27,6 +27,6 @@
       "upstream_hash": "46a9be287963eff0e71f8106b5d31311e43aabbd1117d7bc3d2d8666a0a99474"
     }
   ],
-  "source_state": "working-tree",
-  "source_state_note": "source_revision 记录战略设计源仓 HEAD；upstream_hash 绑定当前 WORKTREE，提交后须固定为 40 位来源提交并恢复 committed。"
+  "source_state": "committed",
+  "source_state_note": "source_revision、upstream_hash 与 gitlink 绑定同一已提交战略设计来源。"
 }
