@@ -13,7 +13,7 @@
 | `stage.plan` | Plan（战略规划） | 确认目标、业务边界、关键规则、MVP / 非目标、优先级和交接责任，为 Spec 提供战略输入；按影响面探索并复用仍有效的结论。 | 命中的战略与阶段决策检查通过，用户统一批准当前 Plan；影响业务边界、关键规则或 MVP 的问题已解决，其他未决项有责任人和解决时点；下游可进入 Spec，不代表可实现。 |
 | `stage.spec-architecture` | Spec / 功能架构 | 固化解决方案和功能边界。 | Spec 基线和功能边界可审查。 |
 | `stage.product-design` | 产品设计 | 在存在产品设计影响时校准页面流和状态。 | 命中的设计门禁通过；未命中项记录 not-applicable 及原因。 |
-| `stage.system-data-engineering` | 系统 / 数据架构与工程契约 | 固化系统、数据、工程基线和 API 契约。 | 受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。 |
+| `stage.system-data-engineering` | 系统 / 数据架构与工程契约 | 固化系统、数据、工程基线和 API 契约。 | 新建后端已由用户确认 DDD / MVC 与精确 Spring Boot 版本，既有工程已核验并复用登记值；受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。 |
 | `stage.ticket-formalization` | Ticket 正式化 | 将冻结范围拆为可追踪的父 Ticket 和垂直切片。 | 工作单元窄、依赖清晰、验收和测试 seam 可执行。 |
 | `stage.vertical-slice-implementation` | 垂直切片实现 | 以批准合同驱动 TDD 实现和跨仓库协作。 | 允许写路径、禁止模式、证据和验证命令全部满足。 |
 | `stage.verification-release-retrospective` | 验证 / 发布 / 复盘 | 完成 fresh verification、发布和回顾。 | 所有命中门禁通过，人工审查点已完成，checkpoint 可追溯。 |
@@ -29,7 +29,8 @@
 | `gate.plan-approved` | Plan 批准 | `stage.plan` | Plan 结论进入 Spec；汇总战略检查，核验当前规划范围的原始批准或有效授权延续。 | `check.domain-strategy-approved`、`check.stage-decision-package-approved` | `evidence.approval-record` |
 | `gate.spec-baseline-approved` | Spec 基线批准 | `stage.spec-architecture` | 新功能、行为变化或范围扩大进入 Spec 基线；已授权范围内细化复用当前有效授权，实质变化重新决定。 | 无 | `evidence.approval-record` |
 | `gate.product-design-approved` | 产品设计批准 | `stage.product-design` | 存在产品设计影响；独立原型评审与交付物验证通过后核验原批准或授权延续，新增体验取舍由用户决定。 | `check.prototype-reviewed`、`check.prototype-verified` | `evidence.prototype-confirmation` |
-| `gate.engineering-contract-approved` | 工程契约批准 | `stage.system-data-engineering` | 存在 API、架构或工程基线影响；组合适用专业审查后统一批准并核验授权，有 API 影响时同时冻结当前 OpenAPI；范围内细化不重复请求用户确认。 | `check.openapi-draft-reviewed`、`check.design-reviewed`、`check.architecture-reviewed`、`check.engineering-baseline-accepted`、`check.openapi-frozen` | `evidence.approval-record`、`evidence.fresh-verification` |
+| `gate.backend-architecture-platform-approved` | 后端架构与平台批准 | `stage.system-data-engineering` | 新建后端工程进入技术设计分支前，由用户在同一次决定中确认 domain-driven / layered-mvc 和精确 Spring Boot 版本；既有工程核验并复用当前登记架构及固定工程基线中的实际 Spring Boot 版本，记录 not-applicable，不重复询问。 | 无 | `evidence.approval-record` |
+| `gate.engineering-contract-approved` | 工程契约批准 | `stage.system-data-engineering` | 存在 API、架构或工程基线影响；组合适用专业审查后统一批准并核验授权，有 API 影响时同时冻结当前 OpenAPI；范围内细化不重复请求用户确认。 | `gate.backend-architecture-platform-approved`、`check.openapi-draft-reviewed`、`check.design-reviewed`、`check.architecture-reviewed`、`check.engineering-baseline-accepted`、`check.openapi-frozen` | `evidence.approval-record`、`evidence.fresh-verification` |
 | `gate.slice-contract-approved` | 切片合同批准 | `stage.ticket-formalization` | 主控在已授权范围内批准已持久化且当前的垂直切片合同；不代替就绪计算。 | 无 | `evidence.contract-approval` |
 | `gate.delivery-accepted` | 交付验收 | `stage.verification-release-retrospective` | 实现交付验收；汇总独立审查、Fresh Verification 和回滚证据，不授予合并或发布权限。 | `check.frontend-implementation-verified` | `evidence.fresh-verification`、`evidence.checkpoint-and-rollback` |
 

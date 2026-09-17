@@ -25,8 +25,8 @@ function fixture(run) {
   run({dir,save,asset,gateId,checkId,state,registry,verify});
  } finally {rmSync(dir,{recursive:true,force:true});}
 }
-test('registry distinguishes six approval gates from internal checks and rejects cycles',()=>{
- const r=loadRegistry();assert.equal(r.stages.length,8);assert.equal(r.gates.length,6);assert.equal(r.checks.length,14);
+test('registry distinguishes seven approval gates from internal checks and rejects cycles',()=>{
+ const r=loadRegistry();assert.equal(r.stages.length,8);assert.equal(r.gates.length,7);assert.equal(r.checks.length,14);
  const cyclic=structuredClone(r);cyclic.checks[0].requires_checks=[cyclic.checks[1].id];cyclic.checks[1].requires_checks=[cyclic.checks[0].id];
  assert.throws(()=>validateRegistry(cyclic,{baseline:null}),/依赖循环/);
 });

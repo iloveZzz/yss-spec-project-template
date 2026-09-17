@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync, readFileSync } from "node:fs";
 import os from "node:os";
 import { attachScaffoldDecisionFixture } from "./fixtures/user-decision/build-fixture.mjs";
 import path from "node:path";
@@ -16,6 +16,14 @@ function run(name, body) {
   const file = path.join(root, `${name}.yaml`);
   const value = parseDocument(body).toJS();
   value.decisions = value.decisions.map((decision) => attachScaffoldDecisionFixture(path.join(root, name, decision.project_id), decision));
+  for (const decision of value.decisions) {
+    const subject = JSON.parse(readFileSync(decision.user_confirmation.decision_subject_ref, "utf8"));
+    const userDecision = JSON.parse(readFileSync(decision.user_confirmation.user_decision_ref, "utf8"));
+    assert.equal(subject.platform_selection.spring_boot_version, "2.7.18");
+    assert.equal(subject.platform_selection.java_version, 8);
+    assert.equal(userDecision.request.items[0].boundary, "gate.backend-architecture-platform-approved");
+    assert.ok(userDecision.request.items[0].scope.includes("spring-boot-2.7-jdk8@2.7.18/java8"));
+  }
   writeFileSync(file, JSON.stringify(value));
   return spawnSync(verifier, [file], { encoding: "utf8" });
 }

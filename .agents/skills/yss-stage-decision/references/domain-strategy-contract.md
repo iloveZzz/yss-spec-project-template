@@ -10,6 +10,8 @@
 - `concept_candidates`、`invariants`、`context_snapshot`；
 - `downstream_mapping`、`evidence_refs`、`approval`。
 
+`approval.approval_ref` 可以指向 `check.domain-strategy-approved` 单条记录，或指向包含该唯一结论的 `review-bundle.plan`；验证器按 check ID 选择结论并核对 `approval.approver`。bundle 中另一项检查的结论不能替代本检查。
+
 ## 业务责任区
 
 每个业务责任区声明内部 `context_id`、职责边界、非职责、业务板块分类、责任人、关键场景和本地词汇引用。`context_id` 是稳定身份，由 Agent 维护；不得使用代码模块、数据库 schema 或菜单路径替代。

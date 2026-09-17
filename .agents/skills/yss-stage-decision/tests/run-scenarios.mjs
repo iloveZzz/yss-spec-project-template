@@ -201,6 +201,39 @@ try {
   const packagePass = run(packageValidator, packageFile, temporaryRoot);
   if (packagePass.status !== 0) throw new Error(`valid v3 stage decision package should pass: ${packagePass.stderr}`);
 
+  const bundleFile = join(temporaryRoot, "plan-review-bundle.json");
+  const bundledDomainValue = parseYaml(domainSource);
+  bundledDomainValue.approval.approval_ref = bundleFile;
+  const bundledDomainSource = JSON.stringify(bundledDomainValue, null, 2);
+  const bundledDomainFile = join(temporaryRoot, "domain-strategy-bundled.yaml");
+  await writeFile(bundledDomainFile, bundledDomainSource);
+  const bundledPackageValue = parseYaml(packageSource);
+  bundledPackageValue.domain_strategy_ref.persisted_ref = "domain-strategy-bundled.yaml";
+  bundledPackageValue.domain_strategy_ref.digest = digestYaml(bundledDomainSource);
+  bundledPackageValue.approval.approval_ref = bundleFile;
+  const bundledPackageSource = JSON.stringify(bundledPackageValue, null, 2);
+  const bundledPackageFile = join(temporaryRoot, "stage-decision-bundled.yaml");
+  await writeFile(bundledPackageFile, bundledPackageSource);
+  await writeFile(bundleFile, JSON.stringify({
+    schema_version: 1,
+    kind: "review-bundle",
+    bundle_id: "review-bundle.plan",
+    task_id: "task.plan-review.supplier-admission",
+    work_unit_id: "work-unit.plan-requirements",
+    review_session_id: "review-session.plan.supplier-admission",
+    role_id: "role.product-manager",
+    runtime_id: "runtime.generic",
+    principal_ref: "instance:role.product-manager",
+    reviews: [
+      { schema_version: 1, gate_id: "check.domain-strategy-approved", decision: "approved", actor_kind: "digital-human", role_id: "role.product-manager", runtime_id: "runtime.generic", principal_ref: "instance:role.product-manager", drafter_role_id: "role.requirements-manager", drafter_principal_ref: "instance:role.requirements-manager", subject_ref: bundledDomainFile, subject_digest: digestYaml(bundledDomainSource).slice(7), approval_scope: ["feature.supplier-admission"], evidence_refs: [bundledDomainFile] },
+      { schema_version: 1, gate_id: "check.stage-decision-package-approved", decision: "approved", actor_kind: "digital-human", role_id: "role.product-manager", runtime_id: "runtime.generic", principal_ref: "instance:role.product-manager", drafter_role_id: "role.requirements-manager", drafter_principal_ref: "instance:role.requirements-manager", subject_ref: bundledPackageFile, subject_digest: digestYaml(bundledPackageSource).slice(7), approval_scope: ["feature.supplier-admission"], evidence_refs: [bundledPackageFile] }
+    ]
+  }, null, 2));
+  const bundledDomainPass = run(validator, bundledDomainFile, temporaryRoot);
+  if (bundledDomainPass.status !== 0) throw new Error(`domain strategy should select its conclusion from Plan review-bundle: ${bundledDomainPass.stderr}`);
+  const bundledPackagePass = run(packageValidator, bundledPackageFile, temporaryRoot);
+  if (bundledPackagePass.status !== 0) throw new Error(`stage decision should select its conclusion from Plan review-bundle: ${bundledPackagePass.stderr}`);
+
   const v2Stage = toV2Stage(packageSource, digestYaml(v2DomainSource));
   const v2StageFile = join(temporaryRoot, "stage-decision-v2.yaml");
   await writeFile(v2StageFile, JSON.stringify(v2Stage, null, 2));

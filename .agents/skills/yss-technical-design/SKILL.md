@@ -17,7 +17,7 @@ description: 在 YSS 技术分析中统一承接需求与战略输入，按已�
 
 先读根 `CONTEXT.md`、已批准且当前的 Spec、业务规则、关键场景、适用的 API 契约、ADR 和工程约束。没有 API 或其他专项影响时记录有依据的不适用，不生成占位设计。
 
-按项目绑定架构选择的来源及摘要。新工程复用 `scaffold-architecture-decisions.yaml` 的用户确认决定，先确认再进入分支，后续脚手架消费同一决定；既有工程沿用已登记架构，架构转换另行立项。只有 `domain-driven` 和 `layered-mvc` 两种架构族，不能从目录推断或默认 DDD。具体 Profile 及模块边界消费技能注册表与 `docs/agents/backend-architecture-profiles.md`。
+按项目绑定架构选择的来源及摘要。新工程必须先通过 `gate.backend-architecture-platform-approved`：Agent 展示 DDD / MVC 推荐依据及平台清单中的精确 Spring Boot、Java 版本，用户在同一次决定中确认两项内容；决定持久化到 `scaffold-architecture-decisions.yaml`，再进入对应分支，后续脚手架消费同一决定。既有工程核验并沿用当前登记架构及固定工程基线/POM 中的实际 Spring Boot 版本，该门禁记录为 `not-applicable`，不重复询问；架构转换或平台升级另行立项。只有 `domain-driven` 和 `layered-mvc` 两种架构族，不能从目录推断或默认 DDD、MVC 或 Spring Boot 版本。具体 Profile 及模块边界消费技能注册表与 `docs/agents/backend-architecture-profiles.md`。
 
 - `domain-driven`：调用 `yss-tactical-design`，补齐适用的战略领域输入。
 - `layered-mvc`：调用 `yss-mvc-design`，不要求战略 DDD、聚合、值对象、Domain Event 或 DDD Gateway。

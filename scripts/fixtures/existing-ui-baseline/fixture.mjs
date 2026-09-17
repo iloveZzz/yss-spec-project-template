@@ -24,8 +24,8 @@ export function baselineFixture(root,{sourceDocumentation=false}={}) {
  return {data,put,binding,root};
 }
 export async function handoffFixture(root,{kind='existing-ui-baseline',backend=true,sourceDocumentation=false}={}) {
- const f=await strategicFixture(root,{handoffVersion:4,impacts:{ui:kind==='prototype',frontend:true,api:backend,backend,data:backend,cross_repo:backend,high_risk:false}});
- f.handoff.schema_version=5;f.handoff.ui_baseline_kind=kind;f.handoff.package_export.schema_version=2;f.handoff.package_export.ui_baseline_kind=kind;
+ const f=await strategicFixture(root,{handoffVersion:5,impacts:{ui:kind==='prototype',frontend:true,api:backend,backend,data:backend,cross_repo:backend,high_risk:false}});
+ f.handoff.ui_baseline_kind=kind;f.handoff.package_export.ui_baseline_kind=kind;
  if(kind==='prototype'){f.sign();return f;}
  const b=baselineFixture(path.join(root,'existing-ui'),{sourceDocumentation});
  b.data.status='ready-for-human';b.put('existing-ui-baseline.json',b.data);
@@ -33,7 +33,7 @@ export async function handoffFixture(root,{kind='existing-ui-baseline',backend=t
  delete source.prototype_ref;delete source.visual_baseline_ref;delete approvals.prototype_ref;delete approvals.visual_baseline_ref;delete f.handoff.package_export.prototype;
  source.existing_ui_baseline_ref={baseline_id:b.data.baseline_id,version:'v1',status:'approved',persisted_ref:'existing-ui',manifest_ref:'existing-ui-baseline.json',digest:b.binding('existing-ui-baseline.json').digest,case_ids:['submit']};
  const roles=read(path.join(root,'docs/agents/digital-human-roles.yaml'));
- // Use the source's existing prototype confirmation gate; never manufacture another product gate.
+ // Use the source's current product-design approval gate; never manufacture another gate.
  roles.user_decision_policy.gates=[productGate];f.put('docs/agents/digital-human-roles.yaml',roles);
  // Sign legacy fixture bindings before adding the current user-decision binding.
  f.sign();
@@ -41,7 +41,7 @@ export async function handoffFixture(root,{kind='existing-ui-baseline',backend=t
  const ref='existing-ui/existing-ui-baseline.json',scope=['feature.supplier'];
  const d=buildDecisionFixture(path.join(root,'decisions/ui'),{subjectRef:path.join(root,ref),boundary:productGate,scope});
  const relative=ref=>path.relative(root,ref).split(path.sep).join('/');d.record.request.items[0].subject.ref=ref;d.record.request.requester_source.ref=relative(d.record.request.requester_source.ref);d.present();d.record.responses=[];d.respond();d.record.request.presented_source.ref=relative(d.record.request.presented_source.ref);d.record.responses[0].source.ref=relative(d.record.responses[0].source.ref);d.save();
- f.put('approvals/existing-ui.json',{schema_version:1,gate_id:productGate,decision:'approved',actor_kind:'digital-human',role_id:'role.product-manager',runtime_id:'runtime.generic',principal_ref:'synthetic-maintenance-fixture',subject_ref:ref,approval_scope:scope,user_decision_ref:relative(d.ref),artifact_bindings:[{id:b.data.baseline_id,version:'v1',digest:source.existing_ui_baseline_ref.digest}]});
+ f.put('approvals/existing-ui.json',{schema_version:1,gate_id:productGate,decision:'approved',actor_kind:'biological-human',role_id:'role.biological-human',runtime_id:'runtime.generic',principal_ref:'person.requester',subject_ref:ref,approval_scope:scope,user_decision_ref:relative(d.ref),artifact_bindings:[{id:b.data.baseline_id,version:'v1',digest:source.existing_ui_baseline_ref.digest}]});
  const save=()=>{f.put('handoff.yaml',f.handoff);const approval=read(path.join(root,approvals.handoff.record_ref));approval.artifact_bindings[0].digest=hash(readFileSync(path.join(root,'handoff.yaml')));f.put(approvals.handoff.record_ref,approval);};save();
  return {...f,baseline:b,save};
 }
@@ -52,7 +52,7 @@ export async function dedicatedDesignHandoffFixture(root) {
  const f=await handoffFixture(root),roles=read(new URL('./design-source-roles.json',import.meta.url));
  f.put('docs/agents/digital-human-roles.yaml',roles);
  const approvals=f.handoff.package_export.approvals;
- for(const key of ['business_ticket_set_ref','handoff'])approvals[key].gate_id='gate.strategic-design-handoff-approved';
+ approvals.handoff.gate_id='gate.strategic-design-handoff-approved';
  const {package_export,status,...delivery}=f.handoff;
  f.put('delivery-content.json',delivery);
  const asset=(ref,version,boundary)=>({ref,version,boundary,digest:hash(readFileSync(path.join(root,ref)))});

@@ -82,10 +82,10 @@ check("同一事项分批批准保留已批准范围", () => {
 check("撤回后不能复用旧批准", () => { const f = fixture("revoke"); f.respond({ decision: "revoked", text: "撤回同意", time: "2026-09-05T01:04:00Z" }); deny(f, "user-decision-not-approved"); });
 check("默认生物人门禁纳入解析和 checkpoint", () => {
   const roles = loadDigitalHumanRoles();
-  for (const gate of ["gate.product-design-approved"]) {
+  for (const gate of ["gate.product-design-approved", "gate.backend-architecture-platform-approved"]) {
     assert.equal(countersignRuleForGate(roles.gate_policy, gate).bucket, "biological_human");
     assert.ok(collectCountersignGateIds(roles.gate_policy).includes(gate));
-    assert.throws(() => assertCheckpointApprovals({ gates: { [gate]: { status: "approved" } } }), /缺少检查|approval_ref/);
+    assert.throws(() => assertCheckpointApprovals({ gates: { [gate]: { status: "approved" } } }), /缺少检查|缺少当前证据摘要|approval_ref/);
   }
 });
 check("历史数字人记录可读但不能关闭关键门禁", () => {

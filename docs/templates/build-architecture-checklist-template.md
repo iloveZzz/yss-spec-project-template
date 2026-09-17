@@ -19,7 +19,7 @@ owner: ai
 | 系统 / 数据架构设计 |  |  |
 | 风险 / 回滚约束 | `AGENTS.md` |  |
 | Slice Implementation Contract |  | 填写 contract_id / contract_version / 生命周期批准状态 |
-| 后端脚手架策略 | `orchestration-contract.yaml` / DDD 或 Layered MVC 生成器 |  | backend `scaffold_status=required` 时填写 architecture decision、schema v3 合同身份、批准/持久化引用、生成器输入、Manifest v3、实际 `./mvnw` 结果和后置实现合同编译器重编译 |
+| 后端脚手架策略 | `orchestration-contract.yaml` / DDD 或 Layered MVC 生成器 |  | backend `scaffold_status=required` 时填写架构与平台用户门禁、architecture decision、精确 Spring Boot 版本、schema v4 合同身份、批准/持久化引用、生成器输入、Manifest v4、实际 `./mvnw` 结果和后置实现合同编译器重编译；既有工程填写登记值复用证据 |
 | 工程项目路径策略 | `docs/process/implementation-repo-integration.md` / 实现合同编译器 Contract |  | Harness 内必须是 `apps/backend/<project>/` 或 `apps/frontend/<project>/`；`apps/backend/`、`apps/frontend/` 仅为容器，`app/backend/`、`app/frontend/` 及其子路径阻断 |
 | 垂直切片工作单元 |  |  |
 | YSS Skill Execution Result |  | 每个 skill / work_unit 的结果文件引用 |
@@ -32,7 +32,7 @@ owner: ai
 | 后端切片必须回勾 `Backend Slice Implementation Contract`：required skills、允许写范围、禁止模式、证据文件、延期 seam 和验证命令完整 | implementation routing / 垂直切片 Ticket / `AGENTS.md` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺合同或合同不完整时暂停并记录替代方案 |
 | 统一合同版本：实现消费的 contract_id / contract_version 与生命周期批准并持久化的版本一致，实现合同编译器 未自行批准合同或推进 `ready-for-agent` | Slice Implementation Contract / 生命周期证据 |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 版本不一致时将工作单元标记 `stale` 并暂停 build |
 | 合同子项闭环：Common、Frontend、Backend、Contract、Cross-repo 子合同按影响面填写，不适用项有原因 | Slice Implementation Contract |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺失适用子合同时回到 实现合同编译器 |
-| 后端脚手架顺序：工程基线与 Agent 推荐 → 用户确认并持久化 architecture decision → schema v3 合同 draft / 生命周期批准 → DDD 或 Layered MVC 生成器 → 对应基线与 Manifest v3 校验 → 实现合同编译器重编译；生成器无交互且不得生成业务行为 | `yss-product-lifecycle` / `yss-ddd-scaffold-generator` / `yss-layered-mvc-scaffold-generator` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 选择缺失、digest 漂移、顺序缺失、生成器混入业务行为或缺 Execution Result 时阻断 |
+| 新建后端顺序：工程基线与 Agent 推荐 → `gate.backend-architecture-platform-approved` 同时确认 DDD / MVC 与精确 Spring Boot 版本 → 持久化 architecture decision → DDD / MVC 分支设计 → schema v4 合同 draft / 生命周期批准 → 对应生成器 → 基线与 Manifest v4 校验 → 实现合同编译器重编译；既有工程核验复用登记值；生成器无交互且不得生成业务行为 | `yss-product-lifecycle` / `yss-ddd-scaffold-generator` / `yss-layered-mvc-scaffold-generator` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 门禁或选择缺失、digest 漂移、顺序缺失、生成器混入业务行为或缺 Execution Result 时阻断 |
 | 写路径与证据：Execution Result 的 changed_files 均位于 allowed_write_paths，expected_evidence_files 已实际生成 | Slice Implementation Contract / YSS Skill Execution Result |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 路径越界或证据缺失标记 `violation` 并阻断 build |
 | TDD 模式：每个工作单元唯一选择 `behavior-tdd` 或 `controlled-generation`；生成器未承载状态、权限、业务过滤、事务、错误映射或用户可见交互 | Slice Implementation Contract / 垂直切片 Ticket / Execution Result |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 模式不匹配时拆分工作单元并完整重路由 |
 | 所有后续生成代码：必须消费当前批准合同、主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result；业务行为使用 `behavior-tdd` | `post_scaffold_generated_code_policy` |  | `implemented` / `seam-deferred` / `drift` / `violation` / `not-applicable` |  | 缺任一条件或以时间压力豁免时阻断 build |

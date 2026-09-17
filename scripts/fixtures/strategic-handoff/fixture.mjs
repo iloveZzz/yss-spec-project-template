@@ -4,6 +4,7 @@ import { sealVisualBaseline } from '../../../.agents/skills/yss-prototype-stage/
 import { parseContextSource, resolveContextTermRefs } from '../../lib/context-contract.mjs';
 import { read, hash, digest, json, files, sourceApprovalPolicy, treeDigest } from '../../lib/strategic-handoff-io.mjs';
 import { countersignRuleForGate } from '../../lib/digital-human-roles.mjs';
+import { buildDecisionFixture } from '../user-decision/build-fixture.mjs';
 export const context = `---
 context_schema_version: 1
 ---
@@ -31,7 +32,8 @@ const baseline = { schema_version: 1, baseline_id: "visual-baseline.supplier", f
 writeFileSync(baselineFile, JSON.stringify(baseline)); const sealedBaseline = await sealVisualBaseline(baselineFile, bundleRoot);
 const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: sealedBaseline.version, digest: sealedBaseline.bundle.digest, status: "approved", persisted_ref: "source/visual-baseline-v1", manifest_ref: "visual-baseline.yaml", case_ids: sealedBaseline.cases.map((item) => item.case_id) };
 
- const roles=sourceApprovalPolicy(read(new URL('./source-roles.json',import.meta.url)));
+ const roles=sourceApprovalPolicy(read(new URL(handoffVersion>=5?'./aggregate-source-roles.json':'./source-roles.json',import.meta.url)));
+ const currentPlan=roles.user_decision_policy.gates.includes('gate.plan-approved');
  put('docs/agents/digital-human-roles.yaml',roles);
  put('preview/index.html','<!doctype html><html><body><button onclick="this.textContent=\'已提交\'">提交</button></body></html>');
  put('prototype-src/main.js','export const state = "ready";');
@@ -46,7 +48,7 @@ const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: se
    {mapping_id:'mapping.backend-complete',source_refs:['rule.complete','scenario.submit'],consumer_capability:'backend-technical-design',impacts:['backend','api','data'].filter(key=>impacts[key]),propagation:(impacts.backend||impacts.api||impacts.data)?'direct':'not-applicable',reapproval_condition:'后端、API 或数据影响变化',evidence_refs:['evidence/offline.log']},
    {mapping_id:'mapping.frontend-complete',source_refs:['scenario.submit'],consumer_capability:'frontend-engineering-design',impacts:['frontend','ui'].filter(key=>impacts[key]),propagation:(impacts.frontend||impacts.ui)?'direct':'not-applicable',reapproval_condition:'前端或 UI 影响变化',evidence_refs:['evidence/offline.log']}
  ].map(item=>({...item,impacts:item.impacts.length?item.impacts:['none']}));
- strategy.approval={approval_ref:'approvals/domain_strategy_ref.yaml',approver:'role.product-manager',persisted_ref:'source/strategy.yaml',current_version:'v1'};
+ strategy.approval={approval_ref:currentPlan?'approvals/plan-checks.yaml':'approvals/domain_strategy_ref.yaml',approver:'role.product-manager',persisted_ref:'source/strategy.yaml',current_version:'v1'};
  strategy.subdomains.forEach(x=>x.evidence_refs=['evidence/offline.log']);
  put('source/strategy.yaml',strategy);
  const stage={...read(new URL('./base-stage.json',import.meta.url)),schema_version:routed?3:2,stage_decision_id:'stage-decision.supplier',package_version:'v1',status:'approved',domain_strategy_ref:{domain_strategy_id:strategy.domain_strategy_id,domain_version:'v1',status:'approved',persisted_ref:'source/strategy.yaml',digest:digest(strategy)},context_snapshot:snapshot,unresolved_items:[],impact_assessment:impacts};
@@ -59,12 +61,15 @@ const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: se
    stage.constraints=[record('constraint.preserve-context','保留 SupplierManagement 边界',['rule.complete'])];
    stage.downstream_mapping=strategy.downstream_mapping.map(({mapping_id,source_refs,consumer_capability,propagation,reapproval_condition,evidence_refs})=>({mapping_id,source_refs,consumer_capability,propagation,reapproval_condition,evidence_refs}));
  }
- stage.approval={approval_ref:'approvals/stage_decision_package_ref.yaml',approver:'role.product-manager',persisted_ref:'source/stage.yaml',current_version:'v1'};stage.evidence_refs=['evidence/offline.log'];
+ stage.approval={approval_ref:currentPlan?'approvals/plan-checks.yaml':'approvals/stage_decision_package_ref.yaml',approver:'role.product-manager',persisted_ref:'source/stage.yaml',current_version:'v1'};stage.evidence_refs=['evidence/offline.log'];
  put('source/stage.yaml',stage);put('source/spec.md','# 供应商提交\n');put('source/tickets.yaml',{status:'approved'});
  const ref=(id,p,kind)=>({id,version:'v1',status:'approved',persisted_ref:p,digest:kind==='canonical-json'?digest(read(path.join(root,p))):hash(readFileSync(path.join(root,p)))});
  const sourceRefs={domain_strategy_ref:ref(strategy.domain_strategy_id,'source/strategy.yaml','canonical-json'),stage_decision_package_ref:ref(stage.stage_decision_id,'source/stage.yaml','canonical-json'),spec_ref:ref('spec.supplier','source/spec.md'),prototype_ref:ref('prototype.supplier','preview/index.html'),visual_baseline_ref:visualBaselineRef,business_ticket_set_ref:ref('business-ticket-set.supplier','source/tickets.yaml','canonical-json')};
- const terminalGate=countersignRuleForGate(roles.gate_policy,'gate.strategic-design-handoff-approved')?'gate.strategic-design-handoff-approved':'gate.stage-decision-package-approved';
- const gates={domain_strategy_ref:'gate.domain-strategy-approved',stage_decision_package_ref:'gate.stage-decision-package-approved',spec_ref:'gate.spec-baseline-approved',prototype_ref:'gate.user-confirmation',visual_baseline_ref:'gate.user-confirmation',business_ticket_set_ref:terminalGate,handoff:terminalGate};
+ const explicitlyReviewed=gate=>['digital_human_review','dual_digital_human','biological_human'].some(bucket=>(roles.gate_policy[bucket]||[]).some(rule=>(typeof rule==='string'?rule:rule.gate)===gate));
+ const terminalGate=currentPlan||explicitlyReviewed('gate.strategic-design-handoff-approved')?'gate.strategic-design-handoff-approved':'gate.stage-decision-package-approved';
+ const gates=currentPlan
+   ? {domain_strategy_ref:'gate.plan-approved',stage_decision_package_ref:'gate.plan-approved',spec_ref:'gate.spec-baseline-approved',prototype_ref:'gate.product-design-approved',visual_baseline_ref:'gate.product-design-approved',business_ticket_set_ref:'gate.plan-approved',handoff:terminalGate}
+   : {domain_strategy_ref:'gate.domain-strategy-approved',stage_decision_package_ref:'gate.stage-decision-package-approved',spec_ref:'gate.spec-baseline-approved',prototype_ref:'gate.user-confirmation',visual_baseline_ref:'gate.user-confirmation',business_ticket_set_ref:terminalGate,handoff:terminalGate};
  const approvals=Object.fromEntries([...Object.keys(sourceRefs),'handoff'].map(key=>[key,{record_ref:`approvals/${key}.yaml`,gate_id:gates[key],digest_kind:key==='visual_baseline_ref'?'visual-baseline':['domain_strategy_ref','stage_decision_package_ref','business_ticket_set_ref'].includes(key)?'canonical-json':'sha256-bytes'}]));
  const handoff={schema_version:handoffVersion,handoff_id:'strategic-design-handoff.supplier',handoff_version:'v1',status:'approved',source:sourceRefs,source_context_snapshot:snapshot,context_delta:{added:resolved.terms.map(({term_ref,term,meaning,english_identifier,context_id,forbidden_aliases})=>({term_ref,term,meaning,english_identifier,context_id,forbidden_aliases})),updated:[],deprecated:[]},problem_and_business_outcomes:['提交供应商材料'],bounded_context_and_subdomain_map:['SupplierManagement'],context_map_and_translation_responsibility:['SupplierManagement'],ubiquitous_language_and_concept_candidates:['Global/Supplier'],scenarios_and_business_invariants:['rule.complete','scenario.submit'],tactical_design_questions:['一致性边界'],deferred_decisions_and_ownership:[],evidence_and_version_digests:['evidence/offline.log'],acceptance:['traceability'],package_export:{schema_version:handoffVersion===5?2:1,approvals,additional_files:[],reference_map:{},prototype:{profile:'H2',preview_root:'preview',entry_ref:'preview/index.html',verification_ref:'evidence/offline.json',verification_digest:hash(readFileSync(path.join(root,'evidence/offline.json'))),source_digest:treeDigest(root,'prototype-src'),source_root:'prototype-src',lock_ref:'prototype-src/pnpm-lock.yaml'},...(handoffVersion===5?{ui_baseline_kind:'prototype'}:{})},...(handoffVersion===5?{ui_baseline_kind:'prototype'}:{})};
  if(handoffVersion===3){
@@ -80,6 +85,28 @@ const visualBaselineRef = { baseline_id: sealedBaseline.baseline_id, version: se
      route('route.coordination','delivery-coordination',(backendRequired||frontendRequired)?'required':'not-applicable',['impact_assessment.backend','impact_assessment.frontend','impact_assessment.api','impact_assessment.data','impact_assessment.ui'],'work-unit.delivery-coordination',['consumer-status-index','business-acceptance'],[...(backendRequired?['route.backend']:[]),...(frontendRequired?['route.frontend']:[])])
    ];
  }
- const sign=()=>{put('handoff.yaml',handoff);for(const[key,approval]of Object.entries(approvals)){const asset=key==='handoff'?{id:handoff.handoff_id,version:handoff.handoff_version,digest:hash(readFileSync(path.join(root,'handoff.yaml')))}:sourceRefs[key];put(approval.record_ref,{schema_version:1,gate_id:approval.gate_id,decision:'approved',actor_kind:'digital-human',role_id:countersignRuleForGate(roles.gate_policy,approval.gate_id).countersigners[0],runtime_id:'runtime.generic',principal_ref:'synthetic-maintenance-fixture',artifact_bindings:[{id:asset.id||asset.baseline_id,version:asset.version,digest:asset.digest}]});}};
+ const relative=ref=>path.relative(root,ref).split(path.sep).join('/');
+ const decisionFor=(key,boundary,subjectRef)=>{const d=buildDecisionFixture(path.join(root,'decisions',key),{subjectRef:path.join(root,subjectRef),boundary,scope:['feature.supplier']});d.record.request.items[0].subject.ref=subjectRef;d.record.request.requester_source.ref=relative(d.record.request.requester_source.ref);d.present();d.record.responses=[];d.respond();d.record.request.presented_source.ref=relative(d.record.request.presented_source.ref);d.record.responses[0].source.ref=relative(d.record.responses[0].source.ref);d.save();return relative(d.ref);};
+ const sign=()=>{
+   put('handoff.yaml',handoff);
+   const planRef='source/plan-review-package.json',productRef='source/product-design-review-package.json';
+   if(currentPlan){
+     put(planRef,{schema_version:1,kind:'plan-review-package',assets:['domain_strategy_ref','stage_decision_package_ref','business_ticket_set_ref'].map(key=>sourceRefs[key])});
+     put(productRef,{schema_version:1,kind:'product-design-review-package',assets:['prototype_ref','visual_baseline_ref'].map(key=>sourceRefs[key])});
+     const row=(gateId,subjectRef)=>({schema_version:1,gate_id:gateId,decision:'approved',actor_kind:'digital-human',role_id:'role.product-manager',runtime_id:'runtime.generic',principal_ref:'synthetic-plan-reviewer',drafter_role_id:'role.requirements-manager',drafter_principal_ref:'synthetic-requirements-drafter',subject_ref:subjectRef,subject_digest:hash(readFileSync(path.join(root,subjectRef))).slice(7),approval_scope:['feature.supplier'],evidence_refs:['evidence/offline.log']});
+     put('approvals/plan-checks.yaml',{schema_version:1,kind:'review-bundle',bundle_id:'review-bundle.plan',task_id:'task.plan-review.supplier',work_unit_id:'work-unit.plan-requirements',review_session_id:'review-session.plan.supplier',role_id:'role.product-manager',runtime_id:'runtime.generic',principal_ref:'synthetic-plan-reviewer',reviews:[row('check.domain-strategy-approved','source/strategy.yaml'),row('check.stage-decision-package-approved','source/stage.yaml')]});
+   }
+   const decisions=currentPlan?{
+     'gate.plan-approved':decisionFor('plan','gate.plan-approved',planRef),
+     'gate.spec-baseline-approved':decisionFor('spec','gate.spec-baseline-approved','source/spec.md'),
+     'gate.product-design-approved':decisionFor('product','gate.product-design-approved',productRef)
+   }:{};
+   for(const[key,approval]of Object.entries(approvals)){
+     const asset=key==='handoff'?{id:handoff.handoff_id,version:handoff.handoff_version,digest:hash(readFileSync(path.join(root,'handoff.yaml')))}:sourceRefs[key];
+     const rule=countersignRuleForGate(roles.gate_policy,approval.gate_id);
+     const subjectRef=approval.gate_id==='gate.plan-approved'?planRef:approval.gate_id==='gate.product-design-approved'?productRef:key==='handoff'?'handoff.yaml':asset.persisted_ref;
+     put(approval.record_ref,{schema_version:1,gate_id:approval.gate_id,decision:'approved',actor_kind:rule.bucket==='biological_human'?'biological-human':'digital-human',role_id:rule.countersigners[0],runtime_id:'runtime.generic',principal_ref:rule.bucket==='biological_human'?'person.requester':approval.gate_id==='gate.plan-approved'?'synthetic-plan-reviewer':'synthetic-maintenance-fixture',...(rule.drafter?{drafter_role_id:rule.drafter}:{}),...(approval.gate_id==='gate.plan-approved'?{review_session_id:'review-session.plan.supplier',review_bundle_ref:'approvals/plan-checks.yaml'}:{}),...(decisions[approval.gate_id]?{subject_ref:subjectRef,approval_scope:['feature.supplier'],user_decision_ref:decisions[approval.gate_id]}:{}),artifact_bindings:[{id:asset.id||asset.baseline_id,version:asset.version,digest:asset.digest}]});
+   }
+ };
  sign();return{handoff,strategy,stage,put,sign,snapshot};
 }

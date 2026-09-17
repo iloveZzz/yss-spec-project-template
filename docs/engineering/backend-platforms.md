@@ -4,7 +4,7 @@ DDD 和 Layered MVC 共同消费 `backend-platforms.json`。平台定义是候�
 
 ## 用户选择
 
-运行 `scripts/backend-platforms` 展示 Boot 精确补丁、Java、YSS 父 POM/BOM、可选状态和阻塞原因。生命周期编排器将平台与架构放在同一次用户决定中。缺少选择时询问；已有批准且当前的选择只展示摘要并复用。独立子项目可继承或覆盖，也可一次确认明确列出的多个项目。同一 Maven Reactor 不混用平台。
+运行 `scripts/backend-platforms` 展示 Boot 精确补丁、Java、YSS 父 POM/BOM、可选状态和阻塞原因。新建后端在进入 DDD / MVC 分支设计前必须通过 `gate.backend-architecture-platform-approved`；生命周期编排器将平台与架构放在同一次用户决定中。缺少选择时询问；已有批准且当前的选择只展示摘要并复用。既有工程核验并复用登记的 `architecture_identity` 与固定工程基线/POM 中的实际 Spring Boot 版本，该门禁记录为 `not-applicable`，不重复询问；平台升级另行立项。独立子项目可继承或覆盖，也可一次确认明确列出的多个项目。同一 Maven Reactor 不混用平台。
 
 候选为 2.7.18 / Java 8、3.5.16 / Java 17 或 21、4.1.1 / Java 17 或 21。3.5 和 4.1 推荐 Java 17。新增补丁必须先通过组合验证，生成合同不接受 `x`、版本范围或 `latest`。
 

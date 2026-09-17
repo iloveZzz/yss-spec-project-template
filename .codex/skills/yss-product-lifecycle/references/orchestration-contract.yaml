@@ -382,7 +382,15 @@ work_unit_routes:
     technical_design:
       applies_when: backend_delivery_impact
       new_backend_repository: required
-      architecture_source: confirmed-project-architecture-before-branch-design
+      architecture_source: new-project-user-gate-or-current-existing-registration-before-branch-design
+      pre_design_gate:
+        id: gate.backend-architecture-platform-approved
+        applies_when: new_backend_repository
+        confirms: [architecture_family, exact_spring_boot_version]
+        architecture_choices: [domain-driven, layered-mvc]
+        platform_source: docs/engineering/backend-platforms.json
+        existing_repository: not-applicable-reuse-current-registration
+        missing_or_stale: blocked
       branches:
         domain-driven: yss-tactical-design
         layered-mvc: yss-mvc-design
@@ -414,6 +422,7 @@ work_unit_routes:
       placeholder_assets: forbidden
       atomic_approval_gate: gate.engineering-contract-approved
     human_gate: gate.engineering-contract-approved
+    entry_user_gate: gate.backend-architecture-platform-approved
     applies_when: technical_or_contract_impact
     not_applicable_reason: no_technical_or_contract_impact
   work-unit.implementation-repository-preparation:
@@ -771,7 +780,8 @@ scaffold_architecture_decision:
   applies_when: [backend_impact, scaffold_status_required]
   owner: yss-product-lifecycle
   stage: work-unit.technical-analysis
-  timing: after-impact-and-engineering-baseline-inputs-before-scaffold-contract-compilation
+  gate: gate.backend-architecture-platform-approved
+  timing: after-impact-and-platform-candidate-resolution-before-ddd-or-mvc-branch-design
   source: scaffold-architecture-decisions.yaml
   schema_version: 1
   statuses: [undecided, recommended, awaiting-user-decision, user-confirmed, lifecycle-approved, consumed, stale]
@@ -782,6 +792,12 @@ scaffold_architecture_decision:
     layered-mvc:
       display_name: MVC 开发脚手架
       recommendation_signals: [crud, reporting-query, data-transformation, external-system-orchestration, thin-domain]
+  platform_choice:
+    source: docs/engineering/backend-platforms.json
+    confirms: [platform_profile, spring_boot_version, java_version]
+    version_format: exact-patch
+    latest_or_range: forbidden
+    same_user_decision_as_architecture: true
   recommendation_policy:
     evidence_required: true
     strong_domain_signal_prefers: domain-driven
@@ -794,7 +810,7 @@ scaffold_architecture_decision:
     main_project_has_no_silent_default: true
     child_projects_prefill_parent_default: true
     batch_confirmation_required: true
-    prompt_fields: [project, responsibility, agent_recommendation, recommendation_reasons, inherited_from, current_choice, platform_profile, architecture_profile, verification_database, production_database, resolved_modules, warnings]
+    prompt_fields: [project, responsibility, agent_recommendation, recommendation_reasons, inherited_from, current_choice, platform_profile, spring_boot_version, java_version, architecture_profile, verification_database, production_database, resolved_modules, warnings]
     missing_or_deferred_action: blocked
   inheritance:
     modes: [root-default, inherit, override]
@@ -803,9 +819,10 @@ scaffold_architecture_decision:
     shared_profile_change_stales_all_affected: true
     new_child_requires_confirmation: true
   persistence:
-    required: [decision_id, project_id, parent_project_id, recommended_architecture, recommendation_reasons, confirmed_architecture, override_reason, inheritance_mode, inherited_from, platform_profile, architecture_profile, verification_database, production_database, requested_capabilities, resolved_modules, resolution_version, user_confirmation, decision_inputs_digest, status]
+    required: [decision_id, project_id, parent_project_id, recommended_architecture, recommendation_reasons, confirmed_architecture, override_reason, inheritance_mode, inherited_from, platform_profile, exact_spring_boot_version_in_user_snapshot, architecture_profile, verification_database, production_database, requested_capabilities, resolved_modules, resolution_version, user_confirmation, decision_inputs_digest, status]
     downstream_reference: [decision_ref, decision_id, decision_digest]
-    no_new_gate: true
+    approval_gate: gate.backend-architecture-platform-approved
+    existing_repository: reuse-current-registration-without-user-reconfirmation
   change_policy:
     before_lifecycle_approval: update-decision
     after_lifecycle_approval_before_generation: stale-contract-and-recompile

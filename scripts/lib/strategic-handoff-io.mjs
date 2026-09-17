@@ -78,6 +78,13 @@ export function sourceApprovalPolicy(source) {
   roles.user_decision_policy ||= {gates:[]};
   ensure(!(roles.user_decision_policy.required_capabilities || []).some(id => id !== 'strategic-decision-reuse-v1'), '接收工具不支持源用户决定策略，请升级工具后验包');
   const policy=roles.gate_policy;
+  // Dedicated receivers may predate check_reviews. Mirror source check-review
+  // rules into their existing digital review lookup without changing source bytes.
+  for(const rule of policy.check_reviews || []) {
+    if(!(policy.digital_human_review||[]).some(x=>x.gate===rule.gate) && !(policy.dual_digital_human||[]).some(x=>x.gate===rule.gate)) {
+      policy.digital_human_review ||= [];policy.digital_human_review.push({gate:rule.gate,drafter:rule.drafter,countersigners:[...rule.countersigners]});
+    }
+  }
   for(const gate of policy.product_digital_human_with_biological_veto || []) {
     if(!(policy.biological_human||[]).includes(gate) && !(policy.digital_human_review||[]).some(x=>x.gate===gate) && !(policy.dual_digital_human||[]).some(x=>x.gate===gate)) {
       policy.digital_human_review ||= [];policy.digital_human_review.push({gate,countersigners:['role.product-manager']});

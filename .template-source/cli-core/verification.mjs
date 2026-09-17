@@ -116,6 +116,12 @@ export function doctor(bundle, target) {
       return {status:modified||missing?'warning':'ok',modified,missing,migrationRequired:Boolean(meta.legacy)};
     });
     if (state && !state.pending.length) check('instance-contract',()=>({checks:verifyInstance(bundle,target)}));
+    if (bundle.family.side === 'design' && bundle.files.has('scripts/verify-strategic-gate-migration')) check('strategic-gate-migration',()=>{
+      const result = spawnSync(process.execPath, [safe(target, 'scripts/verify-strategic-gate-migration'), '--root', target], {cwd:target,encoding:'utf8',timeout:120000,maxBuffer:16*1024*1024});
+      const message = String(result.error?.message || result.stderr || result.stdout).trim();
+      if (result.error || result.status !== 0) throw Object.assign(new Error(`scripts/verify-strategic-gate-migration: ${message}`), {code:message.includes('STRATEGIC_GATE_MIGRATION_REQUIRED')?'STRATEGIC_GATE_MIGRATION_REQUIRED':'VERIFY'});
+      return {exitCode:result.status};
+    });
   }
   const git=spawnSync('git',['--no-optional-locks','-c','core.fsmonitor=false','-C',target,'status','--porcelain'],{encoding:'utf8',timeout:5000});
   report.checks.push({name:'git',status:git.status!==0||git.stdout?'warning':'ok',message:git.status!==0?'未建立 Git 工作区':git.stdout?'存在本地改动':'工作区干净'});

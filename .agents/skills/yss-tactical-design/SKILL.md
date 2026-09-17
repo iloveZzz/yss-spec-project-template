@@ -9,7 +9,7 @@ description: 在 YSS 技术分析阶段将批准的战略领域输入细化为�
 
 ## 适用边界
 
-- 由 `yss-technical-design` 在已确认 `domain-driven` 的技术设计分支中调用；传统 MVC 使用 `yss-mvc-design`，不得按状态或一致性影响单独推断为 DDD。
+- 由 `yss-technical-design` 在已确认 `domain-driven` 的技术设计分支中调用；新建后端必须先通过 `gate.backend-architecture-platform-approved`，由用户在同一次决定中确认 DDD / MVC 与精确 Spring Boot 版本。传统 MVC 使用 `yss-mvc-design`；既有工程直接核验并复用当前登记架构及固定工程基线/POM 中的实际 Spring Boot 版本，不重复询问。不得按状态、一致性影响、目录或默认值单独推断为 DDD。
 - 输入必须是版本当前的 Spec、功能架构、战略 DDD、状态矩阵、OpenAPI Draft / Freeze、ADR 和工程约束。若输入来自 Strategic Design Handoff，必须先用 `scripts/verify-strategic-context-import` 验证历史 v3/v4 或当前 v5 的 `source_context_snapshot` / `context_delta` 已对账到目标仓根 `CONTEXT.md`，对应的 prototype 或 existing UI baseline 可读取且摘要当前，并且目标侧 `context_reconciliation` 有效；未完成时不得开始战术建模。
 - 默认将结果写入系统概要设计 / 数据架构中的 Tactical DDD Check；聚合、状态机、一致性或持久化映射复杂到无法清楚表达时，才升级为独立战术设计文档。
 - 没有聚合、状态、不变量、一致性或领域边界影响时返回 `not-applicable` 及原因，不生成空设计。

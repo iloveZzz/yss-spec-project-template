@@ -185,6 +185,7 @@ gate_policy:
     gate.plan-approved: [role.product-manager]
     gate.spec-baseline-approved: [role.product-manager]
     gate.product-design-approved: [role.frontend-engineer, role.test-engineer]
+    gate.backend-architecture-platform-approved: [role.backend-engineer]
     gate.engineering-contract-approved: [role.backend-engineer, role.test-engineer]
     implementation-scope: [role.test-engineer]
   default_if_unlisted: biological-human
@@ -218,6 +219,7 @@ gate_policy:
   product_digital_human_with_biological_veto: []
   biological_human:
     - gate.product-design-approved
+    - gate.backend-architecture-platform-approved
   automatic_checks:
     - check.repository-identity-valid
     - check.frontend-delivery-inputs-verified
@@ -269,7 +271,7 @@ user_decision_policy:
   continuation:
     capability: approved-scope-continuation-v1
     source_boundary: delivery-scope
-    boundaries: [gate.plan-approved, gate.spec-baseline-approved, gate.product-design-approved, gate.engineering-contract-approved, implementation-scope]
+    boundaries: [gate.plan-approved, gate.spec-baseline-approved, gate.product-design-approved, gate.backend-architecture-platform-approved, gate.engineering-contract-approved, implementation-scope]
     material_changes: [business-scope, acceptance, contract-commitments, authorization, risk-acceptance, quality, external-commitments]
     unknown_change: blocked
     external_requirements: preserve-project-policy
@@ -279,6 +281,7 @@ user_decision_policy:
     - gate.plan-approved
     - gate.spec-baseline-approved
     - gate.product-design-approved
+    - gate.backend-architecture-platform-approved
     - gate.engineering-contract-approved
   work_units:
     work-unit.service-project-initialization: scaffold-choice
@@ -290,6 +293,7 @@ user_decision_policy:
     work-unit.prototype-design:
       - gate.product-design-approved
     work-unit.technical-analysis:
+      - gate.backend-architecture-platform-approved
       - gate.engineering-contract-approved
   conditional_decisions: [ scaffold-choice, external-input, new-authorization, risk-acceptance ]
   waiting_allows: independent-work-only

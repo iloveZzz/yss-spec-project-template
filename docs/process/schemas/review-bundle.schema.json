@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.dev/schemas/review-bundle.schema.json",
+  "title": "YSS Review Bundle v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "bundle_id", "task_id", "work_unit_id", "review_session_id", "role_id", "runtime_id", "principal_ref", "reviews"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "kind": { "const": "review-bundle" },
+    "bundle_id": { "type": "string", "pattern": "^review-bundle\\.[a-z0-9][a-z0-9-]*$" },
+    "task_id": { "type": "string", "minLength": 1 },
+    "work_unit_id": { "type": "string", "pattern": "^work-unit\\.[a-z0-9][a-z0-9-]*$" },
+    "review_session_id": { "type": "string", "minLength": 1 },
+    "role_id": { "type": "string", "pattern": "^role\\.[a-z0-9][a-z0-9-]*$" },
+    "runtime_id": { "type": "string", "pattern": "^runtime\\.[a-z0-9][a-z0-9-]*$" },
+    "principal_ref": { "type": "string", "minLength": 1 },
+    "reviews": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["schema_version", "gate_id", "decision", "actor_kind", "role_id", "runtime_id", "principal_ref", "drafter_principal_ref", "subject_ref", "subject_digest", "approval_scope", "evidence_refs"],
+        "properties": {
+          "schema_version": { "const": 1 },
+          "gate_id": { "type": "string", "pattern": "^check\\.[a-z0-9][a-z0-9-]*$" },
+          "decision": { "enum": ["approved", "rejected", "vetoed"] },
+          "actor_kind": { "const": "digital-human" },
+          "role_id": { "type": "string", "minLength": 1 },
+          "runtime_id": { "type": "string", "minLength": 1 },
+          "principal_ref": { "type": "string", "minLength": 1 },
+          "drafter_principal_ref": { "type": "string", "minLength": 1 },
+          "subject_ref": { "type": "string", "minLength": 1 },
+          "subject_digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "approval_scope": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+          "evidence_refs": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+        }
+      }
+    }
+  }
+}

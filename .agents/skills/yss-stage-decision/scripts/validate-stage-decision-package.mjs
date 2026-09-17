@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 import process from "node:process";
 import { parseArgs } from "node:util";
 import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
-import { loadApprovalRecord, resolveApprovalRef, validateApprovalRecordFile } from "../../../../scripts/lib/approval-record.mjs";
+import { loadApprovalRecord, resolveApprovalRef, validateApprovalRecord } from "../../../../scripts/lib/approval-record.mjs";
 import { verifyContextSnapshot } from "../../../../scripts/lib/context-contract.mjs";
 
 const required = ["schema_version", "stage_decision_id", "package_version", "status", "problem_statement", "target_users", "mvp", "non_goals", "success_criteria", "test_seams", "confirmed_decisions", "assumptions", "constraints", "unresolved_items", "context_snapshot", "domain_strategy_ref", "impact_assessment", "downstream_mapping", "evidence_refs", "approval"];
@@ -129,8 +129,8 @@ async function validate(data, contextRoot) {
   if (data.status === "approved" && nonEmpty(approval.approval_ref)) {
     try {
       const approvalPath = resolveApprovalRef(approval.approval_ref);
-      validateApprovalRecordFile(approvalPath, { requireApproved: true });
-      const record = loadApprovalRecord(approvalPath);
+      const record = loadApprovalRecord(approvalPath, "check.stage-decision-package-approved");
+      validateApprovalRecord(record, { requireApproved: true });
       if (record.gate_id !== "check.stage-decision-package-approved") errors.push("approval_ref 的 gate_id 必须为 check.stage-decision-package-approved");
       if (record.role_id !== approval.approver) errors.push("approval.approver 必须与会签记录 role_id 一致");
     } catch (error) { errors.push(`approval_ref 会签记录无效: ${error.message}`); }

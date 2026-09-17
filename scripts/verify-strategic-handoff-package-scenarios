@@ -184,59 +184,20 @@ test('统一 CLI 在源目录消失后通过 ZIP 验包',async t=>{
  rmSync(f.source,{recursive:true});const checked=spawnSync(process.execPath,[cli,'verify','--bundle',`${output}.zip`],{encoding:'utf8'});assert.equal(checked.status,0,checked.stderr);assert.equal(JSON.parse(checked.stdout).result,'verified');
 });
 
-test('当前决定与交接复用可离线验证；范围缺失、回复丢失和未知能力拒绝',async t=>{
- const f=await setup(t);
- const {buildDecisionFixture}=await import('./fixtures/user-decision/build-fixture.mjs');
- const roles=read(path.join(f.source,'docs/agents/digital-human-roles.yaml'));
- roles.gate_policy.dual_digital_human.push({gate:'gate.strategic-design-handoff-approved',drafter:'role.product-manager',countersigners:['role.requirements-manager']});
- for(const key of ['business_ticket_set_ref','handoff']) {
-   const approval=f.handoff.package_export.approvals[key];approval.gate_id='gate.strategic-design-handoff-approved';
-   const record=read(path.join(f.source,approval.record_ref));f.put(approval.record_ref,{...record,gate_id:approval.gate_id,role_id:'role.requirements-manager'});
- }
- f.put('handoff.yaml',f.handoff);
- const handoffApproval=read(path.join(f.source,'approvals/handoff.yaml'));handoffApproval.artifact_bindings[0].digest=hash(readFileSync(path.join(f.source,'handoff.yaml')));f.put('approvals/handoff.yaml',handoffApproval);
- roles.user_decision_policy={schema_version:1,source_kinds:['session-export'],gates:['gate.spec-baseline-approved','gate.user-confirmation','gate.strategic-design-handoff-approved'],work_units:{},required_capabilities:['strategic-decision-reuse-v1']};
- f.put('docs/agents/digital-human-roles.yaml',roles);
- const scope=['feature.supplier'];
- const decide=(key,ref,boundary)=>{
-   const directory=path.join(f.source,'decisions',key);
-   const d=buildDecisionFixture(directory,{subjectRef:path.join(f.source,ref),boundary,scope});
-   const relative=ref=>path.relative(f.source,ref).split(path.sep).join('/');
-   d.record.request.items[0].subject.ref=ref;
-   d.record.request.requester_source.ref=relative(d.record.request.requester_source.ref);
-   d.present();
-   d.record.responses=[];d.respond();d.record.request.presented_source.ref=relative(d.record.request.presented_source.ref);d.record.responses[0].source.ref=relative(d.record.responses[0].source.ref);
-   d.save();
-   return {boundary,subject_ref:ref,scope,user_decision_ref:relative(d.ref)};
- };
- const requirements=[];const assets=[];
- for(const [key,ref]of Object.entries(f.handoff.source)) {
-   const file=key==='visual_baseline_ref'?`${ref.persisted_ref}/${ref.manifest_ref}`:ref.persisted_ref;
-   const approval=read(path.join(f.source,f.handoff.package_export.approvals[key].record_ref));
-   const boundary=key==='business_ticket_set_ref'?'gate.spec-baseline-approved':approval.gate_id;
-   const requirement=decide(key,file,boundary);requirements.push(requirement);
-   assets.push({ref:file,version:ref.version,digest:hash(readFileSync(path.join(f.source,file))),boundary,scope});
-   f.put(f.handoff.package_export.approvals[key].record_ref,{...approval,subject_ref:file,approval_scope:scope,user_decision_ref:requirement.user_decision_ref});
- }
- const {package_export,status,...delivery}=f.handoff;
- f.put('delivery.json',delivery);
- const deliveryDecision=decide('delivery','delivery.json','gate.spec-baseline-approved');requirements.push(deliveryDecision);
- assets.push({ref:'delivery.json',version:'v1',digest:hash(readFileSync(path.join(f.source,'delivery.json'))),boundary:deliveryDecision.boundary,scope});
- f.put('delivery-scope.json',{schema_version:1,kind:'strategic-delivery-scope',delivery_ref:'delivery.json',assets,risks:[],conditions:[]});
- f.put('reuse.json',{schema_version:1,kind:'strategic-decision-reuse-v1',target_gate:'gate.strategic-design-handoff-approved',scope_ref:'delivery-scope.json',scope,requirements});
- const ticketsApproval=read(path.join(f.source,'approvals/business_ticket_set_ref.yaml'));
- f.put('approvals/business_ticket_set_ref.yaml',{...ticketsApproval,subject_ref:'delivery-scope.json',approval_scope:scope,user_decision_ref:undefined,decision_reuse_ref:'reuse.json'});
- const terminal=read(path.join(f.source,'approvals/handoff.yaml'));
- f.put('approvals/handoff.yaml',{...terminal,subject_ref:'delivery-scope.json',approval_scope:scope,decision_reuse_ref:'reuse.json'});
- const output=path.join(f.base,'current-package');
+test('当前 Plan、Spec、产品决定可离线验证；交接只需独立复核',async t=>{
+ const f=await setupV5(t),output=path.join(f.base,'current-package');
+ const terminalRef=path.join(f.source,f.handoff.package_export.approvals.handoff.record_ref);
+ const terminal=read(terminalRef);
+ assert.equal(terminal.gate_id,'gate.strategic-design-handoff-approved');
+ assert.equal(terminal.role_id,'role.requirements-manager');
+ assert.equal(terminal.drafter_role_id,'role.product-manager');
+ assert.equal(terminal.user_decision_ref,undefined);
  await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output});
- const saved=read(path.join(f.source,'delivery-scope.json'));f.put('delivery-scope.json',{...saved,assets:assets.slice(1)});
- await assert.rejects(()=>exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:path.join(f.base,'bad')}),/遗漏当前资产/);
- f.put('delivery-scope.json',saved);
- f.put('docs/agents/digital-human-roles.yaml',{...roles,user_decision_policy:{...roles.user_decision_policy,required_capabilities:['unsupported-v2']}});
- await assert.rejects(()=>exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:path.join(f.base,'bad')}),/不支持/);
+ f.put(f.handoff.package_export.approvals.handoff.record_ref,{...terminal,role_id:'role.product-manager'});
+ await assert.rejects(()=>exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:path.join(f.base,'bad-review')}),/会签角色|起草者/);
+ f.put(f.handoff.package_export.approvals.handoff.record_ref,terminal);
+ const productDecision=path.join(f.source,'decisions/product/decision.json'),decision=read(productDecision);decision.responses=[];f.put('decisions/product/decision.json',decision);
+ await assert.rejects(()=>exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output:path.join(f.base,'bad-decision')}),/response-required|回复/);
  rmSync(f.source,{recursive:true});
  await openBundle(output,()=>null);
- const response=path.join(output,'payload/files/decisions/spec_ref/reply-0.json');rmSync(response);
- await assert.rejects(()=>openBundle(output,()=>null),/缺失|ENOENT/);
 });

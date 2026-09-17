@@ -42,8 +42,9 @@ function fixture(run, boundary = 'gate.engineering-contract-approved') {
 test('ordinary engineering work reuses explicit authorization through public approval and CLI', () => fixture(f => {
   assert.equal(f.verify().continued, true);
   validateApprovalRecord({ schema_version: 1, gate_id: f.requirement.boundary, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, approval_scope: f.requirement.scope, continuation_ref: f.requirement.continuation_ref }, { requireApproved: true });
-  assertWorkUnitUserDecision('work-unit.technical-analysis', { user_decisions: [f.requirement] });
-  assertCheckpointUserDecisions({ repository_mode: 'project-instance', status: 'running', stage_trace: { completed_work_unit: 'work-unit.technical-analysis' }, human_review: { user_decisions: [f.requirement] } });
+  const existingBackendReuse = [{ boundary: 'gate.backend-architecture-platform-approved', reason: '既有工程复用当前登记架构与固定工程基线中的实际 Spring Boot 版本' }];
+  assertWorkUnitUserDecision('work-unit.technical-analysis', { user_decisions: [f.requirement], user_decision_not_applicable: existingBackendReuse });
+  assertCheckpointUserDecisions({ repository_mode: 'project-instance', status: 'running', stage_trace: { completed_work_unit: 'work-unit.technical-analysis' }, human_review: { user_decisions: [f.requirement], not_applicable: existingBackendReuse } });
   const input = f.save('requirement.json', f.requirement);
   const cli = spawnSync('node', [fileURLToPath(new URL('../../../../scripts/verify-user-decision', import.meta.url)), '--continuation', input], { encoding: 'utf8' });
   assert.equal(cli.status, 0, cli.stderr);
@@ -142,8 +143,8 @@ test('older receivers without continuation capability reject rather than silentl
   assert.throws(() => assertUserDecisionRequirement(f.requirement, { rolesDoc }), /延续边界/);
 }));
 test('one review bundle retains explicit per-check outcomes and rejects duplicates', () => fixture(f => {
-  const record = id => ({ schema_version: 1, gate_id: id, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest: f.subject.digest.slice(7) });
-  const bundle = { schema_version: 1, kind: 'review-bundle', reviews: [record('check.design-reviewed'), record('check.architecture-reviewed')] };
+  const record = id => ({ schema_version: 1, gate_id: id, decision: 'approved', actor_kind: 'digital-human', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', drafter_principal_ref: 'synthetic.worker', subject_ref: f.subject.ref, subject_digest: f.subject.digest.slice(7), approval_scope: ['feature.continuation'], evidence_refs: [f.subject.ref] });
+  const bundle = { schema_version: 1, kind: 'review-bundle', bundle_id: 'review-bundle.plan', task_id: 'task.plan-review.continuation', work_unit_id: 'work-unit.plan-requirements', review_session_id: 'review-session.plan.continuation', role_id: 'role.test-engineer', runtime_id: 'runtime.generic', principal_ref: 'synthetic.reviewer', reviews: [record('check.design-reviewed'), record('check.architecture-reviewed')] };
   const ref = f.save('bundle.json', bundle); assert.equal(validateApprovalRecordFile(ref, { requireApproved: true }).length, 2);
   bundle.reviews[1].decision = 'rejected'; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref, { requireApproved: true }), /必须为 approved/);
   bundle.reviews[1] = bundle.reviews[0]; f.save('bundle.json', bundle); assert.throws(() => validateApprovalRecordFile(ref), /重复/);

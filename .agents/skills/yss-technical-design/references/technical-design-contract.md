@@ -5,7 +5,7 @@
 ## 共同头
 
 - `schema_version: 2`、`technical_design_id: technical-design.<name>`、`version: vN`、`status`、`context_ref: CONTEXT.md`。
-- `architecture`：`family`、`project_id`、`source_kind: scaffold-decision | existing-registration`、`decision_ref`、`decision_digest`。新项目引用正式且 current 的脚手架决定，所选项目必须已由用户确认；既有登记引用当前 `project_id` 和 `architecture_identity.architecture_family`，也可从登记的 `repositories` 数组按项目解析。架构来源变化须重新绑定和审查，不能改合同字段冒充用户改选。
+- `architecture`：`family`、`project_id`、`source_kind: scaffold-decision | existing-registration`、`decision_ref`、`decision_digest`。新项目引用正式且 current 的脚手架决定，所选项目必须已通过 `gate.backend-architecture-platform-approved`，用户决定同时绑定 DDD / MVC、平台 Profile、精确 Spring Boot 与 Java 版本；既有登记引用当前 `project_id` 和 `architecture_identity.architecture_family`，并从固定工程基线/POM 复用实际 Spring Boot 版本，不重新询问。架构或平台来源变化须重新绑定和审查，不能改合同字段冒充用户改选或升级。
 - `inputs`：每行 `{kind, ref, version, digest}`，kind 为 context/spec/rules/scenarios/api/adr/engineering/strategic；至少包含根 CONTEXT.md 与 Spec。适用的工程/API 约束同样绑定。无 API 影响理由记录在需求或工程输入中。DDD 另须 strategic 输入，MVC 不要求。
 - `source_items`：无战略包时从批准需求提取稳定规则和场景 `{source_id, kind: rule | scenario, critical, source_ref}`。source_ref 必须对应 inputs，不复制源正文成为第二事实源。
 - `traceability`：逐项对应 source_items。沿用 `tactical_refs` 字段名以兼容承接协议，其值在新合同中可指向 MVC 用例、规则或 DDD 对象；其他字段与战略承接 rows 相同。implemented 仅表示设计承接已落实，不表示代码已实现。

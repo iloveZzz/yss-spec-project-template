@@ -71,6 +71,6 @@ finding 分为 `requirement-violation/missing-evidence/important-risk/suggestion
 
 实施就绪和派发必须同时提供 `user_decisions`、`slice_contract_ref` 与 `vertical_slice_ticket_ref`。Worker 任务包通过 `user_decisions` 传递记录，不能只声明 `ready_for_agent=true`。
 
-脚手架 `user_confirmation` 新增 `user_decision_ref/decision_subject_ref`，主体为生成前的决策输入快照；当前范围至少包含项目 ID、确认的架构和 `decision_inputs_digest`。先获得真实回复，再由生命周期批准生成合同；不能回到生成器内提问。
+脚手架 `user_confirmation` 使用 `gate.backend-architecture-platform-approved`，`user_decision_ref/decision_subject_ref` 的主体为分支设计前的决策输入快照；当前范围至少包含项目 ID、确认的架构、平台 Profile、精确 Spring Boot 补丁版本、Java 版本和 `decision_inputs_digest`。先获得真实回复，门禁通过后才能进入 DDD 战术设计或 MVC 技术设计，再由生命周期批准生成合同；不能回到设计 skill 或生成器内提问。既有工程核验并复用当前登记值，该门禁记录为 `not-applicable`；升级或架构转换不得冒充复用。
 
 Git commit/push、外部动作仍分别检查已有授权和其范围。用户对一个具体动作的明确自然语言授权可整理成结构化记录，不必再次要求填写内部字段；生命周期批准不隐含其他动作授权。

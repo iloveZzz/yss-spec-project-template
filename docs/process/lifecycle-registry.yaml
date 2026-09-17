@@ -59,7 +59,7 @@ stages:
   - id: stage.system-data-engineering
     name: 系统 / 数据架构与工程契约
     goal: 固化系统、数据、工程基线和 API 契约。
-    exit_criteria: 受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。
+    exit_criteria: 新建后端已由用户确认 DDD / MVC 与精确 Spring Boot 版本，既有工程已核验并复用登记值；受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。
   - id: stage.ticket-formalization
     name: Ticket 正式化
     goal: 将冻结范围拆为可追踪的父 Ticket 和垂直切片。
@@ -172,6 +172,13 @@ gates:
     requires_checks:
       - check.prototype-reviewed
       - check.prototype-verified
+  - id: gate.backend-architecture-platform-approved
+    name: 后端架构与平台批准
+    stage: stage.system-data-engineering
+    trigger: 新建后端工程进入技术设计分支前，由用户在同一次决定中确认 domain-driven / layered-mvc 和精确 Spring Boot 版本；既有工程核验并复用当前登记架构及固定工程基线中的实际 Spring Boot 版本，记录 not-applicable，不重复询问。
+    evidence:
+      - evidence.approval-record
+    requires_checks: []
   - id: gate.engineering-contract-approved
     name: 工程契约批准
     stage: stage.system-data-engineering
@@ -179,6 +186,8 @@ gates:
     evidence:
       - evidence.approval-record
       - evidence.fresh-verification
+    requires_gates:
+      - gate.backend-architecture-platform-approved
     requires_checks:
       - check.openapi-draft-reviewed
       - check.design-reviewed
@@ -417,9 +426,9 @@ work_units:
   - id: work-unit.technical-analysis
     name: 技术分析与契约冻结
     scope: project-instance
-    input: Spec、原型、API/数据/工程影响面。
-    output: OpenAPI、数据架构、按确认架构形成的 DDD / MVC 技术设计合同、工程基线、架构审查和 Slice 合同草案。
-    completion: 命中契约已冻结；无 API 影响有可读记录；所有后端交付均有批准且当前的 Technical Design；数据影响为真时数据架构已批准，否则有可核验的不适用记录；架构、规则与场景承接无未解释冲突；gate.engineering-contract-approved 通过。
+    input: Spec、原型、API/数据/工程影响面；新建后端的架构与平台候选，或既有工程当前登记的架构与平台配置。
+    output: 新建后端的 DDD / MVC 与精确 Spring Boot 版本用户决定，或既有工程复用核验；OpenAPI、数据架构、按确认架构形成的 DDD / MVC 技术设计合同、工程基线、架构审查和 Slice 合同草案。
+    completion: 新建后端的 gate.backend-architecture-platform-approved 已通过，既有工程已核验复用并记录该门禁不适用；命中契约已冻结；无 API 影响有可读记录；所有后端交付均有批准且当前的 Technical Design；数据影响为真时数据架构已批准，否则有可核验的不适用记录；架构、规则与场景承接无未解释冲突；gate.engineering-contract-approved 通过。
   - id: work-unit.implementation-repository-preparation
     name: 实现仓库准备
     scope: project-instance

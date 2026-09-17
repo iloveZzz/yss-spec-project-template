@@ -55,7 +55,7 @@ AND Slice Implementation Contract 已由生命周期编排器批准并持久化
 AND Slice Implementation Contract 的 `ticket_ref` 与 `vertical_slice_ticket_ref` 完全一致
 AND 当前工作单元消费的 contract_id/version 与最新批准版本一致
 AND Backend Slice Implementation Contract（后端适用）和 Build Architecture Checklist 已完成
-AND backend 影响且 scaffold_status=required 时，脚手架架构选择已由用户确认并达到 lifecycle-approved、兼容 schema v3 或统一 schema v4 合同与 Manifest 当前、对应 DDD / Layered MVC 基线、Wrapper 验证和 实现合同编译器重编译均已完成
+AND backend 影响且 scaffold_status=required 时，`gate.backend-architecture-platform-approved` 已由用户同时确认 DDD / MVC 与精确 Spring Boot 版本并达到 lifecycle-approved、统一 schema v4 合同与 Manifest 当前、对应 DDD / Layered MVC 基线、Wrapper 验证和 实现合同编译器重编译均已完成；既有工程只核验并复用当前登记值
 AND frontend 影响且无已有工程时，统一 schema v4 Project Scaffold Contract 已批准、持久化且当前，模板 bundled manifest 摘要或 Git commit 已锁定，`pnpm install --frozen-lockfile` 与工程基线要求的 lint/type-check/build 已实际通过
 AND 所有后续生成代码均绑定主 YSS skill、依赖闭包、允许写路径、预期证据和 YSS Skill Execution Result
 AND UI 影响切片的前端实现还原计划已通过 schema 校验、`template=false`、`status=approved`，且基线引用可读取

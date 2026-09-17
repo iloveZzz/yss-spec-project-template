@@ -42,12 +42,32 @@ export function loadApprovalRecord(filePath, gateId) {
   return selectApprovalRecord(yamlFromFile(filePath, "会签记录"), gateId);
 }
 
+function reviewBundleRows(bundle) {
+  if (bundle?.schema_version !== 1 || bundle.kind !== "review-bundle") fail("组合审查身份无效");
+  for (const field of ["bundle_id", "task_id", "work_unit_id", "review_session_id", "role_id", "runtime_id", "principal_ref"]) requireString(bundle[field], field);
+  if (!/^review-bundle\.[a-z0-9][a-z0-9-]*$/.test(bundle.bundle_id)) fail("组合审查 bundle_id 格式非法");
+  if (!/^work-unit\.[a-z0-9][a-z0-9-]*$/.test(bundle.work_unit_id)) fail("组合审查 work_unit_id 格式非法");
+  if (!Array.isArray(bundle.reviews) || !bundle.reviews.length) fail("组合审查不能为空");
+  if (new Set(bundle.reviews.map(row => row?.gate_id)).size !== bundle.reviews.length) fail("组合审查 gate_id 重复");
+  for (const row of bundle.reviews) {
+    if (!row || typeof row !== "object" || Array.isArray(row)) fail("组合审查结论必须是对象");
+    if (row.role_id !== bundle.role_id || row.runtime_id !== bundle.runtime_id || row.principal_ref !== bundle.principal_ref) fail("组合审查必须来自同一复核角色、运行时和实例");
+    if (row.review_session_id != null && row.review_session_id !== bundle.review_session_id) fail("组合审查 review_session_id 不一致");
+  }
+  return bundle.reviews;
+}
+
 export function selectApprovalRecord(record, gateId) {
   if (record.kind !== 'review-bundle') return record;
-  if (record.schema_version !== 1 || !Array.isArray(record.reviews) || !record.reviews.length || new Set(record.reviews.map(x => x.gate_id)).size !== record.reviews.length) fail('组合审查身份无效或重复');
-  const selected = record.reviews.filter(x => x.gate_id === gateId);
+  const selected = reviewBundleRows(record).filter(x => x.gate_id === gateId);
   if (selected.length !== 1) fail('组合审查缺少当前检查的明确结论');
-  return selected[0];
+  return {
+    ...selected[0],
+    review_bundle_id: record.bundle_id,
+    review_task_id: record.task_id,
+    review_work_unit_id: record.work_unit_id,
+    review_session_id: record.review_session_id
+  };
 }
 
 export function resolveApprovalRef(approvalRef, fromFile = ROOT) {
@@ -114,7 +134,7 @@ export function validateApprovalRecord(record, { rolesDoc, requireApproved = fal
 }
 
 function assertRecordUserDecision(record, registry, options) {
-  if (!registry.user_decision_policy.gates.includes(record.gate_id) && countersignRuleForGate(registry.gate_policy, record.gate_id)?.bucket !== "biological_human") return;
+  if (!registry.user_decision_policy.gates.includes(record.gate_id)) return;
   const result = assertApprovalUserDecision(record, registry, options);
   if (record.actor_kind === "biological-human" && result.validated.some((item) => item.principal_ref !== record.principal_ref)) fail("user-decision-responder-mismatch: 生物人会签者与原始回复者不一致");
 }
@@ -122,8 +142,7 @@ function assertRecordUserDecision(record, registry, options) {
 export function validateApprovalRecordFile(filePath, options = {}) {
   const record = yamlFromFile(filePath, "会签记录");
   if (record.kind === 'review-bundle') {
-    if (!Array.isArray(record.reviews) || !record.reviews.length) fail('组合审查不能为空');
-    return record.reviews.map(item => {
+    return reviewBundleRows(record).map(item => {
       const row = loadApprovalRecord(filePath, item.gate_id);
       if (options.requireApproved) {
         if (!row.drafter_principal_ref || row.drafter_principal_ref === row.principal_ref) fail('组合审查必须保留独立身份');

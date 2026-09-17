@@ -56,7 +56,7 @@ try {
   ddd.design.aggregate_catalog[0].api_exposure = 'public'; ddd.digest = technicalDigest(ddd);
   await assert.rejects(() => validate(ddd), /internal-only/); checks++;
   const scaffold = mvcFixture(root);
-  const decision = attachScaffoldDecisionFixture(path.join(root, 'decision-evidence'), { project_id: 'example', status: 'user-confirmed', confirmed_architecture: 'layered-mvc', decision_inputs_digest: `sha256:${'1'.repeat(64)}`, user_confirmation: { confirmation_ref: 'user-message', confirmed_by: 'user' } });
+  const decision = attachScaffoldDecisionFixture(path.join(root, 'decision-evidence'), { project_id: 'example', status: 'user-confirmed', confirmed_architecture: 'layered-mvc', platform_profile: 'spring-boot-2.7-jdk8', decision_inputs_digest: `sha256:${'1'.repeat(64)}`, user_confirmation: { confirmation_ref: 'user-message', confirmed_by: 'user' } });
   const record = { status: 'current', template: false, decisions: [decision] };
   const recordFile = path.join(root, 'decision.json');
   writeFileSync(recordFile, JSON.stringify(record));

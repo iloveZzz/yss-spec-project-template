@@ -21,7 +21,7 @@ owner: ai
 | YSS skill 路由 |  |  |  |
 | `prototype_confirmation` |  |  | UI 影响时必须是已确认；无 UI 影响记录 `not-applicable` 及原因 |
 | 后端脚手架登记 / 生成结果 |  |  | 记录 `scaffold_status`、目标目录、生成器输入、预期文件和 Execution Result |
-| 后端脚手架架构选择 |  |  | `scaffold-architecture-decisions.yaml` 的 decision_id、用户确认引用和 digest |
+| 后端架构与平台选择 |  |  | 新建工程记录 `gate.backend-architecture-platform-approved`、DDD / MVC、精确 Spring Boot / Java、decision_id、用户确认引用和 digest；既有工程记录登记值复用证据 |
 
 ## 2. 工程影响判断
 
@@ -34,11 +34,11 @@ owner: ai
 | 是否影响统一响应 / DTO / VO / Query / CMD | 是 / 否 |  |
 | 是否存在高风险变更、人工确认项或回滚约束 | 是 / 否 |  |
 
-## 2.2 脚手架架构选择
+## 2.2 后端架构与平台选择
 
-| 项目 | Agent 推荐及依据 | 继承来源 | 用户确认 | architecture_family | Profile / 模块闭包 | decision_id / digest |
-|---|---|---|---|---|---|---|
-|  |  |  |  | `domain-driven` / `layered-mvc` |  |  |
+| 项目 | 工程类型 | Agent 推荐及依据 | 继承来源 | 用户确认 / 复用 | architecture_family | Spring Boot / Java | Profile / 模块闭包 | gate / decision_id / digest |
+|---|---|---|---|---|---|---|---|---|
+|  | 新建 / 既有 |  |  |  | `domain-driven` / `layered-mvc` | 精确补丁 / Java |  |  |
 
 > 聚合不变量、复杂状态机、跨聚合一致性、Domain Event 或复杂并发任一强信号命中时推荐 DDD；强信号均不存在且以 CRUD、报表、数据转换或外部编排为主时推荐 MVC。用户可覆盖软性推荐，但必须记录原因；不支持的 Profile 直接阻断。
 
@@ -88,7 +88,7 @@ owner: ai
 | 检查项 | 结论 | 证据 / 备注 |
 |---|---|---|
 | 原型确认已完成，或已记录 `not-applicable` 原因 | 是 / 否 / 不适用 | `prototype_confirmation` |
-| `scaffold_status=required` 时已由 Agent 推荐、用户确认并持久化 architecture decision，随后由实现合同编译器编译 schema v3 合同并经生命周期批准，再使用对应 DDD / MVC 生成器 | 是 / 否 / 不适用 | decision_id / digest、contract_id / contract_version、实现合同编译器 draft、批准引用、持久化引用和 Manifest v3 |
+| `scaffold_status=required` 时已由 Agent 推荐并通过 `gate.backend-architecture-platform-approved` 同时确认 DDD / MVC 与精确 Spring Boot 版本，随后编译 schema v4 合同并经生命周期批准，再使用对应生成器；既有工程核验复用登记值 | 是 / 否 / 不适用 | gate、decision_id / digest、platform_configuration、contract_id / contract_version、批准引用、持久化引用和 Manifest v4 |
 | 脚手架生成结果只包含工程结构、配置和机械模板 | 是 / 否 | 禁止生成业务行为 |
 | 生成器输入、预期文件和实际 `./mvnw validate` / `./mvnw test` / `./mvnw package` 已留证 | 是 / 否 | 每条命令记录 `exit_code`、`duration_ms`、stdout/stderr 引用和执行时间；打印命令不算证据 |
 | `yss-backend-scaffold-parent` 基线校验已完成并重新进入 `yss-implementation-contract-compiler` | 是 / 否 / 不适用 |  |

@@ -50,6 +50,12 @@ export function packageContract(root) {
    success(run('recover'));success(run('recover',['--apply']));assert.deepEqual(fs.readFileSync(metadata),legacyBytes);
    success(run('sync',['--apply']));assert.equal(JSON.parse(fs.readFileSync(metadata)).metadataSchemaVersion,2);assert.equal(fs.readFileSync(path.join(target,'scripts/instantiate-harness'),'utf8'),'historical creator');
    assert.deepEqual(fs.readFileSync(context),contextBefore);
+   if(fs.existsSync(path.join(target,'scripts/verify-strategic-gate-migration'))) {
+    const active=path.join(target,'docs/.scratch/migration-fixture');fs.mkdirSync(active,{recursive:true});
+    fs.writeFileSync(path.join(active,'checkpoint.json'),JSON.stringify({repository_mode:'project-instance',gates:{'gate.domain-strategy-approved':{status:'approved'}}}));
+    const migrationRequired=run('doctor');assert.equal(migrationRequired.status,1);assert.equal(migrationRequired.data.status,'error');assert.equal(migrationRequired.data.checks.find(x=>x.name==='strategic-gate-migration')?.code,'STRATEGIC_GATE_MIGRATION_REQUIRED');
+    fs.rmSync(active,{recursive:true,force:true});success(run('doctor'));
+   }
   }
   const existing=path.join(scratch,'existing');fs.mkdirSync(path.join(existing,'src'),{recursive:true});
   const userFiles={'README.md':'# existing\n','.gitignore':'private-local-rule\n','src/Main.java':'class Main {}\n','pom.xml':'<project/>\n','approved.yaml':'decision: approved\n'};

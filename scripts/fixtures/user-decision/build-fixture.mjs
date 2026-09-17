@@ -1,7 +1,8 @@
 // Synthetic sources for tests only. Never use these helpers to record a real user's approval.
 import { mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { decisionDigest, requestDigest, renderDecisionRequest } from "../../lib/user-decision.mjs";
+import { decisionDigest, requestDigest, renderDecisionRequest, scaffoldDecisionSnapshot } from "../../lib/user-decision.mjs";
+import { platformProfile } from "../../lib/backend-platform.mjs";
 export function buildDecisionFixture(root, { boundary = "gate.spec-baseline-approved", scope = ["feature.demo"], subjectRef, subjectContent = "冻结业务基线 v1\n", extraItems = [] } = {}) {
   mkdirSync(root, { recursive: true });
   const write = (name, value) => {
@@ -47,10 +48,13 @@ export function buildImplementationFixture(root, ticketRef) {
 
 export function attachScaffoldDecisionFixture(root, decision) {
   mkdirSync(root, { recursive: true });
-  const { user_confirmation, status, decision_inputs_digest, ...snapshot } = decision;
+  const { user_confirmation } = decision;
+  const snapshot = scaffoldDecisionSnapshot(decision);
+  const profile = platformProfile(decision.platform_profile, undefined, decision.platform_configuration?.spring_boot_version);
+  const platformScope = `${profile.id}@${profile.spring_boot_version}/java${profile.java_version}`;
   const snapshotRef = path.join(root, "scaffold-inputs.json");
   writeFileSync(snapshotRef, JSON.stringify(snapshot));
-  const f = buildDecisionFixture(root, { boundary: "scaffold-choice", subjectRef: snapshotRef, scope: [decision.project_id, decision.confirmed_architecture, decision.decision_inputs_digest] });
+  const f = buildDecisionFixture(root, { boundary: "gate.backend-architecture-platform-approved", subjectRef: snapshotRef, scope: [decision.project_id, decision.confirmed_architecture, platformScope, decision.decision_inputs_digest] });
   return { ...decision, user_confirmation: { ...user_confirmation, user_decision_ref: f.ref, decision_subject_ref: snapshotRef } };
 }
 if (process.argv[2] === "--scaffold") {

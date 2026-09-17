@@ -24,9 +24,9 @@
     {
       "upstream": "yss-stage-decision",
       "canonical": "yss-stage-decision",
-      "upstream_hash": "8752a1ed6903bd20c33e21b521d52bd4f7a0662b1d25e00152b60ba38333c93b"
+      "upstream_hash": "46a9be287963eff0e71f8106b5d31311e43aabbd1117d7bc3d2d8666a0a99474"
     }
   ],
-  "source_state": "committed",
-  "source_state_note": "source_revision 与 upstream_hash 均来自已提交设计模板。"
+  "source_state": "working-tree",
+  "source_state_note": "source_revision 记录战略设计源仓 HEAD；upstream_hash 绑定当前 WORKTREE，提交后须固定为 40 位来源提交并恢复 committed。"
 }

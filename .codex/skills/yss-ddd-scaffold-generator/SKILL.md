@@ -23,7 +23,7 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 
 ## Spring Boot / Java 平台选择
 
-调用本技能时先展示 `scripts/backend-platforms` 的精确版本清单及兼容状态。由生命周期编排器把架构、Spring Boot、Java 和 YSS 父 POM/BOM 合并展示并取得真实用户确认；生成器不提问、不猜版本、不使用 `x` 或 `latest`。已有批准且当前的选择展示摘要后复用。
+调用本技能前由生命周期编排器展示 `scripts/backend-platforms` 的精确版本清单及兼容状态，并通过 `gate.backend-architecture-platform-approved` 把架构、Spring Boot、Java 和 YSS 父 POM/BOM 合并展示、取得真实用户确认；生成器不提问、不猜版本、不使用 `x` 或 `latest`。已有批准且当前的选择展示摘要后复用；既有工程核验并复用登记值，不触发该门禁。
 
 - 候选平台：Boot 2.7.18 / Java 8，Boot 3.5.16 / Java 17 或 21，Boot 4.1.1 / Java 17 或 21。新 Boot 默认推荐 Java 17；候选不等于可生成。
 - 独立子项目可继承主项目组合或覆盖，必须逐项目确认（允许一次确认明确列出的项目）；同一 Maven Reactor 使用一个平台。
@@ -36,7 +36,7 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 
 ## 优先流程
 
-1. 确认服务级 `scaffold_request_id`、已由用户确认且生命周期批准的 `domain-driven` 架构选择及 digest、项目名、基础包名、Maven 项目坐标、父 POM GAV、YSS Components BOM 版本、输出目录和批准 Profile。Java `base_package` 与 Maven `group_id` 是两个独立输入，不得相互推导；脚手架发生在 Ticket 正式化前，不使用 `slice_id` 伪造切片身份。
+1. 确认服务级 `scaffold_request_id`、已通过 `gate.backend-architecture-platform-approved` 的 `domain-driven` 架构与精确 Spring Boot 版本选择及 digest、项目名、基础包名、Maven 项目坐标、父 POM GAV、YSS Components BOM 版本、输出目录和批准 Profile。Java `base_package` 与 Maven `group_id` 是两个独立输入，不得相互推导；脚手架发生在 Ticket 正式化前，不使用 `slice_id` 伪造切片身份。
    Harness 内输出目录必须是 `apps/backend/` 容器，生成器再以 `project_name` 创建 `apps/backend/<project>/`；禁止使用 `app/backend/`、`app/frontend/` 或把 `apps/backend/` 之外的容器根当作后端项目根。
 2. 优先运行 `node scripts/generate_and_verify_scaffold.mjs`，在同一个受控工作流中生成骨架并执行真实 Maven 验证。`generate_scaffold.mjs` 只是底层生成原语，单独返回 0 不代表脚手架完成。
 3. 检查生成的模块名、POM、机械启动入口、基础配置文件和包路径。

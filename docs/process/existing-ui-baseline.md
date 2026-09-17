@@ -18,7 +18,7 @@
 
 Handoff v5 必须声明 `ui_baseline_kind`。原型分支继续保留 prototype、visual baseline 与离线原型要求；既有 UI 分支只使用 `source.existing_ui_baseline_ref`，不允许混入或伪填原型字段。`package_export` v2 显式绑定相同类型。
 
-既有 UI 引用的 digest 是 `existing-ui-baseline.json` **原字节摘要**。`package_export.approvals.existing_ui_baseline_ref` 沿用源 profile 已有的产品确认门禁（主模板为 `gate.product-design-approved`，战略专职 profile 为 `gate.user-confirmation`）与 `digest_kind: sha256-bytes`；该门禁必须存在于源 `user_decision_policy.gates`。批准主体必须是同一 manifest，使用现有真实用户决定校验。人工确认需在最终可审阅字节准备完成后获得；不得复用旧原型批准、仅改 status 或自签批准。该门禁的原始回复随交接闭包携带。
+既有 UI 引用的 digest 是 `existing-ui-baseline.json` **原字节摘要**。`package_export.approvals.existing_ui_baseline_ref` 使用 `gate.product-design-approved` 与 `digest_kind: sha256-bytes`；该门禁必须存在于源 `user_decision_policy.gates`。批准主体必须是同一 manifest，使用现有真实用户决定校验。人工确认需在最终可审阅字节准备完成后获得；不得复用旧原型批准、仅改 status 或自签批准。旧包中的 `gate.user-confirmation` 仅按历史模式读取，不得作为当前输入继续流转。该门禁的原始回复随交接闭包携带。
 
 既有 manifest 的 `status` 表达准备状态，展示后保持其原字节不变。`ready-for-human` 清单可在当前批准记录验证通过后交接；有效批准由现有批准记录及真实用户决定持有，不要求确认后把清单改为 `approved`。结构验证不授予批准，导出、包验证和接收均须核验完整批准链。确认后任何字节改写（包括只改 status）仍使原决定失效。旧原型分支仍要求原型自身为 `approved`，不转换历史批准。
 

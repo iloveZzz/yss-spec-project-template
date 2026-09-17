@@ -132,6 +132,7 @@
       "yss-implementation-contract-compiler",
       "yss-domain",
       "yss-ui",
+      "yss-page-module-development",
       "yss-web-controller",
       "yss-repository",
       "implement",
@@ -168,6 +169,7 @@
         "yss-implementation-contract-compiler",
         "yss-domain",
         "yss-ui",
+        "yss-page-module-development",
         "yss-web-controller",
         "yss-repository",
         "implement",
@@ -206,6 +208,7 @@
         "yss-implementation-contract-compiler",
         "yss-domain",
         "yss-ui",
+        "yss-page-module-development",
         "yss-web-controller",
         "yss-repository",
         "implement",
@@ -237,6 +240,7 @@
         "yss-implementation-contract-compiler",
         "yss-domain",
         "yss-ui",
+        "yss-page-module-development",
         "yss-web-controller",
         "yss-repository",
         "implement",
@@ -300,7 +304,7 @@
     }
   ],
   "gate_policy": {
-    "default_if_unlisted": "biological-human",
+    "default_if_unlisted": "reject-unlisted",
     "evidence_only": [],
     "orchestrator": [],
     "digital_human_review": [
@@ -349,7 +353,18 @@
       "additional_reviewers": "uncovered-expertise-or-external-requirement",
       "adjacent_checks": "one-review-with-per-check-conclusions",
       "suggestions": "backlog-without-blocking",
-      "violations_or_missing_evidence": "blocking"
+      "violations_or_missing_evidence": "blocking",
+      "review_bundles": [
+        {
+          "bundle_id": "review-bundle.plan",
+          "work_unit": "work-unit.plan-requirements",
+          "aggregate_gate": "gate.plan-approved",
+          "checks": [
+            "check.domain-strategy-approved",
+            "check.stage-decision-package-approved"
+          ]
+        }
+      ]
     },
     "continuation_reviews": {
       "gate.plan-approved": [

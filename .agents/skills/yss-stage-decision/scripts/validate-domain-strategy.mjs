@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import process from "node:process";
 import { parseArgs } from "node:util";
 import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
-import { loadApprovalRecord, resolveApprovalRef, validateApprovalRecordFile } from "../../../../scripts/lib/approval-record.mjs";
+import { loadApprovalRecord, resolveApprovalRef, validateApprovalRecord } from "../../../../scripts/lib/approval-record.mjs";
 import { verifyContextSnapshot } from "../../../../scripts/lib/context-contract.mjs";
 
 import { extractTraceability } from "../../../../scripts/lib/strategic-handoff-rules.mjs";
@@ -196,8 +196,8 @@ function validate(data, contextRoot) {
     if (approval.current_version !== data.domain_version) errors.push("approval.current_version 必须等于 domain_version");
     try {
       const approvalPath = resolveApprovalRef(approval.approval_ref);
-      validateApprovalRecordFile(approvalPath, { requireApproved: true });
-      const record = loadApprovalRecord(approvalPath);
+      const record = loadApprovalRecord(approvalPath, "check.domain-strategy-approved");
+      validateApprovalRecord(record, { requireApproved: true });
       if (record.gate_id !== "check.domain-strategy-approved") errors.push("approval.approval_ref 的 gate_id 必须为 check.domain-strategy-approved");
       if (record.role_id !== approval.approver) errors.push("approval.approver 必须与会签记录 role_id 一致");
     } catch (error) { errors.push(`approval.approval_ref 会签记录无效: ${error.message}`); }

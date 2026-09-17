@@ -7,6 +7,7 @@ import { ROOT } from "./lifecycle-registry.mjs";
 import { loadDigitalHumanRoles } from "./digital-human-roles.mjs";
 import { validateJsonSchema } from "./json-schema.mjs";
 import { assertDecisionContinuation } from './decision-continuation.mjs';
+import { platformProfile } from './backend-platform.mjs';
 
 export function decisionError(code, detail) {
   const error = new TypeError(`${code}: ${detail}`);
@@ -205,11 +206,21 @@ export function assertImplementationDecision(state, options = {}) {
 
 export function scaffoldDecisionSnapshot(decision) {
   const { user_confirmation, status, decision_inputs_digest, ...inputs } = decision;
-  return inputs;
+  const profile = platformProfile(decision.platform_profile, undefined, decision.platform_configuration?.spring_boot_version);
+  return {
+    ...inputs,
+    platform_selection: {
+      profile_id: profile.id,
+      spring_boot_version: profile.spring_boot_version,
+      java_version: profile.java_version,
+    },
+  };
 }
 export function assertScaffoldUserDecision(decision, options = {}) {
   const confirmation = decision.user_confirmation || {};
-  const requirement = { boundary: "scaffold-choice", subject_ref: confirmation.decision_subject_ref, scope: [decision.project_id, decision.confirmed_architecture, decision.decision_inputs_digest], user_decision_ref: confirmation.user_decision_ref };
+  const profile = platformProfile(decision.platform_profile, undefined, decision.platform_configuration?.spring_boot_version);
+  const platformScope = `${profile.id}@${profile.spring_boot_version}/java${profile.java_version}`;
+  const requirement = { boundary: "gate.backend-architecture-platform-approved", subject_ref: confirmation.decision_subject_ref, scope: [decision.project_id, decision.confirmed_architecture, platformScope, decision.decision_inputs_digest], user_decision_ref: confirmation.user_decision_ref };
   assertUserDecisionRequirement(requirement, options);
   const io = decisionIO(options);
   if (decisionDigest(io.document(requirement.subject_ref)) !== decisionDigest(scaffoldDecisionSnapshot(decision))) decisionError("user-decision-stale", "脚手架输入与用户所见快照不一致");
