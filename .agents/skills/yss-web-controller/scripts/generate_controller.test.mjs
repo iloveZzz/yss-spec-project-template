@@ -13,7 +13,7 @@ const dtoWireProfileDigest = createHash("sha256").update(await readFile(dtoWireP
 
 for (const [profile, module, placement, modules, generator] of [
   ["layered-mvc-service", "service", "server", ["server", "service", "repository"], "yss-layered-mvc-scaffold-generator"],
-  ["mvc-data-analysis-v1", "core", "client", ["server", "core", "client", "repository", "adapter", "feign-client"], "yss-mvc-data-analysis-project-initializer"]
+  ["mvc-data-analysis-v1", "core", "client", ["server", "core", "client", "repository", "adapter", "feign-client"], "yss-layered-mvc-scaffold-generator"]
 ]) test(`${profile} binds MVC service types, DTO ownership and drift checks`, async (t) => {
   const data = await fixture({ platform_profile: "spring-boot-2.7-jdk8", validation_namespace: "javax" });
   t.after(() => rm(data.root, { recursive: true, force: true }));

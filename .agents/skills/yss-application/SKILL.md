@@ -27,13 +27,15 @@ Application 层用例编排 skill。负责协调 Domain 与 Gateway，定义事�
 
 ## 工作方式
 
-1. 确认工程来自 `target-domain-model`；`core/client/repository` 等旧架构对本脚手架链路为 `unsupported`。
-2. 确认 Use Case、Application 边界、事务边界已在批准合同中写明。
-3. 实现 AppService 时调用 Domain Service / Gateway，核心规则下沉 Domain。
-4. Web DTO 转 Application Command/Result 属于 Web，PO 转 Domain 属于 Infrastructure；Application 内确有独立模型转换时才加载 `mapstruct`，并统一 Spring Bean 与构造器注入。
-5. 详细包结构、注解、示例和旧架构阻断边界见 `references/application-layer-guide.md`。
+1. 按 `architecture_identity.architecture_profile` 选择且只选择对应 Profile reference；Profile 未登记、与 Manifest 不一致或成熟度不满足当前任务时返回 `blocked`。
+2. `target-domain-model` 才执行 Domain Service / Gateway、跨聚合编排和下述 DDD 产物规则；`layered-mvc-service` 与 `mvc-data-analysis-v1` 分别按其 service/core Profile 承载用例、规则和事务，不加载 DDD Gateway。
+3. 确认 Use Case、Application/service/core 边界与事务边界已在批准合同中写明。
+4. Web DTO 到内部 Command/Result 的转换归 Web 边界，持久化转换归 Repository/Infrastructure；用例层确有独立模型转换时才加载 `mapstruct`，并统一 Spring Bean 与构造器注入。
+5. DDD 的详细包结构、注解、示例和旧架构阻断边界见 `references/application-layer-guide.md`；MVC 不读取该 guide。
 
-## 产物范围
+## DDD 产物范围
+
+以下路径只适用于 `target-domain-model`；MVC 产物以选中的 Profile reference 和合同为准。
 
 - `application/.../command/*Command.java`、`application/.../query/*Query.java`、`application/.../result/*Result.java`
 - `application/.../port/*QueryPort.java`

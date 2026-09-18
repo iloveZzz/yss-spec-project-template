@@ -1,11 +1,11 @@
 ---
 name: yss-security-algorithm
-description: "接入或排查 YSS 加解密、JWT/JWK、密码编码、密钥加载与轮换。"
+description: "审查、迁移或排查既有 YSS 加解密、JWT/JWK、密码编码与密钥使用；当前组件禁止新生产接入。"
 ---
 
 # yss-security-algorithm
 
-Use this skill for YSS 安全算法组件. Keep implementation grounded in the local project and resolvable YSS backend component source.
+Use this skill as the governance, migration, and troubleshooting entry for the existing YSS 安全算法组件. Keep conclusions grounded in the local project, the approved platform catalog, and resolvable component source.
 
 中文说明：本技能用于 YSS 安全算法组件。执行时优先读取源码索引，避免凭记忆猜类名、配置项或接入方式。
 
@@ -17,13 +17,23 @@ Use this skill for YSS 安全算法组件. Keep implementation grounded in the l
 
 Read `references/source-index.md` as a path-hint index whenever the task depends on exact modules, annotations, auto configuration, properties, controllers, clients, repositories, DTOs, handlers, or troubleshooting.
 
+## 当前准入结论
+
+- `yss-component-security-algorithm` 当前只允许既有工程只读盘点、故障分诊、风险收敛和迁移；禁止为新项目、新 Slice 或新生产能力接入。
+- 硬编码私钥、固定 key id、进程启动时临时生成密钥以及 `noop` password encoder 均不构成生产密钥管理。组件源码可定位或可编译也不能解除该结论。
+- 只有平台目录中的 `component.security-algorithm` 对目标架构为 `verified`，精确构件绑定仍有效，并且外部 KMS / Secret Manager、轮换撤销、兼容迁移、行为测试和安全责任人审查全部闭合后，才能通过独立决策重新开放新接入；本 Skill 不自行修改该状态。
+- 新接入请求返回 `blocked-for-production`，并给出迁移或外部密钥服务方案；不得生成基于当前硬编码工具类的生产代码。
+
 ## Workflow
 
-1. Identify whether the task is symmetric encryption, asymmetric encryption, SM algorithms, JWT key generation/configuration, or decryption troubleshooting.
-2. Read `references/source-index.md`, then inspect `CryptoType`, `SecurityCryptoUtil`, `KeyGeneratorUtils`, and `DefaultJwtConfiguration`.
-3. Use `CryptoType` to route algorithm-specific behavior; current enum values include `RSA`, `AES`, `DES`, `SM2`, and `SM4`.
-4. Treat `SecurityCryptoUtil` and `Jwks` as compatibility/legacy references only. The current `Jwks.generateRsa()` decodes hardcoded `PK`/`SK` constants rather than generating or loading a managed key, while EC/secret keys can be process-local or regenerated at startup; none is production key management.
-5. For production changes, externalize keys/secrets and avoid copying hardcoded sample keys into business modules.
+1. 识别任务是新接入、既有故障、风险止血还是迁移；新接入直接按上述准入结论阻断。
+2. 读取 `references/source-index.md`，再按需检查 `CryptoType`、`SecurityCryptoUtil`、`KeyGeneratorUtils` 和 `DefaultJwtConfiguration`，记录实际算法、模式、编码、key id、密钥来源、调用方和持久化数据范围。
+3. 对既有使用先完成暴露面和兼容盘点：源码/配置中的密钥材料、JWT 签发与验签方、密码散列格式、密文格式、历史数据、下游消费者及回滚要求。
+4. 将 `SecurityCryptoUtil` 和 `Jwks` 视为兼容/遗留入口。`Jwks.generateRsa()` 解码硬编码 `PK`/`SK`，EC/secret key 可能进程内生成或重启变化，均不得成为目标方案。
+5. 迁移目标必须使用批准的外部 KMS / Secret Manager 或等价受控密钥服务，应用只保存 key reference/version；密钥材料不得进入源码、普通配置、日志、证据文件或聊天记录。
+6. 设计分阶段轮换：冻结新旧写入边界，建立新 key version，双读/多版本解密或离线重加密，验证存量数据和 JWT 消费者，再撤销旧 key；不得直接覆盖旧密钥导致数据或令牌不可恢复。
+7. 密码迁移使用显式的强编码器和兼容升级策略；JWT 必须验证 signature、issuer、audience、expiry 和允许算法，payload parsing 不能充当认证。
+8. 输出迁移清单、数据/调用方影响、回滚点、验证结果和安全审查引用；缺任一生产前提时保持 `blocked-for-production`。
 
 ## Security Notes
 
@@ -44,9 +54,17 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 - Decrypt path uses the matching algorithm/key type.
 - No passwords, private keys, or long-lived secrets are added to source files.
 - If external key storage, rotation/revocation, algorithm parameters, compatibility tests, or security-owner review is missing, return `blocked-for-production` instead of generating crypto code.
+- Existing ciphertext/JWT/password compatibility is demonstrated with representative fixtures before disabling an old key or encoder.
+- Logs and verification evidence contain only key references and redacted metadata, never plaintext, private keys, seeds, shared secrets, or complete tokens.
 
 ## Do Not
 
 - Do not invent class names or configuration keys without checking the source index.
 - Do not replace component extension points with business-local framework code.
 - Do not broaden the task into unrelated YSS components unless the user asks.
+- Do not approve a new integration because the component compiles, a source index is fresh, or an existing project already depends on it.
+- Do not copy, print, rotate in place, or reissue any key material through Agent output.
+
+## 平台与源码门禁
+
+接入、修改、代码生成或给出精确类名/配置前，读取 [后端组件平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，从批准的 `platform_configuration.component_platform_line` 选择 `source-index.boot2-java8.md` 或 `source-index.boot3-java17.md`，并以 `--skill yss-security-algorithm --platform-line <line> --source-root <matching-root>` 运行统一 freshness 校验。平台线与源码根不匹配、组件 tree 不一致、组件子树 dirty、索引缺少平台信号，或 Manifest / 组件 GAV 缺少 verified 兼容证据时返回 `blocked`；不得回退另一代索引，也不在业务实现中升级、降级或替换 YSS 组件。既有工程只读分诊可继续，但不得据此宣称跨 Boot/JDK 兼容。

@@ -77,7 +77,7 @@ owner: ai
 | 场景 | 推荐 skill | 是否需要 | 备注 |
 |------|-------------|----------|------|
 | 新服务骨架 | `yss-ddd-scaffold-generator` / `yss-layered-mvc-scaffold-generator` | 是 / 否 | 按批准的 architecture_family 选择 |
-| 后端基线检查 | `yss-backend-scaffold-parent` | 是 / 否 |  |
+| 后端基线检查 | `yss-ddd-scaffold-generator` 内部 `engineering-baseline` / `yss-layered-mvc-scaffold-generator` | 是 / 否 |  |
 | 领域建模 | `yss-domain` | 是 / 否 |  |
 | Application 用例编排 / 事务边界 | `yss-application` | 是 / 否 |  |
 | Repository / MyBatis | `yss-repository` / `yss-mybatis` | 是 / 否 |  |
@@ -91,7 +91,7 @@ owner: ai
 | `scaffold_status=required` 时已由 Agent 推荐并通过 `gate.backend-architecture-platform-approved` 同时确认 DDD / MVC 与精确 Spring Boot 版本，随后编译 schema v4 合同并经生命周期批准，再使用对应生成器；既有工程核验复用登记值 | 是 / 否 / 不适用 | gate、decision_id / digest、platform_configuration、contract_id / contract_version、批准引用、持久化引用和 Manifest v4 |
 | 脚手架生成结果只包含工程结构、配置和机械模板 | 是 / 否 | 禁止生成业务行为 |
 | 生成器输入、预期文件和实际 `./mvnw validate` / `./mvnw test` / `./mvnw package` 已留证 | 是 / 否 | 每条命令记录 `exit_code`、`duration_ms`、stdout/stderr 引用和执行时间；打印命令不算证据 |
-| `yss-backend-scaffold-parent` 基线校验已完成并重新进入 `yss-implementation-contract-compiler` | 是 / 否 / 不适用 |  |
+| 生成器内部工程基线校验已完成并重新进入 `yss-implementation-contract-compiler` | 是 / 否 / 不适用 |  |
 | 脚手架后所有业务代码均绑定批准 Slice Implementation Contract 和 YSS Skill Execution Result | 是 / 否 |  |
 
 ## 5. 完成标准
@@ -104,7 +104,7 @@ owner: ai
 - [ ] `baseline_id` / `baseline_version` 已登记，后续切片和审查只引用该质量基线，未重复定义。
 - [ ] 命中高风险影响时已完成 Doubt-Driven 主张、反证、证据和残余风险记录；未命中时已记录 `not-applicable` 原因。
 - [ ] 风险影响、验证证据和责任人已记录。
-- [ ] 原型确认后已按脚手架顺序完成工程基线、生成器、`yss-backend-scaffold-parent` 和 实现合同编译器 重编译；脚手架未生成业务行为。
+- [ ] 原型确认后已按脚手架顺序完成工程基线、生成器内部基线校验和 实现合同编译器 重编译；脚手架未生成业务行为。
 
 ## 6. 下一步门禁
 

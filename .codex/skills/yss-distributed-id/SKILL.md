@@ -67,3 +67,7 @@ description: "接入或排查 YSS 分布式 ID：Leaf、CosId、号段、雪花�
 - 拦截器与自动注入：`assets/AutoIdInterceptor.java`
 - 启用注解：`assets/EnableDistributedId.java`
 - Leaf 配置相关：`assets/LeafConf.java`
+
+## 平台与源码门禁
+
+接入、修改、代码生成或给出精确类名/配置前，读取 [后端组件平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，从批准的 `platform_configuration.component_platform_line` 选择 `source-index.boot2-java8.md` 或 `source-index.boot3-java17.md`，并以 `--skill yss-distributed-id --platform-line <line> --source-root <matching-root>` 运行统一 freshness 校验。平台线与源码根不匹配、组件 tree 不一致、组件子树 dirty、索引缺少平台信号，或 Manifest / 组件 GAV 缺少 verified 兼容证据时返回 `blocked`；不得回退另一代索引，也不在业务实现中升级、降级或替换 YSS 组件。既有工程只读分诊可继续，但不得据此宣称跨 Boot/JDK 兼容。

@@ -71,6 +71,9 @@ required_files:
   - .agents/skills/yss-skill-source-index-refresh/SKILL.md
   - .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.mjs
   - .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs
+  - tests/backend-platforms.test.mjs
+  - tests/implementation-contract-compiler.test.mjs
+  - tests/yss-skill-source-index.test.mjs
   - .agents/skills/yss-repository/tests/profile-routing.test.mjs
   - docs/agents/yss-ui-skills-integration.md
   - docs/agents/strategic-design-skills-integration.md
@@ -251,6 +254,10 @@ syntax_files:
   - scripts/verify-maintenance-review-workflow-scenarios
   - scripts/verify-template-cache-scenarios
 routing:
+  - patterns: ["tests/backend-platforms.test.mjs", "tests/implementation-contract-compiler.test.mjs"]
+    groups: [implementation]
+  - patterns: ["tests/yss-skill-source-index.test.mjs"]
+    groups: [skills]
   - patterns: [".template-source/cli-core/**"]
     groups: [dedicated-cli-core]
   - patterns: ["scripts/*existing*", "scripts/*preflight-delivery*", "scripts/lib/*existing*", "scripts/lib/delivery-preflight.mjs", "scripts/lib/approved-execution-context.mjs", "scripts/lib/ui-baseline.mjs", "scripts/fixtures/existing-*/**", "docs/process/existing-*", "docs/process/delivery-preflight.md", "docs/process/schemas/existing-*", "docs/process/schemas/delivery-preflight*"]

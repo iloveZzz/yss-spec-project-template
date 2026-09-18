@@ -1,22 +1,12 @@
 ---
 name: yss-mvc-data-analysis-project-initializer
-description: 在生命周期批准的初始化合同下创建独立 Git 管理的数据分析 project-instance；固定 mvc-data-analysis-v1 六模块、Java 8 和本地测试 H2。
+description: 迁移历史数据分析初始化合同到 yss-layered-mvc-scaffold-generator 的 mvc-data-analysis-v1 Profile。
 ---
 
-# 数据分析 MVC 项目初始化
+# 数据分析 MVC 项目初始化（Deprecated）
 
-这是 `work-unit.service-project-initialization` 的执行器，不是通用 MVC 脚手架。通用 MVC 使用 `yss-layered-mvc-scaffold-generator`；DDD 使用 `yss-ddd-scaffold-generator`。历史数据分析初始化入口不提供自动别名，迁移关系只在 `docs/agents/skill-migrations.md` 记录。
+本入口处于 `migration-only`。`mvc-data-analysis-v1` 已由 `yss-layered-mvc-scaffold-generator` 原生持有；本入口不得进入新的 Project Scaffold Contract、Recipe、typed dependency 或任务包。
 
-## 执行合同
+发现旧合同或调用方引用本 ID 时返回 `skill-deprecated`，将合同标记为 `stale`，改由编译器生成绑定 `generator_skill=yss-layered-mvc-scaffold-generator` 与 `architecture_profile=mvc-data-analysis-v1` 的新合同。不得静默替换、继承批准或自动设置 `ready-for-agent`。
 
-- 必须有生命周期批准且当前的 schema v4 scaffold contract，绑定 `architecture_profile=mvc-data-analysis-v1`、本生成器、已批准的架构决策、Technical Design、Data Architecture Decision v1 和真实工程合同批准记录。
-- 固定 server/core/client/repository/adapter/feign-client；core 是薄应用层，规则见 `docs/agents/backend-architecture-profiles.md`。不生成业务接口、SQL、DDL、Mock、生产数据库配置或额外数据源。
-- `verification_database=h2` / `production_database=not-bound`；Java 8 / Boot 2.7 / javax。目标不存在，禁止覆盖、迁移、自动提交和推送。
-- 合同必须包含 `context_handoff_ref`、`context_handoff_digest`：批准交接的完整根 CONTEXT.md（含 schema frontmatter），不得用跨仓路径替代本仓词汇表。初始化只复制已确认内容，不创造业务术语；父项目只保留服务引用和 handoff 证据。
-- `allowed_write_paths` 必须覆盖目标项目及同级 skillUtils。已有 skillUtils 锁不匹配即 blocked，不替换别的项目正在使用的工具包。
-
-## 命令与结果
-
-`node scripts/generate_project.mjs` 使用通用 MVC 生成器相同的批准合同与 Maven 坐标参数（`--output-dir` 是父容器）；无 `--database`、`--with-mock` 或交互选项。
-
-输出独立 project-instance、初始化但未提交的 main Git、生命周期资产、完整锁定 skillUtils、架构身份及 Manifest。使用共享 `run_scaffold_verification.mjs <project> <evidence>` 实跑三条 Wrapper 命令；只在实际成功后报告 empty-scaffold-verified。Profile 仍须独立首切片 fixture 达标才能晋升 supported。
+`scripts/run_scaffold_verification.mjs` 仅为历史已生成项目保留只读恢复验证；它不允许新生成。迁移关系由 `docs/agents/skill-migrations.md` 记录；引用归零后删除本目录，不建立 alias。

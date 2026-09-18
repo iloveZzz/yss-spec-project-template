@@ -97,13 +97,12 @@ async function downstreamDrift(manifest, requiredSkills = REQUIRED_SKILLS) {
   }
   const contracts = manifest.readiness?.contracts ?? {};
   const contractFiles = {
-    scaffold_parent: path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-ddd-scaffold-generator", "references", "yss-backend-scaffold-parent", "SKILL.md"),
     compiler_contract: path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-implementation-contract-compiler", "references", "compiler-contract.yaml")
   };
   if (manifest.architecture_family === "layered-mvc") {
-    delete contractFiles.scaffold_parent;
     contractFiles.architecture_profiles = path.join(REPOSITORY_ROOT, "docs/agents/backend-architecture-profiles.md");
-  }
+  } else if (contracts.engineering_baseline) contractFiles.engineering_baseline = path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-ddd-scaffold-generator", "references", "engineering-baseline.md");
+  else contractFiles.scaffold_parent = path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-ddd-scaffold-generator", "references", "yss-backend-scaffold-parent", "SKILL.md");
   for (const [name, target] of Object.entries(contractFiles)) {
     const expected = contracts[name];
     if (typeof expected !== "string" || !/^[a-f0-9]{64}$/.test(expected)) {

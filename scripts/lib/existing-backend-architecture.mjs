@@ -17,10 +17,11 @@ function file(root,ref){relative(ref);let current=realpathSync(root);for(const p
 function parse(bytes){const doc=parseDocument(String(bytes),{uniqueKeys:true,maxAliasCount:0});requireThat(!doc.errors.length,'ARCH_EVIDENCE_FORMAT',doc.errors[0]?.message);return doc.toJS({maxAliasCount:0});}
 function bound(root,binding){requireThat(binding&&text(binding.ref)&&digest(binding.digest),'ARCH_EVIDENCE_REF','缺少原始证据 ref/digest');const bytes=readFileSync(file(root,binding.ref));requireThat(sha(bytes)===binding.digest,'ARCH_EVIDENCE_STALE',`原始证据已改变: ${binding.ref}`);return parse(bytes);}
 function same(a,b,code,label){requireThat(existingArchitectureDigest(a)===existingArchitectureDigest(b),code,label);}
-const FIELDS=['schema_version','source_kind','architecture_family','architecture_profile','repository_id','project_id','source_digest','build_units_digest'];
+const REQUIRED_FIELDS=['schema_version','source_kind','architecture_family','architecture_profile','repository_id','project_id','source_digest','build_units_digest'];
+const FIELDS=[...REQUIRED_FIELDS,'platform_configuration'];
 export function validateExistingArchitecture(identity,registry){
  requireThat(identity?.schema_version===2&&identity.source_kind==='existing-registration','ARCH_SOURCE_UNSUPPORTED','仅支持 existing-registration v2');
- requireThat(FIELDS.every(k=>identity[k]!==undefined)&&Object.keys(identity).every(k=>FIELDS.includes(k)),'ARCH_IDENTITY_SHAPE','既有身份字段缺失或混入生成事实');
+ requireThat(REQUIRED_FIELDS.every(k=>identity[k]!==undefined)&&Object.keys(identity).every(k=>FIELDS.includes(k)),'ARCH_IDENTITY_SHAPE','既有身份字段缺失或混入生成事实');
  const p=registry.existing_project_profiles?.[identity.architecture_profile];
  requireThat(p&&p.source_kind==='existing-registration'&&p.build_system==='maven'&&p.architecture_family===identity.architecture_family,'ARCH_PROFILE_UNSUPPORTED','未支持的既有工程架构/Profile');
  requireThat(['domain-driven','layered-mvc'].includes(identity.architecture_family)&&text(identity.repository_id)&&text(identity.project_id)&&digest(identity.source_digest)&&digest(identity.build_units_digest),'ARCH_IDENTITY_SHAPE','既有身份未绑定项目或源码/构建摘要');

@@ -1,4 +1,4 @@
-schema_version: 2
+schema_version: 3
 registry_id: yss.skill-routing
 status: active
 description: >-
@@ -6,6 +6,47 @@ description: >-
   单一可执行注册表。实现合同编译器与生命周期编排器只消费通过本表校验的
   canonical 技能；skills-lock.json 继续独立持有来源、hash 与投影完整性。
 canonical_content_root: .agents/skills
+backend_skill_domains:
+  schema_version: 1
+  scope: active-yss-backend-capability-owners
+  domain_ids: [technical-design, layered-implementation, wire-framework-contract, component-capability, engineering-initialization, platform-governance-migration]
+  assignments:
+    yss-technical-design: technical-design
+    yss-tactical-design: technical-design
+    yss-domain: layered-implementation
+    yss-application: layered-implementation
+    yss-repository: layered-implementation
+    yss-web-controller: layered-implementation
+    yss-mybatis: wire-framework-contract
+    yss-dto: wire-framework-contract
+    yss-validation: wire-framework-contract
+    yss-exception: wire-framework-contract
+    yss-cache: component-capability
+    yss-userinfo: component-capability
+    yss-audit-log: component-capability
+    yss-excel-mvc: component-capability
+    yss-distributed-id: component-capability
+    yss-resilience4j: component-capability
+    yss-security-algorithm: component-capability
+    yss-ddd-scaffold-generator: engineering-initialization
+    yss-layered-mvc-scaffold-generator: engineering-initialization
+    yss-implementation-contract-compiler: platform-governance-migration
+    yss-skill-source-index-refresh: platform-governance-migration
+    yss-up-springboot3: platform-governance-migration
+  deprecated_skills: [yss-mvc-design, yss-mvc-data-analysis-project-initializer, yss-backend-scaffold-parent]
+backend_source_index_contract:
+  schema_version: 1
+  owner_skill: yss-skill-source-index-refresh
+  scope: yss-component-capability-skills
+  component_skills: [yss-audit-log, yss-cache, yss-distributed-id, yss-dto, yss-excel-mvc, yss-exception, yss-mybatis, yss-resilience4j, yss-security-algorithm, yss-userinfo, yss-validation]
+  selector_path: references/source-index.md
+  generated_path_pattern: references/source-index.<platform-line>.md
+  platform_lines:
+    - { id: boot2-java8, source_env: YSS_SOURCE_ROOT_BOOT2_JAVA8, generated_suffix: source-index.boot2-java8.md }
+    - { id: boot3-java17, source_env: YSS_SOURCE_ROOT_BOOT3_JAVA17, generated_suffix: source-index.boot3-java17.md }
+  platform_line_source: approved-platform-configuration
+  freshness_checker: yss-skill-source-index-refresh/scripts/check-backend-skill-source-index.mjs
+  cross_line_fallback: forbidden
 existing_project_profiles:
   existing-domain-driven-maven:
     source_kind: existing-registration
@@ -45,7 +86,7 @@ architecture_profiles:
     dto_modules: [server, client]
   mvc-data-analysis-v1:
     architecture_family: layered-mvc
-    generator_skill: yss-mvc-data-analysis-project-initializer
+    generator_skill: yss-layered-mvc-scaffold-generator
     maturity: draft
     core_modules: [server, core, client, repository, adapter, feign-client]
     capability_modules: {}
@@ -58,7 +99,7 @@ runtime_policy:
   consumed_by_lifecycle: true
   discovery_enforced: true
 capability_contract:
-  schema_version: 2
+  schema_version: 3
   id_pattern: "^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$"
   dependency_types: [context-required, context-conditional, coordination-only, review-only, component-dependency]
   task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input, contract-compilation, reroute, result-validation, source-index-refresh]
@@ -69,39 +110,54 @@ capability_contract:
     deduplicate_skills: true
     preserve_all_reasons: true
   deterministic_order: [recipe-declaration, dependency-topology, skill-id]
+  platform_component_binding:
+    marker: provider
+    required_kind: yss-component
+    catalog_source: docs/engineering/backend-platforms.json
+  provider_kinds: [yss-component, platform-managed, none]
+retirement_contract:
+  schema_version: 1
+  stages: [deprecated, retired]
+  deprecated_new_use: forbidden
+  cleanup_statuses: [migration-only, remove-ready]
+  hard_retirement_tombstone: docs/agents/skill-migrations.md
+  retired_id_source: scripts/lib/skill-supply-chain.mjs#OBSOLETE
+  failure_codes:
+    deprecated: skill-deprecated
+    retired: skill-retired
 capabilities:
-  - { id: writing.lifecycle-document, primary_skill: i-have-adhd, task_modes: [guidance] }
-  - { id: architecture.technical-design, primary_skill: yss-technical-design, task_modes: [guidance, integration, review-input] }
-  - { id: architecture.mvc-design, primary_skill: yss-mvc-design, architecture_family: layered-mvc, task_modes: [guidance, integration, review-input] }
-  - { id: layer.mvc-service, primary_skill: yss-application, architecture_family: layered-mvc, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
-  - { id: layer.mvc-persistence, primary_skill: yss-repository, architecture_family: layered-mvc, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
-  - { id: layer.mvc-web, primary_skill: yss-web-controller, architecture_family: layered-mvc, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
-  - { id: governance.implementation-contract, primary_skill: yss-implementation-contract-compiler, task_modes: [contract-compilation, reroute, result-validation] }
-  - { id: maintenance.skill-source-index, primary_skill: yss-skill-source-index-refresh, task_modes: [component-maintenance, source-index-refresh] }
-  - { id: architecture.tactical-domain, primary_skill: yss-tactical-design, architecture_family: domain-driven, task_modes: [guidance, integration, slice-implementation, review-input] }
-  - { id: layer.domain, primary_skill: yss-domain, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
-  - { id: layer.application, primary_skill: yss-application, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
-  - { id: layer.persistence, primary_skill: yss-repository, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
-  - { id: layer.web-adapter, primary_skill: yss-web-controller, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
-  - { id: contract.dto-wire, primary_skill: yss-dto, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
-  - { id: contract.request-validation, primary_skill: yss-validation, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
-  - { id: contract.error-mapping, primary_skill: yss-exception, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
-  - { id: framework.mybatis, primary_skill: yss-mybatis, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
-  - { id: quality.java-code-style, primary_skill: alibaba-java-code-style, task_modes: [guidance, slice-implementation, review-input] }
-  - { id: codegen.mapstruct, primary_skill: mapstruct, task_modes: [integration, slice-implementation, troubleshooting, review-input] }
-  - { id: codegen.lombok, primary_skill: lombok, task_modes: [integration, slice-implementation, troubleshooting, review-input] }
-  - { id: component.cache, primary_skill: yss-cache, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
-  - { id: component.current-user-context, primary_skill: yss-userinfo, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
-  - { id: component.audit-log, primary_skill: yss-audit-log, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
-  - { id: component.excel-import-export, primary_skill: yss-excel-mvc, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
-  - { id: component.distributed-id, primary_skill: yss-distributed-id, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
-  - { id: component.security-algorithm, primary_skill: yss-security-algorithm, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
-  - { id: component.gateway-resilience, primary_skill: yss-resilience4j, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
-  - { id: scaffold.ddd, primary_skill: yss-ddd-scaffold-generator, task_modes: [integration, component-maintenance] }
-  - { id: scaffold.layered-mvc, primary_skill: yss-layered-mvc-scaffold-generator, task_modes: [integration, component-maintenance] }
-  - { id: scaffold.frontend-vue3, primary_skill: yss-frontend-scaffold-generator, task_modes: [integration, component-maintenance] }
-  - { id: project-init.mvc-data-analysis, primary_skill: yss-mvc-data-analysis-project-initializer, task_modes: [component-maintenance] }
-  - { id: migration.springboot3, primary_skill: yss-up-springboot3, task_modes: [guidance, integration, troubleshooting, component-maintenance, review-input] }
+  - { id: writing.lifecycle-document, primary_skill: i-have-adhd, provider: { kind: none }, task_modes: [guidance] }
+  - { id: architecture.technical-design, primary_skill: yss-technical-design, provider: { kind: none }, task_modes: [guidance, integration, review-input] }
+  - { id: architecture.mvc-design, primary_skill: yss-technical-design, provider: { kind: none }, architecture_family: layered-mvc, task_modes: [guidance, integration, review-input] }
+  - { id: layer.mvc-service, primary_skill: yss-application, provider: { kind: none }, architecture_family: layered-mvc, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: layer.mvc-persistence, primary_skill: yss-repository, provider: { kind: none }, architecture_family: layered-mvc, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: layer.mvc-web, primary_skill: yss-web-controller, provider: { kind: none }, architecture_family: layered-mvc, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: governance.implementation-contract, primary_skill: yss-implementation-contract-compiler, provider: { kind: none }, task_modes: [contract-compilation, reroute, result-validation] }
+  - { id: maintenance.skill-source-index, primary_skill: yss-skill-source-index-refresh, provider: { kind: none }, task_modes: [component-maintenance, source-index-refresh] }
+  - { id: architecture.tactical-domain, primary_skill: yss-tactical-design, provider: { kind: none }, architecture_family: domain-driven, task_modes: [guidance, integration, slice-implementation, review-input] }
+  - { id: layer.domain, primary_skill: yss-domain, provider: { kind: none }, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: layer.application, primary_skill: yss-application, provider: { kind: none }, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: layer.persistence, primary_skill: yss-repository, provider: { kind: none }, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: layer.web-adapter, primary_skill: yss-web-controller, provider: { kind: none }, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: contract.dto-wire, primary_skill: yss-dto, provider: { kind: yss-component, binding_id: contract.dto-wire }, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: contract.request-validation, primary_skill: yss-validation, provider: { kind: platform-managed, binding_id: spring-validation }, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: contract.error-mapping, primary_skill: yss-exception, provider: { kind: yss-component, binding_id: contract.error-mapping }, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: framework.mybatis, primary_skill: yss-mybatis, provider: { kind: yss-component, binding_id: framework.mybatis }, task_modes: [guidance, integration, slice-implementation, troubleshooting, review-input] }
+  - { id: quality.java-code-style, primary_skill: alibaba-java-code-style, provider: { kind: none }, task_modes: [guidance, slice-implementation, review-input] }
+  - { id: codegen.mapstruct, primary_skill: mapstruct, provider: { kind: none }, task_modes: [integration, slice-implementation, troubleshooting, review-input] }
+  - { id: codegen.lombok, primary_skill: lombok, provider: { kind: none }, task_modes: [integration, slice-implementation, troubleshooting, review-input] }
+  - { id: component.cache, primary_skill: yss-cache, provider: { kind: yss-component, binding_id: component.cache }, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
+  - { id: component.current-user-context, primary_skill: yss-userinfo, provider: { kind: yss-component, binding_id: component.current-user-context }, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
+  - { id: component.audit-log, primary_skill: yss-audit-log, provider: { kind: yss-component, binding_id: component.audit-log }, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
+  - { id: component.excel-import-export, primary_skill: yss-excel-mvc, provider: { kind: yss-component, binding_id: component.excel-import-export }, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
+  - { id: component.distributed-id, primary_skill: yss-distributed-id, provider: { kind: yss-component, binding_id: component.distributed-id }, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
+  - { id: component.security-algorithm, primary_skill: yss-security-algorithm, provider: { kind: yss-component, binding_id: component.security-algorithm, new_adoption: forbidden, failure_code: component-new-adoption-forbidden }, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
+  - { id: component.gateway-resilience, primary_skill: yss-resilience4j, provider: { kind: yss-component, binding_id: component.gateway-resilience }, task_modes: [guidance, integration, slice-implementation, troubleshooting, component-maintenance, review-input] }
+  - { id: scaffold.ddd, primary_skill: yss-ddd-scaffold-generator, provider: { kind: none }, task_modes: [integration, component-maintenance] }
+  - { id: scaffold.layered-mvc, primary_skill: yss-layered-mvc-scaffold-generator, provider: { kind: none }, task_modes: [integration, component-maintenance] }
+  - { id: scaffold.frontend-vue3, primary_skill: yss-frontend-scaffold-generator, provider: { kind: none }, task_modes: [integration, component-maintenance] }
+  - { id: project-init.mvc-data-analysis, primary_skill: yss-layered-mvc-scaffold-generator, provider: { kind: none }, task_modes: [component-maintenance] }
+  - { id: migration.springboot3, primary_skill: yss-up-springboot3, provider: { kind: none }, task_modes: [guidance, integration, troubleshooting, component-maintenance, review-input] }
 recipes:
   - { id: backend.ddd-domain-behavior, architecture_family: domain-driven, capabilities: [layer.domain, layer.application, quality.java-code-style] }
   - { id: backend.ddd-persistence-mybatis, architecture_family: domain-driven, capabilities: [layer.persistence, framework.mybatis, codegen.mapstruct, codegen.lombok, quality.java-code-style] }
@@ -145,7 +201,6 @@ skill_dependencies:
     - { skill: prototype-review, type: review-only }
     - { skill: yss-design-system, type: coordination-only }
   yss-ddd-scaffold-generator:
-    - { skill: yss-backend-scaffold-parent, type: context-required }
     - { skill: alibaba-java-code-style, type: context-required }
   yss-layered-mvc-scaffold-generator:
     - { skill: alibaba-java-code-style, type: context-required }
@@ -157,8 +212,6 @@ skill_dependencies:
   yss-technical-design:
     - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
     - { skill: yss-tactical-design, type: coordination-only, when: domain-driven }
-    - { skill: yss-mvc-design, type: coordination-only, when: layered-mvc }
-  yss-mvc-design:
     - { skill: yss-openapi-draft-review, type: review-only, when: api-impact }
   yss-tactical-design:
     - { skill: domain-modeling, type: coordination-only }
@@ -506,7 +559,12 @@ skills:
     impacts: [backend, lifecycle]
   - id: yss-mvc-design
     layer: specialist
-    maturity: draft
+    maturity: deprecated
+    replacement_skill: yss-technical-design
+    deprecation:
+      new_use: forbidden
+      cleanup_status: migration-only
+      remove_after: 2026-12-17
     instance_default_discoverable: false
     aliases: []
     impacts: [backend, lifecycle]
@@ -560,7 +618,12 @@ skills:
     impacts: [frontend]
   - id: yss-mvc-data-analysis-project-initializer
     layer: specialist
-    maturity: draft
+    maturity: deprecated
+    replacement_skill: yss-layered-mvc-scaffold-generator
+    deprecation:
+      new_use: forbidden
+      cleanup_status: migration-only
+      remove_after: 2026-12-17
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
@@ -788,3 +851,9 @@ platform_skills:
 external_skills:
   - id: yss-backend-scaffold-parent
     source: .agents/skills/yss-ddd-scaffold-generator/references/yss-backend-scaffold-parent/SKILL.md
+    maturity: deprecated
+    replacement_skill: yss-ddd-scaffold-generator
+    deprecation:
+      new_use: forbidden
+      cleanup_status: migration-only
+      remove_after: 2026-12-17

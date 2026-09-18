@@ -1,11 +1,11 @@
 ---
 name: yss-layered-mvc-scaffold-generator
-description: 用于在生命周期已批准的脚手架合同下生成按批准 Spring Boot / Java 平台生成通用 YSS 分层 MVC 后端工程；核心模块为 server、service、repository，并按能力确定性增加 adapter、client、feign-client。
+description: 在生命周期已批准的脚手架合同下生成通用 YSS 分层 MVC 后端，或按 mvc-data-analysis-v1 初始化六模块数据分析 project-instance。
 ---
 
 # YSS Layered MVC Scaffold Generator
 
-本 skill 只为已登记的全新 backend project 生成机械工程骨架，不创建 `project-instance`、不初始化 Git、不生成业务 Controller、DTO、查询、状态机或 Mock 数据。
+本 skill 只为已登记的全新 backend project 生成机械工程骨架，不生成业务 Controller、DTO、查询、状态机或 Mock 数据。普通 `layered-mvc-service` 不创建 `project-instance` 或初始化 Git；`mvc-data-analysis-v1` 按批准合同创建独立 project-instance、同级锁定 `skillUtils` 和未提交的 main Git。
 
 ## 进入条件
 
@@ -31,12 +31,13 @@ description: 用于在生命周期已批准的脚手架合同下生成按批准 
 
 ## 架构与 Profile
 
-- 固定核心模块：`server`、`service`、`repository`。
+- `layered-mvc-service` 固定核心模块：`server`、`service`、`repository`。
 - `external-integration` 增加 `adapter`。
 - `published-client` 增加 `client`。
 - `feign-client` 增加 `client`、`feign-client`。
 - 平台来自批准的 `platform_configuration`；保留 YSS BOM、MyBatis-Plus，不固定单一 Boot/Java/Validation 命名空间。
-- 固定 architecture_profile=layered-mvc-service；verification_database=h2、production_database=not-bound。测试使用 H2，本地运行显式启用 scaffold-local；不引入外部驱动/数据源。
+- `mvc-data-analysis-v1` 固定 `server/core/client/repository/adapter/feign-client` 六模块，要求 `context_handoff_ref`、摘要和 `init_git=true`，复制批准的根 `CONTEXT.md`、治理资产和锁定工具包；不得从交接内容创造术语。该 Profile 仍绑定平台目录与构件证据，不再通过历史初始化器绕过平台门禁。
+- 两个 Profile 均固定 verification_database=h2、production_database=not-bound。测试使用 H2，本地运行显式启用 scaffold-local；不引入外部驱动/数据源。
 
 能力解析规则、模块职责和依赖方向见 [architecture.md](references/architecture.md)。生成器必须同时校验 `requested_capabilities` 与 `resolved_modules`，不得自行补猜模块。
 
@@ -69,7 +70,7 @@ node scripts/generate_and_verify_scaffold.mjs \
 ## 硬约束
 
 - 新生成只接受包含 API Contract Decision 的统一 schema v4；缺 API 字段的预发布 v4 不得静默接受。验证器可只读检查历史 Manifest v3，恢复必须另行完成所有权审计、技术/数据/API 设计补齐与当前批准。历史 v2/v3 均不用于新生成。
-- `architecture_family` 必须为 `layered-mvc`，`generator_skill` 必须为本 skill。
+- `architecture_family` 必须为 `layered-mvc`，`generator_skill` 必须为本 skill。历史 `yss-mvc-data-analysis-project-initializer` 合同必须返回 `skill-deprecated`、标记 `stale` 并重编译，不自动替换或继承批准。
 - 目标存在、`--force`、旧项目迁移、模板升级均为 `unsupported`。
 - Harness 内只允许以 `apps/backend/` 为输出父容器；外部实现仓库使用已登记真实路径。
 - 不生成业务示例。健康检查、上下文加载测试和架构测试只能验证机械工程能力，不定义用户可见 API。

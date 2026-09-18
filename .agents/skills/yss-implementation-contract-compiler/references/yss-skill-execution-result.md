@@ -17,6 +17,7 @@ execution_result:
     contract_version:
     registry_digest:
     compiler_contract_digest:
+    component_bindings_digest: # 合同含 component_bindings 时必填
     quality_baseline_ref:
     context_plan_ref:
   changed_files:
@@ -57,7 +58,7 @@ execution_result:
 
 实现合同编译器必须验证：
 
-1. `consumed_contract.contract_version` 与当前批准版本一致，两个 resolution digest 与批准合同一致且保持 current。
+1. `consumed_contract.contract_version` 与当前批准版本一致，Registry、编译器以及适用的 `component_bindings_digest` 与批准合同一致且保持 current。
 2. `changed_files` 全部位于工作单元和切片允许路径内。
 3. `expected_evidence_files` 全部存在并能回指行为。
 4. 验证命令包含实际结果和时间；计划命令不算证据。

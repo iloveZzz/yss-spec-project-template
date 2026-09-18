@@ -67,13 +67,13 @@ tracker 选择和冲突按 `docs/agents/issue-tracker.md` 裁决：已持久化 
 
 ## Matt flow 进入条件
 
-- `work-unit.technical-analysis` 由 `yss-technical-design` 组织后端技术设计，先按项目确认架构，再调用 DDD `yss-tactical-design` 或传统 MVC `yss-mvc-design`。状态、规则、一致性、持久化影响本身不意味着选择 DDD。无后端技术设计影响记录带原因的 `not-applicable`，其他 API / 前端技术分析继续各自路由。新合同使用 `artifact.technical-design`，通过 `evidence.technical-design-review` 回交现有架构审查；旧 DDD 稳定 ID 只读兼容。批准仍由生命周期维护，编译器消费批准且当前的设计起草实现合同；`stale`、`drift` 或 `new_impacts` 时不得继续 Ticket 正式化。
+- `work-unit.technical-analysis` 由 `yss-technical-design` 组织后端技术设计；其 `domain-driven` 分支调用 `yss-tactical-design`，`layered-mvc` 分支由自身持有。状态、规则、一致性、持久化影响本身不意味着选择 DDD。无后端技术设计影响记录带原因的 `not-applicable`，其他 API / 前端技术分析继续各自路由。新合同使用 `artifact.technical-design`，通过 `evidence.technical-design-review` 回交现有架构审查；旧 DDD 稳定 ID 只读兼容。批准仍由生命周期维护，编译器消费批准且当前的设计起草实现合同；`stale`、`drift` 或 `new_impacts` 时不得继续 Ticket 正式化。
 
 - `work-unit.plan-requirements` 实际调用 `grilling` 和 `domain-modeling`；`work-unit.plan-opportunity` 按事实类型路由 `competitive-intelligence` 或 `yss-research`。`yss-research:quick` 只用于探索；外部证据进入领域战略、阶段决策或其他生命周期批准输入前必须升级为 `evidence-audited`。生命周期原生工作单元默认负责 Spec、Ticket 和实现资产；`to-spec`、`to-tickets`、`implement` 仅保留为显式兼容入口，结果必须回交生命周期验收。
 - 原生 `work-unit.ticket-decomposition` 只能在 OpenAPI Freeze 或无 API 影响记录后创建垂直切片，初始 Ticket 状态统一为 `ready-for-human`；生命周期复算完整公式后才能提升 `ready-for-agent`。该工作单元必须返回 `ticket_decomposition_result_ref` 和垂直切片引用，并作为实现的必经前置证据。
 - 原生 `work-unit.slice-implementation` 必须在生命周期批准并持久化 Slice Implementation Contract 和 Build Architecture Checklist 后执行；用户显式 `implement` 仍走兼容入口，不得绕过生命周期。
 - `Workflow Execution Result.next_route` 必须通过生命周期转换校验；Spec、原型和技术分析不得直接跳转到 Ticket 正式化或实现，必须先完成 `work-unit.implementation-repository-preparation`，再进入 `work-unit.ticket-decomposition`。
-- `implement` 遇到 backend `scaffold_status=required` 时，还必须满足原型确认后的脚手架策略：脚手架 Execution Result、`yss-backend-scaffold-parent` 基线、Wrapper 验证和 实现合同编译器 合同重编译均已回写；否则停在工程基线，不得写业务代码。
+- `implement` 遇到 backend `scaffold_status=required` 时，还必须满足原型确认后的脚手架策略：脚手架 Execution Result、生成器内部工程基线、Wrapper 验证和 实现合同编译器 合同重编译均已回写；否则停在工程基线，不得写业务代码。
 - `Workflow Execution Result` 出现 `drift`、`new_impacts`、`stale_candidates`、`violation`、`missing_evidence`、空 `evidence_refs` 或缺少必需字段时暂停当前工作单元；旧结果只能先经只读兼容 adapter 归一化。
 
 ## 审查与验证

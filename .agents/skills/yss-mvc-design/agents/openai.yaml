@@ -1,4 +1,4 @@
 interface:
-  display_name: "YSS MVC 技术设计"
-  short_description: "设计 MVC 用例、分层、事务和测试边界"
-  default_prompt: "基于当前批准输入和已确认架构，设计 MVC 用例、分层、事务和测试边界，返回待生命周期审查的结果。"
+  display_name: "YSS MVC 技术设计迁移"
+  short_description: "迁移已退役的 MVC 设计入口"
+  default_prompt: "返回 skill-deprecated，并将历史 yss-mvc-design 引用迁移到 yss-technical-design；不得继承旧批准。"

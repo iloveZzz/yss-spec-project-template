@@ -20,7 +20,7 @@
 | --- | --- | --- |
 | `writing.lifecycle-document` | `i-have-adhd` | `guidance` |
 | `architecture.technical-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
-| `architecture.mvc-design` | `yss-mvc-design` | `guidance`, `integration`, `review-input` |
+| `architecture.mvc-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
 | `layer.mvc-service` | `yss-application` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
 | `layer.mvc-persistence` | `yss-repository` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
 | `layer.mvc-web` | `yss-web-controller` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
@@ -48,7 +48,7 @@
 | `scaffold.ddd` | `yss-ddd-scaffold-generator` | `integration`, `component-maintenance` |
 | `scaffold.layered-mvc` | `yss-layered-mvc-scaffold-generator` | `integration`, `component-maintenance` |
 | `scaffold.frontend-vue3` | `yss-frontend-scaffold-generator` | `integration`, `component-maintenance` |
-| `project-init.mvc-data-analysis` | `yss-mvc-data-analysis-project-initializer` | `component-maintenance` |
+| `project-init.mvc-data-analysis` | `yss-layered-mvc-scaffold-generator` | `component-maintenance` |
 | `migration.springboot3` | `yss-up-springboot3` | `guidance`, `integration`, `troubleshooting`, `component-maintenance`, `review-input` |
 
 ## Narrow Recipes
@@ -118,7 +118,6 @@
 | `yss-prototype-stage` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 | `yss-prototype-stage` | `prototype-review` | `review-only` | — |
 | `yss-prototype-stage` | `yss-design-system` | `coordination-only` | — |
-| `yss-ddd-scaffold-generator` | `yss-backend-scaffold-parent` | `context-required` | — |
 | `yss-ddd-scaffold-generator` | `alibaba-java-code-style` | `context-required` | — |
 | `yss-layered-mvc-scaffold-generator` | `alibaba-java-code-style` | `context-required` | — |
 | `yss-domain` | `alibaba-java-code-style` | `context-required` | — |
@@ -127,8 +126,7 @@
 | `yss-domain` | `lombok` | `context-conditional` | `pojo` |
 | `yss-technical-design` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 | `yss-technical-design` | `yss-tactical-design` | `coordination-only` | `domain-driven` |
-| `yss-technical-design` | `yss-mvc-design` | `coordination-only` | `layered-mvc` |
-| `yss-mvc-design` | `yss-openapi-draft-review` | `review-only` | `api-impact` |
+| `yss-technical-design` | `yss-openapi-draft-review` | `review-only` | `api-impact` |
 | `yss-tactical-design` | `domain-modeling` | `coordination-only` | — |
 | `yss-tactical-design` | `yss-openapi-draft-review` | `review-only` | `api-impact` |
 | `yss-tactical-design` | `yss-repository` | `component-dependency` | `data-impact` |

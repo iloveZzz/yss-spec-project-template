@@ -143,6 +143,14 @@ resolution_contract:
   deterministic_order: [recipe-declaration, dependency-topology, skill-id]
   digest_change_status: stale
   stale_action: recompile-and-return-to-lifecycle-approval
+  component_bindings:
+    when: any-required-capability-provider-kind-is-yss-component
+    platform_configuration: required-v2
+    catalog_source: docs/engineering/backend-platforms.json
+    required_fields: [component_bindings, component_bindings_digest]
+    exact_artifact_binding: [group_id, artifact_id, declared_version, resolved_version, pom_sha256, jar_sha256, source_tree]
+    digest_change_status: stale
+    old_contract_without_binding: stale-and-recompile-no-auto-upgrade
 
 context_plan:
   required: [required_context_refs, on_demand_context_refs, context_stop_rule, missing_context_action]
@@ -157,7 +165,7 @@ project_scaffold_contract_schema:
   delivery_roles:
     backend:
       scaffold_kinds: [backend-ddd, backend-layered-mvc, backend-mvc-data-analysis]
-      generators: [yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, yss-mvc-data-analysis-project-initializer]
+      generators: [yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator]
       requires: [scaffold_request_id, architecture_family, decision_ref, decision_id, decision_digest, project_name, base_package, maven_coordinates, profiles, module_profile, design_prerequisites]
       design_prerequisites:
         required: [technical_design, data_architecture_decision, api_contract_decision, engineering_contract_approval_ref]
@@ -253,7 +261,7 @@ scaffold_contract_schema:
     lifecycle_approves: [approved]
     generator_consumes: []
     after_generation:
-      domain-driven: [yss-backend-scaffold-parent, yss-implementation-contract-compiler]
+      domain-driven: [yss-implementation-contract-compiler]
       layered-mvc: [yss-implementation-contract-compiler]
   work_unit:
     required: [id, behavior, primary_skill, supporting_skills, tdd_mode, allowed_write_paths, expected_evidence, verification_commands, controlled_generation]
@@ -330,6 +338,7 @@ full_reroute_triggers:
   - scaffold-architecture-decision-changed
   - scaffold-profile-changed
   - scaffold-module-resolution-changed
+  - component-binding-drift
   - api-schema-impact
   - database-schema-impact
   - state-machine-impact
@@ -355,6 +364,7 @@ full_reroute_triggers:
 
 reroute_destinations:
   scaffold-baseline-drift: stage7-scaffold-revalidation
+  component-binding-drift: stage7-contract-recompile
   api-schema-impact: system-data-architecture-and-contract-review
   database-schema-impact: data-architecture-and-migration-review
   state-machine-impact: spec-system-data-and-contract-review
@@ -410,6 +420,10 @@ execution_result_required:
   - deviations
   - new_impacts
   - not_applicable_reason
+execution_result_component_binding:
+  when: resolution.component_bindings-present
+  required: consumed_contract.component_bindings_digest
+  mismatch: component-binding-mismatch
 seam_deferred_required: [risk, owner, follow_up_ticket, verification_plan, target_version_or_release_date]
 deviation_required: [rule, reason, approval_ref]
 not_applicable_required: [item, reason]
@@ -432,3 +446,14 @@ backend_platform_contract:
   new_generation_requires: [exact-boot-java, confirmed-decision, matching-yss-coordinates, verified-compatibility-entry]
   candidate_generation: maintenance-only
   candidate_downstream: blocked
+  component_capabilities:
+    registry_marker: provider-kind-yss-component
+    mapping_key: provider-binding-id
+    foundational_capabilities: [contract.dto-wire, contract.request-validation, contract.error-mapping, framework.mybatis]
+    specialized_capabilities: [component.cache, component.current-user-context, component.audit-log, component.excel-import-export, component.distributed-id, component.security-algorithm, component.gateway-resilience]
+    exact_artifact_evidence: [group_id, artifact_id, declared_version, resolved_version, pom_sha256, jar_sha256, source_tree]
+    verified_architecture_required: true
+    unlisted_or_blocked: component-unavailable-for-platform
+    missing_evidence: component-evidence-missing
+    coordinate_conflict: component-artifact-coordinate-conflict
+    drift: component-binding-drift

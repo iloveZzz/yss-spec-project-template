@@ -74,7 +74,7 @@ owner: ai
 |---|---|---|---|---|---|
 |  |  |  |  |  |  |
 
-检查规则和关键场景逐条承接、成功/失败测试、分层依赖及事务回滚。MVC 不填写聚合、值对象或 DDD Gateway；详细规则消费 `yss-mvc-design`。
+检查规则和关键场景逐条承接、成功/失败测试、分层依赖及事务回滚。MVC 不填写聚合、值对象或 DDD Gateway；详细规则由 `yss-technical-design` 的 `layered-mvc` 分支负责。
 
 ### 8.2 DDD Tactical Check
 

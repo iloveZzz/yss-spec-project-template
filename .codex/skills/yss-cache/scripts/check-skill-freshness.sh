@@ -6,26 +6,25 @@ skill_dir=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 locate_source() {
   if [ "$#" -gt 0 ] && [ -n "$1" ]; then
     if [ -d "$1/yss-microservice-components/yss-component-cache-parent" ]; then
-      echo "$1"
+      (CDPATH= cd -- "$1" && pwd)
       return 0
     fi
-    return 1
   fi
-  if [ -n "${YSS_SOURCE_ROOT:-}" ] && [ -d "$YSS_SOURCE_ROOT/yss-microservice-components/yss-component-cache-parent" ]; then
-    echo "$YSS_SOURCE_ROOT"
-    return 0
-  fi
-  for candidate in "$PWD" "$PWD/.." "$HOME/Projects/yss-cloud-microservice" "$HOME/Documents/yss-project/yss-cloud-microservice"; do
-    if [ -d "$candidate/yss-microservice-components/yss-component-cache-parent" ]; then
-      (CDPATH= cd -- "$candidate" && pwd)
-      return 0
-    fi
-  done
   return 1
 }
 
-source_root=$(locate_source "${1:-}") || {
-  echo "ERROR: cannot locate yss-component-cache-parent; pass source root or set YSS_SOURCE_ROOT" >&2
+platform_line=${1:-}
+if [ "$platform_line" != "boot2-java8" ] && [ "$platform_line" != "boot3-java17" ]; then
+  echo "usage: check-skill-freshness.sh <boot2-java8|boot3-java17> [source-root]" >&2
+  exit 2
+fi
+
+configured_root=""
+if [ "$platform_line" = "boot2-java8" ]; then configured_root=${YSS_SOURCE_ROOT_BOOT2_JAVA8:-}; fi
+if [ "$platform_line" = "boot3-java17" ]; then configured_root=${YSS_SOURCE_ROOT_BOOT3_JAVA17:-}; fi
+
+source_root=$(locate_source "${2:-$configured_root}") || {
+  echo "ERROR: cannot locate yss-component-cache-parent for $platform_line; pass its source root or set the generation-specific environment variable" >&2
   exit 2
 }
 
@@ -33,8 +32,14 @@ parent="$source_root/yss-microservice-components/yss-component-cache-parent"
 annotation="$parent/yss-component-spring-cache/src/main/java/com/yss/cloud/cache/annotation/ClearCache.java"
 properties="$parent/yss-component-spring-cache/src/main/java/com/yss/cloud/cache/YssCacheProperties.java"
 connection="$parent/yss-component-redis-cache/src/main/java/com/yss/cloud/cache/redis/config/RedisConnFactoryConfig.java"
-index="$skill_dir/references/source-index.md"
+index="$skill_dir/references/source-index.$platform_line.md"
 fail=0
+
+node "$skill_dir/../yss-skill-source-index-refresh/scripts/check-backend-skill-source-index.mjs" \
+  --skill yss-cache \
+  --platform-line "$platform_line" \
+  --source-root "$source_root" \
+  --skills-root "$skill_dir/.." || exit 1
 
 require_text() {
   file=$1

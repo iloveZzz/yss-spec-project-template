@@ -96,7 +96,7 @@ node scripts/run_first_slice_verification.mjs \
 - Harness 内多项目布局必须使用 `apps/backend/<project>/`；`apps/backend/` 只能是生成器的父容器，`app/backend/`、`app/frontend/` 及其子路径一律拒绝。`git-submodule` gitlink、空挂载点、detached HEAD 工作树不得覆盖生成，即使传入 `--force` 也不得当成普通目录，且不得走「请显式传入 `--force`」普通目录覆盖 / rename 路径。`--output-dir` 指向 detached HEAD 子仓时不得 mkdir、staging 或生成工程。先 `git submodule update --init` 并在子仓附加分支工作树内生成。生成器必须先调用 `gitSubmoduleScaffoldViolation`，再在 exists / `--force` / rename 之前调用 `refuseGitlinkAsRegularDirectory`。
 - 不要在 skill 里硬编码用户业务字段或真实连接信息。
 - 生成后要检查依赖关系是否仍符合分层约束。
-- 生成时的静态依赖由技能注册表与 实现合同编译器 共同约束为 `yss-backend-scaffold-parent`、`alibaba-java-code-style`。生成后必须回到 实现合同编译器，并按批准切片加载 `yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-web-controller`、`yss-dto`、`yss-exception`、`yss-validation`、`mapstruct`、`lombok`、`alibaba-java-code-style` 等实际命中的行为 skill。
+- 生成时的工程基线由本 skill 的 `references/engineering-baseline.md` 持有并绑定摘要；它不是独立 Skill。生成后必须回到 实现合同编译器，并按批准切片加载 `yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-web-controller`、`yss-dto`、`yss-exception`、`yss-validation`、`mapstruct`、`lombok`、`alibaba-java-code-style` 等实际命中的行为 skill。
 - 验证数据库固定 H2，生产数据库 `not-bound`；后续存储接入按批准的切片合同执行。
 - 生成后的后端工程必须使用项目根目录 `./mvnw ...` 执行构建、测试、运行和 CI 验证；不得在 README、实施记录、Ticket、Review 或 Release 中默认写裸 `mvn ...`。既有仓库确实无法使用 wrapper 时，必须记录受控例外。
 - 原型确认后，`scaffold_status=required` 才能进入本 skill；本 skill 的生成边界是工程结构、POM、配置、Wrapper 和机械模板，不是业务实现。
@@ -122,7 +122,7 @@ node scripts/run_first_slice_verification.mjs \
 - 受控验证器：`scripts/run_scaffold_verification.mjs`
 - 首切片验证器：`scripts/run_first_slice_verification.mjs`
 - 模板目录：`assets/templates/`
-- Parent 工程约束使用已登记的 `references/yss-backend-scaffold-parent/`；生成后的分层实现路由见 `references/layer-skill-routing.md`
+- Parent 工程约束使用内部 `references/engineering-baseline.md`；生成后的分层实现路由见 `references/layer-skill-routing.md`。历史 `yss-backend-scaffold-parent` 仅保留迁移提示，不进入新合同。
 
 ## 阶段 7 合同
 

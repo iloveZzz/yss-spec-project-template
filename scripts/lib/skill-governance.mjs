@@ -134,9 +134,11 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
   for (const skill of registry.skills) {
     if (!canonicalIds.has(skill.id)) fail(`注册表 canonical skill 无效: ${skill.id}`);
     if (skill.maturity === "deprecated") {
-      for (const field of ["replaced_by", "migration_deadline", "cleanup_status"]) {
-        if (!skill[field] || typeof skill[field] !== "string") fail(`deprecated 技能缺少 ${field}: ${skill.id}`);
-      }
+      if (!skill.replacement_skill || typeof skill.replacement_skill !== "string") fail(`deprecated 技能缺少 replacement_skill: ${skill.id}`);
+      if (!skill.deprecation || typeof skill.deprecation !== "object") fail(`deprecated 技能缺少 deprecation: ${skill.id}`);
+      if (skill.deprecation.new_use !== "forbidden") fail(`deprecated 技能必须禁止新用法: ${skill.id}`);
+      if (!["migration-only", "remove-ready"].includes(skill.deprecation.cleanup_status)) fail(`deprecated 技能 cleanup_status 无效: ${skill.id}`);
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(skill.deprecation.remove_after ?? "")) fail(`deprecated 技能 remove_after 无效: ${skill.id}`);
     }
   }
   return { checked: true, legacy_aliases: legacy.size, yss_ui_skills: yssUiManifest.skills.length };

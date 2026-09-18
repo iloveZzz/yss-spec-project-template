@@ -46,13 +46,17 @@ test('preparation reuses Ticket facts, renders persisted YAML and refuses source
   const {stringify}=await import('../../vendor/yaml.mjs');
   const f=fixture();try {
     const {basis,scope,applicability,acceptance,verification,work_units,contract_id,contract_version,slice_id}=f.contract;
-    const ticket={contract_id,contract_version,slice_id,scope,applicability,acceptance,verification,work_units};
+    const compatibleWorkUnits=structuredClone(work_units);compatibleWorkUnits[0].primary_skill='alibaba-java-code-style';
+    const ticket={contract_id,contract_version,slice_id,scope,applicability,acceptance,verification,work_units:compatibleWorkUnits};
     fs.writeFileSync(path.join(f.root,'ticket.md'),`---\nslice_implementation:\n${stringify(ticket).split('\n').filter(Boolean).map(line=>'  '+line).join('\n')}\n---\n# 验收\nAC-1: 有效输入成功，非法输入拒绝。\n`);
-    const input={root:f.root,ticket_ref:'ticket.md',sources:Object.fromEntries(Object.entries(basis).map(([key,b])=>[key,{ref:b.ref,...(key==='ticket'?{version:'v1'}:{})}])),refinements:{required_capabilities:['contract.request-validation']}};
+    const input={root:f.root,ticket_ref:'ticket.md',sources:Object.fromEntries(Object.entries(basis).map(([key,b])=>[key,{ref:b.ref,...(key==='ticket'?{version:'v1'}:{})}])),refinements:{required_capabilities:['quality.java-code-style']}};
     const prepared=prepareSliceImplementationContract(input);
     assert.equal(prepared.slice_contract.status,'ready-for-lifecycle-review',JSON.stringify(prepared.report));
     assert.equal(prepared.slice_contract.resolution.reason_chains,undefined);
     assert.equal(prepared.slice_contract.readiness,undefined);
+    const componentBlocked=prepareSliceImplementationContract({...input,refinements:{required_capabilities:['contract.request-validation']}});
+    assert.equal(componentBlocked.slice_contract.status,'blocked');
+    assert.ok(componentBlocked.report.blockers.some(b=>b.code==='component-platform-binding-required'&&b.reason.startsWith('component-capability: component-platform-binding-required:')));
     fs.writeFileSync(path.join(f.root,'checkpoint.json'),JSON.stringify({artifacts:{'artifact.spec':{ref:'spec.md'}}}));
     const inferred={...input,checkpoint_ref:'checkpoint.json',sources:{...input.sources}};delete inferred.sources.spec;
     assert.equal(prepareSliceImplementationContract(inferred).slice_contract.status,'ready-for-lifecycle-review');
@@ -99,7 +103,7 @@ test('MVC v3 requires real approval bindings and independent review before execu
     assert.ok(task.forbidden_actions.includes('不得绕过持久化约束'));
     assert.throws(()=>assertSliceV3TaskPackage({...task,verification_commands:[]},f.contract,{root:f.root}),/遗漏/);
 
-    const result={schema_version:2,status:'implemented',work_unit_id:'work-unit.slice-backend',architecture_identity:f.identity,consumed_contract:{contract_id:f.contract.contract_id,contract_version:f.contract.contract_version,registry_digest:f.contract.resolution.registry_digest,compiler_contract_digest:f.contract.resolution.compiler_contract_digest},changed_files:[{path:'src/main/java/Example.java'}],evidence_files:[{path:'results/test.log'}],verification_results:[{command:'./mvnw test',cwd:f.project,exit_code:0,executed_at:'2026-09-16T00:00:00Z'}],new_impacts:[]};
+    const result={schema_version:2,status:'implemented',work_unit_id:'work-unit.slice-backend',architecture_identity:f.identity,consumed_contract:{contract_id:f.contract.contract_id,contract_version:f.contract.contract_version,registry_digest:f.contract.resolution.registry_digest,compiler_contract_digest:f.contract.resolution.compiler_contract_digest,component_bindings_digest:f.contract.resolution.component_bindings_digest},changed_files:[{path:'src/main/java/Example.java'}],evidence_files:[{path:'results/test.log'}],verification_results:[{command:'./mvnw test',cwd:f.project,exit_code:0,executed_at:'2026-09-16T00:00:00Z'}],new_impacts:[]};
     f.write('results/test.log','Synthetic actual-exit-code mechanism evidence; not a Maven run.');
     const current={root:f.root,registry:loadSkillRegistry(),compilerContract:loadCompilerContract(),approved_slice:approved.binding};
     assert.equal(validateExecutionResult(result,f.contract,current).status,'accepted');
@@ -152,8 +156,8 @@ test('explicit v2 migration preserves effective scope, rejects conflicts and nev
   const {migrateSliceContractV2,persistSliceDraft}=await import('../../lib/slice-contract-preparation.mjs');
   const {compileDefaultImplementationContract}=await import('../../lib/implementation-contract-compiler.mjs');
   const f=fixture();try {
-    const resolution=compileDefaultImplementationContract({requiredCapabilities:['contract.request-validation']});
-    const old={schema_version:2,contract_id:'contract.test',contract_version:'v1',slice_id:'slice.test',status:'approved',lifecycle_refs:Object.fromEntries(Object.entries(f.contract.basis).map(([k,v])=>[k,v.ref])),readiness:{blockers:[],stale_inputs:[],not_applicable:Object.entries(f.contract.applicability).map(([item,v])=>({item,reason:v.reason}))},resolution,common:{...f.contract.scope,required_skills:resolution.required_skills,required_capabilities:resolution.required_capabilities,verification_commands:['pnpm test'],expected_evidence_files:['test.log']},frontend:{status:'not-applicable',component_test_seams:['validate']},backend:{status:'not-applicable'},contract:{api_impact:false,no_api_impact_ref:'no_api_impact_record.md'},cross_repo:{repositories:[]},work_units:[{id:'validate',role_id:'role.backend-engineer',runtime_id:'runtime.generic',contract_id:'contract.test',contract_version:'v1',workflow_status:'active',work_unit:{behavior:'校验输入',primary_skill:'yss-validation',tdd_mode:'behavior-tdd',allowed_write_paths:['src'],expected_evidence:['test.log'],verification_commands:['pnpm test']}}]};
+    const resolution=compileDefaultImplementationContract({requiredCapabilities:['quality.java-code-style']});
+    const old={schema_version:2,contract_id:'contract.test',contract_version:'v1',slice_id:'slice.test',status:'approved',lifecycle_refs:Object.fromEntries(Object.entries(f.contract.basis).map(([k,v])=>[k,v.ref])),readiness:{blockers:[],stale_inputs:[],not_applicable:Object.entries(f.contract.applicability).map(([item,v])=>({item,reason:v.reason}))},resolution,common:{...f.contract.scope,required_skills:resolution.required_skills,required_capabilities:resolution.required_capabilities,verification_commands:['pnpm test'],expected_evidence_files:['test.log']},frontend:{status:'not-applicable',component_test_seams:['validate']},backend:{status:'not-applicable'},contract:{api_impact:false,no_api_impact_ref:'no_api_impact_record.md'},cross_repo:{repositories:[]},work_units:[{id:'validate',role_id:'role.backend-engineer',runtime_id:'runtime.generic',contract_id:'contract.test',contract_version:'v1',workflow_status:'active',work_unit:{behavior:'校验输入',primary_skill:'alibaba-java-code-style',tdd_mode:'behavior-tdd',allowed_write_paths:['src'],expected_evidence:['test.log'],verification_commands:['pnpm test']}}]};
     fs.writeFileSync(path.join(f.root,'old.json'),JSON.stringify(old));const before=fs.readFileSync(path.join(f.root,'old.json'));
     const migrated=migrateSliceContractV2(old,{root:f.root,sources:{ticket:{ref:'ticket.md',version:'v1'}},refinements:{contract_version:'v2',acceptance:f.contract.acceptance}});
     assert.equal(migrated.slice_contract.status,'ready-for-lifecycle-review',JSON.stringify(migrated.report.blockers));

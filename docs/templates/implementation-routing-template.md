@@ -253,7 +253,7 @@ owner: ai
 | 生成选项 | 关闭 `--with-example`；生成器严格 initialize-only，非空目录、`--force`、旧项目迁移和当前模板升级均为 `unsupported` |
 | Profile | DDD：`target-domain-model`；MVC：`layered-mvc-service`；Spring Boot / Java 使用用户确认且兼容清单验证通过的精确组合，不使用版本范围或 `latest` |
 | 验证 | 使用一键生成验证入口，实际执行项目根目录 `./mvnw validate`、`./mvnw test`、`./mvnw package`；通过后仅为 `empty-scaffold-verified`，golden first slice 通过后才是 `first-slice-verified` |
-| 后置 | `yss-backend-scaffold-parent`、`yss-implementation-contract-compiler` 业务合同重编译、YSS Skill Execution Result |
+| 后置 | 生成器内部工程基线校验、`yss-implementation-contract-compiler` 业务合同重编译、YSS Skill Execution Result |
 
 所有后续生成代码必须绑定当前批准且版本一致的 Slice Implementation Contract、主 YSS skill、依赖闭包、允许写路径、预期证据和 Execution Result。业务行为必须使用 `behavior-tdd`；缺任一条件即阻断，不得以脚手架成功或时间压力豁免。
 

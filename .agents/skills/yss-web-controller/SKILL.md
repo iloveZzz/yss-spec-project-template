@@ -47,7 +47,7 @@ node scripts/generate_controller.mjs \
   --domain-segment example \
   --web-project-dir /path/demo-adapter/demo-web \
   --application-service-package com.yss.demo.application.service \
-  --validation-namespace javax
+  --validation-namespace <resolved-platform-namespace>
 ```
 
 ## 输出预期
@@ -68,10 +68,10 @@ node scripts/generate_controller.mjs \
 - HTTP Request 不继承会暴露内部协作字段的 `PageQuery`；只生成冻结 OpenAPI allowlist 字段，禁止把 `offset`、`needTotalCount`、`tempTotalCount` 变成客户端输入。
 - `fields.<table>.pagination` 必须显式列出 `yss-dto` wire profile 允许暴露的字段子集；模板不得无条件生成字段或自行定义默认值。
 - 先跑脚本，再按项目规范做少量手调。
-- `javax` / `jakarta` validation namespace 必须来自工程基线，不得按记忆选择。
+- Validation namespace 参数必须来自批准的精确平台配置和当前工程基线，不得按记忆或 Boot 大版本自行选择。
 - 若用户只是要改单个 Controller，先看现有代码，不要盲覆盖整个目录。
 - 脚本是 initialize-only；写入前先规划全部目标并校验 `allowed_write_paths`，任一目标已存在或传入 `--force` 时整体返回 `unsupported`。落盘使用排他创建和失败回滚，不得留下部分文件；旧项目迁移不属于该生成器。
-- `integration_mode=existing-project` 保留已登记工程的 Boot 2/Boot 3 能力；`integration_mode=scaffold-v2` 必须提供 `--scaffold-manifest-file`，且 Manifest 已达到 `empty-scaffold-verified`，Profile、基础包和标准 Web module 路径全部一致。
+- `integration_mode=existing-project` 只复用工程登记、effective POM 与依赖树共同证明的精确平台，不从 Boot 大版本推断能力；`integration_mode=scaffold-v2` 必须提供 `--scaffold-manifest-file`，且 Manifest 已达到 `empty-scaffold-verified`，Profile、基础包、标准 Web module 路径和平台绑定全部一致。
 
 ## 按需读取
 
@@ -92,4 +92,4 @@ node scripts/generate_controller.mjs \
 
 ## 新脚手架平台约束
 
-消费批准切片架构身份中的 `platform_configuration`，与工程 Manifest 核对后使用对应 YSS 组件。Boot 2.7 使用 `javax` Web/Validation API；Boot 3.5/4.1 使用 `jakarta`。Boot 4 按 Jackson 3、对应自动配置和 starter 适配；不替换 `javax.sql` 等 Java SE 包。平台不一致、兼容条目缺失或候选未验证时回合同编译器阻断，不在业务实现中升级或替换组件。详见 仓库共享合同 `docs/engineering/backend-platforms.md`。
+消费批准切片架构身份中的 `platform_configuration`，并与工程 Manifest、effective POM 和依赖树核对。DTO、Validation、Exception 或其他 YSS 组件命中时，逐项消费合同中的 `component_bindings`；缺少 verified 架构证据、构件摘要或绑定发生漂移时回合同编译器阻断。Validation namespace、Jackson wire 行为、Web starter 和自动配置机制只来自解析后的精确平台事实；命令参数必须使用该解析值，不在本 Skill 中按 Boot 大版本硬编码。不得在业务实现中升级、降级或替换组件；平台迁移使用独立迁移工作单元。详见仓库共享合同 `docs/engineering/backend-platforms.md`。

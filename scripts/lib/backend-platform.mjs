@@ -9,13 +9,154 @@ export const PLATFORM_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta
 export const PLATFORM_CATALOG_REF = "docs/engineering/backend-platforms.json";
 export const PLATFORM_SKILLS = ["yss-ddd-scaffold-generator", "yss-layered-mvc-scaffold-generator"];
 const fail = (message) => { throw new TypeError(`backend-platform: ${message}`); };
+const componentFail = (code, message) => {
+  const error = new TypeError(`component-capability: ${code}: ${message}`);
+  error.code = code;
+  throw error;
+};
 const stable = (value) => Array.isArray(value) ? value.map(stable) : value && typeof value === "object" ? Object.fromEntries(Object.keys(value).sort().map(key => [key, stable(value[key])])) : value;
 export const platformDigest = value => `sha256:${createHash("sha256").update(typeof value === "string" || Buffer.isBuffer(value) ? value : JSON.stringify(stable(value ?? null))).digest("hex")}`;
+const exactVersion = value => typeof value === "string" && value.length > 0 && !/[\[\](),*+]|\bx\b|latest/i.test(value);
+const portableEvidence = item => item && typeof item.ref === "string" && item.ref.length > 0 && !path.isAbsolute(item.ref) && !item.ref.split(/[\\/]/).includes("..") && /^sha256:[a-f0-9]{64}$/.test(item.digest ?? "");
+const sha256 = value => /^sha256:[a-f0-9]{64}$/.test(value ?? "");
+const gitTree = value => /^[a-f0-9]{40}$/.test(value ?? "");
+const major = value => Number.parseInt(String(value ?? "").match(/^(\d+)/)?.[1] ?? "", 10);
+const platformGeneration = profile => major(profile?.spring_boot_version) === 2 ? { line: "boot2-java8", componentMajor: 2 } : major(profile?.spring_boot_version) === 3 ? { line: "boot3-java17", componentMajor: 3 } : { line: "boot4", componentMajor: null };
+const retirementEvidenceComplete = value => {
+  const required = new Set(["organization-code-search", "maven-download-metrics", "runtime-bean-and-configuration-scan", "30-90-day-zero-usage-window"]);
+  if (!Array.isArray(value) || !value.every(item => item?.status === "zero" && typeof item.ref === "string" && item.ref.length > 0)) return false;
+  for (const item of value) required.delete(item.kind);
+  return required.size === 0;
+};
+const candidateArtifactFieldsEmpty = binding =>
+  ["resolved_version", "published_at", "pom_sha256", "jar_sha256", "sources_jar_sha256", "source_tree"].every(field => binding[field] === null) &&
+  Array.isArray(binding.evidence) && binding.evidence.length === 0 &&
+  Array.isArray(binding.blockers) && binding.blockers.length > 0;
+function validateArtifactBinding(binding, label, { role, expected, snapshot, allowedStatuses = ["candidate"] }) {
+  if (!binding || typeof binding !== "object" || typeof role !== "string" || !role.length || binding.role !== role || !allowedStatuses.includes(binding.status)) componentFail("component-binding-drift", `invalid artifact binding: ${label}`);
+  if (!binding.group_id || !binding.artifact_id || !exactVersion(binding.declared_version)) componentFail("component-artifact-coordinate-conflict", `invalid candidate artifact coordinate: ${label}`);
+  if (expected && (binding.group_id !== expected.group_id || binding.artifact_id !== expected.artifact_id || binding.declared_version !== expected.version)) componentFail("component-binding-drift", `candidate artifact differs from compatibility coordinates: ${label}`);
+  if (snapshot !== binding.declared_version.endsWith("-SNAPSHOT")) componentFail("component-artifact-coordinate-conflict", `candidate artifact release kind mismatch: ${label}`);
+  if (binding.status === "candidate" && !candidateArtifactFieldsEmpty(binding)) componentFail("component-evidence-missing", `candidate artifact must remain unresolved until evidence is published: ${label}`);
+  if (binding.status === "resolved") {
+    if (snapshot || binding.resolved_version !== binding.declared_version || !sha256(binding.pom_sha256) || !sha256(binding.jar_sha256) || !sha256(binding.sources_jar_sha256)) componentFail("component-evidence-missing", `resolved external release lacks immutable version or POM/JAR/sources digest: ${label}`);
+    if (binding.published_at !== null && (typeof binding.published_at !== "string" || !binding.published_at.length)) componentFail("component-binding-drift", `invalid external release timestamp: ${label}`);
+    if (binding.source_tree !== null && !gitTree(binding.source_tree)) componentFail("component-binding-drift", `invalid external release source tree: ${label}`);
+    if (!Array.isArray(binding.evidence) || !Array.isArray(binding.blockers)) componentFail("component-evidence-missing", `resolved external release evidence fields are invalid: ${label}`);
+  }
+}
+export function componentCapabilityDigest(value, capabilityId = value?.capability_id) {
+  const { capability_id, component_digest, status, evidence, blockers, ...recipe } = value ?? {};
+  return platformDigest({ capability_id: capabilityId, ...recipe });
+}
+function validateBoot3Java17Policy(entry, profile) {
+  if (profile.component_platform_line !== "boot3-java17") return;
+  if (profile.spring_cloud_version !== "2025.0.3" || profile.spring_cloud_alibaba_version !== "2025.0.0.0" || profile.validation_namespace !== "jakarta" || profile.jackson_major !== 2 || profile.auto_configuration_imports_path !== "META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports") componentFail("component-binding-drift", `Boot 3.5/JDK17 platform constraints changed: ${profile.id}`);
+  if (!entry.platform_artifact_bindings || !Array.isArray(entry.external_snapshot_bindings) || !Array.isArray(entry.external_artifact_bindings)) componentFail("component-binding-drift", `Boot 3.5/JDK17 artifact binding structures are missing: ${entry.id}`);
+  if (entry.external_snapshot_bindings.length) componentFail("component-artifact-coordinate-conflict", `Boot 3.5/JDK17 does not allow unresolved external SNAPSHOT bindings: ${entry.id}`);
+  const components = entry.component_capabilities ?? {};
+  const exactComponent = (capabilityId, expected) => {
+    const artifacts = components[capabilityId]?.artifacts;
+    if (!Array.isArray(artifacts) || artifacts.length !== expected.length || artifacts.some((artifact, index) => `${artifact.group_id}:${artifact.artifact_id}:${artifact.declared_version}` !== expected[index])) componentFail("component-binding-drift", `Boot 3.5/JDK17 component coordinates changed: ${entry.id}:${capabilityId}`);
+  };
+  exactComponent("contract.request-validation", [`org.springframework.boot:spring-boot-starter-validation:${profile.spring_boot_version}`]);
+  exactComponent("component.cache", ["com.yss.cloud:yss-component-cache-starter:3.1.0-SNAPSHOT"]);
+  exactComponent("component.distributed-id", ["com.yss.cloud:yss-component-distributed-id:3.1.0-SNAPSHOT"]);
+  if (Object.values(components).some(item => item.artifacts?.some(artifact => artifact.artifact_id === "yss-component-excel-starter"))) componentFail("component-new-adoption-forbidden", `removed yss-component-excel-starter is present: ${entry.id}`);
+  exactComponent("component.excel-import-export", ["com.yss.cloud:yss-component-excel-mvc:3.0.0-SNAPSHOT"]);
+  for (const [capabilityId, item] of Object.entries(components)) {
+    if (item.status !== "blocked" || item.verified_architectures.length || item.evidence.length || item.artifacts.some(artifact => ["resolved_version", "pom_sha256", "jar_sha256", "source_tree"].some(field => artifact[field] !== null))) componentFail("component-evidence-missing", `Boot 3.5/JDK17 unpublished component must remain blocked and unresolved: ${entry.id}:${capabilityId}`);
+  }
+  const external = entry.external_artifact_bindings;
+  if (external.length !== 1 || `${external[0].group_id}:${external[0].artifact_id}:${external[0].declared_version}` !== "org.apache.fesod:fesod-sheet:2.0.2-incubating" || external[0].status !== "resolved") componentFail("component-binding-drift", `Boot 3.5/JDK17 Fesod release binding changed: ${entry.id}`);
+}
+function validateComponentCatalog(value, root = PLATFORM_ROOT) {
+  if (Object.hasOwn(value, "component_capabilities") || Object.hasOwn(value, "component_capability_ids")) componentFail("component-binding-drift", "component capabilities must be nested in their compatibility entry");
+  for (const entry of value.compatibility) {
+    const profile = value.profiles.find(item => item.id === entry.profile_id && item.spring_boot_version === entry.spring_boot_version);
+    if (!profile) componentFail("component-unavailable-for-platform", `compatibility profile is missing: ${entry.id}`);
+    const generation = platformGeneration(profile);
+    if (generation.line === "boot3-java17" && profile.component_platform_line !== generation.line) componentFail("component-platform-generation-mismatch", `profile component line does not match ${generation.line}: ${profile.id}`);
+    if (entry.platform_artifact_bindings !== undefined) {
+      if (!entry.platform_artifact_bindings || Array.isArray(entry.platform_artifact_bindings) || Object.keys(entry.platform_artifact_bindings).sort().join(",") !== "bom,parent") componentFail("component-binding-drift", `platform artifact bindings must contain parent and bom: ${entry.id}`);
+      validateArtifactBinding(entry.platform_artifact_bindings.parent, `${entry.id}:parent`, { role: "parent", expected: entry.parent, snapshot: true });
+      validateArtifactBinding(entry.platform_artifact_bindings.bom, `${entry.id}:bom`, { role: "bom", expected: entry.bom, snapshot: true });
+    }
+    for (const [field, snapshot] of [["external_snapshot_bindings", true], ["external_artifact_bindings", false]]) {
+      const bindings = entry[field];
+      if (bindings === undefined) continue;
+      if (!Array.isArray(bindings)) componentFail("component-binding-drift", `${field} must be an array: ${entry.id}`);
+      const coordinates = new Set();
+      for (const binding of bindings) {
+        validateArtifactBinding(binding, `${entry.id}:${field}:${binding?.group_id ?? "?"}:${binding?.artifact_id ?? "?"}`, { role: binding?.role, snapshot, allowedStatuses: field === "external_artifact_bindings" ? ["candidate", "resolved"] : ["candidate"] });
+        const coordinate = `${binding.group_id}:${binding.artifact_id}`;
+        if (coordinates.has(coordinate)) componentFail("component-artifact-coordinate-conflict", `duplicate ${field} coordinate: ${entry.id}:${coordinate}`);
+        coordinates.add(coordinate);
+      }
+    }
+    let artifactResolution = null;
+    if (entry.artifact_resolution_evidence !== undefined) {
+      const binding = entry.artifact_resolution_evidence;
+      if (!portableEvidence(binding) || typeof binding.report_id !== "string" || typeof binding.repository_id !== "string") componentFail("component-evidence-missing", `invalid artifact resolution evidence: ${entry.id}`);
+      let bytes;
+      try { bytes = readFileSync(path.join(root, binding.ref)); }
+      catch { componentFail("component-evidence-missing", `artifact resolution evidence is unreadable: ${entry.id}`); }
+      if (platformDigest(bytes) !== binding.digest) componentFail("component-binding-drift", `artifact resolution evidence drift: ${entry.id}`);
+      try { artifactResolution = JSON.parse(bytes); }
+      catch { componentFail("component-binding-drift", `artifact resolution evidence is not valid JSON: ${entry.id}`); }
+      if (artifactResolution.schema_version !== 1 || artifactResolution.kind !== "backend-component-artifact-resolution" || artifactResolution.report_id !== binding.report_id || artifactResolution.repository?.id !== binding.repository_id || !Array.isArray(artifactResolution.artifacts)) componentFail("component-binding-drift", `artifact resolution evidence identity mismatch: ${entry.id}`);
+      artifactResolution = new Map(artifactResolution.artifacts.map(item => [`${item.group_id}:${item.artifact_id}:${item.declared_version}`, item]));
+    }
+    if (entry.component_capabilities === undefined) continue;
+    if (!entry.component_capabilities || Array.isArray(entry.component_capabilities) || typeof entry.component_capabilities !== "object") componentFail("component-evidence-missing", `component capability map is invalid: ${entry.id}`);
+    for (const [capabilityId, item] of Object.entries(entry.component_capabilities)) {
+      const key = `${entry.id}:${capabilityId}`;
+      if (!capabilityId.includes(".") || !item || typeof item !== "object") componentFail("component-binding-drift", `invalid component capability binding: ${key}`);
+      if (!["candidate", "verified", "blocked"].includes(item.status) || !Array.isArray(item.verified_architectures) || !Array.isArray(item.artifacts) || !Array.isArray(item.evidence) || !Array.isArray(item.blockers)) componentFail("component-evidence-missing", `incomplete capability entry: ${key}`);
+      if (item.provider_kind !== undefined && !["yss-component", "platform-managed"].includes(item.provider_kind)) componentFail("component-binding-drift", `invalid component provider kind: ${key}`);
+      if (item.provider_kind === "platform-managed") {
+        if (capabilityId !== "contract.request-validation" || item.artifacts.length !== 1) componentFail("component-binding-drift", `unsupported platform-managed capability: ${key}`);
+        const artifact = item.artifacts[0];
+        if (artifact.group_id !== "org.springframework.boot" || artifact.artifact_id !== "spring-boot-starter-validation" || artifact.declared_version !== profile.spring_boot_version) componentFail("component-binding-drift", `platform-managed validation must match Spring Boot ${profile.spring_boot_version}: ${key}`);
+      }
+      if (!["active", "maintenance", "deprecated", "retired"].includes(item.lifecycle ?? "active") || !["allowed", "forbidden"].includes(item.adoption_policy ?? "allowed")) componentFail("component-binding-drift", `invalid component lifecycle/adoption policy: ${key}`);
+      if (item.lifecycle === "retired" && !retirementEvidenceComplete(item.retirement_evidence)) componentFail("component-retirement-evidence-missing", `organizational zero-consumption evidence is incomplete: ${key}`);
+      if (new Set(item.verified_architectures).size !== item.verified_architectures.length || item.verified_architectures.some(family => !["domain-driven", "layered-mvc"].includes(family))) componentFail("component-binding-drift", `invalid verified architectures: ${key}`);
+      const coordinates = new Set();
+      for (const artifact of item.artifacts) {
+        const coordinate = `${artifact.group_id}:${artifact.artifact_id}`;
+        if (!artifact.group_id || !artifact.artifact_id || !exactVersion(artifact.declared_version) || coordinates.has(coordinate)) componentFail("component-artifact-coordinate-conflict", `invalid or duplicate artifact coordinate in ${key}: ${coordinate}`);
+        if (artifact.resolved_version !== null && artifact.resolved_version !== undefined && !exactVersion(artifact.resolved_version)) componentFail("component-artifact-coordinate-conflict", `invalid resolved version in ${key}: ${coordinate}`);
+        if (artifact.declared_version.endsWith("-SNAPSHOT") && artifact.resolved_version && (artifact.resolved_version === artifact.declared_version || artifact.resolved_version.endsWith("-SNAPSHOT"))) componentFail("component-artifact-coordinate-conflict", `SNAPSHOT is not uniquely resolved in ${key}: ${coordinate}`);
+        if (artifactResolution) {
+          const resolved = artifactResolution.get(`${coordinate}:${artifact.declared_version}`);
+          if (!resolved) componentFail("component-evidence-missing", `artifact is absent from resolution evidence: ${key}:${coordinate}`);
+          const expectedPom = resolved.pom_sha256 ? `sha256:${resolved.pom_sha256}` : null;
+          const expectedJar = resolved.jar_sha256 ? `sha256:${resolved.jar_sha256}` : null;
+          const expectedTree = resolved.sources_match_source_tree === true && resolved.pom_matches_source_tree === true ? resolved.source_tree : null;
+          if (artifact.resolved_version !== resolved.resolved_version || artifact.pom_sha256 !== expectedPom || artifact.jar_sha256 !== expectedJar || artifact.source_tree !== expectedTree) componentFail("component-binding-drift", `artifact binding differs from resolution evidence: ${key}:${coordinate}`);
+        }
+        coordinates.add(coordinate);
+      }
+      if (!sha256(item.component_digest) || item.component_digest !== componentCapabilityDigest(item, capabilityId)) componentFail("component-binding-drift", `component digest mismatch: ${key}`);
+      if (item.status === "verified") {
+        if (!item.verified_architectures.length || !item.artifacts.length || !item.evidence.length || item.blockers.length) componentFail("component-evidence-missing", `verified capability is incomplete: ${key}`);
+        if (entry.status !== "verified") componentFail("component-unavailable-for-platform", `verified capability belongs to an unverified compatibility entry: ${key}`);
+        if (item.artifacts.some(artifact => !exactVersion(artifact.resolved_version) || !sha256(artifact.pom_sha256) || !sha256(artifact.jar_sha256) || !gitTree(artifact.source_tree))) componentFail("component-evidence-missing", `verified artifact evidence is missing: ${key}`);
+        const generation = platformGeneration(value.profiles.find(profile => profile.id === entry.profile_id));
+        if (generation.componentMajor !== null && item.artifacts.some(artifact => major(artifact.declared_version) !== generation.componentMajor)) componentFail("component-platform-generation-mismatch", `${key} does not match ${generation.line}`);
+        if (item.evidence.some(evidence => !portableEvidence(evidence) || !item.verified_architectures.includes(evidence.architecture_family))) componentFail("component-evidence-missing", `verified capability evidence is invalid: ${key}`);
+      } else if (!item.blockers.length) componentFail("component-evidence-missing", `unverified capability lacks blockers: ${key}`);
+    }
+    validateBoot3Java17Policy(entry, profile);
+  }
+}
 export function loadBackendPlatforms(root = PLATFORM_ROOT) {
   const value = JSON.parse(readFileSync(path.join(root, PLATFORM_CATALOG_REF), "utf8"));
-  if (value.schema_version !== 1 || value.kind !== "backend-platform-catalog" || !Array.isArray(value.profiles) || !Array.isArray(value.compatibility)) fail("invalid catalog");
+  if (value.schema_version !== 2 || value.kind !== "backend-platform-catalog" || !Array.isArray(value.profiles) || !Array.isArray(value.compatibility)) fail("invalid catalog");
   if (new Set(value.profiles.map(item => `${item.id}:${item.spring_boot_version}:${item.java_version}`)).size !== value.profiles.length || new Set(value.compatibility.map(item => item.id)).size !== value.compatibility.length) fail("duplicate catalog release/id");
   for (const profile of value.profiles) if (!/^\d+\.\d+\.\d+$/.test(profile.spring_boot_version)) fail("catalog requires exact patch versions");
+  validateComponentCatalog(value, root);
   return value;
 }
 export function platformProfile(id, catalog = loadBackendPlatforms(), version) {
@@ -27,12 +168,15 @@ export function platformProfile(id, catalog = loadBackendPlatforms(), version) {
 }
 export function platformRecipeDigest(profile, entry) {
   const { candidate_blockers, recommended, ...recipe } = profile;
-  return platformDigest({ profile: recipe, entry: { id: entry.id, profile_id: entry.profile_id, spring_boot_version: entry.spring_boot_version, parent: entry.parent, bom: entry.bom, components: entry.components ?? {} } });
+  return platformDigest({ profile: recipe, entry: { id: entry.id, profile_id: entry.profile_id, spring_boot_version: entry.spring_boot_version, parent: entry.parent, bom: entry.bom, components: entry.components ?? {}, platform_artifact_bindings: entry.platform_artifact_bindings ?? {}, external_snapshot_bindings: entry.external_snapshot_bindings ?? [], external_artifact_bindings: entry.external_artifact_bindings ?? [] } });
 }
 export function platformBinding(profile, entry) {
   return { schema_version: 2, profile_id: profile.id, spring_boot_version: profile.spring_boot_version, java_version: profile.java_version, parent: entry.parent, bom: entry.bom, compatibility_id: entry.id, compatibility_digest: platformRecipeDigest(profile, entry) };
 }
-export function resolveBackendPlatform(binding, { catalog = loadBackendPlatforms(), requireVerified = true, root = PLATFORM_ROOT } = {}) {
+export function resolveBackendPlatform(binding, options = {}) {
+  const root = options.root ?? PLATFORM_ROOT;
+  const catalog = options.catalog ?? loadBackendPlatforms(root);
+  const requireVerified = options.requireVerified ?? true;
   if (!binding || binding.schema_version !== 2) fail("missing platform_configuration v2 (v1 is historical read-only); 生命周期须展示 Boot/Java/YSS 组合并取得用户确认");
   const profile = platformProfile(binding.profile_id, catalog, binding.spring_boot_version);
   if (binding.spring_boot_version !== profile.spring_boot_version || binding.java_version !== profile.java_version) fail("unsupported exact Boot/Java combination (x/latest and Java 8/11 for Boot 3.5/4.1 are rejected)");
@@ -65,6 +209,80 @@ export function resolveBackendPlatform(binding, { catalog = loadBackendPlatforms
     }
   }
   return { profile, entry, evidenceReports };
+}
+export function resolveComponentCapabilities(binding, capabilityIds, architectureFamily, options = {}) {
+  const root = options.root ?? PLATFORM_ROOT;
+  const catalog = options.catalog ?? loadBackendPlatforms(root);
+  let resolvedPlatform;
+  try { resolvedPlatform = resolveBackendPlatform(binding, { catalog, root, requireVerified: false }); }
+  catch (error) {
+    const code = /drift|stale/i.test(error.message ?? "") ? "component-binding-drift" : "component-unavailable-for-platform";
+    componentFail(code, error.message);
+  }
+  if (!Array.isArray(capabilityIds) || !capabilityIds.length || capabilityIds.some(id => typeof id !== "string" || !id.length) || new Set(capabilityIds).size !== capabilityIds.length) componentFail("component-unavailable-for-platform", "capability ids must be a non-empty unique list");
+  if (!["domain-driven", "layered-mvc"].includes(architectureFamily)) componentFail("component-unavailable-for-platform", `unsupported architecture family: ${architectureFamily}`);
+  const records = capabilityIds.map(capabilityId => {
+    const item = resolvedPlatform.entry.component_capabilities?.[capabilityId];
+    if (!item) componentFail("component-unavailable-for-platform", `${capabilityId} is not declared for ${resolvedPlatform.entry.id}`);
+    if (item.lifecycle === "retired" && !retirementEvidenceComplete(item.retirement_evidence)) componentFail("component-retirement-evidence-missing", `${capabilityId} lacks organizational zero-consumption evidence`);
+    if ((item.adoption_policy ?? "allowed") === "forbidden" && !(options.allowForbiddenExisting ?? false)) componentFail("component-new-adoption-forbidden", `${capabilityId} is ${item.lifecycle ?? "deprecated"}; use ${item.replacement_binding_id ?? item.replacement_gav ?? "the approved migration route"}`);
+    const generation = platformGeneration(resolvedPlatform.profile);
+    if (generation.componentMajor !== null && item.artifacts.some(artifact => major(artifact.declared_version) !== generation.componentMajor)) componentFail("component-platform-generation-mismatch", `${capabilityId} requires component ${generation.componentMajor}.x for ${generation.line}`);
+    if (item.status !== "verified") {
+      const blockers = (item.blockers ?? []).join("; ");
+      const code = item.blockers?.some(blocker => blocker.startsWith("component-platform-generation-mismatch:"))
+        ? "component-platform-generation-mismatch"
+        : item.blockers?.some(blocker => blocker.startsWith("component-new-adoption-forbidden:"))
+          ? "component-new-adoption-forbidden"
+          : item.blockers?.some(blocker => blocker.startsWith("component-retirement-evidence-missing:"))
+            ? "component-retirement-evidence-missing"
+            : item.blockers?.some(blocker => blocker.startsWith("component-artifact-coordinate-conflict:"))
+              ? "component-artifact-coordinate-conflict"
+              : item.blockers?.some(blocker => blocker.startsWith("component-binding-drift:"))
+                ? "component-binding-drift"
+                : item.blockers?.some(blocker => blocker.startsWith("component-evidence-missing:"))
+                  ? "component-evidence-missing"
+                  : "component-unavailable-for-platform";
+      componentFail(code, `${capabilityId} is ${item.status}; ${blockers}`);
+    }
+    if (!item.verified_architectures.includes(architectureFamily)) componentFail("component-unavailable-for-platform", `${capabilityId} is not verified for ${architectureFamily}`);
+    if (!item.artifacts.length || item.artifacts.some(artifact => !artifact.group_id || !artifact.artifact_id || !exactVersion(artifact.declared_version) || !exactVersion(artifact.resolved_version) || !sha256(artifact.pom_sha256) || !sha256(artifact.jar_sha256) || !gitTree(artifact.source_tree))) componentFail("component-evidence-missing", `${capabilityId} lacks exact artifact evidence`);
+    const artifactCoordinates = item.artifacts.map(artifact => `${artifact.group_id}:${artifact.artifact_id}`);
+    if (new Set(artifactCoordinates).size !== artifactCoordinates.length || item.artifacts.some(artifact => artifact.declared_version.endsWith("-SNAPSHOT") && (artifact.resolved_version === artifact.declared_version || artifact.resolved_version.endsWith("-SNAPSHOT")))) componentFail("component-artifact-coordinate-conflict", `${capabilityId} has duplicate coordinates or an unresolved SNAPSHOT`);
+    if (item.component_digest !== componentCapabilityDigest(item, capabilityId)) componentFail("component-binding-drift", `${capabilityId} component digest changed`);
+    return { capabilityId, item };
+  });
+  if (options.requirePlatformVerified ?? true) {
+    try { resolveBackendPlatform(binding, { catalog, root, requireVerified: true }); }
+    catch (error) {
+      const code = /drift|stale/i.test(error.message ?? "") ? "component-binding-drift" : "component-unavailable-for-platform";
+      componentFail(code, error.message);
+    }
+  }
+  const coordinates = new Map();
+  for (const { capabilityId, item } of records) for (const artifact of item.artifacts) {
+    const coordinate = `${artifact.group_id}:${artifact.artifact_id}`;
+    const previous = coordinates.get(coordinate);
+    const version = `${artifact.declared_version}->${artifact.resolved_version}`;
+    if (previous && previous.version !== version) componentFail("component-artifact-coordinate-conflict", `${coordinate} resolves to both ${previous.version} (${previous.capabilityId}) and ${version} (${capabilityId})`);
+    coordinates.set(coordinate, { version, capabilityId });
+  }
+  return records.map(({ capabilityId, item }) => {
+    const evidence = item.evidence.filter(record => record.architecture_family === architectureFamily);
+    if (!evidence.length) componentFail("component-evidence-missing", `${capabilityId} lacks ${architectureFamily} evidence`);
+    for (const record of evidence) {
+      if (!portableEvidence(record)) componentFail("component-evidence-missing", `${capabilityId} has invalid portable evidence`);
+      let bytes;
+      try { bytes = readFileSync(path.join(root, record.ref)); }
+      catch { componentFail("component-evidence-missing", `${capabilityId} evidence is unreadable: ${record.ref}`); }
+      if (platformDigest(bytes) !== record.digest) componentFail("component-binding-drift", `${capabilityId} evidence bytes changed`);
+      let report;
+      try { report = JSON.parse(bytes); }
+      catch { componentFail("component-binding-drift", `${capabilityId} evidence is not valid JSON`); }
+      if (report.schema_version !== 1 || report.kind !== "backend-component-capability-evidence" || report.status !== "passed" || report.capability_id !== capabilityId || report.compatibility_id !== resolvedPlatform.entry.id || report.profile_id !== resolvedPlatform.profile.id || report.spring_boot_version !== resolvedPlatform.profile.spring_boot_version || report.architecture_family !== architectureFamily || report.component_digest !== item.component_digest || platformDigest(report.artifacts) !== platformDigest(item.artifacts)) componentFail("component-binding-drift", `${capabilityId} evidence identity mismatch`);
+    }
+    return { capability_id: capabilityId, status: item.status, verified_architectures: [...item.verified_architectures], artifacts: item.artifacts.map(artifact => ({ ...artifact })), evidence: evidence.map(record => ({ ...record })), component_digest: item.component_digest };
+  });
 }
 export function assertContractPlatform(contract, decision, options = {}) {
   const binding = contract.platform_configuration;

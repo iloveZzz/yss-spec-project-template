@@ -75,3 +75,5 @@ Slice v3 的任务进度、缺口和实时就绪结果不回写合同。源事�
 ## 后端脚手架平台承接
 
 消费生命周期已确认的架构与 `platform_configuration` v2；不得自行选择、批准或静默升级 Boot/Java。平台清单执行 `scripts/backend-platforms` 查询；只允许已验证 YSS 组合，新生成缺少配置或证据即阻断。决定、合同、Manifest 与下游架构身份须绑定同一平台及兼容摘要。详见 仓库共享合同 `docs/engineering/backend-platforms.md`。
+
+后端 Slice 解析出 `component_binding: required` 的 capability 或其主 Skill 时，必须在同一平台兼容条目中逐项解析 `component_capabilities`。编译结果保存 `component_bindings` 与 `component_bindings_digest`；未登记、未验证、架构证据缺失、构件坐标冲突或摘要漂移均阻断。旧合同含组件 Skill 但没有组件绑定时直接 `stale`，重新编译并交生命周期批准，禁止自动补字段后沿用原批准。

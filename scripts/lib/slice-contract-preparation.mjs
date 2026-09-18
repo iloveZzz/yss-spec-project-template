@@ -4,7 +4,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { stringify } from '../vendor/yaml.mjs';
 import { safe, hash, digest, write } from './strategic-handoff-io.mjs';
-import { compileDefaultImplementationContract, loadCompilerContract } from './implementation-contract-compiler.mjs';
+import { compileDefaultImplementationContract, digestDocument, loadCompilerContract } from './implementation-contract-compiler.mjs';
 import { normalizeSliceContract, parseSliceYaml, readSliceSources, resolveSliceBasis, sourceSliceContract, sliceArchitectureEvidence } from './slice-contract.mjs';
 
 const object=value=>value && typeof value==='object' && !Array.isArray(value);
@@ -123,11 +123,12 @@ export function prepareSliceImplementationContract({root=process.cwd(),ticket_re
         return compileDefaultImplementationContract({...compileBase,recipeIds,requiredCapabilities:[...requiredCapabilities,...(repo.project.delivery_role==='backend'?componentCapabilities:[])],architecture_identity:repo.resolution.architecture_identity,architecture_evidence:repo.resolution.architecture_evidence,technical_design:repo.resolution.technical_design,...(repo.resolution.frontend_delivery?{frontend_delivery:repo.resolution.frontend_delivery}:{}),...(approved_slice?{approved_slice,work_unit_id:input.work_units.find(u=>u.project_root===projectRoot)?.id}:{})});
       });
       if(results.some(r=>r.registry_digest!==results[0].registry_digest||r.compiler_contract_digest!==results[0].compiler_contract_digest))throw new TypeError('逐仓编译依据冲突：准备期间来源发生变化');
-      compiled={...results[0],required_capabilities:[...new Set(results.flatMap(r=>r.required_capabilities))],required_skills:[...new Set(results.flatMap(r=>r.required_skills))],recipe_ids:[...new Set(results.flatMap(r=>r.recipe_ids))],readiness_blockers:results.flatMap(r=>r.readiness_blockers||[]),reason_chains:Object.fromEntries(Object.keys(repositories).map((p,i)=>[p,results[i].reason_chains]))};
+      const componentBindings=[...new Map(results.flatMap(result=>result.component_bindings||[]).map(binding=>[digestDocument(binding),binding])).values()];
+      compiled={...results[0],required_capabilities:[...new Set(results.flatMap(r=>r.required_capabilities))],required_skills:[...new Set(results.flatMap(r=>r.required_skills))],recipe_ids:[...new Set(results.flatMap(r=>r.recipe_ids))],readiness_blockers:results.flatMap(r=>r.readiness_blockers||[]),reason_chains:Object.fromEntries(Object.keys(repositories).map((p,i)=>[p,results[i].reason_chains])),...(componentBindings.length?{component_bindings:componentBindings,component_bindings_digest:digestDocument(componentBindings)}:{})};
       delete compiled.architecture_identity;
     } else compiled=compileDefaultImplementationContract({...compileBase,recipeIds:input.recipe_ids||[],requiredCapabilities:[...new Set([...(input.required_capabilities||[]),...componentCapabilities])],architecture_identity,architecture_evidence,technical_design:bound('technical_design'),...(bound('frontend_delivery')?{frontend_delivery:{acceptance_ref:bound('frontend_delivery').ref,digest:bound('frontend_delivery').digest}}:{}),...(approved_slice?{approved_slice}:{})});
     if(compiled.compiler_contract_digest!==digest(compilerRules).slice(7))throw new TypeError('编译规则来源冲突：准备期间发生变化');
-    const resolution=Object.fromEntries(['required_capabilities','required_skills','recipe_ids','conditions','registry_digest','compiler_contract_digest','architecture_identity'].filter(key=>compiled[key]!==undefined).map(key=>[key,compiled[key]]));
+    const resolution=Object.fromEntries(['required_capabilities','required_skills','recipe_ids','conditions','registry_digest','compiler_contract_digest','architecture_identity','component_bindings','component_bindings_digest'].filter(key=>compiled[key]!==undefined).map(key=>[key,compiled[key]]));
     contract={schema_version:3,ticket_policy:{mode:'frozen-requirements',state_owner:'tracker-or-task-package'},contract_id:input.contract_id,contract_version:input.contract_version,slice_id:input.slice_id,status:'draft',basis,scope,applicability,resolution,acceptance:input.acceptance||markdownAcceptance(ticketText),verification:input.verification,work_units:input.work_units,...(input.extensions?{extensions:input.extensions}:{})};
     report.reason_chains=compiled.reason_chains;
     for(const reason of compiled.readiness_blockers||[])report.blockers.push({reason});
@@ -145,7 +146,7 @@ export function prepareSliceImplementationContract({root=process.cwd(),ticket_re
       if(field==='applicability'&&scope.risk_level)origins.push({kind:'lifecycle-rule',ref:resolveSliceBasis({basis},'lifecycle_registry').ref});
       report.provenance.push({target:field,origins,requires_professional_review:true});
     }
-  }catch(error){if(error.code!=='SLICE_DEPENDENCIES_UNAVAILABLE')report.blockers.push({reason:error.message,recovery:'补齐已确认输入后重新准备；草案不授予执行权限'});report.checks.push({check:'assembly',result:'not-executed',reason:'前置检查未通过'});}
+  }catch(error){if(error.code!=='SLICE_DEPENDENCIES_UNAVAILABLE')report.blockers.push({...(error.code?{code:error.code}:{}),reason:error.message,recovery:'补齐已确认输入后重新准备；草案不授予执行权限'});report.checks.push({check:'assembly',result:'not-executed',reason:'前置检查未通过'});}
   for(const [ref,bytes] of snapshots) {
     try {if(hash(fs.readFileSync(safe(root,ref)))!==hash(bytes))report.blockers.push({field:ref,reason:'生成期间来源变化'});}catch(error){report.blockers.push({field:ref,reason:error.message});}
     report.sources[ref]=hash(bytes);
@@ -203,7 +204,7 @@ export function migrateSliceContractV2(document,{root=process.cwd(),ticket_ref,s
   const checkUnknown=(value,known,prefix)=>{for(const [key,item]of Object.entries(value||{}))if(meaningful(item)&&!known.includes(key))conflicts.push({field:`${prefix}.${key}`,reason:'未映射约束，禁止静默丢弃'});};
   checkUnknown(old,['schema_version','contract_id','contract_version','slice_id','status','suggested_owner_role_id','lifecycle_refs','readiness','resolution','common','frontend','backend','contract','cross_repo','work_units'],'root');
   checkUnknown(old.common,[...scopeKeys,'required_capabilities','required_skills','verification_commands','expected_evidence_files','quality_baseline_ref'],'common');
-  checkUnknown(old.resolution,['schema_version','status','slice_id','architecture_identity','architecture_identity_digest','architecture_evidence','technical_design','frontend_delivery','profile_maturity','readiness_blockers','skill_profiles','recipe_ids','conditions','required_capabilities','required_skills','reason_chains','non_expanding_dependencies','excluded_conditional_dependencies','registry_digest','compiler_contract_digest','compiled_at','freshness'],'resolution');
+  checkUnknown(old.resolution,['schema_version','status','slice_id','architecture_identity','architecture_identity_digest','architecture_evidence','technical_design','frontend_delivery','profile_maturity','readiness_blockers','skill_profiles','recipe_ids','conditions','required_capabilities','required_skills','component_bindings','component_bindings_digest','reason_chains','non_expanding_dependencies','excluded_conditional_dependencies','registry_digest','compiler_contract_digest','compiled_at','freshness'],'resolution');
   const ticketRef=ticket_ref||old.lifecycle_refs?.ticket;
   let acceptance=refinements.acceptance;
   if(!acceptance){try{acceptance=markdownAcceptance(fs.readFileSync(safe(root,ticketRef),'utf8'));}catch(error){conflicts.push({field:'acceptance',reason:error.message});acceptance={};}}

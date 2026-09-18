@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** 依据生命周期批准的 schema v4 合同生成纯机械 YSS 分层 MVC 后端骨架。 */
 import { platformSourceFingerprint, generatedTreeDigest } from "../../../../scripts/lib/backend-platform-provenance.mjs";
-import { assertContractPlatform, platformProfile, platformTemplateVars, platformSmokeTest } from "../../../../scripts/lib/backend-platform.mjs";
+import { assertContractPlatform, platformTemplateVars, platformSmokeTest } from "../../../../scripts/lib/backend-platform.mjs";
 import { assertScaffoldUserDecision } from "../../../../scripts/lib/user-decision.mjs";
 import { validateBackendScaffoldPrerequisites } from "../../../../scripts/lib/backend-scaffold-prerequisites.mjs";
 import { createHash } from "node:crypto";
@@ -14,6 +14,7 @@ import { findGitRoot, gitSubmoduleScaffoldViolation, overlayMountViolation } fro
 import { assertLocalDatabaseProfile, localDatabaseConfiguration, scaffoldArchitectureIdentity } from "../../../../scripts/lib/scaffold-local-database.mjs";
 import { validateArchitectureIdentity } from "../../../../scripts/lib/backend-architecture.mjs";
 import { validateJsonSchema } from "../../../../scripts/lib/json-schema.mjs";
+import { finalizeDataAnalysisProfile } from "./data-analysis-profile.mjs";
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const SKILL_ROOT = path.resolve(SCRIPT_DIR, "..");
@@ -146,7 +147,7 @@ function modulePom(contract, module, modules, platform) {
   }
   if (module === "client") dependencies.push(dependency("com.yss.cloud", "yss-component-dto"), dependency(platform.validation_group, platform.validation_artifact));
   if (["server", "service", "core", "client", "repository"].includes(module)) dependencies.push(dependency("org.projectlombok", "lombok", platform.versions.lombok, "provided"));
-  if (module === "feign-client") dependencies.push(own("client"), dependency("org.springframework.cloud", contract.generator_skill === SKILL_ID ? "spring-cloud-starter-openfeign" : "spring-cloud-openfeign-core"));
+  if (module === "feign-client") dependencies.push(own("client"), dependency("org.springframework.cloud", contract.architecture_profile === "mvc-data-analysis-v1" ? "spring-cloud-openfeign-core" : "spring-cloud-starter-openfeign"));
   const plugin = module === "server" ? `<profiles><profile><id>scaffold-local</id><dependencies>${dependency("com.h2database", "h2", null, "runtime")}</dependencies></profile></profiles><build><plugins><plugin><groupId>org.springframework.boot</groupId><artifactId>spring-boot-maven-plugin</artifactId></plugin></plugins></build>` : "";
   return `<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"><modelVersion>4.0.0</modelVersion><parent><groupId>${xml(contract.maven_coordinates.group_id)}</groupId><artifactId>${xml(contract.project_name)}</artifactId><version>${xml(contract.maven_coordinates.project_version)}</version></parent><artifactId>${xml(contract.project_name)}-${module}</artifactId><dependencies>${dependencies.join("")}</dependencies>${plugin}</project>`;
@@ -160,6 +161,10 @@ export async function validateContract(options, skillId, architectureProfile, pl
   if (contract.schema_version !== 4) fail(`unsupported: 新生成只接受 scaffold contract v4，收到 v${contract.schema_version}`);
   const expectedScaffoldKind = architectureProfile === "mvc-data-analysis-v1" ? "backend-mvc-data-analysis" : "backend-layered-mvc";
   if (contract.kind !== "project-scaffold-contract" || contract.delivery_role !== "backend" || contract.scaffold_kind !== expectedScaffoldKind) fail(`schema v4 合同必须绑定 backend/${expectedScaffoldKind}`);
+  if (architectureProfile === "mvc-data-analysis-v1") {
+    if (contract.init_git !== true) fail("mvc-data-analysis-v1 必须由合同显式要求独立 Git 初始化");
+    if (!contract.context_handoff_ref || !contract.context_handoff_digest) fail("mvc-data-analysis-v1 缺少批准的 CONTEXT handoff");
+  }
   validateJsonSchema(contract, path.join(REPOSITORY_ROOT, "docs/process/schemas/project-scaffold-contract.schema.json"), { label: "Project Scaffold Contract v4" });
   const required = ["contract_id", "contract_version", "scaffold_request_id", "status", "compiler_draft_ref", "lifecycle_approval_ref", "persisted_ref", "current_version", "implementation_repository", "backend_repository", "scaffold_status", "project_name", "target_output_dir", "base_package", "architecture_family", "generator_skill", "decision_ref", "decision_id", "decision_digest", "maven_coordinates", "profiles", "module_profile", "allowed_write_paths", "expected_evidence_files", "verification_commands", "approval", "work_unit", "generation_policy"];
   const missing = required.filter((field) => !isPresent(contract[field]));
@@ -176,6 +181,7 @@ export async function validateContract(options, skillId, architectureProfile, pl
   for (const [field, value] of Object.entries(expectedProfiles)) if (contract.profiles?.[field] !== value) fail(`unsupported profile ${field}: ${contract.profiles?.[field]}`);
   assertLocalDatabaseProfile(contract.profiles);
   if (contract.architecture_profile !== architectureProfile) fail(`合同必须显式绑定 ${architectureProfile} Profile`);
+  if (architectureProfile !== "mvc-data-analysis-v1" && contract.init_git !== false) fail("通用 layered-mvc-service 脚手架不得初始化 Git");
   const requested = contract.module_profile?.requested_capabilities;
   if (!Array.isArray(requested)) fail("module_profile.requested_capabilities 必须是数组");
   const resolved = architectureProfile === "mvc-data-analysis-v1" ? ["server", "core", "client", "repository", "adapter", "feign-client"] : orderedModules(requested);
@@ -209,8 +215,7 @@ export async function validateContract(options, skillId, architectureProfile, pl
   assertScaffoldUserDecision(decision);
   validateArchitectureIdentity(scaffoldArchitectureIdentity(contract, sha256(contractText)));
   const designPrerequisites = await validateBackendScaffoldPrerequisites(contract, { contractFile });
-  const platform = skillId === SKILL_ID ? assertContractPlatform(contract, decision, { ...platformOptions, requireVerified: platformOptions.candidate !== true }).profile : platformProfile("spring-boot-2.7-jdk8", undefined, "2.7.18");
-  if (skillId !== SKILL_ID && (contract.platform_configuration || contract.profiles.platform !== "spring-boot-2.7-jdk8" || contract.profiles.validation_namespace !== "javax")) fail("unsupported: data-analysis initializer remains on legacy Boot 2.7/Java 8");
+  const platform = assertContractPlatform(contract, decision, { ...platformOptions, requireVerified: platformOptions.candidate !== true }).profile;
   return { contract, contractText, modules: resolved, designPrerequisites, platform };
 }
 
@@ -227,8 +232,15 @@ async function validateOutputLayout(outputDir, projectName) {
   if (await exists(target)) fail(`unsupported: 目标已存在 ${target}`);
 }
 
-export async function generate(options, { skillId = SKILL_ID, architectureProfile = "layered-mvc-service", finalize, platformOptions = {} } = {}) {
-  if (!((skillId === SKILL_ID && architectureProfile === "layered-mvc-service") || (skillId === "yss-mvc-data-analysis-project-initializer" && architectureProfile === "mvc-data-analysis-v1"))) fail("unsupported MVC generator/Profile pair");
+async function profileFromContract(options) {
+  const text = await readFile(path.resolve(options.contractFile), "utf8").catch(() => fail(`脚手架合同不可读取: ${path.resolve(options.contractFile)}`));
+  try { return JSON.parse(text).architecture_profile; }
+  catch { fail("脚手架合同必须是 JSON 对象"); }
+}
+
+export async function generate(options, { skillId = SKILL_ID, architectureProfile, finalize, platformOptions = {} } = {}) {
+  architectureProfile ??= await profileFromContract(options);
+  if (skillId !== SKILL_ID || !["layered-mvc-service", "mvc-data-analysis-v1"].includes(architectureProfile)) fail("unsupported MVC generator/Profile pair");
   await validateOutputLayout(options.outputDir, options.projectName);
   const { contract, contractText, modules, designPrerequisites, platform } = await validateContract(options, skillId, architectureProfile, platformOptions);
   const outputDir = path.resolve(options.outputDir);
@@ -252,11 +264,13 @@ export async function generate(options, { skillId = SKILL_ID, architectureProfil
     await put(projectRoot, `${serverRoot}/src/test/resources/application-scaffold-test.yml`, localDatabaseConfiguration(`${options.projectName}_test`));
     await put(projectRoot, `${serverRoot}/src/test/java/${packagePath}/${applicationClass}Test.java`, `package ${options.basePackage};\n\nimport org.junit.jupiter.api.Test;\nimport org.springframework.boot.test.context.SpringBootTest;\nimport org.springframework.test.context.ActiveProfiles;\n\n@SpringBootTest\n@ActiveProfiles("scaffold-test")\nclass ${applicationClass}Test {\n    @Test\n    void contextLoads() {\n    }\n}`);
     await put(projectRoot, `${serverRoot}/src/test/java/${packagePath}/architecture/LayeredMvcArchitectureTest.java`, `package ${options.basePackage}.architecture;\n\nimport static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;\n\nimport com.tngtech.archunit.core.importer.ImportOption;\nimport com.tngtech.archunit.junit.AnalyzeClasses;\nimport com.tngtech.archunit.junit.ArchTest;\nimport com.tngtech.archunit.lang.ArchRule;\n\n@AnalyzeClasses(packages = "${options.basePackage}", importOptions = ImportOption.DoNotIncludeTests.class)\nclass LayeredMvcArchitectureTest {\n    @ArchTest\n    static final ArchRule repositoryDoesNotDependOnUpperLayers = noClasses().that().resideInAPackage("..repository..").should().dependOnClassesThat().resideInAnyPackage("..service..", "..server..");\n}`);
-    if (skillId === SKILL_ID) await put(projectRoot, `${serverRoot}/src/test/java/${packagePath}/PlatformIntegrationTest.java`, platformSmokeTest(options.basePackage, platform, contract.module_profile.requested_capabilities));
+    await put(projectRoot, `${serverRoot}/src/test/java/${packagePath}/PlatformIntegrationTest.java`, platformSmokeTest(options.basePackage, platform, contract.module_profile.requested_capabilities));
     const wrapper = path.join(REPOSITORY_ROOT, ".agents/skills/yss-ddd-scaffold-generator/assets/wrapper");
     await cp(wrapper, projectRoot, { recursive: true });
     await chmod(path.join(projectRoot, "mvnw"), 0o755);
-    if (finalize) await finalize({ projectRoot, contract, architectureIdentity: scaffoldArchitectureIdentity(contract, sha256(contractText)) });
+    const architectureIdentity = scaffoldArchitectureIdentity(contract, sha256(contractText));
+    const profileFinalize = finalize ?? (architectureProfile === "mvc-data-analysis-v1" ? finalizeDataAnalysisProfile : null);
+    if (profileFinalize) await profileFinalize({ projectRoot, contract, architectureIdentity, options });
     await put(projectRoot, "README.md", `# ${options.projectName}\n\n平台：Spring Boot ${platform.spring_boot_version} / Java ${platform.java_version}。\n\n该工程由 ${skillId} 根据批准的 schema v${contract.schema_version} 合同生成。模块：${modules.join("、")}。不包含业务 API、SQL 或生产数据库绑定。\n\n本地运行需同时显式启用 Maven -Pscaffold-local 和 Spring scaffold-local Profile；测试独立使用 H2。生产数据库须由后续已批准存储工作单元接入。`);
     const generatedFiles = [];
     for (const entry of await fileEntries(projectRoot, new Set([".yss/scaffold-generation.json"]))) generatedFiles.push({ path: entry.relative, owner: "generator", sha256: rawSha256(await readFile(entry.target)) });
@@ -269,7 +283,7 @@ export async function generate(options, { skillId = SKILL_ID, architectureProfil
       schema_version: 4,
       kind: architectureProfile === "mvc-data-analysis-v1" ? "service-project-initialization" : "backend-scaffold",
       architecture_profile: contract.architecture_profile,
-      architecture_identity: scaffoldArchitectureIdentity(contract, sha256(contractText)),
+      architecture_identity: architectureIdentity,
       contract_id: contract.contract_id,
       contract_version: contract.contract_version,
       scaffold_request_id: contract.scaffold_request_id,

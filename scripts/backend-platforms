@@ -1,14 +1,83 @@
 #!/usr/bin/env node
 import { loadBackendPlatforms, platformBinding, resolveBackendPlatform } from "./lib/backend-platform.mjs";
+
+function parseArgs(argv) {
+  const result = { requireVerified: false, requireProfile: null };
+  for (let index = 0; index < argv.length; index += 1) {
+    const arg = argv[index];
+    if (arg === "--require-verified") result.requireVerified = true;
+    else if (arg === "--require-profile") {
+      const value = argv[++index];
+      if (!value || value.startsWith("--")) throw new TypeError("--require-profile requires a profile id");
+      result.requireProfile = value;
+    } else if (arg.startsWith("--require-profile=")) {
+      result.requireProfile = arg.slice("--require-profile=".length);
+      if (!result.requireProfile) throw new TypeError("--require-profile requires a profile id");
+    } else throw new TypeError(`unknown argument: ${arg}`);
+  }
+  return result;
+}
+
+function componentView(entry) {
+  return Object.fromEntries(Object.entries(entry.component_capabilities ?? {}).map(([capabilityId, item]) => [capabilityId, {
+    status: item.status,
+    provider_kind: item.provider_kind ?? "yss-component",
+    lifecycle: item.lifecycle ?? "active",
+    adoption_policy: item.adoption_policy ?? "allowed",
+    platform_line: item.platform_line ?? null,
+    replacement_gav: item.replacement_gav ?? null,
+    verified_architectures: item.verified_architectures,
+    artifacts: item.artifacts,
+    evidence: item.evidence,
+    blockers: item.blockers,
+    component_digest: item.component_digest
+  }]));
+}
+
 try {
+  const args = parseArgs(process.argv.slice(2));
   const catalog = loadBackendPlatforms();
   const rows = catalog.profiles.map(profile => {
-    const combinations = catalog.compatibility.filter(entry => entry.profile_id === profile.id && entry.spring_boot_version === profile.spring_boot_version).map(entry => {
-      try { resolveBackendPlatform(platformBinding(profile, entry)); return { id: entry.id, status: "verified", parent: entry.parent, bom: entry.bom, architectures: entry.evidence.map(item => item.architecture_family), capabilities: entry.capabilities ?? [] }; }
-      catch (error) { return { id: entry.id, status: "blocked", reason: error.message }; }
-    });
-    return { profile_id: profile.id, spring_boot_version: profile.spring_boot_version, java_version: profile.java_version, recommended_java: profile.java_version === 8 || profile.java_version === 17, selectable: combinations.some(entry => entry.status === "verified"), combinations, blockers: combinations.some(entry => entry.status === "verified") ? [] : profile.candidate_blockers };
+    const combinations = catalog.compatibility
+      .filter(entry => entry.profile_id === profile.id && entry.spring_boot_version === profile.spring_boot_version)
+      .map(entry => {
+        let platformReason = null;
+        try { resolveBackendPlatform(platformBinding(profile, entry)); }
+        catch (error) { platformReason = error.message; }
+        const componentCapabilities = componentView(entry);
+        const componentValues = Object.values(componentCapabilities);
+        return {
+          id: entry.id,
+          status: platformReason ? "blocked" : "verified",
+          parent: entry.parent,
+          bom: entry.bom,
+          architectures: [...new Set(componentValues.flatMap(item => item.verified_architectures))],
+          capabilities: entry.capabilities ?? [],
+          platform_artifact_bindings: entry.platform_artifact_bindings ?? {},
+          external_snapshot_bindings: entry.external_snapshot_bindings ?? [],
+          external_artifact_bindings: entry.external_artifact_bindings ?? [],
+          component_capabilities: componentCapabilities,
+          component_status: {
+            verified: componentValues.filter(item => item.status === "verified").length,
+            blocked: componentValues.filter(item => item.status !== "verified").length
+          },
+          blockers: platformReason ? [platformReason] : []
+        };
+      });
+    const selectable = combinations.some(entry => entry.status === "verified");
+    const blockers = selectable ? [] : [...new Set([...profile.candidate_blockers, ...combinations.flatMap(item => item.blockers)])];
+    return { profile_id: profile.id, spring_boot_version: profile.spring_boot_version, java_version: profile.java_version, recommended_java: profile.java_version === 8 || profile.java_version === 17, selectable, combinations, blockers };
   });
-  process.stdout.write(`${JSON.stringify({ schema_version: 1, profiles: rows }, null, 2)}\n`);
-  if (process.argv.includes("--require-verified") && rows.some(row => !row.selectable)) process.exitCode = 1;
-} catch (error) { process.stderr.write(`${error.message}\n`); process.exitCode = 1; }
+  const matches = args.requireProfile ? rows.filter(row => row.profile_id === args.requireProfile) : [];
+  const requiredProfile = !args.requireProfile ? null : matches.length === 1 ? matches[0] : {
+    profile_id: args.requireProfile,
+    selectable: false,
+    combinations: [],
+    blockers: [matches.length ? "backend-platform: multiple patches require an exact catalog selection" : `backend-platform: unsupported platform_profile: ${args.requireProfile}`]
+  };
+  process.stdout.write(`${JSON.stringify({ schema_version: 2, requested_profile: args.requireProfile, required_profile: requiredProfile, profiles: rows }, null, 2)}\n`);
+  if ((args.requireVerified && rows.some(row => !row.selectable)) || (requiredProfile && !requiredProfile.selectable)) process.exitCode = 1;
+} catch (error) {
+  process.stderr.write(`${error.message}\n`);
+  process.exitCode = 1;
+}

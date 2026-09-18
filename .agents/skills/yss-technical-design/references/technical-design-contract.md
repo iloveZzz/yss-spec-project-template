@@ -1,6 +1,6 @@
 # Technical Design Contract v2
 
-共同合同字段由 `technical-design-common.schema.json` 定义，完整 `technical-design.schema.json` 通过 `scripts/generate-schema.mjs` 合并专项 Schema 派生，使用 `--check` 检查同步，`design` 按 `architecture.family` 校验：`domain-driven` 沿用 DDD v1 内容结构，`layered-mvc` 使用 `yss-mvc-design/references/mvc-design.schema.json`。DDD 内层的 schema/version/status 是分支内容版本，status 必须与共同头一致；战略交接绑定只写共同头，避免双重维护。
+共同合同字段由 `technical-design-common.schema.json` 定义，完整 `technical-design.schema.json` 通过 `scripts/generate-schema.mjs` 合并专项 Schema 派生，使用 `--check` 检查同步，`design` 按 `architecture.family` 校验：`domain-driven` 沿用 DDD v1 内容结构，`layered-mvc` 使用本 skill 的 `references/mvc-design.schema.json`。DDD 内层的 schema/version/status 是分支内容版本，status 必须与共同头一致；战略交接绑定只写共同头，避免双重维护。历史 `yss-mvc-design/references/mvc-design.schema.json` 只用于退役期等价核验，不是新合同依赖。
 
 ## 共同头
 

@@ -30,7 +30,7 @@ function transformationFor(target,ref){if(!target.endsWith('yss-harness-backend-
 function sync(source,dest,transformation='identity'){const bytes=transformations[transformation](readFileSync(source));if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}if(!check&&path.basename(path.dirname(dest))==='scripts'&&!path.extname(dest))chmodSync(dest,0o755);}
 const digestBytes=bytes=>`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 const sharedRefs=[...new Set(shared)].sort();
-const sliceExecutionRefs=['scripts/slice-contract','scripts/lib/slice-contract-preparation.mjs','scripts/lib/slice-contract-views.mjs','scripts/lib/slice-task-package.mjs','scripts/lib/implementation-contract-compiler.mjs','scripts/lib/technical-design-boundary.mjs'];
+const sliceExecutionRefs=['scripts/slice-contract','scripts/lib/slice-contract-preparation.mjs','scripts/lib/slice-contract-views.mjs','scripts/lib/slice-task-package.mjs','scripts/lib/implementation-contract-compiler.mjs','scripts/lib/skill-registry.mjs','scripts/lib/skill-supply-chain.mjs','scripts/lib/technical-design-boundary.mjs'];
 const backendPlatformRefs=['scripts/verify-backend-platform-matrix','scripts/fixtures/backend-scaffold/generate-candidate.mjs','scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs','scripts/verify-scaffold-architecture-decision-scenarios','scripts/verify-scaffold-generator-scenarios'];
 const registryRef='docs/agents/yss-skill-registry.yaml';
 const sourceRegistry=parseDocument(readFileSync(path.join(root,registryRef),'utf8'),{uniqueKeys:true});

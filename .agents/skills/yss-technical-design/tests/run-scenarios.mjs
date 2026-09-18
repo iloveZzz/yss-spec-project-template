@@ -14,6 +14,9 @@ import { loadSkillRegistry } from '../../../../scripts/lib/skill-registry.mjs';
 const root = mkdtempSync(path.join(tmpdir(), 'yss-technical-design-'));
 let checks = 0;
 try {
+  const activeMvcSchema = JSON.parse(readFileSync(fileURLToPath(new URL('../references/mvc-design.schema.json', import.meta.url)), 'utf8'));
+  const deprecatedMvcSchema = JSON.parse(readFileSync(fileURLToPath(new URL('../../yss-mvc-design/references/mvc-design.schema.json', import.meta.url)), 'utf8'));
+  assert.deepEqual(activeMvcSchema, deprecatedMvcSchema); checks++;
   const mvc = mvcFixture(root);
   const validate = data => validateTechnicalDesign(data, { root });
   assert.equal((await validate(mvc)).architecture_family, 'layered-mvc'); checks++;
@@ -74,7 +77,7 @@ try {
   enforceTechnicalDesign(state, { root }); checks++;
   assert.throws(() => enforceTechnicalDesign({ ...state, technical_design: undefined }, { root }), /缺少已批准技术设计/); checks++;
   assert.throws(() => enforceTechnicalDesign({ ...state, architecture_identity: { architecture_family: 'domain-driven' } }, { root }), /架构不匹配/); checks++;
-  const resolution = compileDefaultImplementationContract({ ...state, root, requiredCapabilities: ['contract.request-validation'], architecture_evidence: { engineering_baseline: identity, repository_registration: identity, manifest: identity } });
+  const resolution = compileDefaultImplementationContract({ ...state, root, requiredCapabilities: ['quality.java-code-style'], architecture_evidence: { engineering_baseline: identity, repository_registration: identity, manifest: identity } });
   assert.deepEqual(resolution.technical_design, technical_design); assert(!resolution.required_skills.includes('yss-domain')); checks++;
   writeFileSync(path.join(root, 'spec.md'), 'changed again');
   assert.equal(evaluateContractFreshness({ schema_version: 2, resolution }, { registry: loadSkillRegistry(), compilerContract: loadCompilerContract(), root }).freshness, 'stale'); checks++;

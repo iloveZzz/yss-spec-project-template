@@ -1,56 +1,132 @@
 #!/usr/bin/env node
 import { existsSync } from "node:fs";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { loadSkillRegistry } from "./lib/skill-registry.mjs";
 import { OBSOLETE, ROOT } from "./lib/skill-supply-chain.mjs";
 
-const checkOnly = process.argv.includes("--check");
-const registry = loadSkillRegistry();
-const capabilityBySkill = new Map();
-for (const capability of registry.capabilities) {
-  if (!capabilityBySkill.has(capability.primary_skill)) capabilityBySkill.set(capability.primary_skill, []);
-  capabilityBySkill.get(capability.primary_skill).push(capability.id);
+const CLASSIFICATIONS = ["keep", "enhance", "merge-ready", "deprecated", "remove-ready"];
+
+function referencesFor(registry) {
+  const capabilityBySkill = new Map();
+  for (const capability of registry.capabilities) {
+    if (!capabilityBySkill.has(capability.primary_skill)) capabilityBySkill.set(capability.primary_skill, []);
+    capabilityBySkill.get(capability.primary_skill).push(capability);
+  }
+  const inbound = new Map();
+  const outbound = new Map();
+  for (const [owner, dependencies] of Object.entries(registry.skill_dependencies)) {
+    outbound.set(owner, dependencies);
+    for (const dependency of dependencies) {
+      if (!inbound.has(dependency.skill)) inbound.set(dependency.skill, []);
+      inbound.get(dependency.skill).push({ owner, type: dependency.type, ...(dependency.when ? { when: dependency.when } : {}) });
+    }
+  }
+  const recipeCallers = new Map();
+  for (const recipe of registry.recipes) for (const capabilityId of recipe.capabilities) {
+    const skill = registry.capabilities.find((item) => item.id === capabilityId)?.primary_skill;
+    if (!skill) continue;
+    if (!recipeCallers.has(skill)) recipeCallers.set(skill, []);
+    recipeCallers.get(skill).push(recipe.id);
+  }
+  const profileGenerators = new Map();
+  for (const [profileId, profile] of Object.entries(registry.architecture_profiles ?? {})) {
+    if (!profileGenerators.has(profile.generator_skill)) profileGenerators.set(profile.generator_skill, []);
+    profileGenerators.get(profile.generator_skill).push(profileId);
+  }
+  return { capabilityBySkill, inbound, outbound, recipeCallers, profileGenerators };
 }
-const inbound = new Map();
-for (const [owner, dependencies] of Object.entries(registry.skill_dependencies)) {
-  for (const dependency of dependencies) {
-    if (!inbound.has(dependency.skill)) inbound.set(dependency.skill, []);
-    inbound.get(dependency.skill).push({ owner, type: dependency.type, ...(dependency.when ? { when: dependency.when } : {}) });
+
+export function auditBackendSkills(registry, { root = ROOT } = {}) {
+  const refs = referencesFor(registry);
+  const shared = registry.skills.map((skill) => ({ ...skill, source_kind: "shared" }));
+  const external = (registry.external_skills ?? []).map((skill) => ({ ...skill, impacts: ["backend"], source_kind: "external" }));
+  const known = new Map([...shared, ...external].map((skill) => [skill.id, skill]));
+  return [...shared, ...external]
+    .filter((skill) => skill.impacts.includes("backend") || refs.capabilityBySkill.has(skill.id) || skill.maturity === "deprecated")
+    .map((skill) => {
+      const capabilities = refs.capabilityBySkill.get(skill.id) ?? [];
+      const callers = [...new Set(refs.recipeCallers.get(skill.id) ?? [])].sort();
+      const dependencies = refs.inbound.get(skill.id) ?? [];
+      const ownedDependencies = refs.outbound.get(skill.id) ?? [];
+      const generatorProfiles = (refs.profileGenerators.get(skill.id) ?? []).sort();
+      const canonicalPath = skill.source_kind === "external" ? skill.source : `.agents/skills/${skill.id}/SKILL.md`;
+      const canonicalExists = existsSync(path.join(root, canonicalPath));
+      const replacement = skill.replacement_skill ? known.get(skill.replacement_skill) : null;
+      const replacementClosed = Boolean(replacement && replacement.maturity !== "deprecated");
+      const activeReferences = capabilities.length + callers.length + dependencies.length + ownedDependencies.length + generatorProfiles.length;
+      const forbiddenProviders = capabilities.filter((item) => item.provider?.new_adoption === "forbidden").map((item) => item.id);
+      const platformManaged = capabilities.filter((item) => item.provider?.kind === "platform-managed").map((item) => item.id);
+      let classification = "keep";
+      let rationale = "unique active capability or typed caller remains";
+      if (skill.maturity === "deprecated") {
+        const requestedRemoval = skill.deprecation?.cleanup_status === "remove-ready";
+        classification = requestedRemoval && activeReferences === 0 && replacementClosed ? "remove-ready" : "deprecated";
+        rationale = classification === "remove-ready"
+          ? "replacement is active, positive references are zero, and cleanup_status is remove-ready"
+          : "migration shell remains; new use is forbidden";
+      } else if (OBSOLETE.has(skill.id)) {
+        classification = canonicalExists ? "deprecated" : "remove-ready";
+        rationale = "skill is present in the hard-retirement obsolete set";
+      } else if (forbiddenProviders.length || platformManaged.length || capabilities.some((item) => item.id === "migration.springboot3")) {
+        classification = "enhance";
+        rationale = forbiddenProviders.length
+          ? "component provider forbids new adoption and requires migration/security hardening"
+          : platformManaged.length
+            ? "capability ownership remains while its provider moves to the platform"
+            : "platform migration capability is an active enhancement route";
+      } else if (activeReferences === 0) {
+        classification = "merge-ready";
+        rationale = "no active capability, recipe, typed dependency, or generator profile reference remains";
+      }
+      return {
+        skill: skill.id,
+        classification,
+        source_kind: skill.source_kind,
+        canonical_exists: canonicalExists,
+        capabilities: capabilities.map((item) => item.id).sort(),
+        forbidden_providers: forbiddenProviders.sort(),
+        platform_managed_providers: platformManaged.sort(),
+        recipe_callers: callers,
+        dependency_callers: dependencies,
+        owned_dependencies: ownedDependencies,
+        generator_profiles: generatorProfiles,
+        replacement_skill: skill.replacement_skill ?? null,
+        replacement_closed: replacementClosed,
+        cleanup_status: skill.deprecation?.cleanup_status ?? null,
+        active_reference_count: activeReferences,
+        rationale
+      };
+    })
+    .sort((left, right) => left.skill.localeCompare(right.skill));
+}
+
+function parseArgs(args) {
+  const values = { check: false, registry: undefined };
+  for (let index = 0; index < args.length; index += 1) {
+    if (args[index] === "--check") values.check = true;
+    else if (args[index] === "--registry") values.registry = args[++index];
+    else throw new TypeError(`未知参数: ${args[index]}`);
+  }
+  return values;
+}
+
+function main() {
+  const options = parseArgs(process.argv.slice(2));
+  const registry = loadSkillRegistry(options.registry ? path.resolve(options.registry) : undefined);
+  const candidates = auditBackendSkills(registry);
+  const invalidDeprecated = candidates.filter((item) => item.classification === "deprecated" && item.active_reference_count > 0);
+  const invalidRemoveReady = candidates.filter((item) => item.cleanup_status === "remove-ready" && item.classification !== "remove-ready");
+  const blocked = invalidDeprecated.length > 0 || invalidRemoveReady.length > 0;
+  if (options.check) {
+    const counts = Object.fromEntries(CLASSIFICATIONS.map((classification) => [classification, candidates.filter((item) => item.classification === classification).length]));
+    process.stdout.write(`backend skill audit ${blocked ? "blocked" : "passed"}: ${candidates.length} candidates (${Object.entries(counts).map(([key, value]) => `${key}=${value}`).join(", ")})\n`);
+  } else process.stdout.write(`${JSON.stringify({ schema_version: 2, generated_from: "docs/agents/yss-skill-registry.yaml", classifications: CLASSIFICATIONS, candidates }, null, 2)}\n`);
+  if (blocked) {
+    const names = [...new Set([...invalidDeprecated, ...invalidRemoveReady].map((item) => item.skill))].sort();
+    process.stderr.write(`backend skill audit blocked: retirement references are not closed for ${names.join(", ")}\n`);
+    process.exitCode = 1;
   }
 }
-const recipeCallers = new Map();
-for (const recipe of registry.recipes) for (const capability of recipe.capabilities) {
-  const skill = registry.capabilities.find((item) => item.id === capability)?.primary_skill;
-  if (!skill) continue;
-  if (!recipeCallers.has(skill)) recipeCallers.set(skill, []);
-  recipeCallers.get(skill).push(recipe.id);
-}
 
-const candidates = registry.skills
-  .filter((skill) => skill.impacts.includes("backend") || capabilityBySkill.has(skill.id))
-  .map((skill) => {
-    const capabilities = capabilityBySkill.get(skill.id) ?? [];
-    const callers = [...new Set(recipeCallers.get(skill.id) ?? [])].sort();
-    const dependencies = inbound.get(skill.id) ?? [];
-    const canonicalExists = existsSync(path.join(ROOT, ".agents/skills", skill.id, "SKILL.md"));
-    let classification = "keep";
-    let rationale = "unique capability or active typed caller exists";
-    if (OBSOLETE.has(skill.id)) {
-      classification = "remove";
-      rationale = "explicitly obsolete";
-    } else if (!capabilities.length && !callers.length && !dependencies.length) {
-      classification = "narrow";
-      rationale = "backend impact is declared but no capability, recipe, or typed dependency consumes it";
-    }
-    return { skill: skill.id, classification, canonical_exists: canonicalExists, capabilities, recipe_callers: callers, dependency_callers: dependencies, rationale };
-  })
-  .sort((left, right) => left.skill.localeCompare(right.skill));
-
-const blocking = candidates.filter((item) => item.classification === "remove" && item.canonical_exists);
-if (checkOnly) {
-  const counts = Object.fromEntries(["keep", "narrow", "merge", "remove"].map((classification) => [classification, candidates.filter((item) => item.classification === classification).length]));
-  process.stdout.write(`backend skill audit passed: ${candidates.length} candidates (${Object.entries(counts).map(([key, value]) => `${key}=${value}`).join(", ")})\n`);
-} else {
-  process.stdout.write(`${JSON.stringify({ schema_version: 1, generated_from: "docs/agents/yss-skill-registry.yaml", candidates }, null, 2)}\n`);
-}
-if (blocking.length) process.exitCode = 1;
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();

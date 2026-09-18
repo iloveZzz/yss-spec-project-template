@@ -147,9 +147,14 @@ test("prototype design route requires independent prototype-review", () => {
 test("deprecated skills require migration and cleanup metadata", () => {
   const data = registry();
   data.skills = data.skills.map((skill) => skill.id === "yss-api-integration"
-    ? { ...skill, maturity: "deprecated", replaced_by: "yss-ui-business-page-generation" }
+    ? {
+        ...skill,
+        maturity: "deprecated",
+        replacement_skill: "yss-ui-business-page-generation",
+        deprecation: { new_use: "forbidden", remove_after: "2026-12-31" }
+      }
     : skill);
-  assert.throws(() => validateSkillRegistry(data), /migration_deadline/);
+  assert.throws(() => validateSkillRegistry(data), /deprecation\.cleanup_status/);
 });
 
 function findingDisposition(overrides = {}) {

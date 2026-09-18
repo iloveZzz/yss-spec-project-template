@@ -36,7 +36,7 @@ async function fixture(t, { profile = capabilityModules.basic, architectureProfi
     delivery_role: "backend",
     scaffold_kind: architectureProfile === "mvc-data-analysis-v1" ? "backend-mvc-data-analysis" : "backend-layered-mvc",
     repository_scope: "external-repository",
-    init_git: false,
+    init_git: architectureProfile === "mvc-data-analysis-v1",
     contract_id: "scaffold.demo-service.v1",
     contract_version: 1,
     scaffold_request_id: "request.demo-service",
@@ -74,25 +74,49 @@ async function fixture(t, { profile = capabilityModules.basic, architectureProfi
 }
 
 test("数据分析初始化生成 H2 六模块和独立治理信封", async (t) => {
-  const skillId = "yss-mvc-data-analysis-project-initializer";
-  const data = await fixture(t, { architectureProfile: "mvc-data-analysis-v1", skillId, profile: { capabilities: [], modules: ["server", "core", "client", "repository", "adapter", "feign-client"] } });
+  const data = await fixture(t, { architectureProfile: "mvc-data-analysis-v1", profile: { capabilities: [], modules: ["server", "core", "client", "repository", "adapter", "feign-client"] } });
   const context = "---\ncontext_schema_version: 1\n---\n# 业务上下文\n\n## 业务术语\n\n| 术语 | 含义 | 英文标识 | 适用业务责任区 | 避免 / 备注 |\n|---|---|---|---|---|\n";
   await writeFile(path.join(data.root, "context-handoff.md"), context);
   data.contract.context_handoff_ref = "context-handoff.md";
   data.contract.context_handoff_digest = digest(context);
   await writeFile(data.contractFile, JSON.stringify(data.contract));
-  const initializer = path.resolve(path.dirname(script), `../../${skillId}/scripts/generate_project.mjs`);
-  const result = spawnSync(process.execPath, [initializer, ...data.args], { encoding: "utf8" });
+  const result = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...data.args], { encoding: "utf8" });
   assert.equal(result.status, 0, result.stderr);
   const manifest = JSON.parse(await readFile(path.join(data.project, ".yss/scaffold-generation.json"), "utf8"));
   assert.equal(manifest.architecture_identity.architecture_profile, "mvc-data-analysis-v1");
-  assert.equal(manifest.generator_skill, skillId);
+  assert.equal(manifest.generator_skill, "yss-layered-mvc-scaffold-generator");
   assert.equal(await readFile(path.join(data.project, "CONTEXT.md"), "utf8"), context);
   await stat(path.join(data.project, ".git"));
   await stat(path.join(data.output, "skillUtils/skills-lock.json"));
   assert.ok(!manifest.ownership.generated_files.some((entry) => entry.path.startsWith(".git/")));
   const core = await readFile(path.join(data.project, "demo-service-core/pom.xml"), "utf8");
   assert.doesNotMatch(core, /demo-service-client|spring-web|ojdbc|mysql-connector/);
+});
+
+test("历史数据分析初始化入口只返回稳定退役错误", () => {
+  const initializer = path.resolve(path.dirname(script), "../../yss-mvc-data-analysis-project-initializer/scripts/generate_project.mjs");
+  const result = spawnSync(process.execPath, [initializer], { encoding: "utf8" });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /^skill-deprecated:/);
+});
+
+test("数据分析 Profile 缺少 CONTEXT handoff 或独立 Git 合同时零写入阻断", async (t) => {
+  const profile = { capabilities: [], modules: ["server", "core", "client", "repository", "adapter", "feign-client"] };
+  const missingContext = await fixture(t, { architectureProfile: "mvc-data-analysis-v1", profile });
+  const missingResult = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...missingContext.args], { encoding: "utf8" });
+  assert.notEqual(missingResult.status, 0);
+  assert.match(missingResult.stderr, /CONTEXT handoff/);
+  await assert.rejects(stat(missingContext.project), { code: "ENOENT" });
+
+  const noGit = await fixture(t, { architectureProfile: "mvc-data-analysis-v1", profile });
+  const context = "---\ncontext_schema_version: 1\n---\n# 业务上下文\n";
+  await writeFile(path.join(noGit.root, "context-handoff.md"), context);
+  Object.assign(noGit.contract, { init_git: false, context_handoff_ref: "context-handoff.md", context_handoff_digest: digest(context) });
+  await writeFile(noGit.contractFile, JSON.stringify(noGit.contract));
+  const noGitResult = spawnSync(process.execPath, [path.resolve(path.dirname(script), "../../../../scripts/fixtures/backend-scaffold/generate-candidate.mjs"), script, ...noGit.args], { encoding: "utf8" });
+  assert.notEqual(noGitResult.status, 0);
+  assert.match(noGitResult.stderr, /独立 Git/);
+  await assert.rejects(stat(noGit.project), { code: "ENOENT" });
 });
 
 test("旧数据库和 Mock 参数在写入前被拒绝", async (t) => {

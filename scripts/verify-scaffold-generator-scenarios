@@ -192,7 +192,7 @@ def write_contract(
             "id": f"{project_name}-scaffold",
             "behavior": "scaffold",
             "primary_skill": "yss-ddd-scaffold-generator",
-            "supporting_skills": ["yss-backend-scaffold-parent", "alibaba-java-code-style"],
+            "supporting_skills": ["alibaba-java-code-style"],
             "tdd_mode": "controlled-generation",
             "allowed_write_paths": ["."],
             "expected_evidence": [".yss/scaffold-generation.json", "scaffold-verification.json"],

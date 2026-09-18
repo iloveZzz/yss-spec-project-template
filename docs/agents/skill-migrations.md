@@ -2,6 +2,29 @@
 
 本文记录已退役技能入口的迁移路径。退役技能不保留物理目录、投影或 lock 条目；本文件是历史名称的唯一持久兼容说明。
 
+## 后端组件源码索引双轨迁移（2026-09-19）
+
+后端组件 Skill 的单一 `references/source-index.md` 已迁移为平台线选择页。生成证据分别保存在 `source-index.boot2-java8.md` 与 `source-index.boot3-java17.md`，来源根分别由 `YSS_SOURCE_ROOT_BOOT2_JAVA8` 与 `YSS_SOURCE_ROOT_BOOT3_JAVA17` 显式提供。
+
+- 精确接入、代码生成和配置指导必须从批准的 `platform_configuration.component_platform_line` 选择索引，并以相同 `--platform-line` 和匹配源码根运行 freshness 检查。
+- 平台线缺失、源码根错配、组件 tree 漂移或组件子树 dirty 均返回 `blocked`；禁止退回另一代索引，也不能用源码可编译替代构件兼容认证。
+- 历史提交中的单轨索引只作只读证据；当前刷新不得覆盖另一平台线或把两个变量指向同一代源码。
+
+## 后端设计与脚手架入口两阶段退役（2026-09-18）
+
+以下入口已停止承接新合同，但在迁移期保留可诊断壳；它们不是 alias，不能静默继承原批准：
+
+- `yss-mvc-design`：新工作使用 `yss-technical-design`。MVC schema、规则和 API impact 的 OpenAPI review 条件依赖由技术设计入口持有。
+- `yss-mvc-data-analysis-project-initializer`：新工作使用 `yss-layered-mvc-scaffold-generator` 的 `mvc-data-analysis-v1` Profile，继续保留六模块、H2、CONTEXT handoff、skillUtils 和独立 Git 行为。
+- `yss-backend-scaffold-parent`：新工作使用 `yss-ddd-scaffold-generator`；原嵌套 Skill 仅作为迁移期参考，基线约束迁入生成器内部 reference 和验证器。
+
+迁移期统一规则：
+
+- `maturity: deprecated`、`new_use: forbidden`、`cleanup_status: migration-only`；计划移除日期为 `2026-12-17`，但日期到达不等于授权删除。
+- 旧 Slice、Technical Design 或 Scaffold Contract 因 Registry、Profile 或 generator 摘要变化变为 `stale`，必须重新编译和批准。
+- 新请求命中迁移壳返回 `skill-deprecated`；硬退役后命中旧 ID 返回 `skill-retired`。
+- 引用、投影和 lock 未归零时不得将 `cleanup_status` 改为 `remove-ready`；硬退役后不保留 alias、物理目录、投影或 lock 条目。
+
 ## DDD 分层包装与前端组件总入口收敛（2026-09-15）
 
 以下入口已硬退役，不保留 alias、物理目录、投影或 lock 条目：

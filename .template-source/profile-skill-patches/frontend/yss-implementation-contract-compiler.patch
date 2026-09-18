@@ -1,8 +1,8 @@
 diff --git a/SKILL.md b/SKILL.md
-index 516f121..5a711fa 100644
+index 5acd25b..580aefb 100644
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -5,73 +5,53 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill 
+@@ -5,75 +5,57 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill 
  
  # YSS Implementation Contract Compiler
  
@@ -18,10 +18,9 @@ index 516f121..5a711fa 100644
  ## 输入
  
 -先读取 Spec、切片 Ticket、需求冻结、适用的原型确认、OpenAPI Freeze/no-impact、适用的系统/数据架构和 Design Review、Build Architecture Checklist、实现仓库和验证命令。输入缺失、未批准或 `stale` 时输出 `blocked`，交回 `yss-product-lifecycle`。
-+采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
- 
+-
 -## 编译循环
-+必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、前端工程设计、已核验的后端交付、API / UI 消费影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
++采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
  
 -1. 判断 frontend/backend/API/data/domain/cross-repo 影响，并按 [compiler-contract.yaml](references/compiler-contract.yaml) 把 impact 映射为入口 capability；逐项填写 backend `component_impacts`。
 -2. 按 `docs/process/delivery-preflight.md` 只读检查当前阶段交付前提，再检查工程存在性和核心/长尾 skill 可用性。既有 Java/Maven 工程按 `docs/process/existing-backend-architecture.md` 加载登记、工程基线、独立观测的原始引用与摘要；不伪填生成器或 H2。
@@ -31,12 +30,13 @@ index 516f121..5a711fa 100644
 -6. 为切片生成基线合同；为当前行为生成工作单元增量路由。
 -7. 选择 `behavior-tdd` 或 `controlled-generation`。
 -8. 输出 `draft`、`blocked` 或 `ready-for-lifecycle-review`，交生命周期编排器核验和持久化。
-+后端 DDD / MVC 技术设计、架构确认和脚手架由后端项目持有；本仓只读消费已冻结 API、联合交付与页面工程约束。两类战略交接合同均可导入，不为前端切片补造后端技术设计。
++必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、前端工程设计、已核验的后端交付、API / UI 消费影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
  
 -完整草案使用 `scripts/slice-contract prepare` 或 `prepareSliceImplementationContract` 从已有 Ticket / checkpoint 和必要细化组装；执行前读取唯一 YAML，视图和检查报告不授予权限。
++后端 DDD / MVC 技术设计、架构确认和脚手架由后端项目持有；本仓只读消费已冻结 API、联合交付与页面工程约束。两类战略交接合同均可导入，不为前端切片补造后端技术设计。
  
 -合同结构见 [slice-implementation-contract.md](references/slice-implementation-contract.md)，专项返回协议见 [yss-skill-execution-result.md](references/yss-skill-execution-result.md)。前端、后端和测试子任务必须由生命周期主控从批准的 Slice Contract 编译任务包；任务包 schema 为 `docs/process/schemas/subagent-task-package.schema.json`，技能列表必须来自 `taskPackageDefaults`，不能由编译器或执行 Agent 另行手写。
--
+ 
 -## 硬规则
 +接入与导出先按 `docs/process/delivery-preflight.md` 执行对应阶段只读预检；既有工程身份按 `docs/process/existing-backend-architecture.md` 读取原始证据，不补造生成器来源。无 UI 改动可承接当前确认的 `existing-ui-baseline`，新设计仍走原型；当前批准后仅允许登记与合同交集内的输出增量。
  
@@ -97,15 +97,19 @@ index 516f121..5a711fa 100644
 -跨仓交接使用 `scripts/strategic-handoff export / verify / import`。正式导出前补齐源战略的稳定规则 ID、关键场景和当前批准绑定；源资产原字节冻结、包内路径通过清单解析。目标导入只产生快照和对账/承接草案，正式 reconciliation 通过后才能进入战术设计。流程与字段见 `docs/process/strategic-handoff-package.md`。
 -
 -来自战略交接包的技术设计合同（DDD / MVC）必须绑定 `strategic_handoff` 导入收据、包摘要、正式目标对账及逐条承接 rows。来自导入包时禁止仅填 `upstream_current: true`。批准前执行 `scripts/verify-strategic-handoff-consumption --root <target> <tactical>`；存在受控延期时按切片执行 `--slice <slice-id>`，实际核验通过且合同批准后才可继续相关切片。最新源规则、关键场景或资产变化使依赖项 stale；未知依赖扩大阻断，业务冲突回交战略方。结果绑定当前包与战术摘要，不能复用旧输出宣布 ready-for-agent。
--
--Slice v3 的任务进度、缺口和实时就绪结果不回写合同。源事实集中在 basis，Skill 闭包只在 resolution 保存，工作单元继承共同约束；独立工程审查与已有用户确认共同交生命周期批准。详见合同引用。
 +使用 `scripts/strategic-handoff export / verify / import`；源资产冻结、规则身份与批准绑定、目标术语对账和逐条承接合同以 `docs/process/strategic-handoff-package.md` 为准。来自导入包时，战术合同绑定 `strategic_handoff`；批准/流转前执行 `scripts/verify-strategic-handoff-consumption --root <target> <tactical>`，切片消费追加 `--slice <slice-id>`。存在延期时仅允许无依赖且核验通过的切片继续；未知依赖扩大阻断。
  
--## 后端脚手架平台承接
+-Slice v3 的任务进度、缺口和实时就绪结果不回写合同。源事实集中在 basis，Skill 闭包只在 resolution 保存，工作单元继承共同约束；独立工程审查与已有用户确认共同交生命周期批准。详见合同引用。
 +## Slice v3 准备与批准
  
--消费生命周期已确认的架构与 `platform_configuration` v2；不得自行选择、批准或静默升级 Boot/Java。平台清单执行 `scripts/backend-platforms` 查询；只允许已验证 YSS 组合，新生成缺少配置或证据即阻断。决定、合同、Manifest 与下游架构身份须绑定同一平台及兼容摘要。详见 仓库共享合同 `docs/engineering/backend-platforms.md`。
+-## 后端脚手架平台承接
 +使用 `scripts/slice-contract prepare/view/diff/migrate`，字段与接口见 [Slice v3](references/slice-implementation-contract.md)。用户只确认目标、范围、验收和关键取舍，已有有效确认按原协议延续；独立专业审查核验工程约束，主控汇总批准。原因链、缺口、检查结果和任务进度留在派生报告或现有证据，不改写权威合同。不得从普通 Spec 确认推断实施授权。
+ 
+-消费生命周期已确认的架构与 `platform_configuration` v2；不得自行选择、批准或静默升级 Boot/Java。平台清单执行 `scripts/backend-platforms` 查询；只允许已验证 YSS 组合，新生成缺少配置或证据即阻断。决定、合同、Manifest 与下游架构身份须绑定同一平台及兼容摘要。详见 仓库共享合同 `docs/engineering/backend-platforms.md`。
++## 后端组件合同的只读承接
+ 
+-后端 Slice 解析出 `component_binding: required` 的 capability 或其主 Skill 时，必须在同一平台兼容条目中逐项解析 `component_capabilities`。编译结果保存 `component_bindings` 与 `component_bindings_digest`；未登记、未验证、架构证据缺失、构件坐标冲突或摘要漂移均阻断。旧合同含组件 Skill 但没有组件绑定时直接 `stale`，重新编译并交生命周期批准，禁止自动补字段后沿用原批准。
++前端任务不选择或认证 YSS 后端组件。跨仓 Slice 含 `component_bindings` 时必须原样保留并消费 `component_bindings_digest`；绑定缺失或漂移时返回 `stale` 并交回后端与主控重新编译，禁止在前端合同中补造构件证据。
 diff --git a/agents/openai.yaml b/agents/openai.yaml
 index b2b097f..9278c4b 100644
 --- a/agents/openai.yaml
@@ -117,7 +121,7 @@ index b2b097f..9278c4b 100644
 -  default_prompt: "Use yss-implementation-contract-compiler to compile the approved slice capabilities, deterministic skill closure, evidence plan, and v3 contract draft."
 +  default_prompt: "Use yss-implementation-contract-compiler to compile approved capabilities, deterministic skill closure, evidence, and a v3 contract draft."
 diff --git a/references/boundaries.md b/references/boundaries.md
-index 7c0e62b..e092724 100644
+index f0acfcf..e092724 100644
 --- a/references/boundaries.md
 +++ b/references/boundaries.md
 @@ -19,37 +19,12 @@
@@ -125,7 +129,7 @@ index 7c0e62b..e092724 100644
  | --- | --- | --- |
  | `writing.lifecycle-document` | `i-have-adhd` | `guidance` |
 -| `architecture.technical-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
--| `architecture.mvc-design` | `yss-mvc-design` | `guidance`, `integration`, `review-input` |
+-| `architecture.mvc-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
 -| `layer.mvc-service` | `yss-application` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
 -| `layer.mvc-persistence` | `yss-repository` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
 -| `layer.mvc-web` | `yss-web-controller` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
@@ -157,12 +161,12 @@ index 7c0e62b..e092724 100644
 -| `scaffold.ddd` | `yss-ddd-scaffold-generator` | `integration`, `component-maintenance` |
 -| `scaffold.layered-mvc` | `yss-layered-mvc-scaffold-generator` | `integration`, `component-maintenance` |
 -| `scaffold.frontend-vue3` | `yss-frontend-scaffold-generator` | `integration`, `component-maintenance` |
--| `project-init.mvc-data-analysis` | `yss-mvc-data-analysis-project-initializer` | `component-maintenance` |
+-| `project-init.mvc-data-analysis` | `yss-layered-mvc-scaffold-generator` | `component-maintenance` |
 -| `migration.springboot3` | `yss-up-springboot3` | `guidance`, `integration`, `troubleshooting`, `component-maintenance`, `review-input` |
  
  ## Narrow Recipes
  
-@@ -57,101 +32,28 @@
+@@ -57,99 +32,28 @@
  
  | Recipe | Capabilities |
  | --- | --- |
@@ -233,7 +237,6 @@ index 7c0e62b..e092724 100644
  | `yss-prototype-stage` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 -| `yss-prototype-stage` | `prototype-review` | `review-only` | — |
 -| `yss-prototype-stage` | `yss-design-system` | `coordination-only` | — |
--| `yss-ddd-scaffold-generator` | `yss-backend-scaffold-parent` | `context-required` | — |
 -| `yss-ddd-scaffold-generator` | `alibaba-java-code-style` | `context-required` | — |
 -| `yss-layered-mvc-scaffold-generator` | `alibaba-java-code-style` | `context-required` | — |
 -| `yss-domain` | `alibaba-java-code-style` | `context-required` | — |
@@ -242,8 +245,7 @@ index 7c0e62b..e092724 100644
 -| `yss-domain` | `lombok` | `context-conditional` | `pojo` |
 -| `yss-technical-design` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 -| `yss-technical-design` | `yss-tactical-design` | `coordination-only` | `domain-driven` |
--| `yss-technical-design` | `yss-mvc-design` | `coordination-only` | `layered-mvc` |
--| `yss-mvc-design` | `yss-openapi-draft-review` | `review-only` | `api-impact` |
+-| `yss-technical-design` | `yss-openapi-draft-review` | `review-only` | `api-impact` |
 -| `yss-tactical-design` | `domain-modeling` | `coordination-only` | — |
 -| `yss-tactical-design` | `yss-openapi-draft-review` | `review-only` | `api-impact` |
 -| `yss-tactical-design` | `yss-repository` | `component-dependency` | `data-impact` |
@@ -273,10 +275,10 @@ index 7c0e62b..e092724 100644
  | `yss-ui-business-page-generation` | `yss-hook` | `context-conditional` | `hooks` |
  | `yss-ui-business-page-generation` | `yss-formily` | `context-conditional` | `form` |
 diff --git a/references/compiler-contract.yaml b/references/compiler-contract.yaml
-index 821eea8..9866d4c 100644
+index e43dfb8..bb91039 100644
 --- a/references/compiler-contract.yaml
 +++ b/references/compiler-contract.yaml
-@@ -8,427 +8,454 @@ slice_contract_versions:
+@@ -8,141 +8,169 @@ slice_contract_versions:
  backend_architecture:
    registry_source: docs/agents/yss-skill-registry.yaml
    identity_schema: docs/process/schemas/backend-architecture-identity.schema.json
@@ -553,6 +555,14 @@ index 821eea8..9866d4c 100644
 +  - skill-id
    digest_change_status: stale
 -  stale_action: recompile-and-return-to-lifecycle-approval
++  stale_action: recompile-and-return-to-harness-approval
+   component_bindings:
+     when: any-required-capability-provider-kind-is-yss-component
+     platform_configuration: required-v2
+@@ -151,309 +179,302 @@ resolution_contract:
+     exact_artifact_binding: [group_id, artifact_id, declared_version, resolved_version, pom_sha256, jar_sha256, source_tree]
+     digest_change_status: stale
+     old_contract_without_binding: stale-and-recompile-no-auto-upgrade
 -
 -context_plan:
 -  required: [required_context_refs, on_demand_context_refs, context_stop_rule, missing_context_action]
@@ -567,7 +577,7 @@ index 821eea8..9866d4c 100644
 -  delivery_roles:
 -    backend:
 -      scaffold_kinds: [backend-ddd, backend-layered-mvc, backend-mvc-data-analysis]
--      generators: [yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, yss-mvc-data-analysis-project-initializer]
+-      generators: [yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator]
 -      requires: [scaffold_request_id, architecture_family, decision_ref, decision_id, decision_digest, project_name, base_package, maven_coordinates, profiles, module_profile, design_prerequisites]
 -      design_prerequisites:
 -        required: [technical_design, data_architecture_decision, api_contract_decision, engineering_contract_approval_ref]
@@ -591,7 +601,6 @@ index 821eea8..9866d4c 100644
 -    backend_schema_v3: historical-manifest-read-only-recovery-audit
 -    frontend_before_v4: unsupported
 -
-+  stale_action: recompile-and-return-to-harness-approval
 +impact_to_capabilities:
 +  system-data-architecture:
 +  - architecture.system-data
@@ -604,6 +613,7 @@ index 821eea8..9866d4c 100644
 +- invariant-impact
 +- scaffold-architecture-decision-changed
 +- scaffold-profile-or-module-closure-changed
++- component-binding-drift
 +- new-write-path
 +- new-repository
 +- contract-violation
@@ -831,7 +841,7 @@ index 821eea8..9866d4c 100644
 -    lifecycle_approves: [approved]
 -    generator_consumes: []
 -    after_generation:
--      domain-driven: [yss-backend-scaffold-parent, yss-implementation-contract-compiler]
+-      domain-driven: [yss-implementation-contract-compiler]
 -      layered-mvc: [yss-implementation-contract-compiler]
 +    compiler_emits:
 +    - draft
@@ -843,7 +853,6 @@ index 821eea8..9866d4c 100644
 +    - approved
 +    after_generation_by_architecture:
 +      domain-driven:
-+      - yss-backend-scaffold-parent
 +      - yss-implementation-contract-compiler
 +      layered-mvc:
 +      - yss-implementation-contract-compiler
@@ -958,6 +967,7 @@ index 821eea8..9866d4c 100644
 -  - scaffold-architecture-decision-changed
 -  - scaffold-profile-changed
 -  - scaffold-module-resolution-changed
+-  - component-binding-drift
 -  - api-schema-impact
 -  - database-schema-impact
 -  - state-machine-impact
@@ -983,6 +993,7 @@ index 821eea8..9866d4c 100644
 -
 -reroute_destinations:
 -  scaffold-baseline-drift: stage7-scaffold-revalidation
+-  component-binding-drift: stage7-contract-recompile
 -  api-schema-impact: system-data-architecture-and-contract-review
 -  database-schema-impact: data-architecture-and-migration-review
 -  state-machine-impact: spec-system-data-and-contract-review
@@ -1038,6 +1049,10 @@ index 821eea8..9866d4c 100644
 -  - deviations
 -  - new_impacts
 -  - not_applicable_reason
+-execution_result_component_binding:
+-  when: resolution.component_bindings-present
+-  required: consumed_contract.component_bindings_digest
+-  mismatch: component-binding-mismatch
 -seam_deferred_required: [risk, owner, follow_up_ticket, verification_plan, target_version_or_release_date]
 -deviation_required: [rule, reason, approval_ref]
 -not_applicable_required: [item, reason]
@@ -1071,7 +1086,18 @@ index 821eea8..9866d4c 100644
    stale_policy: latest-imported-source-digest-and-dependent-slices
    unknown_dependency: block-all
    compiler_must_not_approve: true
--
++frontend_delivery_readiness:
++  when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
++  source: docs/process/frontend-backend-delivery.md
++  verifier: scripts/verify-frontend-delivery
++  output_binding: frontend.delivery
++  inputs_verified_is_implementation_approval: false
++
++execution_result_component_binding:
++  when: resolution.component_bindings-present
++  required: consumed_contract.component_bindings_digest
++  mismatch: component-binding-mismatch
+ 
 -backend_platform_contract:
 -  schema_version: 2
 -  catalog_ref: docs/engineering/backend-platforms.json
@@ -1080,12 +1106,22 @@ index 821eea8..9866d4c 100644
 -  new_generation_requires: [exact-boot-java, confirmed-decision, matching-yss-coordinates, verified-compatibility-entry]
 -  candidate_generation: maintenance-only
 -  candidate_downstream: blocked
-+frontend_delivery_readiness:
-+  when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
-+  source: docs/process/frontend-backend-delivery.md
-+  verifier: scripts/verify-frontend-delivery
-+  output_binding: frontend.delivery
-+  inputs_verified_is_implementation_approval: false
+-  component_capabilities:
+-    registry_marker: provider-kind-yss-component
+-    mapping_key: provider-binding-id
+-    foundational_capabilities: [contract.dto-wire, contract.request-validation, contract.error-mapping, framework.mybatis]
+-    specialized_capabilities: [component.cache, component.current-user-context, component.audit-log, component.excel-import-export, component.distributed-id, component.security-algorithm, component.gateway-resilience]
+-    exact_artifact_evidence: [group_id, artifact_id, declared_version, resolved_version, pom_sha256, jar_sha256, source_tree]
+-    verified_architecture_required: true
+-    unlisted_or_blocked: component-unavailable-for-platform
+-    missing_evidence: component-evidence-missing
+-    coordinate_conflict: component-artifact-coordinate-conflict
+-    drift: component-binding-drift
++backend_component_contract_readonly:
++  binding_fields: [component_bindings, component_bindings_digest]
++  missing_or_drift: component-binding-drift
++  action: return-to-backend-and-harness-orchestrator
++  frontend_must_not_certify: true
 diff --git a/references/slice-implementation-contract-v2.md b/references/slice-implementation-contract-v2.md
 index 80e2bc1..fc6d7fb 100644
 --- a/references/slice-implementation-contract-v2.md
@@ -1341,7 +1377,7 @@ index 80e2bc1..fc6d7fb 100644
 -技术设计编译绑定使用 `technical_design: {ref, version, digest}` 与 `slice_id`，校验器规则见 `yss-technical-design/references/technical-design-contract.md`。`backend.tactical_ddd` 仅适用于 `domain-driven`；MVC 消费共同技术设计绑定与 `design` 的用例、规则、事务和测试 seam，不填聚合或 Gateway 字段。
 +前端专职合同仅填写页面工程、组件、状态管理、API 消费与测试边界。来自导入包的承接使用前端联合接收核验，不生成或执行后端技术设计。
 diff --git a/references/yss-skill-execution-result.md b/references/yss-skill-execution-result.md
-index f4fc931..4fc1638 100644
+index ee8295c..51a23c0 100644
 --- a/references/yss-skill-execution-result.md
 +++ b/references/yss-skill-execution-result.md
 @@ -2,8 +2,6 @@
@@ -1353,16 +1389,16 @@ index f4fc931..4fc1638 100644
  ```yaml
  execution_result:
    schema_version: 2
-@@ -17,8 +15,6 @@ execution_result:
-     contract_version:
+@@ -18,8 +16,6 @@ execution_result:
      registry_digest:
      compiler_contract_digest:
+     component_bindings_digest: # 合同含 component_bindings 时必填
 -    quality_baseline_ref:
 -    context_plan_ref:
    changed_files:
      - path:
        contract_area: common | frontend | backend | contract | cross_repo
-@@ -34,9 +30,6 @@ execution_result:
+@@ -35,9 +31,6 @@ execution_result:
      - constraint:
        status: passed | failed | not-applicable
        evidence_ref:
@@ -1373,29 +1409,72 @@ index f4fc931..4fc1638 100644
      - risk:
        owner:
 diff --git a/tests/compiler-scenarios.test.mjs b/tests/compiler-scenarios.test.mjs
-index c334ed6..19d9b65 100644
+index 967988c..dc5b962 100644
 --- a/tests/compiler-scenarios.test.mjs
 +++ b/tests/compiler-scenarios.test.mjs
-@@ -12,62 +12,46 @@ import { loadSkillRegistry } from "../../../../scripts/lib/skill-registry.mjs";
+@@ -1,6 +1,5 @@
+ import assert from "node:assert/strict";
+ import test from "node:test";
+-import { readFileSync } from "node:fs";
+ import {
+   compileImplementationContract,
+   digestDocument,
+@@ -9,94 +8,50 @@ import {
+   validateExecutionResult
+ } from "../../../../scripts/lib/implementation-contract-compiler.mjs";
+ import { loadSkillRegistry } from "../../../../scripts/lib/skill-registry.mjs";
+-import { loadBackendPlatforms, platformBinding } from "../../../../scripts/lib/backend-platform.mjs";
+ 
  const registry = loadSkillRegistry();
  const compilerContract = loadCompilerContract();
  const fixed = "2026-09-04T00:00:00.000Z";
 -const identity = { architecture_family: "domain-driven", architecture_profile: "target-domain-model", generator_skill: "yss-ddd-scaffold-generator", requested_capabilities: [], resolved_modules: ["domain", "application", "infrastructure", "adapter", "bootstrap"], verification_database: "h2", production_database: "not-bound", contract_digest: "a".repeat(64) };
 -const architecture = { architecture_identity: identity, architecture_evidence: { engineering_baseline: identity, repository_registration: identity, manifest: identity } };
 -const compile = (input) => compileImplementationContract({ registry, compilerContract, compiledAt: fixed, ...architecture, ...input });
+-const stableComponentError = code => error => error?.code === code && new RegExp(`^component-capability: ${code}:`).test(error.message);
 +const compile = (input) => compileImplementationContract({ registry, compilerContract, compiledAt: fixed, ...input });
  
 -test("combines narrow recipes once and preserves deterministic output", () => {
 -  const input = {
--    recipeIds: ["backend.ddd-http-api", "backend.ddd-domain-behavior", "backend.ddd-persistence-mybatis"],
--    conditions: ["mybatis", "conversion", "pojo", "request-validation", "error-mapping"]
+-    recipeIds: ["backend.ddd-domain-behavior"],
+-    conditions: ["conversion", "pojo"]
 -  };
 -  const first = compile(input);
 -  const second = compile({ ...input, recipeIds: [...input.recipeIds].reverse(), conditions: [...input.conditions].reverse() });
 -  assert.deepEqual(first, second);
--  assert.deepEqual(first.recipe_ids, ["backend.ddd-domain-behavior", "backend.ddd-persistence-mybatis", "backend.ddd-http-api"]);
--  for (const skill of ["yss-domain", "yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "yss-validation", "yss-exception", "mapstruct", "lombok", "alibaba-java-code-style"]) {
+-  assert.deepEqual(first.recipe_ids, ["backend.ddd-domain-behavior"]);
+-  for (const skill of ["yss-domain", "yss-application", "mapstruct", "lombok", "alibaba-java-code-style"]) {
 -    assert.equal(first.required_skills.filter((candidate) => candidate === skill).length, 1, `${skill} should appear once`);
+-  }
+-});
+-
+-test("does not promote conditional or component dependencies without explicit input", () => {
+-  const persistence = compile({ requiredCapabilities: ["layer.persistence"] });
+-  assert.deepEqual(persistence.required_skills, ["alibaba-java-code-style", "yss-repository"]);
+-  assert.equal(persistence.required_skills.includes("yss-mybatis"), false);
+-  assert.equal(persistence.required_skills.includes("mapstruct"), false);
+-  assert.equal(persistence.required_skills.includes("lombok"), false);
+-
+-  assert.throws(
+-    () => compile({ requiredCapabilities: ["contract.request-validation"], architecture_identity: undefined, architecture_evidence: undefined }),
+-    /component-platform-binding-required/
+-  );
+-});
+-
+-test("loads only explicitly satisfied context-conditional dependencies", () => {
+-  const application = compile({ requiredCapabilities: ["layer.application"], conditions: ["conversion"] });
+-  assert.equal(application.required_skills.includes("mapstruct"), true);
+-  assert.equal(application.required_skills.includes("lombok"), false);
+-  assert.equal(application.required_skills.includes("yss-mybatis"), false);
+-});
+-
+-test("requires a platform binding for every backend component capability", () => {
+-  for (const capability of ["contract.dto-wire", "contract.request-validation", "contract.error-mapping", "framework.mybatis", "component.cache", "component.current-user-context", "component.audit-log", "component.excel-import-export", "component.distributed-id", "component.security-algorithm", "component.gateway-resilience"]) {
+-    assert.throws(
+-      () => compile({ requiredCapabilities: [capability], architecture_identity: undefined, architecture_evidence: undefined }),
+-      stableComponentError("component-platform-binding-required"),
+-      capability
+-    );
 +test("deduplicates frontend recipes without backend skills or architecture", () => {
 +  const first = compile({recipeIds:["frontend.ui-slice", "frontend.ui-slice"]});
 +  assert.deepEqual(first, compile({recipeIds:["frontend.ui-slice"]}));
@@ -1407,24 +1486,20 @@ index c334ed6..19d9b65 100644
 +  assert.throws(() => compile({requiredCapabilities:["component.current-user-context"]}), /未知 capability/);
  });
  
--test("does not promote conditional or component dependencies without explicit input", () => {
--  const persistence = compile({ requiredCapabilities: ["layer.persistence"] });
--  assert.deepEqual(persistence.required_skills, ["alibaba-java-code-style", "yss-repository"]);
--  assert.equal(persistence.required_skills.includes("yss-mybatis"), false);
--  assert.equal(persistence.required_skills.includes("mapstruct"), false);
--  assert.equal(persistence.required_skills.includes("lombok"), false);
--
--  const validation = compile({ requiredCapabilities: ["contract.request-validation"] });
--  assert.deepEqual(validation.required_skills, ["yss-validation"]);
--  assert.equal(validation.required_skills.includes("yss-exception"), false);
--  assert.ok(validation.non_expanding_dependencies.some((edge) => edge.from === "yss-validation" && edge.skill === "yss-exception"));
--});
--
--test("loads only explicitly satisfied context-conditional dependencies", () => {
--  const persistence = compile({ requiredCapabilities: ["layer.persistence"], conditions: ["mybatis"] });
--  assert.equal(persistence.required_skills.includes("yss-mybatis"), true);
--  assert.equal(persistence.required_skills.includes("mapstruct"), false);
--  assert.equal(persistence.required_skills.includes("lombok"), false);
+-test("public compiler entry preserves stable component error codes", () => {
+-  const catalog = loadBackendPlatforms();
+-  const boot2Profile = catalog.profiles.find(item => item.id === "spring-boot-2.7-jdk8");
+-  const boot2Entry = catalog.compatibility.find(item => item.profile_id === boot2Profile.id);
+-  const boot2 = platformBinding(boot2Profile, boot2Entry);
+-  const withPlatform = platform_configuration => {
+-    const architecture_identity = { ...identity, platform_configuration };
+-    return { architecture_identity, architecture_evidence: { engineering_baseline: architecture_identity, repository_registration: architecture_identity, manifest: architecture_identity } };
+-  };
+-  assert.throws(() => compile({ requiredCapabilities: ["contract.dto-wire"], ...withPlatform(boot2) }), stableComponentError("component-evidence-missing"));
+-  assert.throws(() => compile({ requiredCapabilities: ["component.cache"], ...withPlatform(boot2) }), stableComponentError("component-platform-generation-mismatch"));
+-  const boot3Profile = catalog.profiles.find(item => item.id === "spring-boot-3.5-jdk17");
+-  const boot3 = { ...boot2, profile_id: boot3Profile.id, spring_boot_version: boot3Profile.spring_boot_version, java_version: boot3Profile.java_version, compatibility_id: "unavailable-boot3-components" };
+-  assert.throws(() => compile({ requiredCapabilities: ["contract.dto-wire"], ...withPlatform(boot3) }), stableComponentError("component-unavailable-for-platform"));
 +test("frontend API generation only expands its explicit regeneration condition", () => {
 +  const plain = compile({requiredCapabilities:["frontend.api-integration"]});
 +  assert.deepEqual(plain.required_skills, ["yss-api-integration"]);
@@ -1450,19 +1525,19 @@ index c334ed6..19d9b65 100644
  
  test("rejects removed ids and schema v1 without compatibility", () => {
    assert.throws(() => compile({ recipeIds: ["yss-router"] }), /已移除 skill id/);
--  assert.throws(() => compileImplementationContract({ registry: { ...registry, schema_version: 1 }, compilerContract, requiredCapabilities: ["layer.domain"] }), /schema v1 已停止支持/);
+-  assert.throws(() => compileImplementationContract({ registry: { ...registry, schema_version: 1 }, compilerContract, requiredCapabilities: ["layer.domain"] }), /schema v1\/v2 已停止支持/);
 -  assert.throws(() => compileImplementationContract({ registry, compilerContract: { ...compilerContract, schema_version: 1 }, requiredCapabilities: ["layer.domain"] }), /schema v1 已停止支持/);
-+  assert.throws(() => compileImplementationContract({ registry: { ...registry, schema_version: 1 }, compilerContract, requiredCapabilities: ["frontend.ui"] }), /schema v1 已停止支持/);
++  assert.throws(() => compileImplementationContract({ registry: { ...registry, schema_version: 1 }, compilerContract, requiredCapabilities: ["frontend.ui"] }), /schema v1\/v2 已停止支持/);
 +  assert.throws(() => compileImplementationContract({ registry, compilerContract: { ...compilerContract, schema_version: 1 }, requiredCapabilities: ["frontend.ui"] }), /schema v1 已停止支持/);
  });
  
  test("marks digest drift stale and validates v2 execution evidence", () => {
--  const resolution = compile({ requiredCapabilities: ["contract.request-validation"], architecture_identity: undefined, architecture_evidence: undefined });
+-  const resolution = compile({ requiredCapabilities: ["quality.java-code-style"], architecture_identity: undefined, architecture_evidence: undefined });
 +  const resolution = compile({ requiredCapabilities: ["frontend.api-integration"], architecture_identity: undefined, architecture_evidence: undefined });
    const contract = { schema_version: 2, contract_id: "slice-1", contract_version: 1, resolution };
    assert.deepEqual(evaluateContractFreshness(contract, { registry, compilerContract }), { freshness: "current", reasons: [] });
    const changedRegistry = structuredClone(registry);
-@@ -83,7 +67,7 @@ test("marks digest drift stale and validates v2 execution evidence", () => {
+@@ -112,26 +67,9 @@ test("marks digest drift stale and validates v2 execution evidence", () => {
        registry_digest: digestDocument(registry),
        compiler_contract_digest: digestDocument(compilerContract)
      },
@@ -1471,3 +1546,22 @@ index c334ed6..19d9b65 100644
      new_impacts: []
    };
    assert.deepEqual(validateExecutionResult(result, contract, { registry, compilerContract }), { status: "accepted", blockers: [] });
+   assert.deepEqual(validateExecutionResult({ ...result, new_impacts: [{ impact_type: "cache" }] }, contract, { registry, compilerContract }), { status: "blocked", blockers: ["new-impacts"] });
+ });
+-
+-test("marks legacy component contracts without component bindings stale", () => {
+-  const resolution = compile({ requiredCapabilities: ["quality.java-code-style"], architecture_identity: undefined, architecture_evidence: undefined });
+-  resolution.required_capabilities = ["contract.dto-wire"];
+-  resolution.required_skills = ["yss-dto"];
+-  const contract = { schema_version: 2, contract_id: "legacy-component", contract_version: 1, resolution };
+-  assert.ok(evaluateContractFreshness(contract, { registry, compilerContract }).reasons.includes("component-binding-drift"));
+-});
+-
+-test("current lifecycle scaffold contract delegates platform facts to the catalog", () => {
+-  const source = readFileSync(new URL("../../yss-product-lifecycle/references/orchestration-contract.yaml", import.meta.url), "utf8");
+-  const current = source.slice(source.indexOf("backend_scaffold:"), source.indexOf("  required_inputs:", source.indexOf("backend_scaffold:")));
+-  assert.match(current, /platform_binding: platform_configuration-v2/);
+-  assert.doesNotMatch(current, /yss_components_version:\s*2\.0\.0-SNAPSHOT/);
+-  assert.doesNotMatch(current, /spring-boot-3/);
+-  assert.doesNotMatch(current, /validation_namespace:\s*javax/);
+-});

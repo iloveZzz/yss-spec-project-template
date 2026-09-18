@@ -78,7 +78,7 @@ scripts/verify-strategic-handoff-consumption --root <研发项目根> --slice <�
 node .agents/skills/yss-technical-design/scripts/validate-technical-design.mjs <技术设计合同> --root <研发项目根>
 ```
 
-Handoff v4/v5 后端消费必须绑定 `backend-technical-design` 的 `route_id`，先对账，再由 `yss-technical-design` 依据已批准架构调用 `yss-tactical-design` 或 `yss-mvc-design`。Handoff v3/v4 仅作历史只读兼容，不修改已冻结包。`tactical_refs` 在 v2 Technical Design 可指向 MVC 或 DDD 分支对象；无战略交接包的 MVC 项目直接消费批准需求，不补造战略 DDD。
+Handoff v4/v5 后端消费必须绑定 `backend-technical-design` 的 `route_id`，先对账，再由 `yss-technical-design` 依据已批准架构进入自身 `layered-mvc` 分支或调用 `yss-tactical-design`。Handoff v3/v4 仅作历史只读兼容，不修改已冻结包。`tactical_refs` 在 v2 Technical Design 可指向 MVC 或 DDD 分支对象；无战略交接包的 MVC 项目直接消费批准需求，不补造战略 DDD。
 
 前端先验证与交接版本匹配的 Strategic Preflight：Handoff v4 使用 v1，Handoff v5 使用 v2 的 `ui_baseline_kind/ui_baseline_ref`，只允许起草前端工程设计与实现计划，固定返回 `ready_for_agent: false`。最终 Frontend Delivery Acceptance v2（Handoff v4）或 v3（Handoff v5）在 Backend/API/Data 有影响时必须绑定真实 Backend Delivery 收据与版本探测；UI-only 时使用与战略路由一致的 `backend-not-applicable`，此时 `operation_ids` 必须为空。无论哪条路径，当前且已批准的 Slice Contract 仍是实现入口。
 

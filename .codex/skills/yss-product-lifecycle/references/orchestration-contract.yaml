@@ -25,7 +25,7 @@ backend_architecture_identity_policy:
   new_profile_readiness: supported-only
 service_project_initialization:
   work_unit: work-unit.service-project-initialization
-  skill: yss-mvc-data-analysis-project-initializer
+  skill: yss-layered-mvc-scaffold-generator
   architecture_profile: mvc-data-analysis-v1
   context_inputs: [context_handoff_ref, context_handoff_digest]
   approval: current-schema-v4-scaffold-contract-with-approved-technical-and-data-design
@@ -393,7 +393,7 @@ work_unit_routes:
         missing_or_stale: blocked
       branches:
         domain-driven: yss-tactical-design
-        layered-mvc: yss-mvc-design
+        layered-mvc: yss-technical-design
       not_applicable_reason: no_backend_technical_design_impact
       artifact: artifact.technical-design
       review_evidence: evidence.technical-design-review
@@ -837,7 +837,7 @@ backend_scaffold:
     before_generator: [scaffold-architecture-decision-user-confirmed, scaffold-architecture-decision-lifecycle-approved, yss-implementation-contract-compiler-scaffold-contract, lifecycle-approve-scaffold-contract]
     before: [business_code_generation, implement]
   generator_routes:
-    domain-driven: { recipe: backend.ddd-scaffold, generator_skill: yss-ddd-scaffold-generator, baseline_skills: [yss-backend-scaffold-parent] }
+    domain-driven: { recipe: backend.ddd-scaffold, generator_skill: yss-ddd-scaffold-generator, baseline_skills: [] }
     layered-mvc: { recipe: backend.mvc-scaffold, generator_skill: yss-layered-mvc-scaffold-generator, baseline_skills: [] }
   tdd_mode: controlled-generation
   contract_schema:
@@ -862,12 +862,14 @@ backend_scaffold:
     maven_coordinates:
       required: [group_id, project_version, parent, yss_components_version]
       parent_required: [group_id, artifact_id, version]
-      yss_components_version: 2.0.0-SNAPSHOT
+      source: platform_configuration-v2-and-backend-platform-catalog
+      component_version_policy: per-artifact-from-verified-component-capabilities
     profiles:
       discriminant: architecture_family
-      domain-driven: { generator_skill: yss-ddd-scaffold-generator, architecture: target-domain-model, persistence: mybatis-plus, verification_database: h2, production_database: not-bound, platform: spring-boot-2.7-jdk8, validation_namespace: javax, dto_placement: web, repository: yss-internal }
-      layered-mvc: { generator_skill: yss-layered-mvc-scaffold-generator, architecture: layered-mvc, persistence: mybatis-plus, verification_database: h2, production_database: not-bound, platform: spring-boot-2.7-jdk8, validation_namespace: javax, repository: yss-internal }
-      unsupported: [old-architecture-profile, mybatis, spring-boot-3, jakarta, arbitrary-module-combination]
+      source: docs/engineering/backend-platforms.json
+      platform_binding: platform_configuration-v2
+      architecture_profiles_source: docs/agents/yss-skill-registry.yaml
+      unsupported: [old-architecture-profile, arbitrary-module-combination, unverified-platform-or-component-capability]
     module_profile:
       required: [requested_capabilities, resolved_modules, resolution_version]
       resolution_version: 1
@@ -887,7 +889,7 @@ backend_scaffold:
     old_project_migration: unsupported-separate-architecture-modernization-initiative
   forbidden_generation: [business_rules, state_machine, permission, transaction, complex_query, error_mapping, user_visible_behavior, business_example_crud, unapproved_force_overwrite]
   after_generation:
-    domain-driven: [yss-backend-scaffold-parent, yss-implementation-contract-compiler]
+    domain-driven: [yss-implementation-contract-compiler]
     layered-mvc: [yss-implementation-contract-compiler]
   existing_or_initialized: [baseline_evidence, wrapper_verification, implementation_contract_recompile]
   verification:

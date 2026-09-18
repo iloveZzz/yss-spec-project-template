@@ -5,7 +5,7 @@ owner: ai
 
 # <功能名称> Tactical DDD Design
 
-仅用于已确认 domain-driven 分支的阅读视图；引用 Technical Design Contract v2 的 design，不复制共同输入与审批状态。MVC 使用 yss-mvc-design。
+仅用于已确认 domain-driven 分支的阅读视图；引用 Technical Design Contract v2 的 design，不复制共同输入与审批状态。MVC 使用 `yss-technical-design` 的 `layered-mvc` 分支。
 
 ## 上游引用
 

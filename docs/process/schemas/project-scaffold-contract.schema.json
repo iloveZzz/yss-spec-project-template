@@ -88,7 +88,6 @@
       "enum": [
         "yss-ddd-scaffold-generator",
         "yss-layered-mvc-scaffold-generator",
-        "yss-mvc-data-analysis-project-initializer",
         "yss-frontend-scaffold-generator"
       ]
     },
@@ -607,12 +606,12 @@
     {
       "if": {
         "properties": {
-          "generator_skill": {
-            "const": "yss-mvc-data-analysis-project-initializer"
+          "architecture_profile": {
+            "const": "mvc-data-analysis-v1"
           }
         },
         "required": [
-          "generator_skill"
+          "architecture_profile"
         ]
       },
       "then": {
@@ -626,6 +625,12 @@
           },
           "architecture_family": {
             "const": "layered-mvc"
+          },
+          "generator_skill": {
+            "const": "yss-layered-mvc-scaffold-generator"
+          },
+          "init_git": {
+            "const": true
           }
         }
       }

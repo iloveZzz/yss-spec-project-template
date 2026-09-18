@@ -7,6 +7,8 @@ import {createHash} from 'node:crypto';
 import {parse} from '../../lib/strategic-handoff-io.mjs';
 import {countersignRuleForGate} from '../../lib/digital-human-roles.mjs';
 import {existingArchitectureDigest as digest} from '../../lib/existing-backend-architecture.mjs';
+import {componentCapabilityDigest,loadBackendPlatforms,platformBinding,platformDigest,platformRecipeDigest} from '../../lib/backend-platform.mjs';
+import {platformSourceFingerprint} from '../../lib/backend-platform-provenance.mjs';
 export const sha=x=>`sha256:${createHash('sha256').update(x).digest('hex')}`;
 export function fixture(family='layered-mvc'){
  const root=fs.mkdtempSync(path.join(os.tmpdir(),'yss-existing-regression-')), project=path.join(root,'project');fs.mkdirSync(project);
@@ -26,7 +28,25 @@ export function fixture(family='layered-mvc'){
  const files=git('ls-files').split('\n').map(ref=>({path:ref,base_blob:git('rev-parse',`HEAD:${ref}`),sha256:sha(fs.readFileSync(path.join(project,ref)))}));
  const source={base_commit:git('rev-parse','HEAD'),roots:['pom.xml','src'],files};
  const units=[{id:'app',artifact_id:'existing',pom_ref:'pom.xml',roles,role_paths:Object.fromEntries(roles.map(role=>[role,[`src/main/java/${role}`]])),depends_on:[]}];
- const identity={schema_version:2,source_kind:'existing-registration',architecture_family:family,architecture_profile:family==='domain-driven'?'existing-domain-driven-maven':'existing-layered-mvc-maven',repository_id:'synthetic-repo',project_id:'synthetic-project',source_digest:digest(source),build_units_digest:digest(units)};
+ const catalog=loadBackendPlatforms(),profile=catalog.profiles.find(item=>item.id==='spring-boot-2.7-jdk8');
+ const entry={id:`synthetic-${family}-boot-2.7-jdk8`,profile_id:profile.id,spring_boot_version:profile.spring_boot_version,parent:{group_id:'com.yss.cloud',artifact_id:'yss-cloud-microservice',version:'2.0.0-SNAPSHOT'},bom:{group_id:'com.yss.cloud',artifact_id:'yss-components-bom',version:'2.0.0-SNAPSHOT'},status:'verified',capabilities:[],component_capabilities:{},evidence:[]};
+ const componentIds=['contract.dto-wire','contract.request-validation','contract.error-mapping'];
+ for(const [index,capabilityId] of componentIds.entries()) {
+  const artifact={group_id:'com.yss.cloud',artifact_id:`synthetic-component-${index+1}`,declared_version:'2.0.0-SNAPSHOT',resolved_version:`2.0.0-20260918.00000${index+1}-1`,pom_sha256:platformDigest(`synthetic pom ${capabilityId}`),jar_sha256:platformDigest(`synthetic jar ${capabilityId}`),source_tree:String(index+1).repeat(40)};
+  const component={status:'verified',verified_architectures:[family],artifacts:[artifact],evidence:[],blockers:[]};
+  component.component_digest=componentCapabilityDigest(component,capabilityId);
+  const report={schema_version:1,kind:'backend-component-capability-evidence',status:'passed',capability_id:capabilityId,compatibility_id:entry.id,profile_id:profile.id,spring_boot_version:profile.spring_boot_version,architecture_family:family,component_digest:component.component_digest,artifacts:component.artifacts};
+  const ref=`docs/engineering/evidence/component-${index+1}.json`,binding=write(ref,report);
+  component.evidence=[{architecture_family:family,ref,digest:binding.digest}];
+  entry.component_capabilities[capabilityId]=component;
+ }
+ const artifactRefs=['effective-pom.xml','dependency-trees.json','platform-tests.xml','boot-bom-effective.xml','runtime-jar-entries.log','startup.stdout.log','startup.stderr.log',...['validate','test','package'].flatMap(phase=>[`mvnw-${phase}.stdout.log`,`mvnw-${phase}.stderr.log`])];
+ for(const ref of artifactRefs)write(`docs/engineering/evidence/${ref}`,'synthetic mechanism fixture only');
+ const platformReport={verification_scope:'empty-scaffold',recipe_digest:platformRecipeDigest(profile,entry),source_fingerprint:platformSourceFingerprint(family),generated_tree_digest:platformDigest('synthetic generated tree'),status:'passed',spring_boot_version:profile.spring_boot_version,java_version:profile.java_version,architecture_family:family,parent:entry.parent,bom:entry.bom,commands:['validate','test','package'].map(phase=>({command:`./mvnw ${phase}`,exit_code:0,executed_at:'test-only',stdout_ref:`mvnw-${phase}.stdout.log`,stderr_ref:`mvnw-${phase}.stderr.log`})),dependency_check:'passed',startup_check:'passed',integration_tests:{status:'passed'},evidence_artifacts:artifactRefs.map(ref=>({ref,digest:platformDigest('synthetic mechanism fixture only')}))};
+ const platformEvidence=write('docs/engineering/evidence/platform.json',platformReport);
+ entry.evidence=[{architecture_family:family,ref:platformEvidence.ref,digest:platformEvidence.digest}];
+ catalog.compatibility=[entry];write('docs/engineering/backend-platforms.json',catalog);
+ const identity={schema_version:2,source_kind:'existing-registration',architecture_family:family,architecture_profile:family==='domain-driven'?'existing-domain-driven-maven':'existing-layered-mvc-maven',repository_id:'synthetic-repo',project_id:'synthetic-project',source_digest:digest(source),build_units_digest:digest(units),platform_configuration:platformBinding(profile,entry)};
  const common={repository_id:identity.repository_id,project_id:identity.project_id,architecture_identity:identity};
  const manifest={schema_version:1,kind:'existing-project-observation',...common,source,build_units:units};
  const baseline={schema_version:1,kind:'existing-engineering-baseline',id:'engineering.fixture',version:'v1',status:'current',author:'fixture-drafter',boundary_scope:['src/main/java'],...common,source,build_units:units,verification_commands:['./mvnw test'],databases:{verification:{status:'not-applicable',reason:'compiler fixture only'},production:{status:'unknown'}}};

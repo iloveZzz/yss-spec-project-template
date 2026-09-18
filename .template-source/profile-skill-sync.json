@@ -311,7 +311,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "7ec663950f067011cbbcfe789af4169a517bc836cabbd7e9a5fb5da32f6f1ccb"
+          "source_tree_sha256": "c6d9349c6c00ce26832e3793caa12b6bb1593458e31c35c94bf58fe30b05ef13"
         },
         {
           "id": "yss-openapi-governance",
@@ -323,13 +323,13 @@
           "id": "yss-mybatis",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-mybatis.patch",
-          "source_tree_sha256": "73e4371492c03facf112c672f3f03155d9ed0e237986d255b26dd899c447b96e"
+          "source_tree_sha256": "5c608701feac10aba817b0cd1308620cee24aa2cc8cb43c5deed4280aaa1e85d"
         },
         {
           "id": "yss-repository",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-repository.patch",
-          "source_tree_sha256": "aa9ef4077d2a0ee5c3e64a7335c164ccfd8ace02c7a549d9e0a780c1adfcf587"
+          "source_tree_sha256": "7f8164cc19af8f0764639e226d6e39967e2bfa17e9f2018f21924f109532df11"
         }
       ],
       "assets": [
@@ -574,7 +574,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "7ec663950f067011cbbcfe789af4169a517bc836cabbd7e9a5fb5da32f6f1ccb"
+          "source_tree_sha256": "c6d9349c6c00ce26832e3793caa12b6bb1593458e31c35c94bf58fe30b05ef13"
         },
         {
           "id": "yss-openapi-governance",

@@ -20,7 +20,7 @@
 | 原型交付物 | `docs/.scratch/<feature>/design/prototypes/index.html` 或稳定 URL | 有产品设计影响时必需；必须引用 Prototype Evidence schema v4、Visual Baseline schema v1 档位决策与交付物验证 |
 | 条件 AntD 事实 | `prototype-evidence.yaml` 的档位证据 | H1 不适用；H2 使用 AntD 时引用新鲜 fact pack 或增量 CLI；不得作为生产 YSS/AntDV 组件事实 |
 | 用户确认记录 | `docs/.scratch/<feature>/design/<feature>-prototype-confirmation.md` | 有 UI 时必需；未确认前不得进入 OpenAPI Draft 评审 |
-| YSS 工程基线 | `.codex/skills/yss-ddd-scaffold-generator/references/yss-backend-scaffold-parent/SKILL.md` |  |
+| YSS 工程基线 | `.agents/skills/yss-ddd-scaffold-generator/references/engineering-baseline.md` |  |
 | YSS DTO wire profile | `.agents/skills/yss-dto/references/openapi-wire-profile.yaml`；`scripts/verify-yss-dto-openapi-profile` |  |
 
 ## P0 追踪矩阵

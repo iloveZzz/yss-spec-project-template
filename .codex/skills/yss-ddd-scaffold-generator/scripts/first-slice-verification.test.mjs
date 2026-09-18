@@ -34,7 +34,7 @@ async function readiness() {
   return {
     downstream_skills: downstreamSkills,
     contracts: {
-      scaffold_parent: await digest(".agents/skills/yss-ddd-scaffold-generator/references/yss-backend-scaffold-parent/SKILL.md"),
+      engineering_baseline: await digest(".agents/skills/yss-ddd-scaffold-generator/references/engineering-baseline.md"),
       compiler_contract: await digest(".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml")
     },
     architecture_ruleset: "b".repeat(64)

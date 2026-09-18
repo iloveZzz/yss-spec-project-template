@@ -20,7 +20,7 @@ description: 在 YSS 技术分析中统一承接需求与战略输入，按已�
 按项目绑定架构选择的来源及摘要。新工程必须先通过 `gate.backend-architecture-platform-approved`：Agent 展示 DDD / MVC 推荐依据及平台清单中的精确 Spring Boot、Java 版本，用户在同一次决定中确认两项内容；决定持久化到 `scaffold-architecture-decisions.yaml`，再进入对应分支，后续脚手架消费同一决定。既有工程核验并沿用当前登记架构及固定工程基线/POM 中的实际 Spring Boot 版本，该门禁记录为 `not-applicable`，不重复询问；架构转换或平台升级另行立项。只有 `domain-driven` 和 `layered-mvc` 两种架构族，不能从目录推断或默认 DDD、MVC 或 Spring Boot 版本。具体 Profile 及模块边界消费技能注册表与 `docs/agents/backend-architecture-profiles.md`。
 
 - `domain-driven`：调用 `yss-tactical-design`，补齐适用的战略领域输入。
-- `layered-mvc`：调用 `yss-mvc-design`，不要求战略 DDD、聚合、值对象、Domain Event 或 DDD Gateway。
+- `layered-mvc`：由本 skill 直接设计模块职责与依赖方向、用例流程、业务规则、状态转换、事务与回滚、幂等与并发、持久化映射、外部集成和公开测试 seam；不要求战略 DDD、聚合、值对象、Domain Event 或 DDD Gateway。分层边界消费 `docs/agents/backend-architecture-profiles.md`，不得为 MVC 加载 `yss-domain` 或生成 DDD Gateway。
 
 已有 Strategic Design Handoff 时，两种分支都必须先完成导入和目标词汇对账，再逐条承接规则与关键场景。没有战略交接包的项目直接消费批准需求，不能为 MVC 补造战略 DDD。
 
@@ -29,6 +29,8 @@ description: 在 YSS 技术分析中统一承接需求与战略输入，按已�
 ## 合同与验证
 
 新产物使用 schema v2 Technical Design Contract：共同头记录架构来源、输入版本与摘要、规则/场景承接、评审证据和状态，`design` 保存架构专属内容。合同格式与兼容规则见 `references/technical-design-contract.md`，Schema 见 `references/technical-design.schema.json`。
+
+MVC `design` 分支由 `references/mvc-design.schema.json` 约束。无状态流转或外部集成时记录有依据的不适用；业务规则和关键场景必须关联具体用例与成功/失败测试 seam。MVC 与 DDD 使用同一承接和审查要求，不能因采用分层 MVC 省略规则、一致性或测试设计。历史 `yss-mvc-design` 入口仅保留迁移提示，不再拥有该能力或被新合同调用。
 
 运行 `node .agents/skills/yss-technical-design/scripts/validate-technical-design.mjs <合同> --root <项目根>`。整体存在延期或冲突即阻断整体；相关切片可带 `--slice <切片ID>` 按依赖核验，仍须合同已批准。校验成功只返回审查输入，不批准、不设置 `ready-for-agent`。
 

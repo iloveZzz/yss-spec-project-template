@@ -17,7 +17,7 @@ await mkdir(evidence, { recursive: true });
 const input = values.inputs ? JSON.parse(await readFile(path.resolve(values.inputs), "utf8")) : {};
 const inputRoot = values.inputs ? path.dirname(path.resolve(values.inputs)) : process.cwd();
 const catalog = input.catalog_ref ? JSON.parse(await readFile(path.resolve(inputRoot, input.catalog_ref), "utf8")) : loadBackendPlatforms();
-if (catalog.schema_version !== 1 || catalog.kind !== "backend-platform-catalog" || !Array.isArray(catalog.compatibility) || platformDigest(catalog.profiles) !== platformDigest(loadBackendPlatforms().profiles)) throw new Error("candidate input must preserve the maintained platform profiles; only supply actual YSS combinations");
+if (catalog.schema_version !== 2 || catalog.kind !== "backend-platform-catalog" || !Array.isArray(catalog.compatibility) || platformDigest(catalog.profiles) !== platformDigest(loadBackendPlatforms().profiles)) throw new Error("candidate input must preserve the maintained platform profiles; only supply actual YSS combinations");
 const keys = new Set();
 for (const item of input.combinations ?? []) {
   const key = `${item.profile_id}:${item.spring_boot_version}:${item.architecture_family}`;

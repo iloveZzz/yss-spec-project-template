@@ -54,7 +54,7 @@ function validateManifest(manifest) {
       assertArchitectureAgreement(manifest.architecture_identity, { manifest_fields: scaffoldArchitectureIdentity(manifest, manifest.contract_digest) });
     }
     const supportedArchitecture = manifest.architecture_family === "domain-driven" && manifest.generator_skill === "yss-ddd-scaffold-generator" && manifest.profiles.architecture === "target-domain-model"
-      || manifest.architecture_family === "layered-mvc" && ["yss-layered-mvc-scaffold-generator", "yss-mvc-data-analysis-project-initializer"].includes(manifest.generator_skill) && manifest.profiles.architecture === "layered-mvc";
+      || manifest.architecture_family === "layered-mvc" && manifest.generator_skill === "yss-layered-mvc-scaffold-generator" && manifest.profiles.architecture === "layered-mvc";
     if (!supportedArchitecture || manifest.module_profile?.resolution_version !== 1 || !Array.isArray(manifest.module_profile?.resolved_modules)) throw new Error("Manifest v3/v4 的架构族、生成器、Profile 或模块闭包不一致");
     if (manifest.schema_version === 4 && (!manifest.design_prerequisites?.technical_design || !manifest.design_prerequisites?.data_architecture_decision || !manifest.design_prerequisites?.engineering_contract_approval_ref)) throw new Error("Manifest v4 缺少设计门禁绑定");
   } else if (manifest.profiles.architecture !== "target-domain-model") throw new Error("历史 Manifest v2 只读兼容仅支持 target-domain-model");

@@ -1,12 +1,13 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
-import { nestedSkillPaths, PROJECTION_ROOTS, ROOT, unregisteredNestedSkillPaths } from "./skill-supply-chain.mjs";
+import { nestedSkillPaths, OBSOLETE, PROJECTION_ROOTS, ROOT, unregisteredNestedSkillPaths } from "./skill-supply-chain.mjs";
 
 export const DEFAULT_REGISTRY = path.join(ROOT, "docs/agents/yss-skill-registry.yaml");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
 const COMPILER_CONTRACT = path.join(ROOT, ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml");
 const LIFECYCLE_CONTRACT = path.join(ROOT, ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml");
+const BACKEND_PLATFORMS = path.join(ROOT, "docs/engineering/backend-platforms.json");
 const LAYERS = new Set(["core", "specialist", "compatibility", "maintainer-only"]);
 const MATURITIES = new Set(["draft", "verified", "supported", "deprecated"]);
 const INVOCATION_MODES = new Set(["user", "model", "both"]);
@@ -15,6 +16,24 @@ const TASK_MODES = new Set(["guidance", "integration", "slice-implementation", "
 const ID_PATTERN = /^[a-z0-9][a-z0-9-]*$/;
 const CAPABILITY_ID_PATTERN = /^[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/;
 const PLATFORM_ALIAS_PATTERN = /^[a-z0-9][a-z0-9-]*(?::[a-z0-9][a-z0-9-]*)?$/;
+const PROVIDER_KINDS = new Set(["yss-component", "platform-managed", "none"]);
+const BACKEND_SKILL_DOMAINS = new Set(["technical-design", "layered-implementation", "wire-framework-contract", "component-capability", "engineering-initialization", "platform-governance-migration"]);
+const CLEANUP_STATUSES = new Set(["migration-only", "remove-ready"]);
+const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+export const SKILL_LIFECYCLE_FAILURE_CODES = Object.freeze({
+  deprecated: "skill-deprecated",
+  retired: "skill-retired"
+});
+
+export class SkillLifecycleError extends TypeError {
+  constructor(code, message, details = {}) {
+    super(`${code}: ${message}`);
+    this.name = "SkillLifecycleError";
+    this.code = code;
+    this.details = details;
+  }
+}
 
 function fail(message) {
   throw new TypeError(message);
@@ -39,6 +58,34 @@ export function loadSkillRegistry(filePath = DEFAULT_REGISTRY) {
   return yamlFromFile(filePath, "技能路由注册表");
 }
 
+export function resolveSkillForNewUse(registry, requestedId) {
+  requireString(requestedId, "requested skill id");
+  if (OBSOLETE.has(requestedId)) {
+    throw new SkillLifecycleError(
+      SKILL_LIFECYCLE_FAILURE_CODES.retired,
+      `${requestedId} 已硬退役；按迁移 tombstone 重新路由`,
+      { skill: requestedId, migration_ref: "docs/agents/skill-migrations.md" }
+    );
+  }
+  const aliases = new Map((registry.skills ?? []).flatMap((skill) => (skill.aliases ?? []).map((alias) => [alias, skill.id])));
+  const canonicalId = aliases.get(requestedId) ?? requestedId;
+  const skill = [...(registry.skills ?? []), ...(registry.external_skills ?? [])].find((item) => item.id === canonicalId);
+  if (!skill) fail(`未知 skill: ${requestedId}`);
+  if (skill.maturity === "deprecated") {
+    throw new SkillLifecycleError(
+      SKILL_LIFECYCLE_FAILURE_CODES.deprecated,
+      `${canonicalId} 已停止新用法；必须重新编译并显式迁移到 ${skill.replacement_skill}`,
+      {
+        skill: canonicalId,
+        replacement_skill: skill.replacement_skill,
+        remove_after: skill.deprecation.remove_after,
+        cleanup_status: skill.deprecation.cleanup_status
+      }
+    );
+  }
+  return skill;
+}
+
 function frontmatterName(skillMd) {
   const match = skillMd.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) fail("SKILL.md 缺少 frontmatter");
@@ -58,6 +105,26 @@ function requireObject(value, field) {
 function requireStringArray(value, field, { nonEmpty = false } = {}) {
   if (!Array.isArray(value) || (nonEmpty && value.length === 0) || value.some((item) => typeof item !== "string" || !item.trim())) {
     fail(`${field} 必须是${nonEmpty ? "非空" : ""}字符串数组`);
+  }
+}
+
+function exactValuePaths(value, targets, current = "$", found = []) {
+  if (typeof value === "string" && targets.has(value)) found.push(current);
+  else if (Array.isArray(value)) value.forEach((item, index) => exactValuePaths(item, targets, `${current}[${index}]`, found));
+  else if (value && typeof value === "object") for (const [key, item] of Object.entries(value)) exactValuePaths(item, targets, `${current}.${key}`, found);
+  return found;
+}
+
+function validateDeprecation(skill, prefix) {
+  requireString(skill.replacement_skill, `${prefix}.replacement_skill`);
+  requireObject(skill.deprecation, `${prefix}.deprecation`);
+  if (skill.deprecation.new_use !== "forbidden") fail(`${prefix}.deprecation.new_use 必须为 forbidden`);
+  if (!CLEANUP_STATUSES.has(skill.deprecation.cleanup_status)) {
+    fail(`${prefix}.deprecation.cleanup_status 必须是 migration-only 或 remove-ready`);
+  }
+  requireString(skill.deprecation.remove_after, `${prefix}.deprecation.remove_after`);
+  if (!ISO_DATE_PATTERN.test(skill.deprecation.remove_after) || Number.isNaN(Date.parse(`${skill.deprecation.remove_after}T00:00:00Z`))) {
+    fail(`${prefix}.deprecation.remove_after 必须是有效 ISO 日期`);
   }
 }
 
@@ -217,9 +284,9 @@ function validateCodeReviewRoute(route, resolve) {
   validateFindingDisposition(standards.finding_disposition);
 }
 
-export function validateSkillRegistry(registry, { lock, compilerContract, lifecycleContract, skillSource, externalSkillSource, nestedSkillSources } = {}) {
+export function validateSkillRegistry(registry, { lock, compilerContract, lifecycleContract, skillSource, externalSkillSource, nestedSkillSources, backendPlatforms } = {}) {
   if (!registry || typeof registry !== "object" || Array.isArray(registry)) fail("技能路由注册表必须是对象");
-  if (registry.schema_version !== 2) fail("schema_version 必须为 2；v1 已停止支持，请迁移 capability、typed dependencies 与 recipes");
+  if (registry.schema_version !== 3) fail("schema_version 必须为 3；v1/v2 已停止支持，请迁移 provider 与两阶段退役合同");
   if (registry.registry_id !== "yss.skill-routing") fail("registry_id 必须为 yss.skill-routing");
   if (!["shadow", "active"].includes(registry.status)) fail("status 必须是 shadow 或 active");
   requireString(registry.description, "description");
@@ -271,13 +338,10 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
       fail(`${skill.id} 作为 ${skill.layer} 不得默认可发现`);
     }
     if (skill.maturity === "deprecated") {
-      requireString(skill.replaced_by, `${skill.id}.replaced_by`);
-      requireString(skill.migration_deadline, `${skill.id}.migration_deadline`);
-      requireString(skill.cleanup_status, `${skill.id}.cleanup_status`);
+      validateDeprecation(skill, prefix);
+      if (registry.invocation_contract?.overrides?.[skill.id] !== undefined) fail(`${skill.id} 进入 deprecated 后不得保留 invocation override`);
     }
-    if (skill.replaced_by && !ids.has(skill.replaced_by) && !skills.some((item) => item.id === skill.replaced_by)) {
-      // resolved in second pass
-    }
+    else if (skill.replacement_skill !== undefined || skill.deprecation !== undefined) fail(`${skill.id} 仅 deprecated 技能可声明 replacement_skill/deprecation`);
     if (!Array.isArray(skill.aliases) || skill.aliases.some((alias) => typeof alias !== "string" || !ID_PATTERN.test(alias))) {
       fail(`${skill.id} aliases 必须是合法 id 数组`);
     }
@@ -292,7 +356,23 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
     validateInvocationContract(registry, skill);
   }
   for (const skill of skills) {
-    if (skill.replaced_by && !ids.has(skill.replaced_by)) fail(`${skill.id}.replaced_by 引用了未登记技能: ${skill.replaced_by}`);
+    if (skill.maturity === "deprecated") {
+      if (!ids.has(skill.replacement_skill)) fail(`${skill.id}.replacement_skill 引用了未登记技能: ${skill.replacement_skill}`);
+      if (skills.find((item) => item.id === skill.replacement_skill)?.maturity === "deprecated") fail(`${skill.id}.replacement_skill 不得指向 deprecated 技能`);
+      if (skill.aliases.length) fail(`${skill.id} 进入 deprecated 后不得保留 alias`);
+    }
+  }
+
+  requireObject(registry.retirement_contract, "retirement_contract");
+  if (registry.retirement_contract.schema_version !== 1) fail("retirement_contract.schema_version 必须为 1");
+  requireStringSet(registry.retirement_contract.stages, ["deprecated", "retired"], "retirement_contract.stages");
+  if (registry.retirement_contract.deprecated_new_use !== "forbidden") fail("retirement_contract.deprecated_new_use 必须为 forbidden");
+  requireStringSet(registry.retirement_contract.cleanup_statuses, [...CLEANUP_STATUSES], "retirement_contract.cleanup_statuses");
+  if (registry.retirement_contract.hard_retirement_tombstone !== "docs/agents/skill-migrations.md") fail("retirement_contract.hard_retirement_tombstone 必须指向技能迁移说明");
+  if (registry.retirement_contract.retired_id_source !== "scripts/lib/skill-supply-chain.mjs#OBSOLETE") fail("retirement_contract.retired_id_source 必须指向统一 OBSOLETE 集");
+  requireObject(registry.retirement_contract.failure_codes, "retirement_contract.failure_codes");
+  if (registry.retirement_contract.failure_codes.deprecated !== SKILL_LIFECYCLE_FAILURE_CODES.deprecated || registry.retirement_contract.failure_codes.retired !== SKILL_LIFECYCLE_FAILURE_CODES.retired) {
+    fail("retirement_contract.failure_codes 必须稳定为 skill-deprecated/skill-retired");
   }
 
   const platform = registry.platform_skills ?? [];
@@ -319,6 +399,9 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   for (const skill of external) {
     requireString(skill.id, "external_skills.id");
     requireString(skill.source, `${skill.id}.source`);
+    if (skill.maturity !== undefined && skill.maturity !== "deprecated") fail(`${skill.id}.maturity 仅允许 deprecated`);
+    if (skill.maturity === "deprecated") validateDeprecation(skill, `external_skills.${skill.id}`);
+    else if (skill.replacement_skill !== undefined || skill.deprecation !== undefined) fail(`${skill.id} 仅 deprecated external skill 可声明 replacement_skill/deprecation`);
     if (externalIds.has(skill.id) || ids.has(skill.id) || aliases.has(skill.id) || platformAliases.has(skill.id)) fail(`external skill 冲突: ${skill.id}`);
     const canonicalExternalSource = skill.source.startsWith(`${registry.canonical_content_root}/`);
     if (canonicalExternalSource && externalSources.has(skill.source)) fail(`external skill source 重复: ${skill.source}`);
@@ -328,6 +411,20 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
     }
     externalIds.add(skill.id);
     externalSources.add(skill.source);
+  }
+  for (const skill of external.filter((item) => item.maturity === "deprecated")) {
+    if (!ids.has(skill.replacement_skill)) fail(`${skill.id}.replacement_skill 引用了未登记技能: ${skill.replacement_skill}`);
+    if (skills.find((item) => item.id === skill.replacement_skill)?.maturity === "deprecated") fail(`${skill.id}.replacement_skill 不得指向 deprecated 技能`);
+  }
+  const deprecatedSkillIds = new Set([
+    ...skills.filter((item) => item.maturity === "deprecated").map((item) => item.id),
+    ...external.filter((item) => item.maturity === "deprecated").map((item) => item.id)
+  ]);
+  for (const [profileId, profile] of Object.entries(registry.architecture_profiles ?? {})) {
+    requireObject(profile, `architecture_profiles.${profileId}`);
+    requireString(profile.generator_skill, `architecture_profiles.${profileId}.generator_skill`);
+    if (!ids.has(profile.generator_skill)) fail(`${profileId}.generator_skill 引用了未登记技能: ${profile.generator_skill}`);
+    if (deprecatedSkillIds.has(profile.generator_skill)) fail(`${profileId}.generator_skill 不得使用 deprecated skill: ${profile.generator_skill}`);
   }
   if (nestedSkillSources) {
     const unregistered = unregisteredNestedSkillPaths(nestedSkillSources, externalSources);
@@ -347,7 +444,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
     || [...platformIds].some((key) => key.endsWith(`:${name}`));
   const capabilityContract = registry.capability_contract;
   requireObject(capabilityContract, "capability_contract");
-  if (capabilityContract.schema_version !== 2) fail("capability_contract.schema_version 必须为 2");
+  if (capabilityContract.schema_version !== 3) fail("capability_contract.schema_version 必须为 3");
   requireStringSet(capabilityContract.dependency_types, [...DEPENDENCY_TYPES], "capability_contract.dependency_types");
   requireStringSet(capabilityContract.task_modes, [...TASK_MODES], "capability_contract.task_modes");
   requireObject(capabilityContract.closure, "capability_contract.closure");
@@ -360,6 +457,11 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   if (JSON.stringify(capabilityContract.deterministic_order) !== JSON.stringify(["recipe-declaration", "dependency-topology", "skill-id"])) {
     fail("capability_contract.deterministic_order 必须固定为 recipe-declaration、dependency-topology、skill-id");
   }
+  requireObject(capabilityContract.platform_component_binding, "capability_contract.platform_component_binding");
+  if (capabilityContract.platform_component_binding.marker !== "provider" || capabilityContract.platform_component_binding.required_kind !== "yss-component" || capabilityContract.platform_component_binding.catalog_source !== "docs/engineering/backend-platforms.json") {
+    fail("capability_contract.platform_component_binding 必须绑定中央后端平台目录");
+  }
+  requireStringSet(capabilityContract.provider_kinds, [...PROVIDER_KINDS], "capability_contract.provider_kinds");
 
   if (!Array.isArray(registry.capabilities) || registry.capabilities.length === 0) fail("capabilities 不能为空");
   const capabilityIds = new Set();
@@ -373,13 +475,48 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
     capabilityIds.add(capability.id);
     requireString(capability.primary_skill, `${prefix}.primary_skill`);
     if (!ids.has(capability.primary_skill)) fail(`${capability.id} 的 primary_skill 未登记: ${capability.primary_skill}`);
+    if (skills.find((item) => item.id === capability.primary_skill)?.maturity === "deprecated") fail(`${capability.id} 不得由 deprecated skill 持有: ${capability.primary_skill}`);
     requireStringArray(capability.task_modes, `${prefix}.task_modes`, { nonEmpty: true });
     for (const mode of capability.task_modes) if (!TASK_MODES.has(mode)) fail(`${capability.id} 使用未知 task mode: ${mode}`);
+    requireObject(capability.provider, `${prefix}.provider`);
+    if (!PROVIDER_KINDS.has(capability.provider.kind)) fail(`${capability.id}.provider.kind 无效: ${capability.provider.kind}`);
+    if (capability.provider.kind === "none") {
+      if (capability.provider.binding_id !== undefined || capability.provider.new_adoption !== undefined || capability.provider.failure_code !== undefined) {
+        fail(`${capability.id} 的 none provider 不得声明 binding_id/new_adoption/failure_code`);
+      }
+    } else requireString(capability.provider.binding_id, `${prefix}.provider.binding_id`);
+    if (capability.provider.new_adoption !== undefined && capability.provider.new_adoption !== "forbidden") fail(`${capability.id}.provider.new_adoption 只能为 forbidden`);
+    if (capability.provider.new_adoption === "forbidden" && capability.provider.failure_code !== "component-new-adoption-forbidden") {
+      fail(`${capability.id}.provider.failure_code 必须为 component-new-adoption-forbidden`);
+    }
+    if (capability.provider.failure_code !== undefined && capability.provider.new_adoption !== "forbidden") fail(`${capability.id}.provider.failure_code 仅用于禁止新接入`);
+    if (capability.component_binding !== undefined) fail(`${capability.id}.component_binding 已由 provider 取代`);
     capabilitySkills.add(capability.primary_skill);
+  }
+  if (backendPlatforms) {
+    const catalogIds = new Set((backendPlatforms.compatibility ?? []).flatMap((item) => Object.keys(item.component_capabilities ?? {})));
+    for (const capability of registry.capabilities.filter((item) => item.provider.kind === "yss-component")) {
+      if (!catalogIds.has(capability.provider.binding_id)) fail(`${capability.id} 的 YSS component binding 未登记到后端平台目录: ${capability.provider.binding_id}`);
+    }
   }
   for (const skill of skills.filter((item) => item.impacts.includes("backend") && item.maturity !== "deprecated")) {
     if (!capabilitySkills.has(skill.id)) fail(`backend skill 缺少 capability: ${skill.id}`);
   }
+
+  const backendDomains = registry.backend_skill_domains;
+  requireObject(backendDomains, "backend_skill_domains");
+  if (backendDomains.schema_version !== 1 || backendDomains.scope !== "active-yss-backend-capability-owners") fail("backend_skill_domains 必须使用 schema v1 与 active-yss-backend-capability-owners scope");
+  requireStringSet(backendDomains.domain_ids, [...BACKEND_SKILL_DOMAINS], "backend_skill_domains.domain_ids");
+  requireObject(backendDomains.assignments, "backend_skill_domains.assignments");
+  const backendCapabilityOwners = [...new Set(registry.capabilities
+    .filter((capability) => capability.id !== "scaffold.frontend-vue3" && capability.primary_skill.startsWith("yss-"))
+    .map((capability) => capability.primary_skill))];
+  requireStringSet(Object.keys(backendDomains.assignments), backendCapabilityOwners, "backend_skill_domains.assignments");
+  for (const [skillId, domainId] of Object.entries(backendDomains.assignments)) {
+    if (!BACKEND_SKILL_DOMAINS.has(domainId)) fail(`backend skill ${skillId} 使用未知能力域: ${domainId}`);
+    if (deprecatedSkillIds.has(skillId)) fail(`deprecated skill 不得进入 active backend domain: ${skillId}`);
+  }
+  requireStringSet(backendDomains.deprecated_skills, [...deprecatedSkillIds], "backend_skill_domains.deprecated_skills");
 
   if (!Array.isArray(registry.recipes) || registry.recipes.length === 0) fail("recipes 不能为空");
   const recipeIds = new Set();
@@ -399,6 +536,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   const requiredGraph = new Map([...ids].map((id) => [id, []]));
   for (const [owner, dependencies] of Object.entries(registry.skill_dependencies)) {
     if (!ids.has(owner)) fail(`skill_dependencies 使用未知 owner: ${owner}`);
+    if (deprecatedSkillIds.has(owner)) fail(`deprecated skill 不得拥有 typed dependency: ${owner}`);
     if (!Array.isArray(dependencies)) fail(`skill_dependencies.${owner} 必须是数组`);
     const edgeKeys = new Set();
     for (const [index, dependency] of dependencies.entries()) {
@@ -406,6 +544,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
       requireObject(dependency, prefix);
       requireString(dependency.skill, `${prefix}.skill`);
       if (!registeredDependency(dependency.skill)) fail(`${owner} 的依赖引用了未登记技能: ${dependency.skill}`);
+      if (deprecatedSkillIds.has(dependency.skill)) fail(`${owner} 不得依赖 deprecated skill: ${dependency.skill}`);
       if (dependency.skill === owner) fail(`${owner} 不得依赖自身`);
       if (!DEPENDENCY_TYPES.has(dependency.type)) fail(`${owner} 使用未知依赖类型: ${dependency.type}`);
       if (dependency.type === "context-conditional") requireString(dependency.when, `${prefix}.when`);
@@ -461,6 +600,8 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   }
 
   if (compilerContract) {
+    const deprecatedCompilerRefs = exactValuePaths(compilerContract, deprecatedSkillIds);
+    if (deprecatedCompilerRefs.length) fail(`实现合同编译器合同仍引用 deprecated skill: ${deprecatedCompilerRefs.join(", ")}`);
     if (compilerContract.schema_version !== 2) fail("compiler-contract.yaml schema_version 必须为 2；v1 已停止支持");
     if (compilerContract.compiled_by !== "yss-implementation-contract-compiler") fail("compiler-contract.yaml compiled_by 无效");
     if (compilerContract.capability_source !== "docs/agents/yss-skill-registry.yaml") fail("compiler-contract.yaml capability_source 必须指向技能注册表");
@@ -477,9 +618,12 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
 
   if (lifecycleContract || existsSync(LIFECYCLE_CONTRACT)) {
     const lifecycle = lifecycleContract ?? yamlFromFile(LIFECYCLE_CONTRACT, "生命周期编排合同");
+    const deprecatedLifecycleRefs = exactValuePaths(lifecycle, deprecatedSkillIds);
+    if (deprecatedLifecycleRefs.length) fail(`生命周期编排合同仍引用 deprecated skill: ${deprecatedLifecycleRefs.join(", ")}`);
     const routes = lifecycle.work_unit_routes;
     if (!routes || typeof routes !== "object" || Array.isArray(routes)) fail("生命周期编排合同缺少 work_unit_routes");
     const resolve = (name) => {
+      if (deprecatedSkillIds.has(name)) return null;
       if (ids.has(name)) return name;
       if (aliases.has(name)) return aliases.get(name);
       if (platformAliases.has(name)) return platformAliases.get(name);
@@ -494,6 +638,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
       if (!Array.isArray(route.skills) || route.skills.length === 0) fail(`${routeId}.skills 不能为空`);
       if (!route.applies_when || !route.not_applicable_reason) fail(`${routeId} 缺少 applies_when 或 not_applicable_reason`);
       for (const name of [route.primary_skill, ...route.supporting_skills, ...route.skills]) {
+        if (deprecatedSkillIds.has(name)) fail(`生命周期路由不得引用 deprecated skill: ${routeId} -> ${name}`);
         if (!resolve(name)) fail(`生命周期路由引用了未登记技能: ${routeId} -> ${name}`);
       }
       if (route.frontend_route) {
@@ -524,15 +669,23 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
     if (lifecycle.review_input) validateReviewInputFinding(lifecycle.review_input);
   }
 
-  return { skill_count: skills.length, platform_count: platform.length, status: registry.status };
+  return {
+    schema_version: registry.schema_version,
+    skill_count: skills.length,
+    platform_count: platform.length,
+    deprecated_count: deprecatedSkillIds.size,
+    status: registry.status
+  };
 }
 
 export function validateDefaultSkillRegistry() {
   const registry = loadSkillRegistry();
   const lock = JSON.parse(readFileSync(LOCK_PATH, "utf8"));
+  const backendPlatforms = JSON.parse(readFileSync(BACKEND_PLATFORMS, "utf8"));
   const compilerContract = yamlFromFile(COMPILER_CONTRACT, "实现合同编译器合同");
   return validateSkillRegistry(registry, {
     lock,
+    backendPlatforms,
     compilerContract,
     lifecycleContract: yamlFromFile(LIFECYCLE_CONTRACT, "生命周期编排合同"),
     skillSource: (id) => readFileSync(path.join(ROOT, ".agents/skills", id, "SKILL.md"), "utf8"),

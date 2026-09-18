@@ -2,11 +2,10 @@
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { access, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
-import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const BACKEND = {
+export const BACKEND = {
   "yss-cache": ["yss-microservice-components/yss-component-cache-parent"],
   "yss-mybatis": ["yss-microservice-components/yss-component-persistence"],
   "yss-dto": ["yss-microservice-components/yss-component-dto"],
@@ -20,14 +19,40 @@ const BACKEND = {
     "yss-microservice-components/yss-component-leaf",
   ],
   "yss-resilience4j": ["yss-microservice-components/yss-component-resilience4j-starter"],
-  "yss-validation": [
-    "yss-microservice-components/yss-component-validation-engine-parent",
-    "yss-microservice-components/yss-component-validation-jsr303",
-  ],
+  "yss-validation": ["yss-microservice-components/yss-component-validation-jsr303"],
   "yss-security-algorithm": ["yss-microservice-components/yss-component-security-algorithm"],
   "yss-userinfo": ["yss-microservice-components/yss-component-userinfo-starter"],
   "yss-exception": ["yss-microservice-components/yss-component-exception"],
 };
+
+export const BACKEND_PLATFORM_LINES = Object.freeze({
+  "boot2-java8": Object.freeze({
+    env: "YSS_SOURCE_ROOT_BOOT2_JAVA8",
+    label: "Spring Boot 2.7 / Java 8 maintenance line",
+  }),
+  "boot3-java17": Object.freeze({
+    env: "YSS_SOURCE_ROOT_BOOT3_JAVA17",
+    label: "Spring Boot 3.5 / Java 17 mainline",
+  }),
+});
+
+const BACKEND_PATH_OVERRIDES = Object.freeze({
+  "boot2-java8": Object.freeze({}),
+  "boot3-java17": Object.freeze({
+    "yss-excel-mvc": Object.freeze(["yss-microservice-components/yss-component-excel-mvc"]),
+  }),
+});
+
+export function backendComponentPaths(skill, platformLine) {
+  if (!BACKEND_PLATFORM_LINES[platformLine]) throw new TypeError(`unknown backend component platform line: ${platformLine}`);
+  if (!BACKEND[skill]) throw new TypeError(`unknown backend component skill: ${skill}`);
+  return BACKEND_PATH_OVERRIDES[platformLine][skill] ?? BACKEND[skill];
+}
+
+export function backendPlatformIndexPath(skillsRoot, skill, platformLine) {
+  if (!BACKEND_PLATFORM_LINES[platformLine]) throw new TypeError(`unknown backend component platform line: ${platformLine}`);
+  return path.join(skillsRoot, skill, "references", `source-index.${platformLine}.md`);
+}
 
 const FRONTEND = {
   "yss-ui": ["components", "hooks", "skills"],
@@ -165,42 +190,23 @@ export function sourceState(root, componentPaths) {
   }
 }
 
-async function sourceRoot() {
-  if (process.env.YSS_SOURCE_ROOT) {
-    const root = path.resolve(process.env.YSS_SOURCE_ROOT);
-    if (await exists(path.join(root, "yss-microservice-components"))) return root;
-    throw new Error(`YSS_SOURCE_ROOT must point to the repository root containing \`yss-microservice-components\`: ${root}`);
-  }
-
-  const home = os.homedir();
-  const candidates = [
-    process.cwd(),
-    ...ancestors(process.cwd()),
-    path.join(home, "Documents/yss-project/yss-cloud-microservice"),
-    path.join(home, "Documents/yss-project"),
-    path.join(home, "Projects/yss-cloud-microservice"),
-    path.join(home, "Projects"),
-  ];
-  for (const base of [path.join(home, "Projects"), path.join(home, "Documents"), path.join(home, "Documents/yss-project")]) {
-    if (!await exists(base)) continue;
-    for (const entry of await readdir(base, { withFileTypes: true })) {
-      if (entry.isDirectory()) candidates.push(path.join(base, entry.name));
+async function configuredSourceRoots() {
+  const entries = [];
+  for (const [platformLine, contract] of Object.entries(BACKEND_PLATFORM_LINES)) {
+    const configured = process.env[contract.env];
+    if (!configured) continue;
+    const root = path.resolve(configured);
+    if (!await exists(path.join(root, "yss-microservice-components"))) {
+      throw new Error(`${contract.env} must point to the repository root containing \`yss-microservice-components\`: ${root}`);
     }
+    entries.push([platformLine, root]);
   }
-  for (const root of candidates) {
-    if (await exists(path.join(root, "yss-microservice-components"))) return path.resolve(root);
+  if (entries.length === Object.keys(BACKEND_PLATFORM_LINES).length) return Object.fromEntries(entries);
+  if (entries.length) {
+    const missing = Object.values(BACKEND_PLATFORM_LINES).filter((item) => !process.env[item.env]).map((item) => item.env);
+    throw new Error(`dual-track refresh requires both backend source roots; missing ${missing.join(", ")}`);
   }
-  throw new Error("Could not find a YSS source repository containing `yss-microservice-components`. Export YSS_SOURCE_ROOT=/absolute/path/to/yss-cloud-microservice and rerun.");
-}
-
-function ancestors(start) {
-  const output = [];
-  let current = path.resolve(start);
-  while (path.dirname(current) !== current) {
-    current = path.dirname(current);
-    output.push(current);
-  }
-  return output;
+  throw new Error(`Set both ${Object.values(BACKEND_PLATFORM_LINES).map((item) => item.env).join(" and ")} to clean, generation-specific YSS source roots.`);
 }
 
 async function files(bases) {
@@ -210,11 +216,168 @@ async function files(bases) {
       if (DOCS.has(path.basename(target))) output.docs.push(target);
       else if (path.basename(target) === "pom.xml") output.poms.push(target);
       else if (target.endsWith(".java") && target.includes(`${path.sep}src${path.sep}main${path.sep}java${path.sep}`)) output.java.push(target);
-      else if (path.basename(target) === "spring.factories") output.metadata.push(target);
+      else if (["spring.factories", "org.springframework.boot.autoconfigure.AutoConfiguration.imports"].includes(path.basename(target))) output.metadata.push(target);
     }
   }
   for (const items of Object.values(output)) items.sort();
   return output;
+}
+
+function xmlText(contents, tag) {
+  const match = contents.match(new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`));
+  return match ? match[1].trim() : null;
+}
+
+function xmlSection(contents, tag) {
+  const match = contents.match(new RegExp(`<${tag}(?:\\s[^>]*)?>[\\s\\S]*?<\\/${tag}>`));
+  return match?.[0] ?? null;
+}
+
+function xmlProperties(contents) {
+  const block = xmlText(contents, "properties");
+  if (!block) return {};
+  return Object.fromEntries([...block.matchAll(/<([A-Za-z0-9_.-]+)(?:\s[^>]*)?>([^<]*)<\/\1>/g)]
+    .map((match) => [match[1], match[2].trim()]));
+}
+
+function pomCoordinateText(contents, tag) {
+  let direct = contents;
+  for (const nested of ["parent", "properties", "modules", "dependencyManagement", "dependencies", "build", "profiles", "repositories", "pluginRepositories", "distributionManagement", "reporting"]) {
+    direct = direct.replace(new RegExp(`<${nested}(?:\\s[^>]*)?>[\\s\\S]*?<\\/${nested}>`, "g"), "");
+  }
+  return xmlText(direct, tag);
+}
+
+function resolveProperties(value, properties) {
+  let result = value;
+  for (let round = 0; result && round < 8; round += 1) {
+    const next = result.replace(/\$\{([^}]+)\}/g, (whole, key) => properties[key] ?? whole);
+    if (next === result) break;
+    result = next;
+  }
+  return result;
+}
+
+export async function assertSourcePlatformLine(source, platformLine) {
+  if (!BACKEND_PLATFORM_LINES[platformLine]) throw new TypeError(`unknown backend component platform line: ${platformLine}`);
+  const rootPom = path.join(source, "pom.xml");
+  if (!await exists(rootPom)) throw new Error(`backend source root has no pom.xml: ${source}`);
+  const contents = (await readFile(rootPom, "utf8")).replace(/<!--[\s\S]*?-->/g, "");
+  const parent = xmlSection(contents, "parent");
+  const parentVersion = parent ? xmlText(parent, "version") : null;
+  const properties = {
+    ...xmlProperties(contents),
+    "project.parent.version": parentVersion,
+    "parent.version": parentVersion,
+  };
+  const javaVersion = resolveProperties(properties["java.version"] ?? properties["maven.compiler.release"] ?? properties["maven.compiler.source"], properties);
+  const bootVersion = resolveProperties(properties["spring-boot.version"] ?? parentVersion, properties);
+  const matches = platformLine === "boot2-java8"
+    ? /^(?:1\.)?8(?:\D|$)/.test(javaVersion ?? "") && /^2\./.test(bootVersion ?? "")
+    : /^17(?:\D|$)/.test(javaVersion ?? "") && /^3\./.test(bootVersion ?? "");
+  if (!matches) throw new Error(`source root does not match ${platformLine}: java=${javaVersion ?? "unknown"}, spring-boot=${bootVersion ?? "unknown"}`);
+  return { platformLine, javaVersion, bootVersion };
+}
+
+async function pomLineage(source, target, seen = new Set()) {
+  const normalized = path.resolve(target);
+  if (seen.has(normalized) || !await exists(normalized)) return [];
+  seen.add(normalized);
+  const contents = (await readFile(normalized, "utf8")).replace(/<!--[\s\S]*?-->/g, "");
+  const parent = xmlSection(contents, "parent");
+  let inherited = [];
+  if (parent && !/<relativePath\s*\/>/.test(parent)) {
+    const relativePath = xmlText(parent, "relativePath") ?? "../pom.xml";
+    const parentPath = path.resolve(path.dirname(normalized), relativePath);
+    const withinSource = path.relative(source, parentPath);
+    if (!withinSource.startsWith("..") && !path.isAbsolute(withinSource)) inherited = await pomLineage(source, parentPath, seen);
+  }
+  const body = parent ? contents.replace(parent, "") : contents;
+  const parentCoordinates = parent ? {
+    groupId: xmlText(parent, "groupId"),
+    artifactId: xmlText(parent, "artifactId"),
+    version: xmlText(parent, "version"),
+  } : {};
+  return [...inherited, {
+    path: relative(source, normalized),
+    groupId: pomCoordinateText(body, "groupId"),
+    artifactId: pomCoordinateText(body, "artifactId"),
+    version: pomCoordinateText(body, "version"),
+    parent: parentCoordinates,
+    properties: xmlProperties(contents),
+  }];
+}
+
+async function mavenAndPlatformFacts(source, pomFiles, javaFiles, metadataFiles) {
+  const gavLines = [];
+  const javaVersions = new Set();
+  const bootVersions = new Set();
+  for (const target of pomFiles) {
+    const lineage = await pomLineage(source, target);
+    const inheritedProperties = {};
+    for (const item of lineage) {
+      const itemParent = item.parent ?? {};
+      const itemResolution = {
+        ...inheritedProperties,
+        ...item.properties,
+        "project.groupId": item.groupId ?? itemParent.groupId,
+        "project.artifactId": item.artifactId,
+        "project.version": item.version ?? itemParent.version,
+        "project.parent.groupId": itemParent.groupId,
+        "project.parent.artifactId": itemParent.artifactId,
+        "project.parent.version": itemParent.version,
+        "parent.groupId": itemParent.groupId,
+        "parent.artifactId": itemParent.artifactId,
+        "parent.version": itemParent.version,
+      };
+      for (const [key, value] of Object.entries(item.properties)) inheritedProperties[key] = resolveProperties(value, itemResolution);
+    }
+    const current = lineage.at(-1) ?? {};
+    const parent = current.parent ?? {};
+    const properties = {
+      ...inheritedProperties,
+      "project.groupId": current.groupId ?? parent.groupId,
+      "project.artifactId": current.artifactId,
+      "project.version": current.version ?? parent.version,
+      "project.parent.groupId": parent.groupId,
+      "project.parent.artifactId": parent.artifactId,
+      "project.parent.version": parent.version,
+      "parent.groupId": parent.groupId,
+      "parent.artifactId": parent.artifactId,
+      "parent.version": parent.version,
+    };
+    const groupId = resolveProperties(current.groupId ?? parent.groupId ?? "unknown", properties);
+    const artifactId = resolveProperties(current.artifactId ?? "unknown", properties);
+    const version = resolveProperties(current.version ?? parent.version ?? "unknown", properties);
+    const parentGav = parent.artifactId
+      ? `${resolveProperties(parent.groupId ?? "unknown", properties)}:${resolveProperties(parent.artifactId, properties)}:${resolveProperties(parent.version ?? "unknown", properties)}`
+      : "none";
+    gavLines.push(`- \`${relative(source, target)}\` — GAV \`${groupId}:${artifactId}:${version}\`; parent \`${parentGav}\``);
+    const javaVersion = inheritedProperties["java.version"] ?? inheritedProperties["maven.compiler.release"] ?? inheritedProperties["maven.compiler.source"];
+    const bootVersion = inheritedProperties["spring-boot.version"]
+      ?? (parent.groupId === "org.springframework.boot" ? parent.version : null);
+    if (javaVersion) javaVersions.add(resolveProperties(javaVersion, properties));
+    if (bootVersion) bootVersions.add(resolveProperties(bootVersion, properties));
+  }
+  let javaxFiles = 0;
+  let jakartaFiles = 0;
+  for (const target of javaFiles) {
+    const contents = await readFile(target, "utf8");
+    if (/\b(?:import|extends|implements|new)\s+javax\.|\bjavax\./.test(contents)) javaxFiles += 1;
+    if (/\b(?:import|extends|implements|new)\s+jakarta\.|\bjakarta\./.test(contents)) jakartaFiles += 1;
+  }
+  const springFactories = metadataFiles.filter((target) => path.basename(target) === "spring.factories").length;
+  const autoConfigurationImports = metadataFiles.filter((target) => path.basename(target) === "org.springframework.boot.autoconfigure.AutoConfiguration.imports").length;
+  return {
+    gavLines,
+    platformLines: [
+      `- Inherited Java signals: ${javaVersions.size ? [...javaVersions].map((item) => `\`${item}\``).join(", ") : "not declared in the local POM lineage"}.`,
+      `- Inherited Spring Boot signals: ${bootVersions.size ? [...bootVersions].map((item) => `\`${item}\``).join(", ") : "not declared in the local POM lineage"}.`,
+      `- Namespace source signals: \`javax.*\` in ${javaxFiles} main Java files; \`jakarta.*\` in ${jakartaFiles} main Java files.`,
+      `- Auto-configuration metadata: ${springFactories} \`spring.factories\`; ${autoConfigurationImports} \`AutoConfiguration.imports\` files.`,
+      "- These are source observations, not compatibility certification. Use the approved `platform_configuration` and verified compatibility evidence before integration or generation.",
+    ],
+  };
 }
 
 async function sha256(target) {
@@ -278,7 +441,7 @@ async function mybatisCapabilityMatrix(source, javaFiles, metadataFiles) {
   return output;
 }
 
-async function backendIndex({ skill, parts, source, found, now, stateResolver }) {
+async function backendIndex({ skill, parts, source, platformLine, found, now, stateResolver }) {
   const currentState = stateResolver(source, parts);
   const bases = parts.map((item) => path.join(source, item));
   const baseHints = await Promise.all(bases.map(async (target) =>
@@ -287,14 +450,17 @@ async function backendIndex({ skill, parts, source, found, now, stateResolver })
   const treeLines = currentState.componentTrees.map(({ path: componentPath, tree }) =>
     `Component tree \`${componentPath}\`: \`${tree}\``,
   );
+  const facts = await mavenAndPlatformFacts(source, found.poms, found.java, found.metadata);
   const lines = [
     `# ${skill} Source Index`,
     "",
+    "Index schema: `backend-component-source-index-v2`",
+    `Platform line: \`${platformLine}\``,
     `Generated: ${now}`,
     `Source commit: \`${currentState.commit}\``,
     `Component worktree: \`${currentState.componentWorktree}\``,
     ...treeLines,
-    "Indexed source root: resolved at refresh time; set `YSS_SOURCE_ROOT` to reproduce or refresh.",
+    `Indexed source root: resolved at refresh time; set \`${BACKEND_PLATFORM_LINES[platformLine].env}\` to reproduce or refresh.`,
     "",
     "This file is generated by `yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.mjs`. Do not hand-edit generated sections.",
     "",
@@ -312,7 +478,11 @@ async function backendIndex({ skill, parts, source, found, now, stateResolver })
     "",
     "## Maven Modules",
     "",
-    ...list(found.poms, (target) => `- \`${relative(source, path.dirname(target))}\``, "- No Maven modules found."),
+    ...(facts.gavLines.length ? facts.gavLines : ["- No Maven modules found."]),
+    "",
+    "## Platform Signals",
+    "",
+    ...facts.platformLines,
     "",
   ];
 
@@ -322,8 +492,9 @@ async function backendIndex({ skill, parts, source, found, now, stateResolver })
   lines.push(
     "## Freshness and Use",
     "",
-    "- Locate the current source root using `YSS_SOURCE_ROOT`, CodeGraph, Maven artifact names or repository search.",
+    `- Locate the current source root using \`${BACKEND_PLATFORM_LINES[platformLine].env}\`, CodeGraph, Maven artifact names or repository search.`,
     "- Compare each indexed `Component tree` with `git rev-parse HEAD:<component-path>` and require the current component subtree to be clean before exact guidance.",
+    `- Run \`node ../yss-skill-source-index-refresh/scripts/check-backend-skill-source-index.mjs --skill <skill-id> --platform-line ${platformLine} --source-root <root>\` from the canonical skill root before exact integration guidance.`,
     "- A repository commit difference alone is not stale when the component tree is unchanged; a component tree mismatch or component-local dirty state is stale.",
     "- Read only the source entries needed for the current decision or troubleshooting path.",
     "",
@@ -333,7 +504,7 @@ async function backendIndex({ skill, parts, source, found, now, stateResolver })
 
 export async function refresh({
   skillsRoot,
-  source,
+  sources,
   now = new Date().toISOString(),
   frontend = true,
   backendSkills = Object.keys(BACKEND),
@@ -341,13 +512,35 @@ export async function refresh({
 }) {
   const unknownSkills = backendSkills.filter((skill) => !(skill in BACKEND));
   if (unknownSkills.length) throw new Error(`Unknown backend source-index skill: ${unknownSkills.join(", ")}`);
+  const sourceEntries = Object.entries(sources ?? {});
+  const unknownLines = sourceEntries.filter(([platformLine]) => !BACKEND_PLATFORM_LINES[platformLine]).map(([platformLine]) => platformLine);
+  if (unknownLines.length) throw new Error(`Unknown backend platform line: ${unknownLines.join(", ")}`);
+  if (backendSkills.length && sourceEntries.length === 0) throw new Error("Backend source-index refresh requires at least one explicit platform source root.");
+  for (const [platformLine, source] of sourceEntries) await assertSourcePlatformLine(source, platformLine);
   for (const skill of backendSkills) {
-    const parts = BACKEND[skill];
-    const bases = parts.map((item) => path.join(source, item));
-    const found = await files(bases);
-    const target = path.join(skillsRoot, skill, "references", "source-index.md");
-    await mkdir(path.dirname(target), { recursive: true });
-    await writeFile(target, await backendIndex({ skill, parts, source, found, now, stateResolver }), "utf8");
+    const referenceRoot = path.join(skillsRoot, skill, "references");
+    await mkdir(referenceRoot, { recursive: true });
+    for (const [platformLine, source] of sourceEntries) {
+      const parts = backendComponentPaths(skill, platformLine);
+      const bases = parts.map((item) => path.join(source, item));
+      const found = await files(bases);
+      const target = backendPlatformIndexPath(skillsRoot, skill, platformLine);
+      await writeFile(target, await backendIndex({ skill, parts, source, platformLine, found, now, stateResolver }), "utf8");
+    }
+    await writeFile(path.join(referenceRoot, "source-index.md"), [
+      `# ${skill} Source Index Router`,
+      "",
+      "Index schema: `backend-component-source-index-router-v1`",
+      "",
+      "Select the source index from the approved `platform_configuration.component_platform_line`; do not infer a line from imports, a branch name or a requested upgrade.",
+      "",
+      ...Object.entries(BACKEND_PLATFORM_LINES).map(([platformLine, contract]) =>
+        `- \`${platformLine}\` — [${contract.label}](source-index.${platformLine}.md)`,
+      ),
+      "",
+      "Run the freshness checker with the same explicit `--platform-line` and its matching clean source root before exact integration guidance.",
+      "",
+    ].join("\n"), "utf8");
   }
 
   if (frontend) {
@@ -369,7 +562,7 @@ export async function refresh({
       ].join("\n"), "utf8");
     }
   }
-  return { backend: backendSkills.length, frontend: frontend ? Object.keys(FRONTEND).length : 0 };
+  return { backend: backendSkills.length, backendTracks: backendSkills.length * sourceEntries.length, frontend: frontend ? Object.keys(FRONTEND).length : 0 };
 }
 
 async function main() {
@@ -377,13 +570,13 @@ async function main() {
     const script = path.dirname(fileURLToPath(import.meta.url));
     const result = await refresh({
       skillsRoot: path.resolve(process.env.YSS_SKILLS_ROOT || path.join(script, "../..")),
-      source: await sourceRoot(),
+      sources: await configuredSourceRoots(),
       frontend: !["0", "false", "no"].includes((process.env.YSS_REFRESH_FRONTEND || "true").toLowerCase()),
       backendSkills: process.env.YSS_REFRESH_BACKEND_SKILLS
         ? process.env.YSS_REFRESH_BACKEND_SKILLS.split(",").map((skill) => skill.trim()).filter(Boolean)
         : Object.keys(BACKEND),
     });
-    console.log(`Updated ${result.backend} backend indexes and ${result.frontend} frontend doc references.`);
+    console.log(`Updated ${result.backendTracks} backend platform indexes for ${result.backend} skills and ${result.frontend} frontend doc references.`);
   } catch (error) {
     console.error(error.message);
     process.exitCode = 1;

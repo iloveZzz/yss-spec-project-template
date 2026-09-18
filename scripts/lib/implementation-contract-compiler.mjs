@@ -1,4 +1,4 @@
-import { resolveBackendPlatform } from "./backend-platform.mjs";
+import { resolveBackendPlatform, resolveComponentCapabilities } from "./backend-platform.mjs";
 import { safe } from './strategic-handoff-io.mjs';
 import { selectSliceWorkUnit, normalizeSliceContract, withinSlicePath } from './slice-contract.mjs';
 import { createApprovedExecutionContext, createApprovedRecompilationContext, assertApprovedExecutionContext } from './approved-execution-context.mjs';
@@ -8,7 +8,7 @@ import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
-import { DEFAULT_REGISTRY, loadSkillRegistry } from "./skill-registry.mjs";
+import { DEFAULT_REGISTRY, loadSkillRegistry, resolveSkillForNewUse } from "./skill-registry.mjs";
 import { ROOT } from "./skill-supply-chain.mjs";
 import { architectureDigest, assertArchitectureAgreement, validateArchitectureIdentity, verifyArchitectureEvidence } from "./backend-architecture.mjs";
 import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
@@ -24,6 +24,20 @@ const EXECUTION_STATUSES = new Set(["implemented", "seam-deferred", "drift", "vi
 
 function fail(message) {
   throw new TypeError(message);
+}
+
+function componentFail(code, message) {
+  const error = new TypeError(`component-capability: ${code}: ${message}`);
+  error.code = code;
+  throw error;
+}
+
+function bindComponentContext(bindings, architectureIdentity) {
+  return bindings.map((binding) => ({
+    ...binding,
+    architecture_family: architectureIdentity.architecture_family,
+    platform_configuration: structuredClone(architectureIdentity.platform_configuration)
+  }));
 }
 
 function stable(value) {
@@ -46,9 +60,27 @@ export function loadCompilerContract(filePath = DEFAULT_COMPILER_CONTRACT) {
   return loadYaml(filePath, "实现合同编译器合同");
 }
 
-function assertV2(registry, compilerContract) {
-  if (registry?.schema_version !== 2) fail("技能注册表 schema v1 已停止支持；请迁移到 capability/typed-dependency v2");
+function assertV3(registry, compilerContract) {
+  if (registry?.schema_version !== 3) fail("技能注册表 schema v1/v2 已停止支持；请迁移到 provider/deprecation v3");
   if (compilerContract?.schema_version !== 2) fail("实现合同编译器合同 schema v1 已停止支持；请迁移到 v2");
+}
+
+function skillFail(code, message, details = {}) {
+  const error = new TypeError(`${code}: ${message}`);
+  error.code = code;
+  error.details = details;
+  throw error;
+}
+
+function componentBindingIds(registry, capabilityIds, skillIds, nonExpanding = []) {
+  const capabilitySet = new Set(capabilityIds);
+  const skillSet = new Set([
+    ...skillIds,
+    ...nonExpanding.filter(item => item.type === "component-dependency").map(item => item.skill)
+  ]);
+  return [...new Set(registry.capabilities
+    .filter(capability => capability.provider?.kind === "yss-component" && (capabilitySet.has(capability.id) || skillSet.has(capability.primary_skill)))
+    .map(capability => capability.provider.binding_id))];
 }
 
 function assertNoRemovedId(value, field) {
@@ -77,7 +109,7 @@ export function compileImplementationContract({
   technical_design,
   readOnly = false
 }) {
-  assertV2(registry, compilerContract);
+  assertV3(registry, compilerContract);
   const recompilationExecution=approved_slice?createApprovedRecompilationContext(approved_slice,{root,work_unit_id}):undefined;
   const deliveryInput = enforceFrontendDelivery({ slice_id, frontend_delivery }, { root });
   if (!Array.isArray(recipeIds) || !Array.isArray(requiredCapabilities) || !Array.isArray(conditions)) {
@@ -91,7 +123,7 @@ export function compileImplementationContract({
   for (const recipeId of requestedRecipes) if (!knownRecipes.has(recipeId)) fail(`未知 recipe: ${recipeId}`);
   const orderedRecipes = registry.recipes.filter((recipe) => requestedRecipes.has(recipe.id));
   const retiredRecipes = new Set(["backend.domain-behavior", "backend.persistence-mybatis", "backend.http-api"]);
-  for (const recipe of orderedRecipes) if (retiredRecipes.has(recipe.id) || recipe.maturity === "deprecated") fail(`deprecated/read-only Recipe ${recipe.id}；必须按架构重新编译`);
+  for (const recipe of orderedRecipes) if (retiredRecipes.has(recipe.id) || recipe.maturity === "deprecated") skillFail("skill-deprecated", `Recipe ${recipe.id} 已停止新用法；必须按架构重新编译`, { recipe_id: recipe.id });
   const architectural = orderedRecipes.some((recipe) => recipe.architecture_family) || requiredCapabilities.some((id) => id.startsWith("layer."));
   let architectureProfile;
   if (architectural || architecture_identity) {
@@ -101,7 +133,6 @@ export function compileImplementationContract({
     for (const recipe of orderedRecipes) if (recipe.architecture_family && recipe.architecture_family !== architecture_identity.architecture_family) fail(`Recipe ${recipe.id} 与架构族不匹配`);
   }
 
-  if (architecture_identity?.platform_configuration) resolveBackendPlatform(architecture_identity.platform_configuration);
   enforceTechnicalDesign({ technical_design, conditions, architecture_identity, slice_id }, { root, execution:recompilationExecution, readOnly });
 
   const capabilitySources = new Map();
@@ -127,7 +158,7 @@ export function compileImplementationContract({
     const family = capabilities.get(id).architecture_family ?? (dddCapabilities.has(id) ? "domain-driven" : null);
     if (family && family !== architecture_identity?.architecture_family) fail(`capability ${id} 与 architecture_identity 不匹配`);
   }
-  const knownSkills = new Set(registry.skills.map((skill) => skill.id));
+  const knownSkills = new Set([...(registry.skills ?? []), ...(registry.external_skills ?? [])].map((skill) => skill.id));
   const conditionSet = new Set(conditions);
   const reasons = new Map();
   const nonExpanding = [];
@@ -142,6 +173,7 @@ export function compileImplementationContract({
   for (const capabilityId of orderedCapabilities) {
     const skill = capabilities.get(capabilityId).primary_skill;
     if (!knownSkills.has(skill)) fail(`${capabilityId} 解析到未知 skill: ${skill}`);
+    resolveSkillForNewUse(registry, skill);
     if (!roots.includes(skill)) roots.push(skill);
     for (const source of capabilitySources.get(capabilityId)) addReason(skill, { ...source, capability: capabilityId });
   }
@@ -156,6 +188,7 @@ export function compileImplementationContract({
     const dependencies = [...(registry.skill_dependencies?.[skill] ?? [])]
       .sort((left, right) => left.skill.localeCompare(right.skill));
     for (const dependency of dependencies) {
+      if (knownSkills.has(dependency.skill)) resolveSkillForNewUse(registry, dependency.skill);
       const conditionMatches = !dependency.when || conditionSet.has(dependency.when);
       if (dependency.type === "context-conditional" && !conditionMatches) {
         excludedConditional.push({ from: skill, ...dependency });
@@ -177,6 +210,23 @@ export function compileImplementationContract({
   for (const root of roots) visit(root);
   enforceHarnessSkillScope(orderedSkills, registry, { root });
 
+  const requiredSkillSet = new Set(orderedSkills);
+  const componentCapabilityIds = componentBindingIds(registry, orderedCapabilities, requiredSkillSet, nonExpanding);
+  let componentBindings = [];
+  if (componentCapabilityIds.length && !architecture_identity?.platform_configuration) {
+    componentFail("component-platform-binding-required", `组件能力 ${componentCapabilityIds.join(", ")} 必须绑定 architecture_identity.platform_configuration v2`);
+  }
+  if (architecture_identity?.platform_configuration) {
+    if (componentCapabilityIds.length) {
+      componentBindings = bindComponentContext(resolveComponentCapabilities(
+        architecture_identity.platform_configuration,
+        componentCapabilityIds,
+        architecture_identity.architecture_family,
+        { root }
+      ), architecture_identity);
+    } else resolveBackendPlatform(architecture_identity.platform_configuration, { root });
+  }
+
   return {
     schema_version: 2,
     status: "draft",
@@ -193,6 +243,10 @@ export function compileImplementationContract({
     recipe_ids: orderedRecipes.map((recipe) => recipe.id),
     conditions: [...conditionSet].sort(),
     required_capabilities: orderedCapabilities,
+    ...(componentBindings.length ? {
+      component_bindings: structuredClone(componentBindings),
+      component_bindings_digest: digestDocument(componentBindings)
+    } : {}),
     required_skills: orderedSkills,
     reason_chains: Object.fromEntries(orderedSkills.map((skill) => [skill, reasons.get(skill) ?? []])),
     non_expanding_dependencies: nonExpanding,
@@ -213,7 +267,7 @@ export function compileDefaultImplementationContract(input = {}) {
 }
 
 export function evaluateContractFreshness(contract, { registry, compilerContract, root = ROOT, approved_slice, readOnly = false, work_unit_id }, execution) {
-  assertV2(registry, compilerContract);
+  assertV3(registry, compilerContract);
   try { contract=normalizeSliceContract(contract,{root}); } catch(error) { return {freshness:'stale',reasons:[error.message]}; }
   if (![2,3].includes(contract?.schema_version)) fail("Slice Implementation Contract schema v1 已停止支持；必须重新编译 v2 合同");
   const all=contract;
@@ -240,6 +294,35 @@ export function evaluateContractFreshness(contract, { registry, compilerContract
     }
     if (resolution.architecture_identity_digest !== architectureDigest(resolution.architecture_identity)) reasons.push("architecture-identity-digest-changed");
   }
+  const requiredCapabilitySet = new Set(resolution.required_capabilities ?? []);
+  const requiredSkillSet = new Set(resolution.required_skills ?? []);
+  const componentCapabilityIds = componentBindingIds(registry, requiredCapabilitySet, requiredSkillSet, resolution.non_expanding_dependencies ?? []);
+  if (componentCapabilityIds.length) {
+    if (!Array.isArray(resolution.component_bindings) || !resolution.component_bindings.length) {
+      reasons.push("component-binding-drift");
+    } else {
+      try {
+        const storedIds = new Set(resolution.component_bindings.map((binding) => binding.capability_id));
+        if (componentCapabilityIds.some((id) => !storedIds.has(id))) throw Object.assign(new TypeError("component-binding-drift: required capability binding missing"), { code: "component-binding-drift" });
+        const groups = new Map();
+        for (const binding of resolution.component_bindings) {
+          if (!binding.platform_configuration || !binding.architecture_family) throw Object.assign(new TypeError("component-binding-drift: binding context missing"), { code: "component-binding-drift" });
+          const key = digestDocument({ platform_configuration: binding.platform_configuration, architecture_family: binding.architecture_family });
+          if (!groups.has(key)) groups.set(key, { platform_configuration: binding.platform_configuration, architecture_family: binding.architecture_family, capability_ids: [] });
+          groups.get(key).capability_ids.push(binding.capability_id);
+        }
+        const currentBindings = [...groups.values()].flatMap((group) => bindComponentContext(resolveComponentCapabilities(
+          group.platform_configuration,
+          group.capability_ids,
+          group.architecture_family,
+          { root }
+        ), { platform_configuration: group.platform_configuration, architecture_family: group.architecture_family }));
+        if (resolution.component_bindings_digest !== digestDocument(currentBindings) || digestDocument(resolution.component_bindings) !== digestDocument(currentBindings)) reasons.push("component-binding-drift");
+      } catch (error) {
+        reasons.push(error.code ?? ["component-new-adoption-forbidden", "component-retirement-evidence-missing", "component-platform-generation-mismatch", "component-unavailable-for-platform", "component-artifact-coordinate-conflict", "component-evidence-missing", "component-binding-drift"].find((code) => error.message?.includes(code)) ?? "component-binding-drift");
+      }
+    }
+  }
   return { freshness: reasons.length ? "stale" : "current", reasons };
 }
 
@@ -259,6 +342,7 @@ export function validateExecutionResult(result, contract, current) {
   if (resolution.readiness_blockers?.length) blockers.push(...resolution.readiness_blockers);
   if (consumed.contract_id !== contract.contract_id || consumed.contract_version !== contract.contract_version) blockers.push("contract-version-mismatch");
   if (consumed.registry_digest !== resolution.registry_digest || consumed.compiler_contract_digest !== resolution.compiler_contract_digest) blockers.push("resolution-digest-mismatch");
+  if (resolution.component_bindings_digest && consumed.component_bindings_digest !== resolution.component_bindings_digest) blockers.push("component-binding-mismatch");
   if (!Array.isArray(result.verification_results) || !result.verification_results.length) blockers.push("verification-not-executed");
   else for (const item of result.verification_results) {
     if (!item?.command || item.exit_code === undefined || !item.executed_at) blockers.push("verification-result-incomplete");

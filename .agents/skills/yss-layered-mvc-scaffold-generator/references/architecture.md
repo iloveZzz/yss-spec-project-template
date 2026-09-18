@@ -11,6 +11,8 @@
 
 合同保存 `requested_capabilities`、`resolved_modules` 和 `resolution_version: 1`。模块按 `server`、`service`、`repository`、`adapter`、`client`、`feign-client` 的稳定顺序生成。
 
+`mvc-data-analysis-v1` 是本生成器的固定 Profile，不使用上述可选闭包：模块严格为 `server`、`core`、`client`、`repository`、`adapter`、`feign-client`。`core` 承载薄应用编排，不能依赖 `client`、Spring Web 或生产数据库驱动；CONTEXT handoff、project-instance 治理信封、同级 `skillUtils` 与独立 Git 必须在最终 rename 前完成。
+
 ## 职责和依赖
 
 | 模块 | 职责 | 允许依赖 |

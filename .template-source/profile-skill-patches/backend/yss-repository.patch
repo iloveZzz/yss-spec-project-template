@@ -1,3 +1,5 @@
+diff --git a/SKILL.md b/SKILL.md
+index 6a77836..b2cf968 100644
 --- a/SKILL.md
 +++ b/SKILL.md
 @@ -1,47 +1,89 @@
@@ -118,6 +120,8 @@
  
  ## 新脚手架平台约束
  
+diff --git a/agents/openai.yaml b/agents/openai.yaml
+index a73569c..89a1a47 100644
 --- a/agents/openai.yaml
 +++ b/agents/openai.yaml
 @@ -1,5 +1,5 @@
@@ -128,6 +132,9 @@
 -  default_prompt: "Use $yss-repository to route and implement persistence structures from an approved architecture profile and contract without inventing domain, service, or API contracts."
 +  short_description: "Infrastructure Repository、Mapper、Convertor 与端口实现规范"
 +  default_prompt: "Use $yss-repository to implement Infrastructure persistence and query adapters against existing Domain Gateway and Application Query Port interfaces without creating domain contracts."
+diff --git a/references/infrastructure-layer-guide.md b/references/infrastructure-layer-guide.md
+new file mode 100644
+index 0000000..f472514
 --- /dev/null
 +++ b/references/infrastructure-layer-guide.md
 @@ -0,0 +1,107 @@
@@ -238,6 +245,8 @@
 +## 8. 旧架构边界
 +
 +检测到 Repository 直接接收 client Query、返回 VO、Convertor 做 `PO -> VO` 或使用旧式 Entity 布局时，返回 `unsupported`，不得由新 scaffold 自动改写。旧项目继续按原工程维护；现代化改造必须单独立项。
+diff --git a/references/profiles/layered-mvc-service.md b/references/profiles/layered-mvc-service.md
+index 93b1319..c0f0a19 100644
 --- a/references/profiles/layered-mvc-service.md
 +++ b/references/profiles/layered-mvc-service.md
 @@ -1,21 +1,3 @@
@@ -263,6 +272,8 @@
 -- Repository/Mapper 覆盖查询、写入、分页、回滚、字段转换和批准数据库 fixture。
 -- H2 仅作为验证数据库；生产驱动和数据源必须由单独批准的存储工作单元接入。
 +先读仓库 `docs/agents/backend-architecture-profiles.md`。依据批准的数据合同写入 repository 的 po/repository/convertor 及 Mapper XML；无需领域模型或 Gateway。使用 `yss-mybatis` 的 MyBatis-Plus 体系；保留 cause，避免向上暴露原始 SQL/凭据。事务由 service 用例拥有。测试覆盖查询、分页、回滚与字段转换；H2 不证明生产方言。生产驱动/数据源接入须另有批准的存储工作单元。
+diff --git a/references/profiles/mvc-data-analysis-v1.md b/references/profiles/mvc-data-analysis-v1.md
+index 54c9151..77d355a 100644
 --- a/references/profiles/mvc-data-analysis-v1.md
 +++ b/references/profiles/mvc-data-analysis-v1.md
 @@ -1,21 +1,3 @@
@@ -288,6 +299,8 @@
 -- 数据库 fixture 验证实际 Mapper/XML 与方言；H2 不能证明生产数据库的函数、排序或执行计划。
 -- core 是唯一业务事务边界，server 不直连 Repository。
 +遵守 `layered-mvc-service.md`，但事务所有者为 `core`。repository 不依赖 core/client/server，不生成 DDD Gateway。数据分析的动态排序、分组、过滤均须白名单及参数绑定；只消费批准的数据和查询合同。
+diff --git a/references/profiles/target-domain-model.md b/references/profiles/target-domain-model.md
+index 693c365..af74ca4 100644
 --- a/references/profiles/target-domain-model.md
 +++ b/references/profiles/target-domain-model.md
 @@ -1,23 +1,3 @@
@@ -315,6 +328,9 @@
 -- Query Port 覆盖分页 total、空结果、排序/过滤白名单和字段转换。
 -- Mapper/Repository 使用批准数据库 fixture；H2 不能证明生产方言。
 +完整执行规则见 `../infrastructure-layer-guide.md`。Domain Gateway 和 Application Query Port 必须已存在；本 Skill 只在 Infrastructure 实现，不反向创建领域端口。事务归 Application。
+diff --git a/tests/profile-routing.test.mjs b/tests/profile-routing.test.mjs
+deleted file mode 100644
+index 481ad73..0000000
 --- a/tests/profile-routing.test.mjs
 +++ /dev/null
 @@ -1,59 +0,0 @@
