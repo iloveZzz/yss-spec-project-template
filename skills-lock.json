@@ -729,7 +729,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-audit-log/SKILL.md",
-        "effectiveHash": "302ba48cdd01cd49647b8af1066a865e77403e5b86ccab5786d09f79a94987a3",
+        "effectiveHash": "197c049b619c31cd008d92508aab932d1cdb0c7a485df8823214a79094961e8a",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -816,7 +816,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-excel-mvc/SKILL.md",
-        "effectiveHash": "53fa6db4a4695050f7071a6623d5da148ada782f83bdc290ade9194f5aeb15f3",
+        "effectiveHash": "ba723ec68c4f95e0541700a11852f40dbcff9525325cf66445c7d51fa42707da",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -828,7 +828,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-exception/SKILL.md",
-        "effectiveHash": "3bef19018da9b5dfad75179c4cf2c41f73222576124ae6a5c130e13cbed394c2",
+        "effectiveHash": "ee0ed28408ad623e97cc34425a41cc57c9dce090f1b1057100c4126ba935ebf9",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -1041,7 +1041,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-security-algorithm/SKILL.md",
-        "effectiveHash": "f719d2829aa83c494b17a782bc1fa140c32cf5b3ea96655f0269649426dbf475",
+        "effectiveHash": "4dd8ccc16f6d24c0d9676d0ceb710a712ade1cee63493afba72d0d96b10251d8",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -1173,7 +1173,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-userinfo/SKILL.md",
-        "effectiveHash": "6fa81036230f5e7f35633fa71a87ed88684f974a3f225998a5708c3951065435",
+        "effectiveHash": "159305291157e7b8be38518899a59918a436d7929474cbbc0d5039cc1efb303e",
         "targets": [
           ".agents/skills",
           ".codex/skills",

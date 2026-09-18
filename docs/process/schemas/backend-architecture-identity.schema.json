@@ -68,6 +68,7 @@
             "profile_id",
             "spring_boot_version",
             "java_version",
+            "component_platform_line",
             "parent",
             "bom",
             "compatibility_id",
@@ -93,6 +94,12 @@
                 8,
                 17,
                 21
+              ]
+            },
+            "component_platform_line": {
+              "enum": [
+                "boot2-java8",
+                "boot3-java17"
               ]
             },
             "compatibility_id": {
@@ -209,6 +216,7 @@
             "profile_id",
             "spring_boot_version",
             "java_version",
+            "component_platform_line",
             "parent",
             "bom",
             "compatibility_id",
@@ -231,6 +239,12 @@
                 8,
                 17,
                 21
+              ]
+            },
+            "component_platform_line": {
+              "enum": [
+                "boot2-java8",
+                "boot3-java17"
               ]
             },
             "compatibility_id": {

@@ -445,7 +445,18 @@
               },
               "platform_configuration": {
                 "type": "object",
-                "minProperties": 1
+                "minProperties": 1,
+                "required": [
+                  "component_platform_line"
+                ],
+                "properties": {
+                  "component_platform_line": {
+                    "enum": [
+                      "boot2-java8",
+                      "boot3-java17"
+                    ]
+                  }
+                }
               }
             },
             "required": [

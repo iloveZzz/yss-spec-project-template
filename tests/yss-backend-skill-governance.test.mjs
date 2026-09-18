@@ -13,6 +13,10 @@ import { parseDocument } from "../scripts/vendor/yaml.mjs";
 const registry = loadSkillRegistry();
 const backendPlatforms = JSON.parse(readFileSync("docs/engineering/backend-platforms.json", "utf8"));
 
+function skillBody(name) {
+  return readFileSync(`.agents/skills/${name}/SKILL.md`, "utf8");
+}
+
 function yaml(path) {
   const document = parseDocument(readFileSync(path, "utf8"), { maxAliasCount: 0, uniqueKeys: true });
   assert.equal(document.errors.length, 0);
@@ -173,4 +177,44 @@ test("backend audit emits all five governance states and gates remove-ready on z
   const mergeReady = structuredClone(registry);
   mergeReady.skills.push({ id: "merge-candidate", layer: "specialist", maturity: "draft", instance_default_discoverable: false, aliases: [], impacts: ["backend"] });
   assert.equal(auditBackendSkills(mergeReady).find((item) => item.skill === "merge-candidate").classification, "merge-ready");
+});
+
+test("Boot 3 component Skill semantics match the source-backed security and failure contracts", () => {
+  const auditLog = skillBody("yss-audit-log");
+  assert.match(auditLog, /`boot3-java17`[^\n]*`args`[^\n]*`result`/);
+  assert.match(auditLog, /#\{args\[0\]\}/);
+  assert.match(auditLog, /#\{result\[name\]\}/);
+  assert.match(auditLog, /CurrentUserProvider/);
+  assert.doesNotMatch(auditLog, /参数审计|结果审计/);
+
+  const userInfo = skillBody("yss-userinfo");
+  assert.match(userInfo, /SecurityContextCurrentUserProvider/);
+  assert.match(userInfo, /TrustedGatewayHeaderCurrentUserProvider/);
+  assert.match(userInfo, /`yss\.userinfo\.trusted-gateway\.enabled`/);
+  assert.match(userInfo, /`trusted-proxies`/);
+  assert.match(userInfo, /SecurityContext[^\n]*优先/);
+  assert.match(userInfo, /does not parse an unverified Bearer payload/);
+  assert.doesNotMatch(userInfo, /lookup order[^\n]*Bearer JWT payload/);
+  assert.doesNotMatch(userInfo, /JWT user-info cache key path/);
+
+  const exception = skillBody("yss-exception");
+  assert.match(exception, /Unknown `Exception`, `RuntimeException`[^\n]*HTTP 500/);
+  assert.match(exception, /HTTP 413 \(`PAYLOAD_TOO_LARGE`\)/);
+  assert.match(exception, /`ResultErrorCode\.INTERNAL_ERROR`/);
+  assert.match(exception, /SLF4J logger/);
+  assert.match(exception, /`X-Trace-Id`/);
+  assert.match(exception, /does not contain the raw localized exception or stack trace/);
+  assert.doesNotMatch(exception, /maps BizException, unknown Exception, and RuntimeException to HTTP 400/);
+  assert.doesNotMatch(exception, /direct `printStackTrace\(\)` branch/);
+
+  const security = skillBody("yss-security-algorithm");
+  assert.match(security, /`new_adoption: forbidden`[^\n]*new-adoption-forbidden/);
+  assert.match(security, /`component-new-adoption-forbidden`/);
+  assert.match(security, /`Jwks\.generateRsa\(\)`[^\n]*deprecated fail-closed/);
+  assert.match(security, /managed `JWKSource`/);
+  assert.match(security, /`SecurityCryptoProvider`[^\n]*fail closed/);
+  assert.match(security, /public constructor[^\n]*`TextEncryptor`[^\n]*实例 `encrypt` \/ `decrypt`/);
+  assert.match(security, /`PasswordEncoderFactories\.createDelegatingPasswordEncoder\(\)`/);
+  assert.match(security, /不得把 delegating encoder 的默认 id 改回 `noop`/);
+  assert.doesNotMatch(security, /`Jwks\.generateRsa\(\)` 解码硬编码/);
 });

@@ -14,6 +14,7 @@ export function attachPlatformFixture(root, contract) {
   if (!["yss-ddd-scaffold-generator", "yss-layered-mvc-scaffold-generator"].includes(contract.generator_skill) || contract.schema_version !== 4) return;
   const catalog = fixtureCatalog(contract);
   const profile = platformProfile(contract.profiles.platform, catalog);
+  if (!profile.component_platform_line) return;
   contract.platform_configuration ??= platformBinding(profile, catalog.compatibility[0]);
   const file = path.resolve(root, contract.decision_ref);
   const decisions = parseDocument(readFileSync(file, "utf8")).toJS();

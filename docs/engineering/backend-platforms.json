@@ -34,7 +34,7 @@
       ],
       "spring_cloud_line": "2021.0",
       "openfeign_line": "3.1",
-      "component_platform_line": "boot2-java8-maintenance"
+      "component_platform_line": "boot2-java8"
     },
     {
       "id": "spring-boot-3.5-jdk17",
@@ -107,7 +107,7 @@
       ],
       "spring_cloud_line": "2025.0",
       "openfeign_line": "4.3",
-      "component_platform_line": "boot3-candidate"
+      "component_platform_line": "boot3-java17"
     },
     {
       "id": "spring-boot-4.1-jdk17",
@@ -142,8 +142,7 @@
       ],
       "spring_cloud_line": "2025.1",
       "openfeign_line": "5.0",
-      "spring_cloud_minimum": "2025.1.2",
-      "component_platform_line": "boot4-blocked"
+      "spring_cloud_minimum": "2025.1.2"
     },
     {
       "id": "spring-boot-4.1-jdk21",
@@ -178,8 +177,7 @@
       ],
       "spring_cloud_line": "2025.1",
       "openfeign_line": "5.0",
-      "spring_cloud_minimum": "2025.1.2",
-      "component_platform_line": "boot4-blocked"
+      "spring_cloud_minimum": "2025.1.2"
     }
   ],
   "compatibility": [

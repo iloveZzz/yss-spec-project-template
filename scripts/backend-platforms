@@ -66,7 +66,7 @@ try {
       });
     const selectable = combinations.some(entry => entry.status === "verified");
     const blockers = selectable ? [] : [...new Set([...profile.candidate_blockers, ...combinations.flatMap(item => item.blockers)])];
-    return { profile_id: profile.id, spring_boot_version: profile.spring_boot_version, java_version: profile.java_version, recommended_java: profile.java_version === 8 || profile.java_version === 17, selectable, combinations, blockers };
+    return { profile_id: profile.id, spring_boot_version: profile.spring_boot_version, java_version: profile.java_version, component_platform_line: profile.component_platform_line ?? null, recommended_java: profile.java_version === 8 || profile.java_version === 17, selectable, combinations, blockers };
   });
   const matches = args.requireProfile ? rows.filter(row => row.profile_id === args.requireProfile) : [];
   const requiredProfile = !args.requireProfile ? null : matches.length === 1 ? matches[0] : {

@@ -18,11 +18,12 @@ Project Scaffold Contract v4 新增 `platform_configuration` v2，两个脚手�
 | `profile_id` | 如 `spring-boot-3.5-jdk17` |
 | `spring_boot_version` | 精确补丁，如 `3.5.16` |
 | `java_version` | 经选择的 `8`、`17` 或 `21` |
+| `component_platform_line` | 组件源码与 Skill 索引平台线；只允许 `boot2-java8` 或 `boot3-java17` |
 | `parent` / `bom` | `group_id`、`artifact_id`、`version` |
 | `compatibility_id` | 清单组合 ID |
 | `compatibility_digest` | `platformRecipeDigest(profile, entry)`，排除证据列表、支持状态和展示提示 |
 
-配置可由 `platformBinding(profile, entry)` 机械构造；该函数不批准用户选择或开放支持。修改平台、YSS 坐标或依赖配方会使绑定失效；仅更新同配方证据不改变用户选择摘要。历史 Manifest 继续只读验证，不自动补字段或重写批准。仅继承架构不等于继承平台批准。
+配置可由 `platformBinding(profile, entry)` 机械构造；该函数把 Profile 中规范化的 `component_platform_line` 持久化到 v2 binding，并由 schema、解析器、架构身份摘要和 Slice 组件绑定摘要共同校验。组件平台线表示可消费的双平台源码索引，不承载 `maintenance`、`candidate` 或 `blocked` 生命周期；生命周期继续由 compatibility 与 capability 状态表达。当前 Boot 2 与 Boot 3 分别固定为 `boot2-java8`、`boot3-java17`。Boot 4 没有现有组件平台线，不生成可批准的 v2 `platform_configuration`，继续在选择阶段阻断。该函数不批准用户选择或开放支持。修改平台、YSS 坐标或依赖配方会使绑定失效；仅更新同配方证据不改变用户选择摘要。历史 Manifest 继续只读验证，不自动补字段或重写批准。仅继承架构不等于继承平台批准。
 
 `resolveBackendPlatform(binding, { root })` 在未显式传入 catalog 时读取该 `root` 下的 `docs/engineering/backend-platforms.json`；未传 `root` 时读取模板仓目录。这样 Slice freshness 与隔离 fixture 使用各自的目录事实，不会意外回退到模板工作区。
 

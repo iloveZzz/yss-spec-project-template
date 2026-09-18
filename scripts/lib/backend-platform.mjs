@@ -22,6 +22,8 @@ const sha256 = value => /^sha256:[a-f0-9]{64}$/.test(value ?? "");
 const gitTree = value => /^[a-f0-9]{40}$/.test(value ?? "");
 const major = value => Number.parseInt(String(value ?? "").match(/^(\d+)/)?.[1] ?? "", 10);
 const platformGeneration = profile => major(profile?.spring_boot_version) === 2 ? { line: "boot2-java8", componentMajor: 2 } : major(profile?.spring_boot_version) === 3 ? { line: "boot3-java17", componentMajor: 3 } : { line: "boot4", componentMajor: null };
+const COMPONENT_PLATFORM_LINES = new Set(["boot2-java8", "boot3-java17"]);
+const normalizedComponentPlatformLine = profile => COMPONENT_PLATFORM_LINES.has(profile?.component_platform_line) ? profile.component_platform_line : undefined;
 const retirementEvidenceComplete = value => {
   const required = new Set(["organization-code-search", "maven-download-metrics", "runtime-bean-and-configuration-scan", "30-90-day-zero-usage-window"]);
   if (!Array.isArray(value) || !value.every(item => item?.status === "zero" && typeof item.ref === "string" && item.ref.length > 0)) return false;
@@ -76,7 +78,7 @@ function validateComponentCatalog(value, root = PLATFORM_ROOT) {
     const profile = value.profiles.find(item => item.id === entry.profile_id && item.spring_boot_version === entry.spring_boot_version);
     if (!profile) componentFail("component-unavailable-for-platform", `compatibility profile is missing: ${entry.id}`);
     const generation = platformGeneration(profile);
-    if (generation.line === "boot3-java17" && profile.component_platform_line !== generation.line) componentFail("component-platform-generation-mismatch", `profile component line does not match ${generation.line}: ${profile.id}`);
+    if (!COMPONENT_PLATFORM_LINES.has(generation.line) || profile.component_platform_line !== generation.line) componentFail("component-platform-generation-mismatch", `profile component line does not match ${generation.line}: ${profile.id}`);
     if (entry.platform_artifact_bindings !== undefined) {
       if (!entry.platform_artifact_bindings || Array.isArray(entry.platform_artifact_bindings) || Object.keys(entry.platform_artifact_bindings).sort().join(",") !== "bom,parent") componentFail("component-binding-drift", `platform artifact bindings must contain parent and bom: ${entry.id}`);
       validateArtifactBinding(entry.platform_artifact_bindings.parent, `${entry.id}:parent`, { role: "parent", expected: entry.parent, snapshot: true });
@@ -155,7 +157,12 @@ export function loadBackendPlatforms(root = PLATFORM_ROOT) {
   const value = JSON.parse(readFileSync(path.join(root, PLATFORM_CATALOG_REF), "utf8"));
   if (value.schema_version !== 2 || value.kind !== "backend-platform-catalog" || !Array.isArray(value.profiles) || !Array.isArray(value.compatibility)) fail("invalid catalog");
   if (new Set(value.profiles.map(item => `${item.id}:${item.spring_boot_version}:${item.java_version}`)).size !== value.profiles.length || new Set(value.compatibility.map(item => item.id)).size !== value.compatibility.length) fail("duplicate catalog release/id");
-  for (const profile of value.profiles) if (!/^\d+\.\d+\.\d+$/.test(profile.spring_boot_version)) fail("catalog requires exact patch versions");
+  for (const profile of value.profiles) {
+    if (!/^\d+\.\d+\.\d+$/.test(profile.spring_boot_version)) fail("catalog requires exact patch versions");
+    const generation = platformGeneration(profile);
+    if (COMPONENT_PLATFORM_LINES.has(generation.line) && profile.component_platform_line !== generation.line) componentFail("component-platform-generation-mismatch", `profile component line does not match ${generation.line}: ${profile.id}`);
+    if (!COMPONENT_PLATFORM_LINES.has(generation.line) && profile.component_platform_line !== undefined) componentFail("component-platform-generation-mismatch", `unsupported component platform line for ${profile.id}: ${profile.component_platform_line}`);
+  }
   validateComponentCatalog(value, root);
   return value;
 }
@@ -171,7 +178,8 @@ export function platformRecipeDigest(profile, entry) {
   return platformDigest({ profile: recipe, entry: { id: entry.id, profile_id: entry.profile_id, spring_boot_version: entry.spring_boot_version, parent: entry.parent, bom: entry.bom, components: entry.components ?? {}, platform_artifact_bindings: entry.platform_artifact_bindings ?? {}, external_snapshot_bindings: entry.external_snapshot_bindings ?? [], external_artifact_bindings: entry.external_artifact_bindings ?? [] } });
 }
 export function platformBinding(profile, entry) {
-  return { schema_version: 2, profile_id: profile.id, spring_boot_version: profile.spring_boot_version, java_version: profile.java_version, parent: entry.parent, bom: entry.bom, compatibility_id: entry.id, compatibility_digest: platformRecipeDigest(profile, entry) };
+  const componentPlatformLine = normalizedComponentPlatformLine(profile);
+  return { schema_version: 2, profile_id: profile.id, spring_boot_version: profile.spring_boot_version, java_version: profile.java_version, ...(componentPlatformLine ? { component_platform_line: componentPlatformLine } : {}), parent: entry.parent, bom: entry.bom, compatibility_id: entry.id, compatibility_digest: platformRecipeDigest(profile, entry) };
 }
 export function resolveBackendPlatform(binding, options = {}) {
   const root = options.root ?? PLATFORM_ROOT;
@@ -180,6 +188,7 @@ export function resolveBackendPlatform(binding, options = {}) {
   if (!binding || binding.schema_version !== 2) fail("missing platform_configuration v2 (v1 is historical read-only); 生命周期须展示 Boot/Java/YSS 组合并取得用户确认");
   const profile = platformProfile(binding.profile_id, catalog, binding.spring_boot_version);
   if (binding.spring_boot_version !== profile.spring_boot_version || binding.java_version !== profile.java_version) fail("unsupported exact Boot/Java combination (x/latest and Java 8/11 for Boot 3.5/4.1 are rejected)");
+  if (binding.component_platform_line !== normalizedComponentPlatformLine(profile)) fail("component_platform_line does not match the selected platform profile");
   const entry = catalog.compatibility.find(item => item.id === binding.compatibility_id);
   const evidenceReports = [];
   if (!entry || entry.profile_id !== profile.id || entry.spring_boot_version !== profile.spring_boot_version) fail("YSS compatibility entry missing; parent/BOM/starter verification required");

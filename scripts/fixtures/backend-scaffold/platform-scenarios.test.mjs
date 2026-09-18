@@ -6,6 +6,7 @@ import { mkdtemp, mkdir, readFile, writeFile, rm, readdir } from "node:fs/promis
 import os from "node:os";
 import path from "node:path";
 import { loadBackendPlatforms, platformBinding, platformRecipeDigest, platformProfile, platformDigest, resolveBackendPlatform, resolveComponentCapabilities, componentCapabilityDigest, assertJavaPlatform, assertContractPlatform } from "../../lib/backend-platform.mjs";
+import { architectureDigest } from "../../lib/backend-architecture.mjs";
 import { checkPlatformDependencies, checkPlatformTests, checkRuntimeArchive } from "../../lib/backend-platform-verification.mjs";
 import { fixtureCatalog } from "./platform-fixture.mjs";
 import { attachDesignPrerequisites } from "./design-prerequisites.mjs";
@@ -46,7 +47,7 @@ export async function platformFixture(root, family, profile) {
   return { contract, contractFile, catalog, output, project: path.join(output, contract.project_name), save, generate };
 }
 
-for (const family of ["domain-driven", "layered-mvc"]) for (const profile of profiles) test(`candidate rendering only: ${family} ${profile.id}`, async t => {
+for (const family of ["domain-driven", "layered-mvc"]) for (const profile of profiles.filter(item => item.component_platform_line)) test(`candidate rendering only: ${family} ${profile.id}`, async t => {
   const root = await mkdtemp(path.join(os.tmpdir(), "yss-platform-matrix-")); t.after(() => rm(root, { recursive: true, force: true }));
   const f = await platformFixture(root, family, profile);
   await f.generate();
@@ -70,6 +71,7 @@ for (const family of ["domain-driven", "layered-mvc"]) for (const profile of pro
   assert.ok(smoke.includes(profile.jackson_major === 3 ? "tools.jackson.databind.json.JsonMapper" : "com.fasterxml.jackson.databind.ObjectMapper"));
   if (family === "layered-mvc") assert.ok(smoke.includes("feignCanDecodeJson"));
   const manifest = JSON.parse(await readFile(path.join(f.project, ".yss/scaffold-generation.json"), "utf8"));
+  assert.equal(f.contract.platform_configuration.component_platform_line, profile.component_platform_line);
   assert.deepEqual(manifest.platform_configuration, f.contract.platform_configuration);
   assert.equal(manifest.platform_verification, "candidate");
   assert.equal(manifest.completion_level, "generated");
@@ -82,6 +84,23 @@ for (const family of ["domain-driven", "layered-mvc"]) for (const profile of pro
   manifest.platform_configuration.java_version = profile.java_version === 8 ? 17 : 8;
   await writeFile(path.join(f.project, ".yss/scaffold-generation.json"), JSON.stringify(manifest));
   await assert.rejects(() => verifyScaffold(f.project, path.join(root, "evidence"), {}, { platformOptions: { catalog: f.catalog, candidate: true } }));
+});
+
+for (const family of ["domain-driven", "layered-mvc"]) for (const profile of profiles.filter(item => !item.component_platform_line)) test(`unsupported component platform never synthesizes a binding: ${family} ${profile.id}`, async t => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "yss-platform-no-component-line-")); t.after(() => rm(root, { recursive: true, force: true }));
+  const f = await platformFixture(root, family, profile);
+  assert.equal(f.contract.platform_configuration, undefined);
+  await assert.rejects(() => f.generate(), /platform_configuration/);
+  assert.deepEqual(await readdir(f.output), []);
+});
+
+test("v2 scaffold schema rejects a platform binding without the normalized component line", async t => {
+  const root = await mkdtemp(path.join(os.tmpdir(), "yss-platform-line-required-")); t.after(() => rm(root, { recursive: true, force: true }));
+  const f = await platformFixture(root, "domain-driven", profiles.find(item => item.id === "spring-boot-3.5-jdk17"));
+  delete f.contract.platform_configuration.component_platform_line;
+  await f.save();
+  await assert.rejects(() => f.generate(), /component_platform_line/);
+  assert.deepEqual(await readdir(f.output), []);
 });
 
 for (const family of ["domain-driven", "layered-mvc"]) test(`production fail-closed and zero writes: ${family}`, async t => {
@@ -98,8 +117,14 @@ test("version, digest, namespace, YSS coordinates and decision mismatches are re
   const contract = { profiles: { platform: profiles[1].id, validation_namespace: "jakarta" }, maven_coordinates: { parent: { group_id: "com.yss.cloud", artifact_id: "parent", version: "3.0" }, yss_components_version: "3.0" }, architecture_family: "layered-mvc" };
   const catalog = fixtureCatalog(contract);
   const binding = platformBinding(profiles[1], catalog.compatibility[0]);
+  assert.equal(binding.component_platform_line, "boot3-java17");
+  const identity = { architecture_family: "layered-mvc", platform_configuration: binding };
+  assert.notEqual(architectureDigest(identity), architectureDigest({ ...identity, platform_configuration: { ...binding, component_platform_line: "boot2-java8" } }));
   const options = { catalog, requireVerified: false };
-  for (const change of [{ schema_version: 1 }, { java_version: 8 }, { java_version: 11 }, { spring_boot_version: "3.5.x" }, { spring_boot_version: "3.5.999" }, { compatibility_digest: `sha256:${"0".repeat(64)}` }]) assert.throws(() => resolveBackendPlatform({ ...binding, ...change }, options));
+  for (const change of [{ schema_version: 1 }, { java_version: 8 }, { java_version: 11 }, { spring_boot_version: "3.5.x" }, { spring_boot_version: "3.5.999" }, { component_platform_line: "boot2-java8" }, { compatibility_digest: `sha256:${"0".repeat(64)}` }]) assert.throws(() => resolveBackendPlatform({ ...binding, ...change }, options));
+  const missingComponentLine = { ...binding };
+  delete missingComponentLine.component_platform_line;
+  assert.throws(() => resolveBackendPlatform(missingComponentLine, options), /component_platform_line/);
   contract.platform_configuration = binding;
   assert.throws(() => assertContractPlatform({ ...contract, profiles: { ...contract.profiles, validation_namespace: "javax" } }, null, options), /namespace/);
   assert.throws(() => assertContractPlatform(contract, { platform_configuration: { ...binding, java_version: 21 } }, options), /decision\/contract/);
@@ -204,6 +229,8 @@ test("component capabilities are nested by registry capability id and uncertifie
   assert.equal(catalog.compatibility.length, 2);
   const entry = catalog.compatibility[0];
   assert.equal(entry.profile_id, "spring-boot-2.7-jdk8");
+  assert.equal(catalog.profiles.find(item => item.id === entry.profile_id).component_platform_line, "boot2-java8");
+  assert.equal(platformBinding(catalog.profiles.find(item => item.id === entry.profile_id), entry).component_platform_line, "boot2-java8");
   assert.equal(entry.status, "blocked");
   assert.equal(entry.artifact_resolution_evidence.report_id, "aliyun-maven-artifact-resolution-2026-09-18");
   assert.match(entry.artifact_resolution_evidence.digest, /^sha256:[a-f0-9]{64}$/);
@@ -271,6 +298,8 @@ test("component capabilities are nested by registry capability id and uncertifie
   for (const profile of catalog.profiles.filter(item => !["spring-boot-2.7-jdk8", "spring-boot-3.5-jdk17"].includes(item.id))) {
     assert.equal(catalog.compatibility.some(item => item.profile_id === profile.id), false);
     assert.match(profile.candidate_blockers.join("\n"), /component-unavailable-for-platform/);
+    if (profile.spring_boot_version.startsWith("3.")) assert.equal(profile.component_platform_line, "boot3-java17");
+    else assert.equal(profile.component_platform_line, undefined);
   }
 });
 
@@ -450,6 +479,7 @@ test("backend-platforms require-profile exposes nested component blockers and ex
   assert.equal(output.schema_version, 2);
   assert.equal(output.requested_profile, "spring-boot-2.7-jdk8");
   assert.equal(output.required_profile.selectable, false);
+  assert.equal(output.required_profile.component_platform_line, "boot2-java8");
   assert.equal(Object.keys(output.required_profile.combinations[0].component_capabilities).length, 11);
   assert.equal(output.required_profile.combinations[0].component_status.blocked, 11);
   assert.match(output.required_profile.combinations[0].component_capabilities["contract.dto-wire"].blockers.join("\n"), /component-evidence-missing/);
@@ -457,7 +487,9 @@ test("backend-platforms require-profile exposes nested component blockers and ex
 
   const boot3Result = spawnSync(path.resolve("scripts/backend-platforms"), ["--require-profile", "spring-boot-3.5-jdk17"], { encoding: "utf8" });
   assert.equal(boot3Result.status, 1);
-  const boot3 = JSON.parse(boot3Result.stdout).required_profile.combinations[0];
+  const boot3Output = JSON.parse(boot3Result.stdout).required_profile;
+  assert.equal(boot3Output.component_platform_line, "boot3-java17");
+  const boot3 = boot3Output.combinations[0];
   assert.equal(boot3.component_capabilities["contract.request-validation"].provider_kind, "platform-managed");
   assert.deepEqual(boot3.external_snapshot_bindings, []);
   assert.equal(boot3.external_artifact_bindings[0].declared_version, "2.0.2-incubating");

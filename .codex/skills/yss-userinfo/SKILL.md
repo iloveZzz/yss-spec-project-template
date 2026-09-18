@@ -1,6 +1,6 @@
 ---
 name: yss-userinfo
-description: "接入或排查 YSS AuthUserInfoUtil、用户头透传、JWT、Redis 用户缓存与后台用户上下文。"
+description: "接入或排查 YSS CurrentUserProvider、已认证 SecurityContext、受信网关头适配与后台用户上下文。"
 ---
 
 # yss-userinfo
@@ -19,33 +19,36 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 
 ## Workflow
 
-1. Identify whether the task is current-user lookup, request header propagation, JWT parsing, Redis user cache lookup, or non-REST/background fallback behavior.
-2. Read `references/source-index.md`, then inspect `AuthUserInfoUtil`, `DmUser`, and `DmUserDetails`.
-3. Prefer `AuthUserInfoUtil.userInfo()`, `userName()`, `userCode()`, or `currentUserJson()` over manually parsing headers in business code, but treat the result as propagated context, not as JWT signature verification.
-4. Check lookup order before debugging: `X-Username`/`X-Usercode`/`X-LoginDisplayName` headers, Bearer JWT payload, then Redis cache via `CacheManagerCompose`.
-5. For scheduled/background tasks, expect fallback behavior such as default `system` user unless the caller explicitly provides context.
+1. 先按已批准平台线读取对应索引；以下当前行为针对 `boot3-java17`，Boot 2 旧工程只按其独立索引做只读分诊和迁移。
+2. Identify whether the task is authenticated current-user lookup, an explicitly trusted gateway adapter, a custom `CurrentUserProvider`, or non-REST/background fallback behavior.
+3. Read `references/source-index.md`, then inspect `CurrentUserProvider`, `SecurityContextCurrentUserProvider`, `TrustedGatewayHeaderCurrentUserProvider`, `AuthUserInfoUtil`, `DmUser`, and `DmUserDetails`.
+4. 默认使用 `SecurityContextCurrentUserProvider`，只消费 Spring Security 已认证且非 anonymous 的 `Authentication`。JWT 的 signature、issuer、audience、expiry 与算法校验必须在资源服务器认证链完成。
+5. `AuthUserInfoUtil` 是由 `CurrentUserProvider` 驱动的兼容 facade；业务代码可继续调用 `userInfo()`、`userName()`、`userCode()` 或 `currentUserJson()`，但不得自行解析 Header、JWT payload 或 Redis 身份缓存。
+6. 只有显式启用 `yss.userinfo.trusted-gateway.enabled` 且配置非空 `trusted-proxies` 时，才启用 `TrustedGatewayHeaderCurrentUserProvider`；它只接受 remote address 在 allow-list 中的请求，并且 SecurityContext 结果优先。
+7. For scheduled/background tasks, an empty provider result causes the compatibility facade to return the distinct `system` fallback; do not represent it as an authenticated system principal.
 
 ## Source-Backed Notes
 
-- Header names include `X-Username`, `X-Usercode`, and `X-LoginDisplayName`.
-- Bearer token parsing reads payload fields such as `sub`, `loginDisplayName`, `email`, and `userCode` without verifying signature/issuer/audience/expiry in this utility. Authentication decisions must use a verified security context.
-- The current source has a known reversed `userCode` header assignment condition; do not claim that header path is reliable until fixed and tested.
-- Redis cache lookup uses the JWT user-info cache key path; load `yss-cache` if changing cache behavior.
+- `SecurityContextCurrentUserProvider` supports a `UserInfo` principal and an authenticated `OAuth2AuthenticatedPrincipal`; claim mapping happens only after authentication.
+- Trusted gateway header names are `X-Username`, `X-Usercode`, and `X-LoginDisplayName`; the adapter requires a trusted proxy allow-list and a nonblank username.
+- `UserInfoAutoConfiguration` installs SecurityContext as the default and composes the optional gateway provider behind it. A project-supplied `CurrentUserProvider` remains the explicit extension seam.
+- The Boot 3 component does not parse an unverified Bearer payload and does not use Redis as an authentication fallback. Cache behavior is outside this identity provider contract.
 
 ## Checklist
 
 - Required dependency or starter module is present.
 - Request context exists before relying on servlet headers.
-- Gateway/auth service forwards expected user headers or Authorization token.
-- Cache fallback is checked when headers exist but detailed user info is incomplete.
-- Business code does not duplicate JWT parsing logic.
-- Header/JWT/cache/background precedence and overwrite behavior are covered by tests; `system` fallback is distinguished from an authenticated system user.
+- Spring Security has authenticated the request before the provider reads the principal.
+- When trusted gateway mode is enabled, at least one proxy address is allow-listed and untrusted remote addresses are rejected.
+- Business code does not duplicate JWT or header parsing logic.
+- SecurityContext/gateway/background precedence and empty-result behavior are covered by tests; `system` fallback is distinguished from an authenticated system user.
 - User info propagation is tested for REST calls and async/background execution separately.
 
 ## Do Not
 
 - Do not invent class names or configuration keys without checking the source index.
 - Do not replace component extension points with business-local framework code.
+- Do not treat raw `Authorization` payloads or gateway headers as authenticated identity.
 - Do not broaden the task into unrelated YSS components unless the user asks.
 
 ## 平台与源码门禁

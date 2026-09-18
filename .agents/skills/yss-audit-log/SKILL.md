@@ -18,7 +18,7 @@ description: "接入或排查 YSS AuditLog 的 SpEL 摘要、异步发布、订�
 1. 先确认用户是在做“接入”还是“排障”。
 2. 涉及真实类名、配置项、订阅器或排障时，先读 `references/source-index.md`，再定位源码或文档。
 3. 优先检查项目里是否已有注解、配置项和订阅器实现，再决定改法。
-4. 只给出与当前问题直接相关的接入点：注解、配置、切面链路、订阅器扩展。
+4. 只给出与当前问题直接相关的接入点：注解、配置、切面链路、`CurrentUserProvider` 和订阅器扩展。
 5. 需要看实现细节时，再读取 `assets/` 下源码，不要先讲整套组件原理。
 
 ## 源码索引
@@ -34,23 +34,24 @@ description: "接入或排查 YSS AuditLog 的 SpEL 摘要、异步发布、订�
 - 启动类是否启用了类似 `@EnableAuditLog` 的能力。
 - 目标方法是否是可被 AOP 代理拦截的 Spring Bean 方法。
 - `@AuditLog` 是否标在正确的方法上。
-- `summary` 中的 SpEL 变量必须使用源码实际暴露的 context keys (`参数审计` / `结果审计`)；方法参数名不会自动进入 context。
-- 当前源码的变量正则只接受 ASCII 字母、数字、下划线和路径符号，不能可靠识别中文 context key；涉及 `#{参数审计...}` / `#{结果审计...}` 时先标记 `blocked`，除非组件修复并有表达式测试，不要声称摘要会被解析。
-- 项目编译参数是否保留了参数名。
+- `boot3-java17` 的 SpEL 根上下文只暴露 ASCII key：`args` 和 `result`；例如 `#{args[0]}`、`#{result[name]}`。方法参数名不会自动进入上下文。
+- `args` 仅在 `@AuditLog(isNeedArgs = true)` 时写入，`result` 仅在 `isNeedResult = true` 时写入；表达式引用未启用的 key 属于配置错误，必须由组件 seam 测试覆盖。
+- `boot3-java17` 不再使用中文 context key，也不得把 Boot 2 的历史模板直接复制到 Boot 3。处理旧模板时先读取所选平台线索引并显式迁移。
 - `yss.audit.enabled` 是否开启；`sendSysManageEnabled` 与 `auditLogPrintEnabled` 在当前实现中不会自动阻止订阅器注册，需按源码验证，不能假设开关生效。
+- 审计身份由 `CurrentUserProvider` 提供；不得在审计切面中重新解析 Header 或未验签 JWT。
 
 ## 排障顺序
 
 1. 注解是否生效。
 2. 切面是否拦截到方法。
-3. SpEL 是否能从参数和返回值取到值。
+3. SpEL 是否能从已启用的 `args` / `result` 取到值。
 4. 发布服务是否成功入队。
 5. 订阅器是否被 Spring 扫描并注册。
 6. 下游系统管理或打印订阅器是否被开关禁用。
 7. 异步线程池或事件发布异常是否被吞掉。
-8. 参数名、返回值字段、异常分支是否满足摘要模板。
+8. 参数位置、返回值字段、异常分支是否满足摘要模板。
 
-审计切面当前是 `@AfterReturning`，只记录成功返回；异常审计、参数脱敏、队列满丢弃、线程池关闭、重试和幂等必须单独设计并测试。
+`boot3-java17` 审计切面当前是 `@AfterReturning`，只记录成功返回；异常审计、参数脱敏、队列满丢弃、线程池关闭、重试和幂等必须单独设计并测试。组件测试至少覆盖 `#{result[name]}`、`args` / `result` 资源写入和可信身份来源。
 
 ## 修改约束
 

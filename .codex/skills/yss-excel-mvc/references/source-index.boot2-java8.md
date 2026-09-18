@@ -2,7 +2,7 @@
 
 Index schema: `backend-component-source-index-v2`
 Platform line: `boot2-java8`
-Generated: 2026-09-18T18:40:26.031Z
+Generated: 2026-09-18T19:31:25.688Z
 Source commit: `a3be2b2e33dca4545782e2b31894aaa00d0305cd`
 Component worktree: `clean`
 Component tree `yss-microservice-components/yss-component-excel-mvc`: `acc02f7747905f715708dfe029c3f66a8457e3a5`

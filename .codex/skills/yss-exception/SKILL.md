@@ -27,12 +27,14 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 6. In the `target-domain-model` profile, Domain owns stable error meaning and parameters but does not depend directly on YSS `BizException` or HTTP. Translate at the Web boundary after verifying the component handler precedence.
 7. MVC Profile 的稳定业务错误归 service/core；Repository 保留 cause；server 持有 HTTP 映射与脱敏。不要为了复用错误码引入 Domain 层或让 core 依赖 client。分层依据 `docs/agents/backend-architecture-profiles.md`。
 
-## Current Source Behavior
+## Boot 3 Current Source Behavior
 
-- `GlobalExceptionAdvice` currently maps BizException, unknown Exception, and RuntimeException to HTTP 400; the OpenAPI error contract must reflect or deliberately override that behavior.
-- The current RuntimeException handler returns `exception.getLocalizedMessage()` for many runtime failures; treat that as a response-information-leak risk and do not copy it into new APIs without an approved, sanitized error mapping.
-- `yss.exception.level` only controls a direct `printStackTrace()` branch when its value is exactly `debug`; it is not a general response-format switch.
-- Validation binding failures currently become `SysException(PARAM_VALIDATION_ERROR)`. Coordinate changes with `yss-validation` and contract tests.
+- 以下当前行为针对 `boot3-java17`；Boot 2 旧工程必须读取其独立索引，旧行为只用于迁移识别。
+- `GlobalExceptionAdvice` maps `BizException` to HTTP 400. Unknown `Exception`, `RuntimeException`, and `NullPointerException` map to HTTP 500 and return a sanitized `SysException` with `ResultErrorCode.INTERNAL_ERROR` instead of raw exception text.
+- `MaxUploadSizeExceededException` maps to HTTP 413 (`PAYLOAD_TOO_LARGE`) with `ResultErrorCode.MAX_UPLOAD_SIZE_EXCEEDED`.
+- System and unknown failures are recorded with the SLF4J logger. `yss.exception.level=debug` adds a logger-backed debug stack trace; it never calls `Throwable#printStackTrace()`.
+- Every handled response attaches or reuses a trace id in MDC and exposes it through the `X-Trace-Id` response header. The public body does not contain the raw localized exception or stack trace.
+- Validation binding failures become `SysException(PARAM_VALIDATION_ERROR)`. Coordinate changes with `yss-validation` and contract tests.
 
 ## Source-Backed Exception Semantics
 
@@ -45,11 +47,12 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 - Required dependency or starter module is present.
 - Error code/message are meaningful to API consumers.
 - Response messages are sanitized and do not expose raw RuntimeException or localized exception details.
+- HTTP assertions cover business 4xx, unknown/runtime 5xx, upload 413, and `X-Trace-Id`.
 - Business validation failures are not reported as unknown system errors.
-- Stack traces are preserved for unknown/system failures.
+- Stack traces are preserved in structured logger output for unknown/system failures, never printed directly to stderr or serialized to clients.
 - Retry guidance matches exception type.
 - Known system failures use `ExceptionFactory.sysException(..., cause)`; Application code does not replace them with ad-hoc `RuntimeException`.
-- Endpoint contract tests cover business, known-system, and unknown/runtime failures; unknown public messages never expose `getLocalizedMessage()`.
+- Endpoint contract tests cover business, known-system, unknown/runtime, and upload-limit failures; unknown public messages never expose `getLocalizedMessage()`.
 
 ## Do Not
 
