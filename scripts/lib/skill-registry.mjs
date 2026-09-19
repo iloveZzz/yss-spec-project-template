@@ -6,7 +6,11 @@ import { nestedSkillPaths, OBSOLETE, PROJECTION_ROOTS, ROOT, unregisteredNestedS
 export const DEFAULT_REGISTRY = path.join(ROOT, "docs/agents/yss-skill-registry.yaml");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
 const COMPILER_CONTRACT = path.join(ROOT, ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml");
-const LIFECYCLE_CONTRACT = path.join(ROOT, ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml");
+const LIFECYCLE_CONTRACT = [
+  path.join(ROOT, ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"),
+  path.join(ROOT, ".agents/skills/harness-orchestrator/references/orchestration-contract.yaml"),
+].find((candidate) => existsSync(candidate))
+  ?? path.join(ROOT, ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml");
 const BACKEND_PLATFORMS = path.join(ROOT, "docs/engineering/backend-platforms.json");
 const LAYERS = new Set(["core", "specialist", "compatibility", "maintainer-only"]);
 const MATURITIES = new Set(["draft", "verified", "supported", "deprecated"]);
