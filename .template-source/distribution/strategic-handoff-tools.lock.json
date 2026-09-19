@@ -2,7 +2,7 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "92fe58c347af008ad778ab8c90e99344ea46943d",
+  "source_revision": "85b9505b3ce7cd3f18e5e6179451873b3fb1805a",
   "source_state": "committed",
   "transformation_set": [
     "identity"
@@ -67,7 +67,7 @@
     "scripts/fixtures/strategic-handoff/base-stage.json": "sha256:2df5dbea262cf2bee39972da58e3e0fab844615e272d1e7c8ec2d262bcf486dd",
     "scripts/fixtures/strategic-handoff/base-strategy.json": "sha256:f0e2979af57aca8b33277e8f4fd043c16935c2b037f3562a7e4108c90fab2d3e",
     "scripts/fixtures/strategic-handoff/fixture.mjs": "sha256:7c1f8d879cfaf6a3f6651c01503d70ff7062d254c43f3f50c296c55ecc4c039a",
-    "scripts/fixtures/strategic-handoff/source-roles.json": "sha256:3f53ac405ebc45bef6dee1e283f62c5f2a4a5ad7ae3c7d3790897b48e74cea7a",
+    "scripts/fixtures/strategic-handoff/source-roles.json": "sha256:23992ea9d2d79576d1f0e8c31a62090c6c08a7748c966543063408e054e32421",
     "scripts/fixtures/user-decision/build-fixture.mjs": "sha256:0aa49bd3eb10a504094bc1c9855543b652cc68b1e9e94d7d043586a4cd05e0ef",
     "scripts/instantiate-harness": "sha256:065e2ba223752f4a81a48f31eea41625e9f638547605ff4736297f38b0a0a8e0",
     "scripts/lib/approved-execution-context.mjs": "sha256:dbbf64a893091e582f815c3951c32a34b78db4394f4fb949f7f49af7bf70fc56",
@@ -88,8 +88,8 @@
     "scripts/lib/implementation-contract-compiler.mjs": "sha256:3dd6adc0c385b912b8d3caa9f268b4974ad8cf6badabd002ba8dcc9fd148f5f4",
     "scripts/lib/json-schema.mjs": "sha256:007e39300478da6f0e359d822642f7a6aaf2466ee5781bd81924cf5897eebc72",
     "scripts/lib/scaffold-local-database.mjs": "sha256:66d47c11698b36ff57e4f37577c6f83ea3a6590f4b9ab6862833bd991fde3662",
-    "scripts/lib/skill-registry.mjs": "sha256:ba4ffe37b440b91639ef090f204acebdb822cba57cc187634af67b5407bf2601",
-    "scripts/lib/skill-supply-chain.mjs": "sha256:5e70b6c1b73587524a8280e8a4509a951ec956118b05ac0b681364b65a58a111",
+    "scripts/lib/skill-registry.mjs": "sha256:cb03fd0e0f9a808980a1a89b24d1de20910a255b5922020de74fe31f66a100ba",
+    "scripts/lib/skill-supply-chain.mjs": "sha256:5500b36276ebe1712c37d80d8e2c55725c1309aafc7649b044cf8898c07bea52",
     "scripts/lib/slice-applicability.mjs": "sha256:c899fd31a39e3a4237a4a21e13c5fa718b319b792b6365b23b602cf792281e1c",
     "scripts/lib/slice-contract-preparation.mjs": "sha256:15ee8f4e567b0b4cc209d60be6f7d9ca9e8d5dca7f0b1e9b104443604184d1de",
     "scripts/lib/slice-contract-views.mjs": "sha256:6b8b3803b520ac68e880fffcff155b443d2117efc2cbbc758b021563f2ff4751",
@@ -126,7 +126,7 @@
     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
     "scripts/verify-strategic-handoff-package-scenarios": "sha256:35f5ccf55f11e59848e53a865acba6a66ba9e8ab45d4c2ccc592e1d03660f892",
     "scripts/verify-strategic-handoff-tools-lock": "sha256:7b413ccc4ab4dc606113ec9e3f51ddac0d2045a761b18130483a70118c566d9b",
-    "docs/agents/yss-skill-registry.yaml": "sha256:86eb4adbac7c0d7979eb85557060b32afdfacd14fd22d66278d7e4bf573ea827"
+    "docs/agents/yss-skill-registry.yaml": "sha256:2b491bbb10dfb8d5e8a382e2c8b7ca8125f5cbb56648e4b9dcf41cc847119e6e"
   },
   "effective_files": {
     "docs/agents/backend-architecture-profiles.md": "sha256:009172fe0d456ad40fc82637bfde800fc3b1ece0b9b5696e215cfc528dc96eea",
@@ -188,7 +188,7 @@
     "scripts/fixtures/strategic-handoff/base-stage.json": "sha256:2df5dbea262cf2bee39972da58e3e0fab844615e272d1e7c8ec2d262bcf486dd",
     "scripts/fixtures/strategic-handoff/base-strategy.json": "sha256:f0e2979af57aca8b33277e8f4fd043c16935c2b037f3562a7e4108c90fab2d3e",
     "scripts/fixtures/strategic-handoff/fixture.mjs": "sha256:7c1f8d879cfaf6a3f6651c01503d70ff7062d254c43f3f50c296c55ecc4c039a",
-    "scripts/fixtures/strategic-handoff/source-roles.json": "sha256:3f53ac405ebc45bef6dee1e283f62c5f2a4a5ad7ae3c7d3790897b48e74cea7a",
+    "scripts/fixtures/strategic-handoff/source-roles.json": "sha256:23992ea9d2d79576d1f0e8c31a62090c6c08a7748c966543063408e054e32421",
     "scripts/fixtures/user-decision/build-fixture.mjs": "sha256:0aa49bd3eb10a504094bc1c9855543b652cc68b1e9e94d7d043586a4cd05e0ef",
     "scripts/instantiate-harness": "sha256:065e2ba223752f4a81a48f31eea41625e9f638547605ff4736297f38b0a0a8e0",
     "scripts/lib/approved-execution-context.mjs": "sha256:dbbf64a893091e582f815c3951c32a34b78db4394f4fb949f7f49af7bf70fc56",
@@ -209,8 +209,8 @@
     "scripts/lib/implementation-contract-compiler.mjs": "sha256:3dd6adc0c385b912b8d3caa9f268b4974ad8cf6badabd002ba8dcc9fd148f5f4",
     "scripts/lib/json-schema.mjs": "sha256:007e39300478da6f0e359d822642f7a6aaf2466ee5781bd81924cf5897eebc72",
     "scripts/lib/scaffold-local-database.mjs": "sha256:66d47c11698b36ff57e4f37577c6f83ea3a6590f4b9ab6862833bd991fde3662",
-    "scripts/lib/skill-registry.mjs": "sha256:ba4ffe37b440b91639ef090f204acebdb822cba57cc187634af67b5407bf2601",
-    "scripts/lib/skill-supply-chain.mjs": "sha256:5e70b6c1b73587524a8280e8a4509a951ec956118b05ac0b681364b65a58a111",
+    "scripts/lib/skill-registry.mjs": "sha256:cb03fd0e0f9a808980a1a89b24d1de20910a255b5922020de74fe31f66a100ba",
+    "scripts/lib/skill-supply-chain.mjs": "sha256:5500b36276ebe1712c37d80d8e2c55725c1309aafc7649b044cf8898c07bea52",
     "scripts/lib/slice-applicability.mjs": "sha256:c899fd31a39e3a4237a4a21e13c5fa718b319b792b6365b23b602cf792281e1c",
     "scripts/lib/slice-contract-preparation.mjs": "sha256:15ee8f4e567b0b4cc209d60be6f7d9ca9e8d5dca7f0b1e9b104443604184d1de",
     "scripts/lib/slice-contract-views.mjs": "sha256:6b8b3803b520ac68e880fffcff155b443d2117efc2cbbc758b021563f2ff4751",
@@ -247,6 +247,6 @@
     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
     "scripts/verify-strategic-handoff-package-scenarios": "sha256:35f5ccf55f11e59848e53a865acba6a66ba9e8ab45d4c2ccc592e1d03660f892",
     "scripts/verify-strategic-handoff-tools-lock": "sha256:7b413ccc4ab4dc606113ec9e3f51ddac0d2045a761b18130483a70118c566d9b",
-    "docs/agents/yss-skill-registry.yaml": "sha256:86eb4adbac7c0d7979eb85557060b32afdfacd14fd22d66278d7e4bf573ea827"
+    "docs/agents/yss-skill-registry.yaml": "sha256:2b491bbb10dfb8d5e8a382e2c8b7ca8125f5cbb56648e4b9dcf41cc847119e6e"
   }
 }
