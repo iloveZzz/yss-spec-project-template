@@ -251,6 +251,9 @@
           "id": "yss-up-springboot3"
         },
         {
+          "id": "yss-skill-source-index-refresh"
+        },
+        {
           "id": "yss-userinfo"
         },
         {
@@ -340,6 +343,9 @@
           "source": "docs/templates/examples/lifecycle-writing-examples.md"
         },
         {
+          "source": ".template-source/evidence/maintenance/2026-09-18-yss-backend-components/aliyun-artifact-resolution.json"
+        },
+        {
           "source": ".agents/skills/yss-technical-design/references/technical-design.schema.json"
         },
         {
@@ -347,6 +353,9 @@
         },
         {
           "source": ".agents/skills/yss-technical-design/references/technical-design-common.schema.json"
+        },
+        {
+          "source": ".agents/skills/yss-technical-design/references/mvc-design.schema.json"
         },
         {
           "source": ".agents/skills/yss-technical-design/references/engineering-design.schema.json"
@@ -432,7 +441,6 @@
         "yss-mvc-data-analysis-project-initializer",
         "yss-openapi-draft-review",
         "yss-product-lifecycle",
-        "yss-skill-source-index-refresh",
         "yss-stage-decision",
         "yss-ui"
       ],
@@ -595,6 +603,9 @@
         },
         {
           "source": "docs/templates/examples/lifecycle-writing-examples.md"
+        },
+        {
+          "source": ".template-source/evidence/maintenance/2026-09-18-yss-backend-components/aliyun-artifact-resolution.json"
         },
         {
           "source": "DESIGN.md"

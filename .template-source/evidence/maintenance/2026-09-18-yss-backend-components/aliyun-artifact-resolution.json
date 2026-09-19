@@ -1,0 +1,446 @@
+{
+  "schema_version": 1,
+  "kind": "backend-component-artifact-resolution",
+  "report_id": "aliyun-maven-artifact-resolution-2026-09-18",
+  "generated_at": "2026-09-18T22:46:00+08:00",
+  "status": "resolved-with-blockers",
+  "settings_ref": "~/.m2/settings.xml",
+  "settings_usage": "configuration-evidence-only",
+  "credentials_recorded": false,
+  "repository": {
+    "id": "2306938-snapshot-Yloqmt",
+    "url": "https://packages.aliyun.com/6381d2a25db8487f76c8149c/maven/2306938-snapshot-yloqmt"
+  },
+  "resolution_command": "./mvnw -N -U -s ~/.m2/settings.xml org.apache.maven.plugins:maven-dependency-plugin:3.6.1:get -Dartifact=<GAV> -Dtransitive=false",
+  "source_root": "isolated-worktree",
+  "source_commit": "a3be2b2e33dca4545782e2b31894aaa00d0305cd",
+  "artifacts": [
+    {
+      "capability_id": "contract.dto-wire",
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-dto",
+      "declared_version": "2.0.0-SNAPSHOT",
+      "repository_id": "2306938-snapshot-Yloqmt",
+      "metadata_sha256": "feff02992897c622c6403cfa9546c4a61d17e9d00de8f539d79065b956bf240e",
+      "resolved_version": "2.0.0-20260916.162843-1",
+      "jar_sha256": "65d05ae596242fb683f29938d0d5f0247a445ff4a24cb03618f14622b41fa5a3",
+      "pom_sha256": "5653ee0785cc005efa9dfb626a00bc43a26c411f78a87da3c2efaa2fbac7c181",
+      "sources_sha256": "65d4b5d09ca77b6fca3c009ead2f7f170bcaf1f4b26f5708eaf7d49c26522366",
+      "module_path": "yss-microservice-components/yss-component-dto",
+      "source_tree": "3add70b98d26f6534a4ebf7d9b09d74790ea60a5",
+      "sources_published_by_repository": true,
+      "sources_match_source_tree": true,
+      "source_mismatch": {
+        "missing": [],
+        "extra": [],
+        "changed": []
+      },
+      "pom_matches_source_tree": true,
+      "build_jdk_spec": "1.8",
+      "namespace_signals": {
+        "javax": false,
+        "jakarta": false
+      },
+      "auto_configuration": {
+        "spring_factories": false,
+        "auto_configuration_imports": false
+      },
+      "component_subtree_clean": true,
+      "worktree_change_count": 0,
+      "blockers": []
+    },
+    {
+      "capability_id": "contract.request-validation",
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-validation-jsr303",
+      "declared_version": "2.0.0-SNAPSHOT",
+      "repository_id": "2306938-snapshot-Yloqmt",
+      "metadata_sha256": "90ca51bd3b376e21e0043c48cae842d231479045d20518c708a87ada770c451c",
+      "resolved_version": "2.0.0-20260916.163229-1",
+      "jar_sha256": "5a3a73e3ddd24cceb23ddd27680107952ac3cb030bd36ef1db243dacb0bedcc1",
+      "pom_sha256": "f0aef77e7b1f9e853cc7527b3977d29410cf7f953c3f19691ff6d788791b2a48",
+      "sources_sha256": "d1b538b9c6387a1da5158ef8f469017c1a4bc6f1c2f259374e47527ae7442d56",
+      "module_path": "yss-microservice-components/yss-component-validation-jsr303",
+      "source_tree": "fe5b36afb474afa41541fe1187a6828bdae080dc",
+      "sources_published_by_repository": true,
+      "sources_match_source_tree": true,
+      "source_mismatch": {
+        "missing": [],
+        "extra": [],
+        "changed": []
+      },
+      "pom_matches_source_tree": true,
+      "build_jdk_spec": "1.8",
+      "namespace_signals": {
+        "javax": true,
+        "jakarta": false
+      },
+      "auto_configuration": {
+        "spring_factories": false,
+        "auto_configuration_imports": false
+      },
+      "component_subtree_clean": true,
+      "worktree_change_count": 0,
+      "blockers": []
+    },
+    {
+      "capability_id": "contract.error-mapping",
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-exception",
+      "declared_version": "2.0.0-SNAPSHOT",
+      "repository_id": "2306938-snapshot-Yloqmt",
+      "metadata_sha256": "f8ae4611bfdc80ee23b89ff626712c0586a95495f4aa0c7c89dc9a4f76c5d2c4",
+      "resolved_version": "2.0.0-20260916.162932-1",
+      "jar_sha256": "520363b8ced9df0c6a664a6abb5eec6439818ccae0d92de77184d229e64b6732",
+      "pom_sha256": "d51a60e37a97a686c295bb1d5001b376e939698eac256eb6b8cd4eee55ae68b3",
+      "sources_sha256": "ae75fb5bf395fcdd166db011dd597388f7461f252a473c0b39f169632608a090",
+      "module_path": "yss-microservice-components/yss-component-exception",
+      "source_tree": "e5d71e213f26cd7e52d419ded1c2f5e7b7fbf40b",
+      "sources_published_by_repository": true,
+      "sources_match_source_tree": true,
+      "source_mismatch": {
+        "missing": [],
+        "extra": [],
+        "changed": []
+      },
+      "pom_matches_source_tree": true,
+      "build_jdk_spec": "1.8",
+      "namespace_signals": {
+        "javax": true,
+        "jakarta": false
+      },
+      "auto_configuration": {
+        "spring_factories": true,
+        "auto_configuration_imports": false
+      },
+      "component_subtree_clean": false,
+      "worktree_change_count": 5,
+      "blockers": [
+        "candidate-not-published: isolated hardening worktree differs from the resolved artifact"
+      ]
+    },
+    {
+      "capability_id": "framework.mybatis",
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-mybatis-plus-starter",
+      "declared_version": "2.0.0-SNAPSHOT",
+      "repository_id": "2306938-snapshot-Yloqmt",
+      "metadata_sha256": "6c5be1e763f10f97d4c7ddbdbd911ef9154d06dccc1ac60dab0c08ada71cbc61",
+      "resolved_version": "2.0.0-20260916.162918-1",
+      "jar_sha256": "bdb2a477bef0825e2bc668c242f83e75b72f6ee5d9f34b3edfdb887481ff2a05",
+      "pom_sha256": "51e036bc15fcf79e38c5656d056731c78385750adf700bcf885d7a0954bb9ff9",
+      "sources_sha256": "be55556c98042e2c1abbe089c235c7e364b55990dc32d0f54ac328a0eb717939",
+      "module_path": "yss-microservice-components/yss-component-persistence/yss-component-mybatis-plus-starter",
+      "source_tree": "03e29e6d74cf0b2bc8e4b879f7252766fb607356",
+      "sources_published_by_repository": true,
+      "sources_match_source_tree": true,
+      "source_mismatch": {
+        "missing": [],
+        "extra": [],
+        "changed": []
+      },
+      "pom_matches_source_tree": true,
+      "build_jdk_spec": "1.8",
+      "namespace_signals": {
+        "javax": true,
+        "jakarta": false
+      },
+      "auto_configuration": {
+        "spring_factories": true,
+        "auto_configuration_imports": false
+      },
+      "component_subtree_clean": true,
+      "worktree_change_count": 0,
+      "blockers": []
+    },
+    {
+      "capability_id": "component.cache",
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-cache-starter",
+      "declared_version": "3.0.0-SNAPSHOT",
+      "repository_id": "2306938-snapshot-Yloqmt",
+      "metadata_sha256": "8d8130760288af01085e3fbc8ecdf3e66e0b892d56654faa9edbf6c46bb5ee4c",
+      "resolved_version": "3.0.0-20260916.163035-1",
+      "jar_sha256": "1631b4e5bc64d0d59727f3988366962c4bbc9fc368581f359e89aed757fe10c2",
+      "pom_sha256": "55b57d85d2b21fe4ec3ca2536631b4a0c850a06a891e9104f620e9b8160b8bda",
+      "sources_sha256": null,
+      "module_path": "yss-microservice-components/yss-component-cache-parent/yss-component-cache-starter",
+      "source_tree": "da5acccf1450fe48014ffff36d2ad212119a33a2",
+      "sources_published_by_repository": false,
+      "sources_match_source_tree": null,
+      "pom_matches_source_tree": true,
+      "build_jdk_spec": "1.8",
+      "namespace_signals": {
+        "javax": false,
+        "jakarta": false
+      },
+      "auto_configuration": {
+        "spring_factories": false,
+        "auto_configuration_imports": false
+      },
+      "component_subtree_clean": true,
+      "worktree_change_count": 0,
+      "blockers": [
+        "source-binding-missing: repository metadata does not publish a sources JAR",
+        "component-platform-generation-mismatch: published 3.x artifact was built with JDK 8 and belongs to the Boot 2 generation"
+      ]
+    },
+    {
+      "capability_id": "component.current-user-context",
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-userinfo-starter",
+      "declared_version": "2.0.0-SNAPSHOT",
+      "repository_id": "2306938-snapshot-Yloqmt",
+      "metadata_sha256": "6562cde961b7f588200bf7ccc000eeb499863a94d2d7818e882e1a66b10c8491",
+      "resolved_version": "2.0.0-20260916.163623-1",
+      "jar_sha256": "cf85f2c6528c06adb296dd9c050b954fa33e6316fb22cdb2c57db5a59acf10c9",
+      "pom_sha256": "a56c3ed0e65f96ab81f8ebca378b70ad684b0c78e7a83e661aa5cef8912dbe0c",
+      "sources_sha256": "8941410b7a545e6ab8c9135a29dc7fb79d5408867ec1e941ca5af84ac992639c",
+      "module_path": "yss-microservice-components/yss-component-userinfo-starter",
+      "source_tree": "fc77d57e0be6ee81b10247c0746baed6a09c6bb4",
+      "sources_published_by_repository": true,
+      "sources_match_source_tree": true,
+      "source_mismatch": {
+        "missing": [],
+        "extra": [],
+        "changed": []
+      },
+      "pom_matches_source_tree": true,
+      "build_jdk_spec": "1.8",
+      "namespace_signals": {
+        "javax": true,
+        "jakarta": false
+      },
+      "auto_configuration": {
+        "spring_factories": false,
+        "auto_configuration_imports": false
+      },
+      "component_subtree_clean": false,
+      "worktree_change_count": 5,
+      "blockers": [
+        "candidate-not-published: isolated hardening worktree differs from the resolved artifact"
+      ]
+    },
+    {
+      "capability_id": "component.audit-log",
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-audit-log",
+      "declared_version": "2.0.0-SNAPSHOT",
+      "repository_id": "2306938-snapshot-Yloqmt",
+      "metadata_sha256": "ba24c144ae630df1f0c0bc4dae467decebe03e3f21d483ab22b8d2a4a7aef803",
+      "resolved_version": "2.0.0-20260916.163223-1",
+      "jar_sha256": "01dd17d7fdf10bf1eef04957d59cf74f3b3abf2fbcf9bba6a1719055a537fb44",
+      "pom_sha256": "1eb2d2d1495ddc539e033c55a8cf4981427c9d054936a8dc09e794d81e5ddc9b",
+      "sources_sha256": "3483a0f158875f83beac1a46e098d75513d36d45ee77bff76033cffe28be5f84",
+      "module_path": "yss-microservice-components/yss-component-audit-log",
+      "source_tree": "d00f2e156714e43e8ec70b28e0bd33967d130485",
+      "sources_published_by_repository": true,
+      "sources_match_source_tree": true,
+      "source_mismatch": {
+        "missing": [],
+        "extra": [],
+        "changed": []
+      },
+      "pom_matches_source_tree": true,
+      "build_jdk_spec": "1.8",
+      "namespace_signals": {
+        "javax": true,
+        "jakarta": false
+      },
+      "auto_configuration": {
+        "spring_factories": false,
+        "auto_configuration_imports": false
+      },
+      "component_subtree_clean": true,
+      "worktree_change_count": 0,
+      "blockers": []
+    },
+    {
+      "capability_id": "component.excel-import-export",
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-excel-starter",
+      "declared_version": "2.0.0-SNAPSHOT",
+      "repository_id": "2306938-snapshot-Yloqmt",
+      "metadata_sha256": "4e91090c8c13ceb3d775909b60b3e1ea236b812d3afd8ed39754ef6a61a3c2c9",
+      "resolved_version": "2.0.0-20260916.163244-1",
+      "jar_sha256": "1d5523b7b134c1bf63094ab274fa8d79fbea7c4e752cf434ef4b43a25ed86ce3",
+      "pom_sha256": "f106de25eef3c6b4a83dd5a5558cfc2e906b5a210b917638f26289be4019f466",
+      "sources_sha256": "a7077ca1c680800fec6d0c95e3a6563066d993f4495e0d8e91d2619a5b736b05",
+      "module_path": "yss-microservice-components/yss-component-excel-starter",
+      "source_tree": "82345616c26950981497f254c45bf0b2bc2077a8",
+      "sources_published_by_repository": true,
+      "sources_match_source_tree": true,
+      "source_mismatch": {
+        "missing": [],
+        "extra": [],
+        "changed": []
+      },
+      "pom_matches_source_tree": true,
+      "build_jdk_spec": "1.8",
+      "namespace_signals": {
+        "javax": true,
+        "jakarta": false
+      },
+      "auto_configuration": {
+        "spring_factories": true,
+        "auto_configuration_imports": false
+      },
+      "component_subtree_clean": true,
+      "worktree_change_count": 0,
+      "blockers": []
+    },
+    {
+      "capability_id": "component.excel-import-export",
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-excel-mvc",
+      "declared_version": "2.0.0-SNAPSHOT",
+      "repository_id": "2306938-snapshot-Yloqmt",
+      "metadata_sha256": "ba3d5f3e05b048203c0ab7fe8716d4814c30c511bbba88857315a428d71a8586",
+      "resolved_version": "2.0.0-20260916.163630-1",
+      "jar_sha256": "986f4c5441749bd6f4d076893460b17c3015f74d2296969c89441da7d74e3bf7",
+      "pom_sha256": "fa6e8fb94edfc492e1b6da0814be266328c0f526347564797c3eaed8c8ca6a10",
+      "sources_sha256": "7a25a9578dba56e4d0a052271ce619c6f48a4bb49d5486eb92f30f7cc49201a5",
+      "module_path": "yss-microservice-components/yss-component-excel-mvc",
+      "source_tree": "acc02f7747905f715708dfe029c3f66a8457e3a5",
+      "sources_published_by_repository": true,
+      "sources_match_source_tree": true,
+      "source_mismatch": {
+        "missing": [],
+        "extra": [],
+        "changed": []
+      },
+      "pom_matches_source_tree": true,
+      "build_jdk_spec": "1.8",
+      "namespace_signals": {
+        "javax": true,
+        "jakarta": false
+      },
+      "auto_configuration": {
+        "spring_factories": false,
+        "auto_configuration_imports": false
+      },
+      "component_subtree_clean": true,
+      "worktree_change_count": 0,
+      "blockers": []
+    },
+    {
+      "capability_id": "component.distributed-id",
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-distributed-id",
+      "declared_version": "3.0.0-SNAPSHOT",
+      "repository_id": "2306938-snapshot-Yloqmt",
+      "metadata_sha256": "ebc6e7431776dbb3d990fa6d1a297a51b4b145c56924aaa92ee672a56833430d",
+      "resolved_version": "3.0.0-20260916.163140-1",
+      "jar_sha256": "b22f0751d4fd6e465621e1743bae3452a66f8a648dc3e0aa2e74f8a0b75e71a8",
+      "pom_sha256": "0f43860eb182da2c82c6668c75436bff44e392279033bb5b24694a4e4ab63fb6",
+      "sources_sha256": "66dd0e67581264ce2b487e8bc739444937b276747dfab113219b6e42ed81b9a7",
+      "module_path": "yss-microservice-components/yss-component-distributed-id",
+      "source_tree": "ac54e61f980cfea3e0a574b0559b5fc6a6ccb9f6",
+      "sources_published_by_repository": true,
+      "sources_match_source_tree": true,
+      "source_mismatch": {
+        "missing": [],
+        "extra": [],
+        "changed": []
+      },
+      "pom_matches_source_tree": true,
+      "build_jdk_spec": "1.8",
+      "namespace_signals": {
+        "javax": true,
+        "jakarta": false
+      },
+      "auto_configuration": {
+        "spring_factories": true,
+        "auto_configuration_imports": false
+      },
+      "component_subtree_clean": true,
+      "worktree_change_count": 0,
+      "blockers": [
+        "component-platform-generation-mismatch: published 3.x artifact was built with JDK 8 and belongs to the Boot 2 generation"
+      ]
+    },
+    {
+      "capability_id": "component.security-algorithm",
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-security-algorithm",
+      "declared_version": "2.0.0-SNAPSHOT",
+      "repository_id": "2306938-snapshot-Yloqmt",
+      "metadata_sha256": "56936651f0a9455db800111a017f7f27fb40aa1445f963d4eef6bc5ba1762bb9",
+      "resolved_version": "2.0.0-20260916.163215-1",
+      "jar_sha256": "e0a10bb655c24bb10397e8c75579bcb2b38469a48efc363a101d526f486f7f2d",
+      "pom_sha256": "e839c11d06abd1c324cc9e6c56339cbd65b7aad6e3fe80ea882372671e6a5a8a",
+      "sources_sha256": "a8016b719d65a8a12c9800f1462290cc0ca2f92300be67b8ca9357fb5ee0a10e",
+      "module_path": "yss-microservice-components/yss-component-security-algorithm",
+      "source_tree": "a28f507af00845909eef3ad6bdf8b716660f5b9d",
+      "sources_published_by_repository": true,
+      "sources_match_source_tree": true,
+      "source_mismatch": {
+        "missing": [],
+        "extra": [],
+        "changed": []
+      },
+      "pom_matches_source_tree": true,
+      "build_jdk_spec": "1.8",
+      "namespace_signals": {
+        "javax": true,
+        "jakarta": false
+      },
+      "auto_configuration": {
+        "spring_factories": true,
+        "auto_configuration_imports": false
+      },
+      "component_subtree_clean": false,
+      "worktree_change_count": 5,
+      "blockers": [
+        "candidate-not-published: isolated hardening worktree differs from the resolved artifact"
+      ]
+    },
+    {
+      "capability_id": "component.gateway-resilience",
+      "group_id": "com.yss.cloud",
+      "artifact_id": "yss-component-resilience4j-starter",
+      "declared_version": "2.0.0-SNAPSHOT",
+      "repository_id": "2306938-snapshot-Yloqmt",
+      "metadata_sha256": "a0d242173e1a6b54b2a701e46f5ced0492edc5d9e6648c7acbc022a7cafc56dd",
+      "resolved_version": "2.0.0-20260916.163208-1",
+      "jar_sha256": "69b92bb710267f5fe5d73cb144462157aaaa250c05685beeae62ee8aa623c58c",
+      "pom_sha256": "a4410689d02120d34e1b08cdbf46c513bec07aca0b3b9b8cdba9cf9149b68a59",
+      "sources_sha256": "66094d40ff02de7f44c717e898b1d417cd46f4ee8237e9e532c1a694eda723c0",
+      "module_path": "yss-microservice-components/yss-component-resilience4j-starter",
+      "source_tree": "10cdf49599161c77137cac47d047b23998aad75b",
+      "sources_published_by_repository": true,
+      "sources_match_source_tree": true,
+      "source_mismatch": {
+        "missing": [],
+        "extra": [],
+        "changed": []
+      },
+      "pom_matches_source_tree": true,
+      "build_jdk_spec": "1.8",
+      "namespace_signals": {
+        "javax": false,
+        "jakarta": false
+      },
+      "auto_configuration": {
+        "spring_factories": false,
+        "auto_configuration_imports": false
+      },
+      "component_subtree_clean": false,
+      "worktree_change_count": 11,
+      "blockers": [
+        "candidate-not-published: isolated hardening worktree differs from the resolved artifact"
+      ]
+    }
+  ],
+  "summary": {
+    "requested": 12,
+    "resolved": 12,
+    "source_bound": 11,
+    "candidate_subtree_clean": 8
+  },
+  "global_blockers": [
+    "architecture-evidence-missing: domain-driven and layered-mvc consuming-application reports are not recorded",
+    "candidate-publication-missing: hardening changes for Exception, UserInfo, Security and Resilience4j are not present in the resolved artifacts",
+    "settings-warning: distributionManagement under an active settings profile is ignored by Maven and must live in the publishing POM"
+  ]
+}
