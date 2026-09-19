@@ -299,7 +299,7 @@ skill_source_contract:
   lock_version: 3
   source_revisions_required: [mattpocock/skills, iloveZzz/yss-ui]
   adaptation_ref_required_when_effective_diff: true
-  retired_shared_skills: [yss-antd-design, yss-antdv-next-design, ask-matt, batch-grill-me, dispatching-parallel-agents, loop-me, migrate-to-shoehorn, product-design-prototype, prototype-page-acceptance, scaffold-exercises, setup-pre-commit, setup-ts-deep-modules, teach, writing-beats, writing-fragments, writing-shape, yss-components, yss-dictionary, yss-jdbc, yss-log, yss-microapp-commit, yss-mvc-scaffold-generator, yss-page-module-development, yss-taskflow, yss-backend-scaffold-application, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-backend-scaffold-web, yss-backend-scaffold-adapter, yss-application-layer-reference, yss-domain-layer-reference, yss-infrastructure-layer-reference, yss-web-layer-reference]
+  retired_shared_skills: [yss-antd-design, yss-antdv-next-design, ask-matt, batch-grill-me, dispatching-parallel-agents, loop-me, migrate-to-shoehorn, product-design-prototype, prototype-page-acceptance, scaffold-exercises, setup-pre-commit, setup-ts-deep-modules, teach, writing-beats, writing-fragments, writing-shape, yss-components, yss-dictionary, yss-jdbc, yss-log, yss-microapp-commit, yss-mvc-scaffold-generator, yss-mvc-design, yss-mvc-data-analysis-project-initializer, yss-backend-scaffold-parent, yss-page-module-development, yss-taskflow, yss-backend-scaffold-application, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-backend-scaffold-web, yss-backend-scaffold-adapter, yss-application-layer-reference, yss-domain-layer-reference, yss-infrastructure-layer-reference, yss-web-layer-reference]
 
 # 生命周期默认走原生工作单元；Matt user-invoked skill 仅保留为兼容入口。
 lifecycle_native_entries:
@@ -462,7 +462,6 @@ work_unit_routes:
         formily_impact: [yss-formily]
         table_impact: [ytable-usage, yedit-table-usage]
         tree_impact: [ytree-usage]
-        height_impact: [yss-use-table-height, yss-use-tree-height]
         export_impact: [file-export-download]
         theme_impact: [theme-token-usage]
       not_applicable_reasons:
@@ -470,7 +469,6 @@ work_unit_routes:
         formily_impact: no_formily_impact
         table_impact: no_table_impact
         tree_impact: no_tree_impact
-        height_impact: no_height_impact
         export_impact: no_export_impact
         theme_impact: no_theme_impact
     applies_when: ready_for_agent

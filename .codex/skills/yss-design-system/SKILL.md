@@ -26,7 +26,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 2. 读取已有资产：先读根 `DESIGN.md`，再读 `docs/design/design.md` 和 Token 派生快照，最后按任务读取相关 Spec、交互说明、状态矩阵、OpenAPI Draft、现有页面代码。
 3. 按设计系统基线约束输出或修改产物：颜色、排版、间距、圆角、动效、组件、状态、响应式。
 4. 若是产品设计阶段，先使用 `yss-prototype-stage`；规范直出由 YSS HTML adapter 执行；存在已选视觉稿时条件使用 `product-design:index`，其他 Agent 交付等价证据。
-5. 若是前端实现阶段，配合 `yss-ui`、`yss-ui-business-page-generation`、`component-selection-imports`、`yss-formily` 及实际命中的组件专项，但本技能负责风格与体验一致性门禁。
+5. 若是前端实现阶段，配合 `yss-ui`、`yss-ui-business-page-generation`、`yss-formily` 及实际命中的组件专项，但本技能负责风格与体验一致性门禁。
 6. 若发现视觉 Token 或组件变体不足，先更新根 `DESIGN.md` 并重新生成投影；只有治理、流程或验收说明不足时才更新 `docs/design/design.md`。
 
 ## 核心基线
@@ -89,7 +89,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 | 低保真线框或流程图 | 语义草图或 HTML；设计工具按需使用 |
 | 前端页面实现 | `yss-ui` / `yss-ui-business-page-generation` |
 | 表单 schema | `yss-formily` |
-| YTable / YTree / 高度自适应 | `ytable-usage` / `ytree-usage` / `yss-use-table-height` / `yss-use-tree-height` |
+| YTable / YEditTable / YTree / 高度自适应 | `ytable-usage` / `yedit-table-usage` / `ytree-usage` |
 | 原型交接前的六轴 QA | 规范直出由 YSS adapter 按 design-contract 验收；独立视觉稿才条件使用 design-qa 比对，项目 Token 优先 |
 | 原型渲染适配 | `yss-prototype-stage/references/product-design-adapter.md`；H1/H2 统一 HTML 交付、分别验证视觉与可操作流程；不得调用 `yss-ui` |
 | API 契约 / 接入 | `yss-openapi-governance` / `yss-api-integration` |

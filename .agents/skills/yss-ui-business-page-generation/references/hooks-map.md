@@ -10,25 +10,26 @@ const { tableHeight, isReady, recalculateHeight } = useTableHeight(tableAreaRef,
   withPagination: true,
   withToolbar: true,
   withAddButton: false,
-  extraOffset: 16,
 });
 ```
 
 - 必须传入表格父容器 `ref`。
 - 返回值是 `recalculateHeight`，不要使用旧的错误返回名。
 - 可选项：`boundaryRef`、`minHeight`、`defaultHeight`、`extraOffset`、`withPagination`、`withToolbar`、`withAddButton`、`paginationHeight`、`toolbarHeight`、`addButtonHeight`。
+- 被观察区域若会被表格内容撑开，使用更外层稳定的 `boundaryRef`，避免尺寸反馈循环；`extraOffset` 只能对应可说明的实际布局占位。
 
 ## useTreeHeight
 
 ```ts
 const treeAreaRef = ref<HTMLDivElement>();
 const { treeHeight, recalculateHeight } = useTreeHeight(treeAreaRef, {
-  extraOffset: YTREE_SEARCH_HEIGHT + 16,
+  extraOffset: YTREE_SEARCH_HEIGHT,
 });
 ```
 
 - 必须传入树区域父容器 `ref`。
 - 搜索树可引入 `YTREE_SEARCH_HEIGHT`。
+- 内置搜索已由 `YTREE_SEARCH_HEIGHT` 扣除，不得再叠加无依据的 `+16`；Tab/Drawer 可见后按需 `nextTick(recalculateHeight)`。
 
 ## useLoading
 

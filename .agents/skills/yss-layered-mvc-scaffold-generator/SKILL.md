@@ -70,7 +70,7 @@ node scripts/generate_and_verify_scaffold.mjs \
 ## 硬约束
 
 - 新生成只接受包含 API Contract Decision 的统一 schema v4；缺 API 字段的预发布 v4 不得静默接受。验证器可只读检查历史 Manifest v3，恢复必须另行完成所有权审计、技术/数据/API 设计补齐与当前批准。历史 v2/v3 均不用于新生成。
-- `architecture_family` 必须为 `layered-mvc`，`generator_skill` 必须为本 skill。历史 `yss-mvc-data-analysis-project-initializer` 合同必须返回 `skill-deprecated`、标记 `stale` 并重编译，不自动替换或继承批准。
+- `architecture_family` 必须为 `layered-mvc`，`generator_skill` 必须为本 skill。旧数据分析初始化合同必须标记 `stale` 并按 `mvc-data-analysis-v1` Profile 重编译，不自动替换或继承批准。
 - 目标存在、`--force`、旧项目迁移、模板升级均为 `unsupported`。
 - Harness 内只允许以 `apps/backend/` 为输出父容器；外部实现仓库使用已登记真实路径。
 - 不生成业务示例。健康检查、上下文加载测试和架构测试只能验证机械工程能力，不定义用户可见 API。

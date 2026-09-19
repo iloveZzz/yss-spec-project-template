@@ -10,32 +10,45 @@
 - 平台线缺失、源码根错配、组件 tree 漂移或组件子树 dirty 均返回 `blocked`；禁止退回另一代索引，也不能用源码可编译替代构件兼容认证。
 - 历史提交中的单轨索引只作只读证据；当前刷新不得覆盖另一平台线或把两个变量指向同一代源码。
 
-## 后端设计与脚手架入口两阶段退役（2026-09-18）
+## 前端 Skill 面二次收敛（2026-09-20）
 
-以下入口已停止承接新合同，但在迁移期保留可诊断壳；它们不是 alias，不能静默继承原批准：
+以下入口已硬退役，不保留运行时 alias、物理目录、投影、Registry 条目或 lock 条目：
+
+- `page-skeleton`：页面目录、职责拆分和组合流程由 `yss-ui-business-page-generation` 持有。
+- `component-selection-imports`：组件路由、真实导出和受控 Ant Design Vue 回退由 `yss-ui` 及其 `references/component-routing.md` 持有。
+- `page-list-module`：页面编排归 `yss-ui-business-page-generation`，请求参数与异步状态归 `yss-hook`，表格 API、分页、选择态和高度归 `ytable-usage`。
+- `page-form-module`：页面容器生命周期归 `yss-ui-business-page-generation`，Schema、模式、联动和分步行为归 `yss-formily` 路由的专项 Skill。
+- `yss-use-table-height`：YTable/YEditTable 高度分别归 `ytable-usage`、`yedit-table-usage`。
+- `yss-use-tree-height`：YTree 高度归 `ytree-usage`。
+- `vue3-best-practices`：请求竞态、单一参数源和组件状态规则归 `yss-hook`；长整型与普通 number 的类型边界以 `yss-api-integration` 为准。
+
+上游名称 `use-table-height`、`use-tree-height` 不再作为 Registry alias，只在 `.yss-skills-manifest.json` 的排除清单和历史证据中出现。活跃合同必须直接使用替代入口；命中旧 ID 返回 `skill-retired`。
+
+## 后端设计与脚手架入口硬退役（2026-09-20）
+
+以下入口已完成硬退役，不保留 alias、物理目录、投影、Registry 条目或 lock 条目：
 
 - `yss-mvc-design`：新工作使用 `yss-technical-design`。MVC schema、规则和 API impact 的 OpenAPI review 条件依赖由技术设计入口持有。
 - `yss-mvc-data-analysis-project-initializer`：新工作使用 `yss-layered-mvc-scaffold-generator` 的 `mvc-data-analysis-v1` Profile，继续保留六模块、H2、CONTEXT handoff、skillUtils 和独立 Git 行为。
-- `yss-backend-scaffold-parent`：新工作使用 `yss-ddd-scaffold-generator`；原嵌套 Skill 仅作为迁移期参考，基线约束迁入生成器内部 reference 和验证器。
+- `yss-backend-scaffold-parent`：新工作使用 `yss-ddd-scaffold-generator`；工程基线由生成器内部 `references/engineering-baseline.md` 和验证器持有。
 
-迁移期统一规则：
+硬退役统一规则：
 
-- `maturity: deprecated`、`new_use: forbidden`、`cleanup_status: migration-only`；计划移除日期为 `2026-12-17`，但日期到达不等于授权删除。
 - 旧 Slice、Technical Design 或 Scaffold Contract 因 Registry、Profile 或 generator 摘要变化变为 `stale`，必须重新编译和批准。
-- 新请求命中迁移壳返回 `skill-deprecated`；硬退役后命中旧 ID 返回 `skill-retired`。
-- 引用、投影和 lock 未归零时不得将 `cleanup_status` 改为 `remove-ready`；硬退役后不保留 alias、物理目录、投影或 lock 条目。
+- 新请求命中旧 ID 返回 `skill-retired`，迁移路径只从本文件和永久 tombstone 查询。
+- 历史冻结证据保持只读；活跃调用者必须直接使用替代入口，不得恢复兼容壳。
 
 ## DDD 分层包装与前端组件总入口收敛（2026-09-15）
 
 以下入口已硬退役，不保留 alias、物理目录、投影或 lock 条目：
 
 - DDD 嵌套包装：`yss-backend-scaffold-adapter`、`yss-application-layer-reference`、`yss-domain-layer-reference`、`yss-infrastructure-layer-reference`、`yss-web-layer-reference`。
-- 旧数据分析初始化器：`yss-mvc-scaffold-generator`，新工作使用 `yss-mvc-data-analysis-project-initializer`；通用 MVC 使用 `yss-layered-mvc-scaffold-generator`。
+- 旧数据分析初始化器：`yss-mvc-scaffold-generator`，新工作统一使用 `yss-layered-mvc-scaffold-generator`；数据分析工程选择 `mvc-data-analysis-v1` Profile。
 - 前端组件总入口：`yss-components`。
 
-DDD 脚手架只保留已登记并被生成合同消费的 `yss-backend-scaffold-parent`。生成后的 Application、Domain、Infrastructure、Web 和 Adapter 实现从 `yss-ddd-scaffold-generator/references/layer-skill-routing.md` 路由到顶层权威 Skill，不再把普通参考目录暴露为可发现 Skill。
+DDD 脚手架的 Parent 工程约束由 `yss-ddd-scaffold-generator/references/engineering-baseline.md` 内部持有。生成后的 Application、Domain、Infrastructure、Web 和 Adapter 实现从 `yss-ddd-scaffold-generator/references/layer-skill-routing.md` 路由到顶层权威 Skill，不再把普通参考目录暴露为可发现 Skill。
 
-前端页面统一从 `yss-ui` 路由：页面骨架使用 `page-skeleton`，组件选型使用 `component-selection-imports`，表格、树、Formily、Hook 和高度使用各自专项 Skill；没有独立 Skill 的复杂组件契约集中在 `yss-ui/references/specialized-components.md`。`yss-formily` 保留为薄路由器，不再复制表单代码骨架和专项规则。
+前端页面统一从 `yss-ui` 路由：完整页面使用 `yss-ui-business-page-generation`，组件选型与导入使用 `yss-ui/references/component-routing.md`，表格、树、Formily 和 Hook 使用各自专项 Skill；组件高度由对应表格或树专项持有。没有独立 Skill 的复杂组件契约集中在 `yss-ui/references/specialized-components.md`。`yss-formily` 保留为薄路由器，不再复制表单代码骨架和专项规则。
 
 旧 ID 只允许存在于本迁移记录、retired/obsolete 清单、负向测试和不可变历史证据中。
 

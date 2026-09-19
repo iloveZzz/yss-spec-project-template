@@ -112,7 +112,7 @@ roles:
     title: YSS 前端工程师
     stages: [ stage.product-design, stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective ]
     draft_artifact_ids: [ artifact.frontend-implementation-plan ]
-    core_skills: [ yss-ui, yss-ui-business-page-generation, yss-formily, ytable-usage, ytree-usage, yedit-table-usage, yss-api-integration, yss-hook, theme-token-usage, page-skeleton, page-list-module, page-form-module, component-selection-imports, vue3-best-practices, tdd ]
+    core_skills: [ yss-ui, yss-ui-business-page-generation, yss-formily, ytable-usage, ytree-usage, yedit-table-usage, yss-api-integration, yss-hook, theme-token-usage, tdd ]
     forbidden_skills: [ yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator, java-backend-commit ]
     description: >-
       Own Vue page modules, frontend tests, and frontend_implementation_plan. Review OpenAPI Draft for client fit and prototype feasibility. Write only contract-allowed frontend paths. Verify with pnpm. Do not freeze API, own backend domain, or countersign your own merge.
@@ -125,7 +125,7 @@ roles:
     stages: [ stage.system-data-engineering, stage.ticket-formalization, stage.vertical-slice-implementation, stage.verification-release-retrospective ]
     draft_artifact_ids: [ artifact.openapi-draft, artifact.data-architecture, artifact.technical-design ]
     core_skills: [ yss-implementation-contract-compiler, yss-technical-design, yss-tactical-design, yss-domain, yss-application, yss-repository, yss-mybatis, yss-web-controller, yss-dto, mapstruct, lombok, alibaba-java-code-style, yss-exception, yss-validation, tdd, yss-ddd-scaffold-generator, yss-layered-mvc-scaffold-generator ]
-    forbidden_skills: [ yss-ui, yss-ui-business-page-generation, yss-formily, yss-frontend-scaffold-generator, page-list-module, page-form-module ]
+    forbidden_skills: [ yss-ui, yss-ui-business-page-generation, yss-formily, yss-frontend-scaffold-generator ]
     description: >-
       Own OpenAPI Draft, data-architecture contributions, and backend tests. Write only contract-allowed backend paths. Verify with ./mvnw. Do not Freeze OpenAPI, treat UI copy as requirements, or countersign your own implementation.
 

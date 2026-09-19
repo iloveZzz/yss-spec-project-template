@@ -6,11 +6,11 @@
 |---|---|---|---|---|
 | 普通按钮、权限按钮 | `YButton` | AntDV Button | required | 权限、主题和统一动作语义；不得直接导入 Button |
 | 卡片 | `YCard` | AntDV Card | required | YSS 布局与间距扩展 |
-| 数据表格 | `YTable` | VXE Table + AntDV Pagination | specialized | 使用 `ytable-usage`；远程分页交给 `page-list-module`，高度交给 `yss-use-table-height` |
-| 编辑表格 | `YEditTable` | VXE Table | specialized | 使用 `yedit-table-usage`，不要把编辑与普通展示表格混为一套 API |
-| 树 | `YTree` | AntDV Tree | specialized | 使用 `ytree-usage`；高度交给 `yss-use-tree-height` |
+| 数据表格 | `YTable` | VXE Table + AntDV Pagination | specialized | 使用 `ytable-usage`；远程分页与高度均由该专项和 `yss-hook` 协作 |
+| 编辑表格 | `YEditTable` | VXE Table | specialized | 使用 `yedit-table-usage`，包括添加按钮偏移与弹层高度；不要和展示表格混用 API |
+| 树 | `YTree` | AntDV Tree | specialized | 使用 `ytree-usage`，包括搜索区偏移、隐藏容器重算和左树右表联动 |
 | Schema 表单 | `YFormily` | Formily + AntDV | specialized | `YFormily` 为 canonical；`YssFormily` 仅为历史兼容名；加载 `yss-formily` |
-| 分栏布局 | `YSplitPane` | YSS layout | required | 页面骨架使用 `page-skeleton`；组件边界见 `specialized-components.md` |
+| 分栏布局 | `YSplitPane` | YSS layout | required | 页面编排使用 `yss-ui-business-page-generation`；组件边界见 `specialized-components.md` |
 | 文件导入 | `YFileImport` | Upload/业务适配 | required | 两步导入边界见 `specialized-components.md` |
 | 条件构建 | `YConditionBuilder` | YSS domain component | required | 标准模型与校验边界见 `specialized-components.md` |
 | 月历 | `YMonthCalendar` | YSS domain component | required | 日期、月份、高度与事件边界见 `specialized-components.md` |
@@ -26,6 +26,13 @@
 ## 受控回退
 
 YSS `required` wrapper 缺少必要能力时，记录组件、能力缺口、依赖版本、替代方案、主题/locale/浮层影响和验证证据。没有记录不得回退。
+
+## 导入来源判定
+
+1. MCP 可用时，先用 `list_components` 校正名称，再用 `get_component_docs` 确认导出包、Props、Events 和 Slots；复杂场景再查 Demo。
+2. MCP 不可用或结果与目标工程版本不一致时，以 lockfile、当前源码可编译导出、TypeScript 类型和已通过测试的用法为准。
+3. 已封装组件从 `@yss-ui/components` 导入，公开 Hook 和 Utils 分别从 `@yss-ui/hooks`、`@yss-ui/utils` 导入；确认未封装后才回退 `ant-design-vue`。
+4. 禁止仅凭名称猜测 `Y*` 导出，禁止因文档暂时不可达就把猜测实现当作已验证事实。
 
 ## 更新规则
 

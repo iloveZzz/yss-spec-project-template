@@ -93,13 +93,6 @@ test("数据分析初始化生成 H2 六模块和独立治理信封", async (t) 
   assert.doesNotMatch(core, /demo-service-client|spring-web|ojdbc|mysql-connector/);
 });
 
-test("历史数据分析初始化入口只返回稳定退役错误", () => {
-  const initializer = path.resolve(path.dirname(script), "../../yss-mvc-data-analysis-project-initializer/scripts/generate_project.mjs");
-  const result = spawnSync(process.execPath, [initializer], { encoding: "utf8" });
-  assert.notEqual(result.status, 0);
-  assert.match(result.stderr, /^skill-deprecated:/);
-});
-
 test("数据分析 Profile 缺少 CONTEXT handoff 或独立 Git 合同时零写入阻断", async (t) => {
   const profile = { capabilities: [], modules: ["server", "core", "client", "repository", "adapter", "feign-client"] };
   const missingContext = await fixture(t, { architectureProfile: "mvc-data-analysis-v1", profile });

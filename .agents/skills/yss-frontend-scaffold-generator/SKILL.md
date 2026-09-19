@@ -71,7 +71,7 @@ packages/package.json
 - 不携带 Data Quality 业务页面、默认管理员、生产接口、私网 Postman 同步、部署凭证或残缺 JSP 命令；当前支持 Qiankun 与 standalone，JSP 不在可用基线内。
 - 不得把 `apps/frontend/` 容器根登记为项目根；Harness 内每个前端项目必须有独立的 `apps/frontend/<project>/` 路径。
 - 不把模板示例页面当作业务功能交付。
-- 生成后仍需使用 `yss-ui-business-page-generation`、`component-selection-imports`、`yss-api-integration` 以及实际命中的表格、树、Formily 等专项 skill 实现业务页面。
+- 生成后仍需使用 `yss-ui`、`yss-ui-business-page-generation`、`yss-api-integration` 以及实际命中的表格、树、Formily 等专项 skill 实现业务页面。
 
 ## Output
 

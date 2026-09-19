@@ -31,5 +31,6 @@ Frontend docs are written to these skills:
 | --- | --- |
 | `yss-ui` | components, hooks, skills docs |
 | `yss-hook` | hooks docs |
-| `yss-use-table-height` | hooks docs |
-| `yss-use-tree-height` | hooks docs |
+| `ytable-usage` | hooks docs |
+| `yedit-table-usage` | hooks docs |
+| `ytree-usage` | hooks docs |

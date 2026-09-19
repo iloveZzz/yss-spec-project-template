@@ -1,6 +1,6 @@
 ---
 name: ytable-usage
-description: "配置或修复 YSS UI YTable 的列、分页、行操作、筛选、拖拽与插槽；完整列表流程用 page-list-module。"
+description: "配置或修复 YSS UI YTable 的列表查询、列、分页、行操作、筛选、拖拽、插槽与自适应高度。"
 ---
 
 # YTable 使用
@@ -19,7 +19,7 @@ description: "配置或修复 YSS UI YTable 的列、分页、行操作、筛选
 
 1. 当前会话可用 yss-ui MCP 时，先用 `get_component_docs` 查询 `YTable` 的 Props、Events、Slots、Types 与实例方法；需要远程分页、筛选、操作列、拖拽或工具栏时，再用 `get_demo` 获取对应官方 Demo。
 2. MCP 工具不可用、调用失败或用 `search_docs/list_components` 校正后仍无结果时，才读取最新 `llms-full.txt`；若文档与当前项目依赖版本不一致，用当前源码和导出核验。
-3. 把远程数据、`loading`、分页映射、API 调用和事件处理放入 Hook；把列定义和纯配置放入 `constant.ts`。
+3. 把 `currentParams`、远程数据、`loading`、分页映射、选择态、API 调用和事件处理放入 Hook；把列定义和纯配置放入 `constant.ts`。
 4. 在模板中组合 `data/columns/loading/pagination`，并根据真实开启的工具栏和分页配置高度 Hook。
 5. 完成后核对删除确认、远程筛选、分页字段映射和 API 错误处理边界。
 
@@ -37,6 +37,9 @@ description: "配置或修复 YSS UI YTable 的列、分页、行操作、筛选
 - 远程筛选必须提供稳定 `filters`，设置 `filterMethod: () => true` 禁用本地二次过滤，并监听 `filter-change`。
 - 自适应滚动列表绑定 `:height="tableHeight"`；`pageable`、工具栏分别对应 `withPagination: true`、`withToolbar: true`。纯短表不强制引入高度 Hook。
 - `mutator.ts` 已对网络错误和 `success === false` 统一 `message.error` 并 reject。API Hook 不再检查 `success === false`，不在 `else/catch` 重复 `message.error`；用 `finally` 恢复 loading，让异常继续中断流程。
+- 远程列表只维护一份 `currentParams`。查询和重置回到第一页，翻页只更新页码与页大小并保留筛选条件；刷新、导出和编辑后重载复用同一参数源。批量操作成功后清空受控选中态和组件内部选中态。
+- 使用真实签名 `useTableHeight(tableAreaRef, options)`，结果绑定 `:height="tableHeight"`。稳定布局采用可计算高度的 flex column，表格区设置 `flex: 1; min-height: 0; overflow: hidden`，不用固定大高度或魔法偏移。
+- `pageable`、工具栏插槽、YEditTable 添加按钮分别对应 `withPagination`、`withToolbar`、`withAddButton`；只扣除实际开启的区域。shrink-wrap 容器使用更外层稳定 `boundaryRef`，弹层或隐藏布局仅在可见后按需 `nextTick(recalculateHeight)`。
 
 ## 标准代码骨架
 
@@ -105,16 +108,19 @@ export interface ItemListApi {
 export const useItemList = (api: ItemListApi) => {
   const dataList = ref<ItemRow[]>([]);
   const loading = ref(false);
+  const currentParams = ref({ pageIndex: 1, pageSize: 20 });
   const pagination = ref<YTablePagination>({ current: 1, pageSize: 20, total: 0, remote: true });
 
   /** 查询当前页；错误提示由 mutator 统一处理。 */
   const loadList = async () => {
     loading.value = true;
     try {
-      const result = await api.queryPage({
+      currentParams.value = {
+        ...currentParams.value,
         pageIndex: pagination.value.current,
         pageSize: pagination.value.pageSize,
-      });
+      };
+      const result = await api.queryPage(currentParams.value);
       dataList.value = result.list ?? [];
       pagination.value = { ...pagination.value, total: result.totalCount ?? 0 };
     } finally {
@@ -134,7 +140,7 @@ export const useItemList = (api: ItemListApi) => {
     await loadList();
   };
 
-  return { dataList, loading, pagination, loadList, handlePageChange, handleDelete };
+  return { currentParams, dataList, loading, pagination, loadList, handlePageChange, handleDelete };
 };
 ```
 
@@ -196,7 +202,7 @@ onMounted(loadList);
 ```less
 /* style.less */
 .table-area {
-  height: 100%;
+  flex: 1;
   min-height: 0;
   overflow: hidden;
 }
@@ -241,6 +247,8 @@ onMounted(loadList);
 - [ ] 批量操作成功后已重置 `selectedRowKeys` 并调用 `tableRef.clearSelection()`。
 - [ ] 未使用虚构 `request/searchParams/row-key` Props，也未把 `refresh()` 当成远程请求。
 - [ ] 工具栏、字典翻译、操作确认与高度偏移均与实际开关一致。
+- [ ] 查询、重置、翻页、刷新和导出复用同一份 `currentParams`；查询/重置回到第一页，批量成功后清空选中态。
+- [ ] 高度观察容器稳定；分页/工具栏偏移没有重复扣减，隐藏态仅在必要时补算。
 - [ ] API Hook 没有 `success === false` 分支或重复 `message.error`。
 
 ## 失败兜底策略
@@ -248,4 +256,3 @@ onMounted(loadList);
 - 分页字段混乱时，在 Hook 中分离 YTable 状态和后端参数，不直接把 `pageIndex/totalCount` 绑到组件。
 - 操作过多时使用 `displayLimit` 和更多菜单；远程刷新失效时回到业务 `loadList()`，不把实例 `refresh()` 当成接口请求。
 - API 失败后只在 `finally` 恢复本地 loading，让 mutator 的 reject 继续中断删除后刷新等后续流程。
-

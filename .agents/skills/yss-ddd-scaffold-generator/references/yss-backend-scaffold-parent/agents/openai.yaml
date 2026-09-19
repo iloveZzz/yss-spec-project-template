@@ -1,5 +1,0 @@
-version: 1
-interface:
-  display_name: "YSS Scaffold Parent Migration"
-  short_description: "迁移已退役的 DDD 父基线入口"
-  default_prompt: "Return skill-deprecated and migrate the historical $yss-backend-scaffold-parent reference to the internal yss-ddd-scaffold-generator engineering baseline without inheriting approval."

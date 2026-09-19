@@ -122,7 +122,7 @@ node scripts/run_first_slice_verification.mjs \
 - 受控验证器：`scripts/run_scaffold_verification.mjs`
 - 首切片验证器：`scripts/run_first_slice_verification.mjs`
 - 模板目录：`assets/templates/`
-- Parent 工程约束使用内部 `references/engineering-baseline.md`；生成后的分层实现路由见 `references/layer-skill-routing.md`。历史 `yss-backend-scaffold-parent` 仅保留迁移提示，不进入新合同。
+- Parent 工程约束使用内部 `references/engineering-baseline.md`；生成后的分层实现路由见 `references/layer-skill-routing.md`。旧工程基线合同必须迁移为 `readiness.contracts.engineering_baseline` 后重新验证。
 
 ## 阶段 7 合同
 

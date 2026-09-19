@@ -30,7 +30,7 @@ description: 在 YSS 技术分析中统一承接需求与战略输入，按已�
 
 新产物使用 schema v2 Technical Design Contract：共同头记录架构来源、输入版本与摘要、规则/场景承接、评审证据和状态，`design` 保存架构专属内容。合同格式与兼容规则见 `references/technical-design-contract.md`，Schema 见 `references/technical-design.schema.json`。
 
-MVC `design` 分支由 `references/mvc-design.schema.json` 约束。无状态流转或外部集成时记录有依据的不适用；业务规则和关键场景必须关联具体用例与成功/失败测试 seam。MVC 与 DDD 使用同一承接和审查要求，不能因采用分层 MVC 省略规则、一致性或测试设计。历史 `yss-mvc-design` 入口仅保留迁移提示，不再拥有该能力或被新合同调用。
+MVC `design` 分支由 `references/mvc-design.schema.json` 约束。无状态流转或外部集成时记录有依据的不适用；业务规则和关键场景必须关联具体用例与成功/失败测试 seam。MVC 与 DDD 使用同一承接和审查要求，不能因采用分层 MVC 省略规则、一致性或测试设计。旧 MVC 设计合同必须迁移到本入口并重新编译、批准。
 
 运行 `node .agents/skills/yss-technical-design/scripts/validate-technical-design.mjs <合同> --root <项目根>`。整体存在延期或冲突即阻断整体；相关切片可带 `--slice <切片ID>` 按依赖核验，仍须合同已批准。校验成功只返回审查输入，不批准、不设置 `ready-for-agent`。
 

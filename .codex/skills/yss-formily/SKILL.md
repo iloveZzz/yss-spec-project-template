@@ -18,10 +18,10 @@ description: 路由 YSS UI 业务页面中的 YFormily 场景；当查询、编�
 | 字段显隐、值联动、异步 effects、跨字段副作用 | `formily-linkage-effects` |
 | 新增、编辑、查看模式，详情插槽或 disabled 规则 | `formily-mode-slot-detail` |
 | 分步录入、跨步骤校验、步骤状态 | `formily-step-flow` |
-| Modal / Drawer 的打开、回填、保存、关闭和回退 | `page-form-module` |
+| Modal / Drawer 的打开、回填、保存、关闭和回退 | `yss-ui-business-page-generation` 负责页面容器编排，并加载 `formily-foundation` 与实际命中的模式/联动专项 |
 | 从自然语言、截图或 Figma 生成 schema | `yss-formily-schema-generator` |
 
-一个任务可以同时加载多个专项 Skill。`page-form-module` 只在页面容器生命周期命中时加载，不作为本技能的固定依赖。
+一个任务可以同时加载多个专项 Skill。页面容器生命周期不是本技能的固定依赖；仅当任务是完整业务页面或弹层闭环时加载 `yss-ui-business-page-generation`。
 
 ## 边界
 

@@ -239,12 +239,6 @@
           "id": "yss-exception"
         },
         {
-          "id": "yss-mvc-design"
-        },
-        {
-          "id": "yss-mvc-data-analysis-project-initializer"
-        },
-        {
           "id": "yss-resilience4j"
         },
         {
@@ -317,7 +311,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "c6d9349c6c00ce26832e3793caa12b6bb1593458e31c35c94bf58fe30b05ef13"
+          "source_tree_sha256": "bc5c4661f93362c44a6db2003226b933f8c08f021c54839b4a512f0f9c5b2b3d"
         },
         {
           "id": "yss-openapi-governance",
@@ -449,7 +443,9 @@
       "retired": [
         "research",
         "yss-antd-design",
-        "yss-antdv-next-design"
+        "yss-antdv-next-design",
+        "yss-mvc-design",
+        "yss-mvc-data-analysis-project-initializer"
       ]
     },
     "frontend": {
@@ -510,15 +506,6 @@
           "id": "maintaining-skills"
         },
         {
-          "id": "page-form-module"
-        },
-        {
-          "id": "page-list-module"
-        },
-        {
-          "id": "page-skeleton"
-        },
-        {
           "id": "prototype"
         },
         {
@@ -543,10 +530,10 @@
           "id": "using-git-worktrees"
         },
         {
-          "id": "vue3-best-practices"
+          "id": "writing-for-agents"
         },
         {
-          "id": "writing-for-agents"
+          "id": "yss-frontend-scaffold-generator"
         },
         {
           "id": "yedit-table-usage"
@@ -584,7 +571,7 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "c6d9349c6c00ce26832e3793caa12b6bb1593458e31c35c94bf58fe30b05ef13"
+          "source_tree_sha256": "bc5c4661f93362c44a6db2003226b933f8c08f021c54839b4a512f0f9c5b2b3d"
         },
         {
           "id": "yss-openapi-governance",
@@ -674,7 +661,6 @@
       "excluded": [
         "backend-agent",
         "competitive-intelligence",
-        "component-selection-imports",
         "domain-modeling",
         "grill-with-docs",
         "prototype-review",
@@ -685,16 +671,13 @@
         "yss-api-integration",
         "yss-formily",
         "yss-formily-schema-generator",
-        "yss-frontend-scaffold-generator",
         "yss-openapi-draft-review",
         "yss-product-lifecycle",
         "yss-skill-source-index-refresh",
         "yss-stage-decision",
         "yss-tactical-design",
         "yss-technical-design",
-        "yss-ui",
-        "yss-use-table-height",
-        "yss-use-tree-height"
+        "yss-ui"
       ],
       "retired": [
         "research",
@@ -702,7 +685,14 @@
         "yss-antdv-next-design",
         "yss-components",
         "yss-microapp-commit",
-        "yss-page-module-development"
+        "yss-page-module-development",
+        "component-selection-imports",
+        "page-form-module",
+        "page-list-module",
+        "page-skeleton",
+        "vue3-best-practices",
+        "yss-use-table-height",
+        "yss-use-tree-height"
       ]
     }
   }

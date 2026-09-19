@@ -15,8 +15,7 @@ const root = mkdtempSync(path.join(tmpdir(), 'yss-technical-design-'));
 let checks = 0;
 try {
   const activeMvcSchema = JSON.parse(readFileSync(fileURLToPath(new URL('../references/mvc-design.schema.json', import.meta.url)), 'utf8'));
-  const deprecatedMvcSchema = JSON.parse(readFileSync(fileURLToPath(new URL('../../yss-mvc-design/references/mvc-design.schema.json', import.meta.url)), 'utf8'));
-  assert.deepEqual(activeMvcSchema, deprecatedMvcSchema); checks++;
+  assert.equal(activeMvcSchema.title, 'YSS MVC 技术设计内容'); checks++;
   const mvc = mvcFixture(root);
   const validate = data => validateTechnicalDesign(data, { root });
   assert.equal((await validate(mvc)).architecture_family, 'layered-mvc'); checks++;

@@ -72,7 +72,7 @@ function validateInvocationBoundary(data) {
   ensure(routes?.["work-unit.slice-implementation"]?.skills?.includes("tdd") && routes?.["work-unit.slice-implementation"]?.skills?.includes("yss-ui") && routes?.["work-unit.slice-implementation"]?.skills?.includes("yss-ui-business-page-generation"), "原生实现工作单元缺少 TDD、UI 或业务页面生成路由");
   const frontendRoute = routes?.["work-unit.slice-implementation"]?.frontend_route;
   ensure(frontendRoute?.primary_skill === "yss-ui" && frontendRoute?.page_generation_skill === "yss-ui-business-page-generation" && frontendRoute?.page_orchestration_skill === "yss-ui-business-page-generation", "前端实现路由缺少 yss-ui 主入口或统一业务页面技能");
-  for (const impact of ["api_impact", "formily_impact", "table_impact", "tree_impact", "height_impact", "export_impact", "theme_impact"]) {
+  for (const impact of ["api_impact", "formily_impact", "table_impact", "tree_impact", "export_impact", "theme_impact"]) {
     ensure(Array.isArray(frontendRoute?.conditional_skills?.[impact]) && frontendRoute.conditional_skills[impact].length > 0 && typeof frontendRoute.not_applicable_reasons?.[impact] === "string", `前端条件专项路由缺少 ${impact}`);
   }
   ensure(routes?.["work-unit.frontend-implementation-verification"]?.skills?.includes("code-review") && routes?.["work-unit.frontend-implementation-verification"]?.applies_when === "ui_impact", "前端还原验证未绑定 UI fidelity 审查轴");

@@ -33,7 +33,7 @@ backend_skill_domains:
     yss-implementation-contract-compiler: platform-governance-migration
     yss-skill-source-index-refresh: platform-governance-migration
     yss-up-springboot3: platform-governance-migration
-  deprecated_skills: [yss-mvc-design, yss-mvc-data-analysis-project-initializer, yss-backend-scaffold-parent]
+  deprecated_skills: []
 backend_source_index_contract:
   schema_version: 1
   owner_skill: yss-skill-source-index-refresh
@@ -246,7 +246,7 @@ skill_dependencies:
   yss-exception:
     - { skill: yss-dto, type: context-required }
   yss-ui-business-page-generation:
-    - { skill: component-selection-imports, type: context-conditional, when: components }
+    - { skill: yss-ui, type: context-required }
     - { skill: yss-hook, type: context-conditional, when: hooks }
     - { skill: yss-formily, type: context-conditional, when: form }
     - { skill: yss-api-integration, type: context-conditional, when: api }
@@ -557,17 +557,6 @@ skills:
     instance_default_discoverable: true
     aliases: []
     impacts: [backend, lifecycle]
-  - id: yss-mvc-design
-    layer: specialist
-    maturity: deprecated
-    replacement_skill: yss-technical-design
-    deprecation:
-      new_use: forbidden
-      cleanup_status: migration-only
-      remove_after: 2026-12-17
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [backend, lifecycle]
   - id: yss-tactical-design
     layer: specialist
     maturity: draft
@@ -616,17 +605,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend]
-  - id: yss-mvc-data-analysis-project-initializer
-    layer: specialist
-    maturity: deprecated
-    replacement_skill: yss-layered-mvc-scaffold-generator
-    deprecation:
-      new_use: forbidden
-      cleanup_status: migration-only
-      remove_after: 2026-12-17
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [backend]
   - id: yss-mybatis
     layer: specialist
     maturity: supported
@@ -711,18 +689,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
-  - id: yss-use-table-height
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: [use-table-height]
-    impacts: [frontend]
-  - id: yss-use-tree-height
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: [use-tree-height]
-    impacts: [frontend]
   - id: yss-userinfo
     layer: specialist
     maturity: supported
@@ -741,12 +707,6 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend, api]
-  - id: component-selection-imports
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
   - id: file-export-download
     layer: specialist
     maturity: supported
@@ -789,36 +749,12 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [template-maintenance]
-  - id: page-form-module
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
-  - id: page-list-module
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
-  - id: page-skeleton
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
   - id: theme-token-usage
     layer: specialist
     maturity: supported
     instance_default_discoverable: false
     aliases: []
     impacts: [frontend, prototype]
-  - id: vue3-best-practices
-    layer: specialist
-    maturity: supported
-    instance_default_discoverable: false
-    aliases: []
-    impacts: [frontend]
   - id: yedit-table-usage
     layer: specialist
     maturity: supported
@@ -848,12 +784,4 @@ platform_skills:
     layer: specialist
     instance_default_discoverable: false
     aliases: [product-design:index]
-external_skills:
-  - id: yss-backend-scaffold-parent
-    source: .agents/skills/yss-ddd-scaffold-generator/references/yss-backend-scaffold-parent/SKILL.md
-    maturity: deprecated
-    replacement_skill: yss-ddd-scaffold-generator
-    deprecation:
-      new_use: forbidden
-      cleanup_status: migration-only
-      remove_after: 2026-12-17
+external_skills: []

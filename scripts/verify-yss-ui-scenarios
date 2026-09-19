@@ -46,7 +46,7 @@ const specializedBody = read(path.join(skillRoot, "references/specialized-compon
 for (const marker of ["YSplitPane", "YConditionBuilder", "YMonthCalendar", "YFileImport", "YMonaco", "YCron", "YSheet", "YssEcharts"]) if (!specializedBody.includes(marker)) failures.push(`Specialized component contract missing marker: ${marker}`);
 
 const formilyBody = read(path.join(root, ".agents/skills/yss-formily/SKILL.md"));
-for (const marker of ["formily-foundation", "formily-linkage-effects", "formily-mode-slot-detail", "formily-step-flow", "page-form-module", "yss-formily-schema-generator"]) if (!formilyBody.includes(marker)) failures.push(`YFormily router missing marker: ${marker}`);
+for (const marker of ["formily-foundation", "formily-linkage-effects", "formily-mode-slot-detail", "formily-step-flow", "yss-ui-business-page-generation", "yss-formily-schema-generator"]) if (!formilyBody.includes(marker)) failures.push(`YFormily router missing marker: ${marker}`);
 for (const forbidden of ["## 标准代码骨架", "<YFormily", "const schema:"]) if (formilyBody.includes(forbidden)) failures.push(`YFormily router still embeds implementation body: ${forbidden}`);
 
 const compatibilityBody = read(path.join(skillRoot, "references/antdv-compatibility.md"));

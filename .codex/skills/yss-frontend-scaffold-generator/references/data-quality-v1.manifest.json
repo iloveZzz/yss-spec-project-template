@@ -17,10 +17,10 @@
     ".gitignore": "sha256:fb8288522033f645a728dfb53cef24a11824bdbec858b93279d4809924b4539d",
     ".npmrc.example": "sha256:cee4433295152854b58babea9072215a2d84b8de086d218b15ffb7e84f1fe9e1",
     "DESIGN.md": "sha256:e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec",
-    "README.md": "sha256:6d8ed1aed45267f3c581733a7d12b0b891dc94c800d1416a0b172355031b4b96",
+    "README.md": "sha256:745bd31b3397876fc239bde12378bc265a1a8d1626159f188de76873951d471a",
     "micro-config.json": "sha256:8266b0eb806696d6bb2023a0d1e72113cdffc355bb0fafd8b2095d727f827711",
     "orval.config.ts": "sha256:d918458e4ee972ae94740899dd15701530bdc31fd758240fc00e96aba3ba9b3a",
-    "package.json": "sha256:29cd516ba688ae3a3625b4f3a3921c47825134cff27622732ef942c4129c7222",
+    "package.json": "sha256:51a73185fac255062e4f3eaa415017f9c9886d5e3aac4ff483694c49ae810ba7",
     "packages/.env.development": "sha256:e698b56d83ad282c221e2c8067bc4e3e90789c610fd31da2489bd3ac2d8efc5f",
     "packages/.env.example": "sha256:b8cf60af269af3f4dc3c167df88045af949683b302bd9b77e50fb77fa1adf81f",
     "packages/.env.production": "sha256:b0a96ab02559a99fc95c37b967f604675686c8de336731a1721d54f43b047249",
@@ -43,7 +43,7 @@
     "packages/src/views/Welcome.vue": "sha256:0498edee6e25b45644a2d12c6fded1e3c0fda830c9196d4fc5389b94fb1a0e0d",
     "packages/tsconfig.json": "sha256:40e27bb07cd4ae8c0c636b5d9581fe378d00e21acb28423cc2a08bfa1a67c11f",
     "packages/vite.config.ts": "sha256:d3c1775bdca54e1b0f2b267a7dae992cc61836891588e93e02caa49184cb2ab2",
-    "pnpm-lock.yaml": "sha256:dd05bbc9c948cb47de017fa215806d04f0f9f143d3c953b43076a62e5fd85d9b",
+    "pnpm-lock.yaml": "sha256:ddab6b19cb74c769ba1cd3854d3eb0649843e8136811b7cbf2800c3084f73949",
     "pnpm-workspace.yaml": "sha256:d5cdbd2e0a167297976d11695d1593a4e71694ed462120569e20e98fd9c63fbe"
   }
 }

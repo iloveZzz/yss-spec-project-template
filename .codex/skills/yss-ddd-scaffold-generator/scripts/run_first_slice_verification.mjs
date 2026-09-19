@@ -101,8 +101,7 @@ async function downstreamDrift(manifest, requiredSkills = REQUIRED_SKILLS) {
   };
   if (manifest.architecture_family === "layered-mvc") {
     contractFiles.architecture_profiles = path.join(REPOSITORY_ROOT, "docs/agents/backend-architecture-profiles.md");
-  } else if (contracts.engineering_baseline) contractFiles.engineering_baseline = path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-ddd-scaffold-generator", "references", "engineering-baseline.md");
-  else contractFiles.scaffold_parent = path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-ddd-scaffold-generator", "references", "yss-backend-scaffold-parent", "SKILL.md");
+  } else contractFiles.engineering_baseline = path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-ddd-scaffold-generator", "references", "engineering-baseline.md");
   for (const [name, target] of Object.entries(contractFiles)) {
     const expected = contracts[name];
     if (typeof expected !== "string" || !/^[a-f0-9]{64}$/.test(expected)) {

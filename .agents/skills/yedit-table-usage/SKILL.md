@@ -36,6 +36,7 @@ description: "配置或修复 YSS UI YEditTable 的行内编辑、候选联动�
 - 删除使用 `type: 'action' + actionConfig.buttons[].isConfirm`；不默认使用 `Modal.confirm`。
 - `validate()` 真实返回 `Promise<{ valid: boolean; errorMsg: Map<string, string> }>`。组件 ref 未就绪时不得误判为校验成功。
 - 弹窗/抽屉内使用添加按钮时，高度 Hook 配置 `withAddButton: true`；如果同时分页或开启工具栏，一并开启对应偏移。
+- 自适应高度使用 `useTableHeight(tableAreaRef, options)` 并绑定 `:height="tableHeight"`；直接父容器必须可计算且设置 `min-height: 0`。若表格内容会反向撑开观察容器，改用稳定 `boundaryRef`；弹层展开后高度仍不准时才调用 `nextTick(recalculateHeight)`。
 - API 失败由 `mutator.ts` 统一提示并 reject。Hook 中不写 `success === false` 分支，不在 `else/catch` 重复 `message.error`；清理状态放在 `finally`。
 
 ## 标准代码骨架
@@ -218,6 +219,7 @@ const textFilterColumn: YEditTableColumn = {
 - [ ] 查看态同时禁用编辑、隐藏添加按钮和移除操作列。
 - [ ] `validate()` 按 `{ valid, errorMsg }` 处理，组件 ref 未就绪时不提交。
 - [ ] API Hook 没有重复 `message.error`，前端临时 key 不传给后端。
+- [ ] `withAddButton/withPagination/withToolbar` 与实际开关一致，观察容器稳定且没有双滚动条。
 
 ## 失败兜底策略
 

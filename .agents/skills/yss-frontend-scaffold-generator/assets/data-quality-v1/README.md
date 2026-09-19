@@ -2,7 +2,7 @@
 
 Data Quality v1 通用骨架：Vue 3 / Ant Design Vue 4 / YSS UI，默认浅色、14px 正文、32px 控件。`packages/` 是应用根。YSS 按需注册，新增页面再按实现合同引入表格或表单组件。骨架不含业务页面、用户权限、生产 API 地址或部署凭证。
 
-使用 Node >=22.12、pnpm 10.15、TypeScript5.9.3；在用户级 npm 配置中设置企业 @yss-ui registry 和认证，然后运行 `pnpm install --frozen-lockfile`。检查使用 `pnpm lint:check`、`pnpm type-check`、`pnpm build` 和 `pnpm build:standalone`。
+使用 Node >=22.12、pnpm 12.4.2、TypeScript5.9.3；在用户级 npm 配置中设置企业 @yss-ui registry 和认证，然后运行 `pnpm install --frozen-lockfile`。检查使用 `pnpm lint:check`、`pnpm type-check`、`pnpm build` 和 `pnpm build:standalone`。
 
 `pnpm dev` 独立预览；Qiankun 注册名为 `__MICROAPP_NAME__`、默认激活路由 `__BASE_ROUTE__`，门户传入 `container` / `routerBase` / `bridgeVersion: 1` / `themeConfig.mode`。资源部署路径由 `VITE_PUBLIC_BASE` 明确设置，不能从路由猜测。复制 `packages/.env.example` 到 `.env.local` 配置本地代理。
 

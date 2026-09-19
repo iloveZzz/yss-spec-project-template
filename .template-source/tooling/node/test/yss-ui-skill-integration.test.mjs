@@ -11,14 +11,25 @@ import {
 const manifestPath = `${ROOT}/.agents/skills/.yss-skills-manifest.json`;
 const strategicManifestPath = `${ROOT}/.agents/skills/.strategic-design-skills-manifest.json`;
 
-test("yss-ui 业务项目清单覆盖 20 个精选 app skills 与项目级 MCP 配置", () => {
+test("yss-ui 业务项目清单覆盖 13 个精选 app skills 与项目级 MCP 配置", () => {
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
   const contract = validateYssUiSkillManifest(manifest);
 
-  assert.equal(contract.skills.length, 20);
+  assert.equal(contract.skills.length, 13);
   assert.equal(contract.source_category, "app");
   assert.deepEqual(contract.excluded_categories, ["library"]);
-  assert.deepEqual(contract.excluded_skills, ["java-backend-commit", "page-module-development", "prototype-page-acceptance"]);
+  assert.deepEqual(contract.excluded_skills, [
+    "component-selection-imports",
+    "java-backend-commit",
+    "page-form-module",
+    "page-list-module",
+    "page-module-development",
+    "page-skeleton",
+    "prototype-page-acceptance",
+    "use-table-height",
+    "use-tree-height",
+    "vue3-best-practices",
+  ]);
   for (const retired of contract.excluded_skills) {
     assert.equal(contract.skills.some(({ upstream }) => upstream === retired), false);
   }
@@ -45,11 +56,7 @@ test("yss-ui 业务项目清单覆盖 20 个精选 app skills 与项目级 MCP �
     contract.skills
       .filter(({ upstream, canonical }) => upstream !== canonical)
       .map(({ upstream, canonical }) => `${upstream}:${canonical}`),
-    [
-      "api-integration:yss-api-integration",
-      "use-table-height:yss-use-table-height",
-      "use-tree-height:yss-use-tree-height",
-    ],
+    ["api-integration:yss-api-integration"],
   );
   assert.deepEqual(
     contract.mcp.project_configs.map(({ path }) => path),

@@ -1,8 +1,6 @@
-diff --git a/SKILL.md b/SKILL.md
-index 5acd25b..580aefb 100644
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -5,75 +5,57 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill 
+@@ -5,75 +5,57 @@
  
  # YSS Implementation Contract Compiler
  
@@ -18,9 +16,10 @@ index 5acd25b..580aefb 100644
  ## 输入
  
 -先读取 Spec、切片 Ticket、需求冻结、适用的原型确认、OpenAPI Freeze/no-impact、适用的系统/数据架构和 Design Review、Build Architecture Checklist、实现仓库和验证命令。输入缺失、未批准或 `stale` 时输出 `blocked`，交回 `yss-product-lifecycle`。
--
--## 编译循环
 +采用专职前端 profile 或显式 `frontend_delivery` 时，按 `docs/process/frontend-backend-delivery.md` 核验战略与后端联合交付；缺任一输入只诊断和回交，正式实现与恢复从当前批准的 Slice Contract 重验接收摘要和真实服务。
+ 
+-## 编译循环
++必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、前端工程设计、已核验的后端交付、API / UI 消费影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
  
 -1. 判断 frontend/backend/API/data/domain/cross-repo 影响，并按 [compiler-contract.yaml](references/compiler-contract.yaml) 把 impact 映射为入口 capability；逐项填写 backend `component_impacts`。
 -2. 按 `docs/process/delivery-preflight.md` 只读检查当前阶段交付前提，再检查工程存在性和核心/长尾 skill 可用性。既有 Java/Maven 工程按 `docs/process/existing-backend-architecture.md` 加载登记、工程基线、独立观测的原始引用与摘要；不伪填生成器或 H2。
@@ -30,19 +29,32 @@ index 5acd25b..580aefb 100644
 -6. 为切片生成基线合同；为当前行为生成工作单元增量路由。
 -7. 选择 `behavior-tdd` 或 `controlled-generation`。
 -8. 输出 `draft`、`blocked` 或 `ready-for-lifecycle-review`，交生命周期编排器核验和持久化。
-+必须读取 yss-project.yaml、CONTEXT.md、Spec / 战略设计、前端工程设计、已核验的后端交付、API / UI 消费影响、实现仓库登记、允许写路径和验证命令。输入缺失、未批准或过期时返回 blocked。
- 
--完整草案使用 `scripts/slice-contract prepare` 或 `prepareSliceImplementationContract` 从已有 Ticket / checkpoint 和必要细化组装；执行前读取唯一 YAML，视图和检查报告不授予权限。
 +后端 DDD / MVC 技术设计、架构确认和脚手架由后端项目持有；本仓只读消费已冻结 API、联合交付与页面工程约束。两类战略交接合同均可导入，不为前端切片补造后端技术设计。
  
--合同结构见 [slice-implementation-contract.md](references/slice-implementation-contract.md)，专项返回协议见 [yss-skill-execution-result.md](references/yss-skill-execution-result.md)。前端、后端和测试子任务必须由生命周期主控从批准的 Slice Contract 编译任务包；任务包 schema 为 `docs/process/schemas/subagent-task-package.schema.json`，技能列表必须来自 `taskPackageDefaults`，不能由编译器或执行 Agent 另行手写。
+-完整草案使用 `scripts/slice-contract prepare` 或 `prepareSliceImplementationContract` 从已有 Ticket / checkpoint 和必要细化组装；执行前读取唯一 YAML，视图和检查报告不授予权限。
  
--## 硬规则
+-合同结构见 [slice-implementation-contract.md](references/slice-implementation-contract.md)，专项返回协议见 [yss-skill-execution-result.md](references/yss-skill-execution-result.md)。前端、后端和测试子任务必须由生命周期主控从批准的 Slice Contract 编译任务包；任务包 schema 为 `docs/process/schemas/subagent-task-package.schema.json`，技能列表必须来自 `taskPackageDefaults`，不能由编译器或执行 Agent 另行手写。
 +接入与导出先按 `docs/process/delivery-preflight.md` 执行对应阶段只读预检；既有工程身份按 `docs/process/existing-backend-architecture.md` 读取原始证据，不补造生成器来源。无 UI 改动可承接当前确认的 `existing-ui-baseline`，新设计仍走原型；当前批准后仅允许登记与合同交集内的输出增量。
++
++## 编译结果
++
++新合同使用 Slice v3 唯一 YAML：basis、scope、resolution、acceptance、verification、work_units 与适用 extensions 单点保存；任务包由批准合同派生。v2 按原规则读取，修改时显式迁移新草案，不继承批准。
++
++编译器必须计算：
++
++- 按 `compiler-contract.yaml` 将 impact 映射为入口 capability；Recipe 只能引用 capability。
++- 合并多个窄 Recipe 后只计算一次闭包；只递归 `context-required`，显式 condition 命中时才加载 `context-conditional`，其他类型不扩张实现上下文。
++- 按 Recipe 声明顺序、依赖拓扑和 skill ID 兜底确定性排序；去重 skill 并保留全部原因链。
++- API Freeze 或无 API 影响记录。
++- 数据架构或无数据影响记录。
++- UI 交互、状态、原型输入，以及批准且 digest 当前的 Visual Baseline manifest 与当前切片 `case_id`；无 UI 影响时记录不适用。
++- 实现仓库、分支、项目根、CI、验证命令、回滚点和允许写路径。
++- `required_capabilities`、`required_skills`、Registry/Compiler digest、TDD 模式、预期证据和完整重路由触发器。
+ 
+ ## 硬规则
  
 -采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `docs/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
-+## 编译结果
- 
+-
 -- 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
 -- Registry 和编译规则保持 schema v2；新 Slice 使用 v3，v2 按原规则读取和显式迁移。schema v1 一律拒绝，不自动升级，不提供旧技能名兼容。
 -- `required_capabilities` 与 `required_skills` 必须同时冻结；Registry 或编译器摘要变化后合同立即 `stale`，重新编译后仍须交生命周期重新批准。
@@ -60,26 +72,15 @@ index 5acd25b..580aefb 100644
 -- 专项结果中的越界路径、缺失证据、`drift`、`violation` 或 `new_impacts` 必须阻断或重路由。
 -- 前后端子任务必须使用同一 `contract_id/contract_version`，并在任务包中记录 `role_id`、`runtime_id`、`execution_state`、`allowed_write_paths`、`downstream_consumers` 和 `convergence_ref`；版本不一致或汇合引用缺失时输出 `blocked`。
 -- 长尾 skill 不可用时显式 `blocked`，不得用通用知识假装已应用 YSS 规范。
-+新合同使用 Slice v3 唯一 YAML：basis、scope、resolution、acceptance、verification、work_units 与适用 extensions 单点保存；任务包由批准合同派生。v2 按原规则读取，修改时显式迁移新草案，不继承批准。
- 
+-
 -## 三级编译模式
-+编译器必须计算：
- 
+-
 -- 切片基线编译：生成完整合同和技能闭包。
 -- 工作单元增量编译：绑定一个行为、主/辅 skills、TDD 模式、路径和证据。
 -- 完整重编译：API/schema、状态机、数据模型、仓库、写路径、skill、测试 seam 或架构约束发生实质变化时触发。实现中出现未冻结的新行为（包括明确的权限业务行为）统一写入 `new_impacts`，由生命周期按普通影响面重新分诊。
-+- 按 `compiler-contract.yaml` 将 impact 映射为入口 capability；Recipe 只能引用 capability。
-+- 合并多个窄 Recipe 后只计算一次闭包；只递归 `context-required`，显式 condition 命中时才加载 `context-conditional`，其他类型不扩张实现上下文。
-+- 按 Recipe 声明顺序、依赖拓扑和 skill ID 兜底确定性排序；去重 skill 并保留全部原因链。
-+- API Freeze 或无 API 影响记录。
-+- 数据架构或无数据影响记录。
-+- UI 交互、状态、原型输入，以及批准且 digest 当前的 Visual Baseline manifest 与当前切片 `case_id`；无 UI 影响时记录不适用。
-+- 实现仓库、分支、项目根、CI、验证命令、回滚点和允许写路径。
-+- `required_capabilities`、`required_skills`、Registry/Compiler digest、TDD 模式、预期证据和完整重路由触发器。
- 
+-
 -## 输出
-+## 硬规则
- 
+-
 -输出唯一 YAML 合同草案及派生报告；报告包含 capability/Recipe 解析记录、技能依赖闭包、不适用理由、阻塞项、TDD 模式、工作单元、预期证据、验证命令、人工审查点、完整重路由触发器，以及建议的 `suggested_owner_role_id`（UI 影响 → `role.frontend-engineer`，后端影响 → `role.backend-engineer`，测试/审查 → `role.test-engineer`）。自然语言说明不能替代结构化合同字段。编译器不得自行批准合同、设置 `ready-for-agent` 或关闭会签门禁；owner 建议只供主控派活。
 +- 编译器不得输出 approved、ready-for-agent 或 completed。
 +- Registry、编译器合同或 Slice Contract schema v1 一律拒绝并返回迁移提示；不自动升级，不提供旧技能名 alias。
@@ -95,23 +96,21 @@ index 5acd25b..580aefb 100644
  ## 战略交接快照包
  
 -跨仓交接使用 `scripts/strategic-handoff export / verify / import`。正式导出前补齐源战略的稳定规则 ID、关键场景和当前批准绑定；源资产原字节冻结、包内路径通过清单解析。目标导入只产生快照和对账/承接草案，正式 reconciliation 通过后才能进入战术设计。流程与字段见 `docs/process/strategic-handoff-package.md`。
--
--来自战略交接包的技术设计合同（DDD / MVC）必须绑定 `strategic_handoff` 导入收据、包摘要、正式目标对账及逐条承接 rows。来自导入包时禁止仅填 `upstream_current: true`。批准前执行 `scripts/verify-strategic-handoff-consumption --root <target> <tactical>`；存在受控延期时按切片执行 `--slice <slice-id>`，实际核验通过且合同批准后才可继续相关切片。最新源规则、关键场景或资产变化使依赖项 stale；未知依赖扩大阻断，业务冲突回交战略方。结果绑定当前包与战术摘要，不能复用旧输出宣布 ready-for-agent。
 +使用 `scripts/strategic-handoff export / verify / import`；源资产冻结、规则身份与批准绑定、目标术语对账和逐条承接合同以 `docs/process/strategic-handoff-package.md` 为准。来自导入包时，战术合同绑定 `strategic_handoff`；批准/流转前执行 `scripts/verify-strategic-handoff-consumption --root <target> <tactical>`，切片消费追加 `--slice <slice-id>`。存在延期时仅允许无依赖且核验通过的切片继续；未知依赖扩大阻断。
  
--Slice v3 的任务进度、缺口和实时就绪结果不回写合同。源事实集中在 basis，Skill 闭包只在 resolution 保存，工作单元继承共同约束；独立工程审查与已有用户确认共同交生命周期批准。详见合同引用。
+-来自战略交接包的技术设计合同（DDD / MVC）必须绑定 `strategic_handoff` 导入收据、包摘要、正式目标对账及逐条承接 rows。来自导入包时禁止仅填 `upstream_current: true`。批准前执行 `scripts/verify-strategic-handoff-consumption --root <target> <tactical>`；存在受控延期时按切片执行 `--slice <slice-id>`，实际核验通过且合同批准后才可继续相关切片。最新源规则、关键场景或资产变化使依赖项 stale；未知依赖扩大阻断，业务冲突回交战略方。结果绑定当前包与战术摘要，不能复用旧输出宣布 ready-for-agent。
 +## Slice v3 准备与批准
  
--## 后端脚手架平台承接
+-Slice v3 的任务进度、缺口和实时就绪结果不回写合同。源事实集中在 basis，Skill 闭包只在 resolution 保存，工作单元继承共同约束；独立工程审查与已有用户确认共同交生命周期批准。详见合同引用。
 +使用 `scripts/slice-contract prepare/view/diff/migrate`，字段与接口见 [Slice v3](references/slice-implementation-contract.md)。用户只确认目标、范围、验收和关键取舍，已有有效确认按原协议延续；独立专业审查核验工程约束，主控汇总批准。原因链、缺口、检查结果和任务进度留在派生报告或现有证据，不改写权威合同。不得从普通 Spec 确认推断实施授权。
  
--消费生命周期已确认的架构与 `platform_configuration` v2；不得自行选择、批准或静默升级 Boot/Java。平台清单执行 `scripts/backend-platforms` 查询；只允许已验证 YSS 组合，新生成缺少配置或证据即阻断。决定、合同、Manifest 与下游架构身份须绑定同一平台及兼容摘要。详见 仓库共享合同 `docs/engineering/backend-platforms.md`。
+-## 后端脚手架平台承接
 +## 后端组件合同的只读承接
  
+-消费生命周期已确认的架构与 `platform_configuration` v2；不得自行选择、批准或静默升级 Boot/Java。平台清单执行 `scripts/backend-platforms` 查询；只允许已验证 YSS 组合，新生成缺少配置或证据即阻断。决定、合同、Manifest 与下游架构身份须绑定同一平台及兼容摘要。详见 仓库共享合同 `docs/engineering/backend-platforms.md`。
+-
 -后端 Slice 解析出 `component_binding: required` 的 capability 或其主 Skill 时，必须在同一平台兼容条目中逐项解析 `component_capabilities`。编译结果保存 `component_bindings` 与 `component_bindings_digest`；未登记、未验证、架构证据缺失、构件坐标冲突或摘要漂移均阻断。旧合同含组件 Skill 但没有组件绑定时直接 `stale`，重新编译并交生命周期批准，禁止自动补字段后沿用原批准。
 +前端任务不选择或认证 YSS 后端组件。跨仓 Slice 含 `component_bindings` 时必须原样保留并消费 `component_bindings_digest`；绑定缺失或漂移时返回 `stale` 并交回后端与主控重新编译，禁止在前端合同中补造构件证据。
-diff --git a/agents/openai.yaml b/agents/openai.yaml
-index b2b097f..9278c4b 100644
 --- a/agents/openai.yaml
 +++ b/agents/openai.yaml
 @@ -1,4 +1,4 @@
@@ -120,8 +119,6 @@ index b2b097f..9278c4b 100644
    short_description: "Compile capabilities into a minimal implementation contract"
 -  default_prompt: "Use yss-implementation-contract-compiler to compile the approved slice capabilities, deterministic skill closure, evidence plan, and v3 contract draft."
 +  default_prompt: "Use yss-implementation-contract-compiler to compile approved capabilities, deterministic skill closure, evidence, and a v3 contract draft."
-diff --git a/references/boundaries.md b/references/boundaries.md
-index f0acfcf..e092724 100644
 --- a/references/boundaries.md
 +++ b/references/boundaries.md
 @@ -19,37 +19,13 @@
@@ -139,7 +136,6 @@ index f0acfcf..e092724 100644
  | `governance.implementation-contract` | `yss-implementation-contract-compiler` | `contract-compilation`, `reroute`, `result-validation` |
 +| `architecture.system-data` | `architecture-agent` | `guidance`, `contract-compilation`, `review-input` |
  | `maintenance.skill-source-index` | `yss-skill-source-index-refresh` | `component-maintenance`, `source-index-refresh` |
-+| `scaffold.frontend-vue3` | `yss-frontend-scaffold-generator` | `integration`, `component-maintenance` |
 -| `architecture.tactical-domain` | `yss-tactical-design` | `guidance`, `integration`, `slice-implementation`, `review-input` |
 -| `layer.domain` | `yss-domain` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
 -| `layer.application` | `yss-application` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
@@ -161,13 +157,13 @@ index f0acfcf..e092724 100644
 -| `component.gateway-resilience` | `yss-resilience4j` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `component-maintenance`, `review-input` |
 -| `scaffold.ddd` | `yss-ddd-scaffold-generator` | `integration`, `component-maintenance` |
 -| `scaffold.layered-mvc` | `yss-layered-mvc-scaffold-generator` | `integration`, `component-maintenance` |
--| `scaffold.frontend-vue3` | `yss-frontend-scaffold-generator` | `integration`, `component-maintenance` |
+ | `scaffold.frontend-vue3` | `yss-frontend-scaffold-generator` | `integration`, `component-maintenance` |
 -| `project-init.mvc-data-analysis` | `yss-layered-mvc-scaffold-generator` | `component-maintenance` |
 -| `migration.springboot3` | `yss-up-springboot3` | `guidance`, `integration`, `troubleshooting`, `component-maintenance`, `review-input` |
  
  ## Narrow Recipes
  
-@@ -57,99 +32,28 @@
+@@ -57,99 +33,28 @@
  
  | Recipe | Capabilities |
  | --- | --- |
@@ -230,12 +226,13 @@ index f0acfcf..e092724 100644
  | `yss-implementation-contract-compiler` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
  | `yss-openapi-governance` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 -| `yss-stage-decision` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
--| `yss-research` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
++| `yss-prototype-stage` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+ | `yss-research` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 -| `yss-product-lifecycle` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 -| `code-review` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 -| `code-review` | `yss-repository` | `context-conditional` | `backend-persistence-impact` |
 -| `code-review` | `yss-mybatis` | `context-conditional` | `backend-persistence-impact` |
- | `yss-prototype-stage` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
+-| `yss-prototype-stage` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 -| `yss-prototype-stage` | `prototype-review` | `review-only` | — |
 -| `yss-prototype-stage` | `yss-design-system` | `coordination-only` | — |
 -| `yss-ddd-scaffold-generator` | `alibaba-java-code-style` | `context-required` | — |
@@ -270,16 +267,13 @@ index f0acfcf..e092724 100644
 -| `yss-validation` | `yss-exception` | `component-dependency` | — |
 -| `yss-security-algorithm` | `yss-exception` | `component-dependency` | — |
 -| `yss-exception` | `yss-dto` | `context-required` | — |
-+| `yss-research` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 +| `harness-orchestrator` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
- | `yss-ui-business-page-generation` | `component-selection-imports` | `context-conditional` | `components` |
+ | `yss-ui-business-page-generation` | `yss-ui` | `context-required` | — |
  | `yss-ui-business-page-generation` | `yss-hook` | `context-conditional` | `hooks` |
  | `yss-ui-business-page-generation` | `yss-formily` | `context-conditional` | `form` |
-diff --git a/references/compiler-contract.yaml b/references/compiler-contract.yaml
-index e43dfb8..bb91039 100644
 --- a/references/compiler-contract.yaml
 +++ b/references/compiler-contract.yaml
-@@ -8,141 +8,169 @@ slice_contract_versions:
+@@ -8,141 +8,169 @@
  backend_architecture:
    registry_source: docs/agents/yss-skill-registry.yaml
    identity_schema: docs/process/schemas/backend-architecture-identity.schema.json
@@ -560,7 +554,7 @@ index e43dfb8..bb91039 100644
    component_bindings:
      when: any-required-capability-provider-kind-is-yss-component
      platform_configuration: required-v2
-@@ -151,309 +179,302 @@ resolution_contract:
+@@ -151,309 +179,302 @@
      exact_artifact_binding: [group_id, artifact_id, declared_version, resolved_version, pom_sha256, jar_sha256, source_tree]
      digest_change_status: stale
      old_contract_without_binding: stale-and-recompile-no-auto-upgrade
@@ -908,7 +902,39 @@ index e43dfb8..bb91039 100644
 +    - first-slice-verified
      downstream_readiness_claim_requires: first-slice-verified
 -    evidence: [preflight, command, exit_code, failure_category, duration_ms, stdout_ref, stderr_ref, executed_at]
--
++    completion_requires:
++    - validate_passed
++    - test_passed
++    - package_passed
++    evidence:
++    - preflight
++    - command
++    - exit_code
++    - failure_category
++    - duration_ms
++    - stdout_ref
++    - stderr_ref
++    - executed_at
++    failure_action: blocked
++strategic_handoff_consumption:
++  when: upstream-source-is-imported-strategic-handoff
++  required:
++  - import_receipt_ref
++  - bundle_digest
++  - context_reconciliation_ref
++  - rows
++  verification: scripts/verify-strategic-handoff-consumption --root <target> --slice <slice-id> <approved-tactical-contract>
++  require_actual_exit_code: 0
++  stale_policy: latest-imported-source-digest-and-dependent-slices
++  unknown_dependency: block-all
++  compiler_must_not_approve: true
++frontend_delivery_readiness:
++  when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
++  source: docs/process/frontend-backend-delivery.md
++  verifier: scripts/verify-frontend-delivery
++  output_binding: frontend.delivery
++  inputs_verified_is_implementation_approval: false
+ 
 -applicable_subcontract_nonempty:
 -  frontend:
 -    scalar: [approved_prototype_ref, state_matrix_ref, visual_baseline_ref]
@@ -1050,55 +1076,24 @@ index e43dfb8..bb91039 100644
 -  - deviations
 -  - new_impacts
 -  - not_applicable_reason
--execution_result_component_binding:
--  when: resolution.component_bindings-present
--  required: consumed_contract.component_bindings_digest
--  mismatch: component-binding-mismatch
+ execution_result_component_binding:
+   when: resolution.component_bindings-present
+   required: consumed_contract.component_bindings_digest
+   mismatch: component-binding-mismatch
 -seam_deferred_required: [risk, owner, follow_up_ticket, verification_plan, target_version_or_release_date]
 -deviation_required: [rule, reason, approval_ref]
 -not_applicable_required: [item, reason]
 -unavailable_skill_required: [skill, provider, fallback, resolution]
--
-+    completion_requires:
-+    - validate_passed
-+    - test_passed
-+    - package_passed
-+    evidence:
-+    - preflight
-+    - command
-+    - exit_code
-+    - failure_category
-+    - duration_ms
-+    - stdout_ref
-+    - stderr_ref
-+    - executed_at
-+    failure_action: blocked
- strategic_handoff_consumption:
-   when: upstream-source-is-imported-strategic-handoff
+ 
+-strategic_handoff_consumption:
+-  when: upstream-source-is-imported-strategic-handoff
 -  required: [import_receipt_ref, bundle_digest, context_reconciliation_ref, rows]
 -  verification: scripts/verify-strategic-handoff-consumption --root <target> --slice <slice-id> <approved-technical-design-contract>
-+  required:
-+  - import_receipt_ref
-+  - bundle_digest
-+  - context_reconciliation_ref
-+  - rows
-+  verification: scripts/verify-strategic-handoff-consumption --root <target> --slice <slice-id> <approved-tactical-contract>
-   require_actual_exit_code: 0
-   stale_policy: latest-imported-source-digest-and-dependent-slices
-   unknown_dependency: block-all
-   compiler_must_not_approve: true
-+frontend_delivery_readiness:
-+  when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
-+  source: docs/process/frontend-backend-delivery.md
-+  verifier: scripts/verify-frontend-delivery
-+  output_binding: frontend.delivery
-+  inputs_verified_is_implementation_approval: false
-+
-+execution_result_component_binding:
-+  when: resolution.component_bindings-present
-+  required: consumed_contract.component_bindings_digest
-+  mismatch: component-binding-mismatch
- 
+-  require_actual_exit_code: 0
+-  stale_policy: latest-imported-source-digest-and-dependent-slices
+-  unknown_dependency: block-all
+-  compiler_must_not_approve: true
+-
 -backend_platform_contract:
 -  schema_version: 2
 -  catalog_ref: docs/engineering/backend-platforms.json
@@ -1123,8 +1118,6 @@ index e43dfb8..bb91039 100644
 +  missing_or_drift: component-binding-drift
 +  action: return-to-backend-and-harness-orchestrator
 +  frontend_must_not_certify: true
-diff --git a/references/slice-implementation-contract-v2.md b/references/slice-implementation-contract-v2.md
-index 80e2bc1..fc6d7fb 100644
 --- a/references/slice-implementation-contract-v2.md
 +++ b/references/slice-implementation-contract-v2.md
 @@ -1,100 +1,64 @@
@@ -1254,7 +1247,7 @@ index 80e2bc1..fc6d7fb 100644
      state_matrix_ref:
      visual_baseline_ref:
      visual_baseline_case_ids: []
-@@ -110,28 +74,21 @@ slice_contract:
+@@ -110,28 +74,21 @@
      application_boundary:
      transaction_boundary:
      persistence_strategy:
@@ -1295,7 +1288,7 @@ index 80e2bc1..fc6d7fb 100644
      verification_commands: []
    contract:
      api_impact: false
-@@ -142,73 +99,19 @@ slice_contract:
+@@ -142,73 +99,19 @@
      regeneration_commands: []
    cross_repo:
      repositories: []
@@ -1377,20 +1370,18 @@ index 80e2bc1..fc6d7fb 100644
  
 -技术设计编译绑定使用 `technical_design: {ref, version, digest}` 与 `slice_id`，校验器规则见 `yss-technical-design/references/technical-design-contract.md`。`backend.tactical_ddd` 仅适用于 `domain-driven`；MVC 消费共同技术设计绑定与 `design` 的用例、规则、事务和测试 seam，不填聚合或 Gateway 字段。
 +前端专职合同仅填写页面工程、组件、状态管理、API 消费与测试边界。来自导入包的承接使用前端联合接收核验，不生成或执行后端技术设计。
-diff --git a/references/yss-skill-execution-result.md b/references/yss-skill-execution-result.md
-index ee8295c..51a23c0 100644
 --- a/references/yss-skill-execution-result.md
 +++ b/references/yss-skill-execution-result.md
-@@ -2,8 +2,6 @@
+@@ -1,8 +1,6 @@
+ # YSS Skill Execution Result
  
  核心 YSS skill 必须消费已批准合同版本，并返回：
- 
--后端结果顶层带与当前 resolution 完全一致的 `architecture_identity`；每条验证记录还须有整数 `exit_code`。身份缺失、Profile 未 supported、验证非零或没有执行时间均不得 accepted。
 -
+-后端结果顶层带与当前 resolution 完全一致的 `architecture_identity`；每条验证记录还须有整数 `exit_code`。身份缺失、Profile 未 supported、验证非零或没有执行时间均不得 accepted。
+ 
  ```yaml
  execution_result:
-   schema_version: 2
-@@ -18,8 +16,6 @@ execution_result:
+@@ -18,8 +16,6 @@
      registry_digest:
      compiler_contract_digest:
      component_bindings_digest: # 合同含 component_bindings 时必填
@@ -1399,7 +1390,7 @@ index ee8295c..51a23c0 100644
    changed_files:
      - path:
        contract_area: common | frontend | backend | contract | cross_repo
-@@ -35,9 +31,6 @@ execution_result:
+@@ -35,9 +31,6 @@
      - constraint:
        status: passed | failed | not-applicable
        evidence_ref:
@@ -1409,8 +1400,6 @@ index ee8295c..51a23c0 100644
    seam_deferred:
      - risk:
        owner:
-diff --git a/tests/compiler-scenarios.test.mjs b/tests/compiler-scenarios.test.mjs
-index 967988c..dc5b962 100644
 --- a/tests/compiler-scenarios.test.mjs
 +++ b/tests/compiler-scenarios.test.mjs
 @@ -1,6 +1,5 @@
@@ -1420,7 +1409,7 @@ index 967988c..dc5b962 100644
  import {
    compileImplementationContract,
    digestDocument,
-@@ -9,94 +8,50 @@ import {
+@@ -9,94 +8,50 @@
    validateExecutionResult
  } from "../../../../scripts/lib/implementation-contract-compiler.mjs";
  import { loadSkillRegistry } from "../../../../scripts/lib/skill-registry.mjs";
@@ -1446,9 +1435,17 @@ index 967988c..dc5b962 100644
 -  assert.deepEqual(first.recipe_ids, ["backend.ddd-domain-behavior"]);
 -  for (const skill of ["yss-domain", "yss-application", "mapstruct", "lombok", "alibaba-java-code-style"]) {
 -    assert.equal(first.required_skills.filter((candidate) => candidate === skill).length, 1, `${skill} should appear once`);
--  }
--});
--
++test("deduplicates frontend recipes without backend skills or architecture", () => {
++  const first = compile({recipeIds:["frontend.ui-slice", "frontend.ui-slice"]});
++  assert.deepEqual(first, compile({recipeIds:["frontend.ui-slice"]}));
++  for (const skill of ["frontend-agent", "yss-ui", "yss-implementation-contract-compiler"]) {
++    assert.equal(first.required_skills.filter(s => s === skill).length, 1);
+   }
++  assert.ok(!first.required_skills.some(s => ["yss-userinfo", "yss-validation", "yss-domain"].includes(s)));
++  assert.throws(() => compile({recipeIds:["backend.ddd-http-api"]}), /未知 recipe/);
++  assert.throws(() => compile({requiredCapabilities:["component.current-user-context"]}), /未知 capability/);
+ });
+ 
 -test("does not promote conditional or component dependencies without explicit input", () => {
 -  const persistence = compile({ requiredCapabilities: ["layer.persistence"] });
 -  assert.deepEqual(persistence.required_skills, ["alibaba-java-code-style", "yss-repository"]);
@@ -1476,17 +1473,9 @@ index 967988c..dc5b962 100644
 -      stableComponentError("component-platform-binding-required"),
 -      capability
 -    );
-+test("deduplicates frontend recipes without backend skills or architecture", () => {
-+  const first = compile({recipeIds:["frontend.ui-slice", "frontend.ui-slice"]});
-+  assert.deepEqual(first, compile({recipeIds:["frontend.ui-slice"]}));
-+  for (const skill of ["frontend-agent", "yss-ui", "yss-implementation-contract-compiler"]) {
-+    assert.equal(first.required_skills.filter(s => s === skill).length, 1);
-   }
-+  assert.ok(!first.required_skills.some(s => ["yss-userinfo", "yss-validation", "yss-domain"].includes(s)));
-+  assert.throws(() => compile({recipeIds:["backend.ddd-http-api"]}), /未知 recipe/);
-+  assert.throws(() => compile({requiredCapabilities:["component.current-user-context"]}), /未知 capability/);
- });
- 
+-  }
+-});
+-
 -test("public compiler entry preserves stable component error codes", () => {
 -  const catalog = loadBackendPlatforms();
 -  const boot2Profile = catalog.profiles.find(item => item.id === "spring-boot-2.7-jdk8");
@@ -1538,7 +1527,7 @@ index 967988c..dc5b962 100644
    const contract = { schema_version: 2, contract_id: "slice-1", contract_version: 1, resolution };
    assert.deepEqual(evaluateContractFreshness(contract, { registry, compilerContract }), { freshness: "current", reasons: [] });
    const changedRegistry = structuredClone(registry);
-@@ -112,26 +67,9 @@ test("marks digest drift stale and validates v2 execution evidence", () => {
+@@ -112,26 +67,9 @@
        registry_digest: digestDocument(registry),
        compiler_contract_digest: digestDocument(compilerContract)
      },

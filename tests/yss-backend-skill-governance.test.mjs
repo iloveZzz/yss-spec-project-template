@@ -23,21 +23,27 @@ function yaml(path) {
   return document.toJS({ maxAliasCount: 0 });
 }
 
-function replaceExact(value, replacements) {
-  if (typeof value === "string") return replacements[value] ?? value;
-  if (Array.isArray(value)) return value.map((item) => replaceExact(item, replacements));
-  if (!value || typeof value !== "object") return value;
-  return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, replaceExact(item, replacements)]));
-}
+const lifecycleContract = yaml(".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml");
 
-const lifecycleContract = replaceExact(
-  yaml(".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"),
-  {
-    "yss-mvc-design": "yss-technical-design",
-    "yss-mvc-data-analysis-project-initializer": "yss-layered-mvc-scaffold-generator",
-    "yss-backend-scaffold-parent": "yss-ddd-scaffold-generator"
-  }
-);
+function registryWithDeprecatedSkill(cleanupStatus = "migration-only") {
+  const data = structuredClone(registry);
+  data.skills.push({
+    id: "legacy-backend-skill",
+    layer: "specialist",
+    maturity: "deprecated",
+    replacement_skill: "yss-technical-design",
+    deprecation: {
+      new_use: "forbidden",
+      cleanup_status: cleanupStatus,
+      remove_after: "2026-12-17"
+    },
+    instance_default_discoverable: false,
+    aliases: [],
+    impacts: ["backend"]
+  });
+  data.backend_skill_domains.deprecated_skills = ["legacy-backend-skill"];
+  return data;
+}
 
 function validate(document) {
   return validateSkillRegistry(document, { lifecycleContract, backendPlatforms });
@@ -76,27 +82,19 @@ test("active YSS backend skill owners are assigned to exactly one of six domains
     .map((capability) => capability.primary_skill))].sort();
   assert.deepEqual(Object.keys(taxonomy.assignments).sort(), activeOwners);
   assert.equal(new Set(Object.keys(taxonomy.assignments)).size, activeOwners.length);
-  assert.deepEqual(new Set(taxonomy.deprecated_skills), new Set([
-    "yss-mvc-design",
-    "yss-mvc-data-analysis-project-initializer",
-    "yss-backend-scaffold-parent"
-  ]));
+  assert.deepEqual(taxonomy.deprecated_skills, []);
 
   const missing = structuredClone(registry);
   delete missing.backend_skill_domains.assignments["yss-cache"];
   assert.throws(() => validate(missing), /backend_skill_domains\.assignments/);
 });
 
-test("deprecated backend skills own no capability, typed dependency, recipe route, or generator profile", () => {
+test("production registry has no deprecated backend skills and replacements own the live routes", () => {
   const deprecated = new Set([
     ...registry.skills.filter((item) => item.maturity === "deprecated").map((item) => item.id),
     ...registry.external_skills.filter((item) => item.maturity === "deprecated").map((item) => item.id)
   ]);
-  assert.deepEqual(deprecated, new Set([
-    "yss-mvc-design",
-    "yss-mvc-data-analysis-project-initializer",
-    "yss-backend-scaffold-parent"
-  ]));
+  assert.deepEqual(deprecated, new Set());
   for (const capability of registry.capabilities) assert.equal(deprecated.has(capability.primary_skill), false);
   for (const [owner, dependencies] of Object.entries(registry.skill_dependencies)) {
     assert.equal(deprecated.has(owner), false);
@@ -108,18 +106,25 @@ test("deprecated backend skills own no capability, typed dependency, recipe rout
   assert.equal(registry.capabilities.find((item) => item.id === "project-init.mvc-data-analysis").primary_skill, "yss-layered-mvc-scaffold-generator");
 });
 
-test("new use of deprecated and retired skill IDs returns stable codes without alias replacement", () => {
+test("new use of deprecated fixtures and retired production IDs returns stable codes", () => {
+  for (const id of [
+    ["yss", "mvc", "design"].join("-"),
+    ["yss", "mvc", "data", "analysis", "project", "initializer"].join("-"),
+    ["yss", "backend", "scaffold", "parent"].join("-"),
+    ["yss", "router"].join("-")
+  ]) {
+    assert.throws(
+      () => resolveSkillForNewUse(registry, id),
+      (error) => error.code === SKILL_LIFECYCLE_FAILURE_CODES.retired
+        && error.details.migration_ref === "docs/agents/skill-migrations.md"
+    );
+  }
+  const deprecated = registryWithDeprecatedSkill();
   assert.throws(
-    () => resolveSkillForNewUse(registry, "yss-mvc-design"),
+    () => resolveSkillForNewUse(deprecated, "legacy-backend-skill"),
     (error) => error.code === SKILL_LIFECYCLE_FAILURE_CODES.deprecated
       && error.details.replacement_skill === "yss-technical-design"
   );
-  assert.throws(
-    () => resolveSkillForNewUse(registry, ["yss", "router"].join("-")),
-    (error) => error.code === SKILL_LIFECYCLE_FAILURE_CODES.retired
-      && error.details.migration_ref === "docs/agents/skill-migrations.md"
-  );
-  assert.equal(registry.skills.find((item) => item.id === "yss-mvc-design").aliases.length, 0);
 });
 
 test("registry rejects invalid provider and deprecated ownership", () => {
@@ -127,16 +132,16 @@ test("registry rejects invalid provider and deprecated ownership", () => {
   invalidProvider.capabilities.find((item) => item.id === "component.cache").provider.kind = "unmanaged";
   assert.throws(() => validate(invalidProvider), /provider\.kind 无效/);
 
-  const invalidOwner = structuredClone(registry);
-  invalidOwner.capabilities.find((item) => item.id === "architecture.mvc-design").primary_skill = "yss-mvc-design";
+  const invalidOwner = registryWithDeprecatedSkill();
+  invalidOwner.capabilities.find((item) => item.id === "architecture.mvc-design").primary_skill = "legacy-backend-skill";
   assert.throws(() => validate(invalidOwner), /不得由 deprecated skill 持有/);
 
   const missingBinding = structuredClone(registry);
   missingBinding.capabilities.find((item) => item.id === "component.cache").provider.binding_id = "component.not-in-platform-catalog";
   assert.throws(() => validate(missingBinding), /YSS component binding 未登记到后端平台目录/);
 
-  const invalidDependency = structuredClone(registry);
-  invalidDependency.skill_dependencies["yss-technical-design"].push({ skill: "yss-mvc-design", type: "coordination-only" });
+  const invalidDependency = registryWithDeprecatedSkill();
+  invalidDependency.skill_dependencies["yss-technical-design"].push({ skill: "legacy-backend-skill", type: "coordination-only" });
   assert.throws(() => validate(invalidDependency), /不得依赖 deprecated skill/);
 });
 
@@ -145,34 +150,28 @@ test("registry rejects incomplete or invalid two-stage retirement metadata", () 
   legacy.schema_version = 2;
   assert.throws(() => validate(legacy), /schema_version 必须为 3/);
 
-  const badDate = structuredClone(registry);
-  badDate.skills.find((item) => item.id === "yss-mvc-design").deprecation.remove_after = "17-12-2026";
+  const badDate = registryWithDeprecatedSkill();
+  badDate.skills.find((item) => item.id === "legacy-backend-skill").deprecation.remove_after = "17-12-2026";
   assert.throws(() => validate(badDate), /有效 ISO 日期/);
 
-  const alias = structuredClone(registry);
-  alias.skills.find((item) => item.id === "yss-mvc-design").aliases = ["mvc-design"];
+  const alias = registryWithDeprecatedSkill();
+  alias.skills.find((item) => item.id === "legacy-backend-skill").aliases = ["mvc-design"];
   assert.throws(() => validate(alias), /deprecated 后不得保留 alias/);
 
-  const missingReplacement = structuredClone(registry);
-  missingReplacement.skills.find((item) => item.id === "yss-mvc-design").replacement_skill = "missing-skill";
+  const missingReplacement = registryWithDeprecatedSkill();
+  missingReplacement.skills.find((item) => item.id === "legacy-backend-skill").replacement_skill = "missing-skill";
   assert.throws(() => validate(missingReplacement), /replacement_skill 引用了未登记技能/);
 });
 
 test("backend audit emits all five governance states and gates remove-ready on zero references", () => {
   const candidates = auditBackendSkills(registry);
-  assert.deepEqual(
-    candidates.filter((item) => item.classification === "deprecated").map((item) => item.skill),
-    ["yss-backend-scaffold-parent", "yss-mvc-data-analysis-project-initializer", "yss-mvc-design"]
-  );
+  assert.deepEqual(candidates.filter((item) => item.classification === "deprecated"), []);
   assert.deepEqual(
     candidates.filter((item) => item.classification === "enhance").map((item) => item.skill),
     ["yss-security-algorithm", "yss-up-springboot3", "yss-validation"]
   );
-  for (const item of candidates.filter((candidate) => candidate.classification === "deprecated")) assert.equal(item.active_reference_count, 0);
-
-  const removeReady = structuredClone(registry);
-  removeReady.skills.find((item) => item.id === "yss-mvc-design").deprecation.cleanup_status = "remove-ready";
-  assert.equal(auditBackendSkills(removeReady).find((item) => item.skill === "yss-mvc-design").classification, "remove-ready");
+  const removeReady = registryWithDeprecatedSkill("remove-ready");
+  assert.equal(auditBackendSkills(removeReady).find((item) => item.skill === "legacy-backend-skill").classification, "remove-ready");
 
   const mergeReady = structuredClone(registry);
   mergeReady.skills.push({ id: "merge-candidate", layer: "specialist", maturity: "draft", instance_default_discoverable: false, aliases: [], impacts: ["backend"] });

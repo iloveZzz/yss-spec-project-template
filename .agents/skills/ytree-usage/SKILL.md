@@ -32,6 +32,7 @@ description: "配置或修复 YSS UI YTree 的字段映射、搜索、选中与�
 - `danger: true` 只改变危险项视觉，不会弹出确认框。删除必须放在节点附近的 `#node-suffix` 或当前选中节点操作区，用 Ant Design Vue `Popconfirm` 的 `@confirm` 调用接口；不使用居中 `Modal.confirm`。
 - 树区域需要滚动时绑定 `:height="treeHeight"`，不默认添加 `:virtual="true"`。只有展开后可见扁平节点数 `* itemHeight > height` 时才会实际裁剪 DOM。
 - 使用 YTree 内置搜索时，高度 Hook 通过 `extraOffset: YTREE_SEARCH_HEIGHT` 扣除 48px；不再叠加无依据的魔法数。
+- 最外层必须有可计算高度，树区域设置 `flex: 1; min-height: 0; overflow: hidden`；Hook 挂载时 `treeAreaRef` 必须存在。Tab/Drawer 优先保持外层容器挂载，隐藏态得到的最小高度不作为最终结果，可见后按需 `nextTick(recalculateHeight)`。
 - 左树右表优先组合 `YSplitPane + YCard + YTree + YTable`；切换节点时同步查询条件并把右表分页重置为第 1 页。
 - 节点删除 API 的错误由 `mutator.ts` 统一提示并 reject；不在 `else/catch` 重复 `message.error`。
 

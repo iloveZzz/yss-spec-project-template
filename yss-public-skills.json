@@ -32,8 +32,6 @@
     "yss-ui",
     "yss-ui-business-page-generation",
     "yss-up-springboot3",
-    "yss-use-table-height",
-    "yss-use-tree-height",
     "yss-userinfo",
     "yss-validation",
     "yss-web-controller"
@@ -73,9 +71,7 @@
         "yss-hook",
         "yss-prototype-stage",
         "yss-ui",
-        "yss-ui-business-page-generation",
-        "yss-use-table-height",
-        "yss-use-tree-height"
+        "yss-ui-business-page-generation"
       ]
     },
     {

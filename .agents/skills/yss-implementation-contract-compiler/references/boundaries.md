@@ -150,7 +150,7 @@
 | `yss-validation` | `yss-exception` | `component-dependency` | — |
 | `yss-security-algorithm` | `yss-exception` | `component-dependency` | — |
 | `yss-exception` | `yss-dto` | `context-required` | — |
-| `yss-ui-business-page-generation` | `component-selection-imports` | `context-conditional` | `components` |
+| `yss-ui-business-page-generation` | `yss-ui` | `context-required` | — |
 | `yss-ui-business-page-generation` | `yss-hook` | `context-conditional` | `hooks` |
 | `yss-ui-business-page-generation` | `yss-formily` | `context-conditional` | `form` |
 | `yss-ui-business-page-generation` | `yss-api-integration` | `context-conditional` | `api` |

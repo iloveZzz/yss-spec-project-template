@@ -58,8 +58,9 @@ const FRONTEND = {
   "yss-ui": ["components", "hooks", "skills"],
   "yss-hook": ["hooks"],
   "yss-ui-business-page-generation": ["components", "hooks", "skills"],
-  "yss-use-table-height": ["hooks"],
-  "yss-use-tree-height": ["hooks"],
+  "ytable-usage": ["hooks"],
+  "yedit-table-usage": ["hooks"],
+  "ytree-usage": ["hooks"],
 };
 
 const URLS = {

@@ -31,6 +31,7 @@ description: "生成或改造完整 YSS UI CRUD、列表、表单、详情或左
 - 主题 Token 与换肤：`../theme-token-usage/SKILL.md`
 - 文件导出下载：`../file-export-download/SKILL.md`
 - Orval 接口与错误处理：`../yss-api-integration/SKILL.md`
+- 请求、分页、参数与异步竞态：`../yss-hook/SKILL.md`
 
 ## 文档检索顺序
 
@@ -56,6 +57,9 @@ description: "生成或改造完整 YSS UI CRUD、列表、表单、详情或左
 - 删除确认默认使用 `YTable actionConfig.buttons[].isConfirm` 按钮项或 AntDV `Popconfirm` 气泡确认，禁止默认使用居中 `Modal.confirm`。
 - 样式抽离到 `style.less`，在 SFC 中使用 `<style scoped lang="less">@import './style.less';</style>`。
 - `index.vue` 原则上不超过 150 行；状态、API、副作用和处理方法进入 `hooks/`，列定义和静态配置进入 `constant.ts`。
+- 页面目录默认使用 `index.vue + constant.ts + style.less + hooks/`；只有存在多个私有视图或大量独立类型时才增加 `components/` 和 `type.ts`。`index.vue` 只做 Hook 组合、视图编排和事件转发。
+- 列表查询只维护一份 `currentParams`；查询、重置、树节点切换均回到第一页，翻页保留筛选条件，批量操作成功后清空选中态。组件 API 服从 `ytable-usage` / `ytree-usage`，请求和竞态服从 `yss-hook`。
+- Modal/Drawer 表单的 `open/mode/currentId/formModel/submitting`、回填、提交和关闭收敛在同一业务 Hook。新增/编辑数据在打开容器前准备，容器关闭时销毁并清理；默认依赖响应式 `mode`/model，不用动态 `:key` 强制重挂载。
 - 所有导出函数、hooks、类型和静态配置必须使用中文 JSDoc。
 - Orval 请求必须使用真实生成导出和 DTO；禁止 `if (res?.success)` 冗余包裹，也禁止在 `else`/`catch` 重复 `message.error`。
 - 页面、公共组件、内联样式、TS 渲染配置和 SVG 必须遵循 `theme-token-usage`；禁止硬编码品牌色及 hover/active/selected/focus 色阶，主色透明态必须由真实动态 Token 派生。
@@ -83,7 +87,7 @@ src/views/{module-name}/
 1. 读取本 skill 的三个 reference，并按上述文档检索顺序核对真实 API 与导出，禁止根据旧示例猜测。
 2. 读取 `theme-token-usage`，检查项目真实主题变量与运行时同步链路。
 3. 若有截图或旧项目路径，先读取已批准且 digest 当前的 Visual Baseline manifest 和 `frontend_implementation_plan`，按 `case_id` 提取布局、状态、交互、响应式与控件类型验收项；缺失或摘要漂移时返回 `blocked`，不得凭目录或截图猜测。
-4. 按需求类型加载细分 skill：列表读 `page-list-module` 和 `ytable-usage`；表单读 `yss-formily`；编辑表格读 `yedit-table-usage`；树读 `ytree-usage`；导出下载读 `file-export-download`。
+4. 按需求类型加载细分 skill：列表读 `ytable-usage` 与 `yss-hook`；表单读 `yss-formily`；编辑表格读 `yedit-table-usage`；树读 `ytree-usage`；导出下载读 `file-export-download`。
 5. 先设计 `constant.ts`、`style.less` 和 hooks；独立类型或私有视图确有需要时再增加 `type.ts`/`components/`，最后写 `index.vue` 组合视图。
 6. 对 API 请求使用 Orval 真实生成类型和导出，在 hooks 内封装 loading、分页映射和失败后状态；错误 Toast 由 mutator 统一处理。
 7. 交付前检查导入来源、真实组件 API、分页字段、Formily schema 层级、主题 Token、查询按钮右下角布局、表格工具栏、样式作用域、删除确认和原型对照清单。

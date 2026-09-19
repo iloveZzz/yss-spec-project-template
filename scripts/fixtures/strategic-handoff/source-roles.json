@@ -234,11 +234,6 @@
         "yss-api-integration",
         "yss-hook",
         "theme-token-usage",
-        "page-skeleton",
-        "page-list-module",
-        "page-form-module",
-        "component-selection-imports",
-        "vue3-best-practices",
         "tdd"
       ],
       "forbidden_skills": [
@@ -293,9 +288,7 @@
         "yss-formily",
         "yss-frontend-scaffold-generator",
         "yss-antd-design",
-        "yss-antdv-next-design",
-        "page-list-module",
-        "page-form-module"
+        "yss-antdv-next-design"
       ],
       "description": "Own OpenAPI Draft, data-architecture contributions, and backend tests. Write only contract-allowed backend paths. Verify with ./mvnw. Do not Freeze OpenAPI, treat UI copy as requirements, or countersign your own implementation."
     },

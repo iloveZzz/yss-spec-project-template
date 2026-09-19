@@ -13,7 +13,7 @@ description: Use when YSS Vue 页面涉及 vue-hooks-plus/useRequest、分页、
 - Vue Hooks Plus `useRequest`: `https://inhiblabcore.github.io/vue-hooks-plus/zh/hooks/useRequest/quick-start`
 - Local reference index: `references/frontend-docs.md`
 
-本技能负责请求执行、分页/筛选参数、选择状态、响应映射和页面级调度。接口导入与 Orval mutator 使用 `yss-api-integration`；页面布局和组件选型从 `yss-ui` 路由到 `page-skeleton`、`component-selection-imports` 及具体组件 Skill；高度计算分别使用 `yss-use-table-height` 或 `yss-use-tree-height`。
+本技能负责请求执行、分页/筛选参数、选择状态、响应映射、异步竞态和页面级调度。接口导入与 Orval mutator 使用 `yss-api-integration`；页面布局和组件选型从 `yss-ui` 路由到 `yss-ui-business-page-generation` 及具体组件 Skill；表格和树高度分别服从 `ytable-usage`、`yedit-table-usage`、`ytree-usage`。
 
 官方 `@yss-ui/hooks` 当前公开 `useFullscreen`、`useTreeHeight`、`useTableHeight`、`useLoading`、`usePollingTask` 与 `useUrlState`。`useRequest`、防抖、缓存或重试不属于这套公开 YSS Hooks 契约。仅当项目已批准 `vue-hooks-plus` 及其具体版本时，才可使用第 3 节的 `useRequest`；不得把它命名或包装成 YSS 官方 API。
 
@@ -34,6 +34,7 @@ description: Use when YSS Vue 页面涉及 vue-hooks-plus/useRequest、分页、
 - 将请求执行、参数合并、响应映射与数据竞争处理放在 `hooks/useXxx.ts`；页面只保留布局、事件绑定和渲染。
 - 以业务域划分 Hook，而不是为每个微小工具函数各建一个 Hook。
 - 每个对外动作都必须有明确的 loading、成功、失败和数据陈旧策略；不要把这些分支留给模板或页面组件。
+- 组件内不直接修改 `props`；双向绑定使用 `emit('update:xxx')`。模板不承载复杂业务表达式，优先下沉 `computed` 或业务 Hook；避免无边界的深层 `watch`，只观察明确依赖源。
 
 ## 2. 列表 / 分页 Hook
 
@@ -185,7 +186,7 @@ const polling = usePollingTask(async ({ isCurrent, signal }) => {
 
 - `useUrlState()`：返回扁平字符串 `state`、`setState`、`clearKeys`、`clearState`。`setState` 合并状态，`undefined`、`null`、空字符串删除键。默认 `mode: 'replace'`、`strategy: 'history'`；需要路由守卫或导航语义时用 `strategy: 'router'`。
 - `useFullscreen(target, options?)`：返回 `isFullscreen`、`enterFullscreen`、`exitFullscreen`、`toggleFullscreen`、`isEnabled`。浏览器真全屏需要用户手势；`pageFullscreen` 是 CSS 模拟全屏，可配置 `className`、`zIndex`，并可用 `escTip` 控制提示。
-- `useTreeHeight` 与 `useTableHeight` 通过 `ResizeObserver` 计算可用高度。树的 `extraOffset` 仅用于 YTree 内置 `filterable` 搜索区；表格可配置 `boundaryRef` 避免尺寸反馈循环，并可扣除分页、工具栏或新增按钮高度。具体布局约束交由 `yss-use-tree-height` / `yss-use-table-height`。
+- `useTreeHeight` 与 `useTableHeight` 通过 `ResizeObserver` 计算可用高度。树的 `extraOffset` 仅用于 YTree 内置 `filterable` 搜索区；表格可配置 `boundaryRef` 避免尺寸反馈循环，并可扣除分页、工具栏或新增按钮高度。具体布局约束交由 `ytree-usage` / `ytable-usage` / `yedit-table-usage`。
 
 ## 8. 返回契约与自检
 

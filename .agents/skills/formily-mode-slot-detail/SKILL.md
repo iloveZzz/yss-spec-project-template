@@ -29,7 +29,7 @@ description: 指导 YFormily 新增、编辑、查看三态与插槽渲染；当
 - 描述列表配置使用 `:detail-options`。默认 `responsive=true`，此时 `columns` 被忽略；响应式列数使用 `maxColumns`、`minColumns`、`minWidth`，固定列数才组合 `responsive: false` 与 `columns`。
 - 查看态插槽命名固定为 `#detail-<path>`，字段路径中的 `.` 替换为 `-`；作用域为 `{ value, item, values }`。
 - 编辑态插槽使用 `x-component: 'Slot'` 与 `x-component-props.name`；`value/onChange` 默认提供，仅在需要 `field` 或整表数据时配置 `params`。
-- 运行时切换 mode 时加 `:key="mode"`，确保当前实现重新创建 form/schema 上下文并避免状态残留。
+- 运行时切换 mode 默认由响应式 `:mode` 与已准备好的 model 驱动，不加动态 `:key` 强制重挂载。只有目标工程当前源码或可复现测试证明 mode 热切换无法正确重建上下文时，才记录证据后局部使用 key；Modal/Drawer 闭环优先通过 `destroy-on-close + v-if="open"` 隔离实例。
 - 查看态不会发送 `update:modelValue`；回填优先在渲染前准备好 `v-model`/`initial-values`，或通过已公开的 `setValues` 更新。
 - 只使用公开实例方法：`getValues`、`setValues`、`submit`、`setFieldState`、`toggle/expand/collapse`；禁止编造 `validate/reset/clearValidate`。
 - 加载详情的 Orval API 错误已由 `mutator.ts` 统一 `message.error` 并 reject，业务 `else`/`catch` 禁止重复提示。
@@ -97,7 +97,6 @@ const schema: ISchema = {
 
 <template>
   <YFormily
-    :key="mode"
     :schema="schema"
     :initial-values="initialValues"
     :mode="mode"
@@ -120,7 +119,7 @@ const schema: ISchema = {
 
 ## 交付检查清单
 
-- [ ] mode 语义和默认值正确，运行时切换配置了 `:key="mode"`。
+- [ ] mode 语义和默认值正确，回填在打开前完成；未无条件使用动态 `:key` 强制重挂载。
 - [ ] 未生成 `detail-as`、旧式详情开关或虚构实例方法。
 - [ ] `detail-options` 已区分响应式 `maxColumns` 与固定列 `columns`。
 - [ ] 查看态插槽路径映射正确，作用域只使用 `{ value, item, values }`。
@@ -133,5 +132,5 @@ const schema: ISchema = {
 
 - 查看态插槽不生效时，先按详情收集后的数据路径核对 `detail-<path>`，不要把 `FormLayout/FormGrid` 容器名拼入路径。
 - 编辑态插槽不生效时，核对 `x-component-props.name` 与模板名；需要整表值时再加入 `params: ['$values']`。
-- 模式切换错乱时先确认 `:key="mode"`，再检查回填数据是否在新实例挂载前准备好。
+- 模式切换错乱时先检查回填数据是否在打开或模式切换前准备好，再核验当前版本对响应式 mode 的行为；只有可复现证据表明必须重建时才使用 key。
 - API 调用 reject 时只恢复 loading 或保留原数据，不重复弹出错误提示。

@@ -5,7 +5,7 @@ description: "选择和核验 YSS Vue 生产页面组件及 Ant Design Vue 兼�
 
 # YSS UI 统一路由与交付门禁
 
-本技能是 YSS Vue 生产页面的统一入口。它负责组件路由、版本预检、跨组件约束和交付证据；具体组件、请求、表单和高度实现交给最小专项 skill，避免重复维护 API 细节。
+本技能是 YSS Vue 生产页面的统一入口。它负责组件与导入来源路由、版本预检、跨组件约束和交付证据；具体页面、组件、请求和表单实现交给最小专项 skill，避免重复维护 API 细节。
 
 ## 1. 权威事实顺序
 
@@ -51,16 +51,19 @@ pnpm why vue @yss-ui/components @yss-ui/hooks ant-design-vue vxe-table
 - `YFormily` 是新代码 canonical name；`YssFormily` 仅作为已确认导出的历史兼容 alias。
 - `YSplitPane`、`YButton`、`YCard` 等已有封装优先使用 YSS。
 
+导入来源必须可追溯：优先使用当前会话的 yss-ui MCP 查询真实组件、Hook、Utils 与导出包；不可用时再读取与安装版本匹配的本地文档、`llms-full.txt`、源码 `src/index.ts` 和已编译用法。已导出的能力分别从 `@yss-ui/components`、`@yss-ui/hooks`、`@yss-ui/utils` 导入；确认未封装的 `Modal`、`Drawer`、`Popconfirm`、`Input` 等才从 `ant-design-vue` 导入。禁止臆造 `YModal`、`YDrawer`、`YInput`、`YPopconfirm` 或直接导入 `@formily/antdv` 业务 UI。
+
 ## 4. 最小专项 skill 路由
 
 | 任务 | 必须路由 |
 |---|---|
 | 新建或改造完整业务页面 | `yss-ui-business-page-generation` |
-| 页面布局与无独立 Skill 的专项组件 | `page-skeleton`、`component-selection-imports`、`references/specialized-components.md` |
+| 页面布局与无独立 Skill 的专项组件 | `yss-ui-business-page-generation`、`references/component-routing.md`、`references/specialized-components.md` |
 | 请求、分页、参数、树数据映射 | `yss-hook` |
 | Formily schema、联动、校验、详情态 | `yss-formily` |
-| 表格高度 | `yss-use-table-height` |
-| 树高度 | `yss-use-tree-height` |
+| YTable 与表格高度 | `ytable-usage` |
+| YEditTable 与表格高度 | `yedit-table-usage` |
+| YTree 与树高度 | `ytree-usage` |
 | Orval、API、useRequest 接入 | `yss-api-integration` |
 | 视觉、token、响应式体验 | `yss-design-system` |
 
@@ -133,7 +136,7 @@ verification: pnpm type-check
 3. 搭页面目录和布局。
 4. 接 `YFormily`、`YTable`、`YTree` 等 YSS 主体组件。
 5. 下沉请求、分页和映射到 `yss-hook`。
-6. 接高度、主题、locale、浮层和无障碍约束。
+6. 按组件专项接高度，再接主题、locale、浮层和无障碍约束。
 7. 联调冻结 API、Mock、路由和权限。
 8. 按 `references/verification.md` 完成分层验证。
 
@@ -142,7 +145,7 @@ verification: pnpm type-check
 - [ ] 已记录 Vue、YSS UI、AntDV、VXE 实际版本。
 - [ ] 组件选型符合 `component-routing.md`，回退有证据。
 - [ ] 新代码使用 `YFormily` 和真实存在的 `yss-hook`。
-- [ ] YTable/YTree/Formily/高度 Hook 遵循专项 skill。
+- [ ] YTable/YEditTable/YTree/Formily 及其高度 Hook 遵循对应组件专项 skill。
 - [ ] 主题、locale、浮层容器和微应用隔离已检查。
 - [ ] loading/empty/error/no-access/selected 状态按影响面覆盖。
 - [ ] 键盘、焦点、标签和颜色对比度已检查。
