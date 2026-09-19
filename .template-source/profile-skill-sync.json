@@ -242,6 +242,9 @@
           "id": "yss-mvc-design"
         },
         {
+          "id": "yss-mvc-data-analysis-project-initializer"
+        },
+        {
           "id": "yss-resilience4j"
         },
         {
@@ -438,7 +441,6 @@
         "yss-audit-log",
         "yss-distributed-id",
         "yss-excel-mvc",
-        "yss-mvc-data-analysis-project-initializer",
         "yss-openapi-draft-review",
         "yss-product-lifecycle",
         "yss-stage-decision",

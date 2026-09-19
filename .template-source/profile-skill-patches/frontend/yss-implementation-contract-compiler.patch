@@ -124,7 +124,7 @@ diff --git a/references/boundaries.md b/references/boundaries.md
 index f0acfcf..e092724 100644
 --- a/references/boundaries.md
 +++ b/references/boundaries.md
-@@ -19,37 +19,12 @@
+@@ -19,37 +19,13 @@
  | Capability | Primary skill | Task modes |
  | --- | --- | --- |
  | `writing.lifecycle-document` | `i-have-adhd` | `guidance` |
@@ -139,6 +139,7 @@ index f0acfcf..e092724 100644
  | `governance.implementation-contract` | `yss-implementation-contract-compiler` | `contract-compilation`, `reroute`, `result-validation` |
 +| `architecture.system-data` | `architecture-agent` | `guidance`, `contract-compilation`, `review-input` |
  | `maintenance.skill-source-index` | `yss-skill-source-index-refresh` | `component-maintenance`, `source-index-refresh` |
++| `scaffold.frontend-vue3` | `yss-frontend-scaffold-generator` | `integration`, `component-maintenance` |
 -| `architecture.tactical-domain` | `yss-tactical-design` | `guidance`, `integration`, `slice-implementation`, `review-input` |
 -| `layer.domain` | `yss-domain` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
 -| `layer.application` | `yss-application` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
