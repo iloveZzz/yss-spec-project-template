@@ -1082,7 +1082,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-web-controller/SKILL.md",
-        "effectiveHash": "68dcb4af95f894774c2e32168ef6b4a686b8f4f67111d930ccfeaebf0f1e456d",
+        "effectiveHash": "e0ba69025f5ef1ec3ee15bba50caeaa6a3550989abc9b27348d3c64003af3863",
         "targets": [
           ".agents/skills",
           ".codex/skills",
