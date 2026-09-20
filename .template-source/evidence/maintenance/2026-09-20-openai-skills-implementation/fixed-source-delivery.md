@@ -1,3 +1,5 @@
+> 后续 Git 授权已执行：四个 CLI 完成升级，完整验证 87/87 通过；当前固定版本交付结果见 [交付报告](git-delivery/delivery-report.md)。以下内容保留实施结束时的历史状态。
+
 # 固定来源交付待办
 
 本轮授权覆盖本地整改、跨仓同步、开发快照和验证；不包含提交、推送、npm 发布或部署。八个仓库 HEAD 保持基线值。四个 CLI 当前均为 `sourceState: working-tree`；`templateCommit` 只是其工作树所基于的 HEAD，不是本轮改动已经提交的证明。

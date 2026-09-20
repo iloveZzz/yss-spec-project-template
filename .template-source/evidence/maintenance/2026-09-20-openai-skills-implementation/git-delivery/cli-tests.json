@@ -1,0 +1,42 @@
+[
+  {
+    "cli": "create-yss-spec",
+    "command": "pnpm test:prepared",
+    "exit_code": 0,
+    "passed": 185,
+    "failed": 0,
+    "duration_ms": 403670.697708,
+    "log": "create-yss-spec-tests.log",
+    "sha256": "b721e8ccfc9d5a5290414d3c397de4140ac890bd06c934ff1ad553cc09ef3f2b"
+  },
+  {
+    "cli": "create-yss-strategic-design",
+    "command": "pnpm test:prepared",
+    "exit_code": 0,
+    "passed": 1,
+    "failed": 0,
+    "duration_ms": 118382.804667,
+    "log": "create-yss-strategic-design-tests.log",
+    "sha256": "32993e130fd9a63a3db852078019211a85bdc4e9b708fe551680b8673677476d"
+  },
+  {
+    "cli": "create-yss-harness-backend",
+    "command": "pnpm test:prepared",
+    "exit_code": 0,
+    "passed": 1,
+    "failed": 0,
+    "duration_ms": 166398.567625,
+    "log": "create-yss-harness-backend-tests.log",
+    "sha256": "b1285330cf17ca490ebf778d7e7e8cc1d1391e663b253ba4cd2d34b3db046663"
+  },
+  {
+    "cli": "create-yss-harness-frontend",
+    "command": "pnpm test:prepared",
+    "exit_code": 0,
+    "passed": 2,
+    "failed": 0,
+    "duration_ms": 205478.587625,
+    "log": "create-yss-harness-frontend-tests.log",
+    "sha256": "9112ae3e4bf59dfe082b0303e9c5feb31a0c859edec5f4354de9ef6cdd0f54db"
+  }
+]

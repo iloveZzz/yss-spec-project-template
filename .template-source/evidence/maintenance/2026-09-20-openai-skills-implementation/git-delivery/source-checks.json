@@ -1,0 +1,154 @@
+[
+  {
+    "repo": ".",
+    "args": [
+      "scripts/sync-skills",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "skill projections are synchronized",
+    "stderr": ""
+  },
+  {
+    "repo": ".",
+    "args": [
+      "scripts/update-skill-lock",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "skills-lock.json matches distributed skills",
+    "stderr": ""
+  },
+  {
+    "repo": ".",
+    "args": [
+      "scripts/verify-skill-registry"
+    ],
+    "exit_code": 0,
+    "stdout": "技能路由注册表校验通过（schema v3，active，81 个共享，2 个平台，0 个两阶段退役入口）",
+    "stderr": ""
+  },
+  {
+    "repo": ".",
+    "args": [
+      "scripts/verify-skill-governance"
+    ],
+    "exit_code": 0,
+    "stdout": "技能规范冲突扫描通过（1 个兼容 alias，13 个 YSS UI 前端 skills）",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "args": [
+      "scripts/sync-skills",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "skill projections are synchronized",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "args": [
+      "scripts/update-skill-lock",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "skills-lock.json matches distributed skills",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "args": [
+      "scripts/verify-skill-registry"
+    ],
+    "exit_code": 0,
+    "stdout": "技能路由注册表校验通过（active，24 个共享，1 个平台）",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "args": [
+      "scripts/verify-skill-governance"
+    ],
+    "exit_code": 0,
+    "stdout": "技能规范冲突扫描通过（1 个兼容 alias）",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "args": [
+      "scripts/sync-skills",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "skill projections are synchronized",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "args": [
+      "scripts/update-skill-lock",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "skills-lock.json matches distributed skills",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "args": [
+      "scripts/verify-skill-registry"
+    ],
+    "exit_code": 0,
+    "stdout": "技能路由注册表校验通过（active，63 个共享，0 个平台）",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "args": [
+      "scripts/verify-skill-governance"
+    ],
+    "exit_code": 0,
+    "stdout": "技能规范冲突扫描通过（0 个兼容 alias）",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "args": [
+      "scripts/sync-skills",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "skill projections are synchronized",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "args": [
+      "scripts/update-skill-lock",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "skills-lock.json matches distributed skills",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "args": [
+      "scripts/verify-skill-registry"
+    ],
+    "exit_code": 0,
+    "stdout": "技能路由注册表校验通过（active，58 个共享，2 个平台）",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "args": [
+      "scripts/verify-skill-governance"
+    ],
+    "exit_code": 0,
+    "stdout": "技能规范冲突扫描通过（1 个兼容 alias）",
+    "stderr": ""
+  }
+]

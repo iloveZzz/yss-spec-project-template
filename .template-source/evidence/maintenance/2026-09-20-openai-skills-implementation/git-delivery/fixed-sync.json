@@ -1,0 +1,50 @@
+[
+  {
+    "cli": "create-yss-strategic-design",
+    "command": "sync-core.mjs",
+    "source": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "revision": "9126b41c5657b8c80ac3ff6aa7117f4b01e14e18",
+    "exit_code": 0,
+    "seconds": 0.11
+  },
+  {
+    "cli": "create-yss-strategic-design",
+    "command": "sync-template.mjs",
+    "source": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent",
+    "revision": "83d7bce7eab1adf16e02a419717c94fa8ba84f43",
+    "exit_code": 0,
+    "seconds": 0.35
+  },
+  {
+    "cli": "create-yss-harness-backend",
+    "command": "sync-core.mjs",
+    "source": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "revision": "9126b41c5657b8c80ac3ff6aa7117f4b01e14e18",
+    "exit_code": 0,
+    "seconds": 0.09
+  },
+  {
+    "cli": "create-yss-harness-backend",
+    "command": "sync-template.mjs",
+    "source": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent",
+    "revision": "b78a457c56fbb91bfb18dbe66724ce9a59a73292",
+    "exit_code": 0,
+    "seconds": 0.63
+  },
+  {
+    "cli": "create-yss-harness-frontend",
+    "command": "sync-core.mjs",
+    "source": "/Users/zhudaoming/Projects/yss-spec-project-template",
+    "revision": "9126b41c5657b8c80ac3ff6aa7117f4b01e14e18",
+    "exit_code": 0,
+    "seconds": 0.1
+  },
+  {
+    "cli": "create-yss-harness-frontend",
+    "command": "sync-template.mjs",
+    "source": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent",
+    "revision": "2f9ee4e6b90c282d1f3e0a116ef40a5782afdaca",
+    "exit_code": 0,
+    "seconds": 0.75
+  }
+]

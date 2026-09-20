@@ -1,0 +1,317 @@
+[
+  {
+    "path": "clean-checkout-finalize.log",
+    "bytes": 1610,
+    "sha256": "6b373231096ed7f3fbde618b5d6a03efadf301cf7867315ae03f5ed2a43e1012"
+  },
+  {
+    "path": "clean-checkout-setup.log",
+    "bytes": 3225,
+    "sha256": "0537117ee73b56c7a9d168335c033ea99073006098819ba29294b712823e48fe"
+  },
+  {
+    "path": "create-yss-harness-backend-package-01.log",
+    "bytes": 381,
+    "sha256": "9a5ba3b09a3acf973879d83deaf095dbcd98fa03209bbf82cbe02e535219cff4"
+  },
+  {
+    "path": "create-yss-harness-backend-package-02.log",
+    "bytes": 145792,
+    "sha256": "eb0c994d7b2488054ceab9bbf585553aea4331a842c735faf207e01d484c77f2"
+  },
+  {
+    "path": "create-yss-harness-backend-package-03.log",
+    "bytes": 23,
+    "sha256": "260b81283a0da65e0d8dfcf98575e940ede1f863ed00bc5c0ec5bd2f838907e1"
+  },
+  {
+    "path": "create-yss-harness-backend-package-04.log",
+    "bytes": 663571,
+    "sha256": "a6cbebc85f22acec43c58746538cb93a9de8048e5ba776447790516fdc914816"
+  },
+  {
+    "path": "create-yss-harness-backend-package-05.log",
+    "bytes": 1355,
+    "sha256": "ba32444c40d54c302f26f0f0417d90b0935671f714ddccf1cd85757e1c59110a"
+  },
+  {
+    "path": "create-yss-harness-backend-package-06.log",
+    "bytes": 678578,
+    "sha256": "0cb68c648e62766a9e77e88d9ac0c228ae05ce0c1b7e5e20b4657a9bdf9b5c80"
+  },
+  {
+    "path": "create-yss-harness-backend-package-07.log",
+    "bytes": 678578,
+    "sha256": "ef93198bce93ecc819cb00164b202d9ab9a1ce82d763932331a490d4c29e3323"
+  },
+  {
+    "path": "create-yss-harness-backend-package-08.log",
+    "bytes": 678640,
+    "sha256": "540ed3ad9169ab3a28c3d4f22921b99db43ce6ba2d89dc9e97d5b1925af08e16"
+  },
+  {
+    "path": "create-yss-harness-backend-package-09.log",
+    "bytes": 240,
+    "sha256": "d52f886f1b29363831254a42c5324c9d8047d1f223449a616a03908a621e429f"
+  },
+  {
+    "path": "create-yss-harness-backend-package-10.log",
+    "bytes": 663580,
+    "sha256": "e88eb5adedd11b12cb343d6afccee20a84aee4f8874fe4940781f9bad8221f87"
+  },
+  {
+    "path": "create-yss-harness-backend-package-11.log",
+    "bytes": 35,
+    "sha256": "8d01ac8a770279dadc09f623187736a72eba14829dbf463107979ae906a02ba5"
+  },
+  {
+    "path": "create-yss-harness-backend-package-12.log",
+    "bytes": 44,
+    "sha256": "5abf73fd02e1d25019fb4cc51fc477b8ddaed64dbc889b37d116038e391854d5"
+  },
+  {
+    "path": "create-yss-harness-backend-sync-core.mjs.log",
+    "bytes": 3178,
+    "sha256": "e7a6c041be1f3afe1989d2baa6310938514e503ea2d2dfc31d76c35f6ca5368d"
+  },
+  {
+    "path": "create-yss-harness-backend-sync-template.mjs.log",
+    "bytes": 1201413,
+    "sha256": "38dced4b44bb336c622f6f23d87c6dbedfec09b568c980809a17a8664b47f4f1"
+  },
+  {
+    "path": "create-yss-harness-backend-tests.log",
+    "bytes": 392,
+    "sha256": "b1285330cf17ca490ebf778d7e7e8cc1d1391e663b253ba4cd2d34b3db046663"
+  },
+  {
+    "path": "create-yss-harness-frontend-package-01.log",
+    "bytes": 384,
+    "sha256": "693719671df44e99a23326e14a77513a5246bee57783645f9dfcb7a7ef5e0257"
+  },
+  {
+    "path": "create-yss-harness-frontend-package-02.log",
+    "bytes": 194135,
+    "sha256": "7fad8c35d7e000739dd3c7236b6f72c4c5dd80830ee0ff3f0037913a2aff713c"
+  },
+  {
+    "path": "create-yss-harness-frontend-package-03.log",
+    "bytes": 23,
+    "sha256": "41fcd409eab93f589e77ddb9817fde45343692cd78042cfac5cad46c251a42ec"
+  },
+  {
+    "path": "create-yss-harness-frontend-package-04.log",
+    "bytes": 785098,
+    "sha256": "04002d25d9208d7adc41c27a7a3defa0adad84bf51bd6606e86894c137376eb2"
+  },
+  {
+    "path": "create-yss-harness-frontend-package-05.log",
+    "bytes": 1355,
+    "sha256": "a7b18fed1f84c3a51401e9f06b9b50ae95c586234ef9187dfd5e6269a1bf7092"
+  },
+  {
+    "path": "create-yss-harness-frontend-package-06.log",
+    "bytes": 803632,
+    "sha256": "162ccb9880f33982e45d4cedf56a253603ce4ef408e6a8b4e79441b503b9ede0"
+  },
+  {
+    "path": "create-yss-harness-frontend-package-07.log",
+    "bytes": 803632,
+    "sha256": "409d275055f9dfd9dafaf8fd91763ee78ec852422434e3ee7e12b681f7e51389"
+  },
+  {
+    "path": "create-yss-harness-frontend-package-08.log",
+    "bytes": 803694,
+    "sha256": "62049632b1085319790f05cc5c900dee26baa0708b82fb8e705f8bf9270e7a12"
+  },
+  {
+    "path": "create-yss-harness-frontend-package-09.log",
+    "bytes": 240,
+    "sha256": "23d7a3c5ea31dc3ffefea522a763d6f5972e51825446b0e20fe9582cc2719a56"
+  },
+  {
+    "path": "create-yss-harness-frontend-package-10.log",
+    "bytes": 785107,
+    "sha256": "c59a3bea5d6073a61962204accc626ce2f39cc96b94bef19bddea35879345a0a"
+  },
+  {
+    "path": "create-yss-harness-frontend-package-11.log",
+    "bytes": 35,
+    "sha256": "8d01ac8a770279dadc09f623187736a72eba14829dbf463107979ae906a02ba5"
+  },
+  {
+    "path": "create-yss-harness-frontend-package-12.log",
+    "bytes": 44,
+    "sha256": "5abf73fd02e1d25019fb4cc51fc477b8ddaed64dbc889b37d116038e391854d5"
+  },
+  {
+    "path": "create-yss-harness-frontend-sync-core.mjs.log",
+    "bytes": 3178,
+    "sha256": "e7a6c041be1f3afe1989d2baa6310938514e503ea2d2dfc31d76c35f6ca5368d"
+  },
+  {
+    "path": "create-yss-harness-frontend-sync-template.mjs.log",
+    "bytes": 1396054,
+    "sha256": "f6531b313bbd2c1d0a1d253355f77d44a847d0484a8f90ab0b529e67f88351ea"
+  },
+  {
+    "path": "create-yss-harness-frontend-tests.log",
+    "bytes": 474,
+    "sha256": "9112ae3e4bf59dfe082b0303e9c5feb31a0c859edec5f4354de9ef6cdd0f54db"
+  },
+  {
+    "path": "create-yss-spec-package-01.log",
+    "bytes": 603654,
+    "sha256": "5113a07de0556ddcf8831fd2a751ab026d7c4f26861b72bd706efbb835d8c9b2"
+  },
+  {
+    "path": "create-yss-spec-package-02.log",
+    "bytes": 23,
+    "sha256": "84b3615a2b55669c4069410770606e7290261ae70a9db72789bff656c372ce48"
+  },
+  {
+    "path": "create-yss-spec-package-03.log",
+    "bytes": 442,
+    "sha256": "01ee688d182eea86f94fc4d82efeaad0bc947072265dedf3a59d645a44b74fd5"
+  },
+  {
+    "path": "create-yss-spec-package-04.log",
+    "bytes": 174,
+    "sha256": "4d53b6965b7af38069e9899f46ee62191fb13fc6a29eb601143ca0fa74353b88"
+  },
+  {
+    "path": "create-yss-spec-package-05.log",
+    "bytes": 598,
+    "sha256": "ec35941e87bf3ef3954c78939995efae834e167b42fa3f7a3e241cdb6d9e257c"
+  },
+  {
+    "path": "create-yss-spec-package-06.log",
+    "bytes": 35,
+    "sha256": "8d01ac8a770279dadc09f623187736a72eba14829dbf463107979ae906a02ba5"
+  },
+  {
+    "path": "create-yss-spec-package-07.log",
+    "bytes": 44,
+    "sha256": "5abf73fd02e1d25019fb4cc51fc477b8ddaed64dbc889b37d116038e391854d5"
+  },
+  {
+    "path": "create-yss-spec-sync.log",
+    "bytes": 173,
+    "sha256": "c88f00d7cfa2492aed179ccd38a0f584a7967554a29841d28585c5ff6e024311"
+  },
+  {
+    "path": "create-yss-spec-tests.log",
+    "bytes": 14663,
+    "sha256": "b721e8ccfc9d5a5290414d3c397de4140ac890bd06c934ff1ad553cc09ef3f2b"
+  },
+  {
+    "path": "create-yss-strategic-design-package-01.log",
+    "bytes": 379,
+    "sha256": "d14d92510cff18c1426892f9209091ebd521b502cdd486747cbbb053b37ae6e4"
+  },
+  {
+    "path": "create-yss-strategic-design-package-02.log",
+    "bytes": 78547,
+    "sha256": "ec8348d10333d86569205000db1d5663c55617202e92d9674037b17888eace1b"
+  },
+  {
+    "path": "create-yss-strategic-design-package-03.log",
+    "bytes": 23,
+    "sha256": "da13ab9d025b19c91553bc7d4c450975d3e4e36dd7c5fef6f223f8008ba39547"
+  },
+  {
+    "path": "create-yss-strategic-design-package-04.log",
+    "bytes": 185070,
+    "sha256": "5b769223e30003a36d846db3193e8014b882df6f3abcec377994b23e91b9170e"
+  },
+  {
+    "path": "create-yss-strategic-design-package-05.log",
+    "bytes": 1452,
+    "sha256": "555aff685cc4660ad378e40f3383a9ae7be87f1fe4301ddcd48d4b8565bb6714"
+  },
+  {
+    "path": "create-yss-strategic-design-package-06.log",
+    "bytes": 190187,
+    "sha256": "9dc7b48aba07278cad8f1a9963ec5f7659419876d4f367bd2d153287f0c1a9e6"
+  },
+  {
+    "path": "create-yss-strategic-design-package-07.log",
+    "bytes": 190187,
+    "sha256": "dc2d2a1c0a4f623080f55b92432a96dfb497ada4890ecf752ea3257c74b5a361"
+  },
+  {
+    "path": "create-yss-strategic-design-package-08.log",
+    "bytes": 190249,
+    "sha256": "9e88cfffb2f7481b5b2ea52cb5737348ffaa4c7406e5a35fc77b1173721ad2a8"
+  },
+  {
+    "path": "create-yss-strategic-design-package-09.log",
+    "bytes": 240,
+    "sha256": "c83c29a7c7464f3459ccc11a96c4aea8585116d916b4fd1c3590efe397ca78f5"
+  },
+  {
+    "path": "create-yss-strategic-design-package-10.log",
+    "bytes": 185079,
+    "sha256": "66b11a1001a3cae468fe481c440b12cd3dd455d129f5f00188ab00c8f9495a21"
+  },
+  {
+    "path": "create-yss-strategic-design-package-11.log",
+    "bytes": 35,
+    "sha256": "8d01ac8a770279dadc09f623187736a72eba14829dbf463107979ae906a02ba5"
+  },
+  {
+    "path": "create-yss-strategic-design-package-12.log",
+    "bytes": 44,
+    "sha256": "5abf73fd02e1d25019fb4cc51fc477b8ddaed64dbc889b37d116038e391854d5"
+  },
+  {
+    "path": "create-yss-strategic-design-sync-core.mjs.log",
+    "bytes": 3178,
+    "sha256": "e7a6c041be1f3afe1989d2baa6310938514e503ea2d2dfc31d76c35f6ca5368d"
+  },
+  {
+    "path": "create-yss-strategic-design-sync-template.mjs.log",
+    "bytes": 393125,
+    "sha256": "c3810ec28716bde1450c2b37a33a77aa1a9f7a58ae8ba5e1191b39432d95f0a6"
+  },
+  {
+    "path": "create-yss-strategic-design-tests.log",
+    "bytes": 391,
+    "sha256": "32993e130fd9a63a3db852078019211a85bdc4e9b708fe551680b8673677476d"
+  },
+  {
+    "path": "package-fixture-path-attempt/create-yss-strategic-design-package-01.log",
+    "bytes": 379,
+    "sha256": "d14d92510cff18c1426892f9209091ebd521b502cdd486747cbbb053b37ae6e4"
+  },
+  {
+    "path": "package-fixture-path-attempt/create-yss-strategic-design-package-02.log",
+    "bytes": 78547,
+    "sha256": "ec8348d10333d86569205000db1d5663c55617202e92d9674037b17888eace1b"
+  },
+  {
+    "path": "package-fixture-path-attempt/create-yss-strategic-design-package-03.log",
+    "bytes": 23,
+    "sha256": "da13ab9d025b19c91553bc7d4c450975d3e4e36dd7c5fef6f223f8008ba39547"
+  },
+  {
+    "path": "package-fixture-path-attempt/create-yss-strategic-design-package-04.log",
+    "bytes": 175,
+    "sha256": "e058b4ee52b4d694c89e429f0b14c3f9862f27fa05ae5be9b2b9399cf8d3cc7a"
+  },
+  {
+    "path": "profile-tests.log",
+    "bytes": 1496,
+    "sha256": "5452467b43e8ae892e174b5daad606293751308dde2d4b138206e1a2eaec05d0"
+  },
+  {
+    "path": "release-run.log",
+    "bytes": 2417,
+    "sha256": "1cd0d35393bd2f428d384299e2656812305a04f9a46215660195697bc8e2ea0a"
+  },
+  {
+    "path": "release-verification.raw.json",
+    "bytes": 8262,
+    "sha256": "a6f6c9ff42bda708350b015b55f089209e3b036c2bcd5fbc247717e7eeb3c5d0"
+  }
+]

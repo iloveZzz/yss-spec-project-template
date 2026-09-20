@@ -1,0 +1,76 @@
+{
+  "cli": "create-yss-strategic-design",
+  "scratch": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-daztxqde",
+  "commands": [
+    {
+      "args": [
+        "pnpm",
+        "verify-bundle"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+      "log": "create-yss-strategic-design-package-01.log",
+      "exit_code": 0,
+      "seconds": 0.33
+    },
+    {
+      "args": [
+        "npm",
+        "pack",
+        "--pack-destination",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-daztxqde",
+        "--json"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+      "log": "create-yss-strategic-design-package-02.log",
+      "exit_code": 0,
+      "seconds": 1.0
+    },
+    {
+      "args": [
+        "npm",
+        "install",
+        "--prefix",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-daztxqde/installed",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-daztxqde/create-yss-harness-design-0.8.4.tgz"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+      "log": "create-yss-strategic-design-package-03.log",
+      "exit_code": 0,
+      "seconds": 1.67
+    },
+    {
+      "args": [
+        "node",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-daztxqde/installed/node_modules/create-yss-harness-design/bin/create-yss-harness-design.js",
+        "init",
+        "--target-dir",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-daztxqde/project",
+        "--project-name",
+        "Skills 固定版本验收",
+        "--business-domain",
+        "模板治理",
+        "--team-size",
+        "3",
+        "--json"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-strategic-design",
+      "log": "create-yss-strategic-design-package-04.log",
+      "exit_code": 1,
+      "seconds": 0.08
+    }
+  ],
+  "status": "failed",
+  "archive": {
+    "name": "create-yss-harness-design-0.8.4.tgz",
+    "sha256": "833eab5c9f57cbba82874837580a7433e0e7e558a99acca8f3bfa94ef7e8921d"
+  },
+  "version": "0.8.4",
+  "templateCommit": "83d7bce7eab1adf16e02a419717c94fa8ba84f43",
+  "sourceState": "committed",
+  "snapshotHash": "263e8ab9bb39c8bfd8bb5baa44edc03fdf3067e2620fdfdc12422688472ffecf",
+  "coreSourceRevision": "9126b41c5657b8c80ac3ff6aa7117f4b01e14e18",
+  "error": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-20-openai-skills-implementation/git-delivery/create-yss-strategic-design-package-04.log"
+}

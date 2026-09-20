@@ -1,0 +1,14 @@
+
+> create-yss-harness-frontend@0.3.8 test:prepared /Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend
+> node --test tests/*.test.mjs
+
+✔ 真实初始化同时交付视觉规范源与主题快照 (116050.884625ms)
+✔ frontend: 真实包初始化、接入、诊断、只读、同步和家族边界 (205417.60675ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 205478.587625

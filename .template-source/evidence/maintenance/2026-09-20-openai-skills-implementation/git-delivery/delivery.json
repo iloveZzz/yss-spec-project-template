@@ -1,0 +1,70 @@
+{
+  "status": "verified",
+  "source_commits": [
+    {
+      "repo": ".",
+      "source_commit": "9126b41c5657b8c80ac3ff6aa7117f4b01e14e18"
+    },
+    {
+      "repo": "submodules/yss-harness-design-agent",
+      "source_commit": "83d7bce7eab1adf16e02a419717c94fa8ba84f43"
+    },
+    {
+      "repo": "submodules/yss-harness-backend-agent",
+      "source_commit": "b78a457c56fbb91bfb18dbe66724ce9a59a73292"
+    },
+    {
+      "repo": "submodules/yss-harness-frontend-agent",
+      "source_commit": "2f9ee4e6b90c282d1f3e0a116ef40a5782afdaca"
+    }
+  ],
+  "clis": [
+    {
+      "repo": "create-yss-spec",
+      "package": "create-yss-spec",
+      "version": "3.4.9",
+      "commit": "86adf8f04836e2d6f8c96890b2c4d73f26262b2a",
+      "templateCommit": "9126b41c5657b8c80ac3ff6aa7117f4b01e14e18",
+      "sourceState": "committed",
+      "snapshotHash": "e519fcc91c56cb0258bcbe0811573d33a0d5eb5a541848fb0b14195f7111e625",
+      "package_verification": "create-yss-spec-package.json"
+    },
+    {
+      "repo": "create-yss-strategic-design",
+      "package": "create-yss-harness-design",
+      "version": "0.8.4",
+      "commit": "b8b656bbaf45868812228e1d72f25f68e9070878",
+      "templateCommit": "83d7bce7eab1adf16e02a419717c94fa8ba84f43",
+      "sourceState": "committed",
+      "snapshotHash": "263e8ab9bb39c8bfd8bb5baa44edc03fdf3067e2620fdfdc12422688472ffecf",
+      "package_verification": "create-yss-strategic-design-package.json"
+    },
+    {
+      "repo": "create-yss-harness-backend",
+      "package": "create-yss-harness-backend",
+      "version": "0.4.8",
+      "commit": "c81521dc3a664d8c3feadb138cc610d37b5f2e1f",
+      "templateCommit": "b78a457c56fbb91bfb18dbe66724ce9a59a73292",
+      "sourceState": "committed",
+      "snapshotHash": "4e0eca5287467622929e77f4463a7559bea29af811f0aa507b47113c1a5b6ef5",
+      "package_verification": "create-yss-harness-backend-package.json"
+    },
+    {
+      "repo": "create-yss-harness-frontend",
+      "package": "create-yss-harness-frontend",
+      "version": "0.3.8",
+      "commit": "9c6a9c14a87600375a11f142c97bca9d38f0b3d4",
+      "templateCommit": "2f9ee4e6b90c282d1f3e0a116ef40a5782afdaca",
+      "sourceState": "committed",
+      "snapshotHash": "73e55eca23b40867c81655312264f4753434f07d79563ecad2e63716fd22df61",
+      "package_verification": "create-yss-harness-frontend-package.json"
+    }
+  ],
+  "tested_checkout": "36904aace9482e250ece815ac29e160a9da65288",
+  "full_verification": "87/87 passed",
+  "fixed_release_verification": "passed",
+  "real_agent_runs": 64,
+  "npm_publication": "not-performed",
+  "parent_checkpoint_semantics": "CLI templates and cores pin the final source commit; later parent commits only record CLI gitlinks and maintenance evidence, not distributed source changes.",
+  "git_push": "All source and CLI commits pushed; parent evidence checkpoint follows."
+}

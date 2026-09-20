@@ -1,0 +1,187 @@
+{
+  "cli": "create-yss-harness-frontend",
+  "scratch": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z",
+  "commands": [
+    {
+      "args": [
+        "pnpm",
+        "verify-bundle"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+      "log": "create-yss-harness-frontend-package-01.log",
+      "exit_code": 0,
+      "seconds": 0.61
+    },
+    {
+      "args": [
+        "npm",
+        "pack",
+        "--pack-destination",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z",
+        "--json"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+      "log": "create-yss-harness-frontend-package-02.log",
+      "exit_code": 0,
+      "seconds": 1.63
+    },
+    {
+      "args": [
+        "npm",
+        "install",
+        "--prefix",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/installed",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/create-yss-harness-frontend-0.3.8.tgz"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+      "log": "create-yss-harness-frontend-package-03.log",
+      "exit_code": 0,
+      "seconds": 4.24
+    },
+    {
+      "args": [
+        "node",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/installed/node_modules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+        "init",
+        "--target-dir",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/project",
+        "--project-name",
+        "Skills 固定版本验收",
+        "--business-domain",
+        "模板治理",
+        "--team-size",
+        "3",
+        "--json"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+      "log": "create-yss-harness-frontend-package-04.log",
+      "exit_code": 0,
+      "seconds": 60.08
+    },
+    {
+      "args": [
+        "node",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/installed/node_modules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+        "doctor",
+        "--target-dir",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/project",
+        "--json"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+      "log": "create-yss-harness-frontend-package-05.log",
+      "exit_code": 0,
+      "seconds": 1.7
+    },
+    {
+      "args": [
+        "node",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/installed/node_modules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+        "diff",
+        "--target-dir",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/project",
+        "--json"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+      "log": "create-yss-harness-frontend-package-06.log",
+      "exit_code": 0,
+      "seconds": 1.11
+    },
+    {
+      "args": [
+        "node",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/installed/node_modules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+        "sync",
+        "--target-dir",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/project",
+        "--plan",
+        "--prune",
+        "--json"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+      "log": "create-yss-harness-frontend-package-07.log",
+      "exit_code": 0,
+      "seconds": 1.12
+    },
+    {
+      "args": [
+        "node",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/installed/node_modules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+        "sync",
+        "--target-dir",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/project",
+        "--apply",
+        "--prune",
+        "--json"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+      "log": "create-yss-harness-frontend-package-08.log",
+      "exit_code": 0,
+      "seconds": 13.07
+    },
+    {
+      "args": [
+        "node",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/installed/node_modules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+        "recover",
+        "--target-dir",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/project",
+        "--json"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+      "log": "create-yss-harness-frontend-package-09.log",
+      "exit_code": 0,
+      "seconds": 0.4
+    },
+    {
+      "args": [
+        "node",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/installed/node_modules/create-yss-harness-frontend/bin/create-yss-harness-frontend.js",
+        "attach",
+        "--target-dir",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/existing",
+        "--apply",
+        "--json"
+      ],
+      "cwd": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-frontend",
+      "log": "create-yss-harness-frontend-package-10.log",
+      "exit_code": 0,
+      "seconds": 42.52
+    },
+    {
+      "args": [
+        "node",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/project/scripts/sync-skills",
+        "--check"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/project",
+      "log": "create-yss-harness-frontend-package-11.log",
+      "exit_code": 0,
+      "seconds": 0.19
+    },
+    {
+      "args": [
+        "node",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/project/scripts/update-skill-lock",
+        "--check"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-package-fdn207_z/project",
+      "log": "create-yss-harness-frontend-package-12.log",
+      "exit_code": 0,
+      "seconds": 0.09
+    }
+  ],
+  "status": "passed",
+  "archive": {
+    "name": "create-yss-harness-frontend-0.3.8.tgz",
+    "sha256": "20f23fac3724c234b5f1783089f63169424a456cb8332d98c4c580b1cca36ef9"
+  },
+  "version": "0.3.8",
+  "templateCommit": "2f9ee4e6b90c282d1f3e0a116ef40a5782afdaca",
+  "sourceState": "committed",
+  "snapshotHash": "73e55eca23b40867c81655312264f4753434f07d79563ecad2e63716fd22df61",
+  "coreSourceRevision": "9126b41c5657b8c80ac3ff6aa7117f4b01e14e18",
+  "instance_source_state": "committed"
+}

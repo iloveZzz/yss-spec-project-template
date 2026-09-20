@@ -1,0 +1,13 @@
+
+> create-yss-harness-backend@0.4.8 test:prepared /Users/zhudaoming/Projects/yss-spec-project-template/submodules/create-yss-harness-backend
+> node --test tests/*.test.mjs
+
+✔ backend: 真实包初始化、接入、诊断、只读、同步和家族边界 (166341.559875ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 166398.567625

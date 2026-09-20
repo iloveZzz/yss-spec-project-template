@@ -5377,8 +5377,8 @@
       "fixed_source_delivery": "pending Git authorization and committed-source rebuild"
     }
   ],
-  "fixed_source_delivery": "pending Git authorization; strategic source hashes intentionally not rewritten",
+  "fixed_source_delivery": "completed: see git-delivery/delivery.json and release-verification.json",
   "validation_boundary": "条目整改与结构对账不等于真实 Agent 全部通过或固定来源可发布；最终行为与交付结果独立记录。",
-  "state": "local-delivery-complete; fixed-source gate remains blocked",
+  "state": "fixed-source-verification-complete; npm publication not performed",
   "real_agent_runs": 64
 }

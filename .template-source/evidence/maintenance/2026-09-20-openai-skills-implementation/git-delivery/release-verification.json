@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "requested_commit": "36904aace9482e250ece815ac29e160a9da65288",
+  "status": "passed",
+  "started_at": "2026-09-20T15:40:15.711Z",
+  "commands": [
+    {
+      "command": "scripts/repository-mode",
+      "args": [],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-fixed-checkout-o90toyik/repo",
+      "exit_code": 0,
+      "duration_ms": 40,
+      "log": "01.log"
+    },
+    {
+      "command": "scripts/verify-template",
+      "args": [],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-fixed-checkout-o90toyik/repo",
+      "exit_code": 0,
+      "duration_ms": 189626,
+      "log": "02.log"
+    },
+    {
+      "command": "git",
+      "args": [
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-fixed-checkout-o90toyik/repo/submodules/create-yss-spec",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/cli"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-fixed-checkout-o90toyik/repo",
+      "exit_code": 0,
+      "duration_ms": 24,
+      "log": "03.log"
+    },
+    {
+      "command": "git",
+      "args": [
+        "checkout",
+        "--detach",
+        "86adf8f04836e2d6f8c96890b2c4d73f26262b2a"
+      ],
+      "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/cli",
+      "exit_code": 0,
+      "duration_ms": 24,
+      "log": "04.log"
+    },
+    {
+      "command": "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+      "args": [
+        "scripts/sync-template.js"
+      ],
+      "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/cli",
+      "exit_code": 0,
+      "duration_ms": 4034,
+      "log": "05.log"
+    },
+    {
+      "command": "npm",
+      "args": [
+        "pack",
+        "--ignore-scripts",
+        "--json"
+      ],
+      "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/cli",
+      "exit_code": 0,
+      "duration_ms": 3896,
+      "log": "06.log"
+    },
+    {
+      "command": "npm",
+      "args": [
+        "install",
+        "--prefix",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/consumer",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/cli/create-yss-spec-3.4.9.tgz"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-fixed-checkout-o90toyik/repo",
+      "exit_code": 0,
+      "duration_ms": 3000,
+      "log": "07.log"
+    },
+    {
+      "command": "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+      "args": [
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/consumer/node_modules/create-yss-spec/bin/create-yss-spec.js",
+        "--target-dir",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/instance",
+        "--project-name",
+        "CI release verification",
+        "--business-domain",
+        "模板发布验收",
+        "--team-size",
+        "3"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-fixed-checkout-o90toyik/repo",
+      "exit_code": 0,
+      "duration_ms": 2002,
+      "log": "08.log"
+    },
+    {
+      "command": "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+      "args": [
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/instance/scripts/sync-skills",
+        "--check"
+      ],
+      "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/instance",
+      "exit_code": 0,
+      "duration_ms": 216,
+      "log": "09.log"
+    },
+    {
+      "command": "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+      "args": [
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/instance/scripts/update-skill-lock",
+        "--check"
+      ],
+      "cwd": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/instance",
+      "exit_code": 0,
+      "duration_ms": 92,
+      "log": "10.log"
+    },
+    {
+      "command": "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+      "args": [
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/consumer/node_modules/create-yss-spec/bin/create-yss-spec.js",
+        "sync",
+        "--target-dir",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/instance",
+        "--dry-run"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-fixed-checkout-o90toyik/repo",
+      "exit_code": 0,
+      "duration_ms": 964,
+      "log": "11.log"
+    },
+    {
+      "command": "/Users/zhudaoming/Tools/node/node-v24.21.0-darwin-arm64/bin/node",
+      "args": [
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/consumer/node_modules/create-yss-spec/bin/create-yss-spec.js",
+        "sync",
+        "--target-dir",
+        "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-template-release-AE2dMM/instance"
+      ],
+      "cwd": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-fixed-checkout-o90toyik/repo",
+      "exit_code": 0,
+      "duration_ms": 1770,
+      "log": "12.log"
+    }
+  ],
+  "publication": "not-performed",
+  "template_commit": "36904aace9482e250ece815ac29e160a9da65288",
+  "generator_commit": "86adf8f04836e2d6f8c96890b2c4d73f26262b2a",
+  "submodules": "c81521dc3a664d8c3feadb138cc610d37b5f2e1f submodules/create-yss-harness-backend (remotes/origin/HEAD)\n 9c6a9c14a87600375a11f142c97bca9d38f0b3d4 submodules/create-yss-harness-frontend (remotes/origin/HEAD)\n 86adf8f04836e2d6f8c96890b2c4d73f26262b2a submodules/create-yss-spec (remotes/origin/HEAD)\n b8b656bbaf45868812228e1d72f25f68e9070878 submodules/create-yss-strategic-design (remotes/origin/HEAD)\n b78a457c56fbb91bfb18dbe66724ce9a59a73292 submodules/yss-harness-backend-agent (heads/main)\n 83d7bce7eab1adf16e02a419717c94fa8ba84f43 submodules/yss-harness-design-agent (heads/main)\n 2f9ee4e6b90c282d1f3e0a116ef40a5782afdaca submodules/yss-harness-frontend-agent (heads/main)",
+  "finished_at": "2026-09-20T15:43:43.782Z",
+  "generated_snapshot": {
+    "templateCommit": "36904aace9482e250ece815ac29e160a9da65288",
+    "sourceState": "committed",
+    "snapshotHash": "e519fcc91c56cb0258bcbe0811573d33a0d5eb5a541848fb0b14195f7111e625",
+    "requestedRef": "36904aace9482e250ece815ac29e160a9da65288"
+  }
+}

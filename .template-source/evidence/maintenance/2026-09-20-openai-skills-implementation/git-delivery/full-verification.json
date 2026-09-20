@@ -1,0 +1,444 @@
+{
+  "command": "scripts/verify-template",
+  "checkout_commit": "36904aace9482e250ece815ac29e160a9da65288",
+  "exit_code": 0,
+  "passed": 87,
+  "failed": 0,
+  "jobs": [
+    {
+      "command": "scripts/verify-strategic-handoff-tools-lock",
+      "milliseconds": 55,
+      "exit_code": 0
+    },
+    {
+      "command": "node --check scripts/lib/strategic-handoff.mjs",
+      "milliseconds": 33,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-frontend-delivery-scenarios",
+      "milliseconds": 67018,
+      "exit_code": 0
+    },
+    {
+      "command": "node .template-source/tooling/node/scripts/design-md.mjs lint DESIGN.md",
+      "milliseconds": 1714,
+      "exit_code": 0
+    },
+    {
+      "command": "node .template-source/tooling/node/scripts/design-md.mjs drift",
+      "milliseconds": 70,
+      "exit_code": 0
+    },
+    {
+      "command": ".template-source/scripts/evidence-index --check",
+      "milliseconds": 454,
+      "exit_code": 0
+    },
+    {
+      "command": "node --test .template-source/cli-core/tests/*.test.mjs",
+      "milliseconds": 72378,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/sync-profile-skills --check --profile=all",
+      "milliseconds": 1077,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/sync-skills --check",
+      "milliseconds": 178,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/update-skill-lock --check",
+      "milliseconds": 131,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-skill-registry",
+      "milliseconds": 115,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-skill-governance",
+      "milliseconds": 81,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent",
+      "milliseconds": 73,
+      "exit_code": 0
+    },
+    {
+      "command": "node --test .agents/skills/yss-skill-source-index-refresh/scripts/refresh-yss-skill-index.test.mjs",
+      "milliseconds": 701,
+      "exit_code": 0
+    },
+    {
+      "command": "node --test .agents/skills/yss-repository/tests/profile-routing.test.mjs",
+      "milliseconds": 112,
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm --dir .template-source/tooling/node test",
+      "milliseconds": 5593,
+      "exit_code": 0
+    },
+    {
+      "command": "node .agents/skills/yss-technical-design/scripts/generate-schema.mjs --check",
+      "milliseconds": 39,
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm --dir .template-source/tooling/node check:vendor",
+      "milliseconds": 301,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-yss-dto-openapi-profile",
+      "milliseconds": 47,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-yss-dto-openapi-scenarios",
+      "milliseconds": 96,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-openapi-yaml-first-scenarios",
+      "milliseconds": 890,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-openapi-json-handoff-scenarios",
+      "milliseconds": 53,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-digital-human-roles",
+      "milliseconds": 82,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-digital-human-roles-scenarios",
+      "milliseconds": 245,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-approval-record --history docs/templates/approval-record-template.yaml",
+      "milliseconds": 71,
+      "exit_code": 0
+    },
+    {
+      "command": "node .agents/skills/yss-technical-design/tests/run-scenarios.mjs",
+      "milliseconds": 2227,
+      "exit_code": 0
+    },
+    {
+      "command": "node --test .agents/skills/yss-technical-design/tests/engineering-scenarios.mjs",
+      "milliseconds": 2341,
+      "exit_code": 0
+    },
+    {
+      "command": "node --check .agents/skills/yss-tactical-design/scripts/validate-tactical-design.mjs",
+      "milliseconds": 30,
+      "exit_code": 0
+    },
+    {
+      "command": "node --check .agents/skills/yss-tactical-design/tests/run-scenarios.mjs",
+      "milliseconds": 28,
+      "exit_code": 0
+    },
+    {
+      "command": "node .agents/skills/yss-tactical-design/tests/run-scenarios.mjs",
+      "milliseconds": 531,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-subagent-task-package-scenarios",
+      "milliseconds": 4532,
+      "exit_code": 0
+    },
+    {
+      "command": "node --test .template-source/tooling/node/test/decision-continuation.test.mjs",
+      "milliseconds": 3804,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-digital-human-task-package-scenarios",
+      "milliseconds": 4239,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-digital-human-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml",
+      "milliseconds": 148,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-digital-human-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml",
+      "milliseconds": 147,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-maintenance-checkpoint .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml",
+      "milliseconds": 52,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-strategic-handoff-package-scenarios",
+      "milliseconds": 85833,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-maintenance-intensity-scenarios",
+      "milliseconds": 1018,
+      "exit_code": 0
+    },
+    {
+      "command": "node scripts/verify-maintenance-review-workflow-scenarios",
+      "milliseconds": 432,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-implementation-path-scenarios",
+      "milliseconds": 40,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-user-decision-scenarios",
+      "milliseconds": 3481,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-context-contract --root . --json",
+      "milliseconds": 69,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-context-contract-scenarios",
+      "milliseconds": 362,
+      "exit_code": 0
+    },
+    {
+      "command": "node scripts/verify-business-language-scenarios",
+      "milliseconds": 61,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-context-reconciliation-scenarios",
+      "milliseconds": 839,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-repository-scope-scenarios",
+      "milliseconds": 1571,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-existing-backend-architecture-scenarios",
+      "milliseconds": 2967,
+      "exit_code": 0
+    },
+    {
+      "command": "node scripts/verify-script-performance-scenarios",
+      "milliseconds": 1395,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-scaffold-generator-scenarios",
+      "milliseconds": 2262,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-grill-with-docs-context-scenarios",
+      "milliseconds": 1248,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-strategic-context-import-scenarios",
+      "milliseconds": 668,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-lifecycle-registry",
+      "milliseconds": 275,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-lifecycle-context-query-scenarios",
+      "milliseconds": 521,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml",
+      "milliseconds": 163,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-plan-template.yaml",
+      "milliseconds": 138,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-verification-template.yaml",
+      "milliseconds": 132,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-frontend-implementation-evidence-scenarios",
+      "milliseconds": 824,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-scaffold-architecture-decisions --allow-template docs/process/templates/scaffold-architecture-decisions-template.yaml",
+      "milliseconds": 164,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-scaffold-architecture-decision-scenarios",
+      "milliseconds": 1524,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-lifecycle-scenarios",
+      "milliseconds": 488,
+      "exit_code": 0
+    },
+    {
+      "command": "node --test scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs",
+      "milliseconds": 6937,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-lifecycle-transition-scenarios",
+      "milliseconds": 7117,
+      "exit_code": 0
+    },
+    {
+      "command": "node scripts/verify-plan-spec-entry-scenarios",
+      "milliseconds": 1198,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-frontend-scaffold-generator-scenarios",
+      "milliseconds": 1035,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-governance-release",
+      "milliseconds": 40,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-strategic-handoff-tools-lock --require-committed",
+      "milliseconds": 53,
+      "exit_code": 0
+    },
+    {
+      "command": "node scripts/verify-template-verification-scenarios",
+      "milliseconds": 278,
+      "exit_code": 0
+    },
+    {
+      "command": "node scripts/verify-template-cache-scenarios",
+      "milliseconds": 491,
+      "exit_code": 0
+    },
+    {
+      "command": "node --test .agents/skills/yss-ddd-scaffold-generator/scripts/scaffold-generator.test.mjs",
+      "milliseconds": 9450,
+      "exit_code": 0
+    },
+    {
+      "command": "node --test .template-source/scripts/tests/template-ci.test.mjs",
+      "milliseconds": 3457,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-delivery-preflight-scenarios",
+      "milliseconds": 24063,
+      "exit_code": 0
+    },
+    {
+      "command": "node --test .agents/skills/yss-layered-mvc-scaffold-generator/scripts/scaffold-generator.test.mjs",
+      "milliseconds": 11281,
+      "exit_code": 0
+    },
+    {
+      "command": "node --test scripts/lib/legacy-backend-scaffold-audit.test.mjs",
+      "milliseconds": 102,
+      "exit_code": 0
+    },
+    {
+      "command": "node --test scripts/lib/api-contract-decision.test.mjs",
+      "milliseconds": 442,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-prototype-backend-scaffold-scenarios",
+      "milliseconds": 55,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-matt-yss-integration-scenarios",
+      "milliseconds": 4546,
+      "exit_code": 0
+    },
+    {
+      "command": "node .template-source/scripts/verify-delivery-harness-distribution.mjs",
+      "milliseconds": 127150,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-existing-ui-baseline-scenarios",
+      "milliseconds": 37222,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-yss-implementation-contract-compiler-scenarios",
+      "milliseconds": 60213,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/generate-yss-skill-boundaries --check",
+      "milliseconds": 77,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/audit-yss-backend-skills --check",
+      "milliseconds": 68,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-retired-skill-ids",
+      "milliseconds": 1412,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-yss-ui-scenarios",
+      "milliseconds": 42,
+      "exit_code": 0
+    },
+    {
+      "command": "scripts/verify-yss-prototype-contract-scenarios",
+      "milliseconds": 471,
+      "exit_code": 0
+    },
+    {
+      "command": "node --test .agents/skills/yss-prototype-stage/tests/antd-reference.test.mjs",
+      "milliseconds": 87,
+      "exit_code": 0
+    },
+    {
+      "command": "node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence docs/design/templates/prototype-evidence-template.yaml --allow-template",
+      "milliseconds": 58,
+      "exit_code": 0
+    },
+    {
+      "command": "node .agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs validate docs/design/templates/visual-baseline-template.yaml --allow-template",
+      "milliseconds": 45,
+      "exit_code": 0
+    }
+  ]
+}

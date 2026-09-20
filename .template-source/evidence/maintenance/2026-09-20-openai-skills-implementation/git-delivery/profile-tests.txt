@@ -1,0 +1,25 @@
+✔ text preview retains changes and conflict diagnostics without changing JSON or target files (3.820166ms)
+✔ clean check does not invent affected profiles or claim project verification (1.780208ms)
+✔ plans exact, adapted, and retired changes without writing (2.333959ms)
+✔ apply is idempotent and preserves the declared adaptation (2.036916ms)
+✔ a changed adaptation baseline reports adaptation_conflict (1.2365ms)
+✔ missing dependencies and path traversal are rejected (1.278125ms)
+✔ dirty target changes block apply (0.989208ms)
+✔ apply rolls back earlier writes when a later write fails (1.496541ms)
+✔ profile-owned adaptations require their declared markers (1.017625ms)
+✔ a skill cannot be synchronized in both source directions (0.794875ms)
+✔ an unclassified same-name difference is reported (1.383917ms)
+✔ a file patch replays only against its registered source baseline (21.73275ms)
+✔ active excluded and profile-only unclassified entries cannot hide from coverage (1.61075ms)
+✔ platform package paths are covered and exact synchronization is repeatable (2.953083ms)
+✔ entry references resolve against the planned tree and missing references block writes (2.477917ms)
+✔ identical unclassified copies still need a maintenance owner (1.113208ms)
+✔ Python interpreter caches do not enter profile source or create repeated drift (1.394917ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 96.488625
