@@ -1,6 +1,6 @@
 # YSS Domain Target Profile 指南
 
-本指南只定义新 DDD `target-domain-model`。历史 DTO/VO 型 Gateway、`core/client/repository` 和贫血对象均为 `unsupported`，不存在旧架构 Profile 或迁移分支。
+本指南的目录和生成布局只定义新 DDD `target-domain-model`。既有 DDD 通过 [既有工程边界](existing-project.md) 应用领域语义规则；历史目录或贫血对象不能单凭名称判违规。HTTP DTO/VO 穿入领域端口仍须按登记职责检查。架构迁移不属于生成器。
 
 ## 1. Domain 所有权
 
@@ -98,7 +98,7 @@ Web Exception Translator 再将它映射为批准的状态码、错误码和消�
 - 消费批准且当前的 Tactical Design 与 Slice Implementation Contract。
 - 返回 YSS Skill Execution Result，包含 Domain 文件、行为测试、ArchUnit 结果及实际 `./mvnw ...` 证据。
 - 新聚合、不变量、状态机或跨上下文影响进入 `new_impacts` 并暂停。
-- 检测到旧架构时返回 `unsupported`；如需现代化，退出 scaffold 工作流并单独立项评估。
+- 旧布局不走 scaffold 生成分支；既有 DDD 按登记整改。需改变架构或公开契约时单独评估并批准。
 
 ## 聚合创建与重建
 

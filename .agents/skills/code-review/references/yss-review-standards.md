@@ -71,11 +71,9 @@ YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，�
 `contract_digest`、候选摘要、`reviewer` / `implementer` 的 actor_id / runtime_id / instance_id，
 并分别记录 `axes.Standards` 和 `axes.Spec`。自审不能用不同角色名替代不同执行实例。
 
-复用 `constraint_results`，每个适用技能至少一项包含 `axis: Standards`、`skill`、`constraint`、
-`status`、`rule_ref`、规则文件 SHA-256 `rule_digest`、`code_ref`、`evidence_ref`、证据 SHA-256
-`evidence_digest`。按原文定位具体规则，禁止仅写“符合规范”。无持久化影响时 Repository/MyBatis
-可写有原因的 not-applicable；合同必需技能不得豁免。`findings` 的阻断项必须关闭；建议可绑定
-`follow_up_ref` 进入待办。修复后重新捕获候选，重验受影响规则及依赖，并显式重绑复用证据。
+复用 `constraint_results`，按派生覆盖清单逐条包含 `constraint_id`、`applicability_basis`、`axis: Standards`、`skill`、`constraint`、`status`、`rule_ref/rule_digest`、`code_ref`、`evidence_ref/evidence_digest`。每个适用技能还须完成 full-text 项并保留具体 `review_notes`。漏技能、漏规则、重复项、过期证据均不能完成。无分页等需求只豁免对应条件规则，不豁免整个适用技能。
+
+后端输入必须增加 `scope_kind: change`、`standards_coverage_ref/digest`；`committed` 候选还绑定 `review_base_ref`。只读存量基线使用 `scope_kind: baseline`，允许无 Slice/无 diff，成功仅为 audited，不能关闭实现审查。详细输入、未知类型与全文核对规则见 `yss-backend-spec-review/references/standards-coverage.md`。未提供结构化覆盖的历史报告只能阅读，不作为新完成证据。
 
 工作树候选复用现有 packed candidate 工具；审查证据可排除，业务文件不可排除。已提交候选绑定
 不可变 tree ID，并核对当前清洁 checkout。读取结构化结果不会代替 Reviewer 的实际规则判断。

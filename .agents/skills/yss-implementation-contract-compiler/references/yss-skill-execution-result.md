@@ -32,7 +32,9 @@ execution_result:
       result:
       executed_at:
   constraint_results:
-    - constraint:
+    - constraint_id: # 后端审查时为 canonical 稳定 ID
+      applicability_basis: [] # 后端覆盖工具派生依据
+      constraint:
       status: passed | failed | not-applicable
       evidence_ref:
   doubt_driven_review:
@@ -70,3 +72,5 @@ execution_result:
 专项 skill 自报 `implemented` 不等于最终通过，生命周期编排器和独立 Reviewer 必须复核。
 
 `verification_results` 不得为空，每项必须包含非空 `command`、`result` 和 `executed_at`。路径校验按完整目录边界判断，`apps/backend/project1-escape` 不属于 `apps/backend/project1/`；Harness 内路径还必须通过项目路径策略。完整重路由时旧合同必须标记 `stale`，新合同版本递增并保留旧合同引用、失效原因和触发器。
+
+后端独立审查在既有 constraint_results 中消费稳定规则 ID、规则/代码/证据摘要与完整适用性集合；输入增加 scope_kind 与 standards_coverage_ref/digest。见 yss-backend-spec-review/references/standards-coverage.md。实现者结果不代替独立 code-review；历史未携带新字段的报告只读兼容。

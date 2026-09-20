@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import { parseArgs } from 'node:util';
+import { parseSliceYaml, selectSliceWorkUnit } from './lib/slice-contract.mjs';
+import { inspectSliceContract } from './lib/slice-execution-preflight.mjs';
+import { inspectMaintenanceCandidate } from './lib/maintenance-candidate.mjs';
+import { compileStandardsCoverage, coverageFile } from './lib/backend-standards-coverage.mjs';
+import { validateBackendReview } from './lib/backend-review.mjs';
+try {
+ const {values}=parseArgs({options:{input:{type:'string'},root:{type:'string'},verify:{type:'boolean'}},strict:true});
+ if(!values.input)throw Error('usage: scripts/backend-standards-coverage --input <review-state.json|yaml> [--root <governance-root>] [--verify]');
+ const root=path.resolve(values.root||'.'),state=parseSliceYaml(fs.readFileSync(path.resolve(values.input),'utf8'));
+ if(values.verify)console.log(JSON.stringify(validateBackendReview(state,{root}),null,2));
+ else {
+  const input=state.review_input;if(!input)throw Error('review_input required');
+  const projectRoot=path.resolve(root,input.project_root||'.');let contract=null,comparison_ref=null;
+  if(input.scope_kind==='change') {
+   const loaded=inspectSliceContract(input.slice_contract_ref,{root,approval_ref:input.approval_ref,work_unit_id:input.work_unit_id});
+   if(!loaded.report.execution_allowed)throw Error(loaded.report.blockers.join('; '));
+   contract=selectSliceWorkUnit(loaded.contract,input.work_unit_id);
+   comparison_ref=input.review_mode==='worktree'?inspectMaintenanceCandidate({manifestPath:coverageFile(projectRoot,input.candidate_snapshot_ref)}).manifest.merge_base:input.review_base_ref;
+  }
+  console.log(JSON.stringify(compileStandardsCoverage({root,projectRoot,contract,scope_kind:input.scope_kind,baseline_binding:input.baseline_binding,comparison_ref,actual_skills:input.actual_skill_impacts||[],responsibility_evidence:input.responsibility_evidence||[]}),null,2));
+ }
+} catch(error){console.error(error.message);process.exitCode=1;}

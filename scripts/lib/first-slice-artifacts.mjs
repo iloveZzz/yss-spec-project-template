@@ -33,7 +33,7 @@ export function inspectFirstSliceArtifacts(contract, projectRoot) {
       }
     } catch (error) { failures.push(`${label}:${error.message}`); }
   }
-  const aliases = { service: 'application', core: 'domain', repository: 'infrastructure', server: 'web' };
+  const aliases = { service: 'application', core: 'application', repository: 'infrastructure', server: 'web' };
   for (const layer of contract.backend.affected_layers || []) {
     const role = aliases[layer] || layer;
     if (['domain','application','infrastructure','web'].includes(role) && !roles.has(role)) failures.push(`affected-role-empty:${role}`);

@@ -587,15 +587,71 @@
     },
     "review_input": {
       "type": "object",
-      "required": [
-        "slice_contract_ref"
-      ],
       "properties": {
         "slice_contract_ref": {
           "type": "string",
           "minLength": 1
+        },
+        "scope_kind": {
+          "enum": [
+            "baseline",
+            "change"
+          ]
+        },
+        "standards_coverage_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "standards_coverage_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "review_base_ref": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{40}$"
+        },
+        "responsibility_evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "ref",
+              "digest"
+            ],
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^(sha256:)?[a-f0-9]{64}$"
+              }
+            }
+          }
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "required": [
+              "scope_kind"
+            ],
+            "properties": {
+              "scope_kind": {
+                "const": "change"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "slice_contract_ref",
+              "standards_coverage_ref",
+              "standards_coverage_digest"
+            ]
+          }
+        }
+      ]
     },
     "review_result_ref": {
       "type": "string",

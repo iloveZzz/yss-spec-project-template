@@ -44,6 +44,8 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 
 - 写操作参数优先继承 `CommandDTO`。
 - Application/Infrastructure 内部读参数可按项目 Profile 使用 `QueryDTO` 或 `PageQuery`。
+<a id="dto.page-input"></a>
+<!-- yss-rule {"id":"dto.page-input","when":"pagination","level":"mandatory","evidence":"code-and-verification"} -->
 - 公开 HTTP Page Request 默认不继承 `PageQuery`，只复制冻结 OpenAPI 允许的分页字段，再由 WebConvertor 转为 Application Query；避免继承的 `offset`、`needTotalCount`、`tempTotalCount` 进入绑定面。
 - Controller 返回优先使用项目既有的 `Result` 或派生结果对象。
 - 单对象返回优先 `SingleResult`，列表返回优先 `MultiResult`，分页返回优先 `PageResult`，前提是当前项目已采用这套体系。
@@ -54,12 +56,18 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 - `PageResult` 当前稳定公共字段为 `totalCount/pageSize/pageIndex/data[]`；`totalPages` 是计算 getter，只有目标 HTTP mapper / contract fixture 证明后才能进入具体契约。
 - `PageQuery` 客户端输入只允许 `pageIndex/pageSize/orderBy/orderDirection/groupBy`（后四项按 profile 的 optional / whitelist 规则）；`orderDirection` 只能是 `ASC|DESC`。`offset`、`needTotalCount`、`tempTotalCount` 是计算或内部协作字段，禁止成为客户端输入。
 - `buildSuccess(...)` 各重载设置 code 的行为并不一致；冻结契约必须测试 `success/code/message/tips/dataType`、nullability 和三种 data shape，不能只测试 data。
+<a id="dto.wire-evidence"></a>
+<!-- yss-rule {"id":"dto.wire-evidence","when":"wire","level":"mandatory","evidence":"code-and-verification"} -->
 - Java getter、Lombok、`@JsonIgnore` 或默认 Jackson 结果都不是目标 HTTP wire fact；冻结前必须记录 mapper identity、代表性序列化 fixture 和 contract-test / 等价 HTTP 证据。
+<a id="dto.boundary"></a>
+<!-- yss-rule {"id":"dto.boundary","when":"wire","level":"mandatory","evidence":"code-and-verification"} -->
 - DTO 只表达接口契约，不承载 Repository PO 或领域对象的持久化细节。
 
 ## 检查清单
 
 - 分页字段名是否和框架约定一致。
+<a id="dto.sort"></a>
+<!-- yss-rule {"id":"dto.sort","when":"pagination","level":"mandatory","evidence":"code-and-verification"} -->
 - `orderBy` / `groupBy` 是否经过 Repository 白名单映射，禁止直接拼接 SQL。
 - Application Query Port / Infrastructure 是否收到批准的分页语义；Domain Gateway 不接收 `PageQuery`。
 - 新增 DTO 是否与现有序列化和校验方式兼容。
@@ -75,6 +83,8 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 - 不要在一个项目里混用多套返回包装类。
 - 不要新建与 `PageQuery` 含义重叠的分页基类。
 - 不要把 `com.yss.cloud.dto.response` 作为新 API 的 canonical 包，也不要从 Java getter 机械生成 wire schema。
+<a id="dto.no-leak"></a>
+<!-- yss-rule {"id":"dto.no-leak","when":"pagination","level":"mandatory","evidence":"code-and-verification"} -->
 - 不要把 `offset`、`needTotalCount`、`tempTotalCount` 作为客户端分页输入；不要无证据把 `totalPages` 写入所有分页响应。
 - 若项目已有 `SingleResult`、`PageResult`、`MultiResult` 体系，优先保持一致。
 
@@ -95,3 +105,7 @@ description: "实现或核验 YSS Result、PageResult、PageQuery、CommandDTO�
 ## 平台与源码门禁
 
 接入、修改、代码生成或给出精确类名/配置前，读取 [后端组件平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，从批准的 `platform_configuration.component_platform_line` 选择 `source-index.boot2-java8.md` 或 `source-index.boot3-java17.md`，并以 `--skill yss-dto --platform-line <line> --source-root <matching-root>` 运行统一 freshness 校验。平台线与源码根不匹配、组件 tree 不一致、组件子树 dirty、索引缺少平台信号，或 Manifest / 组件 GAV 缺少 verified 兼容证据时返回 `blocked`；不得回退另一代索引，也不在业务实现中升级、降级或替换 YSS 组件。既有工程只读分诊可继续，但不得据此宣称跨 Boot/JDK 兼容。
+
+## 既有契约与特殊协议
+
+只读审计先辨认已锁定的 wire 契约。下载、流式和第三方回调按批准协议检查媒体类型、状态、Header、错误与权限边界；不强套 Result，也不因声称“特殊接口”豁免契约证据。普通已采用 YSS wrapper 的接口继续按 wire profile 检查。旧包/旧协议差距单列迁移，不静默改锁或改公开响应。

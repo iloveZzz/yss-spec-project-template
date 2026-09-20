@@ -1396,8 +1396,8 @@
    changed_files:
      - path:
        contract_area: common | frontend | backend | contract | cross_repo
-@@ -35,9 +31,6 @@
-     - constraint:
+@@ -37,9 +33,6 @@
+       constraint:
        status: passed | failed | not-applicable
        evidence_ref:
 -  doubt_driven_review:

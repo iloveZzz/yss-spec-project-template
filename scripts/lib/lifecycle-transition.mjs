@@ -250,7 +250,10 @@ function validateTicketReference(ref, trackerKind) {
  */
 export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, options = {}) {
   if (currentWorkUnit === "work-unit.code-review" && nextRoute === "work-unit.release-and-retrospective") {
-    try { validateBackendReview(decisionState, { root: options.root || ROOT }); }
+    try {
+      if (decisionState?.review_input?.scope_kind !== "change") throw new Error("只读基线审计不能关闭实现审查");
+      validateBackendReview(decisionState, { root: options.root || ROOT });
+    }
     catch (error) { return blockedResult(["backend-review-incomplete"], [error.message]); }
   }
 

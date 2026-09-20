@@ -11,7 +11,7 @@ description: "按冻结合同与稳定 Application 接口生成或重构 YSS Con
 
 以下 Application / Domain Gateway / Infrastructure / Web module 叙述仅适用于 target-domain-model；MVC 的 service/core/repository/server/client 所有权由所选 Profile 引用定义。
 
-这是一个 Web 适配层生成型 skill。优先复用脚本 `scripts/generate_controller.mjs` 和模板，不手写重复 CRUD。
+本 Skill 同时支持只读审计、既有整改和新建 CRUD 生成。审计读取实际入口和现有契约，缺证据只记录缺口；整改消费批准 Slice、冻结 API/no-impact 与稳定用例 seam；仅新建 CRUD 才要求 Web generation contract、metadata 并调用 initialize-only 生成器。
 
 ## 何时使用
 
@@ -19,12 +19,13 @@ description: "按冻结合同与稳定 Application 接口生成或重构 YSS Con
 - 用户要根据冻结 OpenAPI 字段合同、metadata 和稳定 Application 接口生成 Request / Response / Controller / WebConvertor。
 - 用户要求统一 Web Adapter 风格、返回值和接口路径。
 
-## 不适用
+手工认证、回调、Cookie、下载或流式接口适用本 Skill，但不强制使用 CRUD 脚本或 metadata。
 
-- 用户只是要新增一个手写复杂接口，不一定要用脚本。
-- 用户还没有稳定的 Application Service、冻结 OpenAPI 或 metadata，先回 实现合同编译器 补 `yss-application` / `yss-domain` 和相应合同输入。
+## 实施前置与审计边界
 
-## 优先流程
+- 只读审计可以记录用例 seam 或契约缺失。既有整改缺少批准 Slice、稳定用例 seam 或接口契约时，回实现合同编译器补齐；仅新建 CRUD 生成要求 metadata，不因缺 metadata 拒绝既有代码审计或手工接口整改。
+
+## 新建 CRUD 生成流程
 
 1. 先确认冻结 OpenAPI、批准且版本当前的 Web generation contract schema v2、Application Service 接口、metadata、基础包、模块名、领域 segment 和 web 落盘目录；合同必须绑定 Slice `contract_id` / `contract_version` / `slice_id`、`yss-dto` wire profile 引用与 digest、允许写路径、证据与验证命令。
 2. 加载并遵守 `yss-dto` 与 `yss-validation`；错误映射影响命中时再加载 `yss-exception`。
@@ -61,13 +62,19 @@ node scripts/generate_controller.mjs \
 
 ## 约束
 
+<a id="web.use-case"></a>
+<!-- yss-rule {"id":"web.use-case","when":"web","level":"mandatory","evidence":"code-and-verification"} -->
 - 生成代码只依赖既有 Application Service；读写操作都禁止绕过 Application。复杂查询经 Application Query Port 接入 Infrastructure。
+<a id="web.wire"></a>
+<!-- yss-rule {"id":"web.wire","when":"wire","level":"mandatory","evidence":"code-and-verification"} -->
 - 返回包装类、分页默认值、允许字段与 `PageResult.of(...)` 参数语义必须消费合同绑定的 `yss-dto/references/openapi-wire-profile.yaml`；Web skill 不复制或自行维护第二套协议。
 - DTO / VO / CMD / Query 默认用 Lombok 处理 getter/setter、constructor、builder 和日志样板；不要在 Controller 内部类或非约定包临时定义主要 DTO / VO。
 - `WebConvertor` 使用 `@Mapper(componentModel = "spring")` 和构造器注入；禁止静态 `INSTANCE`、在 Controller / Application 中大段手写字段赋值、使用 `BeanUtils.copyProperties` 或反射式通用拷贝。
+<a id="web.pagination"></a>
+<!-- yss-rule {"id":"web.pagination","when":"pagination","level":"mandatory","evidence":"code-and-verification"} -->
 - HTTP Request 不继承会暴露内部协作字段的 `PageQuery`；只生成冻结 OpenAPI allowlist 字段，禁止把 `offset`、`needTotalCount`、`tempTotalCount` 变成客户端输入。
 - `fields.<table>.pagination` 必须显式列出 `yss-dto` wire profile 允许暴露的字段子集；模板不得无条件生成字段或自行定义默认值。
-- 先跑脚本，再按项目规范做少量手调。
+- 仅新建 CRUD 先跑脚本；既有整改和手工协议适配不重跑初始化生成器。
 - Validation namespace 参数必须来自批准的精确平台配置和当前工程基线，不得按记忆或 Boot 大版本自行选择。
 - 若用户只是要改单个 Controller，先看现有代码，不要盲覆盖整个目录。
 - 脚本是 initialize-only；写入前先规划全部目标并校验 `allowed_write_paths`，任一目标已存在或传入 `--force` 时整体返回 `unsupported`。落盘使用排他创建和失败回滚，不得留下部分文件；旧项目迁移不属于该生成器。
@@ -85,8 +92,10 @@ node scripts/generate_controller.mjs \
 
 ## 阶段 7 合同
 
-- 只消费已批准且当前的 schema v2 Web generation contract 和冻结 OpenAPI/no-impact record；schema v1 为 `unsupported`，不得自动升级，也不得用 Controller 或半成品 backend 反向定义产品契约。
+- 所有写入消费批准且当前的 Slice 与冻结 OpenAPI/no-impact record；只有新建 CRUD 生成还要求 schema v2 Web generation contract。生成合同 v1 为 `unsupported`，不得自动升级；不得用 Controller 反向定义产品契约。
 - DTO/VO/WebConvertor 机械骨架可用 `controlled-generation`；权限、错误映射、校验语义和接口行为必须使用 `behavior-tdd`。
+<a id="web.write-scope"></a>
+<!-- yss-rule {"id":"web.write-scope","when":"change","level":"mandatory","evidence":"code-and-verification"} -->
 - 写入必须位于合同 `allowed_write_paths`，并提供 Controller、DTO/VO、WebConvertor、契约/API 测试和实际验证结果。
 - 按统一 `YSS Skill Execution Result` 返回偏离与新增影响；出现新 API/schema、权限或响应包装变化时暂停并回到 实现合同编译器/生命周期。
 

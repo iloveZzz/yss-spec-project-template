@@ -3,8 +3,10 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { parseSliceYaml, selectSliceWorkUnit } from './slice-contract.mjs';
+import { validateApprovalRecord } from './approval-record.mjs';
 import { inspectSliceContract } from './slice-execution-preflight.mjs';
 import { inspectMaintenanceCandidate } from './maintenance-candidate.mjs';
+import { compileStandardsCoverage, coverageDigest, coverageFile, verifyCoverageRows } from './backend-standards-coverage.mjs';
 
 const ensure = (condition, message) => { if (!condition) throw new Error(`backend-review: ${message}`); };
 const text = value => typeof value === 'string' && value.trim();
@@ -22,12 +24,14 @@ function file(root, ref) {
 
 export function backendReviewSkills(contract, actualSkills = []) {
   return [...new Set([...(contract.resolution?.required_skills || []), ...(contract.common?.required_skills || []),
-    ...(contract.backend?.required_skills || []), ...actualSkills, 'alibaba-java-code-style', 'yss-repository', 'yss-mybatis'])].sort();
+    ...(contract.backend?.required_skills || []), ...actualSkills, 'alibaba-java-code-style'])].sort();
 }
 
 /** Validate existing code-review result and constraint_results; this is not an approval authority. */
 export function validateBackendReview(state, { root = process.cwd() } = {}) {
   const input = state?.review_input;
+  ensure(['baseline','change'].includes(input?.scope_kind), 'scope_kind required; historical records are read-only');
+  if (input.scope_kind === 'baseline') return validateBaselineReview(state, {root});
   ensure(input?.slice_contract_ref, 'review input must bind Slice contract');
   const loaded = inspectSliceContract(input.slice_contract_ref, { root, approval_ref: input.approval_ref, work_unit_id: input.work_unit_id });
   ensure(loaded.report.execution_allowed, `approved current contract required: ${loaded.report.blockers.join('; ')}`);
@@ -68,25 +72,9 @@ export function validateBackendReview(state, { root = process.cwd() } = {}) {
     ensure(tree === input.candidate_digest, 'committed candidate mismatch');
     ensure(git(projectRoot, ['rev-parse','HEAD^{tree}']).toString().trim() === tree && !git(projectRoot, ['status','--porcelain']).length, 'committed candidate is not current clean checkout');
   }
-  const layerSkills = { domain: 'yss-domain', application: 'yss-application', infrastructure: 'yss-repository', web: 'yss-web-controller' };
-  const actualSkills = [...input.actual_skill_impacts, ...(contract.backend.affected_layers || []).map(layer => layerSkills[layer]).filter(Boolean)];
-  const required = backendReviewSkills(contract, actualSkills);
-  const applicable = new Set([...(contract.resolution?.required_skills || []), ...(contract.common?.required_skills || []), ...(contract.backend?.required_skills || []), ...actualSkills, "alibaba-java-code-style"]);
-  ensure(Array.isArray(result.constraint_results), 'constraint_results required');
-  for (const skill of required) {
-    const rows = result.constraint_results.filter(row => row.skill === skill && row.axis === 'Standards');
-    ensure(rows.length, `skill not reviewed: ${skill}`);
-    for (const row of rows) {
-      ensure(text(row.constraint) && text(row.rule_ref) && text(row.code_ref) && text(row.evidence_ref), `${skill}: rule/code/evidence required`);
-      ensure(['passed','not-applicable'].includes(row.status), `${skill}: unresolved violation`);
-      ensure(row.status !== 'not-applicable' || (text(row.reason) && !applicable.has(skill)), `${skill}: applicable skill cannot be waived`);
-      ensure(row.rule_ref.startsWith(`.agents/skills/${skill}/`), `${skill}: rule must cite its canonical skill`);
-      const rule = fs.readFileSync(file(root, row.rule_ref.split('#')[0]));
-      ensure(digest(rule) === row.rule_digest, `${skill}: rule evidence stale`);
-      ensure(fs.existsSync(file(projectRoot, row.code_ref.split(':')[0])), `${skill}: missing code location`);
-      ensure(digest(fs.readFileSync(file(root, row.evidence_ref))) === row.evidence_digest, `${skill}: verification evidence stale`);
-    }
-  }
+  const coverage = currentStandardsCoverage(input, {root, projectRoot, contract});
+  verifyCoverageRows(coverage, result.constraint_results, {root, projectRoot});
+  const required = coverage.skills.map(row => row.skill);
   ensure(Array.isArray(result.verification_results) && result.verification_results.length > 0, 'machine verification required');
   for (const check of result.verification_results) {
     ensure(text(check.command) && Number.isFinite(Date.parse(check.executed_at)) && check.exit_code === 0 && check.candidate_digest === result.candidate_digest, 'machine check failed, absent or stale');
@@ -99,4 +87,54 @@ export function validateBackendReview(state, { root = process.cwd() } = {}) {
     if (finding.disposition === 'suggestion' && finding.status !== 'resolved') ensure(text(finding.follow_up_ref), 'suggestion needs backlog reference');
   }
   return { status: 'passed', candidate_digest: input.candidate_digest, reviewed_skills: required };
+}
+
+/** Recompute derived coverage, do not trust a submitted expected-rule list. */
+export function currentStandardsCoverage(input, {root, projectRoot, contract=null}={}) {
+  ensure(input.standards_coverage_ref && input.standards_coverage_digest, 'standards coverage binding required');
+  const bytes=fs.readFileSync(file(root,input.standards_coverage_ref));
+  ensure(digest(bytes)===input.standards_coverage_digest, 'standards coverage digest stale');
+  const recorded=parseSliceYaml(bytes.toString());
+  let comparison_ref=null;
+  if(input.scope_kind==='change') {
+    comparison_ref=input.review_mode==='worktree'
+      ? inspectMaintenanceCandidate({manifestPath:file(projectRoot,input.candidate_snapshot_ref)}).manifest.merge_base
+      : input.review_base_ref;
+  }
+  const current=compileStandardsCoverage({root,projectRoot,contract,scope_kind:input.scope_kind,
+    baseline_binding:input.baseline_binding,comparison_ref,actual_skills:input.actual_skill_impacts||[],responsibility_evidence:input.responsibility_evidence||[]});
+  ensure(coverageDigest(current)===coverageDigest(recorded),'standards coverage stale or incomplete');
+  return current;
+}
+
+function validateBaselineReview(state,{root}) {
+  const input=state.review_input,projectRoot=fs.realpathSync(path.resolve(root,input.project_root||'.'));
+  const coverage=currentStandardsCoverage(input,{root,projectRoot});
+  const result=parseSliceYaml(fs.readFileSync(file(root,state.review_result_ref),'utf8'));
+  ensure(result.skill==='code-review' && result.result==='completed','independent code-review baseline report required');
+  ensure(result.candidate_digest===coverageDigest(coverage.inventory) && input.candidate_digest===result.candidate_digest,'baseline candidate stale');
+  for(const key of ['actor_id','runtime_id','instance_id'])ensure(text(result.reviewer?.[key])&&text(result.implementer?.[key]),'baseline actor identity required');
+  ensure(result.reviewer.actor_id!==result.implementer.actor_id && result.reviewer.instance_id!==result.implementer.instance_id,'independent Reviewer required');
+  ensure(result.implementer.actor_id===input.implementation_actor_id && result.implementer.instance_id===input.implementation_instance_id,'baseline actor mismatch');
+  verifyCoverageRows(coverage,result.constraint_results,{root,projectRoot});
+  ensure(result.axes?.Standards==='passed','Standards must pass');
+  ensure(['passed','missing_evidence'].includes(result.axes?.Spec),'baseline Spec must be explicit');
+  if(result.axes.Spec==='passed') {
+    ensure(input.spec_binding?.ref && input.spec_binding?.digest,'approved Spec evidence binding required');
+    ensure(digest(fs.readFileSync(file(root,input.spec_binding.ref)))===input.spec_binding.digest.replace(/^sha256:/,''),'Spec evidence stale');
+    ensure(text(input.spec_binding.approval_ref),'Spec approval record required');
+    const approval=parseSliceYaml(fs.readFileSync(file(root,input.spec_binding.approval_ref),'utf8'));
+    validateApprovalRecord(approval,{root,requireApproved:true,rolesDoc:parseSliceYaml(fs.readFileSync(file(root,'docs/agents/digital-human-roles.yaml'),'utf8'))});
+    ensure(approval.gate_id==='gate.spec-baseline-approved' && approval.artifact_bindings?.some(b=>b.digest.replace(/^sha256:/,'')===input.spec_binding.digest.replace(/^sha256:/,'')),'Spec approval does not bind current baseline');
+    ensure(Array.isArray(result.constraint_results)&&result.constraint_results.some(r=>r.axis==='Spec'&&r.status==='passed'&&text(r.evidence_ref)),'Spec acceptance evidence required');
+    for(const row of result.constraint_results.filter(r=>r.axis==='Spec')) {
+      ensure(row.status==='passed'&&text(row.constraint)&&text(row.code_ref)&&text(row.evidence_ref),'Spec acceptance unresolved');
+      coverageFile(projectRoot,row.code_ref.split(':')[0]);
+      ensure(digest(fs.readFileSync(file(root,row.evidence_ref)))===row.evidence_digest,'Spec acceptance evidence stale');
+    }
+  }
+  ensure(Array.isArray(result.findings)&&result.findings.every(f=>f.disposition==='suggestion'||f.status==='resolved'||(f.disposition==='missing_evidence'&&f.axis==='Spec'&&result.axes.Spec==='missing_evidence')),'baseline blocking findings remain');
+  ensure(Array.isArray(result.verification_results)&&result.verification_results.length,'baseline verification required');
+  for(const check of result.verification_results)ensure(text(check.command)&&check.exit_code===0&&Number.isFinite(Date.parse(check.executed_at))&&check.candidate_digest===result.candidate_digest&&digest(fs.readFileSync(file(root,check.evidence_ref)))===check.evidence_digest,'baseline machine evidence missing or stale');
+  return {status:'audited',axes:result.axes,execution_allowed:false,scope_kind:'baseline',candidate_digest:result.candidate_digest,reviewed_skills:coverage.skills.map(s=>s.skill)};
 }

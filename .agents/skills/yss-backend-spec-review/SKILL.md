@@ -36,3 +36,9 @@ description: 审计既有 Java 后端工程对 YSS 技能规范和已批准业�
 ## 输出与完成依据
 
 复用 `docs/templates/review-report-template.md`、当前 Slice 的 YSS Skill Execution Result 和 [审计与整改流程中的记录要求](references/remediation-workflow.md#证据与交接)。报告列明审查覆盖、Standards / Spec 分轴结论、修复前后 finding、候选/规则摘要、实际验证、独立 Reviewer 身份和剩余阻塞。只对本次覆盖且有证据的范围声明符合规范，不自动证明平台已认证或允许发布。
+
+## 必须评估、适用必审
+
+每次显式评估 Web、DTO、Domain、Application、Repository、MyBatis 六类职责；MVC 不套用 DDD，MyBatis 仅在实际使用时适用。使用 `scripts/backend-standards-coverage` 编译实际范围，合同漏列不能抵消真实影响。Java 规范通用，Validation/Exception/映射/注解处理及组件技能按事实追加。
+
+逐条消费 canonical 中 `yss-rule` 声明并返回稳定 `constraint_id`；未结构化条款仍由独立 Reviewer 全文核对。不能只写“本技能通过”。日常后端开发和存量整改共用该检查，详见 [覆盖协议](references/standards-coverage.md)。

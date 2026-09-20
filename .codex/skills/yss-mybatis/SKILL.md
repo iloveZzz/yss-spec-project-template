@@ -16,11 +16,21 @@ description: 用于 YSS MyBatis / MyBatis-Plus 组件能力核验、接入决策
 
 ## 稳定决策规则
 
+<a id="mybatis.binding"></a>
+<!-- yss-rule {"id":"mybatis.binding","when":"mybatis","level":"mandatory","evidence":"code-and-verification"} -->
 - 基类、Mapper 注解、XML 位置和扫描范围以批准 Profile、当前工程基线及当前组件源码共同决定；不得在既有体系外再造 Mapper 抽象。
+<a id="mybatis.pagination"></a>
+<!-- yss-rule {"id":"mybatis.pagination","when":"pagination","level":"mandatory","evidence":"code-and-verification"} -->
 - 一条查询 seam 只能有一个分页责任模型。核对实际插件/切面开关、拦截范围、参数绑定条件和返回 total 的责任，不以“依赖已引入”代替行为验证。
+<a id="mybatis.batch"></a>
+<!-- yss-rule {"id":"mybatis.batch","when":"batch","level":"mandatory","evidence":"code-and-verification"} -->
 - 批量写入必须证明是组件当前支持的 SQL 级批量能力，并验证分批大小、字段填充、主键和数据库方言；循环单条写入不能冒充批量 SQL。
 - 多数据源实例创建不等于动态路由、线程上下文切换或事务传播。先做 capability check；组件未提供的路由能力必须由批准的上层适配承担。
+<a id="mybatis.mapping"></a>
+<!-- yss-rule {"id":"mybatis.mapping","when":"mybatis","level":"mandatory","evidence":"code-and-verification"} -->
 - Mapper/XML、逻辑删除、审计字段、主键策略、动态排序/分组白名单和参数绑定必须与数据合同一致；任何 SQL/DDL/索引新影响返回 `new_impacts`。
+<a id="mybatis.transaction"></a>
+<!-- yss-rule {"id":"mybatis.transaction","when":"mybatis","level":"mandatory","evidence":"code-and-verification"} -->
 - 事务边界归批准的 Application 用例或 MVC service/core；Repository 不临时声明新的业务事务。
 
 ## 任务分流

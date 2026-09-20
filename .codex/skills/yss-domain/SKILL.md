@@ -7,6 +7,8 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 
 这是一个领域实现 skill。核心目标是消费已批准的战术模型，将领域行为落实为代码；`yss-technical-design` 组织 DDD 分支，由 `yss-tactical-design` 设计、`yss-product-lifecycle` 维护批准。
 
+既有工程先读取 `references/existing-project.md`，按登记的职责和批准边界审计或整改；只读审计不要求批准 Slice。
+
 本 skill 在新脚手架链路只支持 `domain-driven` / `target-domain-model`。`layered-mvc-service` 与 `mvc-data-analysis-v1` 是独立 MVC Profile，不是失败的 DDD 工程；它们不加载本 skill，也不生成 Domain Gateway。既有旧架构不在本链路内迁移。
 
 ## 何时使用
@@ -36,17 +38,27 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 
 ## 建模约束
 
+<a id="domain.dependencies"></a>
+<!-- yss-rule {"id":"domain.dependencies","when":"domain","level":"mandatory","evidence":"code-and-verification"} -->
 - Domain 层不依赖 Repository、Mapper、Controller。
+<a id="domain.behavior"></a>
+<!-- yss-rule {"id":"domain.behavior","when":"domain","level":"mandatory","evidence":"code-and-verification"} -->
 - 领域行为放在模型方法，不要放在 Web 层。
+<a id="domain.gateway"></a>
+<!-- yss-rule {"id":"domain.gateway","when":"domain","level":"mandatory","evidence":"code-and-verification"} -->
 - Gateway 只暴露领域能力，不暴露持久化细节。
 - 对关键状态流转给出明确方法，如 `publish()`、`cancel()`、`terminate()`。
+<a id="domain.invariants"></a>
+<!-- yss-rule {"id":"domain.invariants","when":"domain","level":"mandatory","evidence":"code-and-verification"} -->
 - 明确 Aggregate Root、Entity identity、Value Object、不变量、Domain Event 和一致性边界；没有业务行为时不要伪造富领域模型。
-- 发现旧架构时停止套用新脚手架合同并返回 `unsupported`；旧项目继续按原工程维护，现代化改造单独立项。
+- `unsupported` 只阻断不支持的生成方式。既有 DDD 按登记边界整改；目录差异不是领域违规。架构身份转换或公开契约迁移单独立项，MVC 不套用 DDD 规则。
 
 ## 质量要求
 
 - 命名体现业务语义，不照抄表名缩写。
 - 生成代码应可编译，且没有跨层依赖泄漏。
+<a id="domain.gateway-owner"></a>
+<!-- yss-rule {"id":"domain.gateway-owner","when":"domain","level":"mandatory","evidence":"code-and-verification"} -->
 - Domain Gateway interface 由本 skill 唯一拥有；Infrastructure 只能实现，不得由 `yss-repository` 反向创建或改写其签名。
 - 对不确定规则返回 `new_impacts` / `drift` 并暂停；不要把未批准假设或 TODO 写进实现冒充已确认事实。
 

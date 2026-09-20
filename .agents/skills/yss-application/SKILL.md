@@ -29,7 +29,11 @@ Application 层用例编排 skill。负责协调 Domain 与 Gateway，定义事�
 
 1. 按 `architecture_identity.architecture_profile` 选择且只选择对应 Profile reference；Profile 未登记、与 Manifest 不一致或成熟度不满足当前任务时返回 `blocked`。
 2. `target-domain-model` 才执行 Domain Service / Gateway、跨聚合编排和下述 DDD 产物规则；`layered-mvc-service` 与 `mvc-data-analysis-v1` 分别按其 service/core Profile 承载用例、规则和事务，不加载 DDD Gateway。
+<a id="application.use-case"></a>
+<!-- yss-rule {"id":"application.use-case","when":"application","level":"mandatory","evidence":"code-and-verification"} -->
 3. 确认 Use Case、Application/service/core 边界与事务边界已在批准合同中写明。
+<a id="application.mapping"></a>
+<!-- yss-rule {"id":"application.mapping","when":"application","level":"mandatory","evidence":"code-and-verification"} -->
 4. Web DTO 到内部 Command/Result 的转换归 Web 边界，持久化转换归 Repository/Infrastructure；用例层确有独立模型转换时才加载 `mapstruct`，并统一 Spring Bean 与构造器注入。
 5. DDD 的详细包结构、注解、示例和旧架构阻断边界见 `references/application-layer-guide.md`；MVC 不读取该 guide。
 
@@ -53,10 +57,18 @@ Application 层用例编排 skill。负责协调 Domain 与 Gateway，定义事�
 ## 阶段 7 合同
 
 - 只消费批准后的 `Slice Implementation Contract` 和当前 `work_unit`。
+<a id="application.behavior-tests"></a>
+<!-- yss-rule {"id":"application.behavior-tests","when":"application","level":"mandatory","evidence":"code-and-verification"} -->
 - AppService 骨架可 `controlled-generation`；用例编排、事务、幂等、权限和失败行为必须 `behavior-tdd`。
 - 按 `yss-implementation-contract-compiler/references/yss-skill-execution-result.md` 返回统一 `YSS Skill Execution Result`。
+<a id="application.impacts"></a>
+<!-- yss-rule {"id":"application.impacts","when":"application","level":"mandatory","evidence":"code-and-verification"} -->
 - 发现新 API、权限、状态机或跨上下文影响时填入 `new_impacts` 并暂停。
 
 ## 按需读取
 
 - 分层开发规范：`references/application-layer-guide.md`
+
+## 既有工程与条件适用
+
+只读审计不要求先补批准 Slice；业务 Spec 缺失须记录。整改消费批准 Slice、已确认行为 seam 与登记的 Application/service/core 映射，不要求生成 Manifest。事务、幂等、提交后副作用按实际用例评估；未命中不创建空事务、空端口或空恢复实现。DDD 的领域规则归 Domain，MVC 规则允许留在已登记 service/core。

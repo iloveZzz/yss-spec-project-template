@@ -1429,8 +1429,8 @@
    changed_files:
      - path:
        contract_area: common | frontend | backend | contract | cross_repo
-@@ -35,9 +30,6 @@
-     - constraint:
+@@ -37,9 +32,6 @@
+       constraint:
        status: passed | failed | not-applicable
        evidence_ref:
 -  doubt_driven_review:
@@ -1439,7 +1439,7 @@
    seam_deferred:
      - risk:
        owner:
-@@ -58,7 +50,7 @@
+@@ -60,7 +52,7 @@
  
  实现合同编译器必须验证：
  

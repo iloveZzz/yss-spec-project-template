@@ -10,21 +10,31 @@ description: 用于按批准的 YSS 架构与持久化合同实现或重构 PO�
 ## 架构分流
 
 1. 读取当前 Slice Implementation Contract 的 `architecture_identity`、`persistence_profile`、实现仓登记、数据合同、`allowed_write_paths` 和预期证据。
-2. 将架构身份与工程基线、Manifest 和 `docs/agents/yss-skill-registry.yaml` 核对；成熟度以注册表为准，不能把 `draft` 称为已支持。
+2. 将架构身份与当前工程基线、既有工程观测（生成 Manifest 只证明历史来源）和 `docs/agents/yss-skill-registry.yaml` 核对；成熟度以注册表为准，不能把 `draft` 称为已支持。
 3. 根据 `architecture_profile` **且只**加载一个文件：
    - [target-domain-model](references/profiles/target-domain-model.md)
    - [layered-mvc-service](references/profiles/layered-mvc-service.md)
    - [mvc-data-analysis-v1](references/profiles/mvc-data-analysis-v1.md)
+   - [existing-domain-driven-maven](references/profiles/existing-domain-driven-maven.md)
+   - [existing-layered-mvc-maven](references/profiles/existing-layered-mvc-maven.md)
 4. Profile 缺失、身份冲突、Manifest 漂移或数据输入不完整时返回 `blocked` / `drift` / `new_impacts`，不得选择“最像”的分支继续。
 
 ## 共用规则
 
+<a id="repository.ownership"></a>
+<!-- yss-rule {"id":"repository.ownership","when":"persistence","level":"mandatory","evidence":"code-and-verification"} -->
 - 只实现批准合同已有的结构与 seam，不创建或改写 Domain Gateway、Application Query Port、service/core 接口或 Web/API DTO。
 - 持久化 Profile 命中 MyBatis 时加载 `yss-mybatis`，以当前组件能力索引核验基类、分页、批量、扫描、XML 和数据源行为；本 Skill 不复制这些规则。
 - POJO、转换和 Java 规范分别消费 Registry 编译出的 `lombok`、`mapstruct`、`alibaba-java-code-style`；不在此重复其注解和处理器规则。
+<a id="repository.mapping"></a>
+<!-- yss-rule {"id":"repository.mapping","when":"persistence","level":"mandatory","evidence":"code-and-verification"} -->
 - 数据合同必须显式覆盖主键、逻辑删除、审计字段、空值、枚举/值对象映射和敏感字段；动态排序、分组与过滤必须使用批准白名单和参数绑定。
+<a id="repository.transaction"></a>
+<!-- yss-rule {"id":"repository.transaction","when":"persistence","level":"mandatory","evidence":"code-and-verification"} -->
 - 事务归所选 Profile 的用例边界。Repository/Gateway Adapter 不临时新增业务事务，也不把数据库异常原文或凭据暴露给上层。
 - 基础机械结构只有在合同标记 `controlled-generation`、metadata 完整且目标文件不存在时才可受控生成；查询语义、分页、并发、事务和迁移行为使用 `behavior-tdd`。
+<a id="repository.sql"></a>
+<!-- yss-rule {"id":"repository.sql","when":"persistence","level":"mandatory","evidence":"code-and-verification"} -->
 - 发现 SQL、DDL、索引、数据模型或 API schema 新影响时立即暂停并返回 `new_impacts`，不能以 TODO 代替合同重编译。
 
 ## 产物与证据
@@ -46,3 +56,5 @@ description: 用于按批准的 YSS 架构与持久化合同实现或重构 PO�
 ## 新脚手架平台约束
 
 消费批准切片架构身份中的 `platform_configuration`，并与工程 Manifest、effective POM 和依赖树核对。命中 MyBatis 时，`framework.mybatis` 必须从该配置指向的 compatibility 条目解析出对当前架构有效的 `component_binding`；构件、摘要、源码 tree、证据或绑定状态不一致时回合同编译器阻断。Validation namespace、Jackson、starter 和处理器版本只消费解析后的精确平台事实，不在本 Skill 中按 Boot 大版本推导。不得在业务实现中升级、降级或替换 YSS 组件；平台迁移使用独立迁移工作单元。详见仓库共享合同 `docs/engineering/backend-platforms.md`。
+
+只读审计可先盘点、记录缺失合同；不得用实施前置要求阻止发现既有违规。整改仍需批准合同，不因缺少生成 Manifest 阻断已有效登记的既有工程。

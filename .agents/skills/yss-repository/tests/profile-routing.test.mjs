@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { access, readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
+import { parseDocument } from "../../../../scripts/vendor/yaml.mjs";
 import { fileURLToPath } from "node:url";
 
 const repositorySkillRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -15,7 +16,8 @@ async function text(target) {
 test("repository router exposes exactly the registered profile entry points", async () => {
   const profilesRoot = path.join(repositorySkillRoot, "references/profiles");
   const profiles = (await readdir(profilesRoot)).filter((name) => name.endsWith(".md")).sort();
-  assert.deepEqual(profiles, ["layered-mvc-service.md", "mvc-data-analysis-v1.md", "target-domain-model.md"]);
+  const registry = parseDocument(await text(path.join(projectRoot, "docs/agents/yss-skill-registry.yaml"))).toJS();
+  assert.deepEqual(profiles, [...Object.keys(registry.architecture_profiles), ...Object.keys(registry.existing_project_profiles)].map(id => `${id}.md`).sort());
 
   const skill = await text(path.join(repositorySkillRoot, "SKILL.md"));
   for (const profile of profiles) assert.match(skill, new RegExp(`references/profiles/${profile.replace(".md", "")}`));
