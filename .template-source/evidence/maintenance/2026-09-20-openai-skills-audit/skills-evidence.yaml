@@ -1,0 +1,630 @@
+{
+  "schema_version": 1,
+  "profile": "technical-evidence",
+  "mode": "evidence-audited",
+  "scope": {
+    "topic": "当前仓库及7子项目全部技能对照OpenAI建议审计",
+    "audience": "模板维护者",
+    "time_horizon": "2026-09-20当前工作区",
+    "research_questions": [
+      "哪些技能有确定冲突？",
+      "哪些入口值得精简或改善触发？",
+      "如何验证调整效果和分发一致性？"
+    ],
+    "inclusion_criteria": [
+      "当前canonical、profile-local及平台嵌套SKILL",
+      "相关关键引用/校验脚本",
+      "OpenAI官方来源"
+    ],
+    "exclusion_criteria": [
+      "个人用户技能",
+      "历史备份入口",
+      "未安装会话插件",
+      "未执行的真实模型行为效果"
+    ]
+  },
+  "ownership": {
+    "research_owner": "yss-research",
+    "downstream_owner": "maintaining-skills / template maintainer",
+    "decision_ref": null
+  },
+  "search_log": [
+    {
+      "id": "search-official",
+      "channel": "official-domain-web-search-and-open",
+      "query_or_corpus": "Codex skills best practices SKILL.md description; Build skills; Rethinking skills and prompts; eval-skills",
+      "searched_at": "2026-09-20",
+      "result": "results-found"
+    },
+    {
+      "id": "search-current",
+      "channel": "CodeGraph then local read-only inventory and focused reads",
+      "query_or_corpus": "root and submodule SKILL.md, profile-sync, registry, projection, lock, CLI snapshot",
+      "searched_at": "2026-09-20",
+      "result": "results-found"
+    },
+    {
+      "id": "search-counter",
+      "channel": "local files and read-only verification",
+      "query_or_corpus": "allow_implicit_invocation:false, canonical routing, existing valid references, projection and bundle checks",
+      "searched_at": "2026-09-20",
+      "result": "results-found"
+    },
+    {
+      "id": "search-backup",
+      "channel": "filesystem inventory",
+      "query_or_corpus": "submodules/create-yss-spec/.template-root-owned-backup-20260920",
+      "searched_at": "2026-09-20",
+      "result": "access-failed"
+    }
+  ],
+  "evidence_items": [
+    {
+      "id": "evidence-001",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-read-only-checks",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/resolving-merge-conflicts/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/using-git-worktrees/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/prototype/SKILL.md",
+      "locator": ".agents/skills/resolving-merge-conflicts/SKILL.md:14; .agents/skills/using-git-worktrees/SKILL.md:86; .agents/skills/prototype/SKILL.md:26",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "resolving-merge-conflicts 要求 Stage everything and commit，worktree 要求提交 .gitignore，prototype 要求折入真实代码并提交原型。它们会与本仓已有授权约束同时进入上下文。尚未执行越权行为测试。",
+      "limitations": [
+        "静态内容证据；没有真实模型行为评测。"
+      ]
+    },
+    {
+      "id": "evidence-002",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-read-only-checks",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent/.agents/skills/yss-api-integration/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent/.agents/skills/yss-api-integration/SKILL.md",
+      "locator": "submodules/yss-harness-frontend-agent/.agents/skills/yss-api-integration/SKILL.md:64; submodules/yss-harness-frontend-agent/.agents/skills/yss-api-integration/SKILL.md:306",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "前端子仓第64行禁止重复 message.error / if(res.success)，187–204及306–317又给出这种实现；251–268无条件要求useRequest。",
+      "limitations": [
+        "静态内容证据；没有真实模型行为评测。"
+      ]
+    },
+    {
+      "id": "evidence-003",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-read-only-checks",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent/.agents/skills/yss-ui/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent/.agents/skills/formily-foundation/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/yss-formily-schema-generator/SKILL.md",
+      "locator": "submodules/yss-harness-frontend-agent/.agents/skills/yss-ui/SKILL.md:51; submodules/yss-harness-frontend-agent/.agents/skills/formily-foundation/SKILL.md:27; .agents/skills/yss-formily-schema-generator/SKILL.md:123",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "前端子仓 yss-ui 把 YssFormily 声明为新代码名称，formily-foundation/yss-formily要求YFormily。主仓 yss-ui 已修正；主仓 schema-generator仍允许两个名字。",
+      "limitations": [
+        "静态内容证据；没有真实模型行为评测。"
+      ]
+    },
+    {
+      "id": "evidence-004",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-read-only-checks",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent/.agents/skills/domain-modeling/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent/AGENTS.md; /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/.agents/skills/triage/SKILL.md",
+      "locator": "submodules/yss-harness-frontend-agent/.agents/skills/domain-modeling/SKILL.md:24; submodules/yss-harness-frontend-agent/AGENTS.md:31; submodules/yss-harness-design-agent/.agents/skills/triage/SKILL.md:35",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "前/后端 domain-modeling/setup 仍支持嵌套Context；三个子仓triage旧版的ready-for-human/ready-for-agent语义与当地治理不同。主仓domain-modeling和triage已修正。",
+      "limitations": [
+        "静态内容证据；没有真实模型行为评测。"
+      ]
+    },
+    {
+      "id": "evidence-005",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-read-only-checks",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/.agents/skills/ask-matt/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/.agents/skills/yss-design-system/SKILL.md",
+      "locator": "submodules/yss-harness-design-agent/.agents/skills/ask-matt/SKILL.md:13; submodules/yss-harness-design-agent/.agents/skills/yss-design-system/SKILL.md:29",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "战略ask-matt默认yss-product-lifecycle，实际主控是yss-strategic-design，并保留implement/tdd等缺失入口；设计系统仍调用退役组件/高度技能。",
+      "limitations": [
+        "静态内容证据；没有真实模型行为评测。"
+      ]
+    },
+    {
+      "id": "evidence-006",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-read-only-checks",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/prototype-review/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/docs/design/templates/prototype-evidence-template.yaml; /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-design-agent/.agents/skills/prototype-review/SKILL.md",
+      "locator": ".agents/skills/prototype-review/SKILL.md:22; docs/design/templates/prototype-evidence-template.yaml:2; submodules/yss-harness-design-agent/.agents/skills/prototype-review/SKILL.md:71",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "主仓prototype-review允许新建pending v3，当前模板只允许新建v4；部分子仓仍用旧gate.prototype-*。",
+      "limitations": [
+        "静态内容证据；没有真实模型行为评测。"
+      ]
+    },
+    {
+      "id": "evidence-007",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-read-only-checks",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/to-tickets/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml; /Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/yss-product-lifecycle/SKILL.md",
+      "locator": ".agents/skills/to-tickets/SKILL.md:63; .agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml:549; .agents/skills/yss-product-lifecycle/SKILL.md:70",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "to-tickets默认ready-for-agent，但主控合同要求ready-for-human；主控正文与机器合同对Matt正式资产所有者表述不同。四个显式入口已有allow_implicit_invocation:false，因此这里不认定为自动触发缺陷。",
+      "limitations": [
+        "静态内容证据；没有真实模型行为评测。"
+      ]
+    },
+    {
+      "id": "evidence-008",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-read-only-checks",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/yss-openapi-draft-review/SKILL.md",
+      "locator": ".agents/skills/yss-openapi-draft-review/SKILL.md:54",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "Draft Review第54行把import/mapping/review/publish/export/optimistic locking列成无条件阻断；未表达按当前Spec是否命中。",
+      "limitations": [
+        "静态内容证据；没有真实模型行为评测。"
+      ]
+    },
+    {
+      "id": "evidence-009",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-read-only-checks",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent/.agents/skills/yss-audit-log/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/yss-audit-log/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/yss-audit-log/assets/AuditLogAspect.java; /Users/zhudaoming/Projects/yss-spec-project-template/.template-source/profile-skill-sync.json",
+      "locator": "submodules/yss-harness-backend-agent/.agents/skills/yss-audit-log/SKILL.md:37; .agents/skills/yss-audit-log/SKILL.md:37; .agents/skills/yss-audit-log/assets/AuditLogAspect.java:111; .template-source/profile-skill-sync.json:1",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "后端audit-log仍讲旧中文SpEL keys；audit-log/excel-mvc/distributed-id缺主仓平台与源码门禁。主仓audit-log直接引用的assets仍含javax和旧中文keys。同步检查通过并不说明excluded/local副本语义一致。",
+      "limitations": [
+        "静态内容证据；没有真实模型行为评测。"
+      ]
+    },
+    {
+      "id": "evidence-010",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-read-only-checks",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/tdd/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/code-review/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent/.agents/skills/backend-agent/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-backend-agent/.agents/skills/architecture-agent/SKILL.md",
+      "locator": ".agents/skills/tdd/SKILL.md:38; .agents/skills/code-review/SKILL.md:122; submodules/yss-harness-backend-agent/.agents/skills/backend-agent/SKILL.md:8; submodules/yss-harness-backend-agent/.agents/skills/architecture-agent/SKILL.md:14",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "tdd把重构放在code-review阶段，但未明确重构执行者如何满足Reviewer只读约束，属于职责表述缺口；backend-agent称架构Agent已批准，但architecture-agent明确不自行批准，且backend/test描述仍只DDD。",
+      "limitations": [
+        "静态内容证据；没有真实模型行为评测。"
+      ]
+    },
+    {
+      "id": "evidence-011",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-read-only-checks",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/.codex/skills/data-analytics/skills/user-context/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/.codex/skills/data-analytics/skills/user-context/scripts/data_analytics_preflight.py; /Users/zhudaoming/Projects/yss-spec-project-template/.codex/skills/data-analytics/skills/index/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/.codex/skills/data-analytics/skills/build-report/report-to-google-doc/SKILL.md",
+      "locator": ".codex/skills/data-analytics/skills/user-context/SKILL.md:77; .codex/skills/data-analytics/skills/user-context/scripts/data_analytics_preflight.py:100; .codex/skills/data-analytics/skills/index/SKILL.md:66; .codex/skills/data-analytics/skills/build-report/report-to-google-doc/SKILL.md:3",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "18个入口主仓与前端bundle一致，但user-context文档和脚本状态路径不同；index把KPI等推成报告而专项允许inline；spreadsheets含旧插件ID与Sheets/XLSX矛盾；DOCX触发包含本地输出但流程要求上传。",
+      "limitations": [
+        "静态内容证据；没有真实模型行为评测。"
+      ]
+    },
+    {
+      "id": "evidence-012",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-read-only-checks",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/.codex/skills/product-design/skills/get-context/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/.codex/skills/product-design/skills/image-to-code/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/.codex/skills/product-design/references/critical-overrides.md",
+      "locator": ".codex/skills/product-design/skills/get-context/SKILL.md:63; .codex/skills/product-design/skills/image-to-code/SKILL.md:66; .codex/skills/product-design/references/critical-overrides.md:37",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "get-context允许静态模式，image-to-code却要求所有控件全交互；共享critical-overrides要求每第二次用户可见消息前重读。index固定三个方案还与ideate可覆盖数量不一致。",
+      "limitations": [
+        "静态内容证据；没有真实模型行为评测。"
+      ]
+    },
+    {
+      "id": "evidence-013",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-read-only-checks",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/alibaba-java-code-style/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/code-review/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/yss-domain/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/yss-ui-business-page-generation/SKILL.md",
+      "locator": ".agents/skills/alibaba-java-code-style/SKILL.md:3; .agents/skills/code-review/SKILL.md:3; .agents/skills/yss-domain/SKILL.md:3; .agents/skills/yss-ui-business-page-generation/SKILL.md:21",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "code-review和Alibaba description分别328/394字符且混入内部规则；yss-domain描述触发设计而正文只负责实现；业务页面必读清单加载所有专项又在后文要求按需加载。字数只是定位信号，不是违规判据。",
+      "limitations": [
+        "静态内容证据；没有真实模型行为评测。"
+      ]
+    },
+    {
+      "id": "evidence-014",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-read-only-checks",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/.agents/skills/java-backend-commit/SKILL.md; /Users/zhudaoming/Projects/yss-spec-project-template/submodules/yss-harness-frontend-agent/.agents/skills/frontend-commit/SKILL.md",
+      "locator": ".agents/skills/java-backend-commit/SKILL.md:18; submodules/yss-harness-frontend-agent/.agents/skills/frontend-commit/SKILL.md:17",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "主仓java-backend-commit引用不存在的commit-linting；前端子仓还直接引用不存在的java-backend-commit，后端反向引用不存在的frontend-commit。",
+      "limitations": [
+        "静态内容证据；没有真实模型行为评测。"
+      ]
+    },
+    {
+      "id": "evidence-015",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-read-only-checks",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/scripts/lib/skill-governance.mjs; /Users/zhudaoming/Projects/yss-spec-project-template/.template-source/profile-skill-sync.json",
+      "locator": "scripts/lib/skill-governance.mjs:14; .template-source/profile-skill-sync.json:1",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "本轮主仓5项检查通过；三个Agent子仓注册表、治理和投影通过，但各自锁文件检查失败。三个薄CLI bundle验证通过且SKILL副本与当前Agent源一致；说明旧语义也可一致分发。",
+      "limitations": [
+        "静态内容证据；没有真实模型行为评测。"
+      ]
+    },
+    {
+      "id": "counter-structure",
+      "source_level": "primary",
+      "visibility": "internal",
+      "source_class": "repository-source-and-command-output",
+      "source_ref": "/Users/zhudaoming/Projects/yss-spec-project-template/.template-source/evidence/maintenance/2026-09-20-openai-skills-audit/verification.json",
+      "locator": "root checks and bundle checks; explicit compatibility agents/openai.yaml",
+      "stance": "counter",
+      "observed_at": "2026-09-20",
+      "observation": "主仓结构/同步及薄CLI bundle检查通过；兼容入口已禁止隐式调用；部分专业技能已实现条件加载。",
+      "limitations": [
+        "不能证明语义或Agent行为正确。"
+      ]
+    },
+    {
+      "id": "official-1",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://learn.chatgpt.com/docs/build-skills",
+      "locator": "Skills structure/discovery; Better skills; Define success and eval traces",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "精准触发、渐进披露、避免过度流程化和用真实运行轨迹评测。",
+      "limitations": [
+        "通用推荐实践，不替代本仓真实批准/安全门禁。"
+      ]
+    },
+    {
+      "id": "official-2",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://developers.openai.com/blog/rethinking-skills-and-prompts-for-gpt-6-astra",
+      "locator": "Skills structure/discovery; Better skills; Define success and eval traces",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "精准触发、渐进披露、避免过度流程化和用真实运行轨迹评测。",
+      "limitations": [
+        "通用推荐实践，不替代本仓真实批准/安全门禁。"
+      ]
+    },
+    {
+      "id": "official-3",
+      "source_level": "primary",
+      "visibility": "public",
+      "source_class": "official-documentation",
+      "source_ref": "https://developers.openai.com/blog/eval-skills",
+      "locator": "Skills structure/discovery; Better skills; Define success and eval traces",
+      "stance": "support",
+      "observed_at": "2026-09-20",
+      "observation": "精准触发、渐进披露、避免过度流程化和用真实运行轨迹评测。",
+      "limitations": [
+        "通用推荐实践，不替代本仓真实批准/安全门禁。"
+      ]
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-001",
+      "claim_kind": "technical-fact",
+      "statement": "F01: Git 技能越过提交范围。resolving-merge-conflicts 要求 Stage everything and commit，worktree 要求提交 .gitignore，prototype 要求折入真实代码并提交原型。它们会与本仓已有授权约束同时进入上下文。尚未执行越权行为测试。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-001",
+        "official-1",
+        "official-2",
+        "official-3"
+      ],
+      "counter_signal_refs": [
+        "counter-structure"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-002",
+      "claim_kind": "technical-fact",
+      "statement": "F02: 前端 API 规则与示例相反。前端子仓第64行禁止重复 message.error / if(res.success)，187–204及306–317又给出这种实现；251–268无条件要求useRequest。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-002",
+        "official-1",
+        "official-2",
+        "official-3"
+      ],
+      "counter_signal_refs": [
+        "counter-structure"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-003",
+      "claim_kind": "technical-fact",
+      "statement": "F03: 前端同仓组件命名冲突。前端子仓 yss-ui 把 YssFormily 声明为新代码名称，formily-foundation/yss-formily要求YFormily。主仓 yss-ui 已修正；主仓 schema-generator仍允许两个名字。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-003",
+        "official-1",
+        "official-2",
+        "official-3"
+      ],
+      "counter_signal_refs": [
+        "counter-structure"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-004",
+      "claim_kind": "technical-fact",
+      "statement": "F04: 子仓保留旧 Context 和 Ticket 语义。前/后端 domain-modeling/setup 仍支持嵌套Context；三个子仓triage旧版的ready-for-human/ready-for-agent语义与当地治理不同。主仓domain-modeling和triage已修正。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-004",
+        "official-1",
+        "official-2",
+        "official-3"
+      ],
+      "counter_signal_refs": [
+        "counter-structure"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-005",
+      "claim_kind": "technical-fact",
+      "statement": "F05: 战略路由指向不存在或退役入口。战略ask-matt默认yss-product-lifecycle，实际主控是yss-strategic-design，并保留implement/tdd等缺失入口；设计系统仍调用退役组件/高度技能。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-005",
+        "official-1",
+        "official-2",
+        "official-3"
+      ],
+      "counter_signal_refs": [
+        "counter-structure"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-006",
+      "claim_kind": "technical-fact",
+      "statement": "F06: 原型证据版本和检查ID漂移。主仓prototype-review允许新建pending v3，当前模板只允许新建v4；部分子仓仍用旧gate.prototype-*。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-006",
+        "official-1",
+        "official-2",
+        "official-3"
+      ],
+      "counter_signal_refs": [
+        "counter-structure"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-007",
+      "claim_kind": "technical-fact",
+      "statement": "F07: 显式兼容入口与主控合同冲突。to-tickets默认ready-for-agent，但主控合同要求ready-for-human；主控正文与机器合同对Matt正式资产所有者表述不同。四个显式入口已有allow_implicit_invocation:false，因此这里不认定为自动触发缺陷。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-007",
+        "official-1",
+        "official-2",
+        "official-3"
+      ],
+      "counter_signal_refs": [
+        "counter-structure"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-008",
+      "claim_kind": "technical-fact",
+      "statement": "F08: 特定业务测试被泛化为全部OpenAPI门禁。Draft Review第54行把import/mapping/review/publish/export/optimistic locking列成无条件阻断；未表达按当前Spec是否命中。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-008",
+        "official-1",
+        "official-2",
+        "official-3"
+      ],
+      "counter_signal_refs": [
+        "counter-structure"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-009",
+      "claim_kind": "technical-fact",
+      "statement": "F09: 后端子仓平台知识没有完整继承。后端audit-log仍讲旧中文SpEL keys；audit-log/excel-mvc/distributed-id缺主仓平台与源码门禁。主仓audit-log直接引用的assets仍含javax和旧中文keys。同步检查通过并不说明excluded/local副本语义一致。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-009",
+        "official-1",
+        "official-2",
+        "official-3"
+      ],
+      "counter_signal_refs": [
+        "counter-structure"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-010",
+      "claim_kind": "technical-fact",
+      "statement": "F10: TDD和后端角色的职责不一致。tdd把重构放在code-review阶段，但未明确重构执行者如何满足Reviewer只读约束，属于职责表述缺口；backend-agent称架构Agent已批准，但architecture-agent明确不自行批准，且backend/test描述仍只DDD。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-010",
+        "official-1",
+        "official-2",
+        "official-3"
+      ],
+      "counter_signal_refs": [
+        "counter-structure"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-011",
+      "claim_kind": "technical-fact",
+      "statement": "F11: Data Analytics移植与交付模式冲突。18个入口主仓与前端bundle一致，但user-context文档和脚本状态路径不同；index把KPI等推成报告而专项允许inline；spreadsheets含旧插件ID与Sheets/XLSX矛盾；DOCX触发包含本地输出但流程要求上传。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-011",
+        "official-1",
+        "official-2",
+        "official-3"
+      ],
+      "counter_signal_refs": [
+        "counter-structure"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-012",
+      "claim_kind": "technical-fact",
+      "statement": "F12: Product Design范围和重复加载问题。get-context允许静态模式，image-to-code却要求所有控件全交互；共享critical-overrides要求每第二次用户可见消息前重读。index固定三个方案还与ideate可覆盖数量不一致。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-012",
+        "official-1",
+        "official-2",
+        "official-3"
+      ],
+      "counter_signal_refs": [
+        "counter-structure"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-013",
+      "claim_kind": "technical-fact",
+      "statement": "F13: 精准发现与渐进披露仍可改进。code-review和Alibaba description分别328/394字符且混入内部规则；yss-domain描述触发设计而正文只负责实现；业务页面必读清单加载所有专项又在后文要求按需加载。字数只是定位信号，不是违规判据。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-013",
+        "official-1",
+        "official-2",
+        "official-3"
+      ],
+      "counter_signal_refs": [
+        "counter-structure"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-014",
+      "claim_kind": "technical-fact",
+      "statement": "F14: 提交技能存在不可解析的本地依赖。主仓java-backend-commit引用不存在的commit-linting；前端子仓还直接引用不存在的java-backend-commit，后端反向引用不存在的frontend-commit。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-014",
+        "official-1",
+        "official-2",
+        "official-3"
+      ],
+      "counter_signal_refs": [
+        "counter-structure"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    },
+    {
+      "id": "claim-015",
+      "claim_kind": "technical-fact",
+      "statement": "F15: 供应链检查与语义覆盖存在缺口。本轮主仓5项检查通过；三个Agent子仓注册表、治理和投影通过，但各自锁文件检查失败。三个薄CLI bundle验证通过且SKILL副本与当前Agent源一致；说明旧语义也可一致分发。",
+      "decision_bearing": true,
+      "evidence_refs": [
+        "evidence-015",
+        "official-1",
+        "official-2",
+        "official-3"
+      ],
+      "counter_signal_refs": [
+        "counter-structure"
+      ],
+      "audit_status": "supported",
+      "confidence": "high",
+      "disposition": "publish"
+    }
+  ],
+  "source_gaps": [
+    "未运行模型行为评测或A/B，所有效率/触发收益为待验证目标。",
+    "未全文审计每个辅助资产/脚本。",
+    "历史备份目录不可读且不作为当前来源。"
+  ],
+  "audit_summary": {
+    "status": "complete",
+    "audited_claim_ids": [
+      "claim-001",
+      "claim-002",
+      "claim-003",
+      "claim-004",
+      "claim-005",
+      "claim-006",
+      "claim-007",
+      "claim-008",
+      "claim-009",
+      "claim-010",
+      "claim-011",
+      "claim-012",
+      "claim-013",
+      "claim-014",
+      "claim-015"
+    ],
+    "notes": [
+      "complete仅指列出静态事实的证据审计，不表示技能整改完成或可发布。",
+      "矩阵优先级是审计建议，不是OpenAI官方评级。"
+    ]
+  }
+}

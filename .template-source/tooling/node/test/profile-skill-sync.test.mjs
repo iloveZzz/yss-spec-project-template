@@ -187,3 +187,69 @@ test("a file patch replays only against its registered source baseline", () => {
   ].join("\n"));
   assert.ok(planProfileSkillSync({ root, config, dirtyProvider: clean }).issues.some(({ status, message }) => status === "adaptation_conflict" && message.includes("补丁无法重放")));
 });
+
+test("active excluded and profile-only unclassified entries cannot hide from coverage", () => {
+  const { root, profile, config } = fixture();
+  for (const id of ["unrelated", "unknown"]) {
+    mkdirSync(path.join(profile, ".agents/skills", id), { recursive: true });
+    writeFileSync(path.join(profile, ".agents/skills", id, "SKILL.md"), "active\n");
+  }
+  const plan = planProfileSkillSync({ root, config, dirtyProvider: clean });
+  assert.ok(plan.issues.some((item) => item.skill === "unrelated" && item.status === "active_excluded"));
+  assert.ok(plan.issues.some((item) => item.skill === "unknown" && item.status === "unregistered_difference"));
+  assert.throws(() => applyProfileSkillSync({ root, config, plan }), /预检失败/);
+});
+
+test("platform package paths are covered and exact synchronization is repeatable", () => {
+  const { root, profile, config } = fixture();
+  config.platform_roots = [".codex/skills"];
+  const relative = ".codex/skills/analytics/skills/report/SKILL.md";
+  for (const base of [root, profile]) {
+    mkdirSync(path.dirname(path.join(base, relative)), { recursive: true });
+    writeFileSync(path.join(base, relative), base === root ? "current\n" : "old\n");
+  }
+  assert.ok(planProfileSkillSync({ root, config, dirtyProvider: clean }).issues.some((item) => item.status === "unregistered_platform_package"));
+  config.profiles.dev.exact.push({ id: "analytics", source: ".codex/skills/analytics", target: ".codex/skills/analytics" });
+  const plan = planProfileSkillSync({ root, config, dirtyProvider: clean });
+  assert.equal(plan.issues.length, 0);
+  applyProfileSkillSync({ root, config, plan });
+  const repeated = planProfileSkillSync({ root, config, dirtyProvider: clean });
+  assert.equal(repeated.issues.length, 0);
+  assert.equal(repeated.changes.length, 0);
+});
+
+test("entry references resolve against the planned tree and missing references block writes", () => {
+  const { root, profile, config } = fixture();
+  config.verify_entry_references = true;
+  writeFileSync(path.join(root, ".agents/skills/exact/SKILL.md"), "Read [rules](references/rules.md).\n");
+  let plan = planProfileSkillSync({ root, config, dirtyProvider: clean });
+  assert.ok(plan.issues.some((item) => item.status === "missing_reference"));
+  assert.throws(() => applyProfileSkillSync({ root, config, plan }), /预检失败/);
+  mkdirSync(path.join(root, ".agents/skills/exact/references"), { recursive: true });
+  writeFileSync(path.join(root, ".agents/skills/exact/references/rules.md"), "rules\n");
+  plan = planProfileSkillSync({ root, config, dirtyProvider: clean });
+  assert.equal(plan.issues.length, 0);
+  applyProfileSkillSync({ root, config, plan });
+  assert.equal(readFileSync(path.join(profile, ".agents/skills/exact/references/rules.md"), "utf8"), "rules\n");
+});
+
+test("identical unclassified copies still need a maintenance owner", () => {
+  const { root, profile, config } = fixture();
+  for (const base of [root, profile]) {
+    mkdirSync(path.join(base, ".agents/skills/same"), { recursive: true });
+    writeFileSync(path.join(base, ".agents/skills/same/SKILL.md"), "same\n");
+  }
+  assert.ok(planProfileSkillSync({ root, config, dirtyProvider: clean }).issues.some((item) => item.skill === "same" && item.status === "unregistered_difference"));
+});
+
+test("Python interpreter caches do not enter profile source or create repeated drift", () => {
+  const { root, config } = fixture();
+  const cache = path.join(root, ".agents/skills/exact/__pycache__");
+  mkdirSync(cache);
+  writeFileSync(path.join(cache, "helper.cpython-312.pyc"), "volatile bytes");
+  const plan = planProfileSkillSync({ root, config, dirtyProvider: clean });
+  assert.ok(plan.changes.every((item) => !item.path.includes("__pycache__")));
+  applyProfileSkillSync({ root, config, plan });
+  writeFileSync(path.join(cache, "helper.cpython-312.pyc"), "new volatile bytes");
+  assert.equal(planProfileSkillSync({ root, config, dirtyProvider: clean }).changes.length, 0);
+});

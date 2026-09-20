@@ -1,6 +1,6 @@
 ---
 name: alibaba-java-code-style
-description: Apply Alibaba Java Development Manual conventions when implementing, refactoring, or reviewing Java/JVM code, Spring-style services, MyBatis/ORM mappings, SQL, Maven dependencies, unit tests, exception/logging behavior, security checks, and design documentation. Use when the user asks for Java code规范, 阿里规范, P3C-style review, Java code style, or compliance with Alibaba Java coding guidelines.
+description: 应用阿里巴巴 Java 手册审查或实现 Java 代码；按当前项目框架与数据库基线选择适用规范。
 ---
 
 # Alibaba Java Code Style
@@ -16,7 +16,7 @@ This skill distills the provided `阿里巴巴 Java 开发手册` 1.4.0 PDF into
 2. Apply mandatory rules first, then use recommended rules to improve maintainability, performance, and readability.
 3. When reviewing, report mandatory violations as findings. Mention recommended violations when they create real risk or are already in the changed area.
 4. When implementing, prefer the repository's existing framework helpers and code generation skills over inventing new local infrastructure.
-5. If a rule touches a project safety boundary such as auth, payment, encryption, raw SQL, database migration scripts, or public base library API changes, produce a draft or `TODO-HUMAN-REVIEW` rather than silently finalizing risky code.
+5. For auth, payment, encryption, SQL, migrations or public-library changes, check the current contract and actual authorization. Continue an already authorized repair with its required verification; produce a draft or `TODO-HUMAN-REVIEW` only for a real missing decision or approval, and identify that gap.
 
 ## Core Priorities
 

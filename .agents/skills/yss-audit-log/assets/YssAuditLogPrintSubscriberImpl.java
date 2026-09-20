@@ -1,3 +1,4 @@
+// Historical boot2-java8 reference only; not a boot3-java17 implementation template.
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with

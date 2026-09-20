@@ -56,6 +56,11 @@
         },
         {
           "id": "code-review"
+        },
+        {
+          "id": "product-design",
+          "source": ".codex/skills/product-design",
+          "target": ".codex/skills/product-design"
         }
       ],
       "adapted": [
@@ -146,6 +151,9 @@
       "retired": [
         "yss-antd-design",
         "yss-antdv-next-design"
+      ],
+      "reference_roots": [
+        ".codex/skills/product-design"
       ]
     },
     "backend": {
@@ -279,6 +287,36 @@
         },
         {
           "id": "yss-backend-spec-review"
+        },
+        {
+          "id": "competitive-intelligence"
+        },
+        {
+          "id": "domain-modeling"
+        },
+        {
+          "id": "grill-with-docs"
+        },
+        {
+          "id": "setup-matt-pocock-skills"
+        },
+        {
+          "id": "wait-what"
+        },
+        {
+          "id": "wayfinder"
+        },
+        {
+          "id": "yss-audit-log"
+        },
+        {
+          "id": "yss-distributed-id"
+        },
+        {
+          "id": "yss-excel-mvc"
+        },
+        {
+          "id": "yss-openapi-draft-review"
         }
       ],
       "adapted": [
@@ -291,8 +329,8 @@
           "replacements": [
             {
               "file": "SKILL.md",
-              "from": "\u7531 `yss-product-lifecycle` \u8c03\u5ea6\uff0c\u8d1f\u8d23 `work-unit.technical-analysis`",
-              "to": "\u7531 `harness-orchestrator` \u8c03\u5ea6\uff0c\u8d1f\u8d23 `work-unit.technical-design`"
+              "from": "由 `yss-product-lifecycle` 调度，负责 `work-unit.technical-analysis`",
+              "to": "由 `harness-orchestrator` 调度，负责 `work-unit.technical-design`"
             }
           ]
         },
@@ -305,8 +343,8 @@
           "replacements": [
             {
               "file": "SKILL.md",
-              "from": "\u6279\u51c6\u7531 `yss-product-lifecycle` \u7ef4\u62a4",
-              "to": "\u6279\u51c6\u7531 `harness-orchestrator` \u7ef4\u62a4"
+              "from": "批准由 `yss-product-lifecycle` 维护",
+              "to": "批准由 `harness-orchestrator` 维护"
             }
           ]
         },
@@ -314,13 +352,25 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "e53c755b9d35fe256591be80a76a7df3029ca12c07a96544c77fdd0661345d2e"
+          "source_tree_sha256": "d3a035e640dca74692e09af6e8092868c79e2babe1e79509abbb50bfe2f95c64"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-openapi-governance.patch",
-          "source_tree_sha256": "6c50ab0d2593b590f7fff4e978dc555222400e76067011b256eadf9bb5ba0d3c"
+          "source_tree_sha256": "95f312b84d2e3e86d6ff153c4ca5d8a70c36524cd4ae2abf398529bedd69a351"
+        },
+        {
+          "id": "prototype",
+          "strategy": "patch",
+          "patch": ".template-source/profile-skill-patches/backend/prototype.patch",
+          "source_tree_sha256": "b9cefa9d9d8074e60170da0b48a75bf5b2929fa373e4ac771406582ca26f0954"
+        },
+        {
+          "id": "triage",
+          "strategy": "patch",
+          "patch": ".template-source/profile-skill-patches/backend/triage.patch",
+          "source_tree_sha256": "de427092ee8751b94d4d4e6a66220bfd38e7f536f87e8f81410ad680931fcaf2"
         }
       ],
       "assets": [
@@ -404,6 +454,9 @@
         },
         {
           "source": "scripts/fixtures/backend-scaffold/attach-design-prerequisites.mjs"
+        },
+        {
+          "source": ".agents/skills/yss-tactical-design/references/strategic-handoff-routing.md"
         }
       ],
       "upstream": [],
@@ -414,19 +467,7 @@
         "test-agent"
       ],
       "excluded": [
-        "competitive-intelligence",
-        "domain-modeling",
         "frontend-agent",
-        "grill-with-docs",
-        "prototype",
-        "setup-matt-pocock-skills",
-        "triage",
-        "wait-what",
-        "wayfinder",
-        "yss-audit-log",
-        "yss-distributed-id",
-        "yss-excel-mvc",
-        "yss-openapi-draft-review",
         "yss-product-lifecycle",
         "yss-stage-decision",
         "yss-ui"
@@ -437,7 +478,8 @@
         "yss-antdv-next-design",
         "yss-mvc-design",
         "yss-mvc-data-analysis-project-initializer"
-      ]
+      ],
+      "reference_roots": []
     },
     "frontend": {
       "target": "submodules/yss-harness-frontend-agent",
@@ -552,6 +594,46 @@
         },
         {
           "id": "code-review"
+        },
+        {
+          "id": "competitive-intelligence"
+        },
+        {
+          "id": "domain-modeling"
+        },
+        {
+          "id": "grill-with-docs"
+        },
+        {
+          "id": "setup-matt-pocock-skills"
+        },
+        {
+          "id": "wait-what"
+        },
+        {
+          "id": "wayfinder"
+        },
+        {
+          "id": "yss-formily"
+        },
+        {
+          "id": "yss-formily-schema-generator"
+        },
+        {
+          "id": "yss-ui"
+        },
+        {
+          "id": "product-design",
+          "source": ".codex/skills/product-design",
+          "target": ".codex/skills/product-design"
+        },
+        {
+          "id": "data-analytics",
+          "source": ".codex/skills/data-analytics",
+          "target": ".codex/skills/data-analytics"
+        },
+        {
+          "id": "frontend-commit"
         }
       ],
       "adapted": [
@@ -559,19 +641,43 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "e53c755b9d35fe256591be80a76a7df3029ca12c07a96544c77fdd0661345d2e"
+          "source_tree_sha256": "d3a035e640dca74692e09af6e8092868c79e2babe1e79509abbb50bfe2f95c64"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-openapi-governance.patch",
-          "source_tree_sha256": "6c50ab0d2593b590f7fff4e978dc555222400e76067011b256eadf9bb5ba0d3c"
+          "source_tree_sha256": "95f312b84d2e3e86d6ff153c4ca5d8a70c36524cd4ae2abf398529bedd69a351"
         },
         {
-          "id": "frontend-commit",
+          "id": "prototype-review",
           "strategy": "patch",
-          "patch": ".template-source/profile-skill-patches/frontend/frontend-commit.patch",
-          "source_tree_sha256": "06b27a250369d04c398c502c68e141702f359ff2149dbca88163815e48075a73"
+          "patch": ".template-source/profile-skill-patches/frontend/prototype-review.patch",
+          "source_tree_sha256": "9bad87020635c7aa2049263eed9c78a7289af9ee4728d64d1641007fef999c51"
+        },
+        {
+          "id": "triage",
+          "strategy": "patch",
+          "patch": ".template-source/profile-skill-patches/frontend/triage.patch",
+          "source_tree_sha256": "de427092ee8751b94d4d4e6a66220bfd38e7f536f87e8f81410ad680931fcaf2"
+        },
+        {
+          "id": "yss-api-integration",
+          "strategy": "patch",
+          "patch": ".template-source/profile-skill-patches/frontend/yss-api-integration.patch",
+          "source_tree_sha256": "b142cb0cc7616a65b4ab22d63906458bb6f5cec105bca56d7dc9eac589dd8c3b"
+        },
+        {
+          "id": "yss-openapi-draft-review",
+          "strategy": "patch",
+          "patch": ".template-source/profile-skill-patches/frontend/yss-openapi-draft-review.patch",
+          "source_tree_sha256": "fc69a095ab8c4165327a23c7d461034cef288d4e81aeafb9fe2cc4bf36a1f2b1"
+        },
+        {
+          "id": "yss-skill-source-index-refresh",
+          "strategy": "patch",
+          "patch": ".template-source/profile-skill-patches/frontend/yss-skill-source-index-refresh.patch",
+          "source_tree_sha256": "91b5c99171a4ee9f4e35867e8325826eef825f072f9d040f239286b65c2dba58"
         }
       ],
       "assets": [
@@ -648,24 +754,10 @@
       ],
       "excluded": [
         "backend-agent",
-        "competitive-intelligence",
-        "domain-modeling",
-        "grill-with-docs",
-        "prototype-review",
-        "setup-matt-pocock-skills",
-        "triage",
-        "wait-what",
-        "wayfinder",
-        "yss-api-integration",
-        "yss-formily",
-        "yss-formily-schema-generator",
-        "yss-openapi-draft-review",
         "yss-product-lifecycle",
-        "yss-skill-source-index-refresh",
         "yss-stage-decision",
         "yss-tactical-design",
-        "yss-technical-design",
-        "yss-ui"
+        "yss-technical-design"
       ],
       "retired": [
         "research",
@@ -681,7 +773,15 @@
         "vue3-best-practices",
         "yss-use-table-height",
         "yss-use-tree-height"
+      ],
+      "reference_roots": [
+        ".codex/skills/product-design",
+        ".codex/skills/data-analytics"
       ]
     }
-  }
+  },
+  "platform_roots": [
+    ".codex/skills"
+  ],
+  "verify_entry_references": true
 }

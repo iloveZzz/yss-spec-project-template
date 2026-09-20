@@ -1,0 +1,6 @@
+{
+  "only_owned_added_files": [
+    "submodules/yss-harness-frontend-agent/.codex/skills/data-analytics/skills/user-context/scripts/__pycache__/data_analytics_preflight.cpython-312.pyc",
+    "submodules/yss-harness-frontend-agent/.codex/skills/data-analytics/skills/user-context/tests/__pycache__/test_state_helpers.cpython-312.pyc"
+  ]
+}

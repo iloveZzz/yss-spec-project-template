@@ -55,5 +55,5 @@ Before creating or revising an MCP app report artifact, read `../../../src/analy
 - Preserve the current manifest, bounded snapshot, inline-safe source text, package metadata, reading order, visuals, tables, source details, and narrative.
 - Keep static HTML and PDF exports content-only: include the report title, narrative, visuals, tables, and source details, but omit the interactive top bar and app-only controls.
 - Use the `sites-hosting` workflow for project resolution, local validation, source provenance, artifact preparation, version creation, deployment polling, and access control.
-- Default new hosted report access to `workspace_all` unless the user explicitly requests narrower access. Report the production URL and the configured access mode.
+- Use only the explicitly selected hosting audience; missing audience does not authorize workspace-wide access. Report the production URL and the configured access mode.
 - If the local report package files or validated artifact payload are unavailable, stop and ask for the missing source instead of publishing an empty, fallback, or stale report.

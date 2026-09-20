@@ -1,11 +1,11 @@
 ---
 name: report-to-google-slides
-description: "Narrow conversion skill. Invoke only when the user explicitly asks to convert an existing HTML analytics report into a native Google Slides deck."
+description: "Narrow conversion skill. Invoke only when the user explicitly asks to convert an existing HTML analytics report into a local PPTX or native Google Slides deck."
 ---
 
 # Report To Google Slides
 
-Use this skill only when the user explicitly has an existing HTML analytics report and wants a Google Slides deliverable. The output should be a deck, not a pasted report. A stakeholder skimming the slides should understand the answer, evidence,
+Use this skill only when the user explicitly has an existing HTML analytics report and wants a local PPTX or native Google Slides deliverable. The output should be a deck, not a pasted report. A stakeholder skimming the slides should understand the answer, evidence,
 caveats, and recommended follow-up without opening the source report.
 
 This skill consumes an HTML report. It does not convert a live MCP app report directly; if only an MCP app report exists, build an HTML report from the same source evidence as a separate report delivery mode first.
@@ -14,7 +14,7 @@ This skill consumes an HTML report. It does not convert a live MCP app report di
 
 ### User Context
 
-Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mode by loading [data-analytics:user-context](../../user-context/SKILL.md) and running its preflight script before answering, searching connectors, retrieving evidence, creating artifacts, or drafting output. Do not look for a callable MCP tool named `data-analytics:user-context`. Use the returned `data_analytics_preflight` envelope as the source of truth for saved context, source-category mapping, semantic-layer registry, onboarding/final-response obligations, and conditional guidance; use saved context and semantic layers as source-selection inputs, not as substitutes for workflow-time reads from connected or provided sources. Do not read or reinterpret raw plugin state files unless preflight fails, declares required content omitted, local shell access is unavailable, or the user explicitly asks for raw state inspection.
+Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mode by loading [data-analytics:user-context](../../user-context/SKILL.md) and using its read-only preflight before source selection. Reuse the already loaded envelope within the same workflow while the resolved state paths, file digests, request mode and source scope are unchanged; re-read on change, missing context or explicit inspection. Do not look for a callable MCP tool named `data-analytics:user-context`. Use the returned `data_analytics_preflight` envelope as the source of truth for saved context, source-category mapping, semantic-layer registry, onboarding/final-response obligations, and conditional guidance; use saved context and semantic layers as source-selection inputs, not as substitutes for workflow-time reads from connected or provided sources. Do not read or reinterpret raw plugin state files unless preflight fails, declares required content omitted, local shell access is unavailable, or the user explicitly asks for raw state inspection.
 
 ## Workflow
 
@@ -46,8 +46,7 @@ Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mod
 
 4. Import and verify in Google Slides.
 
-   Import `deck.pptx` with `mcp__codex_apps__google_drive._import_presentation` using `upload_mode="native_google_slides"`. Verify the imported deck with `_get_presentation_outline` and `_get_slide_thumbnail` for every slide when possible. At minimum, inspect the cover, one chart slide, one table slide,
-   and the caveats/sources slides.
+   For a local PPTX request, validate and hand off `deck.pptx` without upload. For an explicitly requested native Slides deliverable, discover the installed presentation import/readback capabilities and their schemas; do not assume tool names. Verify the imported native type, outline and rendered slides through available readback tools. Missing import/readback capability is a named gap; the local PPTX remains a separate deliverable, not proof of native completion.
 
 5. Repair before handoff.
 

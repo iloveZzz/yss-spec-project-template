@@ -52,3 +52,7 @@
 ## 2026-09-15 工作版本
 
 本轮使用 DESIGN.md 驱动的原生 HTML 默认路线，并条件支持真实 AntD 离线预构建。公共四项技能已固定到上述战略设计源仓提交；父模板完成提交后，CLI 快照必须从父模板与各 Agent 的固定提交重新生成。
+
+## 2026-09-20 Skills 规范整改固定来源
+
+本轮公共四项技能固定到战略源仓 `83d7bce7eab1adf16e02a419717c94fa8ba84f43`。当前 revision 与摘要以 `.agents/skills/.strategic-design-skills-manifest.json` 为准；上文提交号保留为历史记录。父模板保留生命周期主控薄适配，消费 profile 同步来源清单与锁。Agent 评测、75 项整改对账和后续 CLI 固定版本交付记录见 `.template-source/evidence/maintenance/2026-09-20-openai-skills-implementation/`。

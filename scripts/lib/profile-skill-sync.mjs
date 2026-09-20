@@ -31,6 +31,8 @@ function files(directory, prefix = "") {
   if (!info.isDirectory()) fail(`技能源必须是目录: ${directory}`);
   const result = new Map();
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
+    // Match the skill supply-chain inventory: interpreter caches are not source.
+    if (entry.name === "__pycache__" || entry.name === ".DS_Store" || /\.(iml|pyc|pyo)$/.test(entry.name)) continue;
     if (entry.isSymbolicLink()) fail(`跨仓同步不接受符号链接: ${path.join(directory, entry.name)}`);
     const absolute = path.join(directory, entry.name);
     const relative = prefix ? `${prefix}/${entry.name}` : entry.name;
@@ -101,6 +103,29 @@ function gitDirty(profileRoot, relativePaths) {
 
 function dirtyMatch(dirty, relative) {
   return [...dirty].some((entry) => entry === relative || entry.startsWith(`${relative}/`) || relative.startsWith(`${entry}/`));
+}
+
+function checkEntryReferences(profile, profileRoot, definition, changes, issues) {
+  const overlay = new Map(changes.filter((item) => item.profile === profile).map((item) => [path.resolve(profileRoot, item.path), item.content]));
+  const entries = new Set();
+  for (const relative of [".agents/skills", ...(definition.reference_roots ?? [])]) {
+    const directory = safe(profileRoot, relative, "reference root");
+    for (const name of files(directory).keys()) if (name.endsWith("/SKILL.md")) entries.add(path.join(directory, name));
+  }
+  for (const [file, content] of overlay) if (content !== null && file.endsWith("/SKILL.md")) entries.add(file);
+  for (const file of entries) {
+    const content = overlay.has(file) ? overlay.get(file) : readFileSync(file);
+    if (content === null) continue;
+    const prose = content.toString("utf8").replace(/```[\s\S]*?```/g, "").replace(/`[^`]*`/g, "");
+    for (const match of prose.matchAll(/\]\(([^\s)]+)\)/g)) {
+      const link = match[1].split("#")[0];
+      if (!link || /^[a-z][a-z\d+.-]*:/i.test(link) || link.includes("<")) continue;
+      const target = path.resolve(path.dirname(file), link);
+      const inside = target.startsWith(`${path.resolve(profileRoot)}${path.sep}`);
+      const present = inside && (overlay.has(target) ? overlay.get(target) !== null : existsSync(target));
+      if (!present) issues.push({ profile, status: "missing_reference", path: `${definition.target}/${path.relative(profileRoot, file)}`, message: `Skill 引用无法解析: ${link}` });
+    }
+  }
 }
 
 function transformedSource(root, profile, item) {
@@ -262,22 +287,38 @@ export function planProfileSkillSync({ root, config, selectedProfiles, dirtyProv
     const targetSkillRoot = safe(profileRoot, ".agents/skills", "profile skill root");
     if (existsSync(targetSkillRoot)) {
       for (const entry of readdirSync(targetSkillRoot, { withFileTypes: true })) {
-        if (!entry.isDirectory() || classified.has(entry.name)) continue;
-        const sourceSkill = path.join(canonicalRoot, entry.name);
-        if (!existsSync(sourceSkill) || !lstatSync(sourceSkill).isDirectory()) continue;
-        if (!sameTree(files(sourceSkill), files(path.join(targetSkillRoot, entry.name)))) {
+        if (!entry.isDirectory() || !existsSync(path.join(targetSkillRoot, entry.name, "SKILL.md"))) continue;
+        const classification = classified.get(entry.name);
+        if (classification === "excluded") {
+          issues.push({ profile, skill: entry.name, status: "active_excluded", path: `${definition.target}/.agents/skills/${entry.name}`, message: "活跃 Skill 不能用 excluded 跳过维护；登记 exact、adapted、local_only 或 upstream" });
+        } else if (!classification) {
           issues.push({
             profile,
             skill: entry.name,
             status: "unregistered_difference",
             path: `${definition.target}/.agents/skills/${entry.name}`,
-            message: "同名 Skill 内容不同但未登记同步分类",
+            message: "实际 Skill 入口未登记同步分类（包括内容相同及 profile 独有入口）",
           });
         }
       }
     }
 
+    // Platform packages are source directories, unlike generated shared projections.
+    // Register them using exact/adapted source and target paths; keep schema v1 readable.
+    for (const platformRoot of config.platform_roots ?? []) {
+      const directory = safe(profileRoot, platformRoot, "platform root");
+      if (!existsSync(directory)) continue;
+      for (const entry of readdirSync(directory, { withFileTypes: true })) {
+        if (!entry.isDirectory() || existsSync(path.join(targetSkillRoot, entry.name, "SKILL.md"))) continue;
+        const relative = `${platformRoot}/${entry.name}`;
+        if (![...files(path.join(directory, entry.name)).keys()].some((name) => name === "SKILL.md" || name.endsWith("/SKILL.md"))) continue;
+        const owners = [...(definition.exact ?? []), ...(definition.adapted ?? [])].filter((item) => item.target === relative);
+        if (owners.length !== 1) issues.push({ profile, skill: entry.name, status: "unregistered_platform_package", path: `${definition.target}/${relative}`, message: "平台技能包必须按完整包路径登记唯一来源" });
+      }
+    }
+
     const changedPaths = [...new Set(changes.filter((item) => item.profile === profile).map((item) => item.path))];
+    if (config.verify_entry_references) checkEntryReferences(profile, profileRoot, definition, changes, issues);
     const dirty = dirtyProvider(profileRoot, changedPaths);
     for (const change of changes.filter((item) => item.profile === profile && dirtyMatch(dirty, item.path))) {
       issues.push({ profile, skill: change.skill, status: "adaptation_conflict", path: `${definition.target}/${change.path}`, message: "目标含未提交改动" });

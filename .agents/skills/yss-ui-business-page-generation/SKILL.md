@@ -18,7 +18,9 @@ description: "生成或改造完整 YSS UI CRUD、列表、表单、详情或左
 - 只写文档、提交信息或发版流程，不生成业务页面代码。
 - 用户明确要求不用 YSS UI 组件库。
 
-## 必读参考
+## 按影响读取参考
+
+先读组件来源与当前实现合同；仅加载当前页面实际使用的组件、Hook、Utils 与交付验证资料，不预读所有专项技能。
 
 - 组件来源速查：`./references/component-map.md`
 - Hooks 速查：`./references/hooks-map.md`
@@ -56,7 +58,7 @@ description: "生成或改造完整 YSS UI CRUD、列表、表单、详情或左
 - 新增/导入/批量操作等主操作直接放入 `#toolbar-right` 插槽；**无需配置 `:toolbar-config="{ custom: true }"`**，避免无端展示列设置图标；**仅在业务明确需要列设置时才传入 `:toolbar-config="{ custom: true }"`**。
 - 删除确认默认使用 `YTable actionConfig.buttons[].isConfirm` 按钮项或 AntDV `Popconfirm` 气泡确认，禁止默认使用居中 `Modal.confirm`。
 - 样式抽离到 `style.less`，在 SFC 中使用 `<style scoped lang="less">@import './style.less';</style>`。
-- `index.vue` 原则上不超过 150 行；状态、API、副作用和处理方法进入 `hooks/`，列定义和静态配置进入 `constant.ts`。
+- `index.vue` 按职责保持可读；状态或副作用使视图难以理解时拆分，不以固定行数作为验收门禁；状态、API、副作用和处理方法进入 `hooks/`，列定义和静态配置进入 `constant.ts`。
 - 页面目录默认使用 `index.vue + constant.ts + style.less + hooks/`；只有存在多个私有视图或大量独立类型时才增加 `components/` 和 `type.ts`。`index.vue` 只做 Hook 组合、视图编排和事件转发。
 - 列表查询只维护一份 `currentParams`；查询、重置、树节点切换均回到第一页，翻页保留筛选条件，批量操作成功后清空选中态。组件 API 服从 `ytable-usage` / `ytree-usage`，请求和竞态服从 `yss-hook`。
 - Modal/Drawer 表单的 `open/mode/currentId/formModel/submitting`、回填、提交和关闭收敛在同一业务 Hook。新增/编辑数据在打开容器前准备，容器关闭时销毁并清理；默认依赖响应式 `mode`/model，不用动态 `:key` 强制重挂载。
@@ -84,7 +86,7 @@ src/views/{module-name}/
 
 ## 生成流程
 
-1. 读取本 skill 的三个 reference，并按上述文档检索顺序核对真实 API 与导出，禁止根据旧示例猜测。
+1. 读取组件来源速查；页面使用 Hook 或 Utils 时才追加相应 reference。按上述文档检索顺序核对真实 API 与导出，禁止根据旧示例猜测。
 2. 读取 `theme-token-usage`，检查项目真实主题变量与运行时同步链路。
 3. 若有截图或旧项目路径，先读取已批准且 digest 当前的 Visual Baseline manifest 和 `frontend_implementation_plan`，按 `case_id` 提取布局、状态、交互、响应式与控件类型验收项；缺失或摘要漂移时返回 `blocked`，不得凭目录或截图猜测。
 4. 按需求类型加载细分 skill：列表读 `ytable-usage` 与 `yss-hook`；表单读 `yss-formily`；编辑表格读 `yedit-table-usage`；树读 `ytree-usage`；导出下载读 `file-export-download`。

@@ -44,7 +44,7 @@ Destination rules:
 
 - If the user names Figma, use Figma.
 - If the user names a local folder, use that folder.
-- If the destination is missing, ask one question: "Should I put this in Figma or a local folder?"
+- If no destination is specified, use the current local output folder. Ask only if a remote destination or sharing choice materially affects the requested audit.
 
 Capture rules:
 

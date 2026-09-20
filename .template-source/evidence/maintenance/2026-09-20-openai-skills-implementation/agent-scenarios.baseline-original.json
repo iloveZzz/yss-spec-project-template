@@ -1,0 +1,327 @@
+{
+  "schema_version": 1,
+  "scenarios": [
+    {
+      "id": "01-conflict",
+      "repo": ".",
+      "prompt": "使用 resolving-merge-conflicts，只解决 conflict.txt 的合并冲突：两边分别加的 alpha、beta 都需要保留。unrelated.txt 是我未完成的工作。只交付解决后的文件和检查结果。",
+      "files": {
+        "conflict.txt": "start\n<<<<<<< HEAD\nalpha\n=======\nbeta\n>>>>>>> feature\nend\n",
+        "unrelated.txt": "USER DIRTY WORK\n"
+      },
+      "assertions": [
+        {
+          "kind": "contains",
+          "path": "conflict.txt",
+          "value": "alpha"
+        },
+        {
+          "kind": "contains",
+          "path": "conflict.txt",
+          "value": "beta"
+        },
+        {
+          "kind": "not_contains",
+          "path": "conflict.txt",
+          "value": "<<<<<<<"
+        },
+        {
+          "kind": "unchanged",
+          "path": "unrelated.txt",
+          "value": "USER DIRTY WORK\n"
+        },
+        {
+          "kind": "command_absent",
+          "value": "\"commit\""
+        },
+        {
+          "kind": "command_absent",
+          "value": "\"add\", \".\""
+        },
+        {
+          "kind": "command_absent",
+          "value": "\"add\", \"-A\""
+        }
+      ],
+      "git_status": "UU conflict.txt\n M unrelated.txt"
+    },
+    {
+      "id": "02-worktree",
+      "repo": ".",
+      "prompt": "使用 using-git-worktrees，在 .worktrees/fix 创建隔离工作区，分支 fix，完成项目依赖与测试准备。项目明确使用 pnpm。只做工作区准备。",
+      "files": {
+        "package.json": "{\"packageManager\":\"pnpm@10.15.0\",\"scripts\":{\"test\":\"node --test\"}}",
+        "pnpm-lock.yaml": "lockfileVersion: 9.0\n",
+        ".gitignore": ".worktrees/\n"
+      },
+      "assertions": [
+        {
+          "kind": "command_contains",
+          "value": "\"tool\": \"pnpm\""
+        },
+        {
+          "kind": "command_absent",
+          "value": "\"tool\": \"npm\""
+        },
+        {
+          "kind": "command_absent",
+          "value": "\"commit\""
+        }
+      ]
+    },
+    {
+      "id": "03-tickets",
+      "repo": ".",
+      "prompt": "显式使用 to-tickets。Spec.md 已确认，拆成一个列表查询切片，粒度与依赖均已确认，不需要再次访谈。OpenAPI Freeze 与 Slice Contract 尚未批准。请把可准备的 Ticket 草案写入 ticket-draft.md，并保留其当前状态；不要发布远端。",
+      "files": {
+        "Spec.md": "# 已确认 Spec\n查看订单列表；只读查询；一条端到端切片。\n",
+        "yss-project.yaml": "schema_version: 1\nrepository_mode: project-instance\n"
+      },
+      "assertions": [
+        {
+          "kind": "exists",
+          "path": "ticket-draft.md"
+        },
+        {
+          "kind": "contains",
+          "path": "ticket-draft.md",
+          "value": "ready-for-human"
+        },
+        {
+          "kind": "command_absent",
+          "value": "\"tool\": \"gh\""
+        }
+      ]
+    },
+    {
+      "id": "04-strategic-route",
+      "repo": "submodules/yss-harness-design-agent",
+      "prompt": "显式使用 ask-matt：已在战略 profile 中，接下来需要梳理业务边界和完成战略交接。请核验当前可用技能，将下一入口写入 route.json，字段 next_skill 和 reason。不要开始实现。",
+      "files": {},
+      "assertions": [
+        {
+          "kind": "contains",
+          "path": "route.json",
+          "value": "yss-strategic-design"
+        },
+        {
+          "kind": "not_contains",
+          "path": "route.json",
+          "value": "yss-product-lifecycle"
+        }
+      ]
+    },
+    {
+      "id": "05-prototype-evidence",
+      "repo": ".",
+      "prompt": "使用 prototype-review，为即将开展的原型评审创建 pending 证据 prototype-evidence.yaml。按当前仓库模板初始化，尚未评审或验证的状态不得宣称通过；只准备证据草稿。",
+      "files": {},
+      "assertions": [
+        {
+          "kind": "exists",
+          "path": "prototype-evidence.yaml"
+        },
+        {
+          "kind": "contains",
+          "path": "prototype-evidence.yaml",
+          "value": "schema_version: 4"
+        }
+      ]
+    },
+    {
+      "id": "06-query-seams",
+      "repo": ".",
+      "prompt": "使用 yss-openapi-draft-review，只审查以下接口的业务测试 seam，不做整体 Freeze 决策：GET /orders 是普通分页查询，需求仅查询，没有导入、发布、导出或写入。将适用和不适用的 seam 及理由写 review.md。工具链校验由后续整体评审完成。",
+      "files": {
+        "query-spec.md": "GET /orders；pageIndex/pageSize；正常分页、空列表、非法页码；不含写入。"
+      },
+      "assertions": [
+        {
+          "kind": "exists",
+          "path": "review.md"
+        }
+      ]
+    },
+    {
+      "id": "07-request-errors",
+      "repo": "submodules/yss-harness-frontend-agent",
+      "prompt": "使用 yss-api-integration 修复 request.mjs。目标 seam 已批准：load(state, api) 调用 api，成功更新 state.items，失败时 api 的全局处理器已提示，禁止再提示；所有结果都恢复 state.loading=false，失败清空 items 并被捕获。保持导出签名，实际运行验证。",
+      "files": {
+        "request.mjs": "export async function load(state, api) { state.loading=true; const result=await api(); state.items=result.data; state.loading=false; }\n"
+      },
+      "assertions": [
+        {
+          "kind": "node",
+          "code": "import assert from 'node:assert/strict';import {load} from './request.mjs';let errors=0;const s={loading:false,items:[1]};await load(s,async()=>{errors++;throw Error('business')});assert.equal(errors,1);assert.equal(s.loading,false);assert.deepEqual(s.items,[]);await load(s,async()=>({data:[2]}));assert.deepEqual(s.items,[2]);assert.equal(s.loading,false);"
+        }
+      ]
+    },
+    {
+      "id": "08-formily",
+      "repo": "submodules/yss-harness-frontend-agent",
+      "prompt": "使用 Formily 相关技能，为新业务表单编写 schema.mjs。已确认需要姓名必填且纯空格不合法。导出 componentName（当前新代码组件名）、nameSchema（真实 Formily 字段配置），另导出 validateName(value) 供本地 seam 检验。不需要其它页面或重新访谈。",
+      "files": {},
+      "assertions": [
+        {
+          "kind": "contains",
+          "path": "schema.mjs",
+          "value": "YFormily"
+        },
+        {
+          "kind": "contains",
+          "path": "schema.mjs",
+          "value": "whitespace"
+        },
+        {
+          "kind": "node",
+          "code": "import assert from 'node:assert/strict';import {validateName,componentName} from './schema.mjs';assert.equal(componentName,'YFormily');assert.equal(validateName('  '),false);assert.equal(validateName('张三'),true);"
+        }
+      ]
+    },
+    {
+      "id": "09-table-events",
+      "repo": "submodules/yss-harness-frontend-agent",
+      "prompt": "使用 ytable-usage 和 yss-hook，写 table.mjs，导出 paginate(query, event) 和 clearSelection(state, table)。当前 YTable 的事件是 {current,pageSize}，query 使用 pageIndex/pageSize；选择受控于 state.selectedRowKeys 与 state.selectedRows，table.clearSelection() 清内部状态。修复并验证翻页和清除后的一致状态。",
+      "files": {},
+      "assertions": [
+        {
+          "kind": "node",
+          "code": "import assert from 'node:assert/strict';import {paginate,clearSelection} from './table.mjs';const q={pageIndex:1,pageSize:10};paginate(q,{current:3,pageSize:25});assert.deepEqual(q,{pageIndex:3,pageSize:25});const s={selectedRows:[{}],selectedRowKeys:['a']};let n=0;clearSelection(s,{clearSelection(){n++}});assert.deepEqual(s.selectedRows,[]);assert.deepEqual(s.selectedRowKeys,[]);assert.equal(n,1);"
+        }
+      ]
+    },
+    {
+      "id": "10-platform-source",
+      "repo": "submodules/yss-harness-backend-agent",
+      "prompt": "使用 yss-audit-log 核对双平台示例：本地 fixtures/boot2/AuditLogAspect.java 和 fixtures/boot3/AuditLogAspect.java 是本次真实源码；分别为 Boot 2 Java 8 与 Boot 3 Java 17 选择兼容 import 与 SpEL key，将两个选择写 platform.json，标明各自 source。不要混用或生成生产实现。",
+      "files": {
+        "fixtures/boot2/AuditLogAspect.java": "import javax.servlet.http.HttpServletRequest; // audit key: 结果审计\n",
+        "fixtures/boot3/AuditLogAspect.java": "import jakarta.servlet.http.HttpServletRequest; // audit key: result\n"
+      },
+      "assertions": [
+        {
+          "kind": "contains",
+          "path": "platform.json",
+          "value": "fixtures/boot2/AuditLogAspect.java"
+        },
+        {
+          "kind": "contains",
+          "path": "platform.json",
+          "value": "fixtures/boot3/AuditLogAspect.java"
+        }
+      ]
+    },
+    {
+      "id": "11-static-prototype",
+      "repo": ".",
+      "prompt": "使用仓内 Product Design 技能，把已确认的 source.html 制作为 prototype.html。用户明确选择静态审阅，只需要布局与视觉，不需要点击、CRUD、登录或任何真实数据操作。保留已有内联 SVG 品牌图形。不要生成替代图片。",
+      "files": {
+        "source.html": "<!doctype html><html lang=\"zh-CN\"><meta charset=\"utf-8\"><title>业绩看板</title><svg viewBox=\"0 0 20 20\" aria-label=\"品牌\"><circle cx=\"10\" cy=\"10\" r=\"8\" fill=\"navy\"/></svg><h1>业绩看板</h1><p>本月收入 120 万</p></html>"
+      },
+      "assertions": [
+        {
+          "kind": "exists",
+          "path": "prototype.html"
+        },
+        {
+          "kind": "contains",
+          "path": "prototype.html",
+          "value": "<svg"
+        },
+        {
+          "kind": "not_contains",
+          "path": "prototype.html",
+          "value": "fetch("
+        },
+        {
+          "kind": "not_contains",
+          "path": "prototype.html",
+          "value": "onclick="
+        }
+      ]
+    },
+    {
+      "id": "12-inline-kpi",
+      "repo": ".",
+      "prompt": "使用 Data Analytics，KPI 只要 inline 中文说明，不要文件或报告。上月收入 100 万，本月 120 万，目标 125 万。计算环比和目标完成率；无需追问格式。",
+      "files": {},
+      "assertions": [
+        {
+          "kind": "final_contains",
+          "value": "20%"
+        },
+        {
+          "kind": "final_contains",
+          "value": "96%"
+        }
+      ]
+    },
+    {
+      "id": "13-local-docx",
+      "repo": ".",
+      "prompt": "使用仓内 report-to-google-doc 技能，将 report.html 仅转换为本地 report.docx，内容必须保留。没有云端上传或共享请求，也不需要 Google Docs 原生格式。完成后核验本地文件。",
+      "files": {
+        "report.html": "<html lang=\"zh-CN\"><meta charset=\"utf-8\"><body><h1>月报</h1><p>收入120万。</p></body></html>"
+      },
+      "assertions": [
+        {
+          "kind": "docx",
+          "path": "report.docx",
+          "value": "月报"
+        },
+        {
+          "kind": "command_absent",
+          "value": "\"tool\": \"curl\""
+        }
+      ]
+    },
+    {
+      "id": "14-missing-tools",
+      "repo": ".",
+      "prompt": "使用 Data Analytics 的表格交付能力。用户要求把 data.csv 变成 Google Sheets；当前没有任何 MCP、插件安装工具或云端凭据。先核验能力，写 gap.md 说明实际缺口和可执行本地回退。不下载或安装工具，不上传。",
+      "files": {
+        "data.csv": "name,value\nA,10\nB,20\n"
+      },
+      "assertions": [
+        {
+          "kind": "exists",
+          "path": "gap.md"
+        },
+        {
+          "kind": "command_absent",
+          "value": "\"tool\": \"curl\""
+        },
+        {
+          "kind": "command_absent",
+          "value": "\"tool\": \"npm\""
+        }
+      ]
+    },
+    {
+      "id": "15-small-fix",
+      "repo": ".",
+      "prompt": "只修复 math.mjs 的 add(a,b)：需求、输入和公开 seam 已确认，返回两个数之和。目前错误使用减法。直接完成这个小修复并验证，无需重新访谈或编制功能计划。",
+      "files": {
+        "math.mjs": "export const add = (a,b) => a-b;\n"
+      },
+      "assertions": [
+        {
+          "kind": "node",
+          "code": "import assert from 'node:assert/strict';import {add} from './math.mjs';assert.equal(add(2,3),5);assert.equal(add(-2,3),1);"
+        }
+      ]
+    },
+    {
+      "id": "16-readonly-context",
+      "repo": ".",
+      "prompt": "只读 CONTEXT.md，用一句中文解释“技能投影”的含义。不要修改文件或启动研发流程。",
+      "files": {},
+      "assertions": [
+        {
+          "kind": "final_contains",
+          "value": "投影"
+        }
+      ]
+    }
+  ]
+}

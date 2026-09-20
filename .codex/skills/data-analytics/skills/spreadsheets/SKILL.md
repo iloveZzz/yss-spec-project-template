@@ -17,17 +17,17 @@ Read `charts.md` when creating or editing substantive charts, dashboards, or cha
 
 ### User Context
 
-Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mode by loading [data-analytics:user-context](../user-context/SKILL.md) and running its preflight script before answering, searching connectors, retrieving evidence, creating artifacts, or drafting output. Do not look for a callable MCP tool named `data-analytics:user-context`. Use the returned `data_analytics_preflight` envelope as the source of truth for saved context, source-category mapping, semantic-layer registry, onboarding/final-response obligations, and conditional guidance; use saved context and semantic layers as source-selection inputs, not as substitutes for workflow-time reads from connected or provided sources. Do not read or reinterpret raw plugin state files unless preflight fails, declares required content omitted, local shell access is unavailable, or the user explicitly asks for raw state inspection.
+Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mode by loading [data-analytics:user-context](../user-context/SKILL.md) and using its read-only preflight before source selection. Reuse the already loaded envelope within the same workflow while the resolved state paths, file digests, request mode and source scope are unchanged; re-read on change, missing context or explicit inspection. Do not look for a callable MCP tool named `data-analytics:user-context`. Use the returned `data_analytics_preflight` envelope as the source of truth for saved context, source-category mapping, semantic-layer registry, onboarding/final-response obligations, and conditional guidance; use saved context and semantic layers as source-selection inputs, not as substitutes for workflow-time reads from connected or provided sources. Do not read or reinterpret raw plugin state files unless preflight fails, declares required content omitted, local shell access is unavailable, or the user explicitly asks for raw state inspection.
 
 ## Google Sheets-targeted output
 
 ### New Creations
 
-For a net-new Google Sheets request, create and verify a local `.xlsx` with this skill first. The native Google Sheets deliverable must then be produced by the Google Drive plugin's spreadsheet import action, `mcp__codex_apps__google_drive_import_spreadsheet`, with `upload_mode: "native_google_sheets"`.
+For a net-new Google Sheets request, create and verify a local `.xlsx` with this skill first. For a requested native Google Sheets target, discover a currently available spreadsheet-import capability, read its actual schema, then import and verify the native result. Do not assume a callable name or upload-mode parameter.
 
 Do not use Computer Use, Browser Use, blank-Google-Sheets creation plus Google Sheets write APIs, or another direct-to-Sheets construction path for net-new Google Sheets unless the user explicitly asks for that alternate workflow. If they do, mention first that output quality is expected to be best when a local `.xlsx` is imported through the Google Drive plugin.
 
-If the Google Drive plugin is unavailable, use the plugin-install/user-elicitation flow to ask the user to install `google-drive@openai-curated`. If the plugin is available but `_import_spreadsheet` is missing, ask the user to reinstall or refresh the Google Drive plugin before continuing with the native Google Sheets deliverable.
+If the required cloud capability is unavailable, explain the gap and offer a verified local XLSX. Consult the host tool catalog and its installation policy before suggesting an exact plugin; never invent an ID or demand reinstall as the default repair.
 
 After successful native import, the user-facing deliverable is the Google Sheets link. Treat the local `.xlsx` as a build artifact unless the user explicitly asks to keep or receive it.
 
@@ -45,7 +45,7 @@ Use the Google Drive plugin's Google Sheets skill for edits to existing Google S
 - Prefer one executable `.mjs` builder; patch and rerun it when iterating. Do NOT use shell heredocs or keep extra builder copies.
 - If workspace dependencies or `@oai/artifact-tool` are unavailable, report a setup blocker; do not guess paths, install packages, use system deps, alter module resolution, copy/import bundled internals, or do a broad file system search.
 - Do not search package internals or dump prototypes to discover APIs. Use the API reference below; if blocked, run at most one exact `workbook.help("<api_or_feature>")` query before building.
-- Final response: include a short user-visible summary and standalone Markdown link(s) only to final `.xlsx` artifact(s), one per line: `[Revenue Model - MNST.xlsx](/absolute/path/to/revenue_model_mnst.xlsx)`.
+- Final response: include a short user-visible summary and standalone Markdown link(s) to the selected final deliverable: local `.xlsx` artifacts or verified native Google Sheets URLs, one per line: `[Revenue Model - MNST.xlsx](/absolute/path/to/revenue_model_mnst.xlsx)`.
 - Do not mention internal tooling or support artifacts such as builders, rendered previews, JSON/CSV/log files, or scratch files unless explicitly requested.
 - Do not use alternate workbook creation/editing libraries such as `openpyxl`, `xlsxwriter`, or `pandas.ExcelWriter` unless the user explicitly asks for a non-artifact-tool fallback.
 - For analysis outside workbook authoring, use JS or spreadsheet formulas when sufficient. If Python is needed, use bundled Python libraries, save JSON/CSV intermediates, and have the JS builder create the workbook. Keep auditable/user-editable calculations as formulas.

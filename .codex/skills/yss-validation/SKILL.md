@@ -20,7 +20,7 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 ## Workflow
 
 1. Identify whether the task is JSR-303 annotation validation or an expression/EL parser request.
-2. Read `references/source-index.md`; for JSR-303 behavior, read `yss-component-validation-jsr303/readme.md` first.
+2. Select the approved platform index and inspect the actual POM, validation message resources, consuming Controller annotations and matching exception Advice. The current module README is empty; do not treat reading it as prerequisite evidence.
 3. 当前组件仓不存在历史 `yss-component-validation-engine-parent`；表达式、LiteFlow EL 或 `ExpressParserFactory` 请求返回 `blocked`，先确认真实组件来源和生命周期影响，不以旧索引或通用知识生成实现。
 4. Keep validation failures mapped to the service/API error contract used by the local project.
 5. 消费工程基线选择 javax/jakarta，不自行升级 Java/Boot。MVC 输入校验放在 server/client，业务不变量由 service/core 验证；不生成 DDD Domain。HTTP 失败形态由 server 的合同测试验证。

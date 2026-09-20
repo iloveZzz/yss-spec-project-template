@@ -32,7 +32,7 @@ CRITICAL: THIS IS NOT GUIDANCE. THIS IS A CHECKLIST TO COMPLETE.
 
 3. If the provided design is a mobile viewport, build a mobile app. If it's unclear, default to desktop.
 
-4. Review the reference design, catalog every image asset in the design, and use the Image Gen tool to create individual images for each one. Zoom in so you can catch every asset that needs to be generated.
+4. Review the reference design and inventory its assets. Reuse provided or authorized source assets unchanged unless modification is requested. Generate only a genuinely missing asset when its creation is in scope and the tool is available; name unresolved asset gaps.
 
     Examples include:
 
@@ -47,7 +47,7 @@ CRITICAL: THIS IS NOT GUIDANCE. THIS IS A CHECKLIST TO COMPLETE.
 
     Rules:
 
-    - CRITICAL RULE: Do not create custom div art, CSS art, inline SVGs, handcrafted SVGs, HTML element drawings, div/span shapes, CSS drawings, gradients, emoji, or text glyphs instead of real icons and image assets ever. Use the built-in Image Gen tool for images and the closest matching icon library for icons.
+    - CRITICAL RULE: Do not replace approved source assets with unapproved approximate drawings or placeholders. Reuse provided SVGs and other original assets; only missing in-scope assets require a generation or library capability.
     - If text is part of an image asset, keep it in the image asset. Examples include full bleed hero images, signs, posters, packaging, storefronts, article art, and illustrations where the type belongs to the visual itself. Do not crop the background image and recreate that text with transparent text boxes, HTML, CSS, or separate overlay layers unless the source clearly shows editable UI text sitting on top of the image.
     - Do not use generic placeholders where the reference implies custom visual content.
     - Generated assets must share the same art direction, palette, rendering style, and design language as the reference mockup.
@@ -61,9 +61,9 @@ CRITICAL: THIS IS NOT GUIDANCE. THIS IS A CHECKLIST TO COMPLETE.
 
     Rules:
 
-    - CRITICAL RULE: Do not create custom inline SVGs, handcrafted SVGs, HTML element drawings, div/span shapes, CSS drawings, gradients, emoji, or text glyphs. Use the built-in Image Gen tool to generate assets and use the closest matching icon library for icons.
+    - CRITICAL RULE: Preserve original SVGs, icon assets and code-native visual components. Do not substitute approximate drawings without approval. Use a matching library or generation tool only for missing in-scope assets.
 
-8. Build the app starting with [local-prototype-preflight](../../references/local-prototype-preflight.md). Build all interactions, ensuring the app is complete, functional, and interactive: all controls and states activated and functional.
+8. Build the app starting with [local-prototype-preflight](../../references/local-prototype-preflight.md). Carry the confirmed brief's `interactivity` and `required_states`. For static scope, implement faithful visual states without adding action workflows; for interactive scope, implement and verify the agreed controls and recovery states.
 
     Examples include:
 
@@ -73,12 +73,12 @@ CRITICAL: THIS IS NOT GUIDANCE. THIS IS A CHECKLIST TO COMPLETE.
     - Clickable cards and buttons
     - Animated affordances if implied by the design
     - Newsletter forms, tags, filters, or navigation elements shown in the mockup
-    - Bring the thing to life. Do not deliver a static site; the less you do, the more the designer has to add.
+    - A static prototype is complete when the agreed visual/state review is supported; do not expand it into a functional product.
 
     Rules:
 
     - Place every image asset you generated into its position before proceeding. I repeat, replace all placeholders, including CSS/SVG placeholders, before proceeding.
-    - Do not leave visible controls as static chrome. Do not create new pages or routes unless the user asks for them.
+    - For interactive scope, required controls must work; for static scope, clearly label simulated controls. Do not create new pages or routes unless requested.
 
 9. Run the local app.
 

@@ -11,7 +11,7 @@ Route broad Data Analytics requests to the right focused workflow. Treat invocat
 
 ### User Context
 
-Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mode by loading [data-analytics:user-context](../user-context/SKILL.md) and running its preflight script before answering, searching connectors, retrieving evidence, creating artifacts, or drafting output. Do not look for a callable MCP tool named `data-analytics:user-context`. Use the returned `data_analytics_preflight` envelope as the source of truth for saved context, source-category mapping, semantic-layer registry, onboarding/final-response obligations, and conditional guidance; use saved context and semantic layers as source-selection inputs, not as substitutes for workflow-time reads from connected or provided sources. Do not read or reinterpret raw plugin state files unless preflight fails, declares required content omitted, local shell access is unavailable, or the user explicitly asks for raw state inspection.
+Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mode by loading [data-analytics:user-context](../user-context/SKILL.md) and using its read-only preflight before source selection. Reuse the already loaded envelope within the same workflow while the resolved state paths, file digests, request mode and source scope are unchanged; re-read on change, missing context or explicit inspection. Do not look for a callable MCP tool named `data-analytics:user-context`. Use the returned `data_analytics_preflight` envelope as the source of truth for saved context, source-category mapping, semantic-layer registry, onboarding/final-response obligations, and conditional guidance; use saved context and semantic layers as source-selection inputs, not as substitutes for workflow-time reads from connected or provided sources. Do not read or reinterpret raw plugin state files unless preflight fails, declares required content omitted, local shell access is unavailable, or the user explicitly asks for raw state inspection.
 
 ### Source Discovery And Verification
 
@@ -63,7 +63,7 @@ Use `inline` for bounded factual or computational answers that can be delivered 
 
 Treat short quantitative prompts as Data Analytics work when answering them requires explaining how numbers compare, break down, concentrate, or move across multiple values, groups, or time points. Keep these routes lightweight by default: use `inline` for bounded answers and escalate to `report` only when the user asks for explanation, diagnosis, recommendation, or a durable artifact.
 
-Use `report` for explanation, diagnosis, decomposition, synthesis, recommendation, or larger analytical answers whose value materially improves from a durable artifact. When the user asks to interpret analytical source material or reviewed results, choose report mode when the answer needs evidence-backed narrative, caveats, source metadata, or a reader-facing artifact. $product-business-analysis, $metric-diagnostics, and $kpi-reporting imply `report`; every `report` route includes $build-report unless the user explicitly waives file or report creation.
+Use `report` for explanation, diagnosis, decomposition, synthesis, recommendation, or larger analytical answers whose value materially improves from a durable artifact. When the user asks to interpret analytical source material or reviewed results, choose report mode when the answer needs evidence-backed narrative, caveats, source metadata, or a reader-facing artifact. The focused skill name does not determine delivery mode. Preserve the user-selected `inline`, `report`, `local` file or `native` cloud target. A bounded KPI/diagnostic answer can remain inline; use $build-report only for a selected report deliverable. Cloud upload/sharing requires the corresponding user request and available capability.
 
 After choosing `inline` or `report`, use `$visualize-data` when a visual would make the result easier to understand, especially for category comparisons, part-to-whole breakdowns, rankings, movement over time, or more than a handful of comparable values, rows, categories, or time points. Prefer a visual pass over a scan-heavy table, and let `$visualize-data` choose the form, decide whether to render a chart, and align any table or prose to the visual takeaway.
 
@@ -79,7 +79,7 @@ After choosing `inline` or `report`, use `$visualize-data` when a visual would m
 
 If several focused skills apply, sequence them in the order that creates the most useful analyst workflow. For example, metric diagnostics may precede KPI reporting, semantic-layer setup may precede dashboard or report work, and product-business analysis may feed a recommendation-ready report. Keep this index as a router; do not perform focused workflow logic here.
 
-Before finalizing future Data Analytics instruction edits, run `python3 plugins/data-analytics/skills/user-context/scripts/validate_user_context_preflight.py` from the repository root. Treat a missing mandatory pre-answer gate in any `SKILL.md`, including helper skills, as an audit finding to fix before release.
+Before finalizing future Data Analytics instruction edits, run `python3 .codex/skills/data-analytics/skills/user-context/scripts/validate_user_context_preflight.py .codex/skills/data-analytics` from the repository root. Treat a missing mandatory pre-answer gate in any `SKILL.md`, including helper skills, as an audit finding to fix before release.
 
 Prefer examples that route to focused skills without extra setup, such as:
 
@@ -216,7 +216,7 @@ Use $build-report to build exactly one durable report surface selected for the u
 
 ### report-to-google-doc
 
-Use $report-to-google-doc to convert an existing local HTML report into a polished native Google Doc.
+Use $report-to-google-doc for HTML → local DOCX. Hosted DOCX and native Google Docs are separate optional targets: discover capabilities, preserve user intent, and verify the actual result type before claiming a native document.
 
 ### report-to-google-slides
 

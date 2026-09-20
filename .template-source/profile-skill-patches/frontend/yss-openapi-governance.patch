@@ -1,6 +1,11 @@
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -5,7 +5,7 @@
+@@ -1,11 +1,11 @@
+ ---
+ name: yss-openapi-governance
+-description: "维护、校验、冻结或导出 YSS OpenAPI 3.1 设计合同；以冻结 YAML 生成受审查的 JSON。"
++description: 前端只读核验后端冻结 OpenAPI、JSON 派生与交付证据；契约修订或 Freeze 回交后端权威方。
+ ---
  
  # YSS OpenAPI Governance
  
@@ -75,21 +80,41 @@
  - `$ref` 超出允许范围，或转换器版本、lockfile、命令、输入 YAML 无法识别。
  - `scripts/verify-yss-dto-openapi-profile` 失败、profile 版本未记录，或 Draft 未按 profile 建模 `x-yss-response-wrapper`、`YssResultMeta` / `allOf` 和具体 `data` schema。
  - 新契约引入 `com.yss.cloud.dto.response`、把 Java 泛型文字当成 OAS schema、把全局 `code` 放宽为任意 object，或把 `offset` / `needTotalCount` / `tempTotalCount` 作为客户端字段。
-@@ -125,9 +116,7 @@
+@@ -113,4 +104,44 @@
  
- ### Validation
- - Lint command and result: <locked pnpm command / result>
--- Validation record: <docs/.scratch/<feature>/api/<feature>-validation.yaml / verifier result / matching YAML SHA-256>
--- YSS DTO wire profile: <`.agents/skills/yss-dto/references/openapi-wire-profile.yaml`, schema_version, verifier result>
--- P0 field traceability: <source / operationId / schema / property path / shape / requiredness / constraints / error-test summary>
+ ## 输出契约
+ 
+-执行治理或导出时，按 [输出契约](references/governance-output.md) 记录 YAML 权威、当前校验证据、JSON 派生与交接。不能只给自然语言完成声明；未冻结时不生成可供实现消费的 JSON。
++```markdown
++### Governance Result
++<Draft / Approved for Freeze / Blocked / JSON Exported>
++
++### YAML Authority
++- YAML: <docs/.scratch/<feature>/api/<feature>.yaml>
++- OAS: 3.1.0
++- YAML SHA-256: <sha256>
++- Freeze record: <path / ref>
++
++### Validation
++- Lint command and result: <locked pnpm command / result>
 +- YSS DTO wire profile: <`.agents/skills/yss-openapi-governance/references/openapi-wire-profile.yaml`, schema_version, verifier result>
- - Wrapper conformance: <`x-yss-response-wrapper`, `YssResultMeta`, `allOf`, concrete data schema, direction and forbidden-field result>
- - `$ref` policy / approved exceptions: <details>
- - Blocking findings: <file:line grounded finding>
-@@ -145,3 +134,14 @@
- - Existing frontend code generation: <manual command in target repository / blocked reason>
- - Template boundary: <no frontend configuration, code-generation execution, or CI change>
- ```
++- Wrapper conformance: <`x-yss-response-wrapper`, `YssResultMeta`, `allOf`, concrete data schema, direction and forbidden-field result>
++- `$ref` policy / approved exceptions: <details>
++- Blocking findings: <file:line grounded finding>
++
++### JSON Derivative
++- JSON: <docs/.scratch/<feature>/api/<feature>.json>
++- JSON SHA-256: <sha256>
++- Redocly CLI / lockfile: <version and lock reference>
++- Bundle command and metafile: <command / path>
++- JSON validation result: <pass / blocked>
++
++### Downstream Handoff
++- Canonical JSON / frontend materialization SHA-256: <same sha / blocked>
++- Frontend materialization path: <frontend/openapi/openapi.json / blocked>
++- Existing frontend code generation: <manual command in target repository / blocked reason>
++- Template boundary: <no frontend configuration, code-generation execution, or CI change>
++```
 +
 +## wire profile 同步
 +
@@ -101,8 +126,6 @@
 +```
 +
 +带 `--source-root` 的校验同时核验源仓身份、固定提交字节和当前源工作树。源内容变化时重新审阅并同步快照及绑定；离线消费继续使用已绑定版本，已知上游变化不能被离线校验掩盖。
-diff --git a/references/openapi-wire-profile.yaml b/references/openapi-wire-profile.yaml
-new file mode 100644
 --- /dev/null
 +++ b/references/openapi-wire-profile.yaml
 @@ -0,0 +1,187 @@
@@ -293,8 +316,6 @@ new file mode 100644
 +    - representative-serialization-fixtures
 +    - contract-test-or-equivalent-http-evidence
 +  rule: Java fields and computed getters are not public wire facts until target-boundary evidence confirms them.
-diff --git a/references/openapi-wire-source.json b/references/openapi-wire-source.json
-new file mode 100644
 --- /dev/null
 +++ b/references/openapi-wire-source.json
 @@ -0,0 +1,8 @@

@@ -19,7 +19,7 @@ description: "接入或排查 YSS AuditLog 的 SpEL 摘要、异步发布、订�
 2. 涉及真实类名、配置项、订阅器或排障时，先读 `references/source-index.md`，再定位源码或文档。
 3. 优先检查项目里是否已有注解、配置项和订阅器实现，再决定改法。
 4. 只给出与当前问题直接相关的接入点：注解、配置、切面链路、`CurrentUserProvider` 和订阅器扩展。
-5. 需要看实现细节时，再读取 `assets/` 下源码，不要先讲整套组件原理。
+5. 实现细节以所选平台线的当前源码为准。`assets/` 是 Boot 2 / Java 8 历史快照，仅在旧工程比对或迁移诊断时读取；不能作为 Boot 3 的实现模板或 freshness 证据。
 
 ## 源码索引
 
@@ -61,6 +61,8 @@ description: "接入或排查 YSS AuditLog 的 SpEL 摘要、异步发布、订�
 - 若无法确认真实注解或配置名，先在代码库里搜索现有实现，再修改。
 
 ## 按需读取
+
+以下 `assets/*.java` 均为 `boot2-java8` 历史资料，含 javax 与旧中文 SpEL key。Boot 3 使用其平台索引定位当前 jakarta / args / result 源码；不要修改历史资料来冒充新平台源码。
 
 - 源码索引：`references/source-index.md`
 - 审计切面与 SpEL 解析：`assets/AuditLogAspect.java`

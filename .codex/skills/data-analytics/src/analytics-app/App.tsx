@@ -2692,7 +2692,7 @@ const context = promptContext(manifest, snapshot, packageInfo);
 if (target === "site") {
 return `Publish this ${surface} app as a hosted Site Creator link.
 
-Use the current Data Analytics artifact as the source of truth. Create or reuse a Site Creator project for this ${surface}, materialize a Cloudflare Worker-compatible app that serves the current manifest, bounded snapshot, package metadata, and inline-safe source text through /api/manifest, /api/snapshot, /api/package, and /api/source-file, then deploy it through Site Creator. Preserve the rendered layout, charts, tables, source details, and narrative. Default access to workspace_all unless I explicitly ask for narrower access, and report the production URL plus the access mode.
+Use the current Data Analytics artifact as the source of truth. Create or reuse a Site Creator project for this ${surface}, materialize a Cloudflare Worker-compatible app that serves the current manifest, bounded snapshot, package metadata, and inline-safe source text through /api/manifest, /api/snapshot, /api/package, and /api/source-file, then deploy it through Site Creator. Preserve the rendered layout, charts, tables, source details, and narrative. Use the access scope I explicitly selected. If no access scope has been selected, keep the package local and ask for that publishing decision before deployment. Report the production URL and actual access mode only after successful deployment.
 
 If the local package files are unavailable from the context below, stop and ask for the report package or validated artifact payload rather than publishing an empty or stale report.
 

@@ -15,7 +15,7 @@ description: "为前端改动生成提交信息、审查原子提交或修复 Gi
 ## 不适用场景
 
 - yss-ui 组件库仓库自身的提交与发版：回到 yss-ui 源仓库使用其 `categories.library` 提交流程；该类 skill 不随业务模板分发。
-- Java、Spring Boot、Maven、Gradle 后端仓库：使用 `../java-backend-commit/SKILL.md`。
+- Java、Spring Boot、Maven、Gradle 后端仓库：回交目标后端 profile 的 `java-backend-commit`；本 profile 不臆造跨目录链接。
 - 仅请求代码实现，不涉及提交信息或 `git commit` 操作。
 - 无代码改动，或改动内容与提交请求不匹配。
 - 合并提交、发布提交和自动依赖机器人提交：遵循仓库专用流程，不套用本技能的常规消息模板。
@@ -65,15 +65,15 @@ git ls-files --others --exclude-standard
 
 - type 默认从 `feat/fix/docs/style/refactor/perf/test/chore/revert/build/ci` 中选择，但仓库枚举优先。
 - scope 优先级为：仓库枚举 → monorepo 包或应用 → 业务模块 → 共享能力。使用小写 kebab-case；不要机械地以 `views`、`hooks` 或文件名作为 scope。
-- 标题使用英文 type/scope、ASCII `:` 和中文摘要；描述行为或价值，不写“修改文件”“更新代码”或单个文件名。
-- 默认将完整 header 控制在 72 个字符内；仓库存在更严格限制时服从仓库。标题末尾不加句号，不用 emoji 或全角冒号。
+- 标题使用仓库确定的 type/scope、分隔符和语言；无既定规则时默认英文 type/scope、ASCII `:` 和中文摘要；描述行为或价值，不写“修改文件”“更新代码”或单个文件名。
+- 默认将完整 header 控制在 72 个字符内；仓库配置了其他限制时服从该配置。标题末尾不加句号，不用 emoji 或全角冒号。
 - 简单单文件变更可以没有 body；多文件、非显然修复、重要功能或行为变化使用 body 解释做了什么、为什么以及如何验证。
 - 仅对真实不兼容变更使用 `!` 和 `BREAKING CHANGE:`；仅在已知编号或仓库要求时加入工单、DCO、`Signed-off-by` 等 footer，禁止编造。
 
 ### 4. 验证并提交
 
 1. 根据变更范围运行仓库已有的最小充分检查，例如相关单元测试、类型检查、lint 和构建检查；优先使用仓库脚本与当前包管理器。
-2. 通过 stdin 校验完整候选消息，而不只校验 header。使用仓库本地 commitlint 命令；退出码为 0 才继续。
+2. 通过 stdin 校验完整候选消息，而不只校验 header。仅在仓库实际采用 commitlint 时使用其本地命令并要求退出码 0；否则按现有 hook/贡献指南验证，不安装新工具。
 3. 仅暂存属于当前原子提交的明确路径或安全 hunks，再重新检查 `git diff --cached --check`、`--name-status` 和完整 staged diff。
 4. 执行正常 `git commit`，允许 hooks 运行。
 5. hook 若格式化或修改文件，重新检查 staged 与 working tree，确认实际提交内容没有漂移。
@@ -102,9 +102,9 @@ feat(data-push): 优化推送任务数据源与调度规则展示
 
 ## 交付检查清单
 
-- [ ] type 与 scope 通过仓库 resolved commitlint 校验，完整消息经 stdin 校验退出码为 0。
+- [ ] 完整消息通过仓库实际采用的提交校验；采用 commitlint 时记录 stdin 校验退出码 0。
 - [ ] scope 来自仓库枚举、包名或业务模块，未使用 `views`、`hooks`、`utils` 或文件名兜底。
-- [ ] 标题为英文 type/scope + ASCII 冒号 + 中文摘要，完整 header 不超过 72 字符。
+- [ ] 标题语言、type/scope 和长度符合仓库配置；无配置时才使用本技能回退格式。
 - [ ] 暂存区只包含当前原子提交的文件；lockfile 与对应 manifest 同提交。
 - [ ] 已运行与变更范围匹配的最小充分检查（相关测试、类型检查、lint）。
 - [ ] 提交后已核对 `git show --stat` 与 `git status --short`，并向用户报告 hash 与剩余改动。

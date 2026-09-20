@@ -116,7 +116,7 @@ Do not inspect every saved reference. Inspect only what the current task needs.
 ## Hard Rules
 
 - Capture source evidence first. Do not scaffold, write app code, start a server, or create the local prototype until desktop capture, mobile capture, key states, and every required asset, icon, control mark, and font is captured or replaced.
-- Do not hand off until every single interaction and state is captured from the target.
+- Before handoff, capture and verify the agreed routes, key states and interactions within the confirmed scope. Record inaccessible states as gaps; do not expand a bounded clone into the entire source product.
 - Do not build from memory, screenshots alone, guessed CSS, generic assets, or prior chats.
 - Do not implement a saved state without source screenshot plus the available DOM/style/layout evidence for that state.
 - Do not use hotlinked source assets in the final app.

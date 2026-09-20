@@ -11,7 +11,7 @@ Create quantitative visuals that are analytically sound, immediately readable, a
 
 ### User Context
 
-Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mode by loading [data-analytics:user-context](../user-context/SKILL.md) and running its preflight script before answering, searching connectors, retrieving evidence, creating artifacts, or drafting output. Do not look for a callable MCP tool named `data-analytics:user-context`. Use the returned `data_analytics_preflight` envelope as the source of truth for saved context, source-category mapping, semantic-layer registry, onboarding/final-response obligations, and conditional guidance; use saved context and semantic layers as source-selection inputs, not as substitutes for workflow-time reads from connected or provided sources. Do not read or reinterpret raw plugin state files unless preflight fails, declares required content omitted, local shell access is unavailable, or the user explicitly asks for raw state inspection.
+Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mode by loading [data-analytics:user-context](../user-context/SKILL.md) and using its read-only preflight before source selection. Reuse the already loaded envelope within the same workflow while the resolved state paths, file digests, request mode and source scope are unchanged; re-read on change, missing context or explicit inspection. Do not look for a callable MCP tool named `data-analytics:user-context`. Use the returned `data_analytics_preflight` envelope as the source of truth for saved context, source-category mapping, semantic-layer registry, onboarding/final-response obligations, and conditional guidance; use saved context and semantic layers as source-selection inputs, not as substitutes for workflow-time reads from connected or provided sources. Do not read or reinterpret raw plugin state files unless preflight fails, declares required content omitted, local shell access is unavailable, or the user explicitly asks for raw state inspection.
 
 ## Chart Selection
 
@@ -92,7 +92,7 @@ Concrete forms such as `highlighted multi-series line`, `Likert`, `pie`, `Pareto
 - In multi-area executive reports, repeated line charts are a smell. Use line charts only where the main question is continuous movement over time. Consider dot/lollipop or bar with reference for plan variance, stacked area or 100% stacked bar for mix, ranked bars or leaderboards for category comparisons, waterfall for additive drivers, heatmaps for cohort or matrix structure, and stage bars for ordered progression.
 - For one-slide-per-area executive reports, do a chart-family pass before writing the visual plan. Audit repeated families and require a rationale when multiple sections use the same family despite asking different questions.
 - If every visual in a report uses the same family, document the reason in the chart map and verify that no section is actually asking for status, mix, variance, or drivers.
-- Four or more all-line visuals fail the multi-chart report contract unless the report is redesigned with data-compatible alternatives or fewer visuals.
+- Repeated line charts are appropriate for comparable trends. Review readability and decision value; chart count or chart-family repetition alone is not a failure.
 
 ### Surface And Implementation
 
@@ -133,7 +133,7 @@ Concrete forms such as `highlighted multi-series line`, `Likert`, `pie`, `Pareto
 - For HTML artifacts, keep standalone charts on real grid footprints: `8 columns` by default, `6` minimum, `10` or `12` for complex charts, stacked vertically on mobile. Align multi-chart rows from the left/start edge.
 - Match HTML chart containers, legends, KPI strips, and notes to the same Data Viz System tokens as the surrounding report or dashboard. Remove unused multi-hue CSS variables when they are not rendered.
 - Use dark chart variants only when the containing artifact is dark. Inspect both light and dark variants for shipped branded web outputs.
-- For research charts, lock the blossom to the header's top-right corner. Omit it for third-party, partnership, and non-research charts.
+- Use a brand mark only when the user's selected brand profile requests it and supplies an authorized asset. Do not inject OpenAI or vendor branding by default.
 
 ### Quality Bar
 
@@ -152,6 +152,6 @@ Concrete forms such as `highlighted multi-series line`, `Likert`, `pie`, `Pareto
 - Exported SVG or HTML colors should match declared palette roots plus neutrals; remove unused multi-hue tokens unless documenting an intentional exception.
 - Chart scaffolding should stay quiet: no arbitrary colored backgrounds, gradients, decorative guides, inconsistent stroke widths, or decorative mark fills. Filled marks should keep keylines, and benchmark, calibration, and reference lines should use dark-neutral styling.
 - Titles, legends, and primary labels should use dark ink and share a clear header anchor. Numeric ticks and direct value labels should use mono styling where the template system calls for it.
-- Research charts should use the locked top-right blossom placement; third-party, partnership, and non-research charts should omit it.
+- Apply a brand mark only when the selected user brand profile requests and supplies it.
 - Before handoff, inspect the visual in the artifact readers will open and verify that it answers the stated analytical question, signs and scales are honest, labels fit at laptop and mobile widths, the color and non-color encoding is understandable, and the caption states metric, time window, and source when those are part of the visual.
 - Inspect the final report, slide, dashboard, notebook, widget, or HTML layout before handoff. Revise before delivery when any requirement above fails.

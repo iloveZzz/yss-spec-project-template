@@ -51,7 +51,7 @@ If the file does not exist, continue normally unless the user asks to set up Pro
 
 ## Preflight
 
-When any Product Design workflow needs saved context, run:
+Resolve this skill's directory first. Run the following command from that directory (or use its absolute script path), only when the workflow needs saved context. Reuse the loaded result while state paths/digests and relevant scope are unchanged:
 
 ```bash
 python3 scripts/user_context_preflight.py

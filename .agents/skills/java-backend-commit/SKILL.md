@@ -14,8 +14,8 @@ description: "为 Java 后端改动生成提交信息、审查原子提交或修
 
 ## 不适用场景
 
-- Vue、React 等前端或微前端仓库：使用 `../frontend-commit/SKILL.md`。
-- yss-ui 组件库仓库自身的提交与发版：使用 `../commit-linting/SKILL.md`。
+- Vue、React 等前端或微前端仓库：在目标前端 profile 使用已安装的 `frontend-commit`；本 profile 不臆造跨目录链接。
+- yss-ui 组件库仓库自身的提交与发版：遵循目标组件库已安装的提交规范；不存在对应 skill 时读取其贡献指南和 hooks。
 - 仅请求代码实现，不涉及提交信息或 `git commit` 操作。
 - 无代码改动，或改动内容与提交请求不匹配。
 - 合并提交、发布提交、自动依赖机器人提交和数据库基线发布：遵循仓库专用流程，不套用本技能的常规模板。
@@ -66,8 +66,8 @@ git ls-files --others --exclude-standard
 
 - type 默认从 `feat/fix/docs/style/refactor/perf/test/chore/revert/build/ci` 中选择，但仓库枚举优先。
 - scope 优先级为：仓库枚举 → Maven artifactId 或 Gradle 子项目 → 服务或限界上下文 → 跨模块能力。使用小写 kebab-case；不要仅使用 `controller`、`service`、`repository` 或类名。
-- 标题使用英文 type/scope、ASCII `:` 和中文摘要；描述业务、调用方或运维可感知的结果，不写“修改代码”或单个 Java 类名。
-- 默认将完整 header 控制在 72 个字符内；仓库存在更严格限制时服从仓库。标题末尾不加句号，不用 emoji 或全角冒号。
+- 标题使用仓库确定的 type/scope、分隔符和语言；无既定规则时默认英文 type/scope、ASCII `:` 和中文摘要；描述业务、调用方或运维可感知的结果，不写“修改代码”或单个 Java 类名。
+- 默认将完整 header 控制在 72 个字符内；仓库配置了其他限制时服从该配置。标题末尾不加句号，不用 emoji 或全角冒号。
 - 简单单文件变更可以没有 body；跨层实现、数据迁移、并发或事务修复、重要功能和行为变化使用 body 解释做了什么、为什么以及如何验证。
 - REST/GraphQL/RPC 契约、事件格式、公共 Java API、配置语义或数据库兼容性发生真实破坏时，使用 `!` 和 `BREAKING CHANGE:` 并写迁移方式。
 - 仅在已知编号或仓库要求时加入工单、DCO、`Signed-off-by` 等 footer，禁止编造；不要因为 Spring 项目采用 DCO 就推断所有 Java 项目都必须签署。
@@ -106,7 +106,7 @@ fix(settlement): 修复重复回调导致结算流水重复入账的问题
 
 - [ ] type 与 scope 通过仓库校验规则，完整消息经仓库命令校验通过。
 - [ ] scope 来自仓库枚举、构建模块或业务域，未使用 `controller`、`service`、`repository` 或类名兜底。
-- [ ] 标题为英文 type/scope + ASCII 冒号 + 中文摘要，完整 header 不超过 72 字符。
+- [ ] 标题语言、type/scope 和长度符合仓库配置；无配置时才使用本技能回退格式。
 - [ ] 提交可独立理解、构建和回滚；数据库迁移与对应实体、查询和测试同提交。
 - [ ] 暂存区不包含 `target/`、`build/`、日志或本地运行产物。
 - [ ] 已使用仓库 wrapper 运行与变更范围匹配的最小充分检查。

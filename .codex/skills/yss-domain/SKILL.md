@@ -1,6 +1,6 @@
 ---
 name: yss-domain
-description: 用于构建或重构 YSS 领域层代码。当用户要求设计聚合、Entity、Domain Gateway、领域规则、状态流转或先做领域建模再补持久层时调用。
+description: 按已批准的 DDD 技术设计实现或重构领域行为、不变量、状态机与 Gateway；不负责起草领域设计。
 ---
 
 # yss-domain
@@ -13,9 +13,9 @@ description: 用于构建或重构 YSS 领域层代码。当用户要求设计�
 
 ## 何时使用
 
-- 用户要求先做 Domain、先抽象实体或聚合。
-- 用户要补 `Entity`、`Gateway`、领域规则或状态机。
-- 用户给出页面流程、业务规则、DDL，希望先沉淀领域模型。
+- 当前已批准的 DDD Slice Contract 要求实现或修复领域行为、不变量或状态机。
+- 在既有已确认领域边界内重构 Entity、Value Object、Domain Event 或 Gateway。
+- 需要从需求、页面或 DDL 决定聚合及领域边界时，回交 `yss-technical-design` / `yss-tactical-design`，不先写领域代码。
 
 ## 不适用
 

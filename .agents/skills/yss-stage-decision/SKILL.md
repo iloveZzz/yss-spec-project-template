@@ -69,4 +69,4 @@ Plan 的目标与退出条件由 `docs/process/lifecycle-registry.yaml` 持有�
 
 ## 战略交接快照包
 
-跨仓交接使用 `scripts/strategic-handoff export / verify / import`。正式导出前补齐源战略的稳定规则 ID、关键场景和当前批准绑定；源资产原字节冻结、包内路径通过清单解析。目标导入只产生快照和对账/承接草案，正式 reconciliation 通过后才能进入战术设计。流程与字段见 `docs/process/strategic-handoff-package.md`。
+跨仓交付或恢复时读取 [战略交接合同](references/strategic-handoff-routing.md)。只接受当前可核验包与承接结果；用户决定、版本失效和批准边界仍由主控持有。

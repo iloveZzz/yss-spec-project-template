@@ -1,0 +1,62 @@
+[
+  {
+    "path": ".agents/skills/to-spec/agents/openai.yaml",
+    "implicit_invocation": false
+  },
+  {
+    "path": ".agents/skills/to-tickets/agents/openai.yaml",
+    "implicit_invocation": false
+  },
+  {
+    "path": ".agents/skills/grill-with-docs/agents/openai.yaml",
+    "implicit_invocation": false
+  },
+  {
+    "path": ".agents/skills/implement/agents/openai.yaml",
+    "implicit_invocation": false
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/to-spec/agents/openai.yaml",
+    "implicit_invocation": false
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/to-tickets/agents/openai.yaml",
+    "implicit_invocation": false
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/grill-with-docs/agents/openai.yaml",
+    "implicit_invocation": false
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/implement/agents/openai.yaml",
+    "implicit_invocation": false
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/to-spec/agents/openai.yaml",
+    "implicit_invocation": false
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/to-tickets/agents/openai.yaml",
+    "implicit_invocation": false
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/grill-with-docs/agents/openai.yaml",
+    "implicit_invocation": false
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/implement/agents/openai.yaml",
+    "implicit_invocation": false
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/.agents/skills/to-spec/agents/openai.yaml",
+    "implicit_invocation": false
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/.agents/skills/to-tickets/agents/openai.yaml",
+    "implicit_invocation": false
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/.agents/skills/grill-with-docs/agents/openai.yaml",
+    "implicit_invocation": false
+  }
+]

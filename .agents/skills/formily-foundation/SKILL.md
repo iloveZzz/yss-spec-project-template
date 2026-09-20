@@ -79,7 +79,7 @@ const schema: ISchema = {
           'x-component': 'FormGrid',
           'x-component-props': { maxColumns: 3, minColumns: 1, minWidth: 260 },
           properties: {
-            name: { type: 'string', title: '名称', 'x-decorator': 'FormItem', 'x-component': 'Input', required: true },
+            name: { type: 'string', title: '名称', 'x-decorator': 'FormItem', 'x-component': 'Input', required: true, 'x-validator': [{ required: true, whitespace: true, message: '请输入名称' }] },
             submit: {
               type: 'void',
               'x-component': 'Submit',

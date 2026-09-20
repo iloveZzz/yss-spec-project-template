@@ -1,0 +1,1340 @@
+{
+  "schema_version": 1,
+  "profiles": [
+    "design",
+    "backend",
+    "frontend"
+  ],
+  "changes": [
+    {
+      "profile": "design",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/references/critical-overrides.md",
+      "before_sha256": "fe2b2c5d17a43f06331191667283f4615b81d2ff8519c1c3cb8e8bf1a460f411",
+      "after_sha256": "842a453186afcc908761a6a407bbc789485da8c99dc3f4f812b4eb3d19b40d81"
+    },
+    {
+      "profile": "design",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/audit/SKILL.md",
+      "before_sha256": "24e608fd59f2cc53375e73c1104e65ebb3c4b03643c7e97ccd9433608ff9902a",
+      "after_sha256": "e1f09cefffadabf2fdc1c53a15403e4b54b7ea13382a426665f5116c257e7aba"
+    },
+    {
+      "profile": "design",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/design-qa/SKILL.md",
+      "before_sha256": "8dfa3337b3c862a61518da8d2e642b54545eb8caeafd9b30b3248037cd7626a5",
+      "after_sha256": "02e28385f57875506a5d47cff5c1e67046f074b17ed64b21a6f200e2e4193fba"
+    },
+    {
+      "profile": "design",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/get-context/SKILL.md",
+      "before_sha256": "b2508599cbc880eec3e6a06de49c3929935c608e9fd74d98d467b533f14a70a6",
+      "after_sha256": "f03a3ce8bbf6eec9b315a54ee53aa8bd5f60350a5835f8077cf5a5b664635df9"
+    },
+    {
+      "profile": "design",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/image-to-code/SKILL.md",
+      "before_sha256": "e839e3fc843d1036bb35636dc15f36a7516d2f3b65f5d397cd078023774233db",
+      "after_sha256": "1ec9aa5fa8c97a5cab58d6e87abc35360f563eb577a72155ab00ad1308952205"
+    },
+    {
+      "profile": "design",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/index/SKILL.md",
+      "before_sha256": "04a3e6fd1e3f0b52e6fad46b2fa1a26fd7b8f9c6b4271e4d6a65b3bca019bf14",
+      "after_sha256": "76b0309684cae59da2d3a85f27b876dcc59b8e3e3d179f5c4b1a91f42275b391"
+    },
+    {
+      "profile": "design",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/prototype/SKILL.md",
+      "before_sha256": "03291b7bec33d4ce1ef7b47e1be90fa5d6616bec8e74ad9053c5f9820ebf0b31",
+      "after_sha256": "2ec04b1df7168fd7f31ec850ec4f39b5e19b843cb702c6c9264da65ac4144710"
+    },
+    {
+      "profile": "design",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/url-to-code/SKILL.md",
+      "before_sha256": "282b257c57f75a9c9a2544c2d9c89e2cd1886a32964de75bebde3e8aac4419ad",
+      "after_sha256": "43f21faa09b0314ec7014d11284f493006ff0064fcf8264117f7d7825774440b"
+    },
+    {
+      "profile": "design",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/user-context/SKILL.md",
+      "before_sha256": "407555f46be7940d83ba6a7d20079b2d4e8c26b57d207c6b154ce5304c50946f",
+      "after_sha256": "068052e1068aba200d36190c75b090bc86373b52d2438ba26e089b0f05c0ecca"
+    },
+    {
+      "profile": "frontend",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/references/critical-overrides.md",
+      "before_sha256": "fe2b2c5d17a43f06331191667283f4615b81d2ff8519c1c3cb8e8bf1a460f411",
+      "after_sha256": "842a453186afcc908761a6a407bbc789485da8c99dc3f4f812b4eb3d19b40d81"
+    },
+    {
+      "profile": "frontend",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/audit/SKILL.md",
+      "before_sha256": "24e608fd59f2cc53375e73c1104e65ebb3c4b03643c7e97ccd9433608ff9902a",
+      "after_sha256": "e1f09cefffadabf2fdc1c53a15403e4b54b7ea13382a426665f5116c257e7aba"
+    },
+    {
+      "profile": "frontend",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/design-qa/SKILL.md",
+      "before_sha256": "8dfa3337b3c862a61518da8d2e642b54545eb8caeafd9b30b3248037cd7626a5",
+      "after_sha256": "02e28385f57875506a5d47cff5c1e67046f074b17ed64b21a6f200e2e4193fba"
+    },
+    {
+      "profile": "frontend",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/get-context/SKILL.md",
+      "before_sha256": "b2508599cbc880eec3e6a06de49c3929935c608e9fd74d98d467b533f14a70a6",
+      "after_sha256": "f03a3ce8bbf6eec9b315a54ee53aa8bd5f60350a5835f8077cf5a5b664635df9"
+    },
+    {
+      "profile": "frontend",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/image-to-code/SKILL.md",
+      "before_sha256": "e839e3fc843d1036bb35636dc15f36a7516d2f3b65f5d397cd078023774233db",
+      "after_sha256": "1ec9aa5fa8c97a5cab58d6e87abc35360f563eb577a72155ab00ad1308952205"
+    },
+    {
+      "profile": "frontend",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/index/SKILL.md",
+      "before_sha256": "04a3e6fd1e3f0b52e6fad46b2fa1a26fd7b8f9c6b4271e4d6a65b3bca019bf14",
+      "after_sha256": "76b0309684cae59da2d3a85f27b876dcc59b8e3e3d179f5c4b1a91f42275b391"
+    },
+    {
+      "profile": "frontend",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/prototype/SKILL.md",
+      "before_sha256": "03291b7bec33d4ce1ef7b47e1be90fa5d6616bec8e74ad9053c5f9820ebf0b31",
+      "after_sha256": "2ec04b1df7168fd7f31ec850ec4f39b5e19b843cb702c6c9264da65ac4144710"
+    },
+    {
+      "profile": "frontend",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/url-to-code/SKILL.md",
+      "before_sha256": "282b257c57f75a9c9a2544c2d9c89e2cd1886a32964de75bebde3e8aac4419ad",
+      "after_sha256": "43f21faa09b0314ec7014d11284f493006ff0064fcf8264117f7d7825774440b"
+    },
+    {
+      "profile": "frontend",
+      "skill": "product-design",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/product-design/skills/user-context/SKILL.md",
+      "before_sha256": "407555f46be7940d83ba6a7d20079b2d4e8c26b57d207c6b154ce5304c50946f",
+      "after_sha256": "068052e1068aba200d36190c75b090bc86373b52d2438ba26e089b0f05c0ecca"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/analyze-data-quality/SKILL.md",
+      "before_sha256": "4ec230c6a4bc3b7d97942533a0ff488b96d82972d3f2029b8f4c042215546d54",
+      "after_sha256": "1b4486785ddb2fad6bb68d2c0288c9b93aaf006a52786912c060a45e3285ea87"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/build-dashboard/SKILL.md",
+      "before_sha256": "133b3b3aaabcffa2879ee3c03eb3ec059188d83c53aa746d3c52bc937ecd8afa",
+      "after_sha256": "ccc0365111ab75cb77da9136f2ec9e9fcd6929a745edf597a0b5f726b591f43f"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/build-report/SKILL.md",
+      "before_sha256": "ed5b9e212b43109e9286891921f0a6b621d253b3d0e041419161fb48513c34d3",
+      "after_sha256": "0c46dc595577db9fe09927116eb8d9209893a5732182efd48a7ef44f3dd96516"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/SKILL.md",
+      "before_sha256": "e0ea1a57a6e77c1ba28166df5d440c11dd97285e553b95f02f59170dd12fb97d",
+      "after_sha256": "c6a62f64c4c803b30db98625acf1f14e9338dbfc28138ad8cab308337f4db1f3"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/build-report/report-to-google-slides/SKILL.md",
+      "before_sha256": "c1f5090d6dfd5ad6fca0163cf6cba1996e6d5f65d2de9b7f5d780c9c22e92baf",
+      "after_sha256": "ad57be270197553e5102ca3d4a32783b074287cc696dfa9be0e26c62883b6fb7"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/build-report/report-to-pdf/SKILL.md",
+      "before_sha256": "039f826d4b40fc280d2149ebce42f329c7d6858c90d633cf93deaf6cbc98d9b6",
+      "after_sha256": "1c2636b9de5f6e7868921d4fb39459a5a013887151f3158933de556ebe4a7508"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/build-report/specifications/mcp-app-report.md",
+      "before_sha256": "3395f3c27ba3d476ac67de3d16825c7ad41961724fbae974a0137076a8ccdced",
+      "after_sha256": "b13d144b45c7af199b0f4619700615a482d467e62c65749a946e3443cba6193a"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/design-kpis/SKILL.md",
+      "before_sha256": "3a8301c9d57d64288d8547eba7f13883a34dd48a363a1e973ee253df4396ba25",
+      "after_sha256": "43cd1ec9abbc6975dd7bb52f53413a48e5a52a110e00ce414a73f0d1468cba7b"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/gather-business-context/SKILL.md",
+      "before_sha256": "50d3b85f22c96761121c1c05e7048245dcf61a3fbbfa709546d667d8867f32d9",
+      "after_sha256": "75e2b8c1047094baca4748de54f3513c04bd7c03f4704c332343325b174e6db7"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/index/SKILL.md",
+      "before_sha256": "9b5593402f9bbf884947c693dbb297fe2566b8e19fe4c18dfe3e040c083172cb",
+      "after_sha256": "a7329dae357b2a58984372aa35e90833cc547f834461a6d5773e927f4a16da21"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/jupyter-notebooks/SKILL.md",
+      "before_sha256": "ddd8e46a07c7b8378472817ae3ab10ec3ca0aab9d76c0ae54470132a45684b5d",
+      "after_sha256": "fdb19f2253dc6bf47f5b1d8f363f309041e3206032854924296434b0c8f1435b"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/kpi-reporting/SKILL.md",
+      "before_sha256": "76791dd50d35197883dd51cb96e6b606641711e52863a54a8980e6447c2f3b99",
+      "after_sha256": "12359f6d83689fd7c3075babf2318e5f7357000cc7e3316024ea46720b845692"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/market-sizing/SKILL.md",
+      "before_sha256": "f133f555f86def5f35be4edda864b9dbbfdaa736a2105a3a01a009b19af6ecf7",
+      "after_sha256": "7ea2e1f72b5131e91d46963908c7d7eacec03eca7901d0a4100f02b2d33a2750"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/metric-diagnostics/SKILL.md",
+      "before_sha256": "7ea2159b84f5430ceab5382767852de1a937ab9d9520839bfa7fed9fd966e37e",
+      "after_sha256": "d26af4a35a4dd1d5253a5747c5501d2814cdb1ccea74cfb7342ffe5a29740717"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/product-business-analysis/SKILL.md",
+      "before_sha256": "9b3701215f04d4f3c7700c344ce39e5f4b31111162efe7e1dca31eb261997c8d",
+      "after_sha256": "9f1527dbf113734ab85b8c9b2f9869c801e72411fb26cee997914d247ad4c2dc"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/spreadsheets/SKILL.md",
+      "before_sha256": "ef23856d5b2e19a8917d9f375c929c056ed2c0e5bf4bc2114e5eb9865d4193ca",
+      "after_sha256": "9875864cd54816aebcbc60dfb3c06681d17505a6abe8bbbb666aea7cf73fb434"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/user-context/SKILL.md",
+      "before_sha256": "be12b465f6db4ba9628b64e197749eddefb42c7f2a38169eb9f3af67394a61f2",
+      "after_sha256": "abfb9b0daae7c5ec6c45ff4a943a1c2b4124349a1d095fc3e43ed673f075e1e2"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/user-context/plugin-author-config/automation-config.md",
+      "before_sha256": "367e12e7bd3e493b686efabd30e22efdd60ea7151780163dc89e1ae45c55ddd6",
+      "after_sha256": "fd74362b0eabc26f3812fcf120bf553fcd377694c188665aa38410e07b64645a"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/user-context/references/onboarding-examples.md",
+      "before_sha256": "3f82fd66733e63e62a64487d00b62220d18a7c9c085c751c75916cfa15f80cc8",
+      "after_sha256": "ba7b0c45db810323c3b3d716f9802b63625132392f44f62bb4f7790c3cd2ccf1"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/user-context/references/onboarding.md",
+      "before_sha256": "742f58f2b3de0f5cf1dc3408ff131216e07d41d559bcef7b8583353bab412d73",
+      "after_sha256": "cb83208ebcfcdb97f933fd8f18add10307ba80fc25a33807a90209052c2c1fb8"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/user-context/references/source-category-runtime.md",
+      "before_sha256": "311e1881a4c5b87b47a85a62db95118ad509381d109450ddb93f356bb883215e",
+      "after_sha256": "2ae98d3cabda5ff24d2c628cca183186e0a18d4a9daf3f95cfc8520aaf262f26"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "added",
+      "path": ".codex/skills/data-analytics/skills/user-context/scripts/__pycache__/data_analytics_preflight.cpython-312.pyc",
+      "before_sha256": null,
+      "after_sha256": "b707d784ff64a8ab0ca965f427ad2c620a225e4e7232b5c5f80d0be6df6697c3"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/user-context/scripts/data_analytics_preflight.py",
+      "before_sha256": "9bd7c4561d4e89f4de8189e4e0ef713f9c021766a477d8842df0f0b172195256",
+      "after_sha256": "2b3539c358663af517281f3706e4d2d524ade85c7507435c61e2a89e83c3e511"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/user-context/scripts/validate_user_context_preflight.py",
+      "before_sha256": "dcc1b465478cd45e33bb8406ea0a2296319be9986bc0d829f8203840c480cdf0",
+      "after_sha256": "98dfd03920f11ca870be7bf2d6f2b3d6f9ebe043c1188e7863ffebf551064884"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "added",
+      "path": ".codex/skills/data-analytics/skills/user-context/tests/__pycache__/test_state_helpers.cpython-312.pyc",
+      "before_sha256": null,
+      "after_sha256": "5118401fcab4df149fdb3957fc3a59ada2200a11ef183163a0571b391969061d"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/user-context/tests/test_state_helpers.py",
+      "before_sha256": "44b369ad4b8aab2fb5b79c2fa8f8e80e45dd07c899b940c6620ab8892e4fcb08",
+      "after_sha256": "60877adbb64f095b66bdbcfa934b2cdcbfaed7eb2f9509e6269af9f6364831eb"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/validate-data/SKILL.md",
+      "before_sha256": "ee776ae5001231c6118719e565e6f3996a2a303163b030a4d69ec07540955887",
+      "after_sha256": "f3193bbaa636019baf7466f6845942d0c6912a4e5678634f8dfdefd11262937f"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/skills/visualize-data/SKILL.md",
+      "before_sha256": "c91bfc7dc5c8fb6a9ecde0d00a9d6c319f6cb209e818b04e689e451ead24186d",
+      "after_sha256": "9ffbe73591e49d682cd5ba5b1ee91ca6715070288090681b3d00a1f281296981"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact",
+      "status": "updated",
+      "path": ".codex/skills/data-analytics/src/analytics-app-core.md",
+      "before_sha256": "6913ed51d61aea9732f8cbc9d241da08e5805ac53127c502f14722eeb9cea530",
+      "after_sha256": "9b13e50e1d06da61fc134912d1733623ec2badd015395968b5af4d0b9e37dd77"
+    }
+  ],
+  "classifications": [
+    {
+      "profile": "design",
+      "skill": "competitive-intelligence",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "diagnosing-bugs",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "domain-modeling",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "grill-me",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "grill-with-docs",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "grilling",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "handoff",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "i-have-adhd",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "llm-wiki",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "maintaining-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "resolving-merge-conflicts",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "to-spec",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "to-tickets",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "wayfinder",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "writing-for-agents",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-research",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "code-review",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "product-design",
+      "classification": "exact"
+    },
+    {
+      "profile": "design",
+      "skill": "triage",
+      "classification": "adapted"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-antd-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-antdv-next-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "design",
+      "skill": "ask-matt",
+      "classification": "local-only"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-strategic-design",
+      "classification": "local-only"
+    },
+    {
+      "profile": "design",
+      "skill": "harness-orchestrator",
+      "classification": "excluded"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-technical-design",
+      "classification": "excluded"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-tactical-design",
+      "classification": "excluded"
+    },
+    {
+      "profile": "design",
+      "skill": "prototype-review",
+      "classification": "upstream"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-prototype-stage",
+      "classification": "upstream"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-design-system",
+      "classification": "upstream"
+    },
+    {
+      "profile": "design",
+      "skill": "yss-stage-decision",
+      "classification": "upstream"
+    },
+    {
+      "profile": "backend",
+      "skill": "alibaba-java-code-style",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "archify",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "codebase-design",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "cross-repo-implementation-routing",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "diagnosing-bugs",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "grill-me",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "grilling",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "handoff",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "i-have-adhd",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "implement",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "implementation-repo-onboarding",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "improve-codebase-architecture",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "java-backend-commit",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "llm-wiki",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "lombok",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "maintaining-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "mapstruct",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "resolving-merge-conflicts",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "tdd",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "to-questionnaire",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "to-spec",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "to-tickets",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "using-git-worktrees",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "writing-for-agents",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-application",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-cache",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-domain",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-exception",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-resilience4j",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-security-algorithm",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-up-springboot3",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-skill-source-index-refresh",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-userinfo",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-validation",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-web-controller",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-research",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-ddd-scaffold-generator",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-layered-mvc-scaffold-generator",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-dto",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "code-review",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-mybatis",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-repository",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-backend-spec-review",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "competitive-intelligence",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "domain-modeling",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "grill-with-docs",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "setup-matt-pocock-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "wait-what",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "wayfinder",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-audit-log",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-distributed-id",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-excel-mvc",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-openapi-draft-review",
+      "classification": "exact"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-technical-design",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-tactical-design",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-implementation-contract-compiler",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-openapi-governance",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "prototype",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "triage",
+      "classification": "adapted"
+    },
+    {
+      "profile": "backend",
+      "skill": "research",
+      "classification": "retired"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-antd-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-antdv-next-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-mvc-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-mvc-data-analysis-project-initializer",
+      "classification": "retired"
+    },
+    {
+      "profile": "backend",
+      "skill": "architecture-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "backend",
+      "skill": "backend-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "backend",
+      "skill": "harness-orchestrator",
+      "classification": "local-only"
+    },
+    {
+      "profile": "backend",
+      "skill": "test-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "backend",
+      "skill": "frontend-agent",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-product-lifecycle",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-stage-decision",
+      "classification": "excluded"
+    },
+    {
+      "profile": "backend",
+      "skill": "yss-ui",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "archify",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "codebase-design",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "cross-repo-implementation-routing",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "diagnosing-bugs",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "file-export-download",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-foundation",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-linkage-effects",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-mode-slot-detail",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "formily-step-flow",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "grill-me",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "grilling",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "handoff",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "i-have-adhd",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "implement",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "implementation-repo-onboarding",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "improve-codebase-architecture",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "llm-wiki",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "maintaining-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "prototype",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "resolving-merge-conflicts",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "tdd",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "theme-token-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "to-questionnaire",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "to-spec",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "to-tickets",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "using-git-worktrees",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "writing-for-agents",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-frontend-scaffold-generator",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yedit-table-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-hook",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-ui-business-page-generation",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "ytable-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "ytree-usage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-research",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-prototype-stage",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-design-system",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "code-review",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "competitive-intelligence",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "domain-modeling",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "grill-with-docs",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "setup-matt-pocock-skills",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "wait-what",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "wayfinder",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-formily",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-formily-schema-generator",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-ui",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "product-design",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "data-analytics",
+      "classification": "exact"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-implementation-contract-compiler",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-openapi-governance",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "frontend-commit",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "prototype-review",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "triage",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-api-integration",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-openapi-draft-review",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-skill-source-index-refresh",
+      "classification": "adapted"
+    },
+    {
+      "profile": "frontend",
+      "skill": "research",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-antd-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-antdv-next-design",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-components",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-microapp-commit",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-page-module-development",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "component-selection-imports",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "page-form-module",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "page-list-module",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "page-skeleton",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "vue3-best-practices",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-use-table-height",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-use-tree-height",
+      "classification": "retired"
+    },
+    {
+      "profile": "frontend",
+      "skill": "architecture-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "frontend-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "harness-orchestrator",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "test-agent",
+      "classification": "local-only"
+    },
+    {
+      "profile": "frontend",
+      "skill": "backend-agent",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-product-lifecycle",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-stage-decision",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-tactical-design",
+      "classification": "excluded"
+    },
+    {
+      "profile": "frontend",
+      "skill": "yss-technical-design",
+      "classification": "excluded"
+    }
+  ],
+  "issues": [],
+  "counts": {
+    "updated": 45,
+    "added": 2
+  }
+}

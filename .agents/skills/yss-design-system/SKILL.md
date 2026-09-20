@@ -1,6 +1,6 @@
 ---
 name: yss-design-system
-description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格基线。涉及页面设计、原型评审、UI 实现、组件选型、主题 token、颜色排版间距、响应式验收、Ant Design/YSS UI 风格一致性、docs/design/design.md 更新或从外部设计系统引入规范时必须使用。
+description: 建立或核验 YSS 设计系统、主题 Token 与页面视觉一致性；用于设计规范变更、原型评审及按当前设计基线验收。
 ---
 
 # YSS Design System
@@ -18,7 +18,7 @@ description: Use when YSS 产品设计系统与 Ant Design 企业级 UI 风格�
 - Codex `$design-qa` 项目对照：`references/design-qa-theme.md`，不替代官方 `design-qa` 流程，也不改上游插件正文。
 - 原型阶段合同：`yss-prototype-stage`，用于统一 H1/H2 原型资产和浏览器验证证据。H1/H2 默认使用项目 Token 驱动的 HTML/CSS/JavaScript 离线原型。
 
-如果只需要快速判断，先读本文件。若要写 UI 规范、实现页面、评审设计或调整 Token，必须按 `DESIGN.md` → `docs/design/design.md` → `docs/design/tokens/*` 顺序读取；若要执行评审或实现检查，再读 `references/design-system.md`。
+如果只需要快速判断，先读本文件。若要写 UI 规范、实现页面、评审设计或调整 Token，必须按 `DESIGN.md` → `docs/design/design.md` 顺序读取，再按当前主题、密度与输出表面选择对应 Token 文件，不全量预读所有主题；若要执行评审或实现检查，再读 `references/design-system.md`。
 
 ## 使用流程
 

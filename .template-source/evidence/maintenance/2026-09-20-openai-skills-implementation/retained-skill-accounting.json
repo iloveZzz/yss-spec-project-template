@@ -1,0 +1,581 @@
+{
+  "yss-research": [
+    {
+      "path": ".agents/skills/yss-research/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-research/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/yss-research/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-research/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "yss-resilience4j": [
+    {
+      "path": ".agents/skills/yss-resilience4j/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-resilience4j/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "formily-mode-slot-detail": [
+    {
+      "path": ".agents/skills/formily-mode-slot-detail/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/formily-mode-slot-detail/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "mapstruct": [
+    {
+      "path": ".agents/skills/mapstruct/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/mapstruct/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "lombok": [
+    {
+      "path": ".agents/skills/lombok/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/lombok/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "handoff": [
+    {
+      "path": ".agents/skills/handoff/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/handoff/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/handoff/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/handoff/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "i-have-adhd": [
+    {
+      "path": ".agents/skills/i-have-adhd/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/i-have-adhd/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/i-have-adhd/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/i-have-adhd/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "cross-repo-implementation-routing": [
+    {
+      "path": ".agents/skills/cross-repo-implementation-routing/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/cross-repo-implementation-routing/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/cross-repo-implementation-routing/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "theme-token-usage": [
+    {
+      "path": ".agents/skills/theme-token-usage/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/theme-token-usage/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "yss-application": [
+    {
+      "path": ".agents/skills/yss-application/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-application/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "maintaining-skills": [
+    {
+      "path": ".agents/skills/maintaining-skills/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/maintaining-skills/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/maintaining-skills/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/maintaining-skills/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "yss-backend-spec-review": [
+    {
+      "path": ".agents/skills/yss-backend-spec-review/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-backend-spec-review/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "yss-technical-design": [
+    {
+      "path": ".agents/skills/yss-technical-design/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-technical-design/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "ytree-usage": [
+    {
+      "path": ".agents/skills/ytree-usage/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/ytree-usage/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "yss-up-springboot3": [
+    {
+      "path": ".agents/skills/yss-up-springboot3/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-up-springboot3/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "yss-skill-source-index-refresh": [
+    {
+      "path": ".agents/skills/yss-skill-source-index-refresh/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-skill-source-index-refresh/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-skill-source-index-refresh/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "yss-frontend-scaffold-generator": [
+    {
+      "path": ".agents/skills/yss-frontend-scaffold-generator/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-frontend-scaffold-generator/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "yss-cache": [
+    {
+      "path": ".agents/skills/yss-cache/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-cache/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "yss-userinfo": [
+    {
+      "path": ".agents/skills/yss-userinfo/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-userinfo/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "llm-wiki": [
+    {
+      "path": ".agents/skills/llm-wiki/SKILL.md",
+      "entry_changed": true,
+      "reason": "依赖修复：失效 discover.md 链接改为 references/discover.md；无其他职责重写。"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/SKILL.md",
+      "entry_changed": true,
+      "reason": "依赖修复：失效 discover.md 链接改为 references/discover.md；无其他职责重写。"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/SKILL.md",
+      "entry_changed": true,
+      "reason": "依赖修复：失效 discover.md 链接改为 references/discover.md；无其他职责重写。"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/SKILL.md",
+      "entry_changed": true,
+      "reason": "依赖修复：失效 discover.md 链接改为 references/discover.md；无其他职责重写。"
+    }
+  ],
+  "yedit-table-usage": [
+    {
+      "path": ".agents/skills/yedit-table-usage/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/yedit-table-usage/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "formily-linkage-effects": [
+    {
+      "path": ".agents/skills/formily-linkage-effects/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/formily-linkage-effects/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "yss-formily": [
+    {
+      "path": ".agents/skills/yss-formily/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/yss-formily/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "yss-web-controller": [
+    {
+      "path": ".agents/skills/yss-web-controller/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-web-controller/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "yss-mybatis": [
+    {
+      "path": ".agents/skills/yss-mybatis/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-mybatis/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "yss-repository": [
+    {
+      "path": ".agents/skills/yss-repository/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-repository/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "grill-me": [
+    {
+      "path": ".agents/skills/grill-me/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/grill-me/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/grill-me/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/grill-me/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "yss-security-algorithm": [
+    {
+      "path": ".agents/skills/yss-security-algorithm/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-security-algorithm/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "file-export-download": [
+    {
+      "path": ".agents/skills/file-export-download/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/file-export-download/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "data-analytics/skills/design-kpis": [
+    {
+      "path": ".codex/skills/data-analytics/skills/design-kpis/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.codex/skills/data-analytics/skills/design-kpis/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    }
+  ],
+  "data-analytics/skills/product-business-analysis": [
+    {
+      "path": ".codex/skills/data-analytics/skills/product-business-analysis/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.codex/skills/data-analytics/skills/product-business-analysis/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    }
+  ],
+  "data-analytics/skills/build-dashboard": [
+    {
+      "path": ".codex/skills/data-analytics/skills/build-dashboard/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.codex/skills/data-analytics/skills/build-dashboard/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    }
+  ],
+  "data-analytics/skills/gather-business-context": [
+    {
+      "path": ".codex/skills/data-analytics/skills/gather-business-context/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.codex/skills/data-analytics/skills/gather-business-context/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    }
+  ],
+  "data-analytics/skills/metric-diagnostics": [
+    {
+      "path": ".codex/skills/data-analytics/skills/metric-diagnostics/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.codex/skills/data-analytics/skills/metric-diagnostics/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    }
+  ],
+  "data-analytics/skills/build-report/report-to-pdf": [
+    {
+      "path": ".codex/skills/data-analytics/skills/build-report/report-to-pdf/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.codex/skills/data-analytics/skills/build-report/report-to-pdf/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    }
+  ],
+  "data-analytics/skills/jupyter-notebooks": [
+    {
+      "path": ".codex/skills/data-analytics/skills/jupyter-notebooks/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.codex/skills/data-analytics/skills/jupyter-notebooks/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    }
+  ],
+  "data-analytics/skills/market-sizing": [
+    {
+      "path": ".codex/skills/data-analytics/skills/market-sizing/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.codex/skills/data-analytics/skills/market-sizing/SKILL.md",
+      "entry_changed": true,
+      "reason": "shared preflight reuse contract only"
+    }
+  ],
+  "product-design/skills/research": [
+    {
+      "path": ".codex/skills/product-design/skills/research/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.codex/skills/product-design/skills/research/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.codex/skills/product-design/skills/research/SKILL.md",
+      "entry_changed": true,
+      "reason": "unchanged"
+    }
+  ],
+  "product-design/skills/share": [
+    {
+      "path": ".codex/skills/product-design/skills/share/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.codex/skills/product-design/skills/share/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.codex/skills/product-design/skills/share/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "architecture-agent": [
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/architecture-agent/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/architecture-agent/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "harness-orchestrator": [
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/harness-orchestrator/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/harness-orchestrator/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ],
+  "frontend-agent": [
+    {
+      "path": "submodules/yss-harness-frontend-agent/.agents/skills/frontend-agent/SKILL.md",
+      "entry_changed": false,
+      "reason": "unchanged"
+    }
+  ]
+}

@@ -216,7 +216,7 @@ onMounted(loadList);
 2. **行唯一键**：必须显式指定 `:row-config="{ keyField: 'id', useKey: true }"`（`keyField` 与业务主键如 `userCode` 对齐）。
 3. **受控双向绑定**：推荐优先使用 `v-model:selected-row-keys="selectedRowKeys"` 或 `v-model:selected-rows="selectedRows"`，或者统一监听 `@selection-change`。
 4. **批量操作按钮**：放在 `#toolbar-right`，并配置 `:disabled="selectedRowKeys.length === 0"`。
-5. **清空选中态**：批量操作成功后，直接重置 `selectedRowKeys.value = []` 或调用 `tableRef.value.clearSelection()`。
+5. **清空选中态**：批量操作成功后，清空实际受控的 `selectedRowKeys` / `selectedRows`，并在存在表格内部选择缓存时调用已核验的 `tableRef.value.clearSelection()`。受控状态与组件可见勾选必须一致；不能只清其中一层。
 
 ```vue
 <YTable
@@ -244,7 +244,7 @@ onMounted(loadList);
 
 - [ ] 分页状态和 `page-change` 参数均使用 `current/pageSize`，未使用 `currentPage`；`filter-change` 与 YTable 真实 API 一致。
 - [ ] 多选列已配置 `type: 'checkbox'`，已设置 `:row-config="{ keyField: 'xxx', useKey: true }"`，批量按钮绑定了 `selectedRowKeys.length === 0` 禁用。
-- [ ] 批量操作成功后已重置 `selectedRowKeys` 并调用 `tableRef.clearSelection()`。
+- [ ] 批量成功后，所有实际受控选择字段与表格可见勾选均已清空；内部缓存存在时已通过 `clearSelection()` 清除。
 - [ ] 未使用虚构 `request/searchParams/row-key` Props，也未把 `refresh()` 当成远程请求。
 - [ ] 工具栏、字典翻译、操作确认与高度偏移均与实际开关一致。
 - [ ] 查询、重置、翻页、刷新和导出复用同一份 `currentParams`；查询/重置回到第一页，批量成功后清空选中态。

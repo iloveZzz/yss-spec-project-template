@@ -47,12 +47,12 @@ Read `references/source-index.md` as a path-hint index whenever the task depends
 - Required dependency or starter module is present.
 - Error code/message are meaningful to API consumers.
 - Response messages are sanitized and do not expose raw RuntimeException or localized exception details.
-- HTTP assertions cover business 4xx, unknown/runtime 5xx, upload 413, and `X-Trace-Id`.
+- For affected boot3-java17 HTTP seams, assert the documented business 4xx, unknown/runtime 5xx and trace header behavior. Assert upload 413 only for upload-limit impact. Boot 2 assertions follow its own source and frozen contract; do not import Boot 3 behavior into it.
 - Business validation failures are not reported as unknown system errors.
 - Stack traces are preserved in structured logger output for unknown/system failures, never printed directly to stderr or serialized to clients.
 - Retry guidance matches exception type.
 - Known system failures use `ExceptionFactory.sysException(..., cause)`; Application code does not replace them with ad-hoc `RuntimeException`.
-- Endpoint contract tests cover business, known-system, unknown/runtime, and upload-limit failures; unknown public messages never expose `getLocalizedMessage()`.
+- Endpoint tests cover the failure types actually affected by this change; upload-limit tests apply only to upload endpoints or changed upload handling. Public messages must follow the selected platform contract and never leak protected exception details.
 
 ## Do Not
 

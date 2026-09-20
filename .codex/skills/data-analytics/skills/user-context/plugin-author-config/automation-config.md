@@ -16,7 +16,7 @@ Every automation entry must use this shape:
 - Instructions: thin launcher instructions for the scheduled run.
 ```
 
-Do not add model, reasoning effort, heartbeat kind, RRULEs, tool names, user-specific target thread ids, canonical automation ids, install status, readback evidence, cleanup state, onboarding notification copy, or per-user preferred times here. Those belong in `../references/automation.md` or `$CODEX_HOME/state/plugins/{marketplace_id}/{plugin_id}/onboarding-state.json`.
+Do not add model, reasoning effort, heartbeat kind, RRULEs, tool names, user-specific target thread ids, canonical automation ids, install status, readback evidence, cleanup state, onboarding notification copy, or per-user preferred times here. Those belong in `../references/automation.md` or `$CODEX_HOME/state/plugins/data-analytics/onboarding-state.json`.
 
 ## Default Automations
 

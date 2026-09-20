@@ -17,7 +17,7 @@ Use $metric-diagnostics when the readout needs fresh driver investigation, then 
 
 ### User Context
 
-Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mode by loading [data-analytics:user-context](../user-context/SKILL.md) and running its preflight script before answering, searching connectors, retrieving evidence, creating artifacts, or drafting output. Do not look for a callable MCP tool named `data-analytics:user-context`. Use the returned `data_analytics_preflight` envelope as the source of truth for saved context, source-category mapping, semantic-layer registry, onboarding/final-response obligations, and conditional guidance; use saved context and semantic layers as source-selection inputs, not as substitutes for workflow-time reads from connected or provided sources. Do not read or reinterpret raw plugin state files unless preflight fails, declares required content omitted, local shell access is unavailable, or the user explicitly asks for raw state inspection.
+Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mode by loading [data-analytics:user-context](../user-context/SKILL.md) and using its read-only preflight before source selection. Reuse the already loaded envelope within the same workflow while the resolved state paths, file digests, request mode and source scope are unchanged; re-read on change, missing context or explicit inspection. Do not look for a callable MCP tool named `data-analytics:user-context`. Use the returned `data_analytics_preflight` envelope as the source of truth for saved context, source-category mapping, semantic-layer registry, onboarding/final-response obligations, and conditional guidance; use saved context and semantic layers as source-selection inputs, not as substitutes for workflow-time reads from connected or provided sources. Do not read or reinterpret raw plugin state files unless preflight fails, declares required content omitted, local shell access is unavailable, or the user explicitly asks for raw state inspection.
 
 ### Source Discovery And Verification
 
@@ -97,7 +97,7 @@ After the analysis is assembled and before shaping the final readout, use $valid
 
 ### 9. Shape The Readout
 
-Use the output shape the user requested. If they did not specify one, ask what format they want before building the readout. Common shapes include an inline written update, a document or report, a slide, or a slide deck.
+Use the output shape the user requested. If unspecified, use inline for a bounded readout and infer a durable format only when the task requires it; ask only when the delivery choice materially changes the requested work. Common shapes include an inline written update, a document or report, a slide, or a slide deck.
 
 After the format is selected, load `references/report-templates.md` and use the matching pattern as a starting point. Adapt it to the audience, evidence, and artifact.
 

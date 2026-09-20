@@ -1,0 +1,30 @@
+[
+  {
+    "path": ".agents/skills/llm-wiki/SKILL.md",
+    "link": "discover.md"
+  },
+  {
+    "path": ".codex/skills/data-analytics/skills/spreadsheets/SKILL.md",
+    "link": "/absolute/path/to/revenue_model_mnst.xlsx"
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/llm-wiki/SKILL.md",
+    "link": "discover.md"
+  },
+  {
+    "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-tactical-design/SKILL.md",
+    "link": "references/strategic-handoff-routing.md"
+  },
+  {
+    "path": "submodules/yss-harness-design-agent/.agents/skills/llm-wiki/SKILL.md",
+    "link": "discover.md"
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/.agents/skills/llm-wiki/SKILL.md",
+    "link": "discover.md"
+  },
+  {
+    "path": "submodules/yss-harness-frontend-agent/.codex/skills/data-analytics/skills/spreadsheets/SKILL.md",
+    "link": "/absolute/path/to/revenue_model_mnst.xlsx"
+  }
+]

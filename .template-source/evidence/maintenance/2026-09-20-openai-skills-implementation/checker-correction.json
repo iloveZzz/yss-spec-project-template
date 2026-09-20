@@ -1,0 +1,8 @@
+{
+  "scenario": "04-strategic-route",
+  "reason": "The reason may accurately mention an unavailable old route; assert next_skill, not absence of a word.",
+  "inputs_unchanged": true,
+  "rerun_required": false,
+  "original_suite_sha256": "c3f8a37bb4266e72d8c8a76b26041fa97e177e0e589651a2148fd3af75a6599b",
+  "corrected_suite_sha256": "fa28d8042e78de4e43fc44c22b3b6c7210bc16f51c88b61645c66dbc10d31beb"
+}

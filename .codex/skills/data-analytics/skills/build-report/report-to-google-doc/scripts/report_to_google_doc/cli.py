@@ -1,14 +1,7 @@
-"""Build DOCX upload plans for sanitized HTML reports.
+"""Convert HTML to local DOCX and record the requested delivery target.
 
-The script intentionally does not call Google APIs. It produces deterministic
-artifacts that an agent can feed to the Google Drive connector:
-
-1. report.docx contains the locally converted report for Drive upload.
-2. docx_upload_plan.json gives the compact Google Drive upload sequence.
-3. manifest.json records the source inventory for verification.
-
-The expected deliverable is the uploaded DOCX-backed Drive file. Native Google
-Docs MIME conversion is not required.
+No Google APIs are called. Local delivery is the default. Cloud planning requires
+an explicit target and never substitutes for capability discovery or authorization.
 """
 
 from __future__ import annotations
@@ -47,6 +40,7 @@ def main() -> None:
         action="store_true",
         help="Write preflight_checks.json but do not fail the command when checks fail.",
     )
+    parser.add_argument("--target", choices=["local-docx", "hosted-docx", "native-google-docs"], default="local-docx")
     args = parser.parse_args()
     write_outputs(
         args.html,
@@ -54,4 +48,5 @@ def main() -> None:
         chart_mode=args.chart_mode,
         render_workers=args.render_workers,
         strict_preflight=not args.no_strict_preflight,
+        target=args.target,
     )

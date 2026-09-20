@@ -1,0 +1,26 @@
+[
+  {
+    "repo": "create-yss-harness-backend",
+    "command": "pnpm test:prepared",
+    "exit_code": 0,
+    "seconds": 135.25
+  },
+  {
+    "repo": "create-yss-harness-frontend",
+    "command": "pnpm test:prepared",
+    "exit_code": 0,
+    "seconds": 116.57
+  },
+  {
+    "repo": "create-yss-strategic-design",
+    "command": "pnpm test:prepared",
+    "exit_code": 0,
+    "seconds": 32.24
+  },
+  {
+    "repo": "create-yss-spec",
+    "command": "pnpm test:prepared",
+    "exit_code": 0,
+    "seconds": 138.1
+  }
+]

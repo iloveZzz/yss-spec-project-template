@@ -67,7 +67,7 @@ Plan 入口读取 `docs/plan/README.md` 和 `docs/process/plan-migration.md`，�
 1. 从真实资产重建当前状态，查询当前 mode、stage、work-unit 及必要合同子树。
 2. 评估影响面、上游新鲜度、门禁和阻塞，选择第一个未阻塞工作单元；不把 `not-applicable` 当作豁免。
 3. 原生工作单元由主控持有正式资产；专项工作通过结构化任务包派发，只调用编排合同允许的 model-invoked skill。
-4. Matt 的 `grill-with-docs`、`to-spec`、`to-tickets`、`implement` 等仅为显式 user-invoked 兼容入口。主控不得自动调用它们或代替其创建正式资产；Matt 仅导航，不得写生命周期资产或改变门禁/Ticket 状态，任何写入前回交本编排器。
+4. `grill-with-docs`、`to-spec`、`to-tickets`、`implement` 等兼容入口只可由用户显式调用。主控先预检输入、路径和门禁；入口按 `matt_invocation_boundary` 写入其产物并回交验收，不批准或改变 Ticket 就绪状态。原生资产仍归主控。
 5. 先对照用户目标逐项验收，检查遗漏诉求、错误假设与尚未解决的问题，再验收 `Workflow Execution Result`：工作单元、合同、允许写路径、`context_reconciliation`、证据、实际验证、延期 seam、漂移和下一路由必须可核验。实现派发额外绑定当前 Slice Implementation Contract v3；其他阶段不得伪造该合同。
 6. 在授权边界内继续下一工作单元；遇到人工决定、新授权、证据冲突、专项失败或合并/发布结论时暂停。暂停不得阻断无依赖的独立工作。
 

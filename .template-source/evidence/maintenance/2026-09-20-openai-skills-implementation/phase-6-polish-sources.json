@@ -1,0 +1,150 @@
+[
+  {
+    "repo": ".",
+    "command": [
+      "scripts/sync-skills"
+    ],
+    "exit_code": 0,
+    "stdout": "synchronized 81 shared skills\n",
+    "stderr": ""
+  },
+  {
+    "repo": ".",
+    "command": [
+      "scripts/update-skill-lock"
+    ],
+    "exit_code": 0,
+    "stdout": "updated skills-lock.json with 81 shared skills and 2 platform skills\n",
+    "stderr": ""
+  },
+  {
+    "repo": ".",
+    "command": [
+      "scripts/verify-skill-registry"
+    ],
+    "exit_code": 0,
+    "stdout": "技能路由注册表校验通过（schema v3，active，81 个共享，2 个平台，0 个两阶段退役入口）\n",
+    "stderr": ""
+  },
+  {
+    "repo": ".",
+    "command": [
+      "scripts/update-skill-lock",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "skills-lock.json matches distributed skills\n",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "command": [
+      "scripts/sync-skills"
+    ],
+    "exit_code": 0,
+    "stdout": "synchronized 63 shared skills\n",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "command": [
+      "scripts/update-skill-lock"
+    ],
+    "exit_code": 0,
+    "stdout": "updated skills-lock.json with 63 shared skills and 0 platform skills\n",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "command": [
+      "scripts/verify-skill-registry"
+    ],
+    "exit_code": 0,
+    "stdout": "技能路由注册表校验通过（active，63 个共享，0 个平台）\n",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "command": [
+      "scripts/update-skill-lock",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "skills-lock.json matches distributed skills\n",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "command": [
+      "scripts/sync-skills"
+    ],
+    "exit_code": 0,
+    "stdout": "synchronized 58 shared skills\n",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "command": [
+      "scripts/update-skill-lock"
+    ],
+    "exit_code": 0,
+    "stdout": "updated skills-lock.json with 58 shared skills and 2 platform skills\n",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "command": [
+      "scripts/verify-skill-registry"
+    ],
+    "exit_code": 0,
+    "stdout": "技能路由注册表校验通过（active，58 个共享，2 个平台）\n",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "command": [
+      "scripts/update-skill-lock",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "skills-lock.json matches distributed skills\n",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "command": [
+      "scripts/sync-skills"
+    ],
+    "exit_code": 0,
+    "stdout": "synchronized 24 shared skills\n",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "command": [
+      "scripts/update-skill-lock"
+    ],
+    "exit_code": 0,
+    "stdout": "updated skills-lock.json with 24 shared skills and 1 platform skills\n",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "command": [
+      "scripts/verify-skill-registry"
+    ],
+    "exit_code": 0,
+    "stdout": "技能路由注册表校验通过（active，24 个共享，1 个平台）\n",
+    "stderr": ""
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "command": [
+      "scripts/update-skill-lock",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "skills-lock.json matches distributed skills\n",
+    "stderr": ""
+  }
+]

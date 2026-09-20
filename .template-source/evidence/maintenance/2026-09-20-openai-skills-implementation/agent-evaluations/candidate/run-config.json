@@ -1,0 +1,10 @@
+{
+  "runtime": "/Applications/ChatGPT.app/Contents/Resources/codex",
+  "runtime_sha256": "9280c0754e8f1f6b72f495d30c8c82a006dbc4995bf0492916fa0901f6bfd1f9",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "repetitions": 2,
+  "suite_sha256": "081617f8c64b8d25c81e19b0e606e8b35b78fcc1f4eeabaf40542e3e09a72c9e",
+  "source": "/private/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-candidate-8d7ook7e",
+  "variant": "candidate"
+}

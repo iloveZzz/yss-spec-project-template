@@ -1,0 +1,30 @@
+[
+  {
+    "repo": "create-yss-harness-backend",
+    "command": "pnpm test:prepared",
+    "exit_code": 0,
+    "seconds": 71.83,
+    "log": ".template-source/evidence/maintenance/2026-09-20-openai-skills-implementation/create-yss-harness-backend-tests.log"
+  },
+  {
+    "repo": "create-yss-harness-frontend",
+    "command": "pnpm test:prepared",
+    "exit_code": 1,
+    "seconds": 127.52,
+    "log": ".template-source/evidence/maintenance/2026-09-20-openai-skills-implementation/create-yss-harness-frontend-tests.log"
+  },
+  {
+    "repo": "create-yss-strategic-design",
+    "command": "pnpm test:prepared",
+    "exit_code": 0,
+    "seconds": 31.3,
+    "log": ".template-source/evidence/maintenance/2026-09-20-openai-skills-implementation/create-yss-strategic-design-tests.log"
+  },
+  {
+    "repo": "create-yss-spec",
+    "command": "pnpm test:prepared",
+    "exit_code": 0,
+    "seconds": 136.17,
+    "log": ".template-source/evidence/maintenance/2026-09-20-openai-skills-implementation/create-yss-spec-tests.log"
+  }
+]

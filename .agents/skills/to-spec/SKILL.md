@@ -1,10 +1,10 @@
 ---
 name: to-spec
-description: Turn the current conversation into a spec and publish it to the project issue tracker — no interview, just synthesis of what you've already discussed.
+description: 显式将已确认讨论综合为 Spec 草稿；经主控预检后按配置持久化并回交验收。
 disable-model-invocation: true
 ---
 
-This skill takes the current conversation context and codebase understanding and produces a spec. Do NOT interview the user — just synthesize what you already know.
+This explicit compatibility entry synthesizes confirmed context into a Spec draft. Before formal writes, the active lifecycle orchestrator checks repository identity, Plan → Spec entry evidence, allowed paths and current decisions. Template-source maintenance creates no product Spec. Reuse confirmed inputs and seams; ask only for a material missing decision. Return the draft to the orchestrator for validation and acceptance without approving it.
 
 If the issue tracker or triage label vocabulary is missing, tell the user to run `/setup-matt-pocock-skills`; do not invoke another user-invoked skill yourself.
 
@@ -14,7 +14,7 @@ If the issue tracker or triage label vocabulary is missing, tell the user to run
 
 2. Sketch out the seams at which you're going to test the feature. Existing seams should be preferred to new ones. Use the highest seam possible. If new seams are needed, propose them at the highest point you can. The fewer seams across the codebase, the better - the ideal number is one.
 
-Check with the user that these seams match their expectations.
+Reuse already confirmed seams; ask only when a seam is new or materially changed.
 
 3. Write the spec using the template below, then publish it to the project issue tracker. Apply the `ready-for-human` triage label. Spec drafts need a human baseline approval before they are `approved`, and before implementation tickets may become `ready-for-agent`. Do not label the Spec itself `ready-for-agent`.
 

@@ -3,9 +3,9 @@ name: yss-formily-schema-generator
 description: "从需求或设计图生成 YFormily JSON Schema 与表单代码；仅用于生产表单实现。"
 ---
 
-# YssFormily Schema Generator
+# YFormily Schema Generator
 
-Use this skill to turn upstream input into downstream YssFormily form artifacts.
+Use this skill to turn upstream input into downstream YFormily form artifacts.
 
 Supported input forms:
 
@@ -16,13 +16,13 @@ Supported input forms:
 
 Expected output forms:
 
-- a YssFormily JSON Schema or `ISchema`
+- a YFormily JSON Schema or `ISchema`
 - a recommended `v-model` data shape
 - optional `scope`, `effects`, and slot plan
-- optional Vue render snippet showing how to mount `YssFormily`
+- optional Vue render snippet showing how to mount `YFormily`
 
 This skill designs the schema.
-For implementation rules and exact YssFormily behavior, also read:
+For implementation rules and exact YFormily behavior, also read:
 
 - [yss-formily](../yss-formily/SKILL.md)
 
@@ -35,10 +35,10 @@ For conversion workflow and field mapping, read:
 Use this skill when the request is any of the following:
 
 - “根据需求描述生成表单 schema”
-- “根据原型图生成 YssFormily”
+- “根据原型图生成 YFormily”
 - “根据图片/截图还原表单”
 - “根据 Figma 生成表单 JSON Schema”
-- “把业务字段整理成 YssFormily schema”
+- “把业务字段整理成 YFormily schema”
 - “输出 schema 和渲染代码”
 
 ## Core principle
@@ -50,7 +50,7 @@ Translate the input into a stable form model:
 2. field semantics
 3. validation and dependency rules
 4. layout grouping
-5. YssFormily schema
+5. YFormily schema
 
 The schema must reflect business meaning, not just pixel arrangement.
 
@@ -88,7 +88,7 @@ If the image contains only visual cues and no validation semantics, generate a s
 
 ### Figma input
 
-When a Figma link or node is provided, use the Figma workflow to inspect the design first.
+When a Figma link or node is provided, discover an available design-inspection capability first. If unavailable, use supplied design exports or screenshots; report the missing access when those cannot establish a required detail. Do not invent a tool name or claim inspection succeeded.
 Extract:
 
 - field labels
@@ -99,7 +99,7 @@ Extract:
 - readonly versus editable patterns
 - footer actions
 
-Then convert that structure to YssFormily, following local YSS conventions instead of raw design-tool naming.
+Then convert that structure to YFormily, following local YSS conventions instead of raw design-tool naming.
 
 ## Required outputs
 
@@ -120,7 +120,7 @@ If the user asks for code generation, also produce:
 
 Always align with `yss-formily`:
 
-- wrapper component is `YssFormily` or `YFormily`
+- wrapper component for new code is `YFormily`; the historical `YssFormily` alias is accepted only when an existing installed export is verified
 - schema is `FormLayout -> FormGrid -> fields`
 - use `FormItem` for ordinary fields
 - prefer one shared schema for create/edit/detail when feasible
@@ -151,7 +151,7 @@ Follow this sequence every time:
 4. Decide field types and components.
 5. Decide sections and layout spans.
 6. Identify validation, enum, and linkage requirements.
-7. Produce YssFormily schema.
+7. Produce YFormily schema.
 8. Produce render snippet if requested.
 9. Call out assumptions and uncertain inferences.
 

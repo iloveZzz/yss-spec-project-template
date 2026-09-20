@@ -47,7 +47,7 @@ Use this skill when competitive or market facts are needed to shape product Plan
 5. Hand off to lifecycle assets:
    - Update Plan findings in `docs/.scratch/<feature>/plan/`.
    - Create or update a competitor matrix in `docs/.scratch/<feature>/plan/reports/`.
-   - Feed stable user, pain, MVP, non-goal, and success criteria into `grill-with-docs` and `to-spec`.
+   - Return stable user, pain, MVP, non-goal and success criteria to the current lifecycle/strategic owner for its native Plan and Spec work units. Compatibility entries remain explicit-user-only.
    - Record uncertain claims as assumptions, not requirements.
 
 ## Output Shape

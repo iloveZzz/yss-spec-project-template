@@ -1,0 +1,8 @@
+{
+  "scenario": "09-table-events",
+  "reason": "Prompt does not require mutation. Accept a returned updated query or in-place mutation; same pagination and selection assertions remain.",
+  "inputs_unchanged": true,
+  "rerun_required": false,
+  "previous_suite_sha256": "fa28d8042e78de4e43fc44c22b3b6c7210bc16f51c88b61645c66dbc10d31beb",
+  "corrected_suite_sha256": "081617f8c64b8d25c81e19b0e606e8b35b78fcc1f4eeabaf40542e3e09a72c9e"
+}

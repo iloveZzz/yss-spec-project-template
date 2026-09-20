@@ -1,0 +1,13 @@
+{
+  "invalidated_attempts": [
+    {
+      "evidence": "create-yss-harness-frontend-tests.log",
+      "reason": "Snapshot rebuilt while packaging contract test was running; digest changed."
+    },
+    {
+      "evidence": "phase-6-full-stable.log",
+      "reason": "Distribution initialization overlapped snapshot replacement; old manifest referenced a removed blob."
+    }
+  ],
+  "resolution": "Finish all snapshot writes before re-running packaging and full acceptance; original failures retained."
+}

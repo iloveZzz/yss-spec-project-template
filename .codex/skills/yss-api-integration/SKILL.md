@@ -43,7 +43,7 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
 1. 读取 `yss-openapi-governance` 产出的 OpenAPI Freeze 记录和 `docs/.scratch/<feature>/api/<feature>-json-export.md`；确认 YAML SHA-256、JSON SHA-256、Redocly CLI 版本、lockfile 引用和 JSON 校验均通过。治理 JSON 的唯一产物路径是 `docs/.scratch/<feature>/api/<feature>.json`。
 2. JSON 导出由 `yss-openapi-governance` 负责。`api-integration` 只接受该 skill 留下的派生记录；记录中的锁定 `redocly bundle` 命令是治理导出证据，不是前端集成任意重跑的入口。
 3. **受控交接**：若前端实现仓库需要本地输入，批准的 Cross-repo 子合同或项目脚本只能将上述治理 JSON 原样物化为 `<frontend>/openapi/openapi.json`；物化后的 SHA-256 必须与派生记录一致。禁止从 URL、Draft YAML、后端运行时或任意本地文件临时替换输入。
-4. `api-integration` 只核对 JSON 派生记录、交接路径和 SHA-256，并把原始 JSON 交给既有前端代码生成流程；本 Harness 不读取或修改目标前端的生成器配置，不在此仓库执行生成，也不建立生成 CI 门禁。若 JSON SHA 与派生记录不一致，停止交接并回到治理流程。
+4. `api-integration` 只核对 JSON 派生记录、交接路径和 SHA-256，并把原始 JSON 交给既有前端代码生成流程；本 Harness 可只读核对目标前端的生成器配置与真实导出，但不修改该配置，不在此仓库执行生成，也不建立生成 CI 门禁。若 JSON SHA 与派生记录不一致，停止交接并回到治理流程。
 5. 目标前端项目在需要时手动运行其既有生成命令、类型检查和受影响组件 / API 测试；将实际命令、结果、生成输入 SHA 和偏离写入 `YSS Skill Execution Result`。
 
 ## 真实 mutator 响应契约
@@ -174,7 +174,7 @@ await pageQualityRule(query, { signal: controller.signal, timeout: 120000 });
 
 ## 失败兜底策略
 
-- 生成导出与 skill 示例不同时，以生成文件为准并更新生成脚本，禁止绕过类型检查猜名调用。
+- 生成导出与 skill 示例不同时，以生成文件为准；仅在已授权的生成链维护范围内更新生成脚本，禁止绕过类型检查猜名调用。
 - 接口字段不稳定时，在 Hook API 边界做最小映射，不把兼容逻辑散落到模板。
 - HTTP 200 Blob 业务错误时，先修复后端状态码或 mutator 统一解析，禁止在业务 Hook 重复实现。
 

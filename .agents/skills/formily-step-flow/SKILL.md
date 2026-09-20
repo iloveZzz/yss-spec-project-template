@@ -100,6 +100,7 @@ const step1Schema = createStepSchema({
     type: 'string',
     title: '任务名称',
     required: true,
+    'x-validator': [{ required: true, whitespace: true, message: '请输入任务名称' }],
     'x-decorator': 'FormItem',
     'x-component': 'Input',
   },
@@ -173,7 +174,7 @@ const submitAll = async () => {
 </template>
 ```
 
-复杂页面把 schema、类型与步骤 hook 分别拆到 `constant.ts`、`hooks/useStepFlow.ts`，保持 `index.vue` 在 150 行以内。
+当 schema、步骤状态和页面编排难以独立理解或验证时，分别拆到 `constant.ts`、`hooks/useStepFlow.ts`；以职责清晰和状态可测试为准，不按固定行数拆分。
 
 ## 交付检查清单
 
@@ -191,4 +192,4 @@ const submitAll = async () => {
 - 状态串联错误时先收敛为单一 `reactive` 数据源，再检查每步 `v-model` 路径。
 - 确认页为空时检查是否错误绑定了独立 `step3`，应改为前序数据的 `computed` 聚合。
 - API 调用 reject 时只在 `finally` 恢复 loading，不重复弹出错误提示。
-- 步骤过多或主组件超过 150 行时，按阶段拆子组件和 `useStepXxx` hook。
+- 步骤职责交叉或状态难以验证时，按业务阶段拆子组件和 `useStepXxx` hook。

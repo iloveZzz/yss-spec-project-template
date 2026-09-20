@@ -1,0 +1,86 @@
+[
+  {
+    "profile": "backend",
+    "exit_code": 0,
+    "deltas": [
+      {
+        "field": "/skills/shared/code-review/effectiveHash",
+        "before": "0f5a98824850f868c9d5c3579b425c831604413682397d4f49f77e68ef3bcea9",
+        "expected": "f63e026a8e623d138c3cfad43a3a4f073be9752cff8d7a9252bb7ebbfd1f34f3"
+      },
+      {
+        "field": "/skills/shared/yss-application/effectiveHash",
+        "before": "f13873d39fcc84dd8263fc8c6849bf8627da2b137a96b664754d85dc7115f520",
+        "expected": "af61d4e3ddc32da87a178f3f5b3498bee0e58bc6b1ec313fa795d6f901e5573b"
+      },
+      {
+        "field": "/skills/shared/yss-backend-spec-review/effectiveHash",
+        "before": "6523791ca63d22653640f3e00a424c2ce9102fdb1a7daa989eb5d302f93be263",
+        "expected": "7917d0974978297e7df6d8a112b58f815e0dbd0af316d932bc81770300a473b5"
+      },
+      {
+        "field": "/skills/shared/yss-domain/effectiveHash",
+        "before": "905d4df8e2045c5f1eb56296e6802ed90e90acdfff7dd87eea8159e0e32db91f",
+        "expected": "8c6a223a87278ab95c28fbb42dd9d486ea5e9f93bab3d00b7bfb49c5b3689ca9"
+      },
+      {
+        "field": "/skills/shared/yss-dto/effectiveHash",
+        "before": "52f9f4c6c4b675918f84d1649ad76bbcc379ed683c072e95e418c33c7083133c",
+        "expected": "573310600beadc1138046045bccff4bc111f6904a22192960f68a6fd8d32b676"
+      },
+      {
+        "field": "/skills/shared/yss-implementation-contract-compiler/effectiveHash",
+        "before": "9cce1c13941f5f64fa73645e2524f11bb0c017e1052d439a333b6d16b0a6a430",
+        "expected": "97d4e19d36cc33ce59fcfa7a527b96a943a5af7c64269872adb65728b3245bf6"
+      },
+      {
+        "field": "/skills/shared/yss-mybatis/effectiveHash",
+        "before": "61e6a4b0c3ce0dd4842d7fbf66f670280787ce58339280bb4c2c306bb5f76962",
+        "expected": "c844472c366438f0c84d22246a82eca645753cf562a909c8857d4a621bf5ad7c"
+      },
+      {
+        "field": "/skills/shared/yss-repository/effectiveHash",
+        "before": "a3cd3668188098370923fcb7d4423f0d1a887f6709cc12e32bc4e8c7a264f68e",
+        "expected": "b70b05ba98192eaf3f463d5409e43ed221d53ed097c00bf740364c786954de96"
+      },
+      {
+        "field": "/skills/shared/yss-web-controller/effectiveHash",
+        "before": "d76f3e4490cbb6a64d93da38fafa242a2eba1f3a5f674877ce4bfd3044444da1",
+        "expected": "e0ba69025f5ef1ec3ee15bba50caeaa6a3550989abc9b27348d3c64003af3863"
+      }
+    ],
+    "stdout": "updated skills-lock.json with 63 shared skills and 0 platform skills\n",
+    "stderr": ""
+  },
+  {
+    "profile": "frontend",
+    "exit_code": 0,
+    "deltas": [
+      {
+        "field": "/skills/shared/code-review/effectiveHash",
+        "before": "0f5a98824850f868c9d5c3579b425c831604413682397d4f49f77e68ef3bcea9",
+        "expected": "f63e026a8e623d138c3cfad43a3a4f073be9752cff8d7a9252bb7ebbfd1f34f3"
+      },
+      {
+        "field": "/skills/shared/yss-implementation-contract-compiler/effectiveHash",
+        "before": "c0acf86a7dd2a90051f64b544c1987cc3f1332cea318189c9deffaea696adc58",
+        "expected": "1ce722df3d56a9c701c89d12b8c203626ceace6f295bfdc6a2ede5630550f22f"
+      }
+    ],
+    "stdout": "updated skills-lock.json with 58 shared skills and 2 platform skills\n",
+    "stderr": ""
+  },
+  {
+    "profile": "design",
+    "exit_code": 0,
+    "deltas": [
+      {
+        "field": "/skills/shared/code-review/effectiveHash",
+        "before": "0f5a98824850f868c9d5c3579b425c831604413682397d4f49f77e68ef3bcea9",
+        "expected": "f63e026a8e623d138c3cfad43a3a4f073be9752cff8d7a9252bb7ebbfd1f34f3"
+      }
+    ],
+    "stdout": "updated skills-lock.json with 24 shared skills and 1 platform skills\n",
+    "stderr": ""
+  }
+]

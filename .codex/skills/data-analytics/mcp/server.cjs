@@ -1913,7 +1913,8 @@ function exportDataScienceArtifactPackage(args) {
     archive_path: archivePath,
     worker_entrypoint: path.join(serverDir, "index.js"),
     appgarden_path: path.join(metaDir, "appgarden.json"),
-    access_default: "workspace_all",
+    access_default: null,
+    access_requirement: "explicit-user-selection-before-deployment",
     routes: ["/", "/api/manifest", "/api/snapshot", "/api/package", "/api/source-file", "/api/inline-chart-widget"],
     message:
       "Exported the validated Data Analytics artifact with the canonical MCP app runtime for Site Creator deployment.",

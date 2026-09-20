@@ -65,7 +65,7 @@ User says:
 continue
 ```
 
-Context: Data Analytics found Google Drive and Notion for company docs, but no active data warehouse or team communication route. `functions.list_available_plugins_to_install` returned Databricks, BigQuery, Snowflake, Slack, and Teams.
+Context: Data Analytics found Google Drive and Notion for company docs, but no active data warehouse or team communication route. `host_available_plugin_catalog` returned Databricks, BigQuery, Snowflake, Slack, and Teams.
 
 Expected behavior:
 

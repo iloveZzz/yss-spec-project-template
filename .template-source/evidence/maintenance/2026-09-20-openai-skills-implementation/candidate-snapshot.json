@@ -1,0 +1,7 @@
+{
+  "source": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-skills-candidate-8d7ook7e",
+  "archive": "candidate.tar.gz",
+  "sha256": "9c05a1ba7ca6b22aaf2b1d6b533d8be274145f1ac6084e7ae2e57f79aa2b18a6",
+  "state": "working-tree",
+  "purpose": "immutable candidate fixture source, not a committed release revision"
+}

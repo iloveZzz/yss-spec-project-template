@@ -1,0 +1,69 @@
+{
+  "differences": [
+    {
+      "path": ".agents/skills/yss-stage-decision/SKILL.md",
+      "candidate_sha256": "23145891f30ca7a783ff44cf4fc07632ef7b65f2fa34f418f943604e53c8f5ae",
+      "current_sha256": "79254b115645049fced552f20289ed286e5e0bbcd28ecc3f490eff7194eccea5",
+      "only_trailing_whitespace": true,
+      "supplementary_validation": "diff --check"
+    },
+    {
+      "path": ".agents/skills/yss-openapi-governance/SKILL.md",
+      "candidate_sha256": "804c73109b3e6d38fc9796ecc601ba225299bdfecc7754461670bd86571c2614",
+      "current_sha256": "1e3d7937f4b36c531addd0c6c8370078015968a0aefd26f23424f2e0d94758a4",
+      "only_trailing_whitespace": true,
+      "supplementary_validation": "diff --check"
+    },
+    {
+      "path": ".codex/skills/data-analytics/mcp/server.cjs",
+      "candidate_sha256": "acdd750ef301880186f3a52451349aa40141680ef5cb432a86767045cb1a657b",
+      "current_sha256": "b303c9b70225d6d6f58570cb7c8e2096a11bb90640c09bc1f1516a9c0c26f9ff",
+      "only_trailing_whitespace": false,
+      "supplementary_validation": "sharing-scope-probe.json and analytics-mcp-tests.log"
+    },
+    {
+      "path": ".codex/skills/data-analytics/src/analytics-app/App.tsx",
+      "candidate_sha256": "6f4f7b07fc89cba3b838b09bd9a315c5d4ed24cd10fa7116b4a7f0aad0c584c4",
+      "current_sha256": "8dbd3a6afebe5d92c125f2176e94bac6e5ac6d6207728cee301850959c1a885a",
+      "only_trailing_whitespace": false,
+      "supplementary_validation": "sharing-scope-probe.json and analytics-mcp-tests.log"
+    },
+    {
+      "path": "docs/agents/skills-maintenance.md",
+      "candidate_sha256": "1a6ac87104071533bed6d487796dcf4fedc95eb50dc7099a42ce9f57e423cc85",
+      "current_sha256": "83dd186ee30ab5ee51ca4a40d749bcd939813a7682d05c5839d49cbe6ed8b2e6",
+      "only_trailing_whitespace": false,
+      "supplementary_validation": "source-final-checks.json and cli-stable-tests.json"
+    },
+    {
+      "path": "submodules/yss-harness-backend-agent/.agents/skills/yss-openapi-governance/SKILL.md",
+      "candidate_sha256": "cfe3cfe54b83800f1041be6f7ce93a703a40a5386ebc6bd4a583c915714a165a",
+      "current_sha256": "c9e018a0ad40b1a435bed77c32437beeaa395993157f4be4ad3be2af71d2aaae",
+      "only_trailing_whitespace": true,
+      "supplementary_validation": "diff --check"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.codex/skills/data-analytics/mcp/server.cjs",
+      "candidate_sha256": "acdd750ef301880186f3a52451349aa40141680ef5cb432a86767045cb1a657b",
+      "current_sha256": "b303c9b70225d6d6f58570cb7c8e2096a11bb90640c09bc1f1516a9c0c26f9ff",
+      "only_trailing_whitespace": false,
+      "supplementary_validation": "sharing-scope-probe.json and analytics-mcp-tests.log"
+    },
+    {
+      "path": "submodules/yss-harness-frontend-agent/.codex/skills/data-analytics/src/analytics-app/App.tsx",
+      "candidate_sha256": "6f4f7b07fc89cba3b838b09bd9a315c5d4ed24cd10fa7116b4a7f0aad0c584c4",
+      "current_sha256": "8dbd3a6afebe5d92c125f2176e94bac6e5ac6d6207728cee301850959c1a885a",
+      "only_trailing_whitespace": false,
+      "supplementary_validation": "sharing-scope-probe.json and analytics-mcp-tests.log"
+    },
+    {
+      "path": "submodules/yss-harness-design-agent/.agents/skills/yss-stage-decision/SKILL.md",
+      "candidate_sha256": "e2a0059564009bb43d08e4cf60f26dd2837186a718c97235fc3dd3b6d51a3cc9",
+      "current_sha256": "efaa81e57bab3c61941b9fab6ed38c22947d97688c285e30f32b923cdc2fc821",
+      "only_trailing_whitespace": true,
+      "supplementary_validation": "diff --check"
+    }
+  ],
+  "all_differences_only_trailing_whitespace": false,
+  "reason": "Immutable Agent candidate retained. Later changes are EOF cleanup, maintenance sequence documentation and explicit sharing-scope output, each separately validated. These are not silently substituted into completed Agent runs."
+}

@@ -5,16 +5,16 @@ description: "Narrow conversion skill. Invoke only when the user explicitly asks
 
 # Report To Google Doc
 
-Use this skill only when the user explicitly needs a shareable Google Drive document from an existing HTML analytics report. The source must be an HTML report: a local file, a downloaded blob-hosted report, or a report produced by `$build-report`
+Use this skill when the user requests a local DOCX, a hosted DOCX, or a native Google Doc from an existing HTML analytics report. The source must be an HTML report: a local file, a downloaded blob-hosted report, or a report produced by `$build-report`
 HTML mode. This skill does not convert a live MCP app report directly.
 
-The expected path is HTML -> DOCX -> Drive upload. It is acceptable for Drive to host the upload as a DOCX-backed viewer file rather than a native Google Docs MIME type. Do not use the old Google Docs batch-update request path.
+Choose the requested target: `local-docx` (default for local conversion), `hosted-docx`, or `native-google-docs`. HTML → DOCX is local work; uploading is a separate external action, performed only when requested. A hosted DOCX viewer is not a native Google Doc. Discover an available conversion/import capability and verify the result MIME/type before claiming native delivery.
 
 ## Skill Configuration
 
 ### User Context
 
-Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mode by loading [data-analytics:user-context](../../user-context/SKILL.md) and running its preflight script before answering, searching connectors, retrieving evidence, creating artifacts, or drafting output. Do not look for a callable MCP tool named `data-analytics:user-context`. Use the returned `data_analytics_preflight` envelope as the source of truth for saved context, source-category mapping, semantic-layer registry, onboarding/final-response obligations, and conditional guidance; use saved context and semantic layers as source-selection inputs, not as substitutes for workflow-time reads from connected or provided sources. Do not read or reinterpret raw plugin state files unless preflight fails, declares required content omitted, local shell access is unavailable, or the user explicitly asks for raw state inspection.
+Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mode by loading [data-analytics:user-context](../../user-context/SKILL.md) and using its read-only preflight before source selection. Reuse the already loaded envelope within the same workflow while the resolved state paths, file digests, request mode and source scope are unchanged; re-read on change, missing context or explicit inspection. Do not look for a callable MCP tool named `data-analytics:user-context`. Use the returned `data_analytics_preflight` envelope as the source of truth for saved context, source-category mapping, semantic-layer registry, onboarding/final-response obligations, and conditional guidance; use saved context and semantic layers as source-selection inputs, not as substitutes for workflow-time reads from connected or provided sources. Do not read or reinterpret raw plugin state files unless preflight fails, declares required content omitted, local shell access is unavailable, or the user explicitly asks for raw state inspection.
 
 ## Workflow
 
@@ -30,6 +30,8 @@ Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mod
      --out-dir /tmp/report_to_google_doc_plan
    ```
 
+   The helper defaults to `--target local-docx`. Only for an explicit cloud request, select `--target hosted-docx` or `--target native-google-docs`; the helper still performs no remote action. If dependencies are unavailable and cannot be installed in the authorized scope, use an available local converter and validate against the source, or report the conversion gap.
+
    Omit `--render-workers` on the normal path. Only pass a worker count after benchmarking the same report family locally. If dependencies are missing,
    use a local virtual environment with `beautifulsoup4`, `pillow`, and `python-docx`; `cairosvg` or headless Playwright are optional renderers.
 
@@ -42,32 +44,20 @@ Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mod
      and rendered visual inventory
    - `preflight_checks.json`: source, width, DOCX, and rendered-image checks
    - `report.docx`: generated local Word document
-   - `docx_upload_plan.json`: compact upload instructions
+   - `docx_upload_plan.json`: selected-target handoff plan (no upload steps for local conversion)
    - `placeholder_queries.json`: source mapping debug labels
 
    Do not upload until `preflight_checks.json` has `status: "passed"` with zero errors. Warnings must either be fixed or called out in the handoff.
 
-4. Upload the DOCX.
+4. Complete the selected target.
 
-   ```json
-   mcp__codex_apps__google_drive._upload_file({
-     "file_uri": "/tmp/report_to_google_doc_plan/report.docx",
-     "file_name": "Report Name.docx",
-     "mime_type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-   })
-   ```
+   For `local-docx`, validate the local DOCX against the source inventory and stop with its local link. Do not upload, change sharing, or require a Drive connector.
 
-   Treat the returned Drive URL as the deliverable. Do not attempt to force native Google Docs conversion, and do not fall back to `_batch_update_document`.
+   For explicitly requested `hosted-docx` or `native-google-docs`, discover the currently available upload/import capability and read its schema. Never guess a tool name, plugin ID or parameter. If missing, deliver the validated local DOCX and identify the cloud capability gap; do not claim cloud completion or switch the target silently.
 
-5. Validate the uploaded result.
+5. Verify and hand off.
 
-   Confirm the uploaded file is readable and non-empty. Compare uploaded text against the source inventory: title, section headings, executive summary or answer callout, caveats, recommendations, source notes, and source links.
-   Inspect the local `report.docx` structure when available: heading counts,
-   lists, tables, hyperlink relationships, and image relationships should match `manifest.json`.
-
-6. Hand off the link.
-
-   Return the Drive/Docs URL, local DOCX path, source HTML path, and validation performed. Connector success alone is not enough; the handoff is complete only after the uploaded file and local DOCX structure have been checked against the source report.
+   Check headings, lists, tables, text, links and image relationships against `manifest.json`. For a cloud target, also reopen the returned document and verify content and actual native/hosted type. Return only the selected deliverable links plus source and validation evidence as useful. Connector success alone is insufficient.
 
 ## Standards
 
@@ -114,5 +104,5 @@ python3 <REPORT_TO_GOOGLE_DOC_SKILL_DIR>/scripts/report_to_google_doc_plan.py \
 jq '.status, .summary' /tmp/report_to_google_doc_plan_smoke/preflight_checks.json
 test -f /tmp/report_to_google_doc_plan_smoke/report.docx
 test -f /tmp/report_to_google_doc_plan_smoke/docx_upload_plan.json
-git diff --check -- plugins/data-analytics/skills/build-report/report-to-google-doc
+git diff --check -- .codex/skills/data-analytics/skills/build-report/report-to-google-doc
 ```

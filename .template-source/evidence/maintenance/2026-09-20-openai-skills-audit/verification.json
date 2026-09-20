@@ -1,0 +1,122 @@
+{
+  "observed_date": "2026-09-20",
+  "checks": [
+    {
+      "repo": ".",
+      "command": "scripts/verify-skill-registry",
+      "exit_code": 0
+    },
+    {
+      "repo": ".",
+      "command": "scripts/verify-skill-governance",
+      "exit_code": 0
+    },
+    {
+      "repo": ".",
+      "command": "scripts/sync-skills --check",
+      "exit_code": 0
+    },
+    {
+      "repo": ".",
+      "command": "scripts/update-skill-lock --check",
+      "exit_code": 0
+    },
+    {
+      "repo": ".",
+      "command": "scripts/sync-profile-skills --check --profile=all --json",
+      "exit_code": 0
+    },
+    {
+      "repo": "submodules/yss-harness-backend-agent",
+      "command": "scripts/verify-skill-registry",
+      "exit_code": 0
+    },
+    {
+      "repo": "submodules/yss-harness-backend-agent",
+      "command": "scripts/verify-skill-governance",
+      "exit_code": 0
+    },
+    {
+      "repo": "submodules/yss-harness-backend-agent",
+      "command": "scripts/sync-skills --check",
+      "exit_code": 0
+    },
+    {
+      "repo": "submodules/yss-harness-backend-agent",
+      "command": "scripts/update-skill-lock --check",
+      "exit_code": 1,
+      "output": "skills-lock.json is stale; run scripts/update-skill-lock"
+    },
+    {
+      "repo": "submodules/yss-harness-design-agent",
+      "command": "scripts/verify-skill-registry",
+      "exit_code": 0
+    },
+    {
+      "repo": "submodules/yss-harness-design-agent",
+      "command": "scripts/verify-skill-governance",
+      "exit_code": 0
+    },
+    {
+      "repo": "submodules/yss-harness-design-agent",
+      "command": "scripts/sync-skills --check",
+      "exit_code": 0
+    },
+    {
+      "repo": "submodules/yss-harness-design-agent",
+      "command": "scripts/update-skill-lock --check",
+      "exit_code": 1,
+      "output": "skills-lock.json is stale; run scripts/update-skill-lock"
+    },
+    {
+      "repo": "submodules/yss-harness-frontend-agent",
+      "command": "scripts/verify-skill-registry",
+      "exit_code": 0
+    },
+    {
+      "repo": "submodules/yss-harness-frontend-agent",
+      "command": "scripts/verify-skill-governance",
+      "exit_code": 0
+    },
+    {
+      "repo": "submodules/yss-harness-frontend-agent",
+      "command": "scripts/sync-skills --check",
+      "exit_code": 0
+    },
+    {
+      "repo": "submodules/yss-harness-frontend-agent",
+      "command": "scripts/update-skill-lock --check",
+      "exit_code": 1,
+      "output": "skills-lock.json is stale; run scripts/update-skill-lock"
+    },
+    {
+      "repo": "submodules/create-yss-harness-backend",
+      "command": "pnpm run verify-bundle",
+      "exit_code": 0
+    },
+    {
+      "repo": "submodules/create-yss-harness-frontend",
+      "command": "pnpm run verify-bundle",
+      "exit_code": 0
+    },
+    {
+      "repo": "submodules/create-yss-strategic-design",
+      "command": "pnpm run verify-bundle",
+      "exit_code": 0
+    },
+    {
+      "repo": "submodules/create-yss-spec",
+      "command": "read-only comparison of current .agents/.codex SKILL.md paths with template copies",
+      "exit_code": 0,
+      "paths_compared": 141,
+      "different_paths": 0,
+      "limit": "rglob path comparison; symlink leaves not all expanded in this comparison; no full CLI tests"
+    }
+  ],
+  "not_run": [
+    "model agent A/B evals",
+    "full verify-template",
+    "publication gates",
+    "production/frontend/backend business tests"
+  ]
+}

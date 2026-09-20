@@ -73,17 +73,29 @@
 
 ## 专职 Profile 同步
 
-战略设计、研发、后端和前端 Agent 子项目通过 `.template-source/profile-skill-sync.json` 声明跨仓消费关系。配置把纳管 Skill 分为原样同步、带适配同步、子项目独有、排除、退役和上游六类；战略设计的六个公共 Skill 保持由战略设计仓向本模板集成，其余登记项由本模板向专职 Profile 同步。
+战略设计、后端和前端 Agent 子项目通过 `.template-source/profile-skill-sync.json` 声明跨仓消费关系。每个实际 Skill 入口都必须分类为原样同步、带适配同步、子项目独有、排除、退役或上游；`excluded` 只允许目标中不存在的技能，不能隐藏活跃副本。战略设计的四个公共 Skill 由战略源仓向本模板薄适配集成，其余登记项由本模板向消费 Profile 同步。
 
 维护者先预览，再显式应用；CI 只检查漂移：
 
 ```bash
 scripts/sync-profile-skills --dry-run --profile=all
-scripts/sync-profile-skills --apply --profile=dev,backend,frontend
+scripts/sync-profile-skills --apply --profile=design,backend,frontend
 scripts/sync-profile-skills --check --profile=all
 ```
 
-默认行为等同 `--dry-run`。`--json` 输出机器可读报告。同名 Skill 内容不同但未登记分类时检查失败。简单适配使用已登记的片段替换与计数基线；复杂适配的文件级补丁位于 `.template-source/profile-skill-patches/`，并绑定上游 Skill 树 hash。目标含未提交且与期望结果不同的改动、引用缺失、路径越界、上游基线漂移或补丁无法重放时禁止写入。应用会在整批预检后逐文件更新，并在写入失败时恢复本次已改文件；工具不提交、不推送，也不更新 CLI 的固定版本快照。
+Profile 同步只维护登记的内容，不代替子项目的派生更新。应用后，在每个受影响子项目运行 `scripts/sync-skills`、`scripts/update-skill-lock`，再分别以 `--check` 验证，最后重建其 CLI 快照。正文的 `effectiveHash` 变化必须在同批锁文件中体现；不能靠改来源 revision 掩盖过期摘要。验证和打包期间不要重建同一 CLI 的快照，以免测试前后读到不同输入。
+
+默认行为等同 `--dry-run`。`--json` 输出机器可读报告。实际入口未分类时检查失败，包括内容相同的副本和子项目独有入口。简单适配使用已登记的片段替换与计数基线；复杂适配的文件级补丁位于 `.template-source/profile-skill-patches/`，并绑定上游 Skill 树 hash。目标含未提交且与期望结果不同的改动、引用缺失、路径越界、上游基线漂移或补丁无法重放时禁止写入。应用会在整批预检后逐文件更新，并在写入失败时恢复本次已改文件；工具不提交、不推送，也不更新 CLI 的固定版本快照。
+
+平台专属包通过可选 `platform_roots` 与 `exact` / `adapted` 中的完整 `source`、`target` 包路径登记，继续使用 schema v1。主仓的 Product Design / Data Analytics 是这些仓内包的公共维护源；包内嵌套入口随整包同步，生成的共享投影不重复算作平台源。运行同步两次，第二次应无差异；保留角色技能的 `local_only` 和战略源的单向所有权。
+
+启用 `verify_entry_references` 后，检查器在计划应用后的文件集合中解析入口 Markdown 链接；新增参考文件可随同批变更通过，删除后失效的链接会阻断。`reference_roots` 登记平台包；代码围栏和行内代码中的示例不当作真实链接。Python 缓存不属于技能来源或同步差异。
+
+## 真实 Agent 行为评测
+
+模板维护侧使用 `.template-source/scripts/skills-agent-eval.py`，输入 JSON 场景、冻结的基线或候选目录、Codex 可执行文件、模型和推理配置。两侧使用相同提示、fixture、运行配置和断言，默认每场景串行两次。输出原始 JSONL 工具轨迹、命令替身记录、产物和自动检查结果；另行审阅实际行为，不能把模型自述或静态检查当作行为通过。
+
+fixture 只允许隔离目录中的本地操作，Git、网络和包管理器使用替身，不接触用户真实状态。缺凭据、工具或运行时记为未完成。修正评测断言时保留原始结果、修正理由和两侧统一重评分；技能修复后只复跑受影响场景，并保留所有尝试。具体场景与交付记录留在对应维护证据目录，不分发到项目实例。
 
 ## 单独检查
 

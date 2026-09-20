@@ -83,7 +83,7 @@ Follow this priority order. Explicit user preference always beats observed files
 git check-ignore -q .worktrees 2>/dev/null || git check-ignore -q worktrees 2>/dev/null
 ```
 
-**If NOT ignored:** Add to .gitignore, commit the change, then proceed.
+**If NOT ignored:** Add the chosen directory to .gitignore within the authorized setup scope, verify it is ignored, then proceed. Leave that edit uncommitted unless Git commit authorization already covers it.
 
 **Why critical:** Prevents accidentally committing worktree contents to repository.
 
@@ -97,15 +97,17 @@ git worktree add "$path" -b "$BRANCH_NAME"
 cd "$path"
 ```
 
-**Sandbox fallback:** If `git worktree add` fails with a permission error (sandbox denial), tell the user the sandbox blocked worktree creation and you're working in the current directory instead. Then run setup and baseline tests in place.
+**Isolation failure:** If worktree creation is blocked, report the actual error and preserve the current checkout. Use another already authorized isolated location when available; ask only if proceeding would change the requested isolation boundary. Do not silently begin implementation in the original checkout.
 
 ## Step 2: Project Setup
 
 Auto-detect and run appropriate setup:
 
 ```bash
-# Node.js
-if [ -f package.json ]; then npm install; fi
+# Node.js: inspect packageManager, lockfile and project instructions first.
+# In a pnpm project, use the recorded version and frozen lockfile:
+# pnpm install --frozen-lockfile
+# Use npm/yarn only when the repository actually declares them.
 
 # Rust
 if [ -f Cargo.toml ]; then cargo build; fi
@@ -124,10 +126,10 @@ Run tests to ensure workspace starts clean:
 
 ```bash
 # Use project-appropriate command
-npm test / cargo test / pytest / go test ./...
+pnpm test / cargo test / pytest / go test ./... # select the declared project runner
 ```
 
-**If tests fail:** Report failures, ask whether to proceed or investigate.
+**If tests fail:** Record the existing failure and investigate within the authorized scope. Ask only if a new decision or access is needed; do not label the baseline clean.
 
 **If tests pass:** Report ready.
 
@@ -151,9 +153,9 @@ Ready to implement <feature-name>
 | `worktrees/` exists | Use it (verify ignored) |
 | Both exist | Use `.worktrees/` |
 | Neither exists | Check instruction file, then default `.worktrees/` |
-| Directory not ignored | Add to .gitignore + commit |
-| Permission error on create | Sandbox fallback, work in place |
-| Tests fail during baseline | Report failures + ask |
+| Directory not ignored | Add to .gitignore; commit only when authorized |
+| Permission error on create | Report failure; preserve the requested isolation boundary |
+| Tests fail during baseline | Record failures; continue authorized diagnosis |
 | No package.json/Cargo.toml | Skip dependency install |
 
 ## Common Mistakes
@@ -181,7 +183,7 @@ Ready to implement <feature-name>
 ### Proceeding with failing tests
 
 - **Problem:** Can't distinguish new bugs from pre-existing issues
-- **Fix:** Report failures, get explicit permission to proceed
+- **Fix:** Distinguish baseline failures from new defects; ask only for a missing decision
 
 ## Red Flags
 
@@ -191,7 +193,7 @@ Ready to implement <feature-name>
 - Skip Step 1a by jumping straight to Step 1b's git commands
 - Create worktree without verifying it's ignored (project-local)
 - Skip baseline test verification
-- Proceed with failing tests without asking
+- Claim a clean baseline when checks failed
 
 **Always:**
 - Run Step 0 detection first

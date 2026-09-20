@@ -58,7 +58,7 @@ Use this file after the selected delivery surface is an MCP Apps inline chart/ta
 - Do not rebuild the report as standalone HTML, inline CSS charts, or a separate one-off viewer. Hosted sharing is a packaging step for the current artifact, not a second rendering implementation.
 - Treat Site Creator exports as read-only reader surfaces by default: hide artifact editing controls and remove `Publish to Sites` from hosted export menus. Authoring should happen in the MCP artifact, followed by a new export/deploy.
 - Keep static HTML and PDF exports content-only: include the report or dashboard title, narrative, charts, tables, and source details, but omit the interactive top bar and app-only controls.
-- Keep Site Creator access at `workspace_all` by default unless the user explicitly requests narrower access.
+- Use the explicitly selected sharing audience; if none exists, preserve local/private output until sharing is requested.
 
 ## Encoding Rules
 

@@ -1,0 +1,42 @@
+[
+  {
+    "repo": ".",
+    "exit_code": 2,
+    "output": ".agents/skills/yss-openapi-governance/SKILL.md:117: new blank line at EOF.\n.agents/skills/yss-stage-decision/SKILL.md:73: new blank line at EOF.\n.codex/skills/yss-openapi-governance/SKILL.md:117: new blank line at EOF.\n"
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "exit_code": 2,
+    "output": ".agents/skills/yss-openapi-governance/SKILL.md:110: new blank line at EOF.\n"
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "exit_code": 2,
+    "output": ".agents/skills/yss-stage-decision/SKILL.md:69: new blank line at EOF.\n"
+  },
+  {
+    "repo": "submodules/create-yss-spec",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repo": "submodules/create-yss-harness-backend",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repo": "submodules/create-yss-harness-frontend",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repo": "submodules/create-yss-strategic-design",
+    "exit_code": 0,
+    "output": ""
+  }
+]

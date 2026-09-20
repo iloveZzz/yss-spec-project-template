@@ -1,0 +1,67 @@
+{
+  "completed_runs": 64,
+  "scenarios": 16,
+  "repetitions_per_variant": 2,
+  "execution": "baseline then candidate, serial",
+  "runtime_configuration": {
+    "runtime": "/Applications/ChatGPT.app/Contents/Resources/codex",
+    "runtime_sha256": "9280c0754e8f1f6b72f495d30c8c82a006dbc4995bf0492916fa0901f6bfd1f9",
+    "model": "gpt-6-astra",
+    "reasoning_effort": "high",
+    "repetitions": 2
+  },
+  "prompts_and_fixtures_identical": true,
+  "scoring_corrections": [
+    "checker-correction.json",
+    "checker-correction-table.json"
+  ],
+  "results": {
+    "baseline": {
+      "runs": 32,
+      "original_automatic_passes": 29,
+      "rescored_passes": 32,
+      "semantic_passes": 32,
+      "critical_violations": 0,
+      "unrelated_questions": 0,
+      "elapsed_seconds_total": 2125.99,
+      "elapsed_seconds_median": 65.47,
+      "tool_calls": 213,
+      "usage": {
+        "input_tokens": 4058727,
+        "cached_input_tokens": 3384192,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 40323,
+        "reasoning_output_tokens": 2711
+      },
+      "unique_observed_skill_paths": 33
+    },
+    "candidate": {
+      "runs": 32,
+      "original_automatic_passes": 32,
+      "rescored_passes": 32,
+      "semantic_passes": 32,
+      "critical_violations": 0,
+      "unrelated_questions": 0,
+      "elapsed_seconds_total": 2219.4,
+      "elapsed_seconds_median": 73.36,
+      "tool_calls": 220,
+      "usage": {
+        "input_tokens": 4790279,
+        "cached_input_tokens": 3995776,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 42517,
+        "reasoning_output_tokens": 3149
+      },
+      "unique_observed_skill_paths": 33
+    }
+  },
+  "limits": [
+    "16 focus scenarios, not every trigger or runtime integration.",
+    "Some login-shell Git reads missed PATH stubs and failed; all actual calls and artifacts reviewed, no real commits/uploads/publications occurred.",
+    "Host tool metadata was not fully absent; required cloud import capability unavailable was checked, and no real MCP write occurred.",
+    "DOCX scenarios used the permitted local converter fallback because beautifulsoup4 was absent.",
+    "Static prototype visual-browser verification was not completed or claimed.",
+    "Post-freeze changes have separate evidence in candidate-delivery-equivalence.json.",
+    "Elapsed time and usage are observations with concurrent local structural checks; two repetitions are not a statistical performance claim."
+  ]
+}

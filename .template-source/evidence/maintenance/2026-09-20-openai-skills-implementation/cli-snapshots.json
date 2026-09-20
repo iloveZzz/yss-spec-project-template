@@ -1,0 +1,38 @@
+[
+  {
+    "repo": "submodules/create-yss-spec",
+    "metadata_path": "submodules/create-yss-spec/template.snapshot.json",
+    "sourceState": "working-tree",
+    "source_head": "bf365587b2958f56959c077ca52f07c50378dcc6",
+    "snapshotHash": "e5ed3b3733a329563423ef97bbd246e7ac1b372fe76b3432130e1863fb17ed23",
+    "metadata_sha256": "2384bccc157419f66d6361871a2c31c483c9a97f42924f6170c2b75055425563",
+    "tracked": false
+  },
+  {
+    "repo": "submodules/create-yss-harness-backend",
+    "metadata_path": "submodules/create-yss-harness-backend/template.snapshot.json",
+    "sourceState": "working-tree",
+    "source_head": "f2a36c8eca44b3272bd491da3dead4ce1874372f",
+    "snapshotHash": "923c125976947d41d24bb4ce1d767d97b3ed87c0497618e49fcd8f3e5291156a",
+    "metadata_sha256": "04b45353a699060e2bb17e90c33e8a00f63394dbb74ff210f2c6261ab71e6add",
+    "tracked": true
+  },
+  {
+    "repo": "submodules/create-yss-harness-frontend",
+    "metadata_path": "submodules/create-yss-harness-frontend/template.snapshot.json",
+    "sourceState": "working-tree",
+    "source_head": "56e58df5b9eb5828e569cc3b1cfe5b0f44486032",
+    "snapshotHash": "8d6aa93f118d320f1607ea12eaddc8a50715d23c75bf22dad2e78265f5013263",
+    "metadata_sha256": "a190cfd3bbe8b3bebd7d662c962c2f5a3de1ff0321bc1ad01aa60f6f498e847d",
+    "tracked": true
+  },
+  {
+    "repo": "submodules/create-yss-strategic-design",
+    "metadata_path": "submodules/create-yss-strategic-design/template.snapshot.json",
+    "sourceState": "working-tree",
+    "source_head": "03309804a0e48d562bef17b64ff91b316666a0d1",
+    "snapshotHash": "3d200d01978a57a3b9ee0f67ee6070aec860839b7c2c9578e6b2a191845f944f",
+    "metadata_sha256": "36a0e9afea9cd2f2450b2ca03ecba749efbb089578ea919cf95ca2e5a01e4493",
+    "tracked": true
+  }
+]

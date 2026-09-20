@@ -1,0 +1,53 @@
+[
+  {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      ".template-source/scripts/tests",
+      "-p",
+      "test_skills_agent_eval.py"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.002s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      ".codex/skills/data-analytics/skills/build-report/report-to-google-doc/tests"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ".....\n----------------------------------------------------------------------\nRan 5 tests in 0.000s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      ".codex/skills/data-analytics/skills/user-context/tests"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ".............................\n----------------------------------------------------------------------\nRan 29 tests in 1.030s\n\nOK\n"
+  },
+  {
+    "command": [
+      "python3",
+      ".codex/skills/data-analytics/skills/user-context/scripts/validate_user_context_preflight.py",
+      ".codex/skills/data-analytics"
+    ],
+    "exit_code": 0,
+    "stdout": "Validated 18 Data Analytics skill preflight surfaces.\n",
+    "stderr": ""
+  }
+]

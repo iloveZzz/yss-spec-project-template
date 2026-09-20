@@ -51,7 +51,7 @@ Block if any of these are true:
 - Pagination does not align with the `PageResult` profile or documented exception, or exposes `offset` / `needTotalCount` / `tempTotalCount` as client input.
 - A response omits `x-yss-response-wrapper`, uses the compatibility `com.yss.cloud.dto.response` package for a new contract, writes Java generic notation as an OAS schema, or fails `YssResultMeta` + `allOf` + concrete `data` mapping.
 - `code` is modeled as arbitrary object, `dataType` loses explicit nullability, or computed fields such as `totalPages` lack target wire evidence.
-- Draft has no contract test seam for import, mapping coverage, validation, review, publish, export, and optimistic locking.
+- An in-scope behavior lacks a contract-test seam. Select import, mapping coverage, validation, review, publish, export or optimistic-locking seams only when the Spec/API actually includes that behavior; record a reasoned not-applicable for absent operations. A read-only query does not acquire write/import/publish requirements.
 - YAML contains lifecycle frontmatter / root metadata, or the proposed JSON client input is not explicitly deferred until Freeze and governance export.
 
 ## Output Contract

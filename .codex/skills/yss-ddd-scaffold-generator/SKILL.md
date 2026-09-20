@@ -25,11 +25,11 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 
 调用本技能前由生命周期编排器展示 `scripts/backend-platforms` 的精确版本清单及兼容状态，并通过 `gate.backend-architecture-platform-approved` 把架构、Spring Boot、Java 和 YSS 父 POM/BOM 合并展示、取得真实用户确认；生成器不提问、不猜版本、不使用 `x` 或 `latest`。已有批准且当前的选择展示摘要后复用；既有工程核验并复用登记值，不触发该门禁。
 
-- 候选平台：Boot 2.7.18 / Java 8，Boot 3.5.16 / Java 17 或 21，Boot 4.1.1 / Java 17 或 21。新 Boot 默认推荐 Java 17；候选不等于可生成。
+- 精确候选版本与可选状态只读取 `scripts/backend-platforms` 和共享平台清单，不在此复制版本表；候选不等于可生成。
 - 独立子项目可继承主项目组合或覆盖，必须逐项目确认（允许一次确认明确列出的项目）；同一 Maven Reactor 使用一个平台。
 - 只开放共享兼容清单中已有真实 YSS 构建、依赖和启动证据的组合。缺少兼容父 POM、BOM、starter 或相应能力证据即 `blocked`；不替换官方组件、不降级回退。
 - 新生成合同必须有 `platform_configuration` v2，与架构决策、Maven 坐标及兼容条目摘要一致。Boot、Java、YSS 坐标或依赖配方变化时回生命周期重新确认并编译合同；仅追加同配置验证记录不重复确认，仍核验证据有效性。
-- Spring MVC、Servlet、Validation、Jackson 和 starter 坐标消费共享平台清单；Boot 3.5 / 4.1 拒绝 Java 8/11。Jakarta 转换不包括 `javax.sql` 等 Java SE API。
+- Spring MVC、Servlet、Validation、Jackson 和 starter 坐标消费共享平台清单；Java 下限和允许组合由当前平台条目决定。Jakarta 转换不包括 `javax.sql` 等 Java SE API。
 - 平台候选维护验证产物标记 `platform_verification=candidate`，不能交给业务生成、升级完成等级或进入首切片验证。测试夹具不证明 YSS 兼容。
 
 版本清单、合同字段、候选验证和支持晋级规则见 仓库共享合同 `docs/engineering/backend-platforms.md`。
@@ -47,36 +47,7 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 
 ## 推荐命令
 
-```bash
-node scripts/generate_and_verify_scaffold.mjs \
-  --project-name my-service \
-  --base-package com.yss.myservice \
-  --group-id com.yss.datamiddle \
-  --project-version 1.0.0-SNAPSHOT \
-  --parent-group-id com.yss.datamiddle \
-  --parent-artifact-id yss-datamiddle-parent \
-  --parent-version 2.0.0-SNAPSHOT \
-  --yss-components-version 2.0.0-SNAPSHOT \
-  --output-dir /path/to/implementation-repo \
-  --contract-id <approved-scaffold-contract-id> \
-  --contract-version <current-version> \
-  --approval-ref <lifecycle-approval-ref> \
-  --compiler-draft-ref <compiler-draft-ref> \
-  --persisted-ref <persisted-contract-ref> \
-  --contract-file /path/to/persisted-scaffold-contract.json \
-  --evidence-dir /path/to/evidence/scaffold
-```
-
-完成批准的 golden first slice 后运行：
-
-```bash
-node scripts/run_first_slice_verification.mjs \
-  --project-root /path/to/implementation-repo/my-service \
-  --slice-contract-file /path/to/approved-slice-contract.yaml \
-  --contract-root /path/to/contract-repository \
-  --approval-ref docs/approved-checkpoint.yaml \
-  --evidence-dir /path/to/evidence/first-slice
-```
+输入和合同已核验后，按 [受控生成命令示例](references/command-examples.md) 组装当前参数；示例值不授予生成或覆盖权限。
 
 ## 生成结果应包含
 
@@ -95,7 +66,7 @@ node scripts/run_first_slice_verification.mjs \
 - 永不生成 `User CRUD` 示例；`--with-example` 已禁用，业务代码必须按批准的 Slice Implementation Contract 逐切片实现。
 - 若目标工程已经存在，直接返回 `unsupported`。旧项目继续按原工程维护；需要现代化时单独立项、先评估再逐切片迁移，不属于本 skill。
 - 输出目录必须显式指定；目标工程目录必须不存在，`--force` 永久拒绝。
-- Harness 内多项目布局必须使用 `apps/backend/<project>/`；`apps/backend/` 只能是生成器的父容器，`app/backend/`、`app/frontend/` 及其子路径一律拒绝。`git-submodule` gitlink、空挂载点、detached HEAD 工作树不得覆盖生成，即使传入 `--force` 也不得当成普通目录，且不得走「请显式传入 `--force`」普通目录覆盖 / rename 路径。`--output-dir` 指向 detached HEAD 子仓时不得 mkdir、staging 或生成工程。先 `git submodule update --init` 并在子仓附加分支工作树内生成。生成器必须先调用 `gitSubmoduleScaffoldViolation`，再在 exists / `--force` / rename 之前调用 `refuseGitlinkAsRegularDirectory`。
+- Harness 内多项目布局必须使用 `apps/backend/<project>/`；`apps/backend/` 只能是生成器的父容器，`app/backend/`、`app/frontend/` 及其子路径一律拒绝。`git-submodule` gitlink、空挂载点、detached HEAD 工作树不得覆盖生成，即使传入 `--force` 也不得当成普通目录，且不得走「请显式传入 `--force`」普通目录覆盖 / rename 路径。`--output-dir` 指向 detached HEAD 子仓时不得 mkdir、staging 或生成工程。先 `git submodule update --init` 并在子仓附加分支工作树内生成。维护生成器时按 [守卫顺序](references/generator-maintenance.md) 检查，不能将 gitlink 当普通目录。
 - 不要在 skill 里硬编码用户业务字段或真实连接信息。
 - 生成后要检查依赖关系是否仍符合分层约束。
 - 生成时的工程基线由本 skill 的 `references/engineering-baseline.md` 持有并绑定摘要；它不是独立 Skill。生成后必须回到 实现合同编译器，并按批准切片加载 `yss-domain`、`yss-application`、`yss-repository`、`yss-mybatis`、`yss-web-controller`、`yss-dto`、`yss-exception`、`yss-validation`、`mapstruct`、`lombok`、`alibaba-java-code-style` 等实际命中的行为 skill。
@@ -103,7 +74,7 @@ node scripts/run_first_slice_verification.mjs \
 - 生成后的后端工程必须使用项目根目录 `./mvnw ...` 执行构建、测试、运行和 CI 验证；不得在 README、实施记录、Ticket、Review 或 Release 中默认写裸 `mvn ...`。既有仓库确实无法使用 wrapper 时，必须记录受控例外。
 - 原型确认后，`scaffold_status=required` 才能进入本 skill；本 skill 的生成边界是工程结构、POM、配置、Wrapper 和机械模板，不是业务实现。
 - 脚手架合同必须携带 `contract_id`、`contract_version`、实现合同编译器 draft 引用、生命周期批准引用、持久化引用、当前版本、允许写路径、预期证据文件和验证命令；字段缺失或版本过期时阻断。
-- 新脚手架只接受统一 Project Scaffold Contract schema v4，并必须以原始字节摘要绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision v1 和真实工程合同批准记录。API `required` 必须闭包绑定同一 OpenAPI YAML 字节的 Validation、独立 Review、Freeze 与工程批准；`not-applicable` 必须绑定评估、明确原因和证据且禁止空占位资产。历史 schema v3/v2 仅用于 Manifest 只读验证和补齐 API 对账后的恢复审计，不用于新生成。
+- 新脚手架只接受统一 Project Scaffold Contract schema v4，并必须以原始字节摘要绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision v1 和真实工程合同批准记录。API `required` 必须闭包绑定同一 OpenAPI YAML 字节的 Validation、独立 Review、Freeze 与工程批准；`not-applicable` 必须绑定评估、明确原因和证据且禁止空占位资产。历史 Manifest 只读审计见 [历史兼容边界](references/generator-maintenance.md)，不得用于新生成。
 - DDD 固定 `target-domain-model`、`mybatis-plus`、H2 验证、`web` DTO、`yss-internal`；平台与 Validation 命名空间由共享清单约束。普通 MyBatis、独立 client module、client-in-domain 和其他旧架构仍为 `unsupported`。
 - 运行生成器必须传入 `--contract-file`；生成器会校验合同 `status=approved`、`current_version`、`primary_skill`、`controlled-generation`、实际输出路径和固定三条验证命令，不接受仅凭任意字符串引用的放行。
 - 生成项目必须写入 Manifest v4 `.yss/scaffold-generation.json`，记录技术、数据与 API 设计门禁、架构选择及 digest、生成器、合同 digest、Target Profile、模块闭包、模板 digest、下游完整 当前合同 freshness、generator-owned 文件 hash、严格 `generation_policy` 和完成等级；清单缺失或不一致时不得交给后续 实现合同编译器。

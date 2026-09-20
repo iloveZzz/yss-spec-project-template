@@ -15,6 +15,10 @@ This skill has you show commands, outputs and captured artifacts. **Redact every
 
 If the redacted output is not enough to diagnose the bug, say so and ask the user.
 
+## Simple fixes and complex investigations
+
+When a bounded defect has confirmed inputs and a known public seam, run a direct reproducer, make the authorized minimal fix and run the regression check. Do not restart an interview, minimize an already minimal case, or invent extra hypotheses. Use the phases below when the cause, environment or reproduction is uncertain.
+
 ## Phase 1 — Build a feedback loop
 
 **This is the skill.** Everything else is mechanical. If you have a **tight** pass/fail signal for the bug — one that goes red on _this_ bug — you will find the cause; bisection, hypothesis-testing, and instrumentation all just consume it. If you don't have one, no amount of staring at code will save you.
@@ -83,11 +87,11 @@ Why bother: a minimal repro shrinks the hypothesis space in Phase 3 (fewer movin
 
 Done when **every remaining element is load-bearing** — removing any one of them makes the loop go green.
 
-Do not proceed until you have reproduced **and** minimised.
+Minimize further only while it removes meaningful uncertainty. Preserve representative conditions; do not spend effort proving every remaining element essential when the cause can already be tested directly.
 
 ## Phase 3 — Hypothesise
 
-Generate **3–5 ranked hypotheses** before testing any of them. Single-hypothesis generation anchors on the first plausible idea.
+Generate enough competing falsifiable hypotheses to distinguish plausible causes. For a clear, bounded defect one directly testable hypothesis can be sufficient; complex or ambiguous failures need alternatives, without a fixed count.
 
 Each hypothesis must be **falsifiable**: state the prediction it makes.
 

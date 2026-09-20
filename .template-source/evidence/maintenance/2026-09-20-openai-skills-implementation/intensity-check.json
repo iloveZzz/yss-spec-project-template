@@ -1,0 +1,11 @@
+{
+  "triggers": [
+    "permission-boundary",
+    "ticket-state",
+    "cross-repo-contract",
+    "core-validator"
+  ],
+  "minimum_intensity": "L3",
+  "declared": "L3",
+  "policy": "docs/process/maintenance-intensity.yaml"
+}

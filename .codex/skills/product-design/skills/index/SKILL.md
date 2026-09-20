@@ -41,10 +41,10 @@ For new app, prototype, redesign, or UI build requests without a URL, screenshot
 
 - Run `$get-context`.
 - After the brief is approved, route to `$ideate`.
-- Show exactly three visual options and wait for the user to choose one.
+- Show the user-requested number of visual options (default three when exploration is needed) and wait for the user to choose one.
 - Do not scaffold, edit files, or start a server before a visual option is selected.
 
-`Full working version`, `no refs`, `go for it`, `make an assumption`, or a confirmed brief do not waive this.
+A confirmed selected visual source skips ideation. Otherwise retain the visual-selection step, respecting the user-requested option count; a static brief does not authorize full interaction.
 
 ## User Context
 

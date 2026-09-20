@@ -1,0 +1,42 @@
+[
+  {
+    "repo": ".",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repo": "submodules/create-yss-strategic-design",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repo": "submodules/yss-harness-design-agent",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repo": "submodules/yss-harness-backend-agent",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repo": "submodules/yss-harness-frontend-agent",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repo": "submodules/create-yss-spec",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repo": "submodules/create-yss-harness-frontend",
+    "exit_code": 0,
+    "output": ""
+  },
+  {
+    "repo": "submodules/create-yss-harness-backend",
+    "exit_code": 0,
+    "output": ""
+  }
+]

@@ -1,3 +1,4 @@
+// Historical boot2-java8 reference only; not a boot3-java17 implementation template.
 package com.yss.cloud.audit.configuration;
 
 import cn.hutool.jwt.JWT;

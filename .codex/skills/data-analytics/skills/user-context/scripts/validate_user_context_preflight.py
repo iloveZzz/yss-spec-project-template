@@ -16,10 +16,10 @@ MANDATORY_GATE_PHRASES = (
     "not as substitutes for workflow-time reads from connected or provided sources",
 )
 USER_CONTEXT_MANDATORY_GATE_PHRASES = (
-    "set the tool's `max_output_tokens` to at least `25000`",
+    "there is no fixed minimum token allocation",
     "warn the user that Data Analytics could not load all source-routing preferences and semantic-layer registry entries in one pass",
     "do not use the payload until the complete output is visible",
-    "reports read status for `$CODEX_HOME/state/plugins/{marketplace_id}/{plugin_id}/user-context.md`",
+    "reports read status for `$CODEX_HOME/state/plugins/data-analytics/user-context.md`",
 )
 PREFLIGHT_HELPER_PHRASES = (
     "summarize_user_context",
@@ -30,8 +30,8 @@ PREFLIGHT_HELPER_PHRASES = (
     "preferred_source_routes",
     "match_installable_plugin_candidates",
     "plugin_first_setup_recovery",
-    "functions.list_available_plugins_to_install",
-    "functions.request_plugin_install",
+    "host_available_plugin_catalog",
+    "host_authorized_plugin_install",
     "plugin_setup_opportunities",
 )
 
@@ -171,7 +171,7 @@ def main() -> int:
     for phrase in (
         "## Setup-Owned Source Routes",
         "Preflight is a reader.",
-        "functions.list_available_plugins_to_install",
+        "host_available_plugin_catalog",
         "## Plugin-First Setup For Missing Sources",
         "Do not proactively suggest every installable plugin",
         "## Missing Sources And Fallbacks",

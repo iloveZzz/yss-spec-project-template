@@ -12,9 +12,12 @@ dashboards, experiments, or downstream pipelines. Start with the intended use an
 
 ### User Context
 
-Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mode by loading [data-analytics:user-context](../user-context/SKILL.md) and running its preflight script before answering, searching connectors, retrieving evidence, creating artifacts, or drafting output. Do not look for a callable MCP tool named `data-analytics:user-context`. Use the returned `data_analytics_preflight` envelope as the source of truth for saved context, source-category mapping, semantic-layer registry, onboarding/final-response obligations, and conditional guidance; use saved context and semantic layers as source-selection inputs, not as substitutes for workflow-time reads from connected or provided sources. Do not read or reinterpret raw plugin state files unless preflight fails, declares required content omitted, local shell access is unavailable, or the user explicitly asks for raw state inspection.
+Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mode by loading [data-analytics:user-context](../user-context/SKILL.md) and using its read-only preflight before source selection. Reuse the already loaded envelope within the same workflow while the resolved state paths, file digests, request mode and source scope are unchanged; re-read on change, missing context or explicit inspection. Do not look for a callable MCP tool named `data-analytics:user-context`. Use the returned `data_analytics_preflight` envelope as the source of truth for saved context, source-category mapping, semantic-layer registry, onboarding/final-response obligations, and conditional guidance; use saved context and semantic layers as source-selection inputs, not as substitutes for workflow-time reads from connected or provided sources. Do not read or reinterpret raw plugin state files unless preflight fails, declares required content omitted, local shell access is unavailable, or the user explicitly asks for raw state inspection.
 
 ## Workflow
+
+Choose checks from the data grain, intended decision and known risk. Reuse fresh checks already covering the same source/query/transform; do not repeat the catalog. A notebook is needed only when reproducibility or multi-step analysis warrants it. Preserve blocking correctness findings and report material limitations.
+
 
 1. Clarify the quality question and operating context.
 
@@ -26,7 +29,7 @@ Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mod
 
 2. Choose an inspectable analysis path.
 
-   When checks require SQL or Python, default to a companion notebook so the user can inspect the exact code behind the findings. Use $jupyter-notebooks when a dedicated notebook scaffold or refactor workflow would help. For queryable tables, use `~~structured_data` to confirm schema, grain, sample rows, and query rules through the relevant source connector before heavier checks. Use `~~operations_logs` for freshness and lineage when those checks matter.
+   When multi-step SQL/Python analysis needs a reproducible narrative, use a companion notebook; a bounded check may provide its query/script and result directly. Use $jupyter-notebooks when a dedicated notebook scaffold or refactor workflow would help. For queryable tables, use `~~structured_data` to confirm schema, grain, sample rows, and query rules through the relevant source connector before heavier checks. Use `~~operations_logs` for freshness and lineage when those checks matter.
 
 3. Build a compact profile.
 
@@ -76,35 +79,9 @@ Mandatory pre-answer gate: Invoke `data-analytics:user-context` in preflight mod
 
 ## Standards
 
-### Core Checks
+### 按影响选择检查
 
-- Completeness: null rate by column; null rate by partition, segment, and time bucket; unexpected empty strings or sentinel values; required-column population rate.
-- Uniqueness: exact duplicate rows, duplicate primary keys, duplicate composite keys, and proportion unique for semi-unique fields such as emails or device IDs.
-- Validity: type conformance after casting; format checks for IDs, emails, URLs,
-  enums, country codes, and timestamps; range checks for measures, percentages,
-  counts, and dates; allowed-values checks for controlled vocabularies.
-- Consistency: cross-field rule checks, units or currency consistency, status and timestamp alignment, and agreement between duplicated fields from different sources.
-- Integrity: parent-child key coverage, orphan records, unexpected many-to-many joins, and broken slowly changing dimension joins.
-- Timeliness: freshness lag from source event time to load time, freshness lag from load time to report time, missing recent partitions, and unexplained historical rewrites or backfills.
-- Volume and shape: row-count drift, distinct-count drift, distribution drift,
-  share-of-total drift for major categories, and new or disappeared categories.
-
-### Specific Check Guidance
-
-- Duplicates and keys: check exact duplicates, primary key duplicates, composite key duplicates at the intended grain, and near-duplicates caused by whitespace,
-  casing, formatting, or late updates. Report count, share of affected rows,
-  duplicated keys, and whether duplication is isolated to a time range, source,
-  or segment.
-- Missingness: distinguish acceptable sparsity from broken completeness. Check null rates over time, newly null columns after schema or pipeline changes, and sentinel values such as `''`, `'unknown'`, `'n/a'`, `0`, or `-1`.
-- Domain validity: check malformed identifiers, country codes, timestamps,
-  impossible values, values outside allowed sets, and cross-field contradictions such as `is_cancelled = false` with a non-null `cancelled_at`.
-- Join coverage: when multiple datasets are involved, check foreign keys that do not match a parent table, unexpected one-to-many expansion, coverage loss when joining to dimensions or experiments, and row counts before and after joins.
-- Freshness and schema drift: check row-count changes against recent history,
-  lag on important date columns, added/removed/retyped columns, and shifts in sparsity or cardinality that suggest upstream changes.
-- Outliers and distribution shifts: use robust methods such as quantiles, MAD,
-  or IQR before defaulting to z-scores. Check sudden changes in mean, median,
-  variance, zero rate, category share, and long-tail behavior.
-- Leakage, backfill, and time travel: check features populated before they should exist, future-dated records, late-arriving data causing unstable recent partitions, and backfills that change historical counts without annotation.
+先确认 grain、关键字段和决策风险，再按需读取 [质量检查方法](references/quality-checks.md)。对实际使用的字段/关联执行验证；不把全部目录作为每个任务的固定步骤。
 
 ### Severity
 
@@ -145,7 +122,7 @@ For each finding, include:
 - likely cause when known
 - suggested remediation or automated test
 
-When code was used, include or save a notebook containing the key SQL and Python checks and make the notebook path easy to find.
+When code was used, retain the exact queries/scripts and results. Use a notebook when complexity or the requested output calls for one.
 
 ### Defaults
 

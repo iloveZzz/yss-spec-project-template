@@ -36,7 +36,7 @@ assert PREFLIGHT_SPEC and PREFLIGHT_SPEC.loader
 PREFLIGHT_MODULE = importlib.util.module_from_spec(PREFLIGHT_SPEC)
 PREFLIGHT_SPEC.loader.exec_module(PREFLIGHT_MODULE)
 
-# Representative functions.list_available_plugins_to_install fixture for plugin-first routing.
+# Representative host_available_plugin_catalog fixture for plugin-first routing.
 LIVE_INSTALLABLE_PLUGIN_CANDIDATES = [
     {
         "id": "databricks@openai-curated",
@@ -371,11 +371,11 @@ class DataAnalyticsStateHelperTests(unittest.TestCase):
         self.assertEqual(slack["plugin_preference_order"], ["Slack", "Teams"])
         self.assertEqual(
             slack["setup_recovery"]["candidate_lookup"],
-            "functions.list_available_plugins_to_install",
+            "host_available_plugin_catalog",
         )
         self.assertEqual(
             slack["setup_recovery"]["install_request"],
-            "functions.request_plugin_install",
+            "host_authorized_plugin_install",
         )
         calendar = confirmation["calendar_context"]
         self.assertEqual(

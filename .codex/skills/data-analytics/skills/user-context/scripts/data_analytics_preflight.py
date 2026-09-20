@@ -690,9 +690,9 @@ def plugin_first_setup_recovery(
         "type": "plugin_first_source_setup",
         "preferred_plugins": unique_strings(metadata.get("preferred_plugins") or []),
         "configured_source_routes": preferred_source_routes(metadata),
-        "candidate_lookup": "functions.list_available_plugins_to_install",
+        "candidate_lookup": "host_available_plugin_catalog",
         "candidate_match": "plugin_name_slug_or_app_connector_id_intersection",
-        "install_request": "functions.request_plugin_install",
+        "install_request": "host_authorized_plugin_install",
         "install_requires_user_approval": True,
         "fallback_setup_action": fallback_setup_action,
     }
@@ -1328,6 +1328,7 @@ def final_obligations(
             {
                 "id": "offer_data_analytics_onboarding_next_step",
                 "timing": "append_after_main_answer",
+                "only_when": "missing setup materially affects the requested output and the user has not requested inline-only or quiet delivery",
                 "template": markdown_template_from_onboarding_reference(
                     "Ordinary Workflow Onboarding CTA"
                 ),
@@ -1340,6 +1341,7 @@ def final_obligations(
             {
                 "id": "complete_data_analytics_core_onboarding",
                 "timing": "append_after_main_answer",
+                "only_when": "missing setup materially affects the requested output and the user has not requested inline-only or quiet delivery",
                 "template": markdown_template_from_onboarding_reference(
                     "Active Core Onboarding Reminder"
                 ),

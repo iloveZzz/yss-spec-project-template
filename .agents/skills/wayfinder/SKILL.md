@@ -20,6 +20,8 @@ Every map and ticket is an issue, so it has a **name** — its title. In everyth
 
 The map is a single issue on this repo's issue tracker, labelled `wayfinder:map` — the canonical artifact. Its tickets are child issues of the map.
 
+Return the decision map to the active orchestrator for formal asset/state acceptance. Explicit invocation does not authorize remote publication or Git commits; preserve those action boundaries.
+
 The map is an **index**, not a store. It lists the decisions made and points at the tickets that hold their detail; a decision lives in exactly one place — its ticket — so the map never restates it, only gists it and links.
 
 **Where the map, its child tickets, blocking, and frontier queries physically live is tracker-specific.** The issue tracker should have been provided to you. If not, tell the user to run `/setup-matt-pocock-skills`. Consult the tracker doc's "Wayfinding operations" section for how _this_ repo expresses them. If no tracker has been provided, default to the local-markdown tracker.
@@ -54,7 +56,7 @@ The whole map at low resolution, loaded once per session. Open tickets are **not
 
 ### Tickets
 
-Each ticket is a **child issue** of the map; the tracker's issue id is its identity. Its body is the question, sized to one 100K token agent session:
+Each ticket is a **child issue** of the map; the tracker's issue id is its identity. Its body is the question, bounded by a coherent decision and the current runtime/context capacity:
 
 ```markdown
 ## Question
@@ -102,7 +104,7 @@ Ruling something out of scope is a scoping act, not a step on the route. When a 
 
 ## Invocation
 
-Two modes. Either way, **never resolve more than one ticket per session** — with the exception of research tickets.
+Two modes. Keep each decision traceable and stop at a real dependency, decision or context boundary; related small tickets may share a session when their evidence remains clear.
 
 ### Chart the map
 

@@ -22,13 +22,13 @@ description: Use when connecting an existing frontend, backend, fullstack, or ot
 4. 识别技术栈、包管理器、CI、测试命令、构建命令、OpenAPI 接入和设计 token 接入。
 5. 判定实现位置与 `repository_scope`：`external-repository` 记录真实项目根；`harness-apps` 与 `git-submodule` 只能使用 `apps/backend/<project>/` 或 `apps/frontend/<project>/`。`apps/backend/`、`apps/frontend/` 仅为容器，`app/backend/`、`app/frontend/` 及其子路径必须标记为阻断。gitlink（mode `160000`）必须登记为 `git-submodule` 和 `layout_policy: git-submodule-harness-apps`，不得写成 `harness-apps`。必须对照工作树：`git ls-files --stage`、`.gitmodules` 与声明 scope 不一致时阻断；缺少 `git_entry_mode: 160000` 不得把挂载点当普通目录。
 6. 按 `docs/templates/implementation-repo-registry-template.md` 输出实现仓库登记内容。`git-submodule` 必填 `gitmodules_name`、`gitlink_path`、`git_entry_mode`、`superproject_git_url` 和 `checkout_state`。`harness-apps` / `external-repository` 这些字段填 `不适用`。
-7. 列出 `known_gaps`、人审点、fresh verification 命令和需要回写到 Harness change / Issue / checkpoint 的信息。命中交付预检时，登记和工程基线补齐后重跑 `prepare`；将结构化诊断的责任来源和恢复入口纳入缺口清单，在初始化或构建前关闭当前阶段阻断。后续阶段证据尚未形成不能被当作本阶段失败；其他技术栈/不涉及该交付协议的接入记录不适用原因，不能冒充后端 v2 正例。空 gitlink、detached HEAD、`--force` 覆盖挂载点或缺少递归检出凭据时标记阻断。写入前必须看 `inspectWorkingTreeScope` / `implementationWriteViolation`：只接受对象结果且 `.writable === true` 才可写；字符串、`null` 或 `.writable !== true` 一律不可写。即使已正确登记为 `git-submodule`，空 gitlink 或 detached HEAD 也必须 `.writable === false`，不得当普通目录写文件或脚手架。
+7. 列出 `known_gaps`、人审点、fresh verification 命令和需要回写到 Harness change / Issue / checkpoint 的信息。命中交付预检时，登记和工程基线补齐后重跑 `prepare`；将结构化诊断的责任来源和恢复入口纳入缺口清单，在初始化或构建前关闭当前阶段阻断。后续阶段证据尚未形成不能被当作本阶段失败；其他技术栈/不涉及该交付协议的接入记录不适用原因，不能冒充后端 v2 正例。空 gitlink、detached HEAD、`--force` 覆盖挂载点或缺少递归检出凭据时标记阻断。需要转入已授权写入时，先按 [写范围核验](references/write-scope.md) 检查工具对象结果；只有 `.writable === true` 可写，其他形态或状态一律阻断。
 
 ## Baseline Checks
 
 | repo_role | 必查项 |
 |---|---|
-| backend | 构建工具、模块结构、测试命令、OpenAPI 产出、YSS DDD 基线、数据库 / 迁移红线 |
+| backend | 构建工具、模块结构、测试命令、OpenAPI 产出、已登记 DDD 或分层 MVC 对应的 YSS 工程基线、数据库 / 迁移红线 |
 | frontend | 包管理器、框架、路由、YSS UI / Ant Design、Orval / API client、设计 token、lint / type-check / build |
 | fullstack | 前后端边界、契约生成方式、独立测试命令、CI 阶段拆分 |
 | other | owner、构建 / 测试 / 发布命令、与 Harness change 的关系 |
@@ -39,7 +39,7 @@ description: Use when connecting an existing frontend, backend, fullstack, or ot
 - 不把实现仓库源码复制进 Harness 仓库；`git-submodule` 只能形成 gitlink，不能 copy / subtree 冒充。
 - 不把缺失命令编造为已存在；找不到时标记 `unknown` 或 `需人工确认`。
 - 不得把 `app/backend/`、`app/frontend/` 或 `apps/backend/`、`apps/frontend/` 容器根登记为可生成项目根。
-- 触碰认证、授权、SQL、迁移、加密、公共基础库 API 时标记 `TODO-HUMAN-REVIEW`。
+- 认证、授权、SQL、迁移、加密、公共基础库 API 按实际影响记录审批和证据缺口；仅缺少必要批准时标记 `TODO-HUMAN-REVIEW`，已有授权不因关键词重新审批。
 
 ## Output
 

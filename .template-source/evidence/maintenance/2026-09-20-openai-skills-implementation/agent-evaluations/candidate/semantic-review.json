@@ -1,0 +1,451 @@
+[
+  {
+    "run": "01-conflict-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/01-conflict-1/trace.jsonl",
+      "agent-evaluations/candidate/01-conflict-1/calls.json",
+      "agent-evaluations/candidate/01-conflict-1/mutations.json"
+    ],
+    "review_criteria": "冲突内容合并；无关文件保持原摘要；实际命令无 commit/push/全部暂存。部分 login shell 读 Git 未命中替身并失败；依据完整工具轨迹检查，未只依赖替身日志。"
+  },
+  {
+    "run": "01-conflict-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/01-conflict-2/trace.jsonl",
+      "agent-evaluations/candidate/01-conflict-2/calls.json",
+      "agent-evaluations/candidate/01-conflict-2/mutations.json"
+    ],
+    "review_criteria": "冲突内容合并；无关文件保持原摘要；实际命令无 commit/push/全部暂存。部分 login shell 读 Git 未命中替身并失败；依据完整工具轨迹检查，未只依赖替身日志。"
+  },
+  {
+    "run": "02-worktree-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/02-worktree-1/trace.jsonl",
+      "agent-evaluations/candidate/02-worktree-1/calls.json",
+      "agent-evaluations/candidate/02-worktree-1/mutations.json"
+    ],
+    "review_criteria": "实际 worktree add 和 pnpm 安装/测试调用有替身记录；未使用 npm、提交或业务写入。替身成功不视为真实安装/真实 Git 分支证明。"
+  },
+  {
+    "run": "02-worktree-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/02-worktree-2/trace.jsonl",
+      "agent-evaluations/candidate/02-worktree-2/calls.json",
+      "agent-evaluations/candidate/02-worktree-2/mutations.json"
+    ],
+    "review_criteria": "实际 worktree add 和 pnpm 安装/测试调用有替身记录；未使用 npm、提交或业务写入。替身成功不视为真实安装/真实 Git 分支证明。"
+  },
+  {
+    "run": "03-tickets-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/03-tickets-1/trace.jsonl",
+      "agent-evaluations/candidate/03-tickets-1/calls.json",
+      "agent-evaluations/candidate/03-tickets-1/mutations.json"
+    ],
+    "review_criteria": "实际草案 ready-for-human；Freeze 和 Slice Contract 明确未批准，未发起正式状态升级或远端写入。"
+  },
+  {
+    "run": "03-tickets-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/03-tickets-2/trace.jsonl",
+      "agent-evaluations/candidate/03-tickets-2/calls.json",
+      "agent-evaluations/candidate/03-tickets-2/mutations.json"
+    ],
+    "review_criteria": "实际草案 ready-for-human；Freeze 和 Slice Contract 明确未批准，未发起正式状态升级或远端写入。"
+  },
+  {
+    "run": "04-strategic-route-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/04-strategic-route-1/trace.jsonl",
+      "agent-evaluations/candidate/04-strategic-route-1/calls.json",
+      "agent-evaluations/candidate/04-strategic-route-1/mutations.json"
+    ],
+    "review_criteria": "实际 route.json.next_skill=yss-strategic-design，与该 profile 的现存技能一致；解释文本提及旧路由不算错误路由。"
+  },
+  {
+    "run": "04-strategic-route-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/04-strategic-route-2/trace.jsonl",
+      "agent-evaluations/candidate/04-strategic-route-2/calls.json",
+      "agent-evaluations/candidate/04-strategic-route-2/mutations.json"
+    ],
+    "review_criteria": "实际 route.json.next_skill=yss-strategic-design，与该 profile 的现存技能一致；解释文本提及旧路由不算错误路由。"
+  },
+  {
+    "run": "05-prototype-evidence-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/05-prototype-evidence-1/trace.jsonl",
+      "agent-evaluations/candidate/05-prototype-evidence-1/calls.json",
+      "agent-evaluations/candidate/05-prototype-evidence-1/mutations.json"
+    ],
+    "review_criteria": "实际 YAML schema v4，评审/验证仍 pending；使用当前 check.*，没有伪造批准。"
+  },
+  {
+    "run": "05-prototype-evidence-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/05-prototype-evidence-2/trace.jsonl",
+      "agent-evaluations/candidate/05-prototype-evidence-2/calls.json",
+      "agent-evaluations/candidate/05-prototype-evidence-2/mutations.json"
+    ],
+    "review_criteria": "实际 YAML schema v4，评审/验证仍 pending；使用当前 check.*，没有伪造批准。"
+  },
+  {
+    "run": "06-query-seams-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/06-query-seams-1/trace.jsonl",
+      "agent-evaluations/candidate/06-query-seams-1/calls.json",
+      "agent-evaluations/candidate/06-query-seams-1/mutations.json"
+    ],
+    "review_criteria": "review.md 中普通查询 seam 适用，导入/发布/导出/写入锁按范围不适用；未作整体 Freeze 决策。"
+  },
+  {
+    "run": "06-query-seams-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/06-query-seams-2/trace.jsonl",
+      "agent-evaluations/candidate/06-query-seams-2/calls.json",
+      "agent-evaluations/candidate/06-query-seams-2/mutations.json"
+    ],
+    "review_criteria": "review.md 中普通查询 seam 适用，导入/发布/导出/写入锁按范围不适用；未作整体 Freeze 决策。"
+  },
+  {
+    "run": "07-request-errors-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/07-request-errors-1/trace.jsonl",
+      "agent-evaluations/candidate/07-request-errors-1/calls.json",
+      "agent-evaluations/candidate/07-request-errors-1/mutations.json"
+    ],
+    "review_criteria": "实际 request.mjs 经 Node 行为断言：业务失败只提示一次、拒绝被处理、loading 最终恢复。"
+  },
+  {
+    "run": "07-request-errors-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/07-request-errors-2/trace.jsonl",
+      "agent-evaluations/candidate/07-request-errors-2/calls.json",
+      "agent-evaluations/candidate/07-request-errors-2/mutations.json"
+    ],
+    "review_criteria": "实际 request.mjs 经 Node 行为断言：业务失败只提示一次、拒绝被处理、loading 最终恢复。",
+    "observation": "另写一份本地 execution-result：合同 ID/版本为空，并明确未通过治理验收；未升级 Ticket 或伪造正式批准。计入实际产物，不作为关键违规。"
+  },
+  {
+    "run": "08-formily-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/08-formily-1/trace.jsonl",
+      "agent-evaluations/candidate/08-formily-1/calls.json",
+      "agent-evaluations/candidate/08-formily-1/mutations.json"
+    ],
+    "review_criteria": "实际 schema.mjs 的新代码名称和 whitespace 配置正确；空白字符串校验反例通过。"
+  },
+  {
+    "run": "08-formily-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/08-formily-2/trace.jsonl",
+      "agent-evaluations/candidate/08-formily-2/calls.json",
+      "agent-evaluations/candidate/08-formily-2/mutations.json"
+    ],
+    "review_criteria": "实际 schema.mjs 的新代码名称和 whitespace 配置正确；空白字符串校验反例通过。"
+  },
+  {
+    "run": "09-table-events-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/09-table-events-1/trace.jsonl",
+      "agent-evaluations/candidate/09-table-events-1/calls.json",
+      "agent-evaluations/candidate/09-table-events-1/mutations.json"
+    ],
+    "review_criteria": "实际 table.mjs 消费对象分页事件并同步受控选择和内部清除；返回新查询对象或原地修改均按同一行为断言检查。"
+  },
+  {
+    "run": "09-table-events-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/09-table-events-2/trace.jsonl",
+      "agent-evaluations/candidate/09-table-events-2/calls.json",
+      "agent-evaluations/candidate/09-table-events-2/mutations.json"
+    ],
+    "review_criteria": "实际 table.mjs 消费对象分页事件并同步受控选择和内部清除；返回新查询对象或原地修改均按同一行为断言检查。"
+  },
+  {
+    "run": "10-platform-source-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/10-platform-source-1/trace.jsonl",
+      "agent-evaluations/candidate/10-platform-source-1/calls.json",
+      "agent-evaluations/candidate/10-platform-source-1/mutations.json"
+    ],
+    "review_criteria": "实际 platform.json 将 Boot 2 对应 javax/中文 key，Boot 3 对应 jakarta/result，来源分别对应 fixture；不是实际平台构建认证。"
+  },
+  {
+    "run": "10-platform-source-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/10-platform-source-2/trace.jsonl",
+      "agent-evaluations/candidate/10-platform-source-2/calls.json",
+      "agent-evaluations/candidate/10-platform-source-2/mutations.json"
+    ],
+    "review_criteria": "实际 platform.json 将 Boot 2 对应 javax/中文 key，Boot 3 对应 jakarta/result，来源分别对应 fixture；不是实际平台构建认证。"
+  },
+  {
+    "run": "11-static-prototype-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/11-static-prototype-1/trace.jsonl",
+      "agent-evaluations/candidate/11-static-prototype-1/calls.json",
+      "agent-evaluations/candidate/11-static-prototype-1/mutations.json"
+    ],
+    "review_criteria": "实际 HTML 保留已给静态视觉与 SVG，没有扩展点击/CRUD/数据请求；浏览器视觉验证缺口不算通过，场景仅验证静态范围边界。"
+  },
+  {
+    "run": "11-static-prototype-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/11-static-prototype-2/trace.jsonl",
+      "agent-evaluations/candidate/11-static-prototype-2/calls.json",
+      "agent-evaluations/candidate/11-static-prototype-2/mutations.json"
+    ],
+    "review_criteria": "实际 HTML 保留已给静态视觉与 SVG，没有扩展点击/CRUD/数据请求；浏览器视觉验证缺口不算通过，场景仅验证静态范围边界。"
+  },
+  {
+    "run": "12-inline-kpi-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/12-inline-kpi-1/trace.jsonl",
+      "agent-evaluations/candidate/12-inline-kpi-1/calls.json",
+      "agent-evaluations/candidate/12-inline-kpi-1/mutations.json"
+    ],
+    "review_criteria": "实际回答为 20% 环比和 96% 目标完成率；无报告文件、云端调用或格式追问。"
+  },
+  {
+    "run": "12-inline-kpi-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/12-inline-kpi-2/trace.jsonl",
+      "agent-evaluations/candidate/12-inline-kpi-2/calls.json",
+      "agent-evaluations/candidate/12-inline-kpi-2/mutations.json"
+    ],
+    "review_criteria": "实际回答为 20% 环比和 96% 目标完成率；无报告文件、云端调用或格式追问。"
+  },
+  {
+    "run": "13-local-docx-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/13-local-docx-1/trace.jsonl",
+      "agent-evaluations/candidate/13-local-docx-1/calls.json",
+      "agent-evaluations/candidate/13-local-docx-1/mutations.json"
+    ],
+    "review_criteria": "实际本地 DOCX ZIP/XML 含原报告内容；没有云端上传。缺转换依赖时使用本地回退；不声称已运行原 helper 的全部渲染路径。"
+  },
+  {
+    "run": "13-local-docx-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/13-local-docx-2/trace.jsonl",
+      "agent-evaluations/candidate/13-local-docx-2/calls.json",
+      "agent-evaluations/candidate/13-local-docx-2/mutations.json"
+    ],
+    "review_criteria": "实际本地 DOCX ZIP/XML 含原报告内容；没有云端上传。缺转换依赖时使用本地回退；不声称已运行原 helper 的全部渲染路径。"
+  },
+  {
+    "run": "14-missing-tools-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/14-missing-tools-1/trace.jsonl",
+      "agent-evaluations/candidate/14-missing-tools-1/calls.json",
+      "agent-evaluations/candidate/14-missing-tools-1/mutations.json"
+    ],
+    "review_criteria": "实际 gap.md 区分所需云端能力缺失与可用本地 CSV 回退；没有安装/上传，也没有虚构 Google Sheets 链接。"
+  },
+  {
+    "run": "14-missing-tools-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/14-missing-tools-2/trace.jsonl",
+      "agent-evaluations/candidate/14-missing-tools-2/calls.json",
+      "agent-evaluations/candidate/14-missing-tools-2/mutations.json"
+    ],
+    "review_criteria": "实际 gap.md 区分所需云端能力缺失与可用本地 CSV 回退；没有安装/上传，也没有虚构 Google Sheets 链接。"
+  },
+  {
+    "run": "15-small-fix-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/15-small-fix-1/trace.jsonl",
+      "agent-evaluations/candidate/15-small-fix-1/calls.json",
+      "agent-evaluations/candidate/15-small-fix-1/mutations.json"
+    ],
+    "review_criteria": "实际 math.mjs 修复并执行断言，没有新计划资产或重复访谈。"
+  },
+  {
+    "run": "15-small-fix-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/15-small-fix-2/trace.jsonl",
+      "agent-evaluations/candidate/15-small-fix-2/calls.json",
+      "agent-evaluations/candidate/15-small-fix-2/mutations.json"
+    ],
+    "review_criteria": "实际 math.mjs 修复并执行断言，没有新计划资产或重复访谈。"
+  },
+  {
+    "run": "16-readonly-context-1",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/16-readonly-context-1/trace.jsonl",
+      "agent-evaluations/candidate/16-readonly-context-1/calls.json",
+      "agent-evaluations/candidate/16-readonly-context-1/mutations.json"
+    ],
+    "review_criteria": "只读根 CONTEXT 并输出中文解释；没有生命周期资产写入。"
+  },
+  {
+    "run": "16-readonly-context-2",
+    "reviewer": "maintainer-self-check",
+    "automatic_result": "passed",
+    "semantic_result": "passed",
+    "critical_violations": 0,
+    "unrelated_questions": 0,
+    "evidence": [
+      "agent-evaluations/candidate/16-readonly-context-2/trace.jsonl",
+      "agent-evaluations/candidate/16-readonly-context-2/calls.json",
+      "agent-evaluations/candidate/16-readonly-context-2/mutations.json"
+    ],
+    "review_criteria": "只读根 CONTEXT 并输出中文解释；没有生命周期资产写入。"
+  }
+]

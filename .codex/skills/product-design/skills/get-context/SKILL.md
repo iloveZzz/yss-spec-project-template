@@ -48,7 +48,8 @@ The questions to answer are:
 One of:
 
 - Full interactivity: all controls and states are completely functional and implemented.
-- Static: controls and states are minimally interactive, preferring speed.
+- Static: visual/state review only; simulated controls are labelled and no functional workflow is implied.
+- Pass `interactivity`, `required_states`, selected visual source and asset-reuse decisions to the next skill and its QA; reuse an already confirmed brief unless its scope changes.
 
 After the questions, reply with a pithy design brief that summarizes what you're about to explore. Avoid walls of text at all costs. Be clear and concise.
 
