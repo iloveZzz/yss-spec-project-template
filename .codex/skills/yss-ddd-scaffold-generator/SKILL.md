@@ -41,7 +41,7 @@ description: 用于生成完整的 YSS DDD 多模块后端脚手架。当用户�
 2. 优先运行 `node scripts/generate_and_verify_scaffold.mjs`，在同一个受控工作流中生成骨架并执行真实 Maven 验证。`generate_scaffold.mjs` 只是底层生成原语，单独返回 0 不代表脚手架完成。
 3. 检查生成的模块名、POM、机械启动入口、基础配置文件和包路径。
 4. 受控工作流必须在生成项目根目录实际执行 `./mvnw validate`、`./mvnw test` 和 `./mvnw package`；三条命令全部返回 0 后才能报告完成。
-5. 三条 Wrapper 命令通过只得到 `empty-scaffold-verified`。如需声称已满足下游技能的首切片就绪条件，必须使用 `node scripts/run_first_slice_verification.mjs` 校验批准且版本当前的 Slice Implementation Contract、完整分层产物、skill tree digest 与根 Wrapper；只有验证器成功更新 Manifest 后才得到 `first-slice-verified`。
+5. 三条 Wrapper 命令通过只得到 `empty-scaffold-verified`。如需声称已满足下游技能的首切片就绪条件，必须使用 `node scripts/run_first_slice_verification.mjs` 校验批准且版本当前的 Slice Implementation Contract、完整分层产物、当前合同 freshness 与根 Wrapper；只有验证器成功更新 Manifest 后才得到 `first-slice-verified`。
 
 受控验证命令由本 skill 的 `node scripts/run_scaffold_verification.mjs` 固定执行；验证器先检查 `.yss/scaffold-generation.json` 的合同元数据和 Wrapper、Java、项目级 Maven settings/profile、仓库凭据是否就绪，再在指定 evidence 目录写入每条命令的 stdout/stderr、`exit_code`、`failure_category`、耗时、执行时间和 `scaffold-verification.json`。仓库或凭据失败归为 `repository-access`，与 `project-model`、`compilation`、`bootstrap-entrypoint`、`test-failure`、`packaging` 分开；任何一条命令失败或未执行都必须阻断。
 
@@ -72,7 +72,9 @@ node scripts/generate_and_verify_scaffold.mjs \
 ```bash
 node scripts/run_first_slice_verification.mjs \
   --project-root /path/to/implementation-repo/my-service \
-  --slice-contract-file /path/to/approved-slice-contract.json \
+  --slice-contract-file /path/to/approved-slice-contract.yaml \
+  --contract-root /path/to/contract-repository \
+  --approval-ref docs/approved-checkpoint.yaml \
   --evidence-dir /path/to/evidence/first-slice
 ```
 
@@ -104,7 +106,7 @@ node scripts/run_first_slice_verification.mjs \
 - 新脚手架只接受统一 Project Scaffold Contract schema v4，并必须以原始字节摘要绑定批准且当前的 Technical Design、Data Architecture Decision v1、API Contract Decision v1 和真实工程合同批准记录。API `required` 必须闭包绑定同一 OpenAPI YAML 字节的 Validation、独立 Review、Freeze 与工程批准；`not-applicable` 必须绑定评估、明确原因和证据且禁止空占位资产。历史 schema v3/v2 仅用于 Manifest 只读验证和补齐 API 对账后的恢复审计，不用于新生成。
 - DDD 固定 `target-domain-model`、`mybatis-plus`、H2 验证、`web` DTO、`yss-internal`；平台与 Validation 命名空间由共享清单约束。普通 MyBatis、独立 client module、client-in-domain 和其他旧架构仍为 `unsupported`。
 - 运行生成器必须传入 `--contract-file`；生成器会校验合同 `status=approved`、`current_version`、`primary_skill`、`controlled-generation`、实际输出路径和固定三条验证命令，不接受仅凭任意字符串引用的放行。
-- 生成项目必须写入 Manifest v4 `.yss/scaffold-generation.json`，记录技术、数据与 API 设计门禁、架构选择及 digest、生成器、合同 digest、Target Profile、模块闭包、模板 digest、下游完整 skill tree digest、generator-owned 文件 hash、严格 `generation_policy` 和完成等级；清单缺失或不一致时不得交给后续 实现合同编译器。
+- 生成项目必须写入 Manifest v4 `.yss/scaffold-generation.json`，记录技术、数据与 API 设计门禁、架构选择及 digest、生成器、合同 digest、Target Profile、模块闭包、模板 digest、下游完整 当前合同 freshness、generator-owned 文件 hash、严格 `generation_policy` 和完成等级；清单缺失或不一致时不得交给后续 实现合同编译器。
 - `first-slice-verified` 只能由 `run_first_slice_verification.mjs` 写入。手工改 Manifest、只生成 Controller、只通过局部模块测试或仅有结构扫描都不能升级完成等级。
 - 严禁把领域规则、状态机、权限、事务、复杂查询、错误映射、业务字段或用户可见行为塞进脚手架生成步骤。`./mvnw validate`、输出目录存在或“生成成功”都不等于生命周期批准、架构放行或 `ready-for-agent`。
 - 生命周期脚手架生成必须关闭 `--with-example`，不得把 User CRUD 或业务字段当作样板。生成器严格 `initialize-only`：非空目标、`--force`、旧项目迁移和当前模板升级一律 `unsupported`。未来若支持同一 Target Profile 内的模板升级，必须另行设计和批准，当前不预留可执行承诺。

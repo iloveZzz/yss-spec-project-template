@@ -101,3 +101,17 @@ Boot 4 使用对应 MVC / MVC 测试 starter、Jackson 3 默认栈与新的模�
 通用运行时依赖仍由真实依赖树和 Boot BOM 核验。YSS 组件能力的精确构件绑定只读取同一兼容条目内的 `component_capabilities`，不得再从 catalog 顶层列表或平行 `components` 目录推断。
 
 Jar 核验拒绝未登记或版本不符的额外库；仅允许 Boot 对应版本的 jarmode 工具以及已选配方中的 provided Lombok 随包出现。原因是 [Boot repackage 默认包含 provided 依赖](https://docs.spring.io/spring-boot/maven-plugin/packaging.html)；这些打包例外不能补足必须存在于 compile/runtime 树的 Web、Servlet、JSON 等能力。
+
+
+## 双平台专项认证
+
+本轮必选范围为 `spring-boot-2.7-jdk8:2.7.18` 与 `spring-boot-3.5-jdk17:3.5.16`，各覆盖
+`domain-driven`、`layered-mvc`。矩阵输入可指定 `required_combinations`，或重复传
+`--require-combination <profile_id>:<spring_boot_version>:<architecture_family>`。不指定时仍执行完整矩阵。
+未选择的组合记录 `not-executed`，不计为通过，也不影响专项总状态。专项通过不自动修改清单可选性。
+
+每个组合使用合同选择的平台和显式 `java_homes`，本机默认 Java 不决定项目版本。生成的测试夹具覆盖
+HTTP JSON/Validation 错误响应、MapStruct 编译与字段映射、MyBatis 持久化往返/分页、事务失败回滚。
+夹具在 test scope 使用 H2、标准 MyBatis RowBounds 和 TransactionTemplate；它不证明生产方言、YSS 自动分页切面、业务 Service 代理事务或特定
+组件能力。对应能力仍须读取所选平台的源码索引、验证实际组件并绑定独立证据。新增用例必须出现在本次
+Surefire XML 中，空测试、跳过或旧报告不可通过。没有凭据、构件、真实批准合同或组件兼容证据时保持阻断。

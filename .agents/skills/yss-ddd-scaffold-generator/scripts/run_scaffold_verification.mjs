@@ -62,7 +62,7 @@ function validateManifest(manifest) {
   if (manifest.schema_version === 4 ? manifest.current_version !== true : manifest.current_version !== manifest.contract_version) throw new Error("脚手架生成元数据清单不是当前合同版本");
   if (JSON.stringify(manifest.verification_commands) !== JSON.stringify(COMMANDS)) throw new Error("脚手架生成元数据清单验证命令不符合固定合同");
 }
-export async function run(projectRoot, evidenceDir, environment = process.env, { timeoutMs = 0, signal, platformOptions = {}, firstSlice = false } = {}) {
+export async function run(projectRoot, evidenceDir, environment = process.env, { timeoutMs = 0, signal, platformOptions = {}, firstSlice = false, systemProperties = {} } = {}) {
   const wrapper = path.join(projectRoot, "mvnw"), manifestPath = path.join(projectRoot, ".yss", "scaffold-generation.json");
   if (!await isFile(wrapper)) throw new Error(`项目根目录缺少 Maven wrapper: ${wrapper}`);
   if (!await isFile(manifestPath)) throw new Error(`项目根目录缺少脚手架生成元数据清单: ${manifestPath}`);
@@ -114,13 +114,14 @@ export async function run(projectRoot, evidenceDir, environment = process.env, {
     const stderrPath = path.join(evidenceDir, `mvnw-${phase}.stderr.log`);
     const startedAt = isoNow();
     const started = process.hrtime.bigint();
-    const execution = await runCommand(wrapper, [phase], { cwd: projectRoot, env: environment, timeoutMs, signal, stdoutFile: stdoutPath, stderrFile: stderrPath, secrets: [environment.MAVEN_REPO_USERNAME, environment.MAVEN_REPO_PASSWORD], progress: true });
+    const args = [phase, ...Object.entries(systemProperties).map(([key, value]) => `-D${key}=${value}`)];
+    const execution = await runCommand(wrapper, args, { cwd: projectRoot, env: environment, timeoutMs, signal, stdoutFile: stdoutPath, stderrFile: stderrPath, secrets: [environment.MAVEN_REPO_USERNAME, environment.MAVEN_REPO_PASSWORD], progress: true });
     const outcome = { ...execution, exitCode: execution.status };
     const durationMs = Number(process.hrtime.bigint() - started) / 1e6;
     await writeText(stdoutPath, redactSecrets(outcome.stdout, environment));
     await writeText(stderrPath, redactSecrets(outcome.stderr, environment));
     commands.push({
-      command: `./mvnw ${phase}`,
+      command: `./mvnw ${args.join(" ")}`,
       phase,
       exit_code: outcome.exitCode,
       failure_category: outcome.termination || classifyFailure(phase, outcome),

@@ -168,7 +168,7 @@ test("packaged runtime jar must contain every runtime artifact", () => {
 
 
 test("integration evidence rejects skipped tests and missing optional Feign coverage", () => {
-  const cases = '<testcase name="httpJsonRoundTrip"/><testcase name="httpValidationRejectsBlank"/><testcase name="validationAndJsonAutoConfiguration"/><testcase name="mybatisCanMapVerificationQuery"/>';
+  const cases = '<testcase name="httpJsonRoundTrip"/><testcase name="httpValidationRejectsBlank"/><testcase name="validationAndJsonAutoConfiguration"/><testcase name="mybatisCanMapVerificationQuery"/><testcase name="mappingPersistenceAndPaginationRoundTrip"/><testcase name="transactionRollsBackOnUseCaseFailure"/>';
   assert.equal(checkPlatformTests(`<testsuite>${cases}</testsuite>`).status, "passed");
   assert.throws(() => checkPlatformTests(`<testsuite>${cases}</testsuite>`, ["feign-client"]), /missing/);
   assert.throws(() => checkPlatformTests(`<testsuite>${cases.replace('<testcase name="mybatisCanMapVerificationQuery"/>', '<testcase name="mybatisCanMapVerificationQuery"><skipped/></testcase>')}</testsuite>`), /skipped/);

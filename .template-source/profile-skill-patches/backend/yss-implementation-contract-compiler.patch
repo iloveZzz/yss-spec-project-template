@@ -120,9 +120,11 @@
 +  default_prompt: "Use yss-implementation-contract-compiler to compile approved capabilities, deterministic skill closure, evidence, and a v3 contract draft."
 --- a/references/boundaries.md
 +++ b/references/boundaries.md
-@@ -19,13 +19,14 @@
+@@ -18,15 +18,15 @@
+ 
  | Capability | Primary skill | Task modes |
  | --- | --- | --- |
+-| `governance.backend-spec-conformance` | `yss-backend-spec-review` | `guidance`, `troubleshooting`, `review-input` |
  | `writing.lifecycle-document` | `i-have-adhd` | `guidance` |
 -| `architecture.technical-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
 -| `architecture.mvc-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
@@ -137,7 +139,7 @@
  | `architecture.tactical-domain` | `yss-tactical-design` | `guidance`, `integration`, `slice-implementation`, `review-input` |
  | `layer.domain` | `yss-domain` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
  | `layer.application` | `yss-application` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `review-input` |
-@@ -47,9 +48,9 @@
+@@ -48,9 +48,10 @@
  | `component.gateway-resilience` | `yss-resilience4j` | `guidance`, `integration`, `slice-implementation`, `troubleshooting`, `component-maintenance`, `review-input` |
  | `scaffold.ddd` | `yss-ddd-scaffold-generator` | `integration`, `component-maintenance` |
  | `scaffold.layered-mvc` | `yss-layered-mvc-scaffold-generator` | `integration`, `component-maintenance` |
@@ -146,10 +148,18 @@
  | `migration.springboot3` | `yss-up-springboot3` | `guidance`, `integration`, `troubleshooting`, `component-maintenance`, `review-input` |
 +| `architecture.technical-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
 +| `architecture.mvc-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
++| `governance.backend-spec-conformance` | `yss-backend-spec-review` | `guidance`, `troubleshooting`, `review-input` |
  
  ## Narrow Recipes
  
-@@ -63,6 +64,8 @@
+@@ -58,13 +59,14 @@
+ 
+ | Recipe | Capabilities |
+ | --- | --- |
+-| `backend.spec-conformance` | `governance.backend-spec-conformance`, `quality.java-code-style` |
+ | `backend.ddd-domain-behavior` | `layer.domain`, `layer.application`, `quality.java-code-style` |
+ | `backend.ddd-persistence-mybatis` | `layer.persistence`, `framework.mybatis`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
+ | `backend.ddd-http-api` | `layer.web-adapter`, `contract.dto-wire`, `contract.request-validation`, `contract.error-mapping`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
  | `backend.mvc-service-behavior` | `layer.mvc-service`, `quality.java-code-style` |
  | `backend.mvc-persistence-mybatis` | `layer.mvc-persistence`, `framework.mybatis`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
  | `backend.mvc-http-api` | `layer.mvc-web`, `contract.dto-wire`, `contract.request-validation`, `contract.error-mapping`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
@@ -158,12 +168,13 @@
  | `backend.domain-behavior` | `layer.domain`, `layer.application`, `quality.java-code-style` |
  | `backend.persistence-mybatis` | `layer.persistence`, `framework.mybatis`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
  | `backend.http-api` | `layer.web-adapter`, `contract.dto-wire`, `contract.request-validation`, `contract.error-mapping`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
-@@ -75,13 +78,14 @@
+@@ -77,13 +79,15 @@
  | `backend.distributed-id` | `component.distributed-id` |
  | `backend.ddd-scaffold` | `scaffold.ddd`, `quality.java-code-style` |
  | `backend.mvc-scaffold` | `scaffold.layered-mvc`, `quality.java-code-style` |
 -| `frontend.vue3-scaffold` | `scaffold.frontend-vue3` |
  | `backend.springboot3-migration` | `migration.springboot3`, `quality.java-code-style` |
++| `backend.spec-conformance` | `governance.backend-spec-conformance`, `quality.java-code-style` |
  
  ## Impact Entry Mapping
  
@@ -174,10 +185,13 @@
  | `domain-impact` | `layer.domain`, `layer.application` |
  | `tactical-domain-impact` | `architecture.tactical-domain` |
  | `persistence-impact` | `layer.persistence` |
-@@ -106,27 +110,20 @@
+@@ -108,30 +112,20 @@
  
  | Skill | Dependency | Type | Condition |
  | --- | --- | --- | --- |
+-| `yss-backend-spec-review` | `alibaba-java-code-style` | `context-required` | — |
+-| `yss-backend-spec-review` | `yss-implementation-contract-compiler` | `coordination-only` | — |
+-| `yss-backend-spec-review` | `code-review` | `review-only` | — |
 -| `prototype-review` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 +| `test-agent` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 +| `backend-agent` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
@@ -207,7 +221,7 @@
  | `yss-tactical-design` | `domain-modeling` | `coordination-only` | — |
  | `yss-tactical-design` | `yss-openapi-draft-review` | `review-only` | `api-impact` |
  | `yss-tactical-design` | `yss-repository` | `component-dependency` | `data-impact` |
-@@ -150,12 +147,5 @@
+@@ -155,12 +149,8 @@
  | `yss-validation` | `yss-exception` | `component-dependency` | — |
  | `yss-security-algorithm` | `yss-exception` | `component-dependency` | — |
  | `yss-exception` | `yss-dto` | `context-required` | — |
@@ -222,6 +236,9 @@
 -| `yss-api-integration` | `yss-openapi-governance` | `context-conditional` | `regeneration` |
 +| `yss-technical-design` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 +| `yss-technical-design` | `yss-tactical-design` | `coordination-only` | `domain-driven` |
++| `yss-backend-spec-review` | `alibaba-java-code-style` | `context-required` | — |
++| `yss-backend-spec-review` | `yss-implementation-contract-compiler` | `coordination-only` | — |
++| `yss-backend-spec-review` | `code-review` | `review-only` | — |
 --- a/references/compiler-contract.yaml
 +++ b/references/compiler-contract.yaml
 @@ -8,141 +8,174 @@

@@ -121,9 +121,11 @@
 +  default_prompt: "Use yss-implementation-contract-compiler to compile approved capabilities, deterministic skill closure, evidence, and a v3 contract draft."
 --- a/references/boundaries.md
 +++ b/references/boundaries.md
-@@ -19,37 +19,13 @@
+@@ -18,39 +18,14 @@
+ 
  | Capability | Primary skill | Task modes |
  | --- | --- | --- |
+-| `governance.backend-spec-conformance` | `yss-backend-spec-review` | `guidance`, `troubleshooting`, `review-input` |
  | `writing.lifecycle-document` | `i-have-adhd` | `guidance` |
 -| `architecture.technical-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
 -| `architecture.mvc-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
@@ -163,10 +165,11 @@
  
  ## Narrow Recipes
  
-@@ -57,99 +33,28 @@
+@@ -58,103 +33,28 @@
  
  | Recipe | Capabilities |
  | --- | --- |
+-| `backend.spec-conformance` | `governance.backend-spec-conformance`, `quality.java-code-style` |
 -| `backend.ddd-domain-behavior` | `layer.domain`, `layer.application`, `quality.java-code-style` |
 -| `backend.ddd-persistence-mybatis` | `layer.persistence`, `framework.mybatis`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
 -| `backend.ddd-http-api` | `layer.web-adapter`, `contract.dto-wire`, `contract.request-validation`, `contract.error-mapping`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
@@ -218,6 +221,9 @@
  
  | Skill | Dependency | Type | Condition |
  | --- | --- | --- | --- |
+-| `yss-backend-spec-review` | `alibaba-java-code-style` | `context-required` | — |
+-| `yss-backend-spec-review` | `yss-implementation-contract-compiler` | `coordination-only` | — |
+-| `yss-backend-spec-review` | `code-review` | `review-only` | — |
 +| `test-agent` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 +| `frontend-agent` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 +| `architecture-agent` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |

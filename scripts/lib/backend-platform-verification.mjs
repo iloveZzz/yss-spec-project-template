@@ -21,9 +21,9 @@ export async function platformEvidenceArtifacts(evidenceDir) {
 export function checkPlatformTests(source, capabilities = []) {
   const suite = parseXmlDocument(source).testsuite;
   const cases = array(suite?.testcase);
-  const required = ['httpJsonRoundTrip', 'httpValidationRejectsBlank', 'validationAndJsonAutoConfiguration', 'mybatisCanMapVerificationQuery', ...(capabilities.includes('feign-client') ? ['feignCanDecodeJson'] : [])];
+  const required = ['httpJsonRoundTrip', 'httpValidationRejectsBlank', 'validationAndJsonAutoConfiguration', 'mybatisCanMapVerificationQuery', 'mappingPersistenceAndPaginationRoundTrip', 'transactionRollsBackOnUseCaseFailure', ...(capabilities.includes('feign-client') ? ['feignCanDecodeJson'] : [])];
   if (!suite || required.some(name => !cases.some(item => item['@_name'] === name && !['failure', 'error', 'skipped'].some(key => Object.hasOwn(item, key))))) fail('integration tests missing, failed or skipped');
-  return { status: 'passed', test_count: cases.length };
+  return { status: 'passed', test_count: cases.length, scope: 'test-scope mapping, MyBatis RowBounds, TransactionTemplate, HTTP status and JSON; not component error envelope, pagination interceptor, use-case proxy or production dialect certification' };
 }
 export async function verifyPlatformTests(projectRoot, evidenceDir, manifest, startedAt) {
   try {

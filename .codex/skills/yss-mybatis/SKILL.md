@@ -55,3 +55,7 @@ description: 用于 YSS MyBatis / MyBatis-Plus 组件能力核验、接入决策
 ## 平台与源码门禁
 
 接入、修改、代码生成或给出精确类名/配置前，读取 [后端组件平台与源码门禁](../yss-skill-source-index-refresh/references/backend-component-platform-compatibility.md)，从批准的 `platform_configuration.component_platform_line` 选择 `source-index.boot2-java8.md` 或 `source-index.boot3-java17.md`，并以 `--skill yss-mybatis --platform-line <line> --source-root <matching-root>` 运行统一 freshness 校验。平台线与源码根不匹配、组件 tree 不一致、组件子树 dirty、索引缺少平台信号，或 Manifest / 组件 GAV 缺少 verified 兼容证据时返回 `blocked`；不得回退另一代索引，也不在业务实现中升级、降级或替换 YSS 组件。既有工程只读分诊可继续，但不得据此宣称跨 Boot/JDK 兼容。
+
+## 持久化选择记录
+
+在已有数据合同 / persistence_strategy 中记录：实际 Mapper 基类、组件源码与平台绑定、分页唯一责任者、主键与审计填充，以及命中批量时的 SQL 入口、分批大小和方言证据。`BaseMapper` 与组件扩展基类按所需能力选择，不因命名不同判违规；依赖存在和循环 insert 均不证明批量能力。未命中的能力不强制生成。

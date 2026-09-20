@@ -18,6 +18,7 @@
 
 | Capability | Primary skill | Task modes |
 | --- | --- | --- |
+| `governance.backend-spec-conformance` | `yss-backend-spec-review` | `guidance`, `troubleshooting`, `review-input` |
 | `writing.lifecycle-document` | `i-have-adhd` | `guidance` |
 | `architecture.technical-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
 | `architecture.mvc-design` | `yss-technical-design` | `guidance`, `integration`, `review-input` |
@@ -57,6 +58,7 @@
 
 | Recipe | Capabilities |
 | --- | --- |
+| `backend.spec-conformance` | `governance.backend-spec-conformance`, `quality.java-code-style` |
 | `backend.ddd-domain-behavior` | `layer.domain`, `layer.application`, `quality.java-code-style` |
 | `backend.ddd-persistence-mybatis` | `layer.persistence`, `framework.mybatis`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
 | `backend.ddd-http-api` | `layer.web-adapter`, `contract.dto-wire`, `contract.request-validation`, `contract.error-mapping`, `codegen.mapstruct`, `codegen.lombok`, `quality.java-code-style` |
@@ -106,6 +108,9 @@
 
 | Skill | Dependency | Type | Condition |
 | --- | --- | --- | --- |
+| `yss-backend-spec-review` | `alibaba-java-code-style` | `context-required` | — |
+| `yss-backend-spec-review` | `yss-implementation-contract-compiler` | `coordination-only` | — |
+| `yss-backend-spec-review` | `code-review` | `review-only` | — |
 | `prototype-review` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 | `yss-implementation-contract-compiler` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |
 | `yss-openapi-governance` | `i-have-adhd` | `context-conditional` | `lifecycle-document-output` |

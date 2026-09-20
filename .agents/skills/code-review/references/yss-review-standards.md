@@ -59,3 +59,25 @@ YSS 页面模块约定（YTable、YFormily、页面骨架等）走 Standards，�
 | `drift`、`new_impacts`、`required_skills` 与真实影响不一致 | 合同标 `stale`，回 实现合同编译器 或更早生命周期阶段；禁止在旧合同上继续编码 |
 
 `not-applicable` 仅当影响面未命中。命中后的 mandatory 不得豁免；只允许修复，或写完整 `seam-deferred`（风险、责任人、后续 Ticket、验证计划、目标版本或发布日期）。禁止为日常 Alibaba / YSS 新增生物人豁免门禁；安全 / 公共 API 仍走既有 `TODO-HUMAN-REVIEW` 与生物人门禁。
+
+
+## 可执行后端审查结果
+
+后端 `work-unit.code-review` 到交付的流转由 `scripts/lib/backend-review.mjs` 检查。
+`decision_state.review_input` 绑定 `slice_contract_ref`、`approval_ref`、跨仓时的 `work_unit_id`、`project_root`、既有候选的 `review_mode`、
+`candidate_snapshot_ref`、`implementation_candidate_ref`、`candidate_digest`、
+`implementation_actor_id`、`implementation_instance_id` 和 `actual_skill_impacts`（无新增影响为 `[]`）。
+`review_result_ref` 指向唯一 `code-review` 结果；记录 `result: completed`、合同原始字节的
+`contract_digest`、候选摘要、`reviewer` / `implementer` 的 actor_id / runtime_id / instance_id，
+并分别记录 `axes.Standards` 和 `axes.Spec`。自审不能用不同角色名替代不同执行实例。
+
+复用 `constraint_results`，每个适用技能至少一项包含 `axis: Standards`、`skill`、`constraint`、
+`status`、`rule_ref`、规则文件 SHA-256 `rule_digest`、`code_ref`、`evidence_ref`、证据 SHA-256
+`evidence_digest`。按原文定位具体规则，禁止仅写“符合规范”。无持久化影响时 Repository/MyBatis
+可写有原因的 not-applicable；合同必需技能不得豁免。`findings` 的阻断项必须关闭；建议可绑定
+`follow_up_ref` 进入待办。修复后重新捕获候选，重验受影响规则及依赖，并显式重绑复用证据。
+
+工作树候选复用现有 packed candidate 工具；审查证据可排除，业务文件不可排除。已提交候选绑定
+不可变 tree ID，并核对当前清洁 checkout。读取结构化结果不会代替 Reviewer 的实际规则判断。
+
+`verification_results` 必须包含实际 command、executed_at、exit_code=0、candidate_digest，以及日志 evidence_ref/evidence_digest。缺少本次机器检查或日志漂移不能完成审查。

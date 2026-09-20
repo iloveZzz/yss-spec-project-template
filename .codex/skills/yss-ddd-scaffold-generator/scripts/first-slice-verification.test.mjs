@@ -126,19 +126,18 @@ const environment = { ...process.env, JAVA_HOME: "/fixture/java", YSS_MAVEN_REPO
 
 test("refuses first-slice promotion when a required persistence seam is absent", async () => {
   const data = await fixture({ omitGatewayImpl: true });
-  const report = await runFirstSliceVerification(data.project, data.evidence, data.contractPath, environment);
+  const report = await runFirstSliceVerification(data.project, data.evidence, data.contractPath, environment, { contractRoot: data.root });
   assert.equal(report.status, "failed");
-  assert.ok(report.missing_artifacts.includes("infrastructure-gateway-implementation"));
+  assert.ok(report.missing_artifacts.includes("backend.first_slice.artifacts-required"));
   const manifest = JSON.parse(await readFile(data.manifestPath, "utf8"));
   assert.equal(manifest.completion_level, "empty-scaffold-verified");
 });
 
-test("refuses first-slice promotion when downstream skill or contract digests are absent", async () => {
+test("missing generation provenance does not substitute for current approved contract", async () => {
   const data = await fixture({ omitReadiness: true });
-  const report = await runFirstSliceVerification(data.project, data.evidence, data.contractPath, environment);
+  const report = await runFirstSliceVerification(data.project, data.evidence, data.contractPath, environment, { contractRoot: data.root });
   assert.equal(report.status, "failed");
-  assert.ok(report.downstream_skill_drift.includes("yss-domain:digest-missing"));
-  assert.ok(report.downstream_skill_drift.includes("compiler_contract:digest-missing"));
+  assert.ok(report.contract_failures.includes("slice-execution-not-authorized"));
   const manifest = JSON.parse(await readFile(data.manifestPath, "utf8"));
   assert.equal(manifest.completion_level, "empty-scaffold-verified");
 });
@@ -148,20 +147,17 @@ test("refuses first-slice promotion when a work unit references a stale contract
   const contract = JSON.parse(await readFile(data.contractPath, "utf8"));
   contract.work_units[0].contract_version = 0;
   await writeFile(data.contractPath, JSON.stringify(contract));
-  const report = await runFirstSliceVerification(data.project, data.evidence, data.contractPath, environment);
+  const report = await runFirstSliceVerification(data.project, data.evidence, data.contractPath, environment, { contractRoot: data.root });
   assert.equal(report.status, "failed");
   assert.ok(report.contract_failures.includes("work-unit-contract-version-mismatch:slice-backend"));
 });
 
-test("promotes a complete approved slice only after all root wrapper commands pass", async () => {
+test("fake wrapper success and an approved status cannot promote an incomplete v2 contract", async () => {
   const data = await fixture();
-  const report = await runFirstSliceVerification(data.project, data.evidence, data.contractPath, environment);
-  assert.equal(report.status, "passed");
-  assert.equal(report.completion_level, "first-slice-verified");
-  assert.deepEqual(report.commands.map((item) => item.exit_code), [0, 0, 0]);
+  const report = await runFirstSliceVerification(data.project, data.evidence, data.contractPath, environment, { contractRoot: data.root });
+  assert.equal(report.status, "failed");
+  assert.ok(report.contract_failures.includes("slice-execution-not-authorized"));
+  assert.deepEqual(report.commands, []);
   const manifest = JSON.parse(await readFile(data.manifestPath, "utf8"));
-  assert.equal(manifest.completion_level, "first-slice-verified");
-  assert.equal(manifest.first_slice_contract.contract_id, "slice-1");
-  assert.equal(manifest.first_slice_contract.slice_id, "quality-rule-first-slice");
-  assert.equal(JSON.parse(await readFile(path.join(data.evidence, "first-slice-verification.json"), "utf8")).status, "passed");
+  assert.equal(manifest.completion_level, "empty-scaffold-verified");
 });

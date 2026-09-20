@@ -228,16 +228,12 @@ test("golden first slice 组合 Domain/Application/Infrastructure/Web 且不发�
   assert.match(queryAdapter, /implements QualityRuleQueryPort/);
 });
 
-test("golden first slice 通过真实 Wrapper 后才写入 first-slice-verified", { timeout: 300_000 }, async (t) => {
-  if (!["YSS_MAVEN_REPOSITORY_URL", "MAVEN_REPO_USERNAME", "MAVEN_REPO_PASSWORD"].every((name) => process.env[name])) {
-    t.skip("缺少受控 YSS Maven 仓库环境；不得声明 first-slice-verified");
-    return;
-  }
-  const { project, sliceContract, root } = await prepareGoldenProject(t);
-  await chmod(path.join(project, "mvnw"), 0o755);
-  const result = await runFirstSliceVerification(project, path.join(root, "first-slice-evidence"), sliceContract, process.env);
-  assert.equal(result.status, "passed", JSON.stringify(result, null, 2));
-  assert.equal(JSON.parse(await readFile(path.join(project, ".yss/scaffold-generation.json"), "utf8")).completion_level, "first-slice-verified");
+test("golden 布局与可用凭据不能替代完整批准的 Slice 合同", async (t) => {
+  const { root, project, sliceContract } = await prepareGoldenProject(t);
+  const result = await runFirstSliceVerification(project, path.join(root, "first-slice-evidence"), sliceContract, process.env, { contractRoot: root });
+  assert.equal(result.status, "failed");
+  assert.ok(result.contract_failures.includes("slice-execution-not-authorized"));
+  assert.equal(result.commands.length, 0);
 });
 
 test("真实 YSS exception starter 的自动配置、优先级、三类映射和序列化均受保护", { timeout: 300_000 }, async (t) => {

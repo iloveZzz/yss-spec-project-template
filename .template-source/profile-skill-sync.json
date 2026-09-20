@@ -53,15 +53,12 @@
         },
         {
           "id": "yss-research"
+        },
+        {
+          "id": "code-review"
         }
       ],
       "adapted": [
-        {
-          "id": "code-review",
-          "strategy": "patch",
-          "patch": ".template-source/profile-skill-patches/design/code-review.patch",
-          "source_tree_sha256": "dedd028ae161e8664b014b640a587d01642be61541a8768b8cfd94102aaa9295"
-        },
         {
           "id": "triage",
           "strategy": "patch",
@@ -270,6 +267,18 @@
         },
         {
           "id": "yss-dto"
+        },
+        {
+          "id": "code-review"
+        },
+        {
+          "id": "yss-mybatis"
+        },
+        {
+          "id": "yss-repository"
+        },
+        {
+          "id": "yss-backend-spec-review"
         }
       ],
       "adapted": [
@@ -282,8 +291,8 @@
           "replacements": [
             {
               "file": "SKILL.md",
-              "from": "由 `yss-product-lifecycle` 调度，负责 `work-unit.technical-analysis`",
-              "to": "由 `harness-orchestrator` 调度，负责 `work-unit.technical-design`"
+              "from": "\u7531 `yss-product-lifecycle` \u8c03\u5ea6\uff0c\u8d1f\u8d23 `work-unit.technical-analysis`",
+              "to": "\u7531 `harness-orchestrator` \u8c03\u5ea6\uff0c\u8d1f\u8d23 `work-unit.technical-design`"
             }
           ]
         },
@@ -296,40 +305,22 @@
           "replacements": [
             {
               "file": "SKILL.md",
-              "from": "批准由 `yss-product-lifecycle` 维护",
-              "to": "批准由 `harness-orchestrator` 维护"
+              "from": "\u6279\u51c6\u7531 `yss-product-lifecycle` \u7ef4\u62a4",
+              "to": "\u6279\u51c6\u7531 `harness-orchestrator` \u7ef4\u62a4"
             }
           ]
-        },
-        {
-          "id": "code-review",
-          "strategy": "patch",
-          "patch": ".template-source/profile-skill-patches/backend/code-review.patch",
-          "source_tree_sha256": "dedd028ae161e8664b014b640a587d01642be61541a8768b8cfd94102aaa9295"
         },
         {
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "bc5c4661f93362c44a6db2003226b933f8c08f021c54839b4a512f0f9c5b2b3d"
+          "source_tree_sha256": "0390b22299ea121a2f83b10c2274505a960293cd8c9483a36d67599e245d2783"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-openapi-governance.patch",
           "source_tree_sha256": "6c50ab0d2593b590f7fff4e978dc555222400e76067011b256eadf9bb5ba0d3c"
-        },
-        {
-          "id": "yss-mybatis",
-          "strategy": "patch",
-          "patch": ".template-source/profile-skill-patches/backend/yss-mybatis.patch",
-          "source_tree_sha256": "5c608701feac10aba817b0cd1308620cee24aa2cc8cb43c5deed4280aaa1e85d"
-        },
-        {
-          "id": "yss-repository",
-          "strategy": "patch",
-          "patch": ".template-source/profile-skill-patches/backend/yss-repository.patch",
-          "source_tree_sha256": "7f8164cc19af8f0764639e226d6e39967e2bfa17e9f2018f21924f109532df11"
         }
       ],
       "assets": [
@@ -558,20 +549,17 @@
         },
         {
           "id": "yss-design-system"
+        },
+        {
+          "id": "code-review"
         }
       ],
       "adapted": [
         {
-          "id": "code-review",
-          "strategy": "patch",
-          "patch": ".template-source/profile-skill-patches/frontend/code-review.patch",
-          "source_tree_sha256": "dedd028ae161e8664b014b640a587d01642be61541a8768b8cfd94102aaa9295"
-        },
-        {
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "bc5c4661f93362c44a6db2003226b933f8c08f021c54839b4a512f0f9c5b2b3d"
+          "source_tree_sha256": "0390b22299ea121a2f83b10c2274505a960293cd8c9483a36d67599e245d2783"
         },
         {
           "id": "yss-openapi-governance",

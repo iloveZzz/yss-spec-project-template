@@ -6,7 +6,7 @@ description: "配置或排查 Lombok 注解、构造器、Builder 和注解处�
 
 ## YSS 阶段 7 执行结果
 
-- 消费工程 Java 与处理器基线；三个新后端 Profile 为 Java 8。MapStruct binding 进入 annotationProcessorPaths，不作为业务依赖单独引入；示例不授权升级依赖。MVC PO 的身份/敏感字段风险与 DDD 相同，不能默认全量 @Data。
+- 消费工程 Java 与处理器基线；Java 语法、API、处理器与测试工具消费批准的精确平台配置。MapStruct binding 进入 annotationProcessorPaths，不作为业务依赖单独引入；示例不授权升级依赖。MVC PO 的身份/敏感字段风险与 DDD 相同，不能默认全量 @Data。
 - 消费批准后的 Slice Contract/work unit，只在允许路径内调整 POJO 样板和注解处理器配置。
 - 受控生成必须记录对象类型、选用/排除注解、实体关系和敏感字段风险、编译/测试实际结果。
 - 按 `yss-implementation-contract-compiler` 的统一 Execution Result 返回 changed files、证据、偏离和新增影响；`@Data` 实体风险、处理器配置缺失或越界路径返回 `violation`。

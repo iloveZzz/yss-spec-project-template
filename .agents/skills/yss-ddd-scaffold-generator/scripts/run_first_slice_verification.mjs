@@ -8,33 +8,15 @@ import { fileURLToPath } from "node:url";
 
 import { run as runScaffoldVerification } from "./run_scaffold_verification.mjs";
 import { assertArchitectureAgreement } from "../../../../scripts/lib/backend-architecture.mjs";
-import { mvcFirstSliceProfile } from "../../../../scripts/lib/first-slice-architecture.mjs";
+import { inspectSliceContract } from "../../../../scripts/lib/slice-execution-preflight.mjs";
+import { selectSliceWorkUnit } from "../../../../scripts/lib/slice-contract.mjs";
+import { verifyFirstSliceTests } from "../../../../scripts/lib/first-slice-tests.mjs";
+import { inspectFirstSliceArtifacts } from "../../../../scripts/lib/first-slice-artifacts.mjs";
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const REPOSITORY_ROOT = path.resolve(SCRIPT_DIR, "../../../..");
 const REQUIRED_SKILLS = ["yss-domain", "yss-application", "yss-repository", "yss-mybatis", "yss-web-controller", "yss-dto", "yss-exception", "yss-validation", "mapstruct", "lombok", "alibaba-java-code-style"];
 const REQUIRED_LAYERS = ["domain", "application", "infrastructure", "web"];
-const ARTIFACT_CHECKS = [
-  ["domain-model", /-domain\/src\/main\/java\/.+\/domain\/.+\/model\/.+\.java$/],
-  ["domain-gateway", /-domain\/src\/main\/java\/.+\/domain\/.+\/gateway\/.+Gateway\.java$/],
-  ["domain-behavior-test", /-domain\/src\/test\/java\/.+(?:Test|Tests)\.java$/],
-  ["application-command-or-query", /-application\/src\/main\/java\/.+\/application\/(?:command|query)\/.+\.java$/],
-  ["application-result", /-application\/src\/main\/java\/.+\/application\/result\/.+Result\.java$/],
-  ["application-service", /-application\/src\/main\/java\/.+\/application\/service\/.+Service\.java$/],
-  ["application-service-implementation", /-application\/src\/main\/java\/.+\/application\/service\/impl\/.+ServiceImpl\.java$/],
-  ["application-behavior-test", /-application\/src\/test\/java\/.+(?:Test|Tests)\.java$/],
-  ["infrastructure-po", /-infrastructure\/src\/main\/java\/.+\/infrastructure\/persistence\/po\/.+PO\.java$/],
-  ["infrastructure-repository", /-infrastructure\/src\/main\/java\/.+\/infrastructure\/persistence\/repository\/.+Repository\.java$/],
-  ["infrastructure-convertor", /-infrastructure\/src\/main\/java\/.+\/infrastructure\/persistence\/convertor\/.+Convertor\.java$/],
-  ["infrastructure-gateway-implementation", /-infrastructure\/src\/main\/java\/.+\/infrastructure\/persistence\/gateway\/.+GatewayImpl\.java$/],
-  ["infrastructure-query-adapter", /-infrastructure\/src\/main\/java\/.+\/infrastructure\/query\/adapter\/.+QueryAdapter\.java$/],
-  ["infrastructure-integration-test", /-infrastructure\/src\/test\/java\/.+(?:Test|Tests)\.java$/],
-  ["web-controller", /-adapter\/.+-web\/src\/main\/java\/.+\/rest\/.+Controller\.java$/],
-  ["web-convertor", /-adapter\/.+-web\/src\/main\/java\/.+\/rest\/convertor\/.+WebConvertor\.java$/],
-  ["web-request", /-adapter\/.+-web\/src\/main\/java\/.+\/rest\/dto\/request\/.+Request\.java$/],
-  ["web-response", /-adapter\/.+-web\/src\/main\/java\/.+\/rest\/dto\/response\/.+Response\.java$/],
-  ["web-contract-test", /-adapter\/.+-web\/src\/test\/java\/.+(?:Test|Tests)\.java$/]
-];
 
 const isoNow = () => new Date().toISOString();
 const sha256 = (content) => createHash("sha256").update(content).digest("hex");
@@ -62,59 +44,7 @@ async function writeJsonAtomic(target, value) {
   await writeFile(temporary, `${JSON.stringify(value, null, 2)}\n`, "utf8");
   await rename(temporary, target);
 }
-function invalidContractReasons(contract, requiredSkills = REQUIRED_SKILLS, requiredLayers = REQUIRED_LAYERS) {
-  const reasons = [];
-  if (contract.schema_version !== 2) reasons.push("slice-contract-schema");
-  if (contract.status !== "approved") reasons.push("slice-contract-not-approved");
-  for (const field of ["contract_id", "contract_version", "slice_id"]) if (contract[field] === undefined || contract[field] === null || contract[field] === "") reasons.push(`slice-contract-${field}-missing`);
-  if (contract.readiness?.blockers?.length) reasons.push("slice-contract-has-blockers");
-  if (contract.readiness?.stale_inputs?.length) reasons.push("slice-contract-has-stale-inputs");
-  const actualSkills = new Set([...(contract.common?.required_skills ?? []), ...(contract.backend?.required_skills ?? [])]);
-  for (const skill of requiredSkills) if (!actualSkills.has(skill)) reasons.push(`required-skill-missing:${skill}`);
-  const actualLayers = new Set(contract.backend?.affected_layers ?? []);
-  for (const layer of requiredLayers) if (!actualLayers.has(layer)) reasons.push(`required-layer-missing:${layer}`);
-  if (!Array.isArray(contract.work_units) || !contract.work_units.length) reasons.push("slice-contract-work-units-missing");
-  else for (const [index, unit] of contract.work_units.entries()) {
-    const id = unit.id || `index-${index}`;
-    if (unit.contract_id !== contract.contract_id) reasons.push(`work-unit-contract-id-mismatch:${id}`);
-    if (unit.contract_version !== contract.contract_version) reasons.push(`work-unit-contract-version-mismatch:${id}`);
-    if (!unit.work_unit?.primary_skill) reasons.push(`work-unit-primary-skill-missing:${id}`);
-  }
-  return reasons;
-}
-async function downstreamDrift(manifest, requiredSkills = REQUIRED_SKILLS) {
-  const drift = [];
-  const recordedSkills = manifest.readiness?.downstream_skills ?? {};
-  for (const skill of requiredSkills) {
-    const expected = recordedSkills[skill];
-    if (typeof expected !== "string" || !/^[a-f0-9]{64}$/.test(expected)) {
-      drift.push(`${skill}:digest-missing`);
-      continue;
-    }
-    const root = path.join(REPOSITORY_ROOT, ".agents", "skills", skill);
-    if (!await isFile(path.join(root, "SKILL.md"))) drift.push(`${skill}:unavailable`);
-    else if (await treeDigest(root) !== expected) drift.push(`${skill}:digest-mismatch`);
-  }
-  const contracts = manifest.readiness?.contracts ?? {};
-  const contractFiles = {
-    compiler_contract: path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-implementation-contract-compiler", "references", "compiler-contract.yaml")
-  };
-  if (manifest.architecture_family === "layered-mvc") {
-    contractFiles.architecture_profiles = path.join(REPOSITORY_ROOT, "docs/agents/backend-architecture-profiles.md");
-  } else contractFiles.engineering_baseline = path.join(REPOSITORY_ROOT, ".agents", "skills", "yss-ddd-scaffold-generator", "references", "engineering-baseline.md");
-  for (const [name, target] of Object.entries(contractFiles)) {
-    const expected = contracts[name];
-    if (typeof expected !== "string" || !/^[a-f0-9]{64}$/.test(expected)) {
-      drift.push(`${name}:digest-missing`);
-      continue;
-    }
-    if (!await isFile(target)) drift.push(`${name}:unavailable`);
-    else if (sha256(await readFile(target)) !== expected) drift.push(`${name}:digest-mismatch`);
-  }
-  return drift;
-}
-
-export async function runFirstSliceVerification(projectRoot, evidenceDir, sliceContractFile, environment = process.env) {
+export async function runFirstSliceVerification(projectRoot, evidenceDir, sliceContractFile, environment = process.env, options = {}) {
   projectRoot = path.resolve(projectRoot);
   evidenceDir = path.resolve(evidenceDir);
   sliceContractFile = path.resolve(sliceContractFile);
@@ -123,20 +53,33 @@ export async function runFirstSliceVerification(projectRoot, evidenceDir, sliceC
   if (!await isFile(manifestPath)) throw new Error(`missing scaffold manifest: ${manifestPath}`);
   if (!await isFile(sliceContractFile)) throw new Error(`missing Slice Implementation Contract: ${sliceContractFile}`);
   const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
-  const contract = JSON.parse(await readFile(sliceContractFile, "utf8"));
+  const contractRoot = path.resolve(options.contractRoot || projectRoot);
+  let contract, preflight;
+  try {
+    const loaded = inspectSliceContract(path.relative(contractRoot, sliceContractFile), {
+      root: contractRoot, approval_ref: options.approvalRef, work_unit_id: options.workUnit
+    });
+    preflight = loaded.report;
+    contract = selectSliceWorkUnit(loaded.contract, options.workUnit);
+  } catch (error) {
+    preflight = { execution_allowed: false, blockers: [error.message] };
+    contract = {};
+  }
   if (manifest.platform_verification === "candidate") throw new Error("backend-platform: candidate scaffold cannot become first-slice-verified");
-  const adapter = manifest.architecture_family === "layered-mvc" ? mvcFirstSliceProfile(manifest.architecture_identity ?? {}) : { skills: REQUIRED_SKILLS, layers: REQUIRED_LAYERS, artifacts: ARTIFACT_CHECKS };
-  const contractFailures = invalidContractReasons(contract, adapter.skills, adapter.layers);
+  const contractFailures = [...preflight.blockers];
+  if (!preflight.execution_allowed) contractFailures.push("slice-execution-not-authorized");
+  if (!(contract.common?.project_roots || []).some(ref => path.resolve(contractRoot, ref) === projectRoot)) contractFailures.push("slice-project-root-mismatch");
   try {
     const identity = contract.architecture_identity ?? contract.resolution?.architecture_identity;
-    assertArchitectureAgreement(identity, { manifest });
+    if (identity?.source_kind !== "existing-registration") assertArchitectureAgreement(identity, { manifest });
     for (const unit of contract.work_units ?? []) assertArchitectureAgreement(identity, { work_unit: unit.architecture_identity });
   } catch (error) { contractFailures.push(`architecture-identity:${error.message}`); }
   if (![2, 3, 4].includes(manifest.schema_version) || manifest.completion_level !== "empty-scaffold-verified") contractFailures.push("scaffold-not-empty-scaffold-verified");
   if (manifest.schema_version === 3 && manifest.legacy_reconciliation?.status !== "approved") contractFailures.push("legacy-scaffold-reconciliation-required");
-  const projectFiles = await files(projectRoot);
-  const missingArtifacts = adapter.artifacts.filter(([, pattern]) => !projectFiles.some((file) => pattern.test(file))).map(([name]) => name);
-  const skillDrift = await downstreamDrift(manifest, adapter.skills);
+  const artifacts = inspectFirstSliceArtifacts(contract, projectRoot);
+  const missingArtifacts = artifacts.failures;
+  // Generation-time Skill hashes are provenance. Current authority was checked by execution preflight.
+  const skillDrift = [];
   if (contractFailures.length || missingArtifacts.length || skillDrift.length) {
     const report = { verification_mode: "first-slice", project_root: projectRoot, slice_contract_ref: sliceContractFile, scaffold_manifest_ref: manifestPath, generated_at: isoNow(), status: "failed", completion_level: manifest.completion_level, contract_failures: contractFailures, missing_artifacts: missingArtifacts, downstream_skill_drift: skillDrift, commands: [] };
     await writeJsonAtomic(reportPath, report);
@@ -144,9 +87,15 @@ export async function runFirstSliceVerification(projectRoot, evidenceDir, sliceC
   }
 
   const mavenEvidence = path.join(evidenceDir, "maven");
-  const wrapper = await runScaffoldVerification(projectRoot, mavenEvidence, environment, { firstSlice: true });
-  const passed = wrapper.status === "passed";
-  const report = { verification_mode: "first-slice", project_root: projectRoot, slice_contract_ref: sliceContractFile, scaffold_manifest_ref: manifestPath, generated_at: isoNow(), status: passed ? "passed" : "failed", failure_category: wrapper.failure_category, completion_level: passed ? "first-slice-verified" : manifest.completion_level, contract_failures: [], missing_artifacts: [], downstream_skill_drift: [], commands: wrapper.commands };
+  const startedAt = Date.now();
+  const wrapper = await runScaffoldVerification(projectRoot, mavenEvidence, environment, { firstSlice: true, systemProperties: artifacts.properties });
+  const mvc = manifest.architecture_family === "layered-mvc";
+  const tests = wrapper.status === "passed" ? verifyFirstSliceTests(contract, projectRoot, startedAt, {
+    module: `${manifest.project_name}-${mvc ? "server" : "bootstrap"}`,
+    type: `${manifest.base_package}.${mvc ? "architecture.LayeredMvcArchitectureTest" : "ArchitectureRulesTest"}`
+  }) : { status: "not-executed", failures: [], evidence: [] };
+  const passed = wrapper.status === "passed" && tests.status === "passed";
+  const report = { verification_mode: "first-slice", project_root: projectRoot, slice_contract_ref: sliceContractFile, scaffold_manifest_ref: manifestPath, generated_at: isoNow(), status: passed ? "passed" : "failed", test_execution: tests, failure_category: wrapper.failure_category || (tests.status === "failed" ? "first-slice-tests" : null), completion_level: passed ? "first-slice-verified" : manifest.completion_level, contract_failures: [], missing_artifacts: [], downstream_skill_drift: [], commands: wrapper.commands };
   await writeJsonAtomic(reportPath, report);
   if (passed) {
     manifest.completion_level = "first-slice-verified";
@@ -162,7 +111,7 @@ function parseArgs(argv) {
   const result = {};
   for (let index = 0; index < argv.length; index += 2) {
     const flag = argv[index], value = argv[index + 1];
-    if (!["--project-root", "--evidence-dir", "--slice-contract-file"].includes(flag) || !value) throw new Error("usage: run_first_slice_verification.mjs --project-root DIR --evidence-dir DIR --slice-contract-file FILE");
+    if (!["--project-root", "--evidence-dir", "--slice-contract-file", "--contract-root", "--approval-ref", "--work-unit"].includes(flag) || !value) throw new Error("usage: run_first_slice_verification.mjs --project-root DIR --evidence-dir DIR --slice-contract-file FILE");
     result[flag.slice(2).replaceAll(/-([a-z])/g, (_, letter) => letter.toUpperCase())] = value;
   }
   if (!result.projectRoot || !result.evidenceDir || !result.sliceContractFile) throw new Error("project root, evidence dir, and slice contract file are required");
@@ -172,7 +121,7 @@ function parseArgs(argv) {
 async function main() {
   try {
     const args = parseArgs(process.argv.slice(2));
-    const report = await runFirstSliceVerification(args.projectRoot, args.evidenceDir, args.sliceContractFile);
+    const report = await runFirstSliceVerification(args.projectRoot, args.evidenceDir, args.sliceContractFile, process.env, args);
     process.stdout.write(`${report.status}: ${path.join(path.resolve(args.evidenceDir), "first-slice-verification.json")}\n`);
     return report.status === "passed" ? 0 : 1;
   } catch (error) {

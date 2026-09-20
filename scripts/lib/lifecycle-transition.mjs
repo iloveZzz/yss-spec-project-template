@@ -9,6 +9,7 @@ import { validatePlanSpecEntry } from "./plan-spec-entry.mjs";
 import path from "node:path";
 import { validateApiContractDecision } from "./api-contract-decision.mjs";
 import { loadApprovalRecord, validateApprovalRecord } from "./approval-record.mjs";
+import { validateBackendReview } from "./backend-review.mjs";
 import { ROOT } from "./lifecycle-registry.mjs";
 
 const IMPLEMENTATION_WORK_UNIT = "work-unit.slice-implementation";
@@ -248,6 +249,11 @@ function validateTicketReference(ref, trackerKind) {
  * by `validateWorkflowExecutionResult` before this function is called.
  */
 export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, options = {}) {
+  if (currentWorkUnit === "work-unit.code-review" && nextRoute === "work-unit.release-and-retrospective") {
+    try { validateBackendReview(decisionState, { root: options.root || ROOT }); }
+    catch (error) { return blockedResult(["backend-review-incomplete"], [error.message]); }
+  }
+
 
   if (["work-unit.technical-analysis", TICKET_DECOMPOSITION_WORK_UNIT, IMPLEMENTATION_WORK_UNIT, "work-unit.frontend-implementation-verification"].includes(nextRoute)) {
     try { enforceFrontendDelivery(decisionState, { root: options.root, phase: nextRoute === IMPLEMENTATION_WORK_UNIT ? "implementation" : "inputs" }); }

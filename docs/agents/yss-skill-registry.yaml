@@ -33,6 +33,7 @@ backend_skill_domains:
     yss-implementation-contract-compiler: platform-governance-migration
     yss-skill-source-index-refresh: platform-governance-migration
     yss-up-springboot3: platform-governance-migration
+    yss-backend-spec-review: platform-governance-migration
   deprecated_skills: []
 backend_source_index_contract:
   schema_version: 1
@@ -126,6 +127,7 @@ retirement_contract:
     deprecated: skill-deprecated
     retired: skill-retired
 capabilities:
+  - { id: governance.backend-spec-conformance, primary_skill: yss-backend-spec-review, provider: { kind: none }, task_modes: [guidance, troubleshooting, review-input] }
   - { id: writing.lifecycle-document, primary_skill: i-have-adhd, provider: { kind: none }, task_modes: [guidance] }
   - { id: architecture.technical-design, primary_skill: yss-technical-design, provider: { kind: none }, task_modes: [guidance, integration, review-input] }
   - { id: architecture.mvc-design, primary_skill: yss-technical-design, provider: { kind: none }, architecture_family: layered-mvc, task_modes: [guidance, integration, review-input] }
@@ -159,6 +161,7 @@ capabilities:
   - { id: project-init.mvc-data-analysis, primary_skill: yss-layered-mvc-scaffold-generator, provider: { kind: none }, task_modes: [component-maintenance] }
   - { id: migration.springboot3, primary_skill: yss-up-springboot3, provider: { kind: none }, task_modes: [guidance, integration, troubleshooting, component-maintenance, review-input] }
 recipes:
+  - { id: backend.spec-conformance, capabilities: [governance.backend-spec-conformance, quality.java-code-style] }
   - { id: backend.ddd-domain-behavior, architecture_family: domain-driven, capabilities: [layer.domain, layer.application, quality.java-code-style] }
   - { id: backend.ddd-persistence-mybatis, architecture_family: domain-driven, capabilities: [layer.persistence, framework.mybatis, codegen.mapstruct, codegen.lombok, quality.java-code-style] }
   - { id: backend.ddd-http-api, architecture_family: domain-driven, capabilities: [layer.web-adapter, contract.dto-wire, contract.request-validation, contract.error-mapping, codegen.mapstruct, codegen.lombok, quality.java-code-style] }
@@ -180,6 +183,10 @@ recipes:
   - { id: frontend.vue3-scaffold, capabilities: [scaffold.frontend-vue3] }
   - { id: backend.springboot3-migration, capabilities: [migration.springboot3, quality.java-code-style] }
 skill_dependencies:
+  yss-backend-spec-review:
+    - { skill: alibaba-java-code-style, type: context-required }
+    - { skill: yss-implementation-contract-compiler, type: coordination-only }
+    - { skill: code-review, type: review-only }
   prototype-review:
     - { skill: i-have-adhd, type: context-conditional, when: lifecycle-document-output }
   yss-implementation-contract-compiler:
@@ -689,6 +696,12 @@ skills:
     instance_default_discoverable: false
     aliases: []
     impacts: [backend]
+  - id: yss-backend-spec-review
+    layer: specialist
+    maturity: verified
+    instance_default_discoverable: false
+    aliases: []
+    impacts: [backend, quality]
   - id: yss-userinfo
     layer: specialist
     maturity: supported

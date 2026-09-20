@@ -111,6 +111,6 @@ Domain Error -> Application propagation/translation -> Web Exception Translator
 
 - `generated`：文件已原子生成，尚未完成 Wrapper 验证。
 - `empty-scaffold-verified`：根目录 `./mvnw validate/test/package` 全部通过。
-- `first-slice-verified`：批准且版本当前的 golden first slice 已具备 Domain 模型/Gateway、Application Service 实现/事务/Query Port、Repository/Mapper/GatewayImpl/QueryAdapter、DTO/Web/Exception 与分层测试；下游完整 skill tree digest 无漂移，且根 Wrapper 全部通过。该状态只能由 `scripts/run_first_slice_verification.mjs` 写入。
+- `first-slice-verified`：批准且版本当前的 golden first slice 已具备合同声明的职责类型、适用分层与实际执行的行为测试（分页、事务、组件不适用时不生成空实现）；当前批准合同与技能依据无漂移，且根 Wrapper 全部通过。该状态只能由 `scripts/run_first_slice_verification.mjs` 写入。
 
 只有首切片验证器可以把 Manifest 从 `empty-scaffold-verified` 升级到最后一级；手工写值、局部测试或结构扫描均无效。只有最后一级可以声明已满足下游 YSS skills 的首切片就绪条件。

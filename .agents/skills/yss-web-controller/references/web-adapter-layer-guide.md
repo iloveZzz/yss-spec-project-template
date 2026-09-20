@@ -84,3 +84,11 @@ public interface QualityRuleWebConvertor {
 - Wire forbidden fields 无法绑定。
 - OpenAPI 3 注解、YSS Result wrapper、Validation namespace 与平台 Profile 一致。
 - 执行项目根 `./mvnw test/package`，并保留 HTTP/serialization/exception 证据。
+
+## 非 CRUD 适配
+
+认证、OAuth 回调、Cookie、流式响应及协议端点可以手工实现，不强行套 CRUD metadata；仍消费批准的 wire 合同、Application seam 和平台配置。Controller 不直连 Domain Gateway，也不自行编排登录、撤销或持久化。
+
+协议转换、Cookie/Header 处理归 Web；业务决策归 Application/Domain。异常翻译器可以依赖领域错误类型，不能据此允许 Controller 调用领域端口。MapStruct 处理机械字段映射，协议编码及显式领域工厂适配使用有测试的自定义方法。
+
+生成器推荐 rest 布局；已登记的 adapter.web 等布局通过合同绑定识别。审查按模块、实际 Controller 类型和依赖方向进行，包名偏离不能让检查空匹配通过。

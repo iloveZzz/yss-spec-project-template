@@ -367,6 +367,13 @@ class PlatformIntegrationTest {
         try {
             try (java.io.OutputStream stream = connection.getOutputStream()) { stream.write(mapper.writeValueAsBytes(request)); }
             assertEquals(expectedStatus, connection.getResponseCode());
+            if (expectedStatus == 400) {
+                try (java.io.InputStream stream = connection.getErrorStream()) {
+                    assertNotNull(stream);
+                    java.util.Map<?, ?> error = mapper.readValue(stream, java.util.Map.class);
+                    assertFalse(error.isEmpty()); // Exact YSS error envelope requires the component capability contract.
+                }
+            }
             if (expectedStatus == 200) {
                 assertTrue(connection.getContentType().startsWith("application/json"));
                 try (java.io.InputStream stream = connection.getInputStream()) { assertEquals(value, mapper.readValue(stream, ProbePayload.class).getValue()); }
@@ -375,6 +382,54 @@ class PlatformIntegrationTest {
     }
     @Autowired ${mapper.split(".").at(-1)} mapper;
     @Autowired SqlSessionFactory sqlSessionFactory;
+    @Autowired org.springframework.jdbc.core.JdbcTemplate jdbc;
+    @Autowired org.springframework.transaction.PlatformTransactionManager transactions;
+    @Autowired org.mybatis.spring.SqlSessionTemplate sessions;
+    @Autowired PlatformProbeMapping probeMapping;
+
+    @lombok.Getter
+    @lombok.Setter
+    public static class ProbeRow {
+        private Long id;
+        private String value;
+    }
+    interface RoundTripMapper {
+        @org.apache.ibatis.annotations.Insert("INSERT INTO scaffold_roundtrip(id, probe_value) VALUES(#{id}, #{value})")
+        int insert(ProbeRow row);
+        @org.apache.ibatis.annotations.Results(@org.apache.ibatis.annotations.Result(column = "probe_value", property = "value"))
+        @Select("SELECT id, probe_value FROM scaffold_roundtrip ORDER BY id")
+        java.util.List<ProbeRow> page(org.apache.ibatis.session.RowBounds bounds);
+        @Select("SELECT COUNT(*) FROM scaffold_roundtrip") int count();
+    }
+    private RoundTripMapper roundTripMapper() {
+        jdbc.execute("CREATE TABLE IF NOT EXISTS scaffold_roundtrip(id BIGINT PRIMARY KEY, probe_value VARCHAR(100) NOT NULL)");
+        jdbc.update("DELETE FROM scaffold_roundtrip");
+        if (!sqlSessionFactory.getConfiguration().hasMapper(RoundTripMapper.class)) sqlSessionFactory.getConfiguration().addMapper(RoundTripMapper.class);
+        return sessions.getMapper(RoundTripMapper.class);
+    }
+    @Test void mappingPersistenceAndPaginationRoundTrip() {
+        RoundTripMapper persistence = roundTripMapper();
+        for (long id = 1; id <= 3; id++) {
+            ProbeRow original = new ProbeRow(); original.setId(id); original.setValue("probe-" + id);
+            ProbeRow copy = probeMapping.copy(original);
+            assertNotSame(original, copy); assertEquals(original.getId(), copy.getId());
+            persistence.insert(copy);
+        }
+        assertEquals(3, persistence.count());
+        java.util.List<ProbeRow> page = persistence.page(new org.apache.ibatis.session.RowBounds(1, 1));
+        assertEquals(1, page.size()); assertEquals(Long.valueOf(2), page.get(0).getId());
+        assertEquals("probe-2", page.get(0).getValue());
+        assertNull(probeMapping.copy(null));
+    }
+    @Test void transactionRollsBackOnUseCaseFailure() {
+        final RoundTripMapper persistence = roundTripMapper();
+        org.springframework.transaction.support.TransactionTemplate transaction = new org.springframework.transaction.support.TransactionTemplate(transactions);
+        assertThrows(IllegalStateException.class, () -> transaction.execute(status -> {
+            ProbeRow row = new ProbeRow(); row.setId(9L); row.setValue("must-rollback"); persistence.insert(row);
+            throw new IllegalStateException("synthetic use-case failure");
+        }));
+        assertEquals(0, persistence.count());
+    }
     static final class ValidationProbe { @NotBlank String value = ""; }
     @Test void validationAndJsonAutoConfiguration() throws Exception {
         assertFalse(validator.validate(new ValidationProbe()).isEmpty());
@@ -398,5 +453,12 @@ ${capabilities.includes("feign-client") ? `    @Autowired org.springframework.cl
         assertTrue(decoder.decode(response, java.util.Map.class) instanceof java.util.Map);
     }
 ` : ""}}
+
+@org.mapstruct.Mapper(componentModel = "spring", unmappedTargetPolicy = org.mapstruct.ReportingPolicy.ERROR)
+interface PlatformProbeMapping {
+    @org.mapstruct.Mapping(target = "id", source = "id")
+    @org.mapstruct.Mapping(target = "value", source = "value")
+    PlatformIntegrationTest.ProbeRow copy(PlatformIntegrationTest.ProbeRow row);
+}
 `;
 }

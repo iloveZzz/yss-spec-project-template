@@ -62,7 +62,7 @@ public interface QualityTemplateGateway {
 - `*VO`、`PageResult`、Repository PO。
 - MyBatis、Spring MVC、Jackson、Swagger 类型。
 
-分页、列表和投影查询由 Application Query Port 定义，Infrastructure 实现。
+展示分页、列表和投影查询由 Application Query Port 定义，Infrastructure 实现。
 
 ## 5. Domain Error
 
@@ -99,3 +99,10 @@ Web Exception Translator 再将它映射为批准的状态码、错误码和消�
 - 返回 YSS Skill Execution Result，包含 Domain 文件、行为测试、ArchUnit 结果及实际 `./mvnw ...` 证据。
 - 新聚合、不变量、状态机或跨上下文影响进入 `new_impacts` 并暂停。
 - 检测到旧架构时返回 `unsupported`；如需现代化，退出 scaffold 工作流并单独立项评估。
+
+## 聚合创建与重建
+
+- 创建入口执行当前创建规则；持久化重建入口恢复已批准状态并校验结构不变量，不重复发送创建事件、生成身份或执行外部调用。两者不得通过公开任意 setter 混为一体。
+- 值对象按值相等；聚合按稳定身份相等。集合对外只读，修改经业务方法；Java 8 使用普通类与防御性复制，不从示例推导 record 等高版本语法。
+- 领域错误携带稳定标识与参数；公开消息和 HTTP 状态由 Web 翻译。测试通过公开行为覆盖非法状态、重复动作和重建后语义一致性。
+- 为业务决策加载一个或一组聚合仍可使用 Domain Gateway；展示列表、分页、排序、统计和投影走 Application Query Port。返回 List 本身不是违规，须按调用目的判定。

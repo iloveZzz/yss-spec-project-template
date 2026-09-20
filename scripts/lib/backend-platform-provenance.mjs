@@ -21,7 +21,7 @@ export function platformSourceFingerprint(family, root = ROOT) {
   const skill = family === 'domain-driven' ? 'yss-ddd-scaffold-generator' : family === 'layered-mvc' ? 'yss-layered-mvc-scaffold-generator' : null;
   if (!skill) fail('unknown architecture');
   const base = `.agents/skills/${skill}`;
-  const generator = fileMap(root, [`${base}/scripts/generate_scaffold.mjs`, ...(family === 'domain-driven' ? [`${base}/assets`] : ['.agents/skills/yss-ddd-scaffold-generator/assets/wrapper']), 'scripts/lib/backend-platform.mjs', 'scripts/lib/scaffold-local-database.mjs']);
+  const generator = fileMap(root, [`${base}/scripts/generate_scaffold.mjs`, ...(family === 'domain-driven' ? [`${base}/assets`] : [`${base}/assets`, '.agents/skills/yss-ddd-scaffold-generator/assets/wrapper']), 'scripts/lib/backend-platform.mjs', 'scripts/lib/scaffold-local-database.mjs']);
   const verifier = fileMap(root, ['scripts/lib/backend-platform-provenance.mjs', 'scripts/lib/backend-platform-verification.mjs', 'scripts/lib/command-runner.mjs', 'scripts/vendor/xml.mjs', '.agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs']);
   return { schema_version: 1, generator_digest: digest(JSON.stringify(generator)), verifier_digest: digest(JSON.stringify(verifier)) };
 }

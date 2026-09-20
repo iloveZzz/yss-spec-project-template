@@ -1,36 +1,73 @@
 package {{base_package}};
 
+import com.tngtech.archunit.core.domain.JavaClass;
+import com.tngtech.archunit.core.domain.JavaClasses;
+import com.tngtech.archunit.core.domain.Dependency;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.junit.AnalyzeClasses;
 import com.tngtech.archunit.junit.ArchTest;
-import com.tngtech.archunit.lang.ArchRule;
 
-import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
-
-/**
- * Target DDD 的最小可执行边界。规则允许空包，首个业务切片加入后立即生效。
- */
+/** 空骨架可无业务类型；首切片由批准合同传入职责包和必须加载的实际类型。 */
 @AnalyzeClasses(packages = "{{base_package}}", importOptions = ImportOption.DoNotIncludeTests.class)
 class ArchitectureRulesTest {
+    private static boolean inPackage(JavaClass type, String prefixes) {
+        for (String prefix : prefixes.split(",")) {
+            if (!prefix.isEmpty() && (type.getPackageName().equals(prefix)
+                    || type.getPackageName().startsWith(prefix + "."))) return true;
+        }
+        return false;
+    }
+
+    private static boolean role(JavaClass type, String name, String defaults) {
+        return inPackage(type, defaults) || inPackage(type, System.getProperty("yss.arch." + name, ""));
+    }
+
+    private static boolean controller(JavaClass type) {
+        return type.isAnnotatedWith("org.springframework.web.bind.annotation.RestController")
+                || type.isAnnotatedWith("org.springframework.stereotype.Controller")
+                || type.isMetaAnnotatedWith("org.springframework.stereotype.Controller");
+    }
+
+    private static void reject(boolean forbidden, Dependency dependency) {
+        if (forbidden) throw new AssertionError(dependency.getDescription());
+    }
 
     @ArchTest
-    static final ArchRule domain_is_technology_free = noClasses()
-            .that().resideInAPackage("..domain..")
-            .should().dependOnClassesThat().resideInAnyPackage(
-                    "..application..", "..infrastructure..", "..repository..", "..rest..")
-            .allowEmptyShould(true);
-
-    @ArchTest
-    static final ArchRule application_does_not_depend_on_adapters = noClasses()
-            .that().resideInAPackage("..application..")
-            .should().dependOnClassesThat().resideInAnyPackage(
-                    "..infrastructure..", "..repository..", "..rest..")
-            .allowEmptyShould(true);
-
-    @ArchTest
-    static final ArchRule web_does_not_reach_infrastructure = noClasses()
-            .that().resideInAPackage("..rest..")
-            .should().dependOnClassesThat().resideInAnyPackage(
-                    "..infrastructure..", "..repository..")
-            .allowEmptyShould(true);
+    static void boundaries(JavaClasses classes) {
+        for (JavaClass origin : classes) {
+            boolean domain = role(origin, "domain", "{{base_package}}.domain");
+            boolean application = role(origin, "application", "{{base_package}}.application");
+            boolean infrastructure = role(origin, "infrastructure", "{{base_package}}.infrastructure");
+            for (Dependency dependency : origin.getDirectDependenciesFromSelf()) {
+                JavaClass target = dependency.getTargetClass();
+                boolean targetWeb = controller(target) || role(target, "web",
+                        "{{base_package}}.rest,{{base_package}}.adapter.web");
+                boolean targetInfrastructure = role(target, "infrastructure", "{{base_package}}.infrastructure");
+                boolean targetDomain = role(target, "domain", "{{base_package}}.domain");
+                reject(domain && (targetWeb || targetInfrastructure
+                        || role(target, "application", "{{base_package}}.application")
+                        || inPackage(target, "org.springframework,org.mybatis,com.baomidou,org.apache.ibatis,"
+                            + "com.fasterxml.jackson,io.swagger,javax.persistence,jakarta.persistence,"
+                            + "javax.validation,jakarta.validation,javax.servlet,jakarta.servlet,com.yss.cloud.dto,com.yss.cloud.exception")), dependency);
+                reject(application && (targetWeb || targetInfrastructure), dependency);
+                reject(infrastructure && targetWeb, dependency);
+                // Exception translators may translate Domain errors. Controllers may not invoke Domain directly.
+                reject(controller(origin) && (targetInfrastructure || targetDomain), dependency);
+            }
+        }
+        if (Boolean.getBoolean("yss.firstSlice")) {
+            if (Boolean.getBoolean("yss.arch.requireController")) {
+                boolean foundController = false;
+                for (JavaClass type : classes) if (controller(type)) foundController = true;
+                if (!foundController) throw new AssertionError("Web slice did not load an actual Controller");
+            }
+            String required = System.getProperty("yss.arch.requiredTypes", "");
+            if (required.isEmpty()) throw new AssertionError("first slice requires contract-bound types");
+            for (String name : required.split(",")) {
+                boolean found = false;
+                for (JavaClass type : classes) if (type.getName().equals(name)) found = true;
+                if (!found) throw new AssertionError("architecture scope did not load " + name);
+            }
+        }
+    }
 }

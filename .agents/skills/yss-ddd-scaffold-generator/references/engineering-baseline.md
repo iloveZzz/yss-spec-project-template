@@ -40,7 +40,7 @@ infrastructure-+
 - Maven 内部仓库通过命名 profile `yss-internal` 与环境变量注入；共享模板不写内部 URL 或凭据。
 - Wrapper 必须带 checksum；DEBUG 和 MyBatis stdout SQL 只允许在 `application-local.yml`。
 - `./mvnw validate`、`./mvnw test`、`./mvnw package` 全部成功只得到 `empty-scaffold-verified`。
-- 只有批准且版本当前的 golden first slice 真实组合 Domain/Application/Infrastructure/Web、通过下游 skill tree drift 校验与根 Wrapper，才能由 `run_first_slice_verification.mjs` 写入 `first-slice-verified`。
+- 只有批准且版本当前的 golden first slice 真实组合 Domain/Application/Infrastructure/Web、通过当前批准合同的技能/编译依据 freshness 校验与根 Wrapper，才能由 `run_first_slice_verification.mjs` 写入 `first-slice-verified`。
 
 ## 下游权威技能
 
@@ -51,3 +51,9 @@ infrastructure-+
 - 横切实现约束：`yss-validation` + `mapstruct` + `lombok` + `alibaba-java-code-style`
 
 业务代码必须回到 `yss-implementation-contract-compiler`，消费批准且版本当前的 Slice Implementation Contract，并采用 `behavior-tdd`；脚手架只生成机械工程资产。
+
+## 生成来源与当前基线
+
+Manifest 的平台与文件摘要保留生成时来源；后续批准的平台迁移以当前工程基线、仓库登记和迁移证据重新绑定，不覆盖生成历史伪造当前性。历史 Manifest 与当前合同无法对账时停止晋级。
+
+空骨架允许未出现业务类型；首切片按批准 backend.first_slice.artifacts 的职责、具体源码类型和测试证据核验，不以固定目录或后缀作为合规证明。进入业务验证时启用 yss.firstSlice=true，必须实际发现 Controller（命中 Web 时）及声明的业务层。

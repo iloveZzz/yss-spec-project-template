@@ -34,7 +34,8 @@
     "yss-up-springboot3",
     "yss-userinfo",
     "yss-validation",
-    "yss-web-controller"
+    "yss-web-controller",
+    "yss-backend-spec-review"
   ],
   "groupings": [
     {
@@ -57,7 +58,8 @@
         "yss-layered-mvc-scaffold-generator",
         "yss-mybatis",
         "yss-repository",
-        "yss-web-controller"
+        "yss-web-controller",
+        "yss-backend-spec-review"
       ]
     },
     {

@@ -118,11 +118,13 @@ metadata-service/
 ```bash
 node .agents/skills/yss-ddd-scaffold-generator/scripts/run_first_slice_verification.mjs \
   --project-root /path/to/implementation-repo/metadata-service \
-  --slice-contract-file /path/to/approved-slice-contract.json \
+  --slice-contract-file /path/to/approved-slice-contract.yaml \
+  --contract-root /path/to/contract-repository \
+  --approval-ref docs/approved-checkpoint.yaml \
   --evidence-dir /path/to/evidence/first-slice
 ```
 
-只有该验证器确认合同、全层产物、skill tree digest 与根 Wrapper 全部通过，并更新 Manifest 后，才能标记 `first-slice-verified`。
+只有该验证器确认合同、全层产物、当前合同 freshness 与根 Wrapper 全部通过，并更新 Manifest 后，才能标记 `first-slice-verified`。
 
 目标目录必须不存在。`--force`、旧项目迁移和当前模板升级均为 `unsupported`。旧项目继续按原工程维护；现代化改造必须单独立项、先评估再逐切片迁移。
 

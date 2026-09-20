@@ -10,7 +10,7 @@ import { ScaffoldGenerator, parseArgs as dddArgs } from "../.agents/skills/yss-d
 import { generate, validateContract as validateMvcContract, parseArgs as mvcArgs } from "../.agents/skills/yss-layered-mvc-scaffold-generator/scripts/generate_scaffold.mjs";
 import { run } from "../.agents/skills/yss-ddd-scaffold-generator/scripts/run_scaffold_verification.mjs";
 
-const { values } = parseArgs({ options: { "evidence-dir": { type: "string" }, inputs: { type: "string" }, resume: { type: "boolean", default: false } }, strict: true });
+const { values } = parseArgs({ options: { "evidence-dir": { type: "string" }, inputs: { type: "string" }, resume: { type: "boolean", default: false }, "require-combination": { type: "string", multiple: true } }, strict: true });
 if (!values["evidence-dir"]) throw new Error("--evidence-dir is required; optional --inputs points to real approved contracts and candidate catalog");
 const evidence = path.resolve(values["evidence-dir"]);
 await mkdir(evidence, { recursive: true });
@@ -24,9 +24,15 @@ for (const item of input.combinations ?? []) {
   if (keys.has(key) || !catalog.profiles.some(p => p.id === item.profile_id && p.spring_boot_version === item.spring_boot_version) || !["domain-driven", "layered-mvc"].includes(item.architecture_family)) throw new Error("duplicate or unknown exact matrix combination");
   keys.add(key);
 }
+const allKeys = loadBackendPlatforms().profiles.flatMap(profile => ["domain-driven", "layered-mvc"].map(family => `${profile.id}:${profile.spring_boot_version}:${family}`));
+const requested = values["require-combination"] || input.required_combinations || allKeys;
+if (!Array.isArray(requested) || !requested.length || new Set(requested).size !== requested.length || requested.some(key => !allKeys.includes(key))) throw new Error("required combinations must be unique exact profile_id:spring_boot_version:architecture_family keys");
+const required = new Set(requested);
 const rows = [];
 for (const profile of loadBackendPlatforms().profiles) for (const family of ["domain-driven", "layered-mvc"]) {
   const row = { profile_id: profile.id, spring_boot_version: profile.spring_boot_version, java_version: profile.java_version, architecture_family: family, status: "blocked", blockers: [], commands: [], executed_at: new Date().toISOString() };
+  row.required = required.has(`${profile.id}:${profile.spring_boot_version}:${family}`);
+  if (!row.required) { row.status = "not-executed"; row.reason = "outside explicitly requested matrix"; rows.push(row); continue; }
   const configuration = input.combinations?.find(item => item.profile_id === profile.id && item.spring_boot_version === profile.spring_boot_version && item.architecture_family === family);
   for (const key of ["YSS_MAVEN_REPOSITORY_URL", "MAVEN_REPO_USERNAME", "MAVEN_REPO_PASSWORD"]) if (!process.env[key]) row.blockers.push(`missing environment: ${key}`);
   if (!configuration?.contract_ref) row.blockers.push("missing real approved scaffold contract/YSS compatibility coordinates");
@@ -63,7 +69,7 @@ for (const profile of loadBackendPlatforms().profiles) for (const family of ["do
   }
   rows.push(row);
 }
-const report = { schema_version: 1, kind: "backend-platform-matrix", generated_at: new Date().toISOString(), status: rows.every(row => row.status === "passed") ? "passed" : "blocked", combinations: rows };
+const report = { schema_version: 1, kind: "backend-platform-matrix", generated_at: new Date().toISOString(), scope: requested.length === allKeys.length ? "full-matrix" : "required-combinations", required_combinations: requested, certification_policy: "each platform and architecture still requires complete independently validated compatibility evidence", status: rows.filter(row => row.required).every(row => row.status === "passed") ? "passed" : "blocked", combinations: rows };
 await writeFile(path.join(evidence, "platform-matrix.json"), JSON.stringify(report, null, 2));
 process.stdout.write(`${report.status}: ${path.join(evidence, "platform-matrix.json")}\n`);
 if (report.status !== "passed") process.exitCode = 1;

@@ -85,3 +85,10 @@ public interface QualityTemplateApplicationConvertor {
 ## 8. 旧架构边界
 
 检测到 AppService 接收 client Cmd、返回 client VO、调用返回 VO 的 Domain Gateway 或位于 `core/service` 时，返回 `unsupported`，不得由新 scaffold 或本指南自动改写。旧项目继续按原工程维护；现代化改造必须单独立项、先评估再逐切片迁移。
+
+## 事务与外部副作用
+
+- 合同标明需要原子提交的数据库写入及所属用例；事务从 Application 公共代理 seam 进入。无需原子写入的查询或纯计算不强制增加事务注解。
+- Repository 参与既有事务，不另行决定业务提交边界。多表聚合保存的回滚测试从用例入口注入中途失败，不能只验证单个 Mapper。
+- Redis、邮件、HTTP 调用不因数据库事务自动获得原子性。按批准合同选择提交后缓存失效、可重试事件或 outbox；需要持久重试时不能只依赖内存事件。
+- 幂等键、重复请求结果、重试范围及失败恢复来自合同；不在技能中默认引入分布式事务或通用重试。测试覆盖回滚不发布、提交后失败及重复消费。
