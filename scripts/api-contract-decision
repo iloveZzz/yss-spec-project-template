@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+import fs from 'node:fs';
+import path from 'node:path';
+import {parseArgs} from 'node:util';
+import {parseSliceYaml} from './lib/slice-contract.mjs';
+import {hash,safe,write} from './lib/strategic-handoff-io.mjs';
+import {prepareApiContractDecision,migrateApiContractDecision} from './lib/api-contract-decision.mjs';
+import {stringify} from './vendor/yaml.mjs';
+try{
+ const{values,positionals}=parseArgs({allowPositionals:true,options:{root:{type:'string',default:process.cwd()},output:{type:'string'},version:{type:'string'}}});
+ const[command,ref]=positionals;if(positionals.length!==2||!['prepare','migrate'].includes(command)||!values.output)throw Error('用法: api-contract-decision prepare|migrate <输入> --output <新路径> [--root <目录>] [--version v2]');
+ const root=path.resolve(values.root),bytes=fs.readFileSync(safe(root,ref)),input=parseSliceYaml(bytes);
+ const result=command==='prepare'?prepareApiContractDecision(input,{root}):migrateApiContractDecision({ref,version:input.decision_version,impact:input.impact,digest:hash(bytes)},{root,version:values.version});
+ write(root,values.output,stringify(result));
+ console.log(JSON.stringify({result:'draft',ref:values.output,digest:hash(fs.readFileSync(safe(root,values.output))),approval_inherited:false,next:'按现有差异与授权延续协议完成生命周期批准'}));
+}catch(error){console.error(error.message);process.exitCode=1;}

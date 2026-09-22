@@ -1,0 +1,8 @@
+{
+  "name": "create-yss-spec",
+  "version": "3.4.9",
+  "cli_commit": "86adf8f04836e2d6f8c96890b2c4d73f26262b2a",
+  "template_commit": "9126b41c5657b8c80ac3ff6aa7117f4b01e14e18",
+  "snapshot_hash": "ae2c75fc492456945241124ad4b32f5f87501f7c972c44a4e08afc3d8e004099",
+  "manifest_hash": "7c2fe5e36a464fd32b4ec6466e18e8c762a59bda9cb5b598950aba7dd6358891"
+}

@@ -1,4 +1,6 @@
-import { existsSync, lstatSync, readFileSync, mkdirSync, mkdtempSync, renameSync, rmSync, cpSync } from 'node:fs';
+import { scopedConsumerCapabilities } from './strategic-handoff-routing.mjs';
+import { existsSync, lstatSync, readFileSync } from './validation-phase.mjs';
+import { mkdirSync, mkdtempSync, renameSync, rmSync, cpSync } from 'node:fs';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { ensure, canonical, digest, hash, json, parse, read, safe, relative, files, write, project, schema, schemaBatch, archive, ROOT, sourceApprovalPolicy, withSourceContextSnapshot } from './strategic-handoff-io.mjs';
@@ -432,7 +434,7 @@ export async function importBundle({bundle,targetRoot}) {
       }else{
         const profileRef=path.join(target,'docs/process/harness-profile.yaml');
         const profile=existsSync(profileRef)?read(profileRef):null;
-        const capabilities=profile?.handoff?.consumer_capabilities||CAPABILITIES;
+        const capabilities=scopedConsumerCapabilities(target,profile?.handoff?.consumer_capabilities||CAPABILITIES);
         ensure(Array.isArray(capabilities)&&capabilities.length&&capabilities.every(capability=>CAPABILITIES.includes(capability)),'目标 profile 未声明受支持的消费者能力');
         const selected=b.handoff.consumer_routes.filter(route=>capabilities.includes(route.capability));
         ensure(selected.length===capabilities.length,'目标 profile 的消费者能力在 Handoff v4 中缺失');

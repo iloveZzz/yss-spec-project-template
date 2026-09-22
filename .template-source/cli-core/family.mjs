@@ -11,7 +11,7 @@ export function familyFor(side) {
   ensure(Object.hasOwn(FAMILIES, side), '未知 CLI 家族', 'IDENTITY');
   return FAMILIES[side];
 }
-export function preserved(ref) { return ['README.md', 'CONTEXT.md', 'DESIGN.md'].includes(ref); }
+export function preserved(ref) { return ['README.md', 'CONTEXT.md', 'DESIGN.md', 'docs/agents/issue-tracker.md'].includes(ref); }
 export function userOwned(ref, family) {
   if (['README.md', 'DESIGN.md'].includes(ref)) return true;
   if (ref === 'CONTEXT.md') return false;

@@ -255,6 +255,265 @@
         }
       },
       "additionalProperties": false
+    },
+    "stage_tracking": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "feature_id",
+        "checkpoint_ref",
+        "entry_stage",
+        "entry",
+        "items"
+      ],
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "feature_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "checkpoint_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "entry_stage": {
+          "type": "string",
+          "minLength": 1
+        },
+        "entry": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "ref"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "parent-ticket",
+                "checkpoint"
+              ]
+            },
+            "ref": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "kind",
+              "title",
+              "stage",
+              "work_unit",
+              "owner",
+              "scope",
+              "acceptance",
+              "dependencies",
+              "source_refs",
+              "progress",
+              "split_reasons",
+              "completion"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "kind": {
+                "const": "stage-work-item"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1
+              },
+              "stage": {
+                "type": "string",
+                "minLength": 1
+              },
+              "work_unit": {
+                "type": "string",
+                "minLength": 1
+              },
+              "owner": {
+                "type": "string",
+                "minLength": 1
+              },
+              "scope": {
+                "type": "string",
+                "minLength": 1
+              },
+              "acceptance": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "dependencies": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "uniqueItems": true
+              },
+              "source_refs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "ref",
+                    "digest"
+                  ],
+                  "properties": {
+                    "ref": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "digest": {
+                      "type": "string",
+                      "pattern": "^sha256:[0-9a-f]{64}$"
+                    }
+                  }
+                }
+              },
+              "progress": {
+                "enum": [
+                  "pending",
+                  "running",
+                  "blocked",
+                  "completed",
+                  "cancelled"
+                ]
+              },
+              "split_reasons": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "different-owner",
+                    "independent-acceptance",
+                    "blocks-other-work",
+                    "cross-stage-deferral"
+                  ]
+                },
+                "uniqueItems": true
+              },
+              "completion": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "criterion",
+                    "evidence_refs"
+                  ],
+                  "properties": {
+                    "criterion": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "evidence_refs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "required": [
+                          "ref",
+                          "digest"
+                        ],
+                        "properties": {
+                          "ref": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "digest": {
+                            "type": "string",
+                            "pattern": "^sha256:[0-9a-f]{64}$"
+                          }
+                        }
+                      },
+                      "minItems": 1
+                    }
+                  }
+                }
+              },
+              "definition_ref": {
+                "type": "string",
+                "minLength": 1
+              },
+              "definition_digest": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "recheck_required": {
+                "type": "boolean"
+              },
+              "cancellation_reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "deferred": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "owner",
+                  "resolve_by",
+                  "receiver",
+                  "verification_plan",
+                  "decision_ref",
+                  "risk",
+                  "follow_up_ref"
+                ],
+                "properties": {
+                  "owner": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "resolve_by": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "receiver": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "verification_plan": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "decision_ref": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "risk": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "follow_up_ref": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "$id": "https://yss.dev/schemas/stage-tracking.schema.json",
+      "title": "阶段工作追踪 v1"
     }
   }
 }

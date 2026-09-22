@@ -1,3 +1,4 @@
+import { loadExecutionScope, assertScopeWorkUnit, scopedNextRoutes } from './lifecycle-execution-scope.mjs';
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
@@ -67,6 +68,8 @@ export function queryLifecycleContext({ mode, stageId, workUnitId, include = [] 
     throw new TypeError("至少提供 --mode、--stage、--work-unit 或 --include 之一");
   }
 
+  const scope = loadExecutionScope();
+  if (workUnitId) assertScopeWorkUnit(workUnitId, { readOnly: true });
   const lifecycle = validateRegistry(loadRegistry());
   const orchestration = loadYaml(ORCHESTRATION_CONTRACT_REF, "生命周期编排合同");
   const skillRegistry = loadSkillRegistry();
@@ -91,7 +94,7 @@ export function queryLifecycleContext({ mode, stageId, workUnitId, include = [] 
   const evidenceIds = new Set([...gates, ...checks].flatMap((gate) => gate.evidence ?? []));
   const selected = Object.fromEntries(normalizedIncludes.map((key) => [key, orchestration[key]]));
   const transition = workUnitId ? {
-    next: orchestration.transition_graph?.routes?.[workUnitId] ?? [],
+    next: scopedNextRoutes(workUnitId, orchestration.transition_graph?.routes?.[workUnitId] ?? []),
     forbidden_shortcuts: (orchestration.transition_graph?.forbidden_shortcuts ?? [])
       .filter((edge) => edge.from === workUnitId || edge.to === workUnitId),
   } : null;
@@ -129,6 +132,7 @@ export function queryLifecycleContext({ mode, stageId, workUnitId, include = [] 
       work_unit: workUnit,
     },
     execution: {
+      ...(scope ? { responsibility_scope: scope } : {}),
       mode: mode ? orchestration.modes[mode] : null,
       selected,
       ...(loadPlan ? { plan_checks: lifecycle.stages.find(stage => stage.id === 'stage.plan').spec_entry.required_checks.map(id => ({ id, status: 'pending', evidence_refs: [] })) } : {}),

@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync } from './validation-phase.mjs';
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { resolveContextTermRefs, verifyContextSnapshot } from "./context-contract.mjs";

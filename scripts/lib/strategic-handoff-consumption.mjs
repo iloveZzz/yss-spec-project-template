@@ -1,5 +1,5 @@
 import { uiBaselineSourceKeys, uiBaselineKind } from './ui-baseline.mjs';
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, inValidationPhase, acceptValidationDependencies } from './validation-phase.mjs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { openBundle } from './strategic-handoff.mjs';
@@ -29,8 +29,9 @@ export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consum
     const route=receipt.routes.find(item=>item.capability===capability);
     ensure(route&&route.activation!=='not-applicable'&&binding.route_id===route.route_id,`${capability} 未绑定当前 Handoff v4/v5 route_id`);
   }
-  const result=spawnSync(process.execPath,[path.join(ROOT,'scripts/verify-context-reconciliation'),'--root',root,safe(root,binding.context_reconciliation_ref)],{encoding:'utf8'});
+  const result=spawnSync(process.execPath,[path.join(ROOT,'scripts/verify-context-reconciliation'),'--root',root,safe(root,binding.context_reconciliation_ref),...(inValidationPhase()?['--validation-dependencies']:[])],{encoding:'utf8',timeout:60000,maxBuffer:16*1024*1024});
   ensure(result.status===0,`目标术语对账未通过: ${result.error?.message || result.stderr}`);
+  if(inValidationPhase()){let value;try{value=JSON.parse(result.stdout);}catch{throw new TypeError('VALIDATION_RECEIPT_INVALID: Context 子进程未返回依赖');}acceptValidationDependencies(value.validation_dependencies);}
   const context=parseContextContract({root});
   const parent=safe(root,`docs/handoffs/${receipt.bundle_id}`);
   const versions=readdirSync(parent).filter(x=>/^v[1-9][0-9]*$/.test(x)&&existsSync(path.join(parent,x,'import-receipt.json'))).sort((a,b)=>Number(b.slice(1))-Number(a.slice(1)));
@@ -84,6 +85,6 @@ export async function verifyConsumption(data,{root=process.cwd(),sliceRef,consum
       }
       const blockedHere=all||(sliceRef?blocked.has(sliceRef):issues.length>0);
       return {result:blockedHere?'blocked':'verified',bundle_digest:current.manifest.bundle_digest,consumed_bundle_digest:receipt.bundle_digest,...(consumer==='frontend'?{frontend_acceptance_digest:digest(data)}:{tactical_digest:digest(data), ...(data.schema_version === 2 ? {technical_design_digest:digest(data)} : {})}),scope:sliceRef||`whole-${consumer}-design`,coverage_complete:[...known.keys()].every(id=>rows.has(id)),block_all:all,blocked_slice_refs:[...blocked].sort(),issues};
-    },{readOnly});
-  },{readOnly});
+    },{readOnly:readOnly||inValidationPhase()});
+  },{readOnly:readOnly||inValidationPhase()});
 }

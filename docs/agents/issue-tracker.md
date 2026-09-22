@@ -1,5 +1,6 @@
 ---
 tracker:
+  lifecycle_tracking_version: 1
   platform: local-markdown
   root: docs/.scratch
   legacy_roots:
@@ -135,3 +136,9 @@ Ticket 是默认 triage surface。MR / PR 是否纳入 triage 取决于当前平
 - Local Markdown：读取引用的 `docs/.scratch/<feature>/...` 文件；旧路径引用必须先经过迁移检查。
 - GitLab：使用 `glab issue view <iid> --comments`。
 - GitHub：使用 `gh issue view <number> --comments`。
+
+## 阶段工作追踪
+
+新初始化默认启用 `tracker.lifecycle_tracking_version: 1`。已有项目的 attach / sync 保留原配置；缺省保持旧模式，按 [阶段工作追踪](../process/stage-tracking.md) 执行 check → plan → apply。
+
+Plan / Spec / Design 的小工作记录在 checkpoint.stage_tracking；独立工作项使用 `work-items/<id>.md`，不占用业务票 / 实现切片的 `issues/`。执行进度只由 checkpoint 保存，父票和 map 引用；阶段工作项不得设置 `ready-for-agent`。

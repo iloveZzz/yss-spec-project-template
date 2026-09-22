@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+import path from 'node:path';
+import {viewContract,diffContract} from './lib/contract-views.mjs';
+try{
+ const args=process.argv.slice(2),mode=args.shift(),options={},positional=[];
+ for(let i=0;i<args.length;i++){const arg=args[i];if(arg==='--json')options.json=true;else if(arg.startsWith('--')){const key=arg.slice(2);if(!['kind','profile','unit','root','before-root'].includes(key)||!args[i+1]||args[i+1].startsWith('--'))throw Error(`未知或缺值参数 ${arg}`);options[key]=args[++i];}else positional.push(arg);}
+ const config={kind:options.kind,root:path.resolve(options.root||process.cwd()),profile:options.profile||'review',unit_id:options.unit,beforeRoot:options['before-root']?path.resolve(options['before-root']):undefined};
+ if(!options.kind)throw Error('必须用 --kind 明确资产类型');
+ if(!['view','diff'].includes(mode)||positional.length!==(mode==='view'?1:2))throw Error('用法: contract view <资产> --kind <类型> [--profile review|task|full] [--unit <ID>] [--json] | diff <旧资产> <新资产> --kind <类型>');
+ const result=mode==='view'?viewContract(positional[0],config):diffContract(positional[0],positional[1],config);
+ process.stdout.write(options.json||!result.markdown?JSON.stringify(result,null,2)+'\n':result.markdown);
+ if(result.blockers?.length)process.exitCode=1;
+}catch(error){process.stderr.write(error.message+'\n');process.exitCode=1;}

@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync } from './validation-phase.mjs';
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { loadRegistry, ROOT } from "./lifecycle-registry.mjs";

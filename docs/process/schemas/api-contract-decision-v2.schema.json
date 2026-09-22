@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://yss.example/schemas/api-contract-decision-v2.schema.json",
+  "title": "YSS API Contract Decision v2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "decision_id",
+    "decision_version",
+    "status",
+    "impact",
+    "assessment_ref",
+    "assessment_digest",
+    "evidence_refs"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 2
+    },
+    "kind": {
+      "const": "api-contract-decision"
+    },
+    "decision_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "decision_version": {
+      "type": "string",
+      "pattern": "^v[1-9][0-9]*$"
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "approved"
+      ]
+    },
+    "impact": {
+      "enum": [
+        "required",
+        "not-applicable"
+      ]
+    },
+    "assessment_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "assessment_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "evidence_refs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "openapi": {
+      "$ref": "#/$defs/versionedArtifact"
+    },
+    "validation_record": {
+      "$ref": "#/$defs/artifact"
+    },
+    "draft_review": {
+      "$ref": "#/$defs/artifact"
+    },
+    "freeze": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "frozen_at"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^v[1-9][0-9]*$"
+        },
+        "frozen_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "impact": {
+            "const": "required"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "openapi",
+          "validation_record",
+          "draft_review",
+          "freeze"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "impact": {
+            "const": "not-applicable"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reason"
+        ],
+        "not": {
+          "anyOf": [
+            {
+              "required": [
+                "openapi"
+              ]
+            },
+            {
+              "required": [
+                "validation_record"
+              ]
+            },
+            {
+              "required": [
+                "draft_review"
+              ]
+            },
+            {
+              "required": [
+                "freeze"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "digest"
+      ],
+      "properties": {
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      }
+    },
+    "versionedArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "ref",
+        "version",
+        "digest"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^v[1-9][0-9]*$"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      }
+    }
+  }
+}

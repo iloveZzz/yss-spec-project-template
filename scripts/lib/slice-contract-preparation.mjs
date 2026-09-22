@@ -1,7 +1,8 @@
+import {readContractSource,contractSourceMetadata} from './contract-source.mjs';
 import {sliceRepositories} from './slice-repositories.mjs';
 import { sliceCheckApplicability } from './slice-applicability.mjs';
 import path from 'node:path';
-import fs from 'node:fs';
+import fs, {withValidationPhase} from './validation-phase.mjs';
 import { stringify } from '../vendor/yaml.mjs';
 import { safe, hash, digest, write } from './strategic-handoff-io.mjs';
 import { compileDefaultImplementationContract, digestDocument, loadCompilerContract } from './implementation-contract-compiler.mjs';
@@ -9,11 +10,7 @@ import { normalizeSliceContract, parseSliceYaml, readSliceSources, resolveSliceB
 
 const object=value=>value && typeof value==='object' && !Array.isArray(value);
 const same=(a,b)=>digest(a)===digest(b);
-function metadata(text) {
-  const front=/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/.exec(text);
-  if(front)return parseSliceYaml(front[1]);
-  return (/^\s*[{[]/.test(text)||/^[A-Za-z_][\w-]*:\s/m.test(text)&&!/^#/m.test(text))?parseSliceYaml(text):{};
-}
+const metadata=contractSourceMetadata;
 function mergeFacts(left,right,path,report) {
   if(left===undefined)return structuredClone(right);
   if(right===undefined)return structuredClone(left);
@@ -43,7 +40,15 @@ function lifecycleSources(checkpoint,report) {
   return result;
 }
 /** sources select existing assets; refinements contain ONLY new slice facts, never an approved contract. */
-export function prepareSliceImplementationContract({root=process.cwd(),ticket_ref,checkpoint_ref,sources={},refinements={},approved_slice}={}) {
+export function prepareSliceImplementationContract(options={}) {
+ let result;
+ try{return withValidationPhase({root:options.root,purpose:'slice-prepare',slice_id:options.ticket_ref,readOnly:true,signal:options.signal},()=>result=prepare(options));}
+ catch(error){
+  if(!result||!['VALIDATION_INPUT_CHANGED','VALIDATION_CANCELLED'].includes(error.code))throw error;
+  result.slice_contract.status='blocked';result.report.blockers.push({code:error.code==='VALIDATION_INPUT_CHANGED'?'SLICE_INPUT_CONFLICT':error.code,field:'slice',source_ref:null,reason:`${error.message.includes('compiler-contract.yaml')?'编译规则来源冲突':'生成期间来源变化'}: ${error.message}`,responsibility:'professional-review',recovery:'重新读取当前来源并准备新草案'});return result;
+ }
+}
+function prepare({root=process.cwd(),ticket_ref,checkpoint_ref,sources={},refinements={},approved_slice}={}) {
   const started=performance.now();
   const report={read_only:true,blockers:[],sources:{},provenance:[],reason_chains:{},checks:[]};
   const snapshots=new Map();
@@ -52,6 +57,7 @@ export function prepareSliceImplementationContract({root=process.cwd(),ticket_re
   try {
     let ticketText='',ticket={},saved={};
     try {ticketText=read(ticket_ref).toString('utf8');ticket=metadata(ticketText);}catch(error){report.blockers.push({code:'SLICE_SOURCE_UNREADABLE',field:'basis.ticket',source_ref:ticket_ref,reason:error.message});}
+    if (ticket.kind === 'stage-work-item' || /\/work-items\//.test(ticket_ref || '')) report.blockers.push({code:'STAGE_WORK_ITEM_NOT_IMPLEMENTABLE',field:'basis.ticket',reason:'stage-work-item 不能作为实现 Ticket'});
     if(checkpoint_ref)try {saved=parseSliceYaml(read(checkpoint_ref));}catch(error){report.blockers.push({code:'SLICE_SOURCE_UNREADABLE',field:'checkpoint',source_ref:checkpoint_ref,reason:error.message});}
     const fromTicket=ticket.slice_implementation || {};
     const facts=mergeFacts(saved.slice_implementation || {},fromTicket,'slice',report);
@@ -73,13 +79,9 @@ export function prepareSliceImplementationContract({root=process.cwd(),ticket_re
       try {
       if(typeof value==='string' && Object.hasOwn(selected,value)) {basis[key]=value;continue;}
       const binding=typeof value==='string'?{ref:value}:value;
-      const bytes=read(binding.ref),rawDigest=hash(bytes);
-      if(binding.digest&&binding.digest!==rawDigest)throw new TypeError(`stale: 来源 ${key}`);
-      const data=metadata(bytes.toString('utf8'));
-      const sourceVersion=data.requirement_version??data.version??data.contract_version;
-      if(binding.version!==undefined&&sourceVersion!==undefined&&String(binding.version)!==String(sourceVersion))throw new TypeError(`来源版本冲突: ${key}`);
-      const version=binding.version||data.requirement_version||data.version||data.contract_version;
-      basis[key]={ref:binding.ref,digest:rawDigest,...(version?{version:String(version)}:{}),...(binding.approval_ref?{approval_ref:binding.approval_ref}:{})};
+      const source=readContractSource(binding,{root,read});
+      const rawDigest=source.binding.digest;
+      basis[key]=source.binding;
       if(seen.has(binding.ref)) {
         const previous=seen.get(binding.ref);
         if(!same(basis[key],basis[previous]))throw new TypeError(`来源绑定冲突: ${key}/${previous}`);

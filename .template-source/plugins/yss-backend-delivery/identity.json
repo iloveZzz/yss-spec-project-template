@@ -1,0 +1,7 @@
+{
+  "name": "yss-backend-delivery",
+  "version": "0.3.0-dev.1+codex.20260921061207",
+  "displayName": "YSS 需求到后端交付",
+  "flow": "Plan → Spec → Design → 工程契约 → 后端实现与验证 → 交付",
+  "entry": "backend-delivery"
+}

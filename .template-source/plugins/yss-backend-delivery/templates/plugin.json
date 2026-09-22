@@ -1,0 +1,22 @@
+{
+  "name": "yss-backend-delivery",
+  "version": "0.2.0-dev.1",
+  "description": "从 Plan、Spec、Design 到后端实现、核验与正式交付的开发插件。",
+  "author": {
+    "name": "YSS"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "YSS 需求到后端交付",
+    "shortDescription": "Plan → Spec → Design → 工程契约 → 后端实现与验证 → 交付",
+    "longDescription": "单一业务入口支持新建、复用上游及恢复，交给已绑定治理项目的 yss-product-lifecycle 执行。支持新后端实现和已有后端接入。当前为开发版，真实交付与发布验收仍待完成。",
+    "developerName": "YSS",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": [
+      "从需求开始，依次完成 Plan、Spec、Design 和后端交付",
+      "核验我的已有 Spec 或设计产物，从最近可信阶段继续",
+      "恢复已有治理项目的后端交付流程"
+    ]
+  }
+}

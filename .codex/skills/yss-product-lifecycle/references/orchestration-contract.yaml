@@ -53,7 +53,7 @@ review_verification:
 
 checkpoint_policy:
   strategy: consolidated
-  flush_on: [human_pause, handoff, implementation_entry, merge, release]
+  flush_on: [stage_exit, human_pause, handoff, implementation_entry, merge, release]
   flush_immediately_on: [blocked, responsibility_changed, asset_approval]
   preserve_stage_causality: true
   required_stage_trace_fields: [stage, upstream_refs, artifact_refs, gate_decisions, downstream_impacts]
@@ -481,6 +481,15 @@ work_unit_routes:
     skills: [yss-ui, yss-design-system, code-review]
     applies_when: ui_impact
     not_applicable_reason: no_ui_impact
+  work-unit.backend-delivery:
+    native: {source: yss-product-lifecycle, skill: yss-product-lifecycle, invocation_mode: model-invoked}
+    primary_skill: yss-product-lifecycle
+    supporting_skills: [code-review]
+    skills: [yss-product-lifecycle, code-review]
+    applies_when: execution_scope_plan_to_backend
+    not_applicable_reason: outside_plan_to_backend_execution_scope
+    verifier: scripts/complete-backend-delivery
+    completion: current-source-and-exported-package-verified
   work-unit.code-review:
     native: {source: yss-product-lifecycle, skill: code-review, invocation_mode: model-invoked}
     primary_skill: code-review
@@ -628,6 +637,11 @@ transition_graph:
     work-unit.technical-analysis: [work-unit.implementation-repository-preparation]
     work-unit.implementation-repository-preparation: [work-unit.ticket-decomposition]
     work-unit.ticket-decomposition: [work-unit.slice-implementation]
+    work-unit.slice-implementation: [work-unit.frontend-implementation-verification, work-unit.code-review]
+    work-unit.frontend-implementation-verification: [work-unit.code-review]
+    work-unit.code-review: [work-unit.release-and-retrospective, work-unit.slice-implementation, work-unit.backend-delivery]
+    work-unit.backend-delivery: []
+    work-unit.release-and-retrospective: []
   forbidden_shortcuts:
     - {from: work-unit.spec-synthesis, to: work-unit.implementation-repository-preparation}
     - {from: work-unit.prototype-design, to: work-unit.implementation-repository-preparation}
@@ -1030,6 +1044,7 @@ ready_for_agent:
   parent_ticket_as_implementation_ref: forbidden
 
 frontend_implementation_plan:
+  scope_interpretation: product_ui_impact_requires_design_but_only_owned_frontend_implementation_requires_this_plan
   applies_when: [ui_impact]
   required_before: [ready_for_agent]
   required: [prototype_ref, spec_ref, visual_baseline, route_and_page_inventory, baseline_case_ids, desktop_viewport, narrow_viewport, state_cases, pnpm_commands]
@@ -1196,3 +1211,50 @@ gate_consolidation:
   invalidation: affected_dependencies_or_authorization_change_only
   historical_gate_records: read_only_no_automatic_approval_migration
   verifier: scripts/verify-lifecycle-checkpoint
+
+# 项目 opt-in 只选择此权威策略，不能传入自定义工作单元白名单。
+execution_scopes:
+  plan-to-backend:
+    activation_ref: .yss-execution-scope.yaml
+    validator: scripts/lib/lifecycle-execution-scope.mjs
+    terminal_work_unit: work-unit.backend-delivery
+    terminal_record: .yss-backend-delivery.json
+    allowed_work_units: [work-unit.entry-triage, work-unit.plan-opportunity, work-unit.plan-requirements, work-unit.domain-strategy-design, work-unit.stage-decision, work-unit.spec-synthesis, work-unit.prototype-design, work-unit.technical-analysis, work-unit.implementation-repository-preparation, work-unit.scaffold-generation, work-unit.ticket-decomposition, work-unit.slice-implementation, work-unit.code-review, work-unit.backend-delivery]
+    route_overrides:
+      work-unit.code-review: [work-unit.slice-implementation, work-unit.backend-delivery]
+      work-unit.slice-implementation: [work-unit.code-review]
+      work-unit.backend-delivery: []
+    product_ui_design: retain-all-triggered-gates
+    implementation_delivery_roles: [backend]
+    implementation_ui_impact: false
+    downstream_frontend_required_when_product_ui_impact: [owner, ticket_ref, verification_plan, target_version]
+    consumer_capabilities: [backend-technical-design]
+    completion_claim: backend-delivery-only
+    business_completion: forbidden
+    release: forbidden
+    resume: revalidate-current-scope-approvals-and-delivery
+
+# Package wire IDs remain immutable; each target resolves its own executable entry.
+consumer_entry_routes:
+  yss-full-lifecycle:
+    backend-technical-design:
+      source_work_unit: work-unit.technical-design
+      target_work_unit: work-unit.technical-analysis
+  plan-to-backend:
+    backend-technical-design:
+      source_work_unit: work-unit.technical-design
+      target_work_unit: work-unit.technical-analysis
+  harness.backend-delivery:
+    backend-technical-design:
+      source_work_unit: work-unit.technical-design
+      target_work_unit: work-unit.technical-design
+
+stage_tracking:
+  contract: docs/process/stage-tracking.md
+  schema: docs/process/schemas/stage-tracking.schema.json
+  verifier: scripts/stage-tracking
+  configuration: tracker.lifecycle_tracking_version
+  machine_state_owner: checkpoint.stage_tracking
+  transition_checkpoint_ref: checkpoint_ref
+  flush_on: [stage_exit, blocked, responsibility_changed, asset_approval]
+  preserves: [ticket-state, gate-approval, profile-scope]

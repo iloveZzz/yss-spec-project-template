@@ -103,7 +103,7 @@ const manifests = {
   "docs/.scratch/demo/evidence/backend-manifest.json": JSON.stringify({ schema_version: 4, completion_level: "empty-scaffold-verified", design_prerequisites: backendDesignPrerequisites }),
   "docs/.scratch/demo/evidence/frontend-manifest.json": JSON.stringify({ schema_version: 4, completion_level: "empty-scaffold-verified" }),
 };
-const read = (ref) => ref === "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml" ? decompositionResult : ref === "docs/.scratch/demo/evidence/technical-analysis-result.yaml" ? technicalAnalysisResult : manifests[ref] ?? readFileSync(existsSync(path.resolve(temp, ref)) ? path.resolve(temp, ref) : ref, "utf8");
+const read = (ref) => ref === "docs/.scratch/demo/issues/01-valid-slice.md" ? "---\nkind: vertical-slice-ticket\n---\n# 合法切片测试\n" : ref === "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml" ? decompositionResult : ref === "docs/.scratch/demo/evidence/technical-analysis-result.yaml" ? technicalAnalysisResult : manifests[ref] ?? readFileSync(existsSync(path.resolve(temp, ref)) ? path.resolve(temp, ref) : ref, "utf8");
 const options = { exists, read, root: temp };
 
 const validTicketState = {

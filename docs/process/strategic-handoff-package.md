@@ -106,3 +106,11 @@ scripts/strategic-feedback verify-adjudication --root <消费者项目根> <adju
 `gate.strategic-design-handoff-approved` 不要求新的用户回复，也不把旧决定改写为交接决定。产品经理形成完整交接包后，由需求经理独立复核来源批准新鲜度、完整包摘要、风险与范围，并以 Fresh Verification 关闭交接门禁。缺少独立复核、来源批准过期、摘要漂移或验证失败均阻断 finalize。
 
 历史包中的 `strategic-decision-reuse-v1`、`decision_reuse_ref` 和旧门禁批准保持可读，供离线 `verify/import` 复核当时证据。它们不能关闭当前聚合门禁；任何修改、重发或继续流转都必须先完成战略门禁迁移并重新批准。
+
+## 插件接收入口与目标路由
+
+`yss-product-design` 在战略 profile 内完成设计与 Handoff v5 交付，`yss-backend-delivery` 通过 `project-import-design` 调用目标项目的 `scripts/strategic-consumer-entry --root <目标根> --bundle <交付目录或ZIP>`。入口先验证源包与后端路线，再执行既有 import；返回收据和目标工程设计入口，固定 `ready_for_agent: false`。恢复以 `--receipt <项目内收据路径>` 重新验证，查询不导入文件。
+
+源 `work-unit.technical-design` 保留不变，目标主控 `consumer_entry_routes` 持有精确映射；`plan-to-backend` 和完整主模板进入 `work-unit.technical-analysis`，专职后端进入自己的 `work-unit.technical-design`。目标工作单元不存在或超出 profile/职责范围时阻断。后端插件的 scope 只选择 backend-technical-design；源包保留完整前端、协调路线，不宣称已接管或完成。
+
+正式交付目录导入生成 Receipt v3；现有运输 package.zip 按已有协议生成 v2 收据，源包、批准、逻辑摘要仍须完整校验，不能补造 source-delivery-record。消费校验、反馈裁决和 Slice Contract 的实现门禁保持不变。

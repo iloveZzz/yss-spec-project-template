@@ -5,6 +5,8 @@ description: "维护、校验、冻结或导出 YSS OpenAPI 3.1 设计合同；�
 
 # YSS OpenAPI Governance
 
+已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `docs/process/contract-reading.md`。
+
 本 skill 负责 YSS OpenAPI 的 **YAML-first** 工作流：
 
 ```text
@@ -114,3 +116,5 @@ pnpm exec redocly bundle \
 ## 输出契约
 
 执行治理或导出时，按 [输出契约](references/governance-output.md) 记录 YAML 权威、当前校验证据、JSON 派生与交接。不能只给自然语言完成声明；未冻结时不生成可供实现消费的 JSON。
+
+API Contract Decision 可用 `scripts/api-contract-decision prepare` 自动生成来源摘要；v1 显式迁移用 `migrate --version <新版本> --output <新路径>`。候选保持 draft，审查、Freeze 绑定和工程契约批准仍由现有生命周期核验。

@@ -1,10 +1,14 @@
+import { withValidationPhase } from './validation-phase.mjs';
 import { readSliceContract } from './slice-contract.mjs';
 import { createApprovedExecutionContext } from './approved-execution-context.mjs';
 import { evaluateContractFreshness, loadCompilerContract } from './implementation-contract-compiler.mjs';
 import { loadSkillRegistry } from './skill-registry.mjs';
 
 /** Readability, structure and execution approval are different levels of evidence. */
-export function inspectSliceContract(ref, { root = process.cwd(), approval_ref, work_unit_id } = {}) {
+export function inspectSliceContract(ref, options = {}) {
+  return withValidationPhase({root:options.root,purpose:'slice-inspect',slice_id:ref,work_unit_id:options.work_unit_id,readOnly:true,signal:options.signal},()=>inspect(ref,options));
+}
+function inspect(ref, { root = process.cwd(), approval_ref, work_unit_id } = {}) {
   const loaded = readSliceContract(ref, { root });
   const { contract, binding } = loaded;
   const checks = { readable: 'passed', structure: 'passed', approval: 'not-checked', freshness: 'not-checked' };
@@ -28,9 +32,9 @@ export function inspectSliceContract(ref, { root = process.cwd(), approval_ref, 
   if (approval_ref && !blockers.length) {
     try {
       const approved_slice = { ...binding, approval_ref };
-      const context = createApprovedExecutionContext(approved_slice, { root, contract, work_unit_id });
+      const context = createApprovedExecutionContext(approved_slice, { root, contract, work_unit_id, readOnly: true });
       checks.approval = 'passed';
-      const current = evaluateContractFreshness(contract, { root, registry: loadSkillRegistry(), compilerContract: loadCompilerContract(), approved_slice, work_unit_id }, context);
+      const current = evaluateContractFreshness(contract, { root, registry: loadSkillRegistry(), compilerContract: loadCompilerContract(), approved_slice, work_unit_id, readOnly: true }, context);
       checks.freshness = current.freshness === 'current' ? 'passed' : 'failed';
       blockers.push(...current.reasons);
     } catch (error) {

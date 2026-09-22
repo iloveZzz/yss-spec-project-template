@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
-import { existsSync, lstatSync, readdirSync, readFileSync, mkdirSync, writeFileSync, realpathSync } from 'node:fs';
+import { mkdirSync, writeFileSync, realpathSync } from 'node:fs';
+import { existsSync, lstatSync, readdirSync, readFileSync, validationMemo } from './validation-phase.mjs';
 import path from 'node:path';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { spawnSync } from 'node:child_process';
@@ -9,6 +10,7 @@ import { parseDocument } from '../vendor/yaml.mjs';
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 // A v5 package keeps the source glossary as a snapshot, never a nested CONTEXT.md.
 // Only this fixed alias is supported, isolated to the current asynchronous reader.
+const parseCache=Symbol('handoff-yaml');
 const sourceContextSnapshots = new AsyncLocalStorage();
 export function withSourceContextSnapshot(root, action) {
   const roots = new Set(sourceContextSnapshots.getStore() || []);
@@ -20,7 +22,8 @@ export const canonical = value => Array.isArray(value) ? value.map(canonical) : 
 export const hash = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 export const digest = value => hash(JSON.stringify(canonical(value)));
 export const json = value => `${JSON.stringify(canonical(value), null, 2)}\n`;
-export function parse(bytes) {
+export function parse(bytes) {return validationMemo(parseCache,String(bytes),()=>parseFresh(bytes));}
+function parseFresh(bytes) {
   const doc = parseDocument(String(bytes), { uniqueKeys: true, maxAliasCount: 0 });
   ensure(!doc.errors.length, `YAML/JSON 无效: ${doc.errors[0]?.message}`);
   return doc.toJS({ maxAliasCount: 0 });

@@ -1,11 +1,13 @@
 ---
 name: yss-product-lifecycle
-description: 编排 YSS 产品或模块从机会调研到 Spec、原型、技术契约、垂直切片实现、审查、发布和复盘；当阶段、产物、门禁或 YSS skill 不清晰时使用。
+description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 Skill 路由不清晰时使用。
 ---
 
 # YSS Product Lifecycle
 
-生命周期单一主控：识别请求、仓库身份和最近可信阶段，计算可执行 frontier，派发并验收工作单元；业务设计、实现和独立审查交给专项 skill。
+合同阅读：`scripts/contract view`；见 `docs/process/contract-reading.md`。
+
+主控识别请求、仓库身份和可信阶段，计算 frontier、派发与验收工作单元；专项 Skill 负责设计、实现和独立审查。
 
 文档按 `document_writing` 条件调用 `i-have-adhd`，并传递 `docs/process/document-writing.md` 规范。
 
@@ -21,7 +23,7 @@ description: 编排 YSS 产品或模块从机会调研到 Spec、原型、技术
 | 数字人角色、运行时和会签策略 | `docs/agents/digital-human-roles.yaml` |
 | 影响面、裁剪和模板维护强度 | `docs/process/harness-process-tailoring.md`、`docs/process/maintenance-intensity.yaml` |
 
-使用 `scripts/query-lifecycle-context` 获取确定性 JSON 投影，不要为普通路由整份读取编排合同：
+用 `scripts/query-lifecycle-context` 查询合同：
 
 ```bash
 scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work-unit.plan-requirements --include execution_efficiency
@@ -54,6 +56,8 @@ Plan 入口读取 `docs/plan/README.md` 和 `docs/process/plan-migration.md`，�
 
 聚合批准见 `gate_consolidation`。普通功能默认一个独立审查者，按能力缺口、冲突或外部制度增员；相邻检查组合审查、逐项留证。
 
+项目职责与后端终点见 `execution_scopes`；恢复、编译和派发必须复验。保留产品设计门禁，后端交付不等于业务完成或发布。
+
 ### 用户决定
 
 按角色表 `user_decision_policy` 和 `references/user-decisions.md` 先展示可审阅资产、范围、风险及后续动作，再取得提问者或其指定生物人的原始回复。数字人、超时和默认项不能代答。已有授权优先用 `continuation_ref` 核验延续；未知/实质变化或强制审批缺失才重新决定。缺陷和缺证据阻断，建议记待办；合同、验证及外部动作授权仍须满足。
@@ -71,7 +75,7 @@ Plan 入口读取 `docs/plan/README.md` 和 `docs/process/plan-migration.md`，�
 5. 先对照用户目标逐项验收，检查遗漏诉求、错误假设与尚未解决的问题，再验收 `Workflow Execution Result`：工作单元、合同、允许写路径、`context_reconciliation`、证据、实际验证、延期 seam、漂移和下一路由必须可核验。实现派发额外绑定当前 Slice Implementation Contract v3；其他阶段不得伪造该合同。
 6. 在授权边界内继续下一工作单元；遇到人工决定、新授权、证据冲突、专项失败或合并/发布结论时暂停。暂停不得阻断无依赖的独立工作。
 
-每个 `project-instance` 工作单元在申请批准或流转前，先把稳定术语回写到根目录唯一 `CONTEXT.md`，并生成通过校验的 `context_reconciliation`。候选术语、错误路径、摘要漂移或未决冲突必须阻断。质量标准只由 `engineering-baseline` 定义一次；高风险影响按裁剪合同补充反证和残余风险。
+每个 `project-instance` 工作单元批准或流转前，回写稳定术语到唯一根 `CONTEXT.md`，并生成通过校验的 `context_reconciliation`。候选术语、错误路径、摘要漂移或未决冲突必须阻断。质量标准只由 `engineering-baseline` 定义一次；高风险影响按裁剪合同补充反证和残余风险。
 
 ## 面向业务角色
 
@@ -85,10 +89,12 @@ Plan → Spec（含正式草稿、恢复与显式 `to-spec`）写入前，按 `d
 
 ## 结果与暂停
 
-普通咨询直接回答，不创建流程产物；复杂请求简述目标与下一步。实际工作单元仍记录完整结果，按适用边界同步，对外仅展示当前决定所需信息。
+咨询直接回答；工作单元保留完整结果，对外仅展示当前决定所需信息。
 
 工作单元结果至少包含：模式、仓库身份、当前阶段和工作单元、影响面、资产与门禁状态、证据、新鲜度、Ticket/垂直切片/合同状态、`ready-for-agent` 结论、阻塞项、本轮动作、下一工作单元、暂停或继续理由、Ticket 同步和 Git checkpoint 判断。
 
 暂停会签时追加门禁 ID、`role_id`、`runtime_id`、会签文件路径、推荐答案和恢复动作；恢复前运行适用验证器。只有同一候选快照通过全部适用审查轴与 fresh verification，才能提出合并、发布或完成结论；发布仍须生物人决定。
 
 专项合同加载索引见 `references/orchestration.md`。
+
+Plan / Spec / Design 追踪按 `docs/process/stage-tracking.md`。

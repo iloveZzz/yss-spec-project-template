@@ -39,8 +39,9 @@ context_schema_version: 1
 | 技能投影 | 从权威共享技能生成、供特定 Agent root 加载的同步副本。 | — | 投影不是独立维护的技能源，不应在各 Agent root 中分别修改。 |
 | Spec | 记录用户问题、解决方案、用户故事、关键决策、验收标准和测试 seam 的产品研发规格。 | — | 新资产统一使用 Spec；旧规格称谓只在迁移记录中保留。 |
 | Spec Delta | 记录相对于既有冻结 Spec 基线的 `ADDED / MODIFIED / REMOVED` 行为、验收场景和测试映射。 | — | 不用于全新产品或全新模块，也不替代完整 Spec、OpenAPI 或架构资产。 |
+| 阶段工作项 | Plan、Spec、Design 中有明确负责人、验收和证据的工作记录；当前进度由 checkpoint.stage_tracking 持有，按需独立落盘。 | — | 不等同于业务 Ticket 或可实现垂直切片，不授予 ready-for-agent。 |
 | Ticket | 在追踪平台上承载功能生命周期或可实现工作单元的通用追踪对象。 | — | GitHub Issues / GitLab Issues 是具体平台对象名称；领域资产统一称为 Ticket。 |
-| 功能父 Ticket | 汇总一个功能从 Spec 到契约冻结的阶段状态、资产链接、审查结论和阻塞项的 Ticket。 | — | 不作为 Agent 直接实现的垂直切片。 |
+| 功能父 Ticket | 汇总一个功能从 Plan 或最近可信接入阶段到契约冻结的阶段状态、资产链接、审查结论和阻塞项的 Ticket。 | — | 不作为 Agent 直接实现的垂直切片。 |
 | 垂直切片 Ticket | 契约冻结后生成的可独立验证实现单元，记录范围、阻塞关系、验收标准和验证证据。 | — | 只有通过必要门禁并具备直接实现条件时才能标记 `ready-for-agent`。 |
 | `ready-for-human` | 表示 Spec、设计、契约草案或其他资产仍需会签（指定数字人或生物人）。 | — | 此状态不表示可以直接进入实现；也不等于某个数字人角色。 |
 | `ready-for-agent` | 表示垂直切片已通过必要门禁并具备直接实现条件的流程状态。 | — | 不得用于 Spec 初稿、原型、OpenAPI Draft 或其他未冻结资产。 |

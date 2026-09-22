@@ -62,7 +62,7 @@ stages:
     exit_criteria: 新建后端已由用户确认 DDD / MVC 与精确 Spring Boot 版本，既有工程已核验并复用登记值；受影响工程契约冻结或记录无 API 影响；required 脚手架证据齐全。
   - id: stage.ticket-formalization
     name: Ticket 正式化
-    goal: 将冻结范围拆为可追踪的父 Ticket 和垂直切片。
+    goal: 在既有功能追踪入口下，将冻结范围正式化为垂直切片。
     exit_criteria: 工作单元窄、依赖清晰、验收和测试 seam 可执行。
   - id: stage.vertical-slice-implementation
     name: 垂直切片实现
@@ -309,8 +309,8 @@ artifacts:
     trigger: 已有冻结 Spec 的高风险行为变化。
   - id: artifact.parent-ticket
     name: 功能父 Ticket
-    stage: stage.ticket-formalization
-    trigger: 每个进入追踪的功能。
+    stage: stage.plan
+    trigger: 每个功能首次进入 Plan 或最近可信接入阶段时建立，正式化时复用；Design profile 不创建工程父 Ticket。
   - id: artifact.vertical-slice-ticket
     name: 垂直切片 Ticket
     stage: stage.ticket-formalization
@@ -445,7 +445,7 @@ work_units:
     name: 垂直切片 Ticket 正式化
     scope: project-instance
     input: 冻结 Spec、设计、契约和阻塞关系。
-    output: 功能父 Ticket、垂直切片和批准的 Slice Implementation Contract。
+    output: 更新既有功能父 Ticket 的关联、形成垂直切片和批准的 Slice Implementation Contract。
     completion: 切片可独立验证；生命周期复算后才能 ready-for-agent。
   - id: work-unit.slice-implementation
     name: 垂直切片实现
@@ -465,6 +465,12 @@ work_units:
     input: 不可变候选快照、Spec、Ticket、合同和执行结果。
     output: Standards、Spec、UI fidelity 三轴 Review 与 fresh verification。
     completion: findings 已处理；修复后重新捕获候选并全量复审。
+  - id: work-unit.backend-delivery
+    name: 后端职责交付终点
+    scope: project-instance
+    input: plan-to-backend 职责范围、当前 Slice 批准与独立代码审查、Backend Delivery 源文件及正式导出包。
+    output: 绑定当前源、独立审查和正式包的后端终点记录及下游前端待办。
+    completion: 完整复验源文件与正式包；仅后端可交付，不能宣布全业务完成或自动发布。
   - id: work-unit.release-and-retrospective
     name: 发布与复盘
     scope: project-instance

@@ -9,7 +9,7 @@ import { inspectWorkingTreeScope } from './lib/repository-scope-policy.mjs';
 const root=path.resolve(import.meta.dirname,'..');
 const check=process.argv.includes('--check');
 const targets=['submodules/yss-harness-design-agent','submodules/yss-harness-backend-agent','submodules/yss-harness-frontend-agent'];
-const shared=['scripts/strategic-handoff','scripts/verify-strategic-handoff-consumption','scripts/verify-strategic-handoff-package-scenarios','scripts/verify-strategic-context-import','scripts/verify-strategic-context-import-scenarios','scripts/lib/context-contract.mjs','docs/process/strategic-handoff-package.md','docs/process/schemas/strategic-design-handoff.schema.json',...readdirSync(path.join(root,'scripts/lib')).filter(x=>x.startsWith('strategic-handoff-')||x==='strategic-handoff.mjs').map(x=>`scripts/lib/${x}`),...readdirSync(path.join(root,'docs/process/schemas')).filter(x=>x.startsWith('strategic-handoff-')).map(x=>`docs/process/schemas/${x}`),...readdirSync(path.join(root,'scripts/fixtures/strategic-handoff')).map(x=>`scripts/fixtures/strategic-handoff/${x}`)];
+const shared=['scripts/strategic-consumer-entry','scripts/strategic-handoff','scripts/verify-strategic-handoff-consumption','scripts/verify-strategic-handoff-package-scenarios','scripts/verify-strategic-context-import','scripts/verify-strategic-context-import-scenarios','scripts/lib/context-contract.mjs','docs/process/strategic-handoff-package.md','docs/process/schemas/strategic-design-handoff.schema.json',...readdirSync(path.join(root,'scripts/lib')).filter(x=>x.startsWith('strategic-handoff-')||x==='strategic-handoff.mjs').map(x=>`scripts/lib/${x}`),...readdirSync(path.join(root,'docs/process/schemas')).filter(x=>x.startsWith('strategic-handoff-')).map(x=>`docs/process/schemas/${x}`),...readdirSync(path.join(root,'scripts/fixtures/strategic-handoff')).map(x=>`scripts/fixtures/strategic-handoff/${x}`)];
 shared.push('scripts/lib/user-decision-reuse.mjs','scripts/lib/user-decision.mjs','docs/process/schemas/user-decision.schema.json','docs/process/schemas/review-bundle.schema.json','scripts/fixtures/user-decision/build-fixture.mjs','scripts/lib/command-runner.mjs','scripts/lib/json-schema.mjs','scripts/lib/context-reconciliation.mjs','scripts/verify-context-reconciliation');
 shared.push('scripts/lib/decision-continuation.mjs');
 shared.push('scripts/lib/backend-platform-provenance.mjs','scripts/lib/backend-platform.mjs','scripts/lib/backend-platform-verification.mjs','scripts/lib/scaffold-local-database.mjs','scripts/vendor/xml.mjs','docs/engineering/backend-platforms.json','docs/engineering/backend-platforms.md','docs/process/schemas/project-scaffold-contract.schema.json','docs/process/schemas/scaffold-architecture-decisions.schema.json','scripts/verify-scaffold-architecture-decisions','scripts/backend-platforms','docs/agents/backend-architecture-profiles.md','scripts/fixtures/backend-scaffold/platform-fixture.mjs','scripts/fixtures/backend-scaffold/design-prerequisites.mjs');
@@ -20,7 +20,9 @@ shared.push('scripts/lib/approved-execution-context.mjs','scripts/fixtures/backe
 let differences=[];
 // 专职执行范围由各模板持有；后端只消费 wire 校验器，不恢复原型构建技能。
 function replaceExactly(bytes,from,to,name){const content=bytes.toString();const count=content.split(from).length-1;if(count!==1)throw new Error(`${name} 转换基线失效，预期 1 处，实际 ${count} 处`);return Buffer.from(content.replace(from,to));}
+const visualSource='.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs',visualWire='scripts/lib/visual-baseline-contract.mjs';
 const transformations={
+ 'backend-wire-library':bytes=>replaceExactly(replaceExactly(bytes,'../../../../scripts/vendor/yaml.mjs','../vendor/yaml.mjs','backend-wire-yaml'),'../../../../scripts/lib/validation-phase.mjs','./validation-phase.mjs','backend-wire-phase'),
  identity:bytes=>bytes,
  'backend-wire-runtime':bytes=>replaceExactly(bytes,'../../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs','./visual-baseline-contract.mjs','backend-wire-runtime'),
  'backend-wire-command':bytes=>replaceExactly(bytes,'../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs','./lib/visual-baseline-contract.mjs','backend-wire-command'),
@@ -29,9 +31,24 @@ const transformations={
 function transformationFor(target,ref){if(!target.endsWith('yss-harness-backend-agent'))return'identity';if(['scripts/lib/ui-baseline.mjs','scripts/lib/delivery-preflight.mjs'].includes(ref))return'backend-wire-runtime';if(ref==='scripts/verify-strategic-context-import-scenarios')return'backend-wire-command';if(ref==='scripts/fixtures/strategic-handoff/fixture.mjs')return'backend-wire-fixture';return'identity';}
 function sync(source,dest,transformation='identity'){const bytes=transformations[transformation](readFileSync(source));if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}if(!check&&path.basename(path.dirname(dest))==='scripts'&&!path.extname(dest))chmodSync(dest,0o755);}
 const digestBytes=bytes=>`sha256:${createHash('sha256').update(bytes).digest('hex')}`;
+shared.push('scripts/lib/lifecycle-execution-scope.mjs');
+shared.push('scripts/stage-tracking','scripts/lib/stage-tracking.mjs','scripts/lib/stage-tracking-migration.mjs','docs/process/stage-tracking.md','docs/process/schemas/stage-tracking.schema.json');
+shared.push('scripts/contract','scripts/api-contract-decision','scripts/lib/contract-views.mjs','scripts/lib/contract-source.mjs','scripts/lib/validation-phase.mjs','scripts/lib/slice-contract-views.mjs','scripts/lib/api-contract-decision.mjs','scripts/lib/openapi-draft-validation.mjs','docs/process/schemas/api-contract-decision.schema.json','docs/process/schemas/api-contract-decision-v2.schema.json','docs/process/schemas/openapi-draft-validation-record.schema.json','docs/process/contract-reading.md');
 const sharedRefs=[...new Set(shared)].sort();
-const sliceExecutionRefs=['scripts/lib/backend-standards-coverage.mjs','scripts/backend-standards-coverage','scripts/lib/backend-review.mjs','scripts/lib/slice-execution-preflight.mjs','scripts/slice-contract','scripts/lib/slice-contract-preparation.mjs','scripts/lib/slice-contract-views.mjs','scripts/lib/slice-task-package.mjs','scripts/lib/implementation-contract-compiler.mjs','scripts/lib/skill-registry.mjs','scripts/lib/skill-supply-chain.mjs','scripts/lib/technical-design-boundary.mjs'];
+const sliceExecutionRefs=['scripts/lib/backend-delivery-terminal.mjs','scripts/complete-backend-delivery','scripts/dispatch-slice-task','scripts/lib/backend-standards-coverage.mjs','scripts/backend-standards-coverage','scripts/lib/backend-review.mjs','scripts/lib/slice-execution-preflight.mjs','scripts/slice-contract','scripts/lib/slice-contract-preparation.mjs','scripts/lib/slice-contract-views.mjs','scripts/lib/slice-task-package.mjs','scripts/lib/implementation-contract-compiler.mjs','scripts/lib/skill-registry.mjs','scripts/lib/skill-supply-chain.mjs','scripts/lib/technical-design-boundary.mjs'];
 const backendPlatformRefs=['scripts/verify-backend-platform-matrix','scripts/fixtures/backend-scaffold/generate-candidate.mjs','scripts/fixtures/backend-scaffold/platform-scenarios.test.mjs','scripts/verify-scaffold-architecture-decision-scenarios','scripts/verify-scaffold-generator-scenarios'];
+const routingContractRef='.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
+const routingSource=readFileSync(path.join(root,routingContractRef));
+const consumerRoutes=parseDocument(routingSource.toString(),{uniqueKeys:true}).toJS({maxAliasCount:0}).consumer_entry_routes;
+if(!consumerRoutes)throw new Error('源主控缺少 consumer_entry_routes');
+function targetRoutingRef(targetRoot){return targetRoot===root?routingContractRef:targetRoot.endsWith('design-agent')?'.agents/skills/yss-strategic-design/references/orchestration-contract.yaml':'.agents/skills/harness-orchestrator/references/orchestration-contract.yaml';}
+function projectedRouting(targetRoot){
+ const bytes=readFileSync(path.join(targetRoot,targetRoutingRef(targetRoot))),document=parseDocument(bytes.toString(),{uniqueKeys:true});
+ if(document.errors.length)throw new Error('目标主控不可读');
+ if(JSON.stringify(document.toJS({maxAliasCount:0}).consumer_entry_routes)===JSON.stringify(consumerRoutes))return bytes;
+ document.set('consumer_entry_routes',consumerRoutes);return Buffer.from(document.toString());
+}
+function syncRouting(targetRoot){const dest=path.join(targetRoot,targetRoutingRef(targetRoot)),bytes=projectedRouting(targetRoot);if(!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}}
 const registryRef='docs/agents/yss-skill-registry.yaml';
 const sourceRegistry=parseDocument(readFileSync(path.join(root,registryRef),'utf8'),{uniqueKeys:true});
 if(sourceRegistry.errors.length)throw new Error('源技能注册表不可读');
@@ -47,15 +64,18 @@ function projectedRegistry(targetRoot){
 function syncExistingProfiles(targetRoot){const dest=path.join(targetRoot,registryRef),bytes=projectedRegistry(targetRoot);if(!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check)writeFileSync(dest,bytes);}}
 
 const revision=spawnSync('git',['-C',root,'rev-parse','HEAD'],{encoding:'utf8'}).stdout.trim();
-const scopedState=spawnSync('git',['-C',root,'status','--porcelain=v1','--untracked-files=all','--','scripts/sync-strategic-handoff-tools',registryRef,...sharedRefs,...sliceExecutionRefs,...backendPlatformRefs],{encoding:'utf8'}).stdout.trim();
+const scopedState=spawnSync('git',['-C',root,'status','--porcelain=v1','--untracked-files=all','--','scripts/sync-strategic-handoff-tools',registryRef,routingContractRef,visualSource,...sharedRefs,...sliceExecutionRefs,...backendPlatformRefs],{encoding:'utf8'}).stdout.trim();
 const sourceState=scopedState?'working-tree':'committed';
 function expectedLock(target,targetRoot){
  const lockedRefs=[...new Set([...sharedRefs,...(target==='.'||!target.endsWith('design-agent')?sliceExecutionRefs:[]),...(target==='.'||target.endsWith('backend-agent')?backendPlatformRefs:[])])].sort();
  const sourceFiles=Object.fromEntries(lockedRefs.map(ref=>[ref,digestBytes(readFileSync(path.join(root,ref)))]));
  const effectiveFiles=Object.fromEntries(lockedRefs.map(ref=>[ref,digestBytes(transformations[transformationFor(target,ref)](readFileSync(path.join(root,ref))))]));
+ if(target.endsWith('backend-agent')){sourceFiles[visualSource]=digestBytes(readFileSync(path.join(root,visualSource)));effectiveFiles[visualWire]=digestBytes(transformations['backend-wire-library'](readFileSync(path.join(root,visualSource))));}
+ sourceFiles[routingContractRef]=digestBytes(routingSource);
+ effectiveFiles[targetRoutingRef(targetRoot)]=digestBytes(target==='.'?routingSource:projectedRouting(targetRoot));
  sourceFiles[registryRef]=digestBytes(readFileSync(path.join(root,registryRef)));
  effectiveFiles[registryRef]=digestBytes(target==='.'?readFileSync(path.join(root,registryRef)):projectedRegistry(targetRoot));
- return {schema_version:1,target_id:target==='.'?'template-root':path.basename(target),source_repository:'yss-spec-project-template',source_revision:revision,source_state:sourceState,transformation_set:[...new Set(lockedRefs.map(ref=>transformationFor(target,ref)))].sort(),source_files:sourceFiles,effective_files:effectiveFiles};
+ return {schema_version:1,target_id:target==='.'?'template-root':path.basename(target),source_repository:'yss-spec-project-template',source_revision:revision,source_state:sourceState,transformation_set:[...new Set([...lockedRefs.map(ref=>transformationFor(target,ref)),...(target.endsWith('backend-agent')?['backend-wire-library']:[])])].sort(),source_files:sourceFiles,effective_files:effectiveFiles};
 }
 function lock(target,targetRoot){const ref='.template-source/distribution/strategic-handoff-tools.lock.json',dest=path.join(targetRoot,ref),bytes=Buffer.from(`${JSON.stringify(expectedLock(target,targetRoot),null,2)}\n`);if(!existsSync(dest)||!bytes.equals(readFileSync(dest))){differences.push(path.relative(root,dest));if(!check){mkdirSync(path.dirname(dest),{recursive:true});writeFileSync(dest,bytes);}}}
 // CLI core owns the portable external-command runner. Only create-yss-spec still consumes
@@ -74,7 +94,9 @@ for(const target of targets){
  if(!target.endsWith('design-agent'))for(const ref of sliceExecutionRefs)sync(path.join(root,ref),path.join(root,target,ref));
  if(!target.endsWith('design-agent'))for(const ref of ['scripts/verify-frontend-delivery-scenarios','scripts/fixtures/backend-delivery/revision-server.mjs'])sync(path.join(root,ref),path.join(root,target,ref));
  if(target.endsWith('backend-agent'))for(const ref of ['scripts/fixtures/existing-backend/scenarios.test.mjs','scripts/verify-existing-backend-architecture-scenarios','scripts/lib/implementation-contract-compiler.mjs','scripts/lib/technical-design-boundary.mjs',...backendPlatformRefs])sync(path.join(root,ref),path.join(root,target,ref));
+ if(target.endsWith('backend-agent'))sync(path.join(root,visualSource),path.join(root,target,visualWire),'backend-wire-library');
  syncExistingProfiles(path.join(root,target));
+ syncRouting(path.join(root,target));
  for(const ref of new Set(shared))sync(path.join(root,ref),path.join(root,target,ref),transformationFor(target,ref));
  lock(target,path.join(root,target));
 }

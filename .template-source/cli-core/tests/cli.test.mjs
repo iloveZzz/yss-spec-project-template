@@ -917,3 +917,13 @@ test('三家族真实写入、中断、备份损坏、并发修改及校验失�
   else {assert.equal(preview.status,1);assert.equal(recovered.status,1);assert.deepEqual(tree(f.target),recoveryBefore);}
  }
 });
+
+test('tracker remains project-owned on sync and force; new init enables stage tracking', t => {
+  const x = fixture(t);
+  const old = '---\ntracker:\n  platform: local-markdown\n---\n# 旧项目\n';
+  x.bundle({ 'docs/agents/issue-tracker.md': old });
+  assert.equal(x.run('init').status, 0);
+  x.bundle({ 'docs/agents/issue-tracker.md': old.replace('  platform:', '  lifecycle_tracking_version: 1\n  platform:') });
+  assert.equal(x.run('sync', '--apply', '--force').status, 0);
+  assert.equal(fs.readFileSync(path.join(x.target, 'docs/agents/issue-tracker.md'), 'utf8'), old);
+});

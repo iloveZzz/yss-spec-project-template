@@ -1,11 +1,12 @@
 #!/usr/bin/env node
+import {withValidationPhase,validationDependencies} from "./lib/validation-phase.mjs";
 import { parseArgs } from "node:util";
 import { verifyContextReconciliation } from "./lib/context-reconciliation.mjs";
 try {
-  const { values, positionals } = parseArgs({ options: { root: { type: "string", default: process.cwd() } }, allowPositionals: true, strict: true });
+  const { values, positionals } = parseArgs({ options: { "validation-dependencies": {type:"boolean",default:false}, root: { type: "string", default: process.cwd() } }, allowPositionals: true, strict: true });
   if (positionals.length !== 1) throw new TypeError("用法: scripts/verify-context-reconciliation [--root <repo>] <record.yaml|json>");
-  verifyContextReconciliation(positionals[0], { root: values.root });
-  process.stdout.write("Context reconciliation 验证通过\n");
+  const result=withValidationPhase({root:values.root,purpose:"context-reconciliation",readOnly:true},()=>{verifyContextReconciliation(positionals[0], { root: values.root });return values["validation-dependencies"]?{result:"verified",validation_dependencies:validationDependencies()}:null;});
+  process.stdout.write(result?JSON.stringify(result)+"\n":"Context reconciliation 验证通过\n");
 } catch (error) {
   process.stderr.write(`Context reconciliation 验证失败: ${error.message}\n`);
   process.exitCode = 1;

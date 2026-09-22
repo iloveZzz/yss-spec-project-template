@@ -1,6 +1,6 @@
 import { assertApprovedExecutionContext, approvedExecutionBinding } from './approved-execution-context.mjs';
 import path from 'node:path';
-import { readFileSync } from 'node:fs';
+import { readFileSync, inValidationPhase, acceptValidationDependencies } from './validation-phase.mjs';
 import { spawnSync } from 'node:child_process';
 import { ROOT, read, safe, ensure, hash } from './strategic-handoff-io.mjs';
 
@@ -22,11 +22,13 @@ export function enforceTechnicalDesign(state = {}, { root = ROOT, execution, rea
   if (binding.legacy_ddd === true) args.push('--legacy-ddd');
   if(readOnly)args.push('--read-only');
   if(execution){
-    assertApprovedExecutionContext(execution,{root,technicalDesign:data,architectureIdentity:state.architecture_identity,sliceId:state.slice_id});
+    assertApprovedExecutionContext(execution,{root,technicalDesign:data,architectureIdentity:state.architecture_identity,sliceId:state.slice_id,readOnly});
     const approved=approvedExecutionBinding(execution);
     if(approved.work_unit_id)args.push('--work-unit',approved.work_unit_id);
     args.push('--approved-slice',approved.ref,'--approved-slice-digest',approved.digest,'--approved-slice-approval',approved.approval_ref);
   }
+  if(inValidationPhase())args.push('--validation-dependencies');
   const verified = spawnSync(process.execPath, args, { cwd: root, encoding: 'utf8', timeout: 60000, maxBuffer: 2 * 1024 * 1024 });
   ensure(verified.status === 0, `技术设计不可消费: ${verified.error?.message || verified.stderr}`);
+  if(inValidationPhase()){let output;try{output=JSON.parse(verified.stdout);}catch{throw new TypeError('VALIDATION_RECEIPT_INVALID: 技术设计子进程未返回依赖');}const dependencies=output.validation_dependencies;const required=[file,...(execution?[path.resolve(root,approvedExecutionBinding(execution).ref),path.resolve(root,approvedExecutionBinding(execution).approval_ref),path.resolve(root,'docs/agents/digital-human-roles.yaml')]:[])];ensure(required.every(ref=>dependencies?.files?.some(row=>row.file===ref)),'VALIDATION_RECEIPT_INVALID: 技术设计依赖报告缺少必要原始资产');acceptValidationDependencies(dependencies);}
 }

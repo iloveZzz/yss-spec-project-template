@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+import { parseArgs } from 'node:util';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+import { parseSliceYaml } from './lib/slice-contract.mjs';
+import { compileSliceTaskPackage } from './lib/slice-task-package.mjs';
+try {
+  const { values } = parseArgs({ options: { root: { type: 'string' }, input: { type: 'string' } } });
+  if (!values.root || !values.input) throw new TypeError('用法: dispatch-slice-task --root <project> --input <task-input.yaml>');
+  const input = parseSliceYaml(readFileSync(values.input));
+  const result = compileSliceTaskPackage(input.binding, { ...input, root: path.resolve(values.root) });
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+} catch (error) { process.stderr.write(`${error.message}\n`); process.exitCode = 1; }

@@ -1,12 +1,15 @@
+import {validateJsonSchemas} from './json-schema.mjs';
+import { assertScopeSlice, assertScopeWorkUnit } from './lifecycle-execution-scope.mjs';
 import { selectSliceWorkUnit, normalizeSliceContract, sourceSliceContract, parseSliceYaml } from './slice-contract.mjs';
 import path from 'node:path';
-import { readFileSync } from 'node:fs';
+import { readFileSync, inValidationPhase, validationMemo, validationPhaseToken } from './validation-phase.mjs';
 import { ROOT, read, parse, safe, hash, digest, schema } from './strategic-handoff-io.mjs';
 import { countersignRuleForGate } from './digital-human-roles.mjs';
 import { validateApprovalRecord } from './approval-record.mjs';
 import { assertImplementationDecision } from './user-decision.mjs';
 import { loadSkillRegistry } from './skill-registry.mjs';
 
+const primeCache=Symbol('approval-schema-prime');
 const contexts=new WeakMap();
 const gateId='gate.slice-contract-approved';
 const check=(ok,code,message)=>{if(!ok){const error=new TypeError(`${code}: ${message}`);error.code=code;throw error;}};
@@ -68,27 +71,52 @@ function executionBasis(verified,{allowCompilerDrift=false}={}) {
   return verified;
 }
 
+function primeApprovalSchemas(binding,root){
+  if(!inValidationPhase())return;
+  validationMemo(primeCache,JSON.stringify([root,binding]),()=>{
+    const jobs=[];
+    const add=(value,ref,formatChecker,errorStyle)=>jobs.push({value,schemaPath:path.join(ROOT,ref),formatChecker,errorStyle});
+    // Speculative shape checks never decide approval or change the original error order.
+    // Original consumers still validate every semantic and authorization rule below.
+    try{
+      const source=parseSliceYaml(readFileSync(safe(root,binding.ref))),raw=source.slice_contract||source;
+      if(raw.schema_version===3)add(raw,'docs/process/schemas/slice-implementation-contract-v3.schema.json',false,'verbose');
+      const approval=read(safe(root,binding.approval_ref));
+      if(approval.gates&&approval.human_review&&!approval.gate_id){
+        add(approval,'docs/process/schemas/lifecycle-checkpoint.schema.json',false,'verbose');
+        for(const requirement of approval.human_review.user_decisions||[])if(requirement.user_decision_ref&&!requirement.continuation_ref){const ref=path.isAbsolute(requirement.user_decision_ref)?path.relative(root,requirement.user_decision_ref):requirement.user_decision_ref;add(read(safe(root,ref)),'docs/process/schemas/user-decision.schema.json',true,'compact');}
+      }
+    }catch{/* The original consumer reports missing or invalid input with its existing code. */}
+    if(jobs.length)validateJsonSchemas(jobs);return true;
+  });
+}
 export function createApprovedExecutionContext(binding,options={}) {
+  primeApprovalSchemas(binding,path.resolve(options.root||process.cwd()));
   const verified=executionBasis(verifySliceContractApproval(binding,options));
-  selectSliceWorkUnit(verified.contract,options.work_unit_id);
+  assertScopeSlice(selectSliceWorkUnit(verified.contract,options.work_unit_id),{root:verified.root});
+  if(!options.readOnly)assertScopeWorkUnit('work-unit.slice-implementation',{root:verified.root});
   const context=Object.freeze({kind:'approved-slice-execution-context'});
-  contexts.set(context,{binding:verified.binding,root:verified.root,work_unit_id:options.work_unit_id,allowCompilerDrift:false});
+  contexts.set(context,{phase:validationPhaseToken(),binding:verified.binding,root:verified.root,work_unit_id:options.work_unit_id,allowCompilerDrift:false,readOnly:options.readOnly===true});
   return context;
 }
 
 /** A prior approved scope may authenticate bounded output while current compiler facts are recomputed. */
 export function createApprovedRecompilationContext(binding,options={}) {
-  const verified=executionBasis(verifySliceContractApproval(binding,options),{allowCompilerDrift:true});
-  selectSliceWorkUnit(verified.contract,options.work_unit_id);
+  const verified=executionBasis(verifySliceContractApproval(binding,options),{allowCompilerDrift:true,readOnly:options.readOnly===true});
+  assertScopeSlice(selectSliceWorkUnit(verified.contract,options.work_unit_id),{root:verified.root});
+  if(!options.readOnly)assertScopeWorkUnit('work-unit.slice-implementation',{root:verified.root});
   const context=Object.freeze({kind:'approved-slice-recompilation-context'});
-  contexts.set(context,{binding:verified.binding,root:verified.root,work_unit_id:options.work_unit_id,allowCompilerDrift:true});
+  contexts.set(context,{phase:validationPhaseToken(),binding:verified.binding,root:verified.root,work_unit_id:options.work_unit_id,allowCompilerDrift:true,readOnly:options.readOnly===true});
   return context;
 }
 
 /** Revalidate original bytes on every boundary; a serialized/caller-invented context is rejected. */
-export function assertApprovedExecutionContext(context,{root=process.cwd(),contract,architectureIdentity,architectureEvidence,technicalDesign,sliceId}={}) {
+export function assertApprovedExecutionContext(context,{root=process.cwd(),contract,architectureIdentity,architectureEvidence,technicalDesign,sliceId,readOnly=false}={}) {
   const saved=contexts.get(context);
   check(saved&&saved.root===path.resolve(root),'EXECUTION_CONTEXT_UNTRUSTED','只允许从当前原始 Slice 与本地批准生成的执行上下文');
+  check(!saved.phase||saved.phase===validationPhaseToken(),'EXECUTION_CONTEXT_EXPIRED','不能跨验证阶段复用批准上下文');
+  check(!saved.readOnly||readOnly,'EXECUTION_CONTEXT_READ_ONLY','只读检查上下文不能执行实现');
+  if(!readOnly)assertScopeWorkUnit('work-unit.slice-implementation',{root});
   const verified=executionBasis(verifySliceContractApproval(saved.binding,{root,contract}),{allowCompilerDrift:saved.allowCompilerDrift});
   const current=selectSliceWorkUnit(verified.contract,saved.work_unit_id),resolution=current.resolution;
   if(sliceId)check(current.slice_id===sliceId,'EXECUTION_SCOPE_CONFLICT','执行上下文属于另一切片');

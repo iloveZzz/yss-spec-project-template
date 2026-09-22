@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
-import { existsSync, lstatSync, readFileSync, realpathSync } from "node:fs";
+import { realpathSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync } from "./validation-phase.mjs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseAllDocuments, parseDocument } from "../vendor/yaml.mjs";

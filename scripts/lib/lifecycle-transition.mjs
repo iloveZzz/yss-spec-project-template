@@ -1,3 +1,5 @@
+import { assertTrackingTransition } from './stage-tracking.mjs';
+import { assertScopeTransition, assertScopeImpacts, assertScopeWorkUnit, scopedNextRoutes } from './lifecycle-execution-scope.mjs';
 // Wire capability marker: profile-local readiness rules are not interchangeable.
 export const SLICE_REPOSITORY_PREPARATION_PROTOCOL = 1;
 import { createHash } from "node:crypto";
@@ -43,7 +45,8 @@ const NEXT_ROUTES = deepFreeze({
   [TICKET_DECOMPOSITION_WORK_UNIT]: [IMPLEMENTATION_WORK_UNIT],
   [IMPLEMENTATION_WORK_UNIT]: ["work-unit.frontend-implementation-verification", "work-unit.code-review"],
   "work-unit.frontend-implementation-verification": ["work-unit.code-review"],
-  "work-unit.code-review": ["work-unit.release-and-retrospective", IMPLEMENTATION_WORK_UNIT],
+  "work-unit.code-review": ["work-unit.release-and-retrospective", IMPLEMENTATION_WORK_UNIT, "work-unit.backend-delivery"],
+  "work-unit.backend-delivery": [],
   "work-unit.release-and-retrospective": [],
 });
 
@@ -249,7 +252,11 @@ function validateTicketReference(ref, trackerKind) {
  * by `validateWorkflowExecutionResult` before this function is called.
  */
 export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, options = {}) {
-  if (currentWorkUnit === "work-unit.code-review" && nextRoute === "work-unit.release-and-retrospective") {
+  try { assertTrackingTransition(currentWorkUnit, nextRoute, decisionState, { root: options.root || ROOT }); }
+  catch (error) { return blockedResult(['stage-tracking-blocked'], [error.message]); }
+  try { assertScopeTransition(currentWorkUnit, nextRoute, decisionState, options); }
+  catch (error) { return blockedResult(['execution-scope-blocked'], [error.message]); }
+  if (currentWorkUnit === "work-unit.code-review" && ["work-unit.release-and-retrospective", "work-unit.backend-delivery"].includes(nextRoute)) {
     try {
       if (decisionState?.review_input?.scope_kind !== "change") throw new Error("只读基线审计不能关闭实现审查");
       validateBackendReview(decisionState, { root: options.root || ROOT });
@@ -262,7 +269,7 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
     try { enforceFrontendDelivery(decisionState, { root: options.root, phase: nextRoute === IMPLEMENTATION_WORK_UNIT ? "implementation" : "inputs" }); }
     catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
   }
-  const routes = NEXT_ROUTES[currentWorkUnit];
+  const routes = NEXT_ROUTES[currentWorkUnit] && scopedNextRoutes(currentWorkUnit, NEXT_ROUTES[currentWorkUnit], options);
   if (!routes) return blockedResult([BLOCKING_SIGNALS.invalidRoute], ["known_current_work_unit"]);
   if (nextRoute === REPOSITORY_PREPARATION_WORK_UNIT && currentWorkUnit !== "work-unit.technical-analysis") {
     return blockedResult([BLOCKING_SIGNALS.technicalAnalysisRequired], ["work-unit.technical-analysis predecessor"]);
@@ -299,6 +306,8 @@ export function validateNextRoute(currentWorkUnit, nextRoute, decisionState, opt
  * generated and verified scaffold. Unaffected roles need an explicit reason.
  */
 export function validateImplementationRepositoriesReady(state, { exists = existsSync, read = (ref) => readFileSync(ref, "utf8"), root = ROOT } = {}) {
+  try { assertScopeImpacts(state, { root }); }
+  catch (error) { return blockedResult(['execution-scope-blocked'], [error.message]); }
   const preparation = state?.implementation_repository_preparation;
   const impacts = state?.delivery_impacts;
   const signals = [];
@@ -411,6 +420,13 @@ function validateDecisionBoundary(workUnit, state, options) {
  * `exists` is injectable so external adapters can resolve their own tracker refs.
  */
 export function validateTicketFormalization(state, { exists = existsSync, read = (ref) => readFileSync(ref, "utf8"), ...decisionOptions } = {}) {
+  if ((state?.tracker_kind ?? "local-markdown") === "local-markdown" && state?.vertical_slice_ticket?.ref && isReadable(state.vertical_slice_ticket.ref, exists)) {
+    try {
+      const header = read(state.vertical_slice_ticket.ref).match(/^---\r?\n([\s\S]*?)\r?\n---/);
+      const kind = header ? parseDocument(header[1], { uniqueKeys: true }).toJS({ maxAliasCount: 0 })?.kind : null;
+      if (kind === "stage-work-item") return blockedResult(["stage-work-item-not-implementable"], ["vertical-slice-ticket required"]);
+    } catch { return blockedResult(["ticket-content-unreadable"], ["readable vertical slice content"]); }
+  }
   try { enforceFrontendDelivery(state, { root: decisionOptions.root, phase: "implementation" }); }
   catch (error) { return blockedResult(["frontend-delivery-blocked"], [error.message]); }
   const repositoryResult = validateImplementationRepositoriesReady(state, { exists, read, ...decisionOptions });
@@ -532,6 +548,8 @@ export function validateTicketFormalization(state, { exists = existsSync, read =
  * Validate the complete implementation entry seam after ready-for-agent promotion.
  */
 export function validateImplementationEntry(state, options = {}) {
+  try { assertScopeWorkUnit(IMPLEMENTATION_WORK_UNIT, options); assertScopeImpacts(state, options); }
+  catch (error) { return blockedResult(['execution-scope-blocked'], [error.message]); }
   const ticketResult = validateTicketFormalization(state, options);
   if (ticketResult.result === "blocked") return ticketResult;
   if (state?.predecessor_work_unit !== TICKET_DECOMPOSITION_WORK_UNIT) {

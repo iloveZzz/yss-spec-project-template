@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { existsSync, lstatSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync, readdirSync } from './validation-phase.mjs';
 import path from "node:path";
 
 const CONTEXT_FILE = "CONTEXT.md";

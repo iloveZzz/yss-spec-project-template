@@ -1,11 +1,12 @@
 import {validateExistingUiBaseline} from './existing-ui-baseline.mjs';
 import {sliceRepositories} from './slice-repositories.mjs';
 import { sliceCheckApplicability } from './slice-applicability.mjs';
-import fs from 'node:fs';
+import fs, {validationMemo} from './validation-phase.mjs';
 import path from 'node:path';
 import { parseDocument } from '../vendor/yaml.mjs';
 import { safe, hash, digest, schema } from './strategic-handoff-io.mjs';
 
+const parseCache=Symbol('slice-yaml');
 const originals = new WeakMap();
 const sourceSnapshots = new WeakMap();
 const nonempty = value => typeof value === 'string' && value.trim();
@@ -13,7 +14,8 @@ const unique = values => [...new Set(values)];
 const fail = message => { throw new TypeError(`slice-contract-invalid: ${message}`); };
 const requireThat = (ok, message) => { if (!ok) fail(message); };
 export const sourceSliceContract = value => originals.get(value) || value?.slice_contract || value;
-export function parseSliceYaml(bytes) {
+export function parseSliceYaml(bytes) {return validationMemo(parseCache,String(bytes),()=>parseSliceYamlFresh(bytes));}
+function parseSliceYamlFresh(bytes) {
   const doc = parseDocument(String(bytes), { uniqueKeys: true, intAsBigInt: true });
   requireThat(!doc.errors.length, `YAML 无效: ${doc.errors[0]?.message}`);
   const value = doc.toJS({ maxAliasCount: 0 });
@@ -99,10 +101,23 @@ export function sliceAcceptanceText(contract, sources) {
 export function normalizeSliceContract(document, options = {}) {
   const raw = sourceSliceContract(document);
   requireThat(raw && [2,3].includes(raw.schema_version), 'Slice Implementation Contract schema v1 已停止支持；需要 schema v2 或 v3');
-  if (raw.schema_version === 2) return structuredClone(raw);
+  if (raw.schema_version === 2) {
+    const ref = raw.lifecycle_refs?.ticket;
+    if (ref) {
+      requireThat(!/\/work-items\//.test(ref), 'stage-work-item 不能作为实现 Ticket');
+      const file = safe(options.root || process.cwd(), ref, { missing: true });
+      if (fs.existsSync(file)) {
+        const header = fs.readFileSync(file, 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---/);
+        requireThat(!header || parseSliceYaml(header[1])?.kind !== 'stage-work-item', 'stage-work-item 不能作为实现 Ticket');
+      }
+    }
+    return structuredClone(raw);
+  }
   schema(raw,'docs/process/schemas/slice-implementation-contract-v3.schema.json');
   const sources=readSliceSources(raw,options), refs=Object.fromEntries(Object.entries(sources).map(([key,item])=>[key,item.ref]));
   requireKeys(refs,['spec','ticket','engineering_baseline','implementation_repository','build_architecture_checklist'],'依据');
+  const ticketHeader = sources.ticket.text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  requireThat(!/\/work-items\//.test(refs.ticket) && (!ticketHeader || parseSliceYaml(ticketHeader[1])?.kind !== 'stage-work-item'), 'stage-work-item 不能作为实现 Ticket');
   if(!raw.applicability.checks)requireKeys(refs,['architecture_review'],'依据');
   else {
     requireKeys(refs,['lifecycle_registry','process_tailoring'],'适用性依据');

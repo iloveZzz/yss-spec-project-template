@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "registry_id": "yss.lifecycle",
-  "semantic_sha256": "38afc53efe827596c036133c826acd818c8dab85fab0f430d62a60cf62005196",
+  "semantic_sha256": "09490c2a354d5452d52522cc36e04cec044faf62cb3c80c90bf95cd07963f0fb",
   "published_ids": [
     "artifact.architecture-review",
     "artifact.data-architecture",
@@ -104,6 +104,7 @@
     "stage.verification-release-retrospective",
     "stage.vertical-slice-implementation",
     "work-unit.attach-sync-integration",
+    "work-unit.backend-delivery",
     "work-unit.code-review",
     "work-unit.discovery-opportunity",
     "work-unit.discovery-requirements",

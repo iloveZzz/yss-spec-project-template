@@ -1,7 +1,7 @@
 import { assertSourceFingerprint } from "./backend-platform-provenance.mjs";
 /** Shared, exact backend platform selection. Catalog entries are maintenance-owned. */
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { readFileSync } from './validation-phase.mjs';
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 

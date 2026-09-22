@@ -1,5 +1,5 @@
 import { uiBaselineRef, uiBaselineCaseIds, uiBaselineKind, hasConsumerRoutes } from './ui-baseline.mjs';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from './validation-phase.mjs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { openBackendDelivery } from './backend-delivery.mjs';

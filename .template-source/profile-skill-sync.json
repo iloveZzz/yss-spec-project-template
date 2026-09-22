@@ -141,7 +141,8 @@
       ],
       "local_only": [
         "ask-matt",
-        "yss-strategic-design"
+        "yss-strategic-design",
+        "yss-product-lifecycle"
       ],
       "excluded": [
         "harness-orchestrator",
@@ -352,13 +353,13 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "d3a035e640dca74692e09af6e8092868c79e2babe1e79509abbb50bfe2f95c64"
+          "source_tree_sha256": "d12aaa4cce80c9d8ec90a596f3eee451cfc215f760fef7e1ac2268ce00be4b7a"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-openapi-governance.patch",
-          "source_tree_sha256": "95f312b84d2e3e86d6ff153c4ca5d8a70c36524cd4ae2abf398529bedd69a351"
+          "source_tree_sha256": "c76176dc7a507aba8d0af165dc538582799e91a389056f1fdd5d06641caa0e7a"
         },
         {
           "id": "prototype",
@@ -641,13 +642,13 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "d3a035e640dca74692e09af6e8092868c79e2babe1e79509abbb50bfe2f95c64"
+          "source_tree_sha256": "d12aaa4cce80c9d8ec90a596f3eee451cfc215f760fef7e1ac2268ce00be4b7a"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-openapi-governance.patch",
-          "source_tree_sha256": "95f312b84d2e3e86d6ff153c4ca5d8a70c36524cd4ae2abf398529bedd69a351"
+          "source_tree_sha256": "c76176dc7a507aba8d0af165dc538582799e91a389056f1fdd5d06641caa0e7a"
         },
         {
           "id": "prototype-review",
@@ -671,7 +672,7 @@
           "id": "yss-openapi-draft-review",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-openapi-draft-review.patch",
-          "source_tree_sha256": "fc69a095ab8c4165327a23c7d461034cef288d4e81aeafb9fe2cc4bf36a1f2b1"
+          "source_tree_sha256": "d4ff53b34a41c852f5f7ac0b9c0d2f70ca8a027e04a9622f7c0770683a0ab69d"
         },
         {
           "id": "yss-skill-source-index-refresh",

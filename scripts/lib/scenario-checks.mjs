@@ -152,7 +152,7 @@ function validateWorkflowExecutionResult(payload, contract, workUnitRoutes, opti
       // The scenario uses one explicit virtual fixture; arbitrary local refs
       // must still pass the real readability check and cannot use a fallback.
       exists: (ref) => existsSync(ref) || existsSync(path.resolve(options.root ?? root, ref)) || exists(ref) || ref === "docs/.scratch/demo/issues/01-valid-slice.md" || ref === virtualTicketDecompositionRef,
-      read: (ref) => ref === virtualTicketDecompositionRef ? virtualTicketDecomposition : readFileSync(path.resolve(options.root ?? root, ref), "utf8"),
+      read: (ref) => ref === "docs/.scratch/demo/issues/01-valid-slice.md" ? "---\nkind: vertical-slice-ticket\n---\n# 合法切片测试\n" : ref === virtualTicketDecompositionRef ? virtualTicketDecomposition : readFileSync(path.resolve(options.root ?? root, ref), "utf8"),
     });
     ensure(semantic.result === "allowed", `Workflow Execution Result implementation Ticket 语义非法: ${semantic.blocking_signals.join(", ")} / ${semantic.missing_requirements.join("; ")}`);
   }

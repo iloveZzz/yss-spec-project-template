@@ -1,0 +1,47 @@
+#!/usr/bin/env node
+import { parseArgs } from 'node:util';
+import path from 'node:path';
+import { readFileSync, existsSync } from 'node:fs';
+import { openBundle, openDelivery, importBundle } from './lib/strategic-handoff.mjs';
+import { read, safe, ensure, hash, schema, project } from './lib/strategic-handoff-io.mjs';
+import { consumerEntry } from './lib/strategic-handoff-routing.mjs';
+
+try {
+  const { values } = parseArgs({ options: { root: { type: 'string' }, receipt: { type: 'string' }, bundle: { type: 'string' } } });
+  const root = project(values.root);
+  ensure(Boolean(values.receipt) !== Boolean(values.bundle), 'provide-receipt-or-bundle');
+  const inspect = b => {
+    ensure(b.handoff.schema_version === 5, 'design-entry-requires-handoff-v5');
+    const route = b.handoff.consumer_routes.find(item => item.capability === 'backend-technical-design');
+    ensure(route && route.activation !== 'not-applicable', 'backend-consumer-route-not-active');
+    return { ...consumerEntry(root, route.capability, route.entry_work_unit), route_id: route.route_id,
+      bundle_id: b.manifest.bundle_id, version: b.manifest.version, bundle_digest: b.manifest.bundle_digest };
+  };
+  let receiptRef = values.receipt;
+  if (values.bundle) {
+    const input = path.resolve(values.bundle);
+    // Validate the destination route before any import writes.
+    if (existsSync(path.join(input, 'delivery-record.json'))) await openDelivery(input, inspect);
+    else await openBundle(input, inspect);
+    receiptRef = (await importBundle({ bundle: input, targetRoot: root })).receipt_ref;
+  }
+  const receipt = read(safe(root, receiptRef));
+  ensure([2, 3].includes(receipt.schema_version), 'design-entry-receipt-version');
+  schema(receipt, receipt.schema_version === 3 ? 'docs/process/schemas/strategic-handoff-import-receipt-v3.schema.json' : 'docs/process/schemas/strategic-handoff-import-receipt.schema.json');
+  const base = `docs/handoffs/${receipt.bundle_id}/${receipt.version}`;
+  ensure(receiptRef === `${base}/import-receipt.json` && receipt.package_ref === `${base}/package`, 'design-entry-receipt-path');
+  const entry = await openBundle(safe(root, receipt.package_ref), inspect);
+  ensure(entry.bundle_id === receipt.bundle_id && entry.version === receipt.version && entry.bundle_digest === receipt.bundle_digest, 'design-entry-receipt-drift');
+  const route = receipt.routes.find(item => item.capability === entry.capability);
+  ensure(route?.route_id === entry.route_id && route.activation !== 'not-applicable', 'design-entry-receipt-route');
+  if (receipt.schema_version === 3) {
+    ensure(receipt.source_delivery_record_ref === `${base}/source-delivery-record.json`, 'design-entry-delivery-path');
+    const bytes = readFileSync(safe(root, receipt.source_delivery_record_ref));
+    ensure(hash(bytes) === receipt.source_delivery_record_sha256, 'design-entry-delivery-drift');
+    const record = JSON.parse(bytes);
+    ensure(record.bundle_digest === receipt.bundle_digest && record.handoff.id === receipt.bundle_id && record.handoff.version === receipt.version, 'design-entry-delivery-binding');
+  }
+  console.log(JSON.stringify({ result: values.bundle ? 'design-imported' : 'design-inputs-verified', ...entry,
+    import_receipt_ref: receiptRef, next_work_unit: entry.target_work_unit, ready_for_agent: false,
+    stage_verification_required: true, pending: ['target-context-reconciliation', 'engineering-design-and-consumption', 'slice-contract-approval'] }, null, 2));
+} catch (error) { console.error(JSON.stringify({ result: 'blocked', error: error.message, ready_for_agent: false })); process.exitCode = 1; }

@@ -220,3 +220,13 @@ test('DDD design remains a single bound source with its slice-specific invariant
     c.extensions.backend.design_refs=['pointer:/missing'];assert.throws(()=>normalizeSliceContract(c,{root:f.root}),/定位缺失/);
   }finally{f.cleanup();}
 });
+
+
+test('stage work item cannot be disguised as the implementation contract ticket',()=>{
+  const f=fixture();try {
+    const bytes='---\nkind: "stage-work-item"\n---\nAC-1: 设计任务验收\n';
+    fs.writeFileSync(path.join(f.root,'ticket.md'),bytes);f.contract.basis.ticket.digest=hash(bytes);
+    assert.throws(()=>normalizeSliceContract(f.contract,{root:f.root}),/stage-work-item/);
+    assert.throws(()=>normalizeSliceContract({schema_version:2,lifecycle_refs:{ticket:'ticket.md'}},{root:f.root}),/stage-work-item/);
+  }finally{f.cleanup();}
+});

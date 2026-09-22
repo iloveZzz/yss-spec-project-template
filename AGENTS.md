@@ -50,6 +50,8 @@
 
 ## 6. Ticket 与状态
 
+- Plan / Spec / Design 按 `docs/process/stage-tracking.md` 从阶段入口登记工作、按需拆分并在恢复 / 流转时验证；工作项进度不替代 Ticket 五态和阶段批准。
+
 - 每个功能先建父 Ticket，汇总阶段资产、审查、阻塞和证据。
 - Spec、设计、原型、OpenAPI Draft 和待冻结资产使用 `ready-for-human`；只有门禁通过、阻塞清除且可直接实现的垂直切片才能使用 `ready-for-agent`。
 - 按 `docs/agents/issue-tracker.md` 持久化主 tracker，不从 Git remote 推断；平台不可用时生成待发布草案。五态见 `docs/agents/triage-labels.md`。

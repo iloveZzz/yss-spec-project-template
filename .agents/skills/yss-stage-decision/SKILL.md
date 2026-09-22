@@ -5,6 +5,8 @@ description: 编排 Plan 到 Spec 入口的方案决策与业务边界、协作�
 
 # YSS Stage Decision
 
+已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `docs/process/contract-reading.md`。
+
 `yss-stage-decision` 是由生命周期主控调度的上游决策技能，负责把需求、产品、商务输入和业务边界与规则设计结果整理成可审查、可版本化、可被下游消费的方案决策包。它不替代生命周期主控，也不生成产品代码、原型、OpenAPI 或垂直切片 Ticket。
 
 文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。

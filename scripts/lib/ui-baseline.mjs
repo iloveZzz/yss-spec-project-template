@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync } from './validation-phase.mjs';
 import { ensure, read, safe, hash } from './strategic-handoff-io.mjs';
 import { validateVisualBaseline } from '../../.agents/skills/yss-prototype-stage/scripts/visual-baseline-contract.mjs';
 import { validateExistingUiBaseline } from './existing-ui-baseline.mjs';

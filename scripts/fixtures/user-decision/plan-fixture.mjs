@@ -11,6 +11,8 @@ export function buildPlanFixture(root) {
   mkdirSync(path.join(root, 'docs/process'), { recursive: true });
   const write = (ref, value) => writeFileSync(path.resolve(root, ref), typeof value === 'string' ? value : JSON.stringify(value, null, 2));
   write('yss-project.yaml', 'schema_version: 1\nrepository_mode: project-instance\n');
+  mkdirSync(path.join(root, 'docs/agents'), { recursive: true });
+  write('docs/agents/issue-tracker.md', '---\ntracker:\n  platform: local-markdown\n---\n# Legacy Plan fixture\n');
   for (const ref of ['CONTEXT.md', 'docs/process/lifecycle-registry.yaml']) write(ref, readFileSync(path.join(ROOT, ref), 'utf8'));
   write('plan.md', '测试规划：小范围修订，不改变业务边界或关键规则。\n');
   const c = parseContextContract({ root });

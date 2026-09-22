@@ -1,6 +1,6 @@
 import { normalizeSliceContract } from './slice-contract.mjs';
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { readFileSync } from './validation-phase.mjs';
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { ROOT } from "./lifecycle-registry.mjs";

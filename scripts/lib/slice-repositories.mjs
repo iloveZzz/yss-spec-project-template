@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+import fs from './validation-phase.mjs';
 import * as lifecycle from './lifecycle-transition.mjs';
 import path from 'node:path';
 import {digest,schema} from './strategic-handoff-io.mjs';

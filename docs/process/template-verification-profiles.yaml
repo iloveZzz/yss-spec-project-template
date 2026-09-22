@@ -364,6 +364,7 @@ groups:
       - { run: "scripts/verify-digital-human-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml", when: template-source }
   lifecycle:
     commands:
+      - { run: "node --test scripts/fixtures/stage-tracking/tracking.test.mjs", when: template-source }
       - { run: "node --test .template-source/tooling/node/test/decision-continuation.test.mjs", when: template-source }
       - { run: "scripts/verify-user-decision-scenarios" }
       - { run: "scripts/verify-context-contract --root . --json" }

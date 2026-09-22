@@ -1,6 +1,7 @@
 import {assertApprovedExecutionContext} from './approved-execution-context.mjs';
 import {createHash} from 'node:crypto';
-import {readFileSync,realpathSync,lstatSync,readdirSync} from 'node:fs';
+import { realpathSync } from 'node:fs';
+import { readFileSync, lstatSync, readdirSync } from './validation-phase.mjs';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {parseDocument} from '../vendor/yaml.mjs';
@@ -35,7 +36,7 @@ function inspectMaven(root,units){
  const script=`import json,sys,xml.etree.ElementTree as ET\nout=[]\nfor p in json.load(sys.stdin):\n r=ET.parse(p).getroot(); ns={'m':'http://maven.apache.org/POM/4.0.0'}; q=lambda s:r.find(s,ns)\n aid=q('m:artifactId'); aid=aid if aid is not None else q('artifactId')\n deps=[e.text.strip() for e in r.findall('m:dependencies/m:dependency/m:artifactId',ns)+r.findall('m:profiles/m:profile/m:dependencies/m:dependency/m:artifactId',ns)+r.findall('dependencies/dependency/artifactId') if e.text]\n modules=[e.text.strip() for e in r.findall('.//m:modules/m:module',ns)+r.findall('.//modules/module') if e.text]\n out.append({'artifact_id':aid.text.strip() if aid is not None else '', 'dependencies':deps, 'modules':modules})\nprint(json.dumps(out))`;
  try{return JSON.parse(execFileSync('python3',['-c',script],{input:JSON.stringify(units.map(u=>file(root,u.pom_ref))),encoding:'utf8',timeout:15000,maxBuffer:2*1024*1024}));}catch(error){requireThat(false,'ARCH_BUILD_INVALID',`无法读取实际 Maven 构建单元: ${error.message}`);}
 }
-export function verifyExistingArchitecture(identity,bindings,{root,registry,execution}={}){
+export function verifyExistingArchitecture(identity,bindings,{root,registry,execution,readOnly=false}={}){
  const profile=validateExistingArchitecture(identity,registry);
  requireThat(text(root),'ARCH_EVIDENCE_REF','需要治理 root');
  const baseline=bound(root,bindings?.engineering_baseline),registration=bound(root,bindings?.repository_registration),manifest=bound(root,bindings?.manifest);
@@ -132,7 +133,7 @@ export function verifyExistingArchitecture(identity,bindings,{root,registry,exec
  }
  if(changes.length){
   requireThat(execution,'ARCH_SOURCE_STALE',`固定源码改变: ${changes.join(', ')}`);
-  const permission=assertApprovedExecutionContext(execution,{root,architectureIdentity:identity,architectureEvidence:bindings});
+  const permission=assertApprovedExecutionContext(execution,{root,architectureIdentity:identity,architectureEvidence:bindings,readOnly});
   const allowed=permission.allowed_write_paths.map(x=>{if(path.isAbsolute(x)){const rel=path.relative(projectRoot,x).split(path.sep).join('/');return rel==='.'||rel===''?'.':relative(rel);}return x==='.'?'.':relative(x);});
   requireThat(changes.every(ref=>allowed.some(scope=>beneath(ref,scope))&&registration.allowed_write_paths.some(scope=>beneath(ref,scope))),'ARCH_SOURCE_OUT_OF_SCOPE','输出增量超出批准写范围');
  }

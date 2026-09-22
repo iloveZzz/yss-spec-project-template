@@ -582,6 +582,10 @@
             "type": "string",
             "minLength": 1
           }
+        },
+        "checkpoint_ref": {
+          "type": "string",
+          "minLength": 1
         }
       }
     },
@@ -654,6 +658,10 @@
       ]
     },
     "review_result_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "checkpoint_ref": {
       "type": "string",
       "minLength": 1
     }

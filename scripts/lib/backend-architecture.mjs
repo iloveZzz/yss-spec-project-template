@@ -37,9 +37,9 @@ export function validateArchitectureIdentity(identity, registry = loadSkillRegis
 }
 
 // Existing projects must present original on-disk evidence, not three copies supplied by a caller.
-export function verifyArchitectureEvidence(identity, evidence, { root, registry = loadSkillRegistry(), execution } = {}) {
+export function verifyArchitectureEvidence(identity, evidence, { root, registry = loadSkillRegistry(), execution, readOnly=false } = {}) {
   validateArchitectureIdentity(identity, registry);
-  if (identity.schema_version === 2) return verifyExistingArchitecture(identity, evidence, { root, registry, execution });
+  if (identity.schema_version === 2) return verifyExistingArchitecture(identity, evidence, { root, registry, execution, readOnly });
   if (!evidence?.engineering_baseline || !evidence?.repository_registration || !evidence?.manifest) throw new TypeError("缺少工程基线、仓库登记或 Manifest 架构证据");
   assertArchitectureAgreement(identity, evidence, registry);
   return { source_kind: "scaffold", bindings: evidence };

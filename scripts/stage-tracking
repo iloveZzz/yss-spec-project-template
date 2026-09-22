@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+import path from 'node:path';
+import { readFileSync } from 'node:fs';
+import { parseArgs } from 'node:util';
+import { parseYaml } from './lib/stage-tracking.mjs';
+import { checkTracking, planTracking, applyTracking } from './lib/stage-tracking-migration.mjs';
+try {
+  const { values, positionals } = parseArgs({ allowPositionals: true, strict: true, options: { root: { type: 'string' }, checkpoint: { type: 'string' }, items: { type: 'string' }, plan: { type: 'string' }, refresh: { type: 'boolean', default: false } } });
+  const root = path.resolve(values.root || path.resolve(import.meta.dirname, '..'));
+  const command = positionals[0];
+  if (positionals.length !== 1 || !['check', 'plan', 'apply'].includes(command)) throw new Error('用法: stage-tracking check|plan --root <项目> --checkpoint <相对路径> [--items <yaml>] [--refresh]；apply --root <项目> --plan <json>');
+  let result;
+  if (command === 'apply') {
+    if (!values.plan || values.checkpoint || values.items || values.refresh) throw new Error('apply 只接受 --root 和 --plan');
+    result = applyTracking(root, JSON.parse(readFileSync(values.plan, 'utf8')));
+  } else {
+    if (!values.checkpoint || values.plan) throw new Error('check/plan 需要 --checkpoint');
+    if (command === 'check' && (values.items || values.refresh)) throw new Error('check 不接受写入意图参数');
+    const input = values.items ? parseYaml(readFileSync(values.items, 'utf8')) : [];
+    if (!Array.isArray(input)) throw new Error('--items 必须是工作项数组');
+    result = command === 'check' ? checkTracking(root, values.checkpoint) : planTracking(root, { checkpoint_ref: values.checkpoint, items: input, refresh: values.refresh });
+    if (result.status === 'blocked' || (result.status === 'missing-checkpoint' && result.enabled)) process.exitCode = 1;
+  }
+  process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+} catch (error) { process.stderr.write(`${error.message}\n`); process.exitCode = 1; }

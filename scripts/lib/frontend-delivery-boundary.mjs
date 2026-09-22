@@ -1,6 +1,6 @@
 import { normalizeSliceContract, sourceSliceContract, parseSliceYaml } from './slice-contract.mjs';
 import { loadDeliveryProfile } from './harness-execution-scope.mjs';
-import { existsSync } from 'node:fs';
+import { existsSync } from './validation-phase.mjs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { ROOT, read, safe, ensure, digest } from './strategic-handoff-io.mjs';

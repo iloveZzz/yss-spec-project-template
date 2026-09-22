@@ -1,8 +1,10 @@
-import { readFileSync, statSync } from 'node:fs';
+import { statSync } from 'node:fs';
+import { readFileSync, withValidationPhase, inValidationPhase } from './validation-phase.mjs';
 import { ensure, hash, digest, read, safe, files, schema, treeDigest } from './strategic-handoff-io.mjs';
 
 // This is an observation bundle, not a prototype or an approval generator.
-export function validateExistingUiBaseline(data, { bundleRoot } = {}) {
+export function validateExistingUiBaseline(data,options={}) {return inValidationPhase()?validate(data,options):withValidationPhase({root:options.bundleRoot,purpose:'existing-ui-baseline',readOnly:true},()=>validate(data,options));}
+function validate(data, { bundleRoot } = {}) {
   const errors=[];
   try {
     schema(data,'docs/process/schemas/existing-ui-baseline.schema.json');

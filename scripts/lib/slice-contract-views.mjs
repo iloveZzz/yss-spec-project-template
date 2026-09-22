@@ -1,4 +1,4 @@
-import fs from 'node:fs';
+import fs from './validation-phase.mjs';
 import { safe, hash, digest } from './strategic-handoff-io.mjs';
 import { selectSliceWorkUnit, readSliceContract, readSliceSources, sliceAcceptanceText, parseSliceYaml, sourceSliceContract } from './slice-contract.mjs';
 

@@ -1,5 +1,5 @@
 import {enforceHarnessTaskScope} from './harness-execution-scope.mjs';
-import { readFileSync } from 'node:fs';
+import { readFileSync, withValidationPhase } from './validation-phase.mjs';
 import { ROOT, hash, safe, digest } from './strategic-handoff-io.mjs';
 import { normalizeSliceContract, withinSlicePath, parseSliceYaml } from './slice-contract.mjs';
 import { createApprovedExecutionContext, assertApprovedExecutionContext } from './approved-execution-context.mjs';
@@ -14,7 +14,8 @@ function generateTaskPackageDefaults(roleId,overrides,{rolesDoc}={}) {
 }
 
 /** Compile dispatch from the approved YAML. Only runtime identity and task ID come from the caller. */
-export function compileSliceTaskPackage(binding,{root=ROOT,work_unit_id,task_id,actor_id,runtime_id,execution_state='Worker',rolesDoc,user_decisions}={}) {
+export function compileSliceTaskPackage(binding,options={}) {return withValidationPhase({root:options.root||ROOT,purpose:'slice-dispatch',slice_id:binding.ref,work_unit_id:options.work_unit_id,readOnly:false,signal:options.signal},()=>compile(binding,options));}
+function compile(binding,{root=ROOT,work_unit_id,task_id,actor_id,runtime_id,execution_state='Worker',rolesDoc,user_decisions}={}) {
   const actualRoles=parseSliceYaml(readFileSync(safe(root,'docs/agents/digital-human-roles.yaml')));
   if(rolesDoc&&digest(rolesDoc)!==digest(actualRoles))fail('调用方不能替换接收端角色能力');
   rolesDoc=actualRoles;

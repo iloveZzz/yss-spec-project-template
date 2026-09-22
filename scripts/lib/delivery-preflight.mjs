@@ -1,7 +1,7 @@
 import { normalizeSliceContract, sourceSliceContract, parseSliceYaml } from './slice-contract.mjs';
 import { assertExistingSliceStructure, createApprovedExecutionContext, verifySliceContractApproval } from './approved-execution-context.mjs';
 import path from 'node:path';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, withValidationPhase } from './validation-phase.mjs';
 import { ROOT, read, parse, safe, hash, digest, ensure, schema, sourceApprovalPolicy } from './strategic-handoff-io.mjs';
 import { parseContextContract } from './context-contract.mjs';
 import { validateApprovalRecord } from './approval-record.mjs';
@@ -47,7 +47,8 @@ function requireBackendCapability(key) {
 }
 
 /** Read-only: never executes input commands, starts services, unpacks archives or writes receipts. */
-export async function preflightDelivery(input,{stage,root=process.cwd(),work_unit_id}={}) {
+export async function preflightDelivery(input,options={}) {return withValidationPhase({root:path.resolve(options.root||process.cwd(),typeof input?.governance_root==='string'?input.governance_root:'.'),purpose:`delivery-${options.stage}`,slice_id:input?.scope?.slice_id,work_unit_id:options.work_unit_id,readOnly:true,signal:options.signal},()=>preflight(input,options));}
+async function preflight(input,{stage,root=process.cwd(),work_unit_id}={}) {
   try { ensure(STAGES.includes(stage),'未知阶段；必须是 prepare|build|export|accept');schema(input,'docs/process/schemas/delivery-preflight-input.schema.json'); }
   catch(error) { return invalidPreflightInput(error.message); }
   root=path.resolve(root,input.governance_root||'.');

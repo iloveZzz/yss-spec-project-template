@@ -5,7 +5,7 @@ import { createApprovedExecutionContext, createApprovedRecompilationContext, ass
 import { enforceTechnicalDesign } from './technical-design-boundary.mjs';
 import { enforceHarnessSkillScope } from "./harness-execution-scope.mjs";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { readFileSync } from './validation-phase.mjs';
 import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { DEFAULT_REGISTRY, loadSkillRegistry, resolveSkillForNewUse } from "./skill-registry.mjs";
@@ -276,8 +276,8 @@ export function evaluateContractFreshness(contract, { registry, compilerContract
   const reasons = [];
   let trustedExecution;
   try {
-    trustedExecution=approved_slice?createApprovedExecutionContext(approved_slice,{root,contract:all,work_unit_id}):execution;
-    if(trustedExecution)assertApprovedExecutionContext(trustedExecution,{root,contract});
+    trustedExecution=approved_slice?createApprovedExecutionContext(approved_slice,{root,contract:all,work_unit_id,readOnly}):execution;
+    if(trustedExecution)assertApprovedExecutionContext(trustedExecution,{root,contract,readOnly});
   } catch(error) { reasons.push(error.code||'EXECUTION_APPROVAL_INVALID');trustedExecution=undefined; }
   try { enforceTechnicalDesign({ ...resolution, slice_id: contract.slice_id ?? resolution.slice_id }, { root,execution:trustedExecution,readOnly }); }
   catch { reasons.push("technical-design-stale-or-unavailable"); }
@@ -289,7 +289,7 @@ export function evaluateContractFreshness(contract, { registry, compilerContract
     try { validateArchitectureIdentity(resolution.architecture_identity, registry); }
     catch { reasons.push("architecture-identity-invalid"); }
     if (resolution.architecture_identity.schema_version === 2) {
-      try { verifyArchitectureEvidence(resolution.architecture_identity, resolution.architecture_evidence, { root, registry, execution:trustedExecution }); }
+      try { verifyArchitectureEvidence(resolution.architecture_identity, resolution.architecture_evidence, { root, registry, execution:trustedExecution, readOnly }); }
       catch (error) { reasons.push(error.code ?? "architecture-evidence-stale-or-unavailable"); }
     }
     if (resolution.architecture_identity_digest !== architectureDigest(resolution.architecture_identity)) reasons.push("architecture-identity-digest-changed");

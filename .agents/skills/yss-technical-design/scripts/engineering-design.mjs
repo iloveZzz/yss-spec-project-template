@@ -1,5 +1,5 @@
 import path from 'node:path';
-import {readFileSync} from 'node:fs';
+import {readFileSync} from '../../../../scripts/lib/validation-phase.mjs';
 import {ensure,read,safe,hash} from '../../../../scripts/lib/strategic-handoff-io.mjs';
 const beneath=(ref,scope)=>ref===scope||ref.startsWith(`${scope}/`);
 export function validateEngineeringDesign(data,{root}) {

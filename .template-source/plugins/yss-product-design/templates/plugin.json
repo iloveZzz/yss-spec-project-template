@@ -1,0 +1,22 @@
+{
+  "name": "yss-product-design",
+  "version": "0.1.0-dev.1+codex.20260921060740",
+  "description": "从 Plan、Spec 到已批准的产品设计方案，向 YSS 后端交付插件交接。",
+  "author": {
+    "name": "YSS"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "YSS 需求到产品设计",
+    "shortDescription": "Plan → Spec / 功能架构 → 产品设计与验证 → 方案交接",
+    "longDescription": "从 Plan、Spec 到已批准的产品设计方案，向 YSS 后端交付插件交接。",
+    "developerName": "YSS",
+    "category": "Productivity",
+    "capabilities": [],
+    "defaultPrompt": [
+      "从需求开始产品设计",
+      "复用已批准的 Spec 继续设计",
+      "恢复产品设计并准备后端交接"
+    ]
+  }
+}
