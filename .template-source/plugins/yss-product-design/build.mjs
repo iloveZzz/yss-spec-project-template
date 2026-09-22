@@ -11,7 +11,7 @@ import { corePath } from '../yss-backend-delivery/pack-cli.mjs';
 const HERE = import.meta.dirname, ROOT = path.resolve(HERE, '../../..');
 const git = (root, ...args) => execFileSync('git', ['-C', root, ...args], { encoding: 'utf8' }).trim();
 const json = value => JSON.stringify(value, null, 2) + '\n';
-export async function build({ output, sourceRoot = path.join(ROOT, 'submodules/yss-harness-design-agent'), cliRoot = path.join(ROOT, 'submodules/create-yss-strategic-design') }) {
+export async function build({ output, sourceRoot = path.join(ROOT, 'submodules/yss-harness-design-agent'), cliRoot = process.env.YSS_DESIGN_PLUGIN_CLI_ROOT || path.join(ROOT, 'submodules/create-yss-strategic-design') }) {
   const source = realpathSync(sourceRoot), cli = realpathSync(cliRoot), target = path.resolve(output);
   if (path.basename(target) !== identity.name || existsSync(target)) throw new Error('new-named-output-required');
   if ((target.startsWith(ROOT + path.sep) && !target.startsWith(path.join(ROOT, '.template-source/cache/'))) || source.startsWith(target + path.sep) || cli.startsWith(target + path.sep)) throw new Error('unsafe-output');

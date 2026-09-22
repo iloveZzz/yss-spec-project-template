@@ -8,7 +8,7 @@
   },
   "scripts": {
     "build:vendor": "node scripts/build-vendor.mjs",
-    "test": "node --test test/**/*.test.mjs",
+    "test": "node scripts/test-with-plugin-clis.mjs test/**/*.test.mjs",
     "check:vendor": "node scripts/build-vendor.mjs --check",
     "design-md": "node scripts/design-md.mjs"
   },

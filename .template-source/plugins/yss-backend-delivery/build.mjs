@@ -78,7 +78,7 @@ function outputPath(output, root) {
   return resolved;
 }
 
-export function build({ sourceRoot = ROOT, output, cliRoot = path.join(ROOT, 'submodules/create-yss-spec') }) {
+export function build({ sourceRoot = ROOT, output, cliRoot = process.env.YSS_BACKEND_PLUGIN_CLI_ROOT || path.join(ROOT, 'submodules/create-yss-spec') }) {
   const root = realpathSync(sourceRoot), target = outputPath(output, root);
   const plan = planPlugin(root), graph = closure(root, plan);
   const top = execFileSync('git', ['-C', root, 'rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
@@ -143,7 +143,7 @@ export function build({ sourceRoot = ROOT, output, cliRoot = path.join(ROOT, 'su
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    const { values } = parseArgs({ options: { 'source-root': { type: 'string', default: ROOT }, 'cli-root': { type: 'string', default: path.join(ROOT, 'submodules/create-yss-spec') }, output: { type: 'string' } } });
+    const { values } = parseArgs({ options: { 'source-root': { type: 'string', default: ROOT }, 'cli-root': { type: 'string' }, output: { type: 'string' } } });
     if (!values.output) throw new Error('usage: build.mjs --output <new-directory>/yss-backend-delivery [--source-root <template>]');
     console.log(JSON.stringify(build({ sourceRoot: values['source-root'], cliRoot: values['cli-root'], output: values.output }), null, 2));
   } catch (error) { console.error(JSON.stringify({ result: 'blocked', error: error.message, ready_for_agent: false })); process.exitCode = 1; }
