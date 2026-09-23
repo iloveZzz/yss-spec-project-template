@@ -1,5 +1,7 @@
 # 注解契约
 
+以下 `empty-key-eviction` 可配置行为针对当前 Boot 3 / Java 17 组件；Boot 2 的空 key 处理以其独立源码索引和当前源码为准。
+
 ## 映射
 
 - `@QueryCache` -> Spring `CacheableOperation`。
@@ -28,7 +30,7 @@ public void delete(String tenantId, Long planId) { ... }
 ```
 
 - 未配置 key 时由 Spring KeyGenerator 生成；无参数方法会得到 `SimpleKey.EMPTY`。
-- 当前 YSS 拦截器将 `SimpleKey.EMPTY` 视为全量清理。需要单 key 清理时必须给出稳定 key。
+- 当前 Boot 3 的 `yss.cache.empty-key-eviction=legacy-clear`（默认）把 `SimpleKey.EMPTY` 当作清区；`evict` 时只删该 key。迁移前核对原有无参数清理调用及实际属性，不能把默认行为说成所有配置下的不变量。
 - 全量清理优先显式写 `allEntries=true`，不要依赖偶然 key 形态。
 - 集合参数先稳定排序；null、大小写和空白必须归一化。
 

@@ -61,6 +61,7 @@ assert.equal(release.effective_profile, "release");
 const releaseCommands = new Set(release.commands.map((entry) => entry.command));
 assert.deepEqual(releaseBaseline.filter((command) => !releaseCommands.has(command)), [], "release profile 必须保留旧发布门禁的全部行为命令");
 assert.ok(releaseCommands.has("node scripts/verify-template-verification-scenarios"), "release profile 必须验证三级核验路由本身");
+assert.ok(releaseCommands.has("node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js"), "release profile 必须保留 CLI 快速场景");
 const frontend = release.commands.filter((entry) => entry.group === "frontend-delivery");
 assert.deepEqual(frontend.map((entry) => entry.lane), ["source-scenarios", "generated-distribution"]);
 assert.equal(frontend.every((entry) => entry.parallel_unless_env.includes("YSS_DEDICATED_INSTANCE_ROOT")), true);
@@ -86,6 +87,18 @@ assert.ok(!docsOnly.groups.includes("skills"), "文档内循环不得运行无�
 const skillChange = planTemplateVerification({ profile: "fast", changedFiles: [".agents/skills/maintaining-skills/SKILL.md"] });
 assert.ok(skillChange.groups.includes("skills"));
 assert.ok(skillChange.groups.includes("hygiene"));
+
+for (const file of ["submodules/create-yss-spec", "submodules/create-yss-spec/src/api/_sync-service.js"]) {
+  const cli = planTemplateVerification({ profile: "fast", changedFiles: [file] });
+  assert.deepEqual(cli.groups, ["cli-sync", "hygiene"], `${file} 只运行 CLI 快速组和基本检查`);
+  assert.equal(cli.effective_profile, "fast");
+  const candidateCli = planTemplateVerification({ profile: "candidate", changedFiles: [file] });
+  assert.ok(candidateCli.groups.includes("candidate-integrity"));
+  assert.ok(candidateCli.groups.includes("cli-sync"));
+}
+const otherSubmodule = planTemplateVerification({ profile: "fast", changedFiles: ["submodules/another-agent/src/index.js"] });
+assert.ok(otherSubmodule.groups.includes("implementation"));
+assert.ok(!otherSubmodule.groups.includes("cli-sync"));
 
 const prototypeContractChange = planTemplateVerification({ profile: "fast", changedFiles: ["scripts/verify-yss-prototype-contract-scenarios"] });
 assert.ok(prototypeContractChange.groups.includes("implementation"), "原型契约脚本变化必须运行实现压力场景");

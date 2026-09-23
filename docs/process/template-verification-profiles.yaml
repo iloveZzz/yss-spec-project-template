@@ -296,11 +296,18 @@ routing:
     groups: [tooling]
   - patterns: [".github/**"]
     groups: [candidate-integrity]
+  - patterns: ["submodules/create-yss-spec", "submodules/create-yss-spec/**"]
+    groups: [cli-sync]
   - patterns: ["submodules/**"]
+    exclude_patterns: ["submodules/create-yss-spec", "submodules/create-yss-spec/**"]
     groups: [implementation]
   - patterns: ["scripts/**"]
     groups: [hygiene]
 groups:
+  cli-sync:
+    commands:
+      - { run: "node --test submodules/create-yss-spec/tests/sync-fast-smoke.test.js", when: template-source }
+      - { run: "scripts/verify-repository-scope-scenarios", when: template-source }
   dedicated-cli-core:
     commands:
       - { run: "node --test .template-source/cli-core/tests/*.test.mjs", when: template-source }
@@ -334,6 +341,7 @@ groups:
       - { run: "scripts/sync-profile-skills --check --profile=all" , when: template-source }
       - { run: "scripts/sync-skills --check" }
       - { run: "scripts/update-skill-lock --check" }
+      - { run: "node --test tests/skill-sync-efficiency.test.mjs", when: template-source }
       - { run: "scripts/verify-skill-registry" }
       - { run: "scripts/verify-skill-governance" }
       - { run: "scripts/verify-upstream-skill-source --source=iloveZzz/yss-harness-design-agent --source-root=submodules/yss-harness-design-agent", when: template-source }

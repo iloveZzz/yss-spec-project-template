@@ -33,6 +33,18 @@ description: 用于 YSS MyBatis / MyBatis-Plus 组件能力核验、接入决策
 <!-- yss-rule {"id":"mybatis.transaction","when":"mybatis","level":"mandatory","evidence":"code-and-verification"} -->
 - 事务边界归批准的 Application 用例或 MVC service/core；Repository 不临时声明新的业务事务。
 
+## 能力选择记录
+
+| 既有工程调用 seam | 选择与核验 |
+|---|---|
+| `PageQuery` 经组件切面进入 Repository/Gateway | 核对代理切点、参数位置、PageHelper 开关、实际 SQL 与 `tempTotalCount`；不能因 Bean 注册就认定切面命中。 |
+| Mapper 使用 MyBatis-Plus `IPage` | 核对 MP 分页开关、方言、实际 SQL 与 total；同一次查询不得叠加 PageHelper 上下文。两插件都注册不等于查询已双分页。 |
+| 原生 Mapper/Example/ListMapper | 按当前源码和实体映射选择 `BaseRepository<T,D>`；与完整 MP `BasePlusRepository<T>` 不可直接互换，混用或复合键须验证主键方法、XML 与映射。 |
+| SQL 级批量写入 | 核对公开入口、分片大小、目标方言生成的单批 SQL、审计填充和 ID；多个分片整体回滚由上层用例事务保证。若 batch size 存在进程级可变状态，多 Spring Context 不得据此宣称配置隔离。 |
+| 命名数据源 | Holder 中有多个 DataSource 不证明动态路由；记录实际 Mapper 的 `SqlSessionFactory`/DataSource、主池与自建池所有权，以及事务绑定。 |
+
+以上仅对命中的能力记录，不改变两套分页插件的当前默认注册行为；选择由批准 Profile、消费工程配置和运行测试共同证明。
+
 ## 任务分流
 
 | 请求 | 本 Skill 动作 | 后续路由 |
@@ -48,8 +60,8 @@ description: 用于 YSS MyBatis / MyBatis-Plus 组件能力核验、接入决策
 2. 装配与开关：自动配置、条件属性、Mapper 扫描和 XML location 是否真实生效。
 3. 调用 seam：代理是否命中、分页参数位置/类型、分页插件链和 total 回填责任。
 4. 映射：接口签名、XML namespace、resultMap、字段、逻辑删除和主键策略。
-5. 批量：是否调用当前公开批量入口、分批与方言是否匹配、是否退化为循环单条。
-6. 数据源：先确认组件只提供了什么，再检查上层路由与事务进入顺序；不得假设存在当前线程数据源上下文。
+5. 批量：是否调用当前公开批量入口、分批与方言是否匹配、是否退化为循环单条；核对 batch size 在多个应用上下文中的作用域。
+6. 数据源：先确认组件只提供了什么，再检查 Mapper 实际绑定的会话工厂、上层路由与事务进入顺序；不得假设存在当前线程数据源上下文。
 7. 最后检查 SQL、绑定参数、数据库方言与执行计划。
 
 ## Review 输入

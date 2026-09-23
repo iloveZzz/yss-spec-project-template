@@ -29,6 +29,7 @@ description: 用于按批准的 YSS 架构与持久化合同实现或重构 PO�
 <a id="repository.mapping"></a>
 <!-- yss-rule {"id":"repository.mapping","when":"persistence","level":"mandatory","evidence":"code-and-verification"} -->
 - 数据合同必须显式覆盖主键、逻辑删除、审计字段、空值、枚举/值对象映射和敏感字段；动态排序、分组与过滤必须使用批准白名单和参数绑定。
+- 数据合同选择 YSS 分布式主键时，记录已选 `component.distributed-id` 绑定、Segment/Snowflake 策略、实体主键类型与批量插入路径，并消费 `yss-distributed-id` 的当前平台证据；不由 Repository 自行切换算法或创建发号合同。
 <a id="repository.transaction"></a>
 <!-- yss-rule {"id":"repository.transaction","when":"persistence","level":"mandatory","evidence":"code-and-verification"} -->
 - 事务归所选 Profile 的用例边界。Repository/Gateway Adapter 不临时新增业务事务，也不把数据库异常原文或凭据暴露给上层。

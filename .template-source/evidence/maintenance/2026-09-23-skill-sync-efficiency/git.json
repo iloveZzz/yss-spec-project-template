@@ -1,0 +1,35 @@
+{
+  "targetDir": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-sync-bench-oKvI0t/git",
+  "snapshotHash": "a6f0cfc0688b2671933df78dfac166f48853bc88d452a5aa48632abdff100132",
+  "sourceState": "working-tree",
+  "samples": [
+    {
+      "durationMs": 368.7,
+      "templateReads": 4441,
+      "rootLookups": 1
+    },
+    {
+      "durationMs": 326.7,
+      "templateReads": 4441,
+      "rootLookups": 1
+    },
+    {
+      "durationMs": 318.3,
+      "templateReads": 4441,
+      "rootLookups": 1
+    },
+    {
+      "durationMs": 304,
+      "templateReads": 4441,
+      "rootLookups": 1
+    },
+    {
+      "durationMs": 288.3,
+      "templateReads": 4441,
+      "rootLookups": 1
+    }
+  ],
+  "medianDurationMs": 318.3,
+  "medianTemplateReads": 4441,
+  "medianGitRootLookups": 1
+}

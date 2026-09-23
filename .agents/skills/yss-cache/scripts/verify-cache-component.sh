@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 set -u
 
+platform_line=""
 source_root=""
 consumer_root=""
 consumer_module=""
 
 usage() {
-  echo "Usage: $0 [--source-root PATH] [--consumer-root PATH --consumer-module MODULE]" >&2
+  echo "Usage: $0 --platform-line <boot2-java8|boot3-java17> [--source-root PATH] [--consumer-root PATH --consumer-module MODULE]" >&2
 }
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
+    --platform-line) [ "$#" -ge 2 ] || { usage; exit 2; }; platform_line=$2; shift 2 ;;
     --source-root) [ "$#" -ge 2 ] || { usage; exit 2; }; source_root=$2; shift 2 ;;
     --consumer-root) [ "$#" -ge 2 ] || { usage; exit 2; }; consumer_root=$2; shift 2 ;;
     --consumer-module) [ "$#" -ge 2 ] || { usage; exit 2; }; consumer_module=$2; shift 2 ;;
@@ -19,21 +21,19 @@ while [ "$#" -gt 0 ]; do
   esac
 done
 
+case "$platform_line" in
+  boot2-java8) expected_major=52; configured_root=${YSS_SOURCE_ROOT_BOOT2_JAVA8:-} ;;
+  boot3-java17) expected_major=61; configured_root=${YSS_SOURCE_ROOT_BOOT3_JAVA17:-} ;;
+  *) usage; exit 2 ;;
+esac
+
 if [ -z "$source_root" ]; then
-  source_root=${YSS_SOURCE_ROOT:-}
-fi
-if [ -z "$source_root" ]; then
-  for candidate in "$PWD" "$PWD/.." "$HOME/Projects/yss-cloud-microservice" "$HOME/Documents/yss-project/yss-cloud-microservice"; do
-    if [ -d "$candidate/yss-microservice-components/yss-component-cache-parent" ]; then
-      source_root=$candidate
-      break
-    fi
-  done
+  source_root=$configured_root
 fi
 
 parent="${source_root%/}/yss-microservice-components/yss-component-cache-parent"
 if [ -z "$source_root" ] || [ ! -f "$parent/pom.xml" ]; then
-  echo "ERROR: cannot locate cache parent; use --source-root or YSS_SOURCE_ROOT" >&2
+  echo "ERROR: cannot locate cache parent for $platform_line; use --source-root or its generation-specific YSS_SOURCE_ROOT variable" >&2
   exit 2
 fi
 if [ ! -x "$source_root/mvnw" ]; then
@@ -46,7 +46,7 @@ if { [ -n "$consumer_root" ] && [ -z "$consumer_module" ]; } || { [ -z "$consume
 fi
 
 echo "== Cache reactor verify =="
-(cd "$source_root" && ./mvnw -f "$parent/pom.xml" verify) || exit 1
+(cd "$source_root" && ./mvnw -f "$parent/pom.xml" clean verify) || exit 1
 
 echo "== Docker integration status =="
 report="$parent/yss-component-redis-cache/target/surefire-reports/TEST-com.yss.cloud.cache.redis.config.RedisStandaloneIntegrationTest.xml"
@@ -66,14 +66,14 @@ fi
 
 echo "== Diff whitespace =="
 if command -v git >/dev/null 2>&1 && git -C "$source_root" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-  git -C "$source_root" diff --check || exit 1
+  git -C "$source_root" diff --check -- yss-microservice-components/yss-component-cache-parent || exit 1
 else
   echo "SKIP: source root is not a Git worktree"
 fi
 
-echo "== Java 8 bytecode =="
-classes=$(find "$parent" -path '*/target/classes/*.class' -type f | head -1)
-if [ -z "$classes" ]; then
+echo "== $platform_line bytecode (major $expected_major) =="
+class_count=$(find "$parent" -path '*/target/classes/*.class' -type f | wc -l | tr -d ' ')
+if [ "$class_count" -eq 0 ]; then
   echo "ERROR: no compiled cache class found" >&2
   exit 1
 fi
@@ -81,12 +81,18 @@ if ! command -v javap >/dev/null 2>&1; then
   echo "ERROR: javap is required for bytecode verification" >&2
   exit 2
 fi
-majors=$(find "$parent" -path '*/target/classes/*.class' -type f -exec javap -verbose {} \; 2>/dev/null | sed -n 's/.*major version: *//p' | sort -u)
-if [ "$majors" != "52" ]; then
-  echo "ERROR: expected only Java 8 major version 52, found: $majors" >&2
+major_lines=$(find "$parent" -path '*/target/classes/*.class' -type f -exec javap -verbose {} \; 2>/dev/null | sed -n 's/.*major version: *//p')
+checked_count=$(printf '%s\n' "$major_lines" | sed '/^$/d' | wc -l | tr -d ' ')
+if [ "$checked_count" -ne "$class_count" ]; then
+  echo "ERROR: javap inspected $checked_count of $class_count compiled cache classes" >&2
   exit 1
 fi
-echo "PASS: all cache classes use major version 52"
+majors=$(printf '%s\n' "$major_lines" | sort -u)
+if [ "$majors" != "$expected_major" ]; then
+  echo "ERROR: expected only $platform_line major version $expected_major, found: $majors" >&2
+  exit 1
+fi
+echo "PASS: all cache classes use major version $expected_major"
 
 if [ -n "$consumer_root" ]; then
   echo "== Consumer build =="

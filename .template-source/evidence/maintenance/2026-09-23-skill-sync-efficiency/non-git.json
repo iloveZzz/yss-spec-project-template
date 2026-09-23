@@ -1,0 +1,35 @@
+{
+  "targetDir": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-sync-bench-oKvI0t/non-git",
+  "snapshotHash": "a6f0cfc0688b2671933df78dfac166f48853bc88d452a5aa48632abdff100132",
+  "sourceState": "working-tree",
+  "samples": [
+    {
+      "durationMs": 314.1,
+      "templateReads": 4441,
+      "rootLookups": 1
+    },
+    {
+      "durationMs": 300.7,
+      "templateReads": 4441,
+      "rootLookups": 1
+    },
+    {
+      "durationMs": 286,
+      "templateReads": 4441,
+      "rootLookups": 1
+    },
+    {
+      "durationMs": 319.3,
+      "templateReads": 4441,
+      "rootLookups": 1
+    },
+    {
+      "durationMs": 278.7,
+      "templateReads": 4441,
+      "rootLookups": 1
+    }
+  ],
+  "medianDurationMs": 300.7,
+  "medianTemplateReads": 4441,
+  "medianGitRootLookups": 1
+}

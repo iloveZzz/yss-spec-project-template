@@ -6,6 +6,13 @@ description: >-
   单一可执行注册表。实现合同编译器与生命周期编排器只消费通过本表校验的
   canonical 技能；skills-lock.json 继续独立持有来源、hash 与投影完整性。
 canonical_content_root: .agents/skills
+instance_distribution:
+  schema_version: 1
+  initial_skills: [yss-product-lifecycle, yss-implementation-contract-compiler, yss-research, i-have-adhd]
+  runtimes: [codex, cursor, pi]
+  projection_roots: { codex: .codex/skills, cursor: .cursor/skills, pi: .pi/skills }
+  dependency_types_for_ensure: [context-required, context-conditional]
+  initial_example_docs: false
 backend_skill_domains:
   schema_version: 1
   scope: active-yss-backend-capability-owners

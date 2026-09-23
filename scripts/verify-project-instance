@@ -5,6 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseDocument } from "./vendor/yaml.mjs";
 import { loadRegistry, validateRegistry } from "./lib/lifecycle-registry.mjs";
+import { syncSkills, updateSkillLock } from "./lib/skill-supply-chain.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const identityPath = path.join(root, "yss-project.yaml");
@@ -16,18 +17,18 @@ if (identity?.schema_version !== 1 || identity?.repository_mode !== "project-ins
   throw new TypeError("verify-project-instance 仅适用于合法 project-instance");
 }
 
-const commands = [
-  ["scripts/sync-skills", ["--check"]],
-  ["scripts/update-skill-lock", ["--check"]],
-  ["scripts/verify-context-contract", ["--root", ".", "--json"]],
-];
-for (const [command, args] of commands) {
+const commands = ["scripts/sync-skills", "scripts/update-skill-lock", "scripts/verify-context-contract"];
+for (const command of commands) {
   const executable = path.join(root, command);
   if (!existsSync(executable)) throw new TypeError(`缺少项目实例校验入口: ${command}`);
-  const result = spawnSync(executable, args, { cwd: root, encoding: "utf8" });
-  if (result.status !== 0) {
-    throw new TypeError(result.stderr.trim() || result.stdout.trim() || `${command} 校验失败`);
-  }
+}
+const hashCache = new Map();
+syncSkills({ check: true, hashCache });
+updateSkillLock(["--check"], { hashCache });
+const command = "scripts/verify-context-contract";
+const result = spawnSync(path.join(root, command), ["--root", ".", "--json"], { cwd: root, encoding: "utf8" });
+if (result.status !== 0) {
+  throw new TypeError(result.stderr.trim() || result.stdout.trim() || `${command} 校验失败`);
 }
 validateRegistry(loadRegistry());
 process.stdout.write("项目实例校验通过\n");

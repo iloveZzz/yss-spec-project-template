@@ -1,0 +1,45 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  本轮将当前 Boot 3 组件行为固化到共享技能，并同步后端 Agent 子项目，
+  命中跨仓契约。组件源码子树仍 dirty，生成索引和固定来源 CLI 快照
+  留待源码固定后闭合；本轮状态仅为 implementation-ready。
+triggers:
+  - cross-repo-contract
+changed_assets:
+  - .agents/skills/yss-cache/
+  - .agents/skills/yss-distributed-id/
+  - .agents/skills/yss-mybatis/SKILL.md
+  - .agents/skills/yss-repository/SKILL.md
+  - skills-lock.json
+  - submodules/yss-harness-backend-agent
+  - .template-source/evidence/maintenance/2026-09-23-yss-backend-component-skills/handoff.md
+verification_evidence:
+  - kind: self-check
+    command: git diff --check
+    result: pass
+  - kind: self-check
+    command: scripts/sync-profile-skills --check --profile=all
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast (cwd=submodules/yss-harness-backend-agent)
+    result: pass
+  - kind: source-index-freshness
+    command: node .agents/skills/yss-skill-source-index-refresh/scripts/check-backend-skill-source-index.mjs --skill yss-cache --platform-line boot2-java8 --source-root /private/tmp/yss-component-boot2-a3be2b2
+    result: pass
+  - kind: source-index-freshness
+    command: node .agents/skills/yss-skill-source-index-refresh/scripts/check-backend-skill-source-index.mjs --skill yss-distributed-id --platform-line boot2-java8 --source-root /private/tmp/yss-component-boot2-a3be2b2
+    result: pass
+  - kind: source-index-freshness
+    command: node .agents/skills/yss-skill-source-index-refresh/scripts/check-backend-skill-source-index.mjs --skill yss-mybatis --platform-line boot2-java8 --source-root /private/tmp/yss-component-boot2-a3be2b2
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

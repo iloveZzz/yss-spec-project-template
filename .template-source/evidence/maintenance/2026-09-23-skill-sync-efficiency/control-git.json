@@ -1,0 +1,35 @@
+{
+  "targetDir": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-sync-control-igvUcB/git",
+  "snapshotHash": "7acabc61259cc801ecc097857b38f683319dc6003743ad70f55b48e1cf808af8",
+  "sourceState": "working-tree",
+  "samples": [
+    {
+      "durationMs": 498.5,
+      "templateReads": 4791,
+      "rootLookups": 362
+    },
+    {
+      "durationMs": 484.2,
+      "templateReads": 4791,
+      "rootLookups": 362
+    },
+    {
+      "durationMs": 373.8,
+      "templateReads": 4791,
+      "rootLookups": 362
+    },
+    {
+      "durationMs": 354.7,
+      "templateReads": 4791,
+      "rootLookups": 362
+    },
+    {
+      "durationMs": 342.5,
+      "templateReads": 4791,
+      "rootLookups": 362
+    }
+  ],
+  "medianDurationMs": 373.8,
+  "medianTemplateReads": 4791,
+  "medianGitRootLookups": 362
+}

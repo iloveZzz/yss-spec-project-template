@@ -1,51 +1,15 @@
-# 参考资料
+# 分布式 ID 能力与迁移说明
 
-本文档详细介绍了 `yss-component-distributed-id` 框架的核心组件和实现原理。
+本文件只说明选择和核验边界。类名、配置默认值及方法签名以所选平台线的生成索引和匹配的干净源码为准，不复制组件实现。
 
-## 核心类 (Core Classes)
+| 场景 | Boot 3 / Java 17 当前工作树观察 | 核验重点 |
+|---|---|---|
+| Segment | 本地号段；默认 local + Segment | DataSource、目标方言建表、`biz_tag` 唯一键、已分配水位、缺失标签策略 |
+| Snowflake | 本地节点发号；可配置 worker-id，未指定时按节点地址派生 | 所有实例 worker-id 无冲突、时钟回拨和序列等待；不假设 ZooKeeper 注册 |
+| 主键自动填充 | MyBatis 拦截与 MyBatis-Plus `IdentifierGenerator` 两条入口 | `AUTO` 与 `ASSIGN_ID` 区分、已有值保留、批量参数形态、`Integer` 溢出 |
+| String UUID | 本地拦截器仍有 UUID 字符串分支 | 仅核对显式 UUID 策略及 String 字段，不当作 Segment/Snowflake 的数值主键迁移替代 |
+| CosId、Feign/远程注入 | 当前 Boot 3 主线不提供 | 仅对既有项目按其实际平台线和源码做迁移分诊，不把旧模块写成新接入依赖 |
 
-### 1. AutoIdInterceptor.java
-**位置**: `../assets/AutoIdInterceptor.java`
+Segment 从现有业务表接管 ID 时，先记录业务表最大值、`leaf_alloc.max_id` 和尚未用尽的已分配号段，再在停写窗口确定不回退的起点。缺失标签自动创建不会计算这些值；不得删除或重置控制记录。Snowflake 切换需验证新旧机器位语义及所有活跃节点，不在混合写流量时直接换算法。遗留 `feign_segment` 注解仍是明确的拒绝路径，迁移须清理旧注解及依赖，不能用已有非零 ID 掩盖它。
 
-MyBatis 拦截器，是实现自动 ID 注入的核心。
-
-**拦截逻辑**:
-- **拦截点**: `StatementHandler.prepare` 方法。
-- **判断条件**: 仅拦截 `INSERT` 语句。
-- **处理流程**:
-  1. 获取 SQL 绑定的参数对象 (`parameterObject`)。
-  2. 支持处理单对象、`List`、`Array` 和 `Map` (MyBatis 多参数封装)。
-  3. 遍历参数对象的实体类，检查是否有 `@Entity` (JPA) 或 `@TableName` (MP) 注解。
-  4. 扫描实体字段，查找 `@GeneratedValue` 或 `@TableId` 注解。
-  5. 根据注解指定的策略 (`segment`, `snowflake`, `cosid_segment` 等)，调用对应的 ID 生成器获取 ID。
-  6. 通过反射将 ID 设置到实体的相应字段中。
-
-### 2. EnableDistributedId.java
-**位置**: `../assets/EnableDistributedId.java`
-
-开启分布式 ID 功能的注解。
-
-**属性**:
-- `autoRegister`: 是否自动注册配置，默认为 `true`。
-- `cosid`: 是否开启 CosId 模式，默认为 `false` (即默认使用 Leaf 模式)。
-
-**作用**:
-- 导入 `LeafDataSourceConfiguration` 和 `EnableDistributedImportSelector`，从而根据配置加载相应的 Bean。
-
-### 3. LeafConf.java
-**位置**: `../assets/LeafConf.java`
-
-Leaf 模式的配置类，对应 `spring.leaf` 配置项。
-
-**属性**:
-- `leafSegmentEnable`: 是否开启号段模式。
-- `leafSnowflakeEnable`: 是否开启雪花算法模式。
-
-## ID 生成策略详解
-
-| 策略名称 | 依赖组件 | 描述 | 适用场景 |
-| :--- | :--- | :--- | :--- |
-| **Leaf Segment** | DB (MySQL) | 基于数据库号段，每次从 DB 获取一个号段到内存，高性能，ID 趋势递增。 | 大多数业务场景，高可用要求高。 |
-| **Leaf Snowflake** | Zookeeper | 基于 Twitter 雪花算法，依赖 ZK 进行 WorkerID 管理。 | 对 ID 生成速度要求极高，且不依赖 DB 的场景。 |
-| **CosId Segment** | DB (MySQL) | CosId 的号段模式实现，支持更丰富的配置（如步长动态调整）。 | 需要 CosId 特性或作为 Leaf 的替代方案。 |
-| **UUID** | JDK | 标准 UUID。 | 无需有序、不关心存储空间的场景。 |
+只读分诊可参考当前组件 `readme.md` 和源码路径提示；组件子树 dirty、索引 tree 不一致或兼容证据未 verified 时，这些观察不构成精确接入或发布结论。

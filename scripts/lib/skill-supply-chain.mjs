@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, lstatSync, mkdirSync, readFileSync, readdirSync, readlinkSync, realpathSync, rmSync, symlinkSync, unlinkSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -47,6 +47,21 @@ export function treeHash(directory) {
     digest.update(name).update("\0").update(normalized).update("\0");
   }
   return digest.digest("hex");
+}
+
+// treeHash is the published, normalized Skill digest. A no-op copy needs the
+// stricter filesystem comparison so modes, links and raw line endings survive.
+function projectionMatchesSource(source, target) {
+  const sourceInfo = lstatSafe(source);
+  const targetInfo = lstatSafe(target);
+  if (!sourceInfo || !targetInfo || (sourceInfo.mode & 0o7777) !== (targetInfo.mode & 0o7777)) return false;
+  if (sourceInfo.isSymbolicLink()) return targetInfo.isSymbolicLink() && readlinkSync(source) === readlinkSync(target);
+  if (sourceInfo.isFile()) return targetInfo.isFile() && readFileSync(source).equals(readFileSync(target));
+  if (!sourceInfo.isDirectory() || !targetInfo.isDirectory()) return false;
+  const sourceNames = readdirSync(source).sort();
+  const targetNames = readdirSync(target).sort();
+  return sourceNames.length === targetNames.length && sourceNames.every((name, index) =>
+    name === targetNames[index] && projectionMatchesSource(path.join(source, name), path.join(target, name)));
 }
 
 /**
@@ -156,13 +171,12 @@ export function unlockedCanonicalEntries(names, allowedNames, hasSkillMd = () =>
   const allowed = new Set(allowedNames);
   return names.filter((name) => !allowed.has(name) && !OBSOLETE.has(name) && hasSkillMd(name)).sort();
 }
-export function syncSkills({ check = false } = {}) {
+export function syncSkills({ check = false, hashCache = new Map() } = {}) {
   let trackedSet;
   const tracked = ref => (trackedSet ??= trackedPaths()).has(ref);
-  const sourceHashes = new Map();
   const sourceHash = source => {
-    if (!sourceHashes.has(source)) sourceHashes.set(source, treeHash(source));
-    return sourceHashes.get(source);
+    if (!hashCache.has(source)) hashCache.set(source, treeHash(source));
+    return hashCache.get(source);
   };
   const lock = parseLock();
   const shared = sharedFromLock(lock);
@@ -192,10 +206,12 @@ export function syncSkills({ check = false } = {}) {
         else if (sourceHash(source) !== treeHash(target)) drift.push(`projection drift: ${relative(target)}`);
       } else if (info?.isSymbolicLink() && existsSync(target) && realpathSync(target) === realpathSync(source)) {
         continue;
+      } else if (info?.isDirectory() && tracked(relative(target)) && projectionMatchesSource(source, target)) {
+        continue;
       } else {
         rmSync(target, { recursive: true, force: true });
         if (!info || !tracked(relative(target))) symlinkSync(path.relative(projection, source), target, "dir");
-        else cpSync(source, target, { recursive: true, preserveTimestamps: true });
+        else cpSync(source, target, { recursive: true, preserveTimestamps: true, verbatimSymlinks: true });
       }
     }
     for (const name of OBSOLETE) {
@@ -230,11 +246,12 @@ function sourceRevisionMap(oldLock, arguments_) {
   }
   return sources;
 }
-function metadata(name, skillPath, directory, previous, canonical = false, sources = {}, upstreamRoot = null) {
+function metadata(name, skillPath, directory, previous, canonical = false, sources = {}, upstreamRoot = null, hashCache = new Map()) {
   const old = previous[name] ?? {};
   let recordedPath = old.skillPath ?? skillPath;
   if (canonical && /^\.(codex|cursor|pi)\/skills\//.test(recordedPath)) recordedPath = skillPath;
-  const result = { source: old.source ?? "project", sourceType: old.sourceType ?? "local", skillPath: recordedPath, effectiveHash: treeHash(directory) };
+  if (!hashCache.has(directory)) hashCache.set(directory, treeHash(directory));
+  const result = { source: old.source ?? "project", sourceType: old.sourceType ?? "local", skillPath: recordedPath, effectiveHash: hashCache.get(directory) };
   const sourceInfo = sources[result.source];
   if (sourceInfo?.revision) result.sourceRevision = sourceInfo.revision;
   let upstreamDirectory = null;
@@ -249,7 +266,7 @@ function metadata(name, skillPath, directory, previous, canonical = false, sourc
   }
   return result;
 }
-export function updateSkillLock(arguments_ = process.argv.slice(2)) {
+export function updateSkillLock(arguments_ = process.argv.slice(2), { hashCache = new Map() } = {}) {
   const oldLock = parseLock(); const previous = priorMetadata(oldLock); const sources = sourceRevisionMap(oldLock, arguments_); const upstreamRoot = option(arguments_, "upstream-root");
   const yssUiManifest = loadYssUiSkillManifest();
   sources[yssUiManifest.source] = { ...(sources[yssUiManifest.source] ?? {}), revision: yssUiManifest.source_revision };
@@ -269,7 +286,7 @@ export function updateSkillLock(arguments_ = process.argv.slice(2)) {
   if (unlocked.length) throw new TypeError(`发现未登记到 skills-lock.json 的已跟踪共享 skills: ${unlocked.join(", ")}\n确认新增后运行 scripts/update-skill-lock --add=<skill-name>`);
   const targets = [".agents/skills", ...PROJECTION_ROOTS];
   const shared = Object.fromEntries(sharedNames.map((name) => {
-    const item = metadata(name, `.agents/skills/${name}/SKILL.md`, path.join(SOURCE_ROOT, name), previous, true, sources, upstreamRoot);
+    const item = metadata(name, `.agents/skills/${name}/SKILL.md`, path.join(SOURCE_ROOT, name), previous, true, sources, upstreamRoot, hashCache);
     const yssUiSkill = yssUiSkills.get(name);
     if (yssUiSkill) {
       item.source = yssUiManifest.source;
@@ -300,10 +317,12 @@ export function updateSkillLock(arguments_ = process.argv.slice(2)) {
     if (!names.length) continue;
     const absentPlatform = names.filter((name) => !lstatSafe(path.join(location, name))?.isDirectory());
     if (absentPlatform.length) throw new TypeError(`锁文件声明的平台 skills 缺少内容 (${root}): ${absentPlatform.join(", ")}`);
-    platform[root] = Object.fromEntries(names.map((name) => { const item = metadata(name, `${root}/${name}/SKILL.md`, path.join(location, name), previous, false, sources, upstreamRoot); item.targets = [root]; return [name, item]; }));
+    platform[root] = Object.fromEntries(names.map((name) => { const item = metadata(name, `${root}/${name}/SKILL.md`, path.join(location, name), previous, false, sources, upstreamRoot, hashCache); item.targets = [root]; return [name, item]; }));
   }
   const manifest = { version: 3, generatedBy: "scripts/update-skill-lock", canonicalRoot: ".agents/skills", projectionRoots: PROJECTION_ROOTS, sources, skills: { shared, platform } };
   const rendered = `${JSON.stringify(manifest, null, 2)}\n`;
-  if (arguments_.includes("--check")) { if (!existsSync(LOCK_PATH) || readFileSync(LOCK_PATH, "utf8") !== rendered) throw new TypeError("skills-lock.json is stale; run scripts/update-skill-lock"); return "skills-lock.json matches distributed skills"; }
-  writeFileSync(LOCK_PATH, rendered); return `updated skills-lock.json with ${sharedNames.length} shared skills and ${Object.values(platform).reduce((sum, group) => sum + Object.keys(group).length, 0)} platform skills`;
+  const current = existsSync(LOCK_PATH) ? readFileSync(LOCK_PATH, "utf8") : null;
+  if (arguments_.includes("--check")) { if (current !== rendered) throw new TypeError("skills-lock.json is stale; run scripts/update-skill-lock"); return "skills-lock.json matches distributed skills"; }
+  if (current !== rendered) writeFileSync(LOCK_PATH, rendered);
+  return `updated skills-lock.json with ${sharedNames.length} shared skills and ${Object.values(platform).reduce((sum, group) => sum + Object.keys(group).length, 0)} platform skills`;
 }

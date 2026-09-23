@@ -32,6 +32,11 @@ export function loadVerificationProfiles(source = readFileSync(PROFILE_FILE, "ut
   ensure(config?.schema_version === 1, "核验 profile schema_version 必须为 1");
   ensure(config.profiles?.fast && config.profiles?.candidate && config.profiles?.release, "必须声明 fast、candidate、release profile");
   ensure(config.groups && typeof config.groups === "object", "核验 profile 缺少 groups");
+  for (const rule of config.routing || []) {
+    for (const field of ["patterns", "exclude_patterns", "groups"]) {
+      if (rule[field] !== undefined) ensure(Array.isArray(rule[field]) && rule[field].every((value) => typeof value === "string" && value), `路由 ${field} 无效`);
+    }
+  }
   for (const [name, group] of Object.entries(config.groups)) {
     ensure(Array.isArray(group.commands), `检查组 ${name} 缺少 commands`);
     for (const entry of group.commands) {
@@ -52,7 +57,8 @@ function matchedGroups(config, changedFiles) {
   for (const file of changedFiles) {
     let routed = false;
     for (const rule of config.routing || []) {
-      if ((rule.patterns || []).some((pattern) => matches(file, pattern))) {
+      if ((rule.patterns || []).some((pattern) => matches(file, pattern)) &&
+          !(rule.exclude_patterns || []).some((pattern) => matches(file, pattern))) {
         routed = true;
         for (const group of rule.groups || []) groups.add(group);
       }

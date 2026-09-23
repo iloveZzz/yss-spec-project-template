@@ -1,0 +1,35 @@
+{
+  "targetDir": "/var/folders/8d/60y8vj2j0nn37t4h26zbvvhw0000gn/T/yss-sync-control-igvUcB/non-git",
+  "snapshotHash": "7acabc61259cc801ecc097857b38f683319dc6003743ad70f55b48e1cf808af8",
+  "sourceState": "working-tree",
+  "samples": [
+    {
+      "durationMs": 329,
+      "templateReads": 4441,
+      "rootLookups": 1
+    },
+    {
+      "durationMs": 331.5,
+      "templateReads": 4441,
+      "rootLookups": 1
+    },
+    {
+      "durationMs": 333.3,
+      "templateReads": 4441,
+      "rootLookups": 1
+    },
+    {
+      "durationMs": 296.7,
+      "templateReads": 4441,
+      "rootLookups": 1
+    },
+    {
+      "durationMs": 330.4,
+      "templateReads": 4441,
+      "rootLookups": 1
+    }
+  ],
+  "medianDurationMs": 330.4,
+  "medianTemplateReads": 4441,
+  "medianGitRootLookups": 1
+}
