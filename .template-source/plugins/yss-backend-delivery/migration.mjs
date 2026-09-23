@@ -27,8 +27,10 @@ function prepare(root, target, cli, api) {
   const legacy = ['legacy-m4.json', 'legacy-0.2.json'].map(ref => JSON.parse(readFileSync(safe(root, `assets/${ref}`))))
     .find(item => item.plugin === original.plugin && item.bundle_digest === original.plugin_bundle_sha256);
   if (!legacy) throw new Error('unsupported-legacy-binding');
-  if (api.digest(cli.pin) !== api.digest(legacy.cli)) throw new Error('unsupported-cli-migration');
-  api.projectCheck(root, target, { ...cli, binding: legacy.binding, expectedPlugin: legacy.plugin, expectedBundle: legacy.bundle_digest });
+  api.withLegacyCli(root, oldCli => {
+    if (api.digest(oldCli.pin) !== api.digest(legacy.cli)) throw new Error('unsupported-cli-migration');
+    api.projectCheck(root, target, { ...oldCli, binding: legacy.binding, expectedPlugin: legacy.plugin, expectedBundle: legacy.bundle_digest });
+  });
   const oldReceipt = JSON.parse(readFileSync(safe(target, RECEIPT)));
   if (oldReceipt.plugin !== legacy.plugin || oldReceipt.plugin_bundle_sha256 !== legacy.bundle_digest) throw new Error('unsupported-legacy-binding');
   const before = snapshot(target);
@@ -36,11 +38,18 @@ function prepare(root, target, cli, api) {
   try {
     cpSync(target, stage, { recursive: true, filter: source => path.basename(source) !== '.git' });
     rmSync(path.join(stage, RECEIPT));
+    api.execute(cli.bin, ['sync', '--target-dir', stage], cli.root);
+    const oldMetadata = JSON.parse(readFileSync(safe(target, '.yss-template.json')));
+    const metadataFile = safe(stage, '.yss-template.json');
+    const syncedMetadata = JSON.parse(readFileSync(metadataFile));
+    syncedMetadata.lastSyncedAt = oldMetadata.lastSyncedAt;
+    writeFileSync(metadataFile, json(syncedMetadata));
     const expected = new Set(cli.binding.map(file => file.ref));
-    for (const file of legacy.binding) if (!expected.has(file.ref)) rmSync(safe(stage, file.ref));
+    for (const ref of api.coreFiles(stage)) if (!expected.has(ref)) rmSync(safe(stage, ref));
+    api.applyBaseline(stage, cli);
     api.applyOverlay(stage, cli);
     api.projectCheck(root, stage, cli);
-    const receipt = { ...oldReceipt, plugin: identity.name, plugin_bundle_sha256: hash(readFileSync(safe(root, 'bundle-lock.json'))),
+    const receipt = { ...oldReceipt, plugin: identity.name, cli: cli.pin, plugin_bundle_sha256: hash(readFileSync(safe(root, 'bundle-lock.json'))),
       core_digest: api.digest(cli.binding), business_execution_ready: false,
       migration: { from_plugin: legacy.plugin, from_bundle_sha256: legacy.bundle_digest, previous_binding_sha256: hash(readFileSync(safe(target, RECEIPT))), requires_current_contract_validation: true } };
     writeFileSync(path.join(stage, RECEIPT), json(receipt), { flag: 'wx' });

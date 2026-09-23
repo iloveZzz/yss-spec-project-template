@@ -2,6 +2,7 @@
 import identity from './identity.json' with { type: 'json' };
 import { chmodSync, existsSync, lstatSync, mkdirSync, mkdtempSync, readFileSync, realpathSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import { createRequire } from 'node:module';
@@ -78,6 +79,23 @@ function outputPath(output, root) {
   return resolved;
 }
 
+function packLegacyCli(root, cliSource, pin) {
+  const parent = realpathSync(mkdtempSync(path.join(tmpdir(), 'yss-legacy-cli-source-')));
+  const checkout = path.join(parent, 'create-yss-spec');
+  try {
+    execFileSync('git', ['clone', '--quiet', '--shared', '--no-checkout', cliSource, checkout]);
+    execFileSync('git', ['-C', checkout, 'checkout', '--quiet', '--detach', pin.cli_commit]);
+    // The historical 3.4.9 snapshot hash was produced under zh_CN collation.
+    execFileSync(process.execPath, [path.join(checkout, 'scripts/sync-template.js'), '--require-committed'],
+      { cwd: checkout, env: { ...process.env, YSS_SPEC_TEMPLATE_REPO: root, LANG: 'zh_CN.UTF-8', LC_ALL: 'zh_CN.UTF-8' }, stdio: 'pipe' });
+    const snapshotFile = path.join(checkout, 'template.snapshot.json');
+    const snapshot = JSON.parse(readFileSync(snapshotFile));
+    snapshot.generatedAt = '1970-01-01T00:00:00.000Z';
+    writeFileSync(snapshotFile, `${JSON.stringify(snapshot, null, 2)}\n`);
+    return packCli(checkout, pin);
+  } finally { rmSync(parent, { recursive: true, force: true }); }
+}
+
 export function build({ sourceRoot = ROOT, output, cliRoot = process.env.YSS_BACKEND_PLUGIN_CLI_ROOT || path.join(ROOT, 'submodules/create-yss-spec') }) {
   const root = realpathSync(sourceRoot), target = outputPath(output, root);
   const plan = planPlugin(root), graph = closure(root, plan);
@@ -88,7 +106,10 @@ export function build({ sourceRoot = ROOT, output, cliRoot = process.env.YSS_BAC
   const source = { state: status ? 'working-tree' : 'committed', base_commit: commit,
     content_commit: status ? null : commit, distribution: 'development-only' };
   const pinBytes = readFileSync(path.join(HERE, 'cli-pin.json'));
-  const cli = packCli(cliRoot, JSON.parse(pinBytes));
+  const legacyPinBytes = readFileSync(path.join(HERE, 'legacy-cli-pin.json'));
+  const skillIds = plan.skills.map(skill => skill.id);
+  const cli = packCli(cliRoot, JSON.parse(pinBytes), { agentRuntime: 'codex', skillIds });
+  const legacyCli = packLegacyCli(root, cliRoot, JSON.parse(legacyPinBytes));
   const overlay = projectOverlay(root, cli, graph.refs, source);
   mkdirSync(path.dirname(target), { recursive: true });
   const staging = mkdtempSync(path.join(path.dirname(target), '.yss-plugin-build-'));
@@ -119,16 +140,20 @@ export function build({ sourceRoot = ROOT, output, cliRoot = process.env.YSS_BAC
     write('scripts/plugin.mjs', Buffer.from("#!/usr/bin/env node\nimport { main } from './runtime.mjs';\ntry { await main(); } catch (error) { console.error(JSON.stringify({ result: 'blocked', error: error.message, ready_for_agent: false })); process.exitCode = 1; }\n"), 0o755);
     write('assets/cli-package.json.gz', cli.archive);
     write('assets/cli-pin.json', pinBytes);
+    write('assets/installed-skills.json', Buffer.from(`${JSON.stringify(skillIds)}\n`));
+    write('assets/legacy-cli-package.json.gz', legacyCli.archive);
+    write('assets/legacy-cli-pin.json', legacyPinBytes);
     write('assets/project-overlay.json.gz', overlay.archive);
     write('assets/project-binding.json', Buffer.from(`${JSON.stringify(overlay.binding, null, 2)}\n`));
+    write('assets/project-baseline.json.gz', cli.baselineArchive);
     for (const ref of ['identity.json', 'entry.mjs', 'migration.mjs']) write(`scripts/${ref}`, readFileSync(path.join(HERE, ref)));
     for (const ref of ['legacy-m4.json', 'legacy-0.2.json']) write(`assets/${ref}`, readFileSync(path.join(HERE, ref)));
     write(`skills/${identity.entry}/SKILL.md`, readFileSync(path.join(HERE, 'templates/entry-SKILL.md')), 0o644,
       { transformation: 'project-local-entry', source_ref: 'templates/entry-SKILL.md' });
     write('README.md', readFileSync(path.join(HERE, 'templates/README.md')));
-    const lock = { schema_version: 1, plugin: NAME, phase: 'entry-and-migration', source, cli: cli.pin,
+    const lock = { schema_version: 1, plugin: NAME, phase: 'entry-and-migration', source, cli: cli.pin, legacy_cli: legacyCli.pin,
       builder: { node: process.versions.node, parser: `esbuild@${parserVersion}`,
-        files: ['build.mjs', 'runtime.mjs', 'project.mjs', 'pack-cli.mjs', 'project-overlay.mjs', 'cli-pin.json', 'plan.mjs', 'templates/plugin.json', 'identity.json', 'entry.mjs', 'migration.mjs', 'legacy-m4.json', 'legacy-0.2.json', 'templates/entry-SKILL.md', 'templates/README.md'].map(ref => ({ ref, sha256: hash(readFileSync(path.join(HERE, ref))) })) },
+        files: ['build.mjs', 'runtime.mjs', 'project.mjs', 'pack-cli.mjs', 'project-overlay.mjs', 'cli-pin.json', 'legacy-cli-pin.json', 'plan.mjs', 'templates/plugin.json', 'identity.json', 'entry.mjs', 'migration.mjs', 'legacy-m4.json', 'legacy-0.2.json', 'templates/entry-SKILL.md', 'templates/README.md'].map(ref => ({ ref, sha256: hash(readFileSync(path.join(HERE, ref))) })) },
       external_dependencies: { platform: plan.platform_dependencies.map(({ requested, provider }) => ({ requested, provider, availability: 'unverified', packaging: 'external' })), node_modules: graph.externals },
       runtime_entries: ENTRYPOINTS, closure_scope: 'literal-module-graph-and-governance-data-families',
       files: records.sort((a, b) => a.ref.localeCompare(b.ref)) };

@@ -37,9 +37,9 @@ function execute(file, args, cwd, timeout = 120000) {
   if (result.error || result.status !== 0) throw new Error(`command-failed: ${result.error?.message || result.stderr || result.stdout}`);
   return result.stdout;
 }
-function withCli(root, action) {
-  const archive = JSON.parse(gunzipSync(readFileSync(safe(root, 'assets/cli-package.json.gz')), { maxOutputLength: 256 * 1024 * 1024 }));
-  const pin = JSON.parse(readFileSync(safe(root, 'assets/cli-pin.json')));
+function withPinnedCli(root, prefix, action) {
+  const archive = JSON.parse(gunzipSync(readFileSync(safe(root, `assets/${prefix}cli-package.json.gz`)), { maxOutputLength: 256 * 1024 * 1024 }));
+  const pin = JSON.parse(readFileSync(safe(root, `assets/${prefix}cli-pin.json`)));
   if (archive.schema_version !== 1 || digest(archive.pin) !== digest(pin) || !Array.isArray(archive.files)) throw new Error('cli-archive-identity-mismatch');
   const temp = realpathSync(mkdtempSync(path.join(tmpdir(), 'yss-fixed-cli-')));
   try {
@@ -59,11 +59,15 @@ function withCli(root, action) {
     const snapshot = runtime.readTemplateSnapshot();
     if (snapshot.sourceState !== 'committed' || snapshot.templateCommit !== pin.template_commit || snapshot.snapshotHash !== pin.snapshot_hash
         || snapshot.manifestHash !== pin.manifest_hash || require('./package.json').version !== pin.version) throw new Error('cli-snapshot-mismatch');
-    return action({ root: temp, pin, runtime, bin: path.join(temp, 'bin/create-yss-spec.js'),
+    return action({ root: temp, pin, runtime, bin: path.join(temp, 'bin/create-yss-spec.js'), agentRuntime: prefix ? null : 'codex',
+      skillIds: prefix ? [] : JSON.parse(readFileSync(safe(root, 'assets/installed-skills.json'))),
       overlay: JSON.parse(gunzipSync(readFileSync(safe(root, 'assets/project-overlay.json.gz')), { maxOutputLength: 256 * 1024 * 1024 })),
+      baseline: prefix ? [] : JSON.parse(gunzipSync(readFileSync(safe(root, 'assets/project-baseline.json.gz')), { maxOutputLength: 256 * 1024 * 1024 })),
       binding: JSON.parse(readFileSync(safe(root, 'assets/project-binding.json'))) });
   } finally { rmSync(temp, { recursive: true, force: true }); }
 }
+const withCli = (root, action) => withPinnedCli(root, '', action);
+const withLegacyCli = (root, action) => withPinnedCli(root, 'legacy-', action);
 function targetState(target) {
   const s = stat(target);
   return s ? { kind: readdirSync(target).length ? 'nonempty' : 'empty', device: s.dev, inode: s.ino } : { kind: 'missing' };
@@ -90,8 +94,9 @@ function options(input) {
   if (!['github', 'gitlab'].includes(result['issue-tracker'])) throw new Error('explicit-issue-tracker-required: github|gitlab');
   return result;
 }
-function cliArgs(opts, target) {
-  return [...Object.entries(opts).flatMap(([key, value]) => [`--${key}`, value]), '--target-dir', target, '--no-example-docs'];
+function cliArgs(opts, target, cli) {
+  return [...Object.entries(opts).flatMap(([key, value]) => [`--${key}`, value]), '--target-dir', target,
+    ...(cli.agentRuntime ? ['--agent-runtime', cli.agentRuntime] : []), '--no-example-docs'];
 }
 function projectCheck(root, target, cli) {
   const identityFile = safe(target, 'yss-project.yaml');
@@ -108,6 +113,7 @@ function projectCheck(root, target, cli) {
     if (!s.isFile() || hash(readFileSync(absolute)) !== file.sha256 || (s.mode & 0o777) !== file.mode) throw new Error(`project-core-drift: ${file.ref}`);
   }
   for (const prefix of ['scripts', '.agents/skills', '.codex/skills', '.cursor/skills', '.pi/skills', 'docs/process']) {
+    if (!existsSync(path.join(target, prefix))) continue;
     for (const ref of files(target, prefix)) if (corePath(ref) && !expected.has(ref)) throw new Error(`project-core-extra-file: ${ref}`);
   }
   execute(safe(target, 'scripts/verify-context-contract'), ['--root', target], target);
@@ -136,10 +142,10 @@ function makePlan(root, input, cli) {
     plan.project_guard = digest({ metadata: hash(readFileSync(safe(target, '.yss-template.json'))), context: hash(readFileSync(safe(target, 'CONTEXT.md'))) });
   } else {
     plan.options = options(input);
-    const preview = execute(cli.bin, [...cliArgs(plan.options, target), '--dry-run'], cli.root);
+    const preview = execute(cli.bin, [...cliArgs(plan.options, target, cli), '--dry-run'], cli.root);
     plan.write_files = [...new Set([...preview.split('\n').flatMap(line => {
       const match = line.match(/^(?:copy|render): (.+?)(?: \[[^\]]+\])?$/); return match ? [match[1]] : [];
-    }), ...cli.overlay.files.map(file => file.ref), '.yss-template.json', 'skills-lock.json', RECEIPT])].sort();
+    }), ...cli.binding.map(file => file.ref), '.yss-template.json', 'skills-lock.json', RECEIPT])].sort();
     if (plan.write_files.length < 10) throw new Error('init-preview-incomplete');
   }
   plan.plan_id = digest(plan);
@@ -163,7 +169,8 @@ function applyPlan(root, plan, cli) {
   const stage = mkdtempSync(path.join(path.dirname(plan.target), '.yss-governance-init-'));
   let removedEmpty = false, installed = false;
   try {
-    execute(cli.bin, cliArgs(plan.options, stage), cli.root);
+    execute(cli.bin, cliArgs(plan.options, stage, cli), cli.root);
+    execute(cli.bin, ['skills', 'ensure', ...cli.skillIds, '--target-dir', stage, '--apply'], cli.root);
     applyOverlay(stage, cli);
     projectCheck(root, stage, cli);
     writeFileSync(path.join(stage, RECEIPT), json(receipt), { flag: 'wx', mode: 0o644 });
@@ -188,7 +195,7 @@ export function runProjectCommand(root, command, values) {
       if (!values.plan) throw new Error('plan-file-required');
       return applyPlan(root, JSON.parse(readFileSync(values.plan)), cli);
     }
-    const api = { projectCheck, physical, withCli, execute, digest, applyOverlay };
+    const api = { projectCheck, physical, withCli, withLegacyCli, execute, digest, coreFiles, applyBaseline, applyOverlay };
     if (command === 'project-migration-plan') return migrationPlan(root, physical(values['target-dir']), cli, api);
     if (command === 'project-migration-apply') return migrationApply(root, JSON.parse(readFileSync(values.plan)), cli, api);
     const target = physical(values['target-dir']);
@@ -230,5 +237,30 @@ function applyOverlay(stage, cli) {
   execute(path.join(stage,'scripts/update-skill-lock'),[],stage);
 }
 
+function applyBaseline(stage, cli) {
+  const expected = new Map(cli.binding.map(file => [file.ref, file]));
+  for (const file of cli.baseline) {
+    const record = expected.get(file.ref), bytes = Buffer.from(file.content, 'base64');
+    if (!record || hash(bytes) !== file.sha256 || record.mode !== file.mode) {
+      throw new Error(`baseline-binding-mismatch: ${file.ref}`);
+    }
+    if (path.isAbsolute(file.ref) || file.ref.split('/').some(part => !part || part === '.' || part === '..')
+        || /[\\\x00-\x1f:]/.test(file.ref)) throw new Error(`unsafe-baseline-path: ${file.ref}`);
+    const destination = path.join(stage, file.ref);
+    let parent = stage;
+    for (const part of file.ref.split('/').slice(0, -1)) {
+      parent = path.join(parent, part);
+      if (existsSync(parent) && (lstatSync(parent).isSymbolicLink() || !lstatSync(parent).isDirectory())) {
+        throw new Error(`unsafe-baseline-parent: ${file.ref}`);
+      }
+    }
+    mkdirSync(path.dirname(destination), { recursive: true });
+    if (existsSync(destination)) safe(stage, file.ref);
+    writeFileSync(destination, bytes); chmodSync(destination, file.mode);
+  }
+}
+
+const coreFiles = stage => files(stage).filter(corePath);
+
 // Shared internal operations for the migration engine and its fault-injection tests.
-export const projectOperations = Object.freeze({ projectCheck, physical, withCli, execute, digest, applyOverlay });
+export const projectOperations = Object.freeze({ projectCheck, physical, withCli, withLegacyCli, execute, digest, coreFiles, applyBaseline, applyOverlay });

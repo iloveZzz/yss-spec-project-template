@@ -36,7 +36,7 @@ test('single entry and explicit M4 migration preserve project assets and fail cl
   // Restore the exact M4 overlay over the identical pinned CLI base, then bind its registered digest.
   const legacy = JSON.parse(fs.readFileSync(path.join(SOURCE, 'legacy-m4.json')));
   const overlay = JSON.parse(gunzipSync(fs.readFileSync(path.join(ROOT, '.template-source/tooling/node/fixtures/plugin-migration/m4-overlay.json.gz'))));
-  const archive = JSON.parse(gunzipSync(fs.readFileSync(path.join(plugin, 'assets/cli-package.json.gz'))));
+  const archive = JSON.parse(gunzipSync(fs.readFileSync(path.join(plugin, 'assets/legacy-cli-package.json.gz'))));
   const cliFiles = new Map(archive.files.map(item => [item.ref, item]));
   const snapshot = JSON.parse(Buffer.from(cliFiles.get('template.snapshot.json').content, 'base64'));
   const oldFiles = new Map(overlay.files.map(item => [item.ref, item]));
@@ -54,10 +54,20 @@ test('single entry and explicit M4 migration preserve project assets and fail cl
     const dest = path.join(target, file.ref); fs.mkdirSync(path.dirname(dest), { recursive: true });
     fs.writeFileSync(dest, Buffer.from(file.content, 'base64')); fs.chmodSync(dest, file.mode);
   }
+  fs.writeFileSync(path.join(target, 'skills-lock.json'), Buffer.from(cliFiles.get('template/skills-lock.json').content, 'base64'));
   const receiptPath = path.join(target, '.yss-plugin.json'), receipt = JSON.parse(fs.readFileSync(receiptPath));
-  Object.assign(receipt, { plugin: legacy.plugin, plugin_bundle_sha256: legacy.bundle_digest, core_digest: api.digest(legacy.binding) });
+  Object.assign(receipt, { plugin: legacy.plugin, cli: legacy.cli, plugin_bundle_sha256: legacy.bundle_digest, core_digest: api.digest(legacy.binding) });
   fs.writeFileSync(receiptPath, JSON.stringify(receipt));
-  assert.equal(run(path.join(target, 'scripts/update-skill-lock'), []).status, 0);
+  const metadataPath = path.join(target, '.yss-template.json');
+  api.withLegacyCli(plugin, oldCli => {
+    const oldTarget = path.join(dir, 'legacy-baseline');
+    const init = run(oldCli.bin, ['--project-name', '迁移机制测试', '--business-domain', '合成测试', '--team-size', '3',
+      '--issue-tracker', 'github', '--no-example-docs', '--target-dir', oldTarget]);
+    assert.equal(init.status, 0, init.stderr);
+    fs.copyFileSync(path.join(oldTarget, '.yss-template.json'), metadataPath);
+  });
+  const lockRefresh = run(path.join(target, 'scripts/update-skill-lock'), []);
+  assert.equal(lockRefresh.status, 0, lockRefresh.stderr || lockRefresh.stdout);
   const originalReceipt = fs.readFileSync(receiptPath);
   const business = put('project/docs/business-note.txt', 'Preserve user-owned business and approval evidence');
   const migration = () => command('project-migration-plan', ['--target-dir', target]);

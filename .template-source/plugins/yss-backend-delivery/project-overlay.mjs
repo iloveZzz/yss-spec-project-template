@@ -7,8 +7,16 @@ import { corePath } from './pack-cli.mjs';
 /** A declared development overlay; never rewrites the committed CLI archive or its provenance. */
 export function projectOverlay(root, cli, refs, source) {
   const base = new Map(cli.binding.map(file => [file.ref, file]));
+  const installedSkills = new Set([...base.keys()].flatMap(ref => {
+    const match = ref.match(/^\.agents\/skills\/([^/.][^/]*)\/SKILL\.md$/);
+    return match ? [match[1]] : [];
+  }));
+  const included = ref => {
+    const match = ref.match(/^\.(?:agents|codex|cursor|pi)\/skills\/([^/]+)/);
+    return !match || match[1].startsWith('.') || installedSkills.has(match[1]);
+  };
   const entries = [];
-  for (const ref of [...new Set([...base.keys(), ...refs.filter(corePath)])].sort()) {
+  for (const ref of [...new Set([...base.keys(), ...refs.filter(ref => corePath(ref) && included(ref))])].sort()) {
     const sourceRef = ref.replace(/^\.(codex|cursor|pi)\/skills\//, '.agents/skills/');
     if (!existsSync(path.join(root, sourceRef))) continue;
     const file = safe(root, sourceRef), bytes = readFileSync(file), mode = lstatSync(file).mode & 0o777;

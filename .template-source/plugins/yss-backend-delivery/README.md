@@ -20,6 +20,8 @@ Plan → Spec → Design → 工程契约 → 实现准备 → Ticket / Slice �
 
 支持包内登记精确摘要的 `yss-plan-to-backend` 0.1.0-dev.4 与 `yss-backend-delivery` 0.2 开发包，不接受相同版本号下任意来源。
 
+新项目使用包内固定的 `create-yss-spec` 3.4.12，并安装后端交付所需 Skill；迁移预检另用固定的 3.4.9 核验旧项目，再由新版 CLI 同步并生成逐文件迁移计划。两个 CLI 包均随插件锁定摘要，不从本机全局安装取用。
+
 `project-migration-plan --target-dir <旧治理目录>` 返回逐文件变化、原/目标摘要、备份路径及证据影响；用户审阅并明确授权后执行 `project-migration-apply --plan <计划文件>`。
 
 预览在临时副本核验新规则，原项目不变。应用重新核验计划及全部项目文件摘要，备份本次受影响文件到治理根之外。失败恢复本次写入；发现并发修改则保留现场并报告冲突。原业务代码、Spec、Context、批准及 checkpoint 不改写。规则变化后的合同新鲜度由本地主控重新判断，迁移不授予 ready-for-agent。

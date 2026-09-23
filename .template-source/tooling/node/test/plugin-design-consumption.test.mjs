@@ -98,7 +98,7 @@ test('backend plugin receives Handoff v5 without bypassing engineering or implem
     const currentBinding = JSON.parse(fs.readFileSync(path.join(plugin, 'assets/project-binding.json')));
     const oldRefs = new Set(legacy.binding.map(x => x.ref));
     for (const item of currentBinding) if (!oldRefs.has(item.ref)) fs.rmSync(path.join(target, item.ref));
-    const archive = JSON.parse(gunzipSync(fs.readFileSync(path.join(plugin, 'assets/cli-package.json.gz'))));
+    const archive = JSON.parse(gunzipSync(fs.readFileSync(path.join(plugin, 'assets/legacy-cli-package.json.gz'))));
     const cliFiles = new Map(archive.files.map(item => [item.ref, item]));
     const snapshot = JSON.parse(Buffer.from(cliFiles.get('template.snapshot.json').content, 'base64'));
     const oldFiles = new Map(overlay.files.map(item => [item.ref, item]));
@@ -113,10 +113,20 @@ test('backend plugin receives Handoff v5 without bypassing engineering or implem
       fs.writeFileSync(file, Buffer.from(source.content, 'base64')); fs.chmodSync(file, source.mode);
     }
     for (const item of overlay.files) { const file = path.join(target, item.ref); fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, Buffer.from(item.content, 'base64')); fs.chmodSync(file, item.mode); }
+    fs.writeFileSync(path.join(target, 'skills-lock.json'), Buffer.from(cliFiles.get('template/skills-lock.json').content, 'base64'));
     const receiptFile = path.join(target, '.yss-plugin.json'), binding = JSON.parse(fs.readFileSync(receiptFile));
-    Object.assign(binding, { plugin: legacy.plugin, plugin_bundle_sha256: legacy.bundle_digest, core_digest: api.digest(legacy.binding) });
+    Object.assign(binding, { plugin: legacy.plugin, cli: legacy.cli, plugin_bundle_sha256: legacy.bundle_digest, core_digest: api.digest(legacy.binding) });
     fs.writeFileSync(receiptFile, JSON.stringify(binding));
-    assert.equal(run(path.join(target, 'scripts/update-skill-lock'), []).status, 0);
+    const metadataPath = path.join(target, '.yss-template.json');
+    api.withLegacyCli(plugin, oldCli => {
+      const oldTarget = path.join(dir, 'legacy-baseline');
+      const init = run(oldCli.bin, ['--project-name', '合成接收验证', '--business-domain', '测试', '--team-size', '1',
+        '--issue-tracker', 'github', '--no-example-docs', '--target-dir', oldTarget]);
+      assert.equal(init.status, 0, init.stderr);
+      fs.copyFileSync(path.join(oldTarget, '.yss-template.json'), metadataPath);
+    });
+    const lockRefresh = run(path.join(target, 'scripts/update-skill-lock'), []);
+    assert.equal(lockRefresh.status, 0, lockRefresh.stderr || lockRefresh.stdout);
     const before = fs.readFileSync(path.join(target, receipt));
     const migration = ok(call('project-migration-plan', ['--target-dir', target]));
     assert.equal(migration.from_plugin, 'yss-backend-delivery');

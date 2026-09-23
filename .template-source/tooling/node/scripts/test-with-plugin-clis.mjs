@@ -4,8 +4,8 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-// Plugin migration baselines are immutable dependencies, independent of CLI upgrades.
-// Prepare their exact commits outside the working tree, including ignored snapshots.
+// Plugin CLI pins are immutable dependencies. Prepare exact commits and ignored snapshots
+// outside the working tree; the backend builder reconstructs its historical migration CLI.
 const root = path.resolve(import.meta.dirname, '../../../..');
 const temporary = realpathSync(mkdtempSync(path.join(tmpdir(), 'yss-plugin-test-clis-')));
 const env = { ...process.env };
@@ -24,9 +24,7 @@ try {
     if (repository === 'create-yss-spec') {
       execFileSync(process.execPath, ['scripts/sync-template.js', '--require-committed'], {
         cwd: cli, stdio: 'pipe',
-        // This historical snapshot used Chinese filename collation in its Skill lock.
-        env: { ...env, LANG: 'zh_CN.UTF-8', LC_ALL: 'zh_CN.UTF-8',
-          YSS_SPEC_TEMPLATE_REPO: pathToFileURL(root).href, YSS_SPEC_TEMPLATE_REF: pin.template_commit },
+        env: { ...env, YSS_SPEC_TEMPLATE_REPO: pathToFileURL(root).href, YSS_SPEC_TEMPLATE_REF: pin.template_commit },
       });
     }
     const snapshot = JSON.parse(readFileSync(path.join(cli, 'template.snapshot.json')));
