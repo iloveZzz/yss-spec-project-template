@@ -1,10 +1,10 @@
 {
   "name": "create-yss-harness-design",
-  "version": "0.8.4",
-  "cli_commit": "b8b656bbaf45868812228e1d72f25f68e9070878",
-  "template_commit": "83d7bce7eab1adf16e02a419717c94fa8ba84f43",
-  "snapshot_hash": "263e8ab9bb39c8bfd8bb5baa44edc03fdf3067e2620fdfdc12422688472ffecf",
+  "version": "0.8.6",
+  "cli_commit": "b410e2bd7b886c1f2e02a79f63f3f4f705ad5d0d",
+  "template_commit": "4b6764ae8daa11036063c1ebc1309b2844d11668",
+  "snapshot_hash": "c071d320ecdbf99f328efdf5bbc6704980bdd488f00ef5c3f2086472f507ecf4",
   "manifest_hash": "525107ebb51bfdef74f8d61c9cbe7c04d645d01d49b48bc00912cafffa27921a",
-  "core_digest": "7eec927ca8727cbd03256c2b7e33922cbe962e722986b22512f49b96b14ec2bc",
+  "core_digest": "cd86f460e5a4bc7e57c20b7b712a2f0c6b8b25b2701d5bbef3269f52679c9c17",
   "profile_id": "harness.business-ddd-strategy-handoff"
 }
