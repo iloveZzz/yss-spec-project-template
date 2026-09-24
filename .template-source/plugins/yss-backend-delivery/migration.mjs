@@ -38,7 +38,13 @@ function prepare(root, target, cli, api) {
   try {
     cpSync(target, stage, { recursive: true, filter: source => path.basename(source) !== '.git' });
     rmSync(path.join(stage, RECEIPT));
-    api.execute(cli.bin, ['sync', '--target-dir', stage], cli.root);
+    // The legacy binding proves these bytes are unchanged. Retired canonical skills
+    // must leave the preview before the new instance verifier runs inside sync.
+    for (const agent of ['agents', 'codex', 'cursor', 'pi']) {
+      const ref = `.${agent}/skills/grill-me`;
+      if (legacy.binding.some(file => file.ref.startsWith(`${ref}/`))) rmSync(safe(stage, ref), { recursive: true });
+    }
+    api.execute(cli.bin, ['sync', '--target-dir', stage, '--prune'], cli.root);
     const oldMetadata = JSON.parse(readFileSync(safe(target, '.yss-template.json')));
     const metadataFile = safe(stage, '.yss-template.json');
     const syncedMetadata = JSON.parse(readFileSync(metadataFile));

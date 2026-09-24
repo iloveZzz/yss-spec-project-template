@@ -18,7 +18,8 @@ const ROOT = path.resolve(HERE, '../../..');
 const NAME = identity.name;
 const { buildSync: inspectModules, version: parserVersion } = createRequire(new URL('../../tooling/node/package.json', import.meta.url))('esbuild');
 const ENTRYPOINTS = ['scripts/strategic-consumer-entry', 'scripts/query-lifecycle-context', 'scripts/verify-plan-spec-entry',
-  'scripts/dispatch-slice-task', 'scripts/complete-backend-delivery', 'scripts/verify-lifecycle-checkpoint', 'scripts/slice-contract', 'scripts/contract', 'scripts/api-contract-decision', 'scripts/backend-delivery', 'scripts/verify-context-contract'];
+  'scripts/dispatch-slice-task', 'scripts/complete-backend-delivery', 'scripts/verify-lifecycle-checkpoint', 'scripts/slice-contract', 'scripts/contract', 'scripts/api-contract-decision', 'scripts/backend-delivery', 'scripts/verify-context-contract',
+  'scripts/lib/strategic-handoff-zip.py'];
 const ignore = ref => /(?:^|\/)(?:node_modules|__pycache__|\.git|tests?|fixtures)(?:\/|$)/.test(ref)
   || /(?:\.test\.[cm]?js|\.pyc|\.DS_Store)$/.test(ref);
 // Historical machine paths have no runtime meaning. Preserve exact transformation provenance.

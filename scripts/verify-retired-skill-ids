@@ -45,6 +45,9 @@ const allowed = (relative, line) => relative === "docs/agents/skill-migrations.m
   // Immutable bindings for migration from earlier backend-delivery plugin versions.
   || relative === ".template-source/plugins/yss-backend-delivery/legacy-0.2.json"
   || relative === ".template-source/plugins/yss-backend-delivery/legacy-m4.json"
+  // Explicit migration removes the verified legacy skill before the current verifier runs.
+  || (relative === ".template-source/plugins/yss-backend-delivery/migration.mjs"
+    && line.includes('const ref = `.${agent}/skills/grill-me`;'))
   || relative.startsWith(".template-source/profile-skill-patches/")
   // Verbatim source-policy regression fixture: its retired/forbidden lists are evidence, not active skill routing.
   || relative === "scripts/fixtures/existing-ui-baseline/design-source-roles.json"
