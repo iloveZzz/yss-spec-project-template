@@ -2,7 +2,7 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "2e27527d9ea5f1f72dace5e9d3dbd931217d6bea",
+  "source_revision": "090cf76a10077a40bd2aefc20bf163725518a4bc",
   "source_state": "committed",
   "transformation_set": [
     "identity"
@@ -111,8 +111,8 @@
     "scripts/lib/maintenance-candidate.mjs": "sha256:4c5c89e66bd71383d8e99a7711370728d0fcf463644977a2af3b14b496dd1ffd",
     "scripts/lib/openapi-draft-validation.mjs": "sha256:9564a6c7956e2dc18c872331db6c301a6b5f5aa77a8770528b30cacc88ed7e96",
     "scripts/lib/scaffold-local-database.mjs": "sha256:66d47c11698b36ff57e4f37577c6f83ea3a6590f4b9ab6862833bd991fde3662",
-    "scripts/lib/skill-registry.mjs": "sha256:483e457d4bcae15783f237a317ad71a366f3040ff4298f221ef0675923e1e123",
-    "scripts/lib/skill-supply-chain.mjs": "sha256:951599615fefedc5d5aacc3117dbae4df0e737a214ce8cd120f9603db6b87974",
+    "scripts/lib/skill-registry.mjs": "sha256:215acbca6abf1a73b76710a7636c7d94f6dbdfff94bfedb35a97dc943cab6103",
+    "scripts/lib/skill-supply-chain.mjs": "sha256:6de84cdca6c0d0fc0120a0bf4c9670f403a55b0e0495cecd9cbebf6f425ace52",
     "scripts/lib/slice-applicability.mjs": "sha256:c899fd31a39e3a4237a4a21e13c5fa718b319b792b6365b23b602cf792281e1c",
     "scripts/lib/slice-contract-preparation.mjs": "sha256:f6fb06ff48e1b2161d91d37301ac3c090802a07754bcb686b6ac8c5224751b88",
     "scripts/lib/slice-contract-views.mjs": "sha256:2e572b6ee93014fb145cbb286bc42f4dbebcc210288e60858e4b90f6c548fb6d",
@@ -156,8 +156,8 @@
     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
     "scripts/verify-strategic-handoff-package-scenarios": "sha256:35f5ccf55f11e59848e53a865acba6a66ba9e8ab45d4c2ccc592e1d03660f892",
     "scripts/verify-strategic-handoff-tools-lock": "sha256:7b413ccc4ab4dc606113ec9e3f51ddac0d2045a761b18130483a70118c566d9b",
-    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:cdee384ab5dafa68a31005dec941096d64dd60a64437a1c1d57d7cc6f92ced5a",
-    "docs/agents/yss-skill-registry.yaml": "sha256:dbbe04f208b1de39542c77a141469fe0e9ff40194b97f140bf3f6c25a4864ddd"
+    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:392776412610f5b19b241e1b9400470ef69c6f26059754482277ae5e7dc98c01",
+    "docs/agents/yss-skill-registry.yaml": "sha256:9c9758148e38d61b25e51571d1fb3613f159c0c2cf4908c13568bce7cd606454"
   },
   "effective_files": {
     "docs/agents/backend-architecture-profiles.md": "sha256:009172fe0d456ad40fc82637bfde800fc3b1ece0b9b5696e215cfc528dc96eea",
@@ -263,8 +263,8 @@
     "scripts/lib/maintenance-candidate.mjs": "sha256:4c5c89e66bd71383d8e99a7711370728d0fcf463644977a2af3b14b496dd1ffd",
     "scripts/lib/openapi-draft-validation.mjs": "sha256:9564a6c7956e2dc18c872331db6c301a6b5f5aa77a8770528b30cacc88ed7e96",
     "scripts/lib/scaffold-local-database.mjs": "sha256:66d47c11698b36ff57e4f37577c6f83ea3a6590f4b9ab6862833bd991fde3662",
-    "scripts/lib/skill-registry.mjs": "sha256:483e457d4bcae15783f237a317ad71a366f3040ff4298f221ef0675923e1e123",
-    "scripts/lib/skill-supply-chain.mjs": "sha256:951599615fefedc5d5aacc3117dbae4df0e737a214ce8cd120f9603db6b87974",
+    "scripts/lib/skill-registry.mjs": "sha256:215acbca6abf1a73b76710a7636c7d94f6dbdfff94bfedb35a97dc943cab6103",
+    "scripts/lib/skill-supply-chain.mjs": "sha256:6de84cdca6c0d0fc0120a0bf4c9670f403a55b0e0495cecd9cbebf6f425ace52",
     "scripts/lib/slice-applicability.mjs": "sha256:c899fd31a39e3a4237a4a21e13c5fa718b319b792b6365b23b602cf792281e1c",
     "scripts/lib/slice-contract-preparation.mjs": "sha256:f6fb06ff48e1b2161d91d37301ac3c090802a07754bcb686b6ac8c5224751b88",
     "scripts/lib/slice-contract-views.mjs": "sha256:2e572b6ee93014fb145cbb286bc42f4dbebcc210288e60858e4b90f6c548fb6d",
@@ -308,7 +308,7 @@
     "scripts/verify-strategic-handoff-consumption": "sha256:9ab43edbcf48ab6677ca7389e959a557d52939455ed309e5306391aa48ef0b10",
     "scripts/verify-strategic-handoff-package-scenarios": "sha256:35f5ccf55f11e59848e53a865acba6a66ba9e8ab45d4c2ccc592e1d03660f892",
     "scripts/verify-strategic-handoff-tools-lock": "sha256:7b413ccc4ab4dc606113ec9e3f51ddac0d2045a761b18130483a70118c566d9b",
-    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:cdee384ab5dafa68a31005dec941096d64dd60a64437a1c1d57d7cc6f92ced5a",
-    "docs/agents/yss-skill-registry.yaml": "sha256:dbbe04f208b1de39542c77a141469fe0e9ff40194b97f140bf3f6c25a4864ddd"
+    ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml": "sha256:392776412610f5b19b241e1b9400470ef69c6f26059754482277ae5e7dc98c01",
+    "docs/agents/yss-skill-registry.yaml": "sha256:9c9758148e38d61b25e51571d1fb3613f159c0c2cf4908c13568bce7cd606454"
   }
 }
