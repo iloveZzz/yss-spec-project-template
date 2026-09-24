@@ -52,6 +52,7 @@ test('固定版本发布集成真实打包安装，并产生命令证据', t => 
   const result = verifyTemplateRelease({ root: f.repo, commit: f.sha, output: f.output });
   assert.equal(result.status, 'passed');
   assert.equal(result.template_commit, f.sha);
+  assert.deepEqual(result.commands.find(row => row.command === 'scripts/verify-template')?.args, ['--concurrency', '1']);
   assert.ok(result.commands.some(row => row.command === 'npm' && row.args[0] === 'pack'));
   assert.ok(result.commands.every(row => row.exit_code === 0));
   assert.equal(git(f.repo, 'status', '--porcelain'), '');

@@ -62,7 +62,7 @@ export function verifyTemplateRelease({ root, commit, output }) {
     Object.assign(report, assertReleaseCheckout(root, commit));
     run('scripts/repository-mode', []);
     assert.equal(readFileSync(path.join(output, '01.log'), 'utf8').trim(), 'template-source', '只允许模板源发布验证');
-    run('scripts/verify-template', []);
+    run('scripts/verify-template', ['--concurrency', '1']);
     scratch = mkdtempSync(path.join(os.tmpdir(), 'yss-template-release-'));
     const cli = path.join(scratch, 'cli');
     run('git', ['clone', '--shared', '--no-checkout', path.join(root, 'submodules/create-yss-spec'), cli]);
