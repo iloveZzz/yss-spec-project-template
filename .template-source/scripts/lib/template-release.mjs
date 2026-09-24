@@ -85,7 +85,7 @@ export function verifyTemplateRelease({ root, commit, output }) {
     run('npm', ['install', '--prefix', consumer, '--ignore-scripts', '--no-audit', '--no-fund', path.join(cli, packed[0].filename)]);
     const entry = path.join(consumer, 'node_modules/create-yss-spec/bin/create-yss-spec.js');
     const instance = path.join(scratch, 'instance');
-    run(process.execPath, [entry, '--target-dir', instance, '--project-name', 'CI release verification', '--business-domain', '模板发布验收', '--team-size', '3']);
+    run(process.execPath, [entry, '--target-dir', instance, '--project-name', 'CI release verification', '--business-domain', '模板发布验收', '--team-size', '3', '--agent-runtime', 'codex']);
     assert.match(readFileSync(path.join(instance, 'yss-project.yaml'), 'utf8'), /repository_mode: project-instance/);
     for (const forbidden of ['.github', '.template-source', 'submodules']) assert.equal(existsSync(path.join(instance, forbidden)), false, `实例不得包含 ${forbidden}`);
     const metadata = JSON.parse(readFileSync(path.join(instance, '.yss-template.json'), 'utf8'));

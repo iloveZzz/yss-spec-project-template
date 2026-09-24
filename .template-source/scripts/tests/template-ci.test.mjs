@@ -54,6 +54,7 @@ test('固定版本发布集成真实打包安装，并产生命令证据', t => 
   assert.equal(result.template_commit, f.sha);
   assert.deepEqual(result.commands.find(row => row.command === 'scripts/verify-template')?.args, ['--concurrency', '1']);
   assert.ok(result.commands.some(row => row.command === 'npm' && row.args[0] === 'pack'));
+  assert.ok(result.commands.some(row => row.args.includes('--agent-runtime') && row.args.includes('codex')));
   assert.ok(result.commands.every(row => row.exit_code === 0));
   assert.equal(git(f.repo, 'status', '--porcelain'), '');
   assert.equal(JSON.parse(readFileSync(path.join(f.output, 'release-verification.json'))).status, 'passed');
