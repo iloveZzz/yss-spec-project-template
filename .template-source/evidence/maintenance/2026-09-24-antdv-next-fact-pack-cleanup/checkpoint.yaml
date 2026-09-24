@@ -1,0 +1,58 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  从模板及开发分发快照移除已退役的 Antdv Next 原型事实包，
+  改变新实例与 CLI 包的生成内容；历史原型证据仍只读兼容。
+triggers:
+  - generation-semantics
+changed_assets:
+  - docs/design/facts/antdv-next/
+  - docs/design/design.md
+  - docs/design/README.md
+  - docs/design/templates/interaction-spec-template.md
+  - .agents/skills/yss-prototype-stage/SKILL.md
+  - .template-source/plugins/yss-backend-delivery/build.mjs
+  - skills-lock.json
+  - submodules/yss-harness-design-agent
+  - submodules/yss-harness-frontend-agent
+  - submodules/create-yss-strategic-design
+  - submodules/create-yss-harness-frontend
+  - submodules/create-yss-spec
+verification_evidence:
+  - kind: self-check
+    command: git diff --check
+    result: pass
+  - kind: self-check
+    command: scripts/sync-profile-skills --check --profile=all
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast (cwd=submodules/yss-harness-design-agent)
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast (cwd=submodules/yss-harness-frontend-agent)
+    result: pass
+  - kind: relevant-check
+    command: pnpm test (cwd=submodules/create-yss-strategic-design)
+    result: pass
+  - kind: relevant-check
+    command: pnpm verify-bundle (cwd=submodules/create-yss-strategic-design)
+    result: pass
+  - kind: relevant-check
+    command: pnpm test (cwd=submodules/create-yss-harness-frontend)
+    result: pass
+  - kind: relevant-check
+    command: pnpm verify-bundle (cwd=submodules/create-yss-harness-frontend)
+    result: pass
+  - kind: relevant-check
+    command: npm pack --ignore-scripts --dry-run --json (cwd=submodules/create-yss-spec)
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null

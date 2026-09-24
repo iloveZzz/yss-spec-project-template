@@ -99,24 +99,22 @@ scripts/verify-template-fast
 
 ## 关键文档
 
+业务方可从[用户手册](./docs/user-guide/用户手册.md)了解工作入口；阶段、条件门禁和完成证据以生命周期注册表及流程裁剪规则为准。
+
 | 文档 | 内容 |
 |------|------|
 | [AGENTS.md](./AGENTS.md) | 全局 AI 指令 + 工程基线入口 + Agent 协作 |
 | [docs/user-guide/用户手册.md](./docs/user-guide/用户手册.md) | 从首次只读检查到需求、开发、审查、发布和 CLI 操作的统一用户手册 |
 | [阶段接入与产物复用使用手册](./docs/user-guide/阶段接入与产物复用使用手册.md) | 复用上游资产，从指定入口继续；含后端交付后前端开发操作 |
-| [docs/process/PDCA-SCRUM.md](./docs/process/PDCA-SCRUM.md) | PDCA × Scrum × AI |
 | [docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md](./docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md) | Matt Pocock Engineering Skills 集成与使用 |
 | [docs/process/lifecycle-registry.yaml](./docs/process/lifecycle-registry.yaml) | 生命周期结构事实源：主阶段、门禁、产物、工作单元、证据与稳定 ID |
 | [docs/process/harness-process-tailoring.md](./docs/process/harness-process-tailoring.md) | 小改动 / 中等变更 / 新模块的流程裁剪指南 |
 | [docs/process/template-engineering-overview.md](./docs/process/template-engineering-overview.md) | 模板工程定位、产品线、控制平面、分发边界与维护工作流 |
-| [docs/process/harness-executive-blueprint.md](./docs/process/harness-executive-blueprint.md) | 面向业务方和管理者的 Harness 一页式蓝图 |
 | [docs/process/implementation-repo-integration.md](./docs/process/implementation-repo-integration.md) | 外部前端 / 后端实现仓库接入与跨仓库切片绑定 |
 | [docs/agents/README.md](./docs/agents/README.md) | Agent 协作文档目录说明 |
 | [docs/agents/skills-maintenance.md](./docs/agents/skills-maintenance.md) | Agent skills 安装与维护 |
 | [docs/user-guide/yss-ui-mcp.md](./docs/user-guide/yss-ui-mcp.md) | YSS UI MCP 项目配置、全局安装边界与自检 |
-| [docs/plan/IDEATION.md](./docs/plan/IDEATION.md) | 机会构想方法 |
 | [docs/architecture/README.md](./docs/architecture/README.md) | 架构设计 + 审查清单 |
-| [docs/testing/README.md](./docs/testing/README.md) | 测试策略 |
 
 ## 核心模板
 
@@ -125,7 +123,6 @@ scripts/verify-template-fast
 | [docs/templates/spec-template.md](./docs/templates/spec-template.md) | Spec，包含 OpenAPI 影响、测试决策、AI / 人工审查点 |
 | [docs/templates/local-parent-ticket-template.md](./docs/templates/local-parent-ticket-template.md) | Local Markdown 功能父 Ticket 与生命周期索引 |
 | [docs/templates/vertical-slice-ticket-template.md](./docs/templates/vertical-slice-ticket-template.md) | 垂直切片 Ticket |
-| [docs/templates/agent-brief-template.md](./docs/templates/agent-brief-template.md) | `triage` 产出的 Agent Brief |
 | [docs/templates/implementation-repo-registry-template.md](./docs/templates/implementation-repo-registry-template.md) | 外部实现仓库登记 |
 | [docs/templates/cross-repo-slice-template.md](./docs/templates/cross-repo-slice-template.md) | 跨仓库垂直切片记录 |
 | [docs/architecture/templates/architecture-deepening-template.md](./docs/architecture/templates/architecture-deepening-template.md) | 架构 deepening 候选与 seam 设计 |

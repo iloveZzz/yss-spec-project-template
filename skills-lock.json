@@ -226,21 +226,6 @@
           ".pi/skills"
         ]
       },
-      "grill-me": {
-        "source": "mattpocock/skills",
-        "sourceType": "github",
-        "skillPath": "skills/productivity/grill-me/SKILL.md",
-        "effectiveHash": "916cf7ff0d81cf47fe578bd86695e09a53fbe8a4b371586e19dde6573549e88d",
-        "sourceRevision": "0ab1b63a410a03d3627979a109c8695de27af954",
-        "upstreamHash": "5a13e157f85835632b132390a162d234822658b6a544f31cc2578280062bd044",
-        "adaptationRef": "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md",
-        "targets": [
-          ".agents/skills",
-          ".codex/skills",
-          ".cursor/skills",
-          ".pi/skills"
-        ]
-      },
       "grill-with-docs": {
         "source": "mattpocock/skills",
         "sourceType": "github",
@@ -892,7 +877,7 @@
         "source": "project",
         "sourceType": "local",
         "skillPath": ".agents/skills/yss-product-lifecycle/SKILL.md",
-        "effectiveHash": "0904753ec31459a719530aae71864e5a8f2d8acef66f64065c7e2848a362c23e",
+        "effectiveHash": "509c9a2b5bbb8e4c1a0b72bd59e75ef3cde0d70452a0c9d7ffa5864a737814ba",
         "targets": [
           ".agents/skills",
           ".codex/skills",
@@ -904,7 +889,7 @@
         "source": "iloveZzz/yss-harness-design-agent",
         "sourceType": "git-submodule",
         "skillPath": ".agents/skills/yss-prototype-stage/SKILL.md",
-        "effectiveHash": "4cc7d388f89feddf50d208b2d5db3a4ffa41974afb364328270c097970fc39c0",
+        "effectiveHash": "ac8390003dd1cf661cf01f9b13fdb37f16463810af0c74fe9a8428cc569a5167",
         "sourceRevision": "4b6764ae8daa11036063c1ebc1309b2844d11668",
         "upstreamHash": "6e1bcdf107d95c11faee2b988e4e0c36b8e5b76f6b40312a206b83733a96b0fc",
         "adaptationRef": "docs/agents/strategic-design-skills-integration.md",

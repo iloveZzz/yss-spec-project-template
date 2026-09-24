@@ -2,6 +2,10 @@
 
 本文记录已退役技能入口的迁移路径。退役技能不保留物理目录、投影或 lock 条目；本文件是历史名称的唯一持久兼容说明。
 
+## `grill-me` 入口退役（2026-09-24）
+
+`grill-me` 仅转发到 `grilling`，现已硬退役。新请求直接使用 `grilling`；旧 ID 返回 `skill-retired`，不保留兼容目录、投影、Registry 或 lock 条目。历史候选与冻结证据只读保留。
+
 ## 后端组件源码索引双轨迁移（2026-09-19）
 
 后端组件 Skill 的单一 `references/source-index.md` 已迁移为平台线选择页。生成证据分别保存在 `source-index.boot2-java8.md` 与 `source-index.boot3-java17.md`，来源根分别由 `YSS_SOURCE_ROOT_BOOT2_JAVA8` 与 `YSS_SOURCE_ROOT_BOOT3_JAVA17` 显式提供。

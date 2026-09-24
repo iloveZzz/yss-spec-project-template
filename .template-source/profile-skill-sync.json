@@ -16,9 +16,6 @@
           "id": "domain-modeling"
         },
         {
-          "id": "grill-me"
-        },
-        {
           "id": "grill-with-docs"
         },
         {
@@ -151,7 +148,8 @@
       ],
       "retired": [
         "yss-antd-design",
-        "yss-antdv-next-design"
+        "yss-antdv-next-design",
+        "grill-me"
       ],
       "reference_roots": [
         ".codex/skills/product-design"
@@ -174,9 +172,6 @@
         },
         {
           "id": "diagnosing-bugs"
-        },
-        {
-          "id": "grill-me"
         },
         {
           "id": "grilling"
@@ -478,7 +473,8 @@
         "yss-antd-design",
         "yss-antdv-next-design",
         "yss-mvc-design",
-        "yss-mvc-data-analysis-project-initializer"
+        "yss-mvc-data-analysis-project-initializer",
+        "grill-me"
       ],
       "reference_roots": []
     },
@@ -511,9 +507,6 @@
         },
         {
           "id": "formily-step-flow"
-        },
-        {
-          "id": "grill-me"
         },
         {
           "id": "grilling"
@@ -773,7 +766,8 @@
         "page-skeleton",
         "vue3-best-practices",
         "yss-use-table-height",
-        "yss-use-tree-height"
+        "yss-use-tree-height",
+        "grill-me"
       ],
       "reference_roots": [
         ".codex/skills/product-design",

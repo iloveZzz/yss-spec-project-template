@@ -24,7 +24,6 @@ const ignore = ref => /(?:^|\/)(?:node_modules|__pycache__|\.git|tests?|fixtures
 // Historical machine paths have no runtime meaning. Preserve exact transformation provenance.
 const REDACTIONS = new Map([
   ['.agents/skills/yss-design-system/SKILL.md', ['/Users/zhudaoming/Downloads/Product-Design-System', '<historical-design-input>']],
-  ['docs/design/facts/antdv-next/1.5.2/cli-help.txt', ['/Users/zhudaoming/Projects/yss-spec-project-template', '<capture-working-directory>']],
 ]);
 
 function closure(root, plan) {

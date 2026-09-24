@@ -46,7 +46,6 @@ Token 或组件视觉变体变更必须先修改 `DESIGN.md`，再更新派生�
 - `product-design:index`：Codex 产品原型产出的主路由；根据输入是否有 URL、截图、Figma、代码目标或视觉方向，进入 `$get-context`、`$ideate`、`$prototype`、`$image-to-code`、`$url-to-code`、`$share` 或 `$design-qa` 等 focused skill。
 - Product Design focused skills：按 H1/H2 的问题边界产出视觉或流程设计资产；ideation 只在新/不确定视觉方向时强制。
 当前原型使用 `yss-prototype-stage` 的离线 HTML 适配器；历史 Provider 证据保持只读。
-当前原型使用 `yss-prototype-stage` 的离线 HTML 适配器；历史 Provider 证据保持只读。
 - `prototype-review`：原型阶段评审门禁；未通过则不要进入 Spec 校准 / API 影响分析 / 契约草案。
 - 兼容入口：`product-design-prototype`、`high-fidelity-html-prototype` 只读迁移；新资产统一使用 `artifact.prototype-deliverable`、`yss-prototype-stage`、Prototype Evidence schema v4 与 Visual Baseline schema v1。
 

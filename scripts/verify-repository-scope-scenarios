@@ -215,7 +215,7 @@ const markerFiles = [
   ["docs/templates/implementation-repo-registry-template.md", "git-submodule"],
   ["docs/templates/implementation-repo-registry-template.md", "git-submodule-harness-apps"],
   ["docs/templates/cross-repo-slice-template.md", "superproject-gitlink-update"],
-  ["docs/templates/implementation-routing-template.md", "git-submodule-harness-apps"],
+  ["docs/process/implementation-repo-integration.md", "git-submodule-harness-apps"],
   [".agents/skills/implementation-repo-onboarding/SKILL.md", "git-submodule"],
   [".agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md", "git-submodule-harness-apps"],
   [".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml", "git-submodule-harness-apps"],

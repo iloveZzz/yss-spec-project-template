@@ -6,6 +6,7 @@ import { PROJECTION_ROOTS, ROOT } from "./lib/skill-supply-chain.mjs";
 
 const retired = [
   "ask-matt",
+  "grill-me",
   "dispatching-parallel-agents",
   "loop-me",
   "migrate-to-shoehorn",
@@ -41,6 +42,9 @@ const retired = [
 ];
 const allowed = (relative, line) => relative === "docs/agents/skill-migrations.md"
   || relative === ".template-source/profile-skill-sync.json"
+  // Immutable bindings for migration from earlier backend-delivery plugin versions.
+  || relative === ".template-source/plugins/yss-backend-delivery/legacy-0.2.json"
+  || relative === ".template-source/plugins/yss-backend-delivery/legacy-m4.json"
   || relative.startsWith(".template-source/profile-skill-patches/")
   // Verbatim source-policy regression fixture: its retired/forbidden lists are evidence, not active skill routing.
   || relative === "scripts/fixtures/existing-ui-baseline/design-source-roles.json"
@@ -55,6 +59,8 @@ const allowed = (relative, line) => relative === "docs/agents/skill-migrations.m
   || relative.endsWith("/skills/.yss-skills-manifest.json")
   || relative === "docs/agents/yss-ui-skills-integration.md"
   || relative === "scripts/lib/skill-governance.mjs"
+  // The resolver names this retired ID only to reject it and return its replacement.
+  || (relative === "scripts/lib/skill-registry.mjs" && line.includes('const replacementSkill = requestedId === "grill-me"'))
   || (relative.endsWith("/skills/yss-product-lifecycle/references/orchestration-contract.yaml") && line.includes("retired_shared_skills:"))
   || relative.endsWith("scripts/verify-retired-skill-ids")
   || relative.endsWith("scripts/lib/skill-supply-chain.mjs")

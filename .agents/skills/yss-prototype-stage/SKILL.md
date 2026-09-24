@@ -53,7 +53,7 @@ Design QA 合并 visual、layout、interaction、content、accessibility、cross
 ## 按需读取
 
 - 档位、上游融合与迁移：[prototype-profile-routing.md](references/prototype-profile-routing.md)
-- 渲染适配、fact pack 与命令：[product-design-adapter.md](references/product-design-adapter.md)
+- 离线渲染适配与命令：[product-design-adapter.md](references/product-design-adapter.md)
 - 证据模板：`docs/design/templates/prototype-evidence-template.yaml`
 - Visual Baseline 模板与 schema：`docs/design/templates/visual-baseline-template.yaml`、`docs/design/schemas/visual-baseline.schema.json`
 
@@ -61,7 +61,7 @@ Design QA 合并 visual、layout、interaction、content、accessibility、cross
 
 - 把 H1/H2 当作低/高保真；把离线 HTML 降为静态截图，或继续要求 Provider、Node starter、预先生成图片。
 - 低保真未评审就选择技术栈；用主观评分代替确定性触发规则。
-- 空填 lockfile/fact pack；把自身生成图当成独立来源，或宣称已验证生产真实组件。
+- 编造组件版本或构建来源；把自身生成图当成独立来源，或宣称已验证生产真实组件。
 - 重复抄写机器可采集的版本、digest、截图和 console；创建第二份状态机、QA 或 handoff 资产。
 - 把原型源码直接复制进生产，或在原型阶段调用 `yss-ui`。
 

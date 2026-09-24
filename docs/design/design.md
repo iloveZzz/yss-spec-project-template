@@ -35,13 +35,13 @@
 
 ## 原型设计依据的优先级
 
-原型使用 Ant Design 或 Antdv Next 时，上游 `design.md` 与组件查询提供的是**上游默认**和组件事实；项目根 `DESIGN.md` 是**规范覆盖**，`docs/design/design.md` 是治理解释，`docs/design/tokens/*` 是派生实现视图。当前功能只能在这些层之下完成语义组件映射。若上游默认与项目 Token 不同，以根规范源为准，并在 `prototype-evidence.yaml` 中记录根规范与 Token digest；不得把上游默认直接写回项目实现。
+当前原型以项目根 `DESIGN.md` 为视觉规范源，`docs/design/design.md` 解释治理规则，`docs/design/tokens/*` 是派生实现视图。需要真实 AntD 控件辅助评审时，上游资料只提供组件事实，不覆盖项目规范；在 `prototype-evidence.yaml` 中记录根规范与 Token digest，不把上游默认直接写回项目实现。
 
 项目覆盖与官方默认的差异直接读取根 `DESIGN.md` 并用 `design-md diff` 核验；本文件不复制差异值。上游预设色板可以保留其自身颜色谱，但**色板预设 ≠ 品牌 seed**。
 
 Codex `$design-qa` 的 Colors/tokens 与 Fonts/typography 对照必须以根 `DESIGN.md` 为 source visual truth，并用 `docs/design/tokens/*` 复核实际投影；不得回退到上游默认或历史品牌值。执行清单见 `.agents/skills/yss-design-system/references/design-qa-theme.md`。
 
-原型 H1/H2 统一使用 `html-css-js`，以本地 Token CSS 保留 YSS 企业后台视觉语言。生产实现只在目标工程按 lockfile 核验组件 API；原型阶段不调用 `yss-ui`。已冻结的组件库原型和 fact pack 保留历史只读，不再生成新的 Provider 事实包。
+原型 H1/H2 默认使用 `html-css-js`，以本地 Token CSS 保留 YSS 企业后台视觉语言；复杂交互影响评审结论时可按集成说明选用 `react-antd-prebuilt`。生产实现只在目标工程按 lockfile 核验组件 API；原型阶段不调用 `yss-ui`。已有项目中冻结的组件库原型及其事实证据保持只读；模板不再预置 Antdv Next fact pack，也不生成新的 Provider 事实包。
 
 ### HTML 与生产主题的映射
 

@@ -65,10 +65,17 @@ export function loadSkillRegistry(filePath = DEFAULT_REGISTRY) {
 export function resolveSkillForNewUse(registry, requestedId) {
   requireString(requestedId, "requested skill id");
   if (OBSOLETE.has(requestedId)) {
+    const replacementSkill = requestedId === "grill-me" ? "grilling" : null;
     throw new SkillLifecycleError(
       SKILL_LIFECYCLE_FAILURE_CODES.retired,
-      `${requestedId} 已硬退役；按迁移 tombstone 重新路由`,
-      { skill: requestedId, migration_ref: "docs/agents/skill-migrations.md" }
+      replacementSkill
+        ? `${requestedId} 已硬退役；请使用 ${replacementSkill}`
+        : `${requestedId} 已硬退役；按迁移 tombstone 重新路由`,
+      {
+        skill: requestedId,
+        migration_ref: "docs/agents/skill-migrations.md",
+        ...(replacementSkill ? { replacement_skill: replacementSkill } : {})
+      }
     );
   }
   const aliases = new Map((registry.skills ?? []).flatMap((skill) => (skill.aliases ?? []).map((alias) => [alias, skill.id])));

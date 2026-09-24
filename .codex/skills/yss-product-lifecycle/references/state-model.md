@@ -83,17 +83,17 @@ Git 动作分别保存 `commit_authorized`、`commit_scope`、`commit_authorizat
 lifecycle:
   schema_version: 1
   mode: resume
-  stage: system-data-architecture-and-contract-review
-  status: blocked
+  stage: stage.spec-architecture
+  status: needs-human
 workflow:
   matt_flow: main
-  active_skill: yss-openapi-draft-review
+  active_skill: yss-product-lifecycle
   status: paused
 artifacts:
-  spec: {status: approved, ref: docs/.scratch/example/spec.md}
+  spec: {status: ready-for-human, ref: docs/.scratch/example/spec.md}
   openapi: {status: stale, ref: docs/.scratch/example/api/example.yaml, stale_by: [spec]}
 gates:
-  openapi_freeze: {status: stale}
+  gate.spec-baseline-approved: {status: needs-human}
 tracker:
   kind: local-markdown
   root: docs/.scratch
@@ -101,10 +101,10 @@ tracker:
   role: ready-for-human
 pause:
   reason_code: human-gate
-  gate_ref: requirement-freeze
+  gate_ref: gate.spec-baseline-approved
   owner_or_authority: product-owner
-  resume_condition: requirement-freeze-approved
-  next_work_unit: api-impact-assessment
+  resume_condition: gate.spec-baseline-approved approved
+  next_work_unit: work-unit.technical-analysis
 ```
 
 ## Schema 兼容与迁移

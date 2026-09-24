@@ -286,7 +286,7 @@ task_package:
 # may prepare, validate and accept their results, but cannot invoke them or create
 # their formal artifacts on their behalf.
 matt_invocation_boundary:
-  user_invoked_skills: [grill-me, grill-with-docs, handoff, implement, improve-codebase-architecture, setup-matt-pocock-skills, to-questionnaire, to-spec, to-tickets, triage, wait-what, wayfinder]
+  user_invoked_skills: [grill-with-docs, handoff, implement, improve-codebase-architecture, setup-matt-pocock-skills, to-questionnaire, to-spec, to-tickets, triage, wait-what, wayfinder]
   lifecycle_managed_user_entries: [setup-matt-pocock-skills, grill-with-docs, to-spec, to-tickets, implement]
   model_invoked_skills: [code-review, codebase-design, diagnosing-bugs, domain-modeling, grilling, prototype, resolving-merge-conflicts, tdd, writing-for-agents, yss-research]
   lifecycle_allowed_model_invoked_skills: [code-review, codebase-design, diagnosing-bugs, domain-modeling, grilling, prototype, tdd, yss-research]
@@ -299,7 +299,7 @@ skill_source_contract:
   lock_version: 3
   source_revisions_required: [mattpocock/skills, iloveZzz/yss-ui]
   adaptation_ref_required_when_effective_diff: true
-  retired_shared_skills: [yss-antd-design, yss-antdv-next-design, ask-matt, batch-grill-me, dispatching-parallel-agents, loop-me, migrate-to-shoehorn, product-design-prototype, prototype-page-acceptance, scaffold-exercises, setup-pre-commit, setup-ts-deep-modules, teach, writing-beats, writing-fragments, writing-shape, yss-components, yss-dictionary, yss-jdbc, yss-log, yss-microapp-commit, yss-mvc-scaffold-generator, yss-mvc-design, yss-mvc-data-analysis-project-initializer, yss-backend-scaffold-parent, yss-page-module-development, yss-taskflow, yss-backend-scaffold-application, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-backend-scaffold-web, yss-backend-scaffold-adapter, yss-application-layer-reference, yss-domain-layer-reference, yss-infrastructure-layer-reference, yss-web-layer-reference]
+  retired_shared_skills: [yss-antd-design, yss-antdv-next-design, ask-matt, batch-grill-me, grill-me, dispatching-parallel-agents, loop-me, migrate-to-shoehorn, product-design-prototype, prototype-page-acceptance, scaffold-exercises, setup-pre-commit, setup-ts-deep-modules, teach, writing-beats, writing-fragments, writing-shape, yss-components, yss-dictionary, yss-jdbc, yss-log, yss-microapp-commit, yss-mvc-scaffold-generator, yss-mvc-design, yss-mvc-data-analysis-project-initializer, yss-backend-scaffold-parent, yss-page-module-development, yss-taskflow, yss-backend-scaffold-application, yss-backend-scaffold-domain, yss-backend-scaffold-infrastructure, yss-backend-scaffold-web, yss-backend-scaffold-adapter, yss-application-layer-reference, yss-domain-layer-reference, yss-infrastructure-layer-reference, yss-web-layer-reference]
 
 # 生命周期默认走原生工作单元；Matt user-invoked skill 仅保留为兼容入口。
 lifecycle_native_entries:
@@ -1076,7 +1076,7 @@ impact_propagation:
     targets:
       - {kind: artifact, name: product-design, level: direct, when: ui_impact}
       - {kind: artifact, name: prototype, level: direct, when: ui_impact}
-      - {kind: gate, name: requirement-freeze, level: direct, when: ui_impact}
+      - {kind: gate, name: gate.product-design-approved, level: direct, when: ui_impact}
       - {kind: artifact, name: openapi-draft, level: transitive, when: api_impact}
       - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}
       - {kind: artifact, name: vertical-slice-tickets, level: transitive, when: always}
@@ -1097,7 +1097,8 @@ impact_propagation:
       - {kind: artifact, name: product-design, level: direct, when: ui_impact}
       - {kind: artifact, name: system-architecture, level: direct, when: always}
       - {kind: artifact, name: data-architecture, level: direct, when: data_impact}
-      - {kind: gate, name: requirement-freeze, level: direct, when: always}
+      - {kind: gate, name: gate.spec-baseline-approved, level: direct, when: always}
+      - {kind: gate, name: gate.product-design-approved, level: direct, when: ui_impact}
       - {kind: artifact, name: openapi-draft, level: transitive, when: api_impact}
       - {kind: gate, name: design-review, level: transitive, when: always}
       - {kind: gate, name: openapi-freeze, level: transitive, when: api_impact}

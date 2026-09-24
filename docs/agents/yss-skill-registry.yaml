@@ -8,7 +8,7 @@ description: >-
 canonical_content_root: .agents/skills
 instance_distribution:
   schema_version: 1
-  initial_skills: [yss-product-lifecycle, yss-implementation-contract-compiler, yss-research, i-have-adhd]
+  initial_skills: [yss-product-lifecycle, yss-research, i-have-adhd]
   runtimes: [codex, cursor, pi]
   projection_roots: { codex: .codex/skills, cursor: .cursor/skills, pi: .pi/skills }
   dependency_types_for_ensure: [context-required, context-conditional]
@@ -359,12 +359,6 @@ skills:
     layer: core
     maturity: supported
     instance_default_discoverable: true
-    aliases: []
-    impacts: [discovery]
-  - id: grill-me
-    layer: compatibility
-    maturity: supported
-    instance_default_discoverable: false
     aliases: []
     impacts: [discovery]
   - id: grill-with-docs

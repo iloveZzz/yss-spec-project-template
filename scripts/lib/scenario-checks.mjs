@@ -41,7 +41,7 @@ function validateMattContract(data) {
 
 function validateInvocationBoundary(data) {
   const boundary = data.matt_invocation_boundary;
-  const expectedUserInvoked = ["grill-me", "grill-with-docs", "handoff", "implement", "improve-codebase-architecture", "setup-matt-pocock-skills", "to-questionnaire", "to-spec", "to-tickets", "triage", "wait-what", "wayfinder"];
+  const expectedUserInvoked = ["grill-with-docs", "handoff", "implement", "improve-codebase-architecture", "setup-matt-pocock-skills", "to-questionnaire", "to-spec", "to-tickets", "triage", "wait-what", "wayfinder"];
   const expectedModelInvoked = ["code-review", "codebase-design", "diagnosing-bugs", "domain-modeling", "grilling", "prototype", "resolving-merge-conflicts", "tdd", "writing-for-agents", "yss-research"];
   const expectedLifecycleModelInvoked = ["code-review", "codebase-design", "diagnosing-bugs", "domain-modeling", "grilling", "prototype", "tdd", "yss-research"];
   ensure(JSON.stringify(boundary?.user_invoked_skills) === JSON.stringify(expectedUserInvoked), "Matt user-invoked skills 清单不完整或已漂移");

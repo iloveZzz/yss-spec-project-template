@@ -1,0 +1,75 @@
+schema_version: 2
+intensity: L3
+classification_reason: >-
+  本轮精简跨根仓、三个专职模板和四个 CLI；移除文件改变新实例分发内容，
+  grill-me 硬退役改变 Skill 路由和永久阻断校验，因此按跨仓合同、生成语义和核心校验 L3 执行。
+triggers:
+  - cross-repo-contract
+  - generation-semantics
+  - core-validator
+changed_assets:
+  - README.md
+  - docs/process/PDCA-SCRUM.md
+  - docs/process/harness-executive-blueprint.md
+  - docs/templates/architecture-proposal-template.md
+  - docs/templates/user-story-template.md
+  - docs/templates/risk-register-template.md
+  - .agents/skills/grill-me/
+  - docs/agents/yss-skill-registry.yaml
+  - docs/agents/skill-migrations.md
+  - .template-source/profile-skill-sync.json
+  - scripts/verify-retired-skill-ids
+  - scripts/lib/skill-registry.mjs
+  - skills-lock.json
+  - submodules/yss-harness-design-agent
+  - submodules/yss-harness-backend-agent
+  - submodules/yss-harness-frontend-agent
+  - submodules/create-yss-spec
+  - submodules/create-yss-strategic-design
+  - submodules/create-yss-harness-backend
+  - submodules/create-yss-harness-frontend
+  - .template-source/evidence/maintenance/2026-09-24-template-slimming/scope-and-probe.md
+verification_evidence:
+  - kind: self-check
+    command: git diff --check
+    result: pass
+  - kind: self-check
+    command: scripts/sync-profile-skills --check --profile=all
+    result: pass
+  - kind: self-check
+    command: scripts/sync-skills --check && scripts/update-skill-lock --check && scripts/verify-retired-skill-ids
+    result: pass
+  - kind: relevant-check
+    command: node scripts/verify-business-language-scenarios (root and design agent)
+    result: pass
+  - kind: relevant-check
+    command: node --input-type=module grill-me route assertions (root, backend, frontend)
+    result: pass
+  - kind: relevant-check
+    command: README relative links and retired active-reference checks
+    result: pass
+  - kind: relevant-check
+    command: pnpm test:prepared (all four CLIs)
+    result: pass
+  - kind: relevant-check
+    command: pnpm verify-bundle (three specialist CLIs)
+    result: pass
+  - kind: relevant-check
+    command: committed old CLI init; current sync --apply --force; sync --apply --force --prune
+    result: pass
+  - kind: relevant-check
+    command: specialist CLI placeholder active and retired snapshot assertions
+    result: pass
+  - kind: relevant-check
+    command: old backend CLI placeholder init; current sync --apply --force; explicit --prune
+    result: pass
+  - kind: fresh-verification
+    command: scripts/verify-template-fast --concurrency 1
+    result: pass
+review_mode: self-check
+escalation: none
+target_state: implementation-ready
+current_state: implementation-ready
+verification_profile: fast
+review_round: 0
+candidate_digest: null
