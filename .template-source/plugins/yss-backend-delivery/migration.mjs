@@ -44,7 +44,10 @@ function prepare(root, target, cli, api) {
       const ref = `.${agent}/skills/grill-me`;
       if (legacy.binding.some(file => file.ref.startsWith(`${ref}/`))) rmSync(safe(stage, ref), { recursive: true });
     }
-    api.execute(cli.bin, ['sync', '--target-dir', stage, '--prune'], cli.root);
+    // The legacy binding proves these governance files are unchanged. The current
+    // CLI installs their new locations; project-owned docs remain in the stage.
+    for (const { ref } of legacy.binding) if (ref.startsWith('docs/')) rmSync(safe(stage, ref));
+    api.execute(cli.bin, ['sync', '--target-dir', stage, '--prune', '--migrate-layout'], cli.root);
     const oldMetadata = JSON.parse(readFileSync(safe(target, '.yss-template.json')));
     const metadataFile = safe(stage, '.yss-template.json');
     const syncedMetadata = JSON.parse(readFileSync(metadataFile));
