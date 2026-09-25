@@ -7,7 +7,7 @@ runtime_id: runtime.generic
 execution_state: Reviewer
 workflow_status: active
 skill_source:
-  registry_ref: docs/agents/digital-human-roles.yaml
+  registry_ref: .template-spec/agents/digital-human-roles.yaml
   defaults_ref: taskPackageDefaults(role.test-agent)
   core_skills: [code-review]
   forbidden_skills: [implement]

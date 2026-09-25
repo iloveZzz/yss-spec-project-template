@@ -31,7 +31,7 @@ const retiredComponentsId = ["yss", "components"].join("-");
 if (existsSync(path.join(root, ".agents/skills", retiredComponentsId))) failures.push("Retired yss-components canonical directory remains");
 const lock = JSON.parse(read(path.join(root, "skills-lock.json")));
 if (lock.skills?.shared?.[retiredComponentsId]) failures.push("Retired yss-components remains in skills-lock.json");
-const registryBody = read(path.join(root, "docs/agents/yss-skill-registry.yaml"));
+const registryBody = read(path.join(root, ".template-spec/agents/yss-skill-registry.yaml"));
 if (new RegExp(`^\\s*- id: ${retiredComponentsId}\\s*$`, "m").test(registryBody)) failures.push("Retired yss-components remains in the skill registry");
 const publicSkillsPath = path.join(root, "yss-public-skills.json");
 if (existsSync(publicSkillsPath) && JSON.parse(read(publicSkillsPath)).skills?.includes(retiredComponentsId)) failures.push("Retired yss-components remains public");

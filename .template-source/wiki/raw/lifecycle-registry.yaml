@@ -7,7 +7,7 @@ description: >-
 id_policy:
   pattern: '^(stage|gate|artifact|work-unit|evidence)\.[a-z0-9][a-z0-9-]*$'
   published_ids_immutable: true
-  baseline: docs/process/lifecycle-registry-baseline.json
+  baseline: .template-spec/process/lifecycle-registry-baseline.json
   deprecated_ids: [artifact.high-fidelity-html-prototype, work-unit.fresh-verification, work-unit.independent-review]
 
 stages:

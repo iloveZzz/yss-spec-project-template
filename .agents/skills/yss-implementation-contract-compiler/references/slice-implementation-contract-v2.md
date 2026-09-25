@@ -4,11 +4,11 @@
 
 # Slice Implementation Contract
 
-后端合同还必须绑定 `architecture_identity`（schema 见 `docs/process/schemas/backend-architecture-identity.schema.json`），并与工程基线、登记和 Manifest 一致。将同一身份复制到 `resolution`、backend 工作单元和执行结果；Profile 的成熟度/Recipe 来源是技能注册表，draft 不得 ready-for-agent。旧 backend.domain-behavior/persistence-mybatis/http-api Recipe 只读退役，重新编译时显式选择 backend.ddd-* 或 backend.mvc-*。
+后端合同还必须绑定 `architecture_identity`（schema 见 `.template-spec/process/schemas/backend-architecture-identity.schema.json`），并与工程基线、登记和 Manifest 一致。将同一身份复制到 `resolution`、backend 工作单元和执行结果；Profile 的成熟度/Recipe 来源是技能注册表，draft 不得 ready-for-agent。旧 backend.domain-behavior/persistence-mybatis/http-api Recipe 只读退役，重新编译时显式选择 backend.ddd-* 或 backend.mvc-*。
 
 `yss-implementation-contract-compiler` 生成草案；`yss-product-lifecycle` 核验、批准并持久化。合同缺少必填字段时状态为 `blocked`。schema v1 已停止支持，必须重新编译为 v2，不提供自动升级。
 
-采用专职前端 profile 时，`frontend.delivery` 绑定 `{acceptance_ref, digest}`，来自 `scripts/verify-frontend-delivery` 的当前结果；也可由 `resolution.frontend_delivery` 承载，两处并存时必须一致。正式执行从持久化合同读取并重验输入。细则见 `docs/process/frontend-backend-delivery.md`。
+采用专职前端 profile 时，`frontend.delivery` 绑定 `{acceptance_ref, digest}`，来自 `scripts/verify-frontend-delivery` 的当前结果；也可由 `resolution.frontend_delivery` 承载，两处并存时必须一致。正式执行从持久化合同读取并重验输入。细则见 `.template-spec/process/frontend-backend-delivery.md`。
 
 ```yaml
 slice_contract:
@@ -55,7 +55,7 @@ slice_contract:
     recipe_ids: []
     conditions: []
     reason_chains: {}
-    registry_digest: # sha256 of normalized docs/agents/yss-skill-registry.yaml
+    registry_digest: # sha256 of normalized .template-spec/agents/yss-skill-registry.yaml
     compiler_contract_digest: # sha256 of normalized compiler-contract.yaml
     compiled_at:
     freshness: current # digest 变化后为 stale

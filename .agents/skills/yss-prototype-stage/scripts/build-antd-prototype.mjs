@@ -18,7 +18,7 @@ export async function buildAntdPrototype({projectRoot,root,feature,toolchain,rea
  }
  const lock=await readFile(new URL('pnpm-lock.yaml',assets));
  if(sha(await readFile(path.join(toolchain,'pnpm-lock.yaml')))!==sha(lock))throw new Error('作者工具 pnpm lock 与技能基线不匹配');
- const tokenCss=await readFile(path.join(projectRoot,'docs/design/tokens/variables.css'),'utf8');
+ const tokenCss=await readFile(path.join(projectRoot,'.template-spec/design/tokens/variables.css'),'utf8');
  // This adapter targets the default light :root baseline, never the later dark-theme overrides.
  const lightCss=tokenCss.match(/^:root\s*\{([^}]+)\}/m)?.[1];
  if(!lightCss)throw new Error('缺少明确的 :root light Token 基线');

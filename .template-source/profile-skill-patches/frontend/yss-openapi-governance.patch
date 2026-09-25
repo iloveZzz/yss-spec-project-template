@@ -1,3 +1,5 @@
+diff --git a/SKILL.md b/SKILL.md
+index 131c266..b8f844e 100644
 --- a/SKILL.md
 +++ b/SKILL.md
 @@ -1,13 +1,13 @@
@@ -9,26 +11,26 @@
  
  # YSS OpenAPI Governance
  
- 已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `docs/process/contract-reading.md`。
+ 已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `.template-spec/process/contract-reading.md`。
  
 -本 skill 负责 YSS OpenAPI 的 **YAML-first** 工作流：
 +本 skill 在前端仓只消费 YSS OpenAPI 的 **YAML-first** 工作流结果：
  
  ```text
  Spec / 设计输入 → OpenAPI YAML Draft → 审查与 Freeze → JSON 派生物 → 下游既有前端代码生成流程
-@@ -15,26 +15,24 @@
+@@ -15,26 +15,24 @@ Spec / 设计输入 → OpenAPI YAML Draft → 审查与 Freeze → JSON 派生
  
  `docs/.scratch/<feature>/api/<feature>.yaml` 是唯一权威的 OpenAPI 3.1 契约。JSON 只能由冻结后的 YAML 可复现地产生，用于前端代码生成或分发；不得手写、不得反向覆盖 YAML、不得把运行时代码当成设计契约来源。
  
 -YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-dto/references/openapi-wire-profile.yaml` 单一维护。它描述公开 wire shape，不是 Java 字段或 getter 清单；本 skill 必须消费 profile，不能在治理文档、feature YAML 和 JSON 中各自发明 `SingleResult`、`PageResult` 或 `PageQuery` 字段表。
 +YSS DTO 的可复用 HTTP/JSON 映射由 `.agents/skills/yss-openapi-governance/references/openapi-wire-profile.yaml` 提供只读快照。它描述公开 wire shape，不是 Java 字段或 getter 清单；本 skill 必须消费 profile，不能在治理文档、feature YAML 和 JSON 中各自发明 `SingleResult`、`PageResult` 或 `PageQuery` 字段表。
  
- 文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+ 文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
  
 -## 文档写作
 +## 前端仓消费边界
  
--编写接口说明和契约评审交接正文前，读取 `docs/process/document-writing.md` 的共用写法及工程契约指引；协议标识、schema、冻结状态和验证记录按原合同保存。
+-编写接口说明和契约评审交接正文前，读取 `.template-spec/process/document-writing.md` 的共用写法及工程契约指引；协议标识、schema、冻结状态和验证记录按原合同保存。
 +本地只读审查冻结 YAML、JSON 派生物和 wire profile；profile 是后端规范的只读分发快照，不在前端另行定义；来源仓、完整提交、源路径与 SHA-256 绑定在 `references/openapi-wire-source.json`。默认校验只证明离线快照完整，不代表已检查上游最新版本。下文涉及 Draft、Freeze、后端 mapper 或 schema 修订的步骤由后端项目执行，前端只提交消费需求与问题证据。不得在本仓起草后端契约或批准 Freeze。
  
  ## 边界与职责
@@ -49,14 +51,14 @@
  - Spec Delta 影响存在时，在 `docs/.scratch/<feature>/spec-delta/` 记录与冻结 YAML 的关系；没有影响时明确记录 `not-applicable`。
  
  不使用本 skill 来替代：
-@@ -70,20 +68,15 @@
+@@ -70,20 +68,15 @@ pnpm exec redocly bundle \
     - 所有操作使用稳定、可生成客户端的 `operationId`；页面动作可通过 `x-yss-action-key` 或同路径的追踪矩阵关联。
  
  2. **运行结构与治理校验**
 -   - 先执行项目 lockfile 锁定版本的 `pnpm exec redocly lint`；CI 可以包装调用，但 validation record 必须记录这条实际命令与退出码。
 +   - 先执行项目锁定的 `pnpm exec redocly lint` 或等价 CI 脚本。
     - 检查 YAML 可解析、`$ref` 可解析、路径参数完整、operationId 唯一、examples 合法、schema 命名稳定。
--   - 从 `docs/api/templates/openapi-draft-validation-record-template.yaml` 创建 `<feature>-validation.yaml`，记录 YAML SHA-256 与 lint 工具链；运行 `scripts/verify-openapi-draft-validation-record --root <project-root> <record>`。自定义解析脚本可以补充诊断，但不能代替锁定的 Redocly lint evidence。
+-   - 从 `.template-spec/api/templates/openapi-draft-validation-record-template.yaml` 创建 `<feature>-validation.yaml`，记录 YAML SHA-256 与 lint 工具链；运行 `scripts/verify-openapi-draft-validation-record --root <project-root> <record>`。自定义解析脚本可以补充诊断，但不能代替锁定的 Redocly lint evidence。
 -   - 对每个 P0 写模型、配置模型及影响关键交互的读模型建立字段级追踪：`Spec/交互来源 → operationId → request/response schema → property path → 类型与嵌套形状 → create/update requiredness → nullable/default/enum/format → error/test seam`。数组元素使用 `items[].property` 一类稳定 property path。
 -   - create/update 或其他不同生命周期操作复用同一写 schema 时，逐操作证明 requiredness 与省略语义一致；若不一致，拆分 schema 或明确条件契约。凭据类字段还要说明创建、更新、掩码回显、省略保留与显式清空语义，不能仅凭字段名统一设为必填。
     - 先运行 `scripts/verify-yss-dto-openapi-profile`，并记录 profile 版本；检查 `/api/v1/` 版本策略（或记录例外）、`x-yss-response-wrapper`、`YssResultMeta` + `allOf` 具体 schema、统一错误结构、分页、幂等 / 乐观锁和契约测试 seam。
@@ -72,7 +74,7 @@
  
  4. **从冻结 YAML 派生 JSON**
     - 使用上面的锁定 `redocly bundle` 命令生成 `docs/.scratch/<feature>/api/<feature>.json`，JSON 不纳入人工编辑面。
-@@ -103,9 +96,7 @@
+@@ -103,9 +96,7 @@ pnpm exec redocly bundle \
  
  - YAML 不是单一 OAS 3.1 document，或其根节点混入生命周期元数据。
  - YAML / `$ref` / lint 不通过，operationId 不稳定或不唯一，或路径参数、schema、examples 无法解析。
@@ -82,7 +84,7 @@
  - `$ref` 超出允许范围，或转换器版本、lockfile、命令、输入 YAML 无法识别。
  - `scripts/verify-yss-dto-openapi-profile` 失败、profile 版本未记录，或 Draft 未按 profile 建模 `x-yss-response-wrapper`、`YssResultMeta` / `allOf` 和具体 `data` schema。
  - 新契约引入 `com.yss.cloud.dto.response`、把 Java 泛型文字当成 OAS schema、把全局 `code` 放宽为任意 object，或把 `offset` / `needTotalCount` / `tempTotalCount` 作为客户端字段。
-@@ -115,6 +106,46 @@
+@@ -115,6 +106,46 @@ pnpm exec redocly bundle \
  
  ## 输出契约
  
@@ -130,6 +132,9 @@
 +带 `--source-root` 的校验同时核验源仓身份、固定提交字节和当前源工作树。源内容变化时重新审阅并同步快照及绑定；离线消费继续使用已绑定版本，已知上游变化不能被离线校验掩盖。
  
  API Contract Decision 可用 `scripts/api-contract-decision prepare` 自动生成来源摘要；v1 显式迁移用 `migrate --version <新版本> --output <新路径>`。候选保持 draft，审查、Freeze 绑定和工程契约批准仍由现有生命周期核验。
+diff --git a/b/references/openapi-wire-profile.yaml b/references/openapi-wire-profile.yaml
+new file mode 100644
+index 0000000..2f01089
 --- /dev/null
 +++ b/references/openapi-wire-profile.yaml
 @@ -0,0 +1,187 @@
@@ -320,6 +325,9 @@
 +    - representative-serialization-fixtures
 +    - contract-test-or-equivalent-http-evidence
 +  rule: Java fields and computed getters are not public wire facts until target-boundary evidence confirms them.
+diff --git a/b/references/openapi-wire-source.json b/references/openapi-wire-source.json
+new file mode 100644
+index 0000000..813a34a
 --- /dev/null
 +++ b/references/openapi-wire-source.json
 @@ -0,0 +1,8 @@

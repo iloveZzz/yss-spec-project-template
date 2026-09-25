@@ -66,7 +66,7 @@ test('generated development plugin is portable, deterministic and fails closed o
   });
 
   await t.test('missing, altered, executable-mode and directory replacements are rejected', () => {
-    const ref = path.join(moved, 'assets/template/docs/process/lifecycle-registry.yaml');
+    const ref = path.join(moved, 'assets/template/.template-spec/process/lifecycle-registry.yaml');
     const bytes = readFileSync(ref);
     for (const corrupt of [() => rmSync(ref), () => writeFileSync(ref, 'altered'),
       () => chmodSync(ref, 0o755), () => { rmSync(ref); mkdirSync(ref); writeFileSync(path.join(ref, 'copy'), bytes); }]) {

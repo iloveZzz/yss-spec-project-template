@@ -10,13 +10,13 @@ const fail=message=>{throw new TypeError(message);};
 const equalArrays=(a,b)=>Array.isArray(a)&&a.length===b.length&&a.every((x,i)=>x===b[i]);
 function generateTaskPackageDefaults(roleId,overrides,{rolesDoc}={}) {
   const defaults=taskPackageDefaults(roleId,rolesDoc||loadDigitalHumanRoles());
-  return {schema_version:1,role_id:roleId,skill_source:{registry_ref:'docs/agents/digital-human-roles.yaml',defaults_ref:`taskPackageDefaults(${roleId})`,core_skills:defaults.core_skills,forbidden_skills:defaults.forbidden_skills},...overrides};
+  return {schema_version:1,role_id:roleId,skill_source:{registry_ref:'.template-spec/agents/digital-human-roles.yaml',defaults_ref:`taskPackageDefaults(${roleId})`,core_skills:defaults.core_skills,forbidden_skills:defaults.forbidden_skills},...overrides};
 }
 
 /** Compile dispatch from the approved YAML. Only runtime identity and task ID come from the caller. */
 export function compileSliceTaskPackage(binding,options={}) {return withValidationPhase({root:options.root||ROOT,purpose:'slice-dispatch',slice_id:binding.ref,work_unit_id:options.work_unit_id,readOnly:false,signal:options.signal},()=>compile(binding,options));}
 function compile(binding,{root=ROOT,work_unit_id,task_id,actor_id,runtime_id,execution_state='Worker',rolesDoc,user_decisions}={}) {
-  const actualRoles=parseSliceYaml(readFileSync(safe(root,'docs/agents/digital-human-roles.yaml')));
+  const actualRoles=parseSliceYaml(readFileSync(safe(root,'.template-spec/agents/digital-human-roles.yaml')));
   if(rolesDoc&&digest(rolesDoc)!==digest(actualRoles))fail('调用方不能替换接收端角色能力');
   rolesDoc=actualRoles;
   if(!actualRoles.runtimes.some(runtime=>runtime.id===runtime_id))fail('接收端不支持该 runtime_id');
@@ -46,7 +46,7 @@ export function assertSliceV3TaskPackage(value,slice,{root=ROOT}={}) {
   enforceHarnessTaskScope(value,{root});
   const contract=value.contract;
   const current=normalizeSliceContract(slice,{root});
-  const roles=parseSliceYaml(readFileSync(safe(root,'docs/agents/digital-human-roles.yaml'))),defaults=taskPackageDefaults(value.role_id,roles);
+  const roles=parseSliceYaml(readFileSync(safe(root,'.template-spec/agents/digital-human-roles.yaml'))),defaults=taskPackageDefaults(value.role_id,roles);
   if(!roles.runtimes.some(runtime=>runtime.id===value.runtime_id)||!defaults.stages.includes(value.stage_id))fail('接收端角色或运行时不支持当前任务');
   if(!equalArrays(value.skill_source.core_skills,defaults.core_skills)||!equalArrays(value.skill_source.forbidden_skills,defaults.forbidden_skills))fail('任务角色能力与接收端不一致');
   const unit=current.work_units.find(item=>item.id===value.work_unit_id);

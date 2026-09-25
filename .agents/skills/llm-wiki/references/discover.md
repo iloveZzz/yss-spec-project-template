@@ -17,9 +17,9 @@ Unless the user replaces this list with the host's single source-of-truth table:
 
 - Root authoritative files (for example `README`, `AGENTS`, `CONTEXT`, repository-identity manifest)
 - `docs/adr/`
-- `docs/process/`
-- `docs/agents/`
-- `docs/templates/`
+- `.template-spec/process/`
+- `.template-spec/agents/`
+- `.template-spec/templates/`
 - Frozen contracts the user names
 
 `full` adds only roots the user listed. It is not "everything under `docs/`".

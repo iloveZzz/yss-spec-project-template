@@ -1,6 +1,6 @@
 # layered-mvc-service
 
-仅适用于注册表中 `architecture_family=layered-mvc`、用例层为 `service` 的当前合同。先读仓库 `docs/agents/backend-architecture-profiles.md`；Profile 的成熟度沿用注册表。
+仅适用于注册表中 `architecture_family=layered-mvc`、用例层为 `service` 的当前合同。先读仓库 `.template-spec/agents/backend-architecture-profiles.md`；Profile 的成熟度沿用注册表。
 
 ## 前置与所有权
 

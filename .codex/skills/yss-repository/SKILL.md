@@ -10,7 +10,7 @@ description: 用于按批准的 YSS 架构与持久化合同实现或重构 PO�
 ## 架构分流
 
 1. 读取当前 Slice Implementation Contract 的 `architecture_identity`、`persistence_profile`、实现仓登记、数据合同、`allowed_write_paths` 和预期证据。
-2. 将架构身份与当前工程基线、既有工程观测（生成 Manifest 只证明历史来源）和 `docs/agents/yss-skill-registry.yaml` 核对；成熟度以注册表为准，不能把 `draft` 称为已支持。
+2. 将架构身份与当前工程基线、既有工程观测（生成 Manifest 只证明历史来源）和 `.template-spec/agents/yss-skill-registry.yaml` 核对；成熟度以注册表为准，不能把 `draft` 称为已支持。
 3. 根据 `architecture_profile` **且只**加载一个文件：
    - [target-domain-model](references/profiles/target-domain-model.md)
    - [layered-mvc-service](references/profiles/layered-mvc-service.md)
@@ -56,6 +56,6 @@ description: 用于按批准的 YSS 架构与持久化合同实现或重构 PO�
 
 ## 新脚手架平台约束
 
-消费批准切片架构身份中的 `platform_configuration`，并与工程 Manifest、effective POM 和依赖树核对。命中 MyBatis 时，`framework.mybatis` 必须从该配置指向的 compatibility 条目解析出对当前架构有效的 `component_binding`；构件、摘要、源码 tree、证据或绑定状态不一致时回合同编译器阻断。Validation namespace、Jackson、starter 和处理器版本只消费解析后的精确平台事实，不在本 Skill 中按 Boot 大版本推导。不得在业务实现中升级、降级或替换 YSS 组件；平台迁移使用独立迁移工作单元。详见仓库共享合同 `docs/engineering/backend-platforms.md`。
+消费批准切片架构身份中的 `platform_configuration`，并与工程 Manifest、effective POM 和依赖树核对。命中 MyBatis 时，`framework.mybatis` 必须从该配置指向的 compatibility 条目解析出对当前架构有效的 `component_binding`；构件、摘要、源码 tree、证据或绑定状态不一致时回合同编译器阻断。Validation namespace、Jackson、starter 和处理器版本只消费解析后的精确平台事实，不在本 Skill 中按 Boot 大版本推导。不得在业务实现中升级、降级或替换 YSS 组件；平台迁移使用独立迁移工作单元。详见仓库共享合同 `.template-spec/engineering/backend-platforms.md`。
 
 只读审计可先盘点、记录缺失合同；不得用实施前置要求阻止发现既有违规。整改仍需批准合同，不因缺少生成 Manifest 阻断已有效登记的既有工程。

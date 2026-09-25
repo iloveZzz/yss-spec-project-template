@@ -28,7 +28,7 @@ export function invalidPreflightInput(message) {
 
 /** Installed profile owns backend technical authoring; caller governance_root cannot grant it. */
 export function backendPreflightCapability() {
-  const profileRef=path.join(ROOT,'docs/process/harness-profile.yaml');
+  const profileRef=path.join(ROOT,'.template-spec/process/harness-profile.yaml');
   const profile=existsSync(profileRef)?read(profileRef):null;
   const profileId=profile?.profile_id||'template.full';
   const ownsBackend=!profile||profileId==='harness.backend-delivery';
@@ -49,7 +49,7 @@ function requireBackendCapability(key) {
 /** Read-only: never executes input commands, starts services, unpacks archives or writes receipts. */
 export async function preflightDelivery(input,options={}) {return withValidationPhase({root:path.resolve(options.root||process.cwd(),typeof input?.governance_root==='string'?input.governance_root:'.'),purpose:`delivery-${options.stage}`,slice_id:input?.scope?.slice_id,work_unit_id:options.work_unit_id,readOnly:true,signal:options.signal},()=>preflight(input,options));}
 async function preflight(input,{stage,root=process.cwd(),work_unit_id}={}) {
-  try { ensure(STAGES.includes(stage),'未知阶段；必须是 prepare|build|export|accept');schema(input,'docs/process/schemas/delivery-preflight-input.schema.json'); }
+  try { ensure(STAGES.includes(stage),'未知阶段；必须是 prepare|build|export|accept');schema(input,'.template-spec/process/schemas/delivery-preflight-input.schema.json'); }
   catch(error) { return invalidPreflightInput(error.message); }
   root=path.resolve(root,input.governance_root||'.');
   const deliveryKind=input.delivery_kind||'complete';
@@ -121,7 +121,7 @@ async function preflight(input,{stage,root=process.cwd(),work_unit_id}={}) {
 async function approved(root,binding,gates) {
   ensure(binding.approval_ref&&binding.id&&binding.version,'缺少当前资产 id/version/approval_ref');
   const record=read(safe(root,binding.approval_ref));
-  const roles=sourceApprovalPolicy(read(safe(root,'docs/agents/digital-human-roles.yaml')));
+  const roles=sourceApprovalPolicy(read(safe(root,'.template-spec/agents/digital-human-roles.yaml')));
   validateApprovalRecord(record,{rolesDoc:roles,requireApproved:true,root,read:ref=>readFileSync(safe(root,path.relative(root,ref).split(path.sep).join('/')))});
   ensure(gates.includes(record.gate_id),'资产批准使用错误门禁');
   ensure(record.artifact_bindings?.some(x=>x.id===binding.id&&x.version===binding.version&&x.digest===binding.digest),'stale: 批准未绑定当前资产身份、版本及字节');
@@ -186,7 +186,7 @@ async function verifyAsset(key,data,binding,{root,input,documents,assets,executi
     await approved(root,binding,['gate.product-design-approved','gate.user-confirmation']);
   } else if(key==='build') {
     // Same build shape used by backend-delivery, captured independently before packaging.
-    const deliverySchema=read(safe(ROOT,'docs/process/schemas/backend-delivery.schema.json'));
+    const deliverySchema=read(safe(ROOT,'.template-spec/process/schemas/backend-delivery.schema.json'));
     const buildRules=deliverySchema.properties.build;
     // Validate in memory to avoid writing a generated schema: check the published required fields.
     for(const field of buildRules.required||[])ensure(Object.hasOwn(data,field),`构建缺少交付协议字段: ${field}`);
@@ -195,7 +195,7 @@ async function verifyAsset(key,data,binding,{root,input,documents,assets,executi
     ensure(/^sha256:[0-9a-f]{64}$/.test(data.artifact_digest),'构建制品摘要无效');
     ensure(Object.keys(data).every(key=>Object.hasOwn(buildRules.properties,key)),'构建包含交付协议未定义字段');
   } else if(key==='deployment') {
-    schema(data,'docs/process/schemas/backend-delivery-verification.schema.json');
+    schema(data,'.template-spec/process/schemas/backend-delivery-verification.schema.json');
     ensure(data.kind==='backend-deployment','部署证据 kind 必须为 backend-deployment');
     for(const result of data.results) {
       ensure(result.exit_code===0&&Number.isFinite(Date.parse(result.executed_at))&&Date.parse(result.executed_at)<=Date.now()+60000,'部署执行结果或时间无效');
@@ -206,7 +206,7 @@ async function verifyAsset(key,data,binding,{root,input,documents,assets,executi
       ensure(data.subject_digest===backendDeliveryBasis(documents.backend_delivery),'stale: 部署验证未绑定当前交付依据');
     }
   } else if(key==='backend_delivery') {
-    schema(data,`docs/process/schemas/backend-delivery${data.schema_version===2?'-v2':''}.schema.json`);
+    schema(data,`.template-spec/process/schemas/backend-delivery${data.schema_version===2?'-v2':''}.schema.json`);
     ensure(data.scope.slice_id===input.scope.slice_id&&input.scope.operation_ids.every(id=>data.scope.operation_ids.includes(id)),'后端交付切片/接口范围不匹配');
     for(const asset of ['openapi','slice_contract'])if(assets[asset])ensure(data[asset].ref===assets[asset].ref&&data[asset].digest===assets[asset].digest,'后端交付引用与预检输入不一致');
     for(const asset of [data.environment.test_data,...Object.values(data.verification)])fileBinding(root,asset);

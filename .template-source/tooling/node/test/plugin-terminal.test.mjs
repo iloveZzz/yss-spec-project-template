@@ -18,11 +18,11 @@ test('real validators close a synthetic backend package, preserve the terminal a
   const strategy=await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output:path.join(f.root,'strategy-package')});
   f.write('.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml',fs.readFileSync(path.join(ROOT,'.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml'),'utf8'));
   f.write('.yss-execution-scope.yaml',{schema_version:1,scope_id:'plan-to-backend'});
-  const roles=read(path.join(f.root,'docs/agents/digital-human-roles.yaml'));
+  const roles=read(path.join(f.root,'.template-spec/agents/digital-human-roles.yaml'));
   // Synthetic source policy for the fixture's existing OpenAPI gate.
   roles.gate_policy.biological_human=roles.gate_policy.biological_human.filter(x=>x!=='gate.openapi-frozen');
   roles.gate_policy.digital_human_review.push({gate:'gate.openapi-frozen',countersigners:['role.product-manager']});
-  f.write('docs/agents/digital-human-roles.yaml',roles);
+  f.write('.template-spec/agents/digital-human-roles.yaml',roles);
   const api=attachArtifactApproval(f.root,'api.yaml','api.synthetic','gate.openapi-frozen');
   const file=ref=>({ref,digest:hash(fs.readFileSync(path.join(f.root,ref)))});
   f.write('data.md','Synthetic data');f.write('delivery-check.log','Synthetic success/failure evidence. Not real service validation.');
@@ -37,7 +37,7 @@ test('real validators close a synthetic backend package, preserve the terminal a
   f.write('delivery.json',delivery);f.write('review-state.json',f.state);
   const exported=await exportBackendDelivery({sourceRoot:f.root,deliveryRef:'delivery.json',output:path.join(f.root,'delivery-package')});
   const input={delivery:file('delivery.json'),review_state:file('review-state.json'),bundle_ref:'delivery-package',bundle_digest:exported.bundle_digest,downstream:{owner:'synthetic-receiver',ticket_ref:'tickets/frontend.md',verification_plan:'receiver tests',target_version:'v1'}};
-  for(const ref of ['scripts','docs/process/schemas','docs/process/lifecycle-registry-baseline.json','docs/agents/yss-skill-registry.yaml','.agents/skills','skills-lock.json']) {
+  for(const ref of ['scripts','.template-spec/process/schemas','.template-spec/process/lifecycle-registry-baseline.json','.template-spec/agents/yss-skill-registry.yaml','.agents/skills','skills-lock.json']) {
     fs.mkdirSync(path.dirname(path.join(f.root,ref)),{recursive:true});fs.cpSync(path.join(ROOT,ref),path.join(f.root,ref),{recursive:true});
   }
   f.refreshCoverage();f.save();f.write('review-state.json',f.state);input.review_state=file('review-state.json');

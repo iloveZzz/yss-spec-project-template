@@ -101,4 +101,4 @@ node scripts/generate_controller.mjs \
 
 ## 新脚手架平台约束
 
-消费批准切片架构身份中的 `platform_configuration`，并与工程 Manifest、effective POM 和依赖树核对。DTO、Validation、Exception 或其他 YSS 组件命中时，逐项消费合同中的 `component_bindings`；缺少 verified 架构证据、构件摘要或绑定发生漂移时回合同编译器阻断。Validation namespace、Jackson wire 行为、Web starter 和自动配置机制只来自解析后的精确平台事实；命令参数必须使用该解析值，不在本 Skill 中按 Boot 大版本硬编码。不得在业务实现中升级、降级或替换组件；平台迁移使用独立迁移工作单元。详见仓库共享合同 `docs/engineering/backend-platforms.md`。
+消费批准切片架构身份中的 `platform_configuration`，并与工程 Manifest、effective POM 和依赖树核对。DTO、Validation、Exception 或其他 YSS 组件命中时，逐项消费合同中的 `component_bindings`；缺少 verified 架构证据、构件摘要或绑定发生漂移时回合同编译器阻断。Validation namespace、Jackson wire 行为、Web starter 和自动配置机制只来自解析后的精确平台事实；命令参数必须使用该解析值，不在本 Skill 中按 Boot 大版本硬编码。不得在业务实现中升级、降级或替换组件；平台迁移使用独立迁移工作单元。详见仓库共享合同 `.template-spec/engineering/backend-platforms.md`。

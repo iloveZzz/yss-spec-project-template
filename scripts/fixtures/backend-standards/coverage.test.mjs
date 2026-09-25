@@ -40,7 +40,7 @@ function fixture(family='domain-driven',line='boot2-java8') {
 }
 const run=(name,fn)=>test(name,()=>{const f=fixture();try{fn(f);}finally{f.cleanup();}});
 run('registered component imports and Maven artifacts discover omitted auxiliary skills on their own platform',f=>{
- f.write('docs/agents/yss-skill-registry.yaml',{capabilities:[{id:'component.cache',primary_skill:'yss-cache',provider:{kind:'yss-component'}}]});
+ f.write('.template-spec/agents/yss-skill-registry.yaml',{capabilities:[{id:'component.cache',primary_skill:'yss-cache',provider:{kind:'yss-component'}}]});
  f.write('.agents/skills/yss-cache/SKILL.md','# Synthetic cache standard\nReview cache consistency.');
  const index='.agents/skills/yss-cache/references/source-index.boot2-java8.md';
  f.write(index,'- `component/src/main/java/com/yss/cloud/cache/CacheApi.java`\n- module — GAV `com.yss.cloud:cache-starter:2.0`\n');
@@ -122,8 +122,8 @@ run('unknown external annotation requires source-bound responsibility evidence',
  f.write('project/src/main/java/transport/Endpoint.java','package transport; @ExternalRoute class Endpoint { String changed(){return "ok";} }');assert.throws(()=>f.compile({responsibility_evidence:[resolution]}),/responsibility evidence stale/);
 });
 run('exact registered platform rejects wrong Validation namespace without upgrading JDK',f=>{
- const catalog=JSON.parse(fs.readFileSync(new URL('../../../docs/engineering/backend-platforms.json',import.meta.url),'utf8'));
- f.write('docs/engineering/backend-platforms.json',catalog);
+ const catalog=JSON.parse(fs.readFileSync(new URL('../../../.template-spec/engineering/backend-platforms.json',import.meta.url),'utf8'));
+ f.write('.template-spec/engineering/backend-platforms.json',catalog);
  const p=catalog.profiles.find(p=>p.component_platform_line==='boot2-java8');
  f.baseline.architecture_identity.platform_configuration={profile_id:p.id,java_version:p.java_version,spring_boot_version:p.spring_boot_version,component_platform_line:p.component_platform_line};
  const b=f.write('exact-baseline.json',f.baseline);

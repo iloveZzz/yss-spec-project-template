@@ -9,7 +9,7 @@ import { validateVisualBaseline } from "../.agents/skills/yss-prototype-stage/sc
 import { enforceFrontendDelivery } from "./lib/frontend-delivery-boundary.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const schemaPath = path.join(repoRoot, "docs/process/schemas/frontend-implementation-evidence.schema.json");
+const schemaPath = path.join(repoRoot, ".template-spec/process/schemas/frontend-implementation-evidence.schema.json");
 const validator = String.raw`
 import json
 import sys

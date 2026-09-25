@@ -5,13 +5,13 @@ import { read, safe, ensure } from './strategic-handoff-io.mjs';
 // Wire work-unit IDs belong to the immutable source package. Only target routing is adapted.
 export function consumerEntry(root, capability, sourceWorkUnit) {
   const scope = existsSync(path.join(root, '.yss-execution-scope.yaml')) ? read(safe(root, '.yss-execution-scope.yaml')) : null;
-  const profile = existsSync(path.join(root, 'docs/process/harness-profile.yaml')) ? read(safe(root, 'docs/process/harness-profile.yaml')) : null;
+  const profile = existsSync(path.join(root, '.template-spec/process/harness-profile.yaml')) ? read(safe(root, '.template-spec/process/harness-profile.yaml')) : null;
   const contractRef = scope || !profile ? '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml' : '.agents/skills/harness-orchestrator/references/orchestration-contract.yaml';
   const contract = read(safe(root, contractRef));
   const target = scope?.scope_id || profile?.profile_id || 'yss-full-lifecycle';
   const policy = contract.consumer_entry_routes?.[target]?.[capability];
   ensure(policy && policy.source_work_unit === sourceWorkUnit, `consumer-entry-unmapped: ${target}/${capability}/${sourceWorkUnit}`);
-  const registry = read(safe(root, 'docs/process/lifecycle-registry.yaml'));
+  const registry = read(safe(root, '.template-spec/process/lifecycle-registry.yaml'));
   ensure(registry.work_units.some(unit => unit.id === policy.target_work_unit), 'consumer-entry-unknown-target');
   if (scope) {
     ensure(scope.schema_version === 1, 'consumer-entry-invalid-scope');

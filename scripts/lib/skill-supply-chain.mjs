@@ -261,7 +261,7 @@ function metadata(name, skillPath, directory, previous, canonical = false, sourc
     result.upstreamHash = treeHash(upstreamDirectory);
   } else if (old.upstreamHash ?? old.computedHash) result.upstreamHash = old.upstreamHash ?? old.computedHash;
   if (result.upstreamHash && result.effectiveHash !== result.upstreamHash) {
-    const adaptationRef = old.adaptationRef ?? (result.source === "mattpocock/skills" ? "docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md" : null);
+    const adaptationRef = old.adaptationRef ?? (result.source === "mattpocock/skills" ? ".template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md" : null);
     if (adaptationRef) result.adaptationRef = adaptationRef;
   }
   return result;

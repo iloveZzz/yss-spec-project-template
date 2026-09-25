@@ -16,7 +16,7 @@ import { enforceFrontendDelivery } from "./frontend-delivery-boundary.mjs";
 import { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSchema } from "./task-package-schema.mjs";
 
 export { LEGACY_TASK_PACKAGE_SCHEMA, TASK_PACKAGE_SCHEMA, validateTaskPackageSchema };
-export const TASK_PACKAGE_REGISTRY_REF = "docs/agents/digital-human-roles.yaml";
+export const TASK_PACKAGE_REGISTRY_REF = ".template-spec/agents/digital-human-roles.yaml";
 export const CONTRACT_KINDS = new Set(["lifecycle-work-unit", "slice-implementation", "template-maintenance"]);
 export const EXECUTION_STATES = new Set(["Explorer", "Drafter", "Worker", "Reviewer", "Verifier"]);
 export const WORKFLOW_STATUSES = new Set(["not-started", "active", "paused", "resolved", "failed"]);

@@ -94,11 +94,11 @@ API 由后端维护，冻结前包含前端消费需求确认。前端不机械�
 
 | 范围 | 已有依据 | 本方案所需增量 |
 |---|---|---|
-| 战略交接 | [战略交接快照包](../../docs/process/strategic-handoff-package.md) | 增加面向前端的接收适配，避免强制构造后端战术合同 |
-| 通用研发链 | [研发 profile](../../submodules/yss-harness-dev-agent/docs/process/harness-profile.yaml) | 拆出后端/前端职责与技能闭包，保留通用 profile 兼容 |
-| 后端交付 | [后端交付默认约束](../../submodules/yss-harness-dev-agent/docs/process/backend-delivery-defaults.md) | 将接口、部署身份、战略基线和切片证据绑定为可接收交付 |
-| 实现仓接入 | [接入事实源](../../docs/process/implementation-repo-integration.md) | 登记新模板与产品实现仓各自身份，验证真实 gitlink 与分发边界 |
-| 前端验证 | [生命周期注册表](../../docs/process/lifecycle-registry.yaml)与[前端计划模板](../../docs/process/templates/frontend-implementation-plan-template.yaml) | 在既有计划、实现、恢复和验证前接入联合输入条件 |
+| 战略交接 | [战略交接快照包](../../.template-spec/process/strategic-handoff-package.md) | 增加面向前端的接收适配，避免强制构造后端战术合同 |
+| 通用研发链 | [研发 profile](../../submodules/yss-harness-dev-agent/.template-spec/process/harness-profile.yaml) | 拆出后端/前端职责与技能闭包，保留通用 profile 兼容 |
+| 后端交付 | [后端交付默认约束](../../submodules/yss-harness-dev-agent/.template-spec/process/backend-delivery-defaults.md) | 将接口、部署身份、战略基线和切片证据绑定为可接收交付 |
+| 实现仓接入 | [接入事实源](../../.template-spec/process/implementation-repo-integration.md) | 登记新模板与产品实现仓各自身份，验证真实 gitlink 与分发边界 |
+| 前端验证 | [生命周期注册表](../../.template-spec/process/lifecycle-registry.yaml)与[前端计划模板](../../.template-spec/process/templates/frontend-implementation-plan-template.yaml) | 在既有计划、实现、恢复和验证前接入联合输入条件 |
 | 分发验证 | [战略交接分发验证](../scripts/verify-strategic-handoff-distribution.mjs) | 增加后端交付到独立前端实例的成功与阻断场景 |
 
 现有机制是复用依据，不代表这条完整链路已实现。
@@ -142,7 +142,7 @@ API 由后端维护，冻结前包含前端消费需求确认。前端不机械�
 ## 10. 实施记录与剩余边界
 
 - 仓库身份：template-source；根 CONTEXT 已消费，新增后端交付包与前端联合接收流程术语。产品 context_reconciliation 为 not-applicable；原因是当前没有产品工作单元，测试中的对账属于合成维护 fixture。
-- 权威合同：[战略与后端交付](../../docs/process/frontend-backend-delivery.md)。共享 schema、验包、接收和执行边界由主模板源维护，通过 `scripts/sync-strategic-handoff-tools` 分发。
+- 权威合同：[战略与后端交付](../../.template-spec/process/frontend-backend-delivery.md)。共享 schema、验包、接收和执行边界由主模板源维护，通过 `scripts/sync-strategic-handoff-tools` 分发。
 - 前端 profile 新增 `stage.frontend-engineering-design` / `work-unit.frontend-engineering-design`，旧 DDD 稳定 ID 保留原语义，仅作为兼容注册项；本端主链不执行后端战术设计。
 - 专职模板保留共享技能来源和批准角色身份，本端派发及编译限制由 profile 决定；另一端只能无写权限地参与输入评审。
 - 普通日常目标为 implementation-ready；未创建产品 Spec、Ticket、Slice Contract 或产品批准记录；不会把合成交接测试当产品验收。

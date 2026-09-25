@@ -48,7 +48,7 @@ workflow_reference:
   invocation_mode: reference
 result: completed # completed / blocked / needs-human / failed
 evidence_refs:
-  - docs/process/yss-product-lifecycle-orchestrator-validation.md
+  - .template-spec/process/yss-product-lifecycle-orchestrator-validation.md
 changed_artifacts: []
 new_impacts: []
 stale_candidates: []
@@ -92,11 +92,11 @@ Matt `implement` 的通用提交指令不构成 YSS Git 授权。只有用户明
 
 当 YSS 生命周期处于 active 状态时，Matt `to-spec` 中独立运行时的 `ready-for-agent` 发布提示由本适配层覆盖为 `ready-for-human`：Spec 必须先经过产品总体设计 / 功能架构、必要的设计与契约门禁，之后才由生命周期编排器决定垂直切片 Ticket 的 `ready-for-agent`。这只约束 YSS 编排下的状态写入，不修改 Matt skill 单独运行时的核心行为。
 
-`setup-matt-pocock-skills` 仅由用户显式启动。readiness=`missing` 时返回 `needs-human`、`requested_skill=setup-matt-pocock-skills` 和 `resume_route=setup-readiness`；仅发现旧路径资产仍进入 migration-check 并暂停写入。`ready` 直接继续，`conflict` 进入迁移裁决，`degraded` 保留待发布草案，`not-applicable` 仅验证模板契约。通用 setup 文案与 YSS tracker 合同冲突时，以 `docs/agents/issue-tracker.md` 和本编排契约为准。
+`setup-matt-pocock-skills` 仅由用户显式启动。readiness=`missing` 时返回 `needs-human`、`requested_skill=setup-matt-pocock-skills` 和 `resume_route=setup-readiness`；仅发现旧路径资产仍进入 migration-check 并暂停写入。`ready` 直接继续，`conflict` 进入迁移裁决，`degraded` 保留待发布草案，`not-applicable` 仅验证模板契约。通用 setup 文案与 YSS tracker 合同冲突时，以 `.template-spec/agents/issue-tracker.md` 和本编排契约为准。
 
 ### Local Markdown 兼容映射
 
-当 `docs/agents/issue-tracker.md` 的 `platform` 为 `local-markdown` 时，Matt flow 的本地输出归一化为以下 YSS 载体：
+当 `.template-spec/agents/issue-tracker.md` 的 `platform` 为 `local-markdown` 时，Matt flow 的本地输出归一化为以下 YSS 载体：
 
 | Matt 产物 | Local 载体 |
 |---|---|

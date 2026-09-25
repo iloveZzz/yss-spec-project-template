@@ -6,7 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 export const PLATFORM_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-export const PLATFORM_CATALOG_REF = "docs/engineering/backend-platforms.json";
+export const PLATFORM_CATALOG_REF = ".template-spec/engineering/backend-platforms.json";
 export const PLATFORM_SKILLS = ["yss-ddd-scaffold-generator", "yss-layered-mvc-scaffold-generator"];
 const fail = (message) => { throw new TypeError(`backend-platform: ${message}`); };
 const componentFail = (code, message) => {

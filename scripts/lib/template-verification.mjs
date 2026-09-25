@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 import { parseDocument } from "../vendor/yaml.mjs";
 
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-export const PROFILE_FILE = path.join(ROOT, "docs/process/template-verification-profiles.yaml");
+export const PROFILE_FILE = path.join(ROOT, ".template-source/process/template-verification-profiles.yaml");
 
 function fail(message) { throw new TypeError(message); }
 function ensure(condition, message) { if (!condition) fail(message); }

@@ -9,7 +9,7 @@
 - `inputs`：每行 `{kind, ref, version, digest}`，kind 为 context/spec/rules/scenarios/api/adr/engineering/strategic；至少包含根 CONTEXT.md 与 Spec。适用的工程/API 约束同样绑定。无 API 影响理由记录在需求或工程输入中。DDD 另须 strategic 输入，MVC 不要求。
 - `source_items`：无战略包时从批准需求提取稳定规则和场景 `{source_id, kind: rule | scenario, critical, source_ref}`。source_ref 必须对应 inputs，不复制源正文成为第二事实源。
 - `traceability`：逐项对应 source_items。沿用 `tactical_refs` 字段名以兼容承接协议，其值在新合同中可指向 MVC 用例、规则或 DDD 对象；其他字段与战略承接 rows 相同。implemented 仅表示设计承接已落实，不表示代码已实现。
-- 有战略包时追加 `strategic_handoff`，按 `docs/process/strategic-handoff-package.md` 绑定导入收据、摘要、正式对账及 rows；本地补充规则仍可写 source_items / traceability，但不能重复维护包内来源。
+- 有战略包时追加 `strategic_handoff`，按 `.template-spec/process/strategic-handoff-package.md` 绑定导入收据、摘要、正式对账及 rows；本地补充规则仍可写 source_items / traceability，但不能重复维护包内来源。
 - `evidence_refs`：现有审查证据的可读取路径。approved 状态必须有评审证据，真正批准仍由生命周期核验适用批准记录；本校验器不产生批准。
 - `digest`：删除根 digest 后按键排序、数组保持顺序的 canonical JSON SHA-256，前缀 `sha256:`。来源文件的 digest 使用原始字节 SHA-256；这两种摘要不可混用。
 

@@ -156,7 +156,7 @@ export function syncTemplate(source, ref, packageRoot, check = false) {
     ensure(readJson(packageRoot,'package.json').name === family.packageName, '来源 profile 与薄包身份不一致');
     let manifestBytes;
     if (side === 'design') {
-      const raw = yaml(fs.readFileSync(safe(root,'docs/process/instance-distribution-manifest.yaml')));
+      const raw = yaml(fs.readFileSync(safe(root,'.template-spec/process/instance-distribution-manifest.yaml')));
       ensure(raw.profile_id === family.profileId && raw.cli_package === family.packageName && raw.template_source === family.templateSource, '战略分发清单身份矛盾');
       const manifest = {profileId:raw.profile_id};
       for (const key of ['allow_root_entries','allow_root_files','allow_files','exclude_root_entries','exclude_root_files','exclude_paths','render_paths','init_exclude_root_entries','init_exclude_root_files','init_exclude_paths','instance_forbidden_paths']) manifest[key.replace(/_([a-z])/g,(_,c)=>c.toUpperCase())]=raw[key] || [];

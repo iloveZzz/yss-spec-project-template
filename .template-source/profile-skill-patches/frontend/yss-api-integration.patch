@@ -1,6 +1,8 @@
+diff --git a/SKILL.md b/SKILL.md
+index 34ca9f4..c366fb8 100644
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -23,8 +23,8 @@
+@@ -23,8 +23,8 @@ description: "在 Vue3 YSS UI 中对接 Orval API；核验生成方法、mutator
  
  1. **契约状态已明确**：
     - 已有生成客户端：可以直接集成。

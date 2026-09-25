@@ -39,7 +39,7 @@ const LEGACY_FORMAL_REVIEW_REFS = new Set([
   ".template-source/evidence/maintenance/yss-stage-decision-l3-formal-independent-review-2026-08-27.md",
   ".template-source/evidence/maintenance/yss-tactical-design-formal-independent-review-2026-08-27.md"
 ]);
-const REVIEW_RECORD_SCHEMA = path.join(ROOT, "docs/process/schemas/maintenance-review-record.schema.json");
+const REVIEW_RECORD_SCHEMA = path.join(ROOT, ".template-source/process/schemas/maintenance-review-record.schema.json");
 
 function ensure(condition, message) {
   if (!condition) throw new TypeError(message);

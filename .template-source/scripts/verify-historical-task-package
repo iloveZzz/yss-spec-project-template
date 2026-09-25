@@ -1,0 +1,22 @@
+#!/usr/bin/env node
+import { parseArgs } from "node:util";
+import { loadTaskPackage, validateTaskPackage } from "../../scripts/lib/task-package.mjs";
+
+try {
+  const { positionals } = parseArgs({ allowPositionals: true, strict: true });
+  if (positionals.length !== 1 || !positionals[0].startsWith(".template-source/evidence/maintenance/")) {
+    throw new TypeError("仅校验模板维护目录中的历史任务包");
+  }
+  const { value } = loadTaskPackage(positionals[0]);
+  if (value.skill_source?.registry_ref !== "docs/agents/digital-human-roles.yaml") {
+    throw new TypeError("历史任务包缺少旧注册表引用");
+  }
+  validateTaskPackage({
+    ...value,
+    skill_source: { ...value.skill_source, registry_ref: ".template-spec/agents/digital-human-roles.yaml" },
+  });
+  process.stdout.write("历史任务包结构校验通过；不构成当前放行\n");
+} catch (error) {
+  process.stderr.write(`历史任务包验证失败: ${error.message}\n`);
+  process.exitCode = 1;
+}

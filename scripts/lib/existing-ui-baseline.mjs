@@ -7,7 +7,7 @@ export function validateExistingUiBaseline(data,options={}) {return inValidation
 function validate(data, { bundleRoot } = {}) {
   const errors=[];
   try {
-    schema(data,'docs/process/schemas/existing-ui-baseline.schema.json');
+    schema(data,'.template-spec/process/schemas/existing-ui-baseline.schema.json');
     ensure(bundleRoot,'existing-ui-baseline 需要原始 bundleRoot');
     const consumed=new Set(['existing-ui-baseline.json']);
     const allFiles=files(bundleRoot);

@@ -4,21 +4,21 @@ document_writing:
   condition: lifecycle-document-output
   scope: current-document-work-only
   dispatch: pass-condition-and-reference-to-document-owner
-  reference: docs/process/document-writing.md
-  examples: docs/templates/examples/lifecycle-writing-examples.md
+  reference: .template-spec/process/document-writing.md
+  examples: .template-spec/templates/examples/lifecycle-writing-examples.md
   load_when: [lifecycle-document-draft, lifecycle-document-revision, progress-or-decision-presentation]
   dispatch_input: include-reference-for-document-work
   artifact_ownership: unchanged
   gate_and_status_semantics: unchanged
 
 backend_architecture_identity_policy:
-  source: docs/agents/yss-skill-registry.yaml
+  source: .template-spec/agents/yss-skill-registry.yaml
   generated_profiles: architecture_profiles
   existing_profiles: existing_project_profiles
   existing_evidence: [repository-registration, engineering-baseline, existing-project-observation]
   evidence_policy: original-ref-digest-and-current-source-verification
   delivery_preflight: scripts/preflight-delivery
-  schema: docs/process/schemas/backend-architecture-identity.schema.json
+  schema: .template-spec/process/schemas/backend-architecture-identity.schema.json
   required_surfaces: [engineering-baseline, repository-registration, scaffold-manifest, slice-contract, work-unit, execution-result]
   agreement: exact-identity-and-digest
   missing_or_drift: blocked-and-recompile
@@ -140,7 +140,7 @@ execution_efficiency:
     skip_triggered_gates: forbidden
   interaction:
     questions: batch-independent-current-stage-questions
-    user_decision_policy_ref: docs/agents/digital-human-roles.yaml#user_decision_policy
+    user_decision_policy_ref: .template-spec/agents/digital-human-roles.yaml#user_decision_policy
     decision_evidence_ref: references/user-decisions.md
     dependent_future_approvals: forbidden
     checkpoint_policy_ref: checkpoint_policy
@@ -208,7 +208,7 @@ workflow_execution_result:
   evidence_ref_validation: readable-or-resolvable
   completed_requires_no_blocking_signals: true
   context_reconciliation:
-    schema_ref: docs/process/schemas/context-reconciliation.schema.json
+    schema_ref: .template-spec/process/schemas/context-reconciliation.schema.json
     validator: scripts/verify-context-reconciliation
     project-instance: {required_status: reconciled, readable_ref_required: true, transition_without_reconciliation: blocked}
     template-source: {required_status: not-applicable, reason_required: true}
@@ -233,8 +233,8 @@ workflow_execution_result:
 task_package:
   schema_version: 1
   applies_to: all-formal-digital-human-dispatches
-  schema_ref: docs/process/schemas/digital-human-task-package.schema.json
-  compatibility_schema_ref: docs/process/schemas/subagent-task-package.schema.json
+  schema_ref: .template-spec/process/schemas/digital-human-task-package.schema.json
+  compatibility_schema_ref: .template-spec/process/schemas/subagent-task-package.schema.json
   validator: scripts/verify-digital-human-task-package
   compatibility_validator: scripts/verify-subagent-task-package
   persistence_layout: docs/.scratch/<feature>/task-packages/<task-id>.yaml
@@ -242,7 +242,7 @@ task_package:
   execution_states: [Explorer, Drafter, Worker, Reviewer, Verifier]
   workflow_statuses: [not-started, active, paused, resolved, failed]
   skill_source:
-    registry_ref: docs/agents/digital-human-roles.yaml
+    registry_ref: .template-spec/agents/digital-human-roles.yaml
     defaults: taskPackageDefaults(role_id)
     copy_required: [core_skills, forbidden_skills]
   contract:
@@ -305,7 +305,7 @@ skill_source_contract:
 lifecycle_native_entries:
   default_entry: yss-product-lifecycle
   formal_artifact_owner: yss-product-lifecycle
-  user_confirmation_policy_ref: docs/agents/digital-human-roles.yaml#user_decision_policy
+  user_confirmation_policy_ref: .template-spec/agents/digital-human-roles.yaml#user_decision_policy
   compatibility_entries:
     to-spec: lifecycle-validate-and-accept
     to-tickets: lifecycle-validate-and-accept
@@ -388,7 +388,7 @@ work_unit_routes:
         applies_when: new_backend_repository
         confirms: [architecture_family, exact_spring_boot_version]
         architecture_choices: [domain-driven, layered-mvc]
-        platform_source: docs/engineering/backend-platforms.json
+        platform_source: .template-spec/engineering/backend-platforms.json
         existing_repository: not-applicable-reuse-current-registration
         missing_or_stale: blocked
       branches:
@@ -498,7 +498,7 @@ work_unit_routes:
     review_standards_route:
       unique_default_skill: code-review
       second_generic_review_skill: forbidden
-      report_template: docs/templates/review-report-template.md
+      report_template: .template-spec/templates/review-report-template.md
       contract_required_skills: required
       write_implementation: forbidden
       machine_checks:
@@ -652,15 +652,15 @@ transition_graph:
 
 planning:
   entry_validator: scripts/verify-plan-spec-entry
-  review_contract: docs/plan/entry-review.md
-  check_policy: docs/process/lifecycle-registry.yaml
+  review_contract: .template-spec/plan/entry-review.md
+  check_policy: .template-spec/process/lifecycle-registry.yaml
   default_check_status: pending
   formal_spec_draft_requires_passed_entry: true
   stage: stage.plan
   record: artifact.plan-record
-  template: docs/plan/templates/plan-template.md
-  exit_policy: docs/process/lifecycle-registry.yaml
-  migration_policy: docs/process/plan-migration.md
+  template: .template-spec/plan/templates/plan-template.md
+  exit_policy: .template-spec/process/lifecycle-registry.yaml
+  migration_policy: .template-spec/process/plan-migration.md
   critical_open_questions: block-before-spec
   deferred_details_require: [noncritical_reason, owner, resolution_point, downstream_recipient]
   reuse_requires: [source_ref, current_version, applicable_scope, reason]
@@ -805,7 +805,7 @@ scaffold_architecture_decision:
       display_name: MVC 开发脚手架
       recommendation_signals: [crud, reporting-query, data-transformation, external-system-orchestration, thin-domain]
   platform_choice:
-    source: docs/engineering/backend-platforms.json
+    source: .template-spec/engineering/backend-platforms.json
     confirms: [platform_profile, spring_boot_version, java_version]
     version_format: exact-patch
     latest_or_range: forbidden
@@ -855,7 +855,7 @@ backend_scaffold:
   contract_schema:
     schema_version: 4
     current_schema_version: 4
-    schema_ref: docs/process/schemas/project-scaffold-contract.schema.json
+    schema_ref: .template-spec/process/schemas/project-scaffold-contract.schema.json
     compatible_backend_versions: [3, 4]
     frontend_minimum_version: 4
     identity: service-engineering-baseline
@@ -878,9 +878,9 @@ backend_scaffold:
       component_version_policy: per-artifact-from-verified-component-capabilities
     profiles:
       discriminant: architecture_family
-      source: docs/engineering/backend-platforms.json
+      source: .template-spec/engineering/backend-platforms.json
       platform_binding: platform_configuration-v2
-      architecture_profiles_source: docs/agents/yss-skill-registry.yaml
+      architecture_profiles_source: .template-spec/agents/yss-skill-registry.yaml
       unsupported: [old-architecture-profile, arbitrary-module-combination, unverified-platform-or-component-capability]
     module_profile:
       required: [requested_capabilities, resolved_modules, resolution_version]
@@ -1048,7 +1048,7 @@ frontend_implementation_plan:
   applies_when: [ui_impact]
   required_before: [ready_for_agent]
   required: [prototype_ref, spec_ref, visual_baseline, route_and_page_inventory, baseline_case_ids, desktop_viewport, narrow_viewport, state_cases, pnpm_commands]
-  schema: docs/process/schemas/frontend-implementation-evidence.schema.json
+  schema: .template-spec/process/schemas/frontend-implementation-evidence.schema.json
   validator: scripts/verify-frontend-implementation-evidence
   acceptance: [kind_plan, template_false, status_approved, no_template_placeholders, readable_baseline_refs, approved_visual_baseline_digest_current, selected_case_ids_exist]
 
@@ -1057,7 +1057,7 @@ frontend_implementation_verification:
   required_before: [release]
   required: [prototype_ref, spec_ref, visual_baseline, route_and_page_inventory, case_results, interaction_results, console_warning_check, pnpm_commands, actual_verification, uncovered_differences, difference_owner]
   verification: [actual_command, exit_code, executed_at, evidence_ref]
-  schema: docs/process/schemas/frontend-implementation-evidence.schema.json
+  schema: .template-spec/process/schemas/frontend-implementation-evidence.schema.json
   validator: scripts/verify-frontend-implementation-evidence
   acceptance: [kind_verification, template_false, status_approved, no_template_placeholders, visual_baseline_identity_and_digest_match, case_results_pair_every_selected_case, no_unexplained_difference, console_warning_pass, pnpm_exit_codes_zero, independent_review_approved]
   blocked_when: [unexplained_visual_difference, missing_visual_evidence, typecheck_only, claimed_alignment_without_evidence]
@@ -1182,8 +1182,8 @@ behavioral_invariants:
   diagnostics_redact_secrets: true
 
 user_decision_evidence:
-  policy_ref: docs/agents/digital-human-roles.yaml#user_decision_policy
-  schema_ref: docs/process/schemas/user-decision.schema.json
+  policy_ref: .template-spec/agents/digital-human-roles.yaml#user_decision_policy
+  schema_ref: .template-spec/process/schemas/user-decision.schema.json
   protocol_ref: references/user-decisions.md
   verifier: scripts/verify-user-decision
   workflow_result_fields: [user_decisions, user_decision_not_applicable]
@@ -1195,8 +1195,8 @@ user_decision_evidence:
   basis_changed: revalidate_then_continue_only_with_independent_equivalence_evidence
 
 gate_consolidation:
-  source: docs/process/lifecycle-registry.yaml
-  check_policy: docs/agents/digital-human-roles.yaml
+  source: .template-spec/process/lifecycle-registry.yaml
+  check_policy: .template-spec/agents/digital-human-roles.yaml
   checks: automatic_or_independent_review_without_separate_user_decision
   check_failure: blocks_aggregate_gate
   plan_decision_boundary: gate.plan-approved
@@ -1251,8 +1251,8 @@ consumer_entry_routes:
       target_work_unit: work-unit.technical-design
 
 stage_tracking:
-  contract: docs/process/stage-tracking.md
-  schema: docs/process/schemas/stage-tracking.schema.json
+  contract: .template-spec/process/stage-tracking.md
+  schema: .template-spec/process/schemas/stage-tracking.schema.json
   verifier: scripts/stage-tracking
   configuration: tracker.lifecycle_tracking_version
   machine_state_owner: checkpoint.stage_tracking

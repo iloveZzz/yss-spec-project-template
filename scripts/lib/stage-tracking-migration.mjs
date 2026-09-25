@@ -46,12 +46,12 @@ export function planTracking(root, { checkpoint_ref, items = [], refresh = false
     watch(ref);
     if (!observed[ref] || sha256(after) !== observed[ref].digest) changes.push({ ref, before: observed[ref], after, after_digest: sha256(after) });
   }
-  for (const ref of ['yss-project.yaml', 'CONTEXT.md', TRACKER_REF, 'docs/process/lifecycle-registry.yaml', 'docs/process/schemas/stage-tracking.schema.json', 'docs/process/harness-profile.yaml', checkpoint_ref]) watch(ref);
+  for (const ref of ['yss-project.yaml', 'CONTEXT.md', TRACKER_REF, '.template-spec/process/lifecycle-registry.yaml', '.template-spec/process/schemas/stage-tracking.schema.json', '.template-spec/process/harness-profile.yaml', checkpoint_ref]) watch(ref);
   const exists = observed[checkpoint_ref] !== null;
   let checkpoint;
   if (exists) checkpoint = parseYaml(readTracking(root, checkpoint_ref));
   else {
-    const template = 'docs/process/templates/lifecycle-checkpoint-template.yaml'; watch(template);
+    const template = '.template-spec/process/templates/lifecycle-checkpoint-template.yaml'; watch(template);
     checkpoint = parseYaml(readTracking(root, template));
     checkpoint.feature_id = feature;
     checkpoint.mode = 'orchestrate'; checkpoint.status = 'running';

@@ -4,29 +4,29 @@
   "source_type": "git-submodule",
   "source_root": ".agents/skills",
   "source_revision": "9b579c7b954c153d2347696f53123aebaccde48f",
-  "adaptation_ref": "docs/agents/strategic-design-skills-integration.md",
+  "adaptation_ref": ".template-source/agents/strategic-design-skills-integration.md",
   "skills": [
     {
       "upstream": "prototype-review",
       "canonical": "prototype-review",
-      "upstream_hash": "6df02dd4de236a749a80efd5eba46d18be7979849af2a9af28636906ccfcb2a0"
+      "upstream_hash": "68c6e4613354ad919bab3d718739f1cc6930d8df0777d6f7db90435bdae77d52"
     },
     {
       "upstream": "yss-prototype-stage",
       "canonical": "yss-prototype-stage",
-      "upstream_hash": "6e1bcdf107d95c11faee2b988e4e0c36b8e5b76f6b40312a206b83733a96b0fc"
+      "upstream_hash": "7781df6293f381bd40781d2f6b163cf824f959624b1c34aeb9c241d6be709c89"
     },
     {
       "upstream": "yss-design-system",
       "canonical": "yss-design-system",
-      "upstream_hash": "e156229435c35827c48d3699b021e5e171ec565c2bf91cc91cbb033bf7802d7c"
+      "upstream_hash": "ae040c639056ecf2160f1231e30ac67360bd8aa1e030eac778520dd56af8068c"
     },
     {
       "upstream": "yss-stage-decision",
       "canonical": "yss-stage-decision",
-      "upstream_hash": "f7f765e20f4dca6aca667be03e2b9a7f2a8acc3510eefba88306961882d86ed4"
+      "upstream_hash": "6cd0ed5aa21d68cea871d0bd202beb3b28cca2981f075ad9c24667ac030118d2"
     }
   ],
-  "source_state": "committed",
-  "source_state_note": "source_revision、upstream_hash 与 gitlink 绑定同一已提交战略设计来源。"
+  "source_state": "working-tree",
+  "source_state_note": "当前模板维护使用未提交工作树；候选和发布须从最终已提交 revision 重新固定摘要。"
 }

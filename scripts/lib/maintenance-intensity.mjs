@@ -6,7 +6,7 @@ import { validateMaintenanceReviewEvidence } from "./maintenance-review.mjs";
 
 const LEVELS = ["L1", "L2", "L3"];
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const INTENSITY_POLICY = path.join(root, "docs/process/maintenance-intensity.yaml");
+const INTENSITY_POLICY = path.join(root, ".template-source/process/maintenance-intensity.yaml");
 
 const REQUIRED_EVIDENCE = {
   L1: ["relevant-check"],

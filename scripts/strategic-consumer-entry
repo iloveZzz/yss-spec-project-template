@@ -27,7 +27,7 @@ try {
   }
   const receipt = read(safe(root, receiptRef));
   ensure([2, 3].includes(receipt.schema_version), 'design-entry-receipt-version');
-  schema(receipt, receipt.schema_version === 3 ? 'docs/process/schemas/strategic-handoff-import-receipt-v3.schema.json' : 'docs/process/schemas/strategic-handoff-import-receipt.schema.json');
+  schema(receipt, receipt.schema_version === 3 ? '.template-spec/process/schemas/strategic-handoff-import-receipt-v3.schema.json' : '.template-spec/process/schemas/strategic-handoff-import-receipt.schema.json');
   const base = `docs/handoffs/${receipt.bundle_id}/${receipt.version}`;
   ensure(receiptRef === `${base}/import-receipt.json` && receipt.package_ref === `${base}/package`, 'design-entry-receipt-path');
   const entry = await openBundle(safe(root, receipt.package_ref), inspect);

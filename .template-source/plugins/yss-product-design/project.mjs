@@ -16,7 +16,7 @@ function yaml(root, ref) {
   if (doc.errors.length) throw new Error(`invalid-yaml: ${ref}`);
   return doc.toJS({ maxAliasCount: 0 });
 }
-export const corePath = ref => /^(scripts\/|\.(agents|codex|cursor|pi)\/skills\/|docs\/process\/|docs\/agents\/(yss-skill-registry|digital-human-roles)\.yaml$)/.test(ref) && !ref.endsWith('/.yss-skills-manifest.json');
+export const corePath = ref => /^(scripts\/|\.(agents|codex|cursor|pi)\/skills\/|(?:docs|\.template-spec)\/process\/|(?:docs|\.template-spec)\/agents\/(yss-skill-registry|digital-human-roles)\.yaml$)/.test(ref) && !ref.endsWith('/.yss-skills-manifest.json');
 function directory(value) {
   if (!value) throw new Error('directory-required');
   const result = path.resolve(value);
@@ -57,7 +57,7 @@ function context(root, target) {
   return { pin, expected, overlay, bundleDigest, cli: safe(root, 'assets/cli/bin/create-yss-harness-design.js'), target };
 }
 function checkProject(root, target, ctx) {
-  const project = yaml(target, 'yss-project.yaml'), profile = yaml(target, 'docs/process/harness-profile.yaml');
+  const project = yaml(target, 'yss-project.yaml'), profile = yaml(target, '.template-spec/process/harness-profile.yaml');
   if (project.schema_version !== 1 || project.repository_mode !== 'project-instance' || profile.profile_id !== PROFILE) throw new Error('design-project-identity-required');
   for (const ref of ['.yss-template.json', '.yss-harness-backend.json', '.yss-harness-frontend.json', '.yss-execution-scope.yaml']) if (existsSync(path.join(target, ref))) throw new Error(`conflicting-project-identity: ${ref}`);
   const metadata = read(target, '.yss-harness-design.json');
@@ -70,7 +70,7 @@ function checkProject(root, target, ctx) {
     const file = safe(target, item.ref);
     if (hash(readFileSync(file)) !== item.sha256 || (lstatSync(file).mode & 0o777) !== item.mode) throw new Error(`project-core-drift: ${item.ref}`);
   }
-  for (const prefix of ['scripts', '.agents/skills', '.codex/skills', '.cursor/skills', '.pi/skills', 'docs/process']) {
+  for (const prefix of ['scripts', '.agents/skills', '.codex/skills', '.cursor/skills', '.pi/skills', '.template-spec/process']) {
     if (existsSync(path.join(target, prefix))) for (const ref of files(target, prefix)) if (corePath(ref) && !refs.has(ref)) throw new Error(`project-core-extra-file: ${ref}`);
   }
   execute(safe(target, 'scripts/verify-context-contract'), ['--root', target], target);

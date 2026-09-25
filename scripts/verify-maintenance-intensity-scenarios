@@ -7,7 +7,7 @@ import { validateMaintenanceReviewEvidence } from "./lib/maintenance-review.mjs"
 
 const checkerSource = readFileSync(new URL("./lib/maintenance-intensity.mjs", import.meta.url), "utf8");
 if (checkerSource.includes("LEVEL_BY_TRIGGER = new Map")) {
-  throw new TypeError("触发项映射必须由 docs/process/maintenance-intensity.yaml 唯一维护");
+  throw new TypeError("触发项映射必须由 .template-source/process/maintenance-intensity.yaml 唯一维护");
 }
 if (!checkerSource.includes("maintenance-intensity.yaml")) {
   throw new TypeError("维护强度校验器必须加载权威触发项映射");

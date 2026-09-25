@@ -111,7 +111,7 @@ export function verifyExistingArchitecture(identity,bindings,{root,registry,exec
  requireThat(Array.isArray(baseline.verification_commands)&&baseline.verification_commands.length&&Array.isArray(registration.verification_commands),'ARCH_VERIFICATION_MISSING','缺少登记验证命令');
  same(baseline.verification_commands,registration.verification_commands,'ARCH_VERIFICATION_CONFLICT','验证入口不一致');
  const review=bound(root,baseline.boundary_review);
- const rolesFile=path.join(root,'docs/agents/digital-human-roles.yaml');
+ const rolesFile=path.join(root,'.template-spec/agents/digital-human-roles.yaml');
  const roles=parse(readFileSync(rolesFile));
  validateApprovalRecord(review,{rolesDoc:roles,requireApproved:true,root});
  requireThat(['check.architecture-reviewed','gate.technical-design-approved'].includes(review.gate_id)&&text(baseline.id)&&text(baseline.version),'ARCH_REVIEW_MISSING','需要架构边界审查');

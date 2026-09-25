@@ -24,7 +24,7 @@ Look at the current repo to understand its starting state. Read whatever exists;
 - Root `AGENTS.md` — does it exist, and is there already an `## Agent skills` section?
 - The case-sensitive `CONTEXT.md` at the Git repository root; also detect lowercase, nested, or duplicate context files as migration problems
 - `docs/adr/` and any `src/*/docs/adr/` directories
-- `docs/agents/` — does this skill's prior output already exist?
+- `.template-spec/agents/` — does this skill's prior output already exist?
 - `docs/.scratch/` — sign that the canonical local-markdown issue tracker convention is already in use
 - `.scratch/` and `docs/requirements/tickets/` — legacy local-tracker roots; inspect them read-only for migration and never use them as new write targets
 - Is the `triage` skill installed? (a `triage` skill folder alongside this one, or `triage` in your available skills.) This decides whether Section B runs at all.
@@ -40,7 +40,7 @@ Lead each section with the recommended answer so the user can accept it in a wor
 > Explainer: The "issue tracker" is where issues live for this repo. Skills like `to-tickets`, `triage`, and `to-spec` read from and write to it — they need to know whether to call `gh issue create`, write a markdown file under `docs/.scratch/`, or follow some other workflow you describe. Pick the place you actually track work for this repo.
 
 Path resolution is configuration-first: every Local-aware skill must read the
-persisted `tracker.root` from `docs/agents/issue-tracker.md` before resolving an
+persisted `tracker.root` from `.template-spec/agents/issue-tracker.md` before resolving an
 artifact path. If the field is absent, use `docs/.scratch` as the default. Do
 not infer a tracker or replace the configured root from `git remote`; the legacy
 `.scratch/` and `docs/requirements/tickets/` roots are read-only migration
@@ -54,7 +54,7 @@ The supported tracker choices in this template are exactly `local-markdown`, `gi
 
 Do not offer an `Other` tracker or write an unsupported platform into the project configuration; extending the YSS tracker contract must happen before adding another platform.
 
-Record the choice in `docs/agents/issue-tracker.md`. The GitHub and GitLab templates carry a "PRs as a request surface" flag, defaulted **off** — leave it off and don't raise it; a user who wants external PRs in the triage queue can flip the flag in the file later.
+Record the choice in `.template-spec/agents/issue-tracker.md`. The GitHub and GitLab templates carry a "PRs as a request surface" flag, defaulted **off** — leave it off and don't raise it; a user who wants external PRs in the triage queue can flip the flag in the file later.
 
 **Section B — Triage label vocabulary.** Skip this section entirely if the `triage` skill isn't installed (exploration told you) — an uninstalled skill needs no labels.
 
@@ -73,7 +73,7 @@ If the root `CONTEXT.md` is missing, initialize it with `context_schema_version:
 Show the user a draft of:
 
 - The `## Agent skills` block to add to `AGENTS.md`
-- The contents of `docs/agents/issue-tracker.md`, `docs/agents/domain.md`, and `docs/agents/triage-labels.md` (the last only when `triage` is installed)
+- The contents of `.template-spec/agents/issue-tracker.md`, `.template-spec/agents/domain.md`, and `.template-spec/agents/triage-labels.md` (the last only when `triage` is installed)
 
 Let them edit before writing.
 
@@ -93,18 +93,18 @@ The block:
 
 ### Issue tracker
 
-[one-line summary of where issues are tracked]. See `docs/agents/issue-tracker.md`.
+[one-line summary of where issues are tracked]. See `.template-spec/agents/issue-tracker.md`.
 
 ### Triage labels
 
-[one-line summary of the label vocabulary]. See `docs/agents/triage-labels.md`.
+[one-line summary of the label vocabulary]. See `.template-spec/agents/triage-labels.md`.
 
 ### Domain docs
 
-[one-line summary: one root `CONTEXT.md`, with bounded contexts represented inside its business glossary]. See `docs/agents/domain.md`.
+[one-line summary: one root `CONTEXT.md`, with bounded contexts represented inside its business glossary]. See `.template-spec/agents/domain.md`.
 ```
 
-Include the `### Triage labels` sub-block, and write `docs/agents/triage-labels.md`, only when `triage` is installed and Section B ran. When it isn't, both are omitted.
+Include the `### Triage labels` sub-block, and write `.template-spec/agents/triage-labels.md`, only when `triage` is installed and Section B ran. When it isn't, both are omitted.
 
 Then write the docs files using the seed templates in this skill folder as a starting point:
 
@@ -114,8 +114,8 @@ Then write the docs files using the seed templates in this skill folder as a sta
 - [triage-labels.md](./triage-labels.md) — label mapping (only if `triage` is installed)
 - [domain.md](./domain.md) — domain doc consumer rules + layout
 
-For an unsupported tracker request, stop and require a YSS tracker-contract extension; do not write an unsupported platform into `docs/agents/issue-tracker.md`.
+For an unsupported tracker request, stop and require a YSS tracker-contract extension; do not write an unsupported platform into `.template-spec/agents/issue-tracker.md`.
 
 ### 5. Done
 
-Tell the user the setup is complete and which engineering skills will now read from these files. Mention they can edit `docs/agents/*.md` directly later — re-running this skill is only necessary if they want to switch issue trackers or restart from scratch.
+Tell the user the setup is complete and which engineering skills will now read from these files. Mention they can edit `.template-spec/agents/*.md` directly later — re-running this skill is only necessary if they want to switch issue trackers or restart from scratch.

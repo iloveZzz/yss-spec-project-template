@@ -46,7 +46,7 @@ export function generateReviewerTaskPackages({ checkpointRef, candidateRef, outp
   ensure(candidate.candidate_digest === checkpoint.candidate_digest, "候选 manifest 与 checkpoint 的 candidate_digest 不一致");
   safeRef(outputDir, "outputDir");
   const stem = slug(path.basename(checkpointRef, path.extname(checkpointRef)));
-  const applicableRuleRefs = ["AGENTS.md", "CONTEXT.md", "docs/process/harness-process-tailoring.md", ".agents/skills/maintaining-skills/SKILL.md"];
+  const applicableRuleRefs = ["AGENTS.md", "CONTEXT.md", ".template-spec/process/harness-process-tailoring.md", ".agents/skills/maintaining-skills/SKILL.md"];
   const candidateByteRefs = [candidateRef, candidate.snapshot_stream_ref, candidate.tracked_diff_ref].map(readableRef).filter(Boolean);
   const sourceEvidenceRefs = (checkpoint.verification_evidence || []).flatMap((evidence) => [readableRef(evidence.command), readableRef(evidence.evidence_ref)]).filter(Boolean);
   const allowedReadPaths = [...new Set([...candidateByteRefs, checkpointRef, ...sourceEvidenceRefs, ...applicableRuleRefs])];

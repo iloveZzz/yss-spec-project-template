@@ -7,7 +7,7 @@ description: "审查或迁移 YSS Spring Boot 2 到 3 的依赖、Jakarta 与 Sp
 
 Use this skill for catalog-driven YSS backend upgrade analysis and approved migrations from an exact Spring Boot 2 platform to an exact Spring Boot 3 platform.
 
-中文说明：这个技能是平台迁移编排入口，不替代具体组件 Skill。源平台、目标平台和组件能力只从 `docs/engineering/backend-platforms.json`、批准的 `platform_configuration`、工程 Manifest、effective POM 与实际依赖树解析，不按版本记忆或源码可编译状态推断兼容。
+中文说明：这个技能是平台迁移编排入口，不替代具体组件 Skill。源平台、目标平台和组件能力只从 `.template-spec/engineering/backend-platforms.json`、批准的 `platform_configuration`、工程 Manifest、effective POM 与实际依赖树解析，不按版本记忆或源码可编译状态推断兼容。
 
 ## When To Use
 

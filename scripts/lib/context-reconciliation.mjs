@@ -3,7 +3,7 @@ import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { resolveContextTermRefs, verifyContextSnapshot } from "./context-contract.mjs";
 import { validateJsonSchema } from "./json-schema.mjs";
-const schemaPath = path.resolve(import.meta.dirname, "../../docs/process/schemas/context-reconciliation.schema.json");
+const schemaPath = path.resolve(import.meta.dirname, "../../.template-spec/process/schemas/context-reconciliation.schema.json");
 export function parseReconciliationFile(file) {
   const document = parseDocument(readFileSync(file, "utf8"), { maxAliasCount: 0, uniqueKeys: true });
   if (document.errors.length) throw new TypeError(document.errors[0].message);

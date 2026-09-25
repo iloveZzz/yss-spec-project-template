@@ -40,7 +40,7 @@
     {
       "id": "lifecycle-registry.yaml",
       "kind": "document",
-      "livePath": "docs/process/lifecycle-registry.yaml",
+      "livePath": ".template-spec/process/lifecycle-registry.yaml",
       "rawPath": "raw/lifecycle-registry.yaml",
       "role": "copy",
       "sha256": "2c1f4414eace5993b7f8c1e080588f448909c3eb08a5733acad39761353d30b4"
@@ -48,7 +48,7 @@
     {
       "id": "harness-process-tailoring.md",
       "kind": "document",
-      "livePath": "docs/process/harness-process-tailoring.md",
+      "livePath": ".template-spec/process/harness-process-tailoring.md",
       "rawPath": "raw/harness-process-tailoring.md",
       "role": "copy",
       "sha256": "1af6256e4dd8f658fd877c7927e587d7d2efb81bcc111958c519069fa9e0180d"
@@ -56,7 +56,7 @@
     {
       "id": "maintenance-intensity.yaml",
       "kind": "document",
-      "livePath": "docs/process/maintenance-intensity.yaml",
+      "livePath": ".template-source/process/maintenance-intensity.yaml",
       "rawPath": "raw/maintenance-intensity.yaml",
       "role": "copy",
       "sha256": "6338e218860416a2a2ca9c187b5589bc1140b967dbac5f3ecea906adfb588a0f"
@@ -64,7 +64,7 @@
     {
       "id": "implementation-repo-integration.md",
       "kind": "document",
-      "livePath": "docs/process/implementation-repo-integration.md",
+      "livePath": ".template-spec/process/implementation-repo-integration.md",
       "rawPath": "raw/implementation-repo-integration.md",
       "role": "copy",
       "sha256": "d7b18d59252e6e642e8f68d501d2291512619c65872e81555f605eff7dc97f4c"
@@ -72,7 +72,7 @@
     {
       "id": "skills-maintenance.md",
       "kind": "document",
-      "livePath": "docs/agents/skills-maintenance.md",
+      "livePath": ".template-source/agents/skills-maintenance.md",
       "rawPath": "raw/skills-maintenance.md",
       "role": "copy",
       "sha256": "6862245d3d000bb370426366fa6250c88b20963d9335512ebe00b8d90c904ed2"
@@ -80,7 +80,7 @@
     {
       "id": "yss-skill-registry.yaml",
       "kind": "document",
-      "livePath": "docs/agents/yss-skill-registry.yaml",
+      "livePath": ".template-spec/agents/yss-skill-registry.yaml",
       "rawPath": "raw/yss-skill-registry.yaml",
       "role": "copy",
       "sha256": "95136b6d42c7f021b457311a9bd60c77d7a56933cdd0425a7c0039e39222eef6"
@@ -88,7 +88,7 @@
     {
       "id": "issue-tracker.md",
       "kind": "document",
-      "livePath": "docs/agents/issue-tracker.md",
+      "livePath": ".template-spec/agents/issue-tracker.md",
       "rawPath": "raw/issue-tracker.md",
       "role": "copy",
       "sha256": "260db9b67b39f8cba50fc1de7a7ae12abb9d246f3a4b85c0122a71f9fcf431f9"
@@ -96,7 +96,7 @@
     {
       "id": "triage-labels.md",
       "kind": "document",
-      "livePath": "docs/agents/triage-labels.md",
+      "livePath": ".template-spec/agents/triage-labels.md",
       "rawPath": "raw/triage-labels.md",
       "role": "copy",
       "sha256": "41f5eb2fe11388077c73dbac7d29cf83fb1da229248b6363c273a891d00705fd"
@@ -112,7 +112,7 @@
     {
       "id": "spec-template.md",
       "kind": "document",
-      "livePath": "docs/templates/spec-template.md",
+      "livePath": ".template-spec/templates/spec-template.md",
       "rawPath": "raw/spec-template.md",
       "role": "copy",
       "sha256": "c68a3b2acf907297a58e5f8719063d3695b419aa22a9708f27516119d5c6b122"
@@ -120,7 +120,7 @@
     {
       "id": "vertical-slice-ticket-template.md",
       "kind": "document",
-      "livePath": "docs/templates/vertical-slice-ticket-template.md",
+      "livePath": ".template-spec/templates/vertical-slice-ticket-template.md",
       "rawPath": "raw/vertical-slice-ticket-template.md",
       "role": "copy",
       "sha256": "d473a75f5e9c74b6a65258960ac4efb858bd1d2af5b1b9232db3c405f0f47321"

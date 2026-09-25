@@ -2,7 +2,7 @@ import * as fs from "node:fs";
 import { parseDocument } from "./vendor/yaml.mjs";
 import { ensure, hash, readJson, safe, governance } from "./io.mjs";
 import { familyFor, CHECKS } from './family.mjs';
-export const PROFILE = "docs/process/harness-profile.yaml";
+export const PROFILE = ".template-spec/process/harness-profile.yaml";
 export function yaml(bytes) {
   const doc = parseDocument(String(bytes), { uniqueKeys: true });
   ensure(!doc.errors.length, "YAML 不合法");
@@ -172,11 +172,11 @@ export function render(bundle, variables) {
       );
     else if (ref === "README.md")
       bytes = Buffer.from(
-        `# ${variables.projectName}\n\n本仓是 \`${bundle.family.profileId}\` 的 \`project-instance\`。\n\n先读 [AGENTS.md](AGENTS.md)、[CONTEXT.md](CONTEXT.md) 与 [profile](docs/process/harness-profile.yaml)。\n\n业务领域：${variables.businessDomain}\n团队规模：${variables.teamSize}\n`,
+        `# ${variables.projectName}\n\n本仓是 \`${bundle.family.profileId}\` 的 \`project-instance\`。\n\n先读 [AGENTS.md](AGENTS.md)、[CONTEXT.md](CONTEXT.md) 与 [profile](.template-spec/process/harness-profile.yaml)。\n\n业务领域：${variables.businessDomain}\n团队规模：${variables.teamSize}\n`,
       );
     if (bundle.family.side === "design" && ref === "AGENTS.md")
       bytes = Buffer.from(bytes.toString().replace("**项目名称：** [填写]", () => `**项目名称：** ${variables.projectName}`).replace("**业务领域：** [填写]", () => `**业务领域：** ${variables.businessDomain}`).replace("**团队规模：** [填写]", () => `**团队规模：** ${variables.teamSize}`));
-    if (ref === "docs/agents/issue-tracker.md")
+    if (ref === ".template-spec/agents/issue-tracker.md")
       bytes = Buffer.from(
         bytes
           .toString()

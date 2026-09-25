@@ -1,3 +1,5 @@
+diff --git a/SKILL.md b/SKILL.md
+index 2213d7a..8b77fd5 100644
 --- a/SKILL.md
 +++ b/SKILL.md
 @@ -1,72 +1,19 @@
@@ -80,6 +82,9 @@
 +- 不查找或要求 Java 源仓，不读取 `YSS_SOURCE_ROOT`，不创建后端 `source-index.md`。
 +- 这是文档入口索引生成器，不下载文档，也不证明网页内容已更新或与当前组件版本匹配。实际实现仍需读取当前版本文档与组件证据。
 +- 在 canonical 技能根刷新后，使用本仓 `scripts/update-skill-lock`、`scripts/sync-skills` 和快速验证完成维护；不手改各运行时投影。
+diff --git a/agents/openai.yaml b/a/agents/openai.yaml
+deleted file mode 100644
+index 117c190..0000000
 --- a/agents/openai.yaml
 +++ /dev/null
 @@ -1,4 +0,0 @@
@@ -87,6 +92,9 @@
 -  display_name: "YSS Skill Source Index Refresh"
 -  short_description: "Locate sources and refresh YSS skill indexes"
 -  default_prompt: "Refresh YSS skill indexes from yss-cloud-microservice and YSS UI docs."
+diff --git a/references/backend-component-platform-compatibility.md b/a/references/backend-component-platform-compatibility.md
+deleted file mode 100644
+index c768a08..0000000
 --- a/references/backend-component-platform-compatibility.md
 +++ /dev/null
 @@ -1,27 +0,0 @@
@@ -116,7 +124,10 @@
 -- BOM 版本不等于每个组件 artifact 的实际版本。比较依赖树中的精确 GAV；索引输出的本地 POM lineage 是定位证据，不代替 effective POM 和运行验证。
 -- `javax.sql`、`javax.crypto` 等 Java SE 包不是 Jakarta 迁移目标，不能用简单字符串替换处理。
 -
--共享平台事实源为 `docs/engineering/backend-platforms.json` 和 `docs/engineering/backend-platforms.md`。
+-共享平台事实源为 `.template-spec/engineering/backend-platforms.json` 和 `.template-spec/engineering/backend-platforms.md`。
+diff --git a/references/source-location.md b/a/references/source-location.md
+deleted file mode 100644
+index d3b7ea4..0000000
 --- a/references/source-location.md
 +++ /dev/null
 @@ -1,19 +0,0 @@
@@ -139,6 +150,9 @@
 -- Prefer symbols, package names, Maven artifact names, and annotations in instructions; they survive repository relocation better than absolute paths.
 -- Keep full production source out of skill `assets/`; generate concise signatures, activation conditions and file hashes instead.
 -- When refreshing indexes, export both generation-specific variables; targeted skill refresh still regenerates both tracks for the selected Skill.
+diff --git a/references/source-map-config.md b/a/references/source-map-config.md
+deleted file mode 100644
+index b5b9859..0000000
 --- a/references/source-map-config.md
 +++ /dev/null
 @@ -1,36 +0,0 @@
@@ -178,6 +192,9 @@
 -| `ytable-usage` | hooks docs |
 -| `yedit-table-usage` | hooks docs |
 -| `ytree-usage` | hooks docs |
+diff --git a/scripts/check-backend-skill-source-index.mjs b/a/scripts/check-backend-skill-source-index.mjs
+deleted file mode 100644
+index 64c3527..0000000
 --- a/scripts/check-backend-skill-source-index.mjs
 +++ /dev/null
 @@ -1,60 +0,0 @@
@@ -241,6 +258,8 @@
 -    process.exitCode = 1;
 -  });
 -}
+diff --git a/scripts/refresh-yss-skill-index.mjs b/scripts/refresh-yss-skill-index.mjs
+index 081421b..c6e036b 100644
 --- a/scripts/refresh-yss-skill-index.mjs
 +++ b/scripts/refresh-yss-skill-index.mjs
 @@ -1,587 +1,55 @@
@@ -250,10 +269,7 @@
 -import { access, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 -import path from "node:path";
 -import { fileURLToPath } from "node:url";
-+import { lstat, mkdir, realpath, writeFile } from 'node:fs/promises';
-+import path from 'node:path';
-+import { fileURLToPath } from 'node:url';
- 
+-
 -export const BACKEND = {
 -  "yss-cache": ["yss-microservice-components/yss-component-cache-parent"],
 -  "yss-mybatis": ["yss-microservice-components/yss-component-persistence"],
@@ -272,6 +288,10 @@
 -  "yss-security-algorithm": ["yss-microservice-components/yss-component-security-algorithm"],
 -  "yss-userinfo": ["yss-microservice-components/yss-component-userinfo-starter"],
 -  "yss-exception": ["yss-microservice-components/yss-component-exception"],
++import { lstat, mkdir, realpath, writeFile } from 'node:fs/promises';
++import path from 'node:path';
++import { fileURLToPath } from 'node:url';
++
 +export const FRONTEND = {
 +  'yss-ui': ['components', 'hooks', 'skills'],
 +  'yss-hook': ['hooks'],
@@ -303,45 +323,12 @@
 -  if (!BACKEND_PLATFORM_LINES[platformLine]) throw new TypeError(`unknown backend component platform line: ${platformLine}`);
 -  if (!BACKEND[skill]) throw new TypeError(`unknown backend component skill: ${skill}`);
 -  return BACKEND_PATH_OVERRIDES[platformLine][skill] ?? BACKEND[skill];
-+const URLS = {
-+  components: 'http://192.168.164.27:3200/components',
-+  hooks: 'http://192.168.164.27:3200/hooks',
-+  skills: 'http://192.168.164.27:3200/skills'
-+};
-+async function stat(file) {
-+  try { return await lstat(file); } catch (error) { if (error.code === 'ENOENT') return null; throw error; }
- }
+-}
 -
 -export function backendPlatformIndexPath(skillsRoot, skill, platformLine) {
 -  if (!BACKEND_PLATFORM_LINES[platformLine]) throw new TypeError(`unknown backend component platform line: ${platformLine}`);
 -  return path.join(skillsRoot, skill, "references", `source-index.${platformLine}.md`);
-+export async function refresh({ skillsRoot, now = new Date().toISOString() }) {
-+  const root = await realpath(skillsRoot);
-+  const outputs = [];
-+  for (const [skill, keys] of Object.entries(FRONTEND)) {
-+    const directory = path.join(root, skill);
-+    const info = await stat(directory);
-+    if (!info) continue;
-+    if (!info.isDirectory()) throw new Error(`必须使用 canonical 技能目录: ${directory}`);
-+    const references = path.join(directory, 'references');
-+    const referenceInfo = await stat(references);
-+    if (referenceInfo && !referenceInfo.isDirectory()) throw new Error(`非法引用目录: ${references}`);
-+    const target = path.join(references, 'frontend-docs.md');
-+    const targetInfo = await stat(target);
-+    if (targetInfo && !targetInfo.isFile()) throw new Error(`非法索引文件: ${target}`);
-+    outputs.push({ target, text: [
-+      `# ${skill} Frontend Documentation`, '', `Generated: ${now}`, '',
-+      'This entry-point index does not fetch or verify documentation contents.', '',
-+      ...keys.map(key => `- ${key}: ${URLS[key]}`), '',
-+      'Read current version documentation and local component evidence before implementation.', ''
-+    ].join('\n') });
-+  }
-+  for (const {target, text} of outputs) {
-+    await mkdir(path.dirname(target), {recursive:true});
-+    await writeFile(target, text, 'utf8');
-+  }
-+  return { frontend: outputs.length, files: outputs.map(({target}) => path.relative(root, target)) };
- }
+-}
 -
 -const FRONTEND = {
 -  "yss-ui": ["components", "hooks", "skills"],
@@ -352,11 +339,14 @@
 -  "ytree-usage": ["hooks"],
 -};
 -
--const URLS = {
+ const URLS = {
 -  components: "http://192.168.164.27:3200/components",
 -  hooks: "http://192.168.164.27:3200/hooks",
 -  skills: "http://192.168.164.27:3200/skills",
--};
++  components: 'http://192.168.164.27:3200/components',
++  hooks: 'http://192.168.164.27:3200/hooks',
++  skills: 'http://192.168.164.27:3200/skills'
+ };
 -
 -const KEYS = [
 -  "Audit", "Cache", "Clear", "Command", "Configuration", "Controller", "DTO", "Data", "Enable", "Excel",
@@ -426,9 +416,7 @@
 -];
 -
 -const exists = async (target) => {
-+if (process.argv[1] === fileURLToPath(import.meta.url)) {
-+  const here = path.dirname(fileURLToPath(import.meta.url));
-   try {
+-  try {
 -    await access(target);
 -    return true;
 -  } catch {
@@ -445,10 +433,7 @@
 -    else if (item.isFile()) output.push(target);
 -  }
 -  return output;
-+    const result = await refresh({skillsRoot: process.env.YSS_SKILLS_ROOT || path.resolve(here, '../..')});
-+    console.log(`Updated ${result.frontend} frontend documentation indexes.`);
-+  } catch (error) { console.error(error.message); process.exitCode = 1; }
- }
+-}
 -
 -function relative(root, target) {
 -  const value = path.relative(root, target).replaceAll(path.sep, "/");
@@ -861,7 +846,39 @@
 -}
 -
 -async function main() {
--  try {
++async function stat(file) {
++  try { return await lstat(file); } catch (error) { if (error.code === 'ENOENT') return null; throw error; }
++}
++export async function refresh({ skillsRoot, now = new Date().toISOString() }) {
++  const root = await realpath(skillsRoot);
++  const outputs = [];
++  for (const [skill, keys] of Object.entries(FRONTEND)) {
++    const directory = path.join(root, skill);
++    const info = await stat(directory);
++    if (!info) continue;
++    if (!info.isDirectory()) throw new Error(`必须使用 canonical 技能目录: ${directory}`);
++    const references = path.join(directory, 'references');
++    const referenceInfo = await stat(references);
++    if (referenceInfo && !referenceInfo.isDirectory()) throw new Error(`非法引用目录: ${references}`);
++    const target = path.join(references, 'frontend-docs.md');
++    const targetInfo = await stat(target);
++    if (targetInfo && !targetInfo.isFile()) throw new Error(`非法索引文件: ${target}`);
++    outputs.push({ target, text: [
++      `# ${skill} Frontend Documentation`, '', `Generated: ${now}`, '',
++      'This entry-point index does not fetch or verify documentation contents.', '',
++      ...keys.map(key => `- ${key}: ${URLS[key]}`), '',
++      'Read current version documentation and local component evidence before implementation.', ''
++    ].join('\n') });
++  }
++  for (const {target, text} of outputs) {
++    await mkdir(path.dirname(target), {recursive:true});
++    await writeFile(target, text, 'utf8');
++  }
++  return { frontend: outputs.length, files: outputs.map(({target}) => path.relative(root, target)) };
++}
++if (process.argv[1] === fileURLToPath(import.meta.url)) {
++  const here = path.dirname(fileURLToPath(import.meta.url));
+   try {
 -    const script = path.dirname(fileURLToPath(import.meta.url));
 -    const result = await refresh({
 -      skillsRoot: path.resolve(process.env.YSS_SKILLS_ROOT || path.join(script, "../..")),
@@ -876,9 +893,14 @@
 -    console.error(error.message);
 -    process.exitCode = 1;
 -  }
--}
++    const result = await refresh({skillsRoot: process.env.YSS_SKILLS_ROOT || path.resolve(here, '../..')});
++    console.log(`Updated ${result.frontend} frontend documentation indexes.`);
++  } catch (error) { console.error(error.message); process.exitCode = 1; }
+ }
 -
 -if (process.argv[1] === fileURLToPath(import.meta.url)) await main();
+diff --git a/scripts/refresh-yss-skill-index.test.mjs b/scripts/refresh-yss-skill-index.test.mjs
+index 711fd61..96de00c 100644
 --- a/scripts/refresh-yss-skill-index.test.mjs
 +++ b/scripts/refresh-yss-skill-index.test.mjs
 @@ -1,160 +1,33 @@
@@ -890,15 +912,7 @@
 -import test from "node:test";
 -import { BACKEND, backendComponentPaths, refresh, sourceState } from "./refresh-yss-skill-index.mjs";
 -import { checkBackendSkillSourceIndex } from "./check-backend-skill-source-index.mjs";
-+import assert from 'node:assert/strict';
-+import { mkdtemp, mkdir, readFile, readdir, rm, symlink } from 'node:fs/promises';
-+import { execFileSync } from 'node:child_process';
-+import { tmpdir } from 'node:os';
-+import path from 'node:path';
-+import { fileURLToPath } from 'node:url';
-+import test from 'node:test';
-+import { FRONTEND, refresh } from './refresh-yss-skill-index.mjs';
- 
+-
 -const platformPom = (javaVersion, bootVersion) => `<project><parent><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-parent</artifactId><version>${bootVersion}</version><relativePath/></parent><artifactId>fixture</artifactId><version>1.0.0</version><properties><java.version>${javaVersion}</java.version><spring-boot.version>\${project.parent.version}</spring-boot.version></properties></project>`;
 -
 -test("writes Node-labelled generated indexes", async () => {
@@ -918,20 +932,7 @@
 -    () => refresh({skillsRoot:skills,sources:{"boot3-java17":boot2},frontend:false,backendSkills:["yss-cache"]}),
 -    /source root does not match boot3-java17/,
 -  );
-+test('updates exactly installed frontend skills without needing or creating backend sources', async () => {
-+  const root = await mkdtemp(path.join(tmpdir(), 'frontend-index-'));
-+  try {
-+    for (const skill of Object.keys(FRONTEND)) await mkdir(path.join(root, skill));
-+    const result = await refresh({skillsRoot:root, now:'2026-09-08T00:00:00Z'});
-+    assert.equal(result.frontend, Object.keys(FRONTEND).length);
-+    assert.deepEqual((await readdir(root)).sort(), Object.keys(FRONTEND).sort());
-+    for (const file of result.files) assert.match(await readFile(path.join(root,file),'utf8'), /does not fetch or verify/);
-+    execFileSync(process.execPath, [fileURLToPath(new URL('./refresh-yss-skill-index.mjs',import.meta.url))], {
-+      env:{...process.env,YSS_SKILLS_ROOT:root,YSS_SOURCE_ROOT:'/nonexistent/backend-source'}
-+    });
-+    assert.deepEqual((await readdir(root)).sort(), Object.keys(FRONTEND).sort());
-+  } finally { await rm(root,{recursive:true,force:true}); }
- });
+-});
 -
 -test("keeps generation-specific component path sets", () => {
 -  assert.deepEqual(backendComponentPaths("yss-excel-mvc", "boot2-java8"), [
@@ -941,16 +942,7 @@
 -  assert.deepEqual(backendComponentPaths("yss-excel-mvc", "boot3-java17"), [
 -    "yss-microservice-components/yss-component-excel-mvc",
 -  ]);
-+test('skips missing skills and rejects symlinked output without writing elsewhere', async () => {
-+  const root = await mkdtemp(path.join(tmpdir(), 'frontend-index-'));
-+  try {
-+    assert.equal((await refresh({skillsRoot:root})).frontend, 0);
-+    await mkdir(path.join(root,'other'));
-+    await symlink(path.join(root,'other'),path.join(root,'yss-ui'));
-+    await assert.rejects(refresh({skillsRoot:root}), /canonical/);
-+    assert.deepEqual(await readdir(path.join(root,'other')),[]);
-+  } finally { await rm(root,{recursive:true,force:true}); }
- });
+-});
 -
 -test("writes a source-backed MyBatis capability matrix without absolute paths", async () => {
 -  const root = await mkdtemp(path.join(tmpdir(), "yss-mybatis-index-"));
@@ -1028,7 +1020,29 @@
 -
 -  await writeFile(componentFile, "<project><dirty/></project>\n");
 -  assert.equal(sourceState(root, [component]).componentWorktree, "dirty");
--});
++import assert from 'node:assert/strict';
++import { mkdtemp, mkdir, readFile, readdir, rm, symlink } from 'node:fs/promises';
++import { execFileSync } from 'node:child_process';
++import { tmpdir } from 'node:os';
++import path from 'node:path';
++import { fileURLToPath } from 'node:url';
++import test from 'node:test';
++import { FRONTEND, refresh } from './refresh-yss-skill-index.mjs';
++
++test('updates exactly installed frontend skills without needing or creating backend sources', async () => {
++  const root = await mkdtemp(path.join(tmpdir(), 'frontend-index-'));
++  try {
++    for (const skill of Object.keys(FRONTEND)) await mkdir(path.join(root, skill));
++    const result = await refresh({skillsRoot:root, now:'2026-09-08T00:00:00Z'});
++    assert.equal(result.frontend, Object.keys(FRONTEND).length);
++    assert.deepEqual((await readdir(root)).sort(), Object.keys(FRONTEND).sort());
++    for (const file of result.files) assert.match(await readFile(path.join(root,file),'utf8'), /does not fetch or verify/);
++    execFileSync(process.execPath, [fileURLToPath(new URL('./refresh-yss-skill-index.mjs',import.meta.url))], {
++      env:{...process.env,YSS_SKILLS_ROOT:root,YSS_SOURCE_ROOT:'/nonexistent/backend-source'}
++    });
++    assert.deepEqual((await readdir(root)).sort(), Object.keys(FRONTEND).sort());
++  } finally { await rm(root,{recursive:true,force:true}); }
+ });
 -
 -test("records Maven lineage and platform signals and validates the exact component tree", async () => {
 -  const root = await mkdtemp(path.join(tmpdir(), "yss-platform-index-"));
@@ -1071,4 +1085,13 @@
 -    () => checkBackendSkillSourceIndex({ skill: "yss-validation", platformLine: "boot2-java8", skillsRoot: skills, sourceRoot: source }),
 -    /component worktree is dirty/,
 -  );
--});
++test('skips missing skills and rejects symlinked output without writing elsewhere', async () => {
++  const root = await mkdtemp(path.join(tmpdir(), 'frontend-index-'));
++  try {
++    assert.equal((await refresh({skillsRoot:root})).frontend, 0);
++    await mkdir(path.join(root,'other'));
++    await symlink(path.join(root,'other'),path.join(root,'yss-ui'));
++    await assert.rejects(refresh({skillsRoot:root}), /canonical/);
++    assert.deepEqual(await readdir(path.join(root,'other')),[]);
++  } finally { await rm(root,{recursive:true,force:true}); }
+ });

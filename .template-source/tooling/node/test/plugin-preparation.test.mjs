@@ -36,16 +36,16 @@ function fixture(t) {
   contract.work_unit_routes['work-unit.prototype-design'].skills = ['yss-prototype-stage'];
   contract.work_unit_routes['work-unit.slice-implementation'].skills = ['yss-ui'];
   put('yss-project.yaml', { schema_version: 1, repository_mode: 'template-source' });
-  put('docs/agents/yss-skill-registry.yaml', registry);
+  put('.template-spec/agents/yss-skill-registry.yaml', registry);
   put(CONTRACT, contract);
-  put('docs/process/lifecycle-registry.yaml', { work_units: units.map(id => ({ id })) });
-  put('docs/agents/digital-human-roles.yaml', { schema_version: 1 });
-  put('docs/engineering/backend-platforms.json', JSON.stringify({ compatibility: [{ id: 'candidate', status: 'blocked' }] }));
-  put('docs/process/schemas/contract.json', '{}');
+  put('.template-spec/process/lifecycle-registry.yaml', { work_units: units.map(id => ({ id })) });
+  put('.template-spec/agents/digital-human-roles.yaml', { schema_version: 1 });
+  put('.template-spec/engineering/backend-platforms.json', JSON.stringify({ compatibility: [{ id: 'candidate', status: 'blocked' }] }));
+  put('.template-spec/process/schemas/contract.json', '{}');
   for (const id of ids) put(`.agents/skills/${id}/SKILL.md`, `---\nname: ${id}\n---\n`);
   put('CONTEXT.md', readFileSync(path.join(ROOT, 'CONTEXT.md'), 'utf8'));
   for (const ref of ['AGENTS.md', 'DESIGN.md']) put(ref, '# fixture\n');
-  for (const family of ['plan', 'requirements', 'architecture', 'design', 'templates']) put(`docs/${family}/README.md`, '# fixture\n');
+  for (const family of ['plan', 'requirements', 'architecture', 'design', 'templates']) put(`.template-spec/${family}/README.md`, '# fixture\n');
   put('scripts/tool.mjs', 'export const value = 1;\n');
   function clone() { cpSync(source, project, { recursive: true }); writeFileSync(path.join(project, 'yss-project.yaml'), 'schema_version: 1\nrepository_mode: project-instance\n'); }
   return { source, project, put, registry, contract, clone };
@@ -84,10 +84,10 @@ test('project check allows project-owned Context changes but blocks contract dri
 
 test('source change is detected even if the project keeps an older valid-looking contract', t => {
   const f = fixture(t); f.clone();
-  f.put('docs/process/schemas/contract.json', '{"required":["evidence"]}');
+  f.put('.template-spec/process/schemas/contract.json', '{"required":["evidence"]}');
   const result = run(f.source, ['check-project', '--project-root', f.project]);
   assert.equal(result.code, 1);
-  assert.ok(result.data.mismatches.some(x => x.ref === 'docs/process/schemas/contract.json'));
+  assert.ok(result.data.mismatches.some(x => x.ref === '.template-spec/process/schemas/contract.json'));
 });
 
 test('a directory containing identical bytes cannot replace a bound project file', t => {
@@ -104,11 +104,11 @@ test('a directory containing identical bytes cannot replace a bound project file
 test('missing or retired dependencies fail closed at the public planning command', t => {
   const f = fixture(t);
   f.registry.skill_dependencies['yss-domain'].push({ skill: 'unregistered-skill', type: 'context-required' });
-  f.put('docs/agents/yss-skill-registry.yaml', f.registry);
+  f.put('.template-spec/agents/yss-skill-registry.yaml', f.registry);
   assert.equal(run(f.source).code, 1);
   f.registry.skill_dependencies['yss-domain'].pop();
   f.registry.skills.find(s => s.id === 'lombok').maturity = 'deprecated';
-  f.put('docs/agents/yss-skill-registry.yaml', f.registry);
+  f.put('.template-spec/agents/yss-skill-registry.yaml', f.registry);
   assert.equal(run(f.source).code, 1);
 });
 
@@ -117,7 +117,7 @@ test('registered platform aliases stay explicit external prerequisites instead o
   f.registry.platform_skills = [{ id: 'product-design', root: '.codex/skills', aliases: ['product-design:index'] }];
   f.contract.work_unit_routes['work-unit.prototype-design'].skills.push('product-design:index');
   f.put('.codex/skills/product-design/skills/index/SKILL.md', '# platform fixture');
-  f.put('docs/agents/yss-skill-registry.yaml', f.registry); f.put(CONTRACT, f.contract);
+  f.put('.template-spec/agents/yss-skill-registry.yaml', f.registry); f.put(CONTRACT, f.contract);
   const { code, data } = run(f.source);
   assert.equal(code, 0);
   assert.equal(data.platform_dependencies[0].status, 'external-provider-not-packaged');

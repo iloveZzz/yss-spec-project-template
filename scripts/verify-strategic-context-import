@@ -10,9 +10,9 @@ import { validateHandoffUiBaseline } from "./lib/ui-baseline.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const schemaPaths = new Map([
-  [3, "docs/process/schemas/strategic-design-handoff-v3.schema.json"],
-  [4, "docs/process/schemas/strategic-design-handoff-v4.schema.json"],
-  [5, "docs/process/schemas/strategic-design-handoff-v5.schema.json"],
+  [3, ".template-spec/process/schemas/strategic-design-handoff-v3.schema.json"],
+  [4, ".template-spec/process/schemas/strategic-design-handoff-v4.schema.json"],
+  [5, ".template-spec/process/schemas/strategic-design-handoff-v5.schema.json"],
 ]);
 const pythonValidator = String.raw`
 import json, sys

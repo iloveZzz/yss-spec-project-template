@@ -4,7 +4,7 @@ import { parseDocument } from "../vendor/yaml.mjs";
 import { loadRegistry, ROOT } from "./lifecycle-registry.mjs";
 import { loadSkillRegistry } from "./skill-registry.mjs";
 
-export const DEFAULT_DIGITAL_HUMAN_ROLES = path.join(ROOT, "docs/agents/digital-human-roles.yaml");
+export const DEFAULT_DIGITAL_HUMAN_ROLES = path.join(ROOT, ".template-spec/agents/digital-human-roles.yaml");
 
 const ROLE_ID = /^role\.[a-z0-9][a-z0-9-]*$/;
 const GROUP_ID = /^group\.[a-z0-9][a-z0-9-]*$/;
@@ -259,7 +259,7 @@ export function validateDigitalHumanRoles(doc, { skillIds, stageIds, gateIds, ar
   if (doc.registry_id !== "yss.digital-human-roles") fail("registry_id 必须为 yss.digital-human-roles");
   if (doc.status !== "active") fail("status 必须为 active");
   requireString(doc.description, "description");
-  if (doc.canonical_path !== "docs/agents/digital-human-roles.yaml") fail("canonical_path 必须为 docs/agents/digital-human-roles.yaml");
+  if (doc.canonical_path !== ".template-spec/agents/digital-human-roles.yaml") fail("canonical_path 必须为 .template-spec/agents/digital-human-roles.yaml");
   rejectGrokCoupling(doc.runtime_policy, "runtime_policy");
   rejectGrokCoupling(doc.gate_policy, "gate_policy");
   const runtime = doc.runtime_policy;

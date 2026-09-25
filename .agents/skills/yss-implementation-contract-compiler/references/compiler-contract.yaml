@@ -2,12 +2,12 @@ schema_version: 2
 slice_contract_versions:
   default: 3
   accepted: [2, 3]
-  v3_schema: docs/process/schemas/slice-implementation-contract-v3.schema.json
+  v3_schema: .template-spec/process/schemas/slice-implementation-contract-v3.schema.json
   normalization: scripts/lib/slice-contract.mjs
   v2_migration: explicit-new-draft-no-inherited-approval
 backend_architecture:
-  registry_source: docs/agents/yss-skill-registry.yaml
-  identity_schema: docs/process/schemas/backend-architecture-identity.schema.json
+  registry_source: .template-spec/agents/yss-skill-registry.yaml
+  identity_schema: .template-spec/process/schemas/backend-architecture-identity.schema.json
   required_evidence: [engineering_baseline, repository_registration, manifest]
   evidence_loading: original-references-and-raw-sha256
   existing_identity: {schema_version: 2, source_kind: existing-registration, profiles_source: existing_project_profiles}
@@ -18,8 +18,8 @@ backend_architecture:
   readiness: supported-profile-and-current-identical-evidence
 compiled_by: yss-implementation-contract-compiler
 approved_by: yss-product-lifecycle
-capability_source: docs/agents/yss-skill-registry.yaml
-recipe_source: docs/agents/yss-skill-registry.yaml
+capability_source: .template-spec/agents/yss-skill-registry.yaml
+recipe_source: .template-spec/agents/yss-skill-registry.yaml
 digest_algorithm: sha256
 unsupported_inputs:
   registry_schema_v1: reject-with-migration-guidance
@@ -73,7 +73,7 @@ readiness:
   cross_repo: [repository_registry, delivery_order, integration_verification, rollback_order]
   frontend_delivery:
     when: specialized-frontend-profile-or-explicit-frontend-delivery-binding
-    source: docs/process/frontend-backend-delivery.md
+    source: .template-spec/process/frontend-backend-delivery.md
     verifier: scripts/verify-frontend-delivery
     output_binding: frontend.delivery
     inputs_verified_is_implementation_approval: false
@@ -146,7 +146,7 @@ resolution_contract:
   component_bindings:
     when: any-required-capability-provider-kind-is-yss-component
     platform_configuration: required-v2
-    catalog_source: docs/engineering/backend-platforms.json
+    catalog_source: .template-spec/engineering/backend-platforms.json
     required_fields: [component_bindings, component_bindings_digest]
     exact_artifact_binding: [group_id, artifact_id, declared_version, resolved_version, pom_sha256, jar_sha256, source_tree]
     digest_change_status: stale
@@ -159,7 +159,7 @@ context_plan:
 
 project_scaffold_contract_schema:
   schema_version: 4
-  schema_ref: docs/process/schemas/project-scaffold-contract.schema.json
+  schema_ref: .template-spec/process/schemas/project-scaffold-contract.schema.json
   identity: project-engineering-baseline
   discriminant: delivery_role
   delivery_roles:
@@ -440,7 +440,7 @@ strategic_handoff_consumption:
 
 backend_platform_contract:
   schema_version: 2
-  catalog_ref: docs/engineering/backend-platforms.json
+  catalog_ref: .template-spec/engineering/backend-platforms.json
   configuration_field: platform_configuration
   selection_owner: yss-product-lifecycle
   new_generation_requires: [exact-boot-java, confirmed-decision, matching-yss-coordinates, verified-compatibility-entry]

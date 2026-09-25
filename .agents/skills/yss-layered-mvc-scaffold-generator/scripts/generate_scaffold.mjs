@@ -166,7 +166,7 @@ export async function validateContract(options, skillId, architectureProfile, pl
     if (contract.init_git !== true) fail("mvc-data-analysis-v1 必须由合同显式要求独立 Git 初始化");
     if (!contract.context_handoff_ref || !contract.context_handoff_digest) fail("mvc-data-analysis-v1 缺少批准的 CONTEXT handoff");
   }
-  validateJsonSchema(contract, path.join(REPOSITORY_ROOT, "docs/process/schemas/project-scaffold-contract.schema.json"), { label: "Project Scaffold Contract v4" });
+  validateJsonSchema(contract, path.join(REPOSITORY_ROOT, ".template-spec/process/schemas/project-scaffold-contract.schema.json"), { label: "Project Scaffold Contract v4" });
   const required = ["contract_id", "contract_version", "scaffold_request_id", "status", "compiler_draft_ref", "lifecycle_approval_ref", "persisted_ref", "current_version", "implementation_repository", "backend_repository", "scaffold_status", "project_name", "target_output_dir", "base_package", "architecture_family", "generator_skill", "decision_ref", "decision_id", "decision_digest", "maven_coordinates", "profiles", "module_profile", "allowed_write_paths", "expected_evidence_files", "verification_commands", "approval", "work_unit", "generation_policy"];
   const missing = required.filter((field) => !isPresent(contract[field]));
   if (missing.length) fail(`脚手架合同缺少字段: ${missing.join(", ")}`);
@@ -319,7 +319,7 @@ export async function generate(options, { skillId = SKILL_ID, architectureProfil
       verification_commands: COMMANDS,
       generator: { id: skillId, template_digest: await treeDigest(SKILL_ROOT) },
       ownership: { generated_files: generatedFiles, user_owned_globs: ["**/src/main/java/**", "**/src/test/java/**", "db/**"] },
-      readiness: { downstream_skills: downstream, contracts: { architecture_profiles: rawSha256(await readFile(path.join(REPOSITORY_ROOT, "docs/agents/backend-architecture-profiles.md"))), compiler_contract: rawSha256(await readFile(path.join(REPOSITORY_ROOT, ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml"))) }, architecture_ruleset: rawSha256(await readFile(path.join(projectRoot, architectureRuleset))) },
+      readiness: { downstream_skills: downstream, contracts: { architecture_profiles: rawSha256(await readFile(path.join(REPOSITORY_ROOT, ".template-spec/agents/backend-architecture-profiles.md"))), compiler_contract: rawSha256(await readFile(path.join(REPOSITORY_ROOT, ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml"))) }, architecture_ruleset: rawSha256(await readFile(path.join(projectRoot, architectureRuleset))) },
       generated_at: new Date().toISOString()
     };
     await put(projectRoot, ".yss/scaffold-generation.json", JSON.stringify(manifest, null, 2));

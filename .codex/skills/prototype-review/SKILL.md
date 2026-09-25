@@ -7,7 +7,7 @@ description: Use when independently reviewing low-fidelity UI, interaction specs
 
 Use this skill as the independent low-fidelity review in `yss-prototype-stage`. The review is fail-closed: if the design cannot drive calibrated requirements, API, frontend acceptance, and slices, send it back to product design. `yss-product-lifecycle` alone records the resulting `check.prototype-reviewed` decision.
 
-文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
 
 ## Trigger Boundary
 
@@ -17,9 +17,9 @@ Run this independent gate only when UI changes affect a primary user flow, navig
 
 - Spec baseline or confirmed user stories.
 - `docs/.scratch/<feature>/design/<feature>-interaction-spec.md` or prototype link.
-- State matrix, preferably based on `docs/design/templates/state-matrix-template.md`.
+- State matrix, preferably based on `.template-spec/design/templates/state-matrix-template.md`.
 - Existing OpenAPI Draft only if the review is checking alignment; do not require OpenAPI before product design.
-- `docs/.scratch/<feature>/verification/prototype-evidence.yaml` may be created as a pending Prototype Evidence schema v4 record from `docs/design/templates/prototype-evidence-template.yaml`, but档位构建与浏览器验证属于后续 `check.prototype-verified`。
+- `docs/.scratch/<feature>/verification/prototype-evidence.yaml` may be created as a pending Prototype Evidence schema v4 record from `.template-spec/design/templates/prototype-evidence-template.yaml`, but档位构建与浏览器验证属于后续 `check.prototype-verified`。
 
 ## Review Gates
 
@@ -74,4 +74,4 @@ Run this independent gate only when UI changes affect a primary user flow, navig
 - <yss-prototype-stage / return to product design>
 ```
 
-Use `docs/design/templates/prototype-review-checklist.md` when writing a persistent review artifact.
+Use `.template-spec/design/templates/prototype-review-checklist.md` when writing a persistent review artifact.

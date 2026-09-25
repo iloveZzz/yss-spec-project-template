@@ -32,7 +32,7 @@
 └── scripts/                 ← 模板轻量校验脚本
 ```
 
-项目需要生成度量、外部实现仓库记录或其他临时产物时再按需创建对应目录。前后端实现仓库接入规则见 `docs/process/implementation-repo-integration.md`。
+项目需要生成度量、外部实现仓库记录或其他临时产物时再按需创建对应目录。前后端实现仓库接入规则见 `.template-spec/process/implementation-repo-integration.md`。
 
 ## Quickstart
 
@@ -42,16 +42,16 @@
 4. `project-instance` 默认从 `yss-product-lifecycle` 的 `route` 模式开始，再由原生 `work-unit.*` 推进 Plan、Spec、产品设计、工程契约和 Ticket 正式化；`grill-with-docs`、`to-spec`、`to-tickets`、`implement` 仅作为用户显式调用的兼容入口。
 5. 实现仓库接入、YSS 路由、独立审查、fresh verification 和 Git checkpoint 以 `AGENTS.md` 的硬门禁为准。
 
-YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https://github.com/iloveZzz/yss-spec-dev-skills)，发布清单和导出命令见 [skills 维护说明](./docs/agents/skills-maintenance.md)。
+YSS skills 的公开发布投影维护在 [iloveZzz/yss-spec-dev-skills](https://github.com/iloveZzz/yss-spec-dev-skills)，发布清单和导出命令见 [skills 维护说明](./.template-source/agents/skills-maintenance.md)。
 
-YSS UI 组件知识同时通过项目级 MCP 配置提供；支持的客户端、Codex 全局安装和自检方法见 [YSS UI MCP 接入](./docs/user-guide/yss-ui-mcp.md)。
+YSS UI 组件知识同时通过项目级 MCP 配置提供；支持的客户端、Codex 全局安装和自检方法见 [YSS UI MCP 接入](./.template-spec/user-guide/yss-ui-mcp.md)。
 
 ## 模板初始化 CLI
 
 `create-yss-spec` 的发布仓库是 [iloveZzz/create-yss-spec](https://github.com/iloveZzz/create-yss-spec)。用户从统一手册选择家族；CLI 源码、测试、打包和发布仍在各自仓库维护：
 
-- [YSS 用户手册：CLI 能力与写入方式](./docs/user-guide/用户手册.md#cli-能力与写入方式)
-- [YSS 用户手册：接管、同步与恢复](./docs/user-guide/用户手册.md#接管同步与恢复)
+- [YSS 用户手册：CLI 能力与写入方式](./.template-spec/user-guide/用户手册.md#cli-能力与写入方式)
+- [YSS 用户手册：接管、同步与恢复](./.template-spec/user-guide/用户手册.md#接管同步与恢复)
 
 推荐入口：
 
@@ -99,34 +99,34 @@ scripts/verify-template-fast
 
 ## 关键文档
 
-业务方可从[用户手册](./docs/user-guide/用户手册.md)了解工作入口；阶段、条件门禁和完成证据以生命周期注册表及流程裁剪规则为准。
+业务方可从[用户手册](./.template-spec/user-guide/用户手册.md)了解工作入口；阶段、条件门禁和完成证据以生命周期注册表及流程裁剪规则为准。
 
 | 文档 | 内容 |
 |------|------|
 | [AGENTS.md](./AGENTS.md) | 全局 AI 指令 + 工程基线入口 + Agent 协作 |
-| [docs/user-guide/用户手册.md](./docs/user-guide/用户手册.md) | 从首次只读检查到需求、开发、审查、发布和 CLI 操作的统一用户手册 |
-| [阶段接入与产物复用使用手册](./docs/user-guide/阶段接入与产物复用使用手册.md) | 复用上游资产，从指定入口继续；含后端交付后前端开发操作 |
-| [docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md](./docs/process/MATT-POCOCK-ENGINEERING-SKILLS.md) | Matt Pocock Engineering Skills 集成与使用 |
-| [docs/process/lifecycle-registry.yaml](./docs/process/lifecycle-registry.yaml) | 生命周期结构事实源：主阶段、门禁、产物、工作单元、证据与稳定 ID |
-| [docs/process/harness-process-tailoring.md](./docs/process/harness-process-tailoring.md) | 小改动 / 中等变更 / 新模块的流程裁剪指南 |
-| [docs/process/template-engineering-overview.md](./docs/process/template-engineering-overview.md) | 模板工程定位、产品线、控制平面、分发边界与维护工作流 |
-| [docs/process/implementation-repo-integration.md](./docs/process/implementation-repo-integration.md) | 外部前端 / 后端实现仓库接入与跨仓库切片绑定 |
-| [docs/agents/README.md](./docs/agents/README.md) | Agent 协作文档目录说明 |
-| [docs/agents/skills-maintenance.md](./docs/agents/skills-maintenance.md) | Agent skills 安装与维护 |
-| [docs/user-guide/yss-ui-mcp.md](./docs/user-guide/yss-ui-mcp.md) | YSS UI MCP 项目配置、全局安装边界与自检 |
-| [docs/architecture/README.md](./docs/architecture/README.md) | 架构设计 + 审查清单 |
+| [.template-spec/user-guide/用户手册.md](./.template-spec/user-guide/用户手册.md) | 从首次只读检查到需求、开发、审查、发布和 CLI 操作的统一用户手册 |
+| [阶段接入与产物复用使用手册](./.template-spec/user-guide/阶段接入与产物复用使用手册.md) | 复用上游资产，从指定入口继续；含后端交付后前端开发操作 |
+| [.template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md](./.template-source/process/MATT-POCOCK-ENGINEERING-SKILLS.md) | Matt Pocock Engineering Skills 集成与使用 |
+| [.template-spec/process/lifecycle-registry.yaml](./.template-spec/process/lifecycle-registry.yaml) | 生命周期结构事实源：主阶段、门禁、产物、工作单元、证据与稳定 ID |
+| [.template-spec/process/harness-process-tailoring.md](./.template-spec/process/harness-process-tailoring.md) | 小改动 / 中等变更 / 新模块的流程裁剪指南 |
+| [.template-source/process/template-engineering-overview.md](./.template-source/process/template-engineering-overview.md) | 模板工程定位、产品线、控制平面、分发边界与维护工作流 |
+| [.template-spec/process/implementation-repo-integration.md](./.template-spec/process/implementation-repo-integration.md) | 外部前端 / 后端实现仓库接入与跨仓库切片绑定 |
+| [.template-spec/agents/README.md](./.template-spec/agents/README.md) | Agent 协作文档目录说明 |
+| [.template-source/agents/skills-maintenance.md](./.template-source/agents/skills-maintenance.md) | Agent skills 安装与维护 |
+| [.template-spec/user-guide/yss-ui-mcp.md](./.template-spec/user-guide/yss-ui-mcp.md) | YSS UI MCP 项目配置、全局安装边界与自检 |
+| [.template-spec/architecture/README.md](./.template-spec/architecture/README.md) | 架构设计 + 审查清单 |
 
 ## 核心模板
 
 | 模板 | 用途 |
 |------|------|
-| [docs/templates/spec-template.md](./docs/templates/spec-template.md) | Spec，包含 OpenAPI 影响、测试决策、AI / 人工审查点 |
-| [docs/templates/local-parent-ticket-template.md](./docs/templates/local-parent-ticket-template.md) | Local Markdown 功能父 Ticket 与生命周期索引 |
-| [docs/templates/vertical-slice-ticket-template.md](./docs/templates/vertical-slice-ticket-template.md) | 垂直切片 Ticket |
-| [docs/templates/implementation-repo-registry-template.md](./docs/templates/implementation-repo-registry-template.md) | 外部实现仓库登记 |
-| [docs/templates/cross-repo-slice-template.md](./docs/templates/cross-repo-slice-template.md) | 跨仓库垂直切片记录 |
-| [docs/architecture/templates/architecture-deepening-template.md](./docs/architecture/templates/architecture-deepening-template.md) | 架构 deepening 候选与 seam 设计 |
+| [.template-spec/templates/spec-template.md](./.template-spec/templates/spec-template.md) | Spec，包含 OpenAPI 影响、测试决策、AI / 人工审查点 |
+| [.template-spec/templates/local-parent-ticket-template.md](./.template-spec/templates/local-parent-ticket-template.md) | Local Markdown 功能父 Ticket 与生命周期索引 |
+| [.template-spec/templates/vertical-slice-ticket-template.md](./.template-spec/templates/vertical-slice-ticket-template.md) | 垂直切片 Ticket |
+| [.template-spec/templates/implementation-repo-registry-template.md](./.template-spec/templates/implementation-repo-registry-template.md) | 外部实现仓库登记 |
+| [.template-spec/templates/cross-repo-slice-template.md](./.template-spec/templates/cross-repo-slice-template.md) | 跨仓库垂直切片记录 |
+| [.template-spec/architecture/templates/architecture-deepening-template.md](./.template-spec/architecture/templates/architecture-deepening-template.md) | 架构 deepening 候选与 seam 设计 |
 
 ## 按职责使用与升级
 
-[四个现行家族用户手册](docs/user-guide/用户手册.md)提供选型、初始化及升级；[设备借用贯穿案例](docs/user-guide/设备借用贯穿案例.md)演示战略、后端、前端与统一验收。[全部手册](docs/user-guide/用户手册索引.md)给出本体和子项目入口。GitHub 当前能力、npm 发布版本与实例模板快照分别核对。
+[四个现行家族用户手册](.template-spec/user-guide/用户手册.md)提供选型、初始化及升级；[设备借用贯穿案例](.template-spec/user-guide/设备借用贯穿案例.md)演示战略、后端、前端与统一验收。[全部手册](.template-spec/user-guide/用户手册索引.md)给出本体和子项目入口。GitHub 当前能力、npm 发布版本与实例模板快照分别核对。

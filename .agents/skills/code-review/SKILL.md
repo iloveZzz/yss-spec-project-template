@@ -11,13 +11,13 @@ Review of a pinned candidate against a fixed point on two core axes, plus UI fid
 
 普通功能默认由一名与实现者独立的审查者完成 Standards、Spec 和适用的 UI fidelity 检查，分别报告结论。只有专业能力缺口、结论冲突、明确外部制度或用户指定时，才拆成多个审查者；多个无依赖审查可以并行。检查轴不等于会签人数，不能要求用户为每个轴重复确认。
 
-If `docs/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`; do not invoke another user-invoked skill yourself.
+If `.template-spec/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-pocock-skills`; do not invoke another user-invoked skill yourself.
 
-文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
 
 ## 文档写作
 
-撰写审查报告时，读取 `docs/process/document-writing.md` 的共用写法及审查指引；保留各审查轴的 findings、严重性、定位、证据及原裁决，不因压缩表达合并或降级。
+撰写审查报告时，读取 `.template-spec/process/document-writing.md` 的共用写法及审查指引；保留各审查轴的 findings、严重性、定位、证据及原裁决，不因压缩表达合并或降级。
 
 ## Process
 
@@ -30,13 +30,13 @@ If `docs/agents/issue-tracker.md` is missing, tell the user to run `/setup-matt-
 Look for the originating spec, in this order:
 
 1. A spec/Ticket/contract reference supplied by the user or an upstream lifecycle review input.
-2. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.) — fetch via the workflow in `docs/agents/issue-tracker.md`.
+2. Issue references in the commit messages (`#123`, `Closes #45`, GitLab `!67`, etc.) — fetch via the workflow in `.template-spec/agents/issue-tracker.md`.
 3. A spec file under `docs/`, `specs/`, or `docs/.scratch/` matching the branch name or feature.
 4. If nothing is found, ask the user where the spec is. If they say there isn't one, the **Spec** sub-agent will skip and report "no spec available".
 
 ### 3. Identify the standards sources
 
-Compile sources **before** review. For YSS implementation candidates follow [yss-review-standards.md](references/yss-review-standards.md): run machine checks that exist in the implementation repo; then collect repo docs (`CODING_STANDARDS.md` / `CONTRIBUTING.md` if present), every Slice `required_skills` skill file, the impact-conditioned specialist inputs (`alibaba-java-code-style`, `yss-ui`, `yss-domain`, …), and `docs/templates/review-report-template.md`. Missing applicable coverage is `missing_evidence`, not a pass.
+Compile sources **before** review. For YSS implementation candidates follow [yss-review-standards.md](references/yss-review-standards.md): run machine checks that exist in the implementation repo; then collect repo docs (`CODING_STANDARDS.md` / `CONTRIBUTING.md` if present), every Slice `required_skills` skill file, the impact-conditioned specialist inputs (`alibaba-java-code-style`, `yss-ui`, `yss-domain`, …), and `.template-spec/templates/review-report-template.md`. Missing applicable coverage is `missing_evidence`, not a pass.
 
 For YSS backend review, derive the review roots from the candidate project root, implementation-repository registry, Slice `project_roots` and `allowed_write_paths`. Review only the project itself and registered backend development projects; exclude frontend roots, unrelated submodules/vendor trees and unregistered directories. Never replace this resolution with a fixed `apps/backend` assumption.
 
@@ -89,7 +89,7 @@ If the spec is missing, skip the Spec sub-agent and note this in the final repor
 
 For template-maintenance task packages carrying `review_round`, preserve the frozen scope and apply the two-round convergence contract. A hard requirement added during review must cite a rule that already applied when the candidate was frozen; otherwise report it as `judgement-call` for the backlog. Round 1 blocking findings return to the implementer and require a new digest plus all review axes. If Round 2 still has an open `violation`, `drift`, or `new_impacts`, return `needs-human` and stop; do not silently start Round 3. Candidate byte changes invalidate every earlier axis report.
 
-Present the reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. If UI is in scope, add `## UI fidelity` from the separate pass. Fill `docs/templates/review-report-template.md` specialist tables as part of Standards evidence, not a fourth axis. Do **not** merge or rerank findings — the axes are deliberately separate (see _Why separate axes_). A YSS candidate with blank applicable specialist rows, skipped `required_skills`, or unaddressed mandatory violations is `blocked`, not `completed`. Do not close findings by writing implementation in the review session. `violation` / machine-check failure / blank applicable rows go back to the implementer on the original contract path, then recapture the candidate and rerun affected axes and their dependencies; explicitly rebind unchanged evidence. `drift` / `new_impacts` / `required_skills` mismatch mark the contract `stale` and return to 实现合同编译器; do not keep coding on the old contract. `not-applicable` is only for untriggered impacts; mandatory gates have no waiver, only repair or a complete `seam-deferred` record.
+Present the reports under `## Standards` and `## Spec` headings, verbatim or lightly cleaned. If UI is in scope, add `## UI fidelity` from the separate pass. Fill `.template-spec/templates/review-report-template.md` specialist tables as part of Standards evidence, not a fourth axis. Do **not** merge or rerank findings — the axes are deliberately separate (see _Why separate axes_). A YSS candidate with blank applicable specialist rows, skipped `required_skills`, or unaddressed mandatory violations is `blocked`, not `completed`. Do not close findings by writing implementation in the review session. `violation` / machine-check failure / blank applicable rows go back to the implementer on the original contract path, then recapture the candidate and rerun affected axes and their dependencies; explicitly rebind unchanged evidence. `drift` / `new_impacts` / `required_skills` mismatch mark the contract `stale` and return to 实现合同编译器; do not keep coding on the old contract. `not-applicable` is only for untriggered impacts; mandatory gates have no waiver, only repair or a complete `seam-deferred` record.
 
 For Worktree mode, recapture the candidate digest after all applicable checks finish. If it differs from `candidate_digest`, mark the affected reports as reviewing a **stale candidate** and return `blocked`; the caller may start a new review against a new capture, but this invocation must not aggregate findings from different bytes. Recheck the same digest again at the completion/checkpoint boundary.
 

@@ -8,7 +8,7 @@ import {prepareFlowPrototype,validatePrototypeProject} from '../scripts/prototyp
 import {buildAntdPrototype} from '../scripts/build-antd-prototype.mjs';
 const {chromium}=await import(process.env.YSS_PLAYWRIGHT_MODULE||'playwright');
 const temp=await mkdtemp(path.join(os.tmpdir(),'yss-workbench-browser-'));const source=path.join(temp,'source');
-await mkdir(path.join(source,'docs/design/tokens'),{recursive:true});for(const ref of ['DESIGN.md','docs/design/tokens/variables.css'])await cp(new URL(`../../../../${ref}`,import.meta.url),path.join(source,ref));
+await mkdir(path.join(source,'.template-spec/design/tokens'),{recursive:true});for(const ref of ['DESIGN.md','.template-spec/design/tokens/variables.css'])await cp(new URL(`../../../../${ref}`,import.meta.url),path.join(source,ref));
 const results=[];const browser=await chromium.launch(process.env.YSS_BROWSER_CHANNEL?{channel:process.env.YSS_BROWSER_CHANNEL}:{});
 try{
  for(const kind of ['native','antd']){

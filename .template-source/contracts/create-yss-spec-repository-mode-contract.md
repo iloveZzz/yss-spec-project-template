@@ -73,11 +73,11 @@ npx create-yss-spec@latest attach \
 
 `template.manifest.json` 是模板源与 CLI 共享的分发清单。它必须同时声明允许进入快照的根文件、根目录和路径前缀，明确排除的源仓库路径及其例外文件，以及 init / attach / sync 的差异化受管边界。
 
-未命中 allowlist 的新顶层文件默认不进入快照。`docs/adr/README.md` 是实例 ADR 入口，模板源 ADR 不进入快照；`.nvmrc`、根 `.gitignore` 公共区、共享运行脚本和 `scripts/vendor/` 进入快照。旧实例已经存在的被排除路径默认生成 `remove-report`；只有显式 `sync --prune` 且通过 baseline 与所有权校验时才删除。
+未命中 allowlist 的新顶层文件默认不进入快照。`.template-spec/adr/README.md` 是实例 ADR 入口，模板源 ADR 不进入快照；`.nvmrc`、根 `.gitignore` 公共区、共享运行脚本和 `scripts/vendor/` 进入快照。旧实例已经存在的被排除路径默认生成 `remove-report`；只有显式 `sync --prune` 且通过 baseline 与所有权校验时才删除。
 
 ## 固定迁移规则
 
-CLI 必须遵循本契约的固定映射：旧 Spec / Ticket skill 和模板入口迁移为当前名称，旧规格文件、根 `.scratch/<feature>/` 迁移到当前路径；无法推断功能归属的扁平 Ticket 标记为 `unsafe` 并阻断。新旧目标内容不一致时标记 `conflict`，不得静默覆盖。旧 skill 名称的对应关系见 [`docs/agents/skill-migrations.md`](../../docs/agents/skill-migrations.md)。
+CLI 必须遵循本契约的固定映射：旧 Spec / Ticket skill 和模板入口迁移为当前名称，旧规格文件、根 `.scratch/<feature>/` 迁移到当前路径；无法推断功能归属的扁平 Ticket 标记为 `unsafe` 并阻断。新旧目标内容不一致时标记 `conflict`，不得静默覆盖。旧 skill 名称的对应关系见 [`.template-spec/agents/skill-migrations.md`](../../.template-spec/agents/skill-migrations.md)。
 
 ## 跨仓库验收
 
@@ -98,7 +98,7 @@ CLI 必须遵循本契约的固定映射：旧 Spec / Ticket skill 和模板入�
 
 ## 发布顺序与阻断条件
 
-1. 模板恢复 `docs/process/*`、正式处理 `.qoder` 投影并通过 fresh verification，形成确定 commit。
+1. 模板恢复 `.template-spec/process/*`、正式处理 `.qoder` 投影并通过 fresh verification，形成确定 commit。
 2. CLI 绑定该 commit，完成 attach / sync 跨仓库测试和独立 review。
 3. 运行固定 commit 的 `npm test`、`npm pack --dry-run`，确认包内快照和实例门禁通过。
 4. 发布 CLI `2.1.4`，并回写版本、验证证据、备份恢复路径和回滚点。

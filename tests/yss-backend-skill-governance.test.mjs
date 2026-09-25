@@ -11,7 +11,7 @@ import {
 import { parseDocument } from "../scripts/vendor/yaml.mjs";
 
 const registry = loadSkillRegistry();
-const backendPlatforms = JSON.parse(readFileSync("docs/engineering/backend-platforms.json", "utf8"));
+const backendPlatforms = JSON.parse(readFileSync(".template-spec/engineering/backend-platforms.json", "utf8"));
 
 function skillBody(name) {
   return readFileSync(`.agents/skills/${name}/SKILL.md`, "utf8");
@@ -116,7 +116,7 @@ test("new use of deprecated fixtures and retired production IDs returns stable c
     assert.throws(
       () => resolveSkillForNewUse(registry, id),
       (error) => error.code === SKILL_LIFECYCLE_FAILURE_CODES.retired
-        && error.details.migration_ref === "docs/agents/skill-migrations.md"
+        && error.details.migration_ref === ".template-spec/agents/skill-migrations.md"
     );
   }
   const deprecated = registryWithDeprecatedSkill();

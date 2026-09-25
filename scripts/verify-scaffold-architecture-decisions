@@ -11,7 +11,7 @@ import { assertScaffoldUserDecision } from "./lib/user-decision.mjs";
 import { validateArchitectureIdentity } from "./lib/backend-architecture.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const schemaPath = path.join(repoRoot, "docs/process/schemas/scaffold-architecture-decisions.schema.json");
+const schemaPath = path.join(repoRoot, ".template-spec/process/schemas/scaffold-architecture-decisions.schema.json");
 const MVC_ORDER = ["server", "service", "repository", "adapter", "client", "feign-client"];
 const DDD_MODULES = ["domain", "application", "infrastructure", "adapter", "bootstrap"];
 const CAPABILITIES = { "external-integration": ["adapter"], "published-client": ["client"], "feign-client": ["client", "feign-client"] };

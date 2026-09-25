@@ -22,4 +22,4 @@ description: 从需求、已有 Spec 或设计继续 YSS 后端交付，或恢�
 
 终点仅表示当前切片后端可交付。完成后不得恢复实现、自动发布或宣布整个业务完成。实际 Git、远端写入、部署和发布按主控的独立授权要求处理。当前开发版的真实交付验收仍须补齐。
 
-阅读已有合同优先使用接收项目的 `scripts/contract view <资产> --kind <类型>`；任务约束用 `--profile task --unit <ID>`，摘要明细用 `--profile full`。来源自动准备和 API v2 显式迁移见接收项目 `docs/process/contract-reading.md`。视图不授予执行权限，仍核验原批准与当前来源。
+阅读已有合同优先使用接收项目的 `scripts/contract view <资产> --kind <类型>`；任务约束用 `--profile task --unit <ID>`，摘要明细用 `--profile full`。来源自动准备和 API v2 显式迁移见接收项目 `.template-spec/process/contract-reading.md`。视图不授予执行权限，仍核验原批准与当前来源。

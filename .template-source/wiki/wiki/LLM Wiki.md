@@ -27,6 +27,6 @@ LLM Wiki 是由 `raw/`、`wiki/` 与 `.wiki-manifest.json` 组成的本地持久
 - `AGENTS.md`
 - `CONTEXT.md`
 - `skills-lock.json`
-- `docs/agents/yss-skill-registry.yaml`
+- `.template-spec/agents/yss-skill-registry.yaml`
 - `.template-source/wiki/.wiki-manifest.json`
 - `yss-public-skills.json`

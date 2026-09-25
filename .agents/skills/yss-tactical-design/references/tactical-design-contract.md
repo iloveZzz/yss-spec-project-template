@@ -42,4 +42,4 @@ evidence_refs: []
 6. 复杂跨聚合一致性、并发、幂等、事件补偿或持久化错位必须写明策略，必要时升级独立文档。
 7. 实现发现新影响时必须阻断并回到生命周期重新路由。
 
-跨仓快照消费在 v2 共同头（旧独立 v1 则为根对象）绑定 `strategic_handoff`；字段与实际命令以 `docs/process/strategic-handoff-package.md` 为准。
+跨仓快照消费在 v2 共同头（旧独立 v1 则为根对象）绑定 `strategic_handoff`；字段与实际命令以 `.template-spec/process/strategic-handoff-package.md` 为准。

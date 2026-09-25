@@ -101,7 +101,7 @@ const missingGeneric = clone();
 missingGeneric.runtimes = missingGeneric.runtimes.filter((runtime) => runtime.id !== "runtime.generic");
 mustFail(missingGeneric, /缺少运行时绑定: runtime.generic/, "缺少通用运行时");
 
-validateApprovalRecordFile("docs/templates/approval-record-template.yaml");
+validateApprovalRecordFile(".template-spec/templates/approval-record-template.yaml");
 
 const rolesDoc = loadDigitalHumanRoles();
 try {

@@ -4,9 +4,9 @@
 
 1. 按 `orchestration-contract.yaml.request_triage` 理解请求并选择模式，再识别仓库身份、任务规模和影响面；问题理解与澄清细节见 [请求分诊协议](request-triage.md)。
 2. `setup readiness`：每个任务只执行一次，核对 tracker、五态标签和领域文档布局，并在本轮缓存结果；仅在 tracker、主远端、真实标签或配置变化时重查。
-3. 加载父 Ticket/checkpoint 与真实资产，计算最近可信阶段；按 `docs/process/stage-tracking.md` 登记、恢复并核验当前阶段工作项，写入前确保 checkpoint 已持久化，工作单元结果带 checkpoint_ref。
+3. 加载父 Ticket/checkpoint 与真实资产，计算最近可信阶段；按 `.template-spec/process/stage-tracking.md` 登记、恢复并核验当前阶段工作项，写入前确保 checkpoint 已持久化，工作单元结果带 checkpoint_ref。
 4. 评估资产、门禁和 `stale`，选择第一个未阻塞工作单元。进入 `work-unit.slice-implementation` 前，必须先通过 `scripts/lib/lifecycle-transition.mjs` 的 Ticket 正式化、垂直切片绑定和合法 `next_route` 校验；父 Ticket、缺少垂直切片或 `ready-for-human` 的切片一律 `blocked`。
-5. 执行最小生命周期工作单元：主控先按 `docs/process/schemas/digital-human-task-package.schema.json` 编译并校验任务包，再只实际调用允许的 model-invoked skill；原生工作单元可直接持有正式资产，Matt 兼容 user-invoked skill 仅作为 workflow reference，仍由用户显式启动。将结果归一化为 `Workflow Execution Result`，验收输出并回写状态与证据。任务包的 `contract.kind` 按工作单元选择；只有实现子任务使用 `slice-implementation` 并消费 Slice Implementation Contract，其他阶段不伪造该合同。
+5. 执行最小生命周期工作单元：主控先按 `.template-spec/process/schemas/digital-human-task-package.schema.json` 编译并校验任务包，再只实际调用允许的 model-invoked skill；原生工作单元可直接持有正式资产，Matt 兼容 user-invoked skill 仅作为 workflow reference，仍由用户显式启动。将结果归一化为 `Workflow Execution Result`，验收输出并回写状态与证据。任务包的 `contract.kind` 按工作单元选择；只有实现子任务使用 `slice-implementation` 并消费 Slice Implementation Contract，其他阶段不伪造该合同。
 6. 若仍在授权和自动推进边界内，回到第 3 步；否则暂停。
 
 不要仅输出下一个提示词后结束 `orchestrate`/`resume`。不要因进入业务代码阶段而退出主控；应把实现交给专项 skill，并在返回后继续核验。
@@ -41,7 +41,7 @@ Matt phase boundary 是工作阶段之间的上下文决策，不是新的生命
 
 所有命中项目必须达到 `existing-and-onboarded` 或 `initialized-and-verified`，未命中的交付面必须有带原因的 `not-applicable`。聚合结果、Manifest、验证和 onboarding 证据必须可读且当前；否则 `check.implementation-repositories-ready` 阻断 Ticket 正式化。旧实例恢复时保留已有 Ticket，但将相关 Ticket / Slice Contract 标为 `blocked` / `stale` 并返回本工作单元。
 
-`prototype_confirmation` 通过后，先判断实现仓库登记中的 backend `scaffold_status`。当状态为 `required` 时，在进入 DDD / MVC 分支设计前完成 `gate.backend-architecture-platform-approved`：Agent 按领域复杂度给出 `domain-driven` / `layered-mvc` 推荐和依据，并从 `docs/engineering/backend-platforms.json` 展示可选平台的精确 Spring Boot 补丁版本与 Java 版本；用户在同一次决定中确认架构与平台。本体选择作为子项目预填默认值，用户可批量确认全部项目或逐项覆盖。选择写入 `scaffold-architecture-decisions.yaml`；处于 `undecided`、`recommended`、`awaiting-user-decision` 或 `stale` 时必须阻断，不得默认 DDD、MVC 或 Spring Boot 版本，也不得在生成器内交互。既有工程使用当前 `existing-registration` 的架构及固定工程基线/POM 中的实际 Spring Boot 版本，核验摘要和支持状态后将该门禁记录为 `not-applicable`，不重复询问；架构转换或平台升级另行立项。
+`prototype_confirmation` 通过后，先判断实现仓库登记中的 backend `scaffold_status`。当状态为 `required` 时，在进入 DDD / MVC 分支设计前完成 `gate.backend-architecture-platform-approved`：Agent 按领域复杂度给出 `domain-driven` / `layered-mvc` 推荐和依据，并从 `.template-spec/engineering/backend-platforms.json` 展示可选平台的精确 Spring Boot 补丁版本与 Java 版本；用户在同一次决定中确认架构与平台。本体选择作为子项目预填默认值，用户可批量确认全部项目或逐项覆盖。选择写入 `scaffold-architecture-decisions.yaml`；处于 `undecided`、`recommended`、`awaiting-user-decision` 或 `stale` 时必须阻断，不得默认 DDD、MVC 或 Spring Boot 版本，也不得在生成器内交互。既有工程使用当前 `existing-registration` 的架构及固定工程基线/POM 中的实际 Spring Boot 版本，核验摘要和支持状态后将该门禁记录为 `not-applicable`，不重复询问；架构转换或平台升级另行立项。
 
 `gate.backend-architecture-platform-approved` 通过、选择达到 `lifecycle-approved` 且 digest 当前后，才可进入对应的 DDD 战术设计或 MVC 技术设计分支，再完成批准且当前的 Technical Design、Data Architecture Decision v1 和 API Contract Decision v1。数据与 API 均按影响强制：命中则绑定设计及评审闭包，未命中则绑定评估、明确原因和证据。再由 `yss-implementation-contract-compiler` 编译脚手架 schema v4 `controlled-generation` 工作单元合同。顺序为：工程基线与架构/平台推荐 → 用户确认与选择持久化 → DDD / MVC 分支设计 → 技术/数据/API 设计 → 工程合同原子批准 → 脚手架合同持久化 → `domain-driven` 使用 `yss-ddd-scaffold-generator` 或 `layered-mvc` 使用 `yss-layered-mvc-scaffold-generator` → 对应基线/Manifest v4 校验 → 仓库准备 v2 → 实现合同编译器业务合同重编译。`existing` / `initialized` 不重复生成；架构转换或平台升级必须单独立项。schema v3 只允许历史 Manifest 的只读恢复审计，不得新生成。
 
@@ -61,9 +61,9 @@ Readiness 结果在同一任务内复用。只有 tracker、主远端、真实�
 | `degraded` | 已选择的 GitHub/GitLab 不可用 | 建 `docs/.scratch/<feature>/` 待发布草案，不改投平台 |
 | `not-applicable` | `template-source` | 只验证模板契约 |
 
-远程 tracker 必须检查真实标签；Local Markdown 必须检查功能包目录和 Ticket 顶部的 `Status:`。仅有 `docs/agents/triage-labels.md` 不代表远程标签存在，也不能替代 Local 文件状态检查。
+远程 tracker 必须检查真实标签；Local Markdown 必须检查功能包目录和 Ticket 顶部的 `Status:`。仅有 `.template-spec/agents/triage-labels.md` 不代表远程标签存在，也不能替代 Local 文件状态检查。
 
-tracker 选择和冲突按 `docs/agents/issue-tracker.md` 裁决：已持久化 tracker 配置优先，本模板默认 `local-markdown`，Local root 为 `docs/.scratch/`；用户在初始化/迁移时明确选择 GitHub/GitLab 后才切换，Git remote 只代表代码托管。Local 主 tracker 不要求远程 Ticket；只有已选择远程平台但凭据不可用时，才降级为 `docs/.scratch/<feature>/` 待发布草案，不自动改投其他平台。发现根 `.scratch/` 或 `docs/requirements/tickets/` 旧资产时，保留 `migration_ref` 并暂停写入；新旧路径同时存在时返回 `conflict`。恢复前记录最终平台、真实五态标签或 Local `Status:` 检查结果和草案位置。
+tracker 选择和冲突按 `.template-spec/agents/issue-tracker.md` 裁决：已持久化 tracker 配置优先，本模板默认 `local-markdown`，Local root 为 `docs/.scratch/`；用户在初始化/迁移时明确选择 GitHub/GitLab 后才切换，Git remote 只代表代码托管。Local 主 tracker 不要求远程 Ticket；只有已选择远程平台但凭据不可用时，才降级为 `docs/.scratch/<feature>/` 待发布草案，不自动改投其他平台。发现根 `.scratch/` 或 `docs/requirements/tickets/` 旧资产时，保留 `migration_ref` 并暂停写入；新旧路径同时存在时返回 `conflict`。恢复前记录最终平台、真实五态标签或 Local `Status:` 检查结果和草案位置。
 
 ## Matt flow 进入条件
 
@@ -82,7 +82,7 @@ tracker 选择和冲突按 `docs/agents/issue-tracker.md` 裁决：已持久化 
 - 小改动和中等变更可由同一独立执行者完成 `code-review` 与 fresh verification，并在同一报告中分别记录 findings、命令、结果和残余风险。
 - 该执行者必须独立于实现者；新模块、高风险变更、职责冲突或需双人控制时，Reviewer 与 Verifier 分开。
 - `code-review` 是唯一默认代码审查 skill。GitLab、CI、Sonar、Alibaba Java 与 YSS 前端 / 后端 skill 作为仓库规则或专项检查输入接入 Standards 轴，由 `review_standards_route` 按影响面编译；不再叠加第二个通用审查 skill。漏掉合同 `required_skills`、适用报告行空白、mandatory `violation` 未关闭或可机器检查规则既无工具结果也无原文引用时，不得 `completed`。
-- 产品切片与模板维护共用 finding 分类；产品切片执行下述候选审查闭环，模板维护按 `docs/process/harness-process-tailoring.md` 的 L1 / L2 / L3 验证强度闭合，不自动冻结候选或全轴复审。`violation`、机器检查失败、适用行空白由实现者在原合同路径修复，再重新捕获候选并全轴复审。`drift`、`new_impacts`、`required_skills` 与真实影响不一致时合同 `stale`，回 实现合同编译器 或更早阶段，禁止在旧合同上继续编码。审查者不得写实现。`not-applicable` 仅当影响面未命中；命中后 mandatory 不得豁免，只允许修复或完整 `seam-deferred`。禁止为日常 Alibaba / YSS 新增生物人豁免门禁。
+- 产品切片与模板维护共用 finding 分类；产品切片执行下述候选审查闭环，模板维护按 `.template-spec/process/harness-process-tailoring.md` 的 L1 / L2 / L3 验证强度闭合，不自动冻结候选或全轴复审。`violation`、机器检查失败、适用行空白由实现者在原合同路径修复，再重新捕获候选并全轴复审。`drift`、`new_impacts`、`required_skills` 与真实影响不一致时合同 `stale`，回 实现合同编译器 或更早阶段，禁止在旧合同上继续编码。审查者不得写实现。`not-applicable` 仅当影响面未命中；命中后 mandatory 不得豁免，只允许修复或完整 `seam-deferred`。禁止为日常 Alibaba / YSS 新增生物人豁免门禁。
 - 独立 Reviewer 必须与实现者不同实例，并在能执行已登记 `pnpm` / `./mvnw` 的运行时中审查。模板源 `.cursor/environment.json` 只服务模板校验，不替代实现仓审查运行时。不为此再创建第二个 Cloud 审查环境或 `/code-review` skill。
 - UI 影响切片将 `UI fidelity` 作为 `code-review` 的条件第三轴；任何修复都会使候选摘要失效，必须重新捕获候选并重跑 Standards、Spec、UI fidelity 和 fresh verification。
 
@@ -98,7 +98,7 @@ tracker 选择和冲突按 `docs/agents/issue-tracker.md` 裁决：已持久化 
 
 ## 必须暂停
 
-- 注册表中的聚合门禁等待会签裁决（数字人或生物人，以 `docs/agents/digital-human-roles.yaml` 的 `gate_policy` 为准）。暂停输出必须包含：门禁 ID、指定 `role_id`、`runtime_id`、会签文件路径。恢复前执行 `scripts/verify-approval-record --require-approved`；角色错误、起草者自签或生物人门禁被数字人关闭时返回 `blocked`，不得标 `approved`。
+- 注册表中的聚合门禁等待会签裁决（数字人或生物人，以 `.template-spec/agents/digital-human-roles.yaml` 的 `gate_policy` 为准）。暂停输出必须包含：门禁 ID、指定 `role_id`、`runtime_id`、会签文件路径。恢复前执行 `scripts/verify-approval-record --require-approved`；角色错误、起草者自签或生物人门禁被数字人关闭时返回 `blocked`，不得标 `approved`。
 - 需要目标仓库、外部凭据、发布窗口或其他新授权。
 - 状态与证据冲突且无法可靠重建。
 - 专项 skill 失败或返回不可验收结果。
@@ -147,8 +147,8 @@ Checkpoint 中已批准门禁必须带 `basis: [{ref, digest}]` 和按 `evidence
 
 ## 专项合同加载索引
 
-专项加载提示：实现仓库与脚手架查询 `implementation_repository_preparation`、`backend_scaffold`；切片实现查询 `ticket_formalization`、`ready_for_agent`；UI 查询 `frontend_implementation_plan`、`frontend_implementation_verification`；审查查询 `review_input`；发布查询 `release_readiness`、`git_authorization`、`user_decision_evidence`；战略交接读取 `docs/process/strategic-handoff-package.md` 并按其中验证器执行。
+专项加载提示：实现仓库与脚手架查询 `implementation_repository_preparation`、`backend_scaffold`；切片实现查询 `ticket_formalization`、`ready_for_agent`；UI 查询 `frontend_implementation_plan`、`frontend_implementation_verification`；审查查询 `review_input`；发布查询 `release_readiness`、`git_authorization`、`user_decision_evidence`；战略交接读取 `.template-spec/process/strategic-handoff-package.md` 并按其中验证器执行。
 
 ## 后端脚手架平台
 
-在工程基线中合并展示、确认架构和 Boot 精确版本、Java、YSS 父 POM/BOM；缺少选择时询问，当前批准可复用。独立子项目可继承或覆盖，并可一次确认明确列出的多个项目。同一 Maven 工程统一平台。执行 `scripts/backend-platforms` 展示兼容状态；只允许已验证组合。决定、合同、Manifest 和下游身份绑定同一平台摘要；变更重新确认。合同见仓库 `docs/engineering/backend-platforms.md`。
+在工程基线中合并展示、确认架构和 Boot 精确版本、Java、YSS 父 POM/BOM；缺少选择时询问，当前批准可复用。独立子项目可继承或覆盖，并可一次确认明确列出的多个项目。同一 Maven 工程统一平台。执行 `scripts/backend-platforms` 展示兼容状态；只允许已验证组合。决定、合同、Manifest 和下游身份绑定同一平台摘要；变更重新确认。合同见仓库 `.template-spec/engineering/backend-platforms.md`。

@@ -7,7 +7,7 @@ import {pathToFileURL} from 'node:url';
 const root=path.resolve(process.argv[2] || '.');
 const read=ref=>fs.readFileSync(path.join(root,ref),'utf8');
 const {parse}=await import(pathToFileURL(path.join(root,'scripts/vendor/yaml.mjs')));
-const registry=parse(read('docs/agents/yss-skill-registry.yaml'));
+const registry=parse(read('.template-spec/agents/yss-skill-registry.yaml'));
 const skill=registry.skills.find(x=>x.id==='i-have-adhd');
 assert.equal(skill.instance_default_discoverable,true);
 assert.equal(registry.invocation_contract.overrides['i-have-adhd'].invocation_mode,'model');
@@ -27,7 +27,7 @@ for (const target of locked.targets) {
   const skillPath=target.endsWith('/i-have-adhd')?target:path.join(target,'i-have-adhd');
   assert.equal(treeHash(path.join(root,skillPath)),locked.effectiveHash,`projection ${target}`);
 }
-for(const ref of ['docs/process/document-writing.md','docs/templates/examples/lifecycle-writing-examples.md']) {
+for(const ref of ['.template-spec/process/document-writing.md','.template-spec/templates/examples/lifecycle-writing-examples.md']) {
   assert.ok(read(ref).length);
   assert.ok(!read(ref).includes('.template-source/'));
 }

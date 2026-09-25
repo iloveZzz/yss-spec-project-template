@@ -65,66 +65,66 @@
           "id": "triage",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/design/triage.patch",
-          "source_tree_sha256": "de427092ee8751b94d4d4e6a66220bfd38e7f536f87e8f81410ad680931fcaf2"
+          "source_tree_sha256": "16c88d5139cc7bc23661501db2fdf5473d9f2b7fbf4ceae5cfd4819823486451"
         }
       ],
       "assets": [
         {
-          "source": "docs/process/document-writing.md"
+          "source": ".template-spec/process/document-writing.md"
         },
         {
-          "source": "docs/templates/examples/lifecycle-writing-examples.md"
+          "source": ".template-spec/templates/examples/lifecycle-writing-examples.md"
         },
         {
           "source": "DESIGN.md"
         },
         {
-          "source": "docs/design/design.md"
+          "source": ".template-spec/design/design.md"
         },
         {
-          "source": "docs/design/templates/prototype-evidence-template.yaml"
+          "source": ".template-spec/design/templates/prototype-evidence-template.yaml"
         },
         {
-          "source": "docs/design/templates/visual-baseline-template.yaml"
+          "source": ".template-spec/design/templates/visual-baseline-template.yaml"
         },
         {
-          "source": "docs/design/tokens/.design-md-projection.json"
+          "source": ".template-spec/design/tokens/.design-md-projection.json"
         },
         {
-          "source": "docs/design/tokens/tokens.default.json"
+          "source": ".template-spec/design/tokens/tokens.default.json"
         },
         {
-          "source": "docs/design/tokens/theme.json"
+          "source": ".template-spec/design/tokens/theme.json"
         },
         {
-          "source": "docs/design/tokens/variables.css"
+          "source": ".template-spec/design/tokens/variables.css"
         },
         {
-          "source": "docs/design/tokens/tokens.compact.json"
+          "source": ".template-spec/design/tokens/tokens.compact.json"
         },
         {
-          "source": "docs/design/tokens/tokens.dark.json"
+          "source": ".template-spec/design/tokens/tokens.dark.json"
         },
         {
-          "source": "docs/design/tokens/variables.dark.css"
+          "source": ".template-spec/design/tokens/variables.dark.css"
         },
         {
-          "source": "docs/design/design-system-sync.yaml"
+          "source": ".template-source/design/design-system-sync.yaml"
         },
         {
           "source": ".template-source/tooling/node/scripts/design-md.mjs"
         },
         {
-          "source": "docs/design/README.md"
+          "source": ".template-spec/design/README.md"
         },
         {
-          "source": "docs/design/preview.css"
+          "source": ".template-source/design/preview.css"
         },
         {
-          "source": "docs/design/preview.html"
+          "source": ".template-source/design/preview.html"
         },
         {
-          "source": "docs/design/preview-dark.html"
+          "source": ".template-source/design/preview-dark.html"
         },
         {
           "source": ".template-source/tooling/node/test/design-md.test.mjs"
@@ -348,13 +348,13 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "d12aaa4cce80c9d8ec90a596f3eee451cfc215f760fef7e1ac2268ce00be4b7a"
+          "source_tree_sha256": "2791a97ace9376357c11b47ab1df363bfaa56c882c6dfbc6ec2aacca81ecfcc8"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/yss-openapi-governance.patch",
-          "source_tree_sha256": "c76176dc7a507aba8d0af165dc538582799e91a389056f1fdd5d06641caa0e7a"
+          "source_tree_sha256": "cbd8cff2538419c2bbe45e9717613bf03f7094349164841f79d551a10c40e957"
         },
         {
           "id": "prototype",
@@ -366,15 +366,15 @@
           "id": "triage",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/backend/triage.patch",
-          "source_tree_sha256": "de427092ee8751b94d4d4e6a66220bfd38e7f536f87e8f81410ad680931fcaf2"
+          "source_tree_sha256": "16c88d5139cc7bc23661501db2fdf5473d9f2b7fbf4ceae5cfd4819823486451"
         }
       ],
       "assets": [
         {
-          "source": "docs/process/document-writing.md"
+          "source": ".template-spec/process/document-writing.md"
         },
         {
-          "source": "docs/templates/examples/lifecycle-writing-examples.md"
+          "source": ".template-spec/templates/examples/lifecycle-writing-examples.md"
         },
         {
           "source": ".template-source/evidence/maintenance/2026-09-18-yss-backend-components/aliyun-artifact-resolution.json"
@@ -416,22 +416,22 @@
           "source": ".agents/skills/yss-technical-design/scripts/generate-schema.mjs"
         },
         {
-          "source": "docs/process/schemas/project-scaffold-contract.schema.json"
+          "source": ".template-spec/process/schemas/project-scaffold-contract.schema.json"
         },
         {
-          "source": "docs/process/schemas/data-architecture-decision.schema.json"
+          "source": ".template-spec/process/schemas/data-architecture-decision.schema.json"
         },
         {
-          "source": "docs/process/schemas/api-contract-decision.schema.json"
+          "source": ".template-spec/process/schemas/api-contract-decision.schema.json"
         },
         {
-          "source": "docs/process/schemas/implementation-repository-preparation-result.schema.json"
+          "source": ".template-spec/process/schemas/implementation-repository-preparation-result.schema.json"
         },
         {
-          "source": "docs/process/schemas/openapi-draft-validation-record.schema.json"
+          "source": ".template-spec/process/schemas/openapi-draft-validation-record.schema.json"
         },
         {
-          "source": "docs/api/templates/openapi-draft-validation-record-template.yaml"
+          "source": ".template-spec/api/templates/openapi-draft-validation-record-template.yaml"
         },
         {
           "source": "scripts/lib/backend-scaffold-prerequisites.mjs"
@@ -635,25 +635,25 @@
           "id": "yss-implementation-contract-compiler",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-implementation-contract-compiler.patch",
-          "source_tree_sha256": "d12aaa4cce80c9d8ec90a596f3eee451cfc215f760fef7e1ac2268ce00be4b7a"
+          "source_tree_sha256": "2791a97ace9376357c11b47ab1df363bfaa56c882c6dfbc6ec2aacca81ecfcc8"
         },
         {
           "id": "yss-openapi-governance",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-openapi-governance.patch",
-          "source_tree_sha256": "c76176dc7a507aba8d0af165dc538582799e91a389056f1fdd5d06641caa0e7a"
+          "source_tree_sha256": "cbd8cff2538419c2bbe45e9717613bf03f7094349164841f79d551a10c40e957"
         },
         {
           "id": "prototype-review",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/prototype-review.patch",
-          "source_tree_sha256": "9bad87020635c7aa2049263eed9c78a7289af9ee4728d64d1641007fef999c51"
+          "source_tree_sha256": "caf814e6224ba21b84e87fd30c6846dafc4647d44663ccfdc6a7f48a4f965e21"
         },
         {
           "id": "triage",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/triage.patch",
-          "source_tree_sha256": "de427092ee8751b94d4d4e6a66220bfd38e7f536f87e8f81410ad680931fcaf2"
+          "source_tree_sha256": "16c88d5139cc7bc23661501db2fdf5473d9f2b7fbf4ceae5cfd4819823486451"
         },
         {
           "id": "yss-api-integration",
@@ -665,21 +665,21 @@
           "id": "yss-openapi-draft-review",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-openapi-draft-review.patch",
-          "source_tree_sha256": "d4ff53b34a41c852f5f7ac0b9c0d2f70ca8a027e04a9622f7c0770683a0ab69d"
+          "source_tree_sha256": "5e9586fdc6cc3d17ca67e18d8b82021994a78174b3438968f1b4b5f00414e32d"
         },
         {
           "id": "yss-skill-source-index-refresh",
           "strategy": "patch",
           "patch": ".template-source/profile-skill-patches/frontend/yss-skill-source-index-refresh.patch",
-          "source_tree_sha256": "91b5c99171a4ee9f4e35867e8325826eef825f072f9d040f239286b65c2dba58"
+          "source_tree_sha256": "5f10fe1db604348af21d499a742b8633bb590a33021e72d5e3297ed8ba17e513"
         }
       ],
       "assets": [
         {
-          "source": "docs/process/document-writing.md"
+          "source": ".template-spec/process/document-writing.md"
         },
         {
-          "source": "docs/templates/examples/lifecycle-writing-examples.md"
+          "source": ".template-spec/templates/examples/lifecycle-writing-examples.md"
         },
         {
           "source": ".template-source/evidence/maintenance/2026-09-18-yss-backend-components/aliyun-artifact-resolution.json"
@@ -688,52 +688,52 @@
           "source": "DESIGN.md"
         },
         {
-          "source": "docs/design/design.md"
+          "source": ".template-spec/design/design.md"
         },
         {
-          "source": "docs/design/templates/prototype-evidence-template.yaml"
+          "source": ".template-spec/design/templates/prototype-evidence-template.yaml"
         },
         {
-          "source": "docs/design/templates/visual-baseline-template.yaml"
+          "source": ".template-spec/design/templates/visual-baseline-template.yaml"
         },
         {
-          "source": "docs/design/tokens/.design-md-projection.json"
+          "source": ".template-spec/design/tokens/.design-md-projection.json"
         },
         {
-          "source": "docs/design/tokens/tokens.default.json"
+          "source": ".template-spec/design/tokens/tokens.default.json"
         },
         {
-          "source": "docs/design/tokens/theme.json"
+          "source": ".template-spec/design/tokens/theme.json"
         },
         {
-          "source": "docs/design/tokens/variables.css"
+          "source": ".template-spec/design/tokens/variables.css"
         },
         {
-          "source": "docs/design/tokens/tokens.compact.json"
+          "source": ".template-spec/design/tokens/tokens.compact.json"
         },
         {
-          "source": "docs/design/tokens/tokens.dark.json"
+          "source": ".template-spec/design/tokens/tokens.dark.json"
         },
         {
-          "source": "docs/design/tokens/variables.dark.css"
+          "source": ".template-spec/design/tokens/variables.dark.css"
         },
         {
-          "source": "docs/design/design-system-sync.yaml"
+          "source": ".template-source/design/design-system-sync.yaml"
         },
         {
           "source": ".template-source/tooling/node/scripts/design-md.mjs"
         },
         {
-          "source": "docs/design/README.md"
+          "source": ".template-spec/design/README.md"
         },
         {
-          "source": "docs/design/preview.css"
+          "source": ".template-source/design/preview.css"
         },
         {
-          "source": "docs/design/preview.html"
+          "source": ".template-source/design/preview.html"
         },
         {
-          "source": "docs/design/preview-dark.html"
+          "source": ".template-source/design/preview-dark.html"
         },
         {
           "source": ".template-source/tooling/node/test/design-md.test.mjs"

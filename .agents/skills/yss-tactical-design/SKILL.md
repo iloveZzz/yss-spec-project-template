@@ -5,7 +5,7 @@ description: 在 YSS 技术分析阶段将批准的战略领域输入细化为�
 
 # yss-tactical-design
 
-已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `docs/process/contract-reading.md`。
+已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `.template-spec/process/contract-reading.md`。
 
 本 skill 负责 DDD 战术设计，不新增生命周期主阶段，也不替代 `yss-stage-decision` 或 `yss-domain`。
 
@@ -42,4 +42,4 @@ description: 在 YSS 技术分析阶段将批准的战略领域输入细化为�
 
 ## 后端脚手架平台承接
 
-消费生命周期已确认的架构与 `platform_configuration` v2；不得自行选择、批准或静默升级 Boot/Java。平台清单执行 `scripts/backend-platforms` 查询；只允许已验证 YSS 组合，新生成缺少配置或证据即阻断。决定、合同、Manifest 与下游架构身份须绑定同一平台及兼容摘要。详见 仓库共享合同 `docs/engineering/backend-platforms.md`。
+消费生命周期已确认的架构与 `platform_configuration` v2；不得自行选择、批准或静默升级 Boot/Java。平台清单执行 `scripts/backend-platforms` 查询；只允许已验证 YSS 组合，新生成缺少配置或证据即阻断。决定、合同、Manifest 与下游架构身份须绑定同一平台及兼容摘要。详见 仓库共享合同 `.template-spec/engineering/backend-platforms.md`。

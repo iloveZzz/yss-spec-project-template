@@ -32,7 +32,7 @@ async function sharedTools(outputDir, contract) {
   }
   const staging = await mkdtemp(path.join(outputDir, ".skillUtils.staging-"));
   try {
-    for (const relative of [".agents/skills", ".codex/skills", ".cursor/skills", ".pi/skills", "scripts", "docs/agents", "docs/process", "AGENTS.md", "skills-lock.json"]) {
+    for (const relative of [".agents/skills", ".codex/skills", ".cursor/skills", ".pi/skills", "scripts", ".template-spec/agents", ".template-spec/process", "AGENTS.md", "skills-lock.json"]) {
       await mkdir(path.dirname(path.join(staging, relative)), { recursive: true });
       await cp(path.join(REPOSITORY_ROOT, relative), path.join(staging, relative), { recursive: true });
     }
@@ -55,7 +55,7 @@ export async function finalizeDataAnalysisProfile({ projectRoot, contract, archi
   if (digest(context) !== contract.context_handoff_digest || !/^---\r?\ncontext_schema_version: 1\r?\n---/m.test(context.toString())) throw new Error("CONTEXT handoff schema/digest 不匹配");
   if (spawnSync("git", ["--version"]).status !== 0) throw new Error("Git 不可用");
 
-  for (const relative of ["docs/agents", "docs/process", "docs/templates", "docs/architecture/templates"]) {
+  for (const relative of [".template-spec/agents", ".template-spec/process", ".template-spec/templates", ".template-spec/architecture/templates"]) {
     await mkdir(path.dirname(path.join(projectRoot, relative)), { recursive: true });
     await cp(path.join(REPOSITORY_ROOT, relative), path.join(projectRoot, relative), { recursive: true });
   }
@@ -73,9 +73,9 @@ export async function finalizeDataAnalysisProfile({ projectRoot, contract, archi
   }
   const lockDigest = await sharedTools(path.resolve(options.outputDir), contract);
   await put(path.join(projectRoot, "skills-lock.json"), JSON.stringify({ version: 1, distribution: { mode: "sibling-directory", skillUtilsDir: "../skillUtils", required: true, compatibility: "skill-utils-v1", lock_digest: lockDigest } }, null, 2));
-  await put(path.join(projectRoot, "docs/process/engineering-baseline.json"), JSON.stringify({ schema_version: 1, architecture_identity: architectureIdentity, platform_profile: contract.profiles.platform, scaffold_completion: "generated" }, null, 2));
-  await put(path.join(projectRoot, "docs/process/implementation-repo-registry.yaml"), JSON.stringify({ schema_version: 1, projects: [{ project_type: "backend", project_name: options.projectName, project_root: ".", git_root: ".", repository_scope: "external-repository", scaffold_status: "initialized", default_branch: "main", architecture_identity: architectureIdentity, allowed_write_paths: ["."], verification_commands: contract.verification_commands, expected_evidence_files: contract.expected_evidence_files, ci: "not-configured", rollback_point: "initial-empty-repository" }] }, null, 2));
-  await put(path.join(projectRoot, "docs/process/service-initialization.json"), JSON.stringify({ work_unit: "work-unit.service-project-initialization", context_handoff_ref: contract.context_handoff_ref, context_handoff_digest: contract.context_handoff_digest, contract_id: contract.contract_id, architecture_identity: architectureIdentity, status: "generated" }, null, 2));
+  await put(path.join(projectRoot, ".template-spec/process/engineering-baseline.json"), JSON.stringify({ schema_version: 1, architecture_identity: architectureIdentity, platform_profile: contract.profiles.platform, scaffold_completion: "generated" }, null, 2));
+  await put(path.join(projectRoot, ".template-spec/process/implementation-repo-registry.yaml"), JSON.stringify({ schema_version: 1, projects: [{ project_type: "backend", project_name: options.projectName, project_root: ".", git_root: ".", repository_scope: "external-repository", scaffold_status: "initialized", default_branch: "main", architecture_identity: architectureIdentity, allowed_write_paths: ["."], verification_commands: contract.verification_commands, expected_evidence_files: contract.expected_evidence_files, ci: "not-configured", rollback_point: "initial-empty-repository" }] }, null, 2));
+  await put(path.join(projectRoot, ".template-spec/process/service-initialization.json"), JSON.stringify({ work_unit: "work-unit.service-project-initialization", context_handoff_ref: contract.context_handoff_ref, context_handoff_digest: contract.context_handoff_digest, contract_id: contract.contract_id, architecture_identity: architectureIdentity, status: "generated" }, null, 2));
   await put(path.join(projectRoot, ".gitignore"), "target/\n**/target/\n.idea/\n*.iml\n.env\n.env.*\n.local/");
   const git = spawnSync("git", ["init", "--initial-branch=main"], { cwd: projectRoot, encoding: "utf8" });
   if (git.status !== 0) throw new Error(`Git 初始化失败: ${git.stderr}`);

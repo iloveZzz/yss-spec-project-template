@@ -68,7 +68,7 @@ function packageBase(roleId, taskId, workUnitId, kind, contractFields, stageId) 
     runtime_id: "runtime.skill-projection",
     execution_state: "Worker",
     workflow_status: "not-started",
-    contract: { kind, contract_id: `${kind}-${taskId}`, contract_version: 1, status: "issued", contract_ref: "docs/process/lifecycle-registry.yaml", ...contractFields },
+    contract: { kind, contract_id: `${kind}-${taskId}`, contract_version: 1, status: "issued", contract_ref: ".template-spec/process/lifecycle-registry.yaml", ...contractFields },
     inputs: ["CONTEXT.md"],
     objective: "执行有界生命周期工作单元",
     allowed_write_paths: ["docs/.scratch/"],
@@ -83,11 +83,11 @@ function packageBase(roleId, taskId, workUnitId, kind, contractFields, stageId) 
 }
 
 function lifecyclePackage() {
-  return packageBase("role.requirements-manager", "task-discovery", "work-unit.plan-opportunity", "lifecycle-work-unit", { lifecycle_ref: "docs/process/lifecycle-registry.yaml", artifact_refs: ["artifact.plan-record"] , gate_refs: [] , contract_id: "lifecycle-discovery", contract_version: 1 }, "stage.plan");
+  return packageBase("role.requirements-manager", "task-discovery", "work-unit.plan-opportunity", "lifecycle-work-unit", { lifecycle_ref: ".template-spec/process/lifecycle-registry.yaml", artifact_refs: ["artifact.plan-record"] , gate_refs: [] , contract_id: "lifecycle-discovery", contract_version: 1 }, "stage.plan");
 }
 
 function lifecycleStagePackage(roleId, taskId, workUnitId, stageId) {
-  return packageBase(roleId, taskId, workUnitId, "lifecycle-work-unit", { lifecycle_ref: "docs/process/lifecycle-registry.yaml", contract_id: `lifecycle-${taskId}`, contract_version: 1 }, stageId);
+  return packageBase(roleId, taskId, workUnitId, "lifecycle-work-unit", { lifecycle_ref: ".template-spec/process/lifecycle-registry.yaml", contract_id: `lifecycle-${taskId}`, contract_version: 1 }, stageId);
 }
 
 function templatePackage() {
@@ -214,8 +214,8 @@ try {
   mustFail((value) => { delete value.contract.lifecycle_ref; }, /lifecycle_ref/, "lifecycle-missing-ref");
   mustFail((value) => { value.contract.kind = "slice-implementation"; delete value.contract.slice_contract_ref; }, /slice_contract_ref/, "slice-missing-ref");
   mustFail((value) => { value.contract.kind = "template-maintenance"; delete value.contract.maintenance_ref; }, /maintenance_ref/, "maintenance-missing-ref");
-  mustFail((value) => { value.work_unit_id = "work-unit.intensity-aware-review"; value.contract.kind = "lifecycle-work-unit"; value.contract.lifecycle_ref = "docs/process/lifecycle-registry.yaml"; }, /template-source.*template-maintenance/, "template-source-lifecycle-kind");
-  mustFail((value) => { value.work_unit_id = "work-unit.slice-implementation"; value.stage_id = "stage.vertical-slice-implementation"; value.contract.kind = "lifecycle-work-unit"; value.contract.lifecycle_ref = "docs/process/lifecycle-registry.yaml"; }, /不得冒充垂直切片/, "implementation-lifecycle-kind", () => lifecycleStagePackage("role.frontend-engineer", "task-illegal-implementation", "work-unit.slice-implementation", "stage.vertical-slice-implementation"));
+  mustFail((value) => { value.work_unit_id = "work-unit.intensity-aware-review"; value.contract.kind = "lifecycle-work-unit"; value.contract.lifecycle_ref = ".template-spec/process/lifecycle-registry.yaml"; }, /template-source.*template-maintenance/, "template-source-lifecycle-kind");
+  mustFail((value) => { value.work_unit_id = "work-unit.slice-implementation"; value.stage_id = "stage.vertical-slice-implementation"; value.contract.kind = "lifecycle-work-unit"; value.contract.lifecycle_ref = ".template-spec/process/lifecycle-registry.yaml"; }, /不得冒充垂直切片/, "implementation-lifecycle-kind", () => lifecycleStagePackage("role.frontend-engineer", "task-illegal-implementation", "work-unit.slice-implementation", "stage.vertical-slice-implementation"));
   mustFail((value) => { value.convergence.parent_work_unit = "work-unit.code-review"; }, /必须汇合到 work-unit.slice-implementation/, "slice-wrong-parent", () => slicePackage("role.frontend-engineer", "task-slice-parent", "work-unit.slice-frontend", "apps/frontend/todo/"));
   mustFail((value) => { value.contract.status = "stale"; }, /stale 任务包必须暂停/, "stale-not-paused");
   mustFail((value) => { value.runtime_id = "runtime.unknown"; }, /未知 runtime_id/, "unknown-runtime");

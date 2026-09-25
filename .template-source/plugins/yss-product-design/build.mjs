@@ -25,7 +25,7 @@ export async function build({ output, sourceRoot = path.join(ROOT, 'submodules/y
       || bundle.snapshot.manifestHash !== pin.manifest_hash || bundle.core.digest !== pin.core_digest) throw new Error('cli-pin-mismatch');
   const sourceInfo = { state: git(source, 'status', '--porcelain', '--untracked-files=all') ? 'working-tree' : 'committed', base_commit: git(source, 'rev-parse', 'HEAD'), distribution: 'development-only' };
   const sourceRefs = ['AGENTS.md', 'CONTEXT.md', 'DESIGN.md', 'yss-project.yaml', 'skills-lock.json',
-    ...['scripts', 'docs', '.agents/skills'].flatMap(ref => existsSync(path.join(source, ref)) ? files(source, ref) : [])]
+    ...['scripts', '.template-spec', '.agents/skills'].flatMap(ref => existsSync(path.join(source, ref)) ? files(source, ref) : [])]
     .filter(ref => !/(?:^|\/)(?:node_modules|__pycache__|\.git)(?:\/|$)|\.pyc$|\.DS_Store$/.test(ref));
   const canonicalSkills = sourceRefs.filter(ref => ref.startsWith('.agents/skills/'));
   for (const runtime of ['.codex', '.cursor', '.pi']) for (const ref of canonicalSkills) sourceRefs.push(ref.replace('.agents/', `${runtime}/`));

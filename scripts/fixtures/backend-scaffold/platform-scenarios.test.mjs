@@ -305,11 +305,11 @@ test("component capabilities are nested by registry capability id and uncertifie
 
 test("Boot 3 catalog parser rejects drift in candidate and platform-managed bindings", async t => {
   const root = await mkdtemp(path.join(os.tmpdir(), "yss-boot3-catalog-")); t.after(() => rm(root, { recursive: true, force: true }));
-  await mkdir(path.join(root, "docs/engineering"), { recursive: true });
+  await mkdir(path.join(root, ".template-spec/engineering"), { recursive: true });
   const original = loadBackendPlatforms();
   const boot3Entry = original.compatibility.find(item => item.profile_id === "spring-boot-3.5-jdk17");
   const boot3 = { ...structuredClone(original), compatibility: [structuredClone(boot3Entry)] };
-  const save = async value => writeFile(path.join(root, "docs/engineering/backend-platforms.json"), JSON.stringify(value));
+  const save = async value => writeFile(path.join(root, ".template-spec/engineering/backend-platforms.json"), JSON.stringify(value));
   await save(boot3);
   assert.doesNotThrow(() => loadBackendPlatforms(root));
 
@@ -354,9 +354,9 @@ test("artifact resolution evidence binds catalog coordinates and bytes", async t
   t.after(() => rm(root, { recursive: true, force: true }));
   const catalog = loadBackendPlatforms();
   const binding = catalog.compatibility[0].artifact_resolution_evidence;
-  await mkdir(path.join(root, "docs/engineering"), { recursive: true });
+  await mkdir(path.join(root, ".template-spec/engineering"), { recursive: true });
   await mkdir(path.dirname(path.join(root, binding.ref)), { recursive: true });
-  await writeFile(path.join(root, "docs/engineering/backend-platforms.json"), JSON.stringify(catalog, null, 2));
+  await writeFile(path.join(root, ".template-spec/engineering/backend-platforms.json"), JSON.stringify(catalog, null, 2));
   const evidence = await readFile(path.resolve(binding.ref));
   await writeFile(path.join(root, binding.ref), evidence);
   assert.doesNotThrow(() => loadBackendPlatforms(root));
@@ -464,10 +464,10 @@ test("resolved SNAPSHOT, POM/JAR digests and source tree are mandatory for verif
 
 test("resolveBackendPlatform loads the catalog beneath an explicit root", async t => {
   const root = await mkdtemp(path.join(os.tmpdir(), "yss-platform-root-")); t.after(() => rm(root, { recursive: true, force: true }));
-  await mkdir(path.join(root, "docs/engineering"), { recursive: true });
+  await mkdir(path.join(root, ".template-spec/engineering"), { recursive: true });
   const catalog = loadBackendPlatforms();
   catalog.compatibility = [{ id: "root-local", profile_id: catalog.profiles[0].id, spring_boot_version: catalog.profiles[0].spring_boot_version, parent: { group_id: "root", artifact_id: "parent", version: "local" }, bom: { group_id: "com.yss.cloud", artifact_id: "yss-components-bom", version: "local" }, status: "candidate", capabilities: [], evidence: [] }];
-  await writeFile(path.join(root, "docs/engineering/backend-platforms.json"), JSON.stringify(catalog));
+  await writeFile(path.join(root, ".template-spec/engineering/backend-platforms.json"), JSON.stringify(catalog));
   const binding = platformBinding(catalog.profiles[0], catalog.compatibility[0]);
   assert.equal(resolveBackendPlatform(binding, { root, requireVerified: false }).entry.id, "root-local");
 });

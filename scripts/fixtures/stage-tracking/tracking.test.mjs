@@ -12,11 +12,11 @@ const checkpointRef = 'docs/.scratch/demo/checkpoint.yaml';
 function put(root, ref, value) { const p = path.join(root, ref); mkdirSync(path.dirname(p), { recursive: true }); writeFileSync(p, typeof value === 'string' ? value : stringify(value)); }
 function fixture({ design = false, enabled = false, platform = 'local-markdown' } = {}) {
   const root = mkdtempSync(path.join(os.tmpdir(), 'yss-stage-tracking-'));
-  for (const ref of ['docs/process/schemas/stage-tracking.schema.json', 'docs/process/schemas/lifecycle-checkpoint.schema.json', 'docs/process/templates/lifecycle-checkpoint-template.yaml', 'docs/process/lifecycle-registry.yaml']) put(root, ref, readFileSync(path.join(repo, ref), 'utf8'));
+  for (const ref of ['.template-spec/process/schemas/stage-tracking.schema.json', '.template-spec/process/schemas/lifecycle-checkpoint.schema.json', '.template-spec/process/templates/lifecycle-checkpoint-template.yaml', '.template-spec/process/lifecycle-registry.yaml']) put(root, ref, readFileSync(path.join(repo, ref), 'utf8'));
   put(root, 'yss-project.yaml', { schema_version: 1, repository_mode: 'project-instance' });
   put(root, 'CONTEXT.md', '# 测试词汇');
-  put(root, 'docs/agents/issue-tracker.md', `---\ntracker:\n  platform: ${platform}\n${enabled ? '  lifecycle_tracking_version: 1\n' : ''}---\n# Tracker\n`);
-  if (design) put(root, 'docs/process/harness-profile.yaml', { profile_id: 'harness.business-ddd-strategy-handoff', allowed_work_units: ['work-unit.plan-requirements', 'work-unit.spec-synthesis', 'work-unit.prototype-design'] });
+  put(root, '.template-spec/agents/issue-tracker.md', `---\ntracker:\n  platform: ${platform}\n${enabled ? '  lifecycle_tracking_version: 1\n' : ''}---\n# Tracker\n`);
+  if (design) put(root, '.template-spec/process/harness-profile.yaml', { profile_id: 'harness.business-ddd-strategy-handoff', allowed_work_units: ['work-unit.plan-requirements', 'work-unit.spec-synthesis', 'work-unit.prototype-design'] });
   put(root, 'docs/.scratch/demo/plan/input.md', '# 已确认的问题');
   return root;
 }
@@ -50,7 +50,7 @@ test('Design entry uses checkpoint and never engineering parent', () => {
   assert.throws(() => assertStageTracking(checkpoint, { root }), /design-parent-forbidden/);
 });
 test('existing Spec entry preserves approvals and records entry stage, not historical completion', () => {
-  const root = fixture(); const cp = parseYaml(readFileSync(path.join(repo, 'docs/process/templates/lifecycle-checkpoint-template.yaml'), 'utf8'));
+  const root = fixture(); const cp = parseYaml(readFileSync(path.join(repo, '.template-spec/process/templates/lifecycle-checkpoint-template.yaml'), 'utf8'));
   cp.stage = 'stage.spec-architecture'; cp.human_review = { preserved: '原始批准引用' }; put(root, checkpointRef, cp);
   const item = { ...seed(), stage: cp.stage, work_unit: 'work-unit.spec-synthesis' };
   applyTracking(root, planTracking(root, { checkpoint_ref: checkpointRef, items: [item] }));
@@ -120,9 +120,9 @@ test('migration rejects source drift and altered plan; failed writes roll back',
   const root = fixture(), p = planTracking(root, { checkpoint_ref: checkpointRef, items: [seed()] });
   put(root, 'CONTEXT.md', '并发改变'); assert.throws(() => applyTracking(root, p), /plan-stale/);
   const newer = planTracking(root, p.input); newer.changes[0].after += '篡改'; assert.throws(() => applyTracking(root, newer), /digest-mismatch/);
-  const next = planTracking(root, p.input), before = readFileSync(path.join(root, 'docs/agents/issue-tracker.md'), 'utf8');
+  const next = planTracking(root, p.input), before = readFileSync(path.join(root, '.template-spec/agents/issue-tracker.md'), 'utf8');
   assert.throws(() => applyTracking(root, next, { afterWrite: (_, count) => { if (count === 2) throw new Error('injected-write-failure'); } }), /rollback-complete/);
-  assert.equal(readFileSync(path.join(root, 'docs/agents/issue-tracker.md'), 'utf8'), before);
+  assert.equal(readFileSync(path.join(root, '.template-spec/agents/issue-tracker.md'), 'utf8'), before);
   assert.equal(existsSync(path.join(root, checkpointRef)), false);
 });
 test('migration protects symlink paths and profile boundaries', () => {
@@ -169,7 +169,7 @@ test('dispatch rejects missing registration and permits independent pending work
   assert.throws(() => assertTrackingEntry('work-unit.prototype-design', { checkpoint_ref: checkpointRef }, { root: active.root }), /entry-work-item-required/);
 });
 test('checkpoint schema embeds the canonical stage tracking schema exactly', () => {
-  assert.deepEqual(JSON.parse(readFileSync(path.join(repo, 'docs/process/schemas/lifecycle-checkpoint.schema.json'))).properties.stage_tracking, JSON.parse(readFileSync(path.join(repo, 'docs/process/schemas/stage-tracking.schema.json'))));
+  assert.deepEqual(JSON.parse(readFileSync(path.join(repo, '.template-spec/process/schemas/lifecycle-checkpoint.schema.json'))).properties.stage_tracking, JSON.parse(readFileSync(path.join(repo, '.template-spec/process/schemas/stage-tracking.schema.json'))));
 });
 
 test('source changes during apply are detected and preserved while own writes roll back', () => {
@@ -180,7 +180,7 @@ test('source changes during apply are detected and preserved while own writes ro
 });
 
 test('migration preserves existing stable feature IDs independently of folder slugs', () => {
-  const root = fixture(), cp = parseYaml(readFileSync(path.join(repo, 'docs/process/templates/lifecycle-checkpoint-template.yaml'), 'utf8'));
+  const root = fixture(), cp = parseYaml(readFileSync(path.join(repo, '.template-spec/process/templates/lifecycle-checkpoint-template.yaml'), 'utf8'));
   cp.feature_id = 'feature.demo'; cp.stage = 'stage.plan'; put(root, checkpointRef, cp);
   applyTracking(root, planTracking(root, { checkpoint_ref: checkpointRef, items: [seed()] }));
   const saved = parseYaml(readFileSync(path.join(root, checkpointRef), 'utf8'));

@@ -16,14 +16,14 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
   const tableSkill = read(".agents/skills/ytable-usage/SKILL.md");
   const pageSkill = read(".agents/skills/yss-ui-business-page-generation/SKILL.md");
 
-  for (const marker of ["trigger: always_on", "docs/agents/yss-skill-registry.yaml", ".agents/skills/yss-ui/SKILL.md", "原型阶段"]) {
+  for (const marker of ["trigger: always_on", ".template-spec/agents/yss-skill-registry.yaml", ".agents/skills/yss-ui/SKILL.md", "原型阶段"]) {
     if (!globalRules.includes(marker)) fail(`YSS UI 薄入口缺少路由标记: ${marker}`);
   }
   for (const staleHeading of ["## Available Skills", "## Mandatory Workflow"]) {
     if (globalRules.includes(staleHeading)) fail(`YSS UI 薄入口不得回流技能清单或实现步骤: ${staleHeading}`);
   }
   const cursorRules = read(".cursorrules");
-  for (const marker of ["yss-project.yaml", "docs/agents/yss-skill-registry.yaml", "yss-ui-business-page-generation", ".cursor/skills"]) {
+  for (const marker of ["yss-project.yaml", ".template-spec/agents/yss-skill-registry.yaml", "yss-ui-business-page-generation", ".cursor/skills"]) {
     if (!cursorRules.includes(marker)) fail(`Cursor 薄入口缺少路由标记: ${marker}`);
   }
   if (cursorRules.includes("YSS AI SKILLS START")) fail("Cursor 薄入口不得回流技能清单");
@@ -114,8 +114,8 @@ export function validateSkillGovernance({ read = (relative) => readFileSync(path
   }
   const prototypeStage = read(".agents/skills/yss-prototype-stage/SKILL.md");
   const prototypeAdapter = read(".agents/skills/yss-prototype-stage/references/product-design-adapter.md");
-  const prototypeEvidence = read("docs/design/templates/prototype-evidence-template.yaml");
-  const projectDesign = read("docs/design/design.md");
+  const prototypeEvidence = read(".template-spec/design/templates/prototype-evidence-template.yaml");
+  const projectDesign = read(".template-spec/design/design.md");
   const antdvCompatibility = read(".agents/skills/yss-ui/references/antdv-compatibility.md");
   for (const marker of ["product-design-adapter.md", "Prototype Evidence schema v4", "Visual Baseline schema v1", "H1", "H2", "原型阶段不得调用 `yss-ui`"]) {
     if (!prototypeStage.includes(marker)) fail(`原型阶段合同缺少 YSS adapter 标记: ${marker}`);

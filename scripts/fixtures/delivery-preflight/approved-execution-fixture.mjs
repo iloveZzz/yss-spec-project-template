@@ -12,7 +12,7 @@ import {context as fixtureContext} from '../strategic-handoff/fixture.mjs';
 
 export function approvedFixture(family='layered-mvc',{withDesign=family==='layered-mvc'}={}) {
  const f=fixture(family),slice_id='slice.synthetic',ticket='tickets/synthetic.md';
- const roles=sourceApprovalPolicy(read(path.join(f.root,'docs/agents/digital-human-roles.yaml')));
+ const roles=sourceApprovalPolicy(read(path.join(f.root,'.template-spec/agents/digital-human-roles.yaml')));
  let design,technical_design;
  if(withDesign){
   design=mvcFixture(f.root);

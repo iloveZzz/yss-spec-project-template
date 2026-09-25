@@ -38,13 +38,13 @@ export function verifySliceContractApproval(binding,{root=process.cwd(),contract
   assertExistingSliceStructure(contract);
   check((!binding.id||binding.id===contract.contract_id)&&(!binding.version||binding.version===contract.contract_version),'EXECUTION_CONTRACT_CONFLICT','当前合同身份或版本不匹配');
   if(expected)check(same(sourceSliceContract(expected),sourceSliceContract(contract)),'EXECUTION_CONTRACT_CONFLICT','调用方合同与持久化原字节不一致');
-  const roles=read(safe(root,'docs/agents/digital-human-roles.yaml'));
+  const roles=read(safe(root,'.template-spec/agents/digital-human-roles.yaml'));
   const approval=read(safe(root,binding.approval_ref));
   if(!countersignRuleForGate(roles.gate_policy,gateId)&&roles.gate_policy.orchestrator?.includes(gateId)) {
     // The current lifecycle already owns this gate. Consume its checkpoint and existing
     // implementation-scope decision instead of inventing an approval-record countersignature.
     check(approval?.gates&&approval?.human_review&&!approval.gate_id,'EXECUTION_APPROVAL_PROTOCOL','当前主控 gate 需要生命周期 checkpoint，不接受伪造 approval-record');
-    schema(approval,'docs/process/schemas/lifecycle-checkpoint.schema.json');
+    schema(approval,'.template-spec/process/schemas/lifecycle-checkpoint.schema.json');
     const gate=approval.gates?.[gateId],review=approval.human_review||{};
     check(approval.repository_mode==='project-instance'&&approval.status!=='blocked'&&approval.blockers.length===0,'EXECUTION_APPROVAL_BLOCKED','主控 checkpoint 仍有阻断或不是产品实例');
     check(gate?.status==='approved'&&gate.subject_ref===binding.ref,'EXECUTION_APPROVAL_SCOPE','主控 gate 未批准当前持久化 Slice');
@@ -80,11 +80,11 @@ function primeApprovalSchemas(binding,root){
     // Original consumers still validate every semantic and authorization rule below.
     try{
       const source=parseSliceYaml(readFileSync(safe(root,binding.ref))),raw=source.slice_contract||source;
-      if(raw.schema_version===3)add(raw,'docs/process/schemas/slice-implementation-contract-v3.schema.json',false,'verbose');
+      if(raw.schema_version===3)add(raw,'.template-spec/process/schemas/slice-implementation-contract-v3.schema.json',false,'verbose');
       const approval=read(safe(root,binding.approval_ref));
       if(approval.gates&&approval.human_review&&!approval.gate_id){
-        add(approval,'docs/process/schemas/lifecycle-checkpoint.schema.json',false,'verbose');
-        for(const requirement of approval.human_review.user_decisions||[])if(requirement.user_decision_ref&&!requirement.continuation_ref){const ref=path.isAbsolute(requirement.user_decision_ref)?path.relative(root,requirement.user_decision_ref):requirement.user_decision_ref;add(read(safe(root,ref)),'docs/process/schemas/user-decision.schema.json',true,'compact');}
+        add(approval,'.template-spec/process/schemas/lifecycle-checkpoint.schema.json',false,'verbose');
+        for(const requirement of approval.human_review.user_decisions||[])if(requirement.user_decision_ref&&!requirement.continuation_ref){const ref=path.isAbsolute(requirement.user_decision_ref)?path.relative(root,requirement.user_decision_ref):requirement.user_decision_ref;add(read(safe(root,ref)),'.template-spec/process/schemas/user-decision.schema.json',true,'compact');}
       }
     }catch{/* The original consumer reports missing or invalid input with its existing code. */}
     if(jobs.length)validateJsonSchemas(jobs);return true;

@@ -4,7 +4,7 @@ import { read, safe, ensure, hash, schema, project } from './strategic-handoff-i
 
 export async function verifyConsumerFeedback({root=process.cwd(),feedbackRef}={}) {
   project(root);const file=safe(root,feedbackRef),feedback=read(file);
-  schema(feedback,'docs/process/schemas/strategic-consumer-feedback.schema.json');
+  schema(feedback,'.template-spec/process/schemas/strategic-consumer-feedback.schema.json');
   const receipt=read(safe(root,feedback.import_receipt_ref));
   ensure([2,3].includes(receipt.schema_version),'Consumer Feedback v1 只接受 route-aware Import Receipt v2/v3');
   const base=`docs/handoffs/${receipt.bundle_id}/${receipt.version}`;
@@ -22,7 +22,7 @@ export async function verifyConsumerFeedback({root=process.cwd(),feedbackRef}={}
 
 export async function verifyFeedbackAdjudication({root=process.cwd(),adjudicationRef}={}) {
   project(root);const file=safe(root,adjudicationRef),adjudication=read(file);
-  schema(adjudication,'docs/process/schemas/strategic-feedback-adjudication.schema.json');
+  schema(adjudication,'.template-spec/process/schemas/strategic-feedback-adjudication.schema.json');
   const feedbackFile=safe(root,adjudication.feedback.ref);ensure(hash(readFileSync(feedbackFile))===adjudication.feedback.digest,'Feedback Adjudication 绑定的 feedback digest 已失效');
   const verified=await verifyConsumerFeedback({root,feedbackRef:adjudication.feedback.ref});
   for(const ref of adjudication.evidence_refs)ensure(readFileSync(safe(root,ref)).length>0,`Feedback Adjudication evidence 为空: ${ref}`);

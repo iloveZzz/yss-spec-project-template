@@ -197,7 +197,7 @@ function codeReviewRoute(overrides = {}) {
     review_standards_route: {
       unique_default_skill: "code-review",
       second_generic_review_skill: "forbidden",
-      report_template: "docs/templates/review-report-template.md",
+      report_template: ".template-spec/templates/review-report-template.md",
       contract_required_skills: "required",
       write_implementation: "forbidden",
       machine_checks: {

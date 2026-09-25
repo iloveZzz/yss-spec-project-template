@@ -10,7 +10,7 @@ export function sliceRepositories(contract,sources,{root=process.cwd()}={}) {
  check(lifecycle.SLICE_REPOSITORY_PREPARATION_PROTOCOL===1&&typeof lifecycle.validateImplementationRepositoriesReady==='function','接收端不支持当前来源的多项目准备协议，不能套用本地默认规则');
  check(sources.repository_preparation,'缺少多项目准备结果');
  const preparation=parseSliceYaml(sources.repository_preparation.text);
- schema(preparation,'docs/process/schemas/implementation-repository-preparation-result.schema.json');
+ schema(preparation,'.template-spec/process/schemas/implementation-repository-preparation-result.schema.json');
  const ready=lifecycle.validateImplementationRepositoriesReady({implementation_repository_preparation:preparation,delivery_impacts:Object.fromEntries(['backend','frontend'].map(role=>[role,preparation.projects.some(p=>p.delivery_role===role&&p.status!=='not-applicable')]))},{root,exists:ref=>fs.existsSync(path.resolve(root,ref)),read:ref=>fs.readFileSync(path.resolve(root,ref),'utf8')});
  check(ready.result!=='blocked',`多项目准备未就绪: ${ready.missing_requirements.join('; ')}`);
  check(new Set(Object.keys(bindings).map(p=>path.resolve(p))).size===Object.keys(bindings).length,'工程根存在路径别名，不能重复登记');

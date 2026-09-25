@@ -2,7 +2,7 @@
 
 状态：本轮方案已由提问者确认并授权实施；实际验证与 Git 交付另见维护证据。
 
-本合同补充 `create-yss-spec-repository-mode-contract.md` 的跨仓身份规则。各模板的 profile 与 instantiation 仍由各自 `docs/process/harness-profile.yaml` 定义。本次属于 template-source 的 L3 分发维护，触发 `cross-repo-contract`、`generation-semantics`、`release-semantics`；产品 Spec、OpenAPI、Slice Contract 和产品 context_reconciliation 为 not-applicable。
+本合同补充 `create-yss-spec-repository-mode-contract.md` 的跨仓身份规则。各模板的 profile 与 instantiation 仍由各自 `.template-spec/process/harness-profile.yaml` 定义。本次属于 template-source 的 L3 分发维护，触发 `cross-repo-contract`、`generation-semantics`、`release-semantics`；产品 Spec、OpenAPI、Slice Contract 和产品 context_reconciliation 为 not-applicable。
 
 ## 入口与兼容
 

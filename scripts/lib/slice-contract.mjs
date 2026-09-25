@@ -113,7 +113,7 @@ export function normalizeSliceContract(document, options = {}) {
     }
     return structuredClone(raw);
   }
-  schema(raw,'docs/process/schemas/slice-implementation-contract-v3.schema.json');
+  schema(raw,'.template-spec/process/schemas/slice-implementation-contract-v3.schema.json');
   const sources=readSliceSources(raw,options), refs=Object.fromEntries(Object.entries(sources).map(([key,item])=>[key,item.ref]));
   requireKeys(refs,['spec','ticket','engineering_baseline','implementation_repository','build_architecture_checklist'],'依据');
   const ticketHeader = sources.ticket.text.match(/^---\r?\n([\s\S]*?)\r?\n---/);

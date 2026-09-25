@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { parseDocument } from "./vendor/yaml.mjs";
+import { verifyGovernanceLayout } from "./lib/governance-layout.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const identity = parseDocument(readFileSync(path.join(root, "yss-project.yaml"), "utf8"), {
+  maxAliasCount: 0,
+  uniqueKeys: true,
+}).toJS({ maxAliasCount: 0 });
+if (identity?.schema_version !== 1) throw new TypeError("仓库身份 schema 无效");
+const result = verifyGovernanceLayout(root, identity.repository_mode);
+process.stdout.write(`治理目录布局验证通过（${result.mode}）\n`);

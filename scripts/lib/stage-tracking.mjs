@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto';
 import { parseDocument } from '../vendor/yaml.mjs';
 import { validateJsonSchema } from './json-schema.mjs';
 
-export const TRACKER_REF = 'docs/agents/issue-tracker.md';
+export const TRACKER_REF = '.template-spec/agents/issue-tracker.md';
 export const STAGE_WORK_UNITS = Object.freeze({
   'work-unit.plan-opportunity': 'stage.plan',
   'work-unit.plan-requirements': 'stage.plan',
@@ -43,7 +43,7 @@ export function trackerConfig(root) {
   return config;
 }
 export function trackingProfile(root) {
-  const ref = 'docs/process/harness-profile.yaml';
+  const ref = '.template-spec/process/harness-profile.yaml';
   return existsSync(safeTrackingPath(root, ref)) ? parseYaml(readTracking(root, ref)) : null;
 }
 export const isDesign = root => trackingProfile(root)?.profile_id === 'harness.business-ddd-strategy-handoff';
@@ -81,7 +81,7 @@ export function assertStageTracking(checkpoint, { root, checkpointRef, currentWo
     if (identity.repository_mode === 'project-instance' && config.lifecycle_tracking_version === 1 && relevant) throw new Error('stage-tracking-required');
     return { status: 'not-applicable', stale_item_ids: [] };
   }
-  validateJsonSchema(tracking, path.join(root, 'docs/process/schemas/stage-tracking.schema.json'));
+  validateJsonSchema(tracking, path.join(root, '.template-spec/process/schemas/stage-tracking.schema.json'));
   const feature = checkpoint.feature_id;
   if (feature !== tracking.feature_id || typeof feature !== 'string' || !feature.trim()) throw new Error('tracking-feature-mismatch');
   const location = /^(docs\/\.scratch\/[a-z0-9][a-z0-9-]*\/)[^/]+\.(yaml|json)$/.exec(tracking.checkpoint_ref);
@@ -94,7 +94,7 @@ export function assertStageTracking(checkpoint, { root, checkpointRef, currentWo
   } else if (tracking.entry.kind !== 'parent-ticket' || tracking.entry.ref !== `${base}parent-ticket.md`) throw new Error('tracking-parent-required');
   const entry = readTracking(root, tracking.entry.ref);
   if (tracking.entry.kind === 'parent-ticket' && !entry.includes(tracking.checkpoint_ref)) throw new Error('tracking-parent-checkpoint-link-required');
-  const registry = parseYaml(readTracking(root, 'docs/process/lifecycle-registry.yaml'));
+  const registry = parseYaml(readTracking(root, '.template-spec/process/lifecycle-registry.yaml'));
   const stages = new Set(registry.stages.map(x => x.id));
   const units = new Set(registry.work_units.map(x => x.id));
   if (!stages.has(tracking.entry_stage)) throw new Error('tracking-entry-stage-invalid');

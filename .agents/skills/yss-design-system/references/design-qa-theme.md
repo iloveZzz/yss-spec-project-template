@@ -5,8 +5,8 @@
 ## Source visual truth
 
 - 规范：根 `DESIGN.md`
-- 治理说明：`docs/design/design.md`
-- Token 投影：`docs/design/tokens/theme.json`、`docs/design/tokens/tokens.default.json`、`docs/design/tokens/variables.css`
+- 治理说明：`.template-spec/design/design.md`
+- Token 投影：`.template-spec/design/tokens/theme.json`、`.template-spec/design/tokens/tokens.default.json`、`.template-spec/design/tokens/variables.css`
 - 主题选择：默认采用根 `DESIGN.md` 的 Data Quality 浅色主题；仅显式暗色 / 紧凑模式使用对应的 `tokens.dark.json` / `variables.dark.css` / `tokens.compact.json`，以实际消费文件记录摘要。
 - 实现截图：当前原型或页面在同一 viewport / 主题 / 状态下的渲染
 
@@ -23,7 +23,7 @@
 | 功能状态 | `colors.success*` / `warning*` / `error*` / `info-bg` | 改成非功能色装饰 |
 | 页面 / 容器 / 浮层 | `colors.canvas-layout` / `surface*` | 用阴影或局部硬编码堆叠表面层级 |
 | 主次文本 | `colors.text*` | 使用历史文本值或页面特例 |
-| 运行时变量 | `docs/design/tokens/variables.css` 必须与根规范 digest 同步 | 页面另写一套 Less/CSS 色值 |
+| 运行时变量 | `.template-spec/design/tokens/variables.css` 必须与根规范 digest 同步 | 页面另写一套 Less/CSS 色值 |
 
 上游预设色板不是品牌 seed，不要据此判定规范漂移。
 

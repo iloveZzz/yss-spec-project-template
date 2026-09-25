@@ -32,9 +32,9 @@ export async function handoffFixture(root,{kind='existing-ui-baseline',backend=t
  const source=f.handoff.source,approvals=f.handoff.package_export.approvals;const productGate=approvals.prototype_ref.gate_id;
  delete source.prototype_ref;delete source.visual_baseline_ref;delete approvals.prototype_ref;delete approvals.visual_baseline_ref;delete f.handoff.package_export.prototype;
  source.existing_ui_baseline_ref={baseline_id:b.data.baseline_id,version:'v1',status:'approved',persisted_ref:'existing-ui',manifest_ref:'existing-ui-baseline.json',digest:b.binding('existing-ui-baseline.json').digest,case_ids:['submit']};
- const roles=read(path.join(root,'docs/agents/digital-human-roles.yaml'));
+ const roles=read(path.join(root,'.template-spec/agents/digital-human-roles.yaml'));
  // Use the source's current product-design approval gate; never manufacture another gate.
- roles.user_decision_policy.gates=[productGate];f.put('docs/agents/digital-human-roles.yaml',roles);
+ roles.user_decision_policy.gates=[productGate];f.put('.template-spec/agents/digital-human-roles.yaml',roles);
  // Sign legacy fixture bindings before adding the current user-decision binding.
  f.sign();
  approvals.existing_ui_baseline_ref={record_ref:'approvals/existing-ui.json',gate_id:productGate,digest_kind:'sha256-bytes'};
@@ -50,7 +50,7 @@ export async function handoffFixture(root,{kind='existing-ui-baseline',backend=t
 // The assets/replies remain synthetic; the policy is not changed to make a gate exist.
 export async function dedicatedDesignHandoffFixture(root) {
  const f=await handoffFixture(root),roles=read(new URL('./design-source-roles.json',import.meta.url));
- f.put('docs/agents/digital-human-roles.yaml',roles);
+ f.put('.template-spec/agents/digital-human-roles.yaml',roles);
  const approvals=f.handoff.package_export.approvals;
  approvals.handoff.gate_id='gate.strategic-design-handoff-approved';
  const {package_export,status,...delivery}=f.handoff;

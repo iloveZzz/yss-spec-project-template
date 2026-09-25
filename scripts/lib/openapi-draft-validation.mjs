@@ -83,7 +83,7 @@ function verifyOperations(document, resolveReference) {
   }
 }
 
-export function validateOpenApiDraftValidationRecord(recordFile, { root = TEMPLATE_ROOT, allowTemplate = false, schemaPath = path.join(TEMPLATE_ROOT, "docs/process/schemas/openapi-draft-validation-record.schema.json") } = {}) {
+export function validateOpenApiDraftValidationRecord(recordFile, { root = TEMPLATE_ROOT, allowTemplate = false, schemaPath = path.join(TEMPLATE_ROOT, ".template-spec/process/schemas/openapi-draft-validation-record.schema.json") } = {}) {
   const projectRoot = path.resolve(root);
   const recordDocument = parseDocument(readFileSync(recordFile, "utf8"), { uniqueKeys: true, maxAliasCount: 0 });
   ensure(!recordDocument.errors.length, `validation record YAML 无效: ${recordDocument.errors[0]?.message}`);

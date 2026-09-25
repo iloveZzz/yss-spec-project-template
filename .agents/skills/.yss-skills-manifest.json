@@ -7,7 +7,7 @@
   "excluded_categories": ["library"],
   "excluded_skills": ["component-selection-imports", "java-backend-commit", "page-form-module", "page-list-module", "page-module-development", "page-skeleton", "prototype-page-acceptance", "use-table-height", "use-tree-height", "vue3-best-practices"],
   "source_revision": "c4d958f18cc947cb91cbe1bd48783fa4601cc18f",
-  "adaptation_ref": "docs/agents/yss-ui-skills-integration.md",
+  "adaptation_ref": ".template-source/agents/yss-ui-skills-integration.md",
   "package": {
     "name": "@yss-ui/skills",
     "version": "1.3.9"
@@ -37,6 +37,6 @@
       { "path": ".cursor/mcp.json", "container": "mcpServers" },
       { "path": ".vscode/mcp.json", "container": "servers" }
     ],
-    "global_install_guide": "docs/user-guide/yss-ui-mcp.md"
+    "global_install_guide": ".template-spec/user-guide/yss-ui-mcp.md"
   }
 }

@@ -124,7 +124,7 @@ function validateBaselineReview(state,{root}) {
     ensure(digest(fs.readFileSync(file(root,input.spec_binding.ref)))===input.spec_binding.digest.replace(/^sha256:/,''),'Spec evidence stale');
     ensure(text(input.spec_binding.approval_ref),'Spec approval record required');
     const approval=parseSliceYaml(fs.readFileSync(file(root,input.spec_binding.approval_ref),'utf8'));
-    validateApprovalRecord(approval,{root,requireApproved:true,rolesDoc:parseSliceYaml(fs.readFileSync(file(root,'docs/agents/digital-human-roles.yaml'),'utf8'))});
+    validateApprovalRecord(approval,{root,requireApproved:true,rolesDoc:parseSliceYaml(fs.readFileSync(file(root,'.template-spec/agents/digital-human-roles.yaml'),'utf8'))});
     ensure(approval.gate_id==='gate.spec-baseline-approved' && approval.artifact_bindings?.some(b=>b.digest.replace(/^sha256:/,'')===input.spec_binding.digest.replace(/^sha256:/,'')),'Spec approval does not bind current baseline');
     ensure(Array.isArray(result.constraint_results)&&result.constraint_results.some(r=>r.axis==='Spec'&&r.status==='passed'&&text(r.evidence_ref)),'Spec acceptance evidence required');
     for(const row of result.constraint_results.filter(r=>r.axis==='Spec')) {

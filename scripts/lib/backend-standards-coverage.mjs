@@ -153,7 +153,7 @@ export function compileStandardsCoverage({root,projectRoot,contract=null,scope_k
   // Derive component ownership from the existing registry and the locked platform index.
   // These are discovery signals only; they never certify component compatibility.
   const discovery_sources=[];
-  const registryRef='docs/agents/yss-skill-registry.yaml';
+  const registryRef='.template-spec/agents/yss-skill-registry.yaml';
   if(fs.existsSync(path.join(root,registryRef))) {
     const registryBytes=fs.readFileSync(coverageFile(root,registryRef));
     discovery_sources.push({ref:registryRef,digest:coverageDigest(registryBytes)});
@@ -195,7 +195,7 @@ export function compileStandardsCoverage({root,projectRoot,contract=null,scope_k
   for(const skill of observedSkills){const {rules,sourceDigests}=readRules(root,skill);rulesSources.push(...sourceDigests);for(const rule of rules){const applicability=tags.has(rule.when)?'required':(['pagination','batch'].includes(rule.when)?'conditional':'not-applicable');constraints.push({...rule,constraint_id:rule.id,applicability,applicability_basis:applicability==='required'?[...reasons.get(skill)].sort():[`no-observed-${rule.when}; reviewer must reconcile actual behavior`]});}}
   ensure(new Set(constraints.map(r=>r.constraint_id)).size===constraints.length,'duplicate canonical constraint_id');
   const platform=identity?.platform_configuration;
-  const catalogRef='docs/engineering/backend-platforms.json';
+  const catalogRef='.template-spec/engineering/backend-platforms.json';
   const catalogPath=path.join(root,catalogRef);
   let platform_catalog_digest=null;
   if(platform?.profile_id && fs.existsSync(catalogPath)) {

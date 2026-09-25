@@ -45,12 +45,12 @@ export function fixture(family='layered-mvc'){
  const platformReport={verification_scope:'empty-scaffold',recipe_digest:platformRecipeDigest(profile,entry),source_fingerprint:platformSourceFingerprint(family),generated_tree_digest:platformDigest('synthetic generated tree'),status:'passed',spring_boot_version:profile.spring_boot_version,java_version:profile.java_version,architecture_family:family,parent:entry.parent,bom:entry.bom,commands:['validate','test','package'].map(phase=>({command:`./mvnw ${phase}`,exit_code:0,executed_at:'test-only',stdout_ref:`mvnw-${phase}.stdout.log`,stderr_ref:`mvnw-${phase}.stderr.log`})),dependency_check:'passed',startup_check:'passed',integration_tests:{status:'passed'},evidence_artifacts:artifactRefs.map(ref=>({ref,digest:platformDigest('synthetic mechanism fixture only')}))};
  const platformEvidence=write('docs/engineering/evidence/platform.json',platformReport);
  entry.evidence=[{architecture_family:family,ref:platformEvidence.ref,digest:platformEvidence.digest}];
- catalog.compatibility=[entry];write('docs/engineering/backend-platforms.json',catalog);
+ catalog.compatibility=[entry];write('.template-spec/engineering/backend-platforms.json',catalog);
  const identity={schema_version:2,source_kind:'existing-registration',architecture_family:family,architecture_profile:family==='domain-driven'?'existing-domain-driven-maven':'existing-layered-mvc-maven',repository_id:'synthetic-repo',project_id:'synthetic-project',source_digest:digest(source),build_units_digest:digest(units),platform_configuration:platformBinding(profile,entry)};
  const common={repository_id:identity.repository_id,project_id:identity.project_id,architecture_identity:identity};
  const manifest={schema_version:1,kind:'existing-project-observation',...common,source,build_units:units};
  const baseline={schema_version:1,kind:'existing-engineering-baseline',id:'engineering.fixture',version:'v1',status:'current',author:'fixture-drafter',boundary_scope:['src/main/java'],...common,source,build_units:units,verification_commands:['./mvnw test'],databases:{verification:{status:'not-applicable',reason:'compiler fixture only'},production:{status:'unknown'}}};
- const rolesBytes=fs.readFileSync(new URL('../../../docs/agents/digital-human-roles.yaml',import.meta.url),'utf8'),rolesDoc=parse(rolesBytes);
+ const rolesBytes=fs.readFileSync(new URL('../../../.template-spec/agents/digital-human-roles.yaml',import.meta.url),'utf8'),rolesDoc=parse(rolesBytes);
  const reviewGate=['check.architecture-reviewed','gate.technical-design-approved'].find(gate=>countersignRuleForGate(rolesDoc.gate_policy,gate));
  if(!reviewGate)throw new Error('Synthetic architecture fixture requires the installed source architecture review policy');
  const reviewer=countersignRuleForGate(rolesDoc.gate_policy,reviewGate).countersigners.at(-1);
@@ -60,6 +60,6 @@ export function fixture(family='layered-mvc'){
  const mb=write('manifest.json',manifest),bb=write('baseline.json',baseline);
  const registration={schema_version:1,status:'current',...common,local_worktree:project,project_root:'.',owner:'fixture-owner',allowed_write_paths:['src','pom.xml'],repository_url:'https://example.invalid/fixture.git',verification_commands:baseline.verification_commands,architecture_evidence:{engineering_baseline:bb,manifest:mb}};
  const rb=write('registration.json',registration);
- write('docs/agents/digital-human-roles.yaml',rolesBytes);
+ write('.template-spec/agents/digital-human-roles.yaml',rolesBytes);
  return{root,project,identity,source,units,baseline,registration,manifest,review,write,git,bindings:{engineering_baseline:bb,repository_registration:rb,manifest:mb},cleanup:()=>fs.rmSync(root,{recursive:true,force:true})};
 }

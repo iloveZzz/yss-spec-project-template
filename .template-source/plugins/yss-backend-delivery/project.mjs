@@ -112,7 +112,7 @@ function projectCheck(root, target, cli) {
     const absolute = safe(target, file.ref), s = lstatSync(absolute);
     if (!s.isFile() || hash(readFileSync(absolute)) !== file.sha256 || (s.mode & 0o777) !== file.mode) throw new Error(`project-core-drift: ${file.ref}`);
   }
-  for (const prefix of ['scripts', '.agents/skills', '.codex/skills', '.cursor/skills', '.pi/skills', 'docs/process']) {
+  for (const prefix of ['scripts', '.agents/skills', '.codex/skills', '.cursor/skills', '.pi/skills', '.template-spec/process']) {
     if (!existsSync(path.join(target, prefix))) continue;
     for (const ref of files(target, prefix)) if (corePath(ref) && !expected.has(ref)) throw new Error(`project-core-extra-file: ${ref}`);
   }

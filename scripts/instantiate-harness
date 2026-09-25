@@ -16,7 +16,7 @@ try {
   ensure(options.target,'必须指定 --target <新目录>');
   const identity=read(safe(ROOT,'yss-project.yaml'));
   ensure(identity.schema_version===1&&identity.repository_mode==='template-source','仅模板源可初始化新项目');
-  const profile=read(safe(ROOT,'docs/process/harness-profile.yaml'));
+  const profile=read(safe(ROOT,'.template-spec/process/harness-profile.yaml'));
   ensure(['harness.backend-delivery','harness.frontend-delivery'].includes(profile.profile_id),'仅支持后端/前端专职模板');
   const target=path.resolve(options.target);
   ensure(!target.startsWith(ROOT+path.sep)&&!ROOT.startsWith(target+path.sep)&&target!==ROOT,'目标不得包含模板源或位于模板源内');
@@ -56,7 +56,7 @@ try {
     for(const file of captured) {
       let bytes=file.bytes;
       if(file.ref==='yss-project.yaml') bytes=Buffer.from('schema_version: 1\nrepository_mode: project-instance\n');
-      if(file.ref==='README.md') bytes=Buffer.from(`# ${options['project-name']||path.basename(target)}\n\n本仓是 \`${profile.profile_id}\` 的 \`project-instance\`。先读 [AGENTS.md](AGENTS.md)、根 CONTEXT.md 与 [profile](docs/process/harness-profile.yaml)。接力输入与执行条件见 [交付合同](docs/process/frontend-backend-delivery.md)。\n`);
+      if(file.ref==='README.md') bytes=Buffer.from(`# ${options['project-name']||path.basename(target)}\n\n本仓是 \`${profile.profile_id}\` 的 \`project-instance\`。先读 [AGENTS.md](AGENTS.md)、根 CONTEXT.md 与 [profile](.template-spec/process/harness-profile.yaml)。接力输入与执行条件见 [交付合同](.template-spec/process/frontend-backend-delivery.md)。\n`);
       if(file.link) {mkdirSync(path.dirname(path.join(staging,file.ref)),{recursive:true});symlinkSync(file.link,path.join(staging,file.ref));}
       else {write(staging,file.ref,bytes);chmodSync(path.join(staging,file.ref),file.mode);}
       managed[file.ref]={digest:hash(bytes),mode:file.mode};

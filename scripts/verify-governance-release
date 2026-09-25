@@ -8,8 +8,8 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
 const read = (relativePath) => readFileSync(path.join(root, relativePath), "utf8");
 for (const [relativePath, marker] of Object.entries({
-  "docs/architecture/templates/system-overview-design-template.md": "已明确的认证、授权、租户隔离、敏感数据或合规行为",
-  "docs/architecture/templates/tech-design-template.md": "已明确的认证、授权、租户隔离、敏感数据或合规行为"
+  ".template-spec/architecture/templates/system-overview-design-template.md": "已明确的认证、授权、租户隔离、敏感数据或合规行为",
+  ".template-spec/architecture/templates/tech-design-template.md": "已明确的认证、授权、租户隔离、敏感数据或合规行为"
 })) {
   if (!read(relativePath).includes(marker)) failures.push(`${relativePath} 缺少条件性安全/权限架构承载`);
 }

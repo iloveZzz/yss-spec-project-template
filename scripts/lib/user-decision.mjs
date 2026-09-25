@@ -81,7 +81,7 @@ function checkAsset(asset, io) {
 export function validateUserDecision(record, options = {}) {
   const io = decisionIO(options);
   const policy = (options.rolesDoc || loadDigitalHumanRoles()).user_decision_policy;
-  validateJsonSchema(record, path.join(ROOT, "docs/process/schemas/user-decision.schema.json"), { label: "用户决定记录" });
+  validateJsonSchema(record, path.join(ROOT, ".template-spec/process/schemas/user-decision.schema.json"), { label: "用户决定记录" });
   const { request, responses } = record;
   const originalRequest = messageFromSource(request.requester_source, io, policy);
   if (originalRequest.actor_kind !== "biological-human" || originalRequest.principal_ref !== request.requester_ref) decisionError("user-decision-responder-mismatch", "提问者来源不匹配");

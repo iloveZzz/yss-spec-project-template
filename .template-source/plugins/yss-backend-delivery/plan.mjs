@@ -11,7 +11,7 @@ import { resolveSkillForNewUse } from '../../../scripts/lib/skill-registry.mjs';
 import { parseContextContract } from '../../../scripts/lib/context-contract.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-const REGISTRY = 'docs/agents/yss-skill-registry.yaml';
+const REGISTRY = '.template-spec/agents/yss-skill-registry.yaml';
 const CONTRACT = '.agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml';
 const UNITS = [
   'plan-opportunity', 'plan-requirements', 'domain-strategy-design', 'stage-decision',
@@ -23,11 +23,11 @@ const FRONTEND_IMPLEMENTATION = new Set([
   'yss-ui', 'yss-ui-business-page-generation', 'yss-frontend-scaffold-generator',
 ]);
 const RESOURCE_FAMILIES = [
-  'docs/agents', 'docs/plan', 'docs/requirements', 'docs/architecture', 'docs/design',
-  'docs/engineering', 'docs/process', 'docs/templates', 'scripts',
+  '.template-spec/agents', '.template-spec/plan', '.template-spec/architecture', '.template-spec/design',
+  '.template-spec/engineering', '.template-spec/process', '.template-spec/templates', 'scripts',
 ];
 const AUTHORITY = ['AGENTS.md', 'CONTEXT.md', 'DESIGN.md', REGISTRY,
-  'docs/process/lifecycle-registry.yaml', 'docs/agents/digital-human-roles.yaml', CONTRACT];
+  '.template-spec/process/lifecycle-registry.yaml', '.template-spec/agents/digital-human-roles.yaml', CONTRACT];
 const digest = bytes => `sha256:${createHash('sha256').update(bytes).digest('hex')}`;
 
 function safe(root, ref) {
@@ -92,7 +92,7 @@ export function planPlugin(sourceRoot = ROOT) {
   }
   const skills = uniqueIndex(registry.skills, 'skill');
   const capabilities = uniqueIndex(registry.capabilities, 'capability');
-  const lifecycle = yaml(root, 'docs/process/lifecycle-registry.yaml');
+  const lifecycle = yaml(root, '.template-spec/process/lifecycle-registry.yaml');
   const workUnits = uniqueIndex(lifecycle.work_units, 'work-unit');
   const selected = new Map(), edges = [], omitted = [], recipeIds = [], platformDependencies = new Map();
   const add = (requested, reason) => {
@@ -144,14 +144,14 @@ export function planPlugin(sourceRoot = ROOT) {
   const skillList = [...selected.values()].sort((a, b) => a.id.localeCompare(b.id));
   const skillRoots = skillList.map(item => `.agents/skills/${item.id}`);
   for (const ref of skillRoots) safe(root, `${ref}/SKILL.md`);
-  const authorityFiles = inventory(root, [REGISTRY, CONTRACT, 'docs/process/lifecycle-registry.yaml',
-    'docs/agents/digital-human-roles.yaml', 'docs/process/schemas']);
+  const authorityFiles = inventory(root, [REGISTRY, CONTRACT, '.template-spec/process/lifecycle-registry.yaml',
+    '.template-spec/agents/digital-human-roles.yaml', '.template-spec/process/schemas']);
   // Project-owned Context, AGENTS and DESIGN are not source-equality requirements.
   const skillFiles = inventory(root, skillRoots);
   const bindingFiles = [...new Map([...authorityFiles, ...skillFiles].map(file => [file.ref, file])).values()]
     .sort((a, b) => a.ref < b.ref ? -1 : a.ref > b.ref ? 1 : 0);
   const candidateFiles = inventory(root, [...AUTHORITY, ...skillRoots, ...RESOURCE_FAMILIES]);
-  const platform = JSON.parse(readFileSync(safe(root, 'docs/engineering/backend-platforms.json'), 'utf8'));
+  const platform = JSON.parse(readFileSync(safe(root, '.template-spec/engineering/backend-platforms.json'), 'utf8'));
   return {
     schema_version: 1, kind: 'codex-plugin-preparation', phase: 'M1', result: 'planned',
     plugin_name: identity.name, orchestrator: 'yss-product-lifecycle',

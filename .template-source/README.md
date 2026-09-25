@@ -22,8 +22,8 @@
 | 模板实例分发面来源 | 模板源治理区目标 |
 |---|---|
 | `docs/implementation/create-yss-spec-repository-mode-contract.md` | `.template-source/contracts/create-yss-spec-repository-mode-contract.md` |
-| `docs/process/harness-work-unit-map.md` | `.template-source/derived/harness-work-unit-map.md` |
-| `docs/process/harness-optimization-backlog.md` | `.template-source/roadmap/harness-optimization-backlog.md` |
+| `.template-spec/process/harness-work-unit-map.md` | `.template-source/derived/harness-work-unit-map.md` |
+| `.template-spec/process/harness-optimization-backlog.md` | `.template-source/roadmap/harness-optimization-backlog.md` |
 | `docs/releases/next-major-template-governance.md` | `.template-source/roadmap/next-major-template-governance.md` |
 | `docs/reviews/*.md`（13 个） | `.template-source/evidence/reviews/index.yaml` 及其 Git archive checkpoint |
 | 其余 `docs/reviews/` 审查与证据文件 | `.template-source/evidence/reviews/`（Markdown 进入同一 archive 索引；非 Markdown 留在治理区工作树） |

@@ -8,7 +8,7 @@ import { validateJsonSchema } from "./json-schema.mjs";
 import { openApiDigest, resolveOpenApiRef, validateOpenApiDraftValidationRecord } from "./openapi-draft-validation.mjs";
 
 const TEMPLATE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
-const SCHEMA = path.join(TEMPLATE_ROOT, "docs/process/schemas/api-contract-decision.schema.json");
+const SCHEMA = path.join(TEMPLATE_ROOT, ".template-spec/process/schemas/api-contract-decision.schema.json");
 const fail = (message) => { throw new TypeError(message); };
 const readBound = (root, ref, label) => {
   const file = resolveOpenApiRef(root, ref);

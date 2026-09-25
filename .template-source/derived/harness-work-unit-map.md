@@ -1,7 +1,7 @@
 # Harness 工作单元地图
 
 <!-- lifecycle-registry:work-units:start -->
-> 此表由 `docs/process/lifecycle-registry.yaml` 生成；工作单元按 `scope` 区分模板维护与项目实例流程。
+> 此表由 `.template-spec/process/lifecycle-registry.yaml` 生成；工作单元按 `scope` 区分模板维护与项目实例流程。
 
 | 稳定 ID | 范围 | 工作单元 | 输入 | 输出 | 完成条件 |
 |---|---|---|---|---|---|

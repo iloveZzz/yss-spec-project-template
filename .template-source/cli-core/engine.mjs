@@ -14,6 +14,7 @@ import { mergeGitignore } from "./gitignore.mjs";
 import { prepareGenerated, verifyInstance } from "./verification.mjs";
 import { PROFILE, render } from "./bundle.mjs";
 import { inspectState, applyTransaction, recover } from "./transaction.mjs";
+import { prepareLayoutMigration } from "./layout-migration.mjs";
 export function execute(bundle, target, opts) {
   const { family: f, pkg, snapshot, core } = bundle;
   const state = inspectState(target, f);
@@ -40,7 +41,7 @@ export function execute(bundle, target, opts) {
       "init 只允许不存在或空目录；已有项目请使用 attach",
     );
   else ensure(stat(target)?.isDirectory(), "attach/sync 目标目录不存在");
-  const meta = identity(target, bundle, opts.command);
+  const meta = identity(target, bundle, opts.command, opts.migrateLayout);
   const canForce = f.side !== "design" && opts.force && opts.apply;
   const variables = meta?.variables || {
     projectName: opts.projectName || path.basename(target),
@@ -50,7 +51,13 @@ export function execute(bundle, target, opts) {
     includeExampleDocs: opts.includeExampleDocs,
   };
   const protectedLinks = gitlinks(target);
-  const files = render(bundle, variables),
+  const files = render(bundle, variables);
+  const layout = prepareLayoutMigration(target, meta, files, opts);
+  for (const [ref, bytes] of layout.replacements) {
+    files.set(ref, {bytes, baseline:{type:'file',digest:hash(bytes),mode:0o644}});
+  }
+  const legacyRefs = new Set(layout.legacyFiles);
+  const
     managedFiles = {},
     operations = [],
     changes = [],
@@ -59,6 +66,7 @@ export function execute(bundle, target, opts) {
   for (const ref of [
     ...new Set([...files.keys(), ...Object.keys(meta?.managedFiles || {}), ...Object.keys(bundle.retiredFiles || {})]),
   ].sort()) {
+    if (legacyRefs.has(ref)) continue;
     ensure(
       !protectedLinks.some((x) => ref === x || ref.startsWith(x + "/")),
       `受保护 gitlink: ${ref}`,
@@ -97,6 +105,13 @@ export function execute(bundle, target, opts) {
     if (['update','add','delete'].includes(action) || (action==='conflict' && canForce)) operations.push({path:ref,before,after,bytes:next?.bytes});
     changes.push({path:ref,action,...(reason?{reason}:{})});
   }
+  for (const operation of layout.deletions) {
+    guardNestedRepository(target, operation.path);
+    ensure(!protectedLinks.some((x) => operation.path === x || operation.path.startsWith(x + "/")), `受保护 gitlink: ${operation.path}`, "PROTECTED");
+    observed.set(operation.path, operation.before);
+    operations.push(operation);
+    changes.push({path:operation.path,action:'delete',reason:'migrate-layout'});
+  }
   const result = {
     schemaVersion: 1,
     command: opts.command,
@@ -122,7 +137,7 @@ export function execute(bundle, target, opts) {
   result.prunable = changes.filter(c=>['prunable','prune'].includes(c.reason)).map(c=>c.path);
   result.retainedRemoved = changes.filter(c=>c.reason==='retained-removed').map(c=>c.path);
   result.pruned = [];
-  result.migrationRequired = Boolean(meta?.legacy);
+  result.migrationRequired = Boolean(meta?.legacy || layout.legacyFiles.length);
   result.legacyRetainedFiles = meta?.legacyRetainedFiles || [];
   if (opts.dryRun || opts.plan || opts.command === 'diff' || (opts.command !== "init" && !opts.apply)) return result;
   const watched = [...METADATA, "yss-project.yaml", PROFILE, ".gitmodules"];

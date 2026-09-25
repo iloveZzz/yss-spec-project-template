@@ -5,15 +5,15 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill �
 
 # YSS Implementation Contract Compiler
 
-已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `docs/process/contract-reading.md`。
+已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `.template-spec/process/contract-reading.md`。
 
 阶段 7 的实现合同编译器。它把已批准的生命周期资产、垂直切片、capability 和窄 Recipe 编译为 `Slice Implementation Contract` v3 草案；不批准合同、不写业务代码、不设置 `ready-for-agent`。
 
-文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
 
 ## 文档写作
 
-撰写实现合同的解释正文和切片交接说明前，读取 `docs/process/document-writing.md` 的共用写法及工程契约 / Ticket 指引；不改变结构化合同、批准状态或就绪条件。
+撰写实现合同的解释正文和切片交接说明前，读取 `.template-spec/process/document-writing.md` 的共用写法及工程契约 / Ticket 指引；不改变结构化合同、批准状态或就绪条件。
 
 ## 输入
 
@@ -22,8 +22,8 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill �
 ## 编译循环
 
 1. 判断 frontend/backend/API/data/domain/cross-repo 影响，并按 [compiler-contract.yaml](references/compiler-contract.yaml) 把 impact 映射为入口 capability；逐项填写 backend `component_impacts`。
-2. 按 `docs/process/delivery-preflight.md` 只读检查当前阶段交付前提，再检查工程存在性和核心/长尾 skill 可用性。既有 Java/Maven 工程按 `docs/process/existing-backend-architecture.md` 加载登记、工程基线、独立观测的原始引用与摘要；不伪填生成器或 H2。
-3. 从 `docs/agents/yss-skill-registry.yaml` 选择一个或多个窄 Recipe，合并 `required_capabilities`；Recipe 不得直接引用 skill。
+2. 按 `.template-spec/process/delivery-preflight.md` 只读检查当前阶段交付前提，再检查工程存在性和核心/长尾 skill 可用性。既有 Java/Maven 工程按 `.template-spec/process/existing-backend-architecture.md` 加载登记、工程基线、独立观测的原始引用与摘要；不伪填生成器或 H2。
+3. 从 `.template-spec/agents/yss-skill-registry.yaml` 选择一个或多个窄 Recipe，合并 `required_capabilities`；Recipe 不得直接引用 skill。
 4. 由 capability 解析入口 skill，只递归 `context-required`；`context-conditional` 仅在显式 condition 命中时加载，其他依赖类型只进入原因链，不扩张执行上下文。
 5. 按“Recipe 声明顺序 → 依赖拓扑 → skill ID”确定性排序，去重 skill 并保留全部原因；冻结 Registry 与编译器合同 SHA-256。
 6. 为切片生成基线合同；为当前行为生成工作单元增量路由。
@@ -32,11 +32,11 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill �
 
 完整草案使用 `scripts/slice-contract prepare` 或 `prepareSliceImplementationContract` 从已有 Ticket / checkpoint 和必要细化组装；执行前读取唯一 YAML，视图和检查报告不授予权限。
 
-合同结构见 [slice-implementation-contract.md](references/slice-implementation-contract.md)，专项返回协议见 [yss-skill-execution-result.md](references/yss-skill-execution-result.md)。前端、后端和测试子任务必须由生命周期主控从批准的 Slice Contract 编译任务包；任务包 schema 为 `docs/process/schemas/subagent-task-package.schema.json`，技能列表必须来自 `taskPackageDefaults`，不能由编译器或执行 Agent 另行手写。
+合同结构见 [slice-implementation-contract.md](references/slice-implementation-contract.md)，专项返回协议见 [yss-skill-execution-result.md](references/yss-skill-execution-result.md)。前端、后端和测试子任务必须由生命周期主控从批准的 Slice Contract 编译任务包；任务包 schema 为 `.template-spec/process/schemas/subagent-task-package.schema.json`，技能列表必须来自 `taskPackageDefaults`，不能由编译器或执行 Agent 另行手写。
 
 ## 硬规则
 
-采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `docs/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
+采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `.template-spec/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
 
 - 编译器不得输出 `approved`、`ready-for-agent` 或 `completed`。
 - Registry 和编译规则保持 schema v2；新 Slice 使用 v3，v2 按原规则读取和显式迁移。schema v1 一律拒绝，不自动升级，不提供旧技能名兼容。
@@ -72,6 +72,6 @@ description: "编译或重验 YSS Slice Implementation Contract、最小 Skill �
 
 ## 后端脚手架平台承接
 
-消费生命周期已确认的架构与 `platform_configuration` v2；不得自行选择、批准或静默升级 Boot/Java。平台清单执行 `scripts/backend-platforms` 查询；只允许已验证 YSS 组合，新生成缺少配置或证据即阻断。决定、合同、Manifest 与下游架构身份须绑定同一平台及兼容摘要。详见 仓库共享合同 `docs/engineering/backend-platforms.md`。
+消费生命周期已确认的架构与 `platform_configuration` v2；不得自行选择、批准或静默升级 Boot/Java。平台清单执行 `scripts/backend-platforms` 查询；只允许已验证 YSS 组合，新生成缺少配置或证据即阻断。决定、合同、Manifest 与下游架构身份须绑定同一平台及兼容摘要。详见 仓库共享合同 `.template-spec/engineering/backend-platforms.md`。
 
 后端 Slice 解析出 `component_binding: required` 的 capability 或其主 Skill 时，必须在同一平台兼容条目中逐项解析 `component_capabilities`。编译结果保存 `component_bindings` 与 `component_bindings_digest`；未登记、未验证、架构证据缺失、构件坐标冲突或摘要漂移均阻断。旧合同含组件 Skill 但没有组件绑定时直接 `stale`，重新编译并交生命周期批准，禁止自动补字段后沿用原批准。

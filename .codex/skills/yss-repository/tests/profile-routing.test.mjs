@@ -16,7 +16,7 @@ async function text(target) {
 test("repository router exposes exactly the registered profile entry points", async () => {
   const profilesRoot = path.join(repositorySkillRoot, "references/profiles");
   const profiles = (await readdir(profilesRoot)).filter((name) => name.endsWith(".md")).sort();
-  const registry = parseDocument(await text(path.join(projectRoot, "docs/agents/yss-skill-registry.yaml"))).toJS();
+  const registry = parseDocument(await text(path.join(projectRoot, ".template-spec/agents/yss-skill-registry.yaml"))).toJS();
   assert.deepEqual(profiles, [...Object.keys(registry.architecture_profiles), ...Object.keys(registry.existing_project_profiles)].map(id => `${id}.md`).sort());
 
   const skill = await text(path.join(repositorySkillRoot, "SKILL.md"));
@@ -47,7 +47,7 @@ test("normative persistence skills do not contain business-specific templates or
 
 test("code review wires Repository and MyBatis with registered backend scope", async () => {
   const standards = await text(path.join(skillsRoot, "code-review/references/yss-review-standards.md"));
-  const report = await text(path.join(projectRoot, "docs/templates/review-report-template.md"));
+  const report = await text(path.join(projectRoot, ".template-spec/templates/review-report-template.md"));
   const lifecycle = await text(path.join(skillsRoot, "yss-product-lifecycle/references/orchestration-contract.yaml"));
 
   for (const source of [standards, report, lifecycle]) {

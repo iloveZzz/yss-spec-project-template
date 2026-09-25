@@ -39,7 +39,7 @@ try {
     const opposite=side==='frontend'?'backend':'frontend';
     assert.throws(()=>enforceHarnessTaskScope({contract:{kind:'lifecycle-work-unit'},role_id:`role.${opposite}-agent`,execution_state:'Worker',allowed_write_paths:['docs/']},{root:target}),/另一端/);
     assert.throws(()=>enforceHarnessSkillScope(['opposite'],{skills:[{id:'opposite',impacts:[opposite]}]},{root:target}),/另一端技能/);
-    const profilePath=path.join(target,'docs/process/harness-profile.yaml'),profileBytes=readFileSync(profilePath);
+    const profilePath=path.join(target,'.template-spec/process/harness-profile.yaml'),profileBytes=readFileSync(profilePath);
     writeFileSync(profilePath,'schema_version: 1\nprofile_id: harness.dev-agent-slice\n');
     assert.throws(()=>enforceHarnessTaskScope({},{root:target}),/metadata 与 profile 不一致/);
     writeFileSync(profilePath,profileBytes);

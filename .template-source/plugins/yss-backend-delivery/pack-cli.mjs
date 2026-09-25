@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { files, safe, hash } from './runtime.mjs';
 
-export const corePath = ref => /^(scripts\/|\.(agents|codex|cursor|pi)\/skills\/|docs\/process\/|docs\/agents\/(yss-skill-registry|digital-human-roles)\.yaml$)/.test(ref)
+export const corePath = ref => /^(scripts\/|\.(agents|codex|cursor|pi)\/skills\/|(?:docs|\.template-spec)\/process\/|(?:docs|\.template-spec)\/agents\/(yss-skill-registry|digital-human-roles)\.yaml$)/.test(ref)
   && !ref.endsWith('/.yss-skills-manifest.json');
 
 export function packCli(cliRoot, pin, { agentRuntime, skillIds = [] } = {}) {

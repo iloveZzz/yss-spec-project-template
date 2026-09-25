@@ -20,10 +20,10 @@ const platformConfigurations = value => {
 
 test("platform configuration schemas persist the normalized component platform line", async () => {
   const refs = [
-    "docs/process/schemas/backend-architecture-identity.schema.json",
-    "docs/process/schemas/project-scaffold-contract.schema.json",
-    "docs/process/schemas/scaffold-architecture-decisions.schema.json",
-    "docs/process/schemas/slice-implementation-contract-v3.schema.json",
+    ".template-spec/process/schemas/backend-architecture-identity.schema.json",
+    ".template-spec/process/schemas/project-scaffold-contract.schema.json",
+    ".template-spec/process/schemas/scaffold-architecture-decisions.schema.json",
+    ".template-spec/process/schemas/slice-implementation-contract-v3.schema.json",
   ];
   for (const ref of refs) {
     const schema = JSON.parse(await readFile(new URL(`../${ref}`, import.meta.url), "utf8"));

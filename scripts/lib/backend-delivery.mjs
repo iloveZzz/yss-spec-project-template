@@ -20,7 +20,7 @@ async function approvedFile(root, binding, gate) {
   const bytes=boundFile(root,binding);
   if(gate==='gate.slice-contract-approved'){verifySliceContractApproval(binding,{root});return bytes;}
   const record=read(safe(root,binding.approval_ref));
-  const roles=sourceApprovalPolicy(read(safe(root,'docs/agents/digital-human-roles.yaml')));
+  const roles=sourceApprovalPolicy(read(safe(root,'.template-spec/agents/digital-human-roles.yaml')));
   await sourceApproval(record,roles,root);
   ensure((Array.isArray(gate)?gate:[gate]).includes(record.gate_id),`交付资产批准门禁不匹配: ${binding.ref}`);
   ensure(record.artifact_bindings?.some(x=>x.id===binding.id&&x.version===binding.version&&x.digest===binding.digest),`批准未绑定当前交付资产: ${binding.ref}`);
@@ -30,7 +30,7 @@ async function approvedFile(root, binding, gate) {
 function verification(root, binding, basis, kind) {
   boundFile(root,binding);
   const record=read(safe(root,binding.ref));
-  schema(record,'docs/process/schemas/backend-delivery-verification.schema.json');
+  schema(record,'.template-spec/process/schemas/backend-delivery-verification.schema.json');
   ensure(record.kind===kind&&record.subject_digest===basis,`验证未绑定当前交付: ${kind}`);
   ensure(record.results.every(x=>x.exit_code===0),`后端验证失败: ${kind}`);
   for(const result of record.results) {
@@ -43,7 +43,7 @@ function verification(root, binding, basis, kind) {
 export async function inspectBackendDelivery(root, ref, { readOnly = false } = {}) {
   project(root);
   const delivery=read(safe(root,ref));
-  schema(delivery,'docs/process/schemas/backend-delivery.schema.json');
+  schema(delivery,'.template-spec/process/schemas/backend-delivery.schema.json');
   ensure(boundFile(root,delivery.environment.test_data).length>0,'测试数据准备说明为空');
   await approvedFile(root,delivery.openapi,['gate.engineering-contract-approved','gate.openapi-frozen','gate.openapi-freeze-confirmed']);
   await approvedFile(root,delivery.slice_contract,'gate.slice-contract-approved');
@@ -115,7 +115,7 @@ export async function exportBackendDelivery({sourceRoot,deliveryRef,output,zip=f
   const root=project(sourceRoot), target=path.resolve(output);
   ensure(!existsSync(target)&&(!zip||!existsSync(`${target}.zip`)),'后端包输出已存在');
   const {delivery}=await inspectBackendDelivery(root,deliveryRef);
-  const refs=new Set([deliveryRef,'yss-project.yaml','CONTEXT.md','docs/agents/digital-human-roles.yaml',delivery.openapi.ref,delivery.openapi.approval_ref,delivery.slice_contract.ref,delivery.slice_contract.approval_ref,delivery.environment.test_data.ref,...delivery.supporting_files]);
+  const refs=new Set([deliveryRef,'yss-project.yaml','CONTEXT.md','.template-spec/agents/digital-human-roles.yaml',delivery.openapi.ref,delivery.openapi.approval_ref,delivery.slice_contract.ref,delivery.slice_contract.approval_ref,delivery.environment.test_data.ref,...delivery.supporting_files]);
   for(const binding of Object.values(delivery.verification)) {
     refs.add(binding.ref);
     for(const result of read(safe(root,binding.ref)).results)for(const file of result.evidence)refs.add(file.ref);

@@ -5,11 +5,11 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 # YSS Product Lifecycle
 
-合同阅读：`scripts/contract view`；见 `docs/process/contract-reading.md`。
+合同阅读：`scripts/contract view`；见 `.template-spec/process/contract-reading.md`。
 
-主控识别请求、仓库身份和可信阶段，计算 frontier、派发与验收工作单元；专项 Skill 负责设计、实现和独立审查。
+主控识别请求、身份及可信阶段，计算 frontier 并派发、验收工作单元；专项 Skill 执行与独立审查。
 
-文档按 `document_writing` 条件调用 `i-have-adhd`，并传递 `docs/process/document-writing.md` 规范。
+文档按 `document_writing` 条件调用 `i-have-adhd`，并传递 `.template-spec/process/document-writing.md` 规范。
 
 ## 事实源与按需加载
 
@@ -17,11 +17,11 @@ description: 编排 YSS 研发全生命周期；当阶段、产物、门禁或 S
 
 | 事实 | 权威来源 |
 |---|---|
-| 阶段、聚合门禁、内部检查、产物、工作单元、证据和稳定 ID | `docs/process/lifecycle-registry.yaml` |
+| 阶段、聚合门禁、内部检查、产物、工作单元、证据和稳定 ID | `.template-spec/process/lifecycle-registry.yaml` |
 | 执行模式、流转、readiness、暂停、结果和授权语义 | `references/orchestration-contract.yaml` |
-| Skill 身份、capability、依赖和路由 | `docs/agents/yss-skill-registry.yaml` |
-| 数字人角色、运行时和会签策略 | `docs/agents/digital-human-roles.yaml` |
-| 影响面、裁剪和模板维护强度 | `docs/process/harness-process-tailoring.md`、`docs/process/maintenance-intensity.yaml` |
+| Skill 身份、capability、依赖和路由 | `.template-spec/agents/yss-skill-registry.yaml` |
+| 数字人角色、运行时和会签策略 | `.template-spec/agents/digital-human-roles.yaml` |
+| 影响面、裁剪和模板维护强度 | `.template-spec/process/harness-process-tailoring.md`、`.template-source/process/maintenance-intensity.yaml` |
 
 用 `scripts/query-lifecycle-context` 查询合同：
 
@@ -40,7 +40,7 @@ scripts/query-lifecycle-context --mode route --stage stage.plan --work-unit work
 3. 按合同 `request_triage` 选择 `route`、`orchestrate`、`resume`、`audit`；明确行动请求无需模式关键字，意图不明时只读 `route`。`modes`、门禁及授权边界仍适用。
 4. `project-instance` 按生命周期注册表推进；`template-source` 只走模板维护流程。
 
-Plan 入口读取 `docs/plan/README.md` 和 `docs/process/plan-migration.md`，按注册表的退出条件核查战略输入。关键未决项阻断进入 Spec；非关键细节须有责任人、解决时点和下游接收方。只使用 Plan 标识；旧阶段不提供兼容解析，历史批准不自动成为 Plan 批准。
+Plan 入口读取 `.template-spec/plan/README.md` 和 `.template-spec/process/plan-migration.md`，核查战略输入与退出条件。关键未决项阻断 Spec；其他未决项记录责任人、解决时点和接收方。只用 Plan 标识；旧阶段不兼容解析，历史批准不自动沿用。
 
 理解、澄清与纠错见 [请求分诊协议](references/request-triage.md)；用 `scripts/query-lifecycle-context --include request_triage` 查询合同。先查上下文和证据，只问影响下一动作的缺口，不按问题长度追问。
 
@@ -83,9 +83,9 @@ Plan 入口读取 `docs/plan/README.md` 和 `docs/process/plan-migration.md`，�
 
 `机会与目标 → 业务故事 → 责任与交接 → 规则、例子与疑问 → 可验收需求 → 页面验证 → 业务任务 → 交接研发`
 
-按当前决策澄清目标、流程、责任、规则、最小范围和验收例子。可生成引用权威资产的“业务方案总览”，展示状态、未决项、责任人和下一步；不复制正文或新增门禁。
+按当前决策澄清目标、流程、责任、规则、范围和验收例子。业务方案总览引用权威资产，展示状态、未决项、责任人和下一步；不复制正文或新增门禁。
 
-Plan → Spec（含正式草稿、恢复与显式 `to-spec`）写入前，按 `docs/plan/entry-review.md` 持久化审阅包并运行 `node scripts/verify-plan-spec-entry <state.yaml>`。检查默认 pending，缺项、过期或无真实回复即阻断；独立调研可继续。
+Plan → Spec（含正式草稿、恢复与显式 `to-spec`）写入前，按 `.template-spec/plan/entry-review.md` 持久化审阅包并运行 `node scripts/verify-plan-spec-entry <state.yaml>`。检查默认 pending，缺项、过期或无真实回复即阻断；独立调研可继续。
 
 ## 结果与暂停
 
@@ -97,4 +97,4 @@ Plan → Spec（含正式草稿、恢复与显式 `to-spec`）写入前，按 `d
 
 专项合同加载索引见 `references/orchestration.md`。
 
-Plan / Spec / Design 追踪按 `docs/process/stage-tracking.md`。
+Plan / Spec / Design 追踪按 `.template-spec/process/stage-tracking.md`。

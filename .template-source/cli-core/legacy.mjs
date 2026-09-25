@@ -14,6 +14,6 @@ export function normalizeLegacy(meta, family) {
     if (ref === "scripts/instantiate-harness") { legacyRetainedFiles.push(ref); continue; }
     if (!userOwned(ref, family)) managedFiles[ref] = { baseline: {type:'file',digest:record.contentHash,mode:0o644}, lastApplied:null, legacyUnproven:true };
   }
-  for (const ref of ['yss-project.yaml','docs/process/harness-profile.yaml','AGENTS.md','CONTEXT.md']) ensure(managedFiles[ref], `旧基线缺少合同: ${ref}`, 'BASELINE');
+  for (const ref of ['yss-project.yaml','.template-spec/process/harness-profile.yaml','AGENTS.md','CONTEXT.md']) ensure(managedFiles[ref], `旧基线缺少合同: ${ref}`, 'BASELINE');
   return {...meta, legacy:true, legacyRetainedFiles, variables:{...meta.variables,includeExampleDocs:true}, managedFiles};
 }

@@ -3,7 +3,7 @@ import path from "node:path";
 import { parseDocument } from "../vendor/yaml.mjs";
 import { nestedSkillPaths, OBSOLETE, PROJECTION_ROOTS, ROOT, unregisteredNestedSkillPaths } from "./skill-supply-chain.mjs";
 
-export const DEFAULT_REGISTRY = path.join(ROOT, "docs/agents/yss-skill-registry.yaml");
+export const DEFAULT_REGISTRY = path.join(ROOT, ".template-spec/agents/yss-skill-registry.yaml");
 const LOCK_PATH = path.join(ROOT, "skills-lock.json");
 const COMPILER_CONTRACT = path.join(ROOT, ".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml");
 const LIFECYCLE_CONTRACT = [
@@ -11,7 +11,7 @@ const LIFECYCLE_CONTRACT = [
   path.join(ROOT, ".agents/skills/harness-orchestrator/references/orchestration-contract.yaml"),
 ].find((candidate) => existsSync(candidate))
   ?? path.join(ROOT, ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml");
-const BACKEND_PLATFORMS = path.join(ROOT, "docs/engineering/backend-platforms.json");
+const BACKEND_PLATFORMS = path.join(ROOT, ".template-spec/engineering/backend-platforms.json");
 const LAYERS = new Set(["core", "specialist", "compatibility", "maintainer-only"]);
 const MATURITIES = new Set(["draft", "verified", "supported", "deprecated"]);
 const INVOCATION_MODES = new Set(["user", "model", "both"]);
@@ -73,7 +73,7 @@ export function resolveSkillForNewUse(registry, requestedId) {
         : `${requestedId} 已硬退役；按迁移 tombstone 重新路由`,
       {
         skill: requestedId,
-        migration_ref: "docs/agents/skill-migrations.md",
+        migration_ref: ".template-spec/agents/skill-migrations.md",
         ...(replacementSkill ? { replacement_skill: replacementSkill } : {})
       }
     );
@@ -379,7 +379,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
   requireStringSet(registry.retirement_contract.stages, ["deprecated", "retired"], "retirement_contract.stages");
   if (registry.retirement_contract.deprecated_new_use !== "forbidden") fail("retirement_contract.deprecated_new_use 必须为 forbidden");
   requireStringSet(registry.retirement_contract.cleanup_statuses, [...CLEANUP_STATUSES], "retirement_contract.cleanup_statuses");
-  if (registry.retirement_contract.hard_retirement_tombstone !== "docs/agents/skill-migrations.md") fail("retirement_contract.hard_retirement_tombstone 必须指向技能迁移说明");
+  if (registry.retirement_contract.hard_retirement_tombstone !== ".template-spec/agents/skill-migrations.md") fail("retirement_contract.hard_retirement_tombstone 必须指向技能迁移说明");
   if (registry.retirement_contract.retired_id_source !== "scripts/lib/skill-supply-chain.mjs#OBSOLETE") fail("retirement_contract.retired_id_source 必须指向统一 OBSOLETE 集");
   requireObject(registry.retirement_contract.failure_codes, "retirement_contract.failure_codes");
   if (registry.retirement_contract.failure_codes.deprecated !== SKILL_LIFECYCLE_FAILURE_CODES.deprecated || registry.retirement_contract.failure_codes.retired !== SKILL_LIFECYCLE_FAILURE_CODES.retired) {
@@ -469,7 +469,7 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
     fail("capability_contract.deterministic_order 必须固定为 recipe-declaration、dependency-topology、skill-id");
   }
   requireObject(capabilityContract.platform_component_binding, "capability_contract.platform_component_binding");
-  if (capabilityContract.platform_component_binding.marker !== "provider" || capabilityContract.platform_component_binding.required_kind !== "yss-component" || capabilityContract.platform_component_binding.catalog_source !== "docs/engineering/backend-platforms.json") {
+  if (capabilityContract.platform_component_binding.marker !== "provider" || capabilityContract.platform_component_binding.required_kind !== "yss-component" || capabilityContract.platform_component_binding.catalog_source !== ".template-spec/engineering/backend-platforms.json") {
     fail("capability_contract.platform_component_binding 必须绑定中央后端平台目录");
   }
   requireStringSet(capabilityContract.provider_kinds, [...PROVIDER_KINDS], "capability_contract.provider_kinds");
@@ -615,8 +615,8 @@ export function validateSkillRegistry(registry, { lock, compilerContract, lifecy
     if (deprecatedCompilerRefs.length) fail(`实现合同编译器合同仍引用 deprecated skill: ${deprecatedCompilerRefs.join(", ")}`);
     if (compilerContract.schema_version !== 2) fail("compiler-contract.yaml schema_version 必须为 2；v1 已停止支持");
     if (compilerContract.compiled_by !== "yss-implementation-contract-compiler") fail("compiler-contract.yaml compiled_by 无效");
-    if (compilerContract.capability_source !== "docs/agents/yss-skill-registry.yaml") fail("compiler-contract.yaml capability_source 必须指向技能注册表");
-    if (compilerContract.recipe_source !== "docs/agents/yss-skill-registry.yaml") fail("compiler-contract.yaml recipe_source 必须指向技能注册表");
+    if (compilerContract.capability_source !== ".template-spec/agents/yss-skill-registry.yaml") fail("compiler-contract.yaml capability_source 必须指向技能注册表");
+    if (compilerContract.recipe_source !== ".template-spec/agents/yss-skill-registry.yaml") fail("compiler-contract.yaml recipe_source 必须指向技能注册表");
     requireObject(compilerContract.impact_to_capabilities, "compiler-contract.impact_to_capabilities");
     for (const [impact, mapped] of Object.entries(compilerContract.impact_to_capabilities)) {
       requireStringArray(mapped, `compiler-contract.impact_to_capabilities.${impact}`, { nonEmpty: true });

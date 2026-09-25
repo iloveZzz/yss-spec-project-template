@@ -5,15 +5,15 @@ description: 编排 Plan 到 Spec 入口的方案决策与业务边界、协作�
 
 # YSS Stage Decision
 
-已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `docs/process/contract-reading.md`。
+已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `.template-spec/process/contract-reading.md`。
 
 `yss-stage-decision` 是由生命周期主控调度的上游决策技能，负责把需求、产品、商务输入和业务边界与规则设计结果整理成可审查、可版本化、可被下游消费的方案决策包。它不替代生命周期主控，也不生成产品代码、原型、OpenAPI 或垂直切片 Ticket。
 
-文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
 
 ## 文档写作
 
-撰写方案决策包和业务边界说明前，读取 `docs/process/document-writing.md` 的共用写法及 Plan 指引；原业务规则、决定依据和未决项完整保留。
+撰写方案决策包和业务边界说明前，读取 `.template-spec/process/document-writing.md` 的共用写法及 Plan 指引；原业务规则、决定依据和未决项完整保留。
 
 ## 适用边界
 
@@ -24,7 +24,7 @@ description: 编排 Plan 到 Spec 入口的方案决策与业务边界、协作�
 
 ## 执行顺序
 
-Plan 的目标与退出条件由 `docs/process/lifecycle-registry.yaml` 持有；从 `docs/plan/templates/plan-template.md` 汇总输入。旧资产按 `docs/process/plan-migration.md` 重新整理并核查，关键未决项不得延期到 Spec，非关键项记录责任人、解决时点与接收方。
+Plan 的目标与退出条件由 `.template-spec/process/lifecycle-registry.yaml` 持有；从 `.template-spec/plan/templates/plan-template.md` 汇总输入。旧资产按 `.template-spec/process/plan-migration.md` 重新整理并核查，关键未决项不得延期到 Spec，非关键项记录责任人、解决时点与接收方。
 
 1. 读取 `yss-project.yaml`、`CONTEXT.md`、既有 Plan/Spec、ADR 和当前 profile 的主索引/checkpoint；按 `yss-product-lifecycle` 的 `request-triage` 区分事实确认、产品决定、门禁确认和普通澄清。
 2. 分离事实、决策、假设、约束和未决项；技术事实走 `yss-research` 的 `technical-evidence`，领域边界、业务规则、MVP、非目标、成功标准或阶段推进依据等决策证据走 `strategy-evidence`，市场/竞品事实走 `competitive-intelligence`。
@@ -36,7 +36,7 @@ Plan 的目标与退出条件由 `docs/process/lifecycle-registry.yaml` 持有�
 
 ## 控制面引用
 
-- 用户决定遵循 `docs/process/lifecycle/references/user-decisions.md`：决定必须绑定资产、版本、范围和证据；范围、风险、摘要或失效条件变化后重新确认。
+- 用户决定遵循 `.template-spec/process/lifecycle/references/user-decisions.md`：决定必须绑定资产、版本、范围和证据；范围、风险、摘要或失效条件变化后重新确认。
 - checkpoint 是唯一机器状态源，业务 Ticket 只保存追踪引用，不复制阶段状态。
 - 每次批准、重发和消费者流转前执行 `context_reconciliation`，核验 `CONTEXT.md` 的全文与引用术语双摘要。
 - 技术事实与第三方行为走 `yss-research` 的 `technical-evidence`；产品策略依据走 `strategy-evidence`；市场与竞品判断走 `competitive-intelligence`。

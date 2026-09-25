@@ -24,4 +24,4 @@
 - BOM 版本不等于每个组件 artifact 的实际版本。比较依赖树中的精确 GAV；索引输出的本地 POM lineage 是定位证据，不代替 effective POM 和运行验证。
 - `javax.sql`、`javax.crypto` 等 Java SE 包不是 Jakarta 迁移目标，不能用简单字符串替换处理。
 
-共享平台事实源为 `docs/engineering/backend-platforms.json` 和 `docs/engineering/backend-platforms.md`。
+共享平台事实源为 `.template-spec/engineering/backend-platforms.json` 和 `.template-spec/engineering/backend-platforms.md`。

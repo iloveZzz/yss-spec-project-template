@@ -8,9 +8,9 @@ import { parseDocument } from "../vendor-entry-yaml.mjs";
 
 const repositoryRoot = path.resolve(new URL("../../../..", import.meta.url).pathname);
 const designPath = path.join(repositoryRoot, "DESIGN.md");
-const projectionDir = path.join(repositoryRoot, "docs/design/tokens");
+const projectionDir = path.join(repositoryRoot, ".template-spec/design/tokens");
 const manifestPath = path.join(projectionDir, ".design-md-projection.json");
-const syncMetadataPath = path.join(repositoryRoot, "docs/design/design-system-sync.yaml");
+const syncMetadataPath = path.join(repositoryRoot, ".template-source/design/design-system-sync.yaml");
 const expectedSections = ["Overview", "Colors", "Typography", "Layout", "Elevation & Depth", "Shapes", "Components", "Do's and Don'ts"];
 const requiredFrontmatter = ["version", "name", "description", "colors", "typography", "rounded", "spacing", "components"];
 const componentProperties = new Set(["backgroundColor", "textColor", "typography", "rounded", "padding", "size", "height", "width"]);

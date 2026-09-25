@@ -7,7 +7,7 @@ const fail = message => { throw new TypeError(`plan-spec-entry-blocked: ${messag
 const text = value => typeof value === 'string' && value.trim().length > 0;
 
 export function planEntryPolicy(options = {}) {
-  const registry = decisionIO(options).document('docs/process/lifecycle-registry.yaml');
+  const registry = decisionIO(options).document('.template-spec/process/lifecycle-registry.yaml');
   const policy = registry.stages.find(stage => stage.id === 'stage.plan')?.spec_entry;
   if (!policy?.required_checks?.length || !policy?.gate_impacts) fail('缺少 Plan 入口策略');
   const gateIds = registry.gates.filter(gate => gate.stage === 'stage.plan').map(gate => gate.id).sort();
@@ -33,7 +33,7 @@ export function assertPlanSpecEntry(state, options = {}) {
   const evidence = refs => {
     if (!Array.isArray(refs) || !refs.length || refs.some(ref => !basis.has(ref))) fail('检查项缺少当前依据');
   };
-  for (const ref of [review.plan_ref, 'CONTEXT.md', 'docs/process/lifecycle-registry.yaml', review.context_reconciliation_ref]) {
+  for (const ref of [review.plan_ref, 'CONTEXT.md', '.template-spec/process/lifecycle-registry.yaml', review.context_reconciliation_ref]) {
     if (!basis.has(ref)) fail(`必需依据未绑定: ${ref}`);
   }
   if (Object.keys(review.checks || {}).length !== policy.required_checks.length) fail('检查项缺失或存在未知项');
@@ -62,7 +62,7 @@ export function assertPlanSpecEntry(state, options = {}) {
     } else if (gate.status !== 'not-applicable' || !text(gate.reason)) fail(`未命中门禁须有原因和依据: ${gateId}`);
   }
   // 门禁依赖不能通过将上游标成 N/A 来跳过。
-  const registry = io.document('docs/process/lifecycle-registry.yaml');
+  const registry = io.document('.template-spec/process/lifecycle-registry.yaml');
   for (const gate of registry.checks.filter(gate => gate.stage === 'stage.plan')) {
     if (review.internal_checks[gate.id]?.status === 'approved') {
       for (const dependency of gate.requires_checks || []) if (review.internal_checks[dependency]?.status !== 'approved') fail(`门禁依赖未批准: ${dependency}`);

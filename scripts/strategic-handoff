@@ -8,7 +8,7 @@ import { read, safe, ensure } from './lib/strategic-handoff-io.mjs';
 async function preflightExport(values) {
   const root=path.resolve(values['source-root']),handoff=read(safe(root,values.handoff));
   const required=handoff.schema_version===5&&handoff.ui_baseline_kind==='existing-ui-baseline';
-  ensure(!required||values['preflight-input'],'preflight-required: 既有 UI 战略导出必须提供 --preflight-input <file>；先按 docs/process/delivery-preflight.md 准备源资产清单并执行 export 阶段只读预检');
+  ensure(!required||values['preflight-input'],'preflight-required: 既有 UI 战略导出必须提供 --preflight-input <file>；先按 .template-spec/process/delivery-preflight.md 准备源资产清单并执行 export 阶段只读预检');
   if(!values['preflight-input'])return;
   const {preflightDelivery}=await import('./lib/delivery-preflight.mjs');
   const input=read(path.resolve(values['preflight-input']));

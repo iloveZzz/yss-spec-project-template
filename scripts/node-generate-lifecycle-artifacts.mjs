@@ -12,7 +12,7 @@ try {
   const registryPath = values.registry ? path.resolve(values.registry) : DEFAULT_REGISTRY;
   const registry = validateRegistry(loadRegistry(registryPath));
   const targets = [[
-    path.join(ROOT, "docs/process/lifecycle-artifact-map.md"),
+    path.join(ROOT, ".template-spec/process/lifecycle-artifact-map.md"),
     "<!-- lifecycle-registry:structure:start -->",
     "<!-- lifecycle-registry:structure:end -->",
     renderLifecycleStructure(registry)

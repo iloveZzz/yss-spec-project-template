@@ -14,7 +14,7 @@ OpenAPI Freeze 或无 API 影响记录完成后，由生命周期原生 Ticket �
 
 - `CONTEXT.md`
 - `AGENTS.md`
-- `docs/templates/spec-template.md`
-- `docs/process/lifecycle-registry.yaml`
-- `docs/api/templates/openapi-draft-review-checklist.md`
+- `.template-spec/templates/spec-template.md`
+- `.template-spec/process/lifecycle-registry.yaml`
+- `.template-spec/api/templates/openapi-draft-review-checklist.md`
 - `.agents/skills/yss-implementation-contract-compiler/SKILL.md`

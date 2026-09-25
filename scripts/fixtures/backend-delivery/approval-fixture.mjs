@@ -7,7 +7,7 @@ import {buildDecisionFixture} from '../user-decision/build-fixture.mjs';
 export function attachSliceApproval(root,contractRef) {
  const put=(ref,value)=>{mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});writeFileSync(path.join(root,ref),typeof value==='string'?value:json(value));};
  const contract=read(path.join(root,contractRef));
- const roles=read(path.join(root,'docs/agents/digital-human-roles.yaml'));
+ const roles=read(path.join(root,'.template-spec/agents/digital-human-roles.yaml'));
  const sliceRule=countersignRuleForGate(roles.gate_policy,'gate.slice-contract-approved');
  if(sliceRule) {
   const binding={ref:contractRef,digest:hash(readFileSync(path.join(root,contractRef))),id:contract.contract_id,version:contract.contract_version,approval_ref:'approvals/slice-countersign.json'};
@@ -32,7 +32,7 @@ export function attachSliceApproval(root,contractRef) {
 
 // Use the actual synthetic source's policy, including portable original replies for human gates.
 export function attachArtifactApproval(root,ref,id,gate) {
- const roles=read(path.join(root,'docs/agents/digital-human-roles.yaml')),rule=countersignRuleForGate(roles.gate_policy,gate);
+ const roles=read(path.join(root,'.template-spec/agents/digital-human-roles.yaml')),rule=countersignRuleForGate(roles.gate_policy,gate);
  if(!rule)throw new Error(`Synthetic source has no approval rule for ${gate}`);
  const binding={ref,id,version:'v1',digest:hash(readFileSync(path.join(root,ref))),approval_ref:`approvals/${id}.json`};
  const biological=rule.bucket==='biological_human',supportingFiles=[];

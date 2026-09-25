@@ -112,7 +112,7 @@ Status: ready-for-human
 
 | 门禁 | 记录路径 | 会签角色 | 状态 |
 |---|---|---|---|
-|  | `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml` | 见 `docs/agents/digital-human-roles.yaml` | pending / approved / blocked / not-applicable |
+|  | `docs/.scratch/<feature>/gates/<gate-id>-approval.yaml` | 见 `.template-spec/agents/digital-human-roles.yaml` | pending / approved / blocked / not-applicable |
 
 ## 状态
 

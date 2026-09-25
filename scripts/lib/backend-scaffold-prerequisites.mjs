@@ -8,7 +8,7 @@ import { ROOT } from "./lifecycle-registry.mjs";
 import { validateTechnicalDesign } from "../../.agents/skills/yss-technical-design/scripts/validate-technical-design.mjs";
 import { validateApiContractDecision } from "./api-contract-decision.mjs";
 
-const DATA_DECISION_SCHEMA = path.join(ROOT, "docs/process/schemas/data-architecture-decision.schema.json");
+const DATA_DECISION_SCHEMA = path.join(ROOT, ".template-spec/process/schemas/data-architecture-decision.schema.json");
 
 const fail = (message) => { throw new TypeError(message); };
 const digest = (bytes) => `sha256:${createHash("sha256").update(bytes).digest("hex")}`;

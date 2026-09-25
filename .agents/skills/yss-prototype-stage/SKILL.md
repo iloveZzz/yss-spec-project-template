@@ -5,20 +5,20 @@ description: Use when a YSS feature has product-design impact on a primary flow,
 
 # YSS Prototype Stage
 
-已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `docs/process/contract-reading.md`。
+已有生命周期资产优先用 `scripts/contract view <资产> --kind <类型>` 阅读；执行任务用 `--profile task --unit <ID>`，绑定与校验明细用 `--profile full`。视图不授予执行权限，仍按本 Skill 的原始来源和批准门禁处理。类型、准备和迁移见 `.template-spec/process/contract-reading.md`。
 
 把产品设计影响收敛为跨 Agent 一致的原型交付物、证据和生命周期回流合同。它不替代 `yss-product-lifecycle` 的门禁裁决，也不把原型当作生产前端代码。
 
-文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `docs/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
+文档输出时按 `lifecycle-document-output` 条件调用 `i-have-adhd`，读取 `.template-spec/process/document-writing.md`；作用域仅限当前产物，派发时传递条件及引用。
 
 ## 文档写作
 
-起草或修订交互说明、状态说明和设计结论前，读取 `docs/process/document-writing.md` 的共用写法及产品设计指引；原型视觉和行为仍消费当前设计合同。
+起草或修订交互说明、状态说明和设计结论前，读取 `.template-spec/process/document-writing.md` 的共用写法及产品设计指引；原型视觉和行为仍消费当前设计合同。
 
 ## 进入条件与主入口
 
 - 先由 `yss-product-lifecycle` 判断产品设计影响；无行为变化的孤立视觉修复记录 `not-applicable`，不创建空资产。
-- 先读取 Spec、产品总体设计、`CONTEXT.md`、`yss-design-system`，再按 `DESIGN.md` → `docs/design/design.md` → `docs/design/tokens/*` 顺序消费设计基线，形成交互说明、低保真页面/流程和状态矩阵。
+- 先读取 Spec、产品总体设计、`CONTEXT.md`、`yss-design-system`，再按 `DESIGN.md` → `.template-spec/design/design.md` → `.template-spec/design/tokens/*` 顺序消费设计基线，形成交互说明、低保真页面/流程和状态矩阵。
 - 用独立 `prototype-review` 评审低保真与状态；未通过不得选择档位或构建原型交付物。
 - 按 [原型档位路由](references/prototype-profile-routing.md) 选择 H1/H2 中满足当前决策风险的最低档位。没有充分证据时默认 H2。
 - 默认以 `DESIGN.md`、交互说明和状态矩阵进入 YSS HTML 适配器；有已选视觉稿时才条件调用 `product-design:index` 的还原 workflow。规范直出不调用要求先有图片的 `prototype/image-to-code/design-qa`；六轴 QA 仍由本阶段合同持有，所有 Agent 交付等价证据。
@@ -42,7 +42,7 @@ description: Use when a YSS feature has product-design impact on a primary flow,
 
 ## 事实、QA 与确认
 
-优先级固定为：根 `DESIGN.md` 规范 Token / 组件变体 → `docs/design/design.md` 治理解释 → `docs/design/tokens/*` 派生快照。行为由 Spec、交互说明与状态矩阵定义。HTML 消费包内 Token CSS，保存根规范与 Token 摘要，不再调用组件 Provider 或采集新的 fact pack。标准格式与工具版本沿用项目锁定值，不跟随上游 main 自动升级。
+优先级固定为：根 `DESIGN.md` 规范 Token / 组件变体 → `.template-spec/design/design.md` 治理解释 → `.template-spec/design/tokens/*` 派生快照。行为由 Spec、交互说明与状态矩阵定义。HTML 消费包内 Token CSS，保存根规范与 Token 摘要，不再调用组件 Provider 或采集新的 fact pack。标准格式与工具版本沿用项目锁定值，不跟随上游 main 自动升级。
 
 Design QA 合并 visual、layout、interaction、content、accessibility、cross-platform 六轴，不再建立第二份评审。所有档位至少证明 desktop/narrow 非空渲染、项目 Token、console 和基础键盘/焦点/对比度；H2 追加主流程、关键异常、200% zoom/reduced motion 与按风险视觉回归。规范直出使用 `design_qa.mode=design-contract`，对照规范和实际计算样式审查；已有视觉稿使用 `visual-comparison`，对照同视口同状态源图。首版截图在审查和用户确认后冻结，不能与自身对比来证明符合规范。图片是视觉基准而非唯一事实来源；模型必须从 `visual-baseline.yaml` 的 `case_id` 读取对应语义引用，禁止靠目录 glob 猜测页面含义。
 
@@ -54,8 +54,8 @@ Design QA 合并 visual、layout、interaction、content、accessibility、cross
 
 - 档位、上游融合与迁移：[prototype-profile-routing.md](references/prototype-profile-routing.md)
 - 离线渲染适配与命令：[product-design-adapter.md](references/product-design-adapter.md)
-- 证据模板：`docs/design/templates/prototype-evidence-template.yaml`
-- Visual Baseline 模板与 schema：`docs/design/templates/visual-baseline-template.yaml`、`docs/design/schemas/visual-baseline.schema.json`
+- 证据模板：`.template-spec/design/templates/prototype-evidence-template.yaml`
+- Visual Baseline 模板与 schema：`.template-spec/design/templates/visual-baseline-template.yaml`、`.template-spec/design/schemas/visual-baseline.schema.json`
 
 ## 常见错误
 

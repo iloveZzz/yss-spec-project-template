@@ -19,4 +19,4 @@ description: 从需求、已批准的 Plan 或 Spec 开始 YSS 产品设计，�
 
 设计交付完成不代表后端已接收、前端已实现或业务已发布。Git、远端写入与发布沿用项目主控授权边界。
 
-阅读已有合同优先使用接收项目的 `scripts/contract view <资产> --kind <类型>`；任务约束用 `--profile task --unit <ID>`，摘要明细用 `--profile full`。来源自动准备和 API v2 显式迁移见接收项目 `docs/process/contract-reading.md`。视图不授予执行权限，仍核验原批准与当前来源。
+阅读已有合同优先使用接收项目的 `scripts/contract view <资产> --kind <类型>`；任务约束用 `--profile task --unit <ID>`，摘要明细用 `--profile full`。来源自动准备和 API v2 显式迁移见接收项目 `.template-spec/process/contract-reading.md`。视图不授予执行权限，仍核验原批准与当前来源。

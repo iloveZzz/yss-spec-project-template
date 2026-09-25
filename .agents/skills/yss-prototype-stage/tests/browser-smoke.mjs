@@ -9,9 +9,9 @@ import { prepareFlowPrototype, prepareStaticPrototype } from "../scripts/prototy
 const { chromium } = await import(process.env.YSS_PLAYWRIGHT_MODULE || "playwright");
 const temp = await mkdtemp(path.join(os.tmpdir(), "yss-offline-browser-"));
 const source = path.join(temp, "source");
-await mkdir(path.join(source, "docs/design/tokens"), { recursive: true });
+await mkdir(path.join(source, ".template-spec/design/tokens"), { recursive: true });
 await cp(new URL("../../../../DESIGN.md", import.meta.url), path.join(source, "DESIGN.md"));
-await cp(new URL("../../../../docs/design/tokens/variables.css", import.meta.url), path.join(source, "docs/design/tokens/variables.css"));
+await cp(new URL("../../../../.template-spec/design/tokens/variables.css", import.meta.url), path.join(source, ".template-spec/design/tokens/variables.css"));
 const root = path.join(source, "docs/.scratch/fixture/design/prototypes");
 await prepareFlowPrototype({ projectRoot: source, root, feature: "fixture" });
 const portable = path.join(temp, "portable");

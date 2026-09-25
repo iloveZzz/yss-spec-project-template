@@ -1,0 +1,58 @@
+# 战略设计技能集成合同
+
+`iloveZzz/yss-harness-design-agent` 是以下公共技能 ID 的上游业务 profile：
+
+- `prototype-review`
+- `yss-prototype-stage`
+- `yss-design-system`
+组件 Provider 入口已退役；当前原型由 yss-prototype-stage 统一编排。
+组件 Provider 入口已退役；当前原型由 yss-prototype-stage 统一编排。
+- `yss-stage-decision`
+
+父模板通过 `.agents/skills/.strategic-design-skills-manifest.json` 固定上游 Git revision、路径和 tree hash。公共 ID 不因 profile 改名；共享规则先在战略设计源仓演进，再由父模板同步。
+
+本轮 Plan 调整的 `yss-stage-decision` hash 对应战略设计子仓 commit `3a358684c5684ada433dca4fd97ee187050ca6d8`；父模板的 `source_revision` 与 gitlink 已同步。实施记录见 `.template-source/evidence/maintenance/2026-09-09-plan/`。
+
+## 父模板薄适配
+
+父模板承载完整产品研发生命周期，只允许在以下位置保留最小语境差异：
+
+| 技能 | 父模板适配 |
+|---|---|
+| `prototype-review` | 将评审结论回交 `yss-product-lifecycle`，通过后可进入实现合同编译准备 |
+| `yss-prototype-stage` | 用户确认后由完整生命周期判断 API 影响和实现准备 |
+| `yss-stage-decision` | 门禁状态由 `yss-product-lifecycle` 维护 |
+
+组件 Provider 入口已退役；当前原型由 yss-prototype-stage 统一编排。
+
+## 更新与验证
+
+1. 先在战略设计源仓形成并推送固定 commit。
+2. 更新 manifest 的 `source_revision` 和每项 `upstream_hash`。
+3. 同步父模板 canonical 内容，仅重放上表允许的薄适配。
+4. 运行 `scripts/update-skill-lock`、`scripts/sync-skills`。
+5. 运行：
+
+   ```bash
+   scripts/verify-upstream-skill-source \
+     --source=iloveZzz/yss-harness-design-agent \
+     --source-root=submodules/yss-harness-design-agent
+   scripts/verify-skill-governance
+   scripts/verify-template-fast
+   ```
+
+父模板、战略设计源仓与 CLI 快照必须按源仓 → 父模板 → CLI 顺序固定 revision；旧实例不回填，也不提供迁移检查器。
+
+## 真实用户决定适配
+
+模板生命周期的关键决定统一消费 `.template-spec/agents/digital-human-roles.yaml.user_decision_policy`。本地原型确认与阶段决策批准追加真实回复、当前资产和范围校验；数字人审查保留。记录协议见 [用户决定协议](../../.agents/skills/yss-product-lifecycle/references/user-decisions.md)。此适配只更新 effective hash，不改写已锁定的上游 revision/hash，也不发布外部技能源。
+
+当前既有 UI 交接入口已固定到战略设计源仓提交 `4891d8cc15a453df4bf057874c6127419c6c77d8`；manifest 的 `source_revision`、`upstream_hash` 与 gitlink 使用同一已提交来源。本体继续持有完整生命周期状态，战略侧通过 profile 绑定战略主控；后续 CLI 快照必须从该固定提交重建。GitHub 源码交付不等于 npm 发布或产品资产批准。
+
+## 2026-09-15 工作版本
+
+本轮使用 DESIGN.md 驱动的原生 HTML 默认路线，并条件支持真实 AntD 离线预构建。公共四项技能已固定到上述战略设计源仓提交；父模板完成提交后，CLI 快照必须从父模板与各 Agent 的固定提交重新生成。
+
+## 2026-09-20 Skills 规范整改固定来源
+
+本轮公共四项技能固定到战略源仓 `83d7bce7eab1adf16e02a419717c94fa8ba84f43`。当前 revision 与摘要以 `.agents/skills/.strategic-design-skills-manifest.json` 为准；上文提交号保留为历史记录。父模板保留生命周期主控薄适配，消费 profile 同步来源清单与锁。Agent 评测、75 项整改对账和后续 CLI 固定版本交付记录见 `.template-source/evidence/maintenance/2026-09-20-openai-skills-implementation/`。

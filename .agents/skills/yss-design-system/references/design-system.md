@@ -5,8 +5,8 @@
 权威资料：
 
 - 规范源：根 `DESIGN.md`（项目视觉 Token 与组件视觉变体）
-- 治理说明：`docs/design/design.md`（生命周期、组件路线、状态与验收）
-- 派生快照：`docs/design/tokens/*`（实现映射，不得反向覆盖规范源）
+- 治理说明：`.template-spec/design/design.md`（生命周期、组件路线、状态与验收）
+- 派生快照：`.template-spec/design/tokens/*`（实现映射，不得反向覆盖规范源）
 - Skill 入口：`.agents/skills/yss-design-system/SKILL.md`
 
 ## 设计定位
@@ -205,7 +205,7 @@ YSS UI / Vue：
 
 设计评审时检查：
 
-- 是否引用根 `DESIGN.md`、治理说明 `docs/design/design.md` 与所选主题快照，并在原型证据中记录摘要。
+- 是否引用根 `DESIGN.md`、治理说明 `.template-spec/design/design.md` 与所选主题快照，并在原型证据中记录摘要。
 - 是否符合中后台定位。
 - 页面清单、主路径、异常路径是否清楚。
 - 状态矩阵是否完整。

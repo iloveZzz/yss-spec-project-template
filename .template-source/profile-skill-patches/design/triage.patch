@@ -1,6 +1,8 @@
+diff --git a/SKILL.md b/SKILL.md
+index c096a27..c48a311 100644
 --- a/SKILL.md
 +++ b/SKILL.md
-@@ -6,9 +6,9 @@
+@@ -6,9 +6,9 @@ disable-model-invocation: true
  
  # Triage
  

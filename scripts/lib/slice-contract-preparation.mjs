@@ -72,7 +72,7 @@ function prepare({root=process.cwd(),ticket_ref,checkpoint_ref,sources={},refine
     const selected=mergeFacts(lifecycleSources(saved,report),mergeFacts(input.sources || {},sources,'sources',report),'sources',report);
     if(selected.ticket && (typeof selected.ticket==='string'?selected.ticket:selected.ticket.ref)!==ticket_ref)throw new TypeError('Ticket 来源冲突');
     selected.ticket=selected.ticket || {ref:ticket_ref};
-    if(input.scope?.risk_level){selected.lifecycle_registry??={ref:'docs/process/lifecycle-registry.yaml'};selected.process_tailoring??={ref:'docs/process/harness-process-tailoring.md'};}
+    if(input.scope?.risk_level){selected.lifecycle_registry??={ref:'.template-spec/process/lifecycle-registry.yaml'};selected.process_tailoring??={ref:'.template-spec/process/harness-process-tailoring.md'};}
     if(!selected.context&&fs.existsSync(safe(root,'CONTEXT.md',{missing:true})))selected.context={ref:'CONTEXT.md'};
     const basis={},seen=new Map();
     for(const [key,value] of Object.entries(selected)) {
@@ -136,7 +136,7 @@ function prepare({root=process.cwd(),ticket_ref,checkpoint_ref,sources={},refine
     for(const reason of compiled.readiness_blockers||[])report.blockers.push({reason});
     normalizeSliceContract(contract,{root});
     report.checks.push({check:'structure-sources-scope-acceptance',result:'pass'});
-    report.provenance.push({target:'resolution',source_ref:'docs/agents/yss-skill-registry.yaml',digest:compiled.registry_digest,rule:'existing-capability-compiler'});
+    report.provenance.push({target:'resolution',source_ref:'.template-spec/agents/yss-skill-registry.yaml',digest:compiled.registry_digest,rule:'existing-capability-compiler'});
     for(const field of ['scope','acceptance','verification','work_units','applicability','extensions'])if(contract[field]) {
       const origins=[];
       if(saved.slice_implementation?.[field]!==undefined)origins.push({kind:'checkpoint',ref:checkpoint_ref});

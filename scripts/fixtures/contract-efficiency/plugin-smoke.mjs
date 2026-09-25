@@ -20,7 +20,7 @@ try{
   fs.writeFileSync(path.join(target,'contract-smoke.md'),'# 合同工具验收\n\n约束：保留执行边界。\n');
   const view=run([path.join(target,'scripts/contract'),'view','contract-smoke.md','--kind','spec','--json'],target);
   if(view.execution_allowed!==false||!view.markdown.includes('保留执行边界'))throw Error('Reader did not preserve constraints');
-  if(!fs.existsSync(path.join(target,'docs/process/schemas/api-contract-decision-v2.schema.json')))throw Error('Missing API v2 schema');
+  if(!fs.existsSync(path.join(target,'.template-spec/process/schemas/api-contract-decision-v2.schema.json')))throw Error('Missing API v2 schema');
   rows.push({plugin:name,build_verify_init_check_read:'passed',verify:verified.result,project_check:checked.result,release_ready:false});
   console.log(`${name}: build/verify/project-plan/apply/check/read passed`);
   fs.writeFileSync(output,JSON.stringify({kind:'development-only-plugin-smoke',release_ready:false,rows},null,2)+'\n');

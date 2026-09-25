@@ -10,8 +10,8 @@ import { stringify } from '../../vendor/yaml.mjs';
 export function pilotFixture() {
   const f=approvedFixture();
   const ticket=f.contract.lifecycle_refs.ticket;
-  f.write('docs/process/lifecycle-registry.yaml',fs.readFileSync(new URL('../../../docs/process/lifecycle-registry.yaml',import.meta.url),'utf8'));
-  f.write('docs/process/harness-process-tailoring.md',fs.readFileSync(new URL('../../../docs/process/harness-process-tailoring.md',import.meta.url),'utf8'));
+  f.write('.template-spec/process/lifecycle-registry.yaml',fs.readFileSync(new URL('../../../.template-spec/process/lifecycle-registry.yaml',import.meta.url),'utf8'));
+  f.write('.template-spec/process/harness-process-tailoring.md',fs.readFileSync(new URL('../../../.template-spec/process/harness-process-tailoring.md',import.meta.url),'utf8'));
   f.write(ticket,'# 提交申请\n\n## 要构建什么\n提交完整材料并保存申请。\n\n## 非目标\n无新增审批规则。\n\n## 验收标准\n- [ ] AC-1 完整材料提交成功，缺失材料拒绝。\n');
   f.write('api.yaml','openapi: 3.1.0\ninfo: {title: fixture, version: v1}\npaths: {}\n');
   f.write('project/mvnw','# synthetic wrapper reference; tests do not execute this file\n');

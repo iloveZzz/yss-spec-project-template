@@ -89,7 +89,7 @@ Git checkpoint 必须说明主 tracker、同步状态、验证命令、剩余风
 - Apply labels: `glab issue update <iid> --label "ready-for-agent"`
 - Close an issue: `glab issue close <iid>`
 
-GitLab 相关配置和 MR / CI 工作流见 `docs/agents/gitlab-workflow-skills.md`。
+GitLab 相关配置和 MR / CI 工作流见 `.template-spec/agents/gitlab-workflow-skills.md`。
 
 ## GitHub Issues
 

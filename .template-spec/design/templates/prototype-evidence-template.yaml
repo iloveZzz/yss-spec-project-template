@@ -1,0 +1,132 @@
+# 复制到 docs/.scratch/<feature>/verification/prototype-evidence.yaml。
+# 只保留所选档位的 profile_evidence 子块；schema v1/v2/v3 仅允许只读迁移。
+schema_version: 4
+feature: <feature>
+prototype_ref: docs/.scratch/<feature>/design/prototypes/index.html
+prototype_profile: H2
+profile_kind: flow-review
+profile_decision:
+  decision_to_inform: <本轮原型需要支持的决定>
+  risk_assumptions:
+    - <需要验证或接受的风险假设>
+  trigger_results:
+    - trigger: <multi-page-navigation-or-other-trigger>
+      matched: true
+      evidence_ref: <spec-state-matrix-or-review-ref>
+  calculated_profile: H2
+  override:
+    applied: false
+    direction: none
+    reason: not-applicable
+    evidence_ref: not-applicable
+upstream_refs:
+  spec_ref: docs/.scratch/<feature>/spec/<feature>-spec.md
+  interaction_spec_ref: docs/.scratch/<feature>/design/<feature>-interaction-spec.md
+  low_fidelity_ref: docs/.scratch/<feature>/design/<feature>-low-fidelity.md
+  state_matrix_ref: docs/.scratch/<feature>/design/<feature>-state-matrix.md
+  prototype_review_ref: docs/.scratch/<feature>/design/<feature>-prototype-review.md
+source_visual:
+  kind: design-system # 有独立视觉稿时用 visual-reference
+  ideation_status: not-applicable
+  selected_ref: DESIGN.md
+  reuse_reason: <说明规范及已有页面模式足以支持设计的依据>
+design_baseline:
+  canonical_design_ref: DESIGN.md
+  canonical_design_digest: <sha256>
+  project_design_ref: .template-spec/design/design.md
+  project_token_refs:
+    # 默认 Data Quality 浅色；显式暗色 / 紧凑模式改为实际消费的对应快照，并同步摘要和视觉基线 cases[].theme。
+    - .template-spec/design/tokens/theme.json
+    - .template-spec/design/tokens/tokens.default.json
+    - .template-spec/design/tokens/variables.css
+  project_token_baseline_digest: <sha256>
+  project_override_reviewed: false
+visual_baseline:
+  manifest_ref: docs/.scratch/<feature>/handoff/visual-baseline-v1/visual-baseline.yaml
+  baseline_id: visual-baseline.<feature>
+  version: v1
+  digest: <sha256>
+  status: approved
+  case_ids: [primary-desktop, primary-narrow]
+browser_delivery:
+  delivery_contract: offline-html-v1
+  resource_manifest_ref: docs/.scratch/<feature>/design/prototypes/yss-prototype-adapter.json
+  offline_verification_ref: <file-url-offline-browser-evidence>
+  offline_verification_result: pending
+  delivery_kind: static-directory
+  entry_ref: docs/.scratch/<feature>/design/prototypes/index.html
+  rendered_nonblank: false
+  prototype_digest: <sha256>
+  viewports:
+    - name: desktop
+      size: 1440x900
+      result: pending
+      case_ids: [primary-desktop]
+    - name: narrow
+      size: 390x844
+      result: pending
+      case_ids: [primary-narrow]
+  console_result: pending
+  console_ref: <path-to-console-output-or-none>
+design_qa:
+  mode: design-contract # visual-reference 对应 visual-comparison
+  report_ref: docs/.scratch/<feature>/verification/design-qa.md
+  result: pending
+  axes:
+    visual: pending
+    layout: pending
+    interaction: pending
+    content: pending
+    accessibility: pending
+    cross_platform: pending
+profile_evidence:
+  # H1 只保留 visual_review；不得包含 package/lockfile/AntD 字段。
+  # visual_review:
+  #   runtime_build_required: false
+  #   key_interactions_result: pending
+  #   keyboard_result: pending
+  #   focus_result: pending
+  #   contrast_result: pending
+  #   zoom_200: {applicable: false, result: not-applicable, evidence_ref: not-applicable}
+  #   reduced_motion: {applicable: false, result: not-applicable, evidence_ref: not-applicable}
+  flow_review:
+    implementation:
+      framework: html-css-js
+      runtime_build_required: false
+    scenario_replay_ref: <case-id-and-data-scenario-action-evidence>
+    scenario_reset_result: pending
+    main_flow_result: pending
+    exceptional_state_result: pending
+    exceptional_state_ref: <failure-permission-or-conflict-ref>
+    keyboard_result: pending
+    focus_result: pending
+    contrast_result: pending
+    zoom_200_result: pending
+    reduced_motion_result: pending
+    visual_regression:
+      applicable: true
+      result: pending
+      evidence_ref: <snapshot-result-ref>
+    prototype_library_facts:
+      applicable: false
+      component_basis: html-css-js
+implementation_handoff:
+  prototype_code_reusable: false
+  production_component_assumptions:
+    - <原型采用的语义预计可由目标 YSS/AntDV 组件表达>
+  verification_targets:
+    - behavior: <进入实现后需要基于真实组件验证的行为>
+      target_stage: frontend-implementation-plan
+review:
+  result: pending
+  review_ref: docs/.scratch/<feature>/design/<feature>-prototype-review.md
+user_confirmation:
+  user_decision_ref: <真实用户决定记录>
+  decision_subject_ref: <原型与基线确认快照>
+  result: pending
+  confirmation_ref: docs/.scratch/<feature>/design/<feature>-prototype-confirmation.md
+  confirmed_decision: <用户确认的设计决定>
+  operable_scope: [<可操作范围>]
+  simulations_or_gaps: [<模拟或缺口>]
+gaps: []
+blockers: []

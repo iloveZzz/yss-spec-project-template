@@ -2,7 +2,7 @@
 
 本文件只服务唯一默认审查技能 `code-review`。Alibaba Java、YSS 前端 / 后端 skill 是 **Standards 轴的专项检查输入**，不是第二个通用审查 skill。
 
-权威接线：`yss-product-lifecycle/references/orchestration-contract.yaml` 的 `work-unit.code-review.review_standards_route` 与 `review_input`。报告形状：`docs/templates/review-report-template.md`。
+权威接线：`yss-product-lifecycle/references/orchestration-contract.yaml` 的 `work-unit.code-review.review_standards_route` 与 `review_input`。报告形状：`.template-spec/templates/review-report-template.md`。
 
 ## 1. 编译标准源
 

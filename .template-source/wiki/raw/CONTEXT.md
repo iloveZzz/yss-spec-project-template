@@ -15,10 +15,10 @@
 | Agent | 执行特定工作流步骤的 AI 协作者。 | — | 不要与生物人审查者、数字人角色或 Ticket 状态混用。运行时实例（Cursor Agent、Claude Code、Grok Bot 等）是 Agent 的承载，不是角色本身。 |
 | 运行时绑定 | 把数字人角色落到某个 Agent 平台的适配声明，权威清单在数字人角色注册表的 `runtimes`。 | — | 不要为每个平台复制一套职称职责。 |
 | Grok Bot | Grok 平台上的持久数字队友实例；对应 `runtime.grok`。 | — | 不是数字人角色、技能或门禁。 |
-| 数字人角色 | 叠加在生命周期编排器上的职称配置；一个运行时实例绑定一种。v1 清单以 `docs/agents/digital-human-roles.yaml` 为准。 | — | 不要称为 Ticket「标准角色」、职能 Agent 或某个平台的产品名。 |
+| 数字人角色 | 叠加在生命周期编排器上的职称配置；一个运行时实例绑定一种。v1 清单以 `.template-spec/agents/digital-human-roles.yaml` 为准。 | — | 不要称为 Ticket「标准角色」、职能 Agent 或某个平台的产品名。 |
 | 主控数字人 | 运行 `yss-product-lifecycle` 的协调实例。 | — | 不是第八个业务职称；默认兼任项目经理。 |
 | 角色配置 | 某数字人角色的关注阶段、技能包、可起草产物和禁止事项。 | — | 不是独立编排器，也不含平台群聊人数。 |
-| 生命周期会签 | 指定数字人或生物人关闭 `gate.*` / 独立审查并写入 `evidence.approval-record`。 | — | 不是运行时副作用审批。会签人由 `docs/agents/digital-human-roles.yaml` 的 `gate_policy` 指定。起草者不得会签自己起草的资产。`paused-human-gate` 表示等待该会签人，不是必须生物人。 |
+| 生命周期会签 | 指定数字人或生物人关闭 `gate.*` / 独立审查并写入 `evidence.approval-record`。 | — | 不是运行时副作用审批。会签人由 `.template-spec/agents/digital-human-roles.yaml` 的 `gate_policy` 指定。起草者不得会签自己起草的资产。`paused-human-gate` 表示等待该会签人，不是必须生物人。 |
 | 运行时副作用审批 | 对发消息、改生产、付款、删数据等工具动作的账号级确认。 | — | 点 Allow 不等于门禁已批准或可发布。避免只称「Grok 平台审批」。 |
 | Ticket 状态 | Tracker 五态：`needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix`。 | — | 不要称为数字人角色或「标准角色」。 |
 | 阶段协作组 | 某阶段需要共同可见会签的逻辑成员集合。 | — | 不是某个产品的群聊；平台人数上限只写在对应 `runtimes`。 |
@@ -79,7 +79,7 @@
 | 试验技能 | 尚未达到项目默认支持成熟度的技能。 | — | 只在明确试验范围内使用，不进入 实现合同编译器 默认技能闭包。 |
 | 显式兼容入口 | 为已有用户操作习惯保留的 user-invoked 工作流入口，写入前由生命周期编排器预检，结果回交其验收。 | — | 不是默认路径、过时别名或可以越过门禁的第二套生命周期。 |
 | 技能成熟度 | 描述技能从 `draft`、`verified`、`supported` 到 `deprecated` 的治理状态。 | — | 不等同于文件存在、已被投影或能够安装。 |
-| 技能注册表 | 记录技能身份、别名、分层、适用影响面、成熟度、默认可发现性和 Agent 运行时入口的机器可读路由资产。 | — | 不替代 `skills-lock.json` 的来源、hash 和投影完整性职责。当前 `docs/agents/yss-skill-registry.yaml` 为 `active`，实现合同编译器、生命周期编排器和实例发现面必须消费通过校验的 canonical 技能及其 alias 解析结果。 |
+| 技能注册表 | 记录技能身份、别名、分层、适用影响面、成熟度、默认可发现性和 Agent 运行时入口的机器可读路由资产。 | — | 不替代 `skills-lock.json` 的来源、hash 和投影完整性职责。当前 `.template-spec/agents/yss-skill-registry.yaml` 为 `active`，实现合同编译器、生命周期编排器和实例发现面必须消费通过校验的 canonical 技能及其 alias 解析结果。 |
 | LLM Wiki | 由 `raw/`、`wiki/` 与 `.wiki-manifest.json` 组成的本地持久知识库。 | — | 不是 `yss-research` 一次性研究包，也不替代权威源。`ingest` 只把用户点名的外源或已落盘研究笔记编进 IR，不改 live 权威文件。 |
 | 生态发布清单 | 关联模板 schema 与 commit、CLI 版本与快照、公开技能来源与导出 hash 的跨仓发布证据。 | — | 不要求尚未生成的仓库 commit 互相循环引用。 |
 | 研发管理仓库 | 承载 Spec、OpenAPI、架构、Ticket、验证、发布和复盘等研发管理资产的仓库。 | — | 不等同于前端 / 后端代码 monorepo。 |

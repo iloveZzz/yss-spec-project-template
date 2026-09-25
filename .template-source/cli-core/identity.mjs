@@ -34,7 +34,7 @@ function validDescriptor(d, nullable = false) {
     )
   );
 }
-export function identity(target, bundle, command) {
+export function identity(target, bundle, command, migrateLayout = false) {
   const f = bundle.family,
     present = METADATA.filter((ref) => stat(safe(target, ref)));
   ensure(present.length <= 1, "检测到多个家族 metadata，拒绝混用", "IDENTITY");
@@ -98,8 +98,9 @@ export function identity(target, bundle, command) {
         "BASELINE",
       );
     }
-    for (const ref of ["yss-project.yaml", PROFILE, "AGENTS.md", "CONTEXT.md"])
+    for (const ref of ["yss-project.yaml", "AGENTS.md", "CONTEXT.md"])
       ensure(meta.managedFiles[ref], `基线缺少必需合同: ${ref}`, "BASELINE");
+    ensure(meta.managedFiles[PROFILE] || (migrateLayout && meta.managedFiles["docs/process/harness-profile.yaml"]), `基线缺少必需合同: ${PROFILE}`, "BASELINE");
     ensure(
       meta.variables &&
         typeof meta.variables.projectName === "string" &&
@@ -109,7 +110,7 @@ export function identity(target, bundle, command) {
     );
   }
   }
-  const profilePath = safe(target, PROFILE);
+  const profilePath = safe(target, stat(safe(target, PROFILE)) ? PROFILE : (migrateLayout ? "docs/process/harness-profile.yaml" : PROFILE));
   let profile = null;
   if (stat(profilePath)) {
     profile = yaml(fs.readFileSync(profilePath));

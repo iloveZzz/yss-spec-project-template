@@ -29,6 +29,7 @@ export function parse(argv) {
   const flags = {
     "--plan": "plan",
     "--prune": "prune",
+    "--migrate-layout": "migrateLayout",
     "--apply": "apply",
     "--dry-run": "dryRun",
     "--force": "force",
@@ -63,8 +64,8 @@ export function parse(argv) {
   );
   const accepted = {
     init: ['projectName','businessDomain','teamSize','targetDir','issueTracker','gitInit','includeExampleDocs','dryRun'],
-    attach: ['projectName','businessDomain','teamSize','targetDir','issueTracker','includeExampleDocs','dryRun','apply','force','plan'],
-    sync: ['targetDir','dryRun','apply','force','plan','prune'],
+    attach: ['projectName','businessDomain','teamSize','targetDir','issueTracker','includeExampleDocs','dryRun','apply','force','plan','migrateLayout'],
+    sync: ['targetDir','dryRun','apply','force','plan','prune','migrateLayout'],
     diff: ['targetDir','dryRun'], doctor: ['targetDir'], recover: ['targetDir','dryRun','apply'],
     update: ['dryRun','force'], upgrade: ['dryRun','force'],
   };
@@ -90,7 +91,7 @@ export async function main(packageRoot, argv = process.argv.slice(2)) {
       fs.readFileSync(path.join(packageRoot, "package.json")),
     );
     if (opts.help) {
-      const help = `${pkg.name} init|attach|sync|diff|doctor|recover|update|upgrade\n--target-dir <目录> --project-name <名称> --business-domain <领域> --team-size <规模>\n--issue-tracker <local-markdown|github|gitlab> --git-init --no-example-docs\nattach/sync 默认只预览，写入必须 --apply；冲突显式 --apply --force。\n--plan --prune（仅 sync） --dry-run --json --version\ndoctor/diff/recover 默认只读；recover --apply 恢复未完成事务。init 只接受空目录。\n`;
+      const help = `${pkg.name} init|attach|sync|diff|doctor|recover|update|upgrade\n--target-dir <目录> --project-name <名称> --business-domain <领域> --team-size <规模>\n--issue-tracker <local-markdown|github|gitlab> --git-init --no-example-docs\nattach/sync 默认只预览，写入必须 --apply；冲突显式 --apply --force。\n--plan --prune（仅 sync） --migrate-layout（旧目录显式迁移） --dry-run --json --version\ndoctor/diff/recover 默认只读；recover --apply 恢复未完成事务。init 只接受空目录。\n`;
       process.stdout.write(wantsJson ? json({schemaVersion:1,command:"help",status:"ok",help}) : help);
       return;
     }

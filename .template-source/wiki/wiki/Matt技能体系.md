@@ -17,5 +17,5 @@ Matt Engineering Skills 是来自 `mattpocock/skills` 的轻量工程流程技�
 - `CONTEXT.md`
 - `AGENTS.md`
 - `skills-lock.json`
-- `docs/agents/skills-maintenance.md`
+- `.template-source/agents/skills-maintenance.md`
 - `wiki/raw/skills-lock-names.md`

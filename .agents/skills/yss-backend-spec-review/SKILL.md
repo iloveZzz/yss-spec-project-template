@@ -35,7 +35,7 @@ description: 审计既有 Java 后端工程对 YSS 技能规范和已批准业�
 
 ## 输出与完成依据
 
-复用 `docs/templates/review-report-template.md`、当前 Slice 的 YSS Skill Execution Result 和 [审计与整改流程中的记录要求](references/remediation-workflow.md#证据与交接)。报告列明审查覆盖、Standards / Spec 分轴结论、修复前后 finding、候选/规则摘要、实际验证、独立 Reviewer 身份和剩余阻塞。只对本次覆盖且有证据的范围声明符合规范，不自动证明平台已认证或允许发布。
+复用 `.template-spec/templates/review-report-template.md`、当前 Slice 的 YSS Skill Execution Result 和 [审计与整改流程中的记录要求](references/remediation-workflow.md#证据与交接)。报告列明审查覆盖、Standards / Spec 分轴结论、修复前后 finding、候选/规则摘要、实际验证、独立 Reviewer 身份和剩余阻塞。只对本次覆盖且有证据的范围声明符合规范，不自动证明平台已认证或允许发布。
 
 ## 必须评估、适用必审
 

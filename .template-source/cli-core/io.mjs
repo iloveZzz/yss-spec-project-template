@@ -94,7 +94,7 @@ export function governance(ref) {
     "PROTECTED",
   );
   ensure(
-    /^(?:\.(?:agents|claude|codex|cursor|pi|qoder|trae)\/|docs\/|scripts\/)/.test(
+    /^(?:\.(?:agents|claude|codex|cursor|pi|qoder|trae)\/|\.template-spec\/|docs\/|scripts\/)/.test(
       ref,
     ) ||
       [

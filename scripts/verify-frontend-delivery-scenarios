@@ -19,7 +19,7 @@ const { enforceFrontendDelivery } = await import(frontendTools?pathToFileURL(pat
 const { compileDefaultImplementationContract } = await import(frontendTools?pathToFileURL(path.join(frontendTools,'scripts/lib/implementation-contract-compiler.mjs')):'./lib/implementation-contract-compiler.mjs');
 const { validateNextRoute, validateImplementationEntry } = await import(frontendTools?pathToFileURL(path.join(frontendTools,'scripts/lib/lifecycle-transition.mjs')):'./lib/lifecycle-transition.mjs');
 import { read, hash, json, ROOT } from './lib/strategic-handoff-io.mjs';
-const runtimeRegistry=read(path.join(frontendTools||ROOT,'docs/process/lifecycle-registry.yaml'));
+const runtimeRegistry=read(path.join(frontendTools||ROOT,'.template-spec/process/lifecycle-registry.yaml'));
 const lifecycleRoute=runtimeRegistry.stages.some(x=>x.id==='stage.frontend-engineering-design')
   ?{stage:'stage.frontend-engineering-design',workUnit:'work-unit.frontend-engineering-design'}
   :runtimeRegistry.stages.some(x=>x.id==='stage.technical-design')
@@ -33,11 +33,11 @@ const frontendWorkUnit=lifecycleRoute.workUnit;
 
 test('Frontend-only v4 可先完成战略预检，并以 backend-not-applicable 接收',async t=>{
   const base=mkdtempSync(path.join(tmpdir(),'frontend-preflight-test-')),source=path.join(base,'strategy'),frontend=path.join(base,'frontend');
-  t.after(()=>rmSync(base,{recursive:true,force:true}));mkdirSync(source);mkdirSync(path.join(frontend,'docs/process'),{recursive:true});
+  t.after(()=>rmSync(base,{recursive:true,force:true}));mkdirSync(source);mkdirSync(path.join(frontend,'.template-spec/process'),{recursive:true});
   const put=(root,ref,value)=>{mkdirSync(path.dirname(path.join(root,ref)),{recursive:true});writeFileSync(path.join(root,ref),typeof value==='string'?value:json(value));};
   const f=await fixture(source,{handoffVersion:4,impacts:{ui:true,api:false,data:false,backend:false,frontend:true,cross_repo:false,high_risk:false}});
   put(frontend,'yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');put(frontend,'CONTEXT.md',context);
-  put(frontend,'docs/process/harness-profile.yaml',{schema_version:2,profile_id:'yss-harness-frontend',handoff:{consumer_capabilities:['frontend-engineering-design']}});
+  put(frontend,'.template-spec/process/harness-profile.yaml',{schema_version:2,profile_id:'yss-harness-frontend',handoff:{consumer_capabilities:['frontend-engineering-design']}});
   const output=path.join(base,'strategy-package');await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output});
   const imported=await importBundle({bundle:output,targetRoot:frontend}),receipt=read(path.join(frontend,imported.receipt_ref));
   const route=receipt.routes[0],preflightRef=route.artifact_refs.find(ref=>ref.endsWith('frontend-strategic-preflight-draft.json')),traceRef=route.artifact_refs.find(ref=>ref.endsWith('frontend-traceability-draft.json'));
@@ -63,13 +63,13 @@ test('战略与后端交付联合接收：便携、真实服务、拒绝不完�
   const f=await fixture(source,{handoffVersion:4});
   for(const root of [backend,frontend]) {put(root,'yss-project.yaml','schema_version: 1\nrepository_mode: project-instance\n');put(root,'CONTEXT.md',context);}
   const strategic=await exportBundle({sourceRoot:source,handoffRef:'handoff.yaml',output:path.join(backend,'strategy-package')});
-  const roles=read(path.join(backendTools||source,'docs/agents/digital-human-roles.yaml'));
+  const roles=read(path.join(backendTools||source,'.template-spec/agents/digital-human-roles.yaml'));
   if(!backendTools)for(const gate of ['gate.openapi-frozen']) {
     roles.gate_policy.biological_human=(roles.gate_policy.biological_human||[]).filter(x=>x!==gate);
     roles.gate_policy.digital_human_review=(roles.gate_policy.digital_human_review||[]).filter(x=>x.gate!==gate);
     roles.gate_policy.digital_human_review.push({gate,countersigners:['role.product-manager']});
   }
-  put(backend,'docs/agents/digital-human-roles.yaml',roles);
+  put(backend,'.template-spec/agents/digital-human-roles.yaml',roles);
   put(backend,'api.yaml',{openapi:'3.1.0',info:{title:'Synthetic supplier API',version:'1'},paths:{'/suppliers':{post:{operationId:'submitSupplier',responses:{'200':{description:'OK'}}}}}});
   put(backend,'slice.json',{schema_version:2,contract_id:'contract.backend',contract_version:'v1',slice_id:'slice.submit',status:'approved'});
   put(backend,'data.md','Synthetic data setup for maintenance tests, not product verification.');
@@ -103,9 +103,9 @@ test('战略与后端交付联合接收：便携、真实服务、拒绝不完�
   const acceptance=read(path.join(frontend,imported.acceptance_ref));
   await t.test('草案/缺少两类产物不能进入前端任务',async()=>{
     await assert.rejects(()=>verifyFrontendDelivery({root:frontend,acceptanceRef:imported.acceptance_ref,sliceRef:'slice.submit'}),/schema/);
-    const profileRef=path.join(frontend,'docs/process/harness-profile.yaml');
+    const profileRef=path.join(frontend,'.template-spec/process/harness-profile.yaml');
     const profile=existsSync(profileRef)?read(profileRef):{schema_version:1,profile_id:'harness.frontend-delivery'};
-    put(frontend,'docs/process/harness-profile.yaml',{...profile,frontend_delivery:{required:true}});
+    put(frontend,'.template-spec/process/harness-profile.yaml',{...profile,frontend_delivery:{required:true}});
     assert.throws(()=>enforceFrontendDelivery({}, {root:frontend}),/frontend-delivery-required/);
     assert.throws(()=>compileDefaultImplementationContract({root:frontend}),/frontend-delivery-required/);
     assert.throws(()=>enforceFrontendDelivery({contract:{kind:'template-maintenance'}},{root:frontend}),/不得用模板维护/);

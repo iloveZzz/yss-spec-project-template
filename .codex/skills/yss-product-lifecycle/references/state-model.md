@@ -12,7 +12,7 @@
 | `tracker.kind` | `local-markdown`、`github`、`gitlab` |
 | `ticket.role` | `needs-triage`、`needs-info`、`ready-for-agent`、`ready-for-human`、`wontfix` |
 
-Matt 五态不得扩义。资产的 `ready-for-human` 与 Ticket label 必须带命名空间表达。`paused-human-gate` 表示等待 `docs/agents/digital-human-roles.yaml` 指定的会签人（数字人或生物人），不是「必须是生物人」。但 `user_decision_policy` 命中的关键决定还必须有真实用户回复，数字人会签不能解除该等待。
+Matt 五态不得扩义。资产的 `ready-for-human` 与 Ticket label 必须带命名空间表达。`paused-human-gate` 表示等待 `.template-spec/agents/digital-human-roles.yaml` 指定的会签人（数字人或生物人），不是「必须是生物人」。但 `user_decision_policy` 命中的关键决定还必须有真实用户回复，数字人会签不能解除该等待。
 
 Slice v3 冻结需求文件的 status 是冻结时快照，不能用来推断当前执行状态。状态流转和验收结果写入已配置主 tracker / 任务包；需求改版后重新编译、审查与绑定批准，见 [Slice 冻结需求协议](../../yss-implementation-contract-compiler/references/slice-implementation-contract.md#第二轮增量规则)。
 
@@ -77,7 +77,7 @@ Git 动作分别保存 `commit_authorized`、`commit_scope`、`commit_authorizat
 
 ## 状态块
 
-状态块位于主 tracker 的功能父 Ticket，并使用 `docs/process/templates/lifecycle-checkpoint-template.yaml` 的结构化形状和 `lifecycle-checkpoint.schema.json` 校验；Local Markdown 使用 `docs/.scratch/<feature>/parent-ticket.md`，可将完整 checkpoint 保存在 `docs/.scratch/<feature>/gates/lifecycle-checkpoint.yaml` 后由父 Ticket 引用，远程 tracker 使用 Issue 并在本地功能包保留引用。平台不可用时才位于 stage checkpoint。只保存索引、状态、引用和因果关系：
+状态块位于主 tracker 的功能父 Ticket，并使用 `.template-spec/process/templates/lifecycle-checkpoint-template.yaml` 的结构化形状和 `lifecycle-checkpoint.schema.json` 校验；Local Markdown 使用 `docs/.scratch/<feature>/parent-ticket.md`，可将完整 checkpoint 保存在 `docs/.scratch/<feature>/gates/lifecycle-checkpoint.yaml` 后由父 Ticket 引用，远程 tracker 使用 Issue 并在本地功能包保留引用。平台不可用时才位于 stage checkpoint。只保存索引、状态、引用和因果关系：
 
 ```yaml
 lifecycle:

@@ -32,4 +32,4 @@
 
 ## 便携交付的逐条追溯
 
-正式导出要求场景 `rule_refs / critical / success_results / evidence_refs` 和不变量 `rule_ref / evidence_refs`。`downstream_mapping` 必须使用稳定 `mapping_id`、来源 ID、消费者能力、影响项、传播规则和证据。已有 v2 文档继续只读兼容；修改或重发须显式迁移为 v3 `draft` 并重新批准。具体合同见 `docs/process/strategic-handoff-package.md`，不得由导出器发明业务身份。
+正式导出要求场景 `rule_refs / critical / success_results / evidence_refs` 和不变量 `rule_ref / evidence_refs`。`downstream_mapping` 必须使用稳定 `mapping_id`、来源 ID、消费者能力、影响项、传播规则和证据。已有 v2 文档继续只读兼容；修改或重发须显式迁移为 v3 `draft` 并重新批准。具体合同见 `.template-spec/process/strategic-handoff-package.md`，不得由导出器发明业务身份。

@@ -10,24 +10,24 @@ description: 建立或核验 YSS 设计系统、主题 Token 与页面视觉一�
 ## 权威资料
 
 - 规范源：根 `DESIGN.md`，是项目视觉 Token 与组件视觉变体的唯一事实来源，使用 Google `design.md` alpha canonical H2 章节。
-- 团队治理说明：`docs/design/design.md`，解释 YSS 生命周期、组件路线、状态与验收，不重新定义 `DESIGN.md` 中的具体值。
-- 项目 Token 快照：`docs/design/tokens/theme.json`、`docs/design/tokens/tokens.default.json`、`docs/design/tokens/tokens.dark.json`、`docs/design/tokens/tokens.compact.json`、`docs/design/tokens/variables.css`、`docs/design/tokens/variables.dark.css`；它们是派生实现视图，不得反向覆盖规范源。
-- 本技能执行清单：`references/design-system.md`，用于 Agent 执行和评审，不替代 `docs/design/design.md`。
+- 团队治理说明：`.template-spec/design/design.md`，解释 YSS 生命周期、组件路线、状态与验收，不重新定义 `DESIGN.md` 中的具体值。
+- 项目 Token 快照：`.template-spec/design/tokens/theme.json`、`.template-spec/design/tokens/tokens.default.json`、`.template-spec/design/tokens/tokens.dark.json`、`.template-spec/design/tokens/tokens.compact.json`、`.template-spec/design/tokens/variables.css`、`.template-spec/design/tokens/variables.dark.css`；它们是派生实现视图，不得反向覆盖规范源。
+- 本技能执行清单：`references/design-system.md`，用于 Agent 执行和评审，不替代 `.template-spec/design/design.md`。
 - 历史输入包：`/Users/zhudaoming/Downloads/Product-Design-System`，只用于追溯首次引入来源，不作为后续工程依赖。
 - 默认主题来源：Data Quality 主题经项目适配后落到根 `DESIGN.md`；来源与 AntD v6 设计参考 / Vue 运行时的区别见 `references/data-quality-theme.md`。
 - Codex `$design-qa` 项目对照：`references/design-qa-theme.md`，不替代官方 `design-qa` 流程，也不改上游插件正文。
 - 原型阶段合同：`yss-prototype-stage`，用于统一 H1/H2 原型资产和浏览器验证证据。H1/H2 默认使用项目 Token 驱动的 HTML/CSS/JavaScript 离线原型。
 
-如果只需要快速判断，先读本文件。若要写 UI 规范、实现页面、评审设计或调整 Token，必须按 `DESIGN.md` → `docs/design/design.md` 顺序读取，再按当前主题、密度与输出表面选择对应 Token 文件，不全量预读所有主题；若要执行评审或实现检查，再读 `references/design-system.md`。
+如果只需要快速判断，先读本文件。若要写 UI 规范、实现页面、评审设计或调整 Token，必须按 `DESIGN.md` → `.template-spec/design/design.md` 顺序读取，再按当前主题、密度与输出表面选择对应 Token 文件，不全量预读所有主题；若要执行评审或实现检查，再读 `references/design-system.md`。
 
 ## 使用流程
 
 1. 先判断任务阶段：设计系统引入 / 产品设计 / 原型评审 / 前端实现 / UI 改造 / 主题 token 落地。
-2. 读取已有资产：先读根 `DESIGN.md`，再读 `docs/design/design.md` 和 Token 派生快照，最后按任务读取相关 Spec、交互说明、状态矩阵、OpenAPI Draft、现有页面代码。
+2. 读取已有资产：先读根 `DESIGN.md`，再读 `.template-spec/design/design.md` 和 Token 派生快照，最后按任务读取相关 Spec、交互说明、状态矩阵、OpenAPI Draft、现有页面代码。
 3. 按设计系统基线约束输出或修改产物：颜色、排版、间距、圆角、动效、组件、状态、响应式。
 4. 若是产品设计阶段，先使用 `yss-prototype-stage`；规范直出由 YSS HTML adapter 执行；存在已选视觉稿时条件使用 `product-design:index`，其他 Agent 交付等价证据。
 5. 若是前端实现阶段，配合 `yss-ui`、`yss-ui-business-page-generation`、`yss-formily` 及实际命中的组件专项，但本技能负责风格与体验一致性门禁。
-6. 若发现视觉 Token 或组件变体不足，先更新根 `DESIGN.md` 并重新生成投影；只有治理、流程或验收说明不足时才更新 `docs/design/design.md`。
+6. 若发现视觉 Token 或组件变体不足，先更新根 `DESIGN.md` 并重新生成投影；只有治理、流程或验收说明不足时才更新 `.template-spec/design/design.md`。
 
 ## 核心基线
 
@@ -62,7 +62,7 @@ description: 建立或核验 YSS 设计系统、主题 Token 与页面视觉一�
 
 设计类任务至少输出：
 
-- 设计系统引用：明确引用根 `DESIGN.md`、治理说明 `docs/design/design.md` 和所选主题的 Token 快照；原型证据记录规范与 Token 摘要。
+- 设计系统引用：明确引用根 `DESIGN.md`、治理说明 `.template-spec/design/design.md` 和所选主题的 Token 快照；原型证据记录规范与 Token 摘要。
 - 页面和模块：页面清单、布局结构、主路径、异常路径。
 - 组件选择：YSS UI / Ant Design 组件映射。
 - 状态矩阵：加载、空、错、禁用、只读、无权限、冲突、成功。
@@ -99,10 +99,10 @@ description: 建立或核验 YSS 设计系统、主题 Token 与页面视觉一�
 当用户要求“引入设计系统”“形成项目规范”“更新设计系统 skill”时：
 
 1. 分析来源设计系统，不原样堆拷贝。
-2. 将稳定视觉 Token 与组件变体先落到根 `DESIGN.md`；治理、流程和验收说明再落到 `docs/design/design.md`。
-3. 运行 `node .template-source/tooling/node/scripts/design-md.mjs export dtcg --write --write-manifest --antd-toolchain <固定antd6.6.4作者目录>` 更新派生视图；运行前先更新 `docs/design/design-system-sync.yaml` 的规范源摘要。
+2. 将稳定视觉 Token 与组件变体先落到根 `DESIGN.md`；治理、流程和验收说明再落到 `.template-spec/design/design.md`。
+3. 运行 `node .template-source/tooling/node/scripts/design-md.mjs export dtcg --write --write-manifest --antd-toolchain <固定antd6.6.4作者目录>` 更新派生视图；运行前先更新 `.template-source/design/design-system-sync.yaml` 的规范源摘要。
 4. 将 Agent 执行入口落到 `.agents/skills/yss-design-system/SKILL.md`，执行清单落到 `references/design-system.md`；两者只引用 Token 名和角色，不复制具体值。
-5. 更新 `docs/design/README.md` 和必要的 `AGENTS.md` 入口规则。
+5. 更新 `.template-spec/design/README.md` 和必要的 `AGENTS.md` 入口规则。
 6. 运行 frontmatter、对应 `node --test`、`design-md lint/drift`、技能投影与 lock 校验。
 
 默认主题事实见 `references/data-quality-theme.md`；运行时 Ant Design Vue 4 与 AntD v6 设计参考分别记录。

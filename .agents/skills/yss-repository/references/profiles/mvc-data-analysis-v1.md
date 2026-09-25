@@ -1,6 +1,6 @@
 # mvc-data-analysis-v1
 
-仅适用于注册表中的数据分析 MVC Profile。先读仓库 `docs/agents/backend-architecture-profiles.md`；Profile 的成熟度沿用注册表。
+仅适用于注册表中的数据分析 MVC Profile。先读仓库 `.template-spec/agents/backend-architecture-profiles.md`；Profile 的成熟度沿用注册表。
 
 ## 前置与所有权
 

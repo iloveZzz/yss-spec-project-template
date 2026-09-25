@@ -28,7 +28,7 @@ function walk(root) {
   });
 }
 function validate(contract, outputDir) {
-  validateJsonSchema(contract, path.join(REPOSITORY_ROOT, "docs/process/schemas/project-scaffold-contract.schema.json"), { label: "Project Scaffold Contract v4" });
+  validateJsonSchema(contract, path.join(REPOSITORY_ROOT, ".template-spec/process/schemas/project-scaffold-contract.schema.json"), { label: "Project Scaffold Contract v4" });
   if (contract.schema_version !== 4 || contract.kind !== "project-scaffold-contract") fail("frontend scaffold requires Project Scaffold Contract schema v4");
   if (contract.status !== "approved" || contract.current_version !== true || !contract.persisted_ref) fail("scaffold contract must be approved, persisted and current");
   if (contract.delivery_role !== "frontend" || contract.scaffold_kind !== "frontend-yss-vue3" || contract.generator_skill !== "yss-frontend-scaffold-generator") fail("contract is not for the YSS frontend generator");

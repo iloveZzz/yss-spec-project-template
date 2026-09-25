@@ -6,9 +6,9 @@ import { ROOT, read, safe, ensure } from './strategic-handoff-io.mjs';
 export function loadDeliveryProfile(root=ROOT) {
   const metadata=['backend','frontend'].filter(side=>existsSync(path.join(root,`.yss-harness-${side}.json`)));
   ensure(metadata.length<=1,'专职 Harness metadata 身份冲突');
-  const profilePath=path.join(root,'docs/process/harness-profile.yaml');
+  const profilePath=path.join(root,'.template-spec/process/harness-profile.yaml');
   ensure(!metadata.length||existsSync(profilePath),'专职 Harness 缺少 profile，不得绕过执行门禁');
-  const profile=existsSync(profilePath)?read(safe(root,'docs/process/harness-profile.yaml')):null;
+  const profile=existsSync(profilePath)?read(safe(root,'.template-spec/process/harness-profile.yaml')):null;
   if(metadata.length) {
     const expected=`harness.${metadata[0]}-delivery`;
     const record=read(safe(root,`.yss-harness-${metadata[0]}.json`));

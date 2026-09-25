@@ -16,7 +16,7 @@ test('design/backend/frontend receivers expose identical review and task constra
    const view=JSON.parse(result.stdout);assert.equal(view.execution_allowed,false);assert.match(view.markdown,/AC-1/);
    if(profile==='task'){const content=JSON.stringify(view.content);if(expected)assert.equal(content,expected);else expected=content;}
   }
-  for(const ref of ['scripts/lib/validation-phase.mjs','scripts/lib/api-contract-decision.mjs','docs/process/schemas/api-contract-decision-v2.schema.json'])assert.deepEqual(fs.readFileSync(path.join(receiver,ref)),fs.readFileSync(ref));
+  for(const ref of ['scripts/lib/validation-phase.mjs','scripts/lib/api-contract-decision.mjs','.template-spec/process/schemas/api-contract-decision-v2.schema.json'])assert.deepEqual(fs.readFileSync(path.join(receiver,ref)),fs.readFileSync(ref));
  }
  }finally{f.cleanup();}
 });

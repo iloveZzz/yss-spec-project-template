@@ -211,11 +211,11 @@ for (const id of NAMED_STRESS_SCENARIOS) {
 }
 
 const markerFiles = [
-  ["docs/process/implementation-repo-integration.md", "repository_scope: git-submodule"],
-  ["docs/templates/implementation-repo-registry-template.md", "git-submodule"],
-  ["docs/templates/implementation-repo-registry-template.md", "git-submodule-harness-apps"],
-  ["docs/templates/cross-repo-slice-template.md", "superproject-gitlink-update"],
-  ["docs/process/implementation-repo-integration.md", "git-submodule-harness-apps"],
+  [".template-spec/process/implementation-repo-integration.md", "repository_scope: git-submodule"],
+  [".template-spec/templates/implementation-repo-registry-template.md", "git-submodule"],
+  [".template-spec/templates/implementation-repo-registry-template.md", "git-submodule-harness-apps"],
+  [".template-spec/templates/cross-repo-slice-template.md", "superproject-gitlink-update"],
+  [".template-spec/process/implementation-repo-integration.md", "git-submodule-harness-apps"],
   [".agents/skills/implementation-repo-onboarding/SKILL.md", "git-submodule"],
   [".agents/skills/yss-implementation-contract-compiler/references/slice-implementation-contract.md", "git-submodule-harness-apps"],
   [".agents/skills/yss-implementation-contract-compiler/references/compiler-contract.yaml", "git-submodule-harness-apps"],

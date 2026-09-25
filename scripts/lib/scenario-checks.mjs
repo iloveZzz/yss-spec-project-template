@@ -58,7 +58,7 @@ function validateInvocationBoundary(data) {
   ensure(includesAll(result?.required, ["result_schema", "work_unit", "workflow_reference", "result", "context_reconciliation", "evidence_refs", "changed_artifacts", "new_impacts", "stale_candidates", "next_route", "blocking_signals"]) && includesAll(result?.result_values, ["completed", "blocked", "needs-human", "failed"]) && includesAll(result?.blocking_signals, ["drift", "new_impacts", "violation", "missing_evidence", "stale_candidates"]) && includesAll(result?.completed_requires_empty, ["new_impacts", "stale_candidates"]) && includesAll(result?.completed_requires_non_empty, ["evidence_refs"]) && result?.completed_requires_readable_evidence_refs === true && result?.evidence_ref_validation === "readable-or-resolvable" && result?.completed_requires_no_blocking_signals === true && result?.context_reconciliation?.creates_gate === false && includesAll(result?.workflow_reference?.required, ["source", "skill", "invocation_mode"]), "Workflow Execution Result 的完成态证据、阻断信号、context_reconciliation 或 workflow_reference 契约不完整");
   const native = data.lifecycle_native_entries;
   ensure(native?.default_entry === "yss-product-lifecycle" && native?.formal_artifact_owner === "yss-product-lifecycle", "生命周期原生入口未持有默认正式资产所有权");
-  ensure(native?.user_confirmation_policy_ref === "docs/agents/digital-human-roles.yaml#user_decision_policy", "生命周期人工门禁集合已漂移");
+  ensure(native?.user_confirmation_policy_ref === ".template-spec/agents/digital-human-roles.yaml#user_decision_policy", "生命周期人工门禁集合已漂移");
   const routes = data.work_unit_routes;
   ensure(routes?.["work-unit.plan-requirements"]?.skills?.includes("grilling") && routes?.["work-unit.plan-requirements"]?.skills?.includes("domain-modeling"), "需求分析工作单元缺少 grilling/domain-modeling");
   ensure(routes?.["work-unit.plan-opportunity"]?.route_by?.market_or_competitor_fact === "competitive-intelligence" && routes["work-unit.plan-opportunity"].route_by.technical_or_standard_fact === "yss-research:technical-evidence" && routes["work-unit.plan-opportunity"].route_by.strategy_fact === "yss-research:strategy-evidence", "机会调研事实路由不准确");
@@ -174,7 +174,7 @@ function validateInvocationMetadata(boundary, skillContents) {
 function validateLifecycleEntrySkill(skill) {
   ensure(/^---\nname: yss-product-lifecycle\n/m.test(skill), "生命周期入口缺少有效 frontmatter");
   ensure(Buffer.byteLength(skill) <= 8192, "生命周期入口超过 8KB 上下文预算");
-  for (const reference of ["docs/process/lifecycle-registry.yaml", "references/orchestration-contract.yaml", "docs/agents/yss-skill-registry.yaml", "scripts/query-lifecycle-context"]) {
+  for (const reference of [".template-spec/process/lifecycle-registry.yaml", "references/orchestration-contract.yaml", ".template-spec/agents/yss-skill-registry.yaml", "scripts/query-lifecycle-context"]) {
     ensure(skill.includes(reference), `生命周期入口缺少权威引用: ${reference}`);
   }
   for (const heading of ["### 仓库身份", "### 流转与实现", "### 用户决定", "### 外部副作用与 Git"]) {
@@ -185,12 +185,12 @@ function validateLifecycleEntrySkill(skill) {
 const profiles = {
   lifecycle: {
     message: "六类生命周期压力场景验证通过",
-    files: [".agents/skills/yss-product-lifecycle/SKILL.md", ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml", "docs/process/lifecycle-registry.yaml"],
+    files: [".agents/skills/yss-product-lifecycle/SKILL.md", ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml", ".template-spec/process/lifecycle-registry.yaml"],
     markers: [[".agents/skills/yss-product-lifecycle/SKILL.md", "template-source-product-artifact-forbidden"], [".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml", "ready-for-agent"]]
   },
   matt: {
     message: "Matt/YSS 集成压力场景验证通过",
-    files: [".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md", ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml", "docs/process/templates/lifecycle-checkpoint-template.yaml", "docs/process/templates/frontend-implementation-plan-template.yaml", "docs/process/templates/frontend-implementation-verification-template.yaml"],
+    files: [".agents/skills/yss-product-lifecycle/references/matt-yss-adapter.md", ".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml", ".template-spec/process/templates/lifecycle-checkpoint-template.yaml", ".template-spec/process/templates/frontend-implementation-plan-template.yaml", ".template-spec/process/templates/frontend-implementation-verification-template.yaml"],
     markers: [[".agents/skills/yss-product-lifecycle/SKILL.md", "Workflow Execution Result"]]
   },
   prototype: {
@@ -206,29 +206,29 @@ const profiles = {
   openapiYaml: {
     message: "OpenAPI YAML-first 场景验证通过",
     files: [
-      "docs/templates/openapi-spec-template.yaml",
+      ".template-spec/templates/openapi-spec-template.yaml",
       ".agents/skills/yss-openapi-governance/SKILL.md",
       ".agents/skills/yss-openapi-draft-review/SKILL.md",
-      "docs/api/templates/openapi-draft-review-checklist.md",
-      "docs/api/templates/openapi-draft-validation-record-template.yaml",
-      "docs/process/schemas/openapi-draft-validation-record.schema.json",
+      ".template-spec/api/templates/openapi-draft-review-checklist.md",
+      ".template-spec/api/templates/openapi-draft-validation-record-template.yaml",
+      ".template-spec/process/schemas/openapi-draft-validation-record.schema.json",
       "scripts/verify-openapi-draft-validation-record",
       "scripts/lib/openapi-draft-validation.mjs"
     ],
     markers: [
-      ["docs/templates/openapi-spec-template.yaml", "openapi: 3.1.0"],
+      [".template-spec/templates/openapi-spec-template.yaml", "openapi: 3.1.0"],
       [".agents/skills/yss-openapi-governance/SKILL.md", "property path"],
       [".agents/skills/yss-openapi-draft-review/SKILL.md", "Structural Validation"],
       [".agents/skills/yss-openapi-draft-review/SKILL.md", "omit-to-preserve"],
-      ["docs/api/templates/openapi-draft-review-checklist.md", "P0 字段级追踪矩阵"],
-      ["docs/api/templates/openapi-draft-review-checklist.md", "Create / Update requiredness"],
-      ["docs/process/schemas/openapi-draft-validation-record.schema.json", "openapi-draft-validation"],
+      [".template-spec/api/templates/openapi-draft-review-checklist.md", "P0 字段级追踪矩阵"],
+      [".template-spec/api/templates/openapi-draft-review-checklist.md", "Create / Update requiredness"],
+      [".template-spec/process/schemas/openapi-draft-validation-record.schema.json", "openapi-draft-validation"],
       ["scripts/lib/openapi-draft-validation.mjs", "Draft SHA-256 不匹配"]
     ]
   },
   openapiJson: {
     message: "OpenAPI YAML-first JSON handoff scenarios passed",
-    files: ["docs/api/templates/openapi-json-export-record-template.md", ".agents/skills/yss-api-integration/SKILL.md"],
+    files: [".template-spec/api/templates/openapi-json-export-record-template.md", ".agents/skills/yss-api-integration/SKILL.md"],
     markers: [[".agents/skills/yss-api-integration/SKILL.md", "SHA-256"]]
   },
   yssDtoWire: {
@@ -238,14 +238,14 @@ const profiles = {
       ".agents/skills/yss-dto/SKILL.md",
       ".agents/skills/yss-openapi-governance/SKILL.md",
       ".agents/skills/yss-openapi-draft-review/SKILL.md",
-      "docs/api/templates/openapi-draft-review-checklist.md",
+      ".template-spec/api/templates/openapi-draft-review-checklist.md",
       "scripts/verify-yss-dto-openapi-profile"
     ],
     markers: [
       [".agents/skills/yss-dto/SKILL.md", "x-yss-response-wrapper"],
       [".agents/skills/yss-openapi-governance/SKILL.md", "verify-yss-dto-openapi-profile"],
       [".agents/skills/yss-openapi-draft-review/SKILL.md", "offset`, `needTotalCount`, and `tempTotalCount"],
-      ["docs/api/templates/openapi-draft-review-checklist.md", "DTO wire shape"]
+      [".template-spec/api/templates/openapi-draft-review-checklist.md", "DTO wire shape"]
     ]
   }
 };
@@ -258,7 +258,7 @@ export function runScenario(name) {
   if (name === "lifecycle") {
     const result = spawnSync("scripts/verify-lifecycle-registry", [], { cwd: root, encoding: "utf8" });
     ensure(result.status === 0, result.stderr || result.stdout);
-    const registry = parseDocument(read("docs/process/lifecycle-registry.yaml"), { uniqueKeys: true }).toJS({ maxAliasCount: 0 });
+    const registry = parseDocument(read(".template-spec/process/lifecycle-registry.yaml"), { uniqueKeys: true }).toJS({ maxAliasCount: 0 });
     const releaseGate = registry.gates.find((gate) => gate.id === "gate.delivery-accepted");
     ensure(releaseGate?.requires_checks?.includes("check.frontend-implementation-verified"), "发布就绪未依赖前端实现还原门禁");
     const contract = parseDocument(read(".agents/skills/yss-product-lifecycle/references/orchestration-contract.yaml"), { uniqueKeys: true }).toJS({ maxAliasCount: 0 });
@@ -278,7 +278,7 @@ export function runScenario(name) {
     ensure(contract.implementation_repository_preparation?.check === "check.implementation-repositories-ready", "实现仓库准备聚合门禁缺失");
     ensure(lifecycleTransitionContract.next_routes["work-unit.ticket-decomposition"]?.includes("work-unit.slice-implementation"), "转换校验器未允许 Ticket 正式化后进入实现");
     ensure(contract.release_readiness?.conditional?.ui_impact?.includes("check.frontend-implementation-verified") && contract.frontend_implementation_plan?.acceptance?.includes("no_template_placeholders"), "发布公式或前端计划实质校验不完整");
-    const templateRejected = spawnSync("scripts/verify-frontend-implementation-evidence", ["docs/process/templates/frontend-implementation-plan-template.yaml"], { cwd: root, encoding: "utf8" });
+    const templateRejected = spawnSync("scripts/verify-frontend-implementation-evidence", [".template-spec/process/templates/frontend-implementation-plan-template.yaml"], { cwd: root, encoding: "utf8" });
     ensure(templateRejected.status !== 0 && templateRejected.stderr.includes("template: false"), "前端实现计划占位模板可冒充正式批准证据");
   }
   if (name === "matt") {
@@ -299,8 +299,8 @@ export function runScenario(name) {
       work_unit: "work-unit.spec-synthesis",
       workflow_reference: { source: "yss-product-lifecycle", skill: "yss-product-lifecycle", invocation_mode: "model-invoked" },
       result: "completed",
-      context_reconciliation: { status: "reconciled", ref: "docs/process/lifecycle-registry.yaml" },
-      evidence_refs: ["docs/process/lifecycle-registry.yaml"],
+      context_reconciliation: { status: "reconciled", ref: ".template-spec/process/lifecycle-registry.yaml" },
+      evidence_refs: [".template-spec/process/lifecycle-registry.yaml"],
       changed_artifacts: [],
       new_impacts: [],
       stale_candidates: [],
@@ -391,7 +391,7 @@ export function runScenario(name) {
       kind: "implementation-repository-preparation-result",
       result: "completed",
       current_version: true,
-      evidence_refs: ["docs/process/lifecycle-registry.yaml"],
+      evidence_refs: [".template-spec/process/lifecycle-registry.yaml"],
       projects: [
         {
           project_id: "backend",
@@ -406,7 +406,7 @@ export function runScenario(name) {
             api_contract_decision: { ref: apiContractDecisionRef, version: "v1", digest: decisionDigest(readFileSync(apiContractDecisionFile)), impact: "not-applicable" },
             engineering_contract_approval_ref: engineeringApprovalRef,
           },
-          onboarding_result: { status: "completed", ref: "docs/process/lifecycle-registry.yaml" },
+          onboarding_result: { status: "completed", ref: ".template-spec/process/lifecycle-registry.yaml" },
         },
         { project_id: "frontend-na", delivery_role: "frontend", status: "not-applicable", reason: "no frontend impact" },
       ],
@@ -414,7 +414,7 @@ export function runScenario(name) {
     const validImplementationResult = {
       ...validResult,
       ...implementationDecision.state,
-      evidence_refs: [virtualTicketDecompositionRef, "docs/process/lifecycle-registry.yaml"],
+      evidence_refs: [virtualTicketDecompositionRef, ".template-spec/process/lifecycle-registry.yaml"],
       work_unit: "work-unit.slice-implementation",
       next_route: "work-unit.code-review",
       predecessor_work_unit: "work-unit.ticket-decomposition",
@@ -464,7 +464,7 @@ export function runScenario(name) {
       (item) => { delete item.context_reconciliation; },
       (item) => { item.context_reconciliation.status = "blocked"; },
       (item) => { item.evidence_refs = []; },
-      (item) => { item.evidence_refs = ["docs/process/not-found.md"]; },
+      (item) => { item.evidence_refs = [".template-spec/process/not-found.md"]; },
       (item) => { item.blocking_signals = ["drift"]; },
       (item) => { item.new_impacts = ["new-api"]; },
       (item) => { item.workflow_reference.source = "untrusted/source"; },

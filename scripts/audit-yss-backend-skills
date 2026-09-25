@@ -121,7 +121,7 @@ function main() {
   if (options.check) {
     const counts = Object.fromEntries(CLASSIFICATIONS.map((classification) => [classification, candidates.filter((item) => item.classification === classification).length]));
     process.stdout.write(`backend skill audit ${blocked ? "blocked" : "passed"}: ${candidates.length} candidates (${Object.entries(counts).map(([key, value]) => `${key}=${value}`).join(", ")})\n`);
-  } else process.stdout.write(`${JSON.stringify({ schema_version: 2, generated_from: "docs/agents/yss-skill-registry.yaml", classifications: CLASSIFICATIONS, candidates }, null, 2)}\n`);
+  } else process.stdout.write(`${JSON.stringify({ schema_version: 2, generated_from: ".template-spec/agents/yss-skill-registry.yaml", classifications: CLASSIFICATIONS, candidates }, null, 2)}\n`);
   if (blocked) {
     const names = [...new Set([...invalidDeprecated, ...invalidRemoveReady].map((item) => item.skill))].sort();
     process.stderr.write(`backend skill audit blocked: retirement references are not closed for ${names.join(", ")}\n`);

@@ -12,7 +12,7 @@
 | wire / 参数 / 错误 | `yss-dto`、`yss-validation`、`yss-exception` | 真实响应/分页/错误协议、Bean Validation、命名空间、敏感字段与冻结 OpenAPI 一致 |
 | 映射 / 注解处理 | `mapstruct`、`lombok` | 显式字段策略、处理器版本、领域工厂重建；不强迫聚合开放 setter |
 | 实际组件调用 | Registry 中对应组件 Skill 与精确平台源码索引 | cache、userinfo、audit、ID、Excel、resilience 等按能力加载；不因“审查全面”要求安装不用的组件 |
-| 工程和平台 | `docs/engineering/backend-platforms.json`、当前工程基线、effective POM、依赖树 | 精确 JDK/Boot、父/BOM、starter、javax/jakarta 和源码索引；源码可编译不等于兼容认证 |
+| 工程和平台 | `.template-spec/engineering/backend-platforms.json`、当前工程基线、effective POM、依赖树 | 精确 JDK/Boot、父/BOM、starter、javax/jakarta 和源码索引；源码可编译不等于兼容认证 |
 
 每个后端范围显式评估 `yss-web-controller` / `yss-dto` / `yss-domain` / `yss-application` / `yss-repository` / `yss-mybatis`。无持久化或 MyBatis 影响时分别说明原因；不可跳过适用项，也不可为了填表增加实现。MVC 不强制构造 DDD 聚合/Gateway；没有展示分页需求就不要求分页类。
 

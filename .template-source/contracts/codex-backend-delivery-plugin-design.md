@@ -39,7 +39,7 @@ repository_mode: template-source
 | `backend-delivery` | 验证、导出可移植后端交付包 | 编译通过或 JAR 存在不等于正式交付 |
 | Codex `plugin-creator` | 生成本机支持的插件清单和个人 marketplace 条目 | 清单通过不证明动态技能路由、安装或业务执行正确 |
 
-当前 `docs/engineering/backend-platforms.json` 中 Boot 2.7/JDK 8 与 Boot 3.5/JDK 17 的两条兼容记录均为 `blocked`，平台级 `capabilities` 和 `evidence` 为空。这是本次源码读取时的状态，不断言未来状态或真实工程一定不可运行。完整示例交付必须补齐所选组合及实际命中组件的原始依赖、构建、启动、消费和审查证据；不得改状态字段冒充通过。
+当前 `.template-spec/engineering/backend-platforms.json` 中 Boot 2.7/JDK 8 与 Boot 3.5/JDK 17 的两条兼容记录均为 `blocked`，平台级 `capabilities` 和 `evidence` 为空。这是本次源码读取时的状态，不断言未来状态或真实工程一定不可运行。完整示例交付必须补齐所选组合及实际命中组件的原始依赖、构建、启动、消费和审查证据；不得改状态字段冒充通过。
 
 ## 3. 建议的插件与项目结构
 

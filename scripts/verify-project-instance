@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { parseDocument } from "./vendor/yaml.mjs";
 import { loadRegistry, validateRegistry } from "./lib/lifecycle-registry.mjs";
 import { syncSkills, updateSkillLock } from "./lib/skill-supply-chain.mjs";
+import { verifyGovernanceLayout } from "./lib/governance-layout.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const identityPath = path.join(root, "yss-project.yaml");
@@ -31,4 +32,5 @@ if (result.status !== 0) {
   throw new TypeError(result.stderr.trim() || result.stdout.trim() || `${command} 校验失败`);
 }
 validateRegistry(loadRegistry());
+verifyGovernanceLayout(root, "project-instance");
 process.stdout.write("项目实例校验通过\n");

@@ -53,7 +53,7 @@
 - 只有命中高风险影响时才要求 Doubt-Driven 在途反证：API / 数据迁移、跨仓契约、发布回滚、实际改变的安全行为、生命周期或生成语义。反证写入现有决策 / 架构 / 契约 / 发布审查记录，不新增生命周期阶段；缺少反证、证据不足或残余风险未处理即阻断。
 - Wayfinder 是超长工作的可选规划模式，不改变阶段、门禁或 Ticket 状态；地图收敛后按 `wayfinder → handoff → to-spec` 返回主链。
 
-模板维护默认停在 `implementation-ready`，不自动冻结候选或派发审查。需要独立审查时显式提升到 `review-ready`；完成独立审查和最终完整门禁后才能成为 `release-ready`。三个核验入口由 `docs/process/template-verification-profiles.yaml` 统一定义：
+模板维护默认停在 `implementation-ready`，不自动冻结候选或派发审查。需要独立审查时显式提升到 `review-ready`；完成独立审查和最终完整门禁后才能成为 `release-ready`。三个核验入口由 `.template-source/process/template-verification-profiles.yaml` 统一定义：
 
 - `scripts/verify-template-fast`：按 Git 影响面运行快速检查；未映射路径或核心核验资产变化时 fail-safe 升级为完整门禁。
 - `scripts/verify-template-candidate`：运行命中影响面、候选完整性和审查合同检查；PR 默认使用该入口。
@@ -80,7 +80,7 @@ review_round: 0 | 1 | 2
 candidate_digest: null | <sha256>
 ```
 
-使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。`implementation-ready` 必须使用 fast、`review_round: 0` 且不带候选摘要；`review-ready` 必须绑定候选、candidate / 首次完整门禁和三轴任务包证据；`release-ready` 还必须绑定正式独立审查与最终完整门禁。第二轮仍有未关闭的 `violation`、`drift` 或 `new_impacts` 时，使用 `scripts/evaluate-maintenance-review-round` 形成新的 `needs-human` checkpoint，禁止自动开启第三轮。触发项 ID 与最低等级只由 `docs/process/maintenance-intensity.yaml` 维护；校验器消费该策略。未知触发项必须先更新该权威策略和场景，不能静默接受。
+使用 `scripts/verify-maintenance-checkpoint <file>` 或通过 stdin 传入 YAML / JSON 做只读校验。`implementation-ready` 必须使用 fast、`review_round: 0` 且不带候选摘要；`review-ready` 必须绑定候选、candidate / 首次完整门禁和三轴任务包证据；`release-ready` 还必须绑定正式独立审查与最终完整门禁。第二轮仍有未关闭的 `violation`、`drift` 或 `new_impacts` 时，使用 `scripts/evaluate-maintenance-review-round` 形成新的 `needs-human` checkpoint，禁止自动开启第三轮。触发项 ID 与最低等级只由 `.template-source/process/maintenance-intensity.yaml` 维护；校验器消费该策略。未知触发项必须先更新该权威策略和场景，不能静默接受。
 
 进入 `review-ready` 后使用 `scripts/prepare-maintenance-review` 一次生成 Standards、Spec、Lead 三个任务包。任务包必须明确 `candidate_kind`、`candidate_requirement`、`candidate_digest`、审查轴、允许读取路径、报告写入路径和适用规则。候选变化会使旧报告失效；`judgement-call` 进入后续 backlog，不得在审查中升级为未由既有单一事实来源支持的新硬要求。
 
@@ -88,4 +88,4 @@ Worktree 候选使用 `scripts/capture-maintenance-candidate --output <目录>` 
 
 固定远程模板输入可使用 `scripts/cache-template-commit --repository <remote-url> --commit <40位commit>`。缓存键仅由 URL 与 commit 构成，每次命中仍复核 metadata 和 Git object hash；缓存目录不进入 Git 或正式证据。
 
-`focused-independent-review` 与 `formal-independent-review` 的 `command` 必须引用可读取的审查结论。L3 日常新记录使用 checkpoint 的 `self-check` 证据，不创建独立审查记录；历史 L3 正式记录继续使用 `docs/process/schemas/maintenance-review-record.schema.json` 并只读兼容，仍须带 `legacy_formal_review: true`、审查身份和明确通过结论。审查请求、实施者自述、否定裁决、伪造或非规范候选流、无效任务包、未关闭 findings 或 symlink 越界证据都会被拒绝。可用 `scripts/verify-maintenance-review-record` 单独校验历史记录。
+`focused-independent-review` 与 `formal-independent-review` 的 `command` 必须引用可读取的审查结论。L3 日常新记录使用 checkpoint 的 `self-check` 证据，不创建独立审查记录；历史 L3 正式记录继续使用 `.template-source/process/schemas/maintenance-review-record.schema.json` 并只读兼容，仍须带 `legacy_formal_review: true`、审查身份和明确通过结论。审查请求、实施者自述、否定裁决、伪造或非规范候选流、无效任务包、未关闭 findings 或 symlink 越界证据都会被拒绝。可用 `scripts/verify-maintenance-review-record` 单独校验历史记录。

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "source": "DESIGN.md",
+  "source_sha256": "e84a6c175840efe9663a2d0aba37f5635c053f47452bb146d1025d65665b1bec",
+  "files": {
+    ".template-spec/design/tokens/theme.json": "740f80c2c55763564ac5e1cf4159e0d5f0965548d53e0eb0de0ff380e74f0a93",
+    ".template-spec/design/tokens/tokens.default.json": "4e6446ee85195e3a75676a763cb8be2c625dc86b2b0676cbc8b45b2221135a71",
+    ".template-spec/design/tokens/tokens.dark.json": "826391c5dafaef4d924003052bcfa9b38943e589120b0ff740214a12c9981ae1",
+    ".template-spec/design/tokens/tokens.compact.json": "1a943c1354487addc67e399ededc122337d278a9ff61cb12d36a2f8202e26d9c",
+    ".template-spec/design/tokens/variables.css": "028c24f9e935f5c4b1392d131a4cd13482e6572a2ced4360ffa833aa3fbeaf66",
+    ".template-spec/design/tokens/variables.dark.css": "38132db701cd1e9793b6320baba20645a2cf577edc75b25aadb211f65bf05767"
+  }
+}

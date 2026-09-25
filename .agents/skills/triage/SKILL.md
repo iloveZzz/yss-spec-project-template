@@ -30,7 +30,7 @@ Two categories:
 - `bug` — something is broken
 - `enhancement` — new feature or improvement
 
-五态语义由 `docs/agents/triage-labels.md` 定义：
+五态语义由 `.template-spec/agents/triage-labels.md` 定义：
 
 - `needs-triage` — maintainer needs to evaluate
 - `needs-info` — waiting on reporter for more information

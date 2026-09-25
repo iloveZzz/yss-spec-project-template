@@ -7,7 +7,7 @@ import { openBundle } from './strategic-handoff.mjs';
 import { verifyConsumption } from './strategic-handoff-consumption.mjs';
 import { read, safe, ensure, hash, schema, project, ROOT } from './strategic-handoff-io.mjs';
 
-const ACCEPTANCE_SCHEMAS=new Map([[1,'docs/process/schemas/frontend-delivery-acceptance-v1.schema.json'],[2,'docs/process/schemas/frontend-delivery-acceptance.schema.json'],[3,'docs/process/schemas/frontend-delivery-acceptance-v3.schema.json']]);
+const ACCEPTANCE_SCHEMAS=new Map([[1,'.template-spec/process/schemas/frontend-delivery-acceptance-v1.schema.json'],[2,'.template-spec/process/schemas/frontend-delivery-acceptance.schema.json'],[3,'.template-spec/process/schemas/frontend-delivery-acceptance-v3.schema.json']]);
 
 function acceptanceSchema(version) {
   ensure(ACCEPTANCE_SCHEMAS.has(version),`Frontend Delivery Acceptance 未知 schema_version: ${String(version)}；支持版本: 1, 2, 3；既有 UI 接收请使用 3`);
@@ -18,7 +18,7 @@ export async function verifyFrontendStrategicPreflight({root=process.cwd(),prefl
   project(root);
   const file=safe(root,preflightRef),preflight=read(file);
   ensure([1,2].includes(preflight.schema_version),'Frontend Strategic Preflight 未知 schema_version');
-  schema(preflight,preflight.schema_version===2?'docs/process/schemas/frontend-strategic-preflight-v2.schema.json':'docs/process/schemas/frontend-strategic-preflight.schema.json');
+  schema(preflight,preflight.schema_version===2?'.template-spec/process/schemas/frontend-strategic-preflight-v2.schema.json':'.template-spec/process/schemas/frontend-strategic-preflight.schema.json');
   const preflightDigest=hash(readFileSync(file));
   if(expectedDigest)ensure(expectedDigest===preflightDigest,'前端战略预检摘要已变化，需重编译合同');
   ensure(preflight.status==='verified','前端战略预检尚未 verified');

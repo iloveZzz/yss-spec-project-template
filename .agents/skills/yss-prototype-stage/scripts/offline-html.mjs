@@ -78,7 +78,7 @@ async function inspect(root, profile, checkDigests) {
     for (const token of ["--brand-font-family", "--brand-color-text", "--brand-color-bg-layout", "--brand-color-bg-container", "--yss-color-primary-control", "--yss-control-height"]) if (!styles.includes(token)) errors.push(`styles.css 未消费项目 Token ${token}`);
   }
   if (manifest.design_source?.path !== "DESIGN.md" || !/^sha256:[a-f0-9]{64}$/.test(manifest.design_source?.digest ?? "")) errors.push("缺少根 DESIGN.md 来源摘要");
-  if (manifest.token_source?.path !== "docs/design/tokens/variables.css" || manifest.token_source?.digest !== files["tokens.css"]) errors.push("tokens.css 与登记的 Token 来源摘要不一致");
+  if (manifest.token_source?.path !== ".template-spec/design/tokens/variables.css" || manifest.token_source?.digest !== files["tokens.css"]) errors.push("tokens.css 与登记的 Token 来源摘要不一致");
   if (checkDigests && JSON.stringify(manifest.files) !== JSON.stringify(files)) errors.push("原型资源摘要或清单已变化，审查后重新 seal-project");
   return { errors, manifest, files };
 }
@@ -107,7 +107,7 @@ export async function prepareOfflineHtml({ projectRoot, root, feature, profile, 
   // Refuse an occupied destination instead of replacing an existing or frozen prototype.
   if (existsSync(root) && ((await lstat(root)).isSymbolicLink() || (await readdir(root)).length)) throw new Error("原型目录已存在内容；请在保留旧版本后选择新 feature 工作目录，不覆盖已有原型");
   const design = await readFile(path.join(projectRoot, "DESIGN.md"));
-  const tokens = await readFile(path.join(projectRoot, "docs/design/tokens/variables.css"));
+  const tokens = await readFile(path.join(projectRoot, ".template-spec/design/tokens/variables.css"));
   await mkdir(root, { recursive: true });
   for (const file of ["index.html", "styles.css", "app.js", "scenarios.js"]) {
     const folder = pattern === "workbench" && file !== "scenarios.js" ? new URL("../assets/native-workbench/", import.meta.url) : assetRoot;
@@ -115,7 +115,7 @@ export async function prepareOfflineHtml({ projectRoot, root, feature, profile, 
     await writeFile(path.join(root, file), source.replaceAll("__FEATURE__", feature).replaceAll("__PROFILE__", profile));
   }
   await writeFile(path.join(root, "tokens.css"), tokens);
-  const manifest = { schema_version: 4, feature, pattern, prototype_profile: profile, profile_kind: profile === "H1" ? "visual-review" : "flow-review", component_basis: "html-css-js", runtime_build_required: false, entry: "index.html", design_source: { path: "DESIGN.md", digest: sha(design) }, token_source: { path: "docs/design/tokens/variables.css", digest: sha(tokens) }, files: {} };
+  const manifest = { schema_version: 4, feature, pattern, prototype_profile: profile, profile_kind: profile === "H1" ? "visual-review" : "flow-review", component_basis: "html-css-js", runtime_build_required: false, entry: "index.html", design_source: { path: "DESIGN.md", digest: sha(design) }, token_source: { path: ".template-spec/design/tokens/variables.css", digest: sha(tokens) }, files: {} };
   await writeFile(path.join(root, manifestName), JSON.stringify(manifest));
   return sealOfflineHtml(root, profile);
 }

@@ -7,7 +7,7 @@
 - `.agents/skills` 是跨 Agent 共享技能的唯一权威内容。
 - `.claude/skills`、`.codex/skills`、`.cursor/skills`、`.pi/skills`、`.qoder/skills`、`.trae/skills` 中的同名共享技能是生成投影，不得分别手工修改。
 - Cursor 的契约运行时入口是 `.cursor/skills`。若客户端同时枚举 `.claude/skills`，仍以 `.cursor/skills` 为 Cursor 投影契约，不得把两套同名 skill 解释为两个来源。
-- 分层、别名和默认可发现性以 `docs/agents/yss-skill-registry.yaml` 为准；当前 registry 为 `active`，实现合同编译器、生命周期编排器和实例发现面必须消费通过校验的 canonical 技能及其 alias 解析结果。
+- 分层、别名和默认可发现性以 `.template-spec/agents/yss-skill-registry.yaml` 为准；当前 registry 为 `active`，实现合同编译器、生命周期编排器和实例发现面必须消费通过校验的 canonical 技能及其 alias 解析结果。
 - 只属于某个平台的 skill 继续保留在对应 root，并由 `skills-lock.json` 的 `platform` 分组记录。
 - 共享技能投影可以是指向权威目录的符号链接，也可以是完整同步副本；`scripts/sync-skills --check` 会检查链接目标或完整目录哈希。
 
@@ -17,8 +17,8 @@
 |---|---|---|
 | `mattpocock/skills` | `0ab1b63a410a03d3627979a109c8695de27af954` / `skills/engineering` 及锁文件记录的关联路径 | 通用工程流程及关联 skills |
 | `anthropics/knowledge-work-plugins` | `sales/skills/competitive-intelligence` | 竞品与市场事实研究 |
-| `tt-a1i/archify` | `199360cc6687a7857b54dd188d4922b09e466a4b` / `archify` | 条件式、可验证的技术架构图；YSS 适配见 `docs/agents/archify-integration.md` |
-| `iloveZzz/yss-ui` | `.agents/skills/.yss-skills-manifest.json` 锁定的 revision / `packages/skills` | 22 个 `categories.app` 业务前端 skills；排除组件库内部 `categories.library` 和后端提交 skill，适配见 `docs/agents/yss-ui-skills-integration.md` |
+| `tt-a1i/archify` | `199360cc6687a7857b54dd188d4922b09e466a4b` / `archify` | 条件式、可验证的技术架构图；YSS 适配见 `.template-source/agents/archify-integration.md` |
+| `iloveZzz/yss-ui` | `.agents/skills/.yss-skills-manifest.json` 锁定的 revision / `packages/skills` | 22 个 `categories.app` 业务前端 skills；排除组件库内部 `categories.library` 和后端提交 skill，适配见 `.template-source/agents/yss-ui-skills-integration.md` |
 | 项目本地 | `.agents/skills` 或平台专属 root | YSS 适配与项目治理 skills |
 
 `skills-lock.json` 是技能清单、来源、上游哈希、当前有效内容哈希和投影目标的权威记录：
@@ -37,7 +37,7 @@
 
 1. 在临时目录读取或下载锁定来源，不直接覆盖工作区。
 2. 只在 `.agents/skills/<skill-name>/` 修改共享技能；平台专属技能只在所属 root 修改。
-3. 创建、修改或退役 skill 时使用 `maintaining-skills`，并先按 `docs/process/harness-process-tailoring.md` 判定验证与审查强度：L1 执行相关检查，L2 记录最小反例、fresh verification 和聚焦审查，L3 记录维护者自检与 fresh verification；正式发布前统一执行完整模板门禁。未定义分级的外部仓库按实际风险执行结构校验和针对性行为验证。
+3. 创建、修改或退役 skill 时使用 `maintaining-skills`，并先按 `.template-spec/process/harness-process-tailoring.md` 判定验证与审查强度：L1 执行相关检查，L2 记录最小反例、fresh verification 和聚焦审查，L3 记录维护者自检与 fresh verification；正式发布前统一执行完整模板门禁。未定义分级的外部仓库按实际风险执行结构校验和针对性行为验证。
 4. 生成共享投影并更新锁文件：
 
    ```bash
@@ -81,7 +81,7 @@ scripts/verify-upstream-skill-source --source=mattpocock/skills --source-root <m
 scripts/verify-upstream-skill-source --source=iloveZzz/yss-ui --source-root <yss-ui-checkout>
 ```
 
-前者检查所有共享投影是否指向或匹配权威内容，后者检查 `skills-lock.json` 是否与当前完整目录树一致。过时技能不会保留兼容别名；旧 skill 名称和入口按 [`docs/agents/skill-migrations.md`](./skill-migrations.md) 一次性迁移，项目文件升级由 `create-yss-spec attach` / `sync` 处理。
+前者检查所有共享投影是否指向或匹配权威内容，后者检查 `skills-lock.json` 是否与当前完整目录树一致。过时技能不会保留兼容别名；旧 skill 名称和入口按 [`.template-spec/agents/skill-migrations.md`](./skill-migrations.md) 一次性迁移，项目文件升级由 `create-yss-spec attach` / `sync` 处理。
 
 ## skills.sh 公开发布
 
@@ -98,4 +98,4 @@ YSS 技能的公开发布仓库为 `iloveZzz/yss-spec-dev-skills`，它是本模
 
 ## 外部工作流工具
 
-维护者可按需使用本机的 `gitlab-workflow`、`glab`、`gh` 或 `scripts/gitworks`。这些工具不是共享技能投影的一部分；平台选择与发布规则见 `docs/agents/issue-tracker.md`。
+维护者可按需使用本机的 `gitlab-workflow`、`glab`、`gh` 或 `scripts/gitworks`。这些工具不是共享技能投影的一部分；平台选择与发布规则见 `.template-spec/agents/issue-tracker.md`。

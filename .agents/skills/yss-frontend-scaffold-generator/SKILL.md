@@ -32,7 +32,7 @@ description: Use when creating a new YSS frontend micro-application from the sta
 
 ## Workflow
 
-采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `docs/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
+采用专职前端 profile 或显式 `frontend_delivery` 绑定时，先按 `.template-spec/process/frontend-backend-delivery.md` 实际核验战略与后端联合交付。缺任一输入只能诊断和回交；输入通过后准备计划/合同，正式实现、生成和恢复仍须当前批准的 Slice Contract 冻结接收摘要。接口或部署版本漂移时重新接收，不复用旧成功输出。
 
 1. 确认当前任务已经通过 Harness 入口分诊、逐项目脚手架决定已由真实用户确认，且 schema v4 合同已由生命周期批准、持久化并保持当前。
 2. 确认目标是外部实现仓库；只有用户明确选择时才输出到 Harness 仓库的 `apps/frontend/<project>/`。`apps/frontend/` 只能作为项目容器，`app/frontend/`、`app/backend/` 及其子路径禁止作为输出位置。`git-submodule` 只能在已初始化且附加分支的子仓工作树生成；空 gitlink、detached HEAD、`--force` 覆盖挂载点不得当成普通目录。
@@ -42,7 +42,7 @@ description: Use when creating a new YSS frontend micro-application from the sta
 6. 有 API 影响时核验 OpenAPI Freeze 记录和 JSON 派生记录，将摘要一致的 JSON 原样物化到 `<frontend>/openapi/openapi.json`；`openapi_impact=not-applicable` 时必须有原因并禁止生成 API client。
 7. 保持模板既有的前端代码生成配置不变；本 Harness 只将 SHA-256 一致的 JSON 原样交给既有前端代码生成流程，不修改该配置、不在此仓库执行生成，也不设置生成 CI 门禁。目标前端项目在需要时手动运行其既有命令。
 8. 企业 registry / 认证由目标环境用户级 npm 配置提供，禁止复制来源 `.npmrc` 或 token。实际执行并记录 `pnpm install --frozen-lockfile`、`pnpm lint:check`、`pnpm type-check`、`pnpm build`、`pnpm build:standalone` 的退出码和日志；缺失脚本只能由批准的工程基线提供替代命令。任何必需命令失败都阻断。
-9. 按 `docs/templates/implementation-repo-registry-template.md` 回写前端实现仓库登记。
+9. 按 `.template-spec/templates/implementation-repo-registry-template.md` 回写前端实现仓库登记。
 
 ## Expected Template Shape
 

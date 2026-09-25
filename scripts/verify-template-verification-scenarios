@@ -21,20 +21,20 @@ const releaseBaseline = [
   "scripts/verify-yss-dto-openapi-scenarios",
   "scripts/verify-digital-human-roles",
   "scripts/verify-digital-human-roles-scenarios",
-  "scripts/verify-approval-record --history docs/templates/approval-record-template.yaml",
+  "scripts/verify-approval-record --history .template-spec/templates/approval-record-template.yaml",
   "scripts/verify-lifecycle-registry",
   "scripts/verify-context-contract --root . --json",
   "scripts/verify-context-contract-scenarios",
   "scripts/verify-context-reconciliation-scenarios",
   "scripts/verify-grill-with-docs-context-scenarios",
   "scripts/verify-strategic-context-import-scenarios",
-  "scripts/verify-lifecycle-checkpoint docs/process/templates/lifecycle-checkpoint-template.yaml",
-  "scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-plan-template.yaml",
-  "scripts/verify-frontend-implementation-evidence --allow-template docs/process/templates/frontend-implementation-verification-template.yaml",
+  "scripts/verify-lifecycle-checkpoint .template-spec/process/templates/lifecycle-checkpoint-template.yaml",
+  "scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-plan-template.yaml",
+  "scripts/verify-frontend-implementation-evidence --allow-template .template-spec/process/templates/frontend-implementation-verification-template.yaml",
   "scripts/verify-subagent-task-package-scenarios",
   "scripts/verify-digital-human-task-package-scenarios",
-  "scripts/verify-digital-human-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml",
-  "scripts/verify-digital-human-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml",
+  ".template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/digital-human-task-package-review-task.yaml",
+  ".template-source/scripts/verify-historical-task-package .template-source/evidence/maintenance/lifecycle-ticket-transition-review-task-package.yaml",
   "scripts/verify-maintenance-checkpoint .template-source/evidence/maintenance/yss-tactical-design-l3-checkpoint-2026-08-27.yaml",
   "scripts/verify-lifecycle-scenarios",
   "scripts/verify-lifecycle-transition-scenarios",
@@ -51,7 +51,7 @@ const releaseBaseline = [
   "scripts/verify-retired-skill-ids",
   "scripts/verify-yss-ui-scenarios",
   "scripts/verify-yss-prototype-contract-scenarios",
-  "node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence docs/design/templates/prototype-evidence-template.yaml --allow-template",
+  "node .agents/skills/yss-prototype-stage/scripts/prototype-contract.mjs validate-evidence .template-spec/design/templates/prototype-evidence-template.yaml --allow-template",
   "scripts/verify-openapi-yaml-first-scenarios",
   "scripts/verify-openapi-json-handoff-scenarios"
 ].sort();
@@ -75,7 +75,7 @@ groups:
     commands: [{ run: check, lane: 1 }]
 `), /lane 无效/);
 
-const docsOnly = planTemplateVerification({ profile: "fast", changedFiles: ["docs/user-guide/example.md"] });
+const docsOnly = planTemplateVerification({ profile: "fast", changedFiles: [".template-spec/user-guide/example.md"] });
 assert.equal(docsOnly.effective_profile, "fast");
 assert.equal(docsOnly.compatibility_required, false);
 assert.equal(release.compatibility_required, true);
@@ -103,7 +103,7 @@ assert.ok(!otherSubmodule.groups.includes("cli-sync"));
 const prototypeContractChange = planTemplateVerification({ profile: "fast", changedFiles: ["scripts/verify-yss-prototype-contract-scenarios"] });
 assert.ok(prototypeContractChange.groups.includes("implementation"), "原型契约脚本变化必须运行实现压力场景");
 
-const candidate = planTemplateVerification({ profile: "candidate", changedFiles: ["docs/process/harness-process-tailoring.md"] });
+const candidate = planTemplateVerification({ profile: "candidate", changedFiles: [".template-spec/process/harness-process-tailoring.md"] });
 assert.equal(candidate.effective_profile, "candidate");
 assert.ok(candidate.groups.includes("maintenance"));
 assert.ok(candidate.groups.includes("candidate-integrity"));

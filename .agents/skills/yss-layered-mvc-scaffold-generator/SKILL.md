@@ -27,7 +27,7 @@ description: 在生命周期已批准的脚手架合同下生成通用 YSS 分�
 - Spring MVC、Servlet、Validation、Jackson 和 starter 坐标消费共享平台清单；Java 下限和允许组合由当前平台条目决定。Jakarta 转换不包括 `javax.sql` 等 Java SE API。
 - 平台候选维护验证产物标记 `platform_verification=candidate`，不能交给业务生成、升级完成等级或进入首切片验证。测试夹具不证明 YSS 兼容。
 
-版本清单、合同字段、候选验证和支持晋级规则见 仓库共享合同 `docs/engineering/backend-platforms.md`。
+版本清单、合同字段、候选验证和支持晋级规则见 仓库共享合同 `.template-spec/engineering/backend-platforms.md`。
 
 ## 架构与 Profile
 

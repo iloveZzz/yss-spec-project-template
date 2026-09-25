@@ -79,7 +79,7 @@ write(draftRef, draft.replace("#/components/schemas/Widget", "#/components/schem
 const brokenDigest = `sha256:${createHash("sha256").update(draft.replace("#/components/schemas/Widget", "#/components/schemas/Missing")).digest("hex")}`;
 run("broken-ref", { ...base, draft: { ...base.draft, sha256: brokenDigest } }, 1, /\$ref 无法解析/);
 
-const template = path.join(repoRoot, "docs/api/templates/openapi-draft-validation-record-template.yaml");
+const template = path.join(repoRoot, ".template-spec/api/templates/openapi-draft-validation-record-template.yaml");
 const templateResult = spawnSync("scripts/verify-openapi-draft-validation-record", ["--allow-template", template], { cwd: repoRoot, encoding: "utf8" });
 if (templateResult.status !== 0) throw new Error(templateResult.stderr || templateResult.stdout);
 process.stdout.write("OpenAPI Draft validation record scenarios passed\n");

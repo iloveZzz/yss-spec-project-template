@@ -2,7 +2,7 @@
 
 YAML 是唯一权威合同。Agent 从已确认上游整理草案；用户确认目标、范围、验收和关键取舍；独立专业审查核验工程约束，生命周期主控关闭 `gate.slice-contract-approved`。新合同使用 schema v3；[v2](slice-implementation-contract-v2.md) 保留原规则读取和校验，schema v1 继续拒绝。
 
-结构权威为 `docs/process/schemas/slice-implementation-contract-v3.schema.json`。Registry、编译规则与 Execution Result 继续使用各自版本；Slice v3 不要求它们一同升级。
+结构权威为 `.template-spec/process/schemas/slice-implementation-contract-v3.schema.json`。Registry、编译规则与 Execution Result 继续使用各自版本；Slice v3 不要求它们一同升级。
 
 ## 只保存一次
 

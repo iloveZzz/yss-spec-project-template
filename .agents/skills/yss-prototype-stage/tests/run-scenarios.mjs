@@ -12,11 +12,11 @@ import { sealOfflineHtml } from "../scripts/offline-html.mjs";
 const tempRoot = await mkdtemp(path.join(os.tmpdir(), "yss-prototype-contract-"));
 const projectRoot = path.join(tempRoot, "project");
 const feature = "order-review";
-await mkdir(path.join(projectRoot, "docs/design/tokens"), { recursive: true });
+await mkdir(path.join(projectRoot, ".template-spec/design/tokens"), { recursive: true });
 await writeFile(path.join(projectRoot, "DESIGN.md"), "---\nversion: alpha\n---\n");
-await writeFile(path.join(projectRoot, "docs/design/tokens/theme.json"), JSON.stringify({ token: { colorPrimary: "#3371ff", borderRadius: 6, controlHeight: 32 } }, null, 2));
+await writeFile(path.join(projectRoot, ".template-spec/design/tokens/theme.json"), JSON.stringify({ token: { colorPrimary: "#3371ff", borderRadius: 6, controlHeight: 32 } }, null, 2));
 
-await cp(new URL("../../../../docs/design/tokens/variables.css", import.meta.url), path.join(projectRoot, "docs/design/tokens/variables.css"));
+await cp(new URL("../../../../.template-spec/design/tokens/variables.css", import.meta.url), path.join(projectRoot, ".template-spec/design/tokens/variables.css"));
 
 const h1Root = path.join(projectRoot, "docs/.scratch", feature, "design/prototypes");
 await prepareStaticPrototype({ projectRoot, root: h1Root, feature });
@@ -75,7 +75,7 @@ function common(profile, kind, block) {
     },
     upstream_refs: { spec_ref: "spec.md", interaction_spec_ref: "interaction.md", low_fidelity_ref: "low.md", state_matrix_ref: "states.md", prototype_review_ref: "review.md" },
     source_visual: { ideation_status: "not-applicable", selected_ref: "approved-pattern.md", reuse_reason: "复用已批准模式" },
-    design_baseline: { canonical_design_ref: "DESIGN.md", canonical_design_digest: "sha256:design", project_design_ref: "docs/design/design.md", project_token_refs: ["docs/design/tokens/theme.json"], project_token_baseline_digest: "sha256:tokens", project_override_reviewed: true },
+    design_baseline: { canonical_design_ref: "DESIGN.md", canonical_design_digest: "sha256:design", project_design_ref: ".template-spec/design/design.md", project_token_refs: [".template-spec/design/tokens/theme.json"], project_token_baseline_digest: "sha256:tokens", project_override_reviewed: true },
     visual_baseline: { manifest_ref: `docs/.scratch/${feature}/handoff/visual-baseline-v1/visual-baseline.yaml`, baseline_id: `visual-baseline.${feature}`, version: "v1", digest: `sha256:${"a".repeat(64)}`, status: "approved", case_ids: ["primary-desktop", "primary-narrow"] },
     browser_delivery: {
       delivery_kind: "static-directory", entry_ref: `docs/.scratch/${feature}/design/prototypes/index.html`, rendered_nonblank: true, prototype_digest: "sha256:prototype",

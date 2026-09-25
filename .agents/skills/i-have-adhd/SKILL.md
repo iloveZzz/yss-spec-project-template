@@ -6,7 +6,7 @@ license: MIT
 
 # i-have-adhd · YSS 适配
 
-为当前产物应用 `docs/process/document-writing.md`；该文是中文写法的唯一权威来源。需要例子时读取 `docs/templates/examples/lifecycle-writing-examples.md`。本技能是原资产所有者的配套技能，不持有业务决定、批准或生命周期状态。
+为当前产物应用 `.template-spec/process/document-writing.md`；该文是中文写法的唯一权威来源。需要例子时读取 `.template-spec/templates/examples/lifecycle-writing-examples.md`。本技能是原资产所有者的配套技能，不持有业务决定、批准或生命周期状态。
 
 ## 触发与作用域
 

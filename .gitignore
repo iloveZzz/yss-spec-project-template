@@ -49,5 +49,7 @@ Excalidraw
 output
 docs/process/presentations/
 docs/process/yss-product-lifecycle-team-guide.md
+.template-spec/process/presentations/
+.template-spec/process/yss-product-lifecycle-team-guide.md
 docs/graphify-out
 docs/.scratch/

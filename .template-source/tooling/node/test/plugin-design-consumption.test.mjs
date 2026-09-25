@@ -15,14 +15,14 @@ test('consumer mapping preserves dedicated backend identity and rejects unknown 
   const dir = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), 'consumer-entry-policy-')));
   t.after(() => fs.rmSync(dir, { recursive: true, force: true }));
   const source = path.join(ROOT, 'submodules/yss-harness-backend-agent');
-  for (const ref of ['docs/process/harness-profile.yaml', 'docs/process/lifecycle-registry.yaml', '.agents/skills/harness-orchestrator/references/orchestration-contract.yaml']) {
+  for (const ref of ['.template-spec/process/harness-profile.yaml', '.template-spec/process/lifecycle-registry.yaml', '.agents/skills/harness-orchestrator/references/orchestration-contract.yaml']) {
     fs.mkdirSync(path.dirname(path.join(dir, ref)), { recursive: true });
     fs.copyFileSync(path.join(source, ref), path.join(dir, ref));
   }
   assert.equal(consumerEntry(dir, 'backend-technical-design', 'work-unit.technical-design').target_work_unit, 'work-unit.technical-design');
   assert.throws(() => consumerEntry(dir, 'backend-technical-design', 'work-unit.technical-analysis'), /unmapped/);
   assert.throws(() => consumerEntry(dir, 'backendTechnicalDesign', 'work-unit.technical-design'), /unmapped/);
-  fs.writeFileSync(path.join(dir, 'docs/process/harness-profile.yaml'), JSON.stringify({ profile_id: 'harness.backend-delivery', lifecycle: { allowed_work_units: [] } }));
+  fs.writeFileSync(path.join(dir, '.template-spec/process/harness-profile.yaml'), JSON.stringify({ profile_id: 'harness.backend-delivery', lifecycle: { allowed_work_units: [] } }));
   assert.throws(() => consumerEntry(dir, 'backend-technical-design', 'work-unit.technical-design'), /outside-profile/);
 });
 

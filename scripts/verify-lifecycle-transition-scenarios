@@ -68,7 +68,7 @@ writeProjectFile("docs/.scratch/demo/evidence/engineering-contract-approval.json
 });
 
 const exists = (ref) => [
-  "docs/process/lifecycle-registry.yaml",
+  ".template-spec/process/lifecycle-registry.yaml",
   "docs/.scratch/demo/issues/01-valid-slice.md",
   "docs/.scratch/demo/evidence/ticket-decomposition-result.yaml",
   "docs/.scratch/demo/evidence/repository-preparation.yaml",
@@ -90,7 +90,7 @@ const technicalAnalysisResult = `${JSON.stringify({
   result: "completed",
   current_version: true,
   api_contract_decision: { ref: apiDecision.ref, version: "v1", digest: apiDecision.digest, impact: "not-applicable" },
-  context_reconciliation: { status: "reconciled", ref: "docs/process/lifecycle-registry.yaml" },
+  context_reconciliation: { status: "reconciled", ref: ".template-spec/process/lifecycle-registry.yaml" },
   evidence_refs: ["docs/.scratch/demo/evidence/technical-analysis-result.yaml", apiDecision.ref],
 }, null, 2)}\n`;
 const backendDesignPrerequisites = {
@@ -249,7 +249,7 @@ assert.equal(validateNextRoute("work-unit.technical-analysis", "work-unit.implem
     result: "completed",
     current_version: true,
     api_contract_decision: { ref: apiDecision.ref, version: "v1", digest: apiDecision.digest, impact: "not-applicable" },
-    context_reconciliation: { status: "reconciled", ref: "docs/process/lifecycle-registry.yaml" },
+    context_reconciliation: { status: "reconciled", ref: ".template-spec/process/lifecycle-registry.yaml" },
     evidence_refs: ["docs/.scratch/demo/evidence/technical-analysis-result.yaml", apiDecision.ref],
   },
 }, options).result, "allowed");
@@ -261,7 +261,7 @@ assert.ok(validateNextRoute("work-unit.technical-analysis", "work-unit.implement
     work_unit: "work-unit.technical-analysis",
     result: "completed",
     current_version: true,
-    context_reconciliation: { status: "reconciled", ref: "docs/process/lifecycle-registry.yaml" },
+    context_reconciliation: { status: "reconciled", ref: ".template-spec/process/lifecycle-registry.yaml" },
     evidence_refs: ["docs/.scratch/demo/evidence/technical-analysis-result.yaml"],
   },
 }, options).blocking_signals.includes("technical-analysis-required"));
@@ -271,8 +271,8 @@ assert.equal(validateNextRoute("work-unit.intensity-aware-verification", "work-u
 assert.equal(validateNextRoute("work-unit.release-and-rollback", null).result, "allowed");
 const arbitraryReadable = validateTicketFormalization({
   ...validTicketState,
-  ticket_decomposition_result_ref: "docs/process/lifecycle-registry.yaml",
-  ticket_decomposition_result: { result: "completed", evidence_refs: ["docs/process/lifecycle-registry.yaml"] },
+  ticket_decomposition_result_ref: ".template-spec/process/lifecycle-registry.yaml",
+  ticket_decomposition_result: { result: "completed", evidence_refs: [".template-spec/process/lifecycle-registry.yaml"] },
 }, options);
 assert.equal(arbitraryReadable.result, "blocked");
 assert.ok(arbitraryReadable.blocking_signals.includes("ticket-decomposition-incomplete"));

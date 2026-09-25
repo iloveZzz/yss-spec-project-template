@@ -61,9 +61,9 @@ test('v5 交付目录分别导入后端和前端，生成 Import Receipt v3 并�
  const f=await setupV5(t);const finalized=await finalizeDelivery({sourceRoot:f.source,handoffRef:'handoff.yaml'});
  const recordBytes=readFileSync(path.join(finalized.delivery,'delivery-record.json'));
  for(const [profileId,capabilities] of [['yss-harness-backend',['backend-technical-design']],['yss-harness-frontend',['frontend-engineering-design']]]){
-  const target=path.join(f.base,profileId);mkdirSync(path.join(target,'docs/process'),{recursive:true});
+  const target=path.join(f.base,profileId);mkdirSync(path.join(target,'.template-spec/process'),{recursive:true});
   writeFileSync(path.join(target,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');writeFileSync(path.join(target,'CONTEXT.md'),context);
-  writeFileSync(path.join(target,'docs/process/harness-profile.yaml'),json({schema_version:2,profile_id:profileId,handoff:{consumer_capabilities:capabilities}}));
+  writeFileSync(path.join(target,'.template-spec/process/harness-profile.yaml'),json({schema_version:2,profile_id:profileId,handoff:{consumer_capabilities:capabilities}}));
   const imported=await importBundle({bundle:finalized.delivery,targetRoot:target});const receipt=read(path.join(target,imported.receipt_ref));
   assert.equal(receipt.schema_version,3);assert.equal(receipt.ready_for_agent,false);assert.equal(receipt.source_delivery_record_sha256,hash(recordBytes));
   assert.deepEqual(readFileSync(path.join(target,receipt.source_delivery_record_ref)),recordBytes);
@@ -76,9 +76,9 @@ test('v3/v4 不允许 finalize，新交付必须迁移到 Handoff v5',async t=>{
 });
 test('v4 按消费者能力导入 Import Receipt v2 并生成路由草案',async t=>{
  const f=await setupV4(t),output=path.join(f.base,'package');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output});
- const target=path.join(f.base,'target');mkdirSync(path.join(target,'docs/process'),{recursive:true});
+ const target=path.join(f.base,'target');mkdirSync(path.join(target,'.template-spec/process'),{recursive:true});
  writeFileSync(path.join(target,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');writeFileSync(path.join(target,'CONTEXT.md'),context);
- writeFileSync(path.join(target,'docs/process/harness-profile.yaml'),json({schema_version:2,profile_id:'yss-harness-backend',handoff:{consumer_capabilities:['backend-technical-design']}}));
+ writeFileSync(path.join(target,'.template-spec/process/harness-profile.yaml'),json({schema_version:2,profile_id:'yss-harness-backend',handoff:{consumer_capabilities:['backend-technical-design']}}));
  const imported=await importBundle({bundle:output,targetRoot:target});const receipt=read(path.join(target,imported.receipt_ref));
  assert.equal(receipt.schema_version,2);assert.equal(receipt.target_profile_id,'yss-harness-backend');assert.deepEqual(receipt.selected_consumer_capabilities,['backend-technical-design']);
  assert.equal(receipt.routes[0].route_id,'route.backend');assert.match(receipt.routes[0].artifact_refs.join(','),/backend-technical-traceability-draft/);
@@ -106,7 +106,7 @@ test('消费者反馈按源摘要裁决，amend 与 blocking defer 保持阻断'
  const {verifyConsumerFeedback,verifyFeedbackAdjudication}=await import('./lib/strategic-feedback.mjs');
  const f=await setupV4(t),output=path.join(f.base,'package');await exportBundle({sourceRoot:f.source,handoffRef:'handoff.yaml',output});
  const sourceRule=await openBundle(output,b=>b.indexes.rules[0]);
- const target=path.join(f.base,'target');mkdirSync(path.join(target,'docs/process'),{recursive:true});writeFileSync(path.join(target,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');writeFileSync(path.join(target,'CONTEXT.md'),context);writeFileSync(path.join(target,'docs/process/harness-profile.yaml'),json({schema_version:2,profile_id:'harness.backend-delivery',handoff:{consumer_capabilities:['backend-technical-design']}}));
+ const target=path.join(f.base,'target');mkdirSync(path.join(target,'.template-spec/process'),{recursive:true});writeFileSync(path.join(target,'yss-project.yaml'),'schema_version: 1\nrepository_mode: project-instance\n');writeFileSync(path.join(target,'CONTEXT.md'),context);writeFileSync(path.join(target,'.template-spec/process/harness-profile.yaml'),json({schema_version:2,profile_id:'harness.backend-delivery',handoff:{consumer_capabilities:['backend-technical-design']}}));
  const imported=await importBundle({bundle:output,targetRoot:target}),receipt=read(path.join(target,imported.receipt_ref));writeFileSync(path.join(target,'feedback-evidence.md'),'Synthetic consumer feedback evidence.');writeFileSync(path.join(target,'feedback-approval.md'),'Synthetic adjudication approval evidence.');
  const feedback={schema_version:1,feedback_id:'consumer-feedback.supplier-rule',status:'submitted',import_receipt_ref:imported.receipt_ref,bundle:{id:receipt.bundle_id,version:receipt.version,digest:receipt.bundle_digest},route_id:'route.backend',source:{id:sourceRule.rule_id,digest:sourceRule.source_digest},issue_type:'rule-conflict',severity:'blocking',suggestion:'补充材料有效期规则',raised_by:'role.backend-agent',evidence_refs:['feedback-evidence.md'],created_at:'2026-09-11T00:00:00Z'};
  writeFileSync(path.join(target,'feedback.json'),json(feedback));assert.equal((await verifyConsumerFeedback({root:target,feedbackRef:'feedback.json'})).result,'feedback-verified');
@@ -121,7 +121,7 @@ test('规则遗漏、摘要漂移、批准不匹配和离线资源丢失阻断�
  const text=readFileSync(path.join(f.source,'source/strategy.yaml'));f.put('source/strategy.yaml',{...f.strategy,traceability_version:undefined});
  await assert.rejects(run,/不一致|过期|migration/);writeFileSync(path.join(f.source,'source/strategy.yaml'),text);
  const approved=read(path.join(f.source,'approvals/spec_ref.yaml'));f.put('approvals/spec_ref.yaml',{...approved,artifact_bindings:[]});await assert.rejects(run,/批准记录未绑定/);f.put('approvals/spec_ref.yaml',approved);
- const roles=read(path.join(f.source,'docs/agents/digital-human-roles.yaml'));f.put('docs/agents/digital-human-roles.yaml',{...roles,user_decision_policy:{...roles.user_decision_policy,gates:['gate.domain-strategy-approved']}});await assert.rejects(run,/user-decision|升级/);f.put('docs/agents/digital-human-roles.yaml',roles);
+ const roles=read(path.join(f.source,'.template-spec/agents/digital-human-roles.yaml'));f.put('.template-spec/agents/digital-human-roles.yaml',{...roles,user_decision_policy:{...roles.user_decision_policy,gates:['gate.domain-strategy-approved']}});await assert.rejects(run,/user-decision|升级/);f.put('.template-spec/agents/digital-human-roles.yaml',roles);
  const sourceBytes=readFileSync(path.join(f.source,'prototype-src/main.js'));f.put('prototype-src/main.js','changed');await assert.rejects(run,/源码\/锁文件批准摘要/);writeFileSync(path.join(f.source,'prototype-src/main.js'),sourceBytes);
  const verification=read(path.join(f.source,'evidence/offline.json'));f.put('evidence/offline.json',{...verification,command:'changed'});await assert.rejects(run,/验证记录批准摘要/);f.put('evidence/offline.json',verification);
  f.put('preview/index.html','<img src="missing.png">');await assert.rejects(run,/过期/);

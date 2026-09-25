@@ -8,7 +8,7 @@ async function preflightExport(values) {
   const root=path.resolve(values['source-root']),delivery=read(safe(root,values.delivery));
   const document=read(safe(root,delivery.slice_contract.ref)),contract=document.slice_contract||document;
   const identity=contract.resolution?.architecture_identity||contract.backend?.architecture_identity||contract.architecture_identity;
-  ensure(identity?.schema_version!==2||values['preflight-input'],'preflight-required: 既有工程身份 v2 导出必须提供 --preflight-input <file>；先按 docs/process/delivery-preflight.md 准备源资产清单并执行 export 阶段只读预检');
+  ensure(identity?.schema_version!==2||values['preflight-input'],'preflight-required: 既有工程身份 v2 导出必须提供 --preflight-input <file>；先按 .template-spec/process/delivery-preflight.md 准备源资产清单并执行 export 阶段只读预检');
   if(!values['preflight-input'])return;
   const {preflightDelivery}=await import('./lib/delivery-preflight.mjs');
   const input=read(path.resolve(values['preflight-input']));

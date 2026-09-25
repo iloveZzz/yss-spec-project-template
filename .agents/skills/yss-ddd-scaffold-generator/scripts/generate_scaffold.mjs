@@ -209,7 +209,7 @@ export class ScaffoldGenerator {
     if (!contract || Array.isArray(contract) || typeof contract !== "object") fail("脚手架合同必须是 JSON 对象");
     if (contract.schema_version !== 4) fail(`unsupported: 后端新生成只接受 Project Scaffold Contract v4，收到 v${contract.schema_version}`);
     if (contract.kind !== "project-scaffold-contract" || contract.delivery_role !== "backend" || contract.scaffold_kind !== "backend-ddd") fail("schema v4 合同必须绑定 backend/backend-ddd");
-    validateJsonSchema(contract, path.join(REPOSITORY_ROOT, "docs/process/schemas/project-scaffold-contract.schema.json"), { label: "Project Scaffold Contract v4" });
+    validateJsonSchema(contract, path.join(REPOSITORY_ROOT, ".template-spec/process/schemas/project-scaffold-contract.schema.json"), { label: "Project Scaffold Contract v4" });
     const requiredMetadata = [["--contract-id", this.options.contractId], ["--contract-version", this.options.contractVersion], ["--approval-ref", this.options.approvalRef], ["--compiler-draft-ref", this.options.compilerDraftRef], ["--persisted-ref", this.options.persistedRef]];
     const missing = requiredMetadata.filter(([, value]) => !isPresent(value)).map(([flag]) => flag);
     if (missing.length) fail(`生成项目必须提供当前已批准脚手架合同的完整元数据: ${missing.join(", ")}`);

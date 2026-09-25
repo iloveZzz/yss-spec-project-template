@@ -3,11 +3,11 @@
 ## [2026-09-04] REFRESH | 移除 Kiro、Hermes 与 Gemini 平台支持
 - changed: AGENTS.md, README.md, skills-maintenance.md, yss-skill-registry.yaml, skills-lock.json
 - articles: 技能投影与锁定
-- unmapped: docs/agents/digital-human-roles.yaml (No material)
-- unmapped: docs/agents/digital-human-roles.md (No material)
-- unmapped: docs/process/template-engineering-overview.md (No material)
-- unmapped: docs/process/template-verification-profiles.yaml (No material)
-- unmapped: docs/user-guide/yss-ui-mcp.md (No material)
+- unmapped: .template-spec/agents/digital-human-roles.yaml (No material)
+- unmapped: .template-spec/agents/digital-human-roles.md (No material)
+- unmapped: .template-source/process/template-engineering-overview.md (No material)
+- unmapped: .template-source/process/template-verification-profiles.yaml (No material)
+- unmapped: .template-spec/user-guide/yss-ui-mcp.md (No material)
 - unmapped: .agents/skills/.yss-skills-manifest.json (No material)
 - unmapped: .agents/skills/yss-ui/assets/docs/guide/llms.md (No material)
 
@@ -39,7 +39,7 @@ lint 脚本改为失败跨路径 wikilink、校验 manifest sha256，并要求 H
 
 ## [2026-08-23] REFRESH | 登记前端 pnpm / 后端 mvnw 验证命令
 
-`AGENTS.md` 与根目录 `CLAUDE.md` 写入 frontend `pnpm`、backend `./mvnw` 优先序；细则落在 `docs/process/implementation-repo-integration.md`。刷新 [[Agent入口规则]] 与 [[实现仓库与跨仓库契约]]。
+`AGENTS.md` 与根目录 `CLAUDE.md` 写入 frontend `pnpm`、backend `./mvnw` 优先序；细则落在 `.template-spec/process/implementation-repo-integration.md`。刷新 [[Agent入口规则]] 与 [[实现仓库与跨仓库契约]]。
 
 ## [2026-08-23] REFRESH | llm-wiki 去掉外部技能关联
 
