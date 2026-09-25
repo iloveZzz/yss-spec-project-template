@@ -38,7 +38,7 @@ try {
   }
   const tests = process.argv.slice(2);
   if (!tests.length) throw new Error('test-files-required');
-  const result = spawnSync(process.execPath, ['--test', ...tests], { cwd: process.cwd(), env, stdio: 'inherit' });
+  const result = spawnSync(process.execPath, ['--test', '--test-concurrency=1', ...tests], { cwd: process.cwd(), env, stdio: 'inherit' });
   if (result.error) throw result.error;
   process.exitCode = result.status ?? 1;
 } finally {
