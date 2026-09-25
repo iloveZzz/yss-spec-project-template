@@ -27,6 +27,19 @@
     "convergence"
   ],
   "properties": {
+    "transition_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "strategic_handoff_consumption": { "type": "object" },
+        "approved_spec": { "type": "object" },
+        "context_reconciliation": { "type": "object" },
+        "technical_design": { "type": "object" },
+        "data_architecture_decision": { "type": "object" },
+        "api_contract_decision": { "type": "object" },
+        "engineering_contract_approval_ref": { "type": "string", "minLength": 1 }
+      }
+    },
     "plan_review_ref": {
       "type": "string",
       "minLength": 1
