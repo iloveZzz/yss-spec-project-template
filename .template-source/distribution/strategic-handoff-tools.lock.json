@@ -2,8 +2,8 @@
   "schema_version": 1,
   "target_id": "template-root",
   "source_repository": "yss-spec-project-template",
-  "source_revision": "d48c6ccd54d1112b78ec3d4995a84cd6b24cc9d6",
-  "source_state": "working-tree",
+  "source_revision": "6c894538b95b1ff561fa0ac1cc3cb28f286d353c",
+  "source_state": "committed",
   "transformation_set": [
     "identity"
   ],
@@ -23,7 +23,7 @@
     ".template-spec/process/schemas/backend-delivery.schema.json": "sha256:92a97c59e180c2d618039af64e59863e48fe081d3e0a2ceea0b34923b426f5ee",
     ".template-spec/process/schemas/delivery-preflight-input.schema.json": "sha256:3b9d38d917d92f305cfacf4e949672b4f4539d50194583027f39fd2fb31ce93c",
     ".template-spec/process/schemas/delivery-preflight-result.schema.json": "sha256:fdd98392148dd4bb9f9e7a2654a7c77e8937740ae82a6778dbbb275e5916122d",
-    ".template-spec/process/schemas/digital-human-task-package.schema.json": "sha256:c36b5bbb12fbfae4288e3ccbd2e9c1853706b2844e4727e5c18bf735365d91a8",
+    ".template-spec/process/schemas/digital-human-task-package.schema.json": "sha256:47cf25093e768fb617abb5cbf8d2af99d70ce82ae0a3f260554ca1cac180ffa8",
     ".template-spec/process/schemas/existing-ui-baseline.schema.json": "sha256:a6829ca6ed204a69897d7eff35cb350db71e281260bf72fa97d9bc124433af02",
     ".template-spec/process/schemas/frontend-delivery-acceptance-v1.schema.json": "sha256:831f0132d391fd34eb7268417301588676c18e7d0e8700f74dc0a1f6f6f04754",
     ".template-spec/process/schemas/frontend-delivery-acceptance-v3.schema.json": "sha256:fc2555fed02480e00e751c10cd7e3b07234f812d7d37acbe2819970ab73f2c2d",
@@ -175,7 +175,7 @@
     ".template-spec/process/schemas/backend-delivery.schema.json": "sha256:92a97c59e180c2d618039af64e59863e48fe081d3e0a2ceea0b34923b426f5ee",
     ".template-spec/process/schemas/delivery-preflight-input.schema.json": "sha256:3b9d38d917d92f305cfacf4e949672b4f4539d50194583027f39fd2fb31ce93c",
     ".template-spec/process/schemas/delivery-preflight-result.schema.json": "sha256:fdd98392148dd4bb9f9e7a2654a7c77e8937740ae82a6778dbbb275e5916122d",
-    ".template-spec/process/schemas/digital-human-task-package.schema.json": "sha256:c36b5bbb12fbfae4288e3ccbd2e9c1853706b2844e4727e5c18bf735365d91a8",
+    ".template-spec/process/schemas/digital-human-task-package.schema.json": "sha256:47cf25093e768fb617abb5cbf8d2af99d70ce82ae0a3f260554ca1cac180ffa8",
     ".template-spec/process/schemas/existing-ui-baseline.schema.json": "sha256:a6829ca6ed204a69897d7eff35cb350db71e281260bf72fa97d9bc124433af02",
     ".template-spec/process/schemas/frontend-delivery-acceptance-v1.schema.json": "sha256:831f0132d391fd34eb7268417301588676c18e7d0e8700f74dc0a1f6f6f04754",
     ".template-spec/process/schemas/frontend-delivery-acceptance-v3.schema.json": "sha256:fc2555fed02480e00e751c10cd7e3b07234f812d7d37acbe2819970ab73f2c2d",
